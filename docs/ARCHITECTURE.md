@@ -115,7 +115,7 @@ tail, and VC7.1 `/Ob1` source-shape profile. The second large-function lane,
 `EclManager::RunEcl`, is exact for its 27,091-byte authored body and complete
 27,747-byte COFF extent, including the 158-entry opcode table, six-entry
 easing table, and all 647 relocations. A subsequent target-local audit admitted
-31 functions and 53,257 bytes across the camera/photo, replay/menu, and
+32 functions and 55,476 bytes across the camera/photo, replay/menu, and
 gameplay/resource clusters. The next target-first reconstruction lane is the
 7,271-byte camera/photo state machine at `0x00430AB0`.
 

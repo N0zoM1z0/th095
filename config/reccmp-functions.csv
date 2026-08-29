@@ -68,3 +68,5 @@ th095::PhotoCameraState::BeginCapture,0x00432730,function
 th095::PhotoCameraState::UpdateViewfinder,0x004328C0,function
 th095::PhotoCameraState::TakePhoto,0x00432D10,function
 th095::PhotoCameraState::CancelCapture,0x00433000,function
+th095::PhotoCameraState::CalculatePhotoScore,0x00433140,function
+th095::PhotoCameraState::CountPhotoTargets,0x004339F0,function

@@ -6,6 +6,8 @@
 namespace th095
 {
 
+struct PhotoCapturedBulletView;
+
 enum PhotoCameraMode
 {
     PHOTO_CAMERA_TRACKING = 0,
@@ -80,8 +82,9 @@ struct PhotoCameraState
     void BeginCapture();
     void UpdateViewfinder();
     u32 TakePhoto();
-    void CalculatePhotoScore(void *bulletTargets, i32 *scoreData,
-                             i32 runtimeTargets, i32 stageTargets);
+    i32 CalculatePhotoScore(PhotoCapturedBulletView *bulletTargets,
+                            i32 *scoreData, i32 runtimeTargets,
+                            i32 stageTargets);
     void CancelCapture();
     i32 CountPhotoTargets(f32 *score, f32 *rate);
     void UpdateCharge();

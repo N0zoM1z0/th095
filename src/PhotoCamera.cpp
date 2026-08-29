@@ -6,8 +6,28 @@ namespace th095
 struct PhotoEnemyView
 {
     u8 unknown0000[0x28a0];
-    Float3 position;
+    Float3 position;                   // +0x28a0
+    u8 unknown28ac[0x2bf4 - 0x28ac];
+    u32 flags;                         // +0x2bf4
+    u32 flags2;                        // +0x2bf8
+    u8 unknown2bfc[0x2c28 - 0x2bfc];
+    f32 photoRateNumerator;            // +0x2c28
+    i32 photoRateCount;                // +0x2c2c
+    u8 unknown2c30[0x2c34 - 0x2c30];
+    f32 photoRateDenominator;          // +0x2c34
+
+    i32 HasPhotoRate() const
+    {
+        return this->photoRateCount > 0;
+    }
 };
+
+typedef char PhotoEnemyPositionAt28A0[
+    (offsetof(PhotoEnemyView, position) == 0x28a0) ? 1 : -1];
+typedef char PhotoEnemyFlagsAt2BF4[
+    (offsetof(PhotoEnemyView, flags) == 0x2bf4) ? 1 : -1];
+typedef char PhotoEnemyPhotoRateAt2C28[
+    (offsetof(PhotoEnemyView, photoRateNumerator) == 0x2c28) ? 1 : -1];
 
 struct PhotoRuntimeView
 {
@@ -17,6 +37,28 @@ struct PhotoRuntimeView
     i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
 };
 
+struct PhotoCapturedBulletView
+{
+    u8 unknown000[0x248];
+    AnmVm *vm;                         // +0x248
+    u8 unknown24c[0x2f4 - 0x24c];
+    f32 photoScale;                    // +0x2f4
+    u8 unknown2f8[0x35c - 0x2f8];
+    PhotoCapturedBulletView *next;     // +0x35c
+    u8 unknown360[0x656 - 0x360];
+    i16 group;                         // +0x656
+    i16 kind;                          // +0x658
+};
+
+typedef char PhotoCapturedBulletVmAt248[
+    (offsetof(PhotoCapturedBulletView, vm) == 0x248) ? 1 : -1];
+typedef char PhotoCapturedBulletScaleAt2F4[
+    (offsetof(PhotoCapturedBulletView, photoScale) == 0x2f4) ? 1 : -1];
+typedef char PhotoCapturedBulletNextAt35C[
+    (offsetof(PhotoCapturedBulletView, next) == 0x35c) ? 1 : -1];
+typedef char PhotoCapturedBulletKindAt658[
+    (offsetof(PhotoCapturedBulletView, kind) == 0x658) ? 1 : -1];
+
 struct PhotoGlobalStateView
 {
     u8 unknown000[0xfc];
@@ -25,7 +67,8 @@ struct PhotoGlobalStateView
 
 struct PhotoStageStateView
 {
-    u8 unknown00000[0x2571c];
+    u8 unknown00000[0x25718];
+    f32 scoreMultiplier;
     PhotoAnmLoadedView *anm;
     u32 flags;
 
@@ -94,6 +137,26 @@ enum PhotoCameraFlags
     PHOTO_FLAG_TARGET_SOUND_PLAYED = 1 << 6,
 };
 
+enum PhotoScoreFlags
+{
+    PHOTO_SCORE_ENEMY = 1 << 0,
+    PHOTO_SCORE_SELF = 1 << 1,
+    PHOTO_SCORE_TWO_SHOT = 1 << 2,
+    PHOTO_SCORE_BOSS_RATE = 1 << 3,
+    PHOTO_SCORE_NEARBY = 1 << 4,
+    PHOTO_SCORE_COLOR_1 = 1 << 6,
+    PHOTO_SCORE_COLOR_2 = 1 << 7,
+    PHOTO_SCORE_COLOR_3 = 1 << 8,
+    PHOTO_SCORE_COLOR_4 = 1 << 9,
+    PHOTO_SCORE_COLOR_5 = 1 << 10,
+    PHOTO_SCORE_COLOR_6 = 1 << 11,
+    PHOTO_SCORE_COLOR_7 = 1 << 12,
+    PHOTO_SCORE_COLORFUL = 1 << 13,
+    PHOTO_SCORE_RAINBOW = 1 << 14,
+    PHOTO_SCORE_EMPTY = 1 << 15,
+    PHOTO_SCORE_NO_BULLETS = 1 << 16,
+};
+
 enum PhotoViewfinderDirection
 {
     PHOTO_DIRECTION_NONE = 0,
@@ -128,6 +191,39 @@ static inline void SetPhotoVmColor(AnmVm *vm, u8 red, u8 green, u8 blue)
 static inline i32 PreservePhotoId(i32 value)
 {
     return *reinterpret_cast<volatile i32 *>(&value);
+}
+
+static inline i32 PhotoEnemyIsOffscreen(const Float3 *position)
+{
+    return position->x + 8.0f <= -192.0f ||
+           position->x - 8.0f >= 192.0f ||
+           position->y + 8.0f <= 0.0f ||
+           position->y - 8.0f >= 448.0f;
+}
+
+static inline i32 PhotoRectangleContains(
+    const Float3 *objectPosition, f32 objectWidth, f32 objectHeight,
+    const Float3 *containerPosition, f32 containerWidth,
+    f32 containerHeight)
+{
+    objectWidth *= 0.5f;
+    objectHeight *= 0.5f;
+    containerWidth *= 0.5f;
+    containerHeight *= 0.5f;
+    return objectPosition->x - objectWidth >=
+               containerPosition->x - containerWidth &&
+           objectPosition->x + objectWidth <=
+               containerPosition->x + containerWidth &&
+           objectPosition->y - objectHeight >=
+               containerPosition->y - containerHeight &&
+           objectPosition->y + objectHeight <=
+               containerPosition->y + containerHeight;
+}
+
+static inline f32 PhotoRatio(volatile f32 denominator, volatile f32 numerator)
+{
+    f32 unused;
+    return numerator / denominator;
 }
 
 f32 PhotoGameStateView::AngleToPoint(const Float3 *point)
@@ -335,8 +431,9 @@ u32 PhotoCameraState::TakePhoto()
         &g_PhotoGame->playerPosition, 22.0f);
 
     this->CalculatePhotoScore(
-        g_PhotoBulletManager->CapturePhotoTargets(
-            &this->viewfinderPosition, &this->viewfinderSize),
+        reinterpret_cast<PhotoCapturedBulletView *>(
+            g_PhotoBulletManager->CapturePhotoTargets(
+                &this->viewfinderPosition, &this->viewfinderSize)),
         scoreData,
         g_PhotoRuntime->CountPhotoTargets(
             &this->viewfinderPosition, &this->viewfinderSize),
@@ -406,6 +503,310 @@ void PhotoCameraState::CancelCapture()
     g_AnmGameSpeed = 1.0f;
     this->modeTimer = 0;
     PhotoSoundPlayer()->StopSoundByIdx(0x2c);
+}
+
+i32 PhotoCameraState::CalculatePhotoScore(
+    PhotoCapturedBulletView *bulletTargets, i32 *scoreData,
+    i32 runtimeTargets, i32 stageTargets)
+{
+    i32 preservedNearbyTargets = scoreData[3];
+    memset(scoreData, 0, sizeof(i32) * 8);
+    scoreData[3] = preservedNearbyTargets;
+
+    i32 colorCounts[9];
+    colorCounts[8] = 0;
+    PhotoCapturedBulletView *firstBullet = bulletTargets;
+    scoreData[2] = 0;
+    for (; bulletTargets != NULL; bulletTargets = bulletTargets->next)
+    {
+        scoreData[2]++;
+        i32 bulletScore;
+        if (bulletTargets->vm == NULL || bulletTargets->vm->scale.y <= 8.0f)
+        {
+            bulletScore = 10;
+        }
+        else if (bulletTargets->vm->scale.y <= 16.0f)
+        {
+            bulletScore = 20;
+        }
+        else if (bulletTargets->vm->scale.y <= 32.0f)
+        {
+            bulletScore = 40;
+        }
+        else if (bulletTargets->vm->scale.y <= 64.0f)
+        {
+            bulletScore = 150;
+        }
+
+        if (bulletTargets->photoScale >= 6.0f)
+        {
+            bulletScore *= 4;
+        }
+        else if (bulletTargets->photoScale >= 2.0f)
+        {
+            bulletScore += (i32)(
+                (f32)bulletScore * (bulletTargets->photoScale - 2.0f) *
+                4.0f / 4.0f);
+        }
+        bulletScore -= bulletScore % 10;
+        colorCounts[8] += bulletScore;
+    }
+
+    colorCounts[8] += runtimeTargets * 170 + stageTargets * 10;
+    scoreData[1] = colorCounts[8];
+
+    f32 closestDistance;
+    f32 bossRate;
+    this->flags =
+        (this->flags & ~PHOTO_FLAG_ALTERNATE_CAPTURE) |
+        (this->CountPhotoTargets(&closestDistance, &bossRate) != 0);
+    scoreData[7] =
+        (scoreData[7] & ~PHOTO_SCORE_ENEMY) |
+        (this->flags & PHOTO_FLAG_ALTERNATE_CAPTURE);
+
+    f32 closestMultiplier;
+    if (closestDistance >= 48.0f)
+    {
+        closestMultiplier = 1.2f;
+    }
+    else if (closestDistance <= 8.0f)
+    {
+        closestMultiplier = 2.0f;
+    }
+    else
+    {
+        closestMultiplier =
+            2.0f - ((closestDistance - 8.0f) / 88.0f) * 0.8f;
+    }
+    *reinterpret_cast<f32 *>(&scoreData[5]) = closestMultiplier;
+
+    scoreData[7] =
+        (scoreData[7] & ~PHOTO_SCORE_BOSS_RATE) |
+        ((bossRate > 0.0f) << 3);
+    f32 bossMultiplier;
+    if (bossRate >= 0.8f)
+    {
+        bossMultiplier = 1.5f;
+    }
+    else
+    {
+        bossMultiplier = bossRate * 0.3f / 0.8f + 1.2f;
+    }
+    *reinterpret_cast<f32 *>(&scoreData[6]) = bossMultiplier;
+
+    f32 viewfinderHalfHeight = this->viewfinderSize.y;
+    f32 viewfinderHalfWidth = this->viewfinderSize.x;
+    Float3 *viewfinderPosition = &this->viewfinderPosition;
+    f32 playerHalfHeight = 16.0f;
+    f32 playerHalfWidth = 16.0f;
+    Float3 *playerPosition = &g_PhotoGame->playerPosition;
+    playerHalfWidth *= 0.5f;
+    playerHalfHeight *= 0.5f;
+    viewfinderHalfWidth *= 0.5f;
+    viewfinderHalfHeight *= 0.5f;
+    bool playerInViewfinder =
+        playerPosition->x - playerHalfWidth <=
+            viewfinderPosition->x + viewfinderHalfWidth &&
+        viewfinderPosition->x - viewfinderHalfWidth <=
+            playerPosition->x + playerHalfWidth &&
+        playerPosition->y - playerHalfHeight <=
+            viewfinderPosition->y + viewfinderHalfHeight &&
+        viewfinderPosition->y - viewfinderHalfHeight <=
+            playerPosition->y + playerHalfHeight;
+    if (playerInViewfinder)
+    {
+        scoreData[7] |= PHOTO_SCORE_SELF;
+    }
+
+    if ((scoreData[7] & (PHOTO_SCORE_ENEMY | PHOTO_SCORE_SELF)) !=
+        (PHOTO_SCORE_ENEMY | PHOTO_SCORE_SELF))
+    {
+        if ((scoreData[7] & PHOTO_SCORE_ENEMY) != 0)
+        {
+            if (scoreData[2] == 0)
+            {
+                scoreData[7] |= PHOTO_SCORE_NO_BULLETS;
+                colorCounts[8] += 100;
+            }
+        }
+        else if ((scoreData[7] & PHOTO_SCORE_SELF) != 0)
+        {
+            if (scoreData[2] == 0)
+            {
+                scoreData[7] |= PHOTO_SCORE_NO_BULLETS;
+                colorCounts[8] += 100;
+            }
+        }
+        else if (scoreData[2] == 0)
+        {
+            scoreData[7] |= PHOTO_SCORE_EMPTY;
+        }
+    }
+
+    if (scoreData[3] > 2)
+    {
+        scoreData[4] =
+            scoreData[3] >= 20 ? 2000 : scoreData[3] * 100;
+        scoreData[7] |= PHOTO_SCORE_NEARBY;
+    }
+
+    bulletTargets = firstBullet;
+    colorCounts[0] = 0;
+    colorCounts[1] = 0;
+    colorCounts[2] = 0;
+    colorCounts[3] = 0;
+    colorCounts[4] = 0;
+    colorCounts[5] = 0;
+    colorCounts[6] = 0;
+    for (; bulletTargets != NULL; bulletTargets = bulletTargets->next)
+    {
+        if (bulletTargets->group < 12)
+        {
+            if (bulletTargets->kind == 1 || bulletTargets->kind == 2)
+                colorCounts[0]++;
+            else if (bulletTargets->kind == 3 || bulletTargets->kind == 4)
+                colorCounts[1]++;
+            else if (bulletTargets->kind == 5 || bulletTargets->kind == 6)
+                colorCounts[2]++;
+            else if (bulletTargets->kind == 7 || bulletTargets->kind == 8)
+                colorCounts[3]++;
+            else if (bulletTargets->kind == 9 ||
+                     bulletTargets->kind == 10 ||
+                     bulletTargets->kind == 11)
+                colorCounts[4]++;
+            else if (bulletTargets->kind == 12 || bulletTargets->kind == 13)
+                colorCounts[5]++;
+            else if (bulletTargets->kind == 14)
+                colorCounts[6]++;
+        }
+    }
+
+    for (i32 color = 0; color < 7; color++)
+    {
+        if (colorCounts[color] >= 100)
+        {
+            scoreData[7] |= PHOTO_SCORE_COLOR_1 << color;
+            colorCounts[8] += 300;
+        }
+    }
+
+    colorCounts[7] = 0;
+    for (i32 color = 0; color < 7; color++)
+    {
+        if (colorCounts[color] >= 20)
+            colorCounts[7]++;
+    }
+    if (colorCounts[7] >= 3)
+    {
+        scoreData[7] |= PHOTO_SCORE_COLORFUL;
+        colorCounts[8] += 900;
+    }
+
+    colorCounts[7] = 0;
+    for (i32 color = 0; color < 7; color++)
+    {
+        if (colorCounts[color] > 0)
+            colorCounts[7]++;
+    }
+    if (colorCounts[7] >= 7)
+    {
+        scoreData[7] |= PHOTO_SCORE_RAINBOW;
+        colorCounts[8] += 2100;
+    }
+
+    if ((scoreData[7] & PHOTO_SCORE_ENEMY) != 0 &&
+        (scoreData[7] & PHOTO_SCORE_SELF) != 0)
+    {
+        scoreData[7] |= PHOTO_SCORE_TWO_SHOT;
+        colorCounts[8] = (i32)(
+            (f32)colorCounts[8] * closestMultiplier * 1.5f * 1.2f);
+    }
+    else if ((scoreData[7] & PHOTO_SCORE_ENEMY) != 0)
+    {
+        colorCounts[8] = (i32)((f32)colorCounts[8] * closestMultiplier);
+    }
+    else if ((scoreData[7] & PHOTO_SCORE_SELF) != 0)
+    {
+        colorCounts[8] = (i32)((f32)colorCounts[8] * 1.2f);
+    }
+    if ((scoreData[7] & PHOTO_SCORE_BOSS_RATE) != 0)
+    {
+        colorCounts[8] = (i32)((f32)colorCounts[8] * bossMultiplier);
+    }
+    colorCounts[8] =
+        (i32)((f32)colorCounts[8] * g_PhotoStageState->scoreMultiplier);
+    scoreData[0] = colorCounts[8] - colorCounts[8] % 10;
+    return 0;
+}
+
+i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
+{
+    struct PhotoTargetLocals
+    {
+        u32 enemyIndex;
+        f32 nearestTarget;
+        i32 targetCount;
+        volatile f32 currentValue;
+        f32 highestBossRate;
+    } locals;
+
+    locals.targetCount = 0;
+    locals.nearestTarget = 998001.0f;
+    locals.highestBossRate = 0.0f;
+    for (locals.enemyIndex = 0; locals.enemyIndex < 8;
+         locals.enemyIndex++)
+    {
+        if (g_PhotoRuntime->enemies[locals.enemyIndex] == NULL)
+        {
+            continue;
+        }
+        if (((g_PhotoRuntime->enemies[locals.enemyIndex]->flags >> 4) & 1) != 0 ||
+            ((g_PhotoRuntime->enemies[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
+            ((g_PhotoRuntime->enemies[locals.enemyIndex]->flags2 >> 6) & 1) != 0)
+        {
+            continue;
+        }
+
+        if (!PhotoEnemyIsOffscreen(
+                &g_PhotoRuntime->enemies[locals.enemyIndex]->position))
+        {
+            if (PhotoRectangleContains(
+                    &g_PhotoRuntime->enemies[locals.enemyIndex]->position,
+                    8.0f, 8.0f, &this->viewfinderPosition,
+                    this->viewfinderSize.x, this->viewfinderSize.y))
+            {
+                locals.currentValue = PhotoDistance2D(
+                    &g_PhotoRuntime->enemies[locals.enemyIndex]->position,
+                    &this->viewfinderPosition);
+                if (locals.currentValue < locals.nearestTarget)
+                {
+                    locals.nearestTarget = locals.currentValue;
+                }
+                if (g_PhotoRuntime->enemies[locals.enemyIndex]
+                            ->HasPhotoRate() &&
+                    (locals.currentValue = PhotoRatio(
+                         g_PhotoRuntime->enemies[locals.enemyIndex]
+                             ->photoRateDenominator,
+                         g_PhotoRuntime->enemies[locals.enemyIndex]
+                             ->photoRateNumerator),
+                     locals.currentValue > locals.highestBossRate))
+                {
+                    locals.highestBossRate = locals.currentValue;
+                }
+                locals.targetCount++;
+            }
+        }
+    }
+
+    if (closestDistance != NULL)
+    {
+        *closestDistance = locals.nearestTarget;
+    }
+    if (bossRate != NULL)
+    {
+        *bossRate = locals.highestBossRate;
+    }
+    return locals.targetCount;
 }
 
 f32 __fastcall PhotoDistance2D(const Float3 *left, const Float3 *right)

@@ -10,18 +10,18 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 67 canonical units cover 69,264 authored bytes.
+- Reconstruction: 68 canonical units cover 70,057 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 57.17% (69,264 / 121,154)
+  relocations. Confirmed authored-byte coverage is now 56.78% (70,057 / 123,373)
   while the global origin denominator remains provisional.
-- A target-local boundary and call-graph audit has promoted 31 additional
-  authored functions totaling 53,257 bytes: ten photography/camera functions
-  (12,144 bytes), eleven replay/menu/best-shot functions (15,512 bytes), and
+- A target-local boundary and call-graph audit has promoted 32 additional
+  authored functions totaling 55,476 bytes: eleven photography/camera functions
+  (14,363 bytes), eleven replay/menu/best-shot functions (15,512 bytes), and
   ten gameplay/resource functions (25,601 bytes). This intentionally reduced
   the percentage while increasing origin/boundary review to 93 / 1,830
   candidates. Original class names remain unresolved.
@@ -45,7 +45,7 @@
   root `AnmManager.hpp`. The move passed a complete 58-unit strict replay, and
   the final view rename passed a fresh ECL object comparison. Subsequent ANM
   work passed a complete 61-unit strict replay. The subsequent PhotoCamera
-  lane adds three independently replayable exact units.
+  lane now contributes seven independently replayable exact units.
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.
@@ -89,25 +89,30 @@ python3 scripts/report-reconstruction-status.py --summary
 
 ## Next bounded lane
 
-The earlier narrow 95% checkpoint is superseded by the 31-function target-local
-origin audit. The honest expanded denominator is now 121,154 bytes and exact
-coverage is 57.17%. `WinMain` remains deferred because its remaining eight
+The earlier narrow 95% checkpoint is superseded by the 32-function target-local
+origin audit. The honest expanded denominator is now 123,373 bytes and exact
+coverage is 56.78%. `WinMain` remains deferred because its remaining eight
 stack bytes have resisted the bounded VC7.1 oracle matrix.
 
-1. Continue byte alignment of the now source-present 7,271-byte
-   `UpdatePhotoCamera` state machine at `0x00430AB0`. Its five states and
-   complete gameplay flow are reconstructed, but the current `/Od` probe is
-   5,559 bytes because target stack-temporary shape remains incomplete.
+1. Continue byte alignment of the now source-present 2,219-byte
+   `PhotoCameraState::CalculatePhotoScore @ 0x00433140`. Its complete TH095
+   scoring pipeline is reconstructed, but the current `/Od` probe is 2,006
+   bytes because the original color-bonus expansion and compiler temporaries
+   remain incomplete. `PhotoCameraState::CountPhotoTargets @ 0x004339F0` is
+   now canonical exact for all 793 bytes and 23 relocations.
+2. Continue the source-present 7,271-byte `UpdatePhotoCamera` state machine at
+   `0x00430AB0`. Its five states and complete gameplay flow are reconstructed,
+   but the current `/Od` probe is 5,559 bytes because target stack-temporary
+   shape remains incomplete.
    `PhotoGameStateView::AngleToPoint @ 0x00430370`,
    `PhotoCameraState::BeginCapture @ 0x00432730`,
    `PhotoCameraState::UpdateViewfinder @ 0x004328C0`,
    `PhotoCameraState::TakePhoto @ 0x00432D10`,
    `PhotoCameraState::CancelCapture @ 0x00433000`, and
    `PhotoDistance2D @ 0x00434220` are canonical exact dependencies.
-2. Recalculate against any newly confirmed authored origins after every
+3. Recalculate against any newly confirmed authored origins after every
    promotion; never preserve the percentage by withholding denominator facts.
-3. Continue the private helper family with subject counting at `0x004339F0`
-   and charge update at `0x00433D10`. Follow
+4. Continue the private helper family with charge update at `0x00433D10`. Follow
    with the 6,471-byte replay/menu dispatcher at `0x00426BF0` and the
    16,066-byte gameplay/resource hub at `0x00447D00`.
 
