@@ -65,3 +65,4 @@ address,name,size,status,match_percent,unit,evidence
 0x00432730,th095::PhotoCameraState::BeginCapture,393,matching,100.00,photo-begin-capture,python3 scripts/build.py --unit photo-begin-capture && python3 scripts/compare-coff-function.py --unit photo-begin-capture --json
 0x004328C0,th095::PhotoCameraState::UpdateViewfinder,1059,matching,100.00,photo-update-viewfinder,python3 scripts/build.py --unit photo-update-viewfinder && python3 scripts/compare-coff-function.py --unit photo-update-viewfinder --json
 0x00432D10,th095::PhotoCameraState::TakePhoto,738,matching,100.00,photo-take-photo,python3 scripts/build.py --unit photo-take-photo && python3 scripts/compare-coff-function.py --unit photo-take-photo --json
+0x00433000,th095::PhotoCameraState::CancelCapture,318,matching,100.00,photo-cancel-capture,python3 scripts/build.py --unit photo-cancel-capture && python3 scripts/compare-coff-function.py --unit photo-cancel-capture --json

@@ -386,6 +386,28 @@ u32 PhotoCameraState::TakePhoto()
     return this->flags & PHOTO_FLAG_ALTERNATE_CAPTURE;
 }
 
+void PhotoCameraState::CancelCapture()
+{
+    i32 scoreData[8];
+
+    PhotoAnmManager()->RemoveVm(this->vmIds[2].value);
+    PhotoAnmManager()->RemoveVm(this->vmIds[3].value);
+    PhotoAnmManager()->RemoveVm(this->vmIds[4].value);
+    PhotoAnmManager()->RemoveVm(this->vmIds[5].value);
+    PhotoAnmManager()->RemoveVm(this->vmIds[6].value);
+    memset(scoreData, 0, sizeof(scoreData));
+    g_PhotoStageState->SavePhoto(
+        10, &this->viewfinderPosition, 0, 0, 0, scoreData);
+    this->charge = 0.5f;
+    g_AnmGameSpeed = 1.0f;
+    this->modeTimer = 0;
+    this->flags &= ~PHOTO_FLAG_ALTERNATE_CAPTURE;
+    this->mode = PHOTO_CAMERA_CAPTURED;
+    g_AnmGameSpeed = 1.0f;
+    this->modeTimer = 0;
+    PhotoSoundPlayer()->StopSoundByIdx(0x2c);
+}
+
 f32 __fastcall PhotoDistance2D(const Float3 *left, const Float3 *right)
 {
     return sqrtf(
