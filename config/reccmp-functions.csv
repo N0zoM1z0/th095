@@ -158,4 +158,6 @@ th095::SceneSelectControllerView::OnDraw,0x00445E60,function
 th095::SceneSelectControllerView::Update,0x00445E80,function
 th095::SceneSelectControllerView::Draw,0x00452630,function
 th095::SceneSelectControllerView::UpdateMainMenu,0x00446A50,function
+th095::SceneSelectControllerView::CloseMainMenu,0x00447750,function
+th095::SceneSelectControllerView::UpdateMainMenuSelection,0x004479E0,function
 th095::SceneSelectControllerView::UpdateSceneSelect,0x00447D00,function

@@ -156,3 +156,6 @@ th095::SceneSelectControllerView::OnUpdate
 th095::SceneSelectControllerView::OnDraw
 th095::SceneSelectControllerView::Draw
 th095::SceneSelectControllerView::Update
+th095::SceneSelectControllerView::UpdateMainMenu
+th095::SceneSelectControllerView::CloseMainMenu
+th095::SceneSelectControllerView::UpdateMainMenuSelection

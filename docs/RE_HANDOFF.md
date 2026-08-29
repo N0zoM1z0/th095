@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 137 canonical units cover 88,338 authored bytes.
+- Reconstruction: 139 canonical units cover 89,773 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 54.52% (88,338 / 162,043)
+  relocations. Confirmed authored-byte coverage is now 54.91% (89,773 / 163,478)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,7 +25,7 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 165 authored candidates and leaves 1,665 origin/boundary reviews
+  confirms 167 authored candidates and leaves 1,663 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -246,10 +246,11 @@ The Help viewer and shared scene/replay text renderer are now source-present;
 their asynchronous callback and both chain ownership wrappers are exact.
 `WinMain` remains deferred because its remaining eight stack bytes have
 resisted the bounded VC7.1 oracle matrix. Continue with
-`SceneSelectControllerView::UpdateMainMenu @ 0x00446A50`, now identified by
-the complete coordinator, then enter the 16,066-byte
-`UpdateSceneSelect @ 0x00447D00` hub. Prefer dependency-rich target-specific
-state machines over isolated leaf cleanup.
+`SceneSelectControllerView::UpdateMainMenu @ 0x00446A50` is now source-present
+for all six menu rows, idle-demo playback, queue cleanup, and page transitions;
+its 648-byte close and 787-byte selection helpers are canonical exact. Enter
+the 16,066-byte `UpdateSceneSelect @ 0x00447D00` hub next. Prefer
+dependency-rich target-specific state machines over isolated leaf cleanup.
 
 1. Continue byte alignment of the now source-present 2,219-byte
    `PhotoCameraState::CalculatePhotoScore @ 0x00433140`. Its complete TH095

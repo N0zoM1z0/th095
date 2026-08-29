@@ -112,6 +112,7 @@ struct SceneSupervisorView
 };
 
 struct SceneAnmVmView;
+struct Float3;
 
 struct SceneAnmVmId
 {
@@ -145,6 +146,7 @@ struct SceneAnmLoadedView
 {
     void SetSprite(SceneAnmVmView *vm, i32 spriteIndex);
     SceneAnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
+    SceneAnmVmId CreateVm(i32 scriptIndex, Float3 *position);
 };
 
 struct SceneAnmVmIdArray
@@ -213,6 +215,8 @@ struct SceneSelectControllerView
     ChainCallbackResult Update();
     ChainCallbackResult UpdateMainMenu();
     ChainCallbackResult UpdateSceneSelect();
+    void CloseMainMenu();
+    void UpdateMainMenuSelection();
     ChainCallbackResult Draw();
     static void __fastcall OnUpdate(SceneSelectControllerView *controller);
     static void __fastcall OnDraw(SceneSelectControllerView *controller);

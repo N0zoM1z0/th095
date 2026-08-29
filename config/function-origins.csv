@@ -620,8 +620,8 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00445E60,authored,FrontEndController,authored,exact,vc71-front-end-controller-wrappers-2026-08-29
 0x00445E80,authored,FrontEndController,authored,high,front-end-controller-call-graph-2026-08-29
 0x00446A50,authored,FrontEndController,authored,high,front-end-controller-main-menu-2026-08-29
-0x00447750,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004479E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00447750,authored,FrontEndController,authored,exact,vc71-front-end-main-menu-helpers-2026-08-29
+0x004479E0,authored,FrontEndController,authored,exact,vc71-front-end-main-menu-helpers-2026-08-29
 0x00447D00,authored,SceneSelect,authored,high,front-end-controller-scene-select-2026-08-29
 0x0044BBD0,authored,SceneSelect,authored,high,vc71-scene-selection-refresh-2026-08-29
 0x0044BEA0,authored,SceneSelect,authored,exact,vc71-scene-preview-text-2026-08-29
