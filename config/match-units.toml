@@ -6358,6 +6358,20 @@ target_address = 0x00429450
 size = 0x6C
 relocations = []
 
+[units.result-best-shot-record-reset]
+source = "src/ResultScreen.cpp"
+object = "build/matching/ResultScreen.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ResultSaveDataView::UpdateBestShotRecord"]
+symbol = "?UpdateBestShotRecord@ResultSaveDataView@th095@@QAEXH@Z"
+target_address = 0x004299F0
+size = 0xBB
+compare_size = 0xBD
+relocations = [
+  { offset = 0x34, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x7A, type = "REL32", symbol = "_free", target = 0x004854BE },
+]
+
 [units.anm-vm-id-get-vm]
 source = "src/AnmVmId.cpp"
 object = "build/matching/AnmVmId.obj"

@@ -10,21 +10,22 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 101 canonical units cover 77,863 authored bytes.
+- Reconstruction: 102 canonical units cover 78,050 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 59.81% (77,863 / 130,189)
+  relocations. Confirmed authored-byte coverage is now 59.87% (78,050 / 130,376)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
   (14,363 bytes), eleven replay/menu/best-shot functions (15,512 bytes), and
-  ten gameplay/resource functions (25,601 bytes). This intentionally reduced
+  ten gameplay/resource functions (25,601 bytes). The exact best-shot record
+  reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 123 authored candidates and leaves 1,707 origin/boundary reviews
+  confirms 124 authored candidates and leaves 1,706 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -78,6 +79,10 @@
   relocations. It remains non-exact solely because the target reserves an
   additional `0x2C` of inline temporary homes, changing 38 stack-displacement
   bytes; no artificial padding was introduced.
+- `ResultSaveDataView::UpdateBestShotRecord @ 0x004299F0` is exact for its
+  187-byte authored body; its unit also enforces two compiler-owned trailing
+  bytes and both `_free` relocations. It proves two owned component buffers at
+  best-shot record `+0x70/+0x74` plus loaded/valid bytes at `+0x69/+0x68`.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
   bytes are stack allocation/displacement differences and receive no credit.
@@ -167,9 +172,9 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    deferred-deletion, position, ANM-file deletion, and handle sprite wrappers
    add six more canonical units. The 51-byte `AnmVmId::GetVm` and 34-byte
    `SetInterrupt` wrappers remain exact as well.
-   Recover the adjacent 189-byte best-shot record initializer at `0x004299F0`,
-   then continue byte alignment of the 6,471-byte dispatcher and move to the
-   16,066-byte gameplay/resource hub at `0x00447D00`.
+   Continue with the source-pending 2,573-byte `ResultScreen::Draw @
+   0x00429C80`, then align the 6,471-byte dispatcher and move to the 16,066-byte
+   gameplay/resource hub at `0x00447D00`.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

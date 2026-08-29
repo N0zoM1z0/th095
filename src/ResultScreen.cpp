@@ -68,9 +68,11 @@ struct ResultBestShotRecordView
     u8 unknown014[4];
     char comment[0x50];
     u8 valid;
-    u8 unknown069[3];
+    u8 componentsLoaded;
+    u8 unknown06a[2];
     i32 photoIndex;
-    u8 unknown070[8];
+    void *componentData0;
+    void *componentData1;
 };
 
 struct ResultSaveDataView
@@ -96,6 +98,8 @@ typedef char ResultBestShotRecordCommentAt18[
     (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
 typedef char ResultBestShotRecordValidAt68[
     (offsetof(ResultBestShotRecordView, valid) == 0x68) ? 1 : -1];
+typedef char ResultBestShotRecordComponentsLoadedAt69[
+    (offsetof(ResultBestShotRecordView, componentsLoaded) == 0x69) ? 1 : -1];
 typedef char ResultBestShotRecordPhotoIndexAt6C[
     (offsetof(ResultBestShotRecordView, photoIndex) == 0x6c) ? 1 : -1];
 
@@ -162,6 +166,23 @@ i32 ResultPhotoDataView::FindBestShot()
         }
     }
     return bestShot;
+}
+
+void ResultSaveDataView::UpdateBestShotRecord(i32 index)
+{
+    if (this->bestShotRecords[index].componentData0 != NULL)
+    {
+        g_ZunMemory.Free(this->bestShotRecords[index].componentData0);
+    }
+    this->bestShotRecords[index].componentData0 = NULL;
+
+    if (this->bestShotRecords[index].componentData1 != NULL)
+    {
+        g_ZunMemory.Free(this->bestShotRecords[index].componentData1);
+    }
+    this->bestShotRecords[index].componentData1 = NULL;
+    this->bestShotRecords[index].componentsLoaded = 0;
+    this->bestShotRecords[index].valid = 0;
 }
 
 void ResultScreen::PrepareBestShot()
