@@ -6347,3 +6347,52 @@ relocations = [
   { offset = 0x8, type = "DIR32", symbol = "?g_ResultScreenGlobalState@th095@@3PAUResultScreenGlobalStateView@1@A", target = 0x004BDEC8 },
   { offset = 0x25, type = "REL32", symbol = "?Update@ResultScreen@th095@@QAE?AW4ChainCallbackResult@2@XZ", target = 0x00426BF0 },
 ]
+
+[units.result-photo-find-best-shot]
+source = "src/ResultScreen.cpp"
+object = "build/matching/ResultScreen.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ResultPhotoDataView::FindBestShot"]
+symbol = "?FindBestShot@ResultPhotoDataView@th095@@QAEHXZ"
+target_address = 0x00429450
+size = 0x6C
+relocations = []
+
+[units.anm-vm-id-get-vm]
+source = "src/AnmVmId.cpp"
+object = "build/matching/AnmVmId.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmVmId::GetVm"]
+symbol = "?GetVm@AnmVmId@th095@@QAEPAUAnmVm@2@XZ"
+target_address = 0x004452F0
+size = 0x33
+relocations = [
+  { offset = 0x11, type = "DIR32", symbol = "?g_AnmVmIdManager@th095@@3PAUAnmManagerVmIdView@1@A", target = 0x004CA1B8 },
+  { offset = 0x16, type = "REL32", symbol = "?GetVm@AnmManagerVmIdView@th095@@QAEPAUAnmVm@2@H@Z", target = 0x00445110 },
+]
+
+[units.anm-vm-id-set-interrupt]
+source = "src/AnmVmId.cpp"
+object = "build/matching/AnmVmId.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmVmId::SetInterrupt"]
+symbol = "?SetInterrupt@AnmVmId@th095@@QAEXH@Z"
+target_address = 0x00445330
+size = 0x22
+relocations = [
+  { offset = 0x13, type = "DIR32", symbol = "?g_AnmVmIdManager@th095@@3PAUAnmManagerVmIdView@1@A", target = 0x004CA1B8 },
+  { offset = 0x18, type = "REL32", symbol = "?SetInterrupt@AnmManagerVmIdView@th095@@QAEXHH@Z", target = 0x00445170 },
+]
+
+[units.result-screen-on-draw]
+source = "src/ResultScreen.cpp"
+object = "build/matching/ResultScreen.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ResultScreen::OnDraw"]
+symbol = "?OnDraw@ResultScreen@th095@@SI?AW4ChainCallbackResult@2@PAU12@@Z"
+target_address = 0x0042A6E0
+size = 0x2D
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_ResultScreenGlobalState@th095@@3PAUResultScreenGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x25, type = "REL32", symbol = "?Draw@ResultScreen@th095@@QAE?AW4ChainCallbackResult@2@XZ", target = 0x00429C80 },
+]

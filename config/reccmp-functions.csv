@@ -93,3 +93,7 @@ th095::ResultScreenReplayCursor::Pop,0x0041B6E0,function
 th095::ResultScreenTimer::Tick,0x0041B8A0,function
 th095::ResultScreen::Update,0x00426BF0,function
 th095::ResultScreen::OnUpdate,0x0042A6B0,function
+th095::ResultPhotoDataView::FindBestShot,0x00429450,function
+th095::AnmVmId::GetVm,0x004452F0,function
+th095::AnmVmId::SetInterrupt,0x00445330,function
+th095::ResultScreen::OnDraw,0x0042A6E0,function

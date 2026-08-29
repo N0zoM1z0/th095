@@ -92,3 +92,7 @@ th095::ResultScreenReplayCursor::Pop
 th095::ResultScreenTimer::Tick
 th095::ResultScreen::Update
 th095::ResultScreen::OnUpdate
+th095::ResultPhotoDataView::FindBestShot
+th095::AnmVmId::GetVm
+th095::AnmVmId::SetInterrupt
+th095::ResultScreen::OnDraw

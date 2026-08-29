@@ -88,6 +88,23 @@ struct ResultScreenAnmLoadedView
     void SetAndExecuteScript(ResultScreenAnmVm *vm, i32 scriptIndex);
 };
 
+struct ResultPhotoSlotView
+{
+    u8 unknown0000[0x21f4];
+    i32 score;
+    u8 unknown21f8[0x2214 - 0x21f8];
+};
+
+struct ResultPhotoDataView
+{
+    ResultPhotoSlotView slots[11];
+
+    i32 FindBestShot();
+};
+
+typedef char ResultPhotoSlotViewSizeIs2214[
+    (sizeof(ResultPhotoSlotView) == 0x2214) ? 1 : -1];
+
 struct ResultScreen
 {
     ResultScreenAnmLoadedView *anm;       // +0x0000
@@ -109,7 +126,9 @@ struct ResultScreen
     i32 UpdateCursor(i32 firstVm);
     ZunResult LoadReplays();
     ChainCallbackResult Update();
+    ChainCallbackResult Draw();
     static ChainCallbackResult OnUpdate(ResultScreen *resultScreen);
+    static ChainCallbackResult OnDraw(ResultScreen *resultScreen);
 
     void SetState(i32 value)
     {

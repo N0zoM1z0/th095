@@ -79,6 +79,27 @@ i32 ResultScreenTimer::Tick()
     return this->current;
 }
 
+i32 ResultPhotoDataView::FindBestShot()
+{
+    i32 bestShot;
+
+    bestShot = -1;
+    {
+        i32 bestScore;
+        bestScore = -1;
+
+        for (i32 i = 0; i < 11; i++)
+        {
+            if (this->slots[i].score > bestScore)
+            {
+                bestScore = this->slots[i].score;
+                bestShot = i;
+            }
+        }
+    }
+    return bestShot;
+}
+
 i32 ResultScreenReplayCursor::Move(i32 amount)
 {
     i32 i;
@@ -612,6 +633,15 @@ ChainCallbackResult ResultScreen::OnUpdate(ResultScreen *resultScreen)
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
     return resultScreen->Update();
+}
+
+ChainCallbackResult ResultScreen::OnDraw(ResultScreen *resultScreen)
+{
+    if (g_ResultScreenGlobalState->suppressResultCallbacks)
+    {
+        return CHAIN_CALLBACK_RESULT_CONTINUE;
+    }
+    return resultScreen->Draw();
 }
 
 ZunResult ResultScreen::LoadReplays()
