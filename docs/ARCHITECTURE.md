@@ -119,7 +119,9 @@ easing table, and all 647 relocations. A subsequent target-local audit admitted
 gameplay/resource clusters. Five exact save/unlock helpers now prove that
 `0x00447D00` manages TH095's twelve-group scene-selection UI rather than a
 traditional stage loop. The next dependency-first lane is its adjacent
-716-byte preview/status updater at `0x0044BBD0`.
+716-byte preview/status updater at `0x0044BBD0`, now source-present with its
+78-byte bounded-queue dependency exact. The next adjacent lane is the staged
+preview-text builder at `0x0044BEA0`.
 
 ## Shared engine versus TH095 gameplay
 

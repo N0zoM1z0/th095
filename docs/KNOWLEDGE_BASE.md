@@ -106,6 +106,14 @@ next action belongs in `RE_HANDOFF.md`.
 | PHOTO-010 | exact | `PhotoCameraState::UpdateCharge @ 0x00433D10` implements TH095's focus-to-charge loop: five held frames activate focus and SFX `0x2A`; normal charge accelerates with timer subframes; focused charge accelerates through frame 70; script `0x124` pulses after frame 60 or on even auxiliary-timer advances; release or full charge clears focus and stops the SFX. | Canonical 982-byte VC7.1 unit with all 37 relocations replayed |
 | PHOTO-011 | exact | `PhotoCameraState::Draw @ 0x004340F0` draws the four inline viewfinder VMs when global suppression bits 0 and 2 are clear, then sets or clears bit 1 on the first nine handle-backed camera VMs. | Canonical 296-byte VC7.1 unit with all 12 relocations replayed |
 
+## Reconstructed scene selection
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| SCENE-001 | exact | Twelve scene groups index 120 persistent `0x60`-byte score records. The five exact progression helpers count captures globally or per group, sum the preceding group's unlock scores, and accept score/capture alternatives when deciding whether a group is available. | Five canonical VC7.1 units totaling 586 bytes with thirteen relocations replayed |
+| SCENE-002 | exact | `SceneValueQueue::Push @ 0x00450DD0` clamps a full sixteen-entry integer queue to its final slot, overwrites that slot, increments the count, and returns the new count. | Canonical 78-byte VC7.1 unit with no relocations |
+| SCENE-003 | compiler-observed | `SceneSelectControllerView::RefreshSceneSelection @ 0x0044BBD0` is source-present for the complete TH095 selection refresh: it enters Supervisor critical section 4, queues packed group/scene selection and two preview values, selects locked/unattempted/attempted/score-gated display state from persistent scene data, interrupts status VM handles, and resets the preview timer. Its natural VC7.1 body is 715 bytes versus the 716-byte target, so it receives no exact credit. | Attested target body, exact unlock/queue dependencies, compile-time layout assertions, and non-canonical pinned-VC7.1 probe |
+
 ## Reconstructed replay system
 
 | ID | Class | Durable fact | Evidence |

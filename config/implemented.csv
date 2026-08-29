@@ -116,3 +116,5 @@ th095::SceneSaveDataView::CountCapturedScenes
 th095::SceneSaveDataView::CountCapturedScenesInGroup
 th095::SceneSaveDataView::GetSceneGroupUnlockScore
 th095::AnmVmColorInterpolationView::SetColor1Interpolation
+th095::SceneSelectControllerView::RefreshSceneSelection
+th095::SceneValueQueue::Push

@@ -117,3 +117,5 @@ th095::SceneSaveDataView::CountCapturedScenes,0x004365F0,function
 th095::SceneSaveDataView::CountCapturedScenesInGroup,0x00436680,function
 th095::SceneSaveDataView::GetSceneGroupUnlockScore,0x004366F0,function
 th095::AnmVmColorInterpolationView::SetColor1Interpolation,0x00452D70,function
+th095::SceneSelectControllerView::RefreshSceneSelection,0x0044BBD0,function
+th095::SceneValueQueue::Push,0x00450DD0,function

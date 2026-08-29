@@ -6570,3 +6570,13 @@ symbol = "?SetColor1Interpolation@AnmVmColorInterpolationView@th095@@QAEXHEII@Z"
 target_address = 0x00452D70
 size = 0xDE
 relocations = []
+
+[units.scene-value-queue-push]
+source = "src/SceneSelectController.cpp"
+object = "build/matching/SceneSelectController.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::SceneValueQueue::Push"]
+symbol = "?Push@SceneValueQueue@th095@@QAEHH@Z"
+target_address = 0x00450DD0
+size = 0x4E
+relocations = []
