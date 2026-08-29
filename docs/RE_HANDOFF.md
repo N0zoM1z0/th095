@@ -31,6 +31,13 @@
   frame and stores `this` at `[ebp-0x580]`; integer-bit raw float transfers,
   native bitfields, and whole 4-byte animation-handle assignments are required
   source-shape facts.
+- Source ownership now follows the TH08 layout: shared runtime and subsystem
+  headers live under `src/`, PBG headers live under `src/pbg/`, and only the
+  ECL dispatcher family remains under `src/ecl/`. `AnmManagerEclView.hpp` is a
+  temporary ECL-only ABI view, not a second reconstructed ANM implementation;
+  keep it separate until it can be reconciled with the independently exact
+  root `AnmManager.hpp`. The move passed a complete 58-unit strict replay, and
+  the final view rename passed a fresh ECL object comparison.
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.

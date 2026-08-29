@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AnmManager.hpp"
+#include "ecl/AnmManagerEclView.hpp"
 #include "ZunBool.hpp"
 #include "diffbuild.hpp"
 #include "inttypes.hpp"

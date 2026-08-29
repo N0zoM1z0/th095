@@ -3,11 +3,11 @@
 #include <string.h>
 #include <windows.h>
 
-#include "ecl/Global.hpp"
-#include "ecl/SoundPlayer.hpp"
-#include "ecl/Supervisor.hpp"
-#include "ecl/dxutil.hpp"
-#include "ecl/utils.hpp"
+#include "Global.hpp"
+#include "SoundPlayer.hpp"
+#include "Supervisor.hpp"
+#include "dxutil.hpp"
+#include "utils.hpp"
 
 namespace th095
 {

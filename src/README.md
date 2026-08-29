@@ -21,3 +21,13 @@ Current translation units:
   central ECL VM dispatcher. `EclManager::RunEcl` has a canonical exact unit
   for its 27,091-byte authored body and the 656-byte compiler-owned main and
   easing switch tables that follow it.
+
+Header organization follows the TH08 reconstruction where the evidence permits:
+
+- Shared runtime types and subsystem managers live directly under `src/`.
+- PBG archive types live under `src/pbg/`.
+- `src/ecl/` contains only the ECL dispatcher, operand definitions, opcode
+  bodies, and `AnmManagerEclView.hpp`. The latter is an explicitly temporary
+  ABI view used by the canonical ECL unit; it must not be merged into the
+  independently exact `AnmManager.hpp` until both layouts can be reconciled
+  without changing either strict comparison.

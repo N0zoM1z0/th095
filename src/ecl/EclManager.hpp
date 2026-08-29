@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Global.hpp"
-#include "AnmManager.hpp"
+#include "AnmManagerEclView.hpp"
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
 

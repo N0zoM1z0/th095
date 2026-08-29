@@ -22,7 +22,7 @@
 #ifndef TH08_ECL_RUN_LOW_DECLARATIONS
 #define TH08_ECL_RUN_LOW_DECLARATIONS
 
-#include "AnmManager.hpp"
+#include "AnmManagerEclView.hpp"
 #include "EclManager.hpp"
 #include "EclOperands.hpp"
 #include "EnemyManager.hpp"

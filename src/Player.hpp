@@ -2,7 +2,7 @@
 
 #include "Global.hpp"
 #include "Supervisor.hpp"
-#include "AnmManager.hpp"
+#include "ecl/AnmManagerEclView.hpp"
 #include "EnemyManager.hpp"
 
 namespace th095

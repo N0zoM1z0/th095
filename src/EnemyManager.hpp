@@ -1,8 +1,8 @@
 #pragma once
 #include "Global.hpp"
-#include "AnmManager.hpp"
+#include "ecl/AnmManagerEclView.hpp"
 #include "BulletManager.hpp"
-#include "EclManager.hpp"
+#include "ecl/EclManager.hpp"
 #include "ZunResult.hpp"
 #include "diffbuild.hpp"
 
