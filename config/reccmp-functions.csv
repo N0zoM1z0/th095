@@ -73,3 +73,12 @@ th095::PhotoCameraState::CountPhotoTargets,0x004339F0,function
 th095::PhotoCameraState::UpdateCharge,0x00433D10,function
 th095::PhotoCameraState::Draw,0x004340F0,function
 th095::AnmVm::Draw,0x004452D0,function
+th095::ReplayManager::ReplayManager,0x00434270,function
+th095::ReplayManager::~ReplayManager,0x004344F0,function
+th095::ReplayManager::Create,0x004345B0,function
+th095::ReplayManager::Load,0x00434700,function
+th095::ReplayManager::Destroy,0x004347D0,function
+th095::ReplayManager::ProcessFrame,0x00434830,function
+th095::ReplayManager::DrawFps,0x004349D0,function
+th095::ReplayManager::OnUpdate,0x00435350,function
+th095::ReplayManager::OnDraw,0x00435380,function

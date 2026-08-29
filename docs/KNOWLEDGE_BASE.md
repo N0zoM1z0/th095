@@ -103,6 +103,16 @@ next action belongs in `RE_HANDOFF.md`.
 | PHOTO-010 | exact | `PhotoCameraState::UpdateCharge @ 0x00433D10` implements TH095's focus-to-charge loop: five held frames activate focus and SFX `0x2A`; normal charge accelerates with timer subframes; focused charge accelerates through frame 70; script `0x124` pulses after frame 60 or on even auxiliary-timer advances; release or full charge clears focus and stops the SFX. | Canonical 982-byte VC7.1 unit with all 37 relocations replayed |
 | PHOTO-011 | exact | `PhotoCameraState::Draw @ 0x004340F0` draws the four inline viewfinder VMs when global suppression bits 0 and 2 are clear, then sets or clears bit 1 on the first nine handle-backed camera VMs. | Canonical 296-byte VC7.1 unit with all 12 relocations replayed |
 
+## Reconstructed replay system
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| REPLAY-001 | target-observed | TH095's `ReplayManager` is `0x12C` bytes. Its mode is at `+0x00`, header/input/FPS allocations at `+0x04/+0x08/+0x0C`, stream cursors at `+0x10/+0x14`, sampled playback FPS at `+0x18`, frame counter at `+0x1C`, and calc/draw chain elements at `+0x124/+0x128`. | Exact constructor, destructor, frame processor, and compile-time layout assertions |
+| REPLAY-002 | exact | `ReplayManager::Create @ 0x004345B0` allocates and initializes the manager, then registers update and draw callbacks at priorities 7 and 3. `Load @ 0x00434700` uses mode 2 without chain registration, while both factory paths reproduce the original VC7.1 new/delete EH machinery. | Canonical 330-byte and 207-byte units with 28 relocations replayed |
+| REPLAY-003 | exact | `ReplayManager::ProcessFrame @ 0x00434830` records three 16-bit input values per frame into a `0x69780`-byte stream, samples rounded FPS every 30 frames into a separate byte stream with saturation at 255, and restores the same values during playback. | Canonical 408-byte unit with all 24 relocations replayed |
+| REPLAY-004 | exact | Playback FPS is drawn at `(485, 452)`; samples below 30 use `0xFF5050FF`, samples below 50 use `0xFFA0A0FF`, and higher samples use white. Both replay callbacks are suppressed by target global flag bit 2. | Canonical `replay-manager-draw-fps`, `replay-manager-on-update`, and `replay-manager-on-draw` units |
+| MATCH-006 | exact | Nine canonical ReplayManager units reproduce 1,538 authored bytes and all 78 relocations, covering lifetime, allocation, chain integration, per-frame stream processing, and playback FPS output. | Pinned VC7.1 relocation replay for every listed ReplayManager unit |
+
 ## Reconstructed ECL VM
 
 | ID | Class | Durable fact | Evidence |

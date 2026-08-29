@@ -9,3 +9,12 @@ address,name,module,confidence,evidence
 0x004C4670,th095::g_Supervisor,Supervisor,exact,Exact Render DIR32 relocations with verified field addends
 0x004C4EE8,th095::g_SoundPlayer,SoundPlayer,exact,Exact Render DIR32 relocation and queue call
 0x004CA1B8,th095::g_AnmManager,AnmManager,exact,Exact Render DIR32 relocations and WinMain allocation
+0x004A9F80,th095::g_AsciiManager,AsciiManager,exact,Exact ReplayManager FPS draw base and color-field relocations
+0x004BDEC8,th095::g_PhotoGlobalState,PhotoRuntime,exact,Exact photography and ReplayManager callback-gate relocations
+0x004BE218,th095::g_ReplayInputSource,Input,high,Exact ReplayManager stream relocation base and input-source update call
+0x004BE244,th095::g_CurFrameInput,Input,exact,Exact ReplayManager record/playback stream relocations
+0x004BE246,th095::g_LastFrameInput,Input,exact,Exact ReplayManager record/playback stream relocations
+0x004BE24A,th095::g_ReplayInputAux,Input,high,Exact ReplayManager stream field relocations
+0x004BE24C,th095::g_ReplayInputFlags,Input,high,Exact ReplayManager stream field relocations
+0x004C4E0C,th095::g_ReplayFps,ReplayManager,high,Exact quantized FPS sampling relocations
+0x004C4E74,th095::g_ReplayManager,ReplayManager,exact,Exact ReplayManager destructor singleton relocations
