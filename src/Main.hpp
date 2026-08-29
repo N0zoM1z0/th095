@@ -12,6 +12,7 @@
 namespace th095
 {
 struct AnmVm;
+struct AnmManager;
 
 typedef signed char i8;
 typedef unsigned char u8;
@@ -241,6 +242,10 @@ typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSecti
 
 struct VertexTex1DiffuseXyzrhw
 {
+    VertexTex1DiffuseXyzrhw()
+    {
+    }
+
     f32 x;
     f32 y;
     f32 z;
@@ -249,52 +254,6 @@ struct VertexTex1DiffuseXyzrhw
     f32 u;
     f32 v;
 };
-
-struct AnmManager
-{
-    u8 unknown000[8];
-    i32 captureSurfaceIdx;        // +0x08
-    i32 captureAnmIdx;            // +0x0c
-    i32 scriptsStartedThisFrame;  // +0x10
-    i32 scriptsExecutedThisFrame; // +0x14
-    i32 renderStateChangesThisFrame; // +0x18
-    i32 flushesThisFrame;         // +0x1c
-    u8 unknown020[0x11dc - 0x20];
-    IDirect3DSurface8 *surfaces[32]; // +0x11dc
-    u8 unknown125c[0x175c - 0x125c];
-    u32 currentTextureFactor;         // +0x175c
-    IDirect3DTexture8 *currentTexture;  // +0x1760
-    u8 currentBlendMode;                // +0x1764
-    u8 currentColorOp;                  // +0x1765
-    u8 currentVertexShader;             // +0x1766
-    u8 disableZWrite;                   // +0x1767
-    u8 cameraMode;                      // +0x1768
-    u8 unknown1769[3];
-    void *currentSprite;                 // +0x176c
-    IDirect3DVertexBuffer8 *quadVertexBuffer; // +0x1770
-    u8 unknown1774[0x17c4 - 0x1774];
-    i32 spritesToDraw;                   // +0x17c4
-    VertexTex1DiffuseXyzrhw vertexBuffer[0x20000]; // +0x17c8
-    VertexTex1DiffuseXyzrhw *vertexBufferEndPtr;   // +0x3817c8
-    VertexTex1DiffuseXyzrhw *vertexBufferStartPtr; // +0x3817cc
-    u8 unknown3817d0[0x38314c - 0x3817d0];
-
-    AnmManager();
-    ~AnmManager();
-    void ClearVertexBuffer();
-    void FlushVertexBuffer();
-    void ReleaseSurfaces();
-    void TakeScreenshots();
-    static i32 ExecuteScript(AnmVm *vm);
-
-    void ClearBlendMode() { this->currentBlendMode = 3; }
-    void ClearColorOp() { this->currentColorOp = 0xff; }
-    void ClearVertexShader() { this->currentVertexShader = 0xff; }
-    void ClearTexture() { this->currentTexture = NULL; }
-    void ClearCameraSettings() { this->cameraMode = 0xff; }
-};
-
-typedef char AnmManagerSizeIs38314C[(sizeof(AnmManager) == 0x38314c) ? 1 : -1];
 
 struct SoundPlayer
 {

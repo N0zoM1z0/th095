@@ -33,5 +33,5 @@ address,name,module,confidence,evidence
 0x0043A600,th095::AnmManager::ExecuteScript,AnmManager,exact,Canonical 0x427A authored body and 0x4412 COFF extent with 333 replayed relocations
 0x0043F2B0,th095::AnmManager::ClearVertexBuffer,AnmManager,exact,Canonical anm-clear-vertex-buffer VC7.1 comparison
 0x0043F2F0,th095::AnmManager::FlushVertexBuffer,AnmManager,exact,Canonical anm-flush-vertex-buffer VC7.1 comparison with 8 relocations
-0x00441DC0,th095::AnmManager::AnmManager,AnmManager,high,WinMain 0x38314c allocation and constructor call
-0x004421B0,th095::AnmManager::~AnmManager,AnmManager,high,WinMain delete path and target cleanup flow
+0x00441DC0,th095::AnmManager::AnmManager,AnmManager,exact,Canonical anm-manager-constructor VC7.1 comparison with 88 relocations
+0x004421B0,th095::AnmManager::~AnmManager,AnmManager,exact,Canonical anm-manager-destructor VC7.1 comparison with 8 relocations

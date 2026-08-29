@@ -78,6 +78,9 @@ next action belongs in `RE_HANDOFF.md`.
 | MATCH-002 | exact | `AnmManager::ExecuteScript` contributes 17,018 authored exact bytes; 17,426 total bytes are compared so the 408 compiler-owned table bytes cannot be silently omitted or credited as authored code. | Optional `compare_size` manifest contract and canonical replay |
 | ANM-006 | exact | `AnmLoaded::SetAndExecuteScript` at `0x0043A0C0` reproduces all 234 bytes and all five relocations. Its explicit timer scratch preserves the target's VC7.1 local allocation while retaining the recovered setup semantics. | Canonical `anm-set-and-execute-script` unit |
 | ANM-007 | exact | `ClearVertexBuffer` resets the buffered range and sprite count; `FlushVertexBuffer` submits two triangle-list primitives per sprite and resets the range. Both reproduce all 258 target bytes, including eight D3D-device relocations in the flush path. | Canonical `anm-clear-vertex-buffer` and `anm-flush-vertex-buffer` units |
+| ANM-008 | exact | The target VM is naturally modeled as `AnmVmBase` plus derived `AnmVm`. This makes VC7.1 emit the exact 90-byte VM constructor, 43-byte destructor, array-vector helpers, and outer-manager EH cleanup without manual code bytes. | Compiler oracle plus canonical `anm-manager-constructor` and `anm-manager-destructor` units |
+| ANM-009 | exact | `AnmManager` is `0x38314C` bytes: its primary VM is at `+0xF0C`, inline untextured vertices at `+0x1774`, buffered textured vertices at `+0x17C8`, VM list head/tail at `+0x381814/+0x381818`, and nine preallocated VMs at `+0x38181C`. | Compile-time layout assertions and exact lifecycle units |
+| MATCH-005 | exact | The 1,005-byte manager constructor and 176-byte destructor reproduce every authored byte and all 96 relocations, including ten chain registrations and the vector constructor/destructor helpers. | Canonical `anm-manager-constructor` and `anm-manager-destructor` units |
 
 ## Reconstructed ECL VM
 

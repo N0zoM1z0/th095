@@ -4,6 +4,8 @@
 #include "Main.hpp"
 #include <d3dx8.h>
 #include <math.h>
+#include <stdlib.h>
+#include <string.h>
 
 namespace th095
 {
@@ -174,6 +176,13 @@ struct ZunTimer
     i32 previous;
     f32 subFrame;
     i32 current;
+
+    ZunTimer()
+    {
+        this->current = 0;
+        this->previous = -999999;
+        this->subFrame = 0.0f;
+    }
 
     void Initialize()
     {
@@ -347,7 +356,7 @@ struct Rng
 typedef char RngSizeIs8[(sizeof(Rng) == 8) ? 1 : -1];
 
 #pragma pack(push, 4)
-struct AnmVm
+struct AnmVmBase
 {
     u8 unknown000[0x0c];
     u32 renderMode;                 // +0x00c
@@ -425,6 +434,13 @@ struct AnmVm
     AnmRawInstr *beginningOfScript; // +0x23c
     AnmRawInstr *currentInstruction;// +0x240
     AnmLoadedSprite *loadedSprite;  // +0x244
+
+};
+
+typedef char AnmVmBaseSizeIs248[(sizeof(AnmVmBase) == 0x248) ? 1 : -1];
+
+struct AnmVm : AnmVmBase
+{
     ZunTimer interruptReturnTime;   // +0x248
     AnmRawInstr *interruptReturnInstruction; // +0x254
     Float3 positionInitial;         // +0x258
@@ -442,6 +458,21 @@ struct AnmVm
     Float3 alternatePosition;       // +0x2b0
     i32 timeOfLastSpriteSet;        // +0x2bc
     u8 unknown2c0[0x0c];
+
+    AnmVm()
+    {
+        memset(this, 0, sizeof(AnmVm));
+        this->activeSpriteIndex = -1;
+    }
+
+    ~AnmVm()
+    {
+        if (this->generatedVertices != NULL)
+        {
+            void *generatedVertices = this->generatedVertices;
+            free(generatedVertices);
+        }
+    }
 
     void Initialize();
     void InitializePulsingRadialTrail();
@@ -462,6 +493,115 @@ typedef char AnmVmAnmFileAt230[(offsetof(AnmVm, anmFile) == 0x230) ? 1 : -1];
 typedef char AnmVmCurrentInstructionAt240[(offsetof(AnmVm, currentInstruction) == 0x240) ? 1 : -1];
 typedef char AnmVmLoadedSpriteAt244[(offsetof(AnmVm, loadedSprite) == 0x244) ? 1 : -1];
 typedef char AnmVmSizeIs2CC[(sizeof(AnmVm) == 0x2cc) ? 1 : -1];
+
+struct VertexDiffuseXyzrhw
+{
+    VertexDiffuseXyzrhw()
+    {
+    }
+
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+    u32 diffuse;
+};
+
+struct VertexTex1Xyzrhw
+{
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+    f32 u;
+    f32 v;
+};
+
+struct AnmVmListNode
+{
+    AnmVmListNode *next;
+    AnmVm *vm;
+    AnmVmListNode *previous;
+    u8 unknown00c[8];
+    void *generatedVertices;
+};
+
+struct AnmManager
+{
+    u8 unknown000[8];
+    i32 captureSurfaceIdx;                  // +0x000008
+    i32 captureAnmIdx;                      // +0x00000c
+    i32 scriptsStartedThisFrame;            // +0x000010
+    i32 scriptsExecutedThisFrame;           // +0x000014
+    i32 renderStateChangesThisFrame;        // +0x000018
+    i32 flushesThisFrame;                   // +0x00001c
+    i32 unknown020;
+    i32 unknown024;
+    u8 unknown028[0xf0c - 0x28];
+    AnmVm primaryVm;                         // +0x000f0c
+    u8 unknown11d8[4];
+    IDirect3DSurface8 *surfaces[32];         // +0x0011dc
+    u8 unknown125c[0x175c - 0x125c];
+    u32 currentTextureFactor;                // +0x00175c
+    IDirect3DTexture8 *currentTexture;       // +0x001760
+    u8 currentBlendMode;                     // +0x001764
+    u8 currentColorOp;                       // +0x001765
+    u8 currentVertexShader;                  // +0x001766
+    u8 disableZWrite;                        // +0x001767
+    u8 cameraMode;                           // +0x001768
+    u8 unknown1769[3];
+    void *currentSprite;                     // +0x00176c
+    IDirect3DVertexBuffer8 *quadVertexBuffer;// +0x001770
+    VertexDiffuseXyzrhw untexturedVertices[4];// +0x001774
+    i32 spritesToDraw;                       // +0x0017c4
+    VertexTex1DiffuseXyzrhw vertexBuffer[0x20000]; // +0x0017c8
+    VertexTex1DiffuseXyzrhw *vertexBufferEndPtr;   // +0x3817c8
+    VertexTex1DiffuseXyzrhw *vertexBufferStartPtr; // +0x3817cc
+    u8 unknown3817d0[0x44];
+    AnmVmListNode *vmListHead;               // +0x381814
+    AnmVmListNode *vmListTail;               // +0x381818
+    AnmVm preallocatedVms[9];                // +0x38181c
+    u32 unknown383148;
+
+    AnmManager();
+    ~AnmManager();
+    void ClearVertexBuffer();
+    void FlushVertexBuffer();
+    void ReleaseSurfaces();
+    void TakeScreenshots();
+    i32 RemoveVmListNode(AnmVmListNode *node);
+    static i32 ExecuteScript(AnmVm *vm);
+
+    static void __fastcall OnUpdate(void *arg);
+    static void __fastcall DrawLayer0(void *arg);
+    static void __fastcall DrawLayer1(void *arg);
+    static void __fastcall DrawLayer2(void *arg);
+    static void __fastcall DrawLayer3(void *arg);
+    static void __fastcall DrawLayer4(void *arg);
+    static void __fastcall DrawLayer5(void *arg);
+    static void __fastcall DrawLayer6(void *arg);
+    static void __fastcall DrawLayer7(void *arg);
+    static void __fastcall DrawLayer8(void *arg);
+
+    void ClearBlendMode() { this->currentBlendMode = 3; }
+    void ClearColorOp() { this->currentColorOp = 0xff; }
+    void ClearVertexShader() { this->currentVertexShader = 0xff; }
+    void ClearTexture() { this->currentTexture = NULL; }
+    void ClearCameraSettings() { this->cameraMode = 0xff; }
+};
+
+typedef char VertexDiffuseXyzrhwSizeIs14[(sizeof(VertexDiffuseXyzrhw) == 0x14) ? 1 : -1];
+typedef char VertexTex1XyzrhwSizeIs18[(sizeof(VertexTex1Xyzrhw) == 0x18) ? 1 : -1];
+typedef char AnmManagerPrimaryVmAtF0C[(offsetof(AnmManager, primaryVm) == 0xf0c) ? 1 : -1];
+typedef char AnmManagerSurfacesAt11DC[(offsetof(AnmManager, surfaces) == 0x11dc) ? 1 : -1];
+typedef char AnmManagerVerticesAt1774[(offsetof(AnmManager, untexturedVertices) == 0x1774) ? 1 : -1];
+typedef char AnmManagerVertexBufferAt17C8[(offsetof(AnmManager, vertexBuffer) == 0x17c8) ? 1 : -1];
+typedef char AnmManagerVmListAt381814[(offsetof(AnmManager, vmListHead) == 0x381814) ? 1 : -1];
+typedef char AnmManagerPreallocatedAt38181C[(offsetof(AnmManager, preallocatedVms) == 0x38181c) ? 1 : -1];
+typedef char AnmManagerSizeIs38314C[(sizeof(AnmManager) == 0x38314c) ? 1 : -1];
+
+extern VertexTex1DiffuseXyzrhw g_AnmTexturedVertices[4];
+extern VertexTex1Xyzrhw g_AnmTexturedVerticesNoDiffuse[4];
 
 extern Rng g_Rng;
 extern Rng g_Rng2;

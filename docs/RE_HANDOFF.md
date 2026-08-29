@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 54 canonical units cover 63,392 authored bytes.
+- Reconstruction: 56 canonical units cover 64,573 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 96.20% (63,392 / 65,899)
+  relocations. Confirmed authored-byte coverage is now 97.99% (64,573 / 65,899)
   while the global origin denominator remains provisional.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -42,6 +42,11 @@
   loops.
 - `AnmManager::ClearVertexBuffer` and `FlushVertexBuffer` are exact for all 258
   bytes; the flush unit also replays its eight D3D-device relocations.
+- The 1,005-byte `AnmManager` constructor and 176-byte destructor are exact,
+  including all 96 relocations. The target's natural class shape is proven as
+  an `AnmVmBase` plus derived `AnmVm`, a primary VM at `+0xF0C`, two inline
+  vertex arrays, a VM list at `+0x381814`, and nine preallocated VMs at
+  `+0x38181C`; VC7.1 consequently emits the exact vector/EH machinery.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
   bytes are stack allocation/displacement differences and receive no credit.
@@ -54,18 +59,16 @@ python3 scripts/report-reconstruction-status.py --summary
 
 ## Next bounded lane
 
-The 95% checkpoint is complete; the active target is 99.5%. The three remaining
-confirmed-authored functions total 2,507 unmatched bytes, and at most 329 may
-remain unmatched at the current denominator.
+The 95% checkpoint is complete; the active target is 99.5%. Only the 1,326-byte
+`WinMain` remains unmatched in the confirmed-authored set, and at most 329
+bytes may remain unmatched at the current denominator.
 
 1. Finish the 1,326-byte `WinMain` source probe. It already matches all 134
    relocations and differs only in eight stack-allocation/displacement bytes,
    but partial bytes receive no exact credit.
-2. Close the remaining ANM lifecycle units: the 1,005-byte constructor at
-   `0x00441DC0` and 176-byte destructor at `0x004421B0`.
-3. Recalculate against any newly confirmed authored origins after every
+2. Recalculate against any newly confirmed authored origins after every
    promotion; never preserve the percentage by withholding denominator facts.
-4. Once the authored gap is below 0.5%, resume the target-specific 16,066-byte
+3. Once the authored gap is below 0.5%, resume the target-specific 16,066-byte
    resource/gameplay hub at `0x00447D00` and keep its owner unnamed until
    target-local evidence proves it.
 
