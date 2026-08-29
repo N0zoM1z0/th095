@@ -47,10 +47,12 @@ supplies 1,830 provisional function candidates. Sixty-one canonical units
 now reproduce 66,571 authored bytes exactly, including the complete 17,018-byte
 `AnmManager::ExecuteScript`, 27,091-byte `EclManager::RunEcl`, the
 target-specific asynchronous `SoundPlayer` core, and the exact Main/D3D
-runtime family. That is 98.05% of the currently confirmed 67,897-byte
-authored set; the global denominator remains provisional while origin review
-continues. Mapping, source presence, semantic validation, and exact matches
-are deliberately tracked as independent states.
+runtime family. A target-local audit has now admitted 53,257 additional bytes
+from the photography/camera, replay/menu, and gameplay/resource clusters, so
+exact coverage is 54.95% of the expanded 121,154-byte authored set. The global
+denominator remains provisional while origin review continues. Mapping, source
+presence, semantic validation, and exact matches are deliberately tracked as
+independent states.
 The aspirational reconstruction target is 99.5% of that conservative authored
 denominator, but difficult units remain uncredited rather than weakening the
 exact-match standard.

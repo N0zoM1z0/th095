@@ -52,6 +52,7 @@ next action belongs in `RE_HANDOFF.md`.
 | ARCH-005 | target-observed | TH095 uses a dedicated SoundPlayer worker thread; `0x00437790` creates it and `0x004377F0`/`0x00437810` request and join shutdown. | CreateThread state and WaitForSingleObject/CloseHandle control flow |
 | ARCH-006 | inferred | `0x00430AB0`, `0x00426BF0`, and `0x00447D00` are target-specific gameplay/UI/resource hubs and must not inherit TH08 class names without further proof. | TH095-only state machines, camera/photo/replay evidence, and unresolved owning types |
 | ARCH-007 | exact | TH095 splits SFX loading between a producer worker at `0x00437CD0` and the `InitializeDSound` consumer path. Thirty-seven owned file-data slots begin at `SoundPlayer+0x5230`; `LoadSound` waits for a slot, parses RIFF/WAVE data, then creates the DirectSound buffer. | Canonical worker, `InitializeDSound`, `LoadSoundData`, and `LoadSound` units |
+| ARCH-008 | target-observed | A boundary, call-graph, global-xref, and string audit identifies 31 additional authored functions totaling 53,257 bytes: a ten-function photography/camera cluster rooted at `0x00430AB0`, an eleven-function replay/menu/best-shot cluster rooted at `0x00426BF0`, and a ten-function gameplay/resource cluster rooted at `0x00447D00`. These subsystem labels describe target-proven responsibilities; they are not recovered original class names. | Attested cluster decompiles, terminal-instruction/padding audit, private caller/callee edges, and target strings including `th95_%.2d.rpy` and `bestshot/bs_*.dat` |
 
 ## Reconstructed main family
 

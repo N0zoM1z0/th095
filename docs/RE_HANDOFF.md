@@ -17,8 +17,14 @@
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 98.05% (66,571 / 67,897)
+  relocations. Confirmed authored-byte coverage is now 54.95% (66,571 / 121,154)
   while the global origin denominator remains provisional.
+- A target-local boundary and call-graph audit has promoted 31 additional
+  authored functions totaling 53,257 bytes: ten photography/camera functions
+  (12,144 bytes), eleven replay/menu/best-shot functions (15,512 bytes), and
+  ten gameplay/resource functions (25,601 bytes). This intentionally reduced
+  the percentage while increasing origin/boundary review to 93 / 1,830
+  candidates. Original class names remain unresolved.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
   object construction/release. Twenty-six sound units contribute 8,133 bytes.
@@ -37,7 +43,8 @@
   temporary ECL-only ABI view, not a second reconstructed ANM implementation;
   keep it separate until it can be reconciled with the independently exact
   root `AnmManager.hpp`. The move passed a complete 58-unit strict replay, and
-  the final view rename passed a fresh ECL object comparison.
+  the final view rename passed a fresh ECL object comparison. Subsequent ANM
+  work passed a complete 61-unit strict replay.
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.
@@ -81,22 +88,22 @@ python3 scripts/report-reconstruction-status.py --summary
 
 ## Next bounded lane
 
-The strict 95% checkpoint is complete. `WinMain` is the only unmatched unit in
-the confirmed-authored set, but it is deferred because its remaining eight
-stack bytes have resisted the bounded VC7.1 oracle matrix. Continue expanding
-the denominator through target-proven functions instead of spending the whole
-lane on that compiler artifact.
+The earlier narrow 95% checkpoint is superseded by the 31-function target-local
+origin audit. The honest expanded denominator is now 121,154 bytes and exact
+coverage is 54.95%. `WinMain` remains deferred because its remaining eight
+stack bytes have resisted the bounded VC7.1 oracle matrix.
 
-1. Expand the provisional denominator around the TH095 photography and
-   gameplay state machines rooted at `0x00430AB0` and `0x00426BF0`. Use direct
-   camera/photo/replay xrefs, caller/callee structure, and target fields to
-   prove bounded owners and responsibilities before choosing source names.
+1. Reconstruct the 7,271-byte photography/camera state machine at
+   `0x00430AB0`. It has one target-local caller and 29 internal callees, owns
+   camera tracking, charge/photo state transitions, viewfinder ANM state, and
+   camera SFX. Keep its source-level owner descriptive until layout recovery
+   proves the original class.
 2. Recalculate against any newly confirmed authored origins after every
    promotion; never preserve the percentage by withholding denominator facts.
-3. Keep expanding into the TH095 photography/gameplay/resource hub at
-   `0x00447D00`. Keep this 16,066-byte function descriptively named
-   until target-local evidence proves its owner; do not import a TH08 class
-   name merely to raise the authored count.
+3. Use the already audited private helper family at `0x00432730..0x0043426C`
+   to recover the camera object's fields around the main state machine. Follow
+   with the 6,471-byte replay/menu dispatcher at `0x00426BF0` and the
+   16,066-byte gameplay/resource hub at `0x00447D00`.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

@@ -101,9 +101,9 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | --- | ---: | ---: | --- | --- |
 | `0x00408E70` | 27,091 | 3 callers / 50 internal callees | exact `EclManager::RunEcl` | Largest script VM; establishes enemy/scene semantics |
 | `0x0043A600` | 17,018 | 22 callers / 20 internal callees | exact `AnmManager::ExecuteScript` | Widely shared animation VM and type/layout root |
-| `0x00447D00` | 16,066 | 1 caller / 27 internal callees | target-specific resource/gameplay setup hub | Large async/container lane; exact class name unresolved |
-| `0x00430AB0` | 7,271 | 1 caller / 29 internal callees | target-specific camera/player update state machine | Photography/gameplay lane; do not project a TH08 name |
-| `0x00426BF0` | 6,471 | 1 caller / 17 internal callees | large UI/replay state dispatcher | TH095-specific menu/replay lane |
+| `0x00447D00` | 16,066 | 1 caller / 27 internal callees | boundary-reviewed authored gameplay/resource hub | Ten-function cluster; exact class name unresolved |
+| `0x00430AB0` | 7,271 | 1 caller / 29 internal callees | boundary-reviewed authored camera/photo state machine | Next reconstruction lane; do not project a TH08 name |
+| `0x00426BF0` | 6,471 | 1 caller / 17 internal callees | boundary-reviewed authored replay/menu dispatcher | Eleven-function replay/best-shot cluster |
 | `0x00439200` | 2,525 | 2 callers / 16 internal callees | `SoundPlayer::ProcessQueues` | Shared threaded audio state machine |
 | `0x00420240` | 1,326 | CRT root / 30 internal callees | `WinMain` | Process-level ownership and subsystem naming |
 
@@ -114,8 +114,10 @@ The first large-function lane, `AnmManager::ExecuteScript`, is exact for its
 tail, and VC7.1 `/Ob1` source-shape profile. The second large-function lane,
 `EclManager::RunEcl`, is exact for its 27,091-byte authored body and complete
 27,747-byte COFF extent, including the 158-entry opcode table, six-entry
-easing table, and all 647 relocations. The next target-first lane is the
-16,066-byte target-specific resource/gameplay setup hub at `0x00447D00`.
+easing table, and all 647 relocations. A subsequent target-local audit admitted
+31 functions and 53,257 bytes across the camera/photo, replay/menu, and
+gameplay/resource clusters. The next target-first reconstruction lane is the
+7,271-byte camera/photo state machine at `0x00430AB0`.
 
 ## Shared engine versus TH095 gameplay
 
