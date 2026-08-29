@@ -55,6 +55,7 @@ th095::AnmManager::ExecuteScript,0x0043A600,function
 th095::AnmManager::ClearVertexBuffer,0x0043F2B0,function
 th095::AnmManager::FlushVertexBuffer,0x0043F2F0,function
 th095::AnmManager::Draw,0x004415A0,function
+th095::AnmVm::InitializePulsingRadialTrail,0x00441710,function
 th095::Float3::FromAngleMagnitude,0x00441DA0,function
 th095::AnmManager::AnmManager,0x00441DC0,function
 th095::AnmManager::~AnmManager,0x004421B0,function

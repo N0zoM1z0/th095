@@ -263,6 +263,18 @@ struct AnmVertex
 
 typedef char AnmVertexSizeIs1C[(sizeof(AnmVertex) == 0x1c) ? 1 : -1];
 
+struct PulsingRadialTrailData
+{
+    AnmVertex vertices[33];
+    f32 radii[33];
+    f32 radialVelocities[33];
+    Float2 uvVelocity;
+    u32 unknown4ac;
+};
+
+typedef char PulsingRadialTrailDataSizeIs4B0[
+    (sizeof(PulsingRadialTrailData) == 0x4b0) ? 1 : -1];
+
 struct AnmRawInstr
 {
     i16 opcode;
@@ -453,7 +465,7 @@ struct AnmVm : AnmVmBase
     ZunColor color1Final;           // +0x29c
     ZunColor color2Initial;         // +0x2a0
     ZunColor color2Final;           // +0x2a4
-    void (__fastcall *positionCallback)(AnmVm *); // +0x2a8
+    ZunResult (__fastcall *positionCallback)(AnmVm *); // +0x2a8
     ZunResult (__fastcall *drawCallback)(AnmVm *); // +0x2ac
     Float3 alternatePosition;       // +0x2b0
     i32 timeOfLastSpriteSet;        // +0x2bc
@@ -475,7 +487,7 @@ struct AnmVm : AnmVmBase
     }
 
     void Initialize();
-    void InitializePulsingRadialTrail();
+    ZunResult InitializePulsingRadialTrail();
 
     f32 GetFloatVar(f32 varId);
     i32 GetIntVar(i32 varId);
@@ -493,6 +505,9 @@ typedef char AnmVmAnmFileAt230[(offsetof(AnmVm, anmFile) == 0x230) ? 1 : -1];
 typedef char AnmVmCurrentInstructionAt240[(offsetof(AnmVm, currentInstruction) == 0x240) ? 1 : -1];
 typedef char AnmVmLoadedSpriteAt244[(offsetof(AnmVm, loadedSprite) == 0x244) ? 1 : -1];
 typedef char AnmVmSizeIs2CC[(sizeof(AnmVm) == 0x2cc) ? 1 : -1];
+
+ZunResult __fastcall UpdatePulsingRadialTrail(AnmVm *vm);
+ZunResult __fastcall DrawPulsingRadialTrail(AnmVm *vm);
 
 struct VertexDiffuseXyzrhw
 {

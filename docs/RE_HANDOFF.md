@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 58 canonical units cover 64,922 authored bytes.
+- Reconstruction: 59 canonical units cover 65,676 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 98.00% (64,922 / 66,248)
+  relocations. Confirmed authored-byte coverage is now 98.02% (65,676 / 67,002)
   while the global origin denominator remains provisional.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -67,6 +67,12 @@
   `0,1,4,5,6,7,8,9,2,3`.
 - `Float3::FromAngleMagnitude` at `0x00441DA0` is exact for all 32 bytes with
   no relocations. Its `fsincos` implementation is shared by 26 target callers.
+- `AnmVm::InitializePulsingRadialTrail` at `0x00441710` is exact for all 754
+  bytes and all 29 relocations. This TH095 render-mode-10 path allocates a
+  `0x4B0`-byte payload containing 33 vertices, 33 radii, 33 radial velocities,
+  and UV velocity. The target's two callback pointers prove the adjacent update
+  and draw functions at `0x00441A10` and `0x00441D70` belong to the same bounded
+  cluster.
 
 Read live totals with:
 
@@ -82,21 +88,25 @@ stack bytes have resisted the bounded VC7.1 oracle matrix. Continue expanding
 the denominator through target-proven functions instead of spending the whole
 lane on that compiler artifact.
 
-1. Continue the ANM rendering cluster rooted at exact
-   `AnmManager::Draw @ 0x004415A0`. The next bounded candidate is
-   `AnmVm::InitializePulsingRadialTrail @ 0x00441710` (754 bytes), followed by
-   the draw helpers at `0x0043EA20..0x00441480`.
+1. Finish the TH095 render-mode-10 radial-trail cluster: reconstruct
+   `UpdatePulsingRadialTrail @ 0x00441A10` (850 bytes) and
+   `DrawPulsingRadialTrail @ 0x00441D70` (45 bytes). The exact initializer
+   already proves their callback ABI and shared `0x4B0` payload layout.
 2. Recalculate against any newly confirmed authored origins after every
    promotion; never preserve the percentage by withholding denominator facts.
-3. Keep the target-specific 16,066-byte resource/gameplay hub at `0x00447D00`
-   unnamed until target-local evidence proves its owner; it remains a later,
-   high-cost lane rather than a prerequisite for the current ANM cluster.
+3. After the bounded callback cluster, expand the candidate denominator around
+   the TH095 photography/gameplay/resource hubs at `0x00430AB0`, `0x00426BF0`,
+   and `0x00447D00`. Keep the 16,066-byte `0x00447D00` hub descriptively named
+   until target-local evidence proves its owner; do not import a TH08 class
+   name merely to raise the authored count.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression
 shape; the mesh loop owns a distinct index; and its locals are declared before
-target-order initialization. Any shared-header change must rebuild all six
-accepted ANM helper units plus `anm-execute-script`.
+target-order initialization. The radial-trail initializer's inlined allocation
+wrapper must read its parameters through volatile lvalues to reproduce VC7.1's
+addressable argument homes. Any shared-header change must rebuild the complete
+ANM unit set plus `anm-execute-script`.
 
 Target-specific hubs `0x00430AB0`, `0x00426BF0`, and `0x00447D00` must stay
 descriptively named until photography/gameplay/resource owning types are

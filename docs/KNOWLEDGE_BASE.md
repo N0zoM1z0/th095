@@ -28,6 +28,7 @@ next action belongs in `RE_HANDOFF.md`.
 | ABI-007 | compiler-observed | The ECL translation unit uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`; its exact `RunEcl` body has a 0x9EC-byte frame and keeps `this` at `[ebp-0x580]`. | Canonical `ecl-manager-run-ecl` unit under pinned VC7.1 build 3077 |
 | ABI-008 | compiler-observed | The SoundPlayer translation unit uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. Scoped identifier backing names reproduce target local allocation without a patched frontend. | Twenty-six canonical SoundPlayer units under pinned VC7.1 build 3077 |
 | ABI-009 | compiler-observed | The Main translation unit uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`; this profile reproduces seventeen independent configuration, window, timing, chain, synchronization, and D3D functions. | Canonical Main units under pinned VC7.1 build 3077 |
+| ABI-010 | compiler-observed | The radial-trail initializer requires the inlined memory wrapper to read `Alloc` and `Free` parameters through volatile lvalues. VC7.1 then emits the addressable argument homes at `[ebp-0x3C]` and `[ebp-0x40]` found in the target. | Isolated pinned-VC7.1 compiler oracle and exact `anm-initialize-pulsing-radial-trail` unit |
 
 ## Analysis control plane
 
@@ -80,6 +81,7 @@ next action belongs in `RE_HANDOFF.md`.
 | ANM-007 | exact | `ClearVertexBuffer` resets the buffered range and sprite count; `FlushVertexBuffer` submits two triangle-list primitives per sprite and resets the range. Both reproduce all 258 target bytes, including eight D3D-device relocations in the flush path. | Canonical `anm-clear-vertex-buffer` and `anm-flush-vertex-buffer` units |
 | ANM-008 | exact | The target VM is naturally modeled as `AnmVmBase` plus derived `AnmVm`. This makes VC7.1 emit the exact 90-byte VM constructor, 43-byte destructor, array-vector helpers, and outer-manager EH cleanup without manual code bytes. | Compiler oracle plus canonical `anm-manager-constructor` and `anm-manager-destructor` units |
 | ANM-009 | exact | `AnmManager` is `0x38314C` bytes: its primary VM is at `+0xF0C`, inline untextured vertices at `+0x1774`, buffered textured vertices at `+0x17C8`, VM list head/tail at `+0x381814/+0x381818`, and nine preallocated VMs at `+0x38181C`. | Compile-time layout assertions and exact lifecycle units |
+| ANM-010 | exact | TH095 ANM render mode 10 allocates a `0x4B0`-byte radial-trail payload: 33 `AnmVertex` values at `+0x000`, 33 radii at `+0x39C`, 33 radial velocities at `+0x420`, and UV velocity at `+0x4A4`. Its initializer installs update and draw callbacks at `0x00441A10` and `0x00441D70`. | Canonical 754-byte `anm-initialize-pulsing-radial-trail` unit with all 29 relocations |
 | MATCH-005 | exact | The 1,005-byte manager constructor and 176-byte destructor reproduce every authored byte and all 96 relocations, including ten chain registrations and the vector constructor/destructor helpers. | Canonical `anm-manager-constructor` and `anm-manager-destructor` units |
 
 ## Reconstructed ECL VM

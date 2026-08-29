@@ -545,7 +545,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00441330,330,0x00441479,FUN_00441330,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00441480,275,0x00441592,FUN_00441480,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004415A0,317,0x004416DC,FUN_004415a0,th095::AnmManager::Draw,AnmManager,matching,100.00,__thiscall,ZunResult AnmManager::Draw(AnmVm *),false,src/AnmManager.cpp,Canonical VC7.1 comparison covers the 317-byte body plus 40-byte switch table and all 21 relocations,authored,Exact general ANM draw-mode dispatcher
-0x00441710,754,0x00441A01,FUN_00441710,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00441710,754,0x00441A01,FUN_00441710,th095::AnmVm::InitializePulsingRadialTrail,AnmVm,matching,100.00,__thiscall,ZunResult AnmVm::InitializePulsingRadialTrail(),false,src/AnmManagerTrail.cpp,Canonical relocation-aware VC7.1 comparison: 754/754 bytes and 29 relocations,authored,Exact TH095 render-mode-10 radial trail allocation and vertex initialization
 0x00441A10,850,0x00441D61,FUN_00441a10,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00441D70,45,0x00441D9C,FUN_00441d70,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00441DA0,32,0x00441DBF,FUN_00441da0,th095::Float3::FromAngleMagnitude,ZunMath,matching,100.00,__thiscall,void Float3::FromAngleMagnitude(float; float),false,src/AnmManager.cpp,Canonical relocation-free VC7.1 comparison: 32/32 bytes,authored,Exact shared fsincos vector helper with 26 callers
