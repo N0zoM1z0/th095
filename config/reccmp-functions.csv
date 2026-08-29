@@ -142,3 +142,8 @@ th095::Controller::SetButtonFromDirectInputJoystate,0x00419820,function
 th095::Controller::SetButtonFromControllerInputs,0x004198A0,function
 th095::Controller::GetControllerState,0x00419910,function
 th095::Controller::GetInput,0x00419AE0,function
+th095::Controller::ResetKeyboard,0x0041A550,function
+th095::FileSystem::Decrypt,0x0041A5C0,function
+th095::FileSystem::Encrypt,0x0041A790,function
+th095::FileSystem::OpenFile,0x0041A960,function
+th095::FileSystem::CheckIfFileAlreadyExists,0x0041ABA0,function

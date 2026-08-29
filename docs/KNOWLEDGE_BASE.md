@@ -66,6 +66,15 @@ next action belongs in `RE_HANDOFF.md`.
 | INPUT-003 | exact | `Controller::GetControllerInput @ 0x00419410` selects WinMM or DirectInput through runtime flag bit 11, applies three independently configured bindings, and adds X/Y axis directions. TH095 selects one of two devices for each input slot instead of TH08's single-controller path. | Canonical 1,030-byte unit with 37 replayed relocations and TH08 source-shape corroboration |
 | INPUT-004 | compiler-observed | `Controller::GetInput @ 0x00419AE0` is source-present for the complete TH095 keyboard and dual-controller aggregation path, including the third aggregate slot and per-bit repeat/pressed/released histories. Its natural VC7.1 body is 2,655 bytes versus the 2,662-byte target; the seven-byte register/temporary allocation residual receives no exact credit. | Attested target body, exact five-function dependency chain, and non-canonical pinned-VC7.1 probe |
 | INPUT-005 | exact | `Controller::GetControllerState @ 0x00419910` expands 32 WinMM buttons or copies 128 DirectInput buttons. The original DirectInput path discards `GetDeviceState`'s result and rechecks the earlier `Poll` result; the reconstruction preserves this behavior. | Canonical 460-byte unit with 23 replayed relocations |
+| INPUT-006 | exact | `Controller::ResetKeyboard @ 0x0041A550` clears the high bit of all 256 Win32 keyboard-state bytes while preserving toggle bits, then writes the state back. | Canonical 110-byte unit with both Win32 import relocations replayed |
+
+## Reconstructed file system
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| FILE-001 | exact | `FileSystem::Decrypt` and `Encrypt @ 0x0041A5C0/0x0041A790` copy at most `maxBytes` into a temporary buffer, apply the odd/even chunk permutation and advancing XOR key back into the original allocation, free the temporary, and return the original pointer. This differs from TH08's allocate-and-return codec shape. | Two canonical 464-byte VC7.1 units with all four CRT relocations replayed; TH08 used only as a source-shape contrast |
+| FILE-002 | exact | `FileSystem::OpenFile @ 0x0041A960` serializes through critical section 2, strips path components for archive lookup, allocates and decompresses archive entries, or falls back to sequential loose-file I/O. Every exit decrements the active-count byte at `0x004C4D7E`. | Canonical 576-byte unit with all 37 archive, allocator, string, debug, Win32, and global relocations replayed |
+| FILE-003 | exact | `FileSystem::CheckIfFileAlreadyExists @ 0x0041ABA0` performs a read-only loose-file probe under the same critical section and active-count protocol. | Canonical 175-byte unit with all 14 relocations replayed |
 
 ## Reconstructed main family
 

@@ -437,6 +437,18 @@ u16 GetInput(i32 inputIndex)
     return buttons;
 }
 
+void ResetKeyboard()
+{
+    u8 keyboardState[256];
+
+    GetKeyboardState(keyboardState);
+    for (i32 index = 0; index < 256; index++)
+    {
+        keyboardState[index] &= 0x7f;
+    }
+    SetKeyboardState(keyboardState);
+}
+
 #undef KEYBOARD_KEY_PRESSED
 
 } // namespace Controller

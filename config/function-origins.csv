@@ -198,11 +198,11 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004198A0,authored,Controller,authored,exact,vc71-controller-input-2026-08-29
 0x00419910,authored,Controller,authored,exact,vc71-controller-input-2026-08-29
 0x00419AE0,authored,Controller,authored,high,ghidra-vc71-controller-input-2026-08-29
-0x0041A550,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041A5C0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041A790,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041A960,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041ABA0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041A550,authored,Controller,authored,exact,vc71-controller-reset-keyboard-2026-08-29
+0x0041A5C0,authored,FileSystem,authored,exact,vc71-file-system-crypto-2026-08-29
+0x0041A790,authored,FileSystem,authored,exact,vc71-file-system-crypto-2026-08-29
+0x0041A960,authored,FileSystem,authored,exact,vc71-file-system-open-2026-08-29
+0x0041ABA0,authored,FileSystem,authored,exact,vc71-file-system-open-2026-08-29
 0x0041AC50,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041ADC0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041AEA0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

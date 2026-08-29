@@ -53,3 +53,8 @@ address,name,module,confidence,evidence
 0x004198A0,th095::Controller::SetButtonFromControllerInputs,Controller,exact,Canonical relocation-free WinMM button mapper comparison
 0x00419910,th095::Controller::GetControllerState,Controller,exact,Canonical controller-get-state VC7.1 comparison with 23 relocations
 0x00419AE0,th095::Controller::GetInput,Controller,high,Complete target-local keyboard and dual-controller input aggregator; seven-byte compiler-shape residual
+0x0041A550,th095::Controller::ResetKeyboard,Controller,exact,Canonical controller-reset-keyboard VC7.1 comparison with two relocations
+0x0041A5C0,th095::FileSystem::Decrypt,FileSystem,exact,Canonical file-system-decrypt VC7.1 comparison with two relocations
+0x0041A790,th095::FileSystem::Encrypt,FileSystem,exact,Canonical file-system-encrypt VC7.1 comparison with two relocations
+0x0041A960,th095::FileSystem::OpenFile,FileSystem,exact,Canonical file-system-open-file VC7.1 comparison with 37 relocations
+0x0041ABA0,th095::FileSystem::CheckIfFileAlreadyExists,FileSystem,exact,Canonical file-system-check-exists VC7.1 comparison with 14 relocations

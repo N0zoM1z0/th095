@@ -63,7 +63,8 @@ flowchart LR
     Main --> Chain[calc/draw Chain]
     Main --> Anm[AnmManager]
     Window --> Render[Render\n0x00420770 exact]
-    Window --> Input[Controller input\n0x004193A0..0x0041A545]
+    Window --> Input[Controller input\n0x004193A0..0x0041A5BD]
+    Main --> Files[FileSystem\n0x0041A5C0..0x0041AC4E]
     Render --> Chain
     Render --> Sound
     Render --> Anm
@@ -133,9 +134,13 @@ its controller dependency chain at `0x004193A0..0x00419ADB` is exact for
 another 1,820 bytes. The complete `Controller::GetInput @ 0x00419AE0` source
 proves TH095's two independently assigned devices, third aggregate input slot,
 and per-bit repeat/pressed/released histories; its seven-byte compiler-shape
-residual remains uncredited. The next dependency-first lane is the adjacent
-controller initialization/reset family at `0x0041A550..0x0041AC4E`, followed
-by the front-end pages at `0x00450FC0` and `0x00451C80`.
+residual remains uncredited. The adjacent 110-byte keyboard reset and four
+FileSystem functions at
+`0x0041A550..0x0041AC4E`, now exact for another 1,789 bytes. The FileSystem
+cluster proves the shared replay/resource codec, archive/disk loader, and
+critical-section-2 accounting. The next dependency-first lane is the
+front-end pages at `0x00450FC0` and `0x00451C80`, with the 16,066-byte TH095
+scene-selection hub retained as the next large root.
 
 ## Shared engine versus TH095 gameplay
 

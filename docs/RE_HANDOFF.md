@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 122 canonical units cover 84,229 authored bytes.
+- Reconstruction: 132 canonical units cover 87,838 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 58.17% (84,229 / 144,801)
+  relocations. Confirmed authored-byte coverage is now 58.14% (87,838 / 151,072)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,7 +25,7 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 144 authored candidates and leaves 1,686 origin/boundary reviews
+  confirms 155 authored candidates and leaves 1,675 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -142,6 +142,14 @@
   the third aggregate input slot, and all repeat/pressed/released histories.
   Its natural VC7.1 body is 2,655 bytes; the seven-byte compiler-temporary
   residual receives no exact credit.
+- `Controller::ResetKeyboard @ 0x0041A550` is exact for all 110 bytes and both
+  Win32 imports. The adjacent range was reclassified rather than projected as
+  more Controller code: `FileSystem::Decrypt`, `Encrypt`, `OpenFile`, and
+  `CheckIfFileAlreadyExists @ 0x0041A5C0..0x0041AC4E` are independently exact
+  for all 1,679 bytes and 55 relocations. This proves TH095's in-place chunk
+  permutation/XOR codec, archive-basename lookup, loose-file fallback, and
+  critical-section-2 active-count accounting. The implementation now lives in
+  root-level `FileSystem.*`, preserving the TH08-style subsystem organization.
 - `UpdatePhotoResultScreen @ 0x004294C0` is source-present for the complete
   TH095-specific photo browser and `BSTS` best-shot save path. Its VC7.1 probe
   has the target's full 1,323-byte instruction topology and resolves all 65
@@ -167,7 +175,7 @@
   best-shot paths. Their VC7.1 bodies are 681/1,415/1,071 bytes versus
   788/1,489/1,073-byte targets; the remaining differences are original
   inline-temporary frame gaps and a two-byte capture branch, so they receive
-  no exact credit. The source-present total is now 112 functions, and all ten
+  no exact credit. The source-present total is now 148 functions, and all ten
   canonical ResultScreen units replay unchanged after the expanded layouts.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
@@ -280,10 +288,12 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    reconstructed as the full option/key-configuration page. Its exact static
    call topology is recovered, so defer the remaining compiler-local 54-byte
    excess. Its controller dependency chain through `0x00419AE0` is now exact
-   except for the seven-byte `GetInput` compiler-shape residual. Next classify
-   and reconstruct the adjacent controller initialization/reset family at
-   `0x0041A550..0x0041AC4E`, then continue the front-end pages at `0x00450FC0`
-   and `0x00451C80`.
+   except for the seven-byte `GetInput` compiler-shape residual. The adjacent
+   keyboard reset and FileSystem codec/open cluster at
+   `0x0041A550..0x0041AC4E` is now exact. Continue the candidate inventory with
+   the connected front-end pages at `0x00450FC0` and `0x00451C80`, while
+   keeping the TH095-specific `0x00447D00` scene-selection hub as the next
+   large authored target.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

@@ -7138,3 +7138,115 @@ relocations = [
   { offset = 0x1BB, type = "DIR32", symbol = "?g_ControllerButtons@th095@@3EA", target = 0x004C4428 },
   { offset = 0x1C2, type = "DIR32", symbol = "?g_ControllerButtons@th095@@3EA", target = 0x004C4428 },
 ]
+
+[units.controller-reset-keyboard]
+source = "src/Controller.cpp"
+object = "build/matching/Controller.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Controller::ResetKeyboard"]
+symbol = "?ResetKeyboard@Controller@th095@@YIXXZ"
+target_address = 0x0041A550
+size = 0x6E
+relocations = [
+  { offset = 0x12, type = "DIR32", symbol = "__imp__GetKeyboardState@4", target = 0x004951C4 },
+  { offset = 0x66, type = "DIR32", symbol = "__imp__SetKeyboardState@4", target = 0x004951C8 },
+]
+
+[units.file-system-decrypt]
+source = "src/FileSystem.cpp"
+object = "build/matching/FileSystem.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::FileSystem::Decrypt"]
+symbol = "?Decrypt@FileSystem@th095@@YIPAEPAEHEEHH@Z"
+target_address = 0x0041A5C0
+size = 0x1D0
+relocations = [
+  { offset = 0x6E, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x1BE, type = "REL32", symbol = "_free", target = 0x004854BE },
+]
+
+[units.file-system-encrypt]
+source = "src/FileSystem.cpp"
+object = "build/matching/FileSystem.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::FileSystem::Encrypt"]
+symbol = "?Encrypt@FileSystem@th095@@YIPAEPAEHEEHH@Z"
+target_address = 0x0041A790
+size = 0x1D0
+relocations = [
+  { offset = 0x6E, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x1BE, type = "REL32", symbol = "_free", target = 0x004854BE },
+]
+
+[units.file-system-open-file]
+source = "src/FileSystem.cpp"
+object = "build/matching/FileSystem.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::FileSystem::OpenFile"]
+symbol = "?OpenFile@FileSystem@th095@@YIPAEPBDPAHH@Z"
+target_address = 0x0041A960
+size = 0x240
+relocations = [
+  { offset = 0x1C, type = "DIR32", symbol = "?g_FileSystemCriticalSections@th095@@3EA", target = 0x004C4CD4 },
+  { offset = 0x23, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x00495060 },
+  { offset = 0x29, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0x32, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0x47, type = "REL32", symbol = "_strrchr", target = 0x00485A70 },
+  { offset = 0x6F, type = "REL32", symbol = "_strrchr", target = 0x00485A70 },
+  { offset = 0x95, type = "DIR32", symbol = "?g_PbgArchive@th095@@3VPbgArchive@1@A", target = 0x004BE408 },
+  { offset = 0x9A, type = "REL32", symbol = "?GetEntryDecompressedSize@PbgArchive@th095@@QAEKPBD@Z", target = 0x004552C0 },
+  { offset = 0xC5, type = "DIR32", symbol = "??_C@_0BB@PMABEFFC@?$CFs?5Decode?5?4?4?4?5?$AN?6?$AA@", target = 0x0049579C },
+  { offset = 0xCA, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0xDC, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0xFA, type = "DIR32", symbol = "?g_PbgArchive@th095@@3VPbgArchive@1@A", target = 0x004BE408 },
+  { offset = 0xFF, type = "REL32", symbol = "?ReadDecompressEntry@PbgArchive@th095@@QAEPAEPBDPAE@Z", target = 0x004550F0 },
+  { offset = 0x10D, type = "DIR32", symbol = "?g_FileSystemCriticalSections@th095@@3EA", target = 0x004C4CD4 },
+  { offset = 0x114, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+  { offset = 0x11A, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0x123, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0x131, type = "DIR32", symbol = "??_C@_0P@IFHIHFM@?$CFs?5Load?5?4?4?4?5?$AN?6?$AA@", target = 0x0049578C },
+  { offset = 0x136, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x155, type = "DIR32", symbol = "__imp__CreateFileA@28", target = 0x00495070 },
+  { offset = 0x167, type = "DIR32", symbol = "??_C@_0BL@GMPHOEEC@error?5?3?5?$CFs?5is?5not?5found?4?$AN?6?$AA@", target = 0x00495770 },
+  { offset = 0x16C, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x180, type = "DIR32", symbol = "__imp__GetFileSize@8", target = 0x0049506C },
+  { offset = 0x192, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x1A7, type = "DIR32", symbol = "??_C@_0BP@MOEMMACF@error?5?3?5?$CFs?5allocation?5error?4?$AN?6?$AA@", target = 0x00495750 },
+  { offset = 0x1AC, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x1B9, type = "DIR32", symbol = "__imp__CloseHandle@4", target = 0x00495068 },
+  { offset = 0x1D3, type = "DIR32", symbol = "__imp__ReadFile@20", target = 0x00495064 },
+  { offset = 0x1EB, type = "DIR32", symbol = "__imp__CloseHandle@4", target = 0x00495068 },
+  { offset = 0x1F8, type = "DIR32", symbol = "?g_FileSystemCriticalSections@th095@@3EA", target = 0x004C4CD4 },
+  { offset = 0x1FF, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+  { offset = 0x205, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0x20E, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0x221, type = "DIR32", symbol = "?g_FileSystemCriticalSections@th095@@3EA", target = 0x004C4CD4 },
+  { offset = 0x228, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+  { offset = 0x22D, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0x234, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+]
+
+[units.file-system-check-exists]
+source = "src/FileSystem.cpp"
+object = "build/matching/FileSystem.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::FileSystem::CheckIfFileAlreadyExists"]
+symbol = "?CheckIfFileAlreadyExists@FileSystem@th095@@YIHPBD@Z"
+target_address = 0x0041ABA0
+size = 0xAF
+relocations = [
+  { offset = 0x12, type = "DIR32", symbol = "?g_FileSystemCriticalSections@th095@@3EA", target = 0x004C4CD4 },
+  { offset = 0x19, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x00495060 },
+  { offset = 0x1F, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0x28, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0x44, type = "DIR32", symbol = "__imp__CreateFileA@28", target = 0x00495070 },
+  { offset = 0x57, type = "DIR32", symbol = "__imp__CloseHandle@4", target = 0x00495068 },
+  { offset = 0x65, type = "DIR32", symbol = "?g_FileSystemCriticalSections@th095@@3EA", target = 0x004C4CD4 },
+  { offset = 0x6C, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+  { offset = 0x72, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0x7B, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0x8F, type = "DIR32", symbol = "?g_FileSystemCriticalSections@th095@@3EA", target = 0x004C4CD4 },
+  { offset = 0x96, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+  { offset = 0x9C, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+  { offset = 0xA5, type = "DIR32", symbol = "?g_FileSystemActiveCount@th095@@3EA", target = 0x004C4D7E },
+]

@@ -50,6 +50,7 @@ u32 SetButtonFromControllerInputs(u16 *outButtons,
 u8 *GetControllerState(i32 deviceIndex);
 u16 GetControllerInput(i32 controllerIndex, i32 joystickIndex, u16 buttons);
 u16 GetInput(i32 inputIndex);
+void ResetKeyboard();
 }
 
 } // namespace th095

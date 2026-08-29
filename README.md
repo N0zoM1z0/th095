@@ -49,8 +49,9 @@ and report are the canonical live totals. Exact units include the complete
 target-specific asynchronous `SoundPlayer` core, and the Main/D3D runtime
 family. The TH095-specific replay stream, disk/archive loader, compressed
 writer, result-screen dependencies, scene-selection helpers, photography
-camera helpers, and five-function WinMM/DirectInput controller chain are also
-exact. The complete dual-device and aggregate `Controller::GetInput` path is
+camera helpers, the five-function WinMM/DirectInput controller chain, keyboard
+reset, and the shared FileSystem codec/archive-or-disk loader are also exact.
+The complete dual-device and aggregate `Controller::GetInput` path is
 source-present.
 
 A target-local audit continues to admit photography/camera, replay/menu,
