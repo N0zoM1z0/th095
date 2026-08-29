@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 64 canonical units cover 67,149 authored bytes.
+- Reconstruction: 65 canonical units cover 68,208 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 55.42% (67,149 / 121,154)
+  relocations. Confirmed authored-byte coverage is now 56.30% (68,208 / 121,154)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 31 additional
   authored functions totaling 53,257 bytes: ten photography/camera functions
@@ -91,7 +91,7 @@ python3 scripts/report-reconstruction-status.py --summary
 
 The earlier narrow 95% checkpoint is superseded by the 31-function target-local
 origin audit. The honest expanded denominator is now 121,154 bytes and exact
-coverage is 55.42%. `WinMain` remains deferred because its remaining eight
+coverage is 56.30%. `WinMain` remains deferred because its remaining eight
 stack bytes have resisted the bounded VC7.1 oracle matrix.
 
 1. Continue byte alignment of the now source-present 7,271-byte
@@ -99,12 +99,13 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    complete gameplay flow are reconstructed, but the current `/Od` probe is
    5,559 bytes because target stack-temporary shape remains incomplete.
    `PhotoGameStateView::AngleToPoint @ 0x00430370`,
-   `PhotoCameraState::BeginCapture @ 0x00432730`, and
+   `PhotoCameraState::BeginCapture @ 0x00432730`,
+   `PhotoCameraState::UpdateViewfinder @ 0x004328C0`, and
    `PhotoDistance2D @ 0x00434220` are canonical exact dependencies.
 2. Recalculate against any newly confirmed authored origins after every
    promotion; never preserve the percentage by withholding denominator facts.
-3. Continue the private helper family with `UpdateViewfinder @ 0x004328C0`,
-   then `TakePhoto @ 0x00432D10`, `CancelCapture @ 0x00433000`, subject counting
+3. Continue the private helper family with `TakePhoto @ 0x00432D10`, then
+   `CancelCapture @ 0x00433000`, subject counting
    at `0x004339F0`, and charge update at `0x00433D10`. Follow
    with the 6,471-byte replay/menu dispatcher at `0x00426BF0` and the
    16,066-byte gameplay/resource hub at `0x00447D00`.

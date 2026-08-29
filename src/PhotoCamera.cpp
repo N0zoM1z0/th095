@@ -80,9 +80,27 @@ enum PhotoCameraFlags
     PHOTO_FLAG_TARGET_SOUND_PLAYED = 1 << 6,
 };
 
+enum PhotoViewfinderDirection
+{
+    PHOTO_DIRECTION_NONE = 0,
+    PHOTO_DIRECTION_UP = 1,
+    PHOTO_DIRECTION_DOWN = 2,
+    PHOTO_DIRECTION_LEFT = 3,
+    PHOTO_DIRECTION_RIGHT = 4,
+    PHOTO_DIRECTION_UP_LEFT = 5,
+    PHOTO_DIRECTION_UP_RIGHT = 6,
+    PHOTO_DIRECTION_DOWN_LEFT = 7,
+    PHOTO_DIRECTION_DOWN_RIGHT = 8,
+};
+
 static inline bool PhotoSoundsEnabled()
 {
     return ((g_PhotoGlobalState->flags >> 9) & 1) == 0;
+}
+
+static inline u16 PhotoInputMask(u16 input, u16 mask)
+{
+    return input & mask;
 }
 
 static inline void SetPhotoVmColor(AnmVm *vm, u8 red, u8 green, u8 blue)
@@ -138,6 +156,153 @@ void PhotoCameraState::BeginCapture()
     {
         PhotoSoundPlayer()->PlaySoundByIdx(0x2c, 0);
     }
+}
+
+void PhotoCameraState::UpdateViewfinder()
+{
+    struct ViewfinderLocals
+    {
+        Float3 cornerPosition;
+        Float3 screenPosition;
+        AnmVm *centerVm;
+        PhotoViewfinderDirection direction;
+        f32 offsetX;
+        f32 offsetY;
+    } locals;
+
+    locals.offsetX = 0.0f;
+    locals.offsetY = 0.0f;
+
+    if (PhotoInputMask(g_PhotoInput, 0x50) == 0x50)
+    {
+        locals.direction = PHOTO_DIRECTION_UP_LEFT;
+    }
+    else if (PhotoInputMask(g_PhotoInput, 0x60) == 0x60)
+    {
+        locals.direction = PHOTO_DIRECTION_DOWN_LEFT;
+    }
+    else if (PhotoInputMask(g_PhotoInput, 0x90) == 0x90)
+    {
+        locals.direction = PHOTO_DIRECTION_UP_RIGHT;
+    }
+    else if (PhotoInputMask(g_PhotoInput, 0xa0) == 0xa0)
+    {
+        locals.direction = PHOTO_DIRECTION_DOWN_RIGHT;
+    }
+    else if (PhotoInputMask(g_PhotoInput, 0x20) != 0)
+    {
+        locals.direction = PHOTO_DIRECTION_DOWN;
+    }
+    else if (PhotoInputMask(g_PhotoInput, 0x10) != 0)
+    {
+        locals.direction = PHOTO_DIRECTION_UP;
+    }
+    else if (PhotoInputMask(g_PhotoInput, 0x40) != 0)
+    {
+        locals.direction = PHOTO_DIRECTION_LEFT;
+    }
+    else if (PhotoInputMask(g_PhotoInput, 0x80) != 0)
+    {
+        locals.direction = PHOTO_DIRECTION_RIGHT;
+    }
+    else
+    {
+        locals.direction = PHOTO_DIRECTION_NONE;
+    }
+
+    switch (locals.direction)
+    {
+    case PHOTO_DIRECTION_RIGHT:
+        locals.offsetX = 3.3f;
+        break;
+    case PHOTO_DIRECTION_LEFT:
+        locals.offsetX = -3.3f;
+        break;
+    case PHOTO_DIRECTION_UP:
+        locals.offsetY = -3.3f;
+        break;
+    case PHOTO_DIRECTION_DOWN:
+        locals.offsetY = 3.3f;
+        break;
+    case PHOTO_DIRECTION_UP_LEFT:
+        locals.offsetX = -2.3334749f;
+        locals.offsetY = locals.offsetX;
+        break;
+    case PHOTO_DIRECTION_DOWN_LEFT:
+        locals.offsetY = 2.3334749f;
+        locals.offsetX = -locals.offsetY;
+        break;
+    case PHOTO_DIRECTION_UP_RIGHT:
+        locals.offsetX = 2.3334749f;
+        locals.offsetY = -locals.offsetX;
+        break;
+    case PHOTO_DIRECTION_DOWN_RIGHT:
+        locals.offsetX = 2.3334749f;
+        locals.offsetY = locals.offsetX;
+        break;
+    }
+
+    this->viewfinderPosition.x += locals.offsetX;
+    this->viewfinderPosition.y += locals.offsetY;
+
+    if (this->viewfinderPosition.x < -184.0)
+    {
+        this->viewfinderPosition.x = -184.0f;
+    }
+    else if (this->viewfinderPosition.x > 184.0)
+    {
+        this->viewfinderPosition.x = 184.0f;
+    }
+    if (this->viewfinderPosition.y < 32.0f)
+    {
+        this->viewfinderPosition.y = 32.0f;
+    }
+    else if (this->viewfinderPosition.y > 436.0f)
+    {
+        this->viewfinderPosition.y = 436.0f;
+    }
+
+    this->viewfinderSize.x = this->charge * 160.0f + 48.0f;
+    this->viewfinderSize.y =
+        (this->charge * 160.0f + 48.0f) * 0.75f;
+    this->viewfinderSize.z = 0.0f;
+
+    PhotoToScreen(&locals.screenPosition, &this->viewfinderPosition);
+    locals.cornerPosition.z = 0.0f;
+    locals.cornerPosition.x =
+        locals.screenPosition.x - this->viewfinderSize.x / 2.0f;
+    locals.cornerPosition.y =
+        locals.screenPosition.y + this->viewfinderSize.y / 2.0f;
+    PhotoAnmManager()->SetVmPosition(
+        this->vmIds[2].value, &locals.cornerPosition);
+    locals.cornerPosition.x =
+        locals.screenPosition.x - this->viewfinderSize.x / 2.0f;
+    locals.cornerPosition.y =
+        locals.screenPosition.y - this->viewfinderSize.y / 2.0f;
+    PhotoAnmManager()->SetVmPosition(
+        this->vmIds[3].value, &locals.cornerPosition);
+    locals.cornerPosition.x =
+        locals.screenPosition.x + this->viewfinderSize.x / 2.0f;
+    locals.cornerPosition.y =
+        locals.screenPosition.y - this->viewfinderSize.y / 2.0f;
+    PhotoAnmManager()->SetVmPosition(
+        this->vmIds[4].value, &locals.cornerPosition);
+    locals.cornerPosition.x =
+        locals.screenPosition.x + this->viewfinderSize.x / 2.0f;
+    locals.cornerPosition.y =
+        locals.screenPosition.y + this->viewfinderSize.y / 2.0f;
+    PhotoAnmManager()->SetVmPosition(
+        this->vmIds[5].value, &locals.cornerPosition);
+
+    locals.centerVm = PhotoAnmManager()->FindVm(this->vmIds[6].value);
+    if (locals.centerVm != NULL)
+    {
+        locals.centerVm->scale.y = this->charge * 2.0f;
+        locals.centerVm->scale.x = locals.centerVm->scale.y;
+    }
+    reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition(
+        this->vmIds[6].value,
+        PhotoToScreen(&locals.screenPosition, &this->viewfinderPosition));
 }
 
 f32 __fastcall PhotoDistance2D(const Float3 *left, const Float3 *right)

@@ -94,6 +94,7 @@ next action belongs in `RE_HANDOFF.md`.
 | PHOTO-002 | exact | `PhotoGameStateView::AngleToPoint @ 0x00430370` measures from the player position, returns π/2 for a coincident point, and otherwise uses `atan2f`. `PhotoDistance2D @ 0x00434220` is the corresponding two-dimensional Euclidean distance helper. | Canonical 108-byte and 77-byte VC7.1 units with all five relocations |
 | PHOTO-003 | exact | `PhotoCameraState::BeginCapture @ 0x00432730` transitions tracking to charging, resets the mode timer, creates scripts `0x18..0x1C`, removes stale charge VMs, and queues SFX `0x2C` outside replay suppression. | Canonical 393-byte unit with all 17 relocations |
 | PHOTO-004 | compiler-observed | The complete five-state `UpdatePhotoCamera @ 0x00430AB0` gameplay flow is source-present. It covers target tracking, viewfinder charging, capture, 60-frame recovery, camera ANM/SFX, photo-target indication, and charge-dependent slow motion. Its current VC7.1 body is 5,559 bytes versus the 7,271-byte target, so it receives no exact credit. | Attested target state switch plus non-canonical pinned-VC7.1 source probe |
+| PHOTO-005 | exact | `PhotoCameraState::UpdateViewfinder @ 0x004328C0` decodes the eight movement directions through a 16-bit input-mask helper, clamps the viewfinder to the playable camera bounds, derives its charge-scaled 4:3 frame, positions the four corner VMs, and scales/positions the center VM. | Canonical 1,059-byte body plus 32-byte switch table with all 48 relocations replayed |
 
 ## Reconstructed ECL VM
 

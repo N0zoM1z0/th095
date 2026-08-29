@@ -65,3 +65,4 @@ th095::PhotoDistance2D,0x00434220,function
 th095::PhotoGameStateView::AngleToPoint,0x00430370,function
 th095::UpdatePhotoCamera,0x00430AB0,function
 th095::PhotoCameraState::BeginCapture,0x00432730,function
+th095::PhotoCameraState::UpdateViewfinder,0x004328C0,function
