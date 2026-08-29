@@ -63,6 +63,7 @@ enum SoundIdx
     SOUND_2B,
     SOUND_2C,
     SOUND_2D,
+    SOUND_2E,
 };
 
 struct SoundBufferIdxVolume
@@ -72,6 +73,8 @@ struct SoundBufferIdxVolume
     i16 unconsumedMetadata;
 };
 C_ASSERT(sizeof(SoundBufferIdxVolume) == 0x8);
+DIFFABLE_EXTERN_ARRAY(SoundBufferIdxVolume, 47, g_SoundBufferIdxVol)
+DIFFABLE_EXTERN_ARRAY(char *, 37, g_SFXList)
 
 struct SoundPlayerCommand
 {
@@ -107,11 +110,15 @@ class SoundPlayer
   public:
     SoundPlayer();
 
+    ZunResult Initialize(HWND window);
+    ZunResult RequestThreadStop();
+    ZunResult JoinThread();
     ZunResult InitializeDSound(HWND window);
     ZunResult InitSoundBuffers();
     ZunResult Release();
 
     ZunResult LoadSound(i32 idx, char *path);
+    ZunResult LoadSoundData(i32 idx, char *path);
     static WAVEFORMATEX *GetWavFormatData(u8 *soundData, char *formatString, i32 *formatSize,
                                           u32 fileSizeExcludingFormat);
 
@@ -119,13 +126,20 @@ class SoundPlayer
     i32 ProcessQueues();
     void PlaySoundByIdx(SoundIdx idx, i32 pan);
     void PlaySoundPositionedByIdx(SoundIdx idx, f32 pan);
+    void StopSoundByIdx(SoundIdx idx);
     ZunResult StartBGM(char *path);
     ZunResult ReopenBGM(char *path);
     ZunResult PreloadBGM(i32 idx, char *path);
     ZunResult LoadBGM(i32 idx);
     void FreePreloadedBGM(i32 idx);
     void StopBGM();
-    void FadeOut(f32 seconds);
+    void FadeOut(f32 seconds)
+    {
+        if (this->bgm != NULL)
+        {
+            this->bgm->FadeOut(seconds);
+        }
+    }
     void FadeIn(f32 seconds)
     {
         if (this->bgm != NULL)
@@ -195,11 +209,18 @@ class SoundPlayer
     HANDLE bgmUpdateEvent;
     i32 unconsumedDword5210;
     u32 bgmFileBaseOffset;
+    HANDLE workerThreadHandle;
+    HANDLE secondaryWorkerThreadHandle;
+    DWORD workerThreadId;
+    i32 workerStopRequest;
+    HWND workerWindow;
+    i32 unconsumedDword522c;
+    void *ownedMusicMetadata[37];
     i32 bgmVolume;
     i32 sfxVolume;
     i32 unconsumedBgmAttenuation;
 };
-C_ASSERT(sizeof(SoundPlayer) == 0x5224);
+C_ASSERT(sizeof(SoundPlayer) == 0x52d0);
 C_ASSERT(offsetof(SoundPlayer, unconsumedDword04) == 0x4);
 C_ASSERT(offsetof(SoundPlayer, unconsumedMetadataBySound) == 0x408);
 C_ASSERT(offsetof(SoundPlayer, unconsumedDword61C) == 0x61c);
@@ -213,7 +234,18 @@ C_ASSERT(offsetof(SoundPlayer, bgmPreloadAllocSizes) == 0x1f40);
 C_ASSERT(offsetof(SoundPlayer, loadedBgmSlot) == 0x1f80);
 C_ASSERT(offsetof(SoundPlayer, unconsumedDword5210) == 0x5210);
 C_ASSERT(offsetof(SoundPlayer, bgmFileBaseOffset) == 0x5214);
-C_ASSERT(offsetof(SoundPlayer, unconsumedBgmAttenuation) == 0x5220);
+C_ASSERT(offsetof(SoundPlayer, workerThreadHandle) == 0x5218);
+C_ASSERT(offsetof(SoundPlayer, secondaryWorkerThreadHandle) == 0x521c);
+C_ASSERT(offsetof(SoundPlayer, workerThreadId) == 0x5220);
+C_ASSERT(offsetof(SoundPlayer, workerStopRequest) == 0x5224);
+C_ASSERT(offsetof(SoundPlayer, workerWindow) == 0x5228);
+C_ASSERT(offsetof(SoundPlayer, ownedMusicMetadata) == 0x5230);
+C_ASSERT(offsetof(SoundPlayer, bgmVolume) == 0x52c4);
+C_ASSERT(offsetof(SoundPlayer, unconsumedBgmAttenuation) == 0x52cc);
 
 DIFFABLE_EXTERN(SoundPlayer, g_SoundPlayer)
+
+void __fastcall SoundPlayerWorkerThread(SoundPlayer *soundPlayer);
+HANDLE StartSoundLoadThread();
+void __fastcall SoundDataLoaderThread(SoundPlayer *soundPlayer);
 }; // namespace th095

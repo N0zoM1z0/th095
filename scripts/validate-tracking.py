@@ -95,18 +95,21 @@ def validate_functions(pe: dict[str, object]) -> dict[int, dict[str, str]]:
     return result
 
 
-def validate_origins(functions: dict[int, dict[str, str]]) -> None:
+def validate_origins(
+    functions: dict[int, dict[str, str]]
+) -> dict[int, dict[str, str]]:
     rows = require_header(CONFIG / "function-origins.csv", ORIGIN_FIELDS)
-    seen: set[int] = set()
+    result: dict[int, dict[str, str]] = {}
     for line, row in enumerate(rows, start=2):
         value = address(row["address"], f"function-origins.csv:{line}")
-        if value in seen:
+        if value in result:
             raise ValueError(f"function-origins.csv:{line}: duplicate address")
         if row["disposition"] not in {"review", "authored", "exclude"}:
             raise ValueError(f"function-origins.csv:{line}: invalid disposition")
-        seen.add(value)
-    if seen != set(functions):
+        result[value] = row
+    if set(result) != set(functions):
         raise ValueError("function-origins.csv: addresses differ from functions.csv")
+    return result
 
 
 def validate_named(path: Path, fields: list[str]) -> list[dict[str, str]]:
@@ -217,7 +220,7 @@ def main() -> int:
     try:
         target, pe = validate_target(args.require_target and not args.skip_target_bytes)
         functions = validate_functions(pe)
-        validate_origins(functions)
+        origins = validate_origins(functions)
         if require_header(CONFIG / "claims.csv", CLAIM_FIELDS):
             raise ValueError("claims.csv must remain header-only")
         validate_named(
@@ -257,6 +260,14 @@ def main() -> int:
                 raise ValueError(f"matches.csv:{line}: duplicate or unmapped address")
             if row["status"] != "matching" or float(row["match_percent"]) != 100.0:
                 raise ValueError(f"matches.csv:{line}: only canonical 100% matches are accepted")
+            if origins[value]["disposition"] != "authored":
+                raise ValueError(
+                    f"matches.csv:{line}: exact authored coverage requires an authored origin"
+                )
+            if functions[value]["owner"] != "authored":
+                raise ValueError(
+                    f"matches.csv:{line}: exact authored coverage requires an authored owner"
+                )
             if int(row["size"], 0) != int(functions[value]["size"], 0):
                 raise ValueError(f"matches.csv:{line}: size differs from inventory")
             if row["unit"] not in units or not row["evidence"]:

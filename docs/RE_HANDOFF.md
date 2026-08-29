@@ -10,15 +10,19 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: nine canonical units cover 46,523 authored bytes.
+- Reconstruction: 46 canonical units cover 61,121 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 78.45% (46,523 / 59,302)
+  relocations. Confirmed authored-byte coverage is now 93.42% (61,121 / 65,428)
   while the global origin denominator remains provisional.
+- The asynchronous SoundPlayer core is exact from worker startup through SFX
+  production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
+  object construction/release. Twenty-six sound units contribute 8,133 bytes.
+  TH095 uses 37 producer-owned file slots and 47 duplicate-buffer mappings.
 - ANM build profile: `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`
   reproduces the dispatcher and six exact ANM helpers under pinned VC7.1
   build 3077. The 0x400-byte dispatcher frame and `[ebp-0x17C]` VM home are
@@ -27,6 +31,16 @@
   frame and stores `this` at `[ebp-0x580]`; integer-bit raw float transfers,
   native bitfields, and whole 4-byte animation-handle assignments are required
   source-shape facts.
+- SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
+  is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
+  ownership begins at `+0x5230`.
+- Main uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. Eleven
+  canonical Main/D3D units contribute 5,175 exact authored bytes and enforce
+  365 relocations. This includes the 1,375-byte D3D device initializer and the
+  1,045-byte render-state reset path.
+- `WinMain` remains source-present but not exact: its 1,326-byte probe matches
+  all 134 relocations and 782 of 790 comparable bytes. The eight remaining
+  bytes are stack allocation/displacement differences and receive no credit.
 
 Read live totals with:
 
@@ -36,20 +50,22 @@ python3 scripts/report-reconstruction-status.py --summary
 
 ## Next bounded lane
 
-The next high-connectivity lane is the target-specific 16,066-byte
-resource/gameplay setup hub at `0x00447D00` (one caller, 27 internal callees).
-Its owning class remains intentionally unnamed.
+The immediate exact lane is `Supervisor::LoadConfig` at `0x00424D30`, a
+1,047-byte Main-family function. At the current denominator, 1,036 additional
+exact bytes cross the 95% threshold, so this single complete unit is
+sufficient if target origin review does not expand the denominator.
 
-1. Re-attest the target and reconcile the full candidate boundary, shared
-   tails, compiler tables, direct callers, and all 27 internal callees.
-2. Recover the owning global/object layout from target-local construction,
-   teardown, and call-site evidence before assigning a source class name.
-3. Use exact `RunEcl` relocations and TH095 photography opcodes to route
-   dependencies, while keeping TH08 evidence corroborative only.
-4. Prefer bounded helpers only when they constrain this hub's ABI, layout, or
-   object ownership; do not replace the lane with unrelated leaf matching.
-5. Keep the hub source-present until a complete VC7.1 extent and relocation
-   manifest replay with zero differences.
+1. Preserve the exact 200-byte `GameConfiguration` copy and version
+   `0x95001` validation observed in the target.
+2. Recover the controller-mapping assignment and the default-reset helper at
+   `0x00418720` from target-local call and layout evidence before naming them.
+3. Reproduce the missing/invalid configuration fallback, including the
+   `./thbgm.dat` probe and all option-bit logging branches.
+4. Compile with the proven Main `/Od /Ob1` profile, then require a complete
+   1,047-byte match and full relocation replay before promotion.
+5. After the 95% checkpoint, return to the target-specific 16,066-byte
+   resource/gameplay setup hub at `0x00447D00` and its 27 internal callees;
+   keep its owning type unnamed until target evidence proves it.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression
@@ -66,4 +82,14 @@ Replay the completed ECL lane with:
 ```bash
 python3 scripts/build.py --unit ecl-manager-run-ecl
 python3 scripts/compare-coff-function.py --unit ecl-manager-run-ecl --json
+```
+
+Replay representative completed sound/ANM cleanup units with:
+
+```bash
+python3 scripts/build.py --unit sound-player-initialize-dsound
+python3 scripts/compare-coff-function.py --unit sound-player-initialize-dsound --json
+python3 scripts/compare-coff-function.py --unit sound-player-load-sound --json
+python3 scripts/build.py --unit anm-set-and-execute-script
+python3 scripts/compare-coff-function.py --unit anm-set-and-execute-script --json
 ```

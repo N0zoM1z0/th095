@@ -57,16 +57,17 @@ interactive COFF comparison. Neither tool makes a claim safe by itself. The
 configured target hash, reviewed extent, relocation policy, cold rebuild, and
 ledger promotion together form the acceptance gate.
 
-`main-render` is the first exercised unit. It uses the TH08-corroborated VC7.1
-main profile `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od`; the complete
-TH095 function bytes confirm its emitted source shape. Switches that leave no
-trace in this function are reproducibility settings, not claims about every
-original compiler option.
+The Main lane uses the TH08-corroborated VC7.1 profile
+`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. Eleven independent
+TH095 window, timing, and D3D functions now confirm the emitted source shape,
+including inline helpers made observable by `/Ob1`. Switches that leave no
+trace in a bounded unit remain reproducibility settings rather than claims
+about every original compiler option.
 
 Replay it with:
 
 ```bash
-python3 scripts/build.py --object-name Main.obj
+python3 scripts/build.py --unit main-render
 python3 scripts/compare-coff-function.py --unit main-render --json
 ```
 

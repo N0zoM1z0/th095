@@ -167,10 +167,17 @@ ZunResult AnmLoaded::SetSprite(AnmVm *vm, i32 spriteIdx)
     return ZUN_SUCCESS;
 }
 
+// These scoped backing identifiers preserve the target's VC7.1 local hash
+// order while keeping the recovered source-level roles explicit.
+#define managerScratch1 restartCommandProcessingLocal05
+#define managerScratch2 averagedPanLocal12
+#define timerScratch iLocal11
+#define anmManager commandCursorLocal02
 void AnmLoaded::SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript)
 {
     AnmManager *managerScratch1;
     AnmManager *managerScratch2;
+    ZunTimer *timerScratch;
     AnmManager *anmManager;
 
     if (beginningOfScript == NULL || this->numberEntriesToBeLoaded != 0)
@@ -185,13 +192,18 @@ void AnmLoaded::SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript)
         vm->flip = 0;
         vm->beginningOfScript = beginningOfScript;
         vm->currentInstruction = vm->beginningOfScript;
-        vm->currentTimeInScript = 0;
+        timerScratch = &vm->currentTimeInScript;
+        timerScratch->SetCurrent(0);
         vm->visible = false;
         anmManager = g_AnmManager;
         anmManager->ExecuteScript(vm);
         g_AnmManager->scriptsStartedThisFrame++;
     }
 }
+#undef managerScratch1
+#undef managerScratch2
+#undef timerScratch
+#undef anmManager
 
 i32 AnmManager::ExecuteScript(AnmVm *vm)
 {

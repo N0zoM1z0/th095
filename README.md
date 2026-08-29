@@ -43,19 +43,22 @@ included.
 ## Current status
 
 TH095 is in active reconstruction. An attested Ghidra 12.1.3 headless import
-supplies 1,830 provisional function candidates. Nine canonical units now
-reproduce 46,523 authored bytes exactly, including the complete 17,018-byte
-`AnmManager::ExecuteScript` and 27,091-byte `EclManager::RunEcl` VM hubs. That
-is 78.45% of the currently confirmed authored-byte denominator; the global
-denominator remains provisional while origin review continues. Mapping,
-source presence, semantic validation, and exact matches are deliberately
-tracked as independent states.
+supplies 1,830 provisional function candidates. Forty-six canonical units now
+reproduce 61,121 authored bytes exactly, including the complete 17,018-byte
+`AnmManager::ExecuteScript`, 27,091-byte `EclManager::RunEcl`, the
+target-specific asynchronous `SoundPlayer` core, and eleven exact Main/D3D
+runtime functions. That is 93.42% of the currently confirmed 65,428-byte
+authored set; the global denominator remains provisional while origin review
+continues. Mapping, source presence, semantic validation, and exact matches
+are deliberately tracked as independent states.
 
 The pinned compiler is Microsoft Visual C++ .NET 2003
 `13.10.3077`, matching the target's PE/Rich-header evidence. The
-`/Od /Oi /Gr` main translation-unit profile is proven for the accepted Render
-unit. The exact ANM and ECL VM units additionally prove `/Ob1` for their
-bounded translation units; profiles elsewhere remain unclassified.
+`/Od /Ob1 /Oi /Gr` main translation-unit profile is proven across eleven
+accepted Main/D3D units. The exact ANM and ECL VM units independently prove
+the same optimization/inlining shape for their bounded translation units. The
+reconstructed SoundPlayer lane also uses `/Od /Ob1`; profiles elsewhere
+remain unclassified.
 
 Start a reconstruction session with:
 

@@ -236,7 +236,10 @@ struct Supervisor
 #else
     ZunBool IsMusicPreloadEnabled()
     {
-        return this->cfg.opts.preloadMusic;
+        // TH095 stores the preload toggle in bit 4 of its serialized option
+        // word. The remaining TH08-inherited option names are not yet safe to
+        // reorder without target-local proof for every consumer.
+        return (*(u32 *)&this->cfg.opts >> 4) & 1;
     }
 #endif
 
