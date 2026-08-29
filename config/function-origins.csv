@@ -571,10 +571,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00443980,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00443AC0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00443B10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00443C70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00443CE0,authored,AnmManager,authored,high,vc71-th08-corroborated-anm-text-2026-08-29
-0x00443DD0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00443F80,authored,AnmText,authored,high,scene-select-text-renderer-2026-08-29
+0x00443C70,authored,AnmText,authored,exact,vc71-exact-anm-text-inner-2026-08-29
+0x00443CE0,authored,AnmText,authored,high,vc71-th08-corroborated-anm-text-2026-08-29
+0x00443DD0,authored,AnmText,authored,high,target-vc71-anm-text-family-2026-08-29
+0x00443F80,authored,AnmText,authored,high,target-vc71-anm-text-family-2026-08-29
 0x004440F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00444390,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00444460,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

@@ -14,7 +14,8 @@ struct AnmTextSpriteView
     Float2 endPixelInclusive;
     f32 height;
     f32 width;
-    u8 unknown020[0x18];
+    u8 unknown020[0x14];
+    f32 widthPx;
     Float2 scaleFactor;
 };
 
@@ -37,10 +38,24 @@ struct AnmTextManagerView
                        const char *text, f32 scaleX, f32 scaleY);
     void DrawTextLeft(AnmTextVmView *vm, COLORREF textColor,
                       COLORREF shadowColor, const char *format, ...);
+    void DrawTextRight(AnmTextVmView *vm, COLORREF textColor,
+                       COLORREF shadowColor, const char *format, ...);
+    void DrawTextCentered(AnmTextVmView *vm, COLORREF textColor,
+                          COLORREF shadowColor, const char *format, ...);
+};
+
+struct AnmTextRendererView
+{
+    static void RenderTextToTextureBold(
+        i32 x, i32 y, i32 width, i32 height, i32 glyphWidth,
+        i32 glyphHeight, COLORREF textColor, COLORREF shadowColor,
+        const char *text, IDirect3DTexture8 *texture);
 };
 
 typedef char AnmTextSpriteScaleAt38[
     (offsetof(AnmTextSpriteView, scaleFactor) == 0x38) ? 1 : -1];
+typedef char AnmTextSpriteWidthPxAt34[
+    (offsetof(AnmTextSpriteView, widthPx) == 0x34) ? 1 : -1];
 typedef char AnmTextVmFlagsAt228[
     (offsetof(AnmTextVmView, flagsWord) == 0x228) ? 1 : -1];
 typedef char AnmTextVmSpriteAt244[

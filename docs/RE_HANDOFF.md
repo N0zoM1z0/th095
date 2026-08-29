@@ -103,11 +103,14 @@
   decoder. `UpdateSelectedSceneDetails @ 0x0044C670` and its three digit-VM
   helpers are exact for another 2,453 bytes and all 122 relocations, recovering
   the TH095 scene record's date/time and two six-digit score displays. Target
-  `AnmManager::DrawTextLeft @ 0x00443CE0`, reconstructed through the bounded
-  `AnmTextManagerView::DrawTextLeft`, is source-present from TH095 target
-  evidence plus TH08 corroboration; its natural VC7.1 body is 232 versus 238
-  bytes because the
-  original glyph-width spill sits below the local formatting buffer.
+  The complete ANM text alignment family at `0x00443C70..0x004440ED` is now
+  source-present. `DrawTextInner @ 0x00443C70` is exact for all 104 bytes and
+  proves TH095 removed TH08's small-font fallback. `DrawTextLeft`,
+  `DrawTextRight`, and `DrawTextCentered` implement the target's left/right/
+  centered formatting paths; their residuals are compiler-local frame homes.
+  The centered function at `0x00443F80` corrects the stale `SceneWriteText`
+  identification. Exact scene callsites still use a source-only ABI alias for
+  the left-aligned target at `0x00443CE0`.
 - `ReplayBrowserView::Update @ 0x0044DCA0` is now source-present for the
   complete TH095-specific 4-by-20 replay browser. The target-sized 2,054-byte
   probe resolves all 77 relocations and matches 1,683 of 1,746 comparable

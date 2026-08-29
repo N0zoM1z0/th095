@@ -7490,3 +7490,17 @@ relocations = [
   { offset = 0xF2, type = "REL32", symbol = "?ApplyTextureAlphaBleed@SceneAnmManagerView@th095@@QAEXPAUSceneTextureEntryView@2@@Z", target = 0x00442510 },
   { offset = 0xFF, type = "DIR32", symbol = "?g_TextureFormatBytesPerPixel@th095@@3PAIA", target = 0x00496F28 },
 ]
+
+[units.anm-text-draw-inner]
+source = "src/AnmText.cpp"
+object = "build/matching/AnmText.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmTextManagerView::DrawTextInner"]
+symbol = "?DrawTextInner@AnmTextManagerView@th095@@QAEXPAUIDirect3DTexture8@@HHHHHHKKPBDMM@Z"
+target_address = 0x00443C70
+size = 0x68
+relocations = [
+  { offset = 0x3E, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x4A, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x5E, type = "REL32", symbol = "?RenderTextToTextureBold@AnmTextRendererView@th095@@SIXHHHHHHKKPBDPAUIDirect3DTexture8@@@Z", target = 0x0041C8F0 },
+]

@@ -121,6 +121,9 @@ th095::SceneValueQueue::Push
 th095::SceneSelectControllerView::BuildScenePreviewText
 th095::SceneSelectControllerView::ResolveSceneText
 th095::AnmTextManagerView::DrawTextLeft
+th095::AnmTextManagerView::DrawTextInner
+th095::AnmTextManagerView::DrawTextRight
+th095::AnmTextManagerView::DrawTextCentered
 th095::SceneSelectControllerView::UpdateSelectedSceneDetails
 th095::SceneSelectControllerView::SetDetailDigitSprite
 th095::SceneSelectControllerView::ShowDetailDigit

@@ -80,7 +80,10 @@ address,name,module,confidence,evidence
 0x00442AB0,th095::AccumulateArgb1555Neighbor,AnmTexture,exact,Canonical ARGB1555 neighbor color accumulator
 0x0041C570,th095::AccumulateArgb4444Neighbor,AnmTexture,exact,Canonical ARGB4444 neighbor color accumulator
 0x00442B40,th095::GetAnmFormat,AnmTexture,exact,Canonical forced-16-bit texture format downgrade
-0x00443F80,th095::SceneWriteText,AnmText,high,Shared variadic ANM text renderer used for scene labels
+0x00443C70,th095::AnmTextManagerView::DrawTextInner,AnmText,exact,Canonical TH095 large-glyph text dispatch with three relocations
+0x00443CE0,th095::AnmTextManagerView::DrawTextLeft,AnmText,high,Complete left-aligned variadic ANM text renderer
+0x00443DD0,th095::AnmTextManagerView::DrawTextRight,AnmText,high,Complete right-aligned variadic ANM text renderer
+0x00443F80,th095::AnmTextManagerView::DrawTextCentered,AnmText,high,Complete centered variadic ANM text renderer
 0x004453B0,th095::SceneTextureEntryView::Clear,AnmTexture,exact,Canonical relocation-free D3D texture clear comparison
 0x0044D0A0,th095::LoadSceneSelectionAssets,SceneSelect,high,Asynchronous mission thumbnail face and preview-text producer
 0x00435E90,th095::SceneSaveDataView::LoadBestShotForScene,BestShot,high,Best-shot record reset disk decode decompression and checksum validator

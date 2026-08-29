@@ -121,7 +121,10 @@ th095::SceneSelectControllerView::RefreshSceneSelection,0x0044BBD0,function
 th095::SceneValueQueue::Push,0x00450DD0,function
 th095::SceneSelectControllerView::BuildScenePreviewText,0x0044BEA0,function
 th095::SceneSelectControllerView::ResolveSceneText,0x0044D020,function
+th095::AnmTextManagerView::DrawTextInner,0x00443C70,function
 th095::AnmTextManagerView::DrawTextLeft,0x00443CE0,function
+th095::AnmTextManagerView::DrawTextRight,0x00443DD0,function
+th095::AnmTextManagerView::DrawTextCentered,0x00443F80,function
 th095::SceneSelectControllerView::UpdateSelectedSceneDetails,0x0044C670,function
 th095::SceneSelectControllerView::SetDetailDigitSprite,0x0044CF60,function
 th095::SceneSelectControllerView::ShowDetailDigit,0x0044CFA0,function
@@ -169,7 +172,6 @@ th095::AccumulateArgb8888Neighbor,0x00442A50,function
 th095::AccumulateArgb1555Neighbor,0x00442AB0,function
 th095::AccumulateArgb4444Neighbor,0x0041C570,function
 th095::GetAnmFormat,0x00442B40,function
-th095::SceneWriteText,0x00443F80,function
 th095::SceneTextureEntryView::Clear,0x004453B0,function
 th095::LoadSceneSelectionAssets,0x0044D0A0,function
 th095::SceneSaveDataView::LoadBestShotForScene,0x00435E90,function
