@@ -111,10 +111,13 @@ struct SceneSupervisorView
     void StopReplayScan();
 };
 
+struct SceneAnmVmView;
+
 struct SceneAnmVmId
 {
     i32 value;
 
+    SceneAnmVmView *GetVm();
     void SetInterrupt(i32 interrupt);
 };
 
@@ -208,6 +211,8 @@ struct SceneSelectControllerView
     void BuildScenePreviewText();
     void UpdateSelectedSceneDetails();
     ChainCallbackResult Update();
+    ChainCallbackResult UpdateMainMenu();
+    ChainCallbackResult UpdateSceneSelect();
     ChainCallbackResult Draw();
     static void __fastcall OnUpdate(SceneSelectControllerView *controller);
     static void __fastcall OnDraw(SceneSelectControllerView *controller);

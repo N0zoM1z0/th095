@@ -67,4 +67,6 @@ address,name,module,confidence,evidence
 0x00445E40,th095::SceneSelectControllerView::OnUpdate,FrontEndController,exact,Canonical ownership wrapper targeting the shared update state machine
 0x00445E60,th095::SceneSelectControllerView::OnDraw,FrontEndController,exact,Canonical ownership wrapper targeting the shared draw path
 0x00445E80,th095::SceneSelectControllerView::Update,FrontEndController,high,Shared front-end dispatcher identified by exact wrapper and complete target call graph
+0x00446A50,th095::SceneSelectControllerView::UpdateMainMenu,FrontEndController,high,Shared-controller state 1 target with title-menu transitions and six-row VM setup
+0x00447D00,th095::SceneSelectControllerView::UpdateSceneSelect,SceneSelect,high,Shared-controller state 2 target and root of the TH095 scene-selection cluster
 0x00452630,th095::SceneSelectControllerView::Draw,FrontEndController,high,Complete scene-result and replay-browser text renderer with exact 19-call topology

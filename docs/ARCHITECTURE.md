@@ -144,8 +144,10 @@ adjacent Music Room at `0x00450FC0` is source-present with both parser helpers
 exact. The adjacent `0x00452630` function is now source-present as the shared
 scene-result/replay-browser text renderer; exact wrappers at
 `0x00445E40/0x00445E60` prove its ownership alongside the
-2,969-byte shared update dispatcher at `0x00445E80`. That update dispatcher
-and the 16,066-byte scene-selection hub remain the next large roots.
+2,969-byte shared update dispatcher at `0x00445E80`. The dispatcher is now
+source-present for its complete ten-state and 50-call topology. Its newly
+identified 3,299-byte main-menu child at `0x00446A50` and the 16,066-byte
+scene-selection hub remain the next large roots.
 
 ## Shared engine versus TH095 gameplay
 

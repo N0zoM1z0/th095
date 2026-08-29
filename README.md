@@ -57,6 +57,8 @@ music-comment parsing helpers exact. The complete nine-page Help viewer is
 also source-present, and its asynchronous archive-or-disk loading callback is
 exact. The shared TH095 scene-score/replay-browser text renderer is
 source-present as well, with exact update/draw chain ownership wrappers.
+The owning ten-state front-end coordinator is source-present with its complete
+main/scene/replay/options/music/Help and game-transition routing.
 
 A target-local audit continues to admit photography/camera, replay/menu,
 scene-selection, options, and gameplay/resource functions as their authored
