@@ -129,3 +129,9 @@ th095::ReplayBrowserExitSignal::Request
 th095::ReplayBrowserView::Update
 th095::LoadReplayBrowserEntries
 th095::ReplayBrowserView::LoadReplaySlot
+th095::ReplayScanWorker::~ReplayScanWorker
+th095::ReplayScanWorker::Stop
+th095::ReplayScanWorker::Start
+th095::SceneSupervisorView::StartReplayScan
+th095::SceneSupervisorView::StopReplayScan
+th095::OptionsMenuView::Update

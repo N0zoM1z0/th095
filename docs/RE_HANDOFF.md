@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 117 canonical units cover 83,833 authored bytes.
+- Reconstruction: 122 canonical units cover 84,229 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 62.42% (83,833 / 134,302)
+  relocations. Confirmed authored-byte coverage is now 58.17% (84,229 / 144,801)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,7 +25,7 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 138 authored candidates and leaves 1,692 origin/boundary reviews
+  confirms 144 authored candidates and leaves 1,686 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -120,6 +120,19 @@
   exact for all 21 bytes. `LoadReplayBrowserEntries @ 0x00450C30` is complete
   source-present at 395 versus 403 target bytes; defer its aggregate-local
   stack ordering unless a natural source-shape improvement appears.
+  The dedicated replay worker and its two Supervisor wrappers are separately
+  exact for another 396 bytes: the `0x18`-byte worker at Supervisor `+0x648`
+  owns cooperative stop/join and `_beginthreadex` startup, while critical
+  section 6 serializes replacement.
+- `OptionsMenuView::Update @ 0x0044E4B0` is now source-present for the complete
+  TH095 seven-row option/key-configuration page. It reconstructs three
+  collision-free joystick bindings, window/fullscreen selection, live BGM/SFX
+  volume updates, all entry/exit ANM transitions, and the display-mode-change
+  return. The pinned VC7.1 body is 10,157 versus the 10,103-byte target, but
+  the static call topology is exact (54 VM lookups, 30 sprite writes, 68 scene
+  interrupts, six VM creations, and seven sound calls). The remaining 54-byte
+  excess is compiler-local digit-sprite allocation and receives no exact
+  credit.
 - `UpdatePhotoResultScreen @ 0x004294C0` is source-present for the complete
   TH095-specific photo browser and `BSTS` best-shot save path. Its VC7.1 probe
   has the target's full 1,323-byte instruction topology and resolves all 65
@@ -175,8 +188,9 @@ python3 scripts/report-reconstruction-status.py --summary
 ## Next bounded lane
 
 The earlier narrow 95% checkpoint is superseded by the target-local origin
-audit. Subsequent camera, ANM, replay, result-screen, and scene-selection work
-expanded the honest denominator to 134,302 bytes; exact coverage is 62.42%.
+audit. Subsequent camera, ANM, replay, result-screen, scene-selection, and
+options work expanded the honest denominator to 144,801 bytes; exact coverage
+is 58.17%.
 `WinMain` remains
 deferred because its remaining eight
 stack bytes have resisted the bounded VC7.1 oracle matrix.
@@ -251,10 +265,14 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    at `0x0044D020`, plus the adjacent scene-detail updater at `0x0044C670` and
    its three VM helpers, are now exact. The formerly unnamed `0x0044DCA0`
    function is now the complete source-present replay-browser updater; its
-   slot loader and exit signal are exact. Continue with the adjacent
-   10,103-byte state machine at `0x0044E4B0` (11 internal callees and 122
-   direct ANM-manager references), using the proven cursor/handle layout to
-   reduce this next high-connectivity TH095 UI hub.
+   slot loader, exit signal, worker, and Supervisor wrappers are exact. The
+   adjacent 10,103-byte state machine at `0x0044E4B0` is now identified and
+   reconstructed as the full option/key-configuration page. Its exact static
+   call topology is recovered, so defer the remaining compiler-local 54-byte
+   excess. Next reconstruct `Controller::GetControllerState @ 0x00419910`,
+   which supplies the option page's 32-button DirectInput/WinMM snapshot, then
+   continue classifying the adjacent front-end pages at `0x00450FC0` and
+   `0x00451C80`.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

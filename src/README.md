@@ -24,6 +24,14 @@ Current translation units:
   central ECL VM dispatcher. `EclManager::RunEcl` has a canonical exact unit
   for its 27,091-byte authored body and the 656-byte compiler-owned main and
   easing switch tables that follow it.
+- `ReplayBrowser.cpp` owns the TH095 4-by-20 replay browser and replay-file
+  enumeration path. `ReplayScanWorker.cpp` separately owns the exact generic
+  worker and Supervisor start/stop wrappers instead of mixing that runtime
+  machinery into the browser state machine.
+- `OptionsMenu.cpp` reconstructs the seven-row option/key-configuration page,
+  including live audio volume updates and three joystick-button bindings. Its
+  complete body is source-present; the remaining mismatch is compiler-local
+  sprite-temporary allocation rather than missing behavior.
 
 Header organization follows the TH08 reconstruction where the evidence permits:
 

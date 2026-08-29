@@ -6951,3 +6951,70 @@ relocations = [
   { offset = 0x11D, type = "DIR32", symbol = "?g_SceneSupervisor@th095@@3USceneSupervisorView@1@A", target = 0x004C4670 },
   { offset = 0x126, type = "DIR32", symbol = "?g_SceneSupervisor@th095@@3USceneSupervisorView@1@A", target = 0x004C4670 },
 ]
+
+[units.replay-scan-worker-destructor]
+source = "src/ReplayScanWorker.cpp"
+object = "build/matching/ReplayScanWorker.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ReplayScanWorker::~ReplayScanWorker"]
+symbol = "??1ReplayScanWorker@th095@@QAE@XZ"
+target_address = 0x0041BAE0
+size = 0x13
+relocations = [
+  { offset = 0xB, type = "REL32", symbol = "?Stop@ReplayScanWorker@th095@@QAEXXZ", target = 0x0041BB20 },
+]
+
+[units.replay-scan-worker-stop]
+source = "src/ReplayScanWorker.cpp"
+object = "build/matching/ReplayScanWorker.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ReplayScanWorker::Stop"]
+symbol = "?Stop@ReplayScanWorker@th095@@QAEXXZ"
+target_address = 0x0041BB20
+size = 0x7C
+relocations = [
+  { offset = 0x30, type = "DIR32", symbol = "__imp__WaitForSingleObject@8", target = 0x00495088 },
+  { offset = 0x53, type = "DIR32", symbol = "__imp__Sleep@4", target = 0x00495058 },
+  { offset = 0x61, type = "DIR32", symbol = "__imp__CloseHandle@4", target = 0x00495068 },
+]
+
+[units.replay-scan-worker-start]
+source = "src/ReplayScanWorker.cpp"
+object = "build/matching/ReplayScanWorker.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ReplayScanWorker::Start"]
+symbol = "?Start@ReplayScanWorker@th095@@QAEXP6IXPAX@Z0@Z"
+target_address = 0x0041BBA0
+size = 0x57
+relocations = [
+  { offset = 0xB, type = "REL32", symbol = "?Stop@ReplayScanWorker@th095@@QAEXXZ", target = 0x0041BB20 },
+  { offset = 0x45, type = "REL32", symbol = "__beginthreadex", target = 0x00485BA3 },
+]
+
+[units.supervisor-start-replay-scan]
+source = "src/ReplayScanWorker.cpp"
+object = "build/matching/ReplayScanWorker.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::SceneSupervisorView::StartReplayScan"]
+symbol = "?StartReplayScan@SceneSupervisorView@th095@@QAE?AW4ZunResult@@P6IXPAX@Z0@Z"
+target_address = 0x004255B0
+size = 0x8D
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "??_C@_0DG@PJIJMBEC@FillBufferWithSound?5in?5HandleWav@", target = 0x00496370 },
+  { offset = 0xD, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x29, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x00495060 },
+  { offset = 0x54, type = "REL32", symbol = "?Start@ReplayScanWorker@th095@@QAEXP6IXPAX@Z0@Z", target = 0x0041BBA0 },
+  { offset = 0x6D, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+]
+
+[units.supervisor-stop-replay-scan]
+source = "src/ReplayScanWorker.cpp"
+object = "build/matching/ReplayScanWorker.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::SceneSupervisorView::StopReplayScan"]
+symbol = "?StopReplayScan@SceneSupervisorView@th095@@QAEXXZ"
+target_address = 0x00425640
+size = 0x19
+relocations = [
+  { offset = 0x11, type = "REL32", symbol = "?Stop@ReplayScanWorker@th095@@QAEXXZ", target = 0x0041BB20 },
+]

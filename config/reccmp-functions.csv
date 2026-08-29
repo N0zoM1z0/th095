@@ -130,3 +130,9 @@ th095::ReplayBrowserExitSignal::Request,0x0041BB00,function
 th095::ReplayBrowserView::Update,0x0044DCA0,function
 th095::LoadReplayBrowserEntries,0x00450C30,function
 th095::ReplayBrowserView::LoadReplaySlot,0x00450E20,function
+th095::ReplayScanWorker::~ReplayScanWorker,0x0041BAE0,function
+th095::ReplayScanWorker::Stop,0x0041BB20,function
+th095::ReplayScanWorker::Start,0x0041BBA0,function
+th095::SceneSupervisorView::StartReplayScan,0x004255B0,function
+th095::SceneSupervisorView::StopReplayScan,0x00425640,function
+th095::OptionsMenuView::Update,0x0044E4B0,function

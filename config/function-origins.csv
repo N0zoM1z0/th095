@@ -226,10 +226,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041B920,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041BA30,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041BA80,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041BAE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041BAE0,authored,ReplayScanWorker,authored,exact,vc71-replay-scan-worker-2026-08-29
 0x0041BB00,authored,ReplayBrowser,authored,exact,vc71-replay-browser-2026-08-29
-0x0041BB20,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041BBA0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041BB20,authored,ReplayScanWorker,authored,exact,vc71-replay-scan-worker-2026-08-29
+0x0041BBA0,authored,ReplayScanWorker,authored,exact,vc71-replay-scan-worker-2026-08-29
 0x0041BC00,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041BD20,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041BD70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -364,8 +364,8 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004254D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00425520,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00425570,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004255B0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00425640,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004255B0,authored,Supervisor,authored,exact,vc71-replay-scan-worker-2026-08-29
+0x00425640,authored,Supervisor,authored,exact,vc71-replay-scan-worker-2026-08-29
 0x00425660,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00425730,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004257E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -632,7 +632,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0044D020,authored,SceneSelect,authored,exact,vc71-scene-preview-text-decoder-2026-08-29
 0x0044D0A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0044DCA0,authored,ReplayBrowser,authored,high,vc71-replay-browser-2026-08-29
-0x0044E4B0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0044E4B0,authored,OptionsMenu,authored,high,vc71-options-menu-2026-08-29
 0x00450C30,authored,ReplayBrowser,authored,high,vc71-replay-browser-scan-2026-08-29
 0x00450DD0,authored,SceneSelect,authored,exact,vc71-scene-value-queue-push-2026-08-29
 0x00450E20,authored,ReplayBrowser,authored,exact,vc71-replay-browser-slot-2026-08-29

@@ -63,9 +63,25 @@ struct SceneStateHistoryView
     i32 count;
 };
 
+struct ReplayScanWorker
+{
+    uintptr_t handle;
+    unsigned int threadId;
+    i32 stopRequested;
+    i32 active;
+    u8 unknown0010[4];
+    void (__fastcall *threadProc)(void *);
+
+    ~ReplayScanWorker();
+    void Stop();
+    void Start(void (__fastcall *callback)(void *), void *argument);
+};
+
 struct SceneSupervisorView
 {
-    u8 unknown000[0x664];
+    u8 unknown000[0x648];
+    ReplayScanWorker replayScanWorker;
+    u8 unknown660[4];
     CRITICAL_SECTION criticalSections[7];
     u8 lockCounts[7];
 
@@ -241,6 +257,14 @@ typedef char SceneValueQueueSizeIs48[
     (sizeof(SceneValueQueue) == 0x48) ? 1 : -1];
 typedef char SceneGroupCursorSizeIsD8[
     (sizeof(SceneGroupCursorView) == 0xd8) ? 1 : -1];
+typedef char ReplayScanWorkerSizeIs18[
+    (sizeof(ReplayScanWorker) == 0x18) ? 1 : -1];
+typedef char SceneSupervisorReplayScanWorkerAt648[
+    (offsetof(SceneSupervisorView, replayScanWorker) == 0x648) ? 1 : -1];
+typedef char SceneSupervisorCriticalSectionsAt664[
+    (offsetof(SceneSupervisorView, criticalSections) == 0x664) ? 1 : -1];
+typedef char SceneSupervisorLockCountsAt70C[
+    (offsetof(SceneSupervisorView, lockCounts) == 0x70c) ? 1 : -1];
 typedef char SceneSaveDataScoresAt460[
     (offsetof(SceneSaveDataView, sceneScores) == 0x460) ? 1 : -1];
 typedef char SceneScoreEntryAttemptCountAt3C[
