@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 56 canonical units cover 64,573 authored bytes.
+- Reconstruction: 58 canonical units cover 64,922 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 97.99% (64,573 / 65,899)
+  relocations. Confirmed authored-byte coverage is now 98.00% (64,922 / 66,248)
   while the global origin denominator remains provisional.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -50,6 +50,16 @@
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
   bytes are stack allocation/displacement differences and receive no credit.
+  Compiler-oracle trials covering unused-local sizes and locations, aggregate
+  locals, declaration permutations, identifier hashes, PCH use, and bounded
+  profile variations did not recover the target's isolated four-byte stack
+  gap, so this unit is intentionally deferred.
+- `AnmManager::Draw` at `0x004415A0` is exact for its 317-byte authored body.
+  Its canonical unit also enforces the adjacent 40-byte draw-mode jump table
+  and all 21 relocations. The target-specific physical case order is
+  `0,1,4,5,6,7,8,9,2,3`.
+- `Float3::FromAngleMagnitude` at `0x00441DA0` is exact for all 32 bytes with
+  no relocations. Its `fsincos` implementation is shared by 26 target callers.
 
 Read live totals with:
 
@@ -59,18 +69,21 @@ python3 scripts/report-reconstruction-status.py --summary
 
 ## Next bounded lane
 
-The 95% checkpoint is complete; the active target is 99.5%. Only the 1,326-byte
-`WinMain` remains unmatched in the confirmed-authored set, and at most 329
-bytes may remain unmatched at the current denominator.
+The strict 95% checkpoint is complete. `WinMain` is the only unmatched unit in
+the confirmed-authored set, but it is deferred because its remaining eight
+stack bytes have resisted the bounded VC7.1 oracle matrix. Continue expanding
+the denominator through target-proven functions instead of spending the whole
+lane on that compiler artifact.
 
-1. Finish the 1,326-byte `WinMain` source probe. It already matches all 134
-   relocations and differs only in eight stack-allocation/displacement bytes,
-   but partial bytes receive no exact credit.
+1. Continue the ANM rendering cluster rooted at exact
+   `AnmManager::Draw @ 0x004415A0`. The next bounded candidate is
+   `AnmVm::InitializePulsingRadialTrail @ 0x00441710` (754 bytes), followed by
+   the draw helpers at `0x0043EA20..0x00441480`.
 2. Recalculate against any newly confirmed authored origins after every
    promotion; never preserve the percentage by withholding denominator facts.
-3. Once the authored gap is below 0.5%, resume the target-specific 16,066-byte
-   resource/gameplay hub at `0x00447D00` and keep its owner unnamed until
-   target-local evidence proves it.
+3. Keep the target-specific 16,066-byte resource/gameplay hub at `0x00447D00`
+   unnamed until target-local evidence proves its owner; it remains a later,
+   high-cost lane rather than a prerequisite for the current ANM cluster.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

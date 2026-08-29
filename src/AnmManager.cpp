@@ -992,4 +992,61 @@ AnmManager::~AnmManager()
     }
 }
 
+void Float3::FromAngleMagnitude(f32 angle, f32 magnitude)
+{
+    __asm
+    {
+        mov eax, this
+        fld angle
+        fsincos
+        fmul [magnitude]
+        fstp [eax]
+        fmul [magnitude]
+        fstp [eax + 4]
+    }
+}
+
+ZunResult AnmManager::Draw(AnmVm *vm)
+{
+    if (!vm->visible)
+        return ZUN_ERROR;
+
+    if (!vm->unknownFlag1)
+        return ZUN_ERROR;
+
+    if (vm->color1.a == 0)
+        return ZUN_ERROR;
+
+    if (vm->drawCallback != NULL)
+    {
+        return vm->drawCallback(vm);
+    }
+
+    switch (vm->renderModeBits)
+    {
+    case 0:
+        return this->DrawNoRotation(vm);
+    case 1:
+        return this->Draw2D(vm);
+    case 4:
+        return this->DrawCameraFacingQuad(vm);
+    case 5:
+        return this->DrawProjected3DQuad(vm);
+    case 6:
+        return this->DrawMode6(vm);
+    case 7:
+        return this->DrawMode7(vm);
+    case 8:
+        return this->Draw3D(vm);
+    case 9:
+        return this->DrawVertices(vm, (AnmVertex *)vm->generatedVertices, vm->intVar0 * 2);
+    case 2:
+        return this->DrawNoRotationNoRound(vm);
+    case 3:
+        return this->Draw2D(vm);
+    default:
+        return ZUN_SUCCESS;
+    }
+}
+
 } // namespace th095

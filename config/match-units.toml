@@ -3247,7 +3247,7 @@ target = 0x00485664
 [[units.anm-get-float-var.relocations]]
 offset = 0x2F
 type = "DIR32"
-symbol = "$L66093"
+symbol = "$L66147"
 target = 0x0043A33E
 
 [[units.anm-get-float-var.relocations]]
@@ -3337,97 +3337,97 @@ target = 0x00495398
 [[units.anm-get-float-var.relocations]]
 offset = 0x18E
 type = "DIR32"
-symbol = "$L65552"
+symbol = "$L65575"
 target = 0x0043A1E3
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x192
 type = "DIR32"
-symbol = "$L65553"
+symbol = "$L65576"
 target = 0x0043A1F1
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x196
 type = "DIR32"
-symbol = "$L65554"
+symbol = "$L65577"
 target = 0x0043A1FF
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x19A
 type = "DIR32"
-symbol = "$L65555"
+symbol = "$L65578"
 target = 0x0043A20D
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x19E
 type = "DIR32"
-symbol = "$L65556"
+symbol = "$L65579"
 target = 0x0043A21B
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x1A2
 type = "DIR32"
-symbol = "$L65557"
+symbol = "$L65580"
 target = 0x0043A229
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x1A6
 type = "DIR32"
-symbol = "$L65558"
+symbol = "$L65581"
 target = 0x0043A237
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x1AA
 type = "DIR32"
-symbol = "$L65559"
+symbol = "$L65582"
 target = 0x0043A245
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x1AE
 type = "DIR32"
-symbol = "$L65560"
+symbol = "$L65583"
 target = 0x0043A253
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x1B2
 type = "DIR32"
-symbol = "$L65561"
+symbol = "$L65584"
 target = 0x0043A261
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x1B6
 type = "DIR32"
-symbol = "$L65564"
+symbol = "$L65587"
 target = 0x0043A2D6
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x1BA
 type = "DIR32"
-symbol = "$L65562"
+symbol = "$L65585"
 target = 0x0043A26F
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x1BE
 type = "DIR32"
-symbol = "$L65563"
+symbol = "$L65586"
 target = 0x0043A2A4
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x1C2
 type = "DIR32"
-symbol = "$L65565"
+symbol = "$L65588"
 target = 0x0043A314
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x1C6
 type = "DIR32"
-symbol = "$L65566"
+symbol = "$L65589"
 target = 0x0043A31F
 
 [[units.anm-get-float-var.relocations]]
 offset = 0x1CA
 type = "DIR32"
-symbol = "$L65567"
+symbol = "$L65590"
 target = 0x0043A32A
 
 [units.anm-get-int-var]
@@ -3442,7 +3442,7 @@ size = 0xE2
 [[units.anm-get-int-var.relocations]]
 offset = 0x2B
 type = "DIR32"
-symbol = "$L66097"
+symbol = "$L66151"
 target = 0x0043A43A
 
 [[units.anm-get-int-var.relocations]]
@@ -3472,61 +3472,61 @@ target = 0x00485664
 [[units.anm-get-int-var.relocations]]
 offset = 0xBA
 type = "DIR32"
-symbol = "$L65577"
+symbol = "$L65600"
 target = 0x0043A3AF
 
 [[units.anm-get-int-var.relocations]]
 offset = 0xBE
 type = "DIR32"
-symbol = "$L65578"
+symbol = "$L65601"
 target = 0x0043A3BA
 
 [[units.anm-get-int-var.relocations]]
 offset = 0xC2
 type = "DIR32"
-symbol = "$L65579"
+symbol = "$L65602"
 target = 0x0043A3C5
 
 [[units.anm-get-int-var.relocations]]
 offset = 0xC6
 type = "DIR32"
-symbol = "$L65580"
+symbol = "$L65603"
 target = 0x0043A3D0
 
 [[units.anm-get-int-var.relocations]]
 offset = 0xCA
 type = "DIR32"
-symbol = "$L65581"
+symbol = "$L65604"
 target = 0x0043A3DB
 
 [[units.anm-get-int-var.relocations]]
 offset = 0xCE
 type = "DIR32"
-symbol = "$L65582"
+symbol = "$L65605"
 target = 0x0043A3EB
 
 [[units.anm-get-int-var.relocations]]
 offset = 0xD2
 type = "DIR32"
-symbol = "$L65583"
+symbol = "$L65606"
 target = 0x0043A3FB
 
 [[units.anm-get-int-var.relocations]]
 offset = 0xD6
 type = "DIR32"
-symbol = "$L65584"
+symbol = "$L65607"
 target = 0x0043A40B
 
 [[units.anm-get-int-var.relocations]]
 offset = 0xDA
 type = "DIR32"
-symbol = "$L65585"
+symbol = "$L65608"
 target = 0x0043A41B
 
 [[units.anm-get-int-var.relocations]]
 offset = 0xDE
 type = "DIR32"
-symbol = "$L65586"
+symbol = "$L65609"
 target = 0x0043A426
 
 [units.anm-get-float-var-ptr]
@@ -3547,79 +3547,79 @@ target = 0x00485664
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0x45
 type = "DIR32"
-symbol = "$L66100"
+symbol = "$L66154"
 target = 0x0043A508
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0x98
 type = "DIR32"
-symbol = "$L65600"
+symbol = "$L65623"
 target = 0x0043A4B9
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0x9C
 type = "DIR32"
-symbol = "$L65601"
+symbol = "$L65624"
 target = 0x0043A4C3
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0xA0
 type = "DIR32"
-symbol = "$L65602"
+symbol = "$L65625"
 target = 0x0043A4CD
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0xA4
 type = "DIR32"
-symbol = "$L65603"
+symbol = "$L65626"
 target = 0x0043A4D7
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0xA8
 type = "DIR32"
-symbol = "$L65607"
+symbol = "$L65630"
 target = 0x0043A4FF
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0xAC
 type = "DIR32"
-symbol = "$L65607"
+symbol = "$L65630"
 target = 0x0043A4FF
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0xB0
 type = "DIR32"
-symbol = "$L65607"
+symbol = "$L65630"
 target = 0x0043A4FF
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0xB4
 type = "DIR32"
-symbol = "$L65607"
+symbol = "$L65630"
 target = 0x0043A4FF
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0xB8
 type = "DIR32"
-symbol = "$L65607"
+symbol = "$L65630"
 target = 0x0043A4FF
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0xBC
 type = "DIR32"
-symbol = "$L65604"
+symbol = "$L65627"
 target = 0x0043A4E1
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0xC0
 type = "DIR32"
-symbol = "$L65605"
+symbol = "$L65628"
 target = 0x0043A4EB
 
 [[units.anm-get-float-var-ptr.relocations]]
 offset = 0xC4
 type = "DIR32"
-symbol = "$L65606"
+symbol = "$L65629"
 target = 0x0043A4F5
 
 [units.anm-get-int-var-ptr]
@@ -3634,67 +3634,67 @@ size = 0xB1
 [[units.anm-get-int-var-ptr.relocations]]
 offset = 0x40
 type = "DIR32"
-symbol = "$L66103"
+symbol = "$L66157"
 target = 0x0043A5C9
 
 [[units.anm-get-int-var-ptr.relocations]]
 offset = 0x89
 type = "DIR32"
-symbol = "$L65619"
+symbol = "$L65642"
 target = 0x0043A584
 
 [[units.anm-get-int-var-ptr.relocations]]
 offset = 0x8D
 type = "DIR32"
-symbol = "$L65620"
+symbol = "$L65643"
 target = 0x0043A58E
 
 [[units.anm-get-int-var-ptr.relocations]]
 offset = 0x91
 type = "DIR32"
-symbol = "$L65621"
+symbol = "$L65644"
 target = 0x0043A598
 
 [[units.anm-get-int-var-ptr.relocations]]
 offset = 0x95
 type = "DIR32"
-symbol = "$L65622"
+symbol = "$L65645"
 target = 0x0043A5A2
 
 [[units.anm-get-int-var-ptr.relocations]]
 offset = 0x99
 type = "DIR32"
-symbol = "$L65625"
+symbol = "$L65648"
 target = 0x0043A5C0
 
 [[units.anm-get-int-var-ptr.relocations]]
 offset = 0x9D
 type = "DIR32"
-symbol = "$L65625"
+symbol = "$L65648"
 target = 0x0043A5C0
 
 [[units.anm-get-int-var-ptr.relocations]]
 offset = 0xA1
 type = "DIR32"
-symbol = "$L65625"
+symbol = "$L65648"
 target = 0x0043A5C0
 
 [[units.anm-get-int-var-ptr.relocations]]
 offset = 0xA5
 type = "DIR32"
-symbol = "$L65625"
+symbol = "$L65648"
 target = 0x0043A5C0
 
 [[units.anm-get-int-var-ptr.relocations]]
 offset = 0xA9
 type = "DIR32"
-symbol = "$L65623"
+symbol = "$L65646"
 target = 0x0043A5AC
 
 [[units.anm-get-int-var-ptr.relocations]]
 offset = 0xAD
 type = "DIR32"
-symbol = "$L65624"
+symbol = "$L65647"
 target = 0x0043A5B6
 
 # These target-proven VM setup functions pin the TH095 ANM layout and the
@@ -3754,7 +3754,7 @@ compare_size = 0x4412
 relocations = [
   { offset = 0x46, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
   { offset = 0x63, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
-  { offset = 0xDD, type = "DIR32", symbol = "$L66793", target = 0x0043E87A },
+  { offset = 0xDD, type = "DIR32", symbol = "$L66847", target = 0x0043E87A },
   { offset = 0x111, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
   { offset = 0x139, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
   { offset = 0x1B7, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
@@ -3944,14 +3944,14 @@ relocations = [
   { offset = 0x350F, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
   { offset = 0x3525, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
   { offset = 0x359B, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
-  { offset = 0x3698, type = "DIR32", symbol = "$L66794", target = 0x0043E9DE },
+  { offset = 0x3698, type = "DIR32", symbol = "$L66848", target = 0x0043E9DE },
   { offset = 0x36CB, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
   { offset = 0x36DD, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
   { offset = 0x36EB, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
   { offset = 0x3700, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
   { offset = 0x370E, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
   { offset = 0x3726, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
-  { offset = 0x374F, type = "DIR32", symbol = "$L66795", target = 0x0043E9F6 },
+  { offset = 0x374F, type = "DIR32", symbol = "$L66849", target = 0x0043E9F6 },
   { offset = 0x38F6, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
   { offset = 0x3955, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
   { offset = 0x39B4, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
@@ -3983,108 +3983,108 @@ relocations = [
   { offset = 0x41DE, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
   { offset = 0x4265, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
   { offset = 0x426E, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
-  { offset = 0x427A, type = "DIR32", symbol = "$L65673", target = 0x0043A6E1 },
-  { offset = 0x427E, type = "DIR32", symbol = "$L65670", target = 0x0043DA18 },
-  { offset = 0x4282, type = "DIR32", symbol = "$L65673", target = 0x0043A6E1 },
-  { offset = 0x4286, type = "DIR32", symbol = "$L65674", target = 0x0043A6FC },
-  { offset = 0x428A, type = "DIR32", symbol = "$L65676", target = 0x0043A782 },
-  { offset = 0x428E, type = "DIR32", symbol = "$L65683", target = 0x0043AAE4 },
-  { offset = 0x4292, type = "DIR32", symbol = "$L65686", target = 0x0043AB37 },
-  { offset = 0x4296, type = "DIR32", symbol = "$L65749", target = 0x0043C305 },
-  { offset = 0x429A, type = "DIR32", symbol = "$L65750", target = 0x0043C360 },
-  { offset = 0x429E, type = "DIR32", symbol = "$L65761", target = 0x0043C9C7 },
-  { offset = 0x42A2, type = "DIR32", symbol = "$L65762", target = 0x0043CA36 },
-  { offset = 0x42A6, type = "DIR32", symbol = "$L65763", target = 0x0043CAA5 },
-  { offset = 0x42AA, type = "DIR32", symbol = "$L65764", target = 0x0043CB14 },
-  { offset = 0x42AE, type = "DIR32", symbol = "$L65765", target = 0x0043CB83 },
-  { offset = 0x42B2, type = "DIR32", symbol = "$L65766", target = 0x0043CBF3 },
-  { offset = 0x42B6, type = "DIR32", symbol = "$L65767", target = 0x0043CC62 },
-  { offset = 0x42BA, type = "DIR32", symbol = "$L65768", target = 0x0043CCD2 },
-  { offset = 0x42BE, type = "DIR32", symbol = "$L65769", target = 0x0043CD41 },
-  { offset = 0x42C2, type = "DIR32", symbol = "$L65770", target = 0x0043CDB1 },
-  { offset = 0x42C6, type = "DIR32", symbol = "$L65751", target = 0x0043C3BB },
-  { offset = 0x42CA, type = "DIR32", symbol = "$L65752", target = 0x0043C44E },
-  { offset = 0x42CE, type = "DIR32", symbol = "$L65753", target = 0x0043C4ED },
-  { offset = 0x42D2, type = "DIR32", symbol = "$L65754", target = 0x0043C580 },
-  { offset = 0x42D6, type = "DIR32", symbol = "$L65755", target = 0x0043C61F },
-  { offset = 0x42DA, type = "DIR32", symbol = "$L65756", target = 0x0043C6B3 },
-  { offset = 0x42DE, type = "DIR32", symbol = "$L65757", target = 0x0043C752 },
-  { offset = 0x42E2, type = "DIR32", symbol = "$L65758", target = 0x0043C7E8 },
-  { offset = 0x42E6, type = "DIR32", symbol = "$L65759", target = 0x0043C887 },
-  { offset = 0x42EA, type = "DIR32", symbol = "$L65760", target = 0x0043C91D },
-  { offset = 0x42EE, type = "DIR32", symbol = "$L65784", target = 0x0043D3C4 },
-  { offset = 0x42F2, type = "DIR32", symbol = "$L65788", target = 0x0043D440 },
-  { offset = 0x42F6, type = "DIR32", symbol = "$L65791", target = 0x0043D4C3 },
-  { offset = 0x42FA, type = "DIR32", symbol = "$L65794", target = 0x0043D53F },
-  { offset = 0x42FE, type = "DIR32", symbol = "$L65797", target = 0x0043D5C2 },
-  { offset = 0x4302, type = "DIR32", symbol = "$L65800", target = 0x0043D63E },
-  { offset = 0x4306, type = "DIR32", symbol = "$L65803", target = 0x0043D6BF },
-  { offset = 0x430A, type = "DIR32", symbol = "$L65806", target = 0x0043D73B },
-  { offset = 0x430E, type = "DIR32", symbol = "$L65809", target = 0x0043D7BC },
-  { offset = 0x4312, type = "DIR32", symbol = "$L65812", target = 0x0043D838 },
-  { offset = 0x4316, type = "DIR32", symbol = "$L65815", target = 0x0043D8B9 },
-  { offset = 0x431A, type = "DIR32", symbol = "$L65818", target = 0x0043D935 },
-  { offset = 0x431E, type = "DIR32", symbol = "$L65771", target = 0x0043CE5B },
-  { offset = 0x4322, type = "DIR32", symbol = "$L65772", target = 0x0043CF70 },
-  { offset = 0x4326, type = "DIR32", symbol = "$L65773", target = 0x0043D03F },
-  { offset = 0x432A, type = "DIR32", symbol = "$L65774", target = 0x0043D0B1 },
-  { offset = 0x432E, type = "DIR32", symbol = "$L65775", target = 0x0043D123 },
-  { offset = 0x4332, type = "DIR32", symbol = "$L65776", target = 0x0043D195 },
-  { offset = 0x4336, type = "DIR32", symbol = "$L65777", target = 0x0043D207 },
-  { offset = 0x433A, type = "DIR32", symbol = "$L65778", target = 0x0043D279 },
-  { offset = 0x433E, type = "DIR32", symbol = "$L65697", target = 0x0043B02A },
-  { offset = 0x4342, type = "DIR32", symbol = "$L65692", target = 0x0043ACE5 },
-  { offset = 0x4346, type = "DIR32", symbol = "$L65678", target = 0x0043A80E },
-  { offset = 0x434A, type = "DIR32", symbol = "$L65679", target = 0x0043A8B0 },
-  { offset = 0x434E, type = "DIR32", symbol = "$L65680", target = 0x0043A8F9 },
-  { offset = 0x4352, type = "DIR32", symbol = "$L65693", target = 0x0043ADC8 },
-  { offset = 0x4356, type = "DIR32", symbol = "$L65694", target = 0x0043AEAB },
-  { offset = 0x435A, type = "DIR32", symbol = "$L65695", target = 0x0043AF32 },
-  { offset = 0x435E, type = "DIR32", symbol = "$L65731", target = 0x0043B6D4 },
-  { offset = 0x4362, type = "DIR32", symbol = "$L65734", target = 0x0043B8BF },
-  { offset = 0x4366, type = "DIR32", symbol = "$L65735", target = 0x0043BA8C },
-  { offset = 0x436A, type = "DIR32", symbol = "$L65738", target = 0x0043BE8E },
-  { offset = 0x436E, type = "DIR32", symbol = "$L65739", target = 0x0043C056 },
-  { offset = 0x4372, type = "DIR32", symbol = "$L65690", target = 0x0043ABFF },
-  { offset = 0x4376, type = "DIR32", symbol = "$L65691", target = 0x0043AC72 },
-  { offset = 0x437A, type = "DIR32", symbol = "$L65709", target = 0x0043B31E },
-  { offset = 0x437E, type = "DIR32", symbol = "$L65670", target = 0x0043DA18 },
-  { offset = 0x4382, type = "DIR32", symbol = "$L65726", target = 0x0043B583 },
-  { offset = 0x4386, type = "DIR32", symbol = "$L65696", target = 0x0043AFFC },
-  { offset = 0x438A, type = "DIR32", symbol = "$L65740", target = 0x0043C1D4 },
-  { offset = 0x438E, type = "DIR32", symbol = "$L65780", target = 0x0043D31A },
-  { offset = 0x4392, type = "DIR32", symbol = "$L65708", target = 0x0043B303 },
-  { offset = 0x4396, type = "DIR32", symbol = "$L65727", target = 0x0043B5E1 },
-  { offset = 0x439A, type = "DIR32", symbol = "$L65728", target = 0x0043B62A },
-  { offset = 0x439E, type = "DIR32", symbol = "$L65725", target = 0x0043B558 },
-  { offset = 0x43A2, type = "DIR32", symbol = "$L65729", target = 0x0043B673 },
-  { offset = 0x43A6, type = "DIR32", symbol = "$L65730", target = 0x0043B6A3 },
-  { offset = 0x43AA, type = "DIR32", symbol = "$L66447", target = 0x0043B1E7 },
-  { offset = 0x43AE, type = "DIR32", symbol = "$L65682", target = 0x0043AA13 },
-  { offset = 0x43B2, type = "DIR32", symbol = "$L65681", target = 0x0043A9CA },
-  { offset = 0x43B6, type = "DIR32", symbol = "$L65736", target = 0x0043BBA4 },
-  { offset = 0x43BA, type = "DIR32", symbol = "$L65737", target = 0x0043BD75 },
-  { offset = 0x43BE, type = "DIR32", symbol = "$L65781", target = 0x0043D32F },
-  { offset = 0x43C2, type = "DIR32", symbol = "$L65724", target = 0x0043B516 },
-  { offset = 0x43C6, type = "DIR32", symbol = "$L65782", target = 0x0043D361 },
-  { offset = 0x43CA, type = "DIR32", symbol = "$L65746", target = 0x0043C232 },
-  { offset = 0x43CE, type = "DIR32", symbol = "$L65747", target = 0x0043C28F },
-  { offset = 0x43D2, type = "DIR32", symbol = "$L65779", target = 0x0043D2E8 },
-  { offset = 0x43D6, type = "DIR32", symbol = "$L65675", target = 0x0043A71F },
-  { offset = 0x43DA, type = "DIR32", symbol = "$L65783", target = 0x0043D392 },
-  { offset = 0x43DE, type = "DIR32", symbol = "$L65841", target = 0x0043DC9C },
-  { offset = 0x43E2, type = "DIR32", symbol = "$L65842", target = 0x0043DCAA },
-  { offset = 0x43E6, type = "DIR32", symbol = "$L65843", target = 0x0043DCB8 },
-  { offset = 0x43EA, type = "DIR32", symbol = "$L65844", target = 0x0043DCC9 },
-  { offset = 0x43EE, type = "DIR32", symbol = "$L65845", target = 0x0043DCE9 },
-  { offset = 0x43F2, type = "DIR32", symbol = "$L65846", target = 0x0043DD0C },
-  { offset = 0x43F6, type = "DIR32", symbol = "$L65851", target = 0x0043DD53 },
-  { offset = 0x43FA, type = "DIR32", symbol = "$L65854", target = 0x0043DEA7 },
-  { offset = 0x43FE, type = "DIR32", symbol = "$L65858", target = 0x0043DFC9 },
-  { offset = 0x4402, type = "DIR32", symbol = "$L65866", target = 0x0043E1B3 },
-  { offset = 0x4406, type = "DIR32", symbol = "$L65867", target = 0x0043E27E },
-  { offset = 0x440A, type = "DIR32", symbol = "$L65860", target = 0x0043E02D },
-  { offset = 0x440E, type = "DIR32", symbol = "$L65864", target = 0x0043E14F },
+  { offset = 0x427A, type = "DIR32", symbol = "$L65696", target = 0x0043A6E1 },
+  { offset = 0x427E, type = "DIR32", symbol = "$L65693", target = 0x0043DA18 },
+  { offset = 0x4282, type = "DIR32", symbol = "$L65696", target = 0x0043A6E1 },
+  { offset = 0x4286, type = "DIR32", symbol = "$L65697", target = 0x0043A6FC },
+  { offset = 0x428A, type = "DIR32", symbol = "$L65699", target = 0x0043A782 },
+  { offset = 0x428E, type = "DIR32", symbol = "$L65706", target = 0x0043AAE4 },
+  { offset = 0x4292, type = "DIR32", symbol = "$L65709", target = 0x0043AB37 },
+  { offset = 0x4296, type = "DIR32", symbol = "$L65772", target = 0x0043C305 },
+  { offset = 0x429A, type = "DIR32", symbol = "$L65773", target = 0x0043C360 },
+  { offset = 0x429E, type = "DIR32", symbol = "$L65784", target = 0x0043C9C7 },
+  { offset = 0x42A2, type = "DIR32", symbol = "$L65785", target = 0x0043CA36 },
+  { offset = 0x42A6, type = "DIR32", symbol = "$L65786", target = 0x0043CAA5 },
+  { offset = 0x42AA, type = "DIR32", symbol = "$L65787", target = 0x0043CB14 },
+  { offset = 0x42AE, type = "DIR32", symbol = "$L65788", target = 0x0043CB83 },
+  { offset = 0x42B2, type = "DIR32", symbol = "$L65789", target = 0x0043CBF3 },
+  { offset = 0x42B6, type = "DIR32", symbol = "$L65790", target = 0x0043CC62 },
+  { offset = 0x42BA, type = "DIR32", symbol = "$L65791", target = 0x0043CCD2 },
+  { offset = 0x42BE, type = "DIR32", symbol = "$L65792", target = 0x0043CD41 },
+  { offset = 0x42C2, type = "DIR32", symbol = "$L65793", target = 0x0043CDB1 },
+  { offset = 0x42C6, type = "DIR32", symbol = "$L65774", target = 0x0043C3BB },
+  { offset = 0x42CA, type = "DIR32", symbol = "$L65775", target = 0x0043C44E },
+  { offset = 0x42CE, type = "DIR32", symbol = "$L65776", target = 0x0043C4ED },
+  { offset = 0x42D2, type = "DIR32", symbol = "$L65777", target = 0x0043C580 },
+  { offset = 0x42D6, type = "DIR32", symbol = "$L65778", target = 0x0043C61F },
+  { offset = 0x42DA, type = "DIR32", symbol = "$L65779", target = 0x0043C6B3 },
+  { offset = 0x42DE, type = "DIR32", symbol = "$L65780", target = 0x0043C752 },
+  { offset = 0x42E2, type = "DIR32", symbol = "$L65781", target = 0x0043C7E8 },
+  { offset = 0x42E6, type = "DIR32", symbol = "$L65782", target = 0x0043C887 },
+  { offset = 0x42EA, type = "DIR32", symbol = "$L65783", target = 0x0043C91D },
+  { offset = 0x42EE, type = "DIR32", symbol = "$L65807", target = 0x0043D3C4 },
+  { offset = 0x42F2, type = "DIR32", symbol = "$L65811", target = 0x0043D440 },
+  { offset = 0x42F6, type = "DIR32", symbol = "$L65814", target = 0x0043D4C3 },
+  { offset = 0x42FA, type = "DIR32", symbol = "$L65817", target = 0x0043D53F },
+  { offset = 0x42FE, type = "DIR32", symbol = "$L65820", target = 0x0043D5C2 },
+  { offset = 0x4302, type = "DIR32", symbol = "$L65823", target = 0x0043D63E },
+  { offset = 0x4306, type = "DIR32", symbol = "$L65826", target = 0x0043D6BF },
+  { offset = 0x430A, type = "DIR32", symbol = "$L65829", target = 0x0043D73B },
+  { offset = 0x430E, type = "DIR32", symbol = "$L65832", target = 0x0043D7BC },
+  { offset = 0x4312, type = "DIR32", symbol = "$L65835", target = 0x0043D838 },
+  { offset = 0x4316, type = "DIR32", symbol = "$L65838", target = 0x0043D8B9 },
+  { offset = 0x431A, type = "DIR32", symbol = "$L65841", target = 0x0043D935 },
+  { offset = 0x431E, type = "DIR32", symbol = "$L65794", target = 0x0043CE5B },
+  { offset = 0x4322, type = "DIR32", symbol = "$L65795", target = 0x0043CF70 },
+  { offset = 0x4326, type = "DIR32", symbol = "$L65796", target = 0x0043D03F },
+  { offset = 0x432A, type = "DIR32", symbol = "$L65797", target = 0x0043D0B1 },
+  { offset = 0x432E, type = "DIR32", symbol = "$L65798", target = 0x0043D123 },
+  { offset = 0x4332, type = "DIR32", symbol = "$L65799", target = 0x0043D195 },
+  { offset = 0x4336, type = "DIR32", symbol = "$L65800", target = 0x0043D207 },
+  { offset = 0x433A, type = "DIR32", symbol = "$L65801", target = 0x0043D279 },
+  { offset = 0x433E, type = "DIR32", symbol = "$L65720", target = 0x0043B02A },
+  { offset = 0x4342, type = "DIR32", symbol = "$L65715", target = 0x0043ACE5 },
+  { offset = 0x4346, type = "DIR32", symbol = "$L65701", target = 0x0043A80E },
+  { offset = 0x434A, type = "DIR32", symbol = "$L65702", target = 0x0043A8B0 },
+  { offset = 0x434E, type = "DIR32", symbol = "$L65703", target = 0x0043A8F9 },
+  { offset = 0x4352, type = "DIR32", symbol = "$L65716", target = 0x0043ADC8 },
+  { offset = 0x4356, type = "DIR32", symbol = "$L65717", target = 0x0043AEAB },
+  { offset = 0x435A, type = "DIR32", symbol = "$L65718", target = 0x0043AF32 },
+  { offset = 0x435E, type = "DIR32", symbol = "$L65754", target = 0x0043B6D4 },
+  { offset = 0x4362, type = "DIR32", symbol = "$L65757", target = 0x0043B8BF },
+  { offset = 0x4366, type = "DIR32", symbol = "$L65758", target = 0x0043BA8C },
+  { offset = 0x436A, type = "DIR32", symbol = "$L65761", target = 0x0043BE8E },
+  { offset = 0x436E, type = "DIR32", symbol = "$L65762", target = 0x0043C056 },
+  { offset = 0x4372, type = "DIR32", symbol = "$L65713", target = 0x0043ABFF },
+  { offset = 0x4376, type = "DIR32", symbol = "$L65714", target = 0x0043AC72 },
+  { offset = 0x437A, type = "DIR32", symbol = "$L65732", target = 0x0043B31E },
+  { offset = 0x437E, type = "DIR32", symbol = "$L65693", target = 0x0043DA18 },
+  { offset = 0x4382, type = "DIR32", symbol = "$L65749", target = 0x0043B583 },
+  { offset = 0x4386, type = "DIR32", symbol = "$L65719", target = 0x0043AFFC },
+  { offset = 0x438A, type = "DIR32", symbol = "$L65763", target = 0x0043C1D4 },
+  { offset = 0x438E, type = "DIR32", symbol = "$L65803", target = 0x0043D31A },
+  { offset = 0x4392, type = "DIR32", symbol = "$L65731", target = 0x0043B303 },
+  { offset = 0x4396, type = "DIR32", symbol = "$L65750", target = 0x0043B5E1 },
+  { offset = 0x439A, type = "DIR32", symbol = "$L65751", target = 0x0043B62A },
+  { offset = 0x439E, type = "DIR32", symbol = "$L65748", target = 0x0043B558 },
+  { offset = 0x43A2, type = "DIR32", symbol = "$L65752", target = 0x0043B673 },
+  { offset = 0x43A6, type = "DIR32", symbol = "$L65753", target = 0x0043B6A3 },
+  { offset = 0x43AA, type = "DIR32", symbol = "$L66501", target = 0x0043B1E7 },
+  { offset = 0x43AE, type = "DIR32", symbol = "$L65705", target = 0x0043AA13 },
+  { offset = 0x43B2, type = "DIR32", symbol = "$L65704", target = 0x0043A9CA },
+  { offset = 0x43B6, type = "DIR32", symbol = "$L65759", target = 0x0043BBA4 },
+  { offset = 0x43BA, type = "DIR32", symbol = "$L65760", target = 0x0043BD75 },
+  { offset = 0x43BE, type = "DIR32", symbol = "$L65804", target = 0x0043D32F },
+  { offset = 0x43C2, type = "DIR32", symbol = "$L65747", target = 0x0043B516 },
+  { offset = 0x43C6, type = "DIR32", symbol = "$L65805", target = 0x0043D361 },
+  { offset = 0x43CA, type = "DIR32", symbol = "$L65769", target = 0x0043C232 },
+  { offset = 0x43CE, type = "DIR32", symbol = "$L65770", target = 0x0043C28F },
+  { offset = 0x43D2, type = "DIR32", symbol = "$L65802", target = 0x0043D2E8 },
+  { offset = 0x43D6, type = "DIR32", symbol = "$L65698", target = 0x0043A71F },
+  { offset = 0x43DA, type = "DIR32", symbol = "$L65806", target = 0x0043D392 },
+  { offset = 0x43DE, type = "DIR32", symbol = "$L65864", target = 0x0043DC9C },
+  { offset = 0x43E2, type = "DIR32", symbol = "$L65865", target = 0x0043DCAA },
+  { offset = 0x43E6, type = "DIR32", symbol = "$L65866", target = 0x0043DCB8 },
+  { offset = 0x43EA, type = "DIR32", symbol = "$L65867", target = 0x0043DCC9 },
+  { offset = 0x43EE, type = "DIR32", symbol = "$L65868", target = 0x0043DCE9 },
+  { offset = 0x43F2, type = "DIR32", symbol = "$L65869", target = 0x0043DD0C },
+  { offset = 0x43F6, type = "DIR32", symbol = "$L65874", target = 0x0043DD53 },
+  { offset = 0x43FA, type = "DIR32", symbol = "$L65877", target = 0x0043DEA7 },
+  { offset = 0x43FE, type = "DIR32", symbol = "$L65881", target = 0x0043DFC9 },
+  { offset = 0x4402, type = "DIR32", symbol = "$L65889", target = 0x0043E1B3 },
+  { offset = 0x4406, type = "DIR32", symbol = "$L65890", target = 0x0043E27E },
+  { offset = 0x440A, type = "DIR32", symbol = "$L65883", target = 0x0043E02D },
+  { offset = 0x440E, type = "DIR32", symbol = "$L65887", target = 0x0043E14F },
 ]
 
 # RunEcl's authored body ends at 0x0040F842. Its VC7.1 COFF symbol also owns
@@ -5538,3 +5538,46 @@ relocations = [
   { offset = 0x9B, type = "REL32", symbol = "_free", target = 0x004854BE },
   { offset = 0xA8, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
 ]
+
+[units.anm-manager-draw]
+source = "src/AnmManager.cpp"
+object = "build/matching/AnmManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::Draw"]
+symbol = "?Draw@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z"
+target_address = 0x004415A0
+size = 0x13D
+compare_size = 0x165
+relocations = [
+  { offset = 0x8C, type = "DIR32", symbol = "$L67113", target = 0x004416DD },
+  { offset = 0x98, type = "REL32", symbol = "?DrawNoRotation@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x0043F4A0 },
+  { offset = 0xA9, type = "REL32", symbol = "?Draw2D@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x0043FA40 },
+  { offset = 0xBA, type = "REL32", symbol = "?DrawCameraFacingQuad@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x004400F0 },
+  { offset = 0xC8, type = "REL32", symbol = "?DrawProjected3DQuad@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x004408F0 },
+  { offset = 0xD6, type = "REL32", symbol = "?DrawMode6@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x00440120 },
+  { offset = 0xE4, type = "REL32", symbol = "?DrawMode7@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x00440950 },
+  { offset = 0xF2, type = "REL32", symbol = "?Draw3D@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x00440C10 },
+  { offset = 0x113, type = "REL32", symbol = "?DrawVertices@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@PAUAnmVertex@2@H@Z", target = 0x00441330 },
+  { offset = 0x121, type = "REL32", symbol = "?DrawNoRotationNoRound@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x0043F760 },
+  { offset = 0x12F, type = "REL32", symbol = "?Draw2D@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x0043FA40 },
+  { offset = 0x13D, type = "DIR32", symbol = "$L65972", target = 0x00441630 },
+  { offset = 0x141, type = "DIR32", symbol = "$L65973", target = 0x00441641 },
+  { offset = 0x145, type = "DIR32", symbol = "$L65981", target = 0x004416B9 },
+  { offset = 0x149, type = "DIR32", symbol = "$L65982", target = 0x004416C7 },
+  { offset = 0x14D, type = "DIR32", symbol = "$L65974", target = 0x00441652 },
+  { offset = 0x151, type = "DIR32", symbol = "$L65975", target = 0x00441660 },
+  { offset = 0x155, type = "DIR32", symbol = "$L65976", target = 0x0044166E },
+  { offset = 0x159, type = "DIR32", symbol = "$L65977", target = 0x0044167C },
+  { offset = 0x15D, type = "DIR32", symbol = "$L65978", target = 0x0044168A },
+  { offset = 0x161, type = "DIR32", symbol = "$L65979", target = 0x00441698 },
+]
+
+[units.float3-from-angle-magnitude]
+source = "src/AnmManager.cpp"
+object = "build/matching/AnmManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Float3::FromAngleMagnitude"]
+symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z"
+target_address = 0x00441DA0
+size = 0x20
+relocations = []

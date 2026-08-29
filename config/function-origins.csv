@@ -544,11 +544,11 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004411D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00441330,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00441480,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004415A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004415A0,authored,AnmManager,authored,high,vc71-anm-draw-exact
 0x00441710,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00441A10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00441D70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00441DA0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00441DA0,authored,ZunMath,authored,high,vc71-float3-angle-magnitude-exact
 0x00441DC0,authored,AnmManager,authored,high,target-main-family-2026-08-29
 0x004421B0,authored,AnmManager,authored,high,target-main-family-2026-08-29
 0x00442260,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

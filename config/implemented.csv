@@ -53,5 +53,7 @@ th095::Supervisor::InitializeCriticalSections
 th095::Supervisor::DeleteCriticalSections
 th095::AnmManager::ClearVertexBuffer
 th095::AnmManager::FlushVertexBuffer
+th095::AnmManager::Draw
+th095::Float3::FromAngleMagnitude
 th095::AnmManager::AnmManager
 th095::AnmManager::~AnmManager

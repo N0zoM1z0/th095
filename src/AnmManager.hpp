@@ -454,7 +454,7 @@ struct AnmVm : AnmVmBase
     ZunColor color2Initial;         // +0x2a0
     ZunColor color2Final;           // +0x2a4
     void (__fastcall *positionCallback)(AnmVm *); // +0x2a8
-    u32 unknown2ac;
+    ZunResult (__fastcall *drawCallback)(AnmVm *); // +0x2ac
     Float3 alternatePosition;       // +0x2b0
     i32 timeOfLastSpriteSet;        // +0x2bc
     u8 unknown2c0[0x0c];
@@ -571,6 +571,16 @@ struct AnmManager
     void TakeScreenshots();
     i32 RemoveVmListNode(AnmVmListNode *node);
     static i32 ExecuteScript(AnmVm *vm);
+    ZunResult Draw(AnmVm *vm);
+    ZunResult DrawNoRotation(AnmVm *vm);
+    ZunResult DrawNoRotationNoRound(AnmVm *vm);
+    ZunResult Draw2D(AnmVm *vm);
+    ZunResult DrawCameraFacingQuad(AnmVm *vm);
+    ZunResult DrawProjected3DQuad(AnmVm *vm);
+    ZunResult DrawMode6(AnmVm *vm);
+    ZunResult DrawMode7(AnmVm *vm);
+    ZunResult Draw3D(AnmVm *vm);
+    ZunResult DrawVertices(AnmVm *vm, AnmVertex *vertices, i32 vertexCount);
 
     static void __fastcall OnUpdate(void *arg);
     static void __fastcall DrawLayer0(void *arg);
