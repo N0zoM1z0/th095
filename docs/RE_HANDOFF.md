@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 135 canonical units cover 88,300 authored bytes.
+- Reconstruction: 137 canonical units cover 88,338 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 56.29% (88,300 / 156,855)
+  relocations. Confirmed authored-byte coverage is now 55.65% (88,338 / 158,744)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,7 +25,7 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 161 authored candidates and leaves 1,669 origin/boundary reviews
+  confirms 164 authored candidates and leaves 1,666 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -168,6 +168,16 @@
   its 49 static call sites have the exact target distribution. The adjacent
   `LoadHelpAnm @ 0x004525D0` callback is independently exact for all 88 bytes
   and four relocations, proving the owner pointer and both load-state globals.
+- `SceneSelectControllerView::Draw @ 0x00452630` is source-present for the
+  complete shared front-end renderer. State 2 draws total/high scene scores,
+  captured-scene count, slow rate, success rate, and the cleared-scene marker;
+  state 3 draws one of four twenty-entry replay pages with name, level, scene,
+  timestamp, score, and slow rate under critical section 4. The natural VC7.1
+  body is 1,499 versus 1,851 target bytes but preserves all 19 static calls.
+  Exact 19-byte wrappers at `0x00445E40/0x00445E60` prove ownership of this
+  draw path and the adjacent 2,969-byte shared `Update` dispatcher. All
+  thirteen canonical units affected by naming scene-score rates at
+  `+0x48/+0x4C` replay unchanged.
 - `UpdatePhotoResultScreen @ 0x004294C0` is source-present for the complete
   TH095-specific photo browser and `BSTS` best-shot save path. Its VC7.1 probe
   has the target's full 1,323-byte instruction topology and resolves all 65
@@ -193,7 +203,7 @@
   best-shot paths. Their VC7.1 bodies are 681/1,415/1,071 bytes versus
   788/1,489/1,073-byte targets; the remaining differences are original
   inline-temporary frame gaps and a two-byte capture branch, so they receive
-  no exact credit. The source-present total is now 154 functions, and all ten
+  no exact credit. The source-present total is now 157 functions, and all ten
   canonical ResultScreen units replay unchanged after the expanded layouts.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
@@ -227,12 +237,14 @@ audit. Subsequent camera, ANM, replay, result-screen, scene-selection,
 options, and controller-input work continues to expand the honest denominator.
 Use the generated progress report for live counts; never preserve a percentage
 by withholding newly confirmed authored functions.
-The Help viewer is now source-present and its asynchronous file callback is
-exact. `WinMain` remains deferred because its remaining eight stack bytes have
-resisted the bounded VC7.1 oracle matrix. Continue with the adjacent front-end
-candidate at `0x00452630`, then return to the 16,066-byte TH095 scene-selection
-hub; prefer dependency-rich target-specific state machines over isolated leaf
-cleanup.
+The Help viewer and shared scene/replay text renderer are now source-present;
+their asynchronous callback and both chain ownership wrappers are exact.
+`WinMain` remains deferred because its remaining eight stack bytes have
+resisted the bounded VC7.1 oracle matrix. Continue with
+`SceneSelectControllerView::Update @ 0x00445E80`, whose exact wrapper and
+complete fan-out already establish ownership, then return to the 16,066-byte
+TH095 scene-selection hub. Prefer dependency-rich target-specific state
+machines over isolated leaf cleanup.
 
 1. Continue byte alignment of the now source-present 2,219-byte
    `PhotoCameraState::CalculatePhotoScore @ 0x00433140`. Its complete TH095

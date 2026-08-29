@@ -92,6 +92,14 @@ next action belongs in `RE_HANDOFF.md`.
 | HELP-002 | exact | `LoadHelpAnm @ 0x004525D0` loads the requested Help ANM through the shared archive-or-disk `FileSystem::OpenFile`, moves the owner state to 3, clears the active flag, and sets the completion flag. | Canonical 88-byte VC7.1 unit with all four relocations replayed |
 | HELP-003 | target-observed | The shared title-controller layout places the cursor at `+0x20`, VM handle array at `+0xBF4`, page-selection handles at `+0xE38`, transition handle at `+0x6100`, state at `+0x610C`, path buffer at `+0x6408`, data size at `+0x650C`, and owned file data at `+0x6510`. | Target field accesses and compile-time layout assertions |
 
+## Reconstructed front-end controller
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| FRONT-001 | compiler-observed | `SceneSelectControllerView::Draw @ 0x00452630` is source-present for both TH095-specific draw modes: scene totals/high score/capture and rate data in state 2, and four pages of twenty numbered or user replay records in state 3. Its natural VC7.1 body is 1,499 bytes versus the 1,851-byte target and preserves the exact 19-call topology. | Attested target body, strings, global references, exact dependency calls, and pinned VC7.1 semantic probe |
+| FRONT-002 | exact | The update/draw chain wrappers at `0x00445E40/0x00445E60` are each 19 bytes and call `SceneSelectControllerView::Update @ 0x00445E80` and `Draw @ 0x00452630` respectively. The update target fans out to scene selection, replay browser, options, Music Room, and Help viewer. | Two canonical VC7.1 units with their sole REL32 relocations replayed; attested target call graph |
+| FRONT-003 | target-observed | Scene-score entries store slow rate at `+0x48`, success rate at `+0x4C`, and flags at `+0x50`. The shared front-end controller stores replay page/selection at `+0x20/+0xF8`, selected scene score at `+0xBF0`, eighty replay pointers at `+0xEA8`, outer state at `+0x6110`, and rate-display flag bit 3 at `+0x6120`. | Target field accesses and compile-time layout assertions; thirteen affected canonical units replayed unchanged |
+
 ## Reconstructed main family
 
 | ID | Class | Durable fact | Evidence |

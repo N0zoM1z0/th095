@@ -152,3 +152,6 @@ th095::SkipMusicCommentLine
 th095::ReadMusicCommentLine
 th095::HelpMenuView::UpdateHelpMenu
 th095::LoadHelpAnm
+th095::SceneSelectControllerView::OnUpdate
+th095::SceneSelectControllerView::OnDraw
+th095::SceneSelectControllerView::Draw

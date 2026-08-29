@@ -141,8 +141,11 @@ cluster proves the shared replay/resource codec, archive/disk loader, and
 critical-section-2 accounting. The front-end Help page at `0x00451C80` is now
 source-present with an exact 88-byte asynchronous loader callback; the
 adjacent Music Room at `0x00450FC0` is source-present with both parser helpers
-exact. The adjacent `0x00452630` front-end candidate and the 16,066-byte TH095
-scene-selection hub are the next dependency-rich roots.
+exact. The adjacent `0x00452630` function is now source-present as the shared
+scene-result/replay-browser text renderer; exact wrappers at
+`0x00445E40/0x00445E60` prove its ownership alongside the
+2,969-byte shared update dispatcher at `0x00445E80`. That update dispatcher
+and the 16,066-byte scene-selection hub remain the next large roots.
 
 ## Shared engine versus TH095 gameplay
 

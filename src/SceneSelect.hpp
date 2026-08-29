@@ -22,8 +22,18 @@ struct SceneScoreEntryView
     };
     u8 unknown040[4];
     i32 unlockScore;
-    u8 unknown048[8];
-    u32 flags;
+    f32 slowRate;
+    f32 successRate;
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 captured : 1;
+            u32 showSuccessRateMarker : 1;
+            u32 unknownFlags : 30;
+        };
+    };
     u8 unknown054[0x0c];
 };
 
@@ -197,6 +207,10 @@ struct SceneSelectControllerView
     void RefreshSceneSelection(i32 unused);
     void BuildScenePreviewText();
     void UpdateSelectedSceneDetails();
+    ChainCallbackResult Update();
+    ChainCallbackResult Draw();
+    static void __fastcall OnUpdate(SceneSelectControllerView *controller);
+    static void __fastcall OnDraw(SceneSelectControllerView *controller);
     void SetDetailDigitSprite(i32 vmIndex, i32 spriteIndex);
     void ShowDetailDigit(i32 vmIndex);
     void HideDetailDigit(i32 vmIndex);
@@ -244,6 +258,9 @@ typedef char SceneScoreEntryUnlockScoreAt44[
     (offsetof(SceneScoreEntryView, unlockScore) == 0x44) ? 1 : -1];
 typedef char SceneScoreEntryFlagsAt50[
     (offsetof(SceneScoreEntryView, flags) == 0x50) ? 1 : -1];
+typedef char SceneScoreEntryRatesAt48[
+    (offsetof(SceneScoreEntryView, slowRate) == 0x48 &&
+     offsetof(SceneScoreEntryView, successRate) == 0x4c) ? 1 : -1];
 typedef char SceneDefinitionSizeIs30[
     (sizeof(SceneDefinitionView) == 0x30) ? 1 : -1];
 typedef char SceneDefinitionTitleArgumentsAt04[

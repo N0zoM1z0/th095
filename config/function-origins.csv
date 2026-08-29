@@ -616,9 +616,9 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00445CA0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00445CC0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00445DE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00445E40,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00445E60,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00445E80,authored,GameplayResource,authored,high,ghidra-gameplay-resource-cluster-2026-08-29
+0x00445E40,authored,FrontEndController,authored,exact,vc71-front-end-controller-wrappers-2026-08-29
+0x00445E60,authored,FrontEndController,authored,exact,vc71-front-end-controller-wrappers-2026-08-29
+0x00445E80,authored,FrontEndController,authored,high,front-end-controller-call-graph-2026-08-29
 0x00446A50,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00447750,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004479E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -642,7 +642,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00451B90,authored,MusicRoom,authored,exact,vc71-music-room-parser-2026-08-29
 0x00451C80,authored,HelpMenu,authored,high,vc71-help-menu-update-2026-08-29
 0x004525D0,authored,HelpMenu,authored,exact,vc71-help-menu-loader-2026-08-29
-0x00452630,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00452630,authored,FrontEndController,authored,high,vc71-front-end-controller-draw-2026-08-29
 0x00452D70,authored,AnmManager,authored,exact,vc71-anm-vm-color1-interpolation-2026-08-29
 0x00452E50,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00452E70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

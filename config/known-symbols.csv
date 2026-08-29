@@ -64,3 +64,7 @@ address,name,module,confidence,evidence
 0x00451B90,th095::ReadMusicCommentLine,MusicRoom,exact,Canonical relocation-free music-room-read-comment-line comparison
 0x00451C80,th095::HelpMenuView::UpdateHelpMenu,HelpMenu,high,Complete TH095 Help viewer state machine with target-exact 49-call topology
 0x004525D0,th095::LoadHelpAnm,HelpMenu,exact,Canonical help-menu-load-anm comparison with four relocations
+0x00445E40,th095::SceneSelectControllerView::OnUpdate,FrontEndController,exact,Canonical ownership wrapper targeting the shared update state machine
+0x00445E60,th095::SceneSelectControllerView::OnDraw,FrontEndController,exact,Canonical ownership wrapper targeting the shared draw path
+0x00445E80,th095::SceneSelectControllerView::Update,FrontEndController,high,Shared front-end dispatcher identified by exact wrapper and complete target call graph
+0x00452630,th095::SceneSelectControllerView::Draw,FrontEndController,high,Complete scene-result and replay-browser text renderer with exact 19-call topology

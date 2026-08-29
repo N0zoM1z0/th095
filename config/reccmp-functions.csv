@@ -153,3 +153,7 @@ th095::SkipMusicCommentLine,0x00451B00,function
 th095::ReadMusicCommentLine,0x00451B90,function
 th095::HelpMenuView::UpdateHelpMenu,0x00451C80,function
 th095::LoadHelpAnm,0x004525D0,function
+th095::SceneSelectControllerView::OnUpdate,0x00445E40,function
+th095::SceneSelectControllerView::OnDraw,0x00445E60,function
+th095::SceneSelectControllerView::Update,0x00445E80,function
+th095::SceneSelectControllerView::Draw,0x00452630,function
