@@ -11,6 +11,8 @@ namespace th095
 {
 typedef float f32;
 
+struct AnmVmId;
+
 enum ZunResult
 {
     ZUN_SUCCESS = 0,
@@ -586,6 +588,12 @@ struct AnmManager
     void ReleaseSurfaces();
     void TakeScreenshots();
     i32 RemoveVmListNode(AnmVmListNode *node);
+    AnmVm *GetVm(AnmVmId id);
+    void SetInterrupt(AnmVmId id, i32 interrupt);
+    void MarkVmForDeletion(AnmVmId id);
+    void SetPosition(AnmVmId id, Float3 *position);
+    Float3 *GetPosition(AnmVmId id);
+    void MarkVmsForDeletion(AnmLoaded *anmFile);
     static i32 ExecuteScript(AnmVm *vm);
     ZunResult Draw(AnmVm *vm);
     ZunResult DrawNoRotation(AnmVm *vm);

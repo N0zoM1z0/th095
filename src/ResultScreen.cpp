@@ -20,6 +20,12 @@ struct ResultScreenGlobalStateView
     u32 unknownFlags : 29;
 };
 
+struct ResultAnmVmHandleView
+{
+    u8 unknown000[0x228];
+    u32 flagsWord;
+};
+
 extern ResultScreenGlobalStateView *g_ResultScreenGlobalState;
 
 struct ResultRuntimeView
@@ -43,6 +49,8 @@ extern ResultPlayerConfigView *g_ResultPlayerConfig;
 extern u8 *g_ResultPlayerConfigTable[];
 extern i32 g_ResultSceneLimits[];
 extern const char *g_ResultAlphabet;
+extern ResultPhotoDataView *g_ResultPhotoData;
+extern ResultPhotoControllerView *g_ResultPhotoController;
 
 extern void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
@@ -98,6 +106,38 @@ i32 ResultPhotoDataView::FindBestShot()
         }
     }
     return bestShot;
+}
+
+void ResultScreen::PrepareBestShot()
+{
+    i32 bestShot = g_ResultPhotoData->FindBestShot();
+    if (bestShot >= 0)
+    {
+        g_ResultPhotoData->anm->SetAndExecuteScript(
+            &this->vms[23], bestShot * 2 + 1);
+
+        ResultScreenAnmVm *vm = &this->vms[23];
+        vm->spriteSize.x = vm->loadedSprite->uvEndX * 255.0f;
+        vm->spriteSize.y = vm->loadedSprite->uvEndY * 255.0f;
+
+        g_ResultPhotoData->photoVms[bestShot].SetInterrupt(2);
+        this->photoCursor.Set(bestShot);
+
+        if (bestShot < g_ResultPhotoController->GetPhotoCount())
+        {
+            this->photoCursor.count =
+                g_ResultPhotoController->GetPhotoCount();
+            this->photoCursor.wraps = 1;
+            for (i32 i = 0;
+                 i < g_ResultPhotoController->GetPhotoCount();
+                 i++)
+            {
+                reinterpret_cast<ResultAnmVmHandleView *>(
+                    g_ResultPhotoData->photoVms[i].GetVm())
+                    ->flagsWord |= 0x10000000;
+            }
+        }
+    }
 }
 
 i32 ResultScreenReplayCursor::Move(i32 amount)

@@ -389,7 +389,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00428590,788,0x004288A3,FUN_00428590,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004288B0,1489,0x00428E80,FUN_004288b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00428E90,1073,0x004292C0,FUN_00428e90,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004292D0,380,0x0042944B,FUN_004292d0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x004292D0,380,0x0042944B,FUN_004292d0,th095::ResultScreen::PrepareBestShot,ResultScreen,reconstructed,0.00,__thiscall,void ResultScreen::PrepareBestShot(),false,src/ResultScreen.cpp,Pinned VC7.1 semantic reconstruction emits the complete 380-byte body; the target reserves an additional unused 0x38-byte local-frame gap,authored,Source-present TH095 best-photo selection VM preview cursor initialization and photo-handle visibility setup
 0x00429450,108,0x004294BB,FUN_00429450,th095::ResultPhotoDataView::FindBestShot,ResultScreen,matching,100.00,__thiscall,i32 ResultPhotoDataView::FindBestShot(),false,src/ResultScreen.cpp,Canonical VC7.1 comparison: 108/108 bytes and no relocations,authored,Exact eleven-slot best-shot score maximum scan
 0x004294C0,1323,0x004299EA,FUN_004294c0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004299F0,189,0x00429AAC,FUN_004299f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -597,16 +597,16 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00444EF0,161,0x00444F90,FUN_00444ef0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00444FA0,180,0x00445053,FUN_00444fa0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00445060,169,0x00445108,FUN_00445060,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00445110,90,0x00445169,FUN_00445110,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00445170,50,0x004451A1,FUN_00445170,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004451B0,60,0x004451EB,FUN_004451b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004451F0,64,0x0044522F,FUN_004451f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00445230,60,0x0044526B,FUN_00445230,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00445270,87,0x004452C6,FUN_00445270,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00445110,90,0x00445169,FUN_00445110,th095::AnmManager::GetVm,AnmManager,matching,100.00,__thiscall,AnmVm *AnmManager::GetVm(AnmVmId id),false,src/AnmVmId.cpp,Canonical VC7.1 comparison: 90/90 bytes and no relocations,authored,Exact intrusive animation VM lookup by four-byte handle; 35 direct callers
+0x00445170,50,0x004451A1,FUN_00445170,th095::AnmManager::SetInterrupt,AnmManager,matching,100.00,__thiscall,"void AnmManager::SetInterrupt(AnmVmId id, i32 interrupt)",false,src/AnmVmId.cpp,Canonical relocation-aware VC7.1 comparison: 50/50 bytes and one relocation,authored,Exact handle-resolved pending interrupt setter; 17 direct callers
+0x004451B0,60,0x004451EB,FUN_004451b0,th095::AnmManager::MarkVmForDeletion,AnmManager,matching,100.00,__thiscall,void AnmManager::MarkVmForDeletion(AnmVmId id),false,src/AnmVmId.cpp,Canonical relocation-aware VC7.1 comparison: 60/60 bytes and one relocation,authored,Exact handle-resolved deferred VM deletion flag setter
+0x004451F0,64,0x0044522F,FUN_004451f0,th095::AnmManager::SetPosition,AnmManager,matching,100.00,__thiscall,"void AnmManager::SetPosition(AnmVmId id, Float3 *position)",false,src/AnmVmId.cpp,Canonical relocation-aware VC7.1 comparison: 64/64 bytes and one relocation,authored,Exact handle-resolved animation position-offset setter
+0x00445230,60,0x0044526B,FUN_00445230,th095::AnmManager::GetPosition,AnmManager,matching,100.00,__thiscall,Float3 *AnmManager::GetPosition(AnmVmId id),false,src/AnmVmId.cpp,Canonical relocation-aware VC7.1 comparison: 60/60 bytes and one relocation,authored,Exact nullable animation position-offset lookup
+0x00445270,87,0x004452C6,FUN_00445270,th095::AnmManager::MarkVmsForDeletion,AnmManager,matching,100.00,__thiscall,void AnmManager::MarkVmsForDeletion(AnmLoaded *anmFile),false,src/AnmVmId.cpp,Canonical VC7.1 comparison: 87/87 bytes and no relocations,authored,Exact intrusive-list scan marking every VM owned by one ANM file
 0x004452D0,26,0x004452E9,FUN_004452d0,th095::AnmVm::Draw,AnmVm,matching,100.00,__thiscall,void AnmVm::Draw(),false,src/AnmVmDraw.cpp,Canonical relocation-aware VC7.1 comparison: 26/26 bytes and two relocations,authored,Exact VM-to-manager draw forwarding wrapper used by nine target callers
 0x004452F0,51,0x00445322,FUN_004452f0,th095::AnmVmId::GetVm,AnmManager,matching,100.00,__thiscall,AnmVm *AnmVmId::GetVm(),false,src/AnmVmId.cpp,Canonical relocation-aware VC7.1 comparison: 51/51 bytes and 2 relocations,authored,Exact animation VM handle resolution and stale-handle clearing
 0x00445330,34,0x00445351,FUN_00445330,th095::AnmVmId::SetInterrupt,AnmManager,matching,100.00,__thiscall,void AnmVmId::SetInterrupt(i32 interrupt),false,src/AnmVmId.cpp,Canonical relocation-aware VC7.1 comparison: 34/34 bytes and 2 relocations,authored,Exact animation VM handle interrupt forwarding
-0x00445360,69,0x004453A4,FUN_00445360,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00445360,69,0x004453A4,FUN_00445360,th095::AnmVmId::SetSprite,AnmManager,matching,100.00,__thiscall,void AnmVmId::SetSprite(i32 spriteIndex),false,src/AnmVmId.cpp,Canonical relocation-aware VC7.1 comparison: 69/69 bytes and three relocations,authored,Exact handle wrapper resolving its VM and dispatching sprite selection through the owning ANM file
 0x004453B0,136,0x00445437,FUN_004453b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00445440,674,0x004456E1,FUN_00445440,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004456F0,646,0x00445975,FUN_004456f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,

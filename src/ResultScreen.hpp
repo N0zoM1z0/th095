@@ -2,6 +2,7 @@
 #define TH095_RESULT_SCREEN_HPP
 
 #include "Global.hpp"
+#include "AnmVmId.hpp"
 #include "ReplayManager.hpp"
 
 namespace th095
@@ -59,18 +60,26 @@ struct ResultScreenReplayCursor
         }
         else
         {
-            this->current = 0;
+            this->current = value;
         }
     }
 };
 
 struct ResultScreenAnmVm
 {
-    u8 unknown000[0x220];
+    u8 unknown000[0x40];
+    struct
+    {
+        f32 x;
+        f32 y;
+    } spriteSize;
+    u8 unknown048[0x220 - 0x48];
     u32 color1;
     u8 unknown224[0x22e - 0x224];
     i16 pendingInterrupt;
-    u8 unknown230[0x2cc - 0x230];
+    u8 unknown230[0x244 - 0x230];
+    struct ResultScreenLoadedSpriteView *loadedSprite;
+    u8 unknown248[0x2cc - 0x248];
 
     void SetInterrupt(i32 interrupt)
     {
@@ -88,6 +97,13 @@ struct ResultScreenAnmLoadedView
     void SetAndExecuteScript(ResultScreenAnmVm *vm, i32 scriptIndex);
 };
 
+struct ResultScreenLoadedSpriteView
+{
+    u8 unknown000[0x28];
+    f32 uvEndX;
+    f32 uvEndY;
+};
+
 struct ResultPhotoSlotView
 {
     u8 unknown0000[0x21f4];
@@ -98,8 +114,20 @@ struct ResultPhotoSlotView
 struct ResultPhotoDataView
 {
     ResultPhotoSlotView slots[11];
+    u8 unknown176dc[0x17720 - 0x176dc];
+    AnmVmId photoVms[11];
+    u8 unknown1774c[0x2571c - 0x1774c];
+    ResultScreenAnmLoadedView *anm;
 
     i32 FindBestShot();
+};
+
+struct ResultPhotoControllerView
+{
+    u8 unknown000[0x29ec];
+    i32 photoCount;
+
+    i32 GetPhotoCount() { return this->photoCount; }
 };
 
 typedef char ResultPhotoSlotViewSizeIs2214[
@@ -124,6 +152,7 @@ struct ResultScreen
     i32 notificationTimer;                // +0x6e20
 
     i32 UpdateCursor(i32 firstVm);
+    void PrepareBestShot();
     ZunResult LoadReplays();
     ChainCallbackResult Update();
     ChainCallbackResult Draw();

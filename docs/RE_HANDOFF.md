@@ -10,21 +10,21 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 94 canonical units cover 77,383 authored bytes.
+- Reconstruction: 101 canonical units cover 77,863 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 59.66% (77,383 / 129,709)
+  relocations. Confirmed authored-byte coverage is now 59.81% (77,863 / 130,189)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
   (14,363 bytes), eleven replay/menu/best-shot functions (15,512 bytes), and
   ten gameplay/resource functions (25,601 bytes). This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 116 authored candidates and leaves 1,714 origin/boundary reviews
+  confirms 123 authored candidates and leaves 1,707 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -32,7 +32,7 @@
   object construction/release. Twenty-six sound units contribute 8,133 bytes.
   TH095 uses 37 producer-owned file slots and 47 duplicate-buffer mappings.
 - ANM build profile: `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`
-  reproduces the dispatcher and six exact ANM helpers under pinned VC7.1
+  reproduces the dispatcher and the expanded exact ANM helper family under pinned VC7.1
   build 3077. The 0x400-byte dispatcher frame and `[ebp-0x17C]` VM home are
   exact compiler-oracle results.
 - ECL uses the same bounded compiler profile. Its exact body has a 0x9EC-byte
@@ -67,6 +67,11 @@
   an `AnmVmBase` plus derived `AnmVm`, a primary VM at `+0xF0C`, two inline
   vertex arrays, a VM list at `+0x381814`, and nine preallocated VMs at
   `+0x38181C`; VC7.1 consequently emits the exact vector/EH machinery.
+- The handle-backed intrusive VM core is now exact from lookup through mutation:
+  `GetVm` (90 bytes), `SetInterrupt` (50), deferred deletion (60), position
+  set/get (64/60), ANM-file-wide deletion (87), and `AnmVmId::SetSprite` (69).
+  These seven units add 480 exact bytes and prove `AnmVm+0x00/+0x10/+0x228/
+  +0x22E/+0x230` as next/id/flags/pending-interrupt/owning-ANM fields.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
   bytes are stack allocation/displacement differences and receive no credit.
@@ -96,7 +101,7 @@ python3 scripts/report-reconstruction-status.py --summary
 
 The earlier narrow 95% checkpoint is superseded by the target-local origin
 audit. Subsequent camera, ANM, replay, and result-screen work expanded the
-honest denominator to 129,709 bytes; exact coverage is 59.66%. `WinMain` remains
+honest denominator to 130,189 bytes; exact coverage is 59.81%. `WinMain` remains
 deferred because its remaining eight
 stack bytes have resisted the bounded VC7.1 oracle matrix.
 
@@ -143,8 +148,15 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    eleven `0x2214`-byte slots. `ResultScreen::OnDraw @ 0x0042A6E0` is also
    exact and proves the 2,573-byte `ResultScreen::Draw @ 0x00429C80` authored
    origin; admitting that formerly unknown draw body expanded the denominator
-   immediately. The 51-byte `AnmVmId::GetVm` and 34-byte `SetInterrupt`
-   dependencies are exact and shared by seven and ten callers.
+   immediately. `ResultScreen::PrepareBestShot @ 0x004292D0` is now
+   source-present for the complete 380-byte TH095 preview selection path; its
+   generated instruction stream has the target length, but the original
+   function's unused 0x38-byte local-frame gap remains unresolved and receives
+   no exact credit. The underlying intrusive-VM API is exact:
+   `AnmManager::GetVm @ 0x00445110` has 35 direct callers, and its interrupt,
+   deferred-deletion, position, ANM-file deletion, and handle sprite wrappers
+   add six more canonical units. The 51-byte `AnmVmId::GetVm` and 34-byte
+   `SetInterrupt` wrappers remain exact as well.
    Continue byte alignment of the 6,471-byte dispatcher, then move to the
    16,066-byte gameplay/resource hub at `0x00447D00`.
 

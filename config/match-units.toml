@@ -6367,8 +6367,8 @@ symbol = "?GetVm@AnmVmId@th095@@QAEPAUAnmVm@2@XZ"
 target_address = 0x004452F0
 size = 0x33
 relocations = [
-  { offset = 0x11, type = "DIR32", symbol = "?g_AnmVmIdManager@th095@@3PAUAnmManagerVmIdView@1@A", target = 0x004CA1B8 },
-  { offset = 0x16, type = "REL32", symbol = "?GetVm@AnmManagerVmIdView@th095@@QAEPAUAnmVm@2@H@Z", target = 0x00445110 },
+  { offset = 0x11, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x16, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
 ]
 
 [units.anm-vm-id-set-interrupt]
@@ -6380,8 +6380,90 @@ symbol = "?SetInterrupt@AnmVmId@th095@@QAEXH@Z"
 target_address = 0x00445330
 size = 0x22
 relocations = [
-  { offset = 0x13, type = "DIR32", symbol = "?g_AnmVmIdManager@th095@@3PAUAnmManagerVmIdView@1@A", target = 0x004CA1B8 },
-  { offset = 0x18, type = "REL32", symbol = "?SetInterrupt@AnmManagerVmIdView@th095@@QAEXHH@Z", target = 0x00445170 },
+  { offset = 0x13, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x18, type = "REL32", symbol = "?SetInterrupt@AnmManager@th095@@QAEXUAnmVmId@2@H@Z", target = 0x00445170 },
+]
+
+[units.anm-manager-get-vm]
+source = "src/AnmVmId.cpp"
+object = "build/matching/AnmVmId.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::GetVm"]
+symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z"
+target_address = 0x00445110
+size = 0x5A
+relocations = []
+
+[units.anm-manager-set-interrupt]
+source = "src/AnmVmId.cpp"
+object = "build/matching/AnmVmId.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::SetInterrupt"]
+symbol = "?SetInterrupt@AnmManager@th095@@QAEXUAnmVmId@2@H@Z"
+target_address = 0x00445170
+size = 0x32
+relocations = [
+  { offset = 0x11, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+]
+
+[units.anm-manager-mark-vm-for-deletion]
+source = "src/AnmVmId.cpp"
+object = "build/matching/AnmVmId.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::MarkVmForDeletion"]
+symbol = "?MarkVmForDeletion@AnmManager@th095@@QAEXUAnmVmId@2@@Z"
+target_address = 0x004451B0
+size = 0x3C
+relocations = [
+  { offset = 0x11, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+]
+
+[units.anm-manager-set-position]
+source = "src/AnmVmId.cpp"
+object = "build/matching/AnmVmId.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::SetPosition"]
+symbol = "?SetPosition@AnmManager@th095@@QAEXUAnmVmId@2@PAUFloat3@2@@Z"
+target_address = 0x004451F0
+size = 0x40
+relocations = [
+  { offset = 0x11, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+]
+
+[units.anm-manager-get-position]
+source = "src/AnmVmId.cpp"
+object = "build/matching/AnmVmId.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::GetPosition"]
+symbol = "?GetPosition@AnmManager@th095@@QAEPAUFloat3@2@UAnmVmId@2@@Z"
+target_address = 0x00445230
+size = 0x3C
+relocations = [
+  { offset = 0x11, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+]
+
+[units.anm-manager-mark-vms-for-deletion]
+source = "src/AnmVmId.cpp"
+object = "build/matching/AnmVmId.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::MarkVmsForDeletion"]
+symbol = "?MarkVmsForDeletion@AnmManager@th095@@QAEXPAUAnmLoaded@2@@Z"
+target_address = 0x00445270
+size = 0x57
+relocations = []
+
+[units.anm-vm-id-set-sprite]
+source = "src/AnmVmId.cpp"
+object = "build/matching/AnmVmId.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmVmId::SetSprite"]
+symbol = "?SetSprite@AnmVmId@th095@@QAEXH@Z"
+target_address = 0x00445360
+size = 0x45
+relocations = [
+  { offset = 0x11, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x16, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x3B, type = "REL32", symbol = "?SetSprite@AnmLoaded@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@H@Z", target = 0x00439E30 },
 ]
 
 [units.result-screen-on-draw]
