@@ -122,3 +122,7 @@ th095::SceneValueQueue::Push,0x00450DD0,function
 th095::SceneSelectControllerView::BuildScenePreviewText,0x0044BEA0,function
 th095::SceneSelectControllerView::ResolveSceneText,0x0044D020,function
 th095::AnmTextManagerView::DrawTextLeft,0x00443CE0,function
+th095::SceneSelectControllerView::UpdateSelectedSceneDetails,0x0044C670,function
+th095::SceneSelectControllerView::SetDetailDigitSprite,0x0044CF60,function
+th095::SceneSelectControllerView::ShowDetailDigit,0x0044CFA0,function
+th095::SceneSelectControllerView::HideDetailDigit,0x0044CFE0,function

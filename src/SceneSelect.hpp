@@ -3,6 +3,7 @@
 
 #include "Global.hpp"
 #include "AnmVmId.hpp"
+#include <time.h>
 
 namespace th095
 {
@@ -11,8 +12,14 @@ struct SceneScoreEntryView
 {
     u8 unknown000[0x10];
     i32 score;
-    u8 unknown014[0x28];
-    i32 attemptCount;
+    u8 unknown014[4];
+    i32 detailScore;
+    u8 unknown01c[0x20];
+    union
+    {
+        i32 attemptCount;
+        time_t captureTime;
+    };
     u8 unknown040[4];
     i32 unlockScore;
     u8 unknown048[8];
@@ -80,7 +87,9 @@ struct SceneAnmVmId
 
 struct SceneAnmVmView
 {
-    u8 unknown000[0x2c0];
+    u8 unknown000[0x228];
+    u32 flagsWord;
+    u8 unknown22c[0x94];
     u8 glyphWidth;
     u8 glyphHeight;
 };
@@ -96,6 +105,7 @@ extern SceneAnmManagerView *g_SceneAnmManager;
 
 struct SceneAnmLoadedView
 {
+    void SetSprite(SceneAnmVmView *vm, i32 spriteIndex);
     SceneAnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
 };
 
@@ -121,11 +131,12 @@ struct ScenePreviewTextSourcesView
 
 struct SceneSelectControllerView
 {
-    u8 unknown0000[0x20];
+    SceneAnmLoadedView *sceneAnm;
+    u8 unknown0004[0x1c];
     i32 selectedGroup;
     u8 unknown0024[0x1ac];
     SceneGroupCursorView groupCursors[12];
-    i32 refreshArgument;
+    i32 selectedScoreEntryIndex;
     union
     {
         SceneAnmVmIdArray vmIds;
@@ -155,6 +166,28 @@ struct SceneSelectControllerView
 
     void RefreshSceneSelection(i32 unused);
     void BuildScenePreviewText();
+    void UpdateSelectedSceneDetails();
+    void SetDetailDigitSprite(i32 vmIndex, i32 spriteIndex);
+    void ShowDetailDigit(i32 vmIndex);
+    void HideDetailDigit(i32 vmIndex);
+
+    void SetDetailDigitSpriteInline(i32 vmIndex, i32 spriteIndex)
+    {
+        this->sceneAnm->SetSprite(
+            g_SceneAnmManager->GetVm(this->vmIds.values[vmIndex]),
+            spriteIndex);
+    }
+
+    void ShowDetailDigitInline(i32 vmIndex)
+    {
+        g_SceneAnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord |= 2;
+    }
+
+    void HideDetailDigitInline(i32 vmIndex)
+    {
+        g_SceneAnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord &= ~2;
+    }
+
     char *ResolveSceneText(i32 textId, i32 column, i32 argument1,
                            i32 argument2);
 };
@@ -175,6 +208,8 @@ typedef char SceneScoreEntrySizeIs60[
     (sizeof(SceneScoreEntryView) == 0x60) ? 1 : -1];
 typedef char SceneScoreEntryScoreAt10[
     (offsetof(SceneScoreEntryView, score) == 0x10) ? 1 : -1];
+typedef char SceneScoreEntryDetailScoreAt18[
+    (offsetof(SceneScoreEntryView, detailScore) == 0x18) ? 1 : -1];
 typedef char SceneScoreEntryUnlockScoreAt44[
     (offsetof(SceneScoreEntryView, unlockScore) == 0x44) ? 1 : -1];
 typedef char SceneScoreEntryFlagsAt50[
@@ -191,6 +226,8 @@ typedef char SceneAnmVmIdSizeIs4[
 typedef char SceneAnmVmGlyphSizeAt2C0[
     (offsetof(SceneAnmVmView, glyphWidth) == 0x2c0 &&
      offsetof(SceneAnmVmView, glyphHeight) == 0x2c1) ? 1 : -1];
+typedef char SceneAnmVmFlagsAt228[
+    (offsetof(SceneAnmVmView, flagsWord) == 0x228) ? 1 : -1];
 typedef char SceneValueQueueSizeIs48[
     (sizeof(SceneValueQueue) == 0x48) ? 1 : -1];
 typedef char SceneGroupCursorSizeIsD8[
@@ -203,6 +240,9 @@ typedef char SceneSelectGroupCursorsAt1D0[
     (offsetof(SceneSelectControllerView, groupCursors) == 0x1d0) ? 1 : -1];
 typedef char SceneSelectVmIdsAtBF4[
     (offsetof(SceneSelectControllerView, vmIds) == 0xbf4) ? 1 : -1];
+typedef char SceneSelectScoreEntryAtBF0[
+    (offsetof(SceneSelectControllerView, selectedScoreEntryIndex) == 0xbf0)
+        ? 1 : -1];
 typedef char SceneSelectDisplayStatesAtE88[
     (offsetof(SceneSelectControllerView, lockedDisplayState) == 0xe88) ? 1 : -1];
 typedef char SceneSelectPreviewTextSourcesAtE60[

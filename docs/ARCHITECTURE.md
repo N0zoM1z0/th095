@@ -122,8 +122,10 @@ traditional stage loop. The adjacent 716-byte preview/status updater at
 `0x0044BBD0` is source-present with its 78-byte bounded-queue dependency
 exact. Its staged 1,989-byte preview-text builder at `0x0044BEA0` and 128-byte
 rolling-key text decoder at `0x0044D020` are now exact. The next adjacent
-dependency-first lane is the 2,278-byte scene-detail updater at `0x0044C670`,
-followed by the main hub.
+2,278-byte scene-detail updater at `0x0044C670` and its three VM helpers are
+also exact. The next dependency-first lane is the 2,054-byte scene-select
+state updater at `0x0044DCA0` (twelve internal callees), followed by the main
+hub.
 
 ## Shared engine versus TH095 gameplay
 

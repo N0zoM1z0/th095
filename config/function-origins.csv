@@ -625,10 +625,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00447D00,authored,GameplayResource,authored,high,ghidra-gameplay-resource-cluster-2026-08-29
 0x0044BBD0,authored,SceneSelect,authored,high,vc71-scene-selection-refresh-2026-08-29
 0x0044BEA0,authored,SceneSelect,authored,exact,vc71-scene-preview-text-2026-08-29
-0x0044C670,authored,GameplayResource,authored,high,ghidra-gameplay-resource-cluster-2026-08-29
-0x0044CF60,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0044CFA0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0044CFE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0044C670,authored,SceneSelect,authored,exact,vc71-scene-detail-display-2026-08-29
+0x0044CF60,authored,SceneSelect,authored,exact,vc71-scene-detail-display-2026-08-29
+0x0044CFA0,authored,SceneSelect,authored,exact,vc71-scene-detail-display-2026-08-29
+0x0044CFE0,authored,SceneSelect,authored,exact,vc71-scene-detail-display-2026-08-29
 0x0044D020,authored,SceneSelect,authored,exact,vc71-scene-preview-text-decoder-2026-08-29
 0x0044D0A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0044DCA0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
