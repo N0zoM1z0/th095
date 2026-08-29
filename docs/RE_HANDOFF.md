@@ -133,6 +133,15 @@
   interrupts, six VM creations, and seven sound calls). The remaining 54-byte
   excess is compiler-local digit-sprite allocation and receives no exact
   credit.
+- The controller input dependency chain at `0x004193A0..0x00419ADB` is now
+  exact for five functions and 1,820 authored bytes, including 67 relocation
+  fields. It proves the target-local two-device WinMM/DirectInput selection,
+  three configured joystick bindings per input slot, 32/128-button raw state
+  paths, and `0x8E`-byte input-slot layout. The complete 2,662-byte
+  `Controller::GetInput @ 0x00419AE0` is source-present for keyboard mapping,
+  the third aggregate input slot, and all repeat/pressed/released histories.
+  Its natural VC7.1 body is 2,655 bytes; the seven-byte compiler-temporary
+  residual receives no exact credit.
 - `UpdatePhotoResultScreen @ 0x004294C0` is source-present for the complete
   TH095-specific photo browser and `BSTS` best-shot save path. Its VC7.1 probe
   has the target's full 1,323-byte instruction topology and resolves all 65
@@ -188,9 +197,10 @@ python3 scripts/report-reconstruction-status.py --summary
 ## Next bounded lane
 
 The earlier narrow 95% checkpoint is superseded by the target-local origin
-audit. Subsequent camera, ANM, replay, result-screen, scene-selection, and
-options work expanded the honest denominator to 144,801 bytes; exact coverage
-is 58.17%.
+audit. Subsequent camera, ANM, replay, result-screen, scene-selection,
+options, and controller-input work continues to expand the honest denominator.
+Use the generated progress report for live counts; never preserve a percentage
+by withholding newly confirmed authored functions.
 `WinMain` remains
 deferred because its remaining eight
 stack bytes have resisted the bounded VC7.1 oracle matrix.
@@ -269,10 +279,11 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    adjacent 10,103-byte state machine at `0x0044E4B0` is now identified and
    reconstructed as the full option/key-configuration page. Its exact static
    call topology is recovered, so defer the remaining compiler-local 54-byte
-   excess. Next reconstruct `Controller::GetControllerState @ 0x00419910`,
-   which supplies the option page's 32-button DirectInput/WinMM snapshot, then
-   continue classifying the adjacent front-end pages at `0x00450FC0` and
-   `0x00451C80`.
+   excess. Its controller dependency chain through `0x00419AE0` is now exact
+   except for the seven-byte `GetInput` compiler-shape residual. Next classify
+   and reconstruct the adjacent controller initialization/reset family at
+   `0x0041A550..0x0041AC4E`, then continue the front-end pages at `0x00450FC0`
+   and `0x00451C80`.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

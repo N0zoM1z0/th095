@@ -57,6 +57,16 @@ next action belongs in `RE_HANDOFF.md`.
 | ARCH-010 | exact | `0x00429C80` is the `ResultScreen` member draw path. Its 45-byte suppression wrapper at `0x0042A6E0` calls it directly; the draw body covers best-shot statistics, twenty replay-slot rows, replay-name metadata, and the 6x16 keyboard. | Canonical `result-screen-on-draw` relocation and attested target draw body |
 | ARCH-011 | exact | The five-function cluster at `0x004364F0..0x00436751` implements TH095 scene progression: twelve scene groups index 120 persistent score records, and group availability can be satisfied by total score plus the preceding group's unlock score, global captures, or preceding-group captures. The descriptive `SceneSaveDataView` name is target-local repository terminology, not a recovered original class name. | Five canonical VC7.1 units totaling 586 bytes with thirteen relocations replayed and compile-time layout assertions |
 
+## Reconstructed controller input
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| INPUT-001 | exact | The five controller helpers at `0x004193A0..0x00419ADB` reproduce 1,820 authored bytes and all 67 relocation fields. They cover joystick discovery, per-slot controller mapping, both button-bit helpers, and raw controller-state acquisition. | Five canonical `controller-*` units under pinned VC7.1 build 3077 |
+| INPUT-002 | target-observed | TH095 owns `0x8E`-byte input slots at `0x004BE218`. Each slot begins with current, previous, repeat, pressed, and released masks plus sixteen held-frame counters; joystick bindings for shoot, bomb, focus, and menu are at `+0x58..+0x5E`. | Exact controller units, target field accesses, and compile-time layout assertions |
+| INPUT-003 | exact | `Controller::GetControllerInput @ 0x00419410` selects WinMM or DirectInput through runtime flag bit 11, applies three independently configured bindings, and adds X/Y axis directions. TH095 selects one of two devices for each input slot instead of TH08's single-controller path. | Canonical 1,030-byte unit with 37 replayed relocations and TH08 source-shape corroboration |
+| INPUT-004 | compiler-observed | `Controller::GetInput @ 0x00419AE0` is source-present for the complete TH095 keyboard and dual-controller aggregation path, including the third aggregate slot and per-bit repeat/pressed/released histories. Its natural VC7.1 body is 2,655 bytes versus the 2,662-byte target; the seven-byte register/temporary allocation residual receives no exact credit. | Attested target body, exact five-function dependency chain, and non-canonical pinned-VC7.1 probe |
+| INPUT-005 | exact | `Controller::GetControllerState @ 0x00419910` expands 32 WinMM buttons or copies 128 DirectInput buttons. The original DirectInput path discards `GetDeviceState`'s result and rechecks the earlier `Poll` result; the reconstruction preserves this behavior. | Canonical 460-byte unit with 23 replayed relocations |
+
 ## Reconstructed main family
 
 | ID | Class | Durable fact | Evidence |

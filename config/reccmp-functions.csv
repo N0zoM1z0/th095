@@ -136,3 +136,9 @@ th095::ReplayScanWorker::Start,0x0041BBA0,function
 th095::SceneSupervisorView::StartReplayScan,0x004255B0,function
 th095::SceneSupervisorView::StopReplayScan,0x00425640,function
 th095::OptionsMenuView::Update,0x0044E4B0,function
+th095::Controller::GetJoystickCaps,0x004193A0,function
+th095::Controller::GetControllerInput,0x00419410,function
+th095::Controller::SetButtonFromDirectInputJoystate,0x00419820,function
+th095::Controller::SetButtonFromControllerInputs,0x004198A0,function
+th095::Controller::GetControllerState,0x00419910,function
+th095::Controller::GetInput,0x00419AE0,function

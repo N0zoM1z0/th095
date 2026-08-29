@@ -43,26 +43,21 @@ included.
 ## Current status
 
 TH095 is in active reconstruction. An attested Ghidra 12.1.3 headless import
-supplies 1,830 provisional function candidates. One hundred one canonical units
-now reproduce 77,863 authored bytes exactly, including the complete 17,018-byte
-`AnmManager::ExecuteScript`, 27,091-byte `EclManager::RunEcl`, the
-target-specific asynchronous `SoundPlayer` core, and the exact Main/D3D
-runtime family. The TH095-specific replay lifetime, chain-registration,
-per-frame input/FPS stream, disk/archive loading, compressed replay writing,
-USER metadata, playback display path, and twenty-slot result-screen replay
-loader are also exact. A target-local audit
-has now admitted 60,307 additional bytes
-from the photography/camera, replay/menu, and gameplay/resource clusters, so
-exact coverage is 59.81% of the expanded 130,189-byte authored set. The complete
-6,471-byte TH095 ResultScreen update dispatcher is source-present for all
-sixteen photo-result, replay-selection, and replay-name states; its current
-VC7.1 body is 5,979 bytes and remains uncredited until it is byte-exact. The
-380-byte best-shot preparation path is also source-present, while its
-35-caller VM lookup and the adjacent interrupt/deletion/position manager APIs
-are canonical exact. The global
-denominator remains provisional while origin review continues. Mapping, source
-presence, semantic validation, and exact matches are deliberately tracked as
-independent states.
+supplies 1,830 provisional function candidates; the generated progress badge
+and report are the canonical live totals. Exact units include the complete
+17,018-byte `AnmManager::ExecuteScript`, 27,091-byte `EclManager::RunEcl`, the
+target-specific asynchronous `SoundPlayer` core, and the Main/D3D runtime
+family. The TH095-specific replay stream, disk/archive loader, compressed
+writer, result-screen dependencies, scene-selection helpers, photography
+camera helpers, and five-function WinMM/DirectInput controller chain are also
+exact. The complete dual-device and aggregate `Controller::GetInput` path is
+source-present.
+
+A target-local audit continues to admit photography/camera, replay/menu,
+scene-selection, options, and gameplay/resource functions as their authored
+origins are proved. Mapping, source presence, semantic validation, and exact
+matches are deliberately tracked as independent states, so the denominator
+can grow and difficult compiler-shape residuals remain uncredited.
 The aspirational reconstruction target is 99.5% of that conservative authored
 denominator, but difficult units remain uncredited rather than weakening the
 exact-match standard.

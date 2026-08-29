@@ -63,6 +63,7 @@ flowchart LR
     Main --> Chain[calc/draw Chain]
     Main --> Anm[AnmManager]
     Window --> Render[Render\n0x00420770 exact]
+    Window --> Input[Controller input\n0x004193A0..0x0041A545]
     Render --> Chain
     Render --> Sound
     Render --> Anm
@@ -127,9 +128,14 @@ also exact. Target evidence now identifies `0x0044DCA0` as the TH095-specific
 4-by-20 replay browser rather than a scene-select state updater. Its complete
 2,054-byte topology is source-present with all 77 relocations resolved; the
 306-byte critical-section slot loader and 21-byte exit setter are exact. The
-next dependency-first lane is the adjacent 10,103-byte UI state machine at
-`0x0044E4B0`, which shares the cursor and ANM-handle layout and has 122 direct
-ANM-manager references.
+10,103-byte options state machine at `0x0044E4B0` is source-present and
+its controller dependency chain at `0x004193A0..0x00419ADB` is exact for
+another 1,820 bytes. The complete `Controller::GetInput @ 0x00419AE0` source
+proves TH095's two independently assigned devices, third aggregate input slot,
+and per-bit repeat/pressed/released histories; its seven-byte compiler-shape
+residual remains uncredited. The next dependency-first lane is the adjacent
+controller initialization/reset family at `0x0041A550..0x0041AC4E`, followed
+by the front-end pages at `0x00450FC0` and `0x00451C80`.
 
 ## Shared engine versus TH095 gameplay
 

@@ -1,13 +1,9 @@
 #include "OptionsMenu.hpp"
+#include "Controller.hpp"
 #include "SoundPlayer.hpp"
 
 namespace th095
 {
-
-namespace Controller
-{
-u8 *GetControllerState(i32 deviceIndex);
-}
 
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;

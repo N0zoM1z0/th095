@@ -47,3 +47,9 @@ address,name,module,confidence,evidence
 0x004255B0,th095::SceneSupervisorView::StartReplayScan,Supervisor,exact,Canonical Supervisor replay-scan launch VC7.1 comparison with five relocations
 0x00425640,th095::SceneSupervisorView::StopReplayScan,Supervisor,exact,Canonical Supervisor replay-scan stop VC7.1 comparison
 0x0044E4B0,th095::OptionsMenuView::Update,OptionsMenu,high,Complete options and joystick-binding state machine with target-exact static call topology
+0x004193A0,th095::Controller::GetJoystickCaps,Controller,exact,Canonical controller-get-joystick-caps VC7.1 comparison with seven relocations
+0x00419410,th095::Controller::GetControllerInput,Controller,exact,Canonical controller-get-controller-input VC7.1 comparison with 37 relocations
+0x00419820,th095::Controller::SetButtonFromDirectInputJoystate,Controller,exact,Canonical relocation-free DirectInput button mapper comparison
+0x004198A0,th095::Controller::SetButtonFromControllerInputs,Controller,exact,Canonical relocation-free WinMM button mapper comparison
+0x00419910,th095::Controller::GetControllerState,Controller,exact,Canonical controller-get-state VC7.1 comparison with 23 relocations
+0x00419AE0,th095::Controller::GetInput,Controller,high,Complete target-local keyboard and dual-controller input aggregator; seven-byte compiler-shape residual

@@ -7018,3 +7018,123 @@ size = 0x19
 relocations = [
   { offset = 0x11, type = "REL32", symbol = "?Stop@ReplayScanWorker@th095@@QAEXXZ", target = 0x0041BB20 },
 ]
+
+[units.controller-get-joystick-caps]
+source = "src/Controller.cpp"
+object = "build/matching/Controller.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Controller::GetJoystickCaps"]
+symbol = "?GetJoystickCaps@Controller@th095@@YIGXZ"
+target_address = 0x004193A0
+size = 0x65
+relocations = [
+  { offset = 0x1C, type = "DIR32", symbol = "__imp__joyGetPosEx@8", target = 0x00495268 },
+  { offset = 0x2C, type = "DIR32", symbol = "__imp__joyGetPosEx@8", target = 0x00495268 },
+  { offset = 0x35, type = "DIR32", symbol = "??_C@_0CJ@KCBEENJD@?$IOg?$IC?$KG?$IC?i?$IDp?$IDb?$IDh?$IC?$KK?$JB?$LG?$IN?$NN?$IC?$LF?$IC?H?$IC?$KC?$IC?f?$IC?$KE?$IC?E?$IC?$LH@", target = 0x004956E8 },
+  { offset = 0x3A, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3VGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x3F, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x52, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0x5A, type = "DIR32", symbol = "__imp__joyGetDevCapsA@12", target = 0x00495238 },
+]
+
+[units.controller-get-controller-input]
+source = "src/Controller.cpp"
+object = "build/matching/Controller.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Controller::GetControllerInput"]
+symbol = "?GetControllerInput@Controller@th095@@YIGHHG@Z"
+target_address = 0x00419410
+size = 0x406
+relocations = [
+  { offset = 0x23, type = "DIR32", symbol = "?g_ControllerInputSlots@th095@@3UControllerInputSlotView@1@A", target = 0x004BE218 },
+  { offset = 0x2C, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
+  { offset = 0x69, type = "DIR32", symbol = "__imp__joyGetPosEx@8", target = 0x00495268 },
+  { offset = 0x8B, type = "REL32", symbol = "?SetButtonFromControllerInputs@Controller@th095@@YIIPAGFGI@Z", target = 0x004198A0 },
+  { offset = 0xA0, type = "REL32", symbol = "?SetButtonFromControllerInputs@Controller@th095@@YIIPAGFGI@Z", target = 0x004198A0 },
+  { offset = 0xB5, type = "REL32", symbol = "?SetButtonFromControllerInputs@Controller@th095@@YIIPAGFGI@Z", target = 0x004198A0 },
+  { offset = 0xD3, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0xD9, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0xFE, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0x104, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0x13C, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0x142, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0x177, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0x17D, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0x1A2, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0x1A8, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0x1DD, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0x1E3, type = "DIR32", symbol = "?g_JoystickCaps@th095@@3UtagJOYCAPSA@@A", target = 0x004BDEE0 },
+  { offset = 0x210, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x21D, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x23F, type = "DIR32", symbol = "??_C@_0BK@BJPCNFPG@error?5?3?5DIERR_INPUTLOST?$AN?6?$AA@", target = 0x00495734 },
+  { offset = 0x244, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x254, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x261, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x280, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x28D, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x2A2, type = "DIR32", symbol = "??_C@_0BN@KAGFBIKB@error?5?3?5DIERR_INPUTLOST?5?$CFd?$AN?6?$AA@", target = 0x00495714 },
+  { offset = 0x2A7, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x301, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x30E, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x33E, type = "REL32", symbol = "?SetButtonFromDirectInputJoystate@Controller@th095@@YIIPAGFGPAE@Z", target = 0x00419820 },
+  { offset = 0x359, type = "REL32", symbol = "?SetButtonFromDirectInputJoystate@Controller@th095@@YIIPAGFGPAE@Z", target = 0x00419820 },
+  { offset = 0x371, type = "REL32", symbol = "?SetButtonFromDirectInputJoystate@Controller@th095@@YIIPAGFGPAE@Z", target = 0x00419820 },
+  { offset = 0x378, type = "DIR32", symbol = "?g_ControllerPadXAxis@th095@@3FA", target = 0x004C4834 },
+  { offset = 0x39A, type = "DIR32", symbol = "?g_ControllerPadXAxis@th095@@3FA", target = 0x004C4834 },
+  { offset = 0x3BC, type = "DIR32", symbol = "?g_ControllerPadYAxis@th095@@3FA", target = 0x004C4836 },
+  { offset = 0x3DC, type = "DIR32", symbol = "?g_ControllerPadYAxis@th095@@3FA", target = 0x004C4836 },
+]
+
+[units.controller-set-button-directinput]
+source = "src/Controller.cpp"
+object = "build/matching/Controller.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Controller::SetButtonFromDirectInputJoystate"]
+symbol = "?SetButtonFromDirectInputJoystate@Controller@th095@@YIIPAGFGPAE@Z"
+target_address = 0x00419820
+size = 0x76
+relocations = []
+
+[units.controller-set-button-winmm]
+source = "src/Controller.cpp"
+object = "build/matching/Controller.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Controller::SetButtonFromControllerInputs"]
+symbol = "?SetButtonFromControllerInputs@Controller@th095@@YIIPAGFGI@Z"
+target_address = 0x004198A0
+size = 0x6F
+relocations = []
+
+[units.controller-get-state]
+source = "src/Controller.cpp"
+object = "build/matching/Controller.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Controller::GetControllerState"]
+symbol = "?GetControllerState@Controller@th095@@YIPAEH@Z"
+target_address = 0x00419910
+size = 0x1CC
+relocations = [
+  { offset = 0x19, type = "DIR32", symbol = "?g_ControllerButtons@th095@@3EA", target = 0x004C4428 },
+  { offset = 0x20, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
+  { offset = 0x4E, type = "DIR32", symbol = "__imp__joyGetPosEx@8", target = 0x00495268 },
+  { offset = 0x57, type = "DIR32", symbol = "?g_ControllerButtons@th095@@3EA", target = 0x004C4428 },
+  { offset = 0x93, type = "DIR32", symbol = "?g_ControllerButtons@th095@@3EA", target = 0x004C4428 },
+  { offset = 0x9B, type = "DIR32", symbol = "?g_ControllerButtons@th095@@3EA", target = 0x004C4428 },
+  { offset = 0xAD, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0xBA, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0xDC, type = "DIR32", symbol = "??_C@_0BK@BJPCNFPG@error?5?3?5DIERR_INPUTLOST?$AN?6?$AA@", target = 0x00495734 },
+  { offset = 0xE1, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0xF1, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0xFE, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x11D, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x12A, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x15A, type = "DIR32", symbol = "??_C@_0BN@KAGFBIKB@error?5?3?5DIERR_INPUTLOST?5?$CFd?$AN?6?$AA@", target = 0x00495714 },
+  { offset = 0x15F, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x167, type = "DIR32", symbol = "?g_ControllerButtons@th095@@3EA", target = 0x004C4428 },
+  { offset = 0x170, type = "DIR32", symbol = "?g_ControllerButtons@th095@@3EA", target = 0x004C4428 },
+  { offset = 0x18B, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x198, type = "DIR32", symbol = "?g_ControllerDevices@th095@@3PAUIDirectInputDevice8A@@A", target = 0x004C4684 },
+  { offset = 0x1A9, type = "DIR32", symbol = "?g_ControllerButtons@th095@@3EA", target = 0x004C4428 },
+  { offset = 0x1BB, type = "DIR32", symbol = "?g_ControllerButtons@th095@@3EA", target = 0x004C4428 },
+  { offset = 0x1C2, type = "DIR32", symbol = "?g_ControllerButtons@th095@@3EA", target = 0x004C4428 },
+]
