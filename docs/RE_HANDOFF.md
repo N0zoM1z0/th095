@@ -72,6 +72,12 @@
   set/get (64/60), ANM-file-wide deletion (87), and `AnmVmId::SetSprite` (69).
   These seven units add 480 exact bytes and prove `AnmVm+0x00/+0x10/+0x228/
   +0x22E/+0x230` as next/id/flags/pending-interrupt/owning-ANM fields.
+- `UpdatePhotoResultScreen @ 0x004294C0` is source-present for the complete
+  TH095-specific photo browser and `BSTS` best-shot save path. Its VC7.1 probe
+  has the target's full 1,323-byte instruction topology and resolves all 65
+  relocations. It remains non-exact solely because the target reserves an
+  additional `0x2C` of inline temporary homes, changing 38 stack-displacement
+  bytes; no artificial padding was introduced.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
   bytes are stack allocation/displacement differences and receive no credit.
@@ -152,12 +158,17 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    source-present for the complete 380-byte TH095 preview selection path; its
    generated instruction stream has the target length, but the original
    function's unused 0x38-byte local-frame gap remains unresolved and receives
-   no exact credit. The underlying intrusive-VM API is exact:
+   no exact credit. `UpdatePhotoResultScreen @ 0x004294C0` now reconstructs
+   browsing, animated preview transitions, and the complete best-shot record
+   write. Its generated body also has the target length, with only the
+   independently documented `0x2C` inline-temporary frame gap keeping it from
+   exact promotion. The underlying intrusive-VM API is exact:
    `AnmManager::GetVm @ 0x00445110` has 35 direct callers, and its interrupt,
    deferred-deletion, position, ANM-file deletion, and handle sprite wrappers
    add six more canonical units. The 51-byte `AnmVmId::GetVm` and 34-byte
    `SetInterrupt` wrappers remain exact as well.
-   Continue byte alignment of the 6,471-byte dispatcher, then move to the
+   Recover the adjacent 189-byte best-shot record initializer at `0x004299F0`,
+   then continue byte alignment of the 6,471-byte dispatcher and move to the
    16,066-byte gameplay/resource hub at `0x00447D00`.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched

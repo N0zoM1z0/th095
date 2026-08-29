@@ -46,6 +46,7 @@ struct ResultScreenReplayCursor
     void Pop();
 
     i32 GetCurrent() { return this->current; }
+    i32 GetPrevious() { return this->previous; }
     i32 GetCount() { return this->count; }
     void SaveCurrent() { this->previous = this->current; }
     u32 HasChanged() { return this->previous != this->current; }
@@ -93,8 +94,15 @@ typedef char ResultScreenAnmVmSizeIs2CC[
 struct ResultScreenAnmLoadedView
 {
     u8 unknown000[0x14];
+    struct ResultScreenTextureEntryView *textures;
 
     void SetAndExecuteScript(ResultScreenAnmVm *vm, i32 scriptIndex);
+};
+
+struct ResultScreenTextureEntryView
+{
+    u8 unknown000[0x0c];
+    i32 format;
 };
 
 struct ResultScreenLoadedSpriteView
@@ -106,9 +114,16 @@ struct ResultScreenLoadedSpriteView
 
 struct ResultPhotoSlotView
 {
-    u8 unknown0000[0x21f4];
-    i32 score;
-    u8 unknown21f8[0x2214 - 0x21f8];
+    u8 unknown0000[0x21d4];
+    u32 metadata[8];
+    i32 score;                        // +0x21f4
+    i32 replayValue;                  // +0x21f8
+    i32 stageValue;                   // +0x21fc
+    u16 width;                        // +0x2200
+    u16 unknown2202;
+    u16 height;                       // +0x2204
+    u16 unknown2206;
+    char comment[12];                 // +0x2208
 };
 
 struct ResultPhotoDataView
@@ -132,6 +147,20 @@ struct ResultPhotoControllerView
 
 typedef char ResultPhotoSlotViewSizeIs2214[
     (sizeof(ResultPhotoSlotView) == 0x2214) ? 1 : -1];
+typedef char ResultPhotoSlotMetadataAt21D4[
+    (offsetof(ResultPhotoSlotView, metadata) == 0x21d4) ? 1 : -1];
+typedef char ResultPhotoSlotScoreAt21F4[
+    (offsetof(ResultPhotoSlotView, score) == 0x21f4) ? 1 : -1];
+typedef char ResultPhotoSlotReplayValueAt21F8[
+    (offsetof(ResultPhotoSlotView, replayValue) == 0x21f8) ? 1 : -1];
+typedef char ResultPhotoSlotStageValueAt21FC[
+    (offsetof(ResultPhotoSlotView, stageValue) == 0x21fc) ? 1 : -1];
+typedef char ResultPhotoSlotWidthAt2200[
+    (offsetof(ResultPhotoSlotView, width) == 0x2200) ? 1 : -1];
+typedef char ResultPhotoSlotHeightAt2204[
+    (offsetof(ResultPhotoSlotView, height) == 0x2204) ? 1 : -1];
+typedef char ResultPhotoSlotCommentAt2208[
+    (offsetof(ResultPhotoSlotView, comment) == 0x2208) ? 1 : -1];
 
 struct ResultScreen
 {

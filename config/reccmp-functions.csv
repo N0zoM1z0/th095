@@ -98,6 +98,7 @@ th095::AnmVmId::GetVm,0x004452F0,function
 th095::AnmVmId::SetInterrupt,0x00445330,function
 th095::ResultScreen::OnDraw,0x0042A6E0,function
 th095::ResultScreen::PrepareBestShot,0x004292D0,function
+th095::UpdatePhotoResultScreen,0x004294C0,function
 th095::AnmManager::GetVm,0x00445110,function
 th095::AnmManager::SetInterrupt,0x00445170,function
 th095::AnmManager::MarkVmForDeletion,0x004451B0,function

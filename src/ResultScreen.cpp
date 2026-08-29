@@ -18,6 +18,7 @@ struct ResultScreenGlobalStateView
     u32 unknownFlag1 : 1;
     u32 suppressResultCallbacks : 1;
     u32 unknownFlags : 29;
+    i32 bestShotIndex;
 };
 
 struct ResultAnmVmHandleView
@@ -43,6 +44,61 @@ struct ResultPlayerConfigView
     i32 scene;
 };
 
+struct ResultBestShotImageView
+{
+    u32 metadata[8];
+    u8 unknown020[4];
+    i32 replayValue;
+    u8 unknown028[0x34 - 0x28];
+    i32 stageValue;
+    u8 unknown038[0x60 - 0x38];
+};
+
+struct ResultBestShotRecordView
+{
+    u32 magic;
+    u8 type;
+    u8 componentCount;
+    u16 group;
+    u16 scene;
+    u16 version;
+    u16 width;
+    u16 height;
+    i32 score;
+    u8 unknown014[4];
+    char comment[0x50];
+    u8 valid;
+    u8 unknown069[3];
+    i32 photoIndex;
+    u8 unknown070[8];
+};
+
+struct ResultSaveDataView
+{
+    u8 unknown0000[0x478];
+    ResultBestShotImageView bestShotImages[10];
+    u8 unknown0838[0x3160 - 0x838];
+    ResultBestShotRecordView bestShotRecords[10];
+
+    void UpdateBestShotRecord(i32 index);
+    ZunResult WriteBestShotData();
+};
+
+typedef char ResultBestShotImageSizeIs60[
+    (sizeof(ResultBestShotImageView) == 0x60) ? 1 : -1];
+typedef char ResultBestShotRecordSizeIs78[
+    (sizeof(ResultBestShotRecordView) == 0x78) ? 1 : -1];
+typedef char ResultBestShotImageReplayValueAt24[
+    (offsetof(ResultBestShotImageView, replayValue) == 0x24) ? 1 : -1];
+typedef char ResultBestShotImageStageValueAt34[
+    (offsetof(ResultBestShotImageView, stageValue) == 0x34) ? 1 : -1];
+typedef char ResultBestShotRecordCommentAt18[
+    (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
+typedef char ResultBestShotRecordValidAt68[
+    (offsetof(ResultBestShotRecordView, valid) == 0x68) ? 1 : -1];
+typedef char ResultBestShotRecordPhotoIndexAt6C[
+    (offsetof(ResultBestShotRecordView, photoIndex) == 0x6c) ? 1 : -1];
+
 extern i32 g_ResultSceneState;
 extern ResultRuntimeView *g_ResultRuntime;
 extern ResultPlayerConfigView *g_ResultPlayerConfig;
@@ -51,11 +107,11 @@ extern i32 g_ResultSceneLimits[];
 extern const char *g_ResultAlphabet;
 extern ResultPhotoDataView *g_ResultPhotoData;
 extern ResultPhotoControllerView *g_ResultPhotoController;
+extern ResultSaveDataView *g_ResultSaveData;
 
 extern void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
-extern void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen);
 extern void __fastcall PreparePhotoResultScreen(ResultScreen *resultScreen);
 extern void __fastcall FinalizeResultRuntime(ResultRuntimeView *runtime);
 extern i32 __fastcall ExecuteResultVm(ResultScreenAnmVm *vm);
@@ -137,6 +193,113 @@ void ResultScreen::PrepareBestShot()
                     ->flagsWord |= 0x10000000;
             }
         }
+    }
+}
+
+void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
+{
+    i32 direction;
+    ResultScreenAnmVm *vm;
+
+    direction = 0;
+    if (resultScreen->photoCursor.GetCurrent() <
+        g_ResultPhotoController->GetPhotoCount())
+    {
+        resultScreen->photoCursor.SaveCurrent();
+        if (IsResultMenuInputPressed(0x40))
+        {
+            resultScreen->photoCursor.Move(-1);
+            direction = -1;
+        }
+        if (IsResultMenuInputPressed(0x80))
+        {
+            resultScreen->photoCursor.Move(1);
+            direction = 1;
+        }
+
+        if (resultScreen->photoCursor.HasChanged())
+        {
+            i32 photoIndex = resultScreen->photoCursor.GetCurrent();
+            resultScreen->vms[24] = resultScreen->vms[23];
+            resultScreen->vms[24].SetInterrupt((direction <= 0) + 7);
+            g_ResultPhotoData->anm->SetAndExecuteScript(
+                &resultScreen->vms[23], photoIndex * 2 + 1);
+            resultScreen->vms[23].SetInterrupt((direction > 0) + 9);
+
+            vm = &resultScreen->vms[23];
+            vm->spriteSize.x = vm->loadedSprite->uvEndX * 255.0f;
+            vm->spriteSize.y = vm->loadedSprite->uvEndY * 255.0f;
+
+            g_ResultPhotoData
+                ->photoVms[resultScreen->photoCursor.GetPrevious()]
+                .SetInterrupt(3);
+            g_ResultPhotoData->photoVms[photoIndex].SetInterrupt(2);
+            g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
+        }
+    }
+
+    if (GetPressedButtons(0x400) != 0)
+    {
+        i32 photoIndex = resultScreen->photoCursor.GetCurrent();
+
+        memcpy(
+            g_ResultSaveData
+                ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
+                .metadata,
+            g_ResultPhotoData->slots[photoIndex].metadata,
+            sizeof(g_ResultSaveData->bestShotImages[0].metadata));
+        g_ResultSaveData->UpdateBestShotRecord(
+            g_ResultScreenGlobalState->bestShotIndex);
+
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .valid = 1;
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .magic = 0x53545342;
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .width = g_ResultPhotoData->slots[photoIndex].width;
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .height = g_ResultPhotoData->slots[photoIndex].height;
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .score = g_ResultPhotoData->slots[photoIndex].score;
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .group = (u16)(g_ResultPlayerConfig->group + 1);
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .scene = (u16)(g_ResultPlayerConfig->scene + 1);
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .type = 2;
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .version = 0x102;
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .componentCount =
+            (u8)((g_ResultPhotoData->anm->textures[photoIndex].format == 4) + 2);
+        g_ResultSaveData
+            ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
+            .stageValue = g_ResultPhotoData->slots[photoIndex].stageValue;
+        g_ResultSaveData
+            ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
+            .replayValue = g_ResultPhotoData->slots[photoIndex].replayValue;
+        strcpy(
+            g_ResultSaveData
+                ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+                .comment,
+            g_ResultPhotoData->slots[photoIndex].comment);
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .photoIndex = photoIndex;
+
+        g_ResultSaveData->WriteBestShotData();
+        g_SoundPlayer.PlaySoundByIdx(SOUND_TAKE_PHOTO, 0);
+        resultScreen->notificationTimer = 120;
     }
 }
 

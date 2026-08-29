@@ -97,6 +97,7 @@ th095::AnmVmId::GetVm
 th095::AnmVmId::SetInterrupt
 th095::ResultScreen::OnDraw
 th095::ResultScreen::PrepareBestShot
+th095::UpdatePhotoResultScreen
 th095::AnmManager::GetVm
 th095::AnmManager::SetInterrupt
 th095::AnmManager::MarkVmForDeletion
