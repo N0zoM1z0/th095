@@ -67,7 +67,7 @@ struct PhotoCameraState
     Float3 previousTrackingOrigin;    // +0xb74
     f32 charge;                       // +0xb80
     ZunTimer modeTimer;               // +0xb84
-    u8 unknownb90[0x0c];             // +0xb90
+    ZunTimer chargeTimer;             // +0xb90
     ZunTimer auxiliaryTimer;          // +0xb9c
     i32 photoIndex;                   // +0xba8
     i32 photosTaken;                  // +0xbac

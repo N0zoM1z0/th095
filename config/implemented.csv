@@ -69,3 +69,4 @@ th095::PhotoCameraState::TakePhoto
 th095::PhotoCameraState::CancelCapture
 th095::PhotoCameraState::CalculatePhotoScore
 th095::PhotoCameraState::CountPhotoTargets
+th095::PhotoCameraState::UpdateCharge

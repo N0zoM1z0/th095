@@ -82,10 +82,18 @@ struct PhotoStageControllerView
     i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
 };
 
+struct PhotoAnmSpawnerView
+{
+    // ABI-facing form of the small-structure return used by the target call.
+    void SpawnInto(PhotoAnmVmId *output, i32 script, Float3 *position);
+};
+
 struct PhotoBulletManagerView
 {
     u8 unknown0000[0x1760];
     ZunColor photoColor;
+    u8 unknown1764[0x27c5b0 - 0x1764];
+    PhotoAnmSpawnerView *anmSpawner;
 
     void BeginPhotoCapture(const Float3 *position, const Float3 *size);
     i32 CountNearbyTargets(const Float3 *position, f32 radius);
@@ -131,9 +139,10 @@ Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 enum PhotoCameraFlags
 {
     PHOTO_FLAG_ALTERNATE_CAPTURE = 1 << 0,
-    PHOTO_FLAG_LOCK_TO_PLAYER = 1 << 1,
+    PHOTO_FLAG_FOCUSED = 1 << 1,
     PHOTO_FLAG_TARGET_FRAME_ACTIVE = 1 << 2,
     PHOTO_FLAG_CHARGE_UI_MASK = 3 << 3,
+    PHOTO_FLAG_CHARGE_EFFECT_ACTIVE = 1 << 5,
     PHOTO_FLAG_TARGET_SOUND_PLAYED = 1 << 6,
 };
 
@@ -224,6 +233,11 @@ static inline f32 PhotoRatio(volatile f32 denominator, volatile f32 numerator)
 {
     f32 unused;
     return numerator / denominator;
+}
+
+static inline i32 PhotoTimerAdvancedOnEvenFrame(ZunTimer *timer)
+{
+    return timer->current != timer->previous && timer->current % 2 == 0;
 }
 
 f32 PhotoGameStateView::AngleToPoint(const Float3 *point)
@@ -809,6 +823,114 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
     return locals.targetCount;
 }
 
+void PhotoCameraState::UpdateCharge()
+{
+    struct ChargeLocals
+    {
+        f32 timerValue;
+        f32 timerComparison;
+        ZunTimer *timer;
+        PhotoAnmVmId effect;
+    } locals;
+
+    if (((this->flags >> 1) & 1) == 0)
+    {
+        if (this->charge < 1.0f)
+        {
+            if (PhotoInputMask(g_PhotoInput, 2) != 0 &&
+                PhotoInputMask(g_PhotoInput, 1) != 0)
+            {
+                this->unknownbb8++;
+                if (this->unknownbb8 >= 5)
+                {
+                    this->flags |= PHOTO_FLAG_FOCUSED;
+                    if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+                    {
+                        PhotoSoundPlayer()->PlaySoundByIdx(0x2a, 0);
+                    }
+                    locals.timer = &this->chargeTimer;
+                    locals.timer->current = 0;
+                    locals.timer->subFrame = 0.0f;
+                    locals.timer->previous = -999999;
+                    goto focusedCharge;
+                }
+            }
+            else
+            {
+                this->unknownbb8 = 0;
+            }
+        }
+
+        if (PhotoInputMask(g_PhotoInput, 1) == 0)
+        {
+            this->focusHeldFrames++;
+            this->flags &= ~PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
+        }
+        else
+        {
+            this->focusHeldFrames = 0;
+        }
+
+normalCharge:
+        {
+            locals.timerComparison = this->chargeTimer.subFrame;
+            this->charge +=
+                locals.timerComparison < 60.0f
+                    ? ((locals.timerValue = this->chargeTimer.subFrame),
+                       ((locals.timerValue * 1.0f / 800.0f) / 60.0f +
+                        0.000625f) * g_AnmGameSpeed)
+                    : 0.001875f * g_AnmGameSpeed;
+            if (this->charge > 1.0f)
+            {
+                this->charge = 1.0f;
+            }
+            this->chargeTimer.Tick();
+        }
+    }
+    else
+    {
+        if (((g_PhotoGlobalState->flags >> 9) & 1) != 0)
+        {
+            PhotoSoundPlayer()->StopSoundByIdx(0x2a);
+        }
+        if (this->unknownbb8 > 60 ||
+            PhotoTimerAdvancedOnEvenFrame(&this->auxiliaryTimer))
+        {
+            g_PhotoBulletManager->anmSpawner->SpawnInto(
+                &locals.effect, 0x124, &g_PhotoGame->playerPosition);
+        }
+        this->unknownbb8++;
+        this->flags |= PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
+        this->focusHeldFrames = 0;
+        if (PhotoInputMask(g_PhotoInput, 2) == 0 ||
+            PhotoInputMask(g_PhotoInput, 1) == 0)
+        {
+            this->flags &= ~PHOTO_FLAG_FOCUSED;
+            this->unknownbb8 = 0;
+            PhotoSoundPlayer()->StopSoundByIdx(0x2a);
+            goto normalCharge;
+        }
+
+focusedCharge:
+        {
+            this->charge +=
+                this->unknownbb8 < 70
+                    ? (((f32)this->unknownbb8 * 40.0f / 800.0f) / 30.0f +
+                       0.00125f) * g_AnmGameSpeed
+                    : 0.005f * g_AnmGameSpeed;
+            if (this->charge > 1.0f)
+            {
+                this->charge = 1.0f;
+                this->flags &= ~PHOTO_FLAG_FOCUSED;
+                this->unknownbb8 = 0;
+                PhotoSoundPlayer()->StopSoundByIdx(0x2a);
+                goto normalCharge;
+            }
+            return;
+        }
+    }
+}
+
 f32 __fastcall PhotoDistance2D(const Float3 *left, const Float3 *right)
 {
     return sqrtf(
@@ -829,7 +951,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
     switch (camera->mode)
     {
     case PHOTO_CAMERA_TRACKING:
-        if ((camera->flags & PHOTO_FLAG_LOCK_TO_PLAYER) == 0)
+        if ((camera->flags & PHOTO_FLAG_FOCUSED) == 0)
         {
             if (boss == NULL)
             {
@@ -1107,7 +1229,7 @@ updateCharge:
     else if ((g_PhotoInput & 3) == 3)
         camera->captureRequested = 1;
 
-    if ((camera->flags & PHOTO_FLAG_LOCK_TO_PLAYER) == 0 &&
+    if ((camera->flags & PHOTO_FLAG_FOCUSED) == 0 &&
         camera->charge >= 1.0f &&
         (g_PhotoInput & 2) != 0 &&
         (g_PhotoInput & 1) == 0 &&
