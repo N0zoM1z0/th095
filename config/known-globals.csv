@@ -27,3 +27,4 @@ address,name,module,confidence,evidence
 0x004C4CC0,th095::g_HelpLoadComplete,HelpMenu,exact,Exact Help loader completion-flag relocation
 0x004C4CC4,th095::g_HelpLoadActive,HelpMenu,exact,Exact Help loader active-flag relocation
 0x004CA2F4,th095::g_HelpMenu,HelpMenu,exact,Exact Help loader owner-pointer relocation
+0x004E24A8,th095::g_DecompressionRing,Compression,high,Target-local 8192-byte history ring used by DecompressData

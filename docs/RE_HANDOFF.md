@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 140 canonical units cover 89,909 authored bytes.
+- Reconstruction: 141 canonical units cover 89,992 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 53.52% (89,909 / 167,988)
+  relocations. Confirmed authored-byte coverage is now 53.27% (89,992 / 168,923)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,7 +25,7 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 171 authored candidates and leaves 1,659 origin/boundary reviews
+  confirms 173 authored candidates and leaves 1,657 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -252,10 +252,13 @@ its 648-byte close and 787-byte selection helpers are canonical exact. The
 16,066-byte `UpdateSceneSelect @ 0x00447D00` hub is now source-present for its
 complete 275-call topology, and its 136-byte texture clear is exact.
 `LoadSceneSelectionAssets @ 0x0044D0A0` is source-present for its full
-mission/face queue pipeline and exact 38-call topology. Continue with
-`SceneSaveDataView::LoadBestShotForScene @ 0x00435E90`, then the mapped texture
-upload and scene-label dependencies. Prefer dependency-rich target-specific
-state machines over isolated leaf cleanup.
+mission/face queue pipeline and exact 38-call topology.
+`SceneSaveDataView::LoadBestShotForScene @ 0x00435E90` is source-present for
+its complete twelve-call decode and validation path. Its shared
+`DecompressData @ 0x00456220` dependency is source-present, while
+`CalculateAlignedChecksum @ 0x0041BA80` is canonical exact. Continue with the
+mapped texture upload and scene-label dependencies. Prefer dependency-rich
+target-specific state machines over isolated leaf cleanup.
 
 1. Continue byte alignment of the now source-present 2,219-byte
    `PhotoCameraState::CalculatePhotoScore @ 0x00433140`. Its complete TH095

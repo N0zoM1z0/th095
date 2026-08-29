@@ -7417,3 +7417,13 @@ symbol = "?Clear@SceneTextureEntryView@th095@@QAEXXZ"
 target_address = 0x004453B0
 size = 0x88
 relocations = []
+
+[units.checksum-aligned]
+source = "src/Checksum.cpp"
+object = "build/matching/Checksum.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CalculateAlignedChecksum"]
+symbol = "?CalculateAlignedChecksum@th095@@YIHPAHI@Z"
+target_address = 0x0041BA80
+size = 0x53
+relocations = []

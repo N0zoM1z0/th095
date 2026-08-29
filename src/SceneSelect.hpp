@@ -20,7 +20,7 @@ struct SceneScoreEntryView
         i32 attemptCount;
         time_t captureTime;
     };
-    u8 unknown040[4];
+    i32 bestShotChecksum;
     i32 unlockScore;
     f32 slowRate;
     f32 successRate;

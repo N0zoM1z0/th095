@@ -65,7 +65,8 @@ complete TH095 group/scene selection hub is source-present with all three
 asynchronous preview pipelines and its exact 275-call topology; its shared
 D3D texture clear helper is exact. The selector's asynchronous mission/face
 asset worker is source-present with its complete queue protocol and exact
-38-call topology.
+38-call topology. The selected-scene best-shot loader and shared 8 KiB-ring
+decompressor are source-present, and their aligned checksum dependency is exact.
 
 A target-local audit continues to admit photography/camera, replay/menu,
 scene-selection, options, and gameplay/resource functions as their authored
