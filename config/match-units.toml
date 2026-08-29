@@ -6172,3 +6172,29 @@ relocations = [
   { offset = 0x8, type = "DIR32", symbol = "?g_ReplayGlobalState@th095@@3PAUReplayGlobalStateView@1@A", target = 0x004BDEC8 },
   { offset = 0x25, type = "REL32", symbol = "?DrawFps@ReplayManager@th095@@QAE?AW4ChainCallbackResult@2@XZ", target = 0x004349D0 },
 ]
+
+[units.replay-manager-load-replay]
+source = "src/ReplayManager.cpp"
+object = "build/matching/ReplayManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ReplayManager::LoadReplay"]
+symbol = "?LoadReplay@ReplayManager@th095@@QAE?AW4ZunResult@@PAD@Z"
+target_address = 0x00435130
+size = 0x21C
+relocations = [
+  { offset = 0x7F, type = "DIR32", symbol = "?g_ReplayUsesArchive@th095@@3HA", target = 0x004BDED0 },
+  { offset = 0x8B, type = "DIR32", symbol = "??_C@_09ONNEPONB@replay?1?$CFs?$AA@", target = 0x00496850 },
+  { offset = 0x97, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0xA5, type = "REL32", symbol = "?CheckIfFileAlreadyExists@FileSystem@th095@@YIHPBD@Z", target = 0x0041ABA0 },
+  { offset = 0xBC, type = "REL32", symbol = "?Open@ReplayFile@th095@@YIHPAD@Z", target = 0x0041AEA0 },
+  { offset = 0xD2, type = "REL32", symbol = "?Read@ReplayFile@th095@@YIPAXI@Z", target = 0x0041B020 },
+  { offset = 0xEC, type = "REL32", symbol = "?Read@ReplayFile@th095@@YIPAXI@Z", target = 0x0041B020 },
+  { offset = 0xF4, type = "REL32", symbol = "?Close@ReplayFile@th095@@YIXXZ", target = 0x0041B090 },
+  { offset = 0x106, type = "REL32", symbol = "?OpenFile@FileSystem@th095@@YIPAEPBDPAHH@Z", target = 0x0041A960 },
+  { offset = 0x13C, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x178, type = "REL32", symbol = "?Decrypt@FileSystem@th095@@YIPAEPAEHEEHH@Z", target = 0x0041A5C0 },
+  { offset = 0x1A2, type = "REL32", symbol = "?Decrypt@FileSystem@th095@@YIPAEPAEHEEHH@Z", target = 0x0041A5C0 },
+  { offset = 0x1CD, type = "REL32", symbol = "?Decode@ReplayLzss@th095@@YIPAEPAEH0H@Z", target = 0x00456220 },
+  { offset = 0x201, type = "DIR32", symbol = "?g_ReplayUsesArchive@th095@@3HA", target = 0x004BDED0 },
+  { offset = 0x20D, type = "REL32", symbol = "_free", target = 0x004854BE },
+]

@@ -82,3 +82,4 @@ th095::ReplayManager::ProcessFrame
 th095::ReplayManager::DrawFps
 th095::ReplayManager::OnUpdate
 th095::ReplayManager::OnDraw
+th095::ReplayManager::LoadReplay

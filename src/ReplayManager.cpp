@@ -2,6 +2,7 @@
 #include "ZunMath.hpp"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 namespace th095
@@ -67,6 +68,19 @@ typedef char ReplayPlayerConfigSizeIs30[
 
 extern ReplayPlayerConfigView *g_ReplayPlayerConfig;
 extern ReplayPlayerConfigView *g_ReplayPlayerConfigTable[];
+extern i32 g_ReplayUsesArchive;
+
+namespace ReplayFile
+{
+int Open(char *path);
+void *Read(u32 size);
+void Close();
+};
+
+namespace ReplayLzss
+{
+u8 *Decode(u8 *input, i32 inputSize, u8 *output, i32 outputSize);
+};
 
 struct ReplayFrameScratch
 {
@@ -88,6 +102,15 @@ struct ReplayInitializeScratch
     ReplayInitializeScratch()
     {
     }
+};
+
+struct ReplayLoadLocals
+{
+    u32 allocationSize;
+    i32 fileSize;
+    char fullPath[0x100];
+    ReplayInputData *inputData;
+    u8 *compressedData;
 };
 
 ReplayManager::ReplayManager()
@@ -161,6 +184,59 @@ ZunResult ReplayManager::Initialize(i32 mode, char *path)
             return ZUN_ERROR;
         }
         this->activeInputData = this->inputData;
+    }
+    return ZUN_SUCCESS;
+}
+
+ZunResult ReplayManager::LoadReplay(char *path)
+{
+    ReplayLoadLocals locals;
+
+    locals.compressedData = NULL;
+    strcpy(this->path, path);
+
+    if (g_ReplayUsesArchive == 0)
+    {
+        sprintf(locals.fullPath, "replay/%s", path);
+        if (!FileSystem::CheckIfFileAlreadyExists(locals.fullPath))
+        {
+            return ZUN_ERROR;
+        }
+        if (ReplayFile::Open(locals.fullPath) != ZUN_SUCCESS)
+        {
+            return ZUN_ERROR;
+        }
+        this->fileHeader =
+            (ReplayFileHeader *)ReplayFile::Read(sizeof(ReplayFileHeader));
+        locals.compressedData =
+            (u8 *)ReplayFile::Read(this->fileHeader->compressedSize);
+        ReplayFile::Close();
+    }
+    else
+    {
+        this->fileHeader = (ReplayFileHeader *)FileSystem::OpenFile(
+            path, &locals.fileSize, FALSE);
+        locals.compressedData = (u8 *)this->fileHeader + sizeof(ReplayFileHeader);
+    }
+
+    locals.allocationSize = this->fileHeader->decompressedSize;
+    this->inputData = (ReplayInputData *)malloc(locals.allocationSize);
+    FileSystem::Decrypt(locals.compressedData, this->fileHeader->compressedSize,
+                        0xaa, 0xe1, 0x400,
+                        this->fileHeader->compressedSize);
+    FileSystem::Decrypt(locals.compressedData, this->fileHeader->compressedSize,
+                        0x3d, 0x7a, 0x80,
+                        this->fileHeader->compressedSize);
+    ReplayLzss::Decode(locals.compressedData, this->fileHeader->compressedSize,
+                       (u8 *)this->inputData,
+                       this->fileHeader->decompressedSize);
+
+    locals.inputData = this->inputData;
+    this->fpsData = (u8 *)(locals.inputData->inputStreamSize +
+                           sizeof(ReplayInputData) + (u32)this->inputData);
+    if (g_ReplayUsesArchive == 0)
+    {
+        free(locals.compressedData);
     }
     return ZUN_SUCCESS;
 }

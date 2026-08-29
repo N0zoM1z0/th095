@@ -19,7 +19,9 @@ struct ReplayFileHeader
     u16 version;                     // +0x04
     u8 unknown006[0x0a];
     u32 gameVersion;                 // +0x10
-    u8 unknown014[0x10];
+    u8 unknown014[0x08];
+    u32 compressedSize;              // +0x1c
+    u32 decompressedSize;            // +0x20
 };
 
 struct ReplayInputData
@@ -30,7 +32,9 @@ struct ReplayInputData
     u16 rngSeed;                     // +0x04
     u8 unknown006[0x12];
     u8 globalStateSnapshot[0xc8];     // +0x18
-    u8 unknown0e0[0x18];
+    u8 unknown0e0[0x10];
+    u32 inputStreamSize;              // +0xf0
+    u8 unknown0f4[4];
 };
 
 typedef char ReplayFileHeaderSizeIs24[
@@ -50,7 +54,7 @@ struct ReplayManager
     u8 unknown019[3];
     i32 frameCounter;                // +0x01c
     ReplayInputData *activeInputData; // +0x020
-    u8 unknown024[0x124 - 0x024];
+    char path[0x100];                // +0x024
     ChainElem *calcChain;            // +0x124
     ChainElem *drawChain;            // +0x128
 
