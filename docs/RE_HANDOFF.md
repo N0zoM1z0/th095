@@ -116,12 +116,12 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    `PhotoDistance2D @ 0x00434220` are canonical exact dependencies.
 3. Recalculate against any newly confirmed authored origins after every
    promotion; never preserve the percentage by withholding denominator facts.
-4. The adjacent ReplayManager lane now has nine canonical exact units totaling
-   1,538 bytes and 78 relocations: constructor/destructor, both factories,
-   delete helper, chain wrappers, the 408-byte per-frame input/FPS stream core,
-   and playback FPS drawing. Continue with `ReplayManager::Initialize @ 0x004342A0`,
-   then the 1,691-byte replay writer at `0x00434A90` and the
-   540-byte loader at `0x00435130`. After that, return to the 6,471-byte
+4. The adjacent ReplayManager lane now has ten canonical exact units totaling
+   2,120 bytes and 94 relocations: initialization, constructor/destructor, both
+   factories, delete helper, chain wrappers, the 408-byte per-frame input/FPS
+   stream core, and playback FPS drawing. Continue with the 1,691-byte replay
+   writer at `0x00434A90` and the 540-byte loader at `0x00435130`. After that,
+   return to the 6,471-byte
    replay/menu dispatcher at `0x00426BF0` and the 16,066-byte
    gameplay/resource hub at `0x00447D00`.
 

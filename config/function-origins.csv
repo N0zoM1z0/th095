@@ -449,7 +449,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004340F0,authored,PhotoCamera,authored,exact,vc71-photo-camera-draw-2026-08-29
 0x00434220,authored,PhotoCamera,authored,exact,vc71-photo-distance-2d-2026-08-29
 0x00434270,authored,ReplayManager,authored,exact,vc71-replay-manager-constructor-2026-08-29
-0x004342A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004342A0,authored,ReplayManager,authored,exact,vc71-replay-manager-initialize-2026-08-29
 0x004344F0,authored,ReplayManager,authored,exact,vc71-replay-manager-destructor-2026-08-29
 0x004345B0,authored,ReplayManager,authored,exact,vc71-replay-manager-create-2026-08-29
 0x00434700,authored,ReplayManager,authored,exact,vc71-replay-manager-load-2026-08-29

@@ -75,6 +75,7 @@ th095::PhotoCameraState::Draw,0x004340F0,function
 th095::AnmVm::Draw,0x004452D0,function
 th095::ReplayManager::ReplayManager,0x00434270,function
 th095::ReplayManager::~ReplayManager,0x004344F0,function
+th095::ReplayManager::Initialize,0x004342A0,function
 th095::ReplayManager::Create,0x004345B0,function
 th095::ReplayManager::Load,0x00434700,function
 th095::ReplayManager::Destroy,0x004347D0,function

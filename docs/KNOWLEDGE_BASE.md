@@ -107,11 +107,12 @@ next action belongs in `RE_HANDOFF.md`.
 
 | ID | Class | Durable fact | Evidence |
 | --- | --- | --- | --- |
-| REPLAY-001 | target-observed | TH095's `ReplayManager` is `0x12C` bytes. Its mode is at `+0x00`, header/input/FPS allocations at `+0x04/+0x08/+0x0C`, stream cursors at `+0x10/+0x14`, sampled playback FPS at `+0x18`, frame counter at `+0x1C`, and calc/draw chain elements at `+0x124/+0x128`. | Exact constructor, destructor, frame processor, and compile-time layout assertions |
+| REPLAY-001 | target-observed | TH095's `ReplayManager` is `0x12C` bytes. Its mode is at `+0x00`, header/input/FPS allocations at `+0x04/+0x08/+0x0C`, stream cursors at `+0x10/+0x14`, sampled playback FPS at `+0x18`, frame counter at `+0x1C`, active input-data pointer at `+0x20`, and calc/draw chain elements at `+0x124/+0x128`. | Exact constructor, initializer, destructor, frame processor, and compile-time layout assertions |
 | REPLAY-002 | exact | `ReplayManager::Create @ 0x004345B0` allocates and initializes the manager, then registers update and draw callbacks at priorities 7 and 3. `Load @ 0x00434700` uses mode 2 without chain registration, while both factory paths reproduce the original VC7.1 new/delete EH machinery. | Canonical 330-byte and 207-byte units with 28 relocations replayed |
 | REPLAY-003 | exact | `ReplayManager::ProcessFrame @ 0x00434830` records three 16-bit input values per frame into a `0x69780`-byte stream, samples rounded FPS every 30 frames into a separate byte stream with saturation at 255, and restores the same values during playback. | Canonical 408-byte unit with all 24 relocations replayed |
 | REPLAY-004 | exact | Playback FPS is drawn at `(485, 452)`; samples below 30 use `0xFF5050FF`, samples below 50 use `0xFFA0A0FF`, and higher samples use white. Both replay callbacks are suppressed by target global flag bit 2. | Canonical `replay-manager-draw-fps`, `replay-manager-on-update`, and `replay-manager-on-draw` units |
-| MATCH-006 | exact | Nine canonical ReplayManager units reproduce 1,538 authored bytes and all 78 relocations, covering lifetime, allocation, chain integration, per-frame stream processing, and playback FPS output. | Pinned VC7.1 relocation replay for every listed ReplayManager unit |
+| REPLAY-005 | exact | `ReplayManager::Initialize @ 0x004342A0` builds a 36-byte `th95r` version-1 header, allocates `0x69780` input bytes and `0x11940` FPS bytes in record mode, and saves/restores the RNG seed, `0xC8`-byte runtime snapshot, and 48-byte player-configuration selection across record/playback. | Canonical 582-byte VC7.1 unit with all 16 relocations replayed |
+| MATCH-006 | exact | Ten canonical ReplayManager units reproduce 2,120 authored bytes and all 94 relocations, covering initialization, lifetime, allocation, chain integration, per-frame stream processing, and playback FPS output. | Pinned VC7.1 relocation replay for every listed ReplayManager unit |
 
 ## Reconstructed ECL VM
 

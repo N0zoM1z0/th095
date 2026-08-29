@@ -13,18 +13,44 @@ enum ReplayManagerMode
     REPLAY_MANAGER_LOAD_ONLY = 2,
 };
 
+struct ReplayFileHeader
+{
+    u32 magic;                       // +0x00
+    u16 version;                     // +0x04
+    u8 unknown006[0x0a];
+    u32 gameVersion;                 // +0x10
+    u8 unknown014[0x10];
+};
+
+struct ReplayInputData
+{
+    u16 playerConfigId;              // +0x00
+    i8 playerConfigGroup;            // +0x02
+    i8 playerConfigVariant;          // +0x03
+    u16 rngSeed;                     // +0x04
+    u8 unknown006[0x12];
+    u8 globalStateSnapshot[0xc8];     // +0x18
+    u8 unknown0e0[0x18];
+};
+
+typedef char ReplayFileHeaderSizeIs24[
+    (sizeof(ReplayFileHeader) == 0x24) ? 1 : -1];
+typedef char ReplayInputDataSizeIsF8[
+    (sizeof(ReplayInputData) == 0xf8) ? 1 : -1];
+
 struct ReplayManager
 {
     i32 mode;                        // +0x000
-    void *fileHeader;                // +0x004
-    void *inputData;                 // +0x008
-    void *fpsData;                   // +0x00c
+    ReplayFileHeader *fileHeader;    // +0x004
+    ReplayInputData *inputData;      // +0x008
+    u8 *fpsData;                     // +0x00c
     u8 *inputCursor;                 // +0x010
     u8 *fpsCursor;                   // +0x014
     u8 replayFps;                    // +0x018
     u8 unknown019[3];
     i32 frameCounter;                // +0x01c
-    u8 unknown020[0x124 - 0x020];
+    ReplayInputData *activeInputData; // +0x020
+    u8 unknown024[0x124 - 0x024];
     ChainElem *calcChain;            // +0x124
     ChainElem *drawChain;            // +0x128
 
@@ -32,6 +58,7 @@ struct ReplayManager
     ~ReplayManager();
 
     ZunResult Initialize(i32 mode, char *path);
+    ZunResult LoadReplay(char *path);
 
     static ReplayManager *Create(i32 mode, char *path);
     static ReplayManager *Load(char *path);

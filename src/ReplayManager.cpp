@@ -20,6 +20,7 @@ extern ReplayInputSource g_ReplayInputSource;
 extern u16 g_ReplayInputAux;
 extern u16 g_ReplayInputFlags;
 extern f32 g_ReplayFps;
+extern u16 g_ReplayRngSeed;
 
 struct ReplayAsciiManagerView
 {
@@ -41,7 +42,8 @@ extern ReplayAsciiManagerView g_ReplayAsciiManager;
 
 struct ReplayGlobalStateView
 {
-    u8 unknown000[0xfc];
+    u8 unknown000[0x34];
+    u8 replayStateSnapshot[0xc8];
     u32 unknownFlag0 : 1;
     u32 unknownFlag1 : 1;
     u32 suppressReplayCallbacks : 1;
@@ -49,6 +51,22 @@ struct ReplayGlobalStateView
 };
 
 extern ReplayGlobalStateView *g_ReplayGlobalState;
+
+struct ReplayPlayerConfigView
+{
+    u16 id;
+    u8 unknown002[2];
+    i8 group;
+    u8 unknown005[3];
+    i8 variant;
+    u8 unknown009[0x27];
+};
+
+typedef char ReplayPlayerConfigSizeIs30[
+    (sizeof(ReplayPlayerConfigView) == 0x30) ? 1 : -1];
+
+extern ReplayPlayerConfigView *g_ReplayPlayerConfig;
+extern ReplayPlayerConfigView *g_ReplayPlayerConfigTable[];
 
 struct ReplayFrameScratch
 {
@@ -59,10 +77,92 @@ struct ReplayFrameScratch
     }
 };
 
+struct ReplayInitializeScratch
+{
+    u16 unused000;
+    u16 rngSeed;
+    u32 fpsSize;
+    u32 inputSize;
+    u32 headerSize;
+
+    ReplayInitializeScratch()
+    {
+    }
+};
+
 ReplayManager::ReplayManager()
 {
     utils::DebugPrint("HDinitialize ReplayInf\n");
     memset(this, 0, sizeof(ReplayManager));
+}
+
+ZunResult ReplayManager::Initialize(i32 mode, char *path)
+{
+    ReplayInitializeScratch scratch;
+
+    this->mode = mode;
+    if (this->mode == REPLAY_MANAGER_RECORD)
+    {
+        g_ReplayManager = this;
+        scratch.headerSize = sizeof(ReplayFileHeader);
+        this->fileHeader = (ReplayFileHeader *)malloc(scratch.headerSize);
+        scratch.inputSize = 0x69780;
+        this->inputData = (ReplayInputData *)malloc(scratch.inputSize);
+        scratch.fpsSize = 0x11940;
+        this->fpsData = (u8 *)malloc(scratch.fpsSize);
+
+        memset(this->fileHeader, 0, sizeof(ReplayFileHeader));
+        memset(this->inputData, 0, 0x69780);
+        memset(this->fpsData, 0, 0x11940);
+
+        this->fileHeader->magic = 0x72353974;
+        this->fileHeader->version = 1;
+        this->fileHeader->gameVersion = 0x102;
+
+        this->activeInputData = this->inputData;
+        this->inputCursor =
+            (u8 *)this->activeInputData + sizeof(ReplayInputData);
+        this->fpsCursor = this->fpsData;
+
+        this->activeInputData->playerConfigId = g_ReplayPlayerConfig->id;
+        this->activeInputData->playerConfigGroup = g_ReplayPlayerConfig->group;
+        this->activeInputData->playerConfigVariant =
+            g_ReplayPlayerConfig->variant;
+        memcpy(this->activeInputData->globalStateSnapshot,
+               g_ReplayGlobalState->replayStateSnapshot,
+               sizeof(this->activeInputData->globalStateSnapshot));
+        this->activeInputData->rngSeed = g_ReplayRngSeed;
+    }
+    else if (this->mode == REPLAY_MANAGER_PLAYBACK)
+    {
+        g_ReplayManager = this;
+        if (this->LoadReplay(path) != ZUN_SUCCESS)
+        {
+            return ZUN_ERROR;
+        }
+
+        this->activeInputData = this->inputData;
+        this->inputCursor =
+            (u8 *)this->activeInputData + sizeof(ReplayInputData);
+        this->fpsCursor = this->fpsData;
+        scratch.rngSeed = this->activeInputData->rngSeed;
+        g_ReplayRngSeed = scratch.rngSeed;
+        g_ReplayPlayerConfig =
+            g_ReplayPlayerConfigTable[this->activeInputData->playerConfigGroup] +
+            this->activeInputData->playerConfigVariant;
+        memcpy(g_ReplayGlobalState->replayStateSnapshot,
+               this->activeInputData->globalStateSnapshot,
+               sizeof(this->activeInputData->globalStateSnapshot));
+    }
+    else if (this->mode == REPLAY_MANAGER_LOAD_ONLY)
+    {
+        if (this->LoadReplay(path) != ZUN_SUCCESS)
+        {
+            return ZUN_ERROR;
+        }
+        this->activeInputData = this->inputData;
+    }
+    return ZUN_SUCCESS;
 }
 
 ReplayManager::~ReplayManager()

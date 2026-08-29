@@ -74,6 +74,7 @@ th095::PhotoCameraState::Draw
 th095::AnmVm::Draw
 th095::ReplayManager::ReplayManager
 th095::ReplayManager::~ReplayManager
+th095::ReplayManager::Initialize
 th095::ReplayManager::Create
 th095::ReplayManager::Load
 th095::ReplayManager::Destroy

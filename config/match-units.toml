@@ -6004,6 +6004,33 @@ relocations = [
   { offset = 0xAD, type = "DIR32", symbol = "?g_ReplayManager@th095@@3PAUReplayManager@1@A", target = 0x004C4E74 },
 ]
 
+[units.replay-manager-initialize]
+source = "src/ReplayManager.cpp"
+object = "build/matching/ReplayManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ReplayManager::Initialize"]
+symbol = "?Initialize@ReplayManager@th095@@QAE?AW4ZunResult@@HPAD@Z"
+target_address = 0x004342A0
+size = 0x246
+relocations = [
+  { offset = 0x23, type = "DIR32", symbol = "?g_ReplayManager@th095@@3PAUReplayManager@1@A", target = 0x004C4E74 },
+  { offset = 0x33, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x4C, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x65, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x109, type = "DIR32", symbol = "?g_ReplayPlayerConfig@th095@@3PAUReplayPlayerConfigView@1@A", target = 0x004CA2F0 },
+  { offset = 0x11A, type = "DIR32", symbol = "?g_ReplayPlayerConfig@th095@@3PAUReplayPlayerConfigView@1@A", target = 0x004CA2F0 },
+  { offset = 0x12C, type = "DIR32", symbol = "?g_ReplayPlayerConfig@th095@@3PAUReplayPlayerConfigView@1@A", target = 0x004CA2F0 },
+  { offset = 0x138, type = "DIR32", symbol = "?g_ReplayGlobalState@th095@@3PAUReplayGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x157, type = "DIR32", symbol = "?g_ReplayRngSeed@th095@@3GA", target = 0x004BE208 },
+  { offset = 0x175, type = "DIR32", symbol = "?g_ReplayManager@th095@@3PAUReplayManager@1@A", target = 0x004C4E74 },
+  { offset = 0x181, type = "REL32", symbol = "?LoadReplay@ReplayManager@th095@@QAE?AW4ZunResult@@PAD@Z", target = 0x00435130 },
+  { offset = 0x1D0, type = "DIR32", symbol = "?g_ReplayRngSeed@th095@@3GA", target = 0x004BE208 },
+  { offset = 0x1EE, type = "DIR32", symbol = "?g_ReplayPlayerConfigTable@th095@@3PAPAUReplayPlayerConfigView@1@A", target = 0x004A5800 },
+  { offset = 0x1F4, type = "DIR32", symbol = "?g_ReplayPlayerConfig@th095@@3PAUReplayPlayerConfigView@1@A", target = 0x004CA2F0 },
+  { offset = 0x203, type = "DIR32", symbol = "?g_ReplayGlobalState@th095@@3PAUReplayGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x223, type = "REL32", symbol = "?LoadReplay@ReplayManager@th095@@QAE?AW4ZunResult@@PAD@Z", target = 0x00435130 },
+]
+
 [units.replay-manager-create]
 source = "src/ReplayManager.cpp"
 object = "build/matching/ReplayManager.obj"
