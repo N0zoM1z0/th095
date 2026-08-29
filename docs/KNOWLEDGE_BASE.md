@@ -95,6 +95,7 @@ next action belongs in `RE_HANDOFF.md`.
 | PHOTO-003 | exact | `PhotoCameraState::BeginCapture @ 0x00432730` transitions tracking to charging, resets the mode timer, creates scripts `0x18..0x1C`, removes stale charge VMs, and queues SFX `0x2C` outside replay suppression. | Canonical 393-byte unit with all 17 relocations |
 | PHOTO-004 | compiler-observed | The complete five-state `UpdatePhotoCamera @ 0x00430AB0` gameplay flow is source-present. It covers target tracking, viewfinder charging, capture, 60-frame recovery, camera ANM/SFX, photo-target indication, and charge-dependent slow motion. Its current VC7.1 body is 5,559 bytes versus the 7,271-byte target, so it receives no exact credit. | Attested target state switch plus non-canonical pinned-VC7.1 source probe |
 | PHOTO-005 | exact | `PhotoCameraState::UpdateViewfinder @ 0x004328C0` decodes the eight movement directions through a 16-bit input-mask helper, clamps the viewfinder to the playable camera bounds, derives its charge-scaled 4:3 frame, positions the four corner VMs, and scales/positions the center VM. | Canonical 1,059-byte body plus 32-byte switch table with all 48 relocations replayed |
+| PHOTO-006 | exact | `PhotoCameraState::TakePhoto @ 0x00432D10` removes the active frame VMs, collects bullet/stage/runtime targets, builds an eight-word photo metadata block, saves either the numbered or temporary photo, consumes charge, advances or closes the photo session, restores game speed, and switches SFX. | Canonical 738-byte unit with all 41 relocations replayed |
 
 ## Reconstructed ECL VM
 

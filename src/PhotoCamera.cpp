@@ -13,6 +13,8 @@ struct PhotoRuntimeView
 {
     u8 unknown000000[0x26ae00];
     PhotoEnemyView *enemies[8];
+
+    i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
 };
 
 struct PhotoGlobalStateView
@@ -26,6 +28,15 @@ struct PhotoStageStateView
     u8 unknown00000[0x2571c];
     PhotoAnmLoadedView *anm;
     u32 flags;
+
+    void SavePhoto(i32 slot, const Float3 *position, i32 width, i32 height,
+                   i32 score, const i32 *scoreData);
+};
+
+struct PhotoStageControllerView
+{
+    i32 CountNearbyTargets(const Float3 *position, f32 radius);
+    i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
 };
 
 struct PhotoBulletManagerView
@@ -34,6 +45,8 @@ struct PhotoBulletManagerView
     ZunColor photoColor;
 
     void BeginPhotoCapture(const Float3 *position, const Float3 *size);
+    i32 CountNearbyTargets(const Float3 *position, f32 radius);
+    void *CapturePhotoTargets(const Float3 *position, const Float3 *size);
 };
 
 struct PhotoAnmManagerView
@@ -65,6 +78,7 @@ extern PhotoGameStateView *g_PhotoGame;
 extern PhotoRuntimeView *g_PhotoRuntime;
 extern PhotoGlobalStateView *g_PhotoGlobalState;
 extern PhotoStageStateView *g_PhotoStageState;
+extern PhotoStageControllerView *g_PhotoStageController;
 extern PhotoBulletManagerView *g_PhotoBulletManager;
 extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;
@@ -303,6 +317,73 @@ void PhotoCameraState::UpdateViewfinder()
     reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition(
         this->vmIds[6].value,
         PhotoToScreen(&locals.screenPosition, &this->viewfinderPosition));
+}
+
+u32 PhotoCameraState::TakePhoto()
+{
+    i32 scoreData[8];
+
+    PhotoAnmManager()->RemoveVm(this->vmIds[2].value);
+    PhotoAnmManager()->RemoveVm(this->vmIds[3].value);
+    PhotoAnmManager()->RemoveVm(this->vmIds[4].value);
+    PhotoAnmManager()->RemoveVm(this->vmIds[5].value);
+    PhotoAnmManager()->RemoveVm(this->vmIds[6].value);
+
+    scoreData[3] = g_PhotoBulletManager->CountNearbyTargets(
+        &g_PhotoGame->playerPosition, 22.0f);
+    scoreData[3] += g_PhotoStageController->CountNearbyTargets(
+        &g_PhotoGame->playerPosition, 22.0f);
+
+    this->CalculatePhotoScore(
+        g_PhotoBulletManager->CapturePhotoTargets(
+            &this->viewfinderPosition, &this->viewfinderSize),
+        scoreData,
+        g_PhotoRuntime->CountPhotoTargets(
+            &this->viewfinderPosition, &this->viewfinderSize),
+        g_PhotoStageController->CountPhotoTargets(
+            &this->viewfinderPosition, &this->viewfinderSize));
+
+    if ((this->flags & PHOTO_FLAG_ALTERNATE_CAPTURE) != 0)
+    {
+        g_PhotoStageState->SavePhoto(
+            this->photoIndex, &this->viewfinderPosition,
+            (i32)this->viewfinderSize.x, (i32)this->viewfinderSize.y,
+            scoreData[0], scoreData);
+        this->photoIndex++;
+    }
+    else
+    {
+        g_PhotoStageState->SavePhoto(
+            10, &this->viewfinderPosition,
+            (i32)this->viewfinderSize.x, (i32)this->viewfinderSize.y,
+            scoreData[0], scoreData);
+    }
+
+    this->photosTaken++;
+    this->charge -= 1.0f;
+    if (this->charge <= 0.0f)
+    {
+        this->charge = 0.0f;
+    }
+    if (this->photoIndex >= this->photoLimit)
+    {
+        this->charge = 0.0f;
+        this->mode = PHOTO_CAMERA_DISABLED;
+        g_PhotoGame->mode = 3;
+        g_PhotoGame->completionTimer = 0;
+    }
+    else
+    {
+        this->mode = PHOTO_CAMERA_CAPTURED;
+    }
+    g_AnmGameSpeed = 1.0f;
+    this->modeTimer = 0;
+    PhotoSoundPlayer()->StopSoundByIdx(0x2c);
+    if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+    {
+        PhotoSoundPlayer()->PlaySoundByIdx(0x29, 0);
+    }
+    return this->flags & PHOTO_FLAG_ALTERNATE_CAPTURE;
 }
 
 f32 __fastcall PhotoDistance2D(const Float3 *left, const Float3 *right)

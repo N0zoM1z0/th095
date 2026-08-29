@@ -65,3 +65,4 @@ th095::PhotoGameStateView::AngleToPoint
 th095::UpdatePhotoCamera
 th095::PhotoCameraState::BeginCapture
 th095::PhotoCameraState::UpdateViewfinder
+th095::PhotoCameraState::TakePhoto

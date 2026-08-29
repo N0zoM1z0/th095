@@ -43,13 +43,13 @@ included.
 ## Current status
 
 TH095 is in active reconstruction. An attested Ghidra 12.1.3 headless import
-supplies 1,830 provisional function candidates. Sixty-five canonical units
-now reproduce 68,208 authored bytes exactly, including the complete 17,018-byte
+supplies 1,830 provisional function candidates. Sixty-six canonical units
+now reproduce 68,946 authored bytes exactly, including the complete 17,018-byte
 `AnmManager::ExecuteScript`, 27,091-byte `EclManager::RunEcl`, the
 target-specific asynchronous `SoundPlayer` core, and the exact Main/D3D
 runtime family. A target-local audit has now admitted 53,257 additional bytes
 from the photography/camera, replay/menu, and gameplay/resource clusters, so
-exact coverage is 56.30% of the expanded 121,154-byte authored set. The global
+exact coverage is 56.91% of the expanded 121,154-byte authored set. The global
 denominator remains provisional while origin review continues. Mapping, source
 presence, semantic validation, and exact matches are deliberately tracked as
 independent states.

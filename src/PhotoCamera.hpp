@@ -80,6 +80,8 @@ struct PhotoCameraState
     void BeginCapture();
     void UpdateViewfinder();
     u32 TakePhoto();
+    void CalculatePhotoScore(void *bulletTargets, i32 *scoreData,
+                             i32 runtimeTargets, i32 stageTargets);
     void CancelCapture();
     i32 CountPhotoTargets(f32 *score, f32 *rate);
     void UpdateCharge();
@@ -103,7 +105,9 @@ struct PhotoGameStateView
     AnmVm effectVm;                    // +0x0008
     i32 movementState;                 // +0x02d4
     i32 cameraTrackingMode;            // +0x02d8
-    u8 unknown02dc[0x1e30 - 0x02dc];
+    u8 unknown02dc[0x0420 - 0x02dc];
+    ZunTimer completionTimer;           // +0x0420
+    u8 unknown042c[0x1e30 - 0x042c];
     Float3 playerPosition;             // +0x1e30
     PhotoCameraState camera;            // +0x1e3c
 
@@ -112,6 +116,8 @@ struct PhotoGameStateView
 
 typedef char PhotoGamePlayerPositionAt1E30[
     (offsetof(PhotoGameStateView, playerPosition) == 0x1e30) ? 1 : -1];
+typedef char PhotoGameCompletionTimerAt420[
+    (offsetof(PhotoGameStateView, completionTimer) == 0x0420) ? 1 : -1];
 typedef char PhotoGameCameraAt1E3C[
     (offsetof(PhotoGameStateView, camera) == 0x1e3c) ? 1 : -1];
 
