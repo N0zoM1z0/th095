@@ -14,11 +14,11 @@ address,name,module,confidence,evidence
 0x004217A0,th095::GameWindow::CheckForRunningGameInstance,Main,exact,Canonical mutex shortcut and startup-info unit
 0x00421A20,th095::GameWindow::ActivateWindow,Main,exact,Canonical foreground-thread attachment unit
 0x00421AB0,th095::GameWindow::ResolveShortcut,Main,exact,Canonical COM shortcut-resolution unit
-0x00421C90,th095::AnmManager::ReleaseSurfaces,AnmManager,high,Releases 32 surface slots and is called from exact Render
-0x00423D60,th095::Supervisor::RegisterChain,Supervisor,high,Creates supervisor calc and draw chain elements
+0x00421C90,th095::AnmManager::ReleaseSurfaces,AnmManager,exact,Canonical main-release-surfaces VC7.1 comparison
+0x00423D60,th095::Supervisor::RegisterChain,Supervisor,exact,Canonical main-register-chain VC7.1 comparison with 23 relocations
 0x00424D30,th095::Supervisor::LoadConfig,Supervisor,exact,Canonical 200-byte config load validation and fallback unit
-0x00425890,th095::Supervisor::InitializeCriticalSections,Supervisor,high,Initializes seven critical sections at offset 0x664
-0x004258D0,th095::Supervisor::DeleteCriticalSections,Supervisor,high,Deletes seven critical sections at offset 0x664
+0x00425890,th095::Supervisor::InitializeCriticalSections,Supervisor,exact,Canonical main-initialize-critical-sections VC7.1 comparison
+0x004258D0,th095::Supervisor::DeleteCriticalSections,Supervisor,exact,Canonical main-delete-critical-sections VC7.1 comparison
 0x00437790,th095::SoundPlayer::Initialize,SoundPlayer,high,Creates TH095 sound worker thread
 0x004377F0,th095::SoundPlayer::RequestThreadStop,SoundPlayer,medium,Writes sound worker shutdown state 2
 0x00437810,th095::SoundPlayer::JoinThread,SoundPlayer,high,Waits for and closes sound worker handles
@@ -31,7 +31,7 @@ address,name,module,confidence,evidence
 0x0043A470,th095::AnmVm::GetFloatVarPtr,AnmVm,exact,Canonical full-symbol comparison including switch table
 0x0043A540,th095::AnmVm::GetIntVarPtr,AnmVm,exact,Canonical full-symbol comparison including switch table
 0x0043A600,th095::AnmManager::ExecuteScript,AnmManager,exact,Canonical 0x427A authored body and 0x4412 COFF extent with 333 replayed relocations
-0x0043F2B0,th095::AnmManager::ClearVertexBuffer,AnmManager,high,Exact Render relocation and target counter reset
-0x0043F2F0,th095::AnmManager::FlushVertexBuffer,AnmManager,high,Exact Render relocations and target D3D draw flow
+0x0043F2B0,th095::AnmManager::ClearVertexBuffer,AnmManager,exact,Canonical anm-clear-vertex-buffer VC7.1 comparison
+0x0043F2F0,th095::AnmManager::FlushVertexBuffer,AnmManager,exact,Canonical anm-flush-vertex-buffer VC7.1 comparison with 8 relocations
 0x00441DC0,th095::AnmManager::AnmManager,AnmManager,high,WinMain 0x38314c allocation and constructor call
 0x004421B0,th095::AnmManager::~AnmManager,AnmManager,high,WinMain delete path and target cleanup flow

@@ -903,6 +903,70 @@ void GameWindow::ActivateWindow(HWND hWnd)
 #undef touhouWinThread
 #undef lockoutTime
 
+void AnmManager::ReleaseSurfaces()
+{
+    i32 i;
+
+    for (i = 0; i < 32; i++)
+    {
+        if (this->surfaces[i] != NULL)
+        {
+            this->surfaces[i]->Release();
+            this->surfaces[i] = NULL;
+        }
+    }
+}
+
+#define elem restartCommandProcessingLocal05
+#define result averagedPanLocal12
+#define supervisor iLocal11
+#pragma var_order(elem, result, supervisor)
+i32 Supervisor::RegisterChain()
+{
+    Supervisor *supervisor = &g_Supervisor;
+
+    supervisor->wantedState = 0;
+    supervisor->currentState = -1;
+    supervisor->calcCount = 0;
+
+    ChainElem *elem = g_Chain.CreateElem((ChainCallback)Supervisor::OnUpdate);
+    elem->arg = supervisor;
+    elem->addedCallback = (ChainLifetimeCallback)Supervisor::AddedCallback;
+    elem->deletedCallback = (ChainLifetimeCallback)Supervisor::DeletedCallback;
+
+    i32 result = g_Chain.AddToCalcChain(elem, 0);
+    if (result != 0)
+        return result;
+
+    elem = g_Chain.CreateElem((ChainCallback)Supervisor::DrawFpsCounter);
+    elem->arg = supervisor;
+    g_Chain.AddToDrawChain(elem, 0);
+
+    elem = g_Chain.CreateElem((ChainCallback)Supervisor::OnDraw2);
+    elem->arg = supervisor;
+    g_Chain.AddToDrawChain(elem, 0x17);
+
+    elem = g_Chain.CreateElem((ChainCallback)Supervisor::DrawLoadingVms);
+    elem->arg = supervisor;
+    g_Chain.AddToDrawChain(elem, 0x1e);
+    return 0;
+}
+#undef elem
+#undef result
+#undef supervisor
+
+void Supervisor::InitializeCriticalSections()
+{
+    for (u32 i = 0; i < 7; i++)
+        InitializeCriticalSection(&this->criticalSections[i]);
+}
+
+void Supervisor::DeleteCriticalSections()
+{
+    for (u32 i = 0; i < 7; i++)
+        DeleteCriticalSection(&this->criticalSections[i]);
+}
+
 void GameConfiguration::Initialize()
 {
     memset(this, 0, sizeof(GameConfiguration));

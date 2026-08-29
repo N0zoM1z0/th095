@@ -151,6 +151,22 @@ struct SupervisorFlags
     u32 unknown9 : 23;
 };
 
+typedef i32 (__fastcall *ChainCallback)(void *arg);
+typedef i32 (__fastcall *ChainLifetimeCallback)(void *arg);
+
+struct ChainElem
+{
+    i16 priority;
+    u16 isHeapAllocated : 1;
+    ChainCallback callback;
+    ChainLifetimeCallback addedCallback;
+    ChainLifetimeCallback deletedCallback;
+    ChainElem *prev;
+    ChainElem *next;
+    ChainElem *releaseTarget;
+    void *arg;
+};
+
 struct Supervisor
 {
     HINSTANCE instance;                         // +0x000
@@ -164,7 +180,11 @@ struct Supervisor
     D3DPRESENT_PARAMETERS presentParameters;    // +0x0e4
     u8 unknown118[4];
     GameConfiguration config;                   // +0x11c
-    u8 unknown1e4[0x240];
+    u8 unknown1e4[0x220];
+    i32 calcCount;                              // +0x404
+    i32 wantedState;                            // +0x408
+    i32 currentState;                           // +0x40c
+    u8 unknown410[0x14];
     i32 screenTransitionCountdown;              // +0x424
     u8 unknown428[4];
     i32 disableVsync;                           // +0x42c
@@ -191,6 +211,13 @@ struct Supervisor
     void ThreadClose();
     void TakeScreenshot(char *path);
 
+    static i32 __fastcall OnUpdate(void *arg);
+    static i32 __fastcall AddedCallback(void *arg);
+    static i32 __fastcall DeletedCallback(void *arg);
+    static i32 __fastcall DrawFpsCounter(void *arg);
+    static i32 __fastcall OnDraw2(void *arg);
+    static i32 __fastcall DrawLoadingVms(void *arg);
+
     void EnterCriticalSectionWrapper(i32 id)
     {
         EnterCriticalSection(&this->criticalSections[id]);
@@ -212,18 +239,45 @@ typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 :
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
 
+struct VertexTex1DiffuseXyzrhw
+{
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 w;
+    u32 diffuse;
+    f32 u;
+    f32 v;
+};
+
 struct AnmManager
 {
-    u8 unknown000[0x10];
+    u8 unknown000[8];
+    i32 captureSurfaceIdx;        // +0x08
+    i32 captureAnmIdx;            // +0x0c
     i32 scriptsStartedThisFrame;  // +0x10
-    u8 unknown014[0x1760 - 0x14];
+    i32 scriptsExecutedThisFrame; // +0x14
+    i32 renderStateChangesThisFrame; // +0x18
+    i32 flushesThisFrame;         // +0x1c
+    u8 unknown020[0x11dc - 0x20];
+    IDirect3DSurface8 *surfaces[32]; // +0x11dc
+    u8 unknown125c[0x175c - 0x125c];
+    u32 currentTextureFactor;         // +0x175c
     IDirect3DTexture8 *currentTexture;  // +0x1760
     u8 currentBlendMode;                // +0x1764
     u8 currentColorOp;                  // +0x1765
     u8 currentVertexShader;             // +0x1766
     u8 disableZWrite;                   // +0x1767
     u8 cameraMode;                      // +0x1768
-    u8 unknown1769[0x38314c - 0x1769];
+    u8 unknown1769[3];
+    void *currentSprite;                 // +0x176c
+    IDirect3DVertexBuffer8 *quadVertexBuffer; // +0x1770
+    u8 unknown1774[0x17c4 - 0x1774];
+    i32 spritesToDraw;                   // +0x17c4
+    VertexTex1DiffuseXyzrhw vertexBuffer[0x20000]; // +0x17c8
+    VertexTex1DiffuseXyzrhw *vertexBufferEndPtr;   // +0x3817c8
+    VertexTex1DiffuseXyzrhw *vertexBufferStartPtr; // +0x3817cc
+    u8 unknown3817d0[0x38314c - 0x3817d0];
 
     AnmManager();
     ~AnmManager();
@@ -256,6 +310,9 @@ struct Chain
     i32 RunCalcChain();
     void RunDrawChain();
     void Release();
+    ChainElem *CreateElem(ChainCallback callback);
+    i32 AddToCalcChain(ChainElem *elem, i32 priority);
+    i32 AddToDrawChain(ChainElem *elem, i32 priority);
 };
 
 extern char *g_GameErrorContextCursor;

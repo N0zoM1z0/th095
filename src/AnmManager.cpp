@@ -877,4 +877,25 @@ stop:
     return false;
 }
 
+void AnmManager::ClearVertexBuffer()
+{
+    this->spritesToDraw = 0;
+    this->vertexBufferStartPtr = this->vertexBufferEndPtr = this->vertexBuffer;
+}
+
+void AnmManager::FlushVertexBuffer()
+{
+    if (this->spritesToDraw == 0)
+        return;
+
+    g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+    g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+    g_Supervisor.d3dDevice->SetVertexShader(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1);
+    g_Supervisor.d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, this->spritesToDraw * 2,
+                                            this->vertexBufferStartPtr, sizeof(VertexTex1DiffuseXyzrhw));
+    this->vertexBufferStartPtr = this->vertexBufferEndPtr;
+    this->spritesToDraw = 0;
+    this->flushesThisFrame++;
+}
+
 } // namespace th095

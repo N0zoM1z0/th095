@@ -27,7 +27,7 @@ next action belongs in `RE_HANDOFF.md`.
 | ABI-006 | compiler-observed | The stock VC7.1 build 3077 frontend does not implement TH08's patched `#pragma var_order`; natural local declaration order and identifier allocation are codegen-visible in the 0x400-byte ExecuteScript frame. | Isolated VC7.1 local-layout probes and exact ExecuteScript unit |
 | ABI-007 | compiler-observed | The ECL translation unit uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`; its exact `RunEcl` body has a 0x9EC-byte frame and keeps `this` at `[ebp-0x580]`. | Canonical `ecl-manager-run-ecl` unit under pinned VC7.1 build 3077 |
 | ABI-008 | compiler-observed | The SoundPlayer translation unit uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. Scoped identifier backing names reproduce target local allocation without a patched frontend. | Twenty-six canonical SoundPlayer units under pinned VC7.1 build 3077 |
-| ABI-009 | compiler-observed | The Main translation unit uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`; this profile reproduces thirteen independent configuration, window, timing, and D3D functions. | Canonical Main units under pinned VC7.1 build 3077 |
+| ABI-009 | compiler-observed | The Main translation unit uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`; this profile reproduces seventeen independent configuration, window, timing, chain, synchronization, and D3D functions. | Canonical Main units under pinned VC7.1 build 3077 |
 
 ## Analysis control plane
 
@@ -59,11 +59,12 @@ next action belongs in `RE_HANDOFF.md`.
 | MAIN-001 | target-observed | `GameWindow` timer fields used by Render are at `+0x34`, `+0x3C`, and `+0x44`; QPC frequency/start are at `+0x14` and `+0x1C`. | Target instructions and exact Render relocations/calls |
 | MAIN-002 | target-observed | `Supervisor::config.frameskipConfig` is at Supervisor `+0x1CC`; fog-state cache is at `+0x768`; seven critical sections begin at `+0x664`. | Exact Render DIR32 addends and init/delete loops |
 | MAIN-003 | exact | The configuration file is 200 bytes and validates version `0x95001`; missing or invalid data is reinitialized and `./thbgm.dat` selects wave or MIDI mode. | Canonical `main-load-config` unit at `0x00424D30` |
-| MAIN-004 | compiler-observed | `GameWindow::Render` and twelve configuration/Main/D3D functions compile to the target with `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. | Thirteen canonical Main VC7.1 units |
+| MAIN-004 | compiler-observed | `GameWindow::Render` and sixteen configuration/Main/D3D functions compile to the target with `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. | Seventeen canonical Main VC7.1 units |
 | MAIN-005 | exact | `InitD3DRendering` at `0x00420E20` and `ResetRenderState` at `0x00421380` reproduce the complete D3D device-creation and fixed-function state paths. | Canonical `main-init-d3d-rendering` and `main-reset-render-state` units |
 | MAIN-006 | compiler-observed | The current 1,326-byte `WinMain` source probe matches every one of 134 relocations and 782/790 comparable bytes; all eight differences are four-byte stack allocation/displacement changes. | Non-canonical `main-winmain` probe; no exact credit |
 | MAIN-007 | exact | Serialized controller configuration contains six packed 0x12-byte bindings. Runtime controller state holds them as two groups of three separated by 0x58 bytes; initialization and validated loading copy the groups in opposite directions. | Exact `main-config-initialize` and `main-load-config` field accesses and relocations |
-| MATCH-001 | exact | Thirteen Main units reproduce 6,693 authored bytes with 516 explicitly replayed COFF relocations. | Canonical `main-*` units under pinned VC7.1 build 3077 |
+| MAIN-008 | exact | `Supervisor::RegisterChain` creates one calc and three draw elements at priorities 0, 0, 0x17, and 0x1E. The two synchronization loops each cover seven critical sections, and `ReleaseSurfaces` covers 32 D3D surface slots. | Canonical `main-register-chain`, critical-section, and release-surface units |
+| MATCH-001 | exact | Seventeen Main units reproduce 7,188 authored bytes with 541 explicitly replayed COFF relocations. | Canonical `main-*` units under pinned VC7.1 build 3077 |
 
 ## Reconstructed ANM VM
 
@@ -76,6 +77,7 @@ next action belongs in `RE_HANDOFF.md`.
 | ANM-005 | exact | `Rng::GetRandomU32InRange` must inline as `range != 0 ? GetRandomU32() % range : 0`; the mesh-closing path copies two opening vertices but writes both final V-coordinate updates through the first closing pointer. | Exact target bytes and compiler oracle |
 | MATCH-002 | exact | `AnmManager::ExecuteScript` contributes 17,018 authored exact bytes; 17,426 total bytes are compared so the 408 compiler-owned table bytes cannot be silently omitted or credited as authored code. | Optional `compare_size` manifest contract and canonical replay |
 | ANM-006 | exact | `AnmLoaded::SetAndExecuteScript` at `0x0043A0C0` reproduces all 234 bytes and all five relocations. Its explicit timer scratch preserves the target's VC7.1 local allocation while retaining the recovered setup semantics. | Canonical `anm-set-and-execute-script` unit |
+| ANM-007 | exact | `ClearVertexBuffer` resets the buffered range and sprite count; `FlushVertexBuffer` submits two triangle-list primitives per sprite and resets the range. Both reproduce all 258 target bytes, including eight D3D-device relocations in the flush path. | Canonical `anm-clear-vertex-buffer` and `anm-flush-vertex-buffer` units |
 
 ## Reconstructed ECL VM
 

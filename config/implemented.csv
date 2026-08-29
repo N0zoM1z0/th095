@@ -47,3 +47,9 @@ th095::SoundPlayer::QueueCommand
 th095::SoundPlayer::SoundPlayer
 th095::GameConfiguration::Initialize
 th095::Supervisor::LoadConfig
+th095::AnmManager::ReleaseSurfaces
+th095::Supervisor::RegisterChain
+th095::Supervisor::InitializeCriticalSections
+th095::Supervisor::DeleteCriticalSections
+th095::AnmManager::ClearVertexBuffer
+th095::AnmManager::FlushVertexBuffer
