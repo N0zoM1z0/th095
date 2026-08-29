@@ -1,0 +1,474 @@
+#pragma once
+
+#include <d3d8.h>
+#include <d3dx8math.h>
+#define DIRECTINPUT_VERSION 0x800
+#include <dinput.h>
+
+#include "Global.hpp"
+#include "Midi.hpp"
+#include "ZunBool.hpp"
+#include "ZunMath.hpp"
+#include "diffbuild.hpp"
+#include "inttypes.hpp"
+#include "utils.hpp"
+
+namespace th095
+{
+#define GAME_VERSION 0x80001
+#define ZWAV_MAGIC 'VAWZ'
+
+enum MusicMode
+{
+    OFF = 0,
+    WAV = 1,
+    MIDI = 2
+};
+
+enum EffectQuality
+{
+    MINIMUM,
+    MODERATE,
+    MAXIMUM
+};
+
+enum FogState
+{
+    FOG_DISABLED = 0,
+    FOG_ENABLED = 1,
+    FOG_UNSET = 0xff
+};
+
+struct GameConfigOpts
+{
+    u32 useSwTextureBlending : 1;
+    u32 dontUseVertexBuf : 1;
+    u32 force16bitTextures : 1;
+    u32 clearBackBufferOnRefresh : 1;
+    u32 displayMinimumGraphics : 1;
+    u32 suppressUseOfGoroudShading : 1;
+    u32 disableDepthTest : 1;
+    u32 force60Fps : 1;
+    u32 disableColorCompositing : 1;
+    u32 referenceRasterizerMode : 1;
+    u32 disableFog : 1;
+    u32 dontUseDirectInput : 1;
+    u32 redrawHUDEveryFrame : 1;
+    u32 preloadMusic : 1;
+    u32 disableVsync : 1;
+    u32 dontDetectTextDrawingBackground : 1;
+};
+
+struct GameConfiguration
+{
+    ControllerMapping controllerMapping;
+    i32 version;
+    i16 padXAxis;
+    i16 padYAxis;
+    u8 lifeCount;
+    u8 bombCount;
+    u8 colorMode16bit;
+    u8 musicMode;
+    u8 playSounds;
+    u8 defaultDifficulty;
+    u8 windowed;
+    // 0 = fullspeed, 1 = 1/2 speed, 2 = 1/4 speed.
+    u8 frameskipConfig;
+    u8 effectQuality;
+    u8 slowMode;
+    u8 shotSlow;
+    i8 musicVolume;
+    i8 sfxVolume;
+    i8 serializedReserved29[15];
+    GameConfigOpts opts;
+};
+C_ASSERT(sizeof(GameConfiguration) == 0x3C);
+C_ASSERT(offsetof(GameConfiguration, lifeCount) == 0x1C);
+C_ASSERT(offsetof(GameConfiguration, slowMode) == 0x25);
+C_ASSERT(offsetof(GameConfiguration, serializedReserved29) == 0x29);
+C_ASSERT(offsetof(GameConfiguration, opts) == 0x38);
+
+struct SupervisorFlags
+{
+    u32 usingHardwareTL : 1;
+    u32 lockableBackbuffer : 1;
+    u32 using32BitGraphics : 1;
+    u32 speedhackDetected : 1; // Leftover from PCB. Is never set in IN, but is used.
+    u32 d3dDevDisconnectFlag : 1;
+    u32 forceExtraTimerStep : 1;
+    u32 dummyMidiTimerEnabled : 1;
+    u32 receivedCloseMsg : 1;
+    u32 scoreBackupPending : 1;
+};
+C_ASSERT(sizeof(SupervisorFlags) == 0x4);
+
+enum SupervisorState
+{
+    SupervisorState_ExitGame = -1,
+    SupervisorState_Init = 0,
+    SupervisorState_TitleScreen = 1,
+    SupervisorState_GameManager = 2,
+    SupervisorState_GameManagerReInit = 3,
+    SupervisorState_ExitGame2 = 4,
+    SupervisorState_ResultScreen = 5,
+    SupervisorState_ResultScreenFromGame = 6,
+    SupervisorState_FinishReplay = 7,
+    SupervisorState_MusicRoom = 8,
+    SupervisorState_Ending = 9,
+    SupervisorState_GameManagerRestartFromBeginning = 10,
+    SupervisorState_SpellcardPracticeRestart = 11,
+    SupervisorState_GameManagerNextStageWeird = 12,
+};
+
+enum SupervisorStartupThreadState
+{
+    SupervisorStartupThreadState_Idle = 0,
+    SupervisorStartupThreadState_Running = 1,
+    SupervisorStartupThreadState_Failed = 2,
+};
+
+/* This forward declaration is to prevent including AnmManager.hpp */
+struct AnmLoaded;
+
+struct Supervisor
+{
+    Supervisor();
+    static ZunResult RegisterChain();
+
+    static ChainCallbackResult OnUpdate(Supervisor *s);
+    static BOOL CALLBACK ControllerCallback(LPCDIDEVICEOBJECTINSTANCEA lpddoi, LPVOID pvRef);
+    static int AddedCallback(Supervisor *s);
+    static ZunResult LoadDat();
+    static i32 CheckFps();
+    static void StartupThread(Supervisor *s);
+    ZunResult SetupDInput();
+    static BOOL CALLBACK EnumGameControllersCb(LPCDIDEVICEINSTANCE pdidInstance, LPVOID pContext);
+    static ZunResult DeletedCallback(Supervisor *s);
+    static ChainCallbackResult DrawFpsCounter(Supervisor *s);
+    static ChainCallbackResult OnDraw2(Supervisor *s);
+    static ChainCallbackResult DrawLoadingVms(Supervisor *s);
+    static void CalculateFps(ZunBool shouldDraw);
+    ZunResult CheckVersion(const char *version, i32 exeSize, i32 exeChecksum);
+
+    ZunResult LoadConfig(char *configFile);
+    ZunBool LoadMusic(int preloadSlot, char *path);
+    ZunBool PlayMusic(i32 musicIndex, i32 bgmUnlockIndex);
+    ZunResult PlayAudio(char *path, i32 bgmUnlockIndex);
+    ZunResult StopAudio();
+    ZunBool IsSlowModeEnabled();
+    ZunResult FadeOutMusic(float durationSeconds);
+
+    void ThreadClose();
+    void SetupLoadingVms(Float3 *position);
+    void HideLoadingVms(void);
+    void BeginLoadingCompletion();
+    void SetupLoadingVmsAndInitCapture(Float3 *position);
+    void StartEffect(i32 idx);
+    void InitializeCriticalSections();
+    void DeleteCriticalSections();
+    void TickTimer(i32 *frames, float *subframes);
+    ZunBool TakeSnapshot(const char *filePath);
+    void SetRenderState(D3DRENDERSTATETYPE renderStateType, int value);
+    i32 DisableFog();
+    i32 EnableFog();
+    void UpdatePlayTime();
+    void UpdateGameTime();
+
+    ZunResult ThreadStart(LPTHREAD_START_ROUTINE startFunction, void *startParam);
+
+    void ClearRecordingFpsWarningState()
+    {
+        this->recordingFpsWarning = 0;
+        this->resetOnlyDword340 = 0;
+        this->resetOnlyDword34C = 0;
+        this->resetOnlyDword344 = 0;
+        this->resetOnlyDword348 = 0;
+    }
+
+    ZunBool IsShotSlowEnabled()
+    {
+        return this->cfg.shotSlow;
+    }
+
+    ZunBool IsSpeedhackDetected()
+    {
+        return this->flags.speedhackDetected;
+    }
+
+    ZunBool ShouldForceBackbufferClear()
+    {
+        return this->cfg.opts.clearBackBufferOnRefresh | this->cfg.opts.displayMinimumGraphics;
+    }
+
+    ZunBool IsHardwareBlendingDisabled()
+    {
+        return this->cfg.opts.useSwTextureBlending;
+    }
+
+    ZunBool IsVertexBufferDisabled()
+    {
+        return this->cfg.opts.dontUseVertexBuf;
+    }
+
+    ZunBool Is16bitColorMode()
+    {
+        return this->cfg.opts.force16bitTextures;
+    }
+
+    ZunBool IsDepthTestDisabled();
+
+    ZunBool IsColorCompositingDisabled();
+
+    ZunBool IsFogDisabled()
+    {
+        return this->cfg.opts.disableFog;
+    }
+
+    ZunBool IsHUDRedrawEnabled();
+
+    ZunBool IsReferenceRasterizerMode()
+    {
+        return this->cfg.opts.referenceRasterizerMode;
+    }
+
+#ifdef TH08_MUSICROOM_SUPERVISOR_PRELOAD_OUT_OF_LINE
+    ZunBool IsMusicPreloadEnabled();
+#else
+    ZunBool IsMusicPreloadEnabled()
+    {
+        return this->cfg.opts.preloadMusic;
+    }
+#endif
+
+    ZunBool IsWindowed()
+    {
+        return this->cfg.windowed;
+    }
+
+    ZunBool IsSoftwareTexturing()
+    {
+        return this->cfg.opts.disableColorCompositing | this->cfg.opts.useSwTextureBlending;
+    }
+
+    ZunBool IsMinimumGraphicsMode();
+
+    ZunBool IsSubthreadRunning()
+    {
+        return this->runningSubthreadHandle != NULL;
+    }
+
+    void EnterCriticalSectionWrapper(int id)
+    {
+        EnterCriticalSection(&this->criticalSections[id]);
+        this->lockCounts[id]++;
+    }
+
+    void LeaveCriticalSectionWrapper(int id)
+    {
+        LeaveCriticalSection(&this->criticalSections[id]);
+        this->lockCounts[id]--;
+    }
+
+    void ClearFogState()
+    {
+        this->fogState = FOG_UNSET;
+    }
+
+    HINSTANCE hInstance;
+    PDIRECT3D8 d3dIface;
+    PDIRECT3DDEVICE8 d3dDevice;
+    LPDIRECTINPUT8A dInputIface;
+    LPDIRECTINPUTDEVICE8A keyboard;
+    LPDIRECTINPUTDEVICE8A controller;
+    DIDEVCAPS controllerCaps;
+    HWND hwndGameWindow;
+    D3DXMATRIX viewMatrix;
+    D3DXMATRIX projectionMatrix;
+    D3DVIEWPORT8 viewport;
+    D3DPRESENT_PARAMETERS presentParameters;
+    DummyMidiTimer *dummyMidiTimer;
+    GameConfiguration cfg;
+    i32 calcCount;
+    i32 wantedState;
+    i32 curState;
+    i32 wantedState2;
+    i32 isInitialStageLoad;
+    i32 releaseResourcesOnRestart;
+    i32 keepStageResources;
+    i32 unconsumedDword170;
+    i32 screenTransitionCountdown; // Commonly set for screen transitions and decremented once per frame, but never actually used for
+                // anything
+    i32 suppressFpsDisplay;
+    BOOL disableVsync;
+    ZunBool couldSetRefreshRate;
+    i32 lastFrameTime; // Unused in IN
+    f32 framerateMultiplier;
+    MidiOutput *midiOutput;
+    float lagNumerator;
+    float lagDenominator;
+    i16 recordedFps;
+    AnmLoaded *textAnm;
+    AnmLoaded *loadingAnm;
+    SupervisorFlags flags;
+    DWORD totalPlayTime;
+    DWORD systemTime;
+    D3DCAPS8 d3dCaps;
+    HANDLE runningSubthreadHandle;
+    DWORD runningSubthreadID;
+    BOOL subthreadCloseRequestActive;
+    BOOL subthreadActive;
+    SupervisorStartupThreadState startupThreadState;
+    CRITICAL_SECTION criticalSections[4];
+    u8 lockCounts[4];
+    i32 loadingVmsHaveBeenSetup;
+
+    // Target-observed FPS timing denominator at Supervisor + 0x300.
+    u32 fpsPerformanceFrequency;
+    u8 unconsumedStorage304[0x34];
+
+    u32 recordingFpsWarning;
+    u32 playbackFpsWarning;
+    u32 resetOnlyDword340;
+    u32 resetOnlyDword344;
+    u32 resetOnlyDword348;
+    u32 resetOnlyDword34C;
+
+    FogState fogState;
+    u32 exeChecksum;
+    u32 exeSize;
+
+    i32 versionDataSize;
+    char *versionData;
+};
+C_ASSERT(sizeof(Supervisor) == 0x364);
+C_ASSERT(offsetof(Supervisor, isInitialStageLoad) == 0x164);
+C_ASSERT(offsetof(Supervisor, releaseResourcesOnRestart) == 0x168);
+C_ASSERT(offsetof(Supervisor, keepStageResources) == 0x16c);
+C_ASSERT(offsetof(Supervisor, suppressFpsDisplay) == 0x178);
+C_ASSERT(offsetof(Supervisor, framerateMultiplier) == 0x188);
+C_ASSERT(offsetof(Supervisor, recordedFps) == 0x198);
+C_ASSERT(offsetof(Supervisor, textAnm) == 0x19c);
+C_ASSERT(offsetof(Supervisor, flags) == 0x1a4);
+C_ASSERT(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x2fc);
+C_ASSERT(offsetof(Supervisor, subthreadActive) == 0x290);
+C_ASSERT(offsetof(Supervisor, startupThreadState) == 0x294);
+C_ASSERT(offsetof(Supervisor, unconsumedStorage304) == 0x304);
+C_ASSERT(offsetof(Supervisor, recordingFpsWarning) == 0x338);
+C_ASSERT(offsetof(Supervisor, playbackFpsWarning) == 0x33c);
+C_ASSERT(offsetof(Supervisor, resetOnlyDword340) == 0x340);
+C_ASSERT(offsetof(Supervisor, resetOnlyDword34C) == 0x34c);
+DIFFABLE_EXTERN(Supervisor, g_Supervisor);
+
+#define CRASH_GAME() memset(&g_Supervisor, -1, sizeof(g_Supervisor))
+
+struct ZunTimer
+{
+    int previous;
+    float subFrame;
+    int current;
+
+    ZunTimer()
+    {
+        Initialize();
+    }
+
+    void Initialize()
+    {
+        this->current = 0;
+        this->subFrame = 0.0;
+        this->previous = -999999;
+    }
+
+    void operator=(i32 value)
+    {
+        SetCurrent(value);
+    }
+
+    void SetCurrent(i32 value)
+    {
+        this->current = value;
+        this->subFrame = (float)value;
+        this->previous = -999999;
+    }
+
+    operator int()
+    {
+        return this->current;
+    }
+
+    ZunBool HasTicked();
+    ZunBool JustReached(i32 value);
+    ZunBool IsPeriodic(i32 interval);
+
+    operator float()
+    {
+        return this->subFrame;
+    }
+
+    void operator++(int)
+    {
+        Tick();
+    }
+
+    i32 Tick();
+    void Add(float value);
+
+    void operator+=(float value)
+    {
+        this->Add(value);
+    }
+
+    void DecrementPostfix(i32 value)
+    {
+        this->Decrement(value);
+    }
+
+    void operator--(int)
+    {
+        this->DecrementPostfix(1);
+    }
+
+    ZunBool operator==(int value)
+    {
+        return this->current == value;
+    }
+
+    ZunBool operator!=(int value);
+
+    i32 operator%(i32 value);
+
+    void operator+=(int value);
+
+    ZunBool operator-=(int value)
+    {
+        this->Decrement(value);
+    }
+
+    ZunBool operator<(int value)
+    {
+        return this->current < value;
+    }
+
+    ZunBool operator<=(int value)
+    {
+        return this->current <= value;
+    }
+
+    ZunBool operator>(int value)
+    {
+        return this->current > value;
+    }
+
+    ZunBool operator>=(int value)
+    {
+        return this->current >= value;
+    }
+
+    void Increment(i32 value);
+    void Decrement(i32 value)
+    {
+        this->Add((float)-value);
+    }
+
+};
+}; // namespace th095

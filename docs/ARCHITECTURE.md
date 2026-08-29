@@ -68,7 +68,7 @@ flowchart LR
     Render --> Anm
     Anm --> AnmVM[ExecuteScript\n0x0043A600 exact]
     Chain --> Game[TH095 gameplay/UI states]
-    Game --> EclVM[RunEcl\n0x00408E70]
+    Game --> EclVM[RunEcl\n0x00408E70 exact]
 ```
 
 `WinMain` owns the complete process lifecycle: it disables system power UI,
@@ -99,7 +99,7 @@ and branches so reconstruction work is not biased toward isolated leaves.
 
 | Address | Size | Connectivity | Current classification | Lane value |
 | --- | ---: | ---: | --- | --- |
-| `0x00408E70` | 27,091 | 3 callers / 50 internal callees | `EclManager::RunEcl` | Largest script VM; unlocks enemy/scene semantics |
+| `0x00408E70` | 27,091 | 3 callers / 50 internal callees | exact `EclManager::RunEcl` | Largest script VM; establishes enemy/scene semantics |
 | `0x0043A600` | 17,018 | 22 callers / 20 internal callees | exact `AnmManager::ExecuteScript` | Widely shared animation VM and type/layout root |
 | `0x00447D00` | 16,066 | 1 caller / 27 internal callees | target-specific resource/gameplay setup hub | Large async/container lane; exact class name unresolved |
 | `0x00430AB0` | 7,271 | 1 caller / 29 internal callees | target-specific camera/player update state machine | Photography/gameplay lane; do not project a TH08 name |
@@ -111,9 +111,11 @@ The first large-function lane, `AnmManager::ExecuteScript`, is exact for its
 17,018-byte authored body. Its canonical unit also compares the complete
 17,426-byte COFF extent, including three compiler-owned switch tables and all
 333 relocations. This establishes the ANM VM layout, 89-opcode dispatch, update
-tail, and VC7.1 `/Ob1` source-shape profile. `EclManager::RunEcl` is now the
-active second VM lane. The TH095-specific gameplay hubs remain target-first
-investigations.
+tail, and VC7.1 `/Ob1` source-shape profile. The second large-function lane,
+`EclManager::RunEcl`, is exact for its 27,091-byte authored body and complete
+27,747-byte COFF extent, including the 158-entry opcode table, six-entry
+easing table, and all 647 relocations. The next target-first lane is the
+16,066-byte target-specific resource/gameplay setup hub at `0x00447D00`.
 
 ## Shared engine versus TH095 gameplay
 

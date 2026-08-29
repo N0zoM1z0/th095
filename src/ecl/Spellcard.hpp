@@ -1,0 +1,391 @@
+#pragma once
+
+#include "AnmManager.hpp"
+#include "ZunBool.hpp"
+#include "diffbuild.hpp"
+#include "inttypes.hpp"
+#include "ZunMath.hpp"
+
+namespace th095
+{
+struct Effect;
+struct Enemy;
+
+// Naming scheme:
+// SPELLCARD_[STAGE]_[ENEMY]_(LAST SPELL)(NUM)(DIFFICULTY)
+// [] fields are mandatory
+// () fields are optional
+enum SpellcardNumber
+{
+    SPELLCARD_ST1_MBOSS_1H,
+    SPELLCARD_ST1_MBOSS_1L,
+    SPELLCARD_ST1_BOSS_1E,
+    SPELLCARD_ST1_BOSS_1N,
+    SPELLCARD_ST1_BOSS_1H,
+    SPELLCARD_ST1_BOSS_1L,
+    SPELLCARD_ST1_BOSS_2E,
+    SPELLCARD_ST1_BOSS_2N,
+    SPELLCARD_ST1_BOSS_2H,
+    SPELLCARD_ST1_BOSS_2L,
+    SPELLCARD_ST1_BOSS_LSN,
+    SPELLCARD_ST1_BOSS_LSH,
+    SPELLCARD_ST1_BOSS_LSL,
+
+    SPELLCARD_ST2_MBOSS_1E,
+    SPELLCARD_ST2_MBOSS_1N,
+    SPELLCARD_ST2_MBOSS_1H,
+    SPELLCARD_ST2_MBOSS_1L,
+    SPELLCARD_ST2_BOSS_1E,
+    SPELLCARD_ST2_BOSS_1N,
+    SPELLCARD_ST2_BOSS_1H,
+    SPELLCARD_ST2_BOSS_1L,
+    SPELLCARD_ST2_BOSS_2E,
+    SPELLCARD_ST2_BOSS_2N,
+    SPELLCARD_ST2_BOSS_2H,
+    SPELLCARD_ST2_BOSS_2L,
+    SPELLCARD_ST2_BOSS_3E,
+    SPELLCARD_ST2_BOSS_3N,
+    SPELLCARD_ST2_BOSS_3H,
+    SPELLCARD_ST2_BOSS_3L,
+    SPELLCARD_ST2_BOSS_LSN,
+    SPELLCARD_ST2_BOSS_LSH,
+    SPELLCARD_ST2_BOSS_LSL,
+
+    SPELLCARD_ST3_MBOSS_1E,
+    SPELLCARD_ST3_MBOSS_1N,
+    SPELLCARD_ST3_MBOSS_1H,
+    SPELLCARD_ST3_MBOSS_1L,
+    SPELLCARD_ST3_BOSS_1N,
+    SPELLCARD_ST3_BOSS_1H,
+    SPELLCARD_ST3_BOSS_1L,
+    SPELLCARD_ST3_BOSS_2E,
+    SPELLCARD_ST3_BOSS_2N,
+    SPELLCARD_ST3_BOSS_2H,
+    SPELLCARD_ST3_BOSS_2L,
+    SPELLCARD_ST3_BOSS_3E,
+    SPELLCARD_ST3_BOSS_3N,
+    SPELLCARD_ST3_BOSS_3H,
+    SPELLCARD_ST3_BOSS_3L,
+    SPELLCARD_ST3_BOSS_4E,
+    SPELLCARD_ST3_BOSS_4N,
+    SPELLCARD_ST3_BOSS_4H,
+    SPELLCARD_ST3_BOSS_4L,
+    SPELLCARD_ST3_BOSS_LSN,
+    SPELLCARD_ST3_BOSS_LSH,
+    SPELLCARD_ST3_BOSS_LSL,
+
+    SPELLCARD_ST4A_MBOSS_1E,
+    SPELLCARD_ST4A_MBOSS_1N,
+    SPELLCARD_ST4A_MBOSS_1H,
+    SPELLCARD_ST4A_MBOSS_1L,
+    SPELLCARD_ST4A_MBOSS_2E,
+    SPELLCARD_ST4A_MBOSS_2N,
+    SPELLCARD_ST4A_MBOSS_2H,
+    SPELLCARD_ST4A_MBOSS_2L,
+    SPELLCARD_ST4A_BOSS_1E,
+    SPELLCARD_ST4A_BOSS_1N,
+    SPELLCARD_ST4A_BOSS_1H,
+    SPELLCARD_ST4A_BOSS_1L,
+    SPELLCARD_ST4A_BOSS_2E,
+    SPELLCARD_ST4A_BOSS_2N,
+    SPELLCARD_ST4A_BOSS_2H,
+    SPELLCARD_ST4A_BOSS_2L,
+    SPELLCARD_ST4A_BOSS_3E,
+    SPELLCARD_ST4A_BOSS_3N,
+    SPELLCARD_ST4A_BOSS_3H,
+    SPELLCARD_ST4A_BOSS_3L,
+    SPELLCARD_ST4A_BOSS_LSN,
+    SPELLCARD_ST4A_BOSS_LSH,
+    SPELLCARD_ST4A_BOSS_LSL,
+
+    SPELLCARD_ST4B_MBOSS_1E,
+    SPELLCARD_ST4B_MBOSS_1N,
+    SPELLCARD_ST4B_MBOSS_1H,
+    SPELLCARD_ST4B_MBOSS_1L,
+    SPELLCARD_ST4B_MBOSS_2E,
+    SPELLCARD_ST4B_MBOSS_2N,
+    SPELLCARD_ST4B_MBOSS_2H,
+    SPELLCARD_ST4B_MBOSS_2L,
+    SPELLCARD_ST4B_BOSS_1E,
+    SPELLCARD_ST4B_BOSS_1N,
+    SPELLCARD_ST4B_BOSS_1H,
+    SPELLCARD_ST4B_BOSS_1L,
+    SPELLCARD_ST4B_BOSS_2E,
+    SPELLCARD_ST4B_BOSS_2N,
+    SPELLCARD_ST4B_BOSS_2H,
+    SPELLCARD_ST4B_BOSS_2L,
+    SPELLCARD_ST4B_BOSS_3E,
+    SPELLCARD_ST4B_BOSS_3N,
+    SPELLCARD_ST4B_BOSS_3H,
+    SPELLCARD_ST4B_BOSS_3L,
+    SPELLCARD_ST4B_BOSS_LSN,
+    SPELLCARD_ST4B_BOSS_LSH,
+    SPELLCARD_ST4B_BOSS_LSL,
+
+    SPELLCARD_ST5_BOSS_1E,
+    SPELLCARD_ST5_BOSS_1N,
+    SPELLCARD_ST5_BOSS_1H,
+    SPELLCARD_ST5_BOSS_1L,
+    SPELLCARD_ST5_BOSS_2E,
+    SPELLCARD_ST5_BOSS_2N,
+    SPELLCARD_ST5_BOSS_2H,
+    SPELLCARD_ST5_BOSS_2L,
+    SPELLCARD_ST5_BOSS_3E,
+    SPELLCARD_ST5_BOSS_3N,
+    SPELLCARD_ST5_BOSS_3H,
+    SPELLCARD_ST5_BOSS_3L,
+    SPELLCARD_ST5_BOSS_4E,
+    SPELLCARD_ST5_BOSS_4N,
+    SPELLCARD_ST5_BOSS_4H,
+    SPELLCARD_ST5_BOSS_4L,
+    SPELLCARD_ST5_BOSS_LSN,
+    SPELLCARD_ST5_BOSS_LSH,
+    SPELLCARD_ST5_BOSS_LSL,
+
+    SPELLCARD_ST6A_MBOSS_1E,
+    SPELLCARD_ST6A_MBOSS_1N,
+    SPELLCARD_ST6A_MBOSS_1H,
+    SPELLCARD_ST6A_MBOSS_1L,
+    SPELLCARD_ST6A_BOSS_1E,
+    SPELLCARD_ST6A_BOSS_1N,
+    SPELLCARD_ST6A_BOSS_1H,
+    SPELLCARD_ST6A_BOSS_1L,
+    SPELLCARD_ST6A_BOSS_2E,
+    SPELLCARD_ST6A_BOSS_2N,
+    SPELLCARD_ST6A_BOSS_2H,
+    SPELLCARD_ST6A_BOSS_2L,
+    SPELLCARD_ST6A_BOSS_3E,
+    SPELLCARD_ST6A_BOSS_3N,
+    SPELLCARD_ST6A_BOSS_3H,
+    SPELLCARD_ST6A_BOSS_3L,
+    SPELLCARD_ST6A_BOSS_4E,
+    SPELLCARD_ST6A_BOSS_4N,
+    SPELLCARD_ST6A_BOSS_4H,
+    SPELLCARD_ST6A_BOSS_4L,
+    SPELLCARD_ST6A_BOSS_5E,
+    SPELLCARD_ST6A_BOSS_5N,
+    SPELLCARD_ST6A_BOSS_5H,
+    SPELLCARD_ST6A_BOSS_5L,
+    SPELLCARD_ST6A_BOSS_LSE,
+    SPELLCARD_ST6A_BOSS_LSN,
+    SPELLCARD_ST6A_BOSS_LSH,
+    SPELLCARD_ST6A_BOSS_LSL,
+
+    SPELLCARD_ST6B_MBOSS_1E,
+    SPELLCARD_ST6B_MBOSS_1N,
+    SPELLCARD_ST6B_MBOSS_1H,
+    SPELLCARD_ST6B_MBOSS_1L,
+    SPELLCARD_ST6B_BOSS_1E,
+    SPELLCARD_ST6B_BOSS_1N,
+    SPELLCARD_ST6B_BOSS_1H,
+    SPELLCARD_ST6B_BOSS_1L,
+    SPELLCARD_ST6B_BOSS_2E,
+    SPELLCARD_ST6B_BOSS_2N,
+    SPELLCARD_ST6B_BOSS_2H,
+    SPELLCARD_ST6B_BOSS_2L,
+    SPELLCARD_ST6B_BOSS_3E,
+    SPELLCARD_ST6B_BOSS_3N,
+    SPELLCARD_ST6B_BOSS_3H,
+    SPELLCARD_ST6B_BOSS_3L,
+    SPELLCARD_ST6B_BOSS_4E,
+    SPELLCARD_ST6B_BOSS_4N,
+    SPELLCARD_ST6B_BOSS_4H,
+    SPELLCARD_ST6B_BOSS_4L,
+    SPELLCARD_ST6B_BOSS_5E,
+    SPELLCARD_ST6B_BOSS_5N,
+    SPELLCARD_ST6B_BOSS_5H,
+    SPELLCARD_ST6B_BOSS_5L,
+    SPELLCARD_ST6B_BOSS_LS1E,
+    SPELLCARD_ST6B_BOSS_LS1N,
+    SPELLCARD_ST6B_BOSS_LS1H,
+    SPELLCARD_ST6B_BOSS_LS1L,
+    SPELLCARD_ST6B_BOSS_LS2E,
+    SPELLCARD_ST6B_BOSS_LS2N,
+    SPELLCARD_ST6B_BOSS_LS2H,
+    SPELLCARD_ST6B_BOSS_LS2L,
+    SPELLCARD_ST6B_BOSS_LS3E,
+    SPELLCARD_ST6B_BOSS_LS3N,
+    SPELLCARD_ST6B_BOSS_LS3H,
+    SPELLCARD_ST6B_BOSS_LS3L,
+    SPELLCARD_ST6B_BOSS_LS4E,
+    SPELLCARD_ST6B_BOSS_LS4N,
+    SPELLCARD_ST6B_BOSS_LS4H,
+    SPELLCARD_ST6B_BOSS_LS4L,
+    SPELLCARD_ST6B_BOSS_LS5E,
+    SPELLCARD_ST6B_BOSS_LS5N,
+    SPELLCARD_ST6B_BOSS_LS5H,
+    SPELLCARD_ST6B_BOSS_LS5L,
+
+    SPELLCARD_EX_MBOSS_1,
+    SPELLCARD_EX_MBOSS_2,
+    SPELLCARD_EX_MBOSS_3,
+    SPELLCARD_EX_BOSS_1,
+    SPELLCARD_EX_BOSS_2,
+    SPELLCARD_EX_BOSS_3,
+    SPELLCARD_EX_BOSS_4,
+    SPELLCARD_EX_BOSS_5,
+    SPELLCARD_EX_BOSS_6,
+    SPELLCARD_EX_BOSS_7,
+    SPELLCARD_EX_BOSS_8,
+    SPELLCARD_EX_BOSS_9,
+    SPELLCARD_EX_BOSS_10,
+    SPELLCARD_EX_BOSS_LS,
+
+    SPELLCARD_COUNT_IN_GAME_SPELLCARDS,
+    SPELLCARD_LAST_WORD_START = SPELLCARD_COUNT_IN_GAME_SPELLCARDS,
+
+    SPELLCARD_LW_WRIGGLE = SPELLCARD_LAST_WORD_START,
+    SPELLCARD_LW_MYSTIA,
+    SPELLCARD_LW_KEINE,
+    SPELLCARD_LW_REISEN,
+    SPELLCARD_LW_EIRIN,
+    SPELLCARD_LW_KAGUYA,
+    SPELLCARD_LW_MOKOU,
+    SPELLCARD_LW_TEWI,
+    SPELLCARD_LW_KEINEEX,
+    SPELLCARD_LW_REIMU,
+    SPELLCARD_LW_MARISA,
+    SPELLCARD_LW_SAKUYA,
+    SPELLCARD_LW_YOUMU,
+    SPELLCARD_LW_ALICE,
+    SPELLCARD_LW_REMILIA,
+    SPELLCARD_LW_YUYUKO,
+    SPELLCARD_LW_YUKARI,
+
+    SPELLCARD_COUNT_SPELLCARDS,
+    SPELLCARD_COUNT_LAST_WORD_SPELLCARDS = SPELLCARD_COUNT_SPELLCARDS - SPELLCARD_COUNT_IN_GAME_SPELLCARDS,
+};
+
+enum SpellcardFlagShift
+{
+    SPELLCARD_FLAG_ACTIVE_SHIFT = 0,
+    SPELLCARD_FLAG_CAPTURE_VALID_SHIFT = 2,
+    SPELLCARD_FLAG_TIMER_CALLBACK_TRANSITION_SHIFT = 3,
+    SPELLCARD_FLAG_ALTERNATE_EFFECT_STYLE_SHIFT = 5,
+    SPELLCARD_FLAG_EFFECT_TRACKING_DISABLED_SHIFT = 6,
+    SPELLCARD_FLAG_BOMB_DAMAGE_ENABLED_SHIFT = 7,
+    SPELLCARD_FLAG_CAPTURE_REWARD_PENDING_SHIFT = 8,
+    SPELLCARD_FLAG_CAPTURED_SHIFT = 9,
+    SPELLCARD_FLAG_SUPPRESS_BONUS_PRESENTATION_SHIFT = 10,
+    SPELLCARD_FLAG_BONUS_UPDATES_DISABLED_SHIFT = 11,
+};
+
+enum SpellcardFlagMask
+{
+    SPELLCARD_FLAG_ACTIVE = ZUN_BIT(SPELLCARD_FLAG_ACTIVE_SHIFT),
+    SPELLCARD_FLAG_CAPTURE_VALID = ZUN_BIT(SPELLCARD_FLAG_CAPTURE_VALID_SHIFT),
+    SPELLCARD_FLAG_TIMER_CALLBACK_TRANSITION = ZUN_BIT(SPELLCARD_FLAG_TIMER_CALLBACK_TRANSITION_SHIFT),
+    SPELLCARD_FLAG_ALTERNATE_EFFECT_STYLE = ZUN_BIT(SPELLCARD_FLAG_ALTERNATE_EFFECT_STYLE_SHIFT),
+    SPELLCARD_FLAG_EFFECT_TRACKING_DISABLED = ZUN_BIT(SPELLCARD_FLAG_EFFECT_TRACKING_DISABLED_SHIFT),
+    SPELLCARD_FLAG_BOMB_DAMAGE_ENABLED = ZUN_BIT(SPELLCARD_FLAG_BOMB_DAMAGE_ENABLED_SHIFT),
+    SPELLCARD_FLAG_CAPTURE_REWARD_PENDING = ZUN_BIT(SPELLCARD_FLAG_CAPTURE_REWARD_PENDING_SHIFT),
+    SPELLCARD_FLAG_CAPTURED = ZUN_BIT(SPELLCARD_FLAG_CAPTURED_SHIFT),
+    SPELLCARD_FLAG_SUPPRESS_BONUS_PRESENTATION = ZUN_BIT(SPELLCARD_FLAG_SUPPRESS_BONUS_PRESENTATION_SHIFT),
+    SPELLCARD_FLAG_BONUS_UPDATES_DISABLED = ZUN_BIT(SPELLCARD_FLAG_BONUS_UPDATES_DISABLED_SHIFT),
+};
+
+struct Spellcard
+{
+    Spellcard();
+    ZunResult Init();
+
+    ZunBool IsCaptured()
+    {
+        return (this->flags >> SPELLCARD_FLAG_CAPTURED_SHIFT) & 1;
+    }
+
+    u32 flags;                       // +0x000
+    Enemy *activeEnemy;              // +0x004
+    i32 spellCardNumber;             // +0x008
+    i32 activeEnemyIndexSnapshot;    // +0x00C
+    i32 pendingTimeOrbs;             // +0x010
+    char spellName[48];              // +0x014
+    u8 unconsumedStorage044[0x30];    // +0x044
+    char spellCommentLine1[64];      // +0x074
+    char spellCommentLine2[64];      // +0x0B4
+    Effect *spellEffect;             // +0x0F4
+    Effect *rewardEffect;            // +0x0F8
+    i32 bonusProgress;               // +0x0FC
+    i32 bonusCounter;                // +0x100
+    i32 bonusAward;                  // +0x104
+    ZunTimer timeRemaining;          // +0x108
+    ZunTimer timeLimit;              // +0x114
+    AnmVm playerPortraitVm;                     // +0x120
+    AnmVm enemyPortraitVm;                     // +0x3C4
+    AnmVm portraitBackdropVm;                     // +0x668
+    AnmVm enemyPortraitAuxNoRotationVm;        // +0x90C
+    AnmVm portraitOverlayVm;                     // +0xBB0
+    AnmVm enemyPortraitAux2dVm;                // +0xE54
+    AnmVm playerSpellNameVm;                    // +0x10F8
+    AnmVm enemySpellNameVm;                    // +0x139C
+    AnmVm enemySpellNameLayer1Vm;                    // +0x1640
+    AnmVm enemySpellNameLayer2Vm;                    // +0x18E4
+    AnmVm playerSpellNameFrameVm;                    // +0x1B88
+    AnmVm enemySpellNameFrameVm;                    // +0x1E2C
+    AnmVm spellBonusDigitsVm;                    // +0x20D0
+    AnmVm spellBonusFrameVm;                    // +0x2374
+    f32 playerSpellNameWidth;        // +0x2618
+    f32 enemySpellNameWidth;         // +0x261C
+    D3DCOLOR mixColor;                 // +0x2620
+    AnmLoaded *playerFaceAnm0;       // +0x2624
+    AnmLoaded *playerFaceAnm1;       // +0x2628
+    AnmLoaded *enemyFaceAnm0;        // +0x262C
+    AnmLoaded *enemyFaceAnm1;        // +0x2630
+    AnmLoaded *commonFaceAnm;        // +0x2634
+    i32 scoreLimit;                  // +0x2638
+    ChainElem *lifetimeObject;       // +0x263C
+    ChainElem *lifetimeChain;        // +0x2640
+
+    void StartSpell(i32 spellCardNumber, const u8 *encodedName, i32 enemyFace, i32 bonus, Enemy *enemy,
+                    const u8 *encodedOwner, const char *commentLine1, const char *commentLine2);
+    void CutInEnemyNoPortrait(const char *name, i32 unused);
+    void CutInPlayer(i32 playerFace, const char *name, i32 sprite);
+    void CutInEnemy(i32 enemyFace, const char *name, i32 sprite);
+    void HidePlayerSpellPresentation();
+    void HideEnemySpellPresentation();
+    void InvalidateCaptureAndEnableBombDamage();
+    void InvalidateCapture();
+    void EndSpell();
+    void DeactivateWithoutCleanup();
+    void AddBonusProgress(i32 amount);
+    i32 OnUpdateImpl();
+    i32 OnDrawImpl();
+
+    static ChainCallbackResult OnUpdate(Spellcard *spellcard);
+    static ChainCallbackResult OnDraw(Spellcard *spellcard);
+
+    void SetStoredVector(f32 x, f32 y, f32 z);
+    void SetEffectTrackingDisabled(i32 value);
+    void SetBonusUpdatesDisabled(i32 value);
+    i32 IsActive();
+    i32 WasCaptured();
+    i32 IsCaptureValid();
+    i32 GetTimerFrames();
+    i32 GetPendingTimeOrbs()
+    {
+        return this->pendingTimeOrbs;
+    }
+    i32 UsesAlternateEffectStyle();
+    i32 IsBombDamageEnabled();
+
+    static ZunResult RegisterChain();
+    static ZunResult DeletedCallback(Spellcard *spellcard);
+    static i32 __fastcall IsLastSpell(i32 spellCardNumber);
+
+    static i32 GetDifficultyFromSpellCard(i32 spellcardNumber);
+    static void CutChain();
+};
+C_ASSERT(offsetof(Spellcard, timeRemaining) == 0x108);
+C_ASSERT(offsetof(Spellcard, timeLimit) == 0x114);
+C_ASSERT(sizeof(Spellcard) == 0x2644);
+
+DIFFABLE_EXTERN_ARRAY(i32 *, 6, g_SpellcardNumbersPerDifficulty);
+DIFFABLE_EXTERN_ARRAY(i32, 6, g_SpellcardCountsPerDifficulty);
+DIFFABLE_EXTERN_ARRAY(i32, 43, g_LastSpellNumbers);
+DIFFABLE_EXTERN(i32, g_LastSpellCount);
+DIFFABLE_EXTERN(Spellcard, g_Spellcard);
+DIFFABLE_EXTERN(ChainElem *, g_SpellcardCalcChain);
+DIFFABLE_EXTERN_ARRAY(i32 *, 10, g_SpellcardNumbersPerStage)
+DIFFABLE_EXTERN_ARRAY(i32, 10, g_SpellcardCountPerStage)
+
+} /* namespace th095 */

@@ -25,6 +25,7 @@ next action belongs in `RE_HANDOFF.md`.
 | ABI-004 | inferred | Visual C++ .NET 2003 x86 is the original compiler family. | ABI-001 through ABI-003 |
 | ABI-005 | compiler-observed | The ANM translation unit uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`; `/Gr` makes `AnmManager::ExecuteScript` fastcall and `/Ob1` reproduces its inline helpers. | Canonical ANM units under pinned VC7.1 build 3077 |
 | ABI-006 | compiler-observed | The stock VC7.1 build 3077 frontend does not implement TH08's patched `#pragma var_order`; natural local declaration order and identifier allocation are codegen-visible in the 0x400-byte ExecuteScript frame. | Isolated VC7.1 local-layout probes and exact ExecuteScript unit |
+| ABI-007 | compiler-observed | The ECL translation unit uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`; its exact `RunEcl` body has a 0x9EC-byte frame and keeps `this` at `[ebp-0x580]`. | Canonical `ecl-manager-run-ecl` unit under pinned VC7.1 build 3077 |
 
 ## Analysis control plane
 
@@ -43,7 +44,7 @@ next action belongs in `RE_HANDOFF.md`.
 | --- | --- | --- | --- |
 | ARCH-001 | target-observed | CRT entry `0x00486A9D` calls `WinMain` at `0x00420240`; the latter owns configuration, window/D3D, sound-worker, ANM allocation, message/frame loop, restart, and teardown. | Target call/control flow and system API xrefs |
 | ARCH-002 | corroborated | The TH095 `GameWindow`, `Supervisor`, `SoundPlayer`, `AnmManager`, and ECL layers share source ancestry with TH08. | Matching responsibilities, call shapes, strings, and multiple equal function extents; TH08 exact source |
-| ARCH-003 | target-observed | `0x00408E70` is a 27,091-byte ECL opcode dispatcher with 50 internal callees. | Target dispatcher structure and architecture metrics |
+| ARCH-003 | exact | `0x00408E70` is the 27,091-byte `EclManager::RunEcl` dispatcher with 50 internal callees. Its COFF extent additionally owns 656 bytes of switch tables. | Canonical `ecl-manager-run-ecl` unit and architecture metrics |
 | ARCH-004 | exact | `0x0043A600` is the 17,018-byte `AnmManager::ExecuteScript` ANM opcode dispatcher called by 22 target functions. Its COFF auxiliary extent additionally owns 408 bytes of switch tables. | Canonical `anm-execute-script` unit and architecture metrics |
 | ARCH-005 | target-observed | TH095 uses a dedicated SoundPlayer worker thread; `0x00437790` creates it and `0x004377F0`/`0x00437810` request and join shutdown. | CreateThread state and WaitForSingleObject/CloseHandle control flow |
 | ARCH-006 | inferred | `0x00430AB0`, `0x00426BF0`, and `0x00447D00` are target-specific gameplay/UI/resource hubs and must not inherit TH08 class names without further proof. | TH095-only state machines, camera/photo/replay evidence, and unresolved owning types |
@@ -69,13 +70,23 @@ next action belongs in `RE_HANDOFF.md`.
 | ANM-005 | exact | `Rng::GetRandomU32InRange` must inline as `range != 0 ? GetRandomU32() % range : 0`; the mesh-closing path copies two opening vertices but writes both final V-coordinate updates through the first closing pointer. | Exact target bytes and compiler oracle |
 | MATCH-002 | exact | `AnmManager::ExecuteScript` contributes 17,018 authored exact bytes; 17,426 total bytes are compared so the 408 compiler-owned table bytes cannot be silently omitted or credited as authored code. | Optional `compare_size` manifest contract and canonical replay |
 
+## Reconstructed ECL VM
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| ECL-001 | exact | `EclManager::RunEcl` at `0x00408E70` reproduces its complete 0x69D3-byte authored body. The canonical comparison extends to 0x6C63 and reproduces all 647 relocation fields. | `ecl-manager-run-ecl`; pinned VC7.1 build 3077 |
+| ECL-002 | target-observed | The main ECL dispatch table has 158 entries and the shared interpolation tail has a six-entry easing table. Both tables are compiler-owned by the RunEcl COFF symbol. | Target extents `0x0040F843..0x0040FAD2`; exact DIR32 replay |
+| ECL-003 | compiler-observed | Exact source requires integer-bit raw float transfers, native bitfield assignments for enemy/effect flags, and whole-structure assignment for 4-byte animation handles. These source forms determine register order without changing semantics. | Zero-difference target comparison and isolated VC7.1 source-shape iterations |
+| ECL-004 | target-observed | TH095 extends the inherited ECL VM with photography session, camera, photo-effect, animation-handle, and stage-state opcodes. Adjacent TH08 source establishes ancestry but not these TH095-specific cases. | Exact target handlers and target-local call/field evidence |
+| MATCH-003 | exact | `EclManager::RunEcl` contributes 27,091 authored exact bytes; 27,747 total bytes are compared so the 656 compiler-owned table bytes cannot be omitted or credited as authored code. | `size`/`compare_size` manifest contract and canonical replay |
+
 ## Open architecture questions
 
 - The original object partition outside the proven `Main.cpp` Render unit is
   not established.
-- ECL opcode/type reuse from TH08 remains corroboration until each TH095 case
-  and VM offset is checked locally. The ANM lane has completed that target
-  validation.
+- ECL helper ownership and friendly names outside the exact `RunEcl` unit are
+  still provisional even though every dispatcher case and VM offset in the
+  canonical body is target-validated.
 - Source-level class names for the large TH095 photography, gameplay, and
   asynchronous resource hubs remain unknown.
 

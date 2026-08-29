@@ -88,7 +88,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00408CB0,45,0x00408CDC,FUN_00408cb0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00408CE0,247,0x00408DD6,FUN_00408ce0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00408DE0,140,0x00408E6B,FUN_00408de0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00408E70,27091,0x0040F842,FUN_00408e70,th095::EclManager::RunEcl,EclManager,unclassified,0.00,__thiscall,ZunResult EclManager::RunEcl(Enemy *),false,,TH095 dispatcher shape and call graph; corroborated by TH08 exact RunEcl source,,High-connectivity 27 KB ECL VM lane; boundary still under review
+0x00408E70,27091,0x0040F842,FUN_00408e70,th095::EclManager::RunEcl,EclManager,matching,100.00,__thiscall,ZunResult EclManager::RunEcl(Enemy *),false,src/ecl/EclRun.cpp,Canonical VC7.1 comparison covers the 0x69D3 authored body plus two compiler-owned switch tables through 0x6C63,authored,Exact ECL VM dispatcher and update tail with 647 replayed relocations
 0x0040FAE0,1731,0x004101A2,FUN_0040fae0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00410300,487,0x004104E6,FUN_00410300,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004105A0,1708,0x00410C4B,FUN_004105a0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,

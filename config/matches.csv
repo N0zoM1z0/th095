@@ -7,3 +7,4 @@ address,name,size,status,match_percent,unit,evidence
 0x0043A470,th095::AnmVm::GetFloatVarPtr,200,matching,100.00,anm-get-float-var-ptr,python3 scripts/build.py --unit anm-get-float-var-ptr && python3 scripts/compare-coff-function.py --unit anm-get-float-var-ptr --json
 0x0043A540,th095::AnmVm::GetIntVarPtr,177,matching,100.00,anm-get-int-var-ptr,python3 scripts/build.py --unit anm-get-int-var-ptr && python3 scripts/compare-coff-function.py --unit anm-get-int-var-ptr --json
 0x0043A600,th095::AnmManager::ExecuteScript,17018,matching,100.00,anm-execute-script,python3 scripts/build.py --unit anm-execute-script && python3 scripts/compare-coff-function.py --unit anm-execute-script --json
+0x00408E70,th095::EclManager::RunEcl,27091,matching,100.00,ecl-manager-run-ecl,python3 scripts/build.py --unit ecl-manager-run-ecl && python3 scripts/compare-coff-function.py --unit ecl-manager-run-ecl --json

@@ -83,6 +83,18 @@ A diagnostic `structural-exact` result is compiler-oracle evidence only. It is
 not eligible for `config/matches.csv` until every relocation and a replayable
 unit are committed.
 
+The large ECL dispatcher is replayed independently from the ANM translation
+unit:
+
+```bash
+python3 scripts/build.py --unit ecl-manager-run-ecl
+python3 scripts/compare-coff-function.py --unit ecl-manager-run-ecl --json
+```
+
+The unit credits the 27,091-byte authored body and compares the complete
+27,747-byte COFF extent, including 656 bytes of compiler-owned switch tables
+and all 647 explicit relocations.
+
 Objdiff 3.8.0 reports `100%` measures for an empty zero-unit project. Treat that
 as an empty-denominator UI artifact, never as reconstruction progress. Only the
 accepted ledgers drive `docs/PROGRESS.md` and `resources/progress.svg`.

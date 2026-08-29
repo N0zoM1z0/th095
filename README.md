@@ -1,7 +1,14 @@
 # 東方文花帖 ～ Shoot the Bullet
 
 <p align="center">
-  <img src="resources/progress.svg" alt="TH095 reconstruction progress">
+  <img
+    src="resources/title-screen.jpg"
+    width="640"
+    alt="Original Japanese TH095 1.02a title screen">
+</p>
+
+<p align="center">
+  <img src="resources/progress.svg" alt="TH095 exact source reconstruction progress">
 </p>
 
 This project reconstructs the original Japanese TH095 version 1.02a
@@ -30,23 +37,25 @@ scripts/import-target.sh /path/to/th095.exe
 python3 scripts/verify-target.py
 ```
 
-Copyrighted executables, game data, screenshots, and private analysis
-databases are not included.
+Copyrighted executables, game data, and private analysis databases are not
+included.
 
 ## Current status
 
 TH095 is in active reconstruction. An attested Ghidra 12.1.3 headless import
-supplies 1,830 provisional function candidates. The application lifecycle and
-major engine hubs are mapped, `src/Main.cpp` is source-present, and
-`GameWindow::Render` is the first canonical byte-exact VC7.1 unit. Every other
-boundary and origin remains subject to target review. Mapping, source
-presence, semantic validation, and exact matches are deliberately tracked as
-independent states.
+supplies 1,830 provisional function candidates. Nine canonical units now
+reproduce 46,523 authored bytes exactly, including the complete 17,018-byte
+`AnmManager::ExecuteScript` and 27,091-byte `EclManager::RunEcl` VM hubs. That
+is 78.45% of the currently confirmed authored-byte denominator; the global
+denominator remains provisional while origin review continues. Mapping,
+source presence, semantic validation, and exact matches are deliberately
+tracked as independent states.
 
 The pinned compiler is Microsoft Visual C++ .NET 2003
 `13.10.3077`, matching the target's PE/Rich-header evidence. The
 `/Od /Oi /Gr` main translation-unit profile is proven for the accepted Render
-unit. Profiles and translation-unit boundaries elsewhere remain unclassified.
+unit. The exact ANM and ECL VM units additionally prove `/Ob1` for their
+bounded translation units; profiles elsewhere remain unclassified.
 
 Start a reconstruction session with:
 

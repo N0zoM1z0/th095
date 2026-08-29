@@ -14,3 +14,4 @@ th095::AnmVm::GetIntVar
 th095::AnmVm::GetFloatVarPtr
 th095::AnmVm::GetIntVarPtr
 th095::AnmManager::ExecuteScript
+th095::EclManager::RunEcl
