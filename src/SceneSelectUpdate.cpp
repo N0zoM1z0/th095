@@ -165,11 +165,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             {
                 if (view->loadedGroupQueue.count == 1)
                 {
-                    view->sceneAnm->textures[2].Load(
+                    g_SceneAnmManager->LoadTexture(
+                        &view->sceneAnm->textures[2],
                         reinterpret_cast<u8 *>(SceneQueueFront(
                             &view->groupPreviewDataQueue)),
-                        reinterpret_cast<i32 *>(SceneQueueFront(
-                            &view->groupPreviewSizeQueue)),
+                        SceneQueueFront(&view->groupPreviewSizeQueue),
                         5, 0, 1);
                     view->sceneAnm->textures[2].texture->PreLoad();
                 }
@@ -180,17 +180,17 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             {
                 if (view->loadedGroupQueue.count == 1)
                 {
-                    view->sceneAnm->textures[2].Load(
+                    g_SceneAnmManager->LoadTexture(
+                        &view->sceneAnm->textures[2],
                         reinterpret_cast<u8 *>(SceneQueueFront(
                             &view->groupPreviewDataQueue)),
-                        reinterpret_cast<i32 *>(SceneQueueFront(
-                            &view->groupPreviewSizeQueue)),
+                        SceneQueueFront(&view->groupPreviewSizeQueue),
                         5, 0, 1);
-                    view->sceneAnm->textures[3].LoadRegion(
+                    g_SceneAnmManager->LoadTextureRegion(
+                        &view->sceneAnm->textures[3],
                         reinterpret_cast<u8 *>(SceneQueueFront(
                             &view->scenePreviewDataQueue)),
-                        reinterpret_cast<i32 *>(SceneQueueFront(
-                            &view->scenePreviewSizeQueue)),
+                        SceneQueueFront(&view->scenePreviewSizeQueue),
                         5, 0, 1, 0x20);
                     view->sceneAnm->textures[2].texture->PreLoad();
                 }
@@ -219,14 +219,16 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     {
         if (view->pendingTextureCount == 1)
         {
-            view->sceneAnm->textures[3].Load(
+            g_SceneAnmManager->LoadTexture(
+                &view->sceneAnm->textures[3],
                 reinterpret_cast<u8 *>(view->pendingPrimaryData[0]),
-                reinterpret_cast<i32 *>(view->pendingPrimarySize[0]),
+                view->pendingPrimarySize[0],
                 1, 0, 1);
             view->sceneAnm->textures[3].texture->PreLoad();
-            view->sceneAnm->textures[4].Load(
+            g_SceneAnmManager->LoadTexture(
+                &view->sceneAnm->textures[4],
                 reinterpret_cast<u8 *>(view->pendingSecondaryData[0]),
-                reinterpret_cast<i32 *>(view->pendingSecondarySize[0]),
+                view->pendingSecondarySize[0],
                 1, 0, 1);
             view->sceneAnm->textures[4].texture->PreLoad();
         }

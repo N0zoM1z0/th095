@@ -165,3 +165,10 @@ th095::LoadSceneSelectionAssets
 th095::SceneSaveDataView::LoadBestShotForScene
 th095::CalculateAlignedChecksum
 th095::DecompressData
+th095::SceneAnmManagerView::ApplyTextureAlphaBleed
+th095::AccumulateArgb8888Neighbor
+th095::AccumulateArgb1555Neighbor
+th095::AccumulateArgb4444Neighbor
+th095::GetAnmFormat
+th095::SceneAnmManagerView::LoadTexture
+th095::SceneAnmManagerView::LoadTextureRegion

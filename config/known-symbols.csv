@@ -73,8 +73,13 @@ address,name,module,confidence,evidence
 0x00447D00,th095::SceneSelectControllerView::UpdateSceneSelect,SceneSelect,high,Shared-controller state 2 target and root of the TH095 scene-selection cluster
 0x00452630,th095::SceneSelectControllerView::Draw,FrontEndController,high,Complete scene-result and replay-browser text renderer with exact 19-call topology
 0x004362A0,th095::SceneSaveDataView::LoadScenePreviewTexture,SceneSelect,high,Target-local selected-scene thumbnail upload into an ANM texture
-0x00442B90,th095::SceneTextureEntryView::Load,AnmTexture,high,Complete texture upload used by scene selection and Help
-0x00442CA0,th095::SceneTextureEntryView::LoadRegion,AnmTexture,high,Partial texture upload with destination top offset
+0x00442B90,th095::SceneAnmManagerView::LoadTexture,AnmTexture,exact,Canonical file-or-embedded texture upload with seven relocations
+0x00442CA0,th095::SceneAnmManagerView::LoadTextureRegion,AnmTexture,high,Complete partial texture upload with destination top offset
+0x00442510,th095::SceneAnmManagerView::ApplyTextureAlphaBleed,AnmTexture,high,Complete transparent-pixel neighbor color bleed for three alpha formats
+0x00442A50,th095::AccumulateArgb8888Neighbor,AnmTexture,exact,Canonical ARGB8888 neighbor color accumulator
+0x00442AB0,th095::AccumulateArgb1555Neighbor,AnmTexture,exact,Canonical ARGB1555 neighbor color accumulator
+0x0041C570,th095::AccumulateArgb4444Neighbor,AnmTexture,exact,Canonical ARGB4444 neighbor color accumulator
+0x00442B40,th095::GetAnmFormat,AnmTexture,exact,Canonical forced-16-bit texture format downgrade
 0x00443F80,th095::SceneWriteText,AnmText,high,Shared variadic ANM text renderer used for scene labels
 0x004453B0,th095::SceneTextureEntryView::Clear,AnmTexture,exact,Canonical relocation-free D3D texture clear comparison
 0x0044D0A0,th095::LoadSceneSelectionAssets,SceneSelect,high,Asynchronous mission thumbnail face and preview-text producer

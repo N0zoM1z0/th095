@@ -240,7 +240,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041BF90,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041C180,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041C1E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041C570,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041C570,authored,AnmTexture,authored,exact,vc71-anm-texture-alpha-neighbors-2026-08-29
 0x0041C600,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041C780,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041C8A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -552,10 +552,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00441DC0,authored,AnmManager,authored,high,target-main-family-2026-08-29
 0x004421B0,authored,AnmManager,authored,high,target-main-family-2026-08-29
 0x00442260,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00442510,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00442A50,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00442AB0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00442B40,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00442510,authored,AnmTexture,authored,high,ghidra-vc71-anm-texture-alpha-bleed-2026-08-29
+0x00442A50,authored,AnmTexture,authored,exact,vc71-anm-texture-alpha-neighbors-2026-08-29
+0x00442AB0,authored,AnmTexture,authored,exact,vc71-anm-texture-alpha-neighbors-2026-08-29
+0x00442B40,authored,AnmTexture,authored,exact,vc71-anm-texture-load-2026-08-29
 0x00442B90,authored,AnmTexture,authored,high,scene-select-texture-upload-2026-08-29
 0x00442CA0,authored,AnmTexture,authored,high,scene-select-texture-upload-2026-08-29
 0x00442E10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

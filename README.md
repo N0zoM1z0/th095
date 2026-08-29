@@ -67,6 +67,9 @@ D3D texture clear helper is exact. The selector's asynchronous mission/face
 asset worker is source-present with its complete queue protocol and exact
 38-call topology. The selected-scene best-shot loader and shared 8 KiB-ring
 decompressor are source-present, and their aligned checksum dependency is exact.
+The selector/Help ANM texture pipeline is source-present through full and
+regional uploads and three-format alpha bleed; the full upload, format selector,
+and all three pixel-neighbor helpers are exact.
 
 A target-local audit continues to admit photography/camera, replay/menu,
 scene-selection, options, and gameplay/resource functions as their authored

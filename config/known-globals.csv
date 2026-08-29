@@ -28,3 +28,5 @@ address,name,module,confidence,evidence
 0x004C4CC4,th095::g_HelpLoadActive,HelpMenu,exact,Exact Help loader active-flag relocation
 0x004CA2F4,th095::g_HelpMenu,HelpMenu,exact,Exact Help loader owner-pointer relocation
 0x004E24A8,th095::g_DecompressionRing,Compression,high,Target-local 8192-byte history ring used by DecompressData
+0x00496F10,th095::g_TextureFormatD3D8Mapping,AnmTexture,exact,Canonical GetAnmFormat and LoadTexture DIR32 relocations
+0x00496F28,th095::g_TextureFormatBytesPerPixel,AnmTexture,exact,Canonical LoadTexture DIR32 relocations

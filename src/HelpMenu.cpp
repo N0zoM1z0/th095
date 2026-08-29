@@ -25,12 +25,6 @@ struct HelpAnmStorageView
     HelpTextureEntryView *textures;
 };
 
-struct HelpAnmManagerView
-{
-    void LoadTexture(HelpTextureEntryView *entry, u8 *data, i32 size,
-                     i32 unknown1, i32 unknown2, i32 unknown3);
-};
-
 static __forceinline u16 GetHelpPressedButtons(u16 buttons)
 {
     return g_PressedButtons & buttons;
@@ -165,10 +159,10 @@ i32 HelpMenuView::UpdateHelpMenu()
         return 0;
 
     case 3:
-        ((HelpAnmManagerView *)g_SceneAnmManager)
-            ->LoadTexture(
-                &((HelpAnmStorageView *)this->sceneAnm)->textures[13],
-                this->helpAnmData, this->helpAnmSize, 1, 0, 1);
+        g_SceneAnmManager->LoadTexture(
+            reinterpret_cast<SceneTextureEntryView *>(
+                &((HelpAnmStorageView *)this->sceneAnm)->textures[13]),
+            this->helpAnmData, this->helpAnmSize, 1, 0, 1);
         free(this->helpAnmData);
         this->helpAnmData = NULL;
         ((HelpAnmStorageView *)this->sceneAnm)->textures[13]

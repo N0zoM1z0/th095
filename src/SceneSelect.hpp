@@ -153,6 +153,12 @@ struct SceneAnmManagerView
     void SetInterrupt(SceneAnmVmId id, i32 interrupt);
     SceneAnmVmView *GetVm(SceneAnmVmId id);
     void MarkVmForDeletion(SceneAnmVmId id);
+    i32 LoadTexture(struct SceneTextureEntryView *entry, u8 *data, i32 size,
+                    i32 format, i32 unknown, i32 hasData);
+    i32 LoadTextureRegion(struct SceneTextureEntryView *entry, u8 *data,
+                          i32 size, i32 format, i32 unknown, i32 hasData,
+                          i32 top);
+    void ApplyTextureAlphaBleed(struct SceneTextureEntryView *entry);
 };
 
 extern SceneAnmManagerView *g_SceneAnmManager;
@@ -160,13 +166,37 @@ extern SceneAnmManagerView *g_SceneAnmManager;
 struct SceneTextureEntryView
 {
     IDirect3DTexture8 *texture;
-    u8 unknown004[0x0c];
+    u8 *rawData;
+    i32 rawDataSize;
+    i32 bytesPerPixel;
 
-    i32 Load(u8 *data, i32 *size, i32 format, i32 unknown, i32 hasAlpha);
-    i32 LoadRegion(u8 *data, i32 *size, i32 format, i32 unknown,
-                   i32 hasAlpha, i32 top);
     void Clear();
 };
+
+typedef char SceneTextureEntrySizeIs10[
+    (sizeof(SceneTextureEntryView) == 0x10) ? 1 : -1];
+
+i32 __fastcall GetAnmFormat(i32 format);
+struct PixelArgb1555
+{
+    u16 blue : 5;
+    u16 green : 5;
+    u16 red : 5;
+    u16 alpha : 1;
+};
+struct PixelArgb4444
+{
+    u16 blue : 4;
+    u16 green : 4;
+    u16 red : 4;
+    u16 alpha : 4;
+};
+void __fastcall AccumulateArgb8888Neighbor(u32 *sums, u8 *pixel,
+                                           u32 *count);
+void __fastcall AccumulateArgb1555Neighbor(u32 *sums, PixelArgb1555 *pixel,
+                                           u32 *count);
+void __fastcall AccumulateArgb4444Neighbor(u32 *sums, PixelArgb4444 *pixel,
+                                           u32 *count);
 
 struct SceneAnmLoadedView
 {

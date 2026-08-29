@@ -155,7 +155,10 @@ asynchronous preview, record-detail, and transition topology. Its shared
 is now source-present for its exact 38-call topology. Its 1,034-byte best-shot
 file decoder/checksum validator is also source-present with the exact twelve-call
 distribution. The decoder's shared 8 KiB-ring decompressor is source-present,
-and its 83-byte aligned additive checksum dependency is canonical exact.
+and its 83-byte aligned additive checksum dependency is canonical exact. The
+selector/Help texture path is now source-present from format conversion through
+full and regional D3D uploads and three-format alpha bleed; its full upload,
+format selector, and three pixel-neighbor helpers are exact.
 
 ## Shared engine versus TH095 gameplay
 
