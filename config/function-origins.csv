@@ -397,7 +397,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00429C80,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0042A6B0,authored,ReplayMenu,authored,high,ghidra-replay-menu-cluster-2026-08-29
 0x0042A6E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0042A710,authored,ReplayMenu,authored,high,ghidra-replay-menu-cluster-2026-08-29
+0x0042A710,authored,ResultScreen,authored,exact,vc71-result-screen-load-replays-2026-08-29
 0x0042A8A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0042A940,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0042A9C0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

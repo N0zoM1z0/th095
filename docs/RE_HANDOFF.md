@@ -10,21 +10,23 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 71 canonical units cover 71,361 authored bytes.
+- Reconstruction: 84 canonical units cover 76,102 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 57.69% (71,361 / 123,695)
+  relocations. Confirmed authored-byte coverage is now 60.23% (76,102 / 126,355)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
   (14,363 bytes), eleven replay/menu/best-shot functions (15,512 bytes), and
   ten gameplay/resource functions (25,601 bytes). This intentionally reduced
-  the percentage while increasing origin/boundary review to 93 / 1,830
-  candidates. Original class names remain unresolved.
+  the percentage while expanding the honest denominator. The current ledger
+  confirms 107 authored candidates and leaves 1,723 origin/boundary reviews
+  pending. Original class names remain unresolved where target evidence is
+  insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
   object construction/release. Twenty-six sound units contribute 8,133 bytes.
@@ -92,9 +94,9 @@ python3 scripts/report-reconstruction-status.py --summary
 
 ## Next bounded lane
 
-The earlier narrow 95% checkpoint is superseded by the 32-function target-local
-origin audit. Two subsequently proved camera/ANM candidates expanded the honest
-denominator to 123,695 bytes; exact coverage is 57.69%. `WinMain` remains
+The earlier narrow 95% checkpoint is superseded by the target-local origin
+audit. Subsequent camera, ANM, replay, and result-screen work expanded the
+honest denominator to 126,355 bytes; exact coverage is 60.23%. `WinMain` remains
 deferred because its remaining eight
 stack bytes have resisted the bounded VC7.1 oracle matrix.
 
@@ -121,8 +123,11 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    factories, delete helper, chain wrappers, the 408-byte per-frame input/FPS
    stream core, playback FPS drawing, the complete 540-byte disk/archive
    loader, and the complete 1,691-byte compressed writer with both `USER`
-   metadata blocks. Continue with the 6,471-byte replay/menu dispatcher at
-   `0x00426BF0`, then the 16,066-byte gameplay/resource hub at `0x00447D00`.
+   metadata blocks. The adjacent 390-byte
+   `ResultScreen::LoadReplays @ 0x0042A710` is also exact and proves the
+   replay cursor at `+0x4604` plus twenty replay pointers at `+0x6CE8`.
+   Continue with the 6,471-byte result/replay dispatcher at `0x00426BF0`, then
+   the 16,066-byte gameplay/resource hub at `0x00447D00`.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

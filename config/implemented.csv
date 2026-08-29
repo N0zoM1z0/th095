@@ -84,3 +84,4 @@ th095::ReplayManager::OnUpdate
 th095::ReplayManager::OnDraw
 th095::ReplayManager::LoadReplay
 th095::ReplayManager::WriteReplay
+th095::ResultScreen::LoadReplays

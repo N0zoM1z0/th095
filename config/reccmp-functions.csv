@@ -85,3 +85,4 @@ th095::ReplayManager::OnUpdate,0x00435350,function
 th095::ReplayManager::OnDraw,0x00435380,function
 th095::ReplayManager::LoadReplay,0x00435130,function
 th095::ReplayManager::WriteReplay,0x00434A90,function
+th095::ResultScreen::LoadReplays,0x0042A710,function

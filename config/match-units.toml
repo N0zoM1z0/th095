@@ -6253,3 +6253,19 @@ relocations = [
   { offset = 0x685, type = "REL32", symbol = "_free", target = 0x004854BE },
   { offset = 0x68D, type = "REL32", symbol = "?Close@ReplayFile@th095@@YIXXZ", target = 0x0041B090 },
 ]
+
+[units.result-screen-load-replays]
+source = "src/ResultScreen.cpp"
+object = "build/matching/ResultScreen.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ResultScreen::LoadReplays"]
+symbol = "?LoadReplays@ResultScreen@th095@@QAE?AW4ZunResult@@XZ"
+target_address = 0x0042A710
+size = 0x186
+relocations = [
+  { offset = 0x86, type = "REL32", symbol = "??1ReplayManager@th095@@QAE@XZ", target = 0x004344F0 },
+  { offset = 0x9C, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0xDD, type = "DIR32", symbol = "??_C@_0O@IMBNJIHJ@th95_?$CF?42d?4rpy?$AA@", target = 0x00496450 },
+  { offset = 0xE9, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0xF7, type = "REL32", symbol = "?Load@ReplayManager@th095@@SIPAU12@PAD@Z", target = 0x00434700 },
+]

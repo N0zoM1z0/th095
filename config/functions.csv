@@ -397,7 +397,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00429C80,2573,0x0042A68C,FUN_00429c80,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042A6B0,45,0x0042A6DC,FUN_0042a6b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042A6E0,45,0x0042A70C,FUN_0042a6e0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0042A710,390,0x0042A895,FUN_0042a710,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x0042A710,390,0x0042A895,FUN_0042a710,th095::ResultScreen::LoadReplays,ResultScreen,matching,100.00,__thiscall,ZunResult ResultScreen::LoadReplays(),false,src/ResultScreen.cpp,Canonical relocation-aware VC7.1 comparison: 390/390 bytes and 5 relocations,authored,Exact TH095 twenty-slot replay reload and result-screen cursor reset
 0x0042A8A0,160,0x0042A93F,FUN_0042a8a0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042A940,117,0x0042A9B4,FUN_0042a940,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042A9C0,103,0x0042AA26,FUN_0042a9c0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
