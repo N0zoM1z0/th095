@@ -1,0 +1,4 @@
+interface:
+  display_name: "TH095 Reconstruction"
+  short_description: "Recover bounded TH095 code from attested evidence"
+  default_prompt: "Use $th095-re to reconstruct one bounded TH095 function from the verified Japanese v1.02a target."

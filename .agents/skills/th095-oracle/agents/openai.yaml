@@ -1,0 +1,4 @@
+interface:
+  display_name: "TH095 Oracle Validation"
+  short_description: "Validate semantics with independent TH095 oracles"
+  default_prompt: "Use $th095-oracle to validate a bounded TH095 semantic or layout hypothesis with independent evidence."

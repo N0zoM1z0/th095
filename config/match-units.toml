@@ -1,0 +1,6 @@
+schema_version = 1
+target_sha256 = "bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07"
+
+# Add a unit only after its Ghidra candidate boundary is reconciled against
+# exact target control flow and a reproducible VC7.1 COFF object exists.
+[units]

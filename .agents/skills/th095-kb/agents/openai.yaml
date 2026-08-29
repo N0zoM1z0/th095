@@ -1,0 +1,4 @@
+interface:
+  display_name: "TH095 Knowledge Base"
+  short_description: "Maintain durable TH095 evidence and handoffs"
+  default_prompt: "Use $th095-kb to record verified TH095 findings and refresh the current reconstruction handoff."

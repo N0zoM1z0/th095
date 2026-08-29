@@ -1,0 +1,33 @@
+# Private retail targets and analysis workspaces
+reference/
+resources/private/
+.tools/
+.analysis/
+ghidra-project/
+*.rar
+*.7z
+*.zip
+*.exe
+*.dll
+*.dat
+*.cfg
+*.log
+*.gpr
+*.rep/
+*.i64
+*.id0
+*.id1
+*.id2
+*.nam
+*.til
+
+# Generated outputs and local environments
+build/
+out/
+dist/
+.cache/
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db

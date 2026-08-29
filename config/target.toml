@@ -1,0 +1,73 @@
+[target]
+title = "東方文花帖 ～ Shoot the Bullet"
+version = "1.02a"
+region = "original-japanese"
+filename = "th095.exe"
+size = 696832
+sha256 = "bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07"
+md5 = "8de95bc7651419201fc1a4ea49bc0697"
+
+[provenance]
+official_update = "th095_ver102a.exe"
+official_update_url = "http://www16.big.or.jp/~zun/data/soft/th095_ver102a.exe"
+official_update_sha256 = "8bd17035df64ad102b039bb6c1fbdf8f3495c08ab6774583ba6c7377e0802044"
+official_update_md5 = "11f296b4265f17c3e1e02bc52963a6f4"
+official_update_date = "2006-01-13"
+evidence = "The executable reports Shoot the Bullet. ver 1.02a and its PE timestamp agrees with the official final update window."
+
+[pe]
+machine = "i386"
+image_base = "0x00400000"
+entry_point = "0x00486A9D"
+timestamp_utc = "2006-01-12T17:09:19Z"
+linker_version = "7.10"
+size_of_image = 954368
+headers_raw_size = 1024
+text_start = "0x00401000"
+text_end = "0x004942A7"
+text_virtual_size = 602792
+text_raw_offset = "0x00000400"
+text_raw_size = 603136
+relocations_stripped = true
+
+[[pe.sections]]
+name = ".text"
+rva = "0x00001000"
+virtual_size = 602792
+raw_offset = "0x00000400"
+raw_size = 603136
+
+[[pe.sections]]
+name = ".rdata"
+rva = "0x00095000"
+virtual_size = 60488
+raw_offset = "0x00093800"
+raw_size = 60928
+
+[[pe.sections]]
+name = ".data"
+rva = "0x000A4000"
+virtual_size = 269760
+raw_offset = "0x000A2600"
+raw_size = 24576
+
+[[pe.sections]]
+name = ".data1"
+rva = "0x000E6000"
+virtual_size = 2272
+raw_offset = "0x000A8600"
+raw_size = 2560
+
+[[pe.sections]]
+name = ".rsrc"
+rva = "0x000E7000"
+virtual_size = 4448
+raw_offset = "0x000A9000"
+raw_size = 4608
+
+[toolchain]
+family = "Microsoft Visual C++ .NET 2003 (VC7.1)"
+compiler_version = "13.10.3077"
+linker_version = "7.10.3077"
+rich_build = 3077
+evidence = "PE linker 7.10, Rich-header build 3077 records, and direct version attestation of the pinned VC7.1 compiler/linker. Compiler flags remain unclassified."

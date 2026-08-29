@@ -1,0 +1,18 @@
+targets:
+  th095:
+    filename: th095.exe
+    source_root: src
+    hash:
+      sha256: bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07
+    data_sources:
+      - config/reccmp-functions.csv
+      - config/reccmp-globals.csv
+      - config/reccmp-floats.csv
+      - config/reccmp-strings.csv
+    ghidra:
+      ignore_types: []
+      ignore_functions: []
+      name_substitutions: []
+      allow_hash_mismatch: false
+    report:
+      ignore_functions: []

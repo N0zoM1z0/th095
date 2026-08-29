@@ -1,0 +1,4 @@
+interface:
+  display_name: "TH095 Strict Matching"
+  short_description: "Build and prove exact VC7.1 function matches"
+  default_prompt: "Use $th095-matching to compare one TH095 reconstruction unit against the verified target."

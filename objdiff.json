@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/encounter/objdiff/main/config.schema.json",
+  "min_version": "3.8.0",
+  "custom_make": "python3",
+  "custom_args": ["scripts/build.py", "--object-name"],
+  "build_base": true,
+  "build_target": false,
+  "watch_patterns": ["*.c", "*.cpp", "*.h", "*.hpp"],
+  "units": []
+}
