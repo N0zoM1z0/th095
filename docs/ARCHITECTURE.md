@@ -118,10 +118,12 @@ easing table, and all 647 relocations. A subsequent target-local audit admitted
 32 functions and 55,476 bytes across the camera/photo, replay/menu, and
 gameplay/resource clusters. Five exact save/unlock helpers now prove that
 `0x00447D00` manages TH095's twelve-group scene-selection UI rather than a
-traditional stage loop. The next dependency-first lane is its adjacent
-716-byte preview/status updater at `0x0044BBD0`, now source-present with its
-78-byte bounded-queue dependency exact. The next adjacent lane is the staged
-preview-text builder at `0x0044BEA0`.
+traditional stage loop. The adjacent 716-byte preview/status updater at
+`0x0044BBD0` is source-present with its 78-byte bounded-queue dependency
+exact. Its staged 1,989-byte preview-text builder at `0x0044BEA0` and 128-byte
+rolling-key text decoder at `0x0044D020` are now exact. The next adjacent
+dependency-first lane is the 2,278-byte scene-detail updater at `0x0044C670`,
+followed by the main hub.
 
 ## Shared engine versus TH095 gameplay
 

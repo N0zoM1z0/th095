@@ -23,12 +23,14 @@ struct SceneScoreEntryView
 struct SceneDefinitionView
 {
     i32 scoreEntryIndex;
-    u8 unknown004[0x1c];
+    i32 titleArgument1;
+    i32 titleArgument2;
+    u8 unknown00c[0x14];
     i8 groupDisplayValue;
     i8 sceneDisplayValue;
     u8 unknown022[2];
     i32 scoreRequirement;
-    u8 unknown028[4];
+    i32 titleTextId;
     i8 displayState;
     u8 unknown02d[3];
 };
@@ -71,21 +73,50 @@ struct SceneSupervisorView
     }
 };
 
+struct SceneAnmVmId
+{
+    i32 value;
+};
+
+struct SceneAnmVmView
+{
+    u8 unknown000[0x2c0];
+    u8 glyphWidth;
+    u8 glyphHeight;
+};
+
 struct SceneAnmManagerView
 {
     void SetInterrupt(AnmVmId id, i32 interrupt);
+    void SetInterrupt(SceneAnmVmId id, i32 interrupt);
+    SceneAnmVmView *GetVm(SceneAnmVmId id);
 };
 
 extern SceneAnmManagerView *g_SceneAnmManager;
 
+struct SceneAnmLoadedView
+{
+    SceneAnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
+};
+
 struct SceneAnmVmIdArray
 {
-    AnmVmId values[165];
+    SceneAnmVmId values[165];
 
     void SetInterrupt(i32 index, i32 interrupt)
     {
         g_SceneAnmManager->SetInterrupt(this->values[index], interrupt);
     }
+};
+
+struct ScenePreviewTextSourcesView
+{
+    u8 unknown0bf4[0x26c];
+    i32 lockedTextId;
+    i32 unattemptedTextId;
+    i32 belowRequirementTextId;
+    i32 attemptedTextId;
+    u8 unknown0e70[0x18];
 };
 
 struct SceneSelectControllerView
@@ -95,14 +126,19 @@ struct SceneSelectControllerView
     u8 unknown0024[0x1ac];
     SceneGroupCursorView groupCursors[12];
     i32 refreshArgument;
-    SceneAnmVmIdArray vmIds;
+    union
+    {
+        SceneAnmVmIdArray vmIds;
+        ScenePreviewTextSourcesView previewTextSources;
+    };
     i8 lockedDisplayState;
     i8 unattemptedDisplayState;
     i8 belowRequirementDisplayState;
     i8 attemptedDisplayState;
     u8 unknown0e8c[6];
     i8 currentDisplayState;
-    u8 unknown0e93[0x0d];
+    u8 unknown0e93;
+    SceneAnmVmId previewTextVmIds[3];
     i32 previewTimer;
     u8 unknown0ea4[0x5284];
     SceneValueQueue selectionQueue;
@@ -112,7 +148,15 @@ struct SceneSelectControllerView
     u8 unknown6368[0x48];
     SceneStateHistoryView stateHistory;
 
+    i32 GetSelectedGroup()
+    {
+        return this->selectedGroup;
+    }
+
     void RefreshSceneSelection(i32 unused);
+    void BuildScenePreviewText();
+    char *ResolveSceneText(i32 textId, i32 column, i32 argument1,
+                           i32 argument2);
 };
 
 struct SceneSaveDataView
@@ -137,6 +181,16 @@ typedef char SceneScoreEntryFlagsAt50[
     (offsetof(SceneScoreEntryView, flags) == 0x50) ? 1 : -1];
 typedef char SceneDefinitionSizeIs30[
     (sizeof(SceneDefinitionView) == 0x30) ? 1 : -1];
+typedef char SceneDefinitionTitleArgumentsAt04[
+    (offsetof(SceneDefinitionView, titleArgument1) == 0x04 &&
+     offsetof(SceneDefinitionView, titleArgument2) == 0x08) ? 1 : -1];
+typedef char SceneDefinitionTitleTextIdAt28[
+    (offsetof(SceneDefinitionView, titleTextId) == 0x28) ? 1 : -1];
+typedef char SceneAnmVmIdSizeIs4[
+    (sizeof(SceneAnmVmId) == 4) ? 1 : -1];
+typedef char SceneAnmVmGlyphSizeAt2C0[
+    (offsetof(SceneAnmVmView, glyphWidth) == 0x2c0 &&
+     offsetof(SceneAnmVmView, glyphHeight) == 0x2c1) ? 1 : -1];
 typedef char SceneValueQueueSizeIs48[
     (sizeof(SceneValueQueue) == 0x48) ? 1 : -1];
 typedef char SceneGroupCursorSizeIsD8[
@@ -151,6 +205,11 @@ typedef char SceneSelectVmIdsAtBF4[
     (offsetof(SceneSelectControllerView, vmIds) == 0xbf4) ? 1 : -1];
 typedef char SceneSelectDisplayStatesAtE88[
     (offsetof(SceneSelectControllerView, lockedDisplayState) == 0xe88) ? 1 : -1];
+typedef char SceneSelectPreviewTextSourcesAtE60[
+    (offsetof(SceneSelectControllerView, previewTextSources) +
+         offsetof(ScenePreviewTextSourcesView, lockedTextId) == 0xe60) ? 1 : -1];
+typedef char SceneSelectPreviewTextVmIdsAtE94[
+    (offsetof(SceneSelectControllerView, previewTextVmIds) == 0xe94) ? 1 : -1];
 typedef char SceneSelectPreviewTimerAtEA0[
     (offsetof(SceneSelectControllerView, previewTimer) == 0xea0) ? 1 : -1];
 typedef char SceneSelectSelectionQueueAt6128[
@@ -170,6 +229,12 @@ extern i32 g_SceneUnlockGroupCaptureRequirements[12];
 extern SceneSaveDataView *g_SceneSaveData;
 extern SceneDefinitionView *g_SelectedScene;
 extern SceneSupervisorView g_SceneSupervisor;
+extern SceneAnmLoadedView *g_SceneUiAnm;
+extern u8 g_SceneTextBuffer[0x40];
+
+void __cdecl SceneWriteText(SceneAnmManagerView *manager,
+                            SceneAnmVmView *vm, u32 color, u32 unknown,
+                            const char *text);
 
 } // namespace th095
 

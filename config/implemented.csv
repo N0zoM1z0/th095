@@ -118,3 +118,6 @@ th095::SceneSaveDataView::GetSceneGroupUnlockScore
 th095::AnmVmColorInterpolationView::SetColor1Interpolation
 th095::SceneSelectControllerView::RefreshSceneSelection
 th095::SceneValueQueue::Push
+th095::SceneSelectControllerView::BuildScenePreviewText
+th095::SceneSelectControllerView::ResolveSceneText
+th095::AnmTextManagerView::DrawTextLeft

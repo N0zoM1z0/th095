@@ -119,3 +119,6 @@ th095::SceneSaveDataView::GetSceneGroupUnlockScore,0x004366F0,function
 th095::AnmVmColorInterpolationView::SetColor1Interpolation,0x00452D70,function
 th095::SceneSelectControllerView::RefreshSceneSelection,0x0044BBD0,function
 th095::SceneValueQueue::Push,0x00450DD0,function
+th095::SceneSelectControllerView::BuildScenePreviewText,0x0044BEA0,function
+th095::SceneSelectControllerView::ResolveSceneText,0x0044D020,function
+th095::AnmTextManagerView::DrawTextLeft,0x00443CE0,function

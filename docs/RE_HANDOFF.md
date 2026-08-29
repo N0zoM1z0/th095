@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 109 canonical units cover 78,936 authored bytes.
+- Reconstruction: 111 canonical units cover 81,053 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 60.27% (78,936 / 130,977)
+  relocations. Confirmed authored-byte coverage is now 61.71% (81,053 / 131,343)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,7 +25,7 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 129 authored candidates and leaves 1,701 origin/boundary reviews
+  confirms 131 authored candidates and leaves 1,699 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -93,8 +93,17 @@
   Its natural VC7.1 probe is 715 bytes; stack-slot/register allocation and one
   global-load encoding remain non-exact and receive no exact credit.
   `SceneValueQueue::Push @ 0x00450DD0`, used four times by the refresh path, is
-  exact for all 78 bytes. Source presence is now 120 functions and exact
-  coverage is 109 functions.
+  exact for all 78 bytes.
+- `SceneSelectControllerView::BuildScenePreviewText @ 0x0044BEA0` is exact for
+  all 1,989 bytes and all 141 relocations. It proves the TH095-only staged
+  three-column scene-preview flow, five persistent scene states, VM scripts
+  `0x0B..0x0D`, glyph size 19, and the title/fallback color split.
+  `ResolveSceneText @ 0x0044D020` is independently exact for all 128 bytes and
+  both shared-buffer relocations; it recovers the complete 64-byte rolling-key
+  decoder. Target `AnmManager::DrawTextLeft @ 0x00443CE0`, reconstructed through
+  the bounded `AnmTextManagerView::DrawTextLeft`, is source-present from TH095 target evidence plus TH08
+  corroboration; its natural VC7.1 body is 232 versus 238 bytes because the
+  original glyph-width spill sits below the local formatting buffer.
 - `UpdatePhotoResultScreen @ 0x004294C0` is source-present for the complete
   TH095-specific photo browser and `BSTS` best-shot save path. Its VC7.1 probe
   has the target's full 1,323-byte instruction topology and resolves all 65
@@ -151,7 +160,7 @@ python3 scripts/report-reconstruction-status.py --summary
 
 The earlier narrow 95% checkpoint is superseded by the target-local origin
 audit. Subsequent camera, ANM, replay, result-screen, and scene-selection work
-expanded the honest denominator to 130,977 bytes; exact coverage is 60.27%.
+expanded the honest denominator to 131,343 bytes; exact coverage is 61.71%.
 `WinMain` remains
 deferred because its remaining eight
 stack bytes have resisted the bounded VC7.1 oracle matrix.
@@ -222,9 +231,10 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    references. Its exact five-function save/unlock dependency cluster now
    establishes the 12-group scene model, and the complete adjacent
    preview/status updater at `0x0044BBD0` is source-present with an exact queue
-   dependency. Continue with the 1,989-byte staged preview-text builder at
-   `0x0044BEA0`, then use the shared layout to unlock `0x0044C670` and the main
-   hub.
+   dependency. The staged preview-text builder at `0x0044BEA0` and its decoder
+   at `0x0044D020` are now exact. Continue with the adjacent 2,278-byte
+   scene-detail updater at `0x0044C670`, then use the shared layout to reduce
+   the main hub.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression
