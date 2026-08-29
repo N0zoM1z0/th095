@@ -88,6 +88,7 @@ struct PhotoCameraState
     void CancelCapture();
     i32 CountPhotoTargets(f32 *score, f32 *rate);
     void UpdateCharge();
+    void Draw();
 };
 
 typedef char PhotoCameraVmsAt03C[

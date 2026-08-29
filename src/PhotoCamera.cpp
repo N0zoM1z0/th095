@@ -62,7 +62,17 @@ typedef char PhotoCapturedBulletKindAt658[
 struct PhotoGlobalStateView
 {
     u8 unknown000[0xfc];
-    u32 flags;
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlag0 : 1;
+            u32 unknownFlag1 : 1;
+            u32 unknownFlag2 : 1;
+            u32 unknownFlags3 : 29;
+        };
+    };
 };
 
 struct PhotoStageStateView
@@ -238,6 +248,11 @@ static inline f32 PhotoRatio(volatile f32 denominator, volatile f32 numerator)
 static inline i32 PhotoTimerAdvancedOnEvenFrame(ZunTimer *timer)
 {
     return timer->current != timer->previous && timer->current % 2 == 0;
+}
+
+static inline u32 PhotoEitherFlag(u32 left, u32 right)
+{
+    return left | right;
 }
 
 f32 PhotoGameStateView::AngleToPoint(const Float3 *point)
@@ -927,6 +942,44 @@ focusedCharge:
                 goto normalCharge;
             }
             return;
+        }
+    }
+}
+
+void PhotoCameraState::Draw()
+{
+    if (PhotoEitherFlag(g_PhotoGlobalState->unknownFlag0,
+                        g_PhotoGlobalState->unknownFlag2) == 0)
+    {
+        this->viewfinderVms[0].Draw();
+        this->viewfinderVms[1].Draw();
+        this->viewfinderVms[2].Draw();
+        this->viewfinderVms[3].Draw();
+    }
+
+    if (PhotoEitherFlag(g_PhotoGlobalState->unknownFlag0,
+                        g_PhotoGlobalState->unknownFlag2) != 0)
+    {
+        AnmVm *vm;
+        for (i32 index = 0; index < 9; index++)
+        {
+            vm = PhotoAnmManager()->FindVm(this->vmIds[index].value);
+            if (vm != NULL)
+            {
+                vm->flagsWord &= ~2;
+            }
+        }
+    }
+    else
+    {
+        AnmVm *vm;
+        for (i32 index = 0; index < 9; index++)
+        {
+            vm = PhotoAnmManager()->FindVm(this->vmIds[index].value);
+            if (vm != NULL)
+            {
+                vm->flagsWord |= 2;
+            }
         }
     }
 }

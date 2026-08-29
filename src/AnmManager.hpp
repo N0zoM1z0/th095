@@ -487,6 +487,7 @@ struct AnmVm : AnmVmBase
     }
 
     void Initialize();
+    void Draw();
     ZunResult InitializePulsingRadialTrail();
 
     f32 GetFloatVar(f32 varId);

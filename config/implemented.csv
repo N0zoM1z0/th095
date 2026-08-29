@@ -70,3 +70,5 @@ th095::PhotoCameraState::CancelCapture
 th095::PhotoCameraState::CalculatePhotoScore
 th095::PhotoCameraState::CountPhotoTargets
 th095::PhotoCameraState::UpdateCharge
+th095::PhotoCameraState::Draw
+th095::AnmVm::Draw

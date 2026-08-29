@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 69 canonical units cover 71,039 authored bytes.
+- Reconstruction: 71 canonical units cover 71,361 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 57.58% (71,039 / 123,373)
+  relocations. Confirmed authored-byte coverage is now 57.69% (71,361 / 123,695)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -45,8 +45,10 @@
   root `AnmManager.hpp`. The move passed a complete 58-unit strict replay, and
   the final view rename passed a fresh ECL object comparison. Subsequent ANM
   work passed a complete 61-unit strict replay. The subsequent PhotoCamera
-  lane now contributes eight independently replayable exact units, including
-  the complete 982-byte focus and charging state machine.
+  lane now contributes nine independently replayable exact units, including
+  the complete 982-byte focus and charging state machine and the 296-byte
+  viewfinder renderer. Its `AnmVm::Draw` dependency is also exact in a bounded
+  26-byte unit used by nine target callers.
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.
@@ -91,8 +93,9 @@ python3 scripts/report-reconstruction-status.py --summary
 ## Next bounded lane
 
 The earlier narrow 95% checkpoint is superseded by the 32-function target-local
-origin audit. The honest expanded denominator is now 123,373 bytes and exact
-coverage is 57.58%. `WinMain` remains deferred because its remaining eight
+origin audit. Two subsequently proved camera/ANM candidates expanded the honest
+denominator to 123,695 bytes; exact coverage is 57.69%. `WinMain` remains
+deferred because its remaining eight
 stack bytes have resisted the bounded VC7.1 oracle matrix.
 
 1. Continue byte alignment of the now source-present 2,219-byte
@@ -114,9 +117,11 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
 3. Recalculate against any newly confirmed authored origins after every
    promotion; never preserve the percentage by withholding denominator facts.
 4. `PhotoCameraState::UpdateCharge @ 0x00433D10` is canonical exact for all
-   982 bytes and 37 relocations. Continue the adjacent private camera helpers,
-   then follow with the 6,471-byte replay/menu dispatcher at `0x00426BF0` and
-   the 16,066-byte gameplay/resource hub at `0x00447D00`.
+   982 bytes and 37 relocations, and `PhotoCameraState::Draw @ 0x004340F0` is
+   exact for all 296 bytes and 12 relocations. Continue with the adjacent
+   ReplayInfo family at `0x00434270..0x0043512A`, then the 6,471-byte replay/menu
+   dispatcher at `0x00426BF0` and the 16,066-byte gameplay/resource hub at
+   `0x00447D00`.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression
