@@ -161,3 +161,9 @@ th095::SceneSelectControllerView::UpdateMainMenu,0x00446A50,function
 th095::SceneSelectControllerView::CloseMainMenu,0x00447750,function
 th095::SceneSelectControllerView::UpdateMainMenuSelection,0x004479E0,function
 th095::SceneSelectControllerView::UpdateSceneSelect,0x00447D00,function
+th095::SceneSaveDataView::LoadScenePreviewTexture,0x004362A0,function
+th095::SceneTextureEntryView::Load,0x00442B90,function
+th095::SceneTextureEntryView::LoadRegion,0x00442CA0,function
+th095::SceneWriteText,0x00443F80,function
+th095::SceneTextureEntryView::Clear,0x004453B0,function
+th095::LoadSceneSelectionAssets,0x0044D0A0,function

@@ -469,7 +469,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004356D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00435910,authored,ReplayMenu,authored,high,ghidra-replay-menu-cluster-2026-08-29
 0x00435E90,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004362A0,authored,GameplayResource,authored,high,ghidra-gameplay-resource-cluster-2026-08-29
+0x004362A0,authored,SceneSelect,authored,high,scene-select-preview-texture-2026-08-29
 0x004364F0,authored,SceneSelect,authored,exact,vc71-scene-select-unlock-cluster-2026-08-29
 0x004365B0,authored,SceneSelect,authored,exact,vc71-scene-select-unlock-cluster-2026-08-29
 0x004365F0,authored,SceneSelect,authored,exact,vc71-scene-select-unlock-cluster-2026-08-29
@@ -556,8 +556,8 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00442A50,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00442AB0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00442B40,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00442B90,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00442CA0,authored,GameplayResource,authored,high,ghidra-gameplay-resource-cluster-2026-08-29
+0x00442B90,authored,AnmTexture,authored,high,scene-select-texture-upload-2026-08-29
+0x00442CA0,authored,AnmTexture,authored,high,scene-select-texture-upload-2026-08-29
 0x00442E10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00442E90,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00442FC0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -574,7 +574,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00443C70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00443CE0,authored,AnmManager,authored,high,vc71-th08-corroborated-anm-text-2026-08-29
 0x00443DD0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00443F80,authored,GameplayResource,authored,high,ghidra-gameplay-resource-cluster-2026-08-29
+0x00443F80,authored,AnmText,authored,high,scene-select-text-renderer-2026-08-29
 0x004440F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00444390,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00444460,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -607,7 +607,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004452F0,authored,AnmManager,authored,exact,vc71-anm-vm-id-get-vm-2026-08-29
 0x00445330,authored,AnmManager,authored,exact,vc71-anm-vm-id-set-interrupt-2026-08-29
 0x00445360,authored,AnmManager,authored,exact,vc71-anm-vm-id-set-sprite-2026-08-29
-0x004453B0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004453B0,authored,AnmTexture,authored,exact,vc71-scene-texture-clear-2026-08-29
 0x00445440,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004456F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00445980,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -630,7 +630,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0044CFA0,authored,SceneSelect,authored,exact,vc71-scene-detail-display-2026-08-29
 0x0044CFE0,authored,SceneSelect,authored,exact,vc71-scene-detail-display-2026-08-29
 0x0044D020,authored,SceneSelect,authored,exact,vc71-scene-preview-text-decoder-2026-08-29
-0x0044D0A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0044D0A0,authored,SceneSelect,authored,high,scene-select-asset-worker-2026-08-29
 0x0044DCA0,authored,ReplayBrowser,authored,high,vc71-replay-browser-2026-08-29
 0x0044E4B0,authored,OptionsMenu,authored,high,vc71-options-menu-2026-08-29
 0x00450C30,authored,ReplayBrowser,authored,high,vc71-replay-browser-scan-2026-08-29

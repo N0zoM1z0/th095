@@ -122,13 +122,27 @@ struct SceneAnmVmId
     void SetInterrupt(i32 interrupt);
 };
 
+struct SceneLoadedSpriteView
+{
+    u8 unknown000[0x28];
+    f32 uvEndX;
+    f32 uvEndY;
+};
+
 struct SceneAnmVmView
 {
-    u8 unknown000[0x228];
+    u8 unknown000[0x40];
+    f32 spriteWidth;
+    f32 spriteHeight;
+    u8 unknown048[0x1d8];
+    u32 color1;
+    u32 color2;
     u32 flagsWord;
     u8 unknown22c[2];
     i16 pendingInterrupt;
-    u8 unknown230[0x90];
+    u8 unknown230[0x14];
+    SceneLoadedSpriteView *loadedSprite;
+    u8 unknown248[0x78];
     u8 glyphWidth;
     u8 glyphHeight;
 };
@@ -138,12 +152,27 @@ struct SceneAnmManagerView
     void SetInterrupt(AnmVmId id, i32 interrupt);
     void SetInterrupt(SceneAnmVmId id, i32 interrupt);
     SceneAnmVmView *GetVm(SceneAnmVmId id);
+    void MarkVmForDeletion(SceneAnmVmId id);
 };
 
 extern SceneAnmManagerView *g_SceneAnmManager;
 
+struct SceneTextureEntryView
+{
+    IDirect3DTexture8 *texture;
+    u8 unknown004[0x0c];
+
+    i32 Load(u8 *data, i32 *size, i32 format, i32 unknown, i32 hasAlpha);
+    i32 LoadRegion(u8 *data, i32 *size, i32 format, i32 unknown,
+                   i32 hasAlpha, i32 top);
+    void Clear();
+};
+
 struct SceneAnmLoadedView
 {
+    u8 unknown000[0x14];
+    SceneTextureEntryView *textures;
+
     void SetSprite(SceneAnmVmView *vm, i32 spriteIndex);
     SceneAnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
     SceneAnmVmId CreateVm(i32 scriptIndex, Float3 *position);
@@ -247,9 +276,14 @@ struct SceneSelectControllerView
 
 struct SceneSaveDataView
 {
-    u8 unknown0000[0x460];
+    u8 unknown0000[0x1e];
+    i16 lastSelectedGroup;
+    i16 lastSelectedScene;
+    u8 unknown0022[0x43e];
     SceneScoreEntryView sceneScores[120];
 
+    ZunResult LoadScenePreviewTexture(SceneAnmLoadedView *anm,
+                                      i32 textureIndex, i32 sceneIndex);
     i32 IsSceneGroupUnlocked(i32 group);
     i32 FindHighestUnlockedSceneGroup();
     i32 CountCapturedScenes();
@@ -284,8 +318,15 @@ typedef char SceneAnmVmGlyphSizeAt2C0[
      offsetof(SceneAnmVmView, glyphHeight) == 0x2c1) ? 1 : -1];
 typedef char SceneAnmVmFlagsAt228[
     (offsetof(SceneAnmVmView, flagsWord) == 0x228) ? 1 : -1];
+typedef char SceneAnmVmSpriteSizeAt40[
+    (offsetof(SceneAnmVmView, spriteWidth) == 0x40 &&
+     offsetof(SceneAnmVmView, spriteHeight) == 0x44) ? 1 : -1];
+typedef char SceneAnmVmColor1At220[
+    (offsetof(SceneAnmVmView, color1) == 0x220) ? 1 : -1];
 typedef char SceneAnmVmInterruptAt22E[
     (offsetof(SceneAnmVmView, pendingInterrupt) == 0x22e) ? 1 : -1];
+typedef char SceneAnmVmLoadedSpriteAt244[
+    (offsetof(SceneAnmVmView, loadedSprite) == 0x244) ? 1 : -1];
 typedef char SceneValueQueueSizeIs48[
     (sizeof(SceneValueQueue) == 0x48) ? 1 : -1];
 typedef char SceneGroupCursorSizeIsD8[
@@ -300,6 +341,9 @@ typedef char SceneSupervisorLockCountsAt70C[
     (offsetof(SceneSupervisorView, lockCounts) == 0x70c) ? 1 : -1];
 typedef char SceneSaveDataScoresAt460[
     (offsetof(SceneSaveDataView, sceneScores) == 0x460) ? 1 : -1];
+typedef char SceneSaveDataSelectionAt1E[
+    (offsetof(SceneSaveDataView, lastSelectedGroup) == 0x1e &&
+     offsetof(SceneSaveDataView, lastSelectedScene) == 0x20) ? 1 : -1];
 typedef char SceneScoreEntryAttemptCountAt3C[
     (offsetof(SceneScoreEntryView, attemptCount) == 0x3c) ? 1 : -1];
 typedef char SceneSelectGroupCursorsAt1D0[
@@ -337,6 +381,11 @@ extern SceneDefinitionView *g_SelectedScene;
 extern SceneSupervisorView g_SceneSupervisor;
 extern SceneAnmLoadedView *g_SceneUiAnm;
 extern u8 g_SceneTextBuffer[0x40];
+extern u32 g_SceneGroupColors[11];
+extern u32 g_SceneLockedTransitionColor;
+extern u32 g_SceneLockedInitialColor;
+
+void __fastcall LoadSceneSelectionAssets(void *unused);
 
 void __cdecl SceneWriteText(SceneAnmManagerView *manager,
                             SceneAnmVmView *vm, u32 color, u32 unknown,

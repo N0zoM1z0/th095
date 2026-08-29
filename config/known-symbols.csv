@@ -72,3 +72,9 @@ address,name,module,confidence,evidence
 0x004479E0,th095::SceneSelectControllerView::UpdateMainMenuSelection,FrontEndController,exact,Canonical eighteen-VM main-menu selection interrupt sequence
 0x00447D00,th095::SceneSelectControllerView::UpdateSceneSelect,SceneSelect,high,Shared-controller state 2 target and root of the TH095 scene-selection cluster
 0x00452630,th095::SceneSelectControllerView::Draw,FrontEndController,high,Complete scene-result and replay-browser text renderer with exact 19-call topology
+0x004362A0,th095::SceneSaveDataView::LoadScenePreviewTexture,SceneSelect,high,Target-local selected-scene thumbnail upload into an ANM texture
+0x00442B90,th095::SceneTextureEntryView::Load,AnmTexture,high,Complete texture upload used by scene selection and Help
+0x00442CA0,th095::SceneTextureEntryView::LoadRegion,AnmTexture,high,Partial texture upload with destination top offset
+0x00443F80,th095::SceneWriteText,AnmText,high,Shared variadic ANM text renderer used for scene labels
+0x004453B0,th095::SceneTextureEntryView::Clear,AnmTexture,exact,Canonical relocation-free D3D texture clear comparison
+0x0044D0A0,th095::LoadSceneSelectionAssets,SceneSelect,high,Asynchronous mission thumbnail face and preview-text producer

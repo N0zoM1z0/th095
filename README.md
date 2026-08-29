@@ -60,7 +60,10 @@ source-present as well, with exact update/draw chain ownership wrappers.
 The owning ten-state front-end coordinator is source-present with its complete
 main/scene/replay/options/music/Help and game-transition routing. Its complete
 six-row title menu is source-present as well, including idle-demo playback and
-queue cleanup; both of its high-fan-out VM interrupt helpers are exact.
+queue cleanup; both of its high-fan-out VM interrupt helpers are exact. The
+complete TH095 group/scene selection hub is source-present with all three
+asynchronous preview pipelines and its exact 275-call topology; its shared
+D3D texture clear helper is exact.
 
 A target-local audit continues to admit photography/camera, replay/menu,
 scene-selection, options, and gameplay/resource functions as their authored

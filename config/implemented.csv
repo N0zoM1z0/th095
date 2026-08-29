@@ -159,3 +159,5 @@ th095::SceneSelectControllerView::Update
 th095::SceneSelectControllerView::UpdateMainMenu
 th095::SceneSelectControllerView::CloseMainMenu
 th095::SceneSelectControllerView::UpdateMainMenuSelection
+th095::SceneSelectControllerView::UpdateSceneSelect
+th095::SceneTextureEntryView::Clear
