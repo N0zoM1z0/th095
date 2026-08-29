@@ -83,6 +83,13 @@
   187-byte authored body; its unit also enforces two compiler-owned trailing
   bytes and both `_free` relocations. It proves two owned component buffers at
   best-shot record `+0x70/+0x74` plus loaded/valid bytes at `+0x69/+0x68`.
+- `ResultScreen::Draw @ 0x00429C80` is source-present for the complete
+  TH095-specific best-shot, replay-list, metadata, and replay-name keyboard
+  renderer. Its VC7.1 probe has the target's exact 2,573-byte authored topology
+  and 2,605-byte COFF extent, including both switch tables; all 118 relocations
+  resolve to target destinations and 1,968 of 2,133 comparable bytes match.
+  The remaining 165 local-frame/temporary/register-allocation bytes receive no
+  exact credit. All ten pre-existing exact ResultScreen units replay unchanged.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
   bytes are stack allocation/displacement differences and receive no credit.
@@ -112,7 +119,7 @@ python3 scripts/report-reconstruction-status.py --summary
 
 The earlier narrow 95% checkpoint is superseded by the target-local origin
 audit. Subsequent camera, ANM, replay, and result-screen work expanded the
-honest denominator to 130,189 bytes; exact coverage is 59.81%. `WinMain` remains
+honest denominator to 130,376 bytes; exact coverage is 59.87%. `WinMain` remains
 deferred because its remaining eight
 stack bytes have resisted the bounded VC7.1 oracle matrix.
 
@@ -172,9 +179,14 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    deferred-deletion, position, ANM-file deletion, and handle sprite wrappers
    add six more canonical units. The 51-byte `AnmVmId::GetVm` and 34-byte
    `SetInterrupt` wrappers remain exact as well.
-   Continue with the source-pending 2,573-byte `ResultScreen::Draw @
-   0x00429C80`, then align the 6,471-byte dispatcher and move to the 16,066-byte
-   gameplay/resource hub at `0x00447D00`.
+   `ResultScreen::Draw @ 0x00429C80` is now source-present with exact authored
+   and switch-table extents, exact case boundaries, and all 118 relocation
+   destinations resolved. Its remaining 165 non-relocation differences are
+   isolated to compiler frame/temporary/register allocation, so defer exact
+   work unless a natural source-shape improvement appears. Continue aligning
+   the 6,471-byte `ResultScreen::Update` dispatcher, review the three adjacent
+   initialization/result helpers at `0x00428590..0x004292C0`, then move to the
+   16,066-byte gameplay/resource hub at `0x00447D00`.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

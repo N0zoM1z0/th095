@@ -16,6 +16,7 @@ struct ResultScreenTimer
 
     u32 operator==(i32 value) { return this->current == value; }
     u32 operator<(i32 value) { return this->current < value; }
+    i32 GetCurrent() { return this->current; }
     i32 Tick();
 
     void Reset()

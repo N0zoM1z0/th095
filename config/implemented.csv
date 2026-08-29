@@ -99,6 +99,7 @@ th095::ResultScreen::OnDraw
 th095::ResultScreen::PrepareBestShot
 th095::UpdatePhotoResultScreen
 th095::ResultSaveDataView::UpdateBestShotRecord
+th095::ResultScreen::Draw
 th095::AnmManager::GetVm
 th095::AnmManager::SetInterrupt
 th095::AnmManager::MarkVmForDeletion
