@@ -94,4 +94,99 @@ ZunResult AnmVm::InitializePulsingRadialTrail()
 #undef direction
 #undef data
 
+// Keep descriptive names in the recovered source while feeding VC7.1 the
+// identifier/declaration order that reproduces the target's nine local slots.
+#define trailI vertex
+#define trailData i
+#define trailVertex firstVWrapIndex
+#define trailAngleStep firstUWrapIndex
+#define trailAngle uWrapIndex
+#define trailFirstUWrapIndex vWrapIndex
+#define trailFirstVWrapIndex angle
+#define trailUWrapIndex data
+#define trailVWrapIndex angleStep
+ZunResult __fastcall UpdatePulsingRadialTrail(AnmVm *vm)
+{
+    i32 trailI;
+    AnmVertex *trailVertex;
+    PulsingRadialTrailData *trailData;
+    f32 trailAngleStep;
+    f32 trailAngle;
+    i32 trailFirstUWrapIndex;
+    i32 trailFirstVWrapIndex;
+    i32 trailUWrapIndex;
+    i32 trailVWrapIndex;
+
+    trailData = (PulsingRadialTrailData *)vm->generatedVertices;
+    trailAngleStep = 0.2026834041f;
+    trailAngle = -3.1415927f;
+    trailVertex = trailData->vertices;
+
+    trailVertex->position = vm->position + vm->positionOffset;
+    trailVertex->uv.x += trailData->uvVelocity.x;
+    if (trailVertex->uv.x < 0.0f)
+    {
+        for (trailFirstUWrapIndex = 0; trailFirstUWrapIndex < 33;
+             trailFirstUWrapIndex++)
+            trailData->vertices[trailFirstUWrapIndex].uv.x += 1.0f;
+    }
+    trailVertex->uv.y += trailData->uvVelocity.x;
+    if (trailVertex->uv.y < 0.0f)
+    {
+        for (trailFirstVWrapIndex = 0; trailFirstVWrapIndex < 33;
+             trailFirstVWrapIndex++)
+            trailData->vertices[trailFirstVWrapIndex].uv.y += 1.0f;
+    }
+    trailVertex->diffuse.color = vm->color1.color;
+    trailVertex++;
+
+    for (trailI = 1; trailI < 32; trailI++)
+    {
+        trailVertex->uv.x += trailData->uvVelocity.x;
+        if (trailVertex->uv.x < 0.0f)
+        {
+            for (trailUWrapIndex = 0; trailUWrapIndex < 33;
+                 trailUWrapIndex++)
+                trailData->vertices[trailUWrapIndex].uv.x += 1.0f;
+        }
+        trailVertex->uv.y += trailData->uvVelocity.x;
+        if (trailVertex->uv.y < 0.0f)
+        {
+            for (trailVWrapIndex = 0; trailVWrapIndex < 33;
+                 trailVWrapIndex++)
+                trailData->vertices[trailVWrapIndex].uv.y += 1.0f;
+        }
+
+        trailVertex->diffuse.color = vm->color1.color;
+        trailVertex->diffuse.a = 0;
+        trailData->radii[trailI] += trailData->radialVelocities[trailI];
+        trailVertex->position.FromAngleMagnitude(
+            trailAngle, trailData->radii[trailI]);
+        trailVertex->position += vm->position + vm->positionOffset;
+        trailVertex++;
+        trailAngle += trailAngleStep;
+    }
+
+    *trailVertex = trailData->vertices[1];
+    return ZUN_SUCCESS;
+}
+#undef trailVWrapIndex
+#undef trailUWrapIndex
+#undef trailFirstVWrapIndex
+#undef trailFirstUWrapIndex
+#undef trailAngle
+#undef trailAngleStep
+#undef trailVertex
+#undef trailData
+#undef trailI
+
+ZunResult __fastcall DrawPulsingRadialTrail(AnmVm *vm)
+{
+    PulsingRadialTrailData *data;
+
+    data = (PulsingRadialTrailData *)vm->generatedVertices;
+    g_AnmManager->DrawVertices(vm, data->vertices, 33);
+    return ZUN_SUCCESS;
+}
+
 } // namespace th095

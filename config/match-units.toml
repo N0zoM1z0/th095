@@ -5621,3 +5621,36 @@ relocations = [
   { offset = 0x24F, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
   { offset = 0x2E0, type = "DIR32", symbol = "__real@3e4f8c3d", target = 0x00496EFC },
 ]
+
+[units.anm-update-pulsing-radial-trail]
+source = "src/AnmManagerTrail.cpp"
+object = "build/matching/AnmManagerTrail.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::UpdatePulsingRadialTrail"]
+symbol = "?UpdatePulsingRadialTrail@th095@@YI?AW4ZunResult@1@PAUAnmVm@1@@Z"
+target_address = 0x00441A10
+size = 0x352
+relocations = [
+  { offset = 0xAD, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0xDF, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x10F, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x141, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x1A5, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x1D7, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x207, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x239, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x29F, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
+]
+
+[units.anm-draw-pulsing-radial-trail]
+source = "src/AnmManagerTrail.cpp"
+object = "build/matching/AnmManagerTrail.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::DrawPulsingRadialTrail"]
+symbol = "?DrawPulsingRadialTrail@th095@@YI?AW4ZunResult@1@PAUAnmVm@1@@Z"
+target_address = 0x00441D70
+size = 0x2D
+relocations = [
+  { offset = 0x1E, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x23, type = "REL32", symbol = "?DrawVertices@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@PAUAnmVertex@2@H@Z", target = 0x00441480 },
+]

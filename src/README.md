@@ -18,8 +18,8 @@ Current translation units:
   dispatcher credits 17,018 authored bytes while its comparison extends over
   408 additional compiler-generated switch-table bytes.
 - `AnmManagerTrail.cpp` isolates TH095's render-mode-10 pulsing radial trail.
-  Its 754-byte initializer and all 29 relocations are exact; the adjacent
-  update and draw callbacks remain the next bounded source-recovery targets.
+  Its initializer, update callback, and draw callback reproduce all 1,649
+  authored bytes and all 40 relocations exactly.
 - `ecl/EclRun.cpp` and its private type/dependency headers reconstruct the
   central ECL VM dispatcher. `EclManager::RunEcl` has a canonical exact unit
   for its 27,091-byte authored body and the 656-byte compiler-owned main and
