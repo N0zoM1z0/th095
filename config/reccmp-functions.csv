@@ -167,3 +167,4 @@ th095::SceneTextureEntryView::LoadRegion,0x00442CA0,function
 th095::SceneWriteText,0x00443F80,function
 th095::SceneTextureEntryView::Clear,0x004453B0,function
 th095::LoadSceneSelectionAssets,0x0044D0A0,function
+th095::SceneSaveDataView::LoadBestShotForScene,0x00435E90,function

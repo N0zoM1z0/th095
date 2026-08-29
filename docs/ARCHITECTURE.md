@@ -151,8 +151,9 @@ navigation, idle-demo launch, and page-transition flow; its 648-byte close and
 787-byte selection fan-out helpers are exact. The 16,066-byte scene-selection
 hub is now source-present for its complete 275-call group/scene cursor,
 asynchronous preview, record-detail, and transition topology. Its shared
-136-byte D3D texture clear is exact; the 3,070-byte mission/face asset worker
-is the next target-specific dependency root.
+136-byte D3D texture clear is exact. The 3,070-byte mission/face asset worker
+is now source-present for its exact 38-call topology; its 1,034-byte best-shot
+file decoder/checksum validator is the next target-specific dependency root.
 
 ## Shared engine versus TH095 gameplay
 

@@ -284,6 +284,7 @@ struct SceneSaveDataView
 
     ZunResult LoadScenePreviewTexture(SceneAnmLoadedView *anm,
                                       i32 textureIndex, i32 sceneIndex);
+    i32 LoadBestShotForScene(i32 group, i32 scene);
     i32 IsSceneGroupUnlocked(i32 group);
     i32 FindHighestUnlockedSceneGroup();
     i32 CountCapturedScenes();
@@ -380,6 +381,7 @@ extern SceneSaveDataView *g_SceneSaveData;
 extern SceneDefinitionView *g_SelectedScene;
 extern SceneSupervisorView g_SceneSupervisor;
 extern SceneAnmLoadedView *g_SceneUiAnm;
+extern SceneSelectControllerView *g_SceneSelectController;
 extern u8 g_SceneTextBuffer[0x40];
 extern u32 g_SceneGroupColors[11];
 extern u32 g_SceneLockedTransitionColor;
