@@ -45,3 +45,5 @@ th095::SoundPlayer::ProcessQueues
 th095::SoundPlayer::BGMPlayerThread
 th095::SoundPlayer::QueueCommand
 th095::SoundPlayer::SoundPlayer
+th095::GameConfiguration::Initialize
+th095::Supervisor::LoadConfig

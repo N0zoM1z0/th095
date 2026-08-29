@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 46 canonical units cover 61,121 authored bytes.
+- Reconstruction: 48 canonical units cover 62,639 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 93.42% (61,121 / 65,428)
+  relocations. Confirmed authored-byte coverage is now 95.05% (62,639 / 65,899)
   while the global origin denominator remains provisional.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -34,10 +34,10 @@
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.
-- Main uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. Eleven
-  canonical Main/D3D units contribute 5,175 exact authored bytes and enforce
-  365 relocations. This includes the 1,375-byte D3D device initializer and the
-  1,045-byte render-state reset path.
+- Main uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. Thirteen
+  canonical Main/D3D units contribute 6,693 exact authored bytes and enforce
+  516 relocations. This includes the 1,375-byte D3D device initializer, the
+  1,045-byte render-state reset path, and the complete 1,047-byte config loader.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
   bytes are stack allocation/displacement differences and receive no credit.
@@ -50,22 +50,23 @@ python3 scripts/report-reconstruction-status.py --summary
 
 ## Next bounded lane
 
-The immediate exact lane is `Supervisor::LoadConfig` at `0x00424D30`, a
-1,047-byte Main-family function. At the current denominator, 1,036 additional
-exact bytes cross the 95% threshold, so this single complete unit is
-sufficient if target origin review does not expand the denominator.
+The 95% checkpoint is complete; the active target is 99.5%. The nine remaining
+confirmed-authored functions total 3,260 unmatched bytes, and at most 329 may
+remain unmatched at the current denominator.
 
-1. Preserve the exact 200-byte `GameConfiguration` copy and version
-   `0x95001` validation observed in the target.
-2. Recover the controller-mapping assignment and the default-reset helper at
-   `0x00418720` from target-local call and layout evidence before naming them.
-3. Reproduce the missing/invalid configuration fallback, including the
-   `./thbgm.dat` probe and all option-bit logging branches.
-4. Compile with the proven Main `/Od /Ob1` profile, then require a complete
-   1,047-byte match and full relocation replay before promotion.
-5. After the 95% checkpoint, return to the target-specific 16,066-byte
-   resource/gameplay setup hub at `0x00447D00` and its 27 internal callees;
-   keep its owning type unnamed until target evidence proves it.
+1. Finish the 1,326-byte `WinMain` source probe. It already matches all 134
+   relocations and differs only in eight stack-allocation/displacement bytes,
+   but partial bytes receive no exact credit.
+2. Close the high-leverage ANM lifecycle units: the 1,005-byte constructor at
+   `0x00441DC0`, 198-byte vertex-buffer flush at `0x0043F2F0`, and 176-byte
+   destructor at `0x004421B0`.
+3. Match `Supervisor::RegisterChain` at `0x00423D60` (267 bytes), then sweep
+   `ReleaseSurfaces`, both critical-section loops, and `ClearVertexBuffer`.
+4. Recalculate against any newly confirmed authored origins after every
+   promotion; never preserve the percentage by withholding denominator facts.
+5. Once the authored gap is below 0.5%, resume the target-specific 16,066-byte
+   resource/gameplay hub at `0x00447D00` and keep its owner unnamed until
+   target-local evidence proves it.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

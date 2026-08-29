@@ -2301,6 +2301,930 @@ type = "DIR32"
 symbol = "__imp__CoUninitialize@0"
 target = 0x0049527C
 
+[units.main-config-initialize]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::GameConfiguration::Initialize"]
+symbol = "?Initialize@GameConfiguration@th095@@QAEXXZ"
+target_address = 0x00418720
+size = 0x1D7
+
+[[units.main-config-initialize.relocations]]
+offset = 0x6F
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x77
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x7F
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x88
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x91
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0xA1
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0xA8
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0xB1
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0xB9
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0xC3
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0xD3
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0xDB
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0xE4
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0xED
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0xF7
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x106
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x10E
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x116
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x11F
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x128
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x138
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x13F
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x148
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x150
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x15A
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x16A
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x172
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x17B
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x184
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-config-initialize.relocations]]
+offset = 0x18E
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[units.main-load-config]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::LoadConfig"]
+symbol = "?LoadConfig@Supervisor@th095@@QAEHPAD@Z"
+target_address = 0x00424D30
+size = 0x417
+
+[[units.main-load-config.relocations]]
+offset = 0xC
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x11
+type = "REL32"
+symbol = "?Initialize@GameConfiguration@th095@@QAEXXZ"
+target = 0x00418720
+
+[[units.main-load-config.relocations]]
+offset = 0x1E
+type = "REL32"
+symbol = "?OpenFile@FileSystem@th095@@SIPAEPADPAHH@Z"
+target = 0x0041A960
+
+[[units.main-load-config.relocations]]
+offset = 0x30
+type = "DIR32"
+symbol = "??_C@_0DD@MOMFHLBB@?$IDR?$ID?$JD?$IDt?$IDB?$IDO?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$IM?$KJ?$IC?B?$IC?$KJ?$IC?g?$IC?H?$IC?$KC?$IC?L@"
+target = 0x00496338
+
+[[units.main-load-config.relocations]]
+offset = 0x35
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x3A
+type = "REL32"
+symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B0F0
+
+[[units.main-load-config.relocations]]
+offset = 0x42
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x47
+type = "REL32"
+symbol = "?Initialize@GameConfiguration@th095@@QAEXXZ"
+target = 0x00418720
+
+[[units.main-load-config.relocations]]
+offset = 0x5E
+type = "DIR32"
+symbol = "??_C@_0M@NIBBGJME@?4?1thbgm?4dat?$AA@"
+target = 0x0049632C
+
+[[units.main-load-config.relocations]]
+offset = 0x64
+type = "DIR32"
+symbol = "__imp__CreateFileA@28"
+target = 0x00495070
+
+[[units.main-load-config.relocations]]
+offset = 0x83
+type = "DIR32"
+symbol = "__imp__ReadFile@20"
+target = 0x00495064
+
+[[units.main-load-config.relocations]]
+offset = 0x8D
+type = "DIR32"
+symbol = "__imp__CloseHandle@4"
+target = 0x00495068
+
+[[units.main-load-config.relocations]]
+offset = 0x93
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x9C
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0xA2
+type = "DIR32"
+symbol = "??_C@_0CH@GGKGEOAG@wave?5?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$JG?$LD?$IC?$KC?$IC?L?$IC?E?$IBAmidi?5?$IC?I?$IC?$LF@"
+target = 0x00496304
+
+[[units.main-load-config.relocations]]
+offset = 0xA7
+type = "REL32"
+symbol = "?DebugPrint@utils@th095@@YAXPADZZ"
+target = 0x00412180
+
+[[units.main-load-config.relocations]]
+offset = 0xBC
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0xC7
+type = "REL32"
+symbol = "_free"
+target = 0x004854BE
+
+[[units.main-load-config.relocations]]
+offset = 0xD1
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0xDD
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0xE9
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0xF5
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x101
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x10D
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x118
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x12C
+type = "DIR32"
+symbol = "??_C@_0DD@NAGAPNPP@?$IDR?$ID?$JD?$IDt?$IDB?$IDO?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$II?Y?$IP?m?$IC?E?$IC?$LF?$IC?$LN?$IC?L?$IC?E@"
+target = 0x004962D0
+
+[[units.main-load-config.relocations]]
+offset = 0x131
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x136
+type = "REL32"
+symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B0F0
+
+[[units.main-load-config.relocations]]
+offset = 0x144
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x14A
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x14F
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x154
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x15A
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x160
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x166
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x16C
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x172
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x178
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x17E
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x184
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x18A
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x190
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x195
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x19A
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x1A0
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x1A6
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x1AD
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x1B4
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x1B9
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x1BE
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x1C4
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x1CA
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x1D0
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x1D6
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x1DB
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x1E0
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x1E7
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x1EE
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x1F4
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x1FA
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x1FF
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x204
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x20A
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x210
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x216
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x21C
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x222
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x228
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x22E
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x234
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x23A
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x240
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x245
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x24A
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x250
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x256
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x25D
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x264
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x269
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x26E
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x274
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x27A
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x280
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x286
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x28B
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x290
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x297
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x29E
+type = "DIR32"
+symbol = "?g_ControllerMapping@th095@@3UControllerMapping@1@A"
+target = 0x004BE270
+
+[[units.main-load-config.relocations]]
+offset = 0x2C1
+type = "DIR32"
+symbol = "??_C@_0BL@NOLEKKKI@?$IDt?$IDH?$IDO?$IC?L?$IOg?$JHp?$IC?p?$JH?$HN?$JA?$KH?$IC?$LF?$IC?$NM?$IC?$LH?$AN?6?$AA@"
+target = 0x004962B4
+
+[[units.main-load-config.relocations]]
+offset = 0x2C6
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x2CB
+type = "REL32"
+symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B0F0
+
+[[units.main-load-config.relocations]]
+offset = 0x2E1
+type = "DIR32"
+symbol = "??_C@_0CH@LDICMLHL@16Bit?5?$IC?L?$IDe?$IDN?$IDX?$ID?$GA?$ID?$ID?$IC?L?$IOg?$JHp?$IC?p?$IL?$KN?$JA?$KH?$IC?$LF@"
+target = 0x0049628C
+
+[[units.main-load-config.relocations]]
+offset = 0x2E6
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x2EB
+type = "REL32"
+symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B0F0
+
+[[units.main-load-config.relocations]]
+offset = 0x301
+type = "DIR32"
+symbol = "??_C@_0BP@JCPDLLGL@?$IDE?$IDB?$ID?$JD?$IDh?$IDE?$ID?$IC?$IB?$FL?$IDh?$IC?E?$ILN?$JD?$KO?$IC?$LF?$IC?$NM?$IC?$LH?$AN?6?$AA@"
+target = 0x0049626C
+
+[[units.main-load-config.relocations]]
+offset = 0x306
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x30B
+type = "REL32"
+symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B0F0
+
+[[units.main-load-config.relocations]]
+offset = 0x323
+type = "DIR32"
+symbol = "??_C@_0CH@BLMPDDFE@?$ID?$IK?$IDt?$ID?$EA?$ID?$IM?$ID?$JD?$IDX?$ID?$IJ?$IDX?$ID?$FO?$ID?$IJ?$IDC?$IDU?$IC?p?$IL?$KN?$JA?$KH?$IC?$LF@"
+target = 0x00496244
+
+[[units.main-load-config.relocations]]
+offset = 0x328
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x32D
+type = "REL32"
+symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B0F0
+
+[[units.main-load-config.relocations]]
+offset = 0x346
+type = "DIR32"
+symbol = "??_C@_0DI@JPDEOMND@?$IDp?$IDb?$IDh?$IBA?$IDL?$IB?$FL?$ID?$HL?$IB?$FL?$IDh?$IC?L?$JD?$PM?$JH?M?$IC?I?5Direc@"
+target = 0x0049620C
+
+[[units.main-load-config.relocations]]
+offset = 0x34B
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x350
+type = "REL32"
+symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B0F0
+
+[[units.main-load-config.relocations]]
+offset = 0x369
+type = "DIR32"
+symbol = "??_C@_0BO@FGENLLDJ@?$ICa?$ICf?$ICl?$IC?p?$ID?$IB?$ID?$IC?$ID?$IK?$IC?I?$JD?G?$NN?$IN?$JO?$IC?$NN?$IC?$NM?$IC?$LH?$AN?6?$AA@"
+target = 0x004961EC
+
+[[units.main-load-config.relocations]]
+offset = 0x36E
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x373
+type = "REL32"
+symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B0F0
+
+[[units.main-load-config.relocations]]
+offset = 0x38C
+type = "DIR32"
+symbol = "??_C@_0BH@KMKCMILF@?$JA?$IC?$JC?$LM?$JD?$KP?$IK?z?$IC?p?$IO?f?$IC?h?$IC?$NM?$IC?$LJ?$IC?q?$AN?6?$AA@"
+target = 0x004961D4
+
+[[units.main-load-config.relocations]]
+offset = 0x391
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x396
+type = "REL32"
+symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B0F0
+
+[[units.main-load-config.relocations]]
+offset = 0x39F
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x3B9
+type = "DIR32"
+symbol = "??_C@_0CD@HGPENDMO@?$JF?$LG?$IO?$JK?$JF?$GA?$IJ?f?$IC?L?$IK?B?$IL?$KL?$IC?p?$IO?$KJ?$JD?$KO?$IM?$JP?$IPo?$IC?$LF?$IC?$NM?$IC?$LJ?$IC?q@"
+target = 0x004961B0
+
+[[units.main-load-config.relocations]]
+offset = 0x3BE
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x3C3
+type = "REL32"
+symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B0F0
+
+[[units.main-load-config.relocations]]
+offset = 0x3D0
+type = "DIR32"
+symbol = "?g_Supervisor@th095@@3USupervisor@1@A"
+target = 0x004C4670
+
+[[units.main-load-config.relocations]]
+offset = 0x3D8
+type = "REL32"
+symbol = "?WriteDataToFile@FileSystem@th095@@SIHPADPAXH@Z"
+target = 0x0041AC50
+
+[[units.main-load-config.relocations]]
+offset = 0x3E5
+type = "DIR32"
+symbol = "??_C@_0BO@FODGFDJJ@?$IDt?$ID?$EA?$IDC?$ID?$IL?$IC?$KK?$IP?$JB?$IC?$KL?$IPo?$IC?$LJ?$IC?$NM?$IC?$LJ?$IC?q?5?$CFs?$AN?6?$AA@"
+target = 0x00496190
+
+[[units.main-load-config.relocations]]
+offset = 0x3EA
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x3EF
+type = "REL32"
+symbol = "?Fatal@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B280
+
+[[units.main-load-config.relocations]]
+offset = 0x3F7
+type = "DIR32"
+symbol = "??_C@_0FH@FJAEBMBE@?$IDt?$IDH?$ID?$IL?$ID_?$IC?$KK?$IP?$JB?$IN?$JO?$IC?$NN?$IL?V?$IO?$HO?$JB?$KO?$JA?$KL?$IC?I?$IC?H?$IC?A?$IC?D@"
+target = 0x00496138
+
+[[units.main-load-config.relocations]]
+offset = 0x3FC
+type = "DIR32"
+symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+target = 0x004C2420
+
+[[units.main-load-config.relocations]]
+offset = 0x401
+type = "REL32"
+symbol = "?Fatal@GameErrorContext@th095@@QAAPBDPBDZZ"
+target = 0x0041B280
+
 # These four VM operand helpers are part of the ExecuteScript lane. Their
 # accepted extents include the compiler-emitted switch tables immediately
 # following each RET; all table entries are replayed as explicit DIR32

@@ -45,3 +45,5 @@ address,name,size,status,match_percent,unit,evidence
 0x004217A0,th095::GameWindow::CheckForRunningGameInstance,625,matching,100.00,main-check-running-instance,python3 scripts/build.py --unit main-check-running-instance && python3 scripts/compare-coff-function.py --unit main-check-running-instance --json
 0x00421A20,th095::GameWindow::ActivateWindow,143,matching,100.00,main-activate-window,python3 scripts/build.py --unit main-activate-window && python3 scripts/compare-coff-function.py --unit main-activate-window --json
 0x00421AB0,th095::GameWindow::ResolveShortcut,322,matching,100.00,main-resolve-shortcut,python3 scripts/build.py --unit main-resolve-shortcut && python3 scripts/compare-coff-function.py --unit main-resolve-shortcut --json
+0x00418720,th095::GameConfiguration::Initialize,471,matching,100.00,main-config-initialize,python3 scripts/build.py --unit main-config-initialize && python3 scripts/compare-coff-function.py --unit main-config-initialize --json
+0x00424D30,th095::Supervisor::LoadConfig,1047,matching,100.00,main-load-config,python3 scripts/build.py --unit main-load-config && python3 scripts/compare-coff-function.py --unit main-load-config --json

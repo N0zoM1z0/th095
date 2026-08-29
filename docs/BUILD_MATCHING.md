@@ -58,8 +58,8 @@ configured target hash, reviewed extent, relocation policy, cold rebuild, and
 ledger promotion together form the acceptance gate.
 
 The Main lane uses the TH08-corroborated VC7.1 profile
-`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. Eleven independent
-TH095 window, timing, and D3D functions now confirm the emitted source shape,
+`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. Thirteen independent
+TH095 configuration, window, timing, and D3D functions now confirm the source shape,
 including inline helpers made observable by `/Ob1`. Switches that leave no
 trace in a bounded unit remain reproducibility settings rather than claims
 about every original compiler option.

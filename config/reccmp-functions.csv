@@ -1,6 +1,7 @@
 name,address,type
 th095::AnmVm::Initialize,0x00401C10,function
 th095::EclManager::RunEcl,0x00408E70,function
+th095::GameConfiguration::Initialize,0x00418720,function
 WinMain,0x00420240,function
 th095::GameWindow::Render,0x00420770,function
 th095::GameWindow::Present,0x00420920,function

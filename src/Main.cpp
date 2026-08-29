@@ -6,6 +6,7 @@
 #include <shlguid.h>
 #include <shobjidl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <winnls32.h>
 
@@ -901,3 +902,155 @@ void GameWindow::ActivateWindow(HWND hWnd)
 #undef foregroundWinThread
 #undef touhouWinThread
 #undef lockoutTime
+
+void GameConfiguration::Initialize()
+{
+    memset(this, 0, sizeof(GameConfiguration));
+    this->colorMode16bit = 0;
+    this->version = 0x95001;
+    this->padXAxis = 600;
+    this->padYAxis = 600;
+    this->musicMode = 1;
+    this->playSounds = 1;
+    this->windowed = 0;
+    this->frameskipConfig = 0;
+    this->controllerMapping.bindings[0] = g_ControllerMapping.primaryBindings[0];
+    this->controllerMapping.bindings[1] = g_ControllerMapping.primaryBindings[1];
+    this->controllerMapping.bindings[2] = g_ControllerMapping.primaryBindings[2];
+    this->controllerMapping.bindings[3] = g_ControllerMapping.secondaryBindings[0];
+    this->controllerMapping.bindings[4] = g_ControllerMapping.secondaryBindings[1];
+    this->controllerMapping.bindings[5] = g_ControllerMapping.secondaryBindings[2];
+    this->effectQuality = 2;
+    this->musicVolume = 100;
+    this->sfxVolume = 80;
+    this->unknown0b2 = 0;
+    this->unknown0b3 = 1;
+    this->unknown0b4 = 2;
+}
+
+#define fileSize restartCommandProcessingLocal05
+#define configFileBuffer averagedPanLocal12
+#define bgmHandle iLocal11
+#define bytesRead commandCursorLocal02
+#define bgmBuffer soundIndexLocal01
+#pragma var_order(fileSize, configFileBuffer, bgmHandle, bytesRead, bgmBuffer)
+i32 Supervisor::LoadConfig(char *configFile)
+{
+    i32 bgmBuffer[4];
+    HANDLE bgmHandle;
+    DWORD bytesRead;
+    u8 *configFileBuffer;
+    i32 fileSize;
+
+    g_Supervisor.config.Initialize();
+    configFileBuffer = FileSystem::OpenFile(configFile, &fileSize, true);
+    if (configFileBuffer == NULL)
+    {
+        g_GameErrorContext.Log(
+            "\x83\x52\x83\x93\x83\x74\x83\x42\x83\x4f\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x8c\xa9\x82\xc2\x82\xa9\x82\xe7\x82\xc8\x82\xa2\x82\xcc\x82\xc5\x8f\x89"
+            "\x8a\xfa\x89\xbb\x82\xb5\x82\xdc\x82\xb5\x82\xbd\x0d\x0a");
+    SET_DEFAULT:
+        g_Supervisor.config.Initialize();
+        bgmHandle = CreateFileA("./thbgm.dat", GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+                                FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+        if (bgmHandle != INVALID_HANDLE_VALUE)
+        {
+            ReadFile(bgmHandle, bgmBuffer, 16, &bytesRead, NULL);
+            CloseHandle(bgmHandle);
+            g_Supervisor.config.musicMode = 1;
+        }
+        else
+        {
+            g_Supervisor.config.musicMode = 2;
+            utils::DebugPrint(
+                "\x77\x61\x76\x65\x20\x83\x66\x81\x5b\x83\x5e\x82\xaa\x96\xb3\x82\xa2"
+                "\x82\xcc\x82\xc5\x81\x41\x6d\x69\x64\x69\x20\x82\xc9\x82\xb5\x82\xdc"
+                "\x82\xb7\x0d\x0a");
+        }
+    }
+    else
+    {
+        g_Supervisor.config = *(GameConfiguration *)configFileBuffer;
+        free(configFileBuffer);
+        if (g_Supervisor.config.colorMode16bit >= 2 || g_Supervisor.config.musicMode >= 3 ||
+            g_Supervisor.config.playSounds >= 2 || g_Supervisor.config.windowed >= 2 ||
+            g_Supervisor.config.frameskipConfig >= 3 || g_Supervisor.config.effectQuality >= 3 ||
+            g_Supervisor.config.version != 0x95001 || fileSize != sizeof(GameConfiguration))
+        {
+            g_GameErrorContext.Log(
+                "\x83\x52\x83\x93\x83\x74\x83\x42\x83\x4f\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+                "\x88\xd9\x8f\xed\x82\xc5\x82\xb5\x82\xbd\x82\xcc\x82\xc5\x8d\xc4\x8f\x89"
+                "\x8a\xfa\x89\xbb\x82\xb5\x82\xdc\x82\xb5\x82\xbd\x0d\x0a");
+            goto SET_DEFAULT;
+        }
+        g_ControllerMapping.primaryBindings[0] = g_Supervisor.config.controllerMapping.bindings[0];
+        g_ControllerMapping.primaryBindings[1] = g_Supervisor.config.controllerMapping.bindings[1];
+        g_ControllerMapping.primaryBindings[2] = g_Supervisor.config.controllerMapping.bindings[2];
+        g_ControllerMapping.secondaryBindings[0] = g_Supervisor.config.controllerMapping.bindings[3];
+        g_ControllerMapping.secondaryBindings[1] = g_Supervisor.config.controllerMapping.bindings[4];
+        g_ControllerMapping.secondaryBindings[2] = g_Supervisor.config.controllerMapping.bindings[5];
+    }
+
+    this->disableVsync = 0;
+    if (this->config.options.disableFog)
+        g_GameErrorContext.Log(
+            "\x83\x74\x83\x48\x83\x4f\x82\xcc\x8e\x67\x97\x70\x82\xf0\x97\x7d\x90\xa7"
+            "\x82\xb5\x82\xdc\x82\xb7\x0d\x0a");
+    if (this->config.options.force16BitTextures)
+        g_GameErrorContext.Log(
+            "\x31\x36\x42\x69\x74\x20\x82\xcc\x83\x65\x83\x4e\x83\x58\x83\x60\x83\x83"
+            "\x82\xcc\x8e\x67\x97\x70\x82\xf0\x8b\xad\x90\xa7\x82\xb5\x82\xdc\x82\xb7"
+            "\x0d\x0a");
+    if (this->config.windowed)
+        g_GameErrorContext.Log(
+            "\x83\x45\x83\x42\x83\x93\x83\x68\x83\x45\x83\x82\x81\x5b\x83\x68\x82\xc5"
+            "\x8b\x4e\x93\xae\x82\xb5\x82\xdc\x82\xb7\x0d\x0a");
+    if (this->config.options.useReferenceRasterizer)
+        g_GameErrorContext.Log(
+            "\x83\x8a\x83\x74\x83\x40\x83\x8c\x83\x93\x83\x58\x83\x89\x83\x58\x83\x5e"
+            "\x83\x89\x83\x43\x83\x55\x82\xf0\x8b\xad\x90\xa7\x82\xb5\x82\xdc\x82\xb7"
+            "\x0d\x0a");
+    if (this->config.options.disableDirectInput)
+        g_GameErrorContext.Log(
+            "\x83\x70\x83\x62\x83\x68\x81\x41\x83\x4c\x81\x5b\x83\x7b\x81\x5b\x83\x68"
+            "\x82\xcc\x93\xfc\x97\xcd\x82\xc9\x20\x44\x69\x72\x65\x63\x74\x49\x6e\x70"
+            "\x75\x74\x20\x82\xf0\x8e\x67\x97\x70\x82\xb5\x82\xdc\x82\xb9\x82\xf1\x0d"
+            "\x0a");
+    if (this->config.options.preloadMusic)
+        g_GameErrorContext.Log(
+            "\x82\x61\x82\x66\x82\x6c\x82\xf0\x83\x81\x83\x82\x83\x8a\x82\xc9\x93\xc7"
+            "\xdd\x8d\x9e\x82\xdd\x82\xdc\x82\xb7\x0d\x0a");
+    if (this->config.options.disableVsync)
+    {
+        g_GameErrorContext.Log(
+            "\x90\x82\x92\xbc\x93\xaf\x8a\xfa\x82\xf0\x8e\xe6\x82\xe8\x82\xdc\x82\xb9"
+            "\x82\xf1\x0d\x0a");
+        g_Supervisor.disableVsync = 1;
+    }
+    if (this->config.options.disableTextBackgroundDetection)
+        g_GameErrorContext.Log(
+            "\x95\xb6\x8e\x9a\x95\x60\x89\xe6\x82\xcc\x8a\xc2\x8b\xab\x82\xf0\x8e\xa9"
+            "\x93\xae\x8c\x9f\x8f\x6f\x82\xb5\x82\xdc\x82\xb9\x82\xf1\x0d\x0a");
+
+    if (FileSystem::WriteDataToFile(configFile, &g_Supervisor.config, sizeof(GameConfiguration)) != 0)
+    {
+        g_GameErrorContext.Fatal(
+            "\x83\x74\x83\x40\x83\x43\x83\x8b\x82\xaa\x8f\x91\x82\xab\x8f\x6f\x82\xb9"
+            "\x82\xdc\x82\xb9\x82\xf1\x20\x25\x73\x0d\x0a",
+            configFile);
+        g_GameErrorContext.Fatal(
+            "\x83\x74\x83\x48\x83\x8b\x83\x5f\x82\xaa\x8f\x91\x8d\x9e\x82\xdd\x8b\xd6"
+            "\x8e\x7e\x91\xae\x90\xab\x82\xc9\x82\xc8\x82\xc1\x82\xc4\x82\xa2\x82\xe9"
+            "\x82\xa9\x81\x41\x83\x66\x83\x42\x83\x58\x83\x4e\x82\xaa\x82\xa2\x82\xc1"
+            "\x82\xcf\x82\xa2\x82\xa2\x82\xc1\x82\xcf\x82\xa2\x82\xc9\x82\xc8\x82\xc1"
+            "\x82\xc4\x82\xdc\x82\xb9\x82\xf1\x82\xa9\x81\x48\x0d\x0a");
+        return -1;
+    }
+    return 0;
+}
+#undef fileSize
+#undef configFileBuffer
+#undef bgmHandle
+#undef bytesRead
+#undef bgmBuffer
