@@ -220,7 +220,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x0041B600,95,0x0041B65E,FUN_0041b600,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0041B660,113,0x0041B6D0,FUN_0041b660,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0041B6E0,113,0x0041B750,FUN_0041b6e0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0041B760,200,0x0041B827,FUN_0041b760,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x0041B760,200,0x0041B827,FUN_0041b760,th095::ResultScreenReplayCursor::Move,UiCursor,matching,100.00,__thiscall,i32 ResultScreenReplayCursor::Move(i32 amount),false,src/ResultScreen.cpp,Canonical relocation-aware VC7.1 comparison: 200/200 bytes and no relocations,authored,Exact reusable wrapping clamping and disabled-entry cursor movement
 0x0041B830,98,0x0041B891,FUN_0041b830,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0041B8A0,117,0x0041B914,FUN_0041b8a0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0041B920,264,0x0041BA27,FUN_0041b920,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -393,7 +393,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00429450,108,0x004294BB,FUN_00429450,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004294C0,1323,0x004299EA,FUN_004294c0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004299F0,189,0x00429AAC,FUN_004299f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00429AB0,455,0x00429C76,FUN_00429ab0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00429AB0,455,0x00429C76,FUN_00429ab0,th095::ResultScreen::UpdateCursor,ResultScreen,matching,100.00,__thiscall,i32 ResultScreen::UpdateCursor(i32 firstVm),false,src/ResultScreen.cpp,Canonical relocation-aware VC7.1 comparison: 455/455 bytes and 8 relocations,authored,Exact timer-gated result menu selection VM interrupts repeated input and movement sound
 0x00429C80,2573,0x0042A68C,FUN_00429c80,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042A6B0,45,0x0042A6DC,FUN_0042a6b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042A6E0,45,0x0042A70C,FUN_0042a6e0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,

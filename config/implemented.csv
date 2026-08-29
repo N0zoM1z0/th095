@@ -85,3 +85,5 @@ th095::ReplayManager::OnDraw
 th095::ReplayManager::LoadReplay
 th095::ReplayManager::WriteReplay
 th095::ResultScreen::LoadReplays
+th095::ResultScreenReplayCursor::Move
+th095::ResultScreen::UpdateCursor

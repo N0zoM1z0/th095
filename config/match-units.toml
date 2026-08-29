@@ -6269,3 +6269,32 @@ relocations = [
   { offset = 0xE9, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
   { offset = 0xF7, type = "REL32", symbol = "?Load@ReplayManager@th095@@SIPAU12@PAD@Z", target = 0x00434700 },
 ]
+
+[units.result-screen-replay-cursor-move]
+source = "src/ResultScreen.cpp"
+object = "build/matching/ResultScreen.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ResultScreenReplayCursor::Move"]
+symbol = "?Move@ResultScreenReplayCursor@th095@@QAEHH@Z"
+target_address = 0x0041B760
+size = 0xC8
+relocations = []
+
+[units.result-screen-update-cursor]
+source = "src/ResultScreen.cpp"
+object = "build/matching/ResultScreen.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ResultScreen::UpdateCursor"]
+symbol = "?UpdateCursor@ResultScreen@th095@@QAEHH@Z"
+target_address = 0x00429AB0
+size = 0x1C7
+relocations = [
+  { offset = 0xAA, type = "DIR32", symbol = "?g_PressedButtons@th095@@3GA", target = 0x004BE21E },
+  { offset = 0xBA, type = "DIR32", symbol = "?g_ResultMenuInput@th095@@3GA", target = 0x004BE21C },
+  { offset = 0xE9, type = "REL32", symbol = "?Move@ResultScreenReplayCursor@th095@@QAEHH@Z", target = 0x0041B760 },
+  { offset = 0xF5, type = "DIR32", symbol = "?g_PressedButtons@th095@@3GA", target = 0x004BE21E },
+  { offset = 0x105, type = "DIR32", symbol = "?g_ResultMenuInput@th095@@3GA", target = 0x004BE21C },
+  { offset = 0x134, type = "REL32", symbol = "?Move@ResultScreenReplayCursor@th095@@QAEHH@Z", target = 0x0041B760 },
+  { offset = 0x1B6, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
+  { offset = 0x1BB, type = "REL32", symbol = "?PlaySoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@H@Z", target = 0x00438F20 },
+]
