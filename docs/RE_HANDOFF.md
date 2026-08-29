@@ -116,14 +116,13 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    `PhotoDistance2D @ 0x00434220` are canonical exact dependencies.
 3. Recalculate against any newly confirmed authored origins after every
    promotion; never preserve the percentage by withholding denominator facts.
-4. The adjacent ReplayManager lane now has eleven canonical exact units totaling
-   2,660 bytes and 109 relocations: initialization, constructor/destructor, both
+4. The ReplayManager lane now has twelve canonical exact units totaling
+   4,351 bytes and 153 relocations: initialization, constructor/destructor, both
    factories, delete helper, chain wrappers, the 408-byte per-frame input/FPS
-   stream core, playback FPS drawing, and the complete 540-byte disk/archive
-   loader. Continue with the 1,691-byte replay writer at `0x00434A90`. After
-   that, return to the 6,471-byte
-   replay/menu dispatcher at `0x00426BF0` and the 16,066-byte
-   gameplay/resource hub at `0x00447D00`.
+   stream core, playback FPS drawing, the complete 540-byte disk/archive
+   loader, and the complete 1,691-byte compressed writer with both `USER`
+   metadata blocks. Continue with the 6,471-byte replay/menu dispatcher at
+   `0x00426BF0`, then the 16,066-byte gameplay/resource hub at `0x00447D00`.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

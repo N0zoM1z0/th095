@@ -81,3 +81,4 @@ address,name,size,status,match_percent,unit,evidence
 0x00435350,th095::ReplayManager::OnUpdate,45,matching,100.00,replay-manager-on-update,python3 scripts/build.py --unit replay-manager-on-update && python3 scripts/compare-coff-function.py --unit replay-manager-on-update --json
 0x00435380,th095::ReplayManager::OnDraw,45,matching,100.00,replay-manager-on-draw,python3 scripts/build.py --unit replay-manager-on-draw && python3 scripts/compare-coff-function.py --unit replay-manager-on-draw --json
 0x00435130,th095::ReplayManager::LoadReplay,540,matching,100.00,replay-manager-load-replay,python3 scripts/build.py --unit replay-manager-load-replay && python3 scripts/compare-coff-function.py --unit replay-manager-load-replay --json
+0x00434A90,th095::ReplayManager::WriteReplay,1691,matching,100.00,replay-manager-write-replay,python3 scripts/build.py --unit replay-manager-write-replay && python3 scripts/compare-coff-function.py --unit replay-manager-write-replay --json

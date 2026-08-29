@@ -17,7 +17,8 @@ struct ReplayFileHeader
 {
     u32 magic;                       // +0x00
     u16 version;                     // +0x04
-    u8 unknown006[0x0a];
+    u8 unknown006[0x06];
+    u32 fileSize;                    // +0x0c
     u32 gameVersion;                 // +0x10
     u8 unknown014[0x08];
     u32 compressedSize;              // +0x1c
@@ -27,14 +28,19 @@ struct ReplayFileHeader
 struct ReplayInputData
 {
     u16 playerConfigId;              // +0x00
-    i8 playerConfigGroup;            // +0x02
-    i8 playerConfigVariant;          // +0x03
+    i8 level;                        // +0x02
+    i8 scene;                        // +0x03
     u16 rngSeed;                     // +0x04
-    u8 unknown006[0x12];
+    u8 unknown006;
+    char replayName[8];              // +0x07
+    u8 unknown00f;
+    i32 timestamp;                   // +0x10
+    i32 score;                       // +0x14
     u8 globalStateSnapshot[0xc8];     // +0x18
-    u8 unknown0e0[0x10];
+    f32 slowRate;                    // +0xe0
+    u8 unknown0e4[0x0c];
     u32 inputStreamSize;              // +0xf0
-    u8 unknown0f4[4];
+    u32 fpsStreamSize;                // +0xf4
 };
 
 typedef char ReplayFileHeaderSizeIs24[
@@ -62,6 +68,7 @@ struct ReplayManager
     ~ReplayManager();
 
     ZunResult Initialize(i32 mode, char *path);
+    ZunResult WriteReplay(char *path, char *replayName);
     ZunResult LoadReplay(char *path);
 
     static ReplayManager *Create(i32 mode, char *path);

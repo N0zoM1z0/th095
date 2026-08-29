@@ -6198,3 +6198,58 @@ relocations = [
   { offset = 0x201, type = "DIR32", symbol = "?g_ReplayUsesArchive@th095@@3HA", target = 0x004BDED0 },
   { offset = 0x20D, type = "REL32", symbol = "_free", target = 0x004854BE },
 ]
+
+[units.replay-manager-write-replay]
+source = "src/ReplayManager.cpp"
+object = "build/matching/ReplayManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ReplayManager::WriteReplay"]
+symbol = "?WriteReplay@ReplayManager@th095@@QAE?AW4ZunResult@@PAD0@Z"
+target_address = 0x00434A90
+size = 0x69B
+relocations = [
+  { offset = 0x135, type = "DIR32", symbol = "?g_ReplayLagNumerator@th095@@3NA", target = 0x004C4DFC },
+  { offset = 0x13B, type = "DIR32", symbol = "?g_ReplayLagDenominator@th095@@3NA", target = 0x004C4E04 },
+  { offset = 0x147, type = "DIR32", symbol = "__real@42c80000", target = 0x00495630 },
+  { offset = 0x14D, type = "DIR32", symbol = "__real@42c80000", target = 0x00495630 },
+  { offset = 0x15B, type = "DIR32", symbol = "??_C@_06HOJHLELG@replay?$AA@", target = 0x0049685C },
+  { offset = 0x160, type = "REL32", symbol = "__mkdir", target = 0x00485F6D },
+  { offset = 0x16C, type = "DIR32", symbol = "??_C@_09ONNEPONB@replay?1?$CFs?$AA@", target = 0x00496850 },
+  { offset = 0x178, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x1A6, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x22D, type = "REL32", symbol = "?Encode@ReplayLzss@th095@@YIPAEPAEHPAH@Z", target = 0x00455E10 },
+  { offset = 0x239, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x254, type = "REL32", symbol = "?Encrypt@FileSystem@th095@@YIPAEPAEHEEHH@Z", target = 0x0041A790 },
+  { offset = 0x272, type = "REL32", symbol = "?Encrypt@FileSystem@th095@@YIPAEPAEHEEHH@Z", target = 0x0041A790 },
+  { offset = 0x2CC, type = "REL32", symbol = "?Create@ReplayFile@th095@@YIHPAD@Z", target = 0x0041ADC0 },
+  { offset = 0x2DF, type = "REL32", symbol = "?Write@ReplayFile@th095@@YIHPAXI@Z", target = 0x0041AF80 },
+  { offset = 0x2EA, type = "REL32", symbol = "?Write@ReplayFile@th095@@YIHPAXI@Z", target = 0x0041AF80 },
+  { offset = 0x2F3, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x30C, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x35D, type = "DIR32", symbol = "??_C@_0CC@FLGMJAJP@?$JD?$IM?$JF?$PL?$JF?$LG?$IJ?T?$JC?$JP?5?$ID?$IK?$IDv?$ID?$IM?$IDC?$IDt?$ID?$EA?$IDC?$ID?$IL?$IP?n?$JF?q?$AN@", target = 0x0049682C },
+  { offset = 0x369, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x37D, type = "DIR32", symbol = "??_C@_05FEMIIIII@1?402a?$AA@", target = 0x00496824 },
+  { offset = 0x382, type = "DIR32", symbol = "??_C@_0N@PFJHPMNJ@Version?5?$CFs?$AN?6?$AA@", target = 0x00496814 },
+  { offset = 0x38E, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x3A9, type = "DIR32", symbol = "??_C@_09MAEODCLM@Name?5?$CFs?$AN?6?$AA@", target = 0x00496808 },
+  { offset = 0x3B5, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x3D5, type = "DIR32", symbol = "??_C@_0L@EDHBLGIF@Level?5EX?$AN?6?$AA@", target = 0x004967FC },
+  { offset = 0x3E1, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x402, type = "DIR32", symbol = "??_C@_0L@GALOIGNB@Level?5?$CFd?$AN?6?$AA@", target = 0x004967F0 },
+  { offset = 0x40E, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x42D, type = "DIR32", symbol = "??_C@_0L@NBBOBKK@Scene?5?$CFd?$AN?6?$AA@", target = 0x004967E4 },
+  { offset = 0x439, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x454, type = "REL32", symbol = "_localtime", target = 0x0048643F },
+  { offset = 0x49F, type = "DIR32", symbol = "??_C@_0CA@PEMDKCCK@Date?5?$CF?42d?1?$CF?42d?1?$CF?42d?5?$CF?42d?3?$CF?42d?$AN?6?$AA@", target = 0x004967C4 },
+  { offset = 0x4AB, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x4C6, type = "DIR32", symbol = "??_C@_0L@LDCLEPFA@Score?5?$CFd?$AN?6?$AA@", target = 0x004967B8 },
+  { offset = 0x4D2, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x4F5, type = "DIR32", symbol = "??_C@_0BC@ECJBPDHA@Slow?5Rate?5?$CF2?42f?$AN?6?$AA@", target = 0x004967A4 },
+  { offset = 0x501, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x593, type = "REL32", symbol = "?Write@ReplayFile@th095@@YIHPAXI@Z", target = 0x0041AF80 },
+  { offset = 0x5DB, type = "DIR32", symbol = "??_C@_0BD@GNKMFCMG@?$IDR?$ID?$IB?$ID?$JD?$IDg?$IC?p?$IP?$JB?$IC?$KP?$IC?$NM?$IC?$LH?$AA@", target = 0x00496790 },
+  { offset = 0x5E7, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x679, type = "REL32", symbol = "?Write@ReplayFile@th095@@YIHPAXI@Z", target = 0x0041AF80 },
+  { offset = 0x685, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x68D, type = "REL32", symbol = "?Close@ReplayFile@th095@@YIXXZ", target = 0x0041B090 },
+]
