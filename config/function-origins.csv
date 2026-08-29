@@ -470,11 +470,11 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00435910,authored,ReplayMenu,authored,high,ghidra-replay-menu-cluster-2026-08-29
 0x00435E90,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004362A0,authored,GameplayResource,authored,high,ghidra-gameplay-resource-cluster-2026-08-29
-0x004364F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004365B0,authored,GameplayResource,authored,high,ghidra-gameplay-resource-cluster-2026-08-29
-0x004365F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00436680,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004366F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004364F0,authored,SceneSelect,authored,exact,vc71-scene-select-unlock-cluster-2026-08-29
+0x004365B0,authored,SceneSelect,authored,exact,vc71-scene-select-unlock-cluster-2026-08-29
+0x004365F0,authored,SceneSelect,authored,exact,vc71-scene-select-unlock-cluster-2026-08-29
+0x00436680,authored,SceneSelect,authored,exact,vc71-scene-select-unlock-cluster-2026-08-29
+0x004366F0,authored,SceneSelect,authored,exact,vc71-scene-select-unlock-cluster-2026-08-29
 0x00436760,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00436820,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004368A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -643,7 +643,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00451C80,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004525D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00452630,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00452D70,authored,GameplayResource,authored,high,ghidra-gameplay-resource-cluster-2026-08-29
+0x00452D70,authored,AnmManager,authored,exact,vc71-anm-vm-color1-interpolation-2026-08-29
 0x00452E50,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00452E70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00452EA0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

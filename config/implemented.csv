@@ -110,3 +110,9 @@ th095::AnmManager::SetPosition
 th095::AnmManager::GetPosition
 th095::AnmManager::MarkVmsForDeletion
 th095::AnmVmId::SetSprite
+th095::SceneSaveDataView::IsSceneGroupUnlocked
+th095::SceneSaveDataView::FindHighestUnlockedSceneGroup
+th095::SceneSaveDataView::CountCapturedScenes
+th095::SceneSaveDataView::CountCapturedScenesInGroup
+th095::SceneSaveDataView::GetSceneGroupUnlockScore
+th095::AnmVmColorInterpolationView::SetColor1Interpolation

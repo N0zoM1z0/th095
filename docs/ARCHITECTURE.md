@@ -101,7 +101,7 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | --- | ---: | ---: | --- | --- |
 | `0x00408E70` | 27,091 | 3 callers / 50 internal callees | exact `EclManager::RunEcl` | Largest script VM; establishes enemy/scene semantics |
 | `0x0043A600` | 17,018 | 22 callers / 20 internal callees | exact `AnmManager::ExecuteScript` | Widely shared animation VM and type/layout root |
-| `0x00447D00` | 16,066 | 1 caller / 27 internal callees | boundary-reviewed authored gameplay/resource hub | Ten-function cluster; exact class name unresolved |
+| `0x00447D00` | 16,066 | 1 caller / 27 internal callees | boundary-reviewed authored scene-selection hub | 12-group scene UI; exact class name unresolved |
 | `0x00430AB0` | 7,271 | 1 caller / 29 internal callees | boundary-reviewed authored camera/photo state machine | Next reconstruction lane; do not project a TH08 name |
 | `0x00426BF0` | 6,471 | 1 caller / 17 internal callees | boundary-reviewed authored replay/menu dispatcher | Eleven-function replay/best-shot cluster |
 | `0x00439200` | 2,525 | 2 callers / 16 internal callees | `SoundPlayer::ProcessQueues` | Shared threaded audio state machine |
@@ -116,8 +116,10 @@ tail, and VC7.1 `/Ob1` source-shape profile. The second large-function lane,
 27,747-byte COFF extent, including the 158-entry opcode table, six-entry
 easing table, and all 647 relocations. A subsequent target-local audit admitted
 32 functions and 55,476 bytes across the camera/photo, replay/menu, and
-gameplay/resource clusters. The next target-first reconstruction lane is the
-7,271-byte camera/photo state machine at `0x00430AB0`.
+gameplay/resource clusters. Five exact save/unlock helpers now prove that
+`0x00447D00` manages TH095's twelve-group scene-selection UI rather than a
+traditional stage loop. The next dependency-first lane is its adjacent
+716-byte preview/status updater at `0x0044BBD0`.
 
 ## Shared engine versus TH095 gameplay
 

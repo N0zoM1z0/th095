@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 102 canonical units cover 78,050 authored bytes.
+- Reconstruction: 108 canonical units cover 78,858 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 59.87% (78,050 / 130,376)
+  relocations. Confirmed authored-byte coverage is now 60.24% (78,858 / 130,899)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,7 +25,7 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 124 authored candidates and leaves 1,706 origin/boundary reviews
+  confirms 128 authored candidates and leaves 1,702 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -73,6 +73,20 @@
   set/get (64/60), ANM-file-wide deletion (87), and `AnmVmId::SetSprite` (69).
   These seven units add 480 exact bytes and prove `AnmVm+0x00/+0x10/+0x228/
   +0x22E/+0x230` as next/id/flags/pending-interrupt/owning-ANM fields.
+- The target-local scene-selection unlock cluster at
+  `0x004364F0..0x00436751` is exact for all five functions and 586 authored
+  bytes. It proves twelve scene groups, 120 persistent `0x60`-byte scene-score
+  entries, total/per-group capture counts, per-group unlock-score sums, and
+  the four-way score/capture unlock predicate. The source is isolated in
+  root-level `SceneSelect.*`; it is not mixed into the ECL translation unit.
+- `AnmVm::SetColor1Interpolation @ 0x00452D70` is exact for all 222 bytes
+  through the bounded `AnmVmColorInterpolationView`. It initializes the
+  secondary-color timer pair, interpolation mode, and RGB endpoints while
+  intentionally preserving alpha. Keeping this helper in its own translation
+  unit preserves all pre-existing ANM switch-label identities; all fourteen
+  canonical `AnmManager.cpp` units replay after the separation. Together these
+  six units raise source presence to 118 functions and exact coverage to 108
+  functions.
 - `UpdatePhotoResultScreen @ 0x004294C0` is source-present for the complete
   TH095-specific photo browser and `BSTS` best-shot save path. Its VC7.1 probe
   has the target's full 1,323-byte instruction topology and resolves all 65
@@ -128,8 +142,9 @@ python3 scripts/report-reconstruction-status.py --summary
 ## Next bounded lane
 
 The earlier narrow 95% checkpoint is superseded by the target-local origin
-audit. Subsequent camera, ANM, replay, and result-screen work expanded the
-honest denominator to 130,376 bytes; exact coverage is 59.87%. `WinMain` remains
+audit. Subsequent camera, ANM, replay, result-screen, and scene-selection work
+expanded the honest denominator to 130,899 bytes; exact coverage is 60.24%.
+`WinMain` remains
 deferred because its remaining eight
 stack bytes have resisted the bounded VC7.1 oracle matrix.
 
@@ -194,10 +209,12 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    destinations resolved. Its remaining 165 non-relocation differences are
    isolated to compiler frame/temporary/register allocation, so defer exact
    work unless a natural source-shape improvement appears. Continue the
-   candidate inventory and reconstruct the 16,066-byte gameplay/resource hub
-   at `0x00447D00`; it has 27 internal callees and 156 direct ANM-manager
-   references, so its recovered state/layout information should unlock the
-   adjacent `0x0044BBD0`, `0x0044BEA0`, and `0x0044C670` functions.
+   candidate inventory and reconstruct the 16,066-byte scene-selection hub at
+   `0x00447D00`; it has 27 internal callees and 156 direct ANM-manager
+   references. Its exact five-function save/unlock dependency cluster now
+   establishes the 12-group scene model. Continue with the adjacent 716-byte
+   preview/status updater at `0x0044BBD0`, then use its recovered shared layout
+   to unlock `0x0044BEA0`, `0x0044C670`, and the main hub.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression
@@ -208,7 +225,7 @@ addressable argument homes. Any shared-header change must rebuild the complete
 ANM unit set plus `anm-execute-script`.
 
 Target-specific hubs `0x00430AB0`, `0x00426BF0`, and `0x00447D00` must stay
-descriptively named until photography/gameplay/resource owning types are
+descriptively named until photography/result/scene-selection owning types are
 proved locally. Do not import TH08 stage/player class names into these lanes.
 
 Replay the completed ECL lane with:

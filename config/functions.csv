@@ -470,11 +470,11 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00435910,1407,0x00435E8E,FUN_00435910,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00435E90,1034,0x00436299,FUN_00435e90,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004362A0,578,0x004364E1,FUN_004362a0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004364F0,189,0x004365AC,FUN_004364f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004365B0,63,0x004365EE,FUN_004365b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004365F0,130,0x00436671,FUN_004365f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00436680,106,0x004366E9,FUN_00436680,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004366F0,98,0x00436751,FUN_004366f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x004364F0,189,0x004365AC,FUN_004364f0,th095::SceneSaveDataView::IsSceneGroupUnlocked,SceneSelect,matching,100.00,__thiscall,i32 SceneSaveDataView::IsSceneGroupUnlocked(i32 group),false,src/SceneSelect.cpp,Canonical relocation-aware VC7.1 comparison: 189/189 bytes and 6 relocations,authored,Exact TH095 scene-group unlock predicate
+0x004365B0,63,0x004365EE,FUN_004365b0,th095::SceneSaveDataView::FindHighestUnlockedSceneGroup,SceneSelect,matching,100.00,__thiscall,i32 SceneSaveDataView::FindHighestUnlockedSceneGroup(),false,src/SceneSelect.cpp,Canonical relocation-aware VC7.1 comparison: 63/63 bytes and 1 relocation,authored,Exact highest contiguous unlocked scene group scan
+0x004365F0,130,0x00436671,FUN_004365f0,th095::SceneSaveDataView::CountCapturedScenes,SceneSelect,matching,100.00,__thiscall,i32 SceneSaveDataView::CountCapturedScenes(),false,src/SceneSelect.cpp,Canonical relocation-aware VC7.1 comparison: 130/130 bytes and 2 relocations,authored,Exact captured-scene count across all twelve groups
+0x00436680,106,0x004366E9,FUN_00436680,th095::SceneSaveDataView::CountCapturedScenesInGroup,SceneSelect,matching,100.00,__thiscall,i32 SceneSaveDataView::CountCapturedScenesInGroup(i32 group),false,src/SceneSelect.cpp,Canonical relocation-aware VC7.1 comparison: 106/106 bytes and 2 relocations,authored,Exact per-group captured-scene count
+0x004366F0,98,0x00436751,FUN_004366f0,th095::SceneSaveDataView::GetSceneGroupUnlockScore,SceneSelect,matching,100.00,__thiscall,i32 SceneSaveDataView::GetSceneGroupUnlockScore(i32 group),false,src/SceneSelect.cpp,Canonical relocation-aware VC7.1 comparison: 98/98 bytes and 2 relocations,authored,Exact per-group unlock-score accumulator
 0x00436760,190,0x0043681D,FUN_00436760,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00436820,124,0x0043689B,FUN_00436820,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004368A0,123,0x0043691A,FUN_004368a0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -643,7 +643,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00451C80,2358,0x004525B5,FUN_00451c80,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004525D0,88,0x00452627,FUN_004525d0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00452630,1851,0x00452D6A,FUN_00452630,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00452D70,222,0x00452E4D,FUN_00452d70,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00452D70,222,0x00452E4D,FUN_00452d70,th095::AnmVmColorInterpolationView::SetColor1Interpolation,AnmManager,matching,100.00,__thiscall,"void AnmVmColorInterpolationView::SetColor1Interpolation(i32 duration, u8 mode, u32 initial, u32 final)",false,src/AnmVmInterpolation.cpp,Canonical relocation-aware VC7.1 comparison: 222/222 bytes and no relocations,authored,Exact secondary-color RGB interpolation setup through a bounded ABI view
 0x00452E50,23,0x00452E66,FUN_00452e50,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00452E70,44,0x00452E9B,FUN_00452e70,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00452EA0,142,0x00452F2D,FUN_00452ea0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
