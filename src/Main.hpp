@@ -10,8 +10,11 @@
 
 namespace th095
 {
+struct AnmVm;
+
 typedef signed char i8;
 typedef unsigned char u8;
+typedef signed short i16;
 typedef unsigned short u16;
 typedef signed int i32;
 typedef unsigned int u32;
@@ -133,7 +136,9 @@ typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSecti
 
 struct AnmManager
 {
-    u8 unknown[0x38314c];
+    u8 unknown000[0x10];
+    i32 scriptsStartedThisFrame;  // +0x10
+    u8 unknown014[0x38314c - 0x14];
 
     AnmManager();
     ~AnmManager();
@@ -141,6 +146,7 @@ struct AnmManager
     void FlushVertexBuffer();
     void ReleaseSurfaces();
     void TakeScreenshots();
+    static i32 ExecuteScript(AnmVm *vm);
 };
 
 typedef char AnmManagerSizeIs38314C[(sizeof(AnmManager) == 0x38314c) ? 1 : -1];

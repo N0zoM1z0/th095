@@ -1,4 +1,7 @@
 name,address,type
+th095::g_AnmGameSpeed,0x004BDED8,data
+th095::g_Rng,0x004BE208,data
+th095::g_Rng2,0x004BE210,data
 th095::g_PressedButtons,0x004BE21E,data
 th095::g_Chain,0x004BE3C8,data
 th095::g_GameErrorContext,0x004C2420,data

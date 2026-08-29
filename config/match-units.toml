@@ -215,3 +215,865 @@ offset = 0x19A
 type = "DIR32"
 symbol = "__imp__Sleep@4"
 target = 0x00495058
+
+# These four VM operand helpers are part of the ExecuteScript lane. Their
+# accepted extents include the compiler-emitted switch tables immediately
+# following each RET; all table entries are replayed as explicit DIR32
+# relocations.
+[units.anm-get-float-var]
+source = "src/AnmManager.cpp"
+object = "build/matching/AnmManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmVm::GetFloatVar"]
+symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z"
+target_address = 0x0043A1B0
+size = 0x1CE
+
+[[units.anm-get-float-var.relocations]]
+offset = 0xD
+type = "REL32"
+symbol = "__ftol2"
+target = 0x00485664
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x2F
+type = "DIR32"
+symbol = "$L65697"
+target = 0x0043A33E
+
+[[units.anm-get-float-var.relocations]]
+offset = 0xD1
+type = "DIR32"
+symbol = "?g_Rng2@th095@@3URng@1@A"
+target = 0x004BE210
+
+[[units.anm-get-float-var.relocations]]
+offset = 0xD6
+type = "REL32"
+symbol = "?GetRandomF32@Rng@th095@@QAEMXZ"
+target = 0x0041B4A0
+
+[[units.anm-get-float-var.relocations]]
+offset = 0xE0
+type = "DIR32"
+symbol = "?g_Rng@th095@@3URng@1@A"
+target = 0x004BE208
+
+[[units.anm-get-float-var.relocations]]
+offset = 0xE5
+type = "REL32"
+symbol = "?GetRandomF32@Rng@th095@@QAEMXZ"
+target = 0x0041B4A0
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x106
+type = "DIR32"
+symbol = "?g_Rng2@th095@@3URng@1@A"
+target = 0x004BE210
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x10B
+type = "REL32"
+symbol = "?GetRandomF32Signed@Rng@th095@@QAEMXZ"
+target = 0x0041B4D0
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x115
+type = "DIR32"
+symbol = "?g_Rng@th095@@3URng@1@A"
+target = 0x004BE208
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x11A
+type = "REL32"
+symbol = "?GetRandomF32Signed@Rng@th095@@QAEMXZ"
+target = 0x0041B4D0
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x138
+type = "DIR32"
+symbol = "?g_Rng2@th095@@3URng@1@A"
+target = 0x004BE210
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x13D
+type = "REL32"
+symbol = "?GetRandomF32Signed@Rng@th095@@QAEMXZ"
+target = 0x0041B4D0
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x143
+type = "DIR32"
+symbol = "__real@40490fdb"
+target = 0x00495398
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x14D
+type = "DIR32"
+symbol = "?g_Rng@th095@@3URng@1@A"
+target = 0x004BE208
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x152
+type = "REL32"
+symbol = "?GetRandomF32Signed@Rng@th095@@QAEMXZ"
+target = 0x0041B4D0
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x158
+type = "DIR32"
+symbol = "__real@40490fdb"
+target = 0x00495398
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x18E
+type = "DIR32"
+symbol = "$L65210"
+target = 0x0043A1E3
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x192
+type = "DIR32"
+symbol = "$L65211"
+target = 0x0043A1F1
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x196
+type = "DIR32"
+symbol = "$L65212"
+target = 0x0043A1FF
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x19A
+type = "DIR32"
+symbol = "$L65213"
+target = 0x0043A20D
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x19E
+type = "DIR32"
+symbol = "$L65214"
+target = 0x0043A21B
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x1A2
+type = "DIR32"
+symbol = "$L65215"
+target = 0x0043A229
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x1A6
+type = "DIR32"
+symbol = "$L65216"
+target = 0x0043A237
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x1AA
+type = "DIR32"
+symbol = "$L65217"
+target = 0x0043A245
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x1AE
+type = "DIR32"
+symbol = "$L65218"
+target = 0x0043A253
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x1B2
+type = "DIR32"
+symbol = "$L65219"
+target = 0x0043A261
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x1B6
+type = "DIR32"
+symbol = "$L65222"
+target = 0x0043A2D6
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x1BA
+type = "DIR32"
+symbol = "$L65220"
+target = 0x0043A26F
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x1BE
+type = "DIR32"
+symbol = "$L65221"
+target = 0x0043A2A4
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x1C2
+type = "DIR32"
+symbol = "$L65223"
+target = 0x0043A314
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x1C6
+type = "DIR32"
+symbol = "$L65224"
+target = 0x0043A31F
+
+[[units.anm-get-float-var.relocations]]
+offset = 0x1CA
+type = "DIR32"
+symbol = "$L65225"
+target = 0x0043A32A
+
+[units.anm-get-int-var]
+source = "src/AnmManager.cpp"
+object = "build/matching/AnmManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmVm::GetIntVar"]
+symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z"
+target_address = 0x0043A380
+size = 0xE2
+
+[[units.anm-get-int-var.relocations]]
+offset = 0x2B
+type = "DIR32"
+symbol = "$L65701"
+target = 0x0043A43A
+
+[[units.anm-get-int-var.relocations]]
+offset = 0x65
+type = "REL32"
+symbol = "__ftol2"
+target = 0x00485664
+
+[[units.anm-get-int-var.relocations]]
+offset = 0x75
+type = "REL32"
+symbol = "__ftol2"
+target = 0x00485664
+
+[[units.anm-get-int-var.relocations]]
+offset = 0x85
+type = "REL32"
+symbol = "__ftol2"
+target = 0x00485664
+
+[[units.anm-get-int-var.relocations]]
+offset = 0x95
+type = "REL32"
+symbol = "__ftol2"
+target = 0x00485664
+
+[[units.anm-get-int-var.relocations]]
+offset = 0xBA
+type = "DIR32"
+symbol = "$L65235"
+target = 0x0043A3AF
+
+[[units.anm-get-int-var.relocations]]
+offset = 0xBE
+type = "DIR32"
+symbol = "$L65236"
+target = 0x0043A3BA
+
+[[units.anm-get-int-var.relocations]]
+offset = 0xC2
+type = "DIR32"
+symbol = "$L65237"
+target = 0x0043A3C5
+
+[[units.anm-get-int-var.relocations]]
+offset = 0xC6
+type = "DIR32"
+symbol = "$L65238"
+target = 0x0043A3D0
+
+[[units.anm-get-int-var.relocations]]
+offset = 0xCA
+type = "DIR32"
+symbol = "$L65239"
+target = 0x0043A3DB
+
+[[units.anm-get-int-var.relocations]]
+offset = 0xCE
+type = "DIR32"
+symbol = "$L65240"
+target = 0x0043A3EB
+
+[[units.anm-get-int-var.relocations]]
+offset = 0xD2
+type = "DIR32"
+symbol = "$L65241"
+target = 0x0043A3FB
+
+[[units.anm-get-int-var.relocations]]
+offset = 0xD6
+type = "DIR32"
+symbol = "$L65242"
+target = 0x0043A40B
+
+[[units.anm-get-int-var.relocations]]
+offset = 0xDA
+type = "DIR32"
+symbol = "$L65243"
+target = 0x0043A41B
+
+[[units.anm-get-int-var.relocations]]
+offset = 0xDE
+type = "DIR32"
+symbol = "$L65244"
+target = 0x0043A426
+
+[units.anm-get-float-var-ptr]
+source = "src/AnmManager.cpp"
+object = "build/matching/AnmManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmVm::GetFloatVarPtr"]
+symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z"
+target_address = 0x0043A470
+size = 0xC8
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0x26
+type = "REL32"
+symbol = "__ftol2"
+target = 0x00485664
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0x45
+type = "DIR32"
+symbol = "$L65704"
+target = 0x0043A508
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0x98
+type = "DIR32"
+symbol = "$L65258"
+target = 0x0043A4B9
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0x9C
+type = "DIR32"
+symbol = "$L65259"
+target = 0x0043A4C3
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0xA0
+type = "DIR32"
+symbol = "$L65260"
+target = 0x0043A4CD
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0xA4
+type = "DIR32"
+symbol = "$L65261"
+target = 0x0043A4D7
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0xA8
+type = "DIR32"
+symbol = "$L65265"
+target = 0x0043A4FF
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0xAC
+type = "DIR32"
+symbol = "$L65265"
+target = 0x0043A4FF
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0xB0
+type = "DIR32"
+symbol = "$L65265"
+target = 0x0043A4FF
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0xB4
+type = "DIR32"
+symbol = "$L65265"
+target = 0x0043A4FF
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0xB8
+type = "DIR32"
+symbol = "$L65265"
+target = 0x0043A4FF
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0xBC
+type = "DIR32"
+symbol = "$L65262"
+target = 0x0043A4E1
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0xC0
+type = "DIR32"
+symbol = "$L65263"
+target = 0x0043A4EB
+
+[[units.anm-get-float-var-ptr.relocations]]
+offset = 0xC4
+type = "DIR32"
+symbol = "$L65264"
+target = 0x0043A4F5
+
+[units.anm-get-int-var-ptr]
+source = "src/AnmManager.cpp"
+object = "build/matching/AnmManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmVm::GetIntVarPtr"]
+symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z"
+target_address = 0x0043A540
+size = 0xB1
+
+[[units.anm-get-int-var-ptr.relocations]]
+offset = 0x40
+type = "DIR32"
+symbol = "$L65707"
+target = 0x0043A5C9
+
+[[units.anm-get-int-var-ptr.relocations]]
+offset = 0x89
+type = "DIR32"
+symbol = "$L65277"
+target = 0x0043A584
+
+[[units.anm-get-int-var-ptr.relocations]]
+offset = 0x8D
+type = "DIR32"
+symbol = "$L65278"
+target = 0x0043A58E
+
+[[units.anm-get-int-var-ptr.relocations]]
+offset = 0x91
+type = "DIR32"
+symbol = "$L65279"
+target = 0x0043A598
+
+[[units.anm-get-int-var-ptr.relocations]]
+offset = 0x95
+type = "DIR32"
+symbol = "$L65280"
+target = 0x0043A5A2
+
+[[units.anm-get-int-var-ptr.relocations]]
+offset = 0x99
+type = "DIR32"
+symbol = "$L65283"
+target = 0x0043A5C0
+
+[[units.anm-get-int-var-ptr.relocations]]
+offset = 0x9D
+type = "DIR32"
+symbol = "$L65283"
+target = 0x0043A5C0
+
+[[units.anm-get-int-var-ptr.relocations]]
+offset = 0xA1
+type = "DIR32"
+symbol = "$L65283"
+target = 0x0043A5C0
+
+[[units.anm-get-int-var-ptr.relocations]]
+offset = 0xA5
+type = "DIR32"
+symbol = "$L65283"
+target = 0x0043A5C0
+
+[[units.anm-get-int-var-ptr.relocations]]
+offset = 0xA9
+type = "DIR32"
+symbol = "$L65281"
+target = 0x0043A5AC
+
+[[units.anm-get-int-var-ptr.relocations]]
+offset = 0xAD
+type = "DIR32"
+symbol = "$L65282"
+target = 0x0043A5B6
+
+# These target-proven VM setup functions pin the TH095 ANM layout and the
+# translation unit's /Ob1 force-inline behavior before the large dispatcher is
+# introduced. Initialize has no relocations. SetSprite's only relocations are
+# the replayed 1.0f and 256.0f constants.
+[units.anm-vm-initialize]
+source = "src/AnmManager.cpp"
+object = "build/matching/AnmManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmVm::Initialize"]
+symbol = "?Initialize@AnmVm@th095@@QAEXXZ"
+target_address = 0x00401C10
+size = 0x118
+relocations = []
+
+[units.anm-set-sprite]
+source = "src/AnmManager.cpp"
+object = "build/matching/AnmManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmLoaded::SetSprite"]
+symbol = "?SetSprite@AnmLoaded@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@H@Z"
+target_address = 0x00439E30
+size = 0x289
+
+[[units.anm-set-sprite.relocations]]
+offset = 0x1DC
+type = "DIR32"
+symbol = "__real@3f800000"
+target = 0x004952BC
+
+[[units.anm-set-sprite.relocations]]
+offset = 0x1F6
+type = "DIR32"
+symbol = "__real@43800000"
+target = 0x00496470
+
+[[units.anm-set-sprite.relocations]]
+offset = 0x20B
+type = "DIR32"
+symbol = "__real@43800000"
+target = 0x00496470
+
+# ExecuteScript owns a 0x427A-byte authored body and three immediately
+# following compiler-emitted switch tables (89 + 6 + 7 DIR32 entries).
+# compare_size covers the complete 0x4412-byte COFF auxiliary extent; only
+# size is credited to authored reconstruction progress.
+[units.anm-execute-script]
+source = "src/AnmManager.cpp"
+object = "build/matching/AnmManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::ExecuteScript"]
+symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z"
+target_address = 0x0043A600
+size = 0x427A
+compare_size = 0x4412
+relocations = [
+  { offset = 0x46, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x63, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0xDD, type = "DIR32", symbol = "$L66403", target = 0x0043E87A },
+  { offset = 0x111, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x139, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1B7, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1EA, type = "REL32", symbol = "?SetSprite@AnmLoaded@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@H@Z", target = 0x00439E30 },
+  { offset = 0x228, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x269, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2CA, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x313, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x357, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x39B, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x3E4, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x42D, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x471, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x4B5, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x54F, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x586, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x645, type = "DIR32", symbol = "__real@bf800000", target = 0x0049541C },
+  { offset = 0x6B8, type = "DIR32", symbol = "__real@bf800000", target = 0x0049541C },
+  { offset = 0x6FF, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x740, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x781, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x7E2, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x823, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x864, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x8C5, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x906, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x9A2, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0xA5C, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0xA8E, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0xAC0, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0xB2E, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0xB60, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0xB92, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0xC14, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0xC88, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+  { offset = 0xCFA, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+  { offset = 0xD6E, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+  { offset = 0xE3F, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+  { offset = 0xFFB, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x1044, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x1123, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1208, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x124C, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x1290, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x130E, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x13D5, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1419, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x145D, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x14DE, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1575, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x15F6, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x16BE, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1702, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1746, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x17C7, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x185F, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x18DF, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1984, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x19C8, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x1A0C, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x1AA8, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1B46, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x1B8A, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x1C29, type = "REL32", symbol = "?InitializePulsingRadialTrail@AnmVm@th095@@QAEXXZ", target = 0x00441710 },
+  { offset = 0x1CCB, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1CF0, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x1D1F, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1D4F, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x1D7A, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x1DAA, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x1DD5, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1E07, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1E43, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x1E68, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x1E9A, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x1EDC, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x1F07, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1F39, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x1F75, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x1F9A, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x1FCC, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x200E, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x2039, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x206B, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x20A8, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x20CD, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x20FF, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2141, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x216C, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x219E, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x21DD, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x2202, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2234, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2276, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x22A1, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x22D3, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x2312, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x2337, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2369, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x238E, type = "REL32", symbol = "__CIfmod", target = 0x004859EA },
+  { offset = 0x23B6, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x23E1, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x2411, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x2450, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2480, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x24BF, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x24EF, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x252E, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x255E, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x259D, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x25CD, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x260D, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x263D, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x267C, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x26AC, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x26EC, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x271C, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x275B, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x278B, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x27CB, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x27FD, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2822, type = "REL32", symbol = "__CIfmod", target = 0x004859EA },
+  { offset = 0x284A, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x2889, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x28AB, type = "DIR32", symbol = "?g_Rng2@th095@@3URng@1@A", target = 0x004BE210 },
+  { offset = 0x28B0, type = "REL32", symbol = "?GetRandomU32@Rng@th095@@QAEIXZ", target = 0x0041B470 },
+  { offset = 0x28F6, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x2918, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x291D, type = "REL32", symbol = "?GetRandomU32@Rng@th095@@QAEIXZ", target = 0x0041B470 },
+  { offset = 0x295F, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
+  { offset = 0x299E, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x29B7, type = "DIR32", symbol = "?g_Rng2@th095@@3URng@1@A", target = 0x004BE210 },
+  { offset = 0x29BC, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
+  { offset = 0x29E8, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2A01, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x2A06, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
+  { offset = 0x2A2E, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x2A59, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2A78, type = "REL32", symbol = "__CIsin", target = 0x00485910 },
+  { offset = 0x2AA0, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x2ACB, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2AEA, type = "REL32", symbol = "__CIcos", target = 0x00485860 },
+  { offset = 0x2B12, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x2B3D, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2B5C, type = "REL32", symbol = "__CItan", target = 0x00485FA0 },
+  { offset = 0x2B84, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x2BAF, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2BCE, type = "REL32", symbol = "__CIacos", target = 0x00486810 },
+  { offset = 0x2BF6, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x2C21, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2C40, type = "REL32", symbol = "__CIatan", target = 0x00486730 },
+  { offset = 0x2C68, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x2C93, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2CB5, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x2CD7, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
+  { offset = 0x2DDE, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x2E10, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x2E5A, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2E8C, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2EDD, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x2F0F, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x2F59, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2F8B, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x2FDC, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x300E, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x3058, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x308A, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x30D9, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x310B, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x3155, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x3187, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x31D6, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x3208, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x3252, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x3284, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x32D3, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x3305, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
+  { offset = 0x334F, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x3381, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
+  { offset = 0x343B, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x3453, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x3469, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x3499, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x34B1, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x34C7, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x34F7, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x350F, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x3525, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x359B, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+  { offset = 0x3698, type = "DIR32", symbol = "$L66404", target = 0x0043E9DE },
+  { offset = 0x36CB, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x36DD, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x36EB, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3700, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x370E, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3726, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x374F, type = "DIR32", symbol = "$L66405", target = 0x0043E9F6 },
+  { offset = 0x38F6, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x3955, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x39B4, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x3A18, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x3A7C, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x3ADB, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x3B3A, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x3B9E, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x3BE0, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x3C1A, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x3C54, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x3D06, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x3D1E, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x3D5A, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x3D72, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x3DEA, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3E00, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3E1A, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x3E30, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3E66, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3E7C, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3E96, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x3EAC, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3F03, type = "DIR32", symbol = "__real@40c90fdb", target = 0x00495418 },
+  { offset = 0x3FB6, type = "DIR32", symbol = "__real@3f000000", target = 0x00495420 },
+  { offset = 0x3FCF, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x40ED, type = "DIR32", symbol = "__real@3f000000", target = 0x00495420 },
+  { offset = 0x4106, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x41DE, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x4265, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+  { offset = 0x426E, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x427A, type = "DIR32", symbol = "$L65330", target = 0x0043A6E1 },
+  { offset = 0x427E, type = "DIR32", symbol = "$L65327", target = 0x0043DA18 },
+  { offset = 0x4282, type = "DIR32", symbol = "$L65330", target = 0x0043A6E1 },
+  { offset = 0x4286, type = "DIR32", symbol = "$L65331", target = 0x0043A6FC },
+  { offset = 0x428A, type = "DIR32", symbol = "$L65333", target = 0x0043A782 },
+  { offset = 0x428E, type = "DIR32", symbol = "$L65340", target = 0x0043AAE4 },
+  { offset = 0x4292, type = "DIR32", symbol = "$L65343", target = 0x0043AB37 },
+  { offset = 0x4296, type = "DIR32", symbol = "$L65406", target = 0x0043C305 },
+  { offset = 0x429A, type = "DIR32", symbol = "$L65407", target = 0x0043C360 },
+  { offset = 0x429E, type = "DIR32", symbol = "$L65418", target = 0x0043C9C7 },
+  { offset = 0x42A2, type = "DIR32", symbol = "$L65419", target = 0x0043CA36 },
+  { offset = 0x42A6, type = "DIR32", symbol = "$L65420", target = 0x0043CAA5 },
+  { offset = 0x42AA, type = "DIR32", symbol = "$L65421", target = 0x0043CB14 },
+  { offset = 0x42AE, type = "DIR32", symbol = "$L65422", target = 0x0043CB83 },
+  { offset = 0x42B2, type = "DIR32", symbol = "$L65423", target = 0x0043CBF3 },
+  { offset = 0x42B6, type = "DIR32", symbol = "$L65424", target = 0x0043CC62 },
+  { offset = 0x42BA, type = "DIR32", symbol = "$L65425", target = 0x0043CCD2 },
+  { offset = 0x42BE, type = "DIR32", symbol = "$L65426", target = 0x0043CD41 },
+  { offset = 0x42C2, type = "DIR32", symbol = "$L65427", target = 0x0043CDB1 },
+  { offset = 0x42C6, type = "DIR32", symbol = "$L65408", target = 0x0043C3BB },
+  { offset = 0x42CA, type = "DIR32", symbol = "$L65409", target = 0x0043C44E },
+  { offset = 0x42CE, type = "DIR32", symbol = "$L65410", target = 0x0043C4ED },
+  { offset = 0x42D2, type = "DIR32", symbol = "$L65411", target = 0x0043C580 },
+  { offset = 0x42D6, type = "DIR32", symbol = "$L65412", target = 0x0043C61F },
+  { offset = 0x42DA, type = "DIR32", symbol = "$L65413", target = 0x0043C6B3 },
+  { offset = 0x42DE, type = "DIR32", symbol = "$L65414", target = 0x0043C752 },
+  { offset = 0x42E2, type = "DIR32", symbol = "$L65415", target = 0x0043C7E8 },
+  { offset = 0x42E6, type = "DIR32", symbol = "$L65416", target = 0x0043C887 },
+  { offset = 0x42EA, type = "DIR32", symbol = "$L65417", target = 0x0043C91D },
+  { offset = 0x42EE, type = "DIR32", symbol = "$L65441", target = 0x0043D3C4 },
+  { offset = 0x42F2, type = "DIR32", symbol = "$L65445", target = 0x0043D440 },
+  { offset = 0x42F6, type = "DIR32", symbol = "$L65448", target = 0x0043D4C3 },
+  { offset = 0x42FA, type = "DIR32", symbol = "$L65451", target = 0x0043D53F },
+  { offset = 0x42FE, type = "DIR32", symbol = "$L65454", target = 0x0043D5C2 },
+  { offset = 0x4302, type = "DIR32", symbol = "$L65457", target = 0x0043D63E },
+  { offset = 0x4306, type = "DIR32", symbol = "$L65460", target = 0x0043D6BF },
+  { offset = 0x430A, type = "DIR32", symbol = "$L65463", target = 0x0043D73B },
+  { offset = 0x430E, type = "DIR32", symbol = "$L65466", target = 0x0043D7BC },
+  { offset = 0x4312, type = "DIR32", symbol = "$L65469", target = 0x0043D838 },
+  { offset = 0x4316, type = "DIR32", symbol = "$L65472", target = 0x0043D8B9 },
+  { offset = 0x431A, type = "DIR32", symbol = "$L65475", target = 0x0043D935 },
+  { offset = 0x431E, type = "DIR32", symbol = "$L65428", target = 0x0043CE5B },
+  { offset = 0x4322, type = "DIR32", symbol = "$L65429", target = 0x0043CF70 },
+  { offset = 0x4326, type = "DIR32", symbol = "$L65430", target = 0x0043D03F },
+  { offset = 0x432A, type = "DIR32", symbol = "$L65431", target = 0x0043D0B1 },
+  { offset = 0x432E, type = "DIR32", symbol = "$L65432", target = 0x0043D123 },
+  { offset = 0x4332, type = "DIR32", symbol = "$L65433", target = 0x0043D195 },
+  { offset = 0x4336, type = "DIR32", symbol = "$L65434", target = 0x0043D207 },
+  { offset = 0x433A, type = "DIR32", symbol = "$L65435", target = 0x0043D279 },
+  { offset = 0x433E, type = "DIR32", symbol = "$L65354", target = 0x0043B02A },
+  { offset = 0x4342, type = "DIR32", symbol = "$L65349", target = 0x0043ACE5 },
+  { offset = 0x4346, type = "DIR32", symbol = "$L65335", target = 0x0043A80E },
+  { offset = 0x434A, type = "DIR32", symbol = "$L65336", target = 0x0043A8B0 },
+  { offset = 0x434E, type = "DIR32", symbol = "$L65337", target = 0x0043A8F9 },
+  { offset = 0x4352, type = "DIR32", symbol = "$L65350", target = 0x0043ADC8 },
+  { offset = 0x4356, type = "DIR32", symbol = "$L65351", target = 0x0043AEAB },
+  { offset = 0x435A, type = "DIR32", symbol = "$L65352", target = 0x0043AF32 },
+  { offset = 0x435E, type = "DIR32", symbol = "$L65388", target = 0x0043B6D4 },
+  { offset = 0x4362, type = "DIR32", symbol = "$L65391", target = 0x0043B8BF },
+  { offset = 0x4366, type = "DIR32", symbol = "$L65392", target = 0x0043BA8C },
+  { offset = 0x436A, type = "DIR32", symbol = "$L65395", target = 0x0043BE8E },
+  { offset = 0x436E, type = "DIR32", symbol = "$L65396", target = 0x0043C056 },
+  { offset = 0x4372, type = "DIR32", symbol = "$L65347", target = 0x0043ABFF },
+  { offset = 0x4376, type = "DIR32", symbol = "$L65348", target = 0x0043AC72 },
+  { offset = 0x437A, type = "DIR32", symbol = "$L65366", target = 0x0043B31E },
+  { offset = 0x437E, type = "DIR32", symbol = "$L65327", target = 0x0043DA18 },
+  { offset = 0x4382, type = "DIR32", symbol = "$L65383", target = 0x0043B583 },
+  { offset = 0x4386, type = "DIR32", symbol = "$L65353", target = 0x0043AFFC },
+  { offset = 0x438A, type = "DIR32", symbol = "$L65397", target = 0x0043C1D4 },
+  { offset = 0x438E, type = "DIR32", symbol = "$L65437", target = 0x0043D31A },
+  { offset = 0x4392, type = "DIR32", symbol = "$L65365", target = 0x0043B303 },
+  { offset = 0x4396, type = "DIR32", symbol = "$L65384", target = 0x0043B5E1 },
+  { offset = 0x439A, type = "DIR32", symbol = "$L65385", target = 0x0043B62A },
+  { offset = 0x439E, type = "DIR32", symbol = "$L65382", target = 0x0043B558 },
+  { offset = 0x43A2, type = "DIR32", symbol = "$L65386", target = 0x0043B673 },
+  { offset = 0x43A6, type = "DIR32", symbol = "$L65387", target = 0x0043B6A3 },
+  { offset = 0x43AA, type = "DIR32", symbol = "$L66057", target = 0x0043B1E7 },
+  { offset = 0x43AE, type = "DIR32", symbol = "$L65339", target = 0x0043AA13 },
+  { offset = 0x43B2, type = "DIR32", symbol = "$L65338", target = 0x0043A9CA },
+  { offset = 0x43B6, type = "DIR32", symbol = "$L65393", target = 0x0043BBA4 },
+  { offset = 0x43BA, type = "DIR32", symbol = "$L65394", target = 0x0043BD75 },
+  { offset = 0x43BE, type = "DIR32", symbol = "$L65438", target = 0x0043D32F },
+  { offset = 0x43C2, type = "DIR32", symbol = "$L65381", target = 0x0043B516 },
+  { offset = 0x43C6, type = "DIR32", symbol = "$L65439", target = 0x0043D361 },
+  { offset = 0x43CA, type = "DIR32", symbol = "$L65403", target = 0x0043C232 },
+  { offset = 0x43CE, type = "DIR32", symbol = "$L65404", target = 0x0043C28F },
+  { offset = 0x43D2, type = "DIR32", symbol = "$L65436", target = 0x0043D2E8 },
+  { offset = 0x43D6, type = "DIR32", symbol = "$L65332", target = 0x0043A71F },
+  { offset = 0x43DA, type = "DIR32", symbol = "$L65440", target = 0x0043D392 },
+  { offset = 0x43DE, type = "DIR32", symbol = "$L65498", target = 0x0043DC9C },
+  { offset = 0x43E2, type = "DIR32", symbol = "$L65499", target = 0x0043DCAA },
+  { offset = 0x43E6, type = "DIR32", symbol = "$L65500", target = 0x0043DCB8 },
+  { offset = 0x43EA, type = "DIR32", symbol = "$L65501", target = 0x0043DCC9 },
+  { offset = 0x43EE, type = "DIR32", symbol = "$L65502", target = 0x0043DCE9 },
+  { offset = 0x43F2, type = "DIR32", symbol = "$L65503", target = 0x0043DD0C },
+  { offset = 0x43F6, type = "DIR32", symbol = "$L65508", target = 0x0043DD53 },
+  { offset = 0x43FA, type = "DIR32", symbol = "$L65511", target = 0x0043DEA7 },
+  { offset = 0x43FE, type = "DIR32", symbol = "$L65515", target = 0x0043DFC9 },
+  { offset = 0x4402, type = "DIR32", symbol = "$L65523", target = 0x0043E1B3 },
+  { offset = 0x4406, type = "DIR32", symbol = "$L65524", target = 0x0043E27E },
+  { offset = 0x440A, type = "DIR32", symbol = "$L65517", target = 0x0043E02D },
+  { offset = 0x440E, type = "DIR32", symbol = "$L65521", target = 0x0043E14F },
+]

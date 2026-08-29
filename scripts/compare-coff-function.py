@@ -240,10 +240,18 @@ def compare_unit(name: str) -> dict[str, object]:
     object_path.relative_to(ROOT)
     code, actual = object_function(object_path, str(unit["symbol"]))
     size = int(unit["size"])
+    compare_size = int(unit.get("compare_size", size))
+    if compare_size < size:
+        raise ValueError(
+            f"comparison extent {compare_size:#x} is smaller than coverage size {size:#x}"
+        )
     address = int(unit["target_address"])
-    if len(code) != size:
-        raise ValueError(f"object function size {len(code):#x} differs from manifest {size:#x}")
-    target = pe_bytes_at(verified_target(), address, size)
+    if len(code) != compare_size:
+        raise ValueError(
+            f"object function size {len(code):#x} differs from manifest "
+            f"comparison extent {compare_size:#x}"
+        )
+    target = pe_bytes_at(verified_target(), address, compare_size)
 
     expected = list(unit.get("relocations", []))
     normalized_expected = []
@@ -294,13 +302,16 @@ def compare_unit(name: str) -> dict[str, object]:
         for index, (left, right) in enumerate(zip(code, target))
         if left != right
     ]
+    coverage_differences = sum(int(row["offset"], 0) < size for row in differences)
     return {
         "unit": name,
         "result": "exact" if not differences else "mismatch",
         "symbol": unit["symbol"],
         "target_address": f"0x{address:08X}",
         "size": size,
-        "matched_bytes": size - len(differences),
+        "matched_bytes": size - coverage_differences,
+        "compared_size": compare_size,
+        "matched_compared_bytes": compare_size - len(differences),
         "object": str(object_path.relative_to(ROOT)),
         "relocations": replay,
         "first_differences": differences[:32],
@@ -334,7 +345,14 @@ def main() -> int:
     elif report["result"] == "size-mismatch":
         print(f"{args.symbol}: size mismatch ({report['object_size']}/{report['target_size']} bytes)")
     elif report["result"] in {"exact", "mismatch"} and "unit" in report:
-        print(f"{report['unit']}: {report['result']} ({report['matched_bytes']}/{report['size']} bytes)")
+        if report.get("compared_size") == report["size"]:
+            detail = f"{report['matched_bytes']}/{report['size']} bytes"
+        else:
+            detail = (
+                f"{report['matched_bytes']}/{report['size']} coverage bytes; "
+                f"{report['matched_compared_bytes']}/{report['compared_size']} compared bytes"
+            )
+        print(f"{report['unit']}: {report['result']} ({detail})")
     else:
         print(
             f"{args.symbol}: {report['result']} "

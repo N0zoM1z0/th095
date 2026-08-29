@@ -1,2 +1,4 @@
 name,address,type
+th095::ZUN_PI,0x00495398,float
+th095::TWO_PI,0x00495418,float
 th095::ONE_OVER_SIXTY,0x004959B0,double

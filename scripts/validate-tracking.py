@@ -171,6 +171,11 @@ def validate_match_manifest(
             raise ValueError(f"match-units.toml: unit {name!r} target is not inventoried")
         if int(unit["size"]) != int(functions[target_address]["size"], 0):
             raise ValueError(f"match-units.toml: unit {name!r} size differs from inventory")
+        compare_size = int(unit.get("compare_size", unit["size"]))
+        if compare_size < int(unit["size"]):
+            raise ValueError(
+                f"match-units.toml: unit {name!r} comparison extent is smaller than coverage"
+            )
         if not isinstance(unit["symbol"], str) or not unit["symbol"]:
             raise ValueError(f"match-units.toml: unit {name!r} lacks a COFF symbol")
         relocations = unit["relocations"]
@@ -191,7 +196,7 @@ def validate_match_manifest(
                 raise ValueError(
                     f"match-units.toml: unit {name!r} relocation {index} is incomplete"
                 ) from exc
-            if offset in offsets or not 0 <= offset <= int(unit["size"]) - 4:
+            if offset in offsets or not 0 <= offset <= compare_size - 4:
                 raise ValueError(
                     f"match-units.toml: unit {name!r} relocation offset is invalid"
                 )

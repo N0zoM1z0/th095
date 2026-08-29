@@ -6,3 +6,11 @@ th095::GameWindow::InitD3DInterface
 th095::GameWindow::CreateGameWindow
 th095::GameWindow::WindowProc
 th095::GameWindow::ActivateWindow
+th095::AnmVm::Initialize
+th095::AnmLoaded::SetSprite
+th095::AnmLoaded::SetAndExecuteScript
+th095::AnmVm::GetFloatVar
+th095::AnmVm::GetIntVar
+th095::AnmVm::GetFloatVarPtr
+th095::AnmVm::GetIntVarPtr
+th095::AnmManager::ExecuteScript

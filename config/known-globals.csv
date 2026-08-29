@@ -1,5 +1,8 @@
 address,name,module,confidence,evidence
+0x004BDED8,th095::g_AnmGameSpeed,AnmManager,exact,Nine canonical ExecuteScript DIR32 relocations
 0x004BE21E,th095::g_PressedButtons,Input,high,Present tests bit 0x800 before screenshot path
+0x004BE208,th095::g_Rng,Rng,exact,Exact AnmVm GetFloatVar DIR32 relocations
+0x004BE210,th095::g_Rng2,Rng,exact,Exact AnmVm GetFloatVar DIR32 relocations and VM flag 30 selection
 0x004BE3C8,th095::g_Chain,Chain,exact,Exact Render DIR32 relocations and calc/draw calls
 0x004C2420,th095::g_GameErrorContext,Main,high,WinMain logging and flush lifecycle
 0x004C45E8,th095::g_GameWindow,Main,exact,WinMain base and exact Render this object

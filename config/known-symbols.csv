@@ -1,4 +1,5 @@
 address,name,module,confidence,evidence
+0x00401C10,th095::AnmVm::Initialize,AnmVm,exact,Canonical anm-vm-initialize VC7.1 comparison
 0x00408E70,th095::EclManager::RunEcl,EclManager,high,TH095 27 KB opcode dispatcher plus TH08 exact-source analogue
 0x00420240,WinMain,Main,high,CRT call and complete TH095 application lifecycle
 0x00420770,th095::GameWindow::Render,Main,exact,Canonical main-render VC7.1 relocation replay
@@ -22,7 +23,13 @@ address,name,module,confidence,evidence
 0x00437810,th095::SoundPlayer::JoinThread,SoundPlayer,high,Waits for and closes sound worker handles
 0x00437D60,th095::SoundPlayer::Release,SoundPlayer,high,Releases DirectSound BGM and heap resources
 0x00439200,th095::SoundPlayer::ProcessQueues,SoundPlayer,high,Command state machine and Sound Stage strings
-0x0043A600,th095::AnmManager::ExecuteScript,AnmManager,high,TH095 17 KB ANM opcode dispatcher plus TH08 exact-source analogue
+0x00439E30,th095::AnmLoaded::SetSprite,AnmLoaded,exact,Canonical anm-set-sprite VC7.1 comparison
+0x0043A0C0,th095::AnmLoaded::SetAndExecuteScript,AnmLoaded,high,Equal-size source comparison with five stack displacement mismatches
+0x0043A1B0,th095::AnmVm::GetFloatVar,AnmVm,exact,Canonical full-symbol comparison including switch table
+0x0043A380,th095::AnmVm::GetIntVar,AnmVm,exact,Canonical full-symbol comparison including switch table
+0x0043A470,th095::AnmVm::GetFloatVarPtr,AnmVm,exact,Canonical full-symbol comparison including switch table
+0x0043A540,th095::AnmVm::GetIntVarPtr,AnmVm,exact,Canonical full-symbol comparison including switch table
+0x0043A600,th095::AnmManager::ExecuteScript,AnmManager,exact,Canonical 0x427A authored body and 0x4412 COFF extent with 333 replayed relocations
 0x0043F2B0,th095::AnmManager::ClearVertexBuffer,AnmManager,high,Exact Render relocation and target counter reset
 0x0043F2F0,th095::AnmManager::FlushVertexBuffer,AnmManager,high,Exact Render relocations and target D3D draw flow
 0x00441DC0,th095::AnmManager::AnmManager,AnmManager,high,WinMain 0x38314c allocation and constructor call

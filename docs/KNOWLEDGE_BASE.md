@@ -23,7 +23,8 @@ next action belongs in `RE_HANDOFF.md`.
 | ABI-002 | observed | Rich-header records include build `3077`. | Decoded verified target Rich header |
 | ABI-003 | compiler-observed | The pinned tools report compiler `13.10.3077` and linker `7.10.3077`. | `archaic-msvc/msvc710` commit and binary hashes in `config/tools.lock.toml` |
 | ABI-004 | inferred | Visual C++ .NET 2003 x86 is the original compiler family. | ABI-001 through ABI-003 |
-| ABI-005 | unknown | Optimization, inlining, runtime, EH/RTTI, and floating-point flags are not classified. | Requires bounded compiler experiments |
+| ABI-005 | compiler-observed | The ANM translation unit uses `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`; `/Gr` makes `AnmManager::ExecuteScript` fastcall and `/Ob1` reproduces its inline helpers. | Canonical ANM units under pinned VC7.1 build 3077 |
+| ABI-006 | compiler-observed | The stock VC7.1 build 3077 frontend does not implement TH08's patched `#pragma var_order`; natural local declaration order and identifier allocation are codegen-visible in the 0x400-byte ExecuteScript frame. | Isolated VC7.1 local-layout probes and exact ExecuteScript unit |
 
 ## Analysis control plane
 
@@ -43,7 +44,7 @@ next action belongs in `RE_HANDOFF.md`.
 | ARCH-001 | target-observed | CRT entry `0x00486A9D` calls `WinMain` at `0x00420240`; the latter owns configuration, window/D3D, sound-worker, ANM allocation, message/frame loop, restart, and teardown. | Target call/control flow and system API xrefs |
 | ARCH-002 | corroborated | The TH095 `GameWindow`, `Supervisor`, `SoundPlayer`, `AnmManager`, and ECL layers share source ancestry with TH08. | Matching responsibilities, call shapes, strings, and multiple equal function extents; TH08 exact source |
 | ARCH-003 | target-observed | `0x00408E70` is a 27,091-byte ECL opcode dispatcher with 50 internal callees. | Target dispatcher structure and architecture metrics |
-| ARCH-004 | target-observed | `0x0043A600` is a 17,018-byte ANM opcode dispatcher called by 22 target functions. | Target ANM instruction walk/VM update tail and architecture metrics |
+| ARCH-004 | exact | `0x0043A600` is the 17,018-byte `AnmManager::ExecuteScript` ANM opcode dispatcher called by 22 target functions. Its COFF auxiliary extent additionally owns 408 bytes of switch tables. | Canonical `anm-execute-script` unit and architecture metrics |
 | ARCH-005 | target-observed | TH095 uses a dedicated SoundPlayer worker thread; `0x00437790` creates it and `0x004377F0`/`0x00437810` request and join shutdown. | CreateThread state and WaitForSingleObject/CloseHandle control flow |
 | ARCH-006 | inferred | `0x00430AB0`, `0x00426BF0`, and `0x00447D00` are target-specific gameplay/UI/resource hubs and must not inherit TH08 class names without further proof. | TH095-only state machines, camera/photo/replay evidence, and unresolved owning types |
 
@@ -57,12 +58,24 @@ next action belongs in `RE_HANDOFF.md`.
 | MAIN-004 | compiler-observed | `GameWindow::Render` compiles to the target with `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od`. | Canonical `main-render` VC7.1 unit |
 | MATCH-001 | exact | `GameWindow::Render` at `0x00420770` reproduces all 420 bytes with 33 explicitly replayed COFF relocations. | `python3 scripts/build.py --object-name Main.obj`; `python3 scripts/compare-coff-function.py --unit main-render --json` |
 
+## Reconstructed ANM VM
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| ANM-001 | exact | `AnmManager::ExecuteScript` at `0x0043A600` reproduces its complete 0x427A-byte authored body. The canonical comparison extends to 0x4412 and reproduces all 333 relocation fields and all bytes in the three compiler-owned switch tables. | `anm-execute-script`; pinned VC7.1 build 3077 |
+| ANM-002 | target-observed | The main opcode dispatch is dense across 89 entries; the update tail has separate six-entry easing and seven-entry interpolation-type switches. | Target table extents `0x0043E87A..0x0043EA11`; exact DIR32 replay |
+| ANM-003 | exact | `AnmVm` is 0x2CC bytes for the reconstructed lane; `Initialize`, the four operand resolvers, and `AnmLoaded::SetSprite` are independently exact. | Seven canonical ANM units and compile-time layout assertions |
+| ANM-004 | compiler-observed | The exact source requires a 0x400-byte frame, the VM home at `[ebp-0x17C]`, distinct interpolation and mesh-loop indices, and declaration-only mesh locals followed by target-order initialization. | Zero-difference VC7.1 instruction/relocation comparison |
+| ANM-005 | exact | `Rng::GetRandomU32InRange` must inline as `range != 0 ? GetRandomU32() % range : 0`; the mesh-closing path copies two opening vertices but writes both final V-coordinate updates through the first closing pointer. | Exact target bytes and compiler oracle |
+| MATCH-002 | exact | `AnmManager::ExecuteScript` contributes 17,018 authored exact bytes; 17,426 total bytes are compared so the 408 compiler-owned table bytes cannot be silently omitted or credited as authored code. | Optional `compare_size` manifest contract and canonical replay |
+
 ## Open architecture questions
 
 - The original object partition outside the proven `Main.cpp` Render unit is
   not established.
-- ANM and ECL opcode/type reuse from TH08 remains corroboration until each
-  TH095 case and VM offset is checked locally.
+- ECL opcode/type reuse from TH08 remains corroboration until each TH095 case
+  and VM offset is checked locally. The ANM lane has completed that target
+  validation.
 - Source-level class names for the large TH095 photography, gameplay, and
   asynchronous resource hubs remain unknown.
 

@@ -48,6 +48,7 @@ def parse_args() -> argparse.Namespace:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--check", action="store_true")
     group.add_argument("--object-name")
+    group.add_argument("--unit")
     return parser.parse_args()
 
 
@@ -59,12 +60,16 @@ def main() -> int:
         if args.check:
             print(f"match-unit graph OK: {len(units)} configured units")
             return 0
-        wanted = Path(args.object_name).name
-        matches = [
-            (name, unit)
-            for name, unit in units.items()
-            if Path(str(unit["object"])).name == wanted
-        ]
+        if args.unit is not None:
+            matches = [(args.unit, units[args.unit])] if args.unit in units else []
+            wanted = args.unit
+        else:
+            wanted = Path(args.object_name).name
+            matches = [
+                (name, unit)
+                for name, unit in units.items()
+                if Path(str(unit["object"])).name == wanted
+            ]
         if len(matches) != 1:
             raise ValueError(f"unknown or ambiguous match object: {wanted}")
         name, unit = matches[0]

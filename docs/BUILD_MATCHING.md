@@ -45,6 +45,11 @@ differences. If a compiler-generated jump table, handler, or adjacent tail is
 part of the function's accepted unit, encode that extent explicitly rather
 than truncating comparison at the convenient symbol size.
 
+`size` is the authored coverage credited to the function inventory.
+`compare_size` may extend beyond it when the COFF auxiliary extent owns
+compiler-generated tables that must also replay exactly. The comparator never
+credits the extra bytes as authored coverage.
+
 ## Comparison tools
 
 `reccmp 0.1.6` supplies mapped project comparison and `objdiff 3.8.0` supplies

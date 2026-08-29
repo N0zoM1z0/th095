@@ -12,3 +12,8 @@ Current translation units:
 - `Main.hpp` records the offsets needed by that family. Its assertions are
   target/VC7.1 ABI evidence, not a claim that the rest of `Supervisor` or
   `AnmManager` has been fully typed.
+- `AnmManager.cpp` and `AnmManager.hpp` reconstruct the shared animation VM.
+  `AnmManager::ExecuteScript`, `AnmVm::Initialize`, all four operand
+  resolvers, and `AnmLoaded::SetSprite` have canonical exact units. The large
+  dispatcher credits 17,018 authored bytes while its comparison extends over
+  408 additional compiler-generated switch-table bytes.

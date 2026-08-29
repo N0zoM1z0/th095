@@ -1,4 +1,5 @@
 name,address,type
+th095::AnmVm::Initialize,0x00401C10,function
 th095::EclManager::RunEcl,0x00408E70,function
 WinMain,0x00420240,function
 th095::GameWindow::Render,0x00420770,function
@@ -22,6 +23,12 @@ th095::SoundPlayer::RequestThreadStop,0x004377F0,function
 th095::SoundPlayer::JoinThread,0x00437810,function
 th095::SoundPlayer::Release,0x00437D60,function
 th095::SoundPlayer::ProcessQueues,0x00439200,function
+th095::AnmLoaded::SetSprite,0x00439E30,function
+th095::AnmLoaded::SetAndExecuteScript,0x0043A0C0,function
+th095::AnmVm::GetFloatVar,0x0043A1B0,function
+th095::AnmVm::GetIntVar,0x0043A380,function
+th095::AnmVm::GetFloatVarPtr,0x0043A470,function
+th095::AnmVm::GetIntVarPtr,0x0043A540,function
 th095::AnmManager::ExecuteScript,0x0043A600,function
 th095::AnmManager::ClearVertexBuffer,0x0043F2B0,function
 th095::AnmManager::FlushVertexBuffer,0x0043F2F0,function
