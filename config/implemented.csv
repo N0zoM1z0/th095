@@ -125,3 +125,7 @@ th095::SceneSelectControllerView::UpdateSelectedSceneDetails
 th095::SceneSelectControllerView::SetDetailDigitSprite
 th095::SceneSelectControllerView::ShowDetailDigit
 th095::SceneSelectControllerView::HideDetailDigit
+th095::ReplayBrowserExitSignal::Request
+th095::ReplayBrowserView::Update
+th095::LoadReplayBrowserEntries
+th095::ReplayBrowserView::LoadReplaySlot

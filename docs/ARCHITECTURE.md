@@ -121,11 +121,15 @@ gameplay/resource clusters. Five exact save/unlock helpers now prove that
 traditional stage loop. The adjacent 716-byte preview/status updater at
 `0x0044BBD0` is source-present with its 78-byte bounded-queue dependency
 exact. Its staged 1,989-byte preview-text builder at `0x0044BEA0` and 128-byte
-rolling-key text decoder at `0x0044D020` are now exact. The next adjacent
+rolling-key text decoder at `0x0044D020` are now exact. The adjacent
 2,278-byte scene-detail updater at `0x0044C670` and its three VM helpers are
-also exact. The next dependency-first lane is the 2,054-byte scene-select
-state updater at `0x0044DCA0` (twelve internal callees), followed by the main
-hub.
+also exact. Target evidence now identifies `0x0044DCA0` as the TH095-specific
+4-by-20 replay browser rather than a scene-select state updater. Its complete
+2,054-byte topology is source-present with all 77 relocations resolved; the
+306-byte critical-section slot loader and 21-byte exit setter are exact. The
+next dependency-first lane is the adjacent 10,103-byte UI state machine at
+`0x0044E4B0`, which shares the cursor and ANM-handle layout and has 122 direct
+ANM-manager references.
 
 ## Shared engine versus TH095 gameplay
 

@@ -227,7 +227,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x0041BA30,71,0x0041BA76,FUN_0041ba30,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0041BA80,83,0x0041BAD2,FUN_0041ba80,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0041BAE0,19,0x0041BAF2,FUN_0041bae0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0041BB00,21,0x0041BB14,FUN_0041bb00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x0041BB00,21,0x0041BB14,FUN_0041bb00,th095::ReplayBrowserExitSignal::Request,ReplayBrowser,matching,100.00,__thiscall,void ReplayBrowserExitSignal::Request(),false,src/ReplayBrowser.cpp,Canonical VC7.1 comparison: 21/21 bytes and no relocations,authored,Exact replay-browser exit signal setter
 0x0041BB20,124,0x0041BB9B,FUN_0041bb20,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0041BBA0,87,0x0041BBF6,FUN_0041bba0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0041BC00,278,0x0041BD15,FUN_0041bc00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -631,11 +631,11 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x0044CFE0,61,0x0044D01C,FUN_0044cfe0,th095::SceneSelectControllerView::HideDetailDigit,SceneSelect,matching,100.00,__thiscall,void SceneSelectControllerView::HideDetailDigit(i32 vmIndex),false,src/SceneDetail.cpp,Canonical relocation-aware VC7.1 comparison: 61/61 bytes with two explicit relocations,authored,Exact scene-detail digit hiding helper
 0x0044D020,128,0x0044D09F,FUN_0044d020,th095::SceneSelectControllerView::ResolveSceneText,SceneSelect,matching,100.00,__thiscall,char *SceneSelectControllerView::ResolveSceneText(i32 textId; i32 column; i32 argument1; i32 argument2),false,src/SceneSelectController.cpp,Canonical relocation-aware VC7.1 comparison: 128/128 bytes with two explicit relocations,authored,Exact rolling-key decoder for one 64-byte scene-preview text column
 0x0044D0A0,3070,0x0044DC9D,FUN_0044d0a0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0044DCA0,2054,0x0044E4A5,FUN_0044dca0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x0044DCA0,2054,0x0044E4A5,FUN_0044dca0,th095::ReplayBrowserView::Update,ReplayBrowser,reconstructed,0.00,__thiscall,ChainCallbackResult ReplayBrowserView::Update(),false,src/ReplayBrowser.cpp,Pinned VC7.1 probe has the exact 2054-byte control-flow topology and resolves all 77 relocations; 1683/1746 comparable bytes match,authored,Complete TH095 4x20 replay browser state machine; 63 stack-home bytes remain non-exact
 0x0044E4B0,10103,0x00450C26,FUN_0044e4b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00450C30,403,0x00450DC2,FUN_00450c30,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00450C30,403,0x00450DC2,FUN_00450c30,th095::LoadReplayBrowserEntries,ReplayBrowser,reconstructed,0.00,__fastcall,void LoadReplayBrowserEntries(void *unused),false,src/ReplayBrowser.cpp,Pinned VC7.1 semantic probe is 395 bytes versus the 403-byte target,authored,Complete asynchronous scan of twenty numbered and up to sixty user replay files
 0x00450DD0,78,0x00450E1D,FUN_00450dd0,th095::SceneValueQueue::Push,SceneSelect,matching,100.00,__thiscall,i32 SceneValueQueue::Push(i32 value),false,src/SceneSelectController.cpp,Canonical relocation-aware VC7.1 comparison: 78/78 bytes and no relocations,authored,Exact bounded sixteen-entry integer queue push
-0x00450E20,306,0x00450F51,FUN_00450e20,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00450E20,306,0x00450F51,FUN_00450e20,th095::ReplayBrowserView::LoadReplaySlot,ReplayBrowser,matching,100.00,__thiscall,ZunResult ReplayBrowserView::LoadReplaySlot(i32 slot; char *path),false,src/ReplayBrowser.cpp,Canonical relocation-aware VC7.1 comparison: 306/306 bytes with nineteen explicit relocations,authored,Exact critical-section protected replay replacement and loading helper
 0x00450F60,91,0x00450FBA,FUN_00450f60,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00450FC0,2872,0x00451AF7,FUN_00450fc0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00451B00,141,0x00451B8C,FUN_00451b00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,

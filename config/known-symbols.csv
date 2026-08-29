@@ -37,3 +37,7 @@ address,name,module,confidence,evidence
 0x00441DA0,th095::Float3::FromAngleMagnitude,ZunMath,exact,Canonical relocation-free fsincos vector helper
 0x00441DC0,th095::AnmManager::AnmManager,AnmManager,exact,Canonical anm-manager-constructor VC7.1 comparison with 88 relocations
 0x004421B0,th095::AnmManager::~AnmManager,AnmManager,exact,Canonical anm-manager-destructor VC7.1 comparison with 8 relocations
+0x0041BB00,th095::ReplayBrowserExitSignal::Request,ReplayBrowser,exact,Canonical replay-browser-exit-signal VC7.1 comparison
+0x0044DCA0,th095::ReplayBrowserView::Update,ReplayBrowser,high,Target-sized source probe with all 77 relocations resolved and only stack-home residuals
+0x00450C30,th095::LoadReplayBrowserEntries,ReplayBrowser,high,Complete built-in and user replay enumeration callback
+0x00450E20,th095::ReplayBrowserView::LoadReplaySlot,ReplayBrowser,exact,Canonical replay-browser-load-slot VC7.1 comparison with 19 relocations

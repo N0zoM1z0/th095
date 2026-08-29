@@ -78,6 +78,10 @@ struct SceneSupervisorView
     {
         LeaveCriticalSection(&this->criticalSections[id]);
     }
+
+    ZunResult StartReplayScan(void (__fastcall *callback)(void *),
+                              void *argument);
+    void StopReplayScan();
 };
 
 struct SceneAnmVmId
@@ -112,6 +116,11 @@ struct SceneAnmLoadedView
 struct SceneAnmVmIdArray
 {
     SceneAnmVmId values[165];
+
+    SceneAnmVmId &operator[](i32 index)
+    {
+        return this->values[index];
+    }
 
     void SetInterrupt(i32 index, i32 interrupt)
     {

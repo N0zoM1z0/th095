@@ -126,3 +126,7 @@ th095::SceneSelectControllerView::UpdateSelectedSceneDetails,0x0044C670,function
 th095::SceneSelectControllerView::SetDetailDigitSprite,0x0044CF60,function
 th095::SceneSelectControllerView::ShowDetailDigit,0x0044CFA0,function
 th095::SceneSelectControllerView::HideDetailDigit,0x0044CFE0,function
+th095::ReplayBrowserExitSignal::Request,0x0041BB00,function
+th095::ReplayBrowserView::Update,0x0044DCA0,function
+th095::LoadReplayBrowserEntries,0x00450C30,function
+th095::ReplayBrowserView::LoadReplaySlot,0x00450E20,function
