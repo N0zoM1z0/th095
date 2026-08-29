@@ -5654,3 +5654,58 @@ relocations = [
   { offset = 0x1E, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x23, type = "REL32", symbol = "?DrawVertices@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@PAUAnmVertex@2@H@Z", target = 0x00441480 },
 ]
+
+[units.photo-distance-2d]
+source = "src/PhotoCamera.cpp"
+object = "build/matching/PhotoCamera.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoDistance2D"]
+symbol = "?PhotoDistance2D@th095@@YIMPBUFloat3@1@0@Z"
+target_address = 0x00434220
+size = 0x4D
+relocations = [
+  { offset = 0x42, type = "REL32", symbol = "__CIsqrt", target = 0x004857A0 },
+]
+
+[units.photo-angle-to-point]
+source = "src/PhotoCamera.cpp"
+object = "build/matching/PhotoCamera.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameStateView::AngleToPoint"]
+symbol = "?AngleToPoint@PhotoGameStateView@th095@@QAEMPBUFloat3@2@@Z"
+target_address = 0x00430370
+size = 0x6C
+relocations = [
+  { offset = 0x2E, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x40, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x52, type = "DIR32", symbol = "__real@3fc90fdb", target = 0x00495504 },
+  { offset = 0x5F, type = "REL32", symbol = "__CIatan2", target = 0x004859CA },
+]
+
+[units.photo-begin-capture]
+source = "src/PhotoCamera.cpp"
+object = "build/matching/PhotoCamera.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCameraState::BeginCapture"]
+symbol = "?BeginCapture@PhotoCameraState@th095@@QAEXXZ"
+target_address = 0x00432730
+size = 0x189
+relocations = [
+  { offset = 0x67, type = "DIR32", symbol = "?g_PhotoStageState@th095@@3PAUPhotoStageStateView@1@A", target = 0x004C4E6C },
+  { offset = 0x72, type = "REL32", symbol = "?CreateVm@PhotoAnmLoadedView@th095@@QAE?AUPhotoAnmVmId@2@HH@Z", target = 0x00444EF0 },
+  { offset = 0x88, type = "DIR32", symbol = "?g_PhotoStageState@th095@@3PAUPhotoStageStateView@1@A", target = 0x004C4E6C },
+  { offset = 0x93, type = "REL32", symbol = "?CreateVm@PhotoAnmLoadedView@th095@@QAE?AUPhotoAnmVmId@2@HH@Z", target = 0x00444EF0 },
+  { offset = 0xA8, type = "DIR32", symbol = "?g_PhotoStageState@th095@@3PAUPhotoStageStateView@1@A", target = 0x004C4E6C },
+  { offset = 0xB3, type = "REL32", symbol = "?CreateVm@PhotoAnmLoadedView@th095@@QAE?AUPhotoAnmVmId@2@HH@Z", target = 0x00444EF0 },
+  { offset = 0xC9, type = "DIR32", symbol = "?g_PhotoStageState@th095@@3PAUPhotoStageStateView@1@A", target = 0x004C4E6C },
+  { offset = 0xD4, type = "REL32", symbol = "?CreateVm@PhotoAnmLoadedView@th095@@QAE?AUPhotoAnmVmId@2@HH@Z", target = 0x00444EF0 },
+  { offset = 0xEA, type = "DIR32", symbol = "?g_PhotoStageState@th095@@3PAUPhotoStageStateView@1@A", target = 0x004C4E6C },
+  { offset = 0xF5, type = "REL32", symbol = "?CreateVm@PhotoAnmLoadedView@th095@@QAE?AUPhotoAnmVmId@2@HH@Z", target = 0x00444EF0 },
+  { offset = 0x119, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x11E, type = "REL32", symbol = "?RemoveVm@PhotoAnmManagerView@th095@@QAEXH@Z", target = 0x004451B0 },
+  { offset = 0x14A, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x14F, type = "REL32", symbol = "?RemoveVm@PhotoAnmManagerView@th095@@QAEXH@Z", target = 0x004451B0 },
+  { offset = 0x165, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x17C, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3USoundPlayer@1@A", target = 0x004C4EE8 },
+  { offset = 0x181, type = "REL32", symbol = "?PlaySoundByIdx@PhotoSoundPlayerView@th095@@QAEXHH@Z", target = 0x00438F20 },
+]

@@ -86,6 +86,15 @@ next action belongs in `RE_HANDOFF.md`.
 | ANM-011 | exact | The radial-trail update scrolls both U and V by `uvVelocity.x`, shifts all 33 coordinates by one when a coordinate becomes negative, expands 31 radial vertices, copies vertex 1 through the advanced pointer to close vertex 32, and makes the radial vertices transparent while preserving the center color. The draw callback submits all 33 vertices through `AnmManager::DrawVertices`. | Canonical 850-byte update and 45-byte draw units with all 11 relocations |
 | MATCH-005 | exact | The 1,005-byte manager constructor and 176-byte destructor reproduce every authored byte and all 96 relocations, including ten chain registrations and the vector constructor/destructor helpers. | Canonical `anm-manager-constructor` and `anm-manager-destructor` units |
 
+## Reconstructed photography camera
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| PHOTO-001 | target-observed | The TH095 gameplay controller at `0x004C4E70` stores player position at `+0x1E30` and an embedded `0xBDC`-byte photography state at `+0x1E3C`. The photography state owns eleven VM handles, four inline `0x2CC` ANM VMs, charge/timers, photo counters, flags, and viewfinder position/size. | Main/helper target field accesses and compile-time layout assertions |
+| PHOTO-002 | exact | `PhotoGameStateView::AngleToPoint @ 0x00430370` measures from the player position, returns π/2 for a coincident point, and otherwise uses `atan2f`. `PhotoDistance2D @ 0x00434220` is the corresponding two-dimensional Euclidean distance helper. | Canonical 108-byte and 77-byte VC7.1 units with all five relocations |
+| PHOTO-003 | exact | `PhotoCameraState::BeginCapture @ 0x00432730` transitions tracking to charging, resets the mode timer, creates scripts `0x18..0x1C`, removes stale charge VMs, and queues SFX `0x2C` outside replay suppression. | Canonical 393-byte unit with all 17 relocations |
+| PHOTO-004 | compiler-observed | The complete five-state `UpdatePhotoCamera @ 0x00430AB0` gameplay flow is source-present. It covers target tracking, viewfinder charging, capture, 60-frame recovery, camera ANM/SFX, photo-target indication, and charge-dependent slow motion. Its current VC7.1 body is 5,559 bytes versus the 7,271-byte target, so it receives no exact credit. | Attested target state switch plus non-canonical pinned-VC7.1 source probe |
+
 ## Reconstructed ECL VM
 
 | ID | Class | Durable fact | Evidence |

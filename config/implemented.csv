@@ -60,3 +60,7 @@ th095::DrawPulsingRadialTrail
 th095::Float3::FromAngleMagnitude
 th095::AnmManager::AnmManager
 th095::AnmManager::~AnmManager
+th095::PhotoDistance2D
+th095::PhotoGameStateView::AngleToPoint
+th095::UpdatePhotoCamera
+th095::PhotoCameraState::BeginCapture
