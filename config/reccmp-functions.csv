@@ -147,3 +147,7 @@ th095::FileSystem::Decrypt,0x0041A5C0,function
 th095::FileSystem::Encrypt,0x0041A790,function
 th095::FileSystem::OpenFile,0x0041A960,function
 th095::FileSystem::CheckIfFileAlreadyExists,0x0041ABA0,function
+th095::SceneValueQueue::Pop,0x00450F60,function
+th095::MusicRoomView::UpdateMusicRoom,0x00450FC0,function
+th095::SkipMusicCommentLine,0x00451B00,function
+th095::ReadMusicCommentLine,0x00451B90,function

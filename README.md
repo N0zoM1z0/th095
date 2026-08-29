@@ -52,7 +52,8 @@ writer, result-screen dependencies, scene-selection helpers, photography
 camera helpers, the five-function WinMM/DirectInput controller chain, keyboard
 reset, and the shared FileSystem codec/archive-or-disk loader are also exact.
 The complete dual-device and aggregate `Controller::GetInput` path is
-source-present.
+source-present. The complete TH095 Music Room is source-present, with both
+music-comment parsing helpers exact.
 
 A target-local audit continues to admit photography/camera, replay/menu,
 scene-selection, options, and gameplay/resource functions as their authored

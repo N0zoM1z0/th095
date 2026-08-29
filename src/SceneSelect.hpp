@@ -49,6 +49,7 @@ struct SceneValueQueue
     i32 capacity;
 
     i32 Push(i32 value);
+    i32 Pop();
 };
 
 struct SceneGroupCursorView
@@ -103,13 +104,17 @@ struct SceneSupervisorView
 struct SceneAnmVmId
 {
     i32 value;
+
+    void SetInterrupt(i32 interrupt);
 };
 
 struct SceneAnmVmView
 {
     u8 unknown000[0x228];
     u32 flagsWord;
-    u8 unknown22c[0x94];
+    u8 unknown22c[2];
+    i16 pendingInterrupt;
+    u8 unknown230[0x90];
     u8 glyphWidth;
     u8 glyphHeight;
 };
@@ -253,6 +258,8 @@ typedef char SceneAnmVmGlyphSizeAt2C0[
      offsetof(SceneAnmVmView, glyphHeight) == 0x2c1) ? 1 : -1];
 typedef char SceneAnmVmFlagsAt228[
     (offsetof(SceneAnmVmView, flagsWord) == 0x228) ? 1 : -1];
+typedef char SceneAnmVmInterruptAt22E[
+    (offsetof(SceneAnmVmView, pendingInterrupt) == 0x22e) ? 1 : -1];
 typedef char SceneValueQueueSizeIs48[
     (sizeof(SceneValueQueue) == 0x48) ? 1 : -1];
 typedef char SceneGroupCursorSizeIsD8[

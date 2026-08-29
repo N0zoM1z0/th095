@@ -146,3 +146,7 @@ th095::FileSystem::Decrypt
 th095::FileSystem::Encrypt
 th095::FileSystem::OpenFile
 th095::FileSystem::CheckIfFileAlreadyExists
+th095::SceneValueQueue::Pop
+th095::MusicRoomView::UpdateMusicRoom
+th095::SkipMusicCommentLine
+th095::ReadMusicCommentLine

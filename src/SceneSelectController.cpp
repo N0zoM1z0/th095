@@ -14,6 +14,20 @@ i32 SceneValueQueue::Push(i32 value)
     return this->count;
 }
 
+i32 SceneValueQueue::Pop()
+{
+    if (this->count > 0)
+    {
+        this->count--;
+        for (i32 i = 0; i < 16; i++)
+        {
+            (this->values + i)[0] = (this->values + i)[1];
+        }
+        return this->values[0];
+    }
+    return 0;
+}
+
 void SceneSelectControllerView::RefreshSceneSelection(i32)
 {
     i8 displayState;

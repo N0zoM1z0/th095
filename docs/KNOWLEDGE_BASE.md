@@ -76,6 +76,14 @@ next action belongs in `RE_HANDOFF.md`.
 | FILE-002 | exact | `FileSystem::OpenFile @ 0x0041A960` serializes through critical section 2, strips path components for archive lookup, allocates and decompresses archive entries, or falls back to sequential loose-file I/O. Every exit decrements the active-count byte at `0x004C4D7E`. | Canonical 576-byte unit with all 37 archive, allocator, string, debug, Win32, and global relocations replayed |
 | FILE-003 | exact | `FileSystem::CheckIfFileAlreadyExists @ 0x0041ABA0` performs a read-only loose-file probe under the same critical section and active-count protocol. | Canonical 175-byte unit with all 14 relocations replayed |
 
+## Reconstructed music room
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| MUSIC-001 | compiler-observed | `MusicRoomView::UpdateMusicRoom @ 0x00450FC0` is the complete TH095 music-room state machine embedded in the shared title controller. It reads `sprt/musiccmt.txt`, supports at most 32 tracks with a 64-byte path/title and eight 64-byte comment lines each, stages the title/comment VMs, uses the shared menu cursor, starts a selected track, and restores `bgm/th095_00.wav` on exit. | Attested target control flow and fields through `+0x6110`; pinned VC7.1 2,425-byte semantic probe versus the 2,872-byte target; exact 47-call target topology |
+| MUSIC-002 | exact | `SkipMusicCommentLine` and `ReadMusicCommentLine @ 0x00451B00/0x00451B90` handle CR, LF, and CRLF input while decrementing the caller-owned remaining-byte count; the reader terminates the source line in place and copies it to the fixed destination. | Two canonical relocation-free VC7.1 units totaling 374 bytes |
+| MUSIC-003 | compiler-observed | `SceneValueQueue::Pop @ 0x00450F60` removes the first of sixteen integer values by shifting the complete array and is called by four target scene/front-end hubs. Its natural VC7.1 body is 93 bytes versus the 91-byte target solely because it saves/restores `esi`. | Attested target body and four-caller graph; non-canonical pinned-VC7.1 probe |
+
 ## Reconstructed main family
 
 | ID | Class | Durable fact | Evidence |

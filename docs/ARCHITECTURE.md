@@ -139,8 +139,9 @@ FileSystem functions at
 `0x0041A550..0x0041AC4E`, now exact for another 1,789 bytes. The FileSystem
 cluster proves the shared replay/resource codec, archive/disk loader, and
 critical-section-2 accounting. The next dependency-first lane is the
-front-end pages at `0x00450FC0` and `0x00451C80`, with the 16,066-byte TH095
-scene-selection hub retained as the next large root.
+front-end Help page at `0x00451C80`; the adjacent Music Room at `0x00450FC0`
+is now source-present with both parser helpers exact. The 16,066-byte TH095
+scene-selection hub remains the next large root.
 
 ## Shared engine versus TH095 gameplay
 

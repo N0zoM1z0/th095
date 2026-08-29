@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 132 canonical units cover 87,838 authored bytes.
+- Reconstruction: 134 canonical units cover 88,212 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 58.14% (87,838 / 151,072)
+  relocations. Confirmed authored-byte coverage is now 57.13% (88,212 / 154,409)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,7 +25,7 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 155 authored candidates and leaves 1,675 origin/boundary reviews
+  confirms 159 authored candidates and leaves 1,671 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -150,6 +150,16 @@
   permutation/XOR codec, archive-basename lookup, loose-file fallback, and
   critical-section-2 active-count accounting. The implementation now lives in
   root-level `FileSystem.*`, preserving the TH08-style subsystem organization.
+- `MusicRoomView::UpdateMusicRoom @ 0x00450FC0` is source-present for the
+  complete TH095 title-controller music room: it parses at most 32 tracks and
+  eight 64-byte comment lines per track, stages title/comment VMs, scrolls the
+  shared cursor, starts the selected BGM, and restores the title BGM on exit.
+  Its natural VC7.1 body is 2,425 versus 2,872 target bytes, but all 47 static
+  call sites have the exact target distribution. The CR/LF-aware skip/read
+  helpers at `0x00451B00/0x00451B90` are independently exact for all 374
+  bytes. `SceneValueQueue::Pop @ 0x00450F60`, shared by four scene hubs, is
+  complete source-present at 93 versus 91 bytes; its sole residual is VC7.1's
+  callee-saved-register choice.
 - `UpdatePhotoResultScreen @ 0x004294C0` is source-present for the complete
   TH095-specific photo browser and `BSTS` best-shot save path. Its VC7.1 probe
   has the target's full 1,323-byte instruction topology and resolves all 65
@@ -291,9 +301,10 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    except for the seven-byte `GetInput` compiler-shape residual. The adjacent
    keyboard reset and FileSystem codec/open cluster at
    `0x0041A550..0x0041AC4E` is now exact. Continue the candidate inventory with
-   the connected front-end pages at `0x00450FC0` and `0x00451C80`, while
-   keeping the TH095-specific `0x00447D00` scene-selection hub as the next
-   large authored target.
+   the connected front-end lane with the nine-page Help viewer at
+   `0x00451C80` and its loader callback at `0x004525D0`, while keeping the
+   TH095-specific `0x00447D00` scene-selection hub as the next large authored
+   target.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression
