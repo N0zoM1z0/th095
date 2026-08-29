@@ -81,7 +81,10 @@ struct ResultScreenAnmVm
     i16 pendingInterrupt;
     u8 unknown230[0x244 - 0x230];
     struct ResultScreenLoadedSpriteView *loadedSprite;
-    u8 unknown248[0x2cc - 0x248];
+    u8 unknown248[0x2c0 - 0x248];
+    u8 glyphWidth;
+    u8 glyphHeight;
+    u8 unknown2c2[0x2cc - 0x2c2];
 
     void SetInterrupt(i32 interrupt)
     {
@@ -163,6 +166,15 @@ typedef char ResultPhotoSlotHeightAt2204[
 typedef char ResultPhotoSlotCommentAt2208[
     (offsetof(ResultPhotoSlotView, comment) == 0x2208) ? 1 : -1];
 
+struct ResultScreenSceneLabel
+{
+    char firstLine[0x2c];
+    char secondLine[0x2c];
+};
+
+typedef char ResultScreenSceneLabelSizeIs58[
+    (sizeof(ResultScreenSceneLabel) == 0x58) ? 1 : -1];
+
 struct ResultScreen
 {
     ResultScreenAnmLoadedView *anm;       // +0x0000
@@ -173,7 +185,10 @@ struct ResultScreen
     ResultScreenReplayCursor replayCursor; // +0x4604
     i32 keyboardSelection;                // +0x46dc
     i32 replayNameCursor;                 // +0x46e0
-    u8 unknown46e4[0x6ce8 - 0x46e4];
+    u8 unknown46e4[4];
+    ResultScreenSceneLabel sceneLabels[11][10]; // +0x46e8
+    i32 sceneCounts[11];                  // +0x6cb8
+    i32 selectedGroup;                    // +0x6ce4
     ReplayManager *replays[20];            // +0x6ce8
     u8 unknown6d38[4];
     char replayName[9];                   // +0x6d3c
@@ -198,6 +213,12 @@ struct ResultScreen
 
 typedef char ResultScreenVmsAt18[
     (offsetof(ResultScreen, vms) == 0x18) ? 1 : -1];
+typedef char ResultScreenSceneLabelsAt46E8[
+    (offsetof(ResultScreen, sceneLabels) == 0x46e8) ? 1 : -1];
+typedef char ResultScreenSceneCountsAt6CB8[
+    (offsetof(ResultScreen, sceneCounts) == 0x6cb8) ? 1 : -1];
+typedef char ResultScreenSelectedGroupAt6CE4[
+    (offsetof(ResultScreen, selectedGroup) == 0x6ce4) ? 1 : -1];
 typedef char ResultScreenReplayCursorAt4604[
     (offsetof(ResultScreen, replayCursor) == 0x4604) ? 1 : -1];
 typedef char ResultScreenReplayCursorSizeIsD8[

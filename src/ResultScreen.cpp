@@ -16,13 +16,22 @@ extern f32 g_AnmGameSpeed;
 struct ResultScreenGlobalStateView
 {
     u8 unknown000[0xfc];
-    u32 unknownFlag0 : 1;
-    u32 unknownFlag1 : 1;
-    u32 suppressResultCallbacks : 1;
-    u32 unknownFlags : 29;
+    union
+    {
+        u32 flagsWord;
+        struct
+        {
+            u32 unknownFlag0 : 1;
+            u32 unknownFlag1 : 1;
+            u32 suppressResultCallbacks : 1;
+            u32 unknownFlags : 29;
+        };
+    };
     i32 bestShotIndex;
     u8 unknown104[0x114 - 0x104];
     i32 currentScore;
+    u8 unknown118[8];
+    i32 resultMode;
 };
 
 struct ResultAnmVmDrawView
@@ -39,6 +48,25 @@ struct ResultAsciiManagerView
 
     void AddString(Float3 *position, const char *text);
     void AddFormatText(Float3 *position, const char *format, ...);
+};
+
+struct ResultAnmManagerResultView
+{
+    u8 unknown000000[0x0c];
+    i32 captureAnmIndex;
+    u8 unknown000010[0x3817d0 - 0x10];
+    i32 captureSourceX;
+    i32 captureSourceY;
+    i32 captureSourceWidth;
+    i32 captureSourceHeight;
+    i32 captureDestinationX;
+    i32 captureDestinationY;
+    i32 captureDestinationWidth;
+    i32 captureDestinationHeight;
+    i32 captureFlags;
+
+    void DrawTextLeft(ResultScreenAnmVm *vm, u32 textColor,
+                      u32 shadowColor, const char *format, ...);
 };
 
 typedef char ResultScreenGlobalBestShotIndexAt100[
@@ -109,6 +137,21 @@ struct ResultBestShotRecordView
     void *componentData1;
 };
 
+struct ResultScoreEntryView
+{
+    u16 magic;
+    u16 version;
+    u32 size;
+    u8 unknown008[4];
+    i32 index;
+    i32 score;
+    u8 unknown014[0x48 - 0x14];
+    f32 slowRate;
+    u8 unknown04c[4];
+    u32 flags;
+    u8 unknown054[0x60 - 0x54];
+};
+
 struct ResultScreenDrawLocals
 {
     i32 totalScore;
@@ -161,7 +204,9 @@ typedef char ResultScreenDrawLoopIndexAtEC[
 
 struct ResultSaveDataView
 {
-    u8 unknown0000[0x470];
+    u8 unknown0000[0x22];
+    u8 nextSceneByGroup[11];
+    u8 unknown002d[0x470 - 0x2d];
     union
     {
         ResultBestShotImageView bestShotImages[120];
@@ -180,6 +225,8 @@ typedef char ResultBestShotImageSizeIs60[
     (sizeof(ResultBestShotImageView) == 0x60) ? 1 : -1];
 typedef char ResultBestShotRecordSizeIs78[
     (sizeof(ResultBestShotRecordView) == 0x78) ? 1 : -1];
+typedef char ResultScoreEntrySizeIs60[
+    (sizeof(ResultScoreEntryView) == 0x60) ? 1 : -1];
 typedef char ResultBestShotImageScoreAt00[
     (offsetof(ResultBestShotImageView, score) == 0x00) ? 1 : -1];
 typedef char ResultBestShotImageMetadataAt08[
@@ -209,6 +256,10 @@ extern ResultPhotoDataView *g_ResultPhotoData;
 extern ResultPhotoControllerView *g_ResultPhotoController;
 extern ResultSaveDataView *g_ResultSaveData;
 extern ResultAsciiManagerView g_ResultAsciiManager;
+extern ResultAnmManagerResultView *g_ResultAnmManager;
+extern ResultScreenAnmLoadedView *g_ResultAuxAnm;
+extern f64 g_ReplayLagNumerator;
+extern f64 g_ReplayLagDenominator;
 
 extern void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
@@ -226,6 +277,11 @@ inline u16 IsResultMenuInputPressed(u16 buttons)
 {
     return (u16)((GetPressedButtons(buttons) != 0) ||
                  ((g_ResultMenuInput & buttons) != 0));
+}
+
+inline ResultScreenAnmVm *GetResultVm(ResultScreen *resultScreen, i32 index)
+{
+    return &resultScreen->vms[index];
 }
 
 i32 ResultScreenTimer::Tick()
@@ -282,6 +338,213 @@ void ResultSaveDataView::UpdateBestShotRecord(i32 index)
     this->recordStorage.bestShotRecords[index].componentData1 = NULL;
     this->recordStorage.bestShotRecords[index].componentsLoaded = 0;
     this->recordStorage.bestShotRecords[index].valid = 0;
+}
+
+void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
+{
+    g_SoundPlayer.PlaySoundByIdx(SOUND_20, 0);
+    resultScreen->state = 1;
+    resultScreen->stateTimer.Reset();
+    resultScreen->savedGameSpeed = g_AnmGameSpeed;
+    g_AnmGameSpeed = 1.0f;
+    g_ResultScreenGlobalState->flagsWord |= 0x10;
+    g_ResultScreenGlobalState->flagsWord |= 0x80;
+
+    ResultAnmManagerResultView *anmManager = g_ResultAnmManager;
+    if (anmManager->captureAnmIndex < 0)
+    {
+        anmManager->captureAnmIndex = 10;
+        anmManager->captureSourceX = 0x80;
+        anmManager->captureSourceY = 0x10;
+        anmManager->captureSourceWidth = 0x180;
+        anmManager->captureSourceHeight = 0x1c0;
+        anmManager->captureDestinationX = 0;
+        anmManager->captureDestinationY = 0;
+        anmManager->captureDestinationWidth = 0x80;
+        anmManager->captureDestinationHeight = 0x80;
+        anmManager->captureFlags = 0;
+    }
+
+    resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 0), 0);
+    resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 3), 3);
+    if (g_ResultScreenGlobalState->resultMode == 0)
+    {
+        resultScreen->state = 1;
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 4), 4);
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 6), 6);
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 5), 5);
+    }
+    else
+    {
+        resultScreen->state = 11;
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 16), 16);
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 17), 17);
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 18), 18);
+    }
+
+    resultScreen->replayCursor.Set(0);
+    resultScreen->replayCursor.count = 3;
+    resultScreen->replayCursor.wraps = 1;
+}
+
+void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
+{
+    resultScreen->stateTimer.Reset();
+    resultScreen->savedGameSpeed = g_AnmGameSpeed;
+    g_AnmGameSpeed = 1.0f;
+    g_ResultScreenGlobalState->flagsWord |= 0x10;
+    g_ResultScreenGlobalState->flagsWord |= 0x80;
+
+    ResultAnmManagerResultView *anmManager = g_ResultAnmManager;
+    if (anmManager->captureAnmIndex < 0)
+    {
+        anmManager->captureAnmIndex = 10;
+        anmManager->captureSourceX = 0x80;
+        anmManager->captureSourceY = 0x10;
+        anmManager->captureSourceWidth = 0x180;
+        anmManager->captureSourceHeight = 0x1c0;
+        anmManager->captureDestinationX = 0;
+        anmManager->captureDestinationY = 0;
+        anmManager->captureDestinationWidth = 0x80;
+        anmManager->captureDestinationHeight = 0x80;
+        anmManager->captureFlags = 0;
+    }
+
+    resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 1), 1);
+    resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 7), 7);
+    if (g_ResultScreenGlobalState->resultMode == 0)
+    {
+        resultScreen->state = 3;
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 9), 9);
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 10), 10);
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 8), 8);
+        resultScreen->replayCursor.Set(0);
+        resultScreen->replayCursor.count = 3;
+
+        g_ResultAuxAnm->SetAndExecuteScript(GetResultVm(resultScreen, 21), 9);
+        g_ResultAuxAnm->SetAndExecuteScript(GetResultVm(resultScreen, 22), 10);
+        GetResultVm(resultScreen, 21)->glyphWidth = 0x12;
+        GetResultVm(resultScreen, 21)->glyphHeight = 0x12;
+        GetResultVm(resultScreen, 22)->glyphWidth = 0x12;
+        GetResultVm(resultScreen, 22)->glyphHeight = 0x12;
+
+        i32 group = resultScreen->selectedGroup;
+        u8 scene = g_ResultSaveData->nextSceneByGroup[group];
+        g_ResultAnmManager->DrawTextLeft(
+            GetResultVm(resultScreen, 21), 0xffe0c0, 0x300000,
+            resultScreen->sceneLabels[group][scene].firstLine);
+        g_ResultAnmManager->DrawTextLeft(
+            GetResultVm(resultScreen, 22), 0xffe0c0, 0x300000,
+            resultScreen->sceneLabels[group][scene].secondLine);
+
+        g_ResultSaveData->nextSceneByGroup[group]++;
+        if (g_ResultSaveData->nextSceneByGroup[group] >=
+            resultScreen->sceneCounts[group])
+        {
+            g_ResultSaveData->nextSceneByGroup[group] = 0;
+        }
+
+        time(reinterpret_cast<time_t *>(
+            &g_ReplayManager->activeInputData->timestamp));
+        g_ReplayManager->activeInputData->score =
+            g_ResultScreenGlobalState->currentScore;
+    }
+    else
+    {
+        resultScreen->state = 7;
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 19), 19);
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 20), 20);
+        resultScreen->replayCursor.Set(1);
+        resultScreen->replayCursor.count = 2;
+
+        g_ResultAuxAnm->SetAndExecuteScript(GetResultVm(resultScreen, 21), 9);
+        g_ResultAuxAnm->SetAndExecuteScript(GetResultVm(resultScreen, 22), 10);
+        GetResultVm(resultScreen, 21)->glyphWidth = 0x12;
+        GetResultVm(resultScreen, 21)->glyphHeight = 0x12;
+        GetResultVm(resultScreen, 22)->glyphWidth = 0x12;
+        GetResultVm(resultScreen, 22)->glyphHeight = 0x12;
+        g_ResultAnmManager->DrawTextLeft(
+            GetResultVm(resultScreen, 21), 0xffe0c0, 0x300000, " ");
+        g_ResultAnmManager->DrawTextLeft(
+            GetResultVm(resultScreen, 22), 0xffe0c0, 0x300000, " ");
+    }
+    resultScreen->replayCursor.wraps = 1;
+}
+
+void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
+{
+    resultScreen->stateTimer.Reset();
+    resultScreen->savedGameSpeed = g_AnmGameSpeed;
+    g_AnmGameSpeed = 1.0f;
+    g_ResultScreenGlobalState->flagsWord |= 0x10;
+    g_ResultScreenGlobalState->flagsWord |= 0x80;
+
+    ResultAnmManagerResultView *anmManager = g_ResultAnmManager;
+    if (anmManager->captureAnmIndex < 0)
+    {
+        anmManager->captureAnmIndex = 10;
+        anmManager->captureSourceX = 0x80;
+        anmManager->captureSourceY = 0x10;
+        anmManager->captureSourceWidth = 0x180;
+        anmManager->captureSourceHeight = 0x1c0;
+        anmManager->captureDestinationX = 0;
+        anmManager->captureDestinationY = 0;
+        anmManager->captureDestinationWidth = 0x80;
+        anmManager->captureDestinationHeight = 0x80;
+        anmManager->captureFlags = 0;
+    }
+
+    resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 2), 2);
+    resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 11), 11);
+    if (g_ResultScreenGlobalState->resultMode == 0)
+    {
+        resultScreen->state = 5;
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 14), 14);
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 15), 15);
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 12), 12);
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 13), 13);
+        resultScreen->replayCursor.Set(2);
+        resultScreen->replayCursor.count = 4;
+
+        if (g_ResultPlayerConfig->scene >=
+            g_ResultSceneLimits[g_ResultPlayerConfig->group] - 1)
+        {
+            resultScreen->replayCursor.disabledEntries[
+                resultScreen->replayCursor.disabledEntryCount++] = 1;
+            GetResultVm(resultScreen, 13)->color1 = 0x80000000;
+        }
+
+        ResultScoreEntryView *scoreEntry =
+            reinterpret_cast<ResultScoreEntryView *>(
+                reinterpret_cast<u8 *>(g_ResultSaveData) + 0x460) +
+            g_ResultScreenGlobalState->bestShotIndex;
+        scoreEntry->magic = 0x4353;
+        scoreEntry->version = 1;
+        scoreEntry->size = sizeof(ResultScoreEntryView);
+        scoreEntry->index = g_ResultScreenGlobalState->bestShotIndex;
+        scoreEntry->flags |= 1;
+        if (scoreEntry->score < g_ResultScreenGlobalState->currentScore)
+        {
+            scoreEntry->score = g_ResultScreenGlobalState->currentScore;
+            scoreEntry->slowRate =
+                100.0f -
+                (f32)(g_ReplayLagNumerator / g_ReplayLagDenominator * 100.0);
+        }
+    }
+    else
+    {
+        resultScreen->state = 9;
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 19), 19);
+        resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 20), 20);
+        resultScreen->replayCursor.Set(1);
+        resultScreen->replayCursor.count = 2;
+    }
+    resultScreen->replayCursor.wraps = 1;
+    resultScreen->PrepareBestShot();
+    time(reinterpret_cast<time_t *>(
+        &g_ReplayManager->activeInputData->timestamp));
+    g_ReplayManager->activeInputData->score =
+        g_ResultScreenGlobalState->currentScore;
 }
 
 void ResultScreen::PrepareBestShot()

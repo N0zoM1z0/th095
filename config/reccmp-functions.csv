@@ -92,6 +92,9 @@ th095::ResultScreenReplayCursor::Push,0x0041B660,function
 th095::ResultScreenReplayCursor::Pop,0x0041B6E0,function
 th095::ResultScreenTimer::Tick,0x0041B8A0,function
 th095::ResultScreen::Update,0x00426BF0,function
+th095::InitializeGameResultScreen,0x00428590,function
+th095::InitializeReplayResultScreen,0x004288B0,function
+th095::InitializePhotoResultScreen,0x00428E90,function
 th095::ResultScreen::OnUpdate,0x0042A6B0,function
 th095::ResultPhotoDataView::FindBestShot,0x00429450,function
 th095::AnmVmId::GetVm,0x004452F0,function

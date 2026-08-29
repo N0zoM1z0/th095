@@ -91,6 +91,9 @@ th095::ResultScreenReplayCursor::Push
 th095::ResultScreenReplayCursor::Pop
 th095::ResultScreenTimer::Tick
 th095::ResultScreen::Update
+th095::InitializeGameResultScreen
+th095::InitializeReplayResultScreen
+th095::InitializePhotoResultScreen
 th095::ResultScreen::OnUpdate
 th095::ResultPhotoDataView::FindBestShot
 th095::AnmVmId::GetVm

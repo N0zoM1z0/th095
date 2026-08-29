@@ -90,6 +90,16 @@
   resolve to target destinations and 1,968 of 2,133 comparable bytes match.
   The remaining 165 local-frame/temporary/register-allocation bytes receive no
   exact credit. All ten pre-existing exact ResultScreen units replay unchanged.
+- `InitializeGameResultScreen @ 0x00428590`,
+  `InitializeReplayResultScreen @ 0x004288B0`, and
+  `InitializePhotoResultScreen @ 0x00428E90` are now source-present for the
+  complete 3,350-byte entry cluster. They recover shared capture setup plus
+  the TH095-specific rotating scene-label/replay metadata and photo-score/
+  best-shot paths. Their VC7.1 bodies are 681/1,415/1,071 bytes versus
+  788/1,489/1,073-byte targets; the remaining differences are original
+  inline-temporary frame gaps and a two-byte capture branch, so they receive
+  no exact credit. The source-present total is now 112 functions, and all ten
+  canonical ResultScreen units replay unchanged after the expanded layouts.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
   bytes are stack allocation/displacement differences and receive no credit.
@@ -159,9 +169,9 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    5,979 bytes versus the 6,471-byte target and receives no exact credit yet.
    Its 45-byte suppression wrapper, 113-byte cursor push, 113-byte cursor pop,
    and 117-byte slow-motion timer tick are canonical exact; the timer is shared
-   by 27 target callers. Continue by aligning the dispatcher against these
-   now-exact dependencies and by recovering its remaining initialization and
-   best-shot helpers.
+   by 27 target callers. Its three initialization helpers and best-shot helper
+   are now source-present as well; defer their remaining compiler-frame gaps
+   unless a natural source-shape improvement appears.
    `ResultPhotoDataView::FindBestShot @ 0x00429450` is now exact for its
    eleven `0x2214`-byte slots. `ResultScreen::OnDraw @ 0x0042A6E0` is also
    exact and proves the 2,573-byte `ResultScreen::Draw @ 0x00429C80` authored
@@ -183,10 +193,11 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    and switch-table extents, exact case boundaries, and all 118 relocation
    destinations resolved. Its remaining 165 non-relocation differences are
    isolated to compiler frame/temporary/register allocation, so defer exact
-   work unless a natural source-shape improvement appears. Continue aligning
-   the 6,471-byte `ResultScreen::Update` dispatcher, review the three adjacent
-   initialization/result helpers at `0x00428590..0x004292C0`, then move to the
-   16,066-byte gameplay/resource hub at `0x00447D00`.
+   work unless a natural source-shape improvement appears. Continue the
+   candidate inventory and reconstruct the 16,066-byte gameplay/resource hub
+   at `0x00447D00`; it has 27 internal callees and 156 direct ANM-manager
+   references, so its recovered state/layout information should unlock the
+   adjacent `0x0044BBD0`, `0x0044BEA0`, and `0x0044C670` functions.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression
