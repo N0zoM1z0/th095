@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import subprocess
 import sys
 import tomllib
 
@@ -66,11 +67,33 @@ def main() -> int:
         ]
         if len(matches) != 1:
             raise ValueError(f"unknown or ambiguous match object: {wanted}")
-        raise ValueError(
-            f"unit {matches[0][0]!r} has no implemented build recipe yet; "
-            "record a proven VC7.1 profile before enabling it"
+        name, unit = matches[0]
+        profile = unit["profile"]
+        if not isinstance(profile, list) or not profile or not all(isinstance(flag, str) for flag in profile):
+            raise ValueError(f"unit {name!r} has an invalid compiler profile")
+        output = ROOT / str(unit["object"])
+        subprocess.run(
+            [
+                str(ROOT / "scripts" / "compile-probe.sh"),
+                str(ROOT / str(unit["source"])),
+                str(output),
+                *profile,
+            ],
+            cwd=ROOT,
+            check=True,
         )
-    except (OSError, KeyError, TypeError, ValueError, tomllib.TOMLDecodeError) as exc:
+        if not output.is_file():
+            raise ValueError(f"unit {name!r} did not produce {output}")
+        print(f"built {name}: {output.relative_to(ROOT)}")
+        return 0
+    except (
+        OSError,
+        KeyError,
+        TypeError,
+        ValueError,
+        subprocess.CalledProcessError,
+        tomllib.TOMLDecodeError,
+    ) as exc:
         print(f"error: build routing failed: {exc}", file=sys.stderr)
         return 1
 

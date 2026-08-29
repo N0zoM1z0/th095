@@ -1,1 +1,8 @@
-
+WinMain
+th095::GameWindow::Render
+th095::GameWindow::Present
+th095::GameWindow::GetTimestamp
+th095::GameWindow::InitD3DInterface
+th095::GameWindow::CreateGameWindow
+th095::GameWindow::WindowProc
+th095::GameWindow::ActivateWindow

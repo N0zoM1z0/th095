@@ -1,1 +1,8 @@
 name,address,type
+th095::g_PressedButtons,0x004BE21E,data
+th095::g_Chain,0x004BE3C8,data
+th095::g_GameErrorContext,0x004C2420,data
+th095::g_GameWindow,0x004C45E8,data
+th095::g_Supervisor,0x004C4670,data
+th095::g_SoundPlayer,0x004C4EE8,data
+th095::g_AnmManager,0x004CA1B8,data

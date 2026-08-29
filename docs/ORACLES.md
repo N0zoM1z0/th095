@@ -52,3 +52,19 @@ copied target bytes.
 When the two primary oracles disagree, preserve both observations and narrow
 the hypothesis. Do not solve the disagreement with casts, padding, inert
 locals, assembly, or copied byte arrays.
+
+## TH08 reuse boundary
+
+TH095 retains a substantial TH08-era engine layer. Exact TH08 reconstruction
+is therefore a high-value source-shape oracle for `GameWindow`, `Supervisor`,
+`SoundPlayer`, `AnmManager`, and ECL machinery. Reuse follows three gates:
+
+1. TH095 target-local calls, constants, offsets, strings, and control flow must
+   identify the same responsibility.
+2. The reused declaration or body must compile under the pinned VC7.1 profile.
+3. Only a TH095 comparison may establish a TH095 layout or exactness claim.
+
+This distinction matters above the engine layer. TH095 replaces the
+traditional stage/player/bomb flow with scene selection, photography,
+photo-scoring, and game-specific UI/state machines. Similar names from TH08
+must not be projected onto those target-specific hubs without local proof.

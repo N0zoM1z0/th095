@@ -5,8 +5,10 @@
 | Verify the private executable | `python3 scripts/verify-target.py` | Hash and size only |
 | Install pinned tools | `scripts/bootstrap-tools.sh` | Writes ignored `.tools/` |
 | Import or attest analysis | `python3 scripts/ghidra.py …` | Hash-attested TH095 project only |
+| Rank architecture hubs | `python3 scripts/ghidra.py architecture` then `scripts/report-architecture.py` | Private read-only metrics |
 | Inspect raw PE/disassembly | `objdump`, Ghidra listing | Read-only target evidence |
 | Compile a VC7.1 probe | `scripts/compile-probe.sh` | Explicit flags are mandatory |
+| Replay a strict unit | `scripts/build.py` and `scripts/compare-coff-function.py --unit …` | Full extent and explicit relocations |
 | Validate ledgers | `python3 scripts/validate-tracking.py` | Does not prove exactness |
 | Report live state | `python3 scripts/report-reconstruction-status.py` | Reads ledgers, not prose |
 | Generate progress | `python3 scripts/progress.py` | Generated from accepted state |

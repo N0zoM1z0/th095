@@ -50,6 +50,80 @@ The repository deliberately separates five questions:
 No state promotes another automatically. In particular, a Ghidra function,
 name, decompile, or successful compilation is not an exact result.
 
+## Recovered runtime spine
+
+The CRT entry at `0x00486A9D` calls `WinMain` at `0x00420240`. Target control
+flow and TH08 corroboration establish the following high-level ownership:
+
+```mermaid
+flowchart LR
+    CRT[CRT entry\n0x00486A9D] --> Main[WinMain\n0x00420240]
+    Main --> Window[GameWindow / D3D8]
+    Main --> Sound[SoundPlayer worker]
+    Main --> Chain[calc/draw Chain]
+    Main --> Anm[AnmManager]
+    Window --> Render[Render\n0x00420770 exact]
+    Render --> Chain
+    Render --> Sound
+    Render --> Anm
+    Anm --> AnmVM[ExecuteScript\n0x0043A600]
+    Chain --> Game[TH095 gameplay/UI states]
+    Game --> EclVM[RunEcl\n0x00408E70]
+```
+
+`WinMain` owns the complete process lifecycle: it disables system power UI,
+initializes seven Supervisor critical sections, enforces a single instance,
+loads or repairs the 200-byte configuration, creates the D3D8 interface and
+window, starts the sound worker, constructs the `0x38314c`-byte `AnmManager`,
+runs the message/frame loop, recovers a lost D3D device, supports a settings
+restart path, and releases subsystems in reverse order.
+
+The exact Render unit proves these shared edges and field offsets:
+
+| Target | Recovered role | Exact evidence |
+| --- | --- | --- |
+| `0x00404B10` | `Supervisor::ConfigureGameplayViewport` | Render REL32 |
+| `0x00418C40` / `0x00418DA0` | calc/draw chain dispatch | Render REL32 |
+| `0x00439200` | `SoundPlayer::ProcessQueues` | Render REL32 |
+| `0x0043F2B0` / `0x0043F2F0` | clear/flush ANM vertex buffer | Render REL32 |
+| `0x004C4670 + 0x1CC` | frameskip configuration | Render DIR32 addend |
+| `0x004C4670 + 0x768` | fog-state cache | Render DIR32 addend |
+| `GameWindow + 0x34/+0x3C/+0x44` | current/last/next frame timestamps | exact instructions |
+
+## Target-wide hub inventory
+
+`scripts/ghidra.py architecture` exported 1,830 function metric rows and 3,873
+direct call edges from the attested target. The ranking deliberately combines
+size, incoming callers, internal fan-out, referenced global state, strings,
+and branches so reconstruction work is not biased toward isolated leaves.
+
+| Address | Size | Connectivity | Current classification | Lane value |
+| --- | ---: | ---: | --- | --- |
+| `0x00408E70` | 27,091 | 3 callers / 50 internal callees | `EclManager::RunEcl` | Largest script VM; unlocks enemy/scene semantics |
+| `0x0043A600` | 17,018 | 22 callers / 20 internal callees | `AnmManager::ExecuteScript` | Widely shared animation VM and type/layout root |
+| `0x00447D00` | 16,066 | 1 caller / 27 internal callees | target-specific resource/gameplay setup hub | Large async/container lane; exact class name unresolved |
+| `0x00430AB0` | 7,271 | 1 caller / 29 internal callees | target-specific camera/player update state machine | Photography/gameplay lane; do not project a TH08 name |
+| `0x00426BF0` | 6,471 | 1 caller / 17 internal callees | large UI/replay state dispatcher | TH095-specific menu/replay lane |
+| `0x00439200` | 2,525 | 2 callers / 16 internal callees | `SoundPlayer::ProcessQueues` | Shared threaded audio state machine |
+| `0x00420240` | 1,326 | CRT root / 30 internal callees | `WinMain` | Process-level ownership and subsystem naming |
+
+The first large-function lane is `AnmManager::ExecuteScript`: it has the
+highest incoming connectivity among the large authored hubs and a mature,
+byte-exact TH08 source oracle. `EclManager::RunEcl` follows as the second VM
+lane. The TH095-specific gameplay hubs remain target-first investigations.
+
+## Shared engine versus TH095 gameplay
+
+The window, D3D8, chain, sound, ANM, and ECL layers share clear ancestry with
+TH08. Exact TH08 source is used to seed names, layouts, opcode enums, and
+compiler source shape, then revalidated against TH095.
+
+Above that boundary, TH095 is structurally different from a traditional
+Touhou stage shooter. Target strings and state machines expose scene
+selection, photography/camera behavior, best-shot and total-score displays,
+and replay registration. Those types are intentionally left with descriptive
+lane labels until target-local callers and layouts prove class names.
+
 ## Reference repositories
 
 `N0zoM1z0/th105` supplies the in-progress control-plane shape. `N0zoM1z0/th08`

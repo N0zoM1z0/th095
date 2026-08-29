@@ -123,7 +123,9 @@ def validate_named(path: Path, fields: list[str]) -> list[dict[str, str]]:
     return rows
 
 
-def validate_match_manifest(target: dict[str, object]) -> dict[str, object]:
+def validate_match_manifest(
+    target: dict[str, object], functions: dict[int, dict[str, str]]
+) -> dict[str, object]:
     with (CONFIG / "match-units.toml").open("rb") as stream:
         manifest = tomllib.load(stream)
     if manifest.get("schema_version") != 1:
@@ -133,6 +135,71 @@ def validate_match_manifest(target: dict[str, object]) -> dict[str, object]:
     units = manifest.get("units")
     if not isinstance(units, dict):
         raise ValueError("match-units.toml: [units] must be a table")
+    supported_relocations = {"DIR32", "REL32"}
+    for name, unit in units.items():
+        if not isinstance(unit, dict):
+            raise ValueError(f"match-units.toml: unit {name!r} must be a table")
+        for field in (
+            "source", "object", "profile", "functions", "symbol",
+            "target_address", "size", "relocations",
+        ):
+            if field not in unit:
+                raise ValueError(f"match-units.toml: unit {name!r} lacks {field}")
+        source = ROOT / str(unit["source"])
+        if not source.is_file():
+            raise ValueError(f"match-units.toml: unit {name!r} source is missing")
+        try:
+            (ROOT / str(unit["object"])).resolve().relative_to((ROOT / "build").resolve())
+        except ValueError as exc:
+            raise ValueError(
+                f"match-units.toml: unit {name!r} object must be below build/"
+            ) from exc
+        profile = unit["profile"]
+        names = unit["functions"]
+        if not isinstance(profile, list) or not profile or not all(
+            isinstance(flag, str) and flag for flag in profile
+        ):
+            raise ValueError(f"match-units.toml: unit {name!r} has an invalid profile")
+        if not isinstance(names, list) or len(names) != 1 or not all(
+            isinstance(function, str) and function for function in names
+        ):
+            raise ValueError(
+                f"match-units.toml: unit {name!r} must name its one compared function"
+            )
+        target_address = int(unit["target_address"])
+        if target_address not in functions:
+            raise ValueError(f"match-units.toml: unit {name!r} target is not inventoried")
+        if int(unit["size"]) != int(functions[target_address]["size"], 0):
+            raise ValueError(f"match-units.toml: unit {name!r} size differs from inventory")
+        if not isinstance(unit["symbol"], str) or not unit["symbol"]:
+            raise ValueError(f"match-units.toml: unit {name!r} lacks a COFF symbol")
+        relocations = unit["relocations"]
+        if not isinstance(relocations, list):
+            raise ValueError(f"match-units.toml: unit {name!r} relocations must be a list")
+        offsets: set[int] = set()
+        for index, relocation in enumerate(relocations, start=1):
+            if not isinstance(relocation, dict):
+                raise ValueError(
+                    f"match-units.toml: unit {name!r} relocation {index} is invalid"
+                )
+            try:
+                offset = int(relocation["offset"])
+                relocation_type = str(relocation["type"])
+                relocation_symbol = str(relocation["symbol"])
+                int(relocation["target"])
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ValueError(
+                    f"match-units.toml: unit {name!r} relocation {index} is incomplete"
+                ) from exc
+            if offset in offsets or not 0 <= offset <= int(unit["size"]) - 4:
+                raise ValueError(
+                    f"match-units.toml: unit {name!r} relocation offset is invalid"
+                )
+            if relocation_type not in supported_relocations or not relocation_symbol:
+                raise ValueError(
+                    f"match-units.toml: unit {name!r} relocation type/symbol is invalid"
+                )
+            offsets.add(offset)
     return units
 
 
@@ -175,7 +242,7 @@ def main() -> int:
             if len(row) != 1 or row[0] in implemented or row[0] not in known_mapping_names:
                 raise ValueError(f"implemented.csv:{line}: invalid source-present name")
             implemented.add(row[0])
-        units = validate_match_manifest(target)
+        units = validate_match_manifest(target, functions)
         match_rows = require_header(CONFIG / "matches.csv", MATCH_FIELDS)
         exact: set[int] = set()
         mapping_by_address = {int(row["address"], 0): row for row in mappings}
@@ -189,6 +256,13 @@ def main() -> int:
                 raise ValueError(f"matches.csv:{line}: size differs from inventory")
             if row["unit"] not in units or not row["evidence"]:
                 raise ValueError(f"matches.csv:{line}: unit and evidence are required")
+            unit = units[row["unit"]]
+            if (
+                int(unit["target_address"]) != value
+                or int(unit["size"]) != int(row["size"], 0)
+                or unit["functions"] != [row["name"]]
+            ):
+                raise ValueError(f"matches.csv:{line}: unit does not describe this exact row")
             mapped = mapping_by_address.get(value)
             if mapped is None or mapped["name"] != row["name"]:
                 raise ValueError(f"matches.csv:{line}: exact row lacks matching mapping")

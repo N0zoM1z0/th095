@@ -27,6 +27,8 @@ fi
 mkdir -p "$(dirname -- "$output_path")"
 source_win=$(WINEDEBUG=-all winepath -w "$(realpath "$source_path")")
 output_win=$(WINEDEBUG=-all winepath -w "$(realpath -m "$output_path")")
+pdb_path="${output_path%.*}.pdb"
+pdb_win=$(WINEDEBUG=-all winepath -w "$(realpath -m "$pdb_path")")
 vc_include=$(WINEDEBUG=-all winepath -w "$msvc_root/Vc7/include")
 sdk_include=$(WINEDEBUG=-all winepath -w "$msvc_root/Vc7/PlatformSDK/Include")
 vc_lib=$(WINEDEBUG=-all winepath -w "$msvc_root/Vc7/lib")
@@ -35,4 +37,4 @@ sdk_lib=$(WINEDEBUG=-all winepath -w "$msvc_root/Vc7/PlatformSDK/Lib")
 WINEDEBUG=-all \
 INCLUDE="$vc_include;$sdk_include" \
 LIB="$vc_lib;$sdk_lib" \
-wine "$compiler" /nologo /c "$@" "$source_win" "/Fo$output_win"
+wine "$compiler" /nologo /c "$@" "$source_win" "/Fo$output_win" "/Fd$pdb_win"

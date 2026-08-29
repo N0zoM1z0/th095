@@ -107,6 +107,9 @@ def parse_args() -> argparse.Namespace:
     subparsers.add_parser("import", help="import, analyze, attest, and inventory target")
     subparsers.add_parser("inventory", help="refresh ledgers from existing project")
     subparsers.add_parser("check", help="attest existing project without analysis")
+    subparsers.add_parser(
+        "architecture", help="export private call-graph and reference metrics"
+    )
     decompile = subparsers.add_parser(
         "decompile", help="write bounded decompiler hypotheses below .analysis"
     )
@@ -151,6 +154,21 @@ def main() -> int:
             ]
             if args.command == "inventory":
                 base.extend(inventory_args(pe))
+            elif args.command == "architecture":
+                architecture_dir = ROOT / ".analysis" / "architecture"
+                architecture_dir.mkdir(parents=True, exist_ok=True)
+                base.extend(
+                    [
+                        "-postScript",
+                        "ExportArchitecture.java",
+                        str((architecture_dir / "function-metrics.csv").resolve()),
+                        str((architecture_dir / "call-edges.csv").resolve()),
+                        str((architecture_dir / "global-refs.csv").resolve()),
+                        str((architecture_dir / "string-refs.csv").resolve()),
+                        str(pe["text_start"]),
+                        str(pe["text_end"]),
+                    ]
+                )
             elif args.command == "decompile":
                 output = args.output.expanduser().resolve()
                 try:

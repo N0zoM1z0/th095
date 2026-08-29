@@ -1,1 +1,2 @@
 address,name,size,status,match_percent,unit,evidence
+0x00420770,th095::GameWindow::Render,420,matching,100.00,main-render,python3 scripts/build.py --object-name Main.obj && python3 scripts/compare-coff-function.py --unit main-render --json

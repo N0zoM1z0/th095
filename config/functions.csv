@@ -88,7 +88,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00408CB0,45,0x00408CDC,FUN_00408cb0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00408CE0,247,0x00408DD6,FUN_00408ce0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00408DE0,140,0x00408E6B,FUN_00408de0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00408E70,27091,0x0040F842,FUN_00408e70,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00408E70,27091,0x0040F842,FUN_00408e70,th095::EclManager::RunEcl,EclManager,unclassified,0.00,__thiscall,ZunResult EclManager::RunEcl(Enemy *),false,,TH095 dispatcher shape and call graph; corroborated by TH08 exact RunEcl source,,High-connectivity 27 KB ECL VM lane; boundary still under review
 0x0040FAE0,1731,0x004101A2,FUN_0040fae0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00410300,487,0x004104E6,FUN_00410300,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004105A0,1708,0x00410C4B,FUN_004105a0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -291,20 +291,20 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x0041F990,128,0x0041FA0F,FUN_0041f990,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0041FA10,1767,0x004200F6,FUN_0041fa10,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00420100,312,0x00420237,FUN_00420100,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00420240,1326,0x0042076D,FUN_00420240,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00420770,420,0x00420913,FUN_00420770,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00420920,231,0x00420A06,FUN_00420920,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00420A10,313,0x00420B48,FUN_00420a10,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00420B50,56,0x00420B87,FUN_00420b50,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00420B90,342,0x00420CE5,FUN_00420b90,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00420CF0,303,0x00420E1E,FUN_00420cf0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00420E20,1375,0x0042137E,FUN_00420e20,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00421380,1045,0x00421794,FUN_00421380,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004217A0,625,0x00421A10,FUN_004217a0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00421A20,143,0x00421AAE,FUN_00421a20,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00421AB0,322,0x00421BF1,FUN_00421ab0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00420240,1326,0x0042076D,FUN_00420240,WinMain,Main,reconstructed,0.00,__stdcall,int WINAPI WinMain(HINSTANCE HINSTANCE LPTSTR int),false,src/Main.cpp,CRT call shape and TH095 lifecycle disassembly; TH08 exact WinMain source used as compiler oracle,authored,Source-present; exact comparison pending local/source-shape reconciliation
+0x00420770,420,0x00420913,FUN_00420770,th095::GameWindow::Render,Main,matching,100.00,__thiscall,RenderResult GameWindow::Render(),false,src/Main.cpp,main-render canonical VC7.1 relocation replay,authored,Boundary reviewed through RET at 0x00420913; next function starts 0x00420920
+0x00420920,231,0x00420A06,FUN_00420920,th095::GameWindow::Present,Main,reconstructed,0.00,__fastcall,void GameWindow::Present(),false,src/Main.cpp,TH095 D3D Present/reset/screenshot control flow; TH08 exact Present source corroboration,authored,Source-present; object size and target still differ
+0x00420A10,313,0x00420B48,FUN_00420a10,th095::GameWindow::GetTimestamp,Main,reconstructed,0.00,__thiscall,double GameWindow::GetTimestamp(),false,src/Main.cpp,TH095 QPC/timeGetTime branches and verified Render relocations,authored,Source-present; TH095 adds origin and critical-section state absent from TH08
+0x00420B50,56,0x00420B87,FUN_00420b50,th095::GameWindow::InitD3DInterface,Main,reconstructed,0.00,__fastcall,ZunBool GameWindow::InitD3DInterface(),false,src/Main.cpp,TH095 Direct3DCreate8 call and fatal path; TH08 exact function corroboration,authored,Source-present; exact comparison pending error enum recovery
+0x00420B90,342,0x00420CE5,FUN_00420b90,th095::GameWindow::CreateGameWindow,Main,reconstructed,0.00,__fastcall,ZunBool GameWindow::CreateGameWindow(HINSTANCE),false,src/Main.cpp,TH095 WNDCLASS/CreateWindowEx control flow; TH08 exact source corroboration,authored,Source-present; window-title symbol retained
+0x00420CF0,303,0x00420E1E,FUN_00420cf0,th095::GameWindow::WindowProc,Main,reconstructed,0.00,__stdcall,LRESULT GameWindow::WindowProc(HWND UINT WPARAM LPARAM),false,src/Main.cpp,TH095 message cases and 303-byte TH08 exact analogue,authored,Source-present; MIDI method identity remains provisional
+0x00420E20,1375,0x0042137E,FUN_00420e20,th095::GameWindow::InitD3DRendering,Main,unclassified,0.00,__fastcall,ZunBool GameWindow::InitD3DRendering(),false,,TH095 D3D8 device creation and render setup; TH08 exact source corroboration,authored,High-connectivity bootstrap child; source recovery pending capability-string map
+0x00421380,1045,0x00421794,FUN_00421380,th095::GameWindow::ResetRenderState,Main,unclassified,0.00,__fastcall,void GameWindow::ResetRenderState(),false,,TH095 D3D8 state sequence; TH08 exact source corroboration,authored,Called from device-lost recovery
+0x004217A0,625,0x00421A10,FUN_004217a0,th095::GameWindow::CheckForRunningGameInstance,Main,unclassified,0.00,__fastcall,ZunResult GameWindow::CheckForRunningGameInstance(HINSTANCE),false,,TH095 mutex/shortcut/startup-info flow and byte-identical extent to TH08 analogue,authored,Mutex literal remains inherited as Touhou 08 App
+0x00421A20,143,0x00421AAE,FUN_00421a20,th095::GameWindow::ActivateWindow,Main,reconstructed,0.00,__fastcall,void GameWindow::ActivateWindow(HWND),false,src/Main.cpp,TH095 foreground-thread and lock-timeout flow; TH08 exact source corroboration,authored,Source-present; compiler local order pending
+0x00421AB0,322,0x00421BF1,FUN_00421ab0,th095::GameWindow::ResolveShortcut,Main,unclassified,0.00,__fastcall,ZunBool GameWindow::ResolveShortcut(char * char * int),false,,TH095 COM IShellLink/IPersistFile flow and byte-identical extent to TH08 analogue,authored,Name adapted from TH08 ResolveIt
 0x00421C00,133,0x00421C84,FUN_00421c00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00421C90,104,0x00421CF7,FUN_00421c90,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00421C90,104,0x00421CF7,FUN_00421c90,th095::AnmManager::ReleaseSurfaces,AnmManager,unclassified,0.00,__thiscall,void AnmManager::ReleaseSurfaces(),false,,TH095 releases 32 surface slots; exact TH08 104-byte analogue,authored,Called by Render device-lost path
 0x00421D00,249,0x00421DF8,FUN_00421d00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00421E00,19,0x00421E12,FUN_00421e00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00421E20,89,0x00421E78,FUN_00421e20,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -345,7 +345,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00423C70,109,0x00423CDC,FUN_00423c70,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00423CE0,25,0x00423CF8,FUN_00423ce0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00423D00,89,0x00423D58,FUN_00423d00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00423D60,267,0x00423E6A,FUN_00423d60,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00423D60,267,0x00423E6A,FUN_00423d60,th095::Supervisor::RegisterChain,Supervisor,unclassified,0.00,__fastcall,ZunResult Supervisor::RegisterChain(),false,,TH095 creates supervisor calc and three draw-chain elements; TH08 exact source corroboration,authored,Main lifecycle root
 0x00423E70,320,0x00423FAF,FUN_00423e70,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00423FB0,151,0x00424046,FUN_00423fb0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00424050,600,0x004242A7,FUN_00424050,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -355,7 +355,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00424720,603,0x0042497A,FUN_00424720,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00424980,126,0x004249FD,FUN_00424980,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00424A00,814,0x00424D2D,FUN_00424a00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00424D30,1047,0x00425146,FUN_00424d30,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00424D30,1047,0x00425146,FUN_00424d30,th095::Supervisor::LoadConfig,Supervisor,unclassified,0.00,__thiscall,ZunResult Supervisor::LoadConfig(char *),false,,TH095 200-byte config validation and thbgm.dat probe; TH08 exact source corroboration,authored,Config version observed as 0x95001
 0x00425150,155,0x004251EA,FUN_00425150,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004251F0,253,0x004252EC,FUN_004251f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004252F0,145,0x00425380,FUN_004252f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -369,8 +369,8 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00425660,196,0x00425723,FUN_00425660,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00425730,163,0x004257D2,FUN_00425730,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004257E0,163,0x00425882,FUN_004257e0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00425890,62,0x004258CD,FUN_00425890,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004258D0,62,0x0042590D,FUN_004258d0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00425890,62,0x004258CD,FUN_00425890,th095::Supervisor::InitializeCriticalSections,Supervisor,unclassified,0.00,__thiscall,void Supervisor::InitializeCriticalSections(),false,,TH095 loop initializes seven CRITICAL_SECTION objects at Supervisor+0x664,authored,Layout proven by exact Render and timestamp xrefs
+0x004258D0,62,0x0042590D,FUN_004258d0,th095::Supervisor::DeleteCriticalSections,Supervisor,unclassified,0.00,__thiscall,void Supervisor::DeleteCriticalSections(),false,,TH095 loop deletes seven CRITICAL_SECTION objects at Supervisor+0x664,authored,Layout proven by exact Render and timestamp xrefs
 0x00425910,396,0x00425A9B,FUN_00425910,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00425AA0,539,0x00425CBA,FUN_00425aa0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00425CC0,549,0x00425EE4,FUN_00425cc0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -491,14 +491,14 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x004374B0,592,0x004376FF,FUN_004374b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00437700,53,0x00437734,FUN_00437700,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00437740,80,0x0043778F,FUN_00437740,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00437790,81,0x004377E0,FUN_00437790,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004377F0,26,0x00437809,FUN_004377f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00437810,182,0x004378C5,FUN_00437810,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00437790,81,0x004377E0,FUN_00437790,th095::SoundPlayer::Initialize,SoundPlayer,unclassified,0.00,__thiscall,ZunResult SoundPlayer::Initialize(HWND),false,,TH095 zeroes 0x52d0 bytes and creates sound worker thread,authored,TH095 threaded sound differs materially from TH08
+0x004377F0,26,0x00437809,FUN_004377f0,th095::SoundPlayer::RequestThreadStop,SoundPlayer,unclassified,0.00,__thiscall,void SoundPlayer::RequestThreadStop(),false,,TH095 writes worker state 2 before shutdown,authored,Provisional source-level name
+0x00437810,182,0x004378C5,FUN_00437810,th095::SoundPlayer::JoinThread,SoundPlayer,unclassified,0.00,__thiscall,void SoundPlayer::JoinThread(),false,,TH095 waits on and closes two worker handles,authored,Provisional source-level name
 0x004378D0,69,0x00437914,FUN_004378d0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00437920,881,0x00437C90,FUN_00437920,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00437CA0,44,0x00437CCB,FUN_00437ca0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00437CD0,129,0x00437D50,FUN_00437cd0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00437D60,669,0x00437FFC,FUN_00437d60,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00437D60,669,0x00437FFC,FUN_00437d60,th095::SoundPlayer::Release,SoundPlayer,unclassified,0.00,__thiscall,ZunResult SoundPlayer::Release(),false,,TH095 releases DirectSound buffers BGM state and heap paths,authored,Main shutdown root
 0x00438000,523,0x0043820A,FUN_00438000,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00438210,849,0x00438560,FUN_00438210,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00438570,100,0x004385D3,FUN_00438570,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -513,7 +513,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00438F20,267,0x0043902A,FUN_00438f20,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00439030,290,0x00439151,FUN_00439030,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00439160,151,0x004391F6,FUN_00439160,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00439200,2525,0x00439BDC,FUN_00439200,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00439200,2525,0x00439BDC,FUN_00439200,th095::SoundPlayer::ProcessQueues,SoundPlayer,unclassified,0.00,__thiscall,int SoundPlayer::ProcessQueues(),false,,TH095 command state machine and Sound Stage strings; TH08 exact source corroboration,authored,Called by exact Render and drained by WinMain
 0x00439C00,226,0x00439CE1,FUN_00439c00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00439CF0,225,0x00439DD0,FUN_00439cf0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00439DE0,76,0x00439E2B,FUN_00439de0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -523,12 +523,12 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x0043A380,186,0x0043A439,FUN_0043a380,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0043A470,152,0x0043A507,FUN_0043a470,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0043A540,137,0x0043A5C8,FUN_0043a540,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0043A600,17018,0x0043E879,FUN_0043a600,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x0043A600,17018,0x0043E879,FUN_0043a600,th095::AnmManager::ExecuteScript,AnmManager,unclassified,0.00,__thiscall,ZunBool AnmManager::ExecuteScript(AnmVm *),false,,TH095 ANM opcode dispatcher and VM update tail; TH08 exact ExecuteScript source corroboration,authored,High-connectivity 17 KB ANM VM lane; boundary still under review
 0x0043EA20,498,0x0043EC11,FUN_0043ea20,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0043EC20,167,0x0043ECC6,FUN_0043ec20,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0043ECD0,1497,0x0043F2A8,FUN_0043ecd0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0043F2B0,60,0x0043F2EB,FUN_0043f2b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0043F2F0,198,0x0043F3B5,FUN_0043f2f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x0043F2B0,60,0x0043F2EB,FUN_0043f2b0,th095::AnmManager::ClearVertexBuffer,AnmManager,unclassified,0.00,__thiscall,void AnmManager::ClearVertexBuffer(),false,,Exact Render relocation and target counter reset behavior,authored,Render dependency
+0x0043F2F0,198,0x0043F3B5,FUN_0043f2f0,th095::AnmManager::FlushVertexBuffer,AnmManager,unclassified,0.00,__thiscall,void AnmManager::FlushVertexBuffer(),false,,Exact Render relocations and target D3D draw behavior,authored,Render dependency
 0x0043F3C0,211,0x0043F492,FUN_0043f3c0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0043F4A0,697,0x0043F758,FUN_0043f4a0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0043F760,657,0x0043F9F0,FUN_0043f760,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -549,8 +549,8 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00441A10,850,0x00441D61,FUN_00441a10,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00441D70,45,0x00441D9C,FUN_00441d70,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00441DA0,32,0x00441DBF,FUN_00441da0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00441DC0,1005,0x004421AC,FUN_00441dc0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004421B0,176,0x0044225F,FUN_004421b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00441DC0,1005,0x004421AC,FUN_00441dc0,th095::AnmManager::AnmManager,AnmManager,unclassified,0.00,__thiscall,AnmManager *AnmManager::AnmManager(),false,,WinMain allocation size 0x38314c and TH095 constructor registration flow,authored,Constructor establishes major chain callbacks
+0x004421B0,176,0x0044225F,FUN_004421b0,th095::AnmManager::~AnmManager,AnmManager,unclassified,0.00,__thiscall,void AnmManager::~AnmManager(),false,,WinMain delete path and TH095 list/vector cleanup,authored,Destructor paired with 0x00441DC0
 0x00442260,682,0x00442509,FUN_00442260,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00442510,1292,0x00442A1B,FUN_00442510,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00442A50,96,0x00442AAF,FUN_00442a50,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,

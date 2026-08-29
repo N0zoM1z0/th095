@@ -35,14 +35,18 @@ databases are not included.
 
 ## Current status
 
-TH095 is at initial bring-up. An attested Ghidra 12.1.3 headless import supplies
-1,830 provisional function candidates; every boundary and origin remains
-subject to target review. Mapping, source presence, semantic validation, and
-exact matches are deliberately tracked as independent states.
+TH095 is in active reconstruction. An attested Ghidra 12.1.3 headless import
+supplies 1,830 provisional function candidates. The application lifecycle and
+major engine hubs are mapped, `src/Main.cpp` is source-present, and
+`GameWindow::Render` is the first canonical byte-exact VC7.1 unit. Every other
+boundary and origin remains subject to target review. Mapping, source
+presence, semantic validation, and exact matches are deliberately tracked as
+independent states.
 
 The pinned compiler is Microsoft Visual C++ .NET 2003
-`13.10.3077`, matching the target's PE/Rich-header evidence. Original compiler
-flags and translation-unit boundaries are not yet claimed.
+`13.10.3077`, matching the target's PE/Rich-header evidence. The
+`/Od /Oi /Gr` main translation-unit profile is proven for the accepted Render
+unit. Profiles and translation-unit boundaries elsewhere remain unclassified.
 
 Start a reconstruction session with:
 

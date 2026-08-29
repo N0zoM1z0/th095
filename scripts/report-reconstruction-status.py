@@ -31,8 +31,15 @@ def load() -> tuple[list[dict[str, object]], dict[str, int]]:
         manifest = tomllib.load(stream)
     units: dict[str, list[str]] = {}
     for name, unit in manifest.get("units", {}).items():
-        for function in unit.get("functions", []):
-            units.setdefault(function["address"], []).append(name)
+        functions_in_unit = unit.get("functions", [])
+        for function in functions_in_unit:
+            if isinstance(function, dict):
+                function_address = str(function["address"])
+            elif len(functions_in_unit) == 1 and "target_address" in unit:
+                function_address = f"0x{int(unit['target_address']):08X}"
+            else:
+                continue
+            units.setdefault(function_address, []).append(name)
 
     result: list[dict[str, object]] = []
     for function in functions:

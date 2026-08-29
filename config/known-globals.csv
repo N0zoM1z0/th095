@@ -1,1 +1,8 @@
 address,name,module,confidence,evidence
+0x004BE21E,th095::g_PressedButtons,Input,high,Present tests bit 0x800 before screenshot path
+0x004BE3C8,th095::g_Chain,Chain,exact,Exact Render DIR32 relocations and calc/draw calls
+0x004C2420,th095::g_GameErrorContext,Main,high,WinMain logging and flush lifecycle
+0x004C45E8,th095::g_GameWindow,Main,exact,WinMain base and exact Render this object
+0x004C4670,th095::g_Supervisor,Supervisor,exact,Exact Render DIR32 relocations with verified field addends
+0x004C4EE8,th095::g_SoundPlayer,SoundPlayer,exact,Exact Render DIR32 relocation and queue call
+0x004CA1B8,th095::g_AnmManager,AnmManager,exact,Exact Render DIR32 relocations and WinMain allocation

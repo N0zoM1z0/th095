@@ -33,11 +33,24 @@ point, and mapped `.text`, then exports the function and origin ledgers.
 ```bash
 python3 scripts/ghidra.py check
 python3 scripts/ghidra.py inventory
+python3 scripts/ghidra.py architecture
 python3 scripts/ghidra.py decompile .analysis/function.c 0x00401000
 ```
 
 `check` and `inventory` open the project read-only. Decompiler output must stay
 below `.analysis/` because it is a disposable hypothesis, not source.
+
+`architecture` emits private target-wide function metrics, direct call edges,
+global references, and string references below `.analysis/architecture/`.
+Rank high-connectivity work with:
+
+```bash
+python3 scripts/report-architecture.py --limit 40 --min-size 384
+```
+
+The exporter is read-only and target-attested. Generated CSV files remain
+ignored; accepted names and conclusions must be mirrored into the ledgers and
+knowledge base.
 
 ## GUI use
 

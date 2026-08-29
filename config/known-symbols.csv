@@ -1,1 +1,29 @@
 address,name,module,confidence,evidence
+0x00408E70,th095::EclManager::RunEcl,EclManager,high,TH095 27 KB opcode dispatcher plus TH08 exact-source analogue
+0x00420240,WinMain,Main,high,CRT call and complete TH095 application lifecycle
+0x00420770,th095::GameWindow::Render,Main,exact,Canonical main-render VC7.1 relocation replay
+0x00420920,th095::GameWindow::Present,Main,high,D3D Present reset and screenshot flow plus TH08 exact-source analogue
+0x00420A10,th095::GameWindow::GetTimestamp,Main,high,QPC/timeGetTime branches called twice by exact Render
+0x00420B50,th095::GameWindow::InitD3DInterface,Main,high,Direct3DCreate8 flow plus TH08 exact-source analogue
+0x00420B90,th095::GameWindow::CreateGameWindow,Main,high,WNDCLASS and CreateWindowEx flow plus TH08 exact-source analogue
+0x00420CF0,th095::GameWindow::WindowProc,Main,high,Win32 message dispatcher and exact-size TH08 analogue
+0x00420E20,th095::GameWindow::InitD3DRendering,Main,high,D3D8 device creation and setup flow
+0x00421380,th095::GameWindow::ResetRenderState,Main,high,D3D8 render-state sequence used by device reset
+0x004217A0,th095::GameWindow::CheckForRunningGameInstance,Main,high,Mutex startup and shortcut-resolution flow
+0x00421A20,th095::GameWindow::ActivateWindow,Main,high,Foreground-thread attachment flow plus TH08 exact-source analogue
+0x00421AB0,th095::GameWindow::ResolveShortcut,Main,high,COM shortcut resolution plus TH08 exact-source analogue
+0x00421C90,th095::AnmManager::ReleaseSurfaces,AnmManager,high,Releases 32 surface slots and is called from exact Render
+0x00423D60,th095::Supervisor::RegisterChain,Supervisor,high,Creates supervisor calc and draw chain elements
+0x00424D30,th095::Supervisor::LoadConfig,Supervisor,high,Loads and validates 200-byte th095.cfg
+0x00425890,th095::Supervisor::InitializeCriticalSections,Supervisor,high,Initializes seven critical sections at offset 0x664
+0x004258D0,th095::Supervisor::DeleteCriticalSections,Supervisor,high,Deletes seven critical sections at offset 0x664
+0x00437790,th095::SoundPlayer::Initialize,SoundPlayer,high,Creates TH095 sound worker thread
+0x004377F0,th095::SoundPlayer::RequestThreadStop,SoundPlayer,medium,Writes sound worker shutdown state 2
+0x00437810,th095::SoundPlayer::JoinThread,SoundPlayer,high,Waits for and closes sound worker handles
+0x00437D60,th095::SoundPlayer::Release,SoundPlayer,high,Releases DirectSound BGM and heap resources
+0x00439200,th095::SoundPlayer::ProcessQueues,SoundPlayer,high,Command state machine and Sound Stage strings
+0x0043A600,th095::AnmManager::ExecuteScript,AnmManager,high,TH095 17 KB ANM opcode dispatcher plus TH08 exact-source analogue
+0x0043F2B0,th095::AnmManager::ClearVertexBuffer,AnmManager,high,Exact Render relocation and target counter reset
+0x0043F2F0,th095::AnmManager::FlushVertexBuffer,AnmManager,high,Exact Render relocations and target D3D draw flow
+0x00441DC0,th095::AnmManager::AnmManager,AnmManager,high,WinMain 0x38314c allocation and constructor call
+0x004421B0,th095::AnmManager::~AnmManager,AnmManager,high,WinMain delete path and target cleanup flow
