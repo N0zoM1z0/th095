@@ -138,10 +138,11 @@ residual remains uncredited. The adjacent 110-byte keyboard reset and four
 FileSystem functions at
 `0x0041A550..0x0041AC4E`, now exact for another 1,789 bytes. The FileSystem
 cluster proves the shared replay/resource codec, archive/disk loader, and
-critical-section-2 accounting. The next dependency-first lane is the
-front-end Help page at `0x00451C80`; the adjacent Music Room at `0x00450FC0`
-is now source-present with both parser helpers exact. The 16,066-byte TH095
-scene-selection hub remains the next large root.
+critical-section-2 accounting. The front-end Help page at `0x00451C80` is now
+source-present with an exact 88-byte asynchronous loader callback; the
+adjacent Music Room at `0x00450FC0` is source-present with both parser helpers
+exact. The adjacent `0x00452630` front-end candidate and the 16,066-byte TH095
+scene-selection hub are the next dependency-rich roots.
 
 ## Shared engine versus TH095 gameplay
 

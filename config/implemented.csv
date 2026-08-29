@@ -150,3 +150,5 @@ th095::SceneValueQueue::Pop
 th095::MusicRoomView::UpdateMusicRoom
 th095::SkipMusicCommentLine
 th095::ReadMusicCommentLine
+th095::HelpMenuView::UpdateHelpMenu
+th095::LoadHelpAnm

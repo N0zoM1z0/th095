@@ -10,3 +10,6 @@ th095::g_GameWindow,0x004C45E8,data
 th095::g_Supervisor,0x004C4670,data
 th095::g_SoundPlayer,0x004C4EE8,data
 th095::g_AnmManager,0x004CA1B8,data
+th095::g_HelpLoadComplete,0x004C4CC0,data
+th095::g_HelpLoadActive,0x004C4CC4,data
+th095::g_HelpMenu,0x004CA2F4,data

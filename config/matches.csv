@@ -133,3 +133,4 @@ address,name,size,status,match_percent,unit,evidence
 0x0041ABA0,th095::FileSystem::CheckIfFileAlreadyExists,175,matching,100.00,file-system-check-exists,python3 scripts/build.py --unit file-system-check-exists && python3 scripts/compare-coff-function.py --unit file-system-check-exists --json
 0x00451B00,th095::SkipMusicCommentLine,141,matching,100.00,music-room-skip-comment-line,python3 scripts/build.py --unit music-room-skip-comment-line && python3 scripts/compare-coff-function.py --unit music-room-skip-comment-line --json
 0x00451B90,th095::ReadMusicCommentLine,233,matching,100.00,music-room-read-comment-line,python3 scripts/build.py --unit music-room-read-comment-line && python3 scripts/compare-coff-function.py --unit music-room-read-comment-line --json
+0x004525D0,th095::LoadHelpAnm,88,matching,100.00,help-menu-load-anm,python3 scripts/build.py --unit help-menu-load-anm && python3 scripts/compare-coff-function.py --unit help-menu-load-anm --json

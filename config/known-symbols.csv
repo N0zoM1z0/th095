@@ -62,3 +62,5 @@ address,name,module,confidence,evidence
 0x00450FC0,th095::MusicRoomView::UpdateMusicRoom,MusicRoom,high,Complete TH095 music-room state machine with target-exact 47-call topology
 0x00451B00,th095::SkipMusicCommentLine,MusicRoom,exact,Canonical relocation-free music-room-skip-comment-line comparison
 0x00451B90,th095::ReadMusicCommentLine,MusicRoom,exact,Canonical relocation-free music-room-read-comment-line comparison
+0x00451C80,th095::HelpMenuView::UpdateHelpMenu,HelpMenu,high,Complete TH095 Help viewer state machine with target-exact 49-call topology
+0x004525D0,th095::LoadHelpAnm,HelpMenu,exact,Canonical help-menu-load-anm comparison with four relocations

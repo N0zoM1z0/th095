@@ -84,6 +84,14 @@ next action belongs in `RE_HANDOFF.md`.
 | MUSIC-002 | exact | `SkipMusicCommentLine` and `ReadMusicCommentLine @ 0x00451B00/0x00451B90` handle CR, LF, and CRLF input while decrementing the caller-owned remaining-byte count; the reader terminates the source line in place and copies it to the fixed destination. | Two canonical relocation-free VC7.1 units totaling 374 bytes |
 | MUSIC-003 | compiler-observed | `SceneValueQueue::Pop @ 0x00450F60` removes the first of sixteen integer values by shifting the complete array and is called by four target scene/front-end hubs. Its natural VC7.1 body is 93 bytes versus the 91-byte target solely because it saves/restores `esi`. | Attested target body and four-caller graph; non-canonical pinned-VC7.1 probe |
 
+## Reconstructed Help viewer
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| HELP-001 | compiler-observed | `HelpMenuView::UpdateHelpMenu @ 0x00451C80` is the complete five-state TH095 Help viewer. It owns nine `help_%.2d.anm` pages, uses texture slot 13, gates input for twenty timer ticks, and recreates the nine selection VMs when a page closes. Its natural VC7.1 body is 2,298 bytes versus the 2,358-byte target and preserves the exact 49-call topology. | Attested target control flow and fields through `+0x6510`; pinned VC7.1 semantic probe; exact call-target distribution |
+| HELP-002 | exact | `LoadHelpAnm @ 0x004525D0` loads the requested Help ANM through the shared archive-or-disk `FileSystem::OpenFile`, moves the owner state to 3, clears the active flag, and sets the completion flag. | Canonical 88-byte VC7.1 unit with all four relocations replayed |
+| HELP-003 | target-observed | The shared title-controller layout places the cursor at `+0x20`, VM handle array at `+0xBF4`, page-selection handles at `+0xE38`, transition handle at `+0x6100`, state at `+0x610C`, path buffer at `+0x6408`, data size at `+0x650C`, and owned file data at `+0x6510`. | Target field accesses and compile-time layout assertions |
+
 ## Reconstructed main family
 
 | ID | Class | Durable fact | Evidence |
