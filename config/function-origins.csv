@@ -218,11 +218,11 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041B500,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041B580,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041B600,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041B660,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041B6E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041B660,authored,UiCursor,authored,exact,vc71-result-screen-cursor-push-2026-08-29
+0x0041B6E0,authored,UiCursor,authored,exact,vc71-result-screen-cursor-pop-2026-08-29
 0x0041B760,authored,UiCursor,authored,exact,vc71-result-screen-replay-cursor-move-2026-08-29
 0x0041B830,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041B8A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041B8A0,authored,Timer,authored,exact,vc71-result-screen-timer-tick-2026-08-29
 0x0041B920,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041BA30,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041BA80,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -385,7 +385,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00426880,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00426A50,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00426B90,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00426BF0,authored,ReplayMenu,authored,high,ghidra-replay-menu-cluster-2026-08-29
+0x00426BF0,authored,ResultScreen,authored,high,vc71-result-screen-update-source-2026-08-29
 0x00428590,authored,ReplayMenu,authored,high,ghidra-replay-menu-cluster-2026-08-29
 0x004288B0,authored,ReplayMenu,authored,high,ghidra-replay-menu-cluster-2026-08-29
 0x00428E90,authored,ReplayMenu,authored,high,ghidra-replay-menu-cluster-2026-08-29
@@ -395,7 +395,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004299F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00429AB0,authored,ResultScreen,authored,exact,vc71-result-screen-update-cursor-2026-08-29
 0x00429C80,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0042A6B0,authored,ReplayMenu,authored,high,ghidra-replay-menu-cluster-2026-08-29
+0x0042A6B0,authored,ResultScreen,authored,exact,vc71-result-screen-on-update-2026-08-29
 0x0042A6E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0042A710,authored,ResultScreen,authored,exact,vc71-result-screen-load-replays-2026-08-29
 0x0042A8A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

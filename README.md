@@ -43,8 +43,8 @@ included.
 ## Current status
 
 TH095 is in active reconstruction. An attested Ghidra 12.1.3 headless import
-supplies 1,830 provisional function candidates. Eighty-six canonical units now
-reproduce 76,757 authored bytes exactly, including the complete 17,018-byte
+supplies 1,830 provisional function candidates. Ninety canonical units now
+reproduce 77,145 authored bytes exactly, including the complete 17,018-byte
 `AnmManager::ExecuteScript`, 27,091-byte `EclManager::RunEcl`, the
 target-specific asynchronous `SoundPlayer` core, and the exact Main/D3D
 runtime family. The TH095-specific replay lifetime, chain-registration,
@@ -53,7 +53,11 @@ USER metadata, playback display path, and twenty-slot result-screen replay
 loader are also exact. A target-local audit
 has now admitted 59,827 additional bytes
 from the photography/camera, replay/menu, and gameplay/resource clusters, so
-exact coverage is 60.65% of the expanded 126,555-byte authored set. The global
+exact coverage is 60.79% of the expanded 126,898-byte authored set. The complete
+6,471-byte TH095 ResultScreen update dispatcher is source-present for all
+sixteen photo-result, replay-selection, and replay-name states; its current
+VC7.1 body is 5,979 bytes and remains uncredited until it is byte-exact. The
+global
 denominator remains provisional while origin review continues. Mapping, source
 presence, semantic validation, and exact matches are deliberately tracked as
 independent states.

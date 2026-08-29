@@ -87,3 +87,8 @@ th095::ReplayManager::WriteReplay
 th095::ResultScreen::LoadReplays
 th095::ResultScreenReplayCursor::Move
 th095::ResultScreen::UpdateCursor
+th095::ResultScreenReplayCursor::Push
+th095::ResultScreenReplayCursor::Pop
+th095::ResultScreenTimer::Tick
+th095::ResultScreen::Update
+th095::ResultScreen::OnUpdate

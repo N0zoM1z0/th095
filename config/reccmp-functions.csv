@@ -88,3 +88,8 @@ th095::ReplayManager::WriteReplay,0x00434A90,function
 th095::ResultScreen::LoadReplays,0x0042A710,function
 th095::ResultScreenReplayCursor::Move,0x0041B760,function
 th095::ResultScreen::UpdateCursor,0x00429AB0,function
+th095::ResultScreenReplayCursor::Push,0x0041B660,function
+th095::ResultScreenReplayCursor::Pop,0x0041B6E0,function
+th095::ResultScreenTimer::Tick,0x0041B8A0,function
+th095::ResultScreen::Update,0x00426BF0,function
+th095::ResultScreen::OnUpdate,0x0042A6B0,function

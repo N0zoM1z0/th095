@@ -10,21 +10,21 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 86 canonical units cover 76,757 authored bytes.
+- Reconstruction: 90 canonical units cover 77,145 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 60.65% (76,757 / 126,555)
+  relocations. Confirmed authored-byte coverage is now 60.79% (77,145 / 126,898)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
   (14,363 bytes), eleven replay/menu/best-shot functions (15,512 bytes), and
   ten gameplay/resource functions (25,601 bytes). This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 108 authored candidates and leaves 1,722 origin/boundary reviews
+  confirms 111 authored candidates and leaves 1,719 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -96,7 +96,7 @@ python3 scripts/report-reconstruction-status.py --summary
 
 The earlier narrow 95% checkpoint is superseded by the target-local origin
 audit. Subsequent camera, ANM, replay, and result-screen work expanded the
-honest denominator to 126,555 bytes; exact coverage is 60.65%. `WinMain` remains
+honest denominator to 126,898 bytes; exact coverage is 60.79%. `WinMain` remains
 deferred because its remaining eight
 stack bytes have resisted the bounded VC7.1 oracle matrix.
 
@@ -131,8 +131,16 @@ stack bytes have resisted the bounded VC7.1 oracle matrix.
    together they prove the cursor's disabled-entry/wrap tail, result timer,
    twenty-five VM array, repeated-input globals, and interrupt 2/3 selection
    flow.
-   Continue with the 6,471-byte result/replay dispatcher at `0x00426BF0`, then
-   the 16,066-byte gameplay/resource hub at `0x00447D00`.
+   `ResultScreen::Update @ 0x00426BF0` is now source-present for the complete
+   sixteen-state TH095 result/photo/replay flow. Its pinned VC7.1 probe is
+   5,979 bytes versus the 6,471-byte target and receives no exact credit yet.
+   Its 45-byte suppression wrapper, 113-byte cursor push, 113-byte cursor pop,
+   and 117-byte slow-motion timer tick are canonical exact; the timer is shared
+   by 27 target callers. Continue by aligning the dispatcher against these
+   now-exact dependencies and by recovering its remaining initialization and
+   best-shot helpers.
+   Continue byte alignment of the 6,471-byte dispatcher, then move to the
+   16,066-byte gameplay/resource hub at `0x00447D00`.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression
