@@ -392,3 +392,7 @@ th095::BackgroundStageObject::IsVisible,0x004031A0,function
 th095::BackgroundSupervisorView::ConfigureBackgroundViewport,0x00401B70,function
 th095::Background::Background,0x004020C0,function
 th095::Background::~Background,0x00402330,function
+th095::AnmVm::AnmVm,0x00401EB0,function
+th095::AnmVmBase::AnmVmBase,0x00401F10,function
+th095::AsciiManager::AsciiManager,0x00401D30,function
+th095::AsciiManager::~AsciiManager,0x00402010,function

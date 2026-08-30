@@ -25,3 +25,4 @@ th095::g_TextRenderBuffer,0x004C44B8,data
 th095::g_TextRenderFormatInfoArray,0x004A4330,data
 th095::g_Background,0x004BDD90,data
 th095::g_BackgroundStageDataCache,0x004BDD94,data
+th095::g_AsciiManager,0x004A9F80,data

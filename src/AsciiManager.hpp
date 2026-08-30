@@ -1,71 +1,37 @@
 #pragma once
-#include "ecl/AnmManagerEclView.hpp"
-#include "Global.hpp"
-#include "Supervisor.hpp"
-#include "ZunColor.hpp"
-#include "ZunResult.hpp"
+#include "AnmManager.hpp"
 #include "diffbuild.hpp"
-#include "inttypes.hpp"
-
-#include <d3dx8.h>
 
 #define ASCII_MAX_STRINGS 256
-#define ASCII_MAX_SCORE_POPUPS 720
-#define ASCII_MAX_PLAYER_POPUPS 3
+#define ASCII_MAX_GUI_STRINGS 64
+#define ASCII_MAX_SCORE_POPUPS 723
 #define ASCII_MAX_TIME_POPUPS 128
 
 namespace th095
 {
 
-struct PauseMenu
-{
-    PauseMenu();
-
-    i32 OnUpdate();
-    void OnDraw();
-
-    u32 curState;
-    i32 numFrames;
-    AnmVm menuSprites[10];
-    AnmVm menuBackground;
-};
-
-C_ASSERT(sizeof(PauseMenu) == 0x1d14);
-
-struct RetryMenu
-{
-    RetryMenu();
-
-    i32 OnUpdate();
-    void OnDraw();
-
-    u32 curState;
-    i32 numFrames;
-
-    AnmVm menuSprites[6];
-    AnmVm menuBackground;
-};
-
-C_ASSERT(sizeof(RetryMenu) == 0x1284);
-
 struct AsciiManagerString
 {
-    AsciiManagerString();
+    AsciiManagerString()
+    {
+    }
 
     char text[64];
     Float3 position;
     D3DCOLOR color;
     f32 scaleX;
     f32 scaleY;
-    ZunBool isSelected;
-    ZunBool isGui;
+    i32 isSelected;
+    i32 isGui;
 };
 
 C_ASSERT(sizeof(AsciiManagerString) == 0x60);
 
 struct AsciiManagerPopup
 {
-    AsciiManagerPopup();
+    AsciiManagerPopup()
+    {
+    }
 
     char text[12];
     Float3 position;
@@ -84,9 +50,10 @@ C_ASSERT(offsetof(AsciiManagerPopup, unconsumedDword34) == 0x34);
 struct AsciiManager
 {
     AsciiManager();
-    static ChainCallbackResult OnUpdate(AsciiManager *mgr);
-    static ChainCallbackResult OnDrawLowPrio(AsciiManager *mgr);
-    static ChainCallbackResult OnDrawHighPrio(AsciiManager *mgr);
+    ~AsciiManager();
+    static i32 OnUpdate(AsciiManager *mgr);
+    static i32 OnDrawLowPrio(AsciiManager *mgr);
+    static i32 OnDrawHighPrio(AsciiManager *mgr);
     static ZunResult RegisterChain();
     static ZunResult AddedCallback(AsciiManager *mgr);
     static ZunResult DeletedCallback(AsciiManager *mgr);
@@ -111,10 +78,10 @@ struct AsciiManager
 
     void SetColor(D3DCOLOR color)
     {
-        this->color.d3dColor = color;
+        this->color.color = color;
     }
 
-    void SetIsSelected(ZunBool selected)
+    void SetIsSelected(i32 selected)
     {
         this->isSelected = selected;
     }
@@ -129,63 +96,37 @@ struct AsciiManager
 
     void SetIsGuiMode(u32 value);
 
-    AnmVm largeText;
-    AnmVm smallScoreText;
-    AnmVm popupText;
-    AnmVm youkaiGauge;
-    AnmVm youkaiGaugeHumanIcon;
-    AnmVm youkaiGaugeYoukaiIcon;
-    AnmVm youkaiGaugeCursor;
-    AnmVm percentageText;
-    AnmVm auxiliaryGaugeVm;
-
-    AnmVm bossMarkers[4];
-    i32 bossMarkerStates[4];
-
-    AsciiManagerString strings[ASCII_MAX_STRINGS];
-    i32 numStrings;
-
-    ZunColor color;
-    f32 scaleX;
-    f32 scaleY;
-    ZunBool isGui;
-    ZunBool isSelected;
-
-    i32 gaugeInterrupt;
-    i32 spaceWidth;
-    u32 frameTimer;
-
-    AnmLoaded *asciiAnm;
-    AnmLoaded *captureAnm;
-
-    i32 nextScorePopupIndex;
-    i32 nextPlayerPointPopupIndex;
-    i32 nextTimePopupIndex;
-
-    ZunBool resetOnlyState829C;
-
-    PauseMenu pauseMenu;
-    RetryMenu retryMenu;
-
-    AnmVm demoIcon;
-
-    AsciiManagerPopup scorePopups[ASCII_MAX_SCORE_POPUPS + ASCII_MAX_PLAYER_POPUPS];
-    AsciiManagerPopup timePopups[ASCII_MAX_TIME_POPUPS];
-
-    f32 nightBlindnessRadius;
-    i32 nightBlindnessAlpha;
-
-    AnmVm nightBlindnessVm;
+    AnmVm largeText;                                      // +0x0000
+    AnmVm smallText;                                      // +0x02cc
+    AnmVm popupText;                                      // +0x0598
+    AsciiManagerString strings[ASCII_MAX_STRINGS];        // +0x0864
+    AsciiManagerString guiStrings[ASCII_MAX_GUI_STRINGS]; // +0x6864
+    i32 numStrings;                                       // +0x8064
+    i32 numGuiStrings;                                    // +0x8068
+    ZunColor color;                                       // +0x806c
+    f32 scaleX;                                           // +0x8070
+    f32 scaleY;                                           // +0x8074
+    i32 isGui;                                            // +0x8078
+    i32 isSelected;                                       // +0x807c
+    u8 unknown8080[0x8098 - 0x8080];
+    i32 spaceWidth;                                       // +0x8098
+    u8 unknown809c[4];
+    AnmLoaded *asciiAnm;                                  // +0x80a0
+    AnmLoaded *captureAnm;                                // +0x80a4
+    u8 unknown80a8[0x10];
+    AnmVm auxiliaryVm;                                    // +0x80b8
+    AsciiManagerPopup scorePopups[ASCII_MAX_SCORE_POPUPS];// +0x8384
+    AsciiManagerPopup timePopups[ASCII_MAX_TIME_POPUPS];  // +0x121ac
 };
 
-C_ASSERT(sizeof(AsciiManager) == 0x171b0);
-C_ASSERT(offsetof(AsciiManager, auxiliaryGaugeVm) == 0x1520);
-C_ASSERT(offsetof(AsciiManager, bossMarkerStates) == 0x2254);
-C_ASSERT(offsetof(AsciiManager, frameTimer) == 0x8284);
-C_ASSERT(offsetof(AsciiManager, resetOnlyState829C) == 0x829C);
-C_ASSERT(offsetof(AsciiManager, nightBlindnessRadius) == 0x16f04);
-C_ASSERT(offsetof(AsciiManager, nightBlindnessAlpha) == 0x16f08);
-C_ASSERT(offsetof(AsciiManager, nightBlindnessVm) == 0x16f0c);
+C_ASSERT(sizeof(AsciiManager) == 0x13dac);
+C_ASSERT(offsetof(AsciiManager, strings) == 0x0864);
+C_ASSERT(offsetof(AsciiManager, guiStrings) == 0x6864);
+C_ASSERT(offsetof(AsciiManager, color) == 0x806c);
+C_ASSERT(offsetof(AsciiManager, asciiAnm) == 0x80a0);
+C_ASSERT(offsetof(AsciiManager, auxiliaryVm) == 0x80b8);
+C_ASSERT(offsetof(AsciiManager, scorePopups) == 0x8384);
+C_ASSERT(offsetof(AsciiManager, timePopups) == 0x121ac);
 DIFFABLE_EXTERN(AsciiManager, g_AsciiManager);
 
 } // namespace th095

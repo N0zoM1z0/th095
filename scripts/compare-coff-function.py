@@ -37,7 +37,9 @@ def coff_name(raw: bytes, string_table: bytes) -> str:
     return read_c_string(raw)
 
 
-def object_function(path: Path, wanted: str) -> tuple[bytearray, list[dict[str, object]]]:
+def object_function(
+    path: Path, wanted: str, expected_size: int | None = None
+) -> tuple[bytearray, list[dict[str, object]]]:
     data = path.read_bytes()
     if len(data) < 20:
         raise ValueError("truncated COFF object")
@@ -99,9 +101,18 @@ def object_function(path: Path, wanted: str) -> tuple[bytearray, list[dict[str, 
         raise ValueError(f"expected one defined symbol {wanted!r}, found {len(matches)}")
     symbol = matches[0]
     section = sections[int(symbol["section"]) - 1]
-    if int(symbol["aux_count"]) < 1 or len(symbol["aux"]) < 8:
-        raise ValueError("function symbol lacks a definition auxiliary record")
-    size = struct.unpack_from("<I", symbol["aux"], 4)[0]
+    if int(symbol["aux_count"]) >= 1 and len(symbol["aux"]) >= 8:
+        size = struct.unpack_from("<I", symbol["aux"], 4)[0]
+    else:
+        if expected_size is None:
+            raise ValueError("function symbol lacks a definition auxiliary record")
+        if int(symbol["type"]) != 0x20 or not int(section["flags"]) & 0x20:
+            raise ValueError(
+                "aux-less symbol is not a function in a code section"
+            )
+        size = expected_size
+        if int(symbol["value"]) + size > int(section["size"]):
+            raise ValueError("expected function extent exceeds its COFF section")
     start = int(section["raw_offset"]) + int(symbol["value"])
     if start + size > len(data):
         raise ValueError("function body extends beyond the object")
@@ -236,15 +247,17 @@ def compare_unit(name: str) -> dict[str, object]:
     if not isinstance(unit, dict):
         raise ValueError(f"invalid match unit {name!r}")
 
-    object_path = (ROOT / str(unit["object"])).resolve()
-    object_path.relative_to(ROOT)
-    code, actual = object_function(object_path, str(unit["symbol"]))
     size = int(unit["size"])
     compare_size = int(unit.get("compare_size", size))
     if compare_size < size:
         raise ValueError(
             f"comparison extent {compare_size:#x} is smaller than coverage size {size:#x}"
         )
+    object_path = (ROOT / str(unit["object"])).resolve()
+    object_path.relative_to(ROOT)
+    code, actual = object_function(
+        object_path, str(unit["symbol"]), compare_size
+    )
     address = int(unit["target_address"])
     if len(code) != compare_size:
         raise ValueError(

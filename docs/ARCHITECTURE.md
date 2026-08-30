@@ -69,6 +69,8 @@ flowchart LR
     Render --> Sound
     Render --> Anm
     Anm --> AnmVM[ExecuteScript\n0x0043A600 exact]
+    Chain --> ASCII[AsciiManager text queues\n0x00401280..0x004020B7]
+    ASCII --> Anm
     Chain --> Game[TH095 gameplay/UI states]
     Game --> EclVM[RunEcl\n0x00408E70 exact]
 ```
@@ -85,6 +87,8 @@ The exact Render unit proves these shared edges and field offsets:
 | Target | Recovered role | Exact evidence |
 | --- | --- | --- |
 | `0x00401B70` | `BackgroundSupervisorView::ConfigureBackgroundViewport` | Canonical VC7.1 body and `ApplyBackgroundViewport` REL32 |
+| `0x00401D30` / `0x00402010` | `AsciiManager` constructor/destructor | Canonical VC7.1 member construction/destruction and twelve relocations |
+| `0x00401EB0` / `0x00401F10` | `AnmVm` / `AnmVmBase` constructors | Canonical derived and implicit-COMDAT base bodies |
 | `0x00404B10` | `Supervisor::ConfigureGameplayViewport` | Render REL32 |
 | `0x00418C40` / `0x00418DA0` | calc/draw chain dispatch | Render REL32 |
 | `0x00439200` | `SoundPlayer::ProcessQueues` | Render REL32 |
@@ -115,6 +119,7 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | `0x0042F190` | 3,463 | 1 caller / 6 internal callees | source-present photo-game main state | Complete movement/focus/animation/bounds/history loop; compiler-local residuals deferred |
 | `0x00439200` | 2,525 | 2 callers / 16 internal callees | `SoundPlayer::ProcessQueues` | Shared threaded audio state machine |
 | `0x00420240` | 1,326 | CRT root / 30 internal callees | `WinMain` | Process-level ownership and subsystem naming |
+| `0x00401280..0x00401D2F` | 2,121 | three Chain callbacks / shared text consumers | lifecycle foundation exact; text queues under reconstruction | Global regular/GUI text, score/time popups, and four inline ANM VMs |
 
 The first large-function lane, `AnmManager::ExecuteScript`, is exact for its
 17,018-byte authored body. Its canonical unit also compares the complete

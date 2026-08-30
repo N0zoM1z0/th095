@@ -391,3 +391,7 @@ th095::BackgroundStageObject::IsVisible
 th095::BackgroundSupervisorView::ConfigureBackgroundViewport
 th095::Background::Background
 th095::Background::~Background
+th095::AnmVm::AnmVm
+th095::AnmVmBase::AnmVmBase
+th095::AsciiManager::AsciiManager
+th095::AsciiManager::~AsciiManager

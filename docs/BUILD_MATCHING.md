@@ -84,6 +84,13 @@ A diagnostic `structural-exact` result is compiler-oracle evidence only. It is
 not eligible for `config/matches.csv` until every relocation and a replayable
 unit are committed.
 
+VC7.1 may emit an implicit constructor as a typed COMDAT symbol without a
+function-definition auxiliary record. In that bounded case the comparator
+accepts the reviewed manifest `compare_size` as the extent only after checking
+that the symbol is a function, resides in a code section, and fits completely
+inside that section. Byte replay and the full relocation manifest remain
+unchanged; this rule is used by `anm-vm-base-constructor`.
+
 The large ECL dispatcher is replayed independently from the ANM translation
 unit:
 

@@ -555,10 +555,24 @@ Constructor/destructor source at `0x004020C0/0x00402330` preserves the full
 allocations, slot-four retain/release policy, and eleven embedded VM cleanups.
 Their natural probes are 96/445 bytes against 389/366-byte targets; keep them
 non-exact because the residual is compiler member-array EH/vector machinery,
-not missing runtime behavior. Next review the adjacent high-connectivity ANM
-VM construction foundation at `0x00401D30/0x00401EB0/0x00401F10/0x00402010`.
-Use TH08 only for ancestral source shape and preserve every established
-Background unit plus `PhotoToScreen @ 0x004186D0` and all photography units.
+not missing runtime behavior.
+
+The adjacent construction foundation at `0x00401D30/0x00401EB0/0x00401F10/
+0x00402010` is now canonical exact for all 885 authored bytes. The 90-byte
+`AnmVm` constructor and 243-byte implicit-COMDAT `AnmVmBase` constructor prove
+the natural inherited source shape without weakening byte or relocation
+comparison. The 384-byte `AsciiManager` constructor and 168-byte destructor
+then reproduce four inline VM lifetimes and all four `_free` calls. Target-local
+field evidence replaces the stale TH08 ASCII layout: the `0x13DAC`-byte global
+at `0x004A9F80` owns 256 regular and 64 GUI strings, four VMs, two ANM handles,
+723 score popups, and 128 time popups.
+
+Continue through the high-connectivity text spine at `0x00401280..0x00401D2F`:
+chain registration/reset/release, `AddString`, `AddGuiString`, both variadic
+formatters, and the regular/GUI render queues. Use TH08 only for ancestral
+source shape; target offsets and the regular-versus-GUI queue split are TH095
+evidence. Preserve every established Background, ECL, ANM, and photography
+exact unit while this shared header changes.
 
 ## Closed lanes and preservation constraints
 

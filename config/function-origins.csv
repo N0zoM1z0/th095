@@ -16,10 +16,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00401B70,authored,Background,authored,exact,background-configure-viewport-exact-2026-08-30
 0x00401BE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00401C10,authored,AnmVm,authored,exact,anm-vm-initialize-2026-08-29
-0x00401D30,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00401EB0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00401F10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00402010,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00401D30,authored,AsciiManager,authored,exact,ascii-manager-lifecycle-exact-2026-08-30
+0x00401EB0,authored,AnmVm,authored,exact,anm-vm-construction-exact-2026-08-30
+0x00401F10,authored,AnmVm,authored,exact,anm-vm-construction-exact-2026-08-30
+0x00402010,authored,AsciiManager,authored,exact,ascii-manager-lifecycle-exact-2026-08-30
 0x004020C0,authored,Background,authored,high,background-lifecycle-complete-2026-08-30
 0x00402250,authored,Background,authored,exact,background-lifecycle-2026-08-30
 0x00402330,authored,Background,authored,high,background-lifecycle-complete-2026-08-30

@@ -1,6 +1,5 @@
 #include "EclManager.hpp"
 #include "EclOperands.hpp"
-#include "AsciiManager.hpp"
 #include "Gui.hpp"
 #include "BulletManager.hpp"
 #include "Background.hpp"
