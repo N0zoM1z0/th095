@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 341 canonical exact functions cover 131,944 authored bytes.
+- Reconstruction: 342 canonical exact functions cover 132,099 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 49.34% (131,944 / 267,417)
+  relocations. Confirmed authored-byte coverage is now 49.37% (132,099 / 267,591)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 427 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,395 origin/boundary reviews pending. Original class
+  current ledger confirms 429 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,393 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -626,8 +626,15 @@ completion. The teardown callback closes the inverse ownership graph through
 workers, managers, seven resource owners, ANM/ASCII/sound/text, DirectInput,
 PBG, and the dummy MIDI timer at `+0x118`. The residual bytes only cover unused
 EH space or four compiler-local homes; do not add inert locals for exact credit.
-Continue with `ThreadClose @ 0x00425150` and the adjacent dummy-MIDI destructor
-at `0x00424700`, then resume the remaining Main inventory. Preserve every
+`ThreadClose @ 0x00425150` is canonical exact for all 155 bytes and its three
+imports. It closes and clears the replay-scan worker handle under critical
+section 6, clears the worker's active field, and balances the corresponding
+lock-user counter. This proves Supervisor `+0x70C..+0x712` is the seven-byte
+`criticalSectionLockCounts` array used by both timestamp lane 5 and replay lane
+6. The adjacent 19-byte dummy-MIDI destructor is source-present and complete;
+stock VC7.1 emits a truthful 28-byte body because it publishes the derived vptr
+before calling the base destructor, so it receives no exact credit. Resume the
+remaining Main inventory at `0x00424980/0x00424A00` and preserve every
 established Main, Background, ECL, ANM, photography, and ASCII exact unit while
 the shared headers change.
 

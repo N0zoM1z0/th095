@@ -37,6 +37,15 @@ struct SupervisorInputWorkerView
     void Stop();
 };
 
+struct SupervisorReplayScanWorkerView
+{
+    HANDLE handle;
+    u32 threadId;
+    i32 stopRequested;
+    i32 active;
+    void (__fastcall *threadProc)(void *);
+};
+
 struct FrontEndControllerView
 {
     void Destroy();
@@ -391,7 +400,7 @@ f64 GameWindow::GetTimestamp()
     f64 timestamp;
 
     g_Supervisor.EnterCriticalSectionWrapper(5);
-    g_Supervisor.timestampUsers++;
+    g_Supervisor.criticalSectionLockCounts[5]++;
 
     if (g_GameWindow.performanceFrequency.QuadPart != 0)
     {
@@ -402,7 +411,7 @@ f64 GameWindow::GetTimestamp()
             g_GameWindow.timeOrigin = timestampValue;
 
         g_Supervisor.LeaveCriticalSectionWrapper(5);
-        g_Supervisor.timestampUsers--;
+        g_Supervisor.criticalSectionLockCounts[5]--;
         return timestampValue - g_GameWindow.timeOrigin;
     }
     else
@@ -416,7 +425,7 @@ f64 GameWindow::GetTimestamp()
         timestampValue = (timestamp - timestampValue) / 1000.0;
 
         g_Supervisor.LeaveCriticalSectionWrapper(5);
-        g_Supervisor.timestampUsers--;
+        g_Supervisor.criticalSectionLockCounts[5]--;
         return timestampValue;
     }
 #undef timestampValue
@@ -1218,10 +1227,10 @@ i32 __fastcall Supervisor::FinalizeFrame(Supervisor *s)
 {
     g_AnmManager->FlushVertexBuffer();
     s->EnterCriticalSectionWrapper(5);
-    s->timestampUsers++;
+    s->criticalSectionLockCounts[5]++;
     s->fpsFrameCount += g_Supervisor.config.frameskipConfig + 1;
     s->LeaveCriticalSectionWrapper(5);
-    s->timestampUsers--;
+    s->criticalSectionLockCounts[5]--;
     return 1;
 }
 
@@ -1712,6 +1721,29 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
         g_Supervisor.dummyMidiTimer = NULL;
     }
     return 0;
+}
+
+// FUNCTION: TH095 0x00425150.
+void Supervisor::ThreadClose()
+{
+    SupervisorReplayScanWorkerView *worker;
+
+    this->EnterCriticalSectionWrapper(6);
+    this->criticalSectionLockCounts[6]++;
+    worker = (SupervisorReplayScanWorkerView *)&this->replayScanThreadHandle;
+    if (worker->handle != NULL)
+    {
+        CloseHandle(worker->handle);
+        worker->handle = NULL;
+        worker->active = 0;
+    }
+    this->LeaveCriticalSectionWrapper(6);
+    this->criticalSectionLockCounts[6]--;
+}
+
+// FUNCTION: TH095 0x00424700.
+DummyMidiTimer::~DummyMidiTimer()
+{
 }
 
 void Supervisor::InitializeCriticalSections()

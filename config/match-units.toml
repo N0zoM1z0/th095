@@ -5934,6 +5934,20 @@ relocations = [
   { offset = 0x243, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x42C },
 ]
 
+[units.main-thread-close]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::ThreadClose"]
+symbol = "?ThreadClose@Supervisor@th095@@QAEXXZ"
+target_address = 0x00425150
+size = 0x9B
+relocations = [
+  { offset = 0x1E, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x00495060 },
+  { offset = 0x52, type = "DIR32", symbol = "__imp__CloseHandle@4", target = 0x00495068 },
+  { offset = 0x7E, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+]
+
 [units.main-initialize-critical-sections]
 source = "src/Main.cpp"
 object = "build/matching/Main.obj"

@@ -222,9 +222,8 @@ struct Supervisor
     u8 unknown65c[4];
     i32 startupThreadState;                      // +0x660
     CRITICAL_SECTION criticalSections[7];       // +0x664
-    u8 unknown70c[5];
-    u8 timestampUsers;                          // +0x711
-    u8 unknown712[2];
+    u8 criticalSectionLockCounts[7];            // +0x70c
+    u8 unknown713;
     i32 loadingVmsHaveBeenSetup;                // +0x714
     u8 unknown718[0x50];
     i32 fogState;                               // +0x768
@@ -301,6 +300,7 @@ typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanThreadHan
 typedef char SupervisorReplayScanStopAt650[(offsetof(Supervisor, replayScanStopRequested) == 0x650) ? 1 : -1];
 typedef char SupervisorStartupThreadStateAt660[(offsetof(Supervisor, startupThreadState) == 0x660) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
+typedef char SupervisorCriticalLockCountsAt70C[(offsetof(Supervisor, criticalSectionLockCounts) == 0x70c) ? 1 : -1];
 typedef char SupervisorLoadingVmsAt714[(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x714) ? 1 : -1];
 typedef char SupervisorLagNumeratorAt78C[(offsetof(Supervisor, lagNumerator) == 0x78c) ? 1 : -1];
 typedef char SupervisorVersionDataAt778[(offsetof(Supervisor, versionData) == 0x778) ? 1 : -1];
