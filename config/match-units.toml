@@ -6094,11 +6094,11 @@ relocations = [
   { offset = 0x12F, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
   { offset = 0x13E, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
   { offset = 0x159, type = "DIR32", symbol = "?g_PhotoStageState@th095@@3PAUPhotoStageStateView@1@A", target = 0x004C4E6C },
-  { offset = 0x15E, type = "REL32", symbol = "?SavePhoto@PhotoStageStateView@th095@@QAEXHPBUFloat3@2@HHHPBH@Z", target = 0x0042C450 },
+  { offset = 0x15E, type = "REL32", symbol = "?SavePhoto@PhotoStageStateView@th095@@QAEHHPBUFloat3@2@HHHPBH@Z", target = 0x0042C450 },
   { offset = 0x18B, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
   { offset = 0x19A, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
   { offset = 0x1AD, type = "DIR32", symbol = "?g_PhotoStageState@th095@@3PAUPhotoStageStateView@1@A", target = 0x004C4E6C },
-  { offset = 0x1B2, type = "REL32", symbol = "?SavePhoto@PhotoStageStateView@th095@@QAEXHPBUFloat3@2@HHHPBH@Z", target = 0x0042C450 },
+  { offset = 0x1B2, type = "REL32", symbol = "?SavePhoto@PhotoStageStateView@th095@@QAEHHPBUFloat3@2@HHHPBH@Z", target = 0x0042C450 },
   { offset = 0x1D6, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
   { offset = 0x1EE, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
   { offset = 0x231, type = "DIR32", symbol = "?g_PhotoGame@th095@@3PAUPhotoGameStateView@1@A", target = 0x004C4E70 },
@@ -6131,7 +6131,7 @@ relocations = [
   { offset = 0x5A, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x5F, type = "REL32", symbol = "?RemoveVm@PhotoAnmManagerView@th095@@QAEXH@Z", target = 0x004451B0 },
   { offset = 0x94, type = "DIR32", symbol = "?g_PhotoStageState@th095@@3PAUPhotoStageStateView@1@A", target = 0x004C4E6C },
-  { offset = 0x99, type = "REL32", symbol = "?SavePhoto@PhotoStageStateView@th095@@QAEXHPBUFloat3@2@HHHPBH@Z", target = 0x0042C450 },
+  { offset = 0x99, type = "REL32", symbol = "?SavePhoto@PhotoStageStateView@th095@@QAEHHPBUFloat3@2@HHHPBH@Z", target = 0x0042C450 },
   { offset = 0xAC, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
   { offset = 0xFD, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
   { offset = 0x131, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3USoundPlayer@1@A", target = 0x004C4EE8 },
@@ -8435,4 +8435,68 @@ relocations = [
   { offset = 0x342, type = "DIR32", symbol = "$L67230", target = 0x00410F5A },
   { offset = 0x346, type = "DIR32", symbol = "$L67231", target = 0x00410F6B },
   { offset = 0x34A, type = "DIR32", symbol = "$L67249", target = 0x00411055 },
+]
+
+[units.photo-stage-update-callback]
+source = "src/PhotoStage.cpp"
+object = "build/matching/PhotoStage.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::UpdatePhotoStage"]
+symbol = "?UpdatePhotoStage@th095@@YIHPAUPhotoStageStateView@1@@Z"
+target_address = 0x0042C3E0
+size = 0x2D
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x25, type = "REL32", symbol = "?Update@PhotoStageStateView@th095@@QAEHXZ", target = 0x0042AD60 },
+]
+
+[units.photo-stage-save-photo]
+source = "src/PhotoStage.cpp"
+object = "build/matching/PhotoStage.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoStageStateView::SavePhoto"]
+symbol = "?SavePhoto@PhotoStageStateView@th095@@QAEHHPBUFloat3@2@HHHPBH@Z"
+target_address = 0x0042C450
+size = 0x164
+relocations = [
+  { offset = 0x36, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x95, type = "DIR32", symbol = "?g_PhotoGame@th095@@3PAUPhotoGameStateView@1@A", target = 0x004C4E70 },
+  { offset = 0xA1, type = "DIR32", symbol = "__real@43600000", target = 0x0049664C },
+  { offset = 0xAD, type = "DIR32", symbol = "?g_PhotoGame@th095@@3PAUPhotoGameStateView@1@A", target = 0x004C4E70 },
+  { offset = 0xB9, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x117, type = "DIR32", symbol = "__real@42a00000", target = 0x00495374 },
+  { offset = 0x11D, type = "DIR32", symbol = "__real@43dc0000", target = 0x00496648 },
+  { offset = 0x158, type = "REL32", symbol = "?Build@PhotoStageDisplayView@th095@@QAEXHPAUFloat3@2@0PBH@Z", target = 0x0042C5C0 },
+]
+
+[units.photo-stage-capture-pixels]
+source = "src/PhotoStage.cpp"
+object = "build/matching/PhotoStage.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoStageStateView::CapturePhotoPixels"]
+symbol = "?CapturePhotoPixels@PhotoStageStateView@th095@@QAEHH@Z"
+target_address = 0x0042E7B0
+size = 0x2B1
+relocations = [
+  { offset = 0x12, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x21, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
+  { offset = 0x2F, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x3E, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
+  { offset = 0x4C, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x5B, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
+  { offset = 0x72, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x81, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
+  { offset = 0x94, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0xED, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0xFC, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
+  { offset = 0x10B, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x11A, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
+  { offset = 0x143, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x152, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
+  { offset = 0x196, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x1A4, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
+  { offset = 0x1F6, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x205, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
+  { offset = 0x249, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x258, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
 ]

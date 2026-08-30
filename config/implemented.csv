@@ -208,3 +208,7 @@ th095::EclOperands::ResolveInt
 th095::Enemy::ResolveFloat
 th095::EclOperands::ResolveIntLValue
 th095::EclOperands::ResolveFloatLValue
+th095::PhotoStageStateView::Update
+th095::UpdatePhotoStage
+th095::PhotoStageStateView::SavePhoto
+th095::PhotoStageStateView::CapturePhotoPixels

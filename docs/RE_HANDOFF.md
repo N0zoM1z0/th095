@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 177 canonical units cover 102,016 authored bytes.
+- Reconstruction: 180 canonical units cover 103,106 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 56.06% (102,016 / 181,972)
+  relocations. Confirmed authored-byte coverage is now 54.74% (103,106 / 188,371)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 210 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,613 origin/boundary reviews pending. Original class
+  confirms 214 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,609 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -95,6 +95,14 @@
   81 relocations replay exactly. The writable float selectors prove that
   `0x272A..0x272C` address the enemy's local `position @ +0x28A0`, whereas the
   read resolvers expose the derived `worldPosition @ +0x28F4`.
+- Root-level `PhotoStage.cpp` now owns the TH095-specific stage-side capture
+  pipeline. `PhotoStageStateView::Update @ 0x0042AD60` is source-present for
+  the complete 5,309-byte state machine: eleven photograph VM groups, capture
+  crop/clamp and texture-border writes, score/`BSTS` commit, slot animation,
+  and eighty display-VM boundary fades. Its natural VC7.1 body is 4,375 bytes,
+  so compiler-local source shape remains deferred. The adjacent update wrapper
+  (45 bytes), `SavePhoto` initializer (356), and RGB24/ARGB4444 pixel copier
+  (689) are canonical exact for all 1,090 authored bytes and 31 relocations.
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.
@@ -300,16 +308,15 @@
 
 ## Next bounded lane
 
-Take the TH095-specific photography/result hubs from the ranked inventory.
-Start with the 5,309-byte state machine at `0x0042AD60`, which executes the
-eleven photograph VM groups, creates/crops the capture surface, commits score
-and `BSTS` best-shot state, and controls the capture-border effect. Its sixteen
-internal callees include already-exact ANM-handle and best-shot-reset helpers.
-Then take the adjacent 8,560-byte HUD/layout builder at `0x0042C5C0`, whose
-large repeated flag-driven glyph construction feeds the same photograph
-screen. Promote both into the authored denominator before claiming coverage;
-use descriptive target-local view names until ownership is independently
-proved.
+Continue the same TH095-specific photography/result cluster with the adjacent
+8,560-byte HUD/layout builder at `0x0042C5C0`. It is the sole callee of exact
+`SavePhoto`, owns repeated flag-driven glyph/VM construction, and writes the
+same `0x2214` slot record proved by `PhotoStageStateView::Update`. Recover its
+`0x0042E730` 118-byte VM initializer dependency as part of the bounded unit,
+then sweep the remaining nearby photo-stage candidates at
+`0x0042AD00..0x0042F125` by connectivity and size. Keep the exact three-unit
+stage replay green while changing shared views, and use descriptive
+target-local names until ownership is independently proved.
 
 The large photo functions remain source-present but non-exact:
 `PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe

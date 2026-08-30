@@ -407,14 +407,14 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x0042AAF0,194,0x0042ABB1,FUN_0042aaf0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042ABC0,316,0x0042ACFB,FUN_0042abc0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042AD00,95,0x0042AD5E,FUN_0042ad00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0042AD60,5309,0x0042C21C,FUN_0042ad60,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x0042AD60,5309,0x0042C21C,FUN_0042ad60,th095::PhotoStageStateView::Update,PhotoStage,reconstructed,0.00,__thiscall,i32 PhotoStageStateView::Update(),false,src/PhotoStage.cpp,Pinned VC7.1 semantic reconstruction emits 4375 bytes versus the 5309-byte target after complete target-local photography state recovery,authored,Complete TH095 capture crop texture border best-shot save entry animation and eighty-VM boundary transition state machine; compiler temporary ordering remains non-exact
 0x0042C220,434,0x0042C3D1,FUN_0042c220,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0042C3E0,45,0x0042C40C,FUN_0042c3e0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x0042C3E0,45,0x0042C40C,FUN_0042c3e0,th095::UpdatePhotoStage,PhotoStage,matching,100.00,__fastcall,i32 UpdatePhotoStage(PhotoStageStateView *stage),false,src/PhotoStage.cpp,Canonical relocation-aware VC7.1 comparison: 45/45 bytes and both relocations,authored,Exact photo-stage update-chain wrapper and global suppression gate
 0x0042C410,57,0x0042C448,FUN_0042c410,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0042C450,356,0x0042C5B3,FUN_0042c450,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x0042C450,356,0x0042C5B3,FUN_0042c450,th095::PhotoStageStateView::SavePhoto,PhotoStage,matching,100.00,__thiscall,"i32 PhotoStageStateView::SavePhoto(i32 slot, const Float3 *position, i32 width, i32 height, i32 score, const i32 *scoreData)",false,src/PhotoStage.cpp,Canonical relocation-aware VC7.1 comparison: 356/356 bytes and all 8 relocations,authored,Exact capture-state initializer with player-side placement and slot display dispatch
 0x0042C5C0,8560,0x0042E72F,FUN_0042c5c0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042E730,118,0x0042E7A5,FUN_0042e730,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0042E7B0,689,0x0042EA60,FUN_0042e7b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x0042E7B0,689,0x0042EA60,FUN_0042e7b0,th095::PhotoStageStateView::CapturePhotoPixels,PhotoStage,matching,100.00,__thiscall,i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex),false,src/PhotoStage.cpp,Canonical relocation-aware VC7.1 comparison: 689/689 bytes and all 21 relocations,authored,Exact captured-texture copy into persistent three-byte or alpha-forced two-byte best-shot storage
 0x0042EA70,331,0x0042EBBA,FUN_0042ea70,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042EBC0,167,0x0042EC66,FUN_0042ebc0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042EC70,35,0x0042EC92,FUN_0042ec70,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,

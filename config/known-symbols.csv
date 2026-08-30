@@ -92,3 +92,7 @@ address,name,module,confidence,evidence
 0x00435E90,th095::SceneSaveDataView::LoadBestShotForScene,BestShot,high,Best-shot record reset disk decode decompression and checksum validator
 0x0041BA80,th095::CalculateAlignedChecksum,Checksum,exact,Canonical relocation-free aligned additive checksum comparison
 0x00456220,th095::DecompressData,Compression,high,Complete shared MSB-first 8 KiB ring decompressor
+0x0042AD60,th095::PhotoStageStateView::Update,PhotoStage,high,Complete TH095 capture and stage-display state machine
+0x0042C3E0,th095::UpdatePhotoStage,PhotoStage,exact,Canonical photo-stage update-chain wrapper
+0x0042C450,th095::PhotoStageStateView::SavePhoto,PhotoStage,exact,Canonical capture-state initializer and display dispatch
+0x0042E7B0,th095::PhotoStageStateView::CapturePhotoPixels,PhotoStage,exact,Canonical best-shot texture pixel copy
