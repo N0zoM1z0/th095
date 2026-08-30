@@ -265,3 +265,5 @@ th095::PhotoStraightLaserView::Initialize
 th095::PhotoStraightLaserView::Draw
 th095::PhotoRotatingLaserView::Initialize
 th095::PhotoRotatingLaserView::Draw
+th095::PhotoEffectManagerView::Update
+th095::PhotoEffectManagerView::Remove

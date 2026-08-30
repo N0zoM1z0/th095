@@ -266,3 +266,5 @@ th095::PhotoStraightLaserView::Initialize,0x0041E0C0,function
 th095::PhotoStraightLaserView::Draw,0x0041E6D0,function
 th095::PhotoRotatingLaserView::Initialize,0x0041F380,function
 th095::PhotoRotatingLaserView::Draw,0x0041F990,function
+th095::PhotoEffectManagerView::Update,0x0041D930,function
+th095::PhotoEffectManagerView::Remove,0x0041DA50,function

@@ -426,11 +426,18 @@ target's `0x64` inline-local frame versus the stock compiler's `0x0C` frame
 prevents exact promotion. Their draw callbacks at `0x0041E6D0/0x0041F990`
 are canonical exact for all 253 authored bytes and twelve relocations.
 
-Next stay in the same high-connectivity PhotoEffect cluster and reconstruct
-the shared factory/update hub at `0x0041DBD0/0x0041D930`. This should expose
-ownership and names for the remaining collision/draw helpers around
-`0x0041E750..0x004200F6`. Keep all four PhotoEffect exact units, all PlayerInf
-exact units, the exact outer PhotoGame coordinator, and every established
+The shared PhotoEffect update hub at `0x0041D930` and its unlink helper at
+`0x0041DA50` are now canonical exact for all 373 authored bytes. They prove
+the manager's first/tail/count fields at `+0x08/+0x50/+0x54`, the effect
+previous/next/state fields at `+0x04/+0x08/+0x0C`, the deferred-deletion byte
+at `+0x48`, and virtual update/cleanup ownership. The original shared-tail
+source shape is required for the first deletion branch.
+
+Next stay in this high-connectivity cluster and reconstruct the factory at
+`0x0041DBD0`, then the collision/draw fanout helpers around
+`0x0041DAB0..0x0041E0BA` and the concrete effect methods through
+`0x004200F6`. Keep all six PhotoEffect exact units, all PlayerInf exact units,
+the exact outer PhotoGame coordinator, and every established
 `PhotoCamera.cpp` unit green while extending shared views.
 
 The large photo functions remain source-present but non-exact:

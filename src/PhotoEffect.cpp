@@ -44,7 +44,7 @@ struct PhotoEffectBaseView
     virtual i32 Initialize(void *args) = 0;
     virtual i32 Update() = 0;
     virtual void Unknown08() = 0;
-    virtual void Unknown0C() = 0;
+    virtual void Cleanup() = 0;
     virtual i32 Draw() = 0;
     virtual void Unknown14() = 0;
     virtual i32 CheckCollision(
@@ -62,7 +62,9 @@ struct PhotoEffectBaseView
     f32 width;                              // +0x3c
     f32 speed;                              // +0x40
     f32 tailOffset;                         // +0x44
-    u8 lifecycleBytes[8];                   // +0x48
+    u8 deletionCounter;                    // +0x48
+    u8 unknown49[3];                        // +0x49
+    i32 id;                                 // +0x4c
 };
 
 typedef char PhotoEffectBaseSizeIs50[
@@ -178,6 +180,26 @@ extern PhotoEffectManagerResourcesView *g_PhotoEffectManager;
 
 extern i32 __fastcall GetPhotoEffectScriptBase(i32 type);
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
+
+struct PhotoEffectManagerView
+{
+    u8 listRootVtable[4];                   // +0x00
+    PhotoEffectBaseView *listRootPrevious;  // +0x04
+    PhotoEffectBaseView *first;             // +0x08
+    u8 listRootTail[0x50 - 0x0c];
+    PhotoEffectBaseView *last;              // +0x50
+    i32 effectCount;                        // +0x54
+    i32 nextId;                             // +0x58
+    PhotoEffectVector collisionPosition;    // +0x5c
+    PhotoEffectVector collisionSize;        // +0x68
+    u8 unknown74[0x0c];
+
+    void Remove(PhotoEffectBaseView *effect);
+    static i32 __fastcall Update(PhotoEffectManagerView *manager);
+};
+
+typedef char PhotoEffectManagerSizeIs80[
+    (sizeof(PhotoEffectManagerView) == 0x80) ? 1 : -1];
 
 static inline i32 PhotoEffectIsOutsidePlayfield(
     PhotoEffectVector *position, f32 width, f32 height)
@@ -485,6 +507,66 @@ i32 PhotoRotatingLaserView::Draw()
         this->tailVm.Draw();
     }
     return 0;
+}
+
+void PhotoEffectManagerView::Remove(PhotoEffectBaseView *effect)
+{
+    this->effectCount--;
+    effect->previous->next = effect->next;
+    if (effect->next != NULL)
+    {
+        effect->next->previous = effect->previous;
+    }
+    if (this->last == effect)
+    {
+        this->last = effect->previous;
+    }
+}
+
+i32 __fastcall PhotoEffectManagerView::Update(
+    PhotoEffectManagerView *manager)
+{
+    PhotoEffectBaseView *effect = manager->first;
+    while (effect != NULL)
+    {
+        PhotoEffectBaseView *next = effect->next;
+
+        if (effect->deletionCounter != 0)
+        {
+            effect->deletionCounter++;
+            if (effect->deletionCounter >= 2)
+            {
+                effect->Cleanup();
+                manager->Remove(effect);
+                delete effect;
+                effect = NULL;
+                goto advanceEffect;
+            }
+        }
+
+        if (effect->state == 1)
+        {
+            effect->Cleanup();
+            manager->Remove(effect);
+            delete effect;
+            effect = NULL;
+        }
+        else if (effect->Update() != 0)
+        {
+            effect->Cleanup();
+            manager->Remove(effect);
+            delete effect;
+            effect = NULL;
+        }
+        else
+        {
+            effect->timer.Tick();
+        }
+
+    advanceEffect:
+        effect = next;
+    }
+    return 1;
 }
 
 }
