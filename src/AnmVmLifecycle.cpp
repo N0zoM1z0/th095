@@ -306,14 +306,14 @@ i32 AnmManagerDrawLayerView::DrawLayer(i32 layer)
     vm = this->drawLayerHeads[layer].nextInDrawLayer;
     while (vm != NULL)
     {
-        if (!(g_PhotoGameTask != NULL && vm->flag28 == 0 &&
-              g_PhotoGameTask->drawVms != 0))
+        if (g_PhotoGameTask != NULL && vm->flag28 == 0 &&
+            g_PhotoGameTask->drawVms != 0)
         {
-            if (!vm->flag26)
-            {
-                reinterpret_cast<AnmManager *>(this)->Draw(
-                    reinterpret_cast<AnmVm *>(vm));
-            }
+        }
+        else if (!vm->flag26)
+        {
+            reinterpret_cast<AnmManager *>(this)->Draw(
+                reinterpret_cast<AnmVm *>(vm));
         }
         vm = vm->nextInDrawLayer;
     }

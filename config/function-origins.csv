@@ -239,12 +239,12 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041BF20,authored,TextRenderer,authored,exact,vc71-text-buffer-lifecycle-2026-08-30
 0x0041BF90,authored,TextRenderer,authored,high,target-vc71-text-buffer-lifecycle-2026-08-30
 0x0041C180,authored,TextRenderer,authored,exact,vc71-text-buffer-lifecycle-2026-08-30
-0x0041C1E0,authored,TextRenderer,authored,high,target-vc71-text-alpha-bleed-2026-08-30
+0x0041C1E0,authored,TextRenderer,authored,exact,anm-text-frame-exact-2026-08-31
 0x0041C570,authored,AnmTexture,authored,exact,vc71-anm-texture-alpha-neighbors-2026-08-29
 0x0041C600,authored,TextRenderer,authored,exact,vc71-exact-text-invert-alpha-2026-08-30
 0x0041C780,authored,TextRenderer,authored,exact,vc71-text-buffer-lifecycle-2026-08-30
 0x0041C8A0,authored,TextRenderer,authored,exact,vc71-text-buffer-lifecycle-2026-08-30
-0x0041C8F0,authored,TextRenderer,authored,high,target-vc71-text-renderer-2026-08-30
+0x0041C8F0,authored,TextRenderer,authored,exact,text-renderer-bold-exact-2026-08-31
 0x0041CB20,authored,PhotoItem,authored,exact,vc71-photo-item-manager-2026-08-30
 0x0041CBA0,authored,PhotoItem,authored,exact,vc71-photo-item-manager-2026-08-30
 0x0041CBE0,authored,PhotoItem,authored,exact,vc71-photo-item-manager-2026-08-30
@@ -572,9 +572,9 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00443AC0,authored,AnmManager,authored,exact,anm-release-entry-exact-2026-08-30
 0x00443B10,authored,AnmManager,authored,exact,anm-load-sprite-exact-2026-08-30
 0x00443C70,authored,AnmText,authored,exact,vc71-exact-anm-text-inner-2026-08-29
-0x00443CE0,authored,AnmText,authored,high,vc71-th08-corroborated-anm-text-2026-08-29
-0x00443DD0,authored,AnmText,authored,high,target-vc71-anm-text-family-2026-08-29
-0x00443F80,authored,AnmText,authored,high,target-vc71-anm-text-family-2026-08-29
+0x00443CE0,authored,AnmText,authored,exact,anm-text-frame-exact-2026-08-31
+0x00443DD0,authored,AnmText,authored,exact,anm-text-frame-exact-2026-08-31
+0x00443F80,authored,AnmText,authored,exact,anm-text-frame-exact-2026-08-31
 0x004440F0,authored,AnmManager,authored,exact,anm-surface-exact-2026-08-30
 0x00444390,authored,AnmManager,authored,exact,anm-surface-exact-2026-08-30
 0x00444460,authored,AnmManager,authored,exact,anm-surface-exact-2026-08-30
@@ -591,7 +591,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00444AB0,authored,AnmManager,authored,exact,anm-frame-callbacks-exact-2026-08-30
 0x00444AE0,authored,AnmManager,authored,exact,anm-frame-callbacks-exact-2026-08-30
 0x00444B10,authored,AnmManager,authored,high,anm-frame-update-2026-08-30
-0x00444C80,authored,AnmManager,authored,high,anm-vm-lifecycle-2026-08-30
+0x00444C80,authored,AnmManager,authored,exact,anm-text-frame-exact-2026-08-31
 0x00444D10,authored,AnmManager,authored,high,anm-vm-lifecycle-2026-08-30
 0x00444E00,authored,AnmManager,authored,exact,anm-vm-lifecycle-exact-2026-08-30
 0x00444EF0,authored,AnmManager,authored,high,anm-vm-lifecycle-2026-08-30

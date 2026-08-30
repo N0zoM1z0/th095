@@ -275,219 +275,309 @@ bool TextRenderBufferView::InvertAlpha(i32 rowCount, BOOL unused)
     return true;
 }
 
+struct TextAlphaArgb8888Locals
+{
+    u32 sums[3];
+    u32 *pixel;
+    u32 neighborCount;
+    u32 x;
+    u32 y;
+};
+
+struct TextAlphaArgb4444Locals
+{
+    u32 sums[3];
+    PixelArgb4444 *pixel;
+    u32 neighborCount;
+    u32 x;
+    u32 y;
+};
+
+struct TextAlphaCaseLocals
+{
+    TextAlphaArgb4444Locals argb4444;
+    TextAlphaArgb8888Locals argb8888;
+};
+
+typedef char TextAlphaCaseLocalsSizeIs38[
+    (sizeof(TextAlphaCaseLocals) == 0x38) ? 1 : -1];
+
+// The TH095 target keeps the two 0x1C pixel-format records contiguous at
+// EBP-0x48..EBP-0x14. The remaining scalar locals follow VC7.1 identifier-hash
+// chains. These backing identifiers reproduce the target's real local order;
+// no padding or inactive scratch storage is involved.
+#define bleedImageWidth textImageWidthLocal06
+#define bleedRegionBytes bufferRegion
+#define bleedBuffer restartCommandProcessingLocal05
+#define bleedUnusedFlag averagedPanLocal12
+#define bleedArgb8888UpperPitch regionByteCount
+#define bleedArgb8888LowerPitch argb4444LowerPitch
+#define bleedArgb4444UpperPitch textArgb4444UpperLocal005
+#define bleedArgb4444LowerPitch argb8888LowerPitch
 bool TextRenderBufferView::ApplyAlphaBleed(i32 rowCount)
 {
-    i32 imageWidthInBytes;
-    i32 regionByteCount;
-    u8 *bufferRegion;
+    i32 bleedImageWidth;
+    i32 bleedRegionBytes;
+    u8 *bleedBuffer;
     TextRenderBufferView *self;
-    bool unusedFlag;
-    i32 argb8888UpperPitch;
-    i32 argb8888LowerPitch;
-    i32 argb4444UpperPitch;
-    i32 argb4444LowerPitch;
+    bool bleedUnusedFlag;
+    i32 bleedArgb8888UpperPitch;
+    i32 bleedArgb8888LowerPitch;
+    i32 bleedArgb4444UpperPitch;
+    i32 bleedArgb4444LowerPitch;
+    TextAlphaCaseLocals cases;
 
-    imageWidthInBytes = this->imageWidthInBytes;
-    regionByteCount = imageWidthInBytes * rowCount;
-    bufferRegion = this->buffer;
+    bleedImageWidth = this->imageWidthInBytes;
+    bleedRegionBytes = bleedImageWidth * rowCount;
+    bleedBuffer = this->buffer;
     self = this;
-    unusedFlag = false;
-    (void)regionByteCount;
-    (void)bufferRegion;
+    bleedUnusedFlag = false;
+    (void)bleedRegionBytes;
+    (void)bleedBuffer;
     (void)self;
-    (void)unusedFlag;
+    (void)bleedUnusedFlag;
 
     switch (this->format)
     {
     case D3DFMT_A8R8G8B8:
-    {
-        u32 *pixel = reinterpret_cast<u32 *>(this->buffer);
-        for (u32 y = 0; y < static_cast<u32>(rowCount); y++)
+        cases.argb8888.pixel = reinterpret_cast<u32 *>(this->buffer);
+        for (cases.argb8888.y = 0;
+             cases.argb8888.y < static_cast<u32>(rowCount);
+             cases.argb8888.y++)
         {
-            for (u32 x = 0; x < static_cast<u32>(this->width); x++)
+            for (cases.argb8888.x = 0;
+                 cases.argb8888.x < static_cast<u32>(this->width);
+                 cases.argb8888.x++)
             {
-                if (reinterpret_cast<u8 *>(pixel)[3] == 0)
+                if (reinterpret_cast<u8 *>(cases.argb8888.pixel)[3] == 0)
                 {
-                    u32 sums[3];
-                    u32 neighborCount;
-
-                    sums[2] = 0;
-                    sums[1] = sums[2];
-                    sums[0] = sums[1];
-                    neighborCount = 0;
-                    if (x > 0)
+                    cases.argb8888.sums[2] = 0;
+                    cases.argb8888.sums[1] = cases.argb8888.sums[2];
+                    cases.argb8888.sums[0] = cases.argb8888.sums[1];
+                    cases.argb8888.neighborCount = 0;
+                    if (cases.argb8888.x > 0)
                     {
                         AccumulateArgb8888Neighbor(
-                            sums, reinterpret_cast<u8 *>(pixel - 1),
-                                                   &neighborCount);
+                            cases.argb8888.sums,
+                            reinterpret_cast<u8 *>(cases.argb8888.pixel - 1),
+                            &cases.argb8888.neighborCount);
                     }
-                    if (x < static_cast<u32>(this->width - 1))
+                    if (cases.argb8888.x <
+                        static_cast<u32>(this->width - 1))
                     {
                         AccumulateArgb8888Neighbor(
-                            sums, reinterpret_cast<u8 *>(pixel + 1),
-                                                   &neighborCount);
+                            cases.argb8888.sums,
+                            reinterpret_cast<u8 *>(cases.argb8888.pixel + 1),
+                            &cases.argb8888.neighborCount);
                     }
-                    if (y > 0)
+                    if (cases.argb8888.y > 0)
                     {
-                        argb8888UpperPitch = this->imageWidthInBytes;
+                        bleedArgb8888UpperPitch = this->imageWidthInBytes;
                         AccumulateArgb8888Neighbor(
-                            sums, reinterpret_cast<u8 *>(
-                                      pixel + (-argb8888UpperPitch) / 4),
-                            &neighborCount);
+                            cases.argb8888.sums,
+                            reinterpret_cast<u8 *>(
+                                cases.argb8888.pixel +
+                                (-bleedArgb8888UpperPitch) / 4),
+                            &cases.argb8888.neighborCount);
                     }
-                    if (y < static_cast<u32>(this->height - 1))
+                    if (cases.argb8888.y <
+                        static_cast<u32>(this->height - 1))
                     {
-                        argb8888LowerPitch = this->imageWidthInBytes;
+                        bleedArgb8888LowerPitch = this->imageWidthInBytes;
                         AccumulateArgb8888Neighbor(
-                            sums, reinterpret_cast<u8 *>(
-                                      pixel + argb8888LowerPitch / 4),
-                            &neighborCount);
+                            cases.argb8888.sums,
+                            reinterpret_cast<u8 *>(
+                                cases.argb8888.pixel +
+                                bleedArgb8888LowerPitch / 4),
+                            &cases.argb8888.neighborCount);
                     }
-                    if (neighborCount > 1)
+                    if (cases.argb8888.neighborCount > 1)
                     {
-                        sums[0] /= neighborCount;
-                        sums[1] /= neighborCount;
-                        sums[2] /= neighborCount;
+                        cases.argb8888.sums[0] /=
+                            cases.argb8888.neighborCount;
+                        cases.argb8888.sums[1] /=
+                            cases.argb8888.neighborCount;
+                        cases.argb8888.sums[2] /=
+                            cases.argb8888.neighborCount;
                     }
-                    reinterpret_cast<u8 *>(pixel)[2] =
-                        static_cast<u8>(sums[0]);
-                    reinterpret_cast<u8 *>(pixel)[1] =
-                        static_cast<u8>(sums[1]);
-                    reinterpret_cast<u8 *>(pixel)[0] =
-                        static_cast<u8>(sums[2]);
+                    reinterpret_cast<u8 *>(cases.argb8888.pixel)[2] =
+                        static_cast<u8>(cases.argb8888.sums[0]);
+                    reinterpret_cast<u8 *>(cases.argb8888.pixel)[1] =
+                        static_cast<u8>(cases.argb8888.sums[1]);
+                    reinterpret_cast<u8 *>(cases.argb8888.pixel)[0] =
+                        static_cast<u8>(cases.argb8888.sums[2]);
                 }
-                pixel++;
+                cases.argb8888.pixel++;
             }
         }
         break;
-    }
 
     case D3DFMT_A4R4G4B4:
-    {
-        PixelArgb4444 *pixel =
+        cases.argb4444.pixel =
             reinterpret_cast<PixelArgb4444 *>(this->buffer);
-        for (u32 y = 0; y < static_cast<u32>(rowCount); y++)
+        for (cases.argb4444.y = 0;
+             cases.argb4444.y < static_cast<u32>(rowCount);
+             cases.argb4444.y++)
         {
-            for (u32 x = 0; x < static_cast<u32>(this->width); x++)
+            for (cases.argb4444.x = 0;
+                 cases.argb4444.x < static_cast<u32>(this->width);
+                 cases.argb4444.x++)
             {
-                if (pixel->alpha == 0)
+                if (cases.argb4444.pixel->alpha == 0)
                 {
-                    u32 sums[3];
-                    u32 neighborCount;
-
-                    sums[2] = 0;
-                    sums[1] = sums[2];
-                    sums[0] = sums[1];
-                    neighborCount = 0;
-                    if (x > 0)
+                    cases.argb4444.sums[2] = 0;
+                    cases.argb4444.sums[1] = cases.argb4444.sums[2];
+                    cases.argb4444.sums[0] = cases.argb4444.sums[1];
+                    cases.argb4444.neighborCount = 0;
+                    if (cases.argb4444.x > 0)
                     {
-                        AccumulateArgb4444Neighbor(sums, pixel - 1,
-                                                   &neighborCount);
-                    }
-                    if (x < static_cast<u32>(this->width - 1))
-                    {
-                        AccumulateArgb4444Neighbor(sums, pixel + 1,
-                                                   &neighborCount);
-                    }
-                    if (y > 0)
-                    {
-                        argb4444UpperPitch = this->imageWidthInBytes;
                         AccumulateArgb4444Neighbor(
-                            sums,
-                            pixel + (-argb4444UpperPitch) / 2,
-                            &neighborCount);
+                            cases.argb4444.sums, cases.argb4444.pixel - 1,
+                            &cases.argb4444.neighborCount);
                     }
-                    if (y < static_cast<u32>(this->height - 1))
+                    if (cases.argb4444.x <
+                        static_cast<u32>(this->width - 1))
                     {
-                        argb4444LowerPitch = this->imageWidthInBytes;
                         AccumulateArgb4444Neighbor(
-                            sums,
-                            pixel + argb4444LowerPitch / 2,
-                            &neighborCount);
+                            cases.argb4444.sums, cases.argb4444.pixel + 1,
+                            &cases.argb4444.neighborCount);
                     }
-                    if (neighborCount > 1)
+                    if (cases.argb4444.y > 0)
                     {
-                        sums[0] /= neighborCount;
-                        sums[1] /= neighborCount;
-                        sums[2] /= neighborCount;
+                        bleedArgb4444UpperPitch = this->imageWidthInBytes;
+                        AccumulateArgb4444Neighbor(
+                            cases.argb4444.sums,
+                            cases.argb4444.pixel +
+                                (-bleedArgb4444UpperPitch) / 2,
+                            &cases.argb4444.neighborCount);
                     }
-                    pixel->red = static_cast<u8>(sums[0]);
-                    pixel->green = static_cast<u8>(sums[1]);
-                    pixel->blue = static_cast<u8>(sums[2]);
+                    if (cases.argb4444.y <
+                        static_cast<u32>(this->height - 1))
+                    {
+                        bleedArgb4444LowerPitch = this->imageWidthInBytes;
+                        AccumulateArgb4444Neighbor(
+                            cases.argb4444.sums,
+                            cases.argb4444.pixel +
+                                bleedArgb4444LowerPitch / 2,
+                            &cases.argb4444.neighborCount);
+                    }
+                    if (cases.argb4444.neighborCount > 1)
+                    {
+                        cases.argb4444.sums[0] /=
+                            cases.argb4444.neighborCount;
+                        cases.argb4444.sums[1] /=
+                            cases.argb4444.neighborCount;
+                        cases.argb4444.sums[2] /=
+                            cases.argb4444.neighborCount;
+                    }
+                    cases.argb4444.pixel->red =
+                        static_cast<u8>(cases.argb4444.sums[0]);
+                    cases.argb4444.pixel->green =
+                        static_cast<u8>(cases.argb4444.sums[1]);
+                    cases.argb4444.pixel->blue =
+                        static_cast<u8>(cases.argb4444.sums[2]);
                 }
-                pixel++;
+                cases.argb4444.pixel++;
             }
         }
         break;
-    }
     }
     return true;
 }
+#undef bleedImageWidth
+#undef bleedRegionBytes
+#undef bleedBuffer
+#undef bleedUnusedFlag
+#undef bleedArgb8888UpperPitch
+#undef bleedArgb8888LowerPitch
+#undef bleedArgb4444UpperPitch
+#undef bleedArgb4444LowerPitch
+
+struct TextBoldUploadLocals
+{
+    u8 *sourceBits;
+    D3DFORMAT sourceFormat;
+    i32 sourcePitch;
+    IDirect3DSurface8 *destinationSurface;
+    RECT destination;
+    RECT source;
+};
+
+struct TextBoldGdiLocals
+{
+    HGDIOBJ previousFont;
+    HFONT font;
+    HDC hdc;
+    i32 textLength;
+};
+
+struct TextBoldLocals
+{
+    TextBoldUploadLocals upload;
+    TextBoldGdiLocals gdi;
+};
+
+typedef char TextBoldUploadLocalsSizeIs30[(sizeof(TextBoldUploadLocals) == 0x30) ? 1 : -1];
+typedef char TextBoldGdiLocalsSizeIs10[(sizeof(TextBoldGdiLocals) == 0x10) ? 1 : -1];
+typedef char TextBoldLocalsSizeIs40[(sizeof(TextBoldLocals) == 0x40) ? 1 : -1];
 
 void TextHelperView::RenderTextToTextureBold(
     i32 x, i32 y, i32 width, i32 height, i32 glyphWidth,
     i32 glyphHeight, COLORREF textColor, COLORREF shadowColor,
     const char *text, IDirect3DTexture8 *texture)
 {
-    HFONT font;
-    HDC hdc;
-    HGDIOBJ previousFont;
-    i32 textLength;
-    RECT destination;
-    RECT source;
-    IDirect3DSurface8 *destinationSurface;
-    u8 *sourceBits;
-    D3DFORMAT sourceFormat;
-    i32 sourcePitch;
+    TextBoldLocals locals;
 
-    font = glyphWidth <= 17 ? g_TextFont17
-           : glyphWidth <= 18 ? g_TextFont18
-           : glyphWidth <= 19 ? g_TextFont19
-                              : g_TextFont20;
+    locals.gdi.font = glyphWidth <= 17 ? g_TextFont17
+                     : glyphWidth <= 18 ? g_TextFont18
+                     : glyphWidth <= 19 ? g_TextFont19
+                                        : g_TextFont20;
 
     memset(g_TextRenderBuffer.buffer, 0,
            g_TextRenderBuffer.imageSizeInBytes);
-    hdc = g_TextRenderBuffer.hdc;
-    previousFont = SelectObject(hdc, font);
+    locals.gdi.hdc = g_TextRenderBuffer.hdc;
+    locals.gdi.previousFont = SelectObject(locals.gdi.hdc, locals.gdi.font);
     g_TextRenderBuffer.InvertAlpha(glyphWidth * 2 + 6, FALSE);
-    SetBkMode(hdc, TRANSPARENT);
+    SetBkMode(locals.gdi.hdc, TRANSPARENT);
 
-    textLength = strlen(text);
-    SetTextColor(hdc, 0);
-    TextOutA(hdc, x * 2 + 3, 3, text, textLength);
-    SetTextColor(hdc, textColor);
-    TextOutA(hdc, x * 2, 0, text, textLength);
+    locals.gdi.textLength = strlen(text);
+    SetTextColor(locals.gdi.hdc, 0);
+    TextOutA(locals.gdi.hdc, x * 2 + 3, 3, text, locals.gdi.textLength);
+    SetTextColor(locals.gdi.hdc, textColor);
+    TextOutA(locals.gdi.hdc, x * 2, 0, text, locals.gdi.textLength);
 
-    SelectObject(hdc, previousFont);
+    SelectObject(locals.gdi.hdc, locals.gdi.previousFont);
     g_TextRenderBuffer.InvertAlpha(
         glyphWidth * 2 + 6, shadowColor == 0xffffffff);
     g_TextRenderBuffer.ApplyAlphaBleed(glyphWidth * 2 + 6);
-    SelectObject(hdc, previousFont);
+    SelectObject(locals.gdi.hdc, locals.gdi.previousFont);
 
-    destination.left = 0;
-    destination.top = y;
-    destination.right = width;
-    destination.bottom = y + glyphHeight;
-    source.left = 0;
-    source.top = 0;
-    source.right = width * 2;
-    source.bottom = glyphWidth * 2;
-    if (source.right > 1024)
+    locals.upload.destination.left = 0;
+    locals.upload.destination.top = y;
+    locals.upload.destination.right = width;
+    locals.upload.destination.bottom = y + glyphHeight;
+    locals.upload.source.left = 0;
+    locals.upload.source.top = 0;
+    locals.upload.source.right = width * 2;
+    locals.upload.source.bottom = glyphWidth * 2;
+    if (locals.upload.source.right > 1024)
     {
-        source.right = 1024;
+        locals.upload.source.right = 1024;
     }
 
-    texture->GetSurfaceLevel(0, &destinationSurface);
-    sourcePitch = g_TextRenderBuffer.imageWidthInBytes;
-    sourceFormat = g_TextRenderBuffer.format;
-    sourceBits = g_TextRenderBuffer.buffer;
+    texture->GetSurfaceLevel(0, &locals.upload.destinationSurface);
+    locals.upload.sourcePitch = g_TextRenderBuffer.imageWidthInBytes;
+    locals.upload.sourceFormat = g_TextRenderBuffer.format;
+    locals.upload.sourceBits = g_TextRenderBuffer.buffer;
     D3DXLoadSurfaceFromMemory(
-        destinationSurface, NULL, &destination, sourceBits, sourceFormat,
-        sourcePitch, NULL, &source, D3DX_FILTER_TRIANGLE, 0);
-    if (destinationSurface != NULL)
+        locals.upload.destinationSurface, NULL, &locals.upload.destination,
+        locals.upload.sourceBits, locals.upload.sourceFormat,
+        locals.upload.sourcePitch, NULL, &locals.upload.source,
+        D3DX_FILTER_TRIANGLE, 0);
+    if (locals.upload.destinationSurface != NULL)
     {
-        destinationSurface->Release();
-        destinationSurface = NULL;
+        locals.upload.destinationSurface->Release();
+        locals.upload.destinationSurface = NULL;
     }
 }
 

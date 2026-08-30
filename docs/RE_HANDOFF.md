@@ -259,30 +259,30 @@
   helpers are exact for another 2,453 bytes and all 122 relocations, recovering
   the TH095 scene record's date/time and two six-digit score displays. Target
   The complete ANM text alignment family at `0x00443C70..0x004440ED` is now
-  source-present. `DrawTextInner @ 0x00443C70` is exact for all 104 bytes and
-  proves TH095 removed TH08's small-font fallback. `DrawTextLeft`,
-  `DrawTextRight`, and `DrawTextCentered` implement the target's left/right/
-  centered formatting paths; their residuals are compiler-local frame homes.
-  The centered function at `0x00443F80` corrects the stale `SceneWriteText`
-  identification. Exact scene callsites still use a source-only ABI alias for
-  the left-aligned target at `0x00443CE0`. The TH095-specific persistent-font
-  renderer at `0x0041C8F0` is also complete source-present: its probe has the
-  exact 560-byte extent, all 25 relocations resolve, and 419/460 comparable
-  bytes match. It renders into the `0x124`-byte CPU buffer at `0x004C44B8`
-  and uploads it directly rather than using TH08's temporary text surface.
-  Its `InvertAlpha @ 0x0041C600` dependency is exact for all 373 bytes;
-  `ApplyAlphaBleed @ 0x0041C1E0` is complete at the target's 911-byte extent,
-  with all eight exact pixel-accumulator relocations and 763/879 comparable
-  bytes matched. The adjoining buffer lifecycle is now source-present end to
-  end. `ReleaseBuffer`, `AllocateBufferWithFallback`, `GetFormatInfo`,
-  `CreateTextBuffer`, and `ReleaseTextBuffer @ 0x0041BE60..0x0041C8E0` are
-  canonical exact. The buffer constructor/destructor are exact as well, for a
-  seven-unit lifecycle total of 841 bytes and all 37 relocations. They prove the
-  seven-entry pixel-format table, `1024x64` bottom-up DIB, 256-byte RNG table,
-  and persistent 30/34/36/38-pixel Japanese fonts. The complete 490-byte
-  `TryAllocateBuffer` body is source-present at 478 bytes; its remaining
-  difference is compiler-local placement, so defer it rather than introducing
-  artificial stack padding.
+  canonical exact. `DrawTextInner`, `DrawTextLeft`, `DrawTextRight`, and
+  `DrawTextCentered` contribute 1,140 authored bytes and 24 relocations. TH08
+  documents `#pragma var_order(buf, fontWidth)` for the three variadic helpers;
+  stock VC7.1 reproduces that patched order with target-proven backing names for
+  the real buffer/glyph-width locals, while the unlisted right/center `x` local
+  uses `textXLocal00` and therefore sorts ahead of the ordered pair. The
+  centered target remains the correction for the stale `SceneWriteText` name.
+  `RenderTextToTextureBold @ 0x0041C8F0` is exact for another 560 bytes and 25
+  relocations. Its named GDI/upload locals form a completely live 0x40 semantic
+  aggregate matching target `EBP-0x40..-0x04`; the deeper homes belong only to
+  fastcall and compiler `strlen`/ternary temporaries. The renderer uses the
+  persistent 30/34/36/38-pixel fonts and directly uploads the CPU buffer.
+  `InvertAlpha @ 0x0041C600` remains exact, and `ApplyAlphaBleed @ 0x0041C1E0`
+  is now exact for all 911 bytes and eight neighbor relocations. Its two format
+  scopes form a truthful 0x38 aggregate of two 0x1C records; target-written
+  scalar locals use identifier-hash backing names, with no padding. All ten
+  canonical `TextRenderer.cpp` units replay exact.
+
+  Keep `TryAllocateBuffer @ 0x0041BF90` non-exact. TH08's reconstruction oracle
+  explicitly lists an unused `u32 padding` in its `var_order`, and TH095 has the
+  matching four-byte unreferenced frame hole, but this repository forbids inert
+  locals used only to force a match. The policy-compliant TH095 body remains
+  478 versus 490 target bytes; preserve this as a negative oracle rather than
+  copying the TH08 padding artifact.
 - `ReplayBrowserView::Update @ 0x0044DCA0` is now source-present for the
   complete TH095-specific 4-by-20 replay browser. The target-sized 2,054-byte
   probe resolves all 77 relocations and matches 1,683 of 1,746 comparable
@@ -478,10 +478,14 @@ bridge. The adjacent frame shell at `0x00444980..0x00444B00` is now exact:
 twenty update, draw-layer, render-counter, manager, and viewport relocations.
 The source-present 358-byte `UpdateVms @ 0x00444B10` clears nine embedded
 draw-list sentinels, executes or retires the lifetime list, and rebuilds every
-render bucket under the target-local PhotoGameTask gates. Its natural VC7.1
-probe emits 356 bytes, leaving one two-byte branch-shape residual. `DrawLayer @
-0x00444C80` similarly emits 134 versus 136 bytes around the companion draw
-gate. Do not add inert locals or artificial branches to promote either probe.
+render bucket under the target-local PhotoGameTask gates. A target-shaped
+positive gate reaches the exact 358-byte extent, but stock VC7.1 still chooses
+the opposite destination register for one commutative `or`; keep that one-byte
+residual uncredited. `DrawLayer @ 0x00444C80` is now canonical exact for 136
+bytes and three relocations: the target source shape is a nested suppression
+`if { } else if (!flag26)` rather than the logically equivalent negated
+conjunction, which VC7.1 shortens by two bytes. Do not use assembly or an
+artificial branch to close `UpdateVms`.
 Keep the Supervisor render callback's constant-index residual and the known
 lifecycle compiler-local residuals deferred. The seven-caller ANM draw hub at
 `0x0043ECD0` is now source-present for screen shake, nearest-even half-pixel
@@ -580,14 +584,17 @@ negative oracle, not a reason to add padding. All eight canonical
 `SceneTexture.cpp` units plus exact `main-added-callback` and
 `anm-create-texture-from-file` callers replay after this closure.
 
-Next bounded ANM lane: the contiguous text-alignment family at
-`0x00443CE0..0x004440ED` contains 1,036 source-present authored bytes across
-`DrawTextLeft`, `DrawTextRight`, and `DrawTextCentered`. Their behavior and
-relocations are already recovered, while the remaining gaps are compiler-local
-frame/source-shape differences. Reuse the positive semantic-aggregate oracle
-from the alpha-bleed frame and the negative region-aggregate oracle above;
-preserve exact `DrawTextInner @ 0x00443C70` and the exact surface lane beginning
-at `0x004440F0`, and do not replace the residuals with inert storage.
+The text lane is closed: the three variadic alignment helpers, text-buffer
+alpha bleed, `DrawLayer`, and the persistent-font renderer add 2,643 canonical
+authored bytes in this pass. Reuse two source-shape rules elsewhere: (1) when a
+target stack region is completely occupied by related live fields, a semantic
+aggregate can recover VC7.1 placement without padding; (2) unsupported TH08
+`var_order` can be reproduced with identifier-hash backing names only for real
+locals. Do not generalize either rule to target holes: `TryAllocateBuffer` and
+the VM creation entries remain explicit counterexamples. A future lifecycle
+pass can revisit `UpdateVms/AddVm/CreateVm*` only with a truthful source oracle;
+otherwise skip those residuals and choose another source-present lane rather
+than spending an inert local or artificial branch for exact credit.
 
 The shared `Project3DQuad` declaration previously triggered a cold-object
 identity refresh in `AnmManager.cpp`: 167 switch-local `$L` symbols advanced

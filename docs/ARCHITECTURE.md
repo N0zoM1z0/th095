@@ -196,7 +196,10 @@ full and regional D3D uploads and three-format alpha bleed, including the full
 
 The window, D3D8, chain, sound, ANM, and ECL layers share clear ancestry with
 TH08. Exact TH08 source is used to seed names, layouts, opcode enums, and
-compiler source shape, then revalidated against TH095.
+compiler source shape, then revalidated against TH095. The ANM text path is
+canonical through left/right/center formatting, persistent-font rendering,
+and CPU-buffer alpha bleed; its recovered VC7.1 local-order rules use only
+live semantic aggregates or real-local identifier hash buckets.
 
 Above that boundary, TH095 is structurally different from a traditional
 Touhou stage shooter. Target strings and state machines expose scene

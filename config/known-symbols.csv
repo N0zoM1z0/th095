@@ -96,11 +96,11 @@ address,name,module,confidence,evidence
 0x00418420,th095::PhotoGameTaskView::DrawHud,PhotoGameTask,exact,Canonical TH095 photography HUD with thirty-six replayed relocations
 0x00442B40,th095::GetAnmFormat,AnmTexture,exact,Canonical forced-16-bit texture format downgrade
 0x00443C70,th095::AnmTextManagerView::DrawTextInner,AnmText,exact,Canonical TH095 large-glyph text dispatch with three relocations
-0x00443CE0,th095::AnmTextManagerView::DrawTextLeft,AnmText,high,Complete left-aligned variadic ANM text renderer
-0x00443DD0,th095::AnmTextManagerView::DrawTextRight,AnmText,high,Complete right-aligned variadic ANM text renderer
-0x00443F80,th095::AnmTextManagerView::DrawTextCentered,AnmText,high,Complete centered variadic ANM text renderer
-0x0041C8F0,th095::TextHelperView::RenderTextToTextureBold,TextRenderer,high,Complete persistent-font memory-to-D3D text upload path with 25 resolved relocations
-0x0041C1E0,th095::TextRenderBufferView::ApplyAlphaBleed,TextRenderer,high,Complete text-buffer alpha-format neighbor color bleed
+0x00443CE0,th095::AnmTextManagerView::DrawTextLeft,AnmText,exact,Exact left-aligned variadic ANM text renderer with TH08 var_order frame restored
+0x00443DD0,th095::AnmTextManagerView::DrawTextRight,AnmText,exact,Exact right-aligned variadic ANM text renderer with loaded-sprite width placement
+0x00443F80,th095::AnmTextManagerView::DrawTextCentered,AnmText,exact,Exact centered variadic ANM text renderer
+0x0041C8F0,th095::TextHelperView::RenderTextToTextureBold,TextRenderer,exact,Canonical 560-byte persistent-font memory-to-D3D renderer with 25 relocations
+0x0041C1E0,th095::TextRenderBufferView::ApplyAlphaBleed,TextRenderer,exact,Exact text-buffer alpha bleed with semantic case-local aggregate and target scalar allocation
 0x0041C600,th095::TextRenderBufferView::InvertAlpha,TextRenderer,exact,Canonical three-format text-buffer alpha inversion
 0x004453B0,th095::SceneTextureEntryView::Clear,AnmTexture,exact,Canonical relocation-free D3D texture clear comparison
 0x0044D0A0,th095::LoadSceneSelectionAssets,SceneSelect,high,Asynchronous mission thumbnail face and preview-text producer
@@ -155,7 +155,7 @@ address,name,module,confidence,evidence
 0x00421D00,th095::AnmManager::TakeScreenshots,AnmManager,exact,Canonical 249-byte capture-request dispatcher with two relocations
 0x00444620,th095::AnmManagerCaptureView::CaptureToTexture,AnmManager,exact,Canonical 319-byte indexed texture-entry capture with four relocations
 0x00444760,th095::AnmManagerCaptureView::CaptureToSurface,AnmManager,exact,Canonical 537-byte primary/secondary surface capture with 15 relocations
-0x00444C80,th095::AnmManagerDrawLayerView::DrawLayer,AnmManager,high,Complete nine-layer ANM draw traversal with target-local PhotoGameTask and VM flag gates
+0x00444C80,th095::AnmManagerDrawLayerView::DrawLayer,AnmManager,exact,Exact nine-layer ANM draw traversal with target nested PhotoGameTask gate
 0x00444D10,th095::AnmManagerVmLifecycleView::AddVm,AnmManager,high,Complete intrusive VM tail insertion and nonzero id allocation; exact-sized compiler-local residual only
 0x00444E00,th095::AnmManagerVmLifecycleView::RemoveVm,AnmManager,exact,Canonical 226-byte intrusive unlink and inline VM destruction with two relocations
 0x00444EF0,th095::AnmLoaded::CreateVm,AnmManager,high,Complete render-mode VM creation with all nine target relocations
