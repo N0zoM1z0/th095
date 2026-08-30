@@ -239,6 +239,7 @@ th095::PhotoGameUpdateView::CheckBulletCollision
 th095::PhotoGameUpdateView::CalcLaserHitbox
 th095::PhotoGameUpdateView::Die
 th095::PhotoEnemyView::~PhotoEnemyView
+th095::PhotoEnemyManagerView::Destroy
 th095::PhotoEnemyManagerView::PhotoEnemyManagerView
 th095::PhotoEnemyView::PhotoEnemyView
 th095::PhotoEnemyEclContextView::PhotoEnemyEclContextView
@@ -258,3 +259,5 @@ th095::PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls
 th095::PhotoEnemyManagerView::ResetNonPhotoTargets
 th095::PhotoEnemyManagerView::RestartPhotoTargetEcls
 th095::PhotoEnemyView::UpdateScheduledEclCalls
+th095::PhotoStraightLaserView::Update
+th095::PhotoRotatingLaserView::Update

@@ -8994,3 +8994,89 @@ relocations = [
   { offset = 0x67, type = "REL32", symbol = "??0PhotoEnemyEclContextView@th095@@QAE@XZ", target = 0x00415310 },
   { offset = 0x278, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
 ]
+
+[units.enemy-manager-destroy]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerView::Destroy"]
+symbol = "?Destroy@PhotoEnemyManagerView@th095@@QAEXXZ"
+target_address = 0x00414B30
+size = 0x5F
+relocations = [
+  { offset = 0x2B, type = "REL32", symbol = "??1PhotoEnemyManagerView@th095@@QAE@XZ", target = 0x004154E0 },
+  { offset = 0x3E, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+]
+
+[units.photo-straight-laser-update]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoStraightLaserView::Update"]
+symbol = "?Update@PhotoStraightLaserView@th095@@UAEHXZ"
+target_address = 0x0041E2C0
+size = 0x405
+relocations = [
+  { offset = 0x21, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x5D, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x72, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0xF3, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x13D, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x164, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x1B9, type = "DIR32", symbol = "__real@c3400000", target = 0x00495410 },
+  { offset = 0x1CE, type = "DIR32", symbol = "__real@43400000", target = 0x00495330 },
+  { offset = 0x1E4, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x1FA, type = "DIR32", symbol = "__real@43e00000", target = 0x0049540C },
+  { offset = 0x235, type = "DIR32", symbol = "__real@c3400000", target = 0x00495410 },
+  { offset = 0x248, type = "DIR32", symbol = "__real@43400000", target = 0x00495330 },
+  { offset = 0x25B, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x26E, type = "DIR32", symbol = "__real@43e00000", target = 0x0049540C },
+  { offset = 0x2A1, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
+  { offset = 0x2B8, type = "DIR32", symbol = "__real@42200000", target = 0x0049539C },
+  { offset = 0x2D7, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x30F, type = "DIR32", symbol = "__real@42000000", target = 0x00495440 },
+  { offset = 0x322, type = "DIR32", symbol = "__real@3f000000", target = 0x00495420 },
+  { offset = 0x333, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
+  { offset = 0x342, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
+  { offset = 0x35B, type = "DIR32", symbol = "?g_PhotoGame@th095@@3PAUPhotoGameUpdateView@1@A", target = 0x004C4E70 },
+  { offset = 0x360, type = "REL32", symbol = "?CalcLaserHitbox@PhotoGameUpdateView@th095@@QAEIPAUFloat3@2@MMM@Z", target = 0x00430530 },
+  { offset = 0x385, type = "DIR32", symbol = "?g_PhotoGame@th095@@3PAUPhotoGameUpdateView@1@A", target = 0x004C4E70 },
+  { offset = 0x3D8, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
+  { offset = 0x3E1, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x3FB, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
+]
+
+[units.photo-rotating-laser-update]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoRotatingLaserView::Update"]
+symbol = "?Update@PhotoRotatingLaserView@th095@@UAEHXZ"
+target_address = 0x0041F550
+size = 0x426
+compare_size = 0x436
+relocations = [
+  { offset = 0x21, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x58, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x6B, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x85, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
+  { offset = 0x94, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
+  { offset = 0xBB, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x156, type = "DIR32", symbol = "$L66151", target = 0x0041F976 },
+  { offset = 0x2D6, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
+  { offset = 0x2F5, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x32D, type = "DIR32", symbol = "__real@42000000", target = 0x00495440 },
+  { offset = 0x340, type = "DIR32", symbol = "__real@3f000000", target = 0x00495420 },
+  { offset = 0x351, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
+  { offset = 0x360, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
+  { offset = 0x379, type = "DIR32", symbol = "?g_PhotoGame@th095@@3PAUPhotoGameUpdateView@1@A", target = 0x004C4E70 },
+  { offset = 0x37E, type = "REL32", symbol = "?CalcLaserHitbox@PhotoGameUpdateView@th095@@QAEIPAUFloat3@2@MMM@Z", target = 0x00430530 },
+  { offset = 0x3A3, type = "DIR32", symbol = "?g_PhotoGame@th095@@3PAUPhotoGameUpdateView@1@A", target = 0x004C4E70 },
+  { offset = 0x3F9, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
+  { offset = 0x402, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x41C, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
+  { offset = 0x426, type = "DIR32", symbol = "$L66123", target = 0x0041F773 },
+  { offset = 0x42A, type = "DIR32", symbol = "$L66096", target = 0x0041F6AA },
+  { offset = 0x42E, type = "DIR32", symbol = "$L66107", target = 0x0041F6F7 },
+  { offset = 0x432, type = "DIR32", symbol = "$L66135", target = 0x0041F7BF },
+]

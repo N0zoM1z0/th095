@@ -482,6 +482,7 @@ struct PhotoEnemyManagerView
 
     PhotoEnemyManagerView();
     ~PhotoEnemyManagerView();
+    void Destroy();
     i32 LoadResources();
     static i32 __fastcall OnUpdate(PhotoEnemyManagerView *enemyManager);
     PhotoEnemyView *Spawn(
@@ -649,6 +650,16 @@ PhotoEnemyManagerView::~PhotoEnemyManagerView()
     }
 
     g_PhotoEnemyManager = NULL;
+}
+
+void PhotoEnemyManagerView::Destroy()
+{
+    PhotoEnemyManagerView *enemyManager = this;
+    if (enemyManager != NULL)
+    {
+        delete enemyManager;
+        enemyManager = NULL;
+    }
 }
 
 void PhotoEnemyTimelineView::Run()

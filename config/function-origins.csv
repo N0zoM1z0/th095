@@ -132,7 +132,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00414580,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00414930,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004149F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00414B30,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00414B30,authored,EnemyManager,authored,exact,vc71-photo-enemy-destroy-2026-08-30
 0x00414B90,authored,EnemyManager,authored,high,photo-enemy-construction-2026-08-30
 0x00415040,authored,EnemyManager,authored,exact,vc71-photo-enemy-construction-2026-08-30
 0x004152D0,authored,EnemyManager,authored,exact,vc71-photo-enemy-view-destructor-2026-08-30
@@ -280,14 +280,14 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041E010,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041E060,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041E0C0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041E2C0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041E2C0,authored,PhotoEffect,authored,exact,vc71-photo-straight-laser-update-2026-08-30
 0x0041E6D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041E750,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041E9C0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041F140,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041F280,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041F380,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041F550,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041F550,authored,PhotoEffect,authored,exact,vc71-photo-rotating-laser-update-2026-08-30
 0x0041F990,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041FA10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00420100,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

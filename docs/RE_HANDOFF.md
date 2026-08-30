@@ -168,7 +168,9 @@
   defaults. All eleven relocations resolve and 1,119/1,152 comparable bytes
   match; the remaining 33 bytes are compiler-local stack displacements and
   receive no exact credit. All sixteen established exact units in the shared
-  translation unit replay unchanged.
+  translation unit replay unchanged. The adjacent 95-byte manager
+  self-destruction entry at `0x00414B30` is also canonical exact and closes the
+  enemy lifecycle path used by the game-task shutdown coordinator.
 - Root-level `EclOperandsInt.cpp` and `EclOperandsFloat.cpp` now reconstruct
   the high-connectivity operand resolver pair at `0x0040FAE0/0x004105A0`.
   Their 3,439 authored bytes, adjacent 684 bytes of compiler-owned jump tables,
@@ -405,16 +407,27 @@
 ## Next bounded lane
 
 The enemy update, spawn, reset, resource, and construction spines are now
-source-present. The child constructors at `0x00415040/0x00415310` and resource
-entries at `0x00408CE0/0x00408DE0/0x004153D0` are canonical exact; the large
-manager constructor at `0x00414B90` is conservatively non-exact only because of
-compiler-local homes. First close the adjacent 95-byte ownership wrapper at
-`0x00414B30`, then cover the two approximately 1 KB laser callers at
-`0x0041E2C0/0x0041F550`, which share
-the exact PlayerInf collision path and expose TH095's camera/bullet interaction.
-Keep all fifteen PlayerInf exact units, the exact
-outer PhotoGame coordinator, and every established `PhotoCamera.cpp` unit
-green while extending shared views.
+source-present. The child constructors at `0x00415040/0x00415310`, resource
+entries at `0x00408CE0/0x00408DE0/0x004153D0`, and the manager destroy wrapper
+at `0x00414B30` are canonical exact; the large manager constructor at
+`0x00414B90` is conservatively non-exact only because of compiler-local homes.
+
+The first TH095 PhotoEffect lane is also closed exactly. The straight laser
+update at `0x0041E2C0` reproduces all 1,029 bytes and 27 relocations. The
+rotating/lifecycle laser update at `0x0041F550` reproduces all 1,062 authored
+bytes, its adjacent 16-byte switch table, and all 23 code/table relocations.
+These units prove the packet layouts at effect `+0x50`, body/tail ANM VM
+offsets `+0x78/+0x344` and `+0x98/+0x364`, player-laser collision integration,
+and optional anchoring through enemy-manager photo target zero.
+
+Next stay in the same high-connectivity PhotoEffect cluster: reconstruct the
+two initializers at `0x0041E0C0/0x0041F380`, their draw callbacks at
+`0x0041E6D0/0x0041F990`, then the shared factory/update hub at
+`0x0041DBD0/0x0041D930`. This should expose ownership and names for the
+remaining collision/draw helpers around `0x0041E750..0x004200F6`. Keep both
+new PhotoEffect exact units, all PlayerInf exact units, the exact outer
+PhotoGame coordinator, and every established `PhotoCamera.cpp` unit green
+while extending shared views.
 
 The large photo functions remain source-present but non-exact:
 `PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe
