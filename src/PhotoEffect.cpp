@@ -41,11 +41,11 @@ typedef char PhotoEffectVectorSizeIsC[
 
 struct PhotoEffectBaseView
 {
-    virtual void Unknown00() = 0;
+    virtual i32 Initialize(void *args) = 0;
     virtual i32 Update() = 0;
     virtual void Unknown08() = 0;
     virtual void Unknown0C() = 0;
-    virtual void Unknown10() = 0;
+    virtual i32 Draw() = 0;
     virtual void Unknown14() = 0;
     virtual i32 CheckCollision(
         Float3 *position, Float3 *size, i32 capture) = 0;
@@ -90,7 +90,9 @@ struct PhotoStraightLaserView : PhotoEffectBaseView
     AnmVm bodyVm;                            // +0x078
     AnmVm tailVm;                            // +0x344
 
+    i32 Initialize(void *args);
     i32 Update();
+    i32 Draw();
 };
 
 typedef char PhotoStraightLaserBodyVmAt78[
@@ -126,7 +128,9 @@ struct PhotoRotatingLaserView : PhotoEffectBaseView
     AnmVm bodyVm;                            // +0x098
     AnmVm tailVm;                            // +0x364
 
+    i32 Initialize(void *args);
     i32 Update();
+    i32 Draw();
 };
 
 typedef char PhotoRotatingLaserBodyVmAt98[
@@ -158,6 +162,22 @@ struct PhotoEnemyManagerView
 };
 
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
+
+struct PhotoEffectAnmView
+{
+    void SetAndExecuteScript(AnmVm *vm, i32 scriptIndex);
+};
+
+struct PhotoEffectManagerResourcesView
+{
+    u8 unknown00[0x74];
+    PhotoEffectAnmView *anm;
+};
+
+extern PhotoEffectManagerResourcesView *g_PhotoEffectManager;
+
+extern i32 __fastcall GetPhotoEffectScriptBase(i32 type);
+Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
 static inline i32 PhotoEffectIsOutsidePlayfield(
     PhotoEffectVector *position, f32 width, f32 height)
@@ -249,6 +269,64 @@ i32 PhotoStraightLaserView::Update()
     if (this->tailOffset == 0.0f)
     {
         AnmManager::ExecuteScript(&this->tailVm);
+    }
+    return 0;
+}
+
+i32 PhotoStraightLaserView::Initialize(void *args)
+{
+    this->spawn = *static_cast<PhotoEffectArgsSmallView *>(args);
+    this->state = 2;
+
+    g_PhotoEffectManager->anm->SetAndExecuteScript(
+        &this->bodyVm,
+        GetPhotoEffectScriptBase(this->spawn.type) + this->spawn.color);
+    this->bodyVm.pendingInterrupt = 2;
+    AnmManager::ExecuteScript(&this->bodyVm);
+    this->bodyVm.SetBlendModeAdditive();
+    this->bodyVm.renderModeBits = 1;
+    this->bodyVm.renderStateA = 0;
+    this->bodyVm.renderStateB = 2;
+
+    g_PhotoEffectManager->anm->SetAndExecuteScript(
+        &this->tailVm, this->spawn.color + 0xc2);
+    this->tailVm.pendingInterrupt = 2;
+    AnmManager::ExecuteScript(&this->tailVm);
+    this->tailVm.SetBlendModeAdditive();
+    this->tailVm.renderModeBits = 1;
+
+    this->position = this->spawn.position;
+    *reinterpret_cast<i32 *>(&this->length) = this->spawn.initialLength;
+    this->width = this->spawn.width;
+    this->speed = this->spawn.speed;
+    this->angle = this->spawn.angle;
+    if (this->length > 0.0f)
+    {
+        this->tailOffset = 0.01f;
+    }
+    else
+    {
+        this->tailOffset = 0.0f;
+    }
+    reinterpret_cast<Float3 *>(&this->velocity)
+        ->FromAngleMagnitude(this->angle, this->speed);
+    return 0;
+}
+
+i32 PhotoStraightLaserView::Draw()
+{
+    PhotoToScreen(
+        &this->bodyVm.position,
+        reinterpret_cast<const Float3 *>(&this->position));
+    this->bodyVm.rotation.z =
+        AddNormalizeAngle(this->angle, 1.5707964f);
+    this->bodyVm.Draw();
+    if (this->tailOffset == 0.0f)
+    {
+        PhotoToScreen(
+            &this->tailVm.position,
+            reinterpret_cast<const Float3 *>(&this->position));
+        this->tailVm.Draw();
     }
     return 0;
 }
@@ -357,6 +435,54 @@ i32 PhotoRotatingLaserView::Update()
     if (this->tailOffset == 0.0f)
     {
         AnmManager::ExecuteScript(&this->tailVm);
+    }
+    return 0;
+}
+
+i32 PhotoRotatingLaserView::Initialize(void *args)
+{
+    this->spawn = *static_cast<PhotoEffectArgsView *>(args);
+    this->state = 3;
+
+    g_PhotoEffectManager->anm->SetAndExecuteScript(
+        &this->bodyVm,
+        GetPhotoEffectScriptBase(this->spawn.type) + this->spawn.color);
+    this->bodyVm.pendingInterrupt = 2;
+    AnmManager::ExecuteScript(&this->bodyVm);
+    this->bodyVm.SetBlendModeAdditive();
+    this->bodyVm.renderModeBits = 1;
+    this->bodyVm.renderStateA = 0;
+    this->bodyVm.renderStateB = 2;
+
+    g_PhotoEffectManager->anm->SetAndExecuteScript(
+        &this->tailVm, this->spawn.color + 0xc2);
+    this->tailVm.pendingInterrupt = 2;
+    AnmManager::ExecuteScript(&this->tailVm);
+    this->tailVm.SetBlendModeAdditive();
+    this->tailVm.renderModeBits = 1;
+
+    this->position = this->spawn.position;
+    this->length = this->spawn.initialLength;
+    this->width = 2.0f;
+    this->speed = this->spawn.speed;
+    this->angle = this->spawn.angle;
+    return 0;
+}
+
+i32 PhotoRotatingLaserView::Draw()
+{
+    PhotoToScreen(
+        &this->bodyVm.position,
+        reinterpret_cast<const Float3 *>(&this->position));
+    this->bodyVm.rotation.z =
+        AddNormalizeAngle(this->angle, 1.5707964f);
+    this->bodyVm.Draw();
+    if (this->tailOffset == 0.0f)
+    {
+        PhotoToScreen(
+            &this->tailVm.position,
+            reinterpret_cast<const Float3 *>(&this->position));
+        this->tailVm.Draw();
     }
     return 0;
 }

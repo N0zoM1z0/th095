@@ -382,6 +382,11 @@ typedef char RngSizeIs8[(sizeof(Rng) == 8) ? 1 : -1];
 #pragma pack(push, 4)
 struct AnmVmBase
 {
+    void SetBlendModeAdditive()
+    {
+        this->blendMode = 1;
+    }
+
     u8 unknown000[0x0c];
     u32 renderMode;                 // +0x00c
     u8 unknown010[4];

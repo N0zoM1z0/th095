@@ -262,3 +262,7 @@ th095::PhotoEnemyManagerView::RestartPhotoTargetEcls,0x00416E30,function
 th095::PhotoEnemyView::UpdateScheduledEclCalls,0x00416F30,function
 th095::PhotoStraightLaserView::Update,0x0041E2C0,function
 th095::PhotoRotatingLaserView::Update,0x0041F550,function
+th095::PhotoStraightLaserView::Initialize,0x0041E0C0,function
+th095::PhotoStraightLaserView::Draw,0x0041E6D0,function
+th095::PhotoRotatingLaserView::Initialize,0x0041F380,function
+th095::PhotoRotatingLaserView::Draw,0x0041F990,function

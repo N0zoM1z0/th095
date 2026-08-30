@@ -420,14 +420,18 @@ These units prove the packet layouts at effect `+0x50`, body/tail ANM VM
 offsets `+0x78/+0x344` and `+0x98/+0x364`, player-laser collision integration,
 and optional anchoring through enemy-manager photo target zero.
 
-Next stay in the same high-connectivity PhotoEffect cluster: reconstruct the
-two initializers at `0x0041E0C0/0x0041F380`, their draw callbacks at
-`0x0041E6D0/0x0041F990`, then the shared factory/update hub at
-`0x0041DBD0/0x0041D930`. This should expose ownership and names for the
-remaining collision/draw helpers around `0x0041E750..0x004200F6`. Keep both
-new PhotoEffect exact units, all PlayerInf exact units, the exact outer
-PhotoGame coordinator, and every established `PhotoCamera.cpp` unit green
-while extending shared views.
+The paired initializers at `0x0041E0C0/0x0041F380` are now source-present for
+their exact 500/450-byte instruction topology and all relocations; only the
+target's `0x64` inline-local frame versus the stock compiler's `0x0C` frame
+prevents exact promotion. Their draw callbacks at `0x0041E6D0/0x0041F990`
+are canonical exact for all 253 authored bytes and twelve relocations.
+
+Next stay in the same high-connectivity PhotoEffect cluster and reconstruct
+the shared factory/update hub at `0x0041DBD0/0x0041D930`. This should expose
+ownership and names for the remaining collision/draw helpers around
+`0x0041E750..0x004200F6`. Keep all four PhotoEffect exact units, all PlayerInf
+exact units, the exact outer PhotoGame coordinator, and every established
+`PhotoCamera.cpp` unit green while extending shared views.
 
 The large photo functions remain source-present but non-exact:
 `PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe

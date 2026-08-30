@@ -261,3 +261,7 @@ th095::PhotoEnemyManagerView::RestartPhotoTargetEcls
 th095::PhotoEnemyView::UpdateScheduledEclCalls
 th095::PhotoStraightLaserView::Update
 th095::PhotoRotatingLaserView::Update
+th095::PhotoStraightLaserView::Initialize
+th095::PhotoStraightLaserView::Draw
+th095::PhotoRotatingLaserView::Initialize
+th095::PhotoRotatingLaserView::Draw
