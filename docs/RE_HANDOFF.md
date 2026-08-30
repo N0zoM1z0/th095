@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 170 canonical units cover 95,014 authored bytes.
+- Reconstruction: 171 canonical units cover 96,421 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 53.57% (95,014 / 177,360)
+  relocations. Confirmed authored-byte coverage is now 54.36% (96,421 / 177,360)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -59,6 +59,13 @@
   node destruction, and the replay-worker shutdown edge are all enforced.
   `ZunMemory::~ZunMemory` is exact for another 84 bytes. Four compiler-owned
   global initialization/destruction wrappers were classified as exclusions.
+- The root-level `ScoreData.*` now owns the shared persistent score/best-shot
+  layouts and the exact `ResultSaveDataView::WriteBestShotData @ 0x00435910`.
+  Its 1,407-byte body and all 37 relocations replay exactly, covering pending
+  photo capture, `BSTS` output, record checksum refresh, the 120-record scene
+  score stream, profile checksum, compression, encryption, and final
+  `scoreth095.dat` output. All ten existing ResultScreen units replay unchanged
+  after replacing their old local save-data stubs with the shared header.
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.
@@ -265,20 +272,13 @@
 ## Next bounded lane
 
 Continue the target-local candidate inventory rather than spending more time
-on compiler-only residuals. The immediate high-value authored lane is
-`FUN_00435910 @ 0x00435910` (1,407 bytes): three target callers use it to
-write pending best-shot data and rebuild `scoreth095.dat`; it has twelve
-internal callees and shares exact checksum, encryption, and best-shot record
-dependencies. Recover its owning save-data type locally before assigning a
-final name.
-
-Then complete the already mapped
+on compiler-only residuals. Complete the already mapped
 `SceneSaveDataView::LoadScenePreviewTexture @ 0x004362A0` (578 bytes), which
 is called directly by the 16,066-byte scene-selection hub and uploads the
 selected photograph to the 256x192 preview texture. The other source-missing
 confirmed-authored candidates are `FUN_0042FF60 @ 0x0042FF60` (405 bytes), a
 seven-callee photography/gameplay coordinator, and no others. Re-run the
-origin inventory after these three so large unreviewed game-side candidates
+origin inventory after these two so large unreviewed game-side candidates
 are admitted or excluded on evidence rather than size alone.
 
 The large photo functions remain source-present but non-exact:

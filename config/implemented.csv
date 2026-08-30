@@ -201,3 +201,4 @@ th095::Chain::Cut
 th095::Chain::CutImpl
 th095::Chain::~Chain
 th095::ZunMemory::~ZunMemory
+th095::ResultSaveDataView::WriteBestShotData

@@ -219,6 +219,13 @@ next action belongs in `RE_HANDOFF.md`.
 | ECL-004 | target-observed | TH095 extends the inherited ECL VM with photography session, camera, photo-effect, animation-handle, and stage-state opcodes. Adjacent TH08 source establishes ancestry but not these TH095-specific cases. | Exact target handlers and target-local call/field evidence |
 | MATCH-003 | exact | `EclManager::RunEcl` contributes 27,091 authored exact bytes; 27,747 total bytes are compared so the 656 compiler-owned table bytes cannot be omitted or credited as authored code. | `size`/`compare_size` manifest contract and canonical replay |
 
+## Reconstructed score data
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| SCORE-001 | exact | `ResultSaveDataView::WriteBestShotData @ 0x00435910` commits a pending `BSTS` photograph to its per-scene best-shot file, clears the staged record, updates the persistent best-shot view, then rebuilds `scoreth095.dat`. The rebuild serializes every valid `SC` scene record plus the `0x458`-byte profile, refreshes their additive checksums, compresses the payload, encrypts it with the `AC/35/0x10` transform, and writes a 24-byte header followed by the transformed data. | Canonical 1,407-byte VC7.1 unit with all 37 relocations replayed; exact checksum, compression, encryption, file-writer, and record-reset dependencies |
+| SCORE-002 | exact | Persistent score data begins with a `ScoreFileHeader *` at `+0x00`, profile bytes at `+0x08`, 120 overlapping `0x60`-byte scene score/best-shot image views at `+0x460`, and 120 staged `0x78`-byte best-shot records at `+0x3160`. The profile checksum is at object `+0x10`, and each staged record owns pixel data at record `+0x74`. | Exact member displacements throughout the writer, compile-time layout assertions, and unchanged replay of all ten ResultScreen canonical units after the shared-header refactor |
+
 ## Reconstructed sound system
 
 | ID | Class | Durable fact | Evidence |

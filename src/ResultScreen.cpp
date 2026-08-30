@@ -1,4 +1,5 @@
 #include "ResultScreen.hpp"
+#include "ScoreData.hpp"
 #include "SoundPlayer.hpp"
 #include "ZunMath.hpp"
 
@@ -103,55 +104,6 @@ struct ResultPlayerConfigView
     i32 scene;
 };
 
-struct ResultBestShotImageView
-{
-    i32 score;
-    u8 unknown004[4];
-    u32 metadata[8];
-    u8 unknown028[4];
-    i32 replayValue;
-    u8 unknown030[0x38 - 0x30];
-    f32 slowRate;
-    i32 stageValue;
-    u8 unknown040[0x60 - 0x40];
-};
-
-struct ResultBestShotRecordView
-{
-    u32 magic;
-    u8 type;
-    u8 componentCount;
-    u16 group;
-    u16 scene;
-    u16 version;
-    u16 width;
-    u16 height;
-    i32 score;
-    u8 unknown014[4];
-    char comment[0x50];
-    u8 valid;
-    u8 componentsLoaded;
-    u8 unknown06a[2];
-    i32 photoIndex;
-    void *componentData0;
-    void *componentData1;
-};
-
-struct ResultScoreEntryView
-{
-    u16 magic;
-    u16 version;
-    u32 size;
-    u8 unknown008[4];
-    i32 index;
-    i32 score;
-    u8 unknown014[0x48 - 0x14];
-    f32 slowRate;
-    u8 unknown04c[4];
-    u32 flags;
-    u8 unknown054[0x60 - 0x54];
-};
-
 struct ResultScreenDrawLocals
 {
     i32 totalScore;
@@ -202,31 +154,6 @@ typedef char ResultScreenDrawReplayListPositionAtD0[
 typedef char ResultScreenDrawLoopIndexAtEC[
     (offsetof(ResultScreenDrawLocals, i) == 0xec) ? 1 : -1];
 
-struct ResultSaveDataView
-{
-    u8 unknown0000[0x22];
-    u8 nextSceneByGroup[11];
-    u8 unknown002d[0x470 - 0x2d];
-    union
-    {
-        ResultBestShotImageView bestShotImages[120];
-        struct
-        {
-            u8 unknown0470[0x3160 - 0x470];
-            ResultBestShotRecordView bestShotRecords[10];
-        } recordStorage;
-    };
-
-    void UpdateBestShotRecord(i32 index);
-    ZunResult WriteBestShotData();
-};
-
-typedef char ResultBestShotImageSizeIs60[
-    (sizeof(ResultBestShotImageView) == 0x60) ? 1 : -1];
-typedef char ResultBestShotRecordSizeIs78[
-    (sizeof(ResultBestShotRecordView) == 0x78) ? 1 : -1];
-typedef char ResultScoreEntrySizeIs60[
-    (sizeof(ResultScoreEntryView) == 0x60) ? 1 : -1];
 typedef char ResultBestShotImageScoreAt00[
     (offsetof(ResultBestShotImageView, score) == 0x00) ? 1 : -1];
 typedef char ResultBestShotImageMetadataAt08[
@@ -323,21 +250,21 @@ i32 ResultPhotoDataView::FindBestShot()
 
 void ResultSaveDataView::UpdateBestShotRecord(i32 index)
 {
-    if (this->recordStorage.bestShotRecords[index].componentData0 != NULL)
+    if (this->bestShotRecords[index].componentData0 != NULL)
     {
         g_ZunMemory.Free(
-            this->recordStorage.bestShotRecords[index].componentData0);
+            this->bestShotRecords[index].componentData0);
     }
-    this->recordStorage.bestShotRecords[index].componentData0 = NULL;
+    this->bestShotRecords[index].componentData0 = NULL;
 
-    if (this->recordStorage.bestShotRecords[index].componentData1 != NULL)
+    if (this->bestShotRecords[index].pixelData != NULL)
     {
         g_ZunMemory.Free(
-            this->recordStorage.bestShotRecords[index].componentData1);
+            this->bestShotRecords[index].pixelData);
     }
-    this->recordStorage.bestShotRecords[index].componentData1 = NULL;
-    this->recordStorage.bestShotRecords[index].componentsLoaded = 0;
-    this->recordStorage.bestShotRecords[index].valid = 0;
+    this->bestShotRecords[index].pixelData = NULL;
+    this->bestShotRecords[index].componentsLoaded = 0;
+    this->bestShotRecords[index].valid = 0;
 }
 
 void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
@@ -429,7 +356,7 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
         GetResultVm(resultScreen, 22)->glyphHeight = 0x12;
 
         i32 group = resultScreen->selectedGroup;
-        u8 scene = g_ResultSaveData->nextSceneByGroup[group];
+        u8 scene = g_ResultSaveData->profile.nextSceneByGroup[group];
         g_ResultAnmManager->DrawTextLeft(
             GetResultVm(resultScreen, 21), 0xffe0c0, 0x300000,
             resultScreen->sceneLabels[group][scene].firstLine);
@@ -437,11 +364,11 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
             GetResultVm(resultScreen, 22), 0xffe0c0, 0x300000,
             resultScreen->sceneLabels[group][scene].secondLine);
 
-        g_ResultSaveData->nextSceneByGroup[group]++;
-        if (g_ResultSaveData->nextSceneByGroup[group] >=
+        g_ResultSaveData->profile.nextSceneByGroup[group]++;
+        if (g_ResultSaveData->profile.nextSceneByGroup[group] >=
             resultScreen->sceneCounts[group])
         {
-            g_ResultSaveData->nextSceneByGroup[group] = 0;
+            g_ResultSaveData->profile.nextSceneByGroup[group] = 0;
         }
 
         time(reinterpret_cast<time_t *>(
@@ -635,34 +562,34 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             g_ResultScreenGlobalState->bestShotIndex);
 
         g_ResultSaveData
-            ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .valid = 1;
         g_ResultSaveData
-            ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .magic = 0x53545342;
         g_ResultSaveData
-            ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .width = g_ResultPhotoData->slots[photoIndex].width;
         g_ResultSaveData
-            ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .height = g_ResultPhotoData->slots[photoIndex].height;
         g_ResultSaveData
-            ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .score = g_ResultPhotoData->slots[photoIndex].score;
         g_ResultSaveData
-            ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .group = (u16)(g_ResultPlayerConfig->group + 1);
         g_ResultSaveData
-            ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .scene = (u16)(g_ResultPlayerConfig->scene + 1);
         g_ResultSaveData
-            ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .type = 2;
         g_ResultSaveData
-            ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .version = 0x102;
         g_ResultSaveData
-            ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .componentCount =
             (u8)((g_ResultPhotoData->anm->textures[photoIndex].format == 4) + 2);
         g_ResultSaveData
@@ -673,11 +600,11 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             .replayValue = g_ResultPhotoData->slots[photoIndex].replayValue;
         strcpy(
             g_ResultSaveData
-                ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+                ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
                 .comment,
             g_ResultPhotoData->slots[photoIndex].comment);
         g_ResultSaveData
-            ->recordStorage.bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .photoIndex = photoIndex;
 
         g_ResultSaveData->WriteBestShotData();

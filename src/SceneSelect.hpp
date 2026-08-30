@@ -41,8 +41,16 @@ struct SceneScoreEntryView
 struct SceneDefinitionView
 {
     i32 scoreEntryIndex;
-    i32 titleArgument1;
-    i32 titleArgument2;
+    union
+    {
+        i32 titleArgument1;
+        i32 group;
+    };
+    union
+    {
+        i32 titleArgument2;
+        i32 scene;
+    };
     u8 unknown00c[0x14];
     i8 groupDisplayValue;
     i8 sceneDisplayValue;

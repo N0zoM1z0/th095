@@ -7924,3 +7924,51 @@ size = 0x13
 relocations = [
   { offset = 0xB, type = "REL32", symbol = "?ReleaseBuffer@TextRenderBufferView@th095@@QAE_NXZ", target = 0x0041BE60 },
 ]
+
+[units.score-data-write-best-shot]
+source = "src/ScoreData.cpp"
+object = "build/matching/ScoreData.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ResultSaveDataView::WriteBestShotData"]
+symbol = "?WriteBestShotData@ResultSaveDataView@th095@@QAE?AW4ZunResult@@XZ"
+target_address = 0x00435910
+size = 0x57F
+relocations = [
+  { offset = 0x25, type = "DIR32", symbol = "??_C@_08PGGDBMNB@bestshot?$AA@", target = 0x004968C0 },
+  { offset = 0x2A, type = "REL32", symbol = "__mkdir", target = 0x00485F6D },
+  { offset = 0x33, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
+  { offset = 0x40, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
+  { offset = 0x9D, type = "DIR32", symbol = "?g_ScorePhotoStage@th095@@3PAUScorePhotoStageView@1@A", target = 0x004C4E6C },
+  { offset = 0xA2, type = "REL32", symbol = "?CapturePhotoPixels@ScorePhotoStageView@th095@@QAEXH@Z", target = 0x0042E7B0 },
+  { offset = 0x102, type = "REL32", symbol = "?CalculateAlignedChecksum@th095@@YIHPAHI@Z", target = 0x0041BA80 },
+  { offset = 0x124, type = "REL32", symbol = "?CalculateAlignedChecksum@th095@@YIHPAHI@Z", target = 0x0041BA80 },
+  { offset = 0x18C, type = "REL32", symbol = "?CalculateAlignedChecksum@th095@@YIHPAHI@Z", target = 0x0041BA80 },
+  { offset = 0x1AA, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
+  { offset = 0x1B6, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
+  { offset = 0x1C3, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
+  { offset = 0x1CF, type = "DIR32", symbol = "??_C@_0BI@JFFGNPPG@bestshot?1bs_?$CF?42d_?$CFd?4dat?$AA@", target = 0x00495668 },
+  { offset = 0x1DB, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x1E6, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUSceneDefinitionView@1@A", target = 0x004CA2F0 },
+  { offset = 0x1F2, type = "DIR32", symbol = "??_C@_0BG@NCGNEGJE@bestshot?1bs_ex_?$CFd?4dat?$AA@", target = 0x00495650 },
+  { offset = 0x1FE, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x20C, type = "REL32", symbol = "?Open@ScoreFileWriter@th095@@YI?AW4ZunResult@@PAD@Z", target = 0x0041ADC0 },
+  { offset = 0x22C, type = "REL32", symbol = "?Write@ScoreFileWriter@th095@@YI?AW4ZunResult@@PAXH@Z", target = 0x0041AF80 },
+  { offset = 0x24C, type = "REL32", symbol = "?Write@ScoreFileWriter@th095@@YI?AW4ZunResult@@PAXH@Z", target = 0x0041AF80 },
+  { offset = 0x2B6, type = "REL32", symbol = "?CompressData@th095@@YIPAEPAEHPAH@Z", target = 0x00455E10 },
+  { offset = 0x2C4, type = "REL32", symbol = "?Write@ScoreFileWriter@th095@@YI?AW4ZunResult@@PAXH@Z", target = 0x0041AF80 },
+  { offset = 0x2C9, type = "REL32", symbol = "?Close@ScoreFileWriter@th095@@YI?AW4ZunResult@@XZ", target = 0x0041B090 },
+  { offset = 0x2E9, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x2FE, type = "REL32", symbol = "?UpdateBestShotRecord@ResultSaveDataView@th095@@QAEXH@Z", target = 0x004299F0 },
+  { offset = 0x314, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x3FB, type = "REL32", symbol = "?CalculateAlignedChecksum@th095@@YIHPAHI@Z", target = 0x0041BA80 },
+  { offset = 0x462, type = "REL32", symbol = "?CalculateAlignedChecksum@th095@@YIHPAHI@Z", target = 0x0041BA80 },
+  { offset = 0x4CE, type = "REL32", symbol = "?CompressData@th095@@YIPAEPAEHPAH@Z", target = 0x00455E10 },
+  { offset = 0x518, type = "REL32", symbol = "?Encrypt@FileSystem@th095@@YIPAEPAEHEEHH@Z", target = 0x0041A790 },
+  { offset = 0x51D, type = "DIR32", symbol = "??_C@_0P@DDKLADCN@scoreth095?4dat?$AA@", target = 0x00496864 },
+  { offset = 0x522, type = "REL32", symbol = "?Open@ScoreFileWriter@th095@@YI?AW4ZunResult@@PAD@Z", target = 0x0041ADC0 },
+  { offset = 0x53D, type = "REL32", symbol = "?Write@ScoreFileWriter@th095@@YI?AW4ZunResult@@PAXH@Z", target = 0x0041AF80 },
+  { offset = 0x553, type = "REL32", symbol = "?Write@ScoreFileWriter@th095@@YI?AW4ZunResult@@PAXH@Z", target = 0x0041AF80 },
+  { offset = 0x558, type = "REL32", symbol = "?Close@ScoreFileWriter@th095@@YI?AW4ZunResult@@XZ", target = 0x0041B090 },
+  { offset = 0x564, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x570, type = "REL32", symbol = "_free", target = 0x004854BE },
+]

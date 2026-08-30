@@ -169,3 +169,4 @@ address,name,size,status,match_percent,unit,evidence
 0x004191D0,th095::Chain::CutImpl,458,matching,100.00,chain-cut-impl,python3 scripts/build.py --unit chain-cut-impl && python3 scripts/compare-coff-function.py --unit chain-cut-impl --json
 0x0041BD20,th095::Chain::~Chain,75,matching,100.00,chain-destructor,python3 scripts/build.py --unit chain-destructor && python3 scripts/compare-coff-function.py --unit chain-destructor --json
 0x0041BD70,th095::ZunMemory::~ZunMemory,84,matching,100.00,zun-memory-destructor,python3 scripts/build.py --unit zun-memory-destructor && python3 scripts/compare-coff-function.py --unit zun-memory-destructor --json
+0x00435910,th095::ResultSaveDataView::WriteBestShotData,1407,matching,100.00,score-data-write-best-shot,python3 scripts/build.py --unit score-data-write-best-shot && python3 scripts/compare-coff-function.py --unit score-data-write-best-shot --json
