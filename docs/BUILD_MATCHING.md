@@ -109,3 +109,14 @@ type, target, and complete compared bytes remain exact. The 2026-08-30
 GameTask checkpoint caught and repaired this previously accumulated drift in
 six ANM units plus one PhotoCamera and one PhotoGame unit; 129 affected units
 then replayed exactly.
+
+TH095's game-task runtime provides two further source-shape oracles. A
+16-bit input wrapper with an inline `operator&` reproduces the target's
+mask-register and truncation flow; treating the same address as a plain
+`u16` shortens the code and is not ABI-equivalent. Likewise, the 12-byte
+photo counter's inline integer conversion creates the target loop-bound
+homes. For large unoptimized frames whose semantics are already proved, a
+natural aggregate containing the real locals can preserve their lifetimes
+and physical slot order without inert padding. The canonical
+`photo-game-task-update` and `photo-game-task-draw-hud` units enforce these
+patterns under build 3077.

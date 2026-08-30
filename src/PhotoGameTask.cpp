@@ -1,4 +1,5 @@
 #include "AnmManager.hpp"
+#include "AnmVmId.hpp"
 
 #include <stdio.h>
 
@@ -39,6 +40,7 @@ struct PhotoEnemyManagerTaskView
 {
     static PhotoEnemyManagerTaskView *Create();
     void Destroy();
+    void RestartPhotoTargetEcls();
 };
 
 struct PhotoItemManagerTaskView
@@ -79,12 +81,98 @@ struct PhotoGameSupervisorView
 {
     i32 LoadMusic(i32 slot, char *path);
     i32 StopAudio();
+    void StopReplayScan();
+};
+
+struct PhotoSoundPlayerTaskView
+{
+    void PlaySoundByIdx(i32 soundIndex, i32 pan);
+};
+
+struct PhotoHelpMenuTaskView
+{
+    u8 unknown000[0x6108];
+    i32 closeRequested;
+};
+
+struct PhotoStageStateTaskView
+{
+    u8 unknown000[0x17720];
+    AnmVmId capturedPhotoVms[11];
+    u8 unknown1774c[0x25720 - 0x1774c];
+    u32 flags;
+};
+
+struct PhotoCapacityCounterTaskView
+{
+    i32 capturedPhotoCount;
+    u8 unknown004[4];
+    i32 photoCapacity;
+
+    operator i32()
+    {
+        return this->photoCapacity;
+    }
+};
+
+struct PhotoReplayInputButtonsTaskView
+{
+    u16 current;
+
+    u16 operator&(u16 mask)
+    {
+        return this->current & mask;
+    }
+};
+
+struct PhotoGameRuntimeTaskView
+{
+    u8 unknown000[0x1e34];
+    f32 hudFade;
+    u8 unknown1e38[0x29e4 - 0x1e38];
+    PhotoCapacityCounterTaskView photoCounter;
+};
+
+struct PhotoAsciiManagerTaskView
+{
+    i32 AddFormatText(Float3 *position, const char *format, ...);
 };
 
 struct PhotoRuntimeConfigView
 {
     u32 values[50];
 };
+
+struct PhotoGameTaskDrawHudLocals
+{
+    i32 capturedPhotoCount;
+    i32 photoCapacity;
+    Float3 extraScenePosition;
+    Float3 scenePosition;
+    Float3 photoCountPosition;
+    Float3 scorePosition;
+    Float3 highScorePosition;
+    u32 alpha;
+};
+
+typedef char PhotoGameTaskDrawHudLocalsSizeIs48[
+    (sizeof(PhotoGameTaskDrawHudLocals) == 0x48) ? 1 : -1];
+typedef char PhotoGameTaskDrawHudAlphaAt44[
+    (offsetof(PhotoGameTaskDrawHudLocals, alpha) == 0x44) ? 1 : -1];
+
+struct PhotoGameTaskUpdateLocals
+{
+    PhotoHelpMenuTaskView *activeHelpMenu;
+    PhotoHelpMenuTaskView *shutdownHelpMenu;
+    i32 previousSecond;
+    i32 j;
+    i32 i;
+};
+
+typedef char PhotoGameTaskUpdateLocalsSizeIs14[
+    (sizeof(PhotoGameTaskUpdateLocals) == 0x14) ? 1 : -1];
+typedef char PhotoGameTaskUpdateLoopIAt10[
+    (offsetof(PhotoGameTaskUpdateLocals, i) == 0x10) ? 1 : -1];
 
 typedef char PhotoRuntimeConfigSizeIsC8[
     (sizeof(PhotoRuntimeConfigView) == 0xc8) ? 1 : -1];
@@ -115,17 +203,21 @@ struct PhotoGameTaskView
     PhotoItemManagerTaskView *items;         // +0x01c
     PhotoPauseManagerView *pause;            // +0x020
     PhotoLaserManagerTaskView *lasers;       // +0x024
-    u8 unknown028[0x0c];
+    ZunTimer stageTimer;                     // +0x028
     PhotoRuntimeConfigView runtimeConfig;    // +0x034
-    i32 unknown0fc;
+    u32 flags;                               // +0x0fc
     i32 bestShotIndex;                       // +0x100
-    u8 unknown104[0x14];
+    i32 unknown104;
+    ZunTimer completionTimer;                // +0x108
+    i32 score;                               // +0x114
     ChainElem *calcChain;                    // +0x118
     ChainElem *drawChain;                    // +0x11c
     i32 replayMode;                          // +0x120
 
     i32 InitializeSubsystems();
     void ShutdownSubsystems();
+    i32 Update();
+    i32 DrawHud();
 };
 
 typedef char PhotoGameTaskSizeIs124[
@@ -142,11 +234,208 @@ extern PhotoSceneSaveDataTaskView *g_PhotoSceneSaveData;
 extern PhotoEclFileManagerView *g_PhotoEclFileManager;
 extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoGameSupervisorView g_PhotoGameSupervisor;
+extern PhotoSoundPlayerTaskView g_PhotoGameSoundPlayer;
+extern PhotoHelpMenuTaskView *g_PhotoHelpMenu;
+extern PhotoStageStateTaskView *g_PhotoStageState;
+extern PhotoGameRuntimeTaskView *g_PhotoGameRuntime;
+extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
+extern PhotoAsciiManagerTaskView g_PhotoAsciiManager;
+extern u32 g_PhotoAsciiTextColor;
+extern PhotoReplayInputButtonsTaskView g_ReplayInputButtons;
+extern i32 g_PhotoNextState;
 extern u32 g_ControllerRuntimeFlags;
 extern i32 g_ReplayUsesArchive;
 extern double g_PhotoGameClock;
 extern double g_PhotoGameClock2;
 extern u32 g_PhotoScreenFadeColor;
+
+i32 PhotoGameTaskView::Update()
+{
+    PhotoGameTaskUpdateLocals locals;
+
+    if (((this->flags >> 3) & 1) != 0)
+    {
+        g_PhotoGameSupervisor.StopReplayScan();
+        g_PhotoNextState = 6;
+        if (g_PhotoHelpMenu != NULL)
+        {
+            locals.shutdownHelpMenu = g_PhotoHelpMenu;
+            locals.shutdownHelpMenu->closeRequested = 1;
+        }
+        return 1;
+    }
+
+    if (((this->flags >> 2) & 1) != 0)
+    {
+        this->flags = this->flags | 0x80;
+        return 1;
+    }
+
+    g_PhotoGameSupervisor.StopReplayScan();
+    if (g_PhotoHelpMenu != NULL)
+    {
+        locals.activeHelpMenu = g_PhotoHelpMenu;
+        locals.activeHelpMenu->closeRequested = 1;
+        return 1;
+    }
+
+    if (g_ReplayUsesArchive != 0 &&
+        ((g_ReplayInputButtons & 0x160b) != 0 ||
+         ((this->flags >> 4) & 1) != 0 ||
+         ((this->flags >> 5) & 1) != 0 ||
+         ((this->flags >> 6) & 1) != 0))
+    {
+        g_PhotoNextState = 2;
+    }
+
+    if (((this->flags >> 4) & 1) != 0)
+    {
+        if (((this->flags >> 6) & 1) != 0)
+        {
+            for (locals.i = 0;
+                 locals.i < g_PhotoGameRuntime->photoCounter;
+                 locals.i++)
+            {
+                AnmManager::ExecuteScript(
+                    g_PhotoStageState
+                        ->capturedPhotoVms[locals.i]
+                        .GetVm());
+            }
+        }
+        return 3;
+    }
+
+    if (((this->flags >> 5) & 1) != 0)
+    {
+        return 3;
+    }
+
+    if (((this->flags >> 6) & 1) != 0)
+    {
+        for (locals.j = 0;
+             locals.j < g_PhotoGameRuntime->photoCounter;
+             locals.j++)
+        {
+            AnmManager::ExecuteScript(
+                g_PhotoStageState
+                    ->capturedPhotoVms[locals.j]
+                    .GetVm());
+        }
+        return 3;
+    }
+
+    if (this->completionTimer > 0)
+    {
+        locals.previousSecond =
+            static_cast<i32>(this->completionTimer) / 60;
+        this->completionTimer--;
+        if (static_cast<i32>(this->completionTimer) / 60 <= 5 &&
+            locals.previousSecond !=
+                static_cast<i32>(this->completionTimer) / 60)
+        {
+            g_PhotoGameSoundPlayer.PlaySoundByIdx(0x24, 0);
+        }
+        else if (static_cast<i32>(this->completionTimer) / 60 <= 10 &&
+                 locals.previousSecond !=
+                     static_cast<i32>(this->completionTimer) / 60)
+        {
+            g_PhotoGameSoundPlayer.PlaySoundByIdx(0x1b, 0);
+        }
+
+        if (this->completionTimer <= 0)
+        {
+            g_PhotoEnemyManagerTask->RestartPhotoTargetEcls();
+        }
+    }
+
+    this->stageTimer++;
+    return 1;
+}
+
+i32 PhotoGameTaskView::DrawHud()
+{
+    PhotoGameTaskDrawHudLocals locals;
+
+    if (((this->flags >> 2) & 1) != 0)
+    {
+        return 1;
+    }
+    if (((g_PhotoStageState->flags >> 2) & 1) == 0)
+    {
+        locals.alpha = 0xff;
+        if (g_PhotoGameRuntime->hudFade < 64.0f)
+        {
+            locals.alpha = 0x40;
+        }
+        else if (g_PhotoGameRuntime->hudFade < 128.0f)
+        {
+            locals.alpha =
+                ((u32)(g_PhotoGameRuntime->hudFade - 64.0f) * 0xbf >> 6) +
+                0x40;
+        }
+
+        g_PhotoAsciiTextColor = locals.alpha << 24 | 0xffffff;
+        g_PhotoAsciiManager.AddFormatText(
+            ((locals.highScorePosition.x = 128.0f),
+             (locals.highScorePosition.y = 19.0f),
+             (locals.highScorePosition.z = 0.0f),
+             &locals.highScorePosition),
+            "HiScore %.7d",
+            *reinterpret_cast<i32 *>(
+                &g_PhotoSceneSaveData->bytes[
+                    0x470 + g_PhotoGameTask->bestShotIndex * 0x60]) >
+                    this->score
+                ? *reinterpret_cast<i32 *>(
+                      &g_PhotoSceneSaveData->bytes[
+                          0x470 + g_PhotoGameTask->bestShotIndex * 0x60])
+                : this->score);
+        locals.scorePosition.x = 128.0f;
+        locals.scorePosition.y = 32.0f;
+        locals.scorePosition.z = 0.0f;
+        g_PhotoAsciiManager.AddFormatText(
+            &locals.scorePosition,
+            "  Score %.7d",
+            this->score);
+
+        g_PhotoAsciiTextColor = locals.alpha << 24 | 0xdfefff;
+        locals.photoCapacity =
+            g_PhotoGameRuntime->photoCounter.photoCapacity;
+        locals.capturedPhotoCount =
+            g_PhotoGameRuntime->photoCounter.capturedPhotoCount;
+        locals.photoCountPosition.x = 409.0f;
+        locals.photoCountPosition.y = 19.0f;
+        locals.photoCountPosition.z = 0.0f;
+        g_PhotoAsciiManager.AddFormatText(
+            &locals.photoCountPosition,
+            "Photo %.2d/%.2d",
+            locals.capturedPhotoCount,
+            locals.photoCapacity);
+
+        if (g_PhotoSceneDefinition->level != 10)
+        {
+            locals.scenePosition.x = 472.0f;
+            locals.scenePosition.y = 32.0f;
+            locals.scenePosition.z = 0.0f;
+            g_PhotoAsciiManager.AddFormatText(
+                &locals.scenePosition,
+                "%2d-%d",
+                g_PhotoSceneDefinition->level + 1,
+                g_PhotoSceneDefinition->scene + 1);
+        }
+        else
+        {
+            locals.extraScenePosition.x = 472.0f;
+            locals.extraScenePosition.y = 32.0f;
+            locals.extraScenePosition.z = 0.0f;
+            g_PhotoAsciiManager.AddFormatText(
+                &locals.extraScenePosition,
+                "EX-%d",
+                g_PhotoSceneDefinition->scene + 1);
+        }
+        g_PhotoAsciiTextColor = 0xffffffff;
+    }
+    return 1;
+}
 
 i32 PhotoGameTaskView::InitializeSubsystems()
 {

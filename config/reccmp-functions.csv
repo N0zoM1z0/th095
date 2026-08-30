@@ -308,3 +308,5 @@ th095::PhotoEffectManagerView::Create,0x0041D790,function
 th095::PhotoEffectManagerView::Destroy,0x0041D8D0,function
 th095::PhotoGameTaskView::InitializeSubsystems,0x00417A70,function
 th095::PhotoGameTaskView::ShutdownSubsystems,0x00417E70,function
+th095::PhotoGameTaskView::Update,0x00418100,function
+th095::PhotoGameTaskView::DrawHud,0x00418420,function

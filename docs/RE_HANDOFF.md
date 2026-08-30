@@ -406,14 +406,14 @@
 
 ## Next bounded lane
 
-The high-connectivity `GameTaskInf` lifecycle coordinator is now closed
-exactly. `PhotoGameTaskView::InitializeSubsystems @ 0x00417A70` and
-`ShutdownSubsystems @ 0x00417E70` contribute 953 authored bytes and enforce
-all 63 relocations. They prove the `0x124` task layout, the `0xC8` runtime
-snapshot, normal/extra best-shot validation, and the complete live ownership
-graph from replay creation through background/front/bullet/photo/player/enemy/
-item/pause/laser creation and teardown. Preserve both units while extending
-any of those shared subsystem views.
+The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
+closed exactly. `PhotoGameTaskView::InitializeSubsystems @ 0x00417A70`,
+`ShutdownSubsystems @ 0x00417E70`, `Update @ 0x00418100`, and
+`DrawHud @ 0x00418420` contribute 2,360 authored bytes and enforce all 127
+relocations. They prove the `0x124` task layout, complete live ownership graph,
+replay/help exit gates, captured-photo VM execution, countdown/ECL restart,
+and the TH095 score/photo/scene HUD. Preserve all four units while extending
+shared subsystem views.
 
 A cold affected-object audit also repaired stale VC7.1 compiler-local label
 names left by earlier shared `AnmManager.hpp` growth. Six ANM units, including
@@ -423,11 +423,12 @@ PhotoGame unit now replay with their current COFF `$Lxxxxx` identities. All
 symbol names changed, never target destinations or credited bytes.
 
 Continue outward through the immediately adjacent GameTask/FrontInf cluster at
-`0x00417070..0x00418716`. Prioritize the high-fanout functions at
-`0x00417D20`, `0x00417F80`, `0x00418100`, and `0x00418420`; use the exact
-coordinator's factory/destructor edges to establish ownership before assigning
-names. Keep `0x00417410/0x00417550` as a paired creation/destruction target,
-and preserve the independently exact `PhotoToScreen @ 0x004186D0` bridge.
+`0x00417070..0x00418716`. The next high-connectivity pair is the asynchronous
+startup worker at `0x00417D20` and task factory at `0x00417F80`; close their
+`0x00418690/0x004186B0` callback wrappers and `0x004180A0` destroy entry in the
+same lane. Then take the paired FrontInf creation/destruction entries at
+`0x00417410/0x00417550` before the 873-byte update hub at `0x004175B0`.
+Preserve the independently exact `PhotoToScreen @ 0x004186D0` bridge.
 
 ## Closed lanes and preservation constraints
 

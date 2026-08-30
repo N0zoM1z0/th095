@@ -79,6 +79,8 @@ address,name,module,confidence,evidence
 0x00442A50,th095::AccumulateArgb8888Neighbor,AnmTexture,exact,Canonical ARGB8888 neighbor color accumulator
 0x00442AB0,th095::AccumulateArgb1555Neighbor,AnmTexture,exact,Canonical ARGB1555 neighbor color accumulator
 0x0041C570,th095::AccumulateArgb4444Neighbor,AnmTexture,exact,Canonical ARGB4444 neighbor color accumulator
+0x00418100,th095::PhotoGameTaskView::Update,PhotoGameTask,exact,Canonical TH095 game-task runtime coordinator with twenty-eight replayed relocations
+0x00418420,th095::PhotoGameTaskView::DrawHud,PhotoGameTask,exact,Canonical TH095 photography HUD with thirty-six replayed relocations
 0x00442B40,th095::GetAnmFormat,AnmTexture,exact,Canonical forced-16-bit texture format downgrade
 0x00443C70,th095::AnmTextManagerView::DrawTextInner,AnmText,exact,Canonical TH095 large-glyph text dispatch with three relocations
 0x00443CE0,th095::AnmTextManagerView::DrawTextLeft,AnmText,high,Complete left-aligned variadic ANM text renderer
