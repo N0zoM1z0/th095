@@ -180,3 +180,9 @@ th095::LoadSceneSelectionAssets,0x0044D0A0,function
 th095::SceneSaveDataView::LoadBestShotForScene,0x00435E90,function
 th095::CalculateAlignedChecksum,0x0041BA80,function
 th095::DecompressData,0x00456220,function
+th095::TextRenderBufferView::ReleaseBuffer,0x0041BE60,function
+th095::TextRenderBufferView::AllocateBufferWithFallback,0x0041BF20,function
+th095::TextRenderBufferView::TryAllocateBuffer,0x0041BF90,function
+th095::TextRenderBufferView::GetFormatInfo,0x0041C180,function
+th095::TextHelperView::CreateTextBuffer,0x0041C780,function
+th095::TextHelperView::ReleaseTextBuffer,0x0041C8A0,function

@@ -7514,3 +7514,94 @@ symbol = "?InvertAlpha@TextRenderBufferView@th095@@QAE_NHH@Z"
 target_address = 0x0041C600
 size = 0x175
 relocations = []
+
+[units.text-render-buffer-release]
+source = "src/TextRenderer.cpp"
+object = "build/matching/TextRenderer.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::TextRenderBufferView::ReleaseBuffer"]
+symbol = "?ReleaseBuffer@TextRenderBufferView@th095@@QAE_NXZ"
+target_address = 0x0041BE60
+size = 0xB6
+relocations = [
+  { offset = 0x2D, type = "DIR32", symbol = "__imp__SelectObject@8", target = 0x00495034 },
+  { offset = 0x3D, type = "DIR32", symbol = "__imp__DeleteDC@4", target = 0x00495038 },
+  { offset = 0x4D, type = "DIR32", symbol = "__imp__DeleteObject@4", target = 0x0049503C },
+]
+
+[units.text-render-buffer-allocate-fallback]
+source = "src/TextRenderer.cpp"
+object = "build/matching/TextRenderer.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::TextRenderBufferView::AllocateBufferWithFallback"]
+symbol = "?AllocateBufferWithFallback@TextRenderBufferView@th095@@QAE_NHHW4_D3DFORMAT@@@Z"
+target_address = 0x0041BF20
+size = 0x68
+relocations = [
+  { offset = 0x17, type = "REL32", symbol = "?TryAllocateBuffer@TextRenderBufferView@th095@@QAE_NHHW4_D3DFORMAT@@@Z", target = 0x0041BF90 },
+  { offset = 0x40, type = "REL32", symbol = "?TryAllocateBuffer@TextRenderBufferView@th095@@QAE_NHHW4_D3DFORMAT@@@Z", target = 0x0041BF90 },
+  { offset = 0x5A, type = "REL32", symbol = "?TryAllocateBuffer@TextRenderBufferView@th095@@QAE_NHHW4_D3DFORMAT@@@Z", target = 0x0041BF90 },
+]
+
+[units.text-render-buffer-get-format]
+source = "src/TextRenderer.cpp"
+object = "build/matching/TextRenderer.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::TextRenderBufferView::GetFormatInfo"]
+symbol = "?GetFormatInfo@TextRenderBufferView@th095@@QAEPAUTextRenderFormatInfo@2@W4_D3DFORMAT@@@Z"
+target_address = 0x0041C180
+size = 0x58
+relocations = [
+  { offset = 0x23, type = "DIR32", symbol = "?g_TextRenderFormatInfoArray@th095@@3PAUTextRenderFormatInfo@1@A", target = 0x004A4330 },
+  { offset = 0x32, type = "DIR32", symbol = "?g_TextRenderFormatInfoArray@th095@@3PAUTextRenderFormatInfo@1@A", target = 0x004A4330 },
+  { offset = 0x4E, type = "DIR32", symbol = "?g_TextRenderFormatInfoArray@th095@@3PAUTextRenderFormatInfo@1@A", target = 0x004A4330 },
+]
+
+[units.text-renderer-create-buffer]
+source = "src/TextRenderer.cpp"
+object = "build/matching/TextRenderer.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::TextHelperView::CreateTextBuffer"]
+symbol = "?CreateTextBuffer@TextHelperView@th095@@SIXXZ"
+target_address = 0x0041C780
+size = 0x116
+relocations = [
+  { offset = 0xE, type = "DIR32", symbol = "?g_TextRenderBuffer@th095@@3UTextRenderBufferView@1@A", target = 0x004C44B8 },
+  { offset = 0x13, type = "REL32", symbol = "?AllocateBufferWithFallback@TextRenderBufferView@th095@@QAE_NHHW4_D3DFORMAT@@@Z", target = 0x0041BF20 },
+  { offset = 0x33, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
+  { offset = 0x38, type = "REL32", symbol = "?GetRandomU16@Rng@th095@@QAEGXZ", target = 0x0041B410 },
+  { offset = 0x4C, type = "DIR32", symbol = "?g_TextRenderBuffer@th095@@3UTextRenderBufferView@1@A", target = 0x004C44B8 },
+  { offset = 0x53, type = "DIR32", symbol = "??_C@_0O@LAEHDGPN@?$ICl?$ICr?5?$IDS?$IDV?$IDb?$IDN?$AA@", target = 0x00495850 },
+  { offset = 0x79, type = "DIR32", symbol = "__imp__CreateFontA@56", target = 0x00495040 },
+  { offset = 0x7E, type = "DIR32", symbol = "?g_TextFont17@th095@@3PAUHFONT__@@A", target = 0x004C44B0 },
+  { offset = 0x83, type = "DIR32", symbol = "??_C@_0O@LAEHDGPN@?$ICl?$ICr?5?$IDS?$IDV?$IDb?$IDN?$AA@", target = 0x00495850 },
+  { offset = 0xA9, type = "DIR32", symbol = "__imp__CreateFontA@56", target = 0x00495040 },
+  { offset = 0xAE, type = "DIR32", symbol = "?g_TextFont18@th095@@3PAUHFONT__@@A", target = 0x004C44B4 },
+  { offset = 0xB3, type = "DIR32", symbol = "??_C@_0O@LAEHDGPN@?$ICl?$ICr?5?$IDS?$IDV?$IDb?$IDN?$AA@", target = 0x00495850 },
+  { offset = 0xD9, type = "DIR32", symbol = "__imp__CreateFontA@56", target = 0x00495040 },
+  { offset = 0xDE, type = "DIR32", symbol = "?g_TextFont19@th095@@3PAUHFONT__@@A", target = 0x004C44A8 },
+  { offset = 0xE3, type = "DIR32", symbol = "??_C@_0O@LAEHDGPN@?$ICl?$ICr?5?$IDS?$IDV?$IDb?$IDN?$AA@", target = 0x00495850 },
+  { offset = 0x109, type = "DIR32", symbol = "__imp__CreateFontA@56", target = 0x00495040 },
+  { offset = 0x10E, type = "DIR32", symbol = "?g_TextFont20@th095@@3PAUHFONT__@@A", target = 0x004C44AC },
+]
+
+[units.text-renderer-release-buffer]
+source = "src/TextRenderer.cpp"
+object = "build/matching/TextRenderer.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::TextHelperView::ReleaseTextBuffer"]
+symbol = "?ReleaseTextBuffer@TextHelperView@th095@@SIXXZ"
+target_address = 0x0041C8A0
+size = 0x41
+relocations = [
+  { offset = 0x4, type = "DIR32", symbol = "?g_TextRenderBuffer@th095@@3UTextRenderBufferView@1@A", target = 0x004C44B8 },
+  { offset = 0x9, type = "REL32", symbol = "?ReleaseBuffer@TextRenderBufferView@th095@@QAE_NXZ", target = 0x0041BE60 },
+  { offset = 0xE, type = "DIR32", symbol = "?g_TextFont17@th095@@3PAUHFONT__@@A", target = 0x004C44B0 },
+  { offset = 0x15, type = "DIR32", symbol = "__imp__DeleteObject@4", target = 0x0049503C },
+  { offset = 0x1B, type = "DIR32", symbol = "?g_TextFont18@th095@@3PAUHFONT__@@A", target = 0x004C44B4 },
+  { offset = 0x22, type = "DIR32", symbol = "__imp__DeleteObject@4", target = 0x0049503C },
+  { offset = 0x28, type = "DIR32", symbol = "?g_TextFont19@th095@@3PAUHFONT__@@A", target = 0x004C44A8 },
+  { offset = 0x2F, type = "DIR32", symbol = "__imp__DeleteObject@4", target = 0x0049503C },
+  { offset = 0x34, type = "DIR32", symbol = "?g_TextFont20@th095@@3PAUHFONT__@@A", target = 0x004C44AC },
+  { offset = 0x3B, type = "DIR32", symbol = "__imp__DeleteObject@4", target = 0x0049503C },
+]

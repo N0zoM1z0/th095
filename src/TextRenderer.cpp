@@ -1,5 +1,7 @@
 #include "TextRenderer.hpp"
 
+#include "Global.hpp"
+
 #include <string.h>
 
 namespace th095
@@ -10,6 +12,188 @@ extern HFONT g_TextFont20;
 extern HFONT g_TextFont17;
 extern HFONT g_TextFont18;
 extern TextRenderBufferView g_TextRenderBuffer;
+
+DIFFABLE_STATIC_ARRAY_ASSIGN(TextRenderFormatInfo, 7,
+                             g_TextRenderFormatInfoArray) = {
+    {D3DFMT_X8R8G8B8, 32, 0x00000000, 0x00ff0000, 0x0000ff00,
+     0x000000ff},
+    {D3DFMT_A8R8G8B8, 32, 0xff000000, 0x00ff0000, 0x0000ff00,
+     0x000000ff},
+    {D3DFMT_X1R5G5B5, 16, 0x00000000, 0x00007c00, 0x000003e0,
+     0x0000001f},
+    {D3DFMT_R5G6B5, 16, 0x00000000, 0x0000f800, 0x000007e0,
+     0x0000001f},
+    {D3DFMT_A1R5G5B5, 16, 0x00008000, 0x00007c00, 0x000003e0,
+     0x0000001f},
+    {D3DFMT_A4R4G4B4, 16, 0x0000f000, 0x00000f00, 0x000000f0,
+     0x0000000f},
+    {(D3DFORMAT)-1, 0, 0, 0, 0, 0},
+};
+
+bool TextRenderBufferView::ReleaseBuffer()
+{
+    if (this->hdc)
+    {
+        SelectObject(this->hdc, this->originalBitmap);
+        DeleteDC(this->hdc);
+        DeleteObject(this->bitmap);
+        this->format = (D3DFORMAT)-1;
+        this->width = 0;
+        this->height = 0;
+        this->hdc = 0;
+        this->bitmap = 0;
+        this->originalBitmap = 0;
+        this->buffer = NULL;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool TextRenderBufferView::AllocateBufferWithFallback(
+    i32 width, i32 height, D3DFORMAT format)
+{
+    if (this->TryAllocateBuffer(width, height, format))
+    {
+        return true;
+    }
+
+    if (format == D3DFMT_A1R5G5B5 || format == D3DFMT_A4R4G4B4)
+    {
+        return this->TryAllocateBuffer(width, height, D3DFMT_A8R8G8B8);
+    }
+    if (format == D3DFMT_R5G6B5)
+    {
+        return this->TryAllocateBuffer(width, height, D3DFMT_X8R8G8B8);
+    }
+    return false;
+}
+
+struct TextBitmapInfo
+{
+    BITMAPINFOHEADER header;
+    RGBQUAD colors[17];
+};
+
+typedef char TextBitmapInfoSizeIs6C[
+    (sizeof(TextBitmapInfo) == 0x6c) ? 1 : -1];
+
+bool TextRenderBufferView::TryAllocateBuffer(i32 width, i32 height,
+                                             D3DFORMAT format)
+{
+    HGDIOBJ originalBitmap;
+    u8 *bitmapData;
+    HBITMAP bitmap;
+    TextRenderFormatInfo *formatInfo;
+    TextBitmapInfo bitmapInfo;
+    HDC deviceContext;
+    i32 imageWidthInBytes;
+
+    this->ReleaseBuffer();
+    memset(&bitmapInfo, 0, sizeof(TextBitmapInfo));
+    formatInfo = this->GetFormatInfo(format);
+    if (formatInfo == NULL)
+    {
+        return false;
+    }
+    imageWidthInBytes =
+        ((((width * formatInfo->bitCount) / 8) + 3) / 4) * 4;
+    bitmapInfo.header.biSize = sizeof(TextBitmapInfo);
+    bitmapInfo.header.biWidth = width;
+    bitmapInfo.header.biHeight = -(height + 1);
+    bitmapInfo.header.biPlanes = 1;
+    bitmapInfo.header.biBitCount = formatInfo->bitCount;
+    bitmapInfo.header.biSizeImage = height * imageWidthInBytes;
+    if (format != D3DFMT_X1R5G5B5 && format != D3DFMT_X8R8G8B8)
+    {
+        bitmapInfo.header.biCompression = BI_BITFIELDS;
+        reinterpret_cast<u32 *>(bitmapInfo.colors)[0] = formatInfo->redMask;
+        reinterpret_cast<u32 *>(bitmapInfo.colors)[1] = formatInfo->greenMask;
+        reinterpret_cast<u32 *>(bitmapInfo.colors)[2] = formatInfo->blueMask;
+        reinterpret_cast<u32 *>(bitmapInfo.colors)[3] = formatInfo->alphaMask;
+    }
+    bitmap = CreateDIBSection(NULL, reinterpret_cast<BITMAPINFO *>(&bitmapInfo),
+                              DIB_RGB_COLORS,
+                              reinterpret_cast<void **>(&bitmapData), NULL, 0);
+    if (bitmap == NULL)
+    {
+        return false;
+    }
+    memset(bitmapData, 0, bitmapInfo.header.biSizeImage);
+    deviceContext = CreateCompatibleDC(NULL);
+    originalBitmap = SelectObject(deviceContext, bitmap);
+    this->hdc = deviceContext;
+    this->bitmap = bitmap;
+    this->buffer = bitmapData;
+    this->imageSizeInBytes = bitmapInfo.header.biSizeImage;
+    this->originalBitmap = originalBitmap;
+    this->width = width;
+    this->height = height;
+    this->format = format;
+    this->imageWidthInBytes = imageWidthInBytes;
+    return true;
+}
+
+TextRenderFormatInfo *TextRenderBufferView::GetFormatInfo(D3DFORMAT format)
+{
+    i32 formatIndex;
+
+    for (formatIndex = 0;
+         g_TextRenderFormatInfoArray[formatIndex].format != -1 &&
+         g_TextRenderFormatInfoArray[formatIndex].format != format;
+         formatIndex++)
+    {
+    }
+    if (format == -1)
+    {
+        return NULL;
+    }
+    return &g_TextRenderFormatInfoArray[formatIndex];
+}
+
+void TextHelperView::CreateTextBuffer()
+{
+    u32 index;
+
+    g_TextRenderBuffer.AllocateBufferWithFallback(1024, 64,
+                                                   D3DFMT_A4R4G4B4);
+    for (index = 0; index < 256; index++)
+    {
+        g_TextRenderBuffer.unknown000[index] =
+            static_cast<u8>((g_Rng.GetRandomU16() >> 8) / 2);
+    }
+    g_TextFont17 = CreateFontA(
+        30, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, SHIFTJIS_CHARSET,
+        OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
+        FIXED_PITCH | FF_ROMAN,
+        "\x82\x6c\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4e");
+    g_TextFont18 = CreateFontA(
+        34, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, SHIFTJIS_CHARSET,
+        OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
+        FIXED_PITCH | FF_ROMAN,
+        "\x82\x6c\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4e");
+    g_TextFont19 = CreateFontA(
+        36, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, SHIFTJIS_CHARSET,
+        OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
+        FIXED_PITCH | FF_ROMAN,
+        "\x82\x6c\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4e");
+    g_TextFont20 = CreateFontA(
+        38, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, SHIFTJIS_CHARSET,
+        OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
+        FIXED_PITCH | FF_ROMAN,
+        "\x82\x6c\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4e");
+}
+
+void TextHelperView::ReleaseTextBuffer()
+{
+    g_TextRenderBuffer.ReleaseBuffer();
+    DeleteObject(g_TextFont17);
+    DeleteObject(g_TextFont18);
+    DeleteObject(g_TextFont19);
+    DeleteObject(g_TextFont20);
+}
 
 bool TextRenderBufferView::InvertAlpha(i32 rowCount, BOOL unused)
 {

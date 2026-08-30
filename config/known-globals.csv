@@ -35,3 +35,4 @@ address,name,module,confidence,evidence
 0x004C44B0,th095::g_TextFont17,TextRenderer,high,Target persistent 30-pixel Japanese text font
 0x004C44B4,th095::g_TextFont18,TextRenderer,high,Target persistent 34-pixel Japanese text font
 0x004C44B8,th095::g_TextRenderBuffer,TextRenderer,high,Target 0x124-byte CPU text-render buffer view
+0x004A4330,th095::g_TextRenderFormatInfoArray,TextRenderer,exact,Exact GetFormatInfo DIR32 relocations and target-initialized seven-entry format table

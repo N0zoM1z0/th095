@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 146 canonical units cover 90,703 authored bytes.
+- Reconstruction: 153 canonical units cover 91,897 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 53.15% (90,703 / 170,656)
+  relocations. Confirmed authored-byte coverage is now 53.47% (91,897 / 171,863)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,7 +25,7 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 178 authored candidates and leaves 1,652 origin/boundary reviews
+  confirms 189 authored candidates and leaves 1,641 origin/boundary reviews
   pending. Original class names remain unresolved where target evidence is
   insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
@@ -118,7 +118,15 @@
   Its `InvertAlpha @ 0x0041C600` dependency is exact for all 373 bytes;
   `ApplyAlphaBleed @ 0x0041C1E0` is complete at the target's 911-byte extent,
   with all eight exact pixel-accumulator relocations and 763/879 comparable
-  bytes matched.
+  bytes matched. The adjoining buffer lifecycle is now source-present end to
+  end. `ReleaseBuffer`, `AllocateBufferWithFallback`, `GetFormatInfo`,
+  `CreateTextBuffer`, and `ReleaseTextBuffer @ 0x0041BE60..0x0041C8E0` are
+  canonical exact for another 717 bytes and all 36 relocations. They prove the
+  seven-entry pixel-format table, `1024x64` bottom-up DIB, 256-byte RNG table,
+  and persistent 30/34/36/38-pixel Japanese fonts. The complete 490-byte
+  `TryAllocateBuffer` body is source-present at 478 bytes; its remaining
+  difference is compiler-local placement, so defer it rather than introducing
+  artificial stack padding.
 - `ReplayBrowserView::Update @ 0x0044DCA0` is now source-present for the
   complete TH095-specific 4-by-20 replay browser. The target-sized 2,054-byte
   probe resolves all 77 relocations and matches 1,683 of 1,746 comparable

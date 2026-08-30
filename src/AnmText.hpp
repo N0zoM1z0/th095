@@ -1,6 +1,7 @@
 #ifndef TH095_ANM_TEXT_HPP
 #define TH095_ANM_TEXT_HPP
 
+#include "AnmManager.hpp"
 #include "TextRenderer.hpp"
 
 namespace th095

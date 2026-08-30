@@ -178,3 +178,9 @@ th095::AccumulateArgb4444Neighbor
 th095::GetAnmFormat
 th095::SceneAnmManagerView::LoadTexture
 th095::SceneAnmManagerView::LoadTextureRegion
+th095::TextRenderBufferView::ReleaseBuffer
+th095::TextRenderBufferView::AllocateBufferWithFallback
+th095::TextRenderBufferView::TryAllocateBuffer
+th095::TextRenderBufferView::GetFormatInfo
+th095::TextHelperView::CreateTextBuffer
+th095::TextHelperView::ReleaseTextBuffer
