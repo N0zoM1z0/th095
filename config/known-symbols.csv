@@ -186,3 +186,5 @@ address,name,module,confidence,evidence
 0x0043F3C0,th095::AnmManager::AddSpriteToDrawBuffer,AnmManager,exact,Canonical quad-to-triangle-list batch expansion
 0x0043F4A0,th095::AnmManager::DrawNoRotation,AnmManager,exact,Canonical rounded axis-aligned quad placement with target-specific three-way alignment
 0x0043F760,th095::AnmManager::DrawNoRotationNoRound,AnmManager,exact,Canonical subpixel axis-aligned quad placement with target-specific three-way alignment
+0x0043FA00,th095::AnmManager::TranslateRotation,AnmManager,exact,Canonical relocation-free two-dimensional rotation helper
+0x0043FA40,th095::AnmManager::Draw2D,AnmManager,high,Complete target-specific aligned rotated-quad path with portable sine and cosine calls

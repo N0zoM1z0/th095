@@ -532,8 +532,8 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0043F3C0,authored,AnmManager,authored,exact,anm-draw-core-exact-2026-08-30
 0x0043F4A0,authored,AnmManager,authored,exact,anm-axis-aligned-draw-exact-2026-08-30
 0x0043F760,authored,AnmManager,authored,exact,anm-axis-aligned-draw-exact-2026-08-30
-0x0043FA00,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0043FA40,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0043FA00,authored,AnmManager,authored,exact,anm-rotation-draw-2026-08-30
+0x0043FA40,authored,AnmManager,authored,high,anm-rotation-draw-2026-08-30
 0x0043FC60,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004400F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00440120,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

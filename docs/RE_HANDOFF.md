@@ -496,8 +496,14 @@ subpixel placement. Both implement all three target-specific horizontal and
 vertical alignment values, include `positionOffset`, and contribute 1,354
 bytes with all 98 relocations replayed. Their exact source shape uses a
 truthful four-field sprite-dimensions aggregate to reproduce VC7.1's local
-layout. Continue at `TranslateRotation @ 0x0043FA00` and the rotated `Draw2D @
-0x0043FA40`, then close the remaining immediate draw-mode callers.
+layout. `TranslateRotation @ 0x0043FA00` is now canonical exact for all 58
+relocation-free bytes. The complete rotated `Draw2D @ 0x0043FA40` is also
+source-present and target-specific: it generates four local X/Y pairs from
+the same three-way alignment modes, includes XY position offsets, rotates all
+four vertices, and writes the unoffset Z. Its natural portable probe is 572
+versus 542 bytes solely around the target's inline x87 `FSINCOS`; do not add
+assembly to promote it. Continue through the remaining immediate draw-mode
+callers beginning at `0x0043FC60/0x004400F0`.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

@@ -23,6 +23,19 @@ struct AnmSpriteDimensions
     f32 halfWidth;
 };
 
+struct AnmRotatedSpriteLayout
+{
+    f32 xOffset;
+    f32 yOffset;
+    f32 x[4];
+    f32 y[4];
+    f32 spriteHeight;
+    f32 spriteWidth;
+    f32 cosine;
+    f32 rotation;
+    f32 sine;
+};
+
 static __forceinline u8 MixAnmColor(u8 first, u8 second)
 {
     u32 value = (u32)first * (u32)second >> 7;
@@ -362,6 +375,76 @@ ZunResult AnmManager::DrawNoRotationNoRound(AnmVm *vm)
     g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
         g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
             vm->position.z + vm->positionOffset.z;
+    return this->DrawInner(vm, 0);
+}
+
+// FUNCTION: TH095 0x0043FA00.
+void AnmManager::TranslateRotation(VertexTex1DiffuseXyzrhw *vertex, f32 x,
+                                   f32 y, f32 sine, f32 cosine, f32 xOffset,
+                                   f32 yOffset)
+{
+    vertex->x = x * cosine - y * sine + xOffset;
+    vertex->y = x * sine + y * cosine + yOffset;
+}
+
+// FUNCTION: TH095 0x0043FA40.
+ZunResult AnmManager::Draw2D(AnmVm *vm)
+{
+    AnmRotatedSpriteLayout sprite;
+
+    if (vm->rotation.z == 0.0f)
+        return this->DrawNoRotationNoRound(vm);
+
+    sprite.rotation = vm->rotation.z;
+    sprite.cosine = (f32)cos(sprite.rotation);
+    sprite.sine = (f32)sin(sprite.rotation);
+    sprite.xOffset = vm->position.x + vm->positionOffset.x;
+    sprite.yOffset = vm->position.y + vm->positionOffset.y;
+    sprite.spriteWidth = vm->spriteSize.x * vm->scale.x;
+    sprite.spriteHeight = vm->spriteSize.y * vm->scale.y;
+
+    switch (vm->renderStateA)
+    {
+    case 1:
+        sprite.x[0] = sprite.x[2] = 0.0f;
+        sprite.x[1] = sprite.x[3] = sprite.spriteWidth;
+        break;
+    case 0:
+        sprite.x[0] = sprite.x[2] = -sprite.spriteWidth * 0.5f;
+        sprite.x[1] = sprite.x[3] = sprite.spriteWidth * 0.5f;
+        break;
+    case 2:
+        sprite.x[0] = sprite.x[2] = -sprite.spriteWidth;
+        sprite.x[1] = sprite.x[3] = 0.0f;
+        break;
+    }
+
+    switch (vm->renderStateB)
+    {
+    case 1:
+        sprite.y[0] = sprite.y[1] = 0.0f;
+        sprite.y[2] = sprite.y[3] = sprite.spriteHeight;
+        break;
+    case 0:
+        sprite.y[0] = sprite.y[1] = -sprite.spriteHeight * 0.5f;
+        sprite.y[2] = sprite.y[3] = sprite.spriteHeight * 0.5f;
+        break;
+    case 2:
+        sprite.y[0] = sprite.y[1] = -sprite.spriteHeight;
+        sprite.y[2] = sprite.y[3] = 0.0f;
+        break;
+    }
+
+    for (i32 i = 0; i < 4; i++)
+    {
+        this->TranslateRotation(&g_AnmTexturedVertices[i], sprite.x[i],
+                                sprite.y[i], sprite.sine, sprite.cosine,
+                                sprite.xOffset, sprite.yOffset);
+    }
+
+    g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
+        g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
+            vm->position.z;
     return this->DrawInner(vm, 0);
 }
 

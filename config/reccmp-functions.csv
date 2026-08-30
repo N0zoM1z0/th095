@@ -503,3 +503,5 @@ th095::AnmManager::DrawInner,0x0043ECD0,function
 th095::AnmManager::AddSpriteToDrawBuffer,0x0043F3C0,function
 th095::AnmManager::DrawNoRotation,0x0043F4A0,function
 th095::AnmManager::DrawNoRotationNoRound,0x0043F760,function
+th095::AnmManager::TranslateRotation,0x0043FA00,function
+th095::AnmManager::Draw2D,0x0043FA40,function
