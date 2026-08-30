@@ -271,10 +271,14 @@ th095::PhotoEffectManagerView::Remove,0x0041DA50,function
 th095::PhotoEffectManagerView::Draw,0x0041DAB0,function
 th095::PhotoEffectManagerView::OnUpdate,0x0041DB00,function
 th095::PhotoEffectManagerView::OnDraw,0x0041DBA0,function
-th095::PhotoEffectManagerView::CheckCollisionA,0x0041DF10,function
+th095::PhotoEffectManagerView::CountPhotoTargets,0x0041DF10,function
 th095::PhotoEffectManagerView::CheckCollisionStored,0x0041DFA0,function
 th095::PhotoEffectManagerView::DrawSecondary,0x0041E010,function
-th095::PhotoEffectManagerView::CheckCollisionB,0x0041E060,function
+th095::PhotoEffectManagerView::CountNearbyTargets,0x0041E060,function
 th095::PhotoEffectManagerView::Spawn,0x0041DBD0,function
 th095::PhotoStraightLaserView::PhotoStraightLaserView,0x0041DD80,function
 th095::PhotoRotatingLaserView::PhotoRotatingLaserView,0x0041DE50,function
+th095::PhotoEffectBaseView::CountPhotoTargets,0x0041E750,function
+th095::PhotoStraightLaserView::DrawSecondary,0x0041F140,function
+th095::PhotoEffectBaseView::CountNearbyTargets,0x0041F280,function
+th095::PhotoRotatingLaserView::DrawSecondary,0x00420100,function

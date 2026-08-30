@@ -9062,7 +9062,7 @@ relocations = [
   { offset = 0x85, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0x94, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0xBB, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
-  { offset = 0x156, type = "DIR32", symbol = "$L66490", target = 0x0041F976 },
+  { offset = 0x156, type = "DIR32", symbol = "$L66592", target = 0x0041F976 },
   { offset = 0x2D6, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
   { offset = 0x2F5, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
   { offset = 0x32D, type = "DIR32", symbol = "__real@42000000", target = 0x00495440 },
@@ -9075,10 +9075,10 @@ relocations = [
   { offset = 0x3F9, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
   { offset = 0x402, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
   { offset = 0x41C, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
-  { offset = 0x426, type = "DIR32", symbol = "$L66462", target = 0x0041F773 },
-  { offset = 0x42A, type = "DIR32", symbol = "$L66434", target = 0x0041F6AA },
-  { offset = 0x42E, type = "DIR32", symbol = "$L66446", target = 0x0041F6F7 },
-  { offset = 0x432, type = "DIR32", symbol = "$L66474", target = 0x0041F7BF },
+  { offset = 0x426, type = "DIR32", symbol = "$L66565", target = 0x0041F773 },
+  { offset = 0x42A, type = "DIR32", symbol = "$L66536", target = 0x0041F6AA },
+  { offset = 0x42E, type = "DIR32", symbol = "$L66548", target = 0x0041F6F7 },
+  { offset = 0x432, type = "DIR32", symbol = "$L66577", target = 0x0041F7BF },
 ]
 
 [units.photo-straight-laser-draw]
@@ -9186,12 +9186,12 @@ relocations = [
   { offset = 0x25, type = "REL32", symbol = "?Draw@PhotoEffectManagerView@th095@@SIHPAU12@@Z", target = 0x0041DAB0 },
 ]
 
-[units.photo-effect-manager-check-collision-a]
+[units.photo-effect-manager-count-photo-targets]
 source = "src/PhotoEffect.cpp"
 object = "build/matching/PhotoEffect.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
-functions = ["th095::PhotoEffectManagerView::CheckCollisionA"]
-symbol = "?CheckCollisionA@PhotoEffectManagerView@th095@@QAEHPAUFloat3@2@0@Z"
+functions = ["th095::PhotoEffectManagerView::CountPhotoTargets"]
+symbol = "?CountPhotoTargets@PhotoEffectManagerView@th095@@QAEHPAUFloat3@2@0@Z"
 target_address = 0x0041DF10
 size = 0x8F
 relocations = []
@@ -9216,12 +9216,12 @@ target_address = 0x0041E010
 size = 0x46
 relocations = []
 
-[units.photo-effect-manager-check-collision-b]
+[units.photo-effect-manager-count-nearby-targets]
 source = "src/PhotoEffect.cpp"
 object = "build/matching/PhotoEffect.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
-functions = ["th095::PhotoEffectManagerView::CheckCollisionB"]
-symbol = "?CheckCollisionB@PhotoEffectManagerView@th095@@QAEHPAUFloat3@2@0@Z"
+functions = ["th095::PhotoEffectManagerView::CountNearbyTargets"]
+symbol = "?CountNearbyTargets@PhotoEffectManagerView@th095@@QAEHPAUFloat3@2@M@Z"
 target_address = 0x0041E060
 size = 0x5B
 relocations = []

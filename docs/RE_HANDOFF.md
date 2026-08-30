@@ -448,6 +448,14 @@ units, all PlayerInf exact units, the exact outer PhotoGame coordinator, and
 every established
 `PhotoCamera.cpp` unit green while extending shared views.
 
+The shared target-count methods at `0x0041E750/0x0041F280` and the two
+secondary particle draws at `0x0041F140/0x00420100` are also source-present.
+They prove 12-unit sampling along both laser types, script `0x126` particle
+creation, packet-color propagation, and the angle-local nearby-target test.
+Three probes have exact target sizes and every relocation but retain only
+compiler-local slot differences; keep them non-exact and proceed to the two
+large type-specific collision handlers at `0x0041E9C0/0x0041FA10`.
+
 The large photo functions remain source-present but non-exact:
 `PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe
 against a 2,219-byte target, and `UpdatePhotoCamera @ 0x00430AB0` has a
