@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 331 canonical exact functions cover 129,167 authored bytes.
+- Reconstruction: 332 canonical exact functions cover 129,770 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 49.04% (129,167 / 263,407)
+  relocations. Confirmed authored-byte coverage is now 49.15% (129,770 / 264,010)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 414 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,408 origin/boundary reviews pending. Original class
+  current ledger confirms 415 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,407 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -588,12 +588,15 @@ complete natural probe matches the first 390 bytes exactly and is 434 versus
 442 target bytes; leave the target's longer constant-index array load
 uncredited instead of reintroducing the TH08 reconstruction's assembly island.
 
-Continue through the adjacent Supervisor timing/render cluster. The immediate
-high-value dependency is `Supervisor::CalculateFps @ 0x00424720` (603 bytes),
-called by the exact FPS wrapper and responsible for frame counters and timing
-accumulators. Then review `DrawLoadingVms @ 0x00423840` and the compact
-`0x004238E0` render-state wrapper. Preserve every established Main, Background,
-ECL, ANM, photography, and ASCII exact unit while the shared headers change.
+The immediate timing dependency is also closed exactly:
+`Supervisor::CalculateFps @ 0x00424720` reproduces all 603 bytes and 43
+relocations. It proves the half-second timestamp window, unsigned frame-count
+conversion, 65-FPS staged QPC repair, 57/60 slow-rate cap, six gameplay-state
+gates, and one-sample flag reset. Continue through the remaining adjacent
+render helpers: `DrawLoadingVms @ 0x00423840`, the compact `0x004238E0`
+render-state wrapper, and their direct dependencies. Preserve every established
+Main, Background, ECL, ANM, photography, and ASCII exact unit while the shared
+headers change.
 
 ## Closed lanes and preservation constraints
 

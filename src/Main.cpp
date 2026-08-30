@@ -13,6 +13,25 @@
 
 using namespace th095;
 
+namespace th095
+{
+struct SupervisorGameTaskView
+{
+    u8 unknown000[0xfc];
+    u32 active : 1;
+    u32 unknownFlag1 : 1;
+    u32 timingBlocked2 : 1;
+    u32 unknownFlag3 : 1;
+    u32 timingBlocked4 : 1;
+    u32 timingBlocked5 : 1;
+    u32 timingBlocked6 : 1;
+    u32 resetFpsSample : 1;
+    u32 unknownFlags8 : 24;
+};
+
+extern SupervisorGameTaskView *g_SupervisorGameTask;
+}
+
 #define d3dDeviceStatus restartCommandProcessingLocal05
 #define message averagedPanLocal12
 #define renderResult iLocal11
@@ -1052,6 +1071,82 @@ i32 __fastcall Supervisor::DrawFpsCounter(Supervisor *s)
         &locals.position, "%2.1ffps", locals.currentFps);
     g_AsciiManager.color.color = 0xffffffff;
     return 1;
+}
+
+// FUNCTION: TH095 0x00424720.
+void Supervisor::CalculateFps()
+{
+    struct CalculateFpsLocals
+    {
+        f64 elapsed;
+        f64 currentTime;
+    } locals;
+
+    locals.currentTime = g_GameWindow.GetTimestamp();
+    if (g_Supervisor.lastFpsTimestamp > locals.currentTime)
+    {
+        g_Supervisor.lastFpsTimestamp = locals.currentTime;
+    }
+
+    if (locals.currentTime - g_Supervisor.lastFpsTimestamp >= 0.5)
+    {
+        locals.elapsed = locals.currentTime - g_Supervisor.lastFpsTimestamp;
+        g_Supervisor.lastFpsTimestamp += locals.elapsed;
+        this->currentFps =
+            static_cast<f64>(this->fpsFrameCount) / locals.elapsed;
+
+        if (this->currentFps > 65.0f)
+        {
+            g_Supervisor.fpsClockAnomalyCount++;
+            if (g_Supervisor.fpsClockAnomalyCount == 2)
+            {
+                g_GameWindow.lastTimestamp =
+                    g_GameWindow.currentTimestamp =
+                        g_GameWindow.lastFrameTime =
+                            g_GameWindow.timeOrigin =
+                                g_GameWindow.GetTimestamp();
+            }
+            else if (g_Supervisor.fpsClockAnomalyCount == 4)
+            {
+                g_GameWindow.performanceFrequency.QuadPart = 0;
+                g_GameWindow.lastTimestamp =
+                    g_GameWindow.currentTimestamp =
+                        g_GameWindow.lastFrameTime =
+                            g_GameWindow.timeOrigin =
+                                g_GameWindow.GetTimestamp();
+                g_Supervisor.fpsClockAnomalyCount = 0;
+            }
+        }
+        else
+        {
+            g_Supervisor.fpsClockAnomalyCount = 0;
+        }
+
+        if (g_SupervisorGameTask != NULL &&
+            g_SupervisorGameTask->timingBlocked4 == 0 &&
+            g_SupervisorGameTask->active == 0 &&
+            g_SupervisorGameTask->timingBlocked2 == 0 &&
+            g_SupervisorGameTask->timingBlocked5 == 0 &&
+            g_SupervisorGameTask->timingBlocked6 == 0 &&
+            g_SupervisorGameTask->resetFpsSample == 0)
+        {
+            this->lagDenominator += 60.0;
+            if (this->currentFps > 57.0f)
+            {
+                this->lagNumerator += 60.0;
+            }
+            else
+            {
+                this->lagNumerator += this->currentFps;
+            }
+        }
+
+        if (g_SupervisorGameTask != NULL)
+        {
+            g_SupervisorGameTask->resetFpsSample = 0;
+        }
+        this->fpsFrameCount = 0;
+    }
 }
 
 void Supervisor::InitializeCriticalSections()

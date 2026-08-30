@@ -413,3 +413,4 @@ th095::AsciiManager::DrawGuiStrings,0x00401920,function
 th095::AsciiManager::InitializeVms,0x00423430,function
 th095::Supervisor::OnDraw2,0x004235D0,function
 th095::Supervisor::DrawFpsCounter,0x00423790,function
+th095::Supervisor::CalculateFps,0x00424720,function

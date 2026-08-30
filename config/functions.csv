@@ -352,7 +352,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x004242B0,532,0x004244C3,FUN_004242b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004244D0,550,0x004246F5,FUN_004244d0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00424700,19,0x00424712,FUN_00424700,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00424720,603,0x0042497A,FUN_00424720,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00424720,603,0x0042497A,FUN_00424720,th095::Supervisor::CalculateFps,Supervisor,matching,100.00,__thiscall,void Supervisor::CalculateFps(),false,src/Main.cpp,Canonical relocation-aware VC7.1 comparison: 603/603 bytes and all 43 timer gameplay-state and slow-rate relocations,authored,Exact half-second FPS sampling QPC anomaly fallback and replay/photo slow-rate accumulation
 0x00424980,126,0x004249FD,FUN_00424980,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00424A00,814,0x00424D2D,FUN_00424a00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00424D30,1047,0x00425146,FUN_00424d30,th095::Supervisor::LoadConfig,Supervisor,matching,100.00,__thiscall,ZunResult Supervisor::LoadConfig(char *),false,src/Main.cpp,main-load-config canonical VC7.1 relocation replay,authored,Exact 200-byte validation thbgm.dat fallback option logging and controller mapping

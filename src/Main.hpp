@@ -168,6 +168,7 @@ struct ChainElem
     void *arg;
 };
 
+#pragma pack(push, 4)
 struct Supervisor
 {
     HINSTANCE instance;                         // +0x000
@@ -205,11 +206,14 @@ struct Supervisor
     u8 unknown718[0x50];
     i32 fogState;                               // +0x768
     u8 unknown76c[0x1c];
-    i32 fpsFrameCount;                          // +0x788
-    u8 unknown78c[0x10];
+    u32 fpsFrameCount;                          // +0x788
+    f64 lagNumerator;                           // +0x78c
+    f64 lagDenominator;                         // +0x794
     f32 currentFps;                             // +0x79c
     u8 unknown7a0[0x18];
     D3DCOLOR backbufferClearColor;              // +0x7b8
+    i32 fpsClockAnomalyCount;                   // +0x7bc
+    f64 lastFpsTimestamp;                       // +0x7c0
 
     void InitializeCriticalSections();
     void DeleteCriticalSections();
@@ -243,14 +247,17 @@ struct Supervisor
         return this->config.windowed != 0;
     }
 };
+#pragma pack(pop)
 
 typedef char SupervisorPresentAtE4[(offsetof(Supervisor, presentParameters) == 0xe4) ? 1 : -1];
 typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 : -1];
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
 typedef char SupervisorLoadingVmsAt714[(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x714) ? 1 : -1];
+typedef char SupervisorLagNumeratorAt78C[(offsetof(Supervisor, lagNumerator) == 0x78c) ? 1 : -1];
 typedef char SupervisorCurrentFpsAt79C[(offsetof(Supervisor, currentFps) == 0x79c) ? 1 : -1];
 typedef char SupervisorClearColorAt7B8[(offsetof(Supervisor, backbufferClearColor) == 0x7b8) ? 1 : -1];
+typedef char SupervisorLastFpsTimestampAt7C0[(offsetof(Supervisor, lastFpsTimestamp) == 0x7c0) ? 1 : -1];
 
 struct VertexTex1DiffuseXyzrhw
 {

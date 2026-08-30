@@ -153,7 +153,9 @@ cluster proves the shared replay/resource codec, archive/disk loader, and
 critical-section-2 accounting. The Supervisor draw spine now has target-local
 ownership: `OnDraw2 @ 0x004235D0` is the priority-0 viewport/prompt/surface
 callback, while exact `DrawFpsCounter @ 0x00423790` is priority `0x17` and
-bridges `CalculateFps @ 0x00424720` into the regular ASCII queue. The front-end
+bridges exact `CalculateFps @ 0x00424720` into the regular ASCII queue. The
+calculator also owns the shared replay/photo slow-rate accumulators and QPC
+anomaly fallback. The front-end
 Help page at `0x00451C80` is now
 source-present with an exact 88-byte asynchronous loader callback; the
 adjacent Music Room at `0x00450FC0` is source-present with both parser helpers

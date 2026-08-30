@@ -352,7 +352,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004242B0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004244D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00424700,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00424720,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00424720,authored,Supervisor,authored,exact,supervisor-calculate-fps-exact-2026-08-30
 0x00424980,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00424A00,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00424D30,authored,Supervisor,authored,high,target-main-family-2026-08-29
