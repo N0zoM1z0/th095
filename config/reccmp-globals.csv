@@ -26,3 +26,8 @@ th095::g_TextRenderFormatInfoArray,0x004A4330,data
 th095::g_Background,0x004BDD90,data
 th095::g_BackgroundStageDataCache,0x004BDD94,data
 th095::g_AsciiManager,0x004A9F80,data
+th095::g_AsciiGlobalState,0x004BDEC8,data
+th095::g_AsciiStageState,0x004C4E6C,data
+th095::g_AsciiManagerCalcChain,0x004BDD2C,data
+th095::g_AsciiManagerDrawChainLowPrio,0x004BDD4C,data
+th095::g_AsciiManagerDrawChainHighPrio,0x004BDD6C,data

@@ -119,7 +119,7 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | `0x0042F190` | 3,463 | 1 caller / 6 internal callees | source-present photo-game main state | Complete movement/focus/animation/bounds/history loop; compiler-local residuals deferred |
 | `0x00439200` | 2,525 | 2 callers / 16 internal callees | `SoundPlayer::ProcessQueues` | Shared threaded audio state machine |
 | `0x00420240` | 1,326 | CRT root / 30 internal callees | `WinMain` | Process-level ownership and subsystem naming |
-| `0x00401280..0x00401D2F` | 2,121 | three Chain callbacks / shared text consumers | lifecycle foundation exact; text queues under reconstruction | Global regular/GUI text, score/time popups, and four inline ANM VMs |
+| `0x00401000..0x00401D2F` | 2,802 source-present bytes | three Chain callbacks / shared text consumers | eleven exact / four compiler-observed ASCII functions | Global regular/GUI queues, score/time popups, four inline ANM VMs, and TH095 viewport-aware glyph rendering |
 
 The first large-function lane, `AnmManager::ExecuteScript`, is exact for its
 17,018-byte authored body. Its canonical unit also compares the complete

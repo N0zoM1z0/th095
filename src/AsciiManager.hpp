@@ -59,8 +59,11 @@ struct AsciiManager
     static ZunResult DeletedCallback(AsciiManager *mgr);
     static void CutChain();
     void AddString(Float3 *position, const char *string);
+    void AddGuiString(Float3 *position, const char *string);
     void AddFormatText(Float3 *position, const char *fmt, ...);
-    int AddFormatText2(Float3 *position, const char *fmt, ...);
+    int AddGuiFormatText(Float3 *position, const char *fmt, ...);
+    void DrawStrings();
+    void DrawGuiStrings();
     void UpdateVms();
     void OnDrawLowPrioImpl();
     void CreateScorePopup(Float3 *position, i32 number, D3DCOLOR color);
@@ -110,10 +113,13 @@ struct AsciiManager
     i32 isSelected;                                       // +0x807c
     u8 unknown8080[0x8098 - 0x8080];
     i32 spaceWidth;                                       // +0x8098
-    u8 unknown809c[4];
+    i32 frameCounter;                                     // +0x809c
     AnmLoaded *asciiAnm;                                  // +0x80a0
     AnmLoaded *captureAnm;                                // +0x80a4
-    u8 unknown80a8[0x10];
+    i32 nextScorePopupIndex;                              // +0x80a8
+    i32 nextTimePopupIndex;                               // +0x80ac
+    i32 unknown80b0;
+    i32 resetOnlyState80b4;
     AnmVm auxiliaryVm;                                    // +0x80b8
     AsciiManagerPopup scorePopups[ASCII_MAX_SCORE_POPUPS];// +0x8384
     AsciiManagerPopup timePopups[ASCII_MAX_TIME_POPUPS];  // +0x121ac
@@ -123,6 +129,7 @@ C_ASSERT(sizeof(AsciiManager) == 0x13dac);
 C_ASSERT(offsetof(AsciiManager, strings) == 0x0864);
 C_ASSERT(offsetof(AsciiManager, guiStrings) == 0x6864);
 C_ASSERT(offsetof(AsciiManager, color) == 0x806c);
+C_ASSERT(offsetof(AsciiManager, frameCounter) == 0x809c);
 C_ASSERT(offsetof(AsciiManager, asciiAnm) == 0x80a0);
 C_ASSERT(offsetof(AsciiManager, auxiliaryVm) == 0x80b8);
 C_ASSERT(offsetof(AsciiManager, scorePopups) == 0x8384);

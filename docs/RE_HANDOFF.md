@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 314 canonical units cover 126,833 authored bytes.
+- Reconstruction: 330 canonical exact functions cover 128,997 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 49.12% (126,833 / 258,234)
+  relocations. Confirmed authored-byte coverage is now 49.09% (128,997 / 262,795)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 390 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,432 origin/boundary reviews pending. Original class
+  current ledger confirms 412 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,410 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -567,12 +567,25 @@ field evidence replaces the stale TH08 ASCII layout: the `0x13DAC`-byte global
 at `0x004A9F80` owns 256 regular and 64 GUI strings, four VMs, two ANM handles,
 723 score popups, and 128 time popups.
 
-Continue through the high-connectivity text spine at `0x00401280..0x00401D2F`:
-chain registration/reset/release, `AddString`, `AddGuiString`, both variadic
-formatters, and the regular/GUI render queues. Use TH08 only for ancestral
-source shape; target offsets and the regular-versus-GUI queue split are TH095
-evidence. Preserve every established Background, ECL, ANM, and photography
-exact unit while this shared header changes.
+The high-connectivity ASCII text spine is now source-present. Eleven canonical
+units reproduce 1,171 authored bytes and all 55 relocations: both draw-chain
+wrappers, chain registration/resource lifetime, the target-empty
+`InitializeVms @ 0x00423430`, both bounded queue writers, and both variadic
+formatters. The exact units prove calc priority 1, draw priorities 28/21, the
+256-entry regular and 64-entry GUI split, and the two 512-byte formatting
+paths. `OnUpdate`, `Reset`, and the two renderers are also complete exact-sized
+semantic probes with every relocation resolved. They remain non-exact because
+of one register-direction byte and target-only compiler local-frame homes; do
+not manufacture those residuals.
+
+Continue into the target-local ASCII consumers at `0x004235D0` and
+`0x00423790`. Both call the newly exact `AddFormatText`; the first also drains
+the regular queue and switches the background viewport. Treat the surrounding
+`0x00423440..0x00423D58` Supervisor utility/render cluster as an ownership
+question, not presumed `AsciiManager` methods. Use its exact outgoing
+relocations and global references to recover the bounded views before naming
+it, and preserve every established Background, ECL, ANM, photography, and
+ASCII exact unit while shared headers change.
 
 ## Closed lanes and preservation constraints
 
