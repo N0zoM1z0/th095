@@ -143,10 +143,18 @@ struct PhotoEnemyView
     Float3 collisionSize;                  // +0x28dc
     u8 unknown28e8[0x28f4 - 0x28e8];
     Float3 photoMarkerPosition;            // +0x28f4
-    u8 unknown2900[0x296c - 0x2900];
+    u8 unknown2900[0x2958 - 0x2900];
+    i32 life;                              // +0x2958
+    i32 maximumLife;                       // +0x295c
+    i32 phaseStartingLife;                 // +0x2960
+    i32 score;                             // +0x2964
+    i32 enemyIndex;                        // +0x2968
     ZunTimer eclTimer;                     // +0x296c
     ZunTimer stateTimer;                   // +0x2978
-    u8 unknown2984[0x2bdc - 0x2984];
+    u8 unknown2984[4];
+    u32 displayColor;                      // +0x2988
+    u8 unknown298c[0x2bd8 - 0x298c];
+    i32 itemDropType;                      // +0x2bd8
     i32 timelineParam0;                    // +0x2bdc
     i32 timelineParam1;                    // +0x2be0
     u8 unknown2be4[0x2bf4 - 0x2be4];
@@ -239,11 +247,11 @@ struct PhotoEnemyManagerView
     static i32 __fastcall OnUpdate(PhotoEnemyManagerView *enemyManager);
     PhotoEnemyView *Spawn(
         i32 subroutineId,
-        Float3 *position,
+        const Float3 *position,
         i32 life,
         i32 itemDrop,
         i32 score,
-        u32 isPhotoTarget);
+        u32 mirrorMovementX);
     static void __fastcall ResetNonPhotoTargets(
         PhotoEnemyManagerView *enemyManager);
     static void __fastcall RestartPhotoTargetEcls(
@@ -261,7 +269,7 @@ typedef char PhotoEnemyManagerCountAt26AE2C[
 
 void PhotoEnemyTimelineView::Run()
 {
-    u32 isPhotoTarget = 0;
+    u32 mirrorMovementX = 0;
 
     while (static_cast<PhotoEnemyTimelineInstruction *>(this->instruction)
             ->time >= 0)
@@ -270,12 +278,12 @@ void PhotoEnemyTimelineView::Run()
             static_cast<PhotoEnemyTimelineInstruction *>(this->instruction)
                 ->time)
         {
-            isPhotoTarget = 0;
+            mirrorMovementX = 0;
             switch (static_cast<PhotoEnemyTimelineInstruction *>(
                         this->instruction)->opcode)
             {
             case 1:
-                isPhotoTarget = 1;
+                mirrorMovementX = 1;
             case 0:
             {
                 PhotoEnemyTimelineSpawnArgs *args =
@@ -291,7 +299,7 @@ void PhotoEnemyTimelineView::Run()
                     args->life,
                     args->itemDrop,
                     args->score,
-                    isPhotoTarget);
+                    mirrorMovementX);
                 break;
             }
 
@@ -310,12 +318,12 @@ void PhotoEnemyTimelineView::Run()
                     args->life,
                     args->itemDrop,
                     args->score,
-                    isPhotoTarget);
+                    mirrorMovementX);
                 break;
             }
 
             case 12:
-                isPhotoTarget = 1;
+                mirrorMovementX = 1;
             case 11:
             {
                 PhotoEnemyTimelineExtendedSpawnArgs *args =
@@ -331,14 +339,14 @@ void PhotoEnemyTimelineView::Run()
                     args->life,
                     -1,
                     args->score,
-                    isPhotoTarget);
+                    mirrorMovementX);
                 enemy->timelineParam0 = args->timelineParam0;
                 enemy->timelineParam1 = args->timelineParam1;
                 break;
             }
 
             case 4:
-                isPhotoTarget = 1;
+                mirrorMovementX = 1;
             case 2:
             {
                 PhotoEnemyTimelineRandomRangeArgs *args =
@@ -356,12 +364,12 @@ void PhotoEnemyTimelineView::Run()
                     args->life,
                     args->itemDrop,
                     args->score,
-                    isPhotoTarget);
+                    mirrorMovementX);
                 break;
             }
 
             case 5:
-                isPhotoTarget = 1;
+                mirrorMovementX = 1;
             case 3:
             {
                 PhotoEnemyTimelineRandomWidthArgs *args =
@@ -377,7 +385,7 @@ void PhotoEnemyTimelineView::Run()
                     args->life,
                     args->itemDrop,
                     args->score,
-                    isPhotoTarget);
+                    mirrorMovementX);
                 break;
             }
 
@@ -424,6 +432,62 @@ void PhotoEnemyTimelineView::Run()
 
 finish:
     this->timer.Tick();
+}
+
+PhotoEnemyView *PhotoEnemyManagerView::Spawn(
+    i32 subroutineId,
+    const Float3 *position,
+    i32 life,
+    i32 itemDrop,
+    i32 score,
+    u32 mirrorMovementX)
+{
+    struct EnemySpawnCopy
+    {
+        u32 words[sizeof(PhotoEnemyView) / sizeof(u32)];
+    };
+    i32 enemyIndex;
+    PhotoEnemyView *enemy;
+
+    enemy = &this->enemies[0];
+    for (enemyIndex = 0; enemyIndex < 128; ++enemyIndex, ++enemy)
+    {
+        if (enemy->active != 0)
+        {
+            continue;
+        }
+
+        *reinterpret_cast<EnemySpawnCopy *>(enemy) =
+            *reinterpret_cast<const EnemySpawnCopy *>(this);
+        enemy->enemyIndex = enemyIndex;
+        enemy->mirrorXVelocity = mirrorMovementX;
+        if (life >= 0)
+        {
+            enemy->life = life;
+        }
+        *reinterpret_cast<Float3 *>(&enemy->worldPosition) = *position;
+        this->eclManager->InitializeContext(
+            reinterpret_cast<u8 *>(enemy) + 0x2dc,
+            static_cast<i16>(subroutineId));
+        if (this->eclManager->RunEcl(enemy) == ZUN_ERROR)
+        {
+            enemy->Deactivate();
+            enemyIndex = 128;
+        }
+        else
+        {
+            enemy->displayColor = enemy->vm.color1.color;
+            enemy->itemDropType = static_cast<i8>(itemDrop);
+            if (score >= 0)
+            {
+                enemy->score = score;
+            }
+            enemy->maximumLife = enemy->life;
+            enemy->phaseStartingLife = enemy->maximumLife;
+        }
+        break;
+    }
+    return enemy;
 }
 
 i32 __fastcall PhotoEnemyManagerView::OnUpdate(

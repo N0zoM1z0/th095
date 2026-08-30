@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 205 canonical units cover 106,624 authored bytes.
+- Reconstruction: 206 canonical units cover 106,974 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.63% (106,624 / 210,597)
+  relocations. Confirmed authored-byte coverage is now 50.71% (106,974 / 210,947)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 250 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,573 origin/boundary reviews pending. Original class
+  confirms 251 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,572 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -133,12 +133,19 @@
   its only residual is the exchange of two VC7.1 local slots.
 - `PhotoEnemyTimelineView::Run @ 0x004163F0` is source-present for the complete
   sixteen-opcode timeline interpreter. It covers fixed, random-range,
-  random-width, and extended enemy spawns with their photo-target variants,
+  random-width, and extended enemy spawns with their X-mirrored variants,
   direct timeline-enemy state writes, and the active-enemy wait operation. Its
   pinned VC7.1 probe reproduces the exact 818-byte authored extent plus the
   exact 64-byte switch table, resolves all 37 relocations, and matches 701/734
   comparable bytes. The 33 residual bytes are compiler-local stack
   displacements and receive no exact credit.
+- `PhotoEnemyManagerView::Spawn @ 0x004156C0` is exact for all 350 bytes and
+  three relocations. It scans 128 slots, copies the manager's leading
+  `0x4CC0`-byte spawn template, initializes position/life/index and the main
+  ECL context, retires first-run ECL failures, then installs display color,
+  item type, score, maximum life, and phase-starting life. Together with the
+  exact movement integrator, this proves that the timeline variant toggles
+  flags1 bit 16 to mirror X movement; it is not the photo-target bit.
 - Root-level `EclOperandsInt.cpp` and `EclOperandsFloat.cpp` now reconstruct
   the high-connectivity operand resolver pair at `0x0040FAE0/0x004105A0`.
   Their 3,439 authored bytes, adjacent 684 bytes of compiler-owned jump tables,
@@ -374,12 +381,12 @@
 
 ## Next bounded lane
 
-The enemy update hub, timeline interpreter, scheduled ECL cleanup, and eight
-reset/runtime leaves are now recovered. The next dependency target should be
-`PhotoEnemyManagerView::Spawn @ 0x004156C0` (350 bytes), followed by the
-adjacent enemy spawn/control cluster at `0x00414B90..0x00415820`. These
-functions unlock more inventory relationships than isolated wrappers. After
-that, cover the two approximately 1 KB laser callers at
+The enemy update hub, exact spawn path, timeline interpreter, scheduled ECL
+cleanup, and eight reset/runtime leaves are now recovered. Continue through
+the remaining enemy control cluster at `0x00414B90..0x00415820`, beginning
+with the 336-byte function at `0x00415820` and then its initialization/control
+dependencies. These functions unlock more inventory relationships than
+isolated wrappers. After that, cover the two approximately 1 KB laser callers at
 `0x0041E2C0/0x0041F550`, which share
 the exact PlayerInf collision path and expose TH095's camera/bullet interaction.
 Keep all fifteen PlayerInf exact units, the exact

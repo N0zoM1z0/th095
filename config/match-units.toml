@@ -8759,6 +8759,20 @@ relocations = [
   { offset = 0x258, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
 ]
 
+[units.enemy-spawn]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerView::Spawn"]
+symbol = "?Spawn@PhotoEnemyManagerView@th095@@QAEPAUPhotoEnemyView@2@HPBUFloat3@2@HHHI@Z"
+target_address = 0x004156C0
+size = 0x15E
+relocations = [
+  { offset = 0xD2, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEXPAXF@Z", target = 0x00408DE0 },
+  { offset = 0xE4, type = "REL32", symbol = "?RunEcl@PhotoEnemyEclManagerView@th095@@QAEHPAUPhotoEnemyView@2@@Z", target = 0x00408E70 },
+  { offset = 0xF1, type = "REL32", symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416E80 },
+]
+
 [units.enemy-integrate-movement]
 source = "src/EnemyManagerUpdate.cpp"
 object = "build/matching/EnemyManagerUpdate.obj"
