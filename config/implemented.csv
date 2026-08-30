@@ -420,3 +420,4 @@ th095::Supervisor::EnumGameControllersCb
 th095::Supervisor::ControllerCallback
 th095::Supervisor::StartInputWorker
 th095::Supervisor::ReleaseGameManagers
+th095::Supervisor::AddedCallback

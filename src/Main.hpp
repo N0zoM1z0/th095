@@ -15,6 +15,8 @@ namespace th095
 {
 struct AnmVm;
 struct AnmManager;
+struct AnmLoaded;
+struct Float3;
 struct FrontEndControllerView;
 struct PhotoGameTaskView;
 
@@ -199,16 +201,19 @@ struct Supervisor
     i32 currentState;                           // +0x40c
     u8 unknown410[0x14];
     i32 screenTransitionCountdown;              // +0x424
-    u8 unknown428[4];
+    i32 suppressFpsDisplay;                      // +0x428
     i32 disableVsync;                           // +0x42c
     i32 couldSetRefreshRate;                    // +0x430
     i32 lastFrameTime;                          // +0x434
     MidiOutput *midiOutput;                     // +0x438
-    u8 unknown43c[8];
+    u8 unknown43c[4];
+    AnmLoaded *loadingAnm;                       // +0x440
     SupervisorFlags flags;                      // +0x444
-    u8 unknown448[8];
+    DWORD totalPlayTime;                         // +0x448
+    DWORD systemTime;                            // +0x44c
     D3DCAPS8 d3dCaps;                           // +0x450
-    u8 unknownAfterCaps[0x664 - 0x450 - sizeof(D3DCAPS8)];
+    u8 unknownAfterCaps[0x660 - 0x450 - sizeof(D3DCAPS8)];
+    i32 startupThreadState;                      // +0x660
     CRITICAL_SECTION criticalSections[7];       // +0x664
     u8 unknown70c[5];
     u8 timestampUsers;                          // +0x711
@@ -238,12 +243,18 @@ struct Supervisor
     static void __fastcall InitializeInput(Supervisor *s);
     static void StartInputWorker();
     void ReleaseGameManagers();
+    void InitializeViewports();
+    static i32 LoadDat();
+    static i32 CheckFps();
+    void SetupLoadingVms(Float3 *position);
+    i32 StartReplayScan(void (__fastcall *callback)(void *), void *argument);
+    static void __fastcall StartupThread(Supervisor *s);
     void DisableFog();
     void ThreadClose();
     void TakeScreenshot(char *path);
 
     static i32 __fastcall OnUpdate(void *arg);
-    static i32 __fastcall AddedCallback(void *arg);
+    static i32 __fastcall AddedCallback(Supervisor *s);
     static i32 __fastcall DeletedCallback(void *arg);
     static i32 __fastcall DrawFpsCounter(Supervisor *s);
     static i32 __fastcall OnDraw2(Supervisor *s);
@@ -272,6 +283,8 @@ typedef char SupervisorPresentAtE4[(offsetof(Supervisor, presentParameters) == 0
 typedef char SupervisorControllerCapsAt18[(offsetof(Supervisor, controllerCaps) == 0x18) ? 1 : -1];
 typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 : -1];
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
+typedef char SupervisorLoadingAnmAt440[(offsetof(Supervisor, loadingAnm) == 0x440) ? 1 : -1];
+typedef char SupervisorStartupThreadStateAt660[(offsetof(Supervisor, startupThreadState) == 0x660) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
 typedef char SupervisorLoadingVmsAt714[(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x714) ? 1 : -1];
 typedef char SupervisorLagNumeratorAt78C[(offsetof(Supervisor, lagNumerator) == 0x78c) ? 1 : -1];

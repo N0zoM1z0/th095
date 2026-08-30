@@ -421,3 +421,4 @@ th095::Supervisor::EnumGameControllersCb,0x00423C20,function
 th095::Supervisor::ControllerCallback,0x00423C70,function
 th095::Supervisor::StartInputWorker,0x00423CE0,function
 th095::Supervisor::ReleaseGameManagers,0x00423D00,function
+th095::Supervisor::AddedCallback,0x00423E70,function
