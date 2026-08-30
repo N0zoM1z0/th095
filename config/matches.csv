@@ -174,3 +174,5 @@ address,name,size,status,match_percent,unit,evidence
 0x0042FF60,th095::PhotoGameUpdateView::Update,405,matching,100.00,photo-game-update,python3 scripts/build.py --unit photo-game-update && python3 scripts/compare-coff-function.py --unit photo-game-update --json
 0x0040FAE0,th095::EclOperands::ResolveInt,1731,matching,100.00,ecl-resolve-int,python3 scripts/build.py --unit ecl-resolve-int && python3 scripts/compare-coff-function.py --unit ecl-resolve-int --json
 0x004105A0,th095::Enemy::ResolveFloat,1708,matching,100.00,ecl-resolve-float,python3 scripts/build.py --unit ecl-resolve-float && python3 scripts/compare-coff-function.py --unit ecl-resolve-float --json
+0x00410300,th095::EclOperands::ResolveIntLValue,487,matching,100.00,ecl-resolve-int-lvalue,python3 scripts/build.py --unit ecl-resolve-int-lvalue && python3 scripts/compare-coff-function.py --unit ecl-resolve-int-lvalue --json
+0x00410DB0,th095::EclOperands::ResolveFloatLValue,686,matching,100.00,ecl-resolve-float-lvalue,python3 scripts/build.py --unit ecl-resolve-float-lvalue && python3 scripts/compare-coff-function.py --unit ecl-resolve-float-lvalue --json

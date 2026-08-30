@@ -8327,3 +8327,112 @@ relocations = [
   { offset = 0x7FC, type = "DIR32", symbol = "$L67351", target = 0x00410C08 },
   { offset = 0x800, type = "DIR32", symbol = "$L67326", target = 0x00410A8D },
 ]
+
+# The authored body ends at 0x004104E6; the canonical extent also owns the
+# 25-entry destination table and 77-byte selector map through 0x00410597.
+[units.ecl-resolve-int-lvalue]
+source = "src/EclOperandsIntLValue.cpp"
+object = "build/matching/EclOperandsIntLValue.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclOperands::ResolveIntLValue"]
+symbol = "?ResolveIntLValue@EclOperands@th095@@YIPAHPAUEnemy@2@PAHGH@Z"
+target_address = 0x00410300
+size = 0x1E7
+compare_size = 0x298
+relocations = [
+  { offset = 0x50, type = "DIR32", symbol = "$L67354", target = 0x0041054B },
+  { offset = 0x57, type = "DIR32", symbol = "$L67355", target = 0x004104E7 },
+  { offset = 0x195, type = "DIR32", symbol = "?g_EclIntLValueRuntime@th095@@3PAUEclIntLValueRuntimeView@1@A", target = 0x004BDDC0 },
+  { offset = 0x1A8, type = "DIR32", symbol = "?g_EclIntLValueRuntime@th095@@3PAUEclIntLValueRuntimeView@1@A", target = 0x004BDDC0 },
+  { offset = 0x1BB, type = "DIR32", symbol = "?g_EclIntLValueRuntime@th095@@3PAUEclIntLValueRuntimeView@1@A", target = 0x004BDDC0 },
+  { offset = 0x1CD, type = "DIR32", symbol = "?g_EclIntLValueRuntime@th095@@3PAUEclIntLValueRuntimeView@1@A", target = 0x004BDDC0 },
+  { offset = 0x1E7, type = "DIR32", symbol = "$L67199", target = 0x0041035B },
+  { offset = 0x1EB, type = "DIR32", symbol = "$L67200", target = 0x0041036C },
+  { offset = 0x1EF, type = "DIR32", symbol = "$L67201", target = 0x0041037D },
+  { offset = 0x1F3, type = "DIR32", symbol = "$L67202", target = 0x0041038E },
+  { offset = 0x1F7, type = "DIR32", symbol = "$L67203", target = 0x0041039F },
+  { offset = 0x1FB, type = "DIR32", symbol = "$L67204", target = 0x004103B0 },
+  { offset = 0x1FF, type = "DIR32", symbol = "$L67205", target = 0x004103C1 },
+  { offset = 0x203, type = "DIR32", symbol = "$L67206", target = 0x004103D2 },
+  { offset = 0x207, type = "DIR32", symbol = "$L67211", target = 0x0041042B },
+  { offset = 0x20B, type = "DIR32", symbol = "$L67212", target = 0x0041043C },
+  { offset = 0x20F, type = "DIR32", symbol = "$L67213", target = 0x0041044D },
+  { offset = 0x213, type = "DIR32", symbol = "$L67214", target = 0x0041045E },
+  { offset = 0x217, type = "DIR32", symbol = "$L67215", target = 0x0041046C },
+  { offset = 0x21B, type = "DIR32", symbol = "$L67218", target = 0x00410476 },
+  { offset = 0x21F, type = "DIR32", symbol = "$L67207", target = 0x004103E3 },
+  { offset = 0x223, type = "DIR32", symbol = "$L67208", target = 0x004103F4 },
+  { offset = 0x227, type = "DIR32", symbol = "$L67209", target = 0x00410405 },
+  { offset = 0x22B, type = "DIR32", symbol = "$L67210", target = 0x00410418 },
+  { offset = 0x22F, type = "DIR32", symbol = "$L67227", target = 0x00410494 },
+  { offset = 0x233, type = "DIR32", symbol = "$L67228", target = 0x004104A6 },
+  { offset = 0x237, type = "DIR32", symbol = "$L67229", target = 0x004104B9 },
+  { offset = 0x23B, type = "DIR32", symbol = "$L67230", target = 0x004104CC },
+  { offset = 0x23F, type = "DIR32", symbol = "$L67221", target = 0x00410480 },
+  { offset = 0x243, type = "DIR32", symbol = "$L67224", target = 0x0041048A },
+  { offset = 0x247, type = "DIR32", symbol = "$L67231", target = 0x004104DE },
+]
+
+# The authored body ends at 0x0041105D; the canonical extent also owns the
+# 40-entry destination table and 73-byte selector map through 0x00411146.
+[units.ecl-resolve-float-lvalue]
+source = "src/EclOperandsFloatLValue.cpp"
+object = "build/matching/EclOperandsFloatLValue.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclOperands::ResolveFloatLValue"]
+symbol = "?ResolveFloatLValue@EclOperands@th095@@YIPAMPAUEnemy@2@PAMGH@Z"
+target_address = 0x00410DB0
+size = 0x2AE
+compare_size = 0x397
+relocations = [
+  { offset = 0x32, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x55, type = "DIR32", symbol = "$L67373", target = 0x004110FE },
+  { offset = 0x5C, type = "DIR32", symbol = "$L67374", target = 0x0041105E },
+  { offset = 0x15C, type = "DIR32", symbol = "?g_EclFloatLValuePlayer@th095@@3PAUEclFloatLValuePlayerView@1@A", target = 0x004C4E70 },
+  { offset = 0x16B, type = "DIR32", symbol = "?g_EclFloatLValuePlayer@th095@@3PAUEclFloatLValuePlayerView@1@A", target = 0x004C4E70 },
+  { offset = 0x17A, type = "DIR32", symbol = "?g_EclFloatLValuePlayer@th095@@3PAUEclFloatLValuePlayerView@1@A", target = 0x004C4E70 },
+  { offset = 0x1CE, type = "DIR32", symbol = "?g_EclFloatLValueRuntime@th095@@3PAUEclFloatLValueRuntimeView@1@A", target = 0x004BDDC0 },
+  { offset = 0x1E3, type = "DIR32", symbol = "?g_EclFloatLValueRuntime@th095@@3PAUEclFloatLValueRuntimeView@1@A", target = 0x004BDDC0 },
+  { offset = 0x1F9, type = "DIR32", symbol = "?g_EclFloatLValueRuntime@th095@@3PAUEclFloatLValueRuntimeView@1@A", target = 0x004BDDC0 },
+  { offset = 0x20F, type = "DIR32", symbol = "?g_EclFloatLValueRuntime@th095@@3PAUEclFloatLValueRuntimeView@1@A", target = 0x004BDDC0 },
+  { offset = 0x2AE, type = "DIR32", symbol = "$L67210", target = 0x00410E10 },
+  { offset = 0x2B2, type = "DIR32", symbol = "$L67211", target = 0x00410E21 },
+  { offset = 0x2B6, type = "DIR32", symbol = "$L67212", target = 0x00410E32 },
+  { offset = 0x2BA, type = "DIR32", symbol = "$L67213", target = 0x00410E43 },
+  { offset = 0x2BE, type = "DIR32", symbol = "$L67214", target = 0x00410E54 },
+  { offset = 0x2C2, type = "DIR32", symbol = "$L67215", target = 0x00410E65 },
+  { offset = 0x2C6, type = "DIR32", symbol = "$L67216", target = 0x00410E76 },
+  { offset = 0x2CA, type = "DIR32", symbol = "$L67217", target = 0x00410E87 },
+  { offset = 0x2CE, type = "DIR32", symbol = "$L67222", target = 0x00410EE4 },
+  { offset = 0x2D2, type = "DIR32", symbol = "$L67223", target = 0x00410EF1 },
+  { offset = 0x2D6, type = "DIR32", symbol = "$L67224", target = 0x00410EFE },
+  { offset = 0x2DA, type = "DIR32", symbol = "$L67225", target = 0x00410F0B },
+  { offset = 0x2DE, type = "DIR32", symbol = "$L67226", target = 0x00410F1A },
+  { offset = 0x2E2, type = "DIR32", symbol = "$L67227", target = 0x00410F29 },
+  { offset = 0x2E6, type = "DIR32", symbol = "$L67218", target = 0x00410E98 },
+  { offset = 0x2EA, type = "DIR32", symbol = "$L67219", target = 0x00410EAB },
+  { offset = 0x2EE, type = "DIR32", symbol = "$L67220", target = 0x00410EBE },
+  { offset = 0x2F2, type = "DIR32", symbol = "$L67221", target = 0x00410ED1 },
+  { offset = 0x2F6, type = "DIR32", symbol = "$L67232", target = 0x00410F7C },
+  { offset = 0x2FA, type = "DIR32", symbol = "$L67233", target = 0x00410F92 },
+  { offset = 0x2FE, type = "DIR32", symbol = "$L67234", target = 0x00410FA7 },
+  { offset = 0x302, type = "DIR32", symbol = "$L67235", target = 0x00410FBD },
+  { offset = 0x306, type = "DIR32", symbol = "$L67242", target = 0x0041100F },
+  { offset = 0x30A, type = "DIR32", symbol = "$L67243", target = 0x00411019 },
+  { offset = 0x30E, type = "DIR32", symbol = "$L67244", target = 0x00411023 },
+  { offset = 0x312, type = "DIR32", symbol = "$L67245", target = 0x0041102D },
+  { offset = 0x316, type = "DIR32", symbol = "$L67246", target = 0x00411037 },
+  { offset = 0x31A, type = "DIR32", symbol = "$L67236", target = 0x00410FD3 },
+  { offset = 0x31E, type = "DIR32", symbol = "$L67237", target = 0x00410FDD },
+  { offset = 0x322, type = "DIR32", symbol = "$L67238", target = 0x00410FE7 },
+  { offset = 0x326, type = "DIR32", symbol = "$L67247", target = 0x00411041 },
+  { offset = 0x32A, type = "DIR32", symbol = "$L67248", target = 0x0041104B },
+  { offset = 0x32E, type = "DIR32", symbol = "$L67239", target = 0x00410FF1 },
+  { offset = 0x332, type = "DIR32", symbol = "$L67240", target = 0x00410FFB },
+  { offset = 0x336, type = "DIR32", symbol = "$L67241", target = 0x00411005 },
+  { offset = 0x33A, type = "DIR32", symbol = "$L67228", target = 0x00410F38 },
+  { offset = 0x33E, type = "DIR32", symbol = "$L67229", target = 0x00410F49 },
+  { offset = 0x342, type = "DIR32", symbol = "$L67230", target = 0x00410F5A },
+  { offset = 0x346, type = "DIR32", symbol = "$L67231", target = 0x00410F6B },
+  { offset = 0x34A, type = "DIR32", symbol = "$L67249", target = 0x00411055 },
+]

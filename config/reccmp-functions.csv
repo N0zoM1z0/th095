@@ -206,4 +206,6 @@ th095::ZunMemory::~ZunMemory,0x0041BD70,function
 th095::ResultSaveDataView::WriteBestShotData,0x00435910,function
 th095::PhotoGameUpdateView::Update,0x0042FF60,function
 th095::EclOperands::ResolveInt,0x0040FAE0,function
+th095::EclOperands::ResolveIntLValue,0x00410300,function
+th095::EclOperands::ResolveFloatLValue,0x00410DB0,function
 th095::Enemy::ResolveFloat,0x004105A0,function
