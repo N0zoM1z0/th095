@@ -191,3 +191,7 @@ address,name,module,confidence,evidence
 0x0043FC60,th095::AnmManager::ProjectCameraFacingQuad,AnmManager,high,Complete TH095 current-viewport camera-facing projection and alignment core
 0x004400F0,th095::AnmManager::DrawCameraFacingQuad,AnmManager,exact,Canonical projection failure gate and DrawInner wrapper
 0x00440120,th095::AnmManager::DrawMode6,AnmManager,exact,Canonical TH095 camera-facing photo-blend distance and color attenuation path
+0x00440C10,th095::AnmManager::Draw3D,AnmManager,exact,Canonical direct-3D transform state texture and draw path
+0x004411D0,th095::AnmManager::InitializeHorizontalTextureStrip,AnmManager,exact,Canonical generated-vertex horizontal UV strip initializer
+0x00441330,th095::AnmManager::DrawVertices,AnmManager,exact,Canonical generated-vertex triangle-strip submitter
+0x00441480,th095::AnmManager::DrawTriangleFan,AnmManager,exact,Canonical radial-trail triangle-fan submitter

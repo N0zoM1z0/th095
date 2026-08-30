@@ -679,7 +679,10 @@ struct AnmManager
     ZunResult DrawMode6(AnmVm *vm);
     ZunResult DrawMode7(AnmVm *vm);
     ZunResult Draw3D(AnmVm *vm);
+    ZunResult InitializeHorizontalTextureStrip(AnmVm *vm, AnmVertex *vertices,
+                                               i32 vertexCount);
     ZunResult DrawVertices(AnmVm *vm, AnmVertex *vertices, i32 vertexCount);
+    ZunResult DrawTriangleFan(AnmVm *vm, AnmVertex *vertices, i32 vertexCount);
 
     static void __fastcall OnUpdate(void *arg);
     static void __fastcall DrawLayer0(void *arg);

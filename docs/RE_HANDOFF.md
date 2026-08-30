@@ -543,15 +543,34 @@ than rejecting the draw; unlike mode 6 it does not apply manager mix color.
 It submits through `DrawInner` with flag 2 and restores all four shared RHW
 values. A fully live 32-byte semantic locals aggregate reproduces the target
 stack order without padding. The exact function ends at `0x00440C02`; the
-thirteen following `CC` bytes are alignment, not authored coverage. Continue
-with the direct 3D path at `0x00440C10` after this handoff.
+thirteen following `CC` bytes are alignment, not authored coverage. The
+adjacent direct/generated-geometry lane is now canonical exact too:
+`Draw3D @ 0x00440C10` contributes 1,458 bytes and 33 relocations,
+`InitializeHorizontalTextureStrip @ 0x004411D0` is relocation-free for 352
+bytes, `DrawVertices @ 0x00441330` contributes 330 bytes with 12 relocations,
+and the distinct `DrawTriangleFan @ 0x00441480` contributes 275 bytes with 14
+relocations. Stock VC7.1 reproduces the target patched-var-order frames by
+reusing the established identifier-hash backing buckets for the real live
+locals; do not replace this with assembly, padding, or inert temporaries. The
+direct-3D path also preserves the target-specific duplicated `uvScrollPos.x`
+cache comparison and binds texture independently of the sprite/UV transform
+cache. The pulsing radial-trail draw callback now names the fan submitter
+correctly; the old `DrawVertices` relocation at `0x00441480` was only a
+provisional alias. Continue with the vertex-buffer setup family around
+`0x00442260` after this handoff.
 
-The shared `Project3DQuad` declaration triggered one further cold-object
+The shared `Project3DQuad` declaration previously triggered a cold-object
 identity refresh in `AnmManager.cpp`: 167 switch-local `$L` symbols advanced
-by six and the `Draw` switch-table base symbol advanced by nine. Their offsets,
-types, target destinations, code bytes, and coverage extents did not change.
-All 70 configured ANM units across ten translation units replay canonical
-exact after the refresh.
+by six and the `Draw` switch-table base symbol advanced by nine. The new
+`InitializeHorizontalTextureStrip` / `DrawTriangleFan` declarations trigger
+another uniform `+8` compiler-local identity shift in the six switch-owning
+`AnmManager.cpp` units (`GetFloatVar`, `GetIntVar`, both pointer variants,
+`ExecuteScript`, and `Draw`). This is manifest-only churn: an offset-keyed audit
+proved every relocation offset, type, and target destination unchanged before
+refreshing the `$L` names. After rebuilding all twelve affected ANM objects,
+all 80 configured ANM units replay canonical exact. Future shared-header edits
+must repeat this destination-preserving audit rather than accepting local-label
+renames by pattern alone.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

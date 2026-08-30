@@ -185,7 +185,7 @@ ZunResult __fastcall DrawPulsingRadialTrail(AnmVm *vm)
     PulsingRadialTrailData *data;
 
     data = (PulsingRadialTrailData *)vm->generatedVertices;
-    g_AnmManager->DrawVertices(vm, data->vertices, 33);
+    g_AnmManager->DrawTriangleFan(vm, data->vertices, 33);
     return ZUN_SUCCESS;
 }
 

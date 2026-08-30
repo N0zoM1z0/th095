@@ -510,3 +510,7 @@ th095::AnmManager::DrawMode6
 th095::AnmManager::Project3DQuad
 th095::AnmManager::DrawProjected3DQuad
 th095::AnmManager::DrawMode7
+th095::AnmManager::Draw3D
+th095::AnmManager::InitializeHorizontalTextureStrip
+th095::AnmManager::DrawVertices
+th095::AnmManager::DrawTriangleFan

@@ -869,6 +869,260 @@ ZunResult AnmManager::DrawMode7(AnmVm *vm)
     return draw.result;
 }
 
+// FUNCTION: TH095 0x00440C10.
+// Stock VC7.1 allocates locals through identifier hash chains. Reuse the
+// target-proven backing buckets that reproduce TH08's documented patched
+// var_order without depending on that non-stock frontend.
+#define textureMatrix restartCommandProcessingLocal05
+#define rotationMatrix averagedPanLocal12
+#define worldTransformMatrix iLocal11
+#pragma var_order(textureMatrix, rotationMatrix, worldTransformMatrix, this)
+ZunResult AnmManager::Draw3D(AnmVm *vm)
+{
+    D3DMATRIX textureMatrix;
+    D3DXMATRIX rotationMatrix;
+    D3DXMATRIX worldTransformMatrix;
+
+    if (!vm->visible)
+        return ZUN_ERROR;
+    if (!vm->unknownFlag1)
+        return ZUN_ERROR;
+    if (vm->color1.a == 0)
+        return ZUN_ERROR;
+
+    if (this->spritesToDraw != 0)
+        this->FlushVertexBuffer();
+
+    if (!vm->unknownFlag14 && (vm->updateScale || vm->updateRotation))
+    {
+        vm->matrix2 = vm->matrix1;
+        vm->matrix2._11 *= vm->scale.x;
+        vm->matrix2._22 *= vm->scale.y;
+        vm->updateScale = false;
+
+        if (vm->rotation.x != 0.0)
+        {
+            D3DXMatrixRotationX(&rotationMatrix, vm->rotation.x);
+            D3DXMatrixMultiply(&vm->matrix2, &vm->matrix2, &rotationMatrix);
+        }
+        if (vm->rotation.y != 0.0)
+        {
+            D3DXMatrixRotationY(&rotationMatrix, vm->rotation.y);
+            D3DXMatrixMultiply(&vm->matrix2, &vm->matrix2, &rotationMatrix);
+        }
+        if (vm->rotation.z != 0.0)
+        {
+            D3DXMatrixRotationZ(&rotationMatrix, vm->rotation.z);
+            D3DXMatrixMultiply(&vm->matrix2, &vm->matrix2, &rotationMatrix);
+        }
+        vm->updateRotation = false;
+    }
+
+    worldTransformMatrix = vm->matrix2;
+    switch (vm->renderStateA)
+    {
+    case 1:
+        worldTransformMatrix._41 =
+            vm->position.x + vm->positionOffset.x -
+            (f32)fabs(vm->spriteSize.x * vm->scale.x / 2.0f);
+        break;
+    case 0:
+        worldTransformMatrix._41 = vm->position.x + vm->positionOffset.x;
+        break;
+    case 2:
+        worldTransformMatrix._41 =
+            vm->position.x + vm->positionOffset.x +
+            (f32)fabs(vm->spriteSize.x * vm->scale.x / 2.0f);
+        break;
+    }
+
+    switch (vm->renderStateB)
+    {
+    case 1:
+        worldTransformMatrix._42 =
+            vm->position.y + vm->positionOffset.y -
+            (f32)fabs(vm->spriteSize.y * vm->scale.y / 2.0f);
+        break;
+    case 0:
+        worldTransformMatrix._42 = vm->position.y + vm->positionOffset.y;
+        break;
+    case 2:
+        worldTransformMatrix._42 =
+            vm->position.y + vm->positionOffset.y +
+            (f32)fabs(vm->spriteSize.y * vm->scale.y / 2.0f);
+        break;
+    }
+
+    worldTransformMatrix._43 = vm->position.z + vm->positionOffset.z;
+    this->SetRenderStateForVm3D(vm);
+    worldTransformMatrix._43 = vm->position.z + vm->positionOffset.z;
+    g_Supervisor.d3dDevice->SetTransform(D3DTS_WORLD, &worldTransformMatrix);
+
+    if (this->currentSprite != vm->loadedSprite ||
+        vm->uvScrollPos.x != 0.0f || vm->uvScrollPos.x != 0.0f)
+    {
+        this->currentSprite = vm->loadedSprite;
+        textureMatrix = vm->matrix3;
+        textureMatrix._31 = vm->loadedSprite->uvStart.x + vm->uvScrollPos.x;
+        textureMatrix._32 = vm->loadedSprite->uvStart.y + vm->uvScrollPos.y;
+        g_Supervisor.d3dDevice->SetTransform(D3DTS_TEXTURE0, &textureMatrix);
+    }
+
+    if (this->currentTexture != vm->loadedSprite->texture)
+    {
+        this->currentTexture = vm->loadedSprite->texture;
+        g_Supervisor.d3dDevice->SetTexture(0, this->currentTexture);
+    }
+
+    if (this->currentVertexShader != 2)
+    {
+        g_Supervisor.d3dDevice->SetVertexShader(D3DFVF_XYZ | D3DFVF_TEX1);
+        g_Supervisor.d3dDevice->SetStreamSource(
+            0, this->quadVertexBuffer, sizeof(VertexDiffuseXyzrhw));
+        g_Supervisor.d3dDevice->SetTextureStageState(
+            0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
+        g_Supervisor.d3dDevice->SetTextureStageState(
+            0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
+        this->currentVertexShader = 2;
+    }
+
+    g_Supervisor.d3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+    return ZUN_SUCCESS;
+}
+#undef textureMatrix
+#undef rotationMatrix
+#undef worldTransformMatrix
+
+// FUNCTION: TH095 0x004411D0.
+#define stripY restartCommandProcessingLocal05
+#define stripI averagedPanLocal12
+#define stripVertex iLocal11
+#define stripX commandCursorLocal02
+#define stripCurrentX soundIndexLocal01
+#define stripStep jLocal00
+#define stripXSpan preloadBufferLocal03
+#pragma var_order(stripY, stripI, stripVertex, stripX, stripCurrentX, stripStep, stripXSpan)
+ZunResult AnmManager::InitializeHorizontalTextureStrip(
+    AnmVm *vm, AnmVertex *vertices, i32 vertexCount)
+{
+    f32 stripY;
+    i32 stripI;
+    AnmVertex *stripVertex;
+    f32 stripX;
+    f32 stripCurrentX;
+    f32 stripStep;
+    f32 stripXSpan;
+
+    if (vertexCount < 3)
+        return ZUN_ERROR;
+
+    stripX = vm->loadedSprite->uvEnd.x + vm->uvScrollPos.x;
+    stripXSpan = vm->loadedSprite->uvEnd.x - vm->loadedSprite->uvStart.x;
+    stripY = vm->loadedSprite->uvStart.y + vm->uvScrollPos.y;
+    stripVertex = vertices;
+    stripStep = stripXSpan / ((vertexCount + 1) / 2 - 1);
+    stripI = 0;
+    stripCurrentX = stripX;
+    for (; stripI < vertexCount; stripI += 2, stripVertex += 2,
+           stripCurrentX -= stripStep)
+    {
+        stripVertex->uv.x = stripCurrentX;
+        stripVertex->uv.y = stripY;
+        stripVertex->diffuse.color = vm->color1.color;
+        stripVertex->rhw = 1.0f;
+    }
+
+    stripY = vm->loadedSprite->uvEnd.y + vm->uvScrollPos.y;
+    stripVertex = vertices + 1;
+    stripI = 1;
+    stripCurrentX = stripX;
+    for (; stripI < vertexCount; stripI += 2, stripVertex += 2,
+           stripCurrentX -= stripStep)
+    {
+        stripVertex->uv.x = stripCurrentX;
+        stripVertex->uv.y = stripY;
+        stripVertex->diffuse.color = vm->color1.color;
+        stripVertex->rhw = 1.0f;
+    }
+    return ZUN_SUCCESS;
+}
+#undef stripY
+#undef stripI
+#undef stripVertex
+#undef stripX
+#undef stripCurrentX
+#undef stripStep
+#undef stripXSpan
+
+// FUNCTION: TH095 0x00441330.
+ZunResult AnmManager::DrawVertices(
+    AnmVm *vm, AnmVertex *vertices, i32 vertexCount)
+{
+    if (!vm->visible)
+        return ZUN_ERROR;
+    if (!vm->unknownFlag1)
+        return ZUN_ERROR;
+    if (vm->color1.a == 0)
+        return ZUN_ERROR;
+
+    if (this->spritesToDraw != 0)
+        this->FlushVertexBuffer();
+
+    if (this->currentTexture != vm->loadedSprite->texture)
+    {
+        this->currentTexture = vm->loadedSprite->texture;
+        g_Supervisor.d3dDevice->SetTexture(0, this->currentTexture);
+    }
+
+    if (this->currentVertexShader != 3)
+    {
+        g_Supervisor.d3dDevice->SetVertexShader(
+            D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1);
+        this->currentVertexShader = 3;
+    }
+
+    this->SetRenderStateForVm(vm);
+    g_Supervisor.d3dDevice->SetTextureStageState(
+        0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+    g_Supervisor.d3dDevice->SetTextureStageState(
+        0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+    g_Supervisor.d3dDevice->DrawPrimitiveUP(
+        D3DPT_TRIANGLESTRIP, vertexCount - 2, vertices, sizeof(AnmVertex));
+    return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x00441480.
+ZunResult AnmManager::DrawTriangleFan(
+    AnmVm *vm, AnmVertex *vertices, i32 vertexCount)
+{
+    if (this->spritesToDraw != 0)
+        this->FlushVertexBuffer();
+
+    if (this->currentVertexShader != 3)
+    {
+        g_Supervisor.d3dDevice->SetVertexShader(
+            D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1);
+        this->currentVertexShader = 3;
+    }
+
+    this->SetRenderStateForVm(vm);
+
+    if (this->currentTexture != vm->loadedSprite->texture)
+    {
+        this->currentTexture = vm->loadedSprite->texture;
+        g_Supervisor.d3dDevice->SetTexture(0, this->currentTexture);
+    }
+
+    g_Supervisor.SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+    g_Supervisor.d3dDevice->SetTextureStageState(
+        0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+    g_Supervisor.d3dDevice->SetTextureStageState(
+        0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+    g_Supervisor.d3dDevice->DrawPrimitiveUP(
+        D3DPT_TRIANGLEFAN, vertexCount - 2, vertices, sizeof(AnmVertex));
+    return ZUN_SUCCESS;
+}
+
 // FUNCTION: TH095 0x0043F3C0.
 ZunResult AnmManager::AddSpriteToDrawBuffer(
     VertexTex1DiffuseXyzrhw *vertices)
