@@ -4,6 +4,7 @@
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "PixelFormats.hpp"
+#include "ScoreData.hpp"
 #include <time.h>
 
 namespace th095
@@ -300,6 +301,7 @@ struct SceneSaveDataView
     i16 lastSelectedScene;
     u8 unknown0022[0x43e];
     SceneScoreEntryView sceneScores[120];
+    ResultBestShotRecordView bestShotRecords[120];
 
     ZunResult LoadScenePreviewTexture(SceneAnmLoadedView *anm,
                                       i32 textureIndex, i32 sceneIndex);
@@ -364,6 +366,8 @@ typedef char SceneSaveDataScoresAt460[
 typedef char SceneSaveDataSelectionAt1E[
     (offsetof(SceneSaveDataView, lastSelectedGroup) == 0x1e &&
      offsetof(SceneSaveDataView, lastSelectedScene) == 0x20) ? 1 : -1];
+typedef char SceneSaveBestShotRecordsAt3160[
+    (offsetof(SceneSaveDataView, bestShotRecords) == 0x3160) ? 1 : -1];
 typedef char SceneScoreEntryAttemptCountAt3C[
     (offsetof(SceneScoreEntryView, attemptCount) == 0x3c) ? 1 : -1];
 typedef char SceneSelectGroupCursorsAt1D0[

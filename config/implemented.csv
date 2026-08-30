@@ -202,3 +202,4 @@ th095::Chain::CutImpl
 th095::Chain::~Chain
 th095::ZunMemory::~ZunMemory
 th095::ResultSaveDataView::WriteBestShotData
+th095::SceneSaveDataView::LoadScenePreviewTexture

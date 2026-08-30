@@ -11,42 +11,6 @@
 namespace th095
 {
 
-struct ResultSaveDataView
-{
-    void UpdateBestShotRecord(i32 index);
-};
-
-struct SceneBestShotRecordView
-{
-    u32 magic;
-    u8 type;
-    u8 componentCount;
-    u16 group;
-    u16 scene;
-    u16 version;
-    u16 width;
-    u16 height;
-    i32 score;
-    u8 unknown014[4];
-    char comment[0x50];
-    u8 valid;
-    u8 componentsLoaded;
-    u8 unknown06a[2];
-    i32 photoIndex;
-    u8 *fileData;
-    u8 *pixelData;
-};
-
-typedef char SceneBestShotRecordSizeIs78[
-    (sizeof(SceneBestShotRecordView) == 0x78) ? 1 : -1];
-typedef char SceneBestShotRecordCommentAt18[
-    (offsetof(SceneBestShotRecordView, comment) == 0x18) ? 1 : -1];
-typedef char SceneBestShotRecordValidAt68[
-    (offsetof(SceneBestShotRecordView, valid) == 0x68) ? 1 : -1];
-typedef char SceneBestShotRecordDataAt70[
-    (offsetof(SceneBestShotRecordView, fileData) == 0x70 &&
-     offsetof(SceneBestShotRecordView, pixelData) == 0x74) ? 1 : -1];
-
 i32 SceneSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
 {
     i32 recordIndex = g_SceneGroups[group][scene].scoreEntryIndex;
@@ -76,15 +40,15 @@ i32 SceneSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
         else
         {
             i32 fileSize;
-            SceneBestShotRecordView *record =
-                reinterpret_cast<SceneBestShotRecordView *>(
-                    reinterpret_cast<u8 *>(this) + 0x3160 +
-                    recordIndex * 0x78);
-            record->fileData = FileSystem::OpenFile(path, &fileSize, TRUE);
-            if (record->fileData != NULL)
+            ResultBestShotRecordView *record =
+                &this->bestShotRecords[recordIndex];
+            record->componentData0 = FileSystem::OpenFile(path, &fileSize,
+                                                          TRUE);
+            if (record->componentData0 != NULL)
             {
-                memcpy(record, record->fileData, 0x18);
-                u8 *input = record->fileData + 0x18;
+                memcpy(record, record->componentData0, 0x18);
+                u8 *input =
+                    reinterpret_cast<u8 *>(record->componentData0) + 0x18;
                 size_t pixelSize = record->width * record->height *
                                    record->componentCount;
                 record->pixelData = reinterpret_cast<u8 *>(malloc(pixelSize));

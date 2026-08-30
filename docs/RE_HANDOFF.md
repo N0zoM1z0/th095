@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 171 canonical units cover 96,421 authored bytes.
+- Reconstruction: 172 canonical units cover 96,999 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 54.36% (96,421 / 177,360)
+  relocations. Confirmed authored-byte coverage is now 54.69% (96,999 / 177,360)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -66,6 +66,12 @@
   score stream, profile checksum, compression, encryption, and final
   `scoreth095.dat` output. All ten existing ResultScreen units replay unchanged
   after replacing their old local save-data stubs with the shared header.
+- `SceneSaveDataView::LoadScenePreviewTexture @ 0x004362A0` is exact for all
+  578 bytes and both relocations. It closes the target-local best-shot-to-scene
+  selector path: RGB24/ARGB4444 pixels are uploaded through D3DX, alpha is
+  normalized over the 256-by-192 preview, and a missing decoded component
+  clears the destination surface. The five established scene-progression
+  units replay unchanged after extending their shared save-data view.
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.
@@ -272,13 +278,10 @@
 ## Next bounded lane
 
 Continue the target-local candidate inventory rather than spending more time
-on compiler-only residuals. Complete the already mapped
-`SceneSaveDataView::LoadScenePreviewTexture @ 0x004362A0` (578 bytes), which
-is called directly by the 16,066-byte scene-selection hub and uploads the
-selected photograph to the 256x192 preview texture. The other source-missing
-confirmed-authored candidates are `FUN_0042FF60 @ 0x0042FF60` (405 bytes), a
-seven-callee photography/gameplay coordinator, and no others. Re-run the
-origin inventory after these two so large unreviewed game-side candidates
+on compiler-only residuals. The remaining source-missing confirmed-authored
+candidate is `FUN_0042FF60 @ 0x0042FF60` (405 bytes), a seven-callee
+photography/gameplay coordinator. Re-run the origin inventory after it so
+large unreviewed game-side candidates
 are admitted or excluded on evidence rather than size alone.
 
 The large photo functions remain source-present but non-exact:
