@@ -11,17 +11,38 @@ Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
 struct PhotoEnemyView;
 struct PhotoEnemyManagerView;
+struct PhotoEnemyEclContextView;
 
 struct PhotoEnemyEclFileView
 {
-    u8 unknown000[6];
+    u32 version;
+    i16 subroutineCount;
     i16 timelineCount;
-    void *timelines[1];
+    u32 timelineOffsets[16];
+    u32 subroutineOffsets[1];
+};
+
+typedef char PhotoEnemyEclFileSubroutinesAt48[
+    (offsetof(PhotoEnemyEclFileView, subroutineOffsets) == 0x48) ? 1 : -1];
+
+struct PhotoEnemyEclTimelineStateView
+{
+    u8 unknown000[0x100];
+    D3DXVECTOR3 vectors[8];
 };
 
 struct PhotoEnemyEclManagerView
 {
-    PhotoEnemyEclFileView *eclFile;
+    PhotoEnemyEclFileView *eclFile;            // +0x000
+    u32 *subroutineTable;                      // +0x004
+    PhotoEnemyEclTimelineStateView timelineState; // +0x008
+    i32 callParameterInts[4];                  // +0x168
+    f32 callParameterFloats[4];                // +0x178
+
+    PhotoEnemyEclManagerView()
+    {
+        memset(this, 0, sizeof(*this));
+    }
 
     ~PhotoEnemyEclManagerView()
     {
@@ -32,9 +53,91 @@ struct PhotoEnemyEclManagerView
         }
     }
 
-    void InitializeContext(void *context, i16 subroutineId);
+    i32 Load(char *path);
+    i32 InitializeContext(
+        PhotoEnemyEclContextView *context, i16 subroutineId);
     i32 RunEcl(PhotoEnemyView *enemy);
 };
+
+typedef char PhotoEnemyEclManagerSizeIs188[
+    (sizeof(PhotoEnemyEclManagerView) == 0x188) ? 1 : -1];
+typedef char PhotoEnemyEclManagerParametersAt168[
+    (offsetof(PhotoEnemyEclManagerView, callParameterInts) == 0x168) ? 1 : -1];
+
+struct PhotoEnemyEclContextView
+{
+    void *currentInstruction;
+    ZunTimer time;
+    u8 unknown010[0x98 - 0x10];
+    ZunTimer secondaryTime;
+    u8 unknown0a4[0x22c - 0x0a4];
+    i16 subroutineId;
+};
+
+typedef char PhotoEnemyEclContextSecondaryTimerAt98[
+    (offsetof(PhotoEnemyEclContextView, secondaryTime) == 0x98) ? 1 : -1];
+typedef char PhotoEnemyEclContextSubroutineAt22C[
+    (offsetof(PhotoEnemyEclContextView, subroutineId) == 0x22c) ? 1 : -1];
+
+i32 PhotoEnemyEclManagerView::Load(char *path)
+{
+    i32 index;
+
+    this->eclFile = reinterpret_cast<PhotoEnemyEclFileView *>(
+        FileSystem::OpenFile(path, NULL, FALSE));
+    if (this->eclFile == NULL)
+    {
+        g_GameErrorContext.Log(
+            "\x93\x47\x83\x66\x81\x5b\x83\x5e\x82\xcc"
+            "\x93\xc7\x82\xdd\x8d\x9e\x82\xdd\x82\xc9"
+            "\x8e\xb8\x94\x73\x82\xb5\x82\xdc\x82\xb5"
+            "\x82\xbd\x81\x41\x83\x66\x81\x5b\x83\x5e"
+            "\x82\xaa\x89\xf3\x82\xea\x82\xc4\x82\xe9"
+            "\x82\xa9\x8e\xb8\x82\xed\x82\xea\x82\xc4"
+            "\x82\xa2\x82\xdc\x82\xb7\r\n");
+        return ZUN_ERROR;
+    }
+
+    if (this->eclFile->version != 0x800)
+    {
+        g_GameErrorContext.Log(
+            "\x93\x47\x83\x66\x81\x5b\x83\x5e\x82\xcc"
+            "\x83\x6f\x81\x5b\x83\x57\x83\x87\x83\x93"
+            "\x82\xaa\x88\xe1\x82\xa2\x82\xdc\x82\xb7"
+            "\r\n");
+        return ZUN_ERROR;
+    }
+
+    for (index = 0; index < this->eclFile->timelineCount; ++index)
+    {
+        this->eclFile->timelineOffsets[index] +=
+            reinterpret_cast<u32>(this->eclFile);
+    }
+
+    this->subroutineTable = this->eclFile->subroutineOffsets;
+    for (index = 0; index < this->eclFile->subroutineCount; ++index)
+    {
+        this->subroutineTable[index] +=
+            reinterpret_cast<u32>(this->eclFile);
+    }
+    return ZUN_SUCCESS;
+}
+
+i32 PhotoEnemyEclManagerView::InitializeContext(
+    PhotoEnemyEclContextView *context, i16 subroutineId)
+{
+    if (subroutineId < 0)
+    {
+        return ZUN_SUCCESS;
+    }
+
+    context->currentInstruction = reinterpret_cast<void *>(
+        this->subroutineTable[subroutineId]);
+    context->time = 0;
+    context->secondaryTime = 0;
+    context->subroutineId = subroutineId;
+    return ZUN_SUCCESS;
+}
 
 struct PhotoEnemyTimelineView
 {
@@ -125,6 +228,13 @@ struct PhotoEnemySupervisorFlagsView
     u32 unknown10 : 22;
 };
 
+struct PhotoEnemySceneDefinitionView
+{
+    u8 unknown000[0x10];
+    char *enemyAnmPath;
+    char *enemyEclPath;
+};
+
 struct PhotoEnemyScheduledCall
 {
     i16 subroutineId;
@@ -138,6 +248,7 @@ extern PhotoEnemyBulletManagerView *g_PhotoEnemyBulletManager;
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 extern PhotoEnemyPlayerView *g_PhotoEnemyPlayer;
 extern PhotoEnemyGameView *g_PhotoEnemyGame;
+extern PhotoEnemySceneDefinitionView *g_PhotoEnemySceneDefinition;
 extern f32 g_PhotoEnemyEffectInterpolation;
 extern f32 g_GameSpeed;
 
@@ -267,6 +378,7 @@ struct PhotoEnemyManagerView
     i32 activeEnemyCount;                  // +0x26ae2c
 
     ~PhotoEnemyManagerView();
+    i32 LoadResources();
     static i32 __fastcall OnUpdate(PhotoEnemyManagerView *enemyManager);
     PhotoEnemyView *Spawn(
         i32 subroutineId,
@@ -296,6 +408,36 @@ typedef char PhotoEnemyManagerEnemiesAt4E00[
     (offsetof(PhotoEnemyManagerView, enemies) == 0x4e00) ? 1 : -1];
 typedef char PhotoEnemyManagerCountAt26AE2C[
     (offsetof(PhotoEnemyManagerView, activeEnemyCount) == 0x26ae2c) ? 1 : -1];
+
+i32 PhotoEnemyManagerView::LoadResources()
+{
+    this->enemyAnm =
+        g_AnmManager->LoadAnm(8, g_PhotoEnemySceneDefinition->enemyAnmPath);
+    if (this->enemyAnm == NULL)
+    {
+        g_GameErrorContext.Log(
+            "\x93\x47\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x8c\xa9\x82\xc2\x82\xa9\x82\xe8\x82\xdc"
+            "\x82\xb9\x82\xf1\x81\x42\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x89\xf3\x82\xea\x82\xc4"
+            "\x82\xa2\x82\xdc\x82\xb7\r\n");
+        return ZUN_ERROR;
+    }
+
+    this->eclManager = new PhotoEnemyEclManagerView;
+    if (this->eclManager->Load(
+            g_PhotoEnemySceneDefinition->enemyEclPath) != ZUN_SUCCESS)
+    {
+        g_GameErrorContext.Log(
+            "\x93\x47\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x8c\xa9\x82\xc2\x82\xa9\x82\xe8\x82\xdc"
+            "\x82\xb9\x82\xf1\x81\x42\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x89\xf3\x82\xea\x82\xc4"
+            "\x82\xa2\x82\xdc\x82\xb7\r\n");
+        return ZUN_ERROR;
+    }
+    return ZUN_SUCCESS;
+}
 
 PhotoEnemyManagerView::~PhotoEnemyManagerView()
 {
@@ -535,7 +677,8 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
         }
         *reinterpret_cast<Float3 *>(&enemy->worldPosition) = *position;
         this->eclManager->InitializeContext(
-            reinterpret_cast<u8 *>(enemy) + 0x2dc,
+            reinterpret_cast<PhotoEnemyEclContextView *>(
+                reinterpret_cast<u8 *>(enemy) + 0x2dc),
             static_cast<i16>(subroutineId));
         if (this->eclManager->RunEcl(enemy) == ZUN_ERROR)
         {
@@ -594,7 +737,8 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
         }
         *reinterpret_cast<Float3 *>(&enemy->worldPosition) = *position;
         this->eclManager->InitializeContext(
-            reinterpret_cast<u8 *>(enemy) + 0x2dc,
+            reinterpret_cast<PhotoEnemyEclContextView *>(
+                reinterpret_cast<u8 *>(enemy) + 0x2dc),
             static_cast<i16>(subroutineId));
         *reinterpret_cast<EnemyContextCopy *>(
             reinterpret_cast<u8 *>(enemy) + 0x2f4) =
@@ -633,7 +777,8 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
         {
             void *instruction;
             instruction =
-                enemyManager->eclManager->eclFile->timelines[timelineIndex];
+                reinterpret_cast<void *>(enemyManager->eclManager->eclFile
+                                             ->timelineOffsets[timelineIndex]);
             enemyManager->timelines[timelineIndex].instruction =
                 instruction;
         }
@@ -869,7 +1014,8 @@ void PhotoEnemyView::UpdatePhotoMarkerPulse()
 void PhotoEnemyView::RestartEcl()
 {
     g_PhotoEnemyManager->eclManager->InitializeContext(
-        reinterpret_cast<u8 *>(this) + 0x2dc,
+        reinterpret_cast<PhotoEnemyEclContextView *>(
+            reinterpret_cast<u8 *>(this) + 0x2dc),
         this->mainEclSubroutineId);
 }
 
@@ -913,8 +1059,9 @@ void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
         if (enemyManager->photoTargets[targetIndex] != NULL)
         {
             enemyManager->eclManager->InitializeContext(
-                reinterpret_cast<u8 *>(enemyManager->photoTargets[targetIndex]) +
-                    0x2dc,
+                reinterpret_cast<PhotoEnemyEclContextView *>(
+                    reinterpret_cast<u8 *>(
+                        enemyManager->photoTargets[targetIndex]) + 0x2dc),
                 enemyManager->photoTargets[targetIndex]
                     ->photoTargetEclSubroutineId);
         }
@@ -964,7 +1111,8 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
         if (currentFrame >= this->scheduledCallFrames[scheduleIndex])
         {
             g_PhotoEnemyManager->eclManager->InitializeContext(
-                reinterpret_cast<u8 *>(this) + 0x2dc,
+                reinterpret_cast<PhotoEnemyEclContextView *>(
+                    reinterpret_cast<u8 *>(this) + 0x2dc),
                 this->scheduledCalls[scheduleIndex].subroutineId);
             this->scheduledCallFrames[scheduleIndex] = -1;
 

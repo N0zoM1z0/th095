@@ -20,7 +20,7 @@ address,name,module,confidence,evidence
 0x004C4E0C,th095::g_ReplayFps,ReplayManager,high,Exact quantized FPS sampling relocations
 0x004C4E74,th095::g_ReplayManager,ReplayManager,exact,Exact ReplayManager destructor singleton relocations
 0x004A5800,th095::g_ReplayPlayerConfigTable,ReplayManager,exact,Exact ReplayManager playback configuration-table relocation
-0x004CA2F0,th095::g_ReplayPlayerConfig,ReplayManager,exact,Exact ReplayManager record/playback configuration relocations
+0x004CA2F0,th095::g_SelectedScene,SceneSelect,exact,Exact scene-selection and enemy resource-path relocations; replay reuses the selected-scene record
 0x004BDED0,th095::g_ReplayUsesArchive,FileSystem,exact,Exact ReplayManager disk/archive load-path relocations
 0x004C4DFC,th095::g_ReplayLagNumerator,ReplayManager,exact,Exact ReplayManager writer x87 slow-rate numerator relocation
 0x004C4E04,th095::g_ReplayLagDenominator,ReplayManager,exact,Exact ReplayManager writer x87 slow-rate denominator relocation

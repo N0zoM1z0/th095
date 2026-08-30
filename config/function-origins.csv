@@ -86,8 +86,8 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00408C50,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00408C60,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00408CB0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00408CE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00408DE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00408CE0,authored,EclManager,authored,exact,vc71-photo-enemy-ecl-load-2026-08-30
+0x00408DE0,authored,EclManager,authored,exact,vc71-photo-enemy-ecl-context-2026-08-30
 0x00408E70,authored,EclManager,authored,high,target-architecture-2026-08-29
 0x0040FAE0,authored,EclOperands,authored,exact,vc71-ecl-resolve-int-2026-08-30
 0x00410300,authored,EclOperands,authored,exact,vc71-ecl-resolve-int-lvalue-2026-08-30
@@ -137,7 +137,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00415040,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004152D0,authored,EnemyManager,authored,exact,vc71-photo-enemy-view-destructor-2026-08-30
 0x00415310,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004153D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004153D0,authored,EnemyManager,authored,exact,vc71-photo-enemy-resource-load-2026-08-30
 0x004154E0,authored,EnemyManager,authored,high,photo-enemy-manager-destructor-semantic-2026-08-30
 0x004156C0,authored,EnemyManager,authored,exact,vc71-photo-enemy-spawn-2026-08-30
 0x00415820,authored,EnemyManager,authored,exact,vc71-photo-enemy-spawn-context-2026-08-30

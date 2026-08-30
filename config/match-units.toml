@@ -8771,6 +8771,57 @@ relocations = [
   { offset = 0x29, type = "REL32", symbol = "_free", target = 0x004854BE },
 ]
 
+[units.enemy-ecl-load]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyEclManagerView::Load"]
+symbol = "?Load@PhotoEnemyEclManagerView@th095@@QAEHPAD@Z"
+target_address = 0x00408CE0
+size = 0xF7
+relocations = [
+  { offset = 0x11, type = "REL32", symbol = "?OpenFile@FileSystem@th095@@SIPAEPADPAHH@Z", target = 0x0041A960 },
+  { offset = 0x23, type = "DIR32", symbol = "??_C@_0EF@FDGCHHHK@?$JDG?$IDf?$IB?$FL?$ID?$FO?$IC?L?$JD?G?$IC?$NN?$IN?$JO?$IC?$NN?$IC?I?$IO?$LI?$JEs?$IC?$LF?$IC?$NM?$IC?$LF?$IC?$LN@", target = 0x004954A8 },
+  { offset = 0x28, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x2D, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x4A, type = "DIR32", symbol = "??_C@_0CB@LDCFEELP@?$JDG?$IDf?$IB?$FL?$ID?$FO?$IC?L?$IDo?$IB?$FL?$IDW?$ID?$IH?$ID?$JD?$IC?$KK?$II?a?$IC?$KC?$IC?$NM?$IC?$LH?$AN?6@", target = 0x00495484 },
+  { offset = 0x4F, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x54, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+]
+
+[units.enemy-ecl-initialize-context]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyEclManagerView::InitializeContext"]
+symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEHPAUPhotoEnemyEclContextView@2@F@Z"
+target_address = 0x00408DE0
+size = 0x8C
+relocations = []
+
+[units.enemy-manager-load-resources]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerView::LoadResources"]
+symbol = "?LoadResources@PhotoEnemyManagerView@th095@@QAEHXZ"
+target_address = 0x004153D0
+size = 0x104
+relocations = [
+  { offset = 0xB, type = "DIR32", symbol = "?g_PhotoEnemySceneDefinition@th095@@3PAUPhotoEnemySceneDefinitionView@1@A", target = 0x004CA2F0 },
+  { offset = 0x17, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x1C, type = "REL32", symbol = "?LoadAnm@AnmManager@th095@@QAEPAUAnmLoaded@2@HPBD@Z", target = 0x004432E0 },
+  { offset = 0x36, type = "DIR32", symbol = "??_C@_0DB@EBGCKCDL@?$JDG?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$IM?$KJ?$IC?B?$IC?$KJ?$IC?h?$IC?$NM?$IC?$LJ?$IC?q?$IBB?$IDf?$IB?$FL?$ID?$FO@", target = 0x00495570 },
+  { offset = 0x3B, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x40, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x55, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0xCC, type = "DIR32", symbol = "?g_PhotoEnemySceneDefinition@th095@@3PAUPhotoEnemySceneDefinitionView@1@A", target = 0x004CA2F0 },
+  { offset = 0xDE, type = "REL32", symbol = "?Load@PhotoEnemyEclManagerView@th095@@QAEHPAD@Z", target = 0x00408CE0 },
+  { offset = 0xE7, type = "DIR32", symbol = "??_C@_0DB@EBGCKCDL@?$JDG?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$IM?$KJ?$IC?B?$IC?$KJ?$IC?h?$IC?$NM?$IC?$LJ?$IC?q?$IBB?$IDf?$IB?$FL?$ID?$FO@", target = 0x00495570 },
+  { offset = 0xEC, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0xF1, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+]
+
 [units.enemy-spawn]
 source = "src/EnemyManagerUpdate.cpp"
 object = "build/matching/EnemyManagerUpdate.obj"
@@ -8780,7 +8831,7 @@ symbol = "?Spawn@PhotoEnemyManagerView@th095@@QAEPAUPhotoEnemyView@2@HPBUFloat3@
 target_address = 0x004156C0
 size = 0x15E
 relocations = [
-  { offset = 0xD2, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEXPAXF@Z", target = 0x00408DE0 },
+  { offset = 0xD2, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEHPAUPhotoEnemyEclContextView@2@F@Z", target = 0x00408DE0 },
   { offset = 0xE4, type = "REL32", symbol = "?RunEcl@PhotoEnemyEclManagerView@th095@@QAEHPAUPhotoEnemyView@2@@Z", target = 0x00408E70 },
   { offset = 0xF1, type = "REL32", symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416E80 },
 ]
@@ -8794,7 +8845,7 @@ symbol = "?SpawnWithContext@PhotoEnemyManagerView@th095@@QAEPAUPhotoEnemyView@2@
 target_address = 0x00415820
 size = 0x150
 relocations = [
-  { offset = 0xB1, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEXPAXF@Z", target = 0x00408DE0 },
+  { offset = 0xB1, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEHPAUPhotoEnemyEclContextView@2@F@Z", target = 0x00408DE0 },
   { offset = 0xD6, type = "REL32", symbol = "?RunEcl@PhotoEnemyEclManagerView@th095@@QAEHPAUPhotoEnemyView@2@@Z", target = 0x00408E70 },
   { offset = 0xE3, type = "REL32", symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416E80 },
 ]
@@ -8876,7 +8927,7 @@ target_address = 0x004167E0
 size = 0x30
 relocations = [
   { offset = 0x1D, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
-  { offset = 0x28, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEXPAXF@Z", target = 0x00408DE0 },
+  { offset = 0x28, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEHPAUPhotoEnemyEclContextView@2@F@Z", target = 0x00408DE0 },
 ]
 
 [units.enemy-reset-non-photo-and-photo-ecls]
@@ -8889,7 +8940,7 @@ target_address = 0x00416810
 size = 0xBC
 relocations = [
   { offset = 0x52, type = "REL32", symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416E80 },
-  { offset = 0xB2, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEXPAXF@Z", target = 0x00408DE0 },
+  { offset = 0xB2, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEHPAUPhotoEnemyEclContextView@2@F@Z", target = 0x00408DE0 },
 ]
 
 [units.enemy-reset-non-photo-targets]

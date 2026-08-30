@@ -12,6 +12,8 @@ th095::GameWindow::CheckForRunningGameInstance
 th095::GameWindow::ActivateWindow
 th095::GameWindow::ResolveShortcut
 th095::AnmVm::Initialize
+th095::PhotoEnemyEclManagerView::Load
+th095::PhotoEnemyEclManagerView::InitializeContext
 th095::AnmLoaded::SetSprite
 th095::AnmLoaded::SetAndExecuteScript
 th095::AnmVm::GetFloatVar
@@ -237,6 +239,7 @@ th095::PhotoGameUpdateView::CheckBulletCollision
 th095::PhotoGameUpdateView::CalcLaserHitbox
 th095::PhotoGameUpdateView::Die
 th095::PhotoEnemyView::~PhotoEnemyView
+th095::PhotoEnemyManagerView::LoadResources
 th095::PhotoEnemyManagerView::~PhotoEnemyManagerView
 th095::PhotoEnemyManagerView::Spawn
 th095::PhotoEnemyManagerView::SpawnWithContext

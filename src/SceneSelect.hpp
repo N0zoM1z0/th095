@@ -52,7 +52,10 @@ struct SceneDefinitionView
         i32 titleArgument2;
         i32 scene;
     };
-    u8 unknown00c[0x14];
+    u8 unknown00c[4];
+    char *enemyAnmPath;
+    char *enemyEclPath;
+    u8 unknown018[8];
     i8 groupDisplayValue;
     i8 sceneDisplayValue;
     u8 unknown022[2];
