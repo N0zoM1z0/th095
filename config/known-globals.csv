@@ -43,6 +43,7 @@ address,name,module,confidence,evidence
 0x004C4860,th095::g_BackgroundCameraLookAt,Background,high,RunStageScript opcodes 4/5/11 and interpolation output
 0x004C486C,th095::g_BackgroundCameraUp,Background,exact,Exact Initialize DIR32 relocation base with +4/+8 addends and RunStageScript camera motion consumers
 0x004C4878,th095::g_BackgroundCameraForward,Background,exact,Exact Update DIR32 relocation passed to D3DXVec3Normalize
+0x004C4A34,th095::g_CurrentBackgroundViewport,Background,high,Render visibility reads the active gameplay viewport camera position and +0x3C position offset
 0x004C4890,th095::g_BackgroundWaveX,Background,high,RunStageScript camera motion modes 1 through 3 sine output
 0x004C4898,th095::g_BackgroundWaveY,Background,high,RunStageScript camera motion mode 3 cosine output
 0x004C489C,th095::g_BackgroundModeValue,Background,high,RunStageScript opcode 7 target-global store

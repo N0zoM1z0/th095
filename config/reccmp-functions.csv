@@ -385,3 +385,7 @@ th095::Background::OnDrawLowPrio,0x00402C20,function
 th095::Background::LoadStageData,0x00402C50,function
 th095::Background::LoadStageDataInner,0x00402C80,function
 th095::Background::UpdateStageObjectVms,0x00402E90,function
+th095::Background::DrawHighPrio,0x00402750,function
+th095::Background::DrawLowPrio,0x00402990,function
+th095::Background::RenderObjects,0x00402F60,function
+th095::BackgroundStageObject::IsVisible,0x004031A0,function

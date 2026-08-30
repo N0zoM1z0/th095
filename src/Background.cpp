@@ -16,6 +16,7 @@ struct Background
     i32 RunStageScript();
     i32 DrawHighPrio();
     i32 DrawLowPrio();
+    i32 RenderObjects(i32 mode);
     i32 LoadStageData(const char *path);
     i32 LoadStageDataInner(const char *path);
     void SetPhotoArea(const Float3 *position, const Float3 *size);
@@ -80,6 +81,8 @@ struct BackgroundStageObjectInstruction
     i16 size;
     i16 scriptIndex;
     i16 vmIndex;
+    Float3 position;
+    Float2 sizeOverride;
 };
 
 struct BackgroundStageObject
@@ -87,15 +90,25 @@ struct BackgroundStageObject
     i16 id;
     u8 mode;
     i8 flags;
-    u8 unknown004[0x18];
+    Float3 position;
+    Float3 size;
     BackgroundStageObjectInstruction firstInstruction;
+
+    i32 IsVisible(const Float3 *instancePosition, f32 cullingDistanceSq);
+};
+
+struct BackgroundStageObjectInstance
+{
+    i16 objectId;
+    i16 unknown002;
+    Float3 position;
 };
 
 struct BackgroundStateView
 {
     BackgroundStageHeader *stageData;            // +0x0000
     BackgroundStageObject **stageObjects;        // +0x0004
-    void *stageObjectInstances;                  // +0x0008
+    BackgroundStageObjectInstance *stageObjectInstances; // +0x0008
     u8 *stageScript;                            // +0x000c
     ZunTimer stageScriptTimer;                  // +0x0010
     BackgroundStageInstruction *stageInstruction; // +0x001c
@@ -154,6 +167,49 @@ struct BackgroundSelectedSceneView
     const char *stageDataPath;
 };
 
+struct BackgroundViewportConfigurationView
+{
+    Float3 cameraPosition;
+    u8 unknown00c[0x30];
+    Float3 cameraPositionOffset;
+};
+
+struct BackgroundSupervisorView
+{
+    u8 unknown000[0x3c4];
+    BackgroundViewportConfigurationView *currentViewport;
+
+    void ConfigureBackgroundViewport(i32 index);
+    void SetRenderState(D3DRENDERSTATETYPE renderStateType, i32 value);
+    void DisableFog();
+    void EnableFog();
+};
+
+struct BackgroundAnmManagerView
+{
+    ZunColor color;
+    i32 useMixColor;
+    u8 unknown008[0x1760];
+    u8 cameraMode;
+
+    void SetMixColorDefault()
+    {
+        this->useMixColor = 0;
+        this->color.color = 0x80808080;
+    }
+
+    void SetMixColor(u32 color)
+    {
+        this->useMixColor = 1;
+        this->color.color = color;
+    }
+
+    void SetCameraMode(u8 mode)
+    {
+        this->cameraMode = mode;
+    }
+};
+
 typedef char BackgroundSpellStateAt175C[
     (offsetof(BackgroundStateView, spellBackgroundState) == 0x175c) ? 1 : -1];
 typedef char BackgroundStageScriptAtC[
@@ -182,6 +238,18 @@ typedef char BackgroundStateSizeIs201C[
     (sizeof(BackgroundStateView) == 0x201c) ? 1 : -1];
 typedef char BackgroundClassSizeIs201C[
     (sizeof(Background) == 0x201c) ? 1 : -1];
+typedef char BackgroundStageObjectSizeIs24[
+    (offsetof(BackgroundStageObject, firstInstruction) == 0x1c) ? 1 : -1];
+typedef char BackgroundStageObjectInstructionPositionAt8[
+    (offsetof(BackgroundStageObjectInstruction, position) == 8) ? 1 : -1];
+typedef char BackgroundStageObjectInstanceSizeIs10[
+    (sizeof(BackgroundStageObjectInstance) == 0x10) ? 1 : -1];
+typedef char BackgroundViewportOffsetAt3C[
+    (offsetof(BackgroundViewportConfigurationView, cameraPositionOffset) == 0x3c) ? 1 : -1];
+typedef char BackgroundSupervisorViewportAt3C4[
+    (offsetof(BackgroundSupervisorView, currentViewport) == 0x3c4) ? 1 : -1];
+typedef char BackgroundAnmCameraModeAt1768[
+    (offsetof(BackgroundAnmManagerView, cameraMode) == 0x1768) ? 1 : -1];
 
 extern BackgroundStageStateView *g_BackgroundStageState;
 extern BackgroundRuntimeView *g_BackgroundRuntime;
@@ -200,6 +268,7 @@ extern f32 g_BackgroundWaveX;
 extern f32 g_BackgroundWaveY;
 extern i32 g_BackgroundModeValue;
 extern ZunColor g_PhotoScreenFadeColor;
+extern BackgroundViewportConfigurationView *g_CurrentBackgroundViewport;
 
 f32 __stdcall CubicHermiteInterpolate(
     f32 startValue, f32 endValue, f32 startTangent, f32 endTangent, f32 time);
@@ -295,6 +364,250 @@ i32 Background::Update()
 
     reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive = 0;
     return 1;
+}
+
+// FUNCTION: TH095 0x00402750.
+i32 Background::DrawHighPrio()
+{
+    u32 vmIndex;
+
+    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+        D3DRS_ZWRITEENABLE, TRUE);
+    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+        D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+        D3DRS_FOGCOLOR,
+        reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.color.color);
+    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+        D3DRS_FOGSTART,
+        *reinterpret_cast<i32 *>(
+            &reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.x));
+    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+        D3DRS_FOGEND,
+        *reinterpret_cast<i32 *>(
+            &reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.y));
+    g_Supervisor.d3dDevice->Clear(
+        0, NULL, D3DCLEAR_ZBUFFER, 0, 1.0f, 0);
+
+    if (reinterpret_cast<BackgroundStateView *>(this)->photoColor.a != 0)
+    {
+        reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetMixColor(
+            reinterpret_cast<BackgroundStateView *>(this)->photoColor.color);
+    }
+
+    if (reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundState < 60)
+    {
+        if (reinterpret_cast<BackgroundStateView *>(this)
+                ->stageVms[0]
+                .loadedSprite != NULL)
+        {
+            g_Supervisor.ConfigureGameplayViewport(0);
+            reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)
+                ->DisableFog();
+            g_AnmManager->FlushVertexBuffer();
+            reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)
+                ->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+            for (vmIndex = 0; vmIndex < 8; vmIndex++)
+            {
+                if (reinterpret_cast<BackgroundStateView *>(this)
+                        ->stageVms[vmIndex]
+                        .loadedSprite != NULL)
+                {
+                    reinterpret_cast<BackgroundStateView *>(this)
+                        ->stageVms[vmIndex]
+                        .Draw();
+                }
+            }
+            reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)
+                ->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+        }
+
+        reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->EnableFog();
+        this->RenderObjects(0);
+        this->RenderObjects(1);
+        this->RenderObjects(2);
+        this->RenderObjects(3);
+        if (reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundState != 0)
+            reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundState++;
+    }
+
+    g_Supervisor.ConfigureGameplayViewport(0);
+    reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)
+        ->SetMixColorDefault();
+    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->DisableFog();
+    if (reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive != 0)
+    {
+        reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetMixColor(
+            0xff404040);
+    }
+    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+        D3DRS_ZWRITEENABLE, FALSE);
+    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+        D3DRS_ZFUNC, D3DCMP_ALWAYS);
+    return 1;
+}
+
+// FUNCTION: TH095 0x00402990.
+i32 Background::DrawLowPrio()
+{
+    i32 left;
+    i32 top;
+    i32 right;
+    i32 bottom;
+    D3DRECT clearRect;
+
+    if (reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive != 0)
+    {
+        reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)
+            ->SetMixColorDefault();
+
+        left = (i32)(reinterpret_cast<BackgroundStateView *>(this)
+                         ->photoAreaPosition.x -
+                     reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.x /
+                         2.0f +
+                     128.0f + 192.0f);
+        top = (i32)(reinterpret_cast<BackgroundStateView *>(this)
+                        ->photoAreaPosition.y -
+                    reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.y /
+                        2.0f +
+                    16.0f);
+        right = (i32)(reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.x /
+                          2.0f +
+                      reinterpret_cast<BackgroundStateView *>(this)
+                          ->photoAreaPosition.x +
+                      128.0f + 192.0f);
+        bottom = (i32)(reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.y /
+                           2.0f +
+                       reinterpret_cast<BackgroundStateView *>(this)
+                           ->photoAreaPosition.y +
+                       16.0f);
+
+        if (left < 128)
+            left = 128;
+        if (right > 512)
+            right = 512;
+        if (top < 16)
+            top = 16;
+        if (bottom > 464)
+            bottom = 464;
+
+        g_Supervisor.d3dDevice->Clear(
+            0, NULL, D3DCLEAR_ZBUFFER, 0, 1.0f, 0);
+        clearRect.x1 = left;
+        clearRect.y1 = top;
+        clearRect.x2 = right;
+        clearRect.y2 = bottom;
+        g_Supervisor.d3dDevice->Clear(
+            1, &clearRect, D3DCLEAR_ZBUFFER, 0, 0.0f, 0);
+        reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+            D3DRS_ZWRITEENABLE, TRUE);
+        reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+            D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+        reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[0].Draw();
+        reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[1].Draw();
+        reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[2].Draw();
+        g_AnmManager->FlushVertexBuffer();
+    }
+
+    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+        D3DRS_ZWRITEENABLE, FALSE);
+    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+        D3DRS_ZFUNC, D3DCMP_ALWAYS);
+    return 1;
+}
+
+// FUNCTION: TH095 0x00402F60.
+i32 Background::RenderObjects(i32 mode)
+{
+    BackgroundStageObjectInstance *instance =
+        reinterpret_cast<BackgroundStateView *>(this)->stageObjectInstances;
+
+    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)
+        ->ConfigureBackgroundViewport(0);
+    reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetCameraMode(1);
+    while (instance->objectId >= 0)
+    {
+        BackgroundStageObject *object =
+            reinterpret_cast<BackgroundStateView *>(this)
+                ->stageObjects[instance->objectId];
+        if (object->mode == mode)
+        {
+            Float3 instancePosition = instance->position;
+            if (object->IsVisible(
+                    &instancePosition,
+                    reinterpret_cast<BackgroundStateView *>(this)
+                        ->cullingDistanceSq) == 0)
+            {
+                object->flags |= 2;
+                BackgroundStageObjectInstruction *instruction =
+                    &object->firstInstruction;
+                while (instruction->opcode >= 0)
+                {
+                    AnmVm *vm =
+                        &reinterpret_cast<BackgroundStateView *>(this)
+                             ->stageObjectVms[instruction->vmIndex];
+                    if (instruction->opcode == 0)
+                    {
+                        if (vm->renderModeBits > 3)
+                        {
+                            vm->positionOffset =
+                                instruction->position + instance->position;
+                            if (instruction->sizeOverride.x != 0.0f)
+                            {
+                                vm->scale.x = instruction->sizeOverride.x /
+                                              vm->loadedSprite->widthPx;
+                            }
+                            if (instruction->sizeOverride.y != 0.0f)
+                            {
+                                vm->scale.y = instruction->sizeOverride.y /
+                                              vm->loadedSprite->heightPx;
+                            }
+                        }
+
+                        if (vm->renderModeBits == 8)
+                            reinterpret_cast<BackgroundSupervisorView *>(
+                                &g_Supervisor)
+                                ->EnableFog();
+                        else
+                            reinterpret_cast<BackgroundSupervisorView *>(
+                                &g_Supervisor)
+                                ->DisableFog();
+                        g_AnmManager->Draw(vm);
+                    }
+                    instruction = reinterpret_cast<BackgroundStageObjectInstruction *>(
+                        reinterpret_cast<u8 *>(instruction) + instruction->size);
+                }
+            }
+        }
+        instance++;
+    }
+    return 0;
+}
+
+// FUNCTION: TH095 0x004031A0.
+i32 BackgroundStageObject::IsVisible(
+    const Float3 *instancePosition, f32 cullingDistanceSq)
+{
+    Float3 halfSize = this->size / 2.0f;
+    Float3 center = this->position + *instancePosition + halfSize;
+    Float3 cameraPosition =
+        g_CurrentBackgroundViewport->cameraPosition +
+        g_CurrentBackgroundViewport->cameraPositionOffset;
+    center = center - cameraPosition;
+
+    if (D3DXVec3LengthSq(reinterpret_cast<D3DXVECTOR3 *>(&center)) >
+        cullingDistanceSq)
+        return 1;
+
+    f32 objectDistance = D3DXVec3Dot(
+        reinterpret_cast<D3DXVECTOR3 *>(&center),
+        reinterpret_cast<D3DXVECTOR3 *>(&g_BackgroundCameraForward));
+    f32 radius =
+        D3DXVec3Length(reinterpret_cast<D3DXVECTOR3 *>(&this->size)) / 2.0f +
+        1280.0f;
+    if (objectDistance > radius || objectDistance < 80.0f)
+        return 1;
+    return 0;
 }
 
 // FUNCTION: TH095 0x00402E90.
@@ -422,8 +735,9 @@ i32 Background::LoadStageDataInner(const char *path)
         reinterpret_cast<BackgroundStageObject **>(
             background->stageData->objectOffsets);
     background->stageObjectInstances =
-        reinterpret_cast<u8 *>(background->stageData) +
-        background->stageData->objectInstancesOffset;
+        reinterpret_cast<BackgroundStageObjectInstance *>(
+            reinterpret_cast<u8 *>(background->stageData) +
+            background->stageData->objectInstancesOffset);
     background->stageScript =
         reinterpret_cast<u8 *>(background->stageData) +
         background->stageData->scriptOffset;

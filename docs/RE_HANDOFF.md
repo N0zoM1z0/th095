@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 313 canonical units cover 126,267 authored bytes.
+- Reconstruction: 314 canonical units cover 126,833 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 49.33% (126,267 / 255,955)
+  relocations. Confirmed authored-byte coverage is now 49.12% (126,833 / 258,234)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 386 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,436 origin/boundary reviews pending. Original class
+  current ledger confirms 390 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,432 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -536,14 +536,23 @@ targets. They remain non-exact because of compiler-local source shape, not
 missing behavior. The adjacent `0x00402620` scalar deleting destructor is now
 an explicit compiler-owned exclusion.
 
-Next close the BackgroundInf draw/render spine at `0x00402750/0x00402990/
-0x00402F60/0x004031A0`, then the constructor/destructor at
-`0x004020C0/0x00402330`. These are the remaining high-connectivity consumers
-of the recovered stage object layout and photography-mask state. Use TH08 only
-for ancestral source shape: TH095's `0x201C` object, variable-size stage data,
-and photograph border path are target-specific. Preserve every established
-Background unit plus the independently exact `PhotoToScreen @ 0x004186D0`
-bridge and the GameTask, FrontInf, bullet, CardInf, and photography units.
+The BackgroundInf draw/render spine at `0x00402750/0x00402990/0x00402F60/
+0x004031A0` is now source-present. `DrawHighPrio` is canonical exact for 566
+bytes and all 40 relocations. The 490-byte `DrawLowPrio` probe has the exact
+target extent, every relocation, and 345/362 comparable bytes; its residual is
+only local-slot allocation. The renderer and culler naturally emit 544/622
+bytes against 565/658-byte targets and preserve the full traversal, VM
+position/scale, fog-mode, viewport-camera, distance, and forward-plane logic.
+Do not manufacture their remaining compiler frame shape.
+
+Next close the BackgroundInf constructor/destructor at `0x004020C0/0x00402330`
+and the four-caller background viewport selector at `0x00401B70`. These own the
+remaining lifecycle cleanup and camera-configuration edges needed by the now
+complete renderer. Use TH08 only for ancestral source shape: TH095's `0x201C`
+object, variable-size stage data, and photograph border path are target-specific.
+Preserve every established Background unit plus the independently exact
+`PhotoToScreen @ 0x004186D0` bridge and the GameTask, FrontInf, bullet, CardInf,
+and photography units.
 
 ## Closed lanes and preservation constraints
 
