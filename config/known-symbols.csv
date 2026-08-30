@@ -149,3 +149,6 @@ address,name,module,confidence,evidence
 0x00404A30,th095::Background::StartSpellBackground,Background,exact,Canonical 143-byte spell-photo background start with four relocations
 0x00404AC0,th095::Background::StopSpellBackground,Background,exact,Canonical 66-byte spell-photo background stop with four relocations
 0x00404B10,th095::Supervisor::ConfigureGameplayViewport,Main,exact,Canonical 108-byte viewport selector with one relocation
+0x004440F0,th095::AnmManager::LoadSurface,AnmManager,exact,Canonical 666-byte surface loader with 22 relocations
+0x00444390,th095::AnmManager::ReleaseSurface,AnmManager,exact,Canonical 206-byte surface and deferred-data releaser
+0x00444460,th095::AnmManager::CopySurfaceToBackbuffer,AnmManager,exact,Canonical 445-byte lazy render-target and CopyRects path with 11 relocations

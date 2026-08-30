@@ -141,6 +141,16 @@ displacement. The aggregate records the observed four-byte compiler alignment
 boundary after the `0x44`-byte loaded sprite without inventing executable
 behavior. This source shape replays all 829 bytes and sixteen relocations.
 
+The exact surface-file lane provides a smaller companion oracle. A natural
+three-member aggregate ordered as file data, file size, and temporary D3D
+surface reproduces `LoadSurface`'s `0x10`-byte frame and its `-0x0C/-0x08/-0x04`
+homes. `ReleaseSurface` needs a real local for the deferred-data pointer before
+`free`, which accounts for the target's otherwise surprising extra eight
+bytes. Keep the secondary-surface, deferred-data, size, and image-info arrays
+in the private `AnmSurface.cpp` ABI view: spelling four additional fields in
+the shared `AnmManager.hpp` renumbers 168 compiler-local switch symbols even
+when every offset, relocation type, and compared byte remains exact.
+
 The adjacent task constructor proves that unoptimized VC7.1 preserves nested
 member-construction source shape even when the constructor body immediately
 clears the complete object. Model the `+0x104` completion state as an enclosing

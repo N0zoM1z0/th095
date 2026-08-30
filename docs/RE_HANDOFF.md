@@ -10,24 +10,25 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 368 canonical exact functions cover 139,072 authored bytes.
-  `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
+- Reconstruction: live counts and the exact/currently-confirmed authored-byte
+  ratio are generated in `docs/PROGRESS.md`. `AnmManager::ExecuteScript` at
+  `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.50% (139,072 / 275,389)
-  while the global origin denominator remains provisional.
+  relocations. The global origin denominator remains provisional and must be
+  expanded honestly as candidate boundaries and ownership are reviewed.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
   (14,363 bytes), eleven replay/menu/best-shot functions (15,512 bytes), and
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
-  Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 457 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,365 origin/boundary reviews pending. Original class
+  Background stage interpreter adds another 5,129 target-authored bytes.
+  Current candidate, authored, exclusion, and pending-review totals are kept in
+  the generated progress artifact rather than duplicated here. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -436,9 +437,16 @@ adjacent load/preload chain is exact as well: `LoadAnm @ 0x00443010`, the
 `PreloadAnm @ 0x004432E0`, and `LoadExternalTextureData @ 0x004433A0` prove
 slot reuse/deferred release, synchronous and asynchronous postload, cancellation,
 linked-entry counting, allocation, filename ownership, and external texture
-staging. All thirteen isolated `AnmPreload.cpp` units must remain exact. Return
-to the Supervisor render callback residual, or continue the adjacent unreviewed
-ANM text/render candidates at `0x004440F0..0x0044461C`.
+staging. All thirteen isolated `AnmPreload.cpp` units must remain exact. The
+adjacent surface ownership trio is now exact too: `LoadSurface @ 0x004440F0`,
+`ReleaseSurface @ 0x00444390`, and `CopySurfaceToBackbuffer @ 0x00444460`
+contribute another 1,317 bytes and prove the primary/secondary/deferred-data/
+image-info arrays at `+0x11DC/+0x125C/+0x12DC/+0x13DC`. Their private
+`AnmSurface.cpp` ABI view avoids renumbering the established ANM dispatcher
+labels; all fourteen `AnmManager.cpp` units replay after a cold rebuild. Keep
+the Supervisor render callback's constant-index residual deferred, and continue
+the adjacent unreviewed ANM surface/render candidates at
+`0x00444620..0x004450FF`.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

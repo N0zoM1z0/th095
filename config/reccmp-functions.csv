@@ -466,3 +466,6 @@ th095::ResultScreen::ReleaseAnm,0x00426860,function
 th095::ResultScreen::~ResultScreen,0x00426880,function
 th095::ResultScreen::Create,0x00426A50,function
 th095::ResultScreen::Destroy,0x00426B90,function
+th095::AnmManager::LoadSurface,0x004440F0,function
+th095::AnmManager::ReleaseSurface,0x00444390,function
+th095::AnmManager::CopySurfaceToBackbuffer,0x00444460,function

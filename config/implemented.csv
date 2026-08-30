@@ -465,3 +465,6 @@ th095::ResultScreen::ReleaseAnm
 th095::ResultScreen::~ResultScreen
 th095::ResultScreen::Create
 th095::ResultScreen::Destroy
+th095::AnmManager::LoadSurface
+th095::AnmManager::ReleaseSurface
+th095::AnmManager::CopySurfaceToBackbuffer

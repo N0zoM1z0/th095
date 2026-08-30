@@ -12193,3 +12193,70 @@ symbol = "?LoadSprite@AnmLoaded@th095@@QAEXHPAUAnmLoadedSprite@2@@Z"
 target_address = 0x00443B10
 size = 0x155
 relocations = []
+
+[units.anm-load-surface]
+source = "src/AnmSurface.cpp"
+object = "build/matching/AnmSurface.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::LoadSurface"]
+symbol = "?LoadSurface@AnmManager@th095@@QAEHHPBD@Z"
+target_address = 0x004440F0
+size = 0x29A
+relocations = [
+  { offset = 0x021, type = "REL32", symbol = "?ReleaseSurface@AnmManager@th095@@QAEXH@Z", target = 0x00444390 },
+  { offset = 0x03E, type = "REL32", symbol = "?OpenFile@FileSystem@th095@@SIPAEPADPAHH@Z", target = 0x0041A960 },
+  { offset = 0x050, type = "DIR32", symbol = "??_C@_0BJ@DEENMFGJ@?$CFs?$IC?$KK?$JD?G?$IC?$NN?$IN?$JO?$IC?$NP?$IC?H?$IC?$KC?$IC?E?$IC?$LH?$IBB?$AN?6?$AA@", target = 0x00497114 },
+  { offset = 0x055, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x05A, type = "REL32", symbol = "?Fatal@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B280 },
+  { offset = 0x0A1, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0xEC },
+  { offset = 0x0B2, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x0B9, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x0F5, type = "REL32", symbol = "_D3DXLoadSurfaceFromFileInMemory@36", target = 0x0045C22C },
+  { offset = 0x116, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0xEC },
+  { offset = 0x13F, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x147, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x163, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0xEC },
+  { offset = 0x18B, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x193, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x1B3, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0xEC },
+  { offset = 0x1DC, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x1E3, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x210, type = "REL32", symbol = "_D3DXLoadSurfaceFromSurface@32", target = 0x0045C2E4 },
+  { offset = 0x239, type = "REL32", symbol = "_D3DXLoadSurfaceFromSurface@32", target = 0x0045C2E4 },
+  { offset = 0x261, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x28A, type = "REL32", symbol = "_free", target = 0x004854BE },
+]
+
+[units.anm-release-surface]
+source = "src/AnmSurface.cpp"
+object = "build/matching/AnmSurface.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::ReleaseSurface"]
+symbol = "?ReleaseSurface@AnmManager@th095@@QAEXH@Z"
+target_address = 0x00444390
+size = 0xCE
+relocations = [
+  { offset = 0x0B0, type = "REL32", symbol = "_free", target = 0x004854BE },
+]
+
+[units.anm-copy-surface-to-backbuffer]
+source = "src/AnmSurface.cpp"
+object = "build/matching/AnmSurface.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::CopySurfaceToBackbuffer"]
+symbol = "?CopySurfaceToBackbuffer@AnmManager@th095@@QAEXHHHHH@Z"
+target_address = 0x00444460
+size = 0x1BD
+relocations = [
+  { offset = 0x027, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x02F, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x068, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0xEC },
+  { offset = 0x090, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x098, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x0B3, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0xEC },
+  { offset = 0x0DC, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x0E3, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x129, type = "REL32", symbol = "_D3DXLoadSurfaceFromSurface@32", target = 0x0045C2E4 },
+  { offset = 0x19B, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x1A3, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+]
