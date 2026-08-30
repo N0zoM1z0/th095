@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 307 canonical units cover 125,612 authored bytes.
+- Reconstruction: 313 canonical units cover 126,267 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 49.42% (125,612 / 254,195)
+  relocations. Confirmed authored-byte coverage is now 49.33% (126,267 / 255,955)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 377 authored candidates, excludes seven compiler-owned
-  static wrappers, and leaves 1,446 origin/boundary reviews pending. Original class
+  current ledger confirms 386 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,436 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -526,14 +526,24 @@ easing state; lane two interpolates the TH095-specific photo tuple at
 5,129-byte target while preserving the complete external-call distribution,
 so it receives no exact credit.
 
-Next close the surrounding BackgroundInf lifecycle and draw spine at
-`0x004020C0..0x00403431`, especially the actual update wrapper at `0x00402680`
-that invokes `RunStageScript`, executes eight stage VMs, and conditionally
-executes the three photograph-border VMs. Use the TH08 background source for
-ancestry only: TH095's `0x201C` object and photography-mask path are target-
-specific. Preserve the independently exact `PhotoToScreen @ 0x004186D0` bridge
-and the GameTask, FrontInf, bullet spawn, movement, bullet-photography, CardInf,
-and lifecycle units.
+The surrounding BackgroundInf lifecycle is now source-present. Six canonical
+units contribute 655 exact bytes and enforce 36 relocations: `Initialize @
+0x00402250`, `Update @ 0x00402680`, the calc/high-draw/low-draw callbacks at
+`0x00402B80/0x00402BF0/0x00402C20`, and the stage-load wrapper at `0x00402C50`.
+The complete Create, stage-data loader, and stage-object VM updater are natural
+pinned-VC7.1 semantic probes of 365/518/199 bytes against 374/523/208-byte
+targets. They remain non-exact because of compiler-local source shape, not
+missing behavior. The adjacent `0x00402620` scalar deleting destructor is now
+an explicit compiler-owned exclusion.
+
+Next close the BackgroundInf draw/render spine at `0x00402750/0x00402990/
+0x00402F60/0x004031A0`, then the constructor/destructor at
+`0x004020C0/0x00402330`. These are the remaining high-connectivity consumers
+of the recovered stage object layout and photography-mask state. Use TH08 only
+for ancestral source shape: TH095's `0x201C` object, variable-size stage data,
+and photograph border path are target-specific. Preserve every established
+Background unit plus the independently exact `PhotoToScreen @ 0x004186D0`
+bridge and the GameTask, FrontInf, bullet, CardInf, and photography units.
 
 ## Closed lanes and preservation constraints
 

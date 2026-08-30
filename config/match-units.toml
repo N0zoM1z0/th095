@@ -10685,3 +10685,105 @@ size = 0x6C
 relocations = [
   { offset = 0x31, type = "REL32", symbol = "?ApplyGameplayViewport@SupervisorViewportView@th095@@QAEXPAUGameplayViewportConfiguration@2@@Z", target = 0x00425910 },
 ]
+
+[units.background-initialize]
+source = "src/Background.cpp"
+object = "build/matching/Background.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Background::Initialize"]
+symbol = "?Initialize@Background@th095@@QAEHXZ"
+target_address = 0x00402250
+size = 0xD8
+relocations = [
+  { offset = 0xA, type = "DIR32", symbol = "?g_SelectedScene@th095@@3PAUBackgroundSelectedSceneView@1@A", target = 0x004CA2F0 },
+  { offset = 0x16, type = "REL32", symbol = "?LoadStageData@Background@th095@@QAEHPBD@Z", target = 0x00402C50 },
+  { offset = 0x1F, type = "DIR32", symbol = "??_C@_0DH@DGEHEBIN@?$IDX?$IDe?$IB?$FL?$IDW?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$JD?G?$IC?$NN?$IN?$JO?$IC?$NP?$IC?$NM?$IC?$LJ?$IC?q?$IBB@", target = 0x004952DC },
+  { offset = 0x24, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x29, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B280 },
+  { offset = 0x52, type = "DIR32", symbol = "?g_BackgroundCameraPosition@th095@@3UFloat3@1@A", target = 0x004C4854 },
+  { offset = 0x5A, type = "DIR32", symbol = "?g_BackgroundCameraPosition@th095@@3UFloat3@1@A", addend = 0x4, target = 0x004C4854 },
+  { offset = 0x63, type = "DIR32", symbol = "?g_BackgroundCameraPosition@th095@@3UFloat3@1@A", addend = 0x8, target = 0x004C4854 },
+  { offset = 0x81, type = "DIR32", symbol = "?g_BackgroundCameraLookAt@th095@@3UFloat3@1@A", target = 0x004C4860 },
+  { offset = 0x89, type = "DIR32", symbol = "?g_BackgroundCameraLookAt@th095@@3UFloat3@1@A", addend = 0x4, target = 0x004C4860 },
+  { offset = 0x92, type = "DIR32", symbol = "?g_BackgroundCameraLookAt@th095@@3UFloat3@1@A", addend = 0x8, target = 0x004C4860 },
+  { offset = 0xB0, type = "DIR32", symbol = "?g_BackgroundCameraUp@th095@@3UFloat3@1@A", target = 0x004C486C },
+  { offset = 0xB8, type = "DIR32", symbol = "?g_BackgroundCameraUp@th095@@3UFloat3@1@A", addend = 0x4, target = 0x004C486C },
+  { offset = 0xC1, type = "DIR32", symbol = "?g_BackgroundCameraUp@th095@@3UFloat3@1@A", addend = 0x8, target = 0x004C486C },
+]
+
+[units.background-update]
+source = "src/Background.cpp"
+object = "build/matching/Background.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Background::Update"]
+symbol = "?Update@Background@th095@@QAEHXZ"
+target_address = 0x00402680
+size = 0xCE
+relocations = [
+  { offset = 0xA, type = "DIR32", symbol = "?g_BackgroundCameraLookAt@th095@@3UFloat3@1@A", target = 0x004C4860 },
+  { offset = 0xF, type = "DIR32", symbol = "?g_BackgroundCameraForward@th095@@3UFloat3@1@A", target = 0x004C4878 },
+  { offset = 0x14, type = "REL32", symbol = "_D3DXVec3Normalize@8", target = 0x00458653 },
+  { offset = 0x29, type = "REL32", symbol = "?UpdateStageObjectVms@Background@th095@@QAEHXZ", target = 0x00402E90 },
+  { offset = 0x31, type = "REL32", symbol = "?RunStageScript@Background@th095@@QAEHXZ", target = 0x00403440 },
+  { offset = 0x61, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
+  { offset = 0x75, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x7E, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x90, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
+  { offset = 0x9E, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
+  { offset = 0xAC, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
+  { offset = 0xB4, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+]
+
+[units.background-on-update]
+source = "src/Background.cpp"
+object = "build/matching/Background.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Background::OnUpdate"]
+symbol = "?OnUpdate@Background@th095@@SIHPAU12@@Z"
+target_address = 0x00402B80
+size = 0x6B
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUBackgroundGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x1A, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUBackgroundGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x2D, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUBackgroundGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x46, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUBackgroundGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x63, type = "REL32", symbol = "?Update@Background@th095@@QAEHXZ", target = 0x00402680 },
+]
+
+[units.background-on-draw-high]
+source = "src/Background.cpp"
+object = "build/matching/Background.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Background::OnDrawHighPrio"]
+symbol = "?OnDrawHighPrio@Background@th095@@SIHPAU12@@Z"
+target_address = 0x00402BF0
+size = 0x2D
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUBackgroundGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x25, type = "REL32", symbol = "?DrawHighPrio@Background@th095@@QAEHXZ", target = 0x00402750 },
+]
+
+[units.background-on-draw-low]
+source = "src/Background.cpp"
+object = "build/matching/Background.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Background::OnDrawLowPrio"]
+symbol = "?OnDrawLowPrio@Background@th095@@SIHPAU12@@Z"
+target_address = 0x00402C20
+size = 0x2D
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUBackgroundGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x25, type = "REL32", symbol = "?DrawLowPrio@Background@th095@@QAEHXZ", target = 0x00402990 },
+]
+
+[units.background-load-stage-data]
+source = "src/Background.cpp"
+object = "build/matching/Background.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Background::LoadStageData"]
+symbol = "?LoadStageData@Background@th095@@QAEHPBD@Z"
+target_address = 0x00402C50
+size = 0x24
+relocations = [
+  { offset = 0xF, type = "REL32", symbol = "?LoadStageDataInner@Background@th095@@QAEHPBD@Z", target = 0x00402C80 },
+]

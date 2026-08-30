@@ -376,3 +376,12 @@ th095::Background::StartSpellBackground,0x00404A30,function
 th095::Background::StopSpellBackground,0x00404AC0,function
 th095::Supervisor::ConfigureGameplayViewport,0x00404B10,function
 th095::Background::RunStageScript,0x00403440,function
+th095::Background::Initialize,0x00402250,function
+th095::Background::Create,0x004024A0,function
+th095::Background::Update,0x00402680,function
+th095::Background::OnUpdate,0x00402B80,function
+th095::Background::OnDrawHighPrio,0x00402BF0,function
+th095::Background::OnDrawLowPrio,0x00402C20,function
+th095::Background::LoadStageData,0x00402C50,function
+th095::Background::LoadStageDataInner,0x00402C80,function
+th095::Background::UpdateStageObjectVms,0x00402E90,function

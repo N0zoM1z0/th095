@@ -7,10 +7,45 @@ namespace th095
 
 struct Background
 {
+    Background();
+    ~Background();
+
+    i32 Initialize();
+    i32 Update();
+    i32 UpdateStageObjectVms();
     i32 RunStageScript();
+    i32 DrawHighPrio();
+    i32 DrawLowPrio();
+    i32 LoadStageData(const char *path);
+    i32 LoadStageDataInner(const char *path);
     void SetPhotoArea(const Float3 *position, const Float3 *size);
     void StartSpellBackground();
     void StopSpellBackground();
+
+    static i32 __fastcall OnUpdate(Background *background);
+    static i32 __fastcall OnDrawHighPrio(Background *background);
+    static i32 __fastcall OnDrawLowPrio(Background *background);
+    static Background *Create();
+
+    u8 storage[0x201c];
+};
+
+struct BackgroundGlobalStateView
+{
+    u8 unknown000[0xfc];
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlag0 : 1;
+            u32 freezeBackground : 1;
+            u32 suppressBackground : 1;
+            u32 unknownFlags3 : 7;
+            u32 blockBackgroundUpdate : 1;
+            u32 unknownFlags11 : 21;
+        };
+    };
 };
 
 struct BackgroundStageInstruction
@@ -28,9 +63,39 @@ struct BackgroundPhotoBlend
     ZunColor color;
 };
 
+struct BackgroundStageHeader
+{
+    i16 objectCount;
+    i16 quadCount;
+    i32 objectInstancesOffset;
+    i32 scriptOffset;
+    i32 unknown00c;
+    char anmPath[0x80];
+    i32 objectOffsets[1];
+};
+
+struct BackgroundStageObjectInstruction
+{
+    i16 opcode;
+    i16 size;
+    i16 scriptIndex;
+    i16 vmIndex;
+};
+
+struct BackgroundStageObject
+{
+    i16 id;
+    u8 mode;
+    i8 flags;
+    u8 unknown004[0x18];
+    BackgroundStageObjectInstruction firstInstruction;
+};
+
 struct BackgroundStateView
 {
-    u8 unknown0000[0x0c];
+    BackgroundStageHeader *stageData;            // +0x0000
+    BackgroundStageObject **stageObjects;        // +0x0004
+    void *stageObjectInstances;                  // +0x0008
     u8 *stageScript;                            // +0x000c
     ZunTimer stageScriptTimer;                  // +0x0010
     BackgroundStageInstruction *stageInstruction; // +0x001c
@@ -48,9 +113,9 @@ struct BackgroundStateView
     u8 cameraMotionMode;                         // +0x00e8
     u8 unknown00e9[7];
     AnmLoaded *anm;                              // +0x00f0
-    u8 unknown00f4[4];
+    AnmVm *stageObjectVms;                       // +0x00f4
     AnmVm stageVms[8];                           // +0x00f8
-    u8 unknown1758[4];
+    f32 cullingDistanceSq;                      // +0x1758
     i32 spellBackgroundState;       // +0x175c
     ZunColor photoColor;            // +0x1760
     i32 photoAreaActive;            // +0x1764
@@ -61,7 +126,9 @@ struct BackgroundStateView
     BackgroundPhotoBlend photoBlendCurrent; // +0x1fec
     BackgroundPhotoBlend photoBlendInitial; // +0x1ff8
     BackgroundPhotoBlend photoBlendFinal;   // +0x2004
-    u8 unknown2010[0x0c];
+    ChainElem *calcChain;                        // +0x2010
+    ChainElem *drawHighChain;                    // +0x2014
+    ChainElem *drawLowChain;                     // +0x2018
 };
 
 struct BackgroundStageStateView
@@ -81,6 +148,12 @@ struct BackgroundRuntimeView
     BackgroundAnmSpawnerView *anmSpawner;
 };
 
+struct BackgroundSelectedSceneView
+{
+    u8 unknown000[0x0c];
+    const char *stageDataPath;
+};
+
 typedef char BackgroundSpellStateAt175C[
     (offsetof(BackgroundStateView, spellBackgroundState) == 0x175c) ? 1 : -1];
 typedef char BackgroundStageScriptAtC[
@@ -93,6 +166,8 @@ typedef char BackgroundCameraMotionModeAtE8[
     (offsetof(BackgroundStateView, cameraMotionMode) == 0xe8) ? 1 : -1];
 typedef char BackgroundAnmAtF0[
     (offsetof(BackgroundStateView, anm) == 0xf0) ? 1 : -1];
+typedef char BackgroundStageObjectVmsAtF4[
+    (offsetof(BackgroundStateView, stageObjectVms) == 0xf4) ? 1 : -1];
 typedef char BackgroundStageVmsAtF8[
     (offsetof(BackgroundStateView, stageVms) == 0xf8) ? 1 : -1];
 typedef char BackgroundPhotoAreaAt1764[
@@ -105,11 +180,19 @@ typedef char BackgroundPhotoBlendAt1FEC[
     (offsetof(BackgroundStateView, photoBlendCurrent) == 0x1fec) ? 1 : -1];
 typedef char BackgroundStateSizeIs201C[
     (sizeof(BackgroundStateView) == 0x201c) ? 1 : -1];
+typedef char BackgroundClassSizeIs201C[
+    (sizeof(Background) == 0x201c) ? 1 : -1];
 
 extern BackgroundStageStateView *g_BackgroundStageState;
 extern BackgroundRuntimeView *g_BackgroundRuntime;
+extern BackgroundGlobalStateView *g_PhotoGlobalState;
+extern BackgroundSelectedSceneView *g_SelectedScene;
+extern u8 *g_BackgroundStageDataCache;
+extern i32 g_BackgroundStageDataSize;
 extern Float3 g_BackgroundCameraPosition;
 extern Float3 g_BackgroundCameraLookAt;
+extern Float3 g_BackgroundCameraForward;
+extern Float3 g_BackgroundCameraUp;
 extern f32 g_BackgroundCameraValue0;
 extern f32 g_BackgroundCameraValue1;
 extern f32 g_BackgroundCameraValue2;
@@ -120,6 +203,269 @@ extern ZunColor g_PhotoScreenFadeColor;
 
 f32 __stdcall CubicHermiteInterpolate(
     f32 startValue, f32 endValue, f32 startTangent, f32 endTangent, f32 time);
+
+static inline i32 BackgroundEitherFlag(i32 first, i32 second)
+{
+    return first | second;
+}
+
+// FUNCTION: TH095 0x004024A0.
+Background *Background::Create()
+{
+    Background *background = new Background;
+    if (background->Initialize() == 0)
+    {
+        ChainElem *chain = g_Chain.CreateElem(
+            reinterpret_cast<ChainCallback>(Background::OnUpdate));
+        chain->arg = background;
+        g_Chain.AddToCalcChain(chain, 10);
+        reinterpret_cast<BackgroundStateView *>(background)->calcChain = chain;
+
+        chain = g_Chain.CreateElem(
+            reinterpret_cast<ChainCallback>(Background::OnDrawHighPrio));
+        chain->arg = background;
+        g_Chain.AddToDrawChain(chain, 4);
+        reinterpret_cast<BackgroundStateView *>(background)->drawHighChain = chain;
+
+        chain = g_Chain.CreateElem(
+            reinterpret_cast<ChainCallback>(Background::OnDrawLowPrio));
+        chain->arg = background;
+        g_Chain.AddToDrawChain(chain, 6);
+        reinterpret_cast<BackgroundStateView *>(background)->drawLowChain = chain;
+    }
+    else
+    {
+        delete background;
+        background = NULL;
+    }
+    return background;
+}
+
+// FUNCTION: TH095 0x00402250.
+i32 Background::Initialize()
+{
+    if (this->LoadStageData(g_SelectedScene->stageDataPath) != 0)
+    {
+        g_GameErrorContext.Log(
+            "\x83\x58\x83\x65\x81\x5b\x83\x57\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x93\xc7\x82\xdd\x8d\x9e\x82\xdf"
+            "\x82\xdc\x82\xb9\x82\xf1\x81\x42\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x89\xf3\x82\xea\x82\xc4\x82\xa2"
+            "\x82\xdc\x82\xb7\r\n");
+        return -1;
+    }
+
+    g_BackgroundCameraPosition = Float3(0.0f, 0.0f, -600.0f);
+    g_BackgroundCameraLookAt = Float3(0.0f, 300.0f, 600.0f);
+    g_BackgroundCameraUp = Float3(0.0f, 1.0f, 0.0f);
+    reinterpret_cast<BackgroundStateView *>(this)->cullingDistanceSq =
+        2100.0f * 2100.0f;
+    return 0;
+}
+
+// FUNCTION: TH095 0x00402680.
+i32 Background::Update()
+{
+    u32 vmIndex;
+    f32 savedGameSpeed;
+
+    D3DXVec3Normalize(
+        reinterpret_cast<D3DXVECTOR3 *>(&g_BackgroundCameraForward),
+        reinterpret_cast<D3DXVECTOR3 *>(&g_BackgroundCameraLookAt));
+    reinterpret_cast<BackgroundStateView *>(this)->photoColor.color = 0;
+    this->UpdateStageObjectVms();
+    this->RunStageScript();
+
+    for (vmIndex = 0; vmIndex < 8; vmIndex++)
+        AnmManager::ExecuteScript(
+            &reinterpret_cast<BackgroundStateView *>(this)->stageVms[vmIndex]);
+
+    if (reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive != 0)
+    {
+        savedGameSpeed = g_AnmGameSpeed;
+        g_AnmGameSpeed = 1.0f;
+        AnmManager::ExecuteScript(
+            &reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[0]);
+        AnmManager::ExecuteScript(
+            &reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[1]);
+        AnmManager::ExecuteScript(
+            &reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[2]);
+        g_AnmGameSpeed = savedGameSpeed;
+    }
+
+    reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive = 0;
+    return 1;
+}
+
+// FUNCTION: TH095 0x00402E90.
+i32 Background::UpdateStageObjectVms()
+{
+    BackgroundStageObject *object;
+    BackgroundStageObjectInstruction *instruction;
+    AnmVm *vm;
+    i32 activeVmCount;
+    i32 objectIndex;
+
+    for (objectIndex = 0;
+         objectIndex < reinterpret_cast<BackgroundStateView *>(this)
+                           ->stageData->objectCount;
+         objectIndex++)
+    {
+        object = reinterpret_cast<BackgroundStateView *>(this)
+                     ->stageObjects[objectIndex];
+        if ((object->flags & 1) != 0)
+        {
+            activeVmCount = 0;
+            instruction = &object->firstInstruction;
+            while (instruction->opcode >= 0)
+            {
+                vm = &reinterpret_cast<BackgroundStateView *>(this)
+                          ->stageObjectVms[instruction->vmIndex];
+                g_AnmManager->ExecuteScript(vm);
+                if (vm->currentInstruction != NULL)
+                    activeVmCount++;
+                instruction =
+                    reinterpret_cast<BackgroundStageObjectInstruction *>(
+                        reinterpret_cast<u8 *>(instruction) +
+                        instruction->size);
+            }
+            if (activeVmCount == 0)
+                object->flags &= ~1;
+        }
+    }
+    return 0;
+}
+
+// FUNCTION: TH095 0x00402B80.
+i32 __fastcall Background::OnUpdate(Background *background)
+{
+    if (BackgroundEitherFlag(
+            g_PhotoGlobalState->unknownFlag0,
+            g_PhotoGlobalState->suppressBackground) != 0 ||
+        g_PhotoGlobalState->freezeBackground != 0)
+    {
+        return 1;
+    }
+    if (g_PhotoGlobalState->blockBackgroundUpdate != 0)
+    {
+        return 1;
+    }
+    return background->Update();
+}
+
+// FUNCTION: TH095 0x00402BF0.
+i32 __fastcall Background::OnDrawHighPrio(Background *background)
+{
+    if (g_PhotoGlobalState->suppressBackground != 0)
+    {
+        return 1;
+    }
+    return background->DrawHighPrio();
+}
+
+// FUNCTION: TH095 0x00402C20.
+i32 __fastcall Background::OnDrawLowPrio(Background *background)
+{
+    if (g_PhotoGlobalState->suppressBackground != 0)
+    {
+        return 1;
+    }
+    return background->DrawLowPrio();
+}
+
+// FUNCTION: TH095 0x00402C50.
+i32 Background::LoadStageData(const char *path)
+{
+    if (this->LoadStageDataInner(path) != 0)
+        return -1;
+    return 0;
+}
+
+// FUNCTION: TH095 0x00402C80.
+i32 Background::LoadStageDataInner(const char *path)
+{
+    BackgroundStateView *background =
+        reinterpret_cast<BackgroundStateView *>(this);
+    BackgroundStageObjectInstruction *instruction;
+    i32 objectIndex;
+    i32 vmIndex;
+
+    if (g_BackgroundStageDataCache == NULL)
+    {
+        g_BackgroundStageDataCache = FileSystem::OpenFile(
+            const_cast<char *>(path), &g_BackgroundStageDataSize, FALSE);
+        if (g_BackgroundStageDataCache == NULL)
+            return -1;
+    }
+
+    background->stageData = reinterpret_cast<BackgroundStageHeader *>(
+        malloc(g_BackgroundStageDataSize));
+    memcpy(
+        background->stageData,
+        g_BackgroundStageDataCache,
+        g_BackgroundStageDataSize);
+
+    background->anm = g_AnmManager->LoadAnm(
+        4, background->stageData->anmPath);
+    if (background->anm == NULL)
+    {
+        g_GameErrorContext.Fatal(
+            "\x83\x58\x83\x65\x81\x5b\x83\x57\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x8c\xa9\x82\xc2\x82\xa9\x82\xe8"
+            "\x82\xdc\x82\xb9\x82\xf1\x81\x42\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x89\xf3\x82\xea\x82\xc4\x82\xa2"
+            "\x82\xdc\x82\xb7\r\n");
+        return -1;
+    }
+
+    background->stageObjects =
+        reinterpret_cast<BackgroundStageObject **>(
+            background->stageData->objectOffsets);
+    background->stageObjectInstances =
+        reinterpret_cast<u8 *>(background->stageData) +
+        background->stageData->objectInstancesOffset;
+    background->stageScript =
+        reinterpret_cast<u8 *>(background->stageData) +
+        background->stageData->scriptOffset;
+
+    for (objectIndex = 0;
+         objectIndex < background->stageData->objectCount;
+         objectIndex++)
+    {
+        background->stageObjects[objectIndex] =
+            reinterpret_cast<BackgroundStageObject *>(
+                reinterpret_cast<u8 *>(background->stageData) +
+                reinterpret_cast<u32 *>(background->stageObjects)[objectIndex]);
+    }
+
+    background->stageObjectVms = reinterpret_cast<AnmVm *>(
+        malloc(background->stageData->quadCount * sizeof(AnmVm)));
+    vmIndex = 0;
+    for (objectIndex = 0;
+         objectIndex < background->stageData->objectCount;
+         objectIndex++)
+    {
+        background->stageObjects[objectIndex]->flags = 1;
+        instruction =
+            &background->stageObjects[objectIndex]->firstInstruction;
+        while (instruction->opcode >= 0)
+        {
+            background->anm->InitializeVm(
+                &background->stageObjectVms[vmIndex],
+                instruction->scriptIndex);
+            instruction->vmIndex = (i16)vmIndex;
+            vmIndex++;
+            instruction =
+                reinterpret_cast<BackgroundStageObjectInstruction *>(
+                    reinterpret_cast<u8 *>(instruction) + instruction->size);
+        }
+    }
+
+    background->stageInstruction =
+        reinterpret_cast<BackgroundStageInstruction *>(
+            background->stageScript);
+    return 0;
+}
 
 // FUNCTION: TH095 0x00403440. Variable-size stage-script interpreter and
 // TH095-specific photograph-mask/camera interpolation owner.

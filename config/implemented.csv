@@ -375,3 +375,12 @@ th095::Background::StartSpellBackground
 th095::Background::StopSpellBackground
 th095::Supervisor::ConfigureGameplayViewport
 th095::Background::RunStageScript
+th095::Background::Initialize
+th095::Background::Create
+th095::Background::Update
+th095::Background::OnUpdate
+th095::Background::OnDrawHighPrio
+th095::Background::OnDrawLowPrio
+th095::Background::LoadStageData
+th095::Background::LoadStageDataInner
+th095::Background::UpdateStageObjectVms
