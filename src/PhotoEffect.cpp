@@ -203,7 +203,7 @@ extern u32 g_PhotoEffectColors[];
 
 struct PhotoCaptureParticleSpawnerView
 {
-    void Spawn(i32 type, Float3 *position, u32 color);
+    i32 Spawn(i32 type, Float3 *position, u32 color);
 };
 
 extern PhotoCaptureParticleSpawnerView *g_PhotoCaptureParticleSpawner;

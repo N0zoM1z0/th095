@@ -284,3 +284,15 @@ th095::PhotoStraightLaserView::DrawSecondary,0x0041F140,function
 th095::PhotoEffectBaseView::CountNearbyTargets,0x0041F280,function
 th095::PhotoRotatingLaserView::CheckCollision,0x0041FA10,function
 th095::PhotoRotatingLaserView::DrawSecondary,0x00420100,function
+th095::PhotoItemManagerView::PhotoItemManagerView,0x0041CB20,function
+th095::PhotoItemView::PhotoItemView,0x0041CBA0,function
+th095::PhotoItemView::~PhotoItemView,0x0041CBE0,function
+th095::PhotoItemManagerView::Initialize,0x0041CC10,function
+th095::PhotoItemManagerView::~PhotoItemManagerView,0x0041CC20,function
+th095::PhotoItemManagerView::Create,0x0041CCC0,function
+th095::PhotoItemManagerView::Destroy,0x0041CE00,function
+th095::PhotoItemManagerView::Update,0x0041CE60,function
+th095::PhotoItemManagerView::Draw,0x0041D340,function
+th095::PhotoItemManagerView::OnUpdate,0x0041D3D0,function
+th095::PhotoItemManagerView::OnDraw,0x0041D430,function
+th095::PhotoItemManagerView::Spawn,0x0041D460,function

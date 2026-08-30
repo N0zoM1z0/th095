@@ -283,3 +283,15 @@ th095::PhotoStraightLaserView::DrawSecondary
 th095::PhotoEffectBaseView::CountNearbyTargets
 th095::PhotoRotatingLaserView::CheckCollision
 th095::PhotoRotatingLaserView::DrawSecondary
+th095::PhotoItemManagerView::PhotoItemManagerView
+th095::PhotoItemView::PhotoItemView
+th095::PhotoItemView::~PhotoItemView
+th095::PhotoItemManagerView::Initialize
+th095::PhotoItemManagerView::~PhotoItemManagerView
+th095::PhotoItemManagerView::Create
+th095::PhotoItemManagerView::Destroy
+th095::PhotoItemManagerView::Update
+th095::PhotoItemManagerView::Draw
+th095::PhotoItemManagerView::OnUpdate
+th095::PhotoItemManagerView::OnDraw
+th095::PhotoItemManagerView::Spawn

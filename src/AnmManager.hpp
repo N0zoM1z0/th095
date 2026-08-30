@@ -190,6 +190,13 @@ struct Float3
             this->z * inverse);
     }
 
+    void operator*=(f32 scalar)
+    {
+        this->x *= scalar;
+        this->y *= scalar;
+        this->z *= scalar;
+    }
+
     void operator+=(const Float3 &other)
     {
         this->x += other.x;

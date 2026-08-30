@@ -456,18 +456,20 @@ Three probes have exact target sizes and every relocation but retain only
 compiler-local slot differences and remain conservatively non-exact.
 
 The two large type-specific collision handlers at
-`0x0041E9C0/0x0041FA10` are now source-present. They recover the complete
-TH095 photo-cut behavior: 12-unit capture sampling, script-`0x126` and capture
-particle emission, straight-beam head/gap trimming, full-capture retirement,
-and rotating-beam conversion of surviving gaps into type-0 straight lasers.
-Their natural VC7.1 probes are 1,965/1,801 bytes versus 1,910/1,767-byte
-targets, so compiler-local/source-shape residuals receive no exact credit.
-All fifteen pre-existing canonical PhotoEffect units replay after the shared
-`Float3` operator additions; the rotating switch-table manifest records only
-the compiler's newly numbered local symbols. Continue leftward into the
-adjacent capture-particle owner at `0x0041CC10..0x0041D92E`, beginning with
-the four-caller spawn helper at `0x0041D460` and then its update/draw/lifecycle
-fanout.
+`0x0041E9C0/0x0041FA10` are source-present and recover the complete TH095
+photo-cut behavior. The adjacent live `ItemInf` owner at
+`0x0041CB20..0x0041D575` is now also source-present. It is a 150-slot
+photo-charge-item pool, not the traditional TH08 item manager: ten lifecycle,
+draw, and callback functions totaling 1,072 bytes are canonical exact, while
+the complete 1,235-byte update and 278-byte spawn remain conservatively
+compiler-observed. The update proves delayed launch, player homing, collection
+bounds, camera-charge formulas, the one-point clamp, and sound `0x14`; spawn
+proves script `0x120`, random upward velocity, and caller-color propagation.
+The live implementation is isolated in `PhotoItemManager.hpp/.cpp`; the
+TH08-derived `ItemManager.hpp` declarations remain only as the exact ECL
+dispatcher oracle. Continue into the remaining adjacent PhotoEffect lifecycle
+at `0x0041D580..0x0041D8D0`: constructor/base initialization, resource load,
+destructor, heap factory, and self-destruction are the next bounded family.
 
 The large photo functions remain source-present but non-exact:
 `PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe
