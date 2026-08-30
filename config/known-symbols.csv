@@ -3,6 +3,15 @@ address,name,module,confidence,evidence
 0x004062B0,th095::PhotoBulletView::AdvanceTransformProgram,BulletManager,high,Complete TH095 transform dispatcher with target-proven 0x65C bullet layout
 0x00406CC0,th095::PhotoBulletManagerView::SpawnBulletPattern,BulletManager,exact,Canonical 181-byte pattern fanout with five relocations
 0x004077A0,th095::PhotoBulletView::BeginDespawn,BulletManager,exact,Canonical relocation-free 116-byte state transition
+0x00406D80,th095::PhotoBulletView::UpdateDeceleration,BulletManager,exact,Canonical TH095 deceleration transform update
+0x00406E20,th095::PhotoBulletView::UpdateVectorAcceleration,BulletManager,exact,Canonical TH095 vector acceleration transform update
+0x00406F90,th095::PhotoBulletView::UpdatePolarAcceleration,BulletManager,exact,Canonical TH095 polar acceleration transform update
+0x00407050,th095::PhotoBulletView::UpdateRelativeDirectionChange,BulletManager,exact,Canonical TH095 relative direction transform update
+0x004071A0,th095::PhotoBulletView::UpdateAbsoluteDirectionChange,BulletManager,exact,Canonical TH095 absolute direction transform update
+0x004072E0,th095::PhotoBulletView::UpdateAimedDirectionChange,BulletManager,exact,Canonical TH095 aimed direction transform update
+0x00407440,th095::PhotoBulletView::UpdateBoundaryBounce,BulletManager,high,Complete centered-playfield boundary bounce transform update
+0x00407620,th095::PhotoBulletView::UpdateHorizontalWrap,BulletManager,exact,Canonical TH095 horizontal wrap transform update
+0x004076E0,th095::PhotoBulletView::UpdateVerticalWrap,BulletManager,exact,Canonical TH095 vertical wrap transform update
 0x00401C10,th095::AnmVm::Initialize,AnmVm,exact,Canonical anm-vm-initialize VC7.1 comparison
 0x00408E70,th095::EclManager::RunEcl,EclManager,exact,Canonical 0x69D3 authored body and 0x6C63 COFF extent with 647 replayed relocations
 0x00418720,th095::GameConfiguration::Initialize,Main,exact,Canonical 200-byte config initialization and controller-mapping serialization

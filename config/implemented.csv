@@ -330,3 +330,12 @@ th095::PhotoBulletManagerView::SpawnSingleBullet
 th095::PhotoBulletView::AdvanceTransformProgram
 th095::PhotoBulletManagerView::SpawnBulletPattern
 th095::PhotoBulletView::BeginDespawn
+th095::PhotoBulletView::UpdateDeceleration
+th095::PhotoBulletView::UpdateVectorAcceleration
+th095::PhotoBulletView::UpdatePolarAcceleration
+th095::PhotoBulletView::UpdateRelativeDirectionChange
+th095::PhotoBulletView::UpdateAbsoluteDirectionChange
+th095::PhotoBulletView::UpdateAimedDirectionChange
+th095::PhotoBulletView::UpdateBoundaryBounce
+th095::PhotoBulletView::UpdateHorizontalWrap
+th095::PhotoBulletView::UpdateVerticalWrap

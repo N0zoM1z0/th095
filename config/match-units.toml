@@ -10080,3 +10080,132 @@ symbol = "?BeginDespawn@PhotoBulletView@th095@@QAEHXZ"
 target_address = 0x004077A0
 size = 0x74
 relocations = []
+
+[units.photo-bullet-update-deceleration]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletView::UpdateDeceleration"]
+symbol = "?UpdateDeceleration@PhotoBulletView@th095@@QAEXXZ"
+target_address = 0x00406D80
+size = 0x91
+relocations = [
+  { offset = 0x2A, type = "DIR32", symbol = "__real@40a00000", target = 0x0049542C },
+  { offset = 0x33, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
+  { offset = 0x39, type = "DIR32", symbol = "__real@40a00000", target = 0x0049542C },
+  { offset = 0x64, type = "REL32", symbol = "?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x89, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+]
+
+[units.photo-bullet-update-vector-acceleration]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletView::UpdateVectorAcceleration"]
+symbol = "?UpdateVectorAcceleration@PhotoBulletView@th095@@QAEXXZ"
+target_address = 0x00406E20
+size = 0x162
+relocations = [
+  { offset = 0x43, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x61, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0xF5, type = "DIR32", symbol = "__real@38d1b717", target = 0x00495430 },
+  { offset = 0x116, type = "DIR32", symbol = "__real@38d1b717", target = 0x00495430 },
+  { offset = 0x140, type = "REL32", symbol = "__CIatan2", target = 0x004859CA },
+  { offset = 0x15A, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+]
+
+[units.photo-bullet-update-polar-acceleration]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletView::UpdatePolarAcceleration"]
+symbol = "?UpdatePolarAcceleration@PhotoBulletView@th095@@QAEXXZ"
+target_address = 0x00406F90
+size = 0xB9
+relocations = [
+  { offset = 0x3E, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x57, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x69, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0xA3, type = "REL32", symbol = "?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0xB1, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+]
+
+[units.photo-bullet-update-relative-direction]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletView::UpdateRelativeDirectionChange"]
+symbol = "?UpdateRelativeDirectionChange@PhotoBulletView@th095@@QAEXXZ"
+target_address = 0x00407050
+size = 0x146
+relocations = [
+  { offset = 0x41, type = "DIR32", symbol = "?g_PhotoBulletSoundPlayer@th095@@3UPhotoBulletSoundPlayerView@1@A", target = 0x004C4EE8 },
+  { offset = 0x46, type = "REL32", symbol = "?PlaySoundByIdx@PhotoBulletSoundPlayerView@th095@@QAEXHH@Z", target = 0x00438F20 },
+  { offset = 0x130, type = "REL32", symbol = "?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x13E, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+]
+
+[units.photo-bullet-update-absolute-direction]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletView::UpdateAbsoluteDirectionChange"]
+symbol = "?UpdateAbsoluteDirectionChange@PhotoBulletView@th095@@QAEXXZ"
+target_address = 0x004071A0
+size = 0x140
+relocations = [
+  { offset = 0x41, type = "DIR32", symbol = "?g_PhotoBulletSoundPlayer@th095@@3UPhotoBulletSoundPlayerView@1@A", target = 0x004C4EE8 },
+  { offset = 0x46, type = "REL32", symbol = "?PlaySoundByIdx@PhotoBulletSoundPlayerView@th095@@QAEXHH@Z", target = 0x00438F20 },
+  { offset = 0x12A, type = "REL32", symbol = "?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x138, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+]
+
+[units.photo-bullet-update-aimed-direction]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletView::UpdateAimedDirectionChange"]
+symbol = "?UpdateAimedDirectionChange@PhotoBulletView@th095@@QAEXXZ"
+target_address = 0x004072E0
+size = 0x15F
+relocations = [
+  { offset = 0x41, type = "DIR32", symbol = "?g_PhotoBulletSoundPlayer@th095@@3UPhotoBulletSoundPlayerView@1@A", target = 0x004C4EE8 },
+  { offset = 0x46, type = "REL32", symbol = "?PlaySoundByIdx@PhotoBulletSoundPlayerView@th095@@QAEXHH@Z", target = 0x00438F20 },
+  { offset = 0xA0, type = "DIR32", symbol = "?g_PhotoBulletPlayer@th095@@3PAUPhotoBulletPlayerView@1@A", target = 0x004C4E70 },
+  { offset = 0xA5, type = "REL32", symbol = "?AngleFromPoint@PhotoBulletPlayerView@th095@@QAEMPAUPhotoBulletVector@2@@Z", target = 0x004303E0 },
+  { offset = 0xAE, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x149, type = "REL32", symbol = "?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x157, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+]
+
+[units.photo-bullet-update-horizontal-wrap]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletView::UpdateHorizontalWrap"]
+symbol = "?UpdateHorizontalWrap@PhotoBulletView@th095@@QAEXXZ"
+target_address = 0x00407620
+size = 0xB6
+relocations = [
+  { offset = 0x14, type = "DIR32", symbol = "__real@c3400000", target = 0x00495410 },
+  { offset = 0x2A, type = "DIR32", symbol = "__real@43c00000", target = 0x00495434 },
+  { offset = 0x44, type = "DIR32", symbol = "__real@43400000", target = 0x00495330 },
+  { offset = 0x5A, type = "DIR32", symbol = "__real@43c00000", target = 0x00495434 },
+  { offset = 0xAE, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+]
+
+[units.photo-bullet-update-vertical-wrap]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletView::UpdateVerticalWrap"]
+symbol = "?UpdateVerticalWrap@PhotoBulletView@th095@@QAEXXZ"
+target_address = 0x004076E0
+size = 0xB6
+relocations = [
+  { offset = 0x14, type = "DIR32", symbol = "__real@0000000000000000", target = 0x00495438 },
+  { offset = 0x2A, type = "DIR32", symbol = "__real@43e00000", target = 0x0049540C },
+  { offset = 0x44, type = "DIR32", symbol = "__real@43e00000", target = 0x0049540C },
+  { offset = 0x5A, type = "DIR32", symbol = "__real@43e00000", target = 0x0049540C },
+  { offset = 0xAE, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+]

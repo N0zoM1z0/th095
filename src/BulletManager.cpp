@@ -741,10 +741,254 @@ i32 PhotoBulletView::BeginDespawn()
 static inline i32 PhotoBulletIsOutsidePlayfield(
     PhotoBulletVector *position, f32 width, f32 height)
 {
-    return width + position->x <= -192.0f ||
+    return position->x + width <= -192.0f ||
            position->x - width >= 192.0f ||
-           height + position->y <= 0.0f ||
+           position->y + height <= 0.0f ||
            position->y - height >= 448.0f;
+}
+
+// FUNCTION: TH095 0x00406D80; TH08 0x00432210 is the adjacent source oracle.
+#pragma var_order(magnitude, this)
+void PhotoBulletView::UpdateDeceleration()
+{
+    f32 magnitude;
+
+    if (this->exStates[0].timer <= 16)
+    {
+        magnitude =
+            5.0f - (5.0f * (f32)this->exStates[0].timer) / 16.0f;
+        this->velocity.FromAngleMagnitude(
+            this->angle, magnitude + this->speed);
+    }
+    else
+    {
+        this->activeTransformFlags ^= PHOTO_BULLET_TRANSFORM_DECELERATE;
+    }
+
+    this->exStates[0].timer++;
+}
+
+// FUNCTION: TH095 0x00406E20; TH08 0x004322B0 is the adjacent source oracle.
+#pragma var_order(delta, this)
+void PhotoBulletView::UpdateVectorAcceleration()
+{
+    if (this->exStates[1].timer >= this->exStates[1].durationFrames)
+    {
+        this->activeTransformFlags &=
+            ~PHOTO_BULLET_TRANSFORM_ACCELERATE_VECTOR;
+    }
+    else
+    {
+        this->speed +=
+            g_AnmGameSpeed * this->exStates[1].accelerationMagnitude;
+        this->velocity += this->exStates[1].vector * g_AnmGameSpeed;
+
+        if (fabsf(this->velocity.x) > 0.0001f ||
+            fabsf(this->velocity.y) > 0.0001f)
+        {
+            this->angle =
+                (f32)atan2(this->velocity.y, this->velocity.x);
+        }
+    }
+
+    this->exStates[1].timer++;
+}
+
+// FUNCTION: TH095 0x00406F90; TH08 0x00432390 is the adjacent source oracle.
+void PhotoBulletView::UpdatePolarAcceleration()
+{
+    if (this->exStates[2].timer >= this->exStates[2].durationFrames)
+    {
+        this->activeTransformFlags &=
+            ~PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR;
+    }
+    else
+    {
+        this->angle = AddNormalizeAngle(
+            this->angle, g_AnmGameSpeed * this->exStates[2].angleDelta);
+        this->speed += g_AnmGameSpeed * this->exStates[2].speedDelta;
+        this->velocity.FromAngleMagnitude(this->angle, this->speed);
+    }
+
+    this->exStates[2].timer++;
+}
+
+// FUNCTION: TH095 0x00407050; TH08 0x00432460 is the adjacent source oracle.
+#pragma var_order(magnitude, this)
+void PhotoBulletView::UpdateRelativeDirectionChange()
+{
+    f32 magnitude;
+
+    if (this->exStates[3].timer >=
+        this->exStates[3].directionChangeIntervalFrames)
+    {
+        if (this->transformSound >= 0)
+            g_PhotoBulletSoundPlayer.PlaySoundByIdx(this->transformSound, 0);
+        this->exStates[3].directionChangesCompleted += 1;
+        if (this->exStates[3].directionChangesCompleted >=
+            this->exStates[3].directionChangeRepeatCount)
+        {
+            this->activeTransformFlags &=
+                ~PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_RELATIVE;
+        }
+        this->angle += this->exStates[3].directionChangeAngle;
+        *reinterpret_cast<i32 *>(&this->speed) =
+            *reinterpret_cast<i32 *>(&this->exStates[3].directionChangeSpeed);
+        magnitude = this->speed;
+        this->exStates[3].timer = 0;
+    }
+    else
+    {
+        magnitude =
+            this->speed -
+            ((f32)this->exStates[3].timer * this->speed) /
+                this->exStates[3].directionChangeIntervalFrames;
+    }
+
+    this->velocity.FromAngleMagnitude(this->angle, magnitude);
+    this->exStates[3].timer++;
+}
+
+// FUNCTION: TH095 0x004071A0; TH08 0x004325A0 is the adjacent source oracle.
+#pragma var_order(magnitude, this)
+void PhotoBulletView::UpdateAbsoluteDirectionChange()
+{
+    f32 magnitude;
+
+    if (this->exStates[3].timer >=
+        this->exStates[3].directionChangeIntervalFrames)
+    {
+        if (this->transformSound >= 0)
+            g_PhotoBulletSoundPlayer.PlaySoundByIdx(this->transformSound, 0);
+        this->exStates[3].directionChangesCompleted += 1;
+        if (this->exStates[3].directionChangesCompleted >=
+            this->exStates[3].directionChangeRepeatCount)
+        {
+            this->activeTransformFlags &=
+                ~PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_ABSOLUTE;
+        }
+        *reinterpret_cast<i32 *>(&this->angle) =
+            *reinterpret_cast<i32 *>(&this->exStates[3].directionChangeAngle);
+        *reinterpret_cast<i32 *>(&this->speed) =
+            *reinterpret_cast<i32 *>(&this->exStates[3].directionChangeSpeed);
+        magnitude = this->speed;
+        this->exStates[3].timer = 0;
+    }
+    else
+    {
+        magnitude =
+            this->speed -
+            ((f32)this->exStates[3].timer * this->speed) /
+                this->exStates[3].directionChangeIntervalFrames;
+    }
+
+    this->velocity.FromAngleMagnitude(this->angle, magnitude);
+    this->exStates[3].timer++;
+}
+
+// FUNCTION: TH095 0x004072E0; TH08 0x004326E0 is the adjacent source oracle.
+#pragma var_order(magnitude, this)
+void PhotoBulletView::UpdateAimedDirectionChange()
+{
+    f32 magnitude;
+
+    if (this->exStates[3].timer >=
+        this->exStates[3].directionChangeIntervalFrames)
+    {
+        if (this->transformSound >= 0)
+            g_PhotoBulletSoundPlayer.PlaySoundByIdx(this->transformSound, 0);
+        this->exStates[3].directionChangesCompleted += 1;
+        if (this->exStates[3].directionChangesCompleted >=
+            this->exStates[3].directionChangeRepeatCount)
+        {
+            this->activeTransformFlags &=
+                ~PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_AIMED;
+        }
+        this->angle = AddNormalizeAngle(
+            g_PhotoBulletPlayer->AngleFromPoint(&this->position),
+            this->exStates[3].directionChangeAngle);
+        *reinterpret_cast<i32 *>(&this->speed) =
+            *reinterpret_cast<i32 *>(&this->exStates[3].directionChangeSpeed);
+        magnitude = this->speed;
+        this->exStates[3].timer = 0;
+    }
+    else
+    {
+        magnitude =
+            this->speed -
+            ((f32)this->exStates[3].timer * this->speed) /
+                this->exStates[3].directionChangeIntervalFrames;
+    }
+
+    this->velocity.FromAngleMagnitude(this->angle, magnitude);
+    this->exStates[3].timer++;
+}
+
+// FUNCTION: TH095 0x00407440; TH08 0x00432830 is the adjacent source oracle.
+#pragma var_order(magnitude, this)
+void PhotoBulletView::UpdateBoundaryBounce()
+{
+    f32 magnitude;
+
+    if (PhotoBulletIsOutsidePlayfield(&this->position, 0.0f, 0.0f))
+    {
+        if (this->transformSound >= 0)
+            g_PhotoBulletSoundPlayer.PlaySoundByIdx(this->transformSound, 0);
+
+        if (this->position.x < -192.0f || this->position.x >= 192.0f)
+        {
+            this->angle = -this->angle - 3.1415927f;
+            this->angle = AddNormalizeAngle(this->angle, 0.0f);
+        }
+
+        if (this->position.y < 0.0f ||
+            (this->position.y >= 448.0f &&
+             (this->activeTransformFlags &
+              PHOTO_BULLET_TRANSFORM_BOUNCE_ALL_EDGES) != 0))
+        {
+            this->angle = -this->angle;
+        }
+
+        *reinterpret_cast<i32 *>(&magnitude) =
+            *reinterpret_cast<i32 *>(&this->exStates[4].bounceSpeed);
+        this->velocity.FromAngleMagnitude(this->angle, magnitude);
+        this->exStates[4].bouncesCompleted += 1;
+        if (this->exStates[4].bouncesCompleted >=
+            this->exStates[4].bounceLimit)
+        {
+            this->activeTransformFlags &=
+                ~(PHOTO_BULLET_TRANSFORM_BOUNCE_ALL_EDGES |
+                  PHOTO_BULLET_TRANSFORM_BOUNCE_EXCEPT_BOTTOM);
+        }
+    }
+}
+
+// FUNCTION: TH095 0x00407620; TH08 0x004329F0 is the adjacent source oracle.
+void PhotoBulletView::UpdateHorizontalWrap()
+{
+    if (this->position.x < -192.0f)
+        this->position.x += 384.0f;
+    else if (this->position.x > 192.0f)
+        this->position.x -= 384.0f;
+
+    if (this->exStates[6].timer <= 0)
+        this->activeTransformFlags ^= PHOTO_BULLET_TRANSFORM_WRAP_X;
+    else
+        this->exStates[6].timer--;
+}
+
+// FUNCTION: TH095 0x004076E0; TH08 0x00432AA0 is the adjacent source oracle.
+void PhotoBulletView::UpdateVerticalWrap()
+{
+    if (this->position.y < 0.0)
+        this->position.y += 448.0f;
+    else if (this->position.y > 448.0f)
+        this->position.y -= 448.0f;
+
+    if (this->exStates[6].timer <= 0)
+        this->activeTransformFlags ^= PHOTO_BULLET_TRANSFORM_WRAP_Y;
+    else
+        this->exStates[6].timer--;
 }
 
 i32 __fastcall PhotoBulletManagerView::OnUpdate(

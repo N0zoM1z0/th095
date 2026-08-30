@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 251 canonical units cover 115,618 authored bytes.
+- Reconstruction: 279 canonical units cover 122,075 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.42% (115,618 / 229,308)
+  relocations. Confirmed authored-byte coverage is now 50.57% (122,075 / 241,382)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 309 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,514 origin/boundary reviews pending. Original class
+  confirms 341 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,482 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -445,12 +445,24 @@ slot. Do not close either residual with inert padding. The connecting pattern
 fanout at `0x00406CC0` and the active/spawning despawn transition at
 `0x004077A0` are canonical exact for 297 bytes and five relocations.
 
-Continue through the now-unlocked adjacent bullet movement family at
-`0x00406D80..0x00407795`: deceleration, vector/polar acceleration, three
-direction-change modes, boundary bounce, and horizontal/vertical wrapping.
-Then take the TH095 photography-specific capture/count/reset lane at
-`0x00407820..0x004087C7`. Preserve the independently exact `PhotoToScreen @
-0x004186D0` bridge and the GameTask, FrontInf, and bullet pattern units.
+The adjacent bullet movement family at `0x00406D80..0x00407795` is now
+source-present end to end. Eight canonical units contribute 2,045 exact bytes
+and enforce all 41 relocations: deceleration, vector/polar acceleration, all
+three direction-change modes, and horizontal/vertical wrapping. This proves
+TH095's centered `-192..192` X playfield, shifted wrap flags, scalar-speed
+update during vector acceleration, and the deliberate absence of a final game
+speed multiplier when rebuilding velocity. `UpdateBoundaryBounce @
+0x00407440` is behavior-complete but conservatively non-exact: its natural
+VC7.1 body is 462 bytes against the 469-byte target, with only a seven-byte
+local bit-copy/register-shape residual. Do not add an inert copy to claim it.
+
+Next take the TH095 photography-specific capture/count/reset lane at
+`0x00407820..0x004087C7`, beginning with the 1,122-byte `0x00407820` and
+1,300-byte `0x00407C90` high-connectivity bodies before closing their five
+smaller dependencies. Continue through the adjacent lifecycle shell at
+`0x004087D0..0x00408CDC` when the recovered ownership is clear. Preserve the
+independently exact `PhotoToScreen @ 0x004186D0` bridge and the GameTask,
+FrontInf, bullet pattern, and eight movement units.
 
 ## Closed lanes and preservation constraints
 

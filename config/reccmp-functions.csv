@@ -331,3 +331,12 @@ th095::PhotoBulletManagerView::SpawnSingleBullet,0x00405A30,function
 th095::PhotoBulletView::AdvanceTransformProgram,0x004062B0,function
 th095::PhotoBulletManagerView::SpawnBulletPattern,0x00406CC0,function
 th095::PhotoBulletView::BeginDespawn,0x004077A0,function
+th095::PhotoBulletView::UpdateDeceleration,0x00406D80,function
+th095::PhotoBulletView::UpdateVectorAcceleration,0x00406E20,function
+th095::PhotoBulletView::UpdatePolarAcceleration,0x00406F90,function
+th095::PhotoBulletView::UpdateRelativeDirectionChange,0x00407050,function
+th095::PhotoBulletView::UpdateAbsoluteDirectionChange,0x004071A0,function
+th095::PhotoBulletView::UpdateAimedDirectionChange,0x004072E0,function
+th095::PhotoBulletView::UpdateBoundaryBounce,0x00407440,function
+th095::PhotoBulletView::UpdateHorizontalWrap,0x00407620,function
+th095::PhotoBulletView::UpdateVerticalWrap,0x004076E0,function
