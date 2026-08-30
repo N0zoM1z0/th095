@@ -84,6 +84,7 @@ The exact Render unit proves these shared edges and field offsets:
 
 | Target | Recovered role | Exact evidence |
 | --- | --- | --- |
+| `0x00401B70` | `BackgroundSupervisorView::ConfigureBackgroundViewport` | Canonical VC7.1 body and `ApplyBackgroundViewport` REL32 |
 | `0x00404B10` | `Supervisor::ConfigureGameplayViewport` | Render REL32 |
 | `0x00418C40` / `0x00418DA0` | calc/draw chain dispatch | Render REL32 |
 | `0x00439200` | `SoundPlayer::ProcessQueues` | Render REL32 |

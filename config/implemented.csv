@@ -388,3 +388,6 @@ th095::Background::DrawHighPrio
 th095::Background::DrawLowPrio
 th095::Background::RenderObjects
 th095::BackgroundStageObject::IsVisible
+th095::BackgroundSupervisorView::ConfigureBackgroundViewport
+th095::Background::Background
+th095::Background::~Background

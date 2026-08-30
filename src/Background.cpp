@@ -49,6 +49,13 @@ struct BackgroundGlobalStateView
     };
 };
 
+struct BackgroundSupervisorFlagsView
+{
+    u32 unknown00 : 9;
+    u32 disableResourceReload : 1;
+    u32 unknown10 : 22;
+};
+
 struct BackgroundStageInstruction
 {
     i32 time;
@@ -169,16 +176,25 @@ struct BackgroundSelectedSceneView
 
 struct BackgroundViewportConfigurationView
 {
-    Float3 cameraPosition;
+    Float3 cameraPosition;               // +0x000
     u8 unknown00c[0x30];
-    Float3 cameraPositionOffset;
+    Float3 cameraPositionOffset;         // +0x03c
+    u8 unknown048[0xcc - 0x48];
+    D3DVIEWPORT8 viewport;               // +0x0cc
+    u8 unknown0e4[0x0c];
 };
 
 struct BackgroundSupervisorView
 {
-    u8 unknown000[0x3c4];
-    BackgroundViewportConfigurationView *currentViewport;
+    u8 unknown000[8];
+    IDirect3DDevice8 *d3dDevice;                         // +0x008
+    u8 unknown00c[0x1e4 - 0x00c];
+    BackgroundViewportConfigurationView configurations[2]; // +0x1e4
+    BackgroundViewportConfigurationView *currentViewport;   // +0x3c4
+    i32 currentViewportIndex;                               // +0x3c8
 
+    void ApplyBackgroundViewport(
+        BackgroundViewportConfigurationView *configuration);
     void ConfigureBackgroundViewport(i32 index);
     void SetRenderState(D3DRENDERSTATETYPE renderStateType, i32 value);
     void DisableFog();
@@ -246,6 +262,10 @@ typedef char BackgroundStageObjectInstanceSizeIs10[
     (sizeof(BackgroundStageObjectInstance) == 0x10) ? 1 : -1];
 typedef char BackgroundViewportOffsetAt3C[
     (offsetof(BackgroundViewportConfigurationView, cameraPositionOffset) == 0x3c) ? 1 : -1];
+typedef char BackgroundViewportD3DAtCC[
+    (offsetof(BackgroundViewportConfigurationView, viewport) == 0xcc) ? 1 : -1];
+typedef char BackgroundViewportSizeIsF0[
+    (sizeof(BackgroundViewportConfigurationView) == 0xf0) ? 1 : -1];
 typedef char BackgroundSupervisorViewportAt3C4[
     (offsetof(BackgroundSupervisorView, currentViewport) == 0x3c4) ? 1 : -1];
 typedef char BackgroundAnmCameraModeAt1768[
@@ -255,6 +275,7 @@ extern BackgroundStageStateView *g_BackgroundStageState;
 extern BackgroundRuntimeView *g_BackgroundRuntime;
 extern BackgroundGlobalStateView *g_PhotoGlobalState;
 extern BackgroundSelectedSceneView *g_SelectedScene;
+extern Background *g_Background;
 extern u8 *g_BackgroundStageDataCache;
 extern i32 g_BackgroundStageDataSize;
 extern Float3 g_BackgroundCameraPosition;
@@ -276,6 +297,67 @@ f32 __stdcall CubicHermiteInterpolate(
 static inline i32 BackgroundEitherFlag(i32 first, i32 second)
 {
     return first | second;
+}
+
+// FUNCTION: TH095 0x00401B70.
+void BackgroundSupervisorView::ConfigureBackgroundViewport(i32 index)
+{
+    this->currentViewport = &this->configurations[index];
+    this->ApplyBackgroundViewport(this->currentViewport);
+    this->d3dDevice->SetViewport(&this->currentViewport->viewport);
+    this->currentViewportIndex = index;
+}
+
+// FUNCTION: TH095 0x004020C0.
+Background::Background()
+{
+    BackgroundStateView *background =
+        reinterpret_cast<BackgroundStateView *>(this);
+
+    utils::DebugPrint("initialize BackGroundInf\n");
+    memset(background, 0, sizeof(*background));
+    background->stageScriptTimer.Initialize();
+    g_Background = this;
+}
+
+// FUNCTION: TH095 0x00402330.
+Background::~Background()
+{
+    BackgroundStateView *background =
+        reinterpret_cast<BackgroundStateView *>(this);
+    i32 vmIndex;
+
+    utils::DebugPrint("shutdown BackGroundInf\n");
+    g_Chain.Cut(background->calcChain);
+    g_Chain.Cut(background->drawHighChain);
+    g_Chain.Cut(background->drawLowChain);
+
+    if (background->stageData != NULL)
+        free(background->stageData);
+
+    if (reinterpret_cast<BackgroundSupervisorFlagsView *>(
+            &g_Supervisor.flags)->disableResourceReload == 0)
+    {
+        if (g_BackgroundStageDataCache != NULL)
+            free(g_BackgroundStageDataCache);
+        g_BackgroundStageDataCache = NULL;
+    }
+
+    if (background->stageObjectVms != NULL)
+        free(background->stageObjectVms);
+
+    if (reinterpret_cast<BackgroundSupervisorFlagsView *>(
+            &g_Supervisor.flags)->disableResourceReload == 0)
+        g_AnmManager->ReleaseAnm(4);
+    else
+        g_AnmManager->MarkVmsForDeletion(background->anm);
+
+    g_Background = NULL;
+
+    for (vmIndex = 2; vmIndex >= 0; --vmIndex)
+        background->photoAreaVms[vmIndex].~AnmVm();
+    for (vmIndex = 7; vmIndex >= 0; --vmIndex)
+        background->stageVms[vmIndex].~AnmVm();
 }
 
 // FUNCTION: TH095 0x004024A0.

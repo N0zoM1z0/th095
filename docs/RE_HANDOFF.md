@@ -545,14 +545,20 @@ bytes against 565/658-byte targets and preserve the full traversal, VM
 position/scale, fog-mode, viewport-camera, distance, and forward-plane logic.
 Do not manufacture their remaining compiler frame shape.
 
-Next close the BackgroundInf constructor/destructor at `0x004020C0/0x00402330`
-and the four-caller background viewport selector at `0x00401B70`. These own the
-remaining lifecycle cleanup and camera-configuration edges needed by the now
-complete renderer. Use TH08 only for ancestral source shape: TH095's `0x201C`
-object, variable-size stage data, and photograph border path are target-specific.
-Preserve every established Background unit plus the independently exact
-`PhotoToScreen @ 0x004186D0` bridge and the GameTask, FrontInf, bullet, CardInf,
-and photography units.
+The remaining BackgroundInf lifecycle and viewport edges are now closed.
+`ConfigureBackgroundViewport @ 0x00401B70` is canonical exact for 108 bytes
+and its `ApplyBackgroundViewport @ 0x00425AA0` relocation. It proves two
+`0xF0` configurations at Supervisor `+0x1E4`, the active pointer/index at
+`+0x3C4/+0x3C8`, and the embedded D3D viewport at configuration `+0xCC`.
+Constructor/destructor source at `0x004020C0/0x00402330` preserves the full
+`0x201C` final state, timer sentinel, singleton, three Chain nodes, stage/cache
+allocations, slot-four retain/release policy, and eleven embedded VM cleanups.
+Their natural probes are 96/445 bytes against 389/366-byte targets; keep them
+non-exact because the residual is compiler member-array EH/vector machinery,
+not missing runtime behavior. Next review the adjacent high-connectivity ANM
+VM construction foundation at `0x00401D30/0x00401EB0/0x00401F10/0x00402010`.
+Use TH08 only for ancestral source shape and preserve every established
+Background unit plus `PhotoToScreen @ 0x004186D0` and all photography units.
 
 ## Closed lanes and preservation constraints
 
