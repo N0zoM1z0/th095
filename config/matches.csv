@@ -361,3 +361,4 @@ address,name,size,status,match_percent,unit,evidence
 0x00426860,th095::ResultScreen::ReleaseAnm,20,matching,100.00,result-screen-release-anm,python3 scripts/build.py --unit result-screen-release-anm && python3 scripts/compare-coff-function.py --unit result-screen-release-anm --json
 0x00426A50,th095::ResultScreen::Create,316,matching,100.00,result-screen-create,python3 scripts/build.py --unit result-screen-create && python3 scripts/compare-coff-function.py --unit result-screen-create --json
 0x00426B90,th095::ResultScreen::Destroy,95,matching,100.00,result-screen-destroy,python3 scripts/build.py --unit result-screen-destroy && python3 scripts/compare-coff-function.py --unit result-screen-destroy --json
+0x00425EF0,th095::Supervisor::UpdateSceneState,938,matching,100.00,main-update-scene-state,python3 scripts/build.py --unit main-update-scene-state && python3 scripts/compare-coff-function.py --unit main-update-scene-state --json

@@ -59,13 +59,21 @@ struct SupervisorReplayScanWorkerView
 
 struct FrontEndControllerView
 {
+    static FrontEndControllerView *__fastcall Create(i32 mode);
     void Destroy();
 };
 
 struct PhotoGameTaskView
 {
+    u8 unknown000[0x120];
+    i32 replayMode;
+
+    static PhotoGameTaskView *__fastcall Create(i32 replayMode);
     void Destroy();
 };
+
+extern PhotoGameTaskView *g_PhotoGameTask;
+extern u32 g_ControllerRuntimeFlags;
 
 struct TextHelperView
 {
@@ -1410,6 +1418,128 @@ void Supervisor::ReleaseGameManagers()
         this->photoGameTask->Destroy();
     }
     this->photoGameTask = NULL;
+}
+
+// FUNCTION: TH095 0x00425EF0.
+i32 Supervisor::UpdateSceneState()
+{
+    struct
+    {
+        i32 resultMode;
+        i32 replayMode;
+    } locals;
+
+    if (this->wantedState != this->currentState)
+    {
+        this->EnterCriticalSectionWrapper(5);
+        this->criticalSectionLockCounts[5]++;
+        this->previousState = this->wantedState;
+        utils::DebugPrint(
+            "scene %d -> %d\r\n", this->wantedState, this->currentState);
+        this->backbufferClearColor = 0xff000000;
+
+        switch (this->wantedState)
+        {
+        case 0:
+            this->currentState = SUPERVISOR_STATE_FRONT_END;
+            this->frontEndController = FrontEndControllerView::Create(0);
+            if (this->frontEndController == NULL)
+            {
+                goto failure;
+            }
+            break;
+
+        case SUPERVISOR_STATE_FRONT_END:
+            switch (this->currentState)
+            {
+            case SUPERVISOR_STATE_ERROR:
+                goto failure;
+
+            case SUPERVISOR_STATE_EXIT:
+                this->frontEndController->Destroy();
+                this->frontEndController = NULL;
+                this->LeaveCriticalSectionWrapper(5);
+                this->criticalSectionLockCounts[5]--;
+                return 4;
+
+            case SUPERVISOR_STATE_PHOTO_GAME:
+                this->frontEndController->Destroy();
+                this->frontEndController = NULL;
+                break;
+
+            case SUPERVISOR_STATE_START_REPLAY:
+                this->currentState = SUPERVISOR_STATE_PHOTO_GAME;
+                this->frontEndController->Destroy();
+                this->frontEndController = NULL;
+                break;
+            }
+            break;
+
+        case SUPERVISOR_STATE_PHOTO_GAME:
+            switch (this->currentState)
+            {
+            case SUPERVISOR_STATE_EXIT:
+                this->photoGameTask->Destroy();
+                this->photoGameTask = NULL;
+                return 4;
+
+            case SUPERVISOR_STATE_FRONT_END:
+                locals.replayMode = this->photoGameTask->replayMode;
+                this->photoGameTask->Destroy();
+                this->photoGameTask = NULL;
+                this->frontEndController =
+                    FrontEndControllerView::Create(
+                        locals.replayMode != 0 ? 2 : 1);
+                if (this->frontEndController == NULL)
+                {
+                    goto failure;
+                }
+                break;
+
+            case SUPERVISOR_STATE_ERROR:
+                goto failure;
+
+            case SUPERVISOR_STATE_RETRY_PHOTO_GAME:
+                this->photoGameTask->Destroy();
+                this->photoGameTask = NULL;
+                this->flags.restartPhotoGame = 1;
+                this->photoGameTask = PhotoGameTaskView::Create(0);
+                if (this->photoGameTask == NULL)
+                {
+                    goto failure;
+                }
+                this->currentState = SUPERVISOR_STATE_PHOTO_GAME;
+                break;
+
+            case SUPERVISOR_STATE_RESTART_PHOTO_GAME:
+                locals.resultMode = g_PhotoGameTask->replayMode;
+                g_ControllerRuntimeFlags |= 0x200;
+                this->photoGameTask->Destroy();
+                this->photoGameTask = NULL;
+                this->photoGameTask =
+                    PhotoGameTaskView::Create(locals.resultMode);
+                if (this->photoGameTask == NULL)
+                {
+                    goto failure;
+                }
+                this->currentState = SUPERVISOR_STATE_PHOTO_GAME;
+                break;
+            }
+            break;
+
+        case SUPERVISOR_STATE_ERROR:
+        failure:
+            this->ReleaseGameManagers();
+            this->LeaveCriticalSectionWrapper(5);
+            this->criticalSectionLockCounts[5]--;
+            return 4;
+        }
+
+        this->wantedState = this->currentState;
+        this->LeaveCriticalSectionWrapper(5);
+        this->criticalSectionLockCounts[5]--;
+    }
+    return 1;
 }
 
 // FUNCTION: TH095 0x00423E70.

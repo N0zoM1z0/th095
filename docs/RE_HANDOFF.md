@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 362 canonical exact functions cover 136,919 authored bytes.
+- Reconstruction: 363 canonical exact functions cover 137,857 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.11% (136,919 / 273,236)
+  relocations. Confirmed authored-byte coverage is now 50.28% (137,857 / 274,174)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 451 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,371 origin/boundary reviews pending. Original class
+  current ledger confirms 452 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,370 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -407,6 +407,17 @@
 
 ## Next bounded lane
 
+The high-connectivity Supervisor scene router is now canonical exact.
+`Supervisor::UpdateSceneState @ 0x00425EF0` contributes 938 authored bytes;
+its canonical comparison extends through 88 bytes of three compiler-owned
+switch tables and enforces all 46 relocations. It owns title/front-end modes,
+photo-game start/exit, replay return, result restart, retry restart, and common
+failure teardown. Preserve the target's unusual photo-exit path, which returns
+4 without balancing critical section 5. All 42 `Main.cpp` units replay from the
+current object. The immediate next target is the sole caller and registered
+calc callback, `Supervisor::OnUpdate @ 0x00423440` (400 bytes), so that the
+frame-reset/input/state-routing spine can close around this exact dependency.
+
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`
 through `OnDraw @ 0x004186B0`. Its ten canonical units contribute 3,260
@@ -662,10 +673,12 @@ at Supervisor `+0x714`. This is intentionally not modeled as TH08's inline VM
 array. `InitializeViewports @ 0x00425CC0` establishes two `0xF0` configurations
 at Supervisor `+0x1E4/+0x2D4`; the exact gameplay and background apply hubs at
 `0x00425910/0x00425AA0` flush ANM vertices, rebuild D3D view/projection state,
-and publish viewport values to AnmManager `+0x20/+0x24`. Resume the remaining
-Supervisor inventory at `0x00425EF0` and preserve every established Main,
-Background, ECL, ANM, photography, and ASCII exact unit while shared headers
-change.
+and publish viewport values to AnmManager `+0x20/+0x24`. The adjacent
+`UpdateSceneState @ 0x00425EF0` is now exact for its complete 938-byte authored
+body, 88-byte switch-table tail, and all 46 relocations. Continue through its
+sole caller `Supervisor::OnUpdate @ 0x00423440` and preserve every established
+Main, Background, ECL, ANM, photography, and ASCII exact unit while shared
+headers change.
 
 The adjacent TH095-specific PauseInf/ResultScreen ownership lane is now closed
 for five more exact units and 972 bytes. `Initialize @ 0x00426630` loads
@@ -678,9 +691,9 @@ update/draw callback priorities 5/`0x1B`, and Chain fields at `+0x6E24/+0x6E28`.
 The source-present constructor proves the twenty-five VMs are compiler-visible
 as `21+2+1+1` groups; its target-sized body differs only in constructor-home
 slots. The source-present destructor is 454 versus 452 bytes with complete
-resource/VM teardown. Keep both conservatively non-exact and resume the
-Supervisor state router at `0x00425EF0` rather than spending a disproportionate
-pass on those two local-shape residuals.
+resource/VM teardown. Keep both conservatively non-exact rather than spending
+a disproportionate pass on those two local-shape residuals; the exact
+Supervisor router now provides their surrounding transition ownership.
 
 ## Closed lanes and preservation constraints
 

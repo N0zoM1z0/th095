@@ -163,7 +163,19 @@ struct SupervisorFlags
     u32 unknown9 : 1;
     u32 keyboardAvailable : 1;
     u32 controllerAvailable : 1;
-    u32 unknown12 : 20;
+    u32 restartPhotoGame : 1;
+    u32 unknown13 : 19;
+};
+
+enum SupervisorState
+{
+    SUPERVISOR_STATE_EXIT = 1,
+    SUPERVISOR_STATE_FRONT_END = 2,
+    SUPERVISOR_STATE_PHOTO_GAME = 3,
+    SUPERVISOR_STATE_RESTART_PHOTO_GAME = 4,
+    SUPERVISOR_STATE_ERROR = 6,
+    SUPERVISOR_STATE_START_REPLAY = 7,
+    SUPERVISOR_STATE_RETRY_PHOTO_GAME = 8
 };
 
 #pragma pack(push, 1)
@@ -217,7 +229,8 @@ struct Supervisor
     i32 calcCount;                              // +0x404
     i32 wantedState;                            // +0x408
     i32 currentState;                           // +0x40c
-    u8 unknown410[0x14];
+    i32 previousState;                          // +0x410
+    u8 unknown414[0x10];
     i32 screenTransitionCountdown;              // +0x424
     i32 suppressFpsDisplay;                      // +0x428
     i32 disableVsync;                           // +0x42c
@@ -275,6 +288,7 @@ struct Supervisor
     static void __fastcall InitializeInput(Supervisor *s);
     static void StartInputWorker();
     void ReleaseGameManagers();
+    i32 UpdateSceneState();
     void InitializeViewports();
     static i32 LoadDat();
     static i32 CheckFps();

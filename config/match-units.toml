@@ -5848,6 +5848,68 @@ relocations = [
   { offset = 0x44, type = "REL32", symbol = "?Destroy@PhotoGameTaskView@th095@@QAEXXZ", target = 0x004180A0 },
 ]
 
+# UpdateSceneState owns a 0x3AA-byte authored body and three immediately
+# following compiler-emitted switch tables (7 + 7 + 8 DIR32 entries).
+# compare_size covers the complete 0x402-byte COFF auxiliary extent; only
+# size is credited to authored reconstruction progress.
+[units.main-update-scene-state]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::UpdateSceneState"]
+symbol = "?UpdateSceneState@Supervisor@th095@@QAEHXZ"
+target_address = 0x00425EF0
+size = 0x3AA
+compare_size = 0x402
+relocations = [
+  { offset = 0x36, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x00495060 },
+  { offset = 0x76, type = "DIR32", symbol = "??_C@_0BB@FDECCDMP@scene?5?$CFd?5?9?$DO?5?$CFd?$AN?6?$AA@", target = 0x00496380 },
+  { offset = 0x7B, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0xAB, type = "DIR32", symbol = "$L84883", target = 0x0042629A },
+  { offset = 0xBF, type = "REL32", symbol = "?Create@FrontEndControllerView@th095@@SIPAU12@H@Z", target = 0x00445CC0 },
+  { offset = 0x107, type = "DIR32", symbol = "$L84884", target = 0x004262B6 },
+  { offset = 0x11A, type = "REL32", symbol = "?Destroy@FrontEndControllerView@th095@@QAEXXZ", target = 0x00445DE0 },
+  { offset = 0x140, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+  { offset = 0x16D, type = "REL32", symbol = "?Destroy@FrontEndControllerView@th095@@QAEXXZ", target = 0x00445DE0 },
+  { offset = 0x197, type = "REL32", symbol = "?Destroy@FrontEndControllerView@th095@@QAEXXZ", target = 0x00445DE0 },
+  { offset = 0x1D2, type = "DIR32", symbol = "$L84885", target = 0x004262D2 },
+  { offset = 0x1E0, type = "REL32", symbol = "?Destroy@PhotoGameTaskView@th095@@QAEXXZ", target = 0x004180A0 },
+  { offset = 0x217, type = "REL32", symbol = "?Destroy@PhotoGameTaskView@th095@@QAEXXZ", target = 0x004180A0 },
+  { offset = 0x233, type = "REL32", symbol = "?Create@FrontEndControllerView@th095@@SIPAU12@H@Z", target = 0x00445CC0 },
+  { offset = 0x265, type = "REL32", symbol = "?Destroy@PhotoGameTaskView@th095@@QAEXXZ", target = 0x004180A0 },
+  { offset = 0x290, type = "REL32", symbol = "?Create@PhotoGameTaskView@th095@@SIPAU12@H@Z", target = 0x00417F80 },
+  { offset = 0x2BC, type = "DIR32", symbol = "?g_PhotoGameTask@th095@@3PAUPhotoGameTaskView@1@A", target = 0x004BDEC8 },
+  { offset = 0x2CB, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
+  { offset = 0x2D7, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
+  { offset = 0x2E5, type = "REL32", symbol = "?Destroy@PhotoGameTaskView@th095@@QAEXXZ", target = 0x004180A0 },
+  { offset = 0x2FA, type = "REL32", symbol = "?Create@PhotoGameTaskView@th095@@SIPAU12@H@Z", target = 0x00417F80 },
+  { offset = 0x328, type = "REL32", symbol = "?ReleaseGameManagers@Supervisor@th095@@QAEXXZ", target = 0x00423D00 },
+  { offset = 0x341, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+  { offset = 0x388, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+  { offset = 0x3AA, type = "DIR32", symbol = "$L84021", target = 0x00425F9F },
+  { offset = 0x3AE, type = "DIR32", symbol = "$L84018", target = 0x00426251 },
+  { offset = 0x3B2, type = "DIR32", symbol = "$L84025", target = 0x00425FD2 },
+  { offset = 0x3B6, type = "DIR32", symbol = "$L84035", target = 0x0042609D },
+  { offset = 0x3BA, type = "DIR32", symbol = "$L84018", target = 0x00426251 },
+  { offset = 0x3BE, type = "DIR32", symbol = "$L84018", target = 0x00426251 },
+  { offset = 0x3C2, type = "DIR32", symbol = "$failure$84023", target = 0x00426214 },
+  { offset = 0x3C6, type = "DIR32", symbol = "$L84032", target = 0x00426000 },
+  { offset = 0x3CA, type = "DIR32", symbol = "$L84027", target = 0x00426098 },
+  { offset = 0x3CE, type = "DIR32", symbol = "$L84033", target = 0x00426053 },
+  { offset = 0x3D2, type = "DIR32", symbol = "$L84027", target = 0x00426098 },
+  { offset = 0x3D6, type = "DIR32", symbol = "$L84027", target = 0x00426098 },
+  { offset = 0x3DA, type = "DIR32", symbol = "$L84030", target = 0x00425FFB },
+  { offset = 0x3DE, type = "DIR32", symbol = "$L84034", target = 0x00426070 },
+  { offset = 0x3E2, type = "DIR32", symbol = "$L84040", target = 0x004260C6 },
+  { offset = 0x3E6, type = "DIR32", symbol = "$L84041", target = 0x004260EB },
+  { offset = 0x3EA, type = "DIR32", symbol = "$L84037", target = 0x00426212 },
+  { offset = 0x3EE, type = "DIR32", symbol = "$L84049", target = 0x004261AA },
+  { offset = 0x3F2, type = "DIR32", symbol = "$L84037", target = 0x00426212 },
+  { offset = 0x3F6, type = "DIR32", symbol = "$L84044", target = 0x00426146 },
+  { offset = 0x3FA, type = "DIR32", symbol = "$L84037", target = 0x00426212 },
+  { offset = 0x3FE, type = "DIR32", symbol = "$L84046", target = 0x0042614B },
+]
+
 [units.main-added-callback]
 source = "src/Main.cpp"
 object = "build/matching/Main.obj"
