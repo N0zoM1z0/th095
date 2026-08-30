@@ -115,7 +115,7 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | `0x0042AD60` | 5,309 | 1 caller / 16 internal callees | source-present photo-stage state machine | Capture crop, texture, best-shot, animation, and boundary-fade owner |
 | `0x00403440` | 5,129 | 1 caller / 6 internal callees | source-present Background stage interpreter | TH095 variable-size camera/photo script, Hermite/easing, and four motion modes |
 | `0x00402250..0x00402E90` | 1,760 | lifecycle, three callbacks, loader, VM updater | six exact / three source-present Background functions | Connects selected-scene stage data to the TH095 camera, eight stage VMs, and three photograph-border VMs |
-| `0x00402750..0x00403431` | 2,279 | draw coordinator / renderer / culler | one exact / three source-present Background functions | Four stage layers, fog and viewport camera state, plus TH095's clamped photograph depth mask |
+| `0x00402750..0x00403431` | 2,279 | draw coordinator / renderer / culler | two exact / two source-present Background functions | Four stage layers, fog and viewport camera state, plus TH095's clamped photograph depth mask |
 | `0x0042F190` | 3,463 | 1 caller / 6 internal callees | source-present photo-game main state | Complete movement/focus/animation/bounds/history loop; compiler-local residuals deferred |
 | `0x00439200` | 2,525 | 2 callers / 16 internal callees | `SoundPlayer::ProcessQueues` | Shared threaded audio state machine |
 | `0x00420240` | 1,326 | CRT root / 30 internal callees | `WinMain` | Process-level ownership and subsystem naming |
@@ -133,9 +133,10 @@ easing table, and all 647 relocations. A subsequent target-local audit admitted
 gameplay/resource clusters. Five exact save/unlock helpers now prove that
 `0x00447D00` manages TH095's twelve-group scene-selection UI rather than a
 traditional stage loop. The adjacent 716-byte preview/status updater at
-`0x0044BBD0` is source-present with its 78-byte bounded-queue dependency
-exact. Its staged 1,989-byte preview-text builder at `0x0044BEA0` and 128-byte
-rolling-key text decoder at `0x0044D020` are now exact. The adjacent
+`0x0044BBD0` is now exact, including its target count-first bounded-queue
+source shape; its 78-byte queue dependency is exact as well. Its staged
+1,989-byte preview-text builder at `0x0044BEA0` and 128-byte rolling-key text
+decoder at `0x0044D020` are now exact. The adjacent
 2,278-byte scene-detail updater at `0x0044C670` and its three VM helpers are
 also exact. Target evidence now identifies `0x0044DCA0` as the TH095-specific
 4-by-20 replay browser rather than a scene-select state updater. Its complete

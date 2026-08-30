@@ -1292,6 +1292,10 @@ void PhotoEnemyView::Deactivate()
     memset(this, 0, sizeof(*this));
 }
 
+// Stock VC7.1 identifier buckets reproduce the target's two scheduled-call
+// locals without relying on the patched TH08 var_order frontend.
+#define scheduledArgumentIndex restartCommandProcessingLocal05
+#define scheduledCurrentFrame averagedPanLocal12
 i32 PhotoEnemyView::UpdateScheduledEclCalls()
 {
     i32 activeScheduleCount = 0;
@@ -1303,9 +1307,9 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
         }
 
         activeScheduleCount++;
-        i32 argumentIndex;
-        i32 currentFrame = g_PhotoEnemyGame->frameCounter;
-        if (currentFrame >= this->scheduledCallFrames[scheduleIndex])
+        i32 scheduledArgumentIndex;
+        i32 scheduledCurrentFrame = g_PhotoEnemyGame->frameCounter;
+        if (scheduledCurrentFrame >= this->scheduledCallFrames[scheduleIndex])
         {
             g_PhotoEnemyManager->eclManager->InitializeContext(
                 reinterpret_cast<PhotoEnemyEclContextView *>(
@@ -1313,13 +1317,13 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
                 this->scheduledCalls[scheduleIndex].subroutineId);
             this->scheduledCallFrames[scheduleIndex] = -1;
 
-            for (argumentIndex = 0; argumentIndex < 16; ++argumentIndex)
+            for (scheduledArgumentIndex = 0; scheduledArgumentIndex < 16; ++scheduledArgumentIndex)
             {
-                if (this->allocatedEclArgs[argumentIndex] != NULL)
+                if (this->allocatedEclArgs[scheduledArgumentIndex] != NULL)
                 {
-                    void *argument = this->allocatedEclArgs[argumentIndex];
+                    void *argument = this->allocatedEclArgs[scheduledArgumentIndex];
                     free(argument);
-                    this->allocatedEclArgs[argumentIndex] = NULL;
+                    this->allocatedEclArgs[scheduledArgumentIndex] = NULL;
                 }
             }
 
@@ -1334,5 +1338,7 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
 
     return 0;
 }
+#undef scheduledArgumentIndex
+#undef scheduledCurrentFrame
 
 } // namespace th095

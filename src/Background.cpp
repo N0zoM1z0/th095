@@ -583,55 +583,61 @@ i32 Background::DrawHighPrio()
 // FUNCTION: TH095 0x00402990.
 i32 Background::DrawLowPrio()
 {
-    i32 left;
-    i32 top;
-    i32 right;
-    i32 bottom;
-    D3DRECT clearRect;
+    // All five real draw-rectangle locals occupy one gapless 0x20 target lane.
+    // Keeping them as a semantic aggregate restores the VC7.1 physical order
+    // without padding or inactive storage.
+    struct DrawLowPrioLocals
+    {
+        i32 left;
+        i32 top;
+        D3DRECT clearRect;
+        i32 right;
+        i32 bottom;
+    } locals;
 
     if (reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive != 0)
     {
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)
             ->SetMixColorDefault();
 
-        left = (i32)(reinterpret_cast<BackgroundStateView *>(this)
+        locals.left = (i32)(reinterpret_cast<BackgroundStateView *>(this)
                          ->photoAreaPosition.x -
                      reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.x /
                          2.0f +
                      128.0f + 192.0f);
-        top = (i32)(reinterpret_cast<BackgroundStateView *>(this)
+        locals.top = (i32)(reinterpret_cast<BackgroundStateView *>(this)
                         ->photoAreaPosition.y -
                     reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.y /
                         2.0f +
                     16.0f);
-        right = (i32)(reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.x /
+        locals.right = (i32)(reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.x /
                           2.0f +
                       reinterpret_cast<BackgroundStateView *>(this)
                           ->photoAreaPosition.x +
                       128.0f + 192.0f);
-        bottom = (i32)(reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.y /
+        locals.bottom = (i32)(reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.y /
                            2.0f +
                        reinterpret_cast<BackgroundStateView *>(this)
                            ->photoAreaPosition.y +
                        16.0f);
 
-        if (left < 128)
-            left = 128;
-        if (right > 512)
-            right = 512;
-        if (top < 16)
-            top = 16;
-        if (bottom > 464)
-            bottom = 464;
+        if (locals.left < 128)
+            locals.left = 128;
+        if (locals.right > 512)
+            locals.right = 512;
+        if (locals.top < 16)
+            locals.top = 16;
+        if (locals.bottom > 464)
+            locals.bottom = 464;
 
         g_Supervisor.d3dDevice->Clear(
             0, NULL, D3DCLEAR_ZBUFFER, 0, 1.0f, 0);
-        clearRect.x1 = left;
-        clearRect.y1 = top;
-        clearRect.x2 = right;
-        clearRect.y2 = bottom;
+        locals.clearRect.x1 = locals.left;
+        locals.clearRect.y1 = locals.top;
+        locals.clearRect.x2 = locals.right;
+        locals.clearRect.y2 = locals.bottom;
         g_Supervisor.d3dDevice->Clear(
-            1, &clearRect, D3DCLEAR_ZBUFFER, 0, 0.0f, 0);
+            1, &locals.clearRect, D3DCLEAR_ZBUFFER, 0, 0.0f, 0);
         reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
             D3DRS_ZWRITEENABLE, TRUE);
         reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(

@@ -3,6 +3,16 @@
 namespace th095
 {
 
+static __forceinline void RefreshSelectionQueuePush(
+    SceneValueQueue *queue, i32 value)
+{
+    if (queue->count < queue->capacity)
+    {
+        queue->values[queue->count] = value;
+        queue->count++;
+    }
+}
+
 i32 SceneValueQueue::Push(i32 value)
 {
     if (this->count >= this->capacity)
@@ -28,82 +38,90 @@ i32 SceneValueQueue::Pop()
     return 0;
 }
 
+// Target-proven VC7.1 backing buckets keep the byte display state at EBP-1
+// and the seven dword/pointer locals at EBP-8..EBP-20. The bounded inline
+// queue helper above preserves the target's count-first evaluation order.
+#define refreshDisplayState refreshDisplayStateLocal23
+#define refreshSelectedGroup restartCommandProcessingLocal05
+#define refreshGroupCursorIndex averagedPanLocal12
+#define refreshSelectedScene iLocal11
+#define refreshSelectionQueue commandCursorLocal02
+#define refreshUnlockGroup soundIndexLocal01
+#define refreshLockedGroup jLocal00
+#define refreshStateGroup preloadBufferLocal03
 void SceneSelectControllerView::RefreshSceneSelection(i32)
 {
-    i8 displayState;
-    i32 selectedGroup;
-    i32 groupCursorIndex;
-    i32 selectedScene;
-    SceneValueQueue *selectionQueue;
-    i32 unlockGroup;
-    i32 lockedGroup;
-    i32 stateGroup;
+    i8 refreshDisplayState;
+    i32 refreshSelectedGroup;
+    i32 refreshGroupCursorIndex;
+    i32 refreshSelectedScene;
+    SceneValueQueue *refreshSelectionQueue;
+    i32 refreshUnlockGroup;
+    i32 refreshLockedGroup;
+    i32 refreshStateGroup;
 
     g_SceneSupervisor.EnterCriticalSectionWrapper(4);
     g_SceneSupervisor.lockCounts[4]++;
 
-    selectedGroup = this->selectedGroup;
-    groupCursorIndex = this->selectedGroup;
-    selectedScene = this->groupCursors[groupCursorIndex].current;
-    selectionQueue = &this->selectionQueue;
-    if (selectionQueue->count < selectionQueue->capacity)
-    {
-        selectionQueue->values[selectionQueue->count] =
-            (selectedGroup << 8) | selectedScene;
-        selectionQueue->count++;
-    }
+    refreshSelectedGroup = this->selectedGroup;
+    refreshGroupCursorIndex = this->selectedGroup;
+    refreshSelectedScene = this->groupCursors[refreshGroupCursorIndex].current;
+    refreshSelectionQueue = &this->selectionQueue;
+    RefreshSelectionQueuePush(
+        refreshSelectionQueue,
+        (refreshSelectedGroup << 8) | refreshSelectedScene);
 
     this->vmIds.SetInterrupt(0x82, 1);
 
-    unlockGroup = this->selectedGroup;
-    if (g_SceneSaveData->IsSceneGroupUnlocked(unlockGroup) != 0)
+    refreshUnlockGroup = this->selectedGroup;
+    if (g_SceneSaveData->IsSceneGroupUnlocked(refreshUnlockGroup) != 0)
     {
         this->groupPreviewQueue.Push(g_SelectedScene->groupDisplayValue);
         this->scenePreviewQueue.Push(g_SelectedScene->sceneDisplayValue);
     }
     else
     {
-        lockedGroup = this->selectedGroup;
-        this->groupPreviewQueue.Push(-(lockedGroup + 1));
+        refreshLockedGroup = this->selectedGroup;
+        this->groupPreviewQueue.Push(-(refreshLockedGroup + 1));
         this->scenePreviewQueue.Push(0);
     }
 
-    displayState = 0;
-    stateGroup = this->selectedGroup;
-    if (g_SceneSaveData->IsSceneGroupUnlocked(stateGroup) == 0)
+    refreshDisplayState = 0;
+    refreshStateGroup = this->selectedGroup;
+    if (g_SceneSaveData->IsSceneGroupUnlocked(refreshStateGroup) == 0)
     {
-        displayState = this->lockedDisplayState;
+        refreshDisplayState = this->lockedDisplayState;
     }
     else if (g_SceneSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].score == 0)
     {
         if (g_SceneSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].attemptCount == 0)
         {
-            displayState = this->unattemptedDisplayState;
+            refreshDisplayState = this->unattemptedDisplayState;
         }
         else
         {
-            displayState = this->attemptedDisplayState;
+            refreshDisplayState = this->attemptedDisplayState;
         }
     }
     else if (g_SceneSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].score <
              g_SelectedScene->scoreRequirement)
     {
-        displayState = this->belowRequirementDisplayState;
+        refreshDisplayState = this->belowRequirementDisplayState;
     }
     else
     {
-        displayState = g_SelectedScene->displayState;
+        refreshDisplayState = g_SelectedScene->displayState;
     }
 
-    if (displayState != this->currentDisplayState)
+    if (refreshDisplayState != this->currentDisplayState)
     {
         if (this->stateHistory.count > 2)
         {
             this->stateHistory.count = 2;
         }
-        this->stateHistory.values[this->stateHistory.count] = displayState;
+        this->stateHistory.values[this->stateHistory.count] = refreshDisplayState;
         this->stateHistory.count++;
-        this->currentDisplayState = displayState;
+        this->currentDisplayState = refreshDisplayState;
         this->vmIds.SetInterrupt(0x15, 5);
         this->vmIds.SetInterrupt(0x16, 5);
     }
@@ -112,6 +130,14 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
     g_SceneSupervisor.lockCounts[4]--;
     this->previewTimer = 0;
 }
+#undef refreshDisplayState
+#undef refreshSelectedGroup
+#undef refreshGroupCursorIndex
+#undef refreshSelectedScene
+#undef refreshSelectionQueue
+#undef refreshUnlockGroup
+#undef refreshLockedGroup
+#undef refreshStateGroup
 
 #define BUILD_SCENE_PREVIEW_LINE(vmSlot, scriptIndex, columnIndex)             \
     this->previewTextVmIds[vmSlot] =                                          \

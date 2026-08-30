@@ -598,53 +598,70 @@ i32 PhotoRotatingLaserView::Draw()
     return 0;
 }
 
+// The straight and rotating secondary-draw paths share the same target-proven
+// VC7.1 local hash order. Hoisting the real VM pointer keeps all six live
+// locals in one allocation lane; no scratch or padding locals are used.
+#define secondaryStep restartCommandProcessingLocal05
+#define secondaryCount averagedPanLocal12
+#define secondaryPosition iLocal11
+#define secondaryDistance commandCursorLocal02
+#define secondaryVm soundIndexLocal01
+#define secondaryStartPosition jLocal00
 i32 PhotoStraightLaserView::DrawSecondary()
 {
-    i32 count = 0;
-    f32 distance = 6.0f;
-    Float3 step;
-    step.FromAngleMagnitude(this->angle, 6.0f);
-    Float3 startPosition =
-        *reinterpret_cast<Float3 *>(&this->position) + step;
-    Float3 position = startPosition;
-    step += step;
+    i32 secondaryCount = 0;
+    f32 secondaryDistance = 6.0f;
+    AnmVm *secondaryVm;
+    Float3 secondaryStep;
+    secondaryStep.FromAngleMagnitude(this->angle, 6.0f);
+    Float3 secondaryStartPosition =
+        *reinterpret_cast<Float3 *>(&this->position) + secondaryStep;
+    Float3 secondaryPosition = secondaryStartPosition;
+    secondaryStep += secondaryStep;
 
-    while (distance + 6.0f < this->length)
+    while (secondaryDistance + 6.0f < this->length)
     {
-        count++;
-        AnmVm *vm = g_AnmManager->GetVm(
-            g_PhotoEffectManager->anm->CreateVm(0x126, &position));
-        vm->color1.color = g_PhotoEffectColors[this->spawn.color];
-        position += step;
-        distance += 12.0f;
+        secondaryCount++;
+        secondaryVm = g_AnmManager->GetVm(
+            g_PhotoEffectManager->anm->CreateVm(0x126, &secondaryPosition));
+        secondaryVm->color1.color = g_PhotoEffectColors[this->spawn.color];
+        secondaryPosition += secondaryStep;
+        secondaryDistance += 12.0f;
     }
     this->state = 1;
-    return count;
+    return secondaryCount;
 }
 
 i32 PhotoRotatingLaserView::DrawSecondary()
 {
-    i32 count = 0;
-    f32 distance = 6.0f;
-    Float3 step;
-    step.FromAngleMagnitude(this->angle, 6.0f);
-    Float3 startPosition =
-        *reinterpret_cast<Float3 *>(&this->position) + step;
-    Float3 position = startPosition;
-    step += step;
+    i32 secondaryCount = 0;
+    f32 secondaryDistance = 6.0f;
+    AnmVm *secondaryVm;
+    Float3 secondaryStep;
+    secondaryStep.FromAngleMagnitude(this->angle, 6.0f);
+    Float3 secondaryStartPosition =
+        *reinterpret_cast<Float3 *>(&this->position) + secondaryStep;
+    Float3 secondaryPosition = secondaryStartPosition;
+    secondaryStep += secondaryStep;
 
-    while (distance + 6.0f < this->length)
+    while (secondaryDistance + 6.0f < this->length)
     {
-        count++;
-        AnmVm *vm = g_AnmManager->GetVm(
-            g_PhotoEffectManager->anm->CreateVm(0x126, &position));
-        vm->color1.color = g_PhotoEffectColors[this->spawn.color];
-        position += step;
-        distance += 12.0f;
+        secondaryCount++;
+        secondaryVm = g_AnmManager->GetVm(
+            g_PhotoEffectManager->anm->CreateVm(0x126, &secondaryPosition));
+        secondaryVm->color1.color = g_PhotoEffectColors[this->spawn.color];
+        secondaryPosition += secondaryStep;
+        secondaryDistance += 12.0f;
     }
     this->state = 1;
-    return count;
+    return secondaryCount;
 }
+#undef secondaryStep
+#undef secondaryCount
+#undef secondaryPosition
+#undef secondaryDistance
+#undef secondaryVm
+#undef secondaryStartPosition
 
 i32 PhotoStraightLaserView::CheckCollision(
     Float3 *position, Float3 *size, i32 capture)
@@ -1303,29 +1320,38 @@ i32 PhotoRotatingLaserView::CountPhotoTargets(
     return count;
 }
 
+// Non-trivial Float3 locals must remain independent so VC7 preserves constructor
+// timing. These backing buckets restore the target physical order
+// difference -> delta -> local without aggregating the objects.
+#define nearbyLocal restartCommandProcessingLocal05
+#define nearbyDelta averagedPanLocal12
+#define nearbyDifference iLocal11
 i32 PhotoStraightLaserView::CountNearbyTargets(
     Float3 *position, f32 radius)
 {
-    Float3 local;
-    Float3 difference =
+    Float3 nearbyLocal;
+    Float3 nearbyDifference =
         *position - *reinterpret_cast<Float3 *>(&this->position);
-    Float3 delta = difference;
-    RotatePhotoEffectVector(&local, &delta, -this->angle);
+    Float3 nearbyDelta = nearbyDifference;
+    RotatePhotoEffectVector(&nearbyLocal, &nearbyDelta, -this->angle);
 
-    delta.x = local.x - radius;
-    delta.y = local.y - radius;
-    local.x += radius;
-    local.y += radius;
+    nearbyDelta.x = nearbyLocal.x - radius;
+    nearbyDelta.y = nearbyLocal.y - radius;
+    nearbyLocal.x += radius;
+    nearbyLocal.y += radius;
 
-    if (delta.x > this->length ||
-        this->width / 2.0f < delta.y ||
-        local.x < 0.0f ||
-        local.y < -this->width / 2.0f)
+    if (nearbyDelta.x > this->length ||
+        this->width / 2.0f < nearbyDelta.y ||
+        nearbyLocal.x < 0.0f ||
+        nearbyLocal.y < -this->width / 2.0f)
     {
         return 0;
     }
     return 2;
 }
+#undef nearbyLocal
+#undef nearbyDelta
+#undef nearbyDifference
 
 i32 PhotoRotatingLaserView::CountNearbyTargets(
     Float3 *position, f32 radius)

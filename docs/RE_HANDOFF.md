@@ -134,17 +134,21 @@
   the manager's eight-entry photo-target table at `+0x26AE00`, the main and
   alternate ECL subroutine IDs at enemy `+0x2898/+0x289A`, and the split
   between deactivating ordinary enemies and preserving/restarting photo
-  subjects. `UpdateScheduledEclCalls @ 0x00416F30` is source-present at the
-  exact 309-byte extent with all five relocations and 280/289 comparable bytes;
-  its only residual is the exchange of two VC7.1 local slots.
-- `PhotoEnemyTimelineView::Run @ 0x004163F0` is source-present for the complete
-  sixteen-opcode timeline interpreter. It covers fixed, random-range,
+  subjects. `UpdateScheduledEclCalls @ 0x00416F30` is now canonical exact for
+  all 309 bytes and five relocations. The prior nine-byte residual was only the
+  exchange of the real `argumentIndex`/`currentFrame` stack homes; the same
+  target-proven shallow identifier-hash buckets used elsewhere restore them
+  without changing the scheduled-call semantics.
+- `PhotoEnemyTimelineView::Run @ 0x004163F0` remains source-present for the
+  complete sixteen-opcode timeline interpreter. It covers fixed, random-range,
   random-width, and extended enemy spawns with their X-mirrored variants,
-  direct timeline-enemy state writes, and the active-enemy wait operation. Its
-  pinned VC7.1 probe reproduces the exact 818-byte authored extent plus the
-  exact 64-byte switch table, resolves all 37 relocations, and matches 701/734
-  comparable bytes. The 33 residual bytes are compiler-local stack
-  displacements and receive no exact credit.
+  direct timeline-enemy state writes, and the active-enemy wait operation. The
+  target body is 818 bytes plus a 64-byte switch table, but the old handoff
+  claim that a pinned source probe also emitted exactly 818 bytes is stale. A
+  detached replay of commit `746d38a`, using its historical source/headers and
+  the same pinned VC7.1 compiler, emits 882 bytes, exactly like the current
+  full-source replay. Treat the old 818/701-of-734 probe record as invalid and
+  do not optimize future work around it.
 - `PhotoEnemyManagerView::Spawn @ 0x004156C0` is exact for all 350 bytes and
   three relocations. It scans 128 slots, copies the manager's leading
   `0x4CC0`-byte spawn template, initializes position/life/index and the main
@@ -241,14 +245,16 @@
   unit preserves all pre-existing ANM switch-label identities; all fourteen
   canonical `AnmManager.cpp` units replay after the separation.
 - `SceneSelectControllerView::RefreshSceneSelection @ 0x0044BBD0` is now
-  source-present for its complete 716-byte TH095 scene-preview refresh. It
-  serializes selection changes under Supervisor critical section 4, queues the
-  group/scene preview values, derives locked/unattempted/attempted/score-gated
-  display state, interrupts the two status VMs, and resets the preview timer.
-  Its natural VC7.1 probe is 715 bytes; stack-slot/register allocation and one
-  global-load encoding remain non-exact and receive no exact credit.
-  `SceneValueQueue::Push @ 0x00450DD0`, used four times by the refresh path, is
-  exact for all 78 bytes.
+  canonical exact for all 716 bytes and 32 relocations. It serializes selection
+  changes under Supervisor critical section 4, queues the group/scene preview
+  values, derives locked/unattempted/attempted/score-gated display state,
+  interrupts the two status VMs, and resets the preview timer. Seven real
+  dword/pointer locals reuse the established VC7.1 hash rank while the byte
+  display state uses backing bucket `refreshDisplayStateLocal23` at `EBP-1`.
+  The final one-byte/codegen residual disappeared only after restoring a bounded
+  `__forceinline` queue helper: VC7 then evaluates count/index on the LHS before
+  computing the packed value, matching the target register chronology.
+  `SceneValueQueue::Push @ 0x00450DD0` remains exact for all 78 bytes.
 - `SceneSelectControllerView::BuildScenePreviewText @ 0x0044BEA0` is exact for
   all 1,989 bytes and all 141 relocations. It proves the TH095-only staged
   three-column scene-preview flow, five persistent scene states, VM scripts
@@ -743,13 +749,14 @@ missing behavior. The adjacent `0x00402620` scalar deleting destructor is now
 an explicit compiler-owned exclusion.
 
 The BackgroundInf draw/render spine at `0x00402750/0x00402990/0x00402F60/
-0x004031A0` is now source-present. `DrawHighPrio` is canonical exact for 566
-bytes and all 40 relocations. The 490-byte `DrawLowPrio` probe has the exact
-target extent, every relocation, and 345/362 comparable bytes; its residual is
-only local-slot allocation. The renderer and culler naturally emit 544/622
-bytes against 565/658-byte targets and preserve the full traversal, VM
-position/scale, fog-mode, viewport-camera, distance, and forward-plane logic.
-Do not manufacture their remaining compiler frame shape.
+0x004031A0` is now source-present. `DrawHighPrio` and `DrawLowPrio` are both
+canonical exact, totaling 1,056 authored bytes and all 72 relocations. The
+490-byte low-priority path closes naturally with one fully live, gapless 0x20
+semantic aggregate ordered `{left, top, D3DRECT clearRect, right, bottom}`; no
+padding or inactive storage is involved. The renderer and culler naturally
+emit 544/622 bytes against 565/658-byte targets and preserve the full
+traversal, VM position/scale, fog-mode, viewport-camera, distance, and
+forward-plane logic. Do not manufacture their remaining compiler frame shape.
 
 The remaining BackgroundInf lifecycle and viewport edges are now closed.
 `ConfigureBackgroundViewport @ 0x00401B70` is canonical exact for 108 bytes
@@ -930,17 +937,26 @@ The primary/secondary draw traversals, three collision fanouts, and gated
 update/draw callbacks at `0x0041DAB0..0x0041E0BA` are now canonical exact for
 all 668 authored bytes. The collision entries prove vtable slots
 `+0x14/+0x18/+0x1C` and cached manager bounds `+0x5C/+0x68`; the callbacks
-prove the global suppression/freeze gates. Keep all thirteen PhotoEffect exact
-units, all PlayerInf exact units, the exact outer PhotoGame coordinator, and
-every established
-`PhotoCamera.cpp` unit green while extending shared views.
+prove the global suppression/freeze gates. The new exact source in the same
+translation unit renumbered five compiler-local `$L` symbols inside
+`PhotoRotatingLaserView::Update`; an offset-keyed audit proved all five DIR32 destinations unchanged
+(`0x41F976/0x41F773/0x41F6AA/0x41F6F7/0x41F7BF`), so only manifest-local
+symbol identities were refreshed. Keep all current PhotoEffect exact units, all
+PlayerInf exact units, the exact outer PhotoGame coordinator, and every
+established `PhotoCamera.cpp` unit green while extending shared views.
 
 The shared target-count methods at `0x0041E750/0x0041F280` and the two
-secondary particle draws at `0x0041F140/0x00420100` are also source-present.
-They prove 12-unit sampling along both laser types, script `0x126` particle
-creation, packet-color propagation, and the angle-local nearby-target test.
-Three probes have exact target sizes and every relocation but retain only
-compiler-local slot differences and remain conservatively non-exact.
+secondary particle draws at `0x0041F140/0x00420100` are source-present.
+`PhotoStraightLaserView::CountNearbyTargets @ 0x0041F280` plus both secondary
+draws are now canonical exact for 870 authored bytes and all twenty relocations;
+the rotating nearby-target override is identical-linker-folded to the same
+target. The nearby test must keep its three non-trivial `Float3` locals separate
+so constructor timing remains unchanged; target-proven backing buckets restore
+physical `difference -> delta -> local` order. Both secondary draws hoist the
+real VM pointer out of the loop, keep the original vector expressions, and use
+the same six-local hash rank. Aggregating those non-trivial vectors was a
+negative oracle because VC7 introduced constructor machinery.
+`CountPhotoTargets @ 0x0041E750` remains source-present and non-exact.
 
 The two large type-specific collision handlers at
 `0x0041E9C0/0x0041FA10` are source-present and recover the complete TH095
@@ -971,6 +987,18 @@ are already useful; defer compiler-frame alignment unless a natural
 target-local source-shape improvement appears. Always recalculate coverage
 after origin promotion and never preserve a percentage by withholding
 authored candidates.
+
+This pass also reclassified several tempting residuals as negative compiler
+oracles rather than exact candidates. `PhotoEnemyManagerView` construction
+keeps an unexplained 0x28 target-only frame expansion; its destructor interleaves
+three delete-expression homes around the real argument pointer. `WinMain`,
+`Supervisor::StartupThread`, `Supervisor::DeletedCallback`, `Supervisor::LoadDat`,
+`AnmLoaded::InitializeVm`, `AnmManagerVmLifecycleView::AddVm`, and the
+PhotoEffect factory/initializers likewise retain target-only EH/new/delete or
+unreferenced frame homes after their real locals are accounted for. Do not add
+inert storage to any of these. The two one-byte PhotoGame/Bullet callback OR
+residuals also remain deferred: swapping source operands changes the load order
+instead of reproducing the target destination register.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

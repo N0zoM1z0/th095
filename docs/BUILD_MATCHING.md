@@ -177,6 +177,35 @@ the PhotoGameTask flag gate. Preserve that semantic source and its exact
 dependencies; an explicit no-op jump would encode compiler output rather than
 recover authored C++.
 
+Additional stock-VC7.1 local-allocation oracles are now canonical:
+
+- `PhotoEnemyView::UpdateScheduledEclCalls @ 0x00416F30` proves that two
+  ordinary scalar locals can be fixed solely by the established shallow
+  identifier-hash buckets; do not rewrite the dispatch loop when only their
+  homes are exchanged.
+- Non-trivial vector objects must not be bundled merely to force layout.
+  `PhotoStraightLaserView::CountNearbyTargets @ 0x0041F280` is exact with
+  three independent `Float3` locals mapped through backing identifiers so the
+  physical order is `difference -> delta -> local`. An aggregate of those
+  `Float3`s makes VC7 emit constructor machinery and is a negative oracle.
+- The paired laser `DrawSecondary @ 0x0041F140/0x00420100` functions show that
+  moving a real loop-local VM pointer to function scope can truthfully join six
+  live locals into one allocation lane. Keeping the original vector expressions
+  and mapping `step/count/position/distance/vm/startPosition` through the known
+  hash rank reproduces both bodies exactly; rewriting the vectors as an
+  aggregate changes codegen even when the storage is semantically equivalent.
+- `Background::DrawLowPrio @ 0x00402990` is the positive POD-aggregate case:
+  the five real locals form a gapless 0x20 lane
+  `{left, top, D3DRECT, right, bottom}`. One semantic aggregate reproduces the
+  target without padding.
+- `SceneSelectControllerView::RefreshSceneSelection @ 0x0044BBD0` shows that
+  local homes and expression evaluation are separate problems. Seven
+  dword/pointer locals use the established backing rank, while byte-local
+  backing `refreshDisplayStateLocal23` gives `EBP-1`. The remaining one-byte
+  body-size difference vanished only when the manual queue write was restored
+  as a bounded `__forceinline` helper, which makes VC7 evaluate the LHS
+  count/index before the packed RHS and selects the target register chain.
+
 The adjacent task constructor proves that unoptimized VC7.1 preserves nested
 member-construction source shape even when the constructor body immediately
 clears the complete object. Model the `+0x104` completion state as an enclosing
