@@ -407,13 +407,15 @@
 ## Next bounded lane
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
-closed exactly. `PhotoGameTaskView::InitializeSubsystems @ 0x00417A70`,
-`ShutdownSubsystems @ 0x00417E70`, `Update @ 0x00418100`, and
-`DrawHud @ 0x00418420` contribute 2,360 authored bytes and enforce all 127
-relocations. They prove the `0x124` task layout, complete live ownership graph,
-replay/help exit gates, captured-photo VM execution, countdown/ECL restart,
-and the TH095 score/photo/scene HUD. Preserve all four units while extending
-shared subsystem views.
+closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`
+through `OnDraw @ 0x004186B0`. Its ten canonical units contribute 3,260
+authored bytes and enforce all 178 relocations. They prove the `0x124` task
+layout, asynchronous capture/load gates, Chain registration, complete live
+ownership graph, replay/help exit gates, captured-photo VM execution,
+countdown/ECL restart, and the TH095 score/photo/scene HUD. The exact delete
+wrapper at `0x004180A0` independently corrects `0x00417E70` from a provisional
+`ShutdownSubsystems` name to the actual C++ destructor. Preserve all ten units
+while extending shared subsystem views.
 
 A cold affected-object audit also repaired stale VC7.1 compiler-local label
 names left by earlier shared `AnmManager.hpp` growth. Six ANM units, including
@@ -422,13 +424,13 @@ PhotoGame unit now replay with their current COFF `$Lxxxxx` identities. All
 129 units across the fourteen audited objects are exact; only manifest-local
 symbol names changed, never target destinations or credited bytes.
 
-Continue outward through the immediately adjacent GameTask/FrontInf cluster at
-`0x00417070..0x00418716`. The next high-connectivity pair is the asynchronous
-startup worker at `0x00417D20` and task factory at `0x00417F80`; close their
-`0x00418690/0x004186B0` callback wrappers and `0x004180A0` destroy entry in the
-same lane. Then take the paired FrontInf creation/destruction entries at
-`0x00417410/0x00417550` before the 873-byte update hub at `0x004175B0`.
-Preserve the independently exact `PhotoToScreen @ 0x004186D0` bridge.
+Continue outward through the immediately adjacent `FrontInf` cluster at
+`0x00417070..0x004179CC`. The next high-connectivity target is the 873-byte
+update hub at `0x004175B0`; recover its manager layout and call graph first,
+then close the paired create/destroy entries at `0x00417410/0x00417550`, the
+constructor/initializer around `0x00417070..0x00417333`, and the small
+`0x00417920/0x00417970/0x004179A0` callbacks. Preserve the independently exact
+`PhotoToScreen @ 0x004186D0` bridge and the complete ten-unit GameTask cluster.
 
 ## Closed lanes and preservation constraints
 

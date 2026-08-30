@@ -9573,6 +9573,20 @@ relocations = [
   { offset = 0x3E, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
 ]
 
+[units.photo-game-task-constructor]
+source = "src/PhotoGameTask.cpp"
+object = "build/matching/PhotoGameTask.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameTaskView::PhotoGameTaskView"]
+symbol = "??0PhotoGameTaskView@th095@@QAE@XZ"
+target_address = 0x004179D0
+size = 0x94
+relocations = [
+  { offset = 0x3D, type = "REL32", symbol = "?Initialize@PhotoRuntimeConfigView@th095@@QAEXXZ", target = 0x00418720 },
+  { offset = 0x74, type = "DIR32", symbol = "??_C@_0BK@FDCOKIOF@pBinitialize?5GameTaskInf?6?$AA@", target = 0x00495638 },
+  { offset = 0x79, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+]
+
 [units.photo-game-task-initialize-subsystems]
 source = "src/PhotoGameTask.cpp"
 object = "build/matching/PhotoGameTask.obj"
@@ -9620,12 +9634,47 @@ relocations = [
   { offset = 0x29E, type = "DIR32", symbol = "?g_PhotoGameClock2@th095@@3NA", target = 0x004C4E04 },
 ]
 
-[units.photo-game-task-shutdown-subsystems]
+[units.photo-game-task-load]
 source = "src/PhotoGameTask.cpp"
 object = "build/matching/PhotoGameTask.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
-functions = ["th095::PhotoGameTaskView::ShutdownSubsystems"]
-symbol = "?ShutdownSubsystems@PhotoGameTaskView@th095@@QAEXXZ"
+functions = ["th095::PhotoGameTaskView::Load"]
+symbol = "?Load@PhotoGameTaskView@th095@@SIXPAX@Z"
+target_address = 0x00417D20
+size = 0x14F
+relocations = [
+  { offset = 0xA, type = "DIR32", symbol = "?g_PhotoGameTask@th095@@3PAUPhotoGameTaskView@1@A", target = 0x004BDEC8 },
+  { offset = 0x28, type = "DIR32", symbol = "?g_PhotoCaptureManager@th095@@3PAUPhotoCaptureManagerTaskView@1@A", target = 0x004CA1B8 },
+  { offset = 0x34, type = "DIR32", symbol = "?g_PhotoCaptureManager@th095@@3PAUPhotoCaptureManagerTaskView@1@A", target = 0x004CA1B8 },
+  { offset = 0x3F, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
+  { offset = 0x54, type = "DIR32", symbol = "__imp__Sleep@4", target = 0x00495058 },
+  { offset = 0x5E, type = "REL32", symbol = "?InitializeSubsystems@PhotoGameTaskView@th095@@QAEHXZ", target = 0x00417A70 },
+  { offset = 0x6D, type = "DIR32", symbol = "?g_PhotoLoadWaitFlag@th095@@3HA", target = 0x004C6E70 },
+  { offset = 0x78, type = "DIR32", symbol = "__imp__Sleep@4", target = 0x00495058 },
+  { offset = 0x80, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
+  { offset = 0x8E, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
+  { offset = 0xB5, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
+  { offset = 0xBF, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
+  { offset = 0xC8, type = "DIR32", symbol = "?g_PhotoGameSupervisor@th095@@3UPhotoGameSupervisorView@1@A", target = 0x004C4670 },
+  { offset = 0xCD, type = "REL32", symbol = "?ConfigureMusic@PhotoGameSupervisorView@th095@@QAEHHH@Z", target = 0x004252F0 },
+  { offset = 0xD2, type = "DIR32", symbol = "?g_PhotoGameSupervisor@th095@@3UPhotoGameSupervisorView@1@A", target = 0x004C4670 },
+  { offset = 0xD7, type = "REL32", symbol = "?CompleteLoading@PhotoGameSupervisorView@th095@@QAEXXZ", target = 0x00425730 },
+  { offset = 0xF2, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
+  { offset = 0xFE, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
+  { offset = 0x104, type = "DIR32", symbol = "?g_PhotoLoadBusy@th095@@3HA", target = 0x004C4CC4 },
+  { offset = 0x10E, type = "DIR32", symbol = "?g_PhotoLoadReady@th095@@3HA", target = 0x004C4CC0 },
+  { offset = 0x12E, type = "DIR32", symbol = "?g_PhotoGameSupervisor@th095@@3UPhotoGameSupervisorView@1@A", target = 0x004C4670 },
+  { offset = 0x133, type = "REL32", symbol = "?FailLoading@PhotoGameSupervisorView@th095@@QAEXXZ", target = 0x004257E0 },
+  { offset = 0x139, type = "DIR32", symbol = "?g_PhotoLoadBusy@th095@@3HA", target = 0x004C4CC4 },
+  { offset = 0x143, type = "DIR32", symbol = "?g_PhotoLoadReady@th095@@3HA", target = 0x004C4CC0 },
+]
+
+[units.photo-game-task-destructor]
+source = "src/PhotoGameTask.cpp"
+object = "build/matching/PhotoGameTask.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameTaskView::~PhotoGameTaskView"]
+symbol = "??1PhotoGameTaskView@th095@@QAE@XZ"
 target_address = 0x00417E70
 size = 0x10F
 relocations = [
@@ -9656,6 +9705,50 @@ relocations = [
   { offset = 0xE9, type = "DIR32", symbol = "?g_ControllerRuntimeFlags@th095@@3IA", target = 0x004C4AB4 },
   { offset = 0xF7, type = "DIR32", symbol = "?g_PhotoScreenFadeColor@th095@@3IA", target = 0x004C4E28 },
   { offset = 0x103, type = "DIR32", symbol = "?g_PhotoScreenFadeColor@th095@@3IA", target = 0x004C4E28 },
+]
+
+[units.photo-game-task-create]
+source = "src/PhotoGameTask.cpp"
+object = "build/matching/PhotoGameTask.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameTaskView::Create"]
+symbol = "?Create@PhotoGameTaskView@th095@@SIPAU12@H@Z"
+target_address = 0x00417F80
+size = 0x11C
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?Create@PhotoGameTaskView@th095@@SIPAU12@H@Z", target = 0x004935BB },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x24, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x3F, type = "REL32", symbol = "??0PhotoGameTaskView@th095@@QAE@XZ", target = 0x004179D0 },
+  { offset = 0x67, type = "DIR32", symbol = "?g_PhotoGameTask@th095@@3PAUPhotoGameTaskView@1@A", target = 0x004BDEC8 },
+  { offset = 0x8D, type = "DIR32", symbol = "?OnUpdate@PhotoGameTaskView@th095@@SIHPAU12@@Z", target = 0x00418690 },
+  { offset = 0x92, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x97, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
+  { offset = 0xAE, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xB3, type = "REL32", symbol = "?AddToCalcChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418A20 },
+  { offset = 0xC4, type = "DIR32", symbol = "?OnDraw@PhotoGameTaskView@th095@@SIHPAU12@@Z", target = 0x004186B0 },
+  { offset = 0xC9, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xCE, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
+  { offset = 0xE5, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xEA, type = "REL32", symbol = "?AddToDrawChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418B30 },
+  { offset = 0xFD, type = "DIR32", symbol = "?Load@PhotoGameTaskView@th095@@SIXPAX@Z", target = 0x00417D20 },
+  { offset = 0x102, type = "DIR32", symbol = "?g_PhotoGameSupervisor@th095@@3UPhotoGameSupervisorView@1@A", target = 0x004C4670 },
+  { offset = 0x107, type = "REL32", symbol = "?StartReplayScan@PhotoGameSupervisorView@th095@@QAE?AW4ZunResult@2@P6IXPAX@Z0@Z", target = 0x004255B0 },
+  { offset = 0x114, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+]
+
+[units.photo-game-task-destroy]
+source = "src/PhotoGameTask.cpp"
+object = "build/matching/PhotoGameTask.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameTaskView::Destroy"]
+symbol = "?Destroy@PhotoGameTaskView@th095@@QAEXXZ"
+target_address = 0x004180A0
+size = 0x5F
+relocations = [
+  { offset = 0x2B, type = "REL32", symbol = "??1PhotoGameTaskView@th095@@QAE@XZ", target = 0x00417E70 },
+  { offset = 0x3E, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
 ]
 
 [units.photo-game-task-update]
@@ -9742,4 +9835,28 @@ relocations = [
   { offset = 0x24A, type = "DIR32", symbol = "?g_PhotoAsciiManager@th095@@3UPhotoAsciiManagerTaskView@1@A", target = 0x004A9F80 },
   { offset = 0x24F, type = "REL32", symbol = "?AddFormatText@PhotoAsciiManagerTaskView@th095@@QAAHPAUFloat3@2@PBDZZ", target = 0x00401660 },
   { offset = 0x258, type = "DIR32", symbol = "?g_PhotoAsciiTextColor@th095@@3IA", target = 0x004B1FEC },
+]
+
+[units.photo-game-task-on-update]
+source = "src/PhotoGameTask.cpp"
+object = "build/matching/PhotoGameTask.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameTaskView::OnUpdate"]
+symbol = "?OnUpdate@PhotoGameTaskView@th095@@SIHPAU12@@Z"
+target_address = 0x00418690
+size = 0x13
+relocations = [
+  { offset = 0xB, type = "REL32", symbol = "?Update@PhotoGameTaskView@th095@@QAEHXZ", target = 0x00418100 },
+]
+
+[units.photo-game-task-on-draw]
+source = "src/PhotoGameTask.cpp"
+object = "build/matching/PhotoGameTask.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameTaskView::OnDraw"]
+symbol = "?OnDraw@PhotoGameTaskView@th095@@SIHPAU12@@Z"
+target_address = 0x004186B0
+size = 0x13
+relocations = [
+  { offset = 0xB, type = "REL32", symbol = "?DrawHud@PhotoGameTaskView@th095@@QAEHXZ", target = 0x00418420 },
 ]

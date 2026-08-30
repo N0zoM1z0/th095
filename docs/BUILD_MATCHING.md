@@ -120,3 +120,11 @@ natural aggregate containing the real locals can preserve their lifetimes
 and physical slot order without inert padding. The canonical
 `photo-game-task-update` and `photo-game-task-draw-hud` units enforce these
 patterns under build 3077.
+
+The adjacent task constructor proves that unoptimized VC7.1 preserves nested
+member-construction source shape even when the constructor body immediately
+clears the complete object. Model the `+0x104` completion state as an enclosing
+member containing its `ZunTimer` at `+0x4`, and model the `+0x34` runtime
+configuration with an inline constructor that calls `Initialize`; flattening
+either member removes the target's temporary pointer home. The canonical
+`photo-game-task-constructor` unit enforces all 148 bytes and three relocations.

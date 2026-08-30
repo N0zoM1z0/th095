@@ -305,7 +305,13 @@ th095::PhotoEffectManagerView::Initialize
 th095::PhotoEffectManagerView::~PhotoEffectManagerView
 th095::PhotoEffectManagerView::Create
 th095::PhotoEffectManagerView::Destroy
+th095::PhotoGameTaskView::PhotoGameTaskView
 th095::PhotoGameTaskView::InitializeSubsystems
-th095::PhotoGameTaskView::ShutdownSubsystems
+th095::PhotoGameTaskView::Load
+th095::PhotoGameTaskView::~PhotoGameTaskView
+th095::PhotoGameTaskView::Create
+th095::PhotoGameTaskView::Destroy
 th095::PhotoGameTaskView::Update
 th095::PhotoGameTaskView::DrawHud
+th095::PhotoGameTaskView::OnUpdate
+th095::PhotoGameTaskView::OnDraw
