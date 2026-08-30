@@ -180,3 +180,7 @@ address,name,module,confidence,evidence
 0x00445CA0,th095::FrontEndLifecycleView::ReleaseResources,FrontEndController,exact,Canonical title ANM slot release helper
 0x00445CC0,th095::FrontEndLifecycleView::Create,FrontEndController,exact,Canonical controller allocation chain registration and worker startup
 0x00445DE0,th095::FrontEndLifecycleView::Destroy,FrontEndController,exact,Canonical front-end deleting wrapper
+0x0043EA20,th095::AnmManager::SetRenderStateForVm3D,AnmManager,exact,Canonical blend color-mixing and texture-factor state helper
+0x0043EC20,th095::AnmManager::SetRenderStateForVm,AnmManager,exact,Canonical two-dimensional blend-state helper
+0x0043ECD0,th095::AnmManager::DrawInner,AnmManager,high,Complete seven-caller screen-space quad culling and batching hub
+0x0043F3C0,th095::AnmManager::AddSpriteToDrawBuffer,AnmManager,exact,Canonical quad-to-triangle-list batch expansion

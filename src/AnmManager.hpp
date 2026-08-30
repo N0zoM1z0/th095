@@ -590,15 +590,30 @@ struct AnmVmListNode
 
 struct AnmManager
 {
-    u8 unknown000[8];
+    union
+    {
+        u8 unknown000[8];
+        struct
+        {
+            ZunColor color;
+            i32 useMixColor;
+        };
+    };
     i32 captureSurfaceIdx;                  // +0x000008
     i32 captureAnmIdx;                      // +0x00000c
     i32 scriptsStartedThisFrame;            // +0x000010
     i32 scriptsExecutedThisFrame;           // +0x000014
     i32 renderStateChangesThisFrame;        // +0x000018
     i32 flushesThisFrame;                   // +0x00001c
-    i32 unknown020;
-    i32 unknown024;
+    union
+    {
+        struct
+        {
+            i32 unknown020;
+            i32 unknown024;
+        };
+        Float2 screenShakeOffset;
+    };
     u8 unknown028[0xf0c - 0x28];
     AnmVm primaryVm;                         // +0x000f0c
     u8 unknown11d8[4];
@@ -634,6 +649,10 @@ struct AnmManager
     void ReleaseAnm(i32 anmIdx);
     void ClearVertexBuffer();
     void FlushVertexBuffer();
+    void SetRenderStateForVm3D(AnmVm *vm);
+    void SetRenderStateForVm(AnmVm *vm);
+    ZunResult DrawInner(AnmVm *vm, i32 flags);
+    ZunResult AddSpriteToDrawBuffer(VertexTex1DiffuseXyzrhw *vertices);
     void ReleaseSurfaces();
     void ReleaseSurface(i32 surfaceIndex);
     void CopySurfaceToBackbuffer(i32 surfaceIndex, i32 left, i32 top, i32 x, i32 y);

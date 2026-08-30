@@ -479,12 +479,18 @@ probe emits 356 bytes, leaving one two-byte branch-shape residual. `DrawLayer @
 0x00444C80` similarly emits 134 versus 136 bytes around the companion draw
 gate. Do not add inert locals or artificial branches to promote either probe.
 Keep the Supervisor render callback's constant-index residual and the known
-lifecycle compiler-local residuals deferred. The next inventory-ranked target
-is the seven-caller ANM draw hub at `0x0043ECD0` (1,497 bytes, 23 referenced
-globals), together with its bounded `0x0043EC20` and `0x0043F3C0`
-dependencies. It sits underneath the already reconstructed background, text,
-mesh, and radial-trail callers and should unlock the surrounding unreviewed
-ANM draw neighborhood.
+lifecycle compiler-local residuals deferred. The seven-caller ANM draw hub at
+`0x0043ECD0` is now source-present for screen shake, nearest-even half-pixel
+rounding, UV installation, active-viewport culling, texture/color state, and
+triangle batching. Its portable VC7.1 body emits 1,532 bytes versus the
+1,497-byte target because the original inlines x87 `FRNDINT`; do not use asm to
+promote it. Its exact `SetRenderStateForVm3D`, `SetRenderStateForVm`, and
+`AddSpriteToDrawBuffer` dependencies contribute 876 bytes and fifteen
+relocations. The shared-header cold rebuild shifted 159 unique compiler-local
+labels; every changed relocation retained its offset, type, and target, and
+all fourteen `AnmManager.obj` units replay exact after the manifest-only
+rename. Continue through the seven immediate draw-mode callers beginning at
+`0x0043F4A0/0x0043F760`, which now have an exact state/batch foundation.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

@@ -496,3 +496,7 @@ th095::FrontEndLifecycleView::~FrontEndLifecycleView
 th095::FrontEndLifecycleView::ReleaseResources
 th095::FrontEndLifecycleView::Create
 th095::FrontEndLifecycleView::Destroy
+th095::AnmManager::SetRenderStateForVm3D
+th095::AnmManager::SetRenderStateForVm
+th095::AnmManager::DrawInner
+th095::AnmManager::AddSpriteToDrawBuffer
