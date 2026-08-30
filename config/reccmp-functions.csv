@@ -345,3 +345,13 @@ th095::PhotoBulletManagerView::CapturePhotoTargets,0x00407820,function
 th095::PhotoBulletManagerView::ClearCapturedBullets,0x00407C90,function
 th095::PhotoBulletManagerView::DespawnAllBullets,0x004081B0,function
 th095::PhotoBulletManagerView::CountNearbyTargets,0x00408220,function
+th095::PhotoCardInfoView::PhotoCardInfoView,0x00408610,function
+th095::PhotoCardInfoView::Initialize,0x00408670,function
+th095::PhotoCardInfoView::~PhotoCardInfoView,0x00408760,function
+th095::PhotoCardInfoView::Show,0x004087D0,function
+th095::PhotoCardInfoView::Create,0x00408850,function
+th095::PhotoCardInfoView::Destroy,0x00408990,function
+th095::PhotoCardInfoView::Update,0x004089F0,function
+th095::PhotoCardInfoView::Draw,0x00408C50,function
+th095::PhotoCardInfoView::OnUpdate,0x00408C60,function
+th095::PhotoCardInfoView::OnDraw,0x00408CB0,function

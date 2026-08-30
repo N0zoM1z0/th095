@@ -118,3 +118,13 @@ address,name,module,confidence,evidence
 0x00407C90,th095::PhotoBulletManagerView::ClearCapturedBullets,BulletManager,high,Complete photographed-bullet effect and item conversion
 0x004081B0,th095::PhotoBulletManagerView::DespawnAllBullets,BulletManager,exact,Canonical 102-byte despawn sweep with one relocation
 0x00408220,th095::PhotoBulletManagerView::CountNearbyTargets,BulletManager,high,Complete TH095 camera proximity scoring path
+0x00408610,th095::PhotoCardInfoView::PhotoCardInfoView,PhotoCardInfo,exact,Canonical 90-byte constructor with three relocations
+0x00408670,th095::PhotoCardInfoView::Initialize,PhotoCardInfo,high,Exact-sized semantic reconstruction with all nine relocation targets
+0x00408760,th095::PhotoCardInfoView::~PhotoCardInfoView,PhotoCardInfo,exact,Canonical 104-byte destructor with eleven relocations
+0x004087D0,th095::PhotoCardInfoView::Show,PhotoCardInfo,exact,Canonical 115-byte state transition with five relocations
+0x00408850,th095::PhotoCardInfoView::Create,PhotoCardInfo,exact,Canonical 314-byte factory with nineteen relocations
+0x00408990,th095::PhotoCardInfoView::Destroy,PhotoCardInfo,exact,Canonical 95-byte deleting wrapper with two relocations
+0x004089F0,th095::PhotoCardInfoView::Update,PhotoCardInfo,exact,Canonical 594-byte card presentation state machine with thirty-six relocations
+0x00408C50,th095::PhotoCardInfoView::Draw,PhotoCardInfo,exact,Canonical relocation-free 16-byte draw body
+0x00408C60,th095::PhotoCardInfoView::OnUpdate,PhotoCardInfo,exact,Canonical 72-byte calc callback with three relocations
+0x00408CB0,th095::PhotoCardInfoView::OnDraw,PhotoCardInfo,exact,Canonical 45-byte draw callback with two relocations

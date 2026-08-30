@@ -9690,9 +9690,9 @@ relocations = [
   { offset = 0x67, type = "REL32", symbol = "?Destroy@PhotoItemManagerTaskView@th095@@QAEXXZ", target = 0x0041CE00 },
   { offset = 0x72, type = "REL32", symbol = "?Destroy@PhotoPauseManagerView@th095@@QAEXXZ", target = 0x00426B90 },
   { offset = 0x7D, type = "REL32", symbol = "?Destroy@PhotoLaserManagerTaskView@th095@@QAEXXZ", target = 0x0041D8D0 },
-  { offset = 0x83, type = "DIR32", symbol = "?g_PhotoEclFileManager@th095@@3PAUPhotoEclFileManagerView@1@A", target = 0x004BDD9C },
-  { offset = 0x8C, type = "DIR32", symbol = "?g_PhotoEclFileManager@th095@@3PAUPhotoEclFileManagerView@1@A", target = 0x004BDD9C },
-  { offset = 0x91, type = "REL32", symbol = "?Destroy@PhotoEclFileManagerView@th095@@QAEXXZ", target = 0x00408990 },
+  { offset = 0x83, type = "DIR32", symbol = "?g_PhotoCardInfo@th095@@3PAUPhotoCardInfoView@1@A", target = 0x004BDD9C },
+  { offset = 0x8C, type = "DIR32", symbol = "?g_PhotoCardInfo@th095@@3PAUPhotoCardInfoView@1@A", target = 0x004BDD9C },
+  { offset = 0x91, type = "REL32", symbol = "?Destroy@PhotoCardInfoView@th095@@QAEXXZ", target = 0x00408990 },
   { offset = 0xA0, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
   { offset = 0xA5, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAUChainElem@2@@Z", target = 0x00419160 },
   { offset = 0xB4, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
@@ -10230,4 +10230,183 @@ target_address = 0x004081B0
 size = 0x66
 relocations = [
   { offset = 0x5C, type = "REL32", symbol = "?BeginDespawn@PhotoBulletView@th095@@QAEHXZ", target = 0x004077A0 },
+]
+
+[units.photo-card-info-constructor]
+source = "src/PhotoCardInfo.cpp"
+object = "build/matching/PhotoCardInfo.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCardInfoView::PhotoCardInfoView"]
+symbol = "??0PhotoCardInfoView@th095@@QAE@XZ"
+target_address = 0x00408610
+size = 0x5A
+relocations = [
+  { offset = 0x31, type = "DIR32", symbol = "??_C@_0BF@EOIMCJDP@Ainitialize?5CardInf?6?$AA@", target = 0x0049545C },
+  { offset = 0x36, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x4E, type = "DIR32", symbol = "?g_PhotoCardInfo@th095@@3PAUPhotoCardInfoView@1@A", target = 0x004BDD9C },
+]
+
+[units.photo-card-info-destructor]
+source = "src/PhotoCardInfo.cpp"
+object = "build/matching/PhotoCardInfo.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCardInfoView::~PhotoCardInfoView"]
+symbol = "??1PhotoCardInfoView@th095@@QAE@XZ"
+target_address = 0x00408760
+size = 0x68
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "??_C@_0BC@INFMJPLN@shutdown?5CardInf?6?$AA@", target = 0x00495470 },
+  { offset = 0xD, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x1C, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x21, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAUChainElem@2@@Z", target = 0x00419160 },
+  { offset = 0x2D, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x32, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAUChainElem@2@@Z", target = 0x00419160 },
+  { offset = 0x3F, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x44, type = "REL32", symbol = "?MarkVmForDeletion@AnmManager@th095@@QAEXUAnmVmId@2@@Z", target = 0x004451B0 },
+  { offset = 0x51, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x56, type = "REL32", symbol = "?MarkVmForDeletion@AnmManager@th095@@QAEXUAnmVmId@2@@Z", target = 0x004451B0 },
+  { offset = 0x5C, type = "DIR32", symbol = "?g_PhotoCardInfo@th095@@3PAUPhotoCardInfoView@1@A", target = 0x004BDD9C },
+]
+
+[units.photo-card-info-show]
+source = "src/PhotoCardInfo.cpp"
+object = "build/matching/PhotoCardInfo.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCardInfoView::Show"]
+symbol = "?Show@PhotoCardInfoView@th095@@QAEHXZ"
+target_address = 0x004087D0
+size = 0x73
+relocations = [
+  { offset = 0x14, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x19, type = "REL32", symbol = "?SetInterrupt@AnmManager@th095@@QAEXUAnmVmId@2@H@Z", target = 0x00445170 },
+  { offset = 0x28, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x2D, type = "REL32", symbol = "?SetInterrupt@AnmManager@th095@@QAEXUAnmVmId@2@H@Z", target = 0x00445170 },
+  { offset = 0x69, type = "DIR32", symbol = "?g_PhotoScreenFadeColor@th095@@3IA", target = 0x004C4E28 },
+]
+
+[units.photo-card-info-create]
+source = "src/PhotoCardInfo.cpp"
+object = "build/matching/PhotoCardInfo.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCardInfoView::Create"]
+symbol = "?Create@PhotoCardInfoView@th095@@SIPAU12@PAD@Z"
+target_address = 0x00408850
+size = 0x13A
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?Create@PhotoCardInfoView@th095@@SIPAU12@PAD@Z", target = 0x004934BB },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x21, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x3C, type = "REL32", symbol = "??0PhotoCardInfoView@th095@@QAE@XZ", target = 0x00408610 },
+  { offset = 0x67, type = "REL32", symbol = "?Initialize@PhotoCardInfoView@th095@@QAEHPAD@Z", target = 0x00408670 },
+  { offset = 0x72, type = "DIR32", symbol = "?OnUpdate@PhotoCardInfoView@th095@@SIHPAU12@@Z", target = 0x00408C60 },
+  { offset = 0x77, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x7C, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
+  { offset = 0x93, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x98, type = "REL32", symbol = "?AddToCalcChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418A20 },
+  { offset = 0xA6, type = "DIR32", symbol = "?OnDraw@PhotoCardInfoView@th095@@SIHPAU12@@Z", target = 0x00408CB0 },
+  { offset = 0xAB, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xB0, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
+  { offset = 0xC7, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xCC, type = "REL32", symbol = "?AddToDrawChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418B30 },
+  { offset = 0xFA, type = "REL32", symbol = "??1PhotoCardInfoView@th095@@QAE@XZ", target = 0x00408760 },
+  { offset = 0x10D, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0x132, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+]
+
+[units.photo-card-info-destroy]
+source = "src/PhotoCardInfo.cpp"
+object = "build/matching/PhotoCardInfo.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCardInfoView::Destroy"]
+symbol = "?Destroy@PhotoCardInfoView@th095@@QAEXXZ"
+target_address = 0x00408990
+size = 0x5F
+relocations = [
+  { offset = 0x2B, type = "REL32", symbol = "??1PhotoCardInfoView@th095@@QAE@XZ", target = 0x00408760 },
+  { offset = 0x3E, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+]
+
+[units.photo-card-info-update]
+source = "src/PhotoCardInfo.cpp"
+object = "build/matching/PhotoCardInfo.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCardInfoView::Update"]
+symbol = "?Update@PhotoCardInfoView@th095@@QAEHXZ"
+target_address = 0x004089F0
+size = 0x252
+relocations = [
+  { offset = 0x4C, type = "DIR32", symbol = "?g_PhotoScreenFadeColor@th095@@3IA", target = 0x004C4E28 },
+  { offset = 0x58, type = "DIR32", symbol = "?g_PhotoScreenFadeColor@th095@@3IA", target = 0x004C4E28 },
+  { offset = 0x61, type = "DIR32", symbol = "?g_PhotoScreenFadeColor@th095@@3IA", target = 0x004C4E28 },
+  { offset = 0x71, type = "DIR32", symbol = "?g_PhotoCardStageState@th095@@3PAUPhotoCardStageStateView@1@A", target = 0x004C4E6C },
+  { offset = 0x8C, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x91, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0xA2, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0xA7, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0xC9, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0xCE, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0xDF, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0xE4, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x10B, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x110, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x121, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x126, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x148, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x14D, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x15E, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x163, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x17D, type = "DIR32", symbol = "?g_PhotoCardGameRuntime@th095@@3PAUPhotoCardGameRuntimeView@1@A", target = 0x004C4E70 },
+  { offset = 0x189, type = "DIR32", symbol = "__real@42800000", target = 0x00495454 },
+  { offset = 0x19F, type = "DIR32", symbol = "?g_PhotoCardGameRuntime@th095@@3PAUPhotoCardGameRuntimeView@1@A", target = 0x004C4E70 },
+  { offset = 0x1AB, type = "DIR32", symbol = "__real@43000000", target = 0x00495334 },
+  { offset = 0x1B8, type = "DIR32", symbol = "?g_PhotoCardGameRuntime@th095@@3PAUPhotoCardGameRuntimeView@1@A", target = 0x004C4E70 },
+  { offset = 0x1C4, type = "DIR32", symbol = "__real@42800000", target = 0x00495454 },
+  { offset = 0x1C9, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x1E5, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x1EA, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x1FB, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x200, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x216, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x21B, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x22C, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x231, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x245, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+]
+
+[units.photo-card-info-draw]
+source = "src/PhotoCardInfo.cpp"
+object = "build/matching/PhotoCardInfo.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCardInfoView::Draw"]
+symbol = "?Draw@PhotoCardInfoView@th095@@QAEHXZ"
+target_address = 0x00408C50
+size = 0x10
+relocations = []
+
+[units.photo-card-info-on-update]
+source = "src/PhotoCardInfo.cpp"
+object = "build/matching/PhotoCardInfo.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCardInfoView::OnUpdate"]
+symbol = "?OnUpdate@PhotoCardInfoView@th095@@SIHPAU12@@Z"
+target_address = 0x00408C60
+size = 0x48
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_PhotoCardGameTask@th095@@3PAUPhotoCardGameTaskView@1@A", target = 0x004BDEC8 },
+  { offset = 0x23, type = "DIR32", symbol = "?g_PhotoCardGameTask@th095@@3PAUPhotoCardGameTaskView@1@A", target = 0x004BDEC8 },
+  { offset = 0x40, type = "REL32", symbol = "?Update@PhotoCardInfoView@th095@@QAEHXZ", target = 0x004089F0 },
+]
+
+[units.photo-card-info-on-draw]
+source = "src/PhotoCardInfo.cpp"
+object = "build/matching/PhotoCardInfo.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCardInfoView::OnDraw"]
+symbol = "?OnDraw@PhotoCardInfoView@th095@@SIHPAU12@@Z"
+target_address = 0x00408CB0
+size = 0x2D
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_PhotoCardGameTask@th095@@3PAUPhotoCardGameTaskView@1@A", target = 0x004BDEC8 },
+  { offset = 0x25, type = "REL32", symbol = "?Draw@PhotoCardInfoView@th095@@QAEHXZ", target = 0x00408C50 },
 ]

@@ -68,7 +68,7 @@ struct ReplayManagerTaskView
     void Destroy();
 };
 
-struct PhotoEclFileManagerView
+struct PhotoCardInfoView
 {
     void Destroy();
 };
@@ -267,7 +267,7 @@ extern PhotoRuntimeConfigView g_PhotoRuntimeConfig;
 extern char g_ReplayPath[];
 extern PhotoSceneDefinitionTaskView *g_PhotoSceneDefinition;
 extern PhotoSceneSaveDataTaskView *g_PhotoSceneSaveData;
-extern PhotoEclFileManagerView *g_PhotoEclFileManager;
+extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoGameSupervisorView g_PhotoGameSupervisor;
 extern PhotoSoundPlayerTaskView g_PhotoGameSoundPlayer;
@@ -697,9 +697,9 @@ PhotoGameTaskView::~PhotoGameTaskView()
     this->items->Destroy();
     this->pause->Destroy();
     this->lasers->Destroy();
-    if (g_PhotoEclFileManager != NULL)
+    if (g_PhotoCardInfo != NULL)
     {
-        g_PhotoEclFileManager->Destroy();
+        g_PhotoCardInfo->Destroy();
     }
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);

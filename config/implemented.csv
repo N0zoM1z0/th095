@@ -344,3 +344,13 @@ th095::PhotoBulletManagerView::CapturePhotoTargets
 th095::PhotoBulletManagerView::ClearCapturedBullets
 th095::PhotoBulletManagerView::DespawnAllBullets
 th095::PhotoBulletManagerView::CountNearbyTargets
+th095::PhotoCardInfoView::PhotoCardInfoView
+th095::PhotoCardInfoView::Initialize
+th095::PhotoCardInfoView::~PhotoCardInfoView
+th095::PhotoCardInfoView::Show
+th095::PhotoCardInfoView::Create
+th095::PhotoCardInfoView::Destroy
+th095::PhotoCardInfoView::Update
+th095::PhotoCardInfoView::Draw
+th095::PhotoCardInfoView::OnUpdate
+th095::PhotoCardInfoView::OnDraw

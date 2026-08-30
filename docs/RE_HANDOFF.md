@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 281 canonical units cover 122,284 authored bytes.
+- Reconstruction: 290 canonical units cover 123,729 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 49.91% (122,284 / 245,019)
+  relocations. Confirmed authored-byte coverage is now 50.16% (123,729 / 246,690)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 346 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,477 origin/boundary reviews pending. Original class
+  confirms 356 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,467 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -472,12 +472,23 @@ copy shape are not reproduced. `PhotoBulletView::Deactivate @ 0x00405850` and
 `DespawnAllBullets @ 0x004081B0` are canonical exact for 209 bytes and one
 relocation. Do not close the three residuals with inert locals or padding.
 
-Next separate and reconstruct the adjacent `0x00408610/0x00408670/0x00408760`
-card/text lifecycle cluster; target evidence shows it is not owned by the
-bullet manager. Then continue through the actual bullet lifecycle shell at
-`0x004087D0..0x00408CDC`. Preserve the independently exact `PhotoToScreen @
-0x004186D0` bridge and the GameTask, FrontInf, bullet pattern, movement, and
-new bullet-photography units.
+The adjacent `0x00408610..0x00408CDC` range is now identified and
+source-present as one `CardInf` photograph-card text/fade component, rather
+than any part of the bullet lifecycle. Nine canonical units contribute 1,445
+exact bytes and enforce all 81 relocations: construction/destruction,
+show/factory/delete wrappers, the 594-byte presentation state machine, and
+both gated Chain callbacks. Its `0x68`-byte object owns two VM ids, a state
+timer, the saved screen-fade color, a decoded 48-byte label, and calc/draw
+nodes. `Initialize @ 0x00408670` is behavior-complete and exact-sized at 226
+bytes with all nine relocation destinations, but 47 compiler-local
+displacement/register bytes remain; keep it non-exact without artificial
+local storage.
+
+Next close the actual BulletManager lifecycle and callback shell at
+`0x00404E00..0x00405A2D`, immediately before the already source-present spawn
+and transform core. Preserve the independently exact `PhotoToScreen @
+0x004186D0` bridge and the GameTask, FrontInf, bullet pattern, movement,
+bullet-photography, and CardInf units.
 
 ## Closed lanes and preservation constraints
 
