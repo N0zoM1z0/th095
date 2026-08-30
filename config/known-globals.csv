@@ -30,3 +30,8 @@ address,name,module,confidence,evidence
 0x004E24A8,th095::g_DecompressionRing,Compression,high,Target-local 8192-byte history ring used by DecompressData
 0x00496F10,th095::g_TextureFormatD3D8Mapping,AnmTexture,exact,Canonical GetAnmFormat and LoadTexture DIR32 relocations
 0x00496F28,th095::g_TextureFormatBytesPerPixel,AnmTexture,exact,Canonical LoadTexture DIR32 relocations
+0x004C44A8,th095::g_TextFont19,TextRenderer,high,Target persistent 36-pixel Japanese text font
+0x004C44AC,th095::g_TextFont20,TextRenderer,high,Target persistent 38-pixel Japanese text font
+0x004C44B0,th095::g_TextFont17,TextRenderer,high,Target persistent 30-pixel Japanese text font
+0x004C44B4,th095::g_TextFont18,TextRenderer,high,Target persistent 34-pixel Japanese text font
+0x004C44B8,th095::g_TextRenderBuffer,TextRenderer,high,Target 0x124-byte CPU text-render buffer view

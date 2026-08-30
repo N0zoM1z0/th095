@@ -1,0 +1,45 @@
+#ifndef TH095_TEXT_RENDERER_HPP
+#define TH095_TEXT_RENDERER_HPP
+
+#include "AnmManager.hpp"
+
+namespace th095
+{
+
+struct TextRenderBufferView
+{
+    u8 unknown000[0x100];
+    D3DFORMAT format;
+    i32 width;
+    i32 height;
+    u32 imageSizeInBytes;
+    i32 imageWidthInBytes;
+    HDC hdc;
+    HGDIOBJ originalBitmap;
+    HGDIOBJ bitmap;
+    u8 *buffer;
+
+    BOOL InvertAlpha(i32 rowCount, BOOL unused);
+    BOOL ApplyAlphaBleed(i32 rowCount);
+};
+
+struct TextHelperView
+{
+    static void RenderTextToTextureBold(
+        i32 x, i32 y, i32 width, i32 height, i32 glyphWidth,
+        i32 glyphHeight, COLORREF textColor, COLORREF shadowColor,
+        const char *text, IDirect3DTexture8 *texture);
+};
+
+typedef char TextRenderBufferFormatAt100[
+    (offsetof(TextRenderBufferView, format) == 0x100) ? 1 : -1];
+typedef char TextRenderBufferImageSizeAt10C[
+    (offsetof(TextRenderBufferView, imageSizeInBytes) == 0x10c) ? 1 : -1];
+typedef char TextRenderBufferHdcAt114[
+    (offsetof(TextRenderBufferView, hdc) == 0x114) ? 1 : -1];
+typedef char TextRenderBufferDataAt120[
+    (offsetof(TextRenderBufferView, buffer) == 0x120) ? 1 : -1];
+
+} // namespace th095
+
+#endif

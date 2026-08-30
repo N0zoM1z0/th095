@@ -110,7 +110,11 @@
   centered formatting paths; their residuals are compiler-local frame homes.
   The centered function at `0x00443F80` corrects the stale `SceneWriteText`
   identification. Exact scene callsites still use a source-only ABI alias for
-  the left-aligned target at `0x00443CE0`.
+  the left-aligned target at `0x00443CE0`. The TH095-specific persistent-font
+  renderer at `0x0041C8F0` is also complete source-present: its probe has the
+  exact 560-byte extent, all 25 relocations resolve, and 419/460 comparable
+  bytes match. It renders into the `0x124`-byte CPU buffer at `0x004C44B8`
+  and uploads it directly rather than using TH08's temporary text surface.
 - `ReplayBrowserView::Update @ 0x0044DCA0` is now source-present for the
   complete TH095-specific 4-by-20 replay browser. The target-sized 2,054-byte
   probe resolves all 77 relocations and matches 1,683 of 1,746 comparable

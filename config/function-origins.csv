@@ -244,7 +244,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041C600,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041C780,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041C8A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041C8F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041C8F0,authored,TextRenderer,authored,high,target-vc71-text-renderer-2026-08-30
 0x0041CB20,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041CBA0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041CBE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

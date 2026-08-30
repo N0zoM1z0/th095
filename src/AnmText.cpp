@@ -22,7 +22,7 @@ void AnmTextManagerView::DrawTextInner(
 
     if (glyphWidth > 8)
     {
-        AnmTextRendererView::RenderTextToTextureBold(
+        TextHelperView::RenderTextToTextureBold(
             x, y, width, height, glyphWidth * scaleX, glyphHeight * scaleY,
             textColor, shadowColor, text, texture);
     }

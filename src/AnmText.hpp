@@ -1,7 +1,7 @@
 #ifndef TH095_ANM_TEXT_HPP
 #define TH095_ANM_TEXT_HPP
 
-#include "AnmManager.hpp"
+#include "TextRenderer.hpp"
 
 namespace th095
 {
@@ -42,14 +42,6 @@ struct AnmTextManagerView
                        COLORREF shadowColor, const char *format, ...);
     void DrawTextCentered(AnmTextVmView *vm, COLORREF textColor,
                           COLORREF shadowColor, const char *format, ...);
-};
-
-struct AnmTextRendererView
-{
-    static void RenderTextToTextureBold(
-        i32 x, i32 y, i32 width, i32 height, i32 glyphWidth,
-        i32 glyphHeight, COLORREF textColor, COLORREF shadowColor,
-        const char *text, IDirect3DTexture8 *texture);
 };
 
 typedef char AnmTextSpriteScaleAt38[

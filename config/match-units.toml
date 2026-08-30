@@ -7502,5 +7502,5 @@ size = 0x68
 relocations = [
   { offset = 0x3E, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
   { offset = 0x4A, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
-  { offset = 0x5E, type = "REL32", symbol = "?RenderTextToTextureBold@AnmTextRendererView@th095@@SIXHHHHHHKKPBDPAUIDirect3DTexture8@@@Z", target = 0x0041C8F0 },
+  { offset = 0x5E, type = "REL32", symbol = "?RenderTextToTextureBold@TextHelperView@th095@@SIXHHHHHHKKPBDPAUIDirect3DTexture8@@@Z", target = 0x0041C8F0 },
 ]

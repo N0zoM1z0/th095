@@ -84,6 +84,7 @@ address,name,module,confidence,evidence
 0x00443CE0,th095::AnmTextManagerView::DrawTextLeft,AnmText,high,Complete left-aligned variadic ANM text renderer
 0x00443DD0,th095::AnmTextManagerView::DrawTextRight,AnmText,high,Complete right-aligned variadic ANM text renderer
 0x00443F80,th095::AnmTextManagerView::DrawTextCentered,AnmText,high,Complete centered variadic ANM text renderer
+0x0041C8F0,th095::TextHelperView::RenderTextToTextureBold,TextRenderer,high,Complete persistent-font memory-to-D3D text upload path with 25 resolved relocations
 0x004453B0,th095::SceneTextureEntryView::Clear,AnmTexture,exact,Canonical relocation-free D3D texture clear comparison
 0x0044D0A0,th095::LoadSceneSelectionAssets,SceneSelect,high,Asynchronous mission thumbnail face and preview-text producer
 0x00435E90,th095::SceneSaveDataView::LoadBestShotForScene,BestShot,high,Best-shot record reset disk decode decompression and checksum validator

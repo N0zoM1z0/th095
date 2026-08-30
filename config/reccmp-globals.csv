@@ -16,3 +16,8 @@ th095::g_HelpMenu,0x004CA2F4,data
 th095::g_DecompressionRing,0x004E24A8,data
 th095::g_TextureFormatD3D8Mapping,0x00496F10,data
 th095::g_TextureFormatBytesPerPixel,0x00496F28,data
+th095::g_TextFont19,0x004C44A8,data
+th095::g_TextFont20,0x004C44AC,data
+th095::g_TextFont17,0x004C44B0,data
+th095::g_TextFont18,0x004C44B4,data
+th095::g_TextRenderBuffer,0x004C44B8,data
