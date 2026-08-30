@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 156 canonical units cover 92,299 authored bytes.
+- Reconstruction: 170 canonical units cover 95,014 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 53.58% (92,299 / 172,265)
+  relocations. Confirmed authored-byte coverage is now 53.57% (95,014 / 177,360)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 192 authored candidates, excludes three compiler-owned static
-  wrappers, and leaves 1,635 origin/boundary reviews pending. Original class
+  confirms 206 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,617 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -52,6 +52,13 @@
   the complete 982-byte focus and charging state machine and the 296-byte
   viewfinder renderer. Its `AnmVm::Draw` dependency is also exact in a bounded
   26-byte unit used by nine target callers.
+- The root-level `Global.cpp` now reconstructs the complete intrusive Chain
+  core: thirteen exact Chain units cover 2,631 authored bytes, both adjacent
+  switch tables, and all 127 relocations. Calc/draw priority insertion,
+  callback dispatch, reentrant snapshot release, synchronized unlink, heap
+  node destruction, and the replay-worker shutdown edge are all enforced.
+  `ZunMemory::~ZunMemory` is exact for another 84 bytes. Four compiler-owned
+  global initialization/destruction wrappers were classified as exclusions.
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.
@@ -255,123 +262,33 @@
   enforce all 40 relocations. The initializer allocates a `0x4B0`-byte payload
   containing 33 vertices, 33 radii, 33 radial velocities, and UV velocity.
 
-Read live totals with:
-
-```bash
-python3 scripts/report-reconstruction-status.py --summary
-```
-
 ## Next bounded lane
 
-The earlier narrow 95% checkpoint is superseded by the target-local origin
-audit. Subsequent camera, ANM, replay, result-screen, scene-selection,
-options, and controller-input work continues to expand the honest denominator.
-Use the generated progress report for live counts; never preserve a percentage
-by withholding newly confirmed authored functions.
-The Help viewer and shared scene/replay text renderer are now source-present;
-their asynchronous callback and both chain ownership wrappers are exact.
-`WinMain` remains deferred because its remaining eight stack bytes have
-resisted the bounded VC7.1 oracle matrix. Continue with
-`SceneSelectControllerView::UpdateMainMenu @ 0x00446A50` is source-present
-for all six menu rows, idle-demo playback, queue cleanup, and page transitions;
-its 648-byte close and 787-byte selection helpers are canonical exact. The
-16,066-byte `UpdateSceneSelect @ 0x00447D00` hub is now source-present for its
-complete 275-call topology, and its 136-byte texture clear is exact.
-`LoadSceneSelectionAssets @ 0x0044D0A0` is source-present for its full
-mission/face queue pipeline and exact 38-call topology.
-`SceneSaveDataView::LoadBestShotForScene @ 0x00435E90` is source-present for
-its complete twelve-call decode and validation path. Its shared
-`DecompressData @ 0x00456220` dependency is source-present, while
-`CalculateAlignedChecksum @ 0x0041BA80` is canonical exact. The shared ANM
-texture path is source-present through full/regional upload and three-format
-alpha bleed; `LoadTexture @ 0x00442B90`, `GetAnmFormat @ 0x00442B40`, and all
-three pixel-neighbor helpers are canonical exact. Continue with the mapped
-scene-label dependency, then expand the target-local candidate audit around
-the selector's preview and save-data producers. Prefer dependency-rich
-target-specific state machines over isolated leaf cleanup.
+Continue the target-local candidate inventory rather than spending more time
+on compiler-only residuals. The immediate high-value authored lane is
+`FUN_00435910 @ 0x00435910` (1,407 bytes): three target callers use it to
+write pending best-shot data and rebuild `scoreth095.dat`; it has twelve
+internal callees and shares exact checksum, encryption, and best-shot record
+dependencies. Recover its owning save-data type locally before assigning a
+final name.
 
-1. Continue byte alignment of the now source-present 2,219-byte
-   `PhotoCameraState::CalculatePhotoScore @ 0x00433140`. Its complete TH095
-   scoring pipeline is reconstructed, but the current `/Od` probe is 2,006
-   bytes because the original color-bonus expansion and compiler temporaries
-   remain incomplete. `PhotoCameraState::CountPhotoTargets @ 0x004339F0` is
-   now canonical exact for all 793 bytes and 23 relocations.
-2. Continue the source-present 7,271-byte `UpdatePhotoCamera` state machine at
-   `0x00430AB0`. Its five states and complete gameplay flow are reconstructed,
-   but the current `/Od` probe is 5,559 bytes because target stack-temporary
-   shape remains incomplete.
-   `PhotoGameStateView::AngleToPoint @ 0x00430370`,
-   `PhotoCameraState::BeginCapture @ 0x00432730`,
-   `PhotoCameraState::UpdateViewfinder @ 0x004328C0`,
-   `PhotoCameraState::TakePhoto @ 0x00432D10`,
-   `PhotoCameraState::CancelCapture @ 0x00433000`, and
-   `PhotoDistance2D @ 0x00434220` are canonical exact dependencies.
-3. Recalculate against any newly confirmed authored origins after every
-   promotion; never preserve the percentage by withholding denominator facts.
-4. The ReplayManager lane now has twelve canonical exact units totaling
-   4,351 bytes and 153 relocations: initialization, constructor/destructor, both
-   factories, delete helper, chain wrappers, the 408-byte per-frame input/FPS
-   stream core, playback FPS drawing, the complete 540-byte disk/archive
-   loader, and the complete 1,691-byte compressed writer with both `USER`
-   metadata blocks. The adjacent 390-byte
-   `ResultScreen::LoadReplays @ 0x0042A710` is also exact and proves the
-   replay cursor at `+0x4604` plus twenty replay pointers at `+0x6CE8`.
-   The cursor's reusable 200-byte `Move @ 0x0041B760` helper and the 455-byte
-   `ResultScreen::UpdateCursor @ 0x00429AB0` caller are now exact as well;
-   together they prove the cursor's disabled-entry/wrap tail, result timer,
-   twenty-five VM array, repeated-input globals, and interrupt 2/3 selection
-   flow.
-   `ResultScreen::Update @ 0x00426BF0` is now source-present for the complete
-   sixteen-state TH095 result/photo/replay flow. Its pinned VC7.1 probe is
-   5,979 bytes versus the 6,471-byte target and receives no exact credit yet.
-   Its 45-byte suppression wrapper, 113-byte cursor push, 113-byte cursor pop,
-   and 117-byte slow-motion timer tick are canonical exact; the timer is shared
-   by 27 target callers. Its three initialization helpers and best-shot helper
-   are now source-present as well; defer their remaining compiler-frame gaps
-   unless a natural source-shape improvement appears.
-   `ResultPhotoDataView::FindBestShot @ 0x00429450` is now exact for its
-   eleven `0x2214`-byte slots. `ResultScreen::OnDraw @ 0x0042A6E0` is also
-   exact and proves the 2,573-byte `ResultScreen::Draw @ 0x00429C80` authored
-   origin; admitting that formerly unknown draw body expanded the denominator
-   immediately. `ResultScreen::PrepareBestShot @ 0x004292D0` is now
-   source-present for the complete 380-byte TH095 preview selection path; its
-   generated instruction stream has the target length, but the original
-   function's unused 0x38-byte local-frame gap remains unresolved and receives
-   no exact credit. `UpdatePhotoResultScreen @ 0x004294C0` now reconstructs
-   browsing, animated preview transitions, and the complete best-shot record
-   write. Its generated body also has the target length, with only the
-   independently documented `0x2C` inline-temporary frame gap keeping it from
-   exact promotion. The underlying intrusive-VM API is exact:
-   `AnmManager::GetVm @ 0x00445110` has 35 direct callers, and its interrupt,
-   deferred-deletion, position, ANM-file deletion, and handle sprite wrappers
-   add six more canonical units. The 51-byte `AnmVmId::GetVm` and 34-byte
-   `SetInterrupt` wrappers remain exact as well.
-   `ResultScreen::Draw @ 0x00429C80` is now source-present with exact authored
-   and switch-table extents, exact case boundaries, and all 118 relocation
-   destinations resolved. Its remaining 165 non-relocation differences are
-   isolated to compiler frame/temporary/register allocation, so defer exact
-   work unless a natural source-shape improvement appears. Continue the
-   candidate inventory and reconstruct the 16,066-byte scene-selection hub at
-   `0x00447D00`; it has 27 internal callees and 156 direct ANM-manager
-   references. Its exact five-function save/unlock dependency cluster now
-   establishes the 12-group scene model, and the complete adjacent
-   preview/status updater at `0x0044BBD0` is source-present with an exact queue
-   dependency. The staged preview-text builder at `0x0044BEA0` and its decoder
-   at `0x0044D020`, plus the adjacent scene-detail updater at `0x0044C670` and
-   its three VM helpers, are now exact. The formerly unnamed `0x0044DCA0`
-   function is now the complete source-present replay-browser updater; its
-   slot loader, exit signal, worker, and Supervisor wrappers are exact. The
-   adjacent 10,103-byte state machine at `0x0044E4B0` is now identified and
-   reconstructed as the full option/key-configuration page. Its exact static
-   call topology is recovered, so defer the remaining compiler-local 54-byte
-   excess. Its controller dependency chain through `0x00419AE0` is now exact
-   except for the seven-byte `GetInput` compiler-shape residual. The adjacent
-   keyboard reset and FileSystem codec/open cluster at
-   `0x0041A550..0x0041AC4E` is now exact. Continue the candidate inventory with
-   the connected front-end lane with the nine-page Help viewer at
-   `0x00451C80` and its loader callback at `0x004525D0`, while keeping the
-   TH095-specific `0x00447D00` scene-selection hub as the next large authored
-   target.
+Then complete the already mapped
+`SceneSaveDataView::LoadScenePreviewTexture @ 0x004362A0` (578 bytes), which
+is called directly by the 16,066-byte scene-selection hub and uploads the
+selected photograph to the 256x192 preview texture. The other source-missing
+confirmed-authored candidates are `FUN_0042FF60 @ 0x0042FF60` (405 bytes), a
+seven-callee photography/gameplay coordinator, and no others. Re-run the
+origin inventory after these three so large unreviewed game-side candidates
+are admitted or excluded on evidence rather than size alone.
+
+The large photo functions remain source-present but non-exact:
+`PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe
+against a 2,219-byte target, and `UpdatePhotoCamera @ 0x00430AB0` has a
+5,559-byte probe against a 7,271-byte target. Their exact dependency families
+are already useful; defer compiler-frame alignment unless a natural
+target-local source-shape improvement appears. Always recalculate coverage
+after origin promotion and never preserve a percentage by withholding
+authored candidates.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

@@ -187,3 +187,17 @@ th095::TextHelperView::ReleaseTextBuffer
 th095::ControllerInputSlotView::ControllerInputSlotView
 th095::TextRenderBufferView::TextRenderBufferView
 th095::TextRenderBufferView::~TextRenderBufferView
+th095::ChainElem::ChainElem
+th095::ChainElem::~ChainElem
+th095::Chain::Chain
+th095::Chain::AddToCalcChain
+th095::Chain::AddToDrawChain
+th095::Chain::RunCalcChain
+th095::Chain::RunDrawChain
+th095::Chain::ReleaseSingleChain
+th095::Chain::Release
+th095::Chain::CreateElem
+th095::Chain::Cut
+th095::Chain::CutImpl
+th095::Chain::~Chain
+th095::ZunMemory::~ZunMemory

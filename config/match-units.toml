@@ -5,6 +5,293 @@ target_sha256 = "bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc0
 # exact target control flow and a reproducible VC7.1 COFF object exists.
 [units]
 
+# The runtime Chain batch uses target-attested TH095 control flow. The two
+# runners include their immediately adjacent compiler jump tables in the
+# canonical comparison while crediting only authored function bytes.
+
+[units.chain-elem-constructor]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ChainElem::ChainElem"]
+symbol = "??0ChainElem@th095@@QAE@XZ"
+target_address = 0x418900
+size = 0x63
+relocations = []
+
+[units.chain-elem-destructor]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ChainElem::~ChainElem"]
+symbol = "??1ChainElem@th095@@QAE@XZ"
+target_address = 0x418970
+size = 0x52
+relocations = []
+
+[units.chain-constructor]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Chain::Chain"]
+symbol = "??0Chain@th095@@QAE@XZ"
+target_address = 0x4189D0
+size = 0x4E
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$??0Chain@th095@@QAE@XZ", target = 0x493628 },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x20, type = "REL32", symbol = "??0ChainElem@th095@@QAE@XZ", target = 0x418900 },
+  { offset = 0x32, type = "REL32", symbol = "??0ChainElem@th095@@QAE@XZ", target = 0x418900 },
+  { offset = 0x46, type = "DIR32", symbol = "__except_list", target = 0x0 },
+]
+
+[units.chain-add-calc]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Chain::AddToCalcChain"]
+symbol = "?AddToCalcChain@Chain@th095@@QAEHPAVChainElem@2@H@Z"
+target_address = 0x418A20
+size = 0x104
+relocations = [
+  { offset = 0x3F, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x46, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x495060 },
+  { offset = 0x4B, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x52, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0xE4, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0xEB, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x49505C },
+  { offset = 0xF0, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0xF7, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+]
+
+[units.chain-add-draw]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Chain::AddToDrawChain"]
+symbol = "?AddToDrawChain@Chain@th095@@QAEHPAVChainElem@2@H@Z"
+target_address = 0x418B30
+size = 0x107
+relocations = [
+  { offset = 0x42, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x49, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x495060 },
+  { offset = 0x4E, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x55, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0xE7, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0xEE, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x49505C },
+  { offset = 0xF3, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0xFA, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+]
+
+[units.chain-run-calc]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Chain::RunCalcChain"]
+symbol = "?RunCalcChain@Chain@th095@@QAEHXZ"
+target_address = 0x418C40
+size = 0x13B
+compare_size = 0x157
+relocations = [
+  { offset = 0xF, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x16, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x495060 },
+  { offset = 0x1C, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x25, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x54, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x5B, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x49505C },
+  { offset = 0x61, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x6A, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x84, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x8B, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x495060 },
+  { offset = 0x90, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x97, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0xAD, type = "DIR32", symbol = "$L62768", target = 0x418D7B },
+  { offset = 0xC8, type = "REL32", symbol = "?CutImpl@Chain@th095@@AAEXPAVChainElem@2@@Z", target = 0x4191D0 },
+  { offset = 0x11D, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x124, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x49505C },
+  { offset = 0x129, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x130, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x13B, type = "DIR32", symbol = "$L62449", target = 0x418CF1 },
+  { offset = 0x13F, type = "DIR32", symbol = "$L62446", target = 0x418D3F },
+  { offset = 0x143, type = "DIR32", symbol = "$L62451", target = 0x418D1A },
+  { offset = 0x147, type = "DIR32", symbol = "$L62455", target = 0x418D28 },
+  { offset = 0x14B, type = "DIR32", symbol = "$L62452", target = 0x418D1F },
+  { offset = 0x14F, type = "DIR32", symbol = "$L62457", target = 0x418D31 },
+  { offset = 0x153, type = "DIR32", symbol = "$L62459", target = 0x418D3A },
+]
+
+[units.chain-run-draw]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Chain::RunDrawChain"]
+symbol = "?RunDrawChain@Chain@th095@@QAEHXZ"
+target_address = 0x418DA0
+size = 0x13A
+compare_size = 0x152
+relocations = [
+  { offset = 0x20, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x27, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x495060 },
+  { offset = 0x2D, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x36, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x58, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x5F, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x49505C },
+  { offset = 0x65, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x6E, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x88, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x8F, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x495060 },
+  { offset = 0x94, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x9B, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0xB1, type = "DIR32", symbol = "$L62784", target = 0x418EDA },
+  { offset = 0xCC, type = "REL32", symbol = "?CutImpl@Chain@th095@@AAEXPAVChainElem@2@@Z", target = 0x4191D0 },
+  { offset = 0x11C, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x123, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x49505C },
+  { offset = 0x128, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x12F, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x13A, type = "DIR32", symbol = "$L62476", target = 0x418E55 },
+  { offset = 0x13E, type = "DIR32", symbol = "$L62473", target = 0x418E9E },
+  { offset = 0x142, type = "DIR32", symbol = "$L62478", target = 0x418E7E },
+  { offset = 0x146, type = "DIR32", symbol = "$L62482", target = 0x418E8C },
+  { offset = 0x14A, type = "DIR32", symbol = "$L62479", target = 0x418E83 },
+  { offset = 0x14E, type = "DIR32", symbol = "$L62484", target = 0x418E95 },
+]
+
+[units.chain-release-single]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Chain::ReleaseSingleChain"]
+symbol = "?ReleaseSingleChain@Chain@th095@@AAEXPAVChainElem@2@@Z"
+target_address = 0x418F00
+size = 0x17D
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?ReleaseSingleChain@Chain@th095@@AAEXPAVChainElem@2@@Z", target = 0x4935EE },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x22, type = "REL32", symbol = "??0ChainElem@th095@@QAE@XZ", target = 0x418900 },
+  { offset = 0x30, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x485654 },
+  { offset = 0x48, type = "REL32", symbol = "??0ChainElem@th095@@QAE@XZ", target = 0x418900 },
+  { offset = 0x86, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x485654 },
+  { offset = 0x9E, type = "REL32", symbol = "??0ChainElem@th095@@QAE@XZ", target = 0x418900 },
+  { offset = 0xEC, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAVChainElem@2@@Z", target = 0x419160 },
+  { offset = 0x126, type = "REL32", symbol = "??1ChainElem@th095@@QAE@XZ", target = 0x418970 },
+  { offset = 0x139, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x48564F },
+  { offset = 0x169, type = "REL32", symbol = "??1ChainElem@th095@@QAE@XZ", target = 0x418970 },
+  { offset = 0x173, type = "DIR32", symbol = "__except_list", target = 0x0 },
+]
+
+[units.chain-release]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Chain::Release"]
+symbol = "?Release@Chain@th095@@QAEXXZ"
+target_address = 0x419080
+size = 0x30
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0xD, type = "REL32", symbol = "?StopReplayScan@ChainSupervisorView@th095@@QAEXXZ", target = 0x425640 },
+  { offset = 0x19, type = "REL32", symbol = "?ReleaseSingleChain@Chain@th095@@AAEXPAVChainElem@2@@Z", target = 0x418F00 },
+  { offset = 0x28, type = "REL32", symbol = "?ReleaseSingleChain@Chain@th095@@AAEXPAVChainElem@2@@Z", target = 0x418F00 },
+]
+
+[units.chain-create-elem]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Chain::CreateElem"]
+symbol = "?CreateElem@Chain@th095@@QAEPAVChainElem@2@P6I?AW4ChainCallbackResult@2@PAX@Z@Z"
+target_address = 0x4190B0
+size = 0xA1
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?CreateElem@Chain@th095@@QAEPAVChainElem@2@P6I?AW4ChainCallbackResult@2@PAX@Z@Z", target = 0x49360B },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x21, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x485654 },
+  { offset = 0x3C, type = "REL32", symbol = "??0ChainElem@th095@@QAE@XZ", target = 0x418900 },
+  { offset = 0x97, type = "DIR32", symbol = "__except_list", target = 0x0 },
+]
+
+[units.chain-cut]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Chain::Cut"]
+symbol = "?Cut@Chain@th095@@QAEXPAVChainElem@2@@Z"
+target_address = 0x419160
+size = 0x61
+relocations = [
+  { offset = 0x15, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x1C, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x495060 },
+  { offset = 0x22, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x2B, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x37, type = "REL32", symbol = "?CutImpl@Chain@th095@@AAEXPAVChainElem@2@@Z", target = 0x4191D0 },
+  { offset = 0x41, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x48, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x49505C },
+  { offset = 0x4E, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x57, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+]
+
+[units.chain-cut-impl]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Chain::CutImpl"]
+symbol = "?CutImpl@Chain@th095@@AAEXPAVChainElem@2@@Z"
+target_address = 0x4191D0
+size = 0x1CA
+relocations = [
+  { offset = 0xDA, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0xE1, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x49505C },
+  { offset = 0xE7, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0xF0, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x10A, type = "REL32", symbol = "??1ChainElem@th095@@QAE@XZ", target = 0x418970 },
+  { offset = 0x11D, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x48564F },
+  { offset = 0x141, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x148, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x495060 },
+  { offset = 0x14E, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x157, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x180, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x187, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x49505C },
+  { offset = 0x18D, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x196, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x1AA, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x1B1, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x495060 },
+  { offset = 0x1B7, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+  { offset = 0x1C0, type = "DIR32", symbol = "?g_ChainSupervisor@th095@@3UChainSupervisorView@1@A", target = 0x4C4670 },
+]
+
+[units.chain-destructor]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Chain::~Chain"]
+symbol = "??1Chain@th095@@QAE@XZ"
+target_address = 0x41BD20
+size = 0x4B
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$??1Chain@th095@@QAE@XZ", target = 0x493628 },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x2A, type = "REL32", symbol = "??1ChainElem@th095@@QAE@XZ", target = 0x418970 },
+  { offset = 0x39, type = "REL32", symbol = "??1ChainElem@th095@@QAE@XZ", target = 0x418970 },
+  { offset = 0x43, type = "DIR32", symbol = "__except_list", target = 0x0 },
+]
+
+[units.zun-memory-destructor]
+source = "src/Global.cpp"
+object = "build/matching/Global.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ZunMemory::~ZunMemory"]
+symbol = "??1ZunMemory@th095@@QAE@XZ"
+target_address = 0x41BD70
+size = 0x54
+relocations = [
+  { offset = 0x47, type = "REL32", symbol = "_free", target = 0x4854BE },
+]
+
+
 # Main.cpp uses the TH08-confirmed VC7.1 debug-codegen profile. The target
 # extent 0x00420770..0x00420913 ends at RET and the next candidate begins at
 # 0x00420920. Every relocation below was replayed against the attested TH095

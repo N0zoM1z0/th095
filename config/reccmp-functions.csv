@@ -189,3 +189,17 @@ th095::TextHelperView::ReleaseTextBuffer,0x0041C8A0,function
 th095::ControllerInputSlotView::ControllerInputSlotView,0x0041BC00,function
 th095::TextRenderBufferView::TextRenderBufferView,0x0041BDD0,function
 th095::TextRenderBufferView::~TextRenderBufferView,0x0041BE40,function
+th095::ChainElem::ChainElem,0x00418900,function
+th095::ChainElem::~ChainElem,0x00418970,function
+th095::Chain::Chain,0x004189D0,function
+th095::Chain::AddToCalcChain,0x00418A20,function
+th095::Chain::AddToDrawChain,0x00418B30,function
+th095::Chain::RunCalcChain,0x00418C40,function
+th095::Chain::RunDrawChain,0x00418DA0,function
+th095::Chain::ReleaseSingleChain,0x00418F00,function
+th095::Chain::Release,0x00419080,function
+th095::Chain::CreateElem,0x004190B0,function
+th095::Chain::Cut,0x00419160,function
+th095::Chain::CutImpl,0x004191D0,function
+th095::Chain::~Chain,0x0041BD20,function
+th095::ZunMemory::~ZunMemory,0x0041BD70,function
