@@ -237,6 +237,8 @@ th095::PhotoGameUpdateView::AngleFromPoint,0x004303E0,function
 th095::PhotoGameUpdateView::CheckBulletCollision,0x00430450,function
 th095::PhotoGameUpdateView::CalcLaserHitbox,0x00430530,function
 th095::PhotoGameUpdateView::Die,0x004306D0,function
+th095::PhotoEnemyView::~PhotoEnemyView,0x004152D0,function
+th095::PhotoEnemyManagerView::~PhotoEnemyManagerView,0x004154E0,function
 th095::PhotoEnemyManagerView::Spawn,0x004156C0,function
 th095::PhotoEnemyManagerView::SpawnWithContext,0x00415820,function
 th095::PhotoEnemyManagerView::OnUpdate,0x00415970,function

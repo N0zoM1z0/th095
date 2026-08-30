@@ -23,6 +23,15 @@ struct PhotoEnemyEclManagerView
 {
     PhotoEnemyEclFileView *eclFile;
 
+    ~PhotoEnemyEclManagerView()
+    {
+        if (this->eclFile != NULL)
+        {
+            PhotoEnemyEclFileView *eclFile = this->eclFile;
+            free(eclFile);
+        }
+    }
+
     void InitializeContext(void *context, i16 subroutineId);
     i32 RunEcl(PhotoEnemyView *enemy);
 };
@@ -107,6 +116,13 @@ struct PhotoEnemyGameView
 {
     u8 unknown0000[0x29e4];
     i32 frameCounter;
+};
+
+struct PhotoEnemySupervisorFlagsView
+{
+    u32 unknown00 : 9;
+    u32 disableResourceReload : 1;
+    u32 unknown10 : 22;
 };
 
 struct PhotoEnemyScheduledCall
@@ -211,6 +227,9 @@ struct PhotoEnemyView
     u8 unknown2cec[0x4cbc - 0x2cec];
     AnmVmId attachedVmId;                  // +0x4cbc
 
+    ~PhotoEnemyView()
+    {
+    }
     void IntegrateMovement();
     void ClampPosition();
     void RestartEcl();
@@ -232,18 +251,22 @@ typedef char PhotoEnemyAttachedVmAt4CBC[
 
 struct PhotoEnemyManagerView
 {
-    u8 unknown000000[0x4cc0];
+    PhotoEnemyView spawnTemplate;          // +0x0000
     PhotoEnemyTimelineView timelines[16];  // +0x4cc0
     PhotoEnemyView *drawGroupHeads[4];     // +0x4dc0
     u8 unknown4dd0[0x14];
     PhotoEnemyView *timelineEnemySlots[4];  // +0x4de4
     PhotoEnemyEclManagerView *eclManager;  // +0x4df4
-    u8 unknown4df8[8];
+    AnmLoaded *enemyAnm;                   // +0x4df8
+    u8 unknown4dfc[4];
     PhotoEnemyView enemies[128];           // +0x4e00
     PhotoEnemyView *photoTargets[8];        // +0x26ae00
-    u8 unknown26ae20[0x0c];
+    ChainElem *calcChain;                  // +0x26ae20
+    ChainElem *drawChain;                  // +0x26ae24
+    u8 unknown26ae28[4];
     i32 activeEnemyCount;                  // +0x26ae2c
 
+    ~PhotoEnemyManagerView();
     static i32 __fastcall OnUpdate(PhotoEnemyManagerView *enemyManager);
     PhotoEnemyView *Spawn(
         i32 subroutineId,
@@ -273,6 +296,44 @@ typedef char PhotoEnemyManagerEnemiesAt4E00[
     (offsetof(PhotoEnemyManagerView, enemies) == 0x4e00) ? 1 : -1];
 typedef char PhotoEnemyManagerCountAt26AE2C[
     (offsetof(PhotoEnemyManagerView, activeEnemyCount) == 0x26ae2c) ? 1 : -1];
+
+PhotoEnemyManagerView::~PhotoEnemyManagerView()
+{
+    utils::DebugPrint("shutdown EnemyCtrlInf\n");
+    g_Chain.Cut(this->calcChain);
+    g_Chain.Cut(this->drawChain);
+
+    PhotoEnemyView *enemy = &this->enemies[0];
+    for (i32 enemyIndex = 0; enemyIndex < 128; ++enemyIndex, ++enemy)
+    {
+        for (i32 argumentIndex = 0; argumentIndex < 16; ++argumentIndex)
+        {
+            if (enemy->allocatedEclArgs[argumentIndex] != NULL)
+            {
+                void *argument = enemy->allocatedEclArgs[argumentIndex];
+                free(argument);
+            }
+        }
+    }
+
+    if (this->eclManager != NULL)
+    {
+        delete this->eclManager;
+        this->eclManager = NULL;
+    }
+
+    if (reinterpret_cast<PhotoEnemySupervisorFlagsView *>(
+            &g_Supervisor.flags)->disableResourceReload != 0)
+    {
+        g_AnmManager->MarkVmsForDeletion(this->enemyAnm);
+    }
+    else
+    {
+        g_AnmManager->ReleaseAnm(8);
+    }
+
+    g_PhotoEnemyManager = NULL;
+}
 
 void PhotoEnemyTimelineView::Run()
 {
