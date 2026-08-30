@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 351 canonical exact functions cover 133,941 authored bytes.
+- Reconstruction: 357 canonical exact functions cover 135,947 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 49.71% (133,941 / 269,433)
+  relocations. Confirmed authored-byte coverage is now 50.08% (135,947 / 271,439)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 438 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,384 origin/boundary reviews pending. Original class
+  current ledger confirms 444 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,378 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -651,8 +651,19 @@ mode 2 versus streamed-WAV mode 1, and replay the SoundPlayer load/play/stop/
 release/fade command protocol. WAV fades compensate for game speed in the
 target's `(0, 1]` interval. `EnableFog`, `DisableFog`, and `SetRenderState @
 0x004254D0..0x004255A4` add 205 bytes and six relocations and prove that pending
-ANM vertices are flushed before D3D state changes. Resume the remaining Main
-inventory at `SetupLoadingVms @ 0x00425660` and preserve every established Main,
+ANM vertices are flushed before D3D state changes.
+
+The TH095 loading-handle and viewport spine is now closed exactly for another
+2,006 bytes and 112 relocations. `SetupLoadingVms`, `HideLoadingVms`, and
+`BeginLoadingCompletion @ 0x00425660..0x00425882` prove that TH095 owns three
+four-byte VM handles at `0x004C4648..0x004C4650`, creates scripts 0/1/2 on layer
+7, sends interrupt 1/2, and clears handle ownership before publishing state 0/2
+at Supervisor `+0x714`. This is intentionally not modeled as TH08's inline VM
+array. `InitializeViewports @ 0x00425CC0` establishes two `0xF0` configurations
+at Supervisor `+0x1E4/+0x2D4`; the exact gameplay and background apply hubs at
+`0x00425910/0x00425AA0` flush ANM vertices, rebuild D3D view/projection state,
+and publish viewport values to AnmManager `+0x20/+0x24`. Resume the remaining
+Supervisor inventory at `0x00425EF0` and preserve every established Main,
 Background, ECL, ANM, photography, and ASCII exact unit while shared headers
 change.
 

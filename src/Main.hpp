@@ -279,6 +279,8 @@ struct Supervisor
     static i32 LoadDat();
     static i32 CheckFps();
     void SetupLoadingVms(Float3 *position);
+    void HideLoadingVms();
+    void BeginLoadingCompletion();
     i32 StartReplayScan(void (__fastcall *callback)(void *), void *argument);
     void StopReplayScan();
     static void __fastcall StartupThread(Supervisor *s);

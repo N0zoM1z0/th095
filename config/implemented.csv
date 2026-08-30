@@ -436,3 +436,9 @@ th095::Supervisor::FadeOutMusic
 th095::Supervisor::EnableFog
 th095::Supervisor::DisableFog
 th095::Supervisor::SetRenderState
+th095::Supervisor::SetupLoadingVms
+th095::Supervisor::HideLoadingVms
+th095::Supervisor::BeginLoadingCompletion
+th095::SupervisorViewportView::ApplyGameplayViewport
+th095::BackgroundSupervisorView::ApplyBackgroundViewport
+th095::Supervisor::InitializeViewports

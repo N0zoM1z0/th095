@@ -437,3 +437,9 @@ th095::Supervisor::FadeOutMusic,0x00425410,function
 th095::Supervisor::EnableFog,0x004254D0,function
 th095::Supervisor::DisableFog,0x00425520,function
 th095::Supervisor::SetRenderState,0x00425570,function
+th095::Supervisor::SetupLoadingVms,0x00425660,function
+th095::Supervisor::HideLoadingVms,0x00425730,function
+th095::Supervisor::BeginLoadingCompletion,0x004257E0,function
+th095::SupervisorViewportView::ApplyGameplayViewport,0x00425910,function
+th095::BackgroundSupervisorView::ApplyBackgroundViewport,0x00425AA0,function
+th095::Supervisor::InitializeViewports,0x00425CC0,function

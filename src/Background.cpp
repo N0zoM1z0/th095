@@ -177,11 +177,18 @@ struct BackgroundSelectedSceneView
 struct BackgroundViewportConfigurationView
 {
     Float3 cameraPosition;               // +0x000
-    u8 unknown00c[0x30];
+    Float3 cameraLookAtOffset;           // +0x00c
+    Float3 cameraUp;                     // +0x018
+    Float3 cameraForward;                // +0x024
+    Float3 cameraRight;                  // +0x030
     Float3 cameraPositionOffset;         // +0x03c
-    u8 unknown048[0xcc - 0x48];
+    f32 fieldOfView;                     // +0x048
+    D3DXMATRIX viewMatrix;               // +0x04c
+    D3DXMATRIX projectionMatrix;         // +0x08c
     D3DVIEWPORT8 viewport;               // +0x0cc
-    u8 unknown0e4[0x0c];
+    u8 unknown0e4[4];
+    i32 anmViewportValue0;               // +0x0e8
+    i32 anmViewportValue1;               // +0x0ec
 };
 
 struct BackgroundSupervisorView
@@ -297,6 +304,50 @@ f32 __stdcall CubicHermiteInterpolate(
 static inline i32 BackgroundEitherFlag(i32 first, i32 second)
 {
     return first | second;
+}
+
+// FUNCTION: TH095 0x00425AA0.
+#pragma var_order(eye, lookAt, this)
+void BackgroundSupervisorView::ApplyBackgroundViewport(
+    BackgroundViewportConfigurationView *configuration)
+{
+    if (g_AnmManager != NULL)
+        g_AnmManager->FlushVertexBuffer();
+
+    Float3 lookAt =
+        configuration->cameraLookAtOffset + configuration->cameraPosition;
+    Float3 eye =
+        configuration->cameraPositionOffset + configuration->cameraPosition;
+
+    D3DXMatrixLookAtLH(
+        &configuration->viewMatrix,
+        reinterpret_cast<D3DXVECTOR3 *>(&eye),
+        reinterpret_cast<D3DXVECTOR3 *>(&lookAt),
+        reinterpret_cast<D3DXVECTOR3 *>(&configuration->cameraUp));
+    D3DXMatrixPerspectiveFovLH(
+        &configuration->projectionMatrix,
+        configuration->fieldOfView,
+        (f32)configuration->viewport.Width /
+            (f32)configuration->viewport.Height,
+        30.0f,
+        1800.0f);
+    g_Supervisor.d3dDevice->SetTransform(
+        D3DTS_VIEW, &configuration->viewMatrix);
+    g_Supervisor.d3dDevice->SetTransform(
+        D3DTS_PROJECTION, &configuration->projectionMatrix);
+    D3DXVec3Cross(
+        reinterpret_cast<D3DXVECTOR3 *>(&configuration->cameraRight),
+        reinterpret_cast<D3DXVECTOR3 *>(&configuration->cameraLookAtOffset),
+        reinterpret_cast<D3DXVECTOR3 *>(&configuration->cameraUp));
+    D3DXVec3Normalize(
+        reinterpret_cast<D3DXVECTOR3 *>(&configuration->cameraRight),
+        reinterpret_cast<D3DXVECTOR3 *>(&configuration->cameraRight));
+
+    if (g_AnmManager != NULL)
+    {
+        g_AnmManager->unknown020 = configuration->anmViewportValue0;
+        g_AnmManager->unknown024 = configuration->anmViewportValue1;
+    }
 }
 
 // FUNCTION: TH095 0x00401B70.
