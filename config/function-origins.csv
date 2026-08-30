@@ -169,9 +169,9 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00417970,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004179A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004179D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00417A70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00417A70,authored,PhotoGameTask,authored,exact,vc71-photo-game-task-2026-08-30
 0x00417D20,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00417E70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00417E70,authored,PhotoGameTask,authored,exact,vc71-photo-game-task-2026-08-30
 0x00417F80,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004180A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00418100,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

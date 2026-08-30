@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 211 canonical units cover 108,009 authored bytes.
+- Reconstruction: 251 canonical units cover 115,618 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.84% (108,009 / 212,462)
+  relocations. Confirmed authored-byte coverage is now 50.42% (115,618 / 229,308)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 257 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,566 origin/boundary reviews pending. Original class
+  confirms 309 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,514 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -406,6 +406,31 @@
 
 ## Next bounded lane
 
+The high-connectivity `GameTaskInf` lifecycle coordinator is now closed
+exactly. `PhotoGameTaskView::InitializeSubsystems @ 0x00417A70` and
+`ShutdownSubsystems @ 0x00417E70` contribute 953 authored bytes and enforce
+all 63 relocations. They prove the `0x124` task layout, the `0xC8` runtime
+snapshot, normal/extra best-shot validation, and the complete live ownership
+graph from replay creation through background/front/bullet/photo/player/enemy/
+item/pause/laser creation and teardown. Preserve both units while extending
+any of those shared subsystem views.
+
+A cold affected-object audit also repaired stale VC7.1 compiler-local label
+names left by earlier shared `AnmManager.hpp` growth. Six ANM units, including
+the complete 17,426-byte dispatcher unit, plus one PhotoCamera and one
+PhotoGame unit now replay with their current COFF `$Lxxxxx` identities. All
+129 units across the fourteen audited objects are exact; only manifest-local
+symbol names changed, never target destinations or credited bytes.
+
+Continue outward through the immediately adjacent GameTask/FrontInf cluster at
+`0x00417070..0x00418716`. Prioritize the high-fanout functions at
+`0x00417D20`, `0x00417F80`, `0x00418100`, and `0x00418420`; use the exact
+coordinator's factory/destructor edges to establish ownership before assigning
+names. Keep `0x00417410/0x00417550` as a paired creation/destruction target,
+and preserve the independently exact `PhotoToScreen @ 0x004186D0` bridge.
+
+## Closed lanes and preservation constraints
+
 The enemy update, spawn, reset, resource, and construction spines are now
 source-present. The child constructors at `0x00415040/0x00415310`, resource
 entries at `0x00408CE0/0x00408DE0/0x004153D0`, and the manager destroy wrapper
@@ -433,8 +458,8 @@ previous/next/state fields at `+0x04/+0x08/+0x0C`, the deferred-deletion byte
 at `+0x48`, and virtual update/cleanup ownership. The original shared-tail
 source shape is required for the first deletion branch.
 
-Stay in this high-connectivity cluster and reconstruct the remaining concrete
-effect methods through `0x004200F6`. The factory at `0x0041DBD0` is now
+The remaining concrete effect methods through `0x004200F6` stay deferred where
+only compiler-local homes remain. The factory at `0x0041DBD0` is now
 source-present with the exact 432-byte topology and every relocation; its 34
 residual comparable bytes are only an original `0x14` local-frame gap. Its
 straight/rotating constructors at `0x0041DD80/0x0041DE50` are canonical exact

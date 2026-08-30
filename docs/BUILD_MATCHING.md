@@ -99,3 +99,13 @@ and all 647 explicit relocations.
 Objdiff 3.8.0 reports `100%` measures for an empty zero-unit project. Treat that
 as an empty-denominator UI artifact, never as reconstruction progress. Only the
 accepted ledgers drive `docs/PROGRESS.md` and `resources/progress.svg`.
+
+VC7.1 encodes compiler-local `$Lxxxxx` symbol names into COFF relocations for
+switch tables. Adding source lines to a shared header can renumber those labels
+without changing a single instruction, target destination, or relocation
+offset. After any shared-header edit, cold-rebuild every affected object and
+refresh only the locally renamed relocation symbols after proving that offset,
+type, target, and complete compared bytes remain exact. The 2026-08-30
+GameTask checkpoint caught and repaired this previously accumulated drift in
+six ANM units plus one PhotoCamera and one PhotoGame unit; 129 affected units
+then replayed exactly.
