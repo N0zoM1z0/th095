@@ -7985,3 +7985,40 @@ relocations = [
   { offset = 0xE1, type = "DIR32", symbol = "?g_SceneSaveData@th095@@3PAUSceneSaveDataView@1@A", target = 0x004C4E78 },
   { offset = 0xF8, type = "REL32", symbol = "_D3DXLoadSurfaceFromMemory@40", target = 0x0045BCBF },
 ]
+
+[units.photo-game-update]
+# The authored body ends at 0x004300F4. The canonical COFF extent also owns
+# the adjacent four-entry mode switch table at 0x004300F5..0x00430104.
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameUpdateView::Update"]
+symbol = "?Update@PhotoGameUpdateView@th095@@QAEHXZ"
+target_address = 0x0042FF60
+size = 0x195
+compare_size = 0x1A5
+relocations = [
+  { offset = 0x21, type = "DIR32", symbol = "$L65983", target = 0x004300F5 },
+  { offset = 0x33, type = "DIR32", symbol = "__real@c2a00000", target = 0x004966F4 },
+  { offset = 0x3C, type = "DIR32", symbol = "__real@42700000", target = 0x00495634 },
+  { offset = 0x42, type = "DIR32", symbol = "__real@43f00000", target = 0x00495394 },
+  { offset = 0x9E, type = "REL32", symbol = "?UpdateMainState@PhotoGameUpdateView@th095@@QAEXXZ", target = 0x0042F190 },
+  { offset = 0xAC, type = "REL32", symbol = "?UpdatePhotoCamera@th095@@YIXPAUPhotoCameraState@1@@Z", target = 0x00430AB0 },
+  { offset = 0xC9, type = "DIR32", symbol = "?g_PhotoGameGlobalState@th095@@3PAUPhotoGameGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0xD8, type = "DIR32", symbol = "?g_PhotoGameGlobalState@th095@@3PAUPhotoGameGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0xE4, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x103, type = "DIR32", symbol = "?g_PhotoRuntimeResetTarget@th095@@3PAUPhotoResetTargetView@1@A", target = 0x004BDDC0 },
+  { offset = 0x108, type = "REL32", symbol = "?ResetForPhotoTransition@PhotoResetTargetView@th095@@QAEXXZ", target = 0x00416810 },
+  { offset = 0x123, type = "DIR32", symbol = "?g_PhotoBulletResetTarget@th095@@3PAUPhotoResetTargetView@1@A", target = 0x004BDD98 },
+  { offset = 0x128, type = "REL32", symbol = "?ResetForPhotoTransition@PhotoResetTargetView@th095@@QAEXXZ", target = 0x004081B0 },
+  { offset = 0x12E, type = "DIR32", symbol = "?g_PhotoStageResetTarget@th095@@3PAUPhotoResetTargetView@1@A", target = 0x004C45E0 },
+  { offset = 0x133, type = "REL32", symbol = "?ResetForPhotoTransition@PhotoResetTargetView@th095@@QAEXXZ", target = 0x0041E010 },
+  { offset = 0x14D, type = "DIR32", symbol = "?g_PhotoGameGlobalState@th095@@3PAUPhotoGameGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x15C, type = "DIR32", symbol = "?g_PhotoGameGlobalState@th095@@3PAUPhotoGameGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x17A, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
+  { offset = 0x188, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+  { offset = 0x195, type = "DIR32", symbol = "$L65810", target = 0x0042FF85 },
+  { offset = 0x199, type = "DIR32", symbol = "$L65814", target = 0x0042FFFA },
+  { offset = 0x19D, type = "DIR32", symbol = "$L65967", target = 0x00430015 },
+  { offset = 0x1A1, type = "DIR32", symbol = "$L65970", target = 0x0043004E },
+]

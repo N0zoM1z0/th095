@@ -204,3 +204,4 @@ th095::Chain::CutImpl,0x004191D0,function
 th095::Chain::~Chain,0x0041BD20,function
 th095::ZunMemory::~ZunMemory,0x0041BD70,function
 th095::ResultSaveDataView::WriteBestShotData,0x00435910,function
+th095::PhotoGameUpdateView::Update,0x0042FF60,function

@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 172 canonical units cover 96,999 authored bytes.
+- Reconstruction: 173 canonical units cover 97,404 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 54.69% (96,999 / 177,360)
+  relocations. Confirmed authored-byte coverage is now 54.92% (97,404 / 177,360)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -72,6 +72,14 @@
   normalized over the 256-by-192 preview, and a missing decoded component
   clears the destination surface. The five established scene-progression
   units replay unchanged after extending their shared save-data view.
+- The bounded root-level `PhotoGame.cpp` reconstructs
+  `PhotoGameUpdateView::Update @ 0x0042FF60`. Its 405-byte authored body,
+  adjacent 16-byte switch table, and all 23 relocations replay exactly. The
+  four-state coordinator covers the 60-frame entrance, live photo/camera
+  update, completion signaling, staged runtime/bullet/stage shutdown, inline
+  ANM execution, and timer advance. Keeping its full `+0x2A18` layout local
+  preserves the compiler label identities of all nine established
+  `PhotoCamera.cpp` units; each one replays unchanged.
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.
@@ -277,12 +285,12 @@
 
 ## Next bounded lane
 
-Continue the target-local candidate inventory rather than spending more time
-on compiler-only residuals. The remaining source-missing confirmed-authored
-candidate is `FUN_0042FF60 @ 0x0042FF60` (405 bytes), a seven-callee
-photography/gameplay coordinator. Re-run the origin inventory after it so
-large unreviewed game-side candidates
-are admitted or excluded on evidence rather than size alone.
+Re-run the target-local origin and boundary inventory now that every previously
+confirmed source-missing authored candidate is implemented. Rank the next lane
+by authored likelihood, call-graph connectivity, and TH095-specific leverage;
+do not spend the next pass on compiler-only residuals merely to protect the
+current percentage. Promote newly confirmed authored candidates into the
+denominator before claiming additional coverage.
 
 The large photo functions remain source-present but non-exact:
 `PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe
