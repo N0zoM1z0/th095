@@ -11970,6 +11970,57 @@ relocations = [
   { offset = 0x47, type = "REL32", symbol = "?UpdatePartialFadeOut@CStreamingSound@th095@@QAEJXZ", target = 0x004543E0 },
 ]
 
+[units.anm-create-texture-from-file]
+source = "src/AnmPreload.cpp"
+object = "build/matching/AnmPreload.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManagerPreloadView::CreateTextureFromFile"]
+symbol = "?CreateTextureFromFile@AnmManagerPreloadView@th095@@QAEHPAUAnmTextureEntryView@2@HH@Z"
+target_address = 0x00442E10
+size = 0x7E
+relocations = [
+  { offset = 0x0B, type = "REL32", symbol = "?GetAnmFormat@th095@@YIHH@Z", target = 0x00442B40 },
+  { offset = 0x2A, type = "DIR32", symbol = "?g_TextureFormatD3D8Mapping@th095@@3PAW4_D3DFORMAT@@A", target = 0x00496F10 },
+  { offset = 0x47, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x4D, type = "REL32", symbol = "_D3DXCreateTextureFromFileInMemoryEx@60", target = 0x0045CE67 },
+  { offset = 0x62, type = "REL32", symbol = "?ApplyTextureAlphaBleed@AnmManagerPreloadView@th095@@QAEXPAUAnmTextureEntryView@2@@Z", target = 0x00442510 },
+  { offset = 0x6F, type = "DIR32", symbol = "?g_TextureFormatBytesPerPixel@th095@@3PAIA", target = 0x00496F28 },
+]
+
+[units.anm-create-texture-from-anm]
+source = "src/AnmPreload.cpp"
+object = "build/matching/AnmPreload.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManagerPreloadView::CreateTextureFromAnm"]
+symbol = "?CreateTextureFromAnm@AnmManagerPreloadView@th095@@QAEHPAPAUIDirect3DTexture8@@PAXH@Z"
+target_address = 0x00442E90
+size = 0x125
+relocations = [
+  { offset = 0x14, type = "REL32", symbol = "?GetAnmFormat@th095@@YIHH@Z", target = 0x00442B40 },
+  { offset = 0x4F, type = "DIR32", symbol = "?g_TextureFormatD3D8Mapping@th095@@3PAW4_D3DFORMAT@@A", target = 0x00496F10 },
+  { offset = 0x69, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x6F, type = "REL32", symbol = "_D3DXCreateTexture@32", target = 0x0045C1C6 },
+  { offset = 0xAE, type = "DIR32", symbol = "?g_TextureFormatBytesPerPixel@th095@@3PAIA", target = 0x00496F28 },
+  { offset = 0xBD, type = "DIR32", symbol = "?g_TextureFormatD3D8Mapping@th095@@3PAW4_D3DFORMAT@@A", target = 0x00496F10 },
+  { offset = 0xD2, type = "REL32", symbol = "_D3DXLoadSurfaceFromMemory@40", target = 0x0045BCBF },
+  { offset = 0xDF, type = "DIR32", symbol = "?g_TextureFormatBytesPerPixel@th095@@3PAIA", target = 0x00496F28 },
+]
+
+[units.anm-create-empty-texture]
+source = "src/AnmPreload.cpp"
+object = "build/matching/AnmPreload.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManagerPreloadView::CreateEmptyTexture"]
+symbol = "?CreateEmptyTexture@AnmManagerPreloadView@th095@@QAEHPAPAUIDirect3DTexture8@@HHH@Z"
+target_address = 0x00442FC0
+size = 0x48
+relocations = [
+  { offset = 0x13, type = "DIR32", symbol = "?g_TextureFormatD3D8Mapping@th095@@3PAW4_D3DFORMAT@@A", target = 0x00496F10 },
+  { offset = 0x26, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x2C, type = "REL32", symbol = "_D3DXCreateTexture@32", target = 0x0045C1C6 },
+  { offset = 0x39, type = "DIR32", symbol = "?g_TextureFormatBytesPerPixel@th095@@3PAIA", target = 0x00496F28 },
+]
+
 [units.anm-service-preloaded]
 source = "src/AnmPreload.cpp"
 object = "build/matching/AnmPreload.obj"
@@ -12052,3 +12103,13 @@ size = 0x4E
 relocations = [
   { offset = 0x41, type = "REL32", symbol = "_free", target = 0x004854BE },
 ]
+
+[units.anm-load-sprite]
+source = "src/AnmPreload.cpp"
+object = "build/matching/AnmPreload.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmLoaded::LoadSprite"]
+symbol = "?LoadSprite@AnmLoaded@th095@@QAEXHPAUAnmLoadedSprite@2@@Z"
+target_address = 0x00443B10
+size = 0x155
+relocations = []

@@ -426,10 +426,15 @@ and complete slot reset. `LoadTextureData @ 0x004435A0` (829 bytes) and
 `ReleaseAnmEntry @ 0x00443AC0` (78 bytes) now close that chain exactly: they
 prove the TH095 version-4 `0x40`-byte serialized entry, external/embedded/empty
 texture paths, scaled sprite and script binding, the `0x10`-byte runtime texture
-slot, and COM/raw-allocation teardown. All five isolated `AnmPreload.cpp` units
-must remain exact. Continue with the directly connected texture constructors
-at `0x00442E10`, `0x00442E90`, and `0x00442FC0`, then `AnmLoaded::LoadSprite @
-0x00443B10`; return to the Supervisor render callback residual afterward.
+slot, and COM/raw-allocation teardown. Its three directly connected texture
+constructors at `0x00442E10`, `0x00442E90`, and `0x00442FC0` are exact too,
+including the TH095-specific direct `THTX` surface upload, alpha-bleed path, and
+runtime bytes-per-pixel metadata. `AnmLoaded::LoadSprite @ 0x00443B10` closes
+the consumer side with an exact `0x44`-byte copy and UV/pixel geometry. All nine
+isolated `AnmPreload.cpp` units must remain exact. Continue through the adjacent
+load/preload chain: `LoadAnm @ 0x00443010`, `ReadAnmEntries @ 0x00443070`,
+`PreloadAnm @ 0x004432E0`, and `LoadExternalTextureData @ 0x004433A0`; return to
+the Supervisor render callback residual afterward.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

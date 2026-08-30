@@ -64,6 +64,10 @@ th095::AnmManagerPreloadView::PostloadAnmEntry,0x00443480,function
 th095::AnmManagerPreloadView::ReleaseAnm,0x00443980,function
 th095::AnmManagerPreloadView::LoadTextureData,0x004435A0,function
 th095::AnmManagerPreloadView::ReleaseAnmEntry,0x00443AC0,function
+th095::AnmManagerPreloadView::CreateTextureFromFile,0x00442E10,function
+th095::AnmManagerPreloadView::CreateTextureFromAnm,0x00442E90,function
+th095::AnmManagerPreloadView::CreateEmptyTexture,0x00442FC0,function
+th095::AnmLoaded::LoadSprite,0x00443B10,function
 th095::AnmVm::InitializePulsingRadialTrail,0x00441710,function
 th095::UpdatePulsingRadialTrail,0x00441A10,function
 th095::DrawPulsingRadialTrail,0x00441D70,function

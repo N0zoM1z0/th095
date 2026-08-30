@@ -558,9 +558,9 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00442B40,authored,AnmTexture,authored,exact,vc71-anm-texture-load-2026-08-29
 0x00442B90,authored,AnmTexture,authored,high,scene-select-texture-upload-2026-08-29
 0x00442CA0,authored,AnmTexture,authored,high,scene-select-texture-upload-2026-08-29
-0x00442E10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00442E90,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00442FC0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00442E10,authored,AnmManager,authored,exact,anm-texture-constructors-exact-2026-08-30
+0x00442E90,authored,AnmManager,authored,exact,anm-texture-constructors-exact-2026-08-30
+0x00442FC0,authored,AnmManager,authored,exact,anm-texture-constructors-exact-2026-08-30
 0x00443010,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00443070,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004432E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -570,7 +570,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004438E0,authored,AnmManager,authored,exact,anm-preload-service-exact-2026-08-30
 0x00443980,authored,AnmManager,authored,exact,anm-release-anm-exact-2026-08-30
 0x00443AC0,authored,AnmManager,authored,exact,anm-release-entry-exact-2026-08-30
-0x00443B10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00443B10,authored,AnmManager,authored,exact,anm-load-sprite-exact-2026-08-30
 0x00443C70,authored,AnmText,authored,exact,vc71-exact-anm-text-inner-2026-08-29
 0x00443CE0,authored,AnmText,authored,high,vc71-th08-corroborated-anm-text-2026-08-29
 0x00443DD0,authored,AnmText,authored,high,target-vc71-anm-text-family-2026-08-29

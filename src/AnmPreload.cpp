@@ -35,6 +35,17 @@ struct AnmRawSpriteView
     f32 height;
 };
 
+struct AnmTextureHeaderView
+{
+    char magic[4];
+    u16 serializedReserved004;
+    i16 format;
+    i16 width;
+    i16 height;
+    u16 serializedReserved00c;
+    u16 serializedReserved00e;
+};
+
 struct AnmTextureEntryView
 {
     IDirect3DTexture8 *texture;
@@ -53,6 +64,9 @@ class AnmPreloadMemoryView
 };
 
 extern AnmPreloadMemoryView g_AnmPreloadMemory;
+extern D3DFORMAT g_TextureFormatD3D8Mapping[6];
+extern u32 g_TextureFormatBytesPerPixel[6];
+i32 __fastcall GetAnmFormat(i32 format);
 
 struct AnmPreloadSlotView
 {
@@ -75,6 +89,7 @@ struct AnmManagerPreloadView
                              void *textureData, i32 format);
     i32 CreateEmptyTexture(IDirect3DTexture8 **outTexture, i32 width,
                            i32 height, i32 format);
+    void ApplyTextureAlphaBleed(AnmTextureEntryView *entry);
     void ReleaseAnm(i32 anmIdx);
     void ReleaseAnmEntry(AnmTextureEntryView *entry);
     void MarkVmsForDeletion(AnmLoaded *anm);
@@ -84,7 +99,89 @@ struct AnmManagerPreloadView
 typedef char AnmPreloadSlotViewSizeIs120[(sizeof(AnmPreloadSlotView) == 0x120) ? 1 : -1];
 typedef char AnmRawEntryViewNextAt38[(offsetof(AnmRawEntryView, nextOffset) == 0x38) ? 1 : -1];
 typedef char AnmRawEntryViewSizeIs40[(sizeof(AnmRawEntryView) == 0x40) ? 1 : -1];
+typedef char AnmTextureHeaderViewSizeIs10[(sizeof(AnmTextureHeaderView) == 0x10) ? 1 : -1];
 typedef char AnmTextureEntryViewSizeIs10[(sizeof(AnmTextureEntryView) == 0x10) ? 1 : -1];
+
+// FUNCTION: TH095 0x00442E10.
+i32 AnmManagerPreloadView::CreateTextureFromFile(
+    AnmTextureEntryView *entry, i32 format, i32 colorKey)
+{
+    format = GetAnmFormat(format);
+    if (D3DXCreateTextureFromFileInMemoryEx(
+            g_Supervisor.d3dDevice, entry->rawData, entry->size, 0, 0, 0, 0,
+            g_TextureFormatD3D8Mapping[format], D3DPOOL_MANAGED,
+            D3DX_FILTER_LINEAR, static_cast<DWORD>(-1), colorKey, NULL, NULL,
+            &entry->texture) != D3D_OK)
+    {
+        return ZUN_ERROR;
+    }
+
+    this->ApplyTextureAlphaBleed(entry);
+    entry->unknown00c = g_TextureFormatBytesPerPixel[format];
+    return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x00442E90.
+i32 AnmManagerPreloadView::CreateTextureFromAnm(
+    IDirect3DTexture8 **outTexture, void *textureData, i32 format)
+{
+    IDirect3DSurface8 *textureSurfaceLevel;
+    RECT sourceRect;
+    AnmTextureHeaderView *header;
+
+    textureSurfaceLevel = NULL;
+    format = GetAnmFormat(format);
+    header = reinterpret_cast<AnmTextureHeaderView *>(textureData);
+    sourceRect.left = 0;
+    sourceRect.top = 0;
+    sourceRect.right = header->width;
+    sourceRect.bottom = header->height;
+
+    if (D3DXCreateTexture(
+            g_Supervisor.d3dDevice, header->width, header->height, 1, 0,
+            g_TextureFormatD3D8Mapping[format], D3DPOOL_MANAGED,
+            outTexture) != D3D_OK)
+    {
+        goto error;
+    }
+
+    (*outTexture)->GetSurfaceLevel(0, &textureSurfaceLevel);
+    D3DXLoadSurfaceFromMemory(
+        textureSurfaceLevel, NULL, NULL,
+        reinterpret_cast<u8 *>(textureData) + sizeof(AnmTextureHeaderView),
+        g_TextureFormatD3D8Mapping[header->format],
+        g_TextureFormatBytesPerPixel[header->format] * header->width, NULL,
+        &sourceRect, D3DX_FILTER_NONE, 0);
+    reinterpret_cast<AnmTextureEntryView *>(outTexture)->unknown00c =
+        g_TextureFormatBytesPerPixel[format];
+
+    if (textureSurfaceLevel != NULL)
+    {
+        textureSurfaceLevel->Release();
+        textureSurfaceLevel = NULL;
+    }
+    return ZUN_SUCCESS;
+
+error:
+    if (textureSurfaceLevel != NULL)
+    {
+        textureSurfaceLevel->Release();
+        textureSurfaceLevel = NULL;
+    }
+    return ZUN_ERROR;
+}
+
+// FUNCTION: TH095 0x00442FC0.
+i32 AnmManagerPreloadView::CreateEmptyTexture(
+    IDirect3DTexture8 **outTexture, i32 width, i32 height, i32 format)
+{
+    D3DXCreateTexture(
+        g_Supervisor.d3dDevice, width, height, 1, 0,
+        g_TextureFormatD3D8Mapping[format], D3DPOOL_MANAGED, outTexture);
+    reinterpret_cast<AnmTextureEntryView *>(outTexture)->unknown00c =
+        g_TextureFormatBytesPerPixel[format];
+    return ZUN_SUCCESS;
+}
 
 // FUNCTION: TH095 0x004435A0.
 i32 AnmManagerPreloadView::LoadTextureData(
@@ -334,6 +431,33 @@ void AnmManagerPreloadView::ReleaseAnmEntry(AnmTextureEntryView *entry)
     {
         g_AnmPreloadMemory.Free(entry->rawData);
     }
+}
+
+// FUNCTION: TH095 0x00443B10.
+void AnmLoaded::LoadSprite(i32 spriteIdx, AnmLoadedSprite *loadedSprite)
+{
+    this->sprites[spriteIdx] = *loadedSprite;
+
+    this->sprites[spriteIdx].uvStart.x =
+        this->sprites[spriteIdx].startPixelInclusive.x /
+        (this->sprites[spriteIdx].width);
+    this->sprites[spriteIdx].uvEnd.x =
+        this->sprites[spriteIdx].endPixelInclusive.x /
+        (this->sprites[spriteIdx].width);
+    this->sprites[spriteIdx].uvStart.y =
+        this->sprites[spriteIdx].startPixelInclusive.y /
+        (this->sprites[spriteIdx].height);
+    this->sprites[spriteIdx].uvEnd.y =
+        this->sprites[spriteIdx].endPixelInclusive.y /
+        (this->sprites[spriteIdx].height);
+    this->sprites[spriteIdx].widthPx =
+        (this->sprites[spriteIdx].endPixelInclusive.x -
+         this->sprites[spriteIdx].startPixelInclusive.x) /
+        loadedSprite->scaleFactor.x;
+    this->sprites[spriteIdx].heightPx =
+        (this->sprites[spriteIdx].endPixelInclusive.y -
+         this->sprites[spriteIdx].startPixelInclusive.y) /
+        loadedSprite->scaleFactor.y;
 }
 
 } // namespace th095
