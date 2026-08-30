@@ -168,6 +168,15 @@ permutation of its six inlined id-counter homes. Keep those four bodies
 compiler-observed: an otherwise unused 0x14-byte object or hand-shaped local
 permutation would violate authored-source policy.
 
+The adjacent frame callbacks are the positive half of the same oracle. Ten
+natural `/Od /Ob1` bodies at `0x00444980..0x00444B00` reproduce all 277 bytes
+and twenty relocations exactly, including the two viewport callbacks and the
+four-counter layer-six reset. The complete `UpdateVms` source naturally emits
+356 bytes against the 358-byte target because build 3077 folds one branch in
+the PhotoGameTask flag gate. Preserve that semantic source and its exact
+dependencies; an explicit no-op jump would encode compiler output rather than
+recover authored C++.
+
 The adjacent task constructor proves that unoptimized VC7.1 preserves nested
 member-construction source shape even when the constructor body immediately
 clears the complete object. Model the `+0x104` completion state as an enclosing

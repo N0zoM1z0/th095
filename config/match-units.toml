@@ -12327,3 +12327,131 @@ relocations = [
   { offset = 0x0A7, type = "REL32", symbol = "_free", target = 0x004854BE },
   { offset = 0x0BD, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
 ]
+
+[units.anm-on-update]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::OnUpdate"]
+symbol = "?OnUpdate@AnmManager@th095@@SIXPAX@Z"
+target_address = 0x00444980
+size = 0x13
+relocations = [
+  { offset = 0x0B, type = "REL32", symbol = "?UpdateVms@AnmManagerUpdateView@th095@@QAEHXZ", target = 0x00444B10 },
+]
+
+[units.anm-draw-layer-0]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::DrawLayer0"]
+symbol = "?DrawLayer0@AnmManager@th095@@SIXPAX@Z"
+target_address = 0x004449A0
+size = 0x15
+relocations = [
+  { offset = 0x0D, type = "REL32", symbol = "?DrawLayer@AnmManagerDrawLayerView@th095@@QAEHH@Z", target = 0x00444C80 },
+]
+
+[units.anm-draw-layer-1]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::DrawLayer1"]
+symbol = "?DrawLayer1@AnmManager@th095@@SIXPAX@Z"
+target_address = 0x004449C0
+size = 0x15
+relocations = [
+  { offset = 0x0D, type = "REL32", symbol = "?DrawLayer@AnmManagerDrawLayerView@th095@@QAEHH@Z", target = 0x00444C80 },
+]
+
+[units.anm-draw-layer-2]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::DrawLayer2"]
+symbol = "?DrawLayer2@AnmManager@th095@@SIXPAX@Z"
+target_address = 0x004449E0
+size = 0x15
+relocations = [
+  { offset = 0x0D, type = "REL32", symbol = "?DrawLayer@AnmManagerDrawLayerView@th095@@QAEHH@Z", target = 0x00444C80 },
+]
+
+[units.anm-draw-layer-3]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::DrawLayer3"]
+symbol = "?DrawLayer3@AnmManager@th095@@SIXPAX@Z"
+target_address = 0x00444A00
+size = 0x15
+relocations = [
+  { offset = 0x0D, type = "REL32", symbol = "?DrawLayer@AnmManagerDrawLayerView@th095@@QAEHH@Z", target = 0x00444C80 },
+]
+
+[units.anm-draw-layer-4]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::DrawLayer4"]
+symbol = "?DrawLayer4@AnmManager@th095@@SIXPAX@Z"
+target_address = 0x00444A20
+size = 0x15
+relocations = [
+  { offset = 0x0D, type = "REL32", symbol = "?DrawLayer@AnmManagerDrawLayerView@th095@@QAEHH@Z", target = 0x00444C80 },
+]
+
+[units.anm-draw-layer-5]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::DrawLayer5"]
+symbol = "?DrawLayer5@AnmManager@th095@@SIXPAX@Z"
+target_address = 0x00444A40
+size = 0x15
+relocations = [
+  { offset = 0x0D, type = "REL32", symbol = "?DrawLayer@AnmManagerDrawLayerView@th095@@QAEHH@Z", target = 0x00444C80 },
+]
+
+[units.anm-draw-layer-6]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::DrawLayer6"]
+symbol = "?DrawLayer6@AnmManager@th095@@SIXPAX@Z"
+target_address = 0x00444A60
+size = 0x42
+relocations = [
+  { offset = 0x09, type = "DIR32", symbol = "?g_AnmLayer6CounterA@th095@@3HA", target = 0x004C493C },
+  { offset = 0x13, type = "DIR32", symbol = "?g_AnmLayer6CounterB@th095@@3HA", target = 0x004C4940 },
+  { offset = 0x1C, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x29, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x3A, type = "REL32", symbol = "?DrawLayer@AnmManagerDrawLayerView@th095@@QAEHH@Z", target = 0x00444C80 },
+]
+
+[units.anm-draw-layer-7]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::DrawLayer7"]
+symbol = "?DrawLayer7@AnmManager@th095@@SIXPAX@Z"
+target_address = 0x00444AB0
+size = 0x21
+relocations = [
+  { offset = 0x0A, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670 },
+  { offset = 0x0F, type = "REL32", symbol = "?ConfigureGameplayViewport@Supervisor@th095@@QAEXH@Z", target = 0x00404B10 },
+  { offset = 0x19, type = "REL32", symbol = "?DrawLayer@AnmManagerDrawLayerView@th095@@QAEHH@Z", target = 0x00444C80 },
+]
+
+[units.anm-draw-layer-8]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::DrawLayer8"]
+symbol = "?DrawLayer8@AnmManager@th095@@SIXPAX@Z"
+target_address = 0x00444AE0
+size = 0x21
+relocations = [
+  { offset = 0x0A, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670 },
+  { offset = 0x0F, type = "REL32", symbol = "?ConfigureGameplayViewport@Supervisor@th095@@QAEXH@Z", target = 0x00404B10 },
+  { offset = 0x19, type = "REL32", symbol = "?DrawLayer@AnmManagerDrawLayerView@th095@@QAEHH@Z", target = 0x00444C80 },
+]

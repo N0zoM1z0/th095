@@ -478,3 +478,14 @@ th095::AnmManagerVmLifecycleView::RemoveVm,0x00444E00,function
 th095::AnmLoaded::CreateVm,0x00444EF0,function
 th095::AnmLoadedPositionView::CreateVmAtScreen,0x00444FA0,function
 th095::AnmLoadedPositionView::CreateVmAtWorld,0x00445060,function
+th095::AnmManager::OnUpdate,0x00444980,function
+th095::AnmManager::DrawLayer0,0x004449A0,function
+th095::AnmManager::DrawLayer1,0x004449C0,function
+th095::AnmManager::DrawLayer2,0x004449E0,function
+th095::AnmManager::DrawLayer3,0x00444A00,function
+th095::AnmManager::DrawLayer4,0x00444A20,function
+th095::AnmManager::DrawLayer5,0x00444A40,function
+th095::AnmManager::DrawLayer6,0x00444A60,function
+th095::AnmManager::DrawLayer7,0x00444AB0,function
+th095::AnmManager::DrawLayer8,0x00444AE0,function
+th095::AnmManagerUpdateView::UpdateVms,0x00444B10,function

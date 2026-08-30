@@ -117,14 +117,54 @@ struct PhotoGameTaskDrawGateView
         u32 flags;
         struct
         {
-            u32 unknownFlags0 : 2;
+            u32 flag0 : 1;
+            u32 flag1 : 1;
             u32 drawVms : 1;
-            u32 unknownFlags3 : 29;
+            u32 unknownFlags3 : 7;
+            u32 flag10 : 1;
+            u32 unknownFlags11 : 21;
         };
     };
+
 };
 
 extern PhotoGameTaskDrawGateView *g_PhotoGameTask;
+extern i32 g_AnmLayer6CounterA;
+extern i32 g_AnmLayer6CounterB;
+
+struct AnmVmUpdateView
+{
+    AnmVmUpdateView *next;
+    AnmVmUpdateView *nextInDrawLayer;
+    AnmVmUpdateView *previous;
+    i32 renderMode;
+    u8 unknown010[0x218];
+    union
+    {
+        u32 flagsWord;
+        struct
+        {
+            u32 unknownFlags00 : 26;
+            u32 flag26 : 1;
+            u32 flag27 : 1;
+            u32 flag28 : 1;
+            u32 unknownFlags29 : 3;
+        };
+    };
+    u8 unknown22c[0xa0];
+};
+
+struct AnmManagerUpdateView
+{
+    u8 unknown000[0x28];
+    i32 vmsProcessedThisFrame;
+    u8 unknown02c[0x381814 - 0x2c];
+    AnmVmUpdateView *vmListHead;
+    AnmVmUpdateView *vmListTail;
+    AnmVmUpdateView drawLayerHeads[9];
+
+    i32 UpdateVms();
+};
 
 typedef char AnmVmLifecycleIdAt10[
     (offsetof(AnmVmLifecycleView, id) == 0x10) ? 1 : -1];
@@ -136,6 +176,128 @@ typedef char AnmVmDrawNodeFlagsAt228[
     (offsetof(AnmVmDrawNodeView, flagsWord) == 0x228) ? 1 : -1];
 typedef char AnmManagerDrawLayerHeadsAt38181C[
     (offsetof(AnmManagerDrawLayerView, drawLayerHeads) == 0x38181c) ? 1 : -1];
+typedef char AnmVmUpdateViewSizeIs2CC[
+    (sizeof(AnmVmUpdateView) == 0x2cc) ? 1 : -1];
+typedef char AnmManagerUpdateVmListAt381814[
+    (offsetof(AnmManagerUpdateView, vmListHead) == 0x381814) ? 1 : -1];
+typedef char AnmManagerUpdateDrawLayersAt38181C[
+    (offsetof(AnmManagerUpdateView, drawLayerHeads) == 0x38181c) ? 1 : -1];
+
+// FUNCTION: TH095 0x00444980.
+void __fastcall AnmManager::OnUpdate(void *arg)
+{
+    reinterpret_cast<AnmManagerUpdateView *>(arg)->UpdateVms();
+}
+
+// FUNCTION: TH095 0x004449A0.
+void __fastcall AnmManager::DrawLayer0(void *arg)
+{
+    reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(0);
+}
+
+// FUNCTION: TH095 0x004449C0.
+void __fastcall AnmManager::DrawLayer1(void *arg)
+{
+    reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(1);
+}
+
+// FUNCTION: TH095 0x004449E0.
+void __fastcall AnmManager::DrawLayer2(void *arg)
+{
+    reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(2);
+}
+
+// FUNCTION: TH095 0x00444A00.
+void __fastcall AnmManager::DrawLayer3(void *arg)
+{
+    reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(3);
+}
+
+// FUNCTION: TH095 0x00444A20.
+void __fastcall AnmManager::DrawLayer4(void *arg)
+{
+    reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(4);
+}
+
+// FUNCTION: TH095 0x00444A40.
+void __fastcall AnmManager::DrawLayer5(void *arg)
+{
+    reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(5);
+}
+
+// FUNCTION: TH095 0x00444A60.
+void __fastcall AnmManager::DrawLayer6(void *arg)
+{
+    g_AnmLayer6CounterA = 0;
+    g_AnmLayer6CounterB = 0;
+    g_AnmManager->unknown020 = 0;
+    g_AnmManager->unknown024 = 0;
+    reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(6);
+}
+
+// FUNCTION: TH095 0x00444AB0.
+void __fastcall AnmManager::DrawLayer7(void *arg)
+{
+    g_Supervisor.ConfigureGameplayViewport(1);
+    reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(7);
+}
+
+// FUNCTION: TH095 0x00444AE0.
+void __fastcall AnmManager::DrawLayer8(void *arg)
+{
+    g_Supervisor.ConfigureGameplayViewport(1);
+    reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(8);
+}
+
+// FUNCTION: TH095 0x00444B10.
+i32 AnmManagerUpdateView::UpdateVms()
+{
+    i32 layer;
+    AnmVmUpdateView *layerTails[9];
+    AnmVmUpdateView *vm;
+    AnmVmUpdateView *next;
+
+    for (layer = 0; layer < 9; layer++)
+    {
+        this->drawLayerHeads[layer].nextInDrawLayer = NULL;
+        layerTails[layer] = &this->drawLayerHeads[layer];
+    }
+
+    this->vmsProcessedThisFrame = 0;
+    vm = this->vmListHead;
+    while (vm != NULL)
+    {
+        next = vm->next;
+        if (g_PhotoGameTask == NULL || vm->flag28 ||
+            ((g_PhotoGameTask->drawVms | g_PhotoGameTask->flag0) == 0 &&
+             g_PhotoGameTask->flag1 == 0 &&
+             g_PhotoGameTask->flag10 == 0))
+        {
+            if (vm->flag26)
+            {
+                reinterpret_cast<AnmManagerVmLifecycleView *>(this)->RemoveVm(
+                    reinterpret_cast<AnmVmDeleteView *>(vm));
+                goto vmDone;
+            }
+            if (AnmManager::ExecuteScript(reinterpret_cast<AnmVm *>(vm)))
+            {
+                reinterpret_cast<AnmManagerVmLifecycleView *>(this)->RemoveVm(
+                    reinterpret_cast<AnmVmDeleteView *>(vm));
+                goto vmDone;
+            }
+            goto addToDrawLayer;
+        }
+addToDrawLayer:
+        layerTails[vm->renderMode]->nextInDrawLayer = vm;
+        layerTails[vm->renderMode] = vm;
+        vm->nextInDrawLayer = NULL;
+
+vmDone:
+        this->vmsProcessedThisFrame++;
+        vm = next;
+    }
+    return 1;
+}
 
 // FUNCTION: TH095 0x00444C80.
 i32 AnmManagerDrawLayerView::DrawLayer(i32 layer)

@@ -477,3 +477,14 @@ th095::AnmManagerVmLifecycleView::RemoveVm
 th095::AnmLoaded::CreateVm
 th095::AnmLoadedPositionView::CreateVmAtScreen
 th095::AnmLoadedPositionView::CreateVmAtWorld
+th095::AnmManager::OnUpdate
+th095::AnmManager::DrawLayer0
+th095::AnmManager::DrawLayer1
+th095::AnmManager::DrawLayer2
+th095::AnmManager::DrawLayer3
+th095::AnmManager::DrawLayer4
+th095::AnmManager::DrawLayer5
+th095::AnmManager::DrawLayer6
+th095::AnmManager::DrawLayer7
+th095::AnmManager::DrawLayer8
+th095::AnmManagerUpdateView::UpdateVms

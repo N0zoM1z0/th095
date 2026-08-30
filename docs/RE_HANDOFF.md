@@ -457,12 +457,19 @@ permuted. The render-mode, direct-screen, and world-position creation entries
 are exact-sized and resolve all 28 relocations; each differs in only six stack
 displacements caused by a common original `0x14` frame gap. The world path
 calls exact `PhotoToScreen` and is the shared ECL/enemy/bullet/photo-effect
-bridge. `DrawLayer @ 0x00444C80` is 134 versus 136 bytes, with one two-byte
-branch-shape residual around the PhotoGameTask draw gate. Do not add inert
-locals or an artificial branch to promote these probes. Keep the Supervisor
-render callback's constant-index residual deferred; next continue the
-unreviewed wrappers and update spine at `0x00444980..0x00444C75`, then revisit
-the five lifecycle residuals only if natural target-local source shape appears.
+bridge. The adjacent frame shell at `0x00444980..0x00444B00` is now exact:
+`OnUpdate` and draw callbacks 0 through 8 contribute 277 bytes and enforce all
+twenty update, draw-layer, render-counter, manager, and viewport relocations.
+The source-present 358-byte `UpdateVms @ 0x00444B10` clears nine embedded
+draw-list sentinels, executes or retires the lifetime list, and rebuilds every
+render bucket under the target-local PhotoGameTask gates. Its natural VC7.1
+probe emits 356 bytes, leaving one two-byte branch-shape residual. `DrawLayer @
+0x00444C80` similarly emits 134 versus 136 bytes around the companion draw
+gate. Do not add inert locals or artificial branches to promote either probe.
+Keep the Supervisor render callback's constant-index residual and the five
+lifecycle compiler-local residuals deferred; the next lane should rerank the
+remaining unreviewed ANM neighborhood after `0x004453B0`, prioritizing shared
+texture/VM consumers over isolated leaves.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

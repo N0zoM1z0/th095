@@ -161,3 +161,14 @@ address,name,module,confidence,evidence
 0x00444EF0,th095::AnmLoaded::CreateVm,AnmManager,high,Complete render-mode VM creation with all nine target relocations
 0x00444FA0,th095::AnmLoadedPositionView::CreateVmAtScreen,AnmManager,high,Complete screen-space VM creation with all nine target relocations
 0x00445060,th095::AnmLoadedPositionView::CreateVmAtWorld,AnmManager,high,Complete TH095 world-space VM creation through PhotoToScreen with all ten target relocations
+0x00444980,th095::AnmManager::OnUpdate,AnmManager,exact,Canonical 19-byte update callback with one relocation
+0x004449A0,th095::AnmManager::DrawLayer0,AnmManager,exact,Canonical 21-byte layer-zero callback with one relocation
+0x004449C0,th095::AnmManager::DrawLayer1,AnmManager,exact,Canonical 21-byte layer-one callback with one relocation
+0x004449E0,th095::AnmManager::DrawLayer2,AnmManager,exact,Canonical 21-byte layer-two callback with one relocation
+0x00444A00,th095::AnmManager::DrawLayer3,AnmManager,exact,Canonical 21-byte layer-three callback with one relocation
+0x00444A20,th095::AnmManager::DrawLayer4,AnmManager,exact,Canonical 21-byte layer-four callback with one relocation
+0x00444A40,th095::AnmManager::DrawLayer5,AnmManager,exact,Canonical 21-byte layer-five callback with one relocation
+0x00444A60,th095::AnmManager::DrawLayer6,AnmManager,exact,Canonical 66-byte counter-reset layer callback with five relocations
+0x00444AB0,th095::AnmManager::DrawLayer7,AnmManager,exact,Canonical 33-byte viewport-selecting layer callback with three relocations
+0x00444AE0,th095::AnmManager::DrawLayer8,AnmManager,exact,Canonical 33-byte viewport-selecting layer callback with three relocations
+0x00444B10,th095::AnmManagerUpdateView::UpdateVms,AnmManager,high,Complete nine-layer VM execution deletion and draw-list rebuild with a two-byte compiler branch residual

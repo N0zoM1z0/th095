@@ -384,3 +384,13 @@ address,name,size,status,match_percent,unit,evidence
 0x00444620,th095::AnmManagerCaptureView::CaptureToTexture,319,matching,100.00,anm-capture-to-texture,python3 scripts/build.py --unit anm-capture-to-texture && python3 scripts/compare-coff-function.py --unit anm-capture-to-texture --json
 0x00444760,th095::AnmManagerCaptureView::CaptureToSurface,537,matching,100.00,anm-capture-to-surface,python3 scripts/build.py --unit anm-capture-to-surface && python3 scripts/compare-coff-function.py --unit anm-capture-to-surface --json
 0x00444E00,th095::AnmManagerVmLifecycleView::RemoveVm,226,matching,100.00,anm-remove-vm,python3 scripts/build.py --unit anm-remove-vm && python3 scripts/compare-coff-function.py --unit anm-remove-vm --json
+0x00444980,th095::AnmManager::OnUpdate,19,matching,100.00,anm-on-update,python3 scripts/build.py --unit anm-on-update && python3 scripts/compare-coff-function.py --unit anm-on-update --json
+0x004449A0,th095::AnmManager::DrawLayer0,21,matching,100.00,anm-draw-layer-0,python3 scripts/build.py --unit anm-draw-layer-0 && python3 scripts/compare-coff-function.py --unit anm-draw-layer-0 --json
+0x004449C0,th095::AnmManager::DrawLayer1,21,matching,100.00,anm-draw-layer-1,python3 scripts/build.py --unit anm-draw-layer-1 && python3 scripts/compare-coff-function.py --unit anm-draw-layer-1 --json
+0x004449E0,th095::AnmManager::DrawLayer2,21,matching,100.00,anm-draw-layer-2,python3 scripts/build.py --unit anm-draw-layer-2 && python3 scripts/compare-coff-function.py --unit anm-draw-layer-2 --json
+0x00444A00,th095::AnmManager::DrawLayer3,21,matching,100.00,anm-draw-layer-3,python3 scripts/build.py --unit anm-draw-layer-3 && python3 scripts/compare-coff-function.py --unit anm-draw-layer-3 --json
+0x00444A20,th095::AnmManager::DrawLayer4,21,matching,100.00,anm-draw-layer-4,python3 scripts/build.py --unit anm-draw-layer-4 && python3 scripts/compare-coff-function.py --unit anm-draw-layer-4 --json
+0x00444A40,th095::AnmManager::DrawLayer5,21,matching,100.00,anm-draw-layer-5,python3 scripts/build.py --unit anm-draw-layer-5 && python3 scripts/compare-coff-function.py --unit anm-draw-layer-5 --json
+0x00444A60,th095::AnmManager::DrawLayer6,66,matching,100.00,anm-draw-layer-6,python3 scripts/build.py --unit anm-draw-layer-6 && python3 scripts/compare-coff-function.py --unit anm-draw-layer-6 --json
+0x00444AB0,th095::AnmManager::DrawLayer7,33,matching,100.00,anm-draw-layer-7,python3 scripts/build.py --unit anm-draw-layer-7 && python3 scripts/compare-coff-function.py --unit anm-draw-layer-7 --json
+0x00444AE0,th095::AnmManager::DrawLayer8,33,matching,100.00,anm-draw-layer-8,python3 scripts/build.py --unit anm-draw-layer-8 && python3 scripts/compare-coff-function.py --unit anm-draw-layer-8 --json
