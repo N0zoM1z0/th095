@@ -341,3 +341,5 @@ address,name,size,status,match_percent,unit,evidence
 0x00423E70,th095::Supervisor::AddedCallback,320,matching,100.00,main-added-callback,python3 scripts/build.py --unit main-added-callback && python3 scripts/compare-coff-function.py --unit main-added-callback --json
 0x00424050,th095::Supervisor::CheckFps,600,matching,100.00,main-check-fps,python3 scripts/build.py --unit main-check-fps && python3 scripts/compare-coff-function.py --unit main-check-fps --json
 0x00425150,th095::Supervisor::ThreadClose,155,matching,100.00,main-thread-close,python3 scripts/build.py --unit main-thread-close && python3 scripts/compare-coff-function.py --unit main-thread-close --json
+0x00424980,th095::Supervisor::ScreenshotThread,126,matching,100.00,main-screenshot-thread,python3 scripts/build.py --unit main-screenshot-thread && python3 scripts/compare-coff-function.py --unit main-screenshot-thread --json
+0x00424A00,th095::Supervisor::TakeScreenshot,814,matching,100.00,main-take-screenshot,python3 scripts/build.py --unit main-take-screenshot && python3 scripts/compare-coff-function.py --unit main-take-screenshot --json

@@ -162,6 +162,19 @@ struct SupervisorFlags
     u32 unknown12 : 20;
 };
 
+#pragma pack(push, 1)
+struct ScreenshotBitmapFileHeader
+{
+    u16 type;
+    u32 size;
+    u16 reserved1;
+    u16 reserved2;
+    u32 offBits;
+};
+#pragma pack(pop)
+
+typedef char ScreenshotBitmapFileHeaderSizeIs0E[(sizeof(ScreenshotBitmapFileHeader) == 0x0e) ? 1 : -1];
+
 typedef i32 (__fastcall *ChainCallback)(void *arg);
 typedef i32 (__fastcall *ChainLifetimeCallback)(void *arg);
 
@@ -213,7 +226,13 @@ struct Supervisor
     DWORD totalPlayTime;                         // +0x448
     DWORD systemTime;                            // +0x44c
     D3DCAPS8 d3dCaps;                           // +0x450
-    u8 unknownAfterCaps[0x648 - 0x450 - sizeof(D3DCAPS8)];
+    u8 unknownAfterCaps[0x528 - 0x450 - sizeof(D3DCAPS8)];
+    u32 screenshotThread;                       // +0x528
+    ScreenshotBitmapFileHeader screenshotFileHeader; // +0x52c
+    u8 screenshotHeaderPadding[2];              // +0x53a
+    BITMAPINFOHEADER *screenshotInfoHeader;      // +0x53c
+    u8 *screenshotPixels;                       // +0x540
+    char screenshotPath[MAX_PATH];              // +0x544
     HANDLE replayScanThreadHandle;               // +0x648
     u32 replayScanThreadId;                      // +0x64c
     i32 replayScanStopRequested;                 // +0x650
@@ -261,7 +280,8 @@ struct Supervisor
     static void __fastcall StartupThread(Supervisor *s);
     void DisableFog();
     void ThreadClose();
-    void TakeScreenshot(char *path);
+    i32 TakeScreenshot(char *path);
+    static void __fastcall ScreenshotThread(void *unused);
 
     static i32 __fastcall OnUpdate(void *arg);
     static i32 __fastcall AddedCallback(Supervisor *s);
@@ -300,6 +320,11 @@ typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanThreadHan
 typedef char SupervisorReplayScanStopAt650[(offsetof(Supervisor, replayScanStopRequested) == 0x650) ? 1 : -1];
 typedef char SupervisorStartupThreadStateAt660[(offsetof(Supervisor, startupThreadState) == 0x660) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
+typedef char SupervisorScreenshotThreadAt528[(offsetof(Supervisor, screenshotThread) == 0x528) ? 1 : -1];
+typedef char SupervisorScreenshotFileHeaderAt52C[(offsetof(Supervisor, screenshotFileHeader) == 0x52c) ? 1 : -1];
+typedef char SupervisorScreenshotInfoAt53C[(offsetof(Supervisor, screenshotInfoHeader) == 0x53c) ? 1 : -1];
+typedef char SupervisorScreenshotPixelsAt540[(offsetof(Supervisor, screenshotPixels) == 0x540) ? 1 : -1];
+typedef char SupervisorScreenshotPathAt544[(offsetof(Supervisor, screenshotPath) == 0x544) ? 1 : -1];
 typedef char SupervisorCriticalLockCountsAt70C[(offsetof(Supervisor, criticalSectionLockCounts) == 0x70c) ? 1 : -1];
 typedef char SupervisorLoadingVmsAt714[(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x714) ? 1 : -1];
 typedef char SupervisorLagNumeratorAt78C[(offsetof(Supervisor, lagNumerator) == 0x78c) ? 1 : -1];
@@ -395,6 +420,9 @@ struct FileSystem
     static u8 *OpenFile(char *path, i32 *fileSize, i32 isExternalResource);
     static i32 WriteDataToFile(char *path, void *data, i32 size);
     static i32 FileExists(char *path);
+    static i32 OpenWriteFile(char *path);
+    static i32 WriteToOpenFile(void *data, u32 size);
+    static i32 CloseWriteFile();
 };
 
 namespace utils

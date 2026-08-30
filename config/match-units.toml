@@ -626,7 +626,7 @@ target = 0x004C4670
 [[units.main-present.relocations]]
 offset = 0xDF
 type = "REL32"
-symbol = "?TakeScreenshot@Supervisor@th095@@QAEXPAD@Z"
+symbol = "?TakeScreenshot@Supervisor@th095@@QAEHPAD@Z"
 target = 0x00424A00
 
 [units.main-get-timestamp]
@@ -5946,6 +5946,65 @@ relocations = [
   { offset = 0x1E, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x00495060 },
   { offset = 0x52, type = "DIR32", symbol = "__imp__CloseHandle@4", target = 0x00495068 },
   { offset = 0x7E, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+]
+
+[units.main-screenshot-thread]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::ScreenshotThread"]
+symbol = "?ScreenshotThread@Supervisor@th095@@SIXPAX@Z"
+target_address = 0x00424980
+size = 0x7E
+relocations = [
+  { offset = 0xA, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x544 },
+  { offset = 0xF, type = "REL32", symbol = "?OpenWriteFile@FileSystem@th095@@SIHPAD@Z", target = 0x0041ADC0 },
+  { offset = 0x19, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x52C },
+  { offset = 0x1E, type = "REL32", symbol = "?WriteToOpenFile@FileSystem@th095@@SIHPAXI@Z", target = 0x0041AF80 },
+  { offset = 0x29, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x53C },
+  { offset = 0x2E, type = "REL32", symbol = "?WriteToOpenFile@FileSystem@th095@@SIHPAXI@Z", target = 0x0041AF80 },
+  { offset = 0x39, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x540 },
+  { offset = 0x3E, type = "REL32", symbol = "?WriteToOpenFile@FileSystem@th095@@SIHPAXI@Z", target = 0x0041AF80 },
+  { offset = 0x43, type = "REL32", symbol = "?CloseWriteFile@FileSystem@th095@@SIHXZ", target = 0x0041B090 },
+  { offset = 0x48, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x53C },
+  { offset = 0x54, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x5D, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x540 },
+  { offset = 0x69, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x72, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x528 },
+]
+
+[units.main-take-screenshot]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::TakeScreenshot"]
+symbol = "?TakeScreenshot@Supervisor@th095@@QAEHPAD@Z"
+target_address = 0x00424A00
+size = 0x32E
+relocations = [
+  { offset = 0x1A, type = "DIR32", symbol = "__imp__Sleep@4", target = 0x00495058 },
+  { offset = 0x2C, type = "DIR32", symbol = "??_C@_0O@FOBPAMME@SnapShot?$CB?5?$CFs?6?$AA@", target = 0x00496124 },
+  { offset = 0x31, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x6E, type = "DIR32", symbol = "??_C@_02DGHHEOAL@BM?$AA@", target = 0x00496120 },
+  { offset = 0xF6, type = "DIR32", symbol = "??_C@_0BH@NNBBNPHN@16bit?5?$IC?M?$IO?f?$IC?h?$IN?$JO?$IC?$NP?$IC?H?$IC?$KC?$AN?6?$AA@", target = 0x00496108 },
+  { offset = 0xFB, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x103, type = "DIR32", symbol = "??_C@_0BH@NNBBNPHN@16bit?5?$IC?M?$IO?f?$IC?h?$IN?$JO?$IC?$NP?$IC?H?$IC?$KC?$AN?6?$AA@", target = 0x00496108 },
+  { offset = 0x108, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x10D, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x125, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x142, type = "DIR32", symbol = "??_C@_0BO@GCDLGPM@snapShotScreen?5?3?5?$IKm?$JF?$NL?$IC?$LF?$IC?$KN?$IC?h?$AN?6?$AA@", target = 0x004960E8 },
+  { offset = 0x147, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x14C, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x17C, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x199, type = "DIR32", symbol = "??_C@_0BO@GCDLGPM@snapShotScreen?5?3?5?$IKm?$JF?$NL?$IC?$LF?$IC?$KN?$IC?h?$AN?6?$AA@", target = 0x004960E8 },
+  { offset = 0x19E, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x1A3, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x2E0, type = "DIR32", symbol = "?ScreenshotThread@Supervisor@th095@@SIXPAX@Z", target = 0x00424980 },
+  { offset = 0x2E5, type = "REL32", symbol = "__beginthread", target = 0x004861D4 },
+  { offset = 0x2ED, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x528 },
+  { offset = 0x2F4, type = "DIR32", symbol = "??_C@_0BH@IMOLLGID@error?5?$DP?5?4?2mother?4cpp?$AN?6?$AA@", target = 0x004960D0 },
+  { offset = 0x2F9, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x2FE, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
 ]
 
 [units.main-initialize-critical-sections]

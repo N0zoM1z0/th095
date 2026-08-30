@@ -428,3 +428,5 @@ th095::Supervisor::StartupThread,0x004242B0,function
 th095::Supervisor::DeletedCallback,0x004244D0,function
 th095::DummyMidiTimer::~DummyMidiTimer,0x00424700,function
 th095::Supervisor::ThreadClose,0x00425150,function
+th095::Supervisor::ScreenshotThread,0x00424980,function
+th095::Supervisor::TakeScreenshot,0x00424A00,function

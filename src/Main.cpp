@@ -4,6 +4,7 @@
 #include <direct.h>
 #include <math.h>
 #include <mmsystem.h>
+#include <process.h>
 #include <shlguid.h>
 #include <shobjidl.h>
 #include <stdio.h>
@@ -1720,6 +1721,147 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
         delete g_Supervisor.dummyMidiTimer;
         g_Supervisor.dummyMidiTimer = NULL;
     }
+    return 0;
+}
+
+// FUNCTION: TH095 0x00424980.
+void __fastcall Supervisor::ScreenshotThread(void *unused)
+{
+    void *infoHeader;
+    void *pixels;
+
+    FileSystem::OpenWriteFile(g_Supervisor.screenshotPath);
+    FileSystem::WriteToOpenFile(&g_Supervisor.screenshotFileHeader,
+                                sizeof(g_Supervisor.screenshotFileHeader));
+    FileSystem::WriteToOpenFile(g_Supervisor.screenshotInfoHeader,
+                                sizeof(BITMAPINFOHEADER));
+    FileSystem::WriteToOpenFile(g_Supervisor.screenshotPixels, 0xe1000);
+    FileSystem::CloseWriteFile();
+    infoHeader = g_Supervisor.screenshotInfoHeader;
+    free(infoHeader);
+    pixels = g_Supervisor.screenshotPixels;
+    free(pixels);
+    g_Supervisor.screenshotThread = 0;
+}
+
+// FUNCTION: TH095 0x00424A00.
+i32 Supervisor::TakeScreenshot(char *path)
+{
+    struct ScreenshotCaptureLocals
+    {
+        i32 allocationSize;
+        D3DLOCKED_RECT lockedRect;
+        i32 destinationRow;
+        i32 x;
+        i32 y;
+        u8 *destination;
+        u8 *source;
+        i32 widthBytes;
+        IDirect3DSurface8 *backbuffer;
+    } locals;
+
+#define allocationSize locals.allocationSize
+#define lockedRect locals.lockedRect
+#define destinationRow locals.destinationRow
+#define x locals.x
+#define y locals.y
+#define destination locals.destination
+#define source locals.source
+#define widthBytes locals.widthBytes
+#define backbuffer locals.backbuffer
+
+    while (this->screenshotThread != 0)
+        Sleep(10);
+
+    backbuffer = NULL;
+    utils::DebugPrint("SnapShot! %s\n", path);
+    this->d3dDevice->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &backbuffer);
+
+    memset(&this->screenshotFileHeader, 0,
+           sizeof(this->screenshotFileHeader));
+    this->screenshotFileHeader.type = *(u16 *)"BM";
+    this->screenshotFileHeader.offBits = 0x36;
+    this->screenshotFileHeader.size = this->screenshotFileHeader.offBits;
+    strcpy(this->screenshotPath, path);
+
+    switch (this->presentParameters.BackBufferFormat)
+    {
+    case D3DFMT_R5G6B5:
+        utils::DebugPrint(
+            "16bit \x82\xcd\x8e\xe6\x82\xe8\x8d\x9e\x82\xdf\x82\xc8\x82\xa2\r\n");
+        g_GameErrorContext.Log(
+            "16bit \x82\xcd\x8e\xe6\x82\xe8\x8d\x9e\x82\xdf\x82\xc8\x82\xa2\r\n");
+        goto cleanup;
+
+    case D3DFMT_X8R8G8B8:
+        allocationSize = 0x2c;
+        this->screenshotInfoHeader =
+            (BITMAPINFOHEADER *)malloc(allocationSize);
+        if (this->screenshotInfoHeader == NULL)
+        {
+            g_GameErrorContext.Log(
+                "snapShotScreen : \x8a\x6d\x95\xdb\x82\xb5\x82\xad\x82\xe8\r\n");
+            goto cleanup;
+        }
+        memset(this->screenshotInfoHeader, 0, 0x2c);
+
+        widthBytes = 0x780;
+        this->screenshotPixels = (u8 *)malloc(widthBytes * 0x1e0);
+        if (this->screenshotPixels == NULL)
+        {
+            g_GameErrorContext.Log(
+                "snapShotScreen : \x8a\x6d\x95\xdb\x82\xb5\x82\xad\x82\xe8\r\n");
+            goto cleanup;
+        }
+
+        this->screenshotFileHeader.size += widthBytes * 0x1e0;
+        this->screenshotInfoHeader->biBitCount = 0x18;
+        this->screenshotInfoHeader->biSize = 0x28;
+        this->screenshotInfoHeader->biWidth = 0x280;
+        this->screenshotInfoHeader->biHeight = 0x1e0;
+        this->screenshotInfoHeader->biPlanes = 1;
+        this->screenshotInfoHeader->biCompression = 0;
+
+        backbuffer->LockRect(&lockedRect, NULL, 0);
+        destinationRow = 0;
+        for (y = 0x1df; y > -1; y--, destinationRow++)
+        {
+            destination = this->screenshotPixels + widthBytes * destinationRow;
+            source = (u8 *)lockedRect.pBits + lockedRect.Pitch * y;
+            for (x = 0; x < 0x280; x++)
+            {
+                *(u16 *)destination = *(u16 *)source;
+                destination[2] = source[2];
+                source += 4;
+                destination += 3;
+            }
+        }
+        backbuffer->UnlockRect();
+        g_Supervisor.screenshotThread =
+            _beginthread((void (__cdecl *)(void *))Supervisor::ScreenshotThread,
+                         0, NULL);
+        goto cleanup;
+
+    default:
+        g_GameErrorContext.Log("error ? .\\mother.cpp\r\n");
+        return 1;
+    }
+
+cleanup:
+    if (backbuffer != NULL)
+    {
+        backbuffer->Release();
+        backbuffer = NULL;
+    }
+#undef allocationSize
+#undef lockedRect
+#undef destinationRow
+#undef x
+#undef y
+#undef destination
+#undef source
+#undef widthBytes
+#undef backbuffer
     return 0;
 }
 

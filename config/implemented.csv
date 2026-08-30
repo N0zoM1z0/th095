@@ -427,3 +427,5 @@ th095::Supervisor::StartupThread
 th095::Supervisor::DeletedCallback
 th095::DummyMidiTimer::~DummyMidiTimer
 th095::Supervisor::ThreadClose
+th095::Supervisor::ScreenshotThread
+th095::Supervisor::TakeScreenshot
