@@ -471,3 +471,9 @@ th095::AnmManager::CopySurfaceToBackbuffer
 th095::AnmManager::TakeScreenshots
 th095::AnmManagerCaptureView::CaptureToTexture
 th095::AnmManagerCaptureView::CaptureToSurface
+th095::AnmManagerDrawLayerView::DrawLayer
+th095::AnmManagerVmLifecycleView::AddVm
+th095::AnmManagerVmLifecycleView::RemoveVm
+th095::AnmLoaded::CreateVm
+th095::AnmLoadedPositionView::CreateVmAtScreen
+th095::AnmLoadedPositionView::CreateVmAtWorld

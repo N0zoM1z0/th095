@@ -156,6 +156,18 @@ rectangle, backbuffer, and source rectangle for surface capture. Their member
 order reproduces the target `0x2C` and `0x28` frames without patched
 `#pragma var_order` support.
 
+The VM lifecycle lane is a paired positive and negative oracle. A private VM
+delete view with an inline destructor naturally reproduces `RemoveVm @
+0x00444E00`: VC7.1 emits the target's generated-vertex `_free`, scalar-delete
+guard, `operator delete`, and all five local homes for an exact 226-byte body.
+A trivial-node delete is 25 bytes short and is not ABI-equivalent. Conversely,
+the natural `new AnmVm` source for the three creation entries has the exact
+target extents and all 28 relocations but places six homes 0x14 bytes above the
+target. `AddVm` likewise has the exact extent and instruction topology but a
+permutation of its six inlined id-counter homes. Keep those four bodies
+compiler-observed: an otherwise unused 0x14-byte object or hand-shaped local
+permutation would violate authored-source policy.
+
 The adjacent task constructor proves that unoptimized VC7.1 preserves nested
 member-construction source shape even when the constructor body immediately
 clears the complete object. Model the `+0x104` completion state as an enclosing

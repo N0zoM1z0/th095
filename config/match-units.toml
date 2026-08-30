@@ -12314,3 +12314,16 @@ relocations = [
   { offset = 0x1C3, type = "REL32", symbol = "_D3DXLoadSurfaceFromSurface@32", target = 0x0045C2E4 },
   { offset = 0x1F6, type = "REL32", symbol = "_D3DXLoadSurfaceFromSurface@32", target = 0x0045C2E4 },
 ]
+
+[units.anm-remove-vm]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManagerVmLifecycleView::RemoveVm"]
+symbol = "?RemoveVm@AnmManagerVmLifecycleView@th095@@QAEHPAUAnmVmDeleteView@2@@Z"
+target_address = 0x00444E00
+size = 0xE2
+relocations = [
+  { offset = 0x0A7, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x0BD, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+]

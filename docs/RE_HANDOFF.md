@@ -447,9 +447,22 @@ the two request lanes into exact `CaptureToTexture @ 0x00444620` and
 `+0x3817F0`, between the texture and surface rectangle blocks. These six units
 contribute 2,422 bytes. Their private `AnmSurface.cpp` ABI view avoids
 renumbering the established ANM dispatcher labels; all fourteen
-`AnmManager.cpp` units replay after a cold rebuild. Keep the Supervisor render
-callback's constant-index residual deferred, and continue the adjacent
-unreviewed ANM draw-wrapper/render candidates at `0x00444980..0x004450FF`.
+`AnmManager.cpp` units replay after a cold rebuild. The following VM lifecycle
+spine is now source-present at `0x00444C80..0x00445108`. Exact
+`RemoveVm @ 0x00444E00` contributes 226 bytes and proves that each `0x2CC` VM
+is also its intrusive node, with lifetime links at `+0x00/+0x08`, draw-layer
+link at `+0x04`, id at `+0x10`, and generated vertices at `+0x14`.
+`AddVm @ 0x00444D10` is exact-sized with only six compiler-local homes
+permuted. The render-mode, direct-screen, and world-position creation entries
+are exact-sized and resolve all 28 relocations; each differs in only six stack
+displacements caused by a common original `0x14` frame gap. The world path
+calls exact `PhotoToScreen` and is the shared ECL/enemy/bullet/photo-effect
+bridge. `DrawLayer @ 0x00444C80` is 134 versus 136 bytes, with one two-byte
+branch-shape residual around the PhotoGameTask draw gate. Do not add inert
+locals or an artificial branch to promote these probes. Keep the Supervisor
+render callback's constant-index residual deferred; next continue the
+unreviewed wrappers and update spine at `0x00444980..0x00444C75`, then revisit
+the five lifecycle residuals only if natural target-local source shape appears.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

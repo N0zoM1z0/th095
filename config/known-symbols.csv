@@ -155,3 +155,9 @@ address,name,module,confidence,evidence
 0x00421D00,th095::AnmManager::TakeScreenshots,AnmManager,exact,Canonical 249-byte capture-request dispatcher with two relocations
 0x00444620,th095::AnmManagerCaptureView::CaptureToTexture,AnmManager,exact,Canonical 319-byte indexed texture-entry capture with four relocations
 0x00444760,th095::AnmManagerCaptureView::CaptureToSurface,AnmManager,exact,Canonical 537-byte primary/secondary surface capture with 15 relocations
+0x00444C80,th095::AnmManagerDrawLayerView::DrawLayer,AnmManager,high,Complete nine-layer ANM draw traversal with target-local PhotoGameTask and VM flag gates
+0x00444D10,th095::AnmManagerVmLifecycleView::AddVm,AnmManager,high,Complete intrusive VM tail insertion and nonzero id allocation; exact-sized compiler-local residual only
+0x00444E00,th095::AnmManagerVmLifecycleView::RemoveVm,AnmManager,exact,Canonical 226-byte intrusive unlink and inline VM destruction with two relocations
+0x00444EF0,th095::AnmLoaded::CreateVm,AnmManager,high,Complete render-mode VM creation with all nine target relocations
+0x00444FA0,th095::AnmLoadedPositionView::CreateVmAtScreen,AnmManager,high,Complete screen-space VM creation with all nine target relocations
+0x00445060,th095::AnmLoadedPositionView::CreateVmAtWorld,AnmManager,high,Complete TH095 world-space VM creation through PhotoToScreen with all ten target relocations
