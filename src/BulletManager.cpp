@@ -1,4 +1,6 @@
 #include "AnmManager.hpp"
+#include "AnmVmId.hpp"
+#include "PhotoItemManager.hpp"
 
 #include <string.h>
 
@@ -26,6 +28,22 @@ struct PhotoBulletVector
     {
         return PhotoBulletVector(
             this->x * scalar, this->y * scalar, this->z * scalar);
+    }
+
+    PhotoBulletVector operator+(PhotoBulletVector other) const
+    {
+        return PhotoBulletVector(
+            this->x + other.x,
+            this->y + other.y,
+            this->z + other.z);
+    }
+
+    PhotoBulletVector operator-(PhotoBulletVector other) const
+    {
+        return PhotoBulletVector(
+            this->x - other.x,
+            this->y - other.y,
+            this->z - other.z);
     }
 
     PhotoBulletVector operator/(f32 scalar) const
@@ -226,7 +244,9 @@ struct PhotoBulletView
         {
             u32 unknownFlag0 : 1;
             u32 collidable : 1;
-            u32 unknownFlags2 : 30;
+            u32 unknownFlags2 : 2;
+            u32 captureDisabled : 1;
+            u32 unknownFlags5 : 27;
         };
     };
     AnmVm vm;                          // +0x004
@@ -250,7 +270,11 @@ struct PhotoBulletView
     u16 offscreenFrames;
     u16 unknown356;
     PhotoBulletView *nextInDrawBucket; // +0x358
-    i32 zoneTransitionCooldownFrames;  // +0x35c
+    union
+    {
+        i32 zoneTransitionCooldownFrames;
+        PhotoBulletView *nextCaptured;  // +0x35c
+    };
     i32 field360;
     i32 transformSound;                // +0x364
     i32 transformIndex;                // +0x368
@@ -297,7 +321,8 @@ struct PhotoBulletManagerView
     PhotoBulletView *bulletCursor;       // +0x00
     PhotoBulletView *drawBucketHeads[6]; // +0x04
     PhotoBulletView *drawBucketTails[6]; // +0x1c
-    u8 unknown034[0x4c - 0x34];
+    PhotoBulletVector capturePosition;    // +0x34
+    PhotoBulletVector captureSize;        // +0x40
     PhotoBulletView bullets[0x641];      // +0x4c
     u8 unknown27c5a8[8];
     PhotoBulletAnmLoadedView *anmSpawner; // +0x27c5b0
@@ -307,6 +332,11 @@ struct PhotoBulletManagerView
     i32 SpawnSingleBullet(PhotoBulletSpawnDescriptor *descriptor,
                           i32 index1, i32 index2, f32 angleToPlayer);
     i32 SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor);
+    PhotoBulletView *CapturePhotoTargets(
+        PhotoBulletVector *position, PhotoBulletVector *size);
+    i32 ClearCapturedBullets();
+    void DespawnAllBullets();
+    i32 CountNearbyTargets(PhotoBulletVector *position, f32 radius);
 };
 
 typedef char PhotoBulletManagerBulletsAt4C[
@@ -326,7 +356,8 @@ struct PhotoBulletGlobalStateView
         {
             u32 unknownFlag0 : 1;
             u32 blocksBulletUpdate : 1;
-            u32 unknownFlags2 : 8;
+            u32 unknownFlags2 : 7;
+            u32 suppressesPhotoSound : 1;
             u32 photoCaptureInputMode : 1;
             u32 unknownFlags11 : 21;
         };
@@ -343,6 +374,7 @@ struct PhotoBulletPlayerView
 struct PhotoBulletAnmLoadedView
 {
     void InitializeVm(AnmVm *vm, i32 scriptIndex);
+    AnmVmId CreateVm(i32 scriptIndex, PhotoBulletVector *position);
 };
 
 struct PhotoBulletSoundPlayerView
@@ -358,6 +390,9 @@ extern PhotoBulletSoundPlayerView g_PhotoBulletSoundPlayer;
 extern i32 g_PhotoBulletScriptBases[];
 extern f32 g_PhotoBulletCollisionSizes[];
 extern i32 g_PhotoBulletDrawBucketIndices[];
+extern u32 g_PhotoBulletColors16[];
+extern u32 g_PhotoBulletColors8[];
+extern u32 g_PhotoBulletColors4[];
 
 #pragma var_order(speed, i, bullet, angle, transformFlags, this)
 // FUNCTION: TH095 0x00405A30; TH08 0x0042F5F0 is the adjacent source oracle.
@@ -738,6 +773,14 @@ i32 PhotoBulletView::BeginDespawn()
     return 0;
 }
 
+// FUNCTION: TH095 0x00405850.
+void PhotoBulletView::Deactivate()
+{
+    this->state = 0;
+    this->stateTimer = 0;
+    this->activeTimer = 0;
+}
+
 static inline i32 PhotoBulletIsOutsidePlayfield(
     PhotoBulletVector *position, f32 width, f32 height)
 {
@@ -989,6 +1032,180 @@ void PhotoBulletView::UpdateVerticalWrap()
         this->activeTransformFlags ^= PHOTO_BULLET_TRANSFORM_WRAP_Y;
     else
         this->exStates[6].timer--;
+}
+
+// FUNCTION: TH095 0x00407820.
+#pragma var_order(index, first, previous, bullet, this)
+PhotoBulletView *PhotoBulletManagerView::CapturePhotoTargets(
+    PhotoBulletVector *position, PhotoBulletVector *size)
+{
+    PhotoBulletView *bullet = &this->bullets[0];
+    PhotoBulletView *first = NULL;
+    PhotoBulletView *previous;
+    i32 index;
+
+    this->capturePosition = *position;
+    this->captureSize = *size;
+
+    PhotoBulletVector halfSize = *size / 2.0f;
+    PhotoBulletVector minimum = *position - halfSize;
+    PhotoBulletVector maximum = *position + halfSize;
+
+    for (index = 0; index < 0x640; ++index, ++bullet)
+    {
+        if (bullet->state == 0 || bullet->state == 3)
+            continue;
+        if (bullet->captureDisabled != 0)
+            continue;
+
+        PhotoBulletVector bulletMinimum =
+            bullet->position - bullet->collisionSize / 2.0f;
+        PhotoBulletVector bulletMaximum =
+            bullet->position + bullet->collisionSize / 2.0f;
+        if (minimum.x > bulletMaximum.x || bulletMinimum.x > maximum.x ||
+            minimum.y > bulletMaximum.y || bulletMinimum.y > maximum.y)
+        {
+            continue;
+        }
+        if (first == NULL)
+            first = bullet;
+        else
+            previous->nextCaptured = bullet;
+        bullet->nextCaptured = NULL;
+        previous = bullet;
+    }
+
+    if (g_PhotoBulletGlobalState->suppressesPhotoSound == 0)
+        g_PhotoBulletSoundPlayer.PlaySoundByIdx(0x0f, 0);
+    return first;
+}
+
+// FUNCTION: TH095 0x00407C90.
+#pragma var_order(vmId, maximum, minimum, bulletMaximum, bulletMinimum, halfSize, vm, index, bullet, this)
+i32 PhotoBulletManagerView::ClearCapturedBullets()
+{
+    PhotoBulletView *bullet = &this->bullets[0];
+    i32 index;
+    AnmVm *vm;
+
+    PhotoBulletVector halfSize = this->captureSize / 2.0f;
+    PhotoBulletVector minimum = this->capturePosition - halfSize;
+    PhotoBulletVector maximum = this->capturePosition + halfSize;
+
+    for (index = 0; index < 0x640; ++index, ++bullet)
+    {
+        if (bullet->state == 0 || bullet->state == 3)
+            continue;
+        if (bullet->captureDisabled != 0)
+            continue;
+
+        PhotoBulletVector bulletMinimum =
+            bullet->position - bullet->collisionSize / 2.0f;
+        PhotoBulletVector bulletMaximum =
+            bullet->position + bullet->collisionSize / 2.0f;
+
+        if (minimum.x > bulletMaximum.x || bulletMinimum.x > maximum.x ||
+            minimum.y > bulletMaximum.y || bulletMinimum.y > maximum.y)
+        {
+            continue;
+        }
+
+        bullet->Deactivate();
+        AnmVmId vmId = this->anmSpawner->CreateVm(
+            0x126, &bullet->position);
+        vm = g_AnmManager->GetVm(vmId);
+        if (bullet->vm.loadedSprite != NULL)
+        {
+            if (bullet->vm.loadedSprite->widthPx <= 16.0f)
+                vm->color1.color =
+                    g_PhotoBulletColors16[bullet->color];
+            else if (bullet->vm.loadedSprite->widthPx <= 32.0f)
+                vm->color1.color =
+                    g_PhotoBulletColors8[bullet->color];
+            else
+                vm->color1.color =
+                    g_PhotoBulletColors4[bullet->color];
+        }
+        bullet->nextCaptured = NULL;
+        g_ItemManager->Spawn(
+            0, reinterpret_cast<Float3 *>(&bullet->position),
+            vm->color1.color);
+    }
+    return 0;
+}
+
+// FUNCTION: TH095 0x004081B0.
+void PhotoBulletManagerView::DespawnAllBullets()
+{
+    PhotoBulletView *bullet = &this->bullets[0];
+    for (i32 index = 0; index < 0x640; ++index, ++bullet)
+    {
+        if (bullet->state == 0 || bullet->state == 3)
+            continue;
+        bullet->BeginDespawn();
+    }
+}
+
+// FUNCTION: TH095 0x00408220.
+#pragma var_order(lowerInner, upperInner, maximum, minimum, index, score, bullet, this)
+i32 PhotoBulletManagerView::CountNearbyTargets(
+    PhotoBulletVector *position, f32 radius)
+{
+    PhotoBulletView *bullet = &this->bullets[0];
+    i32 score = 0;
+    i32 index;
+    radius *= radius;
+
+    for (index = 0; index < 0x640; ++index, ++bullet)
+    {
+        if (bullet->state == 0 || bullet->state == 3)
+            continue;
+        {
+            PhotoBulletVector minimum =
+                bullet->position - bullet->collisionSize / 2.0f;
+            PhotoBulletVector maximum =
+                bullet->position + bullet->collisionSize / 2.0f;
+            PhotoBulletVector upperInner = minimum;
+            PhotoBulletVector lowerInner = maximum;
+            upperInner.y += bullet->collisionSize.y;
+            lowerInner.y -= bullet->collisionSize.y;
+
+            if ((position->x - minimum.x) * (position->x - minimum.x) +
+                        (position->y - minimum.y) *
+                            (position->y - minimum.y) <=
+                    radius ||
+                (position->x - upperInner.x) *
+                            (position->x - upperInner.x) +
+                        (position->y - upperInner.y) *
+                            (position->y - upperInner.y) <=
+                    radius ||
+                (position->x - maximum.x) * (position->x - maximum.x) +
+                        (position->y - maximum.y) *
+                            (position->y - maximum.y) <=
+                    radius ||
+                (position->x - lowerInner.x) *
+                            (position->x - lowerInner.x) +
+                        (position->y - lowerInner.y) *
+                            (position->y - lowerInner.y) <=
+                    radius)
+            {
+                if (bullet->vm.loadedSprite != NULL)
+                {
+                    if (bullet->vm.loadedSprite->widthPx <= 8.0f)
+                        score += 1;
+                    else if (bullet->vm.loadedSprite->widthPx <= 16.0f)
+                        score += 1;
+                    else if (bullet->vm.loadedSprite->widthPx <= 32.0f)
+                        score += 4;
+                    else if (bullet->vm.loadedSprite->widthPx <= 64.0f)
+                        score += 10;
+                }
+                else
+                    utils::DebugPrint("Bullet Miss\n");
+            }
+        }
+    }
+    return score;
 }
 
 i32 __fastcall PhotoBulletManagerView::OnUpdate(

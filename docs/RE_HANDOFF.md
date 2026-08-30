@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 279 canonical units cover 122,075 authored bytes.
+- Reconstruction: 281 canonical units cover 122,284 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.57% (122,075 / 241,382)
+  relocations. Confirmed authored-byte coverage is now 49.91% (122,284 / 245,019)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 341 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,482 origin/boundary reviews pending. Original class
+  confirms 346 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,477 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -456,13 +456,28 @@ speed multiplier when rebuilding velocity. `UpdateBoundaryBounce @
 VC7.1 body is 462 bytes against the 469-byte target, with only a seven-byte
 local bit-copy/register-shape residual. Do not add an inert copy to claim it.
 
-Next take the TH095 photography-specific capture/count/reset lane at
-`0x00407820..0x004087C7`, beginning with the 1,122-byte `0x00407820` and
-1,300-byte `0x00407C90` high-connectivity bodies before closing their five
-smaller dependencies. Continue through the adjacent lifecycle shell at
-`0x004087D0..0x00408CDC` when the recovered ownership is clear. Preserve the
-independently exact `PhotoToScreen @ 0x004186D0` bridge and the GameTask,
-FrontInf, bullet pattern, and eight movement units.
+The TH095-specific bullet photography lane at `0x00407820..0x0040860D` is now
+source-present. `CapturePhotoTargets` stores the camera AABB at manager
+`+0x34/+0x40`, filters inactive, despawning, and capture-disabled bullets, and
+constructs the transient list through bullet `+0x35C` rather than the draw
+bucket link at `+0x358`. `ClearCapturedBullets` converts overlapping bullets
+into ANM script `0x126` effects and photo items, selecting the 16/8/4-entry
+color tables from loaded-sprite width. `CountNearbyTargets` samples four
+collision-box corners and awards width-dependent weights `1/1/4/10`.
+
+The natural pinned-VC7.1 bodies are 1,098/1,274/1,005 bytes against targets of
+1,122/1,300/1,006 bytes. They preserve the complete target behavior but remain
+conservatively non-exact because the original vector temporary homes and local
+copy shape are not reproduced. `PhotoBulletView::Deactivate @ 0x00405850` and
+`DespawnAllBullets @ 0x004081B0` are canonical exact for 209 bytes and one
+relocation. Do not close the three residuals with inert locals or padding.
+
+Next separate and reconstruct the adjacent `0x00408610/0x00408670/0x00408760`
+card/text lifecycle cluster; target evidence shows it is not owned by the
+bullet manager. Then continue through the actual bullet lifecycle shell at
+`0x004087D0..0x00408CDC`. Preserve the independently exact `PhotoToScreen @
+0x004186D0` bridge and the GameTask, FrontInf, bullet pattern, movement, and
+new bullet-photography units.
 
 ## Closed lanes and preservation constraints
 

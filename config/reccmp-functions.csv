@@ -340,3 +340,8 @@ th095::PhotoBulletView::UpdateAimedDirectionChange,0x004072E0,function
 th095::PhotoBulletView::UpdateBoundaryBounce,0x00407440,function
 th095::PhotoBulletView::UpdateHorizontalWrap,0x00407620,function
 th095::PhotoBulletView::UpdateVerticalWrap,0x004076E0,function
+th095::PhotoBulletView::Deactivate,0x00405850,function
+th095::PhotoBulletManagerView::CapturePhotoTargets,0x00407820,function
+th095::PhotoBulletManagerView::ClearCapturedBullets,0x00407C90,function
+th095::PhotoBulletManagerView::DespawnAllBullets,0x004081B0,function
+th095::PhotoBulletManagerView::CountNearbyTargets,0x00408220,function

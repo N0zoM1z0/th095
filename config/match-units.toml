@@ -10209,3 +10209,25 @@ relocations = [
   { offset = 0x5A, type = "DIR32", symbol = "__real@43e00000", target = 0x0049540C },
   { offset = 0xAE, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
 ]
+
+[units.photo-bullet-deactivate]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletView::Deactivate"]
+symbol = "?Deactivate@PhotoBulletView@th095@@QAEXXZ"
+target_address = 0x00405850
+size = 0x6B
+relocations = []
+
+[units.photo-bullet-despawn-all]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletManagerView::DespawnAllBullets"]
+symbol = "?DespawnAllBullets@PhotoBulletManagerView@th095@@QAEXXZ"
+target_address = 0x004081B0
+size = 0x66
+relocations = [
+  { offset = 0x5C, type = "REL32", symbol = "?BeginDespawn@PhotoBulletView@th095@@QAEHXZ", target = 0x004077A0 },
+]

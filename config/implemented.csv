@@ -339,3 +339,8 @@ th095::PhotoBulletView::UpdateAimedDirectionChange
 th095::PhotoBulletView::UpdateBoundaryBounce
 th095::PhotoBulletView::UpdateHorizontalWrap
 th095::PhotoBulletView::UpdateVerticalWrap
+th095::PhotoBulletView::Deactivate
+th095::PhotoBulletManagerView::CapturePhotoTargets
+th095::PhotoBulletManagerView::ClearCapturedBullets
+th095::PhotoBulletManagerView::DespawnAllBullets
+th095::PhotoBulletManagerView::CountNearbyTargets
