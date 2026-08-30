@@ -35,6 +35,55 @@ struct PhotoEnemyTimelineView
     void Run();
 };
 
+struct PhotoEnemyTimelineInstruction
+{
+    i32 time;
+    i16 opcode;
+    u8 size;
+    u8 unknown07;
+};
+
+struct PhotoEnemyTimelineSpawnArgs
+{
+    i32 subroutineId;
+    f32 x;
+    f32 y;
+    i32 life;
+    i32 itemDrop;
+    i32 score;
+};
+
+struct PhotoEnemyTimelineRandomRangeArgs
+{
+    i32 subroutineId;
+    f32 minimumX;
+    f32 maximumX;
+    f32 y;
+    i32 life;
+    i32 itemDrop;
+    i32 score;
+};
+
+struct PhotoEnemyTimelineRandomWidthArgs
+{
+    i32 subroutineId;
+    f32 y;
+    i32 life;
+    i32 itemDrop;
+    i32 score;
+};
+
+struct PhotoEnemyTimelineExtendedSpawnArgs
+{
+    i32 subroutineId;
+    f32 x;
+    f32 y;
+    i32 life;
+    i32 timelineParam0;
+    i32 timelineParam1;
+    i32 score;
+};
+
 typedef char PhotoEnemyTimelineSizeIs10[
     (sizeof(PhotoEnemyTimelineView) == 0x10) ? 1 : -1];
 
@@ -84,7 +133,8 @@ struct PhotoEnemyView
     u8 unknown02d4[0x2898 - 0x02d4];
     i16 mainEclSubroutineId;                // +0x2898
     i16 photoTargetEclSubroutineId;         // +0x289a
-    u8 unknown289c[4];
+    i16 timelineValue;                     // +0x289c
+    u8 unknown289e[2];
     D3DXVECTOR3 worldPosition;             // +0x28a0
     u8 unknown28ac[0x28b8 - 0x28ac];
     D3DXVECTOR3 velocity;                  // +0x28b8
@@ -96,7 +146,10 @@ struct PhotoEnemyView
     u8 unknown2900[0x296c - 0x2900];
     ZunTimer eclTimer;                     // +0x296c
     ZunTimer stateTimer;                   // +0x2978
-    u8 unknown2984[0x2bf4 - 0x2984];
+    u8 unknown2984[0x2bdc - 0x2984];
+    i32 timelineParam0;                    // +0x2bdc
+    i32 timelineParam1;                    // +0x2be0
+    u8 unknown2be4[0x2bf4 - 0x2be4];
     union
     {
         u32 flags1;                        // +0x2bf4
@@ -174,7 +227,8 @@ struct PhotoEnemyManagerView
     u8 unknown000000[0x4cc0];
     PhotoEnemyTimelineView timelines[16];  // +0x4cc0
     PhotoEnemyView *drawGroupHeads[4];     // +0x4dc0
-    u8 unknown4dd0[0x4df4 - 0x4dd0];
+    u8 unknown4dd0[0x14];
+    PhotoEnemyView *timelineEnemySlots[4];  // +0x4de4
     PhotoEnemyEclManagerView *eclManager;  // +0x4df4
     u8 unknown4df8[8];
     PhotoEnemyView enemies[128];           // +0x4e00
@@ -183,6 +237,13 @@ struct PhotoEnemyManagerView
     i32 activeEnemyCount;                  // +0x26ae2c
 
     static i32 __fastcall OnUpdate(PhotoEnemyManagerView *enemyManager);
+    PhotoEnemyView *Spawn(
+        i32 subroutineId,
+        Float3 *position,
+        i32 life,
+        i32 itemDrop,
+        i32 score,
+        u32 isPhotoTarget);
     static void __fastcall ResetNonPhotoTargets(
         PhotoEnemyManagerView *enemyManager);
     static void __fastcall RestartPhotoTargetEcls(
@@ -197,6 +258,173 @@ typedef char PhotoEnemyManagerEnemiesAt4E00[
     (offsetof(PhotoEnemyManagerView, enemies) == 0x4e00) ? 1 : -1];
 typedef char PhotoEnemyManagerCountAt26AE2C[
     (offsetof(PhotoEnemyManagerView, activeEnemyCount) == 0x26ae2c) ? 1 : -1];
+
+void PhotoEnemyTimelineView::Run()
+{
+    u32 isPhotoTarget = 0;
+
+    while (static_cast<PhotoEnemyTimelineInstruction *>(this->instruction)
+            ->time >= 0)
+    {
+        if (this->timer ==
+            static_cast<PhotoEnemyTimelineInstruction *>(this->instruction)
+                ->time)
+        {
+            isPhotoTarget = 0;
+            switch (static_cast<PhotoEnemyTimelineInstruction *>(
+                        this->instruction)->opcode)
+            {
+            case 1:
+                isPhotoTarget = 1;
+            case 0:
+            {
+                PhotoEnemyTimelineSpawnArgs *args =
+                    reinterpret_cast<PhotoEnemyTimelineSpawnArgs *>(
+                        reinterpret_cast<u8 *>(this->instruction) + 8);
+                Float3 position;
+                position.x = args->x;
+                position.y = args->y;
+                position.z = 0.0f;
+                g_PhotoEnemyManager->Spawn(
+                    args->subroutineId,
+                    &position,
+                    args->life,
+                    args->itemDrop,
+                    args->score,
+                    isPhotoTarget);
+                break;
+            }
+
+            case 15:
+            {
+                PhotoEnemyTimelineSpawnArgs *args =
+                    reinterpret_cast<PhotoEnemyTimelineSpawnArgs *>(
+                        reinterpret_cast<u8 *>(this->instruction) + 8);
+                Float3 position;
+                position.x = args->x;
+                position.y = args->y;
+                position.z = 0.0f;
+                g_PhotoEnemyManager->Spawn(
+                    args->subroutineId,
+                    &position,
+                    args->life,
+                    args->itemDrop,
+                    args->score,
+                    isPhotoTarget);
+                break;
+            }
+
+            case 12:
+                isPhotoTarget = 1;
+            case 11:
+            {
+                PhotoEnemyTimelineExtendedSpawnArgs *args =
+                    reinterpret_cast<PhotoEnemyTimelineExtendedSpawnArgs *>(
+                        reinterpret_cast<u8 *>(this->instruction) + 8);
+                Float3 position;
+                position.x = args->x;
+                position.y = args->y;
+                position.z = 0.0f;
+                PhotoEnemyView *enemy = g_PhotoEnemyManager->Spawn(
+                    args->subroutineId,
+                    &position,
+                    args->life,
+                    -1,
+                    args->score,
+                    isPhotoTarget);
+                enemy->timelineParam0 = args->timelineParam0;
+                enemy->timelineParam1 = args->timelineParam1;
+                break;
+            }
+
+            case 4:
+                isPhotoTarget = 1;
+            case 2:
+            {
+                PhotoEnemyTimelineRandomRangeArgs *args =
+                    reinterpret_cast<PhotoEnemyTimelineRandomRangeArgs *>(
+                        reinterpret_cast<u8 *>(this->instruction) + 8);
+                Float3 position;
+                position.x = (args->maximumX - args->minimumX) *
+                        g_Rng.GetRandomF32() +
+                    args->minimumX;
+                position.y = args->y;
+                position.z = 0.0f;
+                g_PhotoEnemyManager->Spawn(
+                    args->subroutineId,
+                    &position,
+                    args->life,
+                    args->itemDrop,
+                    args->score,
+                    isPhotoTarget);
+                break;
+            }
+
+            case 5:
+                isPhotoTarget = 1;
+            case 3:
+            {
+                PhotoEnemyTimelineRandomWidthArgs *args =
+                    reinterpret_cast<PhotoEnemyTimelineRandomWidthArgs *>(
+                        reinterpret_cast<u8 *>(this->instruction) + 8);
+                Float3 position;
+                position.x = g_Rng.GetRandomF32() * 384.0f;
+                position.y = args->y;
+                position.z = 0.0f;
+                g_PhotoEnemyManager->Spawn(
+                    args->subroutineId,
+                    &position,
+                    args->life,
+                    args->itemDrop,
+                    args->score,
+                    isPhotoTarget);
+                break;
+            }
+
+            case 8:
+            {
+                g_PhotoEnemyManager->timelineEnemySlots[
+                    reinterpret_cast<i32 *>(
+                        reinterpret_cast<u8 *>(this->instruction) + 8)[0]]
+                    ->timelineValue = static_cast<i16>(
+                        reinterpret_cast<i32 *>(
+                            reinterpret_cast<u8 *>(this->instruction) + 8)[1]);
+                break;
+            }
+
+            case 10:
+            {
+                if (g_PhotoEnemyManager->timelineEnemySlots[
+                        reinterpret_cast<i32 *>(
+                            reinterpret_cast<u8 *>(this->instruction) + 8)[0]] !=
+                        NULL &&
+                    g_PhotoEnemyManager->timelineEnemySlots[
+                        reinterpret_cast<i32 *>(
+                            reinterpret_cast<u8 *>(this->instruction) + 8)[0]]
+                            ->active != 0)
+                {
+                    this->timer.Decrement(1);
+                    goto finish;
+                }
+                break;
+            }
+            }
+        }
+        else if (this->timer <
+            static_cast<PhotoEnemyTimelineInstruction *>(this->instruction)
+                ->time)
+        {
+            break;
+        }
+
+        this->instruction = reinterpret_cast<u8 *>(this->instruction) +
+            static_cast<PhotoEnemyTimelineInstruction *>(this->instruction)
+                ->size;
+    }
+
+finish:
+    this->timer.Tick();
+}
 
 i32 __fastcall PhotoEnemyManagerView::OnUpdate(
     PhotoEnemyManagerView *enemyManager)

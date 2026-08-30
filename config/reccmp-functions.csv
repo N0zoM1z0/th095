@@ -240,6 +240,7 @@ th095::PhotoGameUpdateView::Die,0x004306D0,function
 th095::PhotoEnemyManagerView::OnUpdate,0x00415970,function
 th095::PhotoEnemyView::IntegrateMovement,0x004160B0,function
 th095::PhotoEnemyView::ClampPosition,0x00416320,function
+th095::PhotoEnemyTimelineView::Run,0x004163F0,function
 th095::PhotoEnemyView::UpdatePhotoMarkerPulse,0x00416770,function
 th095::PhotoEnemyView::Deactivate,0x00416E80,function
 th095::PhotoToScreen,0x004186D0,function

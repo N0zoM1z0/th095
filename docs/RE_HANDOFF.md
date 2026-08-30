@@ -17,7 +17,7 @@
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.83% (106,624 / 209,779)
+  relocations. Confirmed authored-byte coverage is now 50.63% (106,624 / 210,597)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 249 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,574 origin/boundary reviews pending. Original class
+  confirms 250 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,573 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -131,6 +131,14 @@
   subjects. `UpdateScheduledEclCalls @ 0x00416F30` is source-present at the
   exact 309-byte extent with all five relocations and 280/289 comparable bytes;
   its only residual is the exchange of two VC7.1 local slots.
+- `PhotoEnemyTimelineView::Run @ 0x004163F0` is source-present for the complete
+  sixteen-opcode timeline interpreter. It covers fixed, random-range,
+  random-width, and extended enemy spawns with their photo-target variants,
+  direct timeline-enemy state writes, and the active-enemy wait operation. Its
+  pinned VC7.1 probe reproduces the exact 818-byte authored extent plus the
+  exact 64-byte switch table, resolves all 37 relocations, and matches 701/734
+  comparable bytes. The 33 residual bytes are compiler-local stack
+  displacements and receive no exact credit.
 - Root-level `EclOperandsInt.cpp` and `EclOperandsFloat.cpp` now reconstruct
   the high-connectivity operand resolver pair at `0x0040FAE0/0x004105A0`.
   Their 3,439 authored bytes, adjacent 684 bytes of compiler-owned jump tables,
@@ -366,12 +374,13 @@
 
 ## Next bounded lane
 
-The enemy update hub, scheduled ECL cleanup, and eight reset/runtime leaves are
-now recovered. Continue the dependency sweep with the `0x004163F0` timeline
-interpreter and the adjacent
-enemy spawn/control cluster at `0x00414B90..0x00415820`. These functions unlock
-more inventory relationships than isolated wrappers. After that, cover the
-two approximately 1 KB laser callers at `0x0041E2C0/0x0041F550`, which share
+The enemy update hub, timeline interpreter, scheduled ECL cleanup, and eight
+reset/runtime leaves are now recovered. The next dependency target should be
+`PhotoEnemyManagerView::Spawn @ 0x004156C0` (350 bytes), followed by the
+adjacent enemy spawn/control cluster at `0x00414B90..0x00415820`. These
+functions unlock more inventory relationships than isolated wrappers. After
+that, cover the two approximately 1 KB laser callers at
+`0x0041E2C0/0x0041F550`, which share
 the exact PlayerInf collision path and expose TH095's camera/bullet interaction.
 Keep all fifteen PlayerInf exact units, the exact
 outer PhotoGame coordinator, and every established `PhotoCamera.cpp` unit
