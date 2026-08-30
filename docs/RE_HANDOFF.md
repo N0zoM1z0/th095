@@ -520,8 +520,25 @@ fade at or beyond one. Its exact source shape uses a fully live four-field
 locals aggregate. A cold current-object audit confirmed the new function
 shifted every affected `AnmManager.cpp` compiler-local label by exactly ten;
 all fourteen canonical units retain identical offsets, relocation types, and
-target destinations after the manifest-only identity refresh. Continue at
-the projected-3D geometry core `0x00440440` and its wrapper `0x004408F0`.
+target destinations after the manifest-only identity refresh. The projected
+3D pair is now canonical exact too: `Project3DQuad @ 0x00440440` reproduces
+all 1,198 bytes and 29 relocations, while `DrawProjected3DQuad @ 0x004408F0`
+reproduces all 91 bytes and nine relocations. The core proves the cached world
+matrix at `AnmManager+0xECC`, TH095's three-state 256-by-256 local quad,
+rotation/scale dirty-bit update, current-background viewport projection, and
+the unoffset final Z. The wrapper submits through `DrawInner` and restores all
+four shared RHW values. Stock VC7.1 needs two live semantic aliases over the
+original matrix backing identifiers to reproduce the patched var-order stack
+layout; do not replace them with padding. Continue at the TH095-specific
+photo-blended projected path `DrawMode7 @ 0x00440950` and then the direct 3D
+path at `0x00440C10`.
+
+The shared `Project3DQuad` declaration triggered one further cold-object
+identity refresh in `AnmManager.cpp`: 167 switch-local `$L` symbols advanced
+by six and the `Draw` switch-table base symbol advanced by nine. Their offsets,
+types, target destinations, code bytes, and coverage extents did not change.
+All 69 configured ANM units across ten translation units replay canonical
+exact after the refresh.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

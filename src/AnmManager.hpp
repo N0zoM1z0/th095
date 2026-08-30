@@ -614,7 +614,8 @@ struct AnmManager
         };
         Float2 screenShakeOffset;
     };
-    u8 unknown028[0xf0c - 0x28];
+    u8 unknown028[0xecc - 0x28];
+    D3DXMATRIX cachedWorldMatrix;             // +0x000ecc
     AnmVm primaryVm;                         // +0x000f0c
     u8 unknown11d8[4];
     IDirect3DSurface8 *surfaces[32];         // +0x0011dc
@@ -673,6 +674,7 @@ struct AnmManager
     ZunResult Draw2D(AnmVm *vm);
     ZunResult ProjectCameraFacingQuad(AnmVm *vm);
     ZunResult DrawCameraFacingQuad(AnmVm *vm);
+    ZunResult Project3DQuad(AnmVm *vm);
     ZunResult DrawProjected3DQuad(AnmVm *vm);
     ZunResult DrawMode6(AnmVm *vm);
     ZunResult DrawMode7(AnmVm *vm);
@@ -700,6 +702,7 @@ struct AnmManager
 typedef char VertexDiffuseXyzrhwSizeIs14[(sizeof(VertexDiffuseXyzrhw) == 0x14) ? 1 : -1];
 typedef char VertexTex1XyzrhwSizeIs18[(sizeof(VertexTex1Xyzrhw) == 0x18) ? 1 : -1];
 typedef char AnmManagerPrimaryVmAtF0C[(offsetof(AnmManager, primaryVm) == 0xf0c) ? 1 : -1];
+typedef char AnmManagerCachedWorldMatrixAtECC[(offsetof(AnmManager, cachedWorldMatrix) == 0xecc) ? 1 : -1];
 typedef char AnmManagerSurfacesAt11DC[(offsetof(AnmManager, surfaces) == 0x11dc) ? 1 : -1];
 typedef char AnmManagerVerticesAt1774[(offsetof(AnmManager, untexturedVertices) == 0x1774) ? 1 : -1];
 typedef char AnmManagerVertexBufferAt17C8[(offsetof(AnmManager, vertexBuffer) == 0x17c8) ? 1 : -1];

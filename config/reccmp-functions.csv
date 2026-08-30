@@ -508,3 +508,5 @@ th095::AnmManager::Draw2D,0x0043FA40,function
 th095::AnmManager::ProjectCameraFacingQuad,0x0043FC60,function
 th095::AnmManager::DrawCameraFacingQuad,0x004400F0,function
 th095::AnmManager::DrawMode6,0x00440120,function
+th095::AnmManager::Project3DQuad,0x00440440,function
+th095::AnmManager::DrawProjected3DQuad,0x004408F0,function

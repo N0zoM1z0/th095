@@ -652,6 +652,136 @@ ZunResult AnmManager::DrawMode6(AnmVm *vm)
     return this->DrawInner(vm, 2);
 }
 
+// FUNCTION: TH095 0x00440440.
+ZunResult AnmManager::Project3DQuad(AnmVm *vm)
+{
+    // Stock VC7.1 allocates these compiler-facing identifiers in the inverse
+    // order used by the original patched var_order frontend. Both matrices
+    // remain live; the aliases only restore the target's stack-slot order.
+    D3DXMATRIX rotationMatrix;
+    D3DXMATRIX worldTransformMatrix;
+#define projectedRotationMatrix worldTransformMatrix
+#define projectedWorldTransformMatrix rotationMatrix
+
+    if (!vm->unknownFlag14 && (vm->updateScale || vm->updateRotation))
+    {
+        vm->matrix2 = vm->matrix1;
+        vm->matrix2._11 *= vm->scale.x;
+        vm->matrix2._22 *= vm->scale.y;
+        vm->updateScale = false;
+
+        if (vm->rotation.x != 0.0)
+        {
+            D3DXMatrixRotationX(&projectedRotationMatrix, vm->rotation.x);
+            D3DXMatrixMultiply(
+                &vm->matrix2, &vm->matrix2, &projectedRotationMatrix);
+        }
+        if (vm->rotation.y != 0.0)
+        {
+            D3DXMatrixRotationY(&projectedRotationMatrix, vm->rotation.y);
+            D3DXMatrixMultiply(
+                &vm->matrix2, &vm->matrix2, &projectedRotationMatrix);
+        }
+        if (vm->rotation.z != 0.0)
+        {
+            D3DXMatrixRotationZ(&projectedRotationMatrix, vm->rotation.z);
+            D3DXMatrixMultiply(
+                &vm->matrix2, &vm->matrix2, &projectedRotationMatrix);
+        }
+        vm->updateRotation = false;
+    }
+
+    projectedWorldTransformMatrix = vm->matrix2;
+    projectedWorldTransformMatrix._41 +=
+        vm->positionOffset.x + vm->position.x;
+    projectedWorldTransformMatrix._42 +=
+        vm->positionOffset.y + vm->position.y;
+    projectedWorldTransformMatrix._43 = vm->position.z;
+
+    Float3 vertices[4];
+
+    switch (vm->renderStateA)
+    {
+    case 1:
+        vertices[0].x = vertices[2].x = 0.0f;
+        vertices[1].x = vertices[3].x = 256.0f;
+        break;
+    case 0:
+        vertices[0].x = vertices[2].x = -128.0f;
+        vertices[1].x = vertices[3].x = 128.0f;
+        break;
+    case 2:
+        vertices[0].x = vertices[2].x = -256.0f;
+        vertices[1].x = vertices[3].x = 0.0f;
+        break;
+    }
+
+    switch (vm->renderStateB)
+    {
+    case 1:
+        vertices[0].y = vertices[1].y = 0.0f;
+        vertices[2].y = vertices[3].y = 256.0f;
+        break;
+    case 0:
+        vertices[0].y = vertices[1].y = -128.0f;
+        vertices[2].y = vertices[3].y = 128.0f;
+        break;
+    case 2:
+        vertices[0].y = vertices[1].y = -256.0f;
+        vertices[2].y = vertices[3].y = 0.0f;
+        break;
+    }
+
+    vertices[0].z = vertices[1].z =
+        vertices[2].z = vertices[3].z = 0.0f;
+
+    D3DXVec3Project(
+        reinterpret_cast<D3DXVECTOR3 *>(&g_AnmTexturedVertices[0]),
+        reinterpret_cast<D3DXVECTOR3 *>(&vertices[0]),
+        &g_CurrentBackgroundViewport->viewport,
+        &g_CurrentBackgroundViewport->projectionMatrix,
+        &g_CurrentBackgroundViewport->viewMatrix,
+        &projectedWorldTransformMatrix);
+    D3DXVec3Project(
+        reinterpret_cast<D3DXVECTOR3 *>(&g_AnmTexturedVertices[1]),
+        reinterpret_cast<D3DXVECTOR3 *>(&vertices[1]),
+        &g_CurrentBackgroundViewport->viewport,
+        &g_CurrentBackgroundViewport->projectionMatrix,
+        &g_CurrentBackgroundViewport->viewMatrix,
+        &projectedWorldTransformMatrix);
+    D3DXVec3Project(
+        reinterpret_cast<D3DXVECTOR3 *>(&g_AnmTexturedVertices[2]),
+        reinterpret_cast<D3DXVECTOR3 *>(&vertices[2]),
+        &g_CurrentBackgroundViewport->viewport,
+        &g_CurrentBackgroundViewport->projectionMatrix,
+        &g_CurrentBackgroundViewport->viewMatrix,
+        &projectedWorldTransformMatrix);
+    D3DXVec3Project(
+        reinterpret_cast<D3DXVECTOR3 *>(&g_AnmTexturedVertices[3]),
+        reinterpret_cast<D3DXVECTOR3 *>(&vertices[3]),
+        &g_CurrentBackgroundViewport->viewport,
+        &g_CurrentBackgroundViewport->projectionMatrix,
+        &g_CurrentBackgroundViewport->viewMatrix,
+        &projectedWorldTransformMatrix);
+
+    this->cachedWorldMatrix = projectedWorldTransformMatrix;
+#undef projectedWorldTransformMatrix
+#undef projectedRotationMatrix
+    return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x004408F0.
+ZunResult AnmManager::DrawProjected3DQuad(AnmVm *vm)
+{
+    ZunResult result;
+
+    this->Project3DQuad(vm);
+    result = this->DrawInner(vm, 0);
+    g_AnmTexturedVertices[0].w = g_AnmTexturedVertices[1].w =
+        g_AnmTexturedVertices[2].w = g_AnmTexturedVertices[3].w = 1.0f;
+    return result;
+}
+
 // FUNCTION: TH095 0x0043F3C0.
 ZunResult AnmManager::AddSpriteToDrawBuffer(
     VertexTex1DiffuseXyzrhw *vertices)
