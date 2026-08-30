@@ -48,3 +48,4 @@ address,name,module,confidence,evidence
 0x004C4898,th095::g_BackgroundWaveY,Background,high,RunStageScript camera motion mode 3 cosine output
 0x004C489C,th095::g_BackgroundModeValue,Background,high,RunStageScript opcode 7 target-global store
 0x004C4E28,th095::g_PhotoScreenFadeColor,PhotoRuntime,high,RunStageScript opcodes 8/9/13 photograph color publication
+0x004CA290,th095::g_BackgroundQuadVertices,AnmManager,exact,Canonical SetupVertexBuffer DIR32 base/addends prove four 0x18-byte software fallback vertices

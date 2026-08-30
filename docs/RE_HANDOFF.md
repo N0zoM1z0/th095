@@ -556,8 +556,38 @@ direct-3D path also preserves the target-specific duplicated `uvScrollPos.x`
 cache comparison and binds texture independently of the sprite/UV transform
 cache. The pulsing radial-trail draw callback now names the fan submitter
 correctly; the old `DrawVertices` relocation at `0x00441480` was only a
-provisional alias. Continue with the vertex-buffer setup family around
-`0x00442260` after this handoff.
+provisional alias. The following vertex/texture lane is now canonical exact as
+well. `AnmManager::SetupVertexBuffer @ 0x00442260` contributes 682 authored
+bytes and 25 relocations, initializes the four source vertices at manager
+`+0x1774`, publishes the software fallback quad at `0x004CA290` as four
+`0x18`-byte vertices, and unconditionally creates/binds the managed 80-byte
+vertex buffer. This is a target-local TH095 divergence from TH08: there is no
+vertex-buffer-disabled branch.
+
+The adjacent texture path is closed through regional upload and alpha bleed.
+`SceneAnmManagerView::ApplyTextureAlphaBleed @ 0x00442510` reproduces all
+1,292 authored bytes plus its complete 43-byte compiler-owned switch-table
+tail and all eighteen relocations. A truthful 0x80 semantic locals aggregate
+contains three 0x1C per-format records followed by the D3D surface description,
+lock rectangle, and surface pointer; together with `this` and the compiler's
+switch temporary this naturally yields the target's 0x88 frame. Preserve the
+target source shapes `pixel + (-Pitch / divisor)` for upper neighbors and `u8`
+channel truncation before the 1555/4444 bitfield writes. `LoadTextureRegion @
+0x00442CA0` is exact for another 354 bytes and seven relocations. Its seven
+real locals must remain separate in the target physical order; combining them
+into one 0x5C aggregate makes stock VC7.1 reserve a 0x64 frame and is a proven
+negative oracle, not a reason to add padding. All eight canonical
+`SceneTexture.cpp` units plus exact `main-added-callback` and
+`anm-create-texture-from-file` callers replay after this closure.
+
+Next bounded ANM lane: the contiguous text-alignment family at
+`0x00443CE0..0x004440ED` contains 1,036 source-present authored bytes across
+`DrawTextLeft`, `DrawTextRight`, and `DrawTextCentered`. Their behavior and
+relocations are already recovered, while the remaining gaps are compiler-local
+frame/source-shape differences. Reuse the positive semantic-aggregate oracle
+from the alpha-bleed frame and the negative region-aggregate oracle above;
+preserve exact `DrawTextInner @ 0x00443C70` and the exact surface lane beginning
+at `0x004440F0`, and do not replace the residuals with inert storage.
 
 The shared `Project3DQuad` declaration previously triggered a cold-object
 identity refresh in `AnmManager.cpp`: 167 switch-local `$L` symbols advanced

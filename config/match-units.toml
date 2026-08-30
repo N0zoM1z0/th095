@@ -13066,3 +13066,87 @@ relocations = [
   { offset = 0xF8, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670 },
   { offset = 0x100, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670 },
 ]
+
+[units.anm-setup-vertex-buffer]
+source = "src/AnmVertexBuffer.cpp"
+object = "build/matching/AnmVertexBuffer.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::SetupVertexBuffer"]
+symbol = "?SetupVertexBuffer@AnmManager@th095@@QAEXXZ"
+target_address = 0x00442260
+size = 0x2AA
+relocations = [
+  { offset = 0x11B, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", target = 0x004CA290 },
+  { offset = 0x124, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x4, target = 0x004CA290 },
+  { offset = 0x12D, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x8, target = 0x004CA290 },
+  { offset = 0x13D, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x18, target = 0x004CA290 },
+  { offset = 0x146, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x1C, target = 0x004CA290 },
+  { offset = 0x14E, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x20, target = 0x004CA290 },
+  { offset = 0x15F, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x30, target = 0x004CA290 },
+  { offset = 0x167, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x34, target = 0x004CA290 },
+  { offset = 0x170, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x38, target = 0x004CA290 },
+  { offset = 0x180, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x48, target = 0x004CA290 },
+  { offset = 0x189, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x4C, target = 0x004CA290 },
+  { offset = 0x192, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x50, target = 0x004CA290 },
+  { offset = 0x1A1, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x10, target = 0x004CA290 },
+  { offset = 0x1AF, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x14, target = 0x004CA290 },
+  { offset = 0x1BE, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x28, target = 0x004CA290 },
+  { offset = 0x1CD, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x2C, target = 0x004CA290 },
+  { offset = 0x1DB, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x40, target = 0x004CA290 },
+  { offset = 0x1EA, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x44, target = 0x004CA290 },
+  { offset = 0x1F9, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x58, target = 0x004CA290 },
+  { offset = 0x207, type = "DIR32", symbol = "?g_BackgroundQuadVertices@th095@@3PAUVertexTex1Xyzrhw@1@A", addend = 0x5C, target = 0x004CA290 },
+  { offset = 0x222, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x8, target = 0x004C4670 },
+  { offset = 0x22A, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x8, target = 0x004C4670 },
+  { offset = 0x283, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x291, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x8, target = 0x004C4670 },
+  { offset = 0x299, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", addend = 0x8, target = 0x004C4670 },
+]
+
+[units.anm-texture-alpha-bleed]
+source = "src/SceneTexture.cpp"
+object = "build/matching/SceneTexture.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::SceneAnmManagerView::ApplyTextureAlphaBleed"]
+symbol = "?ApplyTextureAlphaBleed@SceneAnmManagerView@th095@@QAEXPAUSceneTextureEntryView@2@@Z"
+target_address = 0x00442510
+size = 0x50C
+compare_size = 0x537
+relocations = [
+  { offset = 0x6F, type = "DIR32", symbol = "$L66376", target = 0x00442A2C },
+  { offset = 0x76, type = "DIR32", symbol = "$L66377", target = 0x00442A1C },
+  { offset = 0x100, type = "REL32", symbol = "?AccumulateArgb8888Neighbor@th095@@YIXPAIPAE0@Z", target = 0x00442A50 },
+  { offset = 0x11D, type = "REL32", symbol = "?AccumulateArgb8888Neighbor@th095@@YIXPAIPAE0@Z", target = 0x00442A50 },
+  { offset = 0x143, type = "REL32", symbol = "?AccumulateArgb8888Neighbor@th095@@YIXPAIPAE0@Z", target = 0x00442A50 },
+  { offset = 0x16C, type = "REL32", symbol = "?AccumulateArgb8888Neighbor@th095@@YIXPAIPAE0@Z", target = 0x00442A50 },
+  { offset = 0x259, type = "REL32", symbol = "?AccumulateArgb1555Neighbor@th095@@YIXPAIPAUPixelArgb1555@1@0@Z", target = 0x00442AB0 },
+  { offset = 0x276, type = "REL32", symbol = "?AccumulateArgb1555Neighbor@th095@@YIXPAIPAUPixelArgb1555@1@0@Z", target = 0x00442AB0 },
+  { offset = 0x298, type = "REL32", symbol = "?AccumulateArgb1555Neighbor@th095@@YIXPAIPAUPixelArgb1555@1@0@Z", target = 0x00442AB0 },
+  { offset = 0x2BD, type = "REL32", symbol = "?AccumulateArgb1555Neighbor@th095@@YIXPAIPAUPixelArgb1555@1@0@Z", target = 0x00442AB0 },
+  { offset = 0x3EE, type = "REL32", symbol = "?AccumulateArgb4444Neighbor@th095@@YIXPAIPAUPixelArgb4444@1@0@Z", target = 0x0041C570 },
+  { offset = 0x40B, type = "REL32", symbol = "?AccumulateArgb4444Neighbor@th095@@YIXPAIPAUPixelArgb4444@1@0@Z", target = 0x0041C570 },
+  { offset = 0x42D, type = "REL32", symbol = "?AccumulateArgb4444Neighbor@th095@@YIXPAIPAUPixelArgb4444@1@0@Z", target = 0x0041C570 },
+  { offset = 0x452, type = "REL32", symbol = "?AccumulateArgb4444Neighbor@th095@@YIXPAIPAUPixelArgb4444@1@0@Z", target = 0x0041C570 },
+  { offset = 0x50C, type = "DIR32", symbol = "$L66121", target = 0x0044258A },
+  { offset = 0x510, type = "DIR32", symbol = "$L66147", target = 0x004426D9 },
+  { offset = 0x514, type = "DIR32", symbol = "$L66165", target = 0x0044286E },
+  { offset = 0x518, type = "DIR32", symbol = "$L66118", target = 0x004429FE },
+]
+
+[units.anm-texture-load-region]
+source = "src/SceneTexture.cpp"
+object = "build/matching/SceneTexture.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::SceneAnmManagerView::LoadTextureRegion"]
+symbol = "?LoadTextureRegion@SceneAnmManagerView@th095@@QAEHPAUSceneTextureEntryView@2@PAEHHHHH@Z"
+target_address = 0x00442CA0
+size = 0x162
+relocations = [
+  { offset = 0xD, type = "REL32", symbol = "?GetAnmFormat@th095@@YIHH@Z", target = 0x00442B40 },
+  { offset = 0x84, type = "REL32", symbol = "_D3DXLoadSurfaceFromFileInMemory@36", target = 0x0045C22C },
+  { offset = 0x101, type = "DIR32", symbol = "?g_TextureFormatBytesPerPixel@th095@@3PAIA", target = 0x00496F28 },
+  { offset = 0x110, type = "DIR32", symbol = "?g_TextureFormatD3D8Mapping@th095@@3PAW4_D3DFORMAT@@A", target = 0x00496F10 },
+  { offset = 0x12E, type = "REL32", symbol = "_D3DXLoadSurfaceFromMemory@40", target = 0x0045BCBF },
+  { offset = 0x146, type = "REL32", symbol = "?ApplyTextureAlphaBleed@SceneAnmManagerView@th095@@QAEXPAUSceneTextureEntryView@2@@Z", target = 0x00442510 },
+  { offset = 0x153, type = "DIR32", symbol = "?g_TextureFormatBytesPerPixel@th095@@3PAIA", target = 0x00496F28 },
+]

@@ -89,185 +89,236 @@ i32 __fastcall GetAnmFormat(i32 format)
     return format;
 }
 
+struct SceneAlphaArgb8888Locals
+{
+    u32 sums[3];
+    u32 *pixel;
+    u32 neighborCount;
+    u32 x;
+    u32 y;
+};
+
+struct SceneAlphaArgb1555Locals
+{
+    u32 sums[3];
+    PixelArgb1555 *pixel;
+    u32 neighborCount;
+    u32 x;
+    u32 y;
+};
+
+struct SceneAlphaArgb4444Locals
+{
+    u32 sums[3];
+    PixelArgb4444 *pixel;
+    u32 neighborCount;
+    u32 x;
+    u32 y;
+};
+
+struct SceneTextureAlphaBleedLocals
+{
+    SceneAlphaArgb4444Locals argb4444;
+    SceneAlphaArgb1555Locals argb1555;
+    SceneAlphaArgb8888Locals argb8888;
+    D3DSURFACE_DESC description;
+    D3DLOCKED_RECT lockedRect;
+    IDirect3DSurface8 *surface;
+};
+
+typedef char SceneAlphaCaseSizeIs1C[
+    (sizeof(SceneAlphaArgb8888Locals) == 0x1c &&
+     sizeof(SceneAlphaArgb1555Locals) == 0x1c &&
+     sizeof(SceneAlphaArgb4444Locals) == 0x1c) ? 1 : -1];
+typedef char SceneTextureAlphaBleedLocalsSizeIs80[
+    (sizeof(SceneTextureAlphaBleedLocals) == 0x80) ? 1 : -1];
+typedef char SceneTextureAlphaBleedDescriptionAt54[
+    (offsetof(SceneTextureAlphaBleedLocals, description) == 0x54) ? 1 : -1];
+typedef char SceneTextureAlphaBleedLockedAt74[
+    (offsetof(SceneTextureAlphaBleedLocals, lockedRect) == 0x74) ? 1 : -1];
+typedef char SceneTextureAlphaBleedSurfaceAt7C[
+    (offsetof(SceneTextureAlphaBleedLocals, surface) == 0x7c) ? 1 : -1];
+
 void SceneAnmManagerView::ApplyTextureAlphaBleed(
     SceneTextureEntryView *entry)
 {
-    IDirect3DSurface8 *surface = NULL;
-    D3DLOCKED_RECT lockedRect;
-    D3DSURFACE_DESC description;
+    SceneTextureAlphaBleedLocals locals;
 
-    entry->texture->GetSurfaceLevel(0, &surface);
-    surface->GetDesc(&description);
-    surface->LockRect(&lockedRect, NULL, 0);
+    locals.surface = NULL;
+    entry->texture->GetSurfaceLevel(0, &locals.surface);
+    locals.surface->GetDesc(&locals.description);
+    locals.surface->LockRect(&locals.lockedRect, NULL, 0);
 
-    switch (description.Format)
+    switch (locals.description.Format)
     {
     case D3DFMT_UNKNOWN:
     case D3DFMT_A8R8G8B8:
-        for (u32 y = 0; y < description.Height; y++)
+        for (locals.argb8888.y = 0;
+             locals.argb8888.y < locals.description.Height;
+             locals.argb8888.y++)
         {
-            u32 *pixel = reinterpret_cast<u32 *>(
-                reinterpret_cast<u8 *>(lockedRect.pBits) +
-                lockedRect.Pitch * y);
-            for (u32 x = 0; x < description.Width; x++)
+            locals.argb8888.pixel = reinterpret_cast<u32 *>(
+                reinterpret_cast<u8 *>(locals.lockedRect.pBits) +
+                locals.lockedRect.Pitch * locals.argb8888.y);
+            for (locals.argb8888.x = 0;
+                 locals.argb8888.x < locals.description.Width;
+                 locals.argb8888.x++)
             {
-                if (reinterpret_cast<u8 *>(pixel)[3] == 0)
+                if (reinterpret_cast<u8 *>(locals.argb8888.pixel)[3] == 0)
                 {
-                    u32 sums[3];
-                    sums[2] = 0;
-                    sums[1] = sums[2];
-                    sums[0] = sums[1];
-                    u32 neighborCount = 0;
-                    if (x > 0)
-                    {
+                    locals.argb8888.sums[2] = 0;
+                    locals.argb8888.sums[1] = locals.argb8888.sums[2];
+                    locals.argb8888.sums[0] = locals.argb8888.sums[1];
+                    locals.argb8888.neighborCount = 0;
+                    if (locals.argb8888.x > 0)
                         AccumulateArgb8888Neighbor(
-                            sums, reinterpret_cast<u8 *>(pixel - 1),
-                            &neighborCount);
-                    }
-                    if (x < description.Width - 1)
-                    {
+                            locals.argb8888.sums,
+                            reinterpret_cast<u8 *>(locals.argb8888.pixel - 1),
+                            &locals.argb8888.neighborCount);
+                    if (locals.argb8888.x < locals.description.Width - 1)
                         AccumulateArgb8888Neighbor(
-                            sums, reinterpret_cast<u8 *>(pixel + 1),
-                            &neighborCount);
-                    }
-                    if (y > 0)
-                    {
+                            locals.argb8888.sums,
+                            reinterpret_cast<u8 *>(locals.argb8888.pixel + 1),
+                            &locals.argb8888.neighborCount);
+                    if (locals.argb8888.y > 0)
                         AccumulateArgb8888Neighbor(
-                            sums,
+                            locals.argb8888.sums,
                             reinterpret_cast<u8 *>(
-                                pixel - lockedRect.Pitch / 4),
-                            &neighborCount);
-                    }
-                    if (y < description.Height - 1)
-                    {
+                                locals.argb8888.pixel +
+                                (-locals.lockedRect.Pitch / 4)),
+                            &locals.argb8888.neighborCount);
+                    if (locals.argb8888.y < locals.description.Height - 1)
                         AccumulateArgb8888Neighbor(
-                            sums,
+                            locals.argb8888.sums,
                             reinterpret_cast<u8 *>(
-                                pixel + lockedRect.Pitch / 4),
-                            &neighborCount);
-                    }
-                    if (neighborCount > 1)
+                                locals.argb8888.pixel +
+                                locals.lockedRect.Pitch / 4),
+                            &locals.argb8888.neighborCount);
+                    if (locals.argb8888.neighborCount > 1)
                     {
-                        sums[0] /= neighborCount;
-                        sums[1] /= neighborCount;
-                        sums[2] /= neighborCount;
+                        locals.argb8888.sums[0] /= locals.argb8888.neighborCount;
+                        locals.argb8888.sums[1] /= locals.argb8888.neighborCount;
+                        locals.argb8888.sums[2] /= locals.argb8888.neighborCount;
                     }
-                    reinterpret_cast<u8 *>(pixel)[2] = (u8)sums[0];
-                    reinterpret_cast<u8 *>(pixel)[1] = (u8)sums[1];
-                    reinterpret_cast<u8 *>(pixel)[0] = (u8)sums[2];
+                    reinterpret_cast<u8 *>(locals.argb8888.pixel)[2] =
+                        (u8)locals.argb8888.sums[0];
+                    reinterpret_cast<u8 *>(locals.argb8888.pixel)[1] =
+                        (u8)locals.argb8888.sums[1];
+                    reinterpret_cast<u8 *>(locals.argb8888.pixel)[0] =
+                        (u8)locals.argb8888.sums[2];
                 }
-                pixel++;
+                locals.argb8888.pixel++;
             }
         }
         break;
 
     case D3DFMT_A1R5G5B5:
-        for (u32 y = 0; y < description.Height; y++)
+        for (locals.argb1555.y = 0;
+             locals.argb1555.y < locals.description.Height;
+             locals.argb1555.y++)
         {
-            PixelArgb1555 *pixel = reinterpret_cast<PixelArgb1555 *>(
-                reinterpret_cast<u8 *>(lockedRect.pBits) +
-                lockedRect.Pitch * y);
-            for (u32 x = 0; x < description.Width; x++)
+            locals.argb1555.pixel = reinterpret_cast<PixelArgb1555 *>(
+                reinterpret_cast<u8 *>(locals.lockedRect.pBits) +
+                locals.lockedRect.Pitch * locals.argb1555.y);
+            for (locals.argb1555.x = 0;
+                 locals.argb1555.x < locals.description.Width;
+                 locals.argb1555.x++)
             {
-                if (pixel->alpha == 0)
+                if (locals.argb1555.pixel->alpha == 0)
                 {
-                    u32 sums[3];
-                    sums[2] = 0;
-                    sums[1] = sums[2];
-                    sums[0] = sums[1];
-                    u32 neighborCount = 0;
-                    if (x > 0)
-                    {
-                        AccumulateArgb1555Neighbor(sums, pixel - 1,
-                                                   &neighborCount);
-                    }
-                    if (x < description.Width - 1)
-                    {
-                        AccumulateArgb1555Neighbor(sums, pixel + 1,
-                                                   &neighborCount);
-                    }
-                    if (y > 0)
-                    {
+                    locals.argb1555.sums[2] = 0;
+                    locals.argb1555.sums[1] = locals.argb1555.sums[2];
+                    locals.argb1555.sums[0] = locals.argb1555.sums[1];
+                    locals.argb1555.neighborCount = 0;
+                    if (locals.argb1555.x > 0)
                         AccumulateArgb1555Neighbor(
-                            sums, pixel - lockedRect.Pitch / 2,
-                            &neighborCount);
-                    }
-                    if (y < description.Height - 1)
-                    {
+                            locals.argb1555.sums, locals.argb1555.pixel - 1,
+                            &locals.argb1555.neighborCount);
+                    if (locals.argb1555.x < locals.description.Width - 1)
                         AccumulateArgb1555Neighbor(
-                            sums, pixel + lockedRect.Pitch / 2,
-                            &neighborCount);
-                    }
-                    if (neighborCount > 1)
+                            locals.argb1555.sums, locals.argb1555.pixel + 1,
+                            &locals.argb1555.neighborCount);
+                    if (locals.argb1555.y > 0)
+                        AccumulateArgb1555Neighbor(
+                            locals.argb1555.sums,
+                            locals.argb1555.pixel +
+                                (-locals.lockedRect.Pitch / 2),
+                            &locals.argb1555.neighborCount);
+                    if (locals.argb1555.y < locals.description.Height - 1)
+                        AccumulateArgb1555Neighbor(
+                            locals.argb1555.sums,
+                            locals.argb1555.pixel + locals.lockedRect.Pitch / 2,
+                            &locals.argb1555.neighborCount);
+                    if (locals.argb1555.neighborCount > 1)
                     {
-                        sums[0] /= neighborCount;
-                        sums[1] /= neighborCount;
-                        sums[2] /= neighborCount;
+                        locals.argb1555.sums[0] /= locals.argb1555.neighborCount;
+                        locals.argb1555.sums[1] /= locals.argb1555.neighborCount;
+                        locals.argb1555.sums[2] /= locals.argb1555.neighborCount;
                     }
-                    pixel->red = (u16)sums[0];
-                    pixel->green = (u16)sums[1];
-                    pixel->blue = (u16)sums[2];
+                    locals.argb1555.pixel->red = (u8)locals.argb1555.sums[0];
+                    locals.argb1555.pixel->green = (u8)locals.argb1555.sums[1];
+                    locals.argb1555.pixel->blue = (u8)locals.argb1555.sums[2];
                 }
-                pixel++;
+                locals.argb1555.pixel++;
             }
         }
         break;
 
     case D3DFMT_A4R4G4B4:
-        for (u32 y = 0; y < description.Height; y++)
+        for (locals.argb4444.y = 0;
+             locals.argb4444.y < locals.description.Height;
+             locals.argb4444.y++)
         {
-            PixelArgb4444 *pixel = reinterpret_cast<PixelArgb4444 *>(
-                reinterpret_cast<u8 *>(lockedRect.pBits) +
-                lockedRect.Pitch * y);
-            for (u32 x = 0; x < description.Width; x++)
+            locals.argb4444.pixel = reinterpret_cast<PixelArgb4444 *>(
+                reinterpret_cast<u8 *>(locals.lockedRect.pBits) +
+                locals.lockedRect.Pitch * locals.argb4444.y);
+            for (locals.argb4444.x = 0;
+                 locals.argb4444.x < locals.description.Width;
+                 locals.argb4444.x++)
             {
-                if (pixel->alpha == 0)
+                if (locals.argb4444.pixel->alpha == 0)
                 {
-                    u32 sums[3];
-                    sums[2] = 0;
-                    sums[1] = sums[2];
-                    sums[0] = sums[1];
-                    u32 neighborCount = 0;
-                    if (x > 0)
-                    {
-                        AccumulateArgb4444Neighbor(sums, pixel - 1,
-                                                   &neighborCount);
-                    }
-                    if (x < description.Width - 1)
-                    {
-                        AccumulateArgb4444Neighbor(sums, pixel + 1,
-                                                   &neighborCount);
-                    }
-                    if (y > 0)
-                    {
+                    locals.argb4444.sums[2] = 0;
+                    locals.argb4444.sums[1] = locals.argb4444.sums[2];
+                    locals.argb4444.sums[0] = locals.argb4444.sums[1];
+                    locals.argb4444.neighborCount = 0;
+                    if (locals.argb4444.x > 0)
                         AccumulateArgb4444Neighbor(
-                            sums, pixel - lockedRect.Pitch / 2,
-                            &neighborCount);
-                    }
-                    if (y < description.Height - 1)
-                    {
+                            locals.argb4444.sums, locals.argb4444.pixel - 1,
+                            &locals.argb4444.neighborCount);
+                    if (locals.argb4444.x < locals.description.Width - 1)
                         AccumulateArgb4444Neighbor(
-                            sums, pixel + lockedRect.Pitch / 2,
-                            &neighborCount);
-                    }
-                    if (neighborCount > 1)
+                            locals.argb4444.sums, locals.argb4444.pixel + 1,
+                            &locals.argb4444.neighborCount);
+                    if (locals.argb4444.y > 0)
+                        AccumulateArgb4444Neighbor(
+                            locals.argb4444.sums,
+                            locals.argb4444.pixel +
+                                (-locals.lockedRect.Pitch / 2),
+                            &locals.argb4444.neighborCount);
+                    if (locals.argb4444.y < locals.description.Height - 1)
+                        AccumulateArgb4444Neighbor(
+                            locals.argb4444.sums,
+                            locals.argb4444.pixel + locals.lockedRect.Pitch / 2,
+                            &locals.argb4444.neighborCount);
+                    if (locals.argb4444.neighborCount > 1)
                     {
-                        sums[0] /= neighborCount;
-                        sums[1] /= neighborCount;
-                        sums[2] /= neighborCount;
+                        locals.argb4444.sums[0] /= locals.argb4444.neighborCount;
+                        locals.argb4444.sums[1] /= locals.argb4444.neighborCount;
+                        locals.argb4444.sums[2] /= locals.argb4444.neighborCount;
                     }
-                    pixel->red = (u16)sums[0];
-                    pixel->green = (u16)sums[1];
-                    pixel->blue = (u16)sums[2];
+                    locals.argb4444.pixel->red = (u8)locals.argb4444.sums[0];
+                    locals.argb4444.pixel->green = (u8)locals.argb4444.sums[1];
+                    locals.argb4444.pixel->blue = (u8)locals.argb4444.sums[2];
                 }
-                pixel++;
+                locals.argb4444.pixel++;
             }
         }
         break;
     }
 
-    surface->UnlockRect();
-    surface->Release();
+    locals.surface->UnlockRect();
+    locals.surface->Release();
 }
 
 i32 SceneAnmManagerView::LoadTexture(SceneTextureEntryView *entry, u8 *data,
@@ -309,60 +360,79 @@ i32 SceneAnmManagerView::LoadTexture(SceneTextureEntryView *entry, u8 *data,
     return 0;
 }
 
+#define regionSurface restartCommandProcessingLocal05
+#define regionFileDestinationRect averagedPanLocal12
+#define regionDescription iLocal11
+#define regionSourceRect commandCursorLocal02
+#define regionDataDestinationRect soundIndexLocal01
+#define regionHeader jLocal00
+#define regionRawEntry preloadBufferLocal03
+#pragma var_order(regionSurface, regionFileDestinationRect, regionDescription, \
+                  regionSourceRect, regionDataDestinationRect, regionHeader, \
+                  regionRawEntry, this)
 i32 SceneAnmManagerView::LoadTextureRegion(SceneTextureEntryView *entry,
                                            u8 *data, i32 size, i32 format,
                                            i32, i32 hasData, i32 top)
 {
-    IDirect3DSurface8 *surface;
-    RECT fileDestinationRect;
-    D3DSURFACE_DESC description;
-    RECT sourceRect;
-    RECT dataDestinationRect;
-    AnmTextureHeaderView *header;
-    u8 *rawEntry;
+    IDirect3DSurface8 *regionSurface;
+    RECT regionFileDestinationRect;
+    D3DSURFACE_DESC regionDescription;
+    RECT regionSourceRect;
+    RECT regionDataDestinationRect;
+    AnmTextureHeaderView *regionHeader;
+    u8 *regionRawEntry;
 
     format = GetAnmFormat(format);
     entry->rawDataSize = size;
 
-    surface = NULL;
-    entry->texture->GetSurfaceLevel(0, &surface);
+    regionSurface = NULL;
+    entry->texture->GetSurfaceLevel(0, &regionSurface);
     if (hasData == 0)
     {
-        surface->GetDesc(&description);
-        fileDestinationRect.left = 0;
-        fileDestinationRect.top = top;
-        fileDestinationRect.right = description.Width;
-        fileDestinationRect.bottom = description.Height;
+        regionSurface->GetDesc(&regionDescription);
+        regionFileDestinationRect.left = 0;
+        regionFileDestinationRect.top = top;
+        regionFileDestinationRect.right = regionDescription.Width;
+        regionFileDestinationRect.bottom = regionDescription.Height;
         D3DXLoadSurfaceFromFileInMemory(
-            surface, NULL, &fileDestinationRect, data, size, NULL,
+            regionSurface, NULL, &regionFileDestinationRect, data, size, NULL,
             D3DX_FILTER_NONE, 0, NULL);
     }
     else
     {
-        rawEntry = data;
-        header = reinterpret_cast<AnmTextureHeaderView *>(
-            rawEntry + reinterpret_cast<u32 *>(rawEntry)[12]);
-        sourceRect.left = 0;
-        sourceRect.top = 0;
-        sourceRect.right = header->width;
-        sourceRect.bottom = header->height;
-        dataDestinationRect.left = 0;
-        dataDestinationRect.top = top;
-        dataDestinationRect.right = header->width;
-        dataDestinationRect.bottom = header->height + top;
+        regionRawEntry = data;
+        regionHeader = reinterpret_cast<AnmTextureHeaderView *>(
+            regionRawEntry + reinterpret_cast<u32 *>(regionRawEntry)[12]);
+        regionSourceRect.left = 0;
+        regionSourceRect.top = 0;
+        regionSourceRect.right = regionHeader->width;
+        regionSourceRect.bottom = regionHeader->height;
+        regionDataDestinationRect.left = 0;
+        regionDataDestinationRect.top = top;
+        regionDataDestinationRect.right = regionHeader->width;
+        regionDataDestinationRect.bottom = regionHeader->height + top;
         D3DXLoadSurfaceFromMemory(
-            surface, NULL, &dataDestinationRect,
-            rawEntry + reinterpret_cast<u32 *>(rawEntry)[12] +
+            regionSurface, NULL, &regionDataDestinationRect,
+            regionRawEntry + reinterpret_cast<u32 *>(regionRawEntry)[12] +
                 sizeof(AnmTextureHeaderView),
-            g_TextureFormatD3D8Mapping[header->format],
-            g_TextureFormatBytesPerPixel[header->format] * header->width,
-            NULL, &sourceRect, D3DX_FILTER_NONE, 0);
+            g_TextureFormatD3D8Mapping[regionHeader->format],
+            g_TextureFormatBytesPerPixel[regionHeader->format] *
+                regionHeader->width,
+            NULL, &regionSourceRect, D3DX_FILTER_NONE, 0);
     }
-    surface->Release();
+    regionSurface->Release();
     this->ApplyTextureAlphaBleed(entry);
     entry->bytesPerPixel = g_TextureFormatBytesPerPixel[format];
     return 0;
 }
+#undef regionSurface
+#undef regionFileDestinationRect
+#undef regionDescription
+#undef regionSourceRect
+#undef regionDataDestinationRect
+#undef regionHeader
+#undef regionRawEntry
+
 
 struct SceneTextureClearLocals
 {

@@ -87,8 +87,8 @@ address,name,module,confidence,evidence
 0x00452630,th095::SceneSelectControllerView::Draw,FrontEndController,high,Complete scene-result and replay-browser text renderer with exact 19-call topology
 0x004362A0,th095::SceneSaveDataView::LoadScenePreviewTexture,SceneSelect,high,Target-local selected-scene thumbnail upload into an ANM texture
 0x00442B90,th095::SceneAnmManagerView::LoadTexture,AnmTexture,exact,Canonical file-or-embedded texture upload with seven relocations
-0x00442CA0,th095::SceneAnmManagerView::LoadTextureRegion,AnmTexture,high,Complete partial texture upload with destination top offset
-0x00442510,th095::SceneAnmManagerView::ApplyTextureAlphaBleed,AnmTexture,high,Complete transparent-pixel neighbor color bleed for three alpha formats
+0x00442CA0,th095::SceneAnmManagerView::LoadTextureRegion,AnmTexture,exact,Canonical 354-byte partial texture upload with seven relocations
+0x00442510,th095::SceneAnmManagerView::ApplyTextureAlphaBleed,AnmTexture,exact,Canonical 1292-byte three-format alpha bleed with 43-byte switch-table tail and 18 relocations
 0x00442A50,th095::AccumulateArgb8888Neighbor,AnmTexture,exact,Canonical ARGB8888 neighbor color accumulator
 0x00442AB0,th095::AccumulateArgb1555Neighbor,AnmTexture,exact,Canonical ARGB1555 neighbor color accumulator
 0x0041C570,th095::AccumulateArgb4444Neighbor,AnmTexture,exact,Canonical ARGB4444 neighbor color accumulator
@@ -195,3 +195,4 @@ address,name,module,confidence,evidence
 0x004411D0,th095::AnmManager::InitializeHorizontalTextureStrip,AnmManager,exact,Canonical generated-vertex horizontal UV strip initializer
 0x00441330,th095::AnmManager::DrawVertices,AnmManager,exact,Canonical generated-vertex triangle-strip submitter
 0x00441480,th095::AnmManager::DrawTriangleFan,AnmManager,exact,Canonical radial-trail triangle-fan submitter
+0x00442260,th095::AnmManager::SetupVertexBuffer,AnmManager,exact,Canonical 682-byte managed quad vertex-buffer setup with 25 relocations

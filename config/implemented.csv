@@ -514,3 +514,4 @@ th095::AnmManager::Draw3D
 th095::AnmManager::InitializeHorizontalTextureStrip
 th095::AnmManager::DrawVertices
 th095::AnmManager::DrawTriangleFan
+th095::AnmManager::SetupVertexBuffer
