@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 173 canonical units cover 97,404 authored bytes.
+- Reconstruction: 175 canonical units cover 100,843 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 54.92% (97,404 / 177,360)
+  relocations. Confirmed authored-byte coverage is now 55.78% (100,843 / 180,799)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 206 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,617 origin/boundary reviews pending. Original class
+  confirms 208 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,615 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -80,6 +80,15 @@
   ANM execution, and timer advance. Keeping its full `+0x2A18` layout local
   preserves the compiler label identities of all nine established
   `PhotoCamera.cpp` units; each one replays unchanged.
+- Root-level `EclOperandsInt.cpp` and `EclOperandsFloat.cpp` now reconstruct
+  the high-connectivity operand resolver pair at `0x0040FAE0/0x004105A0`.
+  Their 3,439 authored bytes, adjacent 684 bytes of compiler-owned jump tables,
+  and all 279 relocations replay exactly. The selector maps are target-local:
+  they expose TH095 photo index/count, photography-player coordinates, shared
+  runtime ECL parameters, and active-boss coordinates in addition to context,
+  RNG, and enemy movement values. TH08 supplied only the ancestral switch
+  source shape. A four-byte photo-counter value wrapper with inline conversion
+  is required to reproduce both target stack frames naturally.
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.
@@ -285,12 +294,14 @@
 
 ## Next bounded lane
 
-Re-run the target-local origin and boundary inventory now that every previously
-confirmed source-missing authored candidate is implemented. Rank the next lane
-by authored likelihood, call-graph connectivity, and TH095-specific leverage;
-do not spend the next pass on compiler-only residuals merely to protect the
-current percentage. Promote newly confirmed authored candidates into the
-denominator before claiming additional coverage.
+Complete the writable half of the same high-connectivity operand subsystem:
+`EclOperands::ResolveIntLValue @ 0x00410300` and
+`EclOperands::ResolveFloatLValue @ 0x00410DB0`. Their target tables and layouts
+sit between/after the exact read resolvers and should be derived from TH095,
+using TH08 only as a source-shape oracle. Then return to the ranked inventory
+and take a larger TH095 game-side hub such as `0x00403440`, `0x00405120`, or
+`0x00415970` based on verified caller/callee leverage. Promote newly confirmed
+authored candidates into the denominator before claiming coverage.
 
 The large photo functions remain source-present but non-exact:
 `PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe

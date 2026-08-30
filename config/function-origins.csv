@@ -89,9 +89,9 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00408CE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00408DE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00408E70,authored,EclManager,authored,high,target-architecture-2026-08-29
-0x0040FAE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0040FAE0,authored,EclOperands,authored,exact,vc71-ecl-resolve-int-2026-08-30
 0x00410300,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004105A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004105A0,authored,EclOperands,authored,exact,vc71-ecl-resolve-float-2026-08-30
 0x00410DB0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00411150,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00411390,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

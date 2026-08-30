@@ -82,7 +82,10 @@ struct Float3
     {
         return Float3(this->x + other.x, this->y + other.y, this->z + other.z);
     }
-    Float3 operator-(const Float3 &other) const;
+    Float3 operator-(const Float3 &other) const
+    {
+        return Float3(this->x - other.x, this->y - other.y, this->z - other.z);
+    }
     Float3 operator*(f32 scalar) const;
     Float3 operator/(f32 scalar) const;
     Float3 operator-() const;

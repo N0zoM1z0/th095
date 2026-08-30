@@ -204,3 +204,5 @@ th095::ZunMemory::~ZunMemory
 th095::ResultSaveDataView::WriteBestShotData
 th095::SceneSaveDataView::LoadScenePreviewTexture
 th095::PhotoGameUpdateView::Update
+th095::EclOperands::ResolveInt
+th095::Enemy::ResolveFloat

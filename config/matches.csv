@@ -172,3 +172,5 @@ address,name,size,status,match_percent,unit,evidence
 0x00435910,th095::ResultSaveDataView::WriteBestShotData,1407,matching,100.00,score-data-write-best-shot,python3 scripts/build.py --unit score-data-write-best-shot && python3 scripts/compare-coff-function.py --unit score-data-write-best-shot --json
 0x004362A0,th095::SceneSaveDataView::LoadScenePreviewTexture,578,matching,100.00,scene-preview-load-texture,python3 scripts/build.py --unit scene-preview-load-texture && python3 scripts/compare-coff-function.py --unit scene-preview-load-texture --json
 0x0042FF60,th095::PhotoGameUpdateView::Update,405,matching,100.00,photo-game-update,python3 scripts/build.py --unit photo-game-update && python3 scripts/compare-coff-function.py --unit photo-game-update --json
+0x0040FAE0,th095::EclOperands::ResolveInt,1731,matching,100.00,ecl-resolve-int,python3 scripts/build.py --unit ecl-resolve-int && python3 scripts/compare-coff-function.py --unit ecl-resolve-int --json
+0x004105A0,th095::Enemy::ResolveFloat,1708,matching,100.00,ecl-resolve-float,python3 scripts/build.py --unit ecl-resolve-float && python3 scripts/compare-coff-function.py --unit ecl-resolve-float --json
