@@ -1,4 +1,5 @@
 WinMain
+th095::PhotoBulletManagerView::OnUpdate
 th095::GameWindow::Render
 th095::GameWindow::Present
 th095::GameWindow::GetTimestamp

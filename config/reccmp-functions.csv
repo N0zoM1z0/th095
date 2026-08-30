@@ -1,4 +1,5 @@
 name,address,type
+th095::PhotoBulletManagerView::OnUpdate,0x00405120,function
 th095::AnmVm::Initialize,0x00401C10,function
 th095::EclManager::RunEcl,0x00408E70,function
 th095::GameConfiguration::Initialize,0x00418720,function

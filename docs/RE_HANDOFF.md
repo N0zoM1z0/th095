@@ -344,12 +344,15 @@
 
 ## Next bounded lane
 
-Follow the newly exact collision interfaces into their two high-connectivity
-callers: `0x00405120` is 1,835 bytes with fifteen internal callees and invokes
-the rectangle collision path; `0x00415970` is 1,853 bytes with seventeen
-internal callees and invokes the same path while also coordinating four ANM
-operations. Recover their ownership and update loops as a bounded pair before
-sweeping their adjacent leaves. Then cover the two 1 KB laser callers at
+`PhotoBulletManagerView::OnUpdate @ 0x00405120` is now source-present for its
+complete 1,835-byte, 1,600-slot update loop. Its VC7.1 probe has the exact
+extent and all 30 relocations, with 1,684/1,715 comparable bytes matching; the
+31-byte residual is confined to a 16-byte inline-call frame-home difference
+and receives no exact credit. Continue the collision lane through
+`0x00415970`: it is 1,853 bytes with seventeen internal callees, invokes the
+same rectangle collision path, and coordinates four ANM operations. Recover
+its enemy-manager ownership and update loop before sweeping adjacent leaves.
+Then cover the two 1 KB laser callers at
 `0x0041E2C0/0x0041F550`. Keep all fifteen PlayerInf exact units, the exact
 outer PhotoGame coordinator, and every established `PhotoCamera.cpp` unit
 green while extending shared views.
