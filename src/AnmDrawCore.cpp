@@ -36,6 +36,22 @@ struct AnmRotatedSpriteLayout
     f32 sine;
 };
 
+struct AnmBackgroundViewportView
+{
+    Float3 cameraPosition;
+    Float3 cameraLookAtOffset;
+    Float3 cameraUp;
+    Float3 cameraForward;
+    Float3 cameraRight;
+    Float3 cameraPositionOffset;
+    f32 fieldOfView;
+    D3DXMATRIX viewMatrix;
+    D3DXMATRIX projectionMatrix;
+    D3DVIEWPORT8 viewport;
+};
+
+extern AnmBackgroundViewportView *g_CurrentBackgroundViewport;
+
 static __forceinline u8 MixAnmColor(u8 first, u8 second)
 {
     u32 value = (u32)first * (u32)second >> 7;
@@ -445,6 +461,105 @@ ZunResult AnmManager::Draw2D(AnmVm *vm)
     g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
         g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
             vm->position.z;
+    return this->DrawInner(vm, 0);
+}
+
+// FUNCTION: TH095 0x0043FC60.
+ZunResult AnmManager::ProjectCameraFacingQuad(AnmVm *vm)
+{
+    f32 rotation = vm->rotation.z;
+    f32 cosine = (f32)cos(rotation);
+    f32 sine = (f32)sin(rotation);
+    Float3 origin(0.0f, 0.0f, 0.0f);
+    D3DXMATRIX worldMatrix;
+    Float3 projectedPosition;
+    Float3 projectedReference;
+    Float3 delta;
+    f32 x[4];
+    f32 y[4];
+
+    D3DXMatrixIdentity(&worldMatrix);
+    worldMatrix._41 = vm->position.x + vm->positionOffset.x;
+    worldMatrix._42 = vm->position.y + vm->positionOffset.y;
+    worldMatrix._43 = vm->position.z + vm->positionOffset.z;
+
+    D3DXVec3Project(reinterpret_cast<D3DXVECTOR3 *>(&projectedPosition),
+                    reinterpret_cast<D3DXVECTOR3 *>(&origin),
+                    &g_CurrentBackgroundViewport->viewport,
+                    &g_CurrentBackgroundViewport->projectionMatrix,
+                    &g_CurrentBackgroundViewport->viewMatrix, &worldMatrix);
+    if (projectedPosition.z < 0.0f || projectedPosition.z > 1.0f)
+        return ZUN_ERROR;
+
+    D3DXVec3Project(reinterpret_cast<D3DXVECTOR3 *>(&projectedReference),
+                    reinterpret_cast<D3DXVECTOR3 *>(
+                        &g_CurrentBackgroundViewport->cameraRight),
+                    &g_CurrentBackgroundViewport->viewport,
+                    &g_CurrentBackgroundViewport->projectionMatrix,
+                    &g_CurrentBackgroundViewport->viewMatrix, &worldMatrix);
+
+    delta = projectedReference - projectedPosition;
+    f32 projectedScale =
+        D3DXVec3Length(reinterpret_cast<D3DXVECTOR3 *>(&delta)) * 0.5f;
+    f32 spriteHalfWidth =
+        projectedScale * vm->spriteSize.x * vm->scale.x;
+    f32 spriteHalfHeight =
+        projectedScale * vm->spriteSize.y * vm->scale.y;
+    f32 xOffset = projectedPosition.x;
+    f32 yOffset = projectedPosition.y;
+
+    cosine = (f32)cos(rotation);
+    sine = (f32)sin(rotation);
+
+    switch (vm->renderStateA)
+    {
+    case 1:
+        x[0] = x[2] = 0.0f;
+        x[1] = x[3] = spriteHalfWidth;
+        break;
+    case 0:
+        x[0] = x[2] = -spriteHalfWidth * 0.5f;
+        x[1] = x[3] = spriteHalfWidth * 0.5f;
+        break;
+    case 2:
+        x[0] = x[2] = -spriteHalfWidth;
+        x[1] = x[3] = 0.0f;
+        break;
+    }
+
+    switch (vm->renderStateB)
+    {
+    case 1:
+        y[0] = y[1] = 0.0f;
+        y[2] = y[3] = spriteHalfHeight;
+        break;
+    case 0:
+        y[0] = y[1] = -spriteHalfHeight * 0.5f;
+        y[2] = y[3] = spriteHalfHeight * 0.5f;
+        break;
+    case 2:
+        y[0] = y[1] = -spriteHalfHeight;
+        y[2] = y[3] = 0.0f;
+        break;
+    }
+
+    for (i32 i = 0; i < 4; i++)
+    {
+        this->TranslateRotation(&g_AnmTexturedVertices[i], x[i], y[i], sine,
+                                cosine, xOffset, yOffset);
+    }
+
+    g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
+        g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
+            vm->position.z;
+    return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x004400F0.
+ZunResult AnmManager::DrawCameraFacingQuad(AnmVm *vm)
+{
+    if (this->ProjectCameraFacingQuad(vm) != ZUN_SUCCESS)
+        return ZUN_ERROR;
     return this->DrawInner(vm, 0);
 }
 

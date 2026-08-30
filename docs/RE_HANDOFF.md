@@ -503,7 +503,15 @@ the same three-way alignment modes, includes XY position offsets, rotates all
 four vertices, and writes the unoffset Z. Its natural portable probe is 572
 versus 542 bytes solely around the target's inline x87 `FSINCOS`; do not add
 assembly to promote it. Continue through the remaining immediate draw-mode
-callers beginning at `0x0043FC60/0x004400F0`.
+callers. `ProjectCameraFacingQuad @ 0x0043FC60` is now source-present for the
+complete 1,163-byte target behavior; its 1,140-byte portable probe preserves
+TH095 current-background-viewport projection, offset world position, Z-range
+failure, screen-scale derivation, three-way alignment, and the target-specific
+unprojected final Z. Its two inline `FSINCOS` sites and compiler-local copies
+remain conservatively non-exact. The 48-byte `DrawCameraFacingQuad @
+0x004400F0` wrapper is canonical exact with both relocations. Continue at the
+adjacent depth/color path `0x00440120` and projected-3D geometry core
+`0x00440440`.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

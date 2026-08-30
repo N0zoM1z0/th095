@@ -671,6 +671,7 @@ struct AnmManager
     void TranslateRotation(VertexTex1DiffuseXyzrhw *vertex, f32 x, f32 y,
                            f32 sine, f32 cosine, f32 xOffset, f32 yOffset);
     ZunResult Draw2D(AnmVm *vm);
+    ZunResult ProjectCameraFacingQuad(AnmVm *vm);
     ZunResult DrawCameraFacingQuad(AnmVm *vm);
     ZunResult DrawProjected3DQuad(AnmVm *vm);
     ZunResult DrawMode6(AnmVm *vm);

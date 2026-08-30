@@ -12806,3 +12806,16 @@ target_address = 0x0043FA00
 size = 0x3A
 relocations = [
 ]
+
+[units.anm-draw-camera-facing-quad]
+source = "src/AnmDrawCore.cpp"
+object = "build/matching/AnmDrawCore.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::DrawCameraFacingQuad"]
+symbol = "?DrawCameraFacingQuad@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z"
+target_address = 0x004400F0
+size = 0x30
+relocations = [
+  { offset = 0xF, type = "REL32", symbol = "?ProjectCameraFacingQuad@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x0043FC60 },
+  { offset = 0x26, type = "REL32", symbol = "?DrawInner@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@H@Z", target = 0x0043ECD0 },
+]

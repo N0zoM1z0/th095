@@ -504,3 +504,5 @@ th095::AnmManager::DrawNoRotation
 th095::AnmManager::DrawNoRotationNoRound
 th095::AnmManager::TranslateRotation
 th095::AnmManager::Draw2D
+th095::AnmManager::ProjectCameraFacingQuad
+th095::AnmManager::DrawCameraFacingQuad
