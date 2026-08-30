@@ -125,6 +125,8 @@ th095::AnmTextManagerView::DrawTextInner
 th095::AnmTextManagerView::DrawTextRight
 th095::AnmTextManagerView::DrawTextCentered
 th095::TextHelperView::RenderTextToTextureBold
+th095::TextRenderBufferView::ApplyAlphaBleed
+th095::TextRenderBufferView::InvertAlpha
 th095::SceneSelectControllerView::UpdateSelectedSceneDetails
 th095::SceneSelectControllerView::SetDetailDigitSprite
 th095::SceneSelectControllerView::ShowDetailDigit

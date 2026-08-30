@@ -3,6 +3,7 @@
 
 #include "Global.hpp"
 #include "AnmVmId.hpp"
+#include "PixelFormats.hpp"
 #include <time.h>
 
 namespace th095
@@ -177,26 +178,6 @@ typedef char SceneTextureEntrySizeIs10[
     (sizeof(SceneTextureEntryView) == 0x10) ? 1 : -1];
 
 i32 __fastcall GetAnmFormat(i32 format);
-struct PixelArgb1555
-{
-    u16 blue : 5;
-    u16 green : 5;
-    u16 red : 5;
-    u16 alpha : 1;
-};
-struct PixelArgb4444
-{
-    u16 blue : 4;
-    u16 green : 4;
-    u16 red : 4;
-    u16 alpha : 4;
-};
-void __fastcall AccumulateArgb8888Neighbor(u32 *sums, u8 *pixel,
-                                           u32 *count);
-void __fastcall AccumulateArgb1555Neighbor(u32 *sums, PixelArgb1555 *pixel,
-                                           u32 *count);
-void __fastcall AccumulateArgb4444Neighbor(u32 *sums, PixelArgb4444 *pixel,
-                                           u32 *count);
 
 struct SceneAnmLoadedView
 {

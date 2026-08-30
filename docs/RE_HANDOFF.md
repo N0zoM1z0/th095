@@ -115,6 +115,10 @@
   exact 560-byte extent, all 25 relocations resolve, and 419/460 comparable
   bytes match. It renders into the `0x124`-byte CPU buffer at `0x004C44B8`
   and uploads it directly rather than using TH08's temporary text surface.
+  Its `InvertAlpha @ 0x0041C600` dependency is exact for all 373 bytes;
+  `ApplyAlphaBleed @ 0x0041C1E0` is complete at the target's 911-byte extent,
+  with all eight exact pixel-accumulator relocations and 763/879 comparable
+  bytes matched.
 - `ReplayBrowserView::Update @ 0x0044DCA0` is now source-present for the
   complete TH095-specific 4-by-20 replay browser. The target-sized 2,054-byte
   probe resolves all 77 relocations and matches 1,683 of 1,746 comparable

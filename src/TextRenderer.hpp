@@ -2,6 +2,7 @@
 #define TH095_TEXT_RENDERER_HPP
 
 #include "AnmManager.hpp"
+#include "PixelFormats.hpp"
 
 namespace th095
 {
@@ -19,8 +20,8 @@ struct TextRenderBufferView
     HGDIOBJ bitmap;
     u8 *buffer;
 
-    BOOL InvertAlpha(i32 rowCount, BOOL unused);
-    BOOL ApplyAlphaBleed(i32 rowCount);
+    bool InvertAlpha(i32 rowCount, BOOL unused);
+    bool ApplyAlphaBleed(i32 rowCount);
 };
 
 struct TextHelperView

@@ -126,6 +126,8 @@ th095::AnmTextManagerView::DrawTextLeft,0x00443CE0,function
 th095::AnmTextManagerView::DrawTextRight,0x00443DD0,function
 th095::AnmTextManagerView::DrawTextCentered,0x00443F80,function
 th095::TextHelperView::RenderTextToTextureBold,0x0041C8F0,function
+th095::TextRenderBufferView::ApplyAlphaBleed,0x0041C1E0,function
+th095::TextRenderBufferView::InvertAlpha,0x0041C600,function
 th095::SceneSelectControllerView::UpdateSelectedSceneDetails,0x0044C670,function
 th095::SceneSelectControllerView::SetDetailDigitSprite,0x0044CF60,function
 th095::SceneSelectControllerView::ShowDetailDigit,0x0044CFA0,function

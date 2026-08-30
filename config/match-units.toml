@@ -7504,3 +7504,13 @@ relocations = [
   { offset = 0x4A, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
   { offset = 0x5E, type = "REL32", symbol = "?RenderTextToTextureBold@TextHelperView@th095@@SIXHHHHHHKKPBDPAUIDirect3DTexture8@@@Z", target = 0x0041C8F0 },
 ]
+
+[units.text-render-buffer-invert-alpha]
+source = "src/TextRenderer.cpp"
+object = "build/matching/TextRenderer.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::TextRenderBufferView::InvertAlpha"]
+symbol = "?InvertAlpha@TextRenderBufferView@th095@@QAE_NHH@Z"
+target_address = 0x0041C600
+size = 0x175
+relocations = []

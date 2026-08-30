@@ -146,3 +146,4 @@ address,name,size,status,match_percent,unit,evidence
 0x00442B40,th095::GetAnmFormat,79,matching,100.00,anm-texture-get-format,python3 scripts/build.py --unit anm-texture-get-format && python3 scripts/compare-coff-function.py --unit anm-texture-get-format --json
 0x00442B90,th095::SceneAnmManagerView::LoadTexture,270,matching,100.00,anm-texture-load,python3 scripts/build.py --unit anm-texture-load && python3 scripts/compare-coff-function.py --unit anm-texture-load --json
 0x00443C70,th095::AnmTextManagerView::DrawTextInner,104,matching,100.00,anm-text-draw-inner,python3 scripts/build.py --unit anm-text-draw-inner && python3 scripts/compare-coff-function.py --unit anm-text-draw-inner --json
+0x0041C600,th095::TextRenderBufferView::InvertAlpha,373,matching,100.00,text-render-buffer-invert-alpha,python3 scripts/build.py --unit text-render-buffer-invert-alpha && python3 scripts/compare-coff-function.py --unit text-render-buffer-invert-alpha --json
