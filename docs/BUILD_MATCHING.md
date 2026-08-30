@@ -128,3 +128,12 @@ member containing its `ZunTimer` at `+0x4`, and model the `+0x34` runtime
 configuration with an inline constructor that calls `Initialize`; flattening
 either member removes the target's temporary pointer home. The canonical
 `photo-game-task-constructor` unit enforces all 148 bytes and three relocations.
+
+Do not manufacture an otherwise-unused stack object to close a frame-only
+gap. `PhotoFrontManagerView::Initialize @ 0x004170F0` has a target `0x134`-byte
+frame although every referenced local lies within the first `0x28` bytes. Its
+complete natural source reproduces the ANM load, six VM initializations, four
+handle interrupts, and both conditional VM creations, but VC7.1 emits 455
+bytes rather than 521. The unexplained `0x108` footprint remains a documented
+non-exact compiler-local residual; an inert path buffer would violate authored
+source policy even if it happened to align displacements.

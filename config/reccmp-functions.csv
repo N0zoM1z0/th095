@@ -316,3 +316,14 @@ th095::PhotoGameTaskView::Update,0x00418100,function
 th095::PhotoGameTaskView::DrawHud,0x00418420,function
 th095::PhotoGameTaskView::OnUpdate,0x00418690,function
 th095::PhotoGameTaskView::OnDraw,0x004186B0,function
+th095::PhotoFrontManagerView::PhotoFrontManagerView,0x00417070,function
+th095::PhotoFrontManagerView::Initialize,0x004170F0,function
+th095::LoadPhotoFrontAnm,0x00417300,function
+th095::ReleasePhotoFrontAnm,0x00417340,function
+th095::PhotoFrontManagerView::~PhotoFrontManagerView,0x00417360,function
+th095::PhotoFrontManagerView::Create,0x00417410,function
+th095::PhotoFrontManagerView::Destroy,0x00417550,function
+th095::PhotoFrontManagerView::Update,0x004175B0,function
+th095::PhotoFrontManagerView::Draw,0x00417920,function
+th095::PhotoFrontManagerView::OnUpdate,0x00417970,function
+th095::PhotoFrontManagerView::OnDraw,0x004179A0,function

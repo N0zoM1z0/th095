@@ -315,3 +315,14 @@ th095::PhotoGameTaskView::Update
 th095::PhotoGameTaskView::DrawHud
 th095::PhotoGameTaskView::OnUpdate
 th095::PhotoGameTaskView::OnDraw
+th095::PhotoFrontManagerView::PhotoFrontManagerView
+th095::PhotoFrontManagerView::Initialize
+th095::LoadPhotoFrontAnm
+th095::ReleasePhotoFrontAnm
+th095::PhotoFrontManagerView::~PhotoFrontManagerView
+th095::PhotoFrontManagerView::Create
+th095::PhotoFrontManagerView::Destroy
+th095::PhotoFrontManagerView::Update
+th095::PhotoFrontManagerView::Draw
+th095::PhotoFrontManagerView::OnUpdate
+th095::PhotoFrontManagerView::OnDraw

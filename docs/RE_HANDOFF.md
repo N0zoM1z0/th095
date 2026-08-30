@@ -424,13 +424,22 @@ PhotoGame unit now replay with their current COFF `$Lxxxxx` identities. All
 129 units across the fourteen audited objects are exact; only manifest-local
 symbol names changed, never target destinations or credited bytes.
 
-Continue outward through the immediately adjacent `FrontInf` cluster at
-`0x00417070..0x004179CC`. The next high-connectivity target is the 873-byte
-update hub at `0x004175B0`; recover its manager layout and call graph first,
-then close the paired create/destroy entries at `0x00417410/0x00417550`, the
-constructor/initializer around `0x00417070..0x00417333`, and the small
-`0x00417920/0x00417970/0x004179A0` callbacks. Preserve the independently exact
-`PhotoToScreen @ 0x004186D0` bridge and the complete ten-unit GameTask cluster.
+The adjacent `FrontInf` cluster at `0x00417070..0x004179CC` is now
+source-present. Ten canonical units contribute 1,808 exact bytes and enforce
+all 84 relocations, including the 873-byte TH095 countdown/HUD update hub and
+the complete lifecycle/callback shell. Preserve its six-inline-`AnmVm`
+`0x10D4` layout. `Initialize @ 0x004170F0` remains deliberately non-exact: its
+complete natural probe is 455 bytes while the 521-byte target reserves an
+instruction-unreferenced `0x108` compiler-local frame footprint. Do not close
+that gap with an inert buffer.
+
+Continue with the TH095 bullet-runtime pair at `0x00405A30` (2,133 bytes) and
+`0x004062B0` (2,479 bytes). They call each other through `0x00406CC0`, feed the
+already source-present 1,835-byte manager update at `0x00405120`, and fan into
+ANM execution, bullet geometry helpers, sound, and the photography effect
+path at `0x00441DA0`. Recover their packet/layout contract together before
+sweeping adjacent helpers. Preserve the independently exact `PhotoToScreen @
+0x004186D0` bridge and both the GameTask and FrontInf clusters.
 
 ## Closed lanes and preservation constraints
 
