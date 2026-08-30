@@ -11982,3 +11982,34 @@ relocations = [
   { offset = 0x3C, type = "REL32", symbol = "?ReleaseAnm@AnmManagerPreloadView@th095@@QAEXH@Z", target = 0x00443980 },
   { offset = 0x7E, type = "REL32", symbol = "?PostloadAnmEntry@AnmManagerPreloadView@th095@@QAEPAUAnmLoaded@2@PAU32@@Z", target = 0x00443480 },
 ]
+
+[units.anm-postload-entry]
+source = "src/AnmPreload.cpp"
+object = "build/matching/AnmPreload.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManagerPreloadView::PostloadAnmEntry"]
+symbol = "?PostloadAnmEntry@AnmManagerPreloadView@th095@@QAEPAUAnmLoaded@2@PAU32@@Z"
+target_address = 0x00443480
+size = 0x11C
+relocations = [
+  { offset = 0x17, type = "DIR32", symbol = "??_C@_0BJ@CMLLHHAJ@?3?3postloadAnim?5?3?5?$CFd?0?5?$CFd?6?$AA@", target = 0x00497070 },
+  { offset = 0x1C, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x8A, type = "REL32", symbol = "?LoadTextureData@AnmManagerPreloadView@th095@@QAEHPAUAnmLoaded@2@HHHPAUAnmRawEntryView@2@@Z", target = 0x004435A0 },
+]
+
+[units.anm-release-anm]
+source = "src/AnmPreload.cpp"
+object = "build/matching/AnmPreload.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManagerPreloadView::ReleaseAnm"]
+symbol = "?ReleaseAnm@AnmManagerPreloadView@th095@@QAEXH@Z"
+target_address = 0x00443980
+size = 0x131
+relocations = [
+  { offset = 0x48, type = "REL32", symbol = "?MarkVmsForDeletion@AnmManagerPreloadView@th095@@QAEXPAUAnmLoaded@2@@Z", target = 0x00445270 },
+  { offset = 0x8E, type = "REL32", symbol = "?ReleaseAnmEntry@AnmManagerPreloadView@th095@@QAEXPAUAnmTextureEntryView@2@@Z", target = 0x00443AC0 },
+  { offset = 0xAC, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0xCB, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0xEA, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x109, type = "REL32", symbol = "_free", target = 0x004854BE },
+]

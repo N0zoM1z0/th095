@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 366 canonical exact functions cover 138,483 authored bytes.
+- Reconstruction: 368 canonical exact functions cover 139,072 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.39% (138,483 / 274,800)
+  relocations. Confirmed authored-byte coverage is now 50.50% (139,072 / 275,389)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 455 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,367 origin/boundary reviews pending. Original class
+  current ledger confirms 457 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,365 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -418,10 +418,13 @@ the target's result/replay stack-slot order without inert locals. All 43
 frame services are now exact as well: `SoundPlayer::UpdateFades @ 0x00426300`
 updates all four streaming fade modes, while
 `AnmManagerPreloadView::ServicePreloadedAnims @ 0x004438E0` drains pending
-release/postload work across thirteen `0x120`-byte slots. Continue through the
-service's adjacent ownership bodies `PostloadAnmEntry @ 0x00443480` (284 bytes)
-and `ReleaseAnm @ 0x00443980` (305 bytes), then return to the remaining
-Supervisor render callback residual.
+release/postload work across thirteen `0x120`-byte slots. Its adjacent
+ownership bodies `PostloadAnmEntry @ 0x00443480` (284 bytes) and
+`ReleaseAnm @ 0x00443980` (305 bytes) are now exact too, closing incremental
+raw-entry traversal through VM retirement, entry release, allocation teardown,
+and complete slot reset. Continue into `LoadTextureData @ 0x004435A0`
+(829 bytes) and `ReleaseAnmEntry @ 0x00443AC0` (78 bytes), then return to the
+remaining Supervisor render callback residual.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

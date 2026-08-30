@@ -60,6 +60,8 @@ th095::AnmManager::ClearVertexBuffer,0x0043F2B0,function
 th095::AnmManager::FlushVertexBuffer,0x0043F2F0,function
 th095::AnmManager::Draw,0x004415A0,function
 th095::AnmManagerPreloadView::ServicePreloadedAnims,0x004438E0,function
+th095::AnmManagerPreloadView::PostloadAnmEntry,0x00443480,function
+th095::AnmManagerPreloadView::ReleaseAnm,0x00443980,function
 th095::AnmVm::InitializePulsingRadialTrail,0x00441710,function
 th095::UpdatePulsingRadialTrail,0x00441A10,function
 th095::DrawPulsingRadialTrail,0x00441D70,function

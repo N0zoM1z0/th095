@@ -365,3 +365,5 @@ address,name,size,status,match_percent,unit,evidence
 0x00423440,th095::Supervisor::OnUpdate,400,matching,100.00,main-on-update,python3 scripts/build.py --unit main-on-update && python3 scripts/compare-coff-function.py --unit main-on-update --json
 0x00426300,th095::SoundPlayer::UpdateFades,79,matching,100.00,sound-player-update-fades,python3 scripts/build.py --unit sound-player-update-fades && python3 scripts/compare-coff-function.py --unit sound-player-update-fades --json
 0x004438E0,th095::AnmManagerPreloadView::ServicePreloadedAnims,147,matching,100.00,anm-service-preloaded,python3 scripts/build.py --unit anm-service-preloaded && python3 scripts/compare-coff-function.py --unit anm-service-preloaded --json
+0x00443480,th095::AnmManagerPreloadView::PostloadAnmEntry,284,matching,100.00,anm-postload-entry,python3 scripts/build.py --unit anm-postload-entry && python3 scripts/compare-coff-function.py --unit anm-postload-entry --json
+0x00443980,th095::AnmManagerPreloadView::ReleaseAnm,305,matching,100.00,anm-release-anm,python3 scripts/build.py --unit anm-release-anm && python3 scripts/compare-coff-function.py --unit anm-release-anm --json
