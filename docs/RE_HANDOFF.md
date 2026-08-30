@@ -529,15 +529,24 @@ rotation/scale dirty-bit update, current-background viewport projection, and
 the unoffset final Z. The wrapper submits through `DrawInner` and restores all
 four shared RHW values. Stock VC7.1 needs two live semantic aliases over the
 original matrix backing identifiers to reproduce the patched var-order stack
-layout; do not replace them with padding. Continue at the TH095-specific
-photo-blended projected path `DrawMode7 @ 0x00440950` and then the direct 3D
-path at `0x00440C10`.
+layout; do not replace them with padding. The TH095-specific photo-blended
+projected path `DrawMode7 @ 0x00440950` is now canonical exact for all 691
+authored bytes and 33 relocations. It transforms each manager-local vertex
+through the cached world matrix, computes per-vertex camera distance, and
+blends RGB toward the background photo color while preserving VM alpha. At a
+normalized blend of one or greater it uses the full background RGB rather
+than rejecting the draw; unlike mode 6 it does not apply manager mix color.
+It submits through `DrawInner` with flag 2 and restores all four shared RHW
+values. A fully live 32-byte semantic locals aggregate reproduces the target
+stack order without padding. The exact function ends at `0x00440C02`; the
+thirteen following `CC` bytes are alignment, not authored coverage. Continue
+with the direct 3D path at `0x00440C10` after this handoff.
 
 The shared `Project3DQuad` declaration triggered one further cold-object
 identity refresh in `AnmManager.cpp`: 167 switch-local `$L` symbols advanced
 by six and the `Draw` switch-table base symbol advanced by nine. Their offsets,
 types, target destinations, code bytes, and coverage extents did not change.
-All 69 configured ANM units across ten translation units replay canonical
+All 70 configured ANM units across ten translation units replay canonical
 exact after the refresh.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now

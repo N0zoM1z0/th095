@@ -12920,3 +12920,47 @@ relocations = [
   { offset = 0x48, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x28, target = 0x004CA1C0 },
   { offset = 0x4E, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0xC, target = 0x004CA1C0 },
 ]
+
+[units.anm-draw-projected-photo-blend]
+source = "src/AnmDrawCore.cpp"
+object = "build/matching/AnmDrawCore.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManager::DrawMode7"]
+symbol = "?DrawMode7@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z"
+target_address = 0x00440950
+size = 0x2B3
+relocations = [
+  { offset = 0x15, type = "REL32", symbol = "?Project3DQuad@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x00440440 },
+  { offset = 0x45, type = "DIR32", symbol = "?g_Background@th095@@3PAUAnmBackgroundStateDrawView@1@A", target = 0x004BDD90 },
+  { offset = 0x4B, type = "DIR32", symbol = "?g_Background@th095@@3PAUAnmBackgroundStateDrawView@1@A", target = 0x004BDD90 },
+  { offset = 0xD2, type = "REL32", symbol = "_D3DXVec4Transform@12", target = 0x004588C5 },
+  { offset = 0xE2, type = "DIR32", symbol = "?g_BackgroundCameraPosition@th095@@3UFloat3@1@A", target = 0x004C4854 },
+  { offset = 0xF5, type = "DIR32", symbol = "?g_BackgroundCameraPosition@th095@@3UFloat3@1@A", addend = 0x4, target = 0x004C4854 },
+  { offset = 0x108, type = "DIR32", symbol = "?g_BackgroundCameraPosition@th095@@3UFloat3@1@A", addend = 0x8, target = 0x004C4854 },
+  { offset = 0x126, type = "REL32", symbol = "__CIsqrt", target = 0x004857A0 },
+  { offset = 0x132, type = "DIR32", symbol = "?g_Background@th095@@3PAUAnmBackgroundStateDrawView@1@A", target = 0x004BDD90 },
+  { offset = 0x14B, type = "DIR32", symbol = "?g_Background@th095@@3PAUAnmBackgroundStateDrawView@1@A", target = 0x004BDD90 },
+  { offset = 0x163, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x176, type = "DIR32", symbol = "?g_Background@th095@@3PAUAnmBackgroundStateDrawView@1@A", target = 0x004BDD90 },
+  { offset = 0x182, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x10, target = 0x004CA1C0 },
+  { offset = 0x191, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x13, target = 0x004CA1C0 },
+  { offset = 0x1A4, type = "DIR32", symbol = "?g_Background@th095@@3PAUAnmBackgroundStateDrawView@1@A", target = 0x004BDD90 },
+  { offset = 0x1BB, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x1CC, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x10, target = 0x004CA1C0 },
+  { offset = 0x1D9, type = "DIR32", symbol = "?g_Background@th095@@3PAUAnmBackgroundStateDrawView@1@A", target = 0x004BDD90 },
+  { offset = 0x1F6, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x207, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x11, target = 0x004CA1C0 },
+  { offset = 0x215, type = "DIR32", symbol = "?g_Background@th095@@3PAUAnmBackgroundStateDrawView@1@A", target = 0x004BDD90 },
+  { offset = 0x232, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x243, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x12, target = 0x004CA1C0 },
+  { offset = 0x252, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x13, target = 0x004CA1C0 },
+  { offset = 0x263, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x10, target = 0x004CA1C0 },
+  { offset = 0x276, type = "REL32", symbol = "?DrawInner@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@H@Z", target = 0x0043ECD0 },
+  { offset = 0x27F, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x60, target = 0x004CA1C0 },
+  { offset = 0x289, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x60, target = 0x004CA1C0 },
+  { offset = 0x28F, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x44, target = 0x004CA1C0 },
+  { offset = 0x294, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x44, target = 0x004CA1C0 },
+  { offset = 0x299, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x28, target = 0x004CA1C0 },
+  { offset = 0x29F, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0x28, target = 0x004CA1C0 },
+  { offset = 0x2A5, type = "DIR32", symbol = "?g_AnmTexturedVertices@th095@@3PAUVertexTex1DiffuseXyzrhw@1@A", addend = 0xC, target = 0x004CA1C0 },
+]

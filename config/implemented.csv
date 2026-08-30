@@ -509,3 +509,4 @@ th095::AnmManager::DrawCameraFacingQuad
 th095::AnmManager::DrawMode6
 th095::AnmManager::Project3DQuad
 th095::AnmManager::DrawProjected3DQuad
+th095::AnmManager::DrawMode7

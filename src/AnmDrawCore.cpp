@@ -71,6 +71,16 @@ struct AnmPhotoBlendDrawLocals
     f32 distance;
 };
 
+struct AnmProjectedPhotoBlendDrawLocals
+{
+    f32 distanceRange;
+    Float3 cameraDelta;
+    ZunResult result;
+    ZunColor color;
+    i32 i;
+    f32 distance;
+};
+
 extern AnmBackgroundViewportView *g_CurrentBackgroundViewport;
 extern AnmBackgroundStateDrawView *g_Background;
 extern Float3 g_BackgroundCameraPosition;
@@ -780,6 +790,83 @@ ZunResult AnmManager::DrawProjected3DQuad(AnmVm *vm)
     g_AnmTexturedVertices[0].w = g_AnmTexturedVertices[1].w =
         g_AnmTexturedVertices[2].w = g_AnmTexturedVertices[3].w = 1.0f;
     return result;
+}
+
+// FUNCTION: TH095 0x00440950.
+ZunResult AnmManager::DrawMode7(AnmVm *vm)
+{
+    this->Project3DQuad(vm);
+
+    D3DXVECTOR4 transformedVertices[4];
+    AnmProjectedPhotoBlendDrawLocals draw;
+
+    draw.distanceRange =
+        g_Background->photoBlendCurrent.nearDistance -
+        g_Background->photoBlendCurrent.farDistance;
+    draw.color.color = vm->flag15 ? vm->color2.color : vm->color1.color;
+
+    for (draw.i = 0; draw.i < 4; draw.i++)
+    {
+        D3DXVec4Transform(
+            &transformedVertices[draw.i],
+            reinterpret_cast<D3DXVECTOR4 *>(
+                &this->untexturedVertices[draw.i]),
+            &this->cachedWorldMatrix);
+        draw.cameraDelta.x =
+            transformedVertices[draw.i].x - g_BackgroundCameraPosition.x;
+        draw.cameraDelta.y =
+            transformedVertices[draw.i].y - g_BackgroundCameraPosition.y;
+        draw.cameraDelta.z =
+            transformedVertices[draw.i].z - g_BackgroundCameraPosition.z;
+        draw.distance = D3DXVec3Length(
+            reinterpret_cast<D3DXVECTOR3 *>(&draw.cameraDelta));
+
+        if (g_Background->photoBlendCurrent.nearDistance < draw.distance)
+        {
+            draw.distance =
+                (g_Background->photoBlendCurrent.nearDistance -
+                 draw.distance) / draw.distanceRange;
+            if (draw.distance >= 1.0f)
+            {
+                g_AnmTexturedVertices[draw.i].diffuse =
+                    g_Background->photoBlendCurrent.color.color;
+                reinterpret_cast<ZunColor *>(
+                    &g_AnmTexturedVertices[draw.i].diffuse)->a = draw.color.a;
+            }
+            else
+            {
+                reinterpret_cast<ZunColor *>(
+                    &g_AnmTexturedVertices[draw.i].diffuse)->b =
+                    draw.color.b -
+                    (u8)((draw.color.b -
+                          g_Background->photoBlendCurrent.color.b) *
+                         draw.distance);
+                reinterpret_cast<ZunColor *>(
+                    &g_AnmTexturedVertices[draw.i].diffuse)->g =
+                    draw.color.g -
+                    (u8)((draw.color.g -
+                          g_Background->photoBlendCurrent.color.g) *
+                         draw.distance);
+                reinterpret_cast<ZunColor *>(
+                    &g_AnmTexturedVertices[draw.i].diffuse)->r =
+                    draw.color.r -
+                    (u8)((draw.color.r -
+                          g_Background->photoBlendCurrent.color.r) *
+                         draw.distance);
+                reinterpret_cast<ZunColor *>(
+                    &g_AnmTexturedVertices[draw.i].diffuse)->a = draw.color.a;
+            }
+        }
+        else
+        {
+            g_AnmTexturedVertices[draw.i].diffuse = draw.color.color;
+        }
+    }
+
+    draw.result = this->DrawInner(vm, 2);
+    g_AnmTexturedVertices[0].w = g_AnmTexturedVertices[1].w =
+        g_AnmTexturedVertices[2].w = g_AnmTexturedVertices[3].w = 1.0f;
+    return draw.result;
 }
 
 // FUNCTION: TH095 0x0043F3C0.

@@ -539,7 +539,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00440120,authored,AnmManager,authored,exact,anm-camera-facing-photo-blend-exact-2026-08-30
 0x00440440,authored,AnmManager,authored,exact,anm-projected-3d-exact-2026-08-30
 0x004408F0,authored,AnmManager,authored,exact,anm-projected-3d-exact-2026-08-30
-0x00440950,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00440950,authored,AnmManager,authored,exact,anm-projected-photo-blend-exact-2026-08-30
 0x00440C10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004411D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00441330,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
