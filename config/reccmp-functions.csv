@@ -1,5 +1,5 @@
 name,address,type
-th095::PhotoBulletManagerView::OnUpdate,0x00405120,function
+th095::PhotoBulletManagerView::Update,0x00405120,function
 th095::AnmVm::Initialize,0x00401C10,function
 th095::PhotoEnemyEclManagerView::Load,0x00408CE0,function
 th095::PhotoEnemyEclManagerView::InitializeContext,0x00408DE0,function
@@ -355,3 +355,18 @@ th095::PhotoCardInfoView::Update,0x004089F0,function
 th095::PhotoCardInfoView::Draw,0x00408C50,function
 th095::PhotoCardInfoView::OnUpdate,0x00408C60,function
 th095::PhotoCardInfoView::OnDraw,0x00408CB0,function
+th095::AnmLoaded::InitializeVm,0x00404B80,function
+th095::GetPhotoBulletScriptBase,0x00404C60,function
+th095::PhotoBulletManagerView::PhotoBulletManagerView,0x00404C80,function
+th095::PhotoBulletView::PhotoBulletView,0x00404D00,function
+th095::PhotoBulletView::~PhotoBulletView,0x00404DC0,function
+th095::PhotoBulletManagerView::Initialize,0x00404E00,function
+th095::LoadPhotoBulletAnm,0x00404E70,function
+th095::ReleasePhotoBulletAnm,0x00404EB0,function
+th095::PhotoBulletManagerView::~PhotoBulletManagerView,0x00404ED0,function
+th095::PhotoBulletManagerView::Create,0x00404F80,function
+th095::PhotoBulletManagerView::Destroy,0x004050C0,function
+th095::PhotoBulletManagerView::Draw,0x004058C0,function
+th095::PhotoBulletManagerView::DrawBucket,0x00405900,function
+th095::PhotoBulletManagerView::OnUpdate,0x004059C0,function
+th095::PhotoBulletManagerView::OnDraw,0x00405A00,function

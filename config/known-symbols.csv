@@ -128,3 +128,19 @@ address,name,module,confidence,evidence
 0x00408C50,th095::PhotoCardInfoView::Draw,PhotoCardInfo,exact,Canonical relocation-free 16-byte draw body
 0x00408C60,th095::PhotoCardInfoView::OnUpdate,PhotoCardInfo,exact,Canonical 72-byte calc callback with three relocations
 0x00408CB0,th095::PhotoCardInfoView::OnDraw,PhotoCardInfo,exact,Canonical 45-byte draw callback with two relocations
+0x00404B80,th095::AnmLoaded::InitializeVm,AnmManager,high,Exact-sized shared 29-caller VM initializer with both relocation targets
+0x00404C60,th095::GetPhotoBulletScriptBase,BulletManager,exact,Canonical 21-byte bullet script table accessor
+0x00404C80,th095::PhotoBulletManagerView::PhotoBulletManagerView,BulletManager,exact,Canonical 127-byte manager constructor with ten relocations
+0x00404D00,th095::PhotoBulletView::PhotoBulletView,BulletManager,exact,Canonical 185-byte bullet constructor with one relocation
+0x00404DC0,th095::PhotoBulletView::~PhotoBulletView,BulletManager,exact,Canonical 52-byte bullet destructor with one relocation
+0x00404E00,th095::PhotoBulletManagerView::Initialize,BulletManager,exact,Canonical 98-byte manager initializer with six relocations
+0x00404E70,th095::LoadPhotoBulletAnm,BulletManager,exact,Canonical 52-byte bullet ANM loader with six relocations
+0x00404EB0,th095::ReleasePhotoBulletAnm,BulletManager,exact,Canonical 20-byte bullet ANM release helper with two relocations
+0x00404ED0,th095::PhotoBulletManagerView::~PhotoBulletManagerView,BulletManager,exact,Canonical 167-byte manager destructor with fifteen relocations
+0x00404F80,th095::PhotoBulletManagerView::Create,BulletManager,exact,Canonical 316-byte manager factory with nineteen relocations
+0x004050C0,th095::PhotoBulletManagerView::Destroy,BulletManager,exact,Canonical 95-byte deleting wrapper with two relocations
+0x00405120,th095::PhotoBulletManagerView::Update,BulletManager,high,Complete exact-sized 1600-slot update reconstruction with all thirty relocation targets
+0x004058C0,th095::PhotoBulletManagerView::Draw,BulletManager,exact,Canonical 56-byte six-bucket draw dispatcher
+0x00405900,th095::PhotoBulletManagerView::DrawBucket,BulletManager,exact,Canonical 180-byte bucket traversal with four relocations
+0x004059C0,th095::PhotoBulletManagerView::OnUpdate,BulletManager,high,Exact-sized callback with a single commutative register-choice byte residual
+0x00405A00,th095::PhotoBulletManagerView::OnDraw,BulletManager,exact,Canonical 45-byte draw callback with two relocations

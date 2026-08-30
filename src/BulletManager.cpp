@@ -287,6 +287,8 @@ struct PhotoBulletView
     i16 color;                         // +0x658
     u8 trailingAlignment65A[2];
 
+    PhotoBulletView();
+    ~PhotoBulletView();
     void Deactivate();
     void AdvanceTransformProgram();
     i32 BeginDespawn();
@@ -324,11 +326,21 @@ struct PhotoBulletManagerView
     PhotoBulletVector capturePosition;    // +0x34
     PhotoBulletVector captureSize;        // +0x40
     PhotoBulletView bullets[0x641];      // +0x4c
-    u8 unknown27c5a8[8];
+    ChainElem *calcChain;                 // +0x27c5a8
+    ChainElem *drawChain;                 // +0x27c5ac
     PhotoBulletAnmLoadedView *anmSpawner; // +0x27c5b0
     i32 activeBulletCount;               // +0x27c5b4
 
+    PhotoBulletManagerView();
+    ~PhotoBulletManagerView();
+    i32 Initialize();
+    static PhotoBulletManagerView *__fastcall Create();
+    void Destroy();
+    i32 Update();
+    i32 Draw();
+    i32 DrawBucket(i32 bucketIndex);
     static i32 __fastcall OnUpdate(PhotoBulletManagerView *bulletManager);
+    static i32 __fastcall OnDraw(PhotoBulletManagerView *bulletManager);
     i32 SpawnSingleBullet(PhotoBulletSpawnDescriptor *descriptor,
                           i32 index1, i32 index2, f32 angleToPlayer);
     i32 SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor);
@@ -341,6 +353,11 @@ struct PhotoBulletManagerView
 
 typedef char PhotoBulletManagerBulletsAt4C[
     (offsetof(PhotoBulletManagerView, bullets) == 0x4c) ? 1 : -1];
+typedef char PhotoBulletManagerSizeIs27C5B8[
+    (sizeof(PhotoBulletManagerView) == 0x27c5b8) ? 1 : -1];
+typedef char PhotoBulletManagerChainsAt27C5A8[
+    (offsetof(PhotoBulletManagerView, calcChain) == 0x27c5a8 &&
+     offsetof(PhotoBulletManagerView, drawChain) == 0x27c5ac) ? 1 : -1];
 typedef char PhotoBulletManagerAnmAt27C5B0[
     (offsetof(PhotoBulletManagerView, anmSpawner) == 0x27c5b0) ? 1 : -1];
 typedef char PhotoBulletManagerCountAt27C5B4[
@@ -356,7 +373,8 @@ struct PhotoBulletGlobalStateView
         {
             u32 unknownFlag0 : 1;
             u32 blocksBulletUpdate : 1;
-            u32 unknownFlags2 : 7;
+            u32 suppressesBulletCallbacks : 1;
+            u32 unknownFlags3 : 6;
             u32 suppressesPhotoSound : 1;
             u32 photoCaptureInputMode : 1;
             u32 unknownFlags11 : 21;
@@ -371,7 +389,7 @@ struct PhotoBulletPlayerView
         PhotoBulletVector *position, PhotoBulletVector *size);
 };
 
-struct PhotoBulletAnmLoadedView
+struct PhotoBulletAnmLoadedView : AnmLoaded
 {
     void InitializeVm(AnmVm *vm, i32 scriptIndex);
     AnmVmId CreateVm(i32 scriptIndex, PhotoBulletVector *position);
@@ -393,6 +411,143 @@ extern i32 g_PhotoBulletDrawBucketIndices[];
 extern u32 g_PhotoBulletColors16[];
 extern u32 g_PhotoBulletColors8[];
 extern u32 g_PhotoBulletColors4[];
+
+Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
+
+// FUNCTION: TH095 0x00404C60.
+i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType)
+{
+    return g_PhotoBulletScriptBases[bulletType];
+}
+
+// FUNCTION: TH095 0x00404D00.
+PhotoBulletView::PhotoBulletView()
+{
+}
+
+// FUNCTION: TH095 0x00404DC0.
+PhotoBulletView::~PhotoBulletView()
+{
+}
+
+// FUNCTION: TH095 0x00404C80.
+PhotoBulletManagerView::PhotoBulletManagerView()
+{
+    utils::DebugPrint("@@initialize BulletInf\n");
+    memset(this, 0, sizeof(PhotoBulletManagerView));
+    g_PhotoBulletManager = this;
+}
+
+// FUNCTION: TH095 0x00404E00.
+i32 PhotoBulletManagerView::Initialize()
+{
+    this->anmSpawner = reinterpret_cast<PhotoBulletAnmLoadedView *>(
+        g_AnmManager->LoadAnm(6, "bullet.anm"));
+    if (this->anmSpawner == NULL)
+    {
+        g_GameErrorContext.Log(
+            "\x93\x47\x92\x65\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x8c\xa9\x82\xc2"
+            "\x82\xa9\x82\xe8\x82\xdc\x82\xb9"
+            "\x82\xf1\x81\x42\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x89\xf3\x82\xea"
+            "\x82\xc4\x82\xa2\x82\xdc\x82\xb7"
+            "\r\n");
+        return ZUN_ERROR;
+    }
+    this->bulletCursor = &this->bullets[0];
+    this->bullets[0x640].state = 5;
+    return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x00404E70.
+i32 LoadPhotoBulletAnm()
+{
+    if (g_AnmManager->LoadAnm(6, "bullet.anm") == NULL)
+    {
+        g_GameErrorContext.Log(
+            "\x93\x47\x92\x65\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x8c\xa9\x82\xc2"
+            "\x82\xa9\x82\xe8\x82\xdc\x82\xb9"
+            "\x82\xf1\x81\x42\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x89\xf3\x82\xea"
+            "\x82\xc4\x82\xa2\x82\xdc\x82\xb7"
+            "\r\n");
+        return ZUN_ERROR;
+    }
+    return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x00404EB0.
+i32 ReleasePhotoBulletAnm()
+{
+    g_AnmManager->ReleaseAnm(6);
+    return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x00404ED0.
+PhotoBulletManagerView::~PhotoBulletManagerView()
+{
+    utils::DebugPrint("shitdown BulletInf\n");
+    g_Chain.Cut(this->calcChain);
+    g_Chain.Cut(this->drawChain);
+    g_AnmManager->MarkVmsForDeletion(
+        reinterpret_cast<AnmLoaded *>(this->anmSpawner));
+    g_PhotoBulletManager = NULL;
+}
+
+// FUNCTION: TH095 0x00404F80.
+PhotoBulletManagerView *__fastcall PhotoBulletManagerView::Create()
+{
+    struct
+    {
+        PhotoBulletManagerView *manager;
+        ChainElem *elem;
+    } locals;
+
+#define manager locals.manager
+#define elem locals.elem
+
+    manager = new PhotoBulletManagerView();
+    if (manager->Initialize() != ZUN_SUCCESS)
+    {
+        goto failure;
+    }
+
+    elem = g_Chain.CreateElem(
+        reinterpret_cast<ChainCallback>(PhotoBulletManagerView::OnUpdate));
+    elem->arg = manager;
+    g_Chain.AddToCalcChain(elem, 0x0e);
+    manager->calcChain = elem;
+
+    elem = g_Chain.CreateElem(
+        reinterpret_cast<ChainCallback>(PhotoBulletManagerView::OnDraw));
+    elem->arg = manager;
+    g_Chain.AddToDrawChain(elem, 0x0e);
+    manager->drawChain = elem;
+    return manager;
+
+failure:
+    if (manager != NULL)
+    {
+        delete manager;
+        manager = NULL;
+    }
+#undef elem
+#undef manager
+    return NULL;
+}
+
+// FUNCTION: TH095 0x004050C0.
+void PhotoBulletManagerView::Destroy()
+{
+    PhotoBulletManagerView *manager = this;
+    if (manager != NULL)
+    {
+        delete manager;
+        manager = NULL;
+    }
+}
 
 #pragma var_order(speed, i, bullet, angle, transformFlags, this)
 // FUNCTION: TH095 0x00405A30; TH08 0x0042F5F0 is the adjacent source oracle.
@@ -1208,24 +1363,80 @@ i32 PhotoBulletManagerView::CountNearbyTargets(
     return score;
 }
 
+// FUNCTION: TH095 0x004058C0.
+i32 PhotoBulletManagerView::Draw()
+{
+    for (i32 bucketIndex = 0; bucketIndex < 6; ++bucketIndex)
+    {
+        this->DrawBucket(bucketIndex);
+    }
+    return 1;
+}
+
+// FUNCTION: TH095 0x00405900.
+i32 PhotoBulletManagerView::DrawBucket(i32 bucketIndex)
+{
+    PhotoBulletView *bullet = this->drawBucketHeads[bucketIndex];
+    while (bullet != NULL)
+    {
+        PhotoToScreen(
+            &bullet->vm.position,
+            reinterpret_cast<const Float3 *>(&bullet->position));
+        if (((bullet->vm.flagsWord >> 27) & 1) != 0)
+        {
+            f32 rotationZ =
+                AddNormalizeAngle(bullet->angle, 1.5707964f);
+            AnmVm *vm = &bullet->vm;
+            vm->rotation.z = rotationZ;
+            vm->flagsWord |= 4;
+        }
+        g_AnmManager->Draw(&bullet->vm);
+        bullet = bullet->nextInDrawBucket;
+    }
+    return 1;
+}
+
+// FUNCTION: TH095 0x004059C0.
 i32 __fastcall PhotoBulletManagerView::OnUpdate(
     PhotoBulletManagerView *bulletManager)
 {
-    PhotoBulletView *bullet = &bulletManager->bullets[0];
+    if ((g_PhotoBulletGlobalState->suppressesBulletCallbacks |
+         g_PhotoBulletGlobalState->unknownFlag0) != 0)
+    {
+        return 1;
+    }
+    return bulletManager->Update();
+}
 
-    bulletManager->drawBucketHeads[5] = NULL;
-    bulletManager->drawBucketHeads[4] = NULL;
-    bulletManager->drawBucketHeads[3] = NULL;
-    bulletManager->drawBucketHeads[2] = NULL;
-    bulletManager->drawBucketHeads[1] = NULL;
-    bulletManager->drawBucketHeads[0] = NULL;
-    bulletManager->drawBucketTails[5] = NULL;
-    bulletManager->drawBucketTails[4] = NULL;
-    bulletManager->drawBucketTails[3] = NULL;
-    bulletManager->drawBucketTails[2] = NULL;
-    bulletManager->drawBucketTails[1] = NULL;
-    bulletManager->drawBucketTails[0] = NULL;
-    bulletManager->activeBulletCount = 0;
+// FUNCTION: TH095 0x00405A00.
+i32 __fastcall PhotoBulletManagerView::OnDraw(
+    PhotoBulletManagerView *bulletManager)
+{
+    if (((g_PhotoBulletGlobalState->flags >> 2) & 1) != 0)
+    {
+        return 1;
+    }
+    return bulletManager->Draw();
+}
+
+// FUNCTION: TH095 0x00405120.
+i32 PhotoBulletManagerView::Update()
+{
+    PhotoBulletView *bullet = &this->bullets[0];
+
+    this->drawBucketHeads[5] = NULL;
+    this->drawBucketHeads[4] = NULL;
+    this->drawBucketHeads[3] = NULL;
+    this->drawBucketHeads[2] = NULL;
+    this->drawBucketHeads[1] = NULL;
+    this->drawBucketHeads[0] = NULL;
+    this->drawBucketTails[5] = NULL;
+    this->drawBucketTails[4] = NULL;
+    this->drawBucketTails[3] = NULL;
+    this->drawBucketTails[2] = NULL;
+    this->drawBucketTails[1] = NULL;
+    this->drawBucketTails[0] = NULL;
+    this->activeBulletCount = 0;
 
     for (i32 bulletIndex = 0;
          bulletIndex < 0x640;
@@ -1325,18 +1536,18 @@ i32 __fastcall PhotoBulletManagerView::OnUpdate(
         }
 
     enqueueBullet:
-        if (bulletManager->drawBucketHeads[bullet->drawBucketIndex] != NULL)
+        if (this->drawBucketHeads[bullet->drawBucketIndex] != NULL)
         {
-            bulletManager->drawBucketTails[bullet->drawBucketIndex]
+            this->drawBucketTails[bullet->drawBucketIndex]
                 ->nextInDrawBucket = bullet;
         }
         else
         {
-            bulletManager->drawBucketHeads[bullet->drawBucketIndex] = bullet;
+            this->drawBucketHeads[bullet->drawBucketIndex] = bullet;
         }
-        bulletManager->drawBucketTails[bullet->drawBucketIndex] = bullet;
+        this->drawBucketTails[bullet->drawBucketIndex] = bullet;
         bullet->nextInDrawBucket = NULL;
-        bulletManager->activeBulletCount++;
+        this->activeBulletCount++;
         bullet->stateTimer.Tick();
     }
     return 1;
