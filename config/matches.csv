@@ -343,3 +343,10 @@ address,name,size,status,match_percent,unit,evidence
 0x00425150,th095::Supervisor::ThreadClose,155,matching,100.00,main-thread-close,python3 scripts/build.py --unit main-thread-close && python3 scripts/compare-coff-function.py --unit main-thread-close --json
 0x00424980,th095::Supervisor::ScreenshotThread,126,matching,100.00,main-screenshot-thread,python3 scripts/build.py --unit main-screenshot-thread && python3 scripts/compare-coff-function.py --unit main-screenshot-thread --json
 0x00424A00,th095::Supervisor::TakeScreenshot,814,matching,100.00,main-take-screenshot,python3 scripts/build.py --unit main-take-screenshot && python3 scripts/compare-coff-function.py --unit main-take-screenshot --json
+0x004251F0,th095::Supervisor::LoadMusic,253,matching,100.00,main-load-music,python3 scripts/build.py --unit main-load-music && python3 scripts/compare-coff-function.py --unit main-load-music --json
+0x004252F0,th095::Supervisor::PlayMusic,145,matching,100.00,main-play-music,python3 scripts/build.py --unit main-play-music && python3 scripts/compare-coff-function.py --unit main-play-music --json
+0x00425390,th095::Supervisor::StopAudio,120,matching,100.00,main-stop-audio,python3 scripts/build.py --unit main-stop-audio && python3 scripts/compare-coff-function.py --unit main-stop-audio --json
+0x00425410,th095::Supervisor::FadeOutMusic,179,matching,100.00,main-fade-out-music,python3 scripts/build.py --unit main-fade-out-music && python3 scripts/compare-coff-function.py --unit main-fade-out-music --json
+0x004254D0,th095::Supervisor::EnableFog,76,matching,100.00,main-enable-fog,python3 scripts/build.py --unit main-enable-fog && python3 scripts/compare-coff-function.py --unit main-enable-fog --json
+0x00425520,th095::Supervisor::DisableFog,76,matching,100.00,main-disable-fog,python3 scripts/build.py --unit main-disable-fog && python3 scripts/compare-coff-function.py --unit main-disable-fog --json
+0x00425570,th095::Supervisor::SetRenderState,53,matching,100.00,main-set-render-state,python3 scripts/build.py --unit main-set-render-state && python3 scripts/compare-coff-function.py --unit main-set-render-state --json

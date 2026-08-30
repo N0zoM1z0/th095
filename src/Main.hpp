@@ -140,7 +140,11 @@ typedef char GameConfigurationSizeIsC8[(sizeof(GameConfiguration) == 0xc8) ? 1 :
 
 struct MidiOutput
 {
+    i32 ReadFileData(i32 slot, char *path);
     void StopPlayback();
+    i32 ParseFile(i32 index);
+    i32 Play();
+    i32 SetFadeOut(u32 milliseconds);
     void UnprepareHeader(LPMIDIHDR header);
     ~MidiOutput();
 };
@@ -278,7 +282,13 @@ struct Supervisor
     i32 StartReplayScan(void (__fastcall *callback)(void *), void *argument);
     void StopReplayScan();
     static void __fastcall StartupThread(Supervisor *s);
-    void DisableFog();
+    i32 LoadMusic(i32 preloadSlot, char *path);
+    i32 PlayMusic(i32 musicIndex, i32 unused);
+    i32 StopAudio();
+    i32 FadeOutMusic(f32 durationSeconds);
+    i32 EnableFog();
+    i32 DisableFog();
+    void SetRenderState(D3DRENDERSTATETYPE state, i32 value);
     void ThreadClose();
     i32 TakeScreenshot(char *path);
     static void __fastcall ScreenshotThread(void *unused);

@@ -429,3 +429,10 @@ th095::DummyMidiTimer::~DummyMidiTimer
 th095::Supervisor::ThreadClose
 th095::Supervisor::ScreenshotThread
 th095::Supervisor::TakeScreenshot
+th095::Supervisor::LoadMusic
+th095::Supervisor::PlayMusic
+th095::Supervisor::StopAudio
+th095::Supervisor::FadeOutMusic
+th095::Supervisor::EnableFog
+th095::Supervisor::DisableFog
+th095::Supervisor::SetRenderState

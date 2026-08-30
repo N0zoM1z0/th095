@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 344 canonical exact functions cover 133,039 authored bytes.
+- Reconstruction: 351 canonical exact functions cover 133,941 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 49.54% (133,039 / 268,531)
+  relocations. Confirmed authored-byte coverage is now 49.71% (133,941 / 269,433)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 431 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,391 origin/boundary reviews pending. Original class
+  current ledger confirms 438 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,384 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -642,9 +642,19 @@ X8R8G8B8 backbuffer into a 24-bit BMP payload, and launches the CRT worker.
 `ScreenshotThread @ 0x00424980` contributes 126 bytes and 14 relocations: it
 writes the packed file/info headers and `0xE1000` pixels, frees both capture
 owners, and clears the worker field. Exact addends close the complete
-`+0x528..+0x647` screenshot state. Resume the remaining Main inventory at
-`0x004251F0` and preserve every established Main, Background, ECL, ANM,
-photography, and ASCII exact unit while the shared headers change.
+`+0x528..+0x647` screenshot state.
+
+The adjacent Supervisor music and render-state router is also canonical exact.
+`LoadMusic`, `PlayMusic`, `StopAudio`, and `FadeOutMusic @
+0x004251F0..0x004254C2` contribute 697 bytes and 50 relocations, establish MIDI
+mode 2 versus streamed-WAV mode 1, and replay the SoundPlayer load/play/stop/
+release/fade command protocol. WAV fades compensate for game speed in the
+target's `(0, 1]` interval. `EnableFog`, `DisableFog`, and `SetRenderState @
+0x004254D0..0x004255A4` add 205 bytes and six relocations and prove that pending
+ANM vertices are flushed before D3D state changes. Resume the remaining Main
+inventory at `SetupLoadingVms @ 0x00425660` and preserve every established Main,
+Background, ECL, ANM, photography, and ASCII exact unit while shared headers
+change.
 
 ## Closed lanes and preservation constraints
 

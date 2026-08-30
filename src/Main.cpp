@@ -2051,3 +2051,141 @@ i32 Supervisor::LoadConfig(char *configFile)
 #undef bgmHandle
 #undef bytesRead
 #undef bgmBuffer
+
+// FUNCTION: TH095 0x004251F0.
+i32 Supervisor::LoadMusic(i32 preloadSlot, char *path)
+{
+    struct LoadMusicLocals
+    {
+        char wavPath[MAX_PATH];
+        char *extension;
+    } locals;
+
+#define wavPath locals.wavPath
+#define extension locals.extension
+
+    if (g_Supervisor.config.musicMode == 2)
+    {
+        if (g_Supervisor.midiOutput != NULL)
+            g_Supervisor.midiOutput->ReadFileData(preloadSlot, path);
+        return 0;
+    }
+    else if (g_Supervisor.config.musicMode == 1)
+    {
+        strcpy(wavPath, path);
+        extension = strrchr(wavPath, '.');
+        extension[1] = 'w';
+        extension[2] = 'a';
+        extension[3] = 'v';
+        g_SoundPlayer.QueueCommand(1, preloadSlot, wavPath);
+    }
+#undef wavPath
+#undef extension
+    return 1;
+}
+
+// FUNCTION: TH095 0x004252F0.
+i32 Supervisor::PlayMusic(i32 musicIndex, i32 unused)
+{
+    MidiOutput *midiOutput;
+
+    if (g_Supervisor.config.musicMode == 2)
+    {
+        if (g_Supervisor.midiOutput != NULL)
+        {
+            midiOutput = g_Supervisor.midiOutput;
+            midiOutput->StopPlayback();
+            midiOutput->ParseFile(musicIndex);
+            midiOutput->Play();
+        }
+        return 0;
+    }
+    else if (g_Supervisor.config.musicMode == 1)
+    {
+        if (g_Supervisor.config.options.preloadMusic)
+            g_SoundPlayer.QueueCommand(4, 0, "dummy");
+        g_SoundPlayer.QueueCommand(2, musicIndex, "dummy");
+    }
+    return 0;
+}
+
+// FUNCTION: TH095 0x00425390.
+i32 Supervisor::StopAudio()
+{
+    if (g_Supervisor.config.musicMode == 2)
+    {
+        if (g_Supervisor.midiOutput != NULL)
+            g_Supervisor.midiOutput->StopPlayback();
+    }
+    else if (g_Supervisor.config.musicMode == 1)
+    {
+        if (g_Supervisor.config.options.preloadMusic)
+            g_SoundPlayer.QueueCommand(4, 0, "dummy");
+        else
+            g_SoundPlayer.QueueCommand(3, 0, "dummy");
+    }
+    else
+    {
+        return -1;
+    }
+    return 0;
+}
+
+// FUNCTION: TH095 0x00425410.
+i32 Supervisor::FadeOutMusic(f32 durationSeconds)
+{
+    f32 fadeTime;
+
+    if (g_Supervisor.config.musicMode == 2)
+    {
+        if (g_Supervisor.midiOutput != NULL)
+            g_Supervisor.midiOutput->SetFadeOut(
+                (u32)(1000.0f * durationSeconds));
+    }
+    else if (g_Supervisor.config.musicMode == 1)
+    {
+        if (g_AnmGameSpeed == 0.0f)
+            fadeTime = durationSeconds;
+        else if (g_AnmGameSpeed > 1.0f)
+            fadeTime = durationSeconds;
+        else
+            fadeTime = durationSeconds / g_AnmGameSpeed;
+        g_SoundPlayer.QueueCommand(5, (i32)fadeTime, "");
+    }
+    else
+    {
+        return -1;
+    }
+    return 0;
+}
+
+// FUNCTION: TH095 0x004254D0.
+i32 Supervisor::EnableFog()
+{
+    if (this->fogState != 1)
+    {
+        g_AnmManager->FlushVertexBuffer();
+        this->fogState = 1;
+        return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
+    }
+    return 0;
+}
+
+// FUNCTION: TH095 0x00425520.
+i32 Supervisor::DisableFog()
+{
+    if (this->fogState != 0)
+    {
+        g_AnmManager->FlushVertexBuffer();
+        this->fogState = 0;
+        return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
+    }
+    return 0;
+}
+
+// FUNCTION: TH095 0x00425570.
+void Supervisor::SetRenderState(D3DRENDERSTATETYPE state, i32 value)
+{
+    g_AnmManager->FlushVertexBuffer();
+    this->d3dDevice->SetRenderState(state, value);
+}

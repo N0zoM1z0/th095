@@ -434,7 +434,7 @@ target = 0x004C4670
 [[units.main-render.relocations]]
 offset = 0x135
 type = "REL32"
-symbol = "?DisableFog@Supervisor@th095@@QAEXXZ"
+symbol = "?DisableFog@Supervisor@th095@@QAEHXZ"
 target = 0x00425520
 
 [[units.main-render.relocations]]
@@ -6017,6 +6017,139 @@ target_address = 0x00425890
 size = 0x3E
 relocations = [
   { offset = 0x34, type = "DIR32", symbol = "__imp__InitializeCriticalSection@4", target = 0x004950AC },
+]
+
+[units.main-load-music]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::LoadMusic"]
+symbol = "?LoadMusic@Supervisor@th095@@QAEHHPAD@Z"
+target_address = 0x004251F0
+size = 0xFD
+relocations = [
+  { offset = 0x12, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1C9 },
+  { offset = 0x1D, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x438 },
+  { offset = 0x2E, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x438 },
+  { offset = 0x33, type = "REL32", symbol = "?ReadFileData@MidiOutput@th095@@QAEHHPAD@Z", target = 0x004221B0 },
+  { offset = 0x41, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1C9 },
+  { offset = 0xBC, type = "REL32", symbol = "_strrchr", target = 0x00485A70 },
+  { offset = 0xE9, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3USoundPlayer@1@A", target = 0x004C4EE8 },
+  { offset = 0xEE, type = "REL32", symbol = "?QueueCommand@SoundPlayer@th095@@QAEXHHPAD@Z", target = 0x00439CF0 },
+]
+
+[units.main-play-music]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::PlayMusic"]
+symbol = "?PlayMusic@Supervisor@th095@@QAEHHH@Z"
+target_address = 0x004252F0
+size = 0x91
+relocations = [
+  { offset = 0xC, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1C9 },
+  { offset = 0x17, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x438 },
+  { offset = 0x20, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x438 },
+  { offset = 0x2B, type = "REL32", symbol = "?StopPlayback@MidiOutput@th095@@QAEXXZ", target = 0x00422660 },
+  { offset = 0x37, type = "REL32", symbol = "?ParseFile@MidiOutput@th095@@QAEHH@Z", target = 0x00422300 },
+  { offset = 0x3F, type = "REL32", symbol = "?Play@MidiOutput@th095@@QAEHXZ", target = 0x00422600 },
+  { offset = 0x4A, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1C9 },
+  { offset = 0x55, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1E0 },
+  { offset = 0x62, type = "DIR32", symbol = "??_C@_05JLNEMJLN@dummy?$AA@", target = 0x004960B8 },
+  { offset = 0x6B, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3USoundPlayer@1@A", target = 0x004C4EE8 },
+  { offset = 0x70, type = "REL32", symbol = "?QueueCommand@SoundPlayer@th095@@QAEXHHPAD@Z", target = 0x00439CF0 },
+  { offset = 0x75, type = "DIR32", symbol = "??_C@_05JLNEMJLN@dummy?$AA@", target = 0x004960B8 },
+  { offset = 0x80, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3USoundPlayer@1@A", target = 0x004C4EE8 },
+  { offset = 0x85, type = "REL32", symbol = "?QueueCommand@SoundPlayer@th095@@QAEXHHPAD@Z", target = 0x00439CF0 },
+]
+
+[units.main-stop-audio]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::StopAudio"]
+symbol = "?StopAudio@Supervisor@th095@@QAEHXZ"
+target_address = 0x00425390
+size = 0x78
+relocations = [
+  { offset = 0xA, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1C9 },
+  { offset = 0x15, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x438 },
+  { offset = 0x1E, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x438 },
+  { offset = 0x23, type = "REL32", symbol = "?StopPlayback@MidiOutput@th095@@QAEXXZ", target = 0x00422660 },
+  { offset = 0x2C, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1C9 },
+  { offset = 0x37, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1E0 },
+  { offset = 0x44, type = "DIR32", symbol = "??_C@_05JLNEMJLN@dummy?$AA@", target = 0x004960B8 },
+  { offset = 0x4D, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3USoundPlayer@1@A", target = 0x004C4EE8 },
+  { offset = 0x52, type = "REL32", symbol = "?QueueCommand@SoundPlayer@th095@@QAEXHHPAD@Z", target = 0x00439CF0 },
+  { offset = 0x59, type = "DIR32", symbol = "??_C@_05JLNEMJLN@dummy?$AA@", target = 0x004960B8 },
+  { offset = 0x62, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3USoundPlayer@1@A", target = 0x004C4EE8 },
+  { offset = 0x67, type = "REL32", symbol = "?QueueCommand@SoundPlayer@th095@@QAEXHHPAD@Z", target = 0x00439CF0 },
+]
+
+[units.main-fade-out-music]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::FadeOutMusic"]
+symbol = "?FadeOutMusic@Supervisor@th095@@QAEHM@Z"
+target_address = 0x00425410
+size = 0xB3
+relocations = [
+  { offset = 0xC, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1C9 },
+  { offset = 0x17, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x438 },
+  { offset = 0x20, type = "DIR32", symbol = "__real@447a0000", target = 0x0049636C },
+  { offset = 0x28, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x2F, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x438 },
+  { offset = 0x34, type = "REL32", symbol = "?SetFadeOut@MidiOutput@th095@@QAEHI@Z", target = 0x004227B0 },
+  { offset = 0x3D, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1C9 },
+  { offset = 0x48, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x4E, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x65, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x6B, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x83, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x8B, type = "DIR32", symbol = "??_C@_00CNPNBAHC@?$AA@", target = 0x0049636B },
+  { offset = 0x93, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0x9B, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3USoundPlayer@1@A", target = 0x004C4EE8 },
+  { offset = 0xA0, type = "REL32", symbol = "?QueueCommand@SoundPlayer@th095@@QAEXHHPAD@Z", target = 0x00439CF0 },
+]
+
+[units.main-enable-fog]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::EnableFog"]
+symbol = "?EnableFog@Supervisor@th095@@QAEHXZ"
+target_address = 0x004254D0
+size = 0x4C
+relocations = [
+  { offset = 0x15, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x1A, type = "REL32", symbol = "?FlushVertexBuffer@AnmManager@th095@@QAEXXZ", target = 0x0043F2F0 },
+]
+
+[units.main-disable-fog]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::DisableFog"]
+symbol = "?DisableFog@Supervisor@th095@@QAEHXZ"
+target_address = 0x00425520
+size = 0x4C
+relocations = [
+  { offset = 0x15, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x1A, type = "REL32", symbol = "?FlushVertexBuffer@AnmManager@th095@@QAEXXZ", target = 0x0043F2F0 },
+]
+
+[units.main-set-render-state]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::SetRenderState"]
+symbol = "?SetRenderState@Supervisor@th095@@QAEXW4_D3DRENDERSTATETYPE@@H@Z"
+target_address = 0x00425570
+size = 0x35
+relocations = [
+  { offset = 0x9, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0xE, type = "REL32", symbol = "?FlushVertexBuffer@AnmManager@th095@@QAEXXZ", target = 0x0043F2F0 },
 ]
 
 [units.main-delete-critical-sections]

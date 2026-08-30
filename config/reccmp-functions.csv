@@ -430,3 +430,10 @@ th095::DummyMidiTimer::~DummyMidiTimer,0x00424700,function
 th095::Supervisor::ThreadClose,0x00425150,function
 th095::Supervisor::ScreenshotThread,0x00424980,function
 th095::Supervisor::TakeScreenshot,0x00424A00,function
+th095::Supervisor::LoadMusic,0x004251F0,function
+th095::Supervisor::PlayMusic,0x004252F0,function
+th095::Supervisor::StopAudio,0x00425390,function
+th095::Supervisor::FadeOutMusic,0x00425410,function
+th095::Supervisor::EnableFog,0x004254D0,function
+th095::Supervisor::DisableFog,0x00425520,function
+th095::Supervisor::SetRenderState,0x00425570,function
