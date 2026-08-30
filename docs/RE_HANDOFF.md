@@ -434,10 +434,14 @@ at `+0x48`, and virtual update/cleanup ownership. The original shared-tail
 source shape is required for the first deletion branch.
 
 Next stay in this high-connectivity cluster and reconstruct the factory at
-`0x0041DBD0`, then the collision/draw fanout helpers around
-`0x0041DAB0..0x0041E0BA` and the concrete effect methods through
-`0x004200F6`. Keep all six PhotoEffect exact units, all PlayerInf exact units,
-the exact outer PhotoGame coordinator, and every established
+`0x0041DBD0`, then the concrete effect methods through `0x004200F6`. The
+primary/secondary draw traversals, three collision fanouts, and gated
+update/draw callbacks at `0x0041DAB0..0x0041E0BA` are now canonical exact for
+all 668 authored bytes. The collision entries prove vtable slots
+`+0x14/+0x18/+0x1C` and cached manager bounds `+0x5C/+0x68`; the callbacks
+prove the global suppression/freeze gates. Keep all thirteen PhotoEffect exact
+units, all PlayerInf exact units, the exact outer PhotoGame coordinator, and
+every established
 `PhotoCamera.cpp` unit green while extending shared views.
 
 The large photo functions remain source-present but non-exact:

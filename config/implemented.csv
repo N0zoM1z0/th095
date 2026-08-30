@@ -267,3 +267,10 @@ th095::PhotoRotatingLaserView::Initialize
 th095::PhotoRotatingLaserView::Draw
 th095::PhotoEffectManagerView::Update
 th095::PhotoEffectManagerView::Remove
+th095::PhotoEffectManagerView::Draw
+th095::PhotoEffectManagerView::OnUpdate
+th095::PhotoEffectManagerView::OnDraw
+th095::PhotoEffectManagerView::CheckCollisionA
+th095::PhotoEffectManagerView::CheckCollisionStored
+th095::PhotoEffectManagerView::DrawSecondary
+th095::PhotoEffectManagerView::CheckCollisionB

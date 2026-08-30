@@ -43,10 +43,11 @@ struct PhotoEffectBaseView
 {
     virtual i32 Initialize(void *args) = 0;
     virtual i32 Update() = 0;
-    virtual void Unknown08() = 0;
-    virtual void Cleanup() = 0;
     virtual i32 Draw() = 0;
-    virtual void Unknown14() = 0;
+    virtual void Cleanup() = 0;
+    virtual i32 DrawSecondary() = 0;
+    virtual i32 CheckCollisionA(
+        Float3 *position, Float3 *size, i32 capture) = 0;
     virtual i32 CheckCollision(
         Float3 *position, Float3 *size, i32 capture) = 0;
     virtual i32 Unknown1C(Float3 *position, Float3 *size) = 0;
@@ -178,6 +179,31 @@ struct PhotoEffectManagerResourcesView
 
 extern PhotoEffectManagerResourcesView *g_PhotoEffectManager;
 
+struct PhotoEffectGlobalStateView
+{
+    u8 unknown000[0xfc];
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlag0 : 1;
+            u32 freezeEffects : 1;
+            u32 suppressEffects : 1;
+            u32 unknownFlags3 : 7;
+            u32 blockEffectUpdate : 1;
+            u32 unknownFlags11 : 21;
+        };
+    };
+};
+
+extern PhotoEffectGlobalStateView *g_PhotoGlobalState;
+
+static inline i32 PhotoEffectEitherFlag(i32 first, i32 second)
+{
+    return first | second;
+}
+
 extern i32 __fastcall GetPhotoEffectScriptBase(i32 type);
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -196,6 +222,14 @@ struct PhotoEffectManagerView
 
     void Remove(PhotoEffectBaseView *effect);
     static i32 __fastcall Update(PhotoEffectManagerView *manager);
+    static i32 __fastcall Draw(PhotoEffectManagerView *manager);
+    static i32 __fastcall OnUpdate(PhotoEffectManagerView *manager);
+    static i32 __fastcall OnDraw(PhotoEffectManagerView *manager);
+    i32 CheckCollisionA(Float3 *position, Float3 *size);
+    static i32 __fastcall CheckCollisionStored(
+        PhotoEffectManagerView *manager);
+    static i32 __fastcall DrawSecondary(PhotoEffectManagerView *manager);
+    i32 CheckCollisionB(Float3 *position, Float3 *size);
 };
 
 typedef char PhotoEffectManagerSizeIs80[
@@ -567,6 +601,131 @@ i32 __fastcall PhotoEffectManagerView::Update(
         effect = next;
     }
     return 1;
+}
+
+i32 __fastcall PhotoEffectManagerView::Draw(
+    PhotoEffectManagerView *manager)
+{
+    PhotoEffectBaseView *effect = manager->first;
+    while (effect != NULL)
+    {
+        PhotoEffectBaseView *next = effect->next;
+        if (effect->state != 1)
+        {
+            effect->Draw();
+        }
+        effect = next;
+    }
+    return 1;
+}
+
+i32 __fastcall PhotoEffectManagerView::OnUpdate(
+    PhotoEffectManagerView *manager)
+{
+    if (PhotoEffectEitherFlag(
+            g_PhotoGlobalState->unknownFlag0,
+            g_PhotoGlobalState->suppressEffects) != 0)
+    {
+        return 1;
+    }
+    if (g_PhotoGlobalState->blockEffectUpdate != 0)
+    {
+        return 1;
+    }
+    if (g_PhotoGlobalState->freezeEffects != 0)
+    {
+        f32 gameSpeed = g_GameSpeed;
+        g_GameSpeed = 0.0f;
+        i32 result = Update(manager);
+        g_GameSpeed = gameSpeed;
+        return result;
+    }
+    return Update(manager);
+}
+
+i32 __fastcall PhotoEffectManagerView::OnDraw(
+    PhotoEffectManagerView *manager)
+{
+    if (g_PhotoGlobalState->suppressEffects != 0)
+    {
+        return 1;
+    }
+    return Draw(manager);
+}
+
+i32 PhotoEffectManagerView::CheckCollisionA(
+    Float3 *position, Float3 *size)
+{
+    PhotoEffectBaseView *effect = this->first;
+    i32 count = 0;
+    this->collisionPosition =
+        *reinterpret_cast<PhotoEffectVector *>(position);
+    this->collisionSize =
+        *reinterpret_cast<PhotoEffectVector *>(size);
+
+    while (effect != NULL)
+    {
+        PhotoEffectBaseView *next = effect->next;
+        if (effect->state != 1)
+        {
+            count += effect->CheckCollisionA(position, size, 1);
+        }
+        effect = next;
+    }
+    return count;
+}
+
+i32 __fastcall PhotoEffectManagerView::CheckCollisionStored(
+    PhotoEffectManagerView *manager)
+{
+    PhotoEffectBaseView *effect = manager->first;
+    i32 count = 0;
+    while (effect != NULL)
+    {
+        PhotoEffectBaseView *next = effect->next;
+        if (effect->state != 1)
+        {
+            count += effect->CheckCollision(
+                reinterpret_cast<Float3 *>(&manager->collisionPosition),
+                reinterpret_cast<Float3 *>(&manager->collisionSize),
+                1);
+        }
+        effect = next;
+    }
+    return count;
+}
+
+i32 __fastcall PhotoEffectManagerView::DrawSecondary(
+    PhotoEffectManagerView *manager)
+{
+    PhotoEffectBaseView *effect = manager->first;
+    while (effect != NULL)
+    {
+        PhotoEffectBaseView *next = effect->next;
+        if (effect->state != 1)
+        {
+            effect->DrawSecondary();
+        }
+        effect = next;
+    }
+    return 1;
+}
+
+i32 PhotoEffectManagerView::CheckCollisionB(
+    Float3 *position, Float3 *size)
+{
+    PhotoEffectBaseView *effect = this->first;
+    i32 count = 0;
+    while (effect != NULL)
+    {
+        PhotoEffectBaseView *next = effect->next;
+        if (effect->state != 1)
+        {
+            count += effect->Unknown1C(position, size);
+        }
+        effect = next;
+    }
+    return count;
 }
 
 }
