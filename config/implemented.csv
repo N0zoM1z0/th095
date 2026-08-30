@@ -211,4 +211,6 @@ th095::EclOperands::ResolveFloatLValue
 th095::PhotoStageStateView::Update
 th095::UpdatePhotoStage
 th095::PhotoStageStateView::SavePhoto
+th095::PhotoStageDisplayView::Build
+th095::InitializePhotoStageDisplayVm
 th095::PhotoStageStateView::CapturePhotoPixels

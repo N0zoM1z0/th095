@@ -212,4 +212,6 @@ th095::Enemy::ResolveFloat,0x004105A0,function
 th095::PhotoStageStateView::Update,0x0042AD60,function
 th095::UpdatePhotoStage,0x0042C3E0,function
 th095::PhotoStageStateView::SavePhoto,0x0042C450,function
+th095::PhotoStageDisplayView::Build,0x0042C5C0,function
+th095::InitializePhotoStageDisplayVm,0x0042E730,function
 th095::PhotoStageStateView::CapturePhotoPixels,0x0042E7B0,function

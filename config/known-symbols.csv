@@ -95,4 +95,6 @@ address,name,module,confidence,evidence
 0x0042AD60,th095::PhotoStageStateView::Update,PhotoStage,high,Complete TH095 capture and stage-display state machine
 0x0042C3E0,th095::UpdatePhotoStage,PhotoStage,exact,Canonical photo-stage update-chain wrapper
 0x0042C450,th095::PhotoStageStateView::SavePhoto,PhotoStage,exact,Canonical capture-state initializer and display dispatch
+0x0042C5C0,th095::PhotoStageDisplayView::Build,PhotoStage,high,Complete TH095 flag-driven photograph HUD builder
+0x0042E730,th095::InitializePhotoStageDisplayVm,PhotoStage,exact,Canonical photo-HUD VM initializer
 0x0042E7B0,th095::PhotoStageStateView::CapturePhotoPixels,PhotoStage,exact,Canonical best-shot texture pixel copy

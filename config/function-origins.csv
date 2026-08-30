@@ -412,8 +412,8 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0042C3E0,authored,PhotoStage,authored,exact,vc71-photo-stage-update-callback-2026-08-30
 0x0042C410,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0042C450,authored,PhotoStage,authored,exact,vc71-photo-stage-save-photo-2026-08-30
-0x0042C5C0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0042E730,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0042C5C0,authored,PhotoStage,authored,high,photo-stage-display-build-semantic-2026-08-30
+0x0042E730,authored,PhotoStage,authored,exact,vc71-photo-stage-display-vm-2026-08-30
 0x0042E7B0,authored,PhotoStage,authored,exact,vc71-photo-stage-capture-pixels-2026-08-30
 0x0042EA70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0042EBC0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
