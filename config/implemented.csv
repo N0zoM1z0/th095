@@ -488,3 +488,11 @@ th095::AnmManager::DrawLayer6
 th095::AnmManager::DrawLayer7
 th095::AnmManager::DrawLayer8
 th095::AnmManagerUpdateView::UpdateVms
+th095::FrontEndLifecycleView::FrontEndLifecycleView
+th095::FrontEndLifecycleView::Initialize
+th095::FrontEndLifecycleView::LoadThread
+th095::FrontEndLifecycleView::LoadResources
+th095::FrontEndLifecycleView::~FrontEndLifecycleView
+th095::FrontEndLifecycleView::ReleaseResources
+th095::FrontEndLifecycleView::Create
+th095::FrontEndLifecycleView::Destroy

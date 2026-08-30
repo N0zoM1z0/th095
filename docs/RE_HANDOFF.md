@@ -408,6 +408,18 @@
 
 ## Next bounded lane
 
+The TH095-specific shared front-end ownership shell at
+`0x00445440..0x00445E3E` is now source-present. Seven canonical units contribute
+1,994 exact authored bytes and enforce all 95 relocations: the complete
+`0x6514` constructor, title/mission/sound initializer, capture-aware loading
+worker, ordered photo-resource loader, ANM release helper, allocator/Chain/
+worker `Create`, and deleting `Destroy`. Constructor code generation proves
+the timers at `+0x08/+0x14`, two primary cursors at `+0x20/+0xF8`, twelve
+scene cursors from `+0x1D0`, and nine sixteen-entry queues from `+0x6128`
+through `+0x6368`. The exact-sized 503-byte destructor is behavior-complete
+with all nineteen relocation destinations but retains compiler-local home
+differences, so it remains deliberately non-exact.
+
 The high-connectivity Supervisor frame and scene-routing spine is now canonical
 exact. `Supervisor::OnUpdate @ 0x00423440` contributes 400 authored bytes and
 enforces all 17 SoundPlayer, Controller, ANM, and scene-state relocations. It
@@ -466,10 +478,13 @@ render bucket under the target-local PhotoGameTask gates. Its natural VC7.1
 probe emits 356 bytes, leaving one two-byte branch-shape residual. `DrawLayer @
 0x00444C80` similarly emits 134 versus 136 bytes around the companion draw
 gate. Do not add inert locals or artificial branches to promote either probe.
-Keep the Supervisor render callback's constant-index residual and the five
-lifecycle compiler-local residuals deferred; the next lane should rerank the
-remaining unreviewed ANM neighborhood after `0x004453B0`, prioritizing shared
-texture/VM consumers over isolated leaves.
+Keep the Supervisor render callback's constant-index residual and the known
+lifecycle compiler-local residuals deferred. The next inventory-ranked target
+is the seven-caller ANM draw hub at `0x0043ECD0` (1,497 bytes, 23 referenced
+globals), together with its bounded `0x0043EC20` and `0x0043F3C0`
+dependencies. It sits underneath the already reconstructed background, text,
+mesh, and radial-trail callers and should unlock the surrounding unreviewed
+ANM draw neighborhood.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

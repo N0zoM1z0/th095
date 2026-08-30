@@ -172,3 +172,11 @@ address,name,module,confidence,evidence
 0x00444AB0,th095::AnmManager::DrawLayer7,AnmManager,exact,Canonical 33-byte viewport-selecting layer callback with three relocations
 0x00444AE0,th095::AnmManager::DrawLayer8,AnmManager,exact,Canonical 33-byte viewport-selecting layer callback with three relocations
 0x00444B10,th095::AnmManagerUpdateView::UpdateVms,AnmManager,high,Complete nine-layer VM execution deletion and draw-list rebuild with a two-byte compiler branch residual
+0x00445440,th095::FrontEndLifecycleView::FrontEndLifecycleView,FrontEndController,exact,Canonical full-size construction of timers cursors queues and singleton state
+0x004456F0,th095::FrontEndLifecycleView::Initialize,FrontEndController,exact,Canonical title ANM mission-message sound and photo-resource initialization
+0x00445980,th095::FrontEndLifecycleView::LoadThread,FrontEndController,exact,Canonical capture-aware asynchronous front-end loader
+0x00445A50,th095::FrontEndLifecycleView::LoadResources,FrontEndController,exact,Canonical ordered TH095 photo resource preload chain
+0x00445AA0,th095::FrontEndLifecycleView::~FrontEndLifecycleView,FrontEndController,high,Complete front-end replay chain message queue and preview-data cleanup
+0x00445CA0,th095::FrontEndLifecycleView::ReleaseResources,FrontEndController,exact,Canonical title ANM slot release helper
+0x00445CC0,th095::FrontEndLifecycleView::Create,FrontEndController,exact,Canonical controller allocation chain registration and worker startup
+0x00445DE0,th095::FrontEndLifecycleView::Destroy,FrontEndController,exact,Canonical front-end deleting wrapper

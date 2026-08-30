@@ -489,3 +489,11 @@ th095::AnmManager::DrawLayer6,0x00444A60,function
 th095::AnmManager::DrawLayer7,0x00444AB0,function
 th095::AnmManager::DrawLayer8,0x00444AE0,function
 th095::AnmManagerUpdateView::UpdateVms,0x00444B10,function
+th095::FrontEndLifecycleView::FrontEndLifecycleView,0x00445440,function
+th095::FrontEndLifecycleView::Initialize,0x004456F0,function
+th095::FrontEndLifecycleView::LoadThread,0x00445980,function
+th095::FrontEndLifecycleView::LoadResources,0x00445A50,function
+th095::FrontEndLifecycleView::~FrontEndLifecycleView,0x00445AA0,function
+th095::FrontEndLifecycleView::ReleaseResources,0x00445CA0,function
+th095::FrontEndLifecycleView::Create,0x00445CC0,function
+th095::FrontEndLifecycleView::Destroy,0x00445DE0,function
