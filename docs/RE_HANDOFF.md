@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 334 canonical exact functions cover 130,044 authored bytes.
+- Reconstruction: 337 canonical exact functions cover 130,910 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 49.21% (130,044 / 264,284)
+  relocations. Confirmed authored-byte coverage is now 49.37% (130,910 / 265,150)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 417 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,405 origin/boundary reviews pending. Original class
+  current ledger confirms 420 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,402 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -597,10 +597,14 @@ gates, and one-sample flag reset. Two adjacent functions are exact as well.
 `DrawLoadingVms` label: the priority-`0x1E` callback flushes ANM vertices and
 synchronizes `frameskipConfig + 1` into the FPS frame count through critical
 section 5. `Supervisor::InitializeInput @ 0x004238E0` clears and republishes
-keyboard/controller availability bits around `SetupDInput`. Continue with
-`Supervisor::SetupDInput @ 0x00423960` and its enumeration callbacks at
-`0x00423C20/0x00423C70`; preserve every established Main, Background, ECL,
-ANM, photography, and ASCII exact unit while the shared headers change.
+keyboard/controller availability bits around `SetupDInput`. The complete
+DirectInput cluster is now exact as well: `SetupDInput @ 0x00423960` plus its
+enumeration callbacks at `0x00423C20/0x00423C70` reproduce 866 bytes and 34
+relocations. They prove the `DIDEVCAPS` at `+0x18`, the first-attached-controller
+policy, and the `[-1000,1000]` axis range. Continue through the adjacent worker
+registration/release helpers at `0x00423CE0/0x00423D00` and the larger
+Supervisor lifecycle callbacks; preserve every established Main, Background,
+ECL, ANM, photography, and ASCII exact unit while the shared headers change.
 
 ## Closed lanes and preservation constraints
 

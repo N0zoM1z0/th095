@@ -415,3 +415,6 @@ th095::Supervisor::DrawFpsCounter
 th095::Supervisor::CalculateFps
 th095::Supervisor::FinalizeFrame
 th095::Supervisor::InitializeInput
+th095::Supervisor::SetupDInput
+th095::Supervisor::EnumGameControllersCb
+th095::Supervisor::ControllerCallback

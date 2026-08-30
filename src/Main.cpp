@@ -1171,6 +1171,137 @@ void Supervisor::InitializeInput()
     g_Supervisor.flags.controllerAvailable = g_Supervisor.controller != NULL;
 }
 
+// FUNCTION: TH095 0x00423960.
+i32 Supervisor::SetupDInput()
+{
+    HINSTANCE instance = (HINSTANCE)GetWindowLongA(this->gameWindow, GWL_HINSTANCE);
+
+    if (this->config.options.disableDirectInput != 0)
+    {
+        return -1;
+    }
+
+    if (DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8A,
+                           (void **)&this->directInput, NULL) < 0)
+    {
+        this->directInput = NULL;
+        g_GameErrorContext.Log("DirectInput \x82\xaa\x8e\x67\x97\x70\x82\xc5\x82\xab\x82\xdc\x82\xb9\x82\xf1\r\n");
+        return -1;
+    }
+
+    if (this->directInput->CreateDevice(GUID_SysKeyboard, &this->keyboard, NULL) < 0)
+    {
+        if (this->directInput != NULL)
+        {
+            this->directInput->Release();
+            this->directInput = NULL;
+        }
+        g_GameErrorContext.Log("DirectInput \x82\xaa\x8e\x67\x97\x70\x82\xc5\x82\xab\x82\xdc\x82\xb9\x82\xf1\r\n");
+        return -1;
+    }
+
+    if (this->keyboard->SetDataFormat(&c_dfDIKeyboard) < 0)
+    {
+        if (this->keyboard != NULL)
+        {
+            this->keyboard->Release();
+            this->keyboard = NULL;
+        }
+        if (this->directInput != NULL)
+        {
+            this->directInput->Release();
+            this->directInput = NULL;
+        }
+        g_GameErrorContext.Log(
+            "DirectInput SetDataFormat \x82\xaa\x8e\x67\x97\x70\x82\xc5\x82\xab\x82\xdc\x82\xb9\x82\xf1\r\n");
+        return -1;
+    }
+
+    if (this->keyboard->SetCooperativeLevel(
+            this->gameWindow, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY) < 0)
+    {
+        if (this->keyboard != NULL)
+        {
+            this->keyboard->Release();
+            this->keyboard = NULL;
+        }
+        if (this->directInput != NULL)
+        {
+            this->directInput->Release();
+            this->directInput = NULL;
+        }
+        g_GameErrorContext.Log(
+            "DirectInput SetCooperativeLevel \x82\xaa\x8e\x67\x97\x70\x82\xc5\x82\xab\x82\xdc\x82\xb9\x82\xf1\r\n");
+        return -1;
+    }
+
+    this->keyboard->Acquire();
+    g_GameErrorContext.Log(
+        "DirectInput \x82\xcd\x90\xb3\x8f\xed\x82\xc9\x8f\x89\x8a\xfa\x89\xbb\x82\xb3\x82\xea\x82\xdc\x82\xb5\x82\xbd\r\n");
+    this->directInput->EnumDevices(
+        DI8DEVCLASS_GAMECTRL, Supervisor::EnumGameControllersCb, NULL, DIEDFL_ATTACHEDONLY);
+
+    if (this->controller != NULL)
+    {
+        this->controller->SetDataFormat(&c_dfDIJoystick);
+        this->controller->SetCooperativeLevel(
+            this->gameWindow, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
+        g_Supervisor.controllerCaps.dwSize = sizeof(DIDEVCAPS);
+        this->controller->GetCapabilities(&g_Supervisor.controllerCaps);
+        this->controller->EnumObjects(Supervisor::ControllerCallback, NULL, 0);
+        g_GameErrorContext.Log(
+            "\x97\x4c\x8c\xf8\x82\xc8\x83\x70\x83\x62\x83\x68\x82\xf0\x94\xad\x8c\xa9\x82\xb5\x82\xdc\x82\xb5\x82\xbd\r\n");
+    }
+
+    return 0;
+}
+
+// FUNCTION: TH095 0x00423C20.
+BOOL CALLBACK Supervisor::EnumGameControllersCb(
+    LPCDIDEVICEINSTANCEA instance, LPVOID context)
+{
+    HRESULT result;
+
+    if (g_Supervisor.controller == NULL)
+    {
+        result = g_Supervisor.directInput->CreateDevice(
+            instance->guidInstance, &g_Supervisor.controller, NULL);
+        if (result < 0)
+        {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+// FUNCTION: TH095 0x00423C70.
+BOOL CALLBACK Supervisor::ControllerCallback(
+    LPCDIDEVICEOBJECTINSTANCEA object, LPVOID context)
+{
+    DIPROPRANGE range;
+    LPVOID callbackContext;
+
+    callbackContext = context;
+
+    if ((object->dwType & 3) != 0)
+    {
+        range.diph.dwSize = sizeof(DIPROPRANGE);
+        range.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+        range.diph.dwHow = DIPH_BYID;
+        range.diph.dwObj = object->dwType;
+        range.lMin = -1000;
+        range.lMax = 1000;
+
+        if (g_Supervisor.controller->SetProperty(DIPROP_RANGE, &range.diph) < 0)
+        {
+            return FALSE;
+        }
+    }
+
+    return TRUE;
+}
+
 void Supervisor::InitializeCriticalSections()
 {
     for (u32 i = 0; i < 7; i++)

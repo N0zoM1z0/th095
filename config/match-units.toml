@@ -5753,6 +5753,73 @@ relocations = [
   { offset = 0x77, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x444 },
 ]
 
+[units.main-setup-dinput]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::SetupDInput"]
+symbol = "?SetupDInput@Supervisor@th095@@QAEHXZ"
+target_address = 0x00423960
+size = 0x2B1
+relocations = [
+  { offset = 0x14, type = "DIR32", symbol = "__imp__GetWindowLongA@8", target = 0x004951DC },
+  { offset = 0x3E, type = "DIR32", symbol = "_IID_IDirectInput8A", target = 0x0049BA20 },
+  { offset = 0x4C, type = "REL32", symbol = "_DirectInput8Create@20", target = 0x004583D0 },
+  { offset = 0x5F, type = "DIR32", symbol = "??_C@_0BP@IKPEELGB@DirectInput?5?$IC?$KK?$IOg?$JHp?$IC?E?$IC?$KL?$IC?$NM?$IC?$LJ?$IC?q?$AN?6?$AA@", target = 0x00495EDC },
+  { offset = 0x64, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x69, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x82, type = "DIR32", symbol = "_GUID_SysKeyboard", target = 0x0049B980 },
+  { offset = 0xC2, type = "DIR32", symbol = "??_C@_0BP@IKPEELGB@DirectInput?5?$IC?$KK?$IOg?$JHp?$IC?E?$IC?$KL?$IC?$NM?$IC?$LJ?$IC?q?$AN?6?$AA@", target = 0x00495EDC },
+  { offset = 0xC7, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0xCC, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0xDC, type = "DIR32", symbol = "_c_dfDIKeyboard", target = 0x004980F4 },
+  { offset = 0x141, type = "DIR32", symbol = "??_C@_0CN@IIPBJOOG@DirectInput?5SetDataFormat?5?$IC?$KK?$IOg?$JHp@", target = 0x00495EAC },
+  { offset = 0x146, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x14B, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x1C4, type = "DIR32", symbol = "??_C@_0DD@HOPPMMBG@DirectInput?5SetCooperativeLevel?5@", target = 0x00495E78 },
+  { offset = 0x1C9, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x1CE, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x1F0, type = "DIR32", symbol = "??_C@_0CH@HPJOGPFH@DirectInput?5?$IC?M?$JA?$LD?$IP?m?$IC?I?$IP?$IJ?$IK?z?$IJ?$LL?$IC?$LD?$IC?j?$IC?$NM@", target = 0x00495E50 },
+  { offset = 0x1F5, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x1FA, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x206, type = "DIR32", symbol = "?EnumGameControllersCb@Supervisor@th095@@SGHPBUDIDEVICEINSTANCEA@@PAX@Z", target = 0x00423C20 },
+  { offset = 0x22C, type = "DIR32", symbol = "_c_dfDIJoystick", target = 0x00497EEC },
+  { offset = 0x25F, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4674, addend = 0x18 },
+  { offset = 0x268, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4674, addend = 0x18 },
+  { offset = 0x283, type = "DIR32", symbol = "?ControllerCallback@Supervisor@th095@@SGHPBUDIDEVICEOBJECTINSTANCEA@@PAX@Z", target = 0x00423C70 },
+  { offset = 0x29A, type = "DIR32", symbol = "??_C@_0BN@DBPJGDJM@?$JHL?$IM?x?$IC?H?$IDp?$IDb?$IDh?$IC?p?$JE?$KN?$IM?$KJ?$IC?$LF?$IC?$NM?$IC?$LF?$IC?$LN?$AN?6?$AA@", target = 0x00495E30 },
+  { offset = 0x29F, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x2A4, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+]
+
+[units.main-enum-game-controllers]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::EnumGameControllersCb"]
+symbol = "?EnumGameControllersCb@Supervisor@th095@@SGHPBUDIDEVICEINSTANCEA@@PAX@Z"
+target_address = 0x00423C20
+size = 0x44
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x14 },
+  { offset = 0x10, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x14 },
+  { offset = 0x1D, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x0C },
+  { offset = 0x24, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x0C },
+]
+
+[units.main-controller-callback]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::ControllerCallback"]
+symbol = "?ControllerCallback@Supervisor@th095@@SGHPBUDIDEVICEOBJECTINSTANCEA@@PAX@Z"
+target_address = 0x00423C70
+size = 0x6D
+relocations = [
+  { offset = 0x4A, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x14 },
+  { offset = 0x52, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x14 },
+]
+
 [units.main-initialize-critical-sections]
 source = "src/Main.cpp"
 object = "build/matching/Main.obj"

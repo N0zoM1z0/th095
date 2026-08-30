@@ -2,9 +2,11 @@
 #define TH095_MAIN_HPP
 
 #define _WIN32_WINNT 0x0500
+#define DIRECTINPUT_VERSION 0x0800
 
 #include <d3d8.h>
 #include <d3dx8.h>
+#include <dinput.h>
 #include <windows.h>
 
 #include <stddef.h>
@@ -177,10 +179,11 @@ struct Supervisor
     HINSTANCE instance;                         // +0x000
     IDirect3D8 *d3dInterface;                   // +0x004
     IDirect3DDevice8 *d3dDevice;                // +0x008
-    void *directInput;                          // +0x00c
-    void *keyboard;                             // +0x010
-    void *controller;                           // +0x014
-    u8 unknown018[0x30];
+    IDirectInput8A *directInput;                // +0x00c
+    IDirectInputDevice8A *keyboard;             // +0x010
+    IDirectInputDevice8A *controller;           // +0x014
+    DIDEVCAPS controllerCaps;                    // +0x018
+    u8 unknown044[4];
     HWND gameWindow;                            // +0x048
     D3DXMATRIX viewMatrix;                      // +0x04c
     D3DXMATRIX projectionMatrix;                // +0x08c
@@ -239,6 +242,8 @@ struct Supervisor
     static i32 __fastcall DrawFpsCounter(Supervisor *s);
     static i32 __fastcall OnDraw2(Supervisor *s);
     static i32 __fastcall FinalizeFrame(Supervisor *s);
+    static BOOL CALLBACK EnumGameControllersCb(LPCDIDEVICEINSTANCEA instance, LPVOID context);
+    static BOOL CALLBACK ControllerCallback(LPCDIDEVICEOBJECTINSTANCEA object, LPVOID context);
 
     void EnterCriticalSectionWrapper(i32 id)
     {
@@ -258,6 +263,7 @@ struct Supervisor
 #pragma pack(pop)
 
 typedef char SupervisorPresentAtE4[(offsetof(Supervisor, presentParameters) == 0xe4) ? 1 : -1];
+typedef char SupervisorControllerCapsAt18[(offsetof(Supervisor, controllerCaps) == 0x18) ? 1 : -1];
 typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 : -1];
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
