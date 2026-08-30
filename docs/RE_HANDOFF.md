@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 201 canonical units cover 106,223 authored bytes.
+- Reconstruction: 205 canonical units cover 106,624 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.81% (106,223 / 209,069)
+  relocations. Confirmed authored-byte coverage is now 50.83% (106,624 / 209,779)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 244 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,579 origin/boundary reviews pending. Original class
+  confirms 249 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,574 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -123,6 +123,14 @@
   argument allocations, and whole-object reset. The fifteen-caller
   `PhotoToScreen @ 0x004186D0` bridge is also exact for all 71 bytes and maps
   world coordinates by `(+320,+16,+0)`.
+- Four enemy reset/restart entries at `0x004167E0/0x00416810/0x00416DD0/
+  0x00416E30` are exact for another 401 bytes and six relocations. They prove
+  the manager's eight-entry photo-target table at `+0x26AE00`, the main and
+  alternate ECL subroutine IDs at enemy `+0x2898/+0x289A`, and the split
+  between deactivating ordinary enemies and preserving/restarting photo
+  subjects. `UpdateScheduledEclCalls @ 0x00416F30` is source-present at the
+  exact 309-byte extent with all five relocations and 280/289 comparable bytes;
+  its only residual is the exchange of two VC7.1 local slots.
 - Root-level `EclOperandsInt.cpp` and `EclOperandsFloat.cpp` now reconstruct
   the high-connectivity operand resolver pair at `0x0040FAE0/0x004105A0`.
   Their 3,439 authored bytes, adjacent 684 bytes of compiler-owned jump tables,
@@ -358,9 +366,9 @@
 
 ## Next bounded lane
 
-The enemy update hub and its four nearest runtime leaves are now recovered.
-Continue its dependency sweep with scheduled ECL-call cleanup at
-`0x00416F30`, then the `0x004163F0` timeline interpreter and the adjacent
+The enemy update hub, scheduled ECL cleanup, and eight reset/runtime leaves are
+now recovered. Continue the dependency sweep with the `0x004163F0` timeline
+interpreter and the adjacent
 enemy spawn/control cluster at `0x00414B90..0x00415820`. These functions unlock
 more inventory relationships than isolated wrappers. After that, cover the
 two approximately 1 KB laser callers at `0x0041E2C0/0x0041F550`, which share

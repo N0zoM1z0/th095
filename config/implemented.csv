@@ -242,3 +242,8 @@ th095::PhotoEnemyView::ClampPosition
 th095::PhotoEnemyView::UpdatePhotoMarkerPulse
 th095::PhotoEnemyView::Deactivate
 th095::PhotoToScreen
+th095::PhotoEnemyView::RestartEcl
+th095::PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls
+th095::PhotoEnemyManagerView::ResetNonPhotoTargets
+th095::PhotoEnemyManagerView::RestartPhotoTargetEcls
+th095::PhotoEnemyView::UpdateScheduledEclCalls

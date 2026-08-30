@@ -8825,3 +8825,53 @@ relocations = [
   { offset = 0x19, type = "DIR32", symbol = "__real@43400000", target = 0x00495330 },
   { offset = 0x2A, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
 ]
+
+[units.enemy-restart-ecl]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyView::RestartEcl"]
+symbol = "?RestartEcl@PhotoEnemyView@th095@@QAEXXZ"
+target_address = 0x004167E0
+size = 0x30
+relocations = [
+  { offset = 0x1D, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
+  { offset = 0x28, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEXPAXF@Z", target = 0x00408DE0 },
+]
+
+[units.enemy-reset-non-photo-and-photo-ecls]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls"]
+symbol = "?ResetNonPhotoTargetsAndPhotoTargetEcls@PhotoEnemyManagerView@th095@@SIXPAU12@@Z"
+target_address = 0x00416810
+size = 0xBC
+relocations = [
+  { offset = 0x52, type = "REL32", symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416E80 },
+  { offset = 0xB2, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEXPAXF@Z", target = 0x00408DE0 },
+]
+
+[units.enemy-reset-non-photo-targets]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerView::ResetNonPhotoTargets"]
+symbol = "?ResetNonPhotoTargets@PhotoEnemyManagerView@th095@@SIXPAU12@@Z"
+target_address = 0x00416DD0
+size = 0x5C
+relocations = [
+  { offset = 0x52, type = "REL32", symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416E80 },
+]
+
+[units.enemy-restart-photo-target-ecls]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerView::RestartPhotoTargetEcls"]
+symbol = "?RestartPhotoTargetEcls@PhotoEnemyManagerView@th095@@SIXPAU12@@Z"
+target_address = 0x00416E30
+size = 0x49
+relocations = [
+  { offset = 0x3F, type = "REL32", symbol = "?RestartEcl@PhotoEnemyView@th095@@QAEXXZ", target = 0x004167E0 },
+]

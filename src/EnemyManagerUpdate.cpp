@@ -10,6 +10,7 @@ namespace th095
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
 struct PhotoEnemyView;
+struct PhotoEnemyManagerView;
 
 struct PhotoEnemyEclFileView
 {
@@ -22,6 +23,7 @@ struct PhotoEnemyEclManagerView
 {
     PhotoEnemyEclFileView *eclFile;
 
+    void InitializeContext(void *context, i16 subroutineId);
     i32 RunEcl(PhotoEnemyView *enemy);
 };
 
@@ -52,8 +54,25 @@ struct PhotoEnemyPlayerView
     i32 CheckBulletCollision(Float3 *position, Float3 *size);
 };
 
+struct PhotoEnemyGameView
+{
+    u8 unknown0000[0x29e4];
+    i32 frameCounter;
+};
+
+struct PhotoEnemyScheduledCall
+{
+    i16 subroutineId;
+    i16 unknown02;
+};
+
+typedef char PhotoEnemyScheduledCallSizeIs4[
+    (sizeof(PhotoEnemyScheduledCall) == 4) ? 1 : -1];
+
 extern PhotoEnemyBulletManagerView *g_PhotoEnemyBulletManager;
+extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 extern PhotoEnemyPlayerView *g_PhotoEnemyPlayer;
+extern PhotoEnemyGameView *g_PhotoEnemyGame;
 extern f32 g_PhotoEnemyEffectInterpolation;
 extern f32 g_GameSpeed;
 
@@ -62,7 +81,10 @@ struct PhotoEnemyView
     PhotoEnemyView *nextInDrawGroup;       // +0x0000
     u8 unknown0004[4];
     AnmVm vm;                              // +0x0008
-    u8 unknown02d4[0x28a0 - 0x02d4];
+    u8 unknown02d4[0x2898 - 0x02d4];
+    i16 mainEclSubroutineId;                // +0x2898
+    i16 photoTargetEclSubroutineId;         // +0x289a
+    u8 unknown289c[4];
     D3DXVECTOR3 worldPosition;             // +0x28a0
     u8 unknown28ac[0x28b8 - 0x28ac];
     D3DXVECTOR3 velocity;                  // +0x28b8
@@ -120,15 +142,19 @@ struct PhotoEnemyView
     u8 unknown2c38[4];
     Float2 movementBoundsMin;               // +0x2c3c
     Float2 movementBoundsMax;               // +0x2c44
-    u8 unknown2c4c[0x2cac - 0x2c4c];
+    u8 unknown2c4c[8];
+    i32 scheduledCallFrames[10];            // +0x2c54
+    PhotoEnemyScheduledCall scheduledCalls[10]; // +0x2c7c
+    u8 unknown2ca4[8];
     void *allocatedEclArgs[16];              // +0x2cac
     u8 unknown2cec[0x4cbc - 0x2cec];
     AnmVmId attachedVmId;                  // +0x4cbc
 
     void IntegrateMovement();
     void ClampPosition();
+    void RestartEcl();
     void UpdatePhotoMarkerPulse();
-    void UpdateScheduledEclCalls();
+    i32 UpdateScheduledEclCalls();
     void Deactivate();
 };
 
@@ -152,10 +178,17 @@ struct PhotoEnemyManagerView
     PhotoEnemyEclManagerView *eclManager;  // +0x4df4
     u8 unknown4df8[8];
     PhotoEnemyView enemies[128];           // +0x4e00
-    u8 unknown26ae00[0x2c];
+    PhotoEnemyView *photoTargets[8];        // +0x26ae00
+    u8 unknown26ae20[0x0c];
     i32 activeEnemyCount;                  // +0x26ae2c
 
     static i32 __fastcall OnUpdate(PhotoEnemyManagerView *enemyManager);
+    static void __fastcall ResetNonPhotoTargets(
+        PhotoEnemyManagerView *enemyManager);
+    static void __fastcall RestartPhotoTargetEcls(
+        PhotoEnemyManagerView *enemyManager);
+    static void __fastcall ResetNonPhotoTargetsAndPhotoTargetEcls(
+        PhotoEnemyManagerView *enemyManager);
 };
 
 typedef char PhotoEnemyManagerTimelinesAt4CC0[
@@ -411,6 +444,61 @@ void PhotoEnemyView::UpdatePhotoMarkerPulse()
     }
 }
 
+void PhotoEnemyView::RestartEcl()
+{
+    g_PhotoEnemyManager->eclManager->InitializeContext(
+        reinterpret_cast<u8 *>(this) + 0x2dc,
+        this->mainEclSubroutineId);
+}
+
+void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargets(
+    PhotoEnemyManagerView *enemyManager)
+{
+    for (i32 enemyIndex = 0; enemyIndex < 128; ++enemyIndex)
+    {
+        if (enemyManager->enemies[enemyIndex].photoTarget == 0)
+        {
+            enemyManager->enemies[enemyIndex].Deactivate();
+        }
+    }
+}
+
+void __fastcall PhotoEnemyManagerView::RestartPhotoTargetEcls(
+    PhotoEnemyManagerView *enemyManager)
+{
+    for (i32 targetIndex = 0; targetIndex < 8; ++targetIndex)
+    {
+        if (enemyManager->photoTargets[targetIndex] != NULL)
+        {
+            enemyManager->photoTargets[targetIndex]->RestartEcl();
+        }
+    }
+}
+
+void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
+    PhotoEnemyManagerView *enemyManager)
+{
+    for (i32 enemyIndex = 0; enemyIndex < 128; ++enemyIndex)
+    {
+        if (enemyManager->enemies[enemyIndex].photoTarget == 0)
+        {
+            enemyManager->enemies[enemyIndex].Deactivate();
+        }
+    }
+
+    for (i32 targetIndex = 0; targetIndex < 8; ++targetIndex)
+    {
+        if (enemyManager->photoTargets[targetIndex] != NULL)
+        {
+            enemyManager->eclManager->InitializeContext(
+                reinterpret_cast<u8 *>(enemyManager->photoTargets[targetIndex]) +
+                    0x2dc,
+                enemyManager->photoTargets[targetIndex]
+                    ->photoTargetEclSubroutineId);
+        }
+    }
+}
+
 void PhotoEnemyView::Deactivate()
 {
     i32 argumentIndex;
@@ -436,6 +524,48 @@ void PhotoEnemyView::Deactivate()
     }
 
     memset(this, 0, sizeof(*this));
+}
+
+i32 PhotoEnemyView::UpdateScheduledEclCalls()
+{
+    i32 activeScheduleCount = 0;
+    for (i32 scheduleIndex = 0; scheduleIndex < 10; ++scheduleIndex)
+    {
+        if (this->scheduledCallFrames[scheduleIndex] < 0)
+        {
+            continue;
+        }
+
+        activeScheduleCount++;
+        i32 argumentIndex;
+        i32 currentFrame = g_PhotoEnemyGame->frameCounter;
+        if (currentFrame >= this->scheduledCallFrames[scheduleIndex])
+        {
+            g_PhotoEnemyManager->eclManager->InitializeContext(
+                reinterpret_cast<u8 *>(this) + 0x2dc,
+                this->scheduledCalls[scheduleIndex].subroutineId);
+            this->scheduledCallFrames[scheduleIndex] = -1;
+
+            for (argumentIndex = 0; argumentIndex < 16; ++argumentIndex)
+            {
+                if (this->allocatedEclArgs[argumentIndex] != NULL)
+                {
+                    void *argument = this->allocatedEclArgs[argumentIndex];
+                    free(argument);
+                    this->allocatedEclArgs[argumentIndex] = NULL;
+                }
+            }
+
+            memcpy(
+                reinterpret_cast<u8 *>(this) + 0x298c,
+                reinterpret_cast<u8 *>(g_PhotoEnemyManager) + 0x298c,
+                0x210);
+            *reinterpret_cast<i32 *>(
+                reinterpret_cast<u8 *>(this) + 0x2bc8) = 0;
+        }
+    }
+
+    return 0;
 }
 
 } // namespace th095
