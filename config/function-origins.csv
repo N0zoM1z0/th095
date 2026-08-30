@@ -230,11 +230,11 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041BB00,authored,ReplayBrowser,authored,exact,vc71-replay-browser-2026-08-29
 0x0041BB20,authored,ReplayScanWorker,authored,exact,vc71-replay-scan-worker-2026-08-29
 0x0041BBA0,authored,ReplayScanWorker,authored,exact,vc71-replay-scan-worker-2026-08-29
-0x0041BC00,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041BC00,authored,Controller,authored,exact,vc71-controller-input-slot-constructor-2026-08-30
 0x0041BD20,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x0041BD70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041BDD0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041BE40,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041BDD0,authored,TextRenderer,authored,exact,vc71-text-buffer-lifecycle-2026-08-30
+0x0041BE40,authored,TextRenderer,authored,exact,vc71-text-buffer-lifecycle-2026-08-30
 0x0041BE60,authored,TextRenderer,authored,exact,vc71-text-buffer-lifecycle-2026-08-30
 0x0041BF20,authored,TextRenderer,authored,exact,vc71-text-buffer-lifecycle-2026-08-30
 0x0041BF90,authored,TextRenderer,authored,high,target-vc71-text-buffer-lifecycle-2026-08-30
@@ -1803,10 +1803,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00493F10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00493F30,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00493F50,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00493F70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00493F70,compiler,Controller,exclude,exact,target-static-vector-initializer-2026-08-30
 0x00493FB0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00493FD0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00494000,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00494000,compiler,TextRenderer,exclude,exact,target-static-initializer-wrapper-2026-08-30
 0x00494020,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00494040,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00494060,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -1825,7 +1825,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00494220,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00494240,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00494250,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00494260,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00494260,compiler,TextRenderer,exclude,exact,target-static-destructor-wrapper-2026-08-30
 0x00494270,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00494280,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00494290,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

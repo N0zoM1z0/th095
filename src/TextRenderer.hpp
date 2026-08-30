@@ -23,6 +23,9 @@ struct TextRenderFormatInfo
 
 struct TextRenderBufferView
 {
+    TextRenderBufferView();
+    ~TextRenderBufferView();
+
     u8 unknown000[0x100];
     D3DFORMAT format;
     i32 width;

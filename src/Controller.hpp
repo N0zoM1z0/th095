@@ -22,6 +22,8 @@ extern u8 g_ControllerAssignments;
 
 struct ControllerInputSlotView
 {
+    ControllerInputSlotView();
+
     u16 current;
     u16 previous;
     u16 repeat;
@@ -29,11 +31,7 @@ struct ControllerInputSlotView
     u16 released;
     u16 heldFrames[16];
     u8 unknown02a[0x2e];
-    i16 shootButton;
-    i16 bombButton;
-    i16 focusButton;
-    i16 menuButton;
-    u8 unknown060[0x2e];
+    ControllerMapping mappings[3];
 };
 
 extern ControllerInputSlotView g_ControllerInputSlots;

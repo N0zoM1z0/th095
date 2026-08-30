@@ -7605,3 +7605,35 @@ relocations = [
   { offset = 0x34, type = "DIR32", symbol = "?g_TextFont20@th095@@3PAUHFONT__@@A", target = 0x004C44AC },
   { offset = 0x3B, type = "DIR32", symbol = "__imp__DeleteObject@4", target = 0x0049503C },
 ]
+
+[units.controller-input-slot-constructor]
+source = "src/Controller.cpp"
+object = "build/matching/Controller.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ControllerInputSlotView::ControllerInputSlotView"]
+symbol = "??0ControllerInputSlotView@th095@@QAE@XZ"
+target_address = 0x0041BC00
+size = 0x116
+relocations = []
+
+[units.text-render-buffer-constructor]
+source = "src/TextRenderer.cpp"
+object = "build/matching/TextRenderer.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::TextRenderBufferView::TextRenderBufferView"]
+symbol = "??0TextRenderBufferView@th095@@QAE@XZ"
+target_address = 0x0041BDD0
+size = 0x69
+relocations = []
+
+[units.text-render-buffer-destructor]
+source = "src/TextRenderer.cpp"
+object = "build/matching/TextRenderer.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::TextRenderBufferView::~TextRenderBufferView"]
+symbol = "??1TextRenderBufferView@th095@@QAE@XZ"
+target_address = 0x0041BE40
+size = 0x13
+relocations = [
+  { offset = 0xB, type = "REL32", symbol = "?ReleaseBuffer@TextRenderBufferView@th095@@QAE_NXZ", target = 0x0041BE60 },
+]

@@ -6,6 +6,39 @@
 namespace th095
 {
 
+ControllerInputSlotView::ControllerInputSlotView()
+{
+    this->mappings[0].shotButton = 1;
+    this->mappings[0].bombButton = 0;
+    this->mappings[0].focusButton = 9;
+    this->mappings[0].menuButton = 2;
+    this->mappings[0].upButton = -1;
+    this->mappings[0].downButton = -1;
+    this->mappings[0].leftButton = -1;
+    this->mappings[0].rightButton = -1;
+    this->mappings[0].skipButton = 1;
+
+    this->mappings[1].shotButton = 0x5a;
+    this->mappings[1].bombButton = 0x58;
+    this->mappings[1].focusButton = 0x10;
+    this->mappings[1].menuButton = 0x1b;
+    this->mappings[1].upButton = 0x26;
+    this->mappings[1].downButton = 0x28;
+    this->mappings[1].leftButton = 0x25;
+    this->mappings[1].rightButton = 0x27;
+    this->mappings[1].skipButton = 0x11;
+
+    this->mappings[2].shotButton = 0x2c;
+    this->mappings[2].bombButton = 0x2d;
+    this->mappings[2].focusButton = 0x2a;
+    this->mappings[2].menuButton = 1;
+    this->mappings[2].upButton = 0xc8;
+    this->mappings[2].downButton = 0xd0;
+    this->mappings[2].leftButton = 0xcb;
+    this->mappings[2].rightButton = 0xcd;
+    this->mappings[2].skipButton = 0x1d;
+}
+
 struct ControllerStateLocals
 {
     DIJOYSTATE2 joystickState;
@@ -38,9 +71,10 @@ struct ControllerInputLocals
 typedef char ControllerInputSlotSizeIs8E[
     (sizeof(ControllerInputSlotView) == 0x8e) ? 1 : -1];
 typedef char ControllerInputSlotButtonsAt58[
-    (offsetof(ControllerInputSlotView, shootButton) == 0x58 &&
-     offsetof(ControllerInputSlotView, bombButton) == 0x5a &&
-     offsetof(ControllerInputSlotView, menuButton) == 0x5e) ? 1 : -1];
+    (offsetof(ControllerInputSlotView, mappings) == 0x58 &&
+     offsetof(ControllerMapping, shotButton) == 0x0 &&
+     offsetof(ControllerMapping, bombButton) == 0x2 &&
+     offsetof(ControllerMapping, menuButton) == 0x6) ? 1 : -1];
 typedef char ControllerInputLocalsSizeIs158[
     (sizeof(ControllerInputLocals) == 0x158) ? 1 : -1];
 typedef char ControllerInputStateAt00[
@@ -124,13 +158,13 @@ u16 GetControllerInput(i32 controllerIndex, i32 joystickIndex, u16 buttons)
         }
 
         SetButtonFromControllerInputs(
-            &buttons, locals.inputSlot->shootButton,
+            &buttons, locals.inputSlot->mappings[0].shotButton,
             TH_BUTTON_SHOOT, locals.joystickInfo.dwButtons);
         SetButtonFromControllerInputs(
-            &buttons, locals.inputSlot->bombButton,
+            &buttons, locals.inputSlot->mappings[0].bombButton,
             TH_BUTTON_BOMB, locals.joystickInfo.dwButtons);
         SetButtonFromControllerInputs(
-            &buttons, locals.inputSlot->menuButton,
+            &buttons, locals.inputSlot->mappings[0].menuButton,
             TH_BUTTON_MENU, locals.joystickInfo.dwButtons);
 
         locals.axisDeadzone =
@@ -202,13 +236,13 @@ u16 GetControllerInput(i32 controllerIndex, i32 joystickIndex, u16 buttons)
     }
 
     locals.directInputShootPressed = SetButtonFromDirectInputJoystate(
-        &buttons, locals.inputSlot->shootButton,
+        &buttons, locals.inputSlot->mappings[0].shotButton,
         TH_BUTTON_SHOOT, locals.joystickState.rgbButtons);
     SetButtonFromDirectInputJoystate(
-        &buttons, locals.inputSlot->bombButton,
+        &buttons, locals.inputSlot->mappings[0].bombButton,
         TH_BUTTON_BOMB, locals.joystickState.rgbButtons);
     SetButtonFromDirectInputJoystate(
-        &buttons, locals.inputSlot->menuButton,
+        &buttons, locals.inputSlot->mappings[0].menuButton,
         TH_BUTTON_MENU, locals.joystickState.rgbButtons);
 
     buttons |= locals.joystickState.lX > g_ControllerPadXAxis

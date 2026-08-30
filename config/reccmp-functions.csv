@@ -186,3 +186,6 @@ th095::TextRenderBufferView::TryAllocateBuffer,0x0041BF90,function
 th095::TextRenderBufferView::GetFormatInfo,0x0041C180,function
 th095::TextHelperView::CreateTextBuffer,0x0041C780,function
 th095::TextHelperView::ReleaseTextBuffer,0x0041C8A0,function
+th095::ControllerInputSlotView::ControllerInputSlotView,0x0041BC00,function
+th095::TextRenderBufferView::TextRenderBufferView,0x0041BDD0,function
+th095::TextRenderBufferView::~TextRenderBufferView,0x0041BE40,function

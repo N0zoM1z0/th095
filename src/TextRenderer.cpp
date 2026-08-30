@@ -30,6 +30,22 @@ DIFFABLE_STATIC_ARRAY_ASSIGN(TextRenderFormatInfo, 7,
     {(D3DFORMAT)-1, 0, 0, 0, 0, 0},
 };
 
+TextRenderBufferView::TextRenderBufferView()
+{
+    this->format = (D3DFORMAT)-1;
+    this->width = 0;
+    this->height = 0;
+    this->hdc = 0;
+    this->bitmap = 0;
+    this->originalBitmap = 0;
+    this->buffer = NULL;
+}
+
+TextRenderBufferView::~TextRenderBufferView()
+{
+    this->ReleaseBuffer();
+}
+
 bool TextRenderBufferView::ReleaseBuffer()
 {
     if (this->hdc)

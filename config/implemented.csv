@@ -184,3 +184,6 @@ th095::TextRenderBufferView::TryAllocateBuffer
 th095::TextRenderBufferView::GetFormatInfo
 th095::TextHelperView::CreateTextBuffer
 th095::TextHelperView::ReleaseTextBuffer
+th095::ControllerInputSlotView::ControllerInputSlotView
+th095::TextRenderBufferView::TextRenderBufferView
+th095::TextRenderBufferView::~TextRenderBufferView
