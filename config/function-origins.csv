@@ -140,7 +140,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004153D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004154E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004156C0,authored,EnemyManager,authored,exact,vc71-photo-enemy-spawn-2026-08-30
-0x00415820,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00415820,authored,EnemyManager,authored,exact,vc71-photo-enemy-spawn-context-2026-08-30
 0x00415970,authored,EnemyManager,authored,high,photo-enemy-manager-update-semantic-2026-08-30
 0x004160B0,authored,EnemyManager,authored,exact,vc71-photo-enemy-runtime-2026-08-30
 0x004161F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

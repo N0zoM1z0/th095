@@ -252,6 +252,13 @@ struct PhotoEnemyManagerView
         i32 itemDrop,
         i32 score,
         u32 mirrorMovementX);
+    PhotoEnemyView *SpawnWithContext(
+        i32 subroutineId,
+        const Float3 *position,
+        i32 life,
+        i32 itemDrop,
+        i32 score,
+        const i32 *contextValues);
     static void __fastcall ResetNonPhotoTargets(
         PhotoEnemyManagerView *enemyManager);
     static void __fastcall RestartPhotoTargetEcls(
@@ -469,6 +476,68 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
         this->eclManager->InitializeContext(
             reinterpret_cast<u8 *>(enemy) + 0x2dc,
             static_cast<i16>(subroutineId));
+        if (this->eclManager->RunEcl(enemy) == ZUN_ERROR)
+        {
+            enemy->Deactivate();
+            enemyIndex = 128;
+        }
+        else
+        {
+            enemy->displayColor = enemy->vm.color1.color;
+            enemy->itemDropType = static_cast<i8>(itemDrop);
+            if (score >= 0)
+            {
+                enemy->score = score;
+            }
+            enemy->maximumLife = enemy->life;
+            enemy->phaseStartingLife = enemy->maximumLife;
+        }
+        break;
+    }
+    return enemy;
+}
+
+PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
+    i32 subroutineId,
+    const Float3 *position,
+    i32 life,
+    i32 itemDrop,
+    i32 score,
+    const i32 *contextValues)
+{
+    struct EnemySpawnCopy
+    {
+        u32 words[sizeof(PhotoEnemyView) / sizeof(u32)];
+    };
+    struct EnemyContextCopy
+    {
+        u32 words[0x80 / sizeof(u32)];
+    };
+    i32 enemyIndex;
+    PhotoEnemyView *enemy;
+
+    enemy = &this->enemies[0];
+    for (enemyIndex = 0; enemyIndex < 128; ++enemyIndex, ++enemy)
+    {
+        if (enemy->active != 0)
+        {
+            continue;
+        }
+
+        *reinterpret_cast<EnemySpawnCopy *>(enemy) =
+            *reinterpret_cast<const EnemySpawnCopy *>(this);
+        enemy->enemyIndex = enemyIndex;
+        if (life >= 0)
+        {
+            enemy->life = life;
+        }
+        *reinterpret_cast<Float3 *>(&enemy->worldPosition) = *position;
+        this->eclManager->InitializeContext(
+            reinterpret_cast<u8 *>(enemy) + 0x2dc,
+            static_cast<i16>(subroutineId));
+        *reinterpret_cast<EnemyContextCopy *>(
+            reinterpret_cast<u8 *>(enemy) + 0x2f4) =
+            *reinterpret_cast<const EnemyContextCopy *>(contextValues);
         if (this->eclManager->RunEcl(enemy) == ZUN_ERROR)
         {
             enemy->Deactivate();

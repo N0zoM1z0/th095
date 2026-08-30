@@ -1,16 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="560" height="176" role="img" aria-label="TH095 reconstruction progress: 50.71% of the confirmed authored-byte set is exact, origin review 14.10%">
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="176" role="img" aria-label="TH095 reconstruction progress: 50.79% of the confirmed authored-byte set is exact, origin review 14.15%">
   <rect width="560" height="176" rx="8" fill="#1f2335"/>
   <text x="24" y="28" fill="#f4f4f5" font-family="sans-serif" font-size="16" font-weight="600">TH095 reconstruction progress</text>
 
   <text x="24" y="52" fill="#f4f4f5" font-family="sans-serif" font-size="13" font-weight="600">Confirmed authored-byte coverage</text>
-  <text x="536" y="52" fill="#f4f4f5" text-anchor="end" font-family="monospace" font-size="13">50.71%</text>
+  <text x="536" y="52" fill="#f4f4f5" text-anchor="end" font-family="monospace" font-size="13">50.79%</text>
   <rect x="24" y="60" width="512" height="12" rx="6" fill="#3b4058"/>
-  <rect x="24" y="60" width="259.64" height="12" rx="6" fill="#9b6de3"/>
-  <text x="24" y="89" fill="#c8cad2" font-family="sans-serif" font-size="12">106,974 exact / 210,947 confirmed authored bytes · denominator provisional</text>
+  <rect x="24" y="60" width="260.04" height="12" rx="6" fill="#9b6de3"/>
+  <text x="24" y="89" fill="#c8cad2" font-family="sans-serif" font-size="12">107,310 exact / 211,283 confirmed authored bytes · denominator provisional</text>
 
   <text x="24" y="116" fill="#f4f4f5" font-family="sans-serif" font-size="13" font-weight="600">Origin/boundary reviewed</text>
-  <text x="536" y="116" fill="#f4f4f5" text-anchor="end" font-family="monospace" font-size="13">14.10%</text>
+  <text x="536" y="116" fill="#f4f4f5" text-anchor="end" font-family="monospace" font-size="13">14.15%</text>
   <rect x="24" y="124" width="512" height="12" rx="6" fill="#3b4058"/>
-  <rect x="24" y="124" width="72.18" height="12" rx="6" fill="#9b6de3"/>
-  <text x="24" y="153" fill="#c8cad2" font-family="sans-serif" font-size="12">258 / 1,830 candidates · 1,572 pending</text>
+  <rect x="24" y="124" width="72.46" height="12" rx="6" fill="#9b6de3"/>
+  <text x="24" y="153" fill="#c8cad2" font-family="sans-serif" font-size="12">259 / 1,830 candidates · 1,571 pending</text>
 </svg>

@@ -8773,6 +8773,20 @@ relocations = [
   { offset = 0xF1, type = "REL32", symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416E80 },
 ]
 
+[units.enemy-spawn-with-context]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerView::SpawnWithContext"]
+symbol = "?SpawnWithContext@PhotoEnemyManagerView@th095@@QAEPAUPhotoEnemyView@2@HPBUFloat3@2@HHHPBH@Z"
+target_address = 0x00415820
+size = 0x150
+relocations = [
+  { offset = 0xB1, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEXPAXF@Z", target = 0x00408DE0 },
+  { offset = 0xD6, type = "REL32", symbol = "?RunEcl@PhotoEnemyEclManagerView@th095@@QAEHPAUPhotoEnemyView@2@@Z", target = 0x00408E70 },
+  { offset = 0xE3, type = "REL32", symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416E80 },
+]
+
 [units.enemy-integrate-movement]
 source = "src/EnemyManagerUpdate.cpp"
 object = "build/matching/EnemyManagerUpdate.obj"
