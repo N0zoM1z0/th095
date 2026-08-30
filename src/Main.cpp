@@ -30,6 +30,23 @@ struct SupervisorGameTaskView
 };
 
 extern SupervisorGameTaskView *g_SupervisorGameTask;
+
+struct SupervisorInputWorkerView
+{
+    void Start(void (__fastcall *callback)(void *), void *argument);
+};
+
+struct FrontEndControllerView
+{
+    void Destroy();
+};
+
+struct PhotoGameTaskView
+{
+    void Destroy();
+};
+
+extern SupervisorInputWorkerView g_SupervisorInputWorker;
 }
 
 #define d3dDeviceStatus restartCommandProcessingLocal05
@@ -1162,7 +1179,7 @@ i32 __fastcall Supervisor::FinalizeFrame(Supervisor *s)
 }
 
 // FUNCTION: TH095 0x004238E0.
-void Supervisor::InitializeInput()
+void __fastcall Supervisor::InitializeInput(Supervisor *s)
 {
     g_Supervisor.flags.keyboardAvailable = 0;
     g_Supervisor.flags.controllerAvailable = 0;
@@ -1300,6 +1317,30 @@ BOOL CALLBACK Supervisor::ControllerCallback(
     }
 
     return TRUE;
+}
+
+// FUNCTION: TH095 0x00423CE0.
+void Supervisor::StartInputWorker()
+{
+    g_SupervisorInputWorker.Start(
+        (void (__fastcall *)(void *))Supervisor::InitializeInput,
+        &g_Supervisor);
+}
+
+// FUNCTION: TH095 0x00423D00.
+void Supervisor::ReleaseGameManagers()
+{
+    if (this->frontEndController != NULL)
+    {
+        this->frontEndController->Destroy();
+    }
+    this->frontEndController = NULL;
+
+    if (this->photoGameTask != NULL)
+    {
+        this->photoGameTask->Destroy();
+    }
+    this->photoGameTask = NULL;
 }
 
 void Supervisor::InitializeCriticalSections()

@@ -15,6 +15,8 @@ namespace th095
 {
 struct AnmVm;
 struct AnmManager;
+struct FrontEndControllerView;
+struct PhotoGameTaskView;
 
 typedef signed char i8;
 typedef unsigned char u8;
@@ -214,7 +216,9 @@ struct Supervisor
     i32 loadingVmsHaveBeenSetup;                // +0x714
     u8 unknown718[0x50];
     i32 fogState;                               // +0x768
-    u8 unknown76c[0x1c];
+    u8 unknown76c[0x14];
+    FrontEndControllerView *frontEndController; // +0x780
+    PhotoGameTaskView *photoGameTask;           // +0x784
     u32 fpsFrameCount;                          // +0x788
     f64 lagNumerator;                           // +0x78c
     f64 lagDenominator;                         // +0x794
@@ -231,7 +235,9 @@ struct Supervisor
     void ConfigureGameplayViewport(i32 index);
     void CalculateFps();
     i32 SetupDInput();
-    void InitializeInput();
+    static void __fastcall InitializeInput(Supervisor *s);
+    static void StartInputWorker();
+    void ReleaseGameManagers();
     void DisableFog();
     void ThreadClose();
     void TakeScreenshot(char *path);
@@ -269,6 +275,8 @@ typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : 
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
 typedef char SupervisorLoadingVmsAt714[(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x714) ? 1 : -1];
 typedef char SupervisorLagNumeratorAt78C[(offsetof(Supervisor, lagNumerator) == 0x78c) ? 1 : -1];
+typedef char SupervisorFrontEndAt780[(offsetof(Supervisor, frontEndController) == 0x780) ? 1 : -1];
+typedef char SupervisorGameTaskAt784[(offsetof(Supervisor, photoGameTask) == 0x784) ? 1 : -1];
 typedef char SupervisorCurrentFpsAt79C[(offsetof(Supervisor, currentFps) == 0x79c) ? 1 : -1];
 typedef char SupervisorClearColorAt7B8[(offsetof(Supervisor, backbufferClearColor) == 0x7b8) ? 1 : -1];
 typedef char SupervisorLastFpsTimestampAt7C0[(offsetof(Supervisor, lastFpsTimestamp) == 0x7c0) ? 1 : -1];

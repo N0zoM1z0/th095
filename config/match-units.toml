@@ -5735,7 +5735,7 @@ source = "src/Main.cpp"
 object = "build/matching/Main.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::Supervisor::InitializeInput"]
-symbol = "?InitializeInput@Supervisor@th095@@QAEXXZ"
+symbol = "?InitializeInput@Supervisor@th095@@SIXPAU12@@Z"
 target_address = 0x004238E0
 size = 0x7F
 relocations = [
@@ -5818,6 +5818,34 @@ size = 0x6D
 relocations = [
   { offset = 0x4A, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x14 },
   { offset = 0x52, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x14 },
+]
+
+[units.main-start-input-worker]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::StartInputWorker"]
+symbol = "?StartInputWorker@Supervisor@th095@@SIXXZ"
+target_address = 0x00423CE0
+size = 0x19
+relocations = [
+  { offset = 0x4, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670 },
+  { offset = 0x9, type = "DIR32", symbol = "?InitializeInput@Supervisor@th095@@SIXPAU12@@Z", target = 0x004238E0 },
+  { offset = 0xE, type = "DIR32", symbol = "?g_SupervisorInputWorker@th095@@3USupervisorInputWorkerView@1@A", target = 0x004C4658 },
+  { offset = 0x13, type = "REL32", symbol = "?Start@SupervisorInputWorkerView@th095@@QAEXP6IXPAX@Z0@Z", target = 0x0041BBA0 },
+]
+
+[units.main-release-game-managers]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::ReleaseGameManagers"]
+symbol = "?ReleaseGameManagers@Supervisor@th095@@QAEXXZ"
+target_address = 0x00423D00
+size = 0x59
+relocations = [
+  { offset = 0x1D, type = "REL32", symbol = "?Destroy@FrontEndControllerView@th095@@QAEXXZ", target = 0x00445DE0 },
+  { offset = 0x44, type = "REL32", symbol = "?Destroy@PhotoGameTaskView@th095@@QAEXXZ", target = 0x004180A0 },
 ]
 
 [units.main-initialize-critical-sections]

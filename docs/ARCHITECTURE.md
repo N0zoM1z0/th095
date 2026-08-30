@@ -160,7 +160,10 @@ the ANM vertex buffer and publishes `frameskipConfig + 1` into that frame count
 under critical section 5; exact `InitializeInput @ 0x004238E0` publishes the
 keyboard/controller availability flags around the exact DirectInput setup owner.
 That owner and its two exact callbacks establish the `DIDEVCAPS` at `+0x18`,
-first-attached-controller policy, and TH095 joystick range of `[-1000,1000]`. The front-end
+first-attached-controller policy, and TH095 joystick range of `[-1000,1000]`.
+The exact worker wrapper establishes `InitializeInput` as a fastcall callback;
+the adjacent exact release helper owns the front-end/photo-game pointers at
+`Supervisor+0x780/+0x784`. The front-end
 Help page at `0x00451C80` is now
 source-present with an exact 88-byte asynchronous loader callback; the
 adjacent Music Room at `0x00450FC0` is source-present with both parser helpers

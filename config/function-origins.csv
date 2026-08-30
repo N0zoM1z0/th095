@@ -343,8 +343,8 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00423960,authored,Supervisor,authored,exact,supervisor-dinput-exact-2026-08-30
 0x00423C20,authored,Supervisor,authored,exact,supervisor-dinput-enum-exact-2026-08-30
 0x00423C70,authored,Supervisor,authored,exact,supervisor-dinput-object-exact-2026-08-30
-0x00423CE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00423D00,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00423CE0,authored,Supervisor,authored,exact,supervisor-input-worker-exact-2026-08-30
+0x00423D00,authored,Supervisor,authored,exact,supervisor-manager-release-exact-2026-08-30
 0x00423D60,authored,Supervisor,authored,high,target-main-family-2026-08-29
 0x00423E70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00423FB0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

@@ -418,3 +418,5 @@ th095::Supervisor::InitializeInput
 th095::Supervisor::SetupDInput
 th095::Supervisor::EnumGameControllersCb
 th095::Supervisor::ControllerCallback
+th095::Supervisor::StartInputWorker
+th095::Supervisor::ReleaseGameManagers
