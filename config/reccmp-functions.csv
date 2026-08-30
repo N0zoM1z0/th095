@@ -414,3 +414,5 @@ th095::AsciiManager::InitializeVms,0x00423430,function
 th095::Supervisor::OnDraw2,0x004235D0,function
 th095::Supervisor::DrawFpsCounter,0x00423790,function
 th095::Supervisor::CalculateFps,0x00424720,function
+th095::Supervisor::FinalizeFrame,0x00423840,function
+th095::Supervisor::InitializeInput,0x004238E0,function

@@ -155,7 +155,10 @@ ownership: `OnDraw2 @ 0x004235D0` is the priority-0 viewport/prompt/surface
 callback, while exact `DrawFpsCounter @ 0x00423790` is priority `0x17` and
 bridges exact `CalculateFps @ 0x00424720` into the regular ASCII queue. The
 calculator also owns the shared replay/photo slow-rate accumulators and QPC
-anomaly fallback. The front-end
+anomaly fallback. Exact priority-`0x1E` `FinalizeFrame @ 0x00423840` flushes
+the ANM vertex buffer and publishes `frameskipConfig + 1` into that frame count
+under critical section 5; exact `InitializeInput @ 0x004238E0` publishes the
+keyboard/controller availability flags around the DirectInput setup owner. The front-end
 Help page at `0x00451C80` is now
 source-present with an exact 88-byte asynchronous loader callback; the
 adjacent Music Room at `0x00450FC0` is source-present with both parser helpers

@@ -149,7 +149,10 @@ struct SupervisorFlags
     u32 dummyMidiTimerEnabled : 1;
     u32 receivedCloseMsg : 1;
     u32 scoreBackupPending : 1;
-    u32 unknown9 : 23;
+    u32 unknown9 : 1;
+    u32 keyboardAvailable : 1;
+    u32 controllerAvailable : 1;
+    u32 unknown12 : 20;
 };
 
 typedef i32 (__fastcall *ChainCallback)(void *arg);
@@ -174,7 +177,10 @@ struct Supervisor
     HINSTANCE instance;                         // +0x000
     IDirect3D8 *d3dInterface;                   // +0x004
     IDirect3DDevice8 *d3dDevice;                // +0x008
-    u8 unknown00c[0x3c];
+    void *directInput;                          // +0x00c
+    void *keyboard;                             // +0x010
+    void *controller;                           // +0x014
+    u8 unknown018[0x30];
     HWND gameWindow;                            // +0x048
     D3DXMATRIX viewMatrix;                      // +0x04c
     D3DXMATRIX projectionMatrix;                // +0x08c
@@ -221,6 +227,8 @@ struct Supervisor
     static i32 RegisterChain();
     void ConfigureGameplayViewport(i32 index);
     void CalculateFps();
+    i32 SetupDInput();
+    void InitializeInput();
     void DisableFog();
     void ThreadClose();
     void TakeScreenshot(char *path);
@@ -230,7 +238,7 @@ struct Supervisor
     static i32 __fastcall DeletedCallback(void *arg);
     static i32 __fastcall DrawFpsCounter(Supervisor *s);
     static i32 __fastcall OnDraw2(Supervisor *s);
-    static i32 __fastcall DrawLoadingVms(void *arg);
+    static i32 __fastcall FinalizeFrame(Supervisor *s);
 
     void EnterCriticalSectionWrapper(i32 id)
     {

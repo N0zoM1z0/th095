@@ -5632,7 +5632,7 @@ relocations = [
   { offset = 0xBA, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
   { offset = 0xD1, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
   { offset = 0xD6, type = "REL32", symbol = "?AddToDrawChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418B30 },
-  { offset = 0xDB, type = "DIR32", symbol = "?DrawLoadingVms@Supervisor@th095@@SIHPAX@Z", target = 0x00423840 },
+  { offset = 0xDB, type = "DIR32", symbol = "?FinalizeFrame@Supervisor@th095@@SIHPAU12@@Z", target = 0x00423840 },
   { offset = 0xE0, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
   { offset = 0xE5, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
   { offset = 0xFC, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
@@ -5712,6 +5712,45 @@ relocations = [
   { offset = 0x226, type = "DIR32", symbol = "?g_SupervisorGameTask@th095@@3PAUSupervisorGameTaskView@1@A", target = 0x004BDEC8 },
   { offset = 0x22F, type = "DIR32", symbol = "?g_SupervisorGameTask@th095@@3PAUSupervisorGameTaskView@1@A", target = 0x004BDEC8 },
   { offset = 0x240, type = "DIR32", symbol = "?g_SupervisorGameTask@th095@@3PAUSupervisorGameTaskView@1@A", target = 0x004BDEC8 },
+]
+
+[units.main-finalize-frame]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::FinalizeFrame"]
+symbol = "?FinalizeFrame@Supervisor@th095@@SIHPAU12@@Z"
+target_address = 0x00423840
+size = 0x93
+relocations = [
+  { offset = 0x9, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0xE, type = "REL32", symbol = "?FlushVertexBuffer@AnmManager@th095@@QAEXXZ", target = 0x0043F2F0 },
+  { offset = 0x27, type = "DIR32", symbol = "__imp__EnterCriticalSection@4", target = 0x00495060 },
+  { offset = 0x43, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1CC },
+  { offset = 0x72, type = "DIR32", symbol = "__imp__LeaveCriticalSection@4", target = 0x0049505C },
+]
+
+[units.main-initialize-input]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::InitializeInput"]
+symbol = "?InitializeInput@Supervisor@th095@@QAEXXZ"
+target_address = 0x004238E0
+size = 0x7F
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x444 },
+  { offset = 0x12, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x444 },
+  { offset = 0x18, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x444 },
+  { offset = 0x24, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x444 },
+  { offset = 0x29, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670 },
+  { offset = 0x2E, type = "REL32", symbol = "?SetupDInput@Supervisor@th095@@QAEHXZ", target = 0x00423960 },
+  { offset = 0x36, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x10 },
+  { offset = 0x45, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x444 },
+  { offset = 0x51, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x444 },
+  { offset = 0x59, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x14 },
+  { offset = 0x69, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x444 },
+  { offset = 0x77, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x444 },
 ]
 
 [units.main-initialize-critical-sections]

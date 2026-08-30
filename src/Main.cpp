@@ -966,7 +966,7 @@ i32 Supervisor::RegisterChain()
     elem->arg = supervisor;
     g_Chain.AddToDrawChain(elem, 0x17);
 
-    elem = g_Chain.CreateElem((ChainCallback)Supervisor::DrawLoadingVms);
+    elem = g_Chain.CreateElem((ChainCallback)Supervisor::FinalizeFrame);
     elem->arg = supervisor;
     g_Chain.AddToDrawChain(elem, 0x1e);
     return 0;
@@ -1147,6 +1147,28 @@ void Supervisor::CalculateFps()
         }
         this->fpsFrameCount = 0;
     }
+}
+
+// FUNCTION: TH095 0x00423840.
+i32 __fastcall Supervisor::FinalizeFrame(Supervisor *s)
+{
+    g_AnmManager->FlushVertexBuffer();
+    s->EnterCriticalSectionWrapper(5);
+    s->timestampUsers++;
+    s->fpsFrameCount += g_Supervisor.config.frameskipConfig + 1;
+    s->LeaveCriticalSectionWrapper(5);
+    s->timestampUsers--;
+    return 1;
+}
+
+// FUNCTION: TH095 0x004238E0.
+void Supervisor::InitializeInput()
+{
+    g_Supervisor.flags.keyboardAvailable = 0;
+    g_Supervisor.flags.controllerAvailable = 0;
+    g_Supervisor.SetupDInput();
+    g_Supervisor.flags.keyboardAvailable = g_Supervisor.keyboard != NULL;
+    g_Supervisor.flags.controllerAvailable = g_Supervisor.controller != NULL;
 }
 
 void Supervisor::InitializeCriticalSections()
