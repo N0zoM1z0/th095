@@ -150,6 +150,11 @@ bytes. Keep the secondary-surface, deferred-data, size, and image-info arrays
 in the private `AnmSurface.cpp` ABI view: spelling four additional fields in
 the shared `AnmManager.hpp` renumbers 168 compiler-local switch symbols even
 when every offset, relocation type, and compared byte remains exact.
+The same object models capture locals as real aggregates: destination rectangle,
+backbuffer, texture surface, and source rectangle for texture capture; destination
+rectangle, backbuffer, and source rectangle for surface capture. Their member
+order reproduces the target `0x2C` and `0x28` frames without patched
+`#pragma var_order` support.
 
 The adjacent task constructor proves that unoptimized VC7.1 preserves nested
 member-construction source shape even when the constructor body immediately

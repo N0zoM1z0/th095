@@ -305,7 +305,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00421AB0,authored,Main,authored,high,target-main-family-2026-08-29
 0x00421C00,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00421C90,authored,AnmManager,authored,high,target-main-family-2026-08-29
-0x00421D00,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00421D00,authored,AnmManager,authored,exact,anm-capture-exact-2026-08-30
 0x00421E00,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00421E20,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00421E80,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -578,8 +578,8 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004440F0,authored,AnmManager,authored,exact,anm-surface-exact-2026-08-30
 0x00444390,authored,AnmManager,authored,exact,anm-surface-exact-2026-08-30
 0x00444460,authored,AnmManager,authored,exact,anm-surface-exact-2026-08-30
-0x00444620,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00444760,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00444620,authored,AnmManager,authored,exact,anm-capture-exact-2026-08-30
+0x00444760,authored,AnmManager,authored,exact,anm-capture-exact-2026-08-30
 0x00444980,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004449A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004449C0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

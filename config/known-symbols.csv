@@ -152,3 +152,6 @@ address,name,module,confidence,evidence
 0x004440F0,th095::AnmManager::LoadSurface,AnmManager,exact,Canonical 666-byte surface loader with 22 relocations
 0x00444390,th095::AnmManager::ReleaseSurface,AnmManager,exact,Canonical 206-byte surface and deferred-data releaser
 0x00444460,th095::AnmManager::CopySurfaceToBackbuffer,AnmManager,exact,Canonical 445-byte lazy render-target and CopyRects path with 11 relocations
+0x00421D00,th095::AnmManager::TakeScreenshots,AnmManager,exact,Canonical 249-byte capture-request dispatcher with two relocations
+0x00444620,th095::AnmManagerCaptureView::CaptureToTexture,AnmManager,exact,Canonical 319-byte indexed texture-entry capture with four relocations
+0x00444760,th095::AnmManagerCaptureView::CaptureToSurface,AnmManager,exact,Canonical 537-byte primary/secondary surface capture with 15 relocations

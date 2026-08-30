@@ -469,3 +469,6 @@ th095::ResultScreen::Destroy,0x00426B90,function
 th095::AnmManager::LoadSurface,0x004440F0,function
 th095::AnmManager::ReleaseSurface,0x00444390,function
 th095::AnmManager::CopySurfaceToBackbuffer,0x00444460,function
+th095::AnmManager::TakeScreenshots,0x00421D00,function
+th095::AnmManagerCaptureView::CaptureToTexture,0x00444620,function
+th095::AnmManagerCaptureView::CaptureToSurface,0x00444760,function

@@ -438,15 +438,18 @@ adjacent load/preload chain is exact as well: `LoadAnm @ 0x00443010`, the
 slot reuse/deferred release, synchronous and asynchronous postload, cancellation,
 linked-entry counting, allocation, filename ownership, and external texture
 staging. All thirteen isolated `AnmPreload.cpp` units must remain exact. The
-adjacent surface ownership trio is now exact too: `LoadSurface @ 0x004440F0`,
+adjacent surface/capture lane is now exact too. `LoadSurface @ 0x004440F0`,
 `ReleaseSurface @ 0x00444390`, and `CopySurfaceToBackbuffer @ 0x00444460`
-contribute another 1,317 bytes and prove the primary/secondary/deferred-data/
-image-info arrays at `+0x11DC/+0x125C/+0x12DC/+0x13DC`. Their private
-`AnmSurface.cpp` ABI view avoids renumbering the established ANM dispatcher
-labels; all fourteen `AnmManager.cpp` units replay after a cold rebuild. Keep
-the Supervisor render callback's constant-index residual deferred, and continue
-the adjacent unreviewed ANM surface/render candidates at
-`0x00444620..0x004450FF`.
+prove the primary/secondary/deferred-data/image-info arrays at
+`+0x11DC/+0x125C/+0x12DC/+0x13DC`. `TakeScreenshots @ 0x00421D00` drains
+the two request lanes into exact `CaptureToTexture @ 0x00444620` and
+`CaptureToSurface @ 0x00444760`; TH095's extra texture-entry selector is at
+`+0x3817F0`, between the texture and surface rectangle blocks. These six units
+contribute 2,422 bytes. Their private `AnmSurface.cpp` ABI view avoids
+renumbering the established ANM dispatcher labels; all fourteen
+`AnmManager.cpp` units replay after a cold rebuild. Keep the Supervisor render
+callback's constant-index residual deferred, and continue the adjacent
+unreviewed ANM draw-wrapper/render candidates at `0x00444980..0x004450FF`.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`
