@@ -173,6 +173,23 @@ struct Float3
         return Float3(this->x - other.x, this->y - other.y, this->z - other.z);
     }
 
+    Float3 operator*(f32 scalar) const
+    {
+        return Float3(
+            this->x * scalar,
+            this->y * scalar,
+            this->z * scalar);
+    }
+
+    Float3 operator/(f32 scalar) const
+    {
+        f32 inverse = 1.0f / scalar;
+        return Float3(
+            this->x * inverse,
+            this->y * inverse,
+            this->z * inverse);
+    }
+
     void operator+=(const Float3 &other)
     {
         this->x += other.x;

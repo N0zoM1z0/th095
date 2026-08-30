@@ -279,6 +279,8 @@ th095::PhotoEffectManagerView::Spawn,0x0041DBD0,function
 th095::PhotoStraightLaserView::PhotoStraightLaserView,0x0041DD80,function
 th095::PhotoRotatingLaserView::PhotoRotatingLaserView,0x0041DE50,function
 th095::PhotoEffectBaseView::CountPhotoTargets,0x0041E750,function
+th095::PhotoStraightLaserView::CheckCollision,0x0041E9C0,function
 th095::PhotoStraightLaserView::DrawSecondary,0x0041F140,function
 th095::PhotoEffectBaseView::CountNearbyTargets,0x0041F280,function
+th095::PhotoRotatingLaserView::CheckCollision,0x0041FA10,function
 th095::PhotoRotatingLaserView::DrawSecondary,0x00420100,function

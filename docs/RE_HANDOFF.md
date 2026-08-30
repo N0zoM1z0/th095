@@ -453,8 +453,21 @@ secondary particle draws at `0x0041F140/0x00420100` are also source-present.
 They prove 12-unit sampling along both laser types, script `0x126` particle
 creation, packet-color propagation, and the angle-local nearby-target test.
 Three probes have exact target sizes and every relocation but retain only
-compiler-local slot differences; keep them non-exact and proceed to the two
-large type-specific collision handlers at `0x0041E9C0/0x0041FA10`.
+compiler-local slot differences and remain conservatively non-exact.
+
+The two large type-specific collision handlers at
+`0x0041E9C0/0x0041FA10` are now source-present. They recover the complete
+TH095 photo-cut behavior: 12-unit capture sampling, script-`0x126` and capture
+particle emission, straight-beam head/gap trimming, full-capture retirement,
+and rotating-beam conversion of surviving gaps into type-0 straight lasers.
+Their natural VC7.1 probes are 1,965/1,801 bytes versus 1,910/1,767-byte
+targets, so compiler-local/source-shape residuals receive no exact credit.
+All fifteen pre-existing canonical PhotoEffect units replay after the shared
+`Float3` operator additions; the rotating switch-table manifest records only
+the compiler's newly numbered local symbols. Continue leftward into the
+adjacent capture-particle owner at `0x0041CC10..0x0041D92E`, beginning with
+the four-caller spawn helper at `0x0041D460` and then its update/draw/lifecycle
+fanout.
 
 The large photo functions remain source-present but non-exact:
 `PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe

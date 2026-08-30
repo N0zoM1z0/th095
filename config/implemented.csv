@@ -278,6 +278,8 @@ th095::PhotoEffectManagerView::Spawn
 th095::PhotoStraightLaserView::PhotoStraightLaserView
 th095::PhotoRotatingLaserView::PhotoRotatingLaserView
 th095::PhotoEffectBaseView::CountPhotoTargets
+th095::PhotoStraightLaserView::CheckCollision
 th095::PhotoStraightLaserView::DrawSecondary
 th095::PhotoEffectBaseView::CountNearbyTargets
+th095::PhotoRotatingLaserView::CheckCollision
 th095::PhotoRotatingLaserView::DrawSecondary

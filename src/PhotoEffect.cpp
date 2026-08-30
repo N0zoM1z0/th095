@@ -195,15 +195,18 @@ struct PhotoEffectAnmView
     AnmVmId CreateVm(i32 scriptIndex, Float3 *position);
 };
 
-struct PhotoEffectManagerResourcesView
-{
-    u8 unknown00[0x74];
-    PhotoEffectAnmView *anm;
-};
+struct PhotoEffectManagerView;
 
-extern PhotoEffectManagerResourcesView *g_PhotoEffectManager;
+extern PhotoEffectManagerView *g_PhotoEffectManager;
 extern AnmManager *g_AnmManager;
 extern u32 g_PhotoEffectColors[];
+
+struct PhotoCaptureParticleSpawnerView
+{
+    void Spawn(i32 type, Float3 *position, u32 color);
+};
+
+extern PhotoCaptureParticleSpawnerView *g_PhotoCaptureParticleSpawner;
 
 struct PhotoEffectGlobalStateView
 {
@@ -235,14 +238,6 @@ Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 void __fastcall RotatePhotoEffectVector(
     Float3 *output, const Float3 *input, f32 angle);
 
-static inline Float3 PhotoScaleVector(const Float3 &value, f32 scalar)
-{
-    return Float3(
-        value.x * scalar,
-        value.y * scalar,
-        value.z * scalar);
-}
-
 struct PhotoEffectManagerView
 {
     u8 listRootVtable[4];                   // +0x00
@@ -254,7 +249,8 @@ struct PhotoEffectManagerView
     i32 nextId;                             // +0x58
     PhotoEffectVector collisionPosition;    // +0x5c
     PhotoEffectVector collisionSize;        // +0x68
-    u8 unknown74[0x0c];
+    PhotoEffectAnmView *anm;                // +0x74
+    u8 unknown78[0x08];
 
     void Remove(PhotoEffectBaseView *effect);
     static i32 __fastcall Update(PhotoEffectManagerView *manager);
@@ -635,6 +631,226 @@ i32 PhotoRotatingLaserView::DrawSecondary()
     return count;
 }
 
+i32 PhotoStraightLaserView::CheckCollision(
+    Float3 *position, Float3 *size, i32 capture)
+{
+    i32 hitCount = 0;
+    i32 sampleCount = 0;
+    Float3 initialPosition =
+        *reinterpret_cast<Float3 *>(&this->position);
+    f32 distance = 6.0f;
+    u8 hits[256];
+    memset(hits, 0, sizeof(hits));
+
+    Float3 halfSize = *size / 2.0f;
+    Float3 minimum = *position - halfSize;
+    Float3 maximum = *position + halfSize;
+    Float3 step;
+    step.FromAngleMagnitude(this->angle, 6.0f);
+    Float3 sample =
+        *reinterpret_cast<Float3 *>(&this->position) + step;
+    step += step;
+
+    while (distance + 6.0f < this->length)
+    {
+        if (minimum.x <= sample.x && sample.x <= maximum.x &&
+            minimum.y <= sample.y && sample.y <= maximum.y)
+        {
+            hits[sampleCount] = 1;
+            hitCount++;
+            AnmVm *vm = g_AnmManager->GetVm(
+                g_PhotoEffectManager->anm->CreateVm(0x126, &sample));
+            vm->color1.color = g_PhotoEffectColors[this->spawn.color];
+            if (capture != 0)
+            {
+                g_PhotoCaptureParticleSpawner->Spawn(
+                    0, &sample, vm->color1.color);
+            }
+        }
+        sample += step;
+        sampleCount++;
+        distance += 12.0f;
+    }
+
+    if (hitCount != 0)
+    {
+        if (hitCount >= sampleCount)
+        {
+            this->deletionCounter = 1;
+            return hitCount;
+        }
+
+        i32 sampleIndex = 0;
+        while (sampleIndex < sampleCount && hits[sampleIndex] != 0)
+        {
+            sampleIndex++;
+        }
+
+        if (sampleIndex != 0)
+        {
+            *reinterpret_cast<Float3 *>(&this->position) +=
+                step * static_cast<f32>(sampleIndex);
+            this->length -= static_cast<f32>(sampleIndex) * 12.0f;
+            this->spawn.maximumLength = this->length;
+            this->tailOffset = static_cast<f32>(sampleIndex) * 12.0f;
+        }
+
+        i32 gapLength = 0;
+        while (sampleIndex < sampleCount && hits[sampleIndex] == 0)
+        {
+            sampleIndex++;
+            gapLength++;
+        }
+
+        if (sampleIndex < sampleCount)
+        {
+            this->spawn.maximumLength -=
+                this->length - static_cast<f32>(gapLength) * 12.0f;
+            this->length = static_cast<f32>(gapLength) * 12.0f;
+
+            while (sampleIndex < sampleCount)
+            {
+                while (sampleIndex < sampleCount &&
+                       hits[sampleIndex] != 0)
+                {
+                    sampleIndex++;
+                }
+                if (sampleIndex >= sampleCount)
+                {
+                    return hitCount;
+                }
+
+                gapLength = 0;
+                i32 gapStart = sampleIndex;
+                while (sampleIndex < sampleCount &&
+                       hits[sampleIndex] == 0)
+                {
+                    sampleIndex++;
+                    gapLength++;
+                }
+
+                PhotoEffectArgsSmallView args = this->spawn;
+                args.maximumLength =
+                    static_cast<f32>(gapLength) * 12.0f;
+                *reinterpret_cast<f32 *>(&args.initialLength) =
+                    args.maximumLength;
+                *reinterpret_cast<Float3 *>(&args.position) =
+                    initialPosition +
+                    step * static_cast<f32>(gapStart);
+                g_PhotoEffectManager->Spawn(0, &args);
+            }
+        }
+    }
+    return hitCount;
+}
+
+i32 PhotoRotatingLaserView::CheckCollision(
+    Float3 *position, Float3 *size, i32 capture)
+{
+    i32 hitCount = 0;
+    i32 sampleCount = 0;
+    Float3 initialPosition =
+        *reinterpret_cast<Float3 *>(&this->position);
+    f32 distance = 6.0f;
+    u8 hits[256];
+    memset(hits, 0, sizeof(hits));
+
+    Float3 halfSize = *size / 2.0f;
+    Float3 minimum = *position - halfSize;
+    Float3 maximum = *position + halfSize;
+    Float3 step;
+    step.FromAngleMagnitude(this->angle, 6.0f);
+    Float3 sample =
+        *reinterpret_cast<Float3 *>(&this->position) + step;
+    step += step;
+
+    while (distance + 6.0f < this->length)
+    {
+        if (minimum.x <= sample.x && sample.x <= maximum.x &&
+            minimum.y <= sample.y && sample.y <= maximum.y)
+        {
+            hits[sampleCount] = 1;
+            hitCount++;
+            AnmVm *vm = g_AnmManager->GetVm(
+                g_PhotoEffectManager->anm->CreateVm(0x126, &sample));
+            vm->color1.color = g_PhotoEffectColors[this->spawn.color];
+            if (capture != 0)
+            {
+                g_PhotoCaptureParticleSpawner->Spawn(
+                    0, &sample, vm->color1.color);
+            }
+        }
+        sample += step;
+        sampleCount++;
+        distance += 12.0f;
+    }
+
+    if (hitCount != 0)
+    {
+        i32 sampleIndex = 0;
+        while (sampleIndex < sampleCount && hits[sampleIndex] != 0)
+        {
+            sampleIndex++;
+        }
+
+        if (sampleIndex == 0)
+        {
+            i32 gapLength = 0;
+            while (sampleIndex < sampleCount && hits[sampleIndex] == 0)
+            {
+                sampleIndex++;
+                gapLength++;
+            }
+            if (sampleIndex >= sampleCount)
+            {
+                return hitCount;
+            }
+            this->length = static_cast<f32>(gapLength) * 12.0f;
+        }
+        else
+        {
+            this->length = 0.0f;
+        }
+
+        while (sampleIndex < sampleCount)
+        {
+            while (sampleIndex < sampleCount && hits[sampleIndex] != 0)
+            {
+                sampleIndex++;
+            }
+            if (sampleIndex >= sampleCount)
+            {
+                return hitCount;
+            }
+
+            i32 gapLength = 0;
+            i32 gapStart = sampleIndex;
+            while (sampleIndex < sampleCount && hits[sampleIndex] == 0)
+            {
+                sampleIndex++;
+                gapLength++;
+            }
+
+            PhotoEffectArgsSmallView args;
+            args.maximumLength = static_cast<f32>(gapLength) * 12.0f;
+            *reinterpret_cast<f32 *>(&args.initialLength) =
+                args.maximumLength;
+            *reinterpret_cast<Float3 *>(&args.position) =
+                initialPosition + step * static_cast<f32>(gapStart);
+            args.speed = 8.0f;
+            args.angle = this->angle;
+            args.width = this->width;
+            args.type = this->spawn.type;
+            args.color = this->spawn.color;
+            args.terminalDistance =
+                this->spawn.maximumLength -
+                static_cast<f32>(gapStart) * 12.0f;
+            g_PhotoEffectManager->Spawn(0, &args);
+        }
+    }
+    return hitCount;
+}
+
 void PhotoEffectManagerView::Remove(PhotoEffectBaseView *effect)
 {
     this->effectCount--;
@@ -871,7 +1087,7 @@ i32 PhotoEffectBaseView::CountPhotoTargets(
     i32 count = 0;
     i32 index = 0;
     f32 distance = 6.0f;
-    Float3 halfSize = PhotoScaleVector(*size, 1.0f / 2.0f);
+    Float3 halfSize = *size / 2.0f;
     Float3 minimum = *position - halfSize;
     Float3 maximum = *position + halfSize;
 
