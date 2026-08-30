@@ -21,9 +21,23 @@ struct PhotoAnmVmId
 {
     i32 value;
 
+    PhotoAnmVmId()
+    {
+    }
+
+    PhotoAnmVmId(i32 value)
+    {
+        this->value = value;
+    }
+
     operator i32() const
     {
         return this->value;
+    }
+
+    i32 operator==(PhotoAnmVmId other) const
+    {
+        return this->value == other.value;
     }
 
     void operator=(i32 value)
@@ -49,12 +63,43 @@ struct PhotoAnmLoadedView
 
     ZunResult SetSprite(AnmVm *vm, i32 spriteIdx);
     void SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript);
+
+    void SetAndExecuteScriptIdx(AnmVm *vm, i32 scriptIndex)
+    {
+        vm->anmFile = reinterpret_cast<AnmLoaded *>(this);
+        vm->scriptIndex = scriptIndex;
+        this->SetAndExecuteScript(vm, this->scripts[scriptIndex]);
+    }
+
     void InitializeVm(AnmVm *vm, i32 scriptIndex);
     PhotoAnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
 };
 
 typedef char PhotoAnmLoadedViewSizeIs1C[
     (sizeof(PhotoAnmLoadedView) == 0x1c) ? 1 : -1];
+
+struct PhotoAnmSpawnerView
+{
+    // ABI-facing form of the small-structure return used by the target call.
+    void SpawnInto(PhotoAnmVmId *output, i32 script, Float3 *position);
+};
+
+struct PhotoBulletManagerView
+{
+    u8 unknown0000[0x1760];
+    ZunColor photoColor;
+    u8 unknown1764[0x27c5b0 - 0x1764];
+    PhotoAnmSpawnerView *anmSpawner;
+
+    void BeginPhotoCapture(const Float3 *position, const Float3 *size);
+    i32 CountNearbyTargets(const Float3 *position, f32 radius);
+    void *CapturePhotoTargets(const Float3 *position, const Float3 *size);
+};
+
+typedef char PhotoBulletManagerAnmAt27C5B0[
+    (offsetof(PhotoBulletManagerView, anmSpawner) == 0x27c5b0) ? 1 : -1];
+
+extern PhotoBulletManagerView *g_PhotoBulletManager;
 
 struct PhotoCameraState
 {

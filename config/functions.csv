@@ -424,7 +424,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x0042EE90,273,0x0042EFA0,FUN_0042ee90,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042EFB0,374,0x0042F125,FUN_0042efb0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x0042F130,95,0x0042F18E,FUN_0042f130,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x0042F190,3463,0x0042FF16,FUN_0042f190,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x0042F190,3463,0x0042FF16,FUN_0042f190,th095::PhotoGameUpdateView::UpdateMainState,PhotoGame,reconstructed,0.00,__thiscall,i32 PhotoGameUpdateView::UpdateMainState(),false,src/PhotoGame.cpp,Pinned VC7.1 semantic reconstruction has the exact 3463-byte authored extent plus both 8-entry switch tables; 3232/3275 comparable bytes match and all 63 relocation fields resolve,authored,Complete TH095 live-play movement focus-VM animation bounds and position-history hub; 43 compiler-local stack-slot displacement bytes remain non-exact
 0x0042FF60,405,0x004300F4,FUN_0042ff60,th095::PhotoGameUpdateView::Update,PhotoGame,matching,100.00,__thiscall,i32 PhotoGameUpdateView::Update(),false,src/PhotoGame.cpp,Canonical VC7.1 comparison covers the 405-byte authored body plus its 16-byte switch table and all 23 relocations,authored,Exact TH095 photo-game state coordinator completion transitions ANM execution and timer advance
 0x00430110,72,0x00430157,FUN_00430110,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00430160,30,0x0043017D,FUN_00430160,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,

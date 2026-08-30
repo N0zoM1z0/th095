@@ -158,9 +158,19 @@ struct Float3
         this->z = z;
     }
 
+    operator f32 *()
+    {
+        return reinterpret_cast<f32 *>(this);
+    }
+
     Float3 operator+(const Float3 &other) const
     {
         return Float3(this->x + other.x, this->y + other.y, this->z + other.z);
+    }
+
+    Float3 operator-(const Float3 &other) const
+    {
+        return Float3(this->x - other.x, this->y - other.y, this->z - other.z);
     }
 
     void operator+=(const Float3 &other)

@@ -108,7 +108,7 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | `0x00430AB0` | 7,271 | 1 caller / 29 internal callees | source-present camera/photo state machine | Complete TH095 camera semantics; compiler-local residuals deferred |
 | `0x00426BF0` | 6,471 | 1 caller / 17 internal callees | boundary-reviewed authored replay/menu dispatcher | Eleven-function replay/best-shot cluster |
 | `0x0042AD60` | 5,309 | 1 caller / 16 internal callees | source-present photo-stage state machine | Capture crop, texture, best-shot, animation, and boundary-fade owner |
-| `0x0042F190` | 3,463 | 1 caller / 6 internal callees | next TH095 photo-game hub | Main live-play update called by the exact four-state coordinator |
+| `0x0042F190` | 3,463 | 1 caller / 6 internal callees | source-present photo-game main state | Complete movement/focus/animation/bounds/history loop; compiler-local residuals deferred |
 | `0x00439200` | 2,525 | 2 callers / 16 internal callees | `SoundPlayer::ProcessQueues` | Shared threaded audio state machine |
 | `0x00420240` | 1,326 | CRT root / 30 internal callees | `WinMain` | Process-level ownership and subsystem naming |
 

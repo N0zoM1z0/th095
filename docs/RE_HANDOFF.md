@@ -17,7 +17,7 @@
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 52.38% (103,224 / 197,049)
+  relocations. Confirmed authored-byte coverage is now 51.48% (103,224 / 200,512)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 216 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,607 origin/boundary reviews pending. Original class
+  confirms 217 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,606 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -80,6 +80,17 @@
   ANM execution, and timer advance. Keeping its full `+0x2A18` layout local
   preserves the compiler label identities of all nine established
   `PhotoCamera.cpp` units; each one replays unchanged.
+- The same root-level unit now reconstructs the complete 3,463-byte
+  `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` live-play hub. It owns
+  eight-direction movement, the focus/extra-slow speed tiers, focus VM
+  lifetime and screen placement, four player animation transitions, exact
+  hundredth-coordinate flooring, three bounds pairs, and sixteen-frame
+  position history. Its pinned VC7.1 probe has the exact authored extent,
+  `0x134` frame, both adjacent eight-entry switch tables, and all 63 relocation
+  fields; 3,232/3,275 comparable bytes match. The remaining 43 bytes are only
+  compiler-local stack-slot displacements and receive no exact credit. The
+  exact outer coordinator continues to replay after its return type and COFF
+  label mappings were updated.
 - Root-level `EclOperandsInt.cpp` and `EclOperandsFloat.cpp` now reconstruct
   the high-connectivity operand resolver pair at `0x0040FAE0/0x004105A0`.
   Their 3,439 authored bytes, adjacent 684 bytes of compiler-owned jump tables,
@@ -315,15 +326,15 @@
 
 ## Next bounded lane
 
-Continue the TH095-specific photography lane with
-`PhotoGameUpdateView::UpdateMainState @ 0x0042F190`. This 3,463-byte hub is the
-sole live-play callee of the exact four-state coordinator at `0x0042FF60`; it
-owns 31 branches and six internal callees, including four ANM executions and
-the gameplay-chain update. In parallel with that bounded source recovery,
-sweep the adjacent player lifecycle cluster at `0x0042EA70..0x0042F18E` by
-connectivity and size. Keep all four exact PhotoStage units and the exact
-PhotoGame coordinator green while extending shared views, and use descriptive
-target-local names until ownership is independently proved.
+Continue the TH095-specific photography lane by sweeping the adjacent player
+lifecycle cluster at `0x0042EA70..0x0042F18E`. Start with the 374-byte
+coordinator at `0x0042EFB0`: it has eight internal callees and directly owns
+the `0x0042EA70`, `0x0042ECA0`, and `0x0042EE90` construction/registration
+helpers. Recover that ownership spine before its isolated leaves, then close
+the remaining small lifecycle functions. Keep all four exact PhotoStage units,
+the exact outer PhotoGame coordinator, and every established PhotoCamera unit
+green while extending shared views; use descriptive target-local names until
+ownership is independently proved.
 
 The large photo functions remain source-present but non-exact:
 `PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe

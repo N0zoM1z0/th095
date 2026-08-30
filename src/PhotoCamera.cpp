@@ -92,24 +92,6 @@ struct PhotoStageControllerView
     i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
 };
 
-struct PhotoAnmSpawnerView
-{
-    // ABI-facing form of the small-structure return used by the target call.
-    void SpawnInto(PhotoAnmVmId *output, i32 script, Float3 *position);
-};
-
-struct PhotoBulletManagerView
-{
-    u8 unknown0000[0x1760];
-    ZunColor photoColor;
-    u8 unknown1764[0x27c5b0 - 0x1764];
-    PhotoAnmSpawnerView *anmSpawner;
-
-    void BeginPhotoCapture(const Float3 *position, const Float3 *size);
-    i32 CountNearbyTargets(const Float3 *position, f32 radius);
-    void *CapturePhotoTargets(const Float3 *position, const Float3 *size);
-};
-
 struct PhotoAnmManagerView
 {
     AnmVm *FindVm(i32 id);
@@ -140,7 +122,6 @@ extern PhotoRuntimeView *g_PhotoRuntime;
 extern PhotoGlobalStateView *g_PhotoGlobalState;
 extern PhotoStageStateView *g_PhotoStageState;
 extern PhotoStageControllerView *g_PhotoStageController;
-extern PhotoBulletManagerView *g_PhotoBulletManager;
 extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;
 
