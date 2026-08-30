@@ -1175,6 +1175,12 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
 #undef supervisor
 }
 
+static __forceinline void GetSupervisorAnmSurface(
+    IDirect3DSurface8 **output, AnmManager *manager, i32 surfaceIndex)
+{
+    *output = manager->surfaces[surfaceIndex];
+}
+
 // FUNCTION: TH095 0x004235D0.
 i32 __fastcall Supervisor::OnDraw2(Supervisor *s)
 {
@@ -1233,7 +1239,7 @@ i32 __fastcall Supervisor::OnDraw2(Supervisor *s)
     }
     else
     {
-        locals.surface = g_AnmManager->surfaces[8];
+        GetSupervisorAnmSurface(&locals.surface, g_AnmManager, 8);
         if (locals.surface != NULL)
         {
             g_AnmManager->ReleaseSurface(8);

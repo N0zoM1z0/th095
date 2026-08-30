@@ -10,7 +10,6 @@ namespace th095
 
 struct ReplayBrowserLoadLocals
 {
-    i32 scanFinished2;
     i32 scanFinished1;
     i32 i;
     char path[MAX_PATH];
@@ -20,12 +19,12 @@ struct ReplayBrowserLoadLocals
     HANDLE findHandle;
 };
 
-typedef char ReplayBrowserLoadLocalsSizeIs25C[
-    (sizeof(ReplayBrowserLoadLocals) == 0x25c) ? 1 : -1];
-typedef char ReplayBrowserLoadPathAt0C[
-    (offsetof(ReplayBrowserLoadLocals, path) == 0x0c) ? 1 : -1];
-typedef char ReplayBrowserLoadFindDataAt114[
-    (offsetof(ReplayBrowserLoadLocals, findData) == 0x114) ? 1 : -1];
+typedef char ReplayBrowserLoadLocalsSizeIs258[
+    (sizeof(ReplayBrowserLoadLocals) == 0x258) ? 1 : -1];
+typedef char ReplayBrowserLoadPathAt08[
+    (offsetof(ReplayBrowserLoadLocals, path) == 0x08) ? 1 : -1];
+typedef char ReplayBrowserLoadFindDataAt110[
+    (offsetof(ReplayBrowserLoadLocals, findData) == 0x110) ? 1 : -1];
 
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
@@ -203,6 +202,7 @@ ZunResult ReplayBrowserView::LoadReplaySlot(i32 slot, char *path)
 
 void __fastcall LoadReplayBrowserEntries(void *)
 {
+    i32 scanFinished2;
     ReplayBrowserLoadLocals locals;
 
     locals.browser = g_ReplayBrowser;
@@ -228,15 +228,14 @@ void __fastcall LoadReplayBrowserEntries(void *)
         "th95_ud????.rpy", &locals.findData);
     if (locals.findHandle != INVALID_HANDLE_VALUE)
     {
-        do
+        while (locals.slot < 80)
         {
-            if (locals.slot >= 80 ||
-                locals.browser->requestedState != 3)
+            if (locals.browser->requestedState != 3)
             {
                 break;
             }
-            locals.scanFinished2 = g_ReplayScanFinished;
-            if (locals.scanFinished2 != 0)
+            scanFinished2 = g_ReplayScanFinished;
+            if (scanFinished2 != 0)
             {
                 break;
             }
@@ -245,8 +244,12 @@ void __fastcall LoadReplayBrowserEntries(void *)
                 locals.slot, locals.findData.cFileName);
             locals.slot++;
             _chdir("replay");
-        } while (FindNextFileA(
-                     locals.findHandle, &locals.findData) != 0);
+            if (FindNextFileA(
+                    locals.findHandle, &locals.findData) == 0)
+            {
+                break;
+            }
+        }
     }
     FindClose(locals.findHandle);
     _chdir("../");

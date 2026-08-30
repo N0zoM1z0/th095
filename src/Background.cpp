@@ -724,30 +724,47 @@ i32 Background::RenderObjects(i32 mode)
 }
 
 // FUNCTION: TH095 0x004031A0.
+// Target-proven identifier buckets restore the seven live culling locals.
+#define cullHalfSize soundIndexLocal01
+#define cullPositionSum commandCursorLocal02
+#define cullCenter jLocal00
+#define cullRelativeCenter restartCommandProcessingLocal05
+#define cullCameraPosition preloadBufferLocal03
+#define cullObjectDistance averagedPanLocal12
+#define cullRadius iLocal11
 i32 BackgroundStageObject::IsVisible(
     const Float3 *instancePosition, f32 cullingDistanceSq)
 {
-    Float3 halfSize = this->size / 2.0f;
-    Float3 center = this->position + *instancePosition + halfSize;
-    Float3 cameraPosition =
+    Float3 cullHalfSize = this->size / 2.0f;
+    Float3 cullPositionSum = this->position + *instancePosition;
+    Float3 cullCenter = cullPositionSum + cullHalfSize;
+    Float3 cullRelativeCenter = cullCenter;
+    Float3 cullCameraPosition =
         g_CurrentBackgroundViewport->cameraPosition +
         g_CurrentBackgroundViewport->cameraPositionOffset;
-    center = center - cameraPosition;
+    cullRelativeCenter = cullRelativeCenter - cullCameraPosition;
 
-    if (D3DXVec3LengthSq(reinterpret_cast<D3DXVECTOR3 *>(&center)) >
+    if (D3DXVec3LengthSq(reinterpret_cast<D3DXVECTOR3 *>(&cullRelativeCenter)) >
         cullingDistanceSq)
         return 1;
 
-    f32 objectDistance = D3DXVec3Dot(
-        reinterpret_cast<D3DXVECTOR3 *>(&center),
+    f32 cullObjectDistance = D3DXVec3Dot(
+        reinterpret_cast<D3DXVECTOR3 *>(&cullRelativeCenter),
         reinterpret_cast<D3DXVECTOR3 *>(&g_BackgroundCameraForward));
-    f32 radius =
+    f32 cullRadius =
         D3DXVec3Length(reinterpret_cast<D3DXVECTOR3 *>(&this->size)) / 2.0f +
         1280.0f;
-    if (objectDistance > radius || objectDistance < 80.0f)
+    if (cullObjectDistance > cullRadius || cullObjectDistance < 80.0f)
         return 1;
     return 0;
 }
+#undef cullHalfSize
+#undef cullPositionSum
+#undef cullCenter
+#undef cullRelativeCenter
+#undef cullCameraPosition
+#undef cullObjectDistance
+#undef cullRadius
 
 // FUNCTION: TH095 0x00402E90.
 i32 Background::UpdateStageObjectVms()

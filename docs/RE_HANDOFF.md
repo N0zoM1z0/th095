@@ -207,10 +207,12 @@
 - The same root-level unit now reconstructs the complete 8,560-byte
   `PhotoStageDisplayView::Build @ 0x0042C5C0`. It renders the six-digit slot
   score and the full twenty-bit photo-bonus/multiplier row set through eighty
-  persistent display VMs. The natural VC7.1 body is 8,530 bytes, so its
-  compiler-local temporary order is deferred without exact credit. Its
-  118-byte `InitializePhotoStageDisplayVm @ 0x0042E730` dependency is canonical
-  exact with all four relocations.
+  persistent display VMs. The natural VC7.1 body is 8,530 bytes. A complete
+  stack audit proves that both target and source already own all 92 live VM
+  pointer homes, while target `EBP-0x35..-0x13F` is never read, written, or
+  addressed through EBP or ESP. Do not model that `~0x108` compiler-only frame
+  hole as padding/inert storage. Its 118-byte `InitializePhotoStageDisplayVm @
+  0x0042E730` dependency remains canonical exact with all four relocations.
 - SoundPlayer uses the same `/Od /Ob1` profile. Its target-proven object size
   is `0x52D0`; exact worker state lives at `+0x5218..+0x522C`, and SFX file
   ownership begins at `+0x5230`.
@@ -297,10 +299,12 @@
   `+0x20/+0xF8`, 165 ANM handles at `+0xBF4`, eighty replay pointers at
   `+0xEA8`, and browser/outer states at `+0x610C/+0x6110`.
   `ReplayBrowserView::LoadReplaySlot @ 0x00450E20` is exact for all 306 bytes
-  and 19 relocations, and `ReplayBrowserExitSignal::Request @ 0x0041BB00` is
-  exact for all 21 bytes. `LoadReplayBrowserEntries @ 0x00450C30` is complete
-  source-present at 395 versus 403 target bytes; defer its aggregate-local
-  stack ordering unless a natural source-shape improvement appears.
+  and 19 relocations, `ReplayBrowserExitSignal::Request @ 0x0041BB00` is exact
+  for all 21 bytes, and `LoadReplayBrowserEntries @ 0x00450C30` is now exact
+  for all 403 bytes and 23 relocations. The scan callback's target source shape
+  keeps its second scan-finished snapshot as a function-scope scalar and uses a
+  bounded `while` loop with an explicit `FindNextFileA == 0` break for the
+  sixty user replay slots.
   The dedicated replay worker and its two Supervisor wrappers are separately
   exact for another 396 bytes: the `0x18`-byte worker at Supervisor `+0x648`
   owns cooperative stop/join and `_beginthreadex` startup, while critical
@@ -321,8 +325,10 @@
   paths, and `0x8E`-byte input-slot layout. The complete 2,662-byte
   `Controller::GetInput @ 0x00419AE0` is source-present for keyboard mapping,
   the third aggregate input slot, and all repeat/pressed/released histories.
-  Its natural VC7.1 body is 2,655 bytes; the seven-byte compiler-temporary
-  residual receives no exact credit. `ControllerInputSlotView` construction at
+  Its natural VC7.1 body is 2,655 bytes. The target reserves a `0x124` frame
+  while every semantic local fits the source's `0x11C`; `EBP-0x120/-0x124`
+  are never referenced or addressed, so the eight-byte compiler-only hole
+  remains deliberately uncredited. `ControllerInputSlotView` construction at
   `0x0041BC00` is exact for another 278 bytes and proves three nine-binding
   profiles at slot `+0x58`: joystick, Win32 virtual-key, and DirectInput
   scan-code defaults. The compiler-owned `0x00493F70` wrapper constructs three
@@ -749,14 +755,15 @@ missing behavior. The adjacent `0x00402620` scalar deleting destructor is now
 an explicit compiler-owned exclusion.
 
 The BackgroundInf draw/render spine at `0x00402750/0x00402990/0x00402F60/
-0x004031A0` is now source-present. `DrawHighPrio` and `DrawLowPrio` are both
-canonical exact, totaling 1,056 authored bytes and all 72 relocations. The
-490-byte low-priority path closes naturally with one fully live, gapless 0x20
-semantic aggregate ordered `{left, top, D3DRECT clearRect, right, bottom}`; no
-padding or inactive storage is involved. The renderer and culler naturally
-emit 544/622 bytes against 565/658-byte targets and preserve the full
-traversal, VM position/scale, fog-mode, viewport-camera, distance, and
-forward-plane logic. Do not manufacture their remaining compiler frame shape.
+0x004031A0` now has three canonical exact bodies. `DrawHighPrio`, `DrawLowPrio`,
+and `BackgroundStageObject::IsVisible` total 1,714 authored bytes and all 83
+relocations. The 490-byte low-priority path uses one fully live, gapless 0x20
+semantic aggregate. The 658-byte culler keeps five non-trivial vector
+intermediates plus object-distance/radius as real locals; target-proven VC7.1
+backing identifiers reproduce their physical order and therefore the exact
+camera-relative distance, near-plane-80, and `length(size)/2 + 1280` tests.
+`RenderObjects @ 0x00402F60` remains source-present at 544 versus 565 target
+bytes; do not manufacture its remaining compiler source shape.
 
 The remaining BackgroundInf lifecycle and viewport edges are now closed.
 `ConfigureBackgroundViewport @ 0x00401B70` is canonical exact for 108 bytes
@@ -791,15 +798,18 @@ semantic probes with every relocation resolved. They remain non-exact because
 of one register-direction byte and target-only compiler local-frame homes; do
 not manufacture those residuals.
 
-The two target-local ASCII consumers are now source-present and their inherited
-labels are corrected through the exact `Supervisor::RegisterChain` relocation
-map. `DrawFpsCounter @ 0x00423790` is canonical exact for 170 bytes and all ten
-relocations; it updates `Supervisor+0x79C`, applies the 30/40 FPS color
-thresholds, and queues `%2.1ffps`. `OnDraw2 @ 0x004235D0` owns the viewport,
-pulsing “Press Shot Button”, queue drain, and surface-8 copy/release path. Its
-complete natural probe matches the first 390 bytes exactly and is 434 versus
-442 target bytes; leave the target's longer constant-index array load
-uncredited instead of reintroducing the TH08 reconstruction's assembly island.
+The two target-local ASCII consumers are now canonical exact and their
+inherited labels are corrected through the exact `Supervisor::RegisterChain`
+relocation map. `DrawFpsCounter @ 0x00423790` is exact for 170 bytes and all ten
+relocations. `OnDraw2 @ 0x004235D0` is exact for all 442 bytes and 23
+relocations: it owns viewport 1, optional clear color, pulsing “Press Shot
+Button”, the regular ASCII queue, and surface-8 copy/release. The target's
+longer constant-index surface load is reproduced naturally by an inline
+out-parameter helper that writes the selected `IDirect3DSurface8 *` into the
+real local; no assembly or padding is used. Adding that helper renumbered 25
+compiler-local labels in `UpdateSceneState`; an offset-keyed audit proved all
+46 relocation offsets/types/destinations unchanged before the manifest-only
+symbol refresh.
 
 The immediate timing dependency is also closed exactly:
 `Supervisor::CalculateFps @ 0x00424720` reproduces all 603 bytes and 43
