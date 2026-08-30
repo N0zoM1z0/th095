@@ -32,6 +32,11 @@ Current translation units:
   including live audio volume updates and three joystick-button bindings. Its
   complete body is source-present; the remaining mismatch is compiler-local
   sprite-temporary allocation rather than missing behavior.
+- `PhotoGame.cpp` owns TH095's `PlayerInf` live-play object rather than a
+  traditional TH08-style shot/bomb player. Its movement, compact `player.sht`
+  loader, embedded camera initialization, three Chain callbacks, and complete
+  lifetime are source-present; eleven lifecycle/draw/SHT units are canonical
+  exact.
 
 Header organization follows the TH08 reconstruction where the evidence permits:
 

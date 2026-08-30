@@ -7,6 +7,7 @@ namespace th095
 {
 
 struct PhotoCapturedBulletView;
+struct PhotoAnmVmIdValue;
 
 enum PhotoCameraMode
 {
@@ -21,24 +22,12 @@ struct PhotoAnmVmId
 {
     i32 value;
 
-    PhotoAnmVmId()
-    {
-    }
-
-    PhotoAnmVmId(i32 value)
-    {
-        this->value = value;
-    }
-
     operator i32() const
     {
         return this->value;
     }
 
-    i32 operator==(PhotoAnmVmId other) const
-    {
-        return this->value == other.value;
-    }
+    __forceinline i32 operator==(PhotoAnmVmIdValue other) const;
 
     void operator=(i32 value)
     {
@@ -124,6 +113,9 @@ struct PhotoCameraState
     Float3 viewfinderPosition;        // +0xbc4
     Float3 viewfinderSize;            // +0xbd0
 
+    PhotoCameraState();
+    ~PhotoCameraState();
+    void Initialize();
     void BeginCapture();
     void UpdateViewfinder();
     u32 TakePhoto();

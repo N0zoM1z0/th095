@@ -6017,7 +6017,7 @@ relocations = [
   { offset = 0xC8, type = "DIR32", symbol = "?g_PhotoInput@th095@@3GA", target = 0x004BE244 },
   { offset = 0xE6, type = "DIR32", symbol = "?g_PhotoInput@th095@@3GA", target = 0x004BE244 },
   { offset = 0x104, type = "DIR32", symbol = "?g_PhotoInput@th095@@3GA", target = 0x004BE244 },
-  { offset = 0x13C, type = "DIR32", symbol = "$L66736", target = 0x00432CE3 },
+  { offset = 0x13C, type = "DIR32", symbol = "$L66766", target = 0x00432CE3 },
   { offset = 0x1D7, type = "DIR32", symbol = "__real@c067000000000000", target = 0x004966E8 },
   { offset = 0x1FC, type = "DIR32", symbol = "__real@4067000000000000", target = 0x004966E0 },
   { offset = 0x21F, type = "DIR32", symbol = "__real@42000000", target = 0x00495440 },
@@ -6049,14 +6049,14 @@ relocations = [
   { offset = 0x408, type = "REL32", symbol = "?PhotoToScreen@th095@@YIPAUFloat3@1@PAU21@PBU21@@Z", target = 0x004186D0 },
   { offset = 0x416, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x41B, type = "REL32", symbol = "?SetVmPosition@PhotoAnmManagerView@th095@@QAEXHPBUFloat3@2@@Z", target = 0x004451F0 },
-  { offset = 0x423, type = "DIR32", symbol = "$L66089", target = 0x00432A12 },
-  { offset = 0x427, type = "DIR32", symbol = "$L66090", target = 0x00432A1B },
-  { offset = 0x42B, type = "DIR32", symbol = "$L66088", target = 0x00432A09 },
-  { offset = 0x42F, type = "DIR32", symbol = "$L66087", target = 0x00432A00 },
-  { offset = 0x433, type = "DIR32", symbol = "$L66091", target = 0x00432A24 },
-  { offset = 0x437, type = "DIR32", symbol = "$L66093", target = 0x00432A44 },
-  { offset = 0x43B, type = "DIR32", symbol = "$L66092", target = 0x00432A33 },
-  { offset = 0x43F, type = "DIR32", symbol = "$L66094", target = 0x00432A55 },
+  { offset = 0x423, type = "DIR32", symbol = "$L66119", target = 0x00432A12 },
+  { offset = 0x427, type = "DIR32", symbol = "$L66120", target = 0x00432A1B },
+  { offset = 0x42B, type = "DIR32", symbol = "$L66118", target = 0x00432A09 },
+  { offset = 0x42F, type = "DIR32", symbol = "$L66117", target = 0x00432A00 },
+  { offset = 0x433, type = "DIR32", symbol = "$L66121", target = 0x00432A24 },
+  { offset = 0x437, type = "DIR32", symbol = "$L66123", target = 0x00432A44 },
+  { offset = 0x43B, type = "DIR32", symbol = "$L66122", target = 0x00432A33 },
+  { offset = 0x43F, type = "DIR32", symbol = "$L66124", target = 0x00432A55 },
 ]
 
 [units.photo-take-photo]
@@ -7986,6 +7986,178 @@ relocations = [
   { offset = 0xF8, type = "REL32", symbol = "_D3DXLoadSurfaceFromMemory@40", target = 0x0045BCBF },
 ]
 
+[units.photo-camera-constructor]
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCameraState::PhotoCameraState"]
+symbol = "??0PhotoCameraState@th095@@QAE@XZ"
+target_address = 0x0042EBC0
+size = 0xA7
+relocations = [
+  { offset = 0xA, type = "DIR32", symbol = "??1AnmVm@th095@@QAE@XZ", target = 0x0041CBE0 },
+  { offset = 0xF, type = "DIR32", symbol = "??0AnmVm@th095@@QAE@XZ", target = 0x00401EB0 },
+  { offset = 0x22, type = "REL32", symbol = "??_L@YGXPAXIHP6EX0@Z1@Z", target = 0x004855ED },
+]
+
+[units.photo-camera-destructor]
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoCameraState::~PhotoCameraState"]
+symbol = "??1PhotoCameraState@th095@@QAE@XZ"
+target_address = 0x0042EC70
+size = 0x23
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "??1AnmVm@th095@@QAE@XZ", target = 0x0041CBE0 },
+  { offset = 0x1B, type = "REL32", symbol = "??_M@YGXPAXIHP6EX0@Z@Z", target = 0x0048558D },
+]
+
+[units.photo-player-load-anm]
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::LoadPhotoPlayerAnm"]
+symbol = "?LoadPhotoPlayerAnm@th095@@YIHXZ"
+target_address = 0x0042EE30
+size = 0x34
+relocations = [
+  { offset = 0x4, type = "DIR32", symbol = "??_C@_0L@KJJDNKAJ@player?4anm?$AA@", target = 0x004966B8 },
+  { offset = 0xC, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x11, type = "REL32", symbol = "?LoadAnm@AnmManager@th095@@QAEPAUAnmLoaded@2@HPBD@Z", target = 0x004432E0 },
+  { offset = 0x1A, type = "DIR32", symbol = "??_C@_0DD@KDINFMGL@?$IO?$KJ?$IL?$EA?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$IM?$KJ?$IC?B?$IC?$KJ?$IC?h?$IC?$NM?$IC?$LJ?$IC?q?$IBB?$IDf?$IB?$FL@", target = 0x00496684 },
+  { offset = 0x1F, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x24, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+]
+
+[units.photo-player-release-anm]
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ReleasePhotoPlayerAnm"]
+symbol = "?ReleasePhotoPlayerAnm@th095@@YIHXZ"
+target_address = 0x0042EE70
+size = 0x14
+relocations = [
+  { offset = 0x7, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0xC, type = "REL32", symbol = "?ReleaseAnm@AnmManager@th095@@QAEXH@Z", target = 0x00443980 },
+]
+
+[units.photo-player-create]
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameUpdateView::Create"]
+symbol = "?Create@PhotoGameUpdateView@th095@@SIPAU12@XZ"
+target_address = 0x0042EFB0
+size = 0x176
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?Create@PhotoGameUpdateView@th095@@SIPAU12@XZ", target = 0x0049395B },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x21, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x3C, type = "REL32", symbol = "??0PhotoGameUpdateView@th095@@QAE@XZ", target = 0x0042EA70 },
+  { offset = 0x63, type = "REL32", symbol = "?Initialize@PhotoGameUpdateView@th095@@QAEHXZ", target = 0x0042ECA0 },
+  { offset = 0x71, type = "DIR32", symbol = "?OnUpdate@PhotoGameUpdateView@th095@@SIHPAU12@@Z", target = 0x00430180 },
+  { offset = 0x76, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x7B, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
+  { offset = 0x92, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x97, type = "REL32", symbol = "?AddToCalcChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418A20 },
+  { offset = 0xA8, type = "DIR32", symbol = "?OnDrawPlayer@PhotoGameUpdateView@th095@@SIHPAU12@@Z", target = 0x00430210 },
+  { offset = 0xAD, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xB2, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
+  { offset = 0xC9, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xCE, type = "REL32", symbol = "?AddToDrawChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418B30 },
+  { offset = 0xDF, type = "DIR32", symbol = "?OnDrawCamera@PhotoGameUpdateView@th095@@SIHPAU12@@Z", target = 0x00430240 },
+  { offset = 0xE4, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xE9, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
+  { offset = 0x100, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x105, type = "REL32", symbol = "?AddToDrawChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418B30 },
+  { offset = 0x136, type = "REL32", symbol = "??1PhotoGameUpdateView@th095@@QAE@XZ", target = 0x0042EE90 },
+  { offset = 0x149, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0x16E, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+]
+
+[units.photo-player-destroy]
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameUpdateView::Destroy"]
+symbol = "?Destroy@PhotoGameUpdateView@th095@@QAEXXZ"
+target_address = 0x0042F130
+size = 0x5F
+relocations = [
+  { offset = 0x2B, type = "REL32", symbol = "??1PhotoGameUpdateView@th095@@QAE@XZ", target = 0x0042EE90 },
+  { offset = 0x3E, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+]
+
+[units.photo-player-draw]
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameUpdateView::DrawPlayer"]
+symbol = "?DrawPlayer@PhotoGameUpdateView@th095@@QAEHXZ"
+target_address = 0x00430110
+size = 0x48
+relocations = [
+  { offset = 0x29, type = "REL32", symbol = "?PhotoToScreen@th095@@YIPAUFloat3@1@PAU21@PBU21@@Z", target = 0x004186D0 },
+  { offset = 0x36, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x3B, type = "REL32", symbol = "?Draw@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x004415A0 },
+]
+
+[units.photo-camera-draw-wrapper]
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameUpdateView::DrawCamera"]
+symbol = "?DrawCamera@PhotoGameUpdateView@th095@@QAEHXZ"
+target_address = 0x00430160
+size = 0x1E
+relocations = [
+  { offset = 0x11, type = "REL32", symbol = "?Draw@PhotoCameraState@th095@@QAEXXZ", target = 0x004340F0 },
+]
+
+[units.photo-player-draw-callback]
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameUpdateView::OnDrawPlayer"]
+symbol = "?OnDrawPlayer@PhotoGameUpdateView@th095@@SIHPAU12@@Z"
+target_address = 0x00430210
+size = 0x2D
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_PhotoGameGlobalState@th095@@3PAUPhotoGameGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x25, type = "REL32", symbol = "?DrawPlayer@PhotoGameUpdateView@th095@@QAEHXZ", target = 0x00430110 },
+]
+
+[units.photo-camera-draw-callback]
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameUpdateView::OnDrawCamera"]
+symbol = "?OnDrawCamera@PhotoGameUpdateView@th095@@SIHPAU12@@Z"
+target_address = 0x00430240
+size = 0x13
+relocations = [
+  { offset = 0xB, type = "REL32", symbol = "?DrawCamera@PhotoGameUpdateView@th095@@QAEHXZ", target = 0x00430160 },
+]
+
+[units.photo-player-load-sht]
+source = "src/PhotoGame.cpp"
+object = "build/matching/PhotoGame.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoGameUpdateView::LoadSht"]
+symbol = "?LoadSht@PhotoGameUpdateView@th095@@QAEHPAD@Z"
+target_address = 0x00430260
+size = 0x109
+relocations = [
+  { offset = 0x11, type = "REL32", symbol = "?OpenFile@FileSystem@th095@@SIPAEPADPAHH@Z", target = 0x0041A960 },
+  { offset = 0x34, type = "DIR32", symbol = "__real@3f490fdb", target = 0x004954FC },
+  { offset = 0x39, type = "REL32", symbol = "__CIcos", target = 0x00485910 },
+  { offset = 0x60, type = "DIR32", symbol = "__real@3f490fdb", target = 0x004954FC },
+  { offset = 0x65, type = "REL32", symbol = "__CIcos", target = 0x00485910 },
+]
+
 [units.photo-game-update]
 # The authored body ends at 0x004300F4. The canonical COFF extent also owns
 # the adjacent four-entry mode switch table at 0x004300F5..0x00430104.
@@ -7998,7 +8170,7 @@ target_address = 0x0042FF60
 size = 0x195
 compare_size = 0x1A5
 relocations = [
-  { offset = 0x21, type = "DIR32", symbol = "$L66464", target = 0x004300F5 },
+  { offset = 0x21, type = "DIR32", symbol = "$L67120", target = 0x004300F5 },
   { offset = 0x33, type = "DIR32", symbol = "__real@c2a00000", target = 0x004966F4 },
   { offset = 0x3C, type = "DIR32", symbol = "__real@42700000", target = 0x00495634 },
   { offset = 0x42, type = "DIR32", symbol = "__real@43f00000", target = 0x00495394 },
@@ -8017,10 +8189,10 @@ relocations = [
   { offset = 0x15C, type = "DIR32", symbol = "?g_PhotoGameGlobalState@th095@@3PAUPhotoGameGlobalStateView@1@A", target = 0x004BDEC8 },
   { offset = 0x17A, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
   { offset = 0x188, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
-  { offset = 0x195, type = "DIR32", symbol = "$L66071", target = 0x0042FF85 },
-  { offset = 0x199, type = "DIR32", symbol = "$L66075", target = 0x0042FFFA },
-  { offset = 0x19D, type = "DIR32", symbol = "$L66447", target = 0x00430015 },
-  { offset = 0x1A1, type = "DIR32", symbol = "$L66450", target = 0x0043004E },
+  { offset = 0x195, type = "DIR32", symbol = "$L66310", target = 0x0042FF85 },
+  { offset = 0x199, type = "DIR32", symbol = "$L66314", target = 0x0042FFFA },
+  { offset = 0x19D, type = "DIR32", symbol = "$L67104", target = 0x00430015 },
+  { offset = 0x1A1, type = "DIR32", symbol = "$L67107", target = 0x0043004E },
 ]
 
 # The authored body ends at 0x004101A2; the canonical extent also owns the adjacent 85-entry jump table through 0x004102F6.

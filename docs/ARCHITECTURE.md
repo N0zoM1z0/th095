@@ -175,6 +175,14 @@ selection, photography/camera behavior, best-shot and total-score displays,
 and replay registration. Those types are intentionally left with descriptive
 lane labels until target-local callers and layouts prove class names.
 
+The live-play object at `0x004C4E70` is identified independently by the
+target's `initialize PlayerInf` and `shutdown PlayerInf` strings. Its exact
+`0x0042EFB0` creation spine registers three callbacks and owns the surrounding
+constructor, resource initialization, SHT loading, draw, and destruction
+cluster. Eleven lifecycle units are canonical exact for 1,174 authored bytes;
+the larger movement and camera-state bodies remain source-present without
+claiming compiler-local frame residuals as exact.
+
 ## Reference repositories
 
 `N0zoM1z0/th105` supplies the in-progress control-plane shape. `N0zoM1z0/th08`

@@ -269,6 +269,7 @@ struct Chain
     i32 RunCalcChain();
     void RunDrawChain();
     void Release();
+    void Cut(ChainElem *elem);
     ChainElem *CreateElem(ChainCallback callback);
     i32 AddToCalcChain(ChainElem *elem, i32 priority);
     i32 AddToDrawChain(ChainElem *elem, i32 priority);
