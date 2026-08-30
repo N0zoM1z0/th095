@@ -430,11 +430,15 @@ slot, and COM/raw-allocation teardown. Its three directly connected texture
 constructors at `0x00442E10`, `0x00442E90`, and `0x00442FC0` are exact too,
 including the TH095-specific direct `THTX` surface upload, alpha-bleed path, and
 runtime bytes-per-pixel metadata. `AnmLoaded::LoadSprite @ 0x00443B10` closes
-the consumer side with an exact `0x44`-byte copy and UV/pixel geometry. All nine
-isolated `AnmPreload.cpp` units must remain exact. Continue through the adjacent
-load/preload chain: `LoadAnm @ 0x00443010`, `ReadAnmEntries @ 0x00443070`,
-`PreloadAnm @ 0x004432E0`, and `LoadExternalTextureData @ 0x004433A0`; return to
-the Supervisor render callback residual afterward.
+the consumer side with an exact `0x44`-byte copy and UV/pixel geometry. The
+adjacent load/preload chain is exact as well: `LoadAnm @ 0x00443010`, the
+612-byte allocation and ownership hub `ReadAnmEntries @ 0x00443070`,
+`PreloadAnm @ 0x004432E0`, and `LoadExternalTextureData @ 0x004433A0` prove
+slot reuse/deferred release, synchronous and asynchronous postload, cancellation,
+linked-entry counting, allocation, filename ownership, and external texture
+staging. All thirteen isolated `AnmPreload.cpp` units must remain exact. Return
+to the Supervisor render callback residual, or continue the adjacent unreviewed
+ANM text/render candidates at `0x004440F0..0x0044461C`.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

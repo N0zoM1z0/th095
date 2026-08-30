@@ -67,6 +67,10 @@ th095::AnmManagerPreloadView::CreateTextureFromFile
 th095::AnmManagerPreloadView::CreateTextureFromAnm
 th095::AnmManagerPreloadView::CreateEmptyTexture
 th095::AnmLoaded::LoadSprite
+th095::AnmManagerPreloadView::LoadAnm
+th095::AnmManagerPreloadView::ReadAnmEntries
+th095::AnmManagerPreloadView::PreloadAnm
+th095::AnmManagerPreloadView::LoadExternalTextureData
 th095::AnmVm::InitializePulsingRadialTrail
 th095::UpdatePulsingRadialTrail
 th095::DrawPulsingRadialTrail

@@ -57,6 +57,11 @@ struct AnmTextureEntryView
 class AnmPreloadMemoryView
 {
   public:
+    void *Alloc(i32 size)
+    {
+        return malloc(size);
+    }
+
     void Free(void *ptr)
     {
         free(ptr);
@@ -90,6 +95,12 @@ struct AnmManagerPreloadView
     i32 CreateEmptyTexture(IDirect3DTexture8 **outTexture, i32 width,
                            i32 height, i32 format);
     void ApplyTextureAlphaBleed(AnmTextureEntryView *entry);
+    AnmLoaded *LoadAnm(i32 anmIdx, const char *filename);
+    AnmLoaded *ReadAnmEntries(i32 anmIdx, const char *filename);
+    AnmLoaded *PreloadAnm(i32 anmIdx, const char *filename);
+    i32 LoadExternalTextureData(AnmLoaded *anm, i32 entryNumber,
+                                i32 *sprites, i32 *scripts,
+                                AnmRawEntryView *rawEntry);
     void ReleaseAnm(i32 anmIdx);
     void ReleaseAnmEntry(AnmTextureEntryView *entry);
     void MarkVmsForDeletion(AnmLoaded *anm);
@@ -181,6 +192,221 @@ i32 AnmManagerPreloadView::CreateEmptyTexture(
     reinterpret_cast<AnmTextureEntryView *>(outTexture)->unknown00c =
         g_TextureFormatBytesPerPixel[format];
     return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x00443010.
+AnmLoaded *AnmManagerPreloadView::LoadAnm(i32 anmIdx, const char *filename)
+{
+    utils::DebugPrint("::loadAnim : %s\n", filename);
+    AnmLoaded *anm = this->ReadAnmEntries(anmIdx, filename);
+    if (anm != NULL)
+    {
+        anm->numberEntriesToBeLoaded = 1;
+        while (anm->numberEntriesToBeLoaded != 0)
+        {
+            anm = this->PostloadAnmEntry(anm);
+        }
+    }
+    return anm;
+}
+
+// FUNCTION: TH095 0x00443070.
+AnmLoaded *AnmManagerPreloadView::ReadAnmEntries(
+    i32 anmIdx, const char *filename)
+{
+    struct ReadAnmState
+    {
+        i32 stopRequested;
+        AnmRawEntryView *currentEntry;
+        i32 totalScripts;
+        i32 result;
+        AnmRawEntryView *entry;
+        AnmLoaded *anm;
+        i32 totalEntries;
+        i32 totalSprites;
+        i32 currentEntryNumber;
+    } state;
+
+    utils::DebugPrint("::preloadAnim : %s\n", filename);
+    if (anmIdx >= 13)
+    {
+        g_GameErrorContext.Fatal(
+            "\x83\x65\x83\x4e\x83\x58\x83\x60\x83\x83\x8a\x69\x94\x5b"
+            "\x90\xe6\x82\xaa\x91\xab\x82\xe8\x82\xdc\x82\xb9\x82\xf1"
+            "\r\n");
+        return NULL;
+    }
+
+    if (this->slots[anmIdx].loaded.rawData != NULL)
+    {
+        utils::DebugPrint(":: old delete\n");
+        this->slots[anmIdx].releasePending = 1;
+        while (this->slots[anmIdx].releasePending != 0 &&
+               (state.stopRequested =
+                    g_Supervisor.replayScanStopRequested) == 0)
+        {
+            Sleep(1);
+        }
+    }
+
+    state.entry = reinterpret_cast<AnmRawEntryView *>(
+        FileSystem::OpenFile(const_cast<char *>(filename), NULL, FALSE));
+    state.totalEntries = 0;
+    state.totalScripts = 0;
+    state.totalSprites = 0;
+    state.currentEntryNumber = 0;
+    state.anm = &this->slots[anmIdx].loaded;
+    if (state.entry == NULL)
+        return NULL;
+
+    state.anm->anmIdx = anmIdx;
+    state.anm->rawData = state.entry;
+    strcpy(reinterpret_cast<char *>(state.anm) + 0x20, filename);
+    state.currentEntry = state.entry;
+    while (true)
+    {
+        state.totalEntries++;
+        state.totalScripts += state.currentEntry->numScripts;
+        state.totalSprites += state.currentEntry->numSprites;
+        if (state.currentEntry->nextOffset == 0)
+            break;
+        state.currentEntry = reinterpret_cast<AnmRawEntryView *>(
+            reinterpret_cast<u8 *>(state.currentEntry) +
+            state.currentEntry->nextOffset);
+    }
+
+    state.anm->totalEntries = state.totalEntries;
+    state.anm->textures =
+        malloc(state.totalEntries * sizeof(AnmTextureEntryView));
+    memset(state.anm->textures, 0,
+           state.totalEntries * sizeof(AnmTextureEntryView));
+    state.anm->sprites = reinterpret_cast<AnmLoadedSprite *>(
+        g_AnmPreloadMemory.Alloc(
+            state.totalSprites * sizeof(AnmLoadedSprite)));
+    state.anm->scripts = reinterpret_cast<AnmRawInstr **>(
+        g_AnmPreloadMemory.Alloc(
+            state.totalScripts * sizeof(AnmRawInstr *)));
+
+    state.currentEntry = state.entry;
+    state.totalEntries = 0;
+    state.totalSprites = 0;
+    state.totalScripts = 0;
+    while (true)
+    {
+        state.result = this->LoadExternalTextureData(
+            state.anm, state.currentEntryNumber, &state.totalSprites,
+            &state.totalScripts, state.currentEntry);
+        if (state.result < ZUN_SUCCESS)
+            return NULL;
+
+        state.currentEntryNumber++;
+        if (state.currentEntry->nextOffset == 0)
+            break;
+        state.currentEntry = reinterpret_cast<AnmRawEntryView *>(
+            reinterpret_cast<u8 *>(state.currentEntry) +
+            state.currentEntry->nextOffset);
+    }
+    return state.anm;
+}
+
+// FUNCTION: TH095 0x004432E0.
+AnmLoaded *AnmManagerPreloadView::PreloadAnm(
+    i32 anmIdx, const char *filename)
+{
+    struct PreloadState
+    {
+        i32 finalStopRequested;
+        i32 loopStopRequested;
+        AnmLoaded *anm;
+    } state;
+
+    if (this->slots[anmIdx].loaded.rawData != NULL)
+    {
+        utils::DebugPrint("::preloadAnim already : %s\n", filename);
+        return &this->slots[anmIdx].loaded;
+    }
+
+    state.anm = this->ReadAnmEntries(anmIdx, filename);
+    if (state.anm == NULL)
+        return NULL;
+
+    state.anm->numberEntriesToBeLoaded = 1;
+    while (state.anm->numberEntriesToBeLoaded != 0 &&
+           (state.loopStopRequested =
+                g_Supervisor.replayScanStopRequested) == 0)
+    {
+        Sleep(1);
+    }
+    utils::DebugPrint("::preloadAnimEnd : %s\n", filename);
+    state.finalStopRequested = g_Supervisor.replayScanStopRequested;
+    return state.finalStopRequested ? NULL : state.anm;
+}
+
+// FUNCTION: TH095 0x004433A0.
+i32 AnmManagerPreloadView::LoadExternalTextureData(
+    AnmLoaded *anm, i32 entryNumber, i32 *, i32 *,
+    AnmRawEntryView *rawEntry)
+{
+    struct ExternalTextureState
+    {
+        u8 *fileData;
+        i32 fileSize;
+        const char *path;
+        AnmRawEntryView *startOfEntry;
+        i32 result;
+    } state;
+
+    state.result = 0;
+    if (rawEntry == NULL)
+    {
+        g_GameErrorContext.Fatal(
+            "\x83\x41\x83\x6a\x83\x81\x82\xaa\x93\xc7\x82\xdd\x8d\x9e"
+            "\x82\xdf\x82\xdc\x82\xb9\x82\xf1\x81\x42\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x8e\xb8\x82\xed\x82\xea\x82\xc4\x82\xe9"
+            "\x82\xa9\x89\xf3\x82\xea\x82\xc4\x82\xa2\x82\xdc\x82\xb7"
+            "\r\n");
+        return ZUN_ERROR;
+    }
+
+    state.startOfEntry = rawEntry;
+    if (state.startOfEntry->version != 4)
+    {
+        g_GameErrorContext.Fatal(
+            "\x83\x41\x83\x6a\x83\x81\x82\xcc\x83\x6f\x81\x5b\x83\x57"
+            "\x83\x87\x83\x93\x82\xaa\x88\xe1\x82\xa2\x82\xdc\x82\xb7"
+            "\r\n");
+        return ZUN_ERROR;
+    }
+
+    if (!state.startOfEntry->hasData)
+    {
+        state.path = reinterpret_cast<const char *>(
+            reinterpret_cast<u8 *>(state.startOfEntry) +
+            state.startOfEntry->nameOffset);
+        if (state.path[0] != '@')
+        {
+            state.fileData = FileSystem::OpenFile(
+                const_cast<char *>(state.path), &state.fileSize, TRUE);
+            if (state.fileData == NULL)
+            {
+                g_GameErrorContext.Fatal(
+                    "\x83\x65\x83\x4e\x83\x58\x83\x60\x83\x83 %s "
+                    "\x82\xaa\x93\xc7\x82\xdd\x8d\x9e\x82\xdf\x82\xdc"
+                    "\x82\xb9\x82\xf1\x81\x42\x83\x66\x81\x5b\x83\x5e"
+                    "\x82\xaa\x8e\xb8\x82\xed\x82\xea\x82\xc4\x82\xe9"
+                    "\x82\xa9\x89\xf3\x82\xea\x82\xc4\x82\xa2\x82\xdc"
+                    "\x82\xb7\r\n",
+                    state.path);
+                return ZUN_ERROR;
+            }
+            reinterpret_cast<AnmTextureEntryView *>(anm->textures)[entryNumber].size =
+                state.fileSize;
+            reinterpret_cast<AnmTextureEntryView *>(anm->textures)[entryNumber].rawData =
+                state.fileData;
+        }
+    }
+
+    return state.result + 1;
 }
 
 // FUNCTION: TH095 0x004435A0.
