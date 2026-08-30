@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 192 canonical units cover 104,398 authored bytes.
+- Reconstruction: 196 canonical units cover 105,360 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 51.29% (104,398 / 203,556)
+  relocations. Confirmed authored-byte coverage is now 51.52% (105,360 / 204,518)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 233 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,590 origin/boundary reviews pending. Original class
+  confirms 237 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,586 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -102,6 +102,13 @@
   destructor, one-byte calc-callback residual, and 733-byte camera initializer
   remain source-present but conservatively non-exact because only compiler
   local-frame/register choices differ.
+- The four immediately adjacent collision/death functions are exact for 962
+  more authored bytes and 27 relocation fields. They recover the reverse
+  point-to-player angle shared by ECL/projectiles, axis-aligned bullet
+  collision, rotated laser-local collision, and the common TH095 death path.
+  Death creates one script-`0x121` VM plus thirty-two script-`0x122` particles,
+  resets the completion timer, conditionally plays sound 4, and applies the
+  game's `0.5` death slowdown.
 - Root-level `EclOperandsInt.cpp` and `EclOperandsFloat.cpp` now reconstruct
   the high-connectivity operand resolver pair at `0x0040FAE0/0x004105A0`.
   Their 3,439 authored bytes, adjacent 684 bytes of compiler-owned jump tables,
@@ -337,15 +344,15 @@
 
 ## Next bounded lane
 
-Continue the TH095-specific player lane immediately after the completed
-PlayerInf lifecycle with `0x004303E0..0x004306C0`. The three still-unreviewed
-functions are 108, 212, and 401 bytes and sit between the exact angle/SHT
-helpers and the now source-present camera initializer. Recover them as one
-bounded collision/player-state cluster before returning to unrelated leaves.
-Keep the eleven new lifecycle units, the exact outer PhotoGame coordinator,
-and every established `PhotoCamera.cpp` unit green while extending shared
-views; use descriptive target-local names until ownership is independently
-proved.
+Follow the newly exact collision interfaces into their two high-connectivity
+callers: `0x00405120` is 1,835 bytes with fifteen internal callees and invokes
+the rectangle collision path; `0x00415970` is 1,853 bytes with seventeen
+internal callees and invokes the same path while also coordinating four ANM
+operations. Recover their ownership and update loops as a bounded pair before
+sweeping their adjacent leaves. Then cover the two 1 KB laser callers at
+`0x0041E2C0/0x0041F550`. Keep all fifteen PlayerInf exact units, the exact
+outer PhotoGame coordinator, and every established `PhotoCamera.cpp` unit
+green while extending shared views.
 
 The large photo functions remain source-present but non-exact:
 `PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe

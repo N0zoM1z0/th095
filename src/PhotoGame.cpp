@@ -4,6 +4,8 @@
 namespace th095
 {
 
+void Rotate(Float3 *outVector, Float3 *point, f32 angle);
+
 struct PhotoAnmVmIdValue
 {
     i32 value;
@@ -57,6 +59,21 @@ struct PhotoGameStageStateView
 };
 
 extern PhotoGameStageStateView *g_PhotoStageStateForPlayer;
+
+struct PhotoGameAnmSpawnerView
+{
+    AnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
+};
+
+struct PhotoGameSoundPlayerView
+{
+    void PlaySoundByIdx(i32 idx, i32 pan);
+};
+
+static inline PhotoGameSoundPlayerView *PhotoGameSoundPlayer()
+{
+    return reinterpret_cast<PhotoGameSoundPlayerView *>(&g_SoundPlayer);
+}
 
 struct PhotoPlayerMovementConfigView
 {
@@ -155,6 +172,10 @@ struct PhotoGameUpdateView
     ~PhotoGameUpdateView();
     i32 Initialize();
     i32 LoadSht(char *path);
+    f32 AngleFromPoint(Float3 *position);
+    i32 CheckBulletCollision(Float3 *position, Float3 *size);
+    u32 CalcLaserHitbox(Float3 *origin, f32 angle, f32 width, f32 length);
+    void Die();
     i32 UpdateMainState();
     i32 Update();
     i32 DrawPlayer();
@@ -422,6 +443,102 @@ i32 PhotoGameUpdateView::LoadSht(char *path)
 #undef normalDiagonalFactor
 #undef focusedDiagonalFactor
     return ZUN_SUCCESS;
+}
+
+f32 PhotoGameUpdateView::AngleFromPoint(Float3 *position)
+{
+    f32 xDelta = this->playerPosition.x - position->x;
+    f32 yDelta = this->playerPosition.y - position->y;
+
+    if (yDelta == 0.0f && xDelta == 0.0f)
+    {
+        return 1.5707964f;
+    }
+    return atan2f(yDelta, xDelta);
+}
+
+i32 PhotoGameUpdateView::CheckBulletCollision(Float3 *position, Float3 *size)
+{
+    Float3 boundsMin;
+    Float3 boundsMax;
+
+    boundsMin.x = position->x - size->x / 2.0f;
+    boundsMin.y = position->y - size->y / 2.0f;
+    boundsMax.x = size->x / 2.0f + position->x;
+    boundsMax.y = size->y / 2.0f + position->y;
+
+    if (this->hurtboxBoundsMin.x > boundsMax.x ||
+        this->hurtboxBoundsMin.y > boundsMax.y ||
+        this->hurtboxBoundsMax.x < boundsMin.x ||
+        this->hurtboxBoundsMax.y < boundsMin.y)
+    {
+        return 0;
+    }
+    if (this->mode == 2)
+    {
+        return 0;
+    }
+    if (this->mode == 3)
+    {
+        return 0;
+    }
+    this->Die();
+    return 1;
+}
+
+u32 PhotoGameUpdateView::CalcLaserHitbox(
+    Float3 *origin, f32 angle, f32 width, f32 length)
+{
+    Float3 incomingMin;
+    Float3 incomingMax;
+
+    incomingMin = this->playerPosition - *origin;
+    Rotate(&incomingMax, &incomingMin, -angle);
+    incomingMin = incomingMax - this->hurtboxHalfSize;
+    incomingMax = incomingMax + this->hurtboxHalfSize;
+
+    if (incomingMin.x > length ||
+        width / 2.0f < incomingMin.y ||
+        incomingMax.x < 0.0f ||
+        incomingMax.y < -width / 2.0f)
+    {
+        return 0;
+    }
+    if (this->mode == 2)
+    {
+        return 0;
+    }
+    if (this->mode == 3)
+    {
+        return 0;
+    }
+    this->Die();
+    return 1;
+}
+
+void PhotoGameUpdateView::Die()
+{
+    Float3 screenPosition;
+
+    this->mode = 2;
+    PhotoToScreen(&screenPosition, &this->playerPosition);
+    g_AnmManager->SetPosition(
+        reinterpret_cast<PhotoGameAnmSpawnerView *>(
+            g_PhotoBulletManager->anmSpawner)->CreateVm(0x121, 0),
+        &screenPosition);
+    for (i32 i = 0; i < 32; ++i)
+    {
+        g_AnmManager->SetPosition(
+            reinterpret_cast<PhotoGameAnmSpawnerView *>(
+                g_PhotoBulletManager->anmSpawner)->CreateVm(0x122, 0),
+            &screenPosition);
+    }
+    this->completionTimer = 0;
+    if ((g_PhotoGameGlobalState->flags >> 9 & 1) == 0)
+    {
+        PhotoGameSoundPlayer()->PlaySoundByIdx(4, 0);
+    }
+    g_AnmGameSpeed = 0.5f;
 }
 
 i32 PhotoGameUpdateView::DrawPlayer()

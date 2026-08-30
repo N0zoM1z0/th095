@@ -231,3 +231,7 @@ th095::PhotoGameUpdateView::OnDrawPlayer
 th095::PhotoGameUpdateView::OnDrawCamera
 th095::PhotoGameUpdateView::LoadSht
 th095::PhotoCameraState::Initialize
+th095::PhotoGameUpdateView::AngleFromPoint
+th095::PhotoGameUpdateView::CheckBulletCollision
+th095::PhotoGameUpdateView::CalcLaserHitbox
+th095::PhotoGameUpdateView::Die

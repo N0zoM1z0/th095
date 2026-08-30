@@ -178,10 +178,10 @@ lane labels until target-local callers and layouts prove class names.
 The live-play object at `0x004C4E70` is identified independently by the
 target's `initialize PlayerInf` and `shutdown PlayerInf` strings. Its exact
 `0x0042EFB0` creation spine registers three callbacks and owns the surrounding
-constructor, resource initialization, SHT loading, draw, and destruction
-cluster. Eleven lifecycle units are canonical exact for 1,174 authored bytes;
-the larger movement and camera-state bodies remain source-present without
-claiming compiler-local frame residuals as exact.
+constructor, resource initialization, SHT loading, draw, collision, death, and
+destruction cluster. Fifteen PlayerInf units are canonical exact for 2,136
+authored bytes; the larger movement and camera-state bodies remain
+source-present without claiming compiler-local frame residuals as exact.
 
 ## Reference repositories
 

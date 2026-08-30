@@ -35,8 +35,8 @@ Current translation units:
 - `PhotoGame.cpp` owns TH095's `PlayerInf` live-play object rather than a
   traditional TH08-style shot/bomb player. Its movement, compact `player.sht`
   loader, embedded camera initialization, three Chain callbacks, and complete
-  lifetime are source-present; eleven lifecycle/draw/SHT units are canonical
-  exact.
+  lifetime are source-present; fifteen lifecycle/draw/SHT/collision/death units
+  are canonical exact.
 
 Header organization follows the TH08 reconstruction where the evidence permits:
 

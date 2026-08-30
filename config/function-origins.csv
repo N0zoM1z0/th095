@@ -433,10 +433,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00430240,authored,PhotoGame,authored,exact,vc71-photo-camera-draw-callback-2026-08-30
 0x00430260,authored,PhotoGame,authored,exact,vc71-photo-player-load-sht-2026-08-30
 0x00430370,authored,PhotoCamera,authored,exact,vc71-photo-angle-to-point-2026-08-29
-0x004303E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00430450,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00430530,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004306D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004303E0,authored,PhotoGame,authored,exact,vc71-photo-player-angle-from-point-2026-08-30
+0x00430450,authored,PhotoGame,authored,exact,vc71-photo-player-check-bullet-collision-2026-08-30
+0x00430530,authored,PhotoGame,authored,exact,vc71-photo-player-laser-hitbox-2026-08-30
+0x004306D0,authored,PhotoGame,authored,exact,vc71-photo-player-die-2026-08-30
 0x004307D0,authored,PhotoGame,authored,high,photo-camera-initialize-semantic-2026-08-30
 0x00430AB0,authored,PhotoCamera,authored,high,ghidra-photo-camera-cluster-2026-08-29
 0x00432730,authored,PhotoCamera,authored,exact,vc71-photo-begin-capture-2026-08-29
