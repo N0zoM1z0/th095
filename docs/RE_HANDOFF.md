@@ -509,9 +509,19 @@ TH095 current-background-viewport projection, offset world position, Z-range
 failure, screen-scale derivation, three-way alignment, and the target-specific
 unprojected final Z. Its two inline `FSINCOS` sites and compiler-local copies
 remain conservatively non-exact. The 48-byte `DrawCameraFacingQuad @
-0x004400F0` wrapper is canonical exact with both relocations. Continue at the
-adjacent depth/color path `0x00440120` and projected-3D geometry core
-`0x00440440`.
+0x004400F0` wrapper is canonical exact with both relocations. The adjacent
+render-mode-6 `DrawMode6 @ 0x00440120` path is now canonical exact for all 798
+bytes and 30 relocations. It projects the same camera-facing quad, measures
+offset world position from `g_BackgroundCameraPosition`, applies optional
+manager color mixing, and uses `Background+0x1FEC/+0x1FF0/+0x1FF4` for the
+TH095 photo-blend near/far distances and target color. Beyond the near plane
+it blends RGB toward that target while fading alpha and rejects a normalized
+fade at or beyond one. Its exact source shape uses a fully live four-field
+locals aggregate. A cold current-object audit confirmed the new function
+shifted every affected `AnmManager.cpp` compiler-local label by exactly ten;
+all fourteen canonical units retain identical offsets, relocation types, and
+target destinations after the manifest-only identity refresh. Continue at
+the projected-3D geometry core `0x00440440` and its wrapper `0x004408F0`.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`
