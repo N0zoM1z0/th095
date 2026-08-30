@@ -40,6 +40,7 @@ th095::SoundPlayer::ReopenBGM
 th095::SoundPlayer::PreloadBGM
 th095::SoundPlayer::LoadBGM
 th095::SoundPlayer::StopBGM
+th095::SoundPlayer::UpdateFades
 th095::SoundPlayer::InitSoundBuffers
 th095::SoundPlayer::PlaySoundByIdx
 th095::SoundPlayer::PlaySoundPositionedByIdx
@@ -57,6 +58,7 @@ th095::Supervisor::DeleteCriticalSections
 th095::AnmManager::ClearVertexBuffer
 th095::AnmManager::FlushVertexBuffer
 th095::AnmManager::Draw
+th095::AnmManagerPreloadView::ServicePreloadedAnims
 th095::AnmVm::InitializePulsingRadialTrail
 th095::UpdatePulsingRadialTrail
 th095::DrawPulsingRadialTrail

@@ -112,10 +112,12 @@ switch tables. Adding source lines to a shared header can renumber those labels
 without changing a single instruction, target destination, or relocation
 offset. After any shared-header edit, cold-rebuild every affected object and
 refresh only the locally renamed relocation symbols after proving that offset,
-type, target, and complete compared bytes remain exact. The 2026-08-30
-GameTask checkpoint caught and repaired this previously accumulated drift in
-six ANM units plus one PhotoCamera and one PhotoGame unit; 129 affected units
-then replayed exactly.
+type, target, and complete compared bytes remain exact. The 2026-08-30 ANM
+preload-service checkpoint cold-rebuilt the current `AnmManager.cpp` and
+repaired 168 stale compiler-local identifiers across six switch-owning units;
+all fourteen units from that object then replayed exactly. The new service was
+kept in an isolated object so it does not immediately renumber those symbols
+again.
 
 TH095's game-task runtime provides two further source-shape oracles. A
 16-bit input wrapper with an inline `operator&` reproduces the target's

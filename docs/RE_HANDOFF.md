@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 364 canonical exact functions cover 138,257 authored bytes.
+- Reconstruction: 366 canonical exact functions cover 138,483 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.35% (138,257 / 274,574)
+  relocations. Confirmed authored-byte coverage is now 50.39% (138,483 / 274,800)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,12 +26,12 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 453 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,369 origin/boundary reviews pending. Original class
+  current ledger confirms 455 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,367 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
-  object construction/release. Twenty-six sound units contribute 8,133 bytes.
+  object construction/release. Twenty-seven sound units contribute 8,212 bytes.
   TH095 uses 37 producer-owned file slots and 47 duplicate-buffer mappings.
 - ANM build profile: `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`
   reproduces the dispatcher and the expanded exact ANM helper family under pinned VC7.1
@@ -414,11 +414,14 @@ polls input, resets the per-frame ANM caches and counters, services pending ANM
 loads, routes startup completion, and calls the exact 938-byte
 `UpdateSceneState`. The callback's natural two-member local aggregate preserves
 the target's result/replay stack-slot order without inert locals. All 43
-`Main.cpp` units replay exactly from the current object. The next bounded
-dependencies are `SoundPlayer::UpdateFades @ 0x00426300` (79 bytes) and
-`AnmManager::ServicePreloadedAnims @ 0x004438E0` (147 bytes); close those small
-but highly shared frame services before returning to the remaining Supervisor
-render callback residual.
+`Main.cpp` units replay exactly from the current object. Its two immediate
+frame services are now exact as well: `SoundPlayer::UpdateFades @ 0x00426300`
+updates all four streaming fade modes, while
+`AnmManagerPreloadView::ServicePreloadedAnims @ 0x004438E0` drains pending
+release/postload work across thirteen `0x120`-byte slots. Continue through the
+service's adjacent ownership bodies `PostloadAnmEntry @ 0x00443480` (284 bytes)
+and `ReleaseAnm @ 0x00443980` (305 bytes), then return to the remaining
+Supervisor render callback residual.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`
@@ -431,12 +434,12 @@ wrapper at `0x004180A0` independently corrects `0x00417E70` from a provisional
 `ShutdownSubsystems` name to the actual C++ destructor. Preserve all ten units
 while extending shared subsystem views.
 
-A cold affected-object audit also repaired stale VC7.1 compiler-local label
-names left by earlier shared `AnmManager.hpp` growth. Six ANM units, including
-the complete 17,426-byte dispatcher unit, plus one PhotoCamera and one
-PhotoGame unit now replay with their current COFF `$Lxxxxx` identities. All
-129 units across the fourteen audited objects are exact; only manifest-local
-symbol names changed, never target destinations or credited bytes.
+A cold affected-object audit repaired 168 stale VC7.1 compiler-local label
+names across six switch-owning `AnmManager.cpp` units, including the complete
+17,426-byte dispatcher comparison. All fourteen units from the current object
+replay exactly; only manifest-local symbol names changed, never target
+destinations or credited bytes. The new preload service intentionally lives in
+its own bounded object so future work does not immediately renumber that lane.
 
 The adjacent `FrontInf` cluster at `0x00417070..0x004179CC` is now
 source-present. Ten canonical units contribute 1,808 exact bytes and enforce

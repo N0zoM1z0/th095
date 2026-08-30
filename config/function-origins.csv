@@ -375,7 +375,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00425AA0,authored,Background,authored,exact,background-viewport-apply-exact-2026-08-30
 0x00425CC0,authored,Supervisor,authored,exact,supervisor-viewport-initialize-exact-2026-08-30
 0x00425EF0,authored,Supervisor,authored,exact,supervisor-scene-router-exact-2026-08-30
-0x00426300,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00426300,authored,SoundPlayer,authored,exact,sound-player-update-fades-exact-2026-08-30
 0x00426350,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00426450,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004264B0,authored,ResultScreen,authored,high,result-screen-pause-constructor-source-2026-08-30
@@ -567,7 +567,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004433A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00443480,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004435A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004438E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004438E0,authored,AnmManager,authored,exact,anm-preload-service-exact-2026-08-30
 0x00443980,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00443AC0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00443B10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

@@ -48,6 +48,7 @@ th095::SoundPlayer::ProcessQueues,0x00439200,function
 th095::SoundPlayer::BGMPlayerThread,0x00439C00,function
 th095::SoundPlayer::QueueCommand,0x00439CF0,function
 th095::SoundPlayer::SoundPlayer,0x00439DE0,function
+th095::SoundPlayer::UpdateFades,0x00426300,function
 th095::AnmLoaded::SetSprite,0x00439E30,function
 th095::AnmLoaded::SetAndExecuteScript,0x0043A0C0,function
 th095::AnmVm::GetFloatVar,0x0043A1B0,function
@@ -58,6 +59,7 @@ th095::AnmManager::ExecuteScript,0x0043A600,function
 th095::AnmManager::ClearVertexBuffer,0x0043F2B0,function
 th095::AnmManager::FlushVertexBuffer,0x0043F2F0,function
 th095::AnmManager::Draw,0x004415A0,function
+th095::AnmManagerPreloadView::ServicePreloadedAnims,0x004438E0,function
 th095::AnmVm::InitializePulsingRadialTrail,0x00441710,function
 th095::UpdatePulsingRadialTrail,0x00441A10,function
 th095::DrawPulsingRadialTrail,0x00441D70,function

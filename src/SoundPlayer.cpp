@@ -672,6 +672,18 @@ void SoundPlayer::StopBGM()
     }
 }
 
+// FUNCTION: TH095 0x00426300.
+void SoundPlayer::UpdateFades()
+{
+    if (this->bgm != NULL)
+    {
+        this->bgm->UpdateFadeOut();
+        this->bgm->UpdateFadeIn();
+        this->bgm->UpdatePartialFadeIn();
+        this->bgm->UpdatePartialFadeOut();
+    }
+}
+
 ZunResult SoundPlayer::InitSoundBuffers()
 {
     i32 i;
