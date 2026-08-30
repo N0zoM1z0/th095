@@ -374,3 +374,4 @@ th095::Background::SetPhotoArea
 th095::Background::StartSpellBackground
 th095::Background::StopSpellBackground
 th095::Supervisor::ConfigureGameplayViewport
+th095::Background::RunStageScript

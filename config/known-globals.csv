@@ -36,3 +36,13 @@ address,name,module,confidence,evidence
 0x004C44B4,th095::g_TextFont18,TextRenderer,high,Target persistent 34-pixel Japanese text font
 0x004C44B8,th095::g_TextRenderBuffer,TextRenderer,high,Target 0x124-byte CPU text-render buffer view
 0x004A4330,th095::g_TextRenderFormatInfoArray,TextRenderer,exact,Exact GetFormatInfo DIR32 relocations and target-initialized seven-entry format table
+0x004BDD90,th095::g_Background,Background,high,Hash-attested Background lifecycle singleton ownership and RunStageScript caller
+0x004C4854,th095::g_BackgroundCameraPosition,Background,high,RunStageScript opcodes 2/3/10 and interpolation output
+0x004C4860,th095::g_BackgroundCameraLookAt,Background,high,RunStageScript opcodes 4/5/11 and interpolation output
+0x004C486C,th095::g_BackgroundCameraValue0,Background,high,RunStageScript opcode 6 and camera motion modes 2 through 4
+0x004C4870,th095::g_BackgroundCameraValue1,Background,high,RunStageScript opcode 6 middle float
+0x004C4874,th095::g_BackgroundCameraValue2,Background,high,RunStageScript opcode 6 and camera motion mode 4 cosine output
+0x004C4890,th095::g_BackgroundWaveX,Background,high,RunStageScript camera motion modes 1 through 3 sine output
+0x004C4898,th095::g_BackgroundWaveY,Background,high,RunStageScript camera motion mode 3 cosine output
+0x004C489C,th095::g_BackgroundModeValue,Background,high,RunStageScript opcode 7 target-global store
+0x004C4E28,th095::g_PhotoScreenFadeColor,PhotoRuntime,high,RunStageScript opcodes 8/9/13 photograph color publication

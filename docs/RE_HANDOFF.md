@@ -17,16 +17,17 @@
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.43% (125,612 / 249,066)
+  relocations. Confirmed authored-byte coverage is now 49.42% (125,612 / 254,195)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
   (14,363 bytes), eleven replay/menu/best-shot functions (15,512 bytes), and
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
-  the percentage while expanding the honest denominator. The current ledger
-  confirms 376 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,447 origin/boundary reviews pending. Original class
+  the percentage while expanding the honest denominator. The source-present
+  Background stage interpreter adds another 5,129 target-authored bytes. The
+  current ledger confirms 377 authored candidates, excludes seven compiler-owned
+  static wrappers, and leaves 1,446 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -514,9 +515,21 @@ non-exact because the target reserves an otherwise unreferenced `0x88` stack
 frame; its natural semantic probe emits 180 versus 209 bytes and resolves all
 six dependencies.
 
-Next take the actual high-connectivity BackgroundInf spine, beginning with
-`OnUpdate @ 0x00403440` (5,129 bytes, six internal callees) and its constructor/
-lifecycle range at `0x004020C0..0x00403431`. Use the TH08 background source for
+`Background::RunStageScript @ 0x00403440` is now source-present for the entire
+5,129-byte high-connectivity spine. It consumes variable-size records with
+fifteen opcodes: jump/time control, direct and timed camera position/look-at,
+three shared camera values, photo color/offset interpolation, cubic Hermite
+camera curves, four cyclic camera-motion modes, screen-fade publication, and
+eight stage-VM controls. Four `ZunTimer` lanes at `+0x20/+0x50/+0x80` own the
+easing state; lane two interpolates the TH095-specific photo tuple at
+`+0x1FEC..+0x200F`. Its natural pinned-VC7.1 body is 4,195 bytes versus the
+5,129-byte target while preserving the complete external-call distribution,
+so it receives no exact credit.
+
+Next close the surrounding BackgroundInf lifecycle and draw spine at
+`0x004020C0..0x00403431`, especially the actual update wrapper at `0x00402680`
+that invokes `RunStageScript`, executes eight stage VMs, and conditionally
+executes the three photograph-border VMs. Use the TH08 background source for
 ancestry only: TH095's `0x201C` object and photography-mask path are target-
 specific. Preserve the independently exact `PhotoToScreen @ 0x004186D0` bridge
 and the GameTask, FrontInf, bullet spawn, movement, bullet-photography, CardInf,

@@ -36,7 +36,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00402E90,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00402F60,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004031A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00403440,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00403440,authored,Background,authored,exact,background-stage-script-2026-08-30
 0x004048B0,authored,Background,authored,exact,background-cubic-hermite-exact-2026-08-30
 0x00404950,authored,Background,authored,high,background-set-photo-area-semantic-2026-08-30
 0x00404A30,authored,Background,authored,exact,background-start-spell-exact-2026-08-30
