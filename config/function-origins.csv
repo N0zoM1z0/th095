@@ -566,10 +566,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004432E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004433A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00443480,authored,AnmManager,authored,exact,anm-postload-entry-exact-2026-08-30
-0x004435A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004435A0,authored,AnmManager,authored,exact,anm-load-texture-data-exact-2026-08-30
 0x004438E0,authored,AnmManager,authored,exact,anm-preload-service-exact-2026-08-30
 0x00443980,authored,AnmManager,authored,exact,anm-release-anm-exact-2026-08-30
-0x00443AC0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00443AC0,authored,AnmManager,authored,exact,anm-release-entry-exact-2026-08-30
 0x00443B10,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00443C70,authored,AnmText,authored,exact,vc71-exact-anm-text-inner-2026-08-29
 0x00443CE0,authored,AnmText,authored,high,vc71-th08-corroborated-anm-text-2026-08-29

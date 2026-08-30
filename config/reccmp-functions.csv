@@ -62,6 +62,8 @@ th095::AnmManager::Draw,0x004415A0,function
 th095::AnmManagerPreloadView::ServicePreloadedAnims,0x004438E0,function
 th095::AnmManagerPreloadView::PostloadAnmEntry,0x00443480,function
 th095::AnmManagerPreloadView::ReleaseAnm,0x00443980,function
+th095::AnmManagerPreloadView::LoadTextureData,0x004435A0,function
+th095::AnmManagerPreloadView::ReleaseAnmEntry,0x00443AC0,function
 th095::AnmVm::InitializePulsingRadialTrail,0x00441710,function
 th095::UpdatePulsingRadialTrail,0x00441A10,function
 th095::DrawPulsingRadialTrail,0x00441D70,function

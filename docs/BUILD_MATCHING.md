@@ -117,7 +117,10 @@ preload-service checkpoint cold-rebuilt the current `AnmManager.cpp` and
 repaired 168 stale compiler-local identifiers across six switch-owning units;
 all fourteen units from that object then replayed exactly. The new service was
 kept in an isolated object so it does not immediately renumber those symbols
-again.
+again. Adding the verified `AnmLoaded::LoadSprite` declaration later produced
+a second uniform `+3` identity shift across the same 168 local relocations; a
+cold-object audit proved every offset and type unchanged before refreshing the
+manifest, after which all fourteen units replayed exactly again.
 
 TH095's game-task runtime provides two further source-shape oracles. A
 16-bit input wrapper with an inline `operator&` reproduces the target's
@@ -129,6 +132,14 @@ natural aggregate containing the real locals can preserve their lifetimes
 and physical slot order without inert padding. The canonical
 `photo-game-task-update` and `photo-game-task-draw-hud` units enforce these
 patterns under build 3077.
+
+The exact `anm-load-texture-data` unit provides a second large-frame example.
+Its semantic local aggregate contains the real loaded-sprite, offset walker,
+raw-sprite pointer, path, D3D surface description, entry pointer, and result;
+their member order reproduces the original `0xA4`-byte frame and every target
+displacement. The aggregate records the observed four-byte compiler alignment
+boundary after the `0x44`-byte loaded sprite without inventing executable
+behavior. This source shape replays all 829 bytes and sixteen relocations.
 
 The adjacent task constructor proves that unoptimized VC7.1 preserves nested
 member-construction source shape even when the constructor body immediately

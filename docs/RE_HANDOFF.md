@@ -422,9 +422,14 @@ release/postload work across thirteen `0x120`-byte slots. Its adjacent
 ownership bodies `PostloadAnmEntry @ 0x00443480` (284 bytes) and
 `ReleaseAnm @ 0x00443980` (305 bytes) are now exact too, closing incremental
 raw-entry traversal through VM retirement, entry release, allocation teardown,
-and complete slot reset. Continue into `LoadTextureData @ 0x004435A0`
-(829 bytes) and `ReleaseAnmEntry @ 0x00443AC0` (78 bytes), then return to the
-remaining Supervisor render callback residual.
+and complete slot reset. `LoadTextureData @ 0x004435A0` (829 bytes) and
+`ReleaseAnmEntry @ 0x00443AC0` (78 bytes) now close that chain exactly: they
+prove the TH095 version-4 `0x40`-byte serialized entry, external/embedded/empty
+texture paths, scaled sprite and script binding, the `0x10`-byte runtime texture
+slot, and COM/raw-allocation teardown. All five isolated `AnmPreload.cpp` units
+must remain exact. Continue with the directly connected texture constructors
+at `0x00442E10`, `0x00442E90`, and `0x00442FC0`, then `AnmLoaded::LoadSprite @
+0x00443B10`; return to the Supervisor render callback residual afterward.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`
@@ -443,6 +448,10 @@ names across six switch-owning `AnmManager.cpp` units, including the complete
 replay exactly; only manifest-local symbol names changed, never target
 destinations or credited bytes. The new preload service intentionally lives in
 its own bounded object so future work does not immediately renumber that lane.
+The later shared `LoadSprite` declaration caused a second uniform `+3` local
+identity shift across those same 168 relocations; it was accepted only after a
+cold audit proved unchanged offsets/types and all fourteen current-object units
+replayed exact.
 
 The adjacent `FrontInf` cluster at `0x00417070..0x004179CC` is now
 source-present. Ten canonical units contribute 1,808 exact bytes and enforce

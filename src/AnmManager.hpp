@@ -354,6 +354,7 @@ struct AnmLoaded
     void *textures;
     i32 numberEntriesToBeLoaded;
 
+    void LoadSprite(i32 spriteIdx, AnmLoadedSprite *loadedSprite);
     ZunResult SetSprite(struct AnmVm *vm, i32 spriteIdx);
     AnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
 #ifdef TH095_DECLARE_ANM_LOADED_INITIALIZE_VM
