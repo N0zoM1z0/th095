@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 357 canonical exact functions cover 135,947 authored bytes.
+- Reconstruction: 362 canonical exact functions cover 136,919 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.08% (135,947 / 271,439)
+  relocations. Confirmed authored-byte coverage is now 50.11% (136,919 / 273,236)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 444 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,378 origin/boundary reviews pending. Original class
+  current ledger confirms 451 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,371 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -65,7 +65,7 @@
   Its 1,407-byte body and all 37 relocations replay exactly, covering pending
   photo capture, `BSTS` output, record checksum refresh, the 120-record scene
   score stream, profile checksum, compression, encryption, and final
-  `scoreth095.dat` output. All ten existing ResultScreen units replay unchanged
+  `scoreth095.dat` output. All fifteen current ResultScreen units replay unchanged
   after replacing their old local save-data stubs with the shared header.
 - `SceneSaveDataView::LoadScenePreviewTexture @ 0x004362A0` is exact for all
   578 bytes and both relocations. It closes the target-local best-shot-to-scene
@@ -666,6 +666,21 @@ and publish viewport values to AnmManager `+0x20/+0x24`. Resume the remaining
 Supervisor inventory at `0x00425EF0` and preserve every established Main,
 Background, ECL, ANM, photography, and ASCII exact unit while shared headers
 change.
+
+The adjacent TH095-specific PauseInf/ResultScreen ownership lane is now closed
+for five more exact units and 972 bytes. `Initialize @ 0x00426630` loads
+`pause.anm`, reads `sprt/help.txt`, and parses its `level:` blocks into eleven
+groups of ten two-line scene labels; its complete 489-byte parser and all 19
+relocations are exact. The slot-10 ANM load/release callbacks at
+`0x00426820/0x00426860`, `Create @ 0x00426A50`, and `Destroy @ 0x00426B90`
+are also canonical exact. The factory proves the complete `0x6E2C` owner,
+update/draw callback priorities 5/`0x1B`, and Chain fields at `+0x6E24/+0x6E28`.
+The source-present constructor proves the twenty-five VMs are compiler-visible
+as `21+2+1+1` groups; its target-sized body differs only in constructor-home
+slots. The source-present destructor is 454 versus 452 bytes with complete
+resource/VM teardown. Keep both conservatively non-exact and resume the
+Supervisor state router at `0x00425EF0` rather than spending a disproportionate
+pass on those two local-shape residuals.
 
 ## Closed lanes and preservation constraints
 

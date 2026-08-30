@@ -4,6 +4,7 @@
 #include "ZunMath.hpp"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
@@ -13,6 +14,15 @@ namespace th095
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 extern f32 g_AnmGameSpeed;
+extern ResultScreen *g_ResultScreen;
+
+struct ResultScreenAnmManagerLifecycleView
+{
+    ResultScreenAnmLoadedView *LoadAnm(i32 anmIndex, const char *path);
+    void ReleaseAnm(i32 anmIndex);
+};
+
+extern ResultScreenAnmManagerLifecycleView *g_AnmManager;
 
 struct ResultScreenGlobalStateView
 {
@@ -137,6 +147,18 @@ struct ResultScreenDrawLocals
     i32 i;
 };
 
+struct ResultScreenInitializeLocals
+{
+    i32 lineIndex;
+    u8 *next;
+    char line[64];
+    long currentLevel;
+    size_t fileSize;
+};
+
+typedef char ResultScreenInitializeLocalsSizeIs50[
+    (sizeof(ResultScreenInitializeLocals) == 0x50) ? 1 : -1];
+
 typedef char ResultScreenDrawLocalsSizeIsF0[
     (sizeof(ResultScreenDrawLocals) == 0xf0) ? 1 : -1];
 typedef char ResultScreenDrawReplayNameTitleAt04[
@@ -177,6 +199,9 @@ extern i32 g_ResultSceneState;
 extern ResultRuntimeView *g_ResultRuntime;
 extern ResultPlayerConfigView *g_ResultPlayerConfig;
 extern u8 *g_ResultPlayerConfigTable[];
+extern i32 g_ResultGroupMap[];
+extern u8 *__fastcall ReadResultHelpLine(
+    char *destination, u8 *source, i32 maxLength);
 extern i32 g_ResultSceneLimits[];
 extern const char *g_ResultAlphabet;
 extern ResultPhotoDataView *g_ResultPhotoData;
@@ -209,6 +234,188 @@ inline u16 IsResultMenuInputPressed(u16 buttons)
 inline ResultScreenAnmVm *GetResultVm(ResultScreen *resultScreen, i32 index)
 {
     return &resultScreen->vms[index];
+}
+
+// FUNCTION: TH095 0x004264B0.
+ResultScreen::ResultScreen()
+{
+    utils::DebugPrint("initialize PauseInf\n");
+    memset(this, 0, sizeof(ResultScreen));
+    g_ResultScreen = this;
+}
+
+// FUNCTION: TH095 0x00426880.
+ResultScreen::~ResultScreen()
+{
+    utils::DebugPrint("shutdown PauseInf\n");
+    g_Chain.Cut(this->calcChain);
+    g_Chain.Cut(this->drawChain);
+
+    for (i32 i = 0; i < 20; i++)
+    {
+        if (this->replays[i] != NULL)
+        {
+            delete this->replays[i];
+            this->replays[i] = NULL;
+        }
+    }
+    if (this->helpTextBuffer != NULL)
+    {
+        u8 *helpTextBuffer = this->helpTextBuffer;
+        free(helpTextBuffer);
+    }
+    g_AnmManager->ReleaseAnm(this->anm->anmIdx);
+    g_ResultScreen = NULL;
+}
+
+// FUNCTION: TH095 0x00426630.
+ZunResult ResultScreen::Initialize()
+{
+    u8 *cursor;
+    ResultScreenInitializeLocals locals;
+
+    this->anm = g_AnmManager->LoadAnm(10, "pause.anm");
+    if (this->anm == NULL)
+    {
+        g_GameErrorContext.Log(
+            "\x89\xe6\x96\xca\x8d\x5c\x90\xac"
+            "\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x8c\xa9\x82\xc2\x82\xa9\x82\xe8"
+            "\x82\xdc\x82\xb9\x82\xf1\x81\x42"
+            "\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x89\xf3\x82\xea\x82\xc4\x82\xa2"
+            "\x82\xdc\x82\xb7\r\n");
+        return ZUN_ERROR;
+    }
+
+    this->helpTextBuffer =
+        FileSystem::OpenFile(
+            "sprt/help.txt", (i32 *)&locals.fileSize, FALSE);
+    if (this->helpTextBuffer == NULL)
+    {
+        g_GameErrorContext.Log(
+            "\x89\xe6\x96\xca\x8d\x5c\x90\xac"
+            "\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x8c\xa9\x82\xc2\x82\xa9\x82\xe8"
+            "\x82\xdc\x82\xb9\x82\xf1\x81\x42"
+            "\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x89\xf3\x82\xea\x82\xc4\x82\xa2"
+            "\x82\xdc\x82\xb7\r\n");
+        return ZUN_ERROR;
+    }
+
+    cursor = this->helpTextBuffer;
+    locals.currentLevel = -1;
+    locals.lineIndex = 0;
+    while ((i32)locals.fileSize > 0)
+    {
+        locals.next = ReadResultHelpLine(
+            locals.line, cursor, sizeof(locals.line));
+        locals.fileSize -= locals.next - cursor;
+        cursor = locals.next;
+
+        if (locals.line[0] == '#' || locals.line[0] == '\0')
+        {
+            continue;
+        }
+        if (locals.line[0] == '\0')
+        {
+            continue;
+        }
+        if (strncmp(locals.line, "end", 3) == 0)
+        {
+            break;
+        }
+        if (strncmp(locals.line, "level:", 6) == 0)
+        {
+            locals.currentLevel = atol(locals.line + 6);
+            this->sceneCounts[locals.currentLevel]++;
+            locals.lineIndex = 0;
+            continue;
+        }
+        if (locals.currentLevel >= 0)
+        {
+            strcpy(
+                reinterpret_cast<char *>(
+                    &this->sceneLabels[locals.currentLevel]
+                         [this->sceneCounts[locals.currentLevel] - 1]) +
+                    locals.lineIndex * 0x2c,
+                locals.line);
+            locals.lineIndex++;
+        }
+    }
+    this->selectedGroup = g_ResultGroupMap[g_ResultPlayerConfig->group];
+    return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x00426820.
+ZunResult ResultScreen::LoadAnm()
+{
+    if (g_AnmManager->LoadAnm(10, "pause.anm") == NULL)
+    {
+        g_GameErrorContext.Log(
+            "\x89\xe6\x96\xca\x8d\x5c\x90\xac"
+            "\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x8c\xa9\x82\xc2\x82\xa9\x82\xe8"
+            "\x82\xdc\x82\xb9\x82\xf1\x81\x42"
+            "\x83\x66\x81\x5b\x83\x5e\x82\xaa"
+            "\x89\xf3\x82\xea\x82\xc4\x82\xa2"
+            "\x82\xdc\x82\xb7\r\n");
+        return ZUN_ERROR;
+    }
+    return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x00426860.
+ZunResult ResultScreen::ReleaseAnm()
+{
+    g_AnmManager->ReleaseAnm(10);
+    return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x00426A50.
+ResultScreen *ResultScreen::Create()
+{
+    ResultScreen *resultScreen;
+    ChainElem *elem;
+
+    resultScreen = new ResultScreen();
+    if (resultScreen->Initialize() != ZUN_SUCCESS)
+    {
+        goto failure;
+    }
+
+    elem = g_Chain.CreateElem(
+        reinterpret_cast<ChainCallback>(ResultScreen::OnUpdate));
+    elem->arg = resultScreen;
+    g_Chain.AddToCalcChain(elem, 5);
+    resultScreen->calcChain = elem;
+
+    elem = g_Chain.CreateElem(
+        reinterpret_cast<ChainCallback>(ResultScreen::OnDraw));
+    elem->arg = resultScreen;
+    g_Chain.AddToDrawChain(elem, 0x1b);
+    resultScreen->drawChain = elem;
+    return resultScreen;
+
+failure:
+    if (resultScreen != NULL)
+    {
+        delete resultScreen;
+        resultScreen = NULL;
+    }
+    return NULL;
+}
+
+// FUNCTION: TH095 0x00426B90.
+void ResultScreen::Destroy()
+{
+    ResultScreen *resultScreen = this;
+    if (resultScreen != NULL)
+    {
+        delete resultScreen;
+        resultScreen = NULL;
+    }
 }
 
 i32 ResultScreenTimer::Tick()

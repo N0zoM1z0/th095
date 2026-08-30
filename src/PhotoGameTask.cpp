@@ -50,9 +50,9 @@ struct PhotoItemManagerTaskView
     void Destroy();
 };
 
-struct PhotoPauseManagerView
+struct ResultScreen
 {
-    static PhotoPauseManagerView *Create();
+    static ResultScreen *Create();
     void Destroy();
 };
 
@@ -227,7 +227,7 @@ struct PhotoGameTaskView
     PhotoEnemyManagerTaskView *enemies;      // +0x014
     PhotoOverlayManagerView *photoOverlay;   // +0x018
     PhotoItemManagerTaskView *items;         // +0x01c
-    PhotoPauseManagerView *pause;            // +0x020
+    ResultScreen *pause;                     // +0x020
     PhotoLaserManagerTaskView *lasers;       // +0x024
     ZunTimer stageTimer;                     // +0x028
     PhotoRuntimeConfigView runtimeConfig;    // +0x034
@@ -663,7 +663,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->pause = PhotoPauseManagerView::Create();
+    this->pause = ResultScreen::Create();
     if (this->pause == NULL)
     {
         return ZUN_ERROR;

@@ -443,3 +443,10 @@ th095::Supervisor::BeginLoadingCompletion,0x004257E0,function
 th095::SupervisorViewportView::ApplyGameplayViewport,0x00425910,function
 th095::BackgroundSupervisorView::ApplyBackgroundViewport,0x00425AA0,function
 th095::Supervisor::InitializeViewports,0x00425CC0,function
+th095::ResultScreen::ResultScreen,0x004264B0,function
+th095::ResultScreen::Initialize,0x00426630,function
+th095::ResultScreen::LoadAnm,0x00426820,function
+th095::ResultScreen::ReleaseAnm,0x00426860,function
+th095::ResultScreen::~ResultScreen,0x00426880,function
+th095::ResultScreen::Create,0x00426A50,function
+th095::ResultScreen::Destroy,0x00426B90,function
