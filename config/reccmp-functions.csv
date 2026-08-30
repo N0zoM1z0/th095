@@ -443,6 +443,7 @@ th095::Supervisor::BeginLoadingCompletion,0x004257E0,function
 th095::SupervisorViewportView::ApplyGameplayViewport,0x00425910,function
 th095::BackgroundSupervisorView::ApplyBackgroundViewport,0x00425AA0,function
 th095::Supervisor::InitializeViewports,0x00425CC0,function
+th095::Supervisor::OnUpdate,0x00423440,function
 th095::Supervisor::UpdateSceneState,0x00425EF0,function
 th095::ResultScreen::ResultScreen,0x004264B0,function
 th095::ResultScreen::Initialize,0x00426630,function

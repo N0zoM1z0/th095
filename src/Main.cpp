@@ -75,6 +75,63 @@ struct PhotoGameTaskView
 extern PhotoGameTaskView *g_PhotoGameTask;
 extern u32 g_ControllerRuntimeFlags;
 
+struct SupervisorSoundPlayerView
+{
+    void UpdateFades();
+};
+
+struct SupervisorControllerView
+{
+    static u16 GetInput(i32 inputIndex);
+};
+
+struct SupervisorAnmManagerView
+{
+    u32 mixColor;                              // +0x0000
+    i32 useMixColor;                           // +0x0004
+    i32 captureSurfaceIdx;                     // +0x0008
+    i32 captureAnmIdx;                         // +0x000c
+    i32 scriptsStartedThisFrame;               // +0x0010
+    i32 scriptsExecutedThisFrame;              // +0x0014
+    i32 renderStateChangesThisFrame;           // +0x0018
+    i32 flushesThisFrame;                      // +0x001c
+    Float2 screenShakeOffset;                  // +0x0020
+    u8 unknown028[0x1760 - 0x28];
+    IDirect3DTexture8 *currentTexture;          // +0x1760
+    u8 currentBlendMode;                       // +0x1764
+    u8 currentColorOp;                         // +0x1765
+    u8 currentVertexShader;                    // +0x1766
+    u8 disableZWrite;                          // +0x1767
+    u8 cameraMode;                             // +0x1768
+    u8 unknown1769[3];
+    void *currentSprite;                       // +0x176c
+
+    ZunResult ServicePreloadedAnims();
+
+    void ClearSprite() { this->currentSprite = NULL; }
+    void ClearTexture() { this->currentTexture = NULL; }
+    void ClearColorOp() { this->currentColorOp = 0xff; }
+    void ClearBlendMode() { this->currentBlendMode = 3; }
+    void ClearZWrite() { this->disableZWrite = 0xff; }
+    void ResetFrameDebugInfo()
+    {
+        this->scriptsExecutedThisFrame = 0;
+        this->renderStateChangesThisFrame = 0;
+        this->scriptsStartedThisFrame = 0;
+        this->flushesThisFrame = 0;
+    }
+    void ClearCameraSettings() { this->cameraMode = 0xff; }
+    void SetMixColorDefault()
+    {
+        this->useMixColor = 0;
+        this->mixColor = 0x80808080;
+    }
+    void ClearVertexShader() { this->currentVertexShader = 0xff; }
+};
+
+extern SupervisorSoundPlayerView g_SupervisorSoundPlayer;
+extern SupervisorAnmManagerView *g_SupervisorAnmManager;
+
 struct TextHelperView
 {
     static void CreateTextBuffer();
@@ -1068,6 +1125,55 @@ i32 Supervisor::RegisterChain()
 #undef elem
 #undef result
 #undef supervisor
+
+// FUNCTION: TH095 0x00423440.
+i32 __fastcall Supervisor::OnUpdate(void *arg)
+{
+    struct OnUpdateLocals
+    {
+        i32 replayScanActive;
+        i32 result;
+    } locals;
+
+#define supervisor reinterpret_cast<Supervisor *>(arg)
+    if (supervisor->flags.receivedCloseMsg)
+    {
+        locals.replayScanActive = supervisor->replayScanActive;
+        if (locals.replayScanActive == 0)
+            return 4;
+    }
+
+    g_SupervisorSoundPlayer.UpdateFades();
+    SupervisorControllerView::GetInput(0);
+
+    g_SupervisorAnmManager->ClearSprite();
+    g_SupervisorAnmManager->ClearTexture();
+    g_SupervisorAnmManager->ClearColorOp();
+    g_SupervisorAnmManager->ClearBlendMode();
+    g_SupervisorAnmManager->ClearZWrite();
+    g_SupervisorAnmManager->ResetFrameDebugInfo();
+    g_SupervisorAnmManager->ClearCameraSettings();
+    g_SupervisorAnmManager->SetMixColorDefault();
+    g_SupervisorAnmManager->screenShakeOffset.x =
+        g_SupervisorAnmManager->screenShakeOffset.y = 0.0f;
+
+    if (g_SupervisorAnmManager->ServicePreloadedAnims() != ZUN_SUCCESS)
+        return 4;
+
+    g_SupervisorAnmManager->ClearVertexShader();
+    if (supervisor->startupThreadState != 0)
+    {
+        if (supervisor->startupThreadState == 2)
+            return 4;
+        return 1;
+    }
+
+    locals.result = supervisor->UpdateSceneState();
+    if (locals.result != 1)
+        return locals.result;
+    return 1;
+#undef supervisor
+}
 
 // FUNCTION: TH095 0x004235D0.
 i32 __fastcall Supervisor::OnDraw2(Supervisor *s)

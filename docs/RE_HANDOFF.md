@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 363 canonical exact functions cover 137,857 authored bytes.
+- Reconstruction: 364 canonical exact functions cover 138,257 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.28% (137,857 / 274,174)
+  relocations. Confirmed authored-byte coverage is now 50.35% (138,257 / 274,574)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 452 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,370 origin/boundary reviews pending. Original class
+  current ledger confirms 453 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,369 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -407,16 +407,18 @@
 
 ## Next bounded lane
 
-The high-connectivity Supervisor scene router is now canonical exact.
-`Supervisor::UpdateSceneState @ 0x00425EF0` contributes 938 authored bytes;
-its canonical comparison extends through 88 bytes of three compiler-owned
-switch tables and enforces all 46 relocations. It owns title/front-end modes,
-photo-game start/exit, replay return, result restart, retry restart, and common
-failure teardown. Preserve the target's unusual photo-exit path, which returns
-4 without balancing critical section 5. All 42 `Main.cpp` units replay from the
-current object. The immediate next target is the sole caller and registered
-calc callback, `Supervisor::OnUpdate @ 0x00423440` (400 bytes), so that the
-frame-reset/input/state-routing spine can close around this exact dependency.
+The high-connectivity Supervisor frame and scene-routing spine is now canonical
+exact. `Supervisor::OnUpdate @ 0x00423440` contributes 400 authored bytes and
+enforces all 17 SoundPlayer, Controller, ANM, and scene-state relocations. It
+polls input, resets the per-frame ANM caches and counters, services pending ANM
+loads, routes startup completion, and calls the exact 938-byte
+`UpdateSceneState`. The callback's natural two-member local aggregate preserves
+the target's result/replay stack-slot order without inert locals. All 43
+`Main.cpp` units replay exactly from the current object. The next bounded
+dependencies are `SoundPlayer::UpdateFades @ 0x00426300` (79 bytes) and
+`AnmManager::ServicePreloadedAnims @ 0x004438E0` (147 bytes); close those small
+but highly shared frame services before returning to the remaining Supervisor
+render callback residual.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`
@@ -674,11 +676,12 @@ array. `InitializeViewports @ 0x00425CC0` establishes two `0xF0` configurations
 at Supervisor `+0x1E4/+0x2D4`; the exact gameplay and background apply hubs at
 `0x00425910/0x00425AA0` flush ANM vertices, rebuild D3D view/projection state,
 and publish viewport values to AnmManager `+0x20/+0x24`. The adjacent
-`UpdateSceneState @ 0x00425EF0` is now exact for its complete 938-byte authored
-body, 88-byte switch-table tail, and all 46 relocations. Continue through its
-sole caller `Supervisor::OnUpdate @ 0x00423440` and preserve every established
-Main, Background, ECL, ANM, photography, and ASCII exact unit while shared
-headers change.
+`UpdateSceneState @ 0x00425EF0` is exact for its complete 938-byte authored
+body, 88-byte switch-table tail, and all 46 relocations. Its sole caller
+`Supervisor::OnUpdate @ 0x00423440` is also exact for 400 bytes and all 17
+relocations, closing the registered calc callback through front-end and
+photo-game transition ownership. Preserve every established Main, Background,
+ECL, ANM, photography, and ASCII exact unit while shared headers change.
 
 The adjacent TH095-specific PauseInf/ResultScreen ownership lane is now closed
 for five more exact units and 972 bytes. `Initialize @ 0x00426630` loads
