@@ -59,9 +59,9 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00405900,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004059C0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00405A00,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00405A30,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004062B0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00406CC0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00405A30,authored,BulletManager,authored,high,photo-bullet-spawn-single-semantic-2026-08-30
+0x004062B0,authored,BulletManager,authored,high,photo-bullet-transform-interpreter-semantic-2026-08-30
+0x00406CC0,authored,BulletManager,authored,exact,photo-bullet-spawn-pattern-exact-2026-08-30
 0x00406D80,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00406E20,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00406F90,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -71,7 +71,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00407440,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00407620,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004076E0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004077A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004077A0,authored,BulletManager,authored,exact,photo-bullet-begin-despawn-exact-2026-08-30
 0x00407820,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00407C90,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004081B0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

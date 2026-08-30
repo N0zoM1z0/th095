@@ -326,3 +326,7 @@ th095::PhotoFrontManagerView::Update
 th095::PhotoFrontManagerView::Draw
 th095::PhotoFrontManagerView::OnUpdate
 th095::PhotoFrontManagerView::OnDraw
+th095::PhotoBulletManagerView::SpawnSingleBullet
+th095::PhotoBulletView::AdvanceTransformProgram
+th095::PhotoBulletManagerView::SpawnBulletPattern
+th095::PhotoBulletView::BeginDespawn

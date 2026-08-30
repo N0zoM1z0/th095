@@ -1,5 +1,7 @@
 #include "AnmManager.hpp"
 
+#include <string.h>
+
 namespace th095
 {
 
@@ -41,10 +43,179 @@ struct PhotoBulletVector
         this->y += other.y;
         this->z += other.z;
     }
+
+    void operator-=(const PhotoBulletVector &other)
+    {
+        this->x -= other.x;
+        this->y -= other.y;
+        this->z -= other.z;
+    }
+
+    void FromAngleMagnitude(f32 angle, f32 magnitude);
 };
 
 typedef char PhotoBulletVectorSizeIsC[
     (sizeof(PhotoBulletVector) == 0x0c) ? 1 : -1];
+
+enum PhotoBulletTransformKind
+{
+    PHOTO_BULLET_TRANSFORM_NONE = 0,
+    PHOTO_BULLET_TRANSFORM_DECELERATE = 0x00000001,
+    PHOTO_BULLET_TRANSFORM_SPAWN_FAST = 0x00000002,
+    PHOTO_BULLET_TRANSFORM_SPAWN_NORMAL = 0x00000004,
+    PHOTO_BULLET_TRANSFORM_SPAWN_SLOW = 0x00000008,
+    PHOTO_BULLET_TRANSFORM_ACCELERATE_VECTOR = 0x00000010,
+    PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR = 0x00000020,
+    PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_RELATIVE = 0x00000040,
+    PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_AIMED = 0x00000080,
+    PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_ABSOLUTE = 0x00000100,
+    PHOTO_BULLET_TRANSFORM_PLAY_SPAWN_SOUND = 0x00000200,
+    PHOTO_BULLET_TRANSFORM_BOUNCE_ALL_EDGES = 0x00000400,
+    PHOTO_BULLET_TRANSFORM_BOUNCE_EXCEPT_BOTTOM = 0x00000800,
+    PHOTO_BULLET_TRANSFORM_CANCEL_IMMUNE = 0x00001000,
+    PHOTO_BULLET_TRANSFORM_SET_CULL_DELAY = 0x00002000,
+    PHOTO_BULLET_TRANSFORM_SET_SPRITE = 0x00004000,
+    PHOTO_BULLET_TRANSFORM_WAIT = 0x00008000,
+    PHOTO_BULLET_TRANSFORM_DESPAWN = 0x00010000,
+    PHOTO_BULLET_TRANSFORM_PLAY_SOUND = 0x00020000,
+    PHOTO_BULLET_TRANSFORM_WRAP_X = 0x00100000,
+    PHOTO_BULLET_TRANSFORM_WRAP_Y = 0x00200000,
+    PHOTO_BULLET_TRANSFORM_SPAWN_CHILD_PATTERN = 0x00400000,
+    PHOTO_BULLET_TRANSFORM_SET_FIELD_330 = 0x01000000,
+    PHOTO_BULLET_TRANSFORM_JUMP = 0x02000000,
+};
+
+enum PhotoBulletAimMode
+{
+    PHOTO_BULLET_AIM_FAN_AIMED = 0,
+    PHOTO_BULLET_AIM_FAN = 1,
+    PHOTO_BULLET_AIM_CIRCLE_AIMED = 2,
+    PHOTO_BULLET_AIM_CIRCLE = 3,
+    PHOTO_BULLET_AIM_OFFSET_CIRCLE_AIMED = 4,
+    PHOTO_BULLET_AIM_OFFSET_CIRCLE = 5,
+    PHOTO_BULLET_AIM_RANDOM_ANGLE = 6,
+    PHOTO_BULLET_AIM_RANDOM_SPEED = 7,
+    PHOTO_BULLET_AIM_RANDOM = 8,
+};
+
+struct PhotoBulletTransformPayload
+{
+    union
+    {
+        f32 float0;
+        f32 accelerationMagnitude;
+        f32 speedDelta;
+        f32 directionChangeAngle;
+        f32 bounceSpeed;
+        f32 childSpeed1;
+    };
+    union
+    {
+        f32 float1;
+        f32 accelerationAngle;
+        f32 angleDelta;
+        f32 directionChangeSpeed;
+        f32 childSpeed2;
+    };
+    union
+    {
+        i32 int0;
+        i32 durationFrames;
+        i32 directionChangeIntervalFrames;
+        i32 bounceLimit;
+        i32 soundIndex;
+        i32 packedChildPattern;
+        i32 childCount2;
+    };
+    union
+    {
+        i32 int1;
+        i32 directionChangeRepeatCount;
+        i32 childCount1;
+        i32 childTransformFlags;
+    };
+};
+
+struct PhotoBulletTransformRecord
+{
+    PhotoBulletTransformPayload payload;
+    u32 kind;
+    i32 allowWhileActive;
+};
+
+struct PhotoBulletSpawnDescriptor
+{
+    i16 bulletType;
+    i16 color;
+    PhotoBulletVector position;
+    f32 angle;
+    f32 angleStep;
+    f32 speed1;
+    f32 speed2;
+    PhotoBulletTransformRecord transforms[18];
+    u8 laserFields[0x24];
+    i16 count1;
+    i16 count2;
+    u16 aimMode;
+    u16 unknown1FA;
+    u32 transformFlags;
+    i32 spawnSound;
+    i32 transformSound;
+    i32 transformStartIndex;
+    void *templateSprites;
+
+    PhotoBulletSpawnDescriptor()
+    {
+        memset(this, 0, sizeof(*this));
+        this->transformSound = -1;
+    }
+};
+
+struct PhotoBulletExState
+{
+    ZunTimer timer;
+    union
+    {
+        f32 float0;
+        f32 accelerationMagnitude;
+        f32 speedDelta;
+        f32 directionChangeSpeed;
+        f32 bounceSpeed;
+    };
+    union
+    {
+        f32 float1;
+        f32 accelerationAngle;
+        f32 angleDelta;
+        f32 directionChangeAngle;
+    };
+    PhotoBulletVector vector;
+    union
+    {
+        i32 int0;
+        i32 durationFrames;
+        i32 directionChangeIntervalFrames;
+        i32 bouncesCompleted;
+    };
+    union
+    {
+        i32 int1;
+        i32 directionChangeRepeatCount;
+        i32 bounceLimit;
+    };
+    union
+    {
+        i32 int2;
+        i32 directionChangesCompleted;
+    };
+};
+
+typedef char PhotoBulletTransformRecordSizeIs18[
+    (sizeof(PhotoBulletTransformRecord) == 0x18) ? 1 : -1];
+typedef char PhotoBulletSpawnDescriptorSizeIs210[
+    (sizeof(PhotoBulletSpawnDescriptor) == 0x210) ? 1 : -1];
+typedef char PhotoBulletExStateSizeIs2C[
+    (sizeof(PhotoBulletExState) == 0x2c) ? 1 : -1];
 
 struct PhotoBulletView
 {
@@ -61,23 +232,40 @@ struct PhotoBulletView
     AnmVm vm;                          // +0x004
     PhotoBulletVector position;        // +0x2d0
     PhotoBulletVector velocity;        // +0x2dc
-    u8 unknown2e8[0x30c - 0x2e8];
+    PhotoBulletVector acceleration;    // +0x2e8
+    f32 speed;                         // +0x2f4
+    u32 unknown2f8[2];
+    f32 angle;                         // +0x300
+    u32 unknown304[2];
     PhotoBulletVector collisionSize;   // +0x30c
     ZunTimer stateTimer;               // +0x318
-    u8 unknown324[0x348 - 0x324];
-    u32 activeTransformFlags;           // +0x348
-    u8 unknown34c[0x352 - 0x34c];
+    ZunTimer activeTimer;              // +0x324
+    i32 field330;
+    u8 unknown334[0x344 - 0x334];
+    i32 offscreenCullDelayFrames;      // +0x344
+    u32 activeTransformFlags;          // +0x348
+    u32 transformFlags;                // +0x34c
+    i16 unknown350;
     u16 state;                          // +0x352
-    u8 unknown354[0x358 - 0x354];
+    u16 offscreenFrames;
+    u16 unknown356;
     PhotoBulletView *nextInDrawBucket; // +0x358
-    u8 unknown35c[0x36c - 0x35c];
-    i32 drawBucketIndex;                // +0x36c
-    u8 unknown370[0x5fc - 0x370];
-    ZunTimer waitTimer;                 // +0x5fc
-    u8 unknown608[0x65c - 0x608];
+    i32 zoneTransitionCooldownFrames;  // +0x35c
+    i32 field360;
+    i32 transformSound;                // +0x364
+    i32 transformIndex;                // +0x368
+    i32 drawBucketIndex;               // +0x36c
+    PhotoBulletTransformRecord transforms[18]; // +0x370
+    PhotoBulletExState exStates[7];    // +0x520
+    i8 collisionDisabled;              // +0x654
+    u8 unknown655;
+    i16 bulletType;                    // +0x656
+    i16 color;                         // +0x658
+    u8 trailingAlignment65A[2];
 
     void Deactivate();
     void AdvanceTransformProgram();
+    i32 BeginDespawn();
     void UpdateDeceleration();
     void UpdateVectorAcceleration();
     void UpdatePolarAcceleration();
@@ -97,19 +285,28 @@ typedef char PhotoBulletCollisionAt30C[
     (offsetof(PhotoBulletView, collisionSize) == 0x30c) ? 1 : -1];
 typedef char PhotoBulletStateAt352[
     (offsetof(PhotoBulletView, state) == 0x352) ? 1 : -1];
+typedef char PhotoBulletTransformsAt370[
+    (offsetof(PhotoBulletView, transforms) == 0x370) ? 1 : -1];
+typedef char PhotoBulletExStatesAt520[
+    (offsetof(PhotoBulletView, exStates) == 0x520) ? 1 : -1];
+
+struct PhotoBulletAnmLoadedView;
 
 struct PhotoBulletManagerView
 {
-    u8 unknown000[0x04];
+    PhotoBulletView *bulletCursor;       // +0x00
     PhotoBulletView *drawBucketHeads[6]; // +0x04
     PhotoBulletView *drawBucketTails[6]; // +0x1c
     u8 unknown034[0x4c - 0x34];
     PhotoBulletView bullets[0x641];      // +0x4c
     u8 unknown27c5a8[8];
-    void *anmSpawner;                    // +0x27c5b0
+    PhotoBulletAnmLoadedView *anmSpawner; // +0x27c5b0
     i32 activeBulletCount;               // +0x27c5b4
 
     static i32 __fastcall OnUpdate(PhotoBulletManagerView *bulletManager);
+    i32 SpawnSingleBullet(PhotoBulletSpawnDescriptor *descriptor,
+                          i32 index1, i32 index2, f32 angleToPlayer);
+    i32 SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor);
 };
 
 typedef char PhotoBulletManagerBulletsAt4C[
@@ -138,12 +335,408 @@ struct PhotoBulletGlobalStateView
 
 struct PhotoBulletPlayerView
 {
+    f32 AngleFromPoint(PhotoBulletVector *position);
     i32 CheckBulletCollision(
         PhotoBulletVector *position, PhotoBulletVector *size);
 };
 
+struct PhotoBulletAnmLoadedView
+{
+    void InitializeVm(AnmVm *vm, i32 scriptIndex);
+};
+
+struct PhotoBulletSoundPlayerView
+{
+    void PlaySoundByIdx(i32 soundIndex, i32 pan);
+    void PlaySoundPositionedByIdx(i32 soundIndex, f32 positionX);
+};
+
 extern PhotoBulletGlobalStateView *g_PhotoBulletGlobalState;
 extern PhotoBulletPlayerView *g_PhotoBulletPlayer;
+extern PhotoBulletManagerView *g_PhotoBulletManager;
+extern PhotoBulletSoundPlayerView g_PhotoBulletSoundPlayer;
+extern i32 g_PhotoBulletScriptBases[];
+extern f32 g_PhotoBulletCollisionSizes[];
+extern i32 g_PhotoBulletDrawBucketIndices[];
+
+#pragma var_order(speed, i, bullet, angle, transformFlags, this)
+// FUNCTION: TH095 0x00405A30; TH08 0x0042F5F0 is the adjacent source oracle.
+i32 PhotoBulletManagerView::SpawnSingleBullet(
+    PhotoBulletSpawnDescriptor *descriptor, i32 index1, i32 index2,
+    f32 angleToPlayer)
+{
+    f32 speed;
+    i32 i;
+    PhotoBulletView *bullet;
+    f32 angle;
+    u32 transformFlags;
+
+    i = 0;
+    bullet = this->bulletCursor;
+    for (i = 0; i < 0x640; ++i)
+    {
+        if (bullet->state == 0)
+            break;
+        ++bullet;
+        if (bullet->state == 5)
+            bullet = &this->bullets[0];
+    }
+    if (i >= 0x640)
+        return 1;
+
+    angle = 0.0f;
+    if (descriptor->count2 > 1)
+        speed = descriptor->speed1 -
+                (descriptor->speed1 - descriptor->speed2) * (f32)index2 /
+                    (f32)descriptor->count2;
+    else
+        speed = descriptor->speed1;
+
+    switch (descriptor->aimMode)
+    {
+    case PHOTO_BULLET_AIM_FAN_AIMED:
+    case PHOTO_BULLET_AIM_FAN:
+        if ((descriptor->count1 & 1) != 0)
+            angle += (f32)((index1 + 1) / 2) * descriptor->angleStep;
+        else
+            angle += (f32)(index1 / 2) * descriptor->angleStep +
+                     descriptor->angleStep * 0.5f;
+        if ((index1 & 1) != 0)
+            angle *= -1.0f;
+        if (descriptor->aimMode == PHOTO_BULLET_AIM_FAN_AIMED)
+            angle += angleToPlayer;
+        angle += descriptor->angle;
+        break;
+
+    case PHOTO_BULLET_AIM_CIRCLE_AIMED:
+        angle += angleToPlayer;
+    case PHOTO_BULLET_AIM_CIRCLE:
+        angle += (f32)index1 * 6.2831855f / (f32)descriptor->count1;
+        angle += (f32)index2 * descriptor->angleStep + descriptor->angle;
+        break;
+
+    case PHOTO_BULLET_AIM_OFFSET_CIRCLE_AIMED:
+        angle += angleToPlayer;
+    case PHOTO_BULLET_AIM_OFFSET_CIRCLE:
+        angle += 3.1415927f / (f32)descriptor->count1;
+        angle += (f32)index1 * 6.2831855f / (f32)descriptor->count1;
+        angle += descriptor->angle;
+        break;
+
+    case PHOTO_BULLET_AIM_RANDOM_ANGLE:
+        angle = g_Rng.GetRandomF32InRange(
+                    descriptor->angle - descriptor->angleStep) +
+                descriptor->angleStep;
+        break;
+
+    case PHOTO_BULLET_AIM_RANDOM_SPEED:
+        speed = g_Rng.GetRandomF32InRange(
+                    descriptor->speed1 - descriptor->speed2) +
+                descriptor->speed2;
+        angle += (f32)index1 * 6.2831855f / (f32)descriptor->count1;
+        angle += (f32)index2 * descriptor->angleStep + descriptor->angle;
+        break;
+
+    case PHOTO_BULLET_AIM_RANDOM:
+        angle = g_Rng.GetRandomF32InRange(
+                    descriptor->angle - descriptor->angleStep) +
+                descriptor->angleStep;
+        speed = g_Rng.GetRandomF32InRange(
+                    descriptor->speed1 - descriptor->speed2) +
+                descriptor->speed2;
+        break;
+
+    default:
+        break;
+    }
+
+    bullet->state = 1;
+    bullet->flags |= 1;
+    bullet->stateTimer = 0;
+    bullet->activeTimer = 0;
+    bullet->speed = speed;
+    bullet->angle = AddNormalizeAngle(angle, 0.0f);
+    bullet->position = descriptor->position;
+    bullet->position.z = 0.1f;
+    bullet->velocity.FromAngleMagnitude(angle, speed);
+    bullet->activeTransformFlags = descriptor->transformFlags;
+    bullet->color = descriptor->color;
+    bullet->bulletType = descriptor->bulletType;
+    bullet->field360 = 0;
+    bullet->flags &= ~0x00000008;
+    bullet->flags &= ~0x00000004;
+    bullet->flags |= 0x00000002;
+    bullet->flags &= ~0x00000010;
+
+    this->anmSpawner->InitializeVm(
+        &bullet->vm,
+        g_PhotoBulletScriptBases[descriptor->bulletType] + descriptor->color);
+    bullet->drawBucketIndex =
+        g_PhotoBulletDrawBucketIndices[descriptor->bulletType];
+    bullet->transformSound = descriptor->transformSound;
+    bullet->offscreenCullDelayFrames = 0;
+    bullet->collisionSize.y =
+        g_PhotoBulletCollisionSizes[descriptor->bulletType];
+    bullet->collisionSize.x = bullet->collisionSize.y;
+
+    transformFlags = descriptor->transformFlags;
+    if ((descriptor->transformFlags & PHOTO_BULLET_TRANSFORM_SPAWN_FAST) != 0)
+    {
+        bullet->vm.pendingInterrupt = 7;
+        bullet->state = 2;
+        bullet->position -= bullet->velocity * 4.0f;
+    }
+    else if ((descriptor->transformFlags &
+              PHOTO_BULLET_TRANSFORM_SPAWN_NORMAL) != 0)
+    {
+        bullet->vm.pendingInterrupt = 8;
+        bullet->state = 2;
+        bullet->position -= bullet->velocity * 4.0f;
+    }
+    else if ((descriptor->transformFlags &
+              PHOTO_BULLET_TRANSFORM_SPAWN_SLOW) != 0)
+    {
+        bullet->vm.pendingInterrupt = 9;
+        bullet->state = 2;
+        bullet->position -= bullet->velocity * 4.0f;
+    }
+    else
+    {
+        bullet->vm.pendingInterrupt = 2;
+    }
+
+    memcpy(bullet->transforms, descriptor->transforms,
+           sizeof(descriptor->transforms));
+    bullet->transformFlags = descriptor->transformFlags;
+    bullet->activeTransformFlags = 0;
+    bullet->transformIndex = descriptor->transformStartIndex;
+    bullet->AdvanceTransformProgram();
+    AnmManager::ExecuteScript(&bullet->vm);
+
+    ++bullet;
+    if (bullet->state == 5)
+        this->bulletCursor = &this->bullets[0];
+    else
+        this->bulletCursor = bullet;
+    return 0;
+}
+
+// FUNCTION: TH095 0x004062B0; TH08 0x0042FFC0 is the adjacent source oracle.
+void PhotoBulletView::AdvanceTransformProgram()
+{
+    PhotoBulletTransformRecord *record;
+
+nextRecord:
+    if (this->transformIndex >= 18)
+        return;
+
+    record = &this->transforms[this->transformIndex];
+    if (record->kind == PHOTO_BULLET_TRANSFORM_NONE)
+        return;
+    if (record->allowWhileActive == 0 && this->activeTransformFlags != 0)
+        return;
+    if ((this->transformFlags & record->kind) == 0)
+    {
+        ++this->transformIndex;
+        goto nextRecord;
+    }
+
+    switch (record->kind)
+    {
+    case PHOTO_BULLET_TRANSFORM_DECELERATE:
+        this->activeTransformFlags |= PHOTO_BULLET_TRANSFORM_DECELERATE;
+        this->exStates[0].timer = 0;
+        *reinterpret_cast<i32 *>(&this->exStates[0].vector.z) = 0;
+        break;
+
+    case PHOTO_BULLET_TRANSFORM_ACCELERATE_VECTOR:
+        this->activeTransformFlags |= PHOTO_BULLET_TRANSFORM_ACCELERATE_VECTOR;
+        this->exStates[1].accelerationMagnitude =
+            record->payload.accelerationMagnitude;
+        this->exStates[1].accelerationAngle =
+            record->payload.accelerationAngle > -990.0f
+                ? record->payload.accelerationAngle
+                : this->angle;
+        this->exStates[1].timer = 0;
+        this->exStates[1].durationFrames = record->payload.durationFrames;
+        this->exStates[1].vector.FromAngleMagnitude(
+            this->exStates[1].accelerationAngle,
+            this->exStates[1].accelerationMagnitude);
+        if (this->transformIndex != 0 && this->transformSound >= 0)
+            g_PhotoBulletSoundPlayer.PlaySoundByIdx(
+                this->transformSound, 0);
+        break;
+
+    case PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR:
+        this->activeTransformFlags |= PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR;
+        this->exStates[2].speedDelta = record->payload.speedDelta;
+        this->exStates[2].angleDelta = record->payload.angleDelta;
+        this->exStates[2].timer = 0;
+        this->exStates[2].durationFrames = record->payload.durationFrames;
+        if (this->transformIndex != 0 && this->transformSound >= 0)
+            g_PhotoBulletSoundPlayer.PlaySoundByIdx(
+                this->transformSound, 0);
+        break;
+
+    case PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_RELATIVE:
+    case PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_AIMED:
+    case PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_ABSOLUTE:
+        this->activeTransformFlags |= record->kind;
+        this->exStates[3].directionChangeAngle =
+            record->payload.directionChangeAngle;
+        this->exStates[3].directionChangeSpeed =
+            record->payload.directionChangeSpeed > -999.0f
+                ? record->payload.directionChangeSpeed
+                : this->speed;
+        this->exStates[3].timer = 0;
+        this->exStates[3].directionChangeIntervalFrames =
+            record->payload.directionChangeIntervalFrames;
+        this->exStates[3].directionChangeRepeatCount =
+            record->payload.directionChangeRepeatCount;
+        this->exStates[3].directionChangesCompleted = 0;
+        break;
+
+    case PHOTO_BULLET_TRANSFORM_BOUNCE_ALL_EDGES:
+    case PHOTO_BULLET_TRANSFORM_BOUNCE_EXCEPT_BOTTOM:
+        this->activeTransformFlags |= record->kind;
+        if (record->payload.bounceSpeed >= 0.0f)
+            this->exStates[4].bounceSpeed = record->payload.bounceSpeed;
+        else
+            this->exStates[4].bounceSpeed = this->speed;
+        this->exStates[4].bounceLimit = record->payload.bounceLimit;
+        this->exStates[4].bouncesCompleted = 0;
+        break;
+
+    case PHOTO_BULLET_TRANSFORM_WRAP_X:
+    case PHOTO_BULLET_TRANSFORM_WRAP_Y:
+        this->activeTransformFlags |= record->kind;
+        this->exStates[6].timer = record->payload.durationFrames;
+        break;
+
+    case PHOTO_BULLET_TRANSFORM_WAIT:
+        this->activeTransformFlags |= record->kind;
+        this->exStates[5].timer = record->payload.durationFrames;
+        break;
+
+    case PHOTO_BULLET_TRANSFORM_SET_CULL_DELAY:
+        this->offscreenCullDelayFrames = record->payload.durationFrames;
+        ++this->transformIndex;
+        goto nextRecord;
+
+    case PHOTO_BULLET_TRANSFORM_SET_SPRITE:
+        g_PhotoBulletManager->anmSpawner->InitializeVm(
+            &this->vm,
+            g_PhotoBulletScriptBases[record->payload.int0] +
+                record->payload.int1);
+        ++this->transformIndex;
+        goto nextRecord;
+
+    case PHOTO_BULLET_TRANSFORM_DESPAWN:
+        this->state = 3;
+        break;
+
+    case PHOTO_BULLET_TRANSFORM_PLAY_SOUND:
+        g_PhotoBulletSoundPlayer.PlaySoundPositionedByIdx(
+            record->payload.soundIndex, this->position.x);
+        ++this->transformIndex;
+        goto nextRecord;
+
+    case PHOTO_BULLET_TRANSFORM_SPAWN_CHILD_PATTERN:
+        {
+            PhotoBulletSpawnDescriptor pattern;
+            i32 fadeParent;
+
+            pattern.position = this->position;
+            fadeParent = record->payload.packedChildPattern & 0x80000000;
+            pattern.aimMode =
+                (static_cast<u32>(record->payload.packedChildPattern) &
+                 0x7f000000) >> 24;
+            pattern.bulletType =
+                (static_cast<u32>(record->payload.packedChildPattern) &
+                 0x00ff0000) >> 16;
+            pattern.color =
+                (static_cast<u32>(record->payload.packedChildPattern) &
+                 0x0000ff00) >> 8;
+            pattern.transformStartIndex =
+                record->payload.packedChildPattern & 0xff;
+            pattern.count1 = static_cast<i16>(record->payload.childCount1);
+            pattern.speed1 = record->payload.childSpeed1;
+            pattern.speed2 = record->payload.childSpeed2;
+
+            ++record;
+            ++this->transformIndex;
+            pattern.count2 = static_cast<i16>(record->payload.childCount2);
+            pattern.transformFlags = record->payload.childTransformFlags;
+            pattern.angle = record->payload.float0;
+            pattern.angleStep = record->payload.float1;
+            memcpy(pattern.transforms, this->transforms,
+                   sizeof(pattern.transforms));
+            g_PhotoBulletManager->SpawnBulletPattern(&pattern);
+            ++this->transformIndex;
+            if (fadeParent != 0)
+                this->BeginDespawn();
+            else
+                goto nextRecord;
+        }
+        break;
+
+    case PHOTO_BULLET_TRANSFORM_SET_FIELD_330:
+        this->field330 = record->payload.int0;
+        ++this->transformIndex;
+        goto nextRecord;
+
+    case PHOTO_BULLET_TRANSFORM_JUMP:
+        this->transformIndex = record->payload.int0;
+        goto nextRecord;
+
+    default:
+        break;
+    }
+
+    ++this->transformIndex;
+}
+
+// FUNCTION: TH095 0x00406CC0; TH08 0x00430E10 is the adjacent source oracle.
+i32 PhotoBulletManagerView::SpawnBulletPattern(
+    PhotoBulletSpawnDescriptor *descriptor)
+{
+    i32 index2;
+    i32 index1;
+    f32 angleToPlayer;
+
+    angleToPlayer = g_PhotoBulletPlayer->AngleFromPoint(&descriptor->position);
+    for (index2 = 0; index2 < descriptor->count2; ++index2)
+    {
+        for (index1 = 0; index1 < descriptor->count1; ++index1)
+        {
+            if (this->SpawnSingleBullet(
+                    descriptor, index1, index2, angleToPlayer) != 0)
+                goto doneSpawning;
+        }
+    }
+
+doneSpawning:
+    if ((descriptor->transformFlags &
+         PHOTO_BULLET_TRANSFORM_PLAY_SPAWN_SOUND) != 0)
+    {
+        g_PhotoBulletSoundPlayer.PlaySoundPositionedByIdx(
+            descriptor->spawnSound, descriptor->position.x);
+    }
+    return 0;
+}
+
+// FUNCTION: TH095 0x004077A0.
+i32 PhotoBulletView::BeginDespawn()
+{
+    if (this->state == 2 || this->state == 1)
+    {
+        this->state = 3;
+        this->vm.pendingInterrupt = 1;
+        this->stateTimer = 0;
+        return 1;
+    }
+    return 0;
+}
 
 static inline i32 PhotoBulletIsOutsidePlayfield(
     PhotoBulletVector *position, f32 width, f32 height)
@@ -226,10 +819,10 @@ i32 __fastcall PhotoBulletManagerView::OnUpdate(
                     bullet->UpdateVerticalWrap();
                 if ((bullet->activeTransformFlags & 0x008000) != 0)
                 {
-                    if (bullet->waitTimer <= 0)
+                    if (bullet->exStates[5].timer <= 0)
                         bullet->activeTransformFlags ^= 0x008000;
                     else
-                        bullet->waitTimer--;
+                        bullet->exStates[5].timer--;
                 }
             }
 

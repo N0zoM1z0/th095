@@ -59,9 +59,9 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00405900,180,0x004059B3,FUN_00405900,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004059C0,62,0x004059FD,FUN_004059c0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00405A00,45,0x00405A2C,FUN_00405a00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00405A30,2133,0x00406284,FUN_00405a30,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004062B0,2479,0x00406C5E,FUN_004062b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00406CC0,181,0x00406D74,FUN_00406cc0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00405A30,2133,0x00406284,FUN_00405a30,th095::PhotoBulletManagerView::SpawnSingleBullet,BulletManager,reconstructed,0.00,__thiscall,i32 PhotoBulletManagerView::SpawnSingleBullet(PhotoBulletSpawnDescriptor *descriptor; i32 index1; i32 index2; f32 angleToPlayer),false,src/BulletManager.cpp,Pinned VC7.1 semantic reconstruction emits 2037 bytes with the complete target control flow and all 41 relocation destinations resolved,authored,Complete 1600-slot allocation aim-mode velocity ANM spawn-state transform bootstrap and cursor-wrap path; compiler-local frame and expression-shape residual remains non-exact
+0x004062B0,2479,0x00406C5E,FUN_004062b0,th095::PhotoBulletView::AdvanceTransformProgram,BulletManager,reconstructed,0.00,__thiscall,void PhotoBulletView::AdvanceTransformProgram(),false,src/BulletManager.cpp,Pinned VC7.1 semantic reconstruction emits 2459 bytes and preserves the complete dispatcher topology; target owns an additional unexplained 0x2C compiler-local frame slot,authored,Complete TH095 transform interpreter including acceleration direction bounce wait wrap sprite sound child-pattern cull-delay field and jump operations
+0x00406CC0,181,0x00406D74,FUN_00406cc0,th095::PhotoBulletManagerView::SpawnBulletPattern,BulletManager,matching,100.00,__thiscall,i32 PhotoBulletManagerView::SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor),false,src/BulletManager.cpp,Canonical relocation-aware VC7.1 comparison: 181/181 bytes and all five relocations,authored,Exact TH095 nested count2/count1 pattern fanout with reverse player angle early pool exhaustion and positioned spawn sound
 0x00406D80,145,0x00406E10,FUN_00406d80,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00406E20,354,0x00406F81,FUN_00406e20,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00406F90,185,0x00407048,FUN_00406f90,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -71,7 +71,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00407440,469,0x00407614,FUN_00407440,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00407620,182,0x004076D5,FUN_00407620,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004076E0,182,0x00407795,FUN_004076e0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004077A0,116,0x00407813,FUN_004077a0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x004077A0,116,0x00407813,FUN_004077a0,th095::PhotoBulletView::BeginDespawn,BulletManager,matching,100.00,__thiscall,i32 PhotoBulletView::BeginDespawn(),false,src/BulletManager.cpp,Canonical relocation-free VC7.1 comparison: 116/116 bytes,authored,Exact active-or-spawning bullet transition to state 3 with ANM interrupt 1 and timer reset
 0x00407820,1122,0x00407C81,FUN_00407820,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00407C90,1300,0x004081A3,FUN_00407c90,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004081B0,102,0x00408215,FUN_004081b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,

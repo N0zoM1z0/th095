@@ -10054,3 +10054,29 @@ relocations = [
   { offset = 0x8, type = "DIR32", symbol = "?g_PhotoFrontGameTask@th095@@3PAUPhotoFrontGameTaskView@1@A", target = 0x004BDEC8 },
   { offset = 0x25, type = "REL32", symbol = "?Draw@PhotoFrontManagerView@th095@@QAEHXZ", target = 0x00417920 },
 ]
+
+[units.photo-bullet-spawn-pattern]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletManagerView::SpawnBulletPattern"]
+symbol = "?SpawnBulletPattern@PhotoBulletManagerView@th095@@QAEHPAUPhotoBulletSpawnDescriptor@2@@Z"
+target_address = 0x00406CC0
+size = 0xB5
+relocations = [
+  { offset = 0x12, type = "DIR32", symbol = "?g_PhotoBulletPlayer@th095@@3PAUPhotoBulletPlayerView@1@A", target = 0x004C4E70 },
+  { offset = 0x17, type = "REL32", symbol = "?AngleFromPoint@PhotoBulletPlayerView@th095@@QAEMPAUPhotoBulletVector@2@@Z", target = 0x004303E0 },
+  { offset = 0x74, type = "REL32", symbol = "?SpawnSingleBullet@PhotoBulletManagerView@th095@@QAEHPAUPhotoBulletSpawnDescriptor@2@HHM@Z", target = 0x00405A30 },
+  { offset = 0xA4, type = "DIR32", symbol = "?g_PhotoBulletSoundPlayer@th095@@3UPhotoBulletSoundPlayerView@1@A", target = 0x004C4EE8 },
+  { offset = 0xA9, type = "REL32", symbol = "?PlaySoundPositionedByIdx@PhotoBulletSoundPlayerView@th095@@QAEXHM@Z", target = 0x00439030 },
+]
+
+[units.photo-bullet-begin-despawn]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletView::BeginDespawn"]
+symbol = "?BeginDespawn@PhotoBulletView@th095@@QAEHXZ"
+target_address = 0x004077A0
+size = 0x74
+relocations = []

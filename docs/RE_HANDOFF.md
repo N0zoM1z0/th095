@@ -433,13 +433,24 @@ complete natural probe is 455 bytes while the 521-byte target reserves an
 instruction-unreferenced `0x108` compiler-local frame footprint. Do not close
 that gap with an inert buffer.
 
-Continue with the TH095 bullet-runtime pair at `0x00405A30` (2,133 bytes) and
-`0x004062B0` (2,479 bytes). They call each other through `0x00406CC0`, feed the
-already source-present 1,835-byte manager update at `0x00405120`, and fan into
-ANM execution, bullet geometry helpers, sound, and the photography effect
-path at `0x00441DA0`. Recover their packet/layout contract together before
-sweeping adjacent helpers. Preserve the independently exact `PhotoToScreen @
-0x004186D0` bridge and both the GameTask and FrontInf clusters.
+The TH095 bullet-runtime pair at `0x00405A30` (2,133 bytes) and `0x004062B0`
+(2,479 bytes) is now source-present as a complete semantic reconstruction.
+Together it proves the target-specific `0x65C` bullet, `0x210` spawn packet,
+eighteen-record transform program, nine aim modes, seven transform-state
+slots, child-pattern recursion, and the shifted TH095 transform flag values.
+The natural VC7.1 bodies are 2,037/2,459 bytes and remain conservatively
+non-exact: the spawn body still differs in compiler expression/local shape,
+while the interpreter target owns an additional unexplained `0x2C` local
+slot. Do not close either residual with inert padding. The connecting pattern
+fanout at `0x00406CC0` and the active/spawning despawn transition at
+`0x004077A0` are canonical exact for 297 bytes and five relocations.
+
+Continue through the now-unlocked adjacent bullet movement family at
+`0x00406D80..0x00407795`: deceleration, vector/polar acceleration, three
+direction-change modes, boundary bounce, and horizontal/vertical wrapping.
+Then take the TH095 photography-specific capture/count/reset lane at
+`0x00407820..0x004087C7`. Preserve the independently exact `PhotoToScreen @
+0x004186D0` bridge and the GameTask, FrontInf, and bullet pattern units.
 
 ## Closed lanes and preservation constraints
 

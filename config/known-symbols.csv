@@ -1,4 +1,8 @@
 address,name,module,confidence,evidence
+0x00405A30,th095::PhotoBulletManagerView::SpawnSingleBullet,BulletManager,high,Complete target-local spawn semantics and 41 resolved call/data relocations
+0x004062B0,th095::PhotoBulletView::AdvanceTransformProgram,BulletManager,high,Complete TH095 transform dispatcher with target-proven 0x65C bullet layout
+0x00406CC0,th095::PhotoBulletManagerView::SpawnBulletPattern,BulletManager,exact,Canonical 181-byte pattern fanout with five relocations
+0x004077A0,th095::PhotoBulletView::BeginDespawn,BulletManager,exact,Canonical relocation-free 116-byte state transition
 0x00401C10,th095::AnmVm::Initialize,AnmVm,exact,Canonical anm-vm-initialize VC7.1 comparison
 0x00408E70,th095::EclManager::RunEcl,EclManager,exact,Canonical 0x69D3 authored body and 0x6C63 COFF extent with 647 replayed relocations
 0x00418720,th095::GameConfiguration::Initialize,Main,exact,Canonical 200-byte config initialization and controller-mapping serialization

@@ -327,3 +327,7 @@ th095::PhotoFrontManagerView::Update,0x004175B0,function
 th095::PhotoFrontManagerView::Draw,0x00417920,function
 th095::PhotoFrontManagerView::OnUpdate,0x00417970,function
 th095::PhotoFrontManagerView::OnDraw,0x004179A0,function
+th095::PhotoBulletManagerView::SpawnSingleBullet,0x00405A30,function
+th095::PhotoBulletView::AdvanceTransformProgram,0x004062B0,function
+th095::PhotoBulletManagerView::SpawnBulletPattern,0x00406CC0,function
+th095::PhotoBulletView::BeginDespawn,0x004077A0,function
