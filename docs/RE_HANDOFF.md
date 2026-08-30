@@ -433,9 +433,13 @@ previous/next/state fields at `+0x04/+0x08/+0x0C`, the deferred-deletion byte
 at `+0x48`, and virtual update/cleanup ownership. The original shared-tail
 source shape is required for the first deletion branch.
 
-Next stay in this high-connectivity cluster and reconstruct the factory at
-`0x0041DBD0`, then the concrete effect methods through `0x004200F6`. The
-primary/secondary draw traversals, three collision fanouts, and gated
+Stay in this high-connectivity cluster and reconstruct the remaining concrete
+effect methods through `0x004200F6`. The factory at `0x0041DBD0` is now
+source-present with the exact 432-byte topology and every relocation; its 34
+residual comparable bytes are only an original `0x14` local-frame gap. Its
+straight/rotating constructors at `0x0041DD80/0x0041DE50` are canonical exact
+for all 389 authored bytes and prove the two `0x610/0x630` concrete layouts.
+The primary/secondary draw traversals, three collision fanouts, and gated
 update/draw callbacks at `0x0041DAB0..0x0041E0BA` are now canonical exact for
 all 668 authored bytes. The collision entries prove vtable slots
 `+0x14/+0x18/+0x1C` and cached manager bounds `+0x5C/+0x68`; the callbacks

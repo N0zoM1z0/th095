@@ -41,10 +41,15 @@ typedef char PhotoEffectVectorSizeIsC[
 
 struct PhotoEffectBaseView
 {
+    PhotoEffectBaseView()
+    {
+        memset(this, 0, sizeof(*this));
+    }
+
     virtual i32 Initialize(void *args) = 0;
     virtual i32 Update() = 0;
     virtual i32 Draw() = 0;
-    virtual void Cleanup() = 0;
+    virtual void Cleanup();
     virtual i32 DrawSecondary() = 0;
     virtual i32 CheckCollisionA(
         Float3 *position, Float3 *size, i32 capture) = 0;
@@ -82,6 +87,11 @@ struct PhotoEffectArgsSmallView
     f32 speed;
     i16 type;
     i16 color;
+
+    PhotoEffectArgsSmallView()
+    {
+        memset(this, 0, sizeof(*this));
+    }
 };
 
 typedef char PhotoEffectArgsSmallSizeIs28[
@@ -93,9 +103,14 @@ struct PhotoStraightLaserView : PhotoEffectBaseView
     AnmVm bodyVm;                            // +0x078
     AnmVm tailVm;                            // +0x344
 
+    PhotoStraightLaserView();
     i32 Initialize(void *args);
     i32 Update();
     i32 Draw();
+    i32 DrawSecondary();
+    i32 CheckCollisionA(Float3 *position, Float3 *size, i32 capture);
+    i32 CheckCollision(Float3 *position, Float3 *size, i32 capture);
+    i32 Unknown1C(Float3 *position, Float3 *size);
 };
 
 typedef char PhotoStraightLaserBodyVmAt78[
@@ -120,6 +135,12 @@ struct PhotoEffectArgsView
     i16 type;
     i16 color;
     u32 flags;
+
+    PhotoEffectArgsView()
+    {
+        memset(this, 0, sizeof(*this));
+        this->speed = 8.0f;
+    }
 };
 
 typedef char PhotoEffectArgsSizeIs48[
@@ -131,9 +152,14 @@ struct PhotoRotatingLaserView : PhotoEffectBaseView
     AnmVm bodyVm;                            // +0x098
     AnmVm tailVm;                            // +0x364
 
+    PhotoRotatingLaserView();
     i32 Initialize(void *args);
     i32 Update();
     i32 Draw();
+    i32 DrawSecondary();
+    i32 CheckCollisionA(Float3 *position, Float3 *size, i32 capture);
+    i32 CheckCollision(Float3 *position, Float3 *size, i32 capture);
+    i32 Unknown1C(Float3 *position, Float3 *size);
 };
 
 typedef char PhotoRotatingLaserBodyVmAt98[
@@ -225,6 +251,14 @@ struct PhotoEffectManagerView
     static i32 __fastcall Draw(PhotoEffectManagerView *manager);
     static i32 __fastcall OnUpdate(PhotoEffectManagerView *manager);
     static i32 __fastcall OnDraw(PhotoEffectManagerView *manager);
+    i32 Spawn(i32 type, void *args);
+    void Append(PhotoEffectBaseView *effect)
+    {
+        PhotoEffectBaseView *previous = this->last;
+        effect->previous = previous;
+        previous->next = effect;
+        this->last = effect;
+    }
     i32 CheckCollisionA(Float3 *position, Float3 *size);
     static i32 __fastcall CheckCollisionStored(
         PhotoEffectManagerView *manager);
@@ -653,6 +687,43 @@ i32 __fastcall PhotoEffectManagerView::OnDraw(
     return Draw(manager);
 }
 
+i32 PhotoEffectManagerView::Spawn(i32 type, void *args)
+{
+    if (this->effectCount >= 0x100)
+    {
+        return 0;
+    }
+
+    this->nextId++;
+    if (this->nextId == 0)
+    {
+        this->nextId++;
+    }
+
+    switch (type)
+    {
+    case 0:
+    {
+        PhotoStraightLaserView *effect = new PhotoStraightLaserView;
+        effect->id = this->nextId;
+        this->Append(effect);
+        this->effectCount++;
+        effect->Initialize(args);
+        break;
+    }
+    case 1:
+    {
+        PhotoRotatingLaserView *effect = new PhotoRotatingLaserView;
+        effect->id = this->nextId;
+        this->Append(effect);
+        this->effectCount++;
+        effect->Initialize(args);
+        break;
+    }
+    }
+    return this->nextId;
+}
+
 i32 PhotoEffectManagerView::CheckCollisionA(
     Float3 *position, Float3 *size)
 {
@@ -726,6 +797,14 @@ i32 PhotoEffectManagerView::CheckCollisionB(
         effect = next;
     }
     return count;
+}
+
+PhotoStraightLaserView::PhotoStraightLaserView()
+{
+}
+
+PhotoRotatingLaserView::PhotoRotatingLaserView()
+{
 }
 
 }

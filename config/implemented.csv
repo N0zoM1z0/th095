@@ -274,3 +274,6 @@ th095::PhotoEffectManagerView::CheckCollisionA
 th095::PhotoEffectManagerView::CheckCollisionStored
 th095::PhotoEffectManagerView::DrawSecondary
 th095::PhotoEffectManagerView::CheckCollisionB
+th095::PhotoEffectManagerView::Spawn
+th095::PhotoStraightLaserView::PhotoStraightLaserView
+th095::PhotoRotatingLaserView::PhotoRotatingLaserView
