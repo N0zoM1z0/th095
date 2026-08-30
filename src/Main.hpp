@@ -221,7 +221,10 @@ struct Supervisor
     i32 loadingVmsHaveBeenSetup;                // +0x714
     u8 unknown718[0x50];
     i32 fogState;                               // +0x768
-    u8 unknown76c[0x14];
+    u8 unknown76c[8];
+    i32 versionDataSize;                        // +0x774
+    u8 *versionData;                            // +0x778
+    u8 unknown77c[4];
     FrontEndControllerView *frontEndController; // +0x780
     PhotoGameTaskView *photoGameTask;           // +0x784
     u32 fpsFrameCount;                          // +0x788
@@ -288,6 +291,7 @@ typedef char SupervisorStartupThreadStateAt660[(offsetof(Supervisor, startupThre
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
 typedef char SupervisorLoadingVmsAt714[(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x714) ? 1 : -1];
 typedef char SupervisorLagNumeratorAt78C[(offsetof(Supervisor, lagNumerator) == 0x78c) ? 1 : -1];
+typedef char SupervisorVersionDataAt778[(offsetof(Supervisor, versionData) == 0x778) ? 1 : -1];
 typedef char SupervisorFrontEndAt780[(offsetof(Supervisor, frontEndController) == 0x780) ? 1 : -1];
 typedef char SupervisorGameTaskAt784[(offsetof(Supervisor, photoGameTask) == 0x784) ? 1 : -1];
 typedef char SupervisorCurrentFpsAt79C[(offsetof(Supervisor, currentFps) == 0x79c) ? 1 : -1];

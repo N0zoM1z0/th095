@@ -347,8 +347,8 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00423D00,authored,Supervisor,authored,exact,supervisor-manager-release-exact-2026-08-30
 0x00423D60,authored,Supervisor,authored,high,target-main-family-2026-08-29
 0x00423E70,authored,Supervisor,authored,exact,supervisor-added-callback-exact-2026-08-30
-0x00423FB0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00424050,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00423FB0,authored,Supervisor,authored,high,supervisor-load-dat-2026-08-30
+0x00424050,authored,Supervisor,authored,exact,supervisor-check-fps-exact-2026-08-30
 0x004242B0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004244D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00424700,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

@@ -421,3 +421,5 @@ th095::Supervisor::ControllerCallback
 th095::Supervisor::StartInputWorker
 th095::Supervisor::ReleaseGameManagers
 th095::Supervisor::AddedCallback
+th095::Supervisor::LoadDat
+th095::Supervisor::CheckFps

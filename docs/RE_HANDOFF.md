@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 340 canonical exact functions cover 131,344 authored bytes.
+- Reconstruction: 341 canonical exact functions cover 131,944 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 49.45% (131,344 / 265,584)
+  relocations. Confirmed authored-byte coverage is now 49.54% (131,944 / 266,335)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 423 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,399 origin/boundary reviews pending. Original class
+  current ledger confirms 425 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,397 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -608,10 +608,18 @@ and the release helper owns Supervisor pointers `+0x780/+0x784`. Continue with
 `AddedCallback @ 0x00423E70` is now exact for 320 bytes and all 36 relocations.
 It connects archive/score setup, the retained `title/th08logo.jpg` surface,
 presentation timing, both early workers, loading ANM, vertex/text buffers, and
-the main startup worker. Continue into its direct dependencies `LoadDat @
-0x00423FB0` and `CheckFps @ 0x00424050`, followed by `StartupThread @
-0x004242B0` and `DeletedCallback @ 0x004244D0`; preserve every established Main, Background,
-ECL, ANM, photography, and ASCII exact unit while the shared headers change.
+the main startup worker. Its timing dependency `CheckFps @ 0x00424050` is now
+canonical exact for all 600 bytes and 28 relocations. This is a target-specific
+seconds-based sampler using `GetTimestamp`, 600 rendered frames, a 30-float
+buffer, 0.5/0.7-second windows, and 57/65-FPS thresholds; it must not regress
+to TH08's millisecond/1,800-frame implementation. `LoadDat @ 0x00423FB0` is
+source-present for its complete 151-byte archive/version gate and proves the
+version-data fields at Supervisor `+0x774/+0x778`. Its exact-sized VC7.1 probe
+matches 65/91 comparable bytes, but the target's four-byte local buffer-home
+gap remains conservatively uncredited rather than represented by inert padding.
+Continue with `StartupThread @ 0x004242B0`, then `DeletedCallback @ 0x004244D0`;
+preserve every established Main, Background, ECL, ANM, photography, and ASCII
+exact unit while the shared headers change.
 
 ## Closed lanes and preservation constraints
 

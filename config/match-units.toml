@@ -5895,6 +5895,45 @@ relocations = [
   { offset = 0x136, type = "REL32", symbol = "?StartReplayScan@Supervisor@th095@@QAEHP6IXPAX@Z0@Z", target = 0x004255B0 },
 ]
 
+[units.main-check-fps]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::CheckFps"]
+symbol = "?CheckFps@Supervisor@th095@@SIHXZ"
+target_address = 0x00424050
+size = 0x258
+relocations = [
+  { offset = 0x19, type = "DIR32", symbol = "__real@0000000000000000", target = 0x00495438 },
+  { offset = 0x2B, type = "DIR32", symbol = "?g_GameWindow@th095@@3UGameWindow@1@A", target = 0x004C45E8 },
+  { offset = 0x30, type = "REL32", symbol = "?GetTimestamp@GameWindow@th095@@QAENXZ", target = 0x00420A10 },
+  { offset = 0x52, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x5A, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x71, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x76, type = "REL32", symbol = "?CopySurfaceToBackbuffer@AnmManager@th095@@QAEXHHHHH@Z", target = 0x00444460 },
+  { offset = 0x7B, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x83, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x97, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0x9F, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0xAC, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0xE4 },
+  { offset = 0xB1, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0xB9, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x8 },
+  { offset = 0xCB, type = "DIR32", symbol = "?g_GameWindow@th095@@3UGameWindow@1@A", target = 0x004C45E8 },
+  { offset = 0xD0, type = "REL32", symbol = "?GetTimestamp@GameWindow@th095@@QAENXZ", target = 0x00420A10 },
+  { offset = 0xFA, type = "DIR32", symbol = "__real@3fe6666666666666", target = 0x00496008 },
+  { offset = 0x11F, type = "DIR32", symbol = "__real@3fe0000000000000", target = 0x00496000 },
+  { offset = 0x141, type = "DIR32", symbol = "__real@404c800000000000", target = 0x00495FF8 },
+  { offset = 0x185, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x1E0 },
+  { offset = 0x212, type = "DIR32", symbol = "__real@42820000", target = 0x00495FF4 },
+  { offset = 0x21E, type = "DIR32", symbol = "??_C@_0DL@ELPKNGII@?$JA?$IC?$JC?$LM?$JD?$KP?$IK?z?$IC?$KK?$IO?f?$IC?j?$IC?D?$IC?H?$IC?$KC?$IC?$KJ?$IBA?$ID?$IK?$IDt?$ID?$IM?$IDb@", target = 0x00495FB8 },
+  { offset = 0x223, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x228, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x230, type = "DIR32", symbol = "??_C@_0CF@LJKILJKA@?$IL?$KN?$JA?$KH?$ICU?$ICO?$IDt?$ID?$IM?$IB?$FL?$ID?$IA?$ID?$IC?$IB?$FL?$IDh?$IC?E?$JD?$KO?$IN?l?$IC?$LF?$IC?$NM@", target = 0x00495F90 },
+  { offset = 0x235, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x23A, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x243, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x42C },
+]
+
 [units.main-initialize-critical-sections]
 source = "src/Main.cpp"
 object = "build/matching/Main.obj"
