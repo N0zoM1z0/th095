@@ -239,6 +239,9 @@ th095::PhotoGameUpdateView::CheckBulletCollision
 th095::PhotoGameUpdateView::CalcLaserHitbox
 th095::PhotoGameUpdateView::Die
 th095::PhotoEnemyView::~PhotoEnemyView
+th095::PhotoEnemyManagerView::PhotoEnemyManagerView
+th095::PhotoEnemyView::PhotoEnemyView
+th095::PhotoEnemyEclContextView::PhotoEnemyEclContextView
 th095::PhotoEnemyManagerView::LoadResources
 th095::PhotoEnemyManagerView::~PhotoEnemyManagerView
 th095::PhotoEnemyManagerView::Spawn

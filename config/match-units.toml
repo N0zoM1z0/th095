@@ -8966,3 +8966,31 @@ size = 0x49
 relocations = [
   { offset = 0x3F, type = "REL32", symbol = "?RestartEcl@PhotoEnemyView@th095@@QAEXXZ", target = 0x004167E0 },
 ]
+
+[units.enemy-ecl-context-constructor]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyEclContextView::PhotoEnemyEclContextView"]
+symbol = "??0PhotoEnemyEclContextView@th095@@QAE@XZ"
+target_address = 0x00415310
+size = 0xB5
+relocations = []
+
+[units.enemy-view-constructor]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyView::PhotoEnemyView"]
+symbol = "??0PhotoEnemyView@th095@@QAE@XZ"
+target_address = 0x00415040
+size = 0x281
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$??0PhotoEnemyView@th095@@QAE@XZ", target = 0x0049352B },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x26, type = "REL32", symbol = "??0AnmVm@th095@@QAE@XZ", target = 0x00401EB0 },
+  { offset = 0x3B, type = "REL32", symbol = "??0PhotoEnemyEclContextView@th095@@QAE@XZ", target = 0x00415310 },
+  { offset = 0x67, type = "REL32", symbol = "??0PhotoEnemyEclContextView@th095@@QAE@XZ", target = 0x00415310 },
+  { offset = 0x278, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+]

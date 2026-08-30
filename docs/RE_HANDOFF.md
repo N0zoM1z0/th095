@@ -158,6 +158,17 @@
   retirement, global reset, vector destruction, and spawn-template VM cleanup.
   Its 382/392 comparable bytes differ only in three compiler-local slot homes,
   so the manager body remains conservatively uncredited.
+- The enemy construction spine is now recovered. The `0x230`-byte ECL-context
+  constructor and `0x4CC0`-byte enemy constructor are canonical exact for 822
+  authored bytes; the latter naturally builds one ANM VM, seventeen ECL
+  contexts, nine timers, a bullet descriptor, 96 trail samples, and 194 trail
+  vertices. The enclosing `0x26AE30` manager constructor is source-present for
+  all 1,196 bytes, naturally constructs 128 enemies through VC7.1's vector
+  iterator, and initializes TH095's photo-target, trail, bullet, and ECL
+  defaults. All eleven relocations resolve and 1,119/1,152 comparable bytes
+  match; the remaining 33 bytes are compiler-local stack displacements and
+  receive no exact credit. All sixteen established exact units in the shared
+  translation unit replay unchanged.
 - Root-level `EclOperandsInt.cpp` and `EclOperandsFloat.cpp` now reconstruct
   the high-connectivity operand resolver pair at `0x0040FAE0/0x004105A0`.
   Their 3,439 authored bytes, adjacent 684 bytes of compiler-owned jump tables,
@@ -393,16 +404,12 @@
 
 ## Next bounded lane
 
-The enemy update hub, both exact spawn paths, timeline interpreter, scheduled ECL
-cleanup, eight reset/runtime leaves, ECL file/context initialization, and scene-
-selected resource load are now recovered. The last three are canonical exact
-units at `0x00408CE0`, `0x00408DE0`, and `0x004153D0`; together they prove the
-TH095-specific `0x188`-byte ECL manager and its call-parameter tail. Continue
-through the remaining enemy construction/control cluster at
-`0x00414B90..0x004153C4`, beginning with the 1,196-byte manager constructor and
-then the 641-byte template initializer and 181-byte ECL-context constructor.
-These functions unlock more inventory relationships than isolated wrappers.
-After that, cover the two approximately 1 KB laser callers at
+The enemy update, spawn, reset, resource, and construction spines are now
+source-present. The child constructors at `0x00415040/0x00415310` and resource
+entries at `0x00408CE0/0x00408DE0/0x004153D0` are canonical exact; the large
+manager constructor at `0x00414B90` is conservatively non-exact only because of
+compiler-local homes. First close the adjacent 95-byte ownership wrapper at
+`0x00414B30`, then cover the two approximately 1 KB laser callers at
 `0x0041E2C0/0x0041F550`, which share
 the exact PlayerInf collision path and expose TH095's camera/bullet interaction.
 Keep all fifteen PlayerInf exact units, the exact

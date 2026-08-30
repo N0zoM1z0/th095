@@ -64,20 +64,41 @@ typedef char PhotoEnemyEclManagerSizeIs188[
 typedef char PhotoEnemyEclManagerParametersAt168[
     (offsetof(PhotoEnemyEclManagerView, callParameterInts) == 0x168) ? 1 : -1];
 
+struct PhotoEnemyEclInterpolationSlotView
+{
+    void *callback;
+    ZunTimer timer;
+    u8 unknown010[0x20];
+
+    PhotoEnemyEclInterpolationSlotView()
+    {
+    }
+};
+
+typedef char PhotoEnemyEclInterpolationSlotSizeIs30[
+    (sizeof(PhotoEnemyEclInterpolationSlotView) == 0x30) ? 1 : -1];
+
 struct PhotoEnemyEclContextView
 {
     void *currentInstruction;
     ZunTimer time;
     u8 unknown010[0x98 - 0x10];
     ZunTimer secondaryTime;
-    u8 unknown0a4[0x22c - 0x0a4];
+    PhotoEnemyEclInterpolationSlotView interpolationSlots[8];
+    u8 unknown224[8];
     i16 subroutineId;
+
+    PhotoEnemyEclContextView();
 };
 
 typedef char PhotoEnemyEclContextSecondaryTimerAt98[
     (offsetof(PhotoEnemyEclContextView, secondaryTime) == 0x98) ? 1 : -1];
 typedef char PhotoEnemyEclContextSubroutineAt22C[
     (offsetof(PhotoEnemyEclContextView, subroutineId) == 0x22c) ? 1 : -1];
+
+PhotoEnemyEclContextView::PhotoEnemyEclContextView()
+{
+}
 
 i32 PhotoEnemyEclManagerView::Load(char *path)
 {
@@ -235,6 +256,41 @@ struct PhotoEnemySceneDefinitionView
     char *enemyEclPath;
 };
 
+struct PhotoEnemyBulletSpawnDescriptorView
+{
+    u8 unknown000[0x200];
+    i32 spawnSound;
+    i32 transformSound;
+    u8 unknown208[8];
+
+    PhotoEnemyBulletSpawnDescriptorView()
+    {
+        memset(this, 0, sizeof(*this));
+        this->transformSound = -1;
+    }
+};
+
+struct PhotoEnemyTrailSampleView
+{
+    Float3 position;
+    Float3 velocity;
+    f32 angle;
+
+    PhotoEnemyTrailSampleView()
+    {
+    }
+};
+
+typedef char PhotoEnemyBulletSpawnDescriptorSizeIs210[
+    (sizeof(PhotoEnemyBulletSpawnDescriptorView) == 0x210) ? 1 : -1];
+typedef char PhotoEnemyTrailSampleSizeIs1C[
+    (sizeof(PhotoEnemyTrailSampleView) == 0x1c) ? 1 : -1];
+
+struct PhotoEnemyAnmVmIdStorage
+{
+    i32 value;
+};
+
 struct PhotoEnemyScheduledCall
 {
     i16 subroutineId;
@@ -257,7 +313,18 @@ struct PhotoEnemyView
     PhotoEnemyView *nextInDrawGroup;       // +0x0000
     u8 unknown0004[4];
     AnmVm vm;                              // +0x0008
-    u8 unknown02d4[0x2898 - 0x02d4];
+    i32 anmHandles[2];                     // +0x02d4
+    PhotoEnemyEclContextView mainEclContext; // +0x02dc
+    PhotoEnemyEclContextView eclCallStack[16]; // +0x050c
+    PhotoEnemyEclContextView *activeEclContext; // +0x280c
+    PhotoEnemyEclContextView *activeEclCallStack; // +0x2810
+    i32 eclIntVariables[8];                // +0x2814
+    f32 eclFloatVariables[8];              // +0x2834
+    i16 mainEclCallStackDepth;             // +0x2854
+    i16 activeEclCallStackDepth;           // +0x2856
+    u8 unknown2858[2];
+    i16 pendingEclSubroutineId;             // +0x285a
+    u8 unknown285c[0x3c];
     i16 mainEclSubroutineId;                // +0x2898
     i16 photoTargetEclSubroutineId;         // +0x289a
     i16 timelineValue;                     // +0x289c
@@ -270,7 +337,16 @@ struct PhotoEnemyView
     Float3 collisionSize;                  // +0x28dc
     u8 unknown28e8[0x28f4 - 0x28e8];
     Float3 photoMarkerPosition;            // +0x28f4
-    u8 unknown2900[0x2958 - 0x2900];
+    f32 angularVelocity;                    // +0x2900
+    f32 movementAngle;                      // +0x2904
+    u8 unknown2908[0x0c];
+    f32 acceleration;                       // +0x2914
+    f32 speed;                              // +0x2918
+    u8 unknown291c[8];
+    Float3 shootOffset;                     // +0x2924
+    u8 unknown2930[0x18];
+    ZunTimer movementTimer;                 // +0x2948
+    i32 movementDuration;                  // +0x2954
     i32 life;                              // +0x2958
     i32 maximumLife;                       // +0x295c
     i32 phaseStartingLife;                 // +0x2960
@@ -280,11 +356,15 @@ struct PhotoEnemyView
     ZunTimer stateTimer;                   // +0x2978
     u8 unknown2984[4];
     u32 displayColor;                      // +0x2988
-    u8 unknown298c[0x2bd8 - 0x298c];
+    PhotoEnemyBulletSpawnDescriptorView bulletSpawnDescriptor; // +0x298c
+    u8 unknown2b9c[0x2c];
+    i32 shootIntervalFrames;                // +0x2bc8
+    ZunTimer shootIntervalTimer;           // +0x2bcc
     i32 itemDropType;                      // +0x2bd8
     i32 timelineParam0;                    // +0x2bdc
     i32 timelineParam1;                    // +0x2be0
-    u8 unknown2be4[0x2bf4 - 0x2be4];
+    u8 unknown2be4[4];
+    ZunTimer auxiliaryTimer;               // +0x2be8
     union
     {
         u32 flags1;                        // +0x2bf4
@@ -321,26 +401,34 @@ struct PhotoEnemyView
     ZunTimer photoMarkerPulseTimer;         // +0x2bfc
     u8 unknown2c08[3];
     u8 drawGroup;                          // +0x2c0b
-    u8 unknown2c0c[0x2c1c - 0x2c0c];
-    AnmVmId photoPulseVmId;                // +0x2c1c
-    AnmVmId photoMarkerVmId;               // +0x2c20
+    u8 unknown2c0c[2];
+    i16 idleAnmScript;                      // +0x2c0e
+    u8 unknown2c10[4];
+    i16 moveLeftAnmScript;                  // +0x2c14
+    i16 moveRightAnmScript;                 // +0x2c16
+    u8 unknown2c18[4];
+    PhotoEnemyAnmVmIdStorage photoPulseVmId; // +0x2c1c
+    PhotoEnemyAnmVmIdStorage photoMarkerVmId; // +0x2c20
     ZunTimer photoMarkerTimer;              // +0x2c24
-    u8 unknown2c30[4];
-    f32 photoMarkerDuration;                // +0x2c34
-    u8 unknown2c38[4];
+    ZunTimer photoMarkerDurationTimer;      // +0x2c30
     Float2 movementBoundsMin;               // +0x2c3c
     Float2 movementBoundsMax;               // +0x2c44
-    u8 unknown2c4c[8];
+    i32 selectedLaserSlot;                  // +0x2c4c
+    u8 unknown2c50[4];
     i32 scheduledCallFrames[10];            // +0x2c54
     PhotoEnemyScheduledCall scheduledCalls[10]; // +0x2c7c
-    u8 unknown2ca4[8];
+    i32 pendingCallbackFrame;               // +0x2ca4
+    u8 unknown2ca8[4];
     void *allocatedEclArgs[16];              // +0x2cac
-    u8 unknown2cec[0x4cbc - 0x2cec];
-    AnmVmId attachedVmId;                  // +0x4cbc
+    PhotoEnemyTrailSampleView trailSamples[96]; // +0x2cec
+    VertexTex1DiffuseXyzrhw trailVertices[194]; // +0x376c
+    u8 unknown4ca4[8];
+    ZunTimer damageReductionTimer;          // +0x4cac
+    u8 unknown4cb8[4];
+    PhotoEnemyAnmVmIdStorage attachedVmId; // +0x4cbc
 
-    ~PhotoEnemyView()
-    {
-    }
+    PhotoEnemyView();
+    ~PhotoEnemyView();
     void IntegrateMovement();
     void ClampPosition();
     void RestartEcl();
@@ -357,15 +445,30 @@ typedef char PhotoEnemyPositionAt28A0[
     (offsetof(PhotoEnemyView, worldPosition) == 0x28a0) ? 1 : -1];
 typedef char PhotoEnemyFlagsAt2BF4[
     (offsetof(PhotoEnemyView, flags1) == 0x2bf4) ? 1 : -1];
+typedef char PhotoEnemyTrailSamplesAt2CEC[
+    (offsetof(PhotoEnemyView, trailSamples) == 0x2cec) ? 1 : -1];
+typedef char PhotoEnemyTrailVerticesAt376C[
+    (offsetof(PhotoEnemyView, trailVertices) == 0x376c) ? 1 : -1];
 typedef char PhotoEnemyAttachedVmAt4CBC[
     (offsetof(PhotoEnemyView, attachedVmId) == 0x4cbc) ? 1 : -1];
+
+PhotoEnemyView::PhotoEnemyView()
+{
+    // The target's VC7.1 constructor frame retains two unconsumed local slots.
+    i32 unconsumedConstructorLocals[2];
+}
+
+PhotoEnemyView::~PhotoEnemyView()
+{
+}
 
 struct PhotoEnemyManagerView
 {
     PhotoEnemyView spawnTemplate;          // +0x0000
     PhotoEnemyTimelineView timelines[16];  // +0x4cc0
     PhotoEnemyView *drawGroupHeads[4];     // +0x4dc0
-    u8 unknown4dd0[0x14];
+    u8 unknown4dd0[4];
+    i32 timelineEventSlots[4];             // +0x4dd4
     PhotoEnemyView *timelineEnemySlots[4];  // +0x4de4
     PhotoEnemyEclManagerView *eclManager;  // +0x4df4
     AnmLoaded *enemyAnm;                   // +0x4df8
@@ -377,6 +480,7 @@ struct PhotoEnemyManagerView
     u8 unknown26ae28[4];
     i32 activeEnemyCount;                  // +0x26ae2c
 
+    PhotoEnemyManagerView();
     ~PhotoEnemyManagerView();
     i32 LoadResources();
     static i32 __fastcall OnUpdate(PhotoEnemyManagerView *enemyManager);
@@ -404,10 +508,80 @@ struct PhotoEnemyManagerView
 
 typedef char PhotoEnemyManagerTimelinesAt4CC0[
     (offsetof(PhotoEnemyManagerView, timelines) == 0x4cc0) ? 1 : -1];
+typedef char PhotoEnemyManagerTimelineEventsAt4DD4[
+    (offsetof(PhotoEnemyManagerView, timelineEventSlots) == 0x4dd4) ? 1 : -1];
 typedef char PhotoEnemyManagerEnemiesAt4E00[
     (offsetof(PhotoEnemyManagerView, enemies) == 0x4e00) ? 1 : -1];
 typedef char PhotoEnemyManagerCountAt26AE2C[
     (offsetof(PhotoEnemyManagerView, activeEnemyCount) == 0x26ae2c) ? 1 : -1];
+
+#pragma var_order(i, enemy, this)
+PhotoEnemyManagerView::PhotoEnemyManagerView()
+{
+    i32 i;
+    PhotoEnemyView *enemy;
+
+    utils::DebugPrint("initialize EnemyCtrlInf\n");
+    memset(this, 0, sizeof(*this));
+    g_PhotoEnemyManager = this;
+
+    for (i = 0; (u32)i < 4; ++i)
+    {
+        this->timelineEventSlots[i] = -1;
+    }
+
+    enemy = &this->spawnTemplate;
+    memset(enemy, 0, sizeof(*enemy));
+    for (i = 0; i < 96; ++i)
+    {
+        enemy->trailSamples[i].position.x = -999.0f;
+    }
+
+    enemy->flags1 |= 0x00000001;
+    enemy->eclTimer = 0;
+    enemy->flags1 &= ~0x00400000;
+    enemy->collisionSize = Float3(24.0f, 24.0f, 24.0f);
+    *reinterpret_cast<Float3 *>(&enemy->velocity) =
+        Float3(0.0f, 0.0f, 0.0f);
+    enemy->movementAngle = 0.0f;
+    enemy->angularVelocity = 0.0f;
+    enemy->speed = 0.0f;
+    enemy->acceleration = 0.0f;
+    enemy->flags1 &= ~0x00000c00;
+    enemy->flags1 &= ~0x00008000;
+    enemy->flags1 &= ~0x00010000;
+    enemy->flags1 &= ~0x00000002;
+    enemy->activeEclCallStackDepth = 0;
+    enemy->life = 1;
+    enemy->score = 100;
+    enemy->shootIntervalFrames = 0;
+    enemy->shootIntervalTimer = 0;
+    enemy->shootOffset = Float3(0.0f, 0.0f, 0.0f);
+    enemy->moveLeftAnmScript = -1;
+    enemy->moveRightAnmScript = -1;
+    enemy->idleAnmScript = -1;
+    enemy->flags1 &= ~0x00000004;
+    enemy->flags1 |= 0x00000008;
+    enemy->flags1 &= ~0x00000010;
+    enemy->flags1 |= 0x00000040;
+    enemy->flags1 &= ~0x00000080;
+    enemy->flags1 |= 0x04000000;
+    enemy->flags1 &= ~0x001c0000;
+    enemy->pendingEclSubroutineId = -1;
+    enemy->flags1 &= ~0x00020000;
+    enemy->timelineValue = -1;
+    for (i = 0; i < 10; ++i)
+    {
+        enemy->scheduledCallFrames[i] = -1;
+    }
+    enemy->pendingCallbackFrame = -1;
+    reinterpret_cast<u8 *>(enemy)[0x2be6] = 0;
+    enemy->flags1 &= ~0x00800000;
+    enemy->bulletSpawnDescriptor.spawnSound = 7;
+    enemy->bulletSpawnDescriptor.transformSound = 24;
+    enemy->selectedLaserSlot = 0;
+    enemy->stateTimer = 0;
+}
 
 i32 PhotoEnemyManagerView::LoadResources()
 {
@@ -833,7 +1007,9 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
         {
             D3DXVECTOR3 attachedPosition =
                 *reinterpret_cast<D3DXVECTOR3 *>(
-                    g_AnmManager->GetPosition(enemy->attachedVmId));
+                    g_AnmManager->GetPosition(
+                        *reinterpret_cast<AnmVmId *>(
+                            &enemy->attachedVmId)));
             D3DXVECTOR3 screenPosition;
             PhotoToScreen(
                 reinterpret_cast<Float3 *>(&screenPosition),
@@ -842,7 +1018,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
                 (screenPosition - attachedPosition) *
                 g_PhotoEnemyEffectInterpolation;
             g_AnmManager->SetPosition(
-                enemy->attachedVmId,
+                *reinterpret_cast<AnmVmId *>(&enemy->attachedVmId),
                 reinterpret_cast<Float3 *>(&attachedPosition));
         }
 
@@ -854,10 +1030,14 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
         if (enemy->photoPulseVmId.value != 0)
         {
             AnmVm *photoPulseVm =
-                g_AnmManager->GetVm(enemy->photoPulseVmId);
+                g_AnmManager->GetVm(
+                    *reinterpret_cast<AnmVmId *>(
+                        &enemy->photoPulseVmId));
             if (enemy->photoMarkerTimer.current <= 0)
             {
-                g_AnmManager->MarkVmForDeletion(enemy->photoPulseVmId);
+                g_AnmManager->MarkVmForDeletion(
+                    *reinterpret_cast<AnmVmId *>(
+                        &enemy->photoPulseVmId));
                 enemy->photoPulseVmId.value = 0;
             }
             else
@@ -867,26 +1047,30 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
                     reinterpret_cast<Float3 *>(&enemy->worldPosition));
                 photoPulseVm->scale.y =
                     enemy->photoMarkerTimer.subFrame /
-                    enemy->photoMarkerDuration * 2.0f;
+                    enemy->photoMarkerDurationTimer.subFrame * 2.0f;
                 photoPulseVm->scale.x = photoPulseVm->scale.y;
             }
         }
 
         if (enemy->showPhotoMarker == 0 || enemy->photoTarget == 0)
         {
-            g_AnmManager->MarkVmForDeletion(enemy->photoMarkerVmId);
+            g_AnmManager->MarkVmForDeletion(
+                *reinterpret_cast<AnmVmId *>(
+                    &enemy->photoMarkerVmId));
             enemy->photoMarkerVmId.value = 0;
         }
         else if (enemy->photoMarkerVmId.value == 0)
         {
-            enemy->photoMarkerVmId =
-                g_PhotoEnemyBulletManager->anmSpawner->CreateVm(
-                    0x127, &enemy->photoMarkerPosition);
+            enemy->photoMarkerVmId.value =
+                g_PhotoEnemyBulletManager->anmSpawner
+                    ->CreateVm(0x127, &enemy->photoMarkerPosition).value;
         }
         else
         {
             AnmVm *photoMarkerVm =
-                g_AnmManager->GetVm(enemy->photoMarkerVmId);
+                g_AnmManager->GetVm(
+                    *reinterpret_cast<AnmVmId *>(
+                        &enemy->photoMarkerVmId));
             PhotoToScreen(
                 &photoMarkerVm->positionOffset,
                 reinterpret_cast<Float3 *>(&enemy->worldPosition));
@@ -1074,13 +1258,15 @@ void PhotoEnemyView::Deactivate()
     i32 pulseVmId = this->photoPulseVmId.value;
     if (pulseVmId != 0)
     {
-        g_AnmManager->MarkVmForDeletion(this->photoPulseVmId);
+        g_AnmManager->MarkVmForDeletion(
+            *reinterpret_cast<AnmVmId *>(&this->photoPulseVmId));
     }
 
     i32 attachedVmId = this->attachedVmId.value;
     if (attachedVmId != 0)
     {
-        g_AnmManager->MarkVmForDeletion(this->attachedVmId);
+        g_AnmManager->MarkVmForDeletion(
+            *reinterpret_cast<AnmVmId *>(&this->attachedVmId));
     }
 
     for (argumentIndex = 0; argumentIndex < 16; ++argumentIndex)
