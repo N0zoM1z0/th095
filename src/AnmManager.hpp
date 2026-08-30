@@ -630,6 +630,8 @@ struct AnmManager
     void ClearVertexBuffer();
     void FlushVertexBuffer();
     void ReleaseSurfaces();
+    void ReleaseSurface(i32 surfaceIndex);
+    void CopySurfaceToBackbuffer(i32 surfaceIndex, i32 left, i32 top, i32 x, i32 y);
     void TakeScreenshots();
     i32 RemoveVmListNode(AnmVmListNode *node);
     AnmVm *GetVm(AnmVmId id);

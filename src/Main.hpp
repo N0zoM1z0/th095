@@ -200,14 +200,23 @@ struct Supervisor
     CRITICAL_SECTION criticalSections[7];       // +0x664
     u8 unknown70c[5];
     u8 timestampUsers;                          // +0x711
-    u8 unknown712[0x56];
+    u8 unknown712[2];
+    i32 loadingVmsHaveBeenSetup;                // +0x714
+    u8 unknown718[0x50];
     i32 fogState;                               // +0x768
+    u8 unknown76c[0x1c];
+    i32 fpsFrameCount;                          // +0x788
+    u8 unknown78c[0x10];
+    f32 currentFps;                             // +0x79c
+    u8 unknown7a0[0x18];
+    D3DCOLOR backbufferClearColor;              // +0x7b8
 
     void InitializeCriticalSections();
     void DeleteCriticalSections();
     i32 LoadConfig(char *path);
     static i32 RegisterChain();
     void ConfigureGameplayViewport(i32 index);
+    void CalculateFps();
     void DisableFog();
     void ThreadClose();
     void TakeScreenshot(char *path);
@@ -215,8 +224,8 @@ struct Supervisor
     static i32 __fastcall OnUpdate(void *arg);
     static i32 __fastcall AddedCallback(void *arg);
     static i32 __fastcall DeletedCallback(void *arg);
-    static i32 __fastcall DrawFpsCounter(void *arg);
-    static i32 __fastcall OnDraw2(void *arg);
+    static i32 __fastcall DrawFpsCounter(Supervisor *s);
+    static i32 __fastcall OnDraw2(Supervisor *s);
     static i32 __fastcall DrawLoadingVms(void *arg);
 
     void EnterCriticalSectionWrapper(i32 id)
@@ -239,6 +248,9 @@ typedef char SupervisorPresentAtE4[(offsetof(Supervisor, presentParameters) == 0
 typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 : -1];
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
+typedef char SupervisorLoadingVmsAt714[(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x714) ? 1 : -1];
+typedef char SupervisorCurrentFpsAt79C[(offsetof(Supervisor, currentFps) == 0x79c) ? 1 : -1];
+typedef char SupervisorClearColorAt7B8[(offsetof(Supervisor, backbufferClearColor) == 0x7b8) ? 1 : -1];
 
 struct VertexTex1DiffuseXyzrhw
 {

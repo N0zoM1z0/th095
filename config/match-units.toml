@@ -5622,12 +5622,12 @@ relocations = [
   { offset = 0x5F, type = "DIR32", symbol = "?DeletedCallback@Supervisor@th095@@SIHPAX@Z", target = 0x004244D0 },
   { offset = 0x6A, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
   { offset = 0x6F, type = "REL32", symbol = "?AddToCalcChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418A20 },
-  { offset = 0x85, type = "DIR32", symbol = "?DrawFpsCounter@Supervisor@th095@@SIHPAX@Z", target = 0x004235D0 },
+  { offset = 0x85, type = "DIR32", symbol = "?OnDraw2@Supervisor@th095@@SIHPAU12@@Z", target = 0x004235D0 },
   { offset = 0x8A, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
   { offset = 0x8F, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
   { offset = 0xA6, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
   { offset = 0xAB, type = "REL32", symbol = "?AddToDrawChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418B30 },
-  { offset = 0xB0, type = "DIR32", symbol = "?OnDraw2@Supervisor@th095@@SIHPAX@Z", target = 0x00423790 },
+  { offset = 0xB0, type = "DIR32", symbol = "?DrawFpsCounter@Supervisor@th095@@SIHPAU12@@Z", target = 0x00423790 },
   { offset = 0xB5, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
   { offset = 0xBA, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
   { offset = 0xD1, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
@@ -5637,6 +5637,27 @@ relocations = [
   { offset = 0xE5, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
   { offset = 0xFC, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
   { offset = 0x101, type = "REL32", symbol = "?AddToDrawChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418B30 },
+]
+
+[units.main-draw-fps-counter]
+source = "src/Main.cpp"
+object = "build/matching/Main.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::DrawFpsCounter"]
+symbol = "?DrawFpsCounter@Supervisor@th095@@SIHPAU12@@Z"
+target_address = 0x00423790
+size = 0xAA
+relocations = [
+  { offset = 0xA, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670 },
+  { offset = 0xF, type = "REL32", symbol = "?CalculateFps@Supervisor@th095@@QAEXXZ", target = 0x00424720 },
+  { offset = 0x14, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x79C },
+  { offset = 0x20, type = "DIR32", symbol = "__real@41f00000", target = 0x00495380 },
+  { offset = 0x39, type = "DIR32", symbol = "__real@42200000", target = 0x00495390 },
+  { offset = 0x5F, type = "DIR32", symbol = "?g_AsciiManager@th095@@3UAsciiManager@1@A", target = 0x004A9F80, addend = 0x806C },
+  { offset = 0x82, type = "DIR32", symbol = "??_C@_08BOAAIGCD@?$CF2?41ffps?$AA@", target = 0x00495E24 },
+  { offset = 0x8B, type = "DIR32", symbol = "?g_AsciiManager@th095@@3UAsciiManager@1@A", target = 0x004A9F80 },
+  { offset = 0x90, type = "REL32", symbol = "?AddFormatText@AsciiManager@th095@@QAAXPAUFloat3@2@PBDZZ", target = 0x00401610 },
+  { offset = 0x99, type = "DIR32", symbol = "?g_AsciiManager@th095@@3UAsciiManager@1@A", target = 0x004A9F80, addend = 0x806C },
 ]
 
 [units.main-initialize-critical-sections]

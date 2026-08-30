@@ -150,7 +150,11 @@ residual remains uncredited. The adjacent 110-byte keyboard reset and four
 FileSystem functions at
 `0x0041A550..0x0041AC4E`, now exact for another 1,789 bytes. The FileSystem
 cluster proves the shared replay/resource codec, archive/disk loader, and
-critical-section-2 accounting. The front-end Help page at `0x00451C80` is now
+critical-section-2 accounting. The Supervisor draw spine now has target-local
+ownership: `OnDraw2 @ 0x004235D0` is the priority-0 viewport/prompt/surface
+callback, while exact `DrawFpsCounter @ 0x00423790` is priority `0x17` and
+bridges `CalculateFps @ 0x00424720` into the regular ASCII queue. The front-end
+Help page at `0x00451C80` is now
 source-present with an exact 88-byte asynchronous loader callback; the
 adjacent Music Room at `0x00450FC0` is source-present with both parser helpers
 exact. The adjacent `0x00452630` function is now source-present as the shared

@@ -411,3 +411,5 @@ th095::AsciiManager::AddGuiFormatText,0x00401660,function
 th095::AsciiManager::DrawStrings,0x00401700,function
 th095::AsciiManager::DrawGuiStrings,0x00401920,function
 th095::AsciiManager::InitializeVms,0x00423430,function
+th095::Supervisor::OnDraw2,0x004235D0,function
+th095::Supervisor::DrawFpsCounter,0x00423790,function

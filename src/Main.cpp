@@ -1,4 +1,5 @@
 #include "AnmManager.hpp"
+#include "AsciiManager.hpp"
 
 #include <direct.h>
 #include <math.h>
@@ -938,11 +939,11 @@ i32 Supervisor::RegisterChain()
     if (result != 0)
         return result;
 
-    elem = g_Chain.CreateElem((ChainCallback)Supervisor::DrawFpsCounter);
+    elem = g_Chain.CreateElem((ChainCallback)Supervisor::OnDraw2);
     elem->arg = supervisor;
     g_Chain.AddToDrawChain(elem, 0);
 
-    elem = g_Chain.CreateElem((ChainCallback)Supervisor::OnDraw2);
+    elem = g_Chain.CreateElem((ChainCallback)Supervisor::DrawFpsCounter);
     elem->arg = supervisor;
     g_Chain.AddToDrawChain(elem, 0x17);
 
@@ -954,6 +955,104 @@ i32 Supervisor::RegisterChain()
 #undef elem
 #undef result
 #undef supervisor
+
+// FUNCTION: TH095 0x004235D0.
+i32 __fastcall Supervisor::OnDraw2(Supervisor *s)
+{
+    struct OnDraw2Locals
+    {
+        IDirect3DSurface8 *surface;
+        i32 color2;
+        i32 color1;
+        Float3 position;
+    } locals;
+
+    s->ConfigureGameplayViewport(1);
+    if (g_Supervisor.backbufferClearColor != 0)
+    {
+        g_Supervisor.d3dDevice->Clear(
+            0, NULL, D3DCLEAR_TARGET, g_Supervisor.backbufferClearColor, 1.0f, 0);
+    }
+
+    if (s->loadingVmsHaveBeenSetup >= 2)
+    {
+        s->loadingVmsHaveBeenSetup++;
+        if (s->loadingVmsHaveBeenSetup >= 5)
+        {
+            locals.position.x = 288.0f;
+            locals.position.y = 454.0f;
+            locals.position.z = 0.0f;
+            g_AsciiManager.scaleX = 0.5f;
+            g_AsciiManager.scaleY = 0.5f;
+            if (s->loadingVmsHaveBeenSetup < 35)
+            {
+                locals.color1 = 255 - (((s->loadingVmsHaveBeenSetup - 5) << 7) / 30);
+                g_AsciiManager.color.a = locals.color1;
+            }
+            else
+            {
+                locals.color2 = 255 - (((65 - s->loadingVmsHaveBeenSetup) << 7) / 30);
+                g_AsciiManager.color.a = locals.color2;
+            }
+            g_AsciiManager.AddFormatText(&locals.position, "Press Shot Button");
+            g_AsciiManager.scaleX = 1.0f;
+            g_AsciiManager.scaleY = 1.0f;
+            g_AsciiManager.DrawStrings();
+            g_AsciiManager.numStrings = 0;
+            g_AsciiManager.numGuiStrings = 0;
+
+            if (s->loadingVmsHaveBeenSetup >= 65)
+            {
+                s->loadingVmsHaveBeenSetup = 5;
+            }
+        }
+    }
+
+    if (s->loadingVmsHaveBeenSetup != 0)
+    {
+        g_AnmManager->CopySurfaceToBackbuffer(8, 0, 0, 0, 0);
+    }
+    else
+    {
+        locals.surface = g_AnmManager->surfaces[8];
+        if (locals.surface != NULL)
+        {
+            g_AnmManager->ReleaseSurface(8);
+        }
+    }
+    return 1;
+}
+
+// FUNCTION: TH095 0x00423790.
+i32 __fastcall Supervisor::DrawFpsCounter(Supervisor *s)
+{
+    struct DrawFpsCounterLocals
+    {
+        D3DCOLOR color;
+        Float3 position;
+        f32 currentFps;
+    } locals;
+
+    g_Supervisor.CalculateFps();
+    locals.currentFps = g_Supervisor.currentFps;
+    if (locals.currentFps < 30.0f)
+    {
+        locals.color = 0xff5050ff;
+    }
+    else
+    {
+        locals.color = locals.currentFps < 40.0f ? 0xffa0a0ff : 0xffffffff;
+    }
+
+    g_AsciiManager.color.color = locals.color;
+    locals.position.x = 288.0f;
+    locals.position.y = 0.0f;
+    locals.position.z = 0.0f;
+    g_AsciiManager.AddFormatText(
+        &locals.position, "%2.1ffps", locals.currentFps);
+    g_AsciiManager.color.color = 0xffffffff;
+    return 1;
+}
 
 void Supervisor::InitializeCriticalSections()
 {
