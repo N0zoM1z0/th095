@@ -41,14 +41,14 @@ The repository deliberately separates five questions:
 
 | State | Durable source | Meaning |
 | --- | --- | --- |
-| Candidate boundary | `config/functions.csv` | Ghidra found a possible function extent |
+| Candidate boundary | `config/functions.csv` | Initial Ghidra import or later IDA review found a possible extent |
 | Origin | `config/function-origins.csv` | Authored/library/compiler classification |
 | Mapping | `config/reccmp-functions.csv` | A durable target address has a source name |
 | Source presence | `config/implemented.csv` | A mapped function has a maintained implementation |
 | Exactness | `config/matches.csv` | A canonical unit reproduces all accepted bytes |
 
-No state promotes another automatically. In particular, a Ghidra function,
-name, decompile, or successful compilation is not an exact result.
+No state promotes another automatically. In particular, an IDA/Ghidra
+function, name, decompile, or successful compilation is not an exact result.
 
 ## Recovered runtime spine
 
@@ -99,8 +99,8 @@ The exact Render unit proves these shared edges and field offsets:
 
 ## Target-wide hub inventory
 
-`scripts/ghidra.py architecture` exported 1,830 function metric rows and 3,873
-direct call edges from the attested target. The ranking deliberately combines
+The historical attested Ghidra inventory exported 1,830 function metric rows
+and 3,873 direct call edges from the target. The ranking deliberately combines
 size, incoming callers, internal fan-out, referenced global state, strings,
 and branches so reconstruction work is not biased toward isolated leaves.
 

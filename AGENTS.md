@@ -14,23 +14,28 @@ executable.
 
    ```bash
    python3 scripts/verify-target.py
-   python3 scripts/ghidra.py check
    python3 scripts/report-reconstruction-status.py --summary
    python3 scripts/validate-tracking.py --require-target
    ```
 
-3. Confirm the address in `config/functions.csv`. Ghidra's function extent is
-   provisional until complete control flow and padding are reconciled.
-4. Keep mapping, source presence, semantic acceptance, and byte-exact matching
+3. Before relying on IDA, call `check_connection`, `get_metadata`, and
+   `get_entry_points` through IDA Pro MCP. The module SHA-256, MD5, size, image
+   base, image size, and entry point must agree with `config/target.toml`.
+   The GPT-web bridge performs this check plus mapped-byte sampling before
+   every native IDA operation.
+4. Confirm the address in `config/functions.csv`. IDA's function extent and
+   the ledger's historical Ghidra extent are both provisional until complete
+   control flow and padding are reconciled.
+5. Keep mapping, source presence, semantic acceptance, and byte-exact matching
    as separate facts. None implies another.
-5. Build and compare the smallest affected function or object before broad
+6. Build and compare the smallest affected function or object before broad
    edits.
 
 ## Evidence and state
 
-- Separate exact target observations, compiler-oracle results, external
-  corroboration, inferences, and unknowns. Never paste decompiler output as
-  source.
+- Separate exact target observations, IDA observations, compiler-oracle
+  results, external corroboration, inferences, and unknowns. Never paste
+  decompiler output as source.
 - `config/functions.csv` is the provisional boundary ledger.
 - `config/function-origins.csv` separately classifies authored, compiler, and
   library ownership. Auto-analysis establishes no origin.
@@ -43,17 +48,18 @@ executable.
 - Record durable facts in `docs/KNOWLEDGE_BASE.md`; keep transient experiments
   below `.analysis/`.
 
-## Ghidra safety
+## IDA safety
 
-Ghidra is the semantic-analysis backend for this repository. Every scripted
-session must pass both `scripts/verify-target.py` and the in-project target
-attestation in `scripts/ghidra/VerifyTarget.java`. Treat a GUI project as
-untrusted until its executable SHA-256, image base, entry point, and mapped
-bytes agree with `config/target.toml`.
+IDA Pro MCP is the primary semantic-analysis backend. Treat every active IDB as
+untrusted until its executable identity, image base, entry point, and sampled
+mapped bytes agree with `config/target.toml`. Re-attest after the user switches
+the open IDB. The repository's legacy Ghidra project and exports may be used as
+historical corroboration, but they are not the live backend.
 
-Never patch target bytes. Ghidra projects are private working state, not the
-durable record: mirror accepted names, types, boundaries, and evidence into
-the repository ledgers. Read back database writes before relying on them.
+Never patch target bytes. `patch_address_assembles` is forbidden. IDA databases
+are private working state, not the durable record: mirror accepted names,
+types, boundaries, and evidence into the repository ledgers. Read back database
+writes before relying on them.
 
 ## ABI and implementation
 
@@ -65,10 +71,12 @@ the repository ledgers. Read back database writes before relying on them.
   proves them.
 - Do not use assembly, copied target bytes, inert locals, fake returns, ABI
   lies, or arbitrary padding to force a comparison.
-- Keep generated files below `build/`, private scratch below `.analysis/`, and
-  the private Ghidra database below `ghidra-project/`.
-- Never commit original executables, game archives/data, Ghidra projects,
-  downloaded toolchains, generated decompiler output, or credentials.
+- Keep generated files below `build/`, private scratch below `.analysis/`, IDA
+  databases outside the repository, and any legacy Ghidra database below
+  `ghidra-project/`.
+- Never commit original executables, game archives/data, IDA or Ghidra
+  databases, downloaded toolchains, generated decompiler output, or
+  credentials.
 
 ## Session discipline
 

@@ -4,11 +4,15 @@
 
 - Exact target: original Japanese TH095 v1.02a, verified by size, SHA-256, and
   MD5.
-- Analysis: Ghidra 12.1.3 headless workflow and target attestation are wired.
+- Analysis: IDA Pro MCP is the primary semantic backend. On 2026-08-30 the
+  active IDB was attested as the original Japanese v1.02a by SHA-256, MD5,
+  size, image base, mapped image size, entry point, and distributed `.text`
+  byte samples. The historical Ghidra 12.1.3 inventory remains available as
+  legacy corroboration.
 - Toolchain: VC7.1 compiler/linker build `3077`, reccmp 0.1.6, and objdiff
   3.8.0 are pinned.
-- Tracking: the attested Ghidra project exported 1,830 candidates and a private
-  architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
+- Tracking: the historical attested Ghidra project exported 1,830 candidates
+  and a private architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
 - Reconstruction: live counts and the exact/currently-confirmed authored-byte
   ratio are generated in `docs/PROGRESS.md`. `AnmManager::ExecuteScript` at

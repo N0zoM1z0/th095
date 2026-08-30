@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 from pathlib import Path
 import sys
 import tomllib
@@ -22,7 +23,10 @@ def parse_args() -> argparse.Namespace:
         "executable",
         nargs="?",
         type=Path,
-        help="path to th095.exe (default: resources/th095.exe)",
+        help=(
+            "path to th095.exe (default: TH095_TARGET_PATH or "
+            "resources/th095.exe)"
+        ),
     )
     return parser.parse_args()
 
@@ -46,13 +50,18 @@ def main() -> int:
         print(f"invalid target manifest: {exc}", file=sys.stderr)
         return 2
 
-    default = ROOT / "resources" / str(expected["filename"])
+    configured = os.environ.get("TH095_TARGET_PATH")
+    default = (
+        Path(configured)
+        if configured
+        else ROOT / "resources" / str(expected["filename"])
+    )
     path = (args.executable or default).expanduser().resolve()
     if not path.is_file():
         print(f"missing target: {path}", file=sys.stderr)
         print(
             "copy the original Japanese v1.02a th095.exe to "
-            "resources/th095.exe or pass its path explicitly",
+            "resources/th095.exe, set TH095_TARGET_PATH, or pass its path explicitly",
             file=sys.stderr,
         )
         return 1

@@ -1,5 +1,9 @@
 # Ghidra setup and attestation
 
+> Legacy workflow: IDA Pro MCP is now the primary semantic-analysis backend.
+> Keep this document for reproducing the initial inventory and historical
+> architecture exports; do not treat a stale Ghidra project as the live view.
+
 ## Pinned installation
 
 The public bootstrap installs Ghidra 12.1.3 and Temurin JDK 21 below the ignored

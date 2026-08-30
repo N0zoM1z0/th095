@@ -15,8 +15,9 @@ Use the hash-attested v1.02a executable for:
 - object offsets, scalar widths, constants, switch bounds, and side effects;
 - provisional function and padding boundaries.
 
-Ghidra is a view of this oracle, not the oracle itself. Reconcile suspicious
-analysis against raw mapped bytes.
+IDA is a view of this oracle, not the oracle itself. Reconcile suspicious
+analysis against raw mapped bytes. Legacy Ghidra exports are historical
+corroboration only unless independently revalidated against the target.
 
 ## Oracle B: compiler and ABI
 

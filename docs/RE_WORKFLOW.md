@@ -6,13 +6,16 @@ Run the fail-closed checks before inspecting or changing reconstruction state:
 
 ```bash
 python3 scripts/verify-target.py
-python3 scripts/ghidra.py check
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 ```
 
-If either target attestation fails, stop. Do not substitute a localized,
-earlier, Steam, or patched executable.
+Then attest the active IDA database through IDA Pro MCP with
+`check_connection`, `get_metadata`, and `get_entry_points`; compare the result
+with `config/target.toml`. The GPT-web `ida_call` adapter additionally samples
+mapped `.text` bytes before every operation. If either file or IDA attestation
+fails, stop. Do not substitute a localized, earlier, Steam, or patched
+executable.
 
 ## Bounded reconstruction loop
 
@@ -20,13 +23,9 @@ earlier, Steam, or patched executable.
 2. Reconcile its entry, exits, tail calls, switch bodies, shared epilogues,
    padding, and fall-through against exact target bytes. Treat the stored size
    as provisional.
-3. Inspect callers, callees, globals, strings, and data references in the
-   attested Ghidra project. Use a bounded headless decompile when useful:
-
-   ```bash
-   python3 scripts/ghidra.py decompile \
-     .analysis/decompile-00401000.c 0x00401000
-   ```
+3. Inspect callers, callees, globals, strings, data references, disassembly,
+   and bounded decompilation through the attested IDA Pro MCP database. Keep
+   disposable decompiler text below `.analysis/`; do not copy it into source.
 
 4. Form a semantic and ABI hypothesis. Record uncertainty rather than hiding
    it in a convenient type or name.
@@ -51,7 +50,7 @@ Use this order when evidence conflicts:
 3. Target-local runtime observations and data invariants.
 4. Multiple target-local callers, callees, and xrefs.
 5. Adjacent Touhou source/reconstructions and external documentation.
-6. Ghidra names, inferred types, decompiler syntax, and intuition.
+6. IDA/Ghidra names, inferred types, decompiler syntax, and intuition.
 
 Lower-ranked evidence may route investigation but cannot override the target.
 
@@ -59,7 +58,7 @@ Lower-ranked evidence may route investigation but cannot override the target.
 
 Use precise claims:
 
-- **observed**: directly read from the verified target or attested Ghidra map;
+- **observed**: directly read from the verified target or attested IDA map;
 - **compiler-observed**: reproduced with the pinned compiler and explicit
   command;
 - **corroborated**: supported by an external or adjacent source;

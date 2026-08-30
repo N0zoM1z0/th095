@@ -1,6 +1,6 @@
 ---
 name: th095-re
-description: Reconstruct bounded functions and data from the original Japanese TH095 v1.02a executable using hash-attested Ghidra evidence and conservative ledgers. Use for TH095 disassembly, decompilation, naming, ABI recovery, function-boundary review, source implementation, or address-level reverse engineering.
+description: Reconstruct bounded functions and data from the original Japanese TH095 v1.02a executable using hash-attested IDA Pro MCP evidence and conservative ledgers. Use for TH095 disassembly, decompilation, naming, ABI recovery, function-boundary review, source implementation, or address-level reverse engineering.
 ---
 
 # TH095 bounded reconstruction
@@ -14,19 +14,22 @@ Run:
 
 ```bash
 python3 scripts/verify-target.py
-python3 scripts/ghidra.py check
 python3 scripts/validate-tracking.py --require-target
 ```
 
-Stop if either target attestation fails. Work on one address from
-`config/functions.csv`; treat its Ghidra size and name as provisional.
+Call IDA Pro MCP `check_connection`, `get_metadata`, and `get_entry_points`, and
+compare them with `config/target.toml`. The GPT-web `ida_call` bridge performs
+that check plus mapped-byte sampling automatically. Stop if either file or IDA
+attestation fails. Work on one address from `config/functions.csv`; treat its
+IDA extent and historical Ghidra size/name as provisional.
 
 ## Recover a bounded unit
 
 1. Reconcile entry, exits, tails, switch bodies, padding, and shared code using
    exact target bytes.
-2. Inspect callers, callees, globals, strings, and data xrefs in the attested
-   Ghidra project. Keep decompiler output below `.analysis/`.
+2. Inspect callers, callees, globals, strings, data xrefs, disassembly, and
+   bounded decompilation in the attested IDA database. Keep decompiler output
+   below `.analysis/`.
 3. Distinguish observed facts from proposed semantics and adjacent-game
    corroboration.
 4. Recover calling convention, widths, layout, ownership, and side effects
@@ -37,5 +40,6 @@ Stop if either target attestation fails. Work on one address from
 7. Hand exact-code work to `$th095-matching`; use `$th095-oracle` for ambiguous
    type, layout, or semantic claims.
 
-Record durable findings through `$th095-kb`. Never commit the executable,
-game data, `ghidra-project/`, toolchain, or decompiler output.
+Record durable findings through `$th095-kb`. Never commit the executable, game
+data, IDA/Ghidra databases, toolchain, or decompiler output. Never invoke the
+IDA target-byte patching tool.

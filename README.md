@@ -42,8 +42,9 @@ included.
 
 ## Current status
 
-TH095 is in active reconstruction. An attested Ghidra 12.1.3 headless import
-supplies 1,830 provisional function candidates; the generated progress badge
+TH095 is in active reconstruction. The historical attested Ghidra 12.1.3
+import supplied 1,830 provisional function candidates; IDA Pro MCP is now the
+primary semantic-analysis backend. The generated progress badge
 and report are the canonical live totals. Exact units include the complete
 17,018-byte `AnmManager::ExecuteScript`, 27,091-byte `EclManager::RunEcl`, the
 target-specific asynchronous `SoundPlayer` core, and the Main/D3D runtime
@@ -93,10 +94,12 @@ Start a reconstruction session with:
 ```bash
 scripts/bootstrap-tools.sh
 python3 scripts/verify-target.py
-python3 scripts/ghidra.py check
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 ```
+
+Attest the active IDA database against `config/target.toml` before relying on
+its analysis; see the IDA guide below.
 
 ## Documentation
 
@@ -104,7 +107,8 @@ python3 scripts/validate-tracking.py --require-target
 - [Architecture and exact target](docs/ARCHITECTURE.md)
 - [Reverse-engineering workflow](docs/RE_WORKFLOW.md)
 - [Independent oracle policy](docs/ORACLES.md)
-- [Ghidra setup and attestation](docs/GHIDRA.md)
+- [IDA Pro MCP setup and attestation](docs/IDA.md)
+- [Legacy Ghidra workflow](docs/GHIDRA.md)
 - [VC7.1 build and strict matching](docs/BUILD_MATCHING.md)
 - [Tool routing](docs/TOOLS.md)
 - [Verified knowledge base](docs/KNOWLEDGE_BASE.md)
@@ -112,7 +116,7 @@ python3 scripts/validate-tracking.py --require-target
 - [Agent rules](AGENTS.md)
 
 Run public, target-independent checks with `python3 scripts/ci.py`. Private
-target and Ghidra checks remain separate from public CI.
+target and IDA/Ghidra checks remain separate from public CI.
 
 ## Reference model
 
