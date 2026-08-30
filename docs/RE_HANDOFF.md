@@ -467,9 +467,14 @@ bounds, camera-charge formulas, the one-point clamp, and sound `0x14`; spawn
 proves script `0x120`, random upward velocity, and caller-color propagation.
 The live implementation is isolated in `PhotoItemManager.hpp/.cpp`; the
 TH08-derived `ItemManager.hpp` declarations remain only as the exact ECL
-dispatcher oracle. Continue into the remaining adjacent PhotoEffect lifecycle
-at `0x0041D580..0x0041D8D0`: constructor/base initialization, resource load,
-destructor, heap factory, and self-destruction are the next bounded family.
+dispatcher oracle. The adjacent PhotoEffect lifecycle at
+`0x0041D580..0x0041D8D0` is now complete and canonical: ten functions totaling
+893 bytes prove the inline `PhotoEffectBaseView` list sentinel, base vtable
+defaults, slot-6 `bullet.anm` ownership, priority-13 callback registration,
+failure cleanup, and complete live-effect teardown. The straight and rotating
+laser classes directly override their shared target helpers; their identical
+implementations fold to `0x0041E750/0x0041F280`, while the base vtable keeps
+the zero-return defaults at `0x0041D660/0x0041D670`.
 
 The large photo functions remain source-present but non-exact:
 `PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe

@@ -277,10 +277,10 @@ th095::PhotoEffectManagerView::CountNearbyTargets
 th095::PhotoEffectManagerView::Spawn
 th095::PhotoStraightLaserView::PhotoStraightLaserView
 th095::PhotoRotatingLaserView::PhotoRotatingLaserView
-th095::PhotoEffectBaseView::CountPhotoTargets
+th095::PhotoStraightLaserView::CountPhotoTargets
 th095::PhotoStraightLaserView::CheckCollision
 th095::PhotoStraightLaserView::DrawSecondary
-th095::PhotoEffectBaseView::CountNearbyTargets
+th095::PhotoStraightLaserView::CountNearbyTargets
 th095::PhotoRotatingLaserView::CheckCollision
 th095::PhotoRotatingLaserView::DrawSecondary
 th095::PhotoItemManagerView::PhotoItemManagerView
@@ -295,3 +295,13 @@ th095::PhotoItemManagerView::Draw
 th095::PhotoItemManagerView::OnUpdate
 th095::PhotoItemManagerView::OnDraw
 th095::PhotoItemManagerView::Spawn
+th095::PhotoEffectManagerView::PhotoEffectManagerView
+th095::PhotoEffectBaseView::PhotoEffectBaseView
+th095::PhotoEffectBaseView::Initialize
+th095::PhotoEffectBaseView::Cleanup
+th095::PhotoEffectBaseView::CountPhotoTargets
+th095::PhotoEffectBaseView::CountNearbyTargets
+th095::PhotoEffectManagerView::Initialize
+th095::PhotoEffectManagerView::~PhotoEffectManagerView
+th095::PhotoEffectManagerView::Create
+th095::PhotoEffectManagerView::Destroy

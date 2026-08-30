@@ -47,15 +47,15 @@ struct PhotoEffectBaseView
         memset(this, 0, sizeof(*this));
     }
 
-    virtual i32 Initialize(void *args) = 0;
-    virtual i32 Update() = 0;
-    virtual i32 Draw() = 0;
-    virtual void Cleanup();
-    virtual i32 DrawSecondary() = 0;
+    virtual i32 Initialize(void *args);
+    virtual i32 Update();
+    virtual i32 Draw();
+    virtual i32 Cleanup();
+    virtual i32 DrawSecondary();
     virtual i32 CountPhotoTargets(
         Float3 *position, Float3 *size, i32 capture);
     virtual i32 CheckCollision(
-        Float3 *position, Float3 *size, i32 capture) = 0;
+        Float3 *position, Float3 *size, i32 capture);
     virtual i32 CountNearbyTargets(Float3 *position, f32 radius);
 
     PhotoEffectBaseView *previous;          // +0x04
@@ -109,7 +109,10 @@ struct PhotoStraightLaserView : PhotoEffectBaseView
     i32 Update();
     i32 Draw();
     i32 DrawSecondary();
+    i32 CountPhotoTargets(
+        Float3 *position, Float3 *size, i32 capture);
     i32 CheckCollision(Float3 *position, Float3 *size, i32 capture);
+    i32 CountNearbyTargets(Float3 *position, f32 radius);
 };
 
 typedef char PhotoStraightLaserBodyVmAt78[
@@ -156,7 +159,10 @@ struct PhotoRotatingLaserView : PhotoEffectBaseView
     i32 Update();
     i32 Draw();
     i32 DrawSecondary();
+    i32 CountPhotoTargets(
+        Float3 *position, Float3 *size, i32 capture);
     i32 CheckCollision(Float3 *position, Float3 *size, i32 capture);
+    i32 CountNearbyTargets(Float3 *position, f32 radius);
 };
 
 typedef char PhotoRotatingLaserBodyVmAt98[
@@ -240,17 +246,22 @@ void __fastcall RotatePhotoEffectVector(
 
 struct PhotoEffectManagerView
 {
-    u8 listRootVtable[4];                   // +0x00
-    PhotoEffectBaseView *listRootPrevious;  // +0x04
-    PhotoEffectBaseView *first;             // +0x08
-    u8 listRootTail[0x50 - 0x0c];
+    PhotoEffectBaseView listRoot;           // +0x00
     PhotoEffectBaseView *last;              // +0x50
     i32 effectCount;                        // +0x54
     i32 nextId;                             // +0x58
     PhotoEffectVector collisionPosition;    // +0x5c
     PhotoEffectVector collisionSize;        // +0x68
     PhotoEffectAnmView *anm;                // +0x74
-    u8 unknown78[0x08];
+    ChainElem *calcChain;                   // +0x78
+    ChainElem *drawChain;                   // +0x7c
+
+    PhotoEffectManagerView();
+    ~PhotoEffectManagerView();
+
+    static PhotoEffectManagerView *Create();
+    void Destroy();
+    i32 Initialize();
 
     void Remove(PhotoEffectBaseView *effect);
     static i32 __fastcall Update(PhotoEffectManagerView *manager);
@@ -274,6 +285,10 @@ struct PhotoEffectManagerView
 
 typedef char PhotoEffectManagerSizeIs80[
     (sizeof(PhotoEffectManagerView) == 0x80) ? 1 : -1];
+typedef char PhotoEffectManagerLastAt50[
+    (offsetof(PhotoEffectManagerView, last) == 0x50) ? 1 : -1];
+typedef char PhotoEffectManagerAnmAt74[
+    (offsetof(PhotoEffectManagerView, anm) == 0x74) ? 1 : -1];
 
 static inline i32 PhotoEffectIsOutsidePlayfield(
     PhotoEffectVector *position, f32 width, f32 height)
@@ -851,6 +866,155 @@ i32 PhotoRotatingLaserView::CheckCollision(
     return hitCount;
 }
 
+i32 PhotoEffectBaseView::Initialize(void *args)
+{
+    return 0;
+}
+
+i32 PhotoEffectBaseView::Update()
+{
+    return 0;
+}
+
+i32 PhotoEffectBaseView::Draw()
+{
+    return 0;
+}
+
+i32 PhotoEffectBaseView::Cleanup()
+{
+    this->previous->next = this->next;
+    if (this->next != NULL)
+    {
+        this->next->previous = this->previous;
+    }
+    return 0;
+}
+
+i32 PhotoEffectBaseView::DrawSecondary()
+{
+    return 0;
+}
+
+i32 PhotoEffectBaseView::CountPhotoTargets(
+    Float3 *position, Float3 *size, i32 capture)
+{
+    return 0;
+}
+
+i32 PhotoEffectBaseView::CheckCollision(
+    Float3 *position, Float3 *size, i32 capture)
+{
+    return 0;
+}
+
+i32 PhotoEffectBaseView::CountNearbyTargets(
+    Float3 *position, f32 radius)
+{
+    return 0;
+}
+
+PhotoEffectManagerView::PhotoEffectManagerView()
+{
+    utils::DebugPrint("initialize LaserInf\n");
+    memset(this, 0, sizeof(*this));
+    g_PhotoEffectManager = this;
+}
+
+PhotoEffectManagerView::~PhotoEffectManagerView()
+{
+    utils::DebugPrint("shutdown LaserInf\n");
+    g_Chain.Cut(this->calcChain);
+    g_Chain.Cut(this->drawChain);
+
+    PhotoEffectBaseView *effect = this->listRoot.next;
+    while (effect != NULL)
+    {
+        PhotoEffectBaseView *next = effect->next;
+        effect->Cleanup();
+        effect->previous->next = effect->next;
+        if (effect->next != NULL)
+        {
+            effect->next->previous = effect->previous;
+        }
+        delete effect;
+        effect = NULL;
+        effect = next;
+    }
+    g_PhotoEffectManager = NULL;
+}
+
+i32 PhotoEffectManagerView::Initialize()
+{
+    this->anm = reinterpret_cast<PhotoEffectAnmView *>(
+        g_AnmManager->LoadAnm(6, "bullet.anm"));
+    if (this->anm == NULL)
+    {
+        g_GameErrorContext.Log(
+            "\x93\x47\x92\x65\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x8c\xa9\x82\xc2"
+            "\x82\xa9\x82\xe8\x82\xdc\x82\xb9"
+            "\x82\xf1\x81\x42\x83\x66\x81\x5b"
+            "\x83\x5e\x82\xaa\x89\xf3\x82\xea"
+            "\x82\xc4\x82\xa2\x82\xdc\x82\xb7"
+            "\r\n");
+        return ZUN_ERROR;
+    }
+    this->last = &this->listRoot;
+    return ZUN_SUCCESS;
+}
+
+PhotoEffectManagerView *PhotoEffectManagerView::Create()
+{
+    struct
+    {
+        PhotoEffectManagerView *manager;
+        ChainElem *elem;
+    } locals;
+
+#define manager locals.manager
+#define elem locals.elem
+
+    manager = new PhotoEffectManagerView();
+    if (manager->Initialize() != ZUN_SUCCESS)
+    {
+        goto failure;
+    }
+
+    elem = g_Chain.CreateElem(
+        reinterpret_cast<ChainCallback>(PhotoEffectManagerView::OnUpdate));
+    elem->arg = manager;
+    g_Chain.AddToCalcChain(elem, 0xd);
+    manager->calcChain = elem;
+
+    elem = g_Chain.CreateElem(
+        reinterpret_cast<ChainCallback>(PhotoEffectManagerView::OnDraw));
+    elem->arg = manager;
+    g_Chain.AddToDrawChain(elem, 0xd);
+    manager->drawChain = elem;
+    return manager;
+
+failure:
+    if (manager != NULL)
+    {
+        delete manager;
+        manager = NULL;
+    }
+#undef elem
+#undef manager
+    return NULL;
+}
+
+void PhotoEffectManagerView::Destroy()
+{
+    PhotoEffectManagerView *manager = this;
+    if (manager != NULL)
+    {
+        delete manager;
+        manager = NULL;
+    }
+}
+
 void PhotoEffectManagerView::Remove(PhotoEffectBaseView *effect)
 {
     this->effectCount--;
@@ -868,7 +1032,7 @@ void PhotoEffectManagerView::Remove(PhotoEffectBaseView *effect)
 i32 __fastcall PhotoEffectManagerView::Update(
     PhotoEffectManagerView *manager)
 {
-    PhotoEffectBaseView *effect = manager->first;
+    PhotoEffectBaseView *effect = manager->listRoot.next;
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
@@ -914,7 +1078,7 @@ i32 __fastcall PhotoEffectManagerView::Update(
 i32 __fastcall PhotoEffectManagerView::Draw(
     PhotoEffectManagerView *manager)
 {
-    PhotoEffectBaseView *effect = manager->first;
+    PhotoEffectBaseView *effect = manager->listRoot.next;
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
@@ -1001,7 +1165,7 @@ i32 PhotoEffectManagerView::Spawn(i32 type, void *args)
 i32 PhotoEffectManagerView::CountPhotoTargets(
     Float3 *position, Float3 *size)
 {
-    PhotoEffectBaseView *effect = this->first;
+    PhotoEffectBaseView *effect = this->listRoot.next;
     i32 count = 0;
     this->collisionPosition =
         *reinterpret_cast<PhotoEffectVector *>(position);
@@ -1023,7 +1187,7 @@ i32 PhotoEffectManagerView::CountPhotoTargets(
 i32 __fastcall PhotoEffectManagerView::CheckCollisionStored(
     PhotoEffectManagerView *manager)
 {
-    PhotoEffectBaseView *effect = manager->first;
+    PhotoEffectBaseView *effect = manager->listRoot.next;
     i32 count = 0;
     while (effect != NULL)
     {
@@ -1043,7 +1207,7 @@ i32 __fastcall PhotoEffectManagerView::CheckCollisionStored(
 i32 __fastcall PhotoEffectManagerView::DrawSecondary(
     PhotoEffectManagerView *manager)
 {
-    PhotoEffectBaseView *effect = manager->first;
+    PhotoEffectBaseView *effect = manager->listRoot.next;
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
@@ -1059,7 +1223,7 @@ i32 __fastcall PhotoEffectManagerView::DrawSecondary(
 i32 PhotoEffectManagerView::CountNearbyTargets(
     Float3 *position, f32 radius)
 {
-    PhotoEffectBaseView *effect = this->first;
+    PhotoEffectBaseView *effect = this->listRoot.next;
     i32 count = 0;
     while (effect != NULL)
     {
@@ -1081,7 +1245,7 @@ PhotoRotatingLaserView::PhotoRotatingLaserView()
 {
 }
 
-i32 PhotoEffectBaseView::CountPhotoTargets(
+i32 PhotoStraightLaserView::CountPhotoTargets(
     Float3 *position, Float3 *size, i32 capture)
 {
     i32 count = 0;
@@ -1110,7 +1274,60 @@ i32 PhotoEffectBaseView::CountPhotoTargets(
     return count;
 }
 
-i32 PhotoEffectBaseView::CountNearbyTargets(
+i32 PhotoRotatingLaserView::CountPhotoTargets(
+    Float3 *position, Float3 *size, i32 capture)
+{
+    i32 count = 0;
+    i32 index = 0;
+    f32 distance = 6.0f;
+    Float3 halfSize = *size / 2.0f;
+    Float3 minimum = *position - halfSize;
+    Float3 maximum = *position + halfSize;
+
+    Float3 step;
+    step.FromAngleMagnitude(this->angle, 6.0f);
+    Float3 sample =
+        *reinterpret_cast<Float3 *>(&this->position) + step;
+    step += step;
+
+    for (; distance + 6.0f < this->length;
+         distance += 12.0f, index++)
+    {
+        if (minimum.x <= sample.x && sample.x <= maximum.x &&
+            minimum.y <= sample.y && sample.y <= maximum.y)
+        {
+            count++;
+        }
+        sample += step;
+    }
+    return count;
+}
+
+i32 PhotoStraightLaserView::CountNearbyTargets(
+    Float3 *position, f32 radius)
+{
+    Float3 local;
+    Float3 difference =
+        *position - *reinterpret_cast<Float3 *>(&this->position);
+    Float3 delta = difference;
+    RotatePhotoEffectVector(&local, &delta, -this->angle);
+
+    delta.x = local.x - radius;
+    delta.y = local.y - radius;
+    local.x += radius;
+    local.y += radius;
+
+    if (delta.x > this->length ||
+        this->width / 2.0f < delta.y ||
+        local.x < 0.0f ||
+        local.y < -this->width / 2.0f)
+    {
+        return 0;
+    }
+    return 2;
+}
+
+i32 PhotoRotatingLaserView::CountNearbyTargets(
     Float3 *position, f32 radius)
 {
     Float3 local;

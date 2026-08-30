@@ -9062,7 +9062,7 @@ relocations = [
   { offset = 0x85, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0x94, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0xBB, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
-  { offset = 0x156, type = "DIR32", symbol = "$L66734", target = 0x0041F976 },
+  { offset = 0x156, type = "DIR32", symbol = "$L66909", target = 0x0041F976 },
   { offset = 0x2D6, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
   { offset = 0x2F5, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
   { offset = 0x32D, type = "DIR32", symbol = "__real@42000000", target = 0x00495440 },
@@ -9075,10 +9075,10 @@ relocations = [
   { offset = 0x3F9, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
   { offset = 0x402, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
   { offset = 0x41C, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
-  { offset = 0x426, type = "DIR32", symbol = "$L66707", target = 0x0041F773 },
-  { offset = 0x42A, type = "DIR32", symbol = "$L66679", target = 0x0041F6AA },
-  { offset = 0x42E, type = "DIR32", symbol = "$L66691", target = 0x0041F6F7 },
-  { offset = 0x432, type = "DIR32", symbol = "$L66719", target = 0x0041F7BF },
+  { offset = 0x426, type = "DIR32", symbol = "$L66882", target = 0x0041F773 },
+  { offset = 0x42A, type = "DIR32", symbol = "$L66854", target = 0x0041F6AA },
+  { offset = 0x42E, type = "DIR32", symbol = "$L66866", target = 0x0041F6F7 },
+  { offset = 0x432, type = "DIR32", symbol = "$L66894", target = 0x0041F7BF },
 ]
 
 [units.photo-straight-laser-draw]
@@ -9425,4 +9425,150 @@ size = 0x2D
 relocations = [
   { offset = 0x8, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUItemGlobalStateView@1@A", target = 0x004BDEC8 },
   { offset = 0x25, type = "REL32", symbol = "?Draw@PhotoItemManagerView@th095@@QAEHXZ", target = 0x0041D340 },
+]
+
+[units.photo-effect-manager-constructor]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEffectManagerView::PhotoEffectManagerView"]
+symbol = "??0PhotoEffectManagerView@th095@@QAE@XZ"
+target_address = 0x0041D580
+size = 0x3B
+relocations = [
+  { offset = 0xE, type = "REL32", symbol = "??0PhotoEffectBaseView@th095@@QAE@XZ", target = 0x0041D5C0 },
+  { offset = 0x13, type = "DIR32", symbol = "??_C@_0BF@HKHPDEIE@initialize?5LaserInf?6?$AA@", target = 0x00495898 },
+  { offset = 0x18, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x2F, type = "DIR32", symbol = "?g_PhotoEffectManager@th095@@3PAUPhotoEffectManagerView@1@A", target = 0x004C45E0 },
+]
+
+[units.photo-effect-base-constructor]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEffectBaseView::PhotoEffectBaseView"]
+symbol = "??0PhotoEffectBaseView@th095@@QAE@XZ"
+target_address = 0x0041D5C0
+size = 0x4D
+relocations = [
+  { offset = 0xF, type = "DIR32", symbol = "??_7PhotoEffectBaseView@th095@@6B@", target = 0x004958B0 },
+]
+
+[units.photo-effect-base-initialize]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEffectBaseView::Initialize"]
+symbol = "?Initialize@PhotoEffectBaseView@th095@@UAEHPAX@Z"
+target_address = 0x0041D610
+size = 0xF
+relocations = []
+
+[units.photo-effect-base-cleanup]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEffectBaseView::Cleanup"]
+symbol = "?Cleanup@PhotoEffectBaseView@th095@@UAEHXZ"
+target_address = 0x0041D620
+size = 0x34
+relocations = []
+
+[units.photo-effect-base-count-photo-targets-default]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEffectBaseView::CountPhotoTargets"]
+symbol = "?CountPhotoTargets@PhotoEffectBaseView@th095@@UAEHPAUFloat3@2@0H@Z"
+target_address = 0x0041D660
+size = 0xF
+relocations = []
+
+[units.photo-effect-base-count-nearby-targets-default]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEffectBaseView::CountNearbyTargets"]
+symbol = "?CountNearbyTargets@PhotoEffectBaseView@th095@@UAEHPAUFloat3@2@M@Z"
+target_address = 0x0041D670
+size = 0xF
+relocations = []
+
+[units.photo-effect-manager-initialize]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEffectManagerView::Initialize"]
+symbol = "?Initialize@PhotoEffectManagerView@th095@@QAEHXZ"
+target_address = 0x0041D680
+size = 0x4E
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "??_C@_0L@JHPPDGCE@bullet?4anm?$AA@", target = 0x004953EC },
+  { offset = 0x10, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x15, type = "REL32", symbol = "?LoadAnm@AnmManager@th095@@QAEPAUAnmLoaded@2@HPBD@Z", target = 0x004432E0 },
+  { offset = 0x29, type = "DIR32", symbol = "??_C@_0DD@LJIGBHIF@?$JDG?$JCe?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$IM?$KJ?$IC?B?$IC?$KJ?$IC?h?$IC?$NM?$IC?$LJ?$IC?q?$IBB?$IDf?$IB?$FL@", target = 0x004953B8 },
+  { offset = 0x2E, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x33, type = "REL32", symbol = "?Log@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+]
+
+[units.photo-effect-manager-destructor]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEffectManagerView::~PhotoEffectManagerView"]
+symbol = "??1PhotoEffectManagerView@th095@@QAE@XZ"
+target_address = 0x0041D6D0
+size = 0xB1
+relocations = [
+  { offset = 0xA, type = "DIR32", symbol = "??_C@_0BD@ENEBDFFC@shutdown?5LaserInf?6?$AA@", target = 0x004958D0 },
+  { offset = 0xF, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x1E, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x23, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAUChainElem@2@@Z", target = 0x00419160 },
+  { offset = 0x2F, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x34, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAUChainElem@2@@Z", target = 0x00419160 },
+  { offset = 0x8D, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0xA5, type = "DIR32", symbol = "?g_PhotoEffectManager@th095@@3PAUPhotoEffectManagerView@1@A", target = 0x004C45E0 },
+]
+
+[units.photo-effect-manager-create]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEffectManagerView::Create"]
+symbol = "?Create@PhotoEffectManagerView@th095@@SIPAU12@XZ"
+target_address = 0x0041D790
+size = 0x136
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?Create@PhotoEffectManagerView@th095@@SIPAU12@XZ", target = 0x0049369B },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x21, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x3C, type = "REL32", symbol = "??0PhotoEffectManagerView@th095@@QAE@XZ", target = 0x0041D580 },
+  { offset = 0x63, type = "REL32", symbol = "?Initialize@PhotoEffectManagerView@th095@@QAEHXZ", target = 0x0041D680 },
+  { offset = 0x6E, type = "DIR32", symbol = "?OnUpdate@PhotoEffectManagerView@th095@@SIHPAU12@@Z", target = 0x0041DB00 },
+  { offset = 0x73, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x78, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
+  { offset = 0x8F, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x94, type = "REL32", symbol = "?AddToCalcChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418A20 },
+  { offset = 0xA2, type = "DIR32", symbol = "?OnDraw@PhotoEffectManagerView@th095@@SIHPAU12@@Z", target = 0x0041DBA0 },
+  { offset = 0xA7, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xAC, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAUChainElem@2@P6IHPAX@Z@Z", target = 0x004190B0 },
+  { offset = 0xC3, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xC8, type = "REL32", symbol = "?AddToDrawChain@Chain@th095@@QAEHPAUChainElem@2@H@Z", target = 0x00418B30 },
+  { offset = 0xF6, type = "REL32", symbol = "??1PhotoEffectManagerView@th095@@QAE@XZ", target = 0x0041D6D0 },
+  { offset = 0x109, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0x12E, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+]
+
+[units.photo-effect-manager-destroy]
+source = "src/PhotoEffect.cpp"
+object = "build/matching/PhotoEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEffectManagerView::Destroy"]
+symbol = "?Destroy@PhotoEffectManagerView@th095@@QAEXXZ"
+target_address = 0x0041D8D0
+size = 0x5F
+relocations = [
+  { offset = 0x2B, type = "REL32", symbol = "??1PhotoEffectManagerView@th095@@QAE@XZ", target = 0x0041D6D0 },
+  { offset = 0x3E, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
 ]

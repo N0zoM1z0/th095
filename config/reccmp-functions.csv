@@ -278,10 +278,10 @@ th095::PhotoEffectManagerView::CountNearbyTargets,0x0041E060,function
 th095::PhotoEffectManagerView::Spawn,0x0041DBD0,function
 th095::PhotoStraightLaserView::PhotoStraightLaserView,0x0041DD80,function
 th095::PhotoRotatingLaserView::PhotoRotatingLaserView,0x0041DE50,function
-th095::PhotoEffectBaseView::CountPhotoTargets,0x0041E750,function
+th095::PhotoStraightLaserView::CountPhotoTargets,0x0041E750,function
 th095::PhotoStraightLaserView::CheckCollision,0x0041E9C0,function
 th095::PhotoStraightLaserView::DrawSecondary,0x0041F140,function
-th095::PhotoEffectBaseView::CountNearbyTargets,0x0041F280,function
+th095::PhotoStraightLaserView::CountNearbyTargets,0x0041F280,function
 th095::PhotoRotatingLaserView::CheckCollision,0x0041FA10,function
 th095::PhotoRotatingLaserView::DrawSecondary,0x00420100,function
 th095::PhotoItemManagerView::PhotoItemManagerView,0x0041CB20,function
@@ -296,3 +296,13 @@ th095::PhotoItemManagerView::Draw,0x0041D340,function
 th095::PhotoItemManagerView::OnUpdate,0x0041D3D0,function
 th095::PhotoItemManagerView::OnDraw,0x0041D430,function
 th095::PhotoItemManagerView::Spawn,0x0041D460,function
+th095::PhotoEffectManagerView::PhotoEffectManagerView,0x0041D580,function
+th095::PhotoEffectBaseView::PhotoEffectBaseView,0x0041D5C0,function
+th095::PhotoEffectBaseView::Initialize,0x0041D610,function
+th095::PhotoEffectBaseView::Cleanup,0x0041D620,function
+th095::PhotoEffectBaseView::CountPhotoTargets,0x0041D660,function
+th095::PhotoEffectBaseView::CountNearbyTargets,0x0041D670,function
+th095::PhotoEffectManagerView::Initialize,0x0041D680,function
+th095::PhotoEffectManagerView::~PhotoEffectManagerView,0x0041D6D0,function
+th095::PhotoEffectManagerView::Create,0x0041D790,function
+th095::PhotoEffectManagerView::Destroy,0x0041D8D0,function
