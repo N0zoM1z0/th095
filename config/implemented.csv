@@ -236,3 +236,9 @@ th095::PhotoGameUpdateView::AngleFromPoint
 th095::PhotoGameUpdateView::CheckBulletCollision
 th095::PhotoGameUpdateView::CalcLaserHitbox
 th095::PhotoGameUpdateView::Die
+th095::PhotoEnemyManagerView::OnUpdate
+th095::PhotoEnemyView::IntegrateMovement
+th095::PhotoEnemyView::ClampPosition
+th095::PhotoEnemyView::UpdatePhotoMarkerPulse
+th095::PhotoEnemyView::Deactivate
+th095::PhotoToScreen

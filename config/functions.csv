@@ -141,21 +141,21 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x004154E0,480,0x004156BF,FUN_004154e0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004156C0,350,0x0041581D,FUN_004156c0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00415820,336,0x0041596F,FUN_00415820,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00415970,1853,0x004160AC,FUN_00415970,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004160B0,308,0x004161E3,FUN_004160b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00415970,1853,0x004160AC,FUN_00415970,th095::PhotoEnemyManagerView::OnUpdate,EnemyManager,reconstructed,0.00,__fastcall,i32 PhotoEnemyManagerView::OnUpdate(PhotoEnemyManagerView *enemyManager),false,src/EnemyManagerUpdate.cpp,Pinned VC7.1 semantic reconstruction emits 1640 bytes versus the 1853-byte target after complete target-local control-flow recovery,authored,Complete 128-slot TH095 enemy update timeline ECL movement photo-marker VM collision culling draw-group and timer loop; compiler inline-temporary shape remains non-exact
+0x004160B0,308,0x004161E3,FUN_004160b0,th095::PhotoEnemyView::IntegrateMovement,EnemyManager,matching,100.00,__thiscall,void PhotoEnemyView::IntegrateMovement(),false,src/EnemyManagerUpdate.cpp,Canonical relocation-aware VC7.1 comparison: 308/308 bytes and four relocations,authored,Exact D3DX position-delta previous-position and game-speed velocity integration
 0x004161F0,56,0x00416227,FUN_004161f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00416230,93,0x0041628C,FUN_00416230,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00416290,81,0x004162E0,FUN_00416290,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004162F0,45,0x0041631C,FUN_004162f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00416320,208,0x004163EF,FUN_00416320,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00416320,208,0x004163EF,FUN_00416320,th095::PhotoEnemyView::ClampPosition,EnemyManager,matching,100.00,__thiscall,void PhotoEnemyView::ClampPosition(),false,src/EnemyManagerUpdate.cpp,Canonical relocation-free VC7.1 comparison: 208/208 bytes,authored,Exact optional XY clamp against the target-local enemy movement bounds
 0x004163F0,818,0x00416721,FUN_004163f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00416770,101,0x004167D4,FUN_00416770,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00416770,101,0x004167D4,FUN_00416770,th095::PhotoEnemyView::UpdatePhotoMarkerPulse,EnemyManager,matching,100.00,__thiscall,void PhotoEnemyView::UpdatePhotoMarkerPulse(),false,src/EnemyManagerUpdate.cpp,Canonical relocation-aware VC7.1 comparison: 101/101 bytes and one relocation,authored,Exact photo-marker pulse countdown and visibility-bit retirement
 0x004167E0,48,0x0041680F,FUN_004167e0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00416810,188,0x004168CB,FUN_00416810,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004168D0,1274,0x00416DC9,FUN_004168d0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00416DD0,92,0x00416E2B,FUN_00416dd0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00416E30,73,0x00416E78,FUN_00416e30,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00416E80,175,0x00416F2E,FUN_00416e80,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00416E80,175,0x00416F2E,FUN_00416e80,th095::PhotoEnemyView::Deactivate,EnemyManager,matching,100.00,__thiscall,void PhotoEnemyView::Deactivate(),false,src/EnemyManagerUpdate.cpp,Canonical relocation-aware VC7.1 comparison: 175/175 bytes and five relocations,authored,Exact VM retirement sixteen-allocation cleanup and full 0x4CC0 enemy reset
 0x00416F30,309,0x00417064,FUN_00416f30,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00417070,121,0x004170E8,FUN_00417070,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004170F0,521,0x004172F8,FUN_004170f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
@@ -178,7 +178,7 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00418420,617,0x00418688,FUN_00418420,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00418690,19,0x004186A2,FUN_00418690,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004186B0,19,0x004186C2,FUN_004186b0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004186D0,71,0x00418716,FUN_004186d0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x004186D0,71,0x00418716,FUN_004186d0,th095::PhotoToScreen,GameCoordinates,matching,100.00,__fastcall,Float3 *PhotoToScreen(Float3 *output; const Float3 *position),false,src/GameCoordinates.cpp,Canonical relocation-aware VC7.1 comparison: 71/71 bytes and three relocations,authored,Exact TH095 world-to-screen translation used by enemy photo and rendering paths
 0x00418720,471,0x004188F6,FUN_00418720,th095::GameConfiguration::Initialize,Main,matching,100.00,__thiscall,void GameConfiguration::Initialize(),false,src/Main.cpp,main-config-initialize canonical VC7.1 relocation replay,authored,Exact 200-byte reset defaults and runtime-to-serialized controller mapping
 0x00418900,99,0x00418962,FUN_00418900,th095::ChainElem::ChainElem,Chain,matching,100.00,__thiscall,ChainElem::ChainElem(),false,src/Global.cpp,Canonical relocation-free VC7.1 comparison: 99/99 bytes,authored,Exact intrusive chain node constructor
 0x00418970,82,0x004189C1,FUN_00418970,th095::ChainElem::~ChainElem,Chain,matching,100.00,__thiscall,ChainElem::~ChainElem(),false,src/Global.cpp,Canonical relocation-free VC7.1 comparison: 82/82 bytes,authored,Exact callback-aware intrusive chain node destructor

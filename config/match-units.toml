@@ -8758,3 +8758,70 @@ relocations = [
   { offset = 0x249, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
   { offset = 0x258, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoStageSaveDataView@1@A", target = 0x004C4E78 },
 ]
+
+[units.enemy-integrate-movement]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyView::IntegrateMovement"]
+symbol = "?IntegrateMovement@PhotoEnemyView@th095@@QAEXXZ"
+target_address = 0x004160B0
+size = 0x134
+relocations = [
+  { offset = 0xAF, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0xD2, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0xF3, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x114, type = "DIR32", symbol = "?g_GameSpeed@th095@@3MA", target = 0x004BDED8 },
+]
+
+[units.enemy-clamp-position]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyView::ClampPosition"]
+symbol = "?ClampPosition@PhotoEnemyView@th095@@QAEXXZ"
+target_address = 0x00416320
+size = 0xD0
+relocations = []
+
+[units.enemy-update-photo-marker-pulse]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyView::UpdatePhotoMarkerPulse"]
+symbol = "?UpdatePhotoMarkerPulse@PhotoEnemyView@th095@@QAEXXZ"
+target_address = 0x00416770
+size = 0x65
+relocations = [
+  { offset = 0x35, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+]
+
+[units.enemy-deactivate]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyView::Deactivate"]
+symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ"
+target_address = 0x00416E80
+size = 0xAF
+relocations = [
+  { offset = 0x28, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x2D, type = "REL32", symbol = "?MarkVmForDeletion@AnmManager@th095@@QAEXUAnmVmId@2@@Z", target = 0x004451B0 },
+  { offset = 0x4F, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x54, type = "REL32", symbol = "?MarkVmForDeletion@AnmManager@th095@@QAEXUAnmVmId@2@@Z", target = 0x004451B0 },
+  { offset = 0x95, type = "REL32", symbol = "_free", target = 0x004854BE },
+]
+
+[units.photo-to-screen]
+source = "src/GameCoordinates.cpp"
+object = "build/matching/GameCoordinates.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoToScreen"]
+symbol = "?PhotoToScreen@th095@@YIPAUFloat3@1@PAU21@PBU21@@Z"
+target_address = 0x004186D0
+size = 0x47
+relocations = [
+  { offset = 0x13, type = "DIR32", symbol = "__real@43000000", target = 0x00495334 },
+  { offset = 0x19, type = "DIR32", symbol = "__real@43400000", target = 0x00495330 },
+  { offset = 0x2A, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
+]
