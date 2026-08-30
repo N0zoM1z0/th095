@@ -369,3 +369,8 @@ th095::PhotoBulletManagerView::Update
 th095::PhotoBulletManagerView::Draw
 th095::PhotoBulletManagerView::DrawBucket
 th095::PhotoBulletManagerView::OnDraw
+th095::CubicHermiteInterpolate
+th095::Background::SetPhotoArea
+th095::Background::StartSpellBackground
+th095::Background::StopSpellBackground
+th095::Supervisor::ConfigureGameplayViewport

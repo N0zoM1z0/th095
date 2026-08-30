@@ -10623,3 +10623,65 @@ relocations = [
   { offset = 0x8, type = "DIR32", symbol = "?g_PhotoBulletGlobalState@th095@@3PAUPhotoBulletGlobalStateView@1@A", target = 0x004BDEC8 },
   { offset = 0x25, type = "REL32", symbol = "?Draw@PhotoBulletManagerView@th095@@QAEHXZ", target = 0x004058C0 },
 ]
+
+[units.background-cubic-hermite]
+source = "src/Background.cpp"
+object = "build/matching/Background.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CubicHermiteInterpolate"]
+symbol = "?CubicHermiteInterpolate@th095@@YGMMMMMM@Z"
+target_address = 0x004048B0
+size = 0x98
+relocations = [
+  { offset = 0xB, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x14, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x1C, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
+  { offset = 0x25, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x36, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
+  { offset = 0x3F, type = "DIR32", symbol = "__real@40400000", target = 0x0049539C },
+  { offset = 0x4A, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x53, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x67, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+]
+
+[units.background-start-spell]
+source = "src/Background.cpp"
+object = "build/matching/Background.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Background::StartSpellBackground"]
+symbol = "?StartSpellBackground@Background@th095@@QAEXXZ"
+target_address = 0x00404A30
+size = 0x8F
+relocations = [
+  { offset = 0x36, type = "DIR32", symbol = "?g_BackgroundRuntime@th095@@3PAUBackgroundRuntimeView@1@A", target = 0x004BDDC0 },
+  { offset = 0x41, type = "REL32", symbol = "?CreateVm@BackgroundAnmSpawnerView@th095@@QAE?AUAnmVmId@2@HPAUFloat3@2@@Z", target = 0x00445060 },
+  { offset = 0x71, type = "DIR32", symbol = "?g_BackgroundRuntime@th095@@3PAUBackgroundRuntimeView@1@A", target = 0x004BDDC0 },
+  { offset = 0x7C, type = "REL32", symbol = "?CreateVm@BackgroundAnmSpawnerView@th095@@QAE?AUAnmVmId@2@HPAUFloat3@2@@Z", target = 0x00445060 },
+]
+
+[units.background-stop-spell]
+source = "src/Background.cpp"
+object = "build/matching/Background.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Background::StopSpellBackground"]
+symbol = "?StopSpellBackground@Background@th095@@QAEXXZ"
+target_address = 0x00404AC0
+size = 0x42
+relocations = [
+  { offset = 0x20, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x25, type = "REL32", symbol = "?MarkVmForDeletion@AnmManager@th095@@QAEXUAnmVmId@2@@Z", target = 0x004451B0 },
+  { offset = 0x35, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x3A, type = "REL32", symbol = "?MarkVmForDeletion@AnmManager@th095@@QAEXUAnmVmId@2@@Z", target = 0x004451B0 },
+]
+
+[units.supervisor-configure-gameplay-viewport]
+source = "src/SupervisorViewport.cpp"
+object = "build/matching/SupervisorViewport.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Supervisor::ConfigureGameplayViewport"]
+symbol = "?ConfigureGameplayViewport@Supervisor@th095@@QAEXH@Z"
+target_address = 0x00404B10
+size = 0x6C
+relocations = [
+  { offset = 0x31, type = "REL32", symbol = "?ApplyGameplayViewport@SupervisorViewportView@th095@@QAEXPAUGameplayViewportConfiguration@2@@Z", target = 0x00425910 },
+]

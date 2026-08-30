@@ -10,14 +10,14 @@
 - Tracking: the attested Ghidra project exported 1,830 candidates and a private
   architecture inventory with 3,873 direct call edges. Major main/ANM/ECL/
   sound roots are mapped; unreviewed candidates remain provisional.
-- Reconstruction: 303 canonical units cover 125,143 authored bytes.
+- Reconstruction: 307 canonical units cover 125,612 authored bytes.
   `AnmManager::ExecuteScript` at `0x0043A600` is exact for its complete
   17,018-byte authored body; the unit compares 17,426 bytes so its three
   compiler-owned switch tables and all 333 relocations are also enforced.
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 50.38% (125,143 / 248,388)
+  relocations. Confirmed authored-byte coverage is now 50.43% (125,612 / 249,066)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -25,8 +25,8 @@
   ten gameplay/resource functions (25,601 bytes). The exact best-shot record
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The current ledger
-  confirms 371 authored candidates, excludes seven compiler-owned static
-  wrappers, and leaves 1,452 origin/boundary reviews pending. Original class
+  confirms 376 authored candidates, excludes seven compiler-owned static
+  wrappers, and leaves 1,447 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -494,19 +494,33 @@ slots and the final state-five sentinel, and registers both Chain nodes at
 priority 14.
 
 The 29-caller `AnmLoaded::InitializeVm @ 0x00404B80` is now correctly owned by
-the dedicated `AnmLoaded.cpp` ANM component, not BulletManager. Its exact-sized 222-byte body matches
-210/214 comparable bytes and both relocations; only an original eight-byte
-extra frame reservation changes four displacement bytes. `OnUpdate @
+the dedicated `AnmLoaded.cpp` ANM component, not BulletManager. Its exact-sized
+222-byte body matches 210/214 comparable bytes and both relocations; only an
+original eight-byte extra frame reservation changes four displacement bytes. `OnUpdate @
 0x004059C0` is exact-sized with all three relocations and 49/50 comparable
 bytes; its sole residual is VC7.1 choosing the opposite destination register
 for a commutative OR. Keep both semantic rather than manufacturing storage or
 assembly.
 
-Next review the adjacent `0x004048B0..0x00404B7B` bullet descriptor/template
-helpers, then use the now-closed manager ownership graph to select the next
-high-connectivity TH095-specific caller lane. Preserve the independently exact
-`PhotoToScreen @ 0x004186D0` bridge and the GameTask, FrontInf, bullet spawn,
-movement, bullet-photography, CardInf, and lifecycle units.
+The adjacent `0x004048B0..0x00404B7B` range is no longer misclassified as
+bullet helpers. Four canonical units contribute 469 exact bytes: the inherited
+Hermite interpolation basis, `Background::StartSpellBackground`,
+`Background::StopSpellBackground`, and
+`Supervisor::ConfigureGameplayViewport`. The TH095 BackgroundInf pointer is at
+`0x004BDD90`; its spell-photo state is at `+0x175C`, the camera rectangle at
+`+0x1764..+0x177F`, three persistent border VMs at `+0x1780`, and two dynamic
+spell VM ids at `+0x1FE4/+0x1FE8`. `SetPhotoArea @ 0x00404950` is complete but
+non-exact because the target reserves an otherwise unreferenced `0x88` stack
+frame; its natural semantic probe emits 180 versus 209 bytes and resolves all
+six dependencies.
+
+Next take the actual high-connectivity BackgroundInf spine, beginning with
+`OnUpdate @ 0x00403440` (5,129 bytes, six internal callees) and its constructor/
+lifecycle range at `0x004020C0..0x00403431`. Use the TH08 background source for
+ancestry only: TH095's `0x201C` object and photography-mask path are target-
+specific. Preserve the independently exact `PhotoToScreen @ 0x004186D0` bridge
+and the GameTask, FrontInf, bullet spawn, movement, bullet-photography, CardInf,
+and lifecycle units.
 
 ## Closed lanes and preservation constraints
 

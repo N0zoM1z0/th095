@@ -370,3 +370,8 @@ th095::PhotoBulletManagerView::Draw,0x004058C0,function
 th095::PhotoBulletManagerView::DrawBucket,0x00405900,function
 th095::PhotoBulletManagerView::OnUpdate,0x004059C0,function
 th095::PhotoBulletManagerView::OnDraw,0x00405A00,function
+th095::CubicHermiteInterpolate,0x004048B0,function
+th095::Background::SetPhotoArea,0x00404950,function
+th095::Background::StartSpellBackground,0x00404A30,function
+th095::Background::StopSpellBackground,0x00404AC0,function
+th095::Supervisor::ConfigureGameplayViewport,0x00404B10,function
