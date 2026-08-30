@@ -19,6 +19,7 @@ struct AnmLoaded;
 struct Float3;
 struct FrontEndControllerView;
 struct PhotoGameTaskView;
+struct DummyMidiTimer;
 
 typedef signed char i8;
 typedef unsigned char u8;
@@ -124,8 +125,8 @@ struct GameConfiguration
     u8 unknown0b2;
     u8 unknown0b3;
     u8 unknown0b4;
-    u8 musicVolume;       // +0xb5
-    u8 sfxVolume;         // +0xb6
+    i8 musicVolume;       // +0xb5
+    i8 sfxVolume;         // +0xb6
     u8 unknown0b7[0x0d];
     GameConfigOptions options;  // +0xc4
 
@@ -193,7 +194,7 @@ struct Supervisor
     D3DXMATRIX projectionMatrix;                // +0x08c
     D3DVIEWPORT8 viewport;                      // +0x0cc
     D3DPRESENT_PARAMETERS presentParameters;    // +0x0e4
-    u8 unknown118[4];
+    DummyMidiTimer *dummyMidiTimer;              // +0x118
     GameConfiguration config;                   // +0x11c
     u8 unknown1e4[0x220];
     i32 calcCount;                              // +0x404
@@ -206,13 +207,19 @@ struct Supervisor
     i32 couldSetRefreshRate;                    // +0x430
     i32 lastFrameTime;                          // +0x434
     MidiOutput *midiOutput;                     // +0x438
-    u8 unknown43c[4];
+    AnmLoaded *textAnm;                          // +0x43c
     AnmLoaded *loadingAnm;                       // +0x440
     SupervisorFlags flags;                      // +0x444
     DWORD totalPlayTime;                         // +0x448
     DWORD systemTime;                            // +0x44c
     D3DCAPS8 d3dCaps;                           // +0x450
-    u8 unknownAfterCaps[0x660 - 0x450 - sizeof(D3DCAPS8)];
+    u8 unknownAfterCaps[0x648 - 0x450 - sizeof(D3DCAPS8)];
+    HANDLE replayScanThreadHandle;               // +0x648
+    u32 replayScanThreadId;                      // +0x64c
+    i32 replayScanStopRequested;                 // +0x650
+    i32 replayScanActive;                        // +0x654
+    void (__fastcall *replayScanThreadProc)(void *); // +0x658
+    u8 unknown65c[4];
     i32 startupThreadState;                      // +0x660
     CRITICAL_SECTION criticalSections[7];       // +0x664
     u8 unknown70c[5];
@@ -251,6 +258,7 @@ struct Supervisor
     static i32 CheckFps();
     void SetupLoadingVms(Float3 *position);
     i32 StartReplayScan(void (__fastcall *callback)(void *), void *argument);
+    void StopReplayScan();
     static void __fastcall StartupThread(Supervisor *s);
     void DisableFog();
     void ThreadClose();
@@ -283,10 +291,14 @@ struct Supervisor
 #pragma pack(pop)
 
 typedef char SupervisorPresentAtE4[(offsetof(Supervisor, presentParameters) == 0xe4) ? 1 : -1];
+typedef char SupervisorDummyMidiTimerAt118[(offsetof(Supervisor, dummyMidiTimer) == 0x118) ? 1 : -1];
 typedef char SupervisorControllerCapsAt18[(offsetof(Supervisor, controllerCaps) == 0x18) ? 1 : -1];
 typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 : -1];
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
 typedef char SupervisorLoadingAnmAt440[(offsetof(Supervisor, loadingAnm) == 0x440) ? 1 : -1];
+typedef char SupervisorTextAnmAt43C[(offsetof(Supervisor, textAnm) == 0x43c) ? 1 : -1];
+typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanThreadHandle) == 0x648) ? 1 : -1];
+typedef char SupervisorReplayScanStopAt650[(offsetof(Supervisor, replayScanStopRequested) == 0x650) ? 1 : -1];
 typedef char SupervisorStartupThreadStateAt660[(offsetof(Supervisor, startupThreadState) == 0x660) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
 typedef char SupervisorLoadingVmsAt714[(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x714) ? 1 : -1];
@@ -320,7 +332,16 @@ struct SoundPlayer
     void JoinThread();
     i32 Release();
     i32 ProcessQueues();
+    i32 LoadFmt(char *path);
+    void QueueCommand(i32 opcode, i32 argument, char *path);
+
+    u8 unknown000[0x52c4];
+    i32 bgmVolume;                           // +0x52c4
+    i32 sfxVolume;                           // +0x52c8
+    i32 unconsumedBgmAttenuation;            // +0x52cc
 };
+
+typedef char MainSoundPlayerBgmVolumeAt52C4[(offsetof(SoundPlayer, bgmVolume) == 0x52c4) ? 1 : -1];
 
 struct Chain
 {

@@ -424,3 +424,5 @@ th095::Supervisor::ReleaseGameManagers,0x00423D00,function
 th095::Supervisor::AddedCallback,0x00423E70,function
 th095::Supervisor::LoadDat,0x00423FB0,function
 th095::Supervisor::CheckFps,0x00424050,function
+th095::Supervisor::StartupThread,0x004242B0,function
+th095::Supervisor::DeletedCallback,0x004244D0,function

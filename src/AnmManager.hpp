@@ -626,6 +626,7 @@ struct AnmManager
     AnmManager();
     ~AnmManager();
     AnmLoaded *LoadAnm(i32 anmIdx, const char *path);
+    AnmLoaded *PreloadAnm(i32 anmIdx, const char *path);
     i32 LoadSurface(i32 surfaceIndex, const char *path);
     void SetupVertexBuffer();
     void ReleaseAnm(i32 anmIdx);

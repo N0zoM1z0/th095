@@ -34,6 +34,7 @@ extern SupervisorGameTaskView *g_SupervisorGameTask;
 struct SupervisorInputWorkerView
 {
     void Start(void (__fastcall *callback)(void *), void *argument);
+    void Stop();
 };
 
 struct FrontEndControllerView
@@ -49,11 +50,35 @@ struct PhotoGameTaskView
 struct TextHelperView
 {
     static void CreateTextBuffer();
+    static void ReleaseTextBuffer();
 };
+
+struct MidiTimer
+{
+    MidiTimer();
+    ~MidiTimer();
+    virtual void OnTimerElapsed();
+    void StartTimer();
+    void StopTimer();
+
+    UINT timerId;
+    TIMECAPS timeCaps;
+};
+
+struct DummyMidiTimer : MidiTimer
+{
+    ~DummyMidiTimer();
+    virtual void OnTimerElapsed();
+    u32 unknown010;
+};
+
+typedef char MainMidiTimerSizeIs10[(sizeof(MidiTimer) == 0x10) ? 1 : -1];
+typedef char MainDummyMidiTimerSizeIs14[(sizeof(DummyMidiTimer) == 0x14) ? 1 : -1];
 
 struct PbgArchiveView
 {
     bool Load(const char *path);
+    void Release();
 };
 
 extern SupervisorInputWorkerView g_SupervisorInputWorker;
@@ -61,7 +86,14 @@ extern PbgArchiveView g_PbgArchive;
 extern u32 g_PhotoScreenFadeColor;
 
 void InitializeScoreData();
+void ReleaseScoreData();
 HANDLE StartSoundLoadThread();
+i32 ReleasePhotoBulletAnm();
+i32 ReleaseResultAnm();
+i32 ReleaseReplayAnm();
+i32 ReleasePhotoFrontAnm();
+void ReleaseSceneSelectAnms();
+i32 ReleasePhotoPlayerAnm();
 }
 
 #define d3dDeviceStatus restartCommandProcessingLocal05
@@ -1539,6 +1571,148 @@ i32 Supervisor::CheckFps()
 #undef fps
 #undef averageIndex
 #undef average
+
+// FUNCTION: TH095 0x004242B0.
+void __fastcall Supervisor::StartupThread(Supervisor *s)
+{
+    f32 volume;
+
+    g_AnmGameSpeed = 1.0f;
+    g_Supervisor.suppressFpsDisplay = 0;
+    g_Supervisor.screenTransitionCountdown = 0;
+    g_Supervisor.textAnm = g_AnmManager->PreloadAnm(0, "text.anm");
+    if (g_Supervisor.textAnm == NULL)
+    {
+        goto error;
+    }
+
+    if (AsciiManager::RegisterChain() != 0)
+    {
+        g_GameErrorContext.Log(
+            "error : \x95\xb6\x8e\x9a\x82\xcc\x8f\x89\x8a\xfa\x89\xbb\x82\xc9\x8e\xb8\x94\x73\x82\xb5\x82\xdc\x82\xb5\x82\xbd\r\n");
+        goto error;
+    }
+
+    if (g_SoundPlayer.LoadFmt("bgm/thbgm.fmt") != 0)
+    {
+        g_GameErrorContext.Log(
+            "error : BGM \x82\xcc\x8f\x89\x8a\xfa\x89\xbb\x82\xc9\x8e\xb8\x94\x73\x82\xb5\x82\xdc\x82\xb5\x82\xbd\r\n");
+    }
+
+    g_SoundPlayer.bgmVolume = g_Supervisor.config.musicVolume;
+    g_SoundPlayer.sfxVolume = g_Supervisor.config.sfxVolume;
+    volume = (f32)g_SoundPlayer.bgmVolume / 100.0f;
+    if (g_SoundPlayer.sfxVolume != 0)
+    {
+        volume = 1.0f - volume;
+        volume *= volume;
+        volume *= volume;
+        volume = 1.0f - volume;
+        g_SoundPlayer.unconsumedBgmAttenuation =
+            (i32)(5000.0f * volume) - 5000;
+    }
+    else
+    {
+        g_SoundPlayer.unconsumedBgmAttenuation = -10000;
+    }
+
+    if (g_Supervisor.flags.dummyMidiTimerEnabled)
+    {
+        g_Supervisor.dummyMidiTimer = new DummyMidiTimer();
+        if (g_Supervisor.dummyMidiTimer != NULL)
+        {
+            g_Supervisor.dummyMidiTimer->StartTimer();
+        }
+    }
+
+    g_Supervisor.ThreadClose();
+    g_Supervisor.startupThreadState = 0;
+    g_Supervisor.flags.scoreBackupPending = 0;
+    g_Supervisor.replayScanActive = 0;
+    g_Supervisor.replayScanStopRequested = 1;
+    return;
+
+error:
+    g_Supervisor.ThreadClose();
+    g_Supervisor.startupThreadState = 2;
+    g_Supervisor.flags.receivedCloseMsg = 1;
+    g_Supervisor.replayScanActive = 0;
+    g_Supervisor.replayScanStopRequested = 1;
+}
+
+// FUNCTION: TH095 0x004244D0.
+i32 __fastcall Supervisor::DeletedCallback(void *arg)
+{
+    g_SupervisorInputWorker.Stop();
+    g_SoundPlayer.RequestThreadStop();
+    g_Supervisor.StopReplayScan();
+
+    if (g_Supervisor.versionData != NULL)
+    {
+        void *versionData = g_Supervisor.versionData;
+        free(versionData);
+        g_Supervisor.versionData = NULL;
+    }
+
+    ((Supervisor *)arg)->ReleaseGameManagers();
+    ReleasePhotoBulletAnm();
+    ReleaseResultAnm();
+    ReleaseReplayAnm();
+    ReleasePhotoFrontAnm();
+    ReleaseSceneSelectAnms();
+    ReleasePhotoPlayerAnm();
+    ReleaseScoreData();
+
+    AnmManager *anmManager = g_AnmManager;
+    if (anmManager->quadVertexBuffer != NULL)
+    {
+        anmManager->quadVertexBuffer->Release();
+        anmManager->quadVertexBuffer = NULL;
+    }
+    g_AnmManager->ReleaseAnm(0);
+    g_AnmManager->ReleaseAnm(2);
+    g_AnmManager->ReleaseSurface(8);
+    AsciiManager::CutChain();
+    g_SoundPlayer.QueueCommand(4, 0, "dummy");
+    TextHelperView::ReleaseTextBuffer();
+
+    if (((Supervisor *)arg)->keyboard != NULL)
+    {
+        utils::DebugPrint("DirectInput Release\n");
+        ((Supervisor *)arg)->keyboard->Unacquire();
+        if (((Supervisor *)arg)->keyboard != NULL)
+        {
+            ((Supervisor *)arg)->keyboard->Release();
+            ((Supervisor *)arg)->keyboard = NULL;
+        }
+    }
+
+    if (((Supervisor *)arg)->controller != NULL)
+    {
+        utils::DebugPrint("DirectInput(Pad) Release\n");
+        ((Supervisor *)arg)->controller->Unacquire();
+        if (((Supervisor *)arg)->controller != NULL)
+        {
+            ((Supervisor *)arg)->controller->Release();
+            ((Supervisor *)arg)->controller = NULL;
+        }
+    }
+
+    if (((Supervisor *)arg)->directInput != NULL)
+    {
+        ((Supervisor *)arg)->directInput->Release();
+        ((Supervisor *)arg)->directInput = NULL;
+    }
+
+    g_PbgArchive.Release();
+    if (g_Supervisor.dummyMidiTimer != NULL)
+    {
+        g_Supervisor.dummyMidiTimer->StopTimer();
+        delete g_Supervisor.dummyMidiTimer;
+        g_Supervisor.dummyMidiTimer = NULL;
+    }
+    return 0;
+}
 
 void Supervisor::InitializeCriticalSections()
 {

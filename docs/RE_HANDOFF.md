@@ -17,7 +17,7 @@
 - `EclManager::RunEcl` at `0x00408E70` is exact for its complete 27,091-byte
   authored body. Its canonical unit compares 27,747 bytes and enforces the
   158-entry main opcode table, six-entry easing table, and all 647 COFF
-  relocations. Confirmed authored-byte coverage is now 49.54% (131,944 / 266,335)
+  relocations. Confirmed authored-byte coverage is now 49.34% (131,944 / 267,417)
   while the global origin denominator remains provisional.
 - A target-local boundary and call-graph audit has promoted 32 additional
   authored functions totaling 55,476 bytes: eleven photography/camera functions
@@ -26,8 +26,8 @@
   reset has since promoted one more authored function. This intentionally reduced
   the percentage while expanding the honest denominator. The source-present
   Background stage interpreter adds another 5,129 target-authored bytes. The
-  current ledger confirms 425 authored candidates, excludes eight compiler-owned
-  wrappers, and leaves 1,397 origin/boundary reviews pending. Original class
+  current ledger confirms 427 authored candidates, excludes eight compiler-owned
+  wrappers, and leaves 1,395 origin/boundary reviews pending. Original class
   names remain unresolved where target evidence is insufficient.
 - The asynchronous SoundPlayer core is exact from worker startup through SFX
   production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
@@ -617,9 +617,19 @@ source-present for its complete 151-byte archive/version gate and proves the
 version-data fields at Supervisor `+0x774/+0x778`. Its exact-sized VC7.1 probe
 matches 65/91 comparable bytes, but the target's four-byte local buffer-home
 gap remains conservatively uncredited rather than represented by inert padding.
-Continue with `StartupThread @ 0x004242B0`, then `DeletedCallback @ 0x004244D0`;
-preserve every established Main, Background, ECL, ANM, photography, and ASCII
-exact unit while the shared headers change.
+`StartupThread @ 0x004242B0` and `DeletedCallback @ 0x004244D0` are now
+source-present for their complete 532/550-byte bodies. Their exact-sized VC7.1
+probes resolve every one of 57/43 relocations and match 299/304 plus 364/378
+comparable bytes. The startup worker proves signed volume publication, quartic
+BGM attenuation, optional dummy-MIDI timing, `textAnm +0x43C`, and replay-worker
+completion. The teardown callback closes the inverse ownership graph through
+workers, managers, seven resource owners, ANM/ASCII/sound/text, DirectInput,
+PBG, and the dummy MIDI timer at `+0x118`. The residual bytes only cover unused
+EH space or four compiler-local homes; do not add inert locals for exact credit.
+Continue with `ThreadClose @ 0x00425150` and the adjacent dummy-MIDI destructor
+at `0x00424700`, then resume the remaining Main inventory. Preserve every
+established Main, Background, ECL, ANM, photography, and ASCII exact unit while
+the shared headers change.
 
 ## Closed lanes and preservation constraints
 
