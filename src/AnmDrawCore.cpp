@@ -15,6 +15,14 @@ struct AnmSupervisorDrawView
     AnmViewportConfigurationView *currentViewport;
 };
 
+struct AnmSpriteDimensions
+{
+    f32 width;
+    f32 halfHeight;
+    f32 height;
+    f32 halfWidth;
+};
+
 static __forceinline u8 MixAnmColor(u8 first, u8 second)
 {
     u32 value = (u32)first * (u32)second >> 7;
@@ -235,6 +243,126 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
     this->SetRenderStateForVm(vm);
     this->AddSpriteToDrawBuffer(g_AnmTexturedVertices);
     return ZUN_SUCCESS;
+}
+
+// FUNCTION: TH095 0x0043F4A0.
+ZunResult AnmManager::DrawNoRotation(AnmVm *vm)
+{
+    AnmSpriteDimensions sprite;
+    sprite.width = vm->spriteSize.x * vm->scale.x;
+    sprite.height = vm->spriteSize.y * vm->scale.y;
+    sprite.halfWidth = sprite.width / 2.0f;
+    sprite.halfHeight = sprite.height / 2.0f;
+
+    switch (vm->renderStateA)
+    {
+    case 1:
+        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+            vm->position.x + vm->positionOffset.x;
+        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
+            vm->position.x + vm->positionOffset.x + sprite.width;
+        break;
+    case 0:
+        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+            (f32)floor(vm->position.x + vm->positionOffset.x -
+                       sprite.halfWidth);
+        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
+            g_AnmTexturedVertices[0].x + sprite.width;
+        break;
+    case 2:
+        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+            vm->position.x + vm->positionOffset.x - sprite.width;
+        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
+            vm->position.x + vm->positionOffset.x;
+        break;
+    }
+
+    switch (vm->renderStateB)
+    {
+    case 1:
+        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+            vm->position.y + vm->positionOffset.y;
+        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
+            vm->position.y + vm->positionOffset.y + sprite.height;
+        break;
+    case 0:
+        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+            (f32)floor(vm->position.y + vm->positionOffset.y -
+                       sprite.halfHeight);
+        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
+            g_AnmTexturedVertices[0].y + sprite.height;
+        break;
+    case 2:
+        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+            vm->position.y + vm->positionOffset.y - sprite.height;
+        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
+            vm->position.y + vm->positionOffset.y;
+        break;
+    }
+
+    g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
+        g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
+            vm->position.z + vm->positionOffset.z;
+    return this->DrawInner(vm, 1);
+}
+
+// FUNCTION: TH095 0x0043F760.
+ZunResult AnmManager::DrawNoRotationNoRound(AnmVm *vm)
+{
+    AnmSpriteDimensions sprite;
+    sprite.width = vm->spriteSize.x * vm->scale.x;
+    sprite.height = vm->spriteSize.y * vm->scale.y;
+    sprite.halfWidth = sprite.width / 2.0f;
+    sprite.halfHeight = sprite.height / 2.0f;
+
+    switch (vm->renderStateA)
+    {
+    case 1:
+        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+            vm->position.x + vm->positionOffset.x;
+        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
+            vm->position.x + vm->positionOffset.x + sprite.width;
+        break;
+    case 0:
+        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+            vm->position.x + vm->positionOffset.x - sprite.halfWidth;
+        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
+            g_AnmTexturedVertices[0].x + sprite.width;
+        break;
+    case 2:
+        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+            vm->position.x + vm->positionOffset.x - sprite.width;
+        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
+            vm->position.x + vm->positionOffset.x;
+        break;
+    }
+
+    switch (vm->renderStateB)
+    {
+    case 1:
+        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+            vm->position.y + vm->positionOffset.y;
+        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
+            vm->position.y + vm->positionOffset.y + sprite.height;
+        break;
+    case 0:
+        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+            vm->position.y + vm->positionOffset.y - sprite.halfHeight;
+        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
+            g_AnmTexturedVertices[0].y + sprite.height;
+        break;
+    case 2:
+        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+            vm->position.y + vm->positionOffset.y - sprite.height;
+        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
+            vm->position.y + vm->positionOffset.y;
+        break;
+    }
+
+    g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
+        g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
+            vm->position.z + vm->positionOffset.z;
+    return this->DrawInner(vm, 0);
 }
 
 // FUNCTION: TH095 0x0043F3C0.

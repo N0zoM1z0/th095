@@ -489,8 +489,15 @@ promote it. Its exact `SetRenderStateForVm3D`, `SetRenderStateForVm`, and
 relocations. The shared-header cold rebuild shifted 159 unique compiler-local
 labels; every changed relocation retained its offset, type, and target, and
 all fourteen `AnmManager.obj` units replay exact after the manifest-only
-rename. Continue through the seven immediate draw-mode callers beginning at
-`0x0043F4A0/0x0043F760`, which now have an exact state/batch foundation.
+rename. The first two immediate draw-mode callers are now canonical exact:
+`DrawNoRotation @ 0x0043F4A0` floors only centered X/Y before requesting the
+half-pixel path, while `DrawNoRotationNoRound @ 0x0043F760` preserves
+subpixel placement. Both implement all three target-specific horizontal and
+vertical alignment values, include `positionOffset`, and contribute 1,354
+bytes with all 98 relocations replayed. Their exact source shape uses a
+truthful four-field sprite-dimensions aggregate to reproduce VC7.1's local
+layout. Continue at `TranslateRotation @ 0x0043FA00` and the rotated `Draw2D @
+0x0043FA40`, then close the remaining immediate draw-mode callers.
 
 The high-connectivity `GameTaskInf` lifecycle and runtime coordinator is now
 closed exactly from `PhotoGameTaskView::PhotoGameTaskView @ 0x004179D0`

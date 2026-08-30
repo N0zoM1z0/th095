@@ -184,3 +184,5 @@ address,name,module,confidence,evidence
 0x0043EC20,th095::AnmManager::SetRenderStateForVm,AnmManager,exact,Canonical two-dimensional blend-state helper
 0x0043ECD0,th095::AnmManager::DrawInner,AnmManager,high,Complete seven-caller screen-space quad culling and batching hub
 0x0043F3C0,th095::AnmManager::AddSpriteToDrawBuffer,AnmManager,exact,Canonical quad-to-triangle-list batch expansion
+0x0043F4A0,th095::AnmManager::DrawNoRotation,AnmManager,exact,Canonical rounded axis-aligned quad placement with target-specific three-way alignment
+0x0043F760,th095::AnmManager::DrawNoRotationNoRound,AnmManager,exact,Canonical subpixel axis-aligned quad placement with target-specific three-way alignment

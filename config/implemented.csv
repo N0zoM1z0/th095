@@ -500,3 +500,5 @@ th095::AnmManager::SetRenderStateForVm3D
 th095::AnmManager::SetRenderStateForVm
 th095::AnmManager::DrawInner
 th095::AnmManager::AddSpriteToDrawBuffer
+th095::AnmManager::DrawNoRotation
+th095::AnmManager::DrawNoRotationNoRound
