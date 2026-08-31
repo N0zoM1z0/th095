@@ -501,3 +501,15 @@ address,name,size,status,match_percent,unit,evidence
 0x004233D0,th095::DummyMidiTimer::OnTimerElapsed,22,matching,100.00,dummy-midi-timer-on-timer,python3 scripts/build.py --unit dummy-midi-timer-on-timer && python3 scripts/compare-coff-function.py --unit dummy-midi-timer-on-timer --json
 0x004233F0,th095::MidiTimer::StartTimer,25,matching,100.00,midi-timer-start,python3 scripts/build.py --unit midi-timer-start && python3 scripts/compare-coff-function.py --unit midi-timer-start --json
 0x00423410,th095::MidiTimer::StopTimer,19,matching,100.00,midi-timer-stop,python3 scripts/build.py --unit midi-timer-stop && python3 scripts/compare-coff-function.py --unit midi-timer-stop --json
+0x00456580,th095::Lzss::InitTree,67,matching,100.00,lzss-init-tree,python3 scripts/build.py --unit lzss-init-tree && python3 scripts/compare-coff-function.py --unit lzss-init-tree --json
+0x004565D0,th095::Lzss::InitEncoderState,124,matching,100.00,lzss-init-encoder-state,python3 scripts/build.py --unit lzss-init-encoder-state && python3 scripts/compare-coff-function.py --unit lzss-init-encoder-state --json
+0x00456770,th095::Lzss::DeleteString,134,matching,100.00,lzss-delete-string,python3 scripts/build.py --unit lzss-delete-string && python3 scripts/compare-coff-function.py --unit lzss-delete-string --json
+0x00456800,th095::Lzss::ContractNode,132,matching,100.00,lzss-contract-node,python3 scripts/build.py --unit lzss-contract-node && python3 scripts/compare-coff-function.py --unit lzss-contract-node --json
+0x00456890,th095::Lzss::ReplaceNode,183,matching,100.00,lzss-replace-node,python3 scripts/build.py --unit lzss-replace-node && python3 scripts/compare-coff-function.py --unit lzss-replace-node --json
+0x00456950,th095::Lzss::FindNextNode,63,matching,100.00,lzss-find-next-node,python3 scripts/build.py --unit lzss-find-next-node && python3 scripts/compare-coff-function.py --unit lzss-find-next-node --json
+0x0041B410,th095::Rng::GetRandomU16,88,matching,100.00,rng-get-random-u16,python3 scripts/build.py --unit rng-get-random-u16 && python3 scripts/compare-coff-function.py --unit rng-get-random-u16 --json
+0x0041B470,th095::Rng::GetRandomU32,40,matching,100.00,rng-get-random-u32,python3 scripts/build.py --unit rng-get-random-u32 && python3 scripts/compare-coff-function.py --unit rng-get-random-u32 --json
+0x0041B4A0,th095::Rng::GetRandomF32,40,matching,100.00,rng-get-random-f32,python3 scripts/build.py --unit rng-get-random-f32 && python3 scripts/compare-coff-function.py --unit rng-get-random-f32 --json
+0x0041B4D0,th095::Rng::GetRandomF32Signed,46,matching,100.00,rng-get-random-f32-signed,python3 scripts/build.py --unit rng-get-random-f32-signed && python3 scripts/compare-coff-function.py --unit rng-get-random-f32-signed --json
+0x0041B500,th095::AddNormalizeAngle,127,matching,100.00,add-normalize-angle,python3 scripts/build.py --unit add-normalize-angle && python3 scripts/compare-coff-function.py --unit add-normalize-angle --json
+0x0041B830,th095::ZunTimer::Add,98,matching,100.00,zun-timer-add,python3 scripts/build.py --unit zun-timer-add && python3 scripts/compare-coff-function.py --unit zun-timer-add --json

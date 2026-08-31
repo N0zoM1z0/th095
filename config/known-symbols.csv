@@ -248,3 +248,15 @@ address,name,module,confidence,evidence
 0x004233D0,th095::DummyMidiTimer::OnTimerElapsed,Midi,exact,Exact dummy MIDI timer performance-counter sample
 0x004233F0,th095::MidiTimer::StartTimer,Midi,exact,Exact 16ms dummy-timer start wrapper
 0x00423410,th095::MidiTimer::StopTimer,Midi,exact,Exact timer-stop wrapper
+0x00456580,th095::Lzss::InitTree,Compression,exact,Exact LZSS encoder-tree root/sentinel initialization
+0x004565D0,th095::Lzss::InitEncoderState,Compression,exact,Exact 8 KiB dictionary and 8193-node encoder-tree reset
+0x00456770,th095::Lzss::DeleteString,Compression,exact,Exact LZSS binary-tree deletion choosing contraction or successor replacement
+0x00456800,th095::Lzss::ContractNode,Compression,exact,Exact LZSS parent-child contraction helper
+0x00456890,th095::Lzss::ReplaceNode,Compression,exact,Exact LZSS tree-node replacement with child-parent repair
+0x00456950,th095::Lzss::FindNextNode,Compression,exact,Exact predecessor/successor walk used by LZSS tree deletion
+0x0041B410,th095::Rng::GetRandomU16,Runtime,exact,Exact TH095 16-bit RNG state transition and generation counter update
+0x0041B470,th095::Rng::GetRandomU32,Runtime,exact,Exact concatenation of two sequential 16-bit RNG outputs
+0x0041B4A0,th095::Rng::GetRandomF32,Runtime,exact,Exact unsigned RNG normalization to float
+0x0041B4D0,th095::Rng::GetRandomF32Signed,Runtime,exact,"Exact signed RNG normalization to [-1,1) source shape"
+0x0041B500,th095::AddNormalizeAngle,ZunMath,exact,Exact angle normalization; TH095 permits 32 wrap iterations per shared guard counter versus TH08 source oracle 16
+0x0041B830,th095::ZunTimer::Add,Timer,exact,Exact game-speed-aware timer accumulation and integer current-frame truncation

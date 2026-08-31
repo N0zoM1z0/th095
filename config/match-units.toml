@@ -15022,3 +15022,191 @@ size = 0x13
 relocations = [
   { offset = 0xB, type = "REL32", symbol = "?StopTimerImpl@MidiTimer@th095@@QAEHXZ", target = 0x00422040 },
 ]
+
+[units.lzss-init-tree]
+source = "src/pbg/Lzss.cpp"
+object = "build/matching/Lzss.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Lzss::InitTree"]
+symbol = "?InitTree@Lzss@th095@@SIXH@Z"
+target_address = 0x00456580
+size = 0x43
+relocations = [
+  { offset = 0xB, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x17, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x27, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x37, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+]
+
+[units.lzss-init-encoder-state]
+source = "src/pbg/Lzss.cpp"
+object = "build/matching/Lzss.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Lzss::InitEncoderState"]
+symbol = "?InitEncoderState@Lzss@th095@@SIXXZ"
+target_address = 0x004565D0
+size = 0x7C
+relocations = [
+  { offset = 0x24, type = "DIR32", symbol = "?m_Dict@Lzss@th095@@0PAEA", target = 0x004E24A8 },
+  { offset = 0x4E, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x5E, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x6E, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+]
+
+[units.lzss-delete-string]
+source = "src/pbg/Lzss.cpp"
+object = "build/matching/Lzss.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Lzss::DeleteString"]
+symbol = "?DeleteString@Lzss@th095@@SIXH@Z"
+target_address = 0x00456770
+size = 0x86
+relocations = [
+  { offset = 0x11, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x22, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x31, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x39, type = "REL32", symbol = "?ContractNode@Lzss@th095@@SIXHH@Z", target = 0x00456800 },
+  { offset = 0x47, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x56, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x5E, type = "REL32", symbol = "?ContractNode@Lzss@th095@@SIXHH@Z", target = 0x00456800 },
+  { offset = 0x68, type = "REL32", symbol = "?FindNextNode@Lzss@th095@@SIHH@Z", target = 0x00456950 },
+  { offset = 0x73, type = "REL32", symbol = "?DeleteString@Lzss@th095@@SIXH@Z", target = 0x00456770 },
+  { offset = 0x7E, type = "REL32", symbol = "?ReplaceNode@Lzss@th095@@SIXHH@Z", target = 0x00456890 },
+]
+
+[units.lzss-contract-node]
+source = "src/pbg/Lzss.cpp"
+object = "build/matching/Lzss.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Lzss::ContractNode"]
+symbol = "?ContractNode@Lzss@th095@@SIXHH@Z"
+target_address = 0x00456800
+size = 0x84
+relocations = [
+  { offset = 0x1A, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x20, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x2C, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x35, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x46, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x52, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x60, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x6C, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x78, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+]
+
+[units.lzss-replace-node]
+source = "src/pbg/Lzss.cpp"
+object = "build/matching/Lzss.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Lzss::ReplaceNode"]
+symbol = "?ReplaceNode@Lzss@th095@@SIXHH@Z"
+target_address = 0x00456890
+size = 0xB7
+relocations = [
+  { offset = 0x14, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x23, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x37, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x48, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x54, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x5F, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x7B, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x87, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x93, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x9F, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0xAB, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+]
+
+[units.lzss-find-next-node]
+source = "src/pbg/Lzss.cpp"
+object = "build/matching/Lzss.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Lzss::FindNextNode"]
+symbol = "?FindNextNode@Lzss@th095@@SIHH@Z"
+target_address = 0x00456950
+size = 0x3F
+relocations = [
+  { offset = 0x11, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x20, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+  { offset = 0x2F, type = "DIR32", symbol = "?m_Tree@Lzss@th095@@0PAUTreeNode@12@A", target = 0x004CA498 },
+]
+
+[units.rng-get-random-u16]
+source = "src/RandomMath.cpp"
+object = "build/matching/RandomMath.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Rng::GetRandomU16"]
+symbol = "?GetRandomU16@Rng@th095@@QAEGXZ"
+target_address = 0x0041B410
+size = 0x58
+relocations = [
+]
+
+[units.rng-get-random-u32]
+source = "src/RandomMath.cpp"
+object = "build/matching/RandomMath.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Rng::GetRandomU32"]
+symbol = "?GetRandomU32@Rng@th095@@QAEIXZ"
+target_address = 0x0041B470
+size = 0x28
+relocations = [
+  { offset = 0xC, type = "REL32", symbol = "?GetRandomU16@Rng@th095@@QAEGXZ", target = 0x0041B410 },
+  { offset = 0x1A, type = "REL32", symbol = "?GetRandomU16@Rng@th095@@QAEGXZ", target = 0x0041B410 },
+]
+
+[units.rng-get-random-f32]
+source = "src/RandomMath.cpp"
+object = "build/matching/RandomMath.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Rng::GetRandomF32"]
+symbol = "?GetRandomF32@Rng@th095@@QAEMXZ"
+target_address = 0x0041B4A0
+size = 0x28
+relocations = [
+  { offset = 0xD, type = "REL32", symbol = "?GetRandomU32@Rng@th095@@QAEIXZ", target = 0x0041B470 },
+  { offset = 0x20, type = "DIR32", symbol = "__real@4f800000", target = 0x00495844 },
+]
+
+[units.rng-get-random-f32-signed]
+source = "src/RandomMath.cpp"
+object = "build/matching/RandomMath.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Rng::GetRandomF32Signed"]
+symbol = "?GetRandomF32Signed@Rng@th095@@QAEMXZ"
+target_address = 0x0041B4D0
+size = 0x2E
+relocations = [
+  { offset = 0xD, type = "REL32", symbol = "?GetRandomU32@Rng@th095@@QAEIXZ", target = 0x0041B470 },
+  { offset = 0x20, type = "DIR32", symbol = "__real@4f000000", target = 0x00495848 },
+  { offset = 0x26, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+]
+
+[units.add-normalize-angle]
+source = "src/RandomMath.cpp"
+object = "build/matching/RandomMath.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AddNormalizeAngle"]
+symbol = "?AddNormalizeAngle@th095@@YIMMM@Z"
+target_address = 0x0041B500
+size = 0x7F
+relocations = [
+  { offset = 0x19, type = "DIR32", symbol = "__real@40490fdb", target = 0x00495398 },
+  { offset = 0x29, type = "DIR32", symbol = "__real@40c90fdb", target = 0x00495418 },
+  { offset = 0x4A, type = "DIR32", symbol = "__real@c0490fdb", target = 0x0049552C },
+  { offset = 0x5A, type = "DIR32", symbol = "__real@40c90fdb", target = 0x00495418 },
+]
+
+[units.zun-timer-add]
+source = "src/ZunTimer.cpp"
+object = "build/matching/ZunTimer.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ZunTimer::Add"]
+symbol = "?Add@ZunTimer@th095@@QAEXM@Z"
+target_address = 0x0041B830
+size = 0x62
+relocations = [
+  { offset = 0x14, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x1A, type = "DIR32", symbol = "__real@3f7d70a4", target = 0x0049584C },
+  { offset = 0x38, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x52, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+]

@@ -572,3 +572,15 @@ th095::MidiOutput::SetFadeOut
 th095::DummyMidiTimer::OnTimerElapsed
 th095::MidiTimer::StartTimer
 th095::MidiTimer::StopTimer
+th095::Lzss::InitTree
+th095::Lzss::InitEncoderState
+th095::Lzss::DeleteString
+th095::Lzss::ContractNode
+th095::Lzss::ReplaceNode
+th095::Lzss::FindNextNode
+th095::Rng::GetRandomU16
+th095::Rng::GetRandomU32
+th095::Rng::GetRandomF32
+th095::Rng::GetRandomF32Signed
+th095::AddNormalizeAngle
+th095::ZunTimer::Add

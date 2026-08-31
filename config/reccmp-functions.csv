@@ -573,3 +573,15 @@ th095::MidiOutput::SetFadeOut,0x004227B0,function
 th095::DummyMidiTimer::OnTimerElapsed,0x004233D0,function
 th095::MidiTimer::StartTimer,0x004233F0,function
 th095::MidiTimer::StopTimer,0x00423410,function
+th095::Lzss::InitTree,0x00456580,function
+th095::Lzss::InitEncoderState,0x004565D0,function
+th095::Lzss::DeleteString,0x00456770,function
+th095::Lzss::ContractNode,0x00456800,function
+th095::Lzss::ReplaceNode,0x00456890,function
+th095::Lzss::FindNextNode,0x00456950,function
+th095::Rng::GetRandomU16,0x0041B410,function
+th095::Rng::GetRandomU32,0x0041B470,function
+th095::Rng::GetRandomF32,0x0041B4A0,function
+th095::Rng::GetRandomF32Signed,0x0041B4D0,function
+th095::AddNormalizeAngle,0x0041B500,function
+th095::ZunTimer::Add,0x0041B830,function

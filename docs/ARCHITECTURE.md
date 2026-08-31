@@ -112,6 +112,8 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | `0x004149F0..0x004162F0` | 591 exact authored bytes | manager factory / four draw groups / calc and draw gates | five exact EnemyManager task-shell functions | `0x26AE30` ownership shell, Chain priorities 12/10, draw-group heads `+0x4DC0` |
 | `0x00413380..0x004149E6` | 2,972 exact authored bytes | 22-entry TH095 extended-ECL callback table | fifteen exact callbacks / seven remaining | Photography flags, Background VM transitions, player marker scale, marker/fade VMs, transition coordinator, owned-bullet reset |
 | `0x00421E00..0x00423422` | 1,911 exact authored bytes | WinMM MIDI device/timer/playback support | twenty-four exact MIDI helpers | Device I/O, timer lifetime, SMF byte/VLQ helpers, file/track ownership, play/stop, SysEx cleanup, fade setup |
+| `0x0041B410..0x0041B891` | 439 exact authored bytes | shared RNG / angle / timer runtime | six exact utility functions | RNG state, float normalization, bounded angle wrapping, game-speed-aware timer accumulation |
+| `0x00456580..0x0045698E` | 703 exact authored bytes | LZSS encoder-tree support | six exact tree helpers | Shared 8 KiB dictionary, 8,193-node search tree, deletion/contraction/replacement walks |
 | `0x0043A600` | 17,018 | 22 callers / 20 internal callees | exact `AnmManager::ExecuteScript` | Widely shared animation VM and type/layout root |
 | `0x00447D00` | 16,066 | 1 caller / 27 internal callees | boundary-reviewed authored scene-selection hub | 12-group scene UI; exact class name unresolved |
 | `0x0042C5C0` | 8,560 | 1 caller / 4 internal callees | source-present photo-stage display builder | Repeated TH095 photograph HUD/glyph builder; exact 118-byte VM initializer |
