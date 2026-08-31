@@ -317,3 +317,5 @@ address,name,module,confidence,evidence
 0x004374B0,th095::ScreenEffect::CalcShakeEnvelope,ScreenEffect,exact,Exact ramp-up/hold/ramp-down photography-gated shake envelope with dual RNG direction switches
 0x00437700,th095::ScreenEffect::InitializeTimer,ScreenEffect,exact,"Exact full 12-byte screen-effect timer initialization to current 0, subFrame 0, previous -999999"
 0x00437740,th095::ScreenEffect::DeleteScreenEffect,ScreenEffect,exact,Exact Chain unlink and heap teardown; delete-expression source clears the fastcall argument home after delete
+0x00436920,th095::ScreenEffect::DrawSquare,ScreenEffect,exact,Exact screen-space diffuse quad draw; isolated TU preserves six inline ANM cache-clear this homes and TH095 omits TH08 conditional Z-write device call
+0x00436DD0,th095::ScreenEffect::RegisterChain,ScreenEffect,exact,Exact eight-case ScreenEffect factory/Chain registration; 598-byte authored body plus 32-byte compiler switch table; TH095 swaps enum values 3/4 relative to TH08

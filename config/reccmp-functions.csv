@@ -642,3 +642,5 @@ th095::ScreenEffect::CalcShake,0x004372D0,function
 th095::ScreenEffect::CalcShakeEnvelope,0x004374B0,function
 th095::ScreenEffect::InitializeTimer,0x00437700,function
 th095::ScreenEffect::DeleteScreenEffect,0x00437740,function
+th095::ScreenEffect::DrawSquare,0x00436920,function
+th095::ScreenEffect::RegisterChain,0x00436DD0,function

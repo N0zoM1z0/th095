@@ -7,8 +7,23 @@ namespace th095
 
 struct ChainElem;
 
+enum ScreenEffectType
+{
+    SCREEN_EFFECT_FULL_FADE_IN = 0,
+    SCREEN_EFFECT_SHAKE = 1,
+    SCREEN_EFFECT_ARCADE_FADE_OUT = 2,
+    // TH095 swaps values 3/4 relative to the TH08 source oracle.
+    SCREEN_EFFECT_FULL_FADE_OUT = 3,
+    SCREEN_EFFECT_ARCADE_PULSE = 4,
+    SCREEN_EFFECT_FULL_FADE_HOLD = 5,
+    SCREEN_EFFECT_ARCADE_FADE_HOLD = 6,
+    SCREEN_EFFECT_SHAKE_ENVELOPE = 7,
+};
+
 struct ScreenEffectTimer
 {
+    ScreenEffectTimer();
+
     int previous;
     float subFrame;
     int current;
@@ -57,6 +72,9 @@ struct ScreenEffect
     static int CalcShakeEnvelope(ScreenEffect *screenEffect);
     static int InitializeTimer(ScreenEffect *screenEffect);
     static int DeleteScreenEffect(ScreenEffect *screenEffect);
+    static ScreenEffect *RegisterChain(
+        ScreenEffectType effect, int durationFrames, int primaryParameter,
+        int secondaryParameter, int tertiaryParameter, int drawPriority);
     static void DrawSquare(ScreenEffectRect *rect, unsigned int color);
     static int DrawFullFade(ScreenEffect *screenEffect);
     static int DrawPartialFade(ScreenEffect *screenEffect);

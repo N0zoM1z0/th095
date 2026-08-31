@@ -472,6 +472,24 @@ shake callbacks write signed amplitudes to the same addresses. Keep the shared
 global type/name aligned across translation units so relocation manifests do not
 preserve a stale semantic alias.
 
+ScreenEffect also provides a strong translation-unit partition oracle. The
+portable `DrawSquare` source is semantically and instruction-topology complete in
+the main ScreenEffect TU, but build 3077 in that crowded TU folds the six inline
+ANM cache clears straight into field stores, removing six `this` homes and
+shrinking the body from 887 to 815 bytes. The same ordinary C++ in an isolated
+bounded TU preserves one live parameter home per inline clear and matches the
+target exactly. Prefer truthful TU isolation when source ownership/compiler
+allocation phase is independently evidenced; do not replace the missing homes
+with six dummy locals.
+
+For switch-owning functions, compare compiler tables but never credit them as
+authored code. `ScreenEffect::RegisterChain` is 598 authored bytes and owns the
+32-byte table immediately following it, so its canonical unit uses
+`compare_size=630`. Relocation review is mandatory even when every comparable
+non-relocation byte matches: the initial TH08 enum port reproduced all such bytes
+but sent switch cases 3/4 to the wrong callback targets. TH095 defines value 3 as
+full fade-out and value 4 as arcade pulse, the inverse of TH08.
+
 The adjacent ScoreData lifecycle gives a scheduling rule: exact-sized does not
 mean cheap. Its `0x004354B0` constructor still has live local-home displacement
 residuals, and the straightforward destructor is 97 bytes versus a 109-byte

@@ -641,3 +641,5 @@ th095::ScreenEffect::CalcShake
 th095::ScreenEffect::CalcShakeEnvelope
 th095::ScreenEffect::InitializeTimer
 th095::ScreenEffect::DeleteScreenEffect
+th095::ScreenEffect::DrawSquare
+th095::ScreenEffect::RegisterChain

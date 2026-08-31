@@ -478,10 +478,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00436760,authored,ScreenEffect,authored,exact,vc71-screen-effect-leaves-2026-09-01
 0x00436820,authored,ScreenEffect,authored,exact,vc71-screen-effect-leaves-2026-09-01
 0x004368A0,authored,ScreenEffect,authored,exact,vc71-screen-effect-leaves-2026-09-01
-0x00436920,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00436920,authored,ScreenEffect,authored,exact,vc71-screen-effect-complete-2026-09-01
 0x00436CA0,authored,ScreenEffect,authored,exact,vc71-screen-effect-shake-fade-2026-09-01
 0x00436D20,authored,ScreenEffect,authored,exact,vc71-screen-effect-leaves-2026-09-01
-0x00436DD0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00436DD0,authored,ScreenEffect,authored,exact,vc71-screen-effect-complete-2026-09-01
 0x00437050,authored,ScreenEffect,authored,exact,vc71-screen-effect-leaves-2026-09-01
 0x004370F0,authored,ScreenEffect,authored,exact,vc71-screen-effect-leaves-2026-09-01
 0x00437140,authored,ScreenEffect,authored,exact,vc71-screen-effect-leaves-2026-09-01
