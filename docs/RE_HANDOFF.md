@@ -1080,3 +1080,5 @@ python3 scripts/compare-coff-function.py --unit sound-player-load-sound --json
 python3 scripts/build.py --unit anm-set-and-execute-script
 python3 scripts/compare-coff-function.py --unit anm-set-and-execute-script --json
 ```
+
+- The TH095-specific extended-ECL callback table at `0x004A4270` is now target-proven as 22 fastcall entries spanning `0x00413380..0x004149E6`. Eleven callbacks (indices 0, 6, 9, 11, 12, 13, 15, 16, 18, 19, 21) are canonical exact for 1,265 authored bytes and 65 relocations in root-level `EclExtended.cpp`. They close death-photo VM fanout, player-proximity marker publication, context forwarding, game-speed publication, the two Background dynamic-VM state lanes, photo flags `0x200/0x400`, transition sounds, and the 1,600-bullet owned-motion reset. Continue through the remaining table entries as one coherent lane; preserve the explicit negative oracles in `BUILD_MATCHING.md` rather than spending inert locals or artificial branches.

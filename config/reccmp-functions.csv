@@ -528,3 +528,14 @@ th095::EclRunLow::PopEclContext,0x00412060,function
 th095::EclRunLow::SetPrimaryAnmScripts,0x00412190,function
 th095::EclRunLow::BeginBoundaryAwareMove,0x00412200,function
 th095::EclRunLow::StartTimedPolarDisplacement,0x00412490,function
+th095::EclExtended::SpawnDeathPhotoVms,0x00413380,function
+th095::EclExtended::UpdatePlayerProximityAndMarker,0x00413AA0,function
+th095::EclExtended::DispatchContextValues,0x00413DA0,function
+th095::EclExtended::PublishGameSpeed,0x00413F90,function
+th095::EclExtended::SetBackgroundVmsState2,0x00413FC0,function
+th095::EclExtended::SetBackgroundVmsState3,0x00414020,function
+th095::EclExtended::SetPhotoFlag200,0x00414230,function
+th095::EclExtended::ClearPhotoFlag200,0x00414260,function
+th095::EclExtended::EnablePhotoTransition,0x00414430,function
+th095::EclExtended::DisablePhotoTransition,0x004144E0,function
+th095::EclExtended::ResetOwnedBulletMotion,0x00414930,function

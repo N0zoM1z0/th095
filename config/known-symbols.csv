@@ -209,3 +209,14 @@ address,name,module,confidence,evidence
 0x00412190,th095::EclRunLow::SetPrimaryAnmScripts,EclManager,exact,Canonical exact 112-byte primary ANM script-set helper
 0x00412200,th095::EclRunLow::BeginBoundaryAwareMove,EclManager,exact,Canonical exact 645-byte boundary-aware randomized movement helper
 0x00412490,th095::EclRunLow::StartTimedPolarDisplacement,EclManager,exact,Canonical exact 471-byte timed polar displacement helper
+0x00413380,th095::EclExtended::SpawnDeathPhotoVms,EclManager,exact,"Exact ECL extended entry 0: one script-0x123 VM plus thirty-two script-0x122 VMs, sound 0x12, and game speed 0.25"
+0x00413AA0,th095::EclExtended::UpdatePlayerProximityAndMarker,EclManager,exact,Exact ECL extended entry 6: player-distance 1024/4096 thresholds publish +0x2A18 scale and project enemy marker VM
+0x00413DA0,th095::EclExtended::DispatchContextValues,EclManager,exact,Exact ECL extended entry 9: forwards four context integer variables through fastcall mode 7 with terminal value 29
+0x00413F90,th095::EclExtended::PublishGameSpeed,EclManager,exact,Exact ECL extended entry 11: context float variable 7 publishes g_AnmGameSpeed
+0x00413FC0,th095::EclExtended::SetBackgroundVmsState2,EclManager,exact,Exact ECL extended entry 12: background dynamic VM handles +0x1FE4/+0x1FE8 receive interrupt 2
+0x00414020,th095::EclExtended::SetBackgroundVmsState3,EclManager,exact,Exact ECL extended entry 13: background dynamic VMs receive interrupt 3 and game speed returns to 1.0
+0x00414230,th095::EclExtended::SetPhotoFlag200,EclManager,exact,Exact ECL extended entry 15: sets photography runtime flag 0x200
+0x00414260,th095::EclExtended::ClearPhotoFlag200,EclManager,exact,Exact ECL extended entry 16: clears photography runtime flag 0x200
+0x00414430,th095::EclExtended::EnablePhotoTransition,EclManager,exact,"Exact ECL extended entry 18: flag 0x400, interrupt-2 execute on two background VMs, sound 0x26, game speed 1.0"
+0x004144E0,th095::EclExtended::DisablePhotoTransition,EclManager,exact,"Exact ECL extended entry 19: clears flag 0x400, interrupt-3 execute on two background VMs, sound 0x0F"
+0x00414930,th095::EclExtended::ResetOwnedBulletMotion,EclManager,exact,"Exact ECL extended entry 21: scans 1600 0x65C bullets, filters context ownership, clears transform state, and rebuilds 4.5-speed velocity"

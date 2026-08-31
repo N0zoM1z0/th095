@@ -527,3 +527,14 @@ th095::EclRunLow::PopEclContext
 th095::EclRunLow::SetPrimaryAnmScripts
 th095::EclRunLow::BeginBoundaryAwareMove
 th095::EclRunLow::StartTimedPolarDisplacement
+th095::EclExtended::SpawnDeathPhotoVms
+th095::EclExtended::UpdatePlayerProximityAndMarker
+th095::EclExtended::DispatchContextValues
+th095::EclExtended::PublishGameSpeed
+th095::EclExtended::SetBackgroundVmsState2
+th095::EclExtended::SetBackgroundVmsState3
+th095::EclExtended::SetPhotoFlag200
+th095::EclExtended::ClearPhotoFlag200
+th095::EclExtended::EnablePhotoTransition
+th095::EclExtended::DisablePhotoTransition
+th095::EclExtended::ResetOwnedBulletMotion
