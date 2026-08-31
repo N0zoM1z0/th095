@@ -30,7 +30,7 @@ struct PhotoBulletVector
             this->x * scalar, this->y * scalar, this->z * scalar);
     }
 
-    PhotoBulletVector operator+(PhotoBulletVector other) const
+    PhotoBulletVector operator+(const PhotoBulletVector &other) const
     {
         return PhotoBulletVector(
             this->x + other.x,
@@ -38,7 +38,7 @@ struct PhotoBulletVector
             this->z + other.z);
     }
 
-    PhotoBulletVector operator-(PhotoBulletVector other) const
+    PhotoBulletVector operator-(const PhotoBulletVector &other) const
     {
         return PhotoBulletVector(
             this->x - other.x,
@@ -1191,49 +1191,70 @@ void PhotoBulletView::UpdateVerticalWrap()
 
 // FUNCTION: TH095 0x00407820.
 #pragma var_order(index, first, previous, bullet, this)
+#define captureMinimum averagedPanLocal12
+#define captureMaximum soundIndexLocal01
+#define captureBulletMinimum iLocal11
+#define captureBulletMaximum commandCursorLocal02
+#define captureBullet jLocal00
+#define captureFirst preloadBufferLocal03
+#define capturePrevious restartCommandProcessingLocal05
+#define captureIndex readByteCountLocal02
 PhotoBulletView *PhotoBulletManagerView::CapturePhotoTargets(
     PhotoBulletVector *position, PhotoBulletVector *size)
 {
-    PhotoBulletView *bullet = &this->bullets[0];
-    PhotoBulletView *first = NULL;
-    PhotoBulletView *previous;
-    i32 index;
+    PhotoBulletVector captureMinimum;
+    PhotoBulletVector captureMaximum;
+    PhotoBulletVector captureBulletMinimum;
+    PhotoBulletVector captureBulletMaximum;
+    PhotoBulletView *captureBullet = &this->bullets[0];
+    PhotoBulletView *captureFirst = NULL;
+    PhotoBulletView *capturePrevious;
+    i32 captureIndex;
 
     this->capturePosition = *position;
     this->captureSize = *size;
 
-    PhotoBulletVector halfSize = *size / 2.0f;
-    PhotoBulletVector minimum = *position - halfSize;
-    PhotoBulletVector maximum = *position + halfSize;
+    captureMaximum = *size / 2.0f;
+    captureMinimum = *position - captureMaximum;
+    captureMaximum = *position + captureMaximum;
 
-    for (index = 0; index < 0x640; ++index, ++bullet)
+    for (captureIndex = 0; captureIndex < 0x640; ++captureIndex, ++captureBullet)
     {
-        if (bullet->state == 0 || bullet->state == 3)
+        if (captureBullet->state == 0 || captureBullet->state == 3)
             continue;
-        if (bullet->captureDisabled != 0)
+        if (captureBullet->captureDisabled != 0)
             continue;
 
-        PhotoBulletVector bulletMinimum =
-            bullet->position - bullet->collisionSize / 2.0f;
-        PhotoBulletVector bulletMaximum =
-            bullet->position + bullet->collisionSize / 2.0f;
-        if (minimum.x > bulletMaximum.x || bulletMinimum.x > maximum.x ||
-            minimum.y > bulletMaximum.y || bulletMinimum.y > maximum.y)
+        captureBulletMinimum =
+            captureBullet->position - captureBullet->collisionSize / 2.0f;
+        captureBulletMaximum =
+            captureBullet->position + captureBullet->collisionSize / 2.0f;
+        if (captureBulletMaximum.x < captureMinimum.x || captureBulletMinimum.x > captureMaximum.x ||
+            captureBulletMaximum.y < captureMinimum.y || captureBulletMinimum.y > captureMaximum.y)
         {
             continue;
         }
-        if (first == NULL)
-            first = bullet;
+        if (captureFirst == NULL)
+            captureFirst = captureBullet;
         else
-            previous->nextCaptured = bullet;
-        bullet->nextCaptured = NULL;
-        previous = bullet;
+            capturePrevious->nextCaptured = captureBullet;
+        captureBullet->nextCaptured = NULL;
+        capturePrevious = captureBullet;
     }
 
     if (g_PhotoBulletGlobalState->suppressesPhotoSound == 0)
         g_PhotoBulletSoundPlayer.PlaySoundByIdx(0x0f, 0);
-    return first;
+    return captureFirst;
 }
+
+#undef captureMinimum
+#undef captureMaximum
+#undef captureBulletMinimum
+#undef captureBulletMaximum
+#undef captureBullet
+#undef captureFirst
+#undef capturePrevious
+#undef captureIndex
 
 // FUNCTION: TH095 0x00407C90.
 #pragma var_order(vmId, maximum, minimum, bulletMaximum, bulletMinimum, halfSize, vm, index, bullet, this)
@@ -1242,10 +1263,12 @@ i32 PhotoBulletManagerView::ClearCapturedBullets()
     PhotoBulletView *bullet = &this->bullets[0];
     i32 index;
     AnmVm *vm;
+    PhotoBulletVector minimum;
+    PhotoBulletVector maximum;
 
-    PhotoBulletVector halfSize = this->captureSize / 2.0f;
-    PhotoBulletVector minimum = this->capturePosition - halfSize;
-    PhotoBulletVector maximum = this->capturePosition + halfSize;
+    maximum = this->captureSize / 2.0f;
+    minimum = this->capturePosition - maximum;
+    maximum = this->capturePosition + maximum;
 
     for (index = 0; index < 0x640; ++index, ++bullet)
     {
@@ -1254,21 +1277,22 @@ i32 PhotoBulletManagerView::ClearCapturedBullets()
         if (bullet->captureDisabled != 0)
             continue;
 
-        PhotoBulletVector bulletMinimum =
+        PhotoBulletVector bulletMinimum;
+        PhotoBulletVector bulletMaximum;
+        bulletMinimum =
             bullet->position - bullet->collisionSize / 2.0f;
-        PhotoBulletVector bulletMaximum =
+        bulletMaximum =
             bullet->position + bullet->collisionSize / 2.0f;
 
-        if (minimum.x > bulletMaximum.x || bulletMinimum.x > maximum.x ||
-            minimum.y > bulletMaximum.y || bulletMinimum.y > maximum.y)
+        if (bulletMaximum.x < minimum.x || bulletMinimum.x > maximum.x ||
+            bulletMaximum.y < minimum.y || bulletMinimum.y > maximum.y)
         {
             continue;
         }
 
         bullet->Deactivate();
-        AnmVmId vmId = this->anmSpawner->CreateVm(
-            0x126, &bullet->position);
-        vm = g_AnmManager->GetVm(vmId);
+        vm = g_AnmManager->GetVm(
+            this->anmSpawner->CreateVm(0x126, &bullet->position));
         if (bullet->vm.loadedSprite != NULL)
         {
             if (bullet->vm.loadedSprite->widthPx <= 16.0f)
@@ -1301,67 +1325,81 @@ void PhotoBulletManagerView::DespawnAllBullets()
     }
 }
 
+#define nearbyScore restartCommandProcessingLocal05
+#define nearbyMinimum averagedPanLocal12
+#define nearbyMaximum iLocal11
+#define nearbyLowerInner commandCursorLocal02
+#define nearbyUpperInner soundIndexLocal01
+#define nearbyBullet jLocal00
+#define nearbyIndex preloadBufferLocal03
 // FUNCTION: TH095 0x00408220.
 #pragma var_order(lowerInner, upperInner, maximum, minimum, index, score, bullet, this)
 i32 PhotoBulletManagerView::CountNearbyTargets(
     PhotoBulletVector *position, f32 radius)
 {
-    PhotoBulletView *bullet = &this->bullets[0];
-    i32 score = 0;
-    i32 index;
+    PhotoBulletVector nearbyMinimum;
+    PhotoBulletVector nearbyMaximum;
+    PhotoBulletVector nearbyUpperInner;
+    PhotoBulletVector nearbyLowerInner;
+    PhotoBulletView *nearbyBullet = &this->bullets[0];
+    i32 nearbyScore = 0;
+    i32 nearbyIndex;
     radius *= radius;
 
-    for (index = 0; index < 0x640; ++index, ++bullet)
+    for (nearbyIndex = 0; nearbyIndex < 0x640; ++nearbyIndex, ++nearbyBullet)
     {
-        if (bullet->state == 0 || bullet->state == 3)
+        if (nearbyBullet->state == 0 || nearbyBullet->state == 3)
             continue;
         {
-            PhotoBulletVector minimum =
-                bullet->position - bullet->collisionSize / 2.0f;
-            PhotoBulletVector maximum =
-                bullet->position + bullet->collisionSize / 2.0f;
-            PhotoBulletVector upperInner = minimum;
-            PhotoBulletVector lowerInner = maximum;
-            upperInner.y += bullet->collisionSize.y;
-            lowerInner.y -= bullet->collisionSize.y;
+            nearbyUpperInner =
+                nearbyBullet->position - nearbyBullet->collisionSize / 2.0f;
+            nearbyMinimum = nearbyUpperInner;
+            nearbyLowerInner =
+                nearbyBullet->position + nearbyBullet->collisionSize / 2.0f;
+            nearbyMaximum = nearbyLowerInner;
+            nearbyUpperInner.y += nearbyBullet->collisionSize.y;
+            nearbyLowerInner.y -= nearbyBullet->collisionSize.y;
 
-            if ((position->x - minimum.x) * (position->x - minimum.x) +
-                        (position->y - minimum.y) *
-                            (position->y - minimum.y) <=
-                    radius ||
-                (position->x - upperInner.x) *
-                            (position->x - upperInner.x) +
-                        (position->y - upperInner.y) *
-                            (position->y - upperInner.y) <=
-                    radius ||
-                (position->x - maximum.x) * (position->x - maximum.x) +
-                        (position->y - maximum.y) *
-                            (position->y - maximum.y) <=
-                    radius ||
-                (position->x - lowerInner.x) *
-                            (position->x - lowerInner.x) +
-                        (position->y - lowerInner.y) *
-                            (position->y - lowerInner.y) <=
-                    radius)
+            if ((position->y - nearbyMinimum.y) * (position->y - nearbyMinimum.y) +
+                (position->x - nearbyMinimum.x) * (position->x - nearbyMinimum.x) > radius)
             {
-                if (bullet->vm.loadedSprite != NULL)
+                if ((position->y - nearbyUpperInner.y) * (position->y - nearbyUpperInner.y) +
+                (position->x - nearbyUpperInner.x) * (position->x - nearbyUpperInner.x) > radius)
                 {
-                    if (bullet->vm.loadedSprite->widthPx <= 8.0f)
-                        score += 1;
-                    else if (bullet->vm.loadedSprite->widthPx <= 16.0f)
-                        score += 1;
-                    else if (bullet->vm.loadedSprite->widthPx <= 32.0f)
-                        score += 4;
-                    else if (bullet->vm.loadedSprite->widthPx <= 64.0f)
-                        score += 10;
+                    if ((position->y - nearbyMaximum.y) * (position->y - nearbyMaximum.y) +
+                (position->x - nearbyMaximum.x) * (position->x - nearbyMaximum.x) > radius)
+                    {
+                        if ((position->y - nearbyLowerInner.y) * (position->y - nearbyLowerInner.y) +
+                (position->x - nearbyLowerInner.x) * (position->x - nearbyLowerInner.x) > radius)
+                            continue;
+                    }
+                }
+            }
+                if (nearbyBullet->vm.loadedSprite != NULL)
+                {
+                    if (nearbyBullet->vm.loadedSprite->widthPx <= 8.0f)
+                        nearbyScore += 1;
+                    else if (nearbyBullet->vm.loadedSprite->widthPx <= 16.0f)
+                        nearbyScore += 1;
+                    else if (nearbyBullet->vm.loadedSprite->widthPx <= 32.0f)
+                        nearbyScore += 4;
+                    else if (nearbyBullet->vm.loadedSprite->widthPx <= 64.0f)
+                        nearbyScore += 10;
                 }
                 else
                     utils::DebugPrint("Bullet Miss\n");
-            }
         }
     }
-    return score;
+    return nearbyScore;
 }
+
+#undef nearbyScore
+#undef nearbyMinimum
+#undef nearbyMaximum
+#undef nearbyLowerInner
+#undef nearbyUpperInner
+#undef nearbyBullet
+#undef nearbyIndex
 
 // FUNCTION: TH095 0x004058C0.
 i32 PhotoBulletManagerView::Draw()

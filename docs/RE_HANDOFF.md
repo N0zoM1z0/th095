@@ -675,21 +675,38 @@ speed multiplier when rebuilding velocity. `UpdateBoundaryBounce @
 VC7.1 body is 462 bytes against the 469-byte target, with only a seven-byte
 local bit-copy/register-shape residual. Do not add an inert copy to claim it.
 
-The TH095-specific bullet photography lane at `0x00407820..0x0040860D` is now
-source-present. `CapturePhotoTargets` stores the camera AABB at manager
-`+0x34/+0x40`, filters inactive, despawning, and capture-disabled bullets, and
-constructs the transient list through bullet `+0x35C` rather than the draw
-bucket link at `+0x358`. `ClearCapturedBullets` converts overlapping bullets
-into ANM script `0x126` effects and photo items, selecting the 16/8/4-entry
-color tables from loaded-sprite width. `CountNearbyTargets` samples four
-collision-box corners and awards width-dependent weights `1/1/4/10`.
+The TH095-specific bullet photography lane at `0x00407820..0x0040860D` now has
+two additional canonical exact bodies. `CapturePhotoTargets @ 0x00407820`
+stores the camera AABB at manager `+0x34/+0x40`, filters inactive, despawning,
+and capture-disabled bullets, and constructs the transient list through bullet
+`+0x35C` rather than draw link `+0x358`; it is exact for all 1,122 bytes and
+nine relocations. `CountNearbyTargets @ 0x00408220` samples minimum/maximum plus
+two Y-shifted inner points and applies the `1/1/4/10` width weights; it is exact
+for all 1,006 bytes and ten relocations. Together they add 2,128 authored exact
+bytes without changing the authored denominator.
 
-The natural pinned-VC7.1 bodies are 1,098/1,274/1,005 bytes against targets of
-1,122/1,300/1,006 bytes. They preserve the complete target behavior but remain
-conservatively non-exact because the original vector temporary homes and local
-copy shape are not reproduced. `PhotoBulletView::Deactivate @ 0x00405850` and
-`DespawnAllBullets @ 0x004081B0` are canonical exact for 209 bytes and one
-relocation. Do not close the three residuals with inert locals or padding.
+The reusable source-shape rules are important. `PhotoBulletVector`
+`operator+/-` must take the right operand by `const&`. The nearby path keeps its
+four non-trivial vectors as independent function-scope locals, evaluates each
+distance as Y-squared before X-squared, and expresses the miss path as four
+nested positive `> radius` tests ending in `continue`; target-proven backing
+identifiers restore the score/vector/bullet/index lane. Capture default-declares
+its four bounds, reuses `maximum` first as `size/2` and then overwrites it with
+the final maximum, and uses an eight-bucket backing lane for previous/minimum/
+bullet-minimum/bullet-maximum/maximum/bullet/first/index. Do not replace these
+with vector aggregates: constructor/copy-elision changes are observable under
+VC7.1 `/Od`.
+
+`ClearCapturedBullets @ 0x00407C90` is also substantially narrowed but remains
+non-exact. The committed semantic source now emits the exact 1,300-byte extent,
+all 17 relocations, and the same 305-instruction topology after reusing
+`maximum` as the half-size value and feeding `CreateVm(...)` directly into
+`AnmManager::GetVm`. Stock VC7.1 packs the 69 live homes into a `0x114` frame;
+the target reserves `0x11C`, with `EBP-0x114/-0x118` never read, written, or
+addressed. Keep those two allocator holes uncredited rather than introducing
+inert storage. `PhotoBulletView::Deactivate @ 0x00405850` and
+`DespawnAllBullets @ 0x004081B0` remain canonical exact for 209 bytes and one
+relocation.
 
 The adjacent `0x00408610..0x00408CDC` range is now identified and
 source-present as one `CardInf` photograph-card text/fade component, rather

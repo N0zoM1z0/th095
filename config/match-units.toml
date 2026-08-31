@@ -13518,3 +13518,45 @@ relocations = [
   { offset = 0x17D, type = "DIR32", symbol = "?g_ReplayScanActive@th095@@3HA", target = 0x004C4CC4 },
   { offset = 0x187, type = "DIR32", symbol = "?g_ReplayScanFinished@th095@@3HA", target = 0x004C4CC0 },
 ]
+
+
+[units.photo-bullet-capture-photo-targets]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletManagerView::CapturePhotoTargets"]
+symbol = "?CapturePhotoTargets@PhotoBulletManagerView@th095@@QAEPAUPhotoBulletView@2@PAUPhotoBulletVector@2@0@Z"
+target_address = 0x00407820
+size = 0x462
+relocations = [
+  { offset = 0x5C, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x62, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
+  { offset = 0x1EA, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x1F0, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
+  { offset = 0x2D4, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x2DA, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
+  { offset = 0x439, type = "DIR32", symbol = "?g_PhotoBulletGlobalState@th095@@3PAUPhotoBulletGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x450, type = "DIR32", symbol = "?g_PhotoBulletSoundPlayer@th095@@3UPhotoBulletSoundPlayerView@1@A", target = 0x004C4EE8 },
+  { offset = 0x455, type = "REL32", symbol = "?PlaySoundByIdx@PhotoBulletSoundPlayerView@th095@@QAEXHH@Z", target = 0x00438F20 },
+]
+
+[units.photo-bullet-count-nearby-targets]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletManagerView::CountNearbyTargets"]
+symbol = "?CountNearbyTargets@PhotoBulletManagerView@th095@@QAEHPAUPhotoBulletVector@2@M@Z"
+target_address = 0x00408220
+size = 0x3EE
+relocations = [
+  { offset = 0x83, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x89, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
+  { offset = 0x158, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x15E, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
+  { offset = 0x351, type = "DIR32", symbol = "__real@41000000", target = 0x00495458 },
+  { offset = 0x375, type = "DIR32", symbol = "__real@41800000", target = 0x0049532C },
+  { offset = 0x399, type = "DIR32", symbol = "__real@42000000", target = 0x00495440 },
+  { offset = 0x3BD, type = "DIR32", symbol = "__real@42800000", target = 0x00495454 },
+  { offset = 0x3D4, type = "DIR32", symbol = "??_C@_0N@DMDNEBK@Bullet?5Miss?6?$AA@", target = 0x00495444 },
+  { offset = 0x3D9, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+]

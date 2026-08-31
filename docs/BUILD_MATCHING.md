@@ -206,6 +206,28 @@ Additional stock-VC7.1 local-allocation oracles are now canonical:
   as a bounded `__forceinline` helper, which makes VC7 evaluate the LHS
   count/index before the packed RHS and selects the target register chain.
 
+- The exact bullet-photography pair at `0x00407820/0x00408220` proves several
+  interacting VC7.1 rules. Small three-float value operators can be ABI-visible:
+  `PhotoBulletVector::operator+/-` must take the right operand by `const&` or
+  build 3077 emits an extra argument copy before each result. Declaration-time
+  initialization and later assignment are also not interchangeable under
+  `/Od`; the exact sources default-declare the live vectors, then assign them.
+  A real local may be intentionally reused when the target proves the lifetime:
+  capture uses `maximum = size/2`, consumes it to form `minimum`, then overwrites
+  the same `maximum` with the final upper bound, saving exactly three dword
+  homes without fake storage. Finally, x87 unordered comparisons preserve
+  lexical form: nearby evaluates Y-squared before X-squared and uses nested
+  positive `> radius` rejection, while capture spells the first/third AABB
+  rejects as `bulletMaximum < minimum`. Treat these as source semantics, not
+  algebraic expressions that may be freely reordered.
+- `ClearCapturedBullets @ 0x00407C90` is the negative companion. The same
+  const-reference ABI, declaration/assignment shape, `maximum` reuse, target
+  comparison order, and direct `GetVm(CreateVm(...))` form reproduce the exact
+  1,300-byte extent and all 305 target instructions. The target nevertheless
+  leaves `EBP-0x114/-0x118` unreferenced and places `this` at `-0x11C`; stock
+  VC7.1 uses the same 69 live homes in a packed `0x114` frame. Do not add two
+  unused dwords to force those allocator holes.
+
 The adjacent task constructor proves that unoptimized VC7.1 preserves nested
 member-construction source shape even when the constructor body immediately
 clears the complete object. Model the `+0x104` completion state as an enclosing
