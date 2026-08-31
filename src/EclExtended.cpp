@@ -34,11 +34,15 @@ typedef char ExtendedVectorSizeC[(sizeof(ExtendedVector) == 0x0c) ? 1 : -1];
 struct ExtendedVmHandle
 {
     i32 value;
+    AnmVm *GetVm();
+    void SetSprite(i32 spriteIndex);
 };
 
 struct ExtendedAnmSpawner
 {
     ExtendedVmHandle CreateVmAtWorld(i32 scriptIndex, Float3 *position);
+    void CreateVmAtWorldInto(
+        ExtendedVmHandle *output, i32 scriptIndex, Float3 *position);
 };
 
 struct ExtendedBulletManager
@@ -49,11 +53,25 @@ struct ExtendedBulletManager
 typedef char ExtendedBulletManagerAnmAt27C5B0[
     (offsetof(ExtendedBulletManager, anmSpawner) == 0x27c5b0) ? 1 : -1];
 
+struct ExtendedPhotoCameraView
+{
+    i32 mode;
+    u8 unknown004[0xbc0];
+    Float3 viewfinderPosition;
+    Float3 viewfinderSize;
+
+    i32 CountPhotoTargets(f32 *closestDistance, f32 *bossRate);
+};
+typedef char ExtendedCameraPositionAtBC4[
+    (offsetof(ExtendedPhotoCameraView, viewfinderPosition) == 0xbc4) ? 1 : -1];
+typedef char ExtendedCameraSizeBDC[
+    (sizeof(ExtendedPhotoCameraView) == 0xbdc) ? 1 : -1];
+
 struct ExtendedPlayerView
 {
     u8 unknown0000[0x1e30];
     Float3 position;
-    u8 unknown1e3c[0xbdc];
+    ExtendedPhotoCameraView camera;
     f32 proximityScale;
 };
 typedef char ExtendedPlayerPositionAt1E30[
@@ -111,12 +129,29 @@ typedef char ExtendedBulletOwnerAt330[
 typedef char ExtendedBulletStateAt352[
     (offsetof(ExtendedBulletView, state) == 0x352) ? 1 : -1];
 
+struct ExtendedRuntimeView
+{
+    u8 unknown0000[0x4df8];
+    ExtendedAnmSpawner *markerAnm;
+
+};
+typedef char ExtendedRuntimeMarkerAt4DF8[
+    (offsetof(ExtendedRuntimeView, markerAnm) == 0x4df8) ? 1 : -1];
+
+struct ExtendedRng
+{
+    f32 GetRandomF32();
+};
+
+
 extern AnmManagerLookupView *g_AnmManager;
 extern SoundPlayerView g_SoundPlayer;
 extern PhotoGlobalStateView *g_PhotoGlobalState;
 extern u8 *g_Background;
 extern ExtendedBulletManager *g_PhotoBulletManager;
 extern ExtendedPlayerView *g_Player;
+extern ExtendedRuntimeView *g_ExtendedRuntime;
+extern ExtendedRng g_Rng;
 extern f32 g_AnmGameSpeed;
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -287,6 +322,211 @@ void __fastcall ResetOwnedBulletMotion(
         }
     }
 }
+
+
+
+// ECL extended callback table entry 5 @ 0x00413990.
+void __fastcall FadeOwnedCapturedBullets(
+    Enemy *enemy, EclRawInstruction *instruction)
+{
+    struct FadeLocals
+    {
+        AnmVm *vm;
+        i32 interpolationMode;
+        ZunTimer *endTimer;
+        ZunTimer *currentTimer;
+        i32 i;
+        ExtendedBulletView *bullet;
+    } locals;
+
+    locals.bullet = reinterpret_cast<ExtendedBulletView *>(
+        reinterpret_cast<u8 *>(g_PhotoBulletManager) + 0x4c);
+    for (locals.i = 0; locals.i < 0x640; ++locals.i, ++locals.bullet)
+    {
+        if (locals.bullet->state == 0)
+            continue;
+        if (locals.bullet->ownerTag ==
+            enemy->activeEclContext->extraIntVariables[2])
+        {
+            if (((locals.bullet->flags >> 4) & 1U) != 0)
+            {
+                locals.interpolationMode = 0;
+                locals.vm = &locals.bullet->vm;
+                locals.currentTimer = &locals.vm->interpCurrentTimers[2];
+                locals.currentTimer->current = 0;
+                locals.currentTimer->subFrame = 0.0f;
+                locals.currentTimer->previous = -999999;
+                locals.endTimer = &locals.vm->interpEndTimers[2];
+                locals.endTimer->current = 30;
+                locals.endTimer->subFrame = 30.0f;
+                locals.endTimer->previous = -999999;
+                locals.vm->interpModes[2] =
+                    static_cast<u8>(locals.interpolationMode);
+                locals.vm->color1Initial.a = 0x40;
+                locals.vm->color1Final.a = 0xff;
+            }
+        }
+    }
+}
+
+
+// ECL extended callback table entry 7 @ 0x00413B90.
+// One real 12-byte vector local is reused: first as the 24px direction
+// offset, then as the projected first-marker position.
+void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instruction)
+{
+    ExtendedVector position;
+    AnmVm *firstVm;
+    firstVm = g_AnmManager->GetVm(*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d4));
+    if (firstVm != NULL)
+    {
+        position.FromAngleMagnitude(enemy->movementAngle, 24.0f);
+        firstVm->positionOffset = enemy->position + *reinterpret_cast<Float3 *>(&position);
+        PhotoToScreen(&firstVm->positionOffset, &firstVm->positionOffset);
+        firstVm->positionOffset.x -= 128.0f;
+        firstVm->positionOffset.y -= 16.0f;
+        firstVm->rotation.z = enemy->movementAngle;
+        position = *reinterpret_cast<ExtendedVector *>(&firstVm->positionOffset);
+        firstVm = g_AnmManager->GetVm(*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d8));
+        firstVm->positionOffset = *reinterpret_cast<Float3 *>(&position);
+        firstVm->rotation.z = enemy->movementAngle;
+    }
+}
+
+// ECL extended callback table entry 8 @ 0x00413CF0.
+void __fastcall SpawnEnemyMarkerVm(
+    Enemy *enemy, EclRawInstruction *instruction)
+{
+    struct MarkerLocals
+    {
+        AnmVm *vm;
+        ExtendedVmHandle handle;
+    } locals;
+
+    g_ExtendedRuntime->markerAnm->CreateVmAtWorldInto(
+        &locals.handle,
+        enemy->activeEclContext->extraIntVariables[2],
+        &enemy->worldPosition);
+    locals.vm = locals.handle.GetVm();
+    locals.handle.SetSprite(enemy->vm.activeSpriteIndex);
+    locals.vm->flip = enemy->vm.flip;
+    locals.vm->rotation = enemy->vm.rotation;
+}
+
+static __forceinline i32 ExtendedCameraIsCharging(
+    ExtendedPhotoCameraView *camera)
+{
+    return camera->mode == 1;
+}
+
+#define EXT_MOVEMENT_FLAGS(enemy) \
+    (*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4))
+
+
+// ECL extended callback table entry 20 @ 0x00414580.
+void __fastcall RunPhotoTransition(
+    Enemy *enemy, EclRawInstruction *instruction)
+{
+    struct TransitionLocals
+    {
+        ZunTimer *movementTimer;
+        Float3 *worldPosition;
+        f32 deltaX;
+        f32 deltaY;
+        f32 deltaZ;
+        AnmVm *secondStartVm;
+        AnmVm *firstStartVm;
+        AnmVm *secondEndVm;
+        AnmVm *firstEndVm;
+        Float3 zeroVelocity;
+        Float3 movementDelta;
+        f32 targetX;
+        f32 targetY;
+        f32 zeroZ;
+    } locals;
+
+    if (enemy->activeEclContext->extraIntVariables[2] != 0)
+    {
+        --enemy->activeEclContext->extraIntVariables[2];
+        if (enemy->activeEclContext->extraIntVariables[2] == 60)
+        {
+            g_PhotoGlobalState->flags &= ~0x400U;
+            locals.firstEndVm = g_AnmManager->GetVm(
+                *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
+            locals.firstEndVm->pendingInterrupt = 3;
+            AnmManagerLookupView::ExecuteScript(locals.firstEndVm);
+            locals.secondEndVm = g_AnmManager->GetVm(
+                *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
+            locals.secondEndVm->pendingInterrupt = 3;
+            AnmManagerLookupView::ExecuteScript(locals.secondEndVm);
+            g_SoundPlayer.PlaySoundByIdx(0x0f, 0);
+        }
+    }
+
+    if (((g_PhotoGlobalState->flags >> 10) & 1U) == 0 &&
+        enemy->activeEclContext->extraIntVariables[2] == 0 &&
+        ExtendedCameraIsCharging(&g_Player->camera) &&
+        g_Player->camera.CountPhotoTargets(NULL, NULL) != 0)
+    {
+        g_PhotoGlobalState->flags |= 0x400U;
+        locals.firstStartVm = g_AnmManager->GetVm(
+            *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
+        locals.firstStartVm->pendingInterrupt = 2;
+        AnmManagerLookupView::ExecuteScript(locals.firstStartVm);
+        locals.secondStartVm = g_AnmManager->GetVm(
+            *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
+        locals.secondStartVm->pendingInterrupt = 2;
+        AnmManagerLookupView::ExecuteScript(locals.secondStartVm);
+        g_SoundPlayer.PlaySoundByIdx(0x26, 0);
+        g_AnmGameSpeed = 1.0f;
+        enemy->activeEclContext->extraIntVariables[2] = 120;
+
+        if (g_Player->camera.viewfinderPosition.x < 0.0f)
+            locals.targetX =
+                g_Player->camera.viewfinderSize.x * 0.60000002f +
+                g_Player->camera.viewfinderPosition.x;
+        else
+            locals.targetX =
+                g_Player->camera.viewfinderPosition.x -
+                g_Player->camera.viewfinderSize.x * 0.60000002f;
+
+        if (g_Player->position.y < enemy->position.y)
+            locals.targetY =
+                g_Rng.GetRandomF32() * 64.0f + enemy->position.y;
+        else
+            locals.targetY =
+                enemy->position.y - g_Rng.GetRandomF32() * 64.0f;
+
+        locals.zeroZ = 0.0f;
+        locals.worldPosition = &enemy->worldPosition;
+        locals.deltaZ = locals.zeroZ - locals.worldPosition->z;
+        locals.deltaY = locals.targetY - locals.worldPosition->y;
+        locals.deltaX = locals.targetX - locals.worldPosition->x;
+        locals.movementDelta.x = locals.deltaX;
+        locals.movementDelta.y = locals.deltaY;
+        locals.movementDelta.z = locals.deltaZ;
+        enemy->movementInterpolationDelta = locals.movementDelta;
+        enemy->movementInterpolationOrigin = enemy->position;
+
+        enemy->movementDuration = 60;
+        locals.movementTimer = &enemy->movementTimer;
+        locals.movementTimer->current = 60;
+        locals.movementTimer->subFrame = 60.0f;
+        locals.movementTimer->previous = -999999;
+
+        EXT_MOVEMENT_FLAGS(enemy) =
+            (EXT_MOVEMENT_FLAGS(enemy) & 0xffff8fffU) | 0x4000U;
+        EXT_MOVEMENT_FLAGS(enemy) =
+            (EXT_MOVEMENT_FLAGS(enemy) & 0xfffff3ffU) | 0x0800U;
+
+        locals.zeroVelocity.x = 0.0f;
+        locals.zeroVelocity.y = 0.0f;
+        locals.zeroVelocity.z = 0.0f;
+        enemy->velocity = locals.zeroVelocity;
+    }
+}
+
+#undef EXT_MOVEMENT_FLAGS
 
 } // namespace EclExtended
 } // namespace th095

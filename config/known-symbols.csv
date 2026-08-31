@@ -220,3 +220,7 @@ address,name,module,confidence,evidence
 0x00414430,th095::EclExtended::EnablePhotoTransition,EclManager,exact,"Exact ECL extended entry 18: flag 0x400, interrupt-2 execute on two background VMs, sound 0x26, game speed 1.0"
 0x004144E0,th095::EclExtended::DisablePhotoTransition,EclManager,exact,"Exact ECL extended entry 19: clears flag 0x400, interrupt-3 execute on two background VMs, sound 0x0F"
 0x00414930,th095::EclExtended::ResetOwnedBulletMotion,EclManager,exact,"Exact ECL extended entry 21: scans 1600 0x65C bullets, filters context ownership, clears transform state, and rebuilds 4.5-speed velocity"
+0x00413990,th095::EclExtended::FadeOwnedCapturedBullets,EclManager,exact,Exact extended-ECL entry 5: owner-filtered captured bullets receive ANM alpha interpolation slot 2 from 0x40 to 0xFF over 30 frames
+0x00413CF0,th095::EclExtended::SpawnEnemyMarkerVm,EclManager,exact,"Exact extended-ECL entry 8: marker ANM VM creation from runtime +0x4DF8, sprite/flip/rotation copied from enemy VM"
+0x00414580,th095::EclExtended::RunPhotoTransition,EclManager,exact,"Exact extended-ECL entry 20: complete 120-to-60-frame photography transition coordinator with background VMs, sounds, camera target gating, randomized movement target, and 60-frame interpolation"
+0x00413B90,th095::EclExtended::UpdateEnemyMarkerVms,EclManager,exact,Exact extended-ECL entry 7: projected dual-marker VM synchronization

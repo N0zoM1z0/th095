@@ -538,3 +538,7 @@ th095::EclExtended::ClearPhotoFlag200
 th095::EclExtended::EnablePhotoTransition
 th095::EclExtended::DisablePhotoTransition
 th095::EclExtended::ResetOwnedBulletMotion
+th095::EclExtended::FadeOwnedCapturedBullets
+th095::EclExtended::SpawnEnemyMarkerVm
+th095::EclExtended::RunPhotoTransition
+th095::EclExtended::UpdateEnemyMarkerVms

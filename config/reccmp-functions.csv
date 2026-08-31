@@ -539,3 +539,7 @@ th095::EclExtended::ClearPhotoFlag200,0x00414260,function
 th095::EclExtended::EnablePhotoTransition,0x00414430,function
 th095::EclExtended::DisablePhotoTransition,0x004144E0,function
 th095::EclExtended::ResetOwnedBulletMotion,0x00414930,function
+th095::EclExtended::FadeOwnedCapturedBullets,0x00413990,function
+th095::EclExtended::SpawnEnemyMarkerVm,0x00413CF0,function
+th095::EclExtended::RunPhotoTransition,0x00414580,function
+th095::EclExtended::UpdateEnemyMarkerVms,0x00413B90,function

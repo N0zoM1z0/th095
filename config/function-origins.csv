@@ -114,10 +114,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004134A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00413620,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00413750,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00413990,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00413990,authored,EclManager,authored,exact,vc71-ecl-extended-transition-core-2026-08-31
 0x00413AA0,authored,EclManager,authored,exact,vc71-ecl-extended-callbacks-2026-08-31
-0x00413B90,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00413CF0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00413B90,authored,EclManager,authored,exact,vc71-ecl-extended-marker-bridge-2026-08-31
+0x00413CF0,authored,EclManager,authored,exact,vc71-ecl-extended-transition-core-2026-08-31
 0x00413DA0,authored,EclManager,authored,exact,vc71-ecl-extended-callbacks-2026-08-31
 0x00413DF0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00413F90,authored,EclManager,authored,exact,vc71-ecl-extended-callbacks-2026-08-31
@@ -129,7 +129,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00414290,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00414430,authored,EclManager,authored,exact,vc71-ecl-extended-callbacks-2026-08-31
 0x004144E0,authored,EclManager,authored,exact,vc71-ecl-extended-callbacks-2026-08-31
-0x00414580,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00414580,authored,EclManager,authored,exact,vc71-ecl-extended-transition-core-2026-08-31
 0x00414930,authored,EclManager,authored,exact,vc71-ecl-extended-callbacks-2026-08-31
 0x004149F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00414B30,authored,EnemyManager,authored,exact,vc71-photo-enemy-destroy-2026-08-30
