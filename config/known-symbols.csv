@@ -224,3 +224,27 @@ address,name,module,confidence,evidence
 0x00413CF0,th095::EclExtended::SpawnEnemyMarkerVm,EclManager,exact,"Exact extended-ECL entry 8: marker ANM VM creation from runtime +0x4DF8, sprite/flip/rotation copied from enemy VM"
 0x00414580,th095::EclExtended::RunPhotoTransition,EclManager,exact,"Exact extended-ECL entry 20: complete 120-to-60-frame photography transition coordinator with background VMs, sounds, camera target gating, randomized movement target, and 60-frame interpolation"
 0x00413B90,th095::EclExtended::UpdateEnemyMarkerVms,EclManager,exact,Exact extended-ECL entry 7: projected dual-marker VM synchronization
+0x00421E00,th095::MidiDevice::~MidiDevice,Midi,exact,Exact MIDI output-device teardown forwarding Close
+0x00421E20,th095::MidiDevice::OpenDevice,Midi,exact,Exact MIDI mapper/device open path with CALLBACK_WINDOW ownership
+0x00421E80,th095::MidiDevice::Close,Midi,exact,Exact midiOutReset/midiOutClose device release
+0x00421EC0,th095::MidiDevice::SendLongMsg,Midi,exact,Exact SysEx header prepare and long-message submit helper
+0x00421F10,th095::MidiDevice::SendShortMsg,Midi,exact,Exact packed three-byte MIDI short-message submit helper
+0x00421F60,th095::MidiTimer::MidiTimer,Midi,exact,Exact multimedia timer capability initialization
+0x00421F90,th095::MidiTimer::~MidiTimer,Midi,exact,Exact timer stop and timeEndPeriod teardown
+0x00421FC0,th095::MidiTimer::StartTimerImpl,Midi,exact,Exact periodic multimedia timer setup with default callback fallback
+0x00422040,th095::MidiTimer::StopTimerImpl,Midi,exact,Exact timer cancellation and period release
+0x00422080,th095::MidiTimer::DefaultTimerCallback,Midi,exact,Exact WinMM callback forwarding virtual OnTimerElapsed
+0x004220A0,th095::MidiOutput::Ntohs,Midi,exact,Exact MIDI big-endian 16-bit byte swap
+0x004220C0,th095::MidiOutput::SkipVariableLength,Midi,exact,Exact SMF variable-length integer decoder
+0x00422110,th095::MidiOutput::~MidiOutput,Midi,exact,Exact MIDI playback/tracks/file-data ownership teardown
+0x004221B0,th095::MidiOutput::ReadFileData,Midi,exact,Exact MIDI slot load with stop/release/error logging path
+0x00422230,th095::MidiOutput::ReleaseFileData,Midi,exact,Exact MIDI file-slot free and nulling helper
+0x00422270,th095::MidiOutput::ClearTracks,Midi,exact,Exact per-track data release plus track-array reset
+0x00422530,th095::MidiOutput::LoadTracks,Midi,exact,Exact playback cursor/loop/timing reset for every MIDI track
+0x00422600,th095::MidiOutput::Play,Midi,exact,Exact MIDI track load device open timer start and debug path
+0x00422660,th095::MidiOutput::StopPlayback,Midi,exact,Exact pending-header cleanup timer stop device close and active-slot reset
+0x004226E0,th095::MidiOutput::UnprepareHeader,Midi,exact,Exact pending SysEx header lookup WinMM unprepare and owned-buffer release
+0x004227B0,th095::MidiOutput::SetFadeOut,Midi,exact,Exact MIDI fade-state initialization
+0x004233D0,th095::DummyMidiTimer::OnTimerElapsed,Midi,exact,Exact dummy MIDI timer performance-counter sample
+0x004233F0,th095::MidiTimer::StartTimer,Midi,exact,Exact 16ms dummy-timer start wrapper
+0x00423410,th095::MidiTimer::StopTimer,Midi,exact,Exact timer-stop wrapper
