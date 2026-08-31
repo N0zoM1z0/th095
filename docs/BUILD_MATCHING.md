@@ -452,6 +452,26 @@ compiler-private object-symbol names is therefore manifest maintenance, not a
 source or target relaxation. Never update a local-label symbol unless the target
 destination and all non-relocation bytes are independently unchanged.
 
+The expanded ScreenEffect lane adds three reusable VC7 source-shape rules. First,
+do not flatten `timer = 0` into three member stores when the target owns the
+assignment expression: the inline assignment creates the target temporary phase
+used by `CalcArcadePulse`. Second, target photography gates keep the outer
+`if (state != NULL) { ... } else { return; }` nesting even when two sequential
+early returns are logically equivalent; flattening it removes a short jump.
+Third, a one-byte commutative-OR register residual can sometimes be solved
+without operand swapping. A force-inlined `EitherFlag(first, second)` called as
+`EitherFlag(flag0, flag2)` makes VC7 evaluate flag2 then flag0 (right-to-left
+argument evaluation) while the helper accumulates `first | second` into EAX.
+This exactly reproduces `or eax, ecx` in both shake callbacks and is a useful
+oracle for other one-byte bitfield-OR residuals. Do not generalize it unless the
+load order and target accumulator are independently proven.
+
+`g_ScreenEffectShakeX/Y @ 0x004C493C/0x004C4940` are floats, not generic ANM
+layer-6 counters. The exact layer-6 callback clears them every frame; the exact
+shake callbacks write signed amplitudes to the same addresses. Keep the shared
+global type/name aligned across translation units so relocation manifests do not
+preserve a stale semantic alias.
+
 The adjacent ScoreData lifecycle gives a scheduling rule: exact-sized does not
 mean cheap. Its `0x004354B0` constructor still has live local-home displacement
 residuals, and the straightforward destructor is 97 bytes versus a 109-byte

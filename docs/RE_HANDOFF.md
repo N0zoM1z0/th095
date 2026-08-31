@@ -1156,12 +1156,18 @@ lanes; the 1,274-byte runtime photo-target counter is currently a 1,133-byte
 semantic probe and should not be ground on without a new source oracle.
 
 
-The ScreenEffect leaf lane at `0x00436760..0x004372CB` is now canonical for
-965 authored bytes across eight functions. Preserve the `0x34` layout, local-
-TU `__forceinline` timer helper definitions, the `timer * 255.0f` x87 operand
-order, and TH095's `(128,16)..(512,464)` arcade-pulse rectangle. The intervening
-TH08-derived ScreenEffect bodies have material target differences and are not
-part of this exact lane.
+The ScreenEffect lane at `0x00436760..0x0043778F` is now canonical for
+2,513 authored bytes across fourteen functions. Preserve the `0x34` layout,
+local-TU `__forceinline` timer helpers, `timer * 255.0f` x87 operand order, and
+TH095's `(128,16)..(512,464)` arcade-pulse rectangle. New exact source-shape
+oracles: `CalcFadeOut` has no TH08 menu/retry gate or timer increment;
+`CalcArcadePulse` must use the real `timer = 0` assignment; shake gates retain
+`if (photoState != NULL) { if (blocked) ... } else ...`; and the inline
+`EitherFlag(flag0, flag2)` helper is the natural solution for the target
+bit2-first loads plus `or eax,ecx`. Shake outputs are floats at
+`0x004C493C/0x004C4940` and are cleared by exact `anm-draw-layer-6`. Only
+`DrawSquare @ 0x00436920` and `RegisterChain @ 0x00436DD0` remain outside the
+exact ScreenEffect lane; treat them separately rather than bulk-porting TH08.
 
 The ScoreData lifecycle adds three exact leaves totaling 338 bytes: the `0x458`
 profile initializer and the `0x69A0` global create/release wrappers. Do not grind

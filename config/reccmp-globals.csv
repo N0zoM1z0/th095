@@ -36,3 +36,6 @@ th095::EclRunHigh::g_Th095ExInsn,0x004A4270,data
 th095::g_OpenWriteFileHandle,0x004A4328,data
 th095::g_ErrorCriticalActiveCount,0x004C4D7F,data
 th095::g_PbgDecryptProfiles,0x004A42C8,data
+th095::g_ScreenEffectCounter,0x004C4EAC,data
+th095::g_ScreenEffectShakeX,0x004C493C,data
+th095::g_ScreenEffectShakeY,0x004C4940,data

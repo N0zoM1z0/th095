@@ -12532,8 +12532,8 @@ symbol = "?DrawLayer6@AnmManager@th095@@SIXPAX@Z"
 target_address = 0x00444A60
 size = 0x42
 relocations = [
-  { offset = 0x09, type = "DIR32", symbol = "?g_AnmLayer6CounterA@th095@@3HA", target = 0x004C493C },
-  { offset = 0x13, type = "DIR32", symbol = "?g_AnmLayer6CounterB@th095@@3HA", target = 0x004C4940 },
+  { offset = 0x09, type = "DIR32", symbol = "?g_ScreenEffectShakeX@th095@@3MA", target = 0x004C493C },
+  { offset = 0x13, type = "DIR32", symbol = "?g_ScreenEffectShakeY@th095@@3MA", target = 0x004C4940 },
   { offset = 0x1C, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x29, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x3A, type = "REL32", symbol = "?DrawLayer@AnmManagerDrawLayerView@th095@@QAEHH@Z", target = 0x00444C80 },
@@ -16119,4 +16119,116 @@ relocations = [
   { offset = 0x1BD, type = "REL32", symbol = "_free", target = 0x004854BE },
   { offset = 0x201, type = "DIR32", symbol = "??_C@_0DB@OGAANPCC@?$IDt?$ID?$EA?$IDC?$ID?$IL?5?$CFs?5?$IC?L?$IDI?$IB?$FL?$IDv?$ID?$JD?$JC?$IG?$IC?I?$IDG?$ID?$IJ?$IB?$FL@", target = 0x00497C70 },
   { offset = 0x206, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+]
+
+[units.screen-effect-calc-fade-out]
+source = "src/ScreenEffect.cpp"
+object = "build/matching/ScreenEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ScreenEffect::CalcFadeOut"]
+symbol = "?CalcFadeOut@ScreenEffect@th095@@SIHPAU12@@Z"
+target_address = 0x00436CA0
+size = 0x77
+relocations = [
+  { offset = 0xB, type = "DIR32", symbol = "?g_ScreenEffectCounter@th095@@3HA", target = 0x004C4EAC },
+  { offset = 0x2D, type = "DIR32", symbol = "__real@437f0000", target = 0x004968E8 },
+  { offset = 0x38, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+]
+
+[units.screen-effect-calc-arcade-pulse]
+source = "src/ScreenEffect.cpp"
+object = "build/matching/ScreenEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ScreenEffect::CalcArcadePulse"]
+symbol = "?CalcArcadePulse@ScreenEffect@th095@@SIHPAU12@@Z"
+target_address = 0x00437190
+size = 0xE7
+relocations = [
+  { offset = 0x1D, type = "DIR32", symbol = "?g_ScreenEffectCounter@th095@@3HA", target = 0x004C4EAC },
+  { offset = 0x63, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+  { offset = 0xDA, type = "REL32", symbol = "?Tick@ScreenEffectTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+]
+
+[units.screen-effect-calc-shake]
+source = "src/ScreenEffect.cpp"
+object = "build/matching/ScreenEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ScreenEffect::CalcShake"]
+symbol = "?CalcShake@ScreenEffect@th095@@SIHPAU12@@Z"
+target_address = 0x004372D0
+size = 0x1D9
+relocations = [
+  { offset = 0xB, type = "DIR32", symbol = "?g_ScreenEffectCounter@th095@@3HA", target = 0x004C4EAC },
+  { offset = 0x1B, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x23, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x35, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x48, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x5A, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x6E, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x82, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0xB1, type = "REL32", symbol = "?Tick@ScreenEffectTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+  { offset = 0x114, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
+  { offset = 0x119, type = "REL32", symbol = "?GetRandomU32@Rng@th095@@QAEIXZ", target = 0x0041B470 },
+  { offset = 0x14E, type = "DIR32", symbol = "?g_ScreenEffectShakeX@th095@@3MA", target = 0x004C493C },
+  { offset = 0x15C, type = "DIR32", symbol = "?g_ScreenEffectShakeX@th095@@3MA", target = 0x004C493C },
+  { offset = 0x169, type = "DIR32", symbol = "?g_ScreenEffectShakeX@th095@@3MA", target = 0x004C493C },
+  { offset = 0x177, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
+  { offset = 0x17C, type = "REL32", symbol = "?GetRandomU32@Rng@th095@@QAEIXZ", target = 0x0041B470 },
+  { offset = 0x1B1, type = "DIR32", symbol = "?g_ScreenEffectShakeY@th095@@3MA", target = 0x004C4940 },
+  { offset = 0x1BF, type = "DIR32", symbol = "?g_ScreenEffectShakeY@th095@@3MA", target = 0x004C4940 },
+  { offset = 0x1CC, type = "DIR32", symbol = "?g_ScreenEffectShakeY@th095@@3MA", target = 0x004C4940 },
+]
+
+[units.screen-effect-calc-shake-envelope]
+source = "src/ScreenEffect.cpp"
+object = "build/matching/ScreenEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ScreenEffect::CalcShakeEnvelope"]
+symbol = "?CalcShakeEnvelope@ScreenEffect@th095@@SIHPAU12@@Z"
+target_address = 0x004374B0
+size = 0x250
+relocations = [
+  { offset = 0xB, type = "DIR32", symbol = "?g_ScreenEffectCounter@th095@@3HA", target = 0x004C4EAC },
+  { offset = 0x1B, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x23, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x35, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x48, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x5A, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x6E, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x82, type = "DIR32", symbol = "?g_PhotoGlobalState@th095@@3PAUScreenEffectPhotoGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0xB1, type = "REL32", symbol = "?Tick@ScreenEffectTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+  { offset = 0x18B, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
+  { offset = 0x190, type = "REL32", symbol = "?GetRandomU32@Rng@th095@@QAEIXZ", target = 0x0041B470 },
+  { offset = 0x1C5, type = "DIR32", symbol = "?g_ScreenEffectShakeX@th095@@3MA", target = 0x004C493C },
+  { offset = 0x1D3, type = "DIR32", symbol = "?g_ScreenEffectShakeX@th095@@3MA", target = 0x004C493C },
+  { offset = 0x1E0, type = "DIR32", symbol = "?g_ScreenEffectShakeX@th095@@3MA", target = 0x004C493C },
+  { offset = 0x1EE, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
+  { offset = 0x1F3, type = "REL32", symbol = "?GetRandomU32@Rng@th095@@QAEIXZ", target = 0x0041B470 },
+  { offset = 0x228, type = "DIR32", symbol = "?g_ScreenEffectShakeY@th095@@3MA", target = 0x004C4940 },
+  { offset = 0x236, type = "DIR32", symbol = "?g_ScreenEffectShakeY@th095@@3MA", target = 0x004C4940 },
+  { offset = 0x243, type = "DIR32", symbol = "?g_ScreenEffectShakeY@th095@@3MA", target = 0x004C4940 },
+]
+
+[units.screen-effect-initialize-timer]
+source = "src/ScreenEffect.cpp"
+object = "build/matching/ScreenEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ScreenEffect::InitializeTimer"]
+symbol = "?InitializeTimer@ScreenEffect@th095@@SIHPAU12@@Z"
+target_address = 0x00437700
+size = 0x35
+relocations = []
+
+[units.screen-effect-delete]
+source = "src/ScreenEffect.cpp"
+object = "build/matching/ScreenEffect.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::ScreenEffect::DeleteScreenEffect"]
+symbol = "?DeleteScreenEffect@ScreenEffect@th095@@SIHPAU12@@Z"
+target_address = 0x00437740
+size = 0x50
+relocations = [
+  { offset = 0x1E, type = "DIR32", symbol = "?g_Chain@th095@@3VChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x23, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAUChainElem@2@@Z", target = 0x00419160 },
+  { offset = 0x3C, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
 ]

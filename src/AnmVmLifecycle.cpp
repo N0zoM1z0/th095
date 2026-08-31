@@ -129,8 +129,8 @@ struct PhotoGameTaskDrawGateView
 };
 
 extern PhotoGameTaskDrawGateView *g_PhotoGameTask;
-extern i32 g_AnmLayer6CounterA;
-extern i32 g_AnmLayer6CounterB;
+extern f32 g_ScreenEffectShakeX;
+extern f32 g_ScreenEffectShakeY;
 
 struct AnmVmUpdateView
 {
@@ -228,8 +228,8 @@ void __fastcall AnmManager::DrawLayer5(void *arg)
 // FUNCTION: TH095 0x00444A60.
 void __fastcall AnmManager::DrawLayer6(void *arg)
 {
-    g_AnmLayer6CounterA = 0;
-    g_AnmLayer6CounterB = 0;
+    g_ScreenEffectShakeX = 0.0f;
+    g_ScreenEffectShakeY = 0.0f;
     g_AnmManager->unknown020 = 0;
     g_AnmManager->unknown024 = 0;
     reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(6);

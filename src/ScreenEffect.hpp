@@ -5,6 +5,8 @@
 namespace th095
 {
 
+struct ChainElem;
+
 struct ScreenEffectTimer
 {
     int previous;
@@ -15,6 +17,8 @@ struct ScreenEffectTimer
     __forceinline operator float();
     int Tick();
     __forceinline void operator++(int);
+    __forceinline void operator=(int value);
+    __forceinline unsigned int operator<(int value);
     __forceinline unsigned int operator<=(int value);
     __forceinline unsigned int operator>=(int value);
 };
@@ -32,12 +36,12 @@ struct ScreenEffectRect
 struct ScreenEffect
 {
     int type;
-    void *calcChainElement;
-    void *drawChainElement;
+    ChainElem *calcChainElement;
+    ChainElem *drawChainElement;
     int unconsumedDword0C;
     int overlayAlpha;
     int duration;
-    unsigned int rawParameter0;
+    int rawParameter0;
     int rawParameter1;
     int rawParameter2;
     int fadeReleaseRequested;
@@ -46,7 +50,13 @@ struct ScreenEffect
     static void Clear(unsigned int color);
     static void SetViewport(unsigned int clearColor);
     static int CalcFadeIn(ScreenEffect *screenEffect);
+    static int CalcFadeOut(ScreenEffect *screenEffect);
     static int CalcFadeHold(ScreenEffect *screenEffect);
+    static int CalcArcadePulse(ScreenEffect *screenEffect);
+    static int CalcShake(ScreenEffect *screenEffect);
+    static int CalcShakeEnvelope(ScreenEffect *screenEffect);
+    static int InitializeTimer(ScreenEffect *screenEffect);
+    static int DeleteScreenEffect(ScreenEffect *screenEffect);
     static void DrawSquare(ScreenEffectRect *rect, unsigned int color);
     static int DrawFullFade(ScreenEffect *screenEffect);
     static int DrawPartialFade(ScreenEffect *screenEffect);

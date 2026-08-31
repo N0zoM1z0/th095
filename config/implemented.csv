@@ -635,3 +635,9 @@ th095::PbgArchiveEntry::~PbgArchiveEntry
 th095::CalculateByteChecksum
 th095::PbgArchive::ReadDecompressEntry
 th095::PbgArchive::ParseHeader
+th095::ScreenEffect::CalcFadeOut
+th095::ScreenEffect::CalcArcadePulse
+th095::ScreenEffect::CalcShake
+th095::ScreenEffect::CalcShakeEnvelope
+th095::ScreenEffect::InitializeTimer
+th095::ScreenEffect::DeleteScreenEffect

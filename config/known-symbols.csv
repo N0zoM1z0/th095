@@ -311,3 +311,9 @@ address,name,module,confidence,evidence
 0x0041BA30,th095::CalculateByteChecksum,Checksum,exact,Exact byte-additive checksum used by PBG filename decrypt-profile selection
 0x004550F0,th095::PbgArchive::ReadDecompressEntry,PbgArchive,exact,Exact archive-entry read/decrypt/decompress path with filename-selected 8-profile cipher table
 0x00455360,th095::PbgArchive::ParseHeader,PbgArchive,exact,Exact THA1 16-byte header decode and tail file-table decrypt/decompress/allocation pipeline
+0x00436CA0,th095::ScreenEffect::CalcFadeOut,ScreenEffect,exact,"Exact TH095 fade-out alpha calculator; global cancel gate, no TH08 menu/retry gate or timer increment"
+0x00437190,th095::ScreenEffect::CalcArcadePulse,ScreenEffect,exact,Exact pulsed-fade calculator with repeat count and canonical timer=0 assignment source shape
+0x004372D0,th095::ScreenEffect::CalcShake,ScreenEffect,exact,Exact photography-gated linear shake with dual RNG direction switches and shared shake X/Y outputs
+0x004374B0,th095::ScreenEffect::CalcShakeEnvelope,ScreenEffect,exact,Exact ramp-up/hold/ramp-down photography-gated shake envelope with dual RNG direction switches
+0x00437700,th095::ScreenEffect::InitializeTimer,ScreenEffect,exact,"Exact full 12-byte screen-effect timer initialization to current 0, subFrame 0, previous -999999"
+0x00437740,th095::ScreenEffect::DeleteScreenEffect,ScreenEffect,exact,Exact Chain unlink and heap teardown; delete-expression source clears the fastcall argument home after delete
