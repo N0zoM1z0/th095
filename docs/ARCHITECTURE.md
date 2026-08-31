@@ -141,9 +141,12 @@ decoder at `0x0044D020` are now exact. The adjacent
 2,278-byte scene-detail updater at `0x0044C670` and its three VM helpers are
 also exact. Target evidence now identifies `0x0044DCA0` as the TH095-specific
 4-by-20 replay browser rather than a scene-select state updater. Its complete
-2,054-byte topology is source-present with all 77 relocations resolved; the
-306-byte critical-section slot loader and 21-byte exit setter are exact. The
-10,103-byte options state machine at `0x0044E4B0` is source-present and
+2,054-byte update is now canonical exact with all 77 relocations; the 306-byte
+critical-section slot loader, 403-byte scan callback, and 21-byte exit setter
+are exact as well. The adjacent five-state Help viewer at `0x00451C80` is also
+canonical exact for 2,358 authored bytes, with its five-entry compiler switch
+table covered by a 2,378-byte comparison extent. The 10,103-byte options state
+machine at `0x0044E4B0` is source-present and
 its controller dependency chain at `0x004193A0..0x00419ADB` is exact for
 another 1,820 bytes. The complete `Controller::GetInput @ 0x00419AE0` source
 proves TH095's two independently assigned devices, third aggregate input slot,

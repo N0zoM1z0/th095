@@ -51,7 +51,7 @@ address,name,module,confidence,evidence
 0x00441DC0,th095::AnmManager::AnmManager,AnmManager,exact,Canonical anm-manager-constructor VC7.1 comparison with 88 relocations
 0x004421B0,th095::AnmManager::~AnmManager,AnmManager,exact,Canonical anm-manager-destructor VC7.1 comparison with 8 relocations
 0x0041BB00,th095::ReplayBrowserExitSignal::Request,ReplayBrowser,exact,Canonical replay-browser-exit-signal VC7.1 comparison
-0x0044DCA0,th095::ReplayBrowserView::Update,ReplayBrowser,high,Target-sized source probe with all 77 relocations resolved and only stack-home residuals
+0x0044DCA0,th095::ReplayBrowserView::Update,ReplayBrowser,exact,Canonical exact 2054-byte replay-browser update with 77 relocations
 0x00450C30,th095::LoadReplayBrowserEntries,ReplayBrowser,high,Complete built-in and user replay enumeration callback
 0x00450E20,th095::ReplayBrowserView::LoadReplaySlot,ReplayBrowser,exact,Canonical replay-browser-load-slot VC7.1 comparison with 19 relocations
 0x0041BAE0,th095::ReplayScanWorker::~ReplayScanWorker,ReplayScanWorker,exact,Canonical replay-scan-worker destructor VC7.1 comparison
@@ -75,7 +75,7 @@ address,name,module,confidence,evidence
 0x00450FC0,th095::MusicRoomView::UpdateMusicRoom,MusicRoom,high,Complete TH095 music-room state machine with target-exact 47-call topology
 0x00451B00,th095::SkipMusicCommentLine,MusicRoom,exact,Canonical relocation-free music-room-skip-comment-line comparison
 0x00451B90,th095::ReadMusicCommentLine,MusicRoom,exact,Canonical relocation-free music-room-read-comment-line comparison
-0x00451C80,th095::HelpMenuView::UpdateHelpMenu,HelpMenu,high,Complete TH095 Help viewer state machine with target-exact 49-call topology
+0x00451C80,th095::HelpMenuView::UpdateHelpMenu,HelpMenu,exact,Canonical exact 2358-byte Help update; 2378-byte compare extent includes five-entry switch table
 0x004525D0,th095::LoadHelpAnm,HelpMenu,exact,Canonical help-menu-load-anm comparison with four relocations
 0x00445E40,th095::SceneSelectControllerView::OnUpdate,FrontEndController,exact,Canonical ownership wrapper targeting the shared update state machine
 0x00445E60,th095::SceneSelectControllerView::OnDraw,FrontEndController,exact,Canonical ownership wrapper targeting the shared draw path

@@ -631,7 +631,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0044CFE0,authored,SceneSelect,authored,exact,vc71-scene-detail-display-2026-08-29
 0x0044D020,authored,SceneSelect,authored,exact,vc71-scene-preview-text-decoder-2026-08-29
 0x0044D0A0,authored,SceneSelect,authored,high,scene-select-asset-worker-2026-08-29
-0x0044DCA0,authored,ReplayBrowser,authored,high,vc71-replay-browser-2026-08-29
+0x0044DCA0,authored,ReplayBrowser,authored,exact,ui-inline-temporary-chronology-exact-2026-08-31
 0x0044E4B0,authored,OptionsMenu,authored,high,vc71-options-menu-2026-08-29
 0x00450C30,authored,ReplayBrowser,authored,exact,vc71-exact-replay-browser-load-entries-2026-08-31
 0x00450DD0,authored,SceneSelect,authored,exact,vc71-scene-value-queue-push-2026-08-29
@@ -640,7 +640,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00450FC0,authored,MusicRoom,authored,high,vc71-music-room-update-2026-08-29
 0x00451B00,authored,MusicRoom,authored,exact,vc71-music-room-parser-2026-08-29
 0x00451B90,authored,MusicRoom,authored,exact,vc71-music-room-parser-2026-08-29
-0x00451C80,authored,HelpMenu,authored,high,vc71-help-menu-update-2026-08-29
+0x00451C80,authored,HelpMenu,authored,exact,ui-inline-temporary-chronology-exact-2026-08-31
 0x004525D0,authored,HelpMenu,authored,exact,vc71-help-menu-loader-2026-08-29
 0x00452630,authored,FrontEndController,authored,high,vc71-front-end-controller-draw-2026-08-29
 0x00452D70,authored,AnmManager,authored,exact,vc71-anm-vm-color1-interpolation-2026-08-29

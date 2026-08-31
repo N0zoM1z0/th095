@@ -205,6 +205,20 @@ Additional stock-VC7.1 local-allocation oracles are now canonical:
   body-size difference vanished only when the manual queue write was restored
   as a bounded `__forceinline` helper, which makes VC7 evaluate the LHS
   count/index before the packed RHS and selects the target register chain.
+- ReplayBrowser and HelpMenu add a distinct inline-temporary chronology oracle.
+  When a function directly writes `array[index] = CreateVm(...)`, build 3077
+  may allocate all anonymous return-object (sret) temporaries in the outer
+  function before locals introduced by later inline cursor/timer helpers. If
+  the target instead interleaves those sret homes with each call site, move the
+  *producing expression itself* into a source-local `static __forceinline`
+  helper that performs the store. The sret then belongs to that inline
+  expansion and is allocated in call-site chronology; `ReplayBrowser::Update`
+  uses this to place six VM-return homes exactly, while `HelpMenu::UpdateHelpMenu`
+  also gives dynamic script-index parameters their target homes. A helper that
+  merely accepts an already-produced VM id by value is a negative oracle: it
+  adds a copy and changes extent. The same rule works for ownership locals:
+  `HelpMenuFreeAnmData` contains the real data pointer and `free`, delaying that
+  pointer to the case-3 call site rather than inventing storage.
 
 - The exact bullet-photography pair at `0x00407820/0x00408220` proves several
   interacting VC7.1 rules. Small three-float value operators can be ABI-visible:

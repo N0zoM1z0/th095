@@ -8,6 +8,11 @@
 namespace th095
 {
 
+static __forceinline void ReplayBrowserCreateVmAt(ReplayBrowserView *view, i32 index)
+{
+    view->vmIds[index] = view->sceneAnm->CreateVm(index, 7);
+}
+
 struct ReplayBrowserLoadLocals
 {
     i32 scanFinished1;
@@ -79,14 +84,14 @@ ChainCallbackResult ReplayBrowserView::Update()
         this->state = 1;
         this->selectedReplayIndex = 0;
 
-        this->vmIds[0x68] = this->sceneAnm->CreateVm(0x68, 7);
-        this->vmIds[0x69] = this->sceneAnm->CreateVm(0x69, 7);
+        ReplayBrowserCreateVmAt(this, 0x68);
+        ReplayBrowserCreateVmAt(this, 0x69);
         this->vmIds.SetInterrupt(0x19, 3);
         this->vmIds.SetInterrupt(0x1a, 3);
         this->transitionVm.SetInterrupt(3);
         this->vmIds.SetInterrupt(0x1b, 3);
-        this->vmIds[0x1f] = this->sceneAnm->CreateVm(0x1f, 7);
-        this->vmIds[0x47] = this->sceneAnm->CreateVm(0x47, 7);
+        ReplayBrowserCreateVmAt(this, 0x1f);
+        ReplayBrowserCreateVmAt(this, 0x47);
 
         this->columnCursor.count = 20;
         this->columnCursor.wraps = 1;
@@ -129,9 +134,8 @@ ChainCallbackResult ReplayBrowserView::Update()
 
         if (GetReplayBrowserPressedButtons(0x1002) != 0)
         {
-            i32 replayRow = this->rowCursor.current;
-            i32 replayColumn = this->columnCursor.current;
-            replayIndex = replayRow * 20 + replayColumn;
+            replayIndex = this->rowCursor.GetCurrent() * 20 +
+                          this->columnCursor.GetCurrent();
             if (this->replays[replayIndex] == NULL ||
                 this->replays[replayIndex]->activeInputData == NULL)
             {
@@ -162,8 +166,8 @@ ChainCallbackResult ReplayBrowserView::Update()
             this->vmIds.SetInterrupt(0x47, 1);
             this->vmIds.SetInterrupt(0x68, 1);
             this->vmIds.SetInterrupt(0x69, 1);
-            this->vmIds[0x66] = this->sceneAnm->CreateVm(0x66, 7);
-            this->vmIds[0x67] = this->sceneAnm->CreateVm(0x67, 7);
+            ReplayBrowserCreateVmAt(this, 0x66);
+            ReplayBrowserCreateVmAt(this, 0x67);
             this->vmIds.SetInterrupt(0x19, 2);
             this->vmIds.SetInterrupt(0x1a, 2);
             this->transitionVm.SetInterrupt(2);

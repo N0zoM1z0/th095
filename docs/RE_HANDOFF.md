@@ -291,13 +291,18 @@
   locals used only to force a match. The policy-compliant TH095 body remains
   478 versus 490 target bytes; preserve this as a negative oracle rather than
   copying the TH08 padding artifact.
-- `ReplayBrowserView::Update @ 0x0044DCA0` is now source-present for the
-  complete TH095-specific 4-by-20 replay browser. The target-sized 2,054-byte
-  probe resolves all 77 relocations and matches 1,683 of 1,746 comparable
-  bytes; the 63 residual bytes are local stack homes and receive no exact
-  credit. The shared layout is proven through two reusable cursors at
-  `+0x20/+0xF8`, 165 ANM handles at `+0xBF4`, eighty replay pointers at
-  `+0xEA8`, and browser/outer states at `+0x610C/+0x6110`.
+- `ReplayBrowserView::Update @ 0x0044DCA0` is now canonical exact for all
+  2,054 authored bytes and 77 relocations. The key stock-VC7.1 source shape is
+  a source-local `__forceinline ReplayBrowserCreateVmAt`: putting the producing
+  `CreateVm` expression inside the inline helper makes each anonymous sret
+  temporary belong to that call-site expansion, so the six homes interleave
+  with timer/cursor helpers exactly as the target does. Passing an already
+  produced VM id into a helper and using named result locals are negative
+  oracles because they add copies. `rowCursor.GetCurrent()` and
+  `columnCursor.GetCurrent()` restore the selected-index value temporaries. The
+  shared layout remains proven through cursors `+0x20/+0xF8`, 165 ANM handles
+  at `+0xBF4`, eighty replay pointers at `+0xEA8`, and states at
+  `+0x610C/+0x6110`.
   `ReplayBrowserView::LoadReplaySlot @ 0x00450E20` is exact for all 306 bytes
   and 19 relocations, `ReplayBrowserExitSignal::Request @ 0x0041BB00` is exact
   for all 21 bytes, and `LoadReplayBrowserEntries @ 0x00450C30` is now exact
@@ -353,14 +358,18 @@
   bytes. `SceneValueQueue::Pop @ 0x00450F60`, shared by four scene hubs, is
   complete source-present at 93 versus 91 bytes; its sole residual is VC7.1's
   callee-saved-register choice.
-- `HelpMenuView::UpdateHelpMenu @ 0x00451C80` is source-present for the
-  complete TH095 nine-page Help viewer. Its five states create the title/help
-  VMs, move the shared nine-entry cursor, asynchronously load
-  `help_%.2d.anm`, replace texture slot 13, page left/right, and restore the
-  title menu. The natural VC7.1 body is 2,298 versus 2,358 target bytes, but
-  its 49 static call sites have the exact target distribution. The adjacent
-  `LoadHelpAnm @ 0x004525D0` callback is independently exact for all 88 bytes
-  and four relocations, proving the owner pointer and both load-state globals.
+- `HelpMenuView::UpdateHelpMenu @ 0x00451C80` is now canonical exact for
+  2,358 authored bytes; its complete compare extent is 2,378 bytes because the
+  compiler owns a five-entry 20-byte state switch table immediately after the
+  authored `ret`. All 97 code/table relocations replay. The same inline-sret
+  rule as ReplayBrowser is required: `HelpMenuCreateVmAt` contains the producing
+  `CreateVm` expression, and `HelpMenuFreeAnmData` keeps the real owned-data
+  pointer local in the case-3 free call-site chronology instead of allocating
+  it at the front of the function. Five lexical loop indices, `GetCurrent()`,
+  `ResultScreenTimer::operator<`, the target `SOUND_TAKE_PHOTO` page-turn SFX,
+  and placing `load_page:` inside the confirmed-input body finish the exact
+  control flow without inert locals. `LoadHelpAnm @ 0x004525D0` remains exact
+  for all 88 bytes and four relocations.
 - `SceneSelectControllerView::Draw @ 0x00452630` is source-present for the
   complete shared front-end renderer. State 2 draws total/high scene scores,
   captured-scene count, slow rate, success rate, and the cleared-scene marker;
