@@ -628,3 +628,7 @@ th095::ScreenEffect::DrawArcadePulse
 th095::ScoreProfileView::Initialize
 th095::InitializeScoreData
 th095::ReleaseScoreData
+th095::PbgArchive::PbgArchive
+th095::PbgArchive::Load
+th095::PbgArchive::Release
+th095::PbgArchiveEntry::~PbgArchiveEntry

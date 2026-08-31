@@ -557,3 +557,8 @@ address,name,size,status,match_percent,unit,evidence
 0x00435500,th095::ScoreProfileView::Initialize,122,matching,100.00,score-profile-initialize,python3 scripts/build.py --unit score-profile-initialize && python3 scripts/compare-coff-function.py --unit score-profile-initialize --json
 0x004355F0,th095::InitializeScoreData,112,matching,100.00,score-data-initialize,python3 scripts/build.py --unit score-data-initialize && python3 scripts/compare-coff-function.py --unit score-data-initialize --json
 0x00435660,th095::ReleaseScoreData,104,matching,100.00,score-data-release,python3 scripts/build.py --unit score-data-release && python3 scripts/compare-coff-function.py --unit score-data-release --json
+0x00454E50,th095::PbgArchive::PbgArchive,53,matching,100.00,pbg-archive-constructor,python3 scripts/build.py --unit pbg-archive-constructor && python3 scripts/compare-coff-function.py --unit pbg-archive-constructor --json
+0x00454EB0,th095::PbgArchive::Load,259,matching,100.00,pbg-archive-load,python3 scripts/build.py --unit pbg-archive-load && python3 scripts/compare-coff-function.py --unit pbg-archive-load --json
+0x00454FC0,th095::PbgArchive::Release,190,matching,100.00,pbg-archive-release,python3 scripts/build.py --unit pbg-archive-release && python3 scripts/compare-coff-function.py --unit pbg-archive-release --json
+0x00455820,th095::PbgArchiveEntry::~PbgArchiveEntry,41,matching,100.00,pbg-archive-entry-destructor,python3 scripts/build.py --unit pbg-archive-entry-destructor && python3 scripts/compare-coff-function.py --unit pbg-archive-entry-destructor --json
+0x00456220,th095::DecompressData,852,matching,100.00,decompress-data,python3 scripts/build.py --unit decompress-data && python3 scripts/compare-coff-function.py --unit decompress-data --json

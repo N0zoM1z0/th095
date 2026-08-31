@@ -106,7 +106,7 @@ address,name,module,confidence,evidence
 0x0044D0A0,th095::LoadSceneSelectionAssets,SceneSelect,high,Asynchronous mission thumbnail face and preview-text producer
 0x00435E90,th095::SceneSaveDataView::LoadBestShotForScene,BestShot,high,Best-shot record reset disk decode decompression and checksum validator
 0x0041BA80,th095::CalculateAlignedChecksum,Checksum,exact,Canonical relocation-free aligned additive checksum comparison
-0x00456220,th095::DecompressData,Compression,high,Complete shared MSB-first 8 KiB ring decompressor
+0x00456220,th095::DecompressData,Compression,exact,"Exact MSB-first LZSS decoder with 8 KiB ring, discarded input checksum, and target trailing-bit fetch semantics"
 0x0042AD60,th095::PhotoStageStateView::Update,PhotoStage,high,Complete TH095 capture and stage-display state machine
 0x0042C3E0,th095::UpdatePhotoStage,PhotoStage,exact,Canonical photo-stage update-chain wrapper
 0x0042C450,th095::PhotoStageStateView::SavePhoto,PhotoStage,exact,Canonical capture-state initializer and display dispatch
@@ -304,3 +304,7 @@ address,name,module,confidence,evidence
 0x00435500,th095::ScoreProfileView::Initialize,ScoreData,exact,"Exact 0x458 profile initializer: ST magic/version/size, eight-space name, and 512 RNG words"
 0x004355F0,th095::InitializeScoreData,ScoreData,exact,Exact 0x69A0 save-data allocation/construction and publication to the shared score/photo-stage save-data global
 0x00435660,th095::ReleaseScoreData,ScoreData,exact,Exact guarded save-data destruction/operator-delete and global clear path
+0x00454E50,th095::PbgArchive::PbgArchive,PbgArchive,exact,Exact four-field PBG archive ownership initialization
+0x00454EB0,th095::PbgArchive::Load,PbgArchive,exact,Exact archive load/parse/name ownership; TH095 reopens the archive through mode 0 after successful header parsing
+0x00454FC0,th095::PbgArchive::Release,PbgArchive,exact,"Exact filename, entry-array, and file-abstraction ownership teardown with target delete-expression homes"
+0x00455820,th095::PbgArchiveEntry::~PbgArchiveEntry,PbgArchive,exact,Exact conditional CRT-free ownership teardown for one archive filename

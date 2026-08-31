@@ -629,3 +629,7 @@ th095::ScreenEffect::DrawArcadePulse,0x00437280,function
 th095::ScoreProfileView::Initialize,0x00435500,function
 th095::InitializeScoreData,0x004355F0,function
 th095::ReleaseScoreData,0x00435660,function
+th095::PbgArchive::PbgArchive,0x00454E50,function
+th095::PbgArchive::Load,0x00454EB0,function
+th095::PbgArchive::Release,0x00454FC0,function
+th095::PbgArchiveEntry::~PbgArchiveEntry,0x00455820,function
