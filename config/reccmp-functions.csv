@@ -607,3 +607,14 @@ th095::ReplayFile::Read,0x0041B020,function
 th095::FileSystem::CloseWriteFile,0x0041B090,function
 th095::GameErrorContext::Log,0x0041B0F0,function
 th095::GameErrorContext::Fatal,0x0041B280,function
+th095::PhotoStageSlotLifetimeView::PhotoStageSlotLifetimeView,0x0042A940,function
+th095::PhotoStageSlotLifetimeView::~PhotoStageSlotLifetimeView,0x0042A9C0,function
+th095::PhotoOverlayManagerView::PhotoOverlayManagerView,0x0042A8A0,function
+th095::PhotoOverlayManagerView::Initialize,0x0042AA30,function
+th095::PhotoOverlayManagerView::~PhotoOverlayManagerView,0x0042AAF0,function
+th095::PhotoOverlayManagerView::Create,0x0042ABC0,function
+th095::PhotoOverlayManagerView::Destroy,0x0042AD00,function
+th095::DrawPhotoStage,0x0042C410,function
+th095::LoadPhotoAnm,0x0042AA90,function
+th095::ReadResultHelpLine,0x0041B920,function
+th095::ReplayInputSource::Update,0x004353B0,function

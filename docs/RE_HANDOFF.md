@@ -1138,3 +1138,19 @@ python3 scripts/compare-coff-function.py --unit anm-set-and-execute-script --jso
 - A second TH08-transfer batch closes twelve exact functions for 1,142 authored bytes: six LZSS tree helpers at `0x00456580..0x0045698E`, four RNG methods at `0x0041B410..0x0041B4FD`, `AddNormalizeAngle @ 0x0041B500`, and `ZunTimer::Add @ 0x0041B830`. The LZSS dictionary relocation proves `Lzss::m_Dict` aliases the already-known 8 KiB decompression ring at `0x004E24A8`; the tree is at `0x004CA498`. TH095 changes the TH08 angle-loop guard from 16 to 32, and timer addition requires the lexical `gameSpeed > 0.99f` direct branch for exact VC7.1 block order. Skip `Lzss::AddString` and `CompressData` unless a new natural local-order oracle appears; both are already semantic/topology-complete but retain compiler-local placement residuals.
 - The PBG archive/file lane now has fourteen canonical exact authored functions for 1,040 bytes. Exact leaves cover `PbgArchive` destruction/lookup/name duplication and `CPbgFile` lifecycle plus close/read/write/tell/size/seek/path expansion. The crucial source oracle is an inline empty `IPbgFile` constructor/virtual destructor in `PbgFile.hpp`: it yields direct base/derived vtable stores in `CPbgFile` while still emitting the standalone base destructor. TH095 `CopyFileName` uses `malloc`, not TH08 `MemAlloc`. Skip `CPbgFile::Open`/`ReadWholeFile` and archive `Load`/`Release`/`ReadDecompressEntry`/`ParseHeader`/`AllocEntries` until a new TH095-specific natural source oracle appears.
 - The shared file-write/replay-read/error-log lane at `0x0041AC50..0x0041B407` now contributes eight canonical exact functions for 1,902 authored bytes. `0x0041ADC0`, `0x0041AF80`, and `0x0041B090` have FileSystem/ReplayFile/ScoreFileWriter semantic aliases in exact callers but are credited once. The open HANDLE is `0x004A4328`; lane 2 remains locked from open/create until close. Exact source keeps the critical-section id as an inline helper parameter, uses `FormatMessageA(0x1300, ..., 0x400, ...)`, and uses only fully live aggregates for local slot order. `GameErrorContext::Log/Fatal` use the target-correct `Global.hpp` layout (`bufferEnd +0x2000`, `showMessageBox +0x2004`) and critical-section-3 active byte `0x004C4D7F`.
+
+
+The PhotoInf/PhotoOverlay lifecycle at `0x0042A8A0..0x0042C448` is now a
+canonical nine-function lane totaling 1,182 bytes. Preserve the `0x25730`
+layout, the bounded `0x2214` slot lifetime view, the `{manager, chain}` factory
+aggregate, explicit `goto create_error`, and safe-delete source shapes. The
+large `Draw @ 0x0042C220` remains deferred at 366/434 bytes.
+
+`ReadResultHelpLine @ 0x0041B920` is exact for all 264 bytes and documents the
+CR/LF plus Shift-JIS lexical signedness. `ReplayInputSource::Update @
+0x004353B0` is exact for all 247 bytes; its shared layout keeps ReplayManager's
+public fields at `+0/+6` and the private history state at `+0x2C..+0x58`. All
+twelve established ReplayManager canonical units were replayed after the shared
+header refactor. Continue prioritizing exact-caller-anchored multi-function
+lanes; the 1,274-byte runtime photo-target counter is currently a 1,133-byte
+semantic probe and should not be ground on without a new source oracle.

@@ -389,3 +389,35 @@ The same PBG transfer demonstrates a safe semantic delta: `PbgArchive::CopyFileN
 For the file primitives, do not bake critical-section lane 2 into the helper body. The target source passes `id` into a force-inlined helper; under `/Od /Ob1` VC7.1 preserves `mov id` plus `imul id, 0x18` before the Win32 critical-section call. Writing `2 * 0x18` directly is constant-folded early and leaves open/write/close bodies 10–23 bytes short. The same source family also pins failed-open `FormatMessageA` to flags `0x1300` and language `0x400`.
 
 When every target stack slot is live but identifier hashing permutes locals, use a semantic aggregate instead of dummy storage. `ReplayFile::Read` needs `{data, bytesRead}` for `EBP-0x08/-0x04`; `FileSystem::WriteDataToFile` needs `{errorMessage, handle, bytesWritten}` for `EBP-0x0C/-0x08/-0x04`. `GameErrorContext::Log/Fatal` are the complementary positive oracle for compiler intrinsics: ordinary `strlen`/`strcpy` under `/Oi` naturally produce the target inline scan/copy loops, including their compiler-owned temporary homes.
+
+### PhotoInf lifetime and replay-input source-shape oracles
+
+The exact PhotoInf lane adds three reusable VC7.1 rules. First, the semantic
+object view and the compiler lifetime view do not have to be the same C++ type.
+The target constructs each `0x2214` photograph slot from offset `+0x44` as two
+six-`AnmVm` arrays; a bounded `PhotoStageSlotLifetimeView` truthfully models
+that constructor/destructor surface without changing the higher-level logical
+slot layout used by the stage state machine.
+
+Second, logically equivalent cleanup control flow is codegen-visible under the
+pinned `/Od /Ob1` profile. `PhotoOverlayManagerView::Create @ 0x0042ABC0` needs
+`if (Initialize() != 0) goto create_error;`: VC7.1 then keeps the target
+conditional jump followed by the two-byte jump to shared cleanup. A structured
+success-only `if` is two bytes short. The factory's `{manager, chain}` aggregate
+and `Destroy`'s real safe-delete pointer are fully live semantic storage; they
+reproduce the target delete-expression homes without dummy locals.
+
+Third, small live aggregates can use natural ABI alignment to recover a target
+local order. `ReplayInputSource::Update @ 0x004353B0` uses
+`{u16 currentBits; i32 bitIndex}`: the compiler-required alignment places the
+fields at `EBP-0x08/-0x04` and closes all fourteen displacement differences.
+Do not replace that alignment with explicit padding. Likewise, the exact result
+help parser must keep CR/LF tests as signed `i8` comparisons and Shift-JIS
+lead-byte range tests as unsigned `u8` comparisons.
+
+Two adjacent large probes are negative scheduling oracles, not current exact
+targets. `PhotoOverlayManagerView::Draw @ 0x0042C220` is 366 bytes versus the
+434-byte target despite complete recovered loop semantics, and
+`PhotoRuntimeView::CountPhotoTargets @ 0x004168D0` is 1,133 bytes / 280
+instructions versus the 1,274-byte / 312-instruction target. Defer both until a
+new natural source-shape oracle appears; do not spend inert storage or assembly.

@@ -282,3 +282,14 @@ address,name,module,confidence,evidence
 0x0041B090,th095::FileSystem::CloseWriteFile,FileSystem,exact,Exact shared handle close releasing critical section 2 and decrementing its active-count byte
 0x0041B0F0,th095::GameErrorContext::Log,Main,exact,Exact variadic 8 KiB buffered logger under critical section 3 with VC7 intrinsic strlen/strcpy expansion
 0x0041B280,th095::GameErrorContext::Fatal,Main,exact,Exact 512-byte variadic fatal logger; appends to shared 8 KiB context and sets showMessageBox
+0x0042A940,th095::PhotoStageSlotLifetimeView::PhotoStageSlotLifetimeView,PhotoOverlay,exact,Exact compiler vector construction of the two six-AnmVm groups at slot offsets +0x0000/+0x10C8
+0x0042A9C0,th095::PhotoStageSlotLifetimeView::~PhotoStageSlotLifetimeView,PhotoOverlay,exact,Exact reverse compiler vector destruction of the two six-AnmVm groups in one 0x2214 slot lifetime view
+0x0042A8A0,th095::PhotoOverlayManagerView::PhotoOverlayManagerView,PhotoOverlay,exact,Exact PhotoInf construction: eleven slot lifetime views and eighty display VMs precede the 0x25730 clear and stage singleton publication
+0x0042AA30,th095::PhotoOverlayManagerView::Initialize,PhotoOverlay,exact,Exact photo.anm preload into +0x2571C with Japanese corruption diagnostic and scoreMultiplier=1.0
+0x0042AAF0,th095::PhotoOverlayManagerView::~PhotoOverlayManagerView,PhotoOverlay,exact,"Exact PhotoInf teardown: cut calc/draw Chains, mark owned ANM VMs, clear singleton, destroy eighty VMs and eleven slot views"
+0x0042ABC0,th095::PhotoOverlayManagerView::Create,PhotoOverlay,exact,"Exact 0x25730 factory with calc priority 8, draw priority 0x1A, live manager/chain aggregate, and explicit failure cleanup"
+0x0042AD00,th095::PhotoOverlayManagerView::Destroy,PhotoOverlay,exact,Exact safe-delete wrapper using the target-visible manager pointer home and nulling source shape
+0x0042C410,th095::DrawPhotoStage,PhotoOverlay,exact,"Exact draw-chain shell: gameplay viewport 1, photography suppression bit 2 gate, then PhotoInf Draw"
+0x0042AA90,th095::LoadPhotoAnm,PhotoOverlay,exact,Exact slot-9 photo.anm preload helper with target Japanese corruption diagnostic
+0x0041B920,th095::ReadResultHelpLine,ResultScreen,exact,Exact CR/LF-skipping Shift-JIS line reader with lead-byte ranges 0x81..0x9F and 0xE0..0xFC
+0x004353B0,th095::ReplayInputSource::Update,ReplayManager,exact,"Exact replay-input history update at +0x2C..+0x58; held threshold 26, subtract-8 repeat cadence, pressed/released masks"

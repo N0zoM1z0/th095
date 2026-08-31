@@ -1,4 +1,5 @@
 #include "ReplayManager.hpp"
+#include "ReplayInputSource.hpp"
 #include "ZunMath.hpp"
 
 #include <stdlib.h>
@@ -10,16 +11,6 @@
 namespace th095
 {
 
-struct ReplayInputSource
-{
-    u16 currentInput;
-    u8 unknown002[4];
-    u16 pressedInput;
-
-    void Update();
-};
-
-extern ReplayInputSource g_ReplayInputSource;
 extern u16 g_ReplayInputAux;
 extern u16 g_ReplayInputFlags;
 extern f32 g_ReplayFps;
