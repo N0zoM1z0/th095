@@ -129,7 +129,13 @@
   states, movement, attached/photo-marker VMs, player collision, playfield
   culling, four draw groups, and timer advancement. Its natural VC7.1 body is
   1,640 bytes, so the remaining target-only inline temporary shape receives no
-  exact credit. Four direct dependencies are independently exact:
+  exact credit. The surrounding task shell is now canonical exact: `Create @
+  0x004149F0`, `Draw @ 0x004161F0`, `DrawGroup @ 0x00416230`, and the calc/draw
+  gates at `0x00416290/0x004162F0` contribute 591 authored bytes and enforce all
+  29 relocations. They prove the complete `0x26AE30` allocation, draw-group heads
+  at `+0x4DC0`, Chain fields at `+0x26AE20/+0x26AE24`, calc/draw priorities
+  12/10, and the shared photo-global bit-0/1/2 update suppression. Four direct
+  dependencies are independently exact:
   `IntegrateMovement` (308 bytes), `ClampPosition` (208),
   `UpdatePhotoMarkerPulse` (101), and `Deactivate` (175). They prove the
   `0x4CC0` enemy size, movement flags/bounds, photo-marker timer, sixteen ECL
@@ -168,6 +174,16 @@
   spine, but copies a caller-provided `0x80`-byte context block into enemy
   `+0x2F4` before the first ECL run. Both target callers are in the exact
   `EclManager::RunEcl` dispatcher.
+- `Enemy::UpdateShotAndAnm @ 0x00413030` is canonical exact for 837 bytes and
+  thirteen relocations. It advances the shot interval timer, dispatches the
+  deferred shot instruction when due, selects left/right/idle ANM scripts from
+  movement direction with the X-mirror bit, and switches between the TH095
+  runtime ANM banks at `+0x4DF8/+0x4DFC` through flags1 bit 31. TH08 provides
+  the ancestral source shape; every TH095 offset and both ANM-bank identities
+  are target-local. The adjacent `DispatchShotInstruction @ 0x00412670` remains
+  deliberately non-exact at 757/756: direct raw and volatile minimum-distance
+  lvalues still choose the non-target x87 compare lowering, so no assembly or
+  artificial byte is introduced.
 - `PhotoEnemyView::~PhotoEnemyView @ 0x004152D0` remains exact for 52 bytes,
   and the owning `PhotoEnemyManagerView::~PhotoEnemyManagerView @ 0x004154E0`
   is now canonical exact for all 480 bytes and 22 relocations. The child

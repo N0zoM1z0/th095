@@ -543,3 +543,9 @@ th095::EclExtended::FadeOwnedCapturedBullets,0x00413990,function
 th095::EclExtended::SpawnEnemyMarkerVm,0x00413CF0,function
 th095::EclExtended::RunPhotoTransition,0x00414580,function
 th095::EclExtended::UpdateEnemyMarkerVms,0x00413B90,function
+th095::Enemy::UpdateShotAndAnm,0x00413030,function
+th095::PhotoEnemyManagerTaskView::Create,0x004149F0,function
+th095::PhotoEnemyManagerTaskView::Draw,0x004161F0,function
+th095::PhotoEnemyManagerTaskView::DrawGroup,0x00416230,function
+th095::PhotoEnemyManagerTaskView::OnUpdate,0x00416290,function
+th095::PhotoEnemyManagerTaskView::OnDraw,0x004162F0,function

@@ -108,7 +108,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00412490,authored,EclManager,authored,exact,vc71-ecl-movement-lane-2026-08-31
 0x00412670,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00412970,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00413030,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00413030,authored,EnemyManager,authored,exact,vc71-enemy-shot-task-shell-2026-08-31
 0x00413380,authored,EclManager,authored,exact,vc71-ecl-extended-callbacks-2026-08-31
 0x00413410,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004134A0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -131,7 +131,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004144E0,authored,EclManager,authored,exact,vc71-ecl-extended-callbacks-2026-08-31
 0x00414580,authored,EclManager,authored,exact,vc71-ecl-extended-transition-core-2026-08-31
 0x00414930,authored,EclManager,authored,exact,vc71-ecl-extended-callbacks-2026-08-31
-0x004149F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004149F0,authored,EnemyManager,authored,exact,vc71-enemy-shot-task-shell-2026-08-31
 0x00414B30,authored,EnemyManager,authored,exact,vc71-photo-enemy-destroy-2026-08-30
 0x00414B90,authored,EnemyManager,authored,high,photo-enemy-construction-2026-08-30
 0x00415040,authored,EnemyManager,authored,exact,vc71-photo-enemy-construction-2026-08-30
@@ -143,10 +143,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00415820,authored,EnemyManager,authored,exact,vc71-photo-enemy-spawn-context-2026-08-30
 0x00415970,authored,EnemyManager,authored,high,photo-enemy-manager-update-semantic-2026-08-30
 0x004160B0,authored,EnemyManager,authored,exact,vc71-photo-enemy-runtime-2026-08-30
-0x004161F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00416230,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x00416290,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004162F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004161F0,authored,EnemyManager,authored,exact,vc71-enemy-shot-task-shell-2026-08-31
+0x00416230,authored,EnemyManager,authored,exact,vc71-enemy-shot-task-shell-2026-08-31
+0x00416290,authored,EnemyManager,authored,exact,vc71-enemy-shot-task-shell-2026-08-31
+0x004162F0,authored,EnemyManager,authored,exact,vc71-enemy-shot-task-shell-2026-08-31
 0x00416320,authored,EnemyManager,authored,exact,vc71-photo-enemy-runtime-2026-08-30
 0x004163F0,authored,EnemyManager,authored,high,photo-enemy-timeline-replay-correction-2026-08-31
 0x00416770,authored,EnemyManager,authored,exact,vc71-photo-enemy-runtime-2026-08-30

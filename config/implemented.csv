@@ -542,3 +542,9 @@ th095::EclExtended::FadeOwnedCapturedBullets
 th095::EclExtended::SpawnEnemyMarkerVm
 th095::EclExtended::RunPhotoTransition
 th095::EclExtended::UpdateEnemyMarkerVms
+th095::Enemy::UpdateShotAndAnm
+th095::PhotoEnemyManagerTaskView::Create
+th095::PhotoEnemyManagerTaskView::Draw
+th095::PhotoEnemyManagerTaskView::DrawGroup
+th095::PhotoEnemyManagerTaskView::OnUpdate
+th095::PhotoEnemyManagerTaskView::OnDraw

@@ -14588,3 +14588,111 @@ relocations = [
   { offset = 0x1CB, type = "REL32", symbol = "_free", target = 0x004854BE },
   { offset = 0x1D8, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
 ]
+
+[units.enemy-update-shot-and-anm]
+source = "src/EnemyShotAnm.cpp"
+object = "build/matching/EnemyShotAnm.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Enemy::UpdateShotAndAnm"]
+symbol = "?UpdateShotAndAnm@Enemy@th095@@QAEXXZ"
+target_address = 0x00413030
+size = 0x345
+relocations = [
+  { offset = 0x2F, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+  { offset = 0x5B, type = "REL32", symbol = "?DispatchShotInstruction@EclRunHigh@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z", target = 0x00412670 },
+  { offset = 0xBC, type = "DIR32", symbol = "__real@bc23d70a", target = 0x00495538 },
+  { offset = 0xDB, type = "DIR32", symbol = "__real@3c23d70a", target = 0x00495534 },
+  { offset = 0xFA, type = "DIR32", symbol = "__real@bc23d70a", target = 0x00495538 },
+  { offset = 0x119, type = "DIR32", symbol = "__real@3c23d70a", target = 0x00495534 },
+  { offset = 0x151, type = "DIR32", symbol = "?g_Th095Runtime@EclRunHigh@th095@@3PAEA", target = 0x004BDDC0 },
+  { offset = 0x161, type = "DIR32", symbol = "?g_Th095Runtime@EclRunHigh@th095@@3PAEA", target = 0x004BDDC0 },
+  { offset = 0x1F0, type = "REL32", symbol = "?SetAndExecuteScript@AnmLoaded@th095@@QAEXPAUAnmVm@2@PAUAnmRawInstr@2@@Z", target = 0x0043A0C0 },
+  { offset = 0x24D, type = "REL32", symbol = "?SetAndExecuteScript@AnmLoaded@th095@@QAEXPAUAnmVm@2@PAUAnmRawInstr@2@@Z", target = 0x0043A0C0 },
+  { offset = 0x298, type = "REL32", symbol = "?SetAndExecuteScript@AnmLoaded@th095@@QAEXPAUAnmVm@2@PAUAnmRawInstr@2@@Z", target = 0x0043A0C0 },
+  { offset = 0x2E6, type = "REL32", symbol = "?SetAndExecuteScript@AnmLoaded@th095@@QAEXPAUAnmVm@2@PAUAnmRawInstr@2@@Z", target = 0x0043A0C0 },
+  { offset = 0x331, type = "REL32", symbol = "?SetAndExecuteScript@AnmLoaded@th095@@QAEXPAUAnmVm@2@PAUAnmRawInstr@2@@Z", target = 0x0043A0C0 },
+]
+
+[units.enemy-manager-task-create]
+source = "src/EnemyManagerTask.cpp"
+object = "build/matching/EnemyManagerTask.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerTaskView::Create"]
+symbol = "?Create@PhotoEnemyManagerTaskView@th095@@SIPAU12@XZ"
+target_address = 0x004149F0
+size = 0x13C
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?Create@PhotoEnemyManagerTaskView@th095@@SIPAU12@XZ", target = 0x004934DB },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x21, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x3C, type = "REL32", symbol = "??0PhotoEnemyManagerTaskView@th095@@QAE@XZ", target = 0x00414B90 },
+  { offset = 0x63, type = "REL32", symbol = "?LoadResources@PhotoEnemyManagerTaskView@th095@@QAEHXZ", target = 0x004153D0 },
+  { offset = 0x6E, type = "DIR32", symbol = "?OnUpdate@PhotoEnemyManagerTaskView@th095@@SIHPAU12@@Z", target = 0x00416290 },
+  { offset = 0x73, type = "DIR32", symbol = "?g_Chain@th095@@3VChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x78, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAVChainElem@2@P6I?AW4ChainCallbackResult@2@PAX@Z@Z", target = 0x004190B0 },
+  { offset = 0x8F, type = "DIR32", symbol = "?g_Chain@th095@@3VChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x94, type = "REL32", symbol = "?AddToCalcChain@Chain@th095@@QAEHPAVChainElem@2@H@Z", target = 0x00418A20 },
+  { offset = 0xA5, type = "DIR32", symbol = "?OnDraw@PhotoEnemyManagerTaskView@th095@@SIHPAU12@@Z", target = 0x004162F0 },
+  { offset = 0xAA, type = "DIR32", symbol = "?g_Chain@th095@@3VChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xAF, type = "REL32", symbol = "?CreateElem@Chain@th095@@QAEPAVChainElem@2@P6I?AW4ChainCallbackResult@2@PAX@Z@Z", target = 0x004190B0 },
+  { offset = 0xC6, type = "DIR32", symbol = "?g_Chain@th095@@3VChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xCB, type = "REL32", symbol = "?AddToDrawChain@Chain@th095@@QAEHPAVChainElem@2@H@Z", target = 0x00418B30 },
+  { offset = 0xFC, type = "REL32", symbol = "??1PhotoEnemyManagerTaskView@th095@@QAE@XZ", target = 0x004154E0 },
+  { offset = 0x10F, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0x134, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+]
+
+[units.enemy-manager-task-draw]
+source = "src/EnemyManagerTask.cpp"
+object = "build/matching/EnemyManagerTask.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerTaskView::Draw"]
+symbol = "?Draw@PhotoEnemyManagerTaskView@th095@@QAEHXZ"
+target_address = 0x004161F0
+size = 0x38
+relocations = [
+  { offset = 0x29, type = "REL32", symbol = "?DrawGroup@PhotoEnemyManagerTaskView@th095@@QAEHH@Z", target = 0x00416230 },
+]
+
+[units.enemy-manager-task-draw-group]
+source = "src/EnemyManagerTask.cpp"
+object = "build/matching/EnemyManagerTask.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerTaskView::DrawGroup"]
+symbol = "?DrawGroup@PhotoEnemyManagerTaskView@th095@@QAEHH@Z"
+target_address = 0x00416230
+size = 0x5D
+relocations = [
+  { offset = 0x32, type = "REL32", symbol = "?PhotoToScreen@th095@@YIPAUFloat3@1@PAU21@PBU21@@Z", target = 0x004186D0 },
+  { offset = 0x3F, type = "DIR32", symbol = "?g_PhotoEnemyAnmManager@th095@@3PAUPhotoEnemyAnmManagerDrawView@1@A", target = 0x004CA1B8 },
+  { offset = 0x44, type = "REL32", symbol = "?Draw@PhotoEnemyAnmManagerDrawView@th095@@QAE?AW4ZunResult@@PAUAnmVm@2@@Z", target = 0x004415A0 },
+]
+
+[units.enemy-manager-task-on-update]
+source = "src/EnemyManagerTask.cpp"
+object = "build/matching/EnemyManagerTask.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerTaskView::OnUpdate"]
+symbol = "?OnUpdate@PhotoEnemyManagerTaskView@th095@@SIHPAU12@@Z"
+target_address = 0x00416290
+size = 0x51
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_PhotoEnemyGlobalState@th095@@3PAUPhotoEnemyTaskGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x1A, type = "DIR32", symbol = "?g_PhotoEnemyGlobalState@th095@@3PAUPhotoEnemyTaskGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x2D, type = "DIR32", symbol = "?g_PhotoEnemyGlobalState@th095@@3PAUPhotoEnemyTaskGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x49, type = "REL32", symbol = "?Update@PhotoEnemyManagerTaskView@th095@@QAEHXZ", target = 0x00415970 },
+]
+
+[units.enemy-manager-task-on-draw]
+source = "src/EnemyManagerTask.cpp"
+object = "build/matching/EnemyManagerTask.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerTaskView::OnDraw"]
+symbol = "?OnDraw@PhotoEnemyManagerTaskView@th095@@SIHPAU12@@Z"
+target_address = 0x004162F0
+size = 0x2D
+relocations = [
+  { offset = 0x8, type = "DIR32", symbol = "?g_PhotoEnemyGlobalState@th095@@3PAUPhotoEnemyTaskGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x25, type = "REL32", symbol = "?Draw@PhotoEnemyManagerTaskView@th095@@QAEHXZ", target = 0x004161F0 },
+]

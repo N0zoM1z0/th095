@@ -347,6 +347,12 @@ source policy even if it happened to align displacements.
 
 For TH095 `0x00412670`, logically equivalent float predicates are not codegen-equivalent under the pinned VC7.1 `/Od /Ob1` profile. The target keeps the accumulated squared-distance value on x87 and compares it directly with `fcomp dword ptr [enemy+0x2C4C]`; several natural rewrites (`distance >= minimum`, negated `<`, nested early return) instead load the RHS and use `fcompp`, changing size/branches. Treat this as a compiler-source-shape problem. Structural proximity is not exact proof, and no asm/padding workaround is acceptable.
 
+The final bounded check also tried direct raw and volatile `f32` lvalues for the minimum-distance field. Build 3077 still emits the same 757-byte load-then-compare sequence, so those type qualifiers are negative oracles too. Do not revisit this lane unless a new source-shape oracle explains the target memory-form x87 compare.
+
+`Enemy::UpdateShotAndAnm @ 0x00413030` is the positive companion. The TH08 member source shape ports directly once only target-local field ownership is corrected: TH095 keeps cadence at `+0x2BC8/+0x2BCC`, direction scripts at `+0x2C0E..+0x2C16`, and selects two ANM banks through runtime `+0x4DF8/+0x4DFC`. Keep `direction` and `AnmLoaded *anm` as the only authored locals. Timer increment and the five script-setup expansions naturally account for the remainder of the target 0x40 frame.
+
+The adjacent EnemyManager task shell adds another reusable rule. Its factory uses the same truthful two-pointer aggregate and shared failure label as the other exact manager factories. `OnUpdate @ 0x00416290` must express the bit-0/bit-2 test and bit-1 test as one short-circuit condition with one return-1 tail. VC7 evaluates helper arguments right-to-left, so spelling them `(bit0, bit2)` reproduces the target load order `bit2 -> bit0`; two separate early-return statements are seven bytes longer.
+
 
 ### Extended-ECL VC7.1 source-shape oracles
 

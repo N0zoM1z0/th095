@@ -108,6 +108,8 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | --- | ---: | ---: | --- | --- |
 | `0x00408E70` | 27,091 | 3 callers / 50 internal callees | exact `EclManager::RunEcl` | Largest script VM; establishes enemy/scene semantics |
 | `0x00411150..0x004121FF` | 4,133 exact authored bytes | low-ECL movement/interpolation/branch/call dependencies | ten exact ECL helper units | Target-local movement flags, interpolation slots, compare table, sub-call/return ownership |
+| `0x00413030` | 837 exact authored bytes | enemy update dependency / shot dispatcher / ANM script setup | exact `Enemy::UpdateShotAndAnm` | TH095 shot cadence, movement-direction ANM switching, and dual runtime ANM banks |
+| `0x004149F0..0x004162F0` | 591 exact authored bytes | manager factory / four draw groups / calc and draw gates | five exact EnemyManager task-shell functions | `0x26AE30` ownership shell, Chain priorities 12/10, draw-group heads `+0x4DC0` |
 | `0x00413380..0x004149E6` | 2,972 exact authored bytes | 22-entry TH095 extended-ECL callback table | fifteen exact callbacks / seven remaining | Photography flags, Background VM transitions, player marker scale, marker/fade VMs, transition coordinator, owned-bullet reset |
 | `0x0043A600` | 17,018 | 22 callers / 20 internal callees | exact `AnmManager::ExecuteScript` | Widely shared animation VM and type/layout root |
 | `0x00447D00` | 16,066 | 1 caller / 27 internal callees | boundary-reviewed authored scene-selection hub | 12-group scene UI; exact class name unresolved |
