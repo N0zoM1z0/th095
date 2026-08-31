@@ -70,3 +70,24 @@ const char *GameErrorContext::Fatal(const char *fmt, ...)
     return fmt;
 }
 } // namespace th095
+
+namespace th095
+{
+
+// FUNCTION: TH095 0x00421C00.
+void GameErrorContext::Flush()
+{
+    if (this->bufferEnd != this->buffer)
+    {
+        Log("---------------------------------------------------------- \r\n");
+
+        if (this->showMessageBox)
+        {
+            MessageBoxA(NULL, this->buffer, "log", MB_ICONSTOP);
+        }
+
+        FileSystem::WriteDataToFile("./log.txt", this->buffer, strlen(this->buffer));
+    }
+}
+
+} // namespace th095

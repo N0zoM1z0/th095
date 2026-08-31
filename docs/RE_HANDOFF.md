@@ -552,16 +552,16 @@ calls exact `PhotoToScreen` and is the shared ECL/enemy/bullet/photo-effect
 bridge. The adjacent frame shell at `0x00444980..0x00444B00` is now exact:
 `OnUpdate` and draw callbacks 0 through 8 contribute 277 bytes and enforce all
 twenty update, draw-layer, render-counter, manager, and viewport relocations.
-The source-present 358-byte `UpdateVms @ 0x00444B10` clears nine embedded
-draw-list sentinels, executes or retires the lifetime list, and rebuilds every
-render bucket under the target-local PhotoGameTask gates. A target-shaped
-positive gate reaches the exact 358-byte extent, but stock VC7.1 still chooses
-the opposite destination register for one commutative `or`; keep that one-byte
-residual uncredited. `DrawLayer @ 0x00444C80` is now canonical exact for 136
-bytes and three relocations: the target source shape is a nested suppression
-`if { } else if (!flag26)` rather than the logically equivalent negated
-conjunction, which VC7.1 shortens by two bytes. Do not use assembly or an
-artificial branch to close `UpdateVms`.
+`UpdateVms @ 0x00444B10` is now canonical exact for all 358 authored bytes
+and eight relocations. It clears nine embedded draw-list sentinels, executes or
+retires the lifetime list, and rebuilds every render bucket under the target-local
+PhotoGameTask gates. Preserve the positive suppression-gate control flow and the
+force-inlined `AnmUpdateEitherFlag(flag0, drawVms)` source shape: VC7 evaluates
+`drawVms` first and `flag0` second, then accumulates into the second-loaded EDX,
+matching target `or edx,eax`. Direct `drawVms | flag0` has the exact same extent
+but leaves one register-direction byte wrong. `DrawLayer @ 0x00444C80` remains
+canonical exact for 136 bytes and three relocations; its target source shape is a
+nested suppression `if { } else if (!flag26)` rather than a negated conjunction.
 Keep the Supervisor render callback's constant-index residual and the known
 lifecycle compiler-local residuals deferred. The seven-caller ANM draw hub at
 `0x0043ECD0` is now source-present for screen shake, nearest-even half-pixel
@@ -1190,6 +1190,10 @@ extends through the adjacent 32-byte switch table. TH095 swaps effect enum value
 3/4 relative to TH08 (3=full fade-out, 4=arcade pulse); do not infer correctness
 from non-relocation bytes alone, because the wrong enum version matched those
 bytes while its callback relocations proved the semantics wrong.
+
+The score-file read path is now canonical exact. `ResultSaveDataView::ParseScoreFile @ 0x004356D0` contributes 568 authored bytes and closes the `TH95` v2 / format `0x102` read side against the already-exact writer: raw file ownership is `+0x00`, decompressed payload ownership is `+0x04`, decrypt is `AC/35/0x10`, and the target overallocates decompressed storage by four while passing the unscaled output size to LZSS. Preserve the 24-byte fully-live parser-state aggregate and whole-POD `SC`/`ST` assignments; `memcpy`, partial aggregates, and copy wrappers are negative oracles. The adjacent ctor/dtor remain deliberately non-exact because target-only unreferenced frame bytes remain after the real ownership is accounted for.
+
+Shared runtime gaps at `0x0041B580/0x0041B600/0x00421C00` are also closed: `NormalizeAngle` is the single-angle bounded wrapper, `Rotate` computes sine/cosine once each with declaration order `cosine, sine` but runtime assignment order `sine, cosine`, and `GameErrorContext::Flush` is a genuine out-of-line target body matching the formerly header-inline source. Together with exact `UpdateVms`, these five functions add 1,272 exact authored bytes in this checkpoint.
 
 The ScoreData lifecycle adds three exact leaves totaling 338 bytes: the `0x458`
 profile initializer and the `0x69A0` global create/release wrappers. Do not grind

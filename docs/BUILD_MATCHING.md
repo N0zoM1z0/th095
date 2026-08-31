@@ -459,6 +459,54 @@ targets. `PhotoOverlayManagerView::Draw @ 0x0042C220` is 366 bytes versus the
 instructions versus the 1,274-byte / 312-instruction target. Defer both until a
 new natural source-shape oracle appears; do not spend inert storage or assembly.
 
+### Score-file load and shared-runtime source-shape oracles
+
+`ResultSaveDataView::ParseScoreFile @ 0x004356D0` is the positive companion to
+the score writer. Its target frame has no compiler-only gap: one 24-byte semantic
+record contains, from deep to shallow, decompressed allocation size, header
+allocation size, the true raw-file free argument, decompressed cursor, remaining
+record bytes, and compressed input pointer. Modeling only a subset as an
+aggregate perturbs the allocation phase; the complete all-live record reproduces
+`EBP-0x18..-0x04` exactly. Keep the reset block as the physical fallthrough of
+`if (fileHeader == NULL)`, with parse work in the `else`; this emits the target's
+single near `jne` instead of `je short + jmp`.
+
+The two fixed-size record copies are target-visible C++ ownership, not generic
+`memcpy` calls. Whole-POD assignment of the 0x60-byte `SC` record and the
+0x458-byte raw `ST` profile makes VC7 load the RHS cursor into ESI before
+materializing EDI, exactly matching the target `rep movsd` chronology. Plain
+`memcpy` computes the destination first and leaves 36 comparable-byte residuals;
+a force-inlined copy wrapper is six bytes longer and is also a negative oracle.
+The target deliberately allocates `uncompressedSize * 4` bytes before calling
+`DecompressData` with the unscaled output size; preserve that observable behavior.
+
+The adjacent runtime math adds two source-level cross-version facts.
+`NormalizeAngle @ 0x0041B580` is the single-argument sibling of exact
+`AddNormalizeAngle` and keeps the same 32-iteration protection.
+`Rotate @ 0x0041B600` differs materially from TH08: TH095 evaluates `sin(angle)`
+and `cos(angle)` once each and reuses two live locals, rather than spelling four
+CRT calls. Declare `cosine` before `sine`, then execute the assignments in the
+order `sine = sin(angle); cosine = cos(angle);`; this reproduces the target
+local slots. `GameErrorContext::Flush @ 0x00421C00` is another ownership oracle:
+the source body previously written inline in `Global.hpp` corresponds to a real
+out-of-line target function, so move the body to `GameErrorContext.cpp` rather
+than manufacturing a call-site wrapper or function-pointer scaffold.
+
+`AnmManagerUpdateView::UpdateVms @ 0x00444B10` closes another one-byte
+commutative-OR residual without changing load order. Keep the target-positive
+PhotoGameTask gate, then call a force-inlined two-argument helper as
+`AnmUpdateEitherFlag(flag0, drawVms)`. VC7 evaluates arguments right-to-left, so
+bit2 (`drawVms`) is still loaded first and bit0 second; the helper
+accumulates `first | second` into the second-loaded register, producing target
+`or edx,eax`. Swapping the source operands changes the preceding load/register
+chronology and is not equivalent for exact reconstruction.
+
+The score-data constructor/destructor around the parser remain negative oracles.
+The constructor target owns one completely instruction-unreferenced four-byte
+frame slot; the destructor owns eight such bytes while otherwise performing the
+true `+0x00/+0x04` frees and 120 best-shot record cleanups. Do not add inert
+storage merely to claim those lifecycle bodies.
+
 ### ScreenEffect x87 ordering and VC7 local-label manifest stability
 
 The exact ScreenEffect lane exposes two distinct levels of source sensitivity.

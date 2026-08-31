@@ -644,3 +644,7 @@ th095::ScreenEffect::InitializeTimer,0x00437700,function
 th095::ScreenEffect::DeleteScreenEffect,0x00437740,function
 th095::ScreenEffect::DrawSquare,0x00436920,function
 th095::ScreenEffect::RegisterChain,0x00436DD0,function
+th095::ResultSaveDataView::ParseScoreFile,0x004356D0,function
+th095::NormalizeAngle,0x0041B580,function
+th095::Rotate,0x0041B600,function
+th095::GameErrorContext::Flush,0x00421C00,function

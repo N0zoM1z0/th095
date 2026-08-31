@@ -215,20 +215,7 @@ class GameErrorContext
         this->bufferEnd[0] = '\0';
     }
 
-    void Flush()
-    {
-        if (this->bufferEnd != this->buffer)
-        {
-            Log("---------------------------------------------------------- \r\n");
-
-            if (this->showMessageBox)
-            {
-                MessageBoxA(NULL, this->buffer, "log", MB_ICONSTOP);
-            }
-
-            FileSystem::WriteDataToFile("./log.txt", this->buffer, strlen(this->buffer));
-        }
-    }
+    void Flush();
 
     const char *Log(const char *fmt, ...);
     const char *Fatal(const char *fmt, ...);

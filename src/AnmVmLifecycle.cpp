@@ -132,6 +132,11 @@ extern PhotoGameTaskDrawGateView *g_PhotoGameTask;
 extern f32 g_ScreenEffectShakeX;
 extern f32 g_ScreenEffectShakeY;
 
+static __forceinline i32 AnmUpdateEitherFlag(i32 first, i32 second)
+{
+    return first | second;
+}
+
 struct AnmVmUpdateView
 {
     AnmVmUpdateView *next;
@@ -268,10 +273,14 @@ i32 AnmManagerUpdateView::UpdateVms()
     while (vm != NULL)
     {
         next = vm->next;
-        if (g_PhotoGameTask == NULL || vm->flag28 ||
-            ((g_PhotoGameTask->drawVms | g_PhotoGameTask->flag0) == 0 &&
-             g_PhotoGameTask->flag1 == 0 &&
-             g_PhotoGameTask->flag10 == 0))
+        if (g_PhotoGameTask != NULL && !vm->flag28 &&
+            (AnmUpdateEitherFlag((i32)g_PhotoGameTask->flag0,
+                                 g_PhotoGameTask->drawVms) != 0 ||
+             g_PhotoGameTask->flag1 != 0 ||
+             g_PhotoGameTask->flag10 != 0))
+        {
+            goto addToDrawLayer;
+        }
         {
             if (vm->flag26)
             {

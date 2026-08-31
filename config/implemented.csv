@@ -643,3 +643,7 @@ th095::ScreenEffect::InitializeTimer
 th095::ScreenEffect::DeleteScreenEffect
 th095::ScreenEffect::DrawSquare
 th095::ScreenEffect::RegisterChain
+th095::ResultSaveDataView::ParseScoreFile
+th095::NormalizeAngle
+th095::Rotate
+th095::GameErrorContext::Flush

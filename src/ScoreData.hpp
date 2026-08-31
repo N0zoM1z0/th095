@@ -73,7 +73,7 @@ struct ResultScoreEntryView
 struct ResultSaveDataView
 {
     ScoreFileHeader *fileHeader;
-    u8 unknown004[4];
+    u8 *decompressedData;
     union
     {
         u8 profileData[0x458];
@@ -93,6 +93,7 @@ struct ResultSaveDataView
     };
     ResultBestShotRecordView bestShotRecords[120];
 
+    i32 ParseScoreFile();
     void UpdateBestShotRecord(i32 index);
     ZunResult WriteBestShotData();
 };

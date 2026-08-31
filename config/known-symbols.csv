@@ -171,7 +171,7 @@ address,name,module,confidence,evidence
 0x00444A60,th095::AnmManager::DrawLayer6,AnmManager,exact,Canonical 66-byte counter-reset layer callback with five relocations
 0x00444AB0,th095::AnmManager::DrawLayer7,AnmManager,exact,Canonical 33-byte viewport-selecting layer callback with three relocations
 0x00444AE0,th095::AnmManager::DrawLayer8,AnmManager,exact,Canonical 33-byte viewport-selecting layer callback with three relocations
-0x00444B10,th095::AnmManagerUpdateView::UpdateVms,AnmManager,high,Complete nine-layer VM execution deletion and draw-list rebuild with a two-byte compiler branch residual
+0x00444B10,th095::AnmManagerUpdateView::UpdateVms,AnmManager,exact,Exact 358-byte nine-layer VM execution deletion and draw-list rebuild; target OR accumulator reproduced by bounded inline helper
 0x00445440,th095::FrontEndLifecycleView::FrontEndLifecycleView,FrontEndController,exact,Canonical full-size construction of timers cursors queues and singleton state
 0x004456F0,th095::FrontEndLifecycleView::Initialize,FrontEndController,exact,Canonical title ANM mission-message sound and photo-resource initialization
 0x00445980,th095::FrontEndLifecycleView::LoadThread,FrontEndController,exact,Canonical capture-aware asynchronous front-end loader
@@ -322,3 +322,7 @@ address,name,module,confidence,evidence
 0x00401000,th095::AsciiManager::OnUpdate,AsciiManager,exact,Exact replay/photo reset gate; source-local EitherFlag preserves target OR accumulator register
 0x0041E9C0,th095::PhotoStraightLaserView::CheckCollision,PhotoEffect,exact,"Exact 12-unit straight-laser collision sampling, capture particles, gap trimming and fragment spawning"
 0x00430180,th095::PhotoGameUpdateView::OnUpdate,PhotoGame,exact,Exact player calc-chain photo-global gate and direct capture-input path
+0x004356D0,th095::ResultSaveDataView::ParseScoreFile,ScoreData,exact,Exact TH95 score-file version/decrypt/decompress/record parser with reset fallback and dual raw/decompressed ownership
+0x0041B580,th095::NormalizeAngle,Global,exact,Exact single-angle normalization with 32-iteration guard and shared pi/two-pi constants
+0x0041B600,th095::Rotate,Global,exact,Exact 2D vector rotation; TH095 evaluates sin/cos once each and reuses two true locals
+0x00421C00,th095::GameErrorContext::Flush,GameErrorContext,exact,Exact buffered error flush with separator logging optional message box and log.txt write

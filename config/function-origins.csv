@@ -216,8 +216,8 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041B4A0,authored,Runtime,authored,exact,vc71-runtime-math-core-2026-09-01
 0x0041B4D0,authored,Runtime,authored,exact,vc71-runtime-math-core-2026-09-01
 0x0041B500,authored,ZunMath,authored,exact,vc71-runtime-math-core-2026-09-01
-0x0041B580,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x0041B600,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041B580,authored,Global,authored,exact,vc71-runtime-normalize-angle-exact-2026-09-01
+0x0041B600,authored,Global,authored,exact,vc71-runtime-rotate-exact-2026-09-01
 0x0041B660,authored,UiCursor,authored,exact,vc71-result-screen-cursor-push-2026-08-29
 0x0041B6E0,authored,UiCursor,authored,exact,vc71-result-screen-cursor-pop-2026-08-29
 0x0041B760,authored,UiCursor,authored,exact,vc71-result-screen-replay-cursor-move-2026-08-29
@@ -303,7 +303,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004217A0,authored,Main,authored,high,target-main-family-2026-08-29
 0x00421A20,authored,Main,authored,high,target-main-family-2026-08-29
 0x00421AB0,authored,Main,authored,high,target-main-family-2026-08-29
-0x00421C00,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00421C00,authored,GameErrorContext,authored,exact,vc71-game-error-flush-exact-2026-09-01
 0x00421C90,authored,AnmManager,authored,high,target-main-family-2026-08-29
 0x00421D00,authored,AnmManager,authored,exact,anm-capture-exact-2026-08-30
 0x00421E00,authored,Midi,authored,exact,vc71-midi-core-2026-09-01
@@ -466,7 +466,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00435580,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x004355F0,authored,ScoreData,authored,exact,vc71-score-lifecycle-2026-09-01
 0x00435660,authored,ScoreData,authored,exact,vc71-score-lifecycle-2026-09-01
-0x004356D0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004356D0,authored,ScoreData,authored,exact,vc71-score-parse-file-exact-2026-09-01
 0x00435910,authored,ScoreData,authored,exact,vc71-score-data-write-best-shot-2026-08-30
 0x00435E90,authored,BestShot,authored,high,best-shot-scene-loader-2026-08-29
 0x004362A0,authored,SceneSelect,authored,exact,vc71-scene-preview-texture-2026-08-30
@@ -590,7 +590,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00444A60,authored,AnmManager,authored,exact,anm-frame-callbacks-exact-2026-08-30
 0x00444AB0,authored,AnmManager,authored,exact,anm-frame-callbacks-exact-2026-08-30
 0x00444AE0,authored,AnmManager,authored,exact,anm-frame-callbacks-exact-2026-08-30
-0x00444B10,authored,AnmManager,authored,high,anm-frame-update-2026-08-30
+0x00444B10,authored,AnmManager,authored,exact,vc71-anm-update-vms-exact-2026-09-01
 0x00444C80,authored,AnmManager,authored,exact,anm-text-frame-exact-2026-08-31
 0x00444D10,authored,AnmManager,authored,high,anm-vm-lifecycle-2026-08-30
 0x00444E00,authored,AnmManager,authored,exact,anm-vm-lifecycle-exact-2026-08-30
