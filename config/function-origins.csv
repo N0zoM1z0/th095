@@ -424,7 +424,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0042EE90,authored,PhotoGame,authored,high,photo-player-lifecycle-semantic-2026-08-30
 0x0042EFB0,authored,PhotoGame,authored,exact,vc71-photo-player-create-2026-08-30
 0x0042F130,authored,PhotoGame,authored,exact,vc71-photo-player-destroy-2026-08-30
-0x0042F190,authored,PhotoGame,authored,high,photo-game-main-state-semantic-2026-08-30
+0x0042F190,authored,PhotoGame,authored,exact,photo-game-main-state-exact-2026-08-31
 0x0042FF60,authored,PhotoGame,authored,exact,vc71-photo-game-update-2026-08-30
 0x00430110,authored,PhotoGame,authored,exact,vc71-photo-player-draw-2026-08-30
 0x00430160,authored,PhotoGame,authored,exact,vc71-photo-camera-draw-wrapper-2026-08-30

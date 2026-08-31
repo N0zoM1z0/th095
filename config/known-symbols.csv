@@ -196,3 +196,4 @@ address,name,module,confidence,evidence
 0x00441330,th095::AnmManager::DrawVertices,AnmManager,exact,Canonical generated-vertex triangle-strip submitter
 0x00441480,th095::AnmManager::DrawTriangleFan,AnmManager,exact,Canonical radial-trail triangle-fan submitter
 0x00442260,th095::AnmManager::SetupVertexBuffer,AnmManager,exact,Canonical 682-byte managed quad vertex-buffer setup with 25 relocations
+0x0042F190,th095::PhotoGameUpdateView::UpdateMainState,PhotoGame,high,Exact live-play movement/focus/bounds/history hub and target temporary chronology

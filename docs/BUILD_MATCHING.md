@@ -219,6 +219,22 @@ Additional stock-VC7.1 local-allocation oracles are now canonical:
   adds a copy and changes extent. The same rule works for ownership locals:
   `HelpMenuFreeAnmData` contains the real data pointer and `free`, delaying that
   pointer to the case-3 call site rather than inventing storage.
+- `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` proves the
+  complementary allocation-phase rule. Build 3077 allocates anonymous return
+  objects owned by the outer function before locals introduced by later inline
+  expansions. The target therefore needs the `CreateVm` sret plus six `Float3`
+  return objects at `EBP-0x20..-0x68`, even though the focus-zero comparison is
+  executed earlier. Keep that real comparison inside a source-local
+  `static __forceinline` helper, and keep the real focus-clear assignment in a
+  second helper: their value temporaries are allocated after the outer return
+  objects, producing the target compare/snapshot/clear homes at
+  `-0x6C/-0x70/-0x74` without extra storage. A normal named zero local,
+  identifier-hash renaming, changing the equality parameter to `const&`, or
+  bundling the three focus values in a semantic aggregate all keep storage in
+  the shallow outer phase and are negative oracles. This is the inverse of the
+  ReplayBrowser rule above: move the *producer* into a helper to delay an sret;
+  move the *scalar consumer/assignment* into a helper when outer srets must stay
+  ahead of it.
 
 - The exact bullet-photography pair at `0x00407820/0x00408220` proves several
   interacting VC7.1 rules. Small three-float value operators can be ABI-visible:

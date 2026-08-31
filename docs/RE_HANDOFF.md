@@ -86,17 +86,24 @@
   ANM execution, and timer advance. Keeping its full `+0x2A18` layout local
   preserves the compiler label identities of all nine established
   `PhotoCamera.cpp` units; each one replays unchanged.
-- The same root-level unit now reconstructs the complete 3,463-byte
-  `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` live-play hub. It owns
-  eight-direction movement, the focus/extra-slow speed tiers, focus VM
+- The same root-level unit now closes the complete 3,463-byte
+  `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` live-play hub exactly.
+  It owns eight-direction movement, the focus/extra-slow speed tiers, focus VM
   lifetime and screen placement, four player animation transitions, exact
   hundredth-coordinate flooring, three bounds pairs, and sixteen-frame
-  position history. Its pinned VC7.1 probe has the exact authored extent,
-  `0x134` frame, both adjacent eight-entry switch tables, and all 63 relocation
-  fields; 3,232/3,275 comparable bytes match. The remaining 43 bytes are only
-  compiler-local stack-slot displacements and receive no exact credit. The
-  exact outer coordinator continues to replay after its return type and COFF
-  label mappings were updated.
+  position history. The canonical unit compares 3,527 bytes: 3,463 authored
+  bytes plus both adjacent eight-entry switch tables, with all 63 relocations.
+  The final compiler oracle is allocation phase rather than padding: keeping
+  the real focus-zero comparison and focus-clear assignment in source-local
+  `static __forceinline` helpers lets build 3077 allocate the outer `CreateVm`
+  sret and six `Float3` return objects first (`EBP-0x20..-0x68`), then the
+  compare/snapshot/clear value homes at `-0x6C/-0x70/-0x74`. Ordinary named
+  zero locals, identifier-hash changes, equality-by-reference, and a semantic
+  12-byte focus aggregate all remain shallow and are negative oracles. The
+  helper addition renumbered five `$L...` names in the exact outer 405-byte
+  coordinator; an offset/type/target audit proved destinations unchanged at
+  `0x4300F5/0x42FF85/0x42FFFA/0x430015/0x43004E` before the manifest-only
+  identity refresh. A cold rebuild replays all 17 `PhotoGame.cpp` units exactly.
 - The adjacent `PlayerInf` ownership spine is now recovered end to end. The
   exact `PhotoGameUpdateView::Create @ 0x0042EFB0` allocates the target-proven
   `0x2A40` object, initializes it, registers calc/player-draw/camera-draw

@@ -21,6 +21,18 @@ __forceinline i32 PhotoAnmVmId::operator==(PhotoAnmVmIdValue other) const
     return this->value == other.value;
 }
 
+static __forceinline i32 PhotoGameFocusVmIsZero(const PhotoAnmVmId *vm)
+{
+    return *vm == PhotoAnmVmIdValue(0);
+}
+
+static __forceinline void PhotoGameClearFocusVm(PhotoAnmVmId *vm)
+{
+    PhotoAnmVmId clearedVm;
+    clearedVm = 0;
+    *vm = clearedVm;
+}
+
 struct PhotoResetTargetView
 {
     void ResetForPhotoTransition();
@@ -662,7 +674,7 @@ i32 PhotoGameUpdateView::UpdateMainState()
 
     if (this->cameraTrackingMode != 0)
     {
-        if (this->focusVm == PhotoAnmVmIdValue(0))
+        if (PhotoGameFocusVmIsZero(&this->focusVm))
         {
             this->focusVm =
                 reinterpret_cast<PhotoAnmLoadedView *>(
@@ -716,9 +728,7 @@ i32 PhotoGameUpdateView::UpdateMainState()
         {
             g_AnmManager->SetInterrupt(
                 *reinterpret_cast<AnmVmId *>(&this->focusVm), 1);
-            PhotoAnmVmId clearedVm;
-            clearedVm = 0;
-            this->focusVm = clearedVm;
+            PhotoGameClearFocusVm(&this->focusVm);
         }
 
         switch (this->movementState)
