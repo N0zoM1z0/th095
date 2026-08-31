@@ -618,3 +618,14 @@ th095::DrawPhotoStage,0x0042C410,function
 th095::LoadPhotoAnm,0x0042AA90,function
 th095::ReadResultHelpLine,0x0041B920,function
 th095::ReplayInputSource::Update,0x004353B0,function
+th095::ScreenEffect::Clear,0x00436760,function
+th095::ScreenEffect::SetViewport,0x00436820,function
+th095::ScreenEffect::CalcFadeIn,0x004368A0,function
+th095::ScreenEffect::CalcFadeHold,0x00436D20,function
+th095::ScreenEffect::DrawFullFade,0x00437050,function
+th095::ScreenEffect::DrawPartialFade,0x004370F0,function
+th095::ScreenEffect::DrawArcadeFade,0x00437140,function
+th095::ScreenEffect::DrawArcadePulse,0x00437280,function
+th095::ScoreProfileView::Initialize,0x00435500,function
+th095::InitializeScoreData,0x004355F0,function
+th095::ReleaseScoreData,0x00435660,function

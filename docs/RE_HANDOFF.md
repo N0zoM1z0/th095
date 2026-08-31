@@ -1154,3 +1154,19 @@ twelve established ReplayManager canonical units were replayed after the shared
 header refactor. Continue prioritizing exact-caller-anchored multi-function
 lanes; the 1,274-byte runtime photo-target counter is currently a 1,133-byte
 semantic probe and should not be ground on without a new source oracle.
+
+
+The ScreenEffect leaf lane at `0x00436760..0x004372CB` is now canonical for
+965 authored bytes across eight functions. Preserve the `0x34` layout, local-
+TU `__forceinline` timer helper definitions, the `timer * 255.0f` x87 operand
+order, and TH095's `(128,16)..(512,464)` arcade-pulse rectangle. The intervening
+TH08-derived ScreenEffect bodies have material target differences and are not
+part of this exact lane.
+
+The ScoreData lifecycle adds three exact leaves totaling 338 bytes: the `0x458`
+profile initializer and the `0x69A0` global create/release wrappers. Do not grind
+the adjacent constructor/destructor yet: the former is exact-sized with local-
+home residuals and the latter is 97/109. The shared ScreenEffect declaration
+causes only compiler-private `$L` symbol renumbering in `main-update-scene-state`;
+all 1,026 compared target bytes and relocation destinations remain exact, and
+all forty-four Main canonical units replay after the manifest-local symbol refresh.

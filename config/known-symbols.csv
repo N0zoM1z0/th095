@@ -293,3 +293,14 @@ address,name,module,confidence,evidence
 0x0042AA90,th095::LoadPhotoAnm,PhotoOverlay,exact,Exact slot-9 photo.anm preload helper with target Japanese corruption diagnostic
 0x0041B920,th095::ReadResultHelpLine,ResultScreen,exact,Exact CR/LF-skipping Shift-JIS line reader with lead-byte ranges 0x81..0x9F and 0xE0..0xFC
 0x004353B0,th095::ReplayInputSource::Update,ReplayManager,exact,"Exact replay-input history update at +0x2C..+0x58; held threshold 26, subtract-8 repeat cadence, pressed/released masks"
+0x00436760,th095::ScreenEffect::Clear,ScreenEffect,exact,Exact double clear/present/reset helper for the shared D3D8 target and depth buffer
+0x00436820,th095::ScreenEffect::SetViewport,ScreenEffect,exact,"Exact full-window 640x480 viewport setup, ANM flush, and clear path; independently anchored by exact Main caller"
+0x004368A0,th095::ScreenEffect::CalcFadeIn,ScreenEffect,exact,Exact 255-to-0 fade update using timer subFrame/current and target-visible timer-times-255 x87 operand order
+0x00436D20,th095::ScreenEffect::CalcFadeHold,ScreenEffect,exact,Exact 0-to-128 hold fade and eight-frame release branch with shared timer Tick
+0x00437050,th095::ScreenEffect::DrawFullFade,ScreenEffect,exact,Exact 640x480 fade draw with ANM flush and explicit full-window D3D viewport
+0x004370F0,th095::ScreenEffect::DrawPartialFade,ScreenEffect,exact,Exact 640x480 DrawSquare fade leaf using overlay alpha and raw RGB parameter
+0x00437140,th095::ScreenEffect::DrawArcadeFade,ScreenEffect,exact,"Exact inset fade rectangle at 32,16 through 416,464"
+0x00437280,th095::ScreenEffect::DrawArcadePulse,ScreenEffect,exact,"Exact TH095 pulse rectangle at 128,16 through 512,464; differs from the inherited TH08 inset rectangle"
+0x00435500,th095::ScoreProfileView::Initialize,ScoreData,exact,"Exact 0x458 profile initializer: ST magic/version/size, eight-space name, and 512 RNG words"
+0x004355F0,th095::InitializeScoreData,ScoreData,exact,Exact 0x69A0 save-data allocation/construction and publication to the shared score/photo-stage save-data global
+0x00435660,th095::ReleaseScoreData,ScoreData,exact,Exact guarded save-data destruction/operator-delete and global clear path

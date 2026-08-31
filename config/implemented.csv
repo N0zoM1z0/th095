@@ -617,3 +617,14 @@ th095::DrawPhotoStage
 th095::LoadPhotoAnm
 th095::ReadResultHelpLine
 th095::ReplayInputSource::Update
+th095::ScreenEffect::Clear
+th095::ScreenEffect::SetViewport
+th095::ScreenEffect::CalcFadeIn
+th095::ScreenEffect::CalcFadeHold
+th095::ScreenEffect::DrawFullFade
+th095::ScreenEffect::DrawPartialFade
+th095::ScreenEffect::DrawArcadeFade
+th095::ScreenEffect::DrawArcadePulse
+th095::ScoreProfileView::Initialize
+th095::InitializeScoreData
+th095::ReleaseScoreData

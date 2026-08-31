@@ -10,6 +10,7 @@
 #include <windows.h>
 
 #include <stddef.h>
+#include "ScreenEffect.hpp"
 
 namespace th095
 {
@@ -434,11 +435,6 @@ struct Controller
 {
     static void GetJoystickCaps();
     static void ResetKeyboard();
-};
-
-struct ScreenEffect
-{
-    static void SetViewport(u32 color);
 };
 
 struct FileSystem

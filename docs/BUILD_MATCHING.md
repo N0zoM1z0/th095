@@ -421,3 +421,29 @@ targets. `PhotoOverlayManagerView::Draw @ 0x0042C220` is 366 bytes versus the
 `PhotoRuntimeView::CountPhotoTargets @ 0x004168D0` is 1,133 bytes / 280
 instructions versus the 1,274-byte / 312-instruction target. Defer both until a
 new natural source-shape oracle appears; do not spend inert storage or assembly.
+
+### ScreenEffect x87 ordering and VC7 local-label manifest stability
+
+The exact ScreenEffect lane exposes two distinct levels of source sensitivity.
+Within the ScreenEffect translation unit, `CalcFadeIn` must spell the multiply
+as `timer * 255.0f`; the commuted `255.0f * timer` expression is semantically
+identical but reverses the target x87 load chronology. Keep the timer conversion,
+comparison, and post-increment helpers `__forceinline`, but put their definitions
+in `ScreenEffect.cpp`, not in the shared header. Header-side inline definitions
+consume VC7 translation-unit compiler state and can perturb unrelated compiler-
+private labels.
+
+A unified declaration-only `ScreenEffect` type still changed only the numeric
+names of twenty-five `$Lxxxxx`/`$failure$xxxxx` relocations owned by the existing
+`Supervisor::UpdateSceneState` switch tables. A byte audit proved zero non-
+relocation differences across its complete 1,026-byte compare extent, and every
+relocation offset/type/target destination remained identical. Refreshing those
+compiler-private object-symbol names is therefore manifest maintenance, not a
+source or target relaxation. Never update a local-label symbol unless the target
+destination and all non-relocation bytes are independently unchanged.
+
+The adjacent ScoreData lifecycle gives a scheduling rule: exact-sized does not
+mean cheap. Its `0x004354B0` constructor still has live local-home displacement
+residuals, and the straightforward destructor is 97 bytes versus a 109-byte
+target. Promote the exact 122/112/104-byte profile/global-lifetime leaves and
+defer those two bodies rather than inserting artificial stack storage.
