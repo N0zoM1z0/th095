@@ -637,7 +637,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00450DD0,authored,SceneSelect,authored,exact,vc71-scene-value-queue-push-2026-08-29
 0x00450E20,authored,ReplayBrowser,authored,exact,vc71-replay-browser-slot-2026-08-29
 0x00450F60,authored,SceneSelect,authored,high,vc71-scene-value-queue-pop-2026-08-29
-0x00450FC0,authored,MusicRoom,authored,high,vc71-music-room-update-2026-08-29
+0x00450FC0,authored,MusicRoom,authored,exact,music-room-update-exact-2026-08-31
 0x00451B00,authored,MusicRoom,authored,exact,vc71-music-room-parser-2026-08-29
 0x00451B90,authored,MusicRoom,authored,exact,vc71-music-room-parser-2026-08-29
 0x00451C80,authored,HelpMenu,authored,exact,ui-inline-temporary-chronology-exact-2026-08-31

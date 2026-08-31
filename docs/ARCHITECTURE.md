@@ -173,9 +173,9 @@ startup coordinator: it initializes viewports/RNGs, stages the archive, score,
 surface, ANM, vertex/text buffers, and launches both early workers plus the main
 startup worker. The front-end
 Help page at `0x00451C80` is now
-source-present with an exact 88-byte asynchronous loader callback; the
-adjacent Music Room at `0x00450FC0` is source-present with both parser helpers
-exact. The adjacent `0x00452630` function is now source-present as the shared
+exact together with its 88-byte asynchronous loader callback; the adjacent
+2,872-byte Music Room at `0x00450FC0` is also exact, including its two CR/LF
+parser helpers and the target-proven fully live `0xB4` local frame. The adjacent `0x00452630` function is now source-present as the shared
 scene-result/replay-browser text renderer; exact wrappers at
 `0x00445E40/0x00445E60` prove its ownership alongside the
 2,969-byte shared update dispatcher at `0x00445E80`. The dispatcher is now

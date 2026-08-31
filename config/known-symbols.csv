@@ -72,7 +72,7 @@ address,name,module,confidence,evidence
 0x0041A960,th095::FileSystem::OpenFile,FileSystem,exact,Canonical file-system-open-file VC7.1 comparison with 37 relocations
 0x0041ABA0,th095::FileSystem::CheckIfFileAlreadyExists,FileSystem,exact,Canonical file-system-check-exists VC7.1 comparison with 14 relocations
 0x00450F60,th095::SceneValueQueue::Pop,SceneSelect,high,Complete shared sixteen-entry queue pop with a two-byte callee-saved-register residual
-0x00450FC0,th095::MusicRoomView::UpdateMusicRoom,MusicRoom,high,Complete TH095 music-room state machine with target-exact 47-call topology
+0x00450FC0,th095::MusicRoomView::UpdateMusicRoom,MusicRoom,exact,Canonical exact 2872-byte Music Room update/parser with 76 relocations
 0x00451B00,th095::SkipMusicCommentLine,MusicRoom,exact,Canonical relocation-free music-room-skip-comment-line comparison
 0x00451B90,th095::ReadMusicCommentLine,MusicRoom,exact,Canonical relocation-free music-room-read-comment-line comparison
 0x00451C80,th095::HelpMenuView::UpdateHelpMenu,HelpMenu,exact,Canonical exact 2358-byte Help update; 2378-byte compare extent includes five-entry switch table

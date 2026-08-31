@@ -439,3 +439,4 @@ address,name,size,status,match_percent,unit,evidence
 0x0044DCA0,th095::ReplayBrowserView::Update,2054,matching,100.00,replay-browser-update,python3 scripts/build.py --unit replay-browser-update && python3 scripts/compare-coff-function.py --unit replay-browser-update --json
 0x00451C80,th095::HelpMenuView::UpdateHelpMenu,2358,matching,100.00,help-menu-update,python3 scripts/build.py --unit help-menu-update && python3 scripts/compare-coff-function.py --unit help-menu-update --json
 0x0042F190,th095::PhotoGameUpdateView::UpdateMainState,3463,matching,100.00,photo-game-update-main-state,python3 scripts/build.py --unit photo-game-update-main-state && python3 scripts/compare-coff-function.py --unit photo-game-update-main-state --json
+0x00450FC0,th095::MusicRoomView::UpdateMusicRoom,2872,matching,100.00,music-room-update,python3 scripts/build.py --unit music-room-update && python3 scripts/compare-coff-function.py --unit music-room-update --json

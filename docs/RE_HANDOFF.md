@@ -355,15 +355,24 @@
   permutation/XOR codec, archive-basename lookup, loose-file fallback, and
   critical-section-2 active-count accounting. The implementation now lives in
   root-level `FileSystem.*`, preserving the TH08-style subsystem organization.
-- `MusicRoomView::UpdateMusicRoom @ 0x00450FC0` is source-present for the
-  complete TH095 title-controller music room: it parses at most 32 tracks and
-  eight 64-byte comment lines per track, stages title/comment VMs, scrolls the
-  shared cursor, starts the selected BGM, and restores the title BGM on exit.
-  Its natural VC7.1 body is 2,425 versus 2,872 target bytes, but all 47 static
-  call sites have the exact target distribution. The CR/LF-aware skip/read
-  helpers at `0x00451B00/0x00451B90` are independently exact for all 374
-  bytes. `SceneValueQueue::Pop @ 0x00450F60`, shared by four scene hubs, is
-  complete source-present at 93 versus 91 bytes; its sole residual is VC7.1's
+- `MusicRoomView::UpdateMusicRoom @ 0x00450FC0` is now canonical exact for all
+  2,872 authored bytes and 76 relocations. It parses at most 32 tracks and eight
+  64-byte comment lines per track, stages title/comment VMs, scrolls the shared
+  cursor, starts the selected BGM, and restores the title BGM on exit. The
+  target `0xB4` frame is completely live: a gapless 12-byte parser aggregate
+  stores `fileSize/trackCount/fileCursor`, independent lexical loops own the VM
+  lists, and every remaining dword belongs to an inline timer/cursor/VM or
+  ownership temporary. Exact source mixes allocation phases intentionally:
+  dynamic track/description `CreateVm` calls remain outer expressions, while
+  fixed VM stores and the comment-file free use source-local force-inline
+  helpers. `MusicRoomTimerChangedAndEven` returns the short-circuit expression
+  directly, causing compiler-generated boolean homes at target
+  `EBP-0xAC/-0xB0`; a named helper result is a negative oracle. The Back-input
+  cleanup label sits inside its conditional body and all early state exits use
+  the shared final return. The CR/LF-aware skip/read helpers at
+  `0x00451B00/0x00451B90` remain exact for another 374 bytes.
+  `SceneValueQueue::Pop @ 0x00450F60`, shared by four scene hubs, is complete
+  source-present at 93 versus 91 bytes; its sole residual is VC7.1's
   callee-saved-register choice.
 - `HelpMenuView::UpdateHelpMenu @ 0x00451C80` is now canonical exact for
   2,358 authored bytes; its complete compare extent is 2,378 bytes because the

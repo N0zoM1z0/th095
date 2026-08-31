@@ -235,6 +235,20 @@ Additional stock-VC7.1 local-allocation oracles are now canonical:
   ReplayBrowser rule above: move the *producer* into a helper to delay an sret;
   move the *scalar consumer/assignment* into a helper when outer srets must stay
   ahead of it.
+- `MusicRoomView::UpdateMusicRoom @ 0x00450FC0` extends those rules with a
+  mixed-phase exact case. Build 3077 can require some `CreateVm` return objects
+  to remain outer-function temporaries while fixed VM stores use a source-local
+  producer helper; this places the dynamic track/description srets before the
+  fixed `0x68/0x69/0x17` srets exactly as the target does. Short-circuit boolean
+  allocation is a separate class: an inline helper that directly returns
+  `current != previous && current % 2 == 0` makes VC7.1 synthesize compiler
+  result homes at the deepest `EBP-0xAC/-0xB0` slots. Spelling a named `result`
+  inside the same helper moves those dwords into the middle of the call-site
+  lane and is a negative oracle. The parser is the positive POD-aggregate case:
+  `{fileSize, trackCount, fileCursor}` is a fully live, gapless 12-byte object,
+  not padding. Together with lexical loop scopes, member-handle `GetVm`, a
+  call-site ownership helper, and a shared final return, these rules reproduce
+  all 2,872 bytes and the complete live `0xB4` frame.
 
 - The exact bullet-photography pair at `0x00407820/0x00408220` proves several
   interacting VC7.1 rules. Small three-float value operators can be ABI-visible:
