@@ -647,3 +647,6 @@ th095::ResultSaveDataView::ParseScoreFile
 th095::NormalizeAngle
 th095::Rotate
 th095::GameErrorContext::Flush
+th095::MidiOutput::ParseFile
+th095::MidiOutput::OnTimerElapsed
+th095::MidiOutput::FadeOutSetVolume

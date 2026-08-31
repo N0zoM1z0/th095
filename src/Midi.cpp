@@ -11,6 +11,18 @@
 namespace th095
 {
 
+// TH095 inlines the 32-bit endian swap inside ParseFile; there is no standalone
+// Ntohl target body between ParseFile and LoadTracks.
+static __forceinline u32 ParseMidiNtohl(u32 val)
+{
+    u8 tmp[4];
+    tmp[0] = ((u8 *)&val)[3];
+    tmp[1] = ((u8 *)&val)[2];
+    tmp[2] = ((u8 *)&val)[1];
+    tmp[3] = ((u8 *)&val)[0];
+    return *(const u32 *)tmp;
+}
+
 DIFFABLE_STATIC(LARGE_INTEGER, g_DummyMidiTimerPerformanceCounter);
 
 void MidiTimer::OnTimerElapsed()
@@ -243,8 +255,84 @@ void MidiOutput::ClearTracks()
     this->numTracks = 0;
 }
 
-#pragma var_order(trackIdx, currentCursor, currentCursorTrack, fileData, hdrLength, hdrRaw, trackLength,               \
-                  endOfHeaderPointer)
+// FUNCTION: TH095 0x00422300; TH08 Midi.cpp provides the source/var-order ancestry.
+ZunResult MidiOutput::ParseFile(int fileIdx)
+{
+    // The complete 0x24 source-order record reproduces TH08's documented
+    // var_order under stock VC7.1. parseFileData is intentionally store-only:
+    // TH08 source contains the snapshot and the TH095 target independently
+    // preserves its EBP-0x10 store. It is provenance evidence, not padding.
+    struct MidiParseLocals
+    {
+        LPBYTE parseEndOfHeader;
+        u32 parseTrackLength;
+        u8 parseHdrRaw[8];
+        u32 parseHdrLength;
+        LPBYTE parseFileData;
+        LPBYTE parseCurrentTrack;
+        LPBYTE parseCursor;
+        i32 parseTrackIndex;
+    } locals;
+
+#define endOfHeaderPointer locals.parseEndOfHeader
+#define trackLength locals.parseTrackLength
+#define hdrRaw locals.parseHdrRaw
+#define hdrLength locals.parseHdrLength
+#define currentCursorTrack locals.parseCurrentTrack
+#define currentCursor locals.parseCursor
+#define trackIdx locals.parseTrackIndex
+
+    ClearTracks();
+    currentCursor = this->fileData[fileIdx];
+    locals.parseFileData = currentCursor;
+    if (currentCursor == NULL)
+    {
+        utils::DebugPrint("Midi File not loaded\n");
+        return ZUN_ERROR;
+    }
+
+    memcpy(&hdrRaw, currentCursor, 8);
+    currentCursor += sizeof(hdrRaw);
+    hdrLength = ParseMidiNtohl(*(u32 *)(&hdrRaw[4]));
+
+    endOfHeaderPointer = currentCursor;
+    currentCursor += hdrLength;
+
+    this->fileFormat = MidiOutput::Ntohs(*(u16 *)endOfHeaderPointer);
+    this->ticksPerQuarterNote =
+        MidiOutput::Ntohs(*(u16 *)(endOfHeaderPointer + 4));
+    this->numTracks =
+        MidiOutput::Ntohs(*(u16 *)(endOfHeaderPointer + 2));
+
+    this->tracks = (MidiTrack *)g_ZunMemory.Alloc(
+        sizeof(MidiTrack) * this->numTracks, "midi");
+    memset(this->tracks, 0, sizeof(MidiTrack) * this->numTracks);
+    for (trackIdx = 0; trackIdx < this->numTracks; trackIdx += 1)
+    {
+        currentCursorTrack = currentCursor;
+        currentCursor += 8;
+
+        trackLength = ParseMidiNtohl(*(u32 *)&currentCursorTrack[4]);
+        this->tracks[trackIdx].dataSize = trackLength;
+        this->tracks[trackIdx].data =
+            (LPBYTE)g_ZunMemory.Alloc(trackLength, "midi");
+        this->tracks[trackIdx].trackPlaying = TRUE;
+        memcpy(this->tracks[trackIdx].data, currentCursor, trackLength);
+        currentCursor += trackLength;
+    }
+    this->microsecondsPerQuarterNote = 1000000;
+    this->activeFileIndex = fileIdx;
+    utils::DebugPrint(" midi open %d\n", fileIdx);
+#undef trackIdx
+#undef currentCursor
+#undef currentCursorTrack
+#undef hdrLength
+#undef hdrRaw
+#undef trackLength
+#undef endOfHeaderPointer
+    return ZUN_SUCCESS;
+}
+
 // FUNCTION: TH095 0x00422530; TH08 Midi.cpp is the source-shape oracle.
 void MidiOutput::LoadTracks()
 {
@@ -353,9 +441,124 @@ ZunResult MidiOutput::SetFadeOut(u32 ms)
     return ZUN_SUCCESS;
 }
 
-#pragma var_order(nextEventDeltaTicks, index, eventData2, adjustedChannelVolume, channel, messageType, statusByte,   \
-                  eventData1, eventDataLength, longMessageHeader, metaEventType, beatsPerMinute,                   \
-                  loopCheckpointTrack, loopResetTrack)
+// FUNCTION: TH095 0x00422800; TH08 Midi.cpp provides timer-loop ancestry.
+void MidiOutput::OnTimerElapsed()
+{
+    // Target-proven stock-VC7 identifier bucket for the real trackLoaded flag.
+    // It moves only this live BOOL to the original allocation phase; the 64-bit
+    // next-event comparison temporaries then land naturally at EBP-0x20/-0x1C.
+    BOOL bgmFormatIndexLocal05 = FALSE;
+    ULONGLONG currentPlaybackTick =
+        this->elapsedTicksBeforeTempoChange +
+        (this->elapsedMillisecondsAtCurrentTempo *
+         this->ticksPerQuarterNote * 1000) /
+            this->microsecondsPerQuarterNote;
+
+    if (this->fadeOutActive != FALSE)
+    {
+        if (this->fadeOutElapsedMs < this->fadeOutDurationMs)
+        {
+            this->fadeOutVolumeMultiplier =
+                1.0f - (f32)this->fadeOutElapsedMs /
+                           (f32)this->fadeOutDurationMs;
+            if ((u32)(this->fadeOutVolumeMultiplier * 128.0f) !=
+                this->fadeOutLastSetVolume)
+            {
+                FadeOutSetVolume(0);
+            }
+            this->fadeOutLastSetVolume =
+                this->fadeOutVolumeMultiplier * 128.0f;
+            this->fadeOutElapsedMs++;
+        }
+        else
+        {
+            this->fadeOutVolumeMultiplier = 0.0;
+            return;
+        }
+    }
+
+    i32 trackIndex;
+    for (trackIndex = 0; trackIndex < this->numTracks; trackIndex++)
+    {
+        if (this->tracks[trackIndex].trackPlaying)
+        {
+            bgmFormatIndexLocal05 = TRUE;
+            while (this->tracks[trackIndex].trackPlaying)
+            {
+                if (this->tracks[trackIndex].nextEventTick <=
+                    currentPlaybackTick)
+                {
+                    ProcessMsg(&this->tracks[trackIndex]);
+                    currentPlaybackTick =
+                        this->elapsedTicksBeforeTempoChange +
+                        (this->elapsedMillisecondsAtCurrentTempo *
+                         this->ticksPerQuarterNote * 1000 /
+                         this->microsecondsPerQuarterNote);
+                    continue;
+                }
+                break;
+            }
+        }
+    }
+    this->elapsedMillisecondsAtCurrentTempo++;
+    if (!bgmFormatIndexLocal05)
+    {
+        LoadTracks();
+    }
+}
+
+// FUNCTION: TH095 0x00423310; TH08 Midi.cpp provides fade-loop ancestry.
+void MidiOutput::FadeOutSetVolume(i32 volumeOffset)
+{
+    struct MidiFadeLocals
+    {
+        i32 fadeVolumeClamped;
+        u32 fadeStatusByte;
+        u32 fadeVolumeByte;
+        i32 fadeChannelIndex;
+        i32 fadeControllerNumber;
+    } locals;
+
+#define volumeClamped locals.fadeVolumeClamped
+#define statusByte locals.fadeStatusByte
+#define volumeByte locals.fadeVolumeByte
+#define channelIndex locals.fadeChannelIndex
+#define controllerNumber locals.fadeControllerNumber
+
+    if (this->volumeUpdatesSuppressed != 0)
+    {
+        return;
+    }
+    controllerNumber = MIDI_CONTROLLER_CHANNEL_VOLUME;
+    for (channelIndex = 0;
+         channelIndex < ARRAY_SIZE_SIGNED(this->channels);
+         channelIndex += 1)
+    {
+        statusByte = (u8)(channelIndex + MIDI_OPCODE_CONTROL_CHANGE);
+        volumeClamped =
+            (i32)(this->channels[channelIndex].channelVolume *
+                  this->fadeOutVolumeMultiplier) +
+            volumeOffset;
+        if (volumeClamped < 0)
+        {
+            volumeClamped = 0;
+        }
+        else if (volumeClamped > 127)
+        {
+            volumeClamped = 127;
+        }
+        volumeByte = (u8)volumeClamped;
+        this->outputDevice.SendShortMsg(
+            statusByte, controllerNumber, volumeByte);
+    }
+#undef controllerNumber
+#undef channelIndex
+#undef volumeByte
+#undef statusByte
+#undef volumeClamped
+    return;
+}
+
 // FUNCTION: TH095 0x004233D0; TH08 Midi.cpp is the source-shape oracle.
 void DummyMidiTimer::OnTimerElapsed()
 {

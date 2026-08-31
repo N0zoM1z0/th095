@@ -326,3 +326,6 @@ address,name,module,confidence,evidence
 0x0041B580,th095::NormalizeAngle,Global,exact,Exact single-angle normalization with 32-iteration guard and shared pi/two-pi constants
 0x0041B600,th095::Rotate,Global,exact,Exact 2D vector rotation; TH095 evaluates sin/cos once each and reuses two true locals
 0x00421C00,th095::GameErrorContext::Flush,GameErrorContext,exact,Exact buffered error flush with separator logging optional message box and log.txt write
+0x00422300,th095::MidiOutput::ParseFile,Midi,exact,Exact MIDI SMF header/track parser; inline-only 32-bit endian swap plus TH08-proven source-order record reproduces target 0x38 frame
+0x00422800,th095::MidiOutput::OnTimerElapsed,Midi,exact,Exact multimedia timer playback/fade loop; target-proven live BOOL bucket restores 64-bit event comparison homes
+0x00423310,th095::MidiOutput::FadeOutSetVolume,Midi,exact,Exact 16-channel fade volume publisher; fully live five-field local aggregate restores TH08 var-order

@@ -648,3 +648,6 @@ th095::ResultSaveDataView::ParseScoreFile,0x004356D0,function
 th095::NormalizeAngle,0x0041B580,function
 th095::Rotate,0x0041B600,function
 th095::GameErrorContext::Flush,0x00421C00,function
+th095::MidiOutput::ParseFile,0x00422300,function
+th095::MidiOutput::OnTimerElapsed,0x00422800,function
+th095::MidiOutput::FadeOutSetVolume,0x00423310,function
