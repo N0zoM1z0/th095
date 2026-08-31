@@ -11,12 +11,16 @@ namespace th095
 {
 struct PbgArchiveHeader
 {
-    i32 encodedEntryCount;
-    i32 encodedFileTableOffset;
+    u32 magic;
     i32 encodedFileTableDecompressedSize;
+    i32 encodedFileTableCompressedSize;
+    i32 encodedEntryCount;
 };
-C_ASSERT(sizeof(PbgArchiveHeader) == 0xc);
-C_ASSERT(offsetof(PbgArchiveHeader, encodedFileTableDecompressedSize) == 0x8);
+C_ASSERT(sizeof(PbgArchiveHeader) == 0x10);
+C_ASSERT(offsetof(PbgArchiveHeader, magic) == 0x0);
+C_ASSERT(offsetof(PbgArchiveHeader, encodedFileTableDecompressedSize) == 0x4);
+C_ASSERT(offsetof(PbgArchiveHeader, encodedFileTableCompressedSize) == 0x8);
+C_ASSERT(offsetof(PbgArchiveHeader, encodedEntryCount) == 0xc);
 
 struct PbgArchiveEntry
 {

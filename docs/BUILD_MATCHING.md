@@ -388,7 +388,11 @@ An empty base constructor/destructor can be source-significant even when it has 
 
 The same PBG transfer demonstrates safe semantic deltas. `PbgArchive::CopyFileName` switches from TH08 `MemAlloc` (`GlobalAlloc`) to TH095 CRT `malloc`, while preserving all strlen/strcpy compiler topology. `PbgArchive::Load` additionally reopens the parsed archive with mode zero before returning success. In `Release`, keep filename logging and freeing inside one lexical null guard, and put the true free argument in a source-local `__forceinline` helper: that places its parameter home at `EBP-0x14` after VC7's array-delete and virtual-delete homes. A function-scope pointer steals `EBP-0x04` and rotates every delete-expression home. `PbgArchiveEntry::~` likewise uses conditional CRT `free`, not TH08 `MemFree`.
 
-`CPbgFile::Open`, `ReadWholeFile`, and archive `ReadDecompressEntry`/`ParseHeader`/`AllocEntries` remain TH095-specific residuals and should be skipped rather than tuned with inert frame storage.
+The encrypted archive read path is now a positive TH095-specific oracle. `ReadDecompressEntry` must spell the buffer choice as the negative structured condition `compressedSize != decompressedSize || outBuffer == NULL`; the positive `&&` form puts the output-buffer block before allocation. The one-byte decrypt-profile local uses the verified `profileIndexLocal08` bucket at `EBP-0x0D`, which frees `EBP-0x04` for the entry pointer and restores the entire inherited TH08 var-order. Keep `% 8`, not `& 7`: stock `/Od` intentionally emits the signed-remainder sequence after zero-extending the byte checksum.
+
+`ParseHeader` is the aggregate companion. The target's authored local region is exactly one fully live 0x20 record laid out as compressed-table buffer, table offset, reused size scalar, 16-byte THA1 header, and decompressed-table buffer. Modeling those fields separately rotates every stack slot; the semantic aggregate reproduces the target and naturally leaves VC7's delete-expression homes deeper in the frame. Update shared `PbgArchiveHeader` to the target 0x10 layout; do not retain the TH08 0x0C shape as a fake compatibility type.
+
+`CPbgFile::Open`, `ReadWholeFile`, and `PbgArchive::AllocEntries` remain TH095-specific residuals. The first complete `AllocEntries` probe already includes TH095's four-byte filename-record alignment but is 462 versus 524 target bytes, so defer it rather than tuning compiler iterator/local homes with inert storage.
 
 ### File/log source-shape oracles: inline lock id and live aggregates
 

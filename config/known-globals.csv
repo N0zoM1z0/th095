@@ -52,3 +52,4 @@ address,name,module,confidence,evidence
 0x004A4270,th095::EclRunHigh::g_Th095ExInsn,EclManager,exact,Exact RunEcl DIR32 relocations plus verified 22-entry target callback table
 0x004A4328,th095::g_OpenWriteFileHandle,FileSystem,exact,Six canonical file primitives resolve the shared CreateFileA handle
 0x004C4D7F,th095::g_ErrorCriticalActiveCount,Main,exact,Canonical GameErrorContext Log/Fatal increment and decrement critical-section-3 active count
+0x004A42C8,th095::g_PbgDecryptProfiles,PbgArchive,exact,Exact ReadDecompressEntry resolves four field addends of an 8-entry 0x0C decrypt-profile table

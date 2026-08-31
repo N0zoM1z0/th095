@@ -16061,3 +16061,62 @@ size = 0x29
 relocations = [
   { offset = 0x1E, type = "REL32", symbol = "_free", target = 0x004854BE },
 ]
+
+[units.checksum-byte]
+source = "src/Checksum.cpp"
+object = "build/matching/Checksum.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CalculateByteChecksum"]
+symbol = "?CalculateByteChecksum@th095@@YIEPAEH@Z"
+target_address = 0x0041BA30
+size = 0x47
+relocations = []
+
+[units.pbg-archive-read-decompress-entry]
+source = "src/pbg/PbgArchive.cpp"
+object = "build/matching/PbgArchive.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PbgArchive::ReadDecompressEntry"]
+symbol = "?ReadDecompressEntry@PbgArchive@th095@@QAEPAEPBDPAE@Z"
+target_address = 0x004550F0
+size = 0x1D0
+relocations = [
+  { offset = 0x28, type = "REL32", symbol = "?FindEntry@PbgArchive@th095@@QAEPAUPbgArchiveEntry@2@PBD@Z", target = 0x004552F0 },
+  { offset = 0x65, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x84, type = "DIR32", symbol = "?g_PbgFileSeekModes@th095@@3PAHA", target = 0x00497CE8 },
+  { offset = 0x103, type = "REL32", symbol = "?CalculateByteChecksum@th095@@YIEPAEH@Z", target = 0x0041BA30 },
+  { offset = 0x123, type = "DIR32", symbol = "?g_PbgDecryptProfiles@th095@@3PAUPbgDecryptProfile@1@A", target = 0x004A42C8 },
+  { offset = 0x131, type = "DIR32", symbol = "?g_PbgDecryptProfiles@th095@@3PAUPbgDecryptProfile@1@A", target = 0x004A42C8 },
+  { offset = 0x13F, type = "DIR32", symbol = "?g_PbgDecryptProfiles@th095@@3PAUPbgDecryptProfile@1@A", target = 0x004A42C8 },
+  { offset = 0x14D, type = "DIR32", symbol = "?g_PbgDecryptProfiles@th095@@3PAUPbgDecryptProfile@1@A", target = 0x004A42C8 },
+  { offset = 0x159, type = "REL32", symbol = "?Decrypt@FileSystem@th095@@YIPAEPAEHEEHH@Z", target = 0x0041A5C0 },
+  { offset = 0x174, type = "REL32", symbol = "?DecompressData@th095@@YIPAEPAEH0I@Z", target = 0x00456220 },
+  { offset = 0x196, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x1AA, type = "DIR32", symbol = "??_C@_0BC@MEMJKKEL@info?5?3?5?$CFs?5error?$AN?6?$AA@", target = 0x00497C5C },
+  { offset = 0x1AF, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x1C1, type = "REL32", symbol = "_free", target = 0x004854BE },
+]
+
+[units.pbg-archive-parse-header]
+source = "src/pbg/PbgArchive.cpp"
+object = "build/matching/PbgArchive.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PbgArchive::ParseHeader"]
+symbol = "?ParseHeader@PbgArchive@th095@@QAE_NPBD@Z"
+target_address = 0x00455360
+size = 0x21B
+relocations = [
+  { offset = 0x29, type = "DIR32", symbol = "?g_PbgFileOpenModes@th095@@3PAPADA", target = 0x004A5898 },
+  { offset = 0x81, type = "REL32", symbol = "?Decrypt@FileSystem@th095@@YIPAEPAEHEEHH@Z", target = 0x0041A5C0 },
+  { offset = 0xD8, type = "DIR32", symbol = "?g_PbgFileSeekModes@th095@@3PAHA", target = 0x00497CE8 },
+  { offset = 0xFF, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x14A, type = "REL32", symbol = "?Decrypt@FileSystem@th095@@YIPAEPAEHEEHH@Z", target = 0x0041A5C0 },
+  { offset = 0x15B, type = "REL32", symbol = "?DecompressData@th095@@YIPAEPAEH0I@Z", target = 0x00456220 },
+  { offset = 0x17D, type = "REL32", symbol = "?AllocEntries@PbgArchive@th095@@QAEPAUPbgArchiveEntry@2@PAXHI@Z", target = 0x00455580 },
+  { offset = 0x195, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x1A1, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x1B1, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x1BD, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x201, type = "DIR32", symbol = "??_C@_0DB@OGAANPCC@?$IDt?$ID?$EA?$IDC?$ID?$IL?5?$CFs?5?$IC?L?$IDI?$IB?$FL?$IDv?$ID?$JD?$JC?$IG?$IC?I?$IDG?$ID?$IJ?$IB?$FL@", target = 0x00497C70 },
+  { offset = 0x206, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+]

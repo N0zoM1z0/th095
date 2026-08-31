@@ -118,7 +118,8 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | `0x00435500..0x004356C7` | 338 exact authored bytes | persistent score profile/global lifetime | three exact ScoreData lifecycle leaves | `0x458` randomized profile init plus `0x69A0` global allocation/release ownership |
 | `0x00456220` | 852 exact authored bytes | shared best-shot/replay/PBG LZSS decoder | exact `DecompressData` | MSB-first token stream, discarded input checksum, 8 KiB ring, exact trailing-bit fetch path |
 | `0x00456580..0x0045698E` | 703 exact authored bytes | LZSS encoder-tree support | six exact tree helpers | Shared 8 KiB dictionary, 8,193-node search tree, deletion/contraction/replacement walks |
-| `0x00454E50..0x00455DD3` | 1,583 exact authored bytes | PBG archive/file core | eighteen exact archive and Win32 file helpers | Archive lifecycle/load/reopen, lookup/name ownership, file handle I/O, path expansion, base/derived lifecycle |
+| `0x00454E50..0x00455DD3` | 2,586 exact authored bytes | PBG archive/file core | twenty exact archive and Win32 file helpers | THA1 header parse, filename-profile decrypt/read/decompress, lifecycle/load/reopen, lookup/name ownership, file handle I/O, path expansion |
+| `0x0041BA30` | 71 exact authored bytes | PBG filename checksum | exact `CalculateByteChecksum` | Byte-additive filename hash selecting one of eight 0x0C decrypt profiles |
 | `0x0043A600` | 17,018 | 22 callers / 20 internal callees | exact `AnmManager::ExecuteScript` | Widely shared animation VM and type/layout root |
 | `0x00447D00` | 16,066 | 1 caller / 27 internal callees | boundary-reviewed authored scene-selection hub | 12-group scene UI; exact class name unresolved |
 | `0x0042C5C0` | 8,560 | 1 caller / 4 internal callees | source-present photo-stage display builder | Repeated TH095 photograph HUD/glyph builder; exact 118-byte VM initializer |

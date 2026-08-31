@@ -632,3 +632,6 @@ th095::PbgArchive::PbgArchive
 th095::PbgArchive::Load
 th095::PbgArchive::Release
 th095::PbgArchiveEntry::~PbgArchiveEntry
+th095::CalculateByteChecksum
+th095::PbgArchive::ReadDecompressEntry
+th095::PbgArchive::ParseHeader

@@ -633,3 +633,6 @@ th095::PbgArchive::PbgArchive,0x00454E50,function
 th095::PbgArchive::Load,0x00454EB0,function
 th095::PbgArchive::Release,0x00454FC0,function
 th095::PbgArchiveEntry::~PbgArchiveEntry,0x00455820,function
+th095::CalculateByteChecksum,0x0041BA30,function
+th095::PbgArchive::ReadDecompressEntry,0x004550F0,function
+th095::PbgArchive::ParseHeader,0x00455360,function

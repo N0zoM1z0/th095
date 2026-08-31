@@ -224,7 +224,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041B830,authored,Timer,authored,exact,vc71-runtime-math-core-2026-09-01
 0x0041B8A0,authored,Timer,authored,exact,vc71-result-screen-timer-tick-2026-08-29
 0x0041B920,authored,ResultScreen,authored,exact,vc71-result-help-line-2026-09-01
-0x0041BA30,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0041BA30,authored,Checksum,authored,exact,vc71-pbg-header-pipeline-2026-09-01
 0x0041BA80,authored,Checksum,authored,exact,vc71-aligned-checksum-2026-08-29
 0x0041BAE0,authored,ReplayScanWorker,authored,exact,vc71-replay-scan-worker-2026-08-29
 0x0041BB00,authored,ReplayBrowser,authored,exact,vc71-replay-browser-2026-08-29
@@ -687,10 +687,10 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00454EB0,authored,PbgArchive,authored,exact,vc71-compression-pbg-exact-2026-09-01
 0x00454FC0,authored,PbgArchive,authored,exact,vc71-compression-pbg-exact-2026-09-01
 0x00455080,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
-0x004550F0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x004550F0,authored,PbgArchive,authored,exact,vc71-pbg-header-pipeline-2026-09-01
 0x004552C0,authored,PbgArchive,authored,exact,vc71-pbg-archive-leaves-2026-09-01
 0x004552F0,authored,PbgArchive,authored,exact,vc71-pbg-archive-leaves-2026-09-01
-0x00455360,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00455360,authored,PbgArchive,authored,exact,vc71-pbg-header-pipeline-2026-09-01
 0x00455580,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00455790,authored,PbgArchive,authored,exact,vc71-pbg-archive-leaves-2026-09-01
 0x00455820,authored,PbgArchive,authored,exact,vc71-compression-pbg-exact-2026-09-01

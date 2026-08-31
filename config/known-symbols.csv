@@ -308,3 +308,6 @@ address,name,module,confidence,evidence
 0x00454EB0,th095::PbgArchive::Load,PbgArchive,exact,Exact archive load/parse/name ownership; TH095 reopens the archive through mode 0 after successful header parsing
 0x00454FC0,th095::PbgArchive::Release,PbgArchive,exact,"Exact filename, entry-array, and file-abstraction ownership teardown with target delete-expression homes"
 0x00455820,th095::PbgArchiveEntry::~PbgArchiveEntry,PbgArchive,exact,Exact conditional CRT-free ownership teardown for one archive filename
+0x0041BA30,th095::CalculateByteChecksum,Checksum,exact,Exact byte-additive checksum used by PBG filename decrypt-profile selection
+0x004550F0,th095::PbgArchive::ReadDecompressEntry,PbgArchive,exact,Exact archive-entry read/decrypt/decompress path with filename-selected 8-profile cipher table
+0x00455360,th095::PbgArchive::ParseHeader,PbgArchive,exact,Exact THA1 16-byte header decode and tail file-table decrypt/decompress/allocation pipeline
