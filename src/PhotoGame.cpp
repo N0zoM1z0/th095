@@ -571,10 +571,15 @@ i32 PhotoGameUpdateView::DrawCamera()
     return 1;
 }
 
+static __forceinline i32 PhotoGameEitherFlag(i32 first, i32 second)
+{
+    return first | second;
+}
+
 i32 __fastcall PhotoGameUpdateView::OnUpdate(PhotoGameUpdateView *player)
 {
-    if ((g_PhotoGameGlobalState->blocksPlayerDraw |
-         g_PhotoGameGlobalState->blocksPlayerUpdate0) != 0 ||
+    if (PhotoGameEitherFlag(g_PhotoGameGlobalState->blocksPlayerUpdate0,
+                            g_PhotoGameGlobalState->blocksPlayerDraw) != 0 ||
         g_PhotoGameGlobalState->blocksPlayerUpdate1 != 0)
     {
         return 1;

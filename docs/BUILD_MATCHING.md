@@ -194,6 +194,33 @@ Additional stock-VC7.1 local-allocation oracles are now canonical:
   and mapping `step/count/position/distance/vm/startPosition` through the known
   hash rank reproduces both bodies exactly; rewriting the vectors as an
   aggregate changes codegen even when the storage is semantically equivalent.
+
+The straight-laser collision lane adds a larger var-order/x87 oracle. For
+`PhotoStraightLaserView::CheckCollision @ 0x0041E9C0`, keep the five long-lived
+scan locals outside the inner `hits[256]` scope; mapping them through the
+established shallow identifier rank reproduces `sample/minimum/hitCount/
+sampleCount/step @ EBP-0x2C..-0x04`, while the inner hit array naturally begins
+at `EBP-0x130`. Reuse one real `Float3 maximum` first for half-size and then for
+the final maximum. The three live gap scanner integers form one 12-byte
+`{gapLength, gapStart, sampleIndex}` semantic aggregate, with no padding. The
+collision outside-test is best spelled as an empty outside branch plus `else`;
+this makes VC7 build the target short failure trampoline instead of four long
+conditionals.
+
+The final x87 fingerprint is target-specific and must not be pushed into the
+shared TH08-ancestral `Float3::operator*`. A source-local helper returning
+`Float3(scalar * value.x, scalar * value.y, scalar * value.z)` makes build 3077
+reuse the integer-to-float conversion as `fild; fst temp; fmul value.z`, then
+reload that same temp for Y/X, exactly matching the target. `value.x * scalar`,
+explicit float locals, cast-return helpers, assignment-expression locals, and
+extra vector intermediates are negative oracles. The fragment packet then writes
+the computed gap length to `initialLength` before copying it to `maximumLength`;
+the reverse assignment direction leaves exactly three displacement bytes.
+`PhotoRotatingLaserView::CheckCollision` shares the recovered frame/math source
+shape but remains one byte non-exact because stock VC7 lowers one termination
+condition as `jl short + jmp near` instead of the target near `jge`; do not use
+assembly or an artificial branch to close it.
+
 - `Background::DrawLowPrio @ 0x00402990` is the positive POD-aggregate case:
   the five real locals form a gapless 0x20 lane
   `{left, top, D3DRECT, right, bottom}`. One semantic aggregate reproduces the
@@ -463,8 +490,12 @@ without operand swapping. A force-inlined `EitherFlag(first, second)` called as
 `EitherFlag(flag0, flag2)` makes VC7 evaluate flag2 then flag0 (right-to-left
 argument evaluation) while the helper accumulates `first | second` into EAX.
 This exactly reproduces `or eax, ecx` in both shake callbacks and is a useful
-oracle for other one-byte bitfield-OR residuals. Do not generalize it unless the
-load order and target accumulator are independently proven.
+oracle for other one-byte bitfield-OR residuals. The same pattern is now
+independently canonical in `AsciiManager::OnUpdate @ 0x00401000`,
+`PhotoBulletManagerView::OnUpdate @ 0x004059C0`, and
+`PhotoGameUpdateView::OnUpdate @ 0x00430180`, so prefer it over swapping source
+operands whenever the target load order is already proven. Do not generalize it
+unless the load order and target accumulator are independently proven.
 
 `g_ScreenEffectShakeX/Y @ 0x004C493C/0x004C4940` are floats, not generic ANM
 layer-6 counters. The exact layer-6 callback clears them every frame; the exact

@@ -1,5 +1,5 @@
 address,origin,subsystem,disposition,confidence,evidence_id
-0x00401000,authored,AsciiManager,authored,high,ascii-manager-text-spine-2026-08-30
+0x00401000,authored,AsciiManager,authored,exact,vc71-ascii-on-update-exact-2026-09-01
 0x00401090,authored,AsciiManager,authored,exact,ascii-manager-text-spine-exact-2026-08-30
 0x004010B0,authored,AsciiManager,authored,exact,ascii-manager-text-spine-exact-2026-08-30
 0x004010F0,authored,AsciiManager,authored,high,ascii-manager-text-spine-2026-08-30
@@ -57,7 +57,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00405850,authored,BulletManager,authored,exact,photo-bullet-deactivate-exact-2026-08-30
 0x004058C0,authored,BulletManager,authored,exact,photo-bullet-manager-draw-exact-2026-08-30
 0x00405900,authored,BulletManager,authored,exact,photo-bullet-manager-draw-bucket-exact-2026-08-30
-0x004059C0,authored,BulletManager,authored,high,photo-bullet-manager-on-update-semantic-2026-08-30
+0x004059C0,authored,BulletManager,authored,exact,vc71-photo-bullet-on-update-exact-2026-09-01
 0x00405A00,authored,BulletManager,authored,exact,photo-bullet-manager-on-draw-exact-2026-08-30
 0x00405A30,authored,BulletManager,authored,high,photo-bullet-spawn-single-semantic-2026-08-30
 0x004062B0,authored,BulletManager,authored,high,photo-bullet-transform-interpreter-semantic-2026-08-30
@@ -283,7 +283,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041E2C0,authored,PhotoEffect,authored,exact,vc71-photo-straight-laser-update-2026-08-30
 0x0041E6D0,authored,PhotoEffect,authored,exact,vc71-photo-straight-laser-draw-2026-08-30
 0x0041E750,authored,PhotoEffect,authored,high,vc71-photo-effect-base-count-photo-targets-2026-08-30
-0x0041E9C0,authored,PhotoEffect,authored,high,vc71-photo-straight-laser-check-collision-2026-08-30
+0x0041E9C0,authored,PhotoEffect,authored,exact,vc71-photo-straight-laser-collision-exact-2026-09-01
 0x0041F140,authored,PhotoEffect,authored,exact,vc71-exact-photo-straight-secondary-2026-08-31
 0x0041F280,authored,PhotoEffect,authored,exact,vc71-exact-photo-straight-nearby-2026-08-31
 0x0041F380,authored,PhotoEffect,authored,high,vc71-photo-rotating-laser-initialize-2026-08-30
@@ -428,7 +428,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0042FF60,authored,PhotoGame,authored,exact,vc71-photo-game-update-2026-08-30
 0x00430110,authored,PhotoGame,authored,exact,vc71-photo-player-draw-2026-08-30
 0x00430160,authored,PhotoGame,authored,exact,vc71-photo-camera-draw-wrapper-2026-08-30
-0x00430180,authored,PhotoGame,authored,high,photo-player-callback-semantic-2026-08-30
+0x00430180,authored,PhotoGame,authored,exact,vc71-photo-player-on-update-exact-2026-09-01
 0x00430210,authored,PhotoGame,authored,exact,vc71-photo-player-draw-callback-2026-08-30
 0x00430240,authored,PhotoGame,authored,exact,vc71-photo-camera-draw-callback-2026-08-30
 0x00430260,authored,PhotoGame,authored,exact,vc71-photo-player-load-sht-2026-08-30

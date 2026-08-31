@@ -797,11 +797,11 @@ priority 14.
 The 29-caller `AnmLoaded::InitializeVm @ 0x00404B80` is now correctly owned by
 the dedicated `AnmLoaded.cpp` ANM component, not BulletManager. Its exact-sized
 222-byte body matches 210/214 comparable bytes and both relocations; only an
-original eight-byte extra frame reservation changes four displacement bytes. `OnUpdate @
-0x004059C0` is exact-sized with all three relocations and 49/50 comparable
-bytes; its sole residual is VC7.1 choosing the opposite destination register
-for a commutative OR. Keep both semantic rather than manufacturing storage or
-assembly.
+original eight-byte extra frame reservation changes four displacement bytes.
+`PhotoBulletManagerView::OnUpdate @ 0x004059C0` is now canonical exact for all
+62 bytes and three relocations: a source-local `__forceinline` two-argument OR
+helper preserves target right-to-left bit loads while selecting the target OR
+accumulator register. Do not reintroduce operand swaps or artificial branches.
 
 The adjacent `0x004048B0..0x00404B7B` range is no longer misclassified as
 bullet helpers. Four canonical units contribute 469 exact bytes: the inherited
@@ -1057,9 +1057,27 @@ the same six-local hash rank. Aggregating those non-trivial vectors was a
 negative oracle because VC7 introduced constructor machinery.
 `CountPhotoTargets @ 0x0041E750` remains source-present and non-exact.
 
-The two large type-specific collision handlers at
-`0x0041E9C0/0x0041FA10` are source-present and recover the complete TH095
-photo-cut behavior. The adjacent live `ItemInf` owner at
+`PhotoStraightLaserView::CheckCollision @ 0x0041E9C0` is now canonical exact
+for all 1,910 bytes and nineteen relocations. Preserve the recovered source
+shape: the five shallow scan locals stay outside the inner `hits[256]` scope and
+reuse the established identifier rank; `maximum` first carries half-size and is
+then overwritten with the final maximum; `step.z` is explicitly zeroed; the
+three live gap-scanner integers form a gapless `GapScanState`; and fragment
+position scaling uses a source-local scalar-first helper
+`Float3(scalar*x, scalar*y, scalar*z)` so build 3077 emits the target x87
+`fild; fst; fmul` reuse. The fragment packet writes the computed length to
+`initialLength` first and then copies it to `maximumLength`; reversing that
+assignment is exactly three displacement bytes wrong.
+
+`PhotoRotatingLaserView::CheckCollision @ 0x0041FA10` remains deliberately
+uncredited. The same source oracles recover its complete `0x228` live frame and
+a 1,768-byte semantic probe against the 1,767-byte target. The sole remaining
+residual is one control-flow byte: stock VC7.1 emits `jl short + jmp near` for
+the first post-leading-gap termination test while the target owns one near
+`jge`. Multiple ordinary `return`, positive-if, and nested-block spellings were
+bounded negative oracles; do not grind this lane or encode the branch manually.
+
+The adjacent live `ItemInf` owner at
 `0x0041CB20..0x0041D575` is now also source-present. It is a 150-slot
 photo-charge-item pool, not the traditional TH08 item manager: ten lifecycle,
 draw, and callback functions totaling 1,072 bytes are canonical exact, while
@@ -1100,9 +1118,11 @@ three delete-expression homes around the real argument pointer. `WinMain`,
 `AnmLoaded::InitializeVm`, `AnmManagerVmLifecycleView::AddVm`, and the
 PhotoEffect factory/initializers likewise retain target-only EH/new/delete or
 unreferenced frame homes after their real locals are accounted for. Do not add
-inert storage to any of these. The two one-byte PhotoGame/Bullet callback OR
-residuals also remain deferred: swapping source operands changes the load order
-instead of reproducing the target destination register.
+inert storage to any of these. The former one-byte PhotoGame/Bullet callback OR
+residuals are closed exactly by the same source-local `EitherFlag(first, second)`
+pattern first proven in ScreenEffect: VC7 evaluates arguments right-to-left,
+preserving target bit-load chronology, while the helper controls the accumulator
+register without source-operand swapping.
 
 ANM source-shape facts to preserve: the stock compiler lacks TH08's patched
 `#pragma var_order`; `GetRandomU32InRange` uses the conditional-expression

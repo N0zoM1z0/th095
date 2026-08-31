@@ -142,7 +142,7 @@ address,name,module,confidence,evidence
 0x00405120,th095::PhotoBulletManagerView::Update,BulletManager,high,Complete exact-sized 1600-slot update reconstruction with all thirty relocation targets
 0x004058C0,th095::PhotoBulletManagerView::Draw,BulletManager,exact,Canonical 56-byte six-bucket draw dispatcher
 0x00405900,th095::PhotoBulletManagerView::DrawBucket,BulletManager,exact,Canonical 180-byte bucket traversal with four relocations
-0x004059C0,th095::PhotoBulletManagerView::OnUpdate,BulletManager,high,Exact-sized callback with a single commutative register-choice byte residual
+0x004059C0,th095::PhotoBulletManagerView::OnUpdate,BulletManager,exact,Exact projectile update callback gate; inline EitherFlag closes the former one-byte OR register residual
 0x00405A00,th095::PhotoBulletManagerView::OnDraw,BulletManager,exact,Canonical 45-byte draw callback with two relocations
 0x004048B0,th095::CubicHermiteInterpolate,Background,exact,Canonical 152-byte Hermite interpolation helper with nine relocations
 0x00404950,th095::Background::SetPhotoArea,Background,high,Complete TH095 camera rectangle and three-VM initialization path
@@ -319,3 +319,6 @@ address,name,module,confidence,evidence
 0x00437740,th095::ScreenEffect::DeleteScreenEffect,ScreenEffect,exact,Exact Chain unlink and heap teardown; delete-expression source clears the fastcall argument home after delete
 0x00436920,th095::ScreenEffect::DrawSquare,ScreenEffect,exact,Exact screen-space diffuse quad draw; isolated TU preserves six inline ANM cache-clear this homes and TH095 omits TH08 conditional Z-write device call
 0x00436DD0,th095::ScreenEffect::RegisterChain,ScreenEffect,exact,Exact eight-case ScreenEffect factory/Chain registration; 598-byte authored body plus 32-byte compiler switch table; TH095 swaps enum values 3/4 relative to TH08
+0x00401000,th095::AsciiManager::OnUpdate,AsciiManager,exact,Exact replay/photo reset gate; source-local EitherFlag preserves target OR accumulator register
+0x0041E9C0,th095::PhotoStraightLaserView::CheckCollision,PhotoEffect,exact,"Exact 12-unit straight-laser collision sampling, capture particles, gap trimming and fragment spawning"
+0x00430180,th095::PhotoGameUpdateView::OnUpdate,PhotoGame,exact,Exact player calc-chain photo-global gate and direct capture-input path

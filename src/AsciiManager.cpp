@@ -47,12 +47,17 @@ DIFFABLE_STATIC(ChainElem, g_AsciiManagerCalcChain);
 DIFFABLE_STATIC(ChainElem, g_AsciiManagerDrawChainLowPrio);
 DIFFABLE_STATIC(ChainElem, g_AsciiManagerDrawChainHighPrio);
 
+static __forceinline i32 AsciiEitherFlag(i32 first, i32 second)
+{
+    return first | second;
+}
+
 // FUNCTION: TH095 0x00401000.
 i32 AsciiManager::OnUpdate(AsciiManager *ascii)
 {
     if (g_AsciiGlobalState != NULL &&
-        (g_AsciiGlobalState->suppressStringReset |
-         g_AsciiGlobalState->active) != 0 &&
+        AsciiEitherFlag(g_AsciiGlobalState->active,
+                        g_AsciiGlobalState->suppressStringReset) != 0 &&
         g_AsciiGlobalState->suppressStringReset == 0)
     {
         return 1;

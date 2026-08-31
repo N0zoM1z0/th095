@@ -1434,12 +1434,17 @@ i32 PhotoBulletManagerView::DrawBucket(i32 bucketIndex)
     return 1;
 }
 
+static __forceinline i32 PhotoBulletEitherFlag(i32 first, i32 second)
+{
+    return first | second;
+}
+
 // FUNCTION: TH095 0x004059C0.
 i32 __fastcall PhotoBulletManagerView::OnUpdate(
     PhotoBulletManagerView *bulletManager)
 {
-    if ((g_PhotoBulletGlobalState->suppressesBulletCallbacks |
-         g_PhotoBulletGlobalState->unknownFlag0) != 0)
+    if (PhotoBulletEitherFlag(g_PhotoBulletGlobalState->unknownFlag0,
+                              g_PhotoBulletGlobalState->suppressesBulletCallbacks) != 0)
     {
         return 1;
     }
