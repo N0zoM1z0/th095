@@ -274,3 +274,11 @@ address,name,module,confidence,evidence
 0x004552C0,th095::PbgArchive::GetEntryDecompressedSize,PbgArchive,exact,Exact archive-entry decompressed-size lookup
 0x004552F0,th095::PbgArchive::FindEntry,PbgArchive,exact,Exact case-insensitive linear archive-entry lookup
 0x00455790,th095::PbgArchive::CopyFileName,PbgArchive,exact,Exact filename duplication; TH095 uses CRT malloc rather than TH08 GlobalAlloc-backed MemAlloc
+0x0041AC50,th095::FileSystem::WriteDataToFile,FileSystem,exact,Exact one-shot write under critical section 2 with active-count accounting FormatMessageA diagnostics and full-length verification
+0x0041ADC0,th095::FileSystem::OpenWriteFile,FileSystem,exact,Exact write-handle open that retains critical section 2 until the shared close primitive
+0x0041AEA0,th095::ReplayFile::Open,ReplayManager,exact,Exact replay read-open using shared handle and sequential-scan CreateFileA flags
+0x0041AF80,th095::FileSystem::WriteToOpenFile,FileSystem,exact,Exact shared open-handle write primitive; target is also aliased by ReplayFile::Write and ScoreFileWriter::Write callers
+0x0041B020,th095::ReplayFile::Read,ReplayManager,exact,Exact malloc-backed replay read primitive using one live two-field semantic aggregate for data and bytesRead
+0x0041B090,th095::FileSystem::CloseWriteFile,FileSystem,exact,Exact shared handle close releasing critical section 2 and decrementing its active-count byte
+0x0041B0F0,th095::GameErrorContext::Log,Main,exact,Exact variadic 8 KiB buffered logger under critical section 3 with VC7 intrinsic strlen/strcpy expansion
+0x0041B280,th095::GameErrorContext::Fatal,Main,exact,Exact 512-byte variadic fatal logger; appends to shared 8 KiB context and sets showMessageBox

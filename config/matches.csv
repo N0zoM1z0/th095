@@ -527,3 +527,11 @@ address,name,size,status,match_percent,unit,evidence
 0x004552C0,th095::PbgArchive::GetEntryDecompressedSize,46,matching,100.00,pbg-archive-get-entry-size,python3 scripts/build.py --unit pbg-archive-get-entry-size && python3 scripts/compare-coff-function.py --unit pbg-archive-get-entry-size --json
 0x004552F0,th095::PbgArchive::FindEntry,101,matching,100.00,pbg-archive-find-entry,python3 scripts/build.py --unit pbg-archive-find-entry && python3 scripts/compare-coff-function.py --unit pbg-archive-find-entry --json
 0x00455790,th095::PbgArchive::CopyFileName,139,matching,100.00,pbg-archive-copy-file-name,python3 scripts/build.py --unit pbg-archive-copy-file-name && python3 scripts/compare-coff-function.py --unit pbg-archive-copy-file-name --json
+0x0041AC50,th095::FileSystem::WriteDataToFile,362,matching,100.00,file-write-data,python3 scripts/build.py --unit file-write-data && python3 scripts/compare-coff-function.py --unit file-write-data --json
+0x0041ADC0,th095::FileSystem::OpenWriteFile,214,matching,100.00,file-open-write,python3 scripts/build.py --unit file-open-write && python3 scripts/compare-coff-function.py --unit file-open-write --json
+0x0041AEA0,th095::ReplayFile::Open,214,matching,100.00,replay-file-open,python3 scripts/build.py --unit replay-file-open && python3 scripts/compare-coff-function.py --unit replay-file-open --json
+0x0041AF80,th095::FileSystem::WriteToOpenFile,147,matching,100.00,file-write-open,python3 scripts/build.py --unit file-write-open && python3 scripts/compare-coff-function.py --unit file-write-open --json
+0x0041B020,th095::ReplayFile::Read,107,matching,100.00,replay-file-read,python3 scripts/build.py --unit replay-file-read && python3 scripts/compare-coff-function.py --unit replay-file-read --json
+0x0041B090,th095::FileSystem::CloseWriteFile,81,matching,100.00,file-close-write,python3 scripts/build.py --unit file-close-write && python3 scripts/compare-coff-function.py --unit file-close-write --json
+0x0041B0F0,th095::GameErrorContext::Log,385,matching,100.00,game-error-log,python3 scripts/build.py --unit game-error-log && python3 scripts/compare-coff-function.py --unit game-error-log --json
+0x0041B280,th095::GameErrorContext::Fatal,392,matching,100.00,game-error-fatal,python3 scripts/build.py --unit game-error-fatal && python3 scripts/compare-coff-function.py --unit game-error-fatal --json

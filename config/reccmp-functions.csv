@@ -599,3 +599,11 @@ th095::PbgArchive::~PbgArchive,0x00454E90,function
 th095::PbgArchive::GetEntryDecompressedSize,0x004552C0,function
 th095::PbgArchive::FindEntry,0x004552F0,function
 th095::PbgArchive::CopyFileName,0x00455790,function
+th095::FileSystem::WriteDataToFile,0x0041AC50,function
+th095::FileSystem::OpenWriteFile,0x0041ADC0,function
+th095::ReplayFile::Open,0x0041AEA0,function
+th095::FileSystem::WriteToOpenFile,0x0041AF80,function
+th095::ReplayFile::Read,0x0041B020,function
+th095::FileSystem::CloseWriteFile,0x0041B090,function
+th095::GameErrorContext::Log,0x0041B0F0,function
+th095::GameErrorContext::Fatal,0x0041B280,function

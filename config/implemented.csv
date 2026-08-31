@@ -598,3 +598,11 @@ th095::PbgArchive::~PbgArchive
 th095::PbgArchive::GetEntryDecompressedSize
 th095::PbgArchive::FindEntry
 th095::PbgArchive::CopyFileName
+th095::FileSystem::WriteDataToFile
+th095::FileSystem::OpenWriteFile
+th095::ReplayFile::Open
+th095::FileSystem::WriteToOpenFile
+th095::ReplayFile::Read
+th095::FileSystem::CloseWriteFile
+th095::GameErrorContext::Log
+th095::GameErrorContext::Fatal

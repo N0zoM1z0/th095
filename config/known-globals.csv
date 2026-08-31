@@ -50,3 +50,5 @@ address,name,module,confidence,evidence
 0x004C4E28,th095::g_PhotoScreenFadeColor,PhotoRuntime,high,RunStageScript opcodes 8/9/13 photograph color publication
 0x004CA290,th095::g_BackgroundQuadVertices,AnmManager,exact,Canonical SetupVertexBuffer DIR32 base/addends prove four 0x18-byte software fallback vertices
 0x004A4270,th095::EclRunHigh::g_Th095ExInsn,EclManager,exact,Exact RunEcl DIR32 relocations plus verified 22-entry target callback table
+0x004A4328,th095::g_OpenWriteFileHandle,FileSystem,exact,Six canonical file primitives resolve the shared CreateFileA handle
+0x004C4D7F,th095::g_ErrorCriticalActiveCount,Main,exact,Canonical GameErrorContext Log/Fatal increment and decrement critical-section-3 active count
