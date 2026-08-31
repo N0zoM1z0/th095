@@ -20,6 +20,7 @@ struct ResultScreenAnmManagerLifecycleView
 {
     ResultScreenAnmLoadedView *LoadAnm(i32 anmIndex, const char *path);
     void ReleaseAnm(i32 anmIndex);
+    void MarkVmsForDeletion(ResultScreenAnmLoadedView *anm);
 };
 
 extern ResultScreenAnmManagerLifecycleView *g_AnmManager;
@@ -236,6 +237,15 @@ inline ResultScreenAnmVm *GetResultVm(ResultScreen *resultScreen, i32 index)
     return &resultScreen->vms[index];
 }
 
+static __forceinline void FreeResultHelpText(ResultScreen *resultScreen)
+{
+    if (resultScreen->helpTextBuffer != NULL)
+    {
+        u8 *helpTextBuffer = resultScreen->helpTextBuffer;
+        free(helpTextBuffer);
+    }
+}
+
 // FUNCTION: TH095 0x004264B0.
 ResultScreen::ResultScreen()
 {
@@ -259,12 +269,8 @@ ResultScreen::~ResultScreen()
             this->replays[i] = NULL;
         }
     }
-    if (this->helpTextBuffer != NULL)
-    {
-        u8 *helpTextBuffer = this->helpTextBuffer;
-        free(helpTextBuffer);
-    }
-    g_AnmManager->ReleaseAnm(this->anm->anmIdx);
+    FreeResultHelpText(this);
+    g_AnmManager->MarkVmsForDeletion(this->anm);
     g_ResultScreen = NULL;
 }
 

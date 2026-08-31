@@ -219,6 +219,41 @@ Additional stock-VC7.1 local-allocation oracles are now canonical:
   adds a copy and changes extent. The same rule works for ownership locals:
   `HelpMenuFreeAnmData` contains the real data pointer and `free`, delaying that
   pointer to the case-3 call site rather than inventing storage.
+- `ResultScreen::~ResultScreen @ 0x00426880` extends the ownership-helper
+  rule to an EH-bearing destructor. Keeping the real help-text pointer and
+  `free` inside a source-local `__forceinline` helper allocates that live local
+  after the compiler-generated replay-delete homes, reproducing the target
+  `EBP-0x18/-0x14` delete lane and `EBP-0x1C` help-buffer home with no dummy
+  storage. The same closure exposes an API distinction that private ABI views
+  must preserve: `ReleaseAnm(i32) @ 0x00443980` releases an ANM resource slot
+  by index, whereas `MarkVmsForDeletion(AnmLoaded*) @ 0x00445270` scans live
+  VMs and marks those whose `AnmVm+0x230` owner pointer equals the argument.
+  Passing a loaded-ANM pointer through the index API introduces a real extra
+  dereference and is semantically wrong even when both calls look like teardown.
+- `Background::Create @ 0x004024A0` is a positive control-flow-plus-home
+  oracle. The target factory uses an explicit shared failure label after
+  `Initialize`, including a null guard around delete; the logically equivalent
+  `if/else` source is nine bytes short. Once that authored control flow is
+  restored, only the two real pointer homes differ. The established shallow
+  backing buckets `background -> averagedPanLocal12` and `chain ->
+  restartCommandProcessingLocal05` reproduce them exactly. Declaration order
+  alone does not move these homes under build 3077.
+- `PhotoCardInfoView::Initialize @ 0x00408670` distinguishes binary layout from
+  compiler-visible C++ member semantics. CardInf stores two four-byte POD VM
+  handles, not the shared nontrivial `AnmVmId` type: using the latter would add
+  member construction to the independently exact CardInf constructor. Dedicated
+  inline creators make each zero `Float3` and four-byte VM-return sret belong to
+  its call site, producing two consecutive 16-byte allocation blocks. Whole-POD
+  assignment then gives the target result-before-LHS evaluation order naturally.
+- `PhotoEnemyManagerView::~PhotoEnemyManagerView @ 0x004154E0` combines two
+  destructor rules. Defining the real empty `PhotoEnemyView` destructor in the
+  class lets VC7.1 both emit its callable COMDAT for vector destruction and
+  inline the direct `spawnTemplate` member cleanup. Separately, an inline ECL
+  argument-free helper must take the real enemy and argument index and perform
+  the slot load itself. Passing an already-loaded pointer to the helper adds a
+  non-target copy; loading it inside the helper moves the one real ownership
+  local behind the outer delete-expression homes and reproduces the 480-byte
+  target without padding.
 - `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` proves the
   complementary allocation-phase rule. Build 3077 allocates anonymous return
   objects owned by the outer function before locals introduced by later inline

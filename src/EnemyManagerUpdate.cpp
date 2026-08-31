@@ -428,7 +428,9 @@ struct PhotoEnemyView
     PhotoEnemyAnmVmIdStorage attachedVmId; // +0x4cbc
 
     PhotoEnemyView();
-    ~PhotoEnemyView();
+    ~PhotoEnemyView()
+    {
+    }
     void IntegrateMovement();
     void ClampPosition();
     void RestartEcl();
@@ -456,10 +458,6 @@ PhotoEnemyView::PhotoEnemyView()
 {
     // The target's VC7.1 constructor frame retains two unconsumed local slots.
     i32 unconsumedConstructorLocals[2];
-}
-
-PhotoEnemyView::~PhotoEnemyView()
-{
 }
 
 struct PhotoEnemyManagerView
@@ -614,6 +612,13 @@ i32 PhotoEnemyManagerView::LoadResources()
     return ZUN_SUCCESS;
 }
 
+static __forceinline void FreePhotoEnemyEclArgument(
+    PhotoEnemyView *enemy, i32 argumentIndex)
+{
+    void *argument = enemy->allocatedEclArgs[argumentIndex];
+    free(argument);
+}
+
 PhotoEnemyManagerView::~PhotoEnemyManagerView()
 {
     utils::DebugPrint("shutdown EnemyCtrlInf\n");
@@ -627,8 +632,7 @@ PhotoEnemyManagerView::~PhotoEnemyManagerView()
         {
             if (enemy->allocatedEclArgs[argumentIndex] != NULL)
             {
-                void *argument = enemy->allocatedEclArgs[argumentIndex];
-                free(argument);
+                FreePhotoEnemyEclArgument(enemy, argumentIndex);
             }
         }
     }

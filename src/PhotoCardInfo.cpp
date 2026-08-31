@@ -7,9 +7,17 @@
 namespace th095
 {
 
+struct PhotoCardVmHandle
+{
+    i32 value;
+};
+
+typedef char PhotoCardVmHandleSizeIs4[
+    (sizeof(PhotoCardVmHandle) == 4) ? 1 : -1];
+
 struct PhotoCardAnmLoadedView
 {
-    AnmVmId CreateVm(i32 scriptIndex, Float3 *position);
+    PhotoCardVmHandle CreateVm(i32 scriptIndex, Float3 *position);
 };
 
 struct PhotoCardStageStateView
@@ -33,8 +41,8 @@ struct PhotoCardGameTaskView
 struct PhotoCardInfoView
 {
     i32 unknown000;                 // +0x00
-    i32 backgroundVmId;             // +0x04
-    i32 textVmId;                   // +0x08
+    PhotoCardVmHandle backgroundVmId; // +0x04
+    PhotoCardVmHandle textVmId;       // +0x08
     i32 state;                      // +0x0c
     ZunTimer timer;                 // +0x10
     u32 savedScreenFadeColor;       // +0x1c
@@ -74,6 +82,28 @@ extern PhotoCardGameRuntimeView *g_PhotoCardGameRuntime;
 extern PhotoCardGameTaskView *g_PhotoCardGameTask;
 extern u32 g_PhotoScreenFadeColor;
 
+static __forceinline void CreatePhotoCardBackgroundVm(
+    PhotoCardInfoView *cardInfo)
+{
+    Float3 position;
+    position.x = 0.0f;
+    position.y = 0.0f;
+    position.z = 0.0f;
+    cardInfo->backgroundVmId =
+        g_PhotoCardBackgroundAnm->CreateVm(1, &position);
+}
+
+static __forceinline void CreatePhotoCardTextVm(
+    PhotoCardInfoView *cardInfo)
+{
+    Float3 position;
+    position.x = 0.0f;
+    position.y = 0.0f;
+    position.z = 0.0f;
+    cardInfo->textVmId =
+        g_PhotoCardUiAnm->CreateVm(0x1e, &position);
+}
+
 // FUNCTION: TH095 0x00408610.
 PhotoCardInfoView::PhotoCardInfoView()
 {
@@ -85,24 +115,13 @@ PhotoCardInfoView::PhotoCardInfoView()
 // FUNCTION: TH095 0x00408670.
 i32 PhotoCardInfoView::Initialize(char *encodedText)
 {
-    Float3 textPosition;
-    Float3 backgroundPosition;
     for (i32 index = 0; index < 0x30; ++index)
     {
         this->text[index] = encodedText[index] ^ 0xaa;
     }
 
-    backgroundPosition.x = 0.0f;
-    backgroundPosition.y = 0.0f;
-    backgroundPosition.z = 0.0f;
-    this->backgroundVmId =
-        g_PhotoCardBackgroundAnm->CreateVm(1, &backgroundPosition).value;
-
-    textPosition.x = 0.0f;
-    textPosition.y = 0.0f;
-    textPosition.z = 0.0f;
-    this->textVmId =
-        g_PhotoCardUiAnm->CreateVm(0x1e, &textPosition).value;
+    CreatePhotoCardBackgroundVm(this);
+    CreatePhotoCardTextVm(this);
 
     reinterpret_cast<AnmTextManagerView *>(g_AnmManager)
         ->DrawTextRight(

@@ -23,7 +23,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004020C0,authored,Background,authored,high,background-lifecycle-complete-2026-08-30
 0x00402250,authored,Background,authored,exact,background-lifecycle-2026-08-30
 0x00402330,authored,Background,authored,high,background-lifecycle-complete-2026-08-30
-0x004024A0,authored,Background,authored,high,background-lifecycle-2026-08-30
+0x004024A0,authored,Background,authored,exact,background-create-exact-2026-08-31
 0x00402620,compiler,Background,exclude,exact,background-scalar-deleting-destructor-2026-08-30
 0x00402680,authored,Background,authored,exact,background-lifecycle-2026-08-30
 0x00402750,authored,Background,authored,exact,background-render-spine-2026-08-30
@@ -77,7 +77,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004081B0,authored,BulletManager,authored,exact,photo-bullet-despawn-all-exact-2026-08-30
 0x00408220,authored,BulletManager,authored,exact,photo-bullet-capture-proximity-exact-2026-08-31
 0x00408610,authored,PhotoCardInfo,authored,exact,photo-card-info-constructor-exact-2026-08-30
-0x00408670,authored,PhotoCardInfo,authored,high,photo-card-info-initialize-semantic-2026-08-30
+0x00408670,authored,PhotoCardInfo,authored,exact,photo-card-info-initialize-exact-2026-08-31
 0x00408760,authored,PhotoCardInfo,authored,exact,photo-card-info-destructor-exact-2026-08-30
 0x004087D0,authored,PhotoCardInfo,authored,exact,photo-card-info-show-exact-2026-08-30
 0x00408850,authored,PhotoCardInfo,authored,exact,photo-card-info-create-exact-2026-08-30
@@ -138,7 +138,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004152D0,authored,EnemyManager,authored,exact,vc71-photo-enemy-view-destructor-2026-08-30
 0x00415310,authored,EnemyManager,authored,exact,vc71-photo-enemy-construction-2026-08-30
 0x004153D0,authored,EnemyManager,authored,exact,vc71-photo-enemy-resource-load-2026-08-30
-0x004154E0,authored,EnemyManager,authored,high,photo-enemy-manager-destructor-semantic-2026-08-30
+0x004154E0,authored,EnemyManager,authored,exact,photo-enemy-manager-destructor-exact-2026-08-31
 0x004156C0,authored,EnemyManager,authored,exact,vc71-photo-enemy-spawn-2026-08-30
 0x00415820,authored,EnemyManager,authored,exact,vc71-photo-enemy-spawn-context-2026-08-30
 0x00415970,authored,EnemyManager,authored,high,photo-enemy-manager-update-semantic-2026-08-30
@@ -382,7 +382,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00426630,authored,ResultScreen,authored,exact,result-screen-pause-initialize-exact-2026-08-30
 0x00426820,authored,ResultScreen,authored,exact,result-screen-pause-anm-lifecycle-exact-2026-08-30
 0x00426860,authored,ResultScreen,authored,exact,result-screen-pause-anm-lifecycle-exact-2026-08-30
-0x00426880,authored,ResultScreen,authored,high,result-screen-pause-destructor-source-2026-08-30
+0x00426880,authored,ResultScreen,authored,exact,result-screen-pause-destructor-exact-2026-08-31
 0x00426A50,authored,ResultScreen,authored,exact,result-screen-pause-factory-exact-2026-08-30
 0x00426B90,authored,ResultScreen,authored,exact,result-screen-pause-factory-exact-2026-08-30
 0x00426BF0,authored,ResultScreen,authored,high,vc71-result-screen-update-source-2026-08-29

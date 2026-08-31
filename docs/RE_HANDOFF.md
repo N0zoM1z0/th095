@@ -168,13 +168,19 @@
   spine, but copies a caller-provided `0x80`-byte context block into enemy
   `+0x2F4` before the first ECL run. Both target callers are in the exact
   `EclManager::RunEcl` dispatcher.
-- `PhotoEnemyView::~PhotoEnemyView @ 0x004152D0` is exact for 52 bytes and its
-  `_free` relocation. The owning manager destructor at `0x004154E0` is
-  source-present for all 480 bytes and 22 resolved relocations: Chain unlink,
-  128-by-16 argument cleanup, ECL manager/file deletion, ANM release/VM
-  retirement, global reset, vector destruction, and spawn-template VM cleanup.
-  Its 382/392 comparable bytes differ only in three compiler-local slot homes,
-  so the manager body remains conservatively uncredited.
+- `PhotoEnemyView::~PhotoEnemyView @ 0x004152D0` remains exact for 52 bytes,
+  and the owning `PhotoEnemyManagerView::~PhotoEnemyManagerView @ 0x004154E0`
+  is now canonical exact for all 480 bytes and 22 relocations. The child
+  destructor must be class-inline: build 3077 still emits the callable COMDAT
+  used by the 128-element vector destructor, but expands the direct
+  `spawnTemplate` cleanup in the manager tail. The remaining local-home residual
+  closes with a source-local ownership helper that receives the real enemy plus
+  argument index and obtains/frees the allocated ECL argument inside the inline
+  expansion. This delays only that live pointer to the target call-site phase;
+  no compiler temp, inert local, or padding is modeled. The complete teardown
+  covers Chain unlink, 128-by-16 argument cleanup, ECL manager/file deletion,
+  ANM release/VM retirement, global reset, vector destruction, and direct-member
+  generated-vertex cleanup.
 - The enemy construction spine is now recovered. The `0x230`-byte ECL-context
   constructor and `0x4CC0`-byte enemy constructor are canonical exact for 822
   authored bytes; the latter naturally builds one ANM VM, seventeen ECL
@@ -184,8 +190,8 @@
   iterator, and initializes TH095's photo-target, trail, bullet, and ECL
   defaults. All eleven relocations resolve and 1,119/1,152 comparable bytes
   match; the remaining 33 bytes are compiler-local stack displacements and
-  receive no exact credit. All sixteen established exact units in the shared
-  translation unit replay unchanged. The adjacent 95-byte manager
+  receive no exact credit. All nineteen current canonical units in the shared
+  translation unit replay exact. The adjacent 95-byte manager
   self-destruction entry at `0x00414B30` is also canonical exact and closes the
   enemy lifecycle path used by the game-task shutdown coordinator.
 - Root-level `EclOperandsInt.cpp` and `EclOperandsFloat.cpp` now reconstruct
@@ -373,7 +379,11 @@
   `0x00451B00/0x00451B90` remain exact for another 374 bytes.
   `SceneValueQueue::Pop @ 0x00450F60`, shared by four scene hubs, is complete
   source-present at 93 versus 91 bytes; its sole residual is VC7.1's
-  callee-saved-register choice.
+  callee-saved `esi` choice while evaluating the shift assignment. Ordinary
+  indexing and bounded read/store/pointer inline-helper source shapes were
+  replayed: either VC7.1 retains `esi` or introduces an `/Od` inline-return
+  temporary. Do not manufacture a sequencing helper or no-op solely to remove
+  those two bytes.
 - `HelpMenuView::UpdateHelpMenu @ 0x00451C80` is now canonical exact for
   2,358 authored bytes; its complete compare extent is 2,378 bytes because the
   compiler owns a five-entry 20-byte state switch table immediately after the
@@ -418,15 +428,28 @@
   resolve to target destinations and 1,968 of 2,133 comparable bytes match.
   The remaining 165 local-frame/temporary/register-allocation bytes receive no
   exact credit. All ten pre-existing exact ResultScreen units replay unchanged.
+- `ResultScreen::~ResultScreen @ 0x00426880` is now canonical exact for all
+  452 bytes and 22 relocations. Two source facts close the prior 454/452
+  residual without padding or assembly. First, freeing the real help-text
+  pointer through a source-local `__forceinline` ownership helper delays that
+  local to its actual cleanup phase, naturally restoring the target replay-
+  delete/help/embedded-VM home chronology. Second, target callee `0x00445270`
+  is the VM-list `MarkVmsForDeletion(AnmLoaded*)` routine: the destructor passes
+  `this->anm` directly. Treat `ReleaseAnm(i32) @ 0x00443980` as the slot-resource
+  release API and `MarkVmsForDeletion(AnmLoaded*) @ 0x00445270` as the distinct
+  live-VM retirement API. All sixteen canonical `ResultScreen.cpp` units replay
+  exact after this correction.
 - `InitializeGameResultScreen @ 0x00428590`,
   `InitializeReplayResultScreen @ 0x004288B0`, and
   `InitializePhotoResultScreen @ 0x00428E90` are now source-present for the
   complete 3,350-byte entry cluster. They recover shared capture setup plus
   the TH095-specific rotating scene-label/replay metadata and photo-score/
   best-shot paths. Their VC7.1 bodies are 681/1,415/1,071 bytes versus
-  788/1,489/1,073-byte targets; the remaining differences are original
-  inline-temporary frame gaps and a two-byte capture branch, so they receive
-  no exact credit. The source-present total is now 158 functions, and all ten
+  788/1,489/1,073-byte targets. In particular, the superficially tiny
+  1,071/1,073 residual on the photo initializer is not a two-byte-only closure:
+  the target owns a `0x70` frame while the semantic probe uses `0x24`, and the
+  intervening target interval is instruction-unreferenced. Keep the whole entry
+  cluster non-exact rather than adding inert storage or a synthetic branch. The source-present total is now 158 functions, and all ten
   canonical ResultScreen units replay unchanged after the expanded layouts.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
@@ -733,17 +756,18 @@ inert storage. `PhotoBulletView::Deactivate @ 0x00405850` and
 `DespawnAllBullets @ 0x004081B0` remain canonical exact for 209 bytes and one
 relocation.
 
-The adjacent `0x00408610..0x00408CDC` range is now identified and
-source-present as one `CardInf` photograph-card text/fade component, rather
-than any part of the bullet lifecycle. Nine canonical units contribute 1,445
-exact bytes and enforce all 81 relocations: construction/destruction,
-show/factory/delete wrappers, the 594-byte presentation state machine, and
-both gated Chain callbacks. Its `0x68`-byte object owns two VM ids, a state
-timer, the saved screen-fade color, a decoded 48-byte label, and calc/draw
-nodes. `Initialize @ 0x00408670` is behavior-complete and exact-sized at 226
-bytes with all nine relocation destinations, but 47 compiler-local
-displacement/register bytes remain; keep it non-exact without artificial
-local storage.
+The adjacent `0x00408610..0x00408CDC` `CardInf` photograph-card text/fade
+component is now closed exactly. Ten canonical units contribute 1,671 authored
+bytes and enforce all 90 relocations, including `Initialize @ 0x00408670` for
+all 226 bytes. The `0x68`-byte object owns two four-byte POD VM handles at
+`+0x04/+0x08`, a state timer, saved screen-fade color, decoded 48-byte label,
+and calc/draw nodes. The handles are intentionally not compiler-visible
+`AnmVmId` members: that shared type has a user constructor and would perturb
+the independently exact CardInf constructor. Two dedicated source-local inline
+creators instead keep each zero `Float3` plus four-byte VM-return sret in its
+own 16-byte call-site block, and assigning the returned POD handle as a whole
+restores the target result-before-LHS register chronology. All ten CardInf units
+replay exact after the type correction.
 
 The actual BulletManager lifecycle and rendering shell at
 `0x00404C60..0x00405A2C` is now closed. Thirteen canonical units contribute
@@ -786,15 +810,20 @@ easing state; lane two interpolates the TH095-specific photo tuple at
 5,129-byte target while preserving the complete external-call distribution,
 so it receives no exact credit.
 
-The surrounding BackgroundInf lifecycle is now source-present. Six canonical
-units contribute 655 exact bytes and enforce 36 relocations: `Initialize @
-0x00402250`, `Update @ 0x00402680`, the calc/high-draw/low-draw callbacks at
-`0x00402B80/0x00402BF0/0x00402C20`, and the stage-load wrapper at `0x00402C50`.
-The complete Create, stage-data loader, and stage-object VM updater are natural
-pinned-VC7.1 semantic probes of 365/518/199 bytes against 374/523/208-byte
-targets. They remain non-exact because of compiler-local source shape, not
-missing behavior. The adjacent `0x00402620` scalar deleting destructor is now
-an explicit compiler-owned exclusion.
+The surrounding BackgroundInf lifecycle now has seven canonical units totaling
+1,029 exact authored bytes and 60 relocations. `Background::Create @ 0x004024A0`
+closes all 374 bytes: the target source shape is an explicit `Initialize` failure
+label with a real null-guarded delete path, not the previous `if/else` form. The
+real factory locals use the established target-proven shallow backing buckets
+`background -> averagedPanLocal12` and `chain ->
+restartCommandProcessingLocal05`; no fake storage is involved. `Initialize @
+0x00402250`, `Update @ 0x00402680`, the three callbacks, and the stage-load
+wrapper remain exact. `LoadStageDataInner @ 0x00402C80` remains non-exact
+because target `EBP-0x40..` contains a large instruction-unreferenced compiler
+interval. `UpdateStageObjectVms @ 0x00402E90` likewise keeps its policy-compliant
+source: its one extra target dword is the unused TH08 `unusedQuad` var-order
+artifact, so it is not reintroduced merely for exact credit. The adjacent
+`0x00402620` scalar deleting destructor remains compiler-owned.
 
 The BackgroundInf draw/render spine at `0x00402750/0x00402990/0x00402F60/
 0x004031A0` now has three canonical exact bodies. `DrawHighPrio`, `DrawLowPrio`,
@@ -805,7 +834,9 @@ intermediates plus object-distance/radius as real locals; target-proven VC7.1
 backing identifiers reproduce their physical order and therefore the exact
 camera-relative distance, near-plane-80, and `length(size)/2 + 1280` tests.
 `RenderObjects @ 0x00402F60` remains source-present at 544 versus 565 target
-bytes; do not manufacture its remaining compiler source shape.
+bytes. A fresh frame audit confirms target `0xEC` versus semantic `0x44`, with
+more than `0xA0` of instruction-unreferenced compiler footprint between the
+deep `this` lane and shallow live locals; do not manufacture that gap.
 
 The remaining BackgroundInf lifecycle and viewport edges are now closed.
 `ConfigureBackgroundViewport @ 0x00401B70` is canonical exact for 108 bytes
@@ -1017,7 +1048,12 @@ photo-cut behavior. The adjacent live `ItemInf` owner at
 photo-charge-item pool, not the traditional TH08 item manager: ten lifecycle,
 draw, and callback functions totaling 1,072 bytes are canonical exact, while
 the complete 1,235-byte update and 278-byte spawn remain conservatively
-compiler-observed. The update proves delayed launch, player homing, collection
+compiler-observed. A fresh spawn audit rules out the tempting 279/278-byte
+branch-only interpretation: target `Spawn @ 0x0041D460` reserves a `0x3C`
+frame although its live semantic locals occupy only the shallow tail, leaving a
+large instruction-unreferenced interval. Rewriting the search loop can select
+the target `jge` branch form, but cannot truthfully account for that frame; do
+not add inert locals for exact credit. The update proves delayed launch, player homing, collection
 bounds, camera-charge formulas, the one-point clamp, and sound `0x14`; spawn
 proves script `0x120`, random upward velocity, and caller-color propagation.
 The live implementation is isolated in `PhotoItemManager.hpp/.cpp`; the

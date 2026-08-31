@@ -412,36 +412,45 @@ Background::~Background()
 }
 
 // FUNCTION: TH095 0x004024A0.
+#define background averagedPanLocal12
+#define chain restartCommandProcessingLocal05
 Background *Background::Create()
 {
+    ChainElem *chain;
     Background *background = new Background;
-    if (background->Initialize() == 0)
-    {
-        ChainElem *chain = g_Chain.CreateElem(
-            reinterpret_cast<ChainCallback>(Background::OnUpdate));
-        chain->arg = background;
-        g_Chain.AddToCalcChain(chain, 10);
-        reinterpret_cast<BackgroundStateView *>(background)->calcChain = chain;
 
-        chain = g_Chain.CreateElem(
-            reinterpret_cast<ChainCallback>(Background::OnDrawHighPrio));
-        chain->arg = background;
-        g_Chain.AddToDrawChain(chain, 4);
-        reinterpret_cast<BackgroundStateView *>(background)->drawHighChain = chain;
+    if (background->Initialize() != 0)
+        goto failure;
 
-        chain = g_Chain.CreateElem(
-            reinterpret_cast<ChainCallback>(Background::OnDrawLowPrio));
-        chain->arg = background;
-        g_Chain.AddToDrawChain(chain, 6);
-        reinterpret_cast<BackgroundStateView *>(background)->drawLowChain = chain;
-    }
-    else
+    chain = g_Chain.CreateElem(
+        reinterpret_cast<ChainCallback>(Background::OnUpdate));
+    chain->arg = background;
+    g_Chain.AddToCalcChain(chain, 10);
+    reinterpret_cast<BackgroundStateView *>(background)->calcChain = chain;
+
+    chain = g_Chain.CreateElem(
+        reinterpret_cast<ChainCallback>(Background::OnDrawHighPrio));
+    chain->arg = background;
+    g_Chain.AddToDrawChain(chain, 4);
+    reinterpret_cast<BackgroundStateView *>(background)->drawHighChain = chain;
+
+    chain = g_Chain.CreateElem(
+        reinterpret_cast<ChainCallback>(Background::OnDrawLowPrio));
+    chain->arg = background;
+    g_Chain.AddToDrawChain(chain, 6);
+    reinterpret_cast<BackgroundStateView *>(background)->drawLowChain = chain;
+    return background;
+
+failure:
+    if (background != NULL)
     {
         delete background;
         background = NULL;
     }
-    return background;
+    return NULL;
 }
+#undef chain
+#undef background
 
 // FUNCTION: TH095 0x00402250.
 i32 Background::Initialize()
