@@ -250,6 +250,25 @@ Additional stock-VC7.1 local-allocation oracles are now canonical:
   call-site ownership helper, and a shared final return, these rules reproduce
   all 2,872 bytes and the complete live `0xB4` frame.
 
+The exact ECL dependency lane adds two reusable VC7.1 source-shape oracles.
+First, TH08's eight-scalar `#pragma var_order` in `InterpolateHermite` can be
+reproduced without padding by mapping its real locals, shallow to deep, through
+`restartCommandProcessingLocal05`, `averagedPanLocal12`, `iLocal11`,
+`commandCursorLocal02`, `soundIndexLocal01`, `jLocal00`,
+`preloadBufferLocal03`, and the newly verified eighth bucket `bufferLocal04`.
+Second, source evaluation surface remains codegen-visible even after local homes
+are correct: `CompareOperands` must assign the branch target to the whole
+`ZunTimer`, which naturally emits current/subFrame/previous initialization and
+places its twelve-entry compiler switch table immediately after the authored
+body. Keep table bytes in `compare_size`, never in authored byte credit.
+
+TH095 ECL dependencies also require bounded target-local views rather than
+changing the shared TH08-derived `Enemy` ABI. Movement mode/easing/mirror-X use
+enemy word `+0x2BF4` bits 10..11/12..14/16, while low-ECL call-stack suppression
+uses bit 24 of that same word. `PopEclContext` proves a real `void *argument`
+local before `_free`; direct free expression is five bytes short and should not
+be replaced by inert storage.
+
 - The exact bullet-photography pair at `0x00407820/0x00408220` proves several
   interacting VC7.1 rules. Small three-float value operators can be ABI-visible:
   `PhotoBulletVector::operator+/-` must take the right operand by `const&` or

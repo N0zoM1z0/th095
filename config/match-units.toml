@@ -13507,6 +13507,204 @@ relocations = [
   { offset = 0x2B5, type = "DIR32", symbol = "?g_SceneSupervisor@th095@@3USceneSupervisorView@1@A", addend = 0x710, target = 0x004C4670 },
 ]
 
+[units.ecl-configure-polar-motion]
+source = "src/EclHelpers.cpp"
+object = "build/matching/EclHelpers.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclHelpers::ConfigurePolarMotion"]
+symbol = "?ConfigurePolarMotion@EclHelpers@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+target_address = 0x00411150
+size = 0x234
+relocations = [
+  { offset = 0x23, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x3C, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x5A, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x82, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x98, type = "REL32", symbol = "__CIcos", target = 0x00485860 },
+  { offset = 0xC5, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0xED, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x103, type = "REL32", symbol = "__CIsin", target = 0x00485910 },
+  { offset = 0x15D, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x1B8, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+]
+
+[units.ecl-configure-relative-motion]
+source = "src/EclHelpers.cpp"
+object = "build/matching/EclHelpers.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclHelpers::ConfigureRelativeMotion"]
+symbol = "?ConfigureRelativeMotion@EclHelpers@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+target_address = 0x00411390
+size = 0x207
+relocations = [
+  { offset = 0x23, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x52, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x102, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x15D, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+]
+
+[units.ecl-interpolate-linear]
+source = "src/EclDependencies.cpp"
+object = "build/matching/EclDependencies.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclRunLow::InterpolateLinear"]
+symbol = "?InterpolateLinear@EclRunLow@th095@@YIXPAUEnemy@2@PAUEnemyEclInterpolationSlot@2@M@Z"
+target_address = 0x004115A0
+size = 0x59
+relocations = [
+  { offset = 0x17, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x29, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x4A, type = "REL32", symbol = "?ResolveFloatLValue@EclOperands@th095@@YIPAMPAUEnemy@2@PAMGH@Z", target = 0x00410DB0 },
+]
+
+[units.ecl-interpolate-hermite]
+source = "src/EclDependencies.cpp"
+object = "build/matching/EclDependencies.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclRunLow::InterpolateHermite"]
+symbol = "?InterpolateHermite@EclRunLow@th095@@YIXPAUEnemy@2@PAUEnemyEclInterpolationSlot@2@M@Z"
+target_address = 0x00411600
+size = 0x100
+relocations = [
+  { offset = 0x17, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x29, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x3B, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x4D, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x59, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x62, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x6A, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
+  { offset = 0x73, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x84, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
+  { offset = 0x8D, type = "DIR32", symbol = "__real@40400000", target = 0x0049539C },
+  { offset = 0x98, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0xA1, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0xB5, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0xF1, type = "REL32", symbol = "?ResolveFloatLValue@EclOperands@th095@@YIPAMPAUEnemy@2@PAMGH@Z", target = 0x00410DB0 },
+]
+
+[units.ecl-apply-interpolation-operation]
+source = "src/EclDependencies.cpp"
+object = "build/matching/EclDependencies.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclRunLow::ApplyInterpolationOperation"]
+symbol = "?ApplyInterpolationOperation@EclRunLow@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+target_address = 0x00411700
+size = 0xE6
+relocations = [
+  { offset = 0x23, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x4C, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x7E, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0xA7, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0xD9, type = "REL32", symbol = "?ResolveFloatLValue@EclOperands@th095@@YIPAMPAUEnemy@2@PAMGH@Z", target = 0x00410DB0 },
+]
+
+[units.ecl-install-interpolation-slot]
+source = "src/EclDependencies.cpp"
+object = "build/matching/EclDependencies.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclRunLow::InstallInterpolationSlot"]
+symbol = "?InstallInterpolationSlot@EclRunLow@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+target_address = 0x004117F0
+size = 0x208
+relocations = [
+  { offset = 0xAA, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0xDB, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x10C, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x133, type = "DIR32", symbol = "?g_EclInterpolatorCallbacks@EclRunLow@th095@@3PAP6IXPAUEnemy@2@PAUEnemyEclInterpolationSlot@2@M@ZA", target = 0x004A4250 },
+  { offset = 0x150, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x182, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x1B4, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x1E9, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+]
+
+[units.ecl-compare-operands]
+source = "src/EclDependencies.cpp"
+object = "build/matching/EclDependencies.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclRunLow::CompareOperands"]
+symbol = "?CompareOperands@EclRunLow@th095@@YIPAUEclRawInstruction@2@PAUEnemy@2@PAU32@@Z"
+target_address = 0x00411A00
+size = 0x536
+compare_size = 0x566
+relocations = [
+  { offset = 0x2F, type = "DIR32", symbol = "$L67597", target = 0x00411F36 },
+  { offset = 0x49, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x71, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0xAC, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0xD5, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x116, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x13E, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x179, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x1A2, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x1E3, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x20B, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x246, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x26F, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x2AE, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x2D6, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x311, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x33A, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x379, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x3A1, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x3DC, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x405, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x444, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x46C, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x4A4, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x4CD, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x536, type = "DIR32", symbol = "$L67245", target = 0x00411A33 },
+  { offset = 0x53A, type = "DIR32", symbol = "$L67251", target = 0x00411A95 },
+  { offset = 0x53E, type = "DIR32", symbol = "$L67255", target = 0x00411B00 },
+  { offset = 0x542, type = "DIR32", symbol = "$L67259", target = 0x00411B62 },
+  { offset = 0x546, type = "DIR32", symbol = "$L67263", target = 0x00411BCD },
+  { offset = 0x54A, type = "DIR32", symbol = "$L67267", target = 0x00411C2F },
+  { offset = 0x54E, type = "DIR32", symbol = "$L67271", target = 0x00411C98 },
+  { offset = 0x552, type = "DIR32", symbol = "$L67275", target = 0x00411CFA },
+  { offset = 0x556, type = "DIR32", symbol = "$L67279", target = 0x00411D63 },
+  { offset = 0x55A, type = "DIR32", symbol = "$L67283", target = 0x00411DC5 },
+  { offset = 0x55E, type = "DIR32", symbol = "$L67287", target = 0x00411E2E },
+  { offset = 0x562, type = "DIR32", symbol = "$L67291", target = 0x00411E8D },
+]
+
+[units.ecl-call-sub-on-enemy]
+source = "src/EclDependencies.cpp"
+object = "build/matching/EclDependencies.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclRunLow::CallSubOnEnemy"]
+symbol = "?CallSubOnEnemy@EclRunLow@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@H@Z"
+target_address = 0x00411F70
+size = 0xE4
+relocations = [
+  { offset = 0x70, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUEclDependencyRuntimeView@1@A", target = 0x004BDDC0 },
+  { offset = 0x7B, type = "REL32", symbol = "?InitializeContext@PhotoEnemyEclManagerView@th095@@QAEHPAUPhotoEnemyEclContextView@2@F@Z", target = 0x00408DE0 },
+  { offset = 0x81, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUEclDependencyRuntimeView@1@A", target = 0x004BDDC0 },
+]
+
+[units.ecl-pop-context]
+source = "src/EclDependencies.cpp"
+object = "build/matching/EclDependencies.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclRunLow::PopEclContext"]
+symbol = "?PopEclContext@EclRunLow@th095@@YIHPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+target_address = 0x00412060
+size = 0x119
+relocations = [
+  { offset = 0x20, type = "DIR32", symbol = "??_C@_0BH@NKALJCPN@error?5?3?5no?5Stack?5Ret?$AN?6?$AA@", target = 0x00495510 },
+  { offset = 0x25, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x90, type = "REL32", symbol = "_free", target = 0x004854BE },
+]
+
+[units.ecl-set-primary-anm-scripts]
+source = "src/EclDependencies.cpp"
+object = "build/matching/EclDependencies.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclRunLow::SetPrimaryAnmScripts"]
+symbol = "?SetPrimaryAnmScripts@EclRunLow@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@HHHHHH@Z"
+target_address = 0x00412190
+size = 0x70
+relocations = [
+]
+
 [units.background-stage-object-is-visible]
 source = "src/Background.cpp"
 object = "build/matching/Background.obj"

@@ -61,6 +61,15 @@ next action belongs in `RE_HANDOFF.md`.
 | ARCH-012 | exact | The intrusive calc/draw Chain core at `0x00418900..0x00419399`, plus its destructor at `0x0041BD20`, is exact end to end. It owns priority insertion, callback result dispatch, synchronized unlink, reentrant snapshot release, and heap-node lifetime. TH095 stops the replay-scan worker before releasing both lists and directly allocates Chain nodes rather than routing them through TH08's `ZunMemory` registry. | Thirteen canonical Chain units totaling 2,631 authored bytes; both adjacent switch tables and all 127 relocation fields replayed |
 | ARCH-013 | exact | `ZunMemory::~ZunMemory @ 0x0041BD70` frees every non-null registry slot only when the registry-active byte is set. | Canonical 84-byte `zun-memory-destructor` unit with `_free` relocation replayed |
 
+## Reconstructed ECL dependency lane
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| ECL-001 | exact | `ConfigurePolarMotion @ 0x00411150` and `ConfigureRelativeMotion @ 0x00411390` are the TH095 movement setup helpers called by the exact low-opcode dispatcher. TH095 keeps their movement-control word at enemy `+0x2BF4`: movement mode is bits 10..11, easing is bits 12..14, and X mirroring is bit 16. | Two canonical VC7.1 units totaling 1,083 bytes with fourteen relocations; TH08 ancestry plus exact TH095 operand resolvers and RunEcl call sites. |
+| ECL-002 | exact | The interpolation dependency cluster at `0x004115A0..0x004119F7` contains linear and cubic-Hermite callbacks, the one-shot interpolation operation, and the eight-slot installer. The installer selects callbacks through the table at `0x004A4250`. | Four canonical units totaling 1,095 authored bytes with thirty relocations. The Hermite callback reproduces TH08 `var_order` with eight real scalar locals; `bufferLocal04` is a verified eighth stock-VC7.1 identifier bucket. |
+| ECL-003 | exact | `CompareOperands @ 0x00411A00` implements opcodes 40..51 and resets the complete context `ZunTimer` on a taken branch, not only `time.current`. Its authored body ends at `0x00411F35`; `0x00411F36..0x00411F65` is the compiler-owned twelve-entry switch table, not a function. | Canonical 1,334-byte authored unit with `compare_size=0x566`; body plus 48-byte table reproduce 1,382 bytes and all 37 relocations. |
+| ECL-004 | exact | `CallSubOnEnemy @ 0x00411F70`, `PopEclContext @ 0x00412060`, and `SetPrimaryAnmScripts @ 0x00412190` close the low-ECL call/return/script dependency spine. Call-stack suppression is bit 24 of enemy `+0x2BF4`; sub-call parameters copy from the TH095 ECL manager `+0x168`; return cleanup frees enemy allocation slot `+0x2CAC[index]`; the six primary ANM scripts live at `+0x2C0E/+0x2C14/+0x2C16/+0x2C10/+0x2C12/+0x2C18`, with direction byte `+0x2C0A`. | Three canonical units totaling 621 bytes with six relocations; exact aggregate context copies and target-local bounded ABI views. |
+
 ## Reconstructed controller input
 
 | ID | Class | Durable fact | Evidence |

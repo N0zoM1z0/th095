@@ -515,3 +515,13 @@ th095::AnmManager::InitializeHorizontalTextureStrip
 th095::AnmManager::DrawVertices
 th095::AnmManager::DrawTriangleFan
 th095::AnmManager::SetupVertexBuffer
+th095::EclHelpers::ConfigurePolarMotion
+th095::EclHelpers::ConfigureRelativeMotion
+th095::EclRunLow::InterpolateLinear
+th095::EclRunLow::InterpolateHermite
+th095::EclRunLow::ApplyInterpolationOperation
+th095::EclRunLow::InstallInterpolationSlot
+th095::EclRunLow::CompareOperands
+th095::EclRunLow::CallSubOnEnemy
+th095::EclRunLow::PopEclContext
+th095::EclRunLow::SetPrimaryAnmScripts

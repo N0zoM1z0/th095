@@ -107,6 +107,7 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | Address | Size | Connectivity | Current classification | Lane value |
 | --- | ---: | ---: | --- | --- |
 | `0x00408E70` | 27,091 | 3 callers / 50 internal callees | exact `EclManager::RunEcl` | Largest script VM; establishes enemy/scene semantics |
+| `0x00411150..0x004121FF` | 4,133 exact authored bytes | low-ECL movement/interpolation/branch/call dependencies | ten exact ECL helper units | Target-local movement flags, interpolation slots, compare table, sub-call/return ownership |
 | `0x0043A600` | 17,018 | 22 callers / 20 internal callees | exact `AnmManager::ExecuteScript` | Widely shared animation VM and type/layout root |
 | `0x00447D00` | 16,066 | 1 caller / 27 internal callees | boundary-reviewed authored scene-selection hub | 12-group scene UI; exact class name unresolved |
 | `0x0042C5C0` | 8,560 | 1 caller / 4 internal callees | source-present photo-stage display builder | Repeated TH095 photograph HUD/glyph builder; exact 118-byte VM initializer |
@@ -129,7 +130,12 @@ The first large-function lane, `AnmManager::ExecuteScript`, is exact for its
 tail, and VC7.1 `/Ob1` source-shape profile. The second large-function lane,
 `EclManager::RunEcl`, is exact for its 27,091-byte authored body and complete
 27,747-byte COFF extent, including the 158-entry opcode table, six-entry
-easing table, and all 647 relocations. A subsequent target-local audit admitted
+easing table, and all 647 relocations. Its adjacent low-ECL dependency lane at
+`0x00411150..0x004121FF` is now canonical exact for ten functions and 4,133
+authored bytes: two movement setup helpers, four interpolation helpers, the
+comparison branch helper, sub-call/return stack management, and primary ANM
+script selection. `CompareOperands` also replays its adjacent 48-byte compiler
+switch table. A subsequent target-local audit admitted
 32 functions and 55,476 bytes across the camera/photo, replay/menu, and
 gameplay/resource clusters. Five exact save/unlock helpers now prove that
 `0x00447D00` manages TH095's twelve-group scene-selection UI rather than a

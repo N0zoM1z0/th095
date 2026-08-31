@@ -197,3 +197,13 @@ address,name,module,confidence,evidence
 0x00441480,th095::AnmManager::DrawTriangleFan,AnmManager,exact,Canonical radial-trail triangle-fan submitter
 0x00442260,th095::AnmManager::SetupVertexBuffer,AnmManager,exact,Canonical 682-byte managed quad vertex-buffer setup with 25 relocations
 0x0042F190,th095::PhotoGameUpdateView::UpdateMainState,PhotoGame,high,Exact live-play movement/focus/bounds/history hub and target temporary chronology
+0x00411150,th095::EclHelpers::ConfigurePolarMotion,EclManager,exact,Canonical exact 564-byte TH095 polar movement helper
+0x00411390,th095::EclHelpers::ConfigureRelativeMotion,EclManager,exact,Canonical exact 519-byte TH095 relative movement helper
+0x004115A0,th095::EclRunLow::InterpolateLinear,EclManager,exact,Canonical exact 89-byte ECL linear interpolation callback
+0x00411600,th095::EclRunLow::InterpolateHermite,EclManager,exact,Canonical exact 256-byte ECL Hermite interpolation callback
+0x00411700,th095::EclRunLow::ApplyInterpolationOperation,EclManager,exact,Canonical exact 230-byte ECL interpolation operation helper
+0x004117F0,th095::EclRunLow::InstallInterpolationSlot,EclManager,exact,Canonical exact 520-byte ECL interpolation-slot installer
+0x00411A00,th095::EclRunLow::CompareOperands,EclManager,exact,Canonical exact 1334-byte comparison helper plus 48-byte compiler switch table
+0x00411F70,th095::EclRunLow::CallSubOnEnemy,EclManager,exact,Canonical exact 228-byte ECL subroutine-call helper
+0x00412060,th095::EclRunLow::PopEclContext,EclManager,exact,Canonical exact 281-byte ECL context-pop helper
+0x00412190,th095::EclRunLow::SetPrimaryAnmScripts,EclManager,exact,Canonical exact 112-byte primary ANM script-set helper
