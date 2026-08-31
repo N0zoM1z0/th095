@@ -585,3 +585,17 @@ th095::Rng::GetRandomF32,0x0041B4A0,function
 th095::Rng::GetRandomF32Signed,0x0041B4D0,function
 th095::AddNormalizeAngle,0x0041B500,function
 th095::ZunTimer::Add,0x0041B830,function
+th095::CPbgFile::CPbgFile,0x00455850,function
+th095::CPbgFile::~CPbgFile,0x004558C0,function
+th095::CPbgFile::Close,0x00455A70,function
+th095::CPbgFile::Read,0x00455AB0,function
+th095::CPbgFile::Write,0x00455B00,function
+th095::CPbgFile::Tell,0x00455B50,function
+th095::CPbgFile::GetSize,0x00455B80,function
+th095::CPbgFile::Seek,0x00455BB0,function
+th095::CPbgFile::GetFullFilePath,0x00455CC0,function
+th095::IPbgFile::~IPbgFile,0x00455DC0,function
+th095::PbgArchive::~PbgArchive,0x00454E90,function
+th095::PbgArchive::GetEntryDecompressedSize,0x004552C0,function
+th095::PbgArchive::FindEntry,0x004552F0,function
+th095::PbgArchive::CopyFileName,0x00455790,function

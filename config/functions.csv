@@ -683,30 +683,30 @@ address,size,span_end,current_name,proposed_name,module,status,match_percent,cal
 0x00454CC0,328,0x00454E07,FUN_00454cc0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00454E10,51,0x00454E42,FUN_00454e10,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00454E50,53,0x00454E84,FUN_00454e50,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00454E90,19,0x00454EA2,FUN_00454e90,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00454E90,19,0x00454EA2,FUN_00454e90,th095::PbgArchive::~PbgArchive,PbgArchive,matching,100.00,__thiscall,PbgArchive::~PbgArchive(),false,src/pbg/PbgArchive.cpp,Canonical relocation-aware VC7.1 comparison: 19/19 authored bytes exact,authored,Exact archive destructor forwarding Release
 0x00454EB0,259,0x00454FB2,FUN_00454eb0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00454FC0,190,0x0045507D,FUN_00454fc0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00455080,106,0x004550E9,FID_conflict:`vector_deleting_destructor',,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x004550F0,464,0x004552BF,FUN_004550f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004552C0,46,0x004552ED,FUN_004552c0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004552F0,101,0x00455354,FUN_004552f0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x004552C0,46,0x004552ED,FUN_004552c0,th095::PbgArchive::GetEntryDecompressedSize,PbgArchive,matching,100.00,__thiscall,DWORD PbgArchive::GetEntryDecompressedSize(LPCSTR filename),false,src/pbg/PbgArchive.cpp,Canonical relocation-aware VC7.1 comparison: 46/46 authored bytes exact,authored,Exact archive-entry decompressed-size lookup
+0x004552F0,101,0x00455354,FUN_004552f0,th095::PbgArchive::FindEntry,PbgArchive,matching,100.00,__thiscall,PbgArchiveEntry *PbgArchive::FindEntry(LPCSTR filename),false,src/pbg/PbgArchive.cpp,Canonical relocation-aware VC7.1 comparison: 101/101 authored bytes exact,authored,Exact case-insensitive linear archive-entry lookup
 0x00455360,539,0x0045557A,FUN_00455360,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00455580,524,0x0045578B,FUN_00455580,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00455790,139,0x0045581A,FUN_00455790,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00455790,139,0x0045581A,FUN_00455790,th095::PbgArchive::CopyFileName,PbgArchive,matching,100.00,__thiscall,char *PbgArchive::CopyFileName(LPCSTR filename),false,src/pbg/PbgArchive.cpp,Canonical relocation-aware VC7.1 comparison: 139/139 authored bytes exact,authored,Exact filename duplication; TH095 uses CRT malloc rather than TH08 GlobalAlloc-backed MemAlloc
 0x00455820,41,0x00455848,FUN_00455820,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00455850,52,0x00455883,FUN_00455850,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00455850,52,0x00455883,FUN_00455850,th095::CPbgFile::CPbgFile,PbgFile,matching,100.00,__thiscall,CPbgFile::CPbgFile(),false,src/pbg/PbgFile.cpp,Canonical relocation-aware VC7.1 comparison: 52/52 authored bytes exact,authored,Exact file-wrapper construction with inline empty IPbgFile base lifecycle and direct base/derived vtable publication
 0x00455890,44,0x004558BB,FUN_00455890,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x004558C0,82,0x00455911,FUN_004558c0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x004558C0,82,0x00455911,FUN_004558c0,th095::CPbgFile::~CPbgFile,PbgFile,matching,100.00,__thiscall,CPbgFile::~CPbgFile(),false,src/pbg/PbgFile.cpp,Canonical relocation-aware VC7.1 comparison: 82/82 authored bytes exact,authored,"Exact file-wrapper teardown: derived vtable, Close, then inline empty base vtable publication"
 0x00455920,330,0x00455A69,FUN_00455920,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00455A70,53,0x00455AA4,FUN_00455a70,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00455AB0,68,0x00455AF3,FUN_00455ab0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00455B00,74,0x00455B49,FUN_00455b00,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00455B50,43,0x00455B7A,FUN_00455b50,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00455B80,39,0x00455BA6,FUN_00455b80,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00455BB0,51,0x00455BE2,FUN_00455bb0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00455A70,53,0x00455AA4,FUN_00455a70,th095::CPbgFile::Close,PbgFile,matching,100.00,__thiscall,void CPbgFile::Close(),false,src/pbg/PbgFile.cpp,Canonical relocation-aware VC7.1 comparison: 53/53 authored bytes exact,authored,Exact Win32 handle close and access-state reset
+0x00455AB0,68,0x00455AF3,FUN_00455ab0,th095::CPbgFile::Read,PbgFile,matching,100.00,__thiscall,DWORD CPbgFile::Read(LPVOID data; DWORD dataLen),false,src/pbg/PbgFile.cpp,Canonical relocation-aware VC7.1 comparison: 68/68 authored bytes exact,authored,Exact guarded ReadFile wrapper for GENERIC_READ handles
+0x00455B00,74,0x00455B49,FUN_00455b00,th095::CPbgFile::Write,PbgFile,matching,100.00,__thiscall,bool CPbgFile::Write(LPVOID data; DWORD dataLen),false,src/pbg/PbgFile.cpp,Canonical relocation-aware VC7.1 comparison: 74/74 authored bytes exact,authored,Exact guarded WriteFile wrapper with full-length success check
+0x00455B50,43,0x00455B7A,FUN_00455b50,th095::CPbgFile::Tell,PbgFile,matching,100.00,__thiscall,DWORD CPbgFile::Tell(),false,src/pbg/PbgFile.cpp,Canonical relocation-aware VC7.1 comparison: 43/43 authored bytes exact,authored,Exact FILE_CURRENT SetFilePointer wrapper
+0x00455B80,39,0x00455BA6,FUN_00455b80,th095::CPbgFile::GetSize,PbgFile,matching,100.00,__thiscall,DWORD CPbgFile::GetSize(),false,src/pbg/PbgFile.cpp,Canonical relocation-aware VC7.1 comparison: 39/39 authored bytes exact,authored,Exact GetFileSize wrapper with invalid-handle guard
+0x00455BB0,51,0x00455BE2,FUN_00455bb0,th095::CPbgFile::Seek,PbgFile,matching,100.00,__thiscall,bool CPbgFile::Seek(DWORD offset; DWORD seekFrom),false,src/pbg/PbgFile.cpp,Canonical relocation-aware VC7.1 comparison: 51/51 authored bytes exact,authored,Exact SetFilePointer seek wrapper
 0x00455BF0,199,0x00455CB6,FUN_00455bf0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00455CC0,253,0x00455DBC,FUN_00455cc0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
-0x00455DC0,20,0x00455DD3,FUN_00455dc0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
+0x00455CC0,253,0x00455DBC,FUN_00455cc0,th095::CPbgFile::GetFullFilePath,PbgFile,matching,100.00,__fastcall,void CPbgFile::GetFullFilePath(char *buffer; const char *filename),false,src/pbg/PbgFile.cpp,Canonical relocation-aware VC7.1 comparison: 253/253 authored bytes exact,authored,Exact module-directory path expansion with drive-letter passthrough
+0x00455DC0,20,0x00455DD3,FUN_00455dc0,th095::IPbgFile::~IPbgFile,PbgFile,matching,100.00,__thiscall,IPbgFile::~IPbgFile(),false,src/pbg/PbgFile.cpp,Canonical relocation-aware VC7.1 comparison: 20/20 authored bytes exact,authored,Exact standalone virtual base destructor emitted from inline empty class-body definition
 0x00455DE0,45,0x00455E0C,FUN_00455de0,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00455E10,1035,0x0045621A,FUN_00455e10,,,unclassified,0.00,,,false,,Ghidra 12.1.3 auto-analysis candidate; boundary unreviewed,,
 0x00456220,852,0x00456573,FUN_00456220,th095::DecompressData,Compression,reconstructed,0.00,__fastcall,u8 *DecompressData(u8 *input; i32 inputSize; u8 *output; size_t outputSize),false,src/Decompress.cpp,Pinned VC7.1 semantic probe is 766 bytes versus the 852-byte target and preserves the unique allocation call,authored,Complete MSB-first 8 KiB ring decompressor shared by best-shot replay and archive consumers

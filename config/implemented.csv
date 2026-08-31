@@ -584,3 +584,17 @@ th095::Rng::GetRandomF32
 th095::Rng::GetRandomF32Signed
 th095::AddNormalizeAngle
 th095::ZunTimer::Add
+th095::CPbgFile::CPbgFile
+th095::CPbgFile::~CPbgFile
+th095::CPbgFile::Close
+th095::CPbgFile::Read
+th095::CPbgFile::Write
+th095::CPbgFile::Tell
+th095::CPbgFile::GetSize
+th095::CPbgFile::Seek
+th095::CPbgFile::GetFullFilePath
+th095::IPbgFile::~IPbgFile
+th095::PbgArchive::~PbgArchive
+th095::PbgArchive::GetEntryDecompressedSize
+th095::PbgArchive::FindEntry
+th095::PbgArchive::CopyFileName

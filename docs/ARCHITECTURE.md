@@ -114,6 +114,7 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | `0x00421E00..0x00423422` | 1,911 exact authored bytes | WinMM MIDI device/timer/playback support | twenty-four exact MIDI helpers | Device I/O, timer lifetime, SMF byte/VLQ helpers, file/track ownership, play/stop, SysEx cleanup, fade setup |
 | `0x0041B410..0x0041B891` | 439 exact authored bytes | shared RNG / angle / timer runtime | six exact utility functions | RNG state, float normalization, bounded angle wrapping, game-speed-aware timer accumulation |
 | `0x00456580..0x0045698E` | 703 exact authored bytes | LZSS encoder-tree support | six exact tree helpers | Shared 8 KiB dictionary, 8,193-node search tree, deletion/contraction/replacement walks |
+| `0x00454E90..0x00455DD3` | 1,040 exact authored bytes | PBG archive/file core | fourteen exact archive and Win32 file helpers | Archive lookup/name ownership, file handle I/O, path expansion, base/derived lifecycle |
 | `0x0043A600` | 17,018 | 22 callers / 20 internal callees | exact `AnmManager::ExecuteScript` | Widely shared animation VM and type/layout root |
 | `0x00447D00` | 16,066 | 1 caller / 27 internal callees | boundary-reviewed authored scene-selection hub | 12-group scene UI; exact class name unresolved |
 | `0x0042C5C0` | 8,560 | 1 caller / 4 internal callees | source-present photo-stage display builder | Repeated TH095 photograph HUD/glyph builder; exact 118-byte VM initializer |

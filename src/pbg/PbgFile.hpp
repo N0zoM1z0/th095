@@ -9,7 +9,7 @@ namespace th095
 class IPbgFile
 {
   public:
-    IPbgFile();
+    IPbgFile() {}
 
     virtual bool Open(const char *filename, char *mode) = 0;
     virtual void Close() = 0;
@@ -18,7 +18,7 @@ class IPbgFile
     virtual DWORD Tell() = 0;
     virtual DWORD GetSize() = 0;
     virtual bool Seek(DWORD offset, DWORD seekFrom) = 0;
-    virtual ~IPbgFile();
+    virtual ~IPbgFile() {}
 };
 
 class CPbgFile : public IPbgFile

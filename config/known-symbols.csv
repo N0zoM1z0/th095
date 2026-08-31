@@ -260,3 +260,17 @@ address,name,module,confidence,evidence
 0x0041B4D0,th095::Rng::GetRandomF32Signed,Runtime,exact,"Exact signed RNG normalization to [-1,1) source shape"
 0x0041B500,th095::AddNormalizeAngle,ZunMath,exact,Exact angle normalization; TH095 permits 32 wrap iterations per shared guard counter versus TH08 source oracle 16
 0x0041B830,th095::ZunTimer::Add,Timer,exact,Exact game-speed-aware timer accumulation and integer current-frame truncation
+0x00455850,th095::CPbgFile::CPbgFile,PbgFile,exact,Exact file-wrapper construction with inline empty IPbgFile base lifecycle and direct base/derived vtable publication
+0x004558C0,th095::CPbgFile::~CPbgFile,PbgFile,exact,"Exact file-wrapper teardown: derived vtable, Close, then inline empty base vtable publication"
+0x00455A70,th095::CPbgFile::Close,PbgFile,exact,Exact Win32 handle close and access-state reset
+0x00455AB0,th095::CPbgFile::Read,PbgFile,exact,Exact guarded ReadFile wrapper for GENERIC_READ handles
+0x00455B00,th095::CPbgFile::Write,PbgFile,exact,Exact guarded WriteFile wrapper with full-length success check
+0x00455B50,th095::CPbgFile::Tell,PbgFile,exact,Exact FILE_CURRENT SetFilePointer wrapper
+0x00455B80,th095::CPbgFile::GetSize,PbgFile,exact,Exact GetFileSize wrapper with invalid-handle guard
+0x00455BB0,th095::CPbgFile::Seek,PbgFile,exact,Exact SetFilePointer seek wrapper
+0x00455CC0,th095::CPbgFile::GetFullFilePath,PbgFile,exact,Exact module-directory path expansion with drive-letter passthrough
+0x00455DC0,th095::IPbgFile::~IPbgFile,PbgFile,exact,Exact standalone virtual base destructor emitted from inline empty class-body definition
+0x00454E90,th095::PbgArchive::~PbgArchive,PbgArchive,exact,Exact archive destructor forwarding Release
+0x004552C0,th095::PbgArchive::GetEntryDecompressedSize,PbgArchive,exact,Exact archive-entry decompressed-size lookup
+0x004552F0,th095::PbgArchive::FindEntry,PbgArchive,exact,Exact case-insensitive linear archive-entry lookup
+0x00455790,th095::PbgArchive::CopyFileName,PbgArchive,exact,Exact filename duplication; TH095 uses CRT malloc rather than TH08 GlobalAlloc-backed MemAlloc
