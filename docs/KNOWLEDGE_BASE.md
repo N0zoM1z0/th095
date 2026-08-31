@@ -366,3 +366,9 @@ The initial repository model was compared against local ignored clones at:
 
 These revisions explain workflow provenance only. They do not establish a
 single TH095 code, layout, or behavior claim.
+
+### TH095 low-ECL movement dependency lane (`0x00412200..0x00412666`)
+
+- `EclRunLow::BeginBoundaryAwareMove` at `0x00412200` is canonically exact at 645 bytes. The exact RunEcl relocation manifest supplied the function identity; TH08 `0x00422020` supplied source shape; TH095 target evidence pins the player-position overlay to `g_Th095Player + 0x1E30`, movement flags to `Enemy + 0x2BF4`, and movement bounds to `Enemy + 0x2C3C`.
+- `EclRunLow::StartTimedPolarDisplacement` at `0x00412490` is canonically exact at 471 bytes. A real C++ bitfield view at `Enemy + 0x2BF4` is required for VC7.1 to reproduce the target's movement easing (bits 12..14) and movement mode (bits 10..11) stores without mask-shape drift.
+- The adjacent `EclRunHigh::DispatchShotInstruction` at `0x00412670` is semantically reconstructed but **not exact and not promoted**. A natural TH08-derived form reaches 757 bytes versus the 756-byte TH095 target; the remaining compiler-shape blocker is the minimum-player-distance comparison at `Enemy + 0x2C4C`: target emits `fcomp dword ptr [enemy+0x2C4C]`, while the current natural VC7 probe emits `fld` + `fcompp`. Do not paper over this with assembly, copied bytes, or padding; continue by finding a natural C++ expression/type shape that yields the target x87 compare.

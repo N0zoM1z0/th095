@@ -526,3 +526,5 @@ th095::EclRunLow::CompareOperands,0x00411A00,function
 th095::EclRunLow::CallSubOnEnemy,0x00411F70,function
 th095::EclRunLow::PopEclContext,0x00412060,function
 th095::EclRunLow::SetPrimaryAnmScripts,0x00412190,function
+th095::EclRunLow::BeginBoundaryAwareMove,0x00412200,function
+th095::EclRunLow::StartTimedPolarDisplacement,0x00412490,function

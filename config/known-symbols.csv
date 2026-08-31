@@ -207,3 +207,5 @@ address,name,module,confidence,evidence
 0x00411F70,th095::EclRunLow::CallSubOnEnemy,EclManager,exact,Canonical exact 228-byte ECL subroutine-call helper
 0x00412060,th095::EclRunLow::PopEclContext,EclManager,exact,Canonical exact 281-byte ECL context-pop helper
 0x00412190,th095::EclRunLow::SetPrimaryAnmScripts,EclManager,exact,Canonical exact 112-byte primary ANM script-set helper
+0x00412200,th095::EclRunLow::BeginBoundaryAwareMove,EclManager,exact,Canonical exact 645-byte boundary-aware randomized movement helper
+0x00412490,th095::EclRunLow::StartTimedPolarDisplacement,EclManager,exact,Canonical exact 471-byte timed polar displacement helper

@@ -307,3 +307,7 @@ handle interrupts, and both conditional VM creations, but VC7.1 emits 455
 bytes rather than 521. The unexplained `0x108` footprint remains a documented
 non-exact compiler-local residual; an inert path buffer would violate authored
 source policy even if it happened to align displacements.
+
+### VC7 x87 compare source-shape trap in ECL shot dispatch
+
+For TH095 `0x00412670`, logically equivalent float predicates are not codegen-equivalent under the pinned VC7.1 `/Od /Ob1` profile. The target keeps the accumulated squared-distance value on x87 and compares it directly with `fcomp dword ptr [enemy+0x2C4C]`; several natural rewrites (`distance >= minimum`, negated `<`, nested early return) instead load the RHS and use `fcompp`, changing size/branches. Treat this as a compiler-source-shape problem. Structural proximity is not exact proof, and no asm/padding workaround is acceptable.

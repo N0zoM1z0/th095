@@ -2,6 +2,8 @@
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
 #include "utils.hpp"
+#include "Player.hpp"
+#include "ZunMath.hpp"
 #include <stdlib.h>
 
 namespace th095
@@ -28,6 +30,10 @@ extern EclDependencyRuntimeView *g_PhotoEnemyManager;
 
 namespace EclRunLow
 {
+extern Player *g_Th095Player;
+
+#define DEP_PLAYER_POSITION (*reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(g_Th095Player) + 0x1e30))
+
 #define DEP_READ_INT(enemy, instruction, index) \
     ((instruction)->operandFlags & (1U << (index)) \
          ? EclOperands::ResolveInt((enemy), (instruction)->operands[index].asInt) \
@@ -40,6 +46,95 @@ namespace EclRunLow
 extern EnemyEclInterpolatorCallback g_EclInterpolatorCallbacks[];
 
 #pragma var_order(end, start)
+
+// TH095 keeps movement control and bounds in the compact enemy runtime block
+// used by RunEcl. These fields predate the later shared Enemy view fields.
+struct EclDependencyMovementFlagBits
+{
+    u32 unknown00 : 10;
+    u32 movementMode : 2;
+    u32 movementEasing : 3;
+    u32 unknown15 : 17;
+};
+typedef char EclDependencyMovementFlagBitsSizeCheck[(sizeof(EclDependencyMovementFlagBits) == 4) ? 1 : -1];
+#define DEP_MOVEMENT_FLAGS(enemy) (*reinterpret_cast<EclDependencyMovementFlagBits *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4))
+#define DEP_MOVEMENT_BOUNDS(enemy) (*reinterpret_cast<EnemyMovementBounds *>(reinterpret_cast<u8 *>(enemy) + 0x2c3c))
+
+// FUNCTION: TH095 0x00412490; TH08 0x004222B0 is the source-shape oracle.
+void __fastcall StartTimedPolarDisplacement(
+    Enemy *enemy, EclRawInstruction *instruction, f32 angle)
+{
+    enemy->movementInterpolationDelta.x =
+        cosf(angle) * DEP_READ_FLOAT(enemy, instruction, 2) *
+        DEP_READ_INT(enemy, instruction, 0);
+    enemy->movementInterpolationDelta.y =
+        sinf(angle) * DEP_READ_FLOAT(enemy, instruction, 2) *
+        DEP_READ_INT(enemy, instruction, 0);
+    enemy->movementInterpolationDelta.z = 0.0f;
+    enemy->movementInterpolationOrigin = enemy->worldPosition;
+    enemy->movementTimer =
+        (enemy->movementDuration = DEP_READ_INT(enemy, instruction, 0));
+    DEP_MOVEMENT_FLAGS(enemy).movementEasing = DEP_READ_INT(enemy, instruction, 1);
+    DEP_MOVEMENT_FLAGS(enemy).movementMode = 2;
+}
+
+// FUNCTION: TH095 0x00412200; TH08 0x00422020 is the source-shape oracle.
+void __fastcall BeginBoundaryAwareMove(
+    Enemy *enemy, EclRawInstruction *instruction)
+{
+    f32 angle;
+
+    if (DEP_PLAYER_POSITION.x < enemy->position.x)
+    {
+        angle = AddNormalizeAngle(
+            g_Rng.GetRandomF32InRange(1.5707964f) + 2.3561945f, 0.0f);
+    }
+    else
+    {
+        angle = g_Rng.GetRandomF32InRange(1.5707964f) - 0.78539819f;
+    }
+
+    if (enemy->position.x < DEP_MOVEMENT_BOUNDS(enemy).lower.x + 96.0f)
+    {
+        if (angle > 1.5707964f)
+            angle = 3.1415927f - angle;
+        else if (angle < -1.5707964f)
+            angle = -3.1415927f - angle;
+    }
+
+    if (enemy->position.x > DEP_MOVEMENT_BOUNDS(enemy).upper.x - 96.0f)
+    {
+        if (angle < 1.5707964f && angle >= 0.0f)
+            angle = 3.1415927f - enemy->movementAngle;
+        else if (angle > -1.5707964f && angle <= 0.0f)
+            angle = -3.1415927f - angle;
+    }
+
+    if (enemy->position.y < DEP_MOVEMENT_BOUNDS(enemy).lower.y + 48.0f &&
+        angle < 0.0f)
+    {
+        angle = -angle;
+    }
+    if (enemy->position.y > DEP_MOVEMENT_BOUNDS(enemy).upper.y - 48.0f &&
+        angle > 0.0f)
+    {
+        angle = -angle;
+    }
+
+    if (DEP_READ_INT(enemy, instruction, 0) <= 0)
+    {
+        enemy->movementAngle = angle;
+        enemy->speed = DEP_READ_FLOAT(enemy, instruction, 2);
+        DEP_MOVEMENT_FLAGS(enemy).movementMode = 1;
+        enemy->movementDuration = 0;
+        enemy->movementTimer = 0;
+    }
+    else
+    {
+        StartTimedPolarDisplacement(enemy, instruction, angle);
+    }
+}
+
 // FUNCTION: TH095 0x004115A0; TH08 0x00421120 is the source-shape oracle.
 void __fastcall InterpolateLinear(Enemy *enemy, EnemyEclInterpolationSlot *slot, f32 t)
 {
@@ -238,7 +333,11 @@ void __fastcall SetPrimaryAnmScripts(
     *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0a) = 0xff;
 }
 
+#undef DEP_PLAYER_POSITION
+#undef DEP_MOVEMENT_BOUNDS
+#undef DEP_MOVEMENT_FLAGS
 #undef DEP_READ_FLOAT
 #undef DEP_READ_INT
 }
+
 }

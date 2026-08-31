@@ -525,3 +525,5 @@ th095::EclRunLow::CompareOperands
 th095::EclRunLow::CallSubOnEnemy
 th095::EclRunLow::PopEclContext
 th095::EclRunLow::SetPrimaryAnmScripts
+th095::EclRunLow::BeginBoundaryAwareMove
+th095::EclRunLow::StartTimedPolarDisplacement
