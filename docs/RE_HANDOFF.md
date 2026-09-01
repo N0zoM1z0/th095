@@ -72,6 +72,21 @@
   score stream, profile checksum, compression, encryption, and final
   `scoreth095.dat` output. All fifteen current ResultScreen units replay unchanged
   after replacing their old local save-data stubs with the shared header.
+- The remaining 6,471-byte `ResultScreen::Update @ 0x00426BF0` core has been
+  rebuilt to its complete target structure. The pinned VC7.1 object is exactly
+  `0x1997` bytes: the `0x1947` authored body plus the adjacent sixteen-entry
+  state table and four-entry state-6 table. It reproduces all 1,313 target
+  instruction mnemonics, all 64 call offsets/destinations, all 186 COFF
+  relocations, and all twenty table destinations. The reconstruction corrects
+  replay/photo entry bits 5/6, completion flags, the runtime scene at `+0x20`,
+  four save-data writes, nine VM reinitializations, and the final twenty-five
+  direct ANM executions. A strict relocation-masked probe matches 5,115/5,807
+  comparable bytes; every one of the remaining 692 differences is the frame
+  immediate or an EBP-relative stack displacement. Target frame/hidden `this`
+  are `0x39C`/`EBP-0x328`, versus current `0x210`/`EBP-0x19C`. Treat the
+  `0x18C` compiler-temporary allocation gap as the only remaining oracle, and
+  do not fill it with inert locals or arbitrary padding. All sixteen accepted
+  `ResultScreen.cpp` units replay exactly after this change.
 - `SceneSaveDataView::LoadScenePreviewTexture @ 0x004362A0` is exact for all
   578 bytes and both relocations. It closes the target-local best-shot-to-scene
   selector path: RGB24/ARGB4444 pixels are uploaded through D3DX, alpha is

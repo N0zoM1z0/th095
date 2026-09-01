@@ -24,6 +24,7 @@ struct ResultScreenTimer
 
     u32 operator==(i32 value) { return this->current == value; }
     u32 operator<(i32 value) { return this->current < value; }
+    u32 operator>=(i32 value) { return this->current >= value; }
     i32 GetCurrent() { return this->current; }
     i32 Tick();
 
@@ -75,6 +76,12 @@ struct ResultScreenReplayCursor
     i32 GetCount() { return this->count; }
     void SaveCurrent() { this->previous = this->current; }
     u32 HasChanged() { return this->previous != this->current; }
+
+    void Disable(i32 value)
+    {
+        this->disabledEntries[this->disabledEntryCount] = value;
+        this->disabledEntryCount++;
+    }
 
     void Set(i32 value)
     {
@@ -137,6 +144,7 @@ struct ResultScreenAnmLoadedView
     u8 unknown004[0x10];
     struct ResultScreenTextureEntryView *textures;
 
+    void InitializeVm(ResultScreenAnmVm *vm, i32 scriptIndex);
     void SetAndExecuteScript(ResultScreenAnmVm *vm, i32 scriptIndex);
 };
 
