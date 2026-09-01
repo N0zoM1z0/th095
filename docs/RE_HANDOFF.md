@@ -312,10 +312,15 @@
   the TH095 scene record's date/time and two six-digit score displays.
 - The two remaining scene-selection cores now have exact-sized, call-aligned
   pinned-VC7.1 probes. `UpdateSceneSelect @ 0x00447D00` is 16,066 bytes and all
-  269 non-import direct calls land at their target offsets; 12,344/13,986
-  non-relocation bytes match. Its target `0x3DC` frame has four completely
-  instruction-unreferenced intervals totaling 56 bytes, while the live source
-  naturally uses `0x3A4`; do not represent those intervals with inert locals.
+  269 direct calls land at their target offsets. All 3,637 instructions now
+  have the target mnemonic/opcode shape and 12,487/13,986 non-relocation bytes
+  match. The remaining 1,499 comparable bytes are exclusively the frame-size
+  immediate or EBP-relative stack displacements: the target `0x3DC` frame has
+  four completely instruction-unreferenced intervals totaling 56 bytes, while
+  the live source naturally uses `0x3A4`; do not represent those intervals
+  with inert locals. Preserve the target-proven horizontal group and vertical
+  scene inputs, false-arm-first VM visibility branches, texture-slot-2 preview
+  upload, pending-upload clear order, and `<= 10` group split.
   `LoadSceneSelectionAssets @ 0x0044D0A0` is 3,070 bytes with all 38 call
   offsets exact and 2,513/2,610 comparable bytes matching. Its fully live
   `0x220` local aggregate proves the shallow queue/view homes, both path

@@ -191,14 +191,14 @@ static __forceinline u16 SceneInputAnd(u16 input, u16 mask)
     return input & mask;
 }
 
-static __forceinline u16 SceneLeftInputMask()
+static __forceinline u16 ScenePreviousInputMask()
 {
-    return TH_BUTTON_LEFT;
+    return TH_BUTTON_UP;
 }
 
-static __forceinline u16 SceneRightInputMask()
+static __forceinline u16 SceneNextInputMask()
 {
-    return TH_BUTTON_RIGHT;
+    return TH_BUTTON_DOWN;
 }
 
 static __forceinline i32 SceneQueueSize(const SceneValueQueue *queue)
@@ -208,21 +208,21 @@ static __forceinline i32 SceneQueueSize(const SceneValueQueue *queue)
 
 static __forceinline i32 SceneQueueFront(const SceneValueQueue *queue)
 {
-    if (queue->count <= 0)
+    if (queue->count > 0)
     {
-        return 0;
+        return queue->values[0];
     }
-    return queue->values[0];
+    return 0;
 }
 
 #define SET_SCENE_VM_VISIBILITY(view, vmIndex, condition)                    \
-    if (condition)                                                            \
+    if (!(condition))                                                         \
     {                                                                         \
-        g_SceneAnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord |= 2;     \
+        g_SceneAnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord &= ~2u;   \
     }                                                                         \
     else                                                                      \
     {                                                                         \
-        g_SceneAnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord &= ~2u;   \
+        g_SceneAnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord |= 2;     \
     }
 
 ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
@@ -290,8 +290,8 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->pendingSecondarySize[i + 1];
         }
         view->pendingPrimaryData[2] = 0;
-        view->pendingPrimarySize[2] = 0;
         view->pendingSecondaryData[2] = 0;
+        view->pendingPrimarySize[2] = 0;
         view->pendingSecondarySize[2] = 0;
         view->pendingTextureCount--;
         g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
@@ -380,7 +380,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                         queueLocals.scenePreviewDataPositiveValue = 0;
                     }
                     g_SceneAnmManager->LoadTextureRegion(
-                        &view->sceneAnm->textures[3],
+                        &view->sceneAnm->textures[2],
                         reinterpret_cast<u8 *>(
                             queueLocals.scenePreviewDataPositiveValue),
                         queueLocals.scenePreviewSizePositiveValue,
@@ -608,7 +608,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->vmIds.SetInterrupt(0x1b, 3);
         view->vmIds[0x1e] = view->sceneAnm->CreateVm(0x1e, 7);
         view->vmIds[0x22] = view->sceneAnm->CreateVm(0x22, 7);
-        if (view->groupCursor.GetCurrent() < 11)
+        if (view->groupCursor.GetCurrent() <= 10)
         {
             view->vmIds[0x20] = view->sceneAnm->CreateVm(0x20, 7);
             view->sceneAnm->SetSprite(
@@ -698,9 +698,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
         view->sceneAnm->SetSprite(
             g_SceneAnmManager->GetVm(view->vmIds[0x49]),
-            (view->groupCursor.GetCurrent() < 11
-                 ? view->groupCursor.GetCurrent()
-                 : view->groupCursor.GetCurrent() - 11) +
+            (view->groupCursor.GetCurrent() >= 11
+                 ? view->groupCursor.GetCurrent() - 11
+                 : view->groupCursor.GetCurrent()) +
                 0x28);
         view->sceneAnm->SetSprite(
             g_SceneAnmManager->GetVm(view->vmIds[0x4b]),
@@ -831,12 +831,12 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
     view->groupCursor.SaveCurrent();
     groupDirection = 0;
-    if (SceneInputAnd(g_PressedButtons, TH_BUTTON_UP) != 0)
+    if (SceneInputAnd(g_PressedButtons, TH_BUTTON_LEFT) != 0)
     {
         view->groupCursor.Move(-1);
         groupDirection = -1;
     }
-    if (SceneInputAnd(g_PressedButtons, TH_BUTTON_DOWN) != 0)
+    if (SceneInputAnd(g_PressedButtons, TH_BUTTON_RIGHT) != 0)
     {
         view->groupCursor.Move(1);
         groupDirection = 1;
@@ -849,7 +849,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         g_SceneAnmManager->MarkVmForDeletion(view->vmIds[0x21]);
         g_SceneAnmManager->MarkVmForDeletion(view->vmIds[0x22]);
         view->vmIds[0x22] = view->sceneAnm->CreateVm(0x22, 7);
-        if (view->groupCursor.GetCurrent() < 11)
+        if (view->groupCursor.GetCurrent() <= 10)
         {
             view->vmIds[0x20] = view->sceneAnm->CreateVm(0x20, 7);
             view->sceneAnm->SetSprite(
@@ -876,13 +876,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         {
             view->vmIds.SetInterrupt(
                 previousGroupIndex * 3 + 0x25,
-                groupDirection < 1 ? 8 : 7);
+                groupDirection <= 0 ? 8 : 7);
             view->vmIds.SetInterrupt(
                 previousGroupIndex * 3 + 0x26,
-                groupDirection < 1 ? 8 : 7);
+                groupDirection <= 0 ? 8 : 7);
             view->vmIds.SetInterrupt(
                 previousGroupIndex * 3 + 0x27,
-                groupDirection < 1 ? 8 : 7);
+                groupDirection <= 0 ? 8 : 7);
         }
         for (newGroupIndex = 0;
              newGroupIndex < g_SceneGroupCounts[view->groupCursor.GetCurrent()];
@@ -930,7 +930,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             }
         }
 
-        view->vmIds.SetInterrupt(0x12, groupDirection < 1 ? 8 : 7);
+        view->vmIds.SetInterrupt(0x12, groupDirection <= 0 ? 8 : 7);
         view->vmIds[0x12] = view->sceneAnm->CreateVm(0x12, 7);
         view->vmIds.SetInterrupt(0x12, 5);
         view->vmIds.SetInterrupt(0x12, groupDirection > 0 ? 10 : 9);
@@ -984,13 +984,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->groupCursor.GetCurrent()) != 0)
         {
             activeSceneCursor.SaveCurrent();
-            if ((u16)(SceneInputAnd(g_PressedButtons, TH_BUTTON_LEFT) != 0 ||
-                      (g_ResultMenuInput & SceneLeftInputMask()) != 0) != 0)
+            if ((u16)(SceneInputAnd(g_PressedButtons, TH_BUTTON_UP) != 0 ||
+                      (g_ResultMenuInput & ScenePreviousInputMask()) != 0) != 0)
             {
                 activeSceneCursor.Move(-1);
             }
-            if ((u16)(SceneInputAnd(g_PressedButtons, TH_BUTTON_RIGHT) != 0 ||
-                      (g_ResultMenuInput & SceneRightInputMask()) != 0) != 0)
+            if ((u16)(SceneInputAnd(g_PressedButtons, TH_BUTTON_DOWN) != 0 ||
+                      (g_ResultMenuInput & SceneNextInputMask()) != 0) != 0)
             {
                 activeSceneCursor.Move(1);
             }
@@ -1032,9 +1032,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->vmIds.SetInterrupt(0x14, 5);
                 view->sceneAnm->SetSprite(
                     g_SceneAnmManager->GetVm(view->vmIds[0x49]),
-                    (view->groupCursor.GetCurrent() < 11
-                         ? view->groupCursor.GetCurrent()
-                         : view->groupCursor.GetCurrent() - 11) +
+                    (view->groupCursor.GetCurrent() >= 11
+                         ? view->groupCursor.GetCurrent() - 11
+                         : view->groupCursor.GetCurrent()) +
                         0x28);
                 view->sceneAnm->SetSprite(
                     g_SceneAnmManager->GetVm(view->vmIds[0x4b]),

@@ -209,7 +209,10 @@ main-menu child at `0x00446A50` is also source-present for the complete six-row
 navigation, idle-demo launch, and page-transition flow; its 648-byte close and
 787-byte selection fan-out helpers are exact. The 16,066-byte scene-selection
 hub is now source-present for its complete 275-call group/scene cursor,
-asynchronous preview, record-detail, and transition topology. Its shared
+asynchronous preview, record-detail, and transition topology. Its complete
+3,637-instruction mnemonic/opcode shape is target-exact; the only remaining
+comparable-byte differences are frame-size and EBP-relative stack
+displacements caused by 56 target-only instruction-unreferenced bytes. Its shared
 136-byte D3D texture clear is exact. The 3,070-byte mission/face asset worker
 is now source-present for its exact 38-call topology. Its 1,034-byte best-shot
 file decoder/checksum validator is also source-present with the exact twelve-call
