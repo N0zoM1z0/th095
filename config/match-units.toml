@@ -46,6 +46,251 @@ relocations = [
   { offset = 0x46, type = "DIR32", symbol = "__except_list", target = 0x0 },
 ]
 
+[units.zwave-init-sound-buffers]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CStreamingSound::InitSoundBuffers"]
+symbol = "?InitSoundBuffers@CStreamingSound@th095@@QAEJXZ"
+target_address = 0x004537F0
+size = 0x257
+relocations = [
+  { offset = 0x86, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0xB0, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x123, type = "DIR32", symbol = "_IID_IDirectSoundNotify", target = 0x0049B970 },
+  { offset = 0x158, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x1FF, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0x23E, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+]
+
+[units.zwave-sound-set-volume]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CSound::SetVolume"]
+symbol = "?SetVolume@CSound@th095@@QAEJH@Z"
+target_address = 0x00453FD0
+size = 0x94
+relocations = [
+  { offset = 0xB, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8, addend = 0x52C4 },
+  { offset = 0x11, type = "DIR32", symbol = "__real@42c80000", target = 0x00495630 },
+  { offset = 0x1A, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8, addend = 0x52C4 },
+  { offset = 0x23, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x35, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x51, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
+]
+
+[units.zwave-sound-stop]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CSound::Stop"]
+symbol = "?Stop@CSound@th095@@QAEJXZ"
+target_address = 0x00454070
+size = 0xA7
+relocations = []
+
+[units.zwave-sound-pause]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CSound::Pause"]
+symbol = "?Pause@CSound@th095@@QAEJXZ"
+target_address = 0x00454120
+size = 0x4D
+relocations = []
+
+[units.zwave-sound-unpause]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CSound::Unpause"]
+symbol = "?Unpause@CSound@th095@@QAEJXZ"
+target_address = 0x00454170
+size = 0x4E
+relocations = []
+
+[units.zwave-stream-update-fade-out]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CStreamingSound::UpdateFadeOut"]
+symbol = "?UpdateFadeOut@CStreamingSound@th095@@QAEJXZ"
+target_address = 0x004542E0
+size = 0x81
+relocations = [
+  { offset = 0x74, type = "REL32", symbol = "?SetVolume@CSound@th095@@QAEJH@Z", target = 0x00453FD0 },
+]
+
+[units.zwave-stream-update-fade-in]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CStreamingSound::UpdateFadeIn"]
+symbol = "?UpdateFadeIn@CStreamingSound@th095@@QAEJXZ"
+target_address = 0x00454370
+size = 0x6A
+relocations = [
+  { offset = 0x5D, type = "REL32", symbol = "?SetVolume@CSound@th095@@QAEJH@Z", target = 0x00453FD0 },
+]
+
+[units.zwave-stream-update-partial-fade-out]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CStreamingSound::UpdatePartialFadeOut"]
+symbol = "?UpdatePartialFadeOut@CStreamingSound@th095@@QAEJXZ"
+target_address = 0x00454450
+size = 0x6B
+relocations = [
+  { offset = 0x5E, type = "REL32", symbol = "?SetVolume@CSound@th095@@QAEJH@Z", target = 0x00453FD0 },
+]
+
+[units.zwave-stream-update-partial-fade-in]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CStreamingSound::UpdatePartialFadeIn"]
+symbol = "?UpdatePartialFadeIn@CStreamingSound@th095@@QAEJXZ"
+target_address = 0x004543E0
+size = 0x6A
+relocations = [
+  { offset = 0x5D, type = "REL32", symbol = "?SetVolume@CSound@th095@@QAEJH@Z", target = 0x00453FD0 },
+]
+
+[units.zwave-stream-handle-notification]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CStreamingSound::HandleWaveStreamNotification"]
+symbol = "?HandleWaveStreamNotification@CStreamingSound@th095@@QAEJH@Z"
+target_address = 0x004544C0
+size = 0x3E6
+relocations = [
+  { offset = 0x82, type = "DIR32", symbol = "??_C@_0N@LBIEGBAI@Stream?5Skip?6?$AA@", target = 0x00497BE0 },
+  { offset = 0x87, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0xA9, type = "REL32", symbol = "?RestoreBuffer@CSound@th095@@QAEJPAUIDirectSoundBuffer@@PAH@Z", target = 0x00453D30 },
+  { offset = 0xB7, type = "DIR32", symbol = "??_C@_0DI@GGPMKLFF@error?5?3?5RestoreBuffer?5in?5HandleW@", target = 0x00497BA8 },
+  { offset = 0xBC, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0xE0, type = "REL32", symbol = "?FillBufferWithSound@CSound@th095@@QAEJPAUIDirectSoundBuffer@@H@Z", target = 0x00453B40 },
+  { offset = 0xEE, type = "DIR32", symbol = "??_C@_0DO@LLEHJDIF@error?5?3?5FillBufferWithSound?5in?5H@", target = 0x00497B68 },
+  { offset = 0xF3, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x157, type = "DIR32", symbol = "??_C@_0DH@NALMOKNA@error?5?3?5Buffer?9?$DOLock?5in?5HandleWa@", target = 0x00497B30 },
+  { offset = 0x15C, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x197, type = "REL32", symbol = "?Read@CWaveFile@th095@@QAEJPAEKPAK@Z", target = 0x00454CC0 },
+  { offset = 0x1A5, type = "DIR32", symbol = "??_C@_0DM@PKJJIIDA@error?5?3?5m_pWaveFile?9?$DORead?5in?5Han@", target = 0x00497AF4 },
+  { offset = 0x1AA, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x27F, type = "REL32", symbol = "?ResetFile@CWaveFile@th095@@QAEJ_N@Z", target = 0x00454B70 },
+  { offset = 0x28D, type = "DIR32", symbol = "??_C@_0EB@GNAKAOLI@error?5?3?5m_pWaveFile?9?$DOResetFile?5i@", target = 0x00497AB0 },
+  { offset = 0x292, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x2BA, type = "REL32", symbol = "?Read@CWaveFile@th095@@QAEJPAEKPAK@Z", target = 0x00454CC0 },
+  { offset = 0x2C8, type = "DIR32", symbol = "??_C@_0DP@MBKKLOAH@error?5?3?5m_pWaveFile?9?$DORead?$CI?$CL?$CJ?5in?5@", target = 0x00497A70 },
+  { offset = 0x2CD, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x32F, type = "DIR32", symbol = "??_C@_0EO@ONKAHICI@error?5?3?5m_apDSBuffer?$FL0?$FN?9?$DOGetCurr@", target = 0x00497A20 },
+  { offset = 0x334, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x396, type = "REL32", symbol = "?GetSize@CWaveFile@th095@@QAEKXZ", target = 0x00454B50 },
+]
+
+[units.zwave-stream-reset]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CStreamingSound::Reset"]
+symbol = "?Reset@CStreamingSound@th095@@QAEJXZ"
+target_address = 0x004548B0
+size = 0xC2
+relocations = [
+  { offset = 0x60, type = "REL32", symbol = "?RestoreBuffer@CSound@th095@@QAEJPAUIDirectSoundBuffer@@PAH@Z", target = 0x00453D30 },
+  { offset = 0x87, type = "REL32", symbol = "?FillBufferWithSound@CSound@th095@@QAEJPAUIDirectSoundBuffer@@H@Z", target = 0x00453B40 },
+  { offset = 0xA2, type = "REL32", symbol = "?ResetFile@CWaveFile@th095@@QAEJ_N@Z", target = 0x00454B70 },
+]
+
+[units.zwave-wave-constructor]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CWaveFile::CWaveFile"]
+symbol = "??0CWaveFile@th095@@QAE@XZ"
+target_address = 0x00454980
+size = 0x38
+relocations = []
+
+[units.zwave-wave-open]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CWaveFile::Open"]
+symbol = "?Open@CWaveFile@th095@@QAEJPADPAUThBgmFormat@2@K@Z"
+target_address = 0x004549E0
+size = 0xA3
+relocations = [
+  { offset = 0x35, type = "DIR32", symbol = "??_C@_0BJ@LHNKHHCN@Streaming?5File?5Open?5?$CFs?$AN?6?$AA@", target = 0x00497BF0 },
+  { offset = 0x3A, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x59, type = "DIR32", symbol = "__imp__CreateFileA@28", target = 0x00495070 },
+  { offset = 0x8B, type = "REL32", symbol = "?ResetFile@CWaveFile@th095@@QAEJ_N@Z", target = 0x00454B70 },
+]
+
+[units.zwave-wave-reopen]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CWaveFile::Reopen"]
+symbol = "?Reopen@CWaveFile@th095@@QAEJPAUThBgmFormat@2@@Z"
+target_address = 0x00454A90
+size = 0x54
+relocations = [
+  { offset = 0x3C, type = "REL32", symbol = "?ResetFile@CWaveFile@th095@@QAEJ_N@Z", target = 0x00454B70 },
+]
+
+[units.zwave-wave-open-memory]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CWaveFile::OpenFromMemory"]
+symbol = "?OpenFromMemory@CWaveFile@th095@@QAEJPAEKPAUThBgmFormat@2@K@Z"
+target_address = 0x00454AF0
+size = 0x5C
+relocations = []
+
+[units.zwave-wave-reset-file]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CWaveFile::ResetFile"]
+symbol = "?ResetFile@CWaveFile@th095@@QAEJ_N@Z"
+target_address = 0x00454B70
+size = 0x148
+relocations = [
+  { offset = 0xBD, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8, addend = 0x5214 },
+  { offset = 0xDD, type = "DIR32", symbol = "__imp__SetFilePointer@16", target = 0x004950BC },
+  { offset = 0x113, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8, addend = 0x5214 },
+  { offset = 0x127, type = "DIR32", symbol = "__imp__SetFilePointer@16", target = 0x004950BC },
+]
+
+[units.zwave-wave-read]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CWaveFile::Read"]
+symbol = "?Read@CWaveFile@th095@@QAEJPAEKPAK@Z"
+target_address = 0x00454CC0
+size = 0x148
+relocations = [
+  { offset = 0x12C, type = "DIR32", symbol = "__imp__ReadFile@20", target = 0x00495064 },
+]
+
+[units.zwave-wave-close]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CWaveFile::Close"]
+symbol = "?Close@CWaveFile@th095@@QAEJXZ"
+target_address = 0x00454E10
+size = 0x33
+relocations = [
+  { offset = 0x1C, type = "DIR32", symbol = "__imp__CloseHandle@4", target = 0x00495068 },
+]
+
 [units.chain-add-calc]
 source = "src/Global.cpp"
 object = "build/matching/Global.obj"
@@ -5104,7 +5349,7 @@ target_address = 0x00439200
 size = 0x9DD
 compare_size = 0x9FD
 relocations = [
-  { offset = 0x52, type = "DIR32", symbol = "$L68529", target = 0x00439BDD },
+  { offset = 0x52, type = "DIR32", symbol = "$L68534", target = 0x00439BDD },
   { offset = 0x76, type = "REL32", symbol = "?SetVolume@CSound@th095@@QAEJH@Z", target = 0x00453FD0 },
   { offset = 0x81, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4700 },
   { offset = 0x8E, type = "DIR32", symbol = "??_C@_0BI@DJAPDMHM@Sound?5?3?5PreLoad?5Stage?$AN?6?$AA@", target = 0x00496E98 },
@@ -5183,14 +5428,14 @@ relocations = [
   { offset = 0x92D, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
   { offset = 0x93E, type = "DIR32", symbol = "?g_SoundBufferIdxVol@th095@@3PAUSoundBufferIdxVolume@1@A", target = 0x004A4480 },
   { offset = 0x952, type = "REL32", symbol = "__ftol2", target = 0x00485664 },
-  { offset = 0x9DD, type = "DIR32", symbol = "$L68488", target = 0x0043927F },
-  { offset = 0x9E1, type = "DIR32", symbol = "$L68491", target = 0x00439312 },
-  { offset = 0x9E5, type = "DIR32", symbol = "$L68019", target = 0x004397C9 },
-  { offset = 0x9E9, type = "DIR32", symbol = "$L68036", target = 0x00439624 },
-  { offset = 0x9ED, type = "DIR32", symbol = "$L68026", target = 0x00439822 },
-  { offset = 0x9F1, type = "DIR32", symbol = "$L68030", target = 0x00439880 },
-  { offset = 0x9F5, type = "DIR32", symbol = "$L68036", target = 0x004398C9 },
-  { offset = 0x9F9, type = "DIR32", symbol = "$L67937", target = 0x00439256 },
+  { offset = 0x9DD, type = "DIR32", symbol = "$L68493", target = 0x0043927F },
+  { offset = 0x9E1, type = "DIR32", symbol = "$L68496", target = 0x00439312 },
+  { offset = 0x9E5, type = "DIR32", symbol = "$L68025", target = 0x004397C9 },
+  { offset = 0x9E9, type = "DIR32", symbol = "$L68002", target = 0x00439624 },
+  { offset = 0x9ED, type = "DIR32", symbol = "$L68032", target = 0x00439822 },
+  { offset = 0x9F1, type = "DIR32", symbol = "$L68036", target = 0x00439880 },
+  { offset = 0x9F5, type = "DIR32", symbol = "$L68042", target = 0x004398C9 },
+  { offset = 0x9F9, type = "DIR32", symbol = "$L67943", target = 0x00439256 },
 ]
 
 [units.sound-player-get-fmt-index-by-name]
@@ -12239,8 +12484,8 @@ size = 0x4F
 relocations = [
   { offset = 0x1D, type = "REL32", symbol = "?UpdateFadeOut@CStreamingSound@th095@@QAEJXZ", target = 0x004542E0 },
   { offset = 0x2B, type = "REL32", symbol = "?UpdateFadeIn@CStreamingSound@th095@@QAEJXZ", target = 0x00454370 },
-  { offset = 0x39, type = "REL32", symbol = "?UpdatePartialFadeIn@CStreamingSound@th095@@QAEJXZ", target = 0x00454450 },
-  { offset = 0x47, type = "REL32", symbol = "?UpdatePartialFadeOut@CStreamingSound@th095@@QAEJXZ", target = 0x004543E0 },
+  { offset = 0x39, type = "REL32", symbol = "?UpdatePartialFadeOut@CStreamingSound@th095@@QAEJXZ", target = 0x00454450 },
+  { offset = 0x47, type = "REL32", symbol = "?UpdatePartialFadeIn@CStreamingSound@th095@@QAEJXZ", target = 0x004543E0 },
 ]
 
 [units.anm-create-texture-from-file]

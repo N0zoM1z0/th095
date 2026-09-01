@@ -679,8 +679,8 @@ void SoundPlayer::UpdateFades()
     {
         this->bgm->UpdateFadeOut();
         this->bgm->UpdateFadeIn();
-        this->bgm->UpdatePartialFadeIn();
         this->bgm->UpdatePartialFadeOut();
+        this->bgm->UpdatePartialFadeIn();
     }
 }
 

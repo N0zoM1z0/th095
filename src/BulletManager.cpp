@@ -798,6 +798,10 @@ nextRecord:
         break;
 
     case PHOTO_BULLET_TRANSFORM_WRAP_X:
+        this->activeTransformFlags |= record->kind;
+        this->exStates[6].timer = record->payload.durationFrames;
+        break;
+
     case PHOTO_BULLET_TRANSFORM_WRAP_Y:
         this->activeTransformFlags |= record->kind;
         this->exStates[6].timer = record->payload.durationFrames;
@@ -864,9 +868,11 @@ nextRecord:
             g_PhotoBulletManager->SpawnBulletPattern(&pattern);
             ++this->transformIndex;
             if (fadeParent != 0)
+            {
                 this->BeginDespawn();
-            else
-                goto nextRecord;
+                break;
+            }
+            goto nextRecord;
         }
         break;
 

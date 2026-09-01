@@ -34,10 +34,15 @@
   Current candidate, authored, exclusion, and pending-review totals are kept in
   the generated progress artifact rather than duplicated here. Original class
   names remain unresolved where target evidence is insufficient.
-- The asynchronous SoundPlayer core is exact from worker startup through SFX
-  production/consumption, BGM preload/streaming, the 2,525-byte queue hub, and
-  object construction/release. Twenty-seven sound units contribute 8,212 bytes.
-  TH095 uses 37 producer-owned file slots and 47 duplicate-buffer mappings.
+- The sound subsystem now has 45 canonical authored units totaling 12,023
+  exact bytes. The original 27-unit asynchronous SoundPlayer core covers worker
+  startup, SFX production/consumption, BGM preload/streaming, the 2,525-byte
+  queue hub, and object construction/release. Eighteen new ZUN-modified
+  `zwave.cpp` units add 3,811 bytes across notification setup, volume/pause/
+  resume/fades, the 998-byte refill hub, and the raw `ThBgmFormat` wave path.
+  Five unchanged Microsoft DSUtil scaffold functions and one compiler destructor
+  are exclusions rather than authored credit. TH095 uses 37 producer-owned file
+  slots and 47 duplicate-buffer mappings.
 - ANM build profile: `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`
   reproduces the dispatcher and the expanded exact ANM helper family under pinned VC7.1
   build 3077. The 0x400-byte dispatcher frame and `[ebp-0x17C]` VM home are
@@ -789,10 +794,14 @@ The TH095 bullet-runtime pair at `0x00405A30` (2,133 bytes) and `0x004062B0`
 Together it proves the target-specific `0x65C` bullet, `0x210` spawn packet,
 eighteen-record transform program, nine aim modes, seven transform-state
 slots, child-pattern recursion, and the shifted TH095 transform flag values.
-The natural VC7.1 bodies are 2,037/2,459 bytes and remain conservatively
-non-exact: the spawn body still differs in compiler expression/local shape,
-while the interpreter target owns an additional unexplained `0x2C` local
-slot. Do not close either residual with inert padding. The connecting pattern
+The natural VC7.1 spawn body remains 2,037 bytes. The interpreter now emits its
+complete 2,479-byte authored extent plus the adjacent 84-byte switch table,
+with all 500 target instruction mnemonics and all 23 relocation destinations.
+It nevertheless remains conservatively non-exact: the target frame is `0x27C`
+versus the source's `0x250`, solely because the target owns one completely
+instruction-unreferenced `0x2C` interval. The spawn body still differs in
+compiler expression/local shape. Do not close either residual with inert
+padding. The connecting pattern
 fanout at `0x00406CC0` and the active/spawning despawn transition at
 `0x004077A0` are canonical exact for 297 bytes and five relocations.
 

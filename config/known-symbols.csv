@@ -340,3 +340,27 @@ address,name,module,confidence,evidence
 0x0041CE60,th095::PhotoItemManagerView::Update,PhotoItem,exact,"Exact 150-slot PhotoItem update with semantic bounds/vector state, shared tick path, and source-local vector/charge helpers"
 0x00456650,th095::Lzss::AddString,Compression,exact,Exact LZSS dictionary-tree insertion and longest-match update using a fully live 20-byte local aggregate
 0x004168D0,th095::PhotoRuntimeView::CountPhotoTargets,EnemyManager,exact,Exact 1274-byte target-backed photo-target scan; shared runtime/enemy-manager object at 0x004BDDC0 and all 17 relocations replayed
+0x004537F0,th095::CStreamingSound::InitSoundBuffers,SoundPlayer,exact,Exact ZUN streaming notification-buffer initialization
+0x00453FD0,th095::CSound::SetVolume,SoundPlayer,exact,Exact ZUN nonlinear BGM-volume scaling
+0x00454070,th095::CSound::Stop,SoundPlayer,exact,Exact ZUN play-state and fade-state reset
+0x00454120,th095::CSound::Pause,SoundPlayer,exact,Exact ZUN pause wrapper
+0x00454170,th095::CSound::Unpause,SoundPlayer,exact,Exact ZUN resume wrapper
+0x004541C0,th095::CSound::Reset,SoundPlayer,exact,Microsoft DSUtil scaffold identified and structurally reproduced
+0x00454230,th095::CStreamingSound::CStreamingSound,SoundPlayer,exact,Microsoft DSUtil construction scaffold identified and structurally reproduced
+0x00454290,th095::CStreamingSound::ScalarDeletingDestructor,SoundPlayer,exact,VC7.1 compiler-generated scalar deleting destructor
+0x004542C0,th095::CStreamingSound::~CStreamingSound,SoundPlayer,exact,Microsoft DSUtil destructor scaffold identified and structurally reproduced
+0x004542E0,th095::CStreamingSound::UpdateFadeOut,SoundPlayer,exact,Exact ZUN full fade-out update
+0x00454370,th095::CStreamingSound::UpdateFadeIn,SoundPlayer,exact,Exact ZUN full fade-in update
+0x004543E0,th095::CStreamingSound::UpdatePartialFadeIn,SoundPlayer,exact,Exact ZUN type-three partial fade-in update
+0x00454450,th095::CStreamingSound::UpdatePartialFadeOut,SoundPlayer,exact,Exact ZUN type-four partial fade-out update
+0x004544C0,th095::CStreamingSound::HandleWaveStreamNotification,SoundPlayer,exact,Exact ZUN streaming refill and loop handling
+0x004548B0,th095::CStreamingSound::Reset,SoundPlayer,exact,Exact ZUN raw-stream reset path
+0x00454980,th095::CWaveFile::CWaveFile,SoundPlayer,exact,Exact ZUN-extended raw BGM wrapper construction
+0x004549C0,th095::CWaveFile::~CWaveFile,SoundPlayer,exact,Microsoft DSUtil destructor scaffold identified and structurally reproduced
+0x004549E0,th095::CWaveFile::Open,SoundPlayer,exact,Exact ZUN raw streaming-file open path
+0x00454A90,th095::CWaveFile::Reopen,SoundPlayer,exact,Exact ZUN BGM format rebinding path
+0x00454AF0,th095::CWaveFile::OpenFromMemory,SoundPlayer,exact,Exact ZUN format-aware memory-wave setup
+0x00454B50,th095::CWaveFile::GetSize,SoundPlayer,exact,Microsoft DSUtil accessor scaffold identified and structurally reproduced
+0x00454B70,th095::CWaveFile::ResetFile,SoundPlayer,exact,Exact ZUN intro-loop and archive-offset seek logic
+0x00454CC0,th095::CWaveFile::Read,SoundPlayer,exact,Exact ZUN memory-or-file stream read path
+0x00454E10,th095::CWaveFile::Close,SoundPlayer,exact,Exact ZUN raw file-handle close path

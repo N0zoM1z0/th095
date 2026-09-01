@@ -697,3 +697,30 @@ object lifetime and stable symbol provenance.
 ### PhotoItem vector-lifetime and shared-tail oracle
 
 `PhotoItemManagerView::Update @ 0x0041CE60` is exact only when the source preserves genuine vector lifetime. Reuse the exact `CheckBulletCollision` sibling shape: two real `Float3` bounds plus `{index, item, direction}` form one fully-live 44-byte aggregate; their unused z fields are not padding. Spell launch easing through `(f32)timer`, use scalar-first `ScaleItemVector(f32, const Float3&)`, keep `NormalizeAndScaleItemVelocity(direction, velocity, acceleration)` in that parameter order so VC7 right-to-left evaluation restores the acceleration and velocity-pointer homes, retain source-local indexed/fixed camera-charge helpers, and route timer<4 through the single shared `tick:` tail.
+
+### ZUN sound-wrapper provenance and live-local aggregates
+
+The `zwave.cpp` batch separates origin from byte matching. The header retains
+Microsoft's DSUtil copyright and marks ZUN's class extensions. Only eighteen
+functions whose target behavior consumes those extensions—fade/play state,
+notification size/event state, `ThBgmFormat`, archive base offsets, raw file
+handles, or the custom refill loop—are credited as authored. Five unchanged
+DSUtil scaffold bodies and the VC7.1 scalar deleting destructor are classified
+as exclusions even though the same object reproduces their structure. Do not
+promote a library-derived body merely because it compiles exactly.
+
+Three positive frame oracles use only values that participate in target code.
+`InitSoundBuffers` needs the live `{j, notify, notifications, i}` ordering;
+`CStreamingSound::Reset` needs `{hr, restored}`; and the 998-byte
+`HandleWaveStreamNotification` hub needs its twelve API outputs and control
+values in target stack order. These aggregates are legitimate because every
+member is read or written by the reconstructed behavior. They are not a license
+to model the instruction-unreferenced `0x2C` gaps still present in projectile,
+ECL-callback, or effect residuals.
+
+Changing the partial-fade call order in `SoundPlayer.cpp` renumbered nine
+compiler-private `$Lxxxxx` relocations in the already-exact 2,525-byte
+`ProcessQueues` switch owner. A cold-object audit proved that every relocation
+offset, type, destination, and all compared bytes remained unchanged before
+refreshing only those local symbol names. All 27 `SoundPlayer.cpp` units and
+all eighteen new `zwave.cpp` units then replayed exactly.
