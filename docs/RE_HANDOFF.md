@@ -1330,3 +1330,26 @@ A replay of `.analysis/EnemyHistorical-timeline.cpp` under the pinned VC7.1
 profile still emits 882 bytes for `PhotoEnemyTimelineView::Run @ 0x004163F0`
 against the 818-byte target.  The old exact-sized 818-byte observation is therefore
 stale/non-replayable and must not be used as an exact oracle.
+
+### 2026-09-01 gpt-web PhotoStage display macro-side-effect recovery
+
+`PhotoStageDisplayView::Build @ 0x0042C5C0` has a target-proven authored
+source omission in the final `scoreData[7]` bit-3 multiplier row.  The target
+executes the same two side effects as every preceding display-VM macro expansion
+after creating the final fractional digit VM: `displayVmCount++` and
+`renderMode += 4`.  Restoring those two natural statements moves the pinned
+VC7.1 probe from 8530 to 8548 bytes against the 8560-byte target.
+
+Do not try to close the remaining gap with padding.  Raw target stack-home
+analysis shows exactly 92 unique display-VM pointer temporaries, matching the
+source probe's 92 unique pointer temporaries.  In the target those homes occupy
+EBP-0x144 through EBP-0x2B0, while the natural probe places the same family much
+higher in the frame.  The target interval EBP-0x38 through EBP-0x13C contains
+no referenced homes at all, leaving a target-only 0x108-byte reservation before
+the pointer family.  This is a compiler/frame-allocation barrier unless a future
+semantic source oracle identifies a real historical local whose lifetime explains
+that reservation.  A `Float3`-aggregate boundary assignment reproduces the
+target's grouped final three-DWORD store shape, and duplicating the input position
+as two live `Float3` locals reproduces the target's opening two-copy shape, but
+neither naturally explains the 0x108 unreferenced reservation; do not promote
+those shapes solely to chase frame bytes.

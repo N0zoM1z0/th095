@@ -703,6 +703,8 @@ void PhotoStageDisplayView::Build(
                     10 +
                 15,
             renderMode);
+        displayVmCount++;
+        renderMode += 4;
         displayPosition.y += 12.0f;
         displayPosition.x = photoX;
     }
