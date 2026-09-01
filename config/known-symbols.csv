@@ -337,3 +337,5 @@ address,name,module,confidence,evidence
 0x0042C220,th095::PhotoOverlayManagerView::Draw,PhotoOverlay,exact,Exact 80 display-VM plus 11x6 score-colored overlay draw; target repeats indexed VM expressions instead of hoisting a pointer
 0x00455BF0,th095::CPbgFile::ReadWholeFile,PbgFile,exact,Exact whole-file read with TH095 malloc/free path and fully live 12-byte read-state aggregate
 0x00452E50,th095::PbgArchiveEntry::PbgArchiveEntry,PbgArchive,exact,Exact archive-entry filename-null constructor used by AllocEntries vector construction
+0x0041CE60,th095::PhotoItemManagerView::Update,PhotoItem,exact,"Exact 150-slot PhotoItem update with semantic bounds/vector state, shared tick path, and source-local vector/charge helpers"
+0x00456650,th095::Lzss::AddString,Compression,exact,Exact LZSS dictionary-tree insertion and longest-match update using a fully live 20-byte local aggregate

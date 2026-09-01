@@ -36,6 +36,63 @@ void Lzss::InitEncoderState()
     }
 }
 
+// FUNCTION: TH095 0x00456650; TH08 0x00474520 is the source-shape oracle.
+i32 Lzss::AddString(i32 newNode, i32 *matchPosition)
+{
+    struct AddStringLocals
+    {
+        i32 delta;
+        i32 matchLength;
+        i32 testNode;
+        i32 *child;
+        i32 i;
+    } locals;
+
+    if (newNode == 0)
+        return 0;
+
+    locals.testNode = m_Tree[LZSS_DICTSIZE].right;
+    locals.matchLength = 0;
+    for (;;)
+    {
+        for (locals.i = 0; locals.i < LZSS_LOOKAHEAD_MAX; locals.i++)
+        {
+            locals.delta =
+                m_Dict[LZSS_DICTPOS_MOD(newNode, locals.i)] -
+                m_Dict[LZSS_DICTPOS_MOD(locals.testNode, locals.i)];
+            if (locals.delta != 0)
+                break;
+        }
+
+        if (locals.i >= locals.matchLength)
+        {
+            locals.matchLength = locals.i;
+            *matchPosition = locals.testNode;
+            if (locals.matchLength >= LZSS_LOOKAHEAD_MAX)
+            {
+                ReplaceNode(locals.testNode, newNode);
+                return locals.matchLength;
+            }
+        }
+
+        if (locals.delta >= 0)
+            locals.child = &m_Tree[locals.testNode].right;
+        else
+            locals.child = &m_Tree[locals.testNode].left;
+
+        if (*locals.child == 0)
+        {
+            *locals.child = newNode;
+            m_Tree[newNode].parent = locals.testNode;
+            m_Tree[newNode].right = 0;
+            m_Tree[newNode].left = 0;
+            return locals.matchLength;
+        }
+
+        locals.testNode = *locals.child;
+    }
+}
+
 // FUNCTION: TH095 0x00456770; TH08 0x00474640 is the source-shape oracle.
 void Lzss::DeleteString(i32 p)
 {

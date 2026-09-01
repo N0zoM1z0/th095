@@ -403,13 +403,13 @@ The MIDI lane is a high-value example of using TH08 as a source-shape oracle wit
 
 ### TH08 transfer oracle: LZSS helpers, RNG, and TH095 lexical deltas
 
-Use TH08 stable helper clusters as a candidate generator, not as exact proof. The six LZSS tree helpers and four RNG methods reproduce TH095 directly under build 3077 once compiled against TH095 declarations. Their success also proves that `Lzss::m_Dict` and the previously named decompression ring are two source views of target storage `0x004E24A8`; do not create separate target-address claims merely because the source names differ.
+Use TH08 stable helper clusters as a candidate generator, not as exact proof. Seven LZSS tree helpers and four RNG methods are canonical exact under build 3077 once compiled against TH095 declarations. Their success also proves that `Lzss::m_Dict` and the previously named decompression ring are two source views of target storage `0x004E24A8`; do not create separate target-address claims merely because the source names differ.
 
 Two nearby differences are source semantics, not compiler noise. `AddNormalizeAngle` keeps the TH08 algorithm but changes both escape guards from 16 to 32 iterations. `ZunTimer::Add` must be spelled with the direct path first (`if (g_AnmGameSpeed > 0.99f) subFrame += value; else ...`) to reproduce the target block order.
 
 `DecompressData @ 0x00456220` is the positive patched-`var_order` oracle. Do not simplify away TH08's discarded input checksum: TH095 accumulates every fetched compressed byte and uses the same fetch/checksum macro while draining trailing bits. Once that semantic work is restored, the body is exactly 852 bytes. Stock VC7.1 can reproduce the original local order with established identifier buckets; declaration order still matters for the two real scalar homes `size` and `matchLength`, whose declarations must be reversed to obtain target `EBP-0x20/-0x24`.
 
-`CompressData @ 0x00455E10` is the negative companion. The adapted encoder is exact-sized at 1,035 bytes with all 315 target mnemonics. A target-proven byte bucket closes `outBitMask @ EBP-0x19`, and declaration order closes `inCursor/matchLength`, but the remaining five dword homes require the live `bitfieldMask` after `dictHead @ EBP-0x34`. Bounded stock-VC7 searches across existing exact identifiers plus 384 semantic variants never allocate it at `EBP-0x38`; aggregate and narrowed-scope variants also fail. Leave `CompressData` and `Lzss::AddString` compiler-observed rather than adding inert storage or assembly.
+`CompressData @ 0x00455E10` is the negative companion. The adapted encoder is exact-sized at 1,035 bytes with all 315 target mnemonics. A target-proven byte bucket closes `outBitMask @ EBP-0x19`, and declaration order closes `inCursor/matchLength`, but the remaining five dword homes require the live `bitfieldMask` after `dictHead @ EBP-0x34`. Bounded stock-VC7 searches across existing exact identifiers plus 384 semantic variants never allocate it at `EBP-0x38`; aggregate and narrowed-scope variants also fail. `Lzss::AddString @ 0x00456650` is now the positive local-order companion: one fully-live 20-byte `{delta, matchLength, testNode, child, i}` aggregate closes all 280 bytes and nine relocations. `CompressData` remains compiler-observed; do not add inert storage or assembly.
 
 ### PBG lifecycle oracle: inline empty virtual bases
 
@@ -582,3 +582,8 @@ mean cheap. Its `0x004354B0` constructor still has live local-home displacement
 residuals, and the straightforward destructor is 97 bytes versus a 109-byte
 target. Promote the exact 122/112/104-byte profile/global-lifetime leaves and
 defer those two bodies rather than inserting artificial stack storage.
+
+
+### PhotoItem vector-lifetime and shared-tail oracle
+
+`PhotoItemManagerView::Update @ 0x0041CE60` is exact only when the source preserves genuine vector lifetime. Reuse the exact `CheckBulletCollision` sibling shape: two real `Float3` bounds plus `{index, item, direction}` form one fully-live 44-byte aggregate; their unused z fields are not padding. Spell launch easing through `(f32)timer`, use scalar-first `ScaleItemVector(f32, const Float3&)`, keep `NormalizeAndScaleItemVelocity(direction, velocity, acceleration)` in that parameter order so VC7 right-to-left evaluation restores the acceleration and velocity-pointer homes, retain source-local indexed/fixed camera-charge helpers, and route timer<4 through the single shared `tick:` tail.

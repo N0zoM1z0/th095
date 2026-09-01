@@ -656,3 +656,4 @@ th095::Supervisor::~Supervisor,0x00426450,function
 th095::PhotoOverlayManagerView::Draw,0x0042C220,function
 th095::CPbgFile::ReadWholeFile,0x00455BF0,function
 th095::PbgArchiveEntry::PbgArchiveEntry,0x00452E50,function
+th095::Lzss::AddString,0x00456650,function

@@ -143,76 +143,107 @@ void PhotoItemManagerView::Destroy()
     }
 }
 
+static __forceinline Float3 ScaleItemVector(f32 scalar, const Float3 &value)
+{
+    return Float3(scalar * value.x, scalar * value.y, scalar * value.z);
+}
+
+static __forceinline void NormalizeAndScaleItemVelocity(
+    const Float3 &direction, Float3 *velocity, f32 acceleration)
+{
+    D3DXVec3Normalize(
+        reinterpret_cast<D3DXVECTOR3 *>(velocity),
+        reinterpret_cast<const D3DXVECTOR3 *>(&direction));
+    *velocity *= acceleration;
+}
+
+static __forceinline void AddIndexedItemCameraCharge(
+    ItemPhotoGameView *game, i32 photoIndex)
+{
+    game->cameraCharge += static_cast<f32>(photoIndex) * 0.0002f + 0.0016f;
+    if (game->cameraCharge > 1.0f)
+        game->cameraCharge = 1.0f;
+}
+
+static __forceinline void AddFixedItemCameraCharge(ItemPhotoGameView *game)
+{
+    game->cameraCharge += 0.004f;
+    if (game->cameraCharge > 1.0f)
+        game->cameraCharge = 1.0f;
+}
+
 i32 PhotoItemManagerView::Update()
 {
-    PhotoItemView *item = &this->items[0];
-    for (i32 index = 0; index < 150; index++, item++)
+    struct UpdateLocals
     {
-        if (item->active == 0)
+        Float3 boundsMin;
+        Float3 boundsMax;
+        i32 index;
+        PhotoItemView *item;
+        Float3 direction;
+    } locals;
+    locals.item = &this->items[0];
+    for (locals.index = 0; locals.index < 150; locals.index++, locals.item++)
+    {
+        if (locals.item->active == 0)
         {
             continue;
         }
-        if (item->timer < 4)
+        if (locals.item->timer < 4)
         {
-            item->timer.Tick();
-            continue;
+            goto tick;
         }
 
-        if (item->timer < 20)
+        if (locals.item->timer < 20)
         {
-            item->position +=
-                item->velocity * (20.0f - item->timer.subFrame) / 20.0f;
+            locals.item->position +=
+                ScaleItemVector(
+                    20.0f - static_cast<f32>(locals.item->timer),
+                    locals.item->velocity) / 20.0f;
         }
         else
         {
-            Float3 direction = g_PhotoGame->playerPosition - item->position;
-            D3DXVec3Normalize(
-                reinterpret_cast<D3DXVECTOR3 *>(&item->velocity),
-                reinterpret_cast<const D3DXVECTOR3 *>(&direction));
-            item->velocity *= item->acceleration;
-            item->position += item->velocity;
-            if (item->acceleration < 8.0f)
+            locals.direction = g_PhotoGame->playerPosition - locals.item->position;
+            NormalizeAndScaleItemVelocity(
+                locals.direction, &locals.item->velocity,
+                locals.item->acceleration);
+            locals.item->position += locals.item->velocity;
+            if (locals.item->acceleration < 8.0f)
             {
-                item->acceleration += 0.1f;
+                locals.item->acceleration += 0.1f;
             }
         }
 
-        if (g_PhotoGame->photoTargetBoundsMin.x <= item->position.x + 0.0f &&
-            g_PhotoGame->photoTargetBoundsMin.y <= item->position.y + 0.0f &&
-            item->position.x - 0.0f <=
-                g_PhotoGame->photoTargetBoundsMax.x &&
-            item->position.y - 0.0f <=
-                g_PhotoGame->photoTargetBoundsMax.y)
+        locals.boundsMin.x = locals.item->position.x - 0.0f;
+        locals.boundsMin.y = locals.item->position.y - 0.0f;
+        locals.boundsMax.x = locals.item->position.x + 0.0f;
+        locals.boundsMax.y = locals.item->position.y + 0.0f;
+        if (!(g_PhotoGame->photoTargetBoundsMin.x > locals.boundsMax.x ||
+              g_PhotoGame->photoTargetBoundsMin.y > locals.boundsMax.y ||
+              g_PhotoGame->photoTargetBoundsMax.x < locals.boundsMin.x ||
+              g_PhotoGame->photoTargetBoundsMax.y < locals.boundsMin.y))
         {
-            item->active = 0;
-            if ((g_PhotoGame->cameraFlags & 1) == 0)
+            locals.item->active = 0;
+            if ((g_PhotoGame->cameraFlags & 1) != 0)
             {
-                g_PhotoGame->cameraCharge += 0.004f;
-                if (g_PhotoGame->cameraCharge > 1.0f)
-                {
-                    g_PhotoGame->cameraCharge = 1.0f;
-                }
+                AddIndexedItemCameraCharge(
+                    g_PhotoGame, g_PhotoGame->photoIndex);
             }
             else
             {
-                g_PhotoGame->cameraCharge +=
-                    static_cast<f32>(g_PhotoGame->photoIndex) * 0.0002f +
-                    0.0016f;
-                if (g_PhotoGame->cameraCharge > 1.0f)
-                {
-                    g_PhotoGame->cameraCharge = 1.0f;
-                }
+                AddFixedItemCameraCharge(g_PhotoGame);
             }
             if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
             {
                 reinterpret_cast<ItemSoundPlayerView *>(&g_SoundPlayer)
-                    ->PlaySoundPositionedByIdx(0x14, item->position.x);
+                    ->PlaySoundPositionedByIdx(0x14, locals.item->position.x);
             }
             continue;
         }
 
-        AnmManager::ExecuteScript(&item->vm);
-        item->timer.Tick();
+        AnmManager::ExecuteScript(&locals.item->vm);
+tick:
+        locals.item->timer.Tick();
     }
     return 1;
 }

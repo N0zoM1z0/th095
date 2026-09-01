@@ -252,7 +252,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041CC20,authored,PhotoItem,authored,exact,vc71-photo-item-manager-2026-08-30
 0x0041CCC0,authored,PhotoItem,authored,exact,vc71-photo-item-manager-2026-08-30
 0x0041CE00,authored,PhotoItem,authored,exact,vc71-photo-item-manager-2026-08-30
-0x0041CE60,authored,PhotoItem,authored,high,target-vc71-photo-item-update-2026-08-30
+0x0041CE60,authored,PhotoItem,authored,exact,vc71-photo-item-update-exact-2026-09-01
 0x0041D340,authored,PhotoItem,authored,exact,vc71-photo-item-manager-2026-08-30
 0x0041D3D0,authored,PhotoItem,authored,exact,vc71-photo-item-manager-2026-08-30
 0x0041D430,authored,PhotoItem,authored,exact,vc71-photo-item-manager-2026-08-30
@@ -712,7 +712,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00456220,authored,Compression,authored,exact,vc71-compression-pbg-exact-2026-09-01
 0x00456580,authored,Compression,authored,exact,vc71-lzss-helper-core-2026-09-01
 0x004565D0,authored,Compression,authored,exact,vc71-lzss-helper-core-2026-09-01
-0x00456650,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00456650,authored,Compression,authored,exact,vc71-lzss-add-string-exact-2026-09-01
 0x00456770,authored,Compression,authored,exact,vc71-lzss-helper-core-2026-09-01
 0x00456800,authored,Compression,authored,exact,vc71-lzss-helper-core-2026-09-01
 0x00456890,authored,Compression,authored,exact,vc71-lzss-helper-core-2026-09-01

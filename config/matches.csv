@@ -593,3 +593,5 @@ address,name,size,status,match_percent,unit,evidence
 0x0042C220,th095::PhotoOverlayManagerView::Draw,434,matching,100.00,photo-overlay-draw,python3 scripts/build.py --unit photo-overlay-draw && python3 scripts/compare-coff-function.py --unit photo-overlay-draw --json
 0x00455BF0,th095::CPbgFile::ReadWholeFile,199,matching,100.00,pbg-file-read-whole,python3 scripts/build.py --unit pbg-file-read-whole && python3 scripts/compare-coff-function.py --unit pbg-file-read-whole --json
 0x00452E50,th095::PbgArchiveEntry::PbgArchiveEntry,23,matching,100.00,pbg-archive-entry-constructor,python3 scripts/build.py --unit pbg-archive-entry-constructor && python3 scripts/compare-coff-function.py --unit pbg-archive-entry-constructor --json
+0x0041CE60,th095::PhotoItemManagerView::Update,1235,matching,100.00,photo-item-manager-update,python3 scripts/build.py --unit photo-item-manager-update && python3 scripts/compare-coff-function.py --unit photo-item-manager-update --json
+0x00456650,th095::Lzss::AddString,280,matching,100.00,lzss-add-string,python3 scripts/build.py --unit lzss-add-string && python3 scripts/compare-coff-function.py --unit lzss-add-string --json

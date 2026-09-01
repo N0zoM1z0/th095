@@ -1077,22 +1077,8 @@ the first post-leading-gap termination test while the target owns one near
 `jge`. Multiple ordinary `return`, positive-if, and nested-block spellings were
 bounded negative oracles; do not grind this lane or encode the branch manually.
 
-The adjacent live `ItemInf` owner at
-`0x0041CB20..0x0041D575` is now also source-present. It is a 150-slot
-photo-charge-item pool, not the traditional TH08 item manager: ten lifecycle,
-draw, and callback functions totaling 1,072 bytes are canonical exact, while
-the complete 1,235-byte update and 278-byte spawn remain conservatively
-compiler-observed. A fresh spawn audit rules out the tempting 279/278-byte
-branch-only interpretation: target `Spawn @ 0x0041D460` reserves a `0x3C`
-frame although its live semantic locals occupy only the shallow tail, leaving a
-large instruction-unreferenced interval. Rewriting the search loop can select
-the target `jge` branch form, but cannot truthfully account for that frame; do
-not add inert locals for exact credit. The update proves delayed launch, player homing, collection
-bounds, camera-charge formulas, the one-point clamp, and sound `0x14`; spawn
-proves script `0x120`, random upward velocity, and caller-color propagation.
-The live implementation is isolated in `PhotoItemManager.hpp/.cpp`; the
-TH08-derived `ItemManager.hpp` declarations remain only as the exact ECL
-dispatcher oracle. The adjacent PhotoEffect lifecycle at
+The adjacent live `ItemInf` owner at `0x0041CB20..0x0041D575` now has eleven canonical lifecycle/update/draw/callback units totaling 2,307 exact authored bytes and 83 relocations. `PhotoItemManagerView::Update @ 0x0041CE60` is exact for all 1,235 bytes. Preserve its fully-live 44-byte `{boundsMin, boundsMax, index, item, direction}` aggregate; the two unused z fields belong to real Float3 bounds and are not padding. Use `(f32)timer`, scalar-first `ScaleItemVector`, `NormalizeAndScaleItemVelocity(direction, velocity, acceleration)`, indexed/fixed charge helpers, and the single shared `tick:` tail. `Spawn @ 0x0041D460` remains non-exact because its target reserves a large instruction-unreferenced frame interval; do not add inert storage. The TH08-derived `ItemManager.hpp` declarations remain only as the exact ECL dispatcher oracle.
+The adjacent PhotoEffect lifecycle at
 `0x0041D580..0x0041D8D0` is now complete and canonical: ten functions totaling
 893 bytes prove the inline `PhotoEffectBaseView` list sentinel, base vtable
 defaults, slot-6 `bullet.anm` ownership, priority-13 callback registration,
@@ -1202,3 +1188,5 @@ all forty-four Main canonical units replay after the manifest-local symbol refre
 The next exact batch closes 1,342 authored bytes across four functions. `PhotoStraightLaserView::CountPhotoTargets @ 0x0041E750` is now 614/614 exact by reusing the exact straight-collision shallow local rank and half-size-to-maximum vector lifetime. `Background::Background @ 0x004020C0` is 389/389 exact in isolated `BackgroundLifecycle.cpp`: the target constructs one timer, two four-timer arrays, eight stage VMs and three photo-area VMs before its explicit log/memset/reinitialize/publish body. `Supervisor::Supervisor/~Supervisor @ 0x00426350/0x00426450` add 255+84 exact bytes and prove the global 0x7BC-prefix lifecycle, including two 0xF0 viewport members and worker objects at +0x648/+0x7A0. Both worker constructor calls fold to `0x00454E50`, the same four-dword-zeroing target body as `PbgArchive::PbgArchive`; keep the alias as dependency evidence only and never double-credit the target address. Rotating-laser collision, BoundaryBounce, OptionsMenu, Bullet update, and other documented compiler-hole/branch-hard lanes remain deferred.
 
 The latest exact batch adds 1,022 authored bytes across four functions. `Background::~Background @ 0x00402330` is exact in the lifecycle TU through automatic 3+8 member destruction plus three real force-inlined ownership-free homes; `PhotoOverlayManagerView::Draw @ 0x0042C220` closes the former 366/434 gap by preserving repeated indexed VM expressions; `CPbgFile::ReadWholeFile @ 0x00455BF0` is exact with TH095's simplified malloc/free path and a 12-byte live read-state aggregate; and `PbgArchiveEntry::PbgArchiveEntry @ 0x00452E50` is the relocation-free filename-null ctor used by archive new[]. Keep `AllocEntries` at its improved 511/524 probe until a natural filename-size allocation oracle appears.
+
+The latest exact batch adds 1,515 authored bytes across two functions. `PhotoItemManagerView::Update @ 0x0041CE60` is canonical exact for 1,235 bytes after recovering genuine Float3 bounds/vector lifetimes, timer conversion, shared tick ownership, and source-local vector/charge helpers. `Lzss::AddString @ 0x00456650` adds 280 exact bytes and upgrades a formerly unknown target function to authored; its five real locals require the gapless 20-byte `{delta, matchLength, testNode, child, i}` aggregate. Both source TUs replay all eighteen canonical units after integration.
