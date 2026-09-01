@@ -152,7 +152,6 @@ struct MidiTimer
 
 struct DummyMidiTimer : MidiTimer
 {
-    ~DummyMidiTimer();
     virtual void OnTimerElapsed();
     u32 unknown010;
 };
@@ -2135,11 +2134,6 @@ void Supervisor::ThreadClose()
     }
     this->LeaveCriticalSectionWrapper(6);
     this->criticalSectionLockCounts[6]--;
-}
-
-// FUNCTION: TH095 0x00424700.
-DummyMidiTimer::~DummyMidiTimer()
-{
 }
 
 void Supervisor::InitializeCriticalSections()

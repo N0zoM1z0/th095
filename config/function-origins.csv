@@ -351,7 +351,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00424050,authored,Supervisor,authored,exact,supervisor-check-fps-exact-2026-08-30
 0x004242B0,authored,Supervisor,authored,high,supervisor-startup-thread-2026-08-30
 0x004244D0,authored,Supervisor,authored,high,supervisor-deleted-callback-2026-08-30
-0x00424700,authored,Supervisor,authored,high,supervisor-dummy-midi-destructor-2026-08-30
+0x00424700,compiler,Supervisor,exclude,exact,gpt-web-implicit-dummy-midi-destructor-2026-09-02
 0x00424720,authored,Supervisor,authored,exact,supervisor-calculate-fps-exact-2026-08-30
 0x00424980,authored,Supervisor,authored,exact,supervisor-screenshot-worker-exact-2026-08-30
 0x00424A00,authored,Supervisor,authored,exact,supervisor-screenshot-capture-exact-2026-08-30
