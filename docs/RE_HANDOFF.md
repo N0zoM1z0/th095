@@ -1353,3 +1353,25 @@ target's grouped final three-DWORD store shape, and duplicating the input positi
 as two live `Float3` locals reproduces the target's opening two-copy shape, but
 neither naturally explains the 0x108 unreferenced reservation; do not promote
 those shapes solely to chase frame bytes.
+### 2026-09-02 gpt-web best-shot loader source-shape recovery
+
+`SceneSaveDataView::LoadBestShotForScene @ 0x00435E90` is now exact-sized at
+1,034 bytes under the pinned VC7.1 profile, with all sixteen relocation
+destinations resolved.  The decisive semantic corrections are target-proven:
+record `+0x69` is `componentsLoaded` (the exact scene-preview uploader tests
+that byte), while record `+0x68` is the separate `valid` flag cleared second by
+exact `UpdateBestShotRecord`.  The loader must set/clear `componentsLoaded`, not
+`valid`.  Keep the four real locals in one gapless `0x110` aggregate ordered as
+`path[260], input, recordIndex, fileSize`; this naturally reproduces target
+`EBP-0x110/-0x0C/-0x08/-0x04`.  A nested malloc-only `pixelSize` using
+`componentCount * height * width` reproduces the target spill chronology, and
+an explicit shared `load_failed` label gives the target `jne short + jmp near`
+null-file branch.  The three checksum calls must remain one expression so VC7.1
+uses EDI as the running sum and ESI for the score-entry offset.
+
+Do not promote this function to exact yet.  The target reserves two completely
+instruction-unreferenced dwords at `EBP-0x114/-0x118`; consequently its scoped
+`pixelSize` is at `-0x11C` and `this` at `-0x120`, while the natural semantic
+source uses `-0x114/-0x118`.  The exact-sized probe matches 838/970 comparable
+bytes; the bulk of the residual is the repeated deep `this` displacement.  Do
+not model those two dwords as padding or inert locals.
