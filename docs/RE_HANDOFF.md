@@ -143,8 +143,10 @@
   `PhotoEnemyManagerView::OnUpdate @ 0x00415970` is source-present for the
   1,853-byte, 128-slot loop: ECL timelines and scheduled calls, three lifecycle
   states, movement, attached/photo-marker VMs, player collision, playfield
-  culling, four draw groups, and timer advancement. Its natural VC7.1 body is
-  1,640 bytes, so the remaining target-only inline temporary shape receives no
+  culling, four draw groups, and timer advancement. Target-local source-shape
+  recovery now emits 1,829 bytes and the same 448 instruction mnemonics as the
+  target. The remaining difference is an instruction-unreferenced 32-byte
+  allocator interval before the deep compiler homes, so it still receives no
   exact credit. The surrounding task shell is now canonical exact: `Create @
   0x004149F0`, `Draw @ 0x004161F0`, `DrawGroup @ 0x00416230`, and the calc/draw
   gates at `0x00416290/0x004162F0` contribute 591 authored bytes and enforce all
@@ -882,19 +884,21 @@ easing state; lane two interpolates the TH095-specific photo tuple at
 5,129-byte target while preserving the complete external-call distribution,
 so it receives no exact credit.
 
-The surrounding BackgroundInf lifecycle now has seven canonical units totaling
-1,029 exact authored bytes and 60 relocations. `Background::Create @ 0x004024A0`
+The surrounding BackgroundInf lifecycle now has eight canonical units totaling
+1,237 exact authored bytes and 62 relocations. `Background::Create @ 0x004024A0`
 closes all 374 bytes: the target source shape is an explicit `Initialize` failure
 label with a real null-guarded delete path, not the previous `if/else` form. The
 real factory locals use the established target-proven shallow backing buckets
 `background -> averagedPanLocal12` and `chain ->
 restartCommandProcessingLocal05`; no fake storage is involved. `Initialize @
 0x00402250`, `Update @ 0x00402680`, the three callbacks, and the stage-load
-wrapper remain exact. `LoadStageDataInner @ 0x00402C80` remains non-exact
-because target `EBP-0x40..` contains a large instruction-unreferenced compiler
-interval. `UpdateStageObjectVms @ 0x00402E90` likewise keeps its policy-compliant
-source: its one extra target dword is the unused TH08 `unusedQuad` var-order
-artifact, so it is not reintroduced merely for exact credit. The adjacent
+wrapper remain exact. `UpdateStageObjectVms @ 0x00402E90` is now canonical
+exact for all 208 bytes and both relocations. A genuine loop-local
+`AnmManager *` snapshot before `ExecuteScript`, plus the five target-proven
+live-local identifier buckets, produces the target frame and manager home; this
+supersedes the stale TH08 `unusedQuad` inference. `LoadStageDataInner @
+0x00402C80` remains non-exact because target `EBP-0x40..` contains a large
+instruction-unreferenced compiler interval. The adjacent
 `0x00402620` scalar deleting destructor remains compiler-owned.
 
 The BackgroundInf draw/render spine at `0x00402750/0x00402990/0x00402F60/

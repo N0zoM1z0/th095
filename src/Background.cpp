@@ -728,6 +728,11 @@ i32 BackgroundStageObject::IsVisible(
 #undef cullRadius
 
 // FUNCTION: TH095 0x00402E90.
+#define object commandCursorLocal02
+#define instruction iLocal11
+#define vm restartCommandProcessingLocal05
+#define activeVmCount averagedPanLocal12
+#define objectIndex soundIndexLocal01
 i32 Background::UpdateStageObjectVms()
 {
     BackgroundStageObject *object;
@@ -751,7 +756,8 @@ i32 Background::UpdateStageObjectVms()
             {
                 vm = &reinterpret_cast<BackgroundStateView *>(this)
                           ->stageObjectVms[instruction->vmIndex];
-                g_AnmManager->ExecuteScript(vm);
+                AnmManager *anmManager = g_AnmManager;
+                anmManager->ExecuteScript(vm);
                 if (vm->currentInstruction != NULL)
                     activeVmCount++;
                 instruction =
@@ -765,6 +771,11 @@ i32 Background::UpdateStageObjectVms()
     }
     return 0;
 }
+#undef object
+#undef instruction
+#undef vm
+#undef activeVmCount
+#undef objectIndex
 
 // FUNCTION: TH095 0x00402B80.
 i32 __fastcall Background::OnUpdate(Background *background)

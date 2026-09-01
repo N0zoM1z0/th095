@@ -20,6 +20,11 @@ struct PhotoEnemyEclFileView
     i16 timelineCount;
     u32 timelineOffsets[16];
     u32 subroutineOffsets[1];
+
+    __forceinline void *GetTimeline(i32 index)
+    {
+        return reinterpret_cast<void *>(this->timelineOffsets[index]);
+    }
 };
 
 typedef char PhotoEnemyEclFileSubroutinesAt48[
@@ -286,6 +291,8 @@ typedef char PhotoEnemyBulletSpawnDescriptorSizeIs210[
 typedef char PhotoEnemyTrailSampleSizeIs1C[
     (sizeof(PhotoEnemyTrailSampleView) == 0x1c) ? 1 : -1];
 
+// The target enemy constructor treats these embedded handles as POD storage.
+// Individual users take an AnmVmId view when they need handle operations.
 struct PhotoEnemyAnmVmIdStorage
 {
     i32 value;
@@ -305,7 +312,6 @@ extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 extern PhotoEnemyPlayerView *g_PhotoEnemyPlayer;
 extern PhotoEnemyGameView *g_PhotoEnemyGame;
 extern PhotoEnemySceneDefinitionView *g_PhotoEnemySceneDefinition;
-extern f32 g_PhotoEnemyEffectInterpolation;
 extern f32 g_GameSpeed;
 
 struct PhotoEnemyView
@@ -953,6 +959,32 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
     return enemy;
 }
 
+static __forceinline i32 IsPhotoEnemyOutsidePlayfield(
+    D3DXVECTOR3 *position, f32 spriteWidth, f32 spriteHeight)
+{
+    return spriteWidth + position->x <= -192.0f ||
+        position->x - spriteWidth >= 192.0f ||
+        spriteHeight + position->y <= 0.0f ||
+        position->y - spriteHeight >= 448.0f;
+}
+
+static __forceinline i32 GetPhotoEnemyAnmVmIdValue(AnmVmId *id)
+{
+    return id->value;
+}
+
+static __forceinline i32 IsPhotoEnemyAnmVmIdNull(AnmVmId *id)
+{
+    AnmVmId nullId;
+    return *id == nullId;
+}
+
+static __forceinline void ResetPhotoEnemyAnmVmId(AnmVmId *id)
+{
+    AnmVmId nullId;
+    *id = nullId;
+}
+
 i32 __fastcall PhotoEnemyManagerView::OnUpdate(
     PhotoEnemyManagerView *enemyManager)
 {
@@ -964,12 +996,8 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
     {
         if (enemyManager->timelines[timelineIndex].instruction == NULL)
         {
-            void *instruction;
-            instruction =
-                reinterpret_cast<void *>(enemyManager->eclManager->eclFile
-                                             ->timelineOffsets[timelineIndex]);
             enemyManager->timelines[timelineIndex].instruction =
-                instruction;
+                enemyManager->eclManager->eclFile->GetTimeline(timelineIndex);
         }
         enemyManager->timelines[timelineIndex].Run();
     }
@@ -1017,103 +1045,114 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
         enemy->IntegrateMovement();
         enemy->ClampPosition();
 
-        if (enemy->attachedVmId.value != 0 &&
+        if (GetPhotoEnemyAnmVmIdValue(
+                reinterpret_cast<AnmVmId *>(&enemy->attachedVmId)) != 0 &&
             enemy->freezeAttachedVm == 0)
         {
-            D3DXVECTOR3 attachedPosition =
-                *reinterpret_cast<D3DXVECTOR3 *>(
-                    g_AnmManager->GetPosition(
-                        *reinterpret_cast<AnmVmId *>(
-                            &enemy->attachedVmId)));
-            D3DXVECTOR3 screenPosition;
+            struct AttachedPositions
+            {
+                Float3 attached;
+                Float3 screen;
+            } positions;
+            positions.attached =
+                *g_AnmManager->GetPosition(
+                    *reinterpret_cast<AnmVmId *>(
+                        &enemy->attachedVmId));
             PhotoToScreen(
-                reinterpret_cast<Float3 *>(&screenPosition),
+                &positions.screen,
                 reinterpret_cast<Float3 *>(&enemy->worldPosition));
-            attachedPosition +=
-                (screenPosition - attachedPosition) *
-                g_PhotoEnemyEffectInterpolation;
+            positions.attached = positions.attached +
+                (positions.screen - positions.attached) *
+                0.07f;
             g_AnmManager->SetPosition(
                 *reinterpret_cast<AnmVmId *>(&enemy->attachedVmId),
-                reinterpret_cast<Float3 *>(&attachedPosition));
+                &positions.attached);
         }
 
-        if (enemy->photoMarkerTimer.current > 0)
+        if (enemy->photoMarkerTimer > 0)
         {
-            enemy->photoMarkerTimer.Add(-1.0f);
+            enemy->photoMarkerTimer.Decrement(1);
         }
 
-        if (enemy->photoPulseVmId.value != 0)
+        if (GetPhotoEnemyAnmVmIdValue(
+                reinterpret_cast<AnmVmId *>(&enemy->photoPulseVmId)) != 0)
         {
             AnmVm *photoPulseVm =
                 g_AnmManager->GetVm(
                     *reinterpret_cast<AnmVmId *>(
                         &enemy->photoPulseVmId));
-            if (enemy->photoMarkerTimer.current <= 0)
-            {
-                g_AnmManager->MarkVmForDeletion(
-                    *reinterpret_cast<AnmVmId *>(
-                        &enemy->photoPulseVmId));
-                enemy->photoPulseVmId.value = 0;
-            }
-            else
+            if (enemy->photoMarkerTimer > 0)
             {
                 PhotoToScreen(
                     &photoPulseVm->positionOffset,
                     reinterpret_cast<Float3 *>(&enemy->worldPosition));
                 photoPulseVm->scale.y =
-                    enemy->photoMarkerTimer.subFrame /
-                    enemy->photoMarkerDurationTimer.subFrame * 2.0f;
+                    static_cast<f32>(enemy->photoMarkerTimer) /
+                    static_cast<f32>(enemy->photoMarkerDurationTimer) * 2.0f;
                 photoPulseVm->scale.x = photoPulseVm->scale.y;
+            }
+            else
+            {
+                g_AnmManager->MarkVmForDeletion(
+                    *reinterpret_cast<AnmVmId *>(
+                        &enemy->photoPulseVmId));
+                ResetPhotoEnemyAnmVmId(
+                    reinterpret_cast<AnmVmId *>(
+                        &enemy->photoPulseVmId));
             }
         }
 
-        if (enemy->showPhotoMarker == 0 || enemy->photoTarget == 0)
+        if (enemy->showPhotoMarker != 0 && enemy->photoTarget != 0)
+        {
+            if (IsPhotoEnemyAnmVmIdNull(
+                    reinterpret_cast<AnmVmId *>(
+                        &enemy->photoMarkerVmId)))
+            {
+                *reinterpret_cast<AnmVmId *>(
+                    &enemy->photoMarkerVmId) =
+                    g_PhotoEnemyBulletManager->anmSpawner
+                        ->CreateVm(0x127, &enemy->photoMarkerPosition);
+            }
+            else
+            {
+                AnmVm *photoMarkerVm =
+                    g_AnmManager->GetVm(
+                        *reinterpret_cast<AnmVmId *>(
+                            &enemy->photoMarkerVmId));
+                PhotoToScreen(
+                    &photoMarkerVm->positionOffset,
+                    reinterpret_cast<Float3 *>(&enemy->worldPosition));
+            }
+        }
+        else
         {
             g_AnmManager->MarkVmForDeletion(
                 *reinterpret_cast<AnmVmId *>(
                     &enemy->photoMarkerVmId));
-            enemy->photoMarkerVmId.value = 0;
-        }
-        else if (enemy->photoMarkerVmId.value == 0)
-        {
-            enemy->photoMarkerVmId.value =
-                g_PhotoEnemyBulletManager->anmSpawner
-                    ->CreateVm(0x127, &enemy->photoMarkerPosition).value;
-        }
-        else
-        {
-            AnmVm *photoMarkerVm =
-                g_AnmManager->GetVm(
-                    *reinterpret_cast<AnmVmId *>(
-                        &enemy->photoMarkerVmId));
-            PhotoToScreen(
-                &photoMarkerVm->positionOffset,
-                reinterpret_cast<Float3 *>(&enemy->worldPosition));
+            ResetPhotoEnemyAnmVmId(
+                reinterpret_cast<AnmVmId *>(
+                    &enemy->photoMarkerVmId));
         }
 
         if (enemy->skipOffscreenCheck == 0)
         {
             f32 spriteWidth;
             f32 spriteHeight;
-            if (enemy->vm.loadedSprite == NULL)
-            {
-                spriteWidth = 0.0f;
-                spriteHeight = 0.0f;
-            }
-            else
+            if (enemy->vm.loadedSprite != NULL)
             {
                 spriteWidth =
                     enemy->vm.loadedSprite->widthPx * enemy->vm.scale.x;
                 spriteHeight =
                     enemy->vm.loadedSprite->heightPx * enemy->vm.scale.y;
             }
+            else
+            {
+                spriteHeight = 0.0f;
+                spriteWidth = spriteHeight;
+            }
 
-            bool outsidePlayfield =
-                spriteWidth + enemy->worldPosition.x <= -192.0f ||
-                enemy->worldPosition.x - spriteWidth >= 192.0f ||
-                spriteHeight + enemy->worldPosition.y <= 0.0f ||
-                enemy->worldPosition.y - spriteHeight >= 448.0f;
-            if (outsidePlayfield)
+            if (IsPhotoEnemyOutsidePlayfield(
+                    &enemy->worldPosition, spriteWidth, spriteHeight))
             {
                 if (enemy->hasEnteredPlayfield != 0)
                 {
@@ -1138,13 +1177,13 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
     enqueueEnemy:
         if (enemy->hiddenFromDrawGroups == 0)
         {
-            if (enemyManager->drawGroupHeads[enemy->drawGroup] == NULL)
+            if (enemyManager->drawGroupHeads[enemy->drawGroup] != NULL)
             {
-                enemyManager->drawGroupHeads[enemy->drawGroup] = enemy;
+                drawGroupTails[enemy->drawGroup]->nextInDrawGroup = enemy;
             }
             else
             {
-                drawGroupTails[enemy->drawGroup]->nextInDrawGroup = enemy;
+                enemyManager->drawGroupHeads[enemy->drawGroup] = enemy;
             }
             enemy->nextInDrawGroup = NULL;
             drawGroupTails[enemy->drawGroup] = enemy;

@@ -661,6 +661,34 @@ residuals, and the straightforward destructor is 97 bytes versus a 109-byte
 target. Promote the exact 122/112/104-byte profile/global-lifetime leaves and
 defer those two bodies rather than inserting artificial stack storage.
 
+### Manager snapshots versus ancestral unused locals
+
+`Background::UpdateStageObjectVms @ 0x00402E90` corrects a misleading ancestry
+inference. TH08 declares an unused `unusedQuad`, but the TH095 target actually
+references the disputed dword: immediately before `ExecuteScript` it loads
+`g_AnmManager` into a loop-local `AnmManager *` home and then reloads the VM as
+the call receiver. Preserve that real manager snapshot and use the five
+independently target-proven live-local identifier buckets; VC7.1 then emits all
+208 target bytes and both relocations exactly. When a frame slot is disputed,
+an instruction reference outranks a sibling game's `#pragma var_order` name.
+
+The same audit brought `PhotoEnemyManagerView::OnUpdate @ 0x00415970` to the
+target's complete 448-mnemonic topology without inventing storage. Typed
+`AnmVmId` null/reset operations, overloaded `ZunTimer` comparisons, the literal
+attached-VM interpolation, and positive branch ownership explain real target
+temporaries. Its remaining 32-byte instruction-unreferenced interval is still
+not permission to add dummy locals; exact instruction topology and exact stack
+allocation remain separate facts.
+
+Keep the enemy's three embedded VM-id fields as four-byte POD storage. Making
+them non-trivial `AnmVmId` members adds constructor calls and expands the
+already-exact `PhotoEnemyView` constructor from 641 to 703 bytes. Likewise, do
+not add otherwise-unused inline operations to the shared `AnmVmId.hpp`: VC7.1
+renumbers internal `$Lxxxxx` COFF symbols in unrelated translation units even
+when their machine bytes are unchanged, invalidating reproducible relocation
+manifests. Source-local force-inline typed views preserve both the target
+object lifetime and stable symbol provenance.
+
 
 ### PhotoItem vector-lifetime and shared-tail oracle
 
