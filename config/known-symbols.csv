@@ -384,3 +384,4 @@ address,name,module,confidence,evidence
 0x00455080,th095::PbgArchiveEntry::vector deleting destructor,PbgArchive,exact,IDA target compiler wrapper performs vector/scalar PbgArchiveEntry destruction and conditional delete
 0x00412180,th095::utils::DebugPrint,Utils,exact,Canonical 5-byte empty release-build body plus 119 exact caller relocations and TH08 non-DEBUG source ancestry
 0x00455580,th095::PbgArchive::AllocEntries,PbgArchive,exact,Canonical 524-byte entry-array decoder with ten relocations; TH08 SeekPastString/DeleteArray source ancestry
+0x00455E10,th095::CompressData,Compression,exact,Canonical 1035-byte TH08-ancestral LZSS encoder with 315/315 mnemonics and eight reviewed relocations

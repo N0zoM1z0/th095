@@ -16769,6 +16769,25 @@ relocations = [
   { offset = 0x5C, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUResultSaveDataLifecycleView@1@A", target = 0x004C4E78 },
 ]
 
+[units.compress-data]
+source = "src/Compress.cpp"
+object = "build/matching/Compress.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CompressData"]
+symbol = "?CompressData@th095@@YIPAEPAEHPAH@Z"
+target_address = 0x00455E10
+size = 0x40B
+relocations = [
+  { offset = 0x25, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x52, type = "REL32", symbol = "?InitEncoderState@Lzss@th095@@SIXXZ", target = 0x004565D0 },
+  { offset = 0xAE, type = "DIR32", symbol = "?g_DecompressionRing@th095@@3PAEA", target = 0x004E24A8 },
+  { offset = 0xBE, type = "REL32", symbol = "?InitTree@Lzss@th095@@SIXH@Z", target = 0x00456580 },
+  { offset = 0x154, type = "DIR32", symbol = "?g_DecompressionRing@th095@@3PAEA", target = 0x004E24A8 },
+  { offset = 0x2DE, type = "REL32", symbol = "?DeleteString@Lzss@th095@@SIXH@Z", target = 0x00456770 },
+  { offset = 0x329, type = "DIR32", symbol = "?g_DecompressionRing@th095@@3PAEA", target = 0x004E24A8 },
+  { offset = 0x349, type = "REL32", symbol = "?AddString@Lzss@th095@@SIHHPAH@Z", target = 0x00456650 },
+]
+
 [units.decompress-data]
 source = "src/Decompress.cpp"
 object = "build/matching/Decompress.obj"

@@ -630,3 +630,4 @@ address,name,size,status,match_percent,unit,evidence
 0x0042AAD0,th095::ReleaseResultAnm,20,matching,100.00,photo-release-result-anm,python3 scripts/build.py --unit photo-release-result-anm && python3 scripts/compare-coff-function.py --unit photo-release-result-anm --json
 0x00412180,th095::utils::DebugPrint,5,matching,100.00,utils-debug-print,python3 scripts/build.py --unit utils-debug-print && python3 scripts/compare-coff-function.py --unit utils-debug-print --json
 0x00455580,th095::PbgArchive::AllocEntries,524,matching,100.00,pbg-archive-alloc-entries,python3 scripts/build.py --unit pbg-archive-alloc-entries && python3 scripts/compare-coff-function.py --unit pbg-archive-alloc-entries --json
+0x00455E10,th095::CompressData,1035,matching,100.00,compress-data,python3 scripts/build.py --unit compress-data && python3 scripts/compare-coff-function.py --unit compress-data --json
