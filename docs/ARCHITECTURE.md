@@ -128,6 +128,7 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | `0x0041BA30` | 71 exact authored bytes | PBG filename checksum | exact `CalculateByteChecksum` | Byte-additive filename hash selecting one of eight 0x0C decrypt profiles |
 | `0x0043A600` | 17,018 | 22 callers / 20 internal callees | exact `AnmManager::ExecuteScript` | Widely shared animation VM and type/layout root |
 | `0x00447D00` | 16,066 | 1 caller / 27 internal callees | boundary-reviewed authored scene-selection hub | 12-group scene UI; exact class name unresolved |
+| `0x00430AB0` | 7,271 | five-state camera hub / 29 target callees | structurally complete `UpdatePhotoCamera` / non-exact | Natural VC7.1 body has all 1,565 target instruction mnemonics and all 219 body/table relocation destinations; only the `0x2A0` versus target `0x2D4` compiler-local frame remains |
 | `0x0042C5C0` | 8,560 | 1 caller / 4 internal callees | source-present photo-stage display builder | Repeated TH095 photograph HUD/glyph builder; exact 118-byte VM initializer |
 | `0x00430AB0` | 7,271 | 1 caller / 29 internal callees | source-present camera/photo state machine | Complete TH095 camera semantics; compiler-local residuals deferred |
 | `0x00426BF0` | 6,471 | 1 caller / 17 internal callees | boundary-reviewed authored replay/menu dispatcher | Eleven-function replay/best-shot cluster |

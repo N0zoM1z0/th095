@@ -3,6 +3,16 @@
 namespace th095
 {
 
+struct PhotoAnmVmIdValue
+{
+    i32 value;
+
+    PhotoAnmVmIdValue(i32 value)
+    {
+        this->value = value;
+    }
+};
+
 struct PhotoEnemyView
 {
     u8 unknown0000[0x28a0];
@@ -126,6 +136,7 @@ extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
+f32 NormalizeAngle(f32 angle);
 
 enum PhotoCameraFlags
 {
@@ -170,11 +181,6 @@ enum PhotoViewfinderDirection
     PHOTO_DIRECTION_DOWN_RIGHT = 8,
 };
 
-static inline bool PhotoSoundsEnabled()
-{
-    return ((g_PhotoGlobalState->flags >> 9) & 1) == 0;
-}
-
 static inline u16 PhotoInputMask(u16 input, u16 mask)
 {
     return input & mask;
@@ -182,7 +188,6 @@ static inline u16 PhotoInputMask(u16 input, u16 mask)
 
 static inline void SetPhotoVmColor(AnmVm *vm, u8 red, u8 green, u8 blue)
 {
-    vm->color1.a = 0xff;
     vm->color1.r = red;
     vm->color1.g = green;
     vm->color1.b = blue;
@@ -972,22 +977,36 @@ f32 __fastcall PhotoDistance2D(const Float3 *left, const Float3 *right)
         (left->y - right->y) * (left->y - right->y));
 }
 
+__forceinline i32 PhotoAnmVmId::operator==(
+    PhotoAnmVmIdValue other) const
+{
+    return this->value == other.value;
+}
+
+static inline i32 PhotoTimerAdvancedTo(ZunTimer *timer, i32 frame)
+{
+    return timer->current != timer->previous && timer->current == frame;
+}
+
+static __forceinline void NormalizeAndScalePhotoOffset(
+    const Float3 &direction, Float3 *offset, f32 radius)
+{
+    D3DXVec3Normalize(
+        reinterpret_cast<D3DXVECTOR3 *>(offset),
+        reinterpret_cast<const D3DXVECTOR3 *>(&direction));
+    *offset *= radius;
+}
+
 void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
 {
-    PhotoEnemyView *boss = g_PhotoRuntime->enemies[0];
-    Float3 screenPosition;
-    Float3 effectPosition;
-    AnmVm *frameVm;
     i32 chargeDisplay;
-    i32 angleSector;
-    f32 targetAngle;
 
     switch (camera->mode)
     {
     case PHOTO_CAMERA_TRACKING:
-        if ((camera->flags & PHOTO_FLAG_FOCUSED) == 0)
+        if (((camera->flags >> 1) & 1) == 0)
         {
-            if (boss == NULL)
+            if (g_PhotoRuntime->enemies[0] == NULL)
             {
                 camera->cameraOffset = g_PhotoGame->playerPosition;
                 camera->cameraOffset.y -= 64.0f;
@@ -1003,7 +1022,8 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     f32 playerDistance = PhotoDistance2D(
                         &g_PhotoGame->playerPosition, &camera->viewfinderPosition);
                     f32 bossDistance = PhotoDistance2D(
-                        &boss->position, &g_PhotoGame->playerPosition);
+                        &g_PhotoRuntime->enemies[0]->position,
+                        &g_PhotoGame->playerPosition);
                     if (playerDistance < 56.0f)
                     {
                         camera->trackingRadius = 56.0f;
@@ -1012,7 +1032,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     {
                         camera->trackingRadius = playerDistance + 2.0f;
                     }
-                    else if (bossDistance < playerDistance)
+                    else if (playerDistance > bossDistance)
                     {
                         camera->trackingRadius = playerDistance - 2.0f;
                     }
@@ -1030,95 +1050,190 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     camera->trackingRadius += 1.0f;
                 }
 
-                if (g_PhotoGame->cameraTrackingMode == 0)
+                if (g_PhotoGame->cameraTrackingMode != 0)
                 {
-                    Float3 playerDelta;
-                    playerDelta.x = g_PhotoGame->playerPosition.x - camera->previousTrackingOrigin.x;
-                    playerDelta.y = g_PhotoGame->playerPosition.y - camera->previousTrackingOrigin.y;
-                    playerDelta.z = g_PhotoGame->playerPosition.z - camera->previousTrackingOrigin.z;
-                    if (playerDelta.x * playerDelta.x + playerDelta.y * playerDelta.y >= 0.1f)
+                    camera->cameraOffset =
+                        g_PhotoRuntime->enemies[0]->position -
+                        g_PhotoGame->playerPosition;
+                    NormalizeAndScalePhotoOffset(
+                        camera->cameraOffset,
+                        &camera->cameraOffset,
+                        camera->trackingRadius);
+                }
+                else
+                {
+                    Float3 playerDelta =
+                        g_PhotoGame->playerPosition -
+                        camera->previousTrackingOrigin;
+                    f32 targetAngle;
+                    if (playerDelta.x * playerDelta.x + playerDelta.y * playerDelta.y < 0.1f)
                     {
-                        targetAngle = atan2f(playerDelta.y, playerDelta.x);
+                        targetAngle = g_PhotoGame->AngleToPoint(
+                            &g_PhotoRuntime->enemies[0]->position);
                     }
                     else
                     {
-                        targetAngle = g_PhotoGame->AngleToPoint(&boss->position);
+                        targetAngle = atan2f(playerDelta.y, playerDelta.x);
                     }
-                    targetAngle = AddNormalizeAngle(targetAngle - camera->trackingAngle, 0.0f);
+                    targetAngle = NormalizeAngle(
+                        targetAngle - camera->trackingAngle);
                     camera->trackingAngle += targetAngle * 0.04f;
                     camera->cameraOffset.FromAngleMagnitude(
                         camera->trackingAngle, camera->trackingRadius);
                 }
-                else
-                {
-                    camera->cameraOffset.x = boss->position.x - g_PhotoGame->playerPosition.x;
-                    camera->cameraOffset.y = boss->position.y - g_PhotoGame->playerPosition.y;
-                    camera->cameraOffset.z = boss->position.z - g_PhotoGame->playerPosition.z;
-                    D3DXVec3Normalize(
-                        reinterpret_cast<D3DXVECTOR3 *>(&camera->cameraOffset),
-                        reinterpret_cast<D3DXVECTOR3 *>(&camera->cameraOffset));
-                    camera->cameraOffset.x *= camera->trackingRadius;
-                    camera->cameraOffset.y *= camera->trackingRadius;
-                    camera->cameraOffset.z *= camera->trackingRadius;
-                }
-                camera->cameraOffset += g_PhotoGame->playerPosition;
+                camera->cameraOffset =
+                    g_PhotoGame->playerPosition + camera->cameraOffset;
                 camera->previousTrackingOrigin = g_PhotoGame->playerPosition;
             }
 
-            if (g_PhotoGame->cameraTrackingMode == 0)
+            if (g_PhotoGame->cameraTrackingMode != 0)
             {
-                Float3 delta;
-                delta.x = camera->cameraOffset.x - camera->viewfinderPosition.x;
-                delta.y = camera->cameraOffset.y - camera->viewfinderPosition.y;
-                delta.z = camera->cameraOffset.z - camera->viewfinderPosition.z;
-                camera->viewfinderPosition.x += delta.x * 0.4f;
-                camera->viewfinderPosition.y += delta.y * 0.4f;
-                camera->viewfinderPosition.z += delta.z * 0.4f;
+                camera->viewfinderPosition =
+                    (camera->cameraOffset - camera->viewfinderPosition) *
+                        0.4f +
+                    camera->viewfinderPosition;
+                Float3 angleDelta =
+                    camera->viewfinderPosition -
+                    g_PhotoGame->playerPosition;
+                camera->trackingAngle = atan2f(angleDelta.y, angleDelta.x);
+            }
+            else if (g_PhotoGame->movementState != 0)
+            {
+                camera->viewfinderPosition =
+                    (camera->cameraOffset - camera->viewfinderPosition) *
+                        0.4f +
+                    camera->viewfinderPosition;
             }
             else
             {
-                Float3 delta;
-                delta.x = camera->cameraOffset.x - camera->viewfinderPosition.x;
-                delta.y = camera->cameraOffset.y - camera->viewfinderPosition.y;
-                delta.z = camera->cameraOffset.z - camera->viewfinderPosition.z;
-                camera->viewfinderPosition.x += delta.x * 0.4f;
-                camera->viewfinderPosition.y += delta.y * 0.4f;
-                camera->viewfinderPosition.z += delta.z * 0.4f;
-                camera->trackingAngle = atan2f(
-                    camera->viewfinderPosition.y - g_PhotoGame->playerPosition.y,
-                    camera->viewfinderPosition.x - g_PhotoGame->playerPosition.x);
+                camera->viewfinderPosition =
+                    (camera->cameraOffset - camera->viewfinderPosition) *
+                        0.4f +
+                    camera->viewfinderPosition;
             }
         }
         else
         {
             camera->cameraOffset = g_PhotoGame->playerPosition;
-            Float3 delta;
-            delta.x = camera->cameraOffset.x - camera->viewfinderPosition.x;
-            delta.y = camera->cameraOffset.y - camera->viewfinderPosition.y;
-            delta.z = camera->cameraOffset.z - camera->viewfinderPosition.z;
-            camera->viewfinderPosition.x += delta.x * 0.4f;
-            camera->viewfinderPosition.y += delta.y * 0.4f;
-            camera->viewfinderPosition.z += delta.z * 0.4f;
+            camera->viewfinderPosition =
+                (camera->cameraOffset - camera->viewfinderPosition) * 0.4f +
+                camera->viewfinderPosition;
         }
 
-        if (camera->viewfinderPosition.x <= -176.0f)
+        if (camera->viewfinderPosition.x < -176.0f)
             camera->viewfinderPosition.x = -176.0f;
         else if (camera->viewfinderPosition.x > 176.0f)
             camera->viewfinderPosition.x = 176.0f;
-        if (camera->viewfinderPosition.y <= 16.0f)
+        if (camera->viewfinderPosition.y < 16.0f)
             camera->viewfinderPosition.y = 16.0f;
         else if (camera->viewfinderPosition.y > 432.0f)
             camera->viewfinderPosition.y = 432.0f;
-        goto updateCharge;
+
+updateCharge:
+        camera->UpdateCharge();
+        if (camera->auxiliaryTimer >= 60)
+        {
+            if (camera->charge >= 1.0f)
+            {
+                if (((camera->flags >> 3) & 3) != 1)
+                {
+                    if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+                    {
+                        PhotoSoundPlayer()->PlaySoundByIdx(0x2b, 0);
+                    }
+                    if (camera->vmIds[10])
+                    {
+                        PhotoAnmManager()->RemoveVm(camera->vmIds[10].value);
+                        camera->vmIds[10].value = PreservePhotoId(0);
+                    }
+                    if (camera->vmIds[9] == PhotoAnmVmIdValue(0))
+                    {
+                        camera->vmIds[9] =
+                            g_PhotoStageState->anm->CreateVm(0x1f, 0);
+                    }
+                    camera->vmIds[0].SetInterrupt(2);
+                    camera->vmIds[1].SetInterrupt(2);
+                    camera->flags =
+                        (camera->flags & ~PHOTO_FLAG_CHARGE_UI_MASK) |
+                        (1 << 3);
+                    camera->viewfinderVms[0].pendingInterrupt = 2;
+                    camera->viewfinderVms[1].pendingInterrupt = 2;
+                    camera->viewfinderVms[2].pendingInterrupt = 2;
+                    camera->viewfinderVms[3].pendingInterrupt = 2;
+                }
+                camera->viewfinderSize.x = 256.0f;
+                camera->viewfinderSize.y = 192.0f;
+                camera->viewfinderSize.z = 0.0f;
+                if (camera->CountPhotoTargets(NULL, NULL) != 0)
+                {
+                    AnmVm *frameVm = camera->vmIds[0].GetVm();
+                    SetPhotoVmColor(frameVm, 0xff, 0x20, 0x20);
+                }
+                else
+                {
+                    AnmVm *frameVm = camera->vmIds[0].GetVm();
+                    SetPhotoVmColor(frameVm, 0xff, 0xff, 0xff);
+                }
+            }
+            else
+            {
+                if (((camera->flags >> 3) & 3) != 0)
+                {
+                    if (camera->vmIds[9])
+                    {
+                        PhotoAnmManager()->RemoveVm(camera->vmIds[9].value);
+                        camera->vmIds[9].value = PreservePhotoId(0);
+                    }
+                    if (camera->vmIds[10] == PhotoAnmVmIdValue(0))
+                    {
+                        camera->vmIds[10] =
+                            g_PhotoStageState->anm->CreateVm(0x20, 0);
+                    }
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[0].value, 3);
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[1].value, 3);
+                    camera->flags &= ~PHOTO_FLAG_CHARGE_UI_MASK;
+                    camera->viewfinderVms[0].pendingInterrupt = 3;
+                    camera->viewfinderVms[1].pendingInterrupt = 3;
+                    camera->viewfinderVms[2].pendingInterrupt = 3;
+                    camera->viewfinderVms[3].pendingInterrupt = 3;
+                    AnmVm *frameVm = camera->vmIds[0].GetVm();
+                    SetPhotoVmColor(frameVm, 0xff, 0xff, 0xff);
+                }
+            }
+        }
+
+        if (PhotoInputMask(g_PhotoInputPressed, 2) != 0)
+            camera->captureRequested = 1;
+        else if (PhotoInputMask(g_PhotoInput, 2) == 0)
+            camera->captureRequested = 0;
+        else if (PhotoInputMask(g_PhotoInput, 1) != 0 &&
+                 PhotoInputMask(g_PhotoInput, 2) != 0)
+            camera->captureRequested = 1;
+
+        if (((camera->flags >> 1) & 1) == 0 &&
+            camera->charge >= 1.0f &&
+            PhotoInputMask(g_PhotoInput, 2) != 0 &&
+            PhotoInputMask(g_PhotoInput, 1) == 0 &&
+            camera->captureRequested != 0 &&
+            (camera->focusHeldFrames > 4 ||
+             PhotoInputMask(g_PhotoInputPressed, 2) != 0))
+        {
+            camera->BeginCapture();
+            camera->flags |= PHOTO_FLAG_TARGET_FRAME_ACTIVE;
+            goto cameraActive;
+        }
+        goto finish;
 
     case PHOTO_CAMERA_CHARGING:
         camera->UpdateViewfinder();
-        if ((g_PhotoInput & 2) == 0)
+        if (PhotoInputMask(g_PhotoInput, 2) == 0)
         {
             camera->TakePhoto();
             break;
         }
-        if (camera->modeTimer.current >= 4)
+        if (camera->modeTimer >= 4)
         {
             camera->charge -= 1.0f / 42.0f;
         }
@@ -1127,53 +1242,140 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
             camera->CancelCapture();
             break;
         }
-        if (!PhotoSoundsEnabled())
+        if (((g_PhotoGlobalState->flags >> 9) & 1) != 0)
         {
             PhotoSoundPlayer()->StopSoundByIdx(0x2c);
         }
-        goto cameraActive;
+
+cameraActive:
+        {
+            f32 targetAngle =
+                g_PhotoGame->AngleToPoint(&camera->viewfinderPosition);
+            targetAngle += 0.3926991f;
+            if (targetAngle < 0.0f)
+                targetAngle += 6.2831855f;
+            i32 angleSector = (i32)(targetAngle / 0.7853982f);
+            g_PhotoGame->effectAnm->SetAndExecuteScriptIdx(
+                &g_PhotoGame->effectVm, 5);
+            g_PhotoGame->effectAnm->SetSprite(
+                &g_PhotoGame->effectVm, angleSector + 0x18);
+
+            if (camera->CountPhotoTargets(NULL, NULL) != 0)
+            {
+                if (((camera->flags >> 6) & 1) == 0)
+                {
+                    if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+                        PhotoSoundPlayer()->PlaySoundByIdx(0x2e, 0);
+                    camera->flags |= PHOTO_FLAG_TARGET_SOUND_PLAYED;
+                }
+                if (((camera->flags >> 2) & 1) == 0)
+                {
+                    AnmVm *frameVm = camera->vmIds[0].GetVm();
+                    SetPhotoVmColor(frameVm, 0xff, 0x20, 0x20);
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[2].value, 2);
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[3].value, 2);
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[4].value, 2);
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[5].value, 2);
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[6].value, 2);
+                    camera->flags |= PHOTO_FLAG_TARGET_FRAME_ACTIVE;
+                }
+            }
+            else
+            {
+                camera->flags &= ~PHOTO_FLAG_TARGET_SOUND_PLAYED;
+                if (((camera->flags >> 2) & 1) != 0)
+                {
+                    AnmVm *frameVm = camera->vmIds[0].GetVm();
+                    SetPhotoVmColor(frameVm, 0xff, 0xff, 0xff);
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[2].value, 3);
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[3].value, 3);
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[4].value, 3);
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[5].value, 3);
+                    PhotoAnmManager()->SetVmInterrupt(
+                        camera->vmIds[6].value, 3);
+                    camera->flags &= ~PHOTO_FLAG_TARGET_FRAME_ACTIVE;
+                }
+            }
+
+            g_PhotoBulletManager->BeginPhotoCapture(
+                &camera->viewfinderPosition, &camera->viewfinderSize);
+            if (camera->charge >= 0.35f)
+            {
+                g_AnmGameSpeed = 0.25f;
+                PhotoBulletManagerView *bulletManager = g_PhotoBulletManager;
+                bulletManager->photoColor.color = 0x60404040;
+            }
+            else
+            {
+                f32 slowRate = (0.35f - camera->charge) / 0.35f;
+                g_AnmGameSpeed = slowRate * 0.75f + 0.25f;
+                ZunColor captureColor;
+                captureColor.r = (u8)(32.0f * slowRate) + 0x60;
+                captureColor.r = (u8)(64.0f * slowRate) + 0x40;
+                captureColor.g = (u8)(64.0f * slowRate) + 0x40;
+                captureColor.b = (u8)(64.0f * slowRate) + 0x40;
+                PhotoBulletManagerView *bulletManager = g_PhotoBulletManager;
+                bulletManager->photoColor.color = captureColor.color;
+            }
+        }
+        goto finish;
 
     case PHOTO_CAMERA_CAPTURED:
-        if (camera->modeTimer.current != camera->modeTimer.previous &&
-            camera->modeTimer.current == 20)
+    {
+        if (PhotoTimerAdvancedTo(&camera->modeTimer, 20) != 0)
         {
-            if (g_PhotoGame->movementState >= 0 && g_PhotoGame->movementState <= 2)
+            if (g_PhotoGame->movementState == 0 ||
+                g_PhotoGame->movementState == 1 ||
+                g_PhotoGame->movementState == 2)
             {
                 g_PhotoGame->effectAnm->InitializeVm(&g_PhotoGame->effectVm, 0);
             }
             if ((camera->flags & PHOTO_FLAG_ALTERNATE_CAPTURE) != 0)
             {
-                if (PhotoSoundsEnabled())
+                if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
                 {
                     PhotoSoundPlayer()->PlaySoundPositionedByIdx(
                         0x21, camera->viewfinderPosition.x);
                 }
-                PhotoToScreen(&effectPosition, &g_PhotoGame->playerPosition);
-                PhotoAnmVmId effect = g_PhotoStageState->anm->CreateVm(0x21, 0);
-                PhotoAnmManager()->SetVmPosition(effect.value, &effectPosition);
+                Float3 effectPosition;
+                reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition(
+                    g_PhotoStageState->anm->CreateVm(0x21, 0).value,
+                    PhotoToScreen(
+                        &effectPosition, &g_PhotoGame->playerPosition));
             }
             else
             {
-                if (PhotoSoundsEnabled())
+                if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
                 {
                     PhotoSoundPlayer()->PlaySoundPositionedByIdx(
                         0x25, camera->viewfinderPosition.x);
                 }
-                PhotoToScreen(&effectPosition, &g_PhotoGame->playerPosition);
-                PhotoAnmVmId effect = g_PhotoStageState->anm->CreateVm(0x22, 0);
-                PhotoAnmManager()->SetVmPosition(effect.value, &effectPosition);
+                Float3 effectPosition;
+                reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition(
+                    g_PhotoStageState->anm->CreateVm(0x22, 0).value,
+                    PhotoToScreen(
+                        &effectPosition, &g_PhotoGame->playerPosition));
             }
         }
-        if (camera->modeTimer.current >= 60)
+        if (camera->modeTimer >= 60)
         {
             camera->mode = PHOTO_CAMERA_RECOVERING;
-            camera->modeTimer.Initialize();
-            camera->charge = 0.0f;
+            camera->modeTimer = 0;
         }
         break;
+    }
 
     case PHOTO_CAMERA_RECOVERING:
-        if (camera->modeTimer.current >= 20)
+        if (camera->modeTimer >= 20)
         {
             camera->mode = PHOTO_CAMERA_TRACKING;
         }
@@ -1181,161 +1383,20 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
 
     case PHOTO_CAMERA_DISABLED:
         camera->charge = 0.0f;
-        if (camera->vmIds[0].value != 0)
+        if (camera->vmIds[0])
         {
             PhotoAnmManager()->SetVmInterrupt(camera->vmIds[0].value, 1);
             PhotoAnmManager()->SetVmInterrupt(camera->vmIds[1].value, 1);
-            camera->vmIds[0].value = 0;
-            camera->vmIds[1].value = 0;
+            camera->vmIds[0].value = PreservePhotoId(0);
+            camera->vmIds[1].value = PreservePhotoId(0);
         }
         break;
     }
-    goto finish;
-
-updateCharge:
-    camera->UpdateCharge();
-    if (camera->auxiliaryTimer.current >= 60)
-    {
-        if (camera->charge < 1.0f)
-        {
-            if ((camera->flags & PHOTO_FLAG_CHARGE_UI_MASK) != 0)
-            {
-                if (camera->vmIds[9].value != 0)
-                {
-                    PhotoAnmManager()->RemoveVm(camera->vmIds[9].value);
-                    camera->vmIds[9].value = 0;
-                }
-                if (camera->vmIds[10].value == 0)
-                {
-                    camera->vmIds[10] = g_PhotoStageState->anm->CreateVm(0x20, 0);
-                }
-                PhotoAnmManager()->SetVmInterrupt(camera->vmIds[0].value, 3);
-                PhotoAnmManager()->SetVmInterrupt(camera->vmIds[1].value, 3);
-                camera->flags &= ~PHOTO_FLAG_CHARGE_UI_MASK;
-                for (i32 i = 0; i < 4; ++i)
-                {
-                    camera->viewfinderVms[i].pendingInterrupt = 3;
-                }
-                frameVm = camera->vmIds[0].GetVm();
-                SetPhotoVmColor(frameVm, 0xff, 0xff, 0xff);
-            }
-        }
-        else
-        {
-            if ((camera->flags & PHOTO_FLAG_CHARGE_UI_MASK) != (1 << 3))
-            {
-                if (PhotoSoundsEnabled())
-                {
-                    PhotoSoundPlayer()->PlaySoundByIdx(0x2b, 0);
-                }
-                if (camera->vmIds[10].value != 0)
-                {
-                    PhotoAnmManager()->RemoveVm(camera->vmIds[10].value);
-                    camera->vmIds[10].value = 0;
-                }
-                if (camera->vmIds[9].value == 0)
-                {
-                    camera->vmIds[9] = g_PhotoStageState->anm->CreateVm(0x1f, 0);
-                }
-                camera->vmIds[0].SetInterrupt(2);
-                camera->vmIds[1].SetInterrupt(2);
-                camera->flags = (camera->flags & ~PHOTO_FLAG_CHARGE_UI_MASK) | (1 << 3);
-                for (i32 i = 0; i < 4; ++i)
-                {
-                    camera->viewfinderVms[i].pendingInterrupt = 2;
-                }
-            }
-            camera->viewfinderSize.x = 256.0f;
-            camera->viewfinderSize.y = 192.0f;
-            camera->viewfinderSize.z = 0.0f;
-            frameVm = camera->vmIds[0].GetVm();
-            if (camera->CountPhotoTargets(NULL, NULL) == 0)
-                SetPhotoVmColor(frameVm, 0xff, 0xff, 0xff);
-            else
-                SetPhotoVmColor(frameVm, 0x20, 0x20, 0xff);
-        }
-    }
-
-    if ((g_PhotoInputPressed & 2) != 0)
-        camera->captureRequested = 1;
-    else if ((g_PhotoInput & 2) == 0)
-        camera->captureRequested = 0;
-    else if ((g_PhotoInput & 3) == 3)
-        camera->captureRequested = 1;
-
-    if ((camera->flags & PHOTO_FLAG_FOCUSED) == 0 &&
-        camera->charge >= 1.0f &&
-        (g_PhotoInput & 2) != 0 &&
-        (g_PhotoInput & 1) == 0 &&
-        camera->captureRequested != 0 &&
-        (camera->focusHeldFrames >= 5 || (g_PhotoInputPressed & 2) != 0))
-    {
-        camera->BeginCapture();
-        camera->flags |= PHOTO_FLAG_TARGET_FRAME_ACTIVE;
-
-cameraActive:
-        targetAngle = g_PhotoGame->AngleToPoint(&camera->viewfinderPosition) + 0.3926991f;
-        if (targetAngle < 0.0f)
-            targetAngle += 6.2831855f;
-        angleSector = (i32)(targetAngle / 0.7853982f);
-        g_PhotoGame->effectVm.anmFile =
-            reinterpret_cast<AnmLoaded *>(g_PhotoGame->effectAnm);
-        g_PhotoGame->effectVm.scriptIndex = 5;
-        g_PhotoGame->effectAnm->SetAndExecuteScript(
-            &g_PhotoGame->effectVm, g_PhotoGame->effectAnm->scripts[5]);
-        g_PhotoGame->effectAnm->SetSprite(&g_PhotoGame->effectVm, angleSector + 0x18);
-
-        if (camera->CountPhotoTargets(NULL, NULL) == 0)
-        {
-            camera->flags &= ~PHOTO_FLAG_TARGET_SOUND_PLAYED;
-            if ((camera->flags & PHOTO_FLAG_TARGET_FRAME_ACTIVE) != 0)
-            {
-                frameVm = camera->vmIds[0].GetVm();
-                SetPhotoVmColor(frameVm, 0xff, 0xff, 0xff);
-                for (i32 i = 2; i <= 6; ++i)
-                    PhotoAnmManager()->SetVmInterrupt(camera->vmIds[i].value, 3);
-                camera->flags &= ~PHOTO_FLAG_TARGET_FRAME_ACTIVE;
-            }
-        }
-        else
-        {
-            if ((camera->flags & PHOTO_FLAG_TARGET_SOUND_PLAYED) == 0)
-            {
-                if (PhotoSoundsEnabled())
-                    PhotoSoundPlayer()->PlaySoundByIdx(0x2e, 0);
-                camera->flags |= PHOTO_FLAG_TARGET_SOUND_PLAYED;
-            }
-            if ((camera->flags & PHOTO_FLAG_TARGET_FRAME_ACTIVE) == 0)
-            {
-                frameVm = camera->vmIds[0].GetVm();
-                SetPhotoVmColor(frameVm, 0x20, 0x20, 0xff);
-                for (i32 i = 2; i <= 6; ++i)
-                    PhotoAnmManager()->SetVmInterrupt(camera->vmIds[i].value, 2);
-                camera->flags |= PHOTO_FLAG_TARGET_FRAME_ACTIVE;
-            }
-        }
-
-        g_PhotoBulletManager->BeginPhotoCapture(
-            &camera->viewfinderPosition, &camera->viewfinderSize);
-        if (camera->charge >= 0.35f)
-        {
-            g_AnmGameSpeed = 0.25f;
-            g_PhotoBulletManager->photoColor.color = 0x60404040;
-        }
-        else
-        {
-            f32 slowRate = (0.35f - camera->charge) / 0.35f;
-            g_AnmGameSpeed = slowRate * 0.75f + 0.25f;
-            g_PhotoBulletManager->photoColor.a = (u8)(slowRate * 32.0f) + 0x60;
-            g_PhotoBulletManager->photoColor.r = (u8)(slowRate * 64.0f) + 0x40;
-            g_PhotoBulletManager->photoColor.g = (u8)(slowRate * 64.0f) + 0x40;
-            g_PhotoBulletManager->photoColor.b = (u8)(slowRate * 64.0f) + 0x40;
-        }
-    }
-
 finish:
-    PhotoToScreen(&screenPosition, &camera->viewfinderPosition);
-    PhotoAnmManager()->SetVmPosition(camera->vmIds[0].value, &screenPosition);
+    Float3 screenPosition;
+    reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition(
+        camera->vmIds[0].value,
+        PhotoToScreen(&screenPosition, &camera->viewfinderPosition));
     PhotoAnmManager()->SetVmPosition(camera->vmIds[1].value, &screenPosition);
     PhotoAnmManager()->SetVmPosition(camera->vmIds[9].value, &screenPosition);
     PhotoAnmManager()->SetVmPosition(camera->vmIds[10].value, &screenPosition);
@@ -1346,31 +1407,31 @@ finish:
         PhotoAnmManager()->SetVmInterrupt(camera->vmIds[9].value, 5);
         PhotoAnmManager()->SetVmInterrupt(camera->vmIds[10].value, 5);
     }
-    for (i32 i = 0; i < 4; ++i)
-    {
-        camera->viewfinderVms[i].positionOffset = screenPosition;
-    }
+    camera->viewfinderVms[0].positionOffset = screenPosition;
+    camera->viewfinderVms[1].positionOffset = screenPosition;
+    camera->viewfinderVms[2].positionOffset = screenPosition;
+    camera->viewfinderVms[3].positionOffset = screenPosition;
 
     chargeDisplay = (i32)(camera->charge * 100.0f);
-    if (chargeDisplay / 100 == 0)
-    {
-        camera->viewfinderVms[0].flagsWord &= ~2U;
-    }
-    else
+    if (chargeDisplay / 100 != 0)
     {
         g_PhotoStageState->anm->SetSprite(
             &camera->viewfinderVms[0], chargeDisplay / 100 + 0xf);
         camera->viewfinderVms[0].flagsWord |= 2;
     }
-    if (chargeDisplay / 10 == 0)
-    {
-        camera->viewfinderVms[1].flagsWord &= ~2U;
-    }
     else
+    {
+        camera->viewfinderVms[0].flagsWord &= ~2U;
+    }
+    if (chargeDisplay / 10 != 0)
     {
         g_PhotoStageState->anm->SetSprite(
             &camera->viewfinderVms[1], chargeDisplay / 10 % 10 + 0xf);
         camera->viewfinderVms[1].flagsWord |= 2;
+    }
+    else
+    {
+        camera->viewfinderVms[1].flagsWord &= ~2U;
     }
     g_PhotoStageState->anm->SetSprite(
         &camera->viewfinderVms[2], chargeDisplay % 10 + 0xf);

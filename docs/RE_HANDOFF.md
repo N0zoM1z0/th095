@@ -1144,14 +1144,24 @@ laser classes directly override their shared target helpers; their identical
 implementations fold to `0x0041E750/0x0041F280`, while the base vtable keeps
 the zero-return defaults at `0x0041D660/0x0041D670`.
 
-The large photo functions remain source-present but non-exact:
-`PhotoCameraState::CalculatePhotoScore @ 0x00433140` has a 2,006-byte probe
-against a 2,219-byte target, and `UpdatePhotoCamera @ 0x00430AB0` has a
-5,559-byte probe against a 7,271-byte target. Their exact dependency families
-are already useful; defer compiler-frame alignment unless a natural
-target-local source-shape improvement appears. Always recalculate coverage
-after origin promotion and never preserve a percentage by withholding
-authored candidates.
+The large photo functions remain source-present but non-exact.
+`PhotoCameraState::CalculatePhotoScore @ 0x00433140` still has a 2,006-byte
+probe against a 2,219-byte target. `UpdatePhotoCamera @ 0x00430AB0` is now a
+much narrower compiler-frame oracle: its natural source body and target are
+both 7,271 bytes, all 1,565 instruction mnemonics occur in the same order, and
+all 214 body plus five adjacent switch-table relocations resolve to the target
+destinations. Normalizing relocation fields, control-flow displacements, and
+EBP-relative compiler homes leaves only the prologue frame immediate:
+`0x2A0` from source versus target `0x2D4`. The remaining raw byte differences
+are consequently compiler-local displacements, not missing gameplay flow.
+Do not add 52 bytes of inert storage or padding. Defer this last allocation
+oracle unless a natural target-local lifetime/source-shape improvement appears.
+The added camera-core source shapes renumbered nine COFF-local labels in the
+already-exact `UpdateViewfinder` object. An offset/type/target audit proved the
+unchanged destinations at `0x00432CE3` and
+`0x00432A00..0x00432A55`; only the manifest symbol spellings were refreshed.
+Always recalculate coverage after origin promotion and never preserve a
+percentage by withholding authored candidates.
 
 This pass also reclassified several tempting residuals as negative compiler
 oracles rather than exact candidates. `PhotoEnemyManagerView` construction
