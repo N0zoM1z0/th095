@@ -171,8 +171,8 @@ critical-section slot loader, 403-byte scan callback, and 21-byte exit setter
 are exact as well. The adjacent five-state Help viewer at `0x00451C80` is also
 canonical exact for 2,358 authored bytes, with its five-entry compiler switch
 table covered by a 2,378-byte comparison extent. The 10,103-byte options state
-machine at `0x0044E4B0` is source-present and
-its controller dependency chain at `0x004193A0..0x00419ADB` is exact for
+machine at `0x0044E4B0` is canonical exact with all 372 relocations; its
+controller dependency chain at `0x004193A0..0x00419ADB` is exact for
 another 1,820 bytes. The complete `Controller::GetInput @ 0x00419AE0` source
 proves TH095's two independently assigned devices, third aggregate input slot,
 and per-bit repeat/pressed/released histories; its seven-byte compiler-shape

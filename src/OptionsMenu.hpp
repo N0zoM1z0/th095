@@ -46,7 +46,7 @@ struct OptionsMenuView
     u8 unknown00f8[0xafc];
     SceneAnmVmIdArray vmIds;
     u8 unknown0e88[0x1c];
-    i8 savedWindowed;
+    u8 savedWindowed;
     u8 unknown0ea5[0x143];
     OptionsControllerBinding controllerBinding;
     u8 unknown0ffa[0x5106];
@@ -66,6 +66,51 @@ struct OptionsMenuView
             digit + 0x66);
     }
 
+    __forceinline void UpdateButton00Sprites()
+    {
+        struct ButtonDigitLocals
+        {
+            i32 onesSprite;
+            i32 tensSprite;
+        } digits;
+        digits.tensSprite = this->controllerBinding.button00 / 10 + 0x66;
+        this->sceneAnm->SetSprite(
+            g_SceneAnmManager->GetVm(this->vmIds[0x74]), digits.tensSprite);
+        digits.onesSprite = this->controllerBinding.button00 % 10 + 0x66;
+        this->sceneAnm->SetSprite(
+            g_SceneAnmManager->GetVm(this->vmIds[0x75]), digits.onesSprite);
+    }
+
+    __forceinline void UpdateButton02Sprites()
+    {
+        struct ButtonDigitLocals
+        {
+            i32 onesSprite;
+            i32 tensSprite;
+        } digits;
+        digits.tensSprite = this->controllerBinding.button02 / 10 + 0x66;
+        this->sceneAnm->SetSprite(
+            g_SceneAnmManager->GetVm(this->vmIds[0x72]), digits.tensSprite);
+        digits.onesSprite = this->controllerBinding.button02 % 10 + 0x66;
+        this->sceneAnm->SetSprite(
+            g_SceneAnmManager->GetVm(this->vmIds[0x73]), digits.onesSprite);
+    }
+
+    __forceinline void UpdateButton06Sprites()
+    {
+        struct ButtonDigitLocals
+        {
+            i32 onesSprite;
+            i32 tensSprite;
+        } digits;
+        digits.tensSprite = this->controllerBinding.button06 / 10 + 0x66;
+        this->sceneAnm->SetSprite(
+            g_SceneAnmManager->GetVm(this->vmIds[0x76]), digits.tensSprite);
+        digits.onesSprite = this->controllerBinding.button06 % 10 + 0x66;
+        this->sceneAnm->SetSprite(
+            g_SceneAnmManager->GetVm(this->vmIds[0x77]), digits.onesSprite);
+    }
+
     __forceinline void UpdateButtonSprites(i32 firstVm, i32 value)
     {
         i32 tensSprite = value / 10 + 0x66;
@@ -79,32 +124,50 @@ struct OptionsMenuView
             onesSprite);
     }
 
-    __forceinline void UpdateVolumeSprites(i32 firstVm, i32 value)
+    __forceinline void UpdateBgmVolumeSprites(i32 value)
     {
-        if (value < 100)
+        if (value >= 100)
         {
-            g_SceneAnmManager->GetVm(
-                this->vmIds[firstVm])->flagsWord &= ~2;
+            g_SceneAnmManager->GetVm(this->vmIds[0x7a])->flagsWord |= 2;
+            this->SetDigitSprite(0x7a, (value / 100) % 10);
         }
         else
         {
-            g_SceneAnmManager->GetVm(
-                this->vmIds[firstVm])->flagsWord |= 2;
-            this->SetDigitSprite(firstVm, (value / 100) % 10);
+            g_SceneAnmManager->GetVm(this->vmIds[0x7a])->flagsWord &= ~2;
         }
+        if (value >= 10)
+        {
+            g_SceneAnmManager->GetVm(this->vmIds[0x7b])->flagsWord |= 2;
+            this->SetDigitSprite(0x7b, (value / 10) % 10);
+        }
+        else
+        {
+            g_SceneAnmManager->GetVm(this->vmIds[0x7b])->flagsWord &= ~2;
+        }
+        this->SetDigitSprite(0x7c, value % 10);
+    }
 
-        if (value < 10)
+    __forceinline void UpdateSfxVolumeSprites(i32 value)
+    {
+        if (value >= 100)
         {
-            g_SceneAnmManager->GetVm(
-                this->vmIds[firstVm + 1])->flagsWord &= ~2;
+            g_SceneAnmManager->GetVm(this->vmIds[0x7e])->flagsWord |= 2;
+            this->SetDigitSprite(0x7e, (value / 100) % 10);
         }
         else
         {
-            g_SceneAnmManager->GetVm(
-                this->vmIds[firstVm + 1])->flagsWord |= 2;
-            this->SetDigitSprite(firstVm + 1, (value / 10) % 10);
+            g_SceneAnmManager->GetVm(this->vmIds[0x7e])->flagsWord &= ~2;
         }
-        this->SetDigitSprite(firstVm + 2, value % 10);
+        if (value >= 10)
+        {
+            g_SceneAnmManager->GetVm(this->vmIds[0x7f])->flagsWord |= 2;
+            this->SetDigitSprite(0x7f, (value / 10) % 10);
+        }
+        else
+        {
+            g_SceneAnmManager->GetVm(this->vmIds[0x7f])->flagsWord &= ~2;
+        }
+        this->SetDigitSprite(0x80, value % 10);
     }
 
     __forceinline void UpdateWindowModeSprites()

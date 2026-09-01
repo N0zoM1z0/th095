@@ -343,15 +343,17 @@
   exact for another 396 bytes: the `0x18`-byte worker at Supervisor `+0x648`
   owns cooperative stop/join and `_beginthreadex` startup, while critical
   section 6 serializes replacement.
-- `OptionsMenuView::Update @ 0x0044E4B0` is now source-present for the complete
-  TH095 seven-row option/key-configuration page. It reconstructs three
-  collision-free joystick bindings, window/fullscreen selection, live BGM/SFX
-  volume updates, all entry/exit ANM transitions, and the display-mode-change
-  return. The pinned VC7.1 body is 10,157 versus the 10,103-byte target, but
-  the static call topology is exact (54 VM lookups, 30 sprite writes, 68 scene
-  interrupts, six VM creations, and seven sound calls). The remaining 54-byte
-  excess is compiler-local digit-sprite allocation and receives no exact
-  credit.
+- `OptionsMenuView::Update @ 0x0044E4B0` is canonical exact for the complete
+  10,103-byte TH095 seven-row option/key-configuration page, including all 372
+  relocations. It reconstructs three collision-free joystick bindings,
+  window/fullscreen selection, live BGM/SFX volume updates, all entry/exit ANM
+  transitions, and the display-mode-change return. Preserve the source-local
+  force-inlined initial-VM producer at both fixed and loop sites. The target
+  local chronology is two inline timer/cursor `this` homes, four `CreateVm`
+  sret homes, then the loop script index; pass the real `initialIndex + 0x6B`
+  expression into the helper. A named helper-side index temporary swaps the
+  final homes, while a nested return helper grows the body. Neither inert
+  storage nor inline assembly is involved.
 - The controller input dependency chain at `0x004193A0..0x00419ADB` is now
   exact for five functions and 1,820 authored bytes, including 67 relocation
   fields. It proves the target-local two-device WinMM/DirectInput selection,
@@ -1156,8 +1158,9 @@ CR/LF plus Shift-JIS lexical signedness. `ReplayInputSource::Update @
 public fields at `+0/+6` and the private history state at `+0x2C..+0x58`. All
 twelve established ReplayManager canonical units were replayed after the shared
 header refactor. Continue prioritizing exact-caller-anchored multi-function
-lanes; the 1,274-byte runtime photo-target counter is currently a 1,133-byte
-semantic probe and should not be ground on without a new source oracle.
+lanes. The adjacent runtime photo-target counter is now canonical exact as
+documented above; retain its non-compound final capture-bound assignment and
+fully-live vector aggregate.
 
 
 The complete ScreenEffect lane at `0x00436760..0x0043778F` is now canonical
@@ -1187,7 +1190,7 @@ causes only compiler-private `$L` symbol renumbering in `main-update-scene-state
 all 1,026 compared target bytes and relocation destinations remain exact, and
 all forty-four Main canonical units replay after the manifest-local symbol refresh.
 
-The next exact batch closes 1,342 authored bytes across four functions. `PhotoStraightLaserView::CountPhotoTargets @ 0x0041E750` is now 614/614 exact by reusing the exact straight-collision shallow local rank and half-size-to-maximum vector lifetime. `Background::Background @ 0x004020C0` is 389/389 exact in isolated `BackgroundLifecycle.cpp`: the target constructs one timer, two four-timer arrays, eight stage VMs and three photo-area VMs before its explicit log/memset/reinitialize/publish body. `Supervisor::Supervisor/~Supervisor @ 0x00426350/0x00426450` add 255+84 exact bytes and prove the global 0x7BC-prefix lifecycle, including two 0xF0 viewport members and worker objects at +0x648/+0x7A0. Both worker constructor calls fold to `0x00454E50`, the same four-dword-zeroing target body as `PbgArchive::PbgArchive`; keep the alias as dependency evidence only and never double-credit the target address. Rotating-laser collision, BoundaryBounce, OptionsMenu, Bullet update, and other documented compiler-hole/branch-hard lanes remain deferred.
+The next exact batch closes 1,342 authored bytes across four functions. `PhotoStraightLaserView::CountPhotoTargets @ 0x0041E750` is now 614/614 exact by reusing the exact straight-collision shallow local rank and half-size-to-maximum vector lifetime. `Background::Background @ 0x004020C0` is 389/389 exact in isolated `BackgroundLifecycle.cpp`: the target constructs one timer, two four-timer arrays, eight stage VMs and three photo-area VMs before its explicit log/memset/reinitialize/publish body. `Supervisor::Supervisor/~Supervisor @ 0x00426350/0x00426450` add 255+84 exact bytes and prove the global 0x7BC-prefix lifecycle, including two 0xF0 viewport members and worker objects at +0x648/+0x7A0. Both worker constructor calls fold to `0x00454E50`, the same four-dword-zeroing target body as `PbgArchive::PbgArchive`; keep the alias as dependency evidence only and never double-credit the target address. Rotating-laser collision, BoundaryBounce, Bullet update, and other documented compiler-hole/branch-hard lanes remain deferred; OptionsMenu is now closed by the canonical 10,103-byte unit above.
 
 The latest exact batch adds 1,022 authored bytes across four functions. `Background::~Background @ 0x00402330` is exact in the lifecycle TU through automatic 3+8 member destruction plus three real force-inlined ownership-free homes; `PhotoOverlayManagerView::Draw @ 0x0042C220` closes the former 366/434 gap by preserving repeated indexed VM expressions; `CPbgFile::ReadWholeFile @ 0x00455BF0` is exact with TH095's simplified malloc/free path and a 12-byte live read-state aggregate; and `PbgArchiveEntry::PbgArchiveEntry @ 0x00452E50` is the relocation-free filename-null ctor used by archive new[]. Keep `AllocEntries` at its improved 511/524 probe until a natural filename-size allocation oracle appears.
 

@@ -632,7 +632,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0044D020,authored,SceneSelect,authored,exact,vc71-scene-preview-text-decoder-2026-08-29
 0x0044D0A0,authored,SceneSelect,authored,high,scene-select-asset-worker-2026-08-29
 0x0044DCA0,authored,ReplayBrowser,authored,exact,ui-inline-temporary-chronology-exact-2026-08-31
-0x0044E4B0,authored,OptionsMenu,authored,high,vc71-options-menu-2026-08-29
+0x0044E4B0,authored,OptionsMenu,authored,exact,vc71-options-menu-update-2026-09-01
 0x00450C30,authored,ReplayBrowser,authored,exact,vc71-exact-replay-browser-load-entries-2026-08-31
 0x00450DD0,authored,SceneSelect,authored,exact,vc71-scene-value-queue-push-2026-08-29
 0x00450E20,authored,ReplayBrowser,authored,exact,vc71-replay-browser-slot-2026-08-29

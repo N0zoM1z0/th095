@@ -19,11 +19,33 @@ inline u16 IsOptionsMenuInputPressed(u16 buttons)
                  ((g_ResultMenuInput & buttons) != 0));
 }
 
+static __forceinline void OptionsCreateFixedVm(OptionsMenuView *menu, i32 scriptIndex)
+{
+    menu->vmIds[scriptIndex] = menu->sceneAnm->CreateVm(scriptIndex, 7);
+}
+
+static __forceinline void OptionsCreateInitialVm(
+    OptionsMenuView *menu, i32 scriptIndex)
+{
+    menu->vmIds[scriptIndex] = menu->sceneAnm->CreateVm(scriptIndex, 7);
+}
+
 ChainCallbackResult OptionsMenuView::Update()
 {
-    i32 i;
-    i16 joystickButton;
-    u8 *joystickButtons;
+    struct ShallowOptionLocals
+    {
+        i32 teardownIndex;
+        u8 *joystickButtons;
+        i16 joystickButton;
+        i32 rightSfxVolume;
+        i32 rightBgmVolume;
+        i32 leftSfxVolume;
+        i32 leftBgmVolume;
+        i32 initialSfxVolume;
+        i32 initialBgmVolume;
+        i32 initialIndex;
+    } shallow;
+
 
     switch (this->state)
     {
@@ -36,36 +58,32 @@ ChainCallbackResult OptionsMenuView::Update()
         this->cursor.wraps = 1;
         this->state = 1;
 
-        this->vmIds[0x68] = this->sceneAnm->CreateVm(0x68, 7);
-        this->vmIds[0x69] = this->sceneAnm->CreateVm(0x69, 7);
+        OptionsCreateInitialVm(this, 0x68);
+        OptionsCreateInitialVm(this, 0x69);
         this->vmIds.SetInterrupt(0x19, 3);
         this->vmIds.SetInterrupt(0x1a, 3);
         this->transitionVm.SetInterrupt(3);
         this->vmIds.SetInterrupt(0x1b, 3);
-        this->vmIds[0x6a] = this->sceneAnm->CreateVm(0x6a, 7);
-        for (i = 0; i < 0x17; i++)
+        OptionsCreateInitialVm(this, 0x6a);
+        for (shallow.initialIndex = 0; shallow.initialIndex < 0x17;
+             shallow.initialIndex++)
         {
-            this->vmIds[i + 0x6b] =
-                this->sceneAnm->CreateVm(i + 0x6b, 7);
+            OptionsCreateInitialVm(this, shallow.initialIndex + 0x6b);
         }
 
         this->savedWindowed = g_OptionsGameConfig.windowed;
         this->UpdateWindowModeSprites();
         this->controllerBinding = g_OptionsGameConfig.controllerBinding;
-        this->UpdateButtonSprites(0x74, this->controllerBinding.button00);
-        this->UpdateButtonSprites(0x72, this->controllerBinding.button02);
-        this->UpdateButtonSprites(0x76, this->controllerBinding.button06);
-        this->UpdateVolumeSprites(0x7a, g_OptionsGameConfig.bgmVolume);
-        this->UpdateVolumeSprites(0x7e, g_OptionsGameConfig.sfxVolume);
+        this->UpdateButton00Sprites();
+        this->UpdateButton02Sprites();
+        this->UpdateButton06Sprites();
+        shallow.initialBgmVolume = g_OptionsGameConfig.bgmVolume;
+        this->UpdateBgmVolumeSprites(shallow.initialBgmVolume);
+        shallow.initialSfxVolume = g_OptionsGameConfig.sfxVolume;
+        this->UpdateSfxVolumeSprites(shallow.initialSfxVolume);
         this->outerFlags &= ~8u;
 
     case 1:
-        break;
-
-    default:
-        return CHAIN_CALLBACK_RESULT_CONTINUE;
-    }
-
     if (this->stateTimer < 30)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -85,7 +103,12 @@ ChainCallbackResult OptionsMenuView::Update()
         this->cursor.Move(1);
     }
 
-    if (!this->cursor.HasChanged())
+    if (this->cursor.HasChanged())
+    {
+        g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
+        this->UpdateSelectionSprites();
+    }
+    else
     {
         if (IsOptionsMenuInputPressed(TH_BUTTON_LEFT))
         {
@@ -106,8 +129,8 @@ ChainCallbackResult OptionsMenuView::Update()
                         g_OptionsGameConfig.bgmVolume = 0;
                     }
                 }
-                this->UpdateVolumeSprites(
-                    0x7a, g_OptionsGameConfig.bgmVolume);
+                shallow.leftBgmVolume = g_OptionsGameConfig.bgmVolume;
+                this->UpdateBgmVolumeSprites(shallow.leftBgmVolume);
                 break;
 
             case 5:
@@ -119,8 +142,8 @@ ChainCallbackResult OptionsMenuView::Update()
                         g_OptionsGameConfig.sfxVolume = 0;
                     }
                 }
-                this->UpdateVolumeSprites(
-                    0x7e, g_OptionsGameConfig.sfxVolume);
+                shallow.leftSfxVolume = g_OptionsGameConfig.sfxVolume;
+                this->UpdateSfxVolumeSprites(shallow.leftSfxVolume);
                 break;
             }
         }
@@ -144,8 +167,8 @@ ChainCallbackResult OptionsMenuView::Update()
                         g_OptionsGameConfig.bgmVolume = 100;
                     }
                 }
-                this->UpdateVolumeSprites(
-                    0x7a, g_OptionsGameConfig.bgmVolume);
+                shallow.rightBgmVolume = g_OptionsGameConfig.bgmVolume;
+                this->UpdateBgmVolumeSprites(shallow.rightBgmVolume);
                 break;
 
             case 5:
@@ -157,8 +180,8 @@ ChainCallbackResult OptionsMenuView::Update()
                         g_OptionsGameConfig.sfxVolume = 100;
                     }
                 }
-                this->UpdateVolumeSprites(
-                    0x7e, g_OptionsGameConfig.sfxVolume);
+                shallow.rightSfxVolume = g_OptionsGameConfig.sfxVolume;
+                this->UpdateSfxVolumeSprites(shallow.rightSfxVolume);
                 break;
             }
         }
@@ -170,121 +193,125 @@ ChainCallbackResult OptionsMenuView::Update()
             g_SoundPlayer.PlaySoundByIdx(SOUND_TAKE_PHOTO, 0);
         }
 
-        joystickButtons = Controller::GetControllerState(0);
-        joystickButton = 0;
-        while (joystickButton < 0x20)
+        shallow.joystickButtons = Controller::GetControllerState(0);
+        for (shallow.joystickButton = 0;
+             shallow.joystickButton < 0x20;
+             shallow.joystickButton++)
         {
-            if ((joystickButtons[joystickButton] & 0x80) != 0)
+            if ((shallow.joystickButtons[shallow.joystickButton] & 0x80) != 0)
             {
                 break;
             }
-            joystickButton++;
         }
-        if (joystickButton < 0x20 &&
-            g_OptionsLastJoystickButton != joystickButton)
+        if (shallow.joystickButton < 0x20 &&
+            g_OptionsLastJoystickButton != shallow.joystickButton)
         {
             switch (this->cursor.GetCurrent())
             {
             case 0:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                if (this->controllerBinding.button06 == joystickButton)
+                if (this->controllerBinding.button06 == shallow.joystickButton)
                 {
                     this->controllerBinding.button06 =
                         this->controllerBinding.button02;
                 }
-                if (this->controllerBinding.button00 == joystickButton)
+                if (this->controllerBinding.button00 == shallow.joystickButton)
                 {
                     this->controllerBinding.button00 =
                         this->controllerBinding.button02;
                 }
-                this->controllerBinding.button02 = joystickButton;
+                this->controllerBinding.button02 = shallow.joystickButton;
                 break;
 
             case 1:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                if (this->controllerBinding.button06 == joystickButton)
+                if (this->controllerBinding.button06 == shallow.joystickButton)
                 {
                     this->controllerBinding.button06 =
                         this->controllerBinding.button00;
                 }
-                if (this->controllerBinding.button02 == joystickButton)
+                if (this->controllerBinding.button02 == shallow.joystickButton)
                 {
                     this->controllerBinding.button02 =
                         this->controllerBinding.button00;
                 }
-                this->controllerBinding.button00 = joystickButton;
+                this->controllerBinding.button00 = shallow.joystickButton;
                 break;
 
             case 2:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                if (this->controllerBinding.button00 == joystickButton)
+                if (this->controllerBinding.button00 == shallow.joystickButton)
                 {
                     this->controllerBinding.button00 =
                         this->controllerBinding.button06;
                 }
-                if (this->controllerBinding.button02 == joystickButton)
+                if (this->controllerBinding.button02 == shallow.joystickButton)
                 {
                     this->controllerBinding.button02 =
                         this->controllerBinding.button06;
                 }
-                this->controllerBinding.button06 = joystickButton;
+                this->controllerBinding.button06 = shallow.joystickButton;
                 break;
             }
-            this->UpdateButtonSprites(
-                0x74, this->controllerBinding.button00);
-            this->UpdateButtonSprites(
-                0x72, this->controllerBinding.button02);
-            this->UpdateButtonSprites(
-                0x76, this->controllerBinding.button06);
+            this->UpdateButton00Sprites();
+            this->UpdateButton02Sprites();
+            this->UpdateButton06Sprites();
         }
-        g_OptionsLastJoystickButton = joystickButton;
+        g_OptionsLastJoystickButton = shallow.joystickButton;
 
-        if (GetOptionsPressedButtons(TH_BUTTON_SELECTMENU) == 0)
+        if (GetOptionsPressedButtons(TH_BUTTON_ENTER | TH_BUTTON_BOMB) != 0)
         {
-            if (GetOptionsPressedButtons(TH_BUTTON_RETURNMENU) == 0)
+            if (this->cursor.GetCurrent() == 6)
             {
-                return CHAIN_CALLBACK_RESULT_CONTINUE;
+options_finish:
+            this->cursor.Pop();
+            this->requestedState = 1;
+            this->state = 0;
+            this->stateTimer.Reset();
+            this->vmIds.SetInterrupt(0x68, 1);
+            this->vmIds.SetInterrupt(0x69, 1);
+            OptionsCreateFixedVm(this, 0x66);
+            OptionsCreateFixedVm(this, 0x67);
+            this->vmIds.SetInterrupt(0x19, 2);
+            this->vmIds.SetInterrupt(0x1a, 2);
+            this->transitionVm.SetInterrupt(2);
+            this->vmIds.SetInterrupt(0x1b, 2);
+            for (shallow.teardownIndex = 0;
+                 shallow.teardownIndex < 0x17;
+                 shallow.teardownIndex++)
+            {
+                this->vmIds.SetInterrupt(shallow.teardownIndex + 0x6b, 1);
             }
+            this->vmIds.SetInterrupt(0x6a, 1);
+            g_OptionsControllerMapping.primaryBinding = this->controllerBinding;
+            g_OptionsGameConfig.controllerBinding = g_OptionsControllerMapping.primaryBinding;
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            if (this->cursor.GetCurrent() != 6)
+            if (this->savedWindowed != g_OptionsGameConfig.windowed)
+            {
+                return CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR;
+            }
+                break;
+            }
+            else
             {
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
         }
-        else if (this->cursor.GetCurrent() != 6)
+        else
         {
-            return CHAIN_CALLBACK_RESULT_CONTINUE;
-        }
-
-        this->cursor.Pop();
-        this->requestedState = 1;
-        this->state = 0;
-        this->stateTimer.Reset();
-        this->vmIds.SetInterrupt(0x68, 1);
-        this->vmIds.SetInterrupt(0x69, 1);
-        this->vmIds[0x66] = this->sceneAnm->CreateVm(0x66, 7);
-        this->vmIds[0x67] = this->sceneAnm->CreateVm(0x67, 7);
-        this->vmIds.SetInterrupt(0x19, 2);
-        this->vmIds.SetInterrupt(0x1a, 2);
-        this->transitionVm.SetInterrupt(2);
-        this->vmIds.SetInterrupt(0x1b, 2);
-        for (i = 0; i < 0x17; i++)
-        {
-            this->vmIds.SetInterrupt(i + 0x6b, 1);
-        }
-        this->vmIds.SetInterrupt(0x6a, 1);
-        g_OptionsControllerMapping.primaryBinding = this->controllerBinding;
-        g_OptionsGameConfig.controllerBinding = this->controllerBinding;
-        g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-        if (this->savedWindowed != g_OptionsGameConfig.windowed)
-        {
-            return CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR;
+            if (GetOptionsPressedButtons(TH_BUTTON_MENU | TH_BUTTON_SHOOT) != 0)
+            {
+                g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
+                if (this->cursor.GetCurrent() == 6)
+                {
+                    goto options_finish;
+                }
+                return CHAIN_CALLBACK_RESULT_CONTINUE;
+            }
+            break;
         }
     }
-    else
-    {
-        g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
-        this->UpdateSelectionSprites();
+
     }
 
     return CHAIN_CALLBACK_RESULT_CONTINUE;

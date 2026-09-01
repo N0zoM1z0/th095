@@ -456,6 +456,26 @@ lead-byte range tests as unsigned `u8` comparisons.
 
 `PhotoOverlayManagerView::Draw @ 0x0042C220` is now a positive no-hoist oracle. The target keeps six scalar locals and repeatedly materializes the full slot/VM indexed address independently in each color branch and once more for `Draw()`. Hoisting an `AnmVm*` creates a seventh local and shrinks the exact 434-byte target shape to 370 bytes. Keep the repeated indexed expressions. `PhotoRuntimeView::CountPhotoTargets @ 0x004168D0` is now the positive vector-lifetime companion: a gapless 0x3C aggregate owns `{i, enemy, captureMaximum, enemyMaximum, enemyMinimum, captureMinimum, count}` from deep to shallow; the TH08 `Float3::operator/` body is force-inlined at all three half-size sites; and the final capture maximum must be written as `captureMaximum = captureMaximum + *position`, not `+=`. The non-compound form preserves two anonymous 12-byte Float3 return/copy objects, expanding the all-live frame from 0xEC to the target 0x104 without padding.
 
+### Options initial-VM temporary chronology
+
+`OptionsMenuView::Update @ 0x0044E4B0` is a large positive oracle for call-site
+temporary allocation under `/Od /Ob1`. The exact source puts the complete
+`sceneAnm->CreateVm(scriptIndex, 7)` producer in a translation-unit-local
+`__forceinline` helper and calls it at both the fixed initial-VM sites and the
+loop site. The loop passes the real `initialIndex + 0x6B` expression as the
+helper parameter. This preserves the target frame chronology: inline timer and
+cursor `this` homes at `EBP-0x2C/-0x30`, four small-struct-return homes at
+`EBP-0x34..-0x40`, and the loop script-index home at `EBP-0x44`.
+
+The nearby negative probes are equally useful. Direct call-site producers
+front-load the sret homes ahead of earlier scalar source locals. Giving the
+helper a named script-index temporary swaps the last sret/index homes and
+leaves four displacement-byte differences. A nested return helper grows the
+body, and mutating a by-value helper parameter also changes the lowering. Keep
+the source-local producer and real parameter expression; do not emulate the
+target chronology with inert locals or assembly. The canonical unit covers all
+10,103 authored bytes and 372 relocations.
+
 ### Score-file load and shared-runtime source-shape oracles
 
 `ResultSaveDataView::ParseScoreFile @ 0x004356D0` is the positive companion to
