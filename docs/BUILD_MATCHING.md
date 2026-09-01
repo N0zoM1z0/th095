@@ -629,6 +629,27 @@ Two newly exact lifecycle functions show why a short constructor body cannot be 
 
 The matching Background destructor is the inverse ownership oracle. Do not hand-write the three-photo/eight-stage VM destructor loops: ordinary C++ member destruction emits the two target vector-destructor iterators. Three real free arguments pass through `__forceinline FreeBackgroundOwned(void*)`, producing call-site homes at `EBP-0x10/-0x14/-0x18` while `this` stays at `-0x1C`. The reload branch direction is also target-visible.
 
+### Photo-score bitfield and contiguous-local oracle
+
+`PhotoCameraState::CalculatePhotoScore @ 0x00433140` demonstrates that a
+target read/modify/write sequence can encode an original native-bitfield
+assignment rather than a hand-written mask/or expression. With the exact same
+642 mnemonics, spelling score bits 0 and 3 as mask/or expressions rotated VC7.1
+register allocation and produced a 2,222-byte body. Direct assignments through
+the camera and score bitfield views restore the target accumulator chronology
+and the exact 2,219-byte body. Prefer this source shape only when the target
+shows the complete `and mask -> or assigned-bit -> store` sequence and the bit
+positions are independently established.
+
+The same function also proves a legitimate way to recover a dense debug-build
+frame without inert storage: one fully-live scoring aggregate owns the two loop
+indices, two multiplier inputs, preserved count, list head, bullet score, seven
+color counters, presence count, and total score. A separate fully-live bounds
+aggregate owns the player/viewfinder pointers and half extents. Their declared
+order reproduces the target `0x78` frame and every EBP-relative home. Do not
+generalize the aggregate merely from frame size; every member here is read by
+the target scoring/control-flow pipeline.
+
 
 `Supervisor::Supervisor/~Supervisor @ 0x00426350/0x00426450` is the same pattern at a larger ownership boundary. Construction calls `GameConfiguration::Initialize @ +0x11C`, walks two empty `0xF0` viewport members, constructs a timer at `+0x3F4`, and constructs worker members at `+0x648/+0x7A0` before the TH08-ancestral `memset(0x7BC)` plus separate flag sets `0x40` and `0x100`. Both worker ctor relocations resolve to `0x00454E50`, which is byte-identical to the canonical `PbgArchive::PbgArchive` four-dword-zeroing body. Treat that as an ICF/linker-folded alias, not a second function to credit.
 

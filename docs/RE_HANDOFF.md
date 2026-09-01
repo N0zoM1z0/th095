@@ -54,10 +54,11 @@
   root `AnmManager.hpp`. The move passed a complete 58-unit strict replay, and
   the final view rename passed a fresh ECL object comparison. Subsequent ANM
   work passed a complete 61-unit strict replay. The subsequent PhotoCamera
-  lane now contributes nine independently replayable exact units, including
-  the complete 982-byte focus and charging state machine and the 296-byte
-  viewfinder renderer. Its `AnmVm::Draw` dependency is also exact in a bounded
-  26-byte unit used by nine target callers.
+  lane now contributes ten independently replayable exact units, including
+  the complete 2,219-byte photo-score pipeline, 982-byte focus and charging
+  state machine, and 296-byte viewfinder renderer. Its `AnmVm::Draw`
+  dependency is also exact in a bounded 26-byte unit used by nine target
+  callers.
 - The root-level `Global.cpp` now reconstructs the complete intrusive Chain
   core: thirteen exact Chain units cover 2,631 authored bytes, both adjacent
   switch tables, and all 127 relocations. Calc/draw priority insertion,
@@ -99,8 +100,8 @@
   four-state coordinator covers the 60-frame entrance, live photo/camera
   update, completion signaling, staged runtime/bullet/stage shutdown, inline
   ANM execution, and timer advance. Keeping its full `+0x2A18` layout local
-  preserves the compiler label identities of all nine established
-  `PhotoCamera.cpp` units; each one replays unchanged.
+  kept every then-established `PhotoCamera.cpp` unit exact; the current ten
+  units all replay unchanged.
 - The same root-level unit now closes the complete 3,463-byte
   `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` live-play hub exactly.
   It owns eight-direction movement, the focus/extra-slow speed tiers, focus VM
@@ -1144,10 +1145,20 @@ laser classes directly override their shared target helpers; their identical
 implementations fold to `0x0041E750/0x0041F280`, while the base vtable keeps
 the zero-return defaults at `0x0041D660/0x0041D670`.
 
-The large photo functions remain source-present but non-exact.
-`PhotoCameraState::CalculatePhotoScore @ 0x00433140` still has a 2,006-byte
-probe against a 2,219-byte target. `UpdatePhotoCamera @ 0x00430AB0` is now a
-much narrower compiler-frame oracle: its natural source body and target are
+`PhotoCameraState::CalculatePhotoScore @ 0x00433140` is now canonical exact
+for all 2,219 authored bytes and 36 relocations. Its 642-instruction target
+shape is reproduced by one contiguous set of live scoring locals, full-player
+viewfinder containment, seven physically unrolled color-threshold bonuses,
+and direct native-bitfield assignments for camera bit 0 and score bits 0/3.
+Mask/or spellings are semantic equivalents but rotate the VC7.1 accumulator
+registers and grow the body by three bytes. Adding the score control flow
+renumbered the `UpdateViewfinder` switch-base COFF symbol from `$L69294` to
+`$L69342`; an offset/type/target audit proved its relocation remains at
+object offset `0x13C` and still resolves to `0x00432CE3` before the manifest
+identity refresh. All ten accepted `PhotoCamera.cpp` units replay exactly.
+
+The remaining large `UpdatePhotoCamera @ 0x00430AB0` function is a narrow
+compiler-frame oracle: its natural source body and target are
 both 7,271 bytes, all 1,565 instruction mnemonics occur in the same order, and
 all 214 body plus five adjacent switch-table relocations resolve to the target
 destinations. Normalizing relocation fields, control-flow displacements, and
@@ -1156,7 +1167,7 @@ EBP-relative compiler homes leaves only the prologue frame immediate:
 are consequently compiler-local displacements, not missing gameplay flow.
 Do not add 52 bytes of inert storage or padding. Defer this last allocation
 oracle unless a natural target-local lifetime/source-shape improvement appears.
-The added camera-core source shapes renumbered nine COFF-local labels in the
+The earlier camera-core source shapes renumbered nine COFF-local labels in the
 already-exact `UpdateViewfinder` object. An offset/type/target audit proved the
 unchanged destinations at `0x00432CE3` and
 `0x00432A00..0x00432A55`; only the manifest symbol spellings were refreshed.

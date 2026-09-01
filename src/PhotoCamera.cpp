@@ -520,143 +520,161 @@ void PhotoCameraState::CancelCapture()
     PhotoSoundPlayer()->StopSoundByIdx(0x2c);
 }
 
+struct PhotoScoreCameraFlagBits
+{
+    u32 alternateCapture : 1;
+};
+
+struct PhotoScoreDataFlagBits
+{
+    u32 enemy : 1;
+    u32 self : 1;
+    u32 noBullets : 1;
+    u32 bossRate : 1;
+};
+
 i32 PhotoCameraState::CalculatePhotoScore(
     PhotoCapturedBulletView *bulletTargets, i32 *scoreData,
     i32 runtimeTargets, i32 stageTargets)
 {
-    i32 preservedNearbyTargets = scoreData[3];
-    memset(scoreData, 0, sizeof(i32) * 8);
-    scoreData[3] = preservedNearbyTargets;
+    struct PhotoScoreLocals
+    {
+        f32 viewfinderHalfWidth;
+        f32 viewfinderHalfHeight;
+        i32 rainbowIndex;
+        i32 colorfulIndex;
+        f32 bossRate;
+        f32 closestDistance;
+        i32 preservedNearbyTargets;
+        PhotoCapturedBulletView *firstBullet;
+        i32 bulletScore;
+        i32 colorCounts[7];
+        i32 colorPresenceCount;
+        i32 totalScore;
+    } locals;
 
-    i32 colorCounts[9];
-    colorCounts[8] = 0;
-    PhotoCapturedBulletView *firstBullet = bulletTargets;
+    locals.preservedNearbyTargets = scoreData[3];
+    memset(scoreData, 0, sizeof(i32) * 8);
+    scoreData[3] = locals.preservedNearbyTargets;
+    locals.totalScore = 0;
+    locals.firstBullet = bulletTargets;
     scoreData[2] = 0;
-    for (; bulletTargets != NULL; bulletTargets = bulletTargets->next)
+    while (bulletTargets != NULL)
     {
         scoreData[2]++;
-        i32 bulletScore;
         if (bulletTargets->vm == NULL || bulletTargets->vm->scale.y <= 8.0f)
         {
-            bulletScore = 10;
+            locals.bulletScore = 10;
         }
         else if (bulletTargets->vm->scale.y <= 16.0f)
         {
-            bulletScore = 20;
+            locals.bulletScore = 20;
         }
         else if (bulletTargets->vm->scale.y <= 32.0f)
         {
-            bulletScore = 40;
+            locals.bulletScore = 40;
         }
         else if (bulletTargets->vm->scale.y <= 64.0f)
         {
-            bulletScore = 150;
+            locals.bulletScore = 150;
         }
 
         if (bulletTargets->photoScale >= 6.0f)
         {
-            bulletScore *= 4;
+            locals.bulletScore *= 4;
         }
         else if (bulletTargets->photoScale >= 2.0f)
         {
-            bulletScore += (i32)(
-                (f32)bulletScore * (bulletTargets->photoScale - 2.0f) *
+            locals.bulletScore += (i32)(
+                (f32)locals.bulletScore * (bulletTargets->photoScale - 2.0f) *
                 4.0f / 4.0f);
         }
-        bulletScore -= bulletScore % 10;
-        colorCounts[8] += bulletScore;
+        locals.bulletScore -= locals.bulletScore % 10;
+        locals.totalScore += locals.bulletScore;
+        bulletTargets = bulletTargets->next;
     }
 
-    colorCounts[8] += runtimeTargets * 170 + stageTargets * 10;
-    scoreData[1] = colorCounts[8];
+    locals.totalScore += runtimeTargets * 170;
+    locals.totalScore += stageTargets * 10;
+    scoreData[1] = locals.totalScore;
 
-    f32 closestDistance;
-    f32 bossRate;
-    this->flags =
-        (this->flags & ~PHOTO_FLAG_ALTERNATE_CAPTURE) |
-        (this->CountPhotoTargets(&closestDistance, &bossRate) != 0);
-    scoreData[7] =
-        (scoreData[7] & ~PHOTO_SCORE_ENEMY) |
-        (this->flags & PHOTO_FLAG_ALTERNATE_CAPTURE);
+    reinterpret_cast<PhotoScoreCameraFlagBits *>(&this->flags)
+        ->alternateCapture =
+        this->CountPhotoTargets(&locals.closestDistance, &locals.bossRate) != 0;
+    reinterpret_cast<PhotoScoreDataFlagBits *>(&scoreData[7])->enemy =
+        reinterpret_cast<PhotoScoreCameraFlagBits *>(&this->flags)
+            ->alternateCapture;
 
-    f32 closestMultiplier;
-    if (closestDistance >= 48.0f)
-    {
-        closestMultiplier = 1.2f;
-    }
-    else if (closestDistance <= 8.0f)
-    {
-        closestMultiplier = 2.0f;
-    }
-    else
-    {
-        closestMultiplier =
-            2.0f - ((closestDistance - 8.0f) / 88.0f) * 0.8f;
-    }
-    *reinterpret_cast<f32 *>(&scoreData[5]) = closestMultiplier;
+    *reinterpret_cast<f32 *>(&scoreData[5]) =
+        locals.closestDistance >= 96.0f
+            ? 1.2f
+            : (locals.closestDistance <= 8.0f
+                   ? 2.0f
+                   : 2.0f -
+                         ((locals.closestDistance - 8.0f) / 88.0f) * 0.8f);
 
-    scoreData[7] =
-        (scoreData[7] & ~PHOTO_SCORE_BOSS_RATE) |
-        ((bossRate > 0.0f) << 3);
-    f32 bossMultiplier;
-    if (bossRate >= 0.8f)
-    {
-        bossMultiplier = 1.5f;
-    }
-    else
-    {
-        bossMultiplier = bossRate * 0.3f / 0.8f + 1.2f;
-    }
-    *reinterpret_cast<f32 *>(&scoreData[6]) = bossMultiplier;
+    reinterpret_cast<PhotoScoreDataFlagBits *>(&scoreData[7])->bossRate =
+        locals.bossRate > 0.0f;
+    *reinterpret_cast<f32 *>(&scoreData[6]) =
+        locals.bossRate >= 0.8f
+            ? 1.5f
+            : locals.bossRate * 0.3f / 0.8f + 1.2f;
 
-    f32 viewfinderHalfHeight = this->viewfinderSize.y;
-    f32 viewfinderHalfWidth = this->viewfinderSize.x;
-    Float3 *viewfinderPosition = &this->viewfinderPosition;
-    f32 playerHalfHeight = 16.0f;
-    f32 playerHalfWidth = 16.0f;
-    Float3 *playerPosition = &g_PhotoGame->playerPosition;
-    playerHalfWidth *= 0.5f;
-    playerHalfHeight *= 0.5f;
-    viewfinderHalfWidth *= 0.5f;
-    viewfinderHalfHeight *= 0.5f;
-    bool playerInViewfinder =
-        playerPosition->x - playerHalfWidth <=
-            viewfinderPosition->x + viewfinderHalfWidth &&
-        viewfinderPosition->x - viewfinderHalfWidth <=
-            playerPosition->x + playerHalfWidth &&
-        playerPosition->y - playerHalfHeight <=
-            viewfinderPosition->y + viewfinderHalfHeight &&
-        viewfinderPosition->y - viewfinderHalfHeight <=
-            playerPosition->y + playerHalfHeight;
-    if (playerInViewfinder)
+    struct PhotoScoreBoundsLocals
+    {
+        Float3 *playerPosition;
+        f32 playerHalfWidth;
+        f32 playerHalfHeight;
+        Float3 *viewfinderPosition;
+    } bounds;
+    locals.viewfinderHalfHeight = this->viewfinderSize.y;
+    locals.viewfinderHalfWidth = this->viewfinderSize.x;
+    bounds.viewfinderPosition = &this->viewfinderPosition;
+    bounds.playerHalfHeight = 16.0f;
+    bounds.playerHalfWidth = 16.0f;
+    bounds.playerPosition = &g_PhotoGame->playerPosition;
+    bounds.playerHalfWidth *= 0.5f;
+    bounds.playerHalfHeight *= 0.5f;
+    locals.viewfinderHalfWidth *= 0.5f;
+    locals.viewfinderHalfHeight *= 0.5f;
+    if ((bounds.playerPosition->x - bounds.playerHalfWidth >=
+            bounds.viewfinderPosition->x - locals.viewfinderHalfWidth &&
+        bounds.playerPosition->x + bounds.playerHalfWidth <=
+            bounds.viewfinderPosition->x + locals.viewfinderHalfWidth &&
+        bounds.playerPosition->y - bounds.playerHalfHeight >=
+            bounds.viewfinderPosition->y - locals.viewfinderHalfHeight &&
+        bounds.playerPosition->y + bounds.playerHalfHeight <=
+            bounds.viewfinderPosition->y + locals.viewfinderHalfHeight) ? 1 : 0)
     {
         scoreData[7] |= PHOTO_SCORE_SELF;
     }
 
-    if ((scoreData[7] & (PHOTO_SCORE_ENEMY | PHOTO_SCORE_SELF)) !=
-        (PHOTO_SCORE_ENEMY | PHOTO_SCORE_SELF))
+    if (((static_cast<u32>(scoreData[7]) >> 0) & 1) != 0 &&
+        ((static_cast<u32>(scoreData[7]) >> 1) & 1) != 0)
     {
-        if ((scoreData[7] & PHOTO_SCORE_ENEMY) != 0)
+        goto score_flag_done;
+    }
+    if (((static_cast<u32>(scoreData[7]) >> 0) & 1) != 0)
+    {
+        if (scoreData[2] == 0)
         {
-            if (scoreData[2] == 0)
-            {
-                scoreData[7] |= PHOTO_SCORE_NO_BULLETS;
-                colorCounts[8] += 100;
-            }
-        }
-        else if ((scoreData[7] & PHOTO_SCORE_SELF) != 0)
-        {
-            if (scoreData[2] == 0)
-            {
-                scoreData[7] |= PHOTO_SCORE_NO_BULLETS;
-                colorCounts[8] += 100;
-            }
-        }
-        else if (scoreData[2] == 0)
-        {
-            scoreData[7] |= PHOTO_SCORE_EMPTY;
+            scoreData[7] |= PHOTO_SCORE_NO_BULLETS;
+            locals.totalScore += 100;
         }
     }
+    else if (((static_cast<u32>(scoreData[7]) >> 1) & 1) != 0)
+    {
+        if (scoreData[2] == 0)
+        {
+            scoreData[7] |= PHOTO_SCORE_NO_BULLETS;
+            locals.totalScore += 100;
+        }
+    }
+    else if (scoreData[2] == 0)
+    {
+        scoreData[7] |= PHOTO_SCORE_EMPTY;
+    }
+score_flag_done:
 
     if (scoreData[3] > 2)
     {
@@ -665,92 +683,125 @@ i32 PhotoCameraState::CalculatePhotoScore(
         scoreData[7] |= PHOTO_SCORE_NEARBY;
     }
 
-    bulletTargets = firstBullet;
-    colorCounts[0] = 0;
-    colorCounts[1] = 0;
-    colorCounts[2] = 0;
-    colorCounts[3] = 0;
-    colorCounts[4] = 0;
-    colorCounts[5] = 0;
-    colorCounts[6] = 0;
-    for (; bulletTargets != NULL; bulletTargets = bulletTargets->next)
+    bulletTargets = locals.firstBullet;
+    locals.colorCounts[0] = 0;
+    locals.colorCounts[1] = 0;
+    locals.colorCounts[2] = 0;
+    locals.colorCounts[3] = 0;
+    locals.colorCounts[4] = 0;
+    locals.colorCounts[5] = 0;
+    locals.colorCounts[6] = 0;
+    while (bulletTargets != NULL)
     {
-        if (bulletTargets->group < 12)
+        if (bulletTargets->group <= 11)
         {
             if (bulletTargets->kind == 1 || bulletTargets->kind == 2)
-                colorCounts[0]++;
+                locals.colorCounts[0]++;
             else if (bulletTargets->kind == 3 || bulletTargets->kind == 4)
-                colorCounts[1]++;
+                locals.colorCounts[1]++;
             else if (bulletTargets->kind == 5 || bulletTargets->kind == 6)
-                colorCounts[2]++;
+                locals.colorCounts[2]++;
             else if (bulletTargets->kind == 7 || bulletTargets->kind == 8)
-                colorCounts[3]++;
+                locals.colorCounts[3]++;
             else if (bulletTargets->kind == 9 ||
                      bulletTargets->kind == 10 ||
                      bulletTargets->kind == 11)
-                colorCounts[4]++;
+                locals.colorCounts[4]++;
             else if (bulletTargets->kind == 12 || bulletTargets->kind == 13)
-                colorCounts[5]++;
+                locals.colorCounts[5]++;
             else if (bulletTargets->kind == 14)
-                colorCounts[6]++;
+                locals.colorCounts[6]++;
         }
+        bulletTargets = bulletTargets->next;
     }
 
-    for (i32 color = 0; color < 7; color++)
+    if (locals.colorCounts[0] >= 100)
     {
-        if (colorCounts[color] >= 100)
-        {
-            scoreData[7] |= PHOTO_SCORE_COLOR_1 << color;
-            colorCounts[8] += 300;
-        }
+        scoreData[7] |= PHOTO_SCORE_COLOR_1 << 0;
+        locals.totalScore += 300;
+    }
+    if (locals.colorCounts[1] >= 100)
+    {
+        scoreData[7] |= PHOTO_SCORE_COLOR_1 << 1;
+        locals.totalScore += 300;
+    }
+    if (locals.colorCounts[2] >= 100)
+    {
+        scoreData[7] |= PHOTO_SCORE_COLOR_1 << 2;
+        locals.totalScore += 300;
+    }
+    if (locals.colorCounts[3] >= 100)
+    {
+        scoreData[7] |= PHOTO_SCORE_COLOR_1 << 3;
+        locals.totalScore += 300;
+    }
+    if (locals.colorCounts[4] >= 100)
+    {
+        scoreData[7] |= PHOTO_SCORE_COLOR_1 << 4;
+        locals.totalScore += 300;
+    }
+    if (locals.colorCounts[5] >= 100)
+    {
+        scoreData[7] |= PHOTO_SCORE_COLOR_1 << 5;
+        locals.totalScore += 300;
+    }
+    if (locals.colorCounts[6] >= 100)
+    {
+        scoreData[7] |= PHOTO_SCORE_COLOR_1 << 6;
+        locals.totalScore += 300;
     }
 
-    colorCounts[7] = 0;
-    for (i32 color = 0; color < 7; color++)
+    locals.colorPresenceCount = 0;
+    for (locals.colorfulIndex = 0; locals.colorfulIndex < 7;
+         locals.colorfulIndex++)
     {
-        if (colorCounts[color] >= 20)
-            colorCounts[7]++;
+        if (locals.colorCounts[locals.colorfulIndex] >= 20)
+            locals.colorPresenceCount++;
     }
-    if (colorCounts[7] >= 3)
+    if (locals.colorPresenceCount >= 3)
     {
         scoreData[7] |= PHOTO_SCORE_COLORFUL;
-        colorCounts[8] += 900;
+        locals.totalScore += 900;
     }
 
-    colorCounts[7] = 0;
-    for (i32 color = 0; color < 7; color++)
+    locals.colorPresenceCount = 0;
+    for (locals.rainbowIndex = 0; locals.rainbowIndex < 7;
+         locals.rainbowIndex++)
     {
-        if (colorCounts[color] > 0)
-            colorCounts[7]++;
+        if (locals.colorCounts[locals.rainbowIndex] >= 1)
+            locals.colorPresenceCount++;
     }
-    if (colorCounts[7] >= 7)
+    if (locals.colorPresenceCount >= 7)
     {
         scoreData[7] |= PHOTO_SCORE_RAINBOW;
-        colorCounts[8] += 2100;
+        locals.totalScore += 2100;
     }
 
-    if ((scoreData[7] & PHOTO_SCORE_ENEMY) != 0 &&
-        (scoreData[7] & PHOTO_SCORE_SELF) != 0)
+    if (((static_cast<u32>(scoreData[7]) >> 0) & 1) != 0 &&
+        ((static_cast<u32>(scoreData[7]) >> 1) & 1) != 0)
     {
         scoreData[7] |= PHOTO_SCORE_TWO_SHOT;
-        colorCounts[8] = (i32)(
-            (f32)colorCounts[8] * closestMultiplier * 1.5f * 1.2f);
+        locals.totalScore = (i32)(
+            (f32)locals.totalScore *
+            *reinterpret_cast<f32 *>(&scoreData[5]) * 1.5f * 1.2f);
     }
-    else if ((scoreData[7] & PHOTO_SCORE_ENEMY) != 0)
+    else if (((static_cast<u32>(scoreData[7]) >> 0) & 1) != 0)
     {
-        colorCounts[8] = (i32)((f32)colorCounts[8] * closestMultiplier);
+        locals.totalScore = (i32)((f32)locals.totalScore *
+            *reinterpret_cast<f32 *>(&scoreData[5]));
     }
-    else if ((scoreData[7] & PHOTO_SCORE_SELF) != 0)
+    else if (((static_cast<u32>(scoreData[7]) >> 1) & 1) != 0)
     {
-        colorCounts[8] = (i32)((f32)colorCounts[8] * 1.2f);
+        locals.totalScore = (i32)((f32)locals.totalScore * 1.2f);
     }
-    if ((scoreData[7] & PHOTO_SCORE_BOSS_RATE) != 0)
+    if (((static_cast<u32>(scoreData[7]) >> 3) & 1) != 0)
     {
-        colorCounts[8] = (i32)((f32)colorCounts[8] * bossMultiplier);
+        locals.totalScore = (i32)((f32)locals.totalScore *
+            *reinterpret_cast<f32 *>(&scoreData[6]));
     }
-    colorCounts[8] =
-        (i32)((f32)colorCounts[8] * g_PhotoStageState->scoreMultiplier);
-    scoreData[0] = colorCounts[8] - colorCounts[8] % 10;
+    locals.totalScore =
+        (i32)((f32)locals.totalScore * g_PhotoStageState->scoreMultiplier);
+    scoreData[0] = locals.totalScore - locals.totalScore % 10;
     return 0;
 }
 

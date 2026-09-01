@@ -443,7 +443,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004328C0,authored,PhotoCamera,authored,high,ghidra-photo-camera-cluster-2026-08-29
 0x00432D10,authored,PhotoCamera,authored,high,ghidra-photo-camera-cluster-2026-08-29
 0x00433000,authored,PhotoCamera,authored,high,ghidra-photo-camera-cluster-2026-08-29
-0x00433140,authored,PhotoCamera,authored,high,ghidra-photo-score-2026-08-29
+0x00433140,authored,PhotoCamera,authored,exact,photo-calculate-score-exact-2026-09-01
 0x004339F0,authored,PhotoCamera,authored,exact,vc71-photo-count-targets-2026-08-29
 0x00433D10,authored,PhotoCamera,authored,exact,vc71-photo-update-charge-2026-08-29
 0x004340F0,authored,PhotoCamera,authored,exact,vc71-photo-camera-draw-2026-08-29
