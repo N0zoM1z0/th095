@@ -473,3 +473,8 @@ single TH095 code, layout, or behavior claim.
 | LEAF-001 | exact | `ReleaseResultAnm @ 0x0042AAD0` is a 20-byte authored slot-nine ANM release wrapper. It calls `AnmManager::ReleaseAnm(9)` and returns zero; the unique accepted caller is `Supervisor::DeletedCallback`. | Canonical `photo-release-result-anm` unit with both relocations plus exact caller relocation |
 | LEAF-002 | exact | `utils::DebugPrint @ 0x00412180` is an authored empty variadic sink in the release build, not a CRT thunk. | Canonical relocation-free 5-byte unit, 119 accepted caller relocations, and TH08 source where the body is empty without `DEBUG` |
 | LEAF-003 | compiler-owned | `PbgArchiveEntry::vector deleting destructor @ 0x00455080` selects vector/scalar destruction and conditional deallocation from compiler flags. | Attested IDA control flow; excluded from authored denominator |
+### PbgArchive inline-allocation-phase oracle
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| PBG-ALLOC-001 | exact | `PbgArchive::AllocEntries @ 0x00455580` is exact for 524 bytes. Keep `{buffer,i,entryData}` as one fully-live outer aggregate. Restore TH08 `DeleteArray(buffer)` as `if (buffer) { delete[] buffer; buffer = NULL; }`, and restore `SeekPastString(&entryData)` as a bounded source-local inline helper. Its real `filenameSize` local is thereby allocated in the later inline phase at `EBP-0x30`; this rotates all surrounding new[]/delete[] compiler homes into target order without padding. | Canonical `pbg-archive-alloc-entries` unit: 164/164 mnemonics, 484/484 comparable bytes, ten reviewed relocations, plus full maintained-TU replay |

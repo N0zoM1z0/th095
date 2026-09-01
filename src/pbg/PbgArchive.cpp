@@ -197,6 +197,62 @@ entry_read_error:
 #undef pbgReadCompressedSize
 #undef pbgReadProfileIndex
 
+// TH08 calls SeekPastString here. Keeping its filename-size scalar inside a
+// bounded inline helper moves the real scalar into the target late allocation
+// phase without adding storage.
+static __forceinline void AllocEntriesSeekPastString(LPVOID *entryData)
+{
+    i32 filenameSize = (i32)strlen((const char *)*entryData) + 1;
+    if (filenameSize % 4 != 0)
+        filenameSize += 4 - filenameSize % 4;
+    *entryData = (u8 *)*entryData + filenameSize;
+}
+
+// FUNCTION: TH095 0x00455580; TH08 PbgArchive::AllocEntries is the source oracle.
+PbgArchiveEntry *PbgArchive::AllocEntries(
+    LPVOID entryBuffer, i32 count, u32 dataOffset)
+{
+    struct AllocEntriesLocals
+    {
+        PbgArchiveEntry *buffer;
+        i32 i;
+        LPVOID entryData;
+    } locals;
+
+    locals.buffer = NULL;
+    locals.buffer = new PbgArchiveEntry[count + 1]();
+    if (locals.buffer == NULL)
+        goto buffer_alloc_error;
+
+    locals.entryData = entryBuffer;
+    for (locals.i = 0; locals.i < count; locals.i++)
+    {
+        locals.buffer[locals.i].filename =
+            CopyFileName((const char *)locals.entryData);
+        AllocEntriesSeekPastString(&locals.entryData);
+        locals.buffer[locals.i].dataOffset = *(u32 *)locals.entryData;
+        locals.entryData = (u8 *)locals.entryData + 4;
+        locals.buffer[locals.i].decompressedSize = *(u32 *)locals.entryData;
+        locals.entryData = (u8 *)locals.entryData + 4;
+        locals.buffer[locals.i].unconsumedMetadata = *(u32 *)locals.entryData;
+        locals.entryData = (u8 *)locals.entryData + 4;
+    }
+
+    locals.buffer[count].dataOffset = dataOffset;
+    locals.buffer[count].decompressedSize = 0;
+    return locals.buffer;
+
+buffer_alloc_error:
+    // TH08's DeleteArray macro performs all three source operations.  Keeping
+    // the null guard and post-delete reset is required for target cleanup CFG.
+    if (locals.buffer != NULL)
+    {
+        delete[] locals.buffer;
+        locals.buffer = NULL;
+    }
+    return NULL;
+}
+
 // FUNCTION: TH095 0x00455360. TH095 replaces TH08's 12-byte archive header
 // with a fixed 16-byte THA1 header and stores the compressed file table at the
 // end of the archive. All 0x20 bytes in PbgParseLocals are live target state.

@@ -16118,6 +16118,27 @@ relocations = [
   { offset = 0x4B, type = "REL32", symbol = "__stricmp", target = 0x004925AE },
 ]
 
+[units.pbg-archive-alloc-entries]
+source = "src/pbg/PbgArchive.cpp"
+object = "build/matching/PbgArchive.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PbgArchive::AllocEntries"]
+symbol = "?AllocEntries@PbgArchive@th095@@QAEPAUPbgArchiveEntry@2@PAXHI@Z"
+target_address = 0x00455580
+size = 0x20C
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?AllocEntries@PbgArchive@th095@@QAEPAUPbgArchiveEntry@2@PAXHI@Z", target = 0x00493B1B },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x39, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x59, type = "DIR32", symbol = "??1PbgArchiveEntry@th095@@QAE@XZ", target = 0x00455820 },
+  { offset = 0x5E, type = "DIR32", symbol = "??0PbgArchiveEntry@th095@@QAE@XZ", target = 0x00452E50 },
+  { offset = 0x70, type = "REL32", symbol = "??_L@YGXPAXIHP6EX0@Z1@Z", target = 0x004855ED },
+  { offset = 0xD0, type = "REL32", symbol = "?CopyFileName@PbgArchive@th095@@QAEPADPBD@Z", target = 0x00455790 },
+  { offset = 0x1E3, type = "REL32", symbol = "??_EPbgArchiveEntry@th095@@QAEPAXI@Z", target = 0x00455080 },
+  { offset = 0x202, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+]
+
 [units.pbg-archive-copy-file-name]
 source = "src/pbg/PbgArchive.cpp"
 object = "build/matching/PbgArchive.obj"

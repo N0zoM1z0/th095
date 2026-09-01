@@ -691,7 +691,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004552C0,authored,PbgArchive,authored,exact,vc71-pbg-archive-leaves-2026-09-01
 0x004552F0,authored,PbgArchive,authored,exact,vc71-pbg-archive-leaves-2026-09-01
 0x00455360,authored,PbgArchive,authored,exact,vc71-pbg-header-pipeline-2026-09-01
-0x00455580,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00455580,authored,PbgArchive,authored,exact,vc71-pbg-alloc-entries-exact-2026-09-02
 0x00455790,authored,PbgArchive,authored,exact,vc71-pbg-archive-leaves-2026-09-01
 0x00455820,authored,PbgArchive,authored,exact,vc71-compression-pbg-exact-2026-09-01
 0x00455850,authored,PbgFile,authored,exact,vc71-pbg-file-core-2026-09-01

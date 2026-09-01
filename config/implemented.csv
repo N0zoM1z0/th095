@@ -681,3 +681,4 @@ th095::CSound::Play
 th095::CPbgFile::Open
 th095::ReleaseResultAnm
 th095::utils::DebugPrint
+th095::PbgArchive::AllocEntries

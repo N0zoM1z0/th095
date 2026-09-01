@@ -698,3 +698,4 @@ th095::CWaveFile::Close,0x00454E10,function
 th095::CPbgFile::Open,0x00455920,function
 th095::ReleaseResultAnm,0x0042AAD0,function
 th095::utils::DebugPrint,0x00412180,function
+th095::PbgArchive::AllocEntries,0x00455580,function
