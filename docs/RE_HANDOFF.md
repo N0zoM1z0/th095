@@ -912,9 +912,16 @@ three shared camera values, photo color/offset interpolation, cubic Hermite
 camera curves, four cyclic camera-motion modes, screen-fade publication, and
 eight stage-VM controls. Four `ZunTimer` lanes at `+0x20/+0x50/+0x80` own the
 easing state; lane two interpolates the TH095-specific photo tuple at
-`+0x1FEC..+0x200F`. Its natural pinned-VC7.1 body is 4,195 bytes versus the
-5,129-byte target while preserving the complete external-call distribution,
-so it receives no exact credit.
+`+0x1FEC..+0x200F`. A fresh target/source-shape pass removes the former 4,195-
+byte compressed probe: direct repeated `this->stageInstruction` member access,
+component-wise serialized `Float3` writes, target timer conversions, stepwise
+easing, Hermite output pointers, and physical motion-case order 1/2/4/3 now
+produce all 1,100 target instruction mnemonics in exactly the target order.
+The natural source body is 5,229 bytes. Exact credit is still withheld because
+the target `0x1B8` frame owns an entirely instruction-unreferenced 44-byte
+interval at `EBP-0xB8..-0xE0`; the semantic source frame is `0x18C`, leaving
+physical stack-home/displacement differences that must not be modeled with
+inert storage.
 
 The surrounding BackgroundInf lifecycle now has eight canonical units totaling
 1,237 exact authored bytes and 62 relocations. `Background::Create @ 0x004024A0`
@@ -1375,3 +1382,21 @@ instruction-unreferenced dwords at `EBP-0x114/-0x118`; consequently its scoped
 source uses `-0x114/-0x118`.  The exact-sized probe matches 838/970 comparable
 bytes; the bulk of the residual is the repeated deep `this` displacement.  Do
 not model those two dwords as padding or inert locals.
+### 2026-09-02 gpt-web Background stage-interpreter source-shape oracle
+
+The decisive `RunStageScript` recovery is reusable beyond this one function.
+Under VC7.1 `/Od /Ob1`, hoisting a typed object pointer or a serialized-record
+pointer can delete hundreds of bytes even when semantics remain identical.
+For target matching, preserve repeated owner/member expressions when the target
+re-materializes them.  Serialized `Float3` writes in the TH095 stage opcodes
+are scalar x/y/z assignments, not whole-aggregate assignment.  `ZunTimer`
+object-to-int and object-to-float conversions intentionally create the target
+comparison/ratio temporaries.  Multi-step easing must remain multi-step; do not
+collapse algebraically equivalent assignments.  The Hermite branch keeps a
+live output pointer, and switch source order can matter independently of numeric
+case value (TH095 motion blocks are physically 1,2,4,3).
+
+With these source facts, the maintained function and target both contain 1,100
+instructions with identical mnemonic sequence.  Do not chase byte exactness by
+adding storage for target `EBP-0xB8..-0xE0`: all eleven dwords in that 44-byte
+interval are instruction-unreferenced.

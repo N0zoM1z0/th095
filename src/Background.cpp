@@ -913,22 +913,20 @@ i32 Background::LoadStageDataInner(const char *path)
 // TH095-specific photograph-mask/camera interpolation owner.
 i32 Background::RunStageScript()
 {
-    BackgroundStateView *background =
-        reinterpret_cast<BackgroundStateView *>(this);
-    BackgroundStageInstruction *instruction;
+#define background reinterpret_cast<BackgroundStateView *>(this)
+#define instruction (background->stageInstruction)
     i32 interpolationIndex;
     i32 colorIndex;
     f32 interpolationTime;
-    f32 angle;
 
 read_instruction:
-    instruction = background->stageInstruction;
-    if (background->stageScriptTimer >= instruction->time)
+    i32 stageTime = background->stageScriptTimer.current;
+    if (instruction->time <= stageTime)
     {
         switch (instruction->opcode)
         {
         case 0:
-            break;
+            goto interpolate;
 
         case 1:
             background->stageScriptTimer = instruction->args[1];
@@ -938,31 +936,35 @@ read_instruction:
             goto read_instruction;
 
         case 2:
-            g_BackgroundCameraPosition =
-                *reinterpret_cast<Float3 *>(&instruction->args[0]);
+            g_BackgroundCameraPosition.x = *reinterpret_cast<f32 *>(&instruction->args[0]);
+            g_BackgroundCameraPosition.y = *reinterpret_cast<f32 *>(&instruction->args[1]);
+            g_BackgroundCameraPosition.z = *reinterpret_cast<f32 *>(&instruction->args[2]);
             break;
 
         case 3:
             background->interpolationCurrentTimers[0].Initialize();
             background->interpolationEndTimers[0] = instruction->args[0];
-            background->interpolationModes[0] = (u16)instruction->args[1];
+            background->interpolationModes[0] = instruction->args[1];
             background->cameraPositionInitial = g_BackgroundCameraPosition;
-            background->cameraPositionFinal =
-                *reinterpret_cast<Float3 *>(&instruction->args[2]);
+            background->cameraPositionFinal.x = *reinterpret_cast<f32 *>(&instruction->args[2]);
+            background->cameraPositionFinal.y = *reinterpret_cast<f32 *>(&instruction->args[3]);
+            background->cameraPositionFinal.z = *reinterpret_cast<f32 *>(&instruction->args[4]);
             break;
 
         case 4:
-            g_BackgroundCameraLookAt =
-                *reinterpret_cast<Float3 *>(&instruction->args[0]);
+            g_BackgroundCameraLookAt.x = *reinterpret_cast<f32 *>(&instruction->args[0]);
+            g_BackgroundCameraLookAt.y = *reinterpret_cast<f32 *>(&instruction->args[1]);
+            g_BackgroundCameraLookAt.z = *reinterpret_cast<f32 *>(&instruction->args[2]);
             break;
 
         case 5:
             background->interpolationCurrentTimers[1].Initialize();
             background->interpolationEndTimers[1] = instruction->args[0];
-            background->interpolationModes[1] = (u16)instruction->args[1];
+            background->interpolationModes[1] = instruction->args[1];
             background->cameraLookAtInitial = g_BackgroundCameraLookAt;
-            background->cameraLookAtFinal =
-                *reinterpret_cast<Float3 *>(&instruction->args[2]);
+            background->cameraLookAtFinal.x = *reinterpret_cast<f32 *>(&instruction->args[2]);
+            background->cameraLookAtFinal.y = *reinterpret_cast<f32 *>(&instruction->args[3]);
+            background->cameraLookAtFinal.z = *reinterpret_cast<f32 *>(&instruction->args[4]);
             break;
 
         case 6:
@@ -991,7 +993,7 @@ read_instruction:
         case 9:
             background->interpolationCurrentTimers[2].Initialize();
             background->interpolationEndTimers[2] = instruction->args[0];
-            background->interpolationModes[2] = (u16)instruction->args[1];
+            background->interpolationModes[2] = instruction->args[1];
             background->photoBlendInitial = background->photoBlendCurrent;
             background->photoBlendFinal.color.color = instruction->args[2];
             background->photoBlendFinal.x =
@@ -1004,28 +1006,52 @@ read_instruction:
             background->interpolationCurrentTimers[0].Initialize();
             background->interpolationEndTimers[0] = instruction->args[0];
             background->interpolationModes[0] =
-                (u16)instruction->args[1] | 0x800;
+                instruction->args[1] | 0x800;
             background->cameraPositionInitial = g_BackgroundCameraPosition;
-            background->cameraPositionTangentInitial =
-                *reinterpret_cast<Float3 *>(&instruction->args[2]);
-            background->cameraPositionFinal =
-                *reinterpret_cast<Float3 *>(&instruction->args[5]);
-            background->cameraPositionTangentFinal =
-                *reinterpret_cast<Float3 *>(&instruction->args[8]);
+            background->cameraPositionTangentInitial.x =
+                *reinterpret_cast<f32 *>(&instruction->args[2]);
+            background->cameraPositionTangentInitial.y =
+                *reinterpret_cast<f32 *>(&instruction->args[3]);
+            background->cameraPositionTangentInitial.z =
+                *reinterpret_cast<f32 *>(&instruction->args[4]);
+            background->cameraPositionFinal.x =
+                *reinterpret_cast<f32 *>(&instruction->args[5]);
+            background->cameraPositionFinal.y =
+                *reinterpret_cast<f32 *>(&instruction->args[6]);
+            background->cameraPositionFinal.z =
+                *reinterpret_cast<f32 *>(&instruction->args[7]);
+            background->cameraPositionTangentFinal.x =
+                *reinterpret_cast<f32 *>(&instruction->args[8]);
+            background->cameraPositionTangentFinal.y =
+                *reinterpret_cast<f32 *>(&instruction->args[9]);
+            background->cameraPositionTangentFinal.z =
+                *reinterpret_cast<f32 *>(&instruction->args[10]);
             break;
 
         case 11:
             background->interpolationCurrentTimers[1].Initialize();
             background->interpolationEndTimers[1] = instruction->args[0];
             background->interpolationModes[1] =
-                (u16)instruction->args[1] | 0x800;
+                instruction->args[1] | 0x800;
             background->cameraLookAtInitial = g_BackgroundCameraLookAt;
-            background->cameraLookAtTangentInitial =
-                *reinterpret_cast<Float3 *>(&instruction->args[2]);
-            background->cameraLookAtFinal =
-                *reinterpret_cast<Float3 *>(&instruction->args[5]);
-            background->cameraLookAtTangentFinal =
-                *reinterpret_cast<Float3 *>(&instruction->args[8]);
+            background->cameraLookAtTangentInitial.x =
+                *reinterpret_cast<f32 *>(&instruction->args[2]);
+            background->cameraLookAtTangentInitial.y =
+                *reinterpret_cast<f32 *>(&instruction->args[3]);
+            background->cameraLookAtTangentInitial.z =
+                *reinterpret_cast<f32 *>(&instruction->args[4]);
+            background->cameraLookAtFinal.x =
+                *reinterpret_cast<f32 *>(&instruction->args[5]);
+            background->cameraLookAtFinal.y =
+                *reinterpret_cast<f32 *>(&instruction->args[6]);
+            background->cameraLookAtFinal.z =
+                *reinterpret_cast<f32 *>(&instruction->args[7]);
+            background->cameraLookAtTangentFinal.x =
+                *reinterpret_cast<f32 *>(&instruction->args[8]);
+            background->cameraLookAtTangentFinal.y =
+                *reinterpret_cast<f32 *>(&instruction->args[9]);
+            background->cameraLookAtTangentFinal.z =
+                *reinterpret_cast<f32 *>(&instruction->args[10]);
             break;
 
         case 12:
@@ -1038,15 +1064,16 @@ read_instruction:
             break;
 
         case 14:
-            if (instruction->args[1] < 0)
-            {
-                background->stageVms[instruction->args[0]].flagsWord &= ~1;
-            }
-            else
+            if (instruction->args[1] >= 0)
             {
                 background->anm->InitializeVm(
                     &background->stageVms[instruction->args[0]],
                     instruction->args[1]);
+            }
+            else
+            {
+                AnmVm *vm = &background->stageVms[instruction->args[0]];
+                vm->flagsWord &= ~1;
             }
             break;
         }
@@ -1059,26 +1086,25 @@ read_instruction:
 
     background->stageScriptTimer.Tick();
 
+interpolate:
     for (interpolationIndex = 0; interpolationIndex < 4;
          interpolationIndex++)
     {
-        if (background->interpolationEndTimers[interpolationIndex].current > 0)
+        if (background->interpolationEndTimers[interpolationIndex] > 0)
         {
             background->interpolationCurrentTimers[interpolationIndex].Tick();
-            if (background->interpolationCurrentTimers[interpolationIndex] <
-                background->interpolationEndTimers[interpolationIndex].current)
-            {
-                interpolationTime =
-                    background->interpolationCurrentTimers[interpolationIndex]
-                        .subFrame /
-                    background->interpolationEndTimers[interpolationIndex]
-                        .subFrame;
-            }
-            else
+            if (background->interpolationCurrentTimers[interpolationIndex] >=
+                background->interpolationEndTimers[interpolationIndex])
             {
                 interpolationTime = 1.0f;
                 background->interpolationEndTimers[interpolationIndex]
                     .Initialize();
+            }
+            else
+            {
+                interpolationTime =
+                    (f32)background->interpolationCurrentTimers[interpolationIndex] /
+                    (f32)background->interpolationEndTimers[interpolationIndex];
             }
 
             switch (background->interpolationModes[interpolationIndex] & 0xff)
@@ -1090,48 +1116,46 @@ read_instruction:
                 interpolationTime *= interpolationTime * interpolationTime;
                 break;
             case 3:
-                interpolationTime *= interpolationTime * interpolationTime *
-                                     interpolationTime;
+                interpolationTime *= interpolationTime;
+                interpolationTime *= interpolationTime;
                 break;
             case 4:
                 interpolationTime = 1.0f - interpolationTime;
-                interpolationTime =
-                    1.0f - interpolationTime * interpolationTime;
+                interpolationTime *= interpolationTime;
+                interpolationTime = 1.0f - interpolationTime;
                 break;
             case 5:
                 interpolationTime = 1.0f - interpolationTime;
-                interpolationTime =
-                    1.0f - interpolationTime * interpolationTime *
-                               interpolationTime;
+                interpolationTime *= interpolationTime * interpolationTime;
+                interpolationTime = 1.0f - interpolationTime;
                 break;
             case 6:
                 interpolationTime = 1.0f - interpolationTime;
                 interpolationTime *= interpolationTime;
-                interpolationTime =
-                    1.0f - interpolationTime * interpolationTime;
+                interpolationTime *= interpolationTime;
+                interpolationTime = 1.0f - interpolationTime;
                 break;
             }
 
-            if ((background->interpolationModes[interpolationIndex] >> 8) == 0)
+            if (((background->interpolationModes[interpolationIndex] >> 8) & 0xff) == 0)
             {
-                if (interpolationIndex == 0)
+                switch (interpolationIndex)
                 {
+                case 0:
                     g_BackgroundCameraPosition =
                         (background->cameraPositionFinal -
                          background->cameraPositionInitial) *
                             interpolationTime +
                         background->cameraPositionInitial;
-                }
-                else if (interpolationIndex == 1)
-                {
+                    break;
+                case 1:
                     g_BackgroundCameraLookAt =
                         (background->cameraLookAtFinal -
                          background->cameraLookAtInitial) *
                             interpolationTime +
                         background->cameraLookAtInitial;
-                }
-                else if (interpolationIndex == 2)
-                {
+                    break;
+                case 2:
                     for (colorIndex = 0; colorIndex < 4; colorIndex++)
                     {
                         reinterpret_cast<u8 *>(
@@ -1157,51 +1181,61 @@ read_instruction:
                          background->photoBlendInitial.y) *
                             interpolationTime +
                         background->photoBlendInitial.y;
-                    g_PhotoScreenFadeColor =
-                        background->photoBlendCurrent.color;
+                    g_PhotoScreenFadeColor = background->photoBlendCurrent.color;
+                    break;
                 }
             }
-            else if (interpolationIndex == 0)
+            else
             {
-                g_BackgroundCameraPosition.x = CubicHermiteInterpolate(
+                switch (interpolationIndex)
+                {
+                case 0:
+                {
+                    Float3 *out = &g_BackgroundCameraPosition;
+                    out->x = CubicHermiteInterpolate(
                     background->cameraPositionInitial.x,
                     background->cameraPositionFinal.x,
                     background->cameraPositionTangentInitial.x,
                     background->cameraPositionTangentFinal.x,
                     interpolationTime);
-                g_BackgroundCameraPosition.y = CubicHermiteInterpolate(
+                out->y = CubicHermiteInterpolate(
                     background->cameraPositionInitial.y,
                     background->cameraPositionFinal.y,
                     background->cameraPositionTangentInitial.y,
                     background->cameraPositionTangentFinal.y,
                     interpolationTime);
-                g_BackgroundCameraPosition.z = CubicHermiteInterpolate(
+                out->z = CubicHermiteInterpolate(
                     background->cameraPositionInitial.z,
                     background->cameraPositionFinal.z,
                     background->cameraPositionTangentInitial.z,
                     background->cameraPositionTangentFinal.z,
                     interpolationTime);
-            }
-            else if (interpolationIndex == 1)
-            {
-                g_BackgroundCameraLookAt.x = CubicHermiteInterpolate(
+                    break;
+                }
+                case 1:
+                {
+                    Float3 *out = &g_BackgroundCameraLookAt;
+                    out->x = CubicHermiteInterpolate(
                     background->cameraLookAtInitial.x,
                     background->cameraLookAtFinal.x,
                     background->cameraLookAtTangentInitial.x,
                     background->cameraLookAtTangentFinal.x,
                     interpolationTime);
-                g_BackgroundCameraLookAt.y = CubicHermiteInterpolate(
+                out->y = CubicHermiteInterpolate(
                     background->cameraLookAtInitial.y,
                     background->cameraLookAtFinal.y,
                     background->cameraLookAtTangentInitial.y,
                     background->cameraLookAtTangentFinal.y,
                     interpolationTime);
-                g_BackgroundCameraLookAt.z = CubicHermiteInterpolate(
+                out->z = CubicHermiteInterpolate(
                     background->cameraLookAtInitial.z,
                     background->cameraLookAtFinal.z,
                     background->cameraLookAtTangentInitial.z,
                     background->cameraLookAtTangentFinal.z,
                     interpolationTime);
+                    break;
+                }
+                }
             }
         }
     }
@@ -1211,30 +1245,33 @@ read_instruction:
         switch (background->cameraMotionMode)
         {
         case 1:
-            angle = (f32)background->interpolationCurrentTimers[3] *
-                        3.1415927f * 2.0f / 480.0f -
-                    3.1415927f;
+        {
+            f32 angle = (f32)background->interpolationCurrentTimers[3] *
+                            3.1415927f * 2.0f / 480.0f -
+                        3.1415927f;
             g_BackgroundWaveX = sinf(angle) * 40.0f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 480)
                 background->interpolationCurrentTimers[3].Initialize();
             break;
-
+        }
         case 2:
-            angle = (f32)background->interpolationCurrentTimers[3] *
-                        3.1415927f * 2.0f / 480.0f -
-                    3.1415927f;
+        {
+            f32 angle = (f32)background->interpolationCurrentTimers[3] *
+                            3.1415927f * 2.0f / 480.0f -
+                        3.1415927f;
             g_BackgroundWaveX = sinf(angle) * 70.0f;
             g_BackgroundCameraValue0 = -sinf(angle) * 0.1f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 480)
                 background->interpolationCurrentTimers[3].Initialize();
             break;
-
-        case 3:
-            angle = (f32)background->interpolationCurrentTimers[3] *
-                        3.1415927f * 2.0f / 2048.0f -
-                    3.1415927f;
+        }
+        case 4:
+        {
+            f32 angle = (f32)background->interpolationCurrentTimers[3] *
+                            3.1415927f * 2.0f / 2048.0f -
+                        3.1415927f;
             g_BackgroundWaveX = sinf(angle) * 30.0f;
             g_BackgroundWaveY = cosf(angle) * 30.0f;
             g_BackgroundCameraValue0 = -sinf(angle) * 0.1f;
@@ -1242,11 +1279,12 @@ read_instruction:
             if (background->interpolationCurrentTimers[3] >= 2048)
                 background->interpolationCurrentTimers[3].Initialize();
             break;
-
-        case 4:
-            angle = (f32)background->interpolationCurrentTimers[3] *
-                        3.1415927f * 2.0f / 4800.0f -
-                    3.1415927f;
+        }
+        case 3:
+        {
+            f32 angle = (f32)background->interpolationCurrentTimers[3] *
+                            3.1415927f * 2.0f / 4800.0f -
+                        3.1415927f;
             g_BackgroundCameraValue0 = sinf(angle) * 1.0f;
             g_BackgroundCameraValue2 = cosf(angle) * 1.0f;
             background->interpolationCurrentTimers[3].Tick();
@@ -1254,9 +1292,12 @@ read_instruction:
                 background->interpolationCurrentTimers[3].Initialize();
             break;
         }
+        }
     }
 
     return 0;
+#undef instruction
+#undef background
 }
 
 // FUNCTION: TH095 0x004048B0; TH08 0x00408FC0 is the adjacent source oracle.
