@@ -4,7 +4,7 @@
 
 - Exact target: original Japanese TH095 v1.02a, verified by size, SHA-256, and
   MD5.
-- Analysis: IDA Pro MCP is the primary semantic backend. On 2026-08-30 the
+- Analysis: IDA Pro MCP is the primary semantic backend. On 2026-09-01 the
   active IDB was attested as the original Japanese v1.02a by SHA-256, MD5,
   size, image base, mapped image size, entry point, and distributed `.text`
   byte samples. The historical Ghidra 12.1.3 inventory remains available as
@@ -518,6 +518,22 @@ scene cursors from `+0x1D0`, and nine sixteen-entry queues from `+0x6128`
 through `+0x6368`. The exact-sized 503-byte destructor is behavior-complete
 with all nineteen relocation destinations but retains compiler-local home
 differences, so it remains deliberately non-exact.
+
+The two large controller bodies immediately following that shell have now
+been reconstructed to compiler-bounded source shapes. `Update @ 0x00445E80`
+has the exact target `0xC0` frame, all 714 target mnemonics, the exact 57-call
+destination order, and the complete ten-entry outer switch table. Its natural
+VC7.1 body is 2,970 bytes versus the 2,969-byte target; the one-byte net
+residual is isolated to compiler register selection across three global loads
+and two paired-VM vector copies. The first 37 calls through `+0x7FF` and seven
+of ten table destinations are already offset-exact. `UpdateMainMenu @
+0x00446A50` now owns the exact 3,323-byte body-plus-table extent, all 37 call
+offsets, and all six table destinations; 2,906/3,051 non-relocation bytes
+match. Its remaining 145 bytes are only stack displacements caused by target-
+only instruction-unreferenced homes at `EBP-0x144/-0x150`. Keep both bodies
+non-exact: do not synthesize locals or padding for those compiler artifacts.
+The two pre-existing exact units in the same translation unit, `CloseMainMenu`
+and `UpdateMainMenuSelection`, replayed unchanged for 648 and 787 bytes.
 
 The high-connectivity Supervisor frame and scene-routing spine is now canonical
 exact. `Supervisor::OnUpdate @ 0x00423440` contributes 400 authored bytes and

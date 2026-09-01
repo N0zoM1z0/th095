@@ -244,6 +244,31 @@ assembly or an artificial branch to close it.
   38 target call offsets. The remaining 97 comparable bytes are only stack
   displacements from target-unreferenced `EBP-0x254/-0x2AC/-0x2B0` dwords, so
   the unit remains uncredited rather than manufacturing frame storage.
+- `SceneSelectControllerView::Update @ 0x00445E80` demonstrates that an exact
+  instruction topology can still differ in extent through register selection.
+  A reverse physical-order `0x3C` aggregate fixes the fourteen live surface,
+  lock, pixel-loop, interrupt-loop, and paired-VM homes at `EBP-0x04..-0x3C`.
+  Put the seventeen common-VM store expressions in a bounded source-local
+  `__forceinline` helper so their return-object homes follow call-site order;
+  leave the three transition handles and the discarded periodic VM return in
+  the outer function. Spell entry mode as a switch, order outer states as
+  `0,1,2,3,7,8,9,5,6,4`, and keep a `break` both inside and after each
+  game/replay transition block. Build 3077 then emits the exact `0xC0` frame,
+  all 714 target mnemonics, all 57 call destinations in order, and the complete
+  ten-entry table. The legal body is one byte long because three global-pointer
+  loads use a six-byte general register instead of the target five-byte EAX
+  form, while two `Float3` copies use a five-byte EAX add instead of the target
+  six-byte general-register form. This is compiler-register evidence, not
+  authority for a dummy local or padding byte.
+- `UpdateMainMenu @ 0x00446A50` needs one fully live 216-byte aggregate for the
+  eighteen VM positions, declared in reverse physical order. Use the queue's
+  real inline `Size()` member and small source-local helpers for help-state
+  snapshots and freeing popped queue owners; these are expression/lifetime
+  boundaries, not ABI shims. The resulting 3,323-byte COFF extent exactly owns
+  the 3,299-byte body and six-entry table, with all 37 calls and table targets
+  at the target offsets. Its only structural residual is the target's two
+  instruction-unreferenced stack dwords at `EBP-0x144/-0x150`; do not model
+  them with inert storage.
 - ReplayBrowser and HelpMenu add a distinct inline-temporary chronology oracle.
   When a function directly writes `array[index] = CreateVm(...)`, build 3077
   may allocate all anonymous return-object (sret) temporaries in the outer

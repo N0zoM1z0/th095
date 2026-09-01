@@ -73,6 +73,10 @@ struct SceneValueQueue
 
     i32 Push(i32 value);
     i32 Pop();
+    i32 Size()
+    {
+        return this->count;
+    }
 };
 
 struct SceneGroupCursorView

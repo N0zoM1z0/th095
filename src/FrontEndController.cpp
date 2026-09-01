@@ -78,6 +78,46 @@ struct FrontEndControllerUpdateView
     i32 entryMode;
 };
 
+struct FrontEndUpdateLocals
+{
+    FrontEndVmUpdateView *second69;
+    FrontEndVmUpdateView *first68;
+    FrontEndVmUpdateView *second67;
+    FrontEndVmUpdateView *first66;
+    i32 replayInterruptIndex;
+    i32 gameInterruptIndex;
+    u8 *rgb16Pixel;
+    i32 rgb16X;
+    i32 rgb16Y;
+    u8 *argb32Pixel;
+    i32 argb32X;
+    i32 argb32Y;
+    D3DLOCKED_RECT lockedRect;
+    IDirect3DSurface8 *surface;
+};
+
+struct MainMenuVmPositions
+{
+    Float3 position11;
+    Float3 position10;
+    Float3 position9;
+    Float3 position8;
+    Float3 position7;
+    Float3 position6;
+    Float3 position17;
+    Float3 position16;
+    Float3 position15;
+    Float3 position14;
+    Float3 position13;
+    Float3 position12;
+    Float3 position5;
+    Float3 position4;
+    Float3 position3;
+    Float3 position2;
+    Float3 position1;
+    Float3 position0;
+};
+
 typedef char FrontEndTextureEntrySizeIs10[
     (sizeof(FrontEndTextureEntryView) == 0x10) ? 1 : -1];
 typedef char FrontEndTextureFormatAtC[
@@ -104,6 +144,8 @@ typedef char FrontEndUpdateFlagsAt6120[
     (offsetof(FrontEndControllerUpdateView, flags) == 0x6120) ? 1 : -1];
 typedef char FrontEndUpdateEntryModeAt6124[
     (offsetof(FrontEndControllerUpdateView, entryMode) == 0x6124) ? 1 : -1];
+typedef char FrontEndUpdateLocalsSizeIs3C[
+    (sizeof(FrontEndUpdateLocals) == 0x3c) ? 1 : -1];
 
 extern i32 g_FrontEndSupervisorState;
 extern i32 g_FrontEndUiState;
@@ -115,21 +157,55 @@ extern u16 g_PressedButtons;
 extern u16 g_FrontEndCurrentInput;
 extern i32 g_DemoReplayIndex;
 
+static __forceinline u16 FrontEndInputAnd(u16 input, u16 mask)
+{
+    return input & mask;
+}
+
+static __forceinline u16 FrontEndUpInputMask()
+{
+    return TH_BUTTON_UP;
+}
+
+static __forceinline u16 FrontEndDownInputMask()
+{
+    return TH_BUTTON_DOWN;
+}
+
+static __forceinline i32 FrontEndHelpLoadSnapshot()
+{
+    i32 active = g_HelpLoadActive;
+    return active;
+}
+
+static __forceinline void FrontEndFreePoppedValue(void *block)
+{
+    free(block);
+}
+
+static __forceinline void FrontEndCreateSceneVm(
+    FrontEndControllerUpdateView *view,
+    i32 scriptIndex)
+{
+    view->vmIds[scriptIndex] =
+        view->sceneAnm->CreateVm(scriptIndex, 7);
+}
+
 FrontEndGameManagerView *__fastcall CreateFrontEndGameManager(i32 mode);
 
 struct FrontEndSupervisorAudioView
 {
     ZunResult LoadMusic(i32 slot, const char *path);
     ZunResult PlayMusic(i32 slot, i32 unknown);
-    ZunResult FadeOutMusic();
+    ZunResult FadeOutMusic(f32 durationSeconds);
 };
 
 extern FrontEndSupervisorAudioView g_FrontEndSupervisorAudio;
 
 ChainCallbackResult SceneSelectControllerView::Update()
 {
-    FrontEndControllerUpdateView *view =
-        reinterpret_cast<FrontEndControllerUpdateView *>(this);
+#define view (reinterpret_cast<FrontEndControllerUpdateView *>(this))
+    FrontEndUpdateLocals locals;
 
     switch (view->requestedState)
     {
@@ -141,51 +217,57 @@ ChainCallbackResult SceneSelectControllerView::Update()
             g_FrontEndSupervisorState = 6;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
-        if (g_HelpLoadActive != 0)
+        if (FrontEndHelpLoadSnapshot() != 0)
         {
             return CHAIN_CALLBACK_RESULT_BREAK;
         }
 
         g_SceneSupervisor.StopReplayScan();
-        FrontEndTextureEntryView *textureEntry =
-            &reinterpret_cast<FrontEndAnmStorageView *>(view->sceneAnm)
-                 ->textures[1];
-        IDirect3DSurface8 *surface = NULL;
-        textureEntry->texture->GetSurfaceLevel(0, &surface);
-        D3DLOCKED_RECT lockedRect;
-        surface->LockRect(&lockedRect, NULL, 0);
-        if (textureEntry->bytesPerPixel == 4)
+        locals.surface = NULL;
+        reinterpret_cast<FrontEndAnmStorageView *>(view->sceneAnm)
+            ->textures[1]
+            .texture->GetSurfaceLevel(0, &locals.surface);
+        locals.surface->LockRect(&locals.lockedRect, NULL, 0);
+        if (reinterpret_cast<FrontEndAnmStorageView *>(view->sceneAnm)
+                ->textures[1]
+                .bytesPerPixel == 4)
         {
-            for (i32 y = 0; y < 192; y++)
+            for (locals.argb32Y = 0; locals.argb32Y < 192;
+                 locals.argb32Y++)
             {
-                u8 *pixel =
-                    reinterpret_cast<u8 *>(lockedRect.pBits) + y * lockedRect.Pitch;
-                for (i32 x = 0; x < 256; x++)
+                locals.argb32Pixel =
+                    reinterpret_cast<u8 *>(locals.lockedRect.pBits) +
+                    locals.argb32Y * locals.lockedRect.Pitch;
+                for (locals.argb32X = 0; locals.argb32X < 256;
+                     locals.argb32X++)
                 {
-                    pixel[0] = 0;
-                    pixel[1] = 0;
-                    pixel[2] = 0;
-                    pixel[3] = 0xff;
-                    pixel += 4;
+                    locals.argb32Pixel[0] = 0;
+                    locals.argb32Pixel[1] = 0;
+                    locals.argb32Pixel[2] = 0;
+                    locals.argb32Pixel[3] = 0xff;
+                    locals.argb32Pixel += 4;
                 }
             }
         }
         else
         {
-            for (i32 y = 0; y < 192; y++)
+            for (locals.rgb16Y = 0; locals.rgb16Y < 192;
+                 locals.rgb16Y++)
             {
-                u8 *pixel =
-                    reinterpret_cast<u8 *>(lockedRect.pBits) + y * lockedRect.Pitch;
-                for (i32 x = 0; x < 256; x++)
+                locals.rgb16Pixel =
+                    reinterpret_cast<u8 *>(locals.lockedRect.pBits) +
+                    locals.rgb16Y * locals.lockedRect.Pitch;
+                for (locals.rgb16X = 0; locals.rgb16X < 256;
+                     locals.rgb16X++)
                 {
-                    pixel[0] = 0;
-                    pixel[1] = 0xf0;
-                    pixel += 2;
+                    locals.rgb16Pixel[0] = 0;
+                    locals.rgb16Pixel[1] = 0xf0;
+                    locals.rgb16Pixel += 2;
                 }
             }
         }
-        surface->UnlockRect();
-        surface->Release();
+        locals.surface->UnlockRect();
+        locals.surface->Release();
         g_FrontEndUiState = 0;
 
         if (g_ReplayUsesArchive == 0)
@@ -199,51 +281,57 @@ ChainCallbackResult SceneSelectControllerView::Update()
             g_ReplayUsesArchive = 0;
         }
 
-        if (view->entryMode == 0)
+        switch (view->entryMode)
+        {
+        case 0:
         {
             view->requestedState = 1;
             view->stateTimer.Reset();
             view->state = 0;
-            view->vmIds[0x66] = view->sceneAnm->CreateVm(0x66, 7);
-            view->vmIds[0x67] = view->sceneAnm->CreateVm(0x67, 7);
-            view->vmIds[0x19] = view->sceneAnm->CreateVm(0x19, 7);
-            view->vmIds[0x1a] = view->sceneAnm->CreateVm(0x1a, 7);
+            FrontEndCreateSceneVm(view, 0x66);
+            FrontEndCreateSceneVm(view, 0x67);
+            FrontEndCreateSceneVm(view, 0x19);
+            FrontEndCreateSceneVm(view, 0x1a);
             view->transitionVm.value =
                 view->transitionAnm->CreateVm(0, 7).value;
-            view->vmIds[0x1b] = view->sceneAnm->CreateVm(0x1b, 7);
-            view->vmIds[0x64] = view->sceneAnm->CreateVm(0x64, 7);
-            view->vmIds[0x65] = view->sceneAnm->CreateVm(0x65, 7);
+            FrontEndCreateSceneVm(view, 0x1b);
+            FrontEndCreateSceneVm(view, 0x64);
+            FrontEndCreateSceneVm(view, 0x65);
+            break;
         }
-        else if (view->entryMode == 1)
+        case 1:
         {
             view->requestedState = 2;
             view->state = 0;
             view->stateTimer.Reset();
-            view->vmIds[0x19] = view->sceneAnm->CreateVm(0x19, 7);
-            view->vmIds[0x1a] = view->sceneAnm->CreateVm(0x1a, 7);
+            FrontEndCreateSceneVm(view, 0x19);
+            FrontEndCreateSceneVm(view, 0x1a);
             view->transitionVm.value =
                 view->transitionAnm->CreateVm(0, 7).value;
-            view->vmIds[0x1b] = view->sceneAnm->CreateVm(0x1b, 7);
-            view->vmIds[0x64] = view->sceneAnm->CreateVm(0x64, 7);
-            view->vmIds[0x65] = view->sceneAnm->CreateVm(0x65, 7);
+            FrontEndCreateSceneVm(view, 0x1b);
+            FrontEndCreateSceneVm(view, 0x64);
+            FrontEndCreateSceneVm(view, 0x65);
             view->entryMode = 0;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
-        else if (view->entryMode == 2)
+        case 2:
         {
             view->requestedState = 3;
             view->state = 0;
             view->stateTimer.Reset();
             view->cursor.Set(1);
-            view->vmIds[0x19] = view->sceneAnm->CreateVm(0x19, 7);
-            view->vmIds[0x1a] = view->sceneAnm->CreateVm(0x1a, 7);
+            FrontEndCreateSceneVm(view, 0x19);
+            FrontEndCreateSceneVm(view, 0x1a);
             view->transitionVm.value =
                 view->transitionAnm->CreateVm(0, 7).value;
-            view->vmIds[0x1b] = view->sceneAnm->CreateVm(0x1b, 7);
-            view->vmIds[0x64] = view->sceneAnm->CreateVm(0x64, 7);
-            view->vmIds[0x65] = view->sceneAnm->CreateVm(0x65, 7);
+            FrontEndCreateSceneVm(view, 0x1b);
+            FrontEndCreateSceneVm(view, 0x64);
+            FrontEndCreateSceneVm(view, 0x65);
             view->entryMode = 0;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
+        }
+        default:
+            break;
         }
     }
     case 1:
@@ -256,92 +344,6 @@ ChainCallbackResult SceneSelectControllerView::Update()
 
     case 3:
         reinterpret_cast<ReplayBrowserView *>(this)->Update();
-        break;
-
-    case 4:
-        if (g_HelpLoadActive != 0)
-        {
-            return CHAIN_CALLBACK_RESULT_CONTINUE;
-        }
-        g_SceneSupervisor.StopReplayScan();
-        g_FrontEndSupervisorState = 1;
-        break;
-
-    case 5:
-        if (view->stateTimer.current == 1)
-        {
-            g_FrontEndSupervisorAudio.FadeOutMusic();
-            if (g_HelpLoadActive != 0)
-            {
-                return CHAIN_CALLBACK_RESULT_CONTINUE;
-            }
-            g_SceneSupervisor.StopReplayScan();
-            g_FrontEndGameManager = CreateFrontEndGameManager(0);
-            if (g_FrontEndGameManager == NULL)
-            {
-                g_FrontEndSupervisorState = 1;
-            }
-        }
-        if (view->stateTimer.current > 39 && view->transitionReady != 0)
-        {
-            if (!g_FrontEndGlobalState->transitionBlocked)
-            {
-                for (i32 i = 0; i < 0x9a; i++)
-                {
-                    g_SceneAnmManager->SetInterrupt(view->vmIds[i], 1);
-                }
-                view->transitionVm.SetInterrupt(1);
-                g_FrontEndSupervisorState = 3;
-                if (g_ReplayUsesArchive == 0)
-                {
-                    g_FrontEndSupervisorAudio.PlayMusic(0, 0);
-                }
-            }
-            else
-            {
-                g_FrontEndSupervisorState = 1;
-            }
-        }
-        break;
-
-    case 6:
-        if (view->stateTimer.current == 1)
-        {
-            if (g_ReplayUsesArchive == 0)
-            {
-                g_FrontEndSupervisorAudio.FadeOutMusic();
-            }
-            if (g_HelpLoadActive != 0)
-            {
-                return CHAIN_CALLBACK_RESULT_CONTINUE;
-            }
-            g_SceneSupervisor.StopReplayScan();
-            g_FrontEndGameManager = CreateFrontEndGameManager(1);
-            if (g_FrontEndGameManager == NULL)
-            {
-                g_FrontEndSupervisorState = 1;
-            }
-        }
-        if (view->stateTimer.current > 39 && view->transitionReady != 0)
-        {
-            if (!g_FrontEndGlobalState->transitionBlocked)
-            {
-                for (i32 i = 0; i < 0x9a; i++)
-                {
-                    g_SceneAnmManager->SetInterrupt(view->vmIds[i], 1);
-                }
-                view->transitionVm.SetInterrupt(1);
-                g_FrontEndSupervisorState = 7;
-                if (g_ReplayUsesArchive == 0)
-                {
-                    g_FrontEndSupervisorAudio.PlayMusic(0, 0);
-                }
-            }
-            else
-            {
-                g_FrontEndSupervisorState = 1;
-            }
-        }
         break;
 
     case 7:
@@ -359,28 +361,136 @@ ChainCallbackResult SceneSelectControllerView::Update()
     case 9:
         reinterpret_cast<HelpMenuView *>(this)->UpdateHelpMenu();
         break;
+
+    case 5:
+        if ((view->stateTimer.current == 1) != 0)
+        {
+            g_FrontEndSupervisorAudio.FadeOutMusic(2.0f);
+            if (FrontEndHelpLoadSnapshot() != 0)
+            {
+                return CHAIN_CALLBACK_RESULT_CONTINUE;
+            }
+            g_SceneSupervisor.StopReplayScan();
+            g_FrontEndGameManager = CreateFrontEndGameManager(0);
+            if (g_FrontEndGameManager == NULL)
+            {
+                g_FrontEndSupervisorState = 1;
+            }
+        }
+        if ((view->stateTimer.current < 40) != 0)
+        {
+            break;
+        }
+        if (view->transitionReady != 0)
+        {
+            if (g_FrontEndGlobalState->transitionBlocked)
+            {
+                g_FrontEndSupervisorState = 1;
+                break;
+            }
+            for (locals.gameInterruptIndex = 0;
+                 locals.gameInterruptIndex < 0x9a;
+                 locals.gameInterruptIndex++)
+            {
+                g_SceneAnmManager->SetInterrupt(
+                    view->vmIds[locals.gameInterruptIndex], 1);
+            }
+            view->transitionVm.SetInterrupt(1);
+            g_FrontEndSupervisorState = 3;
+            if (g_ReplayUsesArchive == 0)
+            {
+                g_FrontEndSupervisorAudio.PlayMusic(0, 0);
+            }
+            break;
+        }
+        break;
+
+    case 6:
+        if ((view->stateTimer.current == 1) != 0)
+        {
+            if (g_ReplayUsesArchive == 0)
+            {
+                g_FrontEndSupervisorAudio.FadeOutMusic(2.0f);
+            }
+            if (FrontEndHelpLoadSnapshot() != 0)
+            {
+                return CHAIN_CALLBACK_RESULT_CONTINUE;
+            }
+            g_SceneSupervisor.StopReplayScan();
+            g_FrontEndGameManager = CreateFrontEndGameManager(1);
+            if (g_FrontEndGameManager == NULL)
+            {
+                g_FrontEndSupervisorState = 1;
+            }
+        }
+        if ((view->stateTimer.current < 40) != 0)
+        {
+            break;
+        }
+        if (view->transitionReady != 0)
+        {
+            if (g_FrontEndGlobalState->transitionBlocked)
+            {
+                g_FrontEndSupervisorState = 1;
+                break;
+            }
+            for (locals.replayInterruptIndex = 0;
+                 locals.replayInterruptIndex < 0x9a;
+                 locals.replayInterruptIndex++)
+            {
+                g_SceneAnmManager->SetInterrupt(
+                    view->vmIds[locals.replayInterruptIndex], 1);
+            }
+            view->transitionVm.SetInterrupt(1);
+            g_FrontEndSupervisorState = 7;
+            if (g_ReplayUsesArchive == 0)
+            {
+                g_FrontEndSupervisorAudio.PlayMusic(0, 0);
+            }
+            break;
+        }
+        break;
+
+    case 4:
+        if (FrontEndHelpLoadSnapshot() != 0)
+        {
+            return CHAIN_CALLBACK_RESULT_CONTINUE;
+        }
+        g_SceneSupervisor.StopReplayScan();
+        g_FrontEndSupervisorState = 1;
+        break;
     }
 
-    FrontEndVmUpdateView *first =
-        reinterpret_cast<FrontEndVmUpdateView *>(view->vmIds[0x66].GetVm());
-    FrontEndVmUpdateView *second =
-        reinterpret_cast<FrontEndVmUpdateView *>(view->vmIds[0x67].GetVm());
-    if (first != NULL && second != NULL)
+    locals.first66 =
+        reinterpret_cast<FrontEndVmUpdateView *>(
+            reinterpret_cast<AnmVmId *>(
+                reinterpret_cast<u8 *>(this) + 0xd8c)
+                ->GetVm());
+    locals.second67 =
+        reinterpret_cast<FrontEndVmUpdateView *>(
+            reinterpret_cast<AnmVmId *>(
+                reinterpret_cast<u8 *>(this) + 0xd90)
+                ->GetVm());
+    if (locals.first66 != NULL && locals.second67 != NULL)
     {
-        second->position = first->position;
-        second->position.x += 512.0f;
-        second->displayState = first->displayState;
+        locals.second67->position = locals.first66->position;
+        locals.second67->position.x += 512.0f;
+        locals.second67->displayState = locals.first66->displayState;
     }
 
-    first = reinterpret_cast<FrontEndVmUpdateView *>(
-        view->vmIds[0x68].GetVm());
-    second = reinterpret_cast<FrontEndVmUpdateView *>(
-        view->vmIds[0x69].GetVm());
-    if (first != NULL && second != NULL)
+    locals.first68 = reinterpret_cast<FrontEndVmUpdateView *>(
+        reinterpret_cast<AnmVmId *>(
+            reinterpret_cast<u8 *>(this) + 0xd94)
+            ->GetVm());
+    locals.second69 = reinterpret_cast<FrontEndVmUpdateView *>(
+        reinterpret_cast<AnmVmId *>(
+            reinterpret_cast<u8 *>(this) + 0xd98)
+            ->GetVm());
+    if (locals.first68 != NULL && locals.second69 != NULL)
     {
-        second->position = first->position;
-        second->position.x += 512.0f;
-        second->displayState = first->displayState;
+        locals.second69->position = locals.first68->position;
+        locals.second69->position.x += 512.0f;
+        locals.second69->displayState = locals.first68->displayState;
     }
 
     if (view->animationTimer.current % 5 == 0)
@@ -389,6 +499,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
     }
     view->stateTimer.Tick();
     view->animationTimer.Tick();
+#undef view
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
@@ -461,77 +572,62 @@ void SceneSelectControllerView::UpdateMainMenuSelection()
 
 ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
 {
-    FrontEndControllerUpdateView *view =
-        reinterpret_cast<FrontEndControllerUpdateView *>(this);
+#define view (reinterpret_cast<FrontEndControllerUpdateView *>(this))
+    MainMenuVmPositions positions;
 
-    if (view->state == 0)
+    switch (view->state)
+    {
+    case 0:
     {
         view->cursor.count = 6;
         view->cursor.wraps = 1;
         view->state = 1;
 
-        Float3 position0(64.0f, 130.0f, 0.0f);
-        view->vmIds[0] = view->sceneAnm->CreateVm(0, &position0);
-        Float3 position1(64.0f, 168.0f, 0.0f);
-        view->vmIds[1] = view->sceneAnm->CreateVm(1, &position1);
-        Float3 position2(64.0f, 206.0f, 0.0f);
-        view->vmIds[2] = view->sceneAnm->CreateVm(2, &position2);
-        Float3 position3(64.0f, 244.0f, 0.0f);
-        view->vmIds[3] = view->sceneAnm->CreateVm(3, &position3);
-        Float3 position4(64.0f, 282.0f, 0.0f);
-        view->vmIds[4] = view->sceneAnm->CreateVm(4, &position4);
-        Float3 position5(64.0f, 320.0f, 0.0f);
-        view->vmIds[5] = view->sceneAnm->CreateVm(5, &position5);
-
-        Float3 position12(64.0f, 130.0f, 0.0f);
-        view->vmIds[12] = view->sceneAnm->CreateVm(12, &position12);
-        Float3 position13(64.0f, 168.0f, 0.0f);
-        view->vmIds[13] = view->sceneAnm->CreateVm(13, &position13);
-        Float3 position14(64.0f, 206.0f, 0.0f);
-        view->vmIds[14] = view->sceneAnm->CreateVm(14, &position14);
-        Float3 position15(64.0f, 244.0f, 0.0f);
-        view->vmIds[15] = view->sceneAnm->CreateVm(15, &position15);
-        Float3 position16(64.0f, 282.0f, 0.0f);
-        view->vmIds[16] = view->sceneAnm->CreateVm(16, &position16);
-        Float3 position17(64.0f, 320.0f, 0.0f);
-        view->vmIds[17] = view->sceneAnm->CreateVm(17, &position17);
-
-        Float3 position6(64.0f, 130.0f, 0.0f);
-        view->vmIds[6] = view->sceneAnm->CreateVm(6, &position6);
-        Float3 position7(64.0f, 168.0f, 0.0f);
-        view->vmIds[7] = view->sceneAnm->CreateVm(7, &position7);
-        Float3 position8(64.0f, 206.0f, 0.0f);
-        view->vmIds[8] = view->sceneAnm->CreateVm(8, &position8);
-        Float3 position9(64.0f, 244.0f, 0.0f);
-        view->vmIds[9] = view->sceneAnm->CreateVm(9, &position9);
-        Float3 position10(64.0f, 282.0f, 0.0f);
-        view->vmIds[10] = view->sceneAnm->CreateVm(10, &position10);
-        Float3 position11(64.0f, 320.0f, 0.0f);
-        view->vmIds[11] = view->sceneAnm->CreateVm(11, &position11);
+#define CREATE_MAIN_MENU_VM(position, index, yValue)                           \
+    positions.position.x = 64.0f;                                             \
+    positions.position.y = yValue;                                            \
+    positions.position.z = 0.0f;                                              \
+    view->vmIds[index] =                                                      \
+        view->sceneAnm->CreateVm(index, &positions.position)
+        CREATE_MAIN_MENU_VM(position0, 0, 130.0f);
+        CREATE_MAIN_MENU_VM(position1, 1, 168.0f);
+        CREATE_MAIN_MENU_VM(position2, 2, 206.0f);
+        CREATE_MAIN_MENU_VM(position3, 3, 244.0f);
+        CREATE_MAIN_MENU_VM(position4, 4, 282.0f);
+        CREATE_MAIN_MENU_VM(position5, 5, 320.0f);
+        CREATE_MAIN_MENU_VM(position12, 12, 130.0f);
+        CREATE_MAIN_MENU_VM(position13, 13, 168.0f);
+        CREATE_MAIN_MENU_VM(position14, 14, 206.0f);
+        CREATE_MAIN_MENU_VM(position15, 15, 244.0f);
+        CREATE_MAIN_MENU_VM(position16, 16, 282.0f);
+        CREATE_MAIN_MENU_VM(position17, 17, 320.0f);
+        CREATE_MAIN_MENU_VM(position6, 6, 130.0f);
+        CREATE_MAIN_MENU_VM(position7, 7, 168.0f);
+        CREATE_MAIN_MENU_VM(position8, 8, 206.0f);
+        CREATE_MAIN_MENU_VM(position9, 9, 244.0f);
+        CREATE_MAIN_MENU_VM(position10, 10, 282.0f);
+        CREATE_MAIN_MENU_VM(position11, 11, 320.0f);
+#undef CREATE_MAIN_MENU_VM
         view->stateTimer.Reset();
     }
-    else if (view->state != 1)
+    case 1:
+    if ((view->stateTimer.current < 30) != 0)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
-
-    if (view->stateTimer.current < 30)
-    {
-        return CHAIN_CALLBACK_RESULT_CONTINUE;
-    }
-    if (view->stateTimer.current == 30)
+    if ((view->stateTimer.current == 30) != 0)
     {
         this->UpdateMainMenuSelection();
     }
 
     view->cursor.SaveCurrent();
-    if ((g_PressedButtons & TH_BUTTON_UP) != 0 ||
-        (g_ResultMenuInput & TH_BUTTON_UP) != 0)
+    if ((u16)(FrontEndInputAnd(g_PressedButtons, TH_BUTTON_UP) != 0 ||
+              (g_ResultMenuInput & FrontEndUpInputMask()) != 0) != 0)
     {
         view->cursor.Move(-1);
     }
-    if ((g_PressedButtons & TH_BUTTON_DOWN) != 0 ||
-        (g_ResultMenuInput & TH_BUTTON_DOWN) != 0)
+    if ((u16)(FrontEndInputAnd(g_PressedButtons, TH_BUTTON_DOWN) != 0 ||
+              (g_ResultMenuInput & FrontEndDownInputMask()) != 0) != 0)
     {
         view->cursor.Move(1);
     }
@@ -541,30 +637,31 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
         this->UpdateMainMenuSelection();
     }
 
-    if ((g_FrontEndCurrentInput & 0x160b) == 0)
+    if (FrontEndInputAnd(g_FrontEndCurrentInput, 0x160b) != 0)
+    {
+        g_FrontEndUiState = 0;
+    }
+    else
     {
         g_FrontEndUiState++;
-        if (g_FrontEndUiState > 1799)
+        if (g_FrontEndUiState >= 1800)
         {
             g_FrontEndUiState = 0;
             g_ReplayUsesArchive = 1;
             sprintf(g_SelectedReplayPath, "demo/demo%d.rpy", g_DemoReplayIndex);
-            g_DemoReplayIndex = (g_DemoReplayIndex + 1) % 3;
+            g_DemoReplayIndex++;
+            g_DemoReplayIndex %= 3;
             view->requestedState = 6;
             view->stateTimer.Reset();
             view->state = 0;
-            return CHAIN_CALLBACK_RESULT_CONTINUE;
+            break;
         }
     }
-    else
-    {
-        g_FrontEndUiState = 0;
-    }
 
-    if ((g_PressedButtons & 0x1002) != 0)
+    if (FrontEndInputAnd(g_PressedButtons, 0x1002) != 0)
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-        switch (view->cursor.current)
+        switch (view->cursor.GetCurrent())
         {
         case 0:
         {
@@ -572,21 +669,27 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             view->requestedState = 2;
             view->state = 0;
             view->stateTimer.Reset();
-            while (g_HelpLoadActive != 0)
+            while (FrontEndHelpLoadSnapshot() != 0)
             {
                 Sleep(1);
             }
-            SceneValueQueue *firstQueue = reinterpret_cast<SceneValueQueue *>(
-                reinterpret_cast<u8 *>(this) + 0x61b8);
-            while (firstQueue->count != 0)
+            while (reinterpret_cast<SceneValueQueue *>(
+                       reinterpret_cast<u8 *>(this) + 0x61b8)
+                       ->Size() != 0)
             {
-                free(reinterpret_cast<void *>(firstQueue->Pop()));
+                FrontEndFreePoppedValue(reinterpret_cast<void *>(
+                    reinterpret_cast<SceneValueQueue *>(
+                        reinterpret_cast<u8 *>(this) + 0x61b8)
+                        ->Pop()));
             }
-            SceneValueQueue *secondQueue = reinterpret_cast<SceneValueQueue *>(
-                reinterpret_cast<u8 *>(this) + 0x6248);
-            while (secondQueue->count != 0)
+            while (reinterpret_cast<SceneValueQueue *>(
+                       reinterpret_cast<u8 *>(this) + 0x6248)
+                       ->Size() != 0)
             {
-                free(reinterpret_cast<void *>(secondQueue->Pop()));
+                FrontEndFreePoppedValue(reinterpret_cast<void *>(
+                    reinterpret_cast<SceneValueQueue *>(
+                        reinterpret_cast<u8 *>(this) + 0x6248)
+                        ->Pop()));
             }
             *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6240) = 0;
             *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x62d0) = 0;
@@ -598,54 +701,56 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63cc) = 0;
             *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63bc) = 0;
             *reinterpret_cast<i8 *>(reinterpret_cast<u8 *>(this) + 0xe92) = -1;
-            break;
+            return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
         case 1:
             this->CloseMainMenu();
             view->requestedState = 3;
             view->state = 0;
             view->stateTimer.Reset();
-            break;
+            return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 2:
-            this->CloseMainMenu();
-            view->requestedState = 8;
-            view->state = 0;
-            view->stateTimer.Reset();
-            break;
-        case 3:
             this->CloseMainMenu();
             view->requestedState = 7;
             view->state = 0;
             view->stateTimer.Reset();
-            break;
+            return CHAIN_CALLBACK_RESULT_CONTINUE;
+        case 3:
+            this->CloseMainMenu();
+            view->requestedState = 8;
+            view->state = 0;
+            view->stateTimer.Reset();
+            return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 4:
             this->CloseMainMenu();
             view->requestedState = 9;
             view->state = 0;
             view->stateTimer.Reset();
-            break;
+            return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 5:
+        exitMainMenu:
             view->requestedState = 4;
             view->state = 0;
             view->stateTimer.Reset();
-            break;
-        }
-        return CHAIN_CALLBACK_RESULT_CONTINUE;
-    }
-
-    if ((g_PressedButtons & 9) != 0)
-    {
-        g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-        if (view->cursor.current != 5)
-        {
-            view->cursor.Set(5);
-            this->UpdateMainMenuSelection();
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
-        view->requestedState = 4;
-        view->state = 0;
-        view->stateTimer.Reset();
     }
+
+    if (FrontEndInputAnd(g_PressedButtons, 9) != 0)
+    {
+        g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
+        if (view->cursor.GetCurrent() == 5)
+        {
+            goto exitMainMenu;
+        }
+        view->cursor.Set(5);
+        this->UpdateMainMenuSelection();
+    }
+    break;
+    default:
+        break;
+    }
+#undef view
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
