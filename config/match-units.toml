@@ -46,6 +46,90 @@ relocations = [
   { offset = 0x46, type = "DIR32", symbol = "__except_list", target = 0x0 },
 ]
 
+[units.zwave-manager-create-streaming]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CSoundManager::CreateStreaming"]
+symbol = "?CreateStreaming@CSoundManager@th095@@QAEJPAPAVCStreamingSound@2@PADKU_GUID@@KKPAXPAUThBgmFormat@2@@Z"
+target_address = 0x00453050
+size = 0x35E
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?CreateStreaming@CSoundManager@th095@@QAEJPAPAVCStreamingSound@2@PADKU_GUID@@KKPAXPAUThBgmFormat@2@@Z", target = 0x00493AC6 },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x54, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x6F, type = "REL32", symbol = "??0CWaveFile@th095@@QAE@XZ", target = 0x00454980 },
+  { offset = 0xA0, type = "REL32", symbol = "?Open@CWaveFile@th095@@QAEJPADPAUThBgmFormat@2@K@Z", target = 0x004549E0 },
+  { offset = 0xBE, type = "REL32", symbol = "??1CWaveFile@th095@@QAE@XZ", target = 0x004549C0 },
+  { offset = 0xD1, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0x1A2, type = "DIR32", symbol = "_IID_IDirectSoundNotify", target = 0x0049B970 },
+  { offset = 0x1CC, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x273, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0x2B5, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0x2C6, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x2F1, type = "REL32", symbol = "??0CStreamingSound@th095@@QAE@PAUIDirectSoundBuffer@@KPAVCWaveFile@1@K@Z", target = 0x00454230 },
+  { offset = 0x352, type = "DIR32", symbol = "__except_list", target = 0x0 },
+]
+
+[units.zwave-manager-create-streaming-memory]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CSoundManager::CreateStreamingFromMemory"]
+symbol = "?CreateStreamingFromMemory@CSoundManager@th095@@QAEJPAPAVCStreamingSound@2@PAEKPAUThBgmFormat@2@KU_GUID@@KKPAX@Z"
+target_address = 0x004533B0
+size = 0x32C
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?CreateStreamingFromMemory@CSoundManager@th095@@QAEJPAPAVCStreamingSound@2@PAEKPAUThBgmFormat@2@KU_GUID@@KKPAX@Z", target = 0x00493AE6 },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x0 },
+  { offset = 0x21, type = "DIR32", symbol = "??_C@_0BJ@NMKLAHFH@StreamingSound?5Create?5?$AN?6?$AA@", target = 0x004979FC },
+  { offset = 0x26, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x61, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x7C, type = "REL32", symbol = "??0CWaveFile@th095@@QAE@XZ", target = 0x00454980 },
+  { offset = 0xB1, type = "REL32", symbol = "?OpenFromMemory@CWaveFile@th095@@QAEJPAEKPAUThBgmFormat@2@K@Z", target = 0x00454AF0 },
+  { offset = 0x163, type = "DIR32", symbol = "_IID_IDirectSoundNotify", target = 0x0049B970 },
+  { offset = 0x18D, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x234, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0x276, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0x287, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x2B2, type = "REL32", symbol = "??0CStreamingSound@th095@@QAE@PAUIDirectSoundBuffer@@KPAVCWaveFile@1@K@Z", target = 0x00454230 },
+  { offset = 0x30C, type = "DIR32", symbol = "??_C@_0L@OGIBPDAG@Success?5?$AN?6?$AA@", target = 0x004979F0 },
+  { offset = 0x311, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x320, type = "DIR32", symbol = "__except_list", target = 0x0 },
+]
+
+[units.zwave-sound-constructor]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CSound::CSound"]
+symbol = "??0CSound@th095@@QAE@PAPAUIDirectSoundBuffer@@KKPAVCWaveFile@1@@Z"
+target_address = 0x004536E0
+size = 0xDD
+relocations = [
+  { offset = 0xF, type = "DIR32", symbol = "??_7CSound@th095@@6B@", target = 0x00497A18 },
+  { offset = 0x1B, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x89, type = "REL32", symbol = "?FillBufferWithSound@CSound@th095@@QAEJPAUIDirectSoundBuffer@@H@Z", target = 0x00453B40 },
+]
+
+[units.zwave-sound-play]
+source = "src/zwave.cpp"
+object = "build/matching/zwave.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CSound::Play"]
+symbol = "?Play@CSound@th095@@QAEJKK@Z"
+target_address = 0x00453EE0
+size = 0xEC
+relocations = [
+  { offset = 0x20, type = "REL32", symbol = "?GetFreeBuffer@CSound@th095@@QAEPAUIDirectSoundBuffer@@XZ", target = 0x00453DE0 },
+  { offset = 0x43, type = "REL32", symbol = "?RestoreBuffer@CSound@th095@@QAEJPAUIDirectSoundBuffer@@PAH@Z", target = 0x00453D30 },
+  { offset = 0x68, type = "REL32", symbol = "?FillBufferWithSound@CSound@th095@@QAEJPAUIDirectSoundBuffer@@H@Z", target = 0x00453B40 },
+  { offset = 0x7E, type = "REL32", symbol = "?Reset@CSound@th095@@QAEJXZ", target = 0x004541C0 },
+  { offset = 0xA6, type = "REL32", symbol = "?SetVolume@CSound@th095@@QAEJH@Z", target = 0x00453FD0 },
+]
+
 [units.zwave-init-sound-buffers]
 source = "src/zwave.cpp"
 object = "build/matching/zwave.obj"

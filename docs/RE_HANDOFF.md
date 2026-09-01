@@ -34,15 +34,16 @@
   Current candidate, authored, exclusion, and pending-review totals are kept in
   the generated progress artifact rather than duplicated here. Original class
   names remain unresolved where target evidence is insufficient.
-- The sound subsystem now has 45 canonical authored units totaling 12,023
+- The sound subsystem now has 49 canonical authored units totaling 14,154
   exact bytes. The original 27-unit asynchronous SoundPlayer core covers worker
   startup, SFX production/consumption, BGM preload/streaming, the 2,525-byte
-  queue hub, and object construction/release. Eighteen new ZUN-modified
-  `zwave.cpp` units add 3,811 bytes across notification setup, volume/pause/
-  resume/fades, the 998-byte refill hub, and the raw `ThBgmFormat` wave path.
-  Five unchanged Microsoft DSUtil scaffold functions and one compiler destructor
-  are exclusions rather than authored credit. TH095 uses 37 producer-owned file
-  slots and 47 duplicate-buffer mappings.
+  queue hub, and object construction/release. Twenty-two ZUN-modified
+  `zwave.cpp` units add 5,942 bytes across file/memory streaming creation, base
+  sound construction/play state, notification setup, volume/pause/resume/fades,
+  the 998-byte refill hub, and the raw `ThBgmFormat` wave path. Thirteen unchanged
+  Microsoft DSUtil scaffold functions and two compiler destructors are exclusions
+  rather than authored credit. TH095 uses 37 producer-owned file slots and 47
+  duplicate-buffer mappings.
 - ANM build profile: `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`
   reproduces the dispatcher and the expanded exact ANM helper family under pinned VC7.1
   build 3077. The 0x400-byte dispatcher frame and `[ebp-0x17C]` VM home are

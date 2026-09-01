@@ -340,7 +340,20 @@ address,name,module,confidence,evidence
 0x0041CE60,th095::PhotoItemManagerView::Update,PhotoItem,exact,"Exact 150-slot PhotoItem update with semantic bounds/vector state, shared tick path, and source-local vector/charge helpers"
 0x00456650,th095::Lzss::AddString,Compression,exact,Exact LZSS dictionary-tree insertion and longest-match update using a fully live 20-byte local aggregate
 0x004168D0,th095::PhotoRuntimeView::CountPhotoTargets,EnemyManager,exact,Exact 1274-byte target-backed photo-target scan; shared runtime/enemy-manager object at 0x004BDDC0 and all 17 relocations replayed
+0x00452E70,th095::CSoundManager::~CSoundManager,SoundPlayer,exact,Microsoft DSUtil manager-release scaffold identified and structurally reproduced
+0x00452EA0,th095::CSoundManager::Initialize,SoundPlayer,exact,Microsoft DSUtil device-initialization scaffold identified and structurally reproduced
+0x00452F30,th095::CSoundManager::SetPrimaryBufferFormat,SoundPlayer,exact,Microsoft DSUtil primary-format scaffold identified and structurally reproduced
+0x00453050,th095::CSoundManager::CreateStreaming,SoundPlayer,exact,Exact ZUN file-backed raw-BGM streaming creation
+0x004533B0,th095::CSoundManager::CreateStreamingFromMemory,SoundPlayer,exact,Exact ZUN memory-backed raw-BGM streaming creation
+0x004536E0,th095::CSound::CSound,SoundPlayer,exact,Exact ZUN-extended base sound construction
+0x004537C0,th095::CSound::ScalarDeletingDestructor,SoundPlayer,exact,VC7.1 compiler-generated scalar deleting destructor
 0x004537F0,th095::CStreamingSound::InitSoundBuffers,SoundPlayer,exact,Exact ZUN streaming notification-buffer initialization
+0x00453A50,th095::CSound::~CSound,SoundPlayer,exact,Microsoft DSUtil base destructor scaffold identified and structurally reproduced
+0x00453B40,th095::CSound::FillBufferWithSound,SoundPlayer,exact,Microsoft DSUtil wave-buffer fill scaffold identified and structurally reproduced
+0x00453D30,th095::CSound::RestoreBuffer,SoundPlayer,exact,Microsoft DSUtil lost-buffer recovery scaffold identified and structurally reproduced
+0x00453DE0,th095::CSound::GetFreeBuffer,SoundPlayer,exact,Microsoft DSUtil free-buffer selector identified and structurally reproduced
+0x00453EA0,th095::CSound::GetBuffer,SoundPlayer,exact,Microsoft DSUtil buffer accessor identified and structurally reproduced
+0x00453EE0,th095::CSound::Play,SoundPlayer,exact,Exact ZUN fade and persistent playback-state setup
 0x00453FD0,th095::CSound::SetVolume,SoundPlayer,exact,Exact ZUN nonlinear BGM-volume scaling
 0x00454070,th095::CSound::Stop,SoundPlayer,exact,Exact ZUN play-state and fade-state reset
 0x00454120,th095::CSound::Pause,SoundPlayer,exact,Exact ZUN pause wrapper

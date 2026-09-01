@@ -675,3 +675,7 @@ th095::CWaveFile::OpenFromMemory
 th095::CWaveFile::ResetFile
 th095::CWaveFile::Read
 th095::CWaveFile::Close
+th095::CSoundManager::CreateStreaming
+th095::CSoundManager::CreateStreamingFromMemory
+th095::CSound::CSound
+th095::CSound::Play

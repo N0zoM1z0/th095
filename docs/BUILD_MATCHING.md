@@ -701,7 +701,7 @@ object lifetime and stable symbol provenance.
 ### ZUN sound-wrapper provenance and live-local aggregates
 
 The `zwave.cpp` batch separates origin from byte matching. The header retains
-Microsoft's DSUtil copyright and marks ZUN's class extensions. Only eighteen
+Microsoft's DSUtil copyright and marks ZUN's class extensions. The first eighteen
 functions whose target behavior consumes those extensions—fade/play state,
 notification size/event state, `ThBgmFormat`, archive base offsets, raw file
 handles, or the custom refill loop—are credited as authored. Five unchanged
@@ -724,3 +724,16 @@ compiler-private `$Lxxxxx` relocations in the already-exact 2,525-byte
 offset, type, destination, and all compared bytes remained unchanged before
 refreshing only those local symbol names. All 27 `SoundPlayer.cpp` units and
 all eighteen new `zwave.cpp` units then replayed exactly.
+
+The preceding manager/base-sound batch adds four more authored units. Both
+`CreateStreaming` variants need one fully live aggregate in target order:
+`{notify, hr, bufferDescription, soundBuffer, waveFile, notifications,
+bufferSize}`. `Initialize`, `SetPrimaryBufferFormat`, and `CSound::Play` use the
+same rule at smaller scale; every aggregate member participates in real target
+behavior. The file-backed creation failure path additionally performs
+`delete waveFile; waveFile = NULL;`. The second statement is target-observable
+ownership cleanup, not filler: omitting it produces an 855-byte body, while
+the complete source reproduces all 862 target bytes and fifteen relocations.
+The two creation paths, the ZUN-extended base constructor, and `Play` add 2,131
+authored bytes. Eight structurally exact Microsoft DSUtil bodies and the
+compiler-emitted base scalar deleting destructor remain exclusions.
