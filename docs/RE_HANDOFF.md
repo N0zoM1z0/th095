@@ -1407,3 +1407,35 @@ interval are instruction-unreferenced.
 ### 2026-09-02 gpt-web implicit DummyMidiTimer destructor
 
 `0x00424700` is now correctly classified as compiler-generated.  With no user-declared `DummyMidiTimer` destructor, pinned VC7.1 emits an aux-less `??1DummyMidiTimer@th095@@QAE@XZ` symbol whose 19-byte body is byte-identical to the target after masking the sole `REL32`; that relocation resolves to `MidiTimer::~MidiTimer @ 0x00421F90`.  The target startup path constructs the base timer then writes the derived vptr, and the target shutdown delete-expression calls this implicit destructor before `operator delete`.  A user-authored empty out-of-line or class-inline destructor emits 28 bytes because VC7.1 publishes the derived vptr first, so do not keep this body in the authored denominator or try to suppress that store artificially.
+
+### 2026-09-02 gpt-web scene-controller draw exact closure
+
+`SceneSelectControllerView::Draw @ 0x00452630` is now canonical exact for all
+1,851 authored bytes and 78 relocations.  The maintained body has 446
+instructions with the target mnemonic sequence, the target `0x98` frame, and
+zero non-relocation byte differences.  The closing source shape is entirely
+semantic and should be reused on other VC7.1 frame-order residuals:
+
+- keep `switch (view->requestedState)` direct so VC7.1 owns the single switch
+  value home; a named `requestedState` adds a second source local;
+- put the state-2 score renderer in a bounded `__forceinline` helper.  This
+  preserves the emitted code in state-2 order while moving its six real
+  `Float3` locals plus `totalScore/i` into the target's deeper allocation
+  phase;
+- declare all six state-2 vectors in one helper scope and assign x/y/z at the
+  use sites.  The target-proven hash buckets order those live objects; the two
+  scalar declarations are `u32 i` then `i32 totalScore`;
+- each of the four replay page/selection reads passes through the bounded
+  `FrontEndDrawSnapshot(i32)` identity helper.  These are not padding: each
+  creates one target-visible value snapshot at `EBP-0x84/-0x88/-0x8C/-0x90`;
+- reuse one `sceneText[8]`, `userId[5]`, and `levelText[8]` across the mutually
+  exclusive replay-format branches and declare them before the live
+  `Float3 position`.  Target-proven identifier buckets place this real shallow
+  set at `EBP-0x08..-0x24`; replay index and the two `tm *` results naturally
+  occupy `-0x28/-0x2C/-0x30`.
+
+The exact frame is therefore fully accounted for by live source semantics.
+Do not replace these rules with an aggregate that changes non-trivial `Float3`
+lifetimes, case-order swapping that reverses emitted code, or inert frame
+storage.  The adjacent `OnUpdate/OnDraw` wrappers replay exact after this
+change.

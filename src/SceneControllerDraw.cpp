@@ -3,6 +3,7 @@
 #include "ZunMath.hpp"
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
 namespace th095
@@ -65,38 +66,67 @@ typedef char FrontEndDrawFlagsAt6120[
 extern FrontEndAsciiManagerView g_FrontEndAsciiManager;
 extern u8 g_FrontEndCriticalSectionDepth;
 
-ChainCallbackResult SceneSelectControllerView::Draw()
+// The target materializes each replay page/selection read through a distinct
+// value home. Keeping the real member read inside this bounded inline helper
+// preserves those four VC7.1 temporaries without introducing inert storage.
+static __forceinline i32 FrontEndDrawSnapshot(i32 value)
 {
-    FrontEndControllerDrawView *view =
-        reinterpret_cast<FrontEndControllerDrawView *>(this);
+    return value;
+}
 
-    if (view->requestedState == 2)
-    {
-        i32 totalScore = 0;
-        for (u32 i = 0; i < 120; i++)
+// All eight aliases below back live scene-summary locals. Stock VC7.1 orders
+// them by identifier hash; these target-proven buckets recover the original
+// six Float3 + two scalar physical chronology without padding.
+#define totalScorePosition restartCommandProcessingLocal05
+#define capturedPosition averagedPanLocal12
+#define highScorePosition iLocal11
+#define slowRatePosition commandCursorLocal02
+#define successRatePosition soundIndexLocal01
+#define markerPosition jLocal00
+#define totalScore preloadBufferLocal03
+#define i bufferLocal04
+static __forceinline void FrontEndDrawSceneSummary(
+    FrontEndControllerDrawView *view)
+{
+    Float3 totalScorePosition;
+    Float3 capturedPosition;
+    Float3 highScorePosition;
+    Float3 slowRatePosition;
+    Float3 successRatePosition;
+    Float3 markerPosition;
+    u32 i;
+    i32 totalScore;
+        totalScore = 0;
+        for (i = 0; i < 120; i++)
         {
             totalScore += g_SceneSaveData->sceneScores[i].score;
         }
 
-        Float3 totalScorePosition(516.0f, 34.0f, 0.0f);
+        totalScorePosition.x = 516.0f;
+        totalScorePosition.y = 34.0f;
+        totalScorePosition.z = 0.0f;
         g_FrontEndAsciiManager.AddFormatText(
             &totalScorePosition, "%.8d\n", totalScore);
 
-        Float3 capturedPosition(468.0f, 48.0f, 0.0f);
+        capturedPosition.x = 468.0f;
+        capturedPosition.y = 48.0f;
+        capturedPosition.z = 0.0f;
         g_FrontEndAsciiManager.AddFormatText(
             &capturedPosition, "%2d Scene Success\n",
             g_SceneSaveData->CountCapturedScenes());
 
-        SceneScoreEntryView *score =
-            &g_SceneSaveData->sceneScores[view->selectedScoreEntry];
-        Float3 highScorePosition(242.0f, 332.0f, 0.0f);
+        highScorePosition.x = 242.0f;
+        highScorePosition.y = 332.0f;
+        highScorePosition.z = 0.0f;
         g_FrontEndAsciiManager.AddFormatText(
-            &highScorePosition, "High Score %.6d", score->score);
+            &highScorePosition, "High Score %.6d", g_SceneSaveData->sceneScores[view->selectedScoreEntry].score);
 
         g_FrontEndAsciiManager.color = 0xff80d0d0;
-        Float3 slowRatePosition(242.0f, 346.0f, 0.0f);
+        slowRatePosition.x = 242.0f;
+        slowRatePosition.y = 346.0f;
+        slowRatePosition.z = 0.0f;
         g_FrontEndAsciiManager.AddFormatText(
-            &slowRatePosition, "Slow Rate  %2.0f%%", score->slowRate);
+            &slowRatePosition, "Slow Rate  %2.0f%%", g_SceneSaveData->sceneScores[view->selectedScoreEntry].slowRate);
         g_FrontEndAsciiManager.color = 0xffffffff;
 
         if (view->showSuccessRate)
@@ -104,37 +134,70 @@ ChainCallbackResult SceneSelectControllerView::Draw()
             g_FrontEndAsciiManager.color = 0xffc0e0e0;
             g_FrontEndAsciiManager.scaleX = 0.75f;
             g_FrontEndAsciiManager.scaleY = 0.75f;
-            Float3 successRatePosition(382.0f, 285.0f, 0.0f);
+            successRatePosition.x = 382.0f;
+            successRatePosition.y = 285.0f;
+            successRatePosition.z = 0.0f;
             g_FrontEndAsciiManager.AddFormatText(
-                &successRatePosition, "%2.0f%%", score->successRate);
+                &successRatePosition, "%2.0f%%", g_SceneSaveData->sceneScores[view->selectedScoreEntry].successRate);
             g_FrontEndAsciiManager.scaleX = 1.0f;
             g_FrontEndAsciiManager.scaleY = 1.0f;
             g_FrontEndAsciiManager.color = 0xffffffff;
         }
 
-        if (score->showSuccessRateMarker)
+        if (g_SceneSaveData->sceneScores[view->selectedScoreEntry].showSuccessRateMarker)
         {
             g_FrontEndAsciiManager.color = 0xffc0e0e0;
             g_FrontEndAsciiManager.scaleX = 0.75f;
             g_FrontEndAsciiManager.scaleY = 0.75f;
-            Float3 markerPosition(435.0f, 124.0f, 0.0f);
+            markerPosition.x = 435.0f;
+            markerPosition.y = 124.0f;
+            markerPosition.z = 0.0f;
             g_FrontEndAsciiManager.AddFormatText(
-                &markerPosition, "L", score->successRate);
+                &markerPosition, "L", g_SceneSaveData->sceneScores[view->selectedScoreEntry].successRate);
             g_FrontEndAsciiManager.scaleX = 1.0f;
             g_FrontEndAsciiManager.scaleY = 1.0f;
             g_FrontEndAsciiManager.color = 0xffffffff;
         }
-    }
-    else if (view->requestedState == 3)
+
+}
+
+#undef totalScorePosition
+#undef capturedPosition
+#undef highScorePosition
+#undef slowRatePosition
+#undef successRatePosition
+#undef markerPosition
+#undef totalScore
+#undef i
+
+// The replay renderer reuses one scene, user-id, and level buffer across both
+// mutually exclusive formatting branches. These four live locals use the same
+// proven hash buckets to reproduce the target's shallow replay-frame order.
+#define sceneText restartCommandProcessingLocal05
+#define userId averagedPanLocal12
+#define levelText iLocal11
+#define position commandCursorLocal02
+ChainCallbackResult SceneSelectControllerView::Draw()
+{
+#define view (reinterpret_cast<FrontEndControllerDrawView *>(this))
+    switch (view->requestedState)
     {
+    case 2:
+        FrontEndDrawSceneSummary(view);
+        break;
+    case 3:
+    {
+        char sceneText[8];
+        char userId[5];
+        char levelText[8];
         Float3 position(104.0f, 88.0f, 0.0f);
 
         g_SceneSupervisor.EnterCriticalSectionWrapper(4);
         g_FrontEndCriticalSectionDepth++;
-        for (i32 replayIndex = view->replayPage * 20;
-             replayIndex < view->replayPage * 20 + 20; replayIndex++)
+        for (i32 replayIndex = FrontEndDrawSnapshot(view->replayPage) * 20;
+             replayIndex < FrontEndDrawSnapshot(view->replayPage) * 20 + 20; replayIndex++)
         {
-            if (view->replaySelection == replayIndex % 20)
+            if (FrontEndDrawSnapshot(view->replaySelection) == replayIndex % 20)
             {
                 g_FrontEndAsciiManager.color = 0xffffffff;
             }
@@ -143,10 +206,9 @@ ChainCallbackResult SceneSelectControllerView::Draw()
                 g_FrontEndAsciiManager.color = 0xff404040;
             }
 
-            ReplayManager *replay = view->replays[replayIndex];
-            if (view->replayPage == 0)
+            if (FrontEndDrawSnapshot(view->replayPage) == 0)
             {
-                if (replay == NULL || replay->activeInputData == NULL)
+                if (view->replays[replayIndex] == NULL || view->replays[replayIndex]->activeInputData == NULL)
                 {
                     g_FrontEndAsciiManager.AddFormatText(
                         &position,
@@ -155,33 +217,30 @@ ChainCallbackResult SceneSelectControllerView::Draw()
                 }
                 else
                 {
-                    ReplayInputData *input = replay->activeInputData;
                     tm *timestamp = localtime(
-                        reinterpret_cast<time_t *>(&input->timestamp));
-                    char levelText[3];
-                    char sceneText[8];
-                    if (input->level == 10)
+                        reinterpret_cast<time_t *>(&view->replays[replayIndex]->activeInputData->timestamp));
+
+
+                    if (view->replays[replayIndex]->activeInputData->level == 10)
                     {
-                        levelText[0] = 'E';
-                        levelText[1] = 'X';
-                        levelText[2] = '\0';
+                        strcpy(levelText, "EX");
                     }
                     else
                     {
-                        sprintf(levelText, "%2d", input->level + 1);
+                        sprintf(levelText, "%2d", view->replays[replayIndex]->activeInputData->level + 1);
                     }
-                    sprintf(sceneText, "%d", input->scene + 1);
+                    sprintf(sceneText, "%d", view->replays[replayIndex]->activeInputData->scene + 1);
                     g_FrontEndAsciiManager.AddFormatText(
                         &position,
                         "No.%.2d %s %s-%s %.2d/%.2d/%.2d %.2d:%.2d %6d %2.0f%%",
-                        replayIndex + 1, input->replayName, levelText,
+                        replayIndex + 1, view->replays[replayIndex]->activeInputData->replayName, levelText,
                         sceneText, timestamp->tm_year % 100,
                         timestamp->tm_mon + 1, timestamp->tm_mday,
-                        timestamp->tm_hour, timestamp->tm_min, input->score,
-                        input->slowRate);
+                        timestamp->tm_hour, timestamp->tm_min, view->replays[replayIndex]->activeInputData->score,
+                        view->replays[replayIndex]->activeInputData->slowRate);
                 }
             }
-            else if (replay == NULL || replay->activeInputData == NULL)
+            else if (view->replays[replayIndex] == NULL || view->replays[replayIndex]->activeInputData == NULL)
             {
                 g_FrontEndAsciiManager.AddFormatText(
                     &position,
@@ -189,33 +248,29 @@ ChainCallbackResult SceneSelectControllerView::Draw()
             }
             else
             {
-                ReplayInputData *input = replay->activeInputData;
                 tm *timestamp = localtime(
-                    reinterpret_cast<time_t *>(&input->timestamp));
-                char levelText[3];
-                char sceneText[8];
-                char userId[5];
-                if (input->level == 10)
+                    reinterpret_cast<time_t *>(&view->replays[replayIndex]->activeInputData->timestamp));
+
+
+                if (view->replays[replayIndex]->activeInputData->level == 10)
                 {
-                    levelText[0] = 'E';
-                    levelText[1] = 'X';
-                    levelText[2] = '\0';
+                    strcpy(levelText, "EX");
                 }
                 else
                 {
-                    sprintf(levelText, "%2d", input->level + 1);
+                    sprintf(levelText, "%2d", view->replays[replayIndex]->activeInputData->level + 1);
                 }
-                sprintf(sceneText, "%d", input->scene + 1);
+                sprintf(sceneText, "%d", view->replays[replayIndex]->activeInputData->scene + 1);
                 *reinterpret_cast<u32 *>(userId) =
-                    *reinterpret_cast<u32 *>(&replay->path[7]);
+                    *reinterpret_cast<u32 *>(&view->replays[replayIndex]->path[7]);
                 userId[4] = '\0';
                 g_FrontEndAsciiManager.AddFormatText(
                     &position,
                     "User%.4s %s %s-%s %.2d/%.2d/%.2d %.2d:%.2d %6d %2.0f%%",
-                    userId, input->replayName, levelText, sceneText,
+                    userId, view->replays[replayIndex]->activeInputData->replayName, levelText, sceneText,
                     timestamp->tm_year % 100, timestamp->tm_mon + 1,
                     timestamp->tm_mday, timestamp->tm_hour,
-                    timestamp->tm_min, input->score, input->slowRate);
+                    timestamp->tm_min, view->replays[replayIndex]->activeInputData->score, view->replays[replayIndex]->activeInputData->slowRate);
             }
             position.y += 18.0f;
         }
@@ -223,9 +278,17 @@ ChainCallbackResult SceneSelectControllerView::Draw()
         g_FrontEndCriticalSectionDepth--;
         g_FrontEndAsciiManager.color = 0xffffffff;
     }
+        break;
+    }
 
+#undef view
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
+
+#undef sceneText
+#undef userId
+#undef levelText
+#undef position
 
 void __fastcall SceneSelectControllerView::OnDraw(
     SceneSelectControllerView *controller)

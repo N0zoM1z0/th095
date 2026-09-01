@@ -623,3 +623,4 @@ address,name,size,status,match_percent,unit,evidence
 0x004533B0,th095::CSoundManager::CreateStreamingFromMemory,812,matching,100.00,zwave-manager-create-streaming-memory,python3 scripts/build.py --unit zwave-manager-create-streaming-memory && python3 scripts/compare-coff-function.py --unit zwave-manager-create-streaming-memory --json
 0x004536E0,th095::CSound::CSound,221,matching,100.00,zwave-sound-constructor,python3 scripts/build.py --unit zwave-sound-constructor && python3 scripts/compare-coff-function.py --unit zwave-sound-constructor --json
 0x00453EE0,th095::CSound::Play,236,matching,100.00,zwave-sound-play,python3 scripts/build.py --unit zwave-sound-play && python3 scripts/compare-coff-function.py --unit zwave-sound-play --json
+0x00452630,th095::SceneSelectControllerView::Draw,1851,matching,100.00,scene-controller-draw,python3 scripts/build.py --unit scene-controller-draw && python3 scripts/compare-coff-function.py --unit scene-controller-draw --json
