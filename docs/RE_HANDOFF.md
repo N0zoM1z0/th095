@@ -1029,15 +1029,20 @@ source-present for its complete 151-byte archive/version gate and proves the
 version-data fields at Supervisor `+0x774/+0x778`. Its exact-sized VC7.1 probe
 matches 65/91 comparable bytes, but the target's four-byte local buffer-home
 gap remains conservatively uncredited rather than represented by inert padding.
-`StartupThread @ 0x004242B0` and `DeletedCallback @ 0x004244D0` are now
-source-present for their complete 532/550-byte bodies. Their exact-sized VC7.1
-probes resolve every one of 57/43 relocations and match 299/304 plus 364/378
-comparable bytes. The startup worker proves signed volume publication, quartic
-BGM attenuation, optional dummy-MIDI timing, `textAnm +0x43C`, and replay-worker
-completion. The teardown callback closes the inverse ownership graph through
-workers, managers, seven resource owners, ANM/ASCII/sound/text, DirectInput,
-PBG, and the dummy MIDI timer at `+0x118`. The residual bytes only cover unused
-EH space or four compiler-local homes; do not add inert locals for exact credit.
+`StartupThread @ 0x004242B0` remains source-present for its complete 532-byte
+body and exact-sized VC7.1 probe, resolving all 57 relocations while retaining
+five compiler-local residual bytes.  `DeletedCallback @ 0x004244D0`, however,
+is now canonical exact for all 550 bytes and 43 relocations.  The startup worker
+proves signed volume publication, quartic BGM attenuation, optional dummy-MIDI
+timing, `textAnm +0x43C`, and replay-worker completion.  The teardown callback
+closes the inverse ownership graph through workers, managers, seven resource
+owners, ANM/ASCII/sound/text, DirectInput, PBG, and the dummy MIDI timer at
+`+0x118`.  Its decisive source shape is two bounded inline ownership phases:
+`ReleaseSupervisorVersionData` owns the real version-data pointer and
+`ReleaseSupervisorAnmVertexBuffer` owns the real ANM-manager pointer.  Keeping
+those lifetimes inside their actual teardown phases moves them to target deep
+homes and lets the later `delete dummyMidiTimer` compiler temporaries occupy the
+shallow homes naturally.  No inert local, padding, or ABI fiction is required.
 `ThreadClose @ 0x00425150` is canonical exact for all 155 bytes and its three
 imports. It closes and clears the replay-scan worker handle under critical
 section 6, clears the worker's active field, and balances the corresponding
@@ -1222,7 +1227,7 @@ This pass also reclassified several tempting residuals as negative compiler
 oracles rather than exact candidates. `PhotoEnemyManagerView` construction
 keeps an unexplained 0x28 target-only frame expansion; its destructor interleaves
 three delete-expression homes around the real argument pointer. `WinMain`,
-`Supervisor::StartupThread`, `Supervisor::DeletedCallback`, `Supervisor::LoadDat`,
+`Supervisor::StartupThread`, `Supervisor::LoadDat`,
 `AnmLoaded::InitializeVm`, `AnmManagerVmLifecycleView::AddVm`, and the
 PhotoEffect factory/initializers likewise retain target-only EH/new/delete or
 unreferenced frame homes after their real locals are accounted for. Do not add
@@ -1459,3 +1464,27 @@ manually spelling `GetRandomF32() * range`; that natural helper creates the
 range temporary at the target phase.  Raw serialized ECL/timeline operands are
 kept as `i32 *` and decoded at use sites, matching TH08 ancestry while every
 TH095 index and opcode remains target-local.
+
+### 2026-09-02 gpt-web Supervisor shutdown exact lifetime-phase oracle
+
+`Supervisor::DeletedCallback @ 0x004244D0` is canonical exact for all 550
+bytes and 43 relocations.  Its original exact-sized probe already had the full
+150-instruction target mnemonic sequence and the same six stack-home addresses;
+the remaining fourteen bytes were only a permutation of four homes.  Do not
+classify that pattern as a frame hole until the lifetime phases are tested.
+
+The closing natural source shape keeps the two genuine early ownership locals
+inside separate bounded `__forceinline` helpers: version-data free/nulling and
+ANM vertex-buffer release/nulling.  This changes no call topology and adds no
+storage, but it gives VC7.1 the same allocation phases as the target.  The two
+real ownership homes move deep, while the two compiler temporaries from the late
+`delete g_Supervisor.dummyMidiTimer` expression move shallow.  This exact result
+is a reusable oracle for teardown functions whose target/current stack-home
+*sets are identical* but whose homes are permuted: first isolate real ownership
+phases before assuming the residual is compiler-only.
+
+Adding the helpers renumbered three compiler-private `$L` symbols inside the
+already-exact `Supervisor::UpdateSceneState` switch tables.  A direct structural
+audit proved all 842 comparable bytes, all 46 relocation offsets/types/addends,
+and every solved target destination unchanged; only those three private symbol
+spellings were refreshed.  All 45 canonical `Main.cpp` units then replayed exact.

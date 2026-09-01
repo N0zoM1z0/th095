@@ -1903,6 +1903,30 @@ error:
     g_Supervisor.replayScanStopRequested = 1;
 }
 
+// Keep the real version-data ownership local inside its teardown phase so
+// VC7.1 allocates it with the target destructor chronology.
+static __forceinline void ReleaseSupervisorVersionData()
+{
+    if (g_Supervisor.versionData != NULL)
+    {
+        void *versionData = g_Supervisor.versionData;
+        free(versionData);
+        g_Supervisor.versionData = NULL;
+    }
+}
+
+// The ANM vertex-buffer owner has a separate lifetime from later shutdown
+// delete expressions; a bounded inline helper preserves that live local phase.
+static __forceinline void ReleaseSupervisorAnmVertexBuffer()
+{
+    AnmManager *anmManager = g_AnmManager;
+    if (anmManager->quadVertexBuffer != NULL)
+    {
+        anmManager->quadVertexBuffer->Release();
+        anmManager->quadVertexBuffer = NULL;
+    }
+}
+
 // FUNCTION: TH095 0x004244D0.
 i32 __fastcall Supervisor::DeletedCallback(void *arg)
 {
@@ -1910,12 +1934,7 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
     g_SoundPlayer.RequestThreadStop();
     g_Supervisor.StopReplayScan();
 
-    if (g_Supervisor.versionData != NULL)
-    {
-        void *versionData = g_Supervisor.versionData;
-        free(versionData);
-        g_Supervisor.versionData = NULL;
-    }
+    ReleaseSupervisorVersionData();
 
     ((Supervisor *)arg)->ReleaseGameManagers();
     ReleasePhotoBulletAnm();
@@ -1926,12 +1945,7 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
     ReleasePhotoPlayerAnm();
     ReleaseScoreData();
 
-    AnmManager *anmManager = g_AnmManager;
-    if (anmManager->quadVertexBuffer != NULL)
-    {
-        anmManager->quadVertexBuffer->Release();
-        anmManager->quadVertexBuffer = NULL;
-    }
+    ReleaseSupervisorAnmVertexBuffer();
     g_AnmManager->ReleaseAnm(0);
     g_AnmManager->ReleaseAnm(2);
     g_AnmManager->ReleaseSurface(8);
