@@ -672,6 +672,10 @@ void PhotoEnemyManagerView::Destroy()
     }
 }
 
+// FUNCTION: TH095 0x004163F0.
+// TH08 supplies the ancestral raw-argument source shape.  The target-local
+// 20-byte special-spawn record and GetRandomF32InRange call are compiler-
+// observed: together they restore the original VC7.1 local chronology.
 void PhotoEnemyTimelineView::Run()
 {
     u32 mirrorMovementX = 0;
@@ -691,38 +695,28 @@ void PhotoEnemyTimelineView::Run()
                 mirrorMovementX = 1;
             case 0:
             {
-                PhotoEnemyTimelineSpawnArgs *args =
-                    reinterpret_cast<PhotoEnemyTimelineSpawnArgs *>(
-                        reinterpret_cast<u8 *>(this->instruction) + 8);
+                i32 *args = reinterpret_cast<i32 *>(
+                    reinterpret_cast<u8 *>(this->instruction) + 8);
                 Float3 position;
-                position.x = args->x;
-                position.y = args->y;
+                position.x = *reinterpret_cast<f32 *>(&args[1]);
+                position.y = *reinterpret_cast<f32 *>(&args[2]);
                 position.z = 0.0f;
                 g_PhotoEnemyManager->Spawn(
-                    args->subroutineId,
-                    &position,
-                    args->life,
-                    args->itemDrop,
-                    args->score,
+                    args[0], &position, args[3], args[4], args[5],
                     mirrorMovementX);
                 break;
             }
 
             case 15:
             {
-                PhotoEnemyTimelineSpawnArgs *args =
-                    reinterpret_cast<PhotoEnemyTimelineSpawnArgs *>(
-                        reinterpret_cast<u8 *>(this->instruction) + 8);
+                i32 *args = reinterpret_cast<i32 *>(
+                    reinterpret_cast<u8 *>(this->instruction) + 8);
                 Float3 position;
-                position.x = args->x;
-                position.y = args->y;
+                position.x = *reinterpret_cast<f32 *>(&args[1]);
+                position.y = *reinterpret_cast<f32 *>(&args[2]);
                 position.z = 0.0f;
                 g_PhotoEnemyManager->Spawn(
-                    args->subroutineId,
-                    &position,
-                    args->life,
-                    args->itemDrop,
-                    args->score,
+                    args[0], &position, args[3], args[4], args[5],
                     mirrorMovementX);
                 break;
             }
@@ -731,22 +725,24 @@ void PhotoEnemyTimelineView::Run()
                 mirrorMovementX = 1;
             case 11:
             {
-                PhotoEnemyTimelineExtendedSpawnArgs *args =
-                    reinterpret_cast<PhotoEnemyTimelineExtendedSpawnArgs *>(
-                        reinterpret_cast<u8 *>(this->instruction) + 8);
-                Float3 position;
-                position.x = args->x;
-                position.y = args->y;
-                position.z = 0.0f;
-                PhotoEnemyView *enemy = g_PhotoEnemyManager->Spawn(
-                    args->subroutineId,
-                    &position,
-                    args->life,
-                    -1,
-                    args->score,
-                    mirrorMovementX);
-                enemy->timelineParam0 = args->timelineParam0;
-                enemy->timelineParam1 = args->timelineParam1;
+                // One fully-live record preserves the target's contiguous
+                // position/spawned/args homes without padding.
+                struct SpecialSpawnLocals
+                {
+                    Float3 position;
+                    PhotoEnemyView *enemy;
+                    i32 *args;
+                } locals;
+                locals.args = reinterpret_cast<i32 *>(
+                    reinterpret_cast<u8 *>(this->instruction) + 8);
+                locals.position.x = *reinterpret_cast<f32 *>(&locals.args[1]);
+                locals.position.y = *reinterpret_cast<f32 *>(&locals.args[2]);
+                locals.position.z = 0.0f;
+                locals.enemy = g_PhotoEnemyManager->Spawn(
+                    locals.args[0], &locals.position, locals.args[3], -1,
+                    locals.args[6], mirrorMovementX);
+                locals.enemy->timelineParam0 = locals.args[4];
+                locals.enemy->timelineParam1 = locals.args[5];
                 break;
             }
 
@@ -754,21 +750,17 @@ void PhotoEnemyTimelineView::Run()
                 mirrorMovementX = 1;
             case 2:
             {
-                PhotoEnemyTimelineRandomRangeArgs *args =
-                    reinterpret_cast<PhotoEnemyTimelineRandomRangeArgs *>(
-                        reinterpret_cast<u8 *>(this->instruction) + 8);
+                i32 *args = reinterpret_cast<i32 *>(
+                    reinterpret_cast<u8 *>(this->instruction) + 8);
                 Float3 position;
-                position.x = (args->maximumX - args->minimumX) *
-                        g_Rng.GetRandomF32() +
-                    args->minimumX;
-                position.y = args->y;
+                position.x = g_Rng.GetRandomF32InRange(
+                        *reinterpret_cast<f32 *>(&args[2]) -
+                        *reinterpret_cast<f32 *>(&args[1])) +
+                    *reinterpret_cast<f32 *>(&args[1]);
+                position.y = *reinterpret_cast<f32 *>(&args[3]);
                 position.z = 0.0f;
                 g_PhotoEnemyManager->Spawn(
-                    args->subroutineId,
-                    &position,
-                    args->life,
-                    args->itemDrop,
-                    args->score,
+                    args[0], &position, args[4], args[5], args[6],
                     mirrorMovementX);
                 break;
             }
@@ -777,25 +769,19 @@ void PhotoEnemyTimelineView::Run()
                 mirrorMovementX = 1;
             case 3:
             {
-                PhotoEnemyTimelineRandomWidthArgs *args =
-                    reinterpret_cast<PhotoEnemyTimelineRandomWidthArgs *>(
-                        reinterpret_cast<u8 *>(this->instruction) + 8);
+                i32 *args = reinterpret_cast<i32 *>(
+                    reinterpret_cast<u8 *>(this->instruction) + 8);
                 Float3 position;
                 position.x = g_Rng.GetRandomF32() * 384.0f;
-                position.y = args->y;
+                position.y = *reinterpret_cast<f32 *>(&args[1]);
                 position.z = 0.0f;
                 g_PhotoEnemyManager->Spawn(
-                    args->subroutineId,
-                    &position,
-                    args->life,
-                    args->itemDrop,
-                    args->score,
+                    args[0], &position, args[2], args[3], args[4],
                     mirrorMovementX);
                 break;
             }
 
             case 8:
-            {
                 g_PhotoEnemyManager->timelineEnemySlots[
                     reinterpret_cast<i32 *>(
                         reinterpret_cast<u8 *>(this->instruction) + 8)[0]]
@@ -803,10 +789,8 @@ void PhotoEnemyTimelineView::Run()
                         reinterpret_cast<i32 *>(
                             reinterpret_cast<u8 *>(this->instruction) + 8)[1]);
                 break;
-            }
 
             case 10:
-            {
                 if (g_PhotoEnemyManager->timelineEnemySlots[
                         reinterpret_cast<i32 *>(
                             reinterpret_cast<u8 *>(this->instruction) + 8)[0]] !=
@@ -820,7 +804,6 @@ void PhotoEnemyTimelineView::Run()
                     goto finish;
                 }
                 break;
-            }
             }
         }
         else if (this->timer <

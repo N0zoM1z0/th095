@@ -176,16 +176,17 @@
   exchange of the real `argumentIndex`/`currentFrame` stack homes; the same
   target-proven shallow identifier-hash buckets used elsewhere restore them
   without changing the scheduled-call semantics.
-- `PhotoEnemyTimelineView::Run @ 0x004163F0` remains source-present for the
-  complete sixteen-opcode timeline interpreter. It covers fixed, random-range,
-  random-width, and extended enemy spawns with their X-mirrored variants,
-  direct timeline-enemy state writes, and the active-enemy wait operation. The
-  target body is 818 bytes plus a 64-byte switch table, but the old handoff
-  claim that a pinned source probe also emitted exactly 818 bytes is stale. A
-  detached replay of commit `746d38a`, using its historical source/headers and
-  the same pinned VC7.1 compiler, emits 882 bytes, exactly like the current
-  full-source replay. Treat the old 818/701-of-734 probe record as invalid and
-  do not optimize future work around it.
+- `PhotoEnemyTimelineView::Run @ 0x004163F0` is now canonical exact for
+  all 818 authored bytes; the configured compare extent is 882 bytes because
+  VC7.1 owns the adjacent 64-byte, sixteen-entry switch table.  The prior
+  “882 versus 818” residual was therefore a boundary-accounting error, not a
+  64-byte source mismatch.  TH08 provides the ancestral raw `i32 *` argument
+  shape.  TH095 independently proves `GetRandomF32InRange` in the random-range
+  case and a fully-live 20-byte `{Float3 position; PhotoEnemyView *enemy;
+  i32 *args;}` special-spawn record in cases 11/12.  Those two natural source
+  shapes restore the target range temporary and contiguous position/spawned/
+  args homes without inert storage.  The canonical unit replays all 254 body
+  mnemonics and all 37 code/table relocations.
 - `PhotoEnemyManagerView::Spawn @ 0x004156C0` is exact for all 350 bytes and
   three relocations. It scans 128 slots, copies the manager's leading
   `0x4CC0`-byte spawn template, initializes position/life/index and the main
@@ -1333,10 +1334,10 @@ script 0x120.  Model the local spawner view with `InitializeVm`, not the mislead
 `SetAndExecuteScript` alias.  This preserves the emitted call shape while making
 the source-level dependency and future relocation review truthful.
 
-A replay of `.analysis/EnemyHistorical-timeline.cpp` under the pinned VC7.1
-profile still emits 882 bytes for `PhotoEnemyTimelineView::Run @ 0x004163F0`
-against the 818-byte target.  The old exact-sized 818-byte observation is therefore
-stale/non-replayable and must not be used as an exact oracle.
+The earlier `.analysis/EnemyHistorical-timeline.cpp` replay note is superseded.
+Its 882-byte output is the correct full VC7.1 symbol extent: 818 authored bytes
+followed by a 64-byte compiler switch table.  Always compare boundary-accounted
+body-plus-table extents before interpreting a symbol-size delta as missing source.
 
 ### 2026-09-01 gpt-web PhotoStage display macro-side-effect recovery
 
@@ -1439,3 +1440,22 @@ Do not replace these rules with an aggregate that changes non-trivial `Float3`
 lifetimes, case-order swapping that reverses emitted code, or inert frame
 storage.  The adjacent `OnUpdate/OnDraw` wrappers replay exact after this
 change.
+
+### 2026-09-02 gpt-web enemy timeline exact boundary closure
+
+`PhotoEnemyTimelineView::Run @ 0x004163F0` closes exactly at 818 authored bytes
+plus a 64-byte compiler-owned switch table.  This is a reusable boundary lesson:
+COFF symbol size can include adjacent switch data, so a source symbol of 882 bytes
+does not contradict an 818-byte authored function ledger entry.  Use `size =
+0x332` and `compare_size = 0x372` in the canonical unit.
+
+The final local-order recovery is also reusable.  Prefer target/ancestry-backed
+semantic records over identifier games when several values share one lifetime
+and one value is passed by address.  In timeline cases 11/12, the fully-live
+record `{Float3 position; PhotoEnemyView *enemy; i32 *args;}` forces VC7.1 to
+preserve the exact contiguous `EBP-0x38..-0x28` block.  The random-range cases
+must call the existing inline `Rng::GetRandomF32InRange(range)` rather than
+manually spelling `GetRandomF32() * range`; that natural helper creates the
+range temporary at the target phase.  Raw serialized ECL/timeline operands are
+kept as `i32 *` and decoded at use sites, matching TH08 ancestry while every
+TH095 index and opcode remains target-local.
