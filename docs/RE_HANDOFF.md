@@ -1562,3 +1562,80 @@ authored empty variadic function rather than treating it as a CRT thunk.
 IDA also confirms `PbgArchiveEntry::vector deleting destructor @ 0x00455080`
 as compiler-owned: flag bit 1 selects vector destruction, flag bit 0 selects
 deallocation. It is excluded from authored coverage.
+
+### 2026-09-02 gpt-web residual compiler-context audit
+
+A broad stock-VC7.1 compiler-context sweep did **not** uncover a new exact lane.
+Treat these as bounded negative oracles rather than repeating them function by
+function:
+
+- With same-TU canonical exact units as guards, `/Z7`, removing `/GF`, removing
+  `/Gy`, `/Oi-`, `/GR-`, `/GX`, `/EHs`, `/G6`, `/G7` where accepted, `/Ot`,
+  `/Zp4`, `/Zp8`, and `/Oy-` left the tested PhotoGame, BulletManager,
+  ResultScreen, PhotoEffect, and FrontEnd residual byte scores unchanged.
+  `/EHa`, `/Os`, `/Ob0`, and the other rejected variants changed or broke the
+  exact guards.  Do not reinterpret the documented stack-home residuals as a
+  generic per-unit profile mismatch without new evidence.
+- TH08 production TUs use `/Yu"th_pch.h"`, so PCH state was tested explicitly.
+  A minimal consumer-compatible TH095 PCH containing the system/D3D headers plus
+  the real PhotoCamera/AnmVmId views left `PhotoGameUpdateView` construction at
+  the identical 331-byte, 284/295-comparable mismatch.  Its already-exact
+  destructor stayed exact, while exact `UpdateMainState` regressed from 3,463 to
+  3,527 bytes.  A raw TH08-style umbrella PCH is not ABI-compatible with the
+  reconstruction's private views.  Do not route residual TUs through PCH merely
+  to chase frame allocation.
+- A full EBP/LEA stack audit distinguishes an instruction-unreferenced interval
+  from an address-taken aggregate.  For example, the shallow 0x100 bytes in
+  `ResultScreen::Update` are owned by a real address-taken buffer and are not a
+  hole; its later 176- and 220-byte intervals have no EBP `lea` or boundary
+  address escape and remain true compiler reservations.  The previously noted
+  264-byte PhotoStage-display interval, 264-byte FrontInf-initialize interval,
+  Bullet/transform 16/44-byte intervals, SceneSelect gaps, Controller's deepest
+  eight bytes, and the deep PhotoCamera interval likewise have no address escape.
+  Before declaring a future interval inert, check both direct EBP references and
+  any `lea` whose base spans the apparent gap.
+
+Two legacy canonical sources are **not** reusable policy-compliant oracles for
+new matches.  `InitializePhotoStageDisplayVm @ 0x0042E730` currently carries an
+explicit `unknownStack[0x2c]`; its target interval has no direct or escaped stack
+reference.  More importantly, `AnmLoaded::SetAndExecuteScript @ 0x0043A0C0`
+contains two declarations (`managerScratch1/managerScratch2`) that TH08 does not
+have and that are never read or written.  Removing either declaration changes
+its exact frame from 0x14 to 0x10; removing both changes it to 0x0C.  Therefore
+its shallow two-dword reservation is caused by historical unused declarations,
+not by a truthful runtime lifetime.  Do **not** use either legacy shape to close
+`AnmLoaded::InitializeVm` or another residual; current authored-source policy
+forbids new inert locals/padding.
+
+`AnmLoaded::InitializeVm @ 0x00404B80` was also replayed as a header-defined
+inline COMDAT, matching TH08's ancestral placement style.  The emitted body is
+still exactly 222 bytes with the same 210/214 comparable bytes as the ordinary
+out-of-line definition: all three genuine `Float3(0,0,0)` temporary lanes stay
+at EBP-0x04..-0x24 and only target `this @ EBP-0x30` versus source `EBP-0x28`
+remains.  Header/in-class placement therefore does not explain the missing two
+dwords.
+
+The rotating-laser one-byte lane remains a genuine branch-lowering barrier.
+`PhotoRotatingLaserView::CheckCollision @ 0x0041FA10` has a 1,768-byte natural
+probe whose sole mnemonic divergence is target `jge near collisionDone` versus
+stock-VC7.1 `jl short` plus `jmp near`.  Positive-if/else-goto, guarded, wrapped
+fragment-loop, direct-return, comparison-helper, and bounds-check-plus-length
+producer spellings were replayed.  The closest structured form reaches 374/374
+mnemonics but is 1,770 bytes because one target-short shared-tail jump becomes
+near and changes CFG ownership.  No artificial branch is permitted; defer the
+function until a genuinely new source/CFG oracle appears.
+
+Finally, the pinned runtime does contain `__frnd`, whose CRT implementation is
+literally `fld; frndint; fstp`, and the VC7 backend knows `frndint`, `fsin`,
+`fcos`, and `fsincos` opcodes.  Nevertheless `_frnd` remains an external call
+under `/Od`, `/O1`, and `/O2` even with `/Oi` and `#pragma intrinsic`, while
+paired `sin/cos` expressions emit separate calls under `/Od` or separate
+`fsin`/`fcos` under optimization rather than `fsincos`.  There is no public
+VC7 source intrinsic for these instructions.  `AnmManager::DrawInner`, `Draw2D`,
+and `ProjectCameraFacingQuad` therefore remain backend/special-instruction hard
+lanes under the no-inline-assembly rule.
+
+Revalidated ledger metrics at this checkpoint are `632/685` exact authored
+functions (`92.26%`) and `238639/332245` exact authored bytes (`71.83%`).
+Reaching 95% requires 19 more functions and 76,994 more authored bytes; the
+remaining 53 authored functions are all source-present.

@@ -764,3 +764,29 @@ the complete source reproduces all 862 target bytes and fifteen relocations.
 The two creation paths, the ZUN-extended base constructor, and `Play` add 2,131
 authored bytes. Eight structurally exact Microsoft DSUtil bodies and the
 compiler-emitted base scalar deleting destructor remain exclusions.
+
+### Residual compiler-context negative oracles
+
+Do not assume an exact-sized stack-home residual means the compile profile is
+wrong.  A guarded stock-VC7.1 sweep across PhotoGame, BulletManager,
+ResultScreen, PhotoEffect, and FrontEnd showed that `/Z7`, `/GX`, `/EHs`,
+`/G6`/`/G7` where accepted, `/Ot`, `/Zp4`/`/Zp8`, `/Oy-`, and removing
+`/GF`, `/Gy`, or `/Oi` either preserve the exact guards while leaving the
+residual unchanged, or fail the guard.  `/EHa`, `/Os`, and `/Ob0` are likewise
+not alternate exact profiles for these lanes.  TH08's `/Yu"th_pch.h"` ancestry
+was tested separately: a minimal ABI-compatible PCH leaves the PhotoGame
+constructor residual unchanged and breaks an already-exact large caller.
+
+When auditing a target frame, count address escapes as well as direct EBP
+accesses.  A local buffer may appear to be a large unreferenced range when only
+its base is formed with `lea` and then passed/iterated indirectly.  Conversely,
+intervals with neither direct references nor an EBP-base `lea`/escaped pointer
+remain compiler-reservation evidence; do not synthesize storage for them.
+
+Legacy units that happen to match by unused declarations are not new-source
+oracles.  The current exact `SetAndExecuteScript` source has two unused manager
+pointer declarations: removing one shrinks its 0x14 frame to 0x10, and removing
+both shrinks it to 0x0C; TH08 source has neither declaration.  The legacy
+PhotoStage display helper similarly contains an explicit unknown stack array.
+Keep these as historical compatibility debt, not permission to introduce inert
+locals into new authored matches.
