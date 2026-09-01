@@ -377,3 +377,6 @@ address,name,module,confidence,evidence
 0x00454B70,th095::CWaveFile::ResetFile,SoundPlayer,exact,Exact ZUN intro-loop and archive-offset seek logic
 0x00454CC0,th095::CWaveFile::Read,SoundPlayer,exact,Exact ZUN memory-or-file stream read path
 0x00454E10,th095::CWaveFile::Close,SoundPlayer,exact,Exact ZUN raw file-handle close path
+0x00455920,th095::CPbgFile::Open,PbgFile,exact,Canonical 330-byte VC7.1 file-open unit with all four relocations replayed
+0x00455890,th095::CPbgFile::scalar deleting destructor,PbgFile,exact,IDA target wrapper calls CPbgFile destructor and conditionally operator delete from flag bit 0
+0x00455DE0,th095::IPbgFile::scalar deleting destructor,PbgFile,exact,IDA target wrapper publishes IPbgFile vtable and conditionally operator delete from flag bit 0

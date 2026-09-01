@@ -695,3 +695,4 @@ th095::CWaveFile::GetSize,0x00454B50,function
 th095::CWaveFile::ResetFile,0x00454B70,function
 th095::CWaveFile::Read,0x00454CC0,function
 th095::CWaveFile::Close,0x00454E10,function
+th095::CPbgFile::Open,0x00455920,function

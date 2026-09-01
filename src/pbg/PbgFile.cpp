@@ -18,6 +18,67 @@ CPbgFile::~CPbgFile()
     Close();
 }
 
+// FUNCTION: TH095 0x00455920; TH08 CPbgFile::Open is the source-shape oracle.
+// Stock VC7.1 ignores TH08's patched var_order pragma.  These aliases back
+// only the four real Open locals and reproduce the target shallow-to-deep
+// chronology: curMode, goToEnd, filePathBuffer, creationDisposition.
+#define pbgOpenCurMode restartCommandProcessingLocal05
+#define pbgOpenGoToEnd averagedPanLocal12
+#define pbgOpenFilePathBuffer iLocal11
+#define pbgOpenCreationDisposition commandCursorLocal02
+bool CPbgFile::Open(const char *filename, char *mode)
+{
+    DWORD pbgOpenCreationDisposition;
+    BOOL pbgOpenGoToEnd = FALSE;
+    char pbgOpenFilePathBuffer[MAX_PATH];
+
+    Close();
+
+    char *pbgOpenCurMode;
+    for (pbgOpenCurMode = mode; *pbgOpenCurMode != '\0'; pbgOpenCurMode++)
+    {
+        if (*pbgOpenCurMode == 'r')
+        {
+            m_DesiredAccess = GENERIC_READ;
+            pbgOpenCreationDisposition = OPEN_EXISTING;
+            break;
+        }
+        if (*pbgOpenCurMode == 'w')
+        {
+            DeleteFileA(filename);
+            m_DesiredAccess = GENERIC_WRITE;
+            pbgOpenCreationDisposition = CREATE_ALWAYS;
+            break;
+        }
+        if (*pbgOpenCurMode == 'a')
+        {
+            pbgOpenGoToEnd = TRUE;
+            m_DesiredAccess = GENERIC_WRITE;
+            pbgOpenCreationDisposition = OPEN_ALWAYS;
+            break;
+        }
+    }
+
+    if (*pbgOpenCurMode == '\0')
+        return false;
+
+    GetFullFilePath(pbgOpenFilePathBuffer, filename);
+    m_hFile = CreateFileA(
+        pbgOpenFilePathBuffer, m_DesiredAccess, FILE_SHARE_READ, NULL,
+        pbgOpenCreationDisposition,
+        FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    if (m_hFile == INVALID_HANDLE_VALUE)
+        return false;
+
+    if (pbgOpenGoToEnd)
+        SetFilePointer(m_hFile, 0, NULL, FILE_END);
+    return true;
+}
+#undef pbgOpenCreationDisposition
+#undef pbgOpenFilePathBuffer
+#undef pbgOpenGoToEnd
+#undef pbgOpenCurMode
+
 // FUNCTION: TH095 0x00455A70; TH08 0x004738E0 is the source-shape oracle.
 void CPbgFile::Close()
 {

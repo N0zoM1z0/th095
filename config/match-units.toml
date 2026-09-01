@@ -15968,6 +15968,21 @@ relocations = [
   { offset = 0x4A, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
 ]
 
+[units.pbg-file-open]
+source = "src/pbg/PbgFile.cpp"
+object = "build/matching/PbgFile.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CPbgFile::Open"]
+symbol = "?Open@CPbgFile@th095@@UAE_NPBDPAD@Z"
+target_address = 0x00455920
+size = 0x14A
+relocations = [
+  { offset = 0x7B, type = "DIR32", symbol = "__imp__DeleteFileA@4", target = 0x004950CC },
+  { offset = 0xE0, type = "REL32", symbol = "?GetFullFilePath@CPbgFile@th095@@SIXPADPBD@Z", target = 0x00455CC0 },
+  { offset = 0x109, type = "DIR32", symbol = "__imp__CreateFileA@28", target = 0x00495070 },
+  { offset = 0x13E, type = "DIR32", symbol = "__imp__SetFilePointer@16", target = 0x004950BC },
+]
+
 [units.pbg-file-close]
 source = "src/pbg/PbgFile.cpp"
 object = "build/matching/PbgFile.obj"

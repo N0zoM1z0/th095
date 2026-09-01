@@ -1518,3 +1518,29 @@ f816429 gpt-web: restore PhotoStage display side effects
 922bce1 gpt-web: document residual barriers and fix PhotoItem VM call
 7b6242d Document bullet core compiler barriers
 ```
+### 2026-09-02 gpt-web CPbgFile::Open exact and array-allocation oracle
+
+`CPbgFile::Open @ 0x00455920` is canonical exact for all 330 authored bytes
+and all four relocations.  TH08 supplies the complete semantic source: scan the
+mode string for `r/w/a`, close the prior handle, delete the destination before
+write mode, expand the executable-relative path, create a sequential Win32 file,
+and seek append mode to `FILE_END`.  Stock VC7.1 ignores TH08's patched
+`#pragma var_order`, so keep the four *real* locals independent and map their
+backing identifiers through the established shallow rank in target order:
+`curMode -> goToEnd -> filePathBuffer -> creationDisposition`.  This reproduces
+target homes `EBP-0x04/-0x08`, the 260-byte path array ending at `EBP-0x110`,
+`creationDisposition @ EBP-0x114`, and hidden `this @ EBP-0x118`.  No inert
+storage is present.
+
+A tempting semantic aggregate `{creationDisposition, filePathBuffer}` is a
+negative oracle: it preserves all 89 target mnemonics and gives the exact
+330-byte extent, but collapses the original array allocation boundary, yielding
+a `0x114` frame and shifting only the aggregate/`this` lane by four bytes.  For
+large local arrays, preserve independent lexical allocation before reaching for
+an aggregate; identifier-hash ordering and aggregate layout solve different
+compiler problems.
+
+IDA independently identifies `0x00455890` and `0x00455DE0` as the scalar
+deleting destructors for `CPbgFile` and `IPbgFile`: both conditionally call
+`operator delete` from flag bit 0 and are compiler-owned, excluded from authored
+coverage.
