@@ -380,3 +380,6 @@ address,name,module,confidence,evidence
 0x00455920,th095::CPbgFile::Open,PbgFile,exact,Canonical 330-byte VC7.1 file-open unit with all four relocations replayed
 0x00455890,th095::CPbgFile::scalar deleting destructor,PbgFile,exact,IDA target wrapper calls CPbgFile destructor and conditionally operator delete from flag bit 0
 0x00455DE0,th095::IPbgFile::scalar deleting destructor,PbgFile,exact,IDA target wrapper publishes IPbgFile vtable and conditionally operator delete from flag bit 0
+0x0042AAD0,th095::ReleaseResultAnm,PhotoOverlay,exact,Canonical 20-byte slot-nine ANM release helper; unique Supervisor::DeletedCallback relocation
+0x00455080,th095::PbgArchiveEntry::vector deleting destructor,PbgArchive,exact,IDA target compiler wrapper performs vector/scalar PbgArchiveEntry destruction and conditional delete
+0x00412180,th095::utils::DebugPrint,Utils,exact,Canonical 5-byte empty release-build body plus 119 exact caller relocations and TH08 non-DEBUG source ancestry

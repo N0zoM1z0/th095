@@ -466,3 +466,10 @@ single TH095 code, layout, or behavior claim.
 | --- | --- | --- | --- |
 | PBG-OPEN-001 | exact | `CPbgFile::Open @ 0x00455920` is exact for 330 authored bytes. TH08's `r/w/a` semantics transfer directly, while stock VC7.1 needs only the four live locals mapped through the established identifier-hash rank in target order `curMode / goToEnd / filePathBuffer / creationDisposition`. Keep the 260-byte path array independent: combining it with `creationDisposition` into a semantic aggregate collapses a genuine four-byte array allocation boundary and leaves a `0x114` frame instead of target `0x118`. | Canonical `pbg-file-open` unit, 89/89 target mnemonics, four reviewed relocations, target/local-home crosswalk, and TH08 `CPbgFile::Open` ancestry |
 | PBG-OPEN-002 | compiler-owned | `0x00455890` and `0x00455DE0` are scalar deleting destructors for `CPbgFile` and `IPbgFile`, respectively, not authored methods. | Attested IDA decompilation: underlying destructor/vtable publication followed by flag-bit-0 conditional `operator delete` |
+### Small authored leaf ownership oracles
+
+| ID | Class | Durable fact | Evidence |
+| --- | --- | --- | --- |
+| LEAF-001 | exact | `ReleaseResultAnm @ 0x0042AAD0` is a 20-byte authored slot-nine ANM release wrapper. It calls `AnmManager::ReleaseAnm(9)` and returns zero; the unique accepted caller is `Supervisor::DeletedCallback`. | Canonical `photo-release-result-anm` unit with both relocations plus exact caller relocation |
+| LEAF-002 | exact | `utils::DebugPrint @ 0x00412180` is an authored empty variadic sink in the release build, not a CRT thunk. | Canonical relocation-free 5-byte unit, 119 accepted caller relocations, and TH08 source where the body is empty without `DEBUG` |
+| LEAF-003 | compiler-owned | `PbgArchiveEntry::vector deleting destructor @ 0x00455080` selects vector/scalar destruction and conditional deallocation from compiler flags. | Attested IDA control flow; excluded from authored denominator |

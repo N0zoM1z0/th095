@@ -679,3 +679,5 @@ th095::CSoundManager::CreateStreamingFromMemory
 th095::CSound::CSound
 th095::CSound::Play
 th095::CPbgFile::Open
+th095::ReleaseResultAnm
+th095::utils::DebugPrint

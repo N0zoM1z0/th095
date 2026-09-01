@@ -1544,3 +1544,21 @@ IDA independently identifies `0x00455890` and `0x00455DE0` as the scalar
 deleting destructors for `CPbgFile` and `IPbgFile`: both conditionally call
 `operator delete` from flag bit 0 and are compiler-owned, excluded from authored
 coverage.
+### 2026-09-02 gpt-web resource-release and debug-sink leaves
+
+Two previously unclassified leaves are now target- and caller-proven authored
+functions. `ReleaseResultAnm @ 0x0042AAD0` is the 20-byte slot-nine release
+helper: it calls exact `AnmManager::ReleaseAnm(9)` and returns zero. Its unique
+caller is `Supervisor::DeletedCallback`, whose canonical relocation already
+names the symbol. The function belongs beside the slot-nine `photo.anm` preload
+path in `PhotoOverlay.cpp`.
+
+`utils::DebugPrint @ 0x00412180` is the five-byte release-build no-op body
+`push ebp; mov ebp,esp; pop ebp; ret`. TH08 source independently shows that
+`DebugPrint(char *, ...)` has an empty body when `DEBUG` is not defined, and 119
+accepted TH095 relocations resolve to this exact symbol. Preserve it as an
+authored empty variadic function rather than treating it as a CRT thunk.
+
+IDA also confirms `PbgArchiveEntry::vector deleting destructor @ 0x00455080`
+as compiler-owned: flag bit 1 selects vector destruction, flag bit 0 selects
+deallocation. It is excluded from authored coverage.

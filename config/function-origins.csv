@@ -102,7 +102,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00411A00,authored,EclManager,authored,exact,vc71-ecl-dependency-lane-2026-08-31
 0x00411F70,authored,EclManager,authored,exact,vc71-ecl-dependency-lane-2026-08-31
 0x00412060,authored,EclManager,authored,exact,vc71-ecl-dependency-lane-2026-08-31
-0x00412180,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00412180,authored,Utils,authored,exact,vc71-utils-debug-print-exact-2026-09-02
 0x00412190,authored,EclManager,authored,exact,vc71-ecl-dependency-lane-2026-08-31
 0x00412200,authored,EclManager,authored,exact,vc71-ecl-movement-lane-2026-08-31
 0x00412490,authored,EclManager,authored,exact,vc71-ecl-movement-lane-2026-08-31
@@ -403,7 +403,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0042A9C0,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
 0x0042AA30,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
 0x0042AA90,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
-0x0042AAD0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0042AAD0,authored,PhotoOverlay,authored,exact,vc71-release-result-anm-exact-2026-09-02
 0x0042AAF0,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
 0x0042ABC0,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
 0x0042AD00,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
@@ -686,7 +686,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00454E90,authored,PbgArchive,authored,exact,vc71-pbg-archive-leaves-2026-09-01
 0x00454EB0,authored,PbgArchive,authored,exact,vc71-compression-pbg-exact-2026-09-01
 0x00454FC0,authored,PbgArchive,authored,exact,vc71-compression-pbg-exact-2026-09-01
-0x00455080,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00455080,compiler,PbgArchive,exclude,exact,pbg-entry-vector-deleting-destructor-2026-09-02
 0x004550F0,authored,PbgArchive,authored,exact,vc71-pbg-header-pipeline-2026-09-01
 0x004552C0,authored,PbgArchive,authored,exact,vc71-pbg-archive-leaves-2026-09-01
 0x004552F0,authored,PbgArchive,authored,exact,vc71-pbg-archive-leaves-2026-09-01
