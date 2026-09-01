@@ -232,6 +232,18 @@ assembly or an artificial branch to close it.
   body-size difference vanished only when the manual queue write was restored
   as a bounded `__forceinline` helper, which makes VC7 evaluate the LHS
   count/index before the packed RHS and selects the target register chain.
+- `LoadSceneSelectionAssets @ 0x0044D0A0` is the large queue-worker companion.
+  A reverse-physical-order aggregate of only live fields fixes its shallow
+  `queueValue/view/facePath/i/primaryData/primarySize/missionPath/secondaryData/
+  secondarySize` lane at `EBP-0x04..-0x220`. For an inlined queue `Front`, pass
+  both the queue and destination as pointers so VC7 writes the caller's real
+  destination rather than introducing a returned-value copy. For queue pushes
+  whose value is already a pointer or scalar local, pass a pointer to that live
+  value into the source-local inline helper; a by-value helper introduces a
+  non-target argument home. These shapes give the exact 3,070-byte body and all
+  38 target call offsets. The remaining 97 comparable bytes are only stack
+  displacements from target-unreferenced `EBP-0x254/-0x2AC/-0x2B0` dwords, so
+  the unit remains uncredited rather than manufacturing frame storage.
 - ReplayBrowser and HelpMenu add a distinct inline-temporary chronology oracle.
   When a function directly writes `array[index] = CreateVm(...)`, build 3077
   may allocate all anonymous return-object (sret) temporaries in the outer

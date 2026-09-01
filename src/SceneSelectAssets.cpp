@@ -13,7 +13,16 @@ extern i32 g_HelpLoadComplete;
 struct SceneSelectionAssetView
 {
     u8 unknown0000[0x6120];
-    u32 flags;
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlagBits0 : 5;
+            u32 stopRequested : 1;
+            u32 unknownFlagBits6 : 26;
+        } flagBits;
+    };
     u8 unknown6124[4];
     SceneValueQueue selectionQueue;
     SceneValueQueue loadedSceneQueue;
@@ -41,9 +50,54 @@ typedef char SceneSelectionAssetPendingCountAt63CC[
     (offsetof(SceneSelectionAssetView, pendingTextureCount) == 0x63cc) ? 1
                                                                       : -1];
 
+struct SceneSelectionAssetLoadLocals
+{
+    i32 secondarySize;
+    u8 *secondaryData;
+    char missionPath[MAX_PATH];
+    i32 primarySize;
+    u8 *primaryData;
+    i32 i;
+    char facePath[256];
+    SceneSelectionAssetView *view;
+    i32 queueValue;
+};
+
+typedef char SceneSelectionAssetLoadLocalsSize[
+    (sizeof(SceneSelectionAssetLoadLocals) == 0x220) ? 1 : -1];
+typedef char SceneSelectionAssetLoadQueueValueAt21C[
+    (offsetof(SceneSelectionAssetLoadLocals, queueValue) == 0x21c) ? 1 : -1];
+typedef char SceneSelectionAssetLoadViewAt218[
+    (offsetof(SceneSelectionAssetLoadLocals, view) == 0x218) ? 1 : -1];
+typedef char SceneSelectionAssetLoadFacePathAt118[
+    (offsetof(SceneSelectionAssetLoadLocals, facePath) == 0x118) ? 1 : -1];
+typedef char SceneSelectionAssetLoadMissionPathAt8[
+    (offsetof(SceneSelectionAssetLoadLocals, missionPath) == 8) ? 1 : -1];
+
 static __forceinline i32 AssetQueueFront(SceneValueQueue *queue)
 {
-    return queue->count < 1 ? 0 : queue->values[0];
+    if (queue->count > 0)
+    {
+        return queue->values[0];
+    }
+    return 0;
+}
+
+static __forceinline i32 AssetQueueSize(SceneValueQueue *queue)
+{
+    return queue->count;
+}
+
+static __forceinline void AssetQueueRead(SceneValueQueue *queue, i32 *value)
+{
+    if (queue->count > 0)
+    {
+        *value = queue->values[0];
+    }
+    else
+    {
+        *value = 0;
+    }
 }
 
 static __forceinline void AssetQueuePush(SceneValueQueue *queue, i32 value)
@@ -55,37 +109,66 @@ static __forceinline void AssetQueuePush(SceneValueQueue *queue, i32 value)
     }
 }
 
-static __forceinline bool SceneSelectionAssetsShouldStop(
-    SceneSelectionAssetView *view)
+static __forceinline void AssetQueuePushPointer(SceneValueQueue *queue,
+                                                u8 **value)
 {
-    u32 supervisorFlags =
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(&g_SceneSupervisor) +
-                                 0x444);
-    return ((supervisorFlags & 0x80) != 0) ||
-           ((view->flags & 0x20) != 0) || g_HelpLoadComplete != 0;
+    if (queue->count < queue->capacity)
+    {
+        queue->values[queue->count] = reinterpret_cast<i32>(*value);
+        queue->count++;
+    }
 }
 
-void __fastcall LoadSceneSelectionAssets(void *)
+static __forceinline void AssetQueuePushValue(SceneValueQueue *queue,
+                                              i32 *value)
 {
-    SceneSelectionAssetView *view =
-        reinterpret_cast<SceneSelectionAssetView *>(g_SceneSelectController);
-    char path[MAX_PATH];
-
-    for (;;)
+    if (queue->count < queue->capacity)
     {
-        if (SceneSelectionAssetsShouldStop(view))
+        queue->values[queue->count] = *value;
+        queue->count++;
+    }
+}
+
+static __forceinline u32 SceneSelectionAssetsSupervisorStopRequested()
+{
+    return (
+        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(&g_SceneSupervisor) +
+                                 0x444) >>
+        7) & 1;
+}
+
+static __forceinline i32 SceneSelectionAssetsLoadComplete()
+{
+    i32 value = g_HelpLoadComplete;
+    return value;
+}
+
+void __fastcall LoadSceneSelectionAssets(void *threadParameter)
+{
+    SceneSelectionAssetLoadLocals locals;
+    locals.view =
+        reinterpret_cast<SceneSelectionAssetView *>(g_SceneSelectController);
+
+    while (true)
+    {
+        if (SceneSelectionAssetsSupervisorStopRequested() != 0)
         {
-            g_HelpLoadActive = 0;
-            g_HelpLoadComplete = 1;
-            return;
+            break;
+        }
+        if (locals.view->flagBits.stopRequested != 0)
+        {
+            break;
+        }
+        if (SceneSelectionAssetsLoadComplete() != 0)
+        {
+            break;
         }
 
         g_SceneSupervisor.EnterCriticalSectionWrapper(4);
         g_SceneSupervisor.lockCounts[4]++;
-        bool hasWork = view->selectionQueue.count != 0 ||
-                       view->groupPreviewQueue.count != 0 ||
-                       view->stateHistory.count != 0;
-        if (!hasWork)
+        if (AssetQueueSize(&locals.view->selectionQueue) == 0 &&
+            AssetQueueSize(&locals.view->groupPreviewQueue) == 0 &&
+            locals.view->stateHistory.count == 0)
         {
             g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
             g_SceneSupervisor.lockCounts[4]--;
@@ -96,173 +179,225 @@ void __fastcall LoadSceneSelectionAssets(void *)
         g_SceneSupervisor.lockCounts[4]--;
 
         /* Face/status pages take priority over mission thumbnails. */
-        if (view->stateHistory.count > 0)
+        if (locals.view->stateHistory.count > 0)
         {
-            u32 displayState = (u32)view->stateHistory.values[0];
-            sprintf(path, "fc%.2d.anm", displayState);
-            view->pendingPrimaryData[view->pendingTextureCount] =
+            locals.queueValue = locals.view->stateHistory.values[0];
+            sprintf(locals.facePath, "fc%.2d.anm", locals.queueValue);
+            locals.view->pendingPrimaryData[locals.view->pendingTextureCount] =
                 reinterpret_cast<i32>(FileSystem::OpenFile(
-                    path,
-                    &view->pendingPrimarySize[view->pendingTextureCount],
+                    locals.facePath,
+                    &locals.view
+                         ->pendingPrimarySize[locals.view->pendingTextureCount],
                     FALSE));
-            if (view->pendingPrimaryData[view->pendingTextureCount] != 0)
+            if (locals.view
+                    ->pendingPrimaryData[locals.view->pendingTextureCount] != 0)
             {
-                sprintf(path, "fc%.2db.anm", displayState);
-                view->pendingSecondaryData[view->pendingTextureCount] =
+                sprintf(locals.facePath, "fc%.2db.anm", locals.queueValue);
+                locals.view
+                    ->pendingSecondaryData[locals.view->pendingTextureCount] =
                     reinterpret_cast<i32>(FileSystem::OpenFile(
-                        path,
-                        &view->pendingSecondarySize[view->pendingTextureCount],
+                        locals.facePath,
+                        &locals.view->pendingSecondarySize
+                             [locals.view->pendingTextureCount],
                         FALSE));
                 g_SceneSupervisor.EnterCriticalSectionWrapper(4);
                 g_SceneSupervisor.lockCounts[4]++;
-                view->pendingTextureCount++;
+                locals.view->pendingTextureCount++;
                 g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
                 g_SceneSupervisor.lockCounts[4]--;
             }
 
             g_SceneSupervisor.EnterCriticalSectionWrapper(4);
             g_SceneSupervisor.lockCounts[4]++;
-            for (i32 i = 0; i < 2; i++)
+            for (locals.i = 0; locals.i < 2; locals.i++)
             {
-                view->stateHistory.values[i] =
-                    view->stateHistory.values[i + 1];
+                locals.view->stateHistory.values[locals.i] =
+                    locals.view->stateHistory.values[locals.i + 1];
             }
-            view->stateHistory.count--;
-            view->stateHistory.values[2] = 0;
-            g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-            g_SceneSupervisor.lockCounts[4]--;
-            continue;
-        }
-
-        if (view->selectionQueue.count == 0 &&
-            view->groupPreviewQueue.count != 0)
-        {
-            i32 groupPreview = AssetQueueFront(&view->groupPreviewQueue);
-            if (groupPreview < 0)
-            {
-                i32 primarySize;
-                sprintf(path, "mission_%.2d.anm", -groupPreview);
-                u8 *primaryData =
-                    FileSystem::OpenFile(path, &primarySize, FALSE);
-                if (primaryData != NULL)
-                {
-                    while (view->groupPreviewDataQueue.count != 0)
-                    {
-                        Sleep(10);
-                        if (SceneSelectionAssetsShouldStop(view))
-                        {
-                            break;
-                        }
-                    }
-
-                    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-                    g_SceneSupervisor.lockCounts[4]++;
-                    AssetQueuePush(&view->groupPreviewDataQueue,
-                                   reinterpret_cast<i32>(primaryData));
-                    AssetQueuePush(&view->groupPreviewSizeQueue,
-                                   primarySize);
-                    AssetQueuePush(&view->scenePreviewDataQueue, 0);
-                    AssetQueuePush(&view->scenePreviewSizeQueue, 0);
-                    AssetQueuePush(&view->loadedGroupQueue, groupPreview);
-                    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-                    g_SceneSupervisor.lockCounts[4]--;
-                }
-            }
-            else
-            {
-                i32 primarySize;
-                sprintf(path, "mission%.3d.anm", groupPreview);
-                u8 *primaryData =
-                    FileSystem::OpenFile(path, &primarySize, FALSE);
-                if (primaryData != NULL)
-                {
-                    i32 scenePreview =
-                        AssetQueueFront(&view->scenePreviewQueue);
-                    i32 secondarySize;
-                    sprintf(path, "mission%.3d.anm", scenePreview + 100);
-                    u8 *secondaryData =
-                        FileSystem::OpenFile(path, &secondarySize, FALSE);
-                    while (view->groupPreviewDataQueue.count != 0)
-                    {
-                        Sleep(10);
-                        if (SceneSelectionAssetsShouldStop(view))
-                        {
-                            break;
-                        }
-                    }
-
-                    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-                    g_SceneSupervisor.lockCounts[4]++;
-                    AssetQueuePush(&view->groupPreviewDataQueue,
-                                   reinterpret_cast<i32>(primaryData));
-                    AssetQueuePush(&view->groupPreviewSizeQueue,
-                                   primarySize);
-                    AssetQueuePush(&view->scenePreviewDataQueue,
-                                   reinterpret_cast<i32>(secondaryData));
-                    AssetQueuePush(&view->scenePreviewSizeQueue,
-                                   secondarySize);
-                    AssetQueuePush(&view->loadedGroupQueue, groupPreview);
-                    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-                    g_SceneSupervisor.lockCounts[4]--;
-                }
-            }
-
-            g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-            g_SceneSupervisor.lockCounts[4]++;
-            view->groupPreviewQueue.Pop();
-            view->scenePreviewQueue.Pop();
-            g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-            g_SceneSupervisor.lockCounts[4]--;
-            continue;
-        }
-
-        i32 packedSelection = AssetQueueFront(&view->selectionQueue);
-        i32 group = packedSelection >> 8;
-        i32 scene = packedSelection & 0xff;
-        i32 loadResult =
-            g_SceneSaveData->LoadBestShotForScene(group, scene);
-
-        if (loadResult == 0)
-        {
-            while (view->loadedSceneQueue.count != 0)
-            {
-                Sleep(10);
-                if (SceneSelectionAssetsShouldStop(view))
-                {
-                    break;
-                }
-            }
-            g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-            g_SceneSupervisor.lockCounts[4]++;
-            AssetQueuePush(
-                &view->loadedSceneQueue,
-                g_SceneGroups[group][scene].scoreEntryIndex);
+            locals.view->stateHistory.count--;
+            locals.view->stateHistory.values[2] = 0;
             g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
             g_SceneSupervisor.lockCounts[4]--;
         }
         else
         {
-            while (view->loadedSceneQueue.count != 0)
+            if (AssetQueueSize(&locals.view->selectionQueue) != 0)
             {
-                Sleep(10);
-                if (SceneSelectionAssetsShouldStop(view))
-                {
-                    break;
-                }
-            }
-            g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-            g_SceneSupervisor.lockCounts[4]++;
-            AssetQueuePush(&view->loadedSceneQueue, -1);
-            g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-            g_SceneSupervisor.lockCounts[4]--;
-        }
+                AssetQueueRead(&locals.view->selectionQueue,
+                               &locals.queueValue);
 
-        g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-        g_SceneSupervisor.lockCounts[4]++;
-        view->selectionQueue.Pop();
-        g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-        g_SceneSupervisor.lockCounts[4]--;
+                if (g_SceneSaveData->LoadBestShotForScene(
+                        locals.queueValue >> 8,
+                        locals.queueValue & 0xff) == 0)
+                {
+                    while (AssetQueueSize(&locals.view->loadedSceneQueue) != 0)
+                    {
+                        Sleep(10);
+                        if (SceneSelectionAssetsSupervisorStopRequested() != 0)
+                        {
+                            break;
+                        }
+                        if (locals.view->flagBits.stopRequested != 0)
+                        {
+                            break;
+                        }
+                        if (SceneSelectionAssetsLoadComplete() != 0)
+                        {
+                            break;
+                        }
+                    }
+
+                    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
+                    g_SceneSupervisor.lockCounts[4]++;
+                    AssetQueuePush(
+                        &locals.view->loadedSceneQueue,
+                        g_SceneGroups[locals.queueValue >> 8]
+                                     [locals.queueValue & 0xff]
+                            .scoreEntryIndex);
+                    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
+                    g_SceneSupervisor.lockCounts[4]--;
+                }
+                else
+                {
+                    while (AssetQueueSize(&locals.view->loadedSceneQueue) != 0)
+                    {
+                        Sleep(10);
+                        if (SceneSelectionAssetsSupervisorStopRequested() != 0)
+                        {
+                            break;
+                        }
+                        if (locals.view->flagBits.stopRequested != 0)
+                        {
+                            break;
+                        }
+                        if (SceneSelectionAssetsLoadComplete() != 0)
+                        {
+                            break;
+                        }
+                    }
+
+                    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
+                    g_SceneSupervisor.lockCounts[4]++;
+                    AssetQueuePush(&locals.view->loadedSceneQueue, -1);
+                    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
+                    g_SceneSupervisor.lockCounts[4]--;
+                }
+                g_SceneSupervisor.EnterCriticalSectionWrapper(4);
+                g_SceneSupervisor.lockCounts[4]++;
+                locals.view->selectionQueue.Pop();
+                g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
+                g_SceneSupervisor.lockCounts[4]--;
+            }
+            else if (AssetQueueSize(&locals.view->groupPreviewQueue) != 0)
+            {
+                AssetQueueRead(&locals.view->groupPreviewQueue,
+                               &locals.queueValue);
+                if (locals.queueValue >= 0)
+                {
+                    sprintf(locals.missionPath, "mission%.3d.anm",
+                            locals.queueValue);
+                    locals.primaryData = FileSystem::OpenFile(
+                        locals.missionPath, &locals.primarySize, FALSE);
+                    if (locals.primaryData != NULL)
+                    {
+                        sprintf(locals.missionPath, "mission%.3d.anm",
+                                AssetQueueFront(
+                                    &locals.view->scenePreviewQueue) +
+                                    100);
+                        locals.secondaryData = FileSystem::OpenFile(
+                            locals.missionPath, &locals.secondarySize, FALSE);
+                        while (AssetQueueSize(
+                                   &locals.view->groupPreviewDataQueue) != 0)
+                        {
+                            Sleep(10);
+                            if (SceneSelectionAssetsSupervisorStopRequested() !=
+                                0)
+                            {
+                                break;
+                            }
+                            if (locals.view->flagBits.stopRequested != 0)
+                            {
+                                break;
+                            }
+                            if (SceneSelectionAssetsLoadComplete() != 0)
+                            {
+                                break;
+                            }
+                        }
+
+                        g_SceneSupervisor.EnterCriticalSectionWrapper(4);
+                        g_SceneSupervisor.lockCounts[4]++;
+                        AssetQueuePushPointer(
+                            &locals.view->groupPreviewDataQueue,
+                            &locals.primaryData);
+                        AssetQueuePush(&locals.view->groupPreviewSizeQueue,
+                                       locals.primarySize);
+                        AssetQueuePushPointer(
+                            &locals.view->scenePreviewDataQueue,
+                            &locals.secondaryData);
+                        AssetQueuePush(&locals.view->scenePreviewSizeQueue,
+                                       locals.secondarySize);
+                        AssetQueuePushValue(&locals.view->loadedGroupQueue,
+                                            &locals.queueValue);
+                        g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
+                        g_SceneSupervisor.lockCounts[4]--;
+                    }
+                }
+                else
+                {
+                    sprintf(locals.missionPath, "mission_%.2d.anm",
+                            -locals.queueValue);
+                    locals.primaryData = FileSystem::OpenFile(
+                        locals.missionPath, &locals.primarySize, FALSE);
+                    if (locals.primaryData != NULL)
+                    {
+                        while (AssetQueueSize(
+                                   &locals.view->groupPreviewDataQueue) != 0)
+                        {
+                            Sleep(10);
+                            if (SceneSelectionAssetsSupervisorStopRequested() !=
+                                0)
+                            {
+                                break;
+                            }
+                            if (locals.view->flagBits.stopRequested != 0)
+                            {
+                                break;
+                            }
+                            if (SceneSelectionAssetsLoadComplete() != 0)
+                            {
+                                break;
+                            }
+                        }
+
+                        g_SceneSupervisor.EnterCriticalSectionWrapper(4);
+                        g_SceneSupervisor.lockCounts[4]++;
+                        AssetQueuePushPointer(
+                            &locals.view->groupPreviewDataQueue,
+                            &locals.primaryData);
+                        AssetQueuePush(&locals.view->groupPreviewSizeQueue,
+                                       locals.primarySize);
+                        AssetQueuePush(&locals.view->scenePreviewDataQueue, 0);
+                        AssetQueuePush(&locals.view->scenePreviewSizeQueue, 0);
+                        AssetQueuePushValue(&locals.view->loadedGroupQueue,
+                                            &locals.queueValue);
+                        g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
+                        g_SceneSupervisor.lockCounts[4]--;
+                    }
+                }
+
+                g_SceneSupervisor.EnterCriticalSectionWrapper(4);
+                g_SceneSupervisor.lockCounts[4]++;
+                locals.view->groupPreviewQueue.Pop();
+                locals.view->scenePreviewQueue.Pop();
+                g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
+                g_SceneSupervisor.lockCounts[4]--;
+            }
+        }
     }
+
+    g_HelpLoadActive = 0;
+    g_HelpLoadComplete = 1;
 }
 
 } // namespace th095

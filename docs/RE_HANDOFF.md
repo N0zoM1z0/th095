@@ -294,8 +294,25 @@
   both shared-buffer relocations; it recovers the complete 64-byte rolling-key
   decoder. `UpdateSelectedSceneDetails @ 0x0044C670` and its three digit-VM
   helpers are exact for another 2,453 bytes and all 122 relocations, recovering
-  the TH095 scene record's date/time and two six-digit score displays. Target
-  The complete ANM text alignment family at `0x00443C70..0x004440ED` is now
+  the TH095 scene record's date/time and two six-digit score displays.
+- The two remaining scene-selection cores now have exact-sized, call-aligned
+  pinned-VC7.1 probes. `UpdateSceneSelect @ 0x00447D00` is 16,066 bytes and all
+  269 non-import direct calls land at their target offsets; 12,344/13,986
+  non-relocation bytes match. Its target `0x3DC` frame has four completely
+  instruction-unreferenced intervals totaling 56 bytes, while the live source
+  naturally uses `0x3A4`; do not represent those intervals with inert locals.
+  `LoadSceneSelectionAssets @ 0x0044D0A0` is 3,070 bytes with all 38 call
+  offsets exact and 2,513/2,610 comparable bytes matching. Its fully live
+  `0x220` local aggregate proves the shallow queue/view homes, both path
+  buffers, the face shift index, and both file data/size pairs. All 97 residual
+  bytes are stack displacements caused by instruction-unreferenced target
+  dwords at `EBP-0x254/-0x2AC/-0x2B0`; keep this unit non-exact until a genuine
+  source/lifetime oracle explains them. The successful reusable shapes are:
+  face work before selected-scene work before positive/negative group work;
+  three explicit stop `break` checks; `Size()` snapshots in every wait loop;
+  out-parameter `Front` lowering; and pointer/value out-parameter queue pushes
+  that avoid non-target inline argument copies.
+- The complete ANM text alignment family at `0x00443C70..0x004440ED` is now
   canonical exact. `DrawTextInner`, `DrawTextLeft`, `DrawTextRight`, and
   `DrawTextCentered` contribute 1,140 authored bytes and 24 relocations. TH08
   documents `#pragma var_order(buf, fontWidth)` for the three variadic helpers;

@@ -33,6 +33,13 @@ struct ResultScreenTimer
         this->subFrame = 0.0f;
         this->previous = -999999;
     }
+
+    void Set(i32 value)
+    {
+        this->current = value;
+        this->subFrame = (f32)value;
+        this->previous = -999999;
+    }
 };
 
 typedef char ResultScreenTimerSizeIsC[
