@@ -571,6 +571,14 @@ non-relocation byte matches: the initial TH08 enum port reproduced all such byte
 but sent switch cases 3/4 to the wrong callback targets. TH095 defines value 3 as
 full fade-out and value 4 as arcade pulse, the inverse of TH08.
 
+### Pre-body member construction as authored source ownership
+
+Two newly exact lifecycle functions show why a short constructor body cannot be compared in isolation from automatic member construction. `Background::Background @ 0x004020C0` has a 389-byte target although its explicit body is only log/reset/timer/singleton work. The target first constructs one timer at `+0x10`, two arrays of four timers at `+0x20/+0x50`, then 8 and 3 `AnmVm` arrays at `+0xF8/+0x1780`; the latter naturally lower through VC7's vector-constructor iterator. Keep this ownership in isolated `BackgroundLifecycle.cpp` rather than adding fake locals to the storage-view TU. The timer constructor store order is `current -> previous -> subFrame`, while the post-memset `Initialize` call is `current -> subFrame -> previous`; both orders are target-visible.
+
+`Supervisor::Supervisor/~Supervisor @ 0x00426350/0x00426450` is the same pattern at a larger ownership boundary. Construction calls `GameConfiguration::Initialize @ +0x11C`, walks two empty `0xF0` viewport members, constructs a timer at `+0x3F4`, and constructs worker members at `+0x648/+0x7A0` before the TH08-ancestral `memset(0x7BC)` plus separate flag sets `0x40` and `0x100`. Both worker ctor relocations resolve to `0x00454E50`, which is byte-identical to the canonical `PbgArchive::PbgArchive` four-dword-zeroing body. Treat that as an ICF/linker-folded alias, not a second function to credit.
+
+The exact straight-laser target counter adds a sibling-reuse rule. `CountPhotoTargets @ 0x0041E750` closes immediately when it reuses the exact `CheckCollision` shallow local rank and vector lifetime: keep `step/sampleCount/hitCount/minimum/sample` shallow, reuse the inner half-size vector as maximum after minimum materialization, initialize `step.z` before `FromAngleMagnitude`, and keep the distance scalar in the inner scope. A broad aggregate or the cleaner semantic ordering shortens the body by 139 bytes.
+
 The adjacent ScoreData lifecycle gives a scheduling rule: exact-sized does not
 mean cheap. Its `0x004354B0` constructor still has live local-home displacement
 residuals, and the straightforward destructor is 97 bytes versus a 109-byte

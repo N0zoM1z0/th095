@@ -359,17 +359,7 @@ void BackgroundSupervisorView::ConfigureBackgroundViewport(i32 index)
     this->currentViewportIndex = index;
 }
 
-// FUNCTION: TH095 0x004020C0.
-Background::Background()
-{
-    BackgroundStateView *background =
-        reinterpret_cast<BackgroundStateView *>(this);
-
-    utils::DebugPrint("initialize BackGroundInf\n");
-    memset(background, 0, sizeof(*background));
-    background->stageScriptTimer.Initialize();
-    g_Background = this;
-}
+// FUNCTION: TH095 0x004020C0 is implemented in BackgroundLifecycle.cpp.
 
 // FUNCTION: TH095 0x00402330.
 Background::~Background()

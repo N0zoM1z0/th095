@@ -1302,34 +1302,63 @@ PhotoRotatingLaserView::PhotoRotatingLaserView()
 {
 }
 
+// FUNCTION: TH095 0x0041E750.
+// The shallow-local rank mirrors the exact CheckCollision prefix. The inner
+// half-size vector is deliberately reused as the maximum bound after minimum
+// materialization; keeping these lifetimes separate is target-visible in VC7.1.
+#define countTarget iLocal11
+#define indexTarget averagedPanLocal12
+#define minimumTarget commandCursorLocal02
+#define sampleTarget soundIndexLocal01
+#define stepTarget restartCommandProcessingLocal05
 i32 PhotoStraightLaserView::CountPhotoTargets(
     Float3 *position, Float3 *size, i32 capture)
 {
-    i32 count = 0;
-    i32 index = 0;
-    f32 distance = 6.0f;
-    Float3 halfSize = *size / 2.0f;
-    Float3 minimum = *position - halfSize;
-    Float3 maximum = *position + halfSize;
+    Float3 stepTarget;
+    i32 indexTarget;
+    i32 countTarget;
+    Float3 minimumTarget;
+    Float3 sampleTarget;
 
-    Float3 step;
-    step.FromAngleMagnitude(this->angle, 6.0f);
-    Float3 sample =
-        *reinterpret_cast<Float3 *>(&this->position) + step;
-    step += step;
-
-    for (; distance + 6.0f < this->length;
-         distance += 12.0f, index++)
+    countTarget = 0;
+    indexTarget = 0;
     {
-        if (minimum.x <= sample.x && sample.x <= maximum.x &&
-            minimum.y <= sample.y && sample.y <= maximum.y)
+        f32 bufferLocal04 = 6.0f;
+        Float3 jLocal00;
+
+        jLocal00 = *size / 2.0f;
+        minimumTarget = *position - jLocal00;
+        jLocal00 = *position + jLocal00;
+        stepTarget.z = 0.0f;
+        stepTarget.FromAngleMagnitude(this->angle, 6.0f);
+        sampleTarget =
+            *reinterpret_cast<Float3 *>(&this->position) + stepTarget;
+        stepTarget += stepTarget;
+
+        while (bufferLocal04 + 6.0f < this->length)
         {
-            count++;
+            if (sampleTarget.x < minimumTarget.x ||
+                sampleTarget.x > jLocal00.x ||
+                sampleTarget.y < minimumTarget.y ||
+                sampleTarget.y > jLocal00.y)
+            {
+            }
+            else
+            {
+                countTarget++;
+            }
+            sampleTarget += stepTarget;
+            bufferLocal04 += 12.0f;
+            indexTarget++;
         }
-        sample += step;
     }
-    return count;
+    return countTarget;
 }
+#undef stepTarget
+#undef sampleTarget
+#undef minimumTarget
+#undef indexTarget
+#undef countTarget
 
 i32 PhotoRotatingLaserView::CountPhotoTargets(
     Float3 *position, Float3 *size, i32 capture)

@@ -651,3 +651,5 @@ th095::GameErrorContext::Flush,0x00421C00,function
 th095::MidiOutput::ParseFile,0x00422300,function
 th095::MidiOutput::OnTimerElapsed,0x00422800,function
 th095::MidiOutput::FadeOutSetVolume,0x00423310,function
+th095::Supervisor::Supervisor,0x00426350,function
+th095::Supervisor::~Supervisor,0x00426450,function

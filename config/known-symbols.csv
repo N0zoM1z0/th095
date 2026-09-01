@@ -329,3 +329,7 @@ address,name,module,confidence,evidence
 0x00422300,th095::MidiOutput::ParseFile,Midi,exact,Exact MIDI SMF header/track parser; inline-only 32-bit endian swap plus TH08-proven source-order record reproduces target 0x38 frame
 0x00422800,th095::MidiOutput::OnTimerElapsed,Midi,exact,Exact multimedia timer playback/fade loop; target-proven live BOOL bucket restores 64-bit event comparison homes
 0x00423310,th095::MidiOutput::FadeOutSetVolume,Midi,exact,Exact 16-channel fade volume publisher; fully live five-field local aggregate restores TH08 var-order
+0x004020C0,th095::Background::Background,Background,exact,Exact 0x201C BackgroundInf member construction/reset/singleton lifecycle
+0x0041E750,th095::PhotoStraightLaserView::CountPhotoTargets,PhotoEffect,exact,Exact 12-unit laser photo-target sampling with collision-family local rank
+0x00426350,th095::Supervisor::Supervisor,Supervisor,exact,Exact global Supervisor 0x7BC-prefix member lifecycle and reset
+0x00426450,th095::Supervisor::~Supervisor,Supervisor,exact,Exact reverse destruction of the two Supervisor worker members
