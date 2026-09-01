@@ -11,7 +11,10 @@ struct AnmVm
 {
     AnmVm();
     ~AnmVm();
-    u8 storage[0x2cc];
+    void Draw();
+    u8 unknown000[0x220];
+    u32 color1;
+    u8 unknown224[0xa8];
 };
 typedef char AnmVmSizeIs2CC[(sizeof(AnmVm) == 0x2cc) ? 1 : -1];
 
@@ -55,7 +58,9 @@ struct PhotoStageSlotLifetimeView
 {
     AnmVm primaryVms[6];
     AnmVm overlayVms[6];
-    u8 tail[0x84];
+    u8 unknown2190[0x20];
+    i32 score;
+    u8 tail[0x60];
 
     // FUNCTION: TH095 0x0042A940.
     PhotoStageSlotLifetimeView()
@@ -73,8 +78,24 @@ struct PhotoStageGlobalStateView
 {
     u8 unknown000[0xfc];
     u32 flags;
+    i32 scoreIndex;
 };
 extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
+
+struct PhotoOverlayScoreEntryView
+{
+    u8 unknown000[0x18];
+    i32 detailScore;
+    u8 unknown01c[0x44];
+};
+typedef char PhotoOverlayScoreEntrySizeIs60[
+    (sizeof(PhotoOverlayScoreEntryView) == 0x60) ? 1 : -1];
+struct PhotoOverlaySaveDataView
+{
+    u8 unknown000[0x460];
+    PhotoOverlayScoreEntryView scoreEntries[120];
+};
+extern PhotoOverlaySaveDataView *g_PhotoStageSaveData;
 
 struct PhotoStageStateView;
 i32 __fastcall UpdatePhotoStage(PhotoStageStateView *stage);
@@ -150,6 +171,59 @@ i32 PhotoOverlayManagerView::Initialize()
     }
     this->scoreMultiplier = 1.0f;
     return 0;
+}
+
+// FUNCTION: TH095 0x0042C220.
+i32 PhotoOverlayManagerView::Draw()
+{
+    struct DrawLocals
+    {
+        i32 vmIndex;
+        i32 slotIndex;
+        i32 displayVmIndex;
+        i32 scoreScanIndex;
+        i32 bestSlot;
+        i32 bestScore;
+    } locals;
+
+    locals.bestSlot = 0;
+    locals.bestScore = 0;
+    for (locals.scoreScanIndex = 0; locals.scoreScanIndex < 11;
+         ++locals.scoreScanIndex)
+    {
+        if (locals.bestScore < this->slots[locals.scoreScanIndex].score)
+        {
+            locals.bestScore = this->slots[locals.scoreScanIndex].score;
+            locals.bestSlot = locals.scoreScanIndex;
+        }
+    }
+
+    for (locals.displayVmIndex = 0; locals.displayVmIndex < 80;
+         ++locals.displayVmIndex)
+        this->displayVms[locals.displayVmIndex].Draw();
+
+    for (locals.slotIndex = 0; locals.slotIndex < 11; ++locals.slotIndex)
+    {
+        for (locals.vmIndex = 0; locals.vmIndex < 6; ++locals.vmIndex)
+        {
+            if (locals.bestSlot != locals.slotIndex)
+                this->slots[locals.slotIndex].overlayVms[locals.vmIndex].color1 =
+                    0xffffffff;
+            else if (this->slots[locals.slotIndex].score >=
+                     g_PhotoStageSaveData->scoreEntries[
+                         g_PhotoStageGlobalState->scoreIndex].detailScore)
+                this->slots[locals.slotIndex].overlayVms[locals.vmIndex].color1 =
+                    0xffffff00;
+            else
+                this->slots[locals.slotIndex].overlayVms[locals.vmIndex].color1 =
+                    0xffffe080;
+
+            // Target source keeps the repeated indexed expression. Hoisting a
+            // VM pointer shortens the body and creates a seventh local.
+            this->slots[locals.slotIndex].overlayVms[locals.vmIndex].Draw();
+        }
+    }
+    return 1;
 }
 
 // FUNCTION: TH095 0x0042C410.

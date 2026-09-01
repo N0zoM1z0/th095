@@ -421,7 +421,7 @@ The encrypted archive read path is now a positive TH095-specific oracle. `ReadDe
 
 `ParseHeader` is the aggregate companion. The target's authored local region is exactly one fully live 0x20 record laid out as compressed-table buffer, table offset, reused size scalar, 16-byte THA1 header, and decompressed-table buffer. Modeling those fields separately rotates every stack slot; the semantic aggregate reproduces the target and naturally leaves VC7's delete-expression homes deeper in the frame. Update shared `PbgArchiveHeader` to the target 0x10 layout; do not retain the TH08 0x0C shape as a fake compatibility type.
 
-`CPbgFile::Open`, `ReadWholeFile`, and `PbgArchive::AllocEntries` remain TH095-specific residuals. The first complete `AllocEntries` probe already includes TH095's four-byte filename-record alignment but is 462 versus 524 target bytes, so defer it rather than tuning compiler iterator/local homes with inert storage.
+`CPbgFile::ReadWholeFile @ 0x00455BF0` is now a positive local-order oracle. TH095 removes TH08's redundant post-malloc null guard/null-store and directly frees on read failure. The three live values form `{oldLocation, dataLen, data}`; separate scalars are exact-sized but swap data/dataLen homes. `CPbgFile::Open` remains deferred. `PbgArchive::AllocEntries` now reaches 511/524 after restoring TH08 new-array failure cleanup and a live `{buffer,i,entryData}` aggregate; do not fill the remaining filename-size/compiler-home phase with inert storage.
 
 ### File/log source-shape oracles: inline lock id and live aggregates
 
@@ -454,12 +454,7 @@ Do not replace that alignment with explicit padding. Likewise, the exact result
 help parser must keep CR/LF tests as signed `i8` comparisons and Shift-JIS
 lead-byte range tests as unsigned `u8` comparisons.
 
-Two adjacent large probes are negative scheduling oracles, not current exact
-targets. `PhotoOverlayManagerView::Draw @ 0x0042C220` is 366 bytes versus the
-434-byte target despite complete recovered loop semantics, and
-`PhotoRuntimeView::CountPhotoTargets @ 0x004168D0` is 1,133 bytes / 280
-instructions versus the 1,274-byte / 312-instruction target. Defer both until a
-new natural source-shape oracle appears; do not spend inert storage or assembly.
+`PhotoOverlayManagerView::Draw @ 0x0042C220` is now a positive no-hoist oracle. The target keeps six scalar locals and repeatedly materializes the full slot/VM indexed address independently in each color branch and once more for `Draw()`. Hoisting an `AnmVm*` creates a seventh local and shrinks the exact 434-byte target shape to 370 bytes. Keep the repeated indexed expressions. `PhotoRuntimeView::CountPhotoTargets @ 0x004168D0` remains the unrelated large negative scheduling oracle.
 
 ### Score-file load and shared-runtime source-shape oracles
 
@@ -574,6 +569,9 @@ full fade-out and value 4 as arcade pulse, the inverse of TH08.
 ### Pre-body member construction as authored source ownership
 
 Two newly exact lifecycle functions show why a short constructor body cannot be compared in isolation from automatic member construction. `Background::Background @ 0x004020C0` has a 389-byte target although its explicit body is only log/reset/timer/singleton work. The target first constructs one timer at `+0x10`, two arrays of four timers at `+0x20/+0x50`, then 8 and 3 `AnmVm` arrays at `+0xF8/+0x1780`; the latter naturally lower through VC7's vector-constructor iterator. Keep this ownership in isolated `BackgroundLifecycle.cpp` rather than adding fake locals to the storage-view TU. The timer constructor store order is `current -> previous -> subFrame`, while the post-memset `Initialize` call is `current -> subFrame -> previous`; both orders are target-visible.
+
+The matching Background destructor is the inverse ownership oracle. Do not hand-write the three-photo/eight-stage VM destructor loops: ordinary C++ member destruction emits the two target vector-destructor iterators. Three real free arguments pass through `__forceinline FreeBackgroundOwned(void*)`, producing call-site homes at `EBP-0x10/-0x14/-0x18` while `this` stays at `-0x1C`. The reload branch direction is also target-visible.
+
 
 `Supervisor::Supervisor/~Supervisor @ 0x00426350/0x00426450` is the same pattern at a larger ownership boundary. Construction calls `GameConfiguration::Initialize @ +0x11C`, walks two empty `0xF0` viewport members, constructs a timer at `+0x3F4`, and constructs worker members at `+0x648/+0x7A0` before the TH08-ancestral `memset(0x7BC)` plus separate flag sets `0x40` and `0x100`. Both worker ctor relocations resolve to `0x00454E50`, which is byte-identical to the canonical `PbgArchive::PbgArchive` four-dword-zeroing body. Treat that as an ICF/linker-folded alias, not a second function to credit.
 

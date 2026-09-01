@@ -95,6 +95,12 @@ void PbgArchive::Release()
     m_NumOfEntries = 0;
 }
 
+// FUNCTION: TH095 0x00452E50; TH08 0x004716E0 is the folded source oracle.
+PbgArchiveEntry::PbgArchiveEntry()
+{
+    filename = NULL;
+}
+
 // FUNCTION: TH095 0x00455820; TH08 0x00475270 is the source-shape oracle.
 PbgArchiveEntry::~PbgArchiveEntry()
 {

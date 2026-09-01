@@ -1,5 +1,6 @@
 #include "pbg/PbgFile.hpp"
 
+#include <stdlib.h>
 #include <string.h>
 
 namespace th095
@@ -73,6 +74,41 @@ bool CPbgFile::Seek(DWORD offset, DWORD seekFrom)
         return false;
     SetFilePointer(m_hFile, offset, NULL, seekFrom);
     return true;
+}
+
+// FUNCTION: TH095 0x00455BF0; TH08 0x00473A50 is the source-shape oracle.
+HGLOBAL CPbgFile::ReadWholeFile(DWORD maxSize)
+{
+    struct ReadWholeFileState
+    {
+        DWORD oldLocation;
+        DWORD dataLen;
+        HGLOBAL data;
+    } state;
+
+    if (m_DesiredAccess != GENERIC_READ)
+        return NULL;
+
+    state.dataLen = GetSize();
+    if (state.dataLen > maxSize)
+        return NULL;
+
+    state.data = (HGLOBAL)malloc(state.dataLen);
+    if (state.data == NULL)
+        return NULL;
+
+    state.oldLocation = Tell();
+    if (Seek(state.oldLocation, g_PbgFileSeekModes[0]) == 0)
+        return NULL;
+
+    if (Read(state.data, state.dataLen) == 0)
+    {
+        free(state.data);
+        return NULL;
+    }
+
+    Seek(state.oldLocation, g_PbgFileSeekModes[0]);
+    return state.data;
 }
 
 // FUNCTION: TH095 0x00455CC0; TH08 0x00473B40 is the source-shape oracle.

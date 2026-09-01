@@ -333,3 +333,7 @@ address,name,module,confidence,evidence
 0x0041E750,th095::PhotoStraightLaserView::CountPhotoTargets,PhotoEffect,exact,Exact 12-unit laser photo-target sampling with collision-family local rank
 0x00426350,th095::Supervisor::Supervisor,Supervisor,exact,Exact global Supervisor 0x7BC-prefix member lifecycle and reset
 0x00426450,th095::Supervisor::~Supervisor,Supervisor,exact,Exact reverse destruction of the two Supervisor worker members
+0x00402330,th095::Background::~Background,Background,exact,Exact BackgroundInf teardown with three ownership-call homes and automatic 3+8 AnmVm vector destruction
+0x0042C220,th095::PhotoOverlayManagerView::Draw,PhotoOverlay,exact,Exact 80 display-VM plus 11x6 score-colored overlay draw; target repeats indexed VM expressions instead of hoisting a pointer
+0x00455BF0,th095::CPbgFile::ReadWholeFile,PbgFile,exact,Exact whole-file read with TH095 malloc/free path and fully live 12-byte read-state aggregate
+0x00452E50,th095::PbgArchiveEntry::PbgArchiveEntry,PbgArchive,exact,Exact archive-entry filename-null constructor used by AllocEntries vector construction

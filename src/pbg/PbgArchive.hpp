@@ -24,11 +24,7 @@ C_ASSERT(offsetof(PbgArchiveHeader, encodedEntryCount) == 0xc);
 
 struct PbgArchiveEntry
 {
-    // FUNCTION: th08 0x4716e0 FOLDED
-    PbgArchiveEntry()
-    {
-        filename = NULL;
-    }
+    PbgArchiveEntry();
 
     ~PbgArchiveEntry();
 

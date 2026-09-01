@@ -16646,3 +16646,85 @@ relocations = [
   { offset = 0x42, type = "REL32", symbol = "??1ReplayScanWorker@th095@@QAE@XZ", target = 0x0041BAE0 },
   { offset = 0x4C, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
 ]
+
+
+[units.background-destructor]
+source = "src/BackgroundLifecycle.cpp"
+object = "build/matching/BackgroundLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Background::~Background"]
+symbol = "??1Background@th095@@QAE@XZ"
+target_address = 0x00402330
+size = 0x16E
+relocations = [
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$??1Background@th095@@QAE@XZ", target = 0x00493436 },
+  { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x26, type = "DIR32", symbol = "??_C@_0BI@PJLOFDIG@shutdown?5BackGroundInf?6?$AA@", target = 0x00495314 },
+  { offset = 0x2B, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0x3D, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x42, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAUChainElem@2@@Z", target = 0x00419160 },
+  { offset = 0x51, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x56, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAUChainElem@2@@Z", target = 0x00419160 },
+  { offset = 0x65, type = "DIR32", symbol = "?g_Chain@th095@@3UChain@1@A", target = 0x004BE3C8 },
+  { offset = 0x6A, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAUChainElem@2@@Z", target = 0x00419160 },
+  { offset = 0x83, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x8C, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x444 },
+  { offset = 0x9A, type = "DIR32", symbol = "?g_BackgroundStageDataCache@th095@@3PAEA", target = 0x004BDD94 },
+  { offset = 0xA3, type = "DIR32", symbol = "?g_BackgroundStageDataCache@th095@@3PAEA", target = 0x004BDD94 },
+  { offset = 0xAF, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0xB8, type = "DIR32", symbol = "?g_BackgroundStageDataCache@th095@@3PAEA", target = 0x004BDD94 },
+  { offset = 0xDD, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0xE6, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x444 },
+  { offset = 0xFE, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x103, type = "REL32", symbol = "?MarkVmsForDeletion@AnmManager@th095@@QAEXPAUAnmLoaded@2@@Z", target = 0x00445270 },
+  { offset = 0x10D, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x112, type = "REL32", symbol = "?ReleaseAnm@AnmManager@th095@@QAEXH@Z", target = 0x00443980 },
+  { offset = 0x118, type = "DIR32", symbol = "?g_Background@th095@@3PAUBackground@1@A", target = 0x004BDD90 },
+  { offset = 0x125, type = "DIR32", symbol = "??1AnmVm@th095@@QAE@XZ", target = 0x0041CBE0 },
+  { offset = 0x13B, type = "REL32", symbol = "??_M@YGXPAXIHP6EX0@Z@Z", target = 0x0048558D },
+  { offset = 0x147, type = "DIR32", symbol = "??1AnmVm@th095@@QAE@XZ", target = 0x0041CBE0 },
+  { offset = 0x15C, type = "REL32", symbol = "??_M@YGXPAXIHP6EX0@Z@Z", target = 0x0048558D },
+  { offset = 0x166, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+]
+
+[units.photo-overlay-draw]
+source = "src/PhotoOverlay.cpp"
+object = "build/matching/PhotoOverlay.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoOverlayManagerView::Draw"]
+symbol = "?Draw@PhotoOverlayManagerView@th095@@QAEHXZ"
+target_address = 0x0042C220
+size = 0x1B2
+relocations = [
+  { offset = 0x92, type = "REL32", symbol = "?Draw@AnmVm@th095@@QAEXXZ", target = 0x004452D0 },
+  { offset = 0x109, type = "DIR32", symbol = "?g_PhotoStageGlobalState@th095@@3PAUPhotoStageGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x11B, type = "DIR32", symbol = "?g_PhotoStageSaveData@th095@@3PAUPhotoOverlaySaveDataView@1@A", target = 0x004C4E78 },
+  { offset = 0x19A, type = "REL32", symbol = "?Draw@AnmVm@th095@@QAEXXZ", target = 0x004452D0 },
+]
+
+[units.pbg-file-read-whole]
+source = "src/pbg/PbgFile.cpp"
+object = "build/matching/PbgFile.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::CPbgFile::ReadWholeFile"]
+symbol = "?ReadWholeFile@CPbgFile@th095@@UAEPAXK@Z"
+target_address = 0x00455BF0
+size = 0xC7
+relocations = [
+  { offset = 0x3E, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x62, type = "DIR32", symbol = "?g_PbgFileSeekModes@th095@@3PAHA", target = 0x00497CE8 },
+  { offset = 0x9D, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0xAA, type = "DIR32", symbol = "?g_PbgFileSeekModes@th095@@3PAHA", target = 0x00497CE8 },
+]
+
+[units.pbg-archive-entry-constructor]
+source = "src/pbg/PbgArchive.cpp"
+object = "build/matching/PbgArchive.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PbgArchiveEntry::PbgArchiveEntry"]
+symbol = "??0PbgArchiveEntry@th095@@QAE@XZ"
+target_address = 0x00452E50
+size = 0x17
+relocations = [
+]

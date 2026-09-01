@@ -652,3 +652,6 @@ th095::MidiOutput::OnTimerElapsed
 th095::MidiOutput::FadeOutSetVolume
 th095::Supervisor::Supervisor
 th095::Supervisor::~Supervisor
+th095::PhotoOverlayManagerView::Draw
+th095::CPbgFile::ReadWholeFile
+th095::PbgArchiveEntry::PbgArchiveEntry

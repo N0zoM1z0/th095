@@ -22,7 +22,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00402010,authored,AsciiManager,authored,exact,ascii-manager-lifecycle-exact-2026-08-30
 0x004020C0,authored,Background,authored,exact,vc71-background-constructor-exact-2026-09-01
 0x00402250,authored,Background,authored,exact,background-lifecycle-2026-08-30
-0x00402330,authored,Background,authored,high,background-lifecycle-complete-2026-08-30
+0x00402330,authored,Background,authored,exact,vc71-background-destructor-exact-2026-09-01
 0x004024A0,authored,Background,authored,exact,background-create-exact-2026-08-31
 0x00402620,compiler,Background,exclude,exact,background-scalar-deleting-destructor-2026-08-30
 0x00402680,authored,Background,authored,exact,background-lifecycle-2026-08-30
@@ -408,7 +408,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0042ABC0,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
 0x0042AD00,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
 0x0042AD60,authored,PhotoStage,authored,high,photo-stage-update-semantic-2026-08-30
-0x0042C220,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x0042C220,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-draw-exact-2026-09-01
 0x0042C3E0,authored,PhotoStage,authored,exact,vc71-photo-stage-update-callback-2026-08-30
 0x0042C410,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
 0x0042C450,authored,PhotoStage,authored,exact,vc71-photo-stage-save-photo-2026-08-30
@@ -644,7 +644,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004525D0,authored,HelpMenu,authored,exact,vc71-help-menu-loader-2026-08-29
 0x00452630,authored,FrontEndController,authored,high,vc71-front-end-controller-draw-2026-08-29
 0x00452D70,authored,AnmManager,authored,exact,vc71-anm-vm-color1-interpolation-2026-08-29
-0x00452E50,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00452E50,authored,PbgArchive,authored,exact,vc71-pbg-entry-constructor-exact-2026-09-01
 0x00452E70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00452EA0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
 0x00452F30,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
@@ -704,7 +704,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00455B50,authored,PbgFile,authored,exact,vc71-pbg-file-core-2026-09-01
 0x00455B80,authored,PbgFile,authored,exact,vc71-pbg-file-core-2026-09-01
 0x00455BB0,authored,PbgFile,authored,exact,vc71-pbg-file-core-2026-09-01
-0x00455BF0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00455BF0,authored,PbgFile,authored,exact,vc71-pbg-read-whole-exact-2026-09-01
 0x00455CC0,authored,PbgFile,authored,exact,vc71-pbg-file-core-2026-09-01
 0x00455DC0,authored,PbgFile,authored,exact,vc71-pbg-file-core-2026-09-01
 0x00455DE0,unknown,,review,unknown,ghidra-12.1.3-initial-inventory

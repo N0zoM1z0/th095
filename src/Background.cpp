@@ -361,45 +361,7 @@ void BackgroundSupervisorView::ConfigureBackgroundViewport(i32 index)
 
 // FUNCTION: TH095 0x004020C0 is implemented in BackgroundLifecycle.cpp.
 
-// FUNCTION: TH095 0x00402330.
-Background::~Background()
-{
-    BackgroundStateView *background =
-        reinterpret_cast<BackgroundStateView *>(this);
-    i32 vmIndex;
-
-    utils::DebugPrint("shutdown BackGroundInf\n");
-    g_Chain.Cut(background->calcChain);
-    g_Chain.Cut(background->drawHighChain);
-    g_Chain.Cut(background->drawLowChain);
-
-    if (background->stageData != NULL)
-        free(background->stageData);
-
-    if (reinterpret_cast<BackgroundSupervisorFlagsView *>(
-            &g_Supervisor.flags)->disableResourceReload == 0)
-    {
-        if (g_BackgroundStageDataCache != NULL)
-            free(g_BackgroundStageDataCache);
-        g_BackgroundStageDataCache = NULL;
-    }
-
-    if (background->stageObjectVms != NULL)
-        free(background->stageObjectVms);
-
-    if (reinterpret_cast<BackgroundSupervisorFlagsView *>(
-            &g_Supervisor.flags)->disableResourceReload == 0)
-        g_AnmManager->ReleaseAnm(4);
-    else
-        g_AnmManager->MarkVmsForDeletion(background->anm);
-
-    g_Background = NULL;
-
-    for (vmIndex = 2; vmIndex >= 0; --vmIndex)
-        background->photoAreaVms[vmIndex].~AnmVm();
-    for (vmIndex = 7; vmIndex >= 0; --vmIndex)
-        background->stageVms[vmIndex].~AnmVm();
-}
+// FUNCTION: TH095 0x00402330 is implemented in BackgroundLifecycle.cpp.
 
 // FUNCTION: TH095 0x004024A0.
 #define background averagedPanLocal12
