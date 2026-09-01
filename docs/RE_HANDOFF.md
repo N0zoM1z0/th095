@@ -1400,3 +1400,6 @@ With these source facts, the maintained function and target both contain 1,100
 instructions with identical mnemonic sequence.  Do not chase byte exactness by
 adding storage for target `EBP-0xB8..-0xE0`: all eleven dwords in that 44-byte
 interval are instruction-unreferenced.
+### 2026-09-02 gpt-web PhotoGame destructor exact closure
+
+`PhotoGameUpdateView::~PhotoGameUpdateView @ 0x0042EE90` is canonical exact for all 273 authored bytes and nineteen relocations.  The decisive source shape is genuine C++ lifetime structure, not padding: define the empty `PhotoCameraState` destructor class-inline.  VC7.1 still emits the separately callable 35-byte `PhotoCameraState::~PhotoCameraState @ 0x0042EC70` (which remains exact), but expands the four-member `AnmVm` vector destruction in the owning PlayerInf destructor exactly like the target.  Keep the `movementConfig` ownership pointer local inside the actual free branch; this forces the target load/store/reload free chronology and naturally grows the owner frame from 0x10 to 0x14.  Hoisting that pointer or calling the child destructor out of line are negative oracles.

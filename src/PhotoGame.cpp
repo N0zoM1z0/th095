@@ -229,10 +229,6 @@ PhotoCameraState::PhotoCameraState()
 {
 }
 
-PhotoCameraState::~PhotoCameraState()
-{
-}
-
 void PhotoCameraState::Initialize()
 {
     memset(this, 0, sizeof(*this));
@@ -281,7 +277,8 @@ PhotoGameUpdateView::~PhotoGameUpdateView()
         reinterpret_cast<AnmLoaded *>(this->effectAnm));
     if (this->movementConfig != NULL)
     {
-        free(this->movementConfig);
+        PhotoPlayerMovementConfigView *movementConfig = this->movementConfig;
+        free(movementConfig);
     }
 }
 

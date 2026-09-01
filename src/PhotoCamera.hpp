@@ -114,7 +114,7 @@ struct PhotoCameraState
     Float3 viewfinderSize;            // +0xbd0
 
     PhotoCameraState();
-    ~PhotoCameraState();
+    ~PhotoCameraState() {}
     void Initialize();
     void BeginCapture();
     void UpdateViewfinder();
