@@ -255,11 +255,15 @@ assembly or an artificial branch to close it.
   `0,1,2,3,7,8,9,5,6,4`, and keep a `break` both inside and after each
   game/replay transition block. Build 3077 then emits the exact `0xC0` frame,
   all 714 target mnemonics, all 57 call destinations in order, and the complete
-  ten-entry table. The legal body is one byte long because three global-pointer
-  loads use a six-byte general register instead of the target five-byte EAX
-  form, while two `Float3` copies use a five-byte EAX add instead of the target
-  six-byte general-register form. This is compiler-register evidence, not
-  authority for a dummy local or padding byte.
+  ten-entry table. The final source-shape key is the three transition-handle
+  assignments: `CreateVm` returns a four-byte `SceneAnmVmId`, while the owner
+  field uses a representation-compatible `AnmVmId`. Assign the returned wrapper
+  as a whole through the typed view. Extracting `.value` first makes VC7.1 load
+  `this` before the sret value at all three sites; that rotates later register
+  allocation and appears misleadingly as a net one-byte residual across three
+  global loads and two `Float3` copies. Whole-object assignment restores all
+  2,969 authored bytes, the adjacent 40-byte table, and 101 relocations without
+  dummy storage or padding.
 - `UpdateMainMenu @ 0x00446A50` needs one fully live 216-byte aggregate for the
   eighteen VM positions, declared in reverse physical order. Use the queue's
   real inline `Size()` member and small source-local helpers for help-state

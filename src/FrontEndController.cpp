@@ -292,8 +292,10 @@ ChainCallbackResult SceneSelectControllerView::Update()
             FrontEndCreateSceneVm(view, 0x67);
             FrontEndCreateSceneVm(view, 0x19);
             FrontEndCreateSceneVm(view, 0x1a);
-            view->transitionVm.value =
-                view->transitionAnm->CreateVm(0, 7).value;
+            // Both target handles are four-byte VM ids; preserving the
+            // returned wrapper as a whole is codegen-significant here.
+            *reinterpret_cast<SceneAnmVmId *>(&view->transitionVm) =
+                view->transitionAnm->CreateVm(0, 7);
             FrontEndCreateSceneVm(view, 0x1b);
             FrontEndCreateSceneVm(view, 0x64);
             FrontEndCreateSceneVm(view, 0x65);
@@ -306,8 +308,8 @@ ChainCallbackResult SceneSelectControllerView::Update()
             view->stateTimer.Reset();
             FrontEndCreateSceneVm(view, 0x19);
             FrontEndCreateSceneVm(view, 0x1a);
-            view->transitionVm.value =
-                view->transitionAnm->CreateVm(0, 7).value;
+            *reinterpret_cast<SceneAnmVmId *>(&view->transitionVm) =
+                view->transitionAnm->CreateVm(0, 7);
             FrontEndCreateSceneVm(view, 0x1b);
             FrontEndCreateSceneVm(view, 0x64);
             FrontEndCreateSceneVm(view, 0x65);
@@ -322,8 +324,8 @@ ChainCallbackResult SceneSelectControllerView::Update()
             view->cursor.Set(1);
             FrontEndCreateSceneVm(view, 0x19);
             FrontEndCreateSceneVm(view, 0x1a);
-            view->transitionVm.value =
-                view->transitionAnm->CreateVm(0, 7).value;
+            *reinterpret_cast<SceneAnmVmId *>(&view->transitionVm) =
+                view->transitionAnm->CreateVm(0, 7);
             FrontEndCreateSceneVm(view, 0x1b);
             FrontEndCreateSceneVm(view, 0x64);
             FrontEndCreateSceneVm(view, 0x65);

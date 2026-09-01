@@ -544,19 +544,19 @@ differences, so it remains deliberately non-exact.
 
 The two large controller bodies immediately following that shell have now
 been reconstructed to compiler-bounded source shapes. `Update @ 0x00445E80`
-has the exact target `0xC0` frame, all 714 target mnemonics, the exact 57-call
-destination order, and the complete ten-entry outer switch table. Its natural
-VC7.1 body is 2,970 bytes versus the 2,969-byte target; the one-byte net
-residual is isolated to compiler register selection across three global loads
-and two paired-VM vector copies. The first 37 calls through `+0x7FF` and seven
-of ten table destinations are already offset-exact. `UpdateMainMenu @
+is canonical exact for its 2,969-byte authored body, adjacent 40-byte ten-entry
+switch table, and all 101 relocations. The decisive source shape is whole-object
+assignment of each returned four-byte `SceneAnmVmId` into the representation-
+compatible transition handle. The former `.value`-only assignments reversed
+return/`this` materialization at three creation sites and caused the downstream
+one-byte net register residual. `UpdateMainMenu @
 0x00446A50` now owns the exact 3,323-byte body-plus-table extent, all 37 call
 offsets, and all six table destinations; 2,906/3,051 non-relocation bytes
 match. Its remaining 145 bytes are only stack displacements caused by target-
-only instruction-unreferenced homes at `EBP-0x144/-0x150`. Keep both bodies
-non-exact: do not synthesize locals or padding for those compiler artifacts.
-The two pre-existing exact units in the same translation unit, `CloseMainMenu`
-and `UpdateMainMenuSelection`, replayed unchanged for 648 and 787 bytes.
+only instruction-unreferenced homes at `EBP-0x144/-0x150`; keep that body
+non-exact rather than synthesizing locals or padding. The two pre-existing
+exact units in the same translation unit, `CloseMainMenu` and
+`UpdateMainMenuSelection`, replayed unchanged for 648 and 787 bytes.
 
 The high-connectivity Supervisor frame and scene-routing spine is now canonical
 exact. `Supervisor::OnUpdate @ 0x00423440` contributes 400 authored bytes and
