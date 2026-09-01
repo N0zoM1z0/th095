@@ -1488,3 +1488,33 @@ already-exact `Supervisor::UpdateSceneState` switch tables.  A direct structural
 audit proved all 842 comparable bytes, all 46 relocation offsets/types/addends,
 and every solved target destination unchanged; only those three private symbol
 spellings were refreshed.  All 45 canonical `Main.cpp` units then replayed exact.
+
+### 2026-09-02 gpt-web exact-progress checkpoint
+
+Current ledger-derived authored metrics after this pass:
+
+- exact functions: `627/680` = `92.21%`; 95% needs `19` more functions;
+- exact authored bytes: `236725/330331` = `71.66%`; 95% needs `77090` more authored bytes;
+- source-present non-exact authored residuals: `53`.
+
+This pass used strict exact-only promotion for compiler-tail boundary sweeps,
+bounded whole-body allocation helpers, CreateVm-producing helpers, and VM-id
+whole-object assignment probes.  A candidate was promoted only after a zero-
+difference relocation-aware comparison and same-TU canonical regression replay;
+all approximate variants remain scratch-only under `.analysis/`.  Continue to
+skip documented instruction-unreferenced frame reservations unless a real
+source/lifetime oracle explains them.
+
+Recent commits at checkpoint:
+```text
+fbc0e10 gpt-web: match supervisor shutdown exactly
+a736e71 gpt-web: match enemy timeline exactly
+9cef19f gpt-web: match scene controller draw exactly
+a6dba89 gpt-web: classify implicit MIDI destructor
+d83e3f6 gpt-web: match PhotoGame destructor exactly
+c07a6a8 gpt-web: recover background stage script shape
+8b76eb3 gpt-web: recover best-shot loader source shape
+f816429 gpt-web: restore PhotoStage display side effects
+922bce1 gpt-web: document residual barriers and fix PhotoItem VM call
+7b6242d Document bullet core compiler barriers
+```
