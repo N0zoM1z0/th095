@@ -5,7 +5,7 @@ namespace th095
 
 struct ItemAnmSpawnerView
 {
-    void SetAndExecuteScript(AnmVm *vm, i32 scriptIndex);
+    void InitializeVm(AnmVm *vm, i32 scriptIndex);
 };
 
 struct ItemBulletManagerView
@@ -317,7 +317,7 @@ checkSlot:
     item->velocity.z = 0.0f;
     item->timer = 0;
     item->acceleration = 0.0f;
-    g_PhotoBulletManager->anmSpawner->SetAndExecuteScript(&item->vm, 0x120);
+    g_PhotoBulletManager->anmSpawner->InitializeVm(&item->vm, 0x120);
     item->vm.color1.color = color;
 finished:
     return 0;

@@ -1305,3 +1305,28 @@ The next exact batch closes 1,342 authored bytes across four functions. `PhotoSt
 The latest exact batch adds 1,022 authored bytes across four functions. `Background::~Background @ 0x00402330` is exact in the lifecycle TU through automatic 3+8 member destruction plus three real force-inlined ownership-free homes; `PhotoOverlayManagerView::Draw @ 0x0042C220` closes the former 366/434 gap by preserving repeated indexed VM expressions; `CPbgFile::ReadWholeFile @ 0x00455BF0` is exact with TH095's simplified malloc/free path and a 12-byte live read-state aggregate; and `PbgArchiveEntry::PbgArchiveEntry @ 0x00452E50` is the relocation-free filename-null ctor used by archive new[]. Keep `AllocEntries` at its improved 511/524 probe until a natural filename-size allocation oracle appears.
 
 The latest exact batch adds 1,515 authored bytes across two functions. `PhotoItemManagerView::Update @ 0x0041CE60` is canonical exact for 1,235 bytes after recovering genuine Float3 bounds/vector lifetimes, timer conversion, shared tick ownership, and source-local vector/charge helpers. `Lzss::AddString @ 0x00456650` adds 280 exact bytes and upgrades a formerly unknown target function to authored; its five real locals require the gapless 20-byte `{delta, matchLength, testNode, child, i}` aggregate. Both source TUs replay all eighteen canonical units after integration.
+### 2026-09-01 gpt-web residual triage and PhotoItem call identity
+
+The authored baseline is 623/681 exact functions (91.48%).  All 58 remaining
+authored functions are source-present, so there is no unimplemented-leaf lane left
+to harvest.  Before spending time on a small reported size delta, inspect the raw
+VC7.1 prologue and stack references: normalized/topology comparisons can make a
+compiler-frame residual look like a one- or two-byte problem.  For example,
+`PhotoItemManagerView::Spawn @ 0x0041D460` is 278 bytes in the target while the
+current natural probe is 279 bytes, but the target reserves 0x3C bytes of stack
+versus 0x10 in the natural source.  Likewise,
+`InitializePhotoResultScreen @ 0x00428E90` has the known two-byte capture-branch
+shape difference, but the target frame is 0x70 versus 0x24 in the natural source.
+Treat both as compiler-allocation barriers unless a *live semantic* source shape
+explains the frame; never add dead locals or padding merely to reproduce it.
+
+One semantic correction is target-proven independently of that frame barrier:
+`PhotoItemManagerView::Spawn` calls `AnmLoaded::InitializeVm @ 0x00404B80` for
+script 0x120.  Model the local spawner view with `InitializeVm`, not the misleading
+`SetAndExecuteScript` alias.  This preserves the emitted call shape while making
+the source-level dependency and future relocation review truthful.
+
+A replay of `.analysis/EnemyHistorical-timeline.cpp` under the pinned VC7.1
+profile still emits 882 bytes for `PhotoEnemyTimelineView::Run @ 0x004163F0`
+against the 818-byte target.  The old exact-sized 818-byte observation is therefore
+stale/non-replayable and must not be used as an exact oracle.
