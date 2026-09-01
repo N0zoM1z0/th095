@@ -656,3 +656,4 @@ th095::PhotoOverlayManagerView::Draw
 th095::CPbgFile::ReadWholeFile
 th095::PbgArchiveEntry::PbgArchiveEntry
 th095::Lzss::AddString
+th095::PhotoRuntimeView::CountPhotoTargets

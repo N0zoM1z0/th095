@@ -339,3 +339,4 @@ address,name,module,confidence,evidence
 0x00452E50,th095::PbgArchiveEntry::PbgArchiveEntry,PbgArchive,exact,Exact archive-entry filename-null constructor used by AllocEntries vector construction
 0x0041CE60,th095::PhotoItemManagerView::Update,PhotoItem,exact,"Exact 150-slot PhotoItem update with semantic bounds/vector state, shared tick path, and source-local vector/charge helpers"
 0x00456650,th095::Lzss::AddString,Compression,exact,Exact LZSS dictionary-tree insertion and longest-match update using a fully live 20-byte local aggregate
+0x004168D0,th095::PhotoRuntimeView::CountPhotoTargets,EnemyManager,exact,Exact 1274-byte target-backed photo-target scan; shared runtime/enemy-manager object at 0x004BDDC0 and all 17 relocations replayed
