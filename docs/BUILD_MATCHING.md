@@ -698,6 +698,33 @@ object lifetime and stable symbol provenance.
 
 `PhotoItemManagerView::Update @ 0x0041CE60` is exact only when the source preserves genuine vector lifetime. Reuse the exact `CheckBulletCollision` sibling shape: two real `Float3` bounds plus `{index, item, direction}` form one fully-live 44-byte aggregate; their unused z fields are not padding. Spell launch easing through `(f32)timer`, use scalar-first `ScaleItemVector(f32, const Float3&)`, keep `NormalizeAndScaleItemVelocity(direction, velocity, acceleration)` in that parameter order so VC7 right-to-left evaluation restores the acceleration and velocity-pointer homes, retain source-local indexed/fixed camera-charge helpers, and route timer<4 through the single shared `tick:` tail.
 
+### Bullet-core frame-gap and redundant-copy negative oracles
+
+`PhotoBulletManagerView::SpawnSingleBullet @ 0x00405A30` has the same
+instruction-unreferenced `0x2C` fingerprint as several ECL/effect callbacks
+and `AdvanceTransformProgram`. A fully live aggregate recovers the target's
+five shallow homes (`speed/i/bullet/angle/transformFlags @ EBP-0x04..-0x14`),
+but the target frame is `0xE4` against the natural source's `0xB0`. Target
+instructions reference `EBP-0x04..-0x50` and then resume at `EBP-0x80`; no
+instruction touches `EBP-0x54..-0x7C`. Source temporaries that begin at
+`EBP-0x54` therefore correspond to target homes beginning at `EBP-0x80`.
+Treat this as a compiler/source-provenance barrier, not an invitation to add a
+44-byte field or local.
+
+`PhotoBulletView::UpdateBoundaryBounce @ 0x00407440` isolates a different
+barrier. The target loads the stored bounce-speed bits into `EBP-0x04`, reloads
+and writes the same value back to `EBP-0x04`, then reloads it for the vector
+call. The natural source omits only that seven-byte self-copy and emits 462
+bytes. A force-inlined union-return helper emits 469 bytes and resolves all 17
+relocations, but allocates separate return/destination homes, changes the frame
+from target `0x10` to `0x14`, and matches only 371/401 comparable bytes. An
+integer-return bit helper folds back to 462 bytes. The TH08 ancestral shape
+writes bounce speed through `this->speed` before copying it to `magnitude`; a
+direct TH095 adaptation emits 480 bytes and a target-absent member store. These
+bounded probes support the inference that the target sequence is lineage
+residue; they do not establish a natural exact source shape. Do not spell the
+redundant assignment explicitly merely to obtain exact bytes.
+
 ### ZUN sound-wrapper provenance and live-local aggregates
 
 The `zwave.cpp` batch separates origin from byte matching. The header retains

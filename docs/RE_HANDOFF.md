@@ -795,14 +795,18 @@ The TH095 bullet-runtime pair at `0x00405A30` (2,133 bytes) and `0x004062B0`
 Together it proves the target-specific `0x65C` bullet, `0x210` spawn packet,
 eighteen-record transform program, nine aim modes, seven transform-state
 slots, child-pattern recursion, and the shifted TH095 transform flag values.
-The natural VC7.1 spawn body remains 2,037 bytes. The interpreter now emits its
-complete 2,479-byte authored extent plus the adjacent 84-byte switch table,
-with all 500 target instruction mnemonics and all 23 relocation destinations.
-It nevertheless remains conservatively non-exact: the target frame is `0x27C`
-versus the source's `0x250`, solely because the target owns one completely
-instruction-unreferenced `0x2C` interval. The spawn body still differs in
-compiler expression/local shape. Do not close either residual with inert
-padding. The connecting pattern
+The natural VC7.1 spawn body remains 2,037 bytes. A fully live local aggregate
+recovers its five shallow target homes (`speed/i/bullet/angle/transformFlags @
+EBP-0x04..-0x14`) but does not change the extent: the 2,133-byte target has a
+`0xE4` frame against the natural `0xB0` frame and never references
+`EBP-0x54..-0x7C`. All deeper temporary homes are consequently shifted by the
+same `0x2C`. The interpreter now emits its complete 2,479-byte authored extent
+plus the adjacent 84-byte switch table, with all 500 target instruction
+mnemonics and all 23 relocation destinations. It nevertheless remains
+conservatively non-exact: the target frame is `0x27C` versus the source's
+`0x250`, solely because the target owns another completely
+instruction-unreferenced `0x2C` interval. Do not close either residual with
+inert padding. The connecting pattern
 fanout at `0x00406CC0` and the active/spawning despawn transition at
 `0x004077A0` are canonical exact for 297 bytes and five relocations.
 
@@ -815,7 +819,15 @@ update during vector acceleration, and the deliberate absence of a final game
 speed multiplier when rebuilding velocity. `UpdateBoundaryBounce @
 0x00407440` is behavior-complete but conservatively non-exact: its natural
 VC7.1 body is 462 bytes against the 469-byte target, with only a seven-byte
-local bit-copy/register-shape residual. Do not add an inert copy to claim it.
+local bit-copy/register-shape residual. The target's `0x10` frame performs a
+member-to-local bit copy, a redundant local-to-the-same-local copy, and then
+pushes that local. A force-inlined union-return conversion reaches 469 bytes
+and resolves all 17 relocations, but requires a non-target `0x14` frame and
+matches only 371/401 comparable bytes; an integer-return bit helper folds back
+to the natural 462-byte body. The TH08 lineage instead writes the bounce speed
+through `this->speed` and then copies that member to `magnitude`, producing a
+480-byte TH095 probe rather than the target. Do not add the inert self-copy to
+claim it.
 
 The TH095-specific bullet photography lane at `0x00407820..0x0040860D` now has
 two additional canonical exact bodies. `CapturePhotoTargets @ 0x00407820`
