@@ -247,8 +247,18 @@
   pipeline. `PhotoStageStateView::Update @ 0x0042AD60` is source-present for
   the complete 5,309-byte state machine: eleven photograph VM groups, capture
   crop/clamp and texture-border writes, score/`BSTS` commit, slot animation,
-  and eighty display-VM boundary fades. Its natural VC7.1 body is 4,375 bytes,
-  so compiler-local source shape remains deferred. The adjacent update wrapper
+  and eighty display-VM boundary fades. The slot header is now typed through
+  `+0x44`, where the existing `PhotoStageDisplayView` is embedded; its eighth
+  score word is the slot flags word. The save-data score records are `0x60`
+  bytes from `+0x478`, all four texture-border loops share one real `y/row`
+  pair, the fade mode is an integer local, and the player-exit condition is
+  the target's negation of the entry predicate. These target/compiler-backed
+  source-shape recoveries raise the natural VC7.1 body from 4,375 to 5,284
+  bytes, with 1,166 of the target's 1,172 instruction mnemonics in order and
+  all 130 object relocations accounted for. The remaining differences are the
+  first nested VM address calculation, two unreferenced target coordinate
+  copies, and a `0x11C` versus `0x12C` frame. Do not model those copies or the
+  frame residual with inert locals. The adjacent update wrapper
   (45 bytes), `SavePhoto` initializer (356), and RGB24/ARGB4444 pixel copier
   (689) are canonical exact for all 1,090 authored bytes and 31 relocations.
 - The same root-level unit now reconstructs the complete 8,560-byte
