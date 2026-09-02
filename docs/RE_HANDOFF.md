@@ -543,9 +543,9 @@
   disabled-scene cursor pointer, gives only extra-mode Set(1) a `0x48` phase,
   writes VM 13 color directly, and casts the lag ratio to `f32` before the
   `*100.0f` multiply. That cast boundary reproduces target `fst` before the
-  single-precision multiply. All twenty-one `ResultScreen.cpp` canonical units
-  replay exact. `InitializeReplayResultScreen @ 0x004288B0` remains non-exact
-  and must not inherit either phase size without independent target evidence.
+  single-precision multiply. The replay sibling at `0x004288B0` is now exact as
+  well; its independently proven mixed-address and branch-phase shape is recorded
+  in the latest checkpoint below. All ResultScreen canonical units replay exact.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
   bytes are stack allocation/displacement differences and receive no credit.
@@ -1763,3 +1763,36 @@ six displacement residuals unchanged (119/125, 138/144, and 123/129 comparable
 bytes respectively).  The repeated gap therefore does not yet satisfy the
 phase-boundary proof required by `BUILD_MATCHING.md`; never move the reservation
 to arbitrary function scope just because three targets share its size.
+
+
+### 2026-09-02 gpt-web replay-result initializer exact closure
+
+`InitializeReplayResultScreen @ 0x004288B0` is now canonical exact for all 1,489
+authored bytes and all 43 relocations.  The previous 1,417-byte source mixed two
+separate compiler problems.  Primary ANM stores for VMs `1/7/9/10/8/19/20` must
+retain `GetResultVm`: the target intentionally materializes each constant index
+through `imul index,0x2CC`.  Auxiliary text VMs `21/22` instead use direct member
+addresses and direct glyph stores.  Remove the named `group/scene` cache and
+re-materialize `selectedGroup` plus
+`nextSceneByGroup[selectedGroup]` at each consumer.  Those ordinary C++ changes
+alone produce all 320 target mnemonics in order.
+
+The remaining `0xF8` frame delta is two branch-owned semantic phases, not one
+function-scope hole.  In normal replay setup, `replayCursor.Set(0)` keeps its
+receiver at `EBP-0x0C`; the following real timestamp/score publication owns a
+parameter-free `0xA0` phase.  In extra replay setup, direct `Set(1)` then owns the
+real cursor pointer at `EBP-0xB0`, while the following count/aux-ANM/glyph/text
+tail owns a `0x58` phase.  This places outer `resultScreen @ EBP-0x10C` and the
+two compiler Set-result homes at `-0x110/-0x114`.  A bounded negative control
+wrapped the two `Set` operations themselves with the same `0xA0 + 0x58` storage:
+VC7 produced the same `0x114` frame and 320 mnemonics but cursor pointers at
+`-0xAC/-0x108`, proving that total frame size alone is insufficient.
+
+The source addition renumbers compiler-private `$L` symbols in the already-exact
+`ResultScreen::Update` object.  A direct 6,551-byte comparison remains structural
+exact at 5,807/5,807 non-relocation bytes; every local-label relocation keeps the
+same offset, type, and target destination, so only manifest-local symbol identities
+were refreshed.  All 22 pre-existing `ResultScreen.cpp` canonical units replay
+exact after the change, and the new replay initializer becomes the 23rd.  Authored
+coverage is now 655/685 exact functions (95.62%) and 267,263/332,245 exact bytes
+(80.44%).

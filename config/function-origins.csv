@@ -387,7 +387,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00426B90,authored,ResultScreen,authored,exact,result-screen-pause-factory-exact-2026-08-30
 0x00426BF0,authored,ResultScreen,authored,exact,result-screen-update-exact-2026-09-02
 0x00428590,authored,ResultScreen,authored,exact,vc71-result-game-initialize-exact-2026-09-02
-0x004288B0,authored,ResultScreen,authored,high,vc71-result-screen-initializers-source-2026-08-29
+0x004288B0,authored,ResultScreen,authored,exact,vc71-result-replay-initialize-exact-2026-09-02
 0x00428E90,authored,ResultScreen,authored,exact,vc71-result-photo-initialize-exact-2026-09-02
 0x004292D0,authored,ReplayMenu,authored,exact,ghidra-replay-menu-cluster-2026-08-29
 0x00429450,authored,ResultScreen,authored,exact,vc71-result-photo-find-best-shot-2026-08-29

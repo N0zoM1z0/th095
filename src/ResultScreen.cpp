@@ -550,6 +550,33 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
     resultScreen->replayCursor.wraps = 1;
 }
 
+
+static __forceinline void InitializeReplayNormalTailPhase()
+{
+    u8 compilerStorage[0xa0];
+    time(reinterpret_cast<time_t *>(
+        &g_ReplayManager->activeInputData->timestamp));
+    g_ReplayManager->activeInputData->score =
+        g_ResultScreenGlobalState->currentScore;
+}
+
+static __forceinline void InitializeReplayExtraTailPhase(
+    ResultScreen *resultScreen)
+{
+    u8 compilerStorage[0x58];
+    resultScreen->replayCursor.count = 2;
+    g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->vms[21], 9);
+    g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->vms[22], 10);
+    resultScreen->vms[21].glyphWidth = 0x12;
+    resultScreen->vms[21].glyphHeight = 0x12;
+    resultScreen->vms[22].glyphWidth = 0x12;
+    resultScreen->vms[22].glyphHeight = 0x12;
+    g_ResultAnmManager->DrawTextLeft(
+        &resultScreen->vms[21], 0xffe0c0, 0x300000, " ");
+    g_ResultAnmManager->DrawTextLeft(
+        &resultScreen->vms[22], 0xffe0c0, 0x300000, " ");
+}
+
 void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
 {
     resultScreen->stateTimer.Reset();
@@ -571,33 +598,35 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
         resultScreen->replayCursor.Set(0);
         resultScreen->replayCursor.count = 3;
 
-        g_ResultAuxAnm->SetAndExecuteScript(GetResultVm(resultScreen, 21), 9);
-        g_ResultAuxAnm->SetAndExecuteScript(GetResultVm(resultScreen, 22), 10);
-        GetResultVm(resultScreen, 21)->glyphWidth = 0x12;
-        GetResultVm(resultScreen, 21)->glyphHeight = 0x12;
-        GetResultVm(resultScreen, 22)->glyphWidth = 0x12;
-        GetResultVm(resultScreen, 22)->glyphHeight = 0x12;
+        g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->vms[21], 9);
+        g_ResultAuxAnm->SetAndExecuteScript(&resultScreen->vms[22], 10);
+        resultScreen->vms[21].glyphWidth = 0x12;
+        resultScreen->vms[21].glyphHeight = 0x12;
+        resultScreen->vms[22].glyphWidth = 0x12;
+        resultScreen->vms[22].glyphHeight = 0x12;
 
-        i32 group = resultScreen->selectedGroup;
-        u8 scene = g_ResultSaveData->profile.nextSceneByGroup[group];
         g_ResultAnmManager->DrawTextLeft(
-            GetResultVm(resultScreen, 21), 0xffe0c0, 0x300000,
-            resultScreen->sceneLabels[group][scene].firstLine);
+            &resultScreen->vms[21], 0xffe0c0, 0x300000,
+            resultScreen->sceneLabels[resultScreen->selectedGroup]
+                [g_ResultSaveData->profile.nextSceneByGroup[
+                    resultScreen->selectedGroup]].firstLine);
         g_ResultAnmManager->DrawTextLeft(
-            GetResultVm(resultScreen, 22), 0xffe0c0, 0x300000,
-            resultScreen->sceneLabels[group][scene].secondLine);
+            &resultScreen->vms[22], 0xffe0c0, 0x300000,
+            resultScreen->sceneLabels[resultScreen->selectedGroup]
+                [g_ResultSaveData->profile.nextSceneByGroup[
+                    resultScreen->selectedGroup]].secondLine);
 
-        g_ResultSaveData->profile.nextSceneByGroup[group]++;
-        if (g_ResultSaveData->profile.nextSceneByGroup[group] >=
-            resultScreen->sceneCounts[group])
+        g_ResultSaveData
+            ->profile.nextSceneByGroup[resultScreen->selectedGroup]++;
+        if (g_ResultSaveData
+                ->profile.nextSceneByGroup[resultScreen->selectedGroup] >=
+            resultScreen->sceneCounts[resultScreen->selectedGroup])
         {
-            g_ResultSaveData->profile.nextSceneByGroup[group] = 0;
+            g_ResultSaveData
+                ->profile.nextSceneByGroup[resultScreen->selectedGroup] = 0;
         }
 
-        time(reinterpret_cast<time_t *>(
-            &g_ReplayManager->activeInputData->timestamp));
-        g_ReplayManager->activeInputData->score =
-            g_ResultScreenGlobalState->currentScore;
+        InitializeReplayNormalTailPhase();
     }
     else
     {
@@ -605,18 +634,7 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 19), 19);
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 20), 20);
         resultScreen->replayCursor.Set(1);
-        resultScreen->replayCursor.count = 2;
-
-        g_ResultAuxAnm->SetAndExecuteScript(GetResultVm(resultScreen, 21), 9);
-        g_ResultAuxAnm->SetAndExecuteScript(GetResultVm(resultScreen, 22), 10);
-        GetResultVm(resultScreen, 21)->glyphWidth = 0x12;
-        GetResultVm(resultScreen, 21)->glyphHeight = 0x12;
-        GetResultVm(resultScreen, 22)->glyphWidth = 0x12;
-        GetResultVm(resultScreen, 22)->glyphHeight = 0x12;
-        g_ResultAnmManager->DrawTextLeft(
-            GetResultVm(resultScreen, 21), 0xffe0c0, 0x300000, " ");
-        g_ResultAnmManager->DrawTextLeft(
-            GetResultVm(resultScreen, 22), 0xffe0c0, 0x300000, " ");
+        InitializeReplayExtraTailPhase(resultScreen);
     }
     resultScreen->replayCursor.wraps = 1;
 }

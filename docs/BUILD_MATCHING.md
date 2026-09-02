@@ -918,8 +918,25 @@ This preserves the target shallow timer/capture homes and its `jl short; jmp sho
 layout. The final `replayCursor.Set(0)` alone owns a separate `0x90` target-attested
 phase; putting that storage around capture setup or the whole initializer moves the
 wrong temporaries. Together these two semantic boundaries reproduce all 788 bytes
-and eighteen relocations. Do not infer replay/photo initializer phase sizes from
-this function; those paths remain independent proof obligations.
+and eighteen relocations. Do not infer sibling phase sizes from this function;
+replay and photo each require independent target allocation evidence.
+
+`InitializeReplayResultScreen @ 0x004288B0` is the mixed-address and branch-phase
+companion. Keep the primary ANM calls for VMs `1/7/9/10/8/19/20` in the indexed
+`GetResultVm` form: VC7 deliberately emits the constant `imul index,0x2CC` chains
+seen in the target. The auxiliary text VMs `21/22` are different; use direct
+`&resultScreen->vms[N]` addresses and direct glyph member stores, and repeatedly
+materialize `selectedGroup` plus `nextSceneByGroup[selectedGroup]` instead of
+caching `group/scene` locals. That source shape recovers all 320 target mnemonics.
+The frame then splits into two target-attested branch phases. The normal branch's
+real replay timestamp/score tail owns `0xA0` compiler storage, leaving the normal
+`replayCursor.Set(0)` pointer shallow at `EBP-0x0C`. The extra branch keeps direct
+`Set(1)`, then a source-local helper containing its real count/aux-ANM/glyph/text
+tail owns `0x58`, placing that cursor pointer at `EBP-0xB0`, outer `resultScreen`
+at `-0x10C`, and the two compiler Set-result homes at `-0x110/-0x114`. Wrapping
+the two `Set` calls themselves with the same total storage is the required negative
+control: it gets the `0x114` frame but places both cursor pointers wrong. The
+branch-owned form replays all 1,489 bytes and all 43 relocations exactly.
 
 `FrontEndLifecycleView::~FrontEndLifecycleView @ 0x00445AA0` closes the queue-drain ownership rule.
 Use distinct real loop indices for replay deletion and pending-preview cleanup, and keep
