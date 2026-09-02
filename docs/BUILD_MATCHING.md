@@ -794,10 +794,26 @@ its base is formed with `lea` and then passed/iterated indirectly.  Conversely,
 intervals with neither direct references nor an EBP-base `lea`/escaped pointer
 remain compiler-reservation evidence; do not synthesize storage for them.
 
-Legacy units that happen to match by unused declarations are not new-source
-oracles.  The current exact `SetAndExecuteScript` source has two unused manager
-pointer declarations: removing one shrinks its 0x14 frame to 0x10, and removing
-both shrinks it to 0x0C; TH08 source has neither declaration.  The legacy
-PhotoStage display helper similarly contains an explicit unknown stack array.
-Keep these as historical compatibility debt, not permission to introduce inert
-locals into new authored matches.
+Target-attested compiler storage has one narrower positive rule. The paired
+`PhotoStraightLaserView::Initialize @ 0x0041E0C0` and
+`PhotoRotatingLaserView::Initialize @ 0x0041F380` targets independently expose
+the same two `0x30` frontend phases: a `0x2C` instruction-unreferenced
+reservation followed by the hidden `AnmVm *this` home used by
+`SetBlendModeAdditive`. A source-local `__forceinline` phase containing exactly
+that `0x2C` compiler-storage reservation reproduces both active-home sequences
+`EBP-0x30/-0x60/-0x64`, both original instruction counts, and all relocation
+destinations, closing the 500- and 450-byte bodies exactly. Accept this pattern
+only when the reservation size and phase boundary are independently repeated by
+multiple target functions (or equivalent direct source provenance), the phase
+contains a real semantic operation, and full byte/relocation replay stays
+unchanged. Do not move the storage to arbitrary function scope or infer a size
+from frame arithmetic alone.
+
+Legacy units that happen to match by isolated unused declarations are still not
+new-source oracles. The current exact `SetAndExecuteScript` source has two unused
+manager pointer declarations: removing one shrinks its 0x14 frame to 0x10, and
+removing both shrinks it to 0x0C; TH08 source has neither declaration. The
+legacy PhotoStage display helper similarly contains an explicit unknown stack
+array, but has no independent paired-target phase evidence. Keep those shapes as
+historical compatibility debt; the laser rule above is deliberately narrower
+and does not permit general inert locals or frame filler.

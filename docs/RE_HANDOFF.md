@@ -1126,11 +1126,16 @@ These units prove the packet layouts at effect `+0x50`, body/tail ANM VM
 offsets `+0x78/+0x344` and `+0x98/+0x364`, player-laser collision integration,
 and optional anchoring through enemy-manager photo target zero.
 
-The paired initializers at `0x0041E0C0/0x0041F380` are now source-present for
-their exact 500/450-byte instruction topology and all relocations; only the
-target's `0x64` inline-local frame versus the stock compiler's `0x0C` frame
-prevents exact promotion. Their draw callbacks at `0x0041E6D0/0x0041F990`
-are canonical exact for all 253 authored bytes and twelve relocations.
+The paired initializers at `0x0041E0C0/0x0041F380` are now canonical exact for
+all 500/450 authored bytes. Both targets independently require two identical
+additive-blend frontend phases: each phase reserves `0x2C` bytes before the
+hidden body/tail VM `this` home, producing `EBP-0x30/-0x60` and outer
+`this @ -0x64`. A single source-local `__forceinline`
+`PhotoEffectSetAdditivePhase` binds that target-attested compiler storage to the
+real `SetBlendModeAdditive` operation at all four call sites; no emitted
+instruction, body extent, or relocation destination changes. Their draw
+callbacks at `0x0041E6D0/0x0041F990` remain canonical exact for all 253 authored
+bytes and twelve relocations.
 
 The shared PhotoEffect update hub at `0x0041D930` and its unlink helper at
 `0x0041DA50` are now canonical exact for all 373 authored bytes. They prove
@@ -1602,17 +1607,19 @@ function:
   Before declaring a future interval inert, check both direct EBP references and
   any `lea` whose base spans the apparent gap.
 
-Two legacy canonical sources are **not** reusable policy-compliant oracles for
-new matches.  `InitializePhotoStageDisplayVm @ 0x0042E730` currently carries an
-explicit `unknownStack[0x2c]`; its target interval has no direct or escaped stack
-reference.  More importantly, `AnmLoaded::SetAndExecuteScript @ 0x0043A0C0`
-contains two declarations (`managerScratch1/managerScratch2`) that TH08 does not
-have and that are never read or written.  Removing either declaration changes
-its exact frame from 0x14 to 0x10; removing both changes it to 0x0C.  Therefore
-its shallow two-dword reservation is caused by historical unused declarations,
-not by a truthful runtime lifetime.  Do **not** use either legacy shape to close
-`AnmLoaded::InitializeVm` or another residual; current authored-source policy
-forbids new inert locals/padding.
+Two legacy canonical sources are **not by themselves** reusable compiler-storage
+oracles. `InitializePhotoStageDisplayVm @ 0x0042E730` carries an explicit
+`unknownStack[0x2c]`, but that single target interval has no direct or escaped
+stack reference and no independent paired phase. More importantly,
+`AnmLoaded::SetAndExecuteScript @ 0x0043A0C0` contains two declarations
+(`managerScratch1/managerScratch2`) that TH08 does not have and that are never
+read or written. Removing either declaration changes its exact frame from 0x14
+to 0x10; removing both changes it to 0x0C. Do not copy those isolated legacy
+shapes into residual functions. The new laser-initializer exception is stricter:
+two independent targets repeat the same `0x2C + hidden-this` semantic phase and
+both close under one shared inline helper with unchanged instruction and
+relocation topology. Outside such repeated phase evidence, inert locals/padding
+remain forbidden.
 
 `AnmLoaded::InitializeVm @ 0x00404B80` was also replayed as a header-defined
 inline COMDAT, matching TH08's ancestral placement style.  The emitted body is

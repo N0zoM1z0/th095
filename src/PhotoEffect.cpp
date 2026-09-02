@@ -384,6 +384,12 @@ i32 PhotoStraightLaserView::Update()
     return 0;
 }
 
+static __forceinline void PhotoEffectSetAdditivePhase(AnmVm *vm)
+{
+    u8 compilerStorage[0x2c];
+    vm->SetBlendModeAdditive();
+}
+
 i32 PhotoStraightLaserView::Initialize(void *args)
 {
     this->spawn = *static_cast<PhotoEffectArgsSmallView *>(args);
@@ -394,7 +400,7 @@ i32 PhotoStraightLaserView::Initialize(void *args)
         GetPhotoEffectScriptBase(this->spawn.type) + this->spawn.color);
     this->bodyVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->bodyVm);
-    this->bodyVm.SetBlendModeAdditive();
+    PhotoEffectSetAdditivePhase(&this->bodyVm);
     this->bodyVm.renderModeBits = 1;
     this->bodyVm.renderStateA = 0;
     this->bodyVm.renderStateB = 2;
@@ -403,7 +409,7 @@ i32 PhotoStraightLaserView::Initialize(void *args)
         &this->tailVm, this->spawn.color + 0xc2);
     this->tailVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->tailVm);
-    this->tailVm.SetBlendModeAdditive();
+    PhotoEffectSetAdditivePhase(&this->tailVm);
     this->tailVm.renderModeBits = 1;
 
     this->position = this->spawn.position;
@@ -560,7 +566,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
         GetPhotoEffectScriptBase(this->spawn.type) + this->spawn.color);
     this->bodyVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->bodyVm);
-    this->bodyVm.SetBlendModeAdditive();
+    PhotoEffectSetAdditivePhase(&this->bodyVm);
     this->bodyVm.renderModeBits = 1;
     this->bodyVm.renderStateA = 0;
     this->bodyVm.renderStateB = 2;
@@ -569,7 +575,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
         &this->tailVm, this->spawn.color + 0xc2);
     this->tailVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->tailVm);
-    this->tailVm.SetBlendModeAdditive();
+    PhotoEffectSetAdditivePhase(&this->tailVm);
     this->tailVm.renderModeBits = 1;
 
     this->position = this->spawn.position;
