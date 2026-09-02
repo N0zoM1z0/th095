@@ -488,7 +488,7 @@ void ResultSaveDataView::UpdateBestShotRecord(i32 index)
     this->bestShotRecords[index].valid = 0;
 }
 
-static __forceinline void InitializeGameCapturePhase()
+static __forceinline void InitializeResultCapturePhase()
 {
     ResultAnmManagerResultView *anmManager = g_ResultAnmManager;
     if (anmManager->captureAnmIndex >= 0)
@@ -526,7 +526,7 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
     g_ResultScreenGlobalState->flagsWord |= 0x10;
     g_ResultScreenGlobalState->flagsWord |= 0x80;
 
-    InitializeGameCapturePhase();
+    InitializeResultCapturePhase();
 
     resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 0), 0);
     resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 3), 3);
@@ -558,20 +558,7 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
     g_ResultScreenGlobalState->flagsWord |= 0x10;
     g_ResultScreenGlobalState->flagsWord |= 0x80;
 
-    ResultAnmManagerResultView *anmManager = g_ResultAnmManager;
-    if (anmManager->captureAnmIndex < 0)
-    {
-        anmManager->captureAnmIndex = 10;
-        anmManager->captureSourceX = 0x80;
-        anmManager->captureSourceY = 0x10;
-        anmManager->captureSourceWidth = 0x180;
-        anmManager->captureSourceHeight = 0x1c0;
-        anmManager->captureDestinationX = 0;
-        anmManager->captureDestinationY = 0;
-        anmManager->captureDestinationWidth = 0x80;
-        anmManager->captureDestinationHeight = 0x80;
-        anmManager->captureFlags = 0;
-    }
+    InitializeResultCapturePhase();
 
     resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 1), 1);
     resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 7), 7);
@@ -634,6 +621,19 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
     resultScreen->replayCursor.wraps = 1;
 }
 
+static __forceinline void InitializePhotoDisableCursorPhase(
+    ResultScreenReplayCursor *cursor)
+{
+    cursor->disabledEntries[cursor->disabledEntryCount++] = 1;
+}
+
+static __forceinline void InitializePhotoExtraCursorPhase(
+    ResultScreenReplayCursor *cursor)
+{
+    u8 compilerStorage[0x48];
+    cursor->Set(1);
+}
+
 void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
 {
     resultScreen->stateTimer.Reset();
@@ -642,20 +642,7 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
     g_ResultScreenGlobalState->flagsWord |= 0x10;
     g_ResultScreenGlobalState->flagsWord |= 0x80;
 
-    ResultAnmManagerResultView *anmManager = g_ResultAnmManager;
-    if (anmManager->captureAnmIndex < 0)
-    {
-        anmManager->captureAnmIndex = 10;
-        anmManager->captureSourceX = 0x80;
-        anmManager->captureSourceY = 0x10;
-        anmManager->captureSourceWidth = 0x180;
-        anmManager->captureSourceHeight = 0x1c0;
-        anmManager->captureDestinationX = 0;
-        anmManager->captureDestinationY = 0;
-        anmManager->captureDestinationWidth = 0x80;
-        anmManager->captureDestinationHeight = 0x80;
-        anmManager->captureFlags = 0;
-    }
+    InitializeResultCapturePhase();
 
     resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 2), 2);
     resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 11), 11);
@@ -672,9 +659,8 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
         if (g_ResultPlayerConfig->scene >=
             g_ResultSceneLimits[g_ResultPlayerConfig->group] - 1)
         {
-            resultScreen->replayCursor.disabledEntries[
-                resultScreen->replayCursor.disabledEntryCount++] = 1;
-            GetResultVm(resultScreen, 13)->color1 = 0x80000000;
+            InitializePhotoDisableCursorPhase(&resultScreen->replayCursor);
+            resultScreen->vms[13].color1 = 0x80000000;
         }
 
         ResultScoreEntryView *scoreEntry =
@@ -691,7 +677,7 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
             scoreEntry->score = g_ResultScreenGlobalState->currentScore;
             scoreEntry->slowRate =
                 100.0f -
-                (f32)(g_ReplayLagNumerator / g_ReplayLagDenominator * 100.0);
+                (f32)(g_ReplayLagNumerator / g_ReplayLagDenominator) * 100.0f;
         }
     }
     else
@@ -699,7 +685,7 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
         resultScreen->state = 9;
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 19), 19);
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 20), 20);
-        resultScreen->replayCursor.Set(1);
+        InitializePhotoExtraCursorPhase(&resultScreen->replayCursor);
         resultScreen->replayCursor.count = 2;
     }
     resultScreen->replayCursor.wraps = 1;

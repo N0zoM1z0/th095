@@ -533,16 +533,17 @@
   release API and `MarkVmsForDeletion(AnmLoaded*) @ 0x00445270` as the distinct
   live-VM retirement API. All eighteen canonical `ResultScreen.cpp` units replay
   exact after the current constructor/header correction.
-- `InitializeGameResultScreen @ 0x00428590` is now canonical exact for all 788
-  authored bytes and eighteen relocations. Its former 107-byte apparent body/frame
-  residual separates into two real semantic phases: capture-manager setup belongs
-  to its own source-local inline phase (with the target empty-positive/else branch),
-  while only the final `replayCursor.Set(0)` owns the `0x90` target-attested storage.
-  All twenty `ResultScreen.cpp` canonical units replay exact after promotion.
-  `InitializeReplayResultScreen @ 0x004288B0` and
-  `InitializePhotoResultScreen @ 0x00428E90` remain source-present but non-exact;
-  their target frames and later cursor/text/score lifetimes are different, so do
-  not inherit the game initializer's phase size without independent evidence.
+- `InitializeGameResultScreen @ 0x00428590` and
+  `InitializePhotoResultScreen @ 0x00428E90` are now canonical exact for 788 and
+  1,073 authored bytes. Both reuse the same real capture-manager inline phase.
+  Game mode gives only final `replayCursor.Set(0)` the `0x90` target-attested
+  allocation phase. Photo mode keeps Set(2) shallow, materializes the real
+  disabled-scene cursor pointer, gives only extra-mode Set(1) a `0x48` phase,
+  writes VM 13 color directly, and casts the lag ratio to `f32` before the
+  `*100.0f` multiply. That cast boundary reproduces target `fst` before the
+  single-precision multiply. All twenty-one `ResultScreen.cpp` canonical units
+  replay exact. `InitializeReplayResultScreen @ 0x004288B0` remains non-exact
+  and must not inherit either phase size without independent target evidence.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
   bytes are stack allocation/displacement differences and receive no credit.

@@ -925,3 +925,17 @@ free-consumer helper; naming the Pop result or calling `_free` directly changes 
 The same surface already proven by `UpdateMainMenu` now reproduces both target queue
 slots, all 503 bytes, and nineteen relocations. This is a cross-function positive oracle
 for queue ownership chronology, not permission to insert standalone four-byte locals.
+
+`InitializePhotoResultScreen @ 0x00428E90` extends the result-entry phase rule.
+Reuse the shared capture-manager phase proven by the game initializer, but keep the
+photo-only ownership separate: normal mode materializes a real replay-cursor pointer
+for the disabled-scene update, while extra mode routes only `replayCursor.Set(1)`
+through a source-local `__forceinline` phase with `0x48` target-attested storage.
+This yields the exact shallow homes at `EBP-0x04..-0x14` and deep lane at
+`EBP-0x60..-0x70`; using `0x4C` is four bytes too deep because the disabled-cursor
+pointer already owns one real dword. Write VM 13 color directly through
+`resultScreen->vms[13]`, not `GetResultVm`, and place the cast as
+`(f32)(numerator / denominator) * 100.0f`. The cast-before-multiply form makes VC7
+store the ratio compiler temporary before the m32real multiply, reproducing the
+target `fst; fmul dword; fsubr dword` sequence. All 1,073 bytes and thirty-three
+relocations then replay exactly.
