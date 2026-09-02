@@ -904,3 +904,14 @@ the later factory homes exactly. All four functions replay full bytes and
 relocations. A matching total frame size alone is not evidence: prefer the phase
 whose wrong-side control (broader helper, whole body, or adjacent operation) has
 been explicitly tested and rejected.
+
+`InitializeGameResultScreen @ 0x00428590` adds a two-phase result-entry oracle.
+Keep timer/speed/flag setup in the caller, move the real capture-manager snapshot
+and capture-rectangle initialization into a source-local `__forceinline` helper,
+and spell the already-initialized branch as an empty positive arm plus `else`.
+This preserves the target shallow timer/capture homes and its `jl short; jmp short`
+layout. The final `replayCursor.Set(0)` alone owns a separate `0x90` target-attested
+phase; putting that storage around capture setup or the whole initializer moves the
+wrong temporaries. Together these two semantic boundaries reproduce all 788 bytes
+and eighteen relocations. Do not infer replay/photo initializer phase sizes from
+this function; those paths remain independent proof obligations.

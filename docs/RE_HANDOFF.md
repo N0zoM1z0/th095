@@ -533,18 +533,16 @@
   release API and `MarkVmsForDeletion(AnmLoaded*) @ 0x00445270` as the distinct
   live-VM retirement API. All eighteen canonical `ResultScreen.cpp` units replay
   exact after the current constructor/header correction.
-- `InitializeGameResultScreen @ 0x00428590`,
-  `InitializeReplayResultScreen @ 0x004288B0`, and
-  `InitializePhotoResultScreen @ 0x00428E90` are now source-present for the
-  complete 3,350-byte entry cluster. They recover shared capture setup plus
-  the TH095-specific rotating scene-label/replay metadata and photo-score/
-  best-shot paths. Their VC7.1 bodies are 681/1,415/1,071 bytes versus
-  788/1,489/1,073-byte targets. In particular, the superficially tiny
-  1,071/1,073 residual on the photo initializer is not a two-byte-only closure:
-  the target owns a `0x70` frame while the semantic probe uses `0x24`, and the
-  intervening target interval is instruction-unreferenced. Keep the whole entry
-  cluster non-exact rather than adding inert storage or a synthetic branch. The source-present total is now 158 functions, and all ten
-  canonical ResultScreen units replay unchanged after the expanded layouts.
+- `InitializeGameResultScreen @ 0x00428590` is now canonical exact for all 788
+  authored bytes and eighteen relocations. Its former 107-byte apparent body/frame
+  residual separates into two real semantic phases: capture-manager setup belongs
+  to its own source-local inline phase (with the target empty-positive/else branch),
+  while only the final `replayCursor.Set(0)` owns the `0x90` target-attested storage.
+  All twenty `ResultScreen.cpp` canonical units replay exact after promotion.
+  `InitializeReplayResultScreen @ 0x004288B0` and
+  `InitializePhotoResultScreen @ 0x00428E90` remain source-present but non-exact;
+  their target frames and later cursor/text/score lifetimes are different, so do
+  not inherit the game initializer's phase size without independent evidence.
 - `WinMain` remains source-present but not exact: its 1,326-byte probe matches
   all 134 relocations and 782 of 790 comparable bytes. The eight remaining
   bytes are stack allocation/displacement differences and receive no credit.

@@ -488,18 +488,13 @@ void ResultSaveDataView::UpdateBestShotRecord(i32 index)
     this->bestShotRecords[index].valid = 0;
 }
 
-void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
+static __forceinline void InitializeGameCapturePhase()
 {
-    g_SoundPlayer.PlaySoundByIdx(SOUND_20, 0);
-    resultScreen->state = 1;
-    resultScreen->stateTimer.Reset();
-    resultScreen->savedGameSpeed = g_AnmGameSpeed;
-    g_AnmGameSpeed = 1.0f;
-    g_ResultScreenGlobalState->flagsWord |= 0x10;
-    g_ResultScreenGlobalState->flagsWord |= 0x80;
-
     ResultAnmManagerResultView *anmManager = g_ResultAnmManager;
-    if (anmManager->captureAnmIndex < 0)
+    if (anmManager->captureAnmIndex >= 0)
+    {
+    }
+    else
     {
         anmManager->captureAnmIndex = 10;
         anmManager->captureSourceX = 0x80;
@@ -512,6 +507,26 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
         anmManager->captureDestinationHeight = 0x80;
         anmManager->captureFlags = 0;
     }
+}
+
+static __forceinline void InitializeGameReplayCursorPhase(
+    ResultScreenReplayCursor *cursor)
+{
+    u8 compilerStorage[0x90];
+    cursor->Set(0);
+}
+
+void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
+{
+    g_SoundPlayer.PlaySoundByIdx(SOUND_20, 0);
+    resultScreen->state = 1;
+    resultScreen->stateTimer.Reset();
+    resultScreen->savedGameSpeed = g_AnmGameSpeed;
+    g_AnmGameSpeed = 1.0f;
+    g_ResultScreenGlobalState->flagsWord |= 0x10;
+    g_ResultScreenGlobalState->flagsWord |= 0x80;
+
+    InitializeGameCapturePhase();
 
     resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 0), 0);
     resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 3), 3);
@@ -530,7 +545,7 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
         resultScreen->anm->SetAndExecuteScript(GetResultVm(resultScreen, 18), 18);
     }
 
-    resultScreen->replayCursor.Set(0);
+    InitializeGameReplayCursorPhase(&resultScreen->replayCursor);
     resultScreen->replayCursor.count = 3;
     resultScreen->replayCursor.wraps = 1;
 }

@@ -18582,3 +18582,32 @@ relocations = [
   { offset = 0xCF3, type = "DIR32", symbol = "$L67479", target = 0x004475A5 },
   { offset = 0xCF7, type = "DIR32", symbol = "$exitMainMenu$67484", target = 0x0044760F },
 ]
+
+[units.result-screen-initialize-game]
+source = "src/ResultScreen.cpp"
+object = "build/matching/ResultScreen.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::InitializeGameResultScreen"]
+symbol = "?InitializeGameResultScreen@th095@@YIXPAUResultScreen@1@@Z"
+target_address = 0x00428590
+size = 0x314
+relocations = [
+  { offset = 0x14, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
+  { offset = 0x19, type = "REL32", symbol = "?PlaySoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@H@Z", target = 0x00438F20 },
+  { offset = 0x5A, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x63, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x6D, type = "DIR32", symbol = "?g_ResultScreenGlobalState@th095@@3PAUResultScreenGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x7B, type = "DIR32", symbol = "?g_ResultScreenGlobalState@th095@@3PAUResultScreenGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x87, type = "DIR32", symbol = "?g_ResultScreenGlobalState@th095@@3PAUResultScreenGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x98, type = "DIR32", symbol = "?g_ResultScreenGlobalState@th095@@3PAUResultScreenGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0xA4, type = "DIR32", symbol = "?g_ResultAnmManager@th095@@3PAUResultAnmManagerResultView@1@A", target = 0x004CA1B8 },
+  { offset = 0x153, type = "REL32", symbol = "?SetAndExecuteScript@ResultScreenAnmLoadedView@th095@@QAEXPAUResultScreenAnmVm@2@H@Z", target = 0x00404B80 },
+  { offset = 0x178, type = "REL32", symbol = "?SetAndExecuteScript@ResultScreenAnmLoadedView@th095@@QAEXPAUResultScreenAnmVm@2@H@Z", target = 0x00404B80 },
+  { offset = 0x17D, type = "DIR32", symbol = "?g_ResultScreenGlobalState@th095@@3PAUResultScreenGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x1B8, type = "REL32", symbol = "?SetAndExecuteScript@ResultScreenAnmLoadedView@th095@@QAEXPAUResultScreenAnmVm@2@H@Z", target = 0x00404B80 },
+  { offset = 0x1DD, type = "REL32", symbol = "?SetAndExecuteScript@ResultScreenAnmLoadedView@th095@@QAEXPAUResultScreenAnmVm@2@H@Z", target = 0x00404B80 },
+  { offset = 0x202, type = "REL32", symbol = "?SetAndExecuteScript@ResultScreenAnmLoadedView@th095@@QAEXPAUResultScreenAnmVm@2@H@Z", target = 0x00404B80 },
+  { offset = 0x236, type = "REL32", symbol = "?SetAndExecuteScript@ResultScreenAnmLoadedView@th095@@QAEXPAUResultScreenAnmVm@2@H@Z", target = 0x00404B80 },
+  { offset = 0x25B, type = "REL32", symbol = "?SetAndExecuteScript@ResultScreenAnmLoadedView@th095@@QAEXPAUResultScreenAnmVm@2@H@Z", target = 0x00404B80 },
+  { offset = 0x280, type = "REL32", symbol = "?SetAndExecuteScript@ResultScreenAnmLoadedView@th095@@QAEXPAUResultScreenAnmVm@2@H@Z", target = 0x00404B80 },
+]
