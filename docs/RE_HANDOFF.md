@@ -928,23 +928,24 @@ had all 52 target mnemonics; a source-local inline body phase owns the target
 `0x84` compiler-storage reservation and moves only the hidden receiver from
 `EBP-0x04` to `EBP-0x88`.
 
-`Background::RunStageScript @ 0x00403440` is now source-present for the entire
-5,129-byte high-connectivity spine. It consumes variable-size records with
-fifteen opcodes: jump/time control, direct and timed camera position/look-at,
-three shared camera values, photo color/offset interpolation, cubic Hermite
-camera curves, four cyclic camera-motion modes, screen-fade publication, and
-eight stage-VM controls. Four `ZunTimer` lanes at `+0x20/+0x50/+0x80` own the
-easing state; lane two interpolates the TH095-specific photo tuple at
-`+0x1FEC..+0x200F`. A fresh target/source-shape pass removes the former 4,195-
-byte compressed probe: direct repeated `this->stageInstruction` member access,
-component-wise serialized `Float3` writes, target timer conversions, stepwise
-easing, Hermite output pointers, and physical motion-case order 1/2/4/3 now
-produce all 1,100 target instruction mnemonics in exactly the target order.
-The natural source body is 5,229 bytes. Exact credit is still withheld because
-the target `0x1B8` frame owns an entirely instruction-unreferenced 44-byte
-interval at `EBP-0xB8..-0xE0`; the semantic source frame is `0x18C`, leaving
-physical stack-home/displacement differences that must not be modeled with
-inert storage.
+`Background::RunStageScript @ 0x00403440` is now canonical exact for the
+complete 5,129-byte high-connectivity spine plus 100 bytes of adjacent
+compiler-owned data. It consumes variable-size records with fifteen opcodes:
+jump/time control, direct and timed camera position/look-at, three shared camera
+values, photo color/offset interpolation, cubic Hermite camera curves, four
+cyclic camera-motion modes, screen-fade publication, and eight stage-VM controls.
+The former 44-byte deep-lane residual belongs specifically to case 14: a
+pointer-only source-local `BackgroundDisableStageVmPhase(AnmVm*)` owns the
+`0x2C` reservation and places the stage VM receiver at `EBP-0xE4` without
+moving shallow locals. The real stage-time snapshot belongs to its own
+pointer-based value producer. Finally, the semantic interpolation-slot and
+color-channel indices use target-significant backing identifiers, while a
+Background-local timer reset helper preserves the target store order
+`current -> subFrame -> previous` at all ten reset sites. The result reproduces
+all 1,100 body mnemonics, all 517 EBP-relative homes, 4,761/4,761 comparable
+bytes, and all 117 body/data relocations. Do not change shared `AnmManager.hpp`
+timer ordering to obtain this effect; the exact source keeps the store-order
+correction local to Background.
 
 The surrounding BackgroundInf lifecycle now has eight canonical units totaling
 1,237 exact authored bytes and 62 relocations. `Background::Create @ 0x004024A0`

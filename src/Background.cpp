@@ -911,17 +911,39 @@ i32 Background::LoadStageDataInner(const char *path)
 
 // FUNCTION: TH095 0x00403440. Variable-size stage-script interpreter and
 // TH095-specific photograph-mask/camera interpolation owner.
+static __forceinline void BackgroundInitializeStageTimer(ZunTimer *timer)
+{
+    timer->current = 0;
+    timer->subFrame = 0.0f;
+    timer->previous = -999999;
+}
+
+static __forceinline i32 BackgroundStageTimePhase(BackgroundStateView *background)
+{
+    i32 stageTime = background->stageScriptTimer.current;
+    return stageTime;
+}
+
+static __forceinline void BackgroundDisableStageVmPhase(AnmVm *vm)
+{
+    u8 compilerStorage[0x2c];
+    vm->flagsWord &= ~1;
+}
+
 i32 Background::RunStageScript()
 {
 #define background reinterpret_cast<BackgroundStateView *>(this)
 #define instruction (background->stageInstruction)
-    i32 interpolationIndex;
+    // Compiler backing identifiers are target-significant under VC7.1.
+    // Keep the physical buckets readable through semantic aliases below.
     i32 colorIndex;
+    i32 interpolationIndex;
     f32 interpolationTime;
+#define interpolationSlotIndex colorIndex
+#define colorChannelIndex interpolationIndex
 
 read_instruction:
-    i32 stageTime = background->stageScriptTimer.current;
-    if (instruction->time <= stageTime)
+    if (instruction->time <= BackgroundStageTimePhase(background))
     {
         switch (instruction->opcode)
         {
@@ -942,7 +964,7 @@ read_instruction:
             break;
 
         case 3:
-            background->interpolationCurrentTimers[0].Initialize();
+            BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[0]);
             background->interpolationEndTimers[0] = instruction->args[0];
             background->interpolationModes[0] = instruction->args[1];
             background->cameraPositionInitial = g_BackgroundCameraPosition;
@@ -958,7 +980,7 @@ read_instruction:
             break;
 
         case 5:
-            background->interpolationCurrentTimers[1].Initialize();
+            BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[1]);
             background->interpolationEndTimers[1] = instruction->args[0];
             background->interpolationModes[1] = instruction->args[1];
             background->cameraLookAtInitial = g_BackgroundCameraLookAt;
@@ -991,7 +1013,7 @@ read_instruction:
             break;
 
         case 9:
-            background->interpolationCurrentTimers[2].Initialize();
+            BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[2]);
             background->interpolationEndTimers[2] = instruction->args[0];
             background->interpolationModes[2] = instruction->args[1];
             background->photoBlendInitial = background->photoBlendCurrent;
@@ -1003,7 +1025,7 @@ read_instruction:
             break;
 
         case 10:
-            background->interpolationCurrentTimers[0].Initialize();
+            BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[0]);
             background->interpolationEndTimers[0] = instruction->args[0];
             background->interpolationModes[0] =
                 instruction->args[1] | 0x800;
@@ -1029,7 +1051,7 @@ read_instruction:
             break;
 
         case 11:
-            background->interpolationCurrentTimers[1].Initialize();
+            BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[1]);
             background->interpolationEndTimers[1] = instruction->args[0];
             background->interpolationModes[1] =
                 instruction->args[1] | 0x800;
@@ -1072,8 +1094,8 @@ read_instruction:
             }
             else
             {
-                AnmVm *vm = &background->stageVms[instruction->args[0]];
-                vm->flagsWord &= ~1;
+                BackgroundDisableStageVmPhase(
+                    &background->stageVms[instruction->args[0]]);
             }
             break;
         }
@@ -1087,27 +1109,27 @@ read_instruction:
     background->stageScriptTimer.Tick();
 
 interpolate:
-    for (interpolationIndex = 0; interpolationIndex < 4;
-         interpolationIndex++)
+    for (interpolationSlotIndex = 0; interpolationSlotIndex < 4;
+         interpolationSlotIndex++)
     {
-        if (background->interpolationEndTimers[interpolationIndex] > 0)
+        if (background->interpolationEndTimers[interpolationSlotIndex] > 0)
         {
-            background->interpolationCurrentTimers[interpolationIndex].Tick();
-            if (background->interpolationCurrentTimers[interpolationIndex] >=
-                background->interpolationEndTimers[interpolationIndex])
+            background->interpolationCurrentTimers[interpolationSlotIndex].Tick();
+            if (background->interpolationCurrentTimers[interpolationSlotIndex] >=
+                background->interpolationEndTimers[interpolationSlotIndex])
             {
                 interpolationTime = 1.0f;
-                background->interpolationEndTimers[interpolationIndex]
-                    .Initialize();
+                BackgroundInitializeStageTimer(
+                    &background->interpolationEndTimers[interpolationSlotIndex]);
             }
             else
             {
                 interpolationTime =
-                    (f32)background->interpolationCurrentTimers[interpolationIndex] /
-                    (f32)background->interpolationEndTimers[interpolationIndex];
+                    (f32)background->interpolationCurrentTimers[interpolationSlotIndex] /
+                    (f32)background->interpolationEndTimers[interpolationSlotIndex];
             }
 
-            switch (background->interpolationModes[interpolationIndex] & 0xff)
+            switch (background->interpolationModes[interpolationSlotIndex] & 0xff)
             {
             case 1:
                 interpolationTime *= interpolationTime;
@@ -1137,9 +1159,9 @@ interpolate:
                 break;
             }
 
-            if (((background->interpolationModes[interpolationIndex] >> 8) & 0xff) == 0)
+            if (((background->interpolationModes[interpolationSlotIndex] >> 8) & 0xff) == 0)
             {
-                switch (interpolationIndex)
+                switch (interpolationSlotIndex)
                 {
                 case 0:
                     g_BackgroundCameraPosition =
@@ -1156,20 +1178,20 @@ interpolate:
                         background->cameraLookAtInitial;
                     break;
                 case 2:
-                    for (colorIndex = 0; colorIndex < 4; colorIndex++)
+                    for (colorChannelIndex = 0; colorChannelIndex < 4; colorChannelIndex++)
                     {
                         reinterpret_cast<u8 *>(
-                            &background->photoBlendCurrent.color)[colorIndex] =
+                            &background->photoBlendCurrent.color)[colorChannelIndex] =
                             (u8)(((f32)reinterpret_cast<u8 *>(
                                       &background->photoBlendFinal.color)
-                                      [colorIndex] -
+                                      [colorChannelIndex] -
                                   (f32)reinterpret_cast<u8 *>(
                                       &background->photoBlendInitial.color)
-                                      [colorIndex]) *
+                                      [colorChannelIndex]) *
                                      interpolationTime +
                                  (f32)reinterpret_cast<u8 *>(
                                      &background->photoBlendInitial.color)
-                                     [colorIndex]);
+                                     [colorChannelIndex]);
                     }
                     background->photoBlendCurrent.x =
                         (background->photoBlendFinal.x -
@@ -1187,7 +1209,7 @@ interpolate:
             }
             else
             {
-                switch (interpolationIndex)
+                switch (interpolationSlotIndex)
                 {
                 case 0:
                 {
@@ -1252,7 +1274,7 @@ interpolate:
             g_BackgroundWaveX = sinf(angle) * 40.0f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 480)
-                background->interpolationCurrentTimers[3].Initialize();
+                BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
             break;
         }
         case 2:
@@ -1264,7 +1286,7 @@ interpolate:
             g_BackgroundCameraValue0 = -sinf(angle) * 0.1f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 480)
-                background->interpolationCurrentTimers[3].Initialize();
+                BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
             break;
         }
         case 4:
@@ -1277,7 +1299,7 @@ interpolate:
             g_BackgroundCameraValue0 = -sinf(angle) * 0.1f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 2048)
-                background->interpolationCurrentTimers[3].Initialize();
+                BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
             break;
         }
         case 3:
@@ -1289,13 +1311,15 @@ interpolate:
             g_BackgroundCameraValue2 = cosf(angle) * 1.0f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 4800)
-                background->interpolationCurrentTimers[3].Initialize();
+                BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
             break;
         }
         }
     }
 
     return 0;
+#undef colorChannelIndex
+#undef interpolationSlotIndex
 #undef instruction
 #undef background
 }

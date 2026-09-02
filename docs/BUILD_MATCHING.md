@@ -961,3 +961,20 @@ indices with nine anonymous receiver temps while the three caller indices stay
 shallow, reproducing every home without padding. The accepted unit owns 6,471
 authored bytes and compares the adjacent 80-byte tables for a 6,551-byte exact
 extent with all 186 relocations.
+
+### Background stage-script phase ownership
+
+`Background::RunStageScript @ 0x00403440` is the large exact oracle for a
+phase-local compiler reservation combined with target-significant scalar
+backing names. Keep `stageTime` as a real value, but obtain it through a
+source-local pointer producer so it lands at target `EBP-0x70`. Case 14 alone
+owns the former `0x2C` gap: pass the real `AnmVm *` into a force-inline helper
+that carries the reservation and clears `flagsWord`; passing `(background,
+index)` is four bytes too deep. The semantic interpolation-slot and inner color
+channel indices use the compiler identifiers `colorIndex` and
+`interpolationIndex` respectively; expose readable aliases instead of swapping
+the semantic comments. Background must also use a local timer-reset helper that
+writes `current`, `subFrame`, then `previous`; changing the duplicate shared ANM
+timer would risk exact consumers outside this subsystem. With these shapes the
+5,129-byte body, adjacent 100-byte compiler data, all 1,100 mnemonics, 517 stack
+home references, and 117 relocations replay exactly.
