@@ -1692,3 +1692,74 @@ MainMenu queue-drain shape: `Size()` remains in the outer `while`, while a sourc
 inline phase contributes one four-byte compiler reservation and passes `Pop()` directly
 into a separate free-consumer helper. All eight `FrontEndLifecycle.cpp` canonical units
 replay exact; naming the Pop result or calling `_free` directly are negative oracles.
+
+### 2026-09-02 gpt-web fresh residual allocation audit
+
+The authored-function threshold is already above the project goal at 654/685
+(95.47%), while authored exact bytes remain the bottleneck at 265,774 bytes
+(79.99%).  A fresh pinned-VC7.1 rebuild of all 31 residual authored functions
+confirmed that every authored address remains source-present.  Treat raw target
+frame topology as the first triage gate before spending time on an apparently
+small size or byte residual.
+
+Several high-byte lanes are now independently ruled out as ordinary source-shape
+work.  `PhotoCameraState::Initialize @ 0x004307D0` emits the target's complete
+163-mnemonic sequence but uses a `0x3C` natural frame against target `0xEC`; the
+deep target receiver is separated from the active shallow homes by an entirely
+unreferenced interval.  `PhotoEnemyManagerView::PhotoEnemyManagerView @
+0x00414B90` likewise has the exact 1,196-byte / 269-mnemonic topology; all 33
+comparable residual bytes are one family of homes shifted across a `0x28`
+instruction-unreferenced interval.  These join the already-audited PhotoStage
+Build, UpdatePhotoCamera, FrontInf, Bullet, Controller, and scene-controller
+frame barriers.  Do not synthesize locals for any of them without new source
+provenance or an independently repeated semantic phase.
+
+`PhotoStageStateView::Update @ 0x0042AD60` remains one of the few large open
+source-shape lanes.  Its current 5,284-byte probe differs from the 5,309-byte
+target in six mnemonic regions.  Two target-only copy pairs write
+`EBP-0x14/-0x10` exactly once each and those homes are never read or address
+escaped, so they are compiler temporaries rather than permission for dead source
+locals.  The other early residuals come from nested
+`slots[i].display.{primary,overlay}Vms[j]` address formation.  A bounded inline
+pair helper reduces the mnemonic-region count from six to four but introduces a
+non-target cached display pointer and grows the probe to 5,285 bytes; member and
+static accessor spellings are negative controls.  Keep the repeated indexed
+expressions until a better source oracle appears.
+
+`SceneSelectControllerView::UpdateSceneSelect @ 0x00447D00` remains exact-sized
+at 16,066 bytes with all 3,637 target mnemonics in order.  Its target frame is
+`0x3DC` versus the natural `0x3A4`; the four instruction-unreferenced target
+intervals are 20, 4, 16, and 16 bytes, exactly the `0x38` frame delta.  Diagnostic
+storage can move the comparison score substantially, but wrapper-only
+`Reset()/GetCurrent()` helpers do not change code generation, and moving the
+seven real loaded-scene locals into their later lexical scope grows the body to
+16,075 bytes.  No provenance-backed phase currently explains all four gaps, so
+this 16 KiB body must not be promoted via frame filler.
+
+`ResultScreen::Draw @ 0x00429C80` still has the target's 2,573-byte authored
+mnemonic topology, 2,605-byte COFF extent, and all relocation destinations, with
+1,968/2,133 comparable bytes exact.  The residual is structured rather than a
+single hole: the outer `this` home is uniformly twelve bytes too shallow across
+31 references, while a handful of anonymous cursor/integer temporaries are
+permuted around the fully-live `0xF0` `ResultScreenDrawLocals` aggregate.  Two
+bounded lifetime probes are negative: splitting the monolithic aggregate into
+case-5/13/14 aggregates grows the symbol to 2,758 bytes, and moving only the real
+case-5 `totalScore` scalar out of the aggregate produces a `0x12C` frame and a
+2,617-byte symbol rather than target `0x134` / 2,605.  Do not repeat either
+probe; the remaining problem is original lexical/allocation chronology, not a
+missing padding dword.
+
+The ANM lifecycle create trio adds a useful repeated negative phase oracle.
+`AnmLoaded::CreateVm @ 0x00444EF0`, `CreateVmAtScreen @ 0x00444FA0`, and
+`CreateVmAtWorld @ 0x00445060` are all exact-sized with the same original
+`0x14` frame displacement.  In the screen/world pair the constructor-result
+home moves from source `EBP-0x44` to target `-0x58` and outer `this` from
+`-0x40` to `-0x54`, while the EH/new/`vm` homes remain fixed.  This repeated
+shape is strong evidence that the reservation is real, but its semantic owner
+is not yet established.  Binding a `0x14` reservation to the whole `new AnmVm`
+producer collapses each body to 70/88/78 bytes; binding it instead to the real
+`InitializeVm` call or final intrusive `AddVm` ownership expression leaves all
+six displacement residuals unchanged (119/125, 138/144, and 123/129 comparable
+bytes respectively).  The repeated gap therefore does not yet satisfy the
+phase-boundary proof required by `BUILD_MATCHING.md`; never move the reservation
+to arbitrary function scope just because three targets share its size.
