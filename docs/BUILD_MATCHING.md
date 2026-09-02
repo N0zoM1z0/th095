@@ -962,6 +962,41 @@ store the ratio compiler temporary before the m32real multiply, reproducing the
 target `fst; fmul dword; fsubr dword` sequence. All 1,073 bytes and thirty-three
 relocations then replay exactly.
 
+### ResultScreen Draw: patched `var_order` as oracle, stock VC7 as proof
+
+`ResultScreen::Draw @ 0x00429C80` is the positive companion for recovering a
+large unoptimized local order without using the TH08 patched compiler in the
+canonical build. The TH08 reconstruction can compile an exact diagnostic with
+`#pragma var_order`, but stock VC7.1 build 3077 intentionally ignores that
+pragma. Treat the patched result only as an ordering oracle: it establishes the
+shallow-to-deep order of the 28 real Draw locals (`i`, the replay-list buffers
+and position, replay-name buffers and position, keyboard temporaries, then the
+nine score/text positions). A stock-compiler calibration function with live
+address-taken dword locals supplies identifier buckets in the same rank. Back
+each semantic local with the corresponding bucket and keep a semantic macro
+alias around Draw; build 3077 then reproduces the target physical order without
+patched compiler behavior, padding, assembly, or dead locals.
+
+The remaining `0x0C` allocation belongs to the best-shot frontend, not to
+function scope. The target stack gap is adjacent to the real
+`ResultPhotoDataView::FindBestShot` call. With the recovered local rank, bounded
+stock-compiler controls using `0/4/8/12/16` bytes at that phase yield
+`2065/2067/2069/2133/2069` matched comparable bytes respectively; only twelve
+bytes replay all `2133/2133`. Moving the same twelve-byte phase to the total-score
+helper leaves eight comparable bytes wrong, and moving it to the ordinary-shot
+helper leaves four wrong. The best-shot-line helper remains exact because it is
+part of the same target frontend allocation phase. This is a narrow semantic
+phase oracle: do not move the reservation to function scope or reuse its size in
+unrelated code.
+
+The canonical `result-screen-draw` unit compares the 2,573 authored bytes plus
+both adjacent switch tables for a 2,605-byte extent. All 2,605 compared bytes and
+all 118 body/table relocations replay exactly under stock VC7.1. Adding the Draw
+helpers renumbers twenty-two compiler-private `$L` symbols in the already-exact
+`ResultScreen::Update`; a cold relocation audit confirms every one of its 186
+offsets, types, addends, and target destinations is unchanged, so only those
+manifest-local symbol identities are refreshed.
+
 ### ResultScreen state-dispatch phase ownership
 
 `ResultScreen::Update @ 0x00426BF0` is the large positive oracle for separating

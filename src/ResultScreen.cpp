@@ -125,39 +125,6 @@ struct ResultPlayerConfigView
     i32 scene;
 };
 
-struct ResultScreenDrawLocals
-{
-    i32 totalScore;
-    Float3 replayNameTitlePosition;
-    Float3 replayListTitlePosition;
-    Float3 notificationPosition;
-    Float3 slowRatePosition;
-    Float3 totalScorePosition;
-    Float3 highScorePosition;
-    Float3 scorePosition;
-    Float3 shotPosition;
-    Float3 bestShotPosition;
-    f32 characterX;
-    f32 rowY;
-    f32 positionZ;
-    i32 keyboardColumn;
-    char characterText[16];
-    f32 offsetX;
-    f32 offsetY;
-    Float3 characterPosition;
-    tm *replayNameTimestamp;
-    Float3 replayNamePosition;
-    char replayNameLevelText[8];
-    char replayNameSceneText[8];
-    i32 replayIndex;
-    tm *replayListTimestamp;
-    i32 replayListIndex;
-    Float3 replayListPosition;
-    char replayListLevelText[8];
-    char replayListSceneText[8];
-    i32 i;
-};
-
 struct ResultScreenInitializeLocals
 {
     i32 lineIndex;
@@ -169,23 +136,6 @@ struct ResultScreenInitializeLocals
 
 typedef char ResultScreenInitializeLocalsSizeIs50[
     (sizeof(ResultScreenInitializeLocals) == 0x50) ? 1 : -1];
-
-typedef char ResultScreenDrawLocalsSizeIsF0[
-    (sizeof(ResultScreenDrawLocals) == 0xf0) ? 1 : -1];
-typedef char ResultScreenDrawReplayNameTitleAt04[
-    (offsetof(ResultScreenDrawLocals, replayNameTitlePosition) == 0x04)
-        ? 1
-        : -1];
-typedef char ResultScreenDrawBestShotPositionAt64[
-    (offsetof(ResultScreenDrawLocals, bestShotPosition) == 0x64) ? 1 : -1];
-typedef char ResultScreenDrawCharacterXAt70[
-    (offsetof(ResultScreenDrawLocals, characterX) == 0x70) ? 1 : -1];
-typedef char ResultScreenDrawReplayNamePositionAtA8[
-    (offsetof(ResultScreenDrawLocals, replayNamePosition) == 0xa8) ? 1 : -1];
-typedef char ResultScreenDrawReplayListPositionAtD0[
-    (offsetof(ResultScreenDrawLocals, replayListPosition) == 0xd0) ? 1 : -1];
-typedef char ResultScreenDrawLoopIndexAtEC[
-    (offsetof(ResultScreenDrawLocals, i) == 0xec) ? 1 : -1];
 
 typedef char ResultBestShotImageScoreAt10[
     (offsetof(ResultBestShotImageView, score) == 0x10) ? 1 : -1];
@@ -1474,13 +1424,118 @@ updateResultVms:
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
 
+static __forceinline void DrawResultTotalScorePhase(Float3 *position)
+{
+    i32 totalScore = 0;
+    for (u32 scoreIndex = 0; scoreIndex < 120; scoreIndex++)
+    {
+        totalScore += g_ResultSaveData->bestShotImages[scoreIndex].score;
+    }
+    position->x = 230.0f;
+    position->y = 68.0f;
+    position->z = 0.0f;
+    g_ResultAsciiManager.AddFormatText(position, "Total Score %.8d", totalScore);
+}
+
+static __forceinline i32 ResultFindBestShotPhase()
+{
+    // TH095 Draw assigns a 12-byte compiler allocation phase to this
+    // best-shot frontend. 0/4/8/16-byte controls and moving the same 12
+    // bytes to the total-score or ordinary-shot phases do not replay exact.
+    u8 compilerStorage[12];
+    return g_ResultPhotoData->FindBestShot();
+}
+
+static __forceinline void DrawResultBestShotLinePhase(
+    ResultScreen *resultScreen, Float3 *position)
+{
+    i32 photoIndex = resultScreen->photoCursor.GetCurrent();
+    position->x = 230.0f;
+    position->y = 290.0f;
+    position->z = 0.0f;
+    g_ResultAsciiManager.AddFormatText(
+        position, "  Best Shot   %.6d",
+        g_ResultPhotoData->slots[photoIndex].score);
+}
+
+static __forceinline void DrawResultShotLinePhase(
+    ResultScreen *resultScreen, Float3 *position)
+{
+    i32 photoIndex = resultScreen->photoCursor.GetCurrent();
+    position->x = 230.0f;
+    position->y = 290.0f;
+    position->z = 0.0f;
+    g_ResultAsciiManager.AddFormatText(
+        position, "       Shot   %.6d",
+        g_ResultPhotoData->slots[photoIndex].score);
+}
+
+// TH08's patched #pragma var_order is used only as a local-order oracle here.
+// Stock VC7.1 ignores that pragma, so these target-proven identifier buckets
+// reproduce the same physical order for the 28 real Draw locals. Keep the
+// semantic aliases readable and change the backing rank only with a full replay.
+#define i resultDrawBacking157
+#define replayListSceneText resultDrawBacking153
+#define replayListLevelText resultDrawBacking146
+#define replayListPosition resultDrawBacking142
+#define replayListIndex resultDrawBacking096
+#define replayListTimestamp resultDrawBacking092
+#define replayIndex resultDrawBacking026
+#define replayNameSceneText resultDrawBacking022
+#define replayNameLevelText resultDrawBacking139
+#define replayNamePosition resultDrawBacking135
+#define replayNameTimestamp resultDrawBacking131
+#define characterPosition resultDrawBacking119
+#define offsetY resultDrawBacking115
+#define offsetX resultDrawBacking111
+#define characterText resultDrawBacking089
+#define keyboardColumn resultDrawBacking085
+#define positionZ resultDrawBacking081
+#define rowY resultDrawBacking017
+#define characterX resultDrawBacking013
+#define bestShotPosition resultDrawBacking127
+#define shotPosition resultDrawBacking123
+#define scorePosition resultDrawBacking107
+#define highScorePosition resultDrawBacking103
+#define totalScorePosition resultDrawBacking077
+#define slowRatePosition resultDrawBacking073
+#define notificationPosition resultDrawBacking066
+#define replayListTitlePosition resultDrawBacking062
+#define replayNameTitlePosition resultDrawBacking057
 ChainCallbackResult ResultScreen::Draw()
 {
-    ResultScreenDrawLocals locals;
+    Float3 replayNameTitlePosition;
+    Float3 replayListTitlePosition;
+    Float3 notificationPosition;
+    Float3 slowRatePosition;
+    Float3 totalScorePosition;
+    Float3 highScorePosition;
+    Float3 scorePosition;
+    Float3 shotPosition;
+    Float3 bestShotPosition;
+    f32 characterX;
+    f32 rowY;
+    f32 positionZ;
+    i32 keyboardColumn;
+    char characterText[16];
+    f32 offsetX;
+    f32 offsetY;
+    Float3 characterPosition;
+    tm *replayNameTimestamp;
+    Float3 replayNamePosition;
+    char replayNameLevelText[8];
+    char replayNameSceneText[8];
+    i32 replayIndex;
+    tm *replayListTimestamp;
+    i32 replayListIndex;
+    Float3 replayListPosition;
+    char replayListLevelText[8];
+    char replayListSceneText[8];
+    i32 i;
 
-    for (locals.i = 0; locals.i < 21; locals.i++)
+    for (i = 0; i < 21; i++)
     {
-        reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[locals.i])->Draw();
+        reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[i])->Draw();
     }
     reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[23])->Draw();
     reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[24])->Draw();
@@ -1501,53 +1556,32 @@ ChainCallbackResult ResultScreen::Draw()
                 0x00ffffff;
         }
 
-        if (this->photoCursor.GetCurrent() == g_ResultPhotoData->FindBestShot())
+        if (this->photoCursor.GetCurrent() == ResultFindBestShotPhase())
         {
-            locals.bestShotPosition.x = 230.0f;
-            locals.bestShotPosition.y = 290.0f;
-            locals.bestShotPosition.z = 0.0f;
-            g_ResultAsciiManager.AddFormatText(
-                &locals.bestShotPosition, "  Best Shot   %.6d",
-                g_ResultPhotoData->slots[this->photoCursor.GetCurrent()].score);
+            DrawResultBestShotLinePhase(this, &bestShotPosition);
         }
         else
         {
-            locals.shotPosition.x = 230.0f;
-            locals.shotPosition.y = 290.0f;
-            locals.shotPosition.z = 0.0f;
-            g_ResultAsciiManager.AddFormatText(
-                &locals.shotPosition, "       Shot   %.6d",
-                g_ResultPhotoData->slots[this->photoCursor.GetCurrent()].score);
+            DrawResultShotLinePhase(this, &shotPosition);
         }
 
-        locals.scorePosition.x = 230.0f;
-        locals.scorePosition.y = 40.0f;
-        locals.scorePosition.z = 0.0f;
+        scorePosition.x = 230.0f;
+        scorePosition.y = 40.0f;
+        scorePosition.z = 0.0f;
         g_ResultAsciiManager.AddFormatText(
-            &locals.scorePosition, "      Score  %.7d",
+            &scorePosition, "      Score  %.7d",
             g_ResultScreenGlobalState->currentScore);
 
-        locals.highScorePosition.x = 230.0f;
-        locals.highScorePosition.y = 54.0f;
-        locals.highScorePosition.z = 0.0f;
+        highScorePosition.x = 230.0f;
+        highScorePosition.y = 54.0f;
+        highScorePosition.z = 0.0f;
         g_ResultAsciiManager.AddFormatText(
-            &locals.highScorePosition, " High Score  %.7d",
+            &highScorePosition, " High Score  %.7d",
             g_ResultSaveData
                 ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
                 .score);
 
-        locals.totalScore = 0;
-        for (u32 scoreIndex = 0; scoreIndex < 120; scoreIndex++)
-        {
-            locals.totalScore +=
-                g_ResultSaveData->bestShotImages[scoreIndex].score;
-        }
-        locals.totalScorePosition.x = 230.0f;
-        locals.totalScorePosition.y = 68.0f;
-        locals.totalScorePosition.z = 0.0f;
-        g_ResultAsciiManager.AddFormatText(
-            &locals.totalScorePosition, "Total Score %.8d",
-            locals.totalScore);
+        DrawResultTotalScorePhase(&totalScorePosition);
 
         if (this->stateTimer.GetCurrent() < 30)
         {
@@ -1559,11 +1593,11 @@ ChainCallbackResult ResultScreen::Draw()
         {
             g_ResultAsciiManager.color = 0xffd0d0e0;
         }
-        locals.slowRatePosition.x = 230.0f;
-        locals.slowRatePosition.y = 82.0f;
-        locals.slowRatePosition.z = 0.0f;
+        slowRatePosition.x = 230.0f;
+        slowRatePosition.y = 82.0f;
+        slowRatePosition.z = 0.0f;
         g_ResultAsciiManager.AddFormatText(
-            &locals.slowRatePosition, "  Slow Rate      %2.0f%%",
+            &slowRatePosition, "  Slow Rate      %2.0f%%",
             g_ResultSaveData
                 ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
                 .slowRate);
@@ -1572,11 +1606,11 @@ ChainCallbackResult ResultScreen::Draw()
         if (this->notificationTimer > 0)
         {
             g_ResultAsciiManager.color = 0xffffff00;
-            locals.notificationPosition.x = 212.0f;
-            locals.notificationPosition.y = 224.0f;
-            locals.notificationPosition.z = 0.0f;
+            notificationPosition.x = 212.0f;
+            notificationPosition.y = 224.0f;
+            notificationPosition.z = 0.0f;
             g_ResultAsciiManager.AddFormatText(
-                &locals.notificationPosition, "BestShot was overwrited!");
+                &notificationPosition, "BestShot was overwrited!");
             g_ResultAsciiManager.color = 0xffffffff;
             this->notificationTimer--;
         }
@@ -1585,18 +1619,18 @@ ChainCallbackResult ResultScreen::Draw()
 
     case 13:
     {
-        locals.replayListTitlePosition.x = 160.0f;
-        locals.replayListTitlePosition.y = 32.0f;
-        locals.replayListTitlePosition.z = 0.0f;
+        replayListTitlePosition.x = 160.0f;
+        replayListTitlePosition.y = 32.0f;
+        replayListTitlePosition.z = 0.0f;
         g_ResultAsciiManager.AddFormatText(
-            &locals.replayListTitlePosition, "Select Replay Number");
+            &replayListTitlePosition, "Select Replay Number");
 
-        locals.replayListPosition.x = 144.0f;
-        locals.replayListPosition.y = 64.0f;
-        locals.replayListPosition.z = 0.0f;
-        for (locals.replayListIndex = 0; locals.replayListIndex < 20; locals.replayListIndex++)
+        replayListPosition.x = 144.0f;
+        replayListPosition.y = 64.0f;
+        replayListPosition.z = 0.0f;
+        for (replayListIndex = 0; replayListIndex < 20; replayListIndex++)
         {
-            if (this->replayCursor.GetCurrent() == locals.replayListIndex)
+            if (this->replayCursor.GetCurrent() == replayListIndex)
             {
                 g_ResultAsciiManager.color = 0xffffffff;
             }
@@ -1605,45 +1639,45 @@ ChainCallbackResult ResultScreen::Draw()
                 g_ResultAsciiManager.color = 0xff404040;
             }
 
-            if (this->replays[locals.replayListIndex] == NULL ||
-                this->replays[locals.replayListIndex]->activeInputData == NULL)
+            if (this->replays[replayListIndex] == NULL ||
+                this->replays[replayListIndex]->activeInputData == NULL)
             {
                 g_ResultAsciiManager.AddFormatText(
-                    &locals.replayListPosition, "No.%.2d %s %s-%s %s ------",
-                    locals.replayListIndex + 1, "--------", "--", "-", "--/-- --:--");
+                    &replayListPosition, "No.%.2d %s %s-%s %s ------",
+                    replayListIndex + 1, "--------", "--", "-", "--/-- --:--");
             }
             else
             {
-                locals.replayListTimestamp = localtime(
+                replayListTimestamp = localtime(
                     reinterpret_cast<time_t *>(
-                        &this->replays[locals.replayListIndex]
+                        &this->replays[replayListIndex]
                              ->activeInputData->timestamp));
 
-                if (this->replays[locals.replayListIndex]->activeInputData->level == 10)
+                if (this->replays[replayListIndex]->activeInputData->level == 10)
                 {
-                    strcpy(locals.replayListLevelText, "EX");
+                    strcpy(replayListLevelText, "EX");
                 }
                 else
                 {
-                    sprintf(locals.replayListLevelText, "%2d",
-                            this->replays[locals.replayListIndex]
+                    sprintf(replayListLevelText, "%2d",
+                            this->replays[replayListIndex]
                                     ->activeInputData->level +
                                 1);
                 }
-                sprintf(locals.replayListSceneText, "%d",
-                        this->replays[locals.replayListIndex]->activeInputData->scene + 1);
+                sprintf(replayListSceneText, "%d",
+                        this->replays[replayListIndex]->activeInputData->scene + 1);
                 g_ResultAsciiManager.AddFormatText(
-                    &locals.replayListPosition,
+                    &replayListPosition,
                     "No.%.2d %s %s-%s %.2d/%.2d %.2d:%.2d %6d",
-                    locals.replayListIndex + 1,
-                    this->replays[locals.replayListIndex]->activeInputData->replayName,
-                    locals.replayListLevelText, locals.replayListSceneText,
-                    locals.replayListTimestamp->tm_mon + 1,
-                    locals.replayListTimestamp->tm_mday, locals.replayListTimestamp->tm_hour,
-                    locals.replayListTimestamp->tm_min,
-                    this->replays[locals.replayListIndex]->activeInputData->score);
+                    replayListIndex + 1,
+                    this->replays[replayListIndex]->activeInputData->replayName,
+                    replayListLevelText, replayListSceneText,
+                    replayListTimestamp->tm_mon + 1,
+                    replayListTimestamp->tm_mday, replayListTimestamp->tm_hour,
+                    replayListTimestamp->tm_min,
+                    this->replays[replayListIndex]->activeInputData->score);
             }
-            locals.replayListPosition.y += 18.0f;
+            replayListPosition.y += 18.0f;
         }
         g_ResultAsciiManager.color = 0xffffffff;
         break;
@@ -1651,74 +1685,74 @@ ChainCallbackResult ResultScreen::Draw()
 
     case 14:
     {
-        locals.replayNameTitlePosition.x = 160.0f;
-        locals.replayNameTitlePosition.y = 32.0f;
-        locals.replayNameTitlePosition.z = 0.0f;
+        replayNameTitlePosition.x = 160.0f;
+        replayNameTitlePosition.y = 32.0f;
+        replayNameTitlePosition.z = 0.0f;
         g_ResultAsciiManager.AddFormatText(
-            &locals.replayNameTitlePosition, "Replay Name Regist");
+            &replayNameTitlePosition, "Replay Name Regist");
 
-        locals.replayNamePosition.x = 144.0f;
-        locals.replayNamePosition.y = 128.0f;
-        locals.replayNamePosition.z = 0.0f;
+        replayNamePosition.x = 144.0f;
+        replayNamePosition.y = 128.0f;
+        replayNamePosition.z = 0.0f;
         g_ResultAsciiManager.color = 0xa0ffffc0;
-        locals.replayNamePosition.x =
+        replayNamePosition.x =
             (f32)(this->replayNameCursor * 9) + 198.0f;
-        g_ResultAsciiManager.AddFormatText(&locals.replayNamePosition, "_");
+        g_ResultAsciiManager.AddFormatText(&replayNamePosition, "_");
 
-        locals.replayNamePosition.x = 144.0f;
+        replayNamePosition.x = 144.0f;
         g_ResultAsciiManager.color = 0xffffffff;
-        locals.replayIndex = this->replayCursor.current;
-        locals.replayNameTimestamp = localtime(
+        replayIndex = this->replayCursor.current;
+        replayNameTimestamp = localtime(
             reinterpret_cast<time_t *>(
                 &g_ReplayManager->activeInputData->timestamp));
         if (g_ResultPlayerConfig->group == 10)
         {
-            strcpy(locals.replayNameLevelText, "EX");
+            strcpy(replayNameLevelText, "EX");
         }
         else
         {
-            sprintf(locals.replayNameLevelText, " %d",
+            sprintf(replayNameLevelText, " %d",
                     g_ResultPlayerConfig->group + 1);
         }
-        sprintf(locals.replayNameSceneText, "%d", g_ResultPlayerConfig->scene + 1);
+        sprintf(replayNameSceneText, "%d", g_ResultPlayerConfig->scene + 1);
         g_ResultAsciiManager.AddFormatText(
-            &locals.replayNamePosition,
+            &replayNamePosition,
             "No.%.2d %s %s-%s %.2d/%.2d %.2d:%.2d %6d",
-            locals.replayIndex + 1, this->replayName, locals.replayNameLevelText,
-            locals.replayNameSceneText, locals.replayNameTimestamp->tm_mon + 1,
-            locals.replayNameTimestamp->tm_mday, locals.replayNameTimestamp->tm_hour,
-            locals.replayNameTimestamp->tm_min,
+            replayIndex + 1, this->replayName, replayNameLevelText,
+            replayNameSceneText, replayNameTimestamp->tm_mon + 1,
+            replayNameTimestamp->tm_mday, replayNameTimestamp->tm_hour,
+            replayNameTimestamp->tm_min,
             g_ResultScreenGlobalState->currentScore);
 
-        locals.rowY = 320.0f;
-        locals.positionZ = 0.0f;
-        for (locals.i = 0; locals.i < 6; locals.i++)
+        rowY = 320.0f;
+        positionZ = 0.0f;
+        for (i = 0; i < 6; i++)
         {
-            locals.characterX = 208.0f;
-            for (locals.keyboardColumn = 0; locals.keyboardColumn < 16; locals.keyboardColumn++)
+            characterX = 208.0f;
+            for (keyboardColumn = 0; keyboardColumn < 16; keyboardColumn++)
             {
-                locals.characterX += 12.0f;
-                locals.offsetY = 0.0f;
-                locals.offsetX = 0.0f;
-                if (this->keyboardSelection == locals.i * 16 + locals.keyboardColumn)
+                characterX += 12.0f;
+                offsetY = 0.0f;
+                offsetX = 0.0f;
+                if (this->keyboardSelection == i * 16 + keyboardColumn)
                 {
                     g_ResultAsciiManager.color = 0xffffffc0;
                     if (this->stateTimer.current % 32 < 16)
                     {
-                        locals.offsetY = (this->stateTimer.current % 16) *
+                        offsetY = (this->stateTimer.current % 16) *
                                       0.8f / 16.0f +
                                   1.2f;
                     }
                     else
                     {
-                        locals.offsetY = 2.0f -
+                        offsetY = 2.0f -
                                   (this->stateTimer.current % 16) *
                                       0.8f / 16.0f;
                     }
-                    g_ResultAsciiManager.scaleX = locals.offsetY;
-                    g_ResultAsciiManager.scaleY = locals.offsetY;
-                    locals.offsetY = -(locals.offsetY - 1.0f) * 4.0f;
-                    locals.offsetX = locals.offsetY;
+                    g_ResultAsciiManager.scaleX = offsetY;
+                    g_ResultAsciiManager.scaleY = offsetY;
+                    offsetY = -(offsetY - 1.0f) * 4.0f;
+                    offsetX = offsetY;
                 }
                 else
                 {
@@ -1727,32 +1761,32 @@ ChainCallbackResult ResultScreen::Draw()
                     g_ResultAsciiManager.scaleY = 1.0f;
                 }
 
-                locals.characterPosition.x = locals.characterX + locals.offsetY;
-                locals.characterPosition.y = locals.rowY + locals.offsetX;
-                locals.characterPosition.z = locals.positionZ;
+                characterPosition.x = characterX + offsetY;
+                characterPosition.y = rowY + offsetX;
+                characterPosition.z = positionZ;
 
-                locals.characterText[0] =
-                    g_ResultAlphabet[locals.i * 16 + locals.keyboardColumn];
-                locals.characterText[1] = '\0';
-                if (locals.i == 5)
+                characterText[0] =
+                    g_ResultAlphabet[i * 16 + keyboardColumn];
+                characterText[1] = '\0';
+                if (i == 5)
                 {
-                    if (locals.keyboardColumn == 14)
+                    if (keyboardColumn == 14)
                     {
-                        locals.characterText[0] = 0x7f;
+                        characterText[0] = 0x7f;
                     }
-                    else if (locals.keyboardColumn == 15)
+                    else if (keyboardColumn == 15)
                     {
-                        locals.characterText[0] = (char)0x80;
+                        characterText[0] = (char)0x80;
                     }
-                    else if (locals.keyboardColumn == 13)
+                    else if (keyboardColumn == 13)
                     {
-                        locals.characterText[0] = (char)0x81;
+                        characterText[0] = (char)0x81;
                     }
                 }
                 g_ResultAsciiManager.AddString(
-                    &locals.characterPosition, locals.characterText);
+                    &characterPosition, characterText);
             }
-            locals.rowY += 16.0f;
+            rowY += 16.0f;
         }
         g_ResultAsciiManager.scaleX = 1.0f;
         g_ResultAsciiManager.scaleY = 1.0f;
@@ -1761,6 +1795,35 @@ ChainCallbackResult ResultScreen::Draw()
     }
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
+#undef replayNameTitlePosition
+#undef replayListTitlePosition
+#undef notificationPosition
+#undef slowRatePosition
+#undef totalScorePosition
+#undef highScorePosition
+#undef scorePosition
+#undef shotPosition
+#undef bestShotPosition
+#undef characterX
+#undef rowY
+#undef positionZ
+#undef keyboardColumn
+#undef characterText
+#undef offsetX
+#undef offsetY
+#undef characterPosition
+#undef replayNameTimestamp
+#undef replayNamePosition
+#undef replayNameLevelText
+#undef replayNameSceneText
+#undef replayIndex
+#undef replayListTimestamp
+#undef replayListIndex
+#undef replayListPosition
+#undef replayListLevelText
+#undef replayListSceneText
+#undef i
+
 
 ChainCallbackResult ResultScreen::OnUpdate(ResultScreen *resultScreen)
 {

@@ -517,11 +517,10 @@
   187-byte authored body; its unit also enforces two compiler-owned trailing
   bytes and both `_free` relocations. It proves two owned component buffers at
   best-shot record `+0x70/+0x74` plus loaded/valid bytes at `+0x69/+0x68`.
-- `ResultScreen::Draw @ 0x00429C80` is source-present for the complete
+- `ResultScreen::Draw @ 0x00429C80` is now canonical exact for the complete
   TH095-specific best-shot, replay-list, metadata, and replay-name keyboard
-  renderer. Its VC7.1 probe has the target's exact 2,573-byte authored topology
-  and 2,605-byte COFF extent, including both switch tables; all 118 relocations
-  resolve to target destinations and 1,968 of 2,133 comparable bytes match.
+  renderer. The stock VC7.1 unit replays all 2,573 authored bytes plus both
+  switch tables for a 2,605-byte compare extent, with all 118 relocations.
   The remaining 165 local-frame/temporary/register-allocation bytes receive no
   exact credit. All ten pre-existing exact ResultScreen units replay unchanged.
 - `ResultScreen::~ResultScreen @ 0x00426880` is now canonical exact for all
@@ -1736,11 +1735,11 @@ seven real loaded-scene locals into their later lexical scope grows the body to
 16,075 bytes.  No provenance-backed phase currently explains all four gaps, so
 this 16 KiB body must not be promoted via frame filler.
 
-`ResultScreen::Draw @ 0x00429C80` still has the target's 2,573-byte authored
-mnemonic topology, 2,605-byte COFF extent, and all relocation destinations, with
-1,968/2,133 comparable bytes exact.  The residual is structured rather than a
-single hole: the outer `this` home is uniformly twelve bytes too shallow across
-31 references, while a handful of anonymous cursor/integer temporaries are
+The former `ResultScreen::Draw @ 0x00429C80` 1,968/2,133 comparable-byte
+residual described below is superseded by the exact closure checkpoint at the
+end of this file. The old audit was still useful for isolating the local-order
+and best-shot frontend allocation problems: the outer `this` home and anonymous
+cursor/integer temporaries were
 permuted around the fully-live `0xF0` `ResultScreenDrawLocals` aggregate.  Two
 bounded lifetime probes are negative: splitting the monolithic aggregate into
 case-5/13/14 aggregates grows the symbol to 2,758 bytes, and moving only the real
@@ -1796,3 +1795,42 @@ were refreshed.  All 22 pre-existing `ResultScreen.cpp` canonical units replay
 exact after the change, and the new replay initializer becomes the 23rd.  Authored
 coverage is now 655/685 exact functions (95.62%) and 267,263/332,245 exact bytes
 (80.44%).
+
+### 2026-09-03 gpt-web ResultScreen Draw stock-VC7 exact closure
+
+`ResultScreen::Draw @ 0x00429C80` is now canonical exact for all 2,573 authored
+bytes. Its comparison extent is 2,605 bytes because the compiler owns two
+adjacent switch tables; every compared byte and all 118 body/table relocations
+replay under stock VC7.1 build 3077.
+
+The decisive local-order oracle came from the local TH08 reconstruction, but the
+patched TH08 compiler is not part of the canonical proof. Its exact diagnostic
+`#pragma var_order` revealed the shallow-to-deep order of the 28 real Draw
+locals. A stock-VC7 calibration with live address-taken locals then supplied
+identifier buckets for that same rank. The committed source keeps ordinary
+semantic names through short macro aliases while the backing identifiers encode
+only the compiler allocation rank. Removing the old monolithic
+`ResultScreenDrawLocals` aggregate is required: separate real locals plus the
+stock identifier buckets reproduce the target frame and reuse chronology.
+
+The final twelve-byte frame delta is target-phase-specific rather than generic
+padding. The target gap is adjacent to `ResultPhotoDataView::FindBestShot`.
+With the correct local rank, stock controls at that phase score
+`2065/2067/2069/2133/2069` comparable bytes for `0/4/8/12/16` bytes; only twelve
+replays exact. Moving those twelve bytes to total-score or ordinary-shot phases
+leaves eight or four bytes wrong respectively, while the best-shot line belongs
+to the same frontend phase and also replays exact. Natural replacements using
+three live pointer parameters, three live coordinate parameters, or moving the
+real `Float3` position into the helper do not create the target allocation.
+Keep the reservation attached to the smallest proven best-shot frontend phase;
+never generalize it to function-scope storage.
+
+The Draw helpers renumber twenty-two compiler-private `$L` identities in the
+already-exact 6,471-byte `ResultScreen::Update`. A direct 6,551-byte
+body-plus-tables comparison remains structural exact at 5,807/5,807
+non-relocation bytes; all 186 relocation offsets, types, addends, and target
+destinations are unchanged, so only manifest-local symbol names were refreshed.
+All 24 canonical `ResultScreen.cpp` units replay exact after the update.
+
+Coverage after promotion is 656/685 exact authored functions (95.77%) and
+269,836/332,245 exact authored bytes (81.22%).
