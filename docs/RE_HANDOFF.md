@@ -585,14 +585,15 @@ switch table, and all 101 relocations. The decisive source shape is whole-object
 assignment of each returned four-byte `SceneAnmVmId` into the representation-
 compatible transition handle. The former `.value`-only assignments reversed
 return/`this` materialization at three creation sites and caused the downstream
-one-byte net register residual. `UpdateMainMenu @
-0x00446A50` now owns the exact 3,323-byte body-plus-table extent, all 37 call
-offsets, and all six table destinations; 2,906/3,051 non-relocation bytes
-match. Its remaining 145 bytes are only stack displacements caused by target-
-only instruction-unreferenced homes at `EBP-0x144/-0x150`; keep that body
-non-exact rather than synthesizing locals or padding. The two pre-existing
-exact units in the same translation unit, `CloseMainMenu` and
-`UpdateMainMenuSelection`, replayed unchanged for 648 and 787 bytes.
+one-byte net register residual. `UpdateMainMenu @ 0x00446A50` is now canonical exact for its 3,299-byte
+authored body, adjacent 24-byte six-entry switch table, and all 68 relocations.
+Both scene-data queue drains keep `Size()` in the caller and route the direct
+`Pop()` result through one source-local `FrontEndDrainQueueValue` phase with a
+four-byte target-attested reservation. Those two phases land at
+`EBP-0x144/-0x150`; a named Pop-result variant remains four bytes wrong and is
+a bounded negative oracle. The pre-existing `Update`, `CloseMainMenu`, and
+`UpdateMainMenuSelection` units replay unchanged apart from compiler-private
+label spelling, whose target destinations were audited before manifest refresh.
 
 The high-connectivity Supervisor frame and scene-routing spine is now canonical
 exact. `Supervisor::OnUpdate @ 0x00423440` contributes 400 authored bytes and

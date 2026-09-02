@@ -183,6 +183,12 @@ static __forceinline void FrontEndFreePoppedValue(void *block)
     free(block);
 }
 
+static __forceinline void FrontEndDrainQueueValue(SceneValueQueue *queue)
+{
+    u32 compilerStorage;
+    FrontEndFreePoppedValue(reinterpret_cast<void *>(queue->Pop()));
+}
+
 static __forceinline void FrontEndCreateSceneVm(
     FrontEndControllerUpdateView *view,
     i32 scriptIndex)
@@ -679,19 +685,15 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
                        reinterpret_cast<u8 *>(this) + 0x61b8)
                        ->Size() != 0)
             {
-                FrontEndFreePoppedValue(reinterpret_cast<void *>(
-                    reinterpret_cast<SceneValueQueue *>(
-                        reinterpret_cast<u8 *>(this) + 0x61b8)
-                        ->Pop()));
+                FrontEndDrainQueueValue(reinterpret_cast<SceneValueQueue *>(
+                    reinterpret_cast<u8 *>(this) + 0x61b8));
             }
             while (reinterpret_cast<SceneValueQueue *>(
                        reinterpret_cast<u8 *>(this) + 0x6248)
                        ->Size() != 0)
             {
-                FrontEndFreePoppedValue(reinterpret_cast<void *>(
-                    reinterpret_cast<SceneValueQueue *>(
-                        reinterpret_cast<u8 *>(this) + 0x6248)
-                        ->Pop()));
+                FrontEndDrainQueueValue(reinterpret_cast<SceneValueQueue *>(
+                    reinterpret_cast<u8 *>(this) + 0x6248));
             }
             *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6240) = 0;
             *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x62d0) = 0;

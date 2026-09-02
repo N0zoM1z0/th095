@@ -619,7 +619,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00445E40,authored,FrontEndController,authored,exact,vc71-front-end-controller-wrappers-2026-08-29
 0x00445E60,authored,FrontEndController,authored,exact,vc71-front-end-controller-wrappers-2026-08-29
 0x00445E80,authored,FrontEndController,authored,high,front-end-controller-call-graph-2026-08-29
-0x00446A50,authored,FrontEndController,authored,high,front-end-controller-main-menu-2026-08-29
+0x00446A50,authored,FrontEndController,authored,exact,front-end-controller-main-menu-2026-08-29
 0x00447750,authored,FrontEndController,authored,exact,vc71-front-end-main-menu-helpers-2026-08-29
 0x004479E0,authored,FrontEndController,authored,exact,vc71-front-end-main-menu-helpers-2026-08-29
 0x00447D00,authored,SceneSelect,authored,high,front-end-controller-scene-select-2026-08-29

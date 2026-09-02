@@ -265,14 +265,16 @@ assembly or an artificial branch to close it.
   2,969 authored bytes, the adjacent 40-byte table, and 101 relocations without
   dummy storage or padding.
 - `UpdateMainMenu @ 0x00446A50` needs one fully live 216-byte aggregate for the
-  eighteen VM positions, declared in reverse physical order. Use the queue's
-  real inline `Size()` member and small source-local helpers for help-state
-  snapshots and freeing popped queue owners; these are expression/lifetime
-  boundaries, not ABI shims. The resulting 3,323-byte COFF extent exactly owns
-  the 3,299-byte body and six-entry table, with all 37 calls and table targets
-  at the target offsets. Its only structural residual is the target's two
-  instruction-unreferenced stack dwords at `EBP-0x144/-0x150`; do not model
-  them with inert storage.
+  eighteen VM positions, declared in reverse physical order. Its two queue
+  drains expose a repeated four-byte semantic phase: leave the real inline
+  `Size()` result in the caller, then use one source-local
+  `FrontEndDrainQueueValue` helper containing the target-attested storage and
+  direct `free(reinterpret_cast<void *>(queue->Pop()))`. VC7.1 then places the
+  two queue phases at `EBP-0x144/-0x150` and reproduces the complete 3,299-byte
+  body plus 24-byte six-entry switch table. A helper that first names the Pop
+  return remains four bytes wrong. The canonical unit therefore compares all
+  3,323 bytes and all 68 relocations; table bytes are compiler-owned and are not
+  counted as authored.
 - ReplayBrowser and HelpMenu add a distinct inline-temporary chronology oracle.
   When a function directly writes `array[index] = CreateVm(...)`, build 3077
   may allocate all anonymous return-object (sret) temporaries in the outer
