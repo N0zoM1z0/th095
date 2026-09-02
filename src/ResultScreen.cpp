@@ -954,6 +954,29 @@ i32 ResultScreen::UpdateCursor(i32 firstVm)
     return 0;
 }
 
+static __forceinline void ResultUpdatePhotoSetStatePhase(
+    ResultScreen *resultScreen, i32 value)
+{
+    u8 compilerStorage[0xb0];
+    resultScreen->state = value;
+    resultScreen->stateTimer.Reset();
+}
+
+static __forceinline void ResultUpdateReplayDisablePhase(
+    ResultScreenReplayCursor *cursor, i32 value)
+{
+    u8 compilerStorage[0xdc];
+    cursor->Disable(value);
+}
+
+static __forceinline void ResultUpdateInterruptFirstPhase(ResultScreen *resultScreen)
+{
+    for (i32 index = 0; index < 21; index++)
+    {
+        resultScreen->vms[index].SetInterrupt(1);
+    }
+}
+
 ChainCallbackResult ResultScreen::Update()
 {
     char path[0x100];
@@ -989,10 +1012,7 @@ ChainCallbackResult ResultScreen::Update()
             this->state = 2;
             this->replayCursor.Set(0);
             this->stateTimer.Reset();
-            for (i32 i = 0; i < 21; i++)
-            {
-                this->vms[i].SetInterrupt(1);
-            }
+            ResultUpdateInterruptFirstPhase(this);
             this->vms[23].SetInterrupt(1);
             break;
         }
@@ -1002,10 +1022,7 @@ ChainCallbackResult ResultScreen::Update()
             switch (this->replayCursor.GetCurrent())
             {
             case 0:
-                for (i32 i = 0; i < 21; i++)
-                {
-                    this->vms[i].SetInterrupt(1);
-                }
+                ResultUpdateInterruptFirstPhase(this);
                 this->vms[23].SetInterrupt(1);
                 g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
                 break;
@@ -1054,10 +1071,7 @@ ChainCallbackResult ResultScreen::Update()
             this->state = 12;
             this->replayCursor.Set(0);
             this->stateTimer.Reset();
-            for (i32 i = 0; i < 21; i++)
-            {
-                this->vms[i].SetInterrupt(1);
-            }
+            ResultUpdateInterruptFirstPhase(this);
             this->vms[23].SetInterrupt(1);
             break;
         }
@@ -1068,10 +1082,7 @@ ChainCallbackResult ResultScreen::Update()
             {
             case 0:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-                for (i32 i = 0; i < 21; i++)
-                {
-                    this->vms[i].SetInterrupt(1);
-                }
+                ResultUpdateInterruptFirstPhase(this);
                 this->vms[23].SetInterrupt(1);
                 break;
             case 1:
@@ -1305,7 +1316,7 @@ ChainCallbackResult ResultScreen::Update()
             }
             else if (g_ResultScreenGlobalState->photoResultActive != 0)
             {
-                this->SetState(5);
+                ResultUpdatePhotoSetStatePhase(this, 5);
                 this->anm->InitializeVm(GetResultVm(this, 11), 11);
                 this->state = 5;
                 this->anm->InitializeVm(GetResultVm(this, 14), 14);
@@ -1316,7 +1327,7 @@ ChainCallbackResult ResultScreen::Update()
                 if (g_ResultPlayerConfig->scene >=
                     g_ResultSceneLimits[g_ResultPlayerConfig->group] - 1)
                 {
-                    this->replayCursor.Disable(1);
+                    ResultUpdateReplayDisablePhase(&this->replayCursor, 1);
                     this->vms[13].color1 = 0x80000000;
                 }
                 PreparePhotoResultScreen(this);

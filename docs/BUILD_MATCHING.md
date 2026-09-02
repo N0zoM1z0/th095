@@ -944,3 +944,20 @@ pointer already owns one real dword. Write VM 13 color directly through
 store the ratio compiler temporary before the m32real multiply, reproducing the
 target `fst; fmul dword; fsubr dword` sequence. All 1,073 bytes and thirty-three
 relocations then replay exactly.
+
+### ResultScreen state-dispatch phase ownership
+
+`ResultScreen::Update @ 0x00426BF0` is the large positive oracle for separating
+frame phase ownership from loop-local ownership. Its `0x18C` target frame delta
+is exactly two semantic phases: `0xB0` on the state-13 photo-result
+`SetState(5)`/timer reset and `0xDC` on `replayCursor.Disable(1)`. Do not place
+either reservation at function scope; the single-phase controls leave the other
+late lane off by exactly the complementary amount. Once both phases are in
+place, the remaining seven real loop indices must not all share caller scope.
+Put only the first four early 21-VM interrupt loops in one source-local
+`__forceinline` helper and leave the later two range-3 interrupt loops plus the
+final ExecuteScript loop in the caller. VC7.1 then interleaves the four helper
+indices with nine anonymous receiver temps while the three caller indices stay
+shallow, reproducing every home without padding. The accepted unit owns 6,471
+authored bytes and compares the adjacent 80-byte tables for a 6,551-byte exact
+extent with all 186 relocations.
