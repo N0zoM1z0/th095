@@ -612,7 +612,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004456F0,authored,FrontEndController,authored,exact,front-end-lifecycle-exact-2026-08-30
 0x00445980,authored,FrontEndController,authored,exact,front-end-lifecycle-exact-2026-08-30
 0x00445A50,authored,FrontEndController,authored,exact,front-end-lifecycle-exact-2026-08-30
-0x00445AA0,authored,FrontEndController,authored,high,front-end-lifecycle-semantic-2026-08-30
+0x00445AA0,authored,FrontEndController,authored,exact,front-end-lifecycle-destructor-exact-2026-09-02
 0x00445CA0,authored,FrontEndController,authored,exact,front-end-lifecycle-exact-2026-08-30
 0x00445CC0,authored,FrontEndController,authored,exact,front-end-lifecycle-exact-2026-08-30
 0x00445DE0,authored,FrontEndController,authored,exact,front-end-lifecycle-exact-2026-08-30

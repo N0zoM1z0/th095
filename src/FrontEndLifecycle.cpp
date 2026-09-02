@@ -370,18 +370,68 @@ FrontEndLifecycleView *__fastcall FrontEndLifecycleView::Create(i32 mode)
     return controller;
 }
 
+static __forceinline void FrontEndFreeReplayListData(FrontEndLifecycleView *view)
+{
+    if (view->replayListData != NULL)
+    {
+        void *data = view->replayListData;
+        free(data);
+    }
+}
+static __forceinline void FrontEndFreeMissionMessageData(FrontEndLifecycleView *view)
+{
+    if (view->missionMessageData != NULL)
+    {
+        void *data = view->missionMessageData;
+        free(data);
+    }
+}
+static __forceinline void FrontEndFreePoppedValue(void *data)
+{
+    free(data);
+}
+static __forceinline void FrontEndFreeGroupQueuePop(FrontEndLifecycleView *view)
+{
+    u32 compilerStorage;
+    FrontEndFreePoppedValue(
+        reinterpret_cast<void *>(view->groupPreviewDataQueue.Pop()));
+}
+static __forceinline void FrontEndFreeSceneQueuePop(FrontEndLifecycleView *view)
+{
+    u32 compilerStorage;
+    FrontEndFreePoppedValue(
+        reinterpret_cast<void *>(view->scenePreviewDataQueue.Pop()));
+}
+static __forceinline void FrontEndFreePendingPrimary(FrontEndLifecycleView *view, i32 index)
+{
+    if (view->pendingPrimaryData[index] != NULL)
+    {
+        void *data = view->pendingPrimaryData[index];
+        free(data);
+    }
+}
+static __forceinline void FrontEndFreePendingSecondary(FrontEndLifecycleView *view, i32 index)
+{
+    if (view->pendingSecondaryData[index] != NULL)
+    {
+        void *data = view->pendingSecondaryData[index];
+        free(data);
+    }
+}
+
 // FUNCTION: TH095 0x00445AA0.
 FrontEndLifecycleView::~FrontEndLifecycleView()
 {
-    i32 i;
+    i32 replayIndex;
+    i32 pendingIndex;
 
     g_FrontEndResultSaveData->WriteBestShotData();
-    for (i = 0; i < 80; i++)
+    for (replayIndex = 0; replayIndex < 80; replayIndex++)
     {
-        if (this->replays[i] != NULL)
+        if (this->replays[replayIndex] != NULL)
         {
-            delete this->replays[i];
-            this->replays[i] = NULL;
+            delete this->replays[replayIndex];
+            this->replays[replayIndex] = NULL;
         }
     }
 
@@ -390,42 +440,22 @@ FrontEndLifecycleView::~FrontEndLifecycleView()
     g_Chain.Cut(this->drawChain);
     g_FrontEndController = NULL;
 
-    if (this->replayListData != NULL)
-    {
-        void *replayListData = this->replayListData;
-        free(replayListData);
-    }
-    if (this->missionMessageData != NULL)
-    {
-        void *missionMessageData = this->missionMessageData;
-        free(missionMessageData);
-    }
+    FrontEndFreeReplayListData(this);
+    FrontEndFreeMissionMessageData(this);
 
     while (this->groupPreviewDataQueue.Size() != 0)
     {
-        void *data = reinterpret_cast<void *>(
-            this->groupPreviewDataQueue.Pop());
-        free(data);
+        FrontEndFreeGroupQueuePop(this);
     }
     while (this->scenePreviewDataQueue.Size() != 0)
     {
-        void *data = reinterpret_cast<void *>(
-            this->scenePreviewDataQueue.Pop());
-        free(data);
+        FrontEndFreeSceneQueuePop(this);
     }
 
-    for (i = 0; i < 3; i++)
+    for (pendingIndex = 0; pendingIndex < 3; pendingIndex++)
     {
-        if (this->pendingPrimaryData[i] != NULL)
-        {
-            void *data = this->pendingPrimaryData[i];
-            free(data);
-        }
-        if (this->pendingSecondaryData[i] != NULL)
-        {
-            void *data = this->pendingSecondaryData[i];
-            free(data);
-        }
+        FrontEndFreePendingPrimary(this, pendingIndex);
+        FrontEndFreePendingSecondary(this, pendingIndex);
     }
 }
 

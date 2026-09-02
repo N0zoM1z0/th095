@@ -18611,3 +18611,33 @@ relocations = [
   { offset = 0x25B, type = "REL32", symbol = "?SetAndExecuteScript@ResultScreenAnmLoadedView@th095@@QAEXPAUResultScreenAnmVm@2@H@Z", target = 0x00404B80 },
   { offset = 0x280, type = "REL32", symbol = "?SetAndExecuteScript@ResultScreenAnmLoadedView@th095@@QAEXPAUResultScreenAnmVm@2@H@Z", target = 0x00404B80 },
 ]
+
+[units.front-end-lifecycle-destructor]
+source = "src/FrontEndLifecycle.cpp"
+object = "build/matching/FrontEndLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::FrontEndLifecycleView::~FrontEndLifecycleView"]
+symbol = "??1FrontEndLifecycleView@th095@@QAE@XZ"
+target_address = 0x00445AA0
+size = 0x1F7
+relocations = [
+  { offset = 0xB, type = "DIR32", symbol = "?g_FrontEndResultSaveData@th095@@3PAUResultSaveDataView@1@A", target = 0x004C4E78 },
+  { offset = 0x10, type = "REL32", symbol = "?WriteBestShotData@ResultSaveDataView@th095@@QAE?AW4ZunResult@@XZ", target = 0x00435910 },
+  { offset = 0x5C, type = "REL32", symbol = "??1ReplayManager@th095@@QAE@XZ", target = 0x004344F0 },
+  { offset = 0x6F, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+  { offset = 0x99, type = "DIR32", symbol = "??_C@_0BH@CNKKCCJL@shutdown?5TitleTaskInf?6?$AA@", target = 0x0049780C },
+  { offset = 0x9E, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+  { offset = 0xB0, type = "DIR32", symbol = "?g_Chain@th095@@3VChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xB5, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAVChainElem@2@@Z", target = 0x00419160 },
+  { offset = 0xC4, type = "DIR32", symbol = "?g_Chain@th095@@3VChain@1@A", target = 0x004BE3C8 },
+  { offset = 0xC9, type = "REL32", symbol = "?Cut@Chain@th095@@QAEXPAVChainElem@2@@Z", target = 0x00419160 },
+  { offset = 0xCF, type = "DIR32", symbol = "?g_FrontEndController@th095@@3PAUFrontEndLifecycleView@1@A", target = 0x004CA2F4 },
+  { offset = 0xF4, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x118, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x13B, type = "REL32", symbol = "?Pop@FrontEndPointerQueueView@th095@@QAEHXZ", target = 0x00450F60 },
+  { offset = 0x147, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x16C, type = "REL32", symbol = "?Pop@FrontEndPointerQueueView@th095@@QAEHXZ", target = 0x00450F60 },
+  { offset = 0x178, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x1BE, type = "REL32", symbol = "_free", target = 0x004854BE },
+  { offset = 0x1EA, type = "REL32", symbol = "_free", target = 0x004854BE },
+]

@@ -1681,3 +1681,10 @@ Revalidated ledger metrics at this checkpoint are `632/685` exact authored
 functions (`92.26%`) and `238639/332245` exact authored bytes (`71.83%`).
 Reaching 95% requires 19 more functions and 76,994 more authored bytes; the
 remaining 53 authored functions are all source-present.
+`FrontEndLifecycleView::~FrontEndLifecycleView @ 0x00445AA0` is now canonical exact
+for all 503 bytes and nineteen relocations. The successful source keeps distinct replay
+and pending indices, isolates each real owned pointer lifetime, and reuses the exact
+MainMenu queue-drain shape: `Size()` remains in the outer `while`, while a source-local
+inline phase contributes one four-byte compiler reservation and passes `Pop()` directly
+into a separate free-consumer helper. All eight `FrontEndLifecycle.cpp` canonical units
+replay exact; naming the Pop result or calling `_free` directly are negative oracles.

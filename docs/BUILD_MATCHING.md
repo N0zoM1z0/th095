@@ -915,3 +915,13 @@ phase; putting that storage around capture setup or the whole initializer moves 
 wrong temporaries. Together these two semantic boundaries reproduce all 788 bytes
 and eighteen relocations. Do not infer replay/photo initializer phase sizes from
 this function; those paths remain independent proof obligations.
+
+`FrontEndLifecycleView::~FrontEndLifecycleView @ 0x00445AA0` closes the queue-drain ownership rule.
+Use distinct real loop indices for replay deletion and pending-preview cleanup, and keep
+replay-list/mission/pending pointers in source-local ownership helpers. For each preview
+queue, leave `Size()` in the caller's `while` condition. The inline drain helper owns one
+real four-byte compiler phase and must pass `queue->Pop()` directly into a separate
+free-consumer helper; naming the Pop result or calling `_free` directly changes codegen.
+The same surface already proven by `UpdateMainMenu` now reproduces both target queue
+slots, all 503 bytes, and nineteen relocations. This is a cross-function positive oracle
+for queue ownership chronology, not permission to insert standalone four-byte locals.
