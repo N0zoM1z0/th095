@@ -187,16 +187,16 @@ typedef char ResultScreenDrawReplayListPositionAtD0[
 typedef char ResultScreenDrawLoopIndexAtEC[
     (offsetof(ResultScreenDrawLocals, i) == 0xec) ? 1 : -1];
 
-typedef char ResultBestShotImageScoreAt00[
-    (offsetof(ResultBestShotImageView, score) == 0x00) ? 1 : -1];
-typedef char ResultBestShotImageMetadataAt08[
-    (offsetof(ResultBestShotImageView, metadata) == 0x08) ? 1 : -1];
-typedef char ResultBestShotImageReplayValueAt2C[
-    (offsetof(ResultBestShotImageView, replayValue) == 0x2c) ? 1 : -1];
-typedef char ResultBestShotImageSlowRateAt38[
-    (offsetof(ResultBestShotImageView, slowRate) == 0x38) ? 1 : -1];
-typedef char ResultBestShotImageStageValueAt3C[
-    (offsetof(ResultBestShotImageView, stageValue) == 0x3c) ? 1 : -1];
+typedef char ResultBestShotImageScoreAt10[
+    (offsetof(ResultBestShotImageView, score) == 0x10) ? 1 : -1];
+typedef char ResultBestShotImageMetadataAt18[
+    (offsetof(ResultBestShotImageView, metadata) == 0x18) ? 1 : -1];
+typedef char ResultBestShotImageReplayValueAt3C[
+    (offsetof(ResultBestShotImageView, replayValue) == 0x3c) ? 1 : -1];
+typedef char ResultBestShotImageSlowRateAt48[
+    (offsetof(ResultBestShotImageView, slowRate) == 0x48) ? 1 : -1];
+typedef char ResultBestShotImageStageValueAt4C[
+    (offsetof(ResultBestShotImageView, stageValue) == 0x4c) ? 1 : -1];
 typedef char ResultBestShotRecordCommentAt18[
     (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
 typedef char ResultBestShotRecordValidAt68[
@@ -727,6 +727,21 @@ void ResultScreen::PrepareBestShot()
     }
 }
 
+static __forceinline void ResultPhotoInterruptPreviousPhase(
+    ResultScreen *resultScreen)
+{
+    u8 compilerStorage[0x24];
+    g_ResultPhotoData
+        ->photoVms[resultScreen->photoCursor.GetPrevious()]
+        .SetInterrupt(3);
+}
+
+static __forceinline void ResultPhotoInterruptCurrentPhase(i32 photoIndex)
+{
+    u8 compilerStorage[8];
+    g_ResultPhotoData->photoVms[photoIndex].SetInterrupt(2);
+}
+
 void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
 {
     i32 direction;
@@ -761,10 +776,8 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             vm->spriteSize.x = vm->loadedSprite->uvEndX * 255.0f;
             vm->spriteSize.y = vm->loadedSprite->uvEndY * 255.0f;
 
-            g_ResultPhotoData
-                ->photoVms[resultScreen->photoCursor.GetPrevious()]
-                .SetInterrupt(3);
-            g_ResultPhotoData->photoVms[photoIndex].SetInterrupt(2);
+            ResultPhotoInterruptPreviousPhase(resultScreen);
+            ResultPhotoInterruptCurrentPhase(photoIndex);
             g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
         }
     }

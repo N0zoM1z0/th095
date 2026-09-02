@@ -860,3 +860,21 @@ positive oracle for a target-proven distinct member-construction phase, not a ru
 for adding storage to every repeated member. Shared-header changes require cold
 replay of all canonical consumers; FrontEnd and Help only renumbered compiler-local
 labels, with their complete 3009/2378-byte compare extents and destinations unchanged.
+
+`UpdatePhotoResultScreen @ 0x004294C0` shows why a residual frame delta must be
+partitioned by owner before adding any source-local phase. Its apparent `0x2C`
+difference is **not** one phase: the real previous-photo interrupt expression
+(`photoCursor.GetPrevious()` followed by `SetInterrupt(3)`) owns `0x24`, while
+the following current-photo `SetInterrupt(2)` expression owns another `0x08`.
+Adding only the first phase places its compiler temporary exactly at
+`EBP-0x48` but leaves every later home eight bytes shallow; adding both makes all
+stack homes exact without changing the 1,323-byte instruction/relocation topology.
+After stack allocation was solved, three remaining one-byte displacement differences
+identified a shared data-layout error rather than compiler noise. The persistent
+`0x60` best-shot image is the alternate view of the scene-score union at save-data
+`+0x460`, so its live fields begin at `+0x10`, not `+0x00`. Fix the shared ABI
+(`score/metadata/replay/slow/stage @ +0x10/+0x18/+0x3C/+0x48/+0x4C`) instead of
+patching three call-site constants. Cold replay of ResultScreen, ScoreData, ScoreLoad,
+and FrontEndLifecycle remains exact. This is the preferred sequence: solve semantic
+phase ownership first, then treat any surviving coherent displacement pattern as a
+possible shared-layout fact.

@@ -494,12 +494,16 @@
   exact 50-call distribution. All
   thirteen canonical units affected by naming scene-score rates at
   `+0x48/+0x4C` replay unchanged.
-- `UpdatePhotoResultScreen @ 0x004294C0` is source-present for the complete
-  TH095-specific photo browser and `BSTS` best-shot save path. Its VC7.1 probe
-  has the target's full 1,323-byte instruction topology and resolves all 65
-  relocations. It remains non-exact solely because the target reserves an
-  additional `0x2C` of inline temporary homes, changing 38 stack-displacement
-  bytes; no artificial padding was introduced.
+- `UpdatePhotoResultScreen @ 0x004294C0` is now canonical exact for all 1,323
+  authored bytes and 65 relocations. The previous `0x2C` stack residual splits
+  into two target-owned semantic phases: `0x24` around the previous-photo
+  `GetPrevious()/SetInterrupt(3)` expression and `0x08` around the following
+  current-photo `SetInterrupt(2)` expression. Solving those phases left only
+  three coherent field displacements, which exposed the shared `0x60` best-shot
+  image overlay: its live fields are `score +0x10`, `metadata +0x18`,
+  `replayValue +0x3C`, `slowRate +0x48`, and `stageValue +0x4C`. The corrected
+  `ScoreData.hpp` layout preserves exact ScoreData writer/parser, ResultScreen,
+  and FrontEndLifecycle consumers; do not regress it to the old +0x00 image view.
 - `ResultSaveDataView::UpdateBestShotRecord @ 0x004299F0` is exact for its
   187-byte authored body; its unit also enforces two compiler-owned trailing
   bytes and both `_free` relocations. It proves two owned component buffers at
@@ -520,7 +524,7 @@
   is the VM-list `MarkVmsForDeletion(AnmLoaded*)` routine: the destructor passes
   `this->anm` directly. Treat `ReleaseAnm(i32) @ 0x00443980` as the slot-resource
   release API and `MarkVmsForDeletion(AnmLoaded*) @ 0x00445270` as the distinct
-  live-VM retirement API. All seventeen canonical `ResultScreen.cpp` units replay
+  live-VM retirement API. All eighteen canonical `ResultScreen.cpp` units replay
   exact after the current constructor/header correction.
 - `InitializeGameResultScreen @ 0x00428590`,
   `InitializeReplayResultScreen @ 0x004288B0`, and

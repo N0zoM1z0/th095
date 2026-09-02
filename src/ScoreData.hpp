@@ -18,15 +18,16 @@ struct ScoreFileHeader
 
 struct ResultBestShotImageView
 {
+    u8 unknown000[0x10];
     i32 score;
-    u8 unknown004[4];
+    u8 unknown014[4];
     u32 metadata[8];
-    u8 unknown028[4];
+    u8 unknown038[4];
     i32 replayValue;
-    u8 unknown030[0x38 - 0x30];
+    u8 unknown040[0x48 - 0x40];
     f32 slowRate;
     i32 stageValue;
-    u8 unknown040[0x60 - 0x40];
+    u8 unknown050[0x60 - 0x50];
 };
 
 struct ResultBestShotRecordView
@@ -114,8 +115,8 @@ typedef char ResultSaveScoreEntriesAt460[
     (offsetof(ResultSaveDataView, scoreEntries) == 0x460) ? 1 : -1];
 typedef char ResultSaveBestShotRecordsAt3160[
     (offsetof(ResultSaveDataView, bestShotRecords) == 0x3160) ? 1 : -1];
-typedef char ResultBestShotImageMetadataAt08[
-    (offsetof(ResultBestShotImageView, metadata) == 0x08) ? 1 : -1];
+typedef char ResultBestShotImageMetadataAt18[
+    (offsetof(ResultBestShotImageView, metadata) == 0x18) ? 1 : -1];
 typedef char ResultBestShotRecordCommentAt18[
     (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
 typedef char ResultBestShotRecordValidAt68[

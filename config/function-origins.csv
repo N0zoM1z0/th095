@@ -391,7 +391,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00428E90,authored,ResultScreen,authored,high,vc71-result-screen-initializers-source-2026-08-29
 0x004292D0,authored,ReplayMenu,authored,high,ghidra-replay-menu-cluster-2026-08-29
 0x00429450,authored,ResultScreen,authored,exact,vc71-result-photo-find-best-shot-2026-08-29
-0x004294C0,authored,ResultScreen,authored,high,vc71-result-photo-update-source-2026-08-29
+0x004294C0,authored,ResultScreen,authored,exact,vc71-result-photo-update-source-2026-08-29
 0x004299F0,authored,ResultScreen,authored,exact,vc71-result-best-shot-record-reset-2026-08-29
 0x00429AB0,authored,ResultScreen,authored,exact,vc71-result-screen-update-cursor-2026-08-29
 0x00429C80,authored,ResultScreen,authored,high,result-screen-on-draw-owner-2026-08-29
