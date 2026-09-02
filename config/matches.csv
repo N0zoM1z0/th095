@@ -632,3 +632,5 @@ address,name,size,status,match_percent,unit,evidence
 0x00455580,th095::PbgArchive::AllocEntries,524,matching,100.00,pbg-archive-alloc-entries,python3 scripts/build.py --unit pbg-archive-alloc-entries && python3 scripts/compare-coff-function.py --unit pbg-archive-alloc-entries --json
 0x00455E10,th095::CompressData,1035,matching,100.00,compress-data,python3 scripts/build.py --unit compress-data && python3 scripts/compare-coff-function.py --unit compress-data --json
 0x00423FB0,th095::Supervisor::LoadDat,151,matching,100.00,main-load-dat,python3 scripts/build.py --unit main-load-dat && python3 scripts/compare-coff-function.py --unit main-load-dat --json
+0x00401700,th095::AsciiManager::DrawStrings,536,matching,100.00,ascii-manager-draw-strings,python3 scripts/build.py --unit ascii-manager-draw-strings && python3 scripts/compare-coff-function.py --unit ascii-manager-draw-strings --json
+0x00401920,th095::AsciiManager::DrawGuiStrings,577,matching,100.00,ascii-manager-draw-gui-strings,python3 scripts/build.py --unit ascii-manager-draw-gui-strings && python3 scripts/compare-coff-function.py --unit ascii-manager-draw-gui-strings --json

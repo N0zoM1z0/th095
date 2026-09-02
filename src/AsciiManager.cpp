@@ -270,34 +270,43 @@ int AsciiManager::AddGuiFormatText(Float3 *position, const char *fmt, ...)
     return strlen(buffer);
 }
 
+// TH08's direct ancestor retains one unused Float3 in this renderer.  TH095
+// preserves the same 12-byte compiler home.  The backing identifiers keep the
+// five live locals and that provenance-backed vector in the target VC7.1 order.
+#define asciiDrawVector jLocal00
+#define asciiDrawSpaceWidth restartCommandProcessingLocal05
+#define asciiDrawIndex averagedPanLocal12
+#define asciiDrawString iLocal11
+#define asciiDrawText commandCursorLocal02
+#define asciiDrawIsGui soundIndexLocal01
 // FUNCTION: TH095 0x00401700.
-#pragma var_order(spaceWidth, i, currentString, text, isGui)
 void AsciiManager::DrawStrings()
 {
-    f32 spaceWidth;
-    i32 i;
-    AsciiManagerString *currentString;
-    u8 *text;
-    i32 isGui = 1;
+    Float3 asciiDrawVector;
+    f32 asciiDrawSpaceWidth;
+    i32 asciiDrawIndex;
+    AsciiManagerString *asciiDrawString;
+    u8 *asciiDrawText;
+    i32 asciiDrawIsGui = 1;
 
-    currentString = &this->strings[0];
+    asciiDrawString = &this->strings[0];
     this->largeText.visible = true;
     this->largeText.renderStateA = 1;
     this->largeText.renderStateB = 1;
 
-    for (i = 0; i < this->numStrings; i++, currentString++)
+    for (asciiDrawIndex = 0; asciiDrawIndex < this->numStrings; asciiDrawIndex++, asciiDrawString++)
     {
-        this->largeText.position = currentString->position;
-        text = reinterpret_cast<u8 *>(currentString->text);
-        this->largeText.scale.x = currentString->scaleX;
-        this->largeText.scale.y = currentString->scaleY;
-        spaceWidth = this->spaceWidth * currentString->scaleX;
+        this->largeText.position = asciiDrawString->position;
+        asciiDrawText = reinterpret_cast<u8 *>(asciiDrawString->text);
+        this->largeText.scale.x = asciiDrawString->scaleX;
+        this->largeText.scale.y = asciiDrawString->scaleY;
+        asciiDrawSpaceWidth = this->spaceWidth * asciiDrawString->scaleX;
 
-        if (isGui != currentString->isGui)
+        if (asciiDrawIsGui != asciiDrawString->isGui)
         {
-            isGui = currentString->isGui;
+            asciiDrawIsGui = asciiDrawString->isGui;
             g_AnmManager->FlushVertexBuffer();
-            if (isGui != 0)
+            if (asciiDrawIsGui != 0)
             {
                 reinterpret_cast<AsciiBackgroundSupervisorView *>(&g_Supervisor)
                     ->ConfigureBackgroundViewport(0);
@@ -309,30 +318,30 @@ void AsciiManager::DrawStrings()
             }
         }
 
-        while (*text != '\0')
+        while (*asciiDrawText != '\0')
         {
-            if (*text == '\n')
+            if (*asciiDrawText == '\n')
             {
-                this->largeText.position.y += 16.0f * currentString->scaleY;
-                this->largeText.position.x = currentString->position.x;
+                this->largeText.position.y += 16.0f * asciiDrawString->scaleY;
+                this->largeText.position.x = asciiDrawString->position.x;
             }
-            else if (*text == ' ')
+            else if (*asciiDrawText == ' ')
             {
-                this->largeText.position.x += spaceWidth;
+                this->largeText.position.x += asciiDrawSpaceWidth;
             }
             else
             {
                 this->largeText.loadedSprite =
-                    &this->asciiAnm->sprites[*text - ' '];
-                this->largeText.color1.color = currentString->color;
+                    &this->asciiAnm->sprites[*asciiDrawText - ' '];
+                this->largeText.color1.color = asciiDrawString->color;
                 g_AnmManager->DrawNoRotation(&this->largeText);
-                this->largeText.position.x += spaceWidth;
+                this->largeText.position.x += asciiDrawSpaceWidth;
             }
-            text++;
+            asciiDrawText++;
         }
     }
 
-    if (isGui != 0)
+    if (asciiDrawIsGui != 0)
     {
         g_AnmManager->FlushVertexBuffer();
         reinterpret_cast<AsciiBackgroundSupervisorView *>(&g_Supervisor)
@@ -341,33 +350,33 @@ void AsciiManager::DrawStrings()
 }
 
 // FUNCTION: TH095 0x00401920.
-#pragma var_order(spaceWidth, i, currentString, text, isGui)
 void AsciiManager::DrawGuiStrings()
 {
-    f32 spaceWidth;
-    i32 i;
-    AsciiManagerString *currentString;
-    u8 *text;
-    i32 isGui = 1;
+    Float3 asciiDrawVector;
+    f32 asciiDrawSpaceWidth;
+    i32 asciiDrawIndex;
+    AsciiManagerString *asciiDrawString;
+    u8 *asciiDrawText;
+    i32 asciiDrawIsGui = 1;
 
-    currentString = &this->guiStrings[0];
+    asciiDrawString = &this->guiStrings[0];
     this->largeText.visible = true;
     this->largeText.renderStateA = 1;
     this->largeText.renderStateB = 1;
 
-    for (i = 0; i < this->numGuiStrings; i++, currentString++)
+    for (asciiDrawIndex = 0; asciiDrawIndex < this->numGuiStrings; asciiDrawIndex++, asciiDrawString++)
     {
-        this->largeText.position = currentString->position;
-        text = reinterpret_cast<u8 *>(currentString->text);
-        this->largeText.scale.x = currentString->scaleX;
-        this->largeText.scale.y = currentString->scaleY;
-        spaceWidth = this->spaceWidth * currentString->scaleX;
+        this->largeText.position = asciiDrawString->position;
+        asciiDrawText = reinterpret_cast<u8 *>(asciiDrawString->text);
+        this->largeText.scale.x = asciiDrawString->scaleX;
+        this->largeText.scale.y = asciiDrawString->scaleY;
+        asciiDrawSpaceWidth = this->spaceWidth * asciiDrawString->scaleX;
 
-        if (isGui != currentString->isGui)
+        if (asciiDrawIsGui != asciiDrawString->isGui)
         {
-            isGui = currentString->isGui;
+            asciiDrawIsGui = asciiDrawString->isGui;
             g_AnmManager->FlushVertexBuffer();
-            if (isGui != 0)
+            if (asciiDrawIsGui != 0)
             {
                 reinterpret_cast<AsciiBackgroundSupervisorView *>(&g_Supervisor)
                     ->ConfigureBackgroundViewport(0);
@@ -379,42 +388,49 @@ void AsciiManager::DrawGuiStrings()
             }
         }
 
-        while (*text != '\0')
+        while (*asciiDrawText != '\0')
         {
-            if (*text == '\n')
+            if (*asciiDrawText == '\n')
             {
-                this->largeText.position.y += 16.0f * currentString->scaleY;
-                this->largeText.position.x = currentString->position.x;
+                this->largeText.position.y += 16.0f * asciiDrawString->scaleY;
+                this->largeText.position.x = asciiDrawString->position.x;
             }
-            else if (*text == ' ')
+            else if (*asciiDrawText == ' ')
             {
-                this->largeText.position.x += spaceWidth;
+                this->largeText.position.x += asciiDrawSpaceWidth;
             }
             else
             {
                 this->largeText.loadedSprite =
-                    &this->asciiAnm->sprites[*text - ' '];
-                this->largeText.color1.color = currentString->color;
-                if (this->largeText.scale.x == 1.0f)
-                {
-                    g_AnmManager->DrawNoRotation(&this->largeText);
-                }
-                else
+                    &this->asciiAnm->sprites[*asciiDrawText - ' '];
+                this->largeText.color1.color = asciiDrawString->color;
+                if (this->largeText.scale.x != 1.0f)
                 {
                     g_AnmManager->DrawNoRotationNoRound(&this->largeText);
                 }
-                this->largeText.position.x += spaceWidth;
+                else
+                {
+                    g_AnmManager->DrawNoRotation(&this->largeText);
+                }
+                this->largeText.position.x += asciiDrawSpaceWidth;
             }
-            text++;
+            asciiDrawText++;
         }
     }
 
-    if (isGui != 0)
+    if (asciiDrawIsGui != 0)
     {
         g_AnmManager->FlushVertexBuffer();
         reinterpret_cast<AsciiBackgroundSupervisorView *>(&g_Supervisor)
             ->ConfigureBackgroundViewport(1);
     }
 }
+
+#undef asciiDrawIsGui
+#undef asciiDrawText
+#undef asciiDrawString
+#undef asciiDrawIndex
+#undef asciiDrawSpaceWidth
+#undef asciiDrawVector
 
 } // namespace th095

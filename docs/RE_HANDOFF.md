@@ -976,16 +976,20 @@ field evidence replaces the stale TH08 ASCII layout: the `0x13DAC`-byte global
 at `0x004A9F80` owns 256 regular and 64 GUI strings, four VMs, two ANM handles,
 723 score popups, and 128 time popups.
 
-The high-connectivity ASCII text spine is now source-present. Eleven canonical
-units reproduce 1,171 authored bytes and all 55 relocations: both draw-chain
-wrappers, chain registration/resource lifetime, the target-empty
-`InitializeVms @ 0x00423430`, both bounded queue writers, and both variadic
-formatters. The exact units prove calc priority 1, draw priorities 28/21, the
-256-entry regular and 64-entry GUI split, and the two 512-byte formatting
-paths. `OnUpdate`, `Reset`, and the two renderers are also complete exact-sized
-semantic probes with every relocation resolved. They remain non-exact because
-of one register-direction byte and target-only compiler local-frame homes; do
-not manufacture those residuals.
+The high-connectivity ASCII text spine now has sixteen canonical units totaling
+2,971 authored bytes. `DrawStrings @ 0x00401700` and
+`DrawGuiStrings @ 0x00401920` close at 536/577 bytes with all thirteen/sixteen
+relocations. Their decisive source provenance is unusually specific: the direct
+TH08 ancestor declares an otherwise-unused `Float3 vector`, and the TH095 target
+independently preserves exactly one 12-byte deep compiler home after the five
+live draw locals. Keeping that real ancestral declaration, mapping the six
+semantic names through target-proven VC7.1 identifier buckets, and spelling the
+GUI unit-scale branch as `scale.x != 1.0f` reproduces both bodies exactly. This
+is a narrow provenance exception, not permission to create frame filler: the
+TH08 `TextHelper::TryAllocateBuffer` `u32 padding` declaration was re-tested in
+TH095 and leaves the 478/490-byte probe unchanged. `AsciiManager::Reset` remains
+non-exact because its sixteen target-only inline-local bytes still lack a
+same-function authored explanation.
 
 The two target-local ASCII consumers are now canonical exact and their
 inherited labels are corrected through the exact `Supervisor::RegisterChain`
