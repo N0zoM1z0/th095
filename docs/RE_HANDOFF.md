@@ -1834,3 +1834,60 @@ All 24 canonical `ResultScreen.cpp` units replay exact after the update.
 
 Coverage after promotion is 656/685 exact authored functions (95.77%) and
 269,836/332,245 exact authored bytes (81.22%).
+
+### 2026-09-03 gpt-web high-leverage SceneSelect / PhotoStage source-shape audit
+
+The current authored ledger remains 656/685 exact functions and 269,836 exact
+bytes before any new exact promotion in this checkpoint.  A full sweep of 4,615
+private analysis objects over all 29 residual authored functions found no
+forgotten exact-sized 100% object, so there is no hidden promotion to claim.
+
+`SceneSelectControllerView::UpdateSceneSelect @ 0x00447D00` has a substantially
+better diagnostic than the older 12,487/13,986 baseline.  Keeping the four
+previously isolated 20/4/16/16-byte target phase controls, moving the two real
+preview-clear handles and the VM-construction ownership to their observed
+lexical phases, and declaring each three-index VM family in
+third/second/first order while executing first/second/third produces an
+exact-sized 16,066-byte body with all 3,637 target mnemonics and
+13,846/13,986 comparable bytes.  The initial-scene and new-group declaration
+orders independently contribute three matched bytes each.  The remaining 140
+bytes are stack-home allocation differences; function-scope score pointers,
+caller/preloop VM indices, live five-value aggregates, nested CreateVm return
+producers, whole visibility helpers, loaded-text helpers, and calibrated
+identifier-bucket sweeps are bounded negative controls.  Do not copy the
+private diagnostic phase storage into canonical source until each reservation
+satisfies the repeated-phase/direct-provenance rule.
+
+`PhotoStageStateView::Update @ 0x0042AD60` also has a better private source-shape
+oracle.  Computing the primary/overlay VM address through a force-inlined helper
+that first materializes the slot's embedded display gives a 5,317-byte,
+1,171-instruction probe and matches 1,168 of the target's 1,172 mnemonics in the
+sequence matcher (seven edit operations total).  The helper's source-visible
+display pointer causes one store/reload in each opening address calculation;
+reference, register, return-reference, and pair-reference forms do not remove it.
+The two target-only coordinate-copy homes remain compiler temporaries.  Keep the
+main source conservative until a no-spill expression oracle appears.
+
+`PhotoStageDisplayView::Build @ 0x0042C5C0` has now been improved in canonical
+source without claiming exactness.  The source keeps `displayPosition` and a
+real `photoPositionCopy`, uses one integer leading-digit state, and reuses the
+existing `digit` local for the final tens and ones before their VM setup.  The
+latter chronology is target-direct: target performs each division/remainder and
+stores the digit before `InitializeVm`.  Under build 3077 this yields an
+8,552-byte / 2,240-instruction body versus the 8,560-byte / 2,234-instruction
+target, reducing the best mnemonic edit distance from 72 to 50.  All four
+canonical `PhotoStage.cpp` units (`UpdatePhotoStage`, `SavePhoto`,
+`InitializePhotoStageDisplayVm`, and `CapturePhotoPixels`) replay exact after the
+source change.
+
+Build's remaining allocation barrier is now re-audited precisely.  The target
+frame is `0x2B0`; EBP/ESP never references the full `0x108` interval
+`EBP-0x38..-0x13C`.  Shallow target locals occupy through `-0x34`, outer `this`
+is `-0x140`, and the 92 genuine `AnmVm *displayVm` emission homes continue below
+it.  The policy-compliant source is gapless at `0x1A8`.  Replacing the macro
+ownership with one real force-inline AddDisplayVm helper produces a `0x1C4`
+frame and worsens the body to 8,629 bytes / 158 mnemonic edits; it does not
+explain the target reservation.  The other observed `0x108` residual in
+`PhotoFrontManagerView::Initialize` has a different boundary, so it cannot serve
+as an independent repeated-phase oracle.  Do not add a `0x108` storage array to
+Build merely to move the 92 live pointer homes.

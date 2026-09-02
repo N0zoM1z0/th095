@@ -1030,3 +1030,50 @@ writes `current`, `subFrame`, then `previous`; changing the duplicate shared ANM
 timer would risk exact consumers outside this subsystem. With these shapes the
 5,129-byte body, adjacent 100-byte compiler data, all 1,100 mnemonics, 517 stack
 home references, and 117 relocations replay exactly.
+
+### Scene-selector declaration order and PhotoStage display chronology
+
+Two independent `SceneSelectControllerView::UpdateSceneSelect @ 0x00447D00`
+VM-construction phases show the same stock-VC7.1 declaration-order rule.  Each
+phase computes three real scene VM indices and then performs the runtime work in
+first/second/third order.  Declaring those three integer locals in
+third/second/first order, while leaving every assignment and `CreateVm` call in
+first/second/third order, improves the exact-sized 16,066-byte probe by three
+comparable bytes in the initial-scene phase and by another three bytes in the
+new-group phase.  Other declaration permutations form bounded negative
+controls.  This is the same declaration-order-versus-runtime-order distinction
+seen in the extended ECL lane; it does not license dead locals or arbitrary
+`var_order` guesses.  The current best diagnostic remains non-exact at
+13,846/13,986 comparable bytes, so do not promote it yet.
+
+`PhotoStageDisplayView::Build @ 0x0042C5C0` supplies a separate value-lifetime
+oracle.  Preserve the input photo position through real `Float3` values and use
+one live leading-digit flag across the six overlay digits.  Most importantly,
+reuse the existing `digit` local for the tens and ones: compute `(score / 10) %
+10` and `score % 10` before the corresponding `InitializeVm`/`SetSprite` calls.
+The target performs both integer reductions and stack stores before VM setup;
+leaving either expression inline in the `SetSprite` argument moves the division
+sequence after `InitializeVm`.  Applying both changes improves the best stock
+probe from 8,542 bytes / 72 mnemonic edits to 8,552 bytes / 50 edits without
+adding a local.
+
+Do not treat the remaining Build frame delta as permission for a compiler-storage
+array.  The target has a `0x2B0` frame with no EBP/ESP references in
+`EBP-0x38..-0x13C`; its shallow semantic locals end at `-0x34`, outer `this` is
+at `-0x140`, and the 92 genuine per-emission `AnmVm *` homes occupy the deeper
+lane.  The current source is gapless at `0x1A8`.  Moving the real per-emission
+pointer into a shared force-inlined `AddDisplayVm` helper yields a `0x1C4` frame
+and substantially worse mnemonic topology, so helper ownership does not explain
+the `0x108` reservation.  `PhotoFrontManagerView::Initialize` also owns an
+unreferenced `0x108`, but its phase boundary is different; same size alone is not
+a repeated-phase oracle.
+
+For `PhotoStageStateView::Update @ 0x0042AD60`, a force-inlined primary/overlay
+VM-address producer that materializes `&slots[i].display` first raises the best
+probe to 5,317 bytes and 1,171 instructions, with only seven mnemonic edits
+against the 5,309-byte / 1,172-instruction target.  Its remaining opening
+residual is the helper's real display-pointer spill/reload; reference binding,
+`register`, return-reference, and pair-reference spellings either preserve that
+spill or regress to the direct-expression lowering.  The two other residual
+regions remain target-only coordinate-result compiler copies.  Keep these as
+negative source-shape oracles rather than introducing write-only locals.
