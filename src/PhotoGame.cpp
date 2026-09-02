@@ -259,11 +259,18 @@ void PhotoCameraState::Initialize()
     this->trackingAngle = -1.5707964f;
 }
 
+static __forceinline void PhotoGameConstructorBodyPhase(
+    PhotoGameUpdateView *view)
+{
+    u8 compilerStorage[0x0c];
+    utils::DebugPrint("initialize PlayerInf\n");
+    memset(view, 0, sizeof(*view));
+    g_PhotoGame = view;
+}
+
 PhotoGameUpdateView::PhotoGameUpdateView()
 {
-    utils::DebugPrint("initialize PlayerInf\n");
-    memset(this, 0, sizeof(*this));
-    g_PhotoGame = this;
+    PhotoGameConstructorBodyPhase(this);
 }
 
 PhotoGameUpdateView::~PhotoGameUpdateView()

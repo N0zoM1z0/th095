@@ -127,22 +127,24 @@
   `0x4300F5/0x42FF85/0x42FFFA/0x430015/0x43004E` before the manifest-only
   identity refresh. A cold rebuild replays all 17 `PhotoGame.cpp` units exactly.
 - The adjacent `PlayerInf` ownership spine is now recovered end to end. The
-  exact `PhotoGameUpdateView::Create @ 0x0042EFB0` allocates the target-proven
-  `0x2A40` object, initializes it, registers calc/player-draw/camera-draw
-  callbacks at priorities `0x0B/0x0B/0x12`, and performs exact destructor/free
-  cleanup on failure. `PhotoGameUpdateView::Initialize @ 0x0042ECA0` is now
-  canonical exact for all 392 bytes and sixteen relocations: its real
+  331-byte `PhotoGameUpdateView::PhotoGameUpdateView @ 0x0042EA70` is canonical
+  exact: all automatic member construction stays in the outer compiler phase,
+  while the real `DebugPrint -> memset -> publish g_PhotoGame` body uses one
+  source-local 12-byte constructor phase, moving only the body receiver from
+  `EBP-0x34` to target `-0x40`. `PhotoGameUpdateView::Initialize @ 0x0042ECA0`
+  is also canonical exact for all 392 bytes and sixteen relocations: its real
   `stateTimer = -1` inline assignment owns a source-local `0x2C` compiler phase,
-  placing the hidden timer receiver at `EBP-0x30` and outer `this` at `-0x34`
-  without changing any gameplay operation. The lifecycle subset now has twelve
-  canonical units totaling 1,566 authored bytes and 67 relocation fields. The
-  SHT loader proves the TH095-specific compact header and derives both diagonal
-  speeds through `cos(pi/4)`. The object constructor and 733-byte camera
-  initializer remain source-present but conservatively non-exact because only
-  compiler local-frame choices differ. The helper insertion renumbers only
-  compiler-local labels in exact `UpdateMainState`/`Update`; complete
-  3,527/421-byte structural replays proved every target destination unchanged
-  before refreshing those manifest-only names.
+  placing the hidden timer receiver at `EBP-0x30` and outer `this` at `-0x34`.
+  The exact `Create @ 0x0042EFB0` allocates the target-proven `0x2A40` object,
+  registers calc/player-draw/camera-draw callbacks at priorities `0x0B/0x0B/0x12`,
+  and performs exact destructor/free cleanup on failure. The lifecycle subset now
+  has thirteen canonical units totaling 1,897 authored bytes and 76 relocation
+  fields. The SHT loader proves the TH095-specific compact header and derives both
+  diagonal speeds through `cos(pi/4)`. Only the 733-byte camera initializer remains
+  source-present/non-exact in this immediate construction lane. The two new source
+  phases renumber compiler-local labels in exact `UpdateMainState`/`Update`; full
+  3,527/421-byte structural replays proved every destination unchanged before the
+  manifest-only symbol refresh.
 - The four immediately adjacent collision/death functions are exact for 962
   more authored bytes and 27 relocation fields. They recover the reverse
   point-to-player angle shared by ECL/projectiles, axis-aligned bullet
@@ -1626,13 +1628,15 @@ both close under one shared inline helper with unchanged instruction and
 relocation topology. Outside such repeated phase evidence, inert locals/padding
 remain forbidden.
 
-`AnmLoaded::InitializeVm @ 0x00404B80` was also replayed as a header-defined
-inline COMDAT, matching TH08's ancestral placement style.  The emitted body is
-still exactly 222 bytes with the same 210/214 comparable bytes as the ordinary
-out-of-line definition: all three genuine `Float3(0,0,0)` temporary lanes stay
-at EBP-0x04..-0x24 and only target `this @ EBP-0x30` versus source `EBP-0x28`
-remains.  Header/in-class placement therefore does not explain the missing two
-dwords.
+`AnmLoaded::InitializeVm @ 0x00404B80` is now canonical exact for all 222
+bytes and both relocations. Header/in-class placement was a negative oracle and
+left the final receiver at `EBP-0x28`. The closing source shape keeps all three
+real `Float3(0,0,0)` assignments in the outer function, preserving their nine
+exact homes at `EBP-0x04..-0x24`, and wraps only the final real
+`SetAndExecuteScript(vm, scripts[scriptIndex])` expression in an eight-byte
+source-local phase. That moves only the final `AnmLoaded *` receiver to target
+`EBP-0x30`. Wrapping the whole initializer is also a negative oracle because it
+incorrectly shifts every vector temporary by eight bytes.
 
 The rotating-laser one-byte lane remains a genuine branch-lowering barrier.
 `PhotoRotatingLaserView::CheckCollision @ 0x0041FA10` has a 1,768-byte natural

@@ -42,7 +42,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00404A30,authored,Background,authored,exact,background-start-spell-exact-2026-08-30
 0x00404AC0,authored,Background,authored,exact,background-stop-spell-exact-2026-08-30
 0x00404B10,authored,Main,authored,exact,supervisor-configure-gameplay-viewport-exact-2026-08-30
-0x00404B80,authored,AnmManager,authored,high,anm-loaded-initialize-vm-semantic-2026-08-30
+0x00404B80,authored,AnmManager,authored,exact,anm-loaded-initialize-vm-semantic-2026-08-30
 0x00404C60,authored,BulletManager,authored,exact,photo-bullet-script-base-exact-2026-08-30
 0x00404C80,authored,BulletManager,authored,exact,photo-bullet-manager-constructor-exact-2026-08-30
 0x00404D00,authored,BulletManager,authored,exact,photo-bullet-constructor-exact-2026-08-30
@@ -415,7 +415,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0042C5C0,authored,PhotoStage,authored,high,photo-stage-display-build-semantic-2026-08-30
 0x0042E730,authored,PhotoStage,authored,exact,vc71-photo-stage-display-vm-2026-08-30
 0x0042E7B0,authored,PhotoStage,authored,exact,vc71-photo-stage-capture-pixels-2026-08-30
-0x0042EA70,authored,PhotoGame,authored,high,photo-player-lifecycle-semantic-2026-08-30
+0x0042EA70,authored,PhotoGame,authored,exact,photo-player-lifecycle-semantic-2026-08-30
 0x0042EBC0,authored,PhotoGame,authored,exact,vc71-photo-camera-constructor-2026-08-30
 0x0042EC70,authored,PhotoGame,authored,exact,vc71-photo-camera-destructor-2026-08-30
 0x0042ECA0,authored,PhotoGame,authored,exact,photo-player-lifecycle-semantic-2026-08-30

@@ -4,6 +4,13 @@
 namespace th095
 {
 
+static __forceinline void AnmLoadedSetScriptPhase(
+    AnmLoaded *anm, AnmVm *vm, i32 scriptIndex)
+{
+    u8 compilerStorage[8];
+    anm->SetAndExecuteScript(vm, anm->scripts[scriptIndex]);
+}
+
 // FUNCTION: TH095 0x00404B80.
 void AnmLoaded::InitializeVm(AnmVm *vm, i32 scriptIndex)
 {
@@ -14,7 +21,7 @@ void AnmLoaded::InitializeVm(AnmVm *vm, i32 scriptIndex)
     vm->alternatePosition = Float3(0.0f, 0.0f, 0.0f);
     vm->unknown2c0[1] = 0x0f;
     vm->unknown2c0[0] = 0x0f;
-    this->SetAndExecuteScript(vm, this->scripts[scriptIndex]);
+    AnmLoadedSetScriptPhase(this, vm, scriptIndex);
 }
 
 } // namespace th095

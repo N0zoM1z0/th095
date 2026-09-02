@@ -831,3 +831,17 @@ sequence and all sixteen relocation destinations. These are phase-local
 compiler-storage oracles, not size-driven filler: the storage must be attached
 to the semantic inline operation that owns the displaced hidden temporary, and
 a partial/wrong-phase variant is a required negative control.
+
+The same discipline applies at constructor and tail-call boundaries.
+`PhotoGameUpdateView::PhotoGameUpdateView @ 0x0042EA70` already has every member-
+construction temporary in the correct target home; only the authored constructor
+body receiver is twelve bytes too shallow. Put the real `DebugPrint`, full-object
+`memset`, and singleton publication in one source-local `__forceinline` body phase
+with the target-attested 12-byte reservation. VC7.1 then preserves all member
+construction code and moves only the body receiver to `EBP-0x40`, reproducing all
+331 bytes. `AnmLoaded::InitializeVm @ 0x00404B80` is the complementary tail-phase
+oracle: its nine `Float3` temporary homes are already exact, so an eight-byte
+phase must wrap only the final real `SetAndExecuteScript` expression. Wrapping the
+whole initializer moves every vector temporary and is explicitly wrong. Prefer
+the smallest semantic phase that owns the mismatched hidden receiver; never wrap
+a larger body merely because its total frame delta has the right size.
