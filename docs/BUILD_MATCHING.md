@@ -418,14 +418,25 @@ configuration with an inline constructor that calls `Initialize`; flattening
 either member removes the target's temporary pointer home. The canonical
 `photo-game-task-constructor` unit enforces all 148 bytes and three relocations.
 
-Do not manufacture an otherwise-unused stack object to close a frame-only
-gap. `PhotoFrontManagerView::Initialize @ 0x004170F0` has a target `0x134`-byte
-frame although every referenced local lies within the first `0x28` bytes. Its
-complete natural source reproduces the ANM load, six VM initializations, four
-handle interrupts, and both conditional VM creations, but VC7.1 emits 455
-bytes rather than 521. The unexplained `0x108` footprint remains a documented
-non-exact compiler-local residual; an inert path buffer would violate authored
-source policy even if it happened to align displacements.
+`PhotoFrontManagerView::Initialize @ 0x004170F0` is the positive repeated-phase
+exception for a large compiler-local reservation. Its target `0x134` frame has
+all shallow VM-id/CreateVm homes within `EBP-0x04..-0x28`, then no EBP/ESP
+references anywhere in `EBP-0x2C..-0x130` (`0x108` bytes), followed by hidden
+`this @ -0x134`. Independently, `PhotoStageDisplayView::Build @ 0x0042C5C0`
+repeats the same allocation boundary: shallow semantic homes through `-0x34`, an
+unreferenced `EBP-0x38..-0x13C` `0x108`, then hidden `this @ -0x140` and its
+deep emission-temporary lane. This satisfies the repeated-target size/boundary
+requirement; it is not inferred from a single function's frame size.
+
+For FrontInf, bind the reservation only to a source-local `__forceinline` helper
+whose real operation is the first direct `InitializeVm(&vms[0], 4)` after all
+CreateVm returns have been materialized. Build 3077 then replays all 521 bytes,
+all 421 comparable bytes, and all 25 relocations exactly. The same `0x108`
+inside the first CreateVm phase is a 524-byte negative control; early lexical
+blocks grow to 539 bytes. Thus the reservation is phase-local compiler storage,
+not a generic 264-byte filler. The independent Build target corroborates the
+phase boundary but does not by itself license inserting storage into Build; its
+source placement must still achieve zero-byte replay.
 
 ### VC7 x87 compare source-shape trap in ECL shot dispatch
 
@@ -1097,15 +1108,16 @@ Do not treat that final frame delta as permission for a compiler-storage array.
 The target has no EBP/ESP references anywhere in `EBP-0x38..-0x13C`, a full
 `0x108` interval.  Its shallow semantic locals end at `-0x34`, outer `this` is
 at `-0x140`, and all 92 genuine per-emission `AnmVm *` homes occupy the deeper
-lane.  The policy-compliant source is gapless at `0x1A8`: the same 92 pointer
-homes precede its outer `this`.  A force-inlined helper that also owns count,
-position, sprite, render mode, and increment changes the frame to `0x1C4` and
-substantially worsens topology; pointer/reference/whole-POD alternatives likewise
-do not reproduce the target allocation phase.  `PhotoFrontManagerView::Initialize`
-also owns an unreferenced `0x108`, but at a different semantic boundary, so same
-size alone is not a repeated-phase oracle.  Build remains non-exact until a real
-source/provenance oracle explains this reservation and the `this`/pointer-family
-phase order.
+lane.  The current policy-clean source emits all 2,234 target mnemonics but is
+gapless at frame `0x1A8`.  `PhotoFrontManagerView::Initialize` independently
+repeats this exact shallow-to-hidden-`this` `0x108` boundary and is now an exact
+positive oracle, so the reservation size/boundary is independently attested.
+However, Build still needs a correct semantic source placement: a plain phase on
+the first display emission reaches the target 8,560-byte extent but leaves 51
+comparable bytes wrong, early score ownership grows to 8,632 bytes, and broad
+AddDisplayVm/pointer/reference alternatives also regress.  Do not promote Build
+merely because the reservation is now corroborated; zero-byte replay and the
+correct operation-owned phase remain mandatory.
 
 For `PhotoStageStateView::Update @ 0x0042AD60`, a force-inlined primary/overlay
 VM-address producer that materializes `&slots[i].display` first raises the best
@@ -1160,3 +1172,22 @@ materialized in reverse source order, exactly reproducing the target loads
 record pointer/reference/offset locals and an inline record setter all change
 the target extent and are negative controls; they do not explain the target's
 pre-allocation ESI-preserved record stride.
+
+### Background stage-loader allocation snapshots
+
+`Background::LoadStageDataInner @ 0x00402C80` separates authored source shape
+from an unresolved compiler frame lane. The target explicitly snapshots
+`g_BackgroundStageDataSize` to `EBP-0x10` before the first `malloc`, and snapshots
+`stageData->quadCount * sizeof(AnmVm)` to `EBP-0x14` before the VM-array `malloc`.
+Keep those as real semantic `stageDataAllocationSize` / `stageVmAllocationSize`
+values, and do not create a source-visible `BackgroundStateView *background`
+alias: repeated `this` conversion reproduces the target hidden receiver. This
+yields the exact 523-byte extent and all 163 target mnemonics.
+
+The target still has no references in `EBP-0x18..-0x40`, a separate `0x2C`
+interval before hidden `this @ -0x44`. TH08's ancestor has only object/quad/index
+locals and supplies no direct owner for that lane. Keep the function non-exact
+until a genuine repeated-phase or source-provenance oracle appears; do not turn
+the `0x2C` into an inert local. The source change renumbers compiler-private
+`$L` symbols in exact `RunStageScript` only; a full 5,229-byte structural audit
+proves all bytes and relocation destinations unchanged.

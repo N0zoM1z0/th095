@@ -1896,10 +1896,11 @@ is `-0x140`, and the 92 genuine `AnmVm *displayVm` emission homes continue below
 it.  The policy-compliant source is gapless at `0x1A8`.  Replacing the macro
 ownership with one real force-inline AddDisplayVm helper produces a `0x1C4`
 frame and worsens the body to 8,629 bytes / 158 mnemonic edits; it does not
-explain the target reservation.  The other observed `0x108` residual in
-`PhotoFrontManagerView::Initialize` has a different boundary, so it cannot serve
-as an independent repeated-phase oracle.  Do not add a `0x108` storage array to
-Build merely to move the 92 live pointer homes.
+explain the target reservation.  `PhotoFrontManagerView::Initialize` independently repeats the same target
+boundary: shallow homes, a completely unreferenced `0x108`, then hidden `this`.
+It therefore corroborates the reservation size/boundary, but Build still requires
+its own zero-diff semantic placement; do not add a `0x108` array merely to move
+the 92 live pointer homes.
 
 
 ### 2026-09-03 gpt-web bullet-spawn ternary / live-aggregate closure
@@ -2012,7 +2013,39 @@ per-emission `AnmVm *` homes.  The truthful source is gapless at frame `0x1A8`.
 The older broad AddDisplayVm helper owns too many caller values and changes the
 body/frame rather than explaining this phase; whole-POD destination copies,
 reference aliases, comma expressions, and member setters are bounded negative
-oracles.  `PhotoFrontManagerView::Initialize` has another `0x108` reservation
-but at a different semantic boundary, so it is not valid repeated-phase proof.
-All four canonical exact siblings from `src/PhotoStage.cpp` were cold rebuilt
-and remain exact after this source change.
+oracles.  `PhotoFrontManagerView::Initialize` independently repeats the same `0x108`
+shallow-to-hidden-`this` boundary and now provides repeated-target proof for the
+reservation itself. Build still remains non-exact because tested placements do
+not produce zero-byte replay. All four canonical exact siblings from
+`src/PhotoStage.cpp` were cold rebuilt and remain exact after this source change.
+
+### 2026-09-03 gpt-web PhotoFront 0x108 phase closure and Background loader topology
+
+`PhotoFrontManagerView::Initialize @ 0x004170F0` is now canonical exact for all
+521 authored bytes and 25 relocations. The target's shallow VM-id/CreateVm homes
+end at `EBP-0x28`; `EBP-0x2C..-0x130` is a completely instruction-unreferenced
+`0x108` interval, followed by hidden `this @ -0x134`. Independently,
+`PhotoStageDisplayView::Build @ 0x0042C5C0` has shallow homes through `-0x34`,
+the unreferenced `EBP-0x38..-0x13C` `0x108`, and hidden `this @ -0x140`. This
+repeated target boundary satisfies the narrow compiler-phase evidence rule.
+
+The closing FrontInf source gives only the first direct
+`InitializeVm(&vms[0], 4)` after all CreateVm return temporaries a source-local
+`__forceinline` `0x108` phase. That form is 521/521 with all 421 comparable
+bytes exact; moving the same phase to the first CreateVm is a 524-byte negative
+control, while earlier lexical storage grows to 539. All eleven `PhotoFront.cpp`
+canonical units replay exact. The Build target corroborates the phase but is not
+yet promoted: a plain first-display placement reaches the 8,560-byte target
+extent but leaves 51 comparable bytes wrong, so zero-diff placement is still
+required.
+
+`Background::LoadStageDataInner @ 0x00402C80` now has complete authored
+instruction topology without padding. Remove the source-visible Background view
+pointer and preserve the two real allocation-size snapshots before the stage-data
+and VM-array `malloc` calls. Stock build 3077 then emits exactly 523 bytes and
+all 163 target mnemonics. The remaining target `EBP-0x18..-0x40` `0x2C` interval
+is completely unreferenced before hidden `this @ -0x44`, and TH08 ancestry has
+no semantic owner, so the function remains uncredited. This source change only
+renumbered 28 compiler-private `$L` symbols in already-exact `RunStageScript`;
+a direct 5,229-byte audit remains structural exact with all relocation
+destinations unchanged.

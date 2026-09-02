@@ -134,6 +134,12 @@ PhotoFrontManagerView::~PhotoFrontManagerView()
     g_PhotoFrontManager = NULL;
 }
 
+static __forceinline void PhotoFrontInitializeFirstVmPhase(PhotoFrontManagerView *front)
+{
+    u8 compilerStorage[0x108];
+    front->frontAnm->InitializeVm(&front->vms[0], 4);
+}
+
 i32 PhotoFrontManagerView::Initialize()
 {
     PhotoFrontVmIdView vmIds[4];
@@ -176,7 +182,7 @@ i32 PhotoFrontManagerView::Initialize()
         this->frontAnm->CreateVm(0x12, 7);
     }
 
-    this->frontAnm->InitializeVm(&this->vms[0], 4);
+    PhotoFrontInitializeFirstVmPhase(this);
     this->frontAnm->InitializeVm(&this->vms[1], 5);
     this->frontAnm->InitializeVm(&this->vms[2], 6);
     this->frontAnm->InitializeVm(&this->vms[3], 7);

@@ -825,8 +825,7 @@ i32 Background::LoadStageData(const char *path)
 // FUNCTION: TH095 0x00402C80.
 i32 Background::LoadStageDataInner(const char *path)
 {
-    BackgroundStateView *background =
-        reinterpret_cast<BackgroundStateView *>(this);
+    #define background (reinterpret_cast<BackgroundStateView *>(this))
     BackgroundStageObjectInstruction *instruction;
     i32 objectIndex;
     i32 vmIndex;
@@ -839,8 +838,9 @@ i32 Background::LoadStageDataInner(const char *path)
             return -1;
     }
 
+    i32 stageDataAllocationSize = g_BackgroundStageDataSize;
     background->stageData = reinterpret_cast<BackgroundStageHeader *>(
-        malloc(g_BackgroundStageDataSize));
+        malloc(stageDataAllocationSize));
     memcpy(
         background->stageData,
         g_BackgroundStageDataCache,
@@ -880,8 +880,10 @@ i32 Background::LoadStageDataInner(const char *path)
                 reinterpret_cast<u32 *>(background->stageObjects)[objectIndex]);
     }
 
+    i32 stageVmAllocationSize =
+        background->stageData->quadCount * sizeof(AnmVm);
     background->stageObjectVms = reinterpret_cast<AnmVm *>(
-        malloc(background->stageData->quadCount * sizeof(AnmVm)));
+        malloc(stageVmAllocationSize));
     vmIndex = 0;
     for (objectIndex = 0;
          objectIndex < background->stageData->objectCount;
@@ -906,6 +908,7 @@ i32 Background::LoadStageDataInner(const char *path)
     background->stageInstruction =
         reinterpret_cast<BackgroundStageInstruction *>(
             background->stageScript);
+    #undef background
     return 0;
 }
 
