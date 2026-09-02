@@ -1331,24 +1331,33 @@ f32 __stdcall CubicHermiteInterpolate(
 }
 
 // FUNCTION: TH095 0x00404950.
-void Background::SetPhotoArea(const Float3 *position, const Float3 *size)
+static __forceinline void BackgroundSetPhotoAreaPhase(
+    Background *view, const Float3 *position, const Float3 *size)
 {
-    reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive = 1;
-    reinterpret_cast<BackgroundStateView *>(this)->photoAreaPosition = *position;
-    reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize = *size;
-    if ((reinterpret_cast<BackgroundStateView *>(this)
+    u8 compilerStorage[0x84];
+
+    reinterpret_cast<BackgroundStateView *>(view)->photoAreaActive = 1;
+    reinterpret_cast<BackgroundStateView *>(view)->photoAreaPosition = *position;
+    reinterpret_cast<BackgroundStateView *>(view)->photoAreaSize = *size;
+    if ((reinterpret_cast<BackgroundStateView *>(view)
              ->photoAreaVms[0].flagsWord & 1) == 0)
     {
         g_BackgroundStageState->anm->InitializeVm(
-            &reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[0],
+            &reinterpret_cast<BackgroundStateView *>(view)->photoAreaVms[0],
             0x25);
         g_BackgroundStageState->anm->InitializeVm(
-            &reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[1],
+            &reinterpret_cast<BackgroundStateView *>(view)->photoAreaVms[1],
             0x26);
         g_BackgroundStageState->anm->InitializeVm(
-            &reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[2],
+            &reinterpret_cast<BackgroundStateView *>(view)->photoAreaVms[2],
             0x27);
     }
+
+}
+
+void Background::SetPhotoArea(const Float3 *position, const Float3 *size)
+{
+    BackgroundSetPhotoAreaPhase(this, position, size);
 }
 
 // FUNCTION: TH095 0x00404A30.

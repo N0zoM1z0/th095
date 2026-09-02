@@ -145,7 +145,7 @@ address,name,module,confidence,evidence
 0x004059C0,th095::PhotoBulletManagerView::OnUpdate,BulletManager,exact,Exact projectile update callback gate; inline EitherFlag closes the former one-byte OR register residual
 0x00405A00,th095::PhotoBulletManagerView::OnDraw,BulletManager,exact,Canonical 45-byte draw callback with two relocations
 0x004048B0,th095::CubicHermiteInterpolate,Background,exact,Canonical 152-byte Hermite interpolation helper with nine relocations
-0x00404950,th095::Background::SetPhotoArea,Background,high,Complete TH095 camera rectangle and three-VM initialization path
+0x00404950,th095::Background::SetPhotoArea,Background,exact,Complete TH095 camera rectangle and three-VM initialization path
 0x00404A30,th095::Background::StartSpellBackground,Background,exact,Canonical 143-byte spell-photo background start with four relocations
 0x00404AC0,th095::Background::StopSpellBackground,Background,exact,Canonical 66-byte spell-photo background stop with four relocations
 0x00404B10,th095::Supervisor::ConfigureGameplayViewport,Main,exact,Canonical 108-byte viewport selector with one relocation

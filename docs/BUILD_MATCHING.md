@@ -878,3 +878,27 @@ patching three call-site constants. Cold replay of ResultScreen, ScoreData, Scor
 and FrontEndLifecycle remains exact. This is the preferred sequence: solve semantic
 phase ownership first, then treat any surviving coherent displacement pattern as a
 possible shared-layout fact.
+
+### Minimal semantic-phase placement across cursor, worker, background, and factory code
+
+Four exact closures reinforce a strict rule: attach target-attested compiler
+storage to the **smallest real operation** where hidden receiver/temporary homes
+begin to diverge, not to a convenient function tail.
+`ResultScreen::PrepareBestShot @ 0x004292D0` wraps only
+`photoCursor.Set(bestShot)` with a `0x38` phase; including the later photo-count
+and visibility loop is a five-byte negative oracle. `Background::SetPhotoArea @
+0x00404950` has no competing authored locals, so its complete real camera-bound
+and three-VM body is the semantic phase; `0x84` storage moves only the receiver
+to `EBP-0x88` while preserving all 52 mnemonics.
+
+Construction and ownership phases need the same precision. `Supervisor::StartupThread
+@ 0x004242B0` uses a source-only tagged `DummyMidiTimer` constructor with eight
+bytes of construction storage; operator-new and post-construction temporaries stay
+in their original homes while only the constructor result and worker receiver move.
+`PhotoEffectManagerView::Spawn @ 0x0041DBD0` keeps both `new` expressions and
+virtual `Initialize` calls untouched; its two real inline `Append` operations own
+eight- and twelve-byte case-specific phases, placing both previous-tail locals and
+the later factory homes exactly. All four functions replay full bytes and
+relocations. A matching total frame size alone is not evidence: prefer the phase
+whose wrong-side control (broader helper, whole body, or adjacent operation) has
+been explicitly tested and rejected.

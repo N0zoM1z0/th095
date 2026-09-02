@@ -695,6 +695,13 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
         g_ResultScreenGlobalState->currentScore;
 }
 
+static __forceinline void PrepareBestShotCursorSetPhase(
+    ResultScreenReplayCursor *cursor, i32 bestShot)
+{
+    u8 compilerStorage[0x38];
+    cursor->Set(bestShot);
+}
+
 void ResultScreen::PrepareBestShot()
 {
     i32 bestShot = g_ResultPhotoData->FindBestShot();
@@ -708,7 +715,7 @@ void ResultScreen::PrepareBestShot()
         vm->spriteSize.y = vm->loadedSprite->uvEndY * 255.0f;
 
         g_ResultPhotoData->photoVms[bestShot].SetInterrupt(2);
-        this->photoCursor.Set(bestShot);
+        PrepareBestShotCursorSetPhase(&this->photoCursor, bestShot);
 
         if (bestShot < g_ResultPhotoController->GetPhotoCount())
         {

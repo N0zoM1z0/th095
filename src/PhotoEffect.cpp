@@ -1188,6 +1188,20 @@ i32 __fastcall PhotoEffectManagerView::OnDraw(
     return Draw(manager);
 }
 
+static __forceinline void PhotoEffectAppendStraightPhase(
+    PhotoEffectManagerView *manager, PhotoEffectBaseView *effect)
+{
+    u8 compilerStorage[8];
+    manager->Append(effect);
+}
+
+static __forceinline void PhotoEffectAppendRotatingPhase(
+    PhotoEffectManagerView *manager, PhotoEffectBaseView *effect)
+{
+    u8 compilerStorage[0x0c];
+    manager->Append(effect);
+}
+
 i32 PhotoEffectManagerView::Spawn(i32 type, void *args)
 {
     if (this->effectCount >= 0x100)
@@ -1207,7 +1221,7 @@ i32 PhotoEffectManagerView::Spawn(i32 type, void *args)
     {
         PhotoStraightLaserView *effect = new PhotoStraightLaserView;
         effect->id = this->nextId;
-        this->Append(effect);
+        PhotoEffectAppendStraightPhase(this, effect);
         this->effectCount++;
         effect->Initialize(args);
         break;
@@ -1216,7 +1230,7 @@ i32 PhotoEffectManagerView::Spawn(i32 type, void *args)
     {
         PhotoRotatingLaserView *effect = new PhotoRotatingLaserView;
         effect->id = this->nextId;
-        this->Append(effect);
+        PhotoEffectAppendRotatingPhase(this, effect);
         this->effectCount++;
         effect->Initialize(args);
         break;

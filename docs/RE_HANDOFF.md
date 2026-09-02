@@ -504,6 +504,13 @@
   `replayValue +0x3C`, `slowRate +0x48`, and `stageValue +0x4C`. The corrected
   `ScoreData.hpp` layout preserves exact ScoreData writer/parser, ResultScreen,
   and FrontEndLifecycle consumers; do not regress it to the old +0x00 image view.
+- `ResultScreen::PrepareBestShot @ 0x004292D0` is canonical exact for all
+  380 bytes and thirteen relocations. Its direct source already had the exact
+  VM/cursor/visibility topology; all homes allocated after
+  `photoCursor.Set(bestShot)` were simply `0x38` too shallow. Wrapping **only**
+  that real Set expression in a source-local phase closes every byte. Wrapping
+  Set plus the subsequent count/visibility loop leaves five bytes wrong, so keep
+  the phase boundary minimal.
 - `ResultSaveDataView::UpdateBestShotRecord @ 0x004299F0` is exact for its
   187-byte authored body; its unit also enforces two compiler-owned trailing
   bytes and both `_free` relocations. It proves two owned component buffers at
@@ -913,10 +920,11 @@ Hermite interpolation basis, `Background::StartSpellBackground`,
 `Supervisor::ConfigureGameplayViewport`. The TH095 BackgroundInf pointer is at
 `0x004BDD90`; its spell-photo state is at `+0x175C`, the camera rectangle at
 `+0x1764..+0x177F`, three persistent border VMs at `+0x1780`, and two dynamic
-spell VM ids at `+0x1FE4/+0x1FE8`. `SetPhotoArea @ 0x00404950` is complete but
-non-exact because the target reserves an otherwise unreferenced `0x88` stack
-frame; its natural semantic probe emits 180 versus 209 bytes and resolves all
-six dependencies.
+spell VM ids at `+0x1FE4/+0x1FE8`. `SetPhotoArea @ 0x00404950` is now
+canonical exact for all 209 bytes and six relocations. The direct source already
+had all 52 target mnemonics; a source-local inline body phase owns the target
+`0x84` compiler-storage reservation and moves only the hidden receiver from
+`EBP-0x04` to `EBP-0x88`.
 
 `Background::RunStageScript @ 0x00403440` is now source-present for the entire
 5,129-byte high-connectivity spine. It consumes variable-size records with
@@ -1048,10 +1056,12 @@ shallow bucket places `fileSize` at `EBP-0x04` and the buffer at `EBP-0x88`.
 This is a reusable warning for target decompilation: an apparent larger local
 array can be the decompiler absorbing allocator space into the array extent;
 prefer a natural-size source plus verified compiler-home reconstruction.
-`StartupThread @ 0x004242B0` remains source-present for its complete 532-byte
-body and exact-sized VC7.1 probe, resolving all 57 relocations while retaining
-five compiler-local residual bytes.  `DeletedCallback @ 0x004244D0`, however,
-is now canonical exact for all 550 bytes and 43 relocations.  The startup worker
+`StartupThread @ 0x004242B0` is now canonical exact for all 532 bytes and 57
+relocations. The remaining eight-byte target delta belonged only to the optional
+`new DummyMidiTimer` construction phase: a source-only tagged constructor keeps
+the ordinary new-expression homes shallow while moving the constructor result
+and startup receiver to their target deep slots. `DeletedCallback @ 0x004244D0`
+remains canonical exact for all 550 bytes and 43 relocations.  The startup worker
 proves signed volume publication, quartic BGM attenuation, optional dummy-MIDI
 timing, `textAnm +0x43C`, and replay-worker completion.  The teardown callback
 closes the inverse ownership graph through workers, managers, seven resource
@@ -1157,11 +1167,13 @@ previous/next/state fields at `+0x04/+0x08/+0x0C`, the deferred-deletion byte
 at `+0x48`, and virtual update/cleanup ownership. The original shared-tail
 source shape is required for the first deletion branch.
 
-The remaining concrete effect methods through `0x004200F6` stay deferred where
-only compiler-local homes remain. The factory at `0x0041DBD0` is now
-source-present with the exact 432-byte topology and every relocation; its 34
-residual comparable bytes are only an original `0x14` local-frame gap. Its
-straight/rotating constructors at `0x0041DD80/0x0041DE50` are canonical exact
+The remaining concrete effect methods through `0x004200F6` stay deferred only
+where documented compiler/local or branch-hard residuals remain. The factory at
+`0x0041DBD0` is now canonical exact for all 432 bytes and eight relocations. The
+two `new` expressions and virtual `Initialize` calls were already exact; only
+the real intrusive `Append` previous-tail ownership is phase-split, with an
+eight-byte straight phase and twelve-byte rotating phase. Its straight/rotating
+constructors at `0x0041DD80/0x0041DE50` are canonical exact
 for all 389 authored bytes and prove the two `0x610/0x630` concrete layouts.
 The primary/secondary draw traversals, three collision fanouts, and gated
 update/draw callbacks at `0x0041DAB0..0x0041E0BA` are now canonical exact for
@@ -1249,14 +1261,16 @@ unchanged destinations at `0x00432CE3` and
 Always recalculate coverage after origin promotion and never preserve a
 percentage by withholding authored candidates.
 
-This pass also reclassified several tempting residuals as negative compiler
-oracles rather than exact candidates. `PhotoEnemyManagerView` construction
-keeps an unexplained 0x28 target-only frame expansion; its destructor interleaves
-three delete-expression homes around the real argument pointer. `WinMain`,
-`Supervisor::StartupThread`, `AnmLoaded::InitializeVm`, `AnmManagerVmLifecycleView::AddVm`, and the
-PhotoEffect factory/initializers likewise retain target-only EH/new/delete or
-unreferenced frame homes after their real locals are accounted for. Do not add
-inert storage to any of these. The former one-byte PhotoGame/Bullet callback OR
+Several tempting residuals remain negative compiler oracles.
+`PhotoEnemyManagerView` construction keeps an unexplained 0x28 target-only frame
+expansion; its destructor interleaves three delete-expression homes around the
+real argument pointer. `WinMain`, `AnmManagerVmLifecycleView::AddVm`, and the
+three `AnmLoaded::CreateVm*` paths still resist bounded semantic-phase
+reconstruction after their real locals are accounted for. Do not add
+function-scope inert storage to those lanes. `Supervisor::StartupThread`,
+`AnmLoaded::InitializeVm`, and the PhotoEffect factory/initializers are no longer
+negative examples: each closed only after the frame delta was attached to the
+smallest real construction/call/ownership phase. The former one-byte PhotoGame/Bullet callback OR
 residuals are closed exactly by the same source-local `EitherFlag(first, second)`
 pattern first proven in ScreenEffect: VC7 evaluates arguments right-to-left,
 preserving target bit-load chronology, while the helper controls the accumulator

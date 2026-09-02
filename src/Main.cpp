@@ -152,6 +152,10 @@ struct MidiTimer
 
 struct DummyMidiTimer : MidiTimer
 {
+    __forceinline DummyMidiTimer(i32)
+    {
+        u8 compilerStorage[8];
+    }
     virtual void OnTimerElapsed();
     u32 unknown010;
 };
@@ -1885,7 +1889,7 @@ void __fastcall Supervisor::StartupThread(Supervisor *s)
 
     if (g_Supervisor.flags.dummyMidiTimerEnabled)
     {
-        g_Supervisor.dummyMidiTimer = new DummyMidiTimer();
+        g_Supervisor.dummyMidiTimer = new DummyMidiTimer(0);
         if (g_Supervisor.dummyMidiTimer != NULL)
         {
             g_Supervisor.dummyMidiTimer->StartTimer();

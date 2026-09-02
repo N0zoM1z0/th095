@@ -38,7 +38,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004031A0,authored,Background,authored,exact,vc71-exact-background-is-visible-2026-08-31
 0x00403440,authored,Background,authored,exact,background-stage-script-2026-08-30
 0x004048B0,authored,Background,authored,exact,background-cubic-hermite-exact-2026-08-30
-0x00404950,authored,Background,authored,high,background-set-photo-area-semantic-2026-08-30
+0x00404950,authored,Background,authored,exact,background-set-photo-area-semantic-2026-08-30
 0x00404A30,authored,Background,authored,exact,background-start-spell-exact-2026-08-30
 0x00404AC0,authored,Background,authored,exact,background-stop-spell-exact-2026-08-30
 0x00404B10,authored,Main,authored,exact,supervisor-configure-gameplay-viewport-exact-2026-08-30
@@ -272,7 +272,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041DAB0,authored,PhotoEffect,authored,exact,vc71-photo-effect-manager-draw-2026-08-30
 0x0041DB00,authored,PhotoEffect,authored,exact,vc71-photo-effect-manager-on-update-2026-08-30
 0x0041DBA0,authored,PhotoEffect,authored,exact,vc71-photo-effect-manager-on-draw-2026-08-30
-0x0041DBD0,authored,PhotoEffect,authored,high,vc71-photo-effect-manager-spawn-2026-08-30
+0x0041DBD0,authored,PhotoEffect,authored,exact,vc71-photo-effect-manager-spawn-2026-08-30
 0x0041DD80,authored,PhotoEffect,authored,exact,vc71-photo-straight-laser-constructor-2026-08-30
 0x0041DE50,authored,PhotoEffect,authored,exact,vc71-photo-rotating-laser-constructor-2026-08-30
 0x0041DF10,authored,PhotoEffect,authored,exact,vc71-photo-effect-manager-count-photo-targets-2026-08-30
@@ -349,7 +349,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00423E70,authored,Supervisor,authored,exact,supervisor-added-callback-exact-2026-08-30
 0x00423FB0,authored,Supervisor,authored,high,supervisor-load-dat-2026-08-30
 0x00424050,authored,Supervisor,authored,exact,supervisor-check-fps-exact-2026-08-30
-0x004242B0,authored,Supervisor,authored,high,supervisor-startup-thread-2026-08-30
+0x004242B0,authored,Supervisor,authored,exact,supervisor-startup-thread-2026-08-30
 0x004244D0,authored,Supervisor,authored,high,supervisor-deleted-callback-2026-08-30
 0x00424700,compiler,Supervisor,exclude,exact,gpt-web-implicit-dummy-midi-destructor-2026-09-02
 0x00424720,authored,Supervisor,authored,exact,supervisor-calculate-fps-exact-2026-08-30
@@ -389,7 +389,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00428590,authored,ResultScreen,authored,high,vc71-result-screen-initializers-source-2026-08-29
 0x004288B0,authored,ResultScreen,authored,high,vc71-result-screen-initializers-source-2026-08-29
 0x00428E90,authored,ResultScreen,authored,high,vc71-result-screen-initializers-source-2026-08-29
-0x004292D0,authored,ReplayMenu,authored,high,ghidra-replay-menu-cluster-2026-08-29
+0x004292D0,authored,ReplayMenu,authored,exact,ghidra-replay-menu-cluster-2026-08-29
 0x00429450,authored,ResultScreen,authored,exact,vc71-result-photo-find-best-shot-2026-08-29
 0x004294C0,authored,ResultScreen,authored,exact,vc71-result-photo-update-source-2026-08-29
 0x004299F0,authored,ResultScreen,authored,exact,vc71-result-best-shot-record-reset-2026-08-29
