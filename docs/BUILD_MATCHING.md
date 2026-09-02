@@ -1063,27 +1063,49 @@ seen in the extended ECL lane; it does not license dead locals or arbitrary
 `var_order` guesses.  The current best diagnostic remains non-exact at
 13,846/13,986 comparable bytes, so do not promote it yet.
 
-`PhotoStageDisplayView::Build @ 0x0042C5C0` supplies a separate value-lifetime
-oracle.  Preserve the input photo position through real `Float3` values and use
-one live leading-digit flag across the six overlay digits.  Most importantly,
-reuse the existing `digit` local for the tens and ones: compute `(score / 10) %
-10` and `score % 10` before the corresponding `InitializeVm`/`SetSprite` calls.
-The target performs both integer reductions and stack stores before VM setup;
-leaving either expression inline in the `SetSprite` argument moves the division
-sequence after `InitializeVm`.  Applying both changes improves the best stock
-probe from 8,542 bytes / 72 mnemonic edits to 8,552 bytes / 50 edits without
-adding a local.
+`PhotoStageDisplayView::Build @ 0x0042C5C0` is now authored-instruction
+complete under stock VC7.1.  Its thirteen shallow dwords are all live semantics,
+and their target layout is fully recovered without padding: `displayVmCount @
+EBP-0x04`, `displayPosition.x/y/z @ -0x10/-0x0C/-0x08`, the three-float digit
+position @ `-0x1C/-0x18/-0x14`, `photoPositionCopy.x/y/z @
+-0x28/-0x24/-0x20`, `renderMode @ -0x2C`, `digit @ -0x30`, and the live
+leading-digit state @ `-0x34`.  Reuse the calibrated stock-compiler hash buckets
+from exact `ResultScreen::Draw`: the semantic aliases `displayVmCount` and
+`digitPosition` are backed by `resultDrawBacking022` (bucket 0) and
+`resultDrawBacking000` (bucket 6) respectively.  Both objects are fully read and
+written; the identifiers select physical rank only.
 
-Do not treat the remaining Build frame delta as permission for a compiler-storage
-array.  The target has a `0x2B0` frame with no EBP/ESP references in
-`EBP-0x38..-0x13C`; its shallow semantic locals end at `-0x34`, outer `this` is
-at `-0x140`, and the 92 genuine per-emission `AnmVm *` homes occupy the deeper
-lane.  The current source is gapless at `0x1A8`.  Moving the real per-emission
-pointer into a shared force-inlined `AddDisplayVm` helper yields a `0x1C4` frame
-and substantially worse mnemonic topology, so helper ownership does not explain
-the `0x108` reservation.  `PhotoFrontManagerView::Initialize` also owns an
-unreferenced `0x108`, but its phase boundary is different; same size alone is not
-a repeated-phase oracle.
+Several ordinary C++ source shapes close the remaining instruction-topology
+residuals.  Copy the eight score dwords as one POD value so VC7 materializes the
+RHS in ESI before the destination in EDI.  Copy `entryPosition` into one live
+three-float POD, then assign each overlay `positionOffset` through the compiler's
+implicit `Float3` copy assignment; this keeps the POD lifetime/order while
+emitting one destination base plus three scalar stores at all six sites.  The
+hundreds branch also writes the target-visible leading-digit state.  After the
+overlay digits, restore the full working position from `photoPositionCopy` and
+then add 16 to Y.  The first bonus row increments `renderMode` by four rather
+than assigning eight, the four hand-written final row tails use
+`renderMode += 4 -> X reset -> Y += 12`, and the final three boundary components
+are copied as one contiguous `Float3`.  Keep the already-proven precomputed tens
+and ones.  Together these rules produce exactly 2,234 instructions, the target's
+complete mnemonic sequence.  After normalizing relocation targets, branch
+destinations, and EBP-relative stack displacements, 2,233/2,234 instructions
+also match in register/memory/immediate form; the sole residual is the prologue
+frame allocation (`0x1A8` source versus `0x2B0` target).
+
+Do not treat that final frame delta as permission for a compiler-storage array.
+The target has no EBP/ESP references anywhere in `EBP-0x38..-0x13C`, a full
+`0x108` interval.  Its shallow semantic locals end at `-0x34`, outer `this` is
+at `-0x140`, and all 92 genuine per-emission `AnmVm *` homes occupy the deeper
+lane.  The policy-compliant source is gapless at `0x1A8`: the same 92 pointer
+homes precede its outer `this`.  A force-inlined helper that also owns count,
+position, sprite, render mode, and increment changes the frame to `0x1C4` and
+substantially worsens topology; pointer/reference/whole-POD alternatives likewise
+do not reproduce the target allocation phase.  `PhotoFrontManagerView::Initialize`
+also owns an unreferenced `0x108`, but at a different semantic boundary, so same
+size alone is not a repeated-phase oracle.  Build remains non-exact until a real
+source/provenance oracle explains this reservation and the `this`/pointer-family
+phase order.
 
 For `PhotoStageStateView::Update @ 0x0042AD60`, a force-inlined primary/overlay
 VM-address producer that materializes `&slots[i].display` first raises the best

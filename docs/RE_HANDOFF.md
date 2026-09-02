@@ -1979,3 +1979,40 @@ comparable bytes and 251/253 mnemonics.  Pointer/reference/record-offset and
 inline-setter ownership surfaces all change the extent; the remaining target
 precomputes `recordIndex * 0x78` into ESI across the allocator and retains two
 instruction-unreferenced deep dwords.
+
+### 2026-09-03 gpt-web PhotoStage display instruction-topology closure
+
+`PhotoStageDisplayView::Build @ 0x0042C5C0` is now complete at the authored
+instruction/source-shape level without assembly, padding, dead locals, or inert
+frame storage.  Stock VC7.1 emits 2,234 instructions, exactly the target count
+and mnemonic sequence.  A normalized instruction audit that preserves registers,
+field offsets, immediates, and memory shape while ignoring relocation targets,
+branch destinations, and EBP-relative stack displacement matches 2,233/2,234
+instructions; the only remaining normalized difference is the prologue
+`sub esp, 0x1A8` versus target `sub esp, 0x2B0`.
+
+The shallow `0x34` lane is fully semantic.  Target order is
+`displayVmCount`, working `Float3`, digit-position POD, saved-photo `Float3`,
+`renderMode`, `digit`, and `leadingDigitVisible`.  Exact ResultScreen Draw's
+stock-VC7 hash calibration supplies `resultDrawBacking022` and
+`resultDrawBacking000` for the two rank-sensitive live aliases
+`displayVmCount` and `digitPosition`; no storage-only backing is introduced.
+The score block is copied as one eight-dword POD; entry position is one live
+three-float POD; the six overlay position writes use compiler-generated `Float3`
+copy assignment so each destination base is materialized once.  Preserve the
+hundreds-branch leading-state write, full `displayPosition = photoPositionCopy`
+reset before the +16 Y offset, `renderMode += 4` for the first bonus row, the
+four hand-written tail order `renderMode += 4 -> X reset -> Y += 12`, and the
+final contiguous three-component boundary copy.
+
+Exact credit is still deliberately withheld.  The target alone reserves a
+completely instruction-unreferenced `0x108` interval at
+`EBP-0x38..-0x13C`, then stores outer `this @ -0x140` followed by the 92 real
+per-emission `AnmVm *` homes.  The truthful source is gapless at frame `0x1A8`.
+The older broad AddDisplayVm helper owns too many caller values and changes the
+body/frame rather than explaining this phase; whole-POD destination copies,
+reference aliases, comma expressions, and member setters are bounded negative
+oracles.  `PhotoFrontManagerView::Initialize` has another `0x108` reservation
+but at a different semantic boundary, so it is not valid repeated-phase proof.
+All four canonical exact siblings from `src/PhotoStage.cpp` were cold rebuilt
+and remain exact after this source change.

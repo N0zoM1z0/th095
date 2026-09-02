@@ -472,27 +472,42 @@ enum PhotoStageScoreFlags
     renderMode += 4;                                                         \
     displayPosition.y += 12.0f
 
+// Stock VC7.1 hash buckets recovered from the exact ResultScreen::Draw oracle.
+// Both backing objects are fully live; the aliases only select their physical
+// stack rank without changing the semantic names used by Build.
+#define digitPosition resultDrawBacking000
+#define displayVmCount resultDrawBacking022
+
 void PhotoStageDisplayView::Build(
     i32 score, Float3 *photoPosition, Float3 *entryPosition,
     const i32 *scoreData)
 {
     Float3 displayPosition = *photoPosition;
+    struct PhotoStageDigitPosition
+    {
+        f32 x;
+        f32 y;
+        f32 z;
+    } digitPosition;
     Float3 photoPositionCopy = displayPosition;
     this->score = score;
     if (scoreData != NULL)
     {
-        memcpy(this->scoreData, scoreData, sizeof(this->scoreData));
+        struct PhotoStageScoreDataBlock
+        {
+            i32 values[8];
+        };
+        *reinterpret_cast<PhotoStageScoreDataBlock *>(this->scoreData) =
+            *reinterpret_cast<const PhotoStageScoreDataBlock *>(scoreData);
     }
 
     if (entryPosition != NULL)
     {
-        f32 digitX = entryPosition->x;
-        f32 digitY = entryPosition->y;
-        f32 digitZ = entryPosition->z;
+        digitPosition =
+            *reinterpret_cast<const PhotoStageDigitPosition *>(entryPosition);
         i32 digit = score / 100000;
         i32 leadingDigitVisible;
 
-        displayPosition.y = photoPositionCopy.y;
         leadingDigitVisible = 0;
         if (digit != 0)
         {
@@ -501,10 +516,9 @@ void PhotoStageDisplayView::Build(
                 &this->overlayVms[0], digit + 15);
             leadingDigitVisible = 1;
         }
-        this->overlayVms[0].positionOffset.x = digitX;
-        this->overlayVms[0].positionOffset.y = digitY;
-        this->overlayVms[0].positionOffset.z = digitZ;
-        digitX += 9.0f;
+        this->overlayVms[0].positionOffset =
+            *reinterpret_cast<const Float3 *>(&digitPosition);
+        digitPosition.x += 9.0f;
 
         digit = (score / 10000) % 10;
         if (digit != 0 || leadingDigitVisible != 0)
@@ -514,10 +528,9 @@ void PhotoStageDisplayView::Build(
                 &this->overlayVms[1], digit + 15);
             leadingDigitVisible = 1;
         }
-        this->overlayVms[1].positionOffset.x = digitX;
-        this->overlayVms[1].positionOffset.y = digitY;
-        this->overlayVms[1].positionOffset.z = digitZ;
-        digitX += 9.0f;
+        this->overlayVms[1].positionOffset =
+            *reinterpret_cast<const Float3 *>(&digitPosition);
+        digitPosition.x += 9.0f;
 
         digit = (score / 1000) % 10;
         if (digit != 0 || leadingDigitVisible != 0)
@@ -527,10 +540,9 @@ void PhotoStageDisplayView::Build(
                 &this->overlayVms[2], digit + 15);
             leadingDigitVisible = 1;
         }
-        this->overlayVms[2].positionOffset.x = digitX;
-        this->overlayVms[2].positionOffset.y = digitY;
-        this->overlayVms[2].positionOffset.z = digitZ;
-        digitX += 9.0f;
+        this->overlayVms[2].positionOffset =
+            *reinterpret_cast<const Float3 *>(&digitPosition);
+        digitPosition.x += 9.0f;
 
         digit = (score / 100) % 10;
         if (digit != 0 || leadingDigitVisible != 0)
@@ -538,44 +550,41 @@ void PhotoStageDisplayView::Build(
             g_PhotoStageState->anm->InitializeVm(&this->overlayVms[3], 0x1e);
             g_PhotoStageState->anm->SetSprite(
                 &this->overlayVms[3], digit + 15);
+            leadingDigitVisible = 1;
         }
-        this->overlayVms[3].positionOffset.x = digitX;
-        this->overlayVms[3].positionOffset.y = digitY;
-        this->overlayVms[3].positionOffset.z = digitZ;
-        digitX += 9.0f;
+        this->overlayVms[3].positionOffset =
+            *reinterpret_cast<const Float3 *>(&digitPosition);
+        digitPosition.x += 9.0f;
 
         digit = (score / 10) % 10;
         g_PhotoStageState->anm->InitializeVm(&this->overlayVms[4], 0x1e);
         g_PhotoStageState->anm->SetSprite(
             &this->overlayVms[4], digit + 15);
-        this->overlayVms[4].positionOffset.x = digitX;
-        this->overlayVms[4].positionOffset.y = digitY;
-        this->overlayVms[4].positionOffset.z = digitZ;
-        digitX += 9.0f;
+        this->overlayVms[4].positionOffset =
+            *reinterpret_cast<const Float3 *>(&digitPosition);
+        digitPosition.x += 9.0f;
 
         digit = score % 10;
         g_PhotoStageState->anm->InitializeVm(&this->overlayVms[5], 0x1e);
         g_PhotoStageState->anm->SetSprite(
             &this->overlayVms[5], digit + 15);
-        this->overlayVms[5].positionOffset.x = digitX;
-        this->overlayVms[5].positionOffset.y = digitY;
-        this->overlayVms[5].positionOffset.z = digitZ;
+        this->overlayVms[5].positionOffset =
+            *reinterpret_cast<const Float3 *>(&digitPosition);
     }
 
     i32 renderMode = 4;
-    displayPosition.y = photoPositionCopy.y + 16.0f;
+    displayPosition = photoPositionCopy;
+    displayPosition.y += 16.0f;
     i32 displayVmCount = 0;
     memset(
         g_PhotoStageState->displayVms, 0,
         sizeof(g_PhotoStageState->displayVms));
     g_PhotoStageState->flags &= ~PHOTO_STAGE_PLAYER_PASSED;
-    displayPosition.x = photoPositionCopy.x;
-    displayPosition.z = photoPositionCopy.z;
 
     if (((u32)scoreData[7] >> 5 & 1) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x24);
-        renderMode = 8;
+        renderMode += 4;
         displayPosition.y += 12.0f;
     }
     if (((u32)scoreData[7] >> 6 & 1) != 0)
@@ -653,8 +662,8 @@ void PhotoStageDisplayView::Build(
             (i32)(*reinterpret_cast<const f32 *>(&scoreData[5]) * 10.0f) %
                 10 + 15);
         renderMode += 4;
-        displayPosition.y += 12.0f;
         displayPosition.x = photoPositionCopy.x;
+        displayPosition.y += 12.0f;
     }
     if (((u32)scoreData[7] >> 1 & 1) != 0)
     {
@@ -666,8 +675,8 @@ void PhotoStageDisplayView::Build(
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(0x11);
         renderMode += 4;
-        displayPosition.y += 12.0f;
         displayPosition.x = photoPositionCopy.x;
+        displayPosition.y += 12.0f;
     }
     if (((u32)scoreData[7] >> 2 & 1) != 0)
     {
@@ -679,8 +688,8 @@ void PhotoStageDisplayView::Build(
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(0x14);
         renderMode += 4;
-        displayPosition.y += 12.0f;
         displayPosition.x = photoPositionCopy.x;
+        displayPosition.y += 12.0f;
     }
     if (((u32)scoreData[7] >> 3 & 1) != 0)
     {
@@ -702,16 +711,16 @@ void PhotoStageDisplayView::Build(
             renderMode);
         displayVmCount++;
         renderMode += 4;
-        displayPosition.y += 12.0f;
         displayPosition.x = photoPositionCopy.x;
+        displayPosition.y += 12.0f;
     }
 
-    g_PhotoStageState->boundaryX = displayPosition.x;
-    g_PhotoStageState->boundaryY = displayPosition.y;
-    g_PhotoStageState->unknown25714 =
-        *reinterpret_cast<i32 *>(&displayPosition.z);
+    *reinterpret_cast<Float3 *>(&g_PhotoStageState->boundaryX) =
+        displayPosition;
 }
 
+#undef digitPosition
+#undef displayVmCount
 #undef ADD_PHOTO_STAGE_SCORE_ROW
 #undef ADD_PHOTO_STAGE_DISPLAY_VM
 
