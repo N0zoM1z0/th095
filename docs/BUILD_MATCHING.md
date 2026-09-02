@@ -817,3 +817,17 @@ legacy PhotoStage display helper similarly contains an explicit unknown stack
 array, but has no independent paired-target phase evidence. Keep those shapes as
 historical compatibility debt; the laser rule above is deliberately narrower
 and does not permit general inert locals or frame filler.
+
+Two smaller exact units sharpen the same rule. `AsciiManager::Reset @ 0x004010F0`
+contains two real, repeated `InitializeAndSetSprite` expansions. A shared
+source-local `__forceinline` phase with an eight-byte compiler reservation must
+wrap **both** call sites: wrapping only the second leaves the outer allocation
+phase eight bytes short, while wrapping both reproduces the target homes and all
+394 bytes. `PhotoGameUpdateView::Initialize @ 0x0042ECA0` instead has one real
+`ZunTimer::operator=(-1)` expansion. Binding the target-observed `0x2C`
+reservation to that assignment phase moves only the hidden timer receiver and
+outer `this` to `EBP-0x30/-0x34`, preserving the original 392-byte instruction
+sequence and all sixteen relocation destinations. These are phase-local
+compiler-storage oracles, not size-driven filler: the storage must be attached
+to the semantic inline operation that owns the displaced hidden temporary, and
+a partial/wrong-phase variant is a required negative control.

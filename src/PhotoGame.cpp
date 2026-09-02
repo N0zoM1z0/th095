@@ -282,6 +282,12 @@ PhotoGameUpdateView::~PhotoGameUpdateView()
     }
 }
 
+static __forceinline void PhotoGameSetStateTimerPhase(ZunTimer *timer)
+{
+    u8 compilerStorage[0x2c];
+    *timer = -1;
+}
+
 i32 PhotoGameUpdateView::Initialize()
 {
     this->effectAnm = reinterpret_cast<PhotoAnmLoadedView *>(
@@ -312,7 +318,7 @@ i32 PhotoGameUpdateView::Initialize()
     this->effectAnm->InitializeVm(&this->effectVm, 0);
     this->playerPosition.x = 0.0f;
     this->playerPosition.y = 400.0f;
-    this->stateTimer = -1;
+    PhotoGameSetStateTimerPhase(&this->stateTimer);
     this->hurtboxHalfSize.x =
         this->hurtboxHalfSize.y = this->movementConfig->hurtboxSize / 2.0f;
     this->hurtboxHalfSize.z = 5.0f;

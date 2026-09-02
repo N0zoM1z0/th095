@@ -2,7 +2,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00401000,authored,AsciiManager,authored,exact,vc71-ascii-on-update-exact-2026-09-01
 0x00401090,authored,AsciiManager,authored,exact,ascii-manager-text-spine-exact-2026-08-30
 0x004010B0,authored,AsciiManager,authored,exact,ascii-manager-text-spine-exact-2026-08-30
-0x004010F0,authored,AsciiManager,authored,high,ascii-manager-text-spine-2026-08-30
+0x004010F0,authored,AsciiManager,authored,exact,ascii-manager-text-spine-2026-08-30
 0x00401280,authored,AsciiManager,authored,exact,ascii-manager-text-spine-exact-2026-08-30
 0x00401360,authored,AsciiManager,authored,exact,ascii-manager-text-spine-exact-2026-08-30
 0x004013F0,authored,AsciiManager,authored,exact,ascii-manager-text-spine-exact-2026-08-30
@@ -418,7 +418,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0042EA70,authored,PhotoGame,authored,high,photo-player-lifecycle-semantic-2026-08-30
 0x0042EBC0,authored,PhotoGame,authored,exact,vc71-photo-camera-constructor-2026-08-30
 0x0042EC70,authored,PhotoGame,authored,exact,vc71-photo-camera-destructor-2026-08-30
-0x0042ECA0,authored,PhotoGame,authored,high,photo-player-lifecycle-semantic-2026-08-30
+0x0042ECA0,authored,PhotoGame,authored,exact,photo-player-lifecycle-semantic-2026-08-30
 0x0042EE30,authored,PhotoGame,authored,exact,vc71-photo-player-load-anm-2026-08-30
 0x0042EE70,authored,PhotoGame,authored,exact,vc71-photo-player-release-anm-2026-08-30
 0x0042EE90,authored,PhotoGame,authored,high,photo-player-lifecycle-semantic-2026-08-30

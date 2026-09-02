@@ -99,6 +99,13 @@ AsciiManager::~AsciiManager()
 {
 }
 
+static __forceinline void AsciiInitializeAndSetSpritePhase(
+    AsciiAnmLoadedView *anm, AnmVm *vm, i32 spriteIndex)
+{
+    u8 compilerStorage[8];
+    anm->InitializeAndSetSprite(vm, spriteIndex);
+}
+
 // FUNCTION: TH095 0x004010F0.
 void AsciiManager::Reset()
 {
@@ -120,10 +127,12 @@ void AsciiManager::Reset()
     this->scaleX = 1.0f;
     this->scaleY = 1.0f;
 
-    reinterpret_cast<AsciiAnmLoadedView *>(this->asciiAnm)
-        ->InitializeAndSetSprite(&this->smallText, 0);
-    reinterpret_cast<AsciiAnmLoadedView *>(this->asciiAnm)
-        ->InitializeAndSetSprite(&this->largeText, 32);
+    AsciiInitializeAndSetSpritePhase(
+        reinterpret_cast<AsciiAnmLoadedView *>(this->asciiAnm),
+        &this->smallText, 0);
+    AsciiInitializeAndSetSpritePhase(
+        reinterpret_cast<AsciiAnmLoadedView *>(this->asciiAnm),
+        &this->largeText, 32);
     this->smallText.position.z = 0.1f;
     this->isSelected = 0;
     this->spaceWidth = 9;
