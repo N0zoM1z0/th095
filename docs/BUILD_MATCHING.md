@@ -720,14 +720,31 @@ object lifetime and stable symbol provenance.
 
 `PhotoBulletManagerView::SpawnSingleBullet @ 0x00405A30` has the same
 instruction-unreferenced `0x2C` fingerprint as several ECL/effect callbacks
-and `AdvanceTransformProgram`. A fully live aggregate recovers the target's
-five shallow homes (`speed/i/bullet/angle/transformFlags @ EBP-0x04..-0x14`),
-but the target frame is `0xE4` against the natural source's `0xB0`. Target
-instructions reference `EBP-0x04..-0x50` and then resume at `EBP-0x80`; no
-instruction touches `EBP-0x54..-0x7C`. Source temporaries that begin at
-`EBP-0x54` therefore correspond to target homes beginning at `EBP-0x80`.
-Treat this as a compiler/source-provenance barrier, not an invitation to add a
-44-byte field or local.
+and `AdvanceTransformProgram`, but its semantic source shape is now substantially
+narrower.  Keep the five genuine long-lived values in one gapless 20-byte
+aggregate declared as `{transformFlags, angle, bullet, i, speed}`: VC7 lays the
+record out so the target homes become `speed/i/bullet/angle/transformFlags @
+EBP-0x04..-0x14`.  Two TH095-specific conditional expressions are also required.
+Spell the count-2 speed interpolation as one ternary assigned to `speed`, and
+spell the odd/even fan-angle increment as one ternary added to `angle`.  The
+target stores both arms of each expression into a shared compiler temporary and
+performs one join copy/add; the inherited TH08 statement-level `if/else` forms
+skip those common temporaries.  With both ternaries and the live aggregate,
+stock build 3077 emits all 529 authored target mnemonics in order and a 2,061-byte
+body with frame `0xB8`.
+
+The remaining target-only allocation is still not source-proven.  The 2,133-byte
+target frame is `0xE4`; instructions reference `EBP-0x04..-0x50` and then resume
+at `EBP-0x80`, with no access or escaped address into `EBP-0x54..-0x7C`.  The
+last source/target home before the gap is the compiler receiver used by the real
+`bullet->activeTimer = 0` initialization.  The first source home shifted across
+the gap belongs to the Float3 temporary produced by the first fast-spawn
+`bullet->position -= bullet->velocity * 4.0f` expression.  Moving that repeated
+offset into a real force-inlined helper leaves the `0xB8` frame and 2,061-byte
+body unchanged, so helper ownership does not naturally generate the reservation.
+The exact `0x2C` phase oracles elsewhere in the repository have different
+semantic owners/boundaries; do not transplant their storage here or add a
+44-byte field/local merely to force exactness.
 
 `PhotoBulletView::UpdateBoundaryBounce @ 0x00407440` isolates a different
 barrier. The target loads the stored bounce-speed bits into `EBP-0x04`, reloads

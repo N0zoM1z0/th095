@@ -555,83 +555,84 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
     PhotoBulletSpawnDescriptor *descriptor, i32 index1, i32 index2,
     f32 angleToPlayer)
 {
-    f32 speed;
-    i32 i;
-    PhotoBulletView *bullet;
-    f32 angle;
-    u32 transformFlags;
-
-    i = 0;
-    bullet = this->bulletCursor;
-    for (i = 0; i < 0x640; ++i)
+    struct SpawnLocals
     {
-        if (bullet->state == 0)
+        u32 transformFlags;
+        f32 angle;
+        PhotoBulletView *bullet;
+        i32 i;
+        f32 speed;
+    } locals;
+
+    locals.i = 0;
+    locals.bullet = this->bulletCursor;
+    for (locals.i = 0; locals.i < 0x640; ++locals.i)
+    {
+        if (locals.bullet->state == 0)
             break;
-        ++bullet;
-        if (bullet->state == 5)
-            bullet = &this->bullets[0];
+        ++locals.bullet;
+        if (locals.bullet->state == 5)
+            locals.bullet = &this->bullets[0];
     }
-    if (i >= 0x640)
+    if (locals.i >= 0x640)
         return 1;
 
-    angle = 0.0f;
-    if (descriptor->count2 > 1)
-        speed = descriptor->speed1 -
-                (descriptor->speed1 - descriptor->speed2) * (f32)index2 /
-                    (f32)descriptor->count2;
-    else
-        speed = descriptor->speed1;
+    locals.angle = 0.0f;
+    locals.speed = descriptor->count2 > 1
+        ? descriptor->speed1 -
+              (descriptor->speed1 - descriptor->speed2) * (f32)index2 /
+                  (f32)descriptor->count2
+        : descriptor->speed1;
 
     switch (descriptor->aimMode)
     {
     case PHOTO_BULLET_AIM_FAN_AIMED:
     case PHOTO_BULLET_AIM_FAN:
-        if ((descriptor->count1 & 1) != 0)
-            angle += (f32)((index1 + 1) / 2) * descriptor->angleStep;
-        else
-            angle += (f32)(index1 / 2) * descriptor->angleStep +
-                     descriptor->angleStep * 0.5f;
+        locals.angle += (descriptor->count1 & 1) != 0
+            ? (f32)((index1 + 1) / 2) * descriptor->angleStep
+            : (f32)(index1 / 2) * descriptor->angleStep +
+                  descriptor->angleStep * 0.5f;
         if ((index1 & 1) != 0)
-            angle *= -1.0f;
+            locals.angle *= -1.0f;
         if (descriptor->aimMode == PHOTO_BULLET_AIM_FAN_AIMED)
-            angle += angleToPlayer;
-        angle += descriptor->angle;
+            locals.angle += angleToPlayer;
+        locals.angle += descriptor->angle;
         break;
 
     case PHOTO_BULLET_AIM_CIRCLE_AIMED:
-        angle += angleToPlayer;
+        locals.angle += angleToPlayer;
     case PHOTO_BULLET_AIM_CIRCLE:
-        angle += (f32)index1 * 6.2831855f / (f32)descriptor->count1;
-        angle += (f32)index2 * descriptor->angleStep + descriptor->angle;
+        locals.angle += (f32)index1 * 6.2831855f / (f32)descriptor->count1;
+        locals.angle += (f32)index2 * descriptor->angleStep + descriptor->angle;
         break;
 
     case PHOTO_BULLET_AIM_OFFSET_CIRCLE_AIMED:
-        angle += angleToPlayer;
+        locals.angle += angleToPlayer;
     case PHOTO_BULLET_AIM_OFFSET_CIRCLE:
-        angle += 3.1415927f / (f32)descriptor->count1;
-        angle += (f32)index1 * 6.2831855f / (f32)descriptor->count1;
-        angle += descriptor->angle;
+        locals.angle += 3.1415927f / (f32)descriptor->count1;
+        locals.angle += (f32)index1 * 6.2831855f / (f32)descriptor->count1;
+        locals.angle += descriptor->angle;
         break;
 
     case PHOTO_BULLET_AIM_RANDOM_ANGLE:
-        angle = g_Rng.GetRandomF32InRange(
+        locals.angle = g_Rng.GetRandomF32InRange(
                     descriptor->angle - descriptor->angleStep) +
                 descriptor->angleStep;
         break;
 
     case PHOTO_BULLET_AIM_RANDOM_SPEED:
-        speed = g_Rng.GetRandomF32InRange(
+        locals.speed = g_Rng.GetRandomF32InRange(
                     descriptor->speed1 - descriptor->speed2) +
                 descriptor->speed2;
-        angle += (f32)index1 * 6.2831855f / (f32)descriptor->count1;
-        angle += (f32)index2 * descriptor->angleStep + descriptor->angle;
+        locals.angle += (f32)index1 * 6.2831855f / (f32)descriptor->count1;
+        locals.angle += (f32)index2 * descriptor->angleStep + descriptor->angle;
         break;
 
     case PHOTO_BULLET_AIM_RANDOM:
-        angle = g_Rng.GetRandomF32InRange(
+        locals.angle = g_Rng.GetRandomF32InRange(
                     descriptor->angle - descriptor->angleStep) +
                 descriptor->angleStep;
-        speed = g_Rng.GetRandomF32InRange(
+        locals.speed = g_Rng.GetRandomF32InRange(
                     descriptor->speed1 - descriptor->speed2) +
                 descriptor->speed2;
         break;
@@ -640,74 +641,74 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
         break;
     }
 
-    bullet->state = 1;
-    bullet->flags |= 1;
-    bullet->stateTimer = 0;
-    bullet->activeTimer = 0;
-    bullet->speed = speed;
-    bullet->angle = AddNormalizeAngle(angle, 0.0f);
-    bullet->position = descriptor->position;
-    bullet->position.z = 0.1f;
-    bullet->velocity.FromAngleMagnitude(angle, speed);
-    bullet->activeTransformFlags = descriptor->transformFlags;
-    bullet->color = descriptor->color;
-    bullet->bulletType = descriptor->bulletType;
-    bullet->field360 = 0;
-    bullet->flags &= ~0x00000008;
-    bullet->flags &= ~0x00000004;
-    bullet->flags |= 0x00000002;
-    bullet->flags &= ~0x00000010;
+    locals.bullet->state = 1;
+    locals.bullet->flags |= 1;
+    locals.bullet->stateTimer = 0;
+    locals.bullet->activeTimer = 0;
+    locals.bullet->speed = locals.speed;
+    locals.bullet->angle = AddNormalizeAngle(locals.angle, 0.0f);
+    locals.bullet->position = descriptor->position;
+    locals.bullet->position.z = 0.1f;
+    locals.bullet->velocity.FromAngleMagnitude(locals.angle, locals.speed);
+    locals.bullet->activeTransformFlags = descriptor->transformFlags;
+    locals.bullet->color = descriptor->color;
+    locals.bullet->bulletType = descriptor->bulletType;
+    locals.bullet->field360 = 0;
+    locals.bullet->flags &= ~0x00000008;
+    locals.bullet->flags &= ~0x00000004;
+    locals.bullet->flags |= 0x00000002;
+    locals.bullet->flags &= ~0x00000010;
 
     this->anmSpawner->InitializeVm(
-        &bullet->vm,
+        &locals.bullet->vm,
         g_PhotoBulletScriptBases[descriptor->bulletType] + descriptor->color);
-    bullet->drawBucketIndex =
+    locals.bullet->drawBucketIndex =
         g_PhotoBulletDrawBucketIndices[descriptor->bulletType];
-    bullet->transformSound = descriptor->transformSound;
-    bullet->offscreenCullDelayFrames = 0;
-    bullet->collisionSize.y =
+    locals.bullet->transformSound = descriptor->transformSound;
+    locals.bullet->offscreenCullDelayFrames = 0;
+    locals.bullet->collisionSize.y =
         g_PhotoBulletCollisionSizes[descriptor->bulletType];
-    bullet->collisionSize.x = bullet->collisionSize.y;
+    locals.bullet->collisionSize.x = locals.bullet->collisionSize.y;
 
-    transformFlags = descriptor->transformFlags;
+    locals.transformFlags = descriptor->transformFlags;
     if ((descriptor->transformFlags & PHOTO_BULLET_TRANSFORM_SPAWN_FAST) != 0)
     {
-        bullet->vm.pendingInterrupt = 7;
-        bullet->state = 2;
-        bullet->position -= bullet->velocity * 4.0f;
+        locals.bullet->vm.pendingInterrupt = 7;
+        locals.bullet->state = 2;
+        locals.bullet->position -= locals.bullet->velocity * 4.0f;
     }
     else if ((descriptor->transformFlags &
               PHOTO_BULLET_TRANSFORM_SPAWN_NORMAL) != 0)
     {
-        bullet->vm.pendingInterrupt = 8;
-        bullet->state = 2;
-        bullet->position -= bullet->velocity * 4.0f;
+        locals.bullet->vm.pendingInterrupt = 8;
+        locals.bullet->state = 2;
+        locals.bullet->position -= locals.bullet->velocity * 4.0f;
     }
     else if ((descriptor->transformFlags &
               PHOTO_BULLET_TRANSFORM_SPAWN_SLOW) != 0)
     {
-        bullet->vm.pendingInterrupt = 9;
-        bullet->state = 2;
-        bullet->position -= bullet->velocity * 4.0f;
+        locals.bullet->vm.pendingInterrupt = 9;
+        locals.bullet->state = 2;
+        locals.bullet->position -= locals.bullet->velocity * 4.0f;
     }
     else
     {
-        bullet->vm.pendingInterrupt = 2;
+        locals.bullet->vm.pendingInterrupt = 2;
     }
 
-    memcpy(bullet->transforms, descriptor->transforms,
+    memcpy(locals.bullet->transforms, descriptor->transforms,
            sizeof(descriptor->transforms));
-    bullet->transformFlags = descriptor->transformFlags;
-    bullet->activeTransformFlags = 0;
-    bullet->transformIndex = descriptor->transformStartIndex;
-    bullet->AdvanceTransformProgram();
-    AnmManager::ExecuteScript(&bullet->vm);
+    locals.bullet->transformFlags = descriptor->transformFlags;
+    locals.bullet->activeTransformFlags = 0;
+    locals.bullet->transformIndex = descriptor->transformStartIndex;
+    locals.bullet->AdvanceTransformProgram();
+    AnmManager::ExecuteScript(&locals.bullet->vm);
 
-    ++bullet;
-    if (bullet->state == 5)
+    ++locals.bullet;
+    if (locals.bullet->state == 5)
         this->bulletCursor = &this->bullets[0];
     else
-        this->bulletCursor = bullet;
+        this->bulletCursor = locals.bullet;
     return 0;
 }
 
