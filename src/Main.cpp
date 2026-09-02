@@ -1698,6 +1698,9 @@ i32 __fastcall Supervisor::AddedCallback(Supervisor *s)
     return 0;
 }
 
+// Stock VC7.1 hashes local identifiers when assigning /Od stack homes. Keep
+// the semantic fileSize spelling while using the target-proven shallow bucket.
+#define fileSize averagedPanLocal12
 // FUNCTION: TH095 0x00423FB0.
 i32 Supervisor::LoadDat()
 {
@@ -1725,6 +1728,7 @@ i32 Supervisor::LoadDat()
     }
     return 0;
 }
+#undef fileSize
 
 // Stock VC7.1 allocates locals through identifier hash chains. These scoped
 // backing names reproduce the target order without adding inert locals.

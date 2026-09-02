@@ -1025,10 +1025,14 @@ canonical exact for all 600 bytes and 28 relocations. This is a target-specific
 seconds-based sampler using `GetTimestamp`, 600 rendered frames, a 30-float
 buffer, 0.5/0.7-second windows, and 57/65-FPS thresholds; it must not regress
 to TH08's millisecond/1,800-frame implementation. `LoadDat @ 0x00423FB0` is
-source-present for its complete 151-byte archive/version gate and proves the
-version-data fields at Supervisor `+0x774/+0x778`. Its exact-sized VC7.1 probe
-matches 65/91 comparable bytes, but the target's four-byte local buffer-home
-gap remains conservatively uncredited rather than represented by inert padding.
+now canonical exact for all 151 bytes and fifteen relocations. The authored
+`versionFileName` remains a normal 128-byte buffer; no array growth or padding
+is needed. The decisive source shape is the real `fileSize` scalar's stock
+VC7.1 identifier hash. Keeping its semantic spelling through a macro-backed
+shallow bucket places `fileSize` at `EBP-0x04` and the buffer at `EBP-0x88`.
+This is a reusable warning for target decompilation: an apparent larger local
+array can be the decompiler absorbing allocator space into the array extent;
+prefer a natural-size source plus verified compiler-home reconstruction.
 `StartupThread @ 0x004242B0` remains source-present for its complete 532-byte
 body and exact-sized VC7.1 probe, resolving all 57 relocations while retaining
 five compiler-local residual bytes.  `DeletedCallback @ 0x004244D0`, however,
@@ -1227,8 +1231,7 @@ This pass also reclassified several tempting residuals as negative compiler
 oracles rather than exact candidates. `PhotoEnemyManagerView` construction
 keeps an unexplained 0x28 target-only frame expansion; its destructor interleaves
 three delete-expression homes around the real argument pointer. `WinMain`,
-`Supervisor::StartupThread`, `Supervisor::LoadDat`,
-`AnmLoaded::InitializeVm`, `AnmManagerVmLifecycleView::AddVm`, and the
+`Supervisor::StartupThread`, `AnmLoaded::InitializeVm`, `AnmManagerVmLifecycleView::AddVm`, and the
 PhotoEffect factory/initializers likewise retain target-only EH/new/delete or
 unreferenced frame homes after their real locals are accounted for. Do not add
 inert storage to any of these. The former one-byte PhotoGame/Bullet callback OR

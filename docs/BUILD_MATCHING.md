@@ -306,6 +306,15 @@ assembly or an artificial branch to close it.
   backing buckets `background -> averagedPanLocal12` and `chain ->
   restartCommandProcessingLocal05` reproduce them exactly. Declaration order
   alone does not move these homes under build 3077.
+- `Supervisor::LoadDat @ 0x00423FB0` proves that the same identifier-hash
+  rule applies when one real scalar shares a frame with a large addressed
+  buffer. The natural `char versionFileName[128]` is already correct; mapping
+  only the real `fileSize` scalar to the established `averagedPanLocal12`
+  backing bucket moves it to `EBP-0x04` and the buffer to `EBP-0x88`, closing
+  all 151 bytes and fifteen relocations. Do not enlarge the buffer because a
+  decompiler reports a 132-byte local: target pseudocode may absorb allocator
+  spacing into an array extent. Verify authored array size independently, then
+  solve physical homes with a real local rather than inert bytes.
 - `PhotoCardInfoView::Initialize @ 0x00408670` distinguishes binary layout from
   compiler-visible C++ member semantics. CardInf stores two four-byte POD VM
   handles, not the shared nontrivial `AnmVmId` type: using the latter would add
