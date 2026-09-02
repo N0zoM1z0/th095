@@ -103,7 +103,7 @@ address,name,module,confidence,evidence
 0x0041C1E0,th095::TextRenderBufferView::ApplyAlphaBleed,TextRenderer,exact,Exact text-buffer alpha bleed with semantic case-local aggregate and target scalar allocation
 0x0041C600,th095::TextRenderBufferView::InvertAlpha,TextRenderer,exact,Canonical three-format text-buffer alpha inversion
 0x004453B0,th095::SceneTextureEntryView::Clear,AnmTexture,exact,Canonical relocation-free D3D texture clear comparison
-0x0044D0A0,th095::LoadSceneSelectionAssets,SceneSelect,high,Asynchronous mission thumbnail face and preview-text producer
+0x0044D0A0,th095::LoadSceneSelectionAssets,SceneSelect,exact,Asynchronous mission thumbnail face and preview-text producer
 0x00435E90,th095::SceneSaveDataView::LoadBestShotForScene,BestShot,high,Best-shot record reset disk decode decompression and checksum validator
 0x0041BA80,th095::CalculateAlignedChecksum,Checksum,exact,Canonical relocation-free aligned additive checksum comparison
 0x00456220,th095::DecompressData,Compression,exact,"Exact MSB-first LZSS decoder with 8 KiB ring, discarded input checksum, and target trailing-bit fetch semantics"

@@ -143,6 +143,20 @@ static __forceinline i32 SceneSelectionAssetsLoadComplete()
     return value;
 }
 
+static __forceinline i32 SceneSelectionGroupPreviewSizePhase(
+    SceneValueQueue *queue)
+{
+    u8 compilerStorage[4];
+    return queue->Size();
+}
+
+static __forceinline void SceneSelectionFinishPhase()
+{
+    u8 compilerStorage[8];
+    g_HelpLoadActive = 0;
+    g_HelpLoadComplete = 1;
+}
+
 void __fastcall LoadSceneSelectionAssets(void *threadParameter)
 {
     SceneSelectionAssetLoadLocals locals;
@@ -288,7 +302,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                 g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
                 g_SceneSupervisor.lockCounts[4]--;
             }
-            else if (AssetQueueSize(&locals.view->groupPreviewQueue) != 0)
+            else if (SceneSelectionGroupPreviewSizePhase(&locals.view->groupPreviewQueue) != 0)
             {
                 AssetQueueRead(&locals.view->groupPreviewQueue,
                                &locals.queueValue);
@@ -396,8 +410,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
         }
     }
 
-    g_HelpLoadActive = 0;
-    g_HelpLoadComplete = 1;
+    SceneSelectionFinishPhase();
 }
 
 } // namespace th095

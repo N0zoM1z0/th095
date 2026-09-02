@@ -349,17 +349,19 @@
   with inert locals. Preserve the target-proven horizontal group and vertical
   scene inputs, false-arm-first VM visibility branches, texture-slot-2 preview
   upload, pending-upload clear order, and `<= 10` group split.
-  `LoadSceneSelectionAssets @ 0x0044D0A0` is 3,070 bytes with all 38 call
-  offsets exact and 2,513/2,610 comparable bytes matching. Its fully live
-  `0x220` local aggregate proves the shallow queue/view homes, both path
-  buffers, the face shift index, and both file data/size pairs. All 97 residual
-  bytes are stack displacements caused by instruction-unreferenced target
-  dwords at `EBP-0x254/-0x2AC/-0x2B0`; keep this unit non-exact until a genuine
-  source/lifetime oracle explains them. The successful reusable shapes are:
-  face work before selected-scene work before positive/negative group work;
-  three explicit stop `break` checks; `Size()` snapshots in every wait loop;
-  out-parameter `Front` lowering; and pointer/value out-parameter queue pushes
-  that avoid non-target inline argument copies.
+  `LoadSceneSelectionAssets @ 0x0044D0A0` is now canonical exact for all
+  3,070 authored bytes and 115 relocations. Its fully live `0x220` aggregate
+  proves the shallow queue/view homes, both path buffers, the face shift index,
+  and both file data/size pairs. The former 12-byte frame residual is two
+  independent semantic phases rather than inert function storage: four bytes
+  belong only to the sibling `groupPreviewQueue.Size()` expression, and eight
+  bytes belong to the final load-active/load-complete notification tail. The
+  wrong-side control that puts the eight-byte phase at thread entry preserves
+  total frame size but shifts every later temporary, so keep the completion
+  phase at the tail. Preserve face work before selected-scene work before
+  positive/negative group work, three explicit stop `break` checks,
+  out-parameter `Front` lowering, and pointer/value queue pushes that avoid
+  non-target inline argument copies.
 - The complete ANM text alignment family at `0x00443C70..0x004440ED` is now
   canonical exact. `DrawTextInner`, `DrawTextLeft`, `DrawTextRight`, and
   `DrawTextCentered` contribute 1,140 authored bytes and 24 relocations. TH08

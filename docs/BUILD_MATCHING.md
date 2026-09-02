@@ -240,10 +240,15 @@ assembly or an artificial branch to close it.
   destination rather than introducing a returned-value copy. For queue pushes
   whose value is already a pointer or scalar local, pass a pointer to that live
   value into the source-local inline helper; a by-value helper introduces a
-  non-target argument home. These shapes give the exact 3,070-byte body and all
-  38 target call offsets. The remaining 97 comparable bytes are only stack
-  displacements from target-unreferenced `EBP-0x254/-0x2AC/-0x2B0` dwords, so
-  the unit remains uncredited rather than manufacturing frame storage.
+  non-target argument home. The remaining frame delta partitions into two real
+  phase boundaries. Wrap only the sibling `groupPreviewQueue.Size()` expression
+  in a four-byte source-local phase; that moves every later compiler temporary by
+  exactly one dword while leaving the 0x220 aggregate untouched. Then bind the
+  final `g_HelpLoadActive=0 / g_HelpLoadComplete=1` completion notification to
+  an eight-byte phase. Placing those eight bytes at thread entry is a negative
+  control because it shifts the whole deep lane; the tail phase moves only the
+  hidden fastcall/thread home. The result is canonical exact for all 3,070 bytes
+  and all 115 relocation destinations.
 - `SceneSelectControllerView::Update @ 0x00445E80` demonstrates that an exact
   instruction topology can still differ in extent through register selection.
   A reverse physical-order `0x3C` aggregate fixes the fourteen live surface,
