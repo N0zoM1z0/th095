@@ -29,9 +29,7 @@ struct AnmVmLifecycleView
 
         i32 operator++(int)
         {
-            i32 previous = this->value;
-            this->value++;
-            return previous;
+            return this->value++;
         }
 
     } id;
