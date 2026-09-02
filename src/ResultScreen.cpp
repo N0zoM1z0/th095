@@ -255,6 +255,7 @@ static __forceinline void FreeResultHelpText(ResultScreen *resultScreen)
 
 // FUNCTION: TH095 0x004264B0.
 ResultScreen::ResultScreen()
+    : replayCursor(0)
 {
     utils::DebugPrint("initialize PauseInf\n");
     memset(this, 0, sizeof(ResultScreen));

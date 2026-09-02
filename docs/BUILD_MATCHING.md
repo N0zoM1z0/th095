@@ -845,3 +845,18 @@ phase must wrap only the final real `SetAndExecuteScript` expression. Wrapping t
 whole initializer moves every vector temporary and is explicitly wrong. Prefer
 the smallest semantic phase that owns the mismatched hidden receiver; never wrap
 a larger body merely because its total frame delta has the right size.
+
+`ResultScreen::ResultScreen @ 0x004264B0` adds the member-construction variant.
+Do not distribute a target frame delta evenly across repeated members. The target
+keeps the earlier `ResultScreenTimer` receiver at `EBP-0x10`, then reserves one
+0x18 phase before the first `ResultScreenReplayCursor` only; its receiver lands at
+`-0x2C`, the ordinary second cursor immediately follows at `-0x30`, and outer
+`this` is `-0x34`. Giving both cursor constructors 0x0C storage produces the wrong
+first receiver at `-0x20`. The exact source therefore keeps the default cursor
+constructor untouched and uses a source-only overload solely for the first member
+construction phase. Separately, the timer constructor must preserve the target's
+real store order `current = 0; previous = -999999; subFrame = 0`. This is a
+positive oracle for a target-proven distinct member-construction phase, not a rule
+for adding storage to every repeated member. Shared-header changes require cold
+replay of all canonical consumers; FrontEnd and Help only renumbered compiler-local
+labels, with their complete 3009/2378-byte compare extents and destinations unchanged.

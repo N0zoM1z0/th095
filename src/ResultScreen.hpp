@@ -18,8 +18,8 @@ struct ResultScreenTimer
     ResultScreenTimer()
     {
         this->current = 0;
-        this->subFrame = 0.0f;
         this->previous = -999999;
+        this->subFrame = 0.0f;
     }
 
     u32 operator==(i32 value) { return this->current == value; }
@@ -60,6 +60,20 @@ struct ResultScreenReplayCursor
 
     ResultScreenReplayCursor()
     {
+        this->saveDepth = 0;
+        this->current = 0;
+        this->disabledEntryCount = 0;
+        this->wraps = 1;
+        this->count = 999;
+    }
+
+    // The target constructs ResultScreen::replayCursor in a distinct frontend
+    // allocation phase before the otherwise-identical photoCursor.  The tag
+    // overload selects that source phase without changing object layout or
+    // runtime cursor initialization.
+    ResultScreenReplayCursor(i32)
+    {
+        u8 compilerStorage[0x18];
         this->saveDepth = 0;
         this->current = 0;
         this->disabledEntryCount = 0;

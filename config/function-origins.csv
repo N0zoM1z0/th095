@@ -378,7 +378,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00426300,authored,SoundPlayer,authored,exact,sound-player-update-fades-exact-2026-08-30
 0x00426350,authored,Supervisor,authored,exact,vc71-supervisor-lifecycle-exact-2026-09-01
 0x00426450,authored,Supervisor,authored,exact,vc71-supervisor-lifecycle-exact-2026-09-01
-0x004264B0,authored,ResultScreen,authored,high,result-screen-pause-constructor-source-2026-08-30
+0x004264B0,authored,ResultScreen,authored,exact,result-screen-pause-constructor-source-2026-08-30
 0x00426630,authored,ResultScreen,authored,exact,result-screen-pause-initialize-exact-2026-08-30
 0x00426820,authored,ResultScreen,authored,exact,result-screen-pause-anm-lifecycle-exact-2026-08-30
 0x00426860,authored,ResultScreen,authored,exact,result-screen-pause-anm-lifecycle-exact-2026-08-30

@@ -77,7 +77,7 @@
   Its 1,407-byte body and all 37 relocations replay exactly, covering pending
   photo capture, `BSTS` output, record checksum refresh, the 120-record scene
   score stream, profile checksum, compression, encryption, and final
-  `scoreth095.dat` output. All fifteen current ResultScreen units replay unchanged
+  `scoreth095.dat` output. All seventeen current ResultScreen units replay unchanged
   after replacing their old local save-data stubs with the shared header.
 - The remaining 6,471-byte `ResultScreen::Update @ 0x00426BF0` core has been
   rebuilt to its complete target structure. The pinned VC7.1 object is exactly
@@ -92,7 +92,7 @@
   immediate or an EBP-relative stack displacement. Target frame/hidden `this`
   are `0x39C`/`EBP-0x328`, versus current `0x210`/`EBP-0x19C`. Treat the
   `0x18C` compiler-temporary allocation gap as the only remaining oracle, and
-  do not fill it with inert locals or arbitrary padding. All sixteen accepted
+  do not fill it with inert locals or arbitrary padding. All seventeen accepted
   `ResultScreen.cpp` units replay exactly after this change.
 - `SceneSaveDataView::LoadScenePreviewTexture @ 0x004362A0` is exact for all
   578 bytes and both relocations. It closes the target-local best-shot-to-scene
@@ -520,8 +520,8 @@
   is the VM-list `MarkVmsForDeletion(AnmLoaded*)` routine: the destructor passes
   `this->anm` directly. Treat `ReleaseAnm(i32) @ 0x00443980` as the slot-resource
   release API and `MarkVmsForDeletion(AnmLoaded*) @ 0x00445270` as the distinct
-  live-VM retirement API. All sixteen canonical `ResultScreen.cpp` units replay
-  exact after this correction.
+  live-VM retirement API. All seventeen canonical `ResultScreen.cpp` units replay
+  exact after the current constructor/header correction.
 - `InitializeGameResultScreen @ 0x00428590`,
   `InitializeReplayResultScreen @ 0x004288B0`, and
   `InitializePhotoResultScreen @ 0x00428E90` are now source-present for the
@@ -1102,20 +1102,22 @@ relocations, closing the registered calc callback through front-end and
 photo-game transition ownership. Preserve every established Main, Background,
 ECL, ANM, photography, and ASCII exact unit while shared headers change.
 
-The adjacent TH095-specific PauseInf/ResultScreen ownership lane is now closed
-for five more exact units and 972 bytes. `Initialize @ 0x00426630` loads
-`pause.anm`, reads `sprt/help.txt`, and parses its `level:` blocks into eleven
-groups of ten two-line scene labels; its complete 489-byte parser and all 19
-relocations are exact. The slot-10 ANM load/release callbacks at
-`0x00426820/0x00426860`, `Create @ 0x00426A50`, and `Destroy @ 0x00426B90`
-are also canonical exact. The factory proves the complete `0x6E2C` owner,
-update/draw callback priorities 5/`0x1B`, and Chain fields at `+0x6E24/+0x6E28`.
-The source-present constructor proves the twenty-five VMs are compiler-visible
-as `21+2+1+1` groups; its target-sized body differs only in constructor-home
-slots. The source-present destructor is 454 versus 452 bytes with complete
-resource/VM teardown. Keep both conservatively non-exact rather than spending
-a disproportionate pass on those two local-shape residuals; the exact
-Supervisor router now provides their surrounding transition ownership.
+The adjacent TH095-specific PauseInf/ResultScreen ownership lane now includes
+the canonical exact 373-byte constructor at `0x004264B0`. The twenty-five VMs
+remain compiler-visible as `21+2+1+1` groups. Target constructor order requires
+`ResultScreenTimer` to store `current`, `previous`, then `subFrame`; after those
+VM groups, one 0x18 frontend phase belongs to the first `replayCursor @ +0x4604`
+construction only, followed immediately by the ordinary `photoCursor @ +0x6D48`.
+That source shape reproduces receiver homes `EBP-0x2C/-0x30` and outer `this` at
+`-0x34`, all 373 bytes, and all fifteen EH/vector/body relocations. `Initialize @
+0x00426630` loads `pause.anm`, parses `sprt/help.txt`, and fills eleven groups of
+ten two-line scene labels; slot-10 load/release, exact destructor, `Create`, and
+`Destroy` complete seven lifecycle units totaling 1,797 bytes and 85 relocations.
+Because `ResultScreenTimer/ReplayCursor` are shared inline types, all canonical
+ResultScreen, FrontEndLifecycle, FrontEndController, MusicRoom, OptionsMenu,
+HelpMenu, and ReplayBrowser consumers were rebuilt. Every byte extent remains
+exact; only compiler-local labels in FrontEnd `Update` and Help `UpdateHelpMenu`
+renumbered, and target-destination audits preceded their manifest refresh.
 
 ## Closed lanes and preservation constraints
 
