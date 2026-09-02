@@ -1094,3 +1094,47 @@ residual is the helper's real display-pointer spill/reload; reference binding,
 spill or regress to the direct-expression lowering.  The two other residual
 regions remain target-only coordinate-result compiler copies.  Keep these as
 negative source-shape oracles rather than introducing write-only locals.
+
+
+### Residual phase attribution: SceneSelect, ANM lifecycle, and best-shot loading
+
+`SceneSelectControllerView::UpdateSceneSelect @ 0x00447D00` now has a bounded
+repeated-callsite proof for two of its four private allocation controls.  The
+exact-sized 13,846/13,986 diagnostic contains two separate source-local
+`groupCursor.GetCurrent()` phases, each reserving `0x10` bytes.  Removing only
+the first drops replay to 13,227 comparable bytes, removing only the second to
+13,150, and removing both to 13,142, while the full two-phase form keeps all
+3,637 target mnemonics.  The same operation, same reservation size, and
+independent partial controls make these two call sites analogous to the
+repeated-callsite `AsciiManager::Reset` oracle.  Do not generalize the result to
+all `GetCurrent()` calls.
+
+The selector's remaining 20-byte queue interval is not yet attributable to a
+policy-compliant semantic owner.  Removing its private `4+16` aggregate storage
+changes the extent to 16,075 bytes.  Replacing it with clean branch-local queue
+lifetimes preserves all 3,637 target mnemonics but leaves a `0x3CC` frame.
+Four real `SceneValueQueue::Pop()` call-site phases restore the target `0x3DC`
+frame, both with and without the clean lifetimes, but the early/late queue homes
+still land on the wrong sides of the interval; a fifth Pop phase is four bytes
+too deep.  Frame size alone is therefore insufficient evidence.  The adjacent
+four-byte `stateTimer.Reset()` control likewise lacks an independent same-owner
+positive oracle because later Reset call sites do not repeat it.
+
+The ANM lifecycle create trio supplies a translation-unit negative oracle.
+Moving only `CreateVm`, `CreateVmAtScreen`, and `CreateVmAtWorld` into an
+isolated stock-VC7.1 TU leaves their six displacement residuals byte-identical
+at 119/125, 138/144, and 123/129 comparable bytes.  Isolating `AddVm` likewise
+leaves its current 230/236 result unchanged.  The common create-function `0x14`
+reservation and AddVm's two swapped compiler temporaries are therefore
+function-internal frontend allocation behavior, not crowded-TU folding like
+`ScreenEffect::DrawSquare`.
+
+`SceneSaveDataView::LoadBestShotForScene @ 0x00435E90` adds a multiplication
+source-order oracle.  Write the pixel allocation size as
+`width * height * componentCount`: under `/Od` build 3077 the operands are
+materialized in reverse source order, exactly reproducing the target loads
+`componentCount(byte)`, `height(word)`, then `width(word)`.  Keep the target's
+`g_ZunMemory.Alloc` path and the 80-byte comment as whole-POD assignment.  Real
+record pointer/reference/offset locals and an inline record setter all change
+the target extent and are negative controls; they do not explain the target's
+pre-allocation ESI-preserved record stride.

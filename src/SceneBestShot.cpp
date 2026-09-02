@@ -11,6 +11,8 @@
 namespace th095
 {
 
+struct SceneBestShotCommentBlock { u32 words[20]; };
+
 struct SceneBestShotLoadLocals
 {
     char path[MAX_PATH];
@@ -61,14 +63,11 @@ i32 SceneSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
         locals.input = reinterpret_cast<u8 *>(
                         this->bestShotRecords[locals.recordIndex].componentData0) +
                     0x18;
-        {
-            i32 pixelSize =
-                this->bestShotRecords[locals.recordIndex].componentCount *
+        this->bestShotRecords[locals.recordIndex].pixelData =
+            reinterpret_cast<u8 *>(g_ZunMemory.Alloc(
+                this->bestShotRecords[locals.recordIndex].width *
                 this->bestShotRecords[locals.recordIndex].height *
-                this->bestShotRecords[locals.recordIndex].width;
-            this->bestShotRecords[locals.recordIndex].pixelData =
-                reinterpret_cast<u8 *>(malloc(pixelSize));
-        }
+                this->bestShotRecords[locals.recordIndex].componentCount));
 
         if (this->bestShotRecords[locals.recordIndex].type == 1)
         {
@@ -83,8 +82,8 @@ i32 SceneSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
         }
         else
         {
-            memcpy(this->bestShotRecords[locals.recordIndex].comment, locals.input,
-                   sizeof(this->bestShotRecords[locals.recordIndex].comment));
+            *reinterpret_cast<SceneBestShotCommentBlock *>(this->bestShotRecords[locals.recordIndex].comment) =
+                *reinterpret_cast<const SceneBestShotCommentBlock *>(locals.input);
             locals.input += sizeof(this->bestShotRecords[locals.recordIndex].comment);
             DecompressData(
                 locals.input, locals.fileSize - 0x68,

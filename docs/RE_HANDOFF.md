@@ -1925,3 +1925,57 @@ three repeated spawn-offset operations leaves the frame and extent unchanged.
 No exact sibling repeats this `0x2C` with the same semantic boundary, so the
 laser/timer/background storage exceptions do not apply.  All thirty canonical
 `BulletManager.cpp` units replay exact after the source change.
+
+
+### 2026-09-03 gpt-web residual phase attribution checkpoint
+
+Coverage remains 656/685 exact authored functions (95.77%) and 269,836/332,245
+exact authored bytes (81.22%); this checkpoint improves source fidelity and
+closes several false leads without claiming new exact credit.
+
+The large scene-selector diagnostic remains the highest-leverage residual.  Its
+current private best is exact-sized at 16,066 bytes with all 3,637 target
+mnemonics and 13,846/13,986 comparable bytes.  A two-field/short-lifetime probe
+for the real initialization `sceneCount` improves this to 13,848 by placing that
+value at target `EBP-0xF0`; the adjacent cursor still stays four bytes shallow.
+More importantly, the two independent `groupCursor.GetCurrent()` controls now
+have repeated-callsite phase evidence: both `0x10` phases score 13,846, while
+first-only/second-only/none score 13,227/13,150/13,142.  The private 20-byte
+queue interval is still unproven.  Clean late queue lifetimes and four repeated
+Pop phases can reproduce the target frame and complete mnemonic sequence, but
+not the target early/late queue homes; five Pop phases overshoot by four bytes.
+The remaining four-byte timer control also lacks same-owner repeated evidence.
+Do not promote any queue/timer storage merely because the frame is `0x3DC`.
+
+`UpdatePhotoCamera @ 0x00430AB0` remains at 6,399/6,415 comparable bytes after
+all currently justified source-shape controls.  Renaming the real 8-byte and
+`0x2C` phase storage through sixteen calibrated identifier buckets is
+byte-identical.  Exact-sibling zero/clear helpers, isolated-TU compilation, a
+shared CAPTURED-state `Float3`, and low/high-charge lexical arm reversal are
+negative controls.  The remaining sixteen bytes are compiler-home scheduling,
+not unresolved gameplay semantics.
+
+`PhotoStageStateView::Update @ 0x0042AD60` remains at its 5,317-byte private
+near-topology oracle.  Full target stack-use review proves the two coordinate
+copy homes at `EBP-0x14/-0x10` are each written exactly once and never read or
+address-escaped.  They are compiler-owned copies; do not manufacture source
+aliases to reproduce them.
+
+The ANM lifecycle create trio and AddVm also resist truthful TU isolation.
+CreateVm/CreateVmAtScreen/CreateVmAtWorld remain 119/125, 138/144, and 123/129
+comparable bytes in a TU containing only their declarations and three bodies.
+AddVm remains 230/236 in its own minimal TU.  Additional out-of-class inline
+placement, comma-expression rollover, object-return postfix increment, shared
+wrapper type, and calibrated local-name probes do not improve the residuals.
+
+`SceneSaveDataView::LoadBestShotForScene @ 0x00435E90` has been improved in
+canonical source.  The loader now uses `g_ZunMemory.Alloc`, copies its 80-byte
+comment through one POD assignment, and spells pixel allocation as
+`width * height * componentCount`.  The last change is target-direct: VC7.1's
+reverse materialization produces the exact target operand order
+`componentCount -> height -> width`.  The function remains exactly 1,034 bytes
+and 253 instructions with all sixteen relocations, now matching 886/970
+comparable bytes and 251/253 mnemonics.  Pointer/reference/record-offset and
+inline-setter ownership surfaces all change the extent; the remaining target
+precomputes `recordIndex * 0x78` into ESI across the allocator and retains two
+instruction-unreferenced deep dwords.
