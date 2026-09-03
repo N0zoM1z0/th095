@@ -2071,3 +2071,36 @@ final common `++transformIndex`. An early skip-path placement leaves
 to 2,617 bytes, providing bounded wrong-phase controls. Do not generalize this
 closure to SpawnSingleBullet, whose `0x2C` gap sits between a timer receiver and
 a Float3 expression temporary rather than before hidden `this`.
+
+### 2026-09-03 gpt-web residual source-shape checkpoint
+
+`PhotoEnemyManagerView::OnUpdate @ 0x00415970` has one new canonical source
+correction: write attached-VM smoothing as `(screen - attached) * 0.07f +
+attached`. This leaves the 1,829-byte / 448-instruction body extent unchanged
+but makes every real shallow stack home through `EBP-0x70` agree with target.
+Only the anonymous deep lane after target's unique unreferenced `0x20` interval
+remains displaced. All twenty exact `EnemyManagerUpdate.cpp` units cold-replay
+unchanged.
+
+`Controller::GetInput @ 0x00419AE0` is now stack-rank complete: all 579 target
+stack operands match after the recovered seven-scalar rank, yet the body stays
+2,655 versus 2,662 because the first keyboard ternary starts a persistent
+EAX/ECX/EDX scratch-register rotation. Alternative ordinary-assignment forms,
+identifier sweeps, and 0/4/8/12-byte diagnostic tail storage do not select the
+target register cycle. The target-only final two dwords remain uncredited.
+
+The three ANM creators at `0x00444EF0/0x00444FA0/0x00445060` remain at the
+current compiler boundary. A caller-tail `0x14` phase reaches the target frame
+and corrects hidden `this` plus the final AddVm return home, but shifts the two
+early `new AnmVm` temporaries too deep; the three scores become 120/125,
+139/144, and 124/129. A corrected late AddVm helper causes stock VC7.1 to
+eliminate the reservation, and moving `new` into an inline helper collapses the
+bodies.
+
+`Background::RenderObjects @ 0x00402F60` has a 541-byte source with all 160
+target mnemonics. An opcode-owned `0xA8` helper can form the correct-size gap
+class and 565-byte extent for selected identifier buckets, but its deep order is
+always `opcode -> this`; target is `this -> opcode`. Ninety-six identifier
+controls, direct-return opcode, and camera-mode-owned A8 phase all fail to
+change that ownership correctly. Do not continue generic A8/bucket sweeps
+without a new source provenance.

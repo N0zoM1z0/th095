@@ -162,11 +162,17 @@ delete view with an inline destructor naturally reproduces `RemoveVm @
 guard, `operator delete`, and all five local homes for an exact 226-byte body.
 A trivial-node delete is 25 bytes short and is not ABI-equivalent. Conversely,
 the natural `new AnmVm` source for the three creation entries has the exact
-target extents and all 28 relocations but places six homes 0x14 bytes above the
-target. `AddVm` likewise has the exact extent and instruction topology but a
-permutation of its six inlined id-counter homes. Keep those four bodies
-compiler-observed: an otherwise unused 0x14-byte object or hand-shaped local
-permutation would violate authored-source policy.
+target extents and all 28 relocations. Homes through `EBP-0x3C` agree; only
+hidden outer `this` and the final AddVm return temporary need the repeated
+`0x14` late phase. A caller-tail `0x14` block reaches the target frame and fixes
+those two homes, but incorrectly moves the two early `new AnmVm` EH/allocation
+temporaries from target `-0x14/-0x18` to `-0x28/-0x2C`, leaving five comparable
+bytes wrong in each creator (`120/125`, `139/144`, `124/129`). A corrected late
+AddVm return helper causes build 3077 to eliminate the reservation; moving the
+real `new` producer into an inline helper collapses the bodies to 70/88/78
+bytes. `AddVm` likewise has exact extent/instruction topology but a two-temp
+permutation. Keep these four bodies compiler-observed until a new source phase
+separates early allocation from late return; do not add caller-scope storage.
 
 The adjacent frame callbacks are the positive half of the same oracle. Ten
 natural `/Od /Ob1` bodies at `0x00444980..0x00444B00` reproduce all 277 bytes
@@ -721,11 +727,17 @@ an instruction reference outranks a sibling game's `#pragma var_order` name.
 
 The same audit brought `PhotoEnemyManagerView::OnUpdate @ 0x00415970` to the
 target's complete 448-mnemonic topology without inventing storage. Typed
-`AnmVmId` null/reset operations, overloaded `ZunTimer` comparisons, the literal
-attached-VM interpolation, and positive branch ownership explain real target
-temporaries. Its remaining 32-byte instruction-unreferenced interval is still
-not permission to add dummy locals; exact instruction topology and exact stack
-allocation remain separate facts.
+`AnmVmId` null/reset operations, overloaded `ZunTimer` comparisons, and positive
+branch ownership explain real target temporaries. The attached-VM smoothing
+must spell the final sum as `(screen - attached) * 0.07f + attached`, not
+`attached + (...)`: under `/Od` the scalar-first form makes all real shallow
+homes through `EBP-0x70` agree with target, including both six-float attached
+position values. What remains is one target-only `0x20` interval at
+`EBP-0x74..-0x90`; every deeper anonymous temporary is displaced by exactly
+`0x20`. A census of all 685 authored targets finds no second `0x20` unreferenced
+interval, and moving the attached-VM zero/freeze condition into one inline
+helper grows the body to 1,856 bytes / 453 instructions. Keep this as a unique
+compiler barrier; do not add 32 bytes of storage.
 
 Keep the enemy's three embedded VM-id fields as four-byte POD storage. Making
 them non-trivial `AnmVmId` members adds constructor calls and expands the
@@ -1222,3 +1234,32 @@ until a genuine repeated-phase or source-provenance oracle appears; do not turn
 the `0x2C` into an inert local. The source change renumbers compiler-private
 `$L` symbols in exact `RunStageScript` only; a full 5,229-byte structural audit
 proves all bytes and relocation destinations unchanged.
+
+### Controller and Background residual allocator diagnostics (2026-09-03)
+
+`Controller::GetInput @ 0x00419AE0` now has a complete real-local rank oracle.
+After the 256-byte keyboard array the target physical order is
+`buttons/inputSlot/result/bitIndex/repeatMask/currentBits/inputIndex @
+-0x104/-0x108/-0x10C/-0x110/-0x114/-0x118/-0x11C`. Stock VC7.1 semantic
+aliases plus the real currentBits/repeatMask declaration order reproduce all
+579 target stack operands. Identifier coordinate sweeps leave that state
+unchanged: the body stays 2,655 bytes with all 579 target mnemonics but only
+242/579 register tuples. The scratch-register cycle begins at the first
+`KEYBOARD_KEY_PRESSED` expression immediately after `GetKeyboardState`.
+Replacing `buttons |= expr` with either ordinary assignment ordering changes the
+mnemonic tree. Diagnostic function-scope 0/4/8/12-byte storage never changes the
+242/579 register score; 4/8 bytes merely move the real homes. No accepted target
+repeats the final eight-byte tail after the deepest referenced local, so this is
+not a storage exception.
+
+`Background::RenderObjects @ 0x00402F60` has a 541-byte source with all 160
+target mnemonics. Its target `0xEC` frame places a real opcode snapshot at
+`EBP-0xEC`, hidden `this @ -0xE8`, and leaves an unreferenced `0xA8` band before
+them. An opcode-owned inline helper carrying `0xA8` storage is the only tested
+semantic phase that preserves all 160 mnemonics while reaching the target
+565-byte extent for selected identifier buckets. Ninety-six additional opcode
+identifier controls prove the deep class always orders `opcode @ -0xDC` before
+`this @ -0xE0`; no named bucket produces target `this -> opcode`. Direct-return
+opcode removes the required snapshot (554 bytes/159 instructions), while a
+camera-mode-owned `0xA8` phase grows to 595 bytes. Do not continue generic A8
+storage or identifier sweeps without a new ownership oracle.

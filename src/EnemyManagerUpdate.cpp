@@ -1044,9 +1044,9 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
             PhotoToScreen(
                 &positions.screen,
                 reinterpret_cast<Float3 *>(&enemy->worldPosition));
-            positions.attached = positions.attached +
-                (positions.screen - positions.attached) *
-                0.07f;
+            positions.attached =
+                (positions.screen - positions.attached) * 0.07f +
+                positions.attached;
             g_AnmManager->SetPosition(
                 *reinterpret_cast<AnmVmId *>(&enemy->attachedVmId),
                 &positions.attached);
