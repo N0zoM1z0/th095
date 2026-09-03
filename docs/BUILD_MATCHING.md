@@ -757,6 +757,21 @@ The exact `0x2C` phase oracles elsewhere in the repository have different
 semantic owners/boundaries; do not transplant their storage here or add a
 44-byte field/local merely to force exactness.
 
+`PhotoBulletView::AdvanceTransformProgram @ 0x004062B0` is the positive
+companion. Its target keeps every real shallow home through `EBP-0x240`, then
+has no EBP/ESP references in `EBP-0x244..-0x26C` (`0x2C` bytes), followed by
+hidden `this @ -0x270` and the three deeper compiler temporaries. This is the
+same shallow-to-`0x2C`-to-hidden-this allocation boundary independently proven
+by the straight/rotating laser initializer pair. Bind the reservation only to a
+source-local `__forceinline` helper whose real operation is the final common
+`++transformIndex` after the switch. Stock build 3077 then replays the complete
+2,479-byte authored body plus the adjacent 84-byte compiler switch table: all
+2,563 compared bytes and all 23 body/table relocations are exact. Moving the
+same phase to the early skip-path increment leaves 37 comparable bytes wrong
+(`2434/2471`), while a DESPAWN-owned control changes the extent to 2,617 bytes.
+This is a phase-local repeated-target exception, not permission to pad the
+separate SpawnSingleBullet gap.
+
 `PhotoBulletView::UpdateBoundaryBounce @ 0x00407440` isolates a different
 barrier. The target loads the stored bounce-speed bits into `EBP-0x04`, reloads
 and writes the same value back to `EBP-0x04`, then reloads it for the vector

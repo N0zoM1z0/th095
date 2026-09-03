@@ -713,6 +713,15 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
 }
 
 // FUNCTION: TH095 0x004062B0; TH08 0x0042FFC0 is the adjacent source oracle.
+// The target repeats the laser-initializer 0x2C shallow-to-hidden-this
+// allocation boundary here. Keep the reservation owned by the real common
+// transform-index advance; early per-case advances are a negative phase.
+static __forceinline void PhotoBulletAdvanceTransformPhase(PhotoBulletView *bullet)
+{
+    u8 compilerStorage[0x2c];
+    ++bullet->transformIndex;
+}
+
 void PhotoBulletView::AdvanceTransformProgram()
 {
     PhotoBulletTransformRecord *record;
@@ -890,7 +899,7 @@ nextRecord:
         break;
     }
 
-    ++this->transformIndex;
+    PhotoBulletAdvanceTransformPhase(this);
 }
 
 // FUNCTION: TH095 0x00406CC0; TH08 0x00430E10 is the adjacent source oracle.

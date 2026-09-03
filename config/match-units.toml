@@ -19358,3 +19358,38 @@ relocations = [
   { offset = 0x1465, type = "DIR32", symbol = "$L69196", target = 0x0040478D },
   { offset = 0x1469, type = "DIR32", symbol = "$L69188", target = 0x004046B6 },
 ]
+
+[units.photo-bullet-advance-transform]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletView::AdvanceTransformProgram"]
+symbol = "?AdvanceTransformProgram@PhotoBulletView@th095@@QAEXXZ"
+target_address = 0x004062B0
+size = 0x9AF
+compare_size = 0xA03
+relocations = [
+  { offset = 0x110, type = "DIR32", symbol = "$L69841", target = 0x00406C73 },
+  { offset = 0x117, type = "DIR32", symbol = "$L69848", target = 0x00406C5F },
+  { offset = 0x2B4, type = "DIR32", symbol = "__real@c4778000", target = 0x00495428 },
+  { offset = 0x362, type = "REL32", symbol = "?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x394, type = "DIR32", symbol = "?g_PhotoBulletSoundPlayer@th095@@3UPhotoBulletSoundPlayerView@1@A", target = 0x004C4EE8 },
+  { offset = 0x399, type = "REL32", symbol = "?PlaySoundByIdx@PhotoBulletSoundPlayerView@th095@@QAEXHH@Z", target = 0x00438F20 },
+  { offset = 0x458, type = "DIR32", symbol = "?g_PhotoBulletSoundPlayer@th095@@3UPhotoBulletSoundPlayerView@1@A", target = 0x004C4EE8 },
+  { offset = 0x45D, type = "REL32", symbol = "?PlaySoundByIdx@PhotoBulletSoundPlayerView@th095@@QAEXHH@Z", target = 0x00438F20 },
+  { offset = 0x49D, type = "DIR32", symbol = "__real@c479c000", target = 0x00495424 },
+  { offset = 0x570, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x748, type = "DIR32", symbol = "?g_PhotoBulletScriptBases@th095@@3PAHA", target = 0x004A40C0 },
+  { offset = 0x75E, type = "DIR32", symbol = "?g_PhotoBulletManager@th095@@3PAUPhotoBulletManagerView@1@A", target = 0x004BDD98 },
+  { offset = 0x769, type = "REL32", symbol = "?InitializeVm@PhotoBulletAnmLoadedView@th095@@QAEXPAUAnmVm@2@H@Z", target = 0x00404B80 },
+  { offset = 0x7B6, type = "DIR32", symbol = "?g_PhotoBulletSoundPlayer@th095@@3UPhotoBulletSoundPlayerView@1@A", target = 0x004C4EE8 },
+  { offset = 0x7BB, type = "REL32", symbol = "?PlaySoundPositionedByIdx@PhotoBulletSoundPlayerView@th095@@QAEXHM@Z", target = 0x00439030 },
+  { offset = 0x909, type = "DIR32", symbol = "?g_PhotoBulletManager@th095@@3PAUPhotoBulletManagerView@1@A", target = 0x004BDD98 },
+  { offset = 0x90E, type = "REL32", symbol = "?SpawnBulletPattern@PhotoBulletManagerView@th095@@QAEHPAUPhotoBulletSpawnDescriptor@2@@Z", target = 0x00406CC0 },
+  { offset = 0x93A, type = "REL32", symbol = "?BeginDespawn@PhotoBulletView@th095@@QAEHXZ", target = 0x004077A0 },
+  { offset = 0x9AF, type = "DIR32", symbol = "$L68852", target = 0x004064C8 },
+  { offset = 0x9B3, type = "DIR32", symbol = "$L68854", target = 0x00406530 },
+  { offset = 0x9B7, type = "DIR32", symbol = "$L68856", target = 0x00406652 },
+  { offset = 0x9BB, type = "DIR32", symbol = "$L68858", target = 0x00406716 },
+  { offset = 0x9BF, type = "DIR32", symbol = "$L68849", target = 0x00406C3E },
+]

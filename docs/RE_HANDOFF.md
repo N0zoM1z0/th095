@@ -2049,3 +2049,19 @@ no semantic owner, so the function remains uncredited. This source change only
 renumbered 28 compiler-private `$L` symbols in already-exact `RunStageScript`;
 a direct 5,229-byte audit remains structural exact with all relocation
 destinations unchanged.
+
+### 2026-09-03 gpt-web AdvanceTransformProgram 0x2C closure
+
+`PhotoBulletView::AdvanceTransformProgram @ 0x004062B0` is now canonical exact
+for all 2,479 authored bytes. Its unit compares 2,563 bytes, including the
+adjacent 84-byte compiler switch table, and replays all 23 relocations. The
+target/source already shared all 500 authored mnemonics; the last residual was
+a completely unreferenced `0x2C` allocation interval between shallow homes
+through `EBP-0x240` and hidden `this @ -0x270`. The independent straight and
+rotating laser initializer targets already prove this same `0x2C + hidden-this`
+boundary. The accepted source-local `__forceinline` phase owns only the real
+final common `++transformIndex`. An early skip-path placement leaves
+`2434/2471` comparable bytes matched, and a DESPAWN placement grows the extent
+to 2,617 bytes, providing bounded wrong-phase controls. Do not generalize this
+closure to SpawnSingleBullet, whose `0x2C` gap sits between a timer receiver and
+a Float3 expression temporary rather than before hidden `this`.
