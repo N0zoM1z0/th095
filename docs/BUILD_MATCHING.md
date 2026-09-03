@@ -812,7 +812,12 @@ writes bounce speed through `this->speed` before copying it to `magnitude`; a
 direct TH095 adaptation emits 480 bytes and a target-absent member store. These
 bounded probes support the inference that the target sequence is lineage
 residue; they do not establish a natural exact source shape. Do not spell the
-redundant assignment explicitly merely to obtain exact bytes.
+redundant assignment explicitly merely to obtain exact bytes.  Two bounded value-producer controls do not explain the target-only
+seven-byte local self-copy: a by-value inline identity folds back to the natural
+462-byte body, while a helper with one real float return local reaches 469 bytes
+but rotates the whole frame and matches only 371/401 comparable bytes.  Do not
+encode `magnitude = magnitude` or restore TH08's `this->speed` member write; the
+TH095 target has neither authored operation.
 
 ### ZUN sound-wrapper provenance and live-local aggregates
 
@@ -1197,6 +1202,20 @@ too deep.  Frame size alone is therefore insufficient evidence.  The adjacent
 four-byte `stateTimer.Reset()` control likewise lacks an independent same-owner
 positive oracle because later Reset call sites do not repeat it.
 
+The policy-clean queue decomposition has now been exhaustively bounded on the
+13,846-comparable-byte source shape.  The six semantic Pop sites are the five
+contiguous group-drain queues plus the later loaded-scene queue.  Any four
+4-byte Pop phases give the target `0x3DC` frame, while any five give `0x3E0`.
+All fifteen four-of-six choices preserve the full 3,637-mnemonic sequence but
+produce the same 16,075-byte extent: the only size excess is three long-form
+references to one queue value at source `EBP-0x84` versus target `-0x80`.
+Moving each of the seven genuine late-queue fields in turn into the early queue
+aggregate restores the 16,066-byte extent, but every such candidate falls to
+13,135/13,986 comparable bytes.  Therefore neither Pop-callsite selection nor a
+single truthful queue-lifetime transfer reproduces the private `4+16` layout;
+do not repeat these 15+7 bounded searches or reintroduce unused aggregate
+fields.
+
 The ANM lifecycle create trio supplies a translation-unit negative oracle.
 Moving only `CreateVm`, `CreateVmAtScreen`, and `CreateVmAtWorld` into an
 isolated stock-VC7.1 TU leaves their six displacement residuals byte-identical
@@ -1214,7 +1233,11 @@ materialized in reverse source order, exactly reproducing the target loads
 `g_ZunMemory.Alloc` path and the 80-byte comment as whole-POD assignment.  Real
 record pointer/reference/offset locals and an inline record setter all change
 the target extent and are negative controls; they do not explain the target's
-pre-allocation ESI-preserved record stride.
+pre-allocation ESI-preserved record stride.  Pure array-expression spelling is now a bounded negative oracle:
+changing only the allocator LHS to `(bestShotRecords + recordIndex)->pixelData`
+or its explicit-dereference equivalent is byte-identical to the canonical
+886/970-comparable source.  The target-specific distinction remains the
+pre-Alloc preservation of `recordIndex * 0x78` in ESI, not C++ `[]` syntax.
 
 ### Background stage-loader allocation snapshots
 

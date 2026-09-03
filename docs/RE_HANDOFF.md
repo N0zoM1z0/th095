@@ -2106,3 +2106,31 @@ always `opcode -> this`; target is `this -> opcode`. Ninety-six identifier
 controls, direct-return opcode, and camera-mode-owned A8 phase all fail to
 change that ownership correctly. Do not continue generic A8/bucket sweeps
 without a new source provenance.
+
+
+### 2026-09-03 gpt-web bounded residual search checkpoint 2
+
+`UpdateSceneSelect @ 0x00447D00` has a fully bounded policy-clean replacement
+attempt for its private queue reservation.  Starting from the 13,846/13,986
+source, remove the unused 4+16 queue fields and use only the exact
+`UpdateMainMenu`-proven 4-byte `SceneValueQueue::Pop()` phase.  Four of the six
+semantic Pop callsites always give target frame `0x3DC`; five always give
+`0x3E0`.  All fifteen four-of-six combinations preserve all 3,637 target
+mnemonics but are 16,075 bytes because one queue value lands at `EBP-0x84`
+instead of target `-0x80`.  Moving each of the seven real late-queue fields to
+the early aggregate restores 16,066 bytes but every candidate falls to
+13,135/13,986.  This rules out both Pop selection and a one-field lifetime move
+as the truthful replacement for the private queue storage.  Keep the two
+independently proven 0x10 `groupCursor.GetCurrent()` phases; do not restore the
+unused queue fields.
+
+Three additional bounded negatives should not be repeated.  `Controller::GetInput`
+keeps its exact 579/579 stack-operand rank, but turning `KEYBOARD_KEY_PRESSED`
+into a source-local two-argument force-inline predicate in either parameter
+order expands the body to 3,784 bytes / 679 instructions.  `UpdateBoundaryBounce`
+keeps the natural 462-byte body under a by-value magnitude producer; a producer
+with one genuine float local reaches 469 bytes but rotates the frame to only
+371/401 comparable bytes.  `LoadBestShotForScene` is unchanged at 886/970 when
+its pixel-allocation LHS is spelled as pointer addition or explicit
+dereference; the remaining target behavior is still ESI preservation of the
+scaled record index across Alloc.
