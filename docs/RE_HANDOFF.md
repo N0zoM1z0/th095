@@ -2134,3 +2134,62 @@ with one genuine float local reaches 469 bytes but rotates the frame to only
 its pixel-allocation LHS is spelled as pointer addition or explicit
 dereference; the remaining target behavior is still ESI preservation of the
 scaled record index across Alloc.
+
+### 2026-09-03 gpt-web hard-function stack-home crosswalk checkpoint
+
+A reusable `scripts/compare-stack-homes.py` diagnostic now pairs EBP-relative
+memory operands between one VC7 COFF function and the attested target whenever
+the object and target have equal extent, instruction count, and mnemonic
+sequence.  With an MSVC `/FAsc` listing, object-side homes are labelled with
+compiler/source symbols such as `tv488`, `$T67243`, or `_sceneCount$...`.
+The tool is intentionally diagnostic only: it does not mask bytes, patch code,
+or grant exact credit.
+
+`SceneSelectControllerView::UpdateSceneSelect @ 0x00447D00` has a stronger
+allocation chronology than the earlier aggregate byte score exposed.  The
+current 16,066-byte / 3,637-mnemonic private best has 984/1115 EBP-relative
+operands already at the target home.  Its dominant deep residual is one
+mis-phased compiler ternary result: VC7 places `tv488`, the
+`min(12, FindHighestUnlockedSceneGroup()+2)` result, at `EBP-0x338`; target uses
+`EBP-0xEC`.  Every following anonymous result home from `tv2139 @ -0x33C`
+through `tv1038 @ -0x39C` is then shifted by exactly one dword relative to
+target.  This makes `tv488` a high-leverage allocator barrier rather than an
+independent semantic mismatch.  Giving the result a real named local grows the
+body to 16,080 bytes, and adding only a nested block is byte-identical at the
+13,848/13,986 score, so do not repeat named-local or lexical-block ternary
+spelling probes.  The target shallow chronology instead interleaves compiler
+return temporaries and later case-0 real locals differently; future work should
+focus on truthful lifetime/inline-phase ownership of the later
+`sceneCount/initialSceneCursor/initialGroup*` locals, not queue storage or the
+ternary AST itself.
+
+`PhotoStageDisplayView::Build @ 0x0042C5C0` has also been bounded more tightly.
+A private probe with all 92 real per-emission `AnmVm *` homes moved through one
+source-local inline producer reaches the exact 8,560-byte extent and all 2,234
+target mnemonics.  Those 92 homes match target exactly; only outer hidden
+`this` remains at `EBP-0x2B4` instead of target `-0x140`, giving 43 comparable
+byte differences including the prologue.  Twenty calibrated identifier-hash
+names, nested/assignment/addition helper spellings, two-level inline wrappers,
+static/stage/member owners, and a `PhotoStageDisplayView` member producer all
+collapse to the same 7,245/7,288 score.  This proves the residual is an inline
+scope/hidden-this allocator barrier rather than an ordinary identifier-rank or
+pointer-producer spelling problem.  Do not repeat local-name sweeps here.
+
+`Controller::GetInput @ 0x00419AE0` remains a backend scratch-register hard
+lane.  The rank-correct private probe has all 212 observed EBP-relative operands
+at target homes, yet its EAX/ECX/EDX tuple score is unchanged from canonical.
+Comma-expression variants and logically equivalent ternary ASTs (`!= 0`,
+reversed zero comparison, inverted condition) are byte-identical; explicit
+`u16` casts expand the body materially.  Local-home rank and the persistent
+keyboard scratch-register rotation are therefore independent.  Further local
+name or ternary-expression sweeps are low value without new compiler/source
+provenance.
+
+`UpdatePhotoCamera @ 0x00430AB0` retains the previously established 16-byte
+private residual, now with a sharper allocation model.  Four CreateVm return
+objects must stay in the shallow contiguous lane, while the two
+`PhotoAnmVmIdValue(0)` equality temporaries belong to a deeper compiler lane.
+Moving the value constructor class-inline is byte-identical; adding integer
+`operator==` overloads perturbs the allocator much earlier and drops the score.
+Treat the remaining mismatch as by-value equality-temporary phase ownership,
+not constructor placement or overload spelling.
