@@ -291,6 +291,14 @@ i32 __fastcall PhotoItemManagerView::OnDraw(PhotoItemManagerView *manager)
     return manager->Draw();
 }
 
+static __forceinline void PhotoItemSpawnVmSetupPhase(PhotoItemView *item, u32 color)
+{
+    u8 compilerStorage[0x2c];
+    g_PhotoBulletManager->anmSpawner->InitializeVm(&item->vm, 0x120);
+    item->vm.color1.color = color;
+}
+
+#define item averagedPanLocal12
 i32 PhotoItemManagerView::Spawn(i32 type, Float3 *position, u32 color)
 {
     PhotoItemView *item = &this->items[0];
@@ -301,26 +309,25 @@ nextSlot:
     index++;
     item++;
 checkSlot:
-    if (index >= 150)
+    if (index < 150)
     {
-        goto finished;
-    }
-    if (item->active != 0)
-    {
-        goto nextSlot;
-    }
+        if (item->active != 0)
+        {
+            goto nextSlot;
+        }
 
-    item->active = 1;
-    item->position = *position;
-    item->velocity.x = g_Rng.GetRandomF32Signed() * 1.0f;
-    item->velocity.y = g_Rng.GetRandomF32() * 2.0f + 2.0f;
-    item->velocity.z = 0.0f;
-    item->timer = 0;
-    item->acceleration = 0.0f;
-    g_PhotoBulletManager->anmSpawner->InitializeVm(&item->vm, 0x120);
-    item->vm.color1.color = color;
+        item->active = 1;
+        item->position = *position;
+        item->velocity.x = g_Rng.GetRandomF32Signed() * 1.0f;
+        item->velocity.y = g_Rng.GetRandomF32() * 2.0f + 2.0f;
+        item->velocity.z = 0.0f;
+        item->timer = 0;
+        item->acceleration = 0.0f;
+        PhotoItemSpawnVmSetupPhase(item, color);
+    }
 finished:
     return 0;
 }
+#undef item
 
 } // namespace th095
