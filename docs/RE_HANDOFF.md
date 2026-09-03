@@ -381,12 +381,15 @@
   scalar locals use identifier-hash backing names, with no padding. All ten
   canonical `TextRenderer.cpp` units replay exact.
 
-  Keep `TryAllocateBuffer @ 0x0041BF90` non-exact. TH08's reconstruction oracle
-  explicitly lists an unused `u32 padding` in its `var_order`, and TH095 has the
-  matching four-byte unreferenced frame hole, but this repository forbids inert
-  locals used only to force a match. The policy-compliant TH095 body remains
-  478 versus 490 target bytes; preserve this as a negative oracle rather than
-  copying the TH08 padding artifact.
+  `TryAllocateBuffer @ 0x0041BF90` is now canonical exact for all 490 bytes and
+  five relocations without the TH08 unused `u32 padding`. TH08's patched
+  `var_order` is used only as an ordering oracle. Stock VC7.1 reproduces the
+  target with two fully live 12-byte aggregates around the real 0x6C bitmap-info
+  object: shallow `{originalBitmapObj, deviceContext, imageWidthInBytes}` backed
+  by `averagedPanLocal12`, and deep `{bitmapData, bitmapObj, formatInfo}`. Every
+  field is consumed by real GDI allocation/publication code; the old padding
+  probe remains a negative control rather than part of canonical source.
+
 - `ReplayBrowserView::Update @ 0x0044DCA0` is now canonical exact for all
   2,054 authored bytes and 77 relocations. The key stock-VC7.1 source shape is
   a source-local `__forceinline ReplayBrowserCreateVmAt`: putting the producing
@@ -761,8 +764,7 @@ authored bytes in this pass. Reuse two source-shape rules elsewhere: (1) when a
 target stack region is completely occupied by related live fields, a semantic
 aggregate can recover VC7.1 placement without padding; (2) unsupported TH08
 `var_order` can be reproduced with identifier-hash backing names only for real
-locals. Do not generalize either rule to target holes: `TryAllocateBuffer` and
-the VM creation entries remain explicit counterexamples. A future lifecycle
+locals. Do not generalize either rule to target holes: the VM creation entries remain explicit counterexamples. `TryAllocateBuffer` is no longer one; it closed only after all six GDI locals were grouped into fully live semantic aggregates, with no inert field. A future lifecycle
 pass can revisit `UpdateVms/AddVm/CreateVm*` only with a truthful source oracle;
 otherwise skip those residuals and choose another source-present lane rather
 than spending an inert local or artificial branch for exact credit.

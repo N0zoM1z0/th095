@@ -9233,6 +9233,22 @@ relocations = [
   { offset = 0x5A, type = "REL32", symbol = "?TryAllocateBuffer@TextRenderBufferView@th095@@QAE_NHHW4_D3DFORMAT@@@Z", target = 0x0041BF90 },
 ]
 
+[units.text-render-buffer-try-allocate]
+source = "src/TextRenderer.cpp"
+object = "build/matching/TextRenderer.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::TextRenderBufferView::TryAllocateBuffer"]
+symbol = "?TryAllocateBuffer@TextRenderBufferView@th095@@QAE_NHHW4_D3DFORMAT@@@Z"
+target_address = 0x0041BF90
+size = 0x1EA
+relocations = [
+  { offset = 0x17, type = "REL32", symbol = "?ReleaseBuffer@TextRenderBufferView@th095@@QAE_NXZ", target = 0x0041BE60 },
+  { offset = 0x32, type = "REL32", symbol = "?GetFormatInfo@TextRenderBufferView@th095@@QAEPAUTextRenderFormatInfo@2@W4_D3DFORMAT@@@Z", target = 0x0041C180 },
+  { offset = 0x102, type = "DIR32", symbol = "__imp__CreateDIBSection@24", target = 0x0049502C },
+  { offset = 0x139, type = "DIR32", symbol = "__imp__CreateCompatibleDC@4", target = 0x00495030 },
+  { offset = 0x14D, type = "DIR32", symbol = "__imp__SelectObject@8", target = 0x00495034 },
+]
+
 [units.text-render-buffer-get-format]
 source = "src/TextRenderer.cpp"
 object = "build/matching/TextRenderer.obj"

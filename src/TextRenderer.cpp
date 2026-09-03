@@ -99,13 +99,25 @@ typedef char TextBitmapInfoSizeIs6C[
 bool TextRenderBufferView::TryAllocateBuffer(i32 width, i32 height,
                                              D3DFORMAT format)
 {
-    HGDIOBJ originalBitmap;
-    u8 *bitmapData;
-    HBITMAP bitmap;
-    TextRenderFormatInfo *formatInfo;
+    struct TextRenderShallowLocals
+    {
+        HGDIOBJ originalBitmapObj;
+        HDC deviceContext;
+        i32 imageWidthInBytes;
+    } averagedPanLocal12;
+    struct TextRenderDeepLocals
+    {
+        u8 *bitmapData;
+        HBITMAP bitmapObj;
+        TextRenderFormatInfo *formatInfo;
+    } deep;
     TextBitmapInfo bitmapInfo;
-    HDC deviceContext;
-    i32 imageWidthInBytes;
+#define bitmapData deep.bitmapData
+#define bitmapObj deep.bitmapObj
+#define formatInfo deep.formatInfo
+#define originalBitmapObj averagedPanLocal12.originalBitmapObj
+#define deviceContext averagedPanLocal12.deviceContext
+#define imageWidthInBytes averagedPanLocal12.imageWidthInBytes
 
     this->ReleaseBuffer();
     memset(&bitmapInfo, 0, sizeof(TextBitmapInfo));
@@ -130,25 +142,31 @@ bool TextRenderBufferView::TryAllocateBuffer(i32 width, i32 height,
         reinterpret_cast<u32 *>(bitmapInfo.colors)[2] = formatInfo->blueMask;
         reinterpret_cast<u32 *>(bitmapInfo.colors)[3] = formatInfo->alphaMask;
     }
-    bitmap = CreateDIBSection(NULL, reinterpret_cast<BITMAPINFO *>(&bitmapInfo),
+    bitmapObj = CreateDIBSection(NULL, reinterpret_cast<BITMAPINFO *>(&bitmapInfo),
                               DIB_RGB_COLORS,
                               reinterpret_cast<void **>(&bitmapData), NULL, 0);
-    if (bitmap == NULL)
+    if (bitmapObj == NULL)
     {
         return false;
     }
     memset(bitmapData, 0, bitmapInfo.header.biSizeImage);
     deviceContext = CreateCompatibleDC(NULL);
-    originalBitmap = SelectObject(deviceContext, bitmap);
-    this->hdc = deviceContext;
-    this->bitmap = bitmap;
+    originalBitmapObj = SelectObject(deviceContext, bitmapObj);
+#undef originalBitmapObj
+#undef deviceContext
+#undef imageWidthInBytes
+    this->hdc = averagedPanLocal12.deviceContext;
+    this->bitmap = bitmapObj;
     this->buffer = bitmapData;
     this->imageSizeInBytes = bitmapInfo.header.biSizeImage;
-    this->originalBitmap = originalBitmap;
+    this->originalBitmap = averagedPanLocal12.originalBitmapObj;
     this->width = width;
     this->height = height;
     this->format = format;
-    this->imageWidthInBytes = imageWidthInBytes;
+    this->imageWidthInBytes = averagedPanLocal12.imageWidthInBytes;
+#undef bitmapData
+#undef bitmapObj
+#undef formatInfo
     return true;
 }
 
