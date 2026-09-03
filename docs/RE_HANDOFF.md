@@ -2193,3 +2193,33 @@ Moving the value constructor class-inline is byte-identical; adding integer
 `operator==` overloads perturbs the allocator much earlier and drops the score.
 Treat the remaining mismatch as by-value equality-temporary phase ownership,
 not constructor placement or overload spelling.
+
+### 2026-09-03 gpt-web SceneSelect tv488 ownership negative controls
+
+Follow-up probes on the 13,848/13,986 exact-size private best further bound the
+case-0 shallow/deep allocator split.  Wrapping the group-count ternary in a
+source-local no-argument helper or a helper taking `SceneSelectUpdateView *` is
+byte-identical; taking `SceneSaveDataView *` grows the body to 16,080 bytes.
+Spelling the `0x82` CreateVm directly is also byte-identical, while introducing
+a named VM index grows to 16,080.  These results rule out helper/direct-call
+ownership of `tv488` and `$T67243` as the missing source distinction.
+
+Moving the initialized `loadedSceneTextQueue` statement before the `0x82`
+CreateVm changes the body to 16,065 bytes because it moves executable pointer
+materialization, so that is not a valid topology match.  Moving only its
+*declaration* earlier while retaining the assignment at the original statement
+is byte-identical at 13,848, regardless of whether the declaration precedes the
+texture load, interrupt, or CreateVm call.  VC7.1 therefore ranks this real
+pointer by its effective phase/use rather than lexical declaration point in
+this body.
+
+Finally, shortening the real `initialGroupValue`, `initialGroupCursor`, and/or
+`initialGroupIndex` lifetimes with ordinary nested blocks retains the exact
+16,066-byte / 3,637-mnemonic topology but falls to 13,842/13,986.  The target
+shallow chronology is consequently not explained by simply shrinking these
+three lexical scopes.  Do not repeat group-count AST/helper, `0x82` direct-call,
+loaded-text declaration-point, or simple initial-group nested-scope sweeps.
+The remaining high-value hypothesis is a compiler phase introduced by a
+truthful surrounding operation (or an original aggregate/object-return source
+shape) that interleaves `$T67243/$T67251/tv488` with the later real locals
+without moving the emitted statements.
