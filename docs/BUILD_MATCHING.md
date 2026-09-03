@@ -764,50 +764,42 @@ object lifetime and stable symbol provenance.
 
 `PhotoItemManagerView::Spawn @ 0x0041D460` adds three separate stock-VC7 oracles. First, keep the scan body inside the positive `if (index < 150)` arm with `finished:` as natural fallthrough. The semantically equivalent `if (index >= 150) goto finished` form emits `jl short + jmp near` and is one byte longer; the positive arm emits the target single near `jge`. Second, back the real `item` pointer with the established `averagedPanLocal12` identifier bucket so `item/index` occupy target `EBP-0x04/-0x08` while the real timer receiver remains `-0x0C`. Finally, the target repeats the exact laser/AdvanceTransformProgram `0x2C` shallow-to-hidden-`this` boundary: no EBP/ESP reference exists at `-0x10..-0x38`, then hidden `this` is `-0x3C`. Bind that reservation to one source-local helper containing the real late VM setup (`InitializeVm` plus color publication). This replays all 278 bytes and eight relocations. Putting the same phase on `item->timer = 0` leaves four comparable displacement bytes wrong (`242/246`); the VM initialization and adjacent color store individually lie in the same accepted late allocation phase. Do not move the reservation to function scope.
 
-### Bullet-core frame-gap and redundant-copy negative oracles
+### Bullet-core phase ownership and exact spawn closure
 
-`PhotoBulletManagerView::SpawnSingleBullet @ 0x00405A30` has the same
-instruction-unreferenced `0x2C` fingerprint as several ECL/effect callbacks
-and `AdvanceTransformProgram`, but its semantic source shape is now substantially
-narrower.  Keep the five genuine long-lived values in one gapless 20-byte
-aggregate declared as `{transformFlags, angle, bullet, i, speed}`: VC7 lays the
-record out so the target homes become `speed/i/bullet/angle/transformFlags @
-EBP-0x04..-0x14`.  Two TH095-specific conditional expressions are also required.
-Spell the count-2 speed interpolation as one ternary assigned to `speed`, and
-spell the odd/even fan-angle increment as one ternary added to `angle`.  The
-target stores both arms of each expression into a shared compiler temporary and
-performs one join copy/add; the inherited TH08 statement-level `if/else` forms
-skip those common temporaries.  With both ternaries and the live aggregate,
-stock build 3077 emits all 529 authored target mnemonics in order and a 2,061-byte
-body with frame `0xB8`.
+`PhotoBulletManagerView::SpawnSingleBullet @ 0x00405A30` is canonical exact.
+Keep the five genuine long-lived values in one gapless 20-byte aggregate
+`{transformFlags, angle, bullet, i, speed}` so stock VC7 lays out
+`speed/i/bullet/angle/transformFlags @ EBP-0x04..-0x14`.  Keep the count-2
+speed interpolation as one ternary assigned to `speed`, and the odd/even fan
+angle increment as one ternary added to `angle`; both require the target's
+shared conditional-expression join temporary.
 
-The remaining target-only allocation is still not source-proven.  The 2,133-byte
-target frame is `0xE4`; instructions reference `EBP-0x04..-0x50` and then resume
-at `EBP-0x80`, with no access or escaped address into `EBP-0x54..-0x7C`.  The
-last source/target home before the gap is the compiler receiver used by the real
-`bullet->activeTimer = 0` initialization.  The first source home shifted across
-the gap belongs to the Float3 temporary produced by the first fast-spawn
-`bullet->position -= bullet->velocity * 4.0f` expression.  Moving that repeated
-offset into a real force-inlined helper leaves the `0xB8` frame and 2,061-byte
-body unchanged, so helper ownership does not naturally generate the reservation.
-The exact `0x2C` phase oracles elsewhere in the repository have different
-semantic owners/boundaries; do not transplant their storage here or add a
-44-byte field/local merely to force exactness.
+The former `0x2C` gap at `EBP-0x54..-0x7C` now has positive semantic
+provenance.  Do not infer it merely from the equal size of other reservations.
+The exact `PhotoItemManagerView::Spawn @ 0x0041D460` target independently binds
+a `0x2C` stock-VC7 phase to the real late `InitializeVm` frontend using the
+same underlying bullet ANM initializer.  Applying the same operation-owned
+source-local phase to SpawnSingleBullet changes the natural `0xB8` frame to the
+target `0xE4`, moves every deeper `$T/tv` home to its target location, and
+leaves the emitted semantics unchanged.  Three bounded controls -- phase over
+`InitializeVm` alone, `InitializeVm + drawBucket`, and
+`InitializeVm + drawBucket + transformSound` -- are byte-identical.  Thus the
+minimal accepted owner is `InitializeVm`, not neighboring publication or a
+function-scope filler.
 
-`PhotoBulletView::AdvanceTransformProgram @ 0x004062B0` is the positive
-companion. Its target keeps every real shallow home through `EBP-0x240`, then
-has no EBP/ESP references in `EBP-0x244..-0x26C` (`0x2C` bytes), followed by
-hidden `this @ -0x270` and the three deeper compiler temporaries. This is the
-same shallow-to-`0x2C`-to-hidden-this allocation boundary independently proven
-by the straight/rotating laser initializer pair. Bind the reservation only to a
-source-local `__forceinline` helper whose real operation is the final common
-`++transformIndex` after the switch. Stock build 3077 then replays the complete
-2,479-byte authored body plus the adjacent 84-byte compiler switch table: all
-2,563 compared bytes and all 23 body/table relocations are exact. Moving the
-same phase to the early skip-path increment leaves 37 comparable bytes wrong
-(`2434/2471`), while a DESPAWN-owned control changes the extent to 2,617 bytes.
-This is a phase-local repeated-target exception, not permission to pad the
-separate SpawnSingleBullet gap.
+The canonical unit counts 2,133 authored bytes and compares 2,169 bytes with the
+adjacent nine-entry 36-byte compiler jump table.  All 529 authored mnemonics,
+278 EBP operands, all non-relocation bytes, and all 41 body/table relocations
+replay exactly.  Adding the helper renumbers only compiler-private labels in
+`AdvanceTransformProgram`; a fresh 2,563-byte structural audit proves all
+destinations unchanged before manifest identity is refreshed.
+
+`PhotoBulletView::AdvanceTransformProgram @ 0x004062B0` remains the independent
+positive companion. Its different `0x2C` boundary is before hidden `this` and
+is owned by the real final common `++transformIndex`; it should still not be
+used as a size-only excuse for other functions.  The useful general rule is
+**same operation + independently repeated target phase**, not same reservation
+size.
 
 `PhotoBulletView::UpdateBoundaryBounce @ 0x00407440` isolates a different
 barrier. The target loads the stored bounce-speed bits into `EBP-0x04`, reloads
@@ -1176,15 +1168,27 @@ AddDisplayVm/pointer/reference alternatives also regress.  Do not promote Build
 merely because the reservation is now corroborated; zero-byte replay and the
 correct operation-owned phase remain mandatory.
 
-For `PhotoStageStateView::Update @ 0x0042AD60`, a force-inlined primary/overlay
-VM-address producer that materializes `&slots[i].display` first raises the best
-probe to 5,317 bytes and 1,171 instructions, with only seven mnemonic edits
-against the 5,309-byte / 1,172-instruction target.  Its remaining opening
-residual is the helper's real display-pointer spill/reload; reference binding,
-`register`, return-reference, and pair-reference spellings either preserve that
-spill or regress to the direct-expression lowering.  The two other residual
-regions remain target-only coordinate-result compiler copies.  Keep these as
-negative source-shape oracles rather than introducing write-only locals.
+For `PhotoStageStateView::Update @ 0x0042AD60`, the crop and opening
+instruction topology is now closed without dead locals.  The target's two
+coordinate copy pairs are real value snapshots: compute `rawLeft/rawTop`, copy
+them to `left/top`, and reuse the raw values for `right/bottom`.  This truthful
+source generates the four formerly missing copy/reuse instructions.
+
+For the opening nested VM traversal, express the actual layout as eleven
+strided display rows beginning at state `+0x44`.  A row contains
+`primaryVms[6]`, immediately followed by `overlayVms[6]` because
+`6*sizeof(AnmVm)==0x10C8`, then the real-layout `0x84` tail to the next
+`0x2214`-byte slot.  Direct indexing through that typed view emits the target's
+two-stage address formation (`i*0x2214 -> display base -> j*0x2CC`) and reaches
+1,172/1,172 target mnemonics.  Pointer caches, references, member pair helpers,
+byte-pointer arithmetic, and tail/display accessor variants either spill a
+non-target pointer or let VC7 over-fold the two indices.
+
+The current topology-complete probe is 5,342 bytes with frame `0x124` versus
+target 5,309 / `0x12C`; only 27/413 observed EBP operands are at target homes.
+Do not keep searching opening syntax or reclassify the raw snapshots as compiler
+padding.  The next work is whole-function live-local/compiler-temp rank and
+coalescing, using the source-labelled stack-home crosswalk.
 
 
 ### Residual phase attribution: SceneSelect, ANM lifecycle, and best-shot loading

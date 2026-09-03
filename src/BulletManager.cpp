@@ -549,6 +549,20 @@ void PhotoBulletManagerView::Destroy()
     }
 }
 
+// Stock VC7.1 assigns this real late VM initialization the same 0x2C
+// allocation phase independently proven by exact PhotoItemManagerView::Spawn.
+// Bounded controls that also include draw-bucket and transform-sound publication
+// are byte-identical, so the phase owner is the InitializeVm frontend itself.
+static __forceinline void PhotoBulletSpawnVmSetupPhase(
+    PhotoBulletManagerView *manager, PhotoBulletView *bullet,
+    PhotoBulletSpawnDescriptor *descriptor)
+{
+    u8 compilerStorage[0x2c];
+    manager->anmSpawner->InitializeVm(
+        &bullet->vm,
+        g_PhotoBulletScriptBases[descriptor->bulletType] + descriptor->color);
+}
+
 #pragma var_order(speed, i, bullet, angle, transformFlags, this)
 // FUNCTION: TH095 0x00405A30; TH08 0x0042F5F0 is the adjacent source oracle.
 i32 PhotoBulletManagerView::SpawnSingleBullet(
@@ -659,9 +673,7 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
     locals.bullet->flags |= 0x00000002;
     locals.bullet->flags &= ~0x00000010;
 
-    this->anmSpawner->InitializeVm(
-        &locals.bullet->vm,
-        g_PhotoBulletScriptBases[descriptor->bulletType] + descriptor->color);
+    PhotoBulletSpawnVmSetupPhase(this, locals.bullet, descriptor);
     locals.bullet->drawBucketIndex =
         g_PhotoBulletDrawBucketIndices[descriptor->bulletType];
     locals.bullet->transformSound = descriptor->transformSound;

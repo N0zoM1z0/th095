@@ -59,7 +59,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00405900,authored,BulletManager,authored,exact,photo-bullet-manager-draw-bucket-exact-2026-08-30
 0x004059C0,authored,BulletManager,authored,exact,vc71-photo-bullet-on-update-exact-2026-09-01
 0x00405A00,authored,BulletManager,authored,exact,photo-bullet-manager-on-draw-exact-2026-08-30
-0x00405A30,authored,BulletManager,authored,high,photo-bullet-spawn-single-semantic-2026-08-30
+0x00405A30,authored,BulletManager,authored,exact,vc71-photo-bullet-spawn-single-exact-2026-09-03
 0x004062B0,authored,BulletManager,authored,high,photo-bullet-transform-interpreter-semantic-2026-08-30
 0x00406CC0,authored,BulletManager,authored,exact,photo-bullet-spawn-pattern-exact-2026-08-30
 0x00406D80,authored,BulletManager,authored,exact,photo-bullet-deceleration-exact-2026-08-30
