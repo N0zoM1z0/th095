@@ -1875,15 +1875,14 @@ identifier-bucket sweeps are bounded negative controls.  Do not copy the
 private diagnostic phase storage into canonical source until each reservation
 satisfies the repeated-phase/direct-provenance rule.
 
-`PhotoStageStateView::Update @ 0x0042AD60` also has a better private source-shape
-oracle.  Computing the primary/overlay VM address through a force-inlined helper
-that first materializes the slot's embedded display gives a 5,317-byte,
-1,171-instruction probe and matches 1,168 of the target's 1,172 mnemonics in the
-sequence matcher (seven edit operations total).  The helper's source-visible
-display pointer causes one store/reload in each opening address calculation;
-reference, register, return-reference, and pair-reference forms do not remove it.
-The two target-only coordinate-copy homes remain compiler temporaries.  Keep the
-main source conservative until a no-spill expression oracle appears.
+`PhotoStageStateView::Update @ 0x0042AD60` has a useful opening-address oracle,
+but this older checkpoint is superseded by the later crop re-audit.  A helper
+that materializes the slot's embedded display gives 5,317 bytes / 1,171
+instructions but spills a non-target display pointer.  Reference, register,
+return-reference, and pair-reference spellings do not remove that spill.  Do
+not reuse the former “coordinate-copy compiler temporaries” conclusion: later
+instruction-use analysis proves those X/Y values are genuine live snapshots;
+see the corrected crop checkpoint below.
 
 `PhotoStageDisplayView::Build @ 0x0042C5C0` has now been improved in canonical
 source without claiming exactness.  The source keeps `displayPosition` and a
@@ -1918,11 +1917,12 @@ authored instruction topology under stock VC7.1 without assembly or inert
 storage.  The decisive source changes are a gapless five-field live aggregate
 for the shallow values and two conditional expressions that deliberately create
 the target's join temporaries.  The count-2 speed expression and fan-angle
-odd/even expression each improve the old statement-level TH08-derived lowering;
-combined with the aggregate they produce a 2,061-byte `0xB8`-frame body whose
-first 529 instructions have the target's complete 529-mnemonic authored sequence.
-The aggregate itself is directly target-accounted: every one of its 20 bytes is
-read or written, and its reversed declaration order yields exact homes
+odd/even expression each improve the old statement-level TH08-derived lowering.
+A later boundary re-audit corrects the size terminology: the current authored
+source body ends at `0x7E9` (2,025 bytes) and has all 529 target mnemonics; the
+2,061-byte COFF auxiliary extent additionally owns a 36-byte nine-entry jump
+table.  The aggregate itself is directly target-accounted: every one of its 20
+bytes is read or written, and its reversed declaration order yields exact homes
 `speed/i/bullet/angle/transformFlags @ -0x04/-0x08/-0x0C/-0x10/-0x14`.
 
 The sole remaining allocation barrier is the target's unreferenced
@@ -1964,11 +1964,17 @@ shared CAPTURED-state `Float3`, and low/high-charge lexical arm reversal are
 negative controls.  The remaining sixteen bytes are compiler-home scheduling,
 not unresolved gameplay semantics.
 
-`PhotoStageStateView::Update @ 0x0042AD60` remains at its 5,317-byte private
-near-topology oracle.  Full target stack-use review proves the two coordinate
-copy homes at `EBP-0x14/-0x10` are each written exactly once and never read or
-address-escaped.  They are compiler-owned copies; do not manufacture source
-aliases to reproduce them.
+`PhotoStageStateView::Update @ 0x0042AD60` has a corrected crop oracle.  The
+older claim that the two coordinate homes were write-only compiler copies was
+false: target stores a raw X/Y result, copies it to `left/top`, and then reads
+the raw value again while forming `right/bottom`.  Two fully live locals
+`rawLeft/rawTop` reproduce those four missing copy/reuse instructions exactly.
+The resulting direct probe is 5,338 bytes / 1,170 instructions.  Combining the
+same crop source with a `SlotAt(i)` member-accessor opening reaches 1,172/1,172
+target mnemonics, but its frame is `0x124` versus target `0x12C` and only
+27/413 observed EBP operands remain at target homes.  Preserve the raw
+snapshots as semantic evidence; the remaining problem is address/local-rank
+allocation, not crop semantics.
 
 The ANM lifecycle create trio and AddVm also resist truthful TU isolation.
 CreateVm/CreateVmAtScreen/CreateVmAtWorld remain 119/125, 138/144, and 123/129
@@ -2084,12 +2090,13 @@ Only the anonymous deep lane after target's unique unreferenced `0x20` interval
 remains displaced. All twenty exact `EnemyManagerUpdate.cpp` units cold-replay
 unchanged.
 
-`Controller::GetInput @ 0x00419AE0` is now stack-rank complete: all 579 target
-stack operands match after the recovered seven-scalar rank, yet the body stays
-2,655 versus 2,662 because the first keyboard ternary starts a persistent
-EAX/ECX/EDX scratch-register rotation. Alternative ordinary-assignment forms,
-identifier sweeps, and 0/4/8/12-byte diagnostic tail storage do not select the
-target register cycle. The target-only final two dwords remain uncredited.
+`Controller::GetInput @ 0x00419AE0` has its real-local rank solved: the
+calibrated source places all 212 observed EBP-relative operands at target homes.
+The body remains 2,655 versus 2,662 with all 579 target mnemonics, because the
+keyboard expression lanes use non-target EAX/ECX/EDX scratch cycles and target
+alone reserves two unreferenced tail dwords at `-0x120/-0x124`.  This rank is
+now promoted to canonical source; later checkpoints bound the register
+scheduler independently.
 
 The three ANM creators at `0x00444EF0/0x00444FA0/0x00445060` remain at the
 current compiler boundary. A caller-tail `0x14` phase reaches the target frame
@@ -2175,24 +2182,34 @@ collapse to the same 7,245/7,288 score.  This proves the residual is an inline
 scope/hidden-this allocator barrier rather than an ordinary identifier-rank or
 pointer-producer spelling problem.  Do not repeat local-name sweeps here.
 
-`Controller::GetInput @ 0x00419AE0` remains a backend scratch-register hard
-lane.  The rank-correct private probe has all 212 observed EBP-relative operands
-at target homes, yet its EAX/ECX/EDX tuple score is unchanged from canonical.
-Comma-expression variants and logically equivalent ternary ASTs (`!= 0`,
-reversed zero comparison, inverted condition) are byte-identical; explicit
-`u16` casts expand the body materially.  Local-home rank and the persistent
-keyboard scratch-register rotation are therefore independent.  Further local
-name or ternary-expression sweeps are low value without new compiler/source
-provenance.
+`Controller::GetInput @ 0x00419AE0` is now canonically stack-rank complete:
+the target-proven backing aliases in `src/Controller.cpp` put all 212 observed
+EBP-relative operands at target homes, and all seven pre-existing Controller
+exact units cold-replay unchanged.  The body remains 2,655 versus target 2,662
+with all 579 mnemonics.  The first Win32 keyboard lane is a cyclic register
+permutation (source EAX->EDX->ECX, target EDX->ECX->EAX), while later lanes use
+different permutations and the final controller/history region mostly agrees.
+The exact TH08 ancestor independently exhibits the same three-register VC7
+cycle from a third starting phase, proving this is source-context scheduling,
+not random codegen.  New bounded negatives include declaration-order and
+initializer changes, restoring real array/reference views for controller
+globals, runtime-bitfield versus shift/mask spelling, `GetKeyboardState`
+address forms, outer BOOL spelling, real-operation-owned 8-byte phases, and
+branchless-mask algebra.  None selects the target cycle while preserving target
+instruction order.  Ordinary `buttons = buttons | rhs` does rotate the cycle
+but moves `or` ahead of mask formation and is therefore a topology negative.
 
-`UpdatePhotoCamera @ 0x00430AB0` retains the previously established 16-byte
-private residual, now with a sharper allocation model.  Four CreateVm return
-objects must stay in the shallow contiguous lane, while the two
-`PhotoAnmVmIdValue(0)` equality temporaries belong to a deeper compiler lane.
-Moving the value constructor class-inline is byte-identical; adding integer
-`operator==` overloads perturbs the allocator much earlier and drops the score.
-Treat the remaining mismatch as by-value equality-temporary phase ownership,
-not constructor placement or overload spelling.
+`UpdatePhotoCamera @ 0x00430AB0` retains a 16-byte private residual, now
+resolved to two root homes.  Remember the boundary: authored body is 7,271
+bytes; the 7,291-byte COFF extent includes a 20-byte compiler switch table.
+`$T69614` and `$T69616`, the two `PhotoAnmVmIdValue(0)` equality RHS
+temporaries, are shallow at `-0x11C/-0x124` but target them at
+`-0x264/-0x270`.  Their misplacement alone displaces the four shallow CreateVm
+sret homes and two neighboring deep temps.  Class-inline/out-of-class member
+operator placement, exact-sibling `IsZero` helper families, named zero locals,
+integer overloads, and four free equality parameter ownership forms are bounded
+negatives; do not repeat them.  Treat the residual specifically as by-value
+equality-temp phase ownership.
 
 ### 2026-09-03 gpt-web SceneSelect tv488 ownership negative controls
 
@@ -2224,6 +2241,30 @@ truthful surrounding operation (or an original aggregate/object-return source
 shape) that interleaves `$T67243/$T67251/tv488` with the later real locals
 without moving the emitted statements.
 
+
+### 2026-09-03 gpt-web hard-lane boundary revalidation
+
+`PhotoEnemyManagerView::OnUpdate @ 0x00415970` cold-replays at 1,829 bytes with
+all 448 target mnemonics.  All shallow homes through `EBP-0x70` are exact;
+target alone leaves `-0x74..-0x90` completely unreferenced, and every later
+home is exactly 0x20 deeper.  The first displaced compiler value is `$T69874`,
+the attached-VM-id truthiness temporary.  Narrow value-only inline helpers,
+integer-conversion wrapper views, and `AnmVmId`/POD by-value producer ABIs are
+byte-identical; helpers that absorb the comparison add the wrong instructions.
+The 0x20 phase owner therefore remains open, but its boundary is now precise.
+
+`PhotoBulletManagerView::SpawnSingleBullet @ 0x00405A30` has the analogous
+single-boundary result at 0x2C.  Cold source has a 2,025-byte authored body plus
+a 36-byte compiler jump table in the 2,061-byte COFF symbol; target authored
+body is 2,133 bytes.  All 529 authored mnemonics agree.  Source/target homes are
+identical through `EBP-0x50`; target alone reserves `-0x54..-0x7C`, and the
+first displaced values `$T69696/$T69697/$T69698` are the three components of
+the first fast-spawn `velocity * 4.0f` result.  Moving `operator*` or the
+three-float constructor class-inline/out-of-class, restoring TH08's pointer
+return from `operator-=`, and wrapping the repeated offset expression are all
+byte-identical.  Do not generalize the exact laser/AdvanceTransform 0x2C phase:
+their proven boundary is before hidden `this`, whereas Spawn's is before a
+Float3 expression-return lane.
 
 ### 2026-09-03 gpt-web ProcessMsg authored-body/table and hash-cycle closure
 

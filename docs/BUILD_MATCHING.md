@@ -50,6 +50,15 @@ than truncating comparison at the convenient symbol size.
 compiler-generated tables that must also replay exactly. The comparator never
 credits the extra bytes as authored coverage.
 
+For instruction and stack-home analysis, disassemble only the reviewed authored
+body.  Do not feed the raw COFF auxiliary extent to Capstone/IDA as if every byte
+were executable authored code: unresolved `DIR32` table fields are often zero in
+the object and can decode as plausible `add [eax], al` instructions.  Establish
+the target body boundary first, then replay the compiler-owned tail separately.
+Current examples are `MidiOutput::ProcessMsg` (`0x74A` authored / `0x89E`
+compared), `UpdatePhotoCamera` (`0x1C67` authored / `0x1C7B` COFF extent), and
+the current `SpawnSingleBullet` source (`0x7E9` authored / `0x80D` COFF extent).
+
 ## Comparison tools
 
 `reccmp 0.1.6` supplies mapped project comparison and `objdiff 3.8.0` supplies

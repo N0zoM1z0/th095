@@ -322,99 +322,109 @@ u8 *GetControllerState(i32 deviceIndex)
 #define KEYBOARD_KEY_PRESSED(button, key) \
     keyboardState[key] & 0x80 ? button : 0
 
+// Stock VC7.1 ranks these six real locals by identifier hash rather than source
+// declaration order.  Keep readable semantic aliases while using the
+// target-proven backing buckets; this gives GetInput all 212 observed EBP homes
+// exactly without changing the input logic or adding storage.
+#define inputButtons repeatMask
+#define inputStateSlot buttons
+#define inputResult bitIndex
+#define inputBitIndex currentBits
+#define inputCurrentBits result
+#define inputRepeatMask inputSlot
 u16 GetInput(i32 inputIndex)
 {
     u8 keyboardState[256];
-    u16 buttons;
-    ControllerInputSlotView *inputSlot;
-    HRESULT result;
-    i32 bitIndex;
-    u16 repeatMask;
-    u16 currentBits;
+    u16 inputButtons;
+    ControllerInputSlotView *inputStateSlot;
+    HRESULT inputResult;
+    i32 inputBitIndex;
+    u16 inputCurrentBits;
+    u16 inputRepeatMask;
 
-    buttons = 0;
-    inputSlot = (&g_ControllerInputSlots) + inputIndex;
+    inputButtons = 0;
+    inputStateSlot = (&g_ControllerInputSlots) + inputIndex;
     if (g_ControllerInputEnabled != 0)
     {
         if (((g_ControllerRuntimeFlags >> 10) & 1) == 0)
         {
             GetKeyboardState(keyboardState);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_UP, VK_UP);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_DOWN, VK_DOWN);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_LEFT, VK_LEFT);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RIGHT, VK_RIGHT);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_BOMB, 'Z');
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_SHOOT, 'X');
-            buttons |= KEYBOARD_KEY_PRESSED(
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_UP, VK_UP);
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_DOWN, VK_DOWN);
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_LEFT, VK_LEFT);
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RIGHT, VK_RIGHT);
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_BOMB, 'Z');
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_SHOOT, 'X');
+            inputButtons |= KEYBOARD_KEY_PRESSED(
                 TH_BUTTON_SHOOT | TH_BUTTON_FOCUS, VK_SHIFT);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_UP, VK_NUMPAD8);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_DOWN, VK_NUMPAD2);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_LEFT, VK_NUMPAD4);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RIGHT, VK_NUMPAD6);
-            buttons |= KEYBOARD_KEY_PRESSED(
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_UP, VK_NUMPAD8);
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_DOWN, VK_NUMPAD2);
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_LEFT, VK_NUMPAD4);
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RIGHT, VK_NUMPAD6);
+            inputButtons |= KEYBOARD_KEY_PRESSED(
                 TH_BUTTON_UP_LEFT, VK_NUMPAD7);
-            buttons |= KEYBOARD_KEY_PRESSED(
+            inputButtons |= KEYBOARD_KEY_PRESSED(
                 TH_BUTTON_UP_RIGHT, VK_NUMPAD9);
-            buttons |= KEYBOARD_KEY_PRESSED(
+            inputButtons |= KEYBOARD_KEY_PRESSED(
                 TH_BUTTON_DOWN_LEFT, VK_NUMPAD1);
-            buttons |= KEYBOARD_KEY_PRESSED(
+            inputButtons |= KEYBOARD_KEY_PRESSED(
                 TH_BUTTON_DOWN_RIGHT, VK_NUMPAD3);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_SKIP, VK_CONTROL);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_MENU, VK_ESCAPE);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_ENTER, VK_RETURN);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_HOME, VK_HOME);
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_HOME, 'P');
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_D, 'D');
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_Q, 'Q');
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_S, 'S');
-            buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RESET, 'R');
-            buttons |= KEYBOARD_KEY_PRESSED(0x8000, 'L');
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_SKIP, VK_CONTROL);
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_MENU, VK_ESCAPE);
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_ENTER, VK_RETURN);
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_HOME, VK_HOME);
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_HOME, 'P');
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_D, 'D');
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_Q, 'Q');
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_S, 'S');
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RESET, 'R');
+            inputButtons |= KEYBOARD_KEY_PRESSED(0x8000, 'L');
         }
         else
         {
-            result = g_KeyboardDevice->GetDeviceState(
+            inputResult = g_KeyboardDevice->GetDeviceState(
                 sizeof(keyboardState), keyboardState);
-            buttons = 0;
-            if (result == DIERR_INPUTLOST)
+            inputButtons = 0;
+            if (inputResult == DIERR_INPUTLOST)
             {
                 g_KeyboardDevice->Acquire();
             }
-            else if (result != S_OK)
+            else if (inputResult != S_OK)
             {
                 g_KeyboardDevice->Acquire();
             }
             else
             {
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_UP, DIK_UP);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_DOWN, DIK_DOWN);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_LEFT, DIK_LEFT);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RIGHT, DIK_RIGHT);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_BOMB, DIK_Z);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_SHOOT, DIK_X);
-                buttons |= KEYBOARD_KEY_PRESSED(
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_UP, DIK_UP);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_DOWN, DIK_DOWN);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_LEFT, DIK_LEFT);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RIGHT, DIK_RIGHT);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_BOMB, DIK_Z);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_SHOOT, DIK_X);
+                inputButtons |= KEYBOARD_KEY_PRESSED(
                     TH_BUTTON_SHOOT | TH_BUTTON_FOCUS, DIK_LSHIFT);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_UP, DIK_NUMPAD8);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_DOWN, DIK_NUMPAD2);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_LEFT, DIK_NUMPAD4);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RIGHT, DIK_NUMPAD6);
-                buttons |= KEYBOARD_KEY_PRESSED(
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_UP, DIK_NUMPAD8);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_DOWN, DIK_NUMPAD2);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_LEFT, DIK_NUMPAD4);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RIGHT, DIK_NUMPAD6);
+                inputButtons |= KEYBOARD_KEY_PRESSED(
                     TH_BUTTON_UP_LEFT, DIK_NUMPAD7);
-                buttons |= KEYBOARD_KEY_PRESSED(
+                inputButtons |= KEYBOARD_KEY_PRESSED(
                     TH_BUTTON_UP_RIGHT, DIK_NUMPAD9);
-                buttons |= KEYBOARD_KEY_PRESSED(
+                inputButtons |= KEYBOARD_KEY_PRESSED(
                     TH_BUTTON_DOWN_LEFT, DIK_NUMPAD1);
-                buttons |= KEYBOARD_KEY_PRESSED(
+                inputButtons |= KEYBOARD_KEY_PRESSED(
                     TH_BUTTON_DOWN_RIGHT, DIK_NUMPAD3);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_SKIP, DIK_LCONTROL);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_MENU, DIK_ESCAPE);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_ENTER, DIK_RETURN);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_HOME, DIK_HOME);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_HOME, DIK_P);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_D, DIK_D);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_Q, DIK_Q);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_S, DIK_S);
-                buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RESET, DIK_R);
-                buttons |= KEYBOARD_KEY_PRESSED(0x8000, DIK_L);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_SKIP, DIK_LCONTROL);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_MENU, DIK_ESCAPE);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_ENTER, DIK_RETURN);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_HOME, DIK_HOME);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_HOME, DIK_P);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_D, DIK_D);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_Q, DIK_Q);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_S, DIK_S);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RESET, DIK_R);
+                inputButtons |= KEYBOARD_KEY_PRESSED(0x8000, DIK_L);
             }
         }
     }
@@ -424,52 +434,58 @@ u16 GetInput(i32 inputIndex)
         if ((&g_ControllerAssignments)[0] == 0 ||
             (&g_ControllerAssignments)[0] == 1)
         {
-            buttons = GetControllerInput(
-                0, (&g_ControllerAssignments)[0] != 0, buttons);
+            inputButtons = GetControllerInput(
+                0, (&g_ControllerAssignments)[0] != 0, inputButtons);
         }
         if ((&g_ControllerAssignments)[1] == 0 ||
             (&g_ControllerAssignments)[1] == 1)
         {
-            buttons = GetControllerInput(
-                1, (&g_ControllerAssignments)[1] != 0, buttons);
+            inputButtons = GetControllerInput(
+                1, (&g_ControllerAssignments)[1] != 0, inputButtons);
         }
     }
     else if ((&g_ControllerAssignments)[inputIndex] == 0 ||
              (&g_ControllerAssignments)[inputIndex] == 1)
     {
-        buttons = GetControllerInput(
+        inputButtons = GetControllerInput(
             inputIndex, (&g_ControllerAssignments)[inputIndex] != 0,
-            buttons);
+            inputButtons);
     }
 
-    inputSlot->previous = inputSlot->current;
-    inputSlot->current = buttons;
-    repeatMask = 1;
-    currentBits = buttons;
-    inputSlot->repeat = 0;
-    for (bitIndex = 0; bitIndex < 16;
-         bitIndex++, currentBits >>= 1, repeatMask <<= 1)
+    inputStateSlot->previous = inputStateSlot->current;
+    inputStateSlot->current = inputButtons;
+    inputRepeatMask = 1;
+    inputCurrentBits = inputButtons;
+    inputStateSlot->repeat = 0;
+    for (inputBitIndex = 0; inputBitIndex < 16;
+         inputBitIndex++, inputCurrentBits >>= 1, inputRepeatMask <<= 1)
     {
-        if ((currentBits & 1) != 0)
+        if ((inputCurrentBits & 1) != 0)
         {
-            inputSlot->heldFrames[bitIndex]++;
-            if (inputSlot->heldFrames[bitIndex] >= 26)
+            inputStateSlot->heldFrames[inputBitIndex]++;
+            if (inputStateSlot->heldFrames[inputBitIndex] >= 26)
             {
-                inputSlot->repeat |= repeatMask;
-                inputSlot->heldFrames[bitIndex] -= 8;
+                inputStateSlot->repeat |= inputRepeatMask;
+                inputStateSlot->heldFrames[inputBitIndex] -= 8;
             }
         }
         else
         {
-            inputSlot->heldFrames[bitIndex] = 0;
+            inputStateSlot->heldFrames[inputBitIndex] = 0;
         }
     }
-    inputSlot->pressed =
-        (inputSlot->current ^ inputSlot->previous) & inputSlot->current;
-    inputSlot->released =
-        (inputSlot->current ^ inputSlot->previous) & ~inputSlot->current;
-    return buttons;
+    inputStateSlot->pressed =
+        (inputStateSlot->current ^ inputStateSlot->previous) & inputStateSlot->current;
+    inputStateSlot->released =
+        (inputStateSlot->current ^ inputStateSlot->previous) & ~inputStateSlot->current;
+    return inputButtons;
 }
+#undef inputRepeatMask
+#undef inputCurrentBits
+#undef inputBitIndex
+#undef inputResult
+#undef inputStateSlot
+#undef inputButtons
 
 void ResetKeyboard()
 {
