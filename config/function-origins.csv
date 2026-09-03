@@ -329,7 +329,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x004226E0,authored,Midi,authored,exact,vc71-midi-core-2026-09-01
 0x004227B0,authored,Midi,authored,exact,vc71-midi-core-2026-09-01
 0x00422800,authored,Midi,authored,exact,vc71-midi-residual-core-2026-09-01
-0x00422A70,unknown,,review,unknown,ghidra-12.1.3-initial-inventory
+0x00422A70,authored,Midi,authored,exact,vc71-midi-process-msg-exact-2026-09-03
 0x00423310,authored,Midi,authored,exact,vc71-midi-residual-core-2026-09-01
 0x004233D0,authored,Midi,authored,exact,vc71-midi-core-2026-09-01
 0x004233F0,authored,Midi,authored,exact,vc71-midi-core-2026-09-01

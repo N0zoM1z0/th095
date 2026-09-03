@@ -507,6 +507,241 @@ void MidiOutput::OnTimerElapsed()
     }
 }
 
+// FUNCTION: TH095 0x00422A70; TH08 Midi.cpp provides semantic/var-order ancestry.
+// Target-proven stock-VC7 physical order is reproduced below with real-live
+// identifier buckets and one fully live middle aggregate; no var_order patch is required.
+#define nextEventDeltaTicks restartCommandProcessingLocal05
+#define index averagedPanLocal12
+#define eventData2 midiProcessMiddleData2Backing255
+#define beatsPerMinute midiProcessLoopCheckpointBacking040
+#define loopResetTrack midiProcessLoopResetBacking123
+#define loopCheckpointTrack midiProcessMiddleBpmBacking230
+#define longMessageHeader midiProcessMiddleBacking123.mLongMessageHeader
+#define eventDataLength midiProcessMiddleBacking123.mEventDataLength
+#define eventData1 midiProcessMiddleBacking123.mEventData1
+#define statusByte midiProcessMiddleBacking123.mStatusByte
+#define messageType midiProcessMiddleBacking123.mMessageType
+#define channel midiProcessMiddleBacking123.mChannel
+#define adjustedChannelVolume midiProcessMiddleBacking123.mAdjustedChannelVolume
+void MidiOutput::ProcessMsg(MidiTrack *track)
+{
+    struct MidiProcessMiddleState
+    {
+        LPMIDIHDR mLongMessageHeader;
+        i32 mEventDataLength;
+        u8 mEventData1;
+        u8 mStatusByte;
+        u8 mMessageType;
+        u8 mChannel;
+        i32 mAdjustedChannelVolume;
+    } midiProcessMiddleBacking123;
+    i32 nextEventDeltaTicks;
+    MidiTrack *loopResetTrack;
+    MidiTrack *loopCheckpointTrack;
+    u8 eventData2;
+    u8 metaEventType;
+    i32 index;
+    i32 beatsPerMinute;
+
+    statusByte = *track->cursor;
+    if (statusByte < MIDI_OPCODE_NOTE_OFF)
+    {
+        statusByte = track->runningStatus;
+    }
+    else
+    {
+        track->cursor += 1;
+    }
+    messageType = statusByte & 0xf0;
+    channel = statusByte & 0x0f;
+
+    switch (messageType)
+    {
+    case MIDI_OPCODE_SYSTEM_EXCLUSIVE:
+        if (statusByte == MIDI_OPCODE_SYSTEM_EXCLUSIVE)
+        {
+            if (this->pendingLongMessageHeaders[this->pendingLongMessageHeaderCursor] != NULL)
+            {
+                UnprepareHeader(this->pendingLongMessageHeaders[this->pendingLongMessageHeaderCursor]);
+            }
+
+            size_t headerAllocationSize = sizeof(MIDIHDR);
+            longMessageHeader = this->pendingLongMessageHeaders[this->pendingLongMessageHeaderCursor] =
+                (LPMIDIHDR)malloc(headerAllocationSize);
+            eventDataLength = MidiOutput::SkipVariableLength(&track->cursor);
+            memset(longMessageHeader, 0, sizeof(MIDIHDR));
+            longMessageHeader->lpData = (LPSTR)malloc(eventDataLength + 1);
+            longMessageHeader->lpData[0] = MIDI_OPCODE_SYSTEM_EXCLUSIVE;
+            longMessageHeader->dwFlags = 0;
+            longMessageHeader->dwBufferLength = eventDataLength + 1;
+            for (index = 0; index < eventDataLength; index++)
+            {
+                longMessageHeader->lpData[index + 1] = *track->cursor;
+                track->cursor++;
+            }
+            if (this->outputDevice.SendLongMsg(longMessageHeader))
+            {
+                void *longMessageData = longMessageHeader->lpData;
+                free(longMessageData);
+                free(longMessageHeader);
+                this->pendingLongMessageHeaders[this->pendingLongMessageHeaderCursor] = NULL;
+            }
+            this->pendingLongMessageHeaderCursor += 1;
+            this->pendingLongMessageHeaderCursor = this->pendingLongMessageHeaderCursor % 32;
+        }
+        else if (statusByte == MIDI_OPCODE_SYSTEM_RESET)
+        {
+            // Meta-Event. In a MIDI file, SYSTEM_RESET gets reused as a
+            // sort of escape code to introducde its own meta-events system,
+            // which are events that make sense in the context of a MIDI
+            // file, but not in the context of the MIDI protocol itself.
+            metaEventType = *track->cursor;
+            track->cursor += 1;
+            eventDataLength = MidiOutput::SkipVariableLength(&track->cursor);
+            // End of Track meta-event.
+            if (metaEventType == MIDI_META_END_OF_TRACK)
+            {
+                track->trackPlaying = 0;
+                return;
+            }
+            // Set Tempo meta-event.
+            if (metaEventType == MIDI_META_SET_TEMPO)
+            {
+                this->elapsedTicksBeforeTempoChange +=
+                    (this->elapsedMillisecondsAtCurrentTempo * this->ticksPerQuarterNote * 1000 /
+                     this->microsecondsPerQuarterNote);
+                this->elapsedMillisecondsAtCurrentTempo = 0;
+                this->microsecondsPerQuarterNote = 0;
+                for (index = 0; index < eventDataLength; index += 1)
+                {
+                    this->microsecondsPerQuarterNote +=
+                        this->microsecondsPerQuarterNote * 0x100 + *track->cursor;
+                    track->cursor += 1;
+                }
+                beatsPerMinute = 60000000 / this->microsecondsPerQuarterNote;
+                break;
+            }
+            track->cursor = track->cursor + eventDataLength;
+        }
+        break;
+    case MIDI_OPCODE_NOTE_OFF:
+    case MIDI_OPCODE_NOTE_ON:
+    case MIDI_OPCODE_POLYPHONIC_AFTERTOUCH:
+    case MIDI_OPCODE_CONTROL_CHANGE:
+    case MIDI_OPCODE_PITCH_BEND_CHANGE:
+        eventData1 = *track->cursor;
+        track->cursor += 1;
+        eventData2 = *track->cursor;
+        track->cursor += 1;
+        break;
+    case MIDI_OPCODE_PROGRAM_CHANGE:
+    case MIDI_OPCODE_CHANNEL_AFTERTOUCH:
+        eventData1 = *track->cursor;
+        track->cursor += 1;
+        eventData2 = 0;
+        break;
+    }
+    switch (messageType)
+    {
+    case MIDI_OPCODE_NOTE_ON:
+        if (eventData2 != 0)
+        {
+            eventData1 += this->noteTranspose;
+            this->channels[channel].keyPressedFlags[eventData1 >> 3] |= (u8)(1 << (eventData1 & 7));
+            break;
+        }
+    case MIDI_OPCODE_NOTE_OFF:
+        eventData1 += this->noteTranspose;
+        this->channels[channel].keyPressedFlags[eventData1 >> 3] &= (u8)(~(1 << (eventData1 & 7)));
+        break;
+    case MIDI_OPCODE_PROGRAM_CHANGE:
+        // Program Change
+        this->channels[channel].instrument = eventData1;
+        break;
+    case MIDI_OPCODE_CONTROL_CHANGE:
+        switch (eventData1)
+        {
+        case MIDI_CONTROLLER_BANK_SELECT:
+            // Bank Select
+            this->channels[channel].instrumentBank = eventData2;
+            break;
+        case MIDI_CONTROLLER_CHANNEL_VOLUME:
+            // Channel Volume
+            this->channels[channel].channelVolume = eventData2;
+            adjustedChannelVolume = (f32)eventData2 * this->fadeOutVolumeMultiplier;
+            if (adjustedChannelVolume < 0)
+            {
+                adjustedChannelVolume = 0;
+            }
+            else if (0x7f < adjustedChannelVolume)
+            {
+                adjustedChannelVolume = 0x7f;
+            }
+            eventData2 = this->channels[channel].modifiedVolume = adjustedChannelVolume;
+            break;
+        case MIDI_CONTROLLER_EFFECT_ONE_DEPTH:
+            // Effects 1 Depth
+            this->channels[channel].effectOneDepth = eventData2;
+            break;
+        case MIDI_CONTROLLER_EFFECT_THREE_DEPTH:
+            // Effects 3 Depth
+            this->channels[channel].effectThreeDepth = eventData2;
+            break;
+        case MIDI_CONTROLLER_PAN:
+            // Pan
+            this->channels[channel].pan = eventData2;
+            break;
+        case MIDI_CONTROLLER_LOOP_START:
+            // TH08 repurposes breath control as the MIDI loop checkpoint.
+            for (loopCheckpointTrack = &this->tracks[0], index = 0;
+                 index < this->numTracks;
+                 index += 1, loopCheckpointTrack += 1)
+            {
+                loopCheckpointTrack->loopCursor = loopCheckpointTrack->cursor;
+                loopCheckpointTrack->loopNextEventTick = loopCheckpointTrack->nextEventTick;
+            }
+            this->tempoAtLoopPoint = this->microsecondsPerQuarterNote;
+            this->elapsedMillisecondsAtLoopPoint = this->elapsedMillisecondsAtCurrentTempo;
+            this->elapsedTicksAtLoopPoint = this->elapsedTicksBeforeTempoChange;
+            break;
+        case MIDI_CONTROLLER_LOOP_END:
+            // TH08 repurposes the foot controller as the loop jump.
+            for (loopResetTrack = &this->tracks[0], index = 0;
+                 index < this->numTracks;
+                 index += 1, loopResetTrack += 1)
+            {
+                loopResetTrack->cursor = (byte *)loopResetTrack->loopCursor;
+                loopResetTrack->nextEventTick = loopResetTrack->loopNextEventTick;
+            }
+            this->microsecondsPerQuarterNote = this->tempoAtLoopPoint;
+            this->elapsedMillisecondsAtCurrentTempo = this->elapsedMillisecondsAtLoopPoint;
+            this->elapsedTicksBeforeTempoChange = this->elapsedTicksAtLoopPoint;
+        }
+        break;
+    }
+    if (statusByte < MIDI_OPCODE_SYSTEM_EXCLUSIVE)
+    {
+        this->outputDevice.SendShortMsg(statusByte, eventData1, eventData2);
+    }
+    track->runningStatus = statusByte;
+    nextEventDeltaTicks = MidiOutput::SkipVariableLength(&track->cursor);
+    track->nextEventTick = track->nextEventTick + nextEventDeltaTicks;
+}
+
+#undef adjustedChannelVolume
+#undef channel
+#undef messageType
+#undef statusByte
+#undef eventData1
+#undef eventDataLength
+#undef longMessageHeader
+#undef loopCheckpointTrack
+#undef loopResetTrack
+#undef beatsPerMinute
+#undef eventData2
+#undef index
+#undef nextEventDeltaTicks
+
 // FUNCTION: TH095 0x00423310; TH08 Midi.cpp provides fade-loop ancestry.
 void MidiOutput::FadeOutSetVolume(i32 volumeOffset)
 {

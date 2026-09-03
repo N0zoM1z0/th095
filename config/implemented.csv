@@ -648,6 +648,7 @@ th095::Rotate
 th095::GameErrorContext::Flush
 th095::MidiOutput::ParseFile
 th095::MidiOutput::OnTimerElapsed
+th095::MidiOutput::ProcessMsg
 th095::MidiOutput::FadeOutSetVolume
 th095::Supervisor::Supervisor
 th095::Supervisor::~Supervisor
