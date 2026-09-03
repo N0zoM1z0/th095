@@ -1272,15 +1272,33 @@ PhotoBulletView *PhotoBulletManagerView::CapturePhotoTargets(
 #undef capturePrevious
 #undef captureIndex
 
+// The exact AnmLoaded::InitializeVm target independently repeats this
+// shallow-to-eight-byte-gap-to-hidden-this allocation boundary. Keep the
+// reservation owned by the real per-captured-bullet Deactivate operation.
+static __forceinline void PhotoBulletCapturedDeactivatePhase(PhotoBulletView *bullet)
+{
+    u8 compilerStorage[8];
+    bullet->Deactivate();
+}
+
 // FUNCTION: TH095 0x00407C90.
 #pragma var_order(vmId, maximum, minimum, bulletMaximum, bulletMinimum, halfSize, vm, index, bullet, this)
+#define minimum averagedPanLocal12
+#define maximum soundIndexLocal01
+#define bulletMinimum iLocal11
+#define bulletMaximum commandCursorLocal02
+#define bullet jLocal00
+#define index readByteCountLocal02
+#define captureVm bgmFormatIndexLocal05
 i32 PhotoBulletManagerView::ClearCapturedBullets()
 {
     PhotoBulletView *bullet = &this->bullets[0];
     i32 index;
-    AnmVm *vm;
+    AnmVm *captureVm;
     PhotoBulletVector minimum;
     PhotoBulletVector maximum;
+    PhotoBulletVector bulletMinimum;
+    PhotoBulletVector bulletMaximum;
 
     maximum = this->captureSize / 2.0f;
     minimum = this->capturePosition - maximum;
@@ -1293,8 +1311,6 @@ i32 PhotoBulletManagerView::ClearCapturedBullets()
         if (bullet->captureDisabled != 0)
             continue;
 
-        PhotoBulletVector bulletMinimum;
-        PhotoBulletVector bulletMaximum;
         bulletMinimum =
             bullet->position - bullet->collisionSize / 2.0f;
         bulletMaximum =
@@ -1306,28 +1322,36 @@ i32 PhotoBulletManagerView::ClearCapturedBullets()
             continue;
         }
 
-        bullet->Deactivate();
-        vm = g_AnmManager->GetVm(
+        PhotoBulletCapturedDeactivatePhase(bullet);
+        captureVm = g_AnmManager->GetVm(
             this->anmSpawner->CreateVm(0x126, &bullet->position));
         if (bullet->vm.loadedSprite != NULL)
         {
             if (bullet->vm.loadedSprite->widthPx <= 16.0f)
-                vm->color1.color =
+                captureVm->color1.color =
                     g_PhotoBulletColors16[bullet->color];
             else if (bullet->vm.loadedSprite->widthPx <= 32.0f)
-                vm->color1.color =
+                captureVm->color1.color =
                     g_PhotoBulletColors8[bullet->color];
             else
-                vm->color1.color =
+                captureVm->color1.color =
                     g_PhotoBulletColors4[bullet->color];
         }
         bullet->nextCaptured = NULL;
         g_ItemManager->Spawn(
             0, reinterpret_cast<Float3 *>(&bullet->position),
-            vm->color1.color);
+            captureVm->color1.color);
     }
     return 0;
 }
+
+#undef minimum
+#undef maximum
+#undef bulletMinimum
+#undef bulletMaximum
+#undef bullet
+#undef index
+#undef captureVm
 
 // FUNCTION: TH095 0x004081B0.
 void PhotoBulletManagerView::DespawnAllBullets()

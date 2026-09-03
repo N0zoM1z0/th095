@@ -402,13 +402,27 @@ be replaced by inert storage.
   positive `> radius` rejection, while capture spells the first/third AABB
   rejects as `bulletMaximum < minimum`. Treat these as source semantics, not
   algebraic expressions that may be freely reordered.
-- `ClearCapturedBullets @ 0x00407C90` is the negative companion. The same
-  const-reference ABI, declaration/assignment shape, `maximum` reuse, target
-  comparison order, and direct `GetVm(CreateVm(...))` form reproduce the exact
-  1,300-byte extent and all 305 target instructions. The target nevertheless
-  leaves `EBP-0x114/-0x118` unreferenced and places `this` at `-0x11C`; stock
-  VC7.1 uses the same 69 live homes in a packed `0x114` frame. Do not add two
-  unused dwords to force those allocator holes.
+- `ClearCapturedBullets @ 0x00407C90` is the exact companion. The shared
+  capture source shape is stronger than the earlier packed-frame probe: keep
+  `bulletMinimum` and `bulletMaximum` at function scope beside `minimum` and
+  reused `maximum`, exactly as the independently exact `CapturePhotoTargets`
+  sibling does. Reuse that sibling's calibrated backing identifiers for the
+  six shared semantic locals; the additional real capture VM pointer uses the
+  `bgmFormatIndexLocal05` bucket behind a readable `captureVm` alias. This
+  places all shallow real locals at target homes `minimum -0x0C`,
+  `bulletMinimum -0x18`, `bulletMaximum -0x24`, `maximum -0x30`, `bullet -0x34`,
+  `index -0x38`, and `captureVm -0x3C`.
+
+  The remaining two dwords are a narrow repeated-target compiler phase, not
+  generic padding. `AnmLoaded::InitializeVm @ 0x00404B80` independently has
+  shallow homes through `-0x24`, no references at `-0x28/-0x2C`, and hidden
+  `this @ -0x30`; Clear has shallow/compiler homes through `-0x110`, no
+  references at `-0x114/-0x118`, and hidden `this @ -0x11C`. Bind an eight-byte
+  source-local phase only to the real `bullet->Deactivate()` operation. With
+  the recovered live-local rank it replays all 1,300 bytes and all 17
+  relocations. Moving the same phase to the initial bounds producer gives only
+  `551/1232` comparable bytes, while moving it to the `CreateVm/GetVm` expression
+  gives `1146/1232`. Do not move the reservation to function scope.
 
 The adjacent task constructor proves that unoptimized VC7.1 preserves nested
 member-construction source shape even when the constructor body immediately

@@ -881,16 +881,22 @@ bullet-minimum/bullet-maximum/maximum/bullet/first/index. Do not replace these
 with vector aggregates: constructor/copy-elision changes are observable under
 VC7.1 `/Od`.
 
-`ClearCapturedBullets @ 0x00407C90` is also substantially narrowed but remains
-non-exact. The committed semantic source now emits the exact 1,300-byte extent,
-all 17 relocations, and the same 305-instruction topology after reusing
-`maximum` as the half-size value and feeding `CreateVm(...)` directly into
-`AnmManager::GetVm`. Stock VC7.1 packs the 69 live homes into a `0x114` frame;
-the target reserves `0x11C`, with `EBP-0x114/-0x118` never read, written, or
-addressed. Keep those two allocator holes uncredited rather than introducing
-inert storage. `PhotoBulletView::Deactivate @ 0x00405850` and
-`DespawnAllBullets @ 0x004081B0` remain canonical exact for 209 bytes and one
-relocation.
+`ClearCapturedBullets @ 0x00407C90` is now canonical exact for all 1,300
+authored bytes, all 305 instructions, and all 17 relocations. The key source
+correction is semantic lifetime, not padding: like exact `CapturePhotoTargets`,
+all four AABB vectors are function-scope locals, `maximum` is reused from
+half-size to final upper bound, and the six shared semantic locals use the same
+calibrated identifier rank. The extra VM pointer uses the established
+`bgmFormatIndexLocal05` bucket behind the readable `captureVm` alias.
+
+The target's formerly unexplained `EBP-0x114/-0x118` pair is now a repeated
+eight-byte shallow-to-hidden-`this` phase. Exact `AnmLoaded::InitializeVm`
+independently has the same boundary (`-0x28/-0x2C` unused before `this @ -0x30`).
+Only the real per-hit `Deactivate()` operation owns the phase in Clear. With the
+final local rank it gives `1232/1232` comparable bytes; the same phase at the
+initial bounds calculation gives `551/1232`, and at `CreateVm/GetVm` gives
+`1146/1232`. `PhotoBulletView::Deactivate @ 0x00405850` and
+`DespawnAllBullets @ 0x004081B0` remain canonical exact.
 
 The adjacent `0x00408610..0x00408CDC` `CardInf` photograph-card text/fade
 component is now closed exactly. Ten canonical units contribute 1,671 authored
