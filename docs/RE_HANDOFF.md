@@ -2323,3 +2323,39 @@ exactly `0x20` too shallow.  Class-inline integer conversion with explicit
 `!=0` is byte-identical; implicit boolean conversion adds a wrong
 `neg/sbb/inc/movzx/test` sequence.  Do not repeat conversion/value-owner probes
 or add a synthetic 32-byte lane without a new operation-level oracle.
+
+### 2026-09-03 gpt-web SceneSelect zero-diff private oracle
+
+`UpdateSceneSelect @ 0x00447D00` reached a private authored-body zero-difference
+checkpoint under stock VC7.1: 16,066 bytes, 3,637/3,637 mnemonics,
+1,115/1,115 observed EBP operands, and 13,986/13,986 non-relocation comparable
+bytes.  Keep `.analysis/gpt-web-sceneupdate-final-queue-owner-20260903/member.*`
+as the body oracle.  It is intentionally uncredited because its queue records
+still contain diagnostic 4+16-byte fields for the target-only 20-byte interval.
+
+The source-shape changes that produced the zero-diff body are reusable and are
+not diagnostic padding: direct case-0 group/cursor expressions replace four
+false named locals; selected-score flags use an inline pointer producer; both
+group and scene counts use inline setter arguments; VM creation uses one
+indexed-CreateVm frontend so VC7 interleaves index and sret homes correctly;
+the timer reset is view/lvalue-owned; and the loaded-scene Front is a member
+producer.  These changes reduced the former 13848/13986 private score through
+13861, 13948, 13970, 13975, 13982, and finally 13986.
+
+For policy-clean work, the strongest current source is the 4-Pop + timer +
+late-scalar family under
+`.analysis/gpt-web-sceneupdate-pop4-timer-latescalars-20260903/`.  It preserves
+the target `0x3DC` frame and all 3,637 mnemonics.  Stack-gap comparison proves
+the remaining allocator problem is one dword: target holes are
+`-0xB8..-0xA5` (0x14) and `-0xE4..-0xE1` (4); the clean source has
+`-0xB8..-0xA9` (0x10), the correct `-0xE4` timer dword, and an extra natural
+`-0x4C..-0x49` dword.  All shallow homes through `-0x48` are exact.  The
+92-byte early queue aggregate is required: variable/type hash, local/anonymous
+type identity, branch relocation, 23-scalar decomposition, three-record
+partition, and declaration order do not improve it.  The natural `-0x4C` dword
+is independent of the plain Pop and timer phases; removing the first Pop or all
+Pop storage leaves it present, while removing the first 0x10 group-selection
+phase shifts its position by exactly 0x10.  Pointer/reference/view/value
+parameter spellings of that 0x10 phase do not close the boundary.  Do not
+restore the private fake queue fields merely to claim 16,066 bytes.
+

@@ -1299,3 +1299,53 @@ identifier controls prove the deep class always orders `opcode @ -0xDC` before
 opcode removes the required snapshot (554 bytes/159 instructions), while a
 camera-mode-owned `0xA8` phase grows to 595 bytes. Do not continue generic A8
 storage or identifier sweeps without a new ownership oracle.
+
+### SceneSelect private zero-diff and policy-clean queue barrier (2026-09-03)
+
+`SceneSelectControllerView::UpdateSceneSelect @ 0x00447D00` now has a private
+stock-VC7.1 authored-body oracle with **zero comparable-byte difference**:
+16,066/16,066 authored bytes, all 3,637 target mnemonics, and all 1,115 observed
+EBP operands agree.  This is not a padding-only win.  Re-auditing the old
+13,848/13,986 best recovered several original source surfaces:
+
+- Remove the artificial `initialGroupValue`, `initialGroupCursor`,
+  `initialGroupIndex`, and `initialSceneCursor` locals.  Direct member/index
+  expressions turn their target homes into the correct compiler temporaries.
+- Produce the selected-score flags pointer through an inline value producer;
+  this moves the pointer from the shallow lane to target deep home `-0x39C`.
+- Pass the `FindHighestUnlockedSceneGroup()+2` ternary as the argument of an
+  inline `SetCount` surface.  This moves `tv488` from the deep lane into the
+  shallow case-0 lane and restores the hidden receiver rank.
+- Use the same setter-argument source surface for each `sceneCount`, and use a
+  single `SceneSelectCreateIndexedVm(view,index)` inline frontend for the three
+  initial scene VMs, the `0x4C+index` VM, and the three new-group VMs.  These
+  recover the target CreateVm sret/index interleaving without named-result
+  storage.
+- Reset the state timer through a view/lvalue-owned receiver, not a pointer
+  parameter, and spell loaded-scene queue Front as a member/lvalue producer.
+
+The remaining obstacle is **policy**, not body matching.  The zero-diff private
+source still contains diagnostic 4+16-byte fields that together model the
+target's unreferenced 20-byte queue interval, so it must not be promoted.
+Replacing those fields with real queue operations gives a much stronger clean
+model.  Four independently proven 4-byte `SceneValueQueue::Pop()` caller phases
+plus the real timer phase and separate late queue scalar/helper ownership keep
+the target `0x3DC` frame and all 3,637 mnemonics.  Instruction-index stack
+crosswalks show 1,036/1,115 EBP operands exact.  The entire residual is one
+queue allocation boundary: target has a 20-byte hole at `-0xB8..-0xA5` and a
+4-byte hole at `-0xE4..-0xE1`; the best clean source has a 16-byte hole at
+`-0xB8..-0xA9`, the correct timer hole at `-0xE4`, and one extra natural dword
+at `-0x4C`.  Every shallow home `-0x48..-0x04` is already exact.
+
+Do not repeat the now-bounded queue searches.  Five Pop phases merely move the
+extra dword into the wrong allocation class; grouping four/five Pops into one
+inline cluster is worse; direct `Size()` is byte-identical while a copied
+exact-sibling Size phase grows the frame; queue variable/type-name sweeps are
+insensitive; moving the 92-byte queue record into branch scope grows the frame;
+splitting it into 23 scalars or three logical records regresses badly; wrapping
+queue+shallow in one owner removes the `-0x4C` hole but shifts the complete
+shallow block by one dword; timer `Set(0)`, pointer/reference producers, and
+initial 0x10 phase parameter/reference/view spellings do not move the final
+boundary.  The next acceptable closure must explain relocation of that one
+natural compiler dword without reintroducing inert storage.
+
