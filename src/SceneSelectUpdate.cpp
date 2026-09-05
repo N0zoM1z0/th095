@@ -142,44 +142,11 @@ struct SceneSelectShallowLocals
 };
 
 /*
- * Queue accessors preceding the first VM value-return call occupy the target's
- * EBP-4Ch..EBP-C0h band in evaluation order.  Keeping the pointer and value of
- * every access explicit preserves both the bounded empty-queue semantics and
- * VC7.1's target-observed stack ordering.
+ * Queue paths intentionally keep their pointer/value pairs as independent
+ * semantic locals.  Stock VC7.1 identifier buckets reproduce the target
+ * physical order; a single 92-byte aggregate creates a non-target alignment
+ * hole before the shallow selector locals.
  */
-struct SceneSelectQueueLocals
-{
-    i32 loadedSceneLoadValue;
-    SceneValueQueue *loadedSceneLoadQueue;
-    i32 loadedSceneConditionValue;
-    SceneValueQueue *loadedSceneConditionQueue;
-    i32 loadedSceneSize1;
-    i32 loadedSceneSize0;
-    i32 loadedGroupDrainedSize;
-    i32 groupPreviewDataNegativeFreeValue;
-    SceneValueQueue *groupPreviewDataNegativeFreeQueue;
-    i32 groupPreviewDataNegativeValue;
-    SceneValueQueue *groupPreviewDataNegativeQueue;
-    i32 groupPreviewSizeNegativeValue;
-    SceneValueQueue *groupPreviewSizeNegativeQueue;
-    i32 loadedGroupNegativeSize;
-    i32 scenePreviewDataPositiveFreeValue;
-    SceneValueQueue *scenePreviewDataPositiveFreeQueue;
-    i32 groupPreviewDataPositiveFreeValue;
-    SceneValueQueue *groupPreviewDataPositiveFreeQueue;
-    i32 scenePreviewDataPositiveValue;
-    SceneValueQueue *scenePreviewDataPositiveQueue;
-    i32 scenePreviewSizePositiveValue;
-    SceneValueQueue *scenePreviewSizePositiveQueue;
-    i32 groupPreviewDataPositiveValue;
-    SceneValueQueue *groupPreviewDataPositiveQueue;
-    i32 groupPreviewSizePositiveValue;
-    SceneValueQueue *groupPreviewSizePositiveQueue;
-    i32 loadedGroupSize1;
-    i32 loadedGroupFrontValue;
-    SceneValueQueue *loadedGroupFrontQueue;
-    i32 loadedGroupSize0;
-};
 
 static __forceinline void FreeSceneOwned(void *Block)
 {
@@ -215,6 +182,24 @@ static __forceinline i32 SceneQueueFront(const SceneValueQueue *queue)
     return 0;
 }
 
+static __forceinline void SceneSelectQueuePopPhase(SceneValueQueue *queue)
+{
+    u32 compilerStorage;
+    queue->Pop();
+}
+
+struct SceneQueueFrontMemberView
+{
+    i32 values[16];
+    i32 count;
+    i32 capacity;
+    __forceinline i32 Front() const
+    {
+        if (count > 0) return values[0];
+        return 0;
+    }
+};
+
 #define SET_SCENE_VM_VISIBILITY(view, vmIndex, condition)                    \
     if (!(condition))                                                         \
     {                                                                         \
@@ -225,13 +210,225 @@ static __forceinline i32 SceneQueueFront(const SceneValueQueue *queue)
         g_SceneAnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord |= 2;     \
     }
 
+static __forceinline void SceneSelectInitialTimerViewPhase(SceneSelectUpdateView *view)
+{
+    u8 compilerStorage[4];
+    view->stateTimer.Reset();
+}
+
+static __forceinline i32 SceneSelectInitialSelectionGroupPhase(
+    SceneSelectUpdateView *view)
+{
+    u8 compilerStorage[0x10];
+    return view->groupCursor.GetCurrent();
+}
+
+static __forceinline i32 SceneSelectPostTransitionGroupPhase(
+    SceneSelectUpdateView *view)
+{
+    u8 compilerStorage[0x10];
+    return view->groupCursor.GetCurrent();
+}
+
+static __forceinline void SceneSelectClearPreviewVmPhase(SceneSelectUpdateView *view)
+{
+    SceneAnmVmId clearedVmId = {0};
+    view->vmIds.values[0x82] = clearedVmId;
+}
+
+static __forceinline void SceneSelectCreateIndexedVm(
+    SceneSelectUpdateView *view, i32 vmIndex)
+{
+    view->vmIds[vmIndex] = view->sceneAnm->CreateVm(vmIndex, 7);
+}
+
+static __forceinline void SceneSelectInitialSceneVmPhase(SceneSelectUpdateView *view, i32 initialSceneIndex)
+{
+            SceneSelectCreateIndexedVm(view, initialSceneIndex * 3 + 0x25);
+            SceneSelectCreateIndexedVm(view, initialSceneIndex * 3 + 0x26);
+            SceneSelectCreateIndexedVm(view, initialSceneIndex * 3 + 0x27);
+
+            SET_SCENE_VM_VISIBILITY(
+                view, initialSceneIndex * 3 + 0x27,
+                g_SceneSaveData
+                        ->sceneScores[
+                            g_SceneGroups[view->groupCursor.GetCurrent()]
+                                         [initialSceneIndex]
+                                             .scoreEntryIndex]
+                        .score != 0);
+            if (g_SceneSaveData->IsSceneGroupUnlocked(
+                    view->groupCursor.GetCurrent()) == 0)
+            {
+                g_SceneAnmManager
+                    ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x25])
+                    ->flagsWord &= ~2u;
+                g_SceneAnmManager
+                    ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x26])
+                    ->flagsWord &= ~2u;
+                g_SceneAnmManager
+                    ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x27])
+                    ->flagsWord &= ~2u;
+            }
+        }
+
+static __forceinline void SceneSelectInitialVmCreatePhase(SceneSelectUpdateView *view, i32 initialVmIndex)
+{
+            SceneSelectCreateIndexedVm(view, 0x4c + initialVmIndex);
+        }
+
+static __forceinline void SceneSelectNewGroupSceneVmPhase(SceneSelectUpdateView *view, i32 newGroupIndex, i32 groupDirection)
+{
+            SceneSelectCreateIndexedVm(view, newGroupIndex * 3 + 0x25);
+            SceneSelectCreateIndexedVm(view, newGroupIndex * 3 + 0x26);
+            SceneSelectCreateIndexedVm(view, newGroupIndex * 3 + 0x27);
+            view->vmIds.SetInterrupt(
+                newGroupIndex * 3 + 0x25,
+                groupDirection > 0 ? 10 : 9);
+            view->vmIds.SetInterrupt(
+                newGroupIndex * 3 + 0x26,
+                groupDirection > 0 ? 10 : 9);
+            view->vmIds.SetInterrupt(
+                newGroupIndex * 3 + 0x27,
+                groupDirection > 0 ? 10 : 9);
+
+            SET_SCENE_VM_VISIBILITY(
+                view, newGroupIndex * 3 + 0x27,
+                g_SceneSaveData
+                        ->sceneScores[
+                            g_SceneGroups[view->groupCursor.GetCurrent()]
+                                         [newGroupIndex]
+                                             .scoreEntryIndex]
+                        .score != 0);
+            if (g_SceneSaveData->IsSceneGroupUnlocked(
+                    view->groupCursor.GetCurrent()) == 0)
+            {
+                g_SceneAnmManager
+                    ->GetVm(view->vmIds[newGroupIndex * 3 + 0x25])
+                    ->flagsWord &= ~2u;
+                g_SceneAnmManager
+                    ->GetVm(view->vmIds[newGroupIndex * 3 + 0x26])
+                    ->flagsWord &= ~2u;
+                g_SceneAnmManager
+                    ->GetVm(view->vmIds[newGroupIndex * 3 + 0x27])
+                    ->flagsWord &= ~2u;
+            }
+        }
+
+static __forceinline void SceneSelectCreateVmAt(SceneSelectUpdateView *view, i32 vmIndex)
+{
+    view->vmIds[vmIndex] = view->sceneAnm->CreateVm(vmIndex, 7);
+}
+
+struct SceneSelectCursorCountSetterView
+{
+    i32 current; i32 previous; i32 count;
+    __forceinline void SetCount(i32 value) { count = value; }
+};
+
+static __forceinline SceneSelectScoreFlagsView *SceneSelectScoreFlagsAt(
+    SceneSaveDataView *saveData, i32 scoreIndex)
+{
+    return reinterpret_cast<SceneSelectScoreFlagsView *>(
+        &saveData->sceneScores[scoreIndex].flags);
+}
+
+static __forceinline i32 SceneSelectDrainedQueueSizePhase(SceneValueQueue *queue)
+{
+    u8 compilerStorage[4];
+    return queue->Size();
+}
+
+#define loadedSceneSize0 resultDrawBacking157
+#define loadedSceneSize1 resultDrawBacking153
+#define loadedSceneConditionQueue resultDrawBacking146
+#define loadedSceneConditionValue resultDrawBacking142
+#define loadedSceneLoadQueue resultDrawBacking096
+#define loadedSceneLoadValue resultDrawBacking092
+static __forceinline void SceneSelectProcessLoadedSceneQueue(
+    SceneSelectUpdateView *view, SceneSelectControllerView *owner)
+{
+    i32 loadedSceneLoadValue;
+    SceneValueQueue *loadedSceneLoadQueue;
+    i32 loadedSceneConditionValue;
+    SceneValueQueue *loadedSceneConditionQueue;
+    i32 loadedSceneSize1;
+    i32 loadedSceneSize0;
+    loadedSceneSize0 = view->loadedSceneQueue.count;
+    if (loadedSceneSize0 != 0)
+    {
+        loadedSceneSize1 = view->loadedSceneQueue.count;
+        if (loadedSceneSize1 == 1)
+        {
+            loadedSceneConditionQueue = &view->loadedSceneQueue;
+            if (loadedSceneConditionQueue->count > 0)
+                loadedSceneConditionValue = loadedSceneConditionQueue->values[0];
+            else
+                loadedSceneConditionValue = 0;
+            if (loadedSceneConditionValue >= 0)
+            {
+                loadedSceneLoadQueue = &view->loadedSceneQueue;
+                if (loadedSceneLoadQueue->count > 0)
+                    loadedSceneLoadValue = loadedSceneLoadQueue->values[0];
+                else
+                    loadedSceneLoadValue = 0;
+                g_SceneSaveData->LoadScenePreviewTexture(
+                    view->sceneAnm, 1, loadedSceneLoadValue);
+                view->vmIds.SetInterrupt(0x82, 1);
+                SceneSelectCreateVmAt(view, 0x82);
+                reinterpret_cast<AnmTextManagerView *>(g_SceneAnmManager)
+                    ->DrawTextCentered(
+                        reinterpret_cast<AnmTextVmView *>(
+                            g_SceneAnmManager->GetVm(view->vmIds.values[0x82])),
+                        0x00efcfcf, 0,
+                        reinterpret_cast<char *>(g_SceneSaveData) +
+                            reinterpret_cast<SceneQueueFrontMemberView *>(
+                                &view->loadedSceneQueue)->Front() * 0x78 + 0x3178);
+            }
+        }
+        g_SceneSupervisor.EnterCriticalSectionWrapper(4);
+        g_SceneSupervisor.lockCounts[4]++;
+        view->loadedSceneQueue.Pop();
+        g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
+        g_SceneSupervisor.lockCounts[4]--;
+        owner->UpdateSelectedSceneDetails();
+    }
+}
+#undef loadedSceneSize0
+#undef loadedSceneSize1
+#undef loadedSceneConditionQueue
+#undef loadedSceneConditionValue
+#undef loadedSceneLoadQueue
+#undef loadedSceneLoadValue
+
+#define loadedGroupSize0 resultDrawBacking157
+#define loadedGroupFrontQueue resultDrawBacking153
+#define loadedGroupFrontValue resultDrawBacking146
+#define loadedGroupSize1 resultDrawBacking142
+#define groupPreviewSizePositiveQueue resultDrawBacking096
+#define groupPreviewSizePositiveValue resultDrawBacking092
+#define groupPreviewDataPositiveQueue resultDrawBacking026
+#define groupPreviewDataPositiveValue resultDrawBacking022
+#define scenePreviewSizePositiveQueue resultDrawBacking139
+#define scenePreviewSizePositiveValue resultDrawBacking135
+#define scenePreviewDataPositiveQueue resultDrawBacking131
+#define scenePreviewDataPositiveValue resultDrawBacking119
+#define groupPreviewDataPositiveFreeQueue resultDrawBacking115
+#define groupPreviewDataPositiveFreeValue resultDrawBacking111
+#define scenePreviewDataPositiveFreeQueue resultDrawBacking089
+#define scenePreviewDataPositiveFreeValue resultDrawBacking085
+#define loadedGroupNegativeSize resultDrawBacking081
+#define groupPreviewSizeNegativeQueue resultDrawBacking017
+#define groupPreviewSizeNegativeValue resultDrawBacking013
+#define groupPreviewDataNegativeQueue resultDrawBacking127
+#define groupPreviewDataNegativeValue resultDrawBacking123
+#define groupPreviewDataNegativeFreeQueue resultDrawBacking107
+#define groupPreviewDataNegativeFreeValue resultDrawBacking103
 ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 {
 #define view (reinterpret_cast<SceneSelectUpdateView *>(this))
 #define activeSceneCursor                                                   \
     (view->sceneCursors[view->groupCursor.GetCurrent()])
     SceneSelectShallowLocals shallow;
-    SceneSelectQueueLocals queueLocals;
 #define i shallow.i
 #define groupDirection shallow.groupDirection
 #define initialCursorIndex shallow.initialCursorIndex
@@ -305,250 +502,212 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     }
     else
     {
-        queueLocals.loadedGroupSize0 = view->loadedGroupQueue.count;
-        if (queueLocals.loadedGroupSize0 != 0)
+        i32 groupPreviewDataNegativeFreeValue;
+            SceneValueQueue *groupPreviewDataNegativeFreeQueue;
+            i32 groupPreviewDataNegativeValue;
+            SceneValueQueue *groupPreviewDataNegativeQueue;
+            i32 groupPreviewSizeNegativeValue;
+            SceneValueQueue *groupPreviewSizeNegativeQueue;
+            i32 loadedGroupNegativeSize;
+            i32 scenePreviewDataPositiveFreeValue;
+            SceneValueQueue *scenePreviewDataPositiveFreeQueue;
+            i32 groupPreviewDataPositiveFreeValue;
+            SceneValueQueue *groupPreviewDataPositiveFreeQueue;
+            i32 scenePreviewDataPositiveValue;
+            SceneValueQueue *scenePreviewDataPositiveQueue;
+            i32 scenePreviewSizePositiveValue;
+            SceneValueQueue *scenePreviewSizePositiveQueue;
+            i32 groupPreviewDataPositiveValue;
+            SceneValueQueue *groupPreviewDataPositiveQueue;
+            i32 groupPreviewSizePositiveValue;
+            SceneValueQueue *groupPreviewSizePositiveQueue;
+            i32 loadedGroupSize1;
+            i32 loadedGroupFrontValue;
+            SceneValueQueue *loadedGroupFrontQueue;
+            i32 loadedGroupSize0;
+        loadedGroupSize0 = view->loadedGroupQueue.count;
+        if (loadedGroupSize0 != 0)
         {
-            queueLocals.loadedGroupFrontQueue = &view->loadedGroupQueue;
-            if (queueLocals.loadedGroupFrontQueue->count > 0)
+            loadedGroupFrontQueue = &view->loadedGroupQueue;
+            if (loadedGroupFrontQueue->count > 0)
             {
-                queueLocals.loadedGroupFrontValue =
-                    queueLocals.loadedGroupFrontQueue->values[0];
+                loadedGroupFrontValue =
+                    loadedGroupFrontQueue->values[0];
             }
             else
             {
-                queueLocals.loadedGroupFrontValue = 0;
+                loadedGroupFrontValue = 0;
             }
-            if (queueLocals.loadedGroupFrontValue >= 0)
+            if (loadedGroupFrontValue >= 0)
             {
-                queueLocals.loadedGroupSize1 =
+                loadedGroupSize1 =
                     view->loadedGroupQueue.count;
-                if (queueLocals.loadedGroupSize1 == 1)
+                if (loadedGroupSize1 == 1)
                 {
-                    queueLocals.groupPreviewSizePositiveQueue =
+                    groupPreviewSizePositiveQueue =
                         &view->groupPreviewSizeQueue;
-                    if (queueLocals.groupPreviewSizePositiveQueue->count > 0)
+                    if (groupPreviewSizePositiveQueue->count > 0)
                     {
-                        queueLocals.groupPreviewSizePositiveValue =
-                            queueLocals.groupPreviewSizePositiveQueue
+                        groupPreviewSizePositiveValue =
+                            groupPreviewSizePositiveQueue
                                 ->values[0];
                     }
                     else
                     {
-                        queueLocals.groupPreviewSizePositiveValue = 0;
+                        groupPreviewSizePositiveValue = 0;
                     }
-                    queueLocals.groupPreviewDataPositiveQueue =
+                    groupPreviewDataPositiveQueue =
                         &view->groupPreviewDataQueue;
-                    if (queueLocals.groupPreviewDataPositiveQueue->count > 0)
+                    if (groupPreviewDataPositiveQueue->count > 0)
                     {
-                        queueLocals.groupPreviewDataPositiveValue =
-                            queueLocals.groupPreviewDataPositiveQueue
+                        groupPreviewDataPositiveValue =
+                            groupPreviewDataPositiveQueue
                                 ->values[0];
                     }
                     else
                     {
-                        queueLocals.groupPreviewDataPositiveValue = 0;
+                        groupPreviewDataPositiveValue = 0;
                     }
                     g_SceneAnmManager->LoadTexture(
                         &view->sceneAnm->textures[2],
                         reinterpret_cast<u8 *>(
-                            queueLocals.groupPreviewDataPositiveValue),
-                        queueLocals.groupPreviewSizePositiveValue,
+                            groupPreviewDataPositiveValue),
+                        groupPreviewSizePositiveValue,
                         5, 0, 1);
 
-                    queueLocals.scenePreviewSizePositiveQueue =
+                    scenePreviewSizePositiveQueue =
                         &view->scenePreviewSizeQueue;
-                    if (queueLocals.scenePreviewSizePositiveQueue->count > 0)
+                    if (scenePreviewSizePositiveQueue->count > 0)
                     {
-                        queueLocals.scenePreviewSizePositiveValue =
-                            queueLocals.scenePreviewSizePositiveQueue
+                        scenePreviewSizePositiveValue =
+                            scenePreviewSizePositiveQueue
                                 ->values[0];
                     }
                     else
                     {
-                        queueLocals.scenePreviewSizePositiveValue = 0;
+                        scenePreviewSizePositiveValue = 0;
                     }
-                    queueLocals.scenePreviewDataPositiveQueue =
+                    scenePreviewDataPositiveQueue =
                         &view->scenePreviewDataQueue;
-                    if (queueLocals.scenePreviewDataPositiveQueue->count > 0)
+                    if (scenePreviewDataPositiveQueue->count > 0)
                     {
-                        queueLocals.scenePreviewDataPositiveValue =
-                            queueLocals.scenePreviewDataPositiveQueue
+                        scenePreviewDataPositiveValue =
+                            scenePreviewDataPositiveQueue
                                 ->values[0];
                     }
                     else
                     {
-                        queueLocals.scenePreviewDataPositiveValue = 0;
+                        scenePreviewDataPositiveValue = 0;
                     }
                     g_SceneAnmManager->LoadTextureRegion(
                         &view->sceneAnm->textures[2],
                         reinterpret_cast<u8 *>(
-                            queueLocals.scenePreviewDataPositiveValue),
-                        queueLocals.scenePreviewSizePositiveValue,
+                            scenePreviewDataPositiveValue),
+                        scenePreviewSizePositiveValue,
                         5, 0, 1, 0x20);
                     view->sceneAnm->textures[2].texture->PreLoad();
                 }
 
-                queueLocals.groupPreviewDataPositiveFreeQueue =
+                groupPreviewDataPositiveFreeQueue =
                     &view->groupPreviewDataQueue;
-                if (queueLocals.groupPreviewDataPositiveFreeQueue->count > 0)
+                if (groupPreviewDataPositiveFreeQueue->count > 0)
                 {
-                    queueLocals.groupPreviewDataPositiveFreeValue =
-                        queueLocals.groupPreviewDataPositiveFreeQueue
+                    groupPreviewDataPositiveFreeValue =
+                        groupPreviewDataPositiveFreeQueue
                             ->values[0];
                 }
                 else
                 {
-                    queueLocals.groupPreviewDataPositiveFreeValue = 0;
+                    groupPreviewDataPositiveFreeValue = 0;
                 }
                 FreeSceneOwned(reinterpret_cast<void *>(
-                    queueLocals.groupPreviewDataPositiveFreeValue));
+                    groupPreviewDataPositiveFreeValue));
 
-                queueLocals.scenePreviewDataPositiveFreeQueue =
+                scenePreviewDataPositiveFreeQueue =
                     &view->scenePreviewDataQueue;
-                if (queueLocals.scenePreviewDataPositiveFreeQueue->count > 0)
+                if (scenePreviewDataPositiveFreeQueue->count > 0)
                 {
-                    queueLocals.scenePreviewDataPositiveFreeValue =
-                        queueLocals.scenePreviewDataPositiveFreeQueue
+                    scenePreviewDataPositiveFreeValue =
+                        scenePreviewDataPositiveFreeQueue
                             ->values[0];
                 }
                 else
                 {
-                    queueLocals.scenePreviewDataPositiveFreeValue = 0;
+                    scenePreviewDataPositiveFreeValue = 0;
                 }
                 FreeSceneOwned(reinterpret_cast<void *>(
-                    queueLocals.scenePreviewDataPositiveFreeValue));
+                    scenePreviewDataPositiveFreeValue));
             }
             else
             {
-                queueLocals.loadedGroupNegativeSize =
+                loadedGroupNegativeSize =
                     view->loadedGroupQueue.count;
-                if (queueLocals.loadedGroupNegativeSize == 1)
+                if (loadedGroupNegativeSize == 1)
                 {
-                    queueLocals.groupPreviewSizeNegativeQueue =
+                    groupPreviewSizeNegativeQueue =
                         &view->groupPreviewSizeQueue;
-                    if (queueLocals.groupPreviewSizeNegativeQueue->count > 0)
+                    if (groupPreviewSizeNegativeQueue->count > 0)
                     {
-                        queueLocals.groupPreviewSizeNegativeValue =
-                            queueLocals.groupPreviewSizeNegativeQueue
+                        groupPreviewSizeNegativeValue =
+                            groupPreviewSizeNegativeQueue
                                 ->values[0];
                     }
                     else
                     {
-                        queueLocals.groupPreviewSizeNegativeValue = 0;
+                        groupPreviewSizeNegativeValue = 0;
                     }
-                    queueLocals.groupPreviewDataNegativeQueue =
+                    groupPreviewDataNegativeQueue =
                         &view->groupPreviewDataQueue;
-                    if (queueLocals.groupPreviewDataNegativeQueue->count > 0)
+                    if (groupPreviewDataNegativeQueue->count > 0)
                     {
-                        queueLocals.groupPreviewDataNegativeValue =
-                            queueLocals.groupPreviewDataNegativeQueue
+                        groupPreviewDataNegativeValue =
+                            groupPreviewDataNegativeQueue
                                 ->values[0];
                     }
                     else
                     {
-                        queueLocals.groupPreviewDataNegativeValue = 0;
+                        groupPreviewDataNegativeValue = 0;
                     }
                     g_SceneAnmManager->LoadTexture(
                         &view->sceneAnm->textures[2],
                         reinterpret_cast<u8 *>(
-                            queueLocals.groupPreviewDataNegativeValue),
-                        queueLocals.groupPreviewSizeNegativeValue,
+                            groupPreviewDataNegativeValue),
+                        groupPreviewSizeNegativeValue,
                         5, 0, 1);
                     view->sceneAnm->textures[2].texture->PreLoad();
                 }
 
-                queueLocals.groupPreviewDataNegativeFreeQueue =
+                groupPreviewDataNegativeFreeQueue =
                     &view->groupPreviewDataQueue;
-                if (queueLocals.groupPreviewDataNegativeFreeQueue->count > 0)
+                if (groupPreviewDataNegativeFreeQueue->count > 0)
                 {
-                    queueLocals.groupPreviewDataNegativeFreeValue =
-                        queueLocals.groupPreviewDataNegativeFreeQueue
+                    groupPreviewDataNegativeFreeValue =
+                        groupPreviewDataNegativeFreeQueue
                             ->values[0];
                 }
                 else
                 {
-                    queueLocals.groupPreviewDataNegativeFreeValue = 0;
+                    groupPreviewDataNegativeFreeValue = 0;
                 }
                 FreeSceneOwned(reinterpret_cast<void *>(
-                    queueLocals.groupPreviewDataNegativeFreeValue));
+                    groupPreviewDataNegativeFreeValue));
             }
 
             g_SceneSupervisor.EnterCriticalSectionWrapper(4);
             g_SceneSupervisor.lockCounts[4]++;
             view->loadedGroupQueue.Pop();
-            view->groupPreviewDataQueue.Pop();
-            view->scenePreviewDataQueue.Pop();
-            view->groupPreviewSizeQueue.Pop();
-            view->scenePreviewSizeQueue.Pop();
+            SceneSelectQueuePopPhase(&view->groupPreviewDataQueue);
+            SceneSelectQueuePopPhase(&view->scenePreviewDataQueue);
+            SceneSelectQueuePopPhase(&view->groupPreviewSizeQueue);
+            SceneSelectQueuePopPhase(&view->scenePreviewSizeQueue);
             g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
             g_SceneSupervisor.lockCounts[4]--;
-            queueLocals.loadedGroupDrainedSize =
-                view->loadedGroupQueue.count;
-            if (queueLocals.loadedGroupDrainedSize == 0)
-            {
+            if (SceneSelectDrainedQueueSizePhase(&view->loadedGroupQueue) == 0)
                 view->vmIds.SetInterrupt(0x14, 4);
-            }
         }
         else
         {
-            queueLocals.loadedSceneSize0 = view->loadedSceneQueue.count;
-            if (queueLocals.loadedSceneSize0 != 0)
-            {
-                queueLocals.loadedSceneSize1 =
-                    view->loadedSceneQueue.count;
-                if (queueLocals.loadedSceneSize1 == 1)
-                {
-                    queueLocals.loadedSceneConditionQueue =
-                        &view->loadedSceneQueue;
-                    if (queueLocals.loadedSceneConditionQueue->count > 0)
-                    {
-                        queueLocals.loadedSceneConditionValue =
-                            queueLocals.loadedSceneConditionQueue->values[0];
-                    }
-                    else
-                    {
-                        queueLocals.loadedSceneConditionValue = 0;
-                    }
-                    if (queueLocals.loadedSceneConditionValue >= 0)
-                    {
-                        queueLocals.loadedSceneLoadQueue =
-                            &view->loadedSceneQueue;
-                        if (queueLocals.loadedSceneLoadQueue->count > 0)
-                        {
-                            queueLocals.loadedSceneLoadValue =
-                                queueLocals.loadedSceneLoadQueue->values[0];
-                        }
-                        else
-                        {
-                            queueLocals.loadedSceneLoadValue = 0;
-                        }
-                        g_SceneSaveData->LoadScenePreviewTexture(
-                            view->sceneAnm, 1,
-                            queueLocals.loadedSceneLoadValue);
-                        view->vmIds.SetInterrupt(0x82, 1);
-                        view->vmIds[0x82] =
-                            view->sceneAnm->CreateVm(0x82, 7);
-                        reinterpret_cast<AnmTextManagerView *>(
-                            g_SceneAnmManager)
-                            ->DrawTextCentered(
-                                reinterpret_cast<AnmTextVmView *>(
-                                    g_SceneAnmManager->GetVm(
-                                        view->vmIds.values[0x82])),
-                                0x00efcfcf, 0,
-                                reinterpret_cast<char *>(g_SceneSaveData) +
-                                    SceneQueueFront(&view->loadedSceneQueue) *
-                                        0x78 +
-                                    0x3178);
-                    }
-                }
-
-                g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-                g_SceneSupervisor.lockCounts[4]++;
-                view->loadedSceneQueue.Pop();
-                g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-                g_SceneSupervisor.lockCounts[4]--;
-                this->UpdateSelectedSceneDetails();
-            }
+            SceneSelectProcessLoadedSceneQueue(view, this);
         }
     }
 
@@ -560,7 +719,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     {
         g_SceneSupervisor.StopReplayScan();
         g_SceneUiAnm->textures[0].Clear();
-        view->stateTimer.Reset();
+        SceneSelectInitialTimerViewPhase(view);
         view->groupCursor.Push();
 
         if (g_SceneSaveData->FindHighestUnlockedSceneGroup() < 2)
@@ -573,10 +732,10 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         }
         else
         {
-            view->groupCursor.count =
-                12 <= g_SceneSaveData->FindHighestUnlockedSceneGroup() + 2
-                    ? 12
-                    : g_SceneSaveData->FindHighestUnlockedSceneGroup() + 2;
+            reinterpret_cast<SceneSelectCursorCountSetterView *>(&view->groupCursor)
+                ->SetCount(
+                    12 <= g_SceneSaveData->FindHighestUnlockedSceneGroup() + 2
+                        ? 12 : g_SceneSaveData->FindHighestUnlockedSceneGroup() + 2);
         }
         view->groupCursor.wraps = 1;
         view->state = 1;
@@ -586,8 +745,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         for (initialCursorIndex = 0; initialCursorIndex < 12;
              initialCursorIndex++)
         {
-            int sceneCount = g_SceneGroupCounts[initialCursorIndex];
-            view->sceneCursors[initialCursorIndex].count = sceneCount;
+            reinterpret_cast<SceneSelectCursorCountSetterView *>(
+                &view->sceneCursors[initialCursorIndex])
+                ->SetCount(g_SceneGroupCounts[initialCursorIndex]);
             view->sceneCursors[initialCursorIndex].wraps = 1;
             view->sceneCursors[initialCursorIndex].Set(0);
         }
@@ -600,79 +760,49 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                           [view->sceneCursors[view->groupCursor.GetCurrent()].GetCurrent()];
         view->selectedScoreEntryIndex = g_SelectedScene->scoreEntryIndex;
 
-        view->vmIds[0x68] = view->sceneAnm->CreateVm(0x68, 7);
-        view->vmIds[0x69] = view->sceneAnm->CreateVm(0x69, 7);
+        SceneSelectCreateVmAt(view, 0x68);
+        SceneSelectCreateVmAt(view, 0x69);
         view->vmIds.SetInterrupt(0x19, 3);
         view->vmIds.SetInterrupt(0x1a, 3);
         view->transitionVm.SetInterrupt(3);
         view->vmIds.SetInterrupt(0x1b, 3);
-        view->vmIds[0x1e] = view->sceneAnm->CreateVm(0x1e, 7);
-        view->vmIds[0x22] = view->sceneAnm->CreateVm(0x22, 7);
+        SceneSelectCreateVmAt(view, 0x1e);
+        SceneSelectCreateVmAt(view, 0x22);
         if (view->groupCursor.GetCurrent() <= 10)
         {
-            view->vmIds[0x20] = view->sceneAnm->CreateVm(0x20, 7);
+            SceneSelectCreateVmAt(view, 0x20);
             view->sceneAnm->SetSprite(
                 g_SceneAnmManager->GetVm(view->vmIds[0x22]),
                 view->groupCursor.GetCurrent() + 0x37);
         }
         else
         {
-            view->vmIds[0x21] = view->sceneAnm->CreateVm(0x21, 7);
+            SceneSelectCreateVmAt(view, 0x21);
             view->sceneAnm->SetSprite(
                 g_SceneAnmManager->GetVm(view->vmIds[0x22]),
                 view->groupCursor.GetCurrent() + 0x2c);
         }
-        view->vmIds[0x23] = view->sceneAnm->CreateVm(0x23, 7);
-        view->vmIds[0x24] = view->sceneAnm->CreateVm(0x24, 7);
+        SceneSelectCreateVmAt(view, 0x23);
+        SceneSelectCreateVmAt(view, 0x24);
         SET_SCENE_VM_VISIBILITY(
             view, 0x23, view->groupCursor.GetCurrent() != 0);
         SET_SCENE_VM_VISIBILITY(
             view, 0x24,
             view->groupCursor.GetCurrent() != view->groupCursor.GetCount() - 1);
 
-        view->vmIds[0x44] = view->sceneAnm->CreateVm(0x44, 7);
-        view->vmIds[0x48] = view->sceneAnm->CreateVm(0x48, 7);
-        view->vmIds[0x15] = view->sceneAnm->CreateVm(0x15, 7);
-        view->vmIds[0x16] = view->sceneAnm->CreateVm(0x16, 7);
-        view->vmIds[0x45] = view->sceneAnm->CreateVm(0x45, 7);
-        view->vmIds[0x46] = view->sceneAnm->CreateVm(0x46, 7);
+        SceneSelectCreateVmAt(view, 0x44);
+        SceneSelectCreateVmAt(view, 0x48);
+        SceneSelectCreateVmAt(view, 0x15);
+        SceneSelectCreateVmAt(view, 0x16);
+        SceneSelectCreateVmAt(view, 0x45);
+        SceneSelectCreateVmAt(view, 0x46);
 
         for (initialSceneIndex = 0;
              initialSceneIndex <
                  g_SceneGroupCounts[view->groupCursor.GetCurrent()];
              initialSceneIndex++)
         {
-            int firstSceneVmIndex = initialSceneIndex * 3 + 0x25;
-            view->vmIds[firstSceneVmIndex] =
-                view->sceneAnm->CreateVm(firstSceneVmIndex, 7);
-            int secondSceneVmIndex = initialSceneIndex * 3 + 0x26;
-            view->vmIds[secondSceneVmIndex] =
-                view->sceneAnm->CreateVm(secondSceneVmIndex, 7);
-            int thirdSceneVmIndex = initialSceneIndex * 3 + 0x27;
-            view->vmIds[thirdSceneVmIndex] =
-                view->sceneAnm->CreateVm(thirdSceneVmIndex, 7);
-
-            SET_SCENE_VM_VISIBILITY(
-                view, initialSceneIndex * 3 + 0x27,
-                g_SceneSaveData
-                        ->sceneScores[
-                            g_SceneGroups[view->groupCursor.GetCurrent()]
-                                         [initialSceneIndex]
-                                             .scoreEntryIndex]
-                        .score != 0);
-            if (g_SceneSaveData->IsSceneGroupUnlocked(
-                    view->groupCursor.GetCurrent()) == 0)
-            {
-                g_SceneAnmManager
-                    ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x25])
-                    ->flagsWord &= ~2u;
-                g_SceneAnmManager
-                    ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x26])
-                    ->flagsWord &= ~2u;
-                g_SceneAnmManager
-                    ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x27])
-                    ->flagsWord &= ~2u;
-            }
+            SceneSelectInitialSceneVmPhase(view, initialSceneIndex);
         }
 
         view->groupPreviewQueue.capacity = 5;
@@ -688,13 +818,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->flags &= ~0x20u;
 
         g_SceneSupervisor.StartReplayScan(LoadSceneSelectionAssets, NULL);
-        view->vmIds[0x13] = view->sceneAnm->CreateVm(0x13, 7);
-        view->vmIds[0x12] = view->sceneAnm->CreateVm(0x12, 7);
+        SceneSelectCreateVmAt(view, 0x13);
+        SceneSelectCreateVmAt(view, 0x12);
         view->flags |= 4;
-        view->vmIds[0x14] = view->sceneAnm->CreateVm(0x14, 7);
-        view->vmIds[0x49] = view->sceneAnm->CreateVm(0x49, 7);
-        view->vmIds[0x4a] = view->sceneAnm->CreateVm(0x4a, 7);
-        view->vmIds[0x4b] = view->sceneAnm->CreateVm(0x4b, 7);
+        SceneSelectCreateVmAt(view, 0x14);
+        SceneSelectCreateVmAt(view, 0x49);
+        SceneSelectCreateVmAt(view, 0x4a);
+        SceneSelectCreateVmAt(view, 0x4b);
 
         view->sceneAnm->SetSprite(
             g_SceneAnmManager->GetVm(view->vmIds[0x49]),
@@ -708,17 +838,16 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
         for (initialVmIndex = 0; initialVmIndex < 16; initialVmIndex++)
         {
-            int vmIndex = 0x4c + initialVmIndex;
-            view->vmIds[vmIndex] = view->sceneAnm->CreateVm(vmIndex, 7);
+            SceneSelectInitialVmCreatePhase(view, initialVmIndex);
         }
-        view->vmIds[0x5c] = view->sceneAnm->CreateVm(0x5c, 7);
-        view->vmIds[0x5d] = view->sceneAnm->CreateVm(0x5d, 7);
-        view->vmIds[0x5e] = view->sceneAnm->CreateVm(0x5e, 7);
-        view->vmIds[0x5f] = view->sceneAnm->CreateVm(0x5f, 7);
-        view->vmIds[0x60] = view->sceneAnm->CreateVm(0x60, 7);
-        view->vmIds[0x61] = view->sceneAnm->CreateVm(0x61, 7);
-        view->vmIds[0x62] = view->sceneAnm->CreateVm(0x62, 7);
-        view->vmIds[0x63] = view->sceneAnm->CreateVm(0x63, 7);
+        SceneSelectCreateVmAt(view, 0x5c);
+        SceneSelectCreateVmAt(view, 0x5d);
+        SceneSelectCreateVmAt(view, 0x5e);
+        SceneSelectCreateVmAt(view, 0x5f);
+        SceneSelectCreateVmAt(view, 0x60);
+        SceneSelectCreateVmAt(view, 0x61);
+        SceneSelectCreateVmAt(view, 0x62);
+        SceneSelectCreateVmAt(view, 0x63);
 
         initialGroupVm = view->vmIds.values[0x68].GetVm();
         if (g_SceneSaveData->IsSceneGroupUnlocked(
@@ -752,7 +881,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     {
         for (initialSelectionIndex = 0;
              initialSelectionIndex <
-                 g_SceneGroupCounts[view->groupCursor.GetCurrent()];
+                 g_SceneGroupCounts[SceneSelectInitialSelectionGroupPhase(view)];
              initialSelectionIndex++)
         {
             if (view->sceneCursors[view->groupCursor.GetCurrent()].GetCurrent() ==
@@ -821,12 +950,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             &g_SceneSaveData
                  ->sceneScores[view->selectedScoreEntryIndex]) != 0)
     {
-        SceneSelectScoreFlagsView *scoreFlags =
-            reinterpret_cast<SceneSelectScoreFlagsView *>(
-                &g_SceneSaveData
-                     ->sceneScores[view->selectedScoreEntryIndex]
-                     .flags);
-        scoreFlags->showSuccessRateMarker ^= 1;
+        SceneSelectScoreFlagsAt(
+            g_SceneSaveData, view->selectedScoreEntryIndex)
+            ->showSuccessRateMarker ^= 1;
     }
 
     view->groupCursor.SaveCurrent();
@@ -848,17 +974,17 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         g_SceneAnmManager->MarkVmForDeletion(view->vmIds[0x20]);
         g_SceneAnmManager->MarkVmForDeletion(view->vmIds[0x21]);
         g_SceneAnmManager->MarkVmForDeletion(view->vmIds[0x22]);
-        view->vmIds[0x22] = view->sceneAnm->CreateVm(0x22, 7);
+        SceneSelectCreateVmAt(view, 0x22);
         if (view->groupCursor.GetCurrent() <= 10)
         {
-            view->vmIds[0x20] = view->sceneAnm->CreateVm(0x20, 7);
+            SceneSelectCreateVmAt(view, 0x20);
             view->sceneAnm->SetSprite(
                 g_SceneAnmManager->GetVm(view->vmIds[0x22]),
                 view->groupCursor.GetCurrent() + 0x37);
         }
         else
         {
-            view->vmIds[0x21] = view->sceneAnm->CreateVm(0x21, 7);
+            SceneSelectCreateVmAt(view, 0x21);
             view->sceneAnm->SetSprite(
                 g_SceneAnmManager->GetVm(view->vmIds[0x22]),
                 view->groupCursor.GetCurrent() + 0x2c);
@@ -888,50 +1014,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
              newGroupIndex < g_SceneGroupCounts[view->groupCursor.GetCurrent()];
              newGroupIndex++)
         {
-            int firstSceneVmIndex = newGroupIndex * 3 + 0x25;
-            view->vmIds[firstSceneVmIndex] =
-                view->sceneAnm->CreateVm(firstSceneVmIndex, 7);
-            int secondSceneVmIndex = newGroupIndex * 3 + 0x26;
-            view->vmIds[secondSceneVmIndex] =
-                view->sceneAnm->CreateVm(secondSceneVmIndex, 7);
-            int thirdSceneVmIndex = newGroupIndex * 3 + 0x27;
-            view->vmIds[thirdSceneVmIndex] =
-                view->sceneAnm->CreateVm(thirdSceneVmIndex, 7);
-            view->vmIds.SetInterrupt(
-                newGroupIndex * 3 + 0x25,
-                groupDirection > 0 ? 10 : 9);
-            view->vmIds.SetInterrupt(
-                newGroupIndex * 3 + 0x26,
-                groupDirection > 0 ? 10 : 9);
-            view->vmIds.SetInterrupt(
-                newGroupIndex * 3 + 0x27,
-                groupDirection > 0 ? 10 : 9);
-
-            SET_SCENE_VM_VISIBILITY(
-                view, newGroupIndex * 3 + 0x27,
-                g_SceneSaveData
-                        ->sceneScores[
-                            g_SceneGroups[view->groupCursor.GetCurrent()]
-                                         [newGroupIndex]
-                                             .scoreEntryIndex]
-                        .score != 0);
-            if (g_SceneSaveData->IsSceneGroupUnlocked(
-                    view->groupCursor.GetCurrent()) == 0)
-            {
-                g_SceneAnmManager
-                    ->GetVm(view->vmIds[newGroupIndex * 3 + 0x25])
-                    ->flagsWord &= ~2u;
-                g_SceneAnmManager
-                    ->GetVm(view->vmIds[newGroupIndex * 3 + 0x26])
-                    ->flagsWord &= ~2u;
-                g_SceneAnmManager
-                    ->GetVm(view->vmIds[newGroupIndex * 3 + 0x27])
-                    ->flagsWord &= ~2u;
-            }
+            SceneSelectNewGroupSceneVmPhase(view, newGroupIndex, groupDirection);
         }
 
         view->vmIds.SetInterrupt(0x12, groupDirection <= 0 ? 8 : 7);
-        view->vmIds[0x12] = view->sceneAnm->CreateVm(0x12, 7);
+        SceneSelectCreateVmAt(view, 0x12);
         view->vmIds.SetInterrupt(0x12, 5);
         view->vmIds.SetInterrupt(0x12, groupDirection > 0 ? 10 : 9);
         view->vmIds.SetInterrupt(0x14, 5);
@@ -981,7 +1068,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     else
     {
         if (g_SceneSaveData->IsSceneGroupUnlocked(
-                view->groupCursor.GetCurrent()) != 0)
+                SceneSelectPostTransitionGroupPhase(view)) != 0)
         {
             activeSceneCursor.SaveCurrent();
             if ((u16)(SceneInputAnd(g_PressedButtons, TH_BUTTON_UP) != 0 ||
@@ -1100,8 +1187,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->vmIds.SetInterrupt(0x63, 1);
                 view->vmIds.SetInterrupt(0x48, 1);
                 view->vmIds.SetInterrupt(0x82, 1);
-                SceneAnmVmId clearedVmId = {0};
-                view->vmIds.values[0x82] = clearedVmId;
+                SceneSelectClearPreviewVmPhase(view);
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
         }
@@ -1119,8 +1205,8 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             view->stateTimer.Reset();
             view->vmIds.SetInterrupt(0x68, 1);
             view->vmIds.SetInterrupt(0x69, 1);
-            view->vmIds[0x66] = view->sceneAnm->CreateVm(0x66, 7);
-            view->vmIds[0x67] = view->sceneAnm->CreateVm(0x67, 7);
+            SceneSelectCreateVmAt(view, 0x66);
+            SceneSelectCreateVmAt(view, 0x67);
             view->vmIds.SetInterrupt(0x19, 2);
             view->vmIds.SetInterrupt(0x1a, 2);
             view->transitionVm.SetInterrupt(2);
@@ -1167,8 +1253,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             g_SceneAnmManager->SetInterrupt(view->previewTextVmIds[1], 1);
             g_SceneAnmManager->SetInterrupt(view->previewTextVmIds[2], 1);
             view->vmIds.SetInterrupt(0x82, 1);
-            SceneAnmVmId clearedVmId = {0};
-            view->vmIds.values[0x82] = clearedVmId;
+            SceneSelectClearPreviewVmPhase(view);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
     }
@@ -1241,6 +1326,29 @@ update_preview_text:
 #undef initialCursorIndex
 #undef groupDirection
 #undef i
+#undef loadedGroupSize0
+#undef loadedGroupFrontQueue
+#undef loadedGroupFrontValue
+#undef loadedGroupSize1
+#undef groupPreviewSizePositiveQueue
+#undef groupPreviewSizePositiveValue
+#undef groupPreviewDataPositiveQueue
+#undef groupPreviewDataPositiveValue
+#undef scenePreviewSizePositiveQueue
+#undef scenePreviewSizePositiveValue
+#undef scenePreviewDataPositiveQueue
+#undef scenePreviewDataPositiveValue
+#undef groupPreviewDataPositiveFreeQueue
+#undef groupPreviewDataPositiveFreeValue
+#undef scenePreviewDataPositiveFreeQueue
+#undef scenePreviewDataPositiveFreeValue
+#undef loadedGroupNegativeSize
+#undef groupPreviewSizeNegativeQueue
+#undef groupPreviewSizeNegativeValue
+#undef groupPreviewDataNegativeQueue
+#undef groupPreviewDataNegativeValue
+#undef groupPreviewDataNegativeFreeQueue
+#undef groupPreviewDataNegativeFreeValue
 #undef view
 }
 

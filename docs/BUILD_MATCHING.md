@@ -1395,6 +1395,39 @@ exact four-byte queue-Size phase also regresses to 16,084.  The 96-byte merge is
 therefore a bounded **negative** oracle.  Preserve the 92-byte queue aggregate
 and explain relocation of the compiler hole without disturbing the already
 correct deep lane; do not reintroduce a dummy dword.
+### SceneSelect stock VC7.1 exact closure (2026-09-05)
+
+The former SceneSelect policy barrier is closed.  The private 16,066-byte
+zero-difference oracle was correct about the body but wrong about the source
+owner of its unreferenced queue interval: the diagnostic 4+16-byte fields are
+not needed.  Likewise, the later conclusion that a 92-byte queue aggregate was
+required is superseded.  That aggregate forced stock VC7.1 to align the object
+at `EBP-0xA8`, leaving the non-target dword at `-0x4C..-0x49`.
+
+The target/source crosswalk instead proves 23 independent, fully live queue
+scalar/pointer locals.  They form one gapless four-byte lane immediately below
+`SceneSelectShallowLocals @ -0x48..-0x01`, from `loadedGroupSize0 @ -0x4C`
+through `groupPreviewDataNegativeFreeValue @ -0xA4`.  Six independent
+loaded-scene locals form the later target lane `-0xC0..-0xD4`.  A build-3077
+port of TH08's `var_order` frontend was useful only to read the required
+ordinary-local rank: with those two lists, the clean source reaches
+13,986/13,986 non-relocation bytes and all 1,115 paired EBP operands.
+
+The canonical build does **not** depend on the patched frontend.  Reuse the
+collision-free identifier buckets already calibrated by exact
+`ResultScreen::Draw`, keeping semantic macro aliases around the 23 queue locals
+and six loaded-scene locals.  Unmodified VC7.1 13.10.3077 then emits the same
+16,066-byte body.  The configured `scene-select-update` unit replays all 520
+COFF relocations and compares 16,066/16,066 bytes exactly.  The accepted source
+retains only the previously justified operation-owned Pop/timer/selection/Size
+allocation phases; the fake queue head/tail fields are absent.
+
+Do not revive the old aggregate-alignment search.  The useful historical
+negative is narrower: an **uncalibrated** 23-scalar decomposition regressed
+because stock VC7.1 hash order was wrong.  Once the target rank is known and
+mapped through proven buckets, the independent-scalar source is the exact
+closure.
+
 ### 2026-09-05 PhotoCamera equality temporary chronology
 
 For `UpdatePhotoCamera @ 0x00430AB0`, compare only the 7,271 authored bytes

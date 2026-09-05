@@ -622,7 +622,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00446A50,authored,FrontEndController,authored,exact,front-end-controller-main-menu-2026-08-29
 0x00447750,authored,FrontEndController,authored,exact,vc71-front-end-main-menu-helpers-2026-08-29
 0x004479E0,authored,FrontEndController,authored,exact,vc71-front-end-main-menu-helpers-2026-08-29
-0x00447D00,authored,SceneSelect,authored,high,front-end-controller-scene-select-2026-08-29
+0x00447D00,authored,SceneSelect,authored,exact,vc71-scene-select-update-exact-2026-09-05
 0x0044BBD0,authored,SceneSelect,authored,exact,vc71-exact-scene-refresh-selection-2026-08-31
 0x0044BEA0,authored,SceneSelect,authored,exact,vc71-scene-preview-text-2026-08-29
 0x0044C670,authored,SceneSelect,authored,exact,vc71-scene-detail-display-2026-08-29

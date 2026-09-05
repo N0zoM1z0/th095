@@ -2408,6 +2408,33 @@ reason VC7 leaves the four-byte inter-aggregate hole, not for a larger queue
 record or a way to restore frame size artificially.  Do not repeat queue-size,
 Pop-count, 96-byte merge, or dummy-storage sweeps.
 
+### 2026-09-05 gpt-web SceneSelect canonical exact closure
+
+`UpdateSceneSelect @ 0x00447D00` is now canonical exact under the **stock**
+VC7.1 13.10.3077 toolchain: 16,066/16,066 authored bytes and all 520 relocation
+destinations replay through `scene-select-update`.  This adds 16,066 exact
+authored bytes and moves the ledger to 665 exact authored functions / 296,736
+exact authored bytes (88.81% of the currently confirmed authored-byte total).
+
+The decisive correction was to discard the 92-byte `SceneSelectQueueLocals`
+abstraction, not to enlarge it.  Target-labelled homes show 23 real branch-local
+queue values/pointers packed contiguously from `EBP-0x4C` through `-0xA4`, with
+`loadedGroupSize0` shallowest and the negative-preview free value deepest.  Six
+real loaded-scene locals independently occupy `-0xC0..-0xD4`.  The existing
+build-3077 `var_order` port proved these two ordinary-local orders and produced
+a clean structural zero-diff oracle without the private fake 4+16-byte fields.
+The patched compiler is **not** part of the accepted unit: exact
+`ResultScreen::Draw` supplies 28 collision-free stock-VC7 identifier buckets,
+and mapping the 23+6 semantic locals onto those proven ranks reproduces the same
+layout with the pinned unmodified compiler.
+
+This supersedes two older handoff statements: the 92-byte aggregate is not
+required, and the 23-scalar decomposition is not intrinsically a negative.  It
+was negative only before its physical hash order was calibrated.  Preserve the
+semantic aliases in `src/SceneSelectUpdate.cpp`; do not reintroduce the private
+`loadedQueuePhaseHeadStorage/loadedQueuePhaseTailStorage` fields or reopen the
+queue-size/alignment sweeps.
+
 ### 2026-09-05 gpt-web VC7.1 ordering oracle and PhotoStage Update tightening
 
 The TH08 `var_order` implementation cannot be copied into TH095: TH08 wraps
