@@ -2208,6 +2208,25 @@ integer overloads, and four free equality parameter ownership forms are bounded
 negatives; do not repeat them.  Treat the residual specifically as by-value
 equality-temp phase ownership.
 
+A 2026-09-05 instruction-index `/FAsc` crosswalk sharpens that attribution.
+The target deep chronology is `$T69852 @ -0x260`, first equality RHS
+`@ -0x264`, `$T69868 @ -0x268`, `$T69875 @ -0x26C`, second equality RHS
+`@ -0x270`, after which `$T69925 @ -0x274` and later homes realign.  The
+6,399/6,415 direct-expression probe already has the non-equality members exact
+at `-0x260/-0x274` and beyond; it merely sends the two RHS objects to the
+shallow `-0x11C/-0x124` class.  A force-inline no-storage `IsZero` boundary,
+and separately a semantically live `PhotoAnmVmIdValue zeroValue(0)` helper,
+move the RHS values into the chronological deep class, but VC7.1 then rebases
+all pre-equality members of that class four bytes shallow per wrapped equality
+(eight bytes when both are wrapped).  Two branch-local named zero objects are a
+strong topology negative, and converting-constructor class-inline versus
+out-of-class `__forceinline` placement is byte-identical at 6,399/6,415.  TU
+ordering of the real `PhotoDistance2D` and `PhotoCameraState::Draw` definitions
+is also byte-identical.  Therefore the missing source distinction must
+reclassify the *existing compiler RHS temporaries* without introducing a new
+lexical/helper allocation; do not repeat zero-local, helper-count, constructor
+placement, TU-order, or effect/timer phase-redistribution sweeps.
+
 ### 2026-09-03 gpt-web SceneSelect tv488 ownership negative controls
 
 Follow-up probes on the 13,848/13,986 exact-size private best further bound the

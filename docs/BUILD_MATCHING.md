@@ -1362,4 +1362,21 @@ exact four-byte queue-Size phase also regresses to 16,084.  The 96-byte merge is
 therefore a bounded **negative** oracle.  Preserve the 92-byte queue aggregate
 and explain relocation of the compiler hole without disturbing the already
 correct deep lane; do not reintroduce a dummy dword.
+### 2026-09-05 PhotoCamera equality temporary chronology
+
+For `UpdatePhotoCamera @ 0x00430AB0`, compare only the 7,271 authored bytes
+when reasoning about instructions; the canonical COFF unit is 7,291 because of
+the adjacent 20-byte compiler switch table.  The 6,399/6,415 private best has
+all 1,565 authored mnemonics.  `/FAsc` plus instruction-index pairing proves
+the target deep temp order is `-0x260`, equality RHS #1 `-0x264`, `-0x268`,
+`-0x26C`, equality RHS #2 `-0x270`, then `-0x274`; the direct source instead
+allocates the two RHS values at shallow `-0x11C/-0x124` while every surrounding
+deep home matches.  Wrapping an equality in a no-storage force-inline helper
+reclassifies its temporary as deep but shifts the preceding deep family four
+bytes shallow per wrapped call.  A live `PhotoAnmVmIdValue zeroValue(0)` helper
+shows the same behavior, so the effect is not dependent on fake padding.
+Branch-local named zero objects, constructor definition placement, sibling TU
+definition order, and the already-recorded effect/zero/timer phase grids are
+negative.  Future probes should seek a source surface that reclassifies the
+existing conversion temporary without introducing another lexical/helper temp.
 
