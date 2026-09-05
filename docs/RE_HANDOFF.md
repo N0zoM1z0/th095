@@ -2590,3 +2590,7 @@ those two homes exactly.  Do not revive zero-local, equality-helper, aggregate,
 or identifier sweeps here.  All thirteen pre-existing `AnmVmLifecycle.cpp`
 exact units replay unchanged after the source edit.  The three CreateVm variants
 remain separate `0x14` hidden-receiver/result-home hard cases.
+
+### 2026-09-06 gpt-web PhotoStage Update canonical exact closure
+
+PhotoStageStateView::Update @ 0x0042AD60 is canonical exact: 5,309/5,309 authored bytes, 4,789/4,789 comparable bytes, 413/413 paired EBP operands, and all 130 relocations. The accepted eight-byte phase belongs to one real current-entry frontend that binds the live stage pointer and entry-index reference, computes GetPhotoIndex()-1, and interrupts the indexed entry VM. Exact ResultScreen current/previous photo interrupt frontends independently prove both the eight-byte interrupt phase and the broader owner+getter+indexed-VM phase. Global-state indexing is one byte short; moving the phase after the getter leaves exactly two getter-home bytes wrong. The ledger is 668/686 exact functions and 304,116/334,111 exact authored bytes (91.02%), leaving 13,290 bytes to the 95% byte threshold.

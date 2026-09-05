@@ -407,7 +407,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0042AAF0,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
 0x0042ABC0,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
 0x0042AD00,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01
-0x0042AD60,authored,PhotoStage,authored,high,photo-stage-update-semantic-2026-08-30
+0x0042AD60,authored,PhotoStage,authored,exact,vc71-photo-stage-update-exact-2026-09-06
 0x0042C220,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-draw-exact-2026-09-01
 0x0042C3E0,authored,PhotoStage,authored,exact,vc71-photo-stage-update-callback-2026-08-30
 0x0042C410,authored,PhotoOverlay,authored,exact,vc71-photo-overlay-lifecycle-2026-09-01

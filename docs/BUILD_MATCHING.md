@@ -1561,3 +1561,11 @@ compiler `Id()` temporary naturally falls to `-0x08`, and the second postfix
 increment stays at its already-correct home.  Stock VC7.1 then replays 236/236
 bytes with no relocations.  A cold rebuild preserves every one of the thirteen
 pre-existing exact lifecycle units.
+
+### PhotoStage Update: current-entry interrupt phase closes the final allocation lane (2026-09-06)
+
+`PhotoStageStateView::Update @ 0x0042AD60` is canonical exact for all 5,309 authored bytes and all 130 relocations. The former zero-diff getter probe had the right allocation location but the wrong owner. The accepted source uses one real current-entry interrupt frontend: a source-local force-inlined helper takes `PhotoStageStateView *state` and `i32 &entryIndex`, computes `entryIndex = GetPhotoStageCamera()->GetPhotoIndex() - 1`, and immediately interrupts `state->slots[0].entryVms[entryIndex]`. The reference aliases the existing live outer index and introduces no replacement value.
+
+Two exact `UpdatePhotoResultScreen` frontends provide independent provenance. `ResultPhotoInterruptCurrentPhase` owns an eight-byte current-photo VM-interrupt phase, while `ResultPhotoInterruptPreviousPhase` proves that an owner pointer, cursor getter, indexed VM lookup, and interrupt can share one semantic allocation phase. PhotoStage controls locate the boundary precisely: an index-only helper using `g_PhotoStageState` is one byte short because its absolute global load is shorter than target `mov eax,[ebp-this]`; a state-plus-already-computed-index helper restores the 5,309-byte extent but leaves only the getter result temporary two bytes wrong at 4,787/4,789. Putting the assignment in the call argument is identical. VM-id member and nested-game-camera getter frontends regress the allocation lane to 4,576/4,789.
+
+Cold stock-VC7.1 build 3077 now replays 4,789/4,789 comparable bytes, all 413 paired EBP operands, and all 130 relocation destinations. `UpdatePhotoStage`, `SavePhoto`, `InitializePhotoStageDisplayVm`, and `CapturePhotoPixels` remain exact from the same rebuilt translation unit.
