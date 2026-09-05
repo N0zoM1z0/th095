@@ -1350,14 +1350,16 @@ boundary.  A 2026-09-05 `/FAsc` audit sharpened that description: the clean
 92-byte `queueLocals` aggregate occupies `EBP-0xA8..-0x4D` and the 72-byte
 `shallow` aggregate occupies `EBP-0x48..-0x01`, so `-0x4C..-0x49` is not a
 source variable at all; it is a four-byte hole between two real allocation
-classes.  Moving the real post-drain `loadedGroupDrainedSize` value from its
-inline-helper local into `queueLocals` grows that aggregate to 96 bytes and
-closes the boundary exactly (`queueLocals @ -0xA8`, `shallow @ -0x48`) without
-diagnostic storage.  The resulting body improves from 16,075 to 16,069 bytes,
-but VC7.1 simultaneously shrinks the frame from target `0x3DC` to `0x3D8`.
-A direct inline count-return producer is byte-identical at 16,069; a named
-local-return producer regresses to 16,084.  Therefore the remaining clean
-problem is specifically a genuine four-byte deep-phase lifetime/allocation
-owner, not queue-record size or shallow alignment.  Do not reintroduce a dummy
-dword to restore `0x3DC`.
+classes.  A tempting semantic merge moved the already-live post-drain
+`loadedGroupDrainedSize` into `queueLocals`, growing it to 96 bytes and reducing
+the encoded body from 16,075 to 16,069 bytes.  Do **not** treat that smaller
+extent as progress: an instruction-index audit still has all 3,637 mnemonics
+but the EBP score collapses from 1,036/1,115 to 142/1,115, the frame shrinks
+from target `0x3DC` to `0x3D8`, and the complete hidden-`this`/deep lane moves
+one dword shallow.  A direct inline count-return producer is identical at
+16,069; a named local-return producer regresses to 16,084; the independently
+exact four-byte queue-Size phase also regresses to 16,084.  The 96-byte merge is
+therefore a bounded **negative** oracle.  Preserve the 92-byte queue aggregate
+and explain relocation of the compiler hole without disturbing the already
+correct deep lane; do not reintroduce a dummy dword.
 

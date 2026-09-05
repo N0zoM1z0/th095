@@ -2366,15 +2366,17 @@ old `-0x4C` residual is a compiler hole, not an unidentified local.  The
 72-byte shallow aggregate is exactly `EBP-0x48..-0x01`; the 92-byte queue
 aggregate is `EBP-0xA8..-0x4D`; the four bytes at `-0x4C..-0x49` sit between
 those two real objects.  Re-owning the already-live post-drain queue-count
-value (`loadedGroupDrainedSize`) as a member of the queue aggregate grows it to
-96 bytes at `-0xA8` and makes it abut shallow at `-0x48` with no fake field.
-That clean probe is 16,069 bytes, only three bytes longer than the 16,066-byte
-target, but its frame becomes `0x3D8` rather than target `0x3DC`.  A direct
-inline producer of the same count remains 16,069; materializing a named local
-in that producer grows to 16,084.  The next search should therefore target a
-real operation whose inlined lifetime naturally retains one four-byte deep
-allocation while preserving the now-correct 96-byte queue/shallow boundary.
-Do not repeat queue-size, Pop-count, or dummy-storage sweeps.
+value (`loadedGroupDrainedSize`) as a member of the queue aggregate is a useful
+negative control: it produces a seductive 16,069-byte extent, but an
+instruction-index audit shows only 142/1,115 EBP operands exact versus
+1,036/1,115 in the 92-byte source.  The frame shrinks to `0x3D8` and the whole
+hidden-`this`/deep lane moves one dword shallow.  A direct inline producer keeps
+that same bad 16,069 layout; a named-local producer and the exact-sibling
+four-byte Size phase both grow to 16,084.  Therefore preserve the 92-byte queue
+aggregate.  The remaining search is specifically for the allocation-class
+reason VC7 leaves the four-byte inter-aggregate hole, not for a larger queue
+record or a way to restore frame size artificially.  Do not repeat queue-size,
+Pop-count, 96-byte merge, or dummy-storage sweeps.
 
 ### 2026-09-05 parallel Ghidra web bridge
 
