@@ -1197,20 +1197,47 @@ byte-pointer arithmetic, and tail/display accessor variants either spill a
 non-target pointer or let VC7 over-fold the two indices.
 
 The stronger private probe is now exact-sized at 5,309 bytes, keeps all
-1,172 target mnemonics, and matches 4,632/4,789 non-relocation comparable bytes;
-a fresh `/FAsc` crosswalk places 261/413 paired EBP operands exactly.  The
-remaining mismatches are a bounded set of real-local/compiler-temp rank classes,
-not missing control flow.  Important negative controls prevent a false promotion:
-the private best still carries one diagnostic eight-byte inline reservation.
-Moving that reservation from the capture-request helper to the captured-score
-helper is byte-identical at 4,632/4,789, so it is not evidence for a
-capture-specific owner; the slow-rate phase is one byte worse and the alpha
-phase regresses strongly.  Replacing it with live `captureSlot/anmManager`
-locals or a manager-member capture frontend lowers replay into the 4,47x range,
-and hoisting the crop locals into one var-ordered outer scope drops EBP exactness
-from 261/413 to 200/413.  Keep the truthful crop scopes and exact-size source
-shape, but do not claim exact credit until a genuine eight-byte allocation owner
-and the remaining local-rank permutation are explained.
+1,172 target mnemonics, and matches **4,725/4,789** non-relocation comparable
+bytes; the source-labelled crosswalk places **354/413** paired EBP operands
+exactly.  The decisive correction was to stop treating the capture/update locals
+as unrelated nested-scope accidents.  The target owns one contiguous live-local
+lane from `EBP-0x04` through `-0x80`, in order: `i`, `j`, `k`, `rawTop`,
+`rawLeft`, `top`, captured `vm`, `bottom`, the 12-byte capture position,
+`right`, the read byte, the 20-byte texture-clear aggregate, frame-10 index,
+frame-35 VM/index/12-byte position, two VM/index fade pairs, the final execute
+index, and the 12-byte entry position.  A build-3077 patched-`var_order` probe
+first proved that complete physical order.  More importantly, the same 22 homes
+are reproduced under the **stock** 13.10.3077 frontend by using the already
+exact `ResultScreen::Draw` backing buckets together with that oracle's reverse
+(deep-to-shallow) declaration chronology.  Thus the real-local closure no longer
+depends on the patched compiler.
+
+Two additional source-shape fixes are independently positive.  The frame-35 Y
+coordinate is a real by-value inline phase: computing the Y expression as the
+`f32` argument of a tiny position-writing frontend reproduces the target
+materialize-Y, then X/Y/Z-store order without a temporary `Float3`.  The initial
+`PhotoAnmVmIdValue(0)` comparison likewise belongs behind a no-storage inline
+`IsZero` frontend; this rotates the target four CreateVm sret homes ahead of the
+zero-value temporary.  These changes raise the exact-size replay through
+4,706/4,789 and 4,719/4,789 to the current 4,725/4,789 checkpoint.
+
+The remaining reservation is still **diagnostic**, so the function is not
+promotable.  A 4-byte version of the old capture reservation is a useful split
+phase oracle: together with the target score-local order it makes the entire
+early compiler family `EBP-0xA4..-0xBC` exact (`captureSlot`, manager receiver,
+three following temps, captured score, and global-state pointer).  The old
+8-byte reservation therefore conflates at least two source lifetimes rather than
+proving one 8-byte capture object.  The two strongest remaining cross-class
+values are the entry-X ternary temporary (source around `-0xFC/-0x100`, target
+`-0xA0`) and the best-shot `recordSlowRate` pointer (source around `-0xC0/-0xC4`,
+target `-0x108`).  Return/out-parameter entry-X helpers, named entry-X locals,
+whole entry-position frontends, direct slow-rate block locals, pointer/reference
+slow-rate forms, and a four-byte wrapper value are bounded negatives.  The two
+fade-alpha families are also insensitive to free/member helper form, nested
+helper/block scope, calibrated local names, and ordinary `var_order`.  Do not
+reopen those dimensions; the next acceptable closure must explain the two
+cross-class values and replace the diagnostic split-phase bytes with genuine
+operation ownership.
 
 
 The isolated VC7.1 `var_order` port is useful only as a diagnostic local-order

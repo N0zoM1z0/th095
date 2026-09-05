@@ -2472,18 +2472,32 @@ move its hidden receiver into the target class.  Do not spend more time treating
 
 `PhotoStageStateView::Update @ 0x0042AD60` is substantially stronger than the
 old 5,342-byte handoff.  The current private best is exactly 5,309 bytes, keeps
-all 1,172 target mnemonics, matches 4,632/4,789 comparable bytes, and reaches
-261/413 exact paired EBP operands.  It combines the truthful strided display-row
-view, raw crop snapshots, live texture-clear aggregate, score/slow-rate/alpha
-frontends, and calibrated real identifiers.  One eight-byte reservation remains
-diagnostic, so this is not promotable.  Moving the same 8 bytes from capture
-request to captured-score is byte-identical; slow-rate is one byte worse and
-alpha is much worse.  Thus the reservation is an allocation-class oracle, not a
-proven capture owner.  Live `captureSlot/anmManager` replacement and a pure
-manager-member capture frontend preserve size but regress to about 4,47x/4,789;
-outer-scope crop hoisting plus patched ordering drops EBP exactness to 200/413.
-Continue from the 5,309/4,632 source, preserve the current crop scopes, and attack
-the bounded remaining home families rather than reopening semantics.
+all 1,172 target mnemonics, matches **4,725/4,789** comparable bytes, and reaches
+**354/413** exact paired EBP operands.  Target stack pairing now proves the full
+real-local lane rather than only individual crop homes: `EBP-0x04..-0x80` is
+contiguous and contains, in order, `i/j/k`, frame-1 crop/VM/position locals, the
+20-byte texture-clear object, frame-10 and frame-35 locals, two fade VM/index
+pairs, the final execute index, and the entry `Float3`.  A patched-3077
+`var_order` build established this order, then an independent **stock** VC7.1
+build reproduced every one of those homes by combining exact
+`ResultScreen::Draw` backing buckets with its reverse declaration chronology.
+Do not treat the patched frontend as a production dependency.
+
+The frame-35 Y expression must be materialized as a real by-value inline
+argument before writing X/Y/Z; whole-`Float3` assignment is 36 bytes too long.
+The initial entry-VM zero comparison must also pass through a no-storage inline
+helper so its compiler value follows the four CreateVm sret homes.  Together
+these are the source-shaped improvements from 4,632 through 4,706 and 4,719 to
+4,725 comparable bytes.  The remaining eight-byte reservation is still only an
+oracle.  Its 4-byte form plus target ordering of the two captured-score locals
+makes the complete early compiler lane `-0xA4..-0xBC` exact, proving the old
+8-byte block combines separate lifetimes.  The two key cross-class blockers are
+now entry-X ternary materialization (target `-0xA0`) and the best-shot
+`recordSlowRate` pointer (target `-0x108`).  Entry-X return/out/named-local and
+whole-position frontends, direct slow-rate block locals, pointer/reference/
+wrapper forms, and alpha free/member/nested/name/var-order variants are bounded
+negatives.  Continue from the 5,309/4,725 source and solve those allocation
+classes; do not reopen crop semantics or the already-exact real-local lane.
 
 ### 2026-09-05 parallel Ghidra web bridge
 
