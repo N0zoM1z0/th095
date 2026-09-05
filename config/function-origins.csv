@@ -289,7 +289,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x0041F380,authored,PhotoEffect,authored,high,vc71-photo-rotating-laser-initialize-2026-08-30
 0x0041F550,authored,PhotoEffect,authored,exact,vc71-photo-rotating-laser-update-2026-08-30
 0x0041F990,authored,PhotoEffect,authored,exact,vc71-photo-rotating-laser-draw-2026-08-30
-0x0041FA10,authored,PhotoEffect,authored,high,vc71-photo-rotating-laser-check-collision-2026-08-30
+0x0041FA10,authored,PhotoEffect,authored,exact,vc71-photo-rotating-laser-collision-exact-2026-09-05
 0x00420100,authored,PhotoEffect,authored,exact,vc71-exact-photo-rotating-secondary-2026-08-31
 0x00420240,authored,Main,authored,high,target-main-family-2026-08-29
 0x00420770,authored,Main,authored,exact,main-render

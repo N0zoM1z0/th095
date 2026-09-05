@@ -231,10 +231,22 @@ explicit float locals, cast-return helpers, assignment-expression locals, and
 extra vector intermediates are negative oracles. The fragment packet then writes
 the computed gap length to `initialLength` before copying it to `maximumLength`;
 the reverse assignment direction leaves exactly three displacement bytes.
-`PhotoRotatingLaserView::CheckCollision` shares the recovered frame/math source
-shape but remains one byte non-exact because stock VC7 lowers one termination
-condition as `jl short + jmp near` instead of the target near `jge`; do not use
-assembly or an artificial branch to close it.
+`PhotoRotatingLaserView::CheckCollision` now closes the same lane exactly for
+all 1,767 authored bytes and seventeen relocations.  The former one-byte
+"branch-lowering barrier" was a source-CFG error, not an irreducible backend
+choice.  After the leading run of captured samples is skipped, the target's
+`sampleIndex != 0` arm clears `length` and `gapLength` and jumps into the same
+subsequent-gap scanner used by the zero-leading-run arm.  The older probe had
+that scanner nested inside `else`, so VC7 quite correctly emitted a near jump to
+the function tail.  Keep one `scan_more:` label at the shared scanner and one
+common `finish:` return.  In the zero-leading-run arm, put the initial-length
+write and `scan_more:` inside the positive `sampleIndex < sampleCount` block;
+when the initial zero run consumes the beam, falling out of that positive block
+naturally reaches `finish`.  Build 3077 then emits the target's single near
+`jge finish` rather than `jl short + jmp near`, while the nonzero arm emits the
+target short jump to `scan_more`.  This is a reusable warning: a short/near Jcc
+residual can reflect a misplaced shared semantic tail, so compare branch
+*destinations* before treating it as mere encoding noise.
 
 - `Background::DrawLowPrio @ 0x00402990` is the positive POD-aggregate case:
   the five real locals form a gapless 0x20 lane

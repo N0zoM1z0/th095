@@ -822,30 +822,46 @@ collisionDone:
 #undef sampleCount
 #undef step
 
+#define step restartCommandProcessingLocal05
+#define sampleCount averagedPanLocal12
+#define hitCount iLocal11
+#define minimum commandCursorLocal02
+#define sample soundIndexLocal01
 i32 PhotoRotatingLaserView::CheckCollision(
     Float3 *position, Float3 *size, i32 capture)
 {
-    i32 hitCount = 0;
-    i32 sampleCount = 0;
-    Float3 initialPosition =
+    Float3 step;
+    i32 sampleCount;
+    i32 hitCount;
+    Float3 minimum;
+    Float3 sample;
+    hitCount = 0;
+    sampleCount = 0;
+    {
+    f32 bufferLocal04;
+    Float3 preloadBufferLocal03 =
         *reinterpret_cast<Float3 *>(&this->position);
-    f32 distance = 6.0f;
+    bufferLocal04 = 6.0f;
     u8 hits[256];
     memset(hits, 0, sizeof(hits));
 
-    Float3 halfSize = *size / 2.0f;
-    Float3 minimum = *position - halfSize;
-    Float3 maximum = *position + halfSize;
-    Float3 step;
+    Float3 jLocal00;
+    jLocal00 = *size / 2.0f;
+    minimum = *position - jLocal00;
+    jLocal00 = *position + jLocal00;
+    step.z = 0.0f;
     step.FromAngleMagnitude(this->angle, 6.0f);
-    Float3 sample =
+    sample =
         *reinterpret_cast<Float3 *>(&this->position) + step;
     step += step;
 
-    while (distance + 6.0f < this->length)
+    while (bufferLocal04 + 6.0f < this->length)
     {
-        if (minimum.x <= sample.x && sample.x <= maximum.x &&
-            minimum.y <= sample.y && sample.y <= maximum.y)
+        if (sample.x < minimum.x || sample.x > jLocal00.x ||
+            sample.y < minimum.y || sample.y > jLocal00.y)
+        {
+        }
+        else
         {
             hits[sampleCount] = 1;
             hitCount++;
@@ -859,75 +875,98 @@ i32 PhotoRotatingLaserView::CheckCollision(
             }
         }
         sample += step;
+        bufferLocal04 += 12.0f;
         sampleCount++;
-        distance += 12.0f;
     }
 
     if (hitCount != 0)
     {
-        i32 sampleIndex = 0;
+        struct GapScanState
+        {
+            i32 gapLength;
+            i32 gapStart;
+            i32 sampleIndex;
+        } gapScan;
+#define gapLength gapScan.gapLength
+#define gapStart gapScan.gapStart
+#define sampleIndex gapScan.sampleIndex
+        sampleIndex = 0;
         while (sampleIndex < sampleCount && hits[sampleIndex] != 0)
         {
             sampleIndex++;
         }
 
-        if (sampleIndex == 0)
+        if (sampleIndex != 0)
         {
-            i32 gapLength = 0;
-            while (sampleIndex < sampleCount && hits[sampleIndex] == 0)
-            {
-                sampleIndex++;
-                gapLength++;
-            }
-            if (sampleIndex >= sampleCount)
-            {
-                return hitCount;
-            }
-            this->length = static_cast<f32>(gapLength) * 12.0f;
+            this->length = 0.0f;
+            gapLength = 0;
+            goto scan_more;
         }
         else
         {
-            this->length = 0.0f;
-        }
-
-        while (sampleIndex < sampleCount)
-        {
-            while (sampleIndex < sampleCount && hits[sampleIndex] != 0)
-            {
-                sampleIndex++;
-            }
-            if (sampleIndex >= sampleCount)
-            {
-                return hitCount;
-            }
-
-            i32 gapLength = 0;
-            i32 gapStart = sampleIndex;
+            gapLength = 0;
             while (sampleIndex < sampleCount && hits[sampleIndex] == 0)
             {
                 sampleIndex++;
                 gapLength++;
             }
+            if (sampleIndex < sampleCount)
+            {
+                this->length = static_cast<f32>(gapLength) * 12.0f;
+scan_more:
+                while (sampleIndex < sampleCount)
+                {
+                    while (sampleIndex < sampleCount && hits[sampleIndex] != 0)
+                    {
+                        sampleIndex++;
+                    }
+                    if (sampleIndex >= sampleCount)
+                    {
+                        goto finish;
+                    }
 
-            PhotoEffectArgsSmallView args;
-            args.maximumLength = static_cast<f32>(gapLength) * 12.0f;
-            *reinterpret_cast<f32 *>(&args.initialLength) =
-                args.maximumLength;
-            *reinterpret_cast<Float3 *>(&args.position) =
-                initialPosition + step * static_cast<f32>(gapStart);
-            args.speed = 8.0f;
-            args.angle = this->angle;
-            args.width = this->width;
-            args.type = this->spawn.type;
-            args.color = this->spawn.color;
-            args.terminalDistance =
-                this->spawn.maximumLength -
-                static_cast<f32>(gapStart) * 12.0f;
-            g_PhotoEffectManager->Spawn(0, &args);
+                    gapLength = 0;
+                    gapStart = sampleIndex;
+                    while (sampleIndex < sampleCount && hits[sampleIndex] == 0)
+                    {
+                        sampleIndex++;
+                        gapLength++;
+                    }
+
+                    PhotoEffectArgsSmallView args;
+                    *reinterpret_cast<f32 *>(&args.initialLength) =
+                        static_cast<f32>(gapLength) * 12.0f;
+                    args.maximumLength =
+                        *reinterpret_cast<f32 *>(&args.initialLength);
+                    *reinterpret_cast<Float3 *>(&args.position) =
+                        preloadBufferLocal03 + CollisionScaleStep(
+                            step, static_cast<f32>(gapStart));
+                    args.speed = 8.0f;
+                    args.angle = this->angle;
+                    args.width = this->width;
+                    args.type = this->spawn.type;
+                    args.color = this->spawn.color;
+                    args.terminalDistance =
+                        this->spawn.maximumLength -
+                        static_cast<f32>(gapStart) * 12.0f;
+                    g_PhotoEffectManager->Spawn(0, &args);
+                }
+            }
         }
     }
+finish:
     return hitCount;
+#undef sampleIndex
+#undef gapStart
+#undef gapLength
+    }
 }
+#undef sample
+#undef minimum
+#undef hitCount
+#undef sampleCount
+#undef step
+
 
 i32 PhotoEffectBaseView::Initialize(void *args)
 {

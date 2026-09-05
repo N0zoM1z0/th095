@@ -1231,13 +1231,19 @@ position scaling uses a source-local scalar-first helper
 `initialLength` first and then copies it to `maximumLength`; reversing that
 assignment is exactly three displacement bytes wrong.
 
-`PhotoRotatingLaserView::CheckCollision @ 0x0041FA10` remains deliberately
-uncredited. The same source oracles recover its complete `0x228` live frame and
-a 1,768-byte semantic probe against the 1,767-byte target. The sole remaining
-residual is one control-flow byte: stock VC7.1 emits `jl short + jmp near` for
-the first post-leading-gap termination test while the target owns one near
-`jge`. Multiple ordinary `return`, positive-if, and nested-block spellings were
-bounded negative oracles; do not grind this lane or encode the branch manually.
+`PhotoRotatingLaserView::CheckCollision @ 0x0041FA10` is now canonical exact
+for all 1,767 authored bytes and seventeen relocations.  The old one-byte
+branch-hard diagnosis was superseded by a destination-level CFG audit.  Target
+`+0x41B` does not jump to the function tail: after a nonzero leading captured
+run it jumps to `+0x488`, the common subsequent-gap scanner.  The former source
+incorrectly nested that scanner inside the zero-leading-run `else`, creating a
+semantically different near tail jump.  Exact source keeps the established
+live-local rank, `GapScanState`, scalar-first vector scaling, and
+`initialLength -> maximumLength` copy, but adds a shared `scan_more:` label and
+one common `finish:` return.  The zero-leading-run path wraps its initial length
+write plus `scan_more:` in the positive `sampleIndex < sampleCount` arm; VC7.1
+then emits the target near `jge finish` naturally, with no assembly, fake branch,
+or padding.
 
 The adjacent live `ItemInf` owner at `0x0041CB20..0x0041D575` now has twelve canonical lifecycle/update/draw/callback units totaling 2,585 exact authored bytes. `PhotoItemManagerView::Update @ 0x0041CE60` remains exact for all 1,235 bytes with its fully-live 44-byte `{boundsMin, boundsMax, index, item, direction}` aggregate, scalar-first vector helpers, and shared `tick:` tail. `Spawn @ 0x0041D460` is now exact for all 278 bytes and eight relocations. Its free-slot scan must be the positive `if (index < 150)` block so build 3077 emits one near `jge` instead of `jl short + jmp near`; the real item pointer uses the `averagedPanLocal12` bucket for target `item/index @ -0x04/-0x08`. The formerly unexplained `0x2C` frame interval is the same independently repeated shallow-to-hidden-`this` phase as the exact laser initializer pair and `AdvanceTransformProgram`; only the late `InitializeVm(&item->vm, 0x120)` plus color publication owns it. A timer-owned control leaves `242/246` comparable bytes. The TH08-derived `ItemManager.hpp` declarations remain only as the exact ECL dispatcher oracle.
 
@@ -1677,15 +1683,20 @@ source-local phase. That moves only the final `AnmLoaded *` receiver to target
 `EBP-0x30`. Wrapping the whole initializer is also a negative oracle because it
 incorrectly shifts every vector temporary by eight bytes.
 
-The rotating-laser one-byte lane remains a genuine branch-lowering barrier.
-`PhotoRotatingLaserView::CheckCollision @ 0x0041FA10` has a 1,768-byte natural
-probe whose sole mnemonic divergence is target `jge near collisionDone` versus
-stock-VC7.1 `jl short` plus `jmp near`.  Positive-if/else-goto, guarded, wrapped
-fragment-loop, direct-return, comparison-helper, and bounds-check-plus-length
-producer spellings were replayed.  The closest structured form reaches 374/374
-mnemonics but is 1,770 bytes because one target-short shared-tail jump becomes
-near and changes CFG ownership.  No artificial branch is permitted; defer the
-function until a genuinely new source/CFG oracle appears.
+The rotating-laser one-byte lane is closed and the earlier branch-lowering
+barrier diagnosis is obsolete.  Re-reading the actual destination of the
+1,770-byte probe's only length mismatch showed that source `+0x41B` jumped to
+the function tail while target `+0x41B` jumped short to the shared subsequent-gap
+scanner at target `+0x488`.  Moving that real scanner out of the lexical `else`,
+using `scan_more:` for the nonzero-leading-run path, and sharing one `finish:`
+return yields the canonical 1,767-byte body.  The decisive lesson is to audit
+control-flow destinations before running more branch-syntax sweeps: identical
+mnemonic counts plus a short/near mismatch do not prove semantic CFG identity.
+All 34 configured `PhotoEffect.cpp` units replay exact after the change.  Five
+compiler-private `$L` names in the already-exact rotating update advanced while
+their relocation offsets, types, and solved destinations remained unchanged at
+`0x0041F976/0x0041F773/0x0041F6AA/0x0041F6F7/0x0041F7BF`; the manifest refresh
+was accepted only after that destination audit.
 
 Finally, the pinned runtime does contain `__frnd`, whose CRT implementation is
 literally `fld; frndint; fstp`, and the VC7 backend knows `frndint`, `fsin`,
