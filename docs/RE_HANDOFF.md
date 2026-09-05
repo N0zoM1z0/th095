@@ -2577,3 +2577,16 @@ scratch cleanup, a service restart, and public 2026-protocol Funnel discovery
 plus attestation passed. This backend is independent historical corroboration;
 IDA Pro MCP remains primary, and no reconstruction or exact-match claim
 changed in this maintenance batch.
+
+### 2026-09-06 gpt-web AddVm exact closure
+
+`AnmManagerVmLifecycleView::AddVm @ 0x00444D10` is now canonical exact:
+236/236 authored bytes, relocation-free.  The last six bytes were not a missing
+phase.  Target wants the first `nextVmId++` receiver pointer at `EBP-0x04` and
+the zero-valued `Id()` equality temporary at `-0x08`; stock source had them
+swapped.  Naming only the real increment receiver and using it for the postfix
+increment preserves the original equality/materialized-bool topology and rotates
+those two homes exactly.  Do not revive zero-local, equality-helper, aggregate,
+or identifier sweeps here.  All thirteen pre-existing `AnmVmLifecycle.cpp`
+exact units replay unchanged after the source edit.  The three CreateVm variants
+remain separate `0x14` hidden-receiver/result-home hard cases.

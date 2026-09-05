@@ -1339,10 +1339,8 @@ fields.
 The ANM lifecycle create trio supplies a translation-unit negative oracle.
 Moving only `CreateVm`, `CreateVmAtScreen`, and `CreateVmAtWorld` into an
 isolated stock-VC7.1 TU leaves their six displacement residuals byte-identical
-at 119/125, 138/144, and 123/129 comparable bytes.  Isolating `AddVm` likewise
-leaves its current 230/236 result unchanged.  The common create-function `0x14`
-reservation and AddVm's two swapped compiler temporaries are therefore
-function-internal frontend allocation behavior, not crowded-TU folding like
+at 119/125, 138/144, and 123/129 comparable bytes.  The earlier isolated `AddVm` 230/236 result is superseded by the exact closure below.  The common create-function `0x14`
+reservation remains function-internal frontend allocation behavior, not crowded-TU folding like
 `ScreenEffect::DrawSquare`.
 
 `SceneSaveDataView::LoadBestShotForScene @ 0x00435E90` adds a multiplication
@@ -1547,3 +1545,19 @@ definition order, and the already-recorded effect/zero/timer phase grids are
 negative.  Future probes should seek a source surface that reclassifies the
 existing conversion temporary without introducing another lexical/helper temp.
 
+
+### AddVm: promote only the real increment receiver (2026-09-06)
+
+`AnmManagerVmLifecycleView::AddVm @ 0x00444D10` is exact for all 236 bytes.
+The old source had the correct 71-mnemonic topology but VC7 placed the first
+postfix-increment receiver at `EBP-0x08` and the following zero-valued `Id()`
+equality temporary at `-0x04`; target uses the opposite physical order.  Do not
+rewrite the equality or materialize both values: a live two-field aggregate
+shrinks the direct compare to 231 bytes, while a separate bool helper grows it
+to 241.  Instead name only the real first receiver:
+`AnmVmLifecycleView::Id *incrementReceiver = &this->nextVmId;` followed by
+`(*incrementReceiver)++`.  The named pointer takes target `-0x04`, the untouched
+compiler `Id()` temporary naturally falls to `-0x08`, and the second postfix
+increment stays at its already-correct home.  Stock VC7.1 then replays 236/236
+bytes with no relocations.  A cold rebuild preserves every one of the thirteen
+pre-existing exact lifecycle units.

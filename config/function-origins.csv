@@ -592,7 +592,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00444AE0,authored,AnmManager,authored,exact,anm-frame-callbacks-exact-2026-08-30
 0x00444B10,authored,AnmManager,authored,exact,vc71-anm-update-vms-exact-2026-09-01
 0x00444C80,authored,AnmManager,authored,exact,anm-text-frame-exact-2026-08-31
-0x00444D10,authored,AnmManager,authored,high,anm-vm-lifecycle-2026-08-30
+0x00444D10,authored,AnmManager,authored,exact,vc71-exact-anm-add-vm-2026-09-06
 0x00444E00,authored,AnmManager,authored,exact,anm-vm-lifecycle-exact-2026-08-30
 0x00444EF0,authored,AnmManager,authored,high,anm-vm-lifecycle-2026-08-30
 0x00444FA0,authored,AnmManager,authored,high,anm-vm-lifecycle-2026-08-30

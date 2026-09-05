@@ -345,7 +345,8 @@ AnmVmId AnmManagerVmLifecycleView::AddVm(AnmVmLifecycleView *vm)
         this->vmListTail = vm;
     }
 
-    this->nextVmId++;
+    AnmVmLifecycleView::Id *incrementReceiver = &this->nextVmId;
+    (*incrementReceiver)++;
     if (this->nextVmId == AnmVmLifecycleView::Id())
     {
         this->nextVmId++;

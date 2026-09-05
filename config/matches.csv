@@ -387,6 +387,7 @@ address,name,size,status,match_percent,unit,evidence
 0x00421D00,th095::AnmManager::TakeScreenshots,249,matching,100.00,anm-take-screenshots,python3 scripts/build.py --unit anm-take-screenshots && python3 scripts/compare-coff-function.py --unit anm-take-screenshots --json
 0x00444620,th095::AnmManagerCaptureView::CaptureToTexture,319,matching,100.00,anm-capture-to-texture,python3 scripts/build.py --unit anm-capture-to-texture && python3 scripts/compare-coff-function.py --unit anm-capture-to-texture --json
 0x00444760,th095::AnmManagerCaptureView::CaptureToSurface,537,matching,100.00,anm-capture-to-surface,python3 scripts/build.py --unit anm-capture-to-surface && python3 scripts/compare-coff-function.py --unit anm-capture-to-surface --json
+0x00444D10,th095::AnmManagerVmLifecycleView::AddVm,236,matching,100.00,anm-add-vm,python3 scripts/build.py --unit anm-add-vm && python3 scripts/compare-coff-function.py --unit anm-add-vm --json
 0x00444E00,th095::AnmManagerVmLifecycleView::RemoveVm,226,matching,100.00,anm-remove-vm,python3 scripts/build.py --unit anm-remove-vm && python3 scripts/compare-coff-function.py --unit anm-remove-vm --json
 0x00444980,th095::AnmManager::OnUpdate,19,matching,100.00,anm-on-update,python3 scripts/build.py --unit anm-on-update && python3 scripts/compare-coff-function.py --unit anm-on-update --json
 0x004449A0,th095::AnmManager::DrawLayer0,21,matching,100.00,anm-draw-layer-0,python3 scripts/build.py --unit anm-draw-layer-0 && python3 scripts/compare-coff-function.py --unit anm-draw-layer-0 --json

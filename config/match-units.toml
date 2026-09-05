@@ -13321,6 +13321,16 @@ relocations = [
   { offset = 0x1F6, type = "REL32", symbol = "_D3DXLoadSurfaceFromSurface@32", target = 0x0045C2E4 },
 ]
 
+[units.anm-add-vm]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmManagerVmLifecycleView::AddVm"]
+symbol = "?AddVm@AnmManagerVmLifecycleView@th095@@QAE?AUAnmVmId@2@PAUAnmVmLifecycleView@2@@Z"
+target_address = 0x00444D10
+size = 0xEC
+relocations = []
+
 [units.anm-remove-vm]
 source = "src/AnmVmLifecycle.cpp"
 object = "build/matching/AnmVmLifecycle.obj"
