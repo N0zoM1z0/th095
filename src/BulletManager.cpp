@@ -973,6 +973,14 @@ static inline i32 PhotoBulletIsOutsidePlayfield(
            position->y - height >= 448.0f;
 }
 
+// Exact ClearCapturedBullets independently proves an 8-byte allocation phase
+// owned by the real PhotoBulletView::Deactivate frontend.
+static __forceinline void PhotoBulletUpdateDeactivatePhase(PhotoBulletView *bullet)
+{
+    u8 compilerStorage[8];
+    bullet->Deactivate();
+}
+
 // FUNCTION: TH095 0x00406D80; TH08 0x00432210 is the adjacent source oracle.
 #pragma var_order(magnitude, this)
 void PhotoBulletView::UpdateDeceleration()
@@ -1619,14 +1627,14 @@ i32 PhotoBulletManagerView::Update()
                     bullet->vm.loadedSprite->widthPx,
                     bullet->vm.loadedSprite->heightPx))
             {
-                bullet->Deactivate();
+                PhotoBulletUpdateDeactivatePhase(bullet);
                 continue;
             }
         }
 
         if (AnmManager::ExecuteScript(&bullet->vm) != 0)
         {
-            bullet->Deactivate();
+            PhotoBulletUpdateDeactivatePhase(bullet);
             continue;
         }
 

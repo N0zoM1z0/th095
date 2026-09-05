@@ -1395,6 +1395,33 @@ exact four-byte queue-Size phase also regresses to 16,084.  The 96-byte merge is
 therefore a bounded **negative** oracle.  Preserve the 92-byte queue aggregate
 and explain relocation of the compiler hole without disturbing the already
 correct deep lane; do not reintroduce a dummy dword.
+### Bullet update: repeated Deactivate phases close the 16-byte interval (2026-09-06)
+
+`PhotoBulletManagerView::Update @ 0x00405120` is now exact for all 1,835
+authored bytes.  The old exact-sized source left a target-only 16-byte interval
+before the deepest receiver class.  Putting one 0x10 reservation in the
+`PhotoBulletIsOutsidePlayfield` helper improves 1,684/1,715 comparable bytes to
+1,704/1,715, but it places the interval on the wrong side of the three argument
+temporaries for sprite width, sprite height, and `&bullet->position`.  The
+target wants those three at `EBP-0xB0/-0xB4/-0xB8`, then the unreferenced
+`-0xBC..-0xC8` interval, then outer `this @ -0xCC`.
+
+The accepted source uses one shared force-inlined Deactivate frontend at the two
+real post-playfield call sites.  Each call owns eight bytes.  This is not an
+arbitrary 8+8 split: exact `PhotoBulletManagerView::ClearCapturedBullets`
+independently proves the same `PhotoBulletView::Deactivate()` frontend owns an
+eight-byte allocation phase.  Reusing it twice in Update moves only the late
+compiler class and emits 1,715/1,715 comparable bytes.  The configured
+`photo-bullet-manager-update` unit replays all 30 relocations and all
+1,835/1,835 bytes exactly.
+
+Because `BulletManager.cpp` is shared, the insertion was cold-replayed against
+all 33 pre-existing exact units.  Thirty-one remained directly exact;
+`SpawnSingleBullet` and `AdvanceTransformProgram` changed only three
+compiler-private `$L` names.  Their complete 2,169/2,563-byte compare extents
+were structurally zero-diff with every relocation destination unchanged before
+refreshing those manifest symbol names.
+
 ### SceneSelect stock VC7.1 exact closure (2026-09-05)
 
 The former SceneSelect policy barrier is closed.  The private 16,066-byte

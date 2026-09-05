@@ -2408,6 +2408,27 @@ reason VC7 leaves the four-byte inter-aggregate hole, not for a larger queue
 record or a way to restore frame size artificially.  Do not repeat queue-size,
 Pop-count, 96-byte merge, or dummy-storage sweeps.
 
+### 2026-09-06 gpt-web Bullet Update canonical exact closure
+
+`PhotoBulletManagerView::Update @ 0x00405120` is now canonical exact under stock
+VC7.1: 1,835/1,835 authored bytes and all 30 relocations replay through
+`photo-bullet-manager-update`.  The final 16-byte target interval is two repeated
+eight-byte phases owned by the two real post-playfield `bullet->Deactivate()`
+call sites.  This ownership is independently grounded by exact
+`ClearCapturedBullets`, which already uses an eight-byte Deactivate frontend.
+A single 16-byte reservation on `PhotoBulletIsOutsidePlayfield` was a useful
+diagnostic but remained 11 bytes short because it put the interval before the
+three width/height/position argument temps; the repeated Deactivate frontend
+puts those temps first and closes the body to zero diff.
+
+The shared-TU regression is clean.  All 33 previous BulletManager exact units
+were replayed after integration.  Thirty-one remained directly exact;
+`SpawnSingleBullet` and `AdvanceTransformProgram` only renumbered three
+compiler-private `$L` symbols.  Full compare-extent structural audits proved
+2,169/2,169 and 2,563/2,563 bytes with every target relocation destination
+unchanged before refreshing those three manifest names.  The ledger is now 666
+exact authored functions and 298,571 exact authored bytes.
+
 ### 2026-09-05 gpt-web SceneSelect canonical exact closure
 
 `UpdateSceneSelect @ 0x00447D00` is now canonical exact under the **stock**

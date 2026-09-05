@@ -19462,7 +19462,7 @@ target_address = 0x00405A30
 size = 0x855
 compare_size = 0x879
 relocations = [
-  { offset = 0x10E, type = "DIR32", symbol = "$L69761", target = 0x00406285 },
+  { offset = 0x10E, type = "DIR32", symbol = "$L69766", target = 0x00406285 },
   { offset = 0x168, type = "DIR32", symbol = "__real@3f000000", target = 0x00495420 },
   { offset = 0x18D, type = "DIR32", symbol = "__real@bf800000", target = 0x0049541C },
   { offset = 0x1CA, type = "DIR32", symbol = "__real@40c90fdb", target = 0x00495418 },
@@ -19515,8 +19515,8 @@ target_address = 0x004062B0
 size = 0x9AF
 compare_size = 0xA03
 relocations = [
-  { offset = 0x110, type = "DIR32", symbol = "$L69857", target = 0x00406C73 },
-  { offset = 0x117, type = "DIR32", symbol = "$L69864", target = 0x00406C5F },
+  { offset = 0x110, type = "DIR32", symbol = "$L69862", target = 0x00406C73 },
+  { offset = 0x117, type = "DIR32", symbol = "$L69869", target = 0x00406C5F },
   { offset = 0x2B4, type = "DIR32", symbol = "__real@c4778000", target = 0x00495428 },
   { offset = 0x362, type = "REL32", symbol = "?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z", target = 0x00441DA0 },
   { offset = 0x394, type = "DIR32", symbol = "?g_PhotoBulletSoundPlayer@th095@@3UPhotoBulletSoundPlayerView@1@A", target = 0x004C4EE8 },
@@ -20119,4 +20119,48 @@ relocations = [
   { offset = 0x3E89, type = "DIR32", symbol = "?g_SceneAnmManager@th095@@3PAUSceneAnmManagerView@1@A", target = 0x004CA1B8 },
   { offset = 0x3E8E, type = "REL32", symbol = "?SetInterrupt@SceneAnmManagerView@th095@@QAEXUSceneAnmVmId@2@H@Z", target = 0x00445170 },
   { offset = 0x3EB4, type = "REL32", symbol = "?BuildScenePreviewText@SceneSelectControllerView@th095@@QAEXXZ", target = 0x0044BEA0 },
+]
+
+# Complete TH095 1,600-slot projectile update.  The two real post-cull
+# PhotoBulletView::Deactivate call sites each own the independently proven
+# eight-byte Deactivate allocation phase.
+[units.photo-bullet-manager-update]
+source = "src/BulletManager.cpp"
+object = "build/matching/BulletManager.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoBulletManagerView::Update"]
+symbol = "?Update@PhotoBulletManagerView@th095@@QAEHXZ"
+target_address = 0x00405120
+size = 0x72B
+relocations = [
+  { offset = 0x102, type = "DIR32", symbol = "?g_PhotoBulletGlobalState@th095@@3PAUPhotoBulletGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x11A, type = "DIR32", symbol = "?g_PhotoBulletGlobalState@th095@@3PAUPhotoBulletGlobalStateView@1@A", target = 0x004BDEC8 },
+  { offset = 0x16A, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x1B4, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x1BA, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
+  { offset = 0x246, type = "REL32", symbol = "?AdvanceTransformProgram@PhotoBulletView@th095@@QAEXXZ", target = 0x004062B0 },
+  { offset = 0x26C, type = "REL32", symbol = "?UpdateDeceleration@PhotoBulletView@th095@@QAEXXZ", target = 0x00406D80 },
+  { offset = 0x282, type = "REL32", symbol = "?UpdateVectorAcceleration@PhotoBulletView@th095@@QAEXXZ", target = 0x00406E20 },
+  { offset = 0x298, type = "REL32", symbol = "?UpdatePolarAcceleration@PhotoBulletView@th095@@QAEXXZ", target = 0x00406F90 },
+  { offset = 0x2AE, type = "REL32", symbol = "?UpdateRelativeDirectionChange@PhotoBulletView@th095@@QAEXXZ", target = 0x00407050 },
+  { offset = 0x2C6, type = "REL32", symbol = "?UpdateAbsoluteDirectionChange@PhotoBulletView@th095@@QAEXXZ", target = 0x004071A0 },
+  { offset = 0x2DF, type = "REL32", symbol = "?UpdateAimedDirectionChange@PhotoBulletView@th095@@QAEXXZ", target = 0x004072E0 },
+  { offset = 0x2F8, type = "REL32", symbol = "?UpdateBoundaryBounce@PhotoBulletView@th095@@QAEXXZ", target = 0x00407440 },
+  { offset = 0x310, type = "REL32", symbol = "?UpdateHorizontalWrap@PhotoBulletView@th095@@QAEXXZ", target = 0x00407620 },
+  { offset = 0x329, type = "REL32", symbol = "?UpdateVerticalWrap@PhotoBulletView@th095@@QAEXXZ", target = 0x004076E0 },
+  { offset = 0x38C, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+  { offset = 0x392, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x447, type = "DIR32", symbol = "?g_PhotoBulletPlayer@th095@@3PAUPhotoBulletPlayerView@1@A", target = 0x004C4E70 },
+  { offset = 0x44C, type = "REL32", symbol = "?CheckBulletCollision@PhotoBulletPlayerView@th095@@QAEHPAUPhotoBulletVector@2@0@Z", target = 0x00430450 },
+  { offset = 0x478, type = "DIR32", symbol = "?g_AnmGameSpeed@th095@@3MA", target = 0x004BDED8 },
+  { offset = 0x4EB, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x4F1, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
+  { offset = 0x5E1, type = "DIR32", symbol = "__real@c3400000", target = 0x00495410 },
+  { offset = 0x5FC, type = "DIR32", symbol = "__real@43400000", target = 0x00495330 },
+  { offset = 0x618, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x634, type = "DIR32", symbol = "__real@43e00000", target = 0x0049540C },
+  { offset = 0x662, type = "REL32", symbol = "?Deactivate@PhotoBulletView@th095@@QAEXXZ", target = 0x00405850 },
+  { offset = 0x672, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
+  { offset = 0x67E, type = "REL32", symbol = "?Deactivate@PhotoBulletView@th095@@QAEXXZ", target = 0x00405850 },
+  { offset = 0x719, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
 ]

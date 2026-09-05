@@ -53,7 +53,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00404ED0,authored,BulletManager,authored,exact,photo-bullet-manager-destructor-exact-2026-08-30
 0x00404F80,authored,BulletManager,authored,exact,photo-bullet-manager-create-exact-2026-08-30
 0x004050C0,authored,BulletManager,authored,exact,photo-bullet-manager-destroy-exact-2026-08-30
-0x00405120,authored,BulletManager,authored,high,photo-bullet-manager-update-semantic-2026-08-30
+0x00405120,authored,BulletManager,authored,exact,vc71-photo-bullet-update-exact-2026-09-06
 0x00405850,authored,BulletManager,authored,exact,photo-bullet-deactivate-exact-2026-08-30
 0x004058C0,authored,BulletManager,authored,exact,photo-bullet-manager-draw-exact-2026-08-30
 0x00405900,authored,BulletManager,authored,exact,photo-bullet-manager-draw-bucket-exact-2026-08-30
