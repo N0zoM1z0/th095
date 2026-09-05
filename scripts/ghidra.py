@@ -118,7 +118,31 @@ def parse_args() -> argparse.Namespace:
     )
     decompile.add_argument("output", type=Path)
     decompile.add_argument("addresses", nargs="+")
+    query = subparsers.add_parser(
+        "query", help="write a bounded read-only program query below .analysis"
+    )
+    query.add_argument("output", type=Path)
+    query.add_argument("operation")
+    query.add_argument("query_args", nargs="*")
     return parser.parse_args()
+
+
+def analysis_output(path: Path) -> Path:
+    output = path.expanduser().resolve()
+    try:
+        output.relative_to((ROOT / ".analysis").resolve())
+    except ValueError as exc:
+        raise ValueError("analysis output must stay below .analysis/") from exc
+    output.parent.mkdir(parents=True, exist_ok=True)
+    return output
+
+
+def query_script_args(operation: str, args: list[str]) -> list[str]:
+    result = list(args)
+    text_index = {"list_functions": 2, "search_strings": 1}.get(operation)
+    if text_index is not None and len(result) > text_index:
+        result[text_index] = "text:" + result[text_index]
+    return result
 
 
 def main() -> int:
@@ -173,18 +197,24 @@ def main() -> int:
                     ]
                 )
             elif args.command == "decompile":
-                output = args.output.expanduser().resolve()
-                try:
-                    output.relative_to((ROOT / ".analysis").resolve())
-                except ValueError as exc:
-                    raise ValueError("decompiler output must stay below .analysis/") from exc
-                output.parent.mkdir(parents=True, exist_ok=True)
+                output = analysis_output(args.output)
                 base.extend(
                     [
                         "-postScript",
                         "DecompileFunctions.java",
                         str(output),
                         *args.addresses,
+                    ]
+                )
+            elif args.command == "query":
+                output = analysis_output(args.output)
+                base.extend(
+                    [
+                        "-postScript",
+                        "QueryProgram.java",
+                        str(output),
+                        args.operation,
+                        *query_script_args(args.operation, args.query_args),
                     ]
                 )
             run_headless(base)

@@ -44,6 +44,9 @@ python3 scripts/ghidra.py check
 python3 scripts/ghidra.py inventory
 python3 scripts/ghidra.py architecture
 python3 scripts/ghidra.py decompile .analysis/function.c 0x00401000
+python3 scripts/ghidra.py query .analysis/function.txt function 0x00401000
+python3 scripts/ghidra.py query .analysis/disassembly.txt disassemble 80 0x00401000
+python3 scripts/ghidra.py query .analysis/strings.txt search_strings 20 PlayerInf
 ```
 
 `check` and `inventory` open the project read-only. Decompiler output must stay
@@ -76,8 +79,10 @@ update the ledgers deliberately, and rerun tracking validation.
 
 The optional `.tools/mcp_for_gptweb-ghidra` checkout uses the upstream
 `ghidra-bash` branch and exposes `run_command` plus a read-only `ghidra_call`.
-The latter supports `check` and bounded `decompile`, serializes every Ghidra
-invocation to avoid project-lock conflicts, and invokes this workflow so target
-and project attestation run before every native operation. It uses a separate
-port, fixed private Funnel path, and user-systemd service from the primary
-IDA+Bash bridge, so both analysis backends can stay online concurrently.
+The latter supports `check`, bounded `decompile`, function metadata,
+disassembly, callers/callees, xrefs, function listing, and string search. It
+serializes every Ghidra invocation to avoid project-lock conflicts and invokes
+this workflow so target and project attestation run before every native
+operation. It uses a separate port, fixed private Funnel path, and
+user-systemd service from the primary IDA+Bash bridge, so both analysis
+backends can stay online concurrently.

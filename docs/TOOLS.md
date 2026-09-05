@@ -31,5 +31,6 @@ python3 scripts/report-reconstruction-status.py --sort size --state non-exact
 
 Then call `ida_call` (GPT web) or the native IDA Pro MCP tool directly for the
 bounded address. Use `list_tools` first only when the native schema is unknown.
-For independent historical corroboration, call `ghidra_call` with `check` and
-then `decompile`; IDA remains the primary semantic backend.
+For independent historical corroboration, call `ghidra_call` with `check`, then
+use its bounded decompile/function/disassembly/call/xref/string operations; IDA
+remains the primary semantic backend.

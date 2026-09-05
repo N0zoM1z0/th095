@@ -2367,12 +2367,14 @@ as the separate enabled user service `th095-ghidra-bash-mcp.service`. Its fixed
 private Funnel path and machine-specific settings remain only in ignored
 `.env`/systemd state.
 
-The Ghidra endpoint exposes only `run_command` and read-only `ghidra_call`
-operations `check`/`decompile`. Native Ghidra invocations are serialized to
-avoid project-lock overlap and call `scripts/ghidra.py`, which re-verifies the
-canonical target and the private project's image base, entry point, and mapped
-text before every operation. The private Ghidra 12.1.3 project was initialized
-through the new ledger-preserving `scripts/ghidra.py initialize` command and a
-real bounded `0x00401000` decompile passed. This backend is independent
-historical corroboration; IDA Pro MCP remains primary, and no reconstruction
-or exact-match claim changed in this maintenance batch.
+The Ghidra endpoint exposes only `run_command` and read-only `ghidra_call`.
+The latter supports target/project checks, bounded decompilation, function
+metadata, disassembly, callers/callees, xrefs, function listing, and defined
+string search. Native Ghidra invocations are serialized to avoid project-lock
+overlap and call `scripts/ghidra.py`, which re-verifies the canonical target and
+the private project's image base, entry point, and mapped text before every
+operation. The private Ghidra 12.1.3 project was initialized through the new
+ledger-preserving `scripts/ghidra.py initialize` command. A real bounded
+`0x00401000` decompile and all query families passed. This backend is
+independent historical corroboration; IDA Pro MCP remains primary, and no
+reconstruction or exact-match claim changed in this maintenance batch.
