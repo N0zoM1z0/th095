@@ -2526,6 +2526,32 @@ ownership.  The next task is provenance for exactly these two dwords, preferably
 from a repeated exact target/frontend; do not reopen the now-exact alpha/local
 home work.
 
+### 2026-09-06 gpt-web PhotoStage getter-phase attribution
+
+The private `PhotoStageStateView::Update @ 0x0042AD60` structural-zero-diff
+oracle has a much tighter eight-byte phase location.  The previous slow-rate
+placement was only an allocator control.  Removing it and placing eight bytes
+only on the first, frame-10 `GetPhotoIndex()` frontend gives 5,309/5,309 bytes,
+4,789/4,789 comparable bytes, all 1,172 mnemonics, and all 413 paired EBP homes.
+The same phase on frame-35 gives 4,787/4,789; two four-byte getter phases also
+give 4,787/4,789 and leave only the first getter result one dword shallow.
+`GetPhotoLimit` eight-byte controls regress to 4,576/4,789 and 4,755/4,789,
+while frame-10/frame-35 SetInterrupt phase attempts change the body extent.
+
+Do not promote the unit from this evidence alone.  Exact ECL integer/float
+resolvers read the identical camera `photoIndex @ +0x29E4` through ordinary
+field/result temporaries, and exact PhotoGameTask code reads the same counter
+without an eight-byte getter phase.  There is still no independently repeated
+**same-operation** target for `GetPhotoIndex()`.  The current next action is a
+true provenance oracle, not another placement sweep.
+
+`PhotoStageDisplayView::Build` also has one new strong negative.  A member-array
+`operator[]` returning a real named `AnmVm *` local restores all 92 emission
+pointer homes, but immediately returns outer `this` to `EBP-0x2B4`; replay is
+again exactly 7,245/7,288 with all 2,234 mnemonics and only that 21-use receiver
+wrong versus target `-0x140`.  Member-wrapper receiver movement and emission-home
+materialization are therefore not additive in this source family.
+
 ### 2026-09-05 parallel Ghidra web bridge
 
 The primary IDA+Bash endpoint remains unchanged. A second ignored checkout at

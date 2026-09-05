@@ -1265,6 +1265,27 @@ control, not provenance that those eight bytes belong to slow-rate.  Exact credi
 remains withheld until a repeated target or direct source owner explains that
 phase.
 
+The phase location is now substantially tighter than that earlier slow-rate
+control.  Remove the slow-rate reservation entirely and attach an eight-byte
+phase to only the **first**, frame-10 `GetPhotoIndex()` frontend: stock 3077
+again reaches structural zero-diff (`5,309/5,309`, `4,789/4,789`,
+`1,172/1,172`, `413/413`).  Putting the same eight bytes on the frame-35
+`GetPhotoIndex()` leaves exactly two displacement bytes wrong (`4,787/4,789`);
+using two four-byte `GetPhotoIndex()` phases has the same `4,787/4,789` result
+and pins the sole root to the frame-10 getter result at source `EBP-0xC4` versus
+target `-0xC8`.  The specificity controls are strong: eight-byte phases on
+`GetPhotoLimit()` regress to `4,576/4,789` or `4,755/4,789`, and wrapping the
+frame-10/frame-35 `SetInterrupt` operations changes the body extent to
+`5,319/5,318` (both `5,334`).
+
+This still does **not** satisfy the same-operation/repeated-target promotion
+rule.  Exact ECL integer/float operand resolvers independently read the same
+`camera.photoIndex @ +0x29E4` field with ordinary four-byte compiler result
+homes, while exact `PhotoGameTaskView::Update/DrawHud` read the same counter
+through ordinary field/aggregate copies; none repeats the eight-byte getter
+phase.  Treat frame-10 `GetPhotoIndex()` as the current unique zero-diff owner
+hypothesis, not accepted provenance.
+
 
 The isolated VC7.1 `var_order` port is useful only as a diagnostic local-order
 oracle.  Build-3077 micro tests prove it can reorder ordinary named locals, but
