@@ -2371,10 +2371,16 @@ The Ghidra endpoint exposes only `run_command` and read-only `ghidra_call`.
 The latter supports target/project checks, bounded decompilation, function
 metadata, disassembly, callers/callees, xrefs, function listing, and defined
 string search. Native Ghidra invocations are serialized to avoid project-lock
-overlap and call `scripts/ghidra.py`, which re-verifies the canonical target and
-the private project's image base, entry point, and mapped text before every
-operation. The private Ghidra 12.1.3 project was initialized through the new
-ledger-preserving `scripts/ghidra.py initialize` command. A real bounded
-`0x00401000` decompile and all query families passed. This backend is
-independent historical corroboration; IDA Pro MCP remains primary, and no
-reconstruction or exact-match claim changed in this maintenance batch.
+overlap and call `scripts/ghidra.py`, which re-verifies the canonical file plus
+the private project's SHA-256, MD5, module, image base, entry function, and six
+distributed mapped `.text` samples before every operation. The wrapper also
+requires an exact identity-bearing success marker: a deliberate wrong SHA-256
+proved that Ghidra can report a script error while exiting zero, while a
+deliberate byte mismatch plus headless `ABORT` proved that a following query
+did not execute. The private Ghidra 12.1.3 project was initialized through the
+new ledger-preserving `scripts/ghidra.py initialize` command. All ten
+`ghidra_call` operations, malformed-input/error paths, FIFO concurrency,
+scratch cleanup, a service restart, and public 2026-protocol Funnel discovery
+plus attestation passed. This backend is independent historical corroboration;
+IDA Pro MCP remains primary, and no reconstruction or exact-match claim
+changed in this maintenance batch.

@@ -17,6 +17,7 @@ PROJECT_DIR = ROOT / "ghidra-project"
 PROJECT_NAME = "TH095"
 SCRIPT_DIR = ROOT / "scripts" / "ghidra"
 CONFIG = ROOT / "config" / "target.toml"
+ATTESTATION_PREFIX = "TH095_GHIDRA_ATTESTATION_OK"
 
 
 def load_target() -> tuple[Path, dict[str, object], dict[str, object]]:
@@ -60,15 +61,158 @@ def verify_target(path: Path) -> None:
     )
 
 
-def attestation_args(target: dict[str, object], pe: dict[str, object]) -> list[str]:
+def integer(value: object) -> int:
+    if isinstance(value, int):
+        return value
+    return int(str(value), 0)
+
+
+def verify_pe_manifest(image: bytes, pe: dict[str, object]) -> None:
+    """Verify the manifest's PE32 mapping fields against the canonical file."""
+    if len(image) < 0x40:
+        raise ValueError("target is too small for a DOS header")
+    pe_offset = int.from_bytes(image[0x3C:0x40], "little")
+    if image[pe_offset : pe_offset + 4] != b"PE\0\0":
+        raise ValueError("target has no PE signature")
+    if int.from_bytes(image[pe_offset + 4 : pe_offset + 6], "little") != 0x14C:
+        raise ValueError("target PE machine is not i386")
+
+    section_count = int.from_bytes(image[pe_offset + 6 : pe_offset + 8], "little")
+    optional_size = int.from_bytes(image[pe_offset + 20 : pe_offset + 22], "little")
+    optional = pe_offset + 24
+    if int.from_bytes(image[optional : optional + 2], "little") != 0x10B:
+        raise ValueError("target optional header is not PE32")
+    image_base = int.from_bytes(image[optional + 28 : optional + 32], "little")
+    entry_point = image_base + int.from_bytes(
+        image[optional + 16 : optional + 20], "little"
+    )
+    observed = {
+        "image_base": image_base,
+        "entry_point": entry_point,
+        "size_of_image": int.from_bytes(
+            image[optional + 56 : optional + 60], "little"
+        ),
+        "headers_raw_size": int.from_bytes(
+            image[optional + 60 : optional + 64], "little"
+        ),
+    }
+    for key, actual in observed.items():
+        if actual != integer(pe[key]):
+            raise ValueError(
+                f"target PE {key} is {actual:#x}, expected {integer(pe[key]):#x}"
+            )
+
+    section_table = optional + optional_size
+    text: dict[str, int] | None = None
+    for index in range(section_count):
+        offset = section_table + index * 40
+        if offset + 40 > len(image):
+            raise ValueError("target PE section table is truncated")
+        name = image[offset : offset + 8].split(b"\0", 1)[0]
+        if name == b".text":
+            text = {
+                "virtual_size": int.from_bytes(image[offset + 8 : offset + 12], "little"),
+                "rva": int.from_bytes(image[offset + 12 : offset + 16], "little"),
+                "raw_size": int.from_bytes(image[offset + 16 : offset + 20], "little"),
+                "raw_offset": int.from_bytes(image[offset + 20 : offset + 24], "little"),
+            }
+            break
+    if text is None:
+        raise ValueError("target PE has no .text section")
+
+    expected_text = {
+        "virtual_size": integer(pe["text_virtual_size"]),
+        "rva": integer(pe["text_start"]) - image_base,
+        "raw_size": integer(pe["text_raw_size"]),
+        "raw_offset": integer(pe["text_raw_offset"]),
+    }
+    for key, actual in text.items():
+        if actual != expected_text[key]:
+            raise ValueError(
+                f"target .text {key} is {actual:#x}, expected {expected_text[key]:#x}"
+            )
+    actual_text_end = image_base + text["rva"] + text["virtual_size"] - 1
+    if actual_text_end != integer(pe["text_end"]):
+        raise ValueError(
+            f"target .text end is {actual_text_end:#x}, "
+            f"expected {integer(pe['text_end']):#x}"
+        )
+
+
+def mapped_samples(
+    target_path: Path, pe: dict[str, object]
+) -> list[tuple[int, bytes]]:
+    """Return distributed target-file bytes at mapped .text addresses."""
+    image = target_path.read_bytes()
+    verify_pe_manifest(image, pe)
+    text_start = integer(pe["text_start"])
+    text_end = integer(pe["text_end"])
+    raw_offset = integer(pe["text_raw_offset"])
+    raw_size = integer(pe["text_raw_size"])
+    sample_size = 16
+    mapped_size = text_end - text_start + 1
+    available = min(mapped_size, raw_size)
+    if available < sample_size:
+        raise ValueError("target .text is too small for mapped-byte attestation")
+
+    relative_entry = integer(pe["entry_point"]) - text_start
+    offsets = {
+        0,
+        available // 4,
+        available // 2,
+        (available * 3) // 4,
+        relative_entry,
+        available - sample_size,
+    }
+    normalized = sorted(
+        min(max(offset, 0), available - sample_size) for offset in offsets
+    )
+    samples: list[tuple[int, bytes]] = []
+    for offset in normalized:
+        start = raw_offset + offset
+        sample = image[start : start + sample_size]
+        if len(sample) != sample_size:
+            raise ValueError("mapped-byte sample extends beyond the target file")
+        samples.append((text_start + offset, sample))
+    return samples
+
+
+def attestation_marker(
+    target: dict[str, object], pe: dict[str, object], sample_count: int
+) -> str:
+    return ":".join(
+        [
+            ATTESTATION_PREFIX,
+            str(target["sha256"]).lower(),
+            str(target["md5"]).lower(),
+            str(integer(target["size"])),
+            f"{integer(pe['image_base']):08X}",
+            str(integer(pe["size_of_image"])),
+            f"{integer(pe['entry_point']):08X}",
+            str(sample_count),
+        ]
+    )
+
+
+def attestation_args(
+    target_path: Path, target: dict[str, object], pe: dict[str, object]
+) -> tuple[list[str], str]:
+    samples = mapped_samples(target_path, pe)
+    marker = attestation_marker(target, pe, len(samples))
     return [
         "-postScript",
         "VerifyTarget.java",
         str(target["sha256"]),
+        str(target["md5"]),
+        str(target["filename"]),
+        str(target["size"]),
         str(pe["image_base"]),
+        str(pe["size_of_image"]),
         str(pe["entry_point"]),
         str(pe["text_start"]),
-    ]
+        str(len(samples)),
+        *(value for address, sample in samples for value in (hex(address), sample.hex())),
+    ], marker
 
 
 def inventory_args(pe: dict[str, object]) -> list[str]:
@@ -83,7 +227,7 @@ def inventory_args(pe: dict[str, object]) -> list[str]:
     ]
 
 
-def run_headless(arguments: list[str]) -> None:
+def run_headless(arguments: list[str], required_marker: str) -> None:
     ghidra_home, analyzer = find_analyzer()
     command = [
         str(analyzer),
@@ -94,7 +238,29 @@ def run_headless(arguments: list[str]) -> None:
         str(SCRIPT_DIR),
     ]
     print("Running:", " ".join(command), flush=True)
-    subprocess.run(command, cwd=ROOT, env=environment(ghidra_home), check=True)
+    completed = subprocess.run(
+        command,
+        cwd=ROOT,
+        env=environment(ghidra_home),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        errors="replace",
+    )
+    if completed.stdout:
+        print(completed.stdout, end="" if completed.stdout.endswith("\n") else "\n")
+    if completed.stderr:
+        print(
+            completed.stderr,
+            end="" if completed.stderr.endswith("\n") else "\n",
+            file=sys.stderr,
+        )
+    if completed.returncode != 0:
+        raise subprocess.CalledProcessError(completed.returncode, command)
+    if required_marker not in completed.stdout:
+        raise RuntimeError(
+            "Ghidra did not emit the exact target-attestation success marker"
+        )
 
 
 def project_exists() -> bool:
@@ -150,6 +316,7 @@ def main() -> int:
     try:
         target_path, target, pe = load_target()
         verify_target(target_path)
+        attestation, marker = attestation_args(target_path, target, pe)
         PROJECT_DIR.mkdir(parents=True, exist_ok=True)
         if args.command in {"initialize", "import"}:
             if project_exists():
@@ -164,11 +331,11 @@ def main() -> int:
                 "1800",
                 "-max-cpu",
                 str(max(1, (os.cpu_count() or 2) - 1)),
-                *attestation_args(target, pe),
+                *attestation,
             ]
             if args.command == "import":
                 import_args.extend(inventory_args(pe))
-            run_headless(import_args)
+            run_headless(import_args, marker)
         else:
             if not project_exists():
                 raise ValueError("missing Ghidra project; run scripts/ghidra.py initialize")
@@ -177,7 +344,7 @@ def main() -> int:
                 str(target["filename"]),
                 "-readOnly",
                 "-noanalysis",
-                *attestation_args(target, pe),
+                *attestation,
             ]
             if args.command == "inventory":
                 base.extend(inventory_args(pe))
@@ -217,8 +384,15 @@ def main() -> int:
                         *query_script_args(args.operation, args.query_args),
                     ]
                 )
-            run_headless(base)
-    except (OSError, KeyError, TypeError, ValueError, subprocess.CalledProcessError) as exc:
+            run_headless(base, marker)
+    except (
+        OSError,
+        KeyError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+        subprocess.CalledProcessError,
+    ) as exc:
         print(f"error: Ghidra workflow failed: {exc}", file=sys.stderr)
         return 1
     return 0

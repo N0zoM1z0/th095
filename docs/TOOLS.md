@@ -7,7 +7,7 @@
 | Attest live analysis | IDA Pro MCP `check_connection`, `get_metadata`, `get_entry_points`, bounded `read_memory_bytes` | Must match `config/target.toml` |
 | Inspect disassembly/semantics | Attested IDA Pro MCP tools | IDA output is provisional evidence |
 | Operate from GPT web | `.tools/mcp_for_gptweb` `run_command` and `ida_call` | Private endpoint; every IDA call is re-attested |
-| Run parallel Ghidra corroboration from GPT web | `.tools/mcp_for_gptweb-ghidra` `run_command` and `ghidra_call` | Separate private endpoint; read-only calls are serialized and re-attested |
+| Run parallel Ghidra corroboration from GPT web | `.tools/mcp_for_gptweb-ghidra` `run_command` and `ghidra_call` | Generic bridge, separate private endpoint; this workspace's adapter re-attests identity and six mapped-byte samples |
 | Reproduce legacy inventory | `python3 scripts/ghidra.py …` | Historical Ghidra workflow, not the live backend |
 | Rank historical architecture hubs | `scripts/report-architecture.py` | Private read-only Ghidra-export metrics |
 | Inspect raw PE | `objdump` and verified target bytes | Read-only target evidence |

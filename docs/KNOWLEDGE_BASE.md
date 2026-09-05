@@ -42,6 +42,7 @@ next action belongs in `RE_HANDOFF.md`.
 | RE-005 | tool-observed | Objdiff 3.8.0 renders an empty zero-unit project as 100%; this is not progress. | Target-independent empty-project smoke report |
 | RE-006 | target-observed | The architecture export contains 1,830 metric rows and 3,873 direct call edges. | Attested read-only `scripts/ghidra.py architecture` export on 2026-08-29 |
 | RE-007 | tool-observed | The active IDA Pro MCP database is the original Japanese TH095 v1.02a: module `th095.exe`, SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`, MD5 `8de95bc7651419201fc1a4ea49bc0697`, file size `0xAA200`, image base `0x00400000`, mapped size `0xE9000`, and entry point `0x00486A9D`. | Direct `get_metadata`/`get_entry_points` calls and six canonical-file/mapped-byte samples on 2026-08-30 |
+| RE-008 | tool-observed / policy | The private Ghidra 12.1.3 project is independently re-attested before each headless operation by SHA-256, MD5, module, image base, entry function, and six distributed 16-byte `.text` samples read from the canonical executable. The wrapper requires an exact identity-bearing success marker because a deliberate wrong-hash script failure showed that `analyzeHeadless` itself may still exit zero; mismatch handling also sets headless `ABORT`, and a deliberate byte mismatch proved that the following query script produced no output. | `scripts/ghidra.py`; `scripts/ghidra/VerifyTarget.java`; positive, wrong-hash, and mapped-byte-negative tests on 2026-09-05 |
 
 ## Runtime architecture
 

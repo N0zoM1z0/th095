@@ -33,9 +33,18 @@ batch.
 The project lives below the ignored `ghidra-project/` directory and is never
 committed. Ghidra rejects project paths containing a dot-prefixed path element,
 so the general `.analysis/` scratch directory cannot host it. Import runs
-normal Ghidra analysis and verifies the executable SHA-256, image base, entry
-point, and mapped `.text`; only the explicit `import` maintenance command also
-exports the function and origin ledgers.
+normal Ghidra analysis and verifies the executable SHA-256, MD5, module name,
+image base, entry point, and six distributed mapped `.text` byte samples
+against the canonical file. The file-side check also covers file size and the
+PE32 machine, image base, image size, entry point, headers, and `.text`
+mapping. Only the explicit `import` maintenance command also exports the
+function and origin ledgers.
+
+Ghidra's `analyzeHeadless` can return zero even when a post-script throws. The
+workflow therefore requires an exact success marker containing the target
+identity and sample count in addition to the process status. `VerifyTarget`
+sets the headless continuation state to `ABORT` before rejecting an identity or
+mapped-byte mismatch, so later query/decompile scripts do not run.
 
 ## Existing project
 
