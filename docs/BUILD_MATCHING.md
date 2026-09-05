@@ -1239,6 +1239,32 @@ reopen those dimensions; the next acceptable closure must explain the two
 cross-class values and replace the diagnostic split-phase bytes with genuine
 operation ownership.
 
+A later stock-3077 probe closes the remaining **instruction-visible** allocation
+residual without padding.  Model one fade operation as a fully live 16-byte
+aggregate `{interpolationMode, initialAlpha, endTimer, currentTimer}`.  All four
+fields are consumed: `currentTimer` and `endTimer` point at the two real
+`ZunTimer` members and perform the target `current/subFrame/previous` stores,
+while `initialAlpha` and `interpolationMode` feed the final VM fields.  Because
+VC7 allocates the aggregate downward, this field order yields the target physical
+homes `currentTimer -> endTimer -> initialAlpha -> interpolationMode` at both
+fade sites while preserving the original operation order.  The resulting private
+body is structurally exact: **5,309/5,309 bytes, 4,789/4,789 comparable bytes,
+1,172/1,172 mnemonics, and 413/413 paired EBP operands**.
+
+This is still not a promotion by itself.  The structural-zero-diff source retains
+one previously diagnostic eight-byte compiler phase.  Its placement is strongly
+constrained but its semantic owner remains unproven: keeping all eight bytes on
+the slow-rate publication is zero-diff; moving all eight to captured-score gives
+4,784/4,789; splitting score/slow as four plus four also gives 4,784/4,789;
+placing all eight on capture request or splitting capture with score/slow falls
+to 4,762/4,789.  The zero-diff stack map leaves the two unreferenced dwords at
+`EBP-0xC4/-0xC0`, between the frame-10 compiler-temp family and the two live
+captured-score locals; the slow-rate pointer/value temps themselves are much
+deeper at `-0x108/-0x10C`.  Therefore slow-rate placement is a compiler-phase
+control, not provenance that those eight bytes belong to slow-rate.  Exact credit
+remains withheld until a repeated target or direct source owner explains that
+phase.
+
 
 The isolated VC7.1 `var_order` port is useful only as a diagnostic local-order
 oracle.  Build-3077 micro tests prove it can reorder ordinary named locals, but

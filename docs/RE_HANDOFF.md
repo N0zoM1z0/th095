@@ -2499,6 +2499,33 @@ wrapper forms, and alpha free/member/nested/name/var-order variants are bounded
 negatives.  Continue from the 5,309/4,725 source and solve those allocation
 classes; do not reopen crop semantics or the already-exact real-local lane.
 
+### 2026-09-06 gpt-web PhotoStage Update structural-zero-diff checkpoint
+
+`PhotoStageStateView::Update @ 0x0042AD60` now has a stock-VC7.1 private
+**structural-zero-diff** oracle: 5,309/5,309 bytes, 4,789/4,789 comparable
+bytes, all 1,172 mnemonics, and 413/413 paired EBP homes.  The former final
+24-byte residual was two copies of the same fade-alpha permutation.  Replace the
+8-byte `{initialAlpha, interpolationMode}` helper local with a fully live 16-byte
+phase object ordered in source as `{interpolationMode, initialAlpha, endTimer,
+currentTimer}`.  The two pointer fields address the actual alpha interpolation
+`ZunTimer`s and perform their `current/subFrame/previous` stores explicitly; the
+two scalar fields feed the real VM mode/initial-alpha stores.  Downward VC7 stack
+allocation then produces target physical order `currentTimer, endTimer,
+initialAlpha, interpolationMode` at both fade sites without changing instruction
+chronology or introducing inert state.
+
+Do **not** promote this function yet.  One earlier eight-byte allocation phase
+remains diagnostic.  The zero-diff spelling currently places it on the real
+slow-rate publication helper, but stack evidence disproves treating that as owner
+proof: the two unreferenced target dwords are `EBP-0xC4/-0xC0`, whereas the
+slow-rate pointer/value compiler homes are `-0x108/-0x10C`.  A bounded relocation
+matrix is now available: `slow8` is 4,789/4,789; `score8` and `score4+slow4` are
+4,784/4,789; `capture8`, `capture4+score4`, and `capture4+slow4` are
+4,762/4,789.  This proves strong allocator-phase sensitivity but not semantic
+ownership.  The next task is provenance for exactly these two dwords, preferably
+from a repeated exact target/frontend; do not reopen the now-exact alpha/local
+home work.
+
 ### 2026-09-05 parallel Ghidra web bridge
 
 The primary IDA+Bash endpoint remains unchanged. A second ignored checkout at
