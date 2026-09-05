@@ -1196,11 +1196,32 @@ two-stage address formation (`i*0x2214 -> display base -> j*0x2CC`) and reaches
 byte-pointer arithmetic, and tail/display accessor variants either spill a
 non-target pointer or let VC7 over-fold the two indices.
 
-The current topology-complete probe is 5,342 bytes with frame `0x124` versus
-target 5,309 / `0x12C`; only 27/413 observed EBP operands are at target homes.
-Do not keep searching opening syntax or reclassify the raw snapshots as compiler
-padding.  The next work is whole-function live-local/compiler-temp rank and
-coalescing, using the source-labelled stack-home crosswalk.
+The stronger private probe is now exact-sized at 5,309 bytes, keeps all
+1,172 target mnemonics, and matches 4,632/4,789 non-relocation comparable bytes;
+a fresh `/FAsc` crosswalk places 261/413 paired EBP operands exactly.  The
+remaining mismatches are a bounded set of real-local/compiler-temp rank classes,
+not missing control flow.  Important negative controls prevent a false promotion:
+the private best still carries one diagnostic eight-byte inline reservation.
+Moving that reservation from the capture-request helper to the captured-score
+helper is byte-identical at 4,632/4,789, so it is not evidence for a
+capture-specific owner; the slow-rate phase is one byte worse and the alpha
+phase regresses strongly.  Replacing it with live `captureSlot/anmManager`
+locals or a manager-member capture frontend lowers replay into the 4,47x range,
+and hoisting the crop locals into one var-ordered outer scope drops EBP exactness
+from 261/413 to 200/413.  Keep the truthful crop scopes and exact-size source
+shape, but do not claim exact credit until a genuine eight-byte allocation owner
+and the remaining local-rank permutation are explained.
+
+
+The isolated VC7.1 `var_order` port is useful only as a diagnostic local-order
+oracle.  Build-3077 micro tests prove it can reorder ordinary named locals, but
+member hidden `this` is absent from the hooked `Scope::Add` list: member tests
+report zero pre-existing entries, explicit-local ordering leaves `this` fixed,
+and manually feeding the `this` keyword to the port reaches a compiler internal
+error.  In `PhotoStageDisplayView::Build`, explicit-local var-order therefore
+leaves the 7,245/7,288 private replay unchanged and cannot solve the sole
+hidden-receiver residual.  Keep the stock VC7.1 compiler as exact-match proof;
+use the patched frontend only to test ordinary-local ordering hypotheses.
 
 
 ### Residual phase attribution: SceneSelect, ANM lifecycle, and best-shot loading

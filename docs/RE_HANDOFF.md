@@ -2408,6 +2408,35 @@ reason VC7 leaves the four-byte inter-aggregate hole, not for a larger queue
 record or a way to restore frame size artificially.  Do not repeat queue-size,
 Pop-count, 96-byte merge, or dummy-storage sweeps.
 
+### 2026-09-05 gpt-web VC7.1 ordering oracle and PhotoStage Update tightening
+
+The TH08 `var_order` implementation cannot be copied into TH095: TH08 wraps
+MSVC 7.0 `13.00.9466`, while TH095 is pinned to VC7.1 `13.10.3077`.  Existing
+TH095 scratch already contains a build-3077 port.  Its v3 micro-oracle genuinely
+reorders ordinary identifiers, but hidden member `this` is not in the hooked
+scope list.  Member instrumentation sees `existing=0` before the first named
+local, explicit-only ordering leaves the receiver fixed, and manually parsing
+`this` into the ordering list triggers VC7.1 `msc1.cpp:2701`.  This bounds the
+`PhotoStageDisplayView::Build` problem: ordinary `var_order`, `inline` definition
+placement, self aliases, whole-body helpers, and whole emission helpers do not
+move its hidden receiver into the target class.  Do not spend more time treating
+`this` as a normal identifier-hash bucket.
+
+`PhotoStageStateView::Update @ 0x0042AD60` is substantially stronger than the
+old 5,342-byte handoff.  The current private best is exactly 5,309 bytes, keeps
+all 1,172 target mnemonics, matches 4,632/4,789 comparable bytes, and reaches
+261/413 exact paired EBP operands.  It combines the truthful strided display-row
+view, raw crop snapshots, live texture-clear aggregate, score/slow-rate/alpha
+frontends, and calibrated real identifiers.  One eight-byte reservation remains
+diagnostic, so this is not promotable.  Moving the same 8 bytes from capture
+request to captured-score is byte-identical; slow-rate is one byte worse and
+alpha is much worse.  Thus the reservation is an allocation-class oracle, not a
+proven capture owner.  Live `captureSlot/anmManager` replacement and a pure
+manager-member capture frontend preserve size but regress to about 4,47x/4,789;
+outer-scope crop hoisting plus patched ordering drops EBP exactness to 200/413.
+Continue from the 5,309/4,632 source, preserve the current crop scopes, and attack
+the bounded remaining home families rather than reopening semantics.
+
 ### 2026-09-05 parallel Ghidra web bridge
 
 The primary IDA+Bash endpoint remains unchanged. A second ignored checkout at
