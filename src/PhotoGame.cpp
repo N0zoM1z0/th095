@@ -229,6 +229,15 @@ PhotoCameraState::PhotoCameraState()
 {
 }
 
+static __forceinline void PhotoCameraInitializeViewfinderPhase(AnmVm *vm)
+{
+    // Exact PhotoItem/Bullet InitializeVm frontends independently prove this
+    // 0x2C VC7.1 allocation phase.  A single live VM pointer is essential:
+    // extra explicit parameters add a non-target dword to each inline phase.
+    u8 compilerStorage[0x2c];
+    g_PhotoStageStateForPlayer->anm->InitializeVm(vm, 0x24);
+}
+
 void PhotoCameraState::Initialize()
 {
     memset(this, 0, sizeof(*this));
@@ -243,10 +252,10 @@ void PhotoCameraState::Initialize()
     this->captureRequested = 1;
     this->trackingRadius = 56.0f;
 
-    g_PhotoStageStateForPlayer->anm->InitializeVm(&this->viewfinderVms[0], 0x24);
-    g_PhotoStageStateForPlayer->anm->InitializeVm(&this->viewfinderVms[1], 0x24);
-    g_PhotoStageStateForPlayer->anm->InitializeVm(&this->viewfinderVms[2], 0x24);
-    g_PhotoStageStateForPlayer->anm->InitializeVm(&this->viewfinderVms[3], 0x24);
+    PhotoCameraInitializeViewfinderPhase(&this->viewfinderVms[0]);
+    PhotoCameraInitializeViewfinderPhase(&this->viewfinderVms[1]);
+    PhotoCameraInitializeViewfinderPhase(&this->viewfinderVms[2]);
+    PhotoCameraInitializeViewfinderPhase(&this->viewfinderVms[3]);
     g_PhotoStageStateForPlayer->anm->SetSprite(&this->viewfinderVms[0], 0x10);
     g_PhotoStageStateForPlayer->anm->SetSprite(&this->viewfinderVms[1], 0xf);
     g_PhotoStageStateForPlayer->anm->SetSprite(&this->viewfinderVms[2], 0xf);

@@ -437,7 +437,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00430450,authored,PhotoGame,authored,exact,vc71-photo-player-check-bullet-collision-2026-08-30
 0x00430530,authored,PhotoGame,authored,exact,vc71-photo-player-laser-hitbox-2026-08-30
 0x004306D0,authored,PhotoGame,authored,exact,vc71-photo-player-die-2026-08-30
-0x004307D0,authored,PhotoGame,authored,high,photo-camera-initialize-semantic-2026-08-30
+0x004307D0,authored,PhotoGame,authored,exact,vc71-photo-camera-initialize-exact-2026-09-06
 0x00430AB0,authored,PhotoCamera,authored,high,ghidra-photo-camera-cluster-2026-08-29
 0x00432730,authored,PhotoCamera,authored,exact,vc71-photo-begin-capture-2026-08-29
 0x004328C0,authored,PhotoCamera,authored,high,ghidra-photo-camera-cluster-2026-08-29
