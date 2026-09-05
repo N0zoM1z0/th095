@@ -2359,3 +2359,20 @@ phase shifts its position by exactly 0x10.  Pointer/reference/view/value
 parameter spellings of that 0x10 phase do not close the boundary.  Do not
 restore the private fake queue fields merely to claim 16,066 bytes.
 
+### 2026-09-05 parallel Ghidra web bridge
+
+The primary IDA+Bash endpoint remains unchanged. A second ignored checkout at
+`.tools/mcp_for_gptweb-ghidra` tracks the upstream `ghidra-bash` branch and runs
+as the separate enabled user service `th095-ghidra-bash-mcp.service`. Its fixed
+private Funnel path and machine-specific settings remain only in ignored
+`.env`/systemd state.
+
+The Ghidra endpoint exposes only `run_command` and read-only `ghidra_call`
+operations `check`/`decompile`. Native Ghidra invocations are serialized to
+avoid project-lock overlap and call `scripts/ghidra.py`, which re-verifies the
+canonical target and the private project's image base, entry point, and mapped
+text before every operation. The private Ghidra 12.1.3 project was initialized
+through the new ledger-preserving `scripts/ghidra.py initialize` command and a
+real bounded `0x00401000` decompile passed. This backend is independent
+historical corroboration; IDA Pro MCP remains primary, and no reconstruction
+or exact-match claim changed in this maintenance batch.

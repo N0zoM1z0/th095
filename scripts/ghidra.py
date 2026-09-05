@@ -104,6 +104,9 @@ def project_exists() -> bool:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers.add_parser(
+        "initialize", help="import, analyze, and attest target without rewriting ledgers"
+    )
     subparsers.add_parser("import", help="import, analyze, attest, and inventory target")
     subparsers.add_parser("inventory", help="refresh ledgers from existing project")
     subparsers.add_parser("check", help="attest existing project without analysis")
@@ -124,27 +127,27 @@ def main() -> int:
         target_path, target, pe = load_target()
         verify_target(target_path)
         PROJECT_DIR.mkdir(parents=True, exist_ok=True)
-        if args.command == "import":
+        if args.command in {"initialize", "import"}:
             if project_exists():
                 raise ValueError(
                     "Ghidra project already exists; use inventory/check or move the "
                     "private ghidra-project directory aside before a clean import"
                 )
-            run_headless(
-                [
-                    "-import",
-                    str(target_path.resolve()),
-                    "-analysisTimeoutPerFile",
-                    "1800",
-                    "-max-cpu",
-                    str(max(1, (os.cpu_count() or 2) - 1)),
-                    *attestation_args(target, pe),
-                    *inventory_args(pe),
-                ]
-            )
+            import_args = [
+                "-import",
+                str(target_path.resolve()),
+                "-analysisTimeoutPerFile",
+                "1800",
+                "-max-cpu",
+                str(max(1, (os.cpu_count() or 2) - 1)),
+                *attestation_args(target, pe),
+            ]
+            if args.command == "import":
+                import_args.extend(inventory_args(pe))
+            run_headless(import_args)
         else:
             if not project_exists():
-                raise ValueError("missing Ghidra project; run scripts/ghidra.py import")
+                raise ValueError("missing Ghidra project; run scripts/ghidra.py initialize")
             base = [
                 "-process",
                 str(target["filename"]),

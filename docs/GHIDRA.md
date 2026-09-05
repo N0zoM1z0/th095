@@ -18,19 +18,24 @@ Versions, URLs, and SHA-256 checksums live in `config/tools.lock.toml`.
 
 ## Initial import
 
-Import the verified private target, then create the headless project and
-provisional ledgers:
+Import the verified private target, then create and attest the private headless
+project without changing reconstruction ledgers:
 
 ```bash
 scripts/import-target.sh /path/to/original/th095.exe
-python3 scripts/ghidra.py import
+python3 scripts/ghidra.py initialize
 ```
+
+Use `python3 scripts/ghidra.py import` only when deliberately rebuilding the
+provisional function and origin ledgers as part of a reviewed maintenance
+batch.
 
 The project lives below the ignored `ghidra-project/` directory and is never
 committed. Ghidra rejects project paths containing a dot-prefixed path element,
 so the general `.analysis/` scratch directory cannot host it. Import runs
-normal Ghidra analysis, verifies the executable SHA-256, image base, entry
-point, and mapped `.text`, then exports the function and origin ledgers.
+normal Ghidra analysis and verifies the executable SHA-256, image base, entry
+point, and mapped `.text`; only the explicit `import` maintenance command also
+exports the function and origin ledgers.
 
 ## Existing project
 
@@ -66,3 +71,13 @@ project database is not reviewable evidence.
 Never patch program bytes. Do not bulk-export decompiler output into `src/`.
 After changing a function boundary or durable name in the GUI, read it back,
 update the ledgers deliberately, and rerun tracking validation.
+
+## GPT-web bridge
+
+The optional `.tools/mcp_for_gptweb-ghidra` checkout uses the upstream
+`ghidra-bash` branch and exposes `run_command` plus a read-only `ghidra_call`.
+The latter supports `check` and bounded `decompile`, serializes every Ghidra
+invocation to avoid project-lock conflicts, and invokes this workflow so target
+and project attestation run before every native operation. It uses a separate
+port, fixed private Funnel path, and user-systemd service from the primary
+IDA+Bash bridge, so both analysis backends can stay online concurrently.
