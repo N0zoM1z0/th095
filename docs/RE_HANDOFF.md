@@ -2359,6 +2359,23 @@ phase shifts its position by exactly 0x10.  Pointer/reference/view/value
 parameter spellings of that 0x10 phase do not close the boundary.  Do not
 restore the private fake queue fields merely to claim 16,066 bytes.
 
+### 2026-09-05 gpt-web SceneSelect queue-class tightening
+
+A fresh stock-VC7.1 `/FAsc` pass on the policy-clean 4-Pop source proves the
+old `-0x4C` residual is a compiler hole, not an unidentified local.  The
+72-byte shallow aggregate is exactly `EBP-0x48..-0x01`; the 92-byte queue
+aggregate is `EBP-0xA8..-0x4D`; the four bytes at `-0x4C..-0x49` sit between
+those two real objects.  Re-owning the already-live post-drain queue-count
+value (`loadedGroupDrainedSize`) as a member of the queue aggregate grows it to
+96 bytes at `-0xA8` and makes it abut shallow at `-0x48` with no fake field.
+That clean probe is 16,069 bytes, only three bytes longer than the 16,066-byte
+target, but its frame becomes `0x3D8` rather than target `0x3DC`.  A direct
+inline producer of the same count remains 16,069; materializing a named local
+in that producer grows to 16,084.  The next search should therefore target a
+real operation whose inlined lifetime naturally retains one four-byte deep
+allocation while preserving the now-correct 96-byte queue/shallow boundary.
+Do not repeat queue-size, Pop-count, or dummy-storage sweeps.
+
 ### 2026-09-05 parallel Ghidra web bridge
 
 The primary IDA+Bash endpoint remains unchanged. A second ignored checkout at

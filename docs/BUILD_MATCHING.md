@@ -1346,6 +1346,18 @@ splitting it into 23 scalars or three logical records regresses badly; wrapping
 queue+shallow in one owner removes the `-0x4C` hole but shifts the complete
 shallow block by one dword; timer `Set(0)`, pointer/reference producers, and
 initial 0x10 phase parameter/reference/view spellings do not move the final
-boundary.  The next acceptable closure must explain relocation of that one
-natural compiler dword without reintroducing inert storage.
+boundary.  A 2026-09-05 `/FAsc` audit sharpened that description: the clean
+92-byte `queueLocals` aggregate occupies `EBP-0xA8..-0x4D` and the 72-byte
+`shallow` aggregate occupies `EBP-0x48..-0x01`, so `-0x4C..-0x49` is not a
+source variable at all; it is a four-byte hole between two real allocation
+classes.  Moving the real post-drain `loadedGroupDrainedSize` value from its
+inline-helper local into `queueLocals` grows that aggregate to 96 bytes and
+closes the boundary exactly (`queueLocals @ -0xA8`, `shallow @ -0x48`) without
+diagnostic storage.  The resulting body improves from 16,075 to 16,069 bytes,
+but VC7.1 simultaneously shrinks the frame from target `0x3DC` to `0x3D8`.
+A direct inline count-return producer is byte-identical at 16,069; a named
+local-return producer regresses to 16,084.  Therefore the remaining clean
+problem is specifically a genuine four-byte deep-phase lifetime/allocation
+owner, not queue-record size or shallow alignment.  Do not reintroduce a dummy
+dword to restore `0x3DC`.
 
