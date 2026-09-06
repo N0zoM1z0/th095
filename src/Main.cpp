@@ -172,6 +172,19 @@ struct PbgArchiveView
 extern SupervisorInputWorkerView g_SupervisorInputWorker;
 extern PbgArchiveView g_PbgArchive;
 extern u32 g_PhotoScreenFadeColor;
+
+// WinMain's target has one four-byte compiler allocation class between the
+// operator-new temporaries and the lifecycle merge-result family.  Keep that
+// target-attested phase on the smallest real operation: publishing the newly
+// constructed AnmManager.  A no-phase identity leaves all three merge results
+// one dword shallow, an eight-byte phase moves them one dword too deep, and a
+// function-scope four-byte reservation moves unrelated homes.
+static __forceinline AnmManager *MainPublishAnmManagerPhase(
+    AnmManager *manager)
+{
+    u8 compilerStorage[4];
+    return manager;
+}
 extern AnmVmId g_SupervisorLoadingVms[3];
 extern ScreenEffect *g_SupervisorScreenEffect;
 
@@ -239,7 +252,7 @@ restart:
     Controller::GetJoystickCaps();
     Controller::ResetKeyboard();
 
-    g_AnmManager = new AnmManager();
+    g_AnmManager = MainPublishAnmManagerPhase(new AnmManager());
 
     if (g_Supervisor.config.windowed == 0)
     {

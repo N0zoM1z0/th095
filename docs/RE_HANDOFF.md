@@ -2727,3 +2727,13 @@ destination mismatches before refreshing those two `$L` identities.
 After this promotion the ledger is 672/686 exact authored functions and
 315,827/334,111 exact authored bytes (94.53%).  Reaching the 95% authored-byte
 threshold now requires 1,579 additional exact bytes.
+
+### 2026-09-06 gpt-web WinMain lifecycle publication closure
+
+`WinMain @ 0x00420240` is canonical exact: 1,326/1,326 authored bytes, 790/790 comparable bytes, and all 134 relocations. The previous 782/790 residual was one compiler allocation class, not missing program logic. All six allocation/delete `$T` homes were already exact; only the `new AnmManager`, `delete AnmManager`, and `delete MidiOutput` lifecycle merge results were one dword shallow.
+
+The accepted phase belongs to the real `new AnmManager -> g_AnmManager` publication frontend. A force-inlined pointer identity with a four-byte target-attested compiler reservation shifts exactly that merge-result family and nothing else. The controls make the ownership specific: zero bytes leaves the original 782/790 result; eight bytes moves the same homes one dword too deep and is also 782/790; function-scope four bytes falls to 749/790; an inlined placement-new tag frontend is byte-identical to the zero-byte case. TH08's WinMain confirms there is no ancestral fifth function-scope local, so do not replace this with a dummy scalar.
+
+The rebuilt `Main.obj` replays all 48 configured units. Only `Supervisor::UpdateSceneState` renumbers compiler-private labels. Its complete 1,026-byte authored-body-plus-three-switch-table comparison remains 842/842 structural exact, and an offset/type/solved-destination audit finds zero mismatches across all 46 relocations before refreshing those private names.
+
+After this promotion the ledger is 673/686 exact authored functions and 317,153/334,111 exact authored bytes (94.92%). The authored-function goal remains satisfied. Reaching the 95% authored-byte threshold now requires only **253 additional exact bytes**.
