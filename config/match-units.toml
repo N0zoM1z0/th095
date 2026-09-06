@@ -21248,3 +21248,30 @@ relocations = [
   { offset = 0x1C73, type = "DIR32", symbol = "$L70048", target = 0x00432343 },
   { offset = 0x1C77, type = "DIR32", symbol = "$L69077", target = 0x0043236A },
 ]
+
+[units.scene-best-shot-load]
+source = "src/SceneBestShot.cpp"
+object = "build/matching/SceneBestShot.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::SceneSaveDataView::LoadBestShotForScene"]
+symbol = "?LoadBestShotForScene@SceneSaveDataView@th095@@QAEHHH@Z"
+target_address = 0x00435E90
+size = 0x40A
+relocations = [
+  { offset = 0x01D, type = "DIR32", symbol = "?g_SceneGroups@th095@@3PAPAUSceneDefinitionView@1@A", target = 0x004A5800 },
+  { offset = 0x050, type = "REL32", symbol = "?UpdateBestShotRecord@ResultSaveDataView@th095@@QAEXH@Z", target = 0x004299F0 },
+  { offset = 0x069, type = "DIR32", symbol = "??_C@_0BI@JFFGNPPG@bestshot?1bs_?$CF?42d_?$CFd?4dat?$AA@", target = 0x00495668 },
+  { offset = 0x075, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x086, type = "DIR32", symbol = "??_C@_0BG@NCGNEGJE@bestshot?1bs_ex_?$CFd?4dat?$AA@", target = 0x00495650 },
+  { offset = 0x092, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
+  { offset = 0x0A0, type = "REL32", symbol = "?CheckIfFileAlreadyExists@FileSystem@th095@@YIHPBD@Z", target = 0x0041ABA0 },
+  { offset = 0x0EA, type = "REL32", symbol = "?OpenFile@FileSystem@th095@@YIPAEPBDPAHH@Z", target = 0x0041A960 },
+  { offset = 0x1D3, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x265, type = "REL32", symbol = "?DecompressData@th095@@YIPAEPAEH0I@Z", target = 0x00456220 },
+  { offset = 0x311, type = "REL32", symbol = "?DecompressData@th095@@YIPAEPAEH0I@Z", target = 0x00456220 },
+  { offset = 0x334, type = "REL32", symbol = "?CalculateAlignedChecksum@th095@@YIHPAHI@Z", target = 0x0041BA80 },
+  { offset = 0x353, type = "REL32", symbol = "?CalculateAlignedChecksum@th095@@YIHPAHI@Z", target = 0x0041BA80 },
+  { offset = 0x3AF, type = "REL32", symbol = "?CalculateAlignedChecksum@th095@@YIHPAHI@Z", target = 0x0041BA80 },
+  { offset = 0x3C5, type = "DIR32", symbol = "??_C@_0BL@PFFKCELG@Best?5Shot?5Sum?5Check?5Error?6?$AA@", target = 0x004968CC },
+  { offset = 0x3CA, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
+]

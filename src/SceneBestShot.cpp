@@ -13,108 +13,129 @@ namespace th095
 
 struct SceneBestShotCommentBlock { u32 words[20]; };
 
-struct SceneBestShotLoadLocals
+struct SceneBestShotIoLocals
 {
     char path[MAX_PATH];
     u8 *input;
-    i32 recordIndex;
-    i32 fileSize;
 };
 
-typedef char SceneBestShotLoadLocalsSizeIs110[
-    (sizeof(SceneBestShotLoadLocals) == 0x110) ? 1 : -1];
+typedef char SceneBestShotIoLocalsSizeIs108[
+    (sizeof(SceneBestShotIoLocals) == 0x108) ? 1 : -1];
+
+// The target keeps the pixel-allocation size temporary and hidden receiver
+// eight bytes deeper than the four real loader locals.  This phase belongs
+// only to the inlined pixel allocator; 0-byte and aggregate-wide controls
+// preserve the wrong compiler-home class.
+static __forceinline u8 *SceneBestShotPixelAlloc(size_t size)
+{
+    u8 compilerStorage[8];
+    return reinterpret_cast<u8 *>(malloc(size));
+}
+
+// Stock VC7.1 ranks ordinary locals by identifier hash rather than source
+// declaration order.  Keep the real path/input pair contiguous so the input
+// field occupies the third shallow slot, while recordIndex remains a scalar:
+// that distinction makes VC7 preserve recordIndex * 0x78 in ESI across malloc.
+#define io iLocal11
+#define recordIndex averagedPanLocal12
+#define fileSize restartCommandProcessingLocal05
 
 i32 SceneSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
 {
-    SceneBestShotLoadLocals locals;
-    locals.recordIndex = g_SceneGroups[group][scene].scoreEntryIndex;
+    SceneBestShotIoLocals io;
+    i32 recordIndex;
+    i32 fileSize;
+    recordIndex = g_SceneGroups[group][scene].scoreEntryIndex;
 
-    if (this->sceneScores[locals.recordIndex].attemptCount == 0)
+    if (this->sceneScores[recordIndex].attemptCount == 0)
     {
         return -1;
     }
 
     reinterpret_cast<ResultSaveDataView *>(this)
-        ->UpdateBestShotRecord(locals.recordIndex);
+        ->UpdateBestShotRecord(recordIndex);
 
     if (group != 10)
     {
-        sprintf(locals.path, "bestshot/bs_%.2d_%d.dat", group + 1, scene + 1);
+        sprintf(io.path, "bestshot/bs_%.2d_%d.dat", group + 1, scene + 1);
     }
     else
     {
-        sprintf(locals.path, "bestshot/bs_ex_%d.dat", scene + 1);
+        sprintf(io.path, "bestshot/bs_ex_%d.dat", scene + 1);
     }
 
-    if (!FileSystem::CheckIfFileAlreadyExists(locals.path))
+    if (!FileSystem::CheckIfFileAlreadyExists(io.path))
     {
-        this->sceneScores[locals.recordIndex].detailScore = 0;
-        this->sceneScores[locals.recordIndex].attemptCount = 0;
+        this->sceneScores[recordIndex].detailScore = 0;
+        this->sceneScores[recordIndex].attemptCount = 0;
         return -1;
     }
 
-    this->bestShotRecords[locals.recordIndex].componentData0 =
-        FileSystem::OpenFile(locals.path, &locals.fileSize, TRUE);
-    if (this->bestShotRecords[locals.recordIndex].componentData0 == NULL)
+    this->bestShotRecords[recordIndex].componentData0 =
+        FileSystem::OpenFile(io.path, &fileSize, TRUE);
+    if (this->bestShotRecords[recordIndex].componentData0 == NULL)
         goto load_failed;
     {
-        memcpy(&this->bestShotRecords[locals.recordIndex],
-               this->bestShotRecords[locals.recordIndex].componentData0, 0x18);
-        locals.input = reinterpret_cast<u8 *>(
-                        this->bestShotRecords[locals.recordIndex].componentData0) +
+        memcpy(&this->bestShotRecords[recordIndex],
+               this->bestShotRecords[recordIndex].componentData0, 0x18);
+        io.input = reinterpret_cast<u8 *>(
+                        this->bestShotRecords[recordIndex].componentData0) +
                     0x18;
-        this->bestShotRecords[locals.recordIndex].pixelData =
-            reinterpret_cast<u8 *>(g_ZunMemory.Alloc(
-                this->bestShotRecords[locals.recordIndex].width *
-                this->bestShotRecords[locals.recordIndex].height *
-                this->bestShotRecords[locals.recordIndex].componentCount));
+        this->bestShotRecords[recordIndex].pixelData =
+            SceneBestShotPixelAlloc(
+                this->bestShotRecords[recordIndex].width *
+                this->bestShotRecords[recordIndex].height *
+                this->bestShotRecords[recordIndex].componentCount);
 
-        if (this->bestShotRecords[locals.recordIndex].type == 1)
+        if (this->bestShotRecords[recordIndex].type == 1)
         {
             DecompressData(
-                locals.input, locals.fileSize - 0x18,
-                this->bestShotRecords[locals.recordIndex].pixelData,
-                this->bestShotRecords[locals.recordIndex].width *
-                    this->bestShotRecords[locals.recordIndex].height *
-                    this->bestShotRecords[locals.recordIndex].componentCount);
-            memset(this->bestShotRecords[locals.recordIndex].comment, 0,
-                   sizeof(this->bestShotRecords[locals.recordIndex].comment));
+                io.input, fileSize - 0x18,
+                this->bestShotRecords[recordIndex].pixelData,
+                this->bestShotRecords[recordIndex].width *
+                    this->bestShotRecords[recordIndex].height *
+                    this->bestShotRecords[recordIndex].componentCount);
+            memset(this->bestShotRecords[recordIndex].comment, 0,
+                   sizeof(this->bestShotRecords[recordIndex].comment));
         }
         else
         {
-            *reinterpret_cast<SceneBestShotCommentBlock *>(this->bestShotRecords[locals.recordIndex].comment) =
-                *reinterpret_cast<const SceneBestShotCommentBlock *>(locals.input);
-            locals.input += sizeof(this->bestShotRecords[locals.recordIndex].comment);
+            *reinterpret_cast<SceneBestShotCommentBlock *>(this->bestShotRecords[recordIndex].comment) =
+                *reinterpret_cast<const SceneBestShotCommentBlock *>(io.input);
+            io.input += sizeof(this->bestShotRecords[recordIndex].comment);
             DecompressData(
-                locals.input, locals.fileSize - 0x68,
-                this->bestShotRecords[locals.recordIndex].pixelData,
-                this->bestShotRecords[locals.recordIndex].width *
-                    this->bestShotRecords[locals.recordIndex].height *
-                    this->bestShotRecords[locals.recordIndex].componentCount);
+                io.input, fileSize - 0x68,
+                this->bestShotRecords[recordIndex].pixelData,
+                this->bestShotRecords[recordIndex].width *
+                    this->bestShotRecords[recordIndex].height *
+                    this->bestShotRecords[recordIndex].componentCount);
         }
 
-        if (this->sceneScores[locals.recordIndex].bestShotChecksum !=
+        if (this->sceneScores[recordIndex].bestShotChecksum !=
             CalculateAlignedChecksum(
-                reinterpret_cast<i32 *>(&this->bestShotRecords[locals.recordIndex]), 0x18) +
+                reinterpret_cast<i32 *>(&this->bestShotRecords[recordIndex]), 0x18) +
             CalculateAlignedChecksum(
-                reinterpret_cast<i32 *>(this->bestShotRecords[locals.recordIndex].comment), 0x50) +
+                reinterpret_cast<i32 *>(this->bestShotRecords[recordIndex].comment), 0x50) +
             CalculateAlignedChecksum(
-                reinterpret_cast<i32 *>(this->bestShotRecords[locals.recordIndex].pixelData),
-                this->bestShotRecords[locals.recordIndex].width *
-                    this->bestShotRecords[locals.recordIndex].height *
-                    this->bestShotRecords[locals.recordIndex].componentCount))
+                reinterpret_cast<i32 *>(this->bestShotRecords[recordIndex].pixelData),
+                this->bestShotRecords[recordIndex].width *
+                    this->bestShotRecords[recordIndex].height *
+                    this->bestShotRecords[recordIndex].componentCount))
         {
             utils::DebugPrint("Best Shot Sum Check Error\n");
         }
         else
         {
-            this->bestShotRecords[locals.recordIndex].componentsLoaded = 1;
+            this->bestShotRecords[recordIndex].componentsLoaded = 1;
             return 0;
         }
     }
 load_failed:
-    this->bestShotRecords[locals.recordIndex].componentsLoaded = 0;
+    this->bestShotRecords[recordIndex].componentsLoaded = 0;
     return -1;
 }
+#undef fileSize
+#undef recordIndex
+#undef io
 
 } // namespace th095

@@ -1361,19 +1361,7 @@ at 119/125, 138/144, and 123/129 comparable bytes.  The earlier isolated `AddVm`
 reservation remains function-internal frontend allocation behavior, not crowded-TU folding like
 `ScreenEffect::DrawSquare`.
 
-`SceneSaveDataView::LoadBestShotForScene @ 0x00435E90` adds a multiplication
-source-order oracle.  Write the pixel allocation size as
-`width * height * componentCount`: under `/Od` build 3077 the operands are
-materialized in reverse source order, exactly reproducing the target loads
-`componentCount(byte)`, `height(word)`, then `width(word)`.  Keep the target's
-`g_ZunMemory.Alloc` path and the 80-byte comment as whole-POD assignment.  Real
-record pointer/reference/offset locals and an inline record setter all change
-the target extent and are negative controls; they do not explain the target's
-pre-allocation ESI-preserved record stride.  Pure array-expression spelling is now a bounded negative oracle:
-changing only the allocator LHS to `(bestShotRecords + recordIndex)->pixelData`
-or its explicit-dereference equivalent is byte-identical to the canonical
-886/970-comparable source.  The target-specific distinction remains the
-pre-Alloc preservation of `recordIndex * 0x78` in ESI, not C++ `[]` syntax.
+`SceneSaveDataView::LoadBestShotForScene @ 0x00435E90` was previously bounded at the allocator/ESI frontier. That diagnosis is superseded by the exact closure recorded below. The still-useful source-order oracle remains: spell pixel size as `width * height * componentCount`, because stock `/Od` build 3077 materializes the operands in target order `componentCount(byte) -> height(word) -> width(word)`.
 
 ### Background stage-loader allocation snapshots
 
@@ -1726,3 +1714,11 @@ The width and owner are bounded, not guessed. A no-storage class allocator leave
 `Background::LoadStageDataInner @ 0x00402C80` is canonical exact for 523 authored bytes and all sixteen relocations. The closing source is not the earlier size-only 0x2C scope probe. Three source-shape constraints must coincide: serialized object/script offsets are formed as integer offset plus the stage-data base, the real `stageVmAllocationSize` uses the target-proven `volumeScaleLocal00` backing bucket, and only the real raw stage-VM pool allocation is routed through `BackgroundAllocateStageVms`.
 
 The allocation frontend is a source-local force-inline wrapper around `malloc(size)` with the independently observed `0x2C` compiler phase. In the target that lane is instruction-unreferenced but moves the hidden receiver while leaving the five real shallow loader locals fixed. Width controls at 0x28 and 0x30 miss the target; moving the phase to InitializeVm grows the function to 545 bytes, and member/free allocator-owner probes remain 404/459 comparable bytes. Keep this rule attached to the stage-VM allocation operation. It does not license arbitrary function-scope storage or generic padding.
+
+### LoadBestShotForScene scalar-rank and pixel-allocation closure (2026-09-07)
+
+`SceneSaveDataView::LoadBestShotForScene @ 0x00435E90` is canonical exact for all 1,034 authored bytes and sixteen relocations. The old 886/970 source had the right file/decompression/checksum semantics but hid `recordIndex` inside a fully live `0x110` aggregate. Target disassembly instead preserves `recordIndex * 0x78` in ESI across the pixel allocator and uses that same scaled index for the post-call `pixelData` store.
+
+The closing source restores the real allocation chronology rather than forcing ESI. Keep only `path[260]` and `input` together in a semantic `SceneBestShotIoLocals` pair; keep `recordIndex` and `fileSize` as genuine scalars. Map those real locals through the target-proven stock-VC7.1 identifier buckets, and preserve `width * height * componentCount`. VC7.1 then naturally evaluates the destination stride before `_malloc`, assigns it to ESI, and reuses ESI after the call. The final deep-home class belongs only to the real pixel allocator: `SceneBestShotPixelAlloc(size)` is a force-inlined wrapper around `malloc(size)` with an eight-byte compiler phase.
+
+The width is target-strict on the final exact source. Fresh 2026-09-07 controls changing only that helper to 0, 4, or 12 bytes all replay 933/970 comparable bytes; eight bytes alone replays 970/970 and all sixteen relocation destinations. A no-phase standalone ranked control reaches 966/970 before the final allocation-class correction, while the old monolithic aggregate is substantially worse. This is a scalar-rank plus operation-owned allocation-phase rule, not a license to reserve arbitrary storage or explicitly force ESI.
