@@ -1400,17 +1400,30 @@ mnemonic tree. Diagnostic function-scope 0/4/8/12-byte storage never changes the
 repeats the final eight-byte tail after the deepest referenced local, so this is
 not a storage exception.
 
-`Background::RenderObjects @ 0x00402F60` has a 541-byte source with all 160
-target mnemonics. Its target `0xEC` frame places a real opcode snapshot at
-`EBP-0xEC`, hidden `this @ -0xE8`, and leaves an unreferenced `0xA8` band before
-them. An opcode-owned inline helper carrying `0xA8` storage is the only tested
-semantic phase that preserves all 160 mnemonics while reaching the target
-565-byte extent for selected identifier buckets. Ninety-six additional opcode
-identifier controls prove the deep class always orders `opcode @ -0xDC` before
-`this @ -0xE0`; no named bucket produces target `this -> opcode`. Direct-return
-opcode removes the required snapshot (554 bytes/159 instructions), while a
-camera-mode-owned `0xA8` phase grows to 595 bytes. Do not continue generic A8
-storage or identifier sweeps without a new ownership oracle.
+`Background::RenderObjects @ 0x00402F60` is now canonical exact for all 565
+authored bytes.  The closing source shape comes from the exact TH08 ancestor,
+not an identifier or frame-size sweep.  TH08's original `RenderObjects` keeps
+the current VM at function scope and dispatches `switch (curQuad->type)` with
+the rendered case body directly inside the case.  Rebuilding that source with
+TH08's patched MSVC 7.0 compiler shows hidden `this` immediately before the
+switch controlling `tv`; the full exact TH08 object likewise records the
+ancestral stage-quad workspace and the same `this -> tv` chronology.  Porting
+that structure to the TH095-only opcode-0 renderer fixes the former reversed
+`opcode -> this` allocation class while preserving all 160 target mnemonics.
+
+The target still owns one compiler-only allocation interval in the real opcode
+frontend.  Under stock VC7.1 build 3077 the ancestral workspace declaration
+block contributes `0xA0` before hidden `this`; the TH08 compiler's equivalent
+source physically spans `0xA4`, while the TH095 target requires `0xA8` and then
+`this @ -0xE8`, switch `tv @ -0xEC`.  A source-local eight-byte reservation in
+that real opcode/switch frontend reproduces the target exactly: 565/565 bytes,
+517/517 non-relocation bytes and 64/64 paired EBP operands.  This placement is
+not size-only filler.  Four- and twelve-byte controls at the same frontend stay
+at 509/517; moving the same eight bytes to the camera-mode phase gives 507/517,
+and an outer lexical placement gives 483/517.  Removing the independent
+TH08-lineage `Float3` lifetime moves the later allocation family twelve bytes
+shallow and falls to 475/517.  Preserve the ancestral direct-switch CFG, signed
+object mode byte, function-scope VM owner, and opcode-phase boundary together.
 
 ### SceneSelect private zero-diff and policy-clean queue barrier (2026-09-03)
 

@@ -95,7 +95,7 @@ struct BackgroundStageObjectInstruction
 struct BackgroundStageObject
 {
     i16 id;
-    u8 mode;
+    i8 mode;
     i8 flags;
     Float3 position;
     Float3 size;
@@ -617,72 +617,126 @@ i32 Background::DrawLowPrio()
 }
 
 // FUNCTION: TH095 0x00402F60.
+static __forceinline void BackgroundSetCameraModePhase(
+    BackgroundAnmManagerView *anmManager, i32 mode)
+{
+    anmManager->cameraMode = (u8)mode;
+}
+
+
+// TH08's exact RenderObjects source keeps the full stage-quad workspace in
+// front of hidden this and uses switch(curQuad->type), whose VC7 control value
+// is allocated immediately after this.  TH095 preserves that chronology but
+// its target has an additional eight-byte compiler reservation in this same
+// real opcode frontend.  4/12-byte controls and moving the eight bytes to the
+// camera-mode or outer lexical phase all miss the target.
+static __forceinline i32 BackgroundAncestralOpcodePhase(
+    BackgroundStageObjectInstruction *instruction)
+{
+    u8 compilerStorage[8];
+    void *ancestralObjQuadType1;
+    AnmVm *ancestralCurQuadVm;
+    i32 ancestralInstancesDrawn;
+    BackgroundStageObjectInstance *ancestralInstance;
+    i32 ancestralFogState;
+    D3DXMATRIX ancestralWorldMatrix;
+    BackgroundStageObject *ancestralObject;
+    f32 ancestralObjectDistance;
+    Float3 ancestralCameraVec;
+    Float3 ancestralQuadPos;
+    Float3 ancestralProjectDest;
+    BackgroundStageObjectInstruction *ancestralCurQuad;
+    i32 ancestralDidDraw;
+    f32 ancestralRadius;
+    Float3 ancestralProjectSrc;
+    f32 ancestralQuadWidth;
+    u32 ancestralOriginalColor;
+    return instruction->opcode;
+}
+
 i32 Background::RenderObjects(i32 mode)
 {
+    // TH08 RenderObjects keeps the current VM at function scope.
+    AnmVm *curQuadVm;
     BackgroundStageObjectInstance *instance =
         reinterpret_cast<BackgroundStateView *>(this)->stageObjectInstances;
-
     reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)
         ->ConfigureBackgroundViewport(0);
-    reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetCameraMode(1);
-    while (instance->objectId >= 0)
+    BackgroundSetCameraModePhase(
+        reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager), 1);
     {
-        BackgroundStageObject *object =
+        Float3 ancestralProjectSrc;
+        while (instance->objectId >= 0)
+        {
+        BackgroundStageObject *resultDrawBacking096 =
             reinterpret_cast<BackgroundStateView *>(this)
                 ->stageObjects[instance->objectId];
-        if (object->mode == mode)
-        {
-            Float3 instancePosition = instance->position;
-            if (object->IsVisible(
-                    &instancePosition,
-                    reinterpret_cast<BackgroundStateView *>(this)
-                        ->cullingDistanceSq) == 0)
-            {
-                object->flags |= 2;
-                BackgroundStageObjectInstruction *instruction =
-                    &object->firstInstruction;
-                while (instruction->opcode >= 0)
-                {
-                    AnmVm *vm =
-                        &reinterpret_cast<BackgroundStateView *>(this)
-                             ->stageObjectVms[instruction->vmIndex];
-                    if (instruction->opcode == 0)
-                    {
-                        if (vm->renderModeBits > 3)
-                        {
-                            vm->positionOffset =
-                                instruction->position + instance->position;
-                            if (instruction->sizeOverride.x != 0.0f)
-                            {
-                                vm->scale.x = instruction->sizeOverride.x /
-                                              vm->loadedSprite->widthPx;
-                            }
-                            if (instruction->sizeOverride.y != 0.0f)
-                            {
-                                vm->scale.y = instruction->sizeOverride.y /
-                                              vm->loadedSprite->heightPx;
-                            }
-                        }
+        if (resultDrawBacking096->mode != mode)
+            goto nextInstance;
 
-                        if (vm->renderModeBits == 8)
-                            reinterpret_cast<BackgroundSupervisorView *>(
-                                &g_Supervisor)
-                                ->EnableFog();
-                        else
-                            reinterpret_cast<BackgroundSupervisorView *>(
-                                &g_Supervisor)
-                                ->DisableFog();
-                        g_AnmManager->Draw(vm);
+        Float3 instancePosition(
+            instance->position.x, instance->position.y,
+            instance->position.z);
+        if (resultDrawBacking096->IsVisible(
+                &instancePosition,
+                reinterpret_cast<BackgroundStateView *>(this)
+                    ->cullingDistanceSq) != 0)
+            goto nextInstance;
+
+        resultDrawBacking096->flags |= 2;
+        BackgroundStageObjectInstruction *resultDrawBacking157 =
+            &resultDrawBacking096->firstInstruction;
+        while (resultDrawBacking157->opcode >= 0)
+        {
+            curQuadVm =
+                &reinterpret_cast<BackgroundStateView *>(this)
+                     ->stageObjectVms[resultDrawBacking157->vmIndex];
+            switch (BackgroundAncestralOpcodePhase(resultDrawBacking157))
+            {
+            default:
+                goto nextInstruction;
+            case 0:
+                if (curQuadVm->renderModeBits >= 4)
+                {
+                    curQuadVm->positionOffset.x =
+                        resultDrawBacking157->position.x + instance->position.x;
+                    curQuadVm->positionOffset.y =
+                        resultDrawBacking157->position.y + instance->position.y;
+                    curQuadVm->positionOffset.z =
+                        resultDrawBacking157->position.z + instance->position.z;
+                    if (resultDrawBacking157->sizeOverride.x != 0.0f)
+                    {
+                        curQuadVm->scale.x = resultDrawBacking157->sizeOverride.x /
+                                      curQuadVm->loadedSprite->widthPx;
                     }
-                    instruction = reinterpret_cast<BackgroundStageObjectInstruction *>(
-                        reinterpret_cast<u8 *>(instruction) + instruction->size);
+                    if (resultDrawBacking157->sizeOverride.y != 0.0f)
+                    {
+                        curQuadVm->scale.y = resultDrawBacking157->sizeOverride.y /
+                                      curQuadVm->loadedSprite->heightPx;
+                    }
                 }
+
+                if (curQuadVm->renderModeBits == 8)
+                    reinterpret_cast<BackgroundSupervisorView *>(
+                        &g_Supervisor)->EnableFog();
+                else
+                    reinterpret_cast<BackgroundSupervisorView *>(
+                        &g_Supervisor)->DisableFog();
+                g_AnmManager->Draw(curQuadVm);
+
             }
+
+        nextInstruction:
+            resultDrawBacking157 = reinterpret_cast<BackgroundStageObjectInstruction *>(
+                reinterpret_cast<u8 *>(resultDrawBacking157) + resultDrawBacking157->size);
         }
+    nextInstance:
         instance++;
+    }
     }
     return 0;
 }
+
 
 // FUNCTION: TH095 0x004031A0.
 // Target-proven identifier buckets restore the seven live culling locals.

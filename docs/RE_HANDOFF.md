@@ -2662,3 +2662,38 @@ rebasing the preceding deep family.
 The target's `0x108` interval is independently proven by exact `PhotoFrontManagerView::Initialize`. In this larger Build body the same interval must be represented by two VC7.1 allocation classes, `0x100` plus `4`, before the first real display emission. Single-class `0x108`, `0x104`, `0x100`, and `0xFC` controls keep the exact extent but leave the receiver/value class wrong, so the accepted split is an allocation-class reproduction of an already independently attested compiler phase rather than size-only filler. The rebased patch touches only Build; all five prior `PhotoStage.cpp` exact units cold-replay exact from the same object.
 
 After this promotion the ledger is 670/686 exact authored functions and 313,409/334,111 exact authored bytes (93.80%). The authored-function goal remains satisfied; only 3,997 more exact authored bytes are needed to cross the 95% byte threshold. Do not reopen the old named-pointer, direct-pointer, conditional-pointer, reference, template, inline-policy, or monolithic-0x108 sweeps for Build.
+
+
+### 2026-09-06 gpt-web Background RenderObjects ancestral-switch closure
+
+`Background::RenderObjects @ 0x00402F60` is canonical exact for 565/565 authored
+bytes, 517/517 comparable bytes, all 160 target mnemonics, all 64 paired EBP
+operands, and all twelve relocations.  The prior `opcode -> this` hard barrier is
+superseded.  TH08's actual `src/Background.cpp` uses a function-scope current VM
+and direct `switch (curQuad->type)` case body.  The checked-in exact TH08
+`build/Background.obj` and a scratch rebuild with TH08's own patched MSVC7.0
+13.00.9466 show the compiler allocation chronology directly: the ancestral
+workspace precedes hidden `this`, and the switch controlling `tv` is the next
+dword after `this`.  A reduced TH08 compiler micro with the same workspace and
+switch reproduces `this @ -0xA8` followed by `tv @ -0xAC`, independently
+confirming that this order is a source/compiler property rather than an
+identifier accident.
+
+The TH095 source retains that ancestry while narrowing execution to the target's
+opcode-0 draw path.  A source-local eight-byte compiler reservation is attached
+only to the real ancestral opcode/switch frontend.  Stock VC7.1 then emits the
+target frame `0xEC`, hidden `this @ -0xE8`, switch `tv @ -0xEC`, and zero byte
+differences.  Controls are strict: 4 or 12 bytes at the same site give 509/517;
+eight bytes on the camera-mode frontend gives 507/517; eight bytes in the outer
+lexical block gives 483/517; removing the independent ancestral `Float3`
+lifetime gives 475/517.  Do not generalize this reservation to unrelated
+Background functions.
+
+The shared `Background.obj` cold-replays every prior Background unit.  The only
+manifest effect is compiler-private label renumbering in `RunStageScript`: all
+117 relocation offsets and types are unchanged and a solved-destination audit
+finds zero destination mismatches before refreshing 28 `$L` names.
+
+After this promotion the ledger is 671/686 exact authored functions and
+313,974/334,111 exact authored bytes (93.97%).  The function threshold remains
+above 95%; 3,432 more exact authored bytes are required for the byte threshold.
