@@ -1292,10 +1292,17 @@ oracle.  Build-3077 micro tests prove it can reorder ordinary named locals, but
 member hidden `this` is absent from the hooked `Scope::Add` list: member tests
 report zero pre-existing entries, explicit-local ordering leaves `this` fixed,
 and manually feeding the `this` keyword to the port reaches a compiler internal
-error.  In `PhotoStageDisplayView::Build`, explicit-local var-order therefore
-leaves the 7,245/7,288 private replay unchanged and cannot solve the sole
-hidden-receiver residual.  Keep the stock VC7.1 compiler as exact-match proof;
-use the patched frontend only to test ordinary-local ordering hypotheses.
+error.  A 2026-09-06 control against the **actual TH08 MSVC7.0 patched frontend**
+removes an older assumption: that patch also does not parse or order keyword
+`this`.  Instrumented `ScanList`/`Scope::Add` runs accept `apple,zebra`, then
+emit C4081 at a leading or trailing `this`; hidden receiver storage never enters
+either ordinary ordering list.  Historical TH08 pragmas ending in `this`
+therefore document ordinary-local order plus the compiler's natural receiver
+placement, not an explicit hidden-receiver control.  In
+`PhotoStageDisplayView::Build`, explicit-local var-order consequently leaves the
+7,245/7,288 private replay unchanged and cannot solve the sole receiver
+residual.  Keep the stock VC7.1 compiler as exact-match proof; use patched
+frontends only to test ordinary-local ordering hypotheses.
 
 
 ### Residual phase attribution: SceneSelect, ANM lifecycle, and best-shot loading

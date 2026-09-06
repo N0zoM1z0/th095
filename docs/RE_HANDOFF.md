@@ -2611,3 +2611,45 @@ The three non-exact `AnmLoaded::CreateVm*` functions also share one compiler bou
 `PhotoCameraState::Initialize @ 0x004307D0` is canonical exact: 733/733 authored bytes, 649/649 comparable bytes, target frame `0xEC`, and all 21 relocations.  The old "target-only 0xB0 gap" diagnosis is superseded.  Camera initialization performs four real viewfinder `InitializeVm(...,0x24)` operations, and each must expand through the independently proven `0x2C` InitializeVm allocation frontend.  The exact source surface accepts only the live `AnmVm *`; the global ANM owner and fixed script index remain inside the helper.  Two/three-argument controls add a non-target dword per phase, while no-argument member controls discard the phase.  Four one-argument phases give exactly `0x3C + 4*0x2C = 0xEC` and zero byte differences.
 
 The same rebuilt `PhotoGame.obj` cold-replays all 22 configured exact units.  Only compiler-private switch labels in `photo-game-update-main-state` and `photo-game-update` are renumbered; offsets, relocation types, destinations, and bytes are unchanged.  The ledger is now 669/686 exact authored functions and 304,849/334,111 exact authored bytes (91.24%), leaving 12,557 bytes to the 95% authored-byte threshold.
+
+
+### 2026-09-06 gpt-web hidden-receiver and Camera allocation-class checkpoint
+
+A direct instrumented control against TH08's original MSVC7.0 `var_order` patch
+corrects a long-standing inference.  The patched `ScanList` accepts ordinary
+identifiers, but `#pragma var_order(this, apple, zebra)` reports C4081 before
+adding anything, while `#pragma var_order(apple, zebra, this)` orders only
+`apple/zebra` and then reports C4081 on `this`.  `Scope::Add` never observes the
+hidden receiver.  The VC7.1 port behaves analogously for the symbol path: its
+ordinary-local oracle works, but hidden `this` is absent from the hooked list.
+Do not treat historical TH08 pragma tails containing `this` as an explicit
+receiver-ordering capability; they only preserve the compiler's natural
+receiver placement after ordering ordinary locals.
+
+`PhotoStageDisplayView::Build @ 0x0042C5C0` remains at the exact 8,560-byte
+extent and 7,245/7,288 comparable bytes.  The 92 real per-emission pointer homes
+remain target-exact at `EBP-0x144..-0x2B0`; only the owner spill is at source
+`-0x2B4` versus target `-0x140`.  New bounded controls all collapse to this same
+allocation family: ordinary-inline depth 1/2/255, moving the inline definition
+after `Build`, block-local/reference/volatile/POD pointer values, a volatile
+one-pointer frontend, a constructor-backed four-byte UDT return, and a
+machine-compatible free-fastcall ABI with a sixteen-byte stack argument record.
+The fastcall control also proves member-vs-free ownership is not the switch:
+its explicit ECX `self` still lands at `-0x2B4`.  Reference/const-pointer owner
+parameters are byte-identical; volatile/reference-to-pointer forms change the
+body and are negative.  Do not repeat pointer-value-class, inline-policy, or
+member-vs-fastcall sweeps without a new compiler allocation oracle.
+
+`UpdatePhotoCamera @ 0x00430AB0` still has the 7,291-byte body-plus-table extent
+and 6,399/6,415 best comparable score.  Clean one-equality `IsZero` controls show
+the mechanism precisely: the frontend moves the zero temporary into the deep
+chronological family, but shifts that whole family one dword shallow per wrapped
+comparison.  A separate real clear frontend does not compensate it; first,
+second, and both variants land at 6,200/6,199/6,201.  Ordinary versus force-inline
+`operator==`, struct versus union, empty-base, same-handle converting type,
+cast spelling, and by-value handle-assignment controls do not improve the best;
+copy-ctor/volatile/assignment forms change extent.  Diagnostic four-byte
+zero-comparison reservations top out near 6,203 and therefore are not a route
+to promotion.  Future work must change the existing equality temporary's
+allocation class without introducing a new lexical/helper temporary or
+rebasing the preceding deep family.
