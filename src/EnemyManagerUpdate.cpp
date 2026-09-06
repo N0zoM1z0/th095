@@ -968,6 +968,18 @@ static __forceinline void ResetPhotoEnemyAnmVmId(AnmVmId *id)
     *id = nullId;
 }
 
+// TH08 ancestry keeps movement as one contiguous Clamp/Integrate/Clamp block.
+// TH095 has two movement operations, but the target allocation boundary cannot
+// be attributed more narrowly: placing the same target-attested 0x20 phase on
+// Integrate, Clamp, immediately before Clamp, or the pair is byte-identical.
+// The size is strict: 0x1C/0x24 controls miss 60 comparable bytes.
+static __forceinline void PhotoEnemyMovementPhase(PhotoEnemyView *enemy)
+{
+    u8 compilerStorage[0x20];
+    enemy->IntegrateMovement();
+    enemy->ClampPosition();
+}
+
 i32 __fastcall PhotoEnemyManagerView::OnUpdate(
     PhotoEnemyManagerView *enemyManager)
 {
@@ -1025,8 +1037,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
             continue;
         }
 
-        enemy->IntegrateMovement();
-        enemy->ClampPosition();
+        PhotoEnemyMovementPhase(enemy);
 
         if (GetPhotoEnemyAnmVmIdValue(
                 reinterpret_cast<AnmVmId *>(&enemy->attachedVmId)) != 0 &&

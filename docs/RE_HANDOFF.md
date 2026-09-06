@@ -2697,3 +2697,33 @@ finds zero destination mismatches before refreshing 28 `$L` names.
 After this promotion the ledger is 671/686 exact authored functions and
 313,974/334,111 exact authored bytes (93.97%).  The function threshold remains
 above 95%; 3,432 more exact authored bytes are required for the byte threshold.
+
+
+### 2026-09-06 gpt-web EnemyManager OnUpdate movement-frontier closure
+
+`PhotoEnemyManagerView::OnUpdate @ 0x00415970` is canonical exact: 1,853/1,853
+authored bytes, 1,697/1,697 comparable bytes, all 448 target mnemonics, and all
+39 relocations.  The earlier “unique 0x20 compiler barrier” diagnosis is
+superseded.  The target interval starts after every real shallow home through
+`EBP-0x70` and before the first attached-VM truthiness temporary.  It is best
+modeled as one source-local movement-frontier phase containing the real
+`IntegrateMovement()` and `ClampPosition()` calls.
+
+The ownership is deliberately no narrower.  Fresh controls put the same `0x20`
+reservation on Integrate only, Clamp only, immediately before Clamp, and around
+the pair; all four produce the same zero-difference allocation class.  Size is
+discriminating: `0x1C` and `0x24` keep the 1,853-byte extent but each match only
+1,637/1,697 comparable bytes, while `0x20` matches all 1,697.  TH08's original
+`EnemyManagerUpdate.cpp` groups Clamp/Integrate/Clamp as one contiguous movement
+block.  A scratch `/FAsc` rebuild with TH08's own patched MSVC7.0 13.00.9466
+confirms that source/compiler ancestry; it does not expose a same-size TH08 gap,
+so do not misattribute the TH095 phase to a single inherited call.
+
+The rebuilt `EnemyManagerUpdate.obj` cold-replays every prior configured unit.
+Only two compiler-private labels in `enemy-timeline-run` renumber.  All 37
+relocation offsets/types are unchanged and a solved-destination audit finds zero
+destination mismatches before refreshing those two `$L` identities.
+
+After this promotion the ledger is 672/686 exact authored functions and
+315,827/334,111 exact authored bytes (94.53%).  Reaching the 95% authored-byte
+threshold now requires 1,579 additional exact bytes.

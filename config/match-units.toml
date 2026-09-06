@@ -10882,7 +10882,7 @@ target_address = 0x004163F0
 size = 0x332
 compare_size = 0x372
 relocations = [
-  { offset = 0x5C, type = "DIR32", symbol = "$L69856", target = 0x00416722 },
+  { offset = 0x5C, type = "DIR32", symbol = "$L69861", target = 0x00416722 },
   { offset = 0xB1, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0xB6, type = "REL32", symbol = "?Spawn@PhotoEnemyManagerView@th095@@QAEPAUPhotoEnemyView@2@HPBUFloat3@2@HHHI@Z", target = 0x004156C0 },
   { offset = 0x109, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
@@ -10914,7 +10914,7 @@ relocations = [
   { offset = 0x352, type = "DIR32", symbol = "$L68841", target = 0x00416663 },
   { offset = 0x356, type = "DIR32", symbol = "$L68789", target = 0x004166E0 },
   { offset = 0x35A, type = "DIR32", symbol = "$L68847", target = 0x0041668B },
-  { offset = 0x35E, type = "DIR32", symbol = "$L69837", target = 0x0041650E },
+  { offset = 0x35E, type = "DIR32", symbol = "$L69842", target = 0x0041650E },
   { offset = 0x362, type = "DIR32", symbol = "$L68807", target = 0x00416507 },
   { offset = 0x366, type = "DIR32", symbol = "$L68789", target = 0x004166E0 },
   { offset = 0x36A, type = "DIR32", symbol = "$L68789", target = 0x004166E0 },
@@ -20700,4 +20700,56 @@ relocations = [
   { offset = 0x1FA, type = "REL32", symbol = "?DisableFog@BackgroundSupervisorView@th095@@QAEXXZ", target = 0x00425520 },
   { offset = 0x204, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x209, type = "REL32", symbol = "?Draw@AnmManager@th095@@QAE?AW4ZunResult@2@PAUAnmVm@2@@Z", target = 0x004415A0 },
+]
+
+# Complete TH095 enemy update; the target-attested 0x20 allocation phase belongs
+# to the real movement frontier rather than either individual movement call.
+[units.enemy-manager-on-update]
+source = "src/EnemyManagerUpdate.cpp"
+object = "build/matching/EnemyManagerUpdate.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::PhotoEnemyManagerView::OnUpdate"]
+symbol = "?OnUpdate@PhotoEnemyManagerView@th095@@SIHPAU12@@Z"
+target_address = 0x00415970
+size = 0x73D
+relocations = [
+  { offset = 0x9E, type = "REL32", symbol = "?Run@PhotoEnemyTimelineView@th095@@QAEXXZ", target = 0x004163F0 },
+  { offset = 0x170, type = "REL32", symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416E80 },
+  { offset = 0x1B1, type = "REL32", symbol = "?UpdatePhotoMarkerPulse@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416770 },
+  { offset = 0x1B9, type = "REL32", symbol = "?UpdateScheduledEclCalls@PhotoEnemyView@th095@@QAEHXZ", target = 0x00416F30 },
+  { offset = 0x1CE, type = "REL32", symbol = "?RunEcl@PhotoEnemyEclManagerView@th095@@QAEHPAUPhotoEnemyView@2@@Z", target = 0x00408E70 },
+  { offset = 0x1DB, type = "REL32", symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416E80 },
+  { offset = 0x1E8, type = "REL32", symbol = "?IntegrateMovement@PhotoEnemyView@th095@@QAEXXZ", target = 0x004160B0 },
+  { offset = 0x1F0, type = "REL32", symbol = "?ClampPosition@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416320 },
+  { offset = 0x231, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x236, type = "REL32", symbol = "?GetPosition@AnmManager@th095@@QAEPAUFloat3@2@UAnmVmId@2@@Z", target = 0x00445230 },
+  { offset = 0x258, type = "REL32", symbol = "?PhotoToScreen@th095@@YIPAUFloat3@1@PAU21@PBU21@@Z", target = 0x004186D0 },
+  { offset = 0x2A0, type = "DIR32", symbol = "__real@3d8f5c29", target = 0x004955BC },
+  { offset = 0x2AF, type = "DIR32", symbol = "__real@3d8f5c29", target = 0x004955BC },
+  { offset = 0x2BE, type = "DIR32", symbol = "__real@3d8f5c29", target = 0x004955BC },
+  { offset = 0x344, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x349, type = "REL32", symbol = "?SetPosition@AnmManager@th095@@QAEXUAnmVmId@2@PAUFloat3@2@@Z", target = 0x004451F0 },
+  { offset = 0x381, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+  { offset = 0x3AD, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x3B2, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x3DF, type = "REL32", symbol = "?PhotoToScreen@th095@@YIPAUFloat3@1@PAU21@PBU21@@Z", target = 0x004186D0 },
+  { offset = 0x42F, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x434, type = "REL32", symbol = "?MarkVmForDeletion@AnmManager@th095@@QAEXUAnmVmId@2@@Z", target = 0x004451B0 },
+  { offset = 0x4AE, type = "DIR32", symbol = "?g_PhotoEnemyBulletManager@th095@@3PAUPhotoEnemyBulletManagerView@1@A", target = 0x004BDD98 },
+  { offset = 0x4B9, type = "REL32", symbol = "?CreateVm@PhotoEnemyAnmSpawnerView@th095@@QAE?AUAnmVmId@2@HPAUFloat3@2@@Z", target = 0x00445060 },
+  { offset = 0x4D6, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x4DB, type = "REL32", symbol = "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z", target = 0x00445110 },
+  { offset = 0x4F5, type = "REL32", symbol = "?PhotoToScreen@th095@@YIPAUFloat3@1@PAU21@PBU21@@Z", target = 0x004186D0 },
+  { offset = 0x507, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x50C, type = "REL32", symbol = "?MarkVmForDeletion@AnmManager@th095@@QAEXUAnmVmId@2@@Z", target = 0x004451B0 },
+  { offset = 0x59E, type = "DIR32", symbol = "__real@c3400000", target = 0x00495410 },
+  { offset = 0x5B6, type = "DIR32", symbol = "__real@43400000", target = 0x00495330 },
+  { offset = 0x5CF, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x5E8, type = "DIR32", symbol = "__real@43e00000", target = 0x0049540C },
+  { offset = 0x627, type = "REL32", symbol = "?Deactivate@PhotoEnemyView@th095@@QAEXXZ", target = 0x00416E80 },
+  { offset = 0x670, type = "DIR32", symbol = "?g_PhotoEnemyPlayer@th095@@3PAUPhotoEnemyPlayerView@1@A", target = 0x004C4E70 },
+  { offset = 0x675, type = "REL32", symbol = "?CheckBulletCollision@PhotoEnemyPlayerView@th095@@QAEHPAUFloat3@2@0@Z", target = 0x00430450 },
+  { offset = 0x680, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
+  { offset = 0x71D, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
+  { offset = 0x72B, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
 ]

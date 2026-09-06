@@ -746,19 +746,30 @@ independently target-proven live-local identifier buckets; VC7.1 then emits all
 208 target bytes and both relocations exactly. When a frame slot is disputed,
 an instruction reference outranks a sibling game's `#pragma var_order` name.
 
-The same audit brought `PhotoEnemyManagerView::OnUpdate @ 0x00415970` to the
-target's complete 448-mnemonic topology without inventing storage. Typed
-`AnmVmId` null/reset operations, overloaded `ZunTimer` comparisons, and positive
-branch ownership explain real target temporaries. The attached-VM smoothing
-must spell the final sum as `(screen - attached) * 0.07f + attached`, not
-`attached + (...)`: under `/Od` the scalar-first form makes all real shallow
-homes through `EBP-0x70` agree with target, including both six-float attached
-position values. What remains is one target-only `0x20` interval at
-`EBP-0x74..-0x90`; every deeper anonymous temporary is displaced by exactly
-`0x20`. A census of all 685 authored targets finds no second `0x20` unreferenced
-interval, and moving the attached-VM zero/freeze condition into one inline
-helper grows the body to 1,856 bytes / 453 instructions. Keep this as a unique
-compiler barrier; do not add 32 bytes of storage.
+`PhotoEnemyManagerView::OnUpdate @ 0x00415970` is now canonical exact for all
+1,853 authored bytes. Typed `AnmVmId` null/reset operations, overloaded
+`ZunTimer` comparisons, and the target-sensitive attached-VM smoothing spelling
+`(screen - attached) * 0.07f + attached` first restore every real shallow home
+through `EBP-0x70` and all 448 target mnemonics. The final target allocation
+frontier is the completely unreferenced `0x20` interval at `-0x74..-0x90`,
+immediately before the first attached-VM truthiness temporary.
+
+Do not attribute that interval to one movement call.  Four bounded placements
+inside the real movement frontier -- on `IntegrateMovement`, on `ClampPosition`,
+immediately before Clamp, or around the pair -- are byte-identical structural
+zero-difference controls because they create the same VC7.1 allocation class.
+The accepted source therefore names the semantic owner honestly as one
+`PhotoEnemyMovementPhase(enemy)` containing the two TH095 movement operations.
+The phase size is target-strict: `0x20` gives 1,697/1,697 comparable bytes, while
+`0x1C` and `0x24` each fall to 1,637/1,697.  TH08's original exact source and a
+rebuild with its patched MSVC7.0 compiler independently show the ancestral enemy
+update keeping Clamp/Integrate/Clamp as one contiguous movement block before
+post-movement position work.  That ancestry supports the movement-frontier
+ownership without pretending TH08 itself has a matching `0x20` gap.  The final
+canonical unit replays all 39 relocations; all twenty pre-existing
+`EnemyManagerUpdate.obj` units remain exact after refreshing only two
+compiler-private timeline `$L` names whose solved destinations are unchanged.
+
 
 Keep the enemy's three embedded VM-id fields as four-byte POD storage. Making
 them non-trivial `AnmVmId` members adds constructor calls and expands the
