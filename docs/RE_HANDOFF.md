@@ -2653,3 +2653,12 @@ zero-comparison reservations top out near 6,203 and therefore are not a route
 to promotion.  Future work must change the existing equality temporary's
 allocation class without introducing a new lexical/helper temporary or
 rebasing the preceding deep family.
+
+
+### 2026-09-06 gpt-web PhotoStage display Build canonical exact closure
+
+`PhotoStageDisplayView::Build @ 0x0042C5C0` is now canonical exact: 8,560/8,560 authored bytes, 7,288/7,288 comparable bytes, all 2,234 mnemonics, and all 318 relocations. The old 7,245/7,288 hidden-`this` diagnosis was correct about the final allocation barrier but incomplete about the pointer source class. Naming the inline `AnmVm *displayVm` made all 92 pointer homes target-exact while placing outer `this` at the deep end. Writing the real `displayVmCount++` side effect directly in `displayVms[...]` changes those same spills into compiler `tv` values, naturally producing target `this @ -0x140` followed by 92 pointer homes at `-0x144..-0x2B0`; the final hand-written emission must use the same source shape.
+
+The target's `0x108` interval is independently proven by exact `PhotoFrontManagerView::Initialize`. In this larger Build body the same interval must be represented by two VC7.1 allocation classes, `0x100` plus `4`, before the first real display emission. Single-class `0x108`, `0x104`, `0x100`, and `0xFC` controls keep the exact extent but leave the receiver/value class wrong, so the accepted split is an allocation-class reproduction of an already independently attested compiler phase rather than size-only filler. The rebased patch touches only Build; all five prior `PhotoStage.cpp` exact units cold-replay exact from the same object.
+
+After this promotion the ledger is 670/686 exact authored functions and 313,409/334,111 exact authored bytes (93.80%). The authored-function goal remains satisfied; only 3,997 more exact authored bytes are needed to cross the 95% byte threshold. Do not reopen the old named-pointer, direct-pointer, conditional-pointer, reference, template, inline-policy, or monolithic-0x108 sweeps for Build.

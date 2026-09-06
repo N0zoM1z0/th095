@@ -451,11 +451,9 @@ enum PhotoStageScoreFlags
 
 #define ADD_PHOTO_STAGE_DISPLAY_VM(spriteIndex)                              \
     {                                                                        \
-        AnmVm *displayVm =                                                   \
-            &g_PhotoStageState->displayVms[displayVmCount];                  \
         InitializePhotoStageDisplayVm(                                      \
-            displayVm, &displayPosition, (spriteIndex), renderMode);         \
-        displayVmCount++;                                                    \
+            &g_PhotoStageState->displayVms[displayVmCount++],                \
+            &displayPosition, (spriteIndex), renderMode);                    \
     }
 
 #define ADD_PHOTO_STAGE_SCORE_ROW(labelSprite, value)                       \
@@ -590,11 +588,21 @@ void PhotoStageDisplayView::Build(
         sizeof(g_PhotoStageState->displayVms));
     g_PhotoStageState->flags &= ~PHOTO_STAGE_PLAYER_PASSED;
 
-    if (((u32)scoreData[7] >> 5 & 1) != 0)
     {
-        ADD_PHOTO_STAGE_DISPLAY_VM(0x24);
-        renderMode += 4;
-        displayPosition.y += 12.0f;
+        // PhotoFrontManagerView::Initialize independently proves the same
+        // target 0x108 shallow-to-hidden-this allocation phase on the first
+        // direct display-VM initialization.  In this larger body VC7.1 needs
+        // the phase split into two source allocation classes: a single
+        // 0x108/0x104 block rotates this behind the 92 compiler value temps,
+        // while 0x100+4 gives the target this -> tv chronology exactly.
+        u8 compilerStorage[0x100];
+        u8 compilerStorage4[4];
+        if (((u32)scoreData[7] >> 5 & 1) != 0)
+        {
+            ADD_PHOTO_STAGE_DISPLAY_VM(0x24);
+            renderMode += 4;
+            displayPosition.y += 12.0f;
+        }
     }
     if (((u32)scoreData[7] >> 6 & 1) != 0)
     {
@@ -710,15 +718,13 @@ void PhotoStageDisplayView::Build(
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(0x1a);
         displayPosition.x += 9.0f;
-        AnmVm *displayVm =
-            &g_PhotoStageState->displayVms[displayVmCount];
         InitializePhotoStageDisplayVm(
-            displayVm, &displayPosition,
+            &g_PhotoStageState->displayVms[displayVmCount++],
+            &displayPosition,
             (i32)(*reinterpret_cast<const f32 *>(&scoreData[6]) * 10.0f) %
                     10 +
                 15,
             renderMode);
-        displayVmCount++;
         renderMode += 4;
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
