@@ -2792,3 +2792,46 @@ because they are reusable experiment evidence.  The non-`.cod` untracked files
 `pragma_var_order_3077_chain_debug.obj`, and `droid.resume.txt` were deliberately
 left untouched because they pre-existed this cleanup and may belong to another
 active workflow.
+
+### 2026-09-06 gpt-web `.analysis` scratch pruning
+
+The ignored `.analysis` tree was pruned at session handoff to keep future-agent
+searches bounded.  Before cleanup it contained roughly **3.8 GiB** across
+**4,477 top-level entries**; after cleanup it contains roughly **70 MiB** across
+**53 top-level entries**.  The removed material was overwhelmingly superseded
+hash/name grids, profile sweeps, historical probe variants, duplicate TH08
+copies, and a duplicate toolchain mirror.  No tracked source/config file and no
+running process was touched.  Root-level generated `.cod` files also remain at
+zero.
+
+Do **not** recursively scan `.analysis` as a discovery step.  The authoritative
+state is `config/functions.csv`, `config/match-units.toml`,
+`docs/KNOWLEDGE_BASE.md`, and this handoff.  Enter `.analysis` only after choosing
+one current residual and then inspect the matching prefix.  The intentionally
+retained current entry points are:
+
+- `gpt-web-createvm-publication-phase14-20260906` and
+  `gpt-web-createvm-out-publication-phase14-20260906` for the shared 0x14
+  CreateVm construction-result barrier;
+- `gpt-web-controller-register-hint-20260906` for the remaining GetInput register
+  cycle;
+- `gpt-web-enemy-ctor-home-audit-20260906` for the manager-constructor 0x28
+  deep-home family;
+- `gpt-web-bestshot-{multiply-order-20260903,clean-typed-alloc-20260906,
+  direct-volatile-allocator-20260906}` for the allocator/ESI frontier;
+- `gpt-web-background-loader-current-phase-20260906` plus the two nearby loader
+  controls for the remaining 0x2C loader lane;
+- `gpt-web-boundary-bounce-*20260906` for the seven-byte self-copy residual;
+- `gpt-web-scenequeue-pop-{array,evalorder}-20260906` for the 91-byte Pop backend
+  choice;
+- `gpt-web-photocamera-{zero-database-20260906,default-eqarg-20260906,
+  clear-helper-on-6399-20260903}` for the two equality-temp Camera residuals;
+- `gpt-web-msvc710-varorder` and `gpt-web-msvc710-scopeorder` as the retained
+  ordinary-local compiler-ordering oracle.
+
+A small set of very recent exact-closure controls was retained by a two-hour
+safety window so cleanup could not interfere with another active agent.  They
+are historical controls, not new work items.  Future cleanup may remove them
+once no concurrent session needs them.  Do not recreate deleted bulk sweeps
+unless a new target observation specifically invalidates the tracked conclusion
+that superseded them.
