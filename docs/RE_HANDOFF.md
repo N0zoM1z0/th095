@@ -2737,3 +2737,58 @@ The accepted phase belongs to the real `new AnmManager -> g_AnmManager` publicat
 The rebuilt `Main.obj` replays all 48 configured units. Only `Supervisor::UpdateSceneState` renumbers compiler-private labels. Its complete 1,026-byte authored-body-plus-three-switch-table comparison remains 842/842 structural exact, and an offset/type/solved-destination audit finds zero mismatches across all 46 relocations before refreshing those private names.
 
 After this promotion the ledger is 673/686 exact authored functions and 317,153/334,111 exact authored bytes (94.92%). The authored-function goal remains satisfied. Reaching the 95% authored-byte threshold now requires only **253 additional exact bytes**.
+
+### 2026-09-06 gpt-web session handoff and artifact cleanup
+
+This session stops here by request; do not infer that any residual lane below was
+abandoned as impossible.  The current HEAD is `5f34b82` (`gpt-web: match WinMain
+exactly`).  Formal coverage is **673/686 exact authored functions** and
+**317,153/334,111 exact authored bytes (94.92%)**.  The authored-function goal is
+already satisfied; the 95% authored-byte threshold now needs only **253 more
+exact bytes**.
+
+Recent closures that materially changed the remaining strategy are
+`PhotoStageDisplayView::Build` (8,560 bytes), `Background::RenderObjects` (565),
+`PhotoEnemyManagerView::OnUpdate` (1,853), and `WinMain` (1,326).  Their durable
+compiler/source-shape rules are already recorded above and in
+`docs/KNOWLEDGE_BASE.md`; start from the current repository, not older percentage
+or residual summaries.
+
+For the next session, the fastest threshold route need not be a large function.
+The three remaining ANM creators at `0x00444EF0/0x00444FA0/0x00445060` are only
+161/180/169 authored bytes but share the same target-observed `0x14`
+construction-result allocation barrier.  Their best exact-size controls are
+120/125, 139/144, and 124/129 comparable bytes.  A single truthful shared source
+rule that closes any two of them contributes at least 330 bytes and crosses the
+95% threshold.  Do not repeat profile, value-init, constructor-placement,
+empty/intermediate-base, registry-identity, class-specific-new, placement-new,
+derived/tagged, or generic scope/phase sweeps; those are already bounded in the
+2026-09-06 scratch and handoff entries.
+
+Other policy-clean candidates above the remaining 253-byte threshold are:
+`PhotoEnemyManagerView::PhotoEnemyManagerView` (1,196; seven deep homes are all
+0x28 shallow after the spawn-template/timeline-construction boundary),
+`SceneSaveDataView::LoadBestShotForScene` (1,034; target preserves
+`recordIndex*0x78` in ESI across the pixel allocator and the first mnemonic
+divergence is at that allocator frontier), `Background::LoadStageDataInner`
+(523; exact extent/163 mnemonics but an unowned target `0x2C` lane remains), and
+`PhotoBulletView::UpdateBoundaryBounce` (469; the only target-only behavior is a
+redundant seven-byte local self-copy, so do not spell an inert self-assignment).
+`Controller::GetInput` (2,662) is also sufficient by itself: all 212 EBP homes
+are exact, while the remaining difference is the VC7 three-register keyboard
+cycle plus an unreferenced eight-byte tail.  `UpdatePhotoCamera` remains the
+7,271-byte high-leverage lane with only two by-value equality temporaries in the
+wrong allocation class.
+
+Deprioritize `AnmManager::DrawInner`, `Draw2D`, and
+`ProjectCameraFacingQuad` while inline assembly is forbidden: their remaining
+classes are target-inline x87 `FRNDINT`/`FSINCOS` behavior that pinned VC7.1 has
+not reproduced from policy-compliant portable source.
+
+Artifact cleanup performed at handoff: **87 untracked root-level `.cod` compiler
+listings were deleted**.  `.analysis/**/*.cod` files were intentionally retained
+because they are reusable experiment evidence.  The non-`.cod` untracked files
+`c2stackhook.exp`, `c2stackhook.lib`, `c2stackhook.obj`, `pragma.obj`,
+`pragma_var_order_3077_chain_debug.obj`, and `droid.resume.txt` were deliberately
+left untouched because they pre-existed this cleanup and may belong to another
+active workflow.
