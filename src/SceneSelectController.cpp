@@ -24,6 +24,14 @@ i32 SceneValueQueue::Push(i32 value)
     return this->count;
 }
 
+struct SceneValueQueueCopyValue
+{
+    i32 value;
+};
+
+typedef char SceneValueQueueCopyValueSizeIs4[
+    (sizeof(SceneValueQueueCopyValue) == sizeof(i32)) ? 1 : -1];
+
 i32 SceneValueQueue::Pop()
 {
     if (this->count > 0)
@@ -31,7 +39,9 @@ i32 SceneValueQueue::Pop()
         this->count--;
         for (i32 i = 0; i < 16; i++)
         {
-            (this->values + i)[0] = (this->values + i)[1];
+            *reinterpret_cast<SceneValueQueueCopyValue *>(&this->values[i]) =
+                *reinterpret_cast<const SceneValueQueueCopyValue *>(
+                    &this->values[i + 1]);
         }
         return this->values[0];
     }

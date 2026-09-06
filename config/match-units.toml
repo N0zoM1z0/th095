@@ -8211,6 +8211,16 @@ target_address = 0x00450DD0
 size = 0x4E
 relocations = []
 
+[units.scene-value-queue-pop]
+source = "src/SceneSelectController.cpp"
+object = "build/matching/SceneSelectController.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::SceneValueQueue::Pop"]
+symbol = "?Pop@SceneValueQueue@th095@@QAEHXZ"
+target_address = 0x00450F60
+size = 0x5B
+relocations = []
+
 [units.scene-select-build-preview-text]
 source = "src/SceneSelectController.cpp"
 object = "build/matching/SceneSelectController.obj"
