@@ -2835,3 +2835,23 @@ are historical controls, not new work items.  Future cleanup may remove them
 once no concurrent session needs them.  Do not recreate deleted bulk sweeps
 unless a new target observation specifically invalidates the tracked conclusion
 that superseded them.
+
+## 2026-09-06 enemy-manager constructor exact closure
+
+`PhotoEnemyManagerView::PhotoEnemyManagerView @ 0x00414B90` is no longer a
+compiler-home defer.  The exact source owner is the real generated construction
+of `PhotoEnemyTimelineView timelines[16]`: a constructor-local stock-VC7.1
+`compilerStorage[0x28]` phase moves precisely the seven previously shallow deep
+homes by `-0x28` while preserving the complete 1,196-byte / 269-instruction
+body.  The canonical `enemy-manager-constructor` unit replays 1,196/1,196 bytes
+and all eleven relocations.  `0x24` and `0x2C` controls are symmetric one-dword
+misses (1,119/1,152 comparable), proving the phase size is strict; the older
+explicit-empty-constructor probe remains a zero-effect negative.
+
+The rebuilt `EnemyManagerUpdate.obj` replays all 22 configured units.  The new
+inline constructor renumbers compiler-private labels only in
+`PhotoEnemyTimelineView::Run`; a full 882-byte body-plus-table audit remains
+734/734 structurally exact and every relocation destination is unchanged before
+the manifest names are refreshed.  This closure adds 1,196 exact authored bytes:
+674/686 authored functions are now exact and the exact-authored byte count is
+318,349/334,111 (95.28%), crossing the repository's 95% authored-byte goal.

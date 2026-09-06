@@ -170,6 +170,16 @@ struct PhotoEnemyTimelineView
     ZunTimer timer;
     void *instruction;
 
+    PhotoEnemyTimelineView()
+    {
+        // VC7.1 retains one 0x28 allocation phase for the generated
+        // sixteen-timeline construction loop in PhotoEnemyManagerView.
+        // 0x24 and 0x2C controls move the same deep compiler-home family
+        // one dword shallow/deep, so keep the phase on this real constructor
+        // frontend rather than reserving storage in the manager body.
+        u8 compilerStorage[0x28];
+    }
+
     void Run();
 };
 

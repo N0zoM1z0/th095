@@ -1634,3 +1634,32 @@ The canonical `photo-stage-display-build` unit replays all 8,560 authored bytes,
 The closing source shape attaches the target's single four-byte compiler phase to the smallest real ownership frontier, `new AnmManager -> g_AnmManager` publication. `MainPublishAnmManagerPhase` is a force-inlined identity over the live newly constructed pointer; it changes no runtime operation or relocation destination. No phase stays at 782/790 comparable bytes and leaves the merge family one dword shallow; eight bytes keeps the 1,326-byte extent but moves the same family one dword too deep and is again 782/790; function-scope four bytes falls to 749/790. A placement-new tag frontend is byte-identical to the no-phase source.
 
 Rebuilding `Main.obj` leaves 46 pre-existing units directly exact. `main-update-scene-state` changes only compiler-private `$L`/`$failure$` names: its 1,026-byte body-plus-tables remains 842/842 structurally exact, and all 46 relocation offsets/types resolve to the same destinations before the manifest-only label refresh. With `main-winmain`, all 48 configured `Main.obj` units replay exact.
+
+### Enemy manager constructor: timeline-owned 0x28 construction phase (2026-09-06)
+
+`PhotoEnemyManagerView::PhotoEnemyManagerView @ 0x00414B90` is now canonical
+exact for all 1,196 authored bytes and all eleven relocations.  The previous
+natural source already had the exact 269-mnemonic topology and 1,119/1,152
+comparable bytes.  A source-labelled stack-home audit isolated all 32 residual
+EBP references to seven deep homes, each exactly `0x28` shallow: the generated
+sixteen-entry `PhotoEnemyTimelineView` construction-loop `(base,stride,count)`
+family, three later timer-assignment receiver temporaries, and outer `this`.
+All 95 shallow EBP references were already exact.
+
+The closing source puts the compiler phase on the real timeline constructor
+frontend, not in the manager body.  `PhotoEnemyTimelineView` contains its real
+`ZunTimer` member, and stock VC7.1 shares one `compilerStorage[0x28]` allocation
+phase while generating the sixteen-member construction loop.  This moves only
+the seven deep homes to their target addresses and leaves the emitted operation
+sequence unchanged.  The size is target-strict: `0x24` leaves the same 32
+references one dword shallow at 1,119/1,152, while `0x2C` leaves the same family
+one dword deep at 1,119/1,152.  An explicit empty timeline constructor is a
+byte-identical negative control.  These controls bind the reservation to the
+generated timeline-construction frontier rather than licensing generic frame
+padding.
+
+A cold rebuild of `EnemyManagerUpdate.obj` replays all 22 configured units
+exactly.  Adding the inline constructor renumbers only compiler-private labels
+inside `PhotoEnemyTimelineView::Run`; its complete 882-byte body-plus-switch-
+table comparison remains 734/734 structurally exact and every relocation
+solves to the same target destination before the manifest-only label refresh.
