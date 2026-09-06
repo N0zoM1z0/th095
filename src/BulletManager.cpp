@@ -1159,10 +1159,17 @@ void PhotoBulletView::UpdateAimedDirectionChange()
 }
 
 // FUNCTION: TH095 0x00407440; TH08 0x00432830 is the adjacent source oracle.
-#pragma var_order(magnitude, this)
 void PhotoBulletView::UpdateBoundaryBounce()
 {
-    f32 magnitude;
+    // TH08 performs two distinct publications: bounceSpeed -> this->speed ->
+    // magnitude. TH095 retains both compiler-visible publication roles, but the
+    // target collapses their physical storage to one four-byte local home.
+    union PhotoBulletBouncePublication
+    {
+        i32 bounceSpeedBits;
+        i32 magnitudeBits;
+        f32 magnitude;
+    } publication;
 
     if (PhotoBulletIsOutsidePlayfield(&this->position, 0.0f, 0.0f))
     {
@@ -1183,9 +1190,10 @@ void PhotoBulletView::UpdateBoundaryBounce()
             this->angle = -this->angle;
         }
 
-        *reinterpret_cast<i32 *>(&magnitude) =
+        publication.bounceSpeedBits =
             *reinterpret_cast<i32 *>(&this->exStates[4].bounceSpeed);
-        this->velocity.FromAngleMagnitude(this->angle, magnitude);
+        publication.magnitudeBits = publication.bounceSpeedBits;
+        this->velocity.FromAngleMagnitude(this->angle, publication.magnitude);
         this->exStates[4].bouncesCompleted += 1;
         if (this->exStates[4].bouncesCompleted >=
             this->exStates[4].bounceLimit)

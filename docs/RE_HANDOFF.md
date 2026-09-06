@@ -2899,3 +2899,30 @@ After these promotions the authored-function threshold is above 99%; authored by
 The final allocation class is owned only by the real pixel allocator. `SceneBestShotPixelAlloc(size)` is a force-inlined `malloc(size)` frontend with an eight-byte compiler phase. Fresh controls made from the final exact source are strict: 0, 4, and 12 bytes each fall to 933/970 comparable bytes; 8 bytes alone is 970/970 exact. A standalone ranked/no-phase control reaches 966/970 before the allocator-class correction. Do not reintroduce the old `0x110` monolithic local aggregate, force ESI explicitly, or move the phase to function scope.
 
 After this promotion the ledger is expected to be 681/686 exact authored functions and 327,778/334,111 exact authored bytes (98.10%). The 99% authored-function goal remains satisfied; the 99% authored-byte threshold is 330,770 bytes, so 2,992 more exact bytes are required. The shortest remaining no-assembly route is now `Controller::GetInput @ 0x00419AE0` (2,662) plus `PhotoBulletView::UpdateBoundaryBounce @ 0x00407440` (469), which would reach 330,909 exact bytes (99.04%).
+
+
+### 2026-09-07 gpt-web BoundaryBounce exact overlap-publication closure
+
+`PhotoBulletView::UpdateBoundaryBounce @ 0x00407440` is now canonical exact for
+469/469 authored bytes and all seventeen relocations.  Supersede every earlier
+handoff statement that the final seven bytes require a forbidden literal
+self-assignment.  TH08's exact `Bullet::UpdateBoundaryBounce @ 0x00432830`
+proves a two-stage semantic publication: stored bounce-speed bits are written to
+`this->speed`, then copied to the local `magnitude`.  The TH095 target removes
+the member-speed owner but preserves two publication steps at the same local
+home.  The accepted source models those two roles with one four-byte union
+(`bounceSpeedBits`, `magnitudeBits`, `magnitude`), so stock VC7.1 naturally
+emits the target local-to-the-same-address copy while the source still expresses
+two distinct lineage-backed roles.  The focused probe is 401/401 comparable
+bytes; direct TH08-member, union-return, integer-return, and genuine-extra-float
+controls remain negative.  Do not regress to literal `magnitude = magnitude`,
+and do not generalize this result into permission for inert self-copies.  A
+cold rebuild keeps 33 other `BulletManager.cpp` units directly exact;
+`SpawnSingleBullet` and `AdvanceTransformProgram` remain zero-diff across their
+full body-plus-table extents, with only compiler-private `$L` names renumbered
+and all solved destinations unchanged.
+
+With this promotion the authored ledger is 682/686 exact functions and
+328,247/334,111 exact bytes (98.24%).  The 99% byte threshold is 330,770, so
+`Controller::GetInput @ 0x00419AE0` (2,662 bytes) alone is now sufficient to
+cross 99% if it can be closed without assembly.

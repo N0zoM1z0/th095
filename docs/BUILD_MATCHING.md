@@ -824,24 +824,37 @@ used as a size-only excuse for other functions.  The useful general rule is
 **same operation + independently repeated target phase**, not same reservation
 size.
 
-`PhotoBulletView::UpdateBoundaryBounce @ 0x00407440` isolates a different
-barrier. The target loads the stored bounce-speed bits into `EBP-0x04`, reloads
-and writes the same value back to `EBP-0x04`, then reloads it for the vector
-call. The natural source omits only that seven-byte self-copy and emits 462
-bytes. A force-inlined union-return helper emits 469 bytes and resolves all 17
-relocations, but allocates separate return/destination homes, changes the frame
-from target `0x10` to `0x14`, and matches only 371/401 comparable bytes. An
-integer-return bit helper folds back to 462 bytes. The TH08 ancestral shape
-writes bounce speed through `this->speed` before copying it to `magnitude`; a
-direct TH095 adaptation emits 480 bytes and a target-absent member store. These
-bounded probes support the inference that the target sequence is lineage
-residue; they do not establish a natural exact source shape. Do not spell the
-redundant assignment explicitly merely to obtain exact bytes.  Two bounded value-producer controls do not explain the target-only
-seven-byte local self-copy: a by-value inline identity folds back to the natural
-462-byte body, while a helper with one real float return local reaches 469 bytes
-but rotates the whole frame and matches only 371/401 comparable bytes.  Do not
-encode `magnitude = magnitude` or restore TH08's `this->speed` member write; the
-TH095 target has neither authored operation.
+`PhotoBulletView::UpdateBoundaryBounce @ 0x00407440` is now canonical exact for
+all 469 authored bytes and all seventeen relocations.  The formerly isolated
+seven-byte sequence at `0x004075AE..0x004075B4` is not modeled as a literal
+`magnitude = magnitude` source assignment.  TH08's exact ancestor at
+`0x00432830` supplies the missing provenance: it publishes the stored bounce
+speed bits first through `this->speed`, then copies that value into the local
+`magnitude` before rebuilding velocity.  TH095 removes the member-speed store,
+but its target still contains two compiler-visible publication steps at one
+local address.
+
+The accepted source therefore uses one four-byte union with distinct semantic
+roles `bounceSpeedBits`, `magnitudeBits`, and `magnitude`.  It assigns the stored
+bounce-speed bits to the first role, publishes that role to `magnitudeBits`, and
+passes the float view to `FromAngleMagnitude`.  VC7.1 overlays the two integer
+roles at `EBP-0x04`, naturally emitting the target
+`member -> local; local -> same local; local -> argument` sequence without an
+inert named local, function-scope padding, or assembly.  This exact
+representation replays 401/401 comparable bytes and all seventeen relocations.
+It is compiler-observed source shape backed by the TH08 two-publication
+lineage; it is not evidence that ZUN literally wrote a union, and it does not
+license arbitrary self-assignment as a matching technique.  The retained
+negative controls remain useful: a direct TH08 member-speed port is 480 bytes,
+a force-inlined union-return producer uses a `0x14` frame and only 371/401
+comparable bytes, an integer-return producer folds to 462 bytes, and a helper
+with a genuine extra float local reaches 469 bytes with the wrong frame.
+A cold `BulletManager.obj` rebuild leaves 33 sibling units directly exact.  The
+two table-bearing siblings, `SpawnSingleBullet` and `AdvanceTransformProgram`,
+remain structurally exact across their complete 2,169-byte and 2,563-byte
+body-plus-table extents; only compiler-private `$L` identities are renumbered,
+and every relocation still solves to the same target destination before the
+manifest-only symbol refresh.
 
 ### ZUN sound-wrapper provenance and live-local aggregates
 
