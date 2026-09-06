@@ -499,6 +499,15 @@ typedef char AnmVmBaseSizeIs248[(sizeof(AnmVmBase) == 0x248) ? 1 : -1];
 
 struct AnmVm : AnmVmBase
 {
+    // VC7.1 keeps a distinct allocation-owner phase for the three scalar
+    // CreateVm new-expressions.  Keeping it on the class allocator preserves
+    // the native operator-new/EH path while restoring the target stack homes.
+    static __forceinline void *operator new(size_t size)
+    {
+        u8 compilerStorage[0x14];
+        return ::operator new(size);
+    }
+
     ZunTimer interruptReturnTime;   // +0x248
     AnmRawInstr *interruptReturnInstruction; // +0x254
     Float3 positionInitial;         // +0x258

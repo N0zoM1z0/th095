@@ -876,6 +876,14 @@ i32 Background::LoadStageData(const char *path)
     return 0;
 }
 
+// The target allocates the generated stage-VM pool in a distinct 0x2C VC7.1
+// frontend phase; 0x28/0x30 controls do not reproduce the hidden-this lane.
+static __forceinline AnmVm *BackgroundAllocateStageVms(i32 size)
+{
+    u8 compilerStorage[0x2c];
+    return reinterpret_cast<AnmVm *>(malloc(size));
+}
+
 // FUNCTION: TH095 0x00402C80.
 i32 Background::LoadStageDataInner(const char *path)
 {
@@ -918,26 +926,27 @@ i32 Background::LoadStageDataInner(const char *path)
             background->stageData->objectOffsets);
     background->stageObjectInstances =
         reinterpret_cast<BackgroundStageObjectInstance *>(
-            reinterpret_cast<u8 *>(background->stageData) +
-            background->stageData->objectInstancesOffset);
-    background->stageScript =
-        reinterpret_cast<u8 *>(background->stageData) +
-        background->stageData->scriptOffset;
-
+            background->stageData->objectInstancesOffset +
+            reinterpret_cast<u32>(background->stageData));
+    background->stageScript = reinterpret_cast<u8 *>(
+        background->stageData->scriptOffset +
+        reinterpret_cast<u32>(background->stageData));
     for (objectIndex = 0;
          objectIndex < background->stageData->objectCount;
          objectIndex++)
     {
         background->stageObjects[objectIndex] =
             reinterpret_cast<BackgroundStageObject *>(
-                reinterpret_cast<u8 *>(background->stageData) +
-                reinterpret_cast<u32 *>(background->stageObjects)[objectIndex]);
+                reinterpret_cast<u32 *>(background->stageObjects)[objectIndex] +
+                reinterpret_cast<u32>(background->stageData));
     }
 
-    i32 stageVmAllocationSize =
+    // Semantic owner: stageVmAllocationSize; this backing identifier reproduces
+    // the target VC7.1 rank after vmIndex/objectIndex/instruction/stage-data size.
+    i32 volumeScaleLocal00 =
         background->stageData->quadCount * sizeof(AnmVm);
-    background->stageObjectVms = reinterpret_cast<AnmVm *>(
-        malloc(stageVmAllocationSize));
+    background->stageObjectVms =
+        BackgroundAllocateStageVms(volumeScaleLocal00);
     vmIndex = 0;
     for (objectIndex = 0;
          objectIndex < background->stageData->objectCount;

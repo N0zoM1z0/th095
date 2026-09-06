@@ -1604,6 +1604,8 @@ Cold stock-VC7.1 build 3077 now replays 4,789/4,789 comparable bytes, all 413 pa
 
 ### Hard-lane compiler-class boundaries: Camera, WinMain, Enemy ctor, CreateVm (2026-09-06)
 
+> **Superseded for CreateVm:** the diagnostic residual described below is closed by the exact class-specific allocation-owner frontend recorded later in this document.
+
 Do not score a small byte residual by size alone. Current source-labelled crosswalks distinguish four different allocation barriers. `UpdatePhotoCamera` is a compiler-temp class-insertion problem: helper-local live zero values can enter the deep class but neither identifier buckets nor fixed-total effect/timer redistribution place them at the two target holes. `WinMain` is a one-dword boundary between an already-exact `$T` family and three lifecycle `tv` merge results. The enemy-manager constructor is a uniform 0x28 phase before its sixteen-timeline generated-construction loop. The three CreateVm factories independently repeat a 0x14 `new AnmVm` construction-result phase while their real owner and allocation/EH temporaries remain exact.
 
 For the CreateVm trio, a tagged derived constructor is a particularly useful diagnostic: it moves `this` and the constructor merge result to the exact target homes and produces the exact `0x4C` frame, proving both phase size and class, but the derived new-expression necessarily reloads the allocation pointer after the base constructor and grows each function by three bytes. Conversely, a plain 0x14 caller scope keeps the 47-instruction topology/target extent but moves the two allocation `$T` homes instead of the deep pair. These complementary controls show why a generic `compilerStorage[0x14]` is not an acceptable closure even though three targets independently establish that a construction-result phase exists.
@@ -1709,3 +1711,18 @@ After integration, nine existing `PhotoCamera.cpp` units replay directly exact.
 1,091-byte body-plus-switch-table audit remains 899/899 structurally exact and
 every relocation resolves to the same target before the manifest-only label
 refresh.
+
+### CreateVm allocation-owner frontend closes the repeated phase (2026-09-06)
+
+`AnmLoaded::CreateVm @ 0x00444EF0`, `AnmLoadedPositionView::CreateVmAtScreen @ 0x00444FA0`, and `CreateVmAtWorld @ 0x00445060` are canonical exact for 161/180/169 authored bytes. All three retain the ordinary scalar-new topology: global `operator new`, exact `AnmVm::AnmVm @ 0x00401EB0`, constructor-failure EH cleanup, the real `vm` owner, and the original initialization/publication calls.
+
+The closing source attaches the compiler phase to the allocation frontend itself. `AnmVm` owns a class-specific `__forceinline operator new(size_t)` with target-attested `compilerStorage[0x14]` and a direct forward to global `::operator new(size)`. Stock VC7.1 inlines that frontend into each ordinary `new AnmVm`, so the operator-new relocation and EH topology stay native while only the deep hidden-`this` / constructor-result class moves to the target homes. The repo has exactly three scalar `new AnmVm` call sites, and all three independently require the same phase.
+
+The width and owner are bounded, not guessed. A no-storage class allocator leaves the deep family 0x14 shallow; `0x10` leaves every residual displacement one dword shallow, while `0x18` moves the same family one dword deep. Caller-scope `0x14` moves the allocation `$T` homes instead. A tagged derived constructor reaches the right class/frame but inserts a non-target three-byte allocation-pointer reload. A helper that itself contains `new AnmVm` is not inlined under `/Od /Ob1`. This is an allocation-owner frontend oracle, not permission for generic function-scope storage.
+
+
+### Background stage-VM allocation frontend closes LoadStageDataInner (2026-09-06)
+
+`Background::LoadStageDataInner @ 0x00402C80` is canonical exact for 523 authored bytes and all sixteen relocations. The closing source is not the earlier size-only 0x2C scope probe. Three source-shape constraints must coincide: serialized object/script offsets are formed as integer offset plus the stage-data base, the real `stageVmAllocationSize` uses the target-proven `volumeScaleLocal00` backing bucket, and only the real raw stage-VM pool allocation is routed through `BackgroundAllocateStageVms`.
+
+The allocation frontend is a source-local force-inline wrapper around `malloc(size)` with the independently observed `0x2C` compiler phase. In the target that lane is instruction-unreferenced but moves the hidden receiver while leaving the five real shallow loader locals fixed. Width controls at 0x28 and 0x30 miss the target; moving the phase to InitializeVm grows the function to 545 bytes, and member/free allocator-owner probes remain 404/459 comparable bytes. Keep this rule attached to the stage-VM allocation operation. It does not license arbitrary function-scope storage or generic padding.

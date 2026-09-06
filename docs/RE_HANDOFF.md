@@ -2882,3 +2882,12 @@ authored functions and 325,620/334,111 exact authored bytes (97.46%). The
 function goal remains above 98%; roughly 1,809 additional authored bytes are
 needed for the 98% byte goal. `Controller::GetInput @ 0x00419AE0` is the
 highest-leverage next target because its 2,662 bytes alone are sufficient.
+
+
+### 2026-09-06 gpt-web 99-percent hard-lane checkpoint
+
+The three ANM creation entries at `0x00444EF0/0x00444FA0/0x00445060` are now canonical exact. The shared closing rule is a class-specific force-inline `AnmVm::operator new(size_t)` allocation-owner frontend; stock VC7.1 preserves the native global operator-new/EH/constructor topology while moving only the repeated deep construction-result class to target homes. The three focused units replay 161/161, 180/180, and 169/169 bytes exactly.
+
+`Background::LoadStageDataInner @ 0x00402C80` is also canonical exact for 523/523 bytes and sixteen relocations. The closure requires integer-form serialized pointer relocation, the calibrated real allocation-size backing bucket, and the real stage-VM `malloc` frontend owning the target's `0x2C` compiler lane. Do not regress to the older handoff statement that this lane is unowned; 0x28/0x30 and InitializeVm/member/free placements remain negative controls.
+
+After these promotions the authored-function threshold is above 99%; authored bytes still require the large hard lanes. The preferred no-assembly byte route is `Controller::GetInput` + `SceneSaveDataView::LoadBestShotForScene` + `PhotoBulletView::UpdateBoundaryBounce`.

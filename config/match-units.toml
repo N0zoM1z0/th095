@@ -13241,6 +13241,33 @@ relocations = [
   { offset = 0xF, type = "REL32", symbol = "?LoadStageDataInner@Background@th095@@QAEHPBD@Z", target = 0x00402C80 },
 ]
 
+[units.background-load-stage-data-inner]
+source = "src/Background.cpp"
+object = "build/matching/Background.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Background::LoadStageDataInner"]
+symbol = "?LoadStageDataInner@Background@th095@@QAEHPBD@Z"
+target_address = 0x00402C80
+size = 0x20B
+relocations = [
+  { offset = 0x00D, type = "DIR32", symbol = "?g_BackgroundStageDataCache@th095@@3PAEA", target = 0x004BDD94 },
+  { offset = 0x017, type = "DIR32", symbol = "?g_BackgroundStageDataSize@th095@@3HA", target = 0x004BDD8C },
+  { offset = 0x01F, type = "REL32", symbol = "?OpenFile@FileSystem@th095@@SIPAEPADPAHH@Z", target = 0x0041A960 },
+  { offset = 0x024, type = "DIR32", symbol = "?g_BackgroundStageDataCache@th095@@3PAEA", target = 0x004BDD94 },
+  { offset = 0x02A, type = "DIR32", symbol = "?g_BackgroundStageDataCache@th095@@3PAEA", target = 0x004BDD94 },
+  { offset = 0x03A, type = "DIR32", symbol = "?g_BackgroundStageDataSize@th095@@3HA", target = 0x004BDD8C },
+  { offset = 0x046, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x054, type = "DIR32", symbol = "?g_BackgroundStageDataSize@th095@@3HA", target = 0x004BDD8C },
+  { offset = 0x05A, type = "DIR32", symbol = "?g_BackgroundStageDataCache@th095@@3PAEA", target = 0x004BDD94 },
+  { offset = 0x07E, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x083, type = "REL32", symbol = "?LoadAnm@AnmManager@th095@@QAEPAUAnmLoaded@2@HPBD@Z", target = 0x004432E0 },
+  { offset = 0x09D, type = "DIR32", symbol = "??_C@_0DH@DGPFANG@?$IDX?$IDe?$IB?$FL?$IDW?$IDf?$IB?$FL?$ID?$FO?$IC?$KK?$IM?$KJ?$IC?B?$IC?$KJ?$IC?h?$IC?$NM?$IC?$LJ?$IC?q?$IBB@", target = 0x0049533C },
+  { offset = 0x0A2, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A", target = 0x004C2420 },
+  { offset = 0x0A7, type = "REL32", symbol = "?Fatal@GameErrorContext@th095@@QAAPBDPBDZZ", target = 0x0041B0F0 },
+  { offset = 0x142, type = "REL32", symbol = "_malloc", target = 0x00485780 },
+  { offset = 0x1C9, type = "REL32", symbol = "?InitializeVm@AnmLoaded@th095@@QAEXPAUAnmVm@2@H@Z", target = 0x00404B80 },
+]
+
 [units.background-draw-high]
 source = "src/Background.cpp"
 object = "build/matching/Background.obj"
@@ -13966,6 +13993,67 @@ size = 0xE2
 relocations = [
   { offset = 0x0A7, type = "REL32", symbol = "_free", target = 0x004854BE },
   { offset = 0x0BD, type = "REL32", symbol = "??3@YAXPAX@Z", target = 0x0048564F },
+]
+
+[units.anm-create-vm]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmLoaded::CreateVm"]
+symbol = "?CreateVm@AnmLoaded@th095@@QAE?AUAnmVmId@2@HH@Z"
+target_address = 0x00444EF0
+size = 0xA1
+relocations = [
+  { offset = 0x06, type = "DIR32", symbol = "__ehhandler$?CreateVm@AnmLoaded@th095@@QAE?AUAnmVmId@2@HH@Z", target = 0x00493A7B },
+  { offset = 0x0C, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x24, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x3F, type = "REL32", symbol = "??0AnmVm@th095@@QAE@XZ", target = 0x00401EB0 },
+  { offset = 0x77, type = "REL32", symbol = "?InitializeVm@AnmLoaded@th095@@QAEXPAUAnmVm@2@H@Z", target = 0x00404B80 },
+  { offset = 0x85, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x8A, type = "REL32", symbol = "?AddVm@AnmManagerVmLifecycleView@th095@@QAE?AUAnmVmId@2@PAUAnmVmLifecycleView@2@@Z", target = 0x00444D10 },
+  { offset = 0x97, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+]
+
+[units.anm-create-vm-at-screen]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmLoadedPositionView::CreateVmAtScreen"]
+symbol = "?CreateVmAtScreen@AnmLoadedPositionView@th095@@QAE?AUAnmVmId@2@HPAUFloat3@2@@Z"
+target_address = 0x00444FA0
+size = 0xB4
+relocations = [
+  { offset = 0x06, type = "DIR32", symbol = "__ehhandler$?CreateVmAtScreen@AnmLoadedPositionView@th095@@QAE?AUAnmVmId@2@HPAUFloat3@2@@Z", target = 0x00493A7B },
+  { offset = 0x0C, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x24, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x3F, type = "REL32", symbol = "??0AnmVm@th095@@QAE@XZ", target = 0x00401EB0 },
+  { offset = 0x6E, type = "REL32", symbol = "?InitializeVm@AnmLoaded@th095@@QAEXPAUAnmVm@2@H@Z", target = 0x00404B80 },
+  { offset = 0x98, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x9D, type = "REL32", symbol = "?AddVm@AnmManagerVmLifecycleView@th095@@QAE?AUAnmVmId@2@PAUAnmVmLifecycleView@2@@Z", target = 0x00444D10 },
+  { offset = 0xAA, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+]
+
+[units.anm-create-vm-at-world]
+source = "src/AnmVmLifecycle.cpp"
+object = "build/matching/AnmVmLifecycle.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::AnmLoadedPositionView::CreateVmAtWorld"]
+symbol = "?CreateVmAtWorld@AnmLoadedPositionView@th095@@QAE?AUAnmVmId@2@HPAUFloat3@2@@Z"
+target_address = 0x00445060
+size = 0xA9
+relocations = [
+  { offset = 0x06, type = "DIR32", symbol = "__ehhandler$?CreateVmAtWorld@AnmLoadedPositionView@th095@@QAE?AUAnmVmId@2@HPAUFloat3@2@@Z", target = 0x00493A7B },
+  { offset = 0x0C, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
+  { offset = 0x24, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
+  { offset = 0x3F, type = "REL32", symbol = "??0AnmVm@th095@@QAE@XZ", target = 0x00401EB0 },
+  { offset = 0x6E, type = "REL32", symbol = "?InitializeVm@AnmLoaded@th095@@QAEXPAUAnmVm@2@H@Z", target = 0x00404B80 },
+  { offset = 0x7F, type = "REL32", symbol = "?PhotoToScreen@th095@@YIPAUFloat3@1@PAU21@PBU21@@Z", target = 0x004186D0 },
+  { offset = 0x8D, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
+  { offset = 0x92, type = "REL32", symbol = "?AddVm@AnmManagerVmLifecycleView@th095@@QAE?AUAnmVmId@2@PAUAnmVmLifecycleView@2@@Z", target = 0x00444D10 },
+  { offset = 0x9F, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
 ]
 
 [units.anm-on-update]
