@@ -1663,3 +1663,49 @@ exactly.  Adding the inline constructor renumbers only compiler-private labels
 inside `PhotoEnemyTimelineView::Run`; its complete 882-byte body-plus-switch-
 table comparison remains 734/734 structurally exact and every relocation
 solves to the same target destination before the manifest-only label refresh.
+
+### UpdatePhotoCamera: move the eight-byte phase to the first deep value producer (2026-09-06)
+
+`UpdatePhotoCamera @ 0x00430AB0` is canonical exact for 7,271 authored bytes.
+The VC7.1 function symbol also owns the adjacent 20-byte five-entry switch
+table, so the canonical unit compares 7,291 bytes while crediting only the
+authored body. All 1,565 authored mnemonics and all 219 body/table relocations
+replay exactly.
+
+The old 6,399/6,415 best had the correct semantics but the wrong allocation
+chronology. Its two `PhotoAnmVmIdValue(0)` equality RHS objects were allocated
+in a shallow class. Exact `PhotoGameUpdateView::UpdateMainState` provides the
+positive sibling oracle: a pointer `IsZero` frontend can place that same
+by-value zero object into the deep class while leaving the following `CreateVm`
+structure-return home shallow. Applying that frontend to both camera branches
+does exactly that, but also reveals that the historical effect-start
+`compilerStorage[8]` phase was attached too late. With the late effect phase
+removed, every deep/inline home from the first tracking expression through
+outer `camera` is uniformly eight bytes shallow.
+
+A fresh `/FAsc` chronology identifies the first member of that family: the real
+tracking vector difference
+`g_PhotoRuntime->enemies[0]->position - g_PhotoGame->playerPosition`. The
+accepted source wraps only this value production in a force-inlined
+`PhotoCameraTrackingDifference` and gives that real producer the eight-byte
+compiler phase. It does not wrap the whole assignment and it does not add a
+second phase. A zero-storage producer is byte-identical to the phase-free
+source; a whole-assignment frontend rotates the outer `Float3` return family
+and is a negative control. Phase size is strict: 4 and 12 bytes each reproduce
+only 5,976/6,415 comparable bytes, while 8 bytes gives 6,415/6,415. Direct
+effect-VM invocation and the original class-inline converting constructor are
+structurally exact, proving the former effect wrapper and constructor-placement
+experiments are not part of the closure. The independently established
+`modeTimer` reset keeps its separate `0x2C` phase.
+
+The reusable rule is: **equal reservation size is not ownership evidence**.
+When an entire compiler-home family is uniformly displaced, locate the first
+real source expression that creates that family and test the phase there. A
+later operation can accidentally repair downstream homes while leaving earlier
+temps wrong, producing a deceptively high structural score.
+
+After integration, nine existing `PhotoCamera.cpp` units replay directly exact.
+`UpdateViewfinder` changes only nine compiler-private `$L` names; its complete
+1,091-byte body-plus-switch-table audit remains 899/899 structurally exact and
+every relocation resolves to the same target before the manifest-only label
+refresh.

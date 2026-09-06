@@ -1039,6 +1039,12 @@ static inline i32 PhotoTimerAdvancedTo(ZunTimer *timer, i32 frame)
     return timer->current != timer->previous && timer->current == frame;
 }
 
+static __forceinline Float3 PhotoCameraTrackingDifference(const Float3 &left, const Float3 &right)
+{
+    u8 compilerStorage[8];
+    return left - right;
+}
+
 static __forceinline void NormalizeAndScalePhotoOffset(
     const Float3 &direction, Float3 *offset, f32 radius)
 {
@@ -1048,10 +1054,34 @@ static __forceinline void NormalizeAndScalePhotoOffset(
     *offset *= radius;
 }
 
+static __forceinline void PhotoCameraSetBulletColor(u32 color)
+{
+    PhotoBulletManagerView *bulletManager = g_PhotoBulletManager;
+    bulletManager->photoColor.color = color;
+}
+
+static __forceinline void PhotoCameraModeTimerResetPhase(ZunTimer *timer)
+{
+    u8 compilerStorage[0x2c];
+    timer->current = 0;
+    timer->subFrame = 0.0f;
+    timer->previous = -999999;
+}
+
+static __forceinline i32 PhotoCameraVmIdIsZero(const PhotoAnmVmId *vm)
+{
+    return *vm == PhotoAnmVmIdValue(0);
+}
+
+static __forceinline void PhotoCameraClearVmId(PhotoAnmVmId *vm)
+{
+    PhotoAnmVmId clearedVm;
+    clearedVm = 0;
+    *vm = clearedVm;
+}
+
 void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
 {
-    i32 chargeDisplay;
-
     switch (camera->mode)
     {
     case PHOTO_CAMERA_TRACKING:
@@ -1103,9 +1133,9 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
 
                 if (g_PhotoGame->cameraTrackingMode != 0)
                 {
-                    camera->cameraOffset =
-                        g_PhotoRuntime->enemies[0]->position -
-                        g_PhotoGame->playerPosition;
+                    camera->cameraOffset = PhotoCameraTrackingDifference(
+                        g_PhotoRuntime->enemies[0]->position,
+                        g_PhotoGame->playerPosition);
                     NormalizeAndScalePhotoOffset(
                         camera->cameraOffset,
                         &camera->cameraOffset,
@@ -1117,7 +1147,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                         g_PhotoGame->playerPosition -
                         camera->previousTrackingOrigin;
                     f32 targetAngle;
-                    if (playerDelta.x * playerDelta.x + playerDelta.y * playerDelta.y < 0.1f)
+                    if (playerDelta.y * playerDelta.y + playerDelta.x * playerDelta.x < 0.1f)
                     {
                         targetAngle = g_PhotoGame->AngleToPoint(
                             &g_PhotoRuntime->enemies[0]->position);
@@ -1195,9 +1225,9 @@ updateCharge:
                     if (camera->vmIds[10])
                     {
                         PhotoAnmManager()->RemoveVm(camera->vmIds[10].value);
-                        camera->vmIds[10].value = PreservePhotoId(0);
+                        PhotoCameraClearVmId(&camera->vmIds[10]);
                     }
-                    if (camera->vmIds[9] == PhotoAnmVmIdValue(0))
+                    if (PhotoCameraVmIdIsZero(&camera->vmIds[9]))
                     {
                         camera->vmIds[9] =
                             g_PhotoStageState->anm->CreateVm(0x1f, 0);
@@ -1233,9 +1263,9 @@ updateCharge:
                     if (camera->vmIds[9])
                     {
                         PhotoAnmManager()->RemoveVm(camera->vmIds[9].value);
-                        camera->vmIds[9].value = PreservePhotoId(0);
+                        PhotoCameraClearVmId(&camera->vmIds[9]);
                     }
-                    if (camera->vmIds[10] == PhotoAnmVmIdValue(0))
+                    if (PhotoCameraVmIdIsZero(&camera->vmIds[10]))
                     {
                         camera->vmIds[10] =
                             g_PhotoStageState->anm->CreateVm(0x20, 0);
@@ -1362,8 +1392,7 @@ cameraActive:
             if (camera->charge >= 0.35f)
             {
                 g_AnmGameSpeed = 0.25f;
-                PhotoBulletManagerView *bulletManager = g_PhotoBulletManager;
-                bulletManager->photoColor.color = 0x60404040;
+                PhotoCameraSetBulletColor(0x60404040);
             }
             else
             {
@@ -1374,8 +1403,7 @@ cameraActive:
                 captureColor.r = (u8)(64.0f * slowRate) + 0x40;
                 captureColor.g = (u8)(64.0f * slowRate) + 0x40;
                 captureColor.b = (u8)(64.0f * slowRate) + 0x40;
-                PhotoBulletManagerView *bulletManager = g_PhotoBulletManager;
-                bulletManager->photoColor.color = captureColor.color;
+                PhotoCameraSetBulletColor(captureColor.color);
             }
         }
         goto finish;
@@ -1420,7 +1448,7 @@ cameraActive:
         if (camera->modeTimer >= 60)
         {
             camera->mode = PHOTO_CAMERA_RECOVERING;
-            camera->modeTimer = 0;
+            PhotoCameraModeTimerResetPhase(&camera->modeTimer);
         }
         break;
     }
@@ -1463,31 +1491,34 @@ finish:
     camera->viewfinderVms[2].positionOffset = screenPosition;
     camera->viewfinderVms[3].positionOffset = screenPosition;
 
-    chargeDisplay = (i32)(camera->charge * 100.0f);
-    if (chargeDisplay / 100 != 0)
     {
+        i32 chargeDisplay = (i32)(camera->charge * 100.0f);
+        if (chargeDisplay / 100 != 0)
+        {
+            g_PhotoStageState->anm->SetSprite(
+                &camera->viewfinderVms[0], chargeDisplay / 100 + 0xf);
+            camera->viewfinderVms[0].flagsWord |= 2;
+        }
+        else
+        {
+            camera->viewfinderVms[0].flagsWord &= ~2U;
+        }
+        if (chargeDisplay / 10 != 0)
+        {
+            g_PhotoStageState->anm->SetSprite(
+                &camera->viewfinderVms[1], chargeDisplay / 10 % 10 + 0xf);
+            camera->viewfinderVms[1].flagsWord |= 2;
+        }
+        else
+        {
+            camera->viewfinderVms[1].flagsWord &= ~2U;
+        }
         g_PhotoStageState->anm->SetSprite(
-            &camera->viewfinderVms[0], chargeDisplay / 100 + 0xf);
-        camera->viewfinderVms[0].flagsWord |= 2;
+            &camera->viewfinderVms[2], chargeDisplay % 10 + 0xf);
+        camera->viewfinderVms[2].flagsWord |= 2;
+        camera->viewfinderVms[3].flagsWord |= 2;
+
     }
-    else
-    {
-        camera->viewfinderVms[0].flagsWord &= ~2U;
-    }
-    if (chargeDisplay / 10 != 0)
-    {
-        g_PhotoStageState->anm->SetSprite(
-            &camera->viewfinderVms[1], chargeDisplay / 10 % 10 + 0xf);
-        camera->viewfinderVms[1].flagsWord |= 2;
-    }
-    else
-    {
-        camera->viewfinderVms[1].flagsWord &= ~2U;
-    }
-    g_PhotoStageState->anm->SetSprite(
-        &camera->viewfinderVms[2], chargeDisplay % 10 + 0xf);
-    camera->viewfinderVms[2].flagsWord |= 2;
-    camera->viewfinderVms[3].flagsWord |= 2;
 
     AnmManager::ExecuteScript(&camera->viewfinderVms[0]);
     AnmManager::ExecuteScript(&camera->viewfinderVms[1]);

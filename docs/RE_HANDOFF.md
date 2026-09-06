@@ -2855,3 +2855,30 @@ inline constructor renumbers compiler-private labels only in
 the manifest names are refreshed.  This closure adds 1,196 exact authored bytes:
 674/686 authored functions are now exact and the exact-authored byte count is
 318,349/334,111 (95.28%), crossing the repository's 95% authored-byte goal.
+
+## 2026-09-06 UpdatePhotoCamera exact closure
+
+`UpdatePhotoCamera @ 0x00430AB0` is no longer a compiler-temp defer. The
+canonical `photo-camera-update` unit credits 7,271/7,271 authored bytes and
+compares the complete 7,291-byte function-symbol extent including the 20-byte
+compiler switch table; all 219 relocations replay. The closure supersedes the
+old 6,399/6,415 diagnosis. Both zero-ID comparisons now use the same deep-temp
+`IsZero` source surface independently proven by exact PhotoGame code. Removing
+the historical late effect-start eight-byte phase makes the full deep family
+uniformly eight bytes shallow; `/FAsc` places the family frontier at the first
+real tracking subtraction. `PhotoCameraTrackingDifference` therefore owns the
+single target-strict eight-byte phase. 4/8/12 controls score 5,976/6,415,
+6,415/6,415, and 5,976/6,415 respectively. The effect call is direct and the
+converting constructor remains class-inline; neither historical wrapper is
+needed. The separate modeTimer reset retains its `0x2C` phase.
+
+All ten earlier `PhotoCamera.cpp` canonical units survive the cold rebuild.
+Only `UpdateViewfinder` renumbers nine compiler-private labels; its 1,091-byte
+body/table extent remains 899/899 structurally exact and every solved target
+destination is unchanged before the manifest refresh. Camera scratch under the
+old `gpt-web-photocamera-*` 6,399 barrier is historical negative evidence, not a
+current work item. After this promotion the expected ledger is 675/686 exact
+authored functions and 325,620/334,111 exact authored bytes (97.46%). The
+function goal remains above 98%; roughly 1,809 additional authored bytes are
+needed for the 98% byte goal. `Controller::GetInput @ 0x00419AE0` is the
+highest-leverage next target because its 2,662 bytes alone are sufficient.
