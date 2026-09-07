@@ -1911,7 +1911,9 @@ See `docs/BOUNDARY_AUDIT.md` and `scripts/audit-authored-boundary.py`. This
 follow-up supersedes the earlier prose-only completeness inference and gap
 count. Forty-nine additional compiler EH handlers are now inventoried, with
 57 local COFF template/reference checks. They are exclusions, not authored
-promotions; 72 cleanup action addresses remain separate review leads.
+promotions. The 72 cleanup action addresses were intentionally left as review
+leads until their own associative COFF extents and relocation provenance could
+be replayed; the 2026-09-08 closure below supersedes that temporary state.
 
 Main now names the correct SDK `c_dfDIJoystick2`. Four ANM tables remain fully
 compared through `compare_size` but no longer receive authored credit, while
@@ -1921,3 +1923,37 @@ Ninety-three units across Main, ResultScreen, AnmManager, and Controller were
 cold-built and replayed exactly. Compiler-local label renames were accepted
 only after unchanged full bytes, offsets, relocation types, and target
 destinations were proved.
+
+### 2026-09-08: associative EH cleanup replay and Chain source-shape correction
+
+A canonical parent function can be byte-exact while compiler-owned unwind code
+from its associative COMDAT is still wrong. `scripts/audit-eh-cleanups.py` now
+checks that layer explicitly. It obtains each FuncInfo action target from the
+attested executable, derives its size from compiler-local function symbols in
+the parent's associative `.text$x`, requires the parent match unit to replay
+exact, and resolves action relocations only through handler-relative symbols or
+pre-existing canonical manifest anchors. It never solves a relocation by
+reading the target field being compared. The current graph is 72 unique actions,
+81 parent/action references, 57 canonical parent units, and **81/81
+provenance-exact action replays**.
+
+The sole initial failure was useful compiler evidence.
+`Chain::ReleaseSingleChain @ 0x00418F00` had a convenience
+`ChainReleaseSnapshotLocals { ChainElem head; ChainElem *cursor; }`. Its complete
+381-byte parent body and thirteen relocations were exact, but cleanup
+`0x004935D0` referenced the compiler-emitted aggregate destructor. TH08's exact
+source instead declares `ChainElem releaseSnapshotHead`, `current`,
+`releaseSnapshotCursor`, and `nextSnapshotEntry` separately. A direct TH095
+probe keeps all 381 bytes/instructions and all thirteen relocation positions but
+initially permutes only the cursor/head stack homes. Mapping the real cursor to
+the established stock-VC7.1 backing bucket `jLocal00` restores every EBP
+displacement and makes the cleanup's REL32 point directly to
+`ChainElem::~ChainElem @ 0x00418970`; the eight-byte action then replays exactly.
+
+Cold rebuilding `Global.cpp` only renumbers compiler-private switch labels in
+`chain-run-calc` and `chain-run-draw`. Before refreshing those identities, all
+15 changed relocation positions/types/target destinations and complete replayed
+bytes were checked unchanged. All fourteen canonical `Global.cpp` units replay
+exact from the corrected source. The reusable rule is that aggregate grouping
+is not semantically invisible to VC7.1 EH ownership: preserve the actual
+destructible local object when FuncInfo/COFF evidence identifies it.

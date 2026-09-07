@@ -11,7 +11,9 @@ python3 scripts/verify-target.py
 python3 scripts/audit-authored-boundary.py --require-clean-authored
 python3 scripts/audit-authored-boundary.py --verify-eh-coff --require-clean-authored --json > .analysis/boundary-aligned.json
 python3 scripts/audit-authored-boundary.py --pointer-stride 1 --require-clean-authored --json > .analysis/boundary-unaligned.json
-python3 -m unittest discover -s tests -p test_authored_boundary.py -v
+python3 scripts/audit-eh-cleanups.py --require-all
+python3 -m unittest discover -s tests -p 'test_*boundary.py' -v
+python3 -m unittest discover -s tests -p test_eh_cleanups.py -v
 ```
 
 Capstone is required for private target scanning. Public regression tests use
@@ -57,17 +59,46 @@ are now explicit `origin=compiler`, `disposition=exclude` entries, with evidence
 ID `vc71-eh-handler-graph-2026-09-07`. No C++ stand-in or assembly was added for
 these generated helpers, and none receives authored or exact credit.
 
-The same metadata exposes **72 distinct cleanup action addresses**. The JSON
-report retains their originating states and FuncInfo relationships. Their
-individual extents and implementation provenance are not established merely
-by being unwind-map targets. They remain separate review leads; do not silently
-fold them into a neighboring handler or claim they were all reconstructed.
+The same metadata exposes **72 distinct cleanup action addresses**. A FuncInfo
+pointer alone does not establish their extent or provenance, so the first pass
+kept them as review leads rather than folding them into neighboring handlers.
 
-After the inventory expansion there are 1,880 provisional entries: 697 authored,
-1,072 still in review, and 111 excluded. This is an expanded candidate inventory,
-not an expanded authored denominator. The optional COFF replay checks 57
-references to 49 handler templates; most of those objects are existing matching
-artifacts, not a claim that all their parent translation units were freshly built.
+## 2026-09-08: associative EH cleanup provenance closure
+
+`scripts/audit-eh-cleanups.py` closes that second layer independently. For each
+FuncInfo action it anchors the parent's compiler-local `__ehhandler$...` at the
+verified target address, parses the parent's associative `.text$x` COMDAT, and
+derives the cleanup extent from consecutive COFF function symbols. Relocations
+are replayed only from handler-relative local symbols or already-canonical
+external symbol addresses; the target bytes under test are never used to solve
+a destination. The canonical parent must also replay exact.
+
+The resulting graph contains **72 unique cleanup actions and 81 parent/action
+references**. All 72 inventory extents agree with the COFF-derived extents, all
+57 distinct canonical parent units replay exact, and all **81/81 action
+references replay byte-exact after relocation**. Those 72 candidates are now
+classified `origin=compiler`, `disposition=exclude` with evidence ID
+`vc71-eh-cleanup-provenance-2026-09-08`. This changes review/exclusion coverage,
+not the authored denominator or authored exact credit. The live inventory is
+therefore 1,880 candidates: **697 authored, 1,000 review, 183 excluded**.
+
+One source-shape defect was exposed by this stronger check even though its
+parent body was already canonical exact. `Chain::ReleaseSingleChain @
+0x00418F00` had temporarily grouped the snapshot head and cursor in a helper
+aggregate. Its normal-path body replayed, but the aggregate caused VC7.1 to
+route cleanup `0x004935D0` through an implicit aggregate destructor rather than
+directly destroy the `ChainElem` head. TH08 source proves the original shape is
+separate `ChainElem releaseSnapshotHead` and pointer locals. Restoring those
+locals and backing the real cursor with the calibrated `jLocal00` identifier
+bucket gives the target stack homes, preserves the 381-byte/13-relocation body,
+and makes the first cleanup action relocate directly to the exact
+`ChainElem::~ChainElem @ 0x00418970`. All 14 `Global.cpp` canonical units replay
+exact after the correction. No assembly, inert storage, or target-byte copy is
+used.
+
+The handler/template pass still checks 57 references to 49 handler templates;
+most objects used by either provenance audit are existing canonical build
+artifacts unless the caller explicitly cold-builds the corresponding unit.
 
 ## Corrected DirectInput symbol provenance
 

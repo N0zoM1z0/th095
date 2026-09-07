@@ -31,12 +31,6 @@ typedef char ChainSupervisorCriticalSectionsAt664[
 typedef char ChainSupervisorLockCountsAt70C[
     (offsetof(ChainSupervisorView, lockCounts) == 0x70c) ? 1 : -1];
 
-struct ChainReleaseSnapshotLocals
-{
-    ChainElem head;
-    ChainElem *cursor;
-};
-
 ChainElem::ChainElem()
 {
     this->prev = NULL;
@@ -276,40 +270,47 @@ loopExit:
     return updatedCount;
 }
 
+// TH08 proves that the snapshot head and cursor are separate locals. Stock
+// VC7.1 places the real cursor in the target's shallow third pointer bucket
+// when backed by jLocal00; keeping it separate also makes EH unwind destroy the
+// ChainElem head directly instead of synthesizing an aggregate destructor.
+#define releaseSnapshotCursor jLocal00
 void Chain::ReleaseSingleChain(ChainElem *root)
 {
-    ChainReleaseSnapshotLocals snapshot;
+    ChainElem releaseSnapshotHead;
     ChainElem *current;
+    ChainElem *releaseSnapshotCursor;
     ChainElem *nextSnapshotEntry;
 
-    snapshot.cursor = new ChainElem();
-    snapshot.head.next = snapshot.cursor;
+    releaseSnapshotCursor = new ChainElem();
+    releaseSnapshotHead.next = releaseSnapshotCursor;
 
     current = root;
     while (current != NULL)
     {
-        snapshot.cursor->releaseTarget = current;
-        snapshot.cursor->next = new ChainElem();
-        snapshot.cursor = snapshot.cursor->next;
+        releaseSnapshotCursor->releaseTarget = current;
+        releaseSnapshotCursor->next = new ChainElem();
+        releaseSnapshotCursor = releaseSnapshotCursor->next;
         current = current->next;
     }
 
-    current = &snapshot.head;
+    current = &releaseSnapshotHead;
     while (current != NULL)
     {
         this->Cut(current->releaseTarget);
         current = current->next;
     }
 
-    snapshot.cursor = snapshot.head.next;
-    while (snapshot.cursor != NULL)
+    releaseSnapshotCursor = releaseSnapshotHead.next;
+    while (releaseSnapshotCursor != NULL)
     {
-        nextSnapshotEntry = snapshot.cursor->next;
-        delete snapshot.cursor;
-        snapshot.cursor = NULL;
-        snapshot.cursor = nextSnapshotEntry;
+        nextSnapshotEntry = releaseSnapshotCursor->next;
+        delete releaseSnapshotCursor;
+        releaseSnapshotCursor = NULL;
+        releaseSnapshotCursor = nextSnapshotEntry;
     }
 }
+#undef releaseSnapshotCursor
 
 void Chain::Release()
 {

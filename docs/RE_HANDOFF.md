@@ -3088,11 +3088,11 @@ scope/local-size matrix, and do not add inert locals or padding.
 ## 2026-09-07 continuation: hidden EH entries and corrected exact accounting
 
 Read `docs/BOUNDARY_AUDIT.md` before relying on older boundary or byte counts.
-The inventory now has 1,880 candidates: 697 authored, 1,072 in review, and
-111 excluded. Forty-nine previously unlisted EH handlers were proved
-compiler-generated through 57 canonical references/local COFF templates and
-raw FuncInfo/dispatcher checks. Their 72 cleanup action addresses remain
-separate review leads, not silently counted as reconstructed.
+The inventory has 1,880 candidates. Forty-nine previously unlisted EH handlers
+were proved compiler-generated through 57 canonical references/local COFF
+templates and raw FuncInfo/dispatcher checks. The initially deferred 72 cleanup
+actions are resolved by the 2026-09-08 checkpoint below rather than projected
+from the handler classification.
 
 Main now requests `c_dfDIJoystick2`, matching the target's 272-byte,
 164-object SDK format. Four ANM tables (192 bytes) were removed from authored
@@ -3109,12 +3109,50 @@ No padding, compiler patch, new assembly, or inert source phase operation
 was integrated.
 
 Run the new aligned/unaligned boundary checks and optional EH COFF verification.
-The authored consistency gate is clean, but runtime anomalies and cleanup
-actions remain explicit review leads. The sole ownerless unaligned data
-pointer below the SDK arrays was 0x0041676E, verified as INT3 padding.
+The authored consistency gate is clean; remaining runtime anomalies stay
+explicit review leads. The sole ownerless unaligned data pointer below the SDK
+arrays was 0x0041676E, verified as INT3 padding.
 
 GetInput's fresh TH08 unused-macro controls change register phase only by
 adding instructions and leave its frame at 0x11C; they were rejected.
 Fresh natural-C++ x87 /Od and /Og controls did not reproduce FSINCOS or bare
 FRNDINT. These are bounded negative results, not impossibility claims. All
 four authored hard residuals remain honestly non-exact.
+
+## 2026-09-08 gpt-web EH cleanup provenance closure
+
+The compiler boundary audit now closes the second EH layer instead of stopping
+at the 49 handler thunks. `scripts/audit-eh-cleanups.py --require-all` derives
+cleanup extents from each canonical parent's associative `.text$x` COFF symbols
+and replays relocations using only handler-relative local symbols or existing
+canonical manifest anchors. All **72/72 unique cleanup actions and 81/81
+parent/action references** are provenance-exact; all 57 distinct parent units
+in that graph are canonical exact. Every COFF-derived action size agrees with
+the existing inventory. The 72 former review candidates are therefore
+classified compiler/exclude with evidence ID
+`vc71-eh-cleanup-provenance-2026-09-08`. Candidate totals are now 1,880 =
+697 authored + 1,000 review + 183 excluded. Authored exact credit is unchanged
+at 693/697 functions and 333,284/339,148 bytes.
+
+The stronger replay caught one genuine source-shape defect hidden by ordinary
+parent-body comparison. `Chain::ReleaseSingleChain @ 0x00418F00` had grouped
+its snapshot `ChainElem` and cursor into a convenience aggregate. Although the
+381-byte body was exact, VC7.1 consequently pointed cleanup `0x004935D0` at an
+implicit aggregate destructor. TH08 exact source proves separate
+`releaseSnapshotHead/current/releaseSnapshotCursor/nextSnapshotEntry` locals.
+Restoring that shape and mapping only the real cursor through backing identifier
+`jLocal00` gives 329/329 comparable parent bytes with every EBP home exact and
+makes the eight-byte cleanup relocate directly to exact
+`ChainElem::~ChainElem @ 0x00418970`. All fourteen `Global.cpp` canonical units
+replay exact. `chain-run-calc`/`chain-run-draw` had only 15 compiler-private
+label identity renames; their offsets/types/destinations and full bytes were
+audited before the manifest refresh. No assembly, padding, or inert storage was
+introduced.
+
+A fresh rescore of 457 historical GetInput objects found no overlooked near
+solution: among 579-instruction variants, the only Win32-first-key EDX object
+is the old `slot-late` control that destroys the prelude/local chronology.
+Target-frame `0x124` probes exist without changing instruction count, but all
+retain the wrong Win32 starting register and displace real stack homes. Treat
+this as a compiler-allocation/register-chronology problem, not a seven-byte
+length patch.
