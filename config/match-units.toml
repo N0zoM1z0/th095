@@ -21494,3 +21494,43 @@ relocations = [
   { offset = 0x2E7, type = "DIR32", symbol = "?g_EnemyShotBulletManager@th095@@3PAUEnemyShotBulletManagerView@1@A", target = 0x004BDD98 },
   { offset = 0x2EC, type = "REL32", symbol = "?SpawnBulletPattern@EnemyShotBulletManagerView@th095@@QAEHPAUEnemyShotDescriptorView@2@@Z", target = 0x00406CC0 },
 ]
+
+[units.enemy-update-movement]
+source = "src/EnemyMovement.cpp"
+object = "build/matching/EnemyMovement.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::Enemy::UpdateMovement"]
+symbol = "?UpdateMovement@Enemy@th095@@QAEXXZ"
+target_address = 0x00412970
+size = 0x69F
+compare_size = 0x6B7
+relocations = [
+  { offset = 0x57, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004BDD50 },
+  { offset = 0x73, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x8B, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004BDD50 },
+  { offset = 0xCB, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x142, type = "REL32", symbol = "__CIatan2", target = 0x004859CA },
+  { offset = 0x18B, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+  { offset = 0x1D0, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004BDD50 },
+  { offset = 0x1EC, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
+  { offset = 0x204, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004BDD50 },
+  { offset = 0x24D, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
+  { offset = 0x294, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+  { offset = 0x2F4, type = "REL32", symbol = "?Add@ZunTimer@th095@@QAEXM@Z", target = 0x0041B830 },
+  { offset = 0x318, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x324, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x373, type = "DIR32", symbol = "$L68480", target = 0x0041300F },
+  { offset = 0x3A6, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3B8, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3C6, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3DB, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x3E9, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x401, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
+  { offset = 0x57C, type = "REL32", symbol = "__CIatan2", target = 0x004859CA },
+  { offset = 0x69F, type = "DIR32", symbol = "$L68207", target = 0x00412CE7 },
+  { offset = 0x6A3, type = "DIR32", symbol = "$L68208", target = 0x00412CF5 },
+  { offset = 0x6A7, type = "DIR32", symbol = "$L68209", target = 0x00412D03 },
+  { offset = 0x6AB, type = "DIR32", symbol = "$L68210", target = 0x00412D14 },
+  { offset = 0x6AF, type = "DIR32", symbol = "$L68211", target = 0x00412D34 },
+  { offset = 0x6B3, type = "DIR32", symbol = "$L68212", target = 0x00412D57 },
+]

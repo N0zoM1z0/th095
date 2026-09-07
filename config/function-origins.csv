@@ -107,7 +107,7 @@ address,origin,subsystem,disposition,confidence,evidence_id
 0x00412200,authored,EclManager,authored,exact,vc71-ecl-movement-lane-2026-08-31
 0x00412490,authored,EclManager,authored,exact,vc71-ecl-movement-lane-2026-08-31
 0x00412670,authored,EclManager,authored,exact,vc71-shot-dispatch-nested-gate-2026-09-07
-0x00412970,authored,EnemyManager,authored,high,authored-boundary-audit-2026-09-07
+0x00412970,authored,EnemyManager,authored,exact,th08-legacywork-and-vc71-switch-table-2026-09-07
 0x00413030,authored,EnemyManager,authored,exact,vc71-enemy-shot-task-shell-2026-08-31
 0x00413380,authored,EclManager,authored,exact,vc71-ecl-extended-callbacks-2026-08-31
 0x00413410,authored,EclManager,authored,exact,vc71-ecl-extended-bullet-callbacks-2026-09-07

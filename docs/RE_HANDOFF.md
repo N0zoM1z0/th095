@@ -3048,3 +3048,25 @@ more exact bytes are needed.  The remaining no-assembly route is now exactly
 `Enemy::UpdateMovement @ 0x00412970` (1,695) plus
 `Controller::GetInput @ 0x00419AE0` (2,662), totaling 4,357 bytes and reaching
 336,136 exact bytes (about 99.06%).
+
+### 2026-09-07 gpt-web Enemy::UpdateMovement exact
+
+`Enemy::UpdateMovement @ 0x00412970` is canonical exact. Coverage is 1,695
+authored bytes; `compare_size=0x6B7` additionally enforces the adjacent 24-byte
+six-entry switch table. Full replay is 1,719/1,719 with 1,607/1,607
+non-relocation bytes and 28 relocations.
+
+The old `legacyWork` warning is superseded. TH08's source directly contains an
+otherwise-unused `Float3 legacyWork` in the ORBIT case. That provenance explains
+the target 12-byte allocation interval. The old 1,719-vs-1,695 rejection counted
+the compiler jump table as extra authored code. Keep `src/EnemyMovement.cpp`
+isolated from the shared `EnemyManager.hpp`: the target-local movement ABI uses
+`position +0x28A0`, orbit/interpolation fields through `+0x2958`, and flags at
+`+0x2BF4`, while other exact Enemy units intentionally use a later/larger shared
+layout view.
+
+After this promotion the authored ledger is 693/697 exact functions and
+333,474/339,338 exact bytes. Only 2,471 additional exact bytes are needed for
+99%; `Controller::GetInput @ 0x00419AE0` is 2,662 bytes and is therefore the
+single remaining no-assembly threshold lane. The three ANM FRNDINT/FSINCOS
+functions can remain non-exact if Controller closes.
