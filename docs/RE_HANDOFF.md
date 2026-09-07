@@ -2998,3 +2998,32 @@ Do not rerun the closed macro-grammar, slot-storage, result-publication, or
 ordinary phase/local matrices; the remaining residual is the VC7.1 keyboard
 GPR chronology plus the two target-only deep dwords, with all 212 real stack
 homes already exact.
+
+### 2026-09-07 gpt-web extended-ECL entries 1..4 exact
+
+`EclExtended::Callback01/02/03/04 @ 0x00413410/0x004134A0/0x00413620/0x00413750`
+are canonical exact for 140/378/293/575 bytes with 4/12/11/14 relocations.
+All 22 configured `src/EclExtended.cpp` units cold-replay exact after the
+integration.  The complete 22-entry extended callback table is therefore
+canonical.
+
+Do not repeat the closed Callback04 identifier-bucket grid.  `/FAsc` proved the
+old 16-byte residual was `interpolationMode @ -0x3C`, `vm @ -0x40`, and two
+timer-generated `$T` homes at `-0x44/-0x48`, while target wants the two `$T`s
+shallow and the real values deep.  Twelve calibrated identifier names on either
+real local are byte-identical; a two-field aggregate only swaps the real values.
+The exact source class is a force-inline tail helper with parameters `(AnmVm
+*vm, i32 interpolationMode)`.  Reversing them is a negative control.
+
+Callback01 likewise has a target-strict source CFG: test `loadedSprite->widthPx`
+and skip with `state == 0 || widthPx < 64.0f`.  This is what creates target's
+`TEST AH,5 / JP` floating branch plus the shared `JMP` to the loop update.
+
+After these four promotions the current authored ledger is 691/697 exact
+functions (99.14%) and 331,023/339,338 exact bytes (97.55%).  Function exact is
+now above 99%; byte exact still needs 4,922 bytes.  The complete no-assembly
+route is now exactly the remaining three non-x87 hard lanes:
+`Controller::GetInput` (2,662), `Enemy::UpdateMovement` (1,695), and
+`EclRunHigh::DispatchShotInstruction` (756), totaling 5,113 bytes.  Closing all
+three reaches 336,136 exact bytes, about 99.06%, while the three ANM
+FRNDINT/FSINCOS lanes can remain non-exact under the no-inline-assembly rule.

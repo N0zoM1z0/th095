@@ -706,3 +706,7 @@ th095::CompressData,0x00455E10,function
 th095::EclExtended::Callback10,0x00413DF0,function
 th095::EclExtended::Callback14,0x00414090,function
 th095::EclExtended::Callback17,0x00414290,function
+th095::EclExtended::Callback01,0x00413410,function
+th095::EclExtended::Callback02,0x004134A0,function
+th095::EclExtended::Callback03,0x00413620,function
+th095::EclExtended::Callback04,0x00413750,function

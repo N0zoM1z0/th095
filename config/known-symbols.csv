@@ -390,3 +390,7 @@ address,name,module,confidence,evidence
 0x00413DF0,th095::EclExtended::Callback10,EclManager,exact,Canonical 404-byte extended-ECL effect callback 10; all six relocations replayed; field38=40
 0x00414090,th095::EclExtended::Callback14,EclManager,exact,Canonical 404-byte extended-ECL effect callback 14; all six relocations replayed; field38=300
 0x00414290,th095::EclExtended::Callback17,EclManager,exact,Canonical 404-byte extended-ECL effect callback 17; all six relocations replayed; field38=120
+0x00413410,th095::EclExtended::Callback01,EclManager,exact,Canonical 140-byte extended-ECL live-bullet width-threshold enemy spawn callback; four relocations replayed
+0x004134A0,th095::EclExtended::Callback02,EclManager,exact,Canonical 378-byte shifted-script owned-bullet callback; twelve relocations replayed
+0x00413620,th095::EclExtended::Callback03,EclManager,exact,Canonical 293-byte direct-script active-bullet callback; eleven relocations replayed
+0x00413750,th095::EclExtended::Callback04,EclManager,exact,Canonical 575-byte shifted-script execute/finalize owned-bullet callback; fourteen relocations replayed

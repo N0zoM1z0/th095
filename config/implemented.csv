@@ -689,3 +689,7 @@ th095::CompressData
 th095::EclExtended::Callback10
 th095::EclExtended::Callback14
 th095::EclExtended::Callback17
+th095::EclExtended::Callback01
+th095::EclExtended::Callback02
+th095::EclExtended::Callback03
+th095::EclExtended::Callback04

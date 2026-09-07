@@ -16,6 +16,14 @@ struct SoundPlayerView
     void PlaySoundByIdx(i32 soundIndex, i32 pan);
 };
 
+struct ExtendedPhotoEnemyView;
+struct ExtendedPhotoEnemyManagerView
+{
+    ExtendedPhotoEnemyView *Spawn(
+        i32 subroutineId, const Float3 *position, i32 life,
+        i32 itemDrop, i32 score, u32 mirrorMovementX);
+};
+
 struct PhotoGlobalStateView
 {
     u8 unknown000[0xfc];
@@ -166,6 +174,8 @@ struct ExtendedBulletView
     i16 bulletType;
     i16 color;
     u8 trailingAlignment65A[2];
+    void ReinitializeDirect();
+    void ReinitializeShifted();
 };
 typedef char ExtendedBulletSize65C[
     (sizeof(ExtendedBulletView) == 0x65c) ? 1 : -1];
@@ -203,6 +213,39 @@ extern PhotoGlobalStateView *g_PhotoGlobalState;
 extern u8 *g_Background;
 extern ExtendedBulletManager *g_PhotoBulletManager;
 extern ExtendedPhotoEffectManager *g_PhotoEffectManager;
+extern ExtendedPhotoEnemyManagerView *g_ExtendedPhotoEnemyManager;
+extern u32 g_PhotoScreenFadeColor;
+i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
+
+__forceinline void ExtendedBulletView::ReinitializeDirect()
+{
+    // Extended entries 2/3 repeat this target 0x2C InitializeVm phase.
+    u8 compilerStorage[0x2c];
+    g_PhotoBulletManager->anmSpawner->InitializeVm(
+        &this->vm, GetPhotoBulletScriptBase(this->bulletType) + this->color);
+}
+
+__forceinline void ExtendedBulletView::ReinitializeShifted()
+{
+    // Entry 2 uses the same phase but selects the shifted script bank.
+    u8 compilerStorage[0x2c];
+    g_PhotoBulletManager->anmSpawner->InitializeVm(
+        &this->vm, GetPhotoBulletScriptBase(this->bulletType) + 0x10 + this->color);
+}
+
+static __forceinline void FinalizeExtendedBulletAfterExecute(
+    AnmVm *vm, i32 interpolationMode)
+{
+    // Target-strict parameter order: the two inline value homes follow the
+    // two timer-generated compiler temporaries. Reversing the parameters
+    // changes the 145-instruction body.
+    vm->interpCurrentTimers[2].Initialize();
+    vm->interpEndTimers[2] = 1;
+    vm->interpModes[2] = (u8)interpolationMode;
+    vm->color1Initial.a = 0xff;
+    vm->color1Final.a = 0x40;
+}
+
 extern ExtendedPlayerView *g_Player;
 extern ExtendedRuntimeView *g_ExtendedRuntime;
 extern ExtendedRng g_Rng;
@@ -711,6 +754,165 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
         *reinterpret_cast<i32 *>(
             reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60));
     locals.PublishFlags();
+}
+
+
+static __forceinline void SetExtendedBackgroundVm0State2()
+{
+    AnmVm *vm;
+    vm = g_AnmManager->GetVm(
+        *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
+    vm->pendingInterrupt = 2;
+}
+
+static __forceinline void SetExtendedBackgroundVm1State2()
+{
+    AnmVm *vm;
+    vm = g_AnmManager->GetVm(
+        *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
+    vm->pendingInterrupt = 2;
+}
+
+static __forceinline void SetExtendedBackgroundVm0State3()
+{
+    AnmVm *vm;
+    vm = g_AnmManager->GetVm(
+        *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
+    vm->pendingInterrupt = 3;
+}
+
+static __forceinline void SetExtendedBackgroundVm1State3()
+{
+    AnmVm *vm;
+    vm = g_AnmManager->GetVm(
+        *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
+    vm->pendingInterrupt = 3;
+}
+
+// ECL extended callback table entry 1 @ 0x00413410.
+void __fastcall Callback01(Enemy *enemy, EclRawInstruction *instruction)
+{
+    ExtendedBulletView *index;
+    i32 bullet;
+
+    index = reinterpret_cast<ExtendedBulletView *>(
+        reinterpret_cast<u8 *>(g_PhotoBulletManager) + 0x4c);
+    for (bullet = 0; bullet < 0x640; bullet++, index++)
+    {
+        if (index->state == 0 || index->vm.loadedSprite->widthPx < 64.0f)
+            continue;
+
+        g_ExtendedPhotoEnemyManager->Spawn(
+            0, reinterpret_cast<const Float3 *>(&index->position),
+            1, 0, 0, 0);
+    }
+}
+
+// ECL extended callback table entry 2 @ 0x004134A0.
+void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
+{
+    u32 savedActiveSprite;
+    ExtendedBulletView *index;
+    i32 bullet;
+
+    index = reinterpret_cast<ExtendedBulletView *>(
+        reinterpret_cast<u8 *>(g_PhotoBulletManager) + 0x4c);
+    for (bullet = 0; bullet < 0x640; bullet++, index++)
+    {
+        if (index->state == 0)
+            continue;
+        if (index->ownerTag == *reinterpret_cast<i32 *>(
+                reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60))
+        {
+            savedActiveSprite = *reinterpret_cast<u32 *>(
+                reinterpret_cast<u8 *>(index) + 0x24);
+            index->ReinitializeShifted();
+            *reinterpret_cast<u32 *>(
+                reinterpret_cast<u8 *>(&index->vm) + 0x228) &= 0xf7ffffffU;
+            index->vm.pendingInterrupt = 2;
+            *reinterpret_cast<u32 *>(
+                reinterpret_cast<u8 *>(index) + 0x24) = savedActiveSprite;
+            index->velocity.FromAngleMagnitude(
+                *reinterpret_cast<f32 *>(
+                    reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70),
+                *reinterpret_cast<f32 *>(
+                    reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74));
+            index->flags &= ~2U;
+            index->flags |= 0x10U;
+        }
+    }
+
+    SetExtendedBackgroundVm0State2();
+    SetExtendedBackgroundVm1State2();
+    g_PhotoScreenFadeColor = 0;
+}
+
+// ECL extended callback table entry 3 @ 0x00413620.
+void __fastcall Callback03(Enemy *enemy, EclRawInstruction *instruction)
+{
+    ExtendedBulletView *index;
+    i32 bullet;
+
+    index = reinterpret_cast<ExtendedBulletView *>(
+        reinterpret_cast<u8 *>(g_PhotoBulletManager) + 0x4c);
+    for (bullet = 0; bullet < 0x640; bullet++, index++)
+    {
+        if (index->state == 0)
+            continue;
+
+        index->ReinitializeDirect();
+        index->vm.pendingInterrupt = 2;
+        index->velocity.FromAngleMagnitude(index->angle, index->speed);
+        index->flags |= 2U;
+        index->flags &= ~0x10U;
+    }
+
+    SetExtendedBackgroundVm0State3();
+    SetExtendedBackgroundVm1State3();
+}
+
+// ECL extended callback table entry 4 @ 0x00413750.
+void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
+{
+    u32 savedActiveSprite;
+    ExtendedBulletView *index;
+    i32 bullet;
+
+    index = reinterpret_cast<ExtendedBulletView *>(
+        reinterpret_cast<u8 *>(g_PhotoBulletManager) + 0x4c);
+    for (bullet = 0; bullet < 0x640; bullet++, index++)
+    {
+        if (index->state == 0)
+            continue;
+        if (index->ownerTag == *reinterpret_cast<i32 *>(
+                reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60))
+        {
+            savedActiveSprite = *reinterpret_cast<u32 *>(
+                reinterpret_cast<u8 *>(index) + 0x24);
+            index->ReinitializeShifted();
+            index->vm.flagsWord &= 0xf7ffffffU;
+            index->vm.pendingInterrupt = 2;
+            *reinterpret_cast<u32 *>(
+                reinterpret_cast<u8 *>(index) + 0x24) = savedActiveSprite;
+            index->velocity.FromAngleMagnitude(
+                *reinterpret_cast<f32 *>(
+                    reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70) +
+                    index->angle,
+                *reinterpret_cast<f32 *>(
+                    reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74) > -999.0f
+                    ? *reinterpret_cast<f32 *>(
+                          reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74)
+                    : index->speed);
+            index->flags &= ~2U;
+            index->flags |= 0x10U;
+            AnmManagerLookupView::ExecuteScript(&index->vm);
+            FinalizeExtendedBulletAfterExecute(&index->vm, 0);
+        }
+    }
+
+    SetExtendedBackgroundVm0State2();
+    SetExtendedBackgroundVm1State2();
+    g_PhotoScreenFadeColor = 0;
 }
 
 #undef EXT_MOVEMENT_FLAGS

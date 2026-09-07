@@ -1817,3 +1817,38 @@ manually solved it to `0x00485F6D`.  Pinned `mkdir.obj` proves that address is
 CRT `__mkdir` (32/32 non-relocation bytes plus the expected
 `CreateDirectoryA`, `GetLastError`, and `__dosmaperr` relocations), so canonical
 source now calls `_mkdir` directly and the manifest names `__mkdir`.
+
+### 2026-09-07 extended-ECL bullet callback closure
+
+The four previously reconstructed but non-exact callback-table entries at
+`0x00413410/0x004134A0/0x00413620/0x00413750` are now canonical exact for
+140/378/293/575 authored bytes.  Together they add 1,386 exact bytes and 41
+reviewed relocations, and the complete 22-entry `g_Th095ExInsn` callback table
+now has 22/22 exact callback units.
+
+Entry 1 is a useful CFG oracle rather than an allocation-phase case.  The
+loaded sprite test is `widthPx @ +0x34`, not `heightPx @ +0x30`.  Target VC7.1
+requires the skip spelling
+`if (bullet->state == 0 || bullet->vm.loadedSprite->widthPx < 64.0f) continue;`.
+That naturally emits the shared false block `JE -> TEST AH,5 -> JP spawn -> JMP
+loop`.  The seemingly equivalent positive compound condition emits only 138
+bytes and bypasses the target's shared continue block.  The target local homes
+also require semantic pointer name `index` and loop counter name `bullet`,
+placing them at `EBP-0x04/-0x08`.
+
+Entries 2 and 3 establish a repeated operation-owned phase: the real bullet
+`InitializeVm` frontend owns exactly `0x2C` bytes while selecting shifted or
+direct bullet-script banks.  The two Background VM interrupt publications are
+kept in separate source-local inline helpers, which restores the target
+call-site/home chronology without changing runtime semantics.
+
+Entry 4 reuses the shifted initialization path and then executes the bullet VM.
+Its former 16-byte residual was solely a four-home permutation in the final
+interpolation setup.  `/FAsc` identified `interpolationMode`, `vm`, and the two
+compiler `$T` values created by timer initialization/end-timer publication.
+Ordinary identifier-bucket changes and an 8-byte aggregate cannot move the real
+values past those `$T`s.  A source-local force-inline helper whose parameters
+are ordered `(AnmVm *vm, i32 interpolationMode)` does: target homes become
+`$T/$T/vm/interpolation @ -0x3C/-0x40/-0x48/-0x44`, yielding 519/519
+non-relocation bytes.  Reversing the parameter order fails, so the closure is
+allocation-chronology evidence, not arbitrary helper wrapping.
