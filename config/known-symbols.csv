@@ -32,6 +32,8 @@ address,name,module,confidence,evidence
 0x00424D30,th095::Supervisor::LoadConfig,Supervisor,exact,Canonical 200-byte config load validation and fallback unit
 0x00425890,th095::Supervisor::InitializeCriticalSections,Supervisor,exact,Canonical main-initialize-critical-sections VC7.1 comparison
 0x004258D0,th095::Supervisor::DeleteCriticalSections,Supervisor,exact,Canonical main-delete-critical-sections VC7.1 comparison
+0x004354B0,th095::ResultSaveDataLifecycleView::ResultSaveDataLifecycleView,ScoreData,exact,Exact 69-byte save-data constructor; target-strict OpenFile producer phase plus four relocation destinations
+0x00435580,th095::ResultSaveDataLifecycleView::~ResultSaveDataLifecycleView,ScoreData,exact,Exact 109-byte save-data destructor; two owned-buffer snapshots and two bounded free frontend phases
 0x00437790,th095::SoundPlayer::Initialize,SoundPlayer,high,Creates TH095 sound worker thread
 0x004377F0,th095::SoundPlayer::RequestThreadStop,SoundPlayer,medium,Writes sound worker shutdown state 2
 0x00437810,th095::SoundPlayer::JoinThread,SoundPlayer,high,Waits for and closes sound worker handles

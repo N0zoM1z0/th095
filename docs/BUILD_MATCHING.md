@@ -729,11 +729,19 @@ the target scoring/control-flow pipeline.
 
 The exact straight-laser target counter adds a sibling-reuse rule. `CountPhotoTargets @ 0x0041E750` closes immediately when it reuses the exact `CheckCollision` shallow local rank and vector lifetime: keep `step/sampleCount/hitCount/minimum/sample` shallow, reuse the inner half-size vector as maximum after minimum materialization, initialize `step.z` before `FromAngleMagnitude`, and keep the distance scalar in the inner scope. A broad aggregate or the cleaner semantic ordering shortens the body by 139 bytes.
 
-The adjacent ScoreData lifecycle gives a scheduling rule: exact-sized does not
-mean cheap. Its `0x004354B0` constructor still has live local-home displacement
-residuals, and the straightforward destructor is 97 bytes versus a 109-byte
-target. Promote the exact 122/112/104-byte profile/global-lifetime leaves and
-defer those two bodies rather than inserting artificial stack storage.
+The adjacent ScoreData lifecycle is now canonical exact; the earlier defer
+is superseded. `ResultSaveDataLifecycleView::ResultSaveDataLifecycleView @
+0x004354B0` is a 69-byte body whose only nonsemantic compiler interval belongs
+to the real `OpenFile("scoreth095.dat", &fileSize, TRUE)` producer.  Keep the
+four-byte phase and the live `fileSize` output in one eight-byte operation-local
+record; 0/4/8-byte producer controls score 46/53, 52/53, and 45/53 comparable
+bytes, while the record gives 53/53 plus all four relocations.  The destructor
+at `0x00435580` first restores the two target-observed free-argument snapshots,
+which brings the natural 97-byte source to the exact 109-byte extent.  Each of
+the two real owned-buffer frees then owns one four-byte source-local cleanup
+phase.  Either one-sided placement remains 90/97 comparable bytes; using both
+gives 97/97 and all three relocations.  This is an ownership/publication rule,
+not permission to add function-scope padding.
 
 ### Manager snapshots versus ancestral unused locals
 
@@ -1735,3 +1743,28 @@ The allocation frontend is a source-local force-inline wrapper around `malloc(si
 The closing source restores the real allocation chronology rather than forcing ESI. Keep only `path[260]` and `input` together in a semantic `SceneBestShotIoLocals` pair; keep `recordIndex` and `fileSize` as genuine scalars. Map those real locals through the target-proven stock-VC7.1 identifier buckets, and preserve `width * height * componentCount`. VC7.1 then naturally evaluates the destination stride before `_malloc`, assigns it to ESI, and reuses ESI after the call. The final deep-home class belongs only to the real pixel allocator: `SceneBestShotPixelAlloc(size)` is a force-inlined wrapper around `malloc(size)` with an eight-byte compiler phase.
 
 The width is target-strict on the final exact source. Fresh 2026-09-07 controls changing only that helper to 0, 4, or 12 bytes all replay 933/970 comparable bytes; eight bytes alone replays 970/970 and all sixteen relocation destinations. A no-phase standalone ranked control reaches 966/970 before the final allocation-class correction, while the old monolithic aggregate is substantially worse. This is a scalar-rank plus operation-owned allocation-phase rule, not a license to reserve arbitrary storage or explicitly force ESI.
+
+### 2026-09-07 authored-boundary re-audit
+
+Do not treat the current authored denominator as a by-product of disassembler
+function discovery.  A fresh tracking/raw-text audit found twelve owner-empty
+functions below the last canonical authored body. `0x00401BE0` is the MSVC
+`vector_constructor_iterator` helper and remains compiler-owned.  The other
+eleven are ZUN-authored and are now counted: `DispatchShotInstruction @
+0x00412670`, `Enemy::UpdateMovement @ 0x00412970`, extended-ECL table entries
+1/2/3/4/10/14/17 at `0x00413410/0x004134A0/0x00413620/0x00413750/
+0x00413DF0/0x00414090/0x00414290`, and the ScoreData lifecycle pair at
+`0x004354B0/0x00435580`.  The 22-entry `g_Th095ExInsn @ 0x004A4270` table,
+neighboring exact callback units, direct call edges, and existing semantic
+reconstructions independently establish those callback/function owners; they
+were a tracking omission, not newly invented source.
+
+The upper authored boundary was independently rechecked rather than inferred
+from Ghidra/IDA naming.  `Lzss::FindNextNode @ 0x00456950` remains the last
+hand-authored function.  Raw `.text` bytes from `0x0045698F` through
+`0x004583CF` are a roughly 6.6 KiB compiler/data-table region: scans find no
+`push ebp; mov ebp,esp`, `push esi; mov esi,ecx`, hotpatch, or common saved-GPR
+function prologues.  At `0x004583D0` the next discovered entries are consecutive
+DINPUT8/DSOUND/D3D8 import thunks followed by the dense CRT/compiler-helper
+region.  Thus the denominator expansion is the eleven internal omissions above,
+not an unbounded extension into the runtime tail.

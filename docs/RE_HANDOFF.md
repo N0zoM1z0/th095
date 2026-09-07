@@ -2926,3 +2926,36 @@ With this promotion the authored ledger is 682/686 exact functions and
 328,247/334,111 exact bytes (98.24%).  The 99% byte threshold is 330,770, so
 `Controller::GetInput @ 0x00419AE0` (2,662 bytes) alone is now sufficient to
 cross 99% if it can be closed without assembly.
+
+### 2026-09-07 authored denominator correction and ScoreData lifecycle exact closure
+
+A fresh authored-boundary audit corrected a material tracking omission. Eleven
+owner-empty bodies below the existing runtime boundary are ZUN-authored and now
+belong in the denominator: `0x00412670`, `0x00412970`, extended-ECL entries
+1/2/3/4/10/14/17, and the ScoreData lifecycle pair `0x004354B0/0x00435580`.
+`0x00401BE0` remains excluded as MSVC `vector_constructor_iterator`.  The upper
+boundary was rechecked directly from PE bytes: after `Lzss::FindNextNode @
+0x00456950`, `0x0045698F..0x004583CF` contains no common function prologue and
+`0x004583D0` begins import thunks/CRT.  This correction intentionally lowers the
+reported exact percentages; do not revert it to recover the old 686-function
+denominator.
+
+The two ScoreData lifecycle omissions are already closed. The 69-byte ctor uses
+an `OpenFile` producer-local `{compiler phase,fileSize}` record; 0/4/8-byte
+controls fail and the final record is 53/53 comparable bytes with four solved
+relocations. The 109-byte dtor restores the two target-observed free snapshots
+and gives each real owned-buffer free its own four-byte cleanup frontend;
+one-sided controls are 90/97, both together are 97/97.  A cold
+`ScoreLifecycle.obj` replay keeps `ScoreProfileView::Initialize`,
+`InitializeScoreData`, and `ReleaseScoreData` exact.
+
+Current extended-ECL entry-10 scratch has a reusable non-exact breakthrough:
+a fully-live 0x50 `{PhotoEffectArgs,effect,spawnId}` aggregate plus a source-local
+finder helper naturally reproduces every target local home through `cursor @
+EBP-0x74`; only the common `0x2C` interval before the fastcall homes remains.
+The same source template applies to entries 14/17, differing only in the
+`field38` constants 300/120 versus 40.  Two-parameter InitializeVm and ordinary
+block-local 0x2C reservations are negative oracles because they materialize
+non-target homes/code.  Continue from
+`.analysis/gpt-web-ecl-effect-callbacks-20260907/aggregate-find.cpp`; do not
+restart the local-rank search.

@@ -626,6 +626,8 @@ th095::ScreenEffect::DrawFullFade,0x00437050,function
 th095::ScreenEffect::DrawPartialFade,0x004370F0,function
 th095::ScreenEffect::DrawArcadeFade,0x00437140,function
 th095::ScreenEffect::DrawArcadePulse,0x00437280,function
+th095::ResultSaveDataLifecycleView::ResultSaveDataLifecycleView,0x004354B0,function
+th095::ResultSaveDataLifecycleView::~ResultSaveDataLifecycleView,0x00435580,function
 th095::ScoreProfileView::Initialize,0x00435500,function
 th095::InitializeScoreData,0x004355F0,function
 th095::ReleaseScoreData,0x00435660,function

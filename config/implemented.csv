@@ -624,6 +624,8 @@ th095::ScreenEffect::DrawFullFade
 th095::ScreenEffect::DrawPartialFade
 th095::ScreenEffect::DrawArcadeFade
 th095::ScreenEffect::DrawArcadePulse
+th095::ResultSaveDataLifecycleView::ResultSaveDataLifecycleView
+th095::ResultSaveDataLifecycleView::~ResultSaveDataLifecycleView
 th095::ScoreProfileView::Initialize
 th095::InitializeScoreData
 th095::ReleaseScoreData
