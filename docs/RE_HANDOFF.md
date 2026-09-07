@@ -3084,3 +3084,37 @@ No production source, match ledger, or match unit was changed by this sweep;
 the canonical source remains the 212/212-EBP-home reconstruction. Continue
 from the compiler/register chronology oracle, not from another ordinary
 scope/local-size matrix, and do not add inert locals or padding.
+
+## 2026-09-07 continuation: hidden EH entries and corrected exact accounting
+
+Read `docs/BOUNDARY_AUDIT.md` before relying on older boundary or byte counts.
+The inventory now has 1,880 candidates: 697 authored, 1,072 in review, and
+111 excluded. Forty-nine previously unlisted EH handlers were proved
+compiler-generated through 57 canonical references/local COFF templates and
+raw FuncInfo/dispatcher checks. Their 72 cleanup action addresses remain
+separate review leads, not silently counted as reconstructed.
+
+Main now requests `c_dfDIJoystick2`, matching the target's 272-byte,
+164-object SDK format. Four ANM tables (192 bytes) were removed from authored
+credit without reducing comparison ranges; two bytes of a real `ret 4` were
+restored to authored credit. Current exact credit is **693/697 functions and
+333,284/339,148 bytes (98.270961%)**. Another 2,473 authored bytes must become
+exact to reach 99% bytes; GetInput remains open.
+
+Cold replay passed 93 units: Main 48, ResultScreen 24, AnmManager 14,
+Controller 7. The 25 Main and 168 AnmManager compiler-local label updates
+preserve all target destinations, relocation offsets/types, and complete
+non-relocation bytes. The cause of earlier label drift was not established.
+No padding, compiler patch, new assembly, or inert source phase operation
+was integrated.
+
+Run the new aligned/unaligned boundary checks and optional EH COFF verification.
+The authored consistency gate is clean, but runtime anomalies and cleanup
+actions remain explicit review leads. The sole ownerless unaligned data
+pointer below the SDK arrays was 0x0041676E, verified as INT3 padding.
+
+GetInput's fresh TH08 unused-macro controls change register phase only by
+adding instructions and leave its frame at 0x11C; they were rejected.
+Fresh natural-C++ x87 /Od and /Og controls did not reproduce FSINCOS or bare
+FRNDINT. These are bounded negative results, not impossibility claims. All
+four authored hard residuals remain honestly non-exact.

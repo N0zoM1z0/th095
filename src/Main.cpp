@@ -1465,7 +1465,7 @@ i32 Supervisor::SetupDInput()
 
     if (this->controller != NULL)
     {
-        this->controller->SetDataFormat(&c_dfDIJoystick);
+        this->controller->SetDataFormat(&c_dfDIJoystick2);
         this->controller->SetCooperativeLevel(
             this->gameWindow, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
         g_Supervisor.controllerCaps.dwSize = sizeof(DIDEVCAPS);
