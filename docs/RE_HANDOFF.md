@@ -2959,3 +2959,9 @@ block-local 0x2C reservations are negative oracles because they materialize
 non-target homes/code.  Continue from
 `.analysis/gpt-web-ecl-effect-callbacks-20260907/aggregate-find.cpp`; do not
 restart the local-rank search.
+
+### 2026-09-07 gpt-web extended-ECL effect callback exact closure
+
+Extended-ECL entries 10/14/17 (`0x00413DF0/0x00414090/0x00414290`) are canonical exact for 404 bytes each and six relocations each. The reusable source template is `.analysis/gpt-web-ecl-effect-tail-member-width-20260907/2c.cpp`: a fully-live 0x50 effect record, an early-return linked-list finder, and `ExtendedEffectCallbackLocals::PublishFlags()` owning the target-strict 0x2C tail allocation phase. The phase is after all real locals and therefore moves only fastcall `enemy/instruction` homes by -0x2C; 0x28/0x30 controls are symmetric one-dword misses. All fifteen older `EclExtended.cpp` units replay exact from the same integrated TU.
+
+After these three promotions the authored ledger is 687/697 exact functions and 329,637/339,338 exact authored bytes (97.14%). True 99% requires 691 exact functions and 335,945 exact bytes, so four more functions and 6,308 bytes are still needed. The shortest currently source-present non-x87 route is extended entries 1/2/3/4 (1,386 bytes), `Controller::GetInput` (2,662), `Enemy::UpdateMovement` (1,695), and `EclRunHigh::DispatchShotInstruction` (756), totaling 6,499 bytes.

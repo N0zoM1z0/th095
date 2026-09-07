@@ -1768,3 +1768,9 @@ function prologues.  At `0x004583D0` the next discovered entries are consecutive
 DINPUT8/DSOUND/D3D8 import thunks followed by the dense CRT/compiler-helper
 region.  Thus the denominator expansion is the eleven internal omissions above,
 not an unbounded extension into the runtime tail.
+
+### Extended-ECL effect callbacks: early-return finder and fastcall tail phase (2026-09-07)
+
+`Callback10/14/17 @ 0x00413DF0/0x00414090/0x00414290` are now canonical exact for 404 authored bytes each. The natural semantic probe was 386 bytes and used the wrong finder tail: after the linked-list scan it tested `cursor == NULL` before publishing a null effect. The target instead publishes a matching node and exits the inline finder immediately; only loop exhaustion reaches an unconditional null publication. That change removes exactly the target-absent `cmp/jne` pair and gives all 108 target mnemonics.
+
+The remaining allocation residual is unusually clean. With one fully-live `0x50` `{ExtendedPhotoEffectArgs, effect, spawnId}` record, every local home through finder `cursor @ EBP-0x74` is already exact. Only the callback fastcall argument homes are shallow: source `enemy/instruction @ -0x78/-0x7C`, target `-0xA4/-0xA8`. Bind the target-observed tail class to the final real `effect->flags &= ~2U` publication as an inline member frontend. `compilerStorage[0x2C]` changes no runtime instruction but moves only those two outer homes; widths `0x28` and `0x30` leave the same seven EBP references exactly one dword shallow/deep. All three targets then replay 380/380 non-relocation bytes plus six relocation destinations. Treat this as a repeated operation-owned compiler phase, not permission for function-scope padding.

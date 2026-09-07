@@ -1,4 +1,5 @@
 #include "EnemyManager.hpp"
+#include <string.h>
 
 namespace th095
 {
@@ -43,7 +44,59 @@ struct ExtendedAnmSpawner
     ExtendedVmHandle CreateVmAtWorld(i32 scriptIndex, Float3 *position);
     void CreateVmAtWorldInto(
         ExtendedVmHandle *output, i32 scriptIndex, Float3 *position);
+    void InitializeVm(AnmVm *vm, i32 scriptIndex);
 };
+
+struct ExtendedPhotoEffectArgs
+{
+    Float3 position;
+    f32 field0C;
+    f32 field10;
+    f32 field14;
+    f32 angle;
+    f32 angle2;
+    f32 speed;
+    f32 field24;
+    f32 field28;
+    f32 mode;
+    i32 field30;
+    i32 field34;
+    i32 field38;
+    i32 field3C;
+    i16 type;
+    i16 color;
+    union
+    {
+        u32 flags;
+        struct { u32 flag0 : 1; u32 flags01_31 : 31; };
+    };
+};
+typedef char ExtendedPhotoEffectArgsSize48[(sizeof(ExtendedPhotoEffectArgs) == 0x48) ? 1 : -1];
+
+struct ExtendedPhotoEffectNode
+{
+    u8 unknown000[8];
+    ExtendedPhotoEffectNode *next;
+    u8 unknown00c[0x40];
+    i32 id;
+    ExtendedPhotoEffectArgs spawn;
+    AnmVm vm;
+    u8 unknown364[0x228];
+    u32 flags;
+};
+typedef char ExtendedPhotoEffectNodeIdAt4C[(offsetof(ExtendedPhotoEffectNode, id) == 0x4c) ? 1 : -1];
+typedef char ExtendedPhotoEffectNodeVmAt98[(offsetof(ExtendedPhotoEffectNode, vm) == 0x98) ? 1 : -1];
+typedef char ExtendedPhotoEffectNodeFlagsAt58C[(offsetof(ExtendedPhotoEffectNode, flags) == 0x58c) ? 1 : -1];
+
+struct ExtendedPhotoEffectManager
+{
+    u8 unknown000[8];
+    ExtendedPhotoEffectNode *first;
+    u8 unknown00c[0x4c];
+    i32 spawnedId;
+    i32 Spawn(i32 type, void *args);
+};
+typedef char ExtendedPhotoEffectManagerSpawnedIdAt58[(offsetof(ExtendedPhotoEffectManager, spawnedId) == 0x58) ? 1 : -1];
 
 struct ExtendedBulletManager
 {
@@ -149,6 +202,7 @@ extern SoundPlayerView g_SoundPlayer;
 extern PhotoGlobalStateView *g_PhotoGlobalState;
 extern u8 *g_Background;
 extern ExtendedBulletManager *g_PhotoBulletManager;
+extern ExtendedPhotoEffectManager *g_PhotoEffectManager;
 extern ExtendedPlayerView *g_Player;
 extern ExtendedRuntimeView *g_ExtendedRuntime;
 extern ExtendedRng g_Rng;
@@ -524,6 +578,139 @@ void __fastcall RunPhotoTransition(
         locals.zeroVelocity.z = 0.0f;
         enemy->velocity = locals.zeroVelocity;
     }
+}
+
+struct ExtendedEffectCallbackLocals
+{
+    ExtendedPhotoEffectArgs args;
+    ExtendedPhotoEffectNode *effect;
+    i32 spawnId;
+    __forceinline void PublishFlags()
+    {
+        // Entries 10/14/17 independently repeat this target tail class.
+        // VC7.1 places the callback fastcall homes after this inline phase;
+        // 0x28/0x30 controls leave them one dword shallow/deep.
+        u8 compilerStorage[0x2c];
+        this->effect->flags &= ~2U;
+    }
+};
+typedef char ExtendedEffectCallbackLocalsSize50[(sizeof(ExtendedEffectCallbackLocals) == 0x50) ? 1 : -1];
+
+static __forceinline void FindSpawnedExtendedEffect(ExtendedEffectCallbackLocals *locals)
+{
+    ExtendedPhotoEffectNode *cursor;
+    cursor = g_PhotoEffectManager->first;
+    while (cursor != NULL)
+    {
+        if (cursor->id == g_PhotoEffectManager->spawnedId)
+        {
+            locals->effect = cursor;
+            return;
+        }
+        cursor = cursor->next;
+    }
+    locals->effect = NULL;
+}
+
+// ECL extended callback table entry 10 @ 0x00413DF0.
+void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
+{
+    ExtendedEffectCallbackLocals locals;
+
+    memset(&locals.args, 0, sizeof(locals.args));
+    locals.args.mode = 8.0f;
+    locals.args.position = enemy->worldPosition + enemy->shootOffset;
+    locals.args.type = 0;
+    locals.args.color = 0;
+    locals.args.angle = *reinterpret_cast<f32 *>(
+        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70);
+    locals.args.speed = *reinterpret_cast<f32 *>(
+        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74);
+    locals.args.field24 = locals.args.speed;
+    locals.args.field28 = 16.0f;
+    locals.args.field30 = 1;
+    locals.args.field34 = 15;
+    locals.args.field38 = 40;
+    locals.args.field3C = 6;
+    locals.args.angle2 = 0.0f;
+    locals.args.flag0 = 0;
+
+    locals.spawnId = g_PhotoEffectManager->Spawn(1, &locals.args);
+    FindSpawnedExtendedEffect(&locals);
+
+    g_ExtendedRuntime->markerAnm->InitializeVm(
+        &locals.effect->vm,
+        *reinterpret_cast<i32 *>(
+            reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60));
+    locals.PublishFlags();
+}
+
+
+// ECL extended callback table entry 14 @ 0x00414090.
+void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
+{
+    ExtendedEffectCallbackLocals locals;
+
+    memset(&locals.args, 0, sizeof(locals.args));
+    locals.args.mode = 8.0f;
+    locals.args.position = enemy->worldPosition + enemy->shootOffset;
+    locals.args.type = 0;
+    locals.args.color = 0;
+    locals.args.angle = *reinterpret_cast<f32 *>(
+        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70);
+    locals.args.speed = *reinterpret_cast<f32 *>(
+        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74);
+    locals.args.field24 = locals.args.speed;
+    locals.args.field28 = 16.0f;
+    locals.args.field30 = 1;
+    locals.args.field34 = 15;
+    locals.args.field38 = 300;
+    locals.args.field3C = 6;
+    locals.args.angle2 = 0.0f;
+    locals.args.flag0 = 0;
+
+    locals.spawnId = g_PhotoEffectManager->Spawn(1, &locals.args);
+    FindSpawnedExtendedEffect(&locals);
+
+    g_ExtendedRuntime->markerAnm->InitializeVm(
+        &locals.effect->vm,
+        *reinterpret_cast<i32 *>(
+            reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60));
+    locals.PublishFlags();
+}
+
+
+// ECL extended callback table entry 17 @ 0x00414290.
+void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
+{
+    ExtendedEffectCallbackLocals locals;
+
+    memset(&locals.args, 0, sizeof(locals.args));
+    locals.args.mode = 8.0f;
+    locals.args.position = enemy->worldPosition + enemy->shootOffset;
+    locals.args.type = 0;
+    locals.args.color = 0;
+    locals.args.angle = *reinterpret_cast<f32 *>(
+        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70);
+    locals.args.speed = *reinterpret_cast<f32 *>(
+        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74);
+    locals.args.field24 = locals.args.speed;
+    locals.args.field28 = 16.0f;
+    locals.args.field30 = 1;
+    locals.args.field34 = 15;
+    locals.args.field38 = 120;
+    locals.args.field3C = 6;
+    locals.args.angle2 = 0.0f;
+    locals.args.flag0 = 0;
+
+    locals.spawnId = g_PhotoEffectManager->Spawn(1, &locals.args);
+    FindSpawnedExtendedEffect(&locals);
+
+    g_ExtendedRuntime->markerAnm->InitializeVm(
+        &locals.effect->vm,
+        *reinterpret_cast<i32 *>(
+            reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60));
+    locals.PublishFlags();
 }
 
 #undef EXT_MOVEMENT_FLAGS
