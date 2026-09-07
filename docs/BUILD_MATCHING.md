@@ -1852,3 +1852,27 @@ are ordered `(AnmVm *vm, i32 interpolationMode)` does: target homes become
 `$T/$T/vm/interpolation @ -0x3C/-0x40/-0x48/-0x44`, yielding 519/519
 non-relocation bytes.  Reversing the parameter order fails, so the closure is
 allocation-chronology evidence, not arbitrary helper wrapping.
+
+### 2026-09-07 high-ECL shot dispatcher exact
+
+`EclRunHigh::DispatchShotInstruction @ 0x00412670` is now canonical exact for
+all 756 bytes and fifteen relocations.  The final one-byte historical residual
+was not an intrinsic x87 limitation.  The target-specific source must keep the
+TH08-ancestral nested early-return shape:
+
+```
+if (minimumPlayerDistanceSquared > 0.0f) {
+    if (distanceSquared < minimumPlayerDistanceSquared)
+        return;
+}
+```
+
+Combined with the TH095 target-local Enemy overlay (`worldPosition +0x28F4`,
+`shootOffset +0x2924`, descriptor `+0x298C`, minimum distance `+0x2C4C`, player
+position `+0x1E30`), pinned VC7.1 naturally leaves the accumulated squared
+distance in x87 and emits `FCOMP dword ptr [enemy+0x2C4C]`.  No inline assembly
+or opcode injection is required.  The Ghidra-simplified positive body gate and
+its De Morgan equivalents compile to 755 bytes; empty-arm/goto variants compile
+to 758.  The nested source is therefore a useful target-strict CFG oracle and
+supersedes the older statement that the memory-form compare could not be
+recovered from portable C++.

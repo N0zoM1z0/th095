@@ -394,3 +394,4 @@ address,name,module,confidence,evidence
 0x004134A0,th095::EclExtended::Callback02,EclManager,exact,Canonical 378-byte shifted-script owned-bullet callback; twelve relocations replayed
 0x00413620,th095::EclExtended::Callback03,EclManager,exact,Canonical 293-byte direct-script active-bullet callback; eleven relocations replayed
 0x00413750,th095::EclExtended::Callback04,EclManager,exact,Canonical 575-byte shifted-script execute/finalize owned-bullet callback; fourteen relocations replayed
+0x00412670,th095::EclRunHigh::DispatchShotInstruction,EclManager,exact,"Canonical 756-byte target-local shot descriptor dispatcher; nested minimum-distance early-return preserves x87 memory compare; 15 relocations"

@@ -21468,3 +21468,29 @@ relocations = [
   { offset = 0x21E, type = "REL32", symbol = "?GetVm@AnmManagerLookupView@EclExtended@th095@@QAEPAUAnmVm@3@H@Z", target = 0x00445110 },
   { offset = 0x233, type = "DIR32", symbol = "?g_PhotoScreenFadeColor@EclExtended@th095@@3IA", target = 0x004C4E28 },
 ]
+
+[units.enemy-shot-dispatch]
+source = "src/EnemyShotDispatch.cpp"
+object = "build/matching/EnemyShotDispatch.obj"
+profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
+functions = ["th095::EclRunHigh::DispatchShotInstruction"]
+symbol = "?DispatchShotInstruction@EclRunHigh@th095@@YIXPAUEnemy@2@PAUEclRawInstruction@2@@Z"
+target_address = 0x00412670
+size = 0x2F4
+relocations = [
+  { offset = 0x2C, type = "DIR32", symbol = "__real@00000000", target = 0x004A05C4 },
+  { offset = 0x3C, type = "DIR32", symbol = "?g_EnemyShotPlayer@th095@@3PAEA", target = 0x004C4E70 },
+  { offset = 0x50, type = "DIR32", symbol = "?g_EnemyShotPlayer@th095@@3PAEA", target = 0x004C4E70 },
+  { offset = 0x67, type = "DIR32", symbol = "?g_EnemyShotPlayer@th095@@3PAEA", target = 0x004C4E70 },
+  { offset = 0x7C, type = "DIR32", symbol = "?g_EnemyShotPlayer@th095@@3PAEA", target = 0x004C4E70 },
+  { offset = 0x12C, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x16F, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x1A5, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x1DC, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x20E, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x242, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x274, type = "REL32", symbol = "?ResolveFloat@Enemy@th095@@QAEMM@Z", target = 0x004105A0 },
+  { offset = 0x2C7, type = "REL32", symbol = "?ResolveInt@EclOperands@th095@@YIHPAUEnemy@2@H@Z", target = 0x0040FAE0 },
+  { offset = 0x2E7, type = "DIR32", symbol = "?g_EnemyShotBulletManager@th095@@3PAUEnemyShotBulletManagerView@1@A", target = 0x004BDD98 },
+  { offset = 0x2EC, type = "REL32", symbol = "?SpawnBulletPattern@EnemyShotBulletManagerView@th095@@QAEHPAUEnemyShotDescriptorView@2@@Z", target = 0x00406CC0 },
+]

@@ -3027,3 +3027,24 @@ route is now exactly the remaining three non-x87 hard lanes:
 `EclRunHigh::DispatchShotInstruction` (756), totaling 5,113 bytes.  Closing all
 three reaches 336,136 exact bytes, about 99.06%, while the three ANM
 FRNDINT/FSINCOS lanes can remain non-exact under the no-inline-assembly rule.
+
+### 2026-09-07 gpt-web shot dispatcher exact
+
+`EclRunHigh::DispatchShotInstruction @ 0x00412670` is canonical exact for 756
+bytes, 696/696 non-relocation bytes, and all fifteen relocations.  Use the new
+isolated `src/EnemyShotDispatch.cpp`; its private descriptor/manager/player ABI
+views deliberately avoid coupling this target-local high-ECL layout to the
+later BulletManager translation-unit layout.
+
+The decisive source oracle is the TH08-style nested minimum-distance early
+return.  Do not repeat the old volatile/raw-lvalue x87 probes or assume the
+memory-form `FCOMP` requires assembly.  With the complete target-local source,
+stock VC7.1 emits it naturally.  Positive-OR/De-Morgan body gates are 755 bytes,
+while empty-arm/goto variants are 758; only the nested early return is 756 exact.
+
+After this promotion the authored ledger is 692/697 exact functions and
+331,779/339,338 exact bytes.  The 99% byte threshold remains 335,945, so 4,166
+more exact bytes are needed.  The remaining no-assembly route is now exactly
+`Enemy::UpdateMovement @ 0x00412970` (1,695) plus
+`Controller::GetInput @ 0x00419AE0` (2,662), totaling 4,357 bytes and reaching
+336,136 exact bytes (about 99.06%).
