@@ -62,7 +62,6 @@ extern char g_SelectedReplayPath[0x100];
 extern ReplayBrowserExitSignal g_ReplayBrowserExitSignal;
 
 void __fastcall LoadReplayBrowserEntries(void *unused);
-void __cdecl PrepareReplayDirectory(const char *path);
 
 } // namespace th095
 

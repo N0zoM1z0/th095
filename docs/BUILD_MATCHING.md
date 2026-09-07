@@ -1774,3 +1774,46 @@ not an unbounded extension into the runtime tail.
 `Callback10/14/17 @ 0x00413DF0/0x00414090/0x00414290` are now canonical exact for 404 authored bytes each. The natural semantic probe was 386 bytes and used the wrong finder tail: after the linked-list scan it tested `cursor == NULL` before publishing a null effect. The target instead publishes a matching node and exits the inline finder immediately; only loop exhaustion reaches an unconditional null publication. That change removes exactly the target-absent `cmp/jne` pair and gives all 108 target mnemonics.
 
 The remaining allocation residual is unusually clean. With one fully-live `0x50` `{ExtendedPhotoEffectArgs, effect, spawnId}` record, every local home through finder `cursor @ EBP-0x74` is already exact. Only the callback fastcall argument homes are shallow: source `enemy/instruction @ -0x78/-0x7C`, target `-0xA4/-0xA8`. Bind the target-observed tail class to the final real `effect->flags &= ~2U` publication as an inline member frontend. `compilerStorage[0x2C]` changes no runtime instruction but moves only those two outer homes; widths `0x28` and `0x30` leave the same seven EBP references exactly one dword shallow/deep. All three targets then replay 380/380 non-relocation bytes plus six relocation destinations. Treat this as a repeated operation-owned compiler phase, not permission for function-scope padding.
+
+### 2026-09-07 authored-boundary independent second pass
+
+Do not treat the 1,830 Ghidra candidates as either an authored denominator or a
+complete function inventory.  The current authored boundary was rechecked from
+the attested PE and canonical relocation graph without using Ghidra names as
+proof.  Raw decoding of all 697 authored bodies finds no external immediate
+`CALL`/`JMP` destination that is absent from `functions.csv`.  A separate scan
+of aligned pointers in `.rdata`, `.data`, and `.data1` finds only nine pointers
+into the authored address range that are not function starts; all nine are
+inside already-exact functions and are SEH/internal labels.  Finally, the
+8,989 bytes not covered by function extents inside `0x00401000..0x0045698E`
+are alignment or compiler tables: every gap of at least sixteen bytes begins
+with a switch/jump table whose code pointers lead back into the preceding
+known function, with any remainder consisting of lookup bytes or `INT3`.
+
+The tail boundary is independently data-proven.  `Lzss::FindNextNode` ends at
+`0x0045698E`; after one `INT3`, the DirectInput `DIOBJECTDATAFORMAT` backing
+arrays occupy the next 6,720 bytes.  `c_dfDIJoystick @ 0x00497EEC` has
+`rgodf=0x00456990`, `dwNumObjs=164`, and `dwObjSize=16`; immediately after it,
+`c_dfDIKeyboard @ 0x004980F4` has `rgodf=0x004573D0`, `dwNumObjs=256`, and
+`dwObjSize=16`.  They end exactly at `0x004583CF`, immediately before the first
+import thunk.  These independent call, pointer, gap, and tail checks found no
+additional authored function, so the independently audited authored set remains 697 rather
+than being accepted merely because an old ledger said so.
+
+The same audit fixed several false candidates.  Pinned `d3dx8.lib` COFF bodies
+reproduce `D3DXMatrixLookAtLH`, `D3DXMatrixPerspectiveFovLH`, and the five
+surface/texture helpers used by exact ANM/Main code.  Pinned `libcmt.lib`
+reproduces the anonymous x87/CRT entries used by exact units.  Most notably,
+Ghidra's provisional `FUN_004865c0` extent of 24,330 bytes is impossible: the
+pinned `_floor` body is 64 bytes at `0x004865C0`, and a second, Ghidra-missed
+`__floor_pentium4` function begins at `0x00486600` and spans 225 bytes.  Both
+structurally match the target outside their relocation fields.  This is a
+concrete example of why function discovery remains provisional even when the
+authored boundary itself is stable.
+
+ReplayBrowser had one misleading reconstruction-only symbol in this runtime
+region.  `PrepareReplayDirectory` never had a definition; its match manifest
+manually solved it to `0x00485F6D`.  Pinned `mkdir.obj` proves that address is
+CRT `__mkdir` (32/32 non-relocation bytes plus the expected
+`CreateDirectoryA`, `GetLastError`, and `__dosmaperr` relocations), so canonical
+source now calls `_mkdir` directly and the manifest names `__mkdir`.

@@ -226,7 +226,7 @@ void __fastcall LoadReplayBrowserEntries(void *)
     }
 
     locals.slot = 20;
-    PrepareReplayDirectory("replay");
+    _mkdir("replay");
     _chdir("replay");
     locals.findHandle = FindFirstFileA(
         "th95_ud????.rpy", &locals.findData);

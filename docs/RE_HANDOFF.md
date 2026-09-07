@@ -2965,3 +2965,36 @@ restart the local-rank search.
 Extended-ECL entries 10/14/17 (`0x00413DF0/0x00414090/0x00414290`) are canonical exact for 404 bytes each and six relocations each. The reusable source template is `.analysis/gpt-web-ecl-effect-tail-member-width-20260907/2c.cpp`: a fully-live 0x50 effect record, an early-return linked-list finder, and `ExtendedEffectCallbackLocals::PublishFlags()` owning the target-strict 0x2C tail allocation phase. The phase is after all real locals and therefore moves only fastcall `enemy/instruction` homes by -0x2C; 0x28/0x30 controls are symmetric one-dword misses. All fifteen older `EclExtended.cpp` units replay exact from the same integrated TU.
 
 After these three promotions the authored ledger is 687/697 exact functions and 329,637/339,338 exact authored bytes (97.14%). True 99% requires 691 exact functions and 335,945 exact bytes, so four more functions and 6,308 bytes are still needed. The shortest currently source-present non-x87 route is extended entries 1/2/3/4 (1,386 bytes), `Controller::GetInput` (2,662), `Enemy::UpdateMovement` (1,695), and `EclRunHigh::DispatchShotInstruction` (756), totaling 6,499 bytes.
+
+### 2026-09-07 gpt-web authored-boundary independent second pass
+
+The authored denominator was re-audited independently rather than inherited
+from Ghidra/IDA.  No new authored function was found: all 697 authored bodies
+have their external direct branch/call starts represented in `functions.csv`;
+all data pointers into non-start addresses land inside already-authored exact
+functions; and every >=16-byte uncovered gap in the authored range is a switch
+or jump table returning to its preceding function.  The final authored body
+ends at `0x0045698E`; DirectInput's 164-entry joystick and 256-entry keyboard
+`DIOBJECTDATAFORMAT` arrays cover `0x00456990..0x004583CF` exactly, proving the
+transition into static-library data.
+
+Pinned D3DX8/CRT members were used to classify the high-risk anonymous runtime
+entries instead of trusting Ghidra labels.  This caught one real missed runtime
+function and one bad extent: `_floor @ 0x004865C0` is only 64 bytes, and the
+separate 225-byte `__floor_pentium4 @ 0x00486600` was absent from the imported
+function inventory.  The latter is now explicitly inventoried as library code,
+not added to the authored denominator.  The ReplayBrowser-only
+`PrepareReplayDirectory` name was also false provenance; target `0x00485F6D`
+is pinned CRT `__mkdir`, so source and relocation manifest now use `_mkdir` /
+`__mkdir` directly.
+
+The current ledger remains 687/697 exact authored functions and
+329,637/339,338 exact authored bytes (97.14%). True 99% requires 691 exact
+functions and 335,945 exact bytes, so four functions and 6,308 bytes remain.
+The complete non-x87 route is extended ECL entries 1/2/3/4 (1,386 bytes),
+`Controller::GetInput` (2,662), `Enemy::UpdateMovement` (1,695), and
+`EclRunHigh::DispatchShotInstruction` (756), totaling 6,499 bytes.
+Do not rerun the closed macro-grammar, slot-storage, result-publication, or
+ordinary phase/local matrices; the remaining residual is the VC7.1 keyboard
+GPR chronology plus the two target-only deep dwords, with all 212 real stack
+homes already exact.

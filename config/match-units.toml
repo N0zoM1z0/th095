@@ -15454,7 +15454,7 @@ relocations = [
   { offset = 0x82, type = "REL32", symbol = "_sprintf", target = 0x00485A12 },
   { offset = 0x9E, type = "REL32", symbol = "?LoadReplaySlot@ReplayBrowserView@th095@@QAE?AW4ZunResult@@HPAD@Z", target = 0x00450E20 },
   { offset = 0xAC, type = "DIR32", symbol = "??_C@_06HOJHLELG@replay?$AA@", target = 0x0049685C },
-  { offset = 0xB1, type = "REL32", symbol = "?PrepareReplayDirectory@th095@@YAXPBD@Z", target = 0x00485F6D },
+  { offset = 0xB1, type = "REL32", symbol = "__mkdir", target = 0x00485F6D },
   { offset = 0xB9, type = "DIR32", symbol = "??_C@_06HOJHLELG@replay?$AA@", target = 0x0049685C },
   { offset = 0xBE, type = "REL32", symbol = "__chdir", target = 0x004868DB },
   { offset = 0xCD, type = "DIR32", symbol = "??_C@_0BA@IAENMFNC@th95_ud?$DP?$DP?$DP?$DP?4rpy?$AA@", target = 0x00497884 },
