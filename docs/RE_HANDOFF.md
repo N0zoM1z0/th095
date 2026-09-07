@@ -3156,3 +3156,35 @@ Target-frame `0x124` probes exist without changing instruction count, but all
 retain the wrong Win32 starting register and displace real stack homes. Treat
 this as a compiler-allocation/register-chronology problem, not a seven-byte
 length patch.
+
+
+## 2026-09-08 gpt-web GetInput compiler-class / raw-boundary continuation
+
+Continue GetInput from compiler temporary/value ownership, not from ordinary
+local rank, declaration order, macro spelling, or compiler-profile sweeps.  A
+full 6! declaration-order run is closed: 720/720 variants are the same
+2655-byte, 579-instruction, frame-0x11C, Win32-first-EAX family.  Same-home name
+oracles are stronger still: 43 different semantic identifiers with 212/212 EBP
+homes have identical complete function bytes.  No historical probe combines a
+frame deeper than 0x11C with 212/212 homes; among 168 frame-0x124 objects the
+best is 205/212.  One/two block-local dwords, function-local wide scalars,
+align(8) objects, and branch-local `double` controls reproduce only the wrong
+allocation class.
+
+The target register difference is branch-local rather than one global cyclic
+rename.  Win32 keys use one rotation, DirectInput keys another, and the late
+history region re-synchronizes.  Full-function tail/merge ablations show that
+removing or retaining controller merge, history publication, repeat loop, and
+pressed/released publication does not change the current Win32/DI EAX starts; a
+previous simplified `postloop` micro that appeared to change the seed was not a
+valid full-function oracle.  The remaining promising class is a compiler
+prvalue/reference lifetime distinction: an empty-class temporary can change the
+branch phase, but every tested form also emits non-target initialization or
+reference materialization, or falls back to the wrong phase.
+
+Boundary discovery was independently repeated with pointer stride 1 and EH COFF
+verification.  No authored direct edge lands outside the inventory, and all 44
+uncovered prologue hypotheses start at/after 0x00458659, beyond the authored
+upper boundary 0x0045698E.  Keep the denominator at 697 authored bodies unless
+new target evidence appears; do not infer completeness solely from Ghidra/IDA
+function starts.

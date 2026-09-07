@@ -218,3 +218,25 @@ The only ownerless unaligned destination below the SDK arrays is `0x0041676E`,
 an INT3 alignment byte, not a newly established function. The current
 function-only gap count over `[0x00401000, 0x0045698F)` is 9,178 bytes; older
 8,989-byte prose counts are superseded, not accepted as a completeness proof.
+
+
+## 2026-09-08 raw authored-era second pass
+
+The boundary was re-audited without treating an existing disassembler function
+start as the discovery primitive.  Running
+`audit-authored-boundary.py --pointer-stride 1 --verify-eh-coff` over the
+hash-attested executable scans direct control-flow destinations, executable
+address words, uncovered non-padding ranges, and common prologue leads.  The
+report still covers 21,077 direct edges (11,251 from authored functions) and
+1,086 executable-address words.  No direct edge from an authored function lands
+on an uninventoried function start.  All 44 uncovered prologue hypotheses begin
+at or after `0x00458659`, beyond the established authored-code upper boundary
+`0x0045698E`; there is no raw-gap prologue lead in the authored era.  The two
+short decodes and the nine external non-start direct destinations are likewise
+outside the authored set.
+
+This pass also replays the EH side rather than assuming it from code gaps: the
+49 compiler handlers have 57 canonical local-COFF references and the authored
+consistency gate remains empty.  These results strengthen the current 697-body
+authored denominator, but they are not a proof that every arbitrary byte
+sequence is source code or that every runtime review lead is classified.

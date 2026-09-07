@@ -1957,3 +1957,44 @@ bytes were checked unchanged. All fourteen canonical `Global.cpp` units replay
 exact from the corrected source. The reusable rule is that aggregate grouping
 is not semantically invisible to VC7.1 EH ownership: preserve the actual
 destructible local object when FuncInfo/COFF evidence identifies it.
+
+
+### GetInput compiler-class exhaustion checkpoint (2026-09-08)
+
+`Controller::GetInput @ 0x00419AE0` remains deliberately non-exact.  The
+canonical stock-3077 source is 2,655 bytes / 579 instructions with all 212
+paired EBP-relative operands exact; the target is 2,662 bytes / 579 instructions
+and reserves `EBP-0x120/-0x124` while keeping `inputIndex @ EBP-0x11C`.  Neither
+slot is read, written, or address-taken by target instructions.  The Win32 key
+block starts in target EDX versus source EAX, the DirectInput key block has a
+different register rotation, and the histories re-synchronize by the late
+controller/history region.  Do not model this as one global register rotation.
+
+Several broad source classes are now exhaustively negative.  All **720**
+permutations of the six real scalar/pointer declarations compile to the same
+2,655-byte / 579-instruction / `0x11C` / Win32-EAX family.  Forty-three
+different same-bucket semantic identifiers with 212/212 target homes produce
+identical complete GetInput bytes.  Across **168** historical target-frame
+`0x124` objects, the best stack-home result is only 205/212; across the complete
+historical probe corpus there is **no** object with frame deeper than `0x11C`
+and 212/212 homes.  Function-scope, branch-scope, and tail-scope unused dwords,
+`double`/`__int64`, and aligned eight-byte objects all push the real parameter
+home instead of occupying the target trailing class.  They are not acceptable
+missing-local explanations.
+
+Translation-unit isolation, emitted seed functions, static-member scope, the
+real three-element slot/assignment array declarations, macro ownership, and
+stock profile controls (`/G5`, `/G6`, `/G7`, `/GB`, `/Ot`, `/Oi`, `/Ob0`,
+`/Ob2`, `/Gy`, `/GF`) leave the canonical function bytes unchanged.  Profiles
+that do change coloring (`/O1`, `/O2`, `/Og`, `/Os`, `/ZI`) also destroy target
+instruction topology.  The target Rich header independently pins compiler build
+3077, so this is not evidence for a different VC7.1 release.
+
+The strongest private source-class oracle is an empty-class member call on the
+first key expression.  Value-initializing the temporary makes VC7 emit two
+non-target clear instructions and changes branch register phase; a user-provided
+empty constructor removes the clear instructions but also loses that phase.
+`const&` lifetime-extension variants either materialize non-target references or
+fall back to the same wrong phase.  This demonstrates that the residual belongs
+to compiler temporary/value ownership, but it does **not** license an empty
+class, inert local, compiler patch, or assembly in canonical source.
