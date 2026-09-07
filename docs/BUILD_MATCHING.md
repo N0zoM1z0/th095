@@ -1420,6 +1420,14 @@ mnemonic tree. Diagnostic function-scope 0/4/8/12-byte storage never changes the
 repeats the final eight-byte tail after the deepest referenced local, so this is
 not a storage exception.
 
+A 2026-09-07 bounded lifetime oracle also tested natural block ownership for
+`HRESULT inputResult`, the repeat-loop index, and the two loop-carried masks,
+including their combined scope and the TH08-style DirectInput-local result.
+Every compiling variant remained 2,655 bytes with 579 instructions and began
+the Win32 publication in `EAX`; none reached the target `EDX -> EAX -> ECX`
+phase or closed the 2,662-byte extent. Keep this negative result as a closed
+source-shape test; do not add block locals merely to alter register chronology.
+
 `Background::RenderObjects @ 0x00402F60` is now canonical exact for all 565
 authored bytes.  The closing source shape comes from the exact TH08 ancestor,
 not an identifier or frame-size sweep.  TH08's original `RenderObjects` keeps

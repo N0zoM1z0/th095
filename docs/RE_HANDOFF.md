@@ -3070,3 +3070,17 @@ After this promotion the authored ledger is 693/697 exact functions and
 99%; `Controller::GetInput @ 0x00419AE0` is 2,662 bytes and is therefore the
 single remaining no-assembly threshold lane. The three ANM FRNDINT/FSINCOS
 functions can remain non-exact if Controller closes.
+
+### 2026-09-07 gpt-web GetInput scope-oracle handoff
+
+The final bounded natural-lifetime sweep for `Controller::GetInput` is closed
+as negative. Serial pinned-VC7.1 probes moved `HRESULT inputResult`, the
+repeat-loop index, and the loop-carried masks into real lexical blocks, alone
+and in combination with the TH08-style DirectInput-local result. All seven
+variants retained 579 instructions and a 2,655-byte body, all began the first
+Win32 keyboard publication in `EAX`, and none reproduced the target's
+`EDX -> EAX -> ECX` register phase or the target-only `-0x120/-0x124` tail.
+No production source, match ledger, or match unit was changed by this sweep;
+the canonical source remains the 212/212-EBP-home reconstruction. Continue
+from the compiler/register chronology oracle, not from another ordinary
+scope/local-size matrix, and do not add inert locals or padding.
