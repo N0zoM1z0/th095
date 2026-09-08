@@ -81,6 +81,9 @@ The subsequent name/parameter-class cross is also closed: sixteen names and
 plain/`const`/`register`/`__w64` declarations all leave the target-frame
 diagnostic's parameter at `EBP-0x124`. See
 `.analysis/final-four-oracles-20260908.md`.
+Making that UDT syntactically live through an inline member or default-argument
+reference also leaves all seven homes at `EBP-0x124`; initializing real state
+instead emits 31 extra target-incompatible bytes. This lane is closed too.
 
 For the ANM trio, that same report expands the clean intrinsic whitelist to 34
 names. Only `sin`, `cos`, and `sqrt` positive controls are accepted; all 31

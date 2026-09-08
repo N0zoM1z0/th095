@@ -2019,6 +2019,14 @@ seven-use `EBP-0x11C` parameter home. Parameter renaming or ABI-equivalent
 qualification therefore cannot compose the target-frame and phase effects.
 The complete oracle is in `.analysis/final-four-oracles-20260908.md`.
 
+A live-use cross does not provide a clean escape. Giving the eight-byte return
+object real initialized state and returning one member grows the body to 2,693
+bytes. Using the empty object through an inline identity member or a
+default-argument `const&` lifetime keeps the 2,662-byte extent, but both remain
+at 2,567/2,574 comparable bytes with the same seven `EBP-0x124` parameter
+homes. Syntactic use therefore does not move this temporary into the target's
+post-parameter allocation class, and the empty forms remain provenance-free.
+
 
 ### ANM x87 frontend exhaustion checkpoint (2026-09-08)
 
