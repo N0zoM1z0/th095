@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 160 unique unresolved decorated symbols across 166 diagnostics:
-59 data and 101 callable/runtime. Of those names, 157 map through canonical
-relocations to 135 target addresses; three currently lack target-address
+now fails with 144 unique unresolved decorated symbols across 150 diagnostics:
+59 data and 85 callable/runtime. Of those names, 141 map through canonical
+relocations to 128 target addresses; three currently lack target-address
 evidence and three decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -288,6 +288,24 @@ addresses disappear from the unresolved set. Six affected sources replay
 82/82 configured exact units; 17 BulletManager compiler-private `$L` labels
 were refreshed only after structural bytes, relocation offset/type, and solved
 destination were proven unchanged.
+
+The ANM VM lookup/manipulation family is closed across the core photo and ECL
+receiver universes. Fresh hash-attested Ghidra bounds `CreateVmAtWorld @
+0x00445060` to 169 bytes, `GetVm @ 0x00445110` to 90, `SetInterrupt @
+0x00445170` to 50, `MarkVmForDeletion @ 0x004451B0` to 60, `SetPosition @
+0x004451F0` to 64, `AnmVmId::GetVm @ 0x004452F0` to 51, and
+`AnmVmId::SetSprite @ 0x00445360` to 69. Production PhotoCamera/PhotoStage
+views now call the real `AnmManager` methods with the target four-byte
+`AnmVmId`; ECL production-only declarations use the existing `th095::AnmManager`
+and 0x1c-byte `AnmLoaded` identities, while DIFFBUILD keeps the historical
+proxy receiver spellings. `ExtendedRuntime +0x4DF8` is independently corroborated
+as the real enemy ANM `AnmLoaded *`, and BulletInf `+0x27C5B0` is populated from
+`g_AnmManager->LoadAnm(6, "bullet.anm")`, so the world-spawn canonicalization
+does not rely on an invented receiver. The cold link moves 160 -> 144 unique
+unresolved names and 166 -> 150 diagnostics, callable/runtime 101 -> 85; all
+seven ANM target addresses are absent from the fresh unresolved set. Four
+affected sources replay 40/40 configured exact units with no relocation-label
+refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

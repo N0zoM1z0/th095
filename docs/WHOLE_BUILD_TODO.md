@@ -199,7 +199,7 @@ front-end lifecycle flags, Supervisor member views, and standalone buffers.
 
 ## Callable/runtime families
 
-Most of the remaining 101 callable/runtime names are not missing semantics.
+Most of the remaining 85 callable/runtime names are not missing semantics.
 They are local proxy class names calling already reconstructed target functions.
 Close them by canonicalizing the receiver type and declaration.
 
@@ -211,10 +211,17 @@ proves the 108-byte/212-byte functions and the two calls into `Die @
 diagnostics), both addresses are absent from the unresolved target set, and all
 82 affected exact units replay canonical exact.
 
+Closed 2026-09-09: ANM VM lookup/manipulation at `0x00445060`, `0x00445110`,
+`0x00445170`, `0x004451B0`, `0x004451F0`, `0x004452F0`, and `0x00445360`.
+Core photo views and ECL-local proxy spellings now converge in production on
+the existing `AnmLoaded`, `AnmManager`, and `AnmVmId` implementations; exact
+builds preserve their historical decorated receivers. Fresh link count changes
+160 -> 144 unique unresolved (166 -> 150 diagnostics), all seven target
+addresses disappear from the unresolved set, and the four affected sources
+replay 40/40 canonical exact units.
+
 Continue with:
 
-- ANM VM lookup/manipulation at `0x00445110`, `0x00445170`, `0x004451B0`,
-  `0x004451F0`, `0x004452F0`, and `0x00445360`;
 - bullet capture/count/reset/spawn methods in the `0x00404950..0x00408220`
   family;
 - enemy create/update/destroy/ECL methods in the

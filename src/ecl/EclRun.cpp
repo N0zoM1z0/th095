@@ -79,6 +79,20 @@
 #endif
 
 #ifdef DIFFBUILD
+#define TH095_ECL_ANM_GET_VM(id) TH095_ECL_ANM_MANAGER->FindVm(id)
+#define TH095_ECL_ANM_MARK_DELETE(id) TH095_ECL_ANM_MANAGER->RemoveVm(id)
+#define TH095_ECL_ANM_SPAWN_WORLD(spawner, script, position) \
+    (spawner)->Spawn((script), (position))
+#else
+#define TH095_ECL_ANM_GET_VM(id) \
+    ::th095::g_AnmManager->GetVm(::th095::Th095EclAnmId(id))
+#define TH095_ECL_ANM_MARK_DELETE(id) \
+    ::th095::g_AnmManager->MarkVmForDeletion(::th095::Th095EclAnmId(id))
+#define TH095_ECL_ANM_SPAWN_WORLD(spawner, script, position) \
+    ::th095::Th095EclSpawnWorld((spawner), (script), (position))
+#endif
+
+#ifdef DIFFBUILD
 #define TH095_ECL_EFFECT_MANAGER EclRunHigh::g_Th095PhotoEffectManager
 #define TH095_ECL_STAGE_CONTROLLER EclRunHigh::g_Th095StageController
 #else
@@ -98,6 +112,21 @@ namespace th095
 
 #ifndef DIFFBUILD
 extern AnmManager *g_AnmManager;
+static __forceinline AnmVmId Th095EclAnmId(i32 value)
+{
+    AnmVmId id;
+    id.value = value;
+    return id;
+}
+static __forceinline EclRunHigh::PhotoAnmHandle Th095EclSpawnWorld(
+    EclRunHigh::PhotoAnmSpawner *spawner, i32 script, Float3 *position)
+{
+    AnmVmId id = reinterpret_cast<AnmLoaded *>(spawner)
+        ->CreateVmAtWorld(script, position);
+    EclRunHigh::PhotoAnmHandle result;
+    result.value = id.value;
+    return result;
+}
 #endif
 
 // The low/high opcode bodies are included lexically below so VC7 can reproduce

@@ -221,8 +221,8 @@
     case 150:
     {
         Float3 position = enemy->worldPosition + enemy->shootOffset;
-        (*reinterpret_cast<PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8))
-            ->Spawn(TH08_ECL_READ_I(ctx, 0), &position);
+        TH095_ECL_ANM_SPAWN_WORLD(
+            *reinterpret_cast<PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8), TH08_ECL_READ_I(ctx, 0), &position);
         break;
     }
 
@@ -230,14 +230,14 @@
     {
         Float3 position = enemy->worldPosition + enemy->shootOffset;
         TH095_ENEMY_ANM_HANDLES(enemy)->handles[TH08_ECL_READ_I(ctx, 0)] =
-            (*reinterpret_cast<PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8))
-                ->Spawn(TH08_ECL_READ_I(ctx, 1), &position);
+            TH095_ECL_ANM_SPAWN_WORLD(
+                *reinterpret_cast<PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8), TH08_ECL_READ_I(ctx, 1), &position);
         break;
     }
 
     case 152:
     {
-        AnmVm *vm = TH095_ECL_ANM_MANAGER->FindVm(
+        AnmVm *vm = TH095_ECL_ANM_GET_VM(
             TH095_ENEMY_ANM_HANDLES(enemy)
                 ->handles[TH08_ECL_READ_I(ctx, 0)].value);
         if (vm)

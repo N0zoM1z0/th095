@@ -9,6 +9,10 @@ namespace th095
 extern f32 g_AnmGameSpeed;
 #ifndef DIFFBUILD
 extern AnmManager *g_AnmManager;
+static __forceinline AnmManager *EclExtendedCanonicalAnmManager()
+{
+    return g_AnmManager;
+}
 #endif
 #ifndef TH095_MATCH_EXACT
 struct Background;
@@ -61,6 +65,35 @@ struct ExtendedAnmSpawner
         ExtendedVmHandle *output, i32 scriptIndex, Float3 *position);
     void InitializeVm(AnmVm *vm, i32 scriptIndex);
 };
+typedef char ExtendedVmHandleSizeIs4[
+    (sizeof(ExtendedVmHandle) == sizeof(i32)) ? 1 : -1];
+
+#ifdef DIFFBUILD
+#define TH095_EXT_ANM_GET_VM(handle) g_AnmManager->GetVm(handle)
+#define TH095_EXT_CREATE_VM_WORLD(spawner, script, position)     (spawner)->CreateVmAtWorld((script), (position))
+#define TH095_EXT_CREATE_VM_WORLD_INTO(spawner, output, script, position)     (spawner)->CreateVmAtWorldInto((output), (script), (position))
+#define TH095_EXT_HANDLE_GET_VM(handle) (handle).GetVm()
+#define TH095_EXT_HANDLE_SET_SPRITE(handle, sprite) (handle).SetSprite(sprite)
+#else
+static __forceinline AnmVmId ExtendedCanonicalAnmId(i32 value)
+{
+    AnmVmId id;
+    id.value = value;
+    return id;
+}
+static __forceinline void ExtendedCreateVmAtWorldInto(
+    ExtendedAnmSpawner *spawner, ExtendedVmHandle *output,
+    i32 scriptIndex, Float3 *position)
+{
+    output->value = reinterpret_cast<AnmLoaded *>(spawner)
+        ->CreateVmAtWorld(scriptIndex, position).value;
+}
+#define TH095_EXT_ANM_GET_VM(handle)     ::th095::EclExtendedCanonicalAnmManager()->GetVm(         ExtendedCanonicalAnmId(handle))
+#define TH095_EXT_CREATE_VM_WORLD(spawner, script, position)     reinterpret_cast<AnmLoaded *>(spawner)->CreateVmAtWorld((script), (position))
+#define TH095_EXT_CREATE_VM_WORLD_INTO(spawner, output, script, position)     ExtendedCreateVmAtWorldInto((spawner), (output), (script), (position))
+#define TH095_EXT_HANDLE_GET_VM(handle)     reinterpret_cast<AnmVmId *>(&(handle))->GetVm()
+#define TH095_EXT_HANDLE_SET_SPRITE(handle, sprite)     reinterpret_cast<AnmVmId *>(&(handle))->SetSprite(sprite)
+#endif
 
 struct ExtendedPhotoEffectArgs
 {
@@ -322,9 +355,9 @@ i32 __fastcall DispatchExtendedValue(
 void __fastcall SpawnDeathPhotoVms(
     Enemy *enemy, EclRawInstruction *instruction)
 {
-    g_PhotoBulletManager->anmSpawner->CreateVmAtWorld(0x123, &enemy->position);
+    TH095_EXT_CREATE_VM_WORLD(g_PhotoBulletManager->anmSpawner, 0x123, &enemy->position);
     for (i32 i = 0; i < 32; ++i)
-        g_PhotoBulletManager->anmSpawner->CreateVmAtWorld(0x122, &enemy->position);
+        TH095_EXT_CREATE_VM_WORLD(g_PhotoBulletManager->anmSpawner, 0x122, &enemy->position);
     TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x12, 0);
     TH095_ECL_EXT_GAME_SPEED = 0.25f;
 }
@@ -354,7 +387,7 @@ void __fastcall UpdatePlayerProximityAndMarker(
         g_Player->proximityScale =
             (locals.distanceSquared - 1024.0f) / 3072.0f * 0.75f + 0.25f;
 
-    locals.vm = g_AnmManager->GetVm(
+    locals.vm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d4));
     if (locals.vm != NULL)
         PhotoToScreen(&locals.vm->positionOffset, &enemy->position);
@@ -386,10 +419,10 @@ void __fastcall SetBackgroundVmsState2(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
-    firstVm = g_AnmManager->GetVm(
+    firstVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
     firstVm->pendingInterrupt = 2;
-    secondVm = g_AnmManager->GetVm(
+    secondVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
     secondVm->pendingInterrupt = 2;
 }
@@ -400,10 +433,10 @@ void __fastcall SetBackgroundVmsState3(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
-    firstVm = g_AnmManager->GetVm(
+    firstVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
     firstVm->pendingInterrupt = 3;
-    secondVm = g_AnmManager->GetVm(
+    secondVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
     secondVm->pendingInterrupt = 3;
     TH095_ECL_EXT_GAME_SPEED = 1.0f;
@@ -430,11 +463,11 @@ void __fastcall EnablePhotoTransition(
     AnmVm *secondVm;
     AnmVm *firstVm;
     g_PhotoGlobalState->flags |= 0x400;
-    firstVm = g_AnmManager->GetVm(
+    firstVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
     firstVm->pendingInterrupt = 2;
     AnmManagerLookupView::ExecuteScript(firstVm);
-    secondVm = g_AnmManager->GetVm(
+    secondVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
     secondVm->pendingInterrupt = 2;
     AnmManagerLookupView::ExecuteScript(secondVm);
@@ -449,11 +482,11 @@ void __fastcall DisablePhotoTransition(
     AnmVm *secondVm;
     AnmVm *firstVm;
     g_PhotoGlobalState->flags &= ~0x400U;
-    firstVm = g_AnmManager->GetVm(
+    firstVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
     firstVm->pendingInterrupt = 3;
     AnmManagerLookupView::ExecuteScript(firstVm);
-    secondVm = g_AnmManager->GetVm(
+    secondVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
     secondVm->pendingInterrupt = 3;
     AnmManagerLookupView::ExecuteScript(secondVm);
@@ -537,7 +570,7 @@ void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instructio
 {
     ExtendedVector position;
     AnmVm *firstVm;
-    firstVm = g_AnmManager->GetVm(*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d4));
+    firstVm = TH095_EXT_ANM_GET_VM(*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d4));
     if (firstVm != NULL)
     {
         position.FromAngleMagnitude(enemy->movementAngle, 24.0f);
@@ -547,7 +580,7 @@ void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instructio
         firstVm->positionOffset.y -= 16.0f;
         firstVm->rotation.z = enemy->movementAngle;
         position = *reinterpret_cast<ExtendedVector *>(&firstVm->positionOffset);
-        firstVm = g_AnmManager->GetVm(*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d8));
+        firstVm = TH095_EXT_ANM_GET_VM(*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d8));
         firstVm->positionOffset = *reinterpret_cast<Float3 *>(&position);
         firstVm->rotation.z = enemy->movementAngle;
     }
@@ -563,12 +596,12 @@ void __fastcall SpawnEnemyMarkerVm(
         ExtendedVmHandle handle;
     } locals;
 
-    g_ExtendedRuntime->markerAnm->CreateVmAtWorldInto(
-        &locals.handle,
+    TH095_EXT_CREATE_VM_WORLD_INTO(
+        g_ExtendedRuntime->markerAnm, &locals.handle,
         enemy->activeEclContext->extraIntVariables[2],
         &enemy->worldPosition);
-    locals.vm = locals.handle.GetVm();
-    locals.handle.SetSprite(enemy->vm.activeSpriteIndex);
+    locals.vm = TH095_EXT_HANDLE_GET_VM(locals.handle);
+    TH095_EXT_HANDLE_SET_SPRITE(locals.handle, enemy->vm.activeSpriteIndex);
     locals.vm->flip = enemy->vm.flip;
     locals.vm->rotation = enemy->vm.rotation;
 }
@@ -611,11 +644,11 @@ void __fastcall RunPhotoTransition(
         if (enemy->activeEclContext->extraIntVariables[2] == 60)
         {
             g_PhotoGlobalState->flags &= ~0x400U;
-            locals.firstEndVm = g_AnmManager->GetVm(
+            locals.firstEndVm = TH095_EXT_ANM_GET_VM(
                 *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
             locals.firstEndVm->pendingInterrupt = 3;
             AnmManagerLookupView::ExecuteScript(locals.firstEndVm);
-            locals.secondEndVm = g_AnmManager->GetVm(
+            locals.secondEndVm = TH095_EXT_ANM_GET_VM(
                 *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
             locals.secondEndVm->pendingInterrupt = 3;
             AnmManagerLookupView::ExecuteScript(locals.secondEndVm);
@@ -629,11 +662,11 @@ void __fastcall RunPhotoTransition(
         g_Player->camera.CountPhotoTargets(NULL, NULL) != 0)
     {
         g_PhotoGlobalState->flags |= 0x400U;
-        locals.firstStartVm = g_AnmManager->GetVm(
+        locals.firstStartVm = TH095_EXT_ANM_GET_VM(
             *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
         locals.firstStartVm->pendingInterrupt = 2;
         AnmManagerLookupView::ExecuteScript(locals.firstStartVm);
-        locals.secondStartVm = g_AnmManager->GetVm(
+        locals.secondStartVm = TH095_EXT_ANM_GET_VM(
             *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
         locals.secondStartVm->pendingInterrupt = 2;
         AnmManagerLookupView::ExecuteScript(locals.secondStartVm);
@@ -823,7 +856,7 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
 static __forceinline void SetExtendedBackgroundVm0State2()
 {
     AnmVm *vm;
-    vm = g_AnmManager->GetVm(
+    vm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
     vm->pendingInterrupt = 2;
 }
@@ -831,7 +864,7 @@ static __forceinline void SetExtendedBackgroundVm0State2()
 static __forceinline void SetExtendedBackgroundVm1State2()
 {
     AnmVm *vm;
-    vm = g_AnmManager->GetVm(
+    vm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
     vm->pendingInterrupt = 2;
 }
@@ -839,7 +872,7 @@ static __forceinline void SetExtendedBackgroundVm1State2()
 static __forceinline void SetExtendedBackgroundVm0State3()
 {
     AnmVm *vm;
-    vm = g_AnmManager->GetVm(
+    vm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
     vm->pendingInterrupt = 3;
 }
@@ -847,7 +880,7 @@ static __forceinline void SetExtendedBackgroundVm0State3()
 static __forceinline void SetExtendedBackgroundVm1State3()
 {
     AnmVm *vm;
-    vm = g_AnmManager->GetVm(
+    vm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
     vm->pendingInterrupt = 3;
 }

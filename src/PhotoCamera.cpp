@@ -120,6 +120,7 @@ struct PhotoStageControllerView
     i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
 };
 
+#ifdef DIFFBUILD
 struct PhotoAnmManagerView
 {
     AnmVm *FindVm(i32 id);
@@ -132,6 +133,33 @@ static inline PhotoAnmManagerView *PhotoAnmManager()
 {
     return reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager);
 }
+
+#define TH095_PHOTO_ANM_GET_VM(id) PhotoAnmManager()->FindVm(id)
+#define TH095_PHOTO_ANM_SET_INTERRUPT(id, interrupt) \
+    PhotoAnmManager()->SetVmInterrupt((id), (interrupt))
+#define TH095_PHOTO_ANM_MARK_DELETE(id) PhotoAnmManager()->RemoveVm(id)
+#define TH095_PHOTO_ANM_SET_POSITION(id, position) \
+    PhotoAnmManager()->SetVmPosition((id), (position))
+#define TH095_PHOTO_ANM_SET_POSITION_DIRECT(id, position) \
+    reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition( \
+        (id), (position))
+#else
+static __forceinline AnmVmId PhotoAnmId(i32 value)
+{
+    AnmVmId id;
+    id.value = value;
+    return id;
+}
+
+#define TH095_PHOTO_ANM_GET_VM(id) g_AnmManager->GetVm(PhotoAnmId(id))
+#define TH095_PHOTO_ANM_SET_INTERRUPT(id, interrupt)     g_AnmManager->SetInterrupt(PhotoAnmId(id), (interrupt))
+#define TH095_PHOTO_ANM_MARK_DELETE(id)     g_AnmManager->MarkVmForDeletion(PhotoAnmId(id))
+#define TH095_PHOTO_ANM_SET_POSITION(id, position) \
+    g_AnmManager->SetPosition( \
+        PhotoAnmId(id), const_cast<Float3 *>(position))
+#define TH095_PHOTO_ANM_SET_POSITION_DIRECT(id, position) \
+    TH095_PHOTO_ANM_SET_POSITION((id), (position))
+#endif
 
 #ifdef TH095_MATCH_EXACT
 struct PhotoSoundPlayerView
@@ -313,12 +341,12 @@ void PhotoCameraState::BeginCapture()
     this->vmIds[6] = g_PhotoStageState->anm->CreateVm(0x1c, 0);
     if (this->vmIds[9] != 0)
     {
-        PhotoAnmManager()->RemoveVm(this->vmIds[9].value);
+        TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[9].value);
         this->vmIds[9].value = PreservePhotoId(0);
     }
     if (this->vmIds[10] != 0)
     {
-        PhotoAnmManager()->RemoveVm(this->vmIds[10].value);
+        TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[10].value);
         this->vmIds[10].value = PreservePhotoId(0);
     }
     if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
@@ -442,34 +470,34 @@ void PhotoCameraState::UpdateViewfinder()
         locals.screenPosition.x - this->viewfinderSize.x / 2.0f;
     locals.cornerPosition.y =
         locals.screenPosition.y + this->viewfinderSize.y / 2.0f;
-    PhotoAnmManager()->SetVmPosition(
+    TH095_PHOTO_ANM_SET_POSITION(
         this->vmIds[2].value, &locals.cornerPosition);
     locals.cornerPosition.x =
         locals.screenPosition.x - this->viewfinderSize.x / 2.0f;
     locals.cornerPosition.y =
         locals.screenPosition.y - this->viewfinderSize.y / 2.0f;
-    PhotoAnmManager()->SetVmPosition(
+    TH095_PHOTO_ANM_SET_POSITION(
         this->vmIds[3].value, &locals.cornerPosition);
     locals.cornerPosition.x =
         locals.screenPosition.x + this->viewfinderSize.x / 2.0f;
     locals.cornerPosition.y =
         locals.screenPosition.y - this->viewfinderSize.y / 2.0f;
-    PhotoAnmManager()->SetVmPosition(
+    TH095_PHOTO_ANM_SET_POSITION(
         this->vmIds[4].value, &locals.cornerPosition);
     locals.cornerPosition.x =
         locals.screenPosition.x + this->viewfinderSize.x / 2.0f;
     locals.cornerPosition.y =
         locals.screenPosition.y + this->viewfinderSize.y / 2.0f;
-    PhotoAnmManager()->SetVmPosition(
+    TH095_PHOTO_ANM_SET_POSITION(
         this->vmIds[5].value, &locals.cornerPosition);
 
-    locals.centerVm = PhotoAnmManager()->FindVm(this->vmIds[6].value);
+    locals.centerVm = TH095_PHOTO_ANM_GET_VM(this->vmIds[6].value);
     if (locals.centerVm != NULL)
     {
         locals.centerVm->scale.y = this->charge * 2.0f;
         locals.centerVm->scale.x = locals.centerVm->scale.y;
     }
-    reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition(
+    TH095_PHOTO_ANM_SET_POSITION_DIRECT(
         this->vmIds[6].value,
         PhotoToScreen(&locals.screenPosition, &this->viewfinderPosition));
 }
@@ -478,11 +506,11 @@ u32 PhotoCameraState::TakePhoto()
 {
     i32 scoreData[8];
 
-    PhotoAnmManager()->RemoveVm(this->vmIds[2].value);
-    PhotoAnmManager()->RemoveVm(this->vmIds[3].value);
-    PhotoAnmManager()->RemoveVm(this->vmIds[4].value);
-    PhotoAnmManager()->RemoveVm(this->vmIds[5].value);
-    PhotoAnmManager()->RemoveVm(this->vmIds[6].value);
+    TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[2].value);
+    TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[3].value);
+    TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[4].value);
+    TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[5].value);
+    TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[6].value);
 
     scoreData[3] = g_PhotoBulletManager->CountNearbyTargets(
         &g_PhotoGame->playerPosition, 22.0f);
@@ -546,11 +574,11 @@ void PhotoCameraState::CancelCapture()
 {
     i32 scoreData[8];
 
-    PhotoAnmManager()->RemoveVm(this->vmIds[2].value);
-    PhotoAnmManager()->RemoveVm(this->vmIds[3].value);
-    PhotoAnmManager()->RemoveVm(this->vmIds[4].value);
-    PhotoAnmManager()->RemoveVm(this->vmIds[5].value);
-    PhotoAnmManager()->RemoveVm(this->vmIds[6].value);
+    TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[2].value);
+    TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[3].value);
+    TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[4].value);
+    TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[5].value);
+    TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[6].value);
     memset(scoreData, 0, sizeof(scoreData));
     g_PhotoStageState->SavePhoto(
         10, &this->viewfinderPosition, 0, 0, 0, scoreData);
@@ -1051,7 +1079,7 @@ void PhotoCameraState::Draw()
         AnmVm *vm;
         for (i32 index = 0; index < 9; index++)
         {
-            vm = PhotoAnmManager()->FindVm(this->vmIds[index].value);
+            vm = TH095_PHOTO_ANM_GET_VM(this->vmIds[index].value);
             if (vm != NULL)
             {
                 vm->flagsWord &= ~2;
@@ -1063,7 +1091,7 @@ void PhotoCameraState::Draw()
         AnmVm *vm;
         for (i32 index = 0; index < 9; index++)
         {
-            vm = PhotoAnmManager()->FindVm(this->vmIds[index].value);
+            vm = TH095_PHOTO_ANM_GET_VM(this->vmIds[index].value);
             if (vm != NULL)
             {
                 vm->flagsWord |= 2;
@@ -1281,7 +1309,7 @@ updateCharge:
                     }
                     if (camera->vmIds[10])
                     {
-                        PhotoAnmManager()->RemoveVm(camera->vmIds[10].value);
+                        TH095_PHOTO_ANM_MARK_DELETE(camera->vmIds[10].value);
                         PhotoCameraClearVmId(&camera->vmIds[10]);
                     }
                     if (PhotoCameraVmIdIsZero(&camera->vmIds[9]))
@@ -1319,7 +1347,7 @@ updateCharge:
                 {
                     if (camera->vmIds[9])
                     {
-                        PhotoAnmManager()->RemoveVm(camera->vmIds[9].value);
+                        TH095_PHOTO_ANM_MARK_DELETE(camera->vmIds[9].value);
                         PhotoCameraClearVmId(&camera->vmIds[9]);
                     }
                     if (PhotoCameraVmIdIsZero(&camera->vmIds[10]))
@@ -1327,9 +1355,9 @@ updateCharge:
                         camera->vmIds[10] =
                             g_PhotoStageState->anm->CreateVm(0x20, 0);
                     }
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[0].value, 3);
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[1].value, 3);
                     camera->flags &= ~PHOTO_FLAG_CHARGE_UI_MASK;
                     camera->viewfinderVms[0].pendingInterrupt = 3;
@@ -1411,15 +1439,15 @@ cameraActive:
                 {
                     AnmVm *frameVm = camera->vmIds[0].GetVm();
                     SetPhotoVmColor(frameVm, 0xff, 0x20, 0x20);
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[2].value, 2);
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[3].value, 2);
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[4].value, 2);
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[5].value, 2);
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[6].value, 2);
                     camera->flags |= PHOTO_FLAG_TARGET_FRAME_ACTIVE;
                 }
@@ -1431,15 +1459,15 @@ cameraActive:
                 {
                     AnmVm *frameVm = camera->vmIds[0].GetVm();
                     SetPhotoVmColor(frameVm, 0xff, 0xff, 0xff);
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[2].value, 3);
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[3].value, 3);
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[4].value, 3);
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[5].value, 3);
-                    PhotoAnmManager()->SetVmInterrupt(
+                    TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[6].value, 3);
                     camera->flags &= ~PHOTO_FLAG_TARGET_FRAME_ACTIVE;
                 }
@@ -1490,7 +1518,7 @@ cameraActive:
                         camera->viewfinderPosition.x);
                 }
                 Float3 effectPosition;
-                reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition(
+                TH095_PHOTO_ANM_SET_POSITION_DIRECT(
                     g_PhotoStageState->anm->CreateVm(0x21, 0).value,
                     PhotoToScreen(
                         &effectPosition, &g_PhotoGame->playerPosition));
@@ -1504,7 +1532,7 @@ cameraActive:
                         camera->viewfinderPosition.x);
                 }
                 Float3 effectPosition;
-                reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition(
+                TH095_PHOTO_ANM_SET_POSITION_DIRECT(
                     g_PhotoStageState->anm->CreateVm(0x22, 0).value,
                     PhotoToScreen(
                         &effectPosition, &g_PhotoGame->playerPosition));
@@ -1529,8 +1557,8 @@ cameraActive:
         camera->charge = 0.0f;
         if (camera->vmIds[0])
         {
-            PhotoAnmManager()->SetVmInterrupt(camera->vmIds[0].value, 1);
-            PhotoAnmManager()->SetVmInterrupt(camera->vmIds[1].value, 1);
+            TH095_PHOTO_ANM_SET_INTERRUPT(camera->vmIds[0].value, 1);
+            TH095_PHOTO_ANM_SET_INTERRUPT(camera->vmIds[1].value, 1);
             camera->vmIds[0].value = PreservePhotoId(0);
             camera->vmIds[1].value = PreservePhotoId(0);
         }
@@ -1538,18 +1566,18 @@ cameraActive:
     }
 finish:
     Float3 screenPosition;
-    reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition(
+    TH095_PHOTO_ANM_SET_POSITION_DIRECT(
         camera->vmIds[0].value,
         PhotoToScreen(&screenPosition, &camera->viewfinderPosition));
-    PhotoAnmManager()->SetVmPosition(camera->vmIds[1].value, &screenPosition);
-    PhotoAnmManager()->SetVmPosition(camera->vmIds[9].value, &screenPosition);
-    PhotoAnmManager()->SetVmPosition(camera->vmIds[10].value, &screenPosition);
+    TH095_PHOTO_ANM_SET_POSITION(camera->vmIds[1].value, &screenPosition);
+    TH095_PHOTO_ANM_SET_POSITION(camera->vmIds[9].value, &screenPosition);
+    TH095_PHOTO_ANM_SET_POSITION(camera->vmIds[10].value, &screenPosition);
     if (((g_PhotoStageState->flags >> 2) & 1) != 0)
     {
-        PhotoAnmManager()->SetVmInterrupt(camera->vmIds[0].value, 5);
-        PhotoAnmManager()->SetVmInterrupt(camera->vmIds[1].value, 5);
-        PhotoAnmManager()->SetVmInterrupt(camera->vmIds[9].value, 5);
-        PhotoAnmManager()->SetVmInterrupt(camera->vmIds[10].value, 5);
+        TH095_PHOTO_ANM_SET_INTERRUPT(camera->vmIds[0].value, 5);
+        TH095_PHOTO_ANM_SET_INTERRUPT(camera->vmIds[1].value, 5);
+        TH095_PHOTO_ANM_SET_INTERRUPT(camera->vmIds[9].value, 5);
+        TH095_PHOTO_ANM_SET_INTERRUPT(camera->vmIds[10].value, 5);
     }
     camera->viewfinderVms[0].positionOffset = screenPosition;
     camera->viewfinderVms[1].positionOffset = screenPosition;

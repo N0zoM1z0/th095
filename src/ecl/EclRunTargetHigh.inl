@@ -479,12 +479,12 @@ enter_subroutine:
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0xe), 0);
 
         TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle =
-            (*reinterpret_cast<PhotoAnmSpawner **>(
-                reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0))
-                ->Spawn(0xd2, reinterpret_cast<Float3 *>(
+            TH095_ECL_ANM_SPAWN_WORLD(
+                *reinterpret_cast<PhotoAnmSpawner **>(
+                    reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0), 0xd2, reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0));
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(
-            TH095_ECL_ANM_MANAGER->FindVm(
+            TH095_ECL_ANM_GET_VM(
                 TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value)) + 0x138) =
             Th095PreserveI32(
                 *reinterpret_cast<i32 *>(g_Th095GameManager + 0x110));
@@ -500,7 +500,7 @@ enter_subroutine:
             *reinterpret_cast<PhotoSession **>(
                 TH095_ECL_RUNTIME + 0x26ae28) = 0;
             TH095_ECL_PHOTO_MODE->End();
-            TH095_ECL_ANM_MANAGER->RemoveVm(
+            TH095_ECL_ANM_MARK_DELETE(
                 TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value);
             TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value =
                 Th095PreserveI32(0);
@@ -519,9 +519,9 @@ enter_subroutine:
                 TH08_ECL_READ_I(ctx, 0);
 
         TH095_ENEMY_PHOTO(enemy)->photoAnmHandle =
-            (*reinterpret_cast<PhotoAnmSpawner **>(
-                reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0))
-                ->Spawn(0x125, reinterpret_cast<Float3 *>(
+            TH095_ECL_ANM_SPAWN_WORLD(
+                *reinterpret_cast<PhotoAnmSpawner **>(
+                    reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0), 0x125, reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0));
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x2d), 0);
         break;

@@ -1,4 +1,7 @@
 #pragma once
+#ifndef TH095_MATCH_EXACT
+#include "../AnmVmId.hpp"
+#endif
 #include "Supervisor.hpp"
 
 #include <stddef.h>
@@ -582,6 +585,9 @@ struct AnmLoaded
     int numberEntriesToBeLoaded;
 
     void LoadSprite(i32 spriteIdx, AnmLoadedSprite *loadedSprite);
+#ifndef TH095_MATCH_EXACT
+    AnmVmId CreateVmAtWorld(i32 scriptIndex, Float3 *position);
+#endif
 
     void ExecuteAnmIdx(AnmVm *vm, int scriptIdx);
 
@@ -630,6 +636,10 @@ struct AnmManager
 {
     AnmManager();
     void SetupVertexBuffer();
+#ifndef TH095_MATCH_EXACT
+    AnmVm *GetVm(AnmVmId id);
+    void MarkVmForDeletion(AnmVmId id);
+#endif
 
     // FUNCTION: th08 0x43ef40 FOLDED
     ~AnmManager()

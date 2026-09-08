@@ -330,6 +330,18 @@ static inline PhotoStageAnmManagerView *GetPhotoStageAnmManager()
     return reinterpret_cast<PhotoStageAnmManagerView *>(g_AnmManager);
 }
 
+static __forceinline AnmVmId PhotoStageAnmId(i32 value)
+{
+    AnmVmId id;
+    id.value = value;
+    return id;
+}
+
+#define TH095_PHOTO_STAGE_ANM_GET_VM(id)     g_AnmManager->GetVm(PhotoStageAnmId(id))
+#define TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(id, interrupt)     g_AnmManager->SetInterrupt(PhotoStageAnmId(id), (interrupt))
+#define TH095_PHOTO_STAGE_ANM_MARK_DELETE(id)     g_AnmManager->MarkVmForDeletion(PhotoStageAnmId(id))
+#define TH095_PHOTO_STAGE_ANM_SET_POSITION(id, position)     g_AnmManager->SetPosition(PhotoStageAnmId(id), (position))
+
 static inline PhotoStageTextureEntry *GetPhotoStageTextures(PhotoStageStateView *stage)
 {
     return reinterpret_cast<PhotoStageTextureEntry *>(stage->anm->textures);
@@ -351,7 +363,7 @@ static __forceinline void PhotoStageInterruptCurrentEntryPhase(
 {
     u8 compilerStorage[8];
     entryIndex = GetPhotoStageCamera()->GetPhotoIndex() - 1;
-    GetPhotoStageAnmManager()->SetInterrupt(
+    TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(
         state->slots[0].entryVms[entryIndex].value, 1);
 }
 
@@ -1023,7 +1035,7 @@ i32 PhotoStageStateView::Update()
 
             if (this->capturedPhotoVms[this->slots[0].captureSlot] != 0)
             {
-                GetPhotoStageAnmManager()->MarkVmForDeletion(
+                TH095_PHOTO_STAGE_ANM_MARK_DELETE(
                     this->capturedPhotoVms[this->slots[0].captureSlot].value);
             }
             this->capturedPhotoVms[this->slots[0].captureSlot] =
@@ -1031,7 +1043,7 @@ i32 PhotoStageStateView::Update()
                     this->slots[0].captureSlot * 2, 0);
 
             captureVm =
-                GetPhotoStageAnmManager()->GetVm(
+                TH095_PHOTO_STAGE_ANM_GET_VM(
                     this->capturedPhotoVms[this->slots[0].captureSlot].value);
             captureVm->loadedSprite->uvEnd.x =
                 (f32)this->slots[0].captureWidth / 256.0f;
@@ -1039,7 +1051,7 @@ i32 PhotoStageStateView::Update()
                 (f32)this->slots[0].captureHeight / 256.0f;
             captureVm->spriteSize.x = (f32)this->slots[0].captureWidth;
             captureVm->spriteSize.y = (f32)this->slots[0].captureHeight;
-            GetPhotoStageAnmManager()->SetPosition(
+            TH095_PHOTO_STAGE_ANM_SET_POSITION(
                 this->capturedPhotoVms[this->slots[0].captureSlot].value,
                 &resultDrawBacking012);
 
@@ -1200,11 +1212,11 @@ i32 PhotoStageStateView::Update()
                 this->slots[0].captureSlot != 10)
             {
                 entryIndex = GetPhotoStageCamera()->GetPhotoIndex() - 1;
-                GetPhotoStageAnmManager()->SetInterrupt(
+                TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(
                     this->slots[0].entryVms[entryIndex].value, 1);
 
                 frame35Vm =
-                    GetPhotoStageAnmManager()->GetVm(
+                    TH095_PHOTO_STAGE_ANM_GET_VM(
                         this->capturedPhotoVms[this->slots[0].captureSlot]
                             .value);
                 PhotoStageInitFrame35Position(
