@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 174 unique unresolved decorated symbols across 183 diagnostics:
-66 data and 108 callable/runtime. Of those names, 171 map through canonical
-relocations to 141 target addresses; three currently lack target-address
+now fails with 172 unique unresolved decorated symbols across 181 diagnostics:
+64 data and 108 callable/runtime. Of those names, 169 map through canonical
+relocations to 140 target addresses; three currently lack target-address
 evidence and three decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -228,6 +228,16 @@ views already used `g_RuntimeGameTaskOwner`; Main.obj's final `g_PhotoGameTask`
 view now does too. The cold link moves 175 -> 174 unique unresolved names and
 184 -> 183 diagnostics; `0x004BDEC8` disappears from the unresolved target set.
 Main's 48/48 configured exact units replay exact with no label refresh.
+
+The `0x004CA1B8` canonical ANM-manager family is closed without a bridge owner.
+`AnmManager.cpp` owns the real `AnmManager *g_AnmManager`; hash-attested Ghidra
+shows exact `WinMain @ 0x00420240` publishing it at `0x00420389` and clearing it
+at `0x0042055B` after deletion. Production `EclExtended::g_AnmManager` and
+`EclRunHigh::g_Th095AnmManager` now use typed views of that real pointer, while
+DIFFBUILD keeps the target-facing proxy relocations. The cold link moves
+174 -> 172 unique unresolved names and 183 -> 181 diagnostics; `0x004CA1B8` is
+absent from the fresh unresolved target set. The two affected ECL sources replay
+23/23 exact units with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

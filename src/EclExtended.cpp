@@ -7,6 +7,9 @@
 namespace th095
 {
 extern f32 g_AnmGameSpeed;
+#ifndef DIFFBUILD
+extern AnmManager *g_AnmManager;
+#endif
 #ifndef TH095_MATCH_EXACT
 struct Background;
 extern Background *g_Background;
@@ -206,6 +209,10 @@ typedef char ExtendedRuntimeMarkerAt4DF8[
     (offsetof(ExtendedRuntimeView, markerAnm) == 0x4df8) ? 1 : -1];
 
 extern AnmManagerLookupView *g_AnmManager;
+#ifndef DIFFBUILD
+#define g_AnmManager \
+    (reinterpret_cast<AnmManagerLookupView *>(::th095::g_AnmManager))
+#endif
 extern PhotoGlobalStateView *g_PhotoGlobalState;
 extern u8 *g_Background;
 extern ExtendedBulletManager *g_PhotoBulletManager;

@@ -57,6 +57,13 @@
 #endif
 
 #ifdef DIFFBUILD
+#define TH095_ECL_ANM_MANAGER EclRunHigh::g_Th095AnmManager
+#else
+#define TH095_ECL_ANM_MANAGER \
+    (reinterpret_cast<EclRunHigh::AnmManagerLookup *>(::th095::g_AnmManager))
+#endif
+
+#ifdef DIFFBUILD
 #define TH095_ECL_EFFECT_MANAGER EclRunHigh::g_Th095PhotoEffectManager
 #define TH095_ECL_STAGE_CONTROLLER EclRunHigh::g_Th095StageController
 #else
@@ -73,6 +80,10 @@
 
 namespace th095
 {
+
+#ifndef DIFFBUILD
+extern AnmManager *g_AnmManager;
+#endif
 
 // The low/high opcode bodies are included lexically below so VC7 can reproduce
 // RunEcl's target handler order, shared labels, locals, and stack frame.

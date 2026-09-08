@@ -237,7 +237,7 @@
 
     case 152:
     {
-        AnmVm *vm = g_Th095AnmManager->FindVm(
+        AnmVm *vm = TH095_ECL_ANM_MANAGER->FindVm(
             TH095_ENEMY_ANM_HANDLES(enemy)
                 ->handles[TH08_ECL_READ_I(ctx, 0)].value);
         if (vm)

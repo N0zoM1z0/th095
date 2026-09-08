@@ -367,7 +367,7 @@ enter_subroutine:
             static_cast<i16>(TH08_ECL_READ_I(ctx, 3));
         if ((*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x4ca4) & 8U) != 0)
         {
-            g_Th095AnmManager->ConfigureEnemyPhotoAnm(
+            TH095_ECL_ANM_MANAGER->ConfigureEnemyPhotoAnm(
                 &enemy->vm,
                 reinterpret_cast<u8 *>(enemy) + 0x376c,
                 (*reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x4ca6) /
@@ -484,7 +484,7 @@ enter_subroutine:
                 ->Spawn(0xd2, reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0));
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(
-            g_Th095AnmManager->FindVm(
+            TH095_ECL_ANM_MANAGER->FindVm(
                 TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value)) + 0x138) =
             Th095PreserveI32(
                 *reinterpret_cast<i32 *>(g_Th095GameManager + 0x110));
@@ -500,7 +500,7 @@ enter_subroutine:
             *reinterpret_cast<PhotoSession **>(
                 TH095_ECL_RUNTIME + 0x26ae28) = 0;
             TH095_ECL_PHOTO_MODE->End();
-            g_Th095AnmManager->RemoveVm(
+            TH095_ECL_ANM_MANAGER->RemoveVm(
                 TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value);
             TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value =
                 Th095PreserveI32(0);

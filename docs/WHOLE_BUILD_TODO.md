@@ -158,9 +158,15 @@ Closed 2026-09-09: `0x004BDEC8` (PhotoGameTask/GameTaskInf). Main.obj's final
 `0x00417F2D`. Fresh whole-build count changed 175 -> 174 unique unresolved
 (184 -> 183 diagnostics), and Main replayed 48/48 exact units.
 
+Closed 2026-09-09: `0x004CA1B8` (canonical ANM manager). The ECL extended and
+high-run proxy pointers now use the real `AnmManager *g_AnmManager` owned by
+`AnmManager.cpp`; Ghidra/WinMain lifecycle publishes at `0x00420389` and clears
+at `0x0042055B`. No bridge storage was added. Fresh whole-build count changed
+174 -> 172 unique unresolved (183 -> 181 diagnostics), and both affected ECL
+sources replayed 23/23 exact units.
+
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
-| `0x004CA1B8` | canonical ANM manager | `EclExtended::g_AnmManager` and `EclRunHigh::g_Th095AnmManager` should use the real `g_AnmManager` owner |
 
 `g_PhotoBulletManager` is a known trap: its current decorated proxy name maps
 to both `0x004BDD90` and `0x004BDD98`. Classify each relocation/call site by
