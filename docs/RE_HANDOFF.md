@@ -68,9 +68,9 @@ They are now the only active reconstruction lane:
 | Address | Function | Deferred compiler problem |
 | --- | --- | --- |
 | `0x00419AE0` | `Controller::GetInput` | Branch-local VC7.1 temporary/register chronology; ordinary declaration, naming, scope, and profile sweeps are closed negatives. |
-| `0x0043ECD0` | `AnmManager::DrawInner` | Target emits inline x87 `FRNDINT`; no accepted natural VC7.1 source shape is known. |
-| `0x0043FA40` | `AnmManager::Draw2D` | Target emits inline x87 `FSINCOS`; portable source remains non-exact. |
-| `0x0043FC60` | `AnmManager::ProjectCameraFacingQuad` | Two inline `FSINCOS` sites plus compiler-local copy/lifetime allocation remain unresolved. |
+| `0x0043ECD0` | `AnmManager::DrawInner` | Target emits four direct x87 `FRNDINT` sites; a fresh pinned-VC7.1 clean-intrinsic oracle rejects the tested frontend names with `C4163`. |
+| `0x0043FA40` | `AnmManager::Draw2D` | Target emits one direct x87 `FSINCOS`; paired float/double source emits separate `FSIN`/`FCOS`, and tested clean `sincos` names are unavailable. |
+| `0x0043FC60` | `AnmManager::ProjectCameraFacingQuad` | Two direct `FSINCOS` sites plus compiler-local copy/lifetime allocation remain unresolved; the same pinned frontend oracle is negative. |
 
 Do not use assembly, copied target bytes, dead locals, fake source phases,
 arbitrary padding, ABI lies, or weakened comparisons to close them.

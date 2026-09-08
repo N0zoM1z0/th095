@@ -1998,3 +1998,33 @@ empty constructor removes the clear instructions but also loses that phase.
 fall back to the same wrong phase.  This demonstrates that the residual belongs
 to compiler temporary/value ownership, but it does **not** license an empty
 class, inert local, compiler patch, or assembly in canonical source.
+
+
+### ANM x87 frontend exhaustion checkpoint (2026-09-08)
+
+The three remaining ANM functions are independently target-attested and remain
+deliberately non-exact.  Ghidra shows direct `FRNDINT` instructions in
+`DrawInner` at `0x0043ED77`, `0x0043ED85`, `0x0043ED93`, and `0x0043EDA1`;
+`Draw2D` has `FSINCOS` at `0x0043FA78`; and
+`ProjectCameraFacingQuad` has `FSINCOS` at `0x0043FC78` and `0x0043FEB0`.
+The canonical portable bodies remain 1,532 versus 1,497, 572 versus 542, and
+1,140 versus 1,163 target bytes respectively.
+
+A fresh stock build-3077 oracle compiled paired float/double `sin`/`cos`
+expressions, both evaluation orders, structure-return variants, and the direct
+rotation shape under `/O2 /Ob2 /GX- /GR- /Oi`.  Every accepted form emits
+separate `FSIN` and `FCOS`, never `FSINCOS`.  Separate probes for `sincos`,
+`fsincos`, `_sincos`, `rndint`, `frndint`, `_rndint`, `_frnd`, `_CIsin`, and
+`_CIcos` are rejected as unavailable intrinsics (`C4163`).  The three probe
+inputs are SHA-256
+`c9d70a0786c21a26fbee6e7104e11af1f3459c92d7b6a4ada24b1a715712c325`,
+`f350cf1d880750c88f320aa3956e0687f1d998ccb78e2798aa723186597201fa`, and
+`159fdb2480a1a07d8f2960bb82334ae6faf47f1c5591dff70315cdc02ecef892`.
+
+The adjacent reconstructed codebase contains an explicit ZUN-style `fsincos`
+assembly sequence, which is useful source-family corroboration but not an
+accepted reconstruction mechanism.  Do not promote any of these functions or
+replace their natural portable implementations with assembly, target bytes, or
+inert compiler-shaping artifacts.  Reopen this lane only for a new clean VC7.1
+frontend surface or independent source evidence that explains the emitted x87
+instructions and, for the projection core, its remaining local allocation.
