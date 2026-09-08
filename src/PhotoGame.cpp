@@ -53,6 +53,8 @@ extern PhotoResetTargetView *g_PhotoBulletResetTarget;
 #define g_PhotoBulletResetTarget \
     TH095_RUNTIME_GLOBAL_PTR(PhotoResetTargetView, g_RuntimeBulletManagerOwner)
 extern PhotoResetTargetView *g_PhotoStageResetTarget;
+#define g_PhotoStageResetTarget \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoResetTargetView, g_RuntimeEffectManagerOwner)
 extern PhotoGameGlobalStateView *g_PhotoGameGlobalState;
 extern u16 g_PhotoInput;
 

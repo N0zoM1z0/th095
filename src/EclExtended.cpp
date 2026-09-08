@@ -220,6 +220,8 @@ static __forceinline u8 *ExtendedBackgroundOwner()
 #define g_Background ExtendedBackgroundOwner()
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(ExtendedBulletManager, ::th095::g_RuntimeBulletManagerOwner)
+#define g_PhotoEffectManager \
+    TH095_RUNTIME_GLOBAL_PTR(ExtendedPhotoEffectManager, ::th095::g_RuntimeEffectManagerOwner)
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, ::th095::g_RuntimeGameTaskOwner)
 #endif

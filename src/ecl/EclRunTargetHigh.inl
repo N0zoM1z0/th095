@@ -461,7 +461,7 @@ enter_subroutine:
 
     case 102:
         TH095_ECL_BULLET_MANAGER->ResetEnemyPatterns();
-        g_Th095StageController->ResetEnemyState();
+        TH095_ECL_STAGE_CONTROLLER->ResetEnemyState();
         break;
 
     case 104:

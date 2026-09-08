@@ -127,11 +127,17 @@ publish/clear at `0x00404CE0` / `0x00404F3D`. The multi-target
 Background photo-area edge and `.98` remains BulletInf. Fresh whole-build count
 changed 195 -> 187 unique unresolved (207 -> 197 diagnostics), `0x004BDD98` is
 absent from the unresolved target set, and all 132 directly affected exact
-units replayed canonical exact.
+Closed 2026-09-09: `0x004C45E0` (PhotoEffect/EffectManager). Seven fresh
+unresolved views now share the lifecycle-backed `g_RuntimeEffectManagerOwner`;
+Ghidra-attested ctor/dtor publish/clear at `0x0041D5AE` / `0x0041D773` after
+the target's effect-list teardown. Relocation review ties the partial receivers
+to the same manager method family at `0x0041DBD0`, `0x0041DFA0`, `0x0041E010`,
+and `0x0041E060`. Fresh whole-build count changed 187 -> 180 unique unresolved
+(197 -> 190 diagnostics), `0x004C45E0` is absent from the unresolved target
+set, and all 96 directly affected exact units replayed canonical exact.
 
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
-| `0x004C45E0` | effect/stage-controller slot | photo-effect manager, stage controller/effect/reset views, and ECL high views |
 | `0x004C45DC` | item-manager slot | `g_ItemManager`, `g_PhotoItemManager`, and the photo-capture particle-spawner view |
 | `0x004BDDC4` | background/front manager slot | `g_PhotoFrontManager` and `g_PhotoStageSupervisor` plus the actual background lifecycle family |
 | `0x004BDEC8` | game-task slot | only `Main.obj`'s `g_PhotoGameTask` view remains after the first owner pass |
@@ -150,7 +156,7 @@ front-end lifecycle flags, Supervisor member views, and standalone buffers.
 
 ## Callable/runtime families
 
-Most of the 109 callable/runtime names are not missing semantics. They are
+Most of the 108 callable/runtime names are not missing semantics. They are
 local proxy class names calling already reconstructed target functions. Close
 them by canonicalizing the receiver type and declaration:
 

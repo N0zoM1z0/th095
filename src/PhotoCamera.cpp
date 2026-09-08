@@ -171,6 +171,8 @@ extern u16 g_PhotoInputPressed;
 #ifndef DIFFBUILD
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
+#define g_PhotoStageController \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageControllerView, g_RuntimeEffectManagerOwner)
 #define g_PhotoGame \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \

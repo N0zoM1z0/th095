@@ -785,7 +785,7 @@ enter_subroutine:
         args.speed = TH08_ECL_READ_F(ctx, 4);
         args.field1C = TH08_ECL_READ_F(ctx, 5);
         args.field14 = 0;
-        g_Th095PhotoEffectManager->Spawn(0, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }
     case 146:
@@ -803,7 +803,7 @@ enter_subroutine:
         args.speed = TH08_ECL_READ_F(ctx, 4);
         args.field1C = TH08_ECL_READ_F(ctx, 5);
         args.field14 = 0;
-        g_Th095PhotoEffectManager->Spawn(0, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }
     case 147:
@@ -825,7 +825,7 @@ enter_subroutine:
         args.field3C = TH08_ECL_READ_I(ctx, 8);
         args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 148:
@@ -849,7 +849,7 @@ enter_subroutine:
         args.field3C = TH08_ECL_READ_I(ctx, 8);
         args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 153:
@@ -871,7 +871,7 @@ enter_subroutine:
         args.field3C = TH08_ECL_READ_I(ctx, 8);
         args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 154:
@@ -895,7 +895,7 @@ enter_subroutine:
         args.field3C = TH08_ECL_READ_I(ctx, 8);
         args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 155:
@@ -920,7 +920,7 @@ enter_subroutine:
         args.field0C = TH08_ECL_READ_F(ctx, 11);
         args.field10 = TH08_ECL_READ_F(ctx, 12);
         args.mode = 2.0f;
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 157:
@@ -945,7 +945,7 @@ enter_subroutine:
         args.field0C = TH08_ECL_READ_F(ctx, 11);
         args.field10 = TH08_ECL_READ_F(ctx, 12);
         args.mode = 5.0f;
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 156:
@@ -972,7 +972,7 @@ enter_subroutine:
         args.field0C = TH08_ECL_READ_F(ctx, 11);
         args.field10 = TH08_ECL_READ_F(ctx, 12);
         args.mode = 2.0f;
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 149:

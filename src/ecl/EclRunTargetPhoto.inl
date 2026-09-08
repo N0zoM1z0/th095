@@ -11,7 +11,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.speed, 4);
         TH095_ECL_ASSIGN_FLOAT(args.field1C, 5);
         args.field14 = 0;
-        g_Th095PhotoEffectManager->Spawn(0, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }
 
@@ -29,7 +29,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.speed, 4);
         TH095_ECL_ASSIGN_FLOAT(args.field1C, 5);
         args.field14 = 0;
-        g_Th095PhotoEffectManager->Spawn(0, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }
 
@@ -53,7 +53,7 @@
         args.angle2 = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.flag0 = TH08_ECL_RAW_I(ctx, 10);
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
 
@@ -78,7 +78,7 @@
         args.angle2 = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.flag0 = TH08_ECL_RAW_I(ctx, 10);
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
 
@@ -102,7 +102,7 @@
         args.angle2 = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.flag0 = TH08_ECL_RAW_I(ctx, 10);
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
 
@@ -127,7 +127,7 @@
         args.angle2 = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.flag0 = TH08_ECL_RAW_I(ctx, 10);
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
 
@@ -154,7 +154,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.field0C, 11);
         TH095_ECL_ASSIGN_FLOAT(args.field10, 12);
         args.mode = 2.0f;
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
 
@@ -181,7 +181,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.field0C, 11);
         TH095_ECL_ASSIGN_FLOAT(args.field10, 12);
         args.mode = 5.0f;
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
 
@@ -209,7 +209,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.field0C, 11);
         TH095_ECL_ASSIGN_FLOAT(args.field10, 12);
         args.mode = 2.0f;
-        g_Th095PhotoEffectManager->Spawn(1, &args);
+        TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
 

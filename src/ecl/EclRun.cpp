@@ -56,6 +56,16 @@
     TH095_RUNTIME_GLOBAL_PTR(EclRunHigh::Th095BulletManager, ::th095::g_RuntimeBulletManagerOwner)
 #endif
 
+#ifdef DIFFBUILD
+#define TH095_ECL_EFFECT_MANAGER EclRunHigh::g_Th095PhotoEffectManager
+#define TH095_ECL_STAGE_CONTROLLER EclRunHigh::g_Th095StageController
+#else
+#define TH095_ECL_EFFECT_MANAGER \
+    TH095_RUNTIME_GLOBAL_PTR(EclRunHigh::PhotoEffectManager, ::th095::g_RuntimeEffectManagerOwner)
+#define TH095_ECL_STAGE_CONTROLLER \
+    TH095_RUNTIME_GLOBAL_PTR(EclRunHigh::Th095StageController, ::th095::g_RuntimeEffectManagerOwner)
+#endif
+
 #ifdef TH095_MATCH_EXACT
 #define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
 #define ZUN_ERROR TH095_LEGACY_ZUN_ERROR

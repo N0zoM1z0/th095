@@ -209,6 +209,10 @@ extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 struct PhotoEffectManagerView;
 
 extern PhotoEffectManagerView *g_PhotoEffectManager;
+#ifndef DIFFBUILD
+#define g_PhotoEffectManager \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEffectManagerView, g_RuntimeEffectManagerOwner)
+#endif
 extern AnmManager *g_AnmManager;
 extern u32 g_PhotoEffectColors[];
 
