@@ -2010,6 +2010,15 @@ the frame exact but moves all seven `inputIndex` references from target
 phase/storage diagnostics; retain the natural canonical source. Full hashes and
 commands are in `.analysis/getinput-pareto-rescore-20260908.md`.
 
+A follow-up cross-oracle closes the remaining parameter-declaration escape
+hatch. Sixteen ordinary parameter names plus plain, top-level `const`,
+`register`, `const register`, and `__w64` spellings were compiled on the same
+eight-byte UDT diagnostic. Every object remains 2,662 bytes / 579 instructions,
+reserves `0x124`, and stores ECX at `EBP-0x124`; none restores the target
+seven-use `EBP-0x11C` parameter home. Parameter renaming or ABI-equivalent
+qualification therefore cannot compose the target-frame and phase effects.
+The complete oracle is in `.analysis/final-four-oracles-20260908.md`.
+
 
 ### ANM x87 frontend exhaustion checkpoint (2026-09-08)
 
@@ -2037,6 +2046,17 @@ its contiguous inline-assembler mnemonic table, while the bundled CRT and
 Platform SDK headers expose no `sincos`, `fsincos`, or `frndint` declaration.
 `D3DXMatrixRotationZ` is external rather than header-inline. This narrows the
 remaining clean-source search surface without changing exact status.
+
+An expanded per-name `#pragma intrinsic` whitelist oracle tested 34 names.
+Only the `sin`, `cos`, and `sqrt` positive controls are accepted. All 31
+`sincos`/`fsincos` and `frnd`/`rndint`/`rint`/`nearbyint`/`round` spellings,
+including one- and two-underscore variants, receive C4163; no generated object
+contains `FSINCOS` or `FRNDINT`. The TH08 source family makes the alternative
+explicit: its `DrawInner` spells the four `FRNDINT` operations in `__asm`, and
+its `sincos` macro expands to `FLD`, `FSINCOS`, and two `FSTP` instructions.
+That is strong provenance for the target instruction family but remains outside
+the allowed canonical mechanism. Reproduction details and hashes are in
+`.analysis/final-four-oracles-20260908.md`.
 
 The adjacent reconstructed codebase contains an explicit ZUN-style `fsincos`
 assembly sequence, which is useful source-family corroboration but not an

@@ -77,6 +77,16 @@ arbitrary padding, ABI lies, or weakened comparisons to close them.
 
 For GetInput, start from `.analysis/getinput-pareto-rescore-20260908.md`; do not
 repeat the historical `p2-*` corpus or promote its 99.96% diagnostic object.
+The subsequent name/parameter-class cross is also closed: sixteen names and
+plain/`const`/`register`/`__w64` declarations all leave the target-frame
+diagnostic's parameter at `EBP-0x124`. See
+`.analysis/final-four-oracles-20260908.md`.
+
+For the ANM trio, that same report expands the clean intrinsic whitelist to 34
+names. Only `sin`, `cos`, and `sqrt` positive controls are accepted; all 31
+rounding or paired-trig candidates receive C4163 and none emits the required
+x87 opcode. TH08 independently uses explicit assembly for both instruction
+families, which corroborates provenance but remains forbidden here.
 
 ## Matching checkpoint gate
 
