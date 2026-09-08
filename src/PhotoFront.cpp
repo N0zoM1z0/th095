@@ -71,6 +71,8 @@ extern PhotoFrontStageStateView *g_PhotoFrontStageState;
 extern PhotoFrontManagerView *g_PhotoFrontManager;
 
 #ifndef DIFFBUILD
+#define g_PhotoFrontManager \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoFrontManagerView, g_RuntimeBackgroundManagerOwner)
 #define g_PhotoFrontStageState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoFrontStageStateView, g_RuntimeStageStateOwner)
 #define g_PhotoFrontRuntime \

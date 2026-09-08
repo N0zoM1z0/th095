@@ -144,9 +144,15 @@ count changed 180 -> 177 unique unresolved (190 -> 186 diagnostics), the target
 slot disappears from the unresolved set, and all 82 directly affected exact
 units replayed canonical exact.
 
+Closed 2026-09-09: `0x004BDDC4` (FrontInf/background-front manager). The two
+remaining production views now share `g_RuntimeBackgroundManagerOwner`; Ghidra
+attests ctor/dtor publish/clear at `0x004170CA` / `0x004173CD` around the real
+Chain/ANM/embedded-VM lifecycle. Fresh whole-build count changed 177 -> 175
+unique unresolved (186 -> 184 diagnostics), the target slot disappears from the
+unresolved set, and both affected sources replayed 17/17 exact units.
+
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
-| `0x004BDDC4` | background/front manager slot | `g_PhotoFrontManager` and `g_PhotoStageSupervisor` plus the actual background lifecycle family |
 | `0x004BDEC8` | game-task slot | only `Main.obj`'s `g_PhotoGameTask` view remains after the first owner pass |
 | `0x004CA1B8` | canonical ANM manager | `EclExtended::g_AnmManager` and `EclRunHigh::g_Th095AnmManager` should use the real `g_AnmManager` owner |
 
