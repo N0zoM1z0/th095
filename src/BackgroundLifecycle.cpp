@@ -1,3 +1,4 @@
+#include "Chain.hpp"
 #include "inttypes.hpp"
 #include "utils.hpp"
 
@@ -37,11 +38,6 @@ struct AnmVm
     ~AnmVm();
 };
 
-struct ChainElem;
-struct Chain
-{
-    void Cut(ChainElem *elem);
-};
 struct AnmManager
 {
     void ReleaseAnm(i32 anmIdx);
@@ -59,7 +55,6 @@ struct Supervisor
     u32 flags;
 };
 
-extern Chain g_Chain;
 extern AnmManager *g_AnmManager;
 extern Supervisor g_Supervisor;
 

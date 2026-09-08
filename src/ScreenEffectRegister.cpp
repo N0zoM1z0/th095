@@ -1,36 +1,10 @@
+#include "Chain.hpp"
 #include "ScreenEffect.hpp"
 
 #include <string.h>
 
 namespace th095
 {
-
-typedef int (__fastcall *ChainCallback)(void *arg);
-typedef int (__fastcall *ChainLifetimeCallback)(void *arg);
-
-struct ChainElem
-{
-    short priority;
-    unsigned short isHeapAllocated : 1;
-    ChainCallback callback;
-    ChainLifetimeCallback addedCallback;
-    ChainLifetimeCallback deletedCallback;
-    ChainElem *prev;
-    ChainElem *next;
-    ChainElem *releaseTarget;
-    void *arg;
-};
-typedef char ScreenEffectRegisterChainElemSizeIs20[
-    (sizeof(ChainElem) == 0x20) ? 1 : -1];
-
-class Chain
-{
-  public:
-    int AddToCalcChain(ChainElem *elem, int priority);
-    int AddToDrawChain(ChainElem *elem, int priority);
-    ChainElem *CreateElem(ChainCallback callback);
-};
-extern Chain g_Chain;
 
 // The implicit ScreenEffect default constructor calls this member constructor
 // before RegisterChain immediately clears the whole 0x34-byte allocation.

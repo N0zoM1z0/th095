@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Chain.hpp"
 #include "ZunResult.hpp"
 #include "diffbuild.hpp"
 #include "inttypes.hpp"
@@ -37,117 +38,6 @@ namespace th095
 #define ZUN_FREE(p)                                                                                                    \
     g_ZunMemory.Free(p);                                                                                               \
     p = NULL;
-
-enum ChainCallbackResult
-{
-    CHAIN_CALLBACK_RESULT_CONTINUE_AND_REMOVE_JOB = (unsigned int)0,
-    CHAIN_CALLBACK_RESULT_CONTINUE = (unsigned int)1,
-    CHAIN_CALLBACK_RESULT_EXECUTE_AGAIN = (unsigned int)2,
-    CHAIN_CALLBACK_RESULT_BREAK = (unsigned int)3,
-    CHAIN_CALLBACK_RESULT_EXIT_GAME_SUCCESS = (unsigned int)4,
-    CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR = (unsigned int)5,
-    CHAIN_CALLBACK_RESULT_RESTART_FROM_FIRST_JOB = (unsigned int)6,
-};
-
-typedef ChainCallbackResult (*ChainCallback)(void *);
-typedef ZunResult (*ChainLifetimeCallback)(void *);
-
-enum ChainCalcPriority
-{
-    CHAIN_PRIO_CALC_SUPERVISOR = 0,
-    CHAIN_PRIO_CALC_ASCIIMANAGER = 1,
-    CHAIN_PRIO_CALC_GAMEMANAGER = 2,
-    CHAIN_PRIO_CALC_SCREENEFFECT = 3,
-    CHAIN_PRIO_CALC_TITLESCREEN = 4,
-    CHAIN_PRIO_CALC_MUSICROOM = 4,
-    CHAIN_PRIO_CALC_ENDING = 5,
-    CHAIN_PRIO_CALC_REPLAYMANAGER_PLAYBACK_HIGH_PRIO = 6,
-    CHAIN_PRIO_CALC_REPLAYMANAGER_LOW_PRIO = 7,
-    CHAIN_PRIO_CALC_BACKGROUND = 8,
-    CHAIN_PRIO_CALC_PLAYER = 9,
-    CHAIN_PRIO_CALC_ENEMYMANAGER = 11,
-    CHAIN_PRIO_CALC_SPELLCARD = 12,
-    CHAIN_PRIO_CALC_EFFECTMANAGER = 13,
-    CHAIN_PRIO_CALC_BULLETMANAGER = 14,
-    CHAIN_PRIO_CALC_GUI = 15,
-    CHAIN_PRIO_CALC_RESULTSCREEN = 16,
-    CHAIN_PRIO_CALC_REPLAYMANAGER_RECORD_HIGH_PRIO = 17,
-    CHAIN_PRIO_CALC_REPLAYMANAGER_SKIP_FRAMES = 18,
-};
-
-enum ChainDrawPriority
-{
-    CHAIN_PRIO_DRAW_SUPERVISOR = 0,
-    CHAIN_PRIO_DRAW_SUPERVISOR_LOADING_VMS = 2,
-    CHAIN_PRIO_DRAW_MUSICROOM = 3,
-    CHAIN_PRIO_DRAW_TITLESCREEN = 3,
-    CHAIN_PRIO_DRAW_ENDING = 4,
-    CHAIN_PRIO_DRAW_GAMEMANAGER = 5,
-    CHAIN_PRIO_DRAW_BACKGROUND_HIGH_PRIO = 6,
-    CHAIN_PRIO_DRAW_BACKGROUND_LOW_PRIO = 7,
-    CHAIN_PRIO_DRAW_ENEMYMANAGER_HIGH_PRIO = 8,
-    CHAIN_PRIO_DRAW_PLAYER_HIGH_PRIO = 9,
-    CHAIN_PRIO_DRAW_PLAYER_LOW_PRIO = 10,
-    CHAIN_PRIO_DRAW_ENEMYMANAGER_LOW_PRIO = 11,
-    CHAIN_PRIO_DRAW_EFFECTMANAGER = 12,
-    CHAIN_PRIO_DRAW_BULLETMANAGER = 13,
-    CHAIN_PRIO_DRAW_ASCIIMANAGER_HIGH_PRIO = 14,
-    CHAIN_PRIO_DRAW_SPELLCARD = 15,
-    CHAIN_PRIO_DRAW_SUPERVISOR_DRAW_FPS_COUNTER = 16,
-    CHAIN_PRIO_DRAW_GUI = 17,
-    CHAIN_PRIO_DRAW_RESULTSCREEN = 18,
-    CHAIN_PRIO_DRAW_ASCIIMANAGER_LOW_PRIO = 20,
-    CHAIN_PRIO_DRAW_SCREENEFFECT = 21,
-};
-
-class ChainElem
-{
-  public:
-    ChainElem();
-    ~ChainElem();
-
-    void SetCallback(ChainCallback callback)
-    {
-        this->callback = callback;
-        this->addedCallback = NULL;
-        this->deletedCallback = NULL;
-    }
-
-    short priority;
-    u16 isHeapAllocated : 1;
-    ChainCallback callback;
-    ChainLifetimeCallback addedCallback;
-    ChainLifetimeCallback deletedCallback;
-    struct ChainElem *prev;
-    struct ChainElem *next;
-    struct ChainElem *releaseTarget;
-    void *arg;
-};
-C_ASSERT(sizeof(ChainElem) == 0x20);
-C_ASSERT(offsetof(ChainElem, releaseTarget) == 0x18);
-
-class Chain
-{
-  private:
-    ChainElem calcChain;
-    ChainElem drawChain;
-
-    void ReleaseSingleChain(ChainElem *root);
-    void CutImpl(ChainElem *to_remove);
-
-  public:
-    Chain();
-    ~Chain();
-
-    void Cut(ChainElem *to_remove);
-    void Release();
-    int AddToCalcChain(ChainElem *elem, int priority);
-    int AddToDrawChain(ChainElem *elem, int priority);
-    int RunDrawChain();
-    int RunCalcChain();
-
-    ChainElem *CreateElem(ChainCallback callback);
-};
 
 enum TouhouButton
 {
@@ -429,7 +319,6 @@ DIFFABLE_EXTERN(u16, g_LastFrameInput);
 DIFFABLE_EXTERN(u16, g_NumOfFramesInputsWereHeld);
 DIFFABLE_EXTERN(u16, g_IsEighthFrameOfHeldInput);
 DIFFABLE_EXTERN(GameErrorContext, g_GameErrorContext);
-DIFFABLE_EXTERN(Chain, g_Chain);
 DIFFABLE_EXTERN(PbgArchive, g_PbgArchive);
 DIFFABLE_EXTERN(ZunMemory, g_ZunMemory);
 DIFFABLE_EXTERN(ControllerMapping, g_ControllerMapping);

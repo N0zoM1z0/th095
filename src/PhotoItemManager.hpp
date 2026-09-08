@@ -7,7 +7,7 @@ namespace th095
 
 // TH095's live 150-slot photography charge-item system ("ItemInf").
 
-struct ChainElem;
+class ChainElem;
 
 struct PhotoItemView
 {

@@ -2004,6 +2004,38 @@ exact from the corrected source. The reusable rule is that aggregate grouping
 is not semantically invisible to VC7.1 EH ownership: preserve the actual
 destructible local object when FuncInfo/COFF evidence identifies it.
 
+### 2026-09-08: production Chain ABI and global-owner link closure
+
+Function-exact probe declarations are not automatically production-link
+compatible. The previous source graph had multiple local Chain declarations:
+callers requested `struct ChainElem *` (`PAU`), an int-returning callback, or a
+void `RunDrawChain`, while exact `Global.obj` exports `class ChainElem *`
+(`PAV`), the enum-returning `/Gr` callback, and int `RunDrawChain`. Two tag
+spellings also requested separate decorated names for the same target global.
+
+`src/Chain.hpp` now owns the single production declaration, and `Global.cpp`
+owns `DIFFABLE_STATIC(Chain, g_Chain)`. This owner is independently supported by
+the target's initializer wrapper at `0x00493F30`, which invokes exact
+`Chain::Chain @ 0x004189D0` on `0x004BE3C8`, and its destructor wrapper at
+`0x00494210`, which invokes exact `Chain::~Chain @ 0x0041BD20` on the same
+storage. TH08's `Global.cpp` uses the same `DIFFABLE_STATIC` source shape.
+
+A complete 88-TU cold rebuild still produces only i386 COFF objects. The real
+VC7.1 `/OPT:NOREF` link moves from 515 unique unresolved names / 802 diagnostics
+to 508 / 731, with all five obsolete callable Chain names and both struct/class
+`g_Chain` names gone. This closes six target addresses: the four public
+Chain methods, `RunDrawChain`, and `g_Chain`.
+
+The shared declaration predictably renumbers compiler-private COFF labels.
+Across all 696 canonical units, 636 replay without manifest changes and 60
+change relocation identities only. Before refreshing 242 ABI/tag references
+and 829 compiler-private labels, a cold-object audit proved every complete
+compare extent, relocation offset/type, addend-driven replay, and target
+destination unchanged. The canonical comparator then passes all 60/60 changed
+units, and the independent EH audit remains 81/81 exact. The remaining
+`ChainSupervisorView` names target the Supervisor family and are not Chain
+aliases.
+
 
 ### GetInput compiler-class exhaustion checkpoint (2026-09-08)
 

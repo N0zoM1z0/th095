@@ -1,3 +1,4 @@
+#include "Chain.hpp"
 #include "inttypes.hpp"
 #include <windows.h>
 #include <stddef.h>
@@ -18,19 +19,6 @@ struct AnmVm
 };
 typedef char AnmVmSizeIs2CC[(sizeof(AnmVm) == 0x2cc) ? 1 : -1];
 
-typedef i32 (*ChainCallback)(void *);
-struct ChainElem
-{
-    u8 unknown000[0x1c];
-    void *arg;
-};
-struct Chain
-{
-    void Cut(ChainElem *elem);
-    ChainElem *CreateElem(ChainCallback callback);
-    i32 AddToCalcChain(ChainElem *elem, i32 priority);
-    i32 AddToDrawChain(ChainElem *elem, i32 priority);
-};
 struct AnmManager
 {
     AnmLoaded *PreloadAnm(i32 anmIdx, const char *path);
@@ -50,7 +38,6 @@ namespace utils
 void DebugPrint(char *format, ...);
 }
 
-extern Chain g_Chain;
 extern AnmManager *g_AnmManager;
 extern GameErrorContext g_GameErrorContext;
 extern Supervisor g_Supervisor;

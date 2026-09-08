@@ -3,6 +3,12 @@
 namespace th095
 {
 
+// TH095's static initializer/destructor wrappers at 0x00493F30/0x00494210
+// construct and destroy the object at 0x004BE3C8. TH08 corroborates the same
+// Global.cpp ownership. DIFFABLE_STATIC preserves that real production
+// storage while leaving address-bound comparison builds free to externalize it.
+DIFFABLE_STATIC(Chain, g_Chain);
+
 struct ChainSupervisorView
 {
     u8 unknown000[0x664];

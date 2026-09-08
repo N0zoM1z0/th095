@@ -5,7 +5,7 @@
 namespace th095
 {
 
-struct ChainElem;
+class ChainElem;
 
 enum ScreenEffectType
 {

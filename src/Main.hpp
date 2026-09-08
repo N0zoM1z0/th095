@@ -10,6 +10,7 @@
 #include <windows.h>
 
 #include <stddef.h>
+#include "Chain.hpp"
 #include "ScreenEffect.hpp"
 
 namespace th095
@@ -191,22 +192,6 @@ struct ScreenshotBitmapFileHeader
 #pragma pack(pop)
 
 typedef char ScreenshotBitmapFileHeaderSizeIs0E[(sizeof(ScreenshotBitmapFileHeader) == 0x0e) ? 1 : -1];
-
-typedef i32 (__fastcall *ChainCallback)(void *arg);
-typedef i32 (__fastcall *ChainLifetimeCallback)(void *arg);
-
-struct ChainElem
-{
-    i16 priority;
-    u16 isHeapAllocated : 1;
-    ChainCallback callback;
-    ChainLifetimeCallback addedCallback;
-    ChainLifetimeCallback deletedCallback;
-    ChainElem *prev;
-    ChainElem *next;
-    ChainElem *releaseTarget;
-    void *arg;
-};
 
 #pragma pack(push, 4)
 struct Supervisor
@@ -395,17 +380,6 @@ struct SoundPlayer
 
 typedef char MainSoundPlayerBgmVolumeAt52C4[(offsetof(SoundPlayer, bgmVolume) == 0x52c4) ? 1 : -1];
 
-struct Chain
-{
-    i32 RunCalcChain();
-    void RunDrawChain();
-    void Release();
-    void Cut(ChainElem *elem);
-    ChainElem *CreateElem(ChainCallback callback);
-    i32 AddToCalcChain(ChainElem *elem, i32 priority);
-    i32 AddToDrawChain(ChainElem *elem, i32 priority);
-};
-
 extern char *g_GameErrorContextCursor;
 
 struct GameErrorContext
@@ -455,7 +429,6 @@ void DebugPrint(char *format, ...);
 extern GameWindow g_GameWindow;
 extern Supervisor g_Supervisor;
 extern SoundPlayer g_SoundPlayer;
-extern Chain g_Chain;
 extern GameErrorContext g_GameErrorContext;
 extern AnmManager *g_AnmManager;
 extern u16 g_PressedButtons;

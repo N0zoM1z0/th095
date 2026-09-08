@@ -104,32 +104,45 @@ python3 scripts/build-whole.py --compile-only
 python3 scripts/build-whole.py --link-only
 ```
 
-The 2026-09-08 cold compiler audit passed every current source TU with the
-hash-locked VC7.1 compiler and produced 88 i386 COFF objects under the two
-profiles already recorded by the canonical units. The real VC7.1 link then
-failed with 515 unique unresolved decorated symbols across 802 linker
-diagnostics. The machine-readable current report is generated at
+The 2026-09-08 cold compiler audit passes every current source TU with the
+hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
+profiles already recorded by the canonical units. After the first production
+ownership repair, the real VC7.1 link fails with 508 unique unresolved
+decorated symbols across 731 linker diagnostics: 288 data and 220
+callable/runtime. Of those names, 505 map through canonical relocations to 271
+target addresses; the same three `GetInput`-only globals lack exact relocation
+evidence, and the same six proxy names map to multiple targets. The
+machine-readable current report is generated at
 `build/whole-validation/report.json`; raw linker output is generated at
 `build/whole-validation/link.log`.
 
-This failure does not mean 515 authored functions are missing. The relocation
-manifests map 512 unresolved names to 277 exact target addresses. The dominant
-gap is production declaration/ownership coherence: for example, `Global.cpp`
-exports Chain methods with the `class ChainElem *` (`PAV`) decoration while
-several exact probe-style TUs request `struct ChainElem *` (`PAU`). Numerous
-local `*View` declarations likewise compile and compare in isolation but do
-not name the production owner. Six proxy names are worse: each maps to multiple
-target addresses in different canonical units, so a blanket linker alias is
-incorrect. The only three names without exact relocation evidence are
-`g_ControllerAssignments`, `g_ControllerInputEnabled`, and
-`g_KeyboardDevice`, all referenced only by deferred `GetInput`.
+The Chain family is closed. `src/Chain.hpp` is now the single production ABI
+declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
+enum-returning `/Gr` callback type, and `RunDrawChain` returns `int`.
+`Global.cpp` owns the real `DIFFABLE_STATIC(Chain, g_Chain)` storage. Target
+initializer/destructor wrappers `0x00493F30` and `0x00494210` independently
+construct and destroy `0x004BE3C8`; TH08 corroborates the same TU ownership.
+This removes all seven former Chain ABI/owner unresolved names and six target
+addresses without an alias or shim.
 
-The next bounded lane is the core production ownership family: canonicalize
-`Chain`/`ChainElem` declarations and their real global owner, then replay every
-affected exact unit before rerunning `--link-only`. Do not add duplicate shims,
-fake global storage, arbitrary `/alternatename` mappings, or
-`/FORCE:UNRESOLVED`. A successful link will establish link closure only; it
-will not establish a byte-exact whole image or runtime playability.
+All 88 canonical source objects were cold-rebuilt after the shared-header
+change. Of 696 match units, 636 replayed directly; the other 60 changed only
+relocation symbol identities. Before refreshing them, all complete compare
+extents, relocation offsets/types, and target destinations replayed exact.
+The canonical comparator then passed all 60/60 changed units, and the
+associative EH audit remains 81/81 exact. The manifest refresh comprises 242
+ABI/tag references and 829 compiler-private label identities.
+
+The next bounded lane is the Supervisor production family. The only remaining
+unresolved names containing `Chain` are the `ChainSupervisorView` proxy method
+and global used by `Global.cpp`; their exact targets are the real
+`Supervisor::StopReplayScan @ 0x00425640` and `g_Supervisor @ 0x004C4670`, so
+they must be resolved through the canonical Supervisor declaration/owner, not
+through Chain storage. Continue one target-address family at a time and replay
+every affected exact unit. Do not add duplicate shims, fake global storage,
+arbitrary `/alternatename` mappings, or `/FORCE:UNRESOLVED`. A successful link
+will establish link closure only; it will not establish a byte-exact whole
+image or runtime playability.
 
 ## Matching checkpoint gate
 

@@ -1,4 +1,5 @@
 #define WIN32_LEAN_AND_MEAN
+#include "Chain.hpp"
 #include "ScreenEffect.hpp"
 
 #include <windows.h>
@@ -13,30 +14,6 @@ struct ScreenEffectAnmManagerView
     void FlushVertexBuffer();
 };
 extern ScreenEffectAnmManagerView *g_AnmManager;
-
-struct ChainElem;
-typedef int (__fastcall *ChainCallback)(void *arg);
-typedef int (__fastcall *ChainLifetimeCallback)(void *arg);
-struct ChainElem
-{
-    short priority;
-    unsigned short isHeapAllocated : 1;
-    ChainCallback callback;
-    ChainLifetimeCallback addedCallback;
-    ChainLifetimeCallback deletedCallback;
-    ChainElem *prev;
-    ChainElem *next;
-    ChainElem *releaseTarget;
-    void *arg;
-};
-typedef char ScreenEffectChainElemSizeIs20[(sizeof(ChainElem) == 0x20) ? 1 : -1];
-
-class Chain
-{
-  public:
-    void Cut(ChainElem *elem);
-};
-extern Chain g_Chain;
 
 class Rng
 {
