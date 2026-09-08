@@ -104,17 +104,15 @@ python3 scripts/build-whole.py --compile-only
 python3 scripts/build-whole.py --link-only
 ```
 
-The 2026-09-08 cold compiler audit passes every current source TU with the
+The latest 2026-09-08 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
-profiles already recorded by the canonical units. After the first production
-ownership repair, the real VC7.1 link fails with 508 unique unresolved
-decorated symbols across 731 linker diagnostics: 288 data and 220
-callable/runtime. Of those names, 505 map through canonical relocations to 271
-target addresses; the same three `GetInput`-only globals lack exact relocation
-evidence, and the same six proxy names map to multiple targets. The
-machine-readable current report is generated at
-`build/whole-validation/report.json`; raw linker output is generated at
-`build/whole-validation/link.log`.
+profiles already recorded by the canonical units. The real `/OPT:NOREF` link
+now fails with 239 unique unresolved decorated symbols across 258 diagnostics:
+130 data and 109 callable/runtime. Of those names, 236 map through canonical
+relocations to 151 target addresses; three currently lack target-address
+evidence and four decorated names map to multiple targets. The machine-readable
+current report is generated at `build/whole-validation/report.json`; raw linker
+output is generated at `build/whole-validation/link.log`.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
@@ -133,16 +131,21 @@ The canonical comparator then passed all 60/60 changed units, and the
 associative EH audit remains 81/81 exact. The manifest refresh comprises 242
 ABI/tag references and 829 compiler-private label identities.
 
-The next bounded lane is the Supervisor production family. The only remaining
-unresolved names containing `Chain` are the `ChainSupervisorView` proxy method
-and global used by `Global.cpp`; their exact targets are the real
-`Supervisor::StopReplayScan @ 0x00425640` and `g_Supervisor @ 0x004C4670`, so
-they must be resolved through the canonical Supervisor declaration/owner, not
-through Chain storage. Continue one target-address family at a time and replay
-every affected exact unit. Do not add duplicate shims, fake global storage,
-arbitrary `/alternatename` mappings, or `/FORCE:UNRESOLVED`. A successful link
-will establish link closure only; it will not establish a byte-exact whole
-image or runtime playability.
+The current source and relocation checkpoints are split into four reviewable
+English commits: `a3412fb` (core runtime ownership/ABI), `3872090` (ANM and
+gameplay views), `7d20869` (front-end/scene/replay owners), and `d77ade1`
+(canonical Supervisor relocation names for Chain). The working tree was clean
+after those commits. Representative exact units compiled successfully, but the
+next agent must replay every exact unit affected by the broad shared-header
+changes before claiming full exact regression closure.
+
+Continue from `docs/WHOLE_BUILD_TODO.md`. It records the production-only owner
+alias pattern, prioritized target-address families, multi-target traps,
+callable proxy families, constant/table work, verification gates, and runtime
+definition of done. Do not add duplicate shims, fake global storage, arbitrary
+`/alternatename` mappings, or `/FORCE:UNRESOLVED`. A successful link establishes
+link closure only; it does not establish a byte-exact whole image or runtime
+playability.
 
 ## Matching checkpoint gate
 

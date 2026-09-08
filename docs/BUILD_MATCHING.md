@@ -57,14 +57,14 @@ directive although the pinned tool package does not contain that legacy
 iostream library. `/NODEFAULTLIB:libci.lib` suppresses only the library lookup;
 any real missing iostream symbol remains unresolved and fails the link.
 
-The 2026-09-08 cold audit compiled the complete current source graph but did
-not link. The generated `build/whole-validation/report.json` recorded 515
-unique unresolved decorated symbols across 802 diagnostics: 290 data symbols
-and 225 callable/runtime symbols. Canonical relocation manifests map 512 of
-those names to 277 target addresses; the three without exact relocation
-evidence are the globals used only by the deferred non-exact
-`Controller::GetInput`. Six proxy names map to more than one target address,
-which independently proves that a blanket linker alias would be unsound.
+The initial 2026-09-08 fail-closed audit recorded 515 unique unresolved names.
+After canonical ABI and production-owner repairs, the current cold audit still
+does not link but compiles all 88 objects and reports 239 unique unresolved
+decorated symbols across 258 diagnostics: 130 data and 109 callable/runtime.
+Canonical relocation manifests map 236 names to 151 target addresses; three
+names currently lack target-address evidence and four names map to more than
+one target address. Always read the freshly generated report rather than
+copying these checkpoint counts forward.
 
 This is a source/link-coherence failure, not a loss of existing function-level
 exact credit. Repair it by moving real declarations and definitions into
@@ -74,6 +74,8 @@ replaying every affected exact unit. Do not use duplicate shims, fake globals,
 As with the earliest TH08 i386 validation, the reusable principle is a complete
 compile, complete link, and machine-format attestation. TH095 deliberately uses
 the original VC7.1/PE toolchain rather than creating a Linux port.
+The current family-by-family procedure and remaining work are maintained in
+`docs/WHOLE_BUILD_TODO.md`.
 
 ## Canonical unit requirements
 
