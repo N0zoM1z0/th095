@@ -79,8 +79,9 @@ references**. All 72 inventory extents agree with the COFF-derived extents, all
 references replay byte-exact after relocation**. Those 72 candidates are now
 classified `origin=compiler`, `disposition=exclude` with evidence ID
 `vc71-eh-cleanup-provenance-2026-09-08`. This changes review/exclusion coverage,
-not the authored denominator or authored exact credit. The live inventory is
-therefore 1,880 candidates: **697 authored, 1,000 review, 183 excluded**.
+not the authored denominator or authored exact credit. At that checkpoint the
+inventory was 1,880 candidates: **697 authored, 1,000 review, 183 excluded**;
+the later runtime-origin closure below supersedes those review counts.
 
 One source-shape defect was exposed by this stronger check even though its
 parent body was already canonical exact. `Chain::ReleaseSingleChain @
@@ -239,4 +240,37 @@ This pass also replays the EH side rather than assuming it from code gaps: the
 49 compiler handlers have 57 canonical local-COFF references and the authored
 consistency gate remains empty.  These results strengthen the current 697-body
 authored denominator, but they are not a proof that every arbitrary byte
-sequence is source code or that every runtime review lead is classified.
+sequence is source code.
+
+## 2026-09-08 runtime-origin and boundary closure
+
+`scripts/audit-runtime-origins.py` freezes and replays the former 1,000-row
+post-authored review cohort. It first attests the exact target, then parses the
+pinned VC7.1 `d3dx8.lib`, `libcmt.lib`, and `libcpmt.lib` archives directly.
+Only explicit i386 COFF relocation bytes are masked. Complete function extents,
+whole code contributions, and associative COMDAT ownership remain distinct
+evidence classes; six-byte import thunks are independently checked against the
+target PE import directory.
+
+The replay classifies all 1,000 candidates with no unresolved or ambiguous
+origin: **908 library and 92 compiler**. Of these, 932 have exact PE/COFF origin
+evidence: 3 import thunks, 793 ordinary library function extents, 47 associative
+compiler function extents, and 89 Ghidra candidates wholly contained inside an
+exact pinned-library contribution. The remaining 68 are high-confidence
+boundary/origin reviews: 23 short pinned-library dispatch/thunk shapes plus the
+D3DX CPU-dispatch initializer, and 45 compiler shapes comprising three short
+associative funclets, sixteen adjacent `Unwind@...` cleanup funclets, and the
+twenty-six VC7.1 static initializer/terminator functions at
+`0x00493E90..0x004942A7`.
+
+The contextual cases are not inferred from address alone. Attested Ghidra
+disassembly bounds each entry through its terminal transfer; the D3DX dispatch
+initializer is called by the uniquely matched `_D3DXCpuOptimizations@4` body;
+the unmatched unwind bodies share the same EH-only call/return shapes as the
+adjacent associative COFF matches; and the final compiler glue calls project
+constructors/destructors while registering terminators through `_atexit`.
+`scripts/apply-runtime-origin-review.py` requires the frozen cohort, refuses any
+unknown result, and updates both ledgers together. The resulting inventory is
+**1,880 candidates: 697 authored, 0 review, 1,183 excluded**. This closes the
+origin/boundary review denominator without changing source-present or exact
+reconstruction credit.

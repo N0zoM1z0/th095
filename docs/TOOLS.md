@@ -11,6 +11,8 @@
 | Secondary IDA observation | Attested IDA Pro MCP | Optional corroboration only; never use an IDB for another executable |
 | Rank historical architecture hubs | `scripts/report-architecture.py` | Private read-only Ghidra-export metrics |
 | Inspect raw PE | `objdump` and verified target bytes | Read-only target evidence |
+| Replay runtime/library origins | `python3 scripts/audit-runtime-origins.py` | Attests target, pinned COFF archives, complete extents/contributions, imports, and reviewed compiler shapes |
+| Apply frozen runtime review | `python3 scripts/apply-runtime-origin-review.py --apply` | Refuses unresolved rows; updates both boundary/origin ledgers atomically |
 | Compile a VC7.1 probe | `scripts/compile-probe.sh` | Explicit flags are mandatory |
 | Replay a strict unit | `scripts/build.py` and `scripts/compare-coff-function.py --unit …` | Full extent and explicit relocations |
 | Validate ledgers | `python3 scripts/validate-tracking.py` | Does not prove exactness |

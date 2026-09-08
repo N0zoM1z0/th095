@@ -47,11 +47,10 @@ the primary semantic-analysis backend. Generated `docs/PROGRESS.md` and
 `scripts/report-reconstruction-status.py` output are the only canonical live
 totals; prose intentionally does not duplicate changing counts.
 
-All currently confirmed authored functions have maintained source. The active
-priority is to finish every pending origin and boundary review before resuming
-the small set of source-present, non-exact compiler-shape residuals. Mapping,
-origin, source presence, semantic acceptance, and exactness remain independent
-facts, and the authored denominator may change while review is open.
+All confirmed authored functions have maintained source, and the origin/boundary
+review is closed at zero pending rows. The active priority is the remaining
+source-present, non-exact compiler-shape residuals. Mapping, origin, source
+presence, semantic acceptance, and exactness remain independent facts.
 
 The pinned compiler is Microsoft Visual C++ .NET 2003
 `13.10.3077`, matching the target's PE/Rich-header evidence. The

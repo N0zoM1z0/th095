@@ -36,7 +36,14 @@ def require_header(path: Path, fields: list[str]) -> list[dict[str, str]]:
             raise ValueError(
                 f"{path.name}: header {reader.fieldnames!r} differs from {fields!r}"
             )
-        return list(reader)
+        rows = list(reader)
+    for line, row in enumerate(rows, start=2):
+        if None in row:
+            raise ValueError(f"{path.name}:{line}: unexpected extra CSV fields")
+        missing = [field for field in fields if row[field] is None]
+        if missing:
+            raise ValueError(f"{path.name}:{line}: missing CSV fields {missing!r}")
+    return rows
 
 
 def address(raw: str, label: str) -> int:
