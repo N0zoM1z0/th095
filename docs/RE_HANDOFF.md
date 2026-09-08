@@ -107,10 +107,10 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 195 unique unresolved decorated symbols across 207 diagnostics:
-87 data and 108 callable/runtime. Of those names, 192 map through canonical
-relocations to 147 target addresses; three currently lack target-address
-evidence and four decorated names map to multiple targets. The machine-readable
+now fails with 187 unique unresolved decorated symbols across 197 diagnostics:
+79 data and 108 callable/runtime. Of those names, 184 map through canonical
+relocations to 145 target addresses; three currently lack target-address
+evidence and three decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
 
@@ -166,6 +166,20 @@ references; the `.90` call site itself is now canonical. All 31 source files
 directly affected by the shared-header/type change were cold replayed: 403/403
 configured units are exact, with private-label refreshes accepted only after
 structural and solved-destination audit.
+
+The `0x004BDD98` BulletInf manager family is closed. Hash-attested Ghidra xrefs
+show the exact BulletInf constructor at `0x00404C80` publishing `this` to the
+slot at `0x00404CE0`, and the destructor at `0x00404ED0` clearing it at
+`0x00404F3D` after Chain and ANM teardown. Enemy-shot, ECL, item, enemy, stage,
+reset, and player/camera bullet views now share `g_RuntimeBulletManagerOwner`.
+The previously dangerous `PhotoBulletManagerView::g_PhotoBulletManager`
+multi-target identity was split by relocation/callee: its `.90` edge is the
+real `Background::SetPhotoArea @ 0x00404950` from the preceding family, while
+all `.98` operations route to BulletInf. The cold link moves 195 -> 187 unique
+unresolved names and 207 -> 197 diagnostics; `0x004BDD98` is absent from the
+fresh unresolved target set and the global multi-target-name count drops from
+four to three. All nine directly affected canonical sources replay exact:
+132/132 configured units, with no relocation-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

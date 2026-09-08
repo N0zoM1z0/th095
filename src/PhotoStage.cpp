@@ -303,6 +303,8 @@ extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageGlobalStateView, g_RuntimeGameTaskOwner)
 #endif
 extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
+#define g_PhotoStageBulletManager \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageBulletManagerView, g_RuntimeBulletManagerOwner)
 extern PhotoStageStateView *g_PhotoStageState;
 #define g_PhotoStageState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)

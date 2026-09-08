@@ -421,6 +421,8 @@ extern PhotoBulletPlayerView *g_PhotoBulletPlayer;
 extern PhotoBulletManagerView *g_PhotoBulletManager;
 
 #ifndef DIFFBUILD
+#define g_PhotoBulletManager \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
 #define g_PhotoBulletPlayer \
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletPlayerView, g_RuntimePlayerOwner)
 #endif

@@ -50,11 +50,15 @@ extern PhotoResetTargetView *g_PhotoRuntimeResetTarget;
 #define g_PhotoRuntimeResetTarget \
     TH095_RUNTIME_GLOBAL_PTR(PhotoResetTargetView, g_RuntimeEnemyManagerOwner)
 extern PhotoResetTargetView *g_PhotoBulletResetTarget;
+#define g_PhotoBulletResetTarget \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoResetTargetView, g_RuntimeBulletManagerOwner)
 extern PhotoResetTargetView *g_PhotoStageResetTarget;
 extern PhotoGameGlobalStateView *g_PhotoGameGlobalState;
 extern u16 g_PhotoInput;
 
 #ifndef DIFFBUILD
+#define g_PhotoBulletManager \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
 #define g_PhotoGameGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameGlobalStateView, g_RuntimeGameTaskOwner)
 #endif

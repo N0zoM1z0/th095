@@ -49,6 +49,13 @@
     (reinterpret_cast<EclRunHigh::PhotoModeController *>(::th095::g_Background))
 #endif
 
+#ifdef DIFFBUILD
+#define TH095_ECL_BULLET_MANAGER EclRunHigh::g_Th095BulletManager
+#else
+#define TH095_ECL_BULLET_MANAGER \
+    TH095_RUNTIME_GLOBAL_PTR(EclRunHigh::Th095BulletManager, ::th095::g_RuntimeBulletManagerOwner)
+#endif
+
 #ifdef TH095_MATCH_EXACT
 #define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
 #define ZUN_ERROR TH095_LEGACY_ZUN_ERROR

@@ -15,6 +15,8 @@ struct ItemBulletManagerView
 };
 
 extern ItemBulletManagerView *g_PhotoBulletManager;
+#define g_PhotoBulletManager \
+    TH095_RUNTIME_GLOBAL_PTR(ItemBulletManagerView, g_RuntimeBulletManagerOwner)
 
 struct ItemPhotoGameView
 {

@@ -78,7 +78,7 @@
         *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x2990) =
             *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x28a0) +
             *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x2924);
-        g_Th095BulletManager->SpawnEnemyPattern(
+        TH095_ECL_BULLET_MANAGER->SpawnEnemyPattern(
             reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x298c));
         break;
 
@@ -460,7 +460,7 @@ enter_subroutine:
     }
 
     case 102:
-        g_Th095BulletManager->ResetEnemyPatterns();
+        TH095_ECL_BULLET_MANAGER->ResetEnemyPatterns();
         g_Th095StageController->ResetEnemyState();
         break;
 
@@ -480,7 +480,7 @@ enter_subroutine:
 
         TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle =
             (*reinterpret_cast<PhotoAnmSpawner **>(
-                reinterpret_cast<u8 *>(g_Th095BulletManager) + 0x27c5b0))
+                reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0))
                 ->Spawn(0xd2, reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0));
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(
@@ -520,7 +520,7 @@ enter_subroutine:
 
         TH095_ENEMY_PHOTO(enemy)->photoAnmHandle =
             (*reinterpret_cast<PhotoAnmSpawner **>(
-                reinterpret_cast<u8 *>(g_Th095BulletManager) + 0x27c5b0))
+                reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0))
                 ->Spawn(0x125, reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0));
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x2d), 0);

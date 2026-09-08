@@ -218,6 +218,8 @@ static __forceinline u8 *ExtendedBackgroundOwner()
     return reinterpret_cast<u8 *>(::th095::g_Background);
 }
 #define g_Background ExtendedBackgroundOwner()
+#define g_PhotoBulletManager \
+    TH095_RUNTIME_GLOBAL_PTR(ExtendedBulletManager, ::th095::g_RuntimeBulletManagerOwner)
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, ::th095::g_RuntimeGameTaskOwner)
 #endif

@@ -43,6 +43,8 @@ extern EnemyShotBulletManagerView *g_EnemyShotBulletManager;
 extern u8 *g_EnemyShotPlayer;
 
 #ifndef DIFFBUILD
+#define g_EnemyShotBulletManager \
+    TH095_RUNTIME_GLOBAL_PTR(EnemyShotBulletManagerView, g_RuntimeBulletManagerOwner)
 #define g_EnemyShotPlayer \
     TH095_RUNTIME_GLOBAL_PTR(u8, g_RuntimePlayerOwner)
 #endif

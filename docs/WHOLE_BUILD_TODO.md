@@ -119,9 +119,18 @@ multi-target `g_PhotoBulletManager` name remains only because its `.98` bullet
 references are still open. All 403 directly affected exact units replayed
 canonical exact.
 
+Closed 2026-09-09: `0x004BDD98` (BulletInf manager). Eight fresh unresolved
+link identities/edges in this target-address family were closed through the
+real `g_RuntimeBulletManagerOwner` lifecycle; Ghidra-attested ctor/dtor
+publish/clear at `0x00404CE0` / `0x00404F3D`. The multi-target
+`g_PhotoBulletManager` name was not aliased globally: `.90` remains the real
+Background photo-area edge and `.98` remains BulletInf. Fresh whole-build count
+changed 195 -> 187 unique unresolved (207 -> 197 diagnostics), `0x004BDD98` is
+absent from the unresolved target set, and all 132 directly affected exact
+units replayed canonical exact.
+
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
-| `0x004BDD98` | bullet manager | enemy-shot, ECL, photo-item, photo-enemy, photo-stage, reset-target, and task views |
 | `0x004C45E0` | effect/stage-controller slot | photo-effect manager, stage controller/effect/reset views, and ECL high views |
 | `0x004C45DC` | item-manager slot | `g_ItemManager`, `g_PhotoItemManager`, and the photo-capture particle-spawner view |
 | `0x004BDDC4` | background/front manager slot | `g_PhotoFrontManager` and `g_PhotoStageSupervisor` plus the actual background lifecycle family |

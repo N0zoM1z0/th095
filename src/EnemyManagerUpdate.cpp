@@ -342,6 +342,8 @@ extern PhotoEnemyBulletManagerView *g_PhotoEnemyBulletManager;
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 extern PhotoEnemyPlayerView *g_PhotoEnemyPlayer;
 #ifndef DIFFBUILD
+#define g_PhotoEnemyBulletManager \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyBulletManagerView, g_RuntimeBulletManagerOwner)
 #define g_PhotoEnemyManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
 #endif
