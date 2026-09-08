@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 144 unique unresolved decorated symbols across 150 diagnostics:
-59 data and 85 callable/runtime. Of those names, 141 map through canonical
-relocations to 128 target addresses; three currently lack target-address
+now fails with 142 unique unresolved decorated symbols across 148 diagnostics:
+59 data and 83 callable/runtime. Of those names, 139 map through canonical
+relocations to 127 target addresses; three currently lack target-address
 evidence and three decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -306,6 +306,15 @@ unresolved names and 166 -> 150 diagnostics, callable/runtime 101 -> 85; all
 seven ANM target addresses are absent from the fresh unresolved set. Four
 affected sources replay 40/40 configured exact units with no relocation-label
 refresh.
+
+The ANM texture-entry clear receiver at `0x004453B0` is closed. Fresh attested
+Ghidra bounds the target body to 136 bytes. HelpMenu and MusicRoom each carried
+a local 0x10-byte texture-entry proxy solely to call `Clear`; their production
+storage views now point directly at the canonical `AnmTextureEntryView`, whose
+exact implementation already owns this target body. The cold link moves 144 ->
+142 unique unresolved names and 150 -> 148 diagnostics (59 data / 83 callable),
+and `0x004453B0` leaves the unresolved set. The two affected sources replay 5/5
+configured exact units with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

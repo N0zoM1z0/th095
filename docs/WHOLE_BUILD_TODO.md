@@ -199,7 +199,7 @@ front-end lifecycle flags, Supervisor member views, and standalone buffers.
 
 ## Callable/runtime families
 
-Most of the remaining 85 callable/runtime names are not missing semantics.
+Most of the remaining 83 callable/runtime names are not missing semantics.
 They are local proxy class names calling already reconstructed target functions.
 Close them by canonicalizing the receiver type and declaration.
 
@@ -219,6 +219,11 @@ builds preserve their historical decorated receivers. Fresh link count changes
 160 -> 144 unique unresolved (166 -> 150 diagnostics), all seven target
 addresses disappear from the unresolved set, and the four affected sources
 replay 40/40 canonical exact units.
+
+Closed 2026-09-09: texture-entry clear receiver `0x004453B0`. HelpMenu and
+MusicRoom production storage now uses the real `AnmTextureEntryView`; fresh
+link count changes 144 -> 142 unique unresolved (150 -> 148 diagnostics), and
+both affected sources replay 5/5 exact units.
 
 Continue with:
 

@@ -2,6 +2,7 @@
 #include "HelpMenuExact.inl"
 #else
 #include "HelpMenu.hpp"
+#include "AnmManager.hpp"
 #include "FileSystem.hpp"
 #include "FrontEndGlobals.hpp"
 #include "SoundPlayer.hpp"
@@ -31,18 +32,10 @@ static __forceinline void HelpMenuFreeAnmData(HelpMenuView *view)
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 
-struct HelpTextureEntryView
-{
-    IDirect3DTexture8 *texture;
-    u8 unknown004[0x0c];
-
-    void Clear();
-};
-
 struct HelpAnmStorageView
 {
     u8 unknown000[0x14];
-    HelpTextureEntryView *textures;
+    AnmTextureEntryView *textures;
 };
 
 static __forceinline u16 GetHelpPressedButtons(u16 buttons)

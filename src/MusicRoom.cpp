@@ -2,6 +2,7 @@
 #include "MusicRoomExact.inl"
 #else
 #include "MusicRoom.hpp"
+#include "AnmManager.hpp"
 #include "FileSystem.hpp"
 #include "SoundPlayer.hpp"
 
@@ -34,18 +35,10 @@ static __forceinline void MusicRoomFreeCommentFile(MusicRoomView *view)
     free(block);
 }
 
-struct MusicRoomTextureEntryView
-{
-    IDirect3DTexture8 *texture;
-    u8 unknown004[0x0c];
-
-    void Clear();
-};
-
 struct MusicRoomAnmStorageView
 {
     u8 unknown000[0x14];
-    MusicRoomTextureEntryView *textures;
+    AnmTextureEntryView *textures;
 };
 
 static __forceinline u16 GetMusicRoomPressedButtons(u16 buttons)
