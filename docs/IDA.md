@@ -1,8 +1,9 @@
-# IDA Pro MCP setup and attestation
+# Secondary IDA notes
 
-IDA Pro MCP is the primary semantic-analysis backend. The supported target is
-only the original Japanese TH095 v1.02a executable described by
-`config/target.toml`.
+IDA is not the live TH095 backend. The reconstruction uses the hash-attested
+Ghidra workflow in `docs/GHIDRA.md`. These notes are retained only for bounded
+secondary observations when an independently attested TH095 IDB is available;
+an IDB for another Touhou executable must never be used as TH095 evidence.
 
 ## Start and attest
 
@@ -10,7 +11,7 @@ Open the target in IDA Pro on the Windows host and start the MCP plugin from
 `Edit -> Plugins -> MCP` (`Ctrl+Alt+M`). The installed plugin listens on
 `http://localhost:13337`; keep that listener local to the host.
 
-Before relying on an IDB, call these native MCP tools:
+Before recording any secondary IDA observation, call these native MCP tools:
 
 1. `check_connection`
 2. `get_metadata`
@@ -32,7 +33,7 @@ The required identity is:
 Stop on any mismatch. A localized, patched, trial, Steam, or earlier executable
 is unsupported even if its filename is `th095.exe`.
 
-## GPT-web bridge
+## Historical GPT-web bridge
 
 The optional local `.tools/mcp_for_gptweb` service exposes only `run_command`
 and `ida_call` over stateless Streamable HTTP. `ida_call` hashes the configured
@@ -46,7 +47,8 @@ comment, prototype, type, and stack-variable mutations.
 
 ## Evidence boundary
 
-IDA names, types, decompilation, and function extents are provisional analysis.
+IDA names, types, decompilation, and function extents are provisional secondary
+analysis and never replace the attested Ghidra/raw-target workflow.
 Reconcile them against target bytes and record accepted facts in repository
 ledgers and documentation. An IDA observation, mapping, source implementation,
 or successful compilation does not establish exactness; only a canonical

@@ -42,44 +42,16 @@ included.
 
 ## Current status
 
-TH095 is in active reconstruction. The historical attested Ghidra 12.1.3
-import supplied 1,830 provisional function candidates; IDA Pro MCP is now the
-primary semantic-analysis backend. The generated progress badge
-and report are the canonical live totals. Exact units include the complete
-17,018-byte `AnmManager::ExecuteScript`, 27,091-byte `EclManager::RunEcl`, the
-target-specific asynchronous `SoundPlayer` core, and the Main/D3D runtime
-family. The TH095-specific replay stream, disk/archive loader, compressed
-writer, result-screen dependencies, scene-selection helpers, photography
-camera helpers, the five-function WinMM/DirectInput controller chain, keyboard
-reset, and the shared FileSystem codec/archive-or-disk loader are also exact.
-The complete dual-device and aggregate `Controller::GetInput` path is
-source-present. The complete TH095 Music Room is source-present, with both
-music-comment parsing helpers exact. The complete nine-page Help viewer is
-also source-present, and its asynchronous archive-or-disk loading callback is
-exact. The shared TH095 scene-score/replay-browser text renderer is
-source-present as well, with exact update/draw chain ownership wrappers.
-The owning ten-state front-end coordinator is source-present with its complete
-main/scene/replay/options/music/Help and game-transition routing. Its complete
-six-row title menu is source-present as well, including idle-demo playback and
-queue cleanup; both of its high-fan-out VM interrupt helpers are exact. The
-complete TH095 group/scene selection hub is source-present with all three
-asynchronous preview pipelines and its exact 275-call topology; its shared
-D3D texture clear helper is exact. The selector's asynchronous mission/face
-asset worker is source-present with its complete queue protocol and exact
-38-call topology. The selected-scene best-shot loader and shared 8 KiB-ring
-decompressor are source-present, and their aligned checksum dependency is exact.
-The selector/Help ANM texture pipeline is source-present through full and
-regional uploads and three-format alpha bleed; the full upload, format selector,
-and all three pixel-neighbor helpers are exact.
+TH095 is in active reconstruction. The hash-attested Ghidra 12.1.3 project is
+the primary semantic-analysis backend. Generated `docs/PROGRESS.md` and
+`scripts/report-reconstruction-status.py` output are the only canonical live
+totals; prose intentionally does not duplicate changing counts.
 
-A target-local audit continues to admit photography/camera, replay/menu,
-scene-selection, options, and gameplay/resource functions as their authored
-origins are proved. Mapping, source presence, semantic validation, and exact
-matches are deliberately tracked as independent states, so the denominator
-can grow and difficult compiler-shape residuals remain uncredited.
-The aspirational reconstruction target is 99.5% of that conservative authored
-denominator, but difficult units remain uncredited rather than weakening the
-exact-match standard.
+All currently confirmed authored functions have maintained source. The active
+priority is to finish every pending origin and boundary review before resuming
+the small set of source-present, non-exact compiler-shape residuals. Mapping,
+origin, source presence, semantic acceptance, and exactness remain independent
+facts, and the authored denominator may change while review is open.
 
 The pinned compiler is Microsoft Visual C++ .NET 2003
 `13.10.3077`, matching the target's PE/Rich-header evidence. The
@@ -96,10 +68,11 @@ scripts/bootstrap-tools.sh
 python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
+python3 scripts/ghidra.py check
 ```
 
-Attest the active IDA database against `config/target.toml` before relying on
-its analysis; see the IDA guide below.
+The final command attests the private Ghidra program and six mapped `.text`
+samples against `config/target.toml` before any analysis is trusted.
 
 ## Documentation
 
@@ -107,8 +80,8 @@ its analysis; see the IDA guide below.
 - [Architecture and exact target](docs/ARCHITECTURE.md)
 - [Reverse-engineering workflow](docs/RE_WORKFLOW.md)
 - [Independent oracle policy](docs/ORACLES.md)
-- [IDA Pro MCP setup and attestation](docs/IDA.md)
-- [Legacy Ghidra workflow](docs/GHIDRA.md)
+- [Ghidra setup and attestation](docs/GHIDRA.md)
+- [Secondary IDA notes](docs/IDA.md)
 - [VC7.1 build and strict matching](docs/BUILD_MATCHING.md)
 - [Tool routing](docs/TOOLS.md)
 - [Verified knowledge base](docs/KNOWLEDGE_BASE.md)
@@ -116,7 +89,7 @@ its analysis; see the IDA guide below.
 - [Agent rules](AGENTS.md)
 
 Run public, target-independent checks with `python3 scripts/ci.py`. Private
-target and IDA/Ghidra checks remain separate from public CI.
+target and Ghidra checks remain separate from public CI.
 
 ## Reference model
 

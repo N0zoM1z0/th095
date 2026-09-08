@@ -10,12 +10,12 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 ```
 
-Then attest the active IDA database through IDA Pro MCP with
-`check_connection`, `get_metadata`, and `get_entry_points`; compare the result
-with `config/target.toml`. The GPT-web `ida_call` adapter additionally samples
-mapped `.text` bytes before every operation. If either file or IDA attestation
-fails, stop. Do not substitute a localized, earlier, Steam, or patched
-executable.
+Then attest the private Ghidra program with
+`python3 scripts/ghidra.py check`. The wrapper compares it
+with `config/target.toml` and six mapped `.text` samples; every headless
+query and GPT-web `ghidra_call` operation repeats the same attestation. If
+either file or Ghidra attestation fails, stop. Do not substitute a localized,
+earlier, Steam, or patched executable.
 
 ## Bounded reconstruction loop
 
@@ -24,7 +24,7 @@ executable.
    padding, and fall-through against exact target bytes. Treat the stored size
    as provisional.
 3. Inspect callers, callees, globals, strings, data references, disassembly,
-   and bounded decompilation through the attested IDA Pro MCP database. Keep
+   and bounded decompilation through the attested Ghidra project. Keep
    disposable decompiler text below `.analysis/`; do not copy it into source.
 
 4. Form a semantic and ABI hypothesis. Record uncertainty rather than hiding

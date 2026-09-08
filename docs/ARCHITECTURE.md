@@ -41,13 +41,13 @@ The repository deliberately separates five questions:
 
 | State | Durable source | Meaning |
 | --- | --- | --- |
-| Candidate boundary | `config/functions.csv` | Initial Ghidra import or later IDA review found a possible extent |
+| Candidate boundary | `config/functions.csv` | Initial Ghidra import or later Ghidra/raw-byte review found a possible extent |
 | Origin | `config/function-origins.csv` | Authored/library/compiler classification |
 | Mapping | `config/reccmp-functions.csv` | A durable target address has a source name |
 | Source presence | `config/implemented.csv` | A mapped function has a maintained implementation |
 | Exactness | `config/matches.csv` | A canonical unit reproduces all accepted bytes |
 
-No state promotes another automatically. In particular, an IDA/Ghidra
+No state promotes another automatically. In particular, a Ghidra
 function, name, decompile, or successful compilation is not an exact result.
 
 ## Recovered runtime spine

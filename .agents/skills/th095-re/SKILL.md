@@ -1,6 +1,6 @@
 ---
 name: th095-re
-description: Reconstruct bounded functions and data from the original Japanese TH095 v1.02a executable using hash-attested IDA Pro MCP evidence and conservative ledgers. Use for TH095 disassembly, decompilation, naming, ABI recovery, function-boundary review, source implementation, or address-level reverse engineering.
+description: Reconstruct bounded functions and data from the original Japanese TH095 v1.02a executable using the hash-attested Ghidra workflow and conservative ledgers. Use for TH095 disassembly, decompilation, naming, ABI recovery, function-boundary review, source implementation, or address-level reverse engineering.
 ---
 
 # TH095 bounded reconstruction
@@ -17,18 +17,18 @@ python3 scripts/verify-target.py
 python3 scripts/validate-tracking.py --require-target
 ```
 
-Call IDA Pro MCP `check_connection`, `get_metadata`, and `get_entry_points`, and
-compare them with `config/target.toml`. The GPT-web `ida_call` bridge performs
-that check plus mapped-byte sampling automatically. Stop if either file or IDA
-attestation fails. Work on one address from `config/functions.csv`; treat its
-IDA extent and historical Ghidra size/name as provisional.
+Run `python3 scripts/ghidra.py check`; it compares the private Ghidra program
+with `config/target.toml` and six mapped `.text` samples. Every headless query
+and GPT-web `ghidra_call` operation repeats that attestation. Stop if either
+file or Ghidra attestation fails. Work on one address from
+`config/functions.csv`; treat every imported extent and name as provisional.
 
 ## Recover a bounded unit
 
 1. Reconcile entry, exits, tails, switch bodies, padding, and shared code using
    exact target bytes.
 2. Inspect callers, callees, globals, strings, data xrefs, disassembly, and
-   bounded decompilation in the attested IDA database. Keep decompiler output
+   bounded decompilation in the attested Ghidra project. Keep decompiler output
    below `.analysis/`.
 3. Distinguish observed facts from proposed semantics and adjacent-game
    corroboration.
@@ -41,5 +41,5 @@ IDA extent and historical Ghidra size/name as provisional.
    type, layout, or semantic claims.
 
 Record durable findings through `$th095-kb`. Never commit the executable, game
-data, IDA/Ghidra databases, toolchain, or decompiler output. Never invoke the
-IDA target-byte patching tool.
+data, Ghidra/IDA databases, toolchain, or decompiler output. Never patch target
+program bytes.

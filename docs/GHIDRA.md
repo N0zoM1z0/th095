@@ -1,8 +1,8 @@
 # Ghidra setup and attestation
 
-> Legacy workflow: IDA Pro MCP is now the primary semantic-analysis backend.
-> Keep this document for reproducing the initial inventory and historical
-> architecture exports; do not treat a stale Ghidra project as the live view.
+Ghidra 12.1.3 is the primary TH095 semantic-analysis backend. Every native
+operation must use the repository wrapper or GPT-web bridge so the private
+project is re-attested against the canonical executable before analysis.
 
 ## Pinned installation
 
@@ -86,12 +86,12 @@ update the ledgers deliberately, and rerun tracking validation.
 
 ## GPT-web bridge
 
-The optional `.tools/mcp_for_gptweb-ghidra` checkout uses the upstream
+The `.tools/mcp_for_gptweb-ghidra` checkout uses the upstream
 `ghidra-bash` branch and exposes `run_command` plus a read-only `ghidra_call`.
 The latter supports `check`, bounded `decompile`, function metadata,
 disassembly, callers/callees, xrefs, function listing, and string search. It
 serializes every Ghidra invocation to avoid project-lock conflicts and invokes
 this workflow so target and project attestation run before every native
 operation. It uses a separate port, fixed private Funnel path, and
-user-systemd service from the primary IDA+Bash bridge, so both analysis
-backends can stay online concurrently.
+user-systemd service from unrelated analysis bridges. It is only a transport;
+the repository wrapper remains the identity and mapped-byte authority.
