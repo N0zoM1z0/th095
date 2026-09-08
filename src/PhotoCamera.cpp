@@ -1,17 +1,9 @@
 #include "PhotoCamera.hpp"
+#include "GameplayGlobals.hpp"
+#include "SoundPlayer.hpp"
 
 namespace th095
 {
-
-struct PhotoAnmVmIdValue
-{
-    i32 value;
-
-    PhotoAnmVmIdValue(i32 value)
-    {
-        this->value = value;
-    }
-};
 
 struct PhotoEnemyView
 {
@@ -110,21 +102,9 @@ struct PhotoAnmManagerView
     void SetVmPosition(i32 id, const Float3 *position);
 };
 
-struct PhotoSoundPlayerView
-{
-    void PlaySoundByIdx(i32 idx, i32 pan);
-    void PlaySoundPositionedByIdx(i32 idx, f32 pan);
-    void StopSoundByIdx(i32 idx);
-};
-
 static inline PhotoAnmManagerView *PhotoAnmManager()
 {
     return reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager);
-}
-
-static inline PhotoSoundPlayerView *PhotoSoundPlayer()
-{
-    return reinterpret_cast<PhotoSoundPlayerView *>(&g_SoundPlayer);
 }
 
 extern PhotoGameStateView *g_PhotoGame;
@@ -134,6 +114,11 @@ extern PhotoStageStateView *g_PhotoStageState;
 extern PhotoStageControllerView *g_PhotoStageController;
 extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;
+
+#ifndef DIFFBUILD
+#define g_PhotoGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, g_RuntimeGameTaskOwner)
+#endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 f32 NormalizeAngle(f32 angle);
@@ -279,7 +264,7 @@ void PhotoCameraState::BeginCapture()
     }
     if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
     {
-        PhotoSoundPlayer()->PlaySoundByIdx(0x2c, 0);
+        g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x2c), 0);
     }
 }
 
@@ -490,10 +475,10 @@ u32 PhotoCameraState::TakePhoto()
     }
     g_AnmGameSpeed = 1.0f;
     this->modeTimer = 0;
-    PhotoSoundPlayer()->StopSoundByIdx(0x2c);
+    g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2c));
     if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
     {
-        PhotoSoundPlayer()->PlaySoundByIdx(0x29, 0);
+        g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x29), 0);
     }
     return this->flags & PHOTO_FLAG_ALTERNATE_CAPTURE;
 }
@@ -517,7 +502,7 @@ void PhotoCameraState::CancelCapture()
     this->mode = PHOTO_CAMERA_CAPTURED;
     g_AnmGameSpeed = 1.0f;
     this->modeTimer = 0;
-    PhotoSoundPlayer()->StopSoundByIdx(0x2c);
+    g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2c));
 }
 
 struct PhotoScoreCameraFlagBits
@@ -898,7 +883,8 @@ void PhotoCameraState::UpdateCharge()
                     this->flags |= PHOTO_FLAG_FOCUSED;
                     if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
                     {
-                        PhotoSoundPlayer()->PlaySoundByIdx(0x2a, 0);
+                        g_SoundPlayer.PlaySoundByIdx(
+                            static_cast<SoundIdx>(0x2a), 0);
                     }
                     locals.timer = &this->chargeTimer;
                     locals.timer->current = 0;
@@ -943,13 +929,14 @@ normalCharge:
     {
         if (((g_PhotoGlobalState->flags >> 9) & 1) != 0)
         {
-            PhotoSoundPlayer()->StopSoundByIdx(0x2a);
+            g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2a));
         }
         if (this->unknownbb8 > 60 ||
             PhotoTimerAdvancedOnEvenFrame(&this->auxiliaryTimer))
         {
-            g_PhotoBulletManager->anmSpawner->SpawnInto(
-                &locals.effect, 0x124, &g_PhotoGame->playerPosition);
+            locals.effect =
+                g_PhotoBulletManager->anmSpawner->CreateVmAtWorld(
+                    0x124, &g_PhotoGame->playerPosition);
         }
         this->unknownbb8++;
         this->flags |= PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
@@ -959,7 +946,7 @@ normalCharge:
         {
             this->flags &= ~PHOTO_FLAG_FOCUSED;
             this->unknownbb8 = 0;
-            PhotoSoundPlayer()->StopSoundByIdx(0x2a);
+            g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2a));
             goto normalCharge;
         }
 
@@ -975,7 +962,7 @@ focusedCharge:
                 this->charge = 1.0f;
                 this->flags &= ~PHOTO_FLAG_FOCUSED;
                 this->unknownbb8 = 0;
-                PhotoSoundPlayer()->StopSoundByIdx(0x2a);
+                g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2a));
                 goto normalCharge;
             }
             return;
@@ -1028,12 +1015,6 @@ f32 __fastcall PhotoDistance2D(const Float3 *left, const Float3 *right)
         (left->y - right->y) * (left->y - right->y));
 }
 
-__forceinline i32 PhotoAnmVmId::operator==(
-    PhotoAnmVmIdValue other) const
-{
-    return this->value == other.value;
-}
-
 static inline i32 PhotoTimerAdvancedTo(ZunTimer *timer, i32 frame)
 {
     return timer->current != timer->previous && timer->current == frame;
@@ -1070,7 +1051,7 @@ static __forceinline void PhotoCameraModeTimerResetPhase(ZunTimer *timer)
 
 static __forceinline i32 PhotoCameraVmIdIsZero(const PhotoAnmVmId *vm)
 {
-    return *vm == PhotoAnmVmIdValue(0);
+    return *vm == 0;
 }
 
 static __forceinline void PhotoCameraClearVmId(PhotoAnmVmId *vm)
@@ -1220,7 +1201,8 @@ updateCharge:
                 {
                     if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
                     {
-                        PhotoSoundPlayer()->PlaySoundByIdx(0x2b, 0);
+                        g_SoundPlayer.PlaySoundByIdx(
+                            static_cast<SoundIdx>(0x2b), 0);
                     }
                     if (camera->vmIds[10])
                     {
@@ -1325,7 +1307,7 @@ updateCharge:
         }
         if (((g_PhotoGlobalState->flags >> 9) & 1) != 0)
         {
-            PhotoSoundPlayer()->StopSoundByIdx(0x2c);
+            g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2c));
         }
 
 cameraActive:
@@ -1346,7 +1328,8 @@ cameraActive:
                 if (((camera->flags >> 6) & 1) == 0)
                 {
                     if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
-                        PhotoSoundPlayer()->PlaySoundByIdx(0x2e, 0);
+                        g_SoundPlayer.PlaySoundByIdx(
+                            static_cast<SoundIdx>(0x2e), 0);
                     camera->flags |= PHOTO_FLAG_TARGET_SOUND_PLAYED;
                 }
                 if (((camera->flags >> 2) & 1) == 0)
@@ -1422,8 +1405,9 @@ cameraActive:
             {
                 if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
                 {
-                    PhotoSoundPlayer()->PlaySoundPositionedByIdx(
-                        0x21, camera->viewfinderPosition.x);
+                    g_SoundPlayer.PlaySoundPositionedByIdx(
+                        static_cast<SoundIdx>(0x21),
+                        camera->viewfinderPosition.x);
                 }
                 Float3 effectPosition;
                 reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition(
@@ -1435,8 +1419,9 @@ cameraActive:
             {
                 if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
                 {
-                    PhotoSoundPlayer()->PlaySoundPositionedByIdx(
-                        0x25, camera->viewfinderPosition.x);
+                    g_SoundPlayer.PlaySoundPositionedByIdx(
+                        static_cast<SoundIdx>(0x25),
+                        camera->viewfinderPosition.x);
                 }
                 Float3 effectPosition;
                 reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition(

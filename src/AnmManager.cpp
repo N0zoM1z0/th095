@@ -1,7 +1,20 @@
 #include "AnmManager.hpp"
+#include "diffbuild.hpp"
 
 namespace th095
 {
+
+// Target address 0x004CA1B8 is the process-wide manager pointer.  TH08 places
+// the equivalent storage in AnmManager.cpp, and TH095 WinMain assigns and
+// clears this same pointer around the manager lifetime.
+DIFFABLE_STATIC(AnmManager *, g_AnmManager);
+DIFFABLE_STATIC_ARRAY(VertexTex1DiffuseXyzrhw, 4, g_AnmTexturedVertices);
+DIFFABLE_STATIC_ARRAY(VertexTex1Xyzrhw, 4, g_AnmTexturedVerticesNoDiffuse);
+
+// The target's single animation/game-time scale lives at 0x004BDED8 and is
+// shared by animation, gameplay, replay, and photo-effect code.  It is real
+// initialized storage, not one proxy per consumer translation unit.
+DIFFABLE_STATIC_ASSIGN(f32, g_AnmGameSpeed) = 1.0f;
 
 f32 AnmVm::GetFloatVar(f32 varId)
 {
@@ -992,6 +1005,11 @@ AnmManager::~AnmManager()
     }
 }
 
+// This pinned x86 reconstruction deliberately uses the target's single x87
+// FSINCOS sequence.  Equivalent C/C++ calls make VC7.1 emit separate CRT
+// sin/cos paths and change both intermediate precision and instruction order.
+// We therefore accepted inline x87 only for this bounded math primitive; it is
+// not a portability implementation and must remain covered by its exact unit.
 void Float3::FromAngleMagnitude(f32 angle, f32 magnitude)
 {
     __asm

@@ -1,4 +1,8 @@
 #include "PhotoCamera.hpp"
+#include "GameplayGlobals.hpp"
+#include "Main.hpp"
+#include "ScoreData.hpp"
+#include "SceneData.hpp"
 
 #include <stdlib.h>
 #include <string.h>
@@ -6,16 +10,6 @@
 
 namespace th095
 {
-
-struct PhotoAnmVmIdValue
-{
-    i32 value;
-
-    PhotoAnmVmIdValue(i32 value)
-    {
-        this->value = value;
-    }
-};
 
 struct PhotoStageCameraView : PhotoCameraState
 {
@@ -29,11 +23,6 @@ struct PhotoStageCameraView : PhotoCameraState
         return this->photoLimit;
     }
 };
-
-__forceinline i32 PhotoAnmVmId::operator==(PhotoAnmVmIdValue other) const
-{
-    return this->value == other.value;
-}
 
 enum PhotoStageFlags
 {
@@ -50,21 +39,7 @@ struct PhotoStageTextureEntry
     i32 bytesPerPixel;
 };
 
-struct PhotoStageAnmLoadedView
-{
-    i32 anmIdx;
-    void *rawData;
-    i32 totalEntries;
-    AnmLoadedSprite *sprites;
-    AnmRawInstr **scripts;
-    void *textures;
-    i32 numberEntriesToBeLoaded;
-
-    ZunResult SetSprite(AnmVm *vm, i32 spriteIndex);
-    void InitializeVm(AnmVm *vm, i32 scriptIndex);
-    PhotoAnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
-    PhotoAnmVmId CreateVm(i32 scriptIndex, Float3 *position);
-};
+typedef AnmLoaded PhotoStageAnmLoadedView;
 
 struct PhotoStageBestShotRecord
 {
@@ -98,14 +73,6 @@ struct PhotoStageScoreRecord
     f32 slowRate;
     u32 flags;
     u8 unknown03c[0x60 - 0x3c];
-};
-
-struct PhotoStageSaveDataView
-{
-    u8 unknown0000[0x3160];
-    PhotoStageBestShotRecord bestShotRecords[120];
-
-    void UpdateBestShotRecord(i32 index);
 };
 
 struct PhotoStageAnmManagerView
@@ -186,13 +153,6 @@ struct PhotoStageRuntimeView
 {
     u8 unknown000[0x20];
     char comment[1];
-};
-
-struct PhotoStagePlayerConfigView
-{
-    u8 unknown000[4];
-    i32 group;
-    i32 scene;
 };
 
 struct PhotoStageEffectManagerView
@@ -329,16 +289,17 @@ typedef char PhotoStageCaptureFrameAt25724[
 
 extern PhotoGameStateView *g_PhotoGame;
 extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
-extern PhotoStageSaveDataView *g_PhotoStageSaveData;
 extern PhotoStageRuntimeView *g_PhotoStageRuntime;
 extern PhotoStageSupervisorView *g_PhotoStageSupervisor;
 extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
+
+#ifndef DIFFBUILD
+#define g_PhotoStageGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageGlobalStateView, g_RuntimeGameTaskOwner)
+#endif
 extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
-extern PhotoStagePlayerConfigView *g_PhotoStagePlayerConfig;
 extern PhotoStageStateView *g_PhotoStageState;
 extern u8 g_PhotoCaptureCountdown;
-extern f64 g_PhotoLagNumerator;
-extern f64 g_PhotoLagDenominator;
 
 void __fastcall SpawnPhotoStageEffect(
     i32 effectType, i32 script, i32 count, u32 color, i32 arg4, i32 arg5);
@@ -379,13 +340,14 @@ static __forceinline void PhotoStageInterruptCurrentEntryPhase(
 static inline PhotoStageScoreRecord *GetPhotoStageScoreRecord(i32 index)
 {
     return reinterpret_cast<PhotoStageScoreRecord *>(
-               reinterpret_cast<u8 *>(g_PhotoStageSaveData) + 0x478) +
+               reinterpret_cast<u8 *>(g_ResultSaveData) + 0x478) +
         index;
 }
 
 static inline PhotoStageBestShotRecord *GetPhotoStageBestShotRecord(i32 index)
 {
-    return &g_PhotoStageSaveData->bestShotRecords[index];
+    return reinterpret_cast<PhotoStageBestShotRecord *>(
+        &g_ResultSaveData->bestShotRecords[index]);
 }
 
 static __forceinline void ClearPhotoStageGlobalCaptureActive(
@@ -767,7 +729,7 @@ static __forceinline void PhotoStagePublishSlowRate(PhotoStageStateView *state)
     state->slots[state->slots[0].captureSlot].slowRate =
         GetPhotoStageBestShotRecord(g_PhotoStageGlobalState->scoreIndex)->slowRate =
             100.0f -
-            (f32)(g_PhotoLagNumerator / g_PhotoLagDenominator) * 100.0f;
+            (f32)(g_Supervisor.lagNumerator / g_Supervisor.lagDenominator) * 100.0f;
 }
 
 struct PhotoStageDisplayRowView
@@ -834,7 +796,7 @@ static __forceinline f32 PhotoStageEntryXValue(i32 index)
 
 static __forceinline i32 PhotoStageEntryVmIsZero(const PhotoAnmVmId &id)
 {
-    return id == PhotoAnmVmIdValue(0);
+    return id == 0;
 }
 
 static __forceinline void PhotoStageInitFrame35Position(Float3 *position, f32 y)
@@ -913,7 +875,8 @@ i32 PhotoStageStateView::Update()
             entryPosition.y = 400.0f - (f32)(k % 5) * 80.0f;
             entryPosition.z = 0.0f;
             this->slots[0].entryVms[k] =
-                g_PhotoStageSupervisor->photoAnm->CreateVm(12, &entryPosition);
+                g_PhotoStageSupervisor->photoAnm->CreateVmAtScreen(
+                    12, &entryPosition);
         }
     }
 
@@ -1123,7 +1086,7 @@ i32 PhotoStageStateView::Update()
                             this->slots[this->slots[0].captureSlot]
                                 .display.scoreData,
                             8 * sizeof(i32));
-                        g_PhotoStageSaveData->UpdateBestShotRecord(
+                        g_ResultSaveData->UpdateBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex);
 
                         GetPhotoStageBestShotRecord(
@@ -1143,10 +1106,10 @@ i32 PhotoStageStateView::Update()
                                     .display.score;
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->group =
-                                (u16)(g_PhotoStagePlayerConfig->group + 1);
+                                (u16)(g_SelectedScene->group + 1);
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->scene =
-                                (u16)(g_PhotoStagePlayerConfig->scene + 1);
+                                (u16)(g_SelectedScene->scene + 1);
                         GetPhotoStageBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex)->type = 2;
                         GetPhotoStageBestShotRecord(
@@ -1232,9 +1195,11 @@ i32 PhotoStageStateView::Update()
                 RotatePhotoStagePoint(&frame35Position, &frame35Position, frame35Vm->rotation.z);
                 frame35Position += frame35Vm->position;
                 this->slots[0].entryVms[entryIndex] =
-                    g_PhotoStageSupervisor->photoAnm->CreateVm(10, &frame35Position);
+                    g_PhotoStageSupervisor->photoAnm->CreateVmAtScreen(
+                        10, &frame35Position);
                 frame35Position.y -= 6.0f;
-                g_PhotoStageSupervisor->photoAnm->CreateVm(11, &frame35Position);
+                g_PhotoStageSupervisor->photoAnm->CreateVmAtScreen(
+                    11, &frame35Position);
             }
 
             ClearPhotoStageGlobalCapturedPhotoActive(
@@ -1390,17 +1355,18 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
     locals.surface = NULL;
     locals.allocationSize =
         GetPhotoStagePixelCount(
-            (u32)g_PhotoStageSaveData
+            (u32)g_ResultSaveData
                 ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
                 .width,
-            (u32)g_PhotoStageSaveData
+            (u32)g_ResultSaveData
                 ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
                 .height) *
-        (u32)g_PhotoStageSaveData
+        (u32)g_ResultSaveData
             ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
             .componentCount;
-    locals.record = &g_PhotoStageSaveData
-        ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex];
+    locals.record = reinterpret_cast<PhotoStageBestShotRecord *>(
+        &g_ResultSaveData
+             ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]);
     locals.record->pixelData =
         reinterpret_cast<u8 *>(malloc(locals.allocationSize));
 
@@ -1409,16 +1375,16 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
             .texture->GetSurfaceLevel(0, &locals.surface);
     locals.surface->LockRect(&locals.lockedRect, NULL, 0);
 
-    locals.destination = g_PhotoStageSaveData
+    locals.destination = g_ResultSaveData
         ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
         .pixelData;
-    if (g_PhotoStageSaveData
+    if (g_ResultSaveData
             ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
             .componentCount == 3)
     {
         for (locals.y = 0;
              locals.y <
-                 (i32)g_PhotoStageSaveData
+                 (i32)g_ResultSaveData
                      ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
                      .height;
              locals.y++)
@@ -1428,7 +1394,7 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
                 locals.y * locals.lockedRect.Pitch;
             for (locals.x = 0;
                  locals.x <
-                     (i32)g_PhotoStageSaveData
+                     (i32)g_ResultSaveData
                          ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
                          .width;
                  locals.x++, locals.source += 4, locals.destination += 3)
@@ -1443,7 +1409,7 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
     {
         for (locals.y = 0;
              locals.y <
-                 (i32)g_PhotoStageSaveData
+                 (i32)g_ResultSaveData
                      ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
                      .height;
              locals.y++)
@@ -1453,7 +1419,7 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
                 locals.y * locals.lockedRect.Pitch;
             for (locals.x = 0;
                  locals.x <
-                     (i32)g_PhotoStageSaveData
+                     (i32)g_ResultSaveData
                          ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
                          .width;
                  locals.x++, locals.source += 2, locals.destination += 2)

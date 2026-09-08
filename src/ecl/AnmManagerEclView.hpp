@@ -646,6 +646,7 @@ struct AnmManager
     ZunResult DrawInner(AnmVm *vm, i32 flags);
     ZunResult AddSpriteToDrawBuffer(VertexTex1DiffuseXyzrhw *vertices);
     ZunResult DrawNoRotation(AnmVm *vm);
+    ZunResult Draw(AnmVm *vm);
     ZunResult Draw2DRotatedOrAxisAligned(AnmVm *vm);
     void TranslateRotation(VertexTex1DiffuseXyzrhw *vertex, float x, float y, float sine, float cosine, float xOffset,
                            float yOffset);

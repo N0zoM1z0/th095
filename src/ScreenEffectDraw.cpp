@@ -1,4 +1,5 @@
 #define WIN32_LEAN_AND_MEAN
+#include "AnmManager.hpp"
 #include "ScreenEffect.hpp"
 
 #include <windows.h>
@@ -34,63 +35,6 @@ struct ScreenEffectVertexDiffuseXyzrhw
 };
 typedef char ScreenEffectVertexDiffuseXyzrhwSizeIs14[
     (sizeof(ScreenEffectVertexDiffuseXyzrhw) == 0x14) ? 1 : -1];
-
-struct ScreenEffectAnmManagerView
-{
-    unsigned char unknown000[0x1760];
-    void *currentTexture;
-    unsigned char currentBlendMode;
-    unsigned char currentColorOp;
-    unsigned char currentVertexShader;
-    unsigned char disableZWrite;
-    unsigned int currentTextureFactor;
-    void *currentSprite;
-
-    void FlushVertexBuffer();
-
-    __forceinline void ClearBlendMode()
-    {
-        currentBlendMode = 3;
-    }
-
-    __forceinline void ClearColorOp()
-    {
-        currentColorOp = 0xff;
-    }
-
-    __forceinline void ClearVertexShader()
-    {
-        currentVertexShader = 0xff;
-    }
-
-    __forceinline void ClearTexture()
-    {
-        currentTexture = NULL;
-    }
-
-    __forceinline void ClearSprite()
-    {
-        currentSprite = NULL;
-    }
-
-    __forceinline void ClearZWrite()
-    {
-        disableZWrite = 0xff;
-    }
-};
-typedef char ScreenEffectAnmTextureAt1760[
-    (offsetof(ScreenEffectAnmManagerView, currentTexture) == 0x1760) ? 1 : -1];
-typedef char ScreenEffectAnmSpriteAt176C[
-    (offsetof(ScreenEffectAnmManagerView, currentSprite) == 0x176c) ? 1 : -1];
-
-struct ScreenEffectSupervisorView
-{
-    unsigned char unknown000[8];
-    IDirect3DDevice8 *d3dDevice;
-};
-
-extern ScreenEffectAnmManagerView *g_AnmManager;
-extern ScreenEffectSupervisorView g_Supervisor;
 
 // FUNCTION: TH095 0x00436920; TH08 0x0045B1E0 is the source-shape oracle.
 // TH095 omits TH08's conditional ZWRITE-disable device call. The six inline

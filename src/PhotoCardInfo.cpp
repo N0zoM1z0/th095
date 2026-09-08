@@ -1,24 +1,12 @@
 #include "AnmText.hpp"
 #include "AnmVmId.hpp"
+#include "GameplayGlobals.hpp"
 #include "utils.hpp"
 
 #include <string.h>
 
 namespace th095
 {
-
-struct PhotoCardVmHandle
-{
-    i32 value;
-};
-
-typedef char PhotoCardVmHandleSizeIs4[
-    (sizeof(PhotoCardVmHandle) == 4) ? 1 : -1];
-
-struct PhotoCardAnmLoadedView
-{
-    PhotoCardVmHandle CreateVm(i32 scriptIndex, Float3 *position);
-};
 
 struct PhotoCardStageStateView
 {
@@ -41,8 +29,8 @@ struct PhotoCardGameTaskView
 struct PhotoCardInfoView
 {
     i32 unknown000;                 // +0x00
-    PhotoCardVmHandle backgroundVmId; // +0x04
-    PhotoCardVmHandle textVmId;       // +0x08
+    AnmVmId backgroundVmId;          // +0x04
+    AnmVmId textVmId;                // +0x08
     i32 state;                      // +0x0c
     ZunTimer timer;                 // +0x10
     u32 savedScreenFadeColor;       // +0x1c
@@ -75,12 +63,17 @@ typedef char PhotoCardInfoChainsAt60[
      offsetof(PhotoCardInfoView, drawChain) == 0x64) ? 1 : -1];
 
 extern PhotoCardInfoView *g_PhotoCardInfo;
-extern PhotoCardAnmLoadedView *g_PhotoCardBackgroundAnm;
-extern PhotoCardAnmLoadedView *g_PhotoCardUiAnm;
+extern AnmLoaded *g_PhotoCardBackgroundAnm;
+extern AnmLoaded *g_PhotoCardUiAnm;
 extern PhotoCardStageStateView *g_PhotoCardStageState;
 extern PhotoCardGameRuntimeView *g_PhotoCardGameRuntime;
 extern PhotoCardGameTaskView *g_PhotoCardGameTask;
 extern u32 g_PhotoScreenFadeColor;
+
+#ifndef DIFFBUILD
+#define g_PhotoCardGameTask \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoCardGameTaskView, g_RuntimeGameTaskOwner)
+#endif
 
 static __forceinline void CreatePhotoCardBackgroundVm(
     PhotoCardInfoView *cardInfo)
@@ -90,7 +83,7 @@ static __forceinline void CreatePhotoCardBackgroundVm(
     position.y = 0.0f;
     position.z = 0.0f;
     cardInfo->backgroundVmId =
-        g_PhotoCardBackgroundAnm->CreateVm(1, &position);
+        g_PhotoCardBackgroundAnm->CreateVmAtWorld(1, &position);
 }
 
 static __forceinline void CreatePhotoCardTextVm(
@@ -101,7 +94,7 @@ static __forceinline void CreatePhotoCardTextVm(
     position.y = 0.0f;
     position.z = 0.0f;
     cardInfo->textVmId =
-        g_PhotoCardUiAnm->CreateVm(0x1e, &position);
+        g_PhotoCardUiAnm->CreateVmAtWorld(0x1e, &position);
 }
 
 // FUNCTION: TH095 0x00408610.
@@ -126,8 +119,7 @@ i32 PhotoCardInfoView::Initialize(char *encodedText)
     reinterpret_cast<AnmTextManagerView *>(g_AnmManager)
         ->DrawTextRight(
             reinterpret_cast<AnmTextVmView *>(
-                g_AnmManager->GetVm(
-                    *reinterpret_cast<AnmVmId *>(&this->textVmId))),
+                g_AnmManager->GetVm(this->textVmId)),
             0xffffff, 0, this->text);
     this->savedScreenFadeColor = g_PhotoScreenFadeColor;
     return 0;
@@ -139,20 +131,16 @@ PhotoCardInfoView::~PhotoCardInfoView()
     utils::DebugPrint("shutdown CardInf\n");
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
-    g_AnmManager->MarkVmForDeletion(
-        *reinterpret_cast<AnmVmId *>(&this->backgroundVmId));
-    g_AnmManager->MarkVmForDeletion(
-        *reinterpret_cast<AnmVmId *>(&this->textVmId));
+    g_AnmManager->MarkVmForDeletion(this->backgroundVmId);
+    g_AnmManager->MarkVmForDeletion(this->textVmId);
     g_PhotoCardInfo = NULL;
 }
 
 // FUNCTION: TH095 0x004087D0.
 i32 PhotoCardInfoView::Show()
 {
-    g_AnmManager->SetInterrupt(
-        *reinterpret_cast<AnmVmId *>(&this->backgroundVmId), 1);
-    g_AnmManager->SetInterrupt(
-        *reinterpret_cast<AnmVmId *>(&this->textVmId), 1);
+    g_AnmManager->SetInterrupt(this->backgroundVmId, 1);
+    g_AnmManager->SetInterrupt(this->textVmId, 1);
     this->state = 1;
     this->timer = 0;
     g_PhotoScreenFadeColor = this->savedScreenFadeColor;
@@ -229,35 +217,27 @@ i32 PhotoCardInfoView::Update()
     i32 alpha = 0xff;
     if (((g_PhotoCardStageState->flags >> 2) & 1) != 0)
     {
-        if (g_AnmManager->GetVm(
-                *reinterpret_cast<AnmVmId *>(&this->backgroundVmId)) != NULL)
+        if (g_AnmManager->GetVm(this->backgroundVmId) != NULL)
         {
-            g_AnmManager->GetVm(
-                *reinterpret_cast<AnmVmId *>(&this->backgroundVmId))
+            g_AnmManager->GetVm(this->backgroundVmId)
                 ->flagsWord &= ~2u;
         }
-        if (g_AnmManager->GetVm(
-                *reinterpret_cast<AnmVmId *>(&this->textVmId)) != NULL)
+        if (g_AnmManager->GetVm(this->textVmId) != NULL)
         {
-            g_AnmManager->GetVm(
-                *reinterpret_cast<AnmVmId *>(&this->textVmId))
+            g_AnmManager->GetVm(this->textVmId)
                 ->flagsWord &= ~2u;
         }
     }
     else
     {
-        if (g_AnmManager->GetVm(
-                *reinterpret_cast<AnmVmId *>(&this->backgroundVmId)) != NULL)
+        if (g_AnmManager->GetVm(this->backgroundVmId) != NULL)
         {
-            g_AnmManager->GetVm(
-                *reinterpret_cast<AnmVmId *>(&this->backgroundVmId))
+            g_AnmManager->GetVm(this->backgroundVmId)
                 ->flagsWord |= 2;
         }
-        if (g_AnmManager->GetVm(
-                *reinterpret_cast<AnmVmId *>(&this->textVmId)) != NULL)
+        if (g_AnmManager->GetVm(this->textVmId) != NULL)
         {
-            g_AnmManager->GetVm(
-                *reinterpret_cast<AnmVmId *>(&this->textVmId))
+            g_AnmManager->GetVm(this->textVmId)
                 ->flagsWord |= 2;
         }
 
@@ -273,18 +253,14 @@ i32 PhotoCardInfoView::Update()
         }
     }
 
-    if (g_AnmManager->GetVm(
-            *reinterpret_cast<AnmVmId *>(&this->backgroundVmId)) != NULL)
+    if (g_AnmManager->GetVm(this->backgroundVmId) != NULL)
     {
-        g_AnmManager->GetVm(
-            *reinterpret_cast<AnmVmId *>(&this->backgroundVmId))
+        g_AnmManager->GetVm(this->backgroundVmId)
             ->color1.a = alpha;
     }
-    if (g_AnmManager->GetVm(
-            *reinterpret_cast<AnmVmId *>(&this->textVmId)) != NULL)
+    if (g_AnmManager->GetVm(this->textVmId) != NULL)
     {
-        g_AnmManager->GetVm(
-            *reinterpret_cast<AnmVmId *>(&this->textVmId))
+        g_AnmManager->GetVm(this->textVmId)
             ->color1.a = alpha;
     }
     this->timer.Tick();

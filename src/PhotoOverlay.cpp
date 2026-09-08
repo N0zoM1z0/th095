@@ -1,4 +1,7 @@
 #include "Chain.hpp"
+#include "GameErrorContext.hpp"
+#include "GameplayGlobals.hpp"
+#include "ScoreData.hpp"
 #include "inttypes.hpp"
 #include <windows.h>
 #include <stddef.h>
@@ -25,10 +28,6 @@ struct AnmManager
     void ReleaseAnm(i32 anmIdx);
     void MarkVmsForDeletion(AnmLoaded *anmFile);
 };
-struct GameErrorContext
-{
-    const char *Log(const char *format, ...);
-};
 struct Supervisor
 {
     void ConfigureGameplayViewport(i32 index);
@@ -39,7 +38,6 @@ void DebugPrint(char *format, ...);
 }
 
 extern AnmManager *g_AnmManager;
-extern GameErrorContext g_GameErrorContext;
 extern Supervisor g_Supervisor;
 
 struct PhotoStageSlotLifetimeView
@@ -70,20 +68,10 @@ struct PhotoStageGlobalStateView
 };
 extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
 
-struct PhotoOverlayScoreEntryView
-{
-    u8 unknown000[0x18];
-    i32 detailScore;
-    u8 unknown01c[0x44];
-};
-typedef char PhotoOverlayScoreEntrySizeIs60[
-    (sizeof(PhotoOverlayScoreEntryView) == 0x60) ? 1 : -1];
-struct PhotoOverlaySaveDataView
-{
-    u8 unknown000[0x460];
-    PhotoOverlayScoreEntryView scoreEntries[120];
-};
-extern PhotoOverlaySaveDataView *g_PhotoStageSaveData;
+#ifndef DIFFBUILD
+#define g_PhotoStageGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageGlobalStateView, g_RuntimeGameTaskOwner)
+#endif
 
 struct PhotoStageStateView;
 i32 __fastcall UpdatePhotoStage(PhotoStageStateView *stage);
@@ -198,7 +186,7 @@ i32 PhotoOverlayManagerView::Draw()
                 this->slots[locals.slotIndex].overlayVms[locals.vmIndex].color1 =
                     0xffffffff;
             else if (this->slots[locals.slotIndex].score >=
-                     g_PhotoStageSaveData->scoreEntries[
+                     g_ResultSaveData->scoreEntries[
                          g_PhotoStageGlobalState->scoreIndex].detailScore)
                 this->slots[locals.slotIndex].overlayVms[locals.vmIndex].color1 =
                     0xffffff00;

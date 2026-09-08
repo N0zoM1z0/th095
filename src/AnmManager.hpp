@@ -2,6 +2,11 @@
 #define TH095_ANM_MANAGER_HPP
 
 #include "Main.hpp"
+#include "AnmVmId.hpp"
+#include "Rng.hpp"
+#include "ZunResult.hpp"
+#include "ZunTimer.hpp"
+#include "ZunMath.hpp"
 #include <d3dx8.h>
 #include <math.h>
 #include <stdlib.h>
@@ -9,15 +14,7 @@
 
 namespace th095
 {
-typedef float f32;
-
 struct AnmVmId;
-
-enum ZunResult
-{
-    ZUN_SUCCESS = 0,
-    ZUN_ERROR = -1
-};
 
 enum AnmInterp
 {
@@ -135,148 +132,6 @@ enum AnmOpcode
     ANM_OP_ALTERNATE_RNG = 87
 };
 
-struct Float2
-{
-    f32 x;
-    f32 y;
-};
-
-struct Float3
-{
-    f32 x;
-    f32 y;
-    f32 z;
-
-    Float3()
-    {
-    }
-
-    Float3(f32 x, f32 y, f32 z)
-    {
-        this->x = x;
-        this->y = y;
-        this->z = z;
-    }
-
-    operator f32 *()
-    {
-        return reinterpret_cast<f32 *>(this);
-    }
-
-    Float3 operator+(const Float3 &other) const
-    {
-        return Float3(this->x + other.x, this->y + other.y, this->z + other.z);
-    }
-
-    Float3 operator-(const Float3 &other) const
-    {
-        return Float3(this->x - other.x, this->y - other.y, this->z - other.z);
-    }
-
-    Float3 operator*(f32 scalar) const
-    {
-        return Float3(
-            this->x * scalar,
-            this->y * scalar,
-            this->z * scalar);
-    }
-
-    Float3 operator/(f32 scalar) const
-    {
-        f32 inverse = 1.0f / scalar;
-        return Float3(
-            this->x * inverse,
-            this->y * inverse,
-            this->z * inverse);
-    }
-
-    void operator*=(f32 scalar)
-    {
-        this->x *= scalar;
-        this->y *= scalar;
-        this->z *= scalar;
-    }
-
-    void operator+=(const Float3 &other)
-    {
-        this->x += other.x;
-        this->y += other.y;
-        this->z += other.z;
-    }
-
-    void FromAngleMagnitude(f32 angle, f32 magnitude);
-};
-
-struct ZunTimer
-{
-    i32 previous;
-    f32 subFrame;
-    i32 current;
-
-    ZunTimer()
-    {
-        this->current = 0;
-        this->previous = -999999;
-        this->subFrame = 0.0f;
-    }
-
-    void Initialize()
-    {
-        this->current = 0;
-        this->previous = -999999;
-        this->subFrame = 0.0f;
-    }
-
-    void SetCurrent(i32 value)
-    {
-        this->current = value;
-        this->subFrame = (f32)value;
-        this->previous = -999999;
-    }
-
-    void operator=(i32 value)
-    {
-        this->SetCurrent(value);
-    }
-
-    operator i32()
-    {
-        return this->current;
-    }
-
-    operator f32()
-    {
-        return this->subFrame;
-    }
-
-    i32 Tick();
-    void Add(f32 value);
-
-    void Decrement(i32 value)
-    {
-        this->Add((f32)-value);
-    }
-
-    void operator++(int)
-    {
-        this->Tick();
-    }
-
-    void operator--(int)
-    {
-        this->Decrement(1);
-    }
-
-    u32 operator==(i32 value) { return this->current == value; }
-    u32 operator!=(i32 value) { return this->current != value; }
-    u32 operator<(i32 value) { return this->current < value; }
-    u32 operator<=(i32 value) { return this->current <= value; }
-    u32 operator>(i32 value) { return this->current > value; }
-    u32 operator>=(i32 value) { return this->current >= value; }
-};
-
-typedef char ZunTimerSizeIsC[(sizeof(ZunTimer) == 0xc) ? 1 : -1];
-
 union ZunColor
 {
     u32 color;
@@ -335,7 +190,15 @@ struct AnmLoadedSprite
     f32 height;
     f32 width;
     Float2 uvStart;
-    Float2 uvEnd;
+    union
+    {
+        Float2 uvEnd;
+        struct
+        {
+            f32 uvEndX;
+            f32 uvEndY;
+        };
+    };
     f32 heightPx;
     f32 widthPx;
     Float2 scaleFactor;
@@ -344,6 +207,8 @@ struct AnmLoadedSprite
 
 typedef char AnmLoadedSpriteSizeIs44[(sizeof(AnmLoadedSprite) == 0x44) ? 1 : -1];
 
+struct AnmTextureEntryView;
+
 struct AnmLoaded
 {
     i32 anmIdx;
@@ -351,16 +216,18 @@ struct AnmLoaded
     i32 totalEntries;
     AnmLoadedSprite *sprites;
     AnmRawInstr **scripts;
-    void *textures;
+    AnmTextureEntryView *textures;
     i32 numberEntriesToBeLoaded;
 
     void LoadSprite(i32 spriteIdx, AnmLoadedSprite *loadedSprite);
     ZunResult SetSprite(struct AnmVm *vm, i32 spriteIdx);
     AnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
-#ifdef TH095_DECLARE_ANM_LOADED_INITIALIZE_VM
     void InitializeVm(struct AnmVm *vm, i32 scriptIndex);
-#endif
+    AnmVmId CreateVmAtScreen(i32 scriptIndex, Float3 *position);
+    AnmVmId CreateVmAtWorld(i32 scriptIndex, Float3 *position);
     void SetAndExecuteScript(struct AnmVm *vm, AnmRawInstr *beginningOfScript);
+
+    void SetAndExecuteScriptIdx(struct AnmVm *vm, i32 scriptIndex);
 };
 
 typedef char AnmLoadedSizeIs1C[(sizeof(AnmLoaded) == 0x1c) ? 1 : -1];
@@ -385,29 +252,6 @@ enum AnmVariable
     ANM_VAR_POSITION_Z
 };
 
-struct Rng
-{
-    u16 seed;
-    u16 padding02;
-    u32 generationCount;
-
-    u32 GetRandomU32();
-    f32 GetRandomF32();
-    f32 GetRandomF32Signed();
-
-    u32 GetRandomU32InRange(u32 range)
-    {
-        return range != 0 ? this->GetRandomU32() % range : 0;
-    }
-
-    f32 GetRandomF32InRange(f32 range)
-    {
-        return this->GetRandomF32() * range;
-    }
-};
-
-typedef char RngSizeIs8[(sizeof(Rng) == 8) ? 1 : -1];
-
 #pragma pack(push, 4)
 struct AnmVmBase
 {
@@ -424,7 +268,15 @@ struct AnmVmBase
     Float3 angleVel;                // +0x024
     Float2 scale;                   // +0x030
     Float2 scaleGrowth;             // +0x038
-    Float2 spriteSize;              // +0x040
+    union
+    {
+        Float2 spriteSize;          // +0x040
+        struct
+        {
+            f32 spriteWidth;
+            f32 spriteHeight;
+        };
+    };
     Float2 uvScrollPos;             // +0x048
     ZunTimer currentTimeInScript;   // +0x050
     ZunTimer waitTimer;             // +0x05c
@@ -524,7 +376,16 @@ struct AnmVm : AnmVmBase
     ZunResult (__fastcall *drawCallback)(AnmVm *); // +0x2ac
     Float3 alternatePosition;       // +0x2b0
     i32 timeOfLastSpriteSet;        // +0x2bc
-    u8 unknown2c0[0x0c];
+    union
+    {
+        u8 unknown2c0[0x0c];
+        struct
+        {
+            u8 glyphWidth;
+            u8 glyphHeight;
+            u8 unknownGlyph2c2[0x0a];
+        };
+    };
 
     AnmVm()
     {
@@ -545,6 +406,11 @@ struct AnmVm : AnmVmBase
     void Draw();
     ZunResult InitializePulsingRadialTrail();
 
+    void SetInterrupt(i32 interrupt)
+    {
+        this->pendingInterrupt = (i16)interrupt;
+    }
+
     f32 GetFloatVar(f32 varId);
     i32 GetIntVar(i32 varId);
     f32 *GetFloatVarPtr(f32 *varPtr, u16 varMask, u32 variableNumber);
@@ -561,6 +427,14 @@ typedef char AnmVmAnmFileAt230[(offsetof(AnmVm, anmFile) == 0x230) ? 1 : -1];
 typedef char AnmVmCurrentInstructionAt240[(offsetof(AnmVm, currentInstruction) == 0x240) ? 1 : -1];
 typedef char AnmVmLoadedSpriteAt244[(offsetof(AnmVm, loadedSprite) == 0x244) ? 1 : -1];
 typedef char AnmVmSizeIs2CC[(sizeof(AnmVm) == 0x2cc) ? 1 : -1];
+
+inline void AnmLoaded::SetAndExecuteScriptIdx(
+    AnmVm *vm, i32 scriptIndex)
+{
+    vm->anmFile = this;
+    vm->scriptIndex = scriptIndex;
+    this->SetAndExecuteScript(vm, this->scripts[scriptIndex]);
+}
 
 ZunResult __fastcall UpdatePulsingRadialTrail(AnmVm *vm);
 ZunResult __fastcall DrawPulsingRadialTrail(AnmVm *vm);
@@ -597,6 +471,44 @@ struct AnmVmListNode
     void *generatedVertices;
 };
 
+struct AnmRawEntryView;
+
+struct AnmTextureEntryView
+{
+    IDirect3DTexture8 *texture;
+    u8 *rawData;
+    union
+    {
+        i32 size;
+        i32 rawDataSize;
+    };
+    union
+    {
+        i32 unknown00c;
+        i32 bytesPerPixel;
+        i32 format;
+    };
+
+    void Clear();
+};
+
+typedef char AnmTextureEntryViewSizeIs10[
+    (sizeof(AnmTextureEntryView) == 0x10) ? 1 : -1];
+
+// The verified TH095 manager embeds thirteen preload slots beginning at
+// +0x2c.  Earlier exact units described this region through a TU-local view;
+// giving the storage its real owner lets those implementations and all
+// production callers share one AnmManager ABI.
+struct AnmPreloadSlot
+{
+    AnmLoaded loaded;
+    i32 releasePending;
+    u8 path[0x100];
+};
+
+typedef char AnmPreloadSlotSizeIs120[
+    (sizeof(AnmPreloadSlot) == 0x120) ? 1 : -1];
+
 struct AnmManager
 {
     union
@@ -623,7 +535,8 @@ struct AnmManager
         };
         Float2 screenShakeOffset;
     };
-    u8 unknown028[0xecc - 0x28];
+    u8 unknown028[4];
+    AnmPreloadSlot slots[13];                // +0x00002c
     D3DXMATRIX cachedWorldMatrix;             // +0x000ecc
     AnmVm primaryVm;                         // +0x000f0c
     u8 unknown11d8[4];
@@ -644,7 +557,23 @@ struct AnmManager
     VertexTex1DiffuseXyzrhw vertexBuffer[0x20000]; // +0x0017c8
     VertexTex1DiffuseXyzrhw *vertexBufferEndPtr;   // +0x3817c8
     VertexTex1DiffuseXyzrhw *vertexBufferStartPtr; // +0x3817cc
-    u8 unknown3817d0[0x44];
+    union
+    {
+        u8 unknown3817d0[0x44];
+        struct
+        {
+            i32 captureSourceX;
+            i32 captureSourceY;
+            i32 captureSourceWidth;
+            i32 captureSourceHeight;
+            i32 captureDestinationX;
+            i32 captureDestinationY;
+            i32 captureDestinationWidth;
+            i32 captureDestinationHeight;
+            i32 captureFlags;
+            u8 unknown3817f4[0x20];
+        };
+    };
     AnmVmListNode *vmListHead;               // +0x381814
     AnmVmListNode *vmListTail;               // +0x381818
     AnmVm preallocatedVms[9];                // +0x38181c
@@ -654,6 +583,26 @@ struct AnmManager
     ~AnmManager();
     AnmLoaded *LoadAnm(i32 anmIdx, const char *path);
     AnmLoaded *PreloadAnm(i32 anmIdx, const char *path);
+    AnmLoaded *ReadAnmEntries(i32 anmIdx, const char *path);
+    AnmLoaded *PostloadAnmEntry(AnmLoaded *anm);
+    i32 LoadExternalTextureData(AnmLoaded *anm, i32 entryNumber,
+                                i32 *sprites, i32 *scripts,
+                                AnmRawEntryView *rawEntry);
+    i32 LoadTextureData(AnmLoaded *anm, i32 entryNumber, i32 spriteCount,
+                        i32 scriptCount, AnmRawEntryView *rawEntry);
+    i32 CreateTextureFromFile(AnmTextureEntryView *entry, i32 format,
+                              i32 colorKey);
+    i32 CreateTextureFromAnm(IDirect3DTexture8 **outTexture,
+                             void *textureData, i32 format);
+    i32 CreateEmptyTexture(IDirect3DTexture8 **outTexture, i32 width,
+                           i32 height, i32 format);
+    void ApplyTextureAlphaBleed(AnmTextureEntryView *entry);
+    i32 LoadTexture(AnmTextureEntryView *entry, u8 *data, i32 size,
+                    i32 format, i32 unknown, i32 hasData);
+    i32 LoadTextureRegion(AnmTextureEntryView *entry, u8 *data, i32 size,
+                          i32 format, i32 unknown, i32 hasData, i32 top);
+    void ReleaseAnmEntry(AnmTextureEntryView *entry);
+    ZunResult ServicePreloadedAnims();
     i32 LoadSurface(i32 surfaceIndex, const char *path);
     void SetupVertexBuffer();
     void ReleaseAnm(i32 anmIdx);
@@ -708,12 +657,15 @@ struct AnmManager
     void ClearColorOp() { this->currentColorOp = 0xff; }
     void ClearVertexShader() { this->currentVertexShader = 0xff; }
     void ClearTexture() { this->currentTexture = NULL; }
+    void ClearSprite() { this->currentSprite = NULL; }
+    void ClearZWrite() { this->disableZWrite = 0xff; }
     void ClearCameraSettings() { this->cameraMode = 0xff; }
 };
 
 typedef char VertexDiffuseXyzrhwSizeIs14[(sizeof(VertexDiffuseXyzrhw) == 0x14) ? 1 : -1];
 typedef char VertexTex1XyzrhwSizeIs18[(sizeof(VertexTex1Xyzrhw) == 0x18) ? 1 : -1];
 typedef char AnmManagerPrimaryVmAtF0C[(offsetof(AnmManager, primaryVm) == 0xf0c) ? 1 : -1];
+typedef char AnmManagerPreloadSlotsAt2C[(offsetof(AnmManager, slots) == 0x2c) ? 1 : -1];
 typedef char AnmManagerCachedWorldMatrixAtECC[(offsetof(AnmManager, cachedWorldMatrix) == 0xecc) ? 1 : -1];
 typedef char AnmManagerSurfacesAt11DC[(offsetof(AnmManager, surfaces) == 0x11dc) ? 1 : -1];
 typedef char AnmManagerVerticesAt1774[(offsetof(AnmManager, untexturedVertices) == 0x1774) ? 1 : -1];
@@ -725,8 +677,6 @@ typedef char AnmManagerSizeIs38314C[(sizeof(AnmManager) == 0x38314c) ? 1 : -1];
 extern VertexTex1DiffuseXyzrhw g_AnmTexturedVertices[4];
 extern VertexTex1Xyzrhw g_AnmTexturedVerticesNoDiffuse[4];
 
-extern Rng g_Rng;
-extern Rng g_Rng2;
 extern f32 g_AnmGameSpeed;
 
 f32 AddNormalizeAngle(f32 angle, f32 delta);

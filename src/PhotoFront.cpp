@@ -1,4 +1,8 @@
 #include "AnmManager.hpp"
+#include "FileSystem.hpp"
+#include "GameplayGlobals.hpp"
+#include "Main.hpp"
+#include "SceneData.hpp"
 
 #include <string.h>
 
@@ -26,38 +30,10 @@ struct PhotoFrontStageStateView
     u32 flags;                  // +0x25720
 };
 
-struct PhotoFrontSceneDefinitionView
-{
-    u8 unknown000[0x1c];
-    i32 frontScriptIndex;       // +0x01c
-};
-
-struct PhotoFrontVmIdView
-{
-    i32 value;
-
-    void SetInterrupt(i32 interrupt);
-};
-
-struct PhotoFrontAnmLoadedView
-{
-    i32 anmIdx;
-    void *rawData;
-    i32 totalEntries;
-    AnmLoadedSprite *sprites;
-    AnmRawInstr **scripts;
-    void *textures;
-    i32 numberEntriesToBeLoaded;
-
-    ZunResult SetSprite(AnmVm *vm, i32 spriteIndex);
-    void InitializeVm(AnmVm *vm, i32 scriptIndex);
-    PhotoFrontVmIdView CreateVm(i32 scriptIndex, i32 renderMode);
-};
-
 struct PhotoFrontManagerView
 {
     AnmVm vms[6];               // +0x0000
-    PhotoFrontAnmLoadedView *frontAnm; // +0x10c8
+    AnmLoaded *frontAnm;              // +0x10c8
     ChainElem *calcChain;              // +0x10cc
     ChainElem *drawChain;              // +0x10d0
 
@@ -89,10 +65,12 @@ struct PhotoFrontUpdateLocals
 extern PhotoFrontGameTaskView *g_PhotoFrontGameTask;
 extern PhotoFrontRuntimeView *g_PhotoFrontRuntime;
 extern PhotoFrontStageStateView *g_PhotoFrontStageState;
-extern PhotoFrontSceneDefinitionView *g_PhotoFrontSceneDefinition;
 extern PhotoFrontManagerView *g_PhotoFrontManager;
-extern u32 g_PhotoFrontControllerFlags;
-extern i32 g_PhotoFrontReplayUsesArchive;
+
+#ifndef DIFFBUILD
+#define g_PhotoFrontGameTask \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoFrontGameTaskView, g_RuntimeGameTaskOwner)
+#endif
 
 i32 LoadPhotoFrontAnm()
 {
@@ -142,10 +120,9 @@ static __forceinline void PhotoFrontInitializeFirstVmPhase(PhotoFrontManagerView
 
 i32 PhotoFrontManagerView::Initialize()
 {
-    PhotoFrontVmIdView vmIds[4];
+    AnmVmId vmIds[4];
 
-    this->frontAnm = reinterpret_cast<PhotoFrontAnmLoadedView *>(
-        g_AnmManager->LoadAnm(5, "front.anm"));
+    this->frontAnm = g_AnmManager->LoadAnm(5, "front.anm");
     if (this->frontAnm == NULL)
     {
         g_GameErrorContext.Log(
@@ -164,7 +141,7 @@ i32 PhotoFrontManagerView::Initialize()
     vmIds[2] = this->frontAnm->CreateVm(2, 7);
     vmIds[3] = this->frontAnm->CreateVm(3, 7);
 
-    if (((g_PhotoFrontControllerFlags >> 9) & 1) != 0)
+    if (((g_Supervisor.flags.raw >> 9) & 1) != 0)
     {
         vmIds[0].SetInterrupt(2);
         vmIds[1].SetInterrupt(2);
@@ -174,10 +151,10 @@ i32 PhotoFrontManagerView::Initialize()
     else
     {
         this->frontAnm->CreateVm(
-            g_PhotoFrontSceneDefinition->frontScriptIndex + 0xd, 7);
+            g_SelectedScene->frontScriptIndex + 0xd, 7);
     }
 
-    if (g_PhotoFrontReplayUsesArchive != 0)
+    if (g_ReplayUsesArchive != 0)
     {
         this->frontAnm->CreateVm(0x12, 7);
     }

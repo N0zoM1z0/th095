@@ -1,6 +1,8 @@
 #define TH095_DECLARE_ANM_LOADED_INITIALIZE_VM
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "GameplayGlobals.hpp"
+#include "SceneData.hpp"
 
 namespace th095
 {
@@ -157,21 +159,10 @@ struct BackgroundStageStateView
     AnmLoaded *anm;
 };
 
-struct BackgroundAnmSpawnerView
-{
-    AnmVmId CreateVm(i32 scriptIndex, Float3 *position);
-};
-
 struct BackgroundRuntimeView
 {
     u8 unknown0000[0x4df8];
-    BackgroundAnmSpawnerView *anmSpawner;
-};
-
-struct BackgroundSelectedSceneView
-{
-    u8 unknown000[0x0c];
-    const char *stageDataPath;
+    AnmLoaded *anmSpawner;
 };
 
 struct BackgroundViewportConfigurationView
@@ -202,7 +193,6 @@ struct BackgroundSupervisorView
 
     void ApplyBackgroundViewport(
         BackgroundViewportConfigurationView *configuration);
-    void ConfigureBackgroundViewport(i32 index);
     void SetRenderState(D3DRENDERSTATETYPE renderStateType, i32 value);
     void DisableFog();
     void EnableFog();
@@ -281,22 +271,25 @@ typedef char BackgroundAnmCameraModeAt1768[
 extern BackgroundStageStateView *g_BackgroundStageState;
 extern BackgroundRuntimeView *g_BackgroundRuntime;
 extern BackgroundGlobalStateView *g_PhotoGlobalState;
-extern BackgroundSelectedSceneView *g_SelectedScene;
-extern Background *g_Background;
-extern u8 *g_BackgroundStageDataCache;
-extern i32 g_BackgroundStageDataSize;
-extern Float3 g_BackgroundCameraPosition;
-extern Float3 g_BackgroundCameraLookAt;
-extern Float3 g_BackgroundCameraForward;
-extern Float3 g_BackgroundCameraUp;
-extern f32 g_BackgroundCameraValue0;
-extern f32 g_BackgroundCameraValue1;
-extern f32 g_BackgroundCameraValue2;
-extern f32 g_BackgroundWaveX;
-extern f32 g_BackgroundWaveY;
-extern i32 g_BackgroundModeValue;
-extern ZunColor g_PhotoScreenFadeColor;
-extern BackgroundViewportConfigurationView *g_CurrentBackgroundViewport;
+extern u32 g_PhotoScreenFadeColor;
+
+#ifndef DIFFBUILD
+#define g_PhotoGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(BackgroundGlobalStateView, g_RuntimeGameTaskOwner)
+#endif
+
+DIFFABLE_STATIC(Background *, g_Background);
+DIFFABLE_STATIC(u8 *, g_BackgroundStageDataCache);
+DIFFABLE_STATIC(i32, g_BackgroundStageDataSize);
+DIFFABLE_STATIC(Float3, g_BackgroundCameraPosition);
+DIFFABLE_STATIC(Float3, g_BackgroundCameraLookAt);
+DIFFABLE_STATIC(Float3, g_BackgroundCameraForward);
+DIFFABLE_STATIC(Float3, g_BackgroundCameraUp);
+DIFFABLE_STATIC(f32, g_BackgroundWaveX);
+DIFFABLE_STATIC(f32, g_BackgroundWaveY);
+DIFFABLE_STATIC(i32, g_BackgroundModeValue);
+DIFFABLE_STATIC(BackgroundViewportConfigurationView *,
+                g_CurrentBackgroundViewport);
 
 f32 __stdcall CubicHermiteInterpolate(
     f32 startValue, f32 endValue, f32 startTangent, f32 endTangent, f32 time);
@@ -351,12 +344,14 @@ void BackgroundSupervisorView::ApplyBackgroundViewport(
 }
 
 // FUNCTION: TH095 0x00401B70.
-void BackgroundSupervisorView::ConfigureBackgroundViewport(i32 index)
+void Supervisor::ConfigureBackgroundViewport(i32 index)
 {
-    this->currentViewport = &this->configurations[index];
-    this->ApplyBackgroundViewport(this->currentViewport);
-    this->d3dDevice->SetViewport(&this->currentViewport->viewport);
-    this->currentViewportIndex = index;
+    BackgroundSupervisorView *view =
+        reinterpret_cast<BackgroundSupervisorView *>(this);
+    view->currentViewport = &view->configurations[index];
+    view->ApplyBackgroundViewport(view->currentViewport);
+    view->d3dDevice->SetViewport(&view->currentViewport->viewport);
+    view->currentViewportIndex = index;
 }
 
 // FUNCTION: TH095 0x004020C0 is implemented in BackgroundLifecycle.cpp.
@@ -465,18 +460,18 @@ i32 Background::DrawHighPrio()
 {
     u32 vmIndex;
 
-    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZWRITEENABLE, TRUE);
-    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_FOGCOLOR,
         reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.color.color);
-    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_FOGSTART,
         *reinterpret_cast<i32 *>(
             &reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.x));
-    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_FOGEND,
         *reinterpret_cast<i32 *>(
             &reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.y));
@@ -496,11 +491,9 @@ i32 Background::DrawHighPrio()
                 .loadedSprite != NULL)
         {
             g_Supervisor.ConfigureGameplayViewport(0);
-            reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)
-                ->DisableFog();
+            g_Supervisor.DisableFog();
             g_AnmManager->FlushVertexBuffer();
-            reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)
-                ->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+            g_Supervisor.SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
             for (vmIndex = 0; vmIndex < 8; vmIndex++)
             {
                 if (reinterpret_cast<BackgroundStateView *>(this)
@@ -512,11 +505,10 @@ i32 Background::DrawHighPrio()
                         .Draw();
                 }
             }
-            reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)
-                ->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+            g_Supervisor.SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
         }
 
-        reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->EnableFog();
+        g_Supervisor.EnableFog();
         this->RenderObjects(0);
         this->RenderObjects(1);
         this->RenderObjects(2);
@@ -528,15 +520,15 @@ i32 Background::DrawHighPrio()
     g_Supervisor.ConfigureGameplayViewport(0);
     reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)
         ->SetMixColorDefault();
-    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->DisableFog();
+    g_Supervisor.DisableFog();
     if (reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive != 0)
     {
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetMixColor(
             0xff404040);
     }
-    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZWRITEENABLE, FALSE);
-    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZFUNC, D3DCMP_ALWAYS);
     return 1;
 }
@@ -599,9 +591,9 @@ i32 Background::DrawLowPrio()
         locals.clearRect.y2 = locals.bottom;
         g_Supervisor.d3dDevice->Clear(
             1, &locals.clearRect, D3DCLEAR_ZBUFFER, 0, 0.0f, 0);
-        reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+        g_Supervisor.SetRenderState(
             D3DRS_ZWRITEENABLE, TRUE);
-        reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+        g_Supervisor.SetRenderState(
             D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
         reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[0].Draw();
         reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[1].Draw();
@@ -609,9 +601,9 @@ i32 Background::DrawLowPrio()
         g_AnmManager->FlushVertexBuffer();
     }
 
-    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZWRITEENABLE, FALSE);
-    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZFUNC, D3DCMP_ALWAYS);
     return 1;
 }
@@ -660,8 +652,7 @@ i32 Background::RenderObjects(i32 mode)
     AnmVm *curQuadVm;
     BackgroundStageObjectInstance *instance =
         reinterpret_cast<BackgroundStateView *>(this)->stageObjectInstances;
-    reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)
-        ->ConfigureBackgroundViewport(0);
+    g_Supervisor.ConfigureBackgroundViewport(0);
     BackgroundSetCameraModePhase(
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager), 1);
     {
@@ -717,11 +708,9 @@ i32 Background::RenderObjects(i32 mode)
                 }
 
                 if (curQuadVm->renderModeBits == 8)
-                    reinterpret_cast<BackgroundSupervisorView *>(
-                        &g_Supervisor)->EnableFog();
+                    g_Supervisor.EnableFog();
                 else
-                    reinterpret_cast<BackgroundSupervisorView *>(
-                        &g_Supervisor)->DisableFog();
+                    g_Supervisor.DisableFog();
                 g_AnmManager->Draw(curQuadVm);
 
             }
@@ -1056,11 +1045,11 @@ read_instruction:
             break;
 
         case 6:
-            g_BackgroundCameraValue0 =
+            g_BackgroundCameraUp.x =
                 *reinterpret_cast<f32 *>(&instruction->args[0]);
-            g_BackgroundCameraValue1 =
+            g_BackgroundCameraUp.y =
                 *reinterpret_cast<f32 *>(&instruction->args[1]);
-            g_BackgroundCameraValue2 =
+            g_BackgroundCameraUp.z =
                 *reinterpret_cast<f32 *>(&instruction->args[2]);
             break;
 
@@ -1075,7 +1064,7 @@ read_instruction:
             background->photoBlendCurrent.y =
                 *reinterpret_cast<f32 *>(&instruction->args[2]);
             background->photoBlendFinal = background->photoBlendCurrent;
-            g_PhotoScreenFadeColor = background->photoBlendCurrent.color;
+            g_PhotoScreenFadeColor = background->photoBlendCurrent.color.color;
             break;
 
         case 9:
@@ -1148,7 +1137,7 @@ read_instruction:
             break;
 
         case 13:
-            g_PhotoScreenFadeColor.color = instruction->args[0];
+            g_PhotoScreenFadeColor = instruction->args[0];
             break;
 
         case 14:
@@ -1269,7 +1258,8 @@ interpolate:
                          background->photoBlendInitial.y) *
                             interpolationTime +
                         background->photoBlendInitial.y;
-                    g_PhotoScreenFadeColor = background->photoBlendCurrent.color;
+                    g_PhotoScreenFadeColor =
+                        background->photoBlendCurrent.color.color;
                     break;
                 }
             }
@@ -1349,7 +1339,7 @@ interpolate:
                             3.1415927f * 2.0f / 480.0f -
                         3.1415927f;
             g_BackgroundWaveX = sinf(angle) * 70.0f;
-            g_BackgroundCameraValue0 = -sinf(angle) * 0.1f;
+            g_BackgroundCameraUp.x = -sinf(angle) * 0.1f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 480)
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
@@ -1362,7 +1352,7 @@ interpolate:
                         3.1415927f;
             g_BackgroundWaveX = sinf(angle) * 30.0f;
             g_BackgroundWaveY = cosf(angle) * 30.0f;
-            g_BackgroundCameraValue0 = -sinf(angle) * 0.1f;
+            g_BackgroundCameraUp.x = -sinf(angle) * 0.1f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 2048)
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
@@ -1373,8 +1363,8 @@ interpolate:
             f32 angle = (f32)background->interpolationCurrentTimers[3] *
                             3.1415927f * 2.0f / 4800.0f -
                         3.1415927f;
-            g_BackgroundCameraValue0 = sinf(angle) * 1.0f;
-            g_BackgroundCameraValue2 = cosf(angle) * 1.0f;
+            g_BackgroundCameraUp.x = sinf(angle) * 1.0f;
+            g_BackgroundCameraUp.z = cosf(angle) * 1.0f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 4800)
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
@@ -1455,11 +1445,11 @@ void Background::StartSpellBackground()
 {
     reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundState = 1;
     reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundVms[0] =
-        g_BackgroundRuntime->anmSpawner->CreateVm(
+        g_BackgroundRuntime->anmSpawner->CreateVmAtWorld(
             0, &Float3(0.0f, 0.0f, 0.0f));
 
     reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundVms[1] =
-        g_BackgroundRuntime->anmSpawner->CreateVm(
+        g_BackgroundRuntime->anmSpawner->CreateVmAtWorld(
             1, &Float3(0.0f, 0.0f, 0.0f));
 }
 

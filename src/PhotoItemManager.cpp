@@ -1,17 +1,14 @@
 #include "PhotoItemManager.hpp"
+#include "GameplayGlobals.hpp"
+#include "SoundPlayer.hpp"
 
 namespace th095
 {
 
-struct ItemAnmSpawnerView
-{
-    void InitializeVm(AnmVm *vm, i32 scriptIndex);
-};
-
 struct ItemBulletManagerView
 {
     u8 unknown000000[0x27c5b0];
-    ItemAnmSpawnerView *anmSpawner;
+    AnmLoaded *anmSpawner;
 };
 
 extern ItemBulletManagerView *g_PhotoBulletManager;
@@ -49,13 +46,13 @@ struct ItemGlobalStateView
     };
 };
 
-struct ItemSoundPlayerView
-{
-    void PlaySoundPositionedByIdx(i32 soundIndex, f32 pan);
-};
-
 extern ItemPhotoGameView *g_PhotoGame;
 extern ItemGlobalStateView *g_PhotoGlobalState;
+
+#ifndef DIFFBUILD
+#define g_PhotoGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(ItemGlobalStateView, g_RuntimeGameTaskOwner)
+#endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -235,8 +232,8 @@ i32 PhotoItemManagerView::Update()
             }
             if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
             {
-                reinterpret_cast<ItemSoundPlayerView *>(&g_SoundPlayer)
-                    ->PlaySoundPositionedByIdx(0x14, locals.item->position.x);
+                g_SoundPlayer.PlaySoundPositionedByIdx(
+                    static_cast<SoundIdx>(0x14), locals.item->position.x);
             }
             continue;
         }

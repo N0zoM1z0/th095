@@ -1,14 +1,8 @@
 #include "EnemyManager.hpp"
+#include "GameplayGlobals.hpp"
 
 namespace th095
 {
-
-struct PhotoEnemyAnmManagerDrawView
-{
-    ZunResult Draw(AnmVm *vm);
-};
-
-extern PhotoEnemyAnmManagerDrawView *g_PhotoEnemyAnmManager;
 
 struct PhotoEnemyTaskGlobalStateView
 {
@@ -27,6 +21,11 @@ struct PhotoEnemyTaskGlobalStateView
 };
 
 extern PhotoEnemyTaskGlobalStateView *g_PhotoEnemyGlobalState;
+
+#ifndef DIFFBUILD
+#define g_PhotoEnemyGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyTaskGlobalStateView, g_RuntimeGameTaskOwner)
+#endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -119,7 +118,7 @@ i32 PhotoEnemyManagerTaskView::DrawGroup(i32 groupIndex)
     while (enemy != NULL)
     {
         PhotoToScreen(&enemy->vm.positionOffset, &enemy->position);
-        g_PhotoEnemyAnmManager->Draw(&enemy->vm);
+        g_AnmManager->Draw(&enemy->vm);
         enemy = enemy->nextInDrawGroup;
     }
     return 1;

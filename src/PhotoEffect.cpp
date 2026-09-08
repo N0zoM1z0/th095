@@ -1,5 +1,6 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "GameplayGlobals.hpp"
 
 namespace th095
 {
@@ -179,7 +180,7 @@ struct PhotoGameUpdateView
 };
 
 extern PhotoGameUpdateView *g_PhotoGame;
-extern f32 g_GameSpeed;
+extern f32 g_AnmGameSpeed;
 
 struct PhotoEnemyView
 {
@@ -194,12 +195,6 @@ struct PhotoEnemyManagerView
 };
 
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
-
-struct PhotoEffectAnmView
-{
-    void SetAndExecuteScript(AnmVm *vm, i32 scriptIndex);
-    AnmVmId CreateVm(i32 scriptIndex, Float3 *position);
-};
 
 struct PhotoEffectManagerView;
 
@@ -234,6 +229,11 @@ struct PhotoEffectGlobalStateView
 
 extern PhotoEffectGlobalStateView *g_PhotoGlobalState;
 
+#ifndef DIFFBUILD
+#define g_PhotoGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEffectGlobalStateView, g_RuntimeGameTaskOwner)
+#endif
+
 static inline i32 PhotoEffectEitherFlag(i32 first, i32 second)
 {
     return first | second;
@@ -252,7 +252,7 @@ struct PhotoEffectManagerView
     i32 nextId;                             // +0x58
     PhotoEffectVector collisionPosition;    // +0x5c
     PhotoEffectVector collisionSize;        // +0x68
-    PhotoEffectAnmView *anm;                // +0x74
+    AnmLoaded *anm;                         // +0x74
     ChainElem *calcChain;                   // +0x78
     ChainElem *drawChain;                   // +0x7c
 
@@ -312,7 +312,7 @@ i32 PhotoStraightLaserView::Update()
 {
     if (this->length < this->spawn.maximumLength)
     {
-        this->length += g_GameSpeed * this->speed;
+        this->length += g_AnmGameSpeed * this->speed;
         if (this->length > this->spawn.maximumLength)
         {
             this->length = this->spawn.maximumLength;
@@ -320,8 +320,8 @@ i32 PhotoStraightLaserView::Update()
     }
     else
     {
-        this->tailOffset += g_GameSpeed * this->speed;
-        this->position += this->velocity * g_GameSpeed;
+        this->tailOffset += g_AnmGameSpeed * this->speed;
+        this->position += this->velocity * g_AnmGameSpeed;
         if (this->spawn.terminalDistance > 0.0f &&
             this->spawn.terminalDistance < this->tailOffset + this->length)
         {
@@ -395,7 +395,7 @@ i32 PhotoStraightLaserView::Initialize(void *args)
     this->spawn = *static_cast<PhotoEffectArgsSmallView *>(args);
     this->state = 2;
 
-    g_PhotoEffectManager->anm->SetAndExecuteScript(
+    g_PhotoEffectManager->anm->InitializeVm(
         &this->bodyVm,
         GetPhotoEffectScriptBase(this->spawn.type) + this->spawn.color);
     this->bodyVm.pendingInterrupt = 2;
@@ -405,7 +405,7 @@ i32 PhotoStraightLaserView::Initialize(void *args)
     this->bodyVm.renderStateA = 0;
     this->bodyVm.renderStateB = 2;
 
-    g_PhotoEffectManager->anm->SetAndExecuteScript(
+    g_PhotoEffectManager->anm->InitializeVm(
         &this->tailVm, this->spawn.color + 0xc2);
     this->tailVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->tailVm);
@@ -452,7 +452,7 @@ i32 PhotoRotatingLaserView::Update()
 {
     if (this->length < this->spawn.maximumLength)
     {
-        this->length += g_GameSpeed * this->speed;
+        this->length += g_AnmGameSpeed * this->speed;
         if (this->length > this->spawn.maximumLength)
         {
             this->length = this->spawn.maximumLength;
@@ -460,7 +460,7 @@ i32 PhotoRotatingLaserView::Update()
     }
 
     this->angle = AddNormalizeAngle(
-        this->angle, g_GameSpeed * this->spawn.angularVelocity);
+        this->angle, g_AnmGameSpeed * this->spawn.angularVelocity);
 
     if ((this->spawn.flags & 1) != 0 &&
         g_PhotoEnemyManager->photoTargets[0] != NULL)
@@ -469,7 +469,7 @@ i32 PhotoRotatingLaserView::Update()
             g_PhotoEnemyManager->photoTargets[0]->worldPosition;
     }
 
-    this->position += this->spawn.velocity * g_GameSpeed;
+    this->position += this->spawn.velocity * g_AnmGameSpeed;
 
     switch (this->state)
     {
@@ -561,7 +561,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
     this->spawn = *static_cast<PhotoEffectArgsView *>(args);
     this->state = 3;
 
-    g_PhotoEffectManager->anm->SetAndExecuteScript(
+    g_PhotoEffectManager->anm->InitializeVm(
         &this->bodyVm,
         GetPhotoEffectScriptBase(this->spawn.type) + this->spawn.color);
     this->bodyVm.pendingInterrupt = 2;
@@ -571,7 +571,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
     this->bodyVm.renderStateA = 0;
     this->bodyVm.renderStateB = 2;
 
-    g_PhotoEffectManager->anm->SetAndExecuteScript(
+    g_PhotoEffectManager->anm->InitializeVm(
         &this->tailVm, this->spawn.color + 0xc2);
     this->tailVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->tailVm);
@@ -629,7 +629,8 @@ i32 PhotoStraightLaserView::DrawSecondary()
     {
         secondaryCount++;
         secondaryVm = g_AnmManager->GetVm(
-            g_PhotoEffectManager->anm->CreateVm(0x126, &secondaryPosition));
+            g_PhotoEffectManager->anm->CreateVmAtWorld(
+                0x126, reinterpret_cast<Float3 *>(&secondaryPosition)));
         secondaryVm->color1.color = g_PhotoEffectColors[this->spawn.color];
         secondaryPosition += secondaryStep;
         secondaryDistance += 12.0f;
@@ -654,7 +655,8 @@ i32 PhotoRotatingLaserView::DrawSecondary()
     {
         secondaryCount++;
         secondaryVm = g_AnmManager->GetVm(
-            g_PhotoEffectManager->anm->CreateVm(0x126, &secondaryPosition));
+            g_PhotoEffectManager->anm->CreateVmAtWorld(
+                0x126, reinterpret_cast<Float3 *>(&secondaryPosition)));
         secondaryVm->color1.color = g_PhotoEffectColors[this->spawn.color];
         secondaryPosition += secondaryStep;
         secondaryDistance += 12.0f;
@@ -718,7 +720,8 @@ i32 PhotoStraightLaserView::CheckCollision(
             hits[sampleCount] = 1;
             hitCount++;
             AnmVm *vm = g_AnmManager->GetVm(
-                g_PhotoEffectManager->anm->CreateVm(0x126, &sample));
+                g_PhotoEffectManager->anm->CreateVmAtWorld(
+                    0x126, reinterpret_cast<Float3 *>(&sample)));
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
@@ -866,7 +869,8 @@ i32 PhotoRotatingLaserView::CheckCollision(
             hits[sampleCount] = 1;
             hitCount++;
             AnmVm *vm = g_AnmManager->GetVm(
-                g_PhotoEffectManager->anm->CreateVm(0x126, &sample));
+                g_PhotoEffectManager->anm->CreateVmAtWorld(
+                    0x126, reinterpret_cast<Float3 *>(&sample)));
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
@@ -1048,8 +1052,7 @@ PhotoEffectManagerView::~PhotoEffectManagerView()
 
 i32 PhotoEffectManagerView::Initialize()
 {
-    this->anm = reinterpret_cast<PhotoEffectAnmView *>(
-        g_AnmManager->LoadAnm(6, "bullet.anm"));
+    this->anm = g_AnmManager->LoadAnm(6, "bullet.anm");
     if (this->anm == NULL)
     {
         g_GameErrorContext.Log(
@@ -1208,10 +1211,10 @@ i32 __fastcall PhotoEffectManagerView::OnUpdate(
     }
     if (g_PhotoGlobalState->freezeEffects != 0)
     {
-        f32 gameSpeed = g_GameSpeed;
-        g_GameSpeed = 0.0f;
+        f32 gameSpeed = g_AnmGameSpeed;
+        g_AnmGameSpeed = 0.0f;
         i32 result = Update(manager);
-        g_GameSpeed = gameSpeed;
+        g_AnmGameSpeed = gameSpeed;
         return result;
     }
     return Update(manager);

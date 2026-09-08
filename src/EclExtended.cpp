@@ -1,19 +1,19 @@
 #include "EnemyManager.hpp"
+#include "GameplayGlobals.hpp"
+#include "Rng.hpp"
+#include "SoundPlayer.hpp"
 #include <string.h>
 
 namespace th095
 {
+extern f32 g_AnmGameSpeed;
+
 namespace EclExtended
 {
 struct AnmManagerLookupView
 {
     AnmVm *GetVm(i32 handle);
     static i32 __fastcall ExecuteScript(AnmVm *vm);
-};
-
-struct SoundPlayerView
-{
-    void PlaySoundByIdx(i32 soundIndex, i32 pan);
 };
 
 struct ExtendedPhotoEnemyView;
@@ -201,20 +201,18 @@ struct ExtendedRuntimeView
 typedef char ExtendedRuntimeMarkerAt4DF8[
     (offsetof(ExtendedRuntimeView, markerAnm) == 0x4df8) ? 1 : -1];
 
-struct ExtendedRng
-{
-    f32 GetRandomF32();
-};
-
-
 extern AnmManagerLookupView *g_AnmManager;
-extern SoundPlayerView g_SoundPlayer;
 extern PhotoGlobalStateView *g_PhotoGlobalState;
 extern u8 *g_Background;
 extern ExtendedBulletManager *g_PhotoBulletManager;
 extern ExtendedPhotoEffectManager *g_PhotoEffectManager;
 extern ExtendedPhotoEnemyManagerView *g_ExtendedPhotoEnemyManager;
-extern u32 g_PhotoScreenFadeColor;
+
+#ifndef DIFFBUILD
+#define g_PhotoGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, ::th095::g_RuntimeGameTaskOwner)
+#endif
+
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
 
 __forceinline void ExtendedBulletView::ReinitializeDirect()
@@ -248,9 +246,6 @@ static __forceinline void FinalizeExtendedBulletAfterExecute(
 
 extern ExtendedPlayerView *g_Player;
 extern ExtendedRuntimeView *g_ExtendedRuntime;
-extern ExtendedRng g_Rng;
-extern f32 g_AnmGameSpeed;
-
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 i32 __fastcall DispatchExtendedValue(
     i32 mode, i32 value0, i32 value1, i32 value2, i32 value3, i32 type);
@@ -262,8 +257,8 @@ void __fastcall SpawnDeathPhotoVms(
     g_PhotoBulletManager->anmSpawner->CreateVmAtWorld(0x123, &enemy->position);
     for (i32 i = 0; i < 32; ++i)
         g_PhotoBulletManager->anmSpawner->CreateVmAtWorld(0x122, &enemy->position);
-    g_SoundPlayer.PlaySoundByIdx(0x12, 0);
-    g_AnmGameSpeed = 0.25f;
+    th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x12, 0);
+    th095::g_AnmGameSpeed = 0.25f;
 }
 
 // ECL extended callback table entry 6 @ 0x00413AA0.
@@ -314,7 +309,7 @@ void __fastcall DispatchContextValues(
 void __fastcall PublishGameSpeed(
     Enemy *enemy, EclRawInstruction *instruction)
 {
-    g_AnmGameSpeed = enemy->activeEclContext->floatVariables[7];
+    th095::g_AnmGameSpeed = enemy->activeEclContext->floatVariables[7];
 }
 
 // ECL extended callback table entry 12 @ 0x00413FC0.
@@ -343,7 +338,7 @@ void __fastcall SetBackgroundVmsState3(
     secondVm = g_AnmManager->GetVm(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
     secondVm->pendingInterrupt = 3;
-    g_AnmGameSpeed = 1.0f;
+    th095::g_AnmGameSpeed = 1.0f;
 }
 
 // ECL extended callback table entry 15 @ 0x00414230.
@@ -375,8 +370,8 @@ void __fastcall EnablePhotoTransition(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
     secondVm->pendingInterrupt = 2;
     AnmManagerLookupView::ExecuteScript(secondVm);
-    g_SoundPlayer.PlaySoundByIdx(0x26, 0);
-    g_AnmGameSpeed = 1.0f;
+    th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x26, 0);
+    th095::g_AnmGameSpeed = 1.0f;
 }
 
 // ECL extended callback table entry 19 @ 0x004144E0.
@@ -394,7 +389,7 @@ void __fastcall DisablePhotoTransition(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
     secondVm->pendingInterrupt = 3;
     AnmManagerLookupView::ExecuteScript(secondVm);
-    g_SoundPlayer.PlaySoundByIdx(0x0f, 0);
+    th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x0f, 0);
 }
 
 // ECL extended callback table entry 21 @ 0x00414930.
@@ -556,7 +551,7 @@ void __fastcall RunPhotoTransition(
                 *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
             locals.secondEndVm->pendingInterrupt = 3;
             AnmManagerLookupView::ExecuteScript(locals.secondEndVm);
-            g_SoundPlayer.PlaySoundByIdx(0x0f, 0);
+            th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x0f, 0);
         }
     }
 
@@ -574,8 +569,8 @@ void __fastcall RunPhotoTransition(
             *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
         locals.secondStartVm->pendingInterrupt = 2;
         AnmManagerLookupView::ExecuteScript(locals.secondStartVm);
-        g_SoundPlayer.PlaySoundByIdx(0x26, 0);
-        g_AnmGameSpeed = 1.0f;
+        th095::g_SoundPlayer.PlaySoundByIdx((SoundIdx)0x26, 0);
+        th095::g_AnmGameSpeed = 1.0f;
         enemy->activeEclContext->extraIntVariables[2] = 120;
 
         if (g_Player->camera.viewfinderPosition.x < 0.0f)
@@ -589,10 +584,10 @@ void __fastcall RunPhotoTransition(
 
         if (g_Player->position.y < enemy->position.y)
             locals.targetY =
-                g_Rng.GetRandomF32() * 64.0f + enemy->position.y;
+                th095::g_Rng.GetRandomF32() * 64.0f + enemy->position.y;
         else
             locals.targetY =
-                enemy->position.y - g_Rng.GetRandomF32() * 64.0f;
+                enemy->position.y - th095::g_Rng.GetRandomF32() * 64.0f;
 
         locals.zeroZ = 0.0f;
         locals.worldPosition = &enemy->worldPosition;
@@ -844,7 +839,7 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
 
     SetExtendedBackgroundVm0State2();
     SetExtendedBackgroundVm1State2();
-    g_PhotoScreenFadeColor = 0;
+    th095::g_PhotoScreenFadeColor = 0;
 }
 
 // ECL extended callback table entry 3 @ 0x00413620.
@@ -912,7 +907,7 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
 
     SetExtendedBackgroundVm0State2();
     SetExtendedBackgroundVm1State2();
-    g_PhotoScreenFadeColor = 0;
+    th095::g_PhotoScreenFadeColor = 0;
 }
 
 #undef EXT_MOVEMENT_FLAGS

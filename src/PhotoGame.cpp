@@ -1,29 +1,16 @@
 #include "PhotoCamera.hpp"
 #include "AnmVmId.hpp"
+#include "GameplayGlobals.hpp"
+#include "SoundPlayer.hpp"
 
 namespace th095
 {
 
 void Rotate(Float3 *outVector, Float3 *point, f32 angle);
 
-struct PhotoAnmVmIdValue
-{
-    i32 value;
-
-    PhotoAnmVmIdValue(i32 value)
-    {
-        this->value = value;
-    }
-};
-
-__forceinline i32 PhotoAnmVmId::operator==(PhotoAnmVmIdValue other) const
-{
-    return this->value == other.value;
-}
-
 static __forceinline i32 PhotoGameFocusVmIsZero(const PhotoAnmVmId *vm)
 {
-    return *vm == PhotoAnmVmIdValue(0);
+    return *vm == 0;
 }
 
 static __forceinline void PhotoGameClearFocusVm(PhotoAnmVmId *vm)
@@ -62,6 +49,11 @@ extern PhotoResetTargetView *g_PhotoStageResetTarget;
 extern PhotoGameGlobalStateView *g_PhotoGameGlobalState;
 extern u16 g_PhotoInput;
 
+#ifndef DIFFBUILD
+#define g_PhotoGameGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameGlobalStateView, g_RuntimeGameTaskOwner)
+#endif
+
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
 struct PhotoGameStageStateView
@@ -71,21 +63,6 @@ struct PhotoGameStageStateView
 };
 
 extern PhotoGameStageStateView *g_PhotoStageStateForPlayer;
-
-struct PhotoGameAnmSpawnerView
-{
-    AnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
-};
-
-struct PhotoGameSoundPlayerView
-{
-    void PlaySoundByIdx(i32 idx, i32 pan);
-};
-
-static inline PhotoGameSoundPlayerView *PhotoGameSoundPlayer()
-{
-    return reinterpret_cast<PhotoGameSoundPlayerView *>(&g_SoundPlayer);
-}
 
 struct PhotoPlayerMovementConfigView
 {
@@ -554,20 +531,18 @@ void PhotoGameUpdateView::Die()
     this->mode = 2;
     PhotoToScreen(&screenPosition, &this->playerPosition);
     g_AnmManager->SetPosition(
-        reinterpret_cast<PhotoGameAnmSpawnerView *>(
-            g_PhotoBulletManager->anmSpawner)->CreateVm(0x121, 0),
+        g_PhotoBulletManager->anmSpawner->CreateVm(0x121, 0),
         &screenPosition);
     for (i32 i = 0; i < 32; ++i)
     {
         g_AnmManager->SetPosition(
-            reinterpret_cast<PhotoGameAnmSpawnerView *>(
-                g_PhotoBulletManager->anmSpawner)->CreateVm(0x122, 0),
+            g_PhotoBulletManager->anmSpawner->CreateVm(0x122, 0),
             &screenPosition);
     }
     this->completionTimer = 0;
     if ((g_PhotoGameGlobalState->flags >> 9 & 1) == 0)
     {
-        PhotoGameSoundPlayer()->PlaySoundByIdx(4, 0);
+        g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(4), 0);
     }
     g_AnmGameSpeed = 0.5f;
 }

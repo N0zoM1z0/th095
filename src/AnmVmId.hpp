@@ -22,6 +22,22 @@ struct AnmVmId
         return this->value == other.value;
     }
 
+    i32 operator==(i32 other) const
+    {
+        return this->value == other;
+    }
+
+    operator i32() const
+    {
+        return this->value;
+    }
+
+    AnmVmId &operator=(i32 value)
+    {
+        this->value = value;
+        return *this;
+    }
+
     AnmVm *GetVm();
     void SetInterrupt(i32 interrupt);
     void SetSprite(i32 spriteIndex);

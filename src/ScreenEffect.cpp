@@ -1,5 +1,8 @@
 #define WIN32_LEAN_AND_MEAN
+#include "AnmManager.hpp"
 #include "Chain.hpp"
+#include "GameplayGlobals.hpp"
+#include "Rng.hpp"
 #include "ScreenEffect.hpp"
 
 #include <windows.h>
@@ -9,26 +12,9 @@
 namespace th095
 {
 
-struct ScreenEffectAnmManagerView
-{
-    void FlushVertexBuffer();
-};
-extern ScreenEffectAnmManagerView *g_AnmManager;
-
-class Rng
-{
-  public:
-    unsigned int GetRandomU32();
-    __forceinline unsigned int GetRandomU32InRange(unsigned int range)
-    {
-        return range != 0 ? GetRandomU32() % range : 0;
-    }
-};
-extern Rng g_Rng;
-
-extern int g_ScreenEffectCounter;
-extern float g_ScreenEffectShakeX;
-extern float g_ScreenEffectShakeY;
+DIFFABLE_STATIC(int, g_ScreenEffectCounter);
+DIFFABLE_STATIC(float, g_ScreenEffectShakeX);
+DIFFABLE_STATIC(float, g_ScreenEffectShakeY);
 
 struct ScreenEffectPhotoGlobalStateView
 {
@@ -53,24 +39,15 @@ typedef char ScreenEffectPhotoFlagsAtFC[
     (offsetof(ScreenEffectPhotoGlobalStateView, flags) == 0xfc) ? 1 : -1];
 extern ScreenEffectPhotoGlobalStateView *g_PhotoGlobalState;
 
+#ifndef DIFFBUILD
+#define g_PhotoGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(ScreenEffectPhotoGlobalStateView, g_RuntimeGameTaskOwner)
+#endif
+
 static __forceinline int ScreenEffectEitherFlag(int first, int second)
 {
     return first | second;
 }
-
-struct ScreenEffectSupervisorView
-{
-    unsigned char unknown000[0x08];
-    IDirect3DDevice8 *d3dDevice;
-    unsigned char unknown00C[0xCC - 0x0C];
-    D3DVIEWPORT8 viewport;
-    D3DPRESENT_PARAMETERS presentParameters;
-};
-extern ScreenEffectSupervisorView g_Supervisor;
-
-typedef char ScreenEffectSupervisorDeviceAt08[(offsetof(ScreenEffectSupervisorView, d3dDevice) == 0x08) ? 1 : -1];
-typedef char ScreenEffectSupervisorViewportAtCC[(offsetof(ScreenEffectSupervisorView, viewport) == 0xcc) ? 1 : -1];
-typedef char ScreenEffectSupervisorPresentAtE4[(offsetof(ScreenEffectSupervisorView, presentParameters) == 0xe4) ? 1 : -1];
 
 __forceinline ScreenEffectTimer::operator int()
 {

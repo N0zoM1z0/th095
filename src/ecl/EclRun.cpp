@@ -17,6 +17,13 @@
 #include "EclRunHigh.inl"
 #undef TH08_ECL_RUN_DECLARATIONS_ONLY
 
+#include "../GameplayGlobals.hpp"
+
+#ifndef DIFFBUILD
+#define g_Th095GameManager \
+    TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeGameTaskOwner)
+#endif
+
 namespace th095
 {
 

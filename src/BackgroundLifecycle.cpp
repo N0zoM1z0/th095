@@ -1,4 +1,5 @@
 #include "Chain.hpp"
+#include "ZunTimer.hpp"
 #include "inttypes.hpp"
 #include "utils.hpp"
 
@@ -8,27 +9,6 @@
 
 namespace th095
 {
-
-struct ZunTimer
-{
-    i32 previous;
-    f32 subFrame;
-    i32 current;
-
-    ZunTimer()
-    {
-        current = 0;
-        previous = -999999;
-        subFrame = 0.0f;
-    }
-
-    void Initialize()
-    {
-        current = 0;
-        subFrame = 0.0f;
-        previous = -999999;
-    }
-};
 
 struct AnmLoaded;
 struct AnmVm

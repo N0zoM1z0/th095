@@ -1,6 +1,7 @@
 #define TH095_DECLARE_ANM_LOADED_INITIALIZE_VM
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "GameplayGlobals.hpp"
 
 namespace th095
 {
@@ -65,20 +66,6 @@ struct AnmVmDeleteView
     }
 };
 
-struct AnmLoadedPositionView
-{
-    i32 anmIdx;
-    void *rawData;
-    i32 totalEntries;
-    AnmLoadedSprite *sprites;
-    AnmRawInstr **scripts;
-    void *textures;
-    i32 numberEntriesToBeLoaded;
-
-    AnmVmId CreateVmAtScreen(i32 scriptIndex, Float3 *position);
-    AnmVmId CreateVmAtWorld(i32 scriptIndex, Float3 *position);
-};
-
 struct AnmVmDrawNodeView
 {
     u8 unknown000[4];
@@ -129,6 +116,11 @@ struct PhotoGameTaskDrawGateView
 extern PhotoGameTaskDrawGateView *g_PhotoGameTask;
 extern f32 g_ScreenEffectShakeX;
 extern f32 g_ScreenEffectShakeY;
+
+#ifndef DIFFBUILD
+#define g_PhotoGameTask \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskDrawGateView, g_RuntimeGameTaskOwner)
+#endif
 
 static __forceinline i32 AnmUpdateEitherFlag(i32 first, i32 second)
 {
@@ -398,22 +390,22 @@ AnmVmId AnmLoaded::CreateVm(i32 scriptIndex, i32 renderMode)
 }
 
 // FUNCTION: TH095 0x00444FA0.
-AnmVmId AnmLoadedPositionView::CreateVmAtScreen(
+AnmVmId AnmLoaded::CreateVmAtScreen(
     i32 scriptIndex, Float3 *position)
 {
     AnmVm *vm = new AnmVm;
-    reinterpret_cast<AnmLoaded *>(this)->InitializeVm(vm, scriptIndex);
+    this->InitializeVm(vm, scriptIndex);
     vm->positionOffset = *position;
     return reinterpret_cast<AnmManagerVmLifecycleView *>(g_AnmManager)
         ->AddVm(reinterpret_cast<AnmVmLifecycleView *>(vm));
 }
 
 // FUNCTION: TH095 0x00445060.
-AnmVmId AnmLoadedPositionView::CreateVmAtWorld(
+AnmVmId AnmLoaded::CreateVmAtWorld(
     i32 scriptIndex, Float3 *position)
 {
     AnmVm *vm = new AnmVm;
-    reinterpret_cast<AnmLoaded *>(this)->InitializeVm(vm, scriptIndex);
+    this->InitializeVm(vm, scriptIndex);
     PhotoToScreen(&vm->positionOffset, position);
     return reinterpret_cast<AnmManagerVmLifecycleView *>(g_AnmManager)
         ->AddVm(reinterpret_cast<AnmVmLifecycleView *>(vm));

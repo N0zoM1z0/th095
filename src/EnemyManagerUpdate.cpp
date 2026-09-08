@@ -1,5 +1,6 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "SceneData.hpp"
 
 #include <stdlib.h>
 #include <string.h>
@@ -235,15 +236,10 @@ struct PhotoEnemyTimelineExtendedSpawnArgs
 typedef char PhotoEnemyTimelineSizeIs10[
     (sizeof(PhotoEnemyTimelineView) == 0x10) ? 1 : -1];
 
-struct PhotoEnemyAnmSpawnerView
-{
-    AnmVmId CreateVm(i32 scriptIndex, Float3 *position);
-};
-
 struct PhotoEnemyBulletManagerView
 {
     u8 unknown000000[0x27c5b0];
-    PhotoEnemyAnmSpawnerView *anmSpawner;
+    AnmLoaded *anmSpawner;
 };
 
 struct PhotoEnemyPlayerView
@@ -262,13 +258,6 @@ struct PhotoEnemySupervisorFlagsView
     u32 unknown00 : 9;
     u32 disableResourceReload : 1;
     u32 unknown10 : 22;
-};
-
-struct PhotoEnemySceneDefinitionView
-{
-    u8 unknown000[0x10];
-    char *enemyAnmPath;
-    char *enemyEclPath;
 };
 
 struct PhotoEnemyBulletSpawnDescriptorView
@@ -321,8 +310,7 @@ extern PhotoEnemyBulletManagerView *g_PhotoEnemyBulletManager;
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 extern PhotoEnemyPlayerView *g_PhotoEnemyPlayer;
 extern PhotoEnemyGameView *g_PhotoEnemyGame;
-extern PhotoEnemySceneDefinitionView *g_PhotoEnemySceneDefinition;
-extern f32 g_GameSpeed;
+extern f32 g_AnmGameSpeed;
 
 struct PhotoEnemyView
 {
@@ -601,7 +589,7 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
 i32 PhotoEnemyManagerView::LoadResources()
 {
     this->enemyAnm =
-        g_AnmManager->LoadAnm(8, g_PhotoEnemySceneDefinition->enemyAnmPath);
+        g_AnmManager->LoadAnm(8, g_SelectedScene->enemyAnmPath);
     if (this->enemyAnm == NULL)
     {
         g_GameErrorContext.Log(
@@ -615,7 +603,7 @@ i32 PhotoEnemyManagerView::LoadResources()
 
     this->eclManager = new PhotoEnemyEclManagerView;
     if (this->eclManager->Load(
-            g_PhotoEnemySceneDefinition->enemyEclPath) != ZUN_SUCCESS)
+            g_SelectedScene->enemyEclPath) != ZUN_SUCCESS)
     {
         g_GameErrorContext.Log(
             "\x93\x47\x83\x66\x81\x5b\x83\x5e\x82\xaa"
@@ -1115,7 +1103,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
                 *reinterpret_cast<AnmVmId *>(
                     &enemy->photoMarkerVmId) =
                     g_PhotoEnemyBulletManager->anmSpawner
-                        ->CreateVm(0x127, &enemy->photoMarkerPosition);
+                        ->CreateVmAtWorld(0x127, &enemy->photoMarkerPosition);
             }
             else
             {
@@ -1207,14 +1195,14 @@ void PhotoEnemyView::IntegrateMovement()
 
     if (this->mirrorXVelocity == 0)
     {
-        this->worldPosition.x += g_GameSpeed * this->velocity.x;
+        this->worldPosition.x += g_AnmGameSpeed * this->velocity.x;
     }
     else
     {
-        this->worldPosition.x -= g_GameSpeed * this->velocity.x;
+        this->worldPosition.x -= g_AnmGameSpeed * this->velocity.x;
     }
-    this->worldPosition.y += g_GameSpeed * this->velocity.y;
-    this->worldPosition.z += g_GameSpeed * this->velocity.z;
+    this->worldPosition.y += g_AnmGameSpeed * this->velocity.y;
+    this->worldPosition.z += g_AnmGameSpeed * this->velocity.z;
 }
 
 void PhotoEnemyView::ClampPosition()

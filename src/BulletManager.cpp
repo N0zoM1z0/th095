@@ -1,6 +1,8 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "PhotoItemManager.hpp"
+#include "SoundPlayer.hpp"
+#include "GameplayGlobals.hpp"
 
 #include <string.h>
 
@@ -316,8 +318,6 @@ typedef char PhotoBulletTransformsAt370[
 typedef char PhotoBulletExStatesAt520[
     (offsetof(PhotoBulletView, exStates) == 0x520) ? 1 : -1];
 
-struct PhotoBulletAnmLoadedView;
-
 struct PhotoBulletManagerView
 {
     PhotoBulletView *bulletCursor;       // +0x00
@@ -328,7 +328,7 @@ struct PhotoBulletManagerView
     PhotoBulletView bullets[0x641];      // +0x4c
     ChainElem *calcChain;                 // +0x27c5a8
     ChainElem *drawChain;                 // +0x27c5ac
-    PhotoBulletAnmLoadedView *anmSpawner; // +0x27c5b0
+    AnmLoaded *anmSpawner;                // +0x27c5b0
     i32 activeBulletCount;               // +0x27c5b4
 
     PhotoBulletManagerView();
@@ -389,28 +389,20 @@ struct PhotoBulletPlayerView
         PhotoBulletVector *position, PhotoBulletVector *size);
 };
 
-struct PhotoBulletAnmLoadedView : AnmLoaded
-{
-    void InitializeVm(AnmVm *vm, i32 scriptIndex);
-    AnmVmId CreateVm(i32 scriptIndex, PhotoBulletVector *position);
-};
-
-struct PhotoBulletSoundPlayerView
-{
-    void PlaySoundByIdx(i32 soundIndex, i32 pan);
-    void PlaySoundPositionedByIdx(i32 soundIndex, f32 positionX);
-};
-
 extern PhotoBulletGlobalStateView *g_PhotoBulletGlobalState;
 extern PhotoBulletPlayerView *g_PhotoBulletPlayer;
 extern PhotoBulletManagerView *g_PhotoBulletManager;
-extern PhotoBulletSoundPlayerView g_PhotoBulletSoundPlayer;
 extern i32 g_PhotoBulletScriptBases[];
 extern f32 g_PhotoBulletCollisionSizes[];
 extern i32 g_PhotoBulletDrawBucketIndices[];
 extern u32 g_PhotoBulletColors16[];
 extern u32 g_PhotoBulletColors8[];
 extern u32 g_PhotoBulletColors4[];
+
+#ifndef DIFFBUILD
+#define g_PhotoBulletGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletGlobalStateView, g_RuntimeGameTaskOwner)
+#endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -441,8 +433,7 @@ PhotoBulletManagerView::PhotoBulletManagerView()
 // FUNCTION: TH095 0x00404E00.
 i32 PhotoBulletManagerView::Initialize()
 {
-    this->anmSpawner = reinterpret_cast<PhotoBulletAnmLoadedView *>(
-        g_AnmManager->LoadAnm(6, "bullet.anm"));
+    this->anmSpawner = g_AnmManager->LoadAnm(6, "bullet.anm");
     if (this->anmSpawner == NULL)
     {
         g_GameErrorContext.Log(
@@ -775,8 +766,8 @@ nextRecord:
             this->exStates[1].accelerationAngle,
             this->exStates[1].accelerationMagnitude);
         if (this->transformIndex != 0 && this->transformSound >= 0)
-            g_PhotoBulletSoundPlayer.PlaySoundByIdx(
-                this->transformSound, 0);
+            g_SoundPlayer.PlaySoundByIdx(
+                static_cast<SoundIdx>(this->transformSound), 0);
         break;
 
     case PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR:
@@ -786,8 +777,8 @@ nextRecord:
         this->exStates[2].timer = 0;
         this->exStates[2].durationFrames = record->payload.durationFrames;
         if (this->transformIndex != 0 && this->transformSound >= 0)
-            g_PhotoBulletSoundPlayer.PlaySoundByIdx(
-                this->transformSound, 0);
+            g_SoundPlayer.PlaySoundByIdx(
+                static_cast<SoundIdx>(this->transformSound), 0);
         break;
 
     case PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_RELATIVE:
@@ -852,8 +843,8 @@ nextRecord:
         break;
 
     case PHOTO_BULLET_TRANSFORM_PLAY_SOUND:
-        g_PhotoBulletSoundPlayer.PlaySoundPositionedByIdx(
-            record->payload.soundIndex, this->position.x);
+        g_SoundPlayer.PlaySoundPositionedByIdx(
+            static_cast<SoundIdx>(record->payload.soundIndex), this->position.x);
         ++this->transformIndex;
         goto nextRecord;
 
@@ -937,8 +928,9 @@ doneSpawning:
     if ((descriptor->transformFlags &
          PHOTO_BULLET_TRANSFORM_PLAY_SPAWN_SOUND) != 0)
     {
-        g_PhotoBulletSoundPlayer.PlaySoundPositionedByIdx(
-            descriptor->spawnSound, descriptor->position.x);
+        g_SoundPlayer.PlaySoundPositionedByIdx(
+            static_cast<SoundIdx>(descriptor->spawnSound),
+            descriptor->position.x);
     }
     return 0;
 }
@@ -1057,7 +1049,8 @@ void PhotoBulletView::UpdateRelativeDirectionChange()
         this->exStates[3].directionChangeIntervalFrames)
     {
         if (this->transformSound >= 0)
-            g_PhotoBulletSoundPlayer.PlaySoundByIdx(this->transformSound, 0);
+            g_SoundPlayer.PlaySoundByIdx(
+                static_cast<SoundIdx>(this->transformSound), 0);
         this->exStates[3].directionChangesCompleted += 1;
         if (this->exStates[3].directionChangesCompleted >=
             this->exStates[3].directionChangeRepeatCount)
@@ -1093,7 +1086,8 @@ void PhotoBulletView::UpdateAbsoluteDirectionChange()
         this->exStates[3].directionChangeIntervalFrames)
     {
         if (this->transformSound >= 0)
-            g_PhotoBulletSoundPlayer.PlaySoundByIdx(this->transformSound, 0);
+            g_SoundPlayer.PlaySoundByIdx(
+                static_cast<SoundIdx>(this->transformSound), 0);
         this->exStates[3].directionChangesCompleted += 1;
         if (this->exStates[3].directionChangesCompleted >=
             this->exStates[3].directionChangeRepeatCount)
@@ -1130,7 +1124,8 @@ void PhotoBulletView::UpdateAimedDirectionChange()
         this->exStates[3].directionChangeIntervalFrames)
     {
         if (this->transformSound >= 0)
-            g_PhotoBulletSoundPlayer.PlaySoundByIdx(this->transformSound, 0);
+            g_SoundPlayer.PlaySoundByIdx(
+                static_cast<SoundIdx>(this->transformSound), 0);
         this->exStates[3].directionChangesCompleted += 1;
         if (this->exStates[3].directionChangesCompleted >=
             this->exStates[3].directionChangeRepeatCount)
@@ -1174,7 +1169,8 @@ void PhotoBulletView::UpdateBoundaryBounce()
     if (PhotoBulletIsOutsidePlayfield(&this->position, 0.0f, 0.0f))
     {
         if (this->transformSound >= 0)
-            g_PhotoBulletSoundPlayer.PlaySoundByIdx(this->transformSound, 0);
+            g_SoundPlayer.PlaySoundByIdx(
+                static_cast<SoundIdx>(this->transformSound), 0);
 
         if (this->position.x < -192.0f || this->position.x >= 192.0f)
         {
@@ -1287,7 +1283,7 @@ PhotoBulletView *PhotoBulletManagerView::CapturePhotoTargets(
     }
 
     if (g_PhotoBulletGlobalState->suppressesPhotoSound == 0)
-        g_PhotoBulletSoundPlayer.PlaySoundByIdx(0x0f, 0);
+        g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x0f), 0);
     return captureFirst;
 }
 
@@ -1352,7 +1348,8 @@ i32 PhotoBulletManagerView::ClearCapturedBullets()
 
         PhotoBulletCapturedDeactivatePhase(bullet);
         captureVm = g_AnmManager->GetVm(
-            this->anmSpawner->CreateVm(0x126, &bullet->position));
+            this->anmSpawner->CreateVmAtWorld(
+                0x126, reinterpret_cast<Float3 *>(&bullet->position)));
         if (bullet->vm.loadedSprite != NULL)
         {
             if (bullet->vm.loadedSprite->widthPx <= 16.0f)
