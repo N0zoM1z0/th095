@@ -68,6 +68,8 @@ struct PhotoGameStageStateView
 };
 
 extern PhotoGameStageStateView *g_PhotoStageStateForPlayer;
+#define g_PhotoStageStateForPlayer \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameStageStateView, g_RuntimeStageStateOwner)
 
 struct PhotoPlayerMovementConfigView
 {

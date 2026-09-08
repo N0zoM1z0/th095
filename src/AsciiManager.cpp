@@ -54,6 +54,8 @@ extern AsciiGlobalStateView *g_AsciiGlobalState;
 extern AsciiStageStateView *g_AsciiStageState;
 
 #ifndef DIFFBUILD
+#define g_AsciiStageState \
+    TH095_RUNTIME_GLOBAL_PTR(AsciiStageStateView, g_RuntimeStageStateOwner)
 #define g_AsciiGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(AsciiGlobalStateView, g_RuntimeGameTaskOwner)
 #endif

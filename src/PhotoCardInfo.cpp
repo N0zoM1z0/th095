@@ -74,6 +74,8 @@ extern PhotoCardGameTaskView *g_PhotoCardGameTask;
 extern u32 g_PhotoScreenFadeColor;
 
 #ifndef DIFFBUILD
+#define g_PhotoCardStageState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoCardStageStateView, g_RuntimeStageStateOwner)
 #define g_PhotoCardGameRuntime \
     TH095_RUNTIME_GLOBAL_PTR(PhotoCardGameRuntimeView, g_RuntimePlayerOwner)
 #define g_PhotoCardGameTask \

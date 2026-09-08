@@ -35,6 +35,13 @@
     TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeEnemyManagerOwner)
 #endif
 
+#ifdef DIFFBUILD
+#define TH095_ECL_STAGE_STATE EclRunHigh::g_Th095StageState
+#else
+#define TH095_ECL_STAGE_STATE \
+    TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeStageStateOwner)
+#endif
+
 #ifdef TH095_MATCH_EXACT
 #define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
 #define ZUN_ERROR TH095_LEGACY_ZUN_ERROR

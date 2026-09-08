@@ -152,6 +152,10 @@ extern PhotoGlobalStateView *g_PhotoGlobalState;
     TH095_RUNTIME_GLOBAL_PTR(PhotoRuntimeView, g_RuntimeEnemyManagerOwner)
 #endif
 extern PhotoStageStateView *g_PhotoStageState;
+#ifndef DIFFBUILD
+#define g_PhotoStageState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
+#endif
 extern PhotoStageControllerView *g_PhotoStageController;
 extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;

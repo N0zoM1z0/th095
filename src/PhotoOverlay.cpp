@@ -120,6 +120,8 @@ typedef char PhotoOverlayDrawAt2572C[
     (offsetof(PhotoOverlayManagerView, drawChain) == 0x2572c) ? 1 : -1];
 
 extern PhotoStageStateView *g_PhotoStageState;
+#define g_PhotoStageState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
 
 // FUNCTION: TH095 0x0042A8A0.
 PhotoOverlayManagerView::PhotoOverlayManagerView()

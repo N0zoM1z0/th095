@@ -2,6 +2,7 @@
 #include "ScoreDataExact.inl"
 #else
 #include "ScoreData.hpp"
+#include "GameplayGlobals.hpp"
 
 #include "Checksum.hpp"
 #include "FileSystem.hpp"
@@ -28,6 +29,8 @@ struct ScorePhotoStageView
 };
 
 extern ScorePhotoStageView *g_ScorePhotoStage;
+#define g_ScorePhotoStage \
+    TH095_RUNTIME_GLOBAL_PTR(ScorePhotoStageView, g_RuntimeStageStateOwner)
 
 struct ScoreWriteLocals
 {

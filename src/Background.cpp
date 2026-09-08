@@ -322,6 +322,8 @@ extern BackgroundStageStateView *g_BackgroundStageState;
 extern BackgroundRuntimeView *g_BackgroundRuntime;
 extern BackgroundGlobalStateView *g_PhotoGlobalState;
 #ifndef DIFFBUILD
+#define g_BackgroundStageState \
+    TH095_RUNTIME_GLOBAL_PTR(BackgroundStageStateView, g_RuntimeStageStateOwner)
 #define g_BackgroundRuntime \
     TH095_RUNTIME_GLOBAL_PTR(BackgroundRuntimeView, g_RuntimeEnemyManagerOwner)
 #endif

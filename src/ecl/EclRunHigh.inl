@@ -976,7 +976,7 @@ enter_subroutine:
         break;
     }
     case 149:
-        *reinterpret_cast<f32 *>(g_Th095StageState + 0x25718) =
+        *reinterpret_cast<f32 *>(TH095_ECL_STAGE_STATE + 0x25718) =
             TH08_ECL_READ_F(ctx, 0);
         break;
     case 150:

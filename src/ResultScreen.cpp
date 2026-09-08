@@ -138,6 +138,8 @@ extern ResultPhotoDataView *g_ResultPhotoData;
 extern ResultPhotoControllerView *g_ResultPhotoController;
 
 #ifndef DIFFBUILD
+#define g_ResultPhotoData \
+    TH095_RUNTIME_GLOBAL_PTR(ResultPhotoDataView, g_RuntimeStageStateOwner)
 #define g_ResultPhotoController \
     TH095_RUNTIME_GLOBAL_PTR(ResultPhotoControllerView, g_RuntimePlayerOwner)
 #endif

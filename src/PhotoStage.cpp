@@ -304,6 +304,8 @@ extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
 #endif
 extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
 extern PhotoStageStateView *g_PhotoStageState;
+#define g_PhotoStageState \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
 extern u8 g_PhotoCaptureCountdown;
 
 void __fastcall SpawnPhotoStageEffect(

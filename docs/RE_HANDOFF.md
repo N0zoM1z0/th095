@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 209 unique unresolved decorated symbols across 223 diagnostics:
-100 data and 109 callable/runtime. Of those names, 206 map through canonical
-relocations to 149 target addresses; three currently lack target-address
+now fails with 199 unique unresolved decorated symbols across 211 diagnostics:
+90 data and 109 callable/runtime. Of those names, 196 map through canonical
+relocations to 148 target addresses; three currently lack target-address
 evidence and four decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -138,6 +138,16 @@ unresolved names and 238 -> 223 diagnostics. All directly affected canonical
 sources were cold-replayed: 157/157 units are exact; the only manifest refresh
 was 27 compiler-private labels whose offset/type/solved destinations were
 unchanged.
+
+The `0x004C4E6C` stage/photo-state family is closed. Fresh report data had ten
+unresolved views at the same slot. Hash-attested Ghidra shows the exact
+PhotoInf/overlay constructor `0x0042A8A0` publishing `this` at `0x0042A921`,
+and destructor `0x0042AAF0` clearing the slot at `0x0042AB5D` before destroying
+its display VMs and photo slots. Production ASCII/background/card/front/camera/
+stage/result/score/task and ECL stage-state views now share
+`g_RuntimeStageStateOwner`. The cold link moves 209 -> 199 unique unresolved
+names and 223 -> 211 diagnostics. All 144 directly affected canonical units
+replay exact with no relocation-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

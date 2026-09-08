@@ -101,9 +101,15 @@ publishes/clears the slot at `0x00414C4C` / `0x00415658` from the exact
 changed 222 -> 209 unique unresolved (238 -> 223 diagnostics), and all 157
 directly affected exact units replayed canonical exact.
 
+Closed 2026-09-09: `0x004C4E6C` (stage/photo state). Ten production proxy
+views now share `g_RuntimeStageStateOwner`; Ghidra-attested lifecycle publishes
+at `0x0042A921` from constructor `0x0042A8A0` and clears at `0x0042AB5D` from
+destructor `0x0042AAF0`. Fresh whole-build count changed 209 -> 199 unique
+unresolved (223 -> 211 diagnostics), and all 144 directly affected exact units
+replayed canonical exact.
+
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
-| `0x004C4E6C` | stage state | ASCII/background/card/front/game/task/stage/score/result stage views and `g_Th095StageState` |
 | `0x004BDD98` | bullet manager | enemy-shot, ECL, photo-item, photo-enemy, photo-stage, reset-target, and task views |
 | `0x004C45E0` | effect/stage-controller slot | photo-effect manager, stage controller/effect/reset views, and ECL high views |
 | `0x004C45DC` | item-manager slot | `g_ItemManager`, `g_PhotoItemManager`, and the photo-capture particle-spawner view |
