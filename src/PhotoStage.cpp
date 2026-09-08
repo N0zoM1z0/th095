@@ -158,6 +158,9 @@ struct PhotoStageRuntimeView
     char comment[1];
 };
 
+struct PhotoCardInfoView;
+extern PhotoCardInfoView *g_PhotoCardInfo;
+
 struct PhotoStageEffectManagerView
 {
     i32 CommitCapturedObjects();
@@ -301,6 +304,8 @@ extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoStageGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageGlobalStateView, g_RuntimeGameTaskOwner)
+#define g_PhotoStageRuntime \
+    (reinterpret_cast<PhotoStageRuntimeView *>(g_PhotoCardInfo))
 #define g_PhotoStageSupervisor \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageSupervisorView, g_RuntimeBackgroundManagerOwner)
 #define g_PhotoStageEffectManager \

@@ -66,6 +66,9 @@ typedef char PhotoCardInfoChainsAt60[
      offsetof(PhotoCardInfoView, drawChain) == 0x64) ? 1 : -1];
 
 extern PhotoCardInfoView *g_PhotoCardInfo;
+#ifndef DIFFBUILD
+PhotoCardInfoView *g_PhotoCardInfo = NULL;
+#endif
 extern AnmLoaded *g_PhotoCardBackgroundAnm;
 extern AnmLoaded *g_PhotoCardUiAnm;
 extern PhotoCardStageStateView *g_PhotoCardStageState;

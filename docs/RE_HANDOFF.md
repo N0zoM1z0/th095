@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 172 unique unresolved decorated symbols across 181 diagnostics:
-64 data and 108 callable/runtime. Of those names, 169 map through canonical
-relocations to 140 target addresses; three currently lack target-address
+now fails with 170 unique unresolved decorated symbols across 178 diagnostics:
+62 data and 108 callable/runtime. Of those names, 167 map through canonical
+relocations to 139 target addresses; three currently lack target-address
 evidence and three decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -238,6 +238,17 @@ DIFFBUILD keeps the target-facing proxy relocations. The cold link moves
 174 -> 172 unique unresolved names and 183 -> 181 diagnostics; `0x004CA1B8` is
 absent from the fresh unresolved target set. The two affected ECL sources replay
 23/23 exact units with no label refresh.
+
+The `0x004BDD9C` CardInf pointer family is closed with the real named global, not
+a bridge slot. Hash-attested Ghidra shows `PhotoCardInfoView::PhotoCardInfoView @
+0x00408610` clearing the 0x68-byte object and publishing `this` at `0x0040865C`;
+`~PhotoCardInfoView @ 0x00408760` cuts both Chain entries, retires its two ANM
+VMs, and clears the pointer at `0x004087BA`. Production now defines one
+`g_PhotoCardInfo`; PhotoStage's local runtime view reads `comment @ +0x20`, the
+same offset as the canonical CardInf text buffer. The cold link moves 172 -> 170
+unique unresolved names and 181 -> 178 diagnostics; `0x004BDD9C` disappears
+from the unresolved target set. PhotoCardInfo, PhotoStage, and PhotoGameTask
+replay 26/26 exact units with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
