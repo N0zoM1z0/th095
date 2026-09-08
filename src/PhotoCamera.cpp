@@ -1,9 +1,27 @@
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_SOUNDPLAYER_AS_STRUCT
+#endif
 #include "PhotoCamera.hpp"
 #include "GameplayGlobals.hpp"
 #include "SoundPlayer.hpp"
+#ifdef TH095_MATCH_EXACT
+#undef TH095_MATCH_SOUNDPLAYER_AS_STRUCT
+#endif
 
 namespace th095
 {
+
+#ifdef TH095_MATCH_EXACT
+struct PhotoAnmVmIdValue
+{
+    i32 value;
+
+    PhotoAnmVmIdValue(i32 value)
+    {
+        this->value = value;
+    }
+};
+#endif
 
 struct PhotoEnemyView
 {
@@ -107,6 +125,25 @@ static inline PhotoAnmManagerView *PhotoAnmManager()
     return reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager);
 }
 
+#ifdef TH095_MATCH_EXACT
+struct PhotoSoundPlayerView
+{
+    void PlaySoundByIdx(i32 idx, i32 pan);
+    void PlaySoundPositionedByIdx(i32 idx, f32 pan);
+    void StopSoundByIdx(i32 idx);
+};
+
+static inline PhotoSoundPlayerView *PhotoSoundPlayer()
+{
+    return reinterpret_cast<PhotoSoundPlayerView *>(&g_SoundPlayer);
+}
+#else
+static inline SoundPlayer *PhotoSoundPlayer()
+{
+    return &g_SoundPlayer;
+}
+#endif
+
 extern PhotoGameStateView *g_PhotoGame;
 extern PhotoRuntimeView *g_PhotoRuntime;
 extern PhotoGlobalStateView *g_PhotoGlobalState;
@@ -116,6 +153,8 @@ extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;
 
 #ifndef DIFFBUILD
+#define g_PhotoGame \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, g_RuntimeGameTaskOwner)
 #endif
@@ -264,7 +303,7 @@ void PhotoCameraState::BeginCapture()
     }
     if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
     {
-        g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x2c), 0);
+        PhotoSoundPlayer()->PlaySoundByIdx(static_cast<SoundIdx>(0x2c), 0);
     }
 }
 
@@ -475,10 +514,10 @@ u32 PhotoCameraState::TakePhoto()
     }
     g_AnmGameSpeed = 1.0f;
     this->modeTimer = 0;
-    g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2c));
+    PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2c));
     if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
     {
-        g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x29), 0);
+        PhotoSoundPlayer()->PlaySoundByIdx(static_cast<SoundIdx>(0x29), 0);
     }
     return this->flags & PHOTO_FLAG_ALTERNATE_CAPTURE;
 }
@@ -502,7 +541,7 @@ void PhotoCameraState::CancelCapture()
     this->mode = PHOTO_CAMERA_CAPTURED;
     g_AnmGameSpeed = 1.0f;
     this->modeTimer = 0;
-    g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2c));
+    PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2c));
 }
 
 struct PhotoScoreCameraFlagBits
@@ -883,7 +922,7 @@ void PhotoCameraState::UpdateCharge()
                     this->flags |= PHOTO_FLAG_FOCUSED;
                     if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
                     {
-                        g_SoundPlayer.PlaySoundByIdx(
+                        PhotoSoundPlayer()->PlaySoundByIdx(
                             static_cast<SoundIdx>(0x2a), 0);
                     }
                     locals.timer = &this->chargeTimer;
@@ -929,14 +968,19 @@ normalCharge:
     {
         if (((g_PhotoGlobalState->flags >> 9) & 1) != 0)
         {
-            g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2a));
+            PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2a));
         }
         if (this->unknownbb8 > 60 ||
             PhotoTimerAdvancedOnEvenFrame(&this->auxiliaryTimer))
         {
+#ifdef TH095_MATCH_EXACT
+            g_PhotoBulletManager->anmSpawner->SpawnInto(
+                &locals.effect, 0x124, &g_PhotoGame->playerPosition);
+#else
             locals.effect =
                 g_PhotoBulletManager->anmSpawner->CreateVmAtWorld(
                     0x124, &g_PhotoGame->playerPosition);
+#endif
         }
         this->unknownbb8++;
         this->flags |= PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
@@ -946,7 +990,7 @@ normalCharge:
         {
             this->flags &= ~PHOTO_FLAG_FOCUSED;
             this->unknownbb8 = 0;
-            g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2a));
+            PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2a));
             goto normalCharge;
         }
 
@@ -962,7 +1006,7 @@ focusedCharge:
                 this->charge = 1.0f;
                 this->flags &= ~PHOTO_FLAG_FOCUSED;
                 this->unknownbb8 = 0;
-                g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2a));
+                PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2a));
                 goto normalCharge;
             }
             return;
@@ -1015,6 +1059,13 @@ f32 __fastcall PhotoDistance2D(const Float3 *left, const Float3 *right)
         (left->y - right->y) * (left->y - right->y));
 }
 
+#ifdef TH095_MATCH_EXACT
+__forceinline i32 PhotoAnmVmId::operator==(PhotoAnmVmIdValue other) const
+{
+    return this->value == other.value;
+}
+#endif
+
 static inline i32 PhotoTimerAdvancedTo(ZunTimer *timer, i32 frame)
 {
     return timer->current != timer->previous && timer->current == frame;
@@ -1051,7 +1102,11 @@ static __forceinline void PhotoCameraModeTimerResetPhase(ZunTimer *timer)
 
 static __forceinline i32 PhotoCameraVmIdIsZero(const PhotoAnmVmId *vm)
 {
+#ifdef TH095_MATCH_EXACT
+    return *vm == PhotoAnmVmIdValue(0);
+#else
     return *vm == 0;
+#endif
 }
 
 static __forceinline void PhotoCameraClearVmId(PhotoAnmVmId *vm)
@@ -1201,7 +1256,7 @@ updateCharge:
                 {
                     if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
                     {
-                        g_SoundPlayer.PlaySoundByIdx(
+                        PhotoSoundPlayer()->PlaySoundByIdx(
                             static_cast<SoundIdx>(0x2b), 0);
                     }
                     if (camera->vmIds[10])
@@ -1307,7 +1362,7 @@ updateCharge:
         }
         if (((g_PhotoGlobalState->flags >> 9) & 1) != 0)
         {
-            g_SoundPlayer.StopSoundByIdx(static_cast<SoundIdx>(0x2c));
+            PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2c));
         }
 
 cameraActive:
@@ -1328,7 +1383,7 @@ cameraActive:
                 if (((camera->flags >> 6) & 1) == 0)
                 {
                     if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
-                        g_SoundPlayer.PlaySoundByIdx(
+                        PhotoSoundPlayer()->PlaySoundByIdx(
                             static_cast<SoundIdx>(0x2e), 0);
                     camera->flags |= PHOTO_FLAG_TARGET_SOUND_PLAYED;
                 }
@@ -1405,7 +1460,7 @@ cameraActive:
             {
                 if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
                 {
-                    g_SoundPlayer.PlaySoundPositionedByIdx(
+                    PhotoSoundPlayer()->PlaySoundPositionedByIdx(
                         static_cast<SoundIdx>(0x21),
                         camera->viewfinderPosition.x);
                 }
@@ -1419,7 +1474,7 @@ cameraActive:
             {
                 if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
                 {
-                    g_SoundPlayer.PlaySoundPositionedByIdx(
+                    PhotoSoundPlayer()->PlaySoundPositionedByIdx(
                         static_cast<SoundIdx>(0x25),
                         camera->viewfinderPosition.x);
                 }

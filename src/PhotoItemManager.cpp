@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "PhotoItemManagerExact.inl"
+#else
 #include "PhotoItemManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "SoundPlayer.hpp"
@@ -50,6 +53,8 @@ extern ItemPhotoGameView *g_PhotoGame;
 extern ItemGlobalStateView *g_PhotoGlobalState;
 
 #ifndef DIFFBUILD
+#define g_PhotoGame \
+    TH095_RUNTIME_GLOBAL_PTR(ItemPhotoGameView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(ItemGlobalStateView, g_RuntimeGameTaskOwner)
 #endif
@@ -328,3 +333,5 @@ finished:
 #undef item
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

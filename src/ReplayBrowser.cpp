@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "ReplayBrowserExact.inl"
+#else
 #include "ReplayBrowser.hpp"
 #include "FrontEndGlobals.hpp"
 #include "SoundPlayer.hpp"
@@ -269,3 +272,5 @@ finish:
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

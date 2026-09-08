@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "ReplayBrowserExact.hpp"
+#else
 #ifndef TH095_REPLAY_BROWSER_HPP
 #define TH095_REPLAY_BROWSER_HPP
 
@@ -63,3 +66,5 @@ void __fastcall LoadReplayBrowserEntries(void *unused);
 } // namespace th095
 
 #endif
+
+#endif // TH095_MATCH_EXACT

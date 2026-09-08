@@ -16,6 +16,12 @@
 
 namespace th095
 {
+
+#ifdef TH095_MATCH_EXACT
+typedef ::ZunResult SoundPlayerResult;
+#else
+typedef ZunResult SoundPlayerResult;
+#endif
 enum SoundIdx
 {
     NO_SOUND = -1,
@@ -107,20 +113,24 @@ enum SoundPlayerCommandOpcode
 #define SFX_QUEUE_LENGTH 12
 #define BGM_QUEUE_LENGTH 31
 
+#if defined(TH095_MATCH_EXACT) && defined(TH095_MATCH_SOUNDPLAYER_AS_STRUCT)
+struct SoundPlayer
+#else
 class SoundPlayer
+#endif
 {
   public:
     SoundPlayer();
 
-    ZunResult Initialize(HWND window);
-    ZunResult RequestThreadStop();
-    ZunResult JoinThread();
-    ZunResult InitializeDSound(HWND window);
-    ZunResult InitSoundBuffers();
-    ZunResult Release();
+    SoundPlayerResult Initialize(HWND window);
+    SoundPlayerResult RequestThreadStop();
+    SoundPlayerResult JoinThread();
+    SoundPlayerResult InitializeDSound(HWND window);
+    SoundPlayerResult InitSoundBuffers();
+    SoundPlayerResult Release();
 
-    ZunResult LoadSound(i32 idx, char *path);
-    ZunResult LoadSoundData(i32 idx, char *path);
+    SoundPlayerResult LoadSound(i32 idx, char *path);
+    SoundPlayerResult LoadSoundData(i32 idx, char *path);
     static WAVEFORMATEX *GetWavFormatData(u8 *soundData, char *formatString, i32 *formatSize,
                                           u32 fileSizeExcludingFormat);
 
@@ -129,10 +139,10 @@ class SoundPlayer
     void PlaySoundByIdx(SoundIdx idx, i32 pan);
     void PlaySoundPositionedByIdx(SoundIdx idx, f32 pan);
     void StopSoundByIdx(SoundIdx idx);
-    ZunResult StartBGM(char *path);
-    ZunResult ReopenBGM(char *path);
-    ZunResult PreloadBGM(i32 idx, char *path);
-    ZunResult LoadBGM(i32 idx);
+    SoundPlayerResult StartBGM(char *path);
+    SoundPlayerResult ReopenBGM(char *path);
+    SoundPlayerResult PreloadBGM(i32 idx, char *path);
+    SoundPlayerResult LoadBGM(i32 idx);
     void FreePreloadedBGM(i32 idx);
     void StopBGM();
     void FadeOut(f32 seconds)
@@ -182,7 +192,7 @@ class SoundPlayer
     static DWORD WINAPI BGMPlayerThread(LPVOID lpThreadParameter);
 
     i32 GetFmtIndexByName(char *name);
-    ZunResult LoadFmt(char *path);
+    SoundPlayerResult LoadFmt(char *path);
 
     LPDIRECTSOUND dsoundHdl;
     i32 unconsumedDword04;

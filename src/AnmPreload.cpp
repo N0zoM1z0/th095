@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_FILESYSTEM_AS_CLASS
+#endif
 #include "AnmManager.hpp"
 
 #include <stdlib.h>
@@ -46,6 +49,51 @@ struct AnmTextureHeaderView
     u16 serializedReserved00e;
 };
 
+#ifdef TH095_MATCH_EXACT
+// Exact units predate production canonicalization of this TU onto AnmManager.
+// Preserve their target-facing receiver identity and the target-proven +0x2c
+// preload-slot layout while production uses the real shared AnmManager class.
+struct AnmPreloadSlotView
+{
+    AnmLoaded loaded;
+    i32 releasePending;
+    u8 path[0x100];
+};
+
+struct AnmManagerPreloadView
+{
+    u8 unknown000[0x2c];
+    AnmPreloadSlotView slots[13];
+
+    AnmLoaded *PostloadAnmEntry(AnmLoaded *anm);
+    i32 LoadTextureData(AnmLoaded *anm, i32 entryNumber, i32 spriteCount,
+                        i32 scriptCount, AnmRawEntryView *rawEntry);
+    i32 CreateTextureFromFile(AnmTextureEntryView *entry, i32 format,
+                              i32 colorKey);
+    i32 CreateTextureFromAnm(IDirect3DTexture8 **outTexture,
+                             void *textureData, i32 format);
+    i32 CreateEmptyTexture(IDirect3DTexture8 **outTexture, i32 width,
+                           i32 height, i32 format);
+    void ApplyTextureAlphaBleed(AnmTextureEntryView *entry);
+    AnmLoaded *LoadAnm(i32 anmIdx, const char *filename);
+    AnmLoaded *ReadAnmEntries(i32 anmIdx, const char *filename);
+    AnmLoaded *PreloadAnm(i32 anmIdx, const char *filename);
+    i32 LoadExternalTextureData(AnmLoaded *anm, i32 entryNumber,
+                                i32 *sprites, i32 *scripts,
+                                AnmRawEntryView *rawEntry);
+    void ReleaseAnm(i32 anmIdx);
+    void ReleaseAnmEntry(AnmTextureEntryView *entry);
+    void MarkVmsForDeletion(AnmLoaded *anm);
+    ZunResult ServicePreloadedAnims();
+};
+
+typedef char AnmPreloadSlotViewSizeIs120[
+    (sizeof(AnmPreloadSlotView) == 0x120) ? 1 : -1];
+#define TH095_ANM_PRELOAD_RECEIVER AnmManagerPreloadView
+#else
+#define TH095_ANM_PRELOAD_RECEIVER AnmManager
+#endif
+
 class AnmPreloadMemoryView
 {
   public:
@@ -70,7 +118,7 @@ typedef char AnmRawEntryViewSizeIs40[(sizeof(AnmRawEntryView) == 0x40) ? 1 : -1]
 typedef char AnmTextureHeaderViewSizeIs10[(sizeof(AnmTextureHeaderView) == 0x10) ? 1 : -1];
 
 // FUNCTION: TH095 0x00442E10.
-i32 AnmManager::CreateTextureFromFile(
+i32 TH095_ANM_PRELOAD_RECEIVER::CreateTextureFromFile(
     AnmTextureEntryView *entry, i32 format, i32 colorKey)
 {
     format = GetAnmFormat(format);
@@ -89,7 +137,7 @@ i32 AnmManager::CreateTextureFromFile(
 }
 
 // FUNCTION: TH095 0x00442E90.
-i32 AnmManager::CreateTextureFromAnm(
+i32 TH095_ANM_PRELOAD_RECEIVER::CreateTextureFromAnm(
     IDirect3DTexture8 **outTexture, void *textureData, i32 format)
 {
     IDirect3DSurface8 *textureSurfaceLevel;
@@ -139,7 +187,7 @@ error:
 }
 
 // FUNCTION: TH095 0x00442FC0.
-i32 AnmManager::CreateEmptyTexture(
+i32 TH095_ANM_PRELOAD_RECEIVER::CreateEmptyTexture(
     IDirect3DTexture8 **outTexture, i32 width, i32 height, i32 format)
 {
     D3DXCreateTexture(
@@ -151,7 +199,7 @@ i32 AnmManager::CreateEmptyTexture(
 }
 
 // FUNCTION: TH095 0x00443010.
-AnmLoaded *AnmManager::LoadAnm(i32 anmIdx, const char *filename)
+AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::LoadAnm(i32 anmIdx, const char *filename)
 {
     utils::DebugPrint("::loadAnim : %s\n", filename);
     AnmLoaded *anm = this->ReadAnmEntries(anmIdx, filename);
@@ -167,7 +215,7 @@ AnmLoaded *AnmManager::LoadAnm(i32 anmIdx, const char *filename)
 }
 
 // FUNCTION: TH095 0x00443070.
-AnmLoaded *AnmManager::ReadAnmEntries(
+AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::ReadAnmEntries(
     i32 anmIdx, const char *filename)
 {
     struct ReadAnmState
@@ -266,7 +314,7 @@ AnmLoaded *AnmManager::ReadAnmEntries(
 }
 
 // FUNCTION: TH095 0x004432E0.
-AnmLoaded *AnmManager::PreloadAnm(
+AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::PreloadAnm(
     i32 anmIdx, const char *filename)
 {
     struct PreloadState
@@ -299,7 +347,7 @@ AnmLoaded *AnmManager::PreloadAnm(
 }
 
 // FUNCTION: TH095 0x004433A0.
-i32 AnmManager::LoadExternalTextureData(
+i32 TH095_ANM_PRELOAD_RECEIVER::LoadExternalTextureData(
     AnmLoaded *anm, i32 entryNumber, i32 *, i32 *,
     AnmRawEntryView *rawEntry)
 {
@@ -366,7 +414,7 @@ i32 AnmManager::LoadExternalTextureData(
 }
 
 // FUNCTION: TH095 0x004435A0.
-i32 AnmManager::LoadTextureData(
+i32 TH095_ANM_PRELOAD_RECEIVER::LoadTextureData(
     AnmLoaded *anm, i32 entryNumber, i32 currentSpriteNumber,
     i32 currentScriptNumber, AnmRawEntryView *rawEntry)
 {
@@ -498,7 +546,7 @@ i32 AnmManager::LoadTextureData(
 }
 
 // FUNCTION: TH095 0x00443480.
-AnmLoaded *AnmManager::PostloadAnmEntry(AnmLoaded *anm)
+AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::PostloadAnmEntry(AnmLoaded *anm)
 {
     struct PostloadState
     {
@@ -554,7 +602,7 @@ AnmLoaded *AnmManager::PostloadAnmEntry(AnmLoaded *anm)
 }
 
 // FUNCTION: TH095 0x004438E0.
-ZunResult AnmManager::ServicePreloadedAnims()
+ZunResult TH095_ANM_PRELOAD_RECEIVER::ServicePreloadedAnims()
 {
     u32 i;
 
@@ -576,7 +624,7 @@ ZunResult AnmManager::ServicePreloadedAnims()
 }
 
 // FUNCTION: TH095 0x00443980.
-void AnmManager::ReleaseAnm(i32 anmIdx)
+void TH095_ANM_PRELOAD_RECEIVER::ReleaseAnm(i32 anmIdx)
 {
     i32 i;
 
@@ -602,7 +650,7 @@ void AnmManager::ReleaseAnm(i32 anmIdx)
 }
 
 // FUNCTION: TH095 0x00443AC0.
-void AnmManager::ReleaseAnmEntry(AnmTextureEntryView *entry)
+void TH095_ANM_PRELOAD_RECEIVER::ReleaseAnmEntry(AnmTextureEntryView *entry)
 {
     if (entry->texture != NULL)
     {

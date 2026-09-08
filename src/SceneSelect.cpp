@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "SceneSelectExact.inl"
+#else
 #include "SceneSelect.hpp"
 
 namespace th095
@@ -98,3 +101,5 @@ i32 ResultSaveDataView::GetSceneGroupUnlockScore(i32 group)
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

@@ -10,10 +10,22 @@
 namespace th095
 {
 
+#ifdef TH095_MATCH_EXACT
+extern u8 g_ControllerButtons;
+extern LPDIRECTINPUTDEVICE8A g_ControllerDevices;
+extern u32 g_ControllerRuntimeFlags;
+extern JOYCAPSA g_JoystickCaps;
+extern i16 g_ControllerPadXAxis;
+extern i16 g_ControllerPadYAxis;
+extern i32 g_ControllerInputEnabled;
+extern LPDIRECTINPUTDEVICE8A g_KeyboardDevice;
+extern u8 g_ControllerAssignments;
+#else
 DIFFABLE_EXTERN(i32, g_ControllerInputEnabled);
 DIFFABLE_EXTERN_ARRAY(u8, 128, g_ControllerButtons);
 DIFFABLE_EXTERN_ARRAY(JOYCAPSA, 2, g_JoystickCaps);
 DIFFABLE_EXTERN_ARRAY(u8, 2, g_ControllerAssignments);
+#endif
 
 struct ControllerInputSlotView
 {
@@ -29,7 +41,11 @@ struct ControllerInputSlotView
     ControllerButtonMapping mappings[3];
 };
 
+#ifdef TH095_MATCH_EXACT
+extern ControllerInputSlotView g_ControllerInputSlots;
+#else
 DIFFABLE_EXTERN_ARRAY(ControllerInputSlotView, 3, g_ControllerInputSlots);
+#endif
 
 namespace Controller
 {

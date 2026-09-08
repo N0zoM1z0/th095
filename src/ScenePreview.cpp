@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "ScenePreviewExact.inl"
+#else
 #include "SceneSelect.hpp"
 
 #include <string.h>
@@ -89,3 +92,5 @@ ZunResult ResultSaveDataView::LoadScenePreviewTexture(
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

@@ -47,8 +47,13 @@
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bc8) =
             TH08_ECL_READ_I(ctx, 0);
         if (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bc8) != 0)
+#ifdef TH095_MATCH_EXACT
+            InitializeEclTargetTimerExact(reinterpret_cast<ZunTimer *>(
+                reinterpret_cast<u8 *>(enemy) + 0x2bcc));
+#else
             reinterpret_cast<ZunTimer *>(
                 reinterpret_cast<u8 *>(enemy) + 0x2bcc)->Initialize();
+#endif
         break;
 
     case 96:
@@ -186,8 +191,13 @@ enter_subroutine:
             TH08_ECL_READ_I(ctx, 0);
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2ca8) =
             TH08_ECL_READ_I(ctx, 1);
+#ifdef TH095_MATCH_EXACT
+        InitializeEclTargetTimerExact(reinterpret_cast<ZunTimer *>(
+            reinterpret_cast<u8 *>(enemy) + 0x296c));
+#else
         reinterpret_cast<ZunTimer *>(
             reinterpret_cast<u8 *>(enemy) + 0x296c)->Initialize();
+#endif
         break;
     }
 
@@ -329,8 +339,13 @@ enter_subroutine:
     {
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2ca8) =
             *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x285a);
+#ifdef TH095_MATCH_EXACT
+        InitializeEclTargetTimerExact(reinterpret_cast<ZunTimer *>(
+            reinterpret_cast<u8 *>(enemy) + 0x296c));
+#else
         reinterpret_cast<ZunTimer *>(
             reinterpret_cast<u8 *>(enemy) + 0x296c)->Initialize();
+#endif
         break;
     }
 

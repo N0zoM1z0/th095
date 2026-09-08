@@ -88,9 +88,14 @@ assembly as link-closure shortcuts. Do not run concurrent VC7.1 builds.
 Resolve the high-fanout pointer slots first. The names below are examples from
 the current report, not permission to merge solely by spelling.
 
+Closed 2026-09-09: `0x004C4E70` (player/photo-game runtime). Seventeen
+production proxy globals now share `g_RuntimePlayerOwner`; Ghidra-attested
+lifecycle writes/clears are `0x0042EB9C` / `0x0042EEFE`. Fresh whole-build
+count changed 239 -> 222 unique unresolved, and the exact-build separation was
+validated by a complete 696/696 canonical strict replay.
+
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
-| `0x004C4E70` | player/photo-game runtime | ECL operand player views, `g_PhotoBulletPlayer`, `g_PhotoEnemyGame`, `g_PhotoEnemyPlayer`, `g_PhotoFrontRuntime`, the three `g_PhotoGame` view types, `g_PhotoGameRuntime`, `g_ResultPhotoController`, `EclExtended::g_Player`, `EclRunLow::g_Th095Player`, `EclRunHigh::g_Th095PhotoCamera` |
 | `0x004BDDC0` | enemy/runtime manager | ECL operand runtime views, `g_BackgroundRuntime`, `g_ExtendedPhotoEnemyManager`, `g_ExtendedRuntime`, enemy-manager views, `g_PhotoRuntime`, `g_PhotoRuntimeResetTarget`, and `g_Th095Runtime` |
 | `0x004C4E6C` | stage state | ASCII/background/card/front/game/task/stage/score/result stage views and `g_Th095StageState` |
 | `0x004BDD98` | bullet manager | enemy-shot, ECL, photo-item, photo-enemy, photo-stage, reset-target, and task views |

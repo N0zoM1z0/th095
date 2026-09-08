@@ -1,4 +1,10 @@
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_RNG_AS_STRUCT
+#endif
 #include "AnmManager.hpp"
+#ifdef TH095_MATCH_EXACT
+#undef TH095_MATCH_RNG_AS_STRUCT
+#endif
 #include "AnmVmId.hpp"
 #include "PhotoItemManager.hpp"
 #include "SoundPlayer.hpp"
@@ -318,6 +324,17 @@ typedef char PhotoBulletTransformsAt370[
 typedef char PhotoBulletExStatesAt520[
     (offsetof(PhotoBulletView, exStates) == 0x520) ? 1 : -1];
 
+#ifdef DIFFBUILD
+struct PhotoBulletAnmLoadedView : AnmLoaded
+{
+    void InitializeVm(AnmVm *vm, i32 scriptIndex);
+    AnmVmId CreateVm(i32 scriptIndex, PhotoBulletVector *position);
+};
+typedef PhotoBulletAnmLoadedView PhotoBulletAnmSpawnerView;
+#else
+typedef AnmLoaded PhotoBulletAnmSpawnerView;
+#endif
+
 struct PhotoBulletManagerView
 {
     PhotoBulletView *bulletCursor;       // +0x00
@@ -328,7 +345,7 @@ struct PhotoBulletManagerView
     PhotoBulletView bullets[0x641];      // +0x4c
     ChainElem *calcChain;                 // +0x27c5a8
     ChainElem *drawChain;                 // +0x27c5ac
-    AnmLoaded *anmSpawner;                // +0x27c5b0
+    PhotoBulletAnmSpawnerView *anmSpawner; // +0x27c5b0
     i32 activeBulletCount;               // +0x27c5b4
 
     PhotoBulletManagerView();
@@ -389,9 +406,24 @@ struct PhotoBulletPlayerView
         PhotoBulletVector *position, PhotoBulletVector *size);
 };
 
+#ifdef DIFFBUILD
+struct PhotoBulletSoundPlayerView
+{
+    void PlaySoundByIdx(i32 soundIndex, i32 pan);
+    void PlaySoundPositionedByIdx(i32 soundIndex, f32 positionX);
+};
+extern PhotoBulletSoundPlayerView g_PhotoBulletSoundPlayer;
+#define g_SoundPlayer g_PhotoBulletSoundPlayer
+#endif
+
 extern PhotoBulletGlobalStateView *g_PhotoBulletGlobalState;
 extern PhotoBulletPlayerView *g_PhotoBulletPlayer;
 extern PhotoBulletManagerView *g_PhotoBulletManager;
+
+#ifndef DIFFBUILD
+#define g_PhotoBulletPlayer \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletPlayerView, g_RuntimePlayerOwner)
+#endif
 extern i32 g_PhotoBulletScriptBases[];
 extern f32 g_PhotoBulletCollisionSizes[];
 extern i32 g_PhotoBulletDrawBucketIndices[];
@@ -433,7 +465,8 @@ PhotoBulletManagerView::PhotoBulletManagerView()
 // FUNCTION: TH095 0x00404E00.
 i32 PhotoBulletManagerView::Initialize()
 {
-    this->anmSpawner = g_AnmManager->LoadAnm(6, "bullet.anm");
+    this->anmSpawner = reinterpret_cast<PhotoBulletAnmSpawnerView *>(
+        g_AnmManager->LoadAnm(6, "bullet.anm"));
     if (this->anmSpawner == NULL)
     {
         g_GameErrorContext.Log(
@@ -1348,8 +1381,12 @@ i32 PhotoBulletManagerView::ClearCapturedBullets()
 
         PhotoBulletCapturedDeactivatePhase(bullet);
         captureVm = g_AnmManager->GetVm(
+#ifdef DIFFBUILD
+            this->anmSpawner->CreateVm(0x126, &bullet->position));
+#else
             this->anmSpawner->CreateVmAtWorld(
                 0x126, reinterpret_cast<Float3 *>(&bullet->position)));
+#endif
         if (bullet->vm.loadedSprite != NULL)
         {
             if (bullet->vm.loadedSprite->widthPx <= 16.0f)

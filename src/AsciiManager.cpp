@@ -8,6 +8,20 @@
 namespace th095
 {
 
+#ifdef TH095_MATCH_EXACT
+struct AsciiBackgroundSupervisorView
+{
+    void ConfigureBackgroundViewport(i32 index);
+};
+#define TH095_ASCII_CONFIGURE_BACKGROUND(index) \
+    reinterpret_cast<AsciiBackgroundSupervisorView *>(&g_Supervisor) \
+        ->ConfigureBackgroundViewport(index)
+#else
+#define TH095_ASCII_CONFIGURE_BACKGROUND(index) \
+    g_Supervisor.ConfigureBackgroundViewport(index)
+#endif
+
+
 struct AsciiAnmLoadedView : AnmLoaded
 {
     void InitializeAndSetSprite(AnmVm *vm, i32 sprite)
@@ -319,11 +333,11 @@ void AsciiManager::DrawStrings()
             g_AnmManager->FlushVertexBuffer();
             if (asciiDrawIsGui != 0)
             {
-                g_Supervisor.ConfigureBackgroundViewport(0);
+                TH095_ASCII_CONFIGURE_BACKGROUND(0);
             }
             else
             {
-                g_Supervisor.ConfigureBackgroundViewport(1);
+                TH095_ASCII_CONFIGURE_BACKGROUND(1);
             }
         }
 
@@ -353,7 +367,7 @@ void AsciiManager::DrawStrings()
     if (asciiDrawIsGui != 0)
     {
         g_AnmManager->FlushVertexBuffer();
-        g_Supervisor.ConfigureBackgroundViewport(1);
+        TH095_ASCII_CONFIGURE_BACKGROUND(1);
     }
 }
 
@@ -386,11 +400,11 @@ void AsciiManager::DrawGuiStrings()
             g_AnmManager->FlushVertexBuffer();
             if (asciiDrawIsGui != 0)
             {
-                g_Supervisor.ConfigureBackgroundViewport(0);
+                TH095_ASCII_CONFIGURE_BACKGROUND(0);
             }
             else
             {
-                g_Supervisor.ConfigureBackgroundViewport(1);
+                TH095_ASCII_CONFIGURE_BACKGROUND(1);
             }
         }
 
@@ -427,7 +441,7 @@ void AsciiManager::DrawGuiStrings()
     if (asciiDrawIsGui != 0)
     {
         g_AnmManager->FlushVertexBuffer();
-        g_Supervisor.ConfigureBackgroundViewport(1);
+        TH095_ASCII_CONFIGURE_BACKGROUND(1);
     }
 }
 

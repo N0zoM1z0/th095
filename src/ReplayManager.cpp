@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "ReplayManagerExact.inl"
+#else
 #include "ReplayManager.hpp"
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
@@ -12,6 +15,11 @@
 #include <string.h>
 #include <time.h>
 #include <direct.h>
+
+#ifdef TH095_MATCH_EXACT
+#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
+#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
+#endif
 
 namespace th095
 {
@@ -127,7 +135,7 @@ ReplayManager::ReplayManager()
     memset(this, 0, sizeof(ReplayManager));
 }
 
-ZunResult ReplayManager::Initialize(i32 mode, char *path)
+ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
 {
     ReplayInitializeScratch scratch;
 
@@ -196,7 +204,7 @@ ZunResult ReplayManager::Initialize(i32 mode, char *path)
     return ZUN_SUCCESS;
 }
 
-ZunResult ReplayManager::LoadReplay(char *path)
+ReplayManagerResult ReplayManager::LoadReplay(char *path)
 {
     ReplayLoadLocals locals;
 
@@ -249,7 +257,7 @@ ZunResult ReplayManager::LoadReplay(char *path)
     return ZUN_SUCCESS;
 }
 
-ZunResult ReplayManager::WriteReplay(char *path, char *replayName)
+ReplayManagerResult ReplayManager::WriteReplay(char *path, char *replayName)
 {
     i32 userDataAllocationSize;
     ReplayWriteLocals locals;
@@ -555,3 +563,5 @@ ChainCallbackResult ReplayManager::OnDraw(ReplayManager *replayManager)
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

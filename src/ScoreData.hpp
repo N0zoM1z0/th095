@@ -7,6 +7,12 @@
 namespace th095
 {
 
+#ifdef TH095_MATCH_EXACT
+typedef ::ZunResult ScoreDataResult;
+#else
+typedef ZunResult ScoreDataResult;
+#endif
+
 struct ScoreFileHeader
 {
     u32 magic;
@@ -133,8 +139,8 @@ struct ResultSaveDataView
     ~ResultSaveDataView();
     i32 ParseScoreFile();
     void UpdateBestShotRecord(i32 index);
-    ZunResult WriteBestShotData();
-    ZunResult LoadScenePreviewTexture(
+    ScoreDataResult WriteBestShotData();
+    ScoreDataResult LoadScenePreviewTexture(
         struct AnmLoaded *anm, i32 textureIndex, i32 sceneIndex);
     i32 LoadBestShotForScene(i32 group, i32 scene);
     i32 IsSceneGroupUnlocked(i32 group);

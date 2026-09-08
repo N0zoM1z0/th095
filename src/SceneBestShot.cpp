@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "SceneBestShotExact.inl"
+#else
 #include "SceneSelect.hpp"
 
 #include "Checksum.hpp"
@@ -139,3 +142,5 @@ load_failed:
 #undef io
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

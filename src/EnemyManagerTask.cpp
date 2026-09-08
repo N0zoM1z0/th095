@@ -4,6 +4,17 @@
 namespace th095
 {
 
+#ifdef TH095_MATCH_EXACT
+struct PhotoEnemyAnmManagerDrawView
+{
+    ::ZunResult Draw(AnmVm *vm);
+};
+extern PhotoEnemyAnmManagerDrawView *g_PhotoEnemyAnmManager;
+#define TH095_PHOTO_ENEMY_DRAW(vm) g_PhotoEnemyAnmManager->Draw(vm)
+#else
+#define TH095_PHOTO_ENEMY_DRAW(vm) g_AnmManager->Draw(vm)
+#endif
+
 struct PhotoEnemyTaskGlobalStateView
 {
     u8 unknown000[0xfc];
@@ -118,7 +129,7 @@ i32 PhotoEnemyManagerTaskView::DrawGroup(i32 groupIndex)
     while (enemy != NULL)
     {
         PhotoToScreen(&enemy->vm.positionOffset, &enemy->position);
-        g_AnmManager->Draw(&enemy->vm);
+        TH095_PHOTO_ENEMY_DRAW(&enemy->vm);
         enemy = enemy->nextInDrawGroup;
     }
     return 1;

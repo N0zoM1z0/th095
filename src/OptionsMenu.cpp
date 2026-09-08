@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "OptionsMenuExact.inl"
+#else
 #include "OptionsMenu.hpp"
 #include "Controller.hpp"
 #include "SoundPlayer.hpp"
@@ -318,3 +321,5 @@ options_finish:
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

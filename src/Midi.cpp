@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS
+#endif
 #include "inttypes.hpp"
 #include <windows.h>
 #include <mmreg.h>
@@ -7,6 +10,11 @@
 #include "Midi.hpp"
 #include "Supervisor.hpp"
 #include "utils.hpp"
+
+#ifdef TH095_MATCH_EXACT
+#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
+#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
+#endif
 
 namespace th095
 {
@@ -63,7 +71,7 @@ BOOL MidiDevice::OpenDevice(UINT uDeviceId)
 }
 
 // FUNCTION: TH095 0x00421E80; TH08 Midi.cpp is the source-shape oracle.
-ZunResult MidiDevice::Close()
+MidiResult MidiDevice::Close()
 {
     if (handle == NULL)
     {
@@ -216,7 +224,7 @@ MidiOutput::~MidiOutput()
 }
 
 // FUNCTION: TH095 0x004221B0; TH08 Midi.cpp is the source-shape oracle.
-ZunResult MidiOutput::ReadFileData(int idx, LPCSTR path)
+MidiResult MidiOutput::ReadFileData(int idx, LPCSTR path)
 {
     if (this->activeFileIndex == idx)
     {
@@ -256,7 +264,7 @@ void MidiOutput::ClearTracks()
 }
 
 // FUNCTION: TH095 0x00422300; TH08 Midi.cpp provides the source/var-order ancestry.
-ZunResult MidiOutput::ParseFile(int fileIdx)
+MidiResult MidiOutput::ParseFile(int fileIdx)
 {
     // The complete 0x24 source-order record reproduces TH08's documented
     // var_order under stock VC7.1. parseFileData is intentionally store-only:
@@ -355,7 +363,7 @@ void MidiOutput::LoadTracks()
 }
 
 // FUNCTION: TH095 0x00422600; TH08 Midi.cpp is the source-shape oracle.
-ZunResult MidiOutput::Play()
+MidiResult MidiOutput::Play()
 {
     if (this->tracks == NULL)
     {
@@ -371,7 +379,7 @@ ZunResult MidiOutput::Play()
 }
 
 // FUNCTION: TH095 0x00422660; TH08 Midi.cpp is the source-shape oracle.
-ZunResult MidiOutput::StopPlayback()
+MidiResult MidiOutput::StopPlayback()
 {
     if (this->tracks == NULL)
     {
@@ -394,7 +402,7 @@ ZunResult MidiOutput::StopPlayback()
 }
 
 // FUNCTION: TH095 0x004226E0; TH08 Midi.cpp is the source-shape oracle.
-ZunResult MidiOutput::UnprepareHeader(LPMIDIHDR pmh)
+MidiResult MidiOutput::UnprepareHeader(LPMIDIHDR pmh)
 {
     if (pmh == NULL)
     {
@@ -430,7 +438,7 @@ success:
 }
 
 // FUNCTION: TH095 0x004227B0; TH08 Midi.cpp is the source-shape oracle.
-ZunResult MidiOutput::SetFadeOut(u32 ms)
+MidiResult MidiOutput::SetFadeOut(u32 ms)
 {
     this->fadeOutVolumeMultiplier = 0.0;
     this->fadeOutDurationMs = ms;

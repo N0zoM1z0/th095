@@ -7,6 +7,9 @@ namespace th095
 {
 
 struct PhotoCapturedBulletView;
+#ifdef TH095_MATCH_EXACT
+struct PhotoAnmVmIdValue;
+#endif
 
 enum PhotoCameraMode
 {
@@ -17,16 +20,71 @@ enum PhotoCameraMode
     PHOTO_CAMERA_DISABLED = 4,
 };
 
+#ifdef TH095_MATCH_EXACT
+struct PhotoAnmVmId
+{
+    i32 value;
+
+    operator i32() const
+    {
+        return this->value;
+    }
+
+    __forceinline i32 operator==(PhotoAnmVmIdValue other) const;
+
+    void operator=(i32 value)
+    {
+        this->value = value;
+    }
+
+    AnmVm *GetVm();
+    void SetInterrupt(i32 interrupt);
+};
+#else
 typedef AnmVmId PhotoAnmVmId;
+#endif
 
 typedef char PhotoAnmVmIdSizeIs4[(sizeof(PhotoAnmVmId) == 4) ? 1 : -1];
 
+#ifdef TH095_MATCH_EXACT
+struct PhotoAnmLoadedView
+{
+    i32 anmIdx;
+    void *rawData;
+    i32 totalEntries;
+    AnmLoadedSprite *sprites;
+    AnmRawInstr **scripts;
+    void *textures;
+    i32 numberEntriesToBeLoaded;
+
+    ZunResult SetSprite(AnmVm *vm, i32 spriteIdx);
+    void SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript);
+
+    void SetAndExecuteScriptIdx(AnmVm *vm, i32 scriptIndex)
+    {
+        vm->anmFile = reinterpret_cast<AnmLoaded *>(this);
+        vm->scriptIndex = scriptIndex;
+        this->SetAndExecuteScript(vm, this->scripts[scriptIndex]);
+    }
+
+    void InitializeVm(AnmVm *vm, i32 scriptIndex);
+    PhotoAnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
+};
+#else
 typedef AnmLoaded PhotoAnmLoadedView;
+#endif
 
 typedef char PhotoAnmLoadedViewSizeIs1C[
     (sizeof(PhotoAnmLoadedView) == 0x1c) ? 1 : -1];
 
+#ifdef TH095_MATCH_EXACT
+struct PhotoAnmSpawnerView
+{
+    void SpawnInto(PhotoAnmVmId *output, i32 script, Float3 *position);
+};
+#else
 typedef AnmLoaded PhotoAnmSpawnerView;
+#endif
 
 struct PhotoBulletManagerView
 {

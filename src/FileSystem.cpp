@@ -10,14 +10,35 @@ namespace th095
 // Disk and archive resource readers share this process-wide mode flag.
 DIFFABLE_STATIC(i32, g_ReplayUsesArchive);
 
+#ifdef TH095_MATCH_EXACT
+// The canonical FileSystem units observe the critical-section array and its
+// lane-2 active byte through their historical scalar/base relocation names.
+// Production reaches the same target-owned storage through Supervisor.
+extern u8 g_FileSystemCriticalSections;
+extern u8 g_FileSystemActiveCount;
+#define TH095_FILE_SYSTEM_ACTIVE_COUNT g_FileSystemActiveCount
+#else
+#define TH095_FILE_SYSTEM_ACTIVE_COUNT g_Supervisor.criticalSectionLockCounts[2]
+#endif
+
 static __forceinline void EnterFileSystemCriticalSection(i32 id)
 {
+#ifdef TH095_MATCH_EXACT
+    EnterCriticalSection(
+        reinterpret_cast<CRITICAL_SECTION *>(&g_FileSystemCriticalSections + id * 0x18));
+#else
     EnterCriticalSection(&g_Supervisor.criticalSections[id]);
+#endif
 }
 
 static __forceinline void LeaveFileSystemCriticalSection(i32 id)
 {
+#ifdef TH095_MATCH_EXACT
+    LeaveCriticalSection(
+        reinterpret_cast<CRITICAL_SECTION *>(&g_FileSystemCriticalSections + id * 0x18));
+#else
     LeaveCriticalSection(&g_Supervisor.criticalSections[id]);
+#endif
 }
 
 namespace FileSystem
@@ -177,7 +198,7 @@ LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL isExternalResource)
     locals.unused = -1;
 
     EnterFileSystemCriticalSection(2);
-    g_Supervisor.criticalSectionLockCounts[2]++;
+    TH095_FILE_SYSTEM_ACTIVE_COUNT++;
     if (!isExternalResource)
     {
         locals.entryName = strrchr(path, '\\');
@@ -219,7 +240,7 @@ LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL isExternalResource)
             }
             g_PbgArchive.ReadDecompressEntry(locals.entryName, locals.data);
             LeaveFileSystemCriticalSection(2);
-            g_Supervisor.criticalSectionLockCounts[2]--;
+            TH095_FILE_SYSTEM_ACTIVE_COUNT--;
             goto done;
         }
     }
@@ -250,13 +271,13 @@ LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL isExternalResource)
     }
     CloseHandle(locals.handle);
     LeaveFileSystemCriticalSection(2);
-    g_Supervisor.criticalSectionLockCounts[2]--;
+    TH095_FILE_SYSTEM_ACTIVE_COUNT--;
 done:
     return locals.data;
 
 error:
     LeaveFileSystemCriticalSection(2);
-    g_Supervisor.criticalSectionLockCounts[2]--;
+    TH095_FILE_SYSTEM_ACTIVE_COUNT--;
     return NULL;
 }
 
@@ -265,7 +286,7 @@ BOOL CheckIfFileAlreadyExists(LPCSTR path)
     HANDLE handle;
 
     EnterFileSystemCriticalSection(2);
-    g_Supervisor.criticalSectionLockCounts[2]++;
+    TH095_FILE_SYSTEM_ACTIVE_COUNT++;
     handle = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL,
                          OPEN_EXISTING,
                          FILE_FLAG_SEQUENTIAL_SCAN | FILE_ATTRIBUTE_NORMAL,
@@ -274,11 +295,11 @@ BOOL CheckIfFileAlreadyExists(LPCSTR path)
     {
         CloseHandle(handle);
         LeaveFileSystemCriticalSection(2);
-        g_Supervisor.criticalSectionLockCounts[2]--;
+        TH095_FILE_SYSTEM_ACTIVE_COUNT--;
         return TRUE;
     }
     LeaveFileSystemCriticalSection(2);
-    g_Supervisor.criticalSectionLockCounts[2]--;
+    TH095_FILE_SYSTEM_ACTIVE_COUNT--;
     return FALSE;
 }
 

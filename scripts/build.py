@@ -83,6 +83,7 @@ def main() -> int:
                 str(ROOT / str(unit["source"])),
                 str(output),
                 *profile,
+                "/DTH095_MATCH_EXACT",
             ],
             cwd=ROOT,
             check=True,

@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "ScreenEffectDrawExact.inl"
+#else
 #define WIN32_LEAN_AND_MEAN
 #include "AnmManager.hpp"
 #include "ScreenEffect.hpp"
@@ -100,3 +103,5 @@ void ScreenEffect::DrawSquare(ScreenEffectRect *rect, unsigned int color)
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

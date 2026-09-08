@@ -1,3 +1,9 @@
+#ifdef TH095_MATCH_EXACT
+#include "ResultScreenExact.inl"
+#else
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS
+#endif
 #include "ResultScreen.hpp"
 #include "AnmText.hpp"
 #include "AsciiManager.hpp"
@@ -12,6 +18,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+#ifdef TH095_MATCH_EXACT
+#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
+#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
+#endif
 
 namespace th095
 {
@@ -126,6 +137,11 @@ extern const char *g_ResultAlphabet;
 extern ResultPhotoDataView *g_ResultPhotoData;
 extern ResultPhotoControllerView *g_ResultPhotoController;
 
+#ifndef DIFFBUILD
+#define g_ResultPhotoController \
+    TH095_RUNTIME_GLOBAL_PTR(ResultPhotoControllerView, g_RuntimePlayerOwner)
+#endif
+
 extern void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
@@ -185,7 +201,7 @@ ResultScreen::~ResultScreen()
 }
 
 // FUNCTION: TH095 0x00426630.
-ZunResult ResultScreen::Initialize()
+ResultScreenResult ResultScreen::Initialize()
 {
     u8 *cursor;
     ResultScreenInitializeLocals locals;
@@ -265,7 +281,7 @@ ZunResult ResultScreen::Initialize()
 }
 
 // FUNCTION: TH095 0x00426820.
-ZunResult ResultScreen::LoadAnm()
+ResultScreenResult ResultScreen::LoadAnm()
 {
     if (g_AnmManager->LoadAnm(10, "pause.anm") == NULL)
     {
@@ -283,7 +299,7 @@ ZunResult ResultScreen::LoadAnm()
 }
 
 // FUNCTION: TH095 0x00426860.
-ZunResult ResultScreen::ReleaseAnm()
+ResultScreenResult ResultScreen::ReleaseAnm()
 {
     g_AnmManager->ReleaseAnm(10);
     return ZUN_SUCCESS;
@@ -334,7 +350,11 @@ void ResultScreen::Destroy()
     }
 }
 
+#ifdef TH095_MATCH_EXACT
+i32 ResultScreenTimer::Tick()
+#else
 i32 ZunTimer::Tick()
+#endif
 {
     this->previous = this->current;
     if (g_AnmGameSpeed <= 0.99f)
@@ -1799,7 +1819,7 @@ ChainCallbackResult ResultScreen::OnDraw(ResultScreen *resultScreen)
     return resultScreen->Draw();
 }
 
-ZunResult ResultScreen::LoadReplays()
+ResultScreenResult ResultScreen::LoadReplays()
 {
     char path[0x100];
 
@@ -1818,3 +1838,5 @@ ZunResult ResultScreen::LoadReplays()
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

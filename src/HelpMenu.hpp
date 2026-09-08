@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "HelpMenuExact.hpp"
+#else
 #ifndef TH095_HELP_MENU_HPP
 #define TH095_HELP_MENU_HPP
 
@@ -51,3 +54,5 @@ void __fastcall LoadHelpAnm(void *unused);
 } // namespace th095
 
 #endif
+
+#endif // TH095_MATCH_EXACT

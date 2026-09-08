@@ -1,4 +1,5 @@
 #include "EnemyManager.hpp"
+#include "GameplayGlobals.hpp"
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
 
@@ -40,6 +41,11 @@ struct EnemyShotBulletManagerView
 };
 extern EnemyShotBulletManagerView *g_EnemyShotBulletManager;
 extern u8 *g_EnemyShotPlayer;
+
+#ifndef DIFFBUILD
+#define g_EnemyShotPlayer \
+    TH095_RUNTIME_GLOBAL_PTR(u8, g_RuntimePlayerOwner)
+#endif
 
 namespace EclRunHigh
 {

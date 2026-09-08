@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "SceneTextureExact.inl"
+#else
 #include "SceneSelect.hpp"
 
 #include <string.h>
@@ -461,3 +464,5 @@ void AnmTextureEntryView::Clear()
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "SceneSelectAssetsExact.inl"
+#else
 #include "SceneSelect.hpp"
 
 #include "FileSystem.hpp"
@@ -415,3 +418,5 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "MusicRoomExact.hpp"
+#else
 #ifndef TH095_MUSIC_ROOM_HPP
 #define TH095_MUSIC_ROOM_HPP
 
@@ -67,3 +70,5 @@ char *__fastcall ReadMusicCommentLine(char *destination, char *cursor,
 } // namespace th095
 
 #endif
+
+#endif // TH095_MATCH_EXACT

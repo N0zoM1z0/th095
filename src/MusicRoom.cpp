@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "MusicRoomExact.inl"
+#else
 #include "MusicRoom.hpp"
 #include "FileSystem.hpp"
 #include "SoundPlayer.hpp"
@@ -288,3 +291,5 @@ i32 MusicRoomView::UpdateMusicRoom()
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

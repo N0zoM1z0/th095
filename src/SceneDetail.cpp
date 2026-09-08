@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "SceneDetailExact.inl"
+#else
 #include "SceneSelect.hpp"
 
 namespace th095
@@ -130,3 +133,5 @@ void SceneSelectControllerView::HideDetailDigit(i32 vmIndex)
 #undef SET_DETAIL_SPRITE
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

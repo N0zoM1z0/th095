@@ -1,3 +1,9 @@
+#ifdef TH095_MATCH_EXACT
+#include "ScoreLifecycleExact.inl"
+#else
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_RNG_AS_STRUCT
+#endif
 #include "Rng.hpp"
 #include "ScoreData.hpp"
 #include <windows.h>
@@ -116,3 +122,5 @@ void ReleaseScoreData()
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

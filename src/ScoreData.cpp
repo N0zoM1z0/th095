@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "ScoreDataExact.inl"
+#else
 #include "ScoreData.hpp"
 
 #include "Checksum.hpp"
@@ -8,6 +11,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef TH095_MATCH_EXACT
+#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
+#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
+#endif
 
 namespace th095
 {
@@ -44,7 +52,7 @@ typedef char ScoreWriteLocalsPathAt20[
 typedef char ScoreWriteLocalsRawBufferAt12C[
     (offsetof(ScoreWriteLocals, rawBuffer) == 0x12c) ? 1 : -1];
 
-ZunResult ResultSaveDataView::WriteBestShotData()
+ScoreDataResult ResultSaveDataView::WriteBestShotData()
 {
     ScoreWriteLocals locals;
 
@@ -190,3 +198,5 @@ ZunResult ResultSaveDataView::WriteBestShotData()
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

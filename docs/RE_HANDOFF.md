@@ -104,15 +104,28 @@ python3 scripts/build-whole.py --compile-only
 python3 scripts/build-whole.py --link-only
 ```
 
-The latest 2026-09-08 cold audit passes every current source TU with the
+The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 239 unique unresolved decorated symbols across 258 diagnostics:
-130 data and 109 callable/runtime. Of those names, 236 map through canonical
-relocations to 151 target addresses; three currently lack target-address
+now fails with 222 unique unresolved decorated symbols across 238 diagnostics:
+113 data and 109 callable/runtime. Of those names, 219 map through canonical
+relocations to 150 target addresses; three currently lack target-address
 evidence and four decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
+
+The `0x004C4E70` player/photo-game runtime family is closed in production.
+Fresh relocation evidence previously grouped seventeen unresolved per-TU views
+at that one target slot. Hash-attested Ghidra xrefs show the real PlayerInf
+constructor writes the slot at `0x0042EB9C` and its destructor clears it at
+`0x0042EEFE`; production consumers now route their typed views through the one
+`g_RuntimePlayerOwner` storage while canonical exact builds retain their
+historical target-facing extern symbols. This moves the fresh link from
+239 to 222 unique unresolved names. The exact/build split is audited rather
+than representative: all 696 configured exact units were cold rebuilt by
+source and then strict-compared, with 696/696 exact and zero failures. Compiler-
+private `$L` identity refreshes were accepted only after structural bytes,
+relocation offset/type, and solved target destination were unchanged.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

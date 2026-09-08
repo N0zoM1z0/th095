@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "PhotoFrontExact.inl"
+#else
 #include "AnmManager.hpp"
 #include "FileSystem.hpp"
 #include "GameplayGlobals.hpp"
@@ -68,6 +71,8 @@ extern PhotoFrontStageStateView *g_PhotoFrontStageState;
 extern PhotoFrontManagerView *g_PhotoFrontManager;
 
 #ifndef DIFFBUILD
+#define g_PhotoFrontRuntime \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoFrontRuntimeView, g_RuntimePlayerOwner)
 #define g_PhotoFrontGameTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoFrontGameTaskView, g_RuntimeGameTaskOwner)
 #endif
@@ -351,3 +356,5 @@ i32 __fastcall PhotoFrontManagerView::OnDraw(PhotoFrontManagerView *front)
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

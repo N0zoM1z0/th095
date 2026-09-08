@@ -1,0 +1,269 @@
+#include "ReplayBrowser.hpp"
+#include "SoundPlayer.hpp"
+
+#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
+#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
+
+#include <direct.h>
+#include <stdio.h>
+#include <string.h>
+
+namespace th095
+{
+
+static __forceinline void ReplayBrowserCreateVmAt(ReplayBrowserView *view, i32 index)
+{
+    view->vmIds[index] = view->sceneAnm->CreateVm(index, 7);
+}
+
+struct ReplayBrowserLoadLocals
+{
+    i32 scanFinished1;
+    i32 i;
+    char path[MAX_PATH];
+    ReplayBrowserView *browser;
+    WIN32_FIND_DATAA findData;
+    i32 slot;
+    HANDLE findHandle;
+};
+
+typedef char ReplayBrowserLoadLocalsSizeIs258[
+    (sizeof(ReplayBrowserLoadLocals) == 0x258) ? 1 : -1];
+typedef char ReplayBrowserLoadPathAt08[
+    (offsetof(ReplayBrowserLoadLocals, path) == 0x08) ? 1 : -1];
+typedef char ReplayBrowserLoadFindDataAt110[
+    (offsetof(ReplayBrowserLoadLocals, findData) == 0x110) ? 1 : -1];
+
+extern u16 g_ResultMenuInput;
+extern u16 g_PressedButtons;
+
+inline u16 GetReplayBrowserPressedButtons(u16 buttons)
+{
+    return g_PressedButtons & buttons;
+}
+
+inline u16 IsReplayBrowserMenuInputPressed(u16 buttons)
+{
+    return (u16)((GetReplayBrowserPressedButtons(buttons) != 0) ||
+                 ((g_ResultMenuInput & buttons) != 0));
+}
+
+void ReplayBrowserExitSignal::Request()
+{
+    this->requested = 1;
+}
+
+ChainCallbackResult ReplayBrowserView::Update()
+{
+    i32 i;
+    i32 replayIndex;
+
+    switch (this->state)
+    {
+    case 0:
+        g_SceneSupervisor.StopReplayScan();
+
+        g_SceneSupervisor.EnterCriticalSectionWrapper(4);
+        g_SceneSupervisor.lockCounts[4]++;
+        for (i = 0; i < 80; i++)
+        {
+            if (this->replays[i] != NULL)
+            {
+                delete this->replays[i];
+                this->replays[i] = NULL;
+            }
+        }
+        g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
+        g_SceneSupervisor.lockCounts[4]--;
+
+        g_SceneSupervisor.StartReplayScan(
+            LoadReplayBrowserEntries, NULL);
+
+        this->stateTimer.Reset();
+        this->rowCursor.Push();
+        this->rowCursor.count = 4;
+        this->rowCursor.wraps = 1;
+        this->rowCursor.Set(g_ReplayBrowserSelection / 20);
+        this->state = 1;
+        this->selectedReplayIndex = 0;
+
+        ReplayBrowserCreateVmAt(this, 0x68);
+        ReplayBrowserCreateVmAt(this, 0x69);
+        this->vmIds.SetInterrupt(0x19, 3);
+        this->vmIds.SetInterrupt(0x1a, 3);
+        this->transitionVm.SetInterrupt(3);
+        this->vmIds.SetInterrupt(0x1b, 3);
+        ReplayBrowserCreateVmAt(this, 0x1f);
+        ReplayBrowserCreateVmAt(this, 0x47);
+
+        this->columnCursor.count = 20;
+        this->columnCursor.wraps = 1;
+        this->columnCursor.Set(g_ReplayBrowserSelection % 20);
+        g_ReplayBrowserSelection = 0;
+
+    case 1:
+        if (this->stateTimer < 30)
+        {
+            return CHAIN_CALLBACK_RESULT_CONTINUE;
+        }
+
+        this->rowCursor.SaveCurrent();
+        if (IsReplayBrowserMenuInputPressed(TH_BUTTON_LEFT))
+        {
+            this->rowCursor.Move(-1);
+        }
+        if (IsReplayBrowserMenuInputPressed(TH_BUTTON_RIGHT))
+        {
+            this->rowCursor.Move(1);
+        }
+        if (this->rowCursor.HasChanged())
+        {
+            g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
+        }
+
+        this->columnCursor.SaveCurrent();
+        if (IsReplayBrowserMenuInputPressed(TH_BUTTON_UP))
+        {
+            this->columnCursor.Move(-1);
+        }
+        if (IsReplayBrowserMenuInputPressed(TH_BUTTON_DOWN))
+        {
+            this->columnCursor.Move(1);
+        }
+        if (this->columnCursor.HasChanged())
+        {
+            g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
+        }
+
+        if (GetReplayBrowserPressedButtons(0x1002) != 0)
+        {
+            replayIndex = this->rowCursor.GetCurrent() * 20 +
+                          this->columnCursor.GetCurrent();
+            if (this->replays[replayIndex] == NULL ||
+                this->replays[replayIndex]->activeInputData == NULL)
+            {
+                g_SoundPlayer.PlaySoundByIdx(SOUND_DAMAGE_LOW_HEALTH, 0);
+            }
+            else
+            {
+                g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
+                this->requestedState = 6;
+                this->rowCursor.Pop();
+                this->stateTimer.Reset();
+                this->state = 0;
+                strcpy(g_SelectedReplayPath,
+                       this->replays[replayIndex]->path);
+                g_ReplayBrowserSelection = replayIndex;
+            }
+        }
+
+        if (GetReplayBrowserPressedButtons(9) != 0)
+        {
+            g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
+            this->requestedState = 1;
+            this->rowCursor.Pop();
+            this->stateTimer.Reset();
+            this->state = 0;
+            g_ReplayBrowserExitSignal.Request();
+            this->vmIds.SetInterrupt(0x1f, 1);
+            this->vmIds.SetInterrupt(0x47, 1);
+            this->vmIds.SetInterrupt(0x68, 1);
+            this->vmIds.SetInterrupt(0x69, 1);
+            ReplayBrowserCreateVmAt(this, 0x66);
+            ReplayBrowserCreateVmAt(this, 0x67);
+            this->vmIds.SetInterrupt(0x19, 2);
+            this->vmIds.SetInterrupt(0x1a, 2);
+            this->transitionVm.SetInterrupt(2);
+            this->vmIds.SetInterrupt(0x1b, 2);
+        }
+
+    default:
+        break;
+    }
+
+    return CHAIN_CALLBACK_RESULT_CONTINUE;
+}
+
+::ZunResult ReplayBrowserView::LoadReplaySlot(i32 slot, char *path)
+{
+    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
+    g_SceneSupervisor.lockCounts[4]++;
+    if (this->replays[slot] != NULL)
+    {
+        delete this->replays[slot];
+        this->replays[slot] = NULL;
+    }
+    this->replays[slot] = NULL;
+    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
+    g_SceneSupervisor.lockCounts[4]--;
+
+    ReplayManager *replay = ReplayManager::Load(path);
+
+    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
+    g_SceneSupervisor.lockCounts[4]++;
+    this->replays[slot] = replay;
+    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
+    g_SceneSupervisor.lockCounts[4]--;
+    return ZUN_SUCCESS;
+}
+
+void __fastcall LoadReplayBrowserEntries(void *)
+{
+    i32 scanFinished2;
+    ReplayBrowserLoadLocals locals;
+
+    locals.browser = g_ReplayBrowser;
+    for (locals.i = 0; locals.i < 20; locals.i++)
+    {
+        if (locals.browser->requestedState != 3)
+        {
+            goto finish;
+        }
+        locals.scanFinished1 = g_ReplayScanFinished;
+        if (locals.scanFinished1 != 0)
+        {
+            goto finish;
+        }
+        sprintf(locals.path, "th95_%.2d.rpy", locals.i + 1);
+        locals.browser->LoadReplaySlot(locals.i, locals.path);
+    }
+
+    locals.slot = 20;
+    _mkdir("replay");
+    _chdir("replay");
+    locals.findHandle = FindFirstFileA(
+        "th95_ud????.rpy", &locals.findData);
+    if (locals.findHandle != INVALID_HANDLE_VALUE)
+    {
+        while (locals.slot < 80)
+        {
+            if (locals.browser->requestedState != 3)
+            {
+                break;
+            }
+            scanFinished2 = g_ReplayScanFinished;
+            if (scanFinished2 != 0)
+            {
+                break;
+            }
+            _chdir("../");
+            locals.browser->LoadReplaySlot(
+                locals.slot, locals.findData.cFileName);
+            locals.slot++;
+            _chdir("replay");
+            if (FindNextFileA(
+                    locals.findHandle, &locals.findData) == 0)
+            {
+                break;
+            }
+        }
+    }
+    FindClose(locals.findHandle);
+    _chdir("../");
+
+finish:
+    g_ReplayScanActive = 0;
+    g_ReplayScanFinished = 1;
+}
+
+} // namespace th095

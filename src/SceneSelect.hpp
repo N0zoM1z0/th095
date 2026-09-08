@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "SceneSelectExact.hpp"
+#else
 #ifndef TH095_SCENE_SELECT_HPP
 #define TH095_SCENE_SELECT_HPP
 
@@ -266,3 +269,5 @@ void __cdecl SceneWriteText(SceneAnmManagerView *manager,
 } // namespace th095
 
 #endif
+
+#endif // TH095_MATCH_EXACT

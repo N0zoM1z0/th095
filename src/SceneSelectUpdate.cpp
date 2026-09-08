@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "SceneSelectUpdateExact.inl"
+#else
 #include "SceneSelect.hpp"
 
 #include "ReplayBrowser.hpp"
@@ -1355,3 +1358,5 @@ update_preview_text:
 #undef SET_SCENE_VM_VISIBILITY
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

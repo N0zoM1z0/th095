@@ -6,6 +6,12 @@
 namespace th095
 {
 
+#ifdef TH095_MATCH_EXACT
+typedef ::ZunResult ReplayManagerResult;
+#else
+typedef ZunResult ReplayManagerResult;
+#endif
+
 enum ReplayManagerMode
 {
     REPLAY_MANAGER_RECORD = 0,
@@ -67,9 +73,9 @@ struct ReplayManager
     ReplayManager();
     ~ReplayManager();
 
-    ZunResult Initialize(i32 mode, char *path);
-    ZunResult WriteReplay(char *path, char *replayName);
-    ZunResult LoadReplay(char *path);
+    ReplayManagerResult Initialize(i32 mode, char *path);
+    ReplayManagerResult WriteReplay(char *path, char *replayName);
+    ReplayManagerResult LoadReplay(char *path);
 
     static ReplayManager *Create(i32 mode, char *path);
     static ReplayManager *Load(char *path);

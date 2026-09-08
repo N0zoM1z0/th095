@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS
+#endif
 #include "Global.hpp"
 #include "FrontEndGlobals.hpp"
 #include "Main.hpp"
@@ -21,9 +24,74 @@ extern i32 g_FrontEndLoadActive;
 extern i32 g_HelpLoadComplete;
 extern i32 g_HelpLoadActive;
 
-// The flag word is kept as an address-bound view until the remaining legacy
-// Supervisor.hpp consumers are migrated to the verified TH095 layout.  The
-// method calls below already use the canonical g_Supervisor owner.
+struct FrontEndLifecycleView;
+
+#ifdef TH095_MATCH_EXACT
+extern FrontEndLifecycleView *g_FrontEndController;
+extern ResultSaveDataView *g_FrontEndResultSaveData;
+
+struct FrontEndAnmManagerView
+{
+    u8 unknown000[8];
+    i32 surfaceCaptureIndex;
+    i32 textureCaptureIndex;
+
+    void *PreloadAnm(i32 anmIndex, const char *path);
+    void ReleaseAnm(i32 anmIndex);
+};
+extern FrontEndAnmManagerView *g_FrontEndAnmManager;
+
+struct FrontEndSupervisorView
+{
+    i32 StartReplayScan(void (__fastcall *callback)(void *), void *argument);
+    void HideLoadingVms();
+    void BeginLoadingCompletion();
+};
+extern FrontEndSupervisorView g_FrontEndSupervisor;
+extern u32 g_FrontEndSupervisorFlags;
+extern i32 g_FrontEndLoadFinished;
+extern i32 g_FrontEndLoadInProgress;
+
+struct FrontEndSceneDefinitionView
+{
+    u8 unknown000[0x24];
+    i32 textId;
+    char *text;
+    u8 displayState;
+    u8 unknown02d[3];
+};
+extern FrontEndSceneDefinitionView *g_FrontEndSceneGroups[12];
+
+#define TH095_FRONT_CONTROLLER_STORAGE g_FrontEndController
+#define TH095_FRONT_CONTROLLER_VALUE g_FrontEndController
+#define TH095_FRONT_ANM_PRELOAD(index, path) g_FrontEndAnmManager->PreloadAnm((index), (path))
+#define TH095_FRONT_ANM_RELEASE(index) g_FrontEndAnmManager->ReleaseAnm(index)
+#define TH095_FRONT_SURFACE_CAPTURE_INDEX g_FrontEndAnmManager->surfaceCaptureIndex
+#define TH095_FRONT_TEXTURE_CAPTURE_INDEX g_FrontEndAnmManager->textureCaptureIndex
+#define TH095_FRONT_SUPERVISOR_FLAGS g_FrontEndSupervisorFlags
+#define TH095_FRONT_HIDE_LOADING() g_FrontEndSupervisor.HideLoadingVms()
+#define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_FrontEndSupervisor.BeginLoadingCompletion()
+#define TH095_FRONT_START_REPLAY_SCAN(callback, argument) g_FrontEndSupervisor.StartReplayScan((callback), (argument))
+#define TH095_FRONT_LOAD_FINISHED g_FrontEndLoadFinished
+#define TH095_FRONT_LOAD_IN_PROGRESS g_FrontEndLoadInProgress
+#define TH095_FRONT_RESULT_SAVE_DATA g_FrontEndResultSaveData
+#define TH095_FRONT_SCENE_GROUPS g_FrontEndSceneGroups
+#else
+#define TH095_FRONT_CONTROLLER_STORAGE g_ActiveMenuController
+#define TH095_FRONT_CONTROLLER_VALUE reinterpret_cast<FrontEndLifecycleView *>(g_ActiveMenuController)
+#define TH095_FRONT_ANM_PRELOAD(index, path) g_AnmManager->PreloadAnm((index), (path))
+#define TH095_FRONT_ANM_RELEASE(index) g_AnmManager->ReleaseAnm(index)
+#define TH095_FRONT_SURFACE_CAPTURE_INDEX g_AnmManager->captureSurfaceIdx
+#define TH095_FRONT_TEXTURE_CAPTURE_INDEX g_AnmManager->captureAnmIdx
+#define TH095_FRONT_SUPERVISOR_FLAGS g_Supervisor.flags.raw
+#define TH095_FRONT_HIDE_LOADING() g_Supervisor.HideLoadingVms()
+#define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_Supervisor.BeginLoadingCompletion()
+#define TH095_FRONT_START_REPLAY_SCAN(callback, argument) g_Supervisor.StartReplayScan((callback), (argument))
+#define TH095_FRONT_LOAD_FINISHED g_HelpLoadComplete
+#define TH095_FRONT_LOAD_IN_PROGRESS g_HelpLoadActive
+#define TH095_FRONT_RESULT_SAVE_DATA g_ResultSaveData
+#define TH095_FRONT_SCENE_GROUPS g_SceneGroups
+#endif
 
 extern i32 g_SoundInitializationComplete;
 extern i32 g_MusicArchiveBaseOffset;
@@ -178,7 +246,7 @@ FrontEndLifecycleView::FrontEndLifecycleView()
 {
     utils::DebugPrint("initialize TitleTaskInf\n");
     memset(this, 0, sizeof(*this));
-    g_ActiveMenuController = this;
+    TH095_FRONT_CONTROLLER_STORAGE = this;
 }
 
 // FUNCTION: TH095 0x004456F0.
@@ -187,7 +255,7 @@ i32 FrontEndLifecycleView::Initialize()
     FrontEndInitializeLocals locals;
 
     this->sceneAnm =
-        g_AnmManager->PreloadAnm(11, "title.anm");
+        TH095_FRONT_ANM_PRELOAD(11, "title.anm");
     if (this->sceneAnm == NULL)
     {
         g_GameErrorContext.Log("title data is corrupt\r\n");
@@ -195,7 +263,7 @@ i32 FrontEndLifecycleView::Initialize()
     }
 
     this->transitionAnm =
-        g_AnmManager->PreloadAnm(12, "title_v.anm");
+        TH095_FRONT_ANM_PRELOAD(12, "title_v.anm");
     if (this->transitionAnm == NULL)
     {
         g_GameErrorContext.Log("title data is corrupt\r\n");
@@ -219,11 +287,11 @@ i32 FrontEndLifecycleView::Initialize()
             reinterpret_cast<i32>(this->missionMessageData));
         if (locals.entry->group < 12)
         {
-            g_SceneGroups[locals.entry->group][locals.entry->scene]
+            TH095_FRONT_SCENE_GROUPS[locals.entry->group][locals.entry->scene]
                 .text = locals.entry->text;
-            g_SceneGroups[locals.entry->group][locals.entry->scene]
+            TH095_FRONT_SCENE_GROUPS[locals.entry->group][locals.entry->scene]
                 .displayState = locals.entry->displayState;
-            g_SceneGroups[locals.entry->group][locals.entry->scene]
+            TH095_FRONT_SCENE_GROUPS[locals.entry->group][locals.entry->scene]
                 .textId = locals.entry->textId;
         }
         else
@@ -280,20 +348,20 @@ loadDone:
 // FUNCTION: TH095 0x00445CA0.
 void FrontEndLifecycleView::ReleaseResources()
 {
-    g_AnmManager->ReleaseAnm(11);
-    g_AnmManager->ReleaseAnm(12);
+    TH095_FRONT_ANM_RELEASE(11);
+    TH095_FRONT_ANM_RELEASE(12);
 }
 
 // FUNCTION: TH095 0x00445980.
 void __fastcall FrontEndLifecycleView::LoadThread(void *)
 {
     FrontEndLifecycleView *controller =
-        reinterpret_cast<FrontEndLifecycleView *>(g_ActiveMenuController);
+        TH095_FRONT_CONTROLLER_VALUE;
 
-    while (g_AnmManager->captureSurfaceIdx >= 0 ||
-           g_AnmManager->captureAnmIdx >= 0)
+    while (TH095_FRONT_SURFACE_CAPTURE_INDEX >= 0 ||
+           TH095_FRONT_TEXTURE_CAPTURE_INDEX >= 0)
     {
-        if (((g_Supervisor.flags.raw >> 7) & 1) != 0)
+        if (((TH095_FRONT_SUPERVISOR_FLAGS >> 7) & 1) != 0)
             goto loadFailed;
         Sleep(1);
     }
@@ -301,18 +369,18 @@ void __fastcall FrontEndLifecycleView::LoadThread(void *)
     if (controller->Initialize() != 0)
         goto loadFailed;
 
-    g_Supervisor.HideLoadingVms();
+    TH095_FRONT_HIDE_LOADING();
     controller->flags &= ~1u;
     utils::DebugPrint("Title Load Thread Finish\n");
-    g_HelpLoadActive = 0;
-    g_HelpLoadComplete = 1;
+    TH095_FRONT_LOAD_IN_PROGRESS = 0;
+    TH095_FRONT_LOAD_FINISHED = 1;
     goto loadDone;
 
 loadFailed:
     controller->flags |= 2;
-    g_Supervisor.BeginLoadingCompletion();
-    g_HelpLoadActive = 0;
-    g_HelpLoadComplete = 1;
+    TH095_FRONT_BEGIN_LOADING_COMPLETION();
+    TH095_FRONT_LOAD_IN_PROGRESS = 0;
+    TH095_FRONT_LOAD_FINISHED = 1;
 
 loadDone:
     return;
@@ -337,7 +405,7 @@ FrontEndLifecycleView *__fastcall FrontEndLifecycleView::Create(i32 mode)
     g_Chain.AddToDrawChain(elem, 1);
     controller->drawChain = elem;
 
-    g_Supervisor.StartReplayScan(
+    TH095_FRONT_START_REPLAY_SCAN(
         FrontEndLifecycleView::LoadThread, controller);
     return controller;
 }
@@ -397,7 +465,7 @@ FrontEndLifecycleView::~FrontEndLifecycleView()
     i32 replayIndex;
     i32 pendingIndex;
 
-    g_ResultSaveData->WriteBestShotData();
+    TH095_FRONT_RESULT_SAVE_DATA->WriteBestShotData();
     for (replayIndex = 0; replayIndex < 80; replayIndex++)
     {
         if (this->replays[replayIndex] != NULL)
@@ -410,7 +478,7 @@ FrontEndLifecycleView::~FrontEndLifecycleView()
     utils::DebugPrint("shutdown TitleTaskInf\n");
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
-    g_ActiveMenuController = NULL;
+    TH095_FRONT_CONTROLLER_STORAGE = NULL;
 
     FrontEndFreeReplayListData(this);
     FrontEndFreeMissionMessageData(this);

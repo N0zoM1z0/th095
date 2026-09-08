@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "PhotoEffectExact.inl"
+#else
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
@@ -181,6 +184,11 @@ struct PhotoGameUpdateView
 
 extern PhotoGameUpdateView *g_PhotoGame;
 extern f32 g_AnmGameSpeed;
+
+#ifndef DIFFBUILD
+#define g_PhotoGame \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameUpdateView, g_RuntimePlayerOwner)
+#endif
 
 struct PhotoEnemyView
 {
@@ -1509,3 +1517,5 @@ i32 PhotoRotatingLaserView::CountNearbyTargets(
 }
 
 }
+
+#endif // TH095_MATCH_EXACT

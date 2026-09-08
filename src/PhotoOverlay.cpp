@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "PhotoOverlayExact.inl"
+#else
 #include "Chain.hpp"
 #include "GameErrorContext.hpp"
 #include "GameplayGlobals.hpp"
@@ -278,3 +281,5 @@ i32 ReleaseResultAnm()
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

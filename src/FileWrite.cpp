@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_FILESYSTEM_AS_CLASS
+#endif
 #include "Main.hpp"
 
 #include <stdlib.h>
@@ -6,18 +9,43 @@ namespace th095
 {
 DIFFABLE_STATIC_ASSIGN(HANDLE, g_OpenWriteFileHandle) = INVALID_HANDLE_VALUE;
 
+#ifdef TH095_MATCH_EXACT
+// These six canonical units predate production Supervisor ownership. Preserve
+// their target-facing base/active-byte relocations while production reaches
+// the same runtime storage through Supervisor.
+extern u8 g_FileSystemCriticalSections;
+extern u8 g_FileSystemActiveCount;
+#define TH095_FILE_WRITE_ACTIVE_COUNT g_FileSystemActiveCount
+#else
+#define TH095_FILE_WRITE_ACTIVE_COUNT g_Supervisor.criticalSectionLockCounts[2]
+#endif
+
 static __forceinline void EnterFileCriticalSection(i32 id)
 {
+#ifdef TH095_MATCH_EXACT
+    EnterCriticalSection(reinterpret_cast<CRITICAL_SECTION *>(
+        &g_FileSystemCriticalSections + id * 0x18));
+#else
     EnterCriticalSection(&g_Supervisor.criticalSections[id]);
+#endif
 }
 
 static __forceinline void LeaveFileCriticalSection(i32 id)
 {
+#ifdef TH095_MATCH_EXACT
+    LeaveCriticalSection(reinterpret_cast<CRITICAL_SECTION *>(
+        &g_FileSystemCriticalSections + id * 0x18));
+#else
     LeaveCriticalSection(&g_Supervisor.criticalSections[id]);
+#endif
 }
 
 // FUNCTION: TH095 0x0041AC50.
+#ifdef TH095_MATCH_EXACT
+i32 FileSystem::WriteDataToFile(char *path, void *data, i32 size)
+#else
 i32 FileSystem::WriteDataToFile(const char *path, void *data, size_t size)
+#endif
 {
     struct WriteLocals
     {
@@ -27,7 +55,7 @@ i32 FileSystem::WriteDataToFile(const char *path, void *data, size_t size)
     } locals;
 
     EnterFileCriticalSection(2);
-    g_Supervisor.criticalSectionLockCounts[2]++;
+    TH095_FILE_WRITE_ACTIVE_COUNT++;
     locals.handle = CreateFileA(
         path, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL, NULL);
@@ -42,7 +70,7 @@ i32 FileSystem::WriteDataToFile(const char *path, void *data, size_t size)
             "error : %s write error %s\r\n", path, locals.errorMessage);
         LocalFree(locals.errorMessage);
         LeaveFileCriticalSection(2);
-        g_Supervisor.criticalSectionLockCounts[2]--;
+        TH095_FILE_WRITE_ACTIVE_COUNT--;
         return -1;
     }
 
@@ -52,14 +80,14 @@ i32 FileSystem::WriteDataToFile(const char *path, void *data, size_t size)
         CloseHandle(locals.handle);
         utils::DebugPrint("error : %s write error\r\n", path);
         LeaveFileCriticalSection(2);
-        g_Supervisor.criticalSectionLockCounts[2]--;
+        TH095_FILE_WRITE_ACTIVE_COUNT--;
         return -2;
     }
 
     CloseHandle(locals.handle);
     utils::DebugPrint("%s write ...\r\n", path);
     LeaveFileCriticalSection(2);
-    g_Supervisor.criticalSectionLockCounts[2]--;
+    TH095_FILE_WRITE_ACTIVE_COUNT--;
     return 0;
 }
 
@@ -69,7 +97,7 @@ i32 FileSystem::OpenWriteFile(char *path)
     LPSTR errorMessage;
 
     EnterFileCriticalSection(2);
-    g_Supervisor.criticalSectionLockCounts[2]++;
+    TH095_FILE_WRITE_ACTIVE_COUNT++;
     g_OpenWriteFileHandle = CreateFileA(
         path, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL, NULL);
@@ -84,7 +112,7 @@ i32 FileSystem::OpenWriteFile(char *path)
             "error : %s write error %s\r\n", path, errorMessage);
         LocalFree(errorMessage);
         LeaveFileCriticalSection(2);
-        g_Supervisor.criticalSectionLockCounts[2]--;
+        TH095_FILE_WRITE_ACTIVE_COUNT--;
         return -1;
     }
 
@@ -100,7 +128,7 @@ i32 Open(char *path)
     LPSTR errorMessage;
 
     EnterFileCriticalSection(2);
-    g_Supervisor.criticalSectionLockCounts[2]++;
+    TH095_FILE_WRITE_ACTIVE_COUNT++;
     g_OpenWriteFileHandle = CreateFileA(
         path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
@@ -115,7 +143,7 @@ i32 Open(char *path)
             "error : %s write error %s\r\n", path, errorMessage);
         LocalFree(errorMessage);
         LeaveFileCriticalSection(2);
-        g_Supervisor.criticalSectionLockCounts[2]--;
+        TH095_FILE_WRITE_ACTIVE_COUNT--;
         return -1;
     }
 
@@ -164,7 +192,7 @@ i32 FileSystem::WriteToOpenFile(void *data, u32 size)
         CloseHandle(g_OpenWriteFileHandle);
         utils::DebugPrint("error : write error\r\n");
         LeaveFileCriticalSection(2);
-        g_Supervisor.criticalSectionLockCounts[2]--;
+        TH095_FILE_WRITE_ACTIVE_COUNT--;
         return -2;
     }
 
@@ -181,7 +209,7 @@ i32 FileSystem::CloseWriteFile()
     CloseHandle(g_OpenWriteFileHandle);
     utils::DebugPrint("close ...\r\n");
     LeaveFileCriticalSection(2);
-    g_Supervisor.criticalSectionLockCounts[2]--;
+    TH095_FILE_WRITE_ACTIVE_COUNT--;
     return 0;
 }
 } // namespace th095

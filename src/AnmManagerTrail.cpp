@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_RNG_AS_STRUCT
+#endif
 #include "AnmManager.hpp"
 
 namespace th095

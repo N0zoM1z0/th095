@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "PhotoStageExact.inl"
+#else
 #include "PhotoCamera.hpp"
 #include "GameplayGlobals.hpp"
 #include "Main.hpp"
@@ -294,6 +297,8 @@ extern PhotoStageSupervisorView *g_PhotoStageSupervisor;
 extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
 
 #ifndef DIFFBUILD
+#define g_PhotoGame \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoStageGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageGlobalStateView, g_RuntimeGameTaskOwner)
 #endif
@@ -1437,3 +1442,5 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

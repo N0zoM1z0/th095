@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "ResultScreenExact.hpp"
+#else
 #ifndef TH095_RESULT_SCREEN_HPP
 #define TH095_RESULT_SCREEN_HPP
 
@@ -10,6 +13,49 @@
 
 namespace th095
 {
+
+#ifdef TH095_MATCH_EXACT
+typedef ::ZunResult ResultScreenResult;
+#else
+typedef ZunResult ResultScreenResult;
+#endif
+
+#ifdef TH095_MATCH_EXACT
+struct ResultScreenTimer
+{
+    i32 previous;
+    f32 subFrame;
+    i32 current;
+
+    ResultScreenTimer()
+    {
+        this->current = 0;
+        this->previous = -999999;
+        this->subFrame = 0.0f;
+    }
+
+    u32 operator==(i32 value) { return this->current == value; }
+    u32 operator<(i32 value) { return this->current < value; }
+    u32 operator>=(i32 value) { return this->current >= value; }
+    i32 GetCurrent() { return this->current; }
+    i32 Tick();
+    void Reset()
+    {
+        this->current = 0;
+        this->subFrame = 0.0f;
+        this->previous = -999999;
+    }
+    void Set(i32 value)
+    {
+        this->current = value;
+        this->subFrame = (f32)value;
+        this->previous = -999999;
+    }
+};
+typedef ResultScreenTimer ResultScreenStateTimer;
+#else
+typedef ZunTimer ResultScreenStateTimer;
+#endif
 
 struct ResultScreenReplayCursor
 {
@@ -149,7 +195,7 @@ struct ResultScreen
 {
     ResultScreenAnmLoadedView *anm;       // +0x0000
     i32 state;                            // +0x0004
-    ZunTimer stateTimer;                  // +0x0008
+    ResultScreenStateTimer stateTimer;    // +0x0008
     f32 savedGameSpeed;                   // +0x0014
     ResultScreenAnmVm vms[21];            // +0x0018
     ResultScreenAnmVm auxiliaryVms[2];    // +0x3ad4
@@ -174,14 +220,14 @@ struct ResultScreen
     ResultScreen();
     ~ResultScreen();
 
-    ZunResult Initialize();
-    static ZunResult LoadAnm();
-    static ZunResult ReleaseAnm();
+    ResultScreenResult Initialize();
+    static ResultScreenResult LoadAnm();
+    static ResultScreenResult ReleaseAnm();
     static ResultScreen *Create();
     void Destroy();
     i32 UpdateCursor(i32 firstVm);
     void PrepareBestShot();
-    ZunResult LoadReplays();
+    ResultScreenResult LoadReplays();
     ChainCallbackResult Update();
     ChainCallbackResult Draw();
     static ChainCallbackResult OnUpdate(ResultScreen *resultScreen);
@@ -220,3 +266,5 @@ typedef char ResultScreenSizeIs6E2C[
 } // namespace th095
 
 #endif
+
+#endif // TH095_MATCH_EXACT

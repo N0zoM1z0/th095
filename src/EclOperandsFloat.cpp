@@ -1,4 +1,5 @@
 #include "EnemyManager.hpp"
+#include "GameplayGlobals.hpp"
 
 namespace th095
 {
@@ -46,6 +47,11 @@ struct EclFloatOperandPlayerView
 
 extern EclFloatOperandRuntimeView *g_EclFloatOperandRuntime;
 extern EclFloatOperandPlayerView *g_EclFloatOperandPlayer;
+
+#ifndef DIFFBUILD
+#define g_EclFloatOperandPlayer \
+    TH095_RUNTIME_GLOBAL_PTR(EclFloatOperandPlayerView, g_RuntimePlayerOwner)
+#endif
 
 #define ENEMY_I32(owner, offset) \
     (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(owner) + (offset)))

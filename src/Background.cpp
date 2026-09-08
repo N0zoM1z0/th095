@@ -1,11 +1,32 @@
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_FILESYSTEM_AS_CLASS
+#endif
+#ifdef TH095_MATCH_EXACT
+#define g_SelectedScene th095_BackgroundSharedSelectedSceneDeclaration
+#define g_PhotoScreenFadeColor th095_BackgroundSharedPhotoScreenFadeColorDeclaration
+#endif
 #define TH095_DECLARE_ANM_LOADED_INITIALIZE_VM
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
 #include "SceneData.hpp"
+#ifdef TH095_MATCH_EXACT
+#undef g_SelectedScene
+#undef g_PhotoScreenFadeColor
+#endif
 
 namespace th095
 {
+
+#ifdef TH095_MATCH_EXACT
+struct BackgroundSelectedSceneView
+{
+    u8 unknown000[0x0c];
+    const char *stageDataPath;
+};
+extern BackgroundSelectedSceneView *g_SelectedScene;
+#endif
+
 
 struct Background
 {
@@ -159,11 +180,30 @@ struct BackgroundStageStateView
     AnmLoaded *anm;
 };
 
+#ifdef TH095_MATCH_EXACT
+struct BackgroundAnmSpawnerView
+{
+    AnmVmId CreateVm(i32 scriptIndex, Float3 *position);
+};
+#endif
+
 struct BackgroundRuntimeView
 {
     u8 unknown0000[0x4df8];
+#ifdef TH095_MATCH_EXACT
+    BackgroundAnmSpawnerView *anmSpawner;
+#else
     AnmLoaded *anmSpawner;
+#endif
 };
+
+#ifdef TH095_MATCH_EXACT
+#define TH095_BACKGROUND_CREATE_WORLD_VM(spawner, script, position) \
+    (spawner)->CreateVm((script), (position))
+#else
+#define TH095_BACKGROUND_CREATE_WORLD_VM(spawner, script, position) \
+    (spawner)->CreateVmAtWorld((script), (position))
+#endif
 
 struct BackgroundViewportConfigurationView
 {
@@ -193,10 +233,20 @@ struct BackgroundSupervisorView
 
     void ApplyBackgroundViewport(
         BackgroundViewportConfigurationView *configuration);
+    void ConfigureBackgroundViewport(i32 index);
     void SetRenderState(D3DRENDERSTATETYPE renderStateType, i32 value);
     void DisableFog();
     void EnableFog();
 };
+
+#ifdef TH095_MATCH_EXACT
+#define TH095_BACKGROUND_SUPERVISOR \
+    (reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor))
+#define TH095_BACKGROUND_CONFIGURE_RECEIVER BackgroundSupervisorView
+#else
+#define TH095_BACKGROUND_SUPERVISOR (&g_Supervisor)
+#define TH095_BACKGROUND_CONFIGURE_RECEIVER Supervisor
+#endif
 
 struct BackgroundAnmManagerView
 {
@@ -271,7 +321,11 @@ typedef char BackgroundAnmCameraModeAt1768[
 extern BackgroundStageStateView *g_BackgroundStageState;
 extern BackgroundRuntimeView *g_BackgroundRuntime;
 extern BackgroundGlobalStateView *g_PhotoGlobalState;
+#ifdef TH095_MATCH_EXACT
+extern ZunColor g_PhotoScreenFadeColor;
+#else
 extern u32 g_PhotoScreenFadeColor;
+#endif
 
 #ifndef DIFFBUILD
 #define g_PhotoGlobalState \
@@ -285,6 +339,15 @@ DIFFABLE_STATIC(Float3, g_BackgroundCameraPosition);
 DIFFABLE_STATIC(Float3, g_BackgroundCameraLookAt);
 DIFFABLE_STATIC(Float3, g_BackgroundCameraForward);
 DIFFABLE_STATIC(Float3, g_BackgroundCameraUp);
+#ifdef TH095_MATCH_EXACT
+extern f32 g_BackgroundCameraValue0;
+extern f32 g_BackgroundCameraValue1;
+extern f32 g_BackgroundCameraValue2;
+#else
+#define g_BackgroundCameraValue0 g_BackgroundCameraUp.x
+#define g_BackgroundCameraValue1 g_BackgroundCameraUp.y
+#define g_BackgroundCameraValue2 g_BackgroundCameraUp.z
+#endif
 DIFFABLE_STATIC(f32, g_BackgroundWaveX);
 DIFFABLE_STATIC(f32, g_BackgroundWaveY);
 DIFFABLE_STATIC(i32, g_BackgroundModeValue);
@@ -344,14 +407,21 @@ void BackgroundSupervisorView::ApplyBackgroundViewport(
 }
 
 // FUNCTION: TH095 0x00401B70.
-void Supervisor::ConfigureBackgroundViewport(i32 index)
+void TH095_BACKGROUND_CONFIGURE_RECEIVER::ConfigureBackgroundViewport(i32 index)
 {
+#ifdef TH095_MATCH_EXACT
+    this->currentViewport = &this->configurations[index];
+    this->ApplyBackgroundViewport(this->currentViewport);
+    this->d3dDevice->SetViewport(&this->currentViewport->viewport);
+    this->currentViewportIndex = index;
+#else
     BackgroundSupervisorView *view =
         reinterpret_cast<BackgroundSupervisorView *>(this);
     view->currentViewport = &view->configurations[index];
     view->ApplyBackgroundViewport(view->currentViewport);
     view->d3dDevice->SetViewport(&view->currentViewport->viewport);
     view->currentViewportIndex = index;
+#endif
 }
 
 // FUNCTION: TH095 0x004020C0 is implemented in BackgroundLifecycle.cpp.
@@ -460,18 +530,18 @@ i32 Background::DrawHighPrio()
 {
     u32 vmIndex;
 
-    g_Supervisor.SetRenderState(
+    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_ZWRITEENABLE, TRUE);
-    g_Supervisor.SetRenderState(
+    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-    g_Supervisor.SetRenderState(
+    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_FOGCOLOR,
         reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.color.color);
-    g_Supervisor.SetRenderState(
+    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_FOGSTART,
         *reinterpret_cast<i32 *>(
             &reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.x));
-    g_Supervisor.SetRenderState(
+    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_FOGEND,
         *reinterpret_cast<i32 *>(
             &reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.y));
@@ -491,9 +561,9 @@ i32 Background::DrawHighPrio()
                 .loadedSprite != NULL)
         {
             g_Supervisor.ConfigureGameplayViewport(0);
-            g_Supervisor.DisableFog();
+            TH095_BACKGROUND_SUPERVISOR->DisableFog();
             g_AnmManager->FlushVertexBuffer();
-            g_Supervisor.SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+            TH095_BACKGROUND_SUPERVISOR->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
             for (vmIndex = 0; vmIndex < 8; vmIndex++)
             {
                 if (reinterpret_cast<BackgroundStateView *>(this)
@@ -505,10 +575,10 @@ i32 Background::DrawHighPrio()
                         .Draw();
                 }
             }
-            g_Supervisor.SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+            TH095_BACKGROUND_SUPERVISOR->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
         }
 
-        g_Supervisor.EnableFog();
+        TH095_BACKGROUND_SUPERVISOR->EnableFog();
         this->RenderObjects(0);
         this->RenderObjects(1);
         this->RenderObjects(2);
@@ -520,15 +590,15 @@ i32 Background::DrawHighPrio()
     g_Supervisor.ConfigureGameplayViewport(0);
     reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)
         ->SetMixColorDefault();
-    g_Supervisor.DisableFog();
+    TH095_BACKGROUND_SUPERVISOR->DisableFog();
     if (reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive != 0)
     {
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetMixColor(
             0xff404040);
     }
-    g_Supervisor.SetRenderState(
+    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_ZWRITEENABLE, FALSE);
-    g_Supervisor.SetRenderState(
+    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_ZFUNC, D3DCMP_ALWAYS);
     return 1;
 }
@@ -591,9 +661,9 @@ i32 Background::DrawLowPrio()
         locals.clearRect.y2 = locals.bottom;
         g_Supervisor.d3dDevice->Clear(
             1, &locals.clearRect, D3DCLEAR_ZBUFFER, 0, 0.0f, 0);
-        g_Supervisor.SetRenderState(
+        TH095_BACKGROUND_SUPERVISOR->SetRenderState(
             D3DRS_ZWRITEENABLE, TRUE);
-        g_Supervisor.SetRenderState(
+        TH095_BACKGROUND_SUPERVISOR->SetRenderState(
             D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
         reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[0].Draw();
         reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[1].Draw();
@@ -601,9 +671,9 @@ i32 Background::DrawLowPrio()
         g_AnmManager->FlushVertexBuffer();
     }
 
-    g_Supervisor.SetRenderState(
+    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_ZWRITEENABLE, FALSE);
-    g_Supervisor.SetRenderState(
+    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_ZFUNC, D3DCMP_ALWAYS);
     return 1;
 }
@@ -652,7 +722,7 @@ i32 Background::RenderObjects(i32 mode)
     AnmVm *curQuadVm;
     BackgroundStageObjectInstance *instance =
         reinterpret_cast<BackgroundStateView *>(this)->stageObjectInstances;
-    g_Supervisor.ConfigureBackgroundViewport(0);
+    TH095_BACKGROUND_SUPERVISOR->ConfigureBackgroundViewport(0);
     BackgroundSetCameraModePhase(
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager), 1);
     {
@@ -708,9 +778,9 @@ i32 Background::RenderObjects(i32 mode)
                 }
 
                 if (curQuadVm->renderModeBits == 8)
-                    g_Supervisor.EnableFog();
+                    TH095_BACKGROUND_SUPERVISOR->EnableFog();
                 else
-                    g_Supervisor.DisableFog();
+                    TH095_BACKGROUND_SUPERVISOR->DisableFog();
                 g_AnmManager->Draw(curQuadVm);
 
             }
@@ -1045,11 +1115,11 @@ read_instruction:
             break;
 
         case 6:
-            g_BackgroundCameraUp.x =
+            g_BackgroundCameraValue0 =
                 *reinterpret_cast<f32 *>(&instruction->args[0]);
-            g_BackgroundCameraUp.y =
+            g_BackgroundCameraValue1 =
                 *reinterpret_cast<f32 *>(&instruction->args[1]);
-            g_BackgroundCameraUp.z =
+            g_BackgroundCameraValue2 =
                 *reinterpret_cast<f32 *>(&instruction->args[2]);
             break;
 
@@ -1064,7 +1134,11 @@ read_instruction:
             background->photoBlendCurrent.y =
                 *reinterpret_cast<f32 *>(&instruction->args[2]);
             background->photoBlendFinal = background->photoBlendCurrent;
+#ifdef TH095_MATCH_EXACT
+            g_PhotoScreenFadeColor = background->photoBlendCurrent.color;
+#else
             g_PhotoScreenFadeColor = background->photoBlendCurrent.color.color;
+#endif
             break;
 
         case 9:
@@ -1137,7 +1211,11 @@ read_instruction:
             break;
 
         case 13:
+#ifdef TH095_MATCH_EXACT
+            g_PhotoScreenFadeColor.color = instruction->args[0];
+#else
             g_PhotoScreenFadeColor = instruction->args[0];
+#endif
             break;
 
         case 14:
@@ -1258,8 +1336,13 @@ interpolate:
                          background->photoBlendInitial.y) *
                             interpolationTime +
                         background->photoBlendInitial.y;
+#ifdef TH095_MATCH_EXACT
+                    g_PhotoScreenFadeColor =
+                        background->photoBlendCurrent.color;
+#else
                     g_PhotoScreenFadeColor =
                         background->photoBlendCurrent.color.color;
+#endif
                     break;
                 }
             }
@@ -1339,7 +1422,7 @@ interpolate:
                             3.1415927f * 2.0f / 480.0f -
                         3.1415927f;
             g_BackgroundWaveX = sinf(angle) * 70.0f;
-            g_BackgroundCameraUp.x = -sinf(angle) * 0.1f;
+            g_BackgroundCameraValue0 = -sinf(angle) * 0.1f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 480)
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
@@ -1352,7 +1435,7 @@ interpolate:
                         3.1415927f;
             g_BackgroundWaveX = sinf(angle) * 30.0f;
             g_BackgroundWaveY = cosf(angle) * 30.0f;
-            g_BackgroundCameraUp.x = -sinf(angle) * 0.1f;
+            g_BackgroundCameraValue0 = -sinf(angle) * 0.1f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 2048)
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
@@ -1363,8 +1446,8 @@ interpolate:
             f32 angle = (f32)background->interpolationCurrentTimers[3] *
                             3.1415927f * 2.0f / 4800.0f -
                         3.1415927f;
-            g_BackgroundCameraUp.x = sinf(angle) * 1.0f;
-            g_BackgroundCameraUp.z = cosf(angle) * 1.0f;
+            g_BackgroundCameraValue0 = sinf(angle) * 1.0f;
+            g_BackgroundCameraValue2 = cosf(angle) * 1.0f;
             background->interpolationCurrentTimers[3].Tick();
             if (background->interpolationCurrentTimers[3] >= 4800)
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
@@ -1445,11 +1528,11 @@ void Background::StartSpellBackground()
 {
     reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundState = 1;
     reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundVms[0] =
-        g_BackgroundRuntime->anmSpawner->CreateVmAtWorld(
+        TH095_BACKGROUND_CREATE_WORLD_VM(g_BackgroundRuntime->anmSpawner,
             0, &Float3(0.0f, 0.0f, 0.0f));
 
     reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundVms[1] =
-        g_BackgroundRuntime->anmSpawner->CreateVmAtWorld(
+        TH095_BACKGROUND_CREATE_WORLD_VM(g_BackgroundRuntime->anmSpawner,
             1, &Float3(0.0f, 0.0f, 0.0f));
 }
 

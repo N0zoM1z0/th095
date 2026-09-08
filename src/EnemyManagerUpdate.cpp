@@ -1,6 +1,15 @@
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_FILESYSTEM_AS_CLASS
+#define TH095_MATCH_RNG_AS_STRUCT
+#endif
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "GameplayGlobals.hpp"
 #include "SceneData.hpp"
+#ifdef TH095_MATCH_EXACT
+#undef TH095_MATCH_RNG_AS_STRUCT
+#undef TH095_MATCH_FILESYSTEM_AS_CLASS
+#endif
 
 #include <stdlib.h>
 #include <string.h>
@@ -236,10 +245,20 @@ struct PhotoEnemyTimelineExtendedSpawnArgs
 typedef char PhotoEnemyTimelineSizeIs10[
     (sizeof(PhotoEnemyTimelineView) == 0x10) ? 1 : -1];
 
+#ifdef TH095_MATCH_EXACT
+struct PhotoEnemyAnmSpawnerView
+{
+    AnmVmId CreateVm(i32 scriptIndex, Float3 *position);
+};
+typedef PhotoEnemyAnmSpawnerView PhotoEnemyAnmSpawner;
+#else
+typedef AnmLoaded PhotoEnemyAnmSpawner;
+#endif
+
 struct PhotoEnemyBulletManagerView
 {
     u8 unknown000000[0x27c5b0];
-    AnmLoaded *anmSpawner;
+    PhotoEnemyAnmSpawner *anmSpawner;
 };
 
 struct PhotoEnemyPlayerView
@@ -259,6 +278,19 @@ struct PhotoEnemySupervisorFlagsView
     u32 disableResourceReload : 1;
     u32 unknown10 : 22;
 };
+
+#ifdef TH095_MATCH_EXACT
+struct PhotoEnemySceneDefinitionView
+{
+    u8 unknown000[0x10];
+    char *enemyAnmPath;
+    char *enemyEclPath;
+};
+extern PhotoEnemySceneDefinitionView *g_PhotoEnemySceneDefinition;
+#define TH095_PHOTO_ENEMY_SCENE g_PhotoEnemySceneDefinition
+#else
+#define TH095_PHOTO_ENEMY_SCENE g_SelectedScene
+#endif
 
 struct PhotoEnemyBulletSpawnDescriptorView
 {
@@ -311,6 +343,20 @@ extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 extern PhotoEnemyPlayerView *g_PhotoEnemyPlayer;
 extern PhotoEnemyGameView *g_PhotoEnemyGame;
 extern f32 g_AnmGameSpeed;
+
+#ifdef TH095_MATCH_EXACT
+extern f32 g_GameSpeed;
+#define TH095_PHOTO_ENEMY_GAME_SPEED g_GameSpeed
+#else
+#define TH095_PHOTO_ENEMY_GAME_SPEED g_AnmGameSpeed
+#endif
+
+#ifndef DIFFBUILD
+#define g_PhotoEnemyPlayer \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyPlayerView, g_RuntimePlayerOwner)
+#define g_PhotoEnemyGame \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyGameView, g_RuntimePlayerOwner)
+#endif
 
 struct PhotoEnemyView
 {
@@ -589,7 +635,7 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
 i32 PhotoEnemyManagerView::LoadResources()
 {
     this->enemyAnm =
-        g_AnmManager->LoadAnm(8, g_SelectedScene->enemyAnmPath);
+        g_AnmManager->LoadAnm(8, TH095_PHOTO_ENEMY_SCENE->enemyAnmPath);
     if (this->enemyAnm == NULL)
     {
         g_GameErrorContext.Log(
@@ -603,7 +649,7 @@ i32 PhotoEnemyManagerView::LoadResources()
 
     this->eclManager = new PhotoEnemyEclManagerView;
     if (this->eclManager->Load(
-            g_SelectedScene->enemyEclPath) != ZUN_SUCCESS)
+            TH095_PHOTO_ENEMY_SCENE->enemyEclPath) != ZUN_SUCCESS)
     {
         g_GameErrorContext.Log(
             "\x93\x47\x83\x66\x81\x5b\x83\x5e\x82\xaa"
@@ -1103,7 +1149,11 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
                 *reinterpret_cast<AnmVmId *>(
                     &enemy->photoMarkerVmId) =
                     g_PhotoEnemyBulletManager->anmSpawner
+#ifdef TH095_MATCH_EXACT
+                        ->CreateVm(0x127, &enemy->photoMarkerPosition);
+#else
                         ->CreateVmAtWorld(0x127, &enemy->photoMarkerPosition);
+#endif
             }
             else
             {
@@ -1195,14 +1245,14 @@ void PhotoEnemyView::IntegrateMovement()
 
     if (this->mirrorXVelocity == 0)
     {
-        this->worldPosition.x += g_AnmGameSpeed * this->velocity.x;
+        this->worldPosition.x += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.x;
     }
     else
     {
-        this->worldPosition.x -= g_AnmGameSpeed * this->velocity.x;
+        this->worldPosition.x -= TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.x;
     }
-    this->worldPosition.y += g_AnmGameSpeed * this->velocity.y;
-    this->worldPosition.z += g_AnmGameSpeed * this->velocity.z;
+    this->worldPosition.y += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.y;
+    this->worldPosition.z += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.z;
 }
 
 void PhotoEnemyView::ClampPosition()

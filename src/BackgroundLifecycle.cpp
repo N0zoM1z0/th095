@@ -1,5 +1,7 @@
 #include "Chain.hpp"
+#ifndef TH095_MATCH_EXACT
 #include "ZunTimer.hpp"
+#endif
 #include "inttypes.hpp"
 #include "utils.hpp"
 
@@ -9,6 +11,33 @@
 
 namespace th095
 {
+
+#ifdef TH095_MATCH_EXACT
+// This lifecycle TU was independently matched with a bounded timer view. The
+// target distinguishes member construction order from the post-memset reset:
+// ctor writes current/previous/subFrame, while Initialize writes
+// current/subFrame/previous. Production uses the shared ZunTimer definition.
+struct ZunTimer
+{
+    i32 previous;
+    f32 subFrame;
+    i32 current;
+
+    ZunTimer()
+    {
+        current = 0;
+        previous = -999999;
+        subFrame = 0.0f;
+    }
+
+    void Initialize()
+    {
+        current = 0;
+        subFrame = 0.0f;
+        previous = -999999;
+    }
+};
+#endif
 
 struct AnmLoaded;
 struct AnmVm

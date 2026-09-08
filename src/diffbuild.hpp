@@ -31,28 +31,49 @@
 #pragma once
 
 #ifdef DIFFBUILD
+#ifdef TH095_MATCH_EXACT
+// Canonical TH095 COFF replay needs DIFFBUILD storage/alias semantics while
+// retaining the target's C++ decorated namespace symbols.
+#define DIFFABLE_EXTERN(type, name) extern type name;
+#define DIFFABLE_EXTERN_ARRAY(type, size, name) extern type name[size];
+#define DIFFABLE_STATIC(type, name) extern type name;
+#define DIFFABLE_STATIC_ARRAY(type, size, name) extern type name[size];
+#else
 #define DIFFABLE_EXTERN(type, name) extern "C" type name;
 #define DIFFABLE_EXTERN_ARRAY(type, size, name) extern "C" type name[size];
 #define DIFFABLE_STATIC(type, name) extern "C" type name;
 #define DIFFABLE_STATIC_ARRAY(type, size, name) extern "C" type name[size];
+#endif
 // This macro is meant to be used like so:
 // DIFFABLE_STATIC_ARRAY_ASSIGN(u32, g_ArrayName) = 12;
 //
 // In diffbuild, we want to discard the content of the array, so we generate a
 // second, fake static, that we store in a template<> to make sure it doesn't
 // get instanciated.
+#ifdef TH095_MATCH_EXACT
+#define DIFFABLE_STATIC_ASSIGN(type, name)                                                                             \
+    extern type name;                                                                                                  \
+    template <> type DIFFBUILD_HIDE_NAME_##name
+#else
 #define DIFFABLE_STATIC_ASSIGN(type, name)                                                                             \
     extern "C" type name;                                                                                              \
     template <> type DIFFBUILD_HIDE_NAME_##name
+#endif
 // This macro is meant to be used like so:
 // DIFFABLE_STATIC_ARRAY_ASSIGN(u32, 5, g_ArrayName) = { 0, 1, 2 };
 //
 // In diffbuild, we want to discard the content of the array, so we generate a
 // second, fake static, that we store in a template<> to make sure it doesn't
 // get instanciated.
+#ifdef TH095_MATCH_EXACT
+#define DIFFABLE_STATIC_ARRAY_ASSIGN(type, size, name)                                                                 \
+    extern type name[size];                                                                                            \
+    template <> type DIFFBUILD_HIDE_NAME_##name[size]
+#else
 #define DIFFABLE_STATIC_ARRAY_ASSIGN(type, size, name)                                                                 \
     extern "C" type name[size];                                                                                        \
     template <> type DIFFBUILD_HIDE_NAME_##name[size]
+#endif
 #else
 #define DIFFABLE_EXTERN(type, name) extern type name;
 #define DIFFABLE_EXTERN_ARRAY(type, size, name) extern type name[size];

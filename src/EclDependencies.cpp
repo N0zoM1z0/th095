@@ -1,4 +1,5 @@
 #include "EnemyManager.hpp"
+#include "GameplayGlobals.hpp"
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
 #include "utils.hpp"
@@ -31,6 +32,11 @@ extern EclDependencyRuntimeView *g_PhotoEnemyManager;
 namespace EclRunLow
 {
 extern Player *g_Th095Player;
+
+#ifndef DIFFBUILD
+#define g_Th095Player \
+    TH095_RUNTIME_GLOBAL_PTR(Player, ::th095::g_RuntimePlayerOwner)
+#endif
 
 #define DEP_PLAYER_POSITION (*reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(g_Th095Player) + 0x1e30))
 

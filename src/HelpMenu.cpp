@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "HelpMenuExact.inl"
+#else
 #include "HelpMenu.hpp"
 #include "FileSystem.hpp"
 #include "FrontEndGlobals.hpp"
@@ -237,3 +240,5 @@ i32 HelpMenuView::UpdateHelpMenu()
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

@@ -6,6 +6,29 @@
 namespace th095
 {
 
+#ifdef TH095_MATCH_EXACT
+// The two positional creator entries were originally proven through this
+// target-facing partial view. Production canonicalizes them onto AnmLoaded,
+// but exact replay must retain the historical receiver decoration.
+struct AnmLoadedPositionView
+{
+    i32 anmIdx;
+    void *rawData;
+    i32 totalEntries;
+    AnmLoadedSprite *sprites;
+    AnmRawInstr **scripts;
+    void *textures;
+    i32 numberEntriesToBeLoaded;
+
+    AnmVmId CreateVmAtScreen(i32 scriptIndex, Float3 *position);
+    AnmVmId CreateVmAtWorld(i32 scriptIndex, Float3 *position);
+};
+#define TH095_ANM_POSITION_RECEIVER AnmLoadedPositionView
+#else
+#define TH095_ANM_POSITION_RECEIVER AnmLoaded
+#endif
+
+
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
 struct AnmVmLifecycleView
@@ -390,22 +413,22 @@ AnmVmId AnmLoaded::CreateVm(i32 scriptIndex, i32 renderMode)
 }
 
 // FUNCTION: TH095 0x00444FA0.
-AnmVmId AnmLoaded::CreateVmAtScreen(
+AnmVmId TH095_ANM_POSITION_RECEIVER::CreateVmAtScreen(
     i32 scriptIndex, Float3 *position)
 {
     AnmVm *vm = new AnmVm;
-    this->InitializeVm(vm, scriptIndex);
+    reinterpret_cast<AnmLoaded *>(this)->InitializeVm(vm, scriptIndex);
     vm->positionOffset = *position;
     return reinterpret_cast<AnmManagerVmLifecycleView *>(g_AnmManager)
         ->AddVm(reinterpret_cast<AnmVmLifecycleView *>(vm));
 }
 
 // FUNCTION: TH095 0x00445060.
-AnmVmId AnmLoaded::CreateVmAtWorld(
+AnmVmId TH095_ANM_POSITION_RECEIVER::CreateVmAtWorld(
     i32 scriptIndex, Float3 *position)
 {
     AnmVm *vm = new AnmVm;
-    this->InitializeVm(vm, scriptIndex);
+    reinterpret_cast<AnmLoaded *>(this)->InitializeVm(vm, scriptIndex);
     PhotoToScreen(&vm->positionOffset, position);
     return reinterpret_cast<AnmManagerVmLifecycleView *>(g_AnmManager)
         ->AddVm(reinterpret_cast<AnmVmLifecycleView *>(vm));

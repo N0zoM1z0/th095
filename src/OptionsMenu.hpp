@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "OptionsMenuExact.hpp"
+#else
 #ifndef TH095_OPTIONS_MENU_HPP
 #define TH095_OPTIONS_MENU_HPP
 
@@ -239,3 +242,5 @@ typedef char OptionsMenuOuterFlagsAt6120[
 } // namespace th095
 
 #endif
+
+#endif // TH095_MATCH_EXACT

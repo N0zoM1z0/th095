@@ -1,4 +1,5 @@
 #include "EnemyManager.hpp"
+#include "GameplayGlobals.hpp"
 #include "ecl/EclOperands.hpp"
 
 namespace th095
@@ -24,6 +25,11 @@ struct EclFloatLValuePlayerView
 
 extern EclFloatLValueRuntimeView *g_EclFloatLValueRuntime;
 extern EclFloatLValuePlayerView *g_EclFloatLValuePlayer;
+
+#ifndef DIFFBUILD
+#define g_EclFloatLValuePlayer \
+    TH095_RUNTIME_GLOBAL_PTR(EclFloatLValuePlayerView, g_RuntimePlayerOwner)
+#endif
 
 namespace EclOperands
 {

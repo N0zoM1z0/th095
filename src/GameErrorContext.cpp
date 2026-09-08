@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "GameErrorContextExact.inl"
+#else
 #include "Global.hpp"
 #include "Main.hpp"
 
@@ -96,3 +99,5 @@ void GameErrorContext::Flush()
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#define TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS
+#endif
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +11,11 @@
 #include "Supervisor.hpp"
 #include "dxutil.hpp"
 #include "utils.hpp"
+
+#ifdef TH095_MATCH_EXACT
+#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
+#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
+#endif
 
 namespace th095
 {
@@ -57,7 +65,7 @@ void __fastcall SoundPlayerWorkerThread(SoundPlayer *soundPlayer)
 #define audioBuffer1Start soundIndexLocal01
 #define wavFormat jLocal00
 #pragma var_order(bufDesc, audioBuffer2Start, audioBuffer2Len, audioBuffer1Len, audioBuffer1Start, wavFormat)
-ZunResult SoundPlayer::InitializeDSound(HWND gameWindow)
+SoundPlayerResult SoundPlayer::InitializeDSound(HWND gameWindow)
 {
     DSBUFFERDESC bufDesc;
     LPVOID audioBuffer2Start;
@@ -165,7 +173,7 @@ void __fastcall SoundDataLoaderThread(SoundPlayer *soundPlayer)
     }
 }
 
-ZunResult SoundPlayer::Initialize(HWND window)
+SoundPlayerResult SoundPlayer::Initialize(HWND window)
 {
     memset(this, 0, sizeof(SoundPlayer));
     this->workerWindow = window;
@@ -174,13 +182,13 @@ ZunResult SoundPlayer::Initialize(HWND window)
     return ZUN_SUCCESS;
 }
 
-ZunResult SoundPlayer::RequestThreadStop()
+SoundPlayerResult SoundPlayer::RequestThreadStop()
 {
     this->workerStopRequest = 2;
     return ZUN_SUCCESS;
 }
 
-ZunResult SoundPlayer::JoinThread()
+SoundPlayerResult SoundPlayer::JoinThread()
 {
     if (this->workerThreadHandle != NULL)
     {
@@ -217,7 +225,7 @@ ZunResult SoundPlayer::JoinThread()
 #define fileSize volumeScaleLocal00
 #pragma var_order(sFDCursor, dsBuffer, wavDataPtr, formatSize, audioPtr2, audioSize2, audioSize1, audioPtr1,           \
                   soundFileData, wavData, fileSize)
-ZunResult SoundPlayer::LoadSound(i32 idx, char *path)
+SoundPlayerResult SoundPlayer::LoadSound(i32 idx, char *path)
 {
     u8 *soundFileData;
     u8 *sFDCursor;
@@ -460,7 +468,7 @@ WAVEFORMATEX *SoundPlayer::GetWavFormatData(u8 *soundData, char *formatString, i
     return NULL;
 }
 
-ZunResult SoundPlayer::LoadSoundData(i32 idx, char *path)
+SoundPlayerResult SoundPlayer::LoadSoundData(i32 idx, char *path)
 {
     this->ownedMusicMetadata[idx] = FileSystem::OpenFile(path, NULL, FALSE);
     if (this->ownedMusicMetadata[idx] == NULL)
@@ -468,7 +476,7 @@ ZunResult SoundPlayer::LoadSoundData(i32 idx, char *path)
     return ZUN_SUCCESS;
 }
 
-ZunResult SoundPlayer::LoadFmt(char *path)
+SoundPlayerResult SoundPlayer::LoadFmt(char *path)
 {
     this->bgmFmtData = (ThBgmFormat *)FileSystem::OpenFile(path, NULL, FALSE);
     return this->bgmFmtData != NULL ? ZUN_SUCCESS : ZUN_ERROR;
@@ -480,7 +488,7 @@ ZunResult SoundPlayer::LoadFmt(char *path)
 #define numSamplesPerSec restartCommandProcessingLocal09
 #define blockAlign restartCommandProcessingLocal26
 #pragma var_order(notifySize, fmtData, res, numSamplesPerSec, blockAlign)
-ZunResult SoundPlayer::StartBGM(char *path)
+SoundPlayerResult SoundPlayer::StartBGM(char *path)
 {
     DWORD numSamplesPerSec;
     ThBgmFormat *fmtData;
@@ -523,7 +531,7 @@ ZunResult SoundPlayer::StartBGM(char *path)
 #undef numSamplesPerSec
 #undef blockAlign
 
-ZunResult SoundPlayer::ReopenBGM(char *path)
+SoundPlayerResult SoundPlayer::ReopenBGM(char *path)
 {
     if (this->bgm == NULL)
         return ZUN_ERROR;
@@ -540,7 +548,7 @@ ZunResult SoundPlayer::ReopenBGM(char *path)
 #define handle restartCommandProcessingLocal09
 #define bufferPtr restartCommandProcessingLocal05
 #pragma var_order(fmtIdx, numBytesRead, handle, bufferPtr)
-ZunResult SoundPlayer::PreloadBGM(i32 idx, char *path)
+SoundPlayerResult SoundPlayer::PreloadBGM(i32 idx, char *path)
 {
     LPBYTE bufferPtr;
     DWORD numBytesRead;
@@ -605,7 +613,7 @@ ZunResult SoundPlayer::PreloadBGM(i32 idx, char *path)
 #define numSamplesPerSec restartCommandProcessingLocal05
 #define blockAlign restartCommandProcessingLocal09
 #pragma var_order(notifySize, hr, numSamplesPerSec, blockAlign)
-ZunResult SoundPlayer::LoadBGM(i32 idx)
+SoundPlayerResult SoundPlayer::LoadBGM(i32 idx)
 {
     HRESULT hr;
     DWORD blockAlign;
@@ -689,7 +697,7 @@ void SoundPlayer::UpdateFades()
     }
 }
 
-ZunResult SoundPlayer::InitSoundBuffers()
+SoundPlayerResult SoundPlayer::InitSoundBuffers()
 {
     i32 i;
 
@@ -1099,7 +1107,7 @@ void SoundPlayer::QueueCommand(i32 opcode, i32 argument, char *path)
     utils::DebugPrint("Sound Que Add %d\r\n", opcode);
 }
 
-ZunResult SoundPlayer::Release()
+SoundPlayerResult SoundPlayer::Release()
 {
     i32 i;
 

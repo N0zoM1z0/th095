@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "SceneControllerDrawExact.inl"
+#else
 #include "SceneSelect.hpp"
 #include "AsciiManager.hpp"
 #include "Main.hpp"
@@ -302,3 +305,5 @@ void __fastcall SceneSelectControllerView::OnUpdate(
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

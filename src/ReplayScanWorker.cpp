@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "ReplayScanWorkerExact.inl"
+#else
 #include "ReplayBrowser.hpp"
 
 #include <process.h>
@@ -69,3 +72,5 @@ void Supervisor::StopReplayScan()
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

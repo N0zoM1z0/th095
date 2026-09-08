@@ -10,6 +10,12 @@
 namespace th095
 {
 
+#ifdef TH095_MATCH_EXACT
+typedef ::ZunResult EclRunResult;
+#else
+typedef ZunResult EclRunResult;
+#endif
+
 struct Enemy;
 struct AnmVm;
 struct Effect;
@@ -289,8 +295,8 @@ struct EclManager
     EclManager();
     ZunResult Load(char *path);
     void Unload();
-    ZunResult CallEclSub(EnemyEclContext *context, i16 subId);
-    ZunResult RunEcl(Enemy *enemy);
+    EclRunResult CallEclSub(EnemyEclContext *context, i16 subId);
+    EclRunResult RunEcl(Enemy *enemy);
     i32 GetTimelineCount();
     EclTimelineInstruction *GetTimeline(i32 index);
 

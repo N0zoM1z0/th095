@@ -6,6 +6,12 @@
 
 namespace th095
 {
+
+#ifdef TH095_MATCH_EXACT
+typedef ::ZunResult MidiResult;
+#else
+typedef ZunResult MidiResult;
+#endif
 struct MidiTimer
 {
   public:
@@ -112,7 +118,7 @@ class MidiDevice
     ~MidiDevice();
 
     BOOL OpenDevice(UINT uDeviceId);
-    ZunResult Close();
+    MidiResult Close();
     BOOL SendLongMsg(LPMIDIHDR pmh);
     BOOL SendShortMsg(u8 midiStatus, u8 firstByte, u8 secondByte);
 
@@ -144,20 +150,20 @@ class MidiOutput : MidiTimer
 
     void OnTimerElapsed();
 
-    ZunResult UnprepareHeader(LPMIDIHDR pmh);
+    MidiResult UnprepareHeader(LPMIDIHDR pmh);
 
-    ZunResult StopPlayback();
+    MidiResult StopPlayback();
     void LoadTracks();
     void ClearTracks();
-    ZunResult ReadFileData(int idx, LPCSTR path);
+    MidiResult ReadFileData(int idx, LPCSTR path);
     void ReleaseFileData(int idx);
     void ProcessMsg(MidiTrack *track);
 
-    ZunResult ParseFile(int fileIdx);
-    ZunResult LoadFile(LPCSTR midiPath);
-    ZunResult Play();
+    MidiResult ParseFile(int fileIdx);
+    MidiResult LoadFile(LPCSTR midiPath);
+    MidiResult Play();
 
-    ZunResult SetFadeOut(u32 ms);
+    MidiResult SetFadeOut(u32 ms);
     void FadeOutSetVolume(i32 volumeOffset);
 
     static u16 Ntohs(u16 val);

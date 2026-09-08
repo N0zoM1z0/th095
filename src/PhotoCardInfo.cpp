@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "PhotoCardInfoExact.inl"
+#else
 #include "AnmText.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
@@ -71,6 +74,8 @@ extern PhotoCardGameTaskView *g_PhotoCardGameTask;
 extern u32 g_PhotoScreenFadeColor;
 
 #ifndef DIFFBUILD
+#define g_PhotoCardGameRuntime \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoCardGameRuntimeView, g_RuntimePlayerOwner)
 #define g_PhotoCardGameTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoCardGameTaskView, g_RuntimeGameTaskOwner)
 #endif
@@ -298,3 +303,5 @@ i32 __fastcall PhotoCardInfoView::OnDraw(PhotoCardInfoView *cardInfo)
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

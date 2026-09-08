@@ -10,7 +10,11 @@ namespace th095
 // public because target-authored initialization writes the seeds directly;
 // keeping one shared declaration prevents class/struct name-decoration splits
 // from creating multiple link-time identities for the same target storage.
+#if defined(TH095_MATCH_EXACT) && defined(TH095_MATCH_RNG_AS_STRUCT)
+struct Rng
+#else
 class Rng
+#endif
 {
   public:
     u16 GetRandomU16();

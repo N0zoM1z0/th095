@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "SceneSelectControllerExact.inl"
+#else
 #include "SceneSelect.hpp"
 #include "AnmText.hpp"
 
@@ -278,3 +281,5 @@ char *SceneSelectControllerView::ResolveSceneText(i32 textId, i32 column,
 #undef BUILD_SCENE_PREVIEW_LINE
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

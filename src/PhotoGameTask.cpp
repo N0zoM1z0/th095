@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "PhotoGameTaskExact.inl"
+#else
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "AsciiManager.hpp"
@@ -243,6 +246,8 @@ extern i32 g_HelpLoadComplete;
 extern i32 g_HelpLoadActive;
 
 #ifndef DIFFBUILD
+#define g_PhotoGameRuntime \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameRuntimeTaskView, g_RuntimePlayerOwner)
 #define g_PhotoGameTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGameTaskOwner)
 #endif
@@ -676,3 +681,5 @@ PhotoGameTaskView::~PhotoGameTaskView()
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

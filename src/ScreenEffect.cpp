@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "ScreenEffectExact.inl"
+#else
 #define WIN32_LEAN_AND_MEAN
 #include "AnmManager.hpp"
 #include "Chain.hpp"
@@ -409,3 +412,5 @@ int ScreenEffect::DeleteScreenEffect(ScreenEffect *screenEffect)
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

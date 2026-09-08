@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "AnmManager.hpp"
+#endif
 #include "SceneSelect.hpp"
 #include "ReplayBrowser.hpp"
 #include "OptionsMenu.hpp"
@@ -50,12 +53,19 @@ struct FrontEndGameManagerView
     };
 };
 
+#ifdef TH095_MATCH_EXACT
+typedef ResultScreenTimer FrontEndControllerTimer;
+#define CreateVmAtScreen CreateVm
+#else
+typedef ZunTimer FrontEndControllerTimer;
+#endif
+
 struct FrontEndControllerUpdateView
 {
     SceneAnmLoadedView *sceneAnm;
     SceneAnmLoadedView *transitionAnm;
-    ZunTimer stateTimer;
-    ZunTimer animationTimer;
+    FrontEndControllerTimer stateTimer;
+    FrontEndControllerTimer animationTimer;
     ResultScreenReplayCursor cursor;
     u8 unknown00f8[0xafc];
     SceneAnmVmIdArray vmIds;
@@ -148,6 +158,26 @@ typedef char FrontEndUpdateEntryModeAt6124[
 typedef char FrontEndUpdateLocalsSizeIs3C[
     (sizeof(FrontEndUpdateLocals) == 0x3c) ? 1 : -1];
 
+#ifdef TH095_MATCH_EXACT
+extern i32 g_FrontEndSupervisorState;
+struct FrontEndSupervisorAudioView
+{
+    ::ZunResult LoadMusic(i32 slot, const char *path);
+    ::ZunResult PlayMusic(i32 slot, i32 unknown);
+    ::ZunResult FadeOutMusic(f32 durationSeconds);
+};
+extern FrontEndSupervisorAudioView g_FrontEndSupervisorAudio;
+#define TH095_FRONT_SUPERVISOR g_SceneSupervisor
+#define TH095_FRONT_AUDIO g_FrontEndSupervisorAudio
+#define TH095_FRONT_SUPERVISOR_STATE g_FrontEndSupervisorState
+#define TH095_FRONT_ANM_MANAGER g_SceneAnmManager
+#else
+#define TH095_FRONT_SUPERVISOR g_Supervisor
+#define TH095_FRONT_AUDIO g_Supervisor
+#define TH095_FRONT_SUPERVISOR_STATE g_Supervisor.currentState
+#define TH095_FRONT_ANM_MANAGER g_AnmManager
+#endif
+
 extern i32 g_FrontEndUiState;
 extern FrontEndGameManagerView *g_FrontEndGameManager;
 extern FrontEndGameManagerView *g_FrontEndGlobalState;
@@ -215,8 +245,8 @@ ChainCallbackResult SceneSelectControllerView::Update()
     {
         if (view->exitToResult)
         {
-            g_Supervisor.StopReplayScan();
-            g_Supervisor.currentState = 6;
+            TH095_FRONT_SUPERVISOR.StopReplayScan();
+            TH095_FRONT_SUPERVISOR_STATE = 6;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
         if (FrontEndHelpLoadSnapshot() != 0)
@@ -224,7 +254,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             return CHAIN_CALLBACK_RESULT_BREAK;
         }
 
-        g_Supervisor.StopReplayScan();
+        TH095_FRONT_SUPERVISOR.StopReplayScan();
         locals.surface = NULL;
         reinterpret_cast<FrontEndAnmStorageView *>(view->sceneAnm)
             ->textures[1]
@@ -274,8 +304,8 @@ ChainCallbackResult SceneSelectControllerView::Update()
 
         if (g_ReplayUsesArchive == 0)
         {
-            g_Supervisor.LoadMusic(0, "bgm/th09_00.wav");
-            g_Supervisor.PlayMusic(0, 0);
+            TH095_FRONT_AUDIO.LoadMusic(0, "bgm/th09_00.wav");
+            TH095_FRONT_AUDIO.PlayMusic(0, 0);
         }
         else
         {
@@ -369,16 +399,16 @@ ChainCallbackResult SceneSelectControllerView::Update()
     case 5:
         if ((view->stateTimer.current == 1) != 0)
         {
-            g_Supervisor.FadeOutMusic(2.0f);
+            TH095_FRONT_AUDIO.FadeOutMusic(2.0f);
             if (FrontEndHelpLoadSnapshot() != 0)
             {
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
-            g_Supervisor.StopReplayScan();
+            TH095_FRONT_SUPERVISOR.StopReplayScan();
             g_FrontEndGameManager = CreateFrontEndGameManager(0);
             if (g_FrontEndGameManager == NULL)
             {
-                g_Supervisor.currentState = 1;
+                TH095_FRONT_SUPERVISOR_STATE = 1;
             }
         }
         if ((view->stateTimer.current < 40) != 0)
@@ -389,21 +419,21 @@ ChainCallbackResult SceneSelectControllerView::Update()
         {
             if (g_FrontEndGlobalState->transitionBlocked)
             {
-                g_Supervisor.currentState = 1;
+                TH095_FRONT_SUPERVISOR_STATE = 1;
                 break;
             }
             for (locals.gameInterruptIndex = 0;
                  locals.gameInterruptIndex < 0x9a;
                  locals.gameInterruptIndex++)
             {
-                g_AnmManager->SetInterrupt(
+                TH095_FRONT_ANM_MANAGER->SetInterrupt(
                     view->vmIds[locals.gameInterruptIndex], 1);
             }
             view->transitionVm.SetInterrupt(1);
-            g_Supervisor.currentState = 3;
+            TH095_FRONT_SUPERVISOR_STATE = 3;
             if (g_ReplayUsesArchive == 0)
             {
-                g_Supervisor.PlayMusic(0, 0);
+                TH095_FRONT_AUDIO.PlayMusic(0, 0);
             }
             break;
         }
@@ -414,17 +444,17 @@ ChainCallbackResult SceneSelectControllerView::Update()
         {
             if (g_ReplayUsesArchive == 0)
             {
-                g_Supervisor.FadeOutMusic(2.0f);
+                TH095_FRONT_AUDIO.FadeOutMusic(2.0f);
             }
             if (FrontEndHelpLoadSnapshot() != 0)
             {
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
-            g_Supervisor.StopReplayScan();
+            TH095_FRONT_SUPERVISOR.StopReplayScan();
             g_FrontEndGameManager = CreateFrontEndGameManager(1);
             if (g_FrontEndGameManager == NULL)
             {
-                g_Supervisor.currentState = 1;
+                TH095_FRONT_SUPERVISOR_STATE = 1;
             }
         }
         if ((view->stateTimer.current < 40) != 0)
@@ -435,21 +465,21 @@ ChainCallbackResult SceneSelectControllerView::Update()
         {
             if (g_FrontEndGlobalState->transitionBlocked)
             {
-                g_Supervisor.currentState = 1;
+                TH095_FRONT_SUPERVISOR_STATE = 1;
                 break;
             }
             for (locals.replayInterruptIndex = 0;
                  locals.replayInterruptIndex < 0x9a;
                  locals.replayInterruptIndex++)
             {
-                g_AnmManager->SetInterrupt(
+                TH095_FRONT_ANM_MANAGER->SetInterrupt(
                     view->vmIds[locals.replayInterruptIndex], 1);
             }
             view->transitionVm.SetInterrupt(1);
-            g_Supervisor.currentState = 7;
+            TH095_FRONT_SUPERVISOR_STATE = 7;
             if (g_ReplayUsesArchive == 0)
             {
-                g_Supervisor.PlayMusic(0, 0);
+                TH095_FRONT_AUDIO.PlayMusic(0, 0);
             }
             break;
         }
@@ -460,8 +490,8 @@ ChainCallbackResult SceneSelectControllerView::Update()
         {
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
-        g_Supervisor.StopReplayScan();
-        g_Supervisor.currentState = 1;
+        TH095_FRONT_SUPERVISOR.StopReplayScan();
+        TH095_FRONT_SUPERVISOR_STATE = 1;
         break;
     }
 
@@ -535,41 +565,41 @@ void SceneSelectControllerView::UpdateMainMenuSelection()
 {
 #define MAIN_MENU_VM(offset)                                                   \
     (*reinterpret_cast<SceneAnmVmId *>(reinterpret_cast<u8 *>(this) + offset))
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xbf4), (this->GetSelectedGroup() != 0) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc0c), (this->GetSelectedGroup() != 0) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xbf8), (this->GetSelectedGroup() != 1) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc10), (this->GetSelectedGroup() != 1) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xbfc), (this->GetSelectedGroup() != 2) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc14), (this->GetSelectedGroup() != 2) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc00), (this->GetSelectedGroup() != 3) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc18), (this->GetSelectedGroup() != 3) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc04), (this->GetSelectedGroup() != 4) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc1c), (this->GetSelectedGroup() != 4) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc08), (this->GetSelectedGroup() != 5) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc20), (this->GetSelectedGroup() != 5) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc24), (this->GetSelectedGroup() != 0) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc28), (this->GetSelectedGroup() != 1) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc2c), (this->GetSelectedGroup() != 2) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc30), (this->GetSelectedGroup() != 3) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc34), (this->GetSelectedGroup() != 4) + 2);
-    g_AnmManager->SetInterrupt(
+    TH095_FRONT_ANM_MANAGER->SetInterrupt(
         MAIN_MENU_VM(0xc38), (this->GetSelectedGroup() != 5) + 2);
 #undef MAIN_MENU_VM
 }

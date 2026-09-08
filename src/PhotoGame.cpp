@@ -1,3 +1,6 @@
+#ifdef TH095_MATCH_EXACT
+#include "PhotoGameExact.inl"
+#else
 #include "PhotoCamera.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
@@ -178,6 +181,11 @@ struct PhotoGameUpdateView
 };
 
 extern PhotoGameUpdateView *g_PhotoGame;
+
+#ifndef DIFFBUILD
+#define g_PhotoGame \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameUpdateView, g_RuntimePlayerOwner)
+#endif
 
 typedef char PhotoGameUpdateHistoryAt2E8[
     (offsetof(PhotoGameUpdateView, positionHistory) == 0x02e8) ? 1 : -1];
@@ -891,3 +899,5 @@ i32 PhotoGameUpdateView::Update()
 }
 
 } // namespace th095
+
+#endif // TH095_MATCH_EXACT

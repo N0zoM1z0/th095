@@ -20,8 +20,17 @@
 #include "../GameplayGlobals.hpp"
 
 #ifndef DIFFBUILD
+#define g_Th095Player \
+    TH095_RUNTIME_GLOBAL_PTR(Player, ::th095::g_RuntimePlayerOwner)
+#define g_Th095PhotoCamera \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoCamera, ::th095::g_RuntimePlayerOwner)
 #define g_Th095GameManager \
     TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeGameTaskOwner)
+#endif
+
+#ifdef TH095_MATCH_EXACT
+#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
+#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
 #endif
 
 namespace th095
@@ -36,8 +45,17 @@ namespace th095
 #define TH08_ECL_CONTEXT_INSTRUCTION(unusedContext) (instruction)
 #define TH08_ECL_CONTEXT_CHILD(unusedContext) (activeChildContext)
 
+#ifdef TH095_MATCH_EXACT
+static __forceinline void InitializeEclTargetTimerExact(ZunTimer *timer)
+{
+    timer->current = 0;
+    timer->subFrame = 0.0f;
+    timer->previous = -999999;
+}
+#endif
+
 // FUNCTION: TH095 0x00408E70; TH08 0x004184B0 is the adjacent source oracle.
-ZunResult EclManager::RunEcl(Enemy *enemy)
+EclRunResult EclManager::RunEcl(Enemy *enemy)
 {
     using namespace EclRunLow;
     using namespace EclRunHigh;
