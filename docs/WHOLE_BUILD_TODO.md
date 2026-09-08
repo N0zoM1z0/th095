@@ -94,9 +94,15 @@ lifecycle writes/clears are `0x0042EB9C` / `0x0042EEFE`. Fresh whole-build
 count changed 239 -> 222 unique unresolved, and the exact-build separation was
 validated by a complete 696/696 canonical strict replay.
 
+Closed 2026-09-09: `0x004BDDC0` (enemy/runtime manager). Thirteen production
+proxy globals now share `g_RuntimeEnemyManagerOwner`; Ghidra-attested lifecycle
+publishes/clears the slot at `0x00414C4C` / `0x00415658` from the exact
+`0x00414B90` constructor and `0x004154E0` destructor. Fresh whole-build count
+changed 222 -> 209 unique unresolved (238 -> 223 diagnostics), and all 157
+directly affected exact units replayed canonical exact.
+
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
-| `0x004BDDC0` | enemy/runtime manager | ECL operand runtime views, `g_BackgroundRuntime`, `g_ExtendedPhotoEnemyManager`, `g_ExtendedRuntime`, enemy-manager views, `g_PhotoRuntime`, `g_PhotoRuntimeResetTarget`, and `g_Th095Runtime` |
 | `0x004C4E6C` | stage state | ASCII/background/card/front/game/task/stage/score/result stage views and `g_Th095StageState` |
 | `0x004BDD98` | bullet manager | enemy-shot, ECL, photo-item, photo-enemy, photo-stage, reset-target, and task views |
 | `0x004C45E0` | effect/stage-controller slot | photo-effect manager, stage controller/effect/reset views, and ECL high views |

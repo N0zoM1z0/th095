@@ -237,6 +237,8 @@ extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoStageStateTaskView *g_PhotoStageState;
 extern PhotoGameRuntimeTaskView *g_PhotoGameRuntime;
 extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
+#define g_PhotoEnemyManagerTask \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerTaskView, g_RuntimeEnemyManagerOwner)
 extern u32 g_PhotoAsciiTextColor;
 extern PhotoReplayInputButtonsTaskView g_ReplayInputButtons;
 extern i32 g_PhotoNextState;

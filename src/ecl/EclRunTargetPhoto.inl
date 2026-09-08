@@ -221,7 +221,7 @@
     case 150:
     {
         Float3 position = enemy->worldPosition + enemy->shootOffset;
-        (*reinterpret_cast<PhotoAnmSpawner **>(g_Th095Runtime + 0x4df8))
+        (*reinterpret_cast<PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8))
             ->Spawn(TH08_ECL_READ_I(ctx, 0), &position);
         break;
     }
@@ -230,7 +230,7 @@
     {
         Float3 position = enemy->worldPosition + enemy->shootOffset;
         TH095_ENEMY_ANM_HANDLES(enemy)->handles[TH08_ECL_READ_I(ctx, 0)] =
-            (*reinterpret_cast<PhotoAnmSpawner **>(g_Th095Runtime + 0x4df8))
+            (*reinterpret_cast<PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8))
                 ->Spawn(TH08_ECL_READ_I(ctx, 1), &position);
         break;
     }

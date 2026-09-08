@@ -55,6 +55,8 @@ extern EclOperandRuntimeView *g_EclOperandRuntime;
 extern EclOperandPlayerView *g_EclOperandPlayer;
 
 #ifndef DIFFBUILD
+#define g_EclOperandRuntime \
+    TH095_RUNTIME_GLOBAL_PTR(EclOperandRuntimeView, g_RuntimeEnemyManagerOwner)
 #define g_EclOperandPlayer \
     TH095_RUNTIME_GLOBAL_PTR(EclOperandPlayerView, g_RuntimePlayerOwner)
 #endif

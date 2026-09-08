@@ -27,6 +27,8 @@ extern EclFloatLValueRuntimeView *g_EclFloatLValueRuntime;
 extern EclFloatLValuePlayerView *g_EclFloatLValuePlayer;
 
 #ifndef DIFFBUILD
+#define g_EclFloatLValueRuntime \
+    TH095_RUNTIME_GLOBAL_PTR(EclFloatLValueRuntimeView, g_RuntimeEnemyManagerOwner)
 #define g_EclFloatLValuePlayer \
     TH095_RUNTIME_GLOBAL_PTR(EclFloatLValuePlayerView, g_RuntimePlayerOwner)
 #endif

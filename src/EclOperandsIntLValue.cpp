@@ -1,4 +1,5 @@
 #include "EnemyManager.hpp"
+#include "GameplayGlobals.hpp"
 #include "ecl/EclOperands.hpp"
 
 namespace th095
@@ -17,6 +18,10 @@ struct EclIntLValueRuntimeView
 };
 
 extern EclIntLValueRuntimeView *g_EclIntLValueRuntime;
+#ifndef DIFFBUILD
+#define g_EclIntLValueRuntime \
+    TH095_RUNTIME_GLOBAL_PTR(EclIntLValueRuntimeView, g_RuntimeEnemyManagerOwner)
+#endif
 
 #define ENEMY_I32(owner, offset) \
     (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(owner) + (offset)))

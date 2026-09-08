@@ -444,7 +444,7 @@ static EclRawInstruction *__fastcall CompareOperands(
 
     case 54:
         (*reinterpret_cast<AnmLoaded **>(
-            EclRunHigh::g_Th095Runtime + 0x4df8))
+            TH095_ECL_RUNTIME + 0x4df8))
             ->SetAndExecuteScriptIdx(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
@@ -478,7 +478,7 @@ static EclRawInstruction *__fastcall CompareOperands(
 #endif
     case 58:
         (*reinterpret_cast<AnmLoaded **>(
-            EclRunHigh::g_Th095Runtime + 0x4dfc))
+            TH095_ECL_RUNTIME + 0x4dfc))
             ->SetAndExecuteScriptIdx(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
@@ -514,7 +514,7 @@ static EclRawInstruction *__fastcall CompareOperands(
                   reinterpret_cast<u8 *>(enemy) + 0x2bf4) >> 31) & 1U) == 0)
         {
             (*reinterpret_cast<AnmLoaded **>(
-                EclRunHigh::g_Th095Runtime + 0x4df8))
+                TH095_ECL_RUNTIME + 0x4df8))
                 ->SetAndExecuteScriptIdx(
                 &enemy->vm,
                 *reinterpret_cast<i16 *>(
@@ -523,7 +523,7 @@ static EclRawInstruction *__fastcall CompareOperands(
         else
         {
             (*reinterpret_cast<AnmLoaded **>(
-                EclRunHigh::g_Th095Runtime + 0x4dfc))
+                TH095_ECL_RUNTIME + 0x4dfc))
                 ->SetAndExecuteScriptIdx(
                 &enemy->vm,
                 *reinterpret_cast<i16 *>(

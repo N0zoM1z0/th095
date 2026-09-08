@@ -147,6 +147,10 @@ static inline SoundPlayer *PhotoSoundPlayer()
 extern PhotoGameStateView *g_PhotoGame;
 extern PhotoRuntimeView *g_PhotoRuntime;
 extern PhotoGlobalStateView *g_PhotoGlobalState;
+#ifndef DIFFBUILD
+#define g_PhotoRuntime \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoRuntimeView, g_RuntimeEnemyManagerOwner)
+#endif
 extern PhotoStageStateView *g_PhotoStageState;
 extern PhotoStageControllerView *g_PhotoStageController;
 extern u16 g_PhotoInput;

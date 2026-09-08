@@ -1,4 +1,5 @@
 #include "EnemyManager.hpp"
+#include "GameplayGlobals.hpp"
 #include "ecl/EclManager.hpp"
 
 namespace th095
@@ -8,6 +9,13 @@ namespace EclRunHigh
 extern u8 *g_Th095Runtime;
 void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruction);
 }
+
+#ifdef DIFFBUILD
+#define TH095_ENEMY_SHOT_RUNTIME EclRunHigh::g_Th095Runtime
+#else
+#define TH095_ENEMY_SHOT_RUNTIME \
+    TH095_RUNTIME_GLOBAL_PTR(u8, g_RuntimeEnemyManagerOwner)
+#endif
 
 struct TargetEnemyAnmScripts
 {
@@ -88,8 +96,8 @@ void Enemy::UpdateShotAndAnm()
             if (TargetEnemyAnmDirection(this) != direction)
             {
                 anm = ((TargetEnemyFlags1(this) >> 31) & 1)
-                    ? *reinterpret_cast<AnmLoaded **>(EclRunHigh::g_Th095Runtime + 0x4dfc)
-                    : *reinterpret_cast<AnmLoaded **>(EclRunHigh::g_Th095Runtime + 0x4df8);
+                    ? *reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4dfc)
+                    : *reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4df8);
 
                 switch (direction)
                 {

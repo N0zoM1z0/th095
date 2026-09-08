@@ -28,6 +28,10 @@ struct EclDependencyRuntimeView
 };
 typedef char EclDependencyRuntimeManagerAt4DF4[(offsetof(EclDependencyRuntimeView, eclManager) == 0x4df4) ? 1 : -1];
 extern EclDependencyRuntimeView *g_PhotoEnemyManager;
+#ifndef DIFFBUILD
+#define g_PhotoEnemyManager \
+    TH095_RUNTIME_GLOBAL_PTR(EclDependencyRuntimeView, g_RuntimeEnemyManagerOwner)
+#endif
 
 namespace EclRunLow
 {

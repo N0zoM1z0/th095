@@ -47,6 +47,8 @@ struct PhotoGameGlobalStateView
 };
 
 extern PhotoResetTargetView *g_PhotoRuntimeResetTarget;
+#define g_PhotoRuntimeResetTarget \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoResetTargetView, g_RuntimeEnemyManagerOwner)
 extern PhotoResetTargetView *g_PhotoBulletResetTarget;
 extern PhotoResetTargetView *g_PhotoStageResetTarget;
 extern PhotoGameGlobalStateView *g_PhotoGameGlobalState;

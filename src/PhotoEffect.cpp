@@ -203,6 +203,8 @@ struct PhotoEnemyManagerView
 };
 
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
+#define g_PhotoEnemyManager \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
 
 struct PhotoEffectManagerView;
 

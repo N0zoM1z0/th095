@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 222 unique unresolved decorated symbols across 238 diagnostics:
-113 data and 109 callable/runtime. Of those names, 219 map through canonical
-relocations to 150 target addresses; three currently lack target-address
+now fails with 209 unique unresolved decorated symbols across 223 diagnostics:
+100 data and 109 callable/runtime. Of those names, 206 map through canonical
+relocations to 149 target addresses; three currently lack target-address
 evidence and four decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -126,6 +126,18 @@ than representative: all 696 configured exact units were cold rebuilt by
 source and then strict-compared, with 696/696 exact and zero failures. Compiler-
 private `$L` identity refreshes were accepted only after structural bytes,
 relocation offset/type, and solved target destination were unchanged.
+
+The `0x004BDDC0` enemy/runtime-manager family is also closed. Fresh report data
+had thirteen unresolved per-TU views at that one slot. Hash-attested Ghidra
+shows the canonical enemy-manager constructor `0x00414B90` publishing `this`
+at `0x00414C4C`, and the canonical destructor `0x004154E0` clearing the slot at
+`0x00415658` after its ECL/ANM cleanup. Production ECL operand, background,
+enemy/photo, camera, game-task, and ECL-runtime byte views now share
+`g_RuntimeEnemyManagerOwner`. The fresh cold link moves 222 -> 209 unique
+unresolved names and 238 -> 223 diagnostics. All directly affected canonical
+sources were cold-replayed: 157/157 units are exact; the only manifest refresh
+was 27 compiler-private labels whose offset/type/solved destinations were
+unchanged.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
@@ -144,13 +156,12 @@ The canonical comparator then passed all 60/60 changed units, and the
 associative EH audit remains 81/81 exact. The manifest refresh comprises 242
 ABI/tag references and 829 compiler-private label identities.
 
-The current source and relocation checkpoints are split into four reviewable
-English commits: `a3412fb` (core runtime ownership/ABI), `3872090` (ANM and
-gameplay views), `7d20869` (front-end/scene/replay owners), and `d77ade1`
-(canonical Supervisor relocation names for Chain). The working tree was clean
-after those commits. Representative exact units compiled successfully, but the
-next agent must replay every exact unit affected by the broad shared-header
-changes before claiming full exact regression closure.
+The broad shared-header exact-regression debt from the earlier owner
+canonicalization is closed by `abba3bf`: canonical exact compilation is split
+from production ownership through `TH095_MATCH_EXACT`, and all 696 configured
+units were cold rebuilt and strict-compared with zero failures. Continue to
+replay every directly affected canonical source after each later family change;
+production link progress alone never changes exact evidence.
 
 Continue from `docs/WHOLE_BUILD_TODO.md`. It records the production-only owner
 alias pattern, prioritized target-address families, multi-target traps,

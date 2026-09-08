@@ -100,7 +100,7 @@
         if (TH08_ECL_READ_I(ctx, 0) >= 0)
         {
             *reinterpret_cast<Enemy **>(
-                g_Th095Runtime + 0x26ae00 + TH08_ECL_READ_I(ctx, 0) * 4) = enemy;
+                TH095_ECL_RUNTIME + 0x26ae00 + TH08_ECL_READ_I(ctx, 0) * 4) = enemy;
             *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |= 2U;
             *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2be5) =
                 static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
@@ -108,7 +108,7 @@
         else
         {
             *reinterpret_cast<Enemy **>(
-                g_Th095Runtime + 0x26ae00 +
+                TH095_ECL_RUNTIME + 0x26ae00 +
                 *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2be5) * 4) = 0;
             *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &= ~2U;
         }
@@ -266,7 +266,7 @@ enter_subroutine:
     case 83:
         if (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958) > 0)
         {
-            reinterpret_cast<Th095RuntimeManager *>(g_Th095Runtime)->SpawnEnemy(
+            reinterpret_cast<Th095RuntimeManager *>(TH095_ECL_RUNTIME)->SpawnEnemy(
                 TH08_ECL_RAW_I(ctx, 0),
                 reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x28a0),
                 10, 0, 0,
@@ -295,7 +295,7 @@ enter_subroutine:
                 position += *reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0);
                 spawned =
-                reinterpret_cast<Th095RuntimeManager *>(g_Th095Runtime)->SpawnEnemy(
+                reinterpret_cast<Th095RuntimeManager *>(TH095_ECL_RUNTIME)->SpawnEnemy(
                     packet.eclSubroutineId, &position, 10, 0, 0,
                     reinterpret_cast<i32 *>(
                         reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x18));
@@ -305,7 +305,7 @@ enter_subroutine:
         break;
 
     case 85:
-        reinterpret_cast<Th095RuntimeManager *>(g_Th095Runtime)->ResetEnemies();
+        reinterpret_cast<Th095RuntimeManager *>(TH095_ECL_RUNTIME)->ResetEnemies();
         break;
 
     case 124:
@@ -466,14 +466,14 @@ enter_subroutine:
 
     case 104:
     {
-        if (*reinterpret_cast<PhotoSession **>(g_Th095Runtime + 0x26ae28))
+        if (*reinterpret_cast<PhotoSession **>(TH095_ECL_RUNTIME + 0x26ae28))
             (*reinterpret_cast<PhotoSession **>(
-                g_Th095Runtime + 0x26ae28))->ReplaceActive();
-        *reinterpret_cast<PhotoSession **>(g_Th095Runtime + 0x26ae28) =
+                TH095_ECL_RUNTIME + 0x26ae28))->ReplaceActive();
+        *reinterpret_cast<PhotoSession **>(TH095_ECL_RUNTIME + 0x26ae28) =
             reinterpret_cast<PhotoSessionDescriptor *>(
                 instruction->operands)->Create();
         if (!*reinterpret_cast<PhotoSession **>(
-                g_Th095Runtime + 0x26ae28))
+                TH095_ECL_RUNTIME + 0x26ae28))
             return ZUN_ERROR;
         g_Th095PhotoMode->Begin();
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0xe), 0);
@@ -493,12 +493,12 @@ enter_subroutine:
 
     case 105:
     {
-        if (*reinterpret_cast<PhotoSession **>(g_Th095Runtime + 0x26ae28))
+        if (*reinterpret_cast<PhotoSession **>(TH095_ECL_RUNTIME + 0x26ae28))
         {
             (*reinterpret_cast<PhotoSession **>(
-                g_Th095Runtime + 0x26ae28))->Finish();
+                TH095_ECL_RUNTIME + 0x26ae28))->Finish();
             *reinterpret_cast<PhotoSession **>(
-                g_Th095Runtime + 0x26ae28) = 0;
+                TH095_ECL_RUNTIME + 0x26ae28) = 0;
             g_Th095PhotoMode->End();
             g_Th095AnmManager->RemoveVm(
                 TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value);

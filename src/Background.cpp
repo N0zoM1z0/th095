@@ -321,6 +321,10 @@ typedef char BackgroundAnmCameraModeAt1768[
 extern BackgroundStageStateView *g_BackgroundStageState;
 extern BackgroundRuntimeView *g_BackgroundRuntime;
 extern BackgroundGlobalStateView *g_PhotoGlobalState;
+#ifndef DIFFBUILD
+#define g_BackgroundRuntime \
+    TH095_RUNTIME_GLOBAL_PTR(BackgroundRuntimeView, g_RuntimeEnemyManagerOwner)
+#endif
 #ifdef TH095_MATCH_EXACT
 extern ZunColor g_PhotoScreenFadeColor;
 #else

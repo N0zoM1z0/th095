@@ -49,6 +49,8 @@ extern EclFloatOperandRuntimeView *g_EclFloatOperandRuntime;
 extern EclFloatOperandPlayerView *g_EclFloatOperandPlayer;
 
 #ifndef DIFFBUILD
+#define g_EclFloatOperandRuntime \
+    TH095_RUNTIME_GLOBAL_PTR(EclFloatOperandRuntimeView, g_RuntimeEnemyManagerOwner)
 #define g_EclFloatOperandPlayer \
     TH095_RUNTIME_GLOBAL_PTR(EclFloatOperandPlayerView, g_RuntimePlayerOwner)
 #endif

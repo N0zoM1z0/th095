@@ -259,6 +259,12 @@ static __forceinline void FinalizeExtendedBulletAfterExecute(
 
 extern ExtendedPlayerView *g_Player;
 extern ExtendedRuntimeView *g_ExtendedRuntime;
+#ifndef DIFFBUILD
+#define g_ExtendedPhotoEnemyManager \
+    TH095_RUNTIME_GLOBAL_PTR(ExtendedPhotoEnemyManagerView, ::th095::g_RuntimeEnemyManagerOwner)
+#define g_ExtendedRuntime \
+    TH095_RUNTIME_GLOBAL_PTR(ExtendedRuntimeView, ::th095::g_RuntimeEnemyManagerOwner)
+#endif
 
 #ifdef TH095_MATCH_EXACT
 struct SoundPlayerView

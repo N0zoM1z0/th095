@@ -984,7 +984,7 @@ enter_subroutine:
         Float3 position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                           TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         PhotoAnmHandle result;
-        (*reinterpret_cast<PhotoAnmSpawner **>(g_Th095Runtime + 0x4df8))
+        (*reinterpret_cast<PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8))
             ->Spawn(&result, TH08_ECL_READ_I(ctx, 0), &position);
         break;
     }
@@ -997,7 +997,7 @@ enter_subroutine:
         *reinterpret_cast<i32 *>(
             reinterpret_cast<u8 *>(TH08_ECL_CONTEXT_ENEMY(ctx)) + 0x2d4 +
             slot * 4) =
-            (*reinterpret_cast<PhotoAnmSpawner **>(g_Th095Runtime + 0x4df8))
+            (*reinterpret_cast<PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8))
                 ->Spawn(&result, TH08_ECL_READ_I(ctx, 1), &position)->value;
         break;
     }
