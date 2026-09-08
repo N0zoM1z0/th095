@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 169 unique unresolved decorated symbols across 176 diagnostics:
-61 data and 108 callable/runtime. Of those names, 166 map through canonical
-relocations to 138 target addresses; three currently lack target-address
+now fails with 167 unique unresolved decorated symbols across 173 diagnostics:
+59 data and 108 callable/runtime. Of those names, 164 map through canonical
+relocations to 137 target addresses; three currently lack target-address
 evidence and three decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -258,6 +258,18 @@ singleton. Production `ReplayManager.cpp` now owns one real `g_ReplayManager`.
 The cold link moves 170 -> 169 unique unresolved names and 178 -> 176
 diagnostics; `0x004C4E74` disappears from the unresolved target set. All 12
 ReplayManager exact units replay with no label refresh.
+
+The replay-path storage at `0x004BDDC8` is closed as a real shared buffer, not a
+pointer-owner alias. `ReplayBrowser.hpp` gives the target-sized
+`g_SelectedReplayPath[0x100]`; ReplayBrowser and the front-end write it with
+`strcpy`/`sprintf`, while PhotoGameTask reads the same target address through
+its historical `g_ReplayPath` relocation. Hash-attested Ghidra places the
+explicit ReplayBrowser update write at `0x0044E2BF` inside exact
+`ReplayBrowserView::Update @ 0x0044DCA0`. Production now defines one real
+`g_SelectedReplayPath[0x100]` and maps only the PhotoGameTask production view to
+it. The cold link moves 169 -> 167 unique unresolved names and 176 -> 173
+diagnostics; `0x004BDDC8` disappears from the unresolved target set. The two
+affected sources replay 14/14 exact units with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

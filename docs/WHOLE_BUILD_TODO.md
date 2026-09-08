@@ -177,6 +177,13 @@ record/playback mode and the destructor clears the active singleton. Fresh
 whole-build count changed 170 -> 169 unique unresolved (178 -> 176 diagnostics),
 and all 12 ReplayManager exact units replayed exact.
 
+Closed 2026-09-09: replay path `0x004BDDC8`. The target is one 0x100-byte
+shared buffer: ReplayBrowser/front-end write `g_SelectedReplayPath`, and
+PhotoGameTask reads the same address through its historical `g_ReplayPath`
+view. Production owns one real array and aliases only the source-level read
+view. Fresh whole-build count changed 169 -> 167 unique unresolved
+(176 -> 173 diagnostics), and the two affected sources replayed 14/14 exact.
+
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
 
@@ -187,7 +194,7 @@ object and function before replacing it. The other multi-target names are
 `g_OptionsGameConfig` (two addresses), and `g_PhotoInput` (two input slots).
 
 After those families, close the independent pointer/storage owners, including
-`g_ResultScreen @ 0x004C4E38`, the replay path at `0x004BDDC8`, input globals,
+`g_ResultScreen @ 0x004C4E38`, input globals,
 front-end lifecycle flags, Supervisor member views, and standalone buffers.
 
 ## Callable/runtime families

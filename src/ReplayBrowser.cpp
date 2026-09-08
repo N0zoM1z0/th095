@@ -12,6 +12,10 @@
 namespace th095
 {
 
+#ifndef DIFFBUILD
+char g_SelectedReplayPath[0x100];
+#endif
+
 extern i32 g_HelpLoadComplete;
 extern i32 g_HelpLoadActive;
 

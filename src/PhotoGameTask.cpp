@@ -232,6 +232,10 @@ typedef char PhotoGameTaskChainsAt118[
 
 extern PhotoRuntimeConfigView g_PhotoRuntimeConfig;
 extern char g_ReplayPath[];
+#ifndef DIFFBUILD
+extern char g_SelectedReplayPath[0x100];
+#define g_ReplayPath g_SelectedReplayPath
+#endif
 extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoStageStateTaskView *g_PhotoStageState;
