@@ -20244,7 +20244,7 @@ target_address = 0x00405A30
 size = 0x855
 compare_size = 0x879
 relocations = [
-  { offset = 0x10E, type = "DIR32", symbol = "$L72778", target = 0x00406285 },
+  { offset = 0x10E, type = "DIR32", symbol = "$L72793", target = 0x00406285 },
   { offset = 0x168, type = "DIR32", symbol = "__real@3f000000", target = 0x00495420 },
   { offset = 0x18D, type = "DIR32", symbol = "__real@bf800000", target = 0x0049541C },
   { offset = 0x1CA, type = "DIR32", symbol = "__real@40c90fdb", target = 0x00495418 },
@@ -20276,15 +20276,15 @@ relocations = [
   { offset = 0x73B, type = "DIR32", symbol = "__real@40800000", target = 0x00495414 },
   { offset = 0x804, type = "REL32", symbol = "?AdvanceTransformProgram@PhotoBulletView@th095@@QAEXXZ", target = 0x004062B0 },
   { offset = 0x80F, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
-  { offset = 0x855, type = "DIR32", symbol = "$L71717", target = 0x00405B42 },
-  { offset = 0x859, type = "DIR32", symbol = "$L71717", target = 0x00405B42 },
-  { offset = 0x85D, type = "DIR32", symbol = "$L71722", target = 0x00405BEC },
-  { offset = 0x861, type = "DIR32", symbol = "$L71723", target = 0x00405BF5 },
-  { offset = 0x865, type = "DIR32", symbol = "$L71727", target = 0x00405C34 },
-  { offset = 0x869, type = "DIR32", symbol = "$L71728", target = 0x00405C3D },
-  { offset = 0x86D, type = "DIR32", symbol = "$L71732", target = 0x00405C95 },
-  { offset = 0x871, type = "DIR32", symbol = "$L71733", target = 0x00405CBF },
-  { offset = 0x875, type = "DIR32", symbol = "$L71737", target = 0x00405D20 },
+  { offset = 0x855, type = "DIR32", symbol = "$L71732", target = 0x00405B42 },
+  { offset = 0x859, type = "DIR32", symbol = "$L71732", target = 0x00405B42 },
+  { offset = 0x85D, type = "DIR32", symbol = "$L71737", target = 0x00405BEC },
+  { offset = 0x861, type = "DIR32", symbol = "$L71738", target = 0x00405BF5 },
+  { offset = 0x865, type = "DIR32", symbol = "$L71742", target = 0x00405C34 },
+  { offset = 0x869, type = "DIR32", symbol = "$L71743", target = 0x00405C3D },
+  { offset = 0x86D, type = "DIR32", symbol = "$L71747", target = 0x00405C95 },
+  { offset = 0x871, type = "DIR32", symbol = "$L71748", target = 0x00405CBF },
+  { offset = 0x875, type = "DIR32", symbol = "$L71752", target = 0x00405D20 },
 ]
 
 [units.photo-bullet-advance-transform]
@@ -20297,8 +20297,8 @@ target_address = 0x004062B0
 size = 0x9AF
 compare_size = 0xA03
 relocations = [
-  { offset = 0x110, type = "DIR32", symbol = "$L72874", target = 0x00406C73 },
-  { offset = 0x117, type = "DIR32", symbol = "$L72881", target = 0x00406C5F },
+  { offset = 0x110, type = "DIR32", symbol = "$L72889", target = 0x00406C73 },
+  { offset = 0x117, type = "DIR32", symbol = "$L72896", target = 0x00406C5F },
   { offset = 0x2B4, type = "DIR32", symbol = "__real@c4778000", target = 0x00495428 },
   { offset = 0x362, type = "REL32", symbol = "?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z", target = 0x00441DA0 },
   { offset = 0x394, type = "DIR32", symbol = "?g_PhotoBulletSoundPlayer@th095@@3UPhotoBulletSoundPlayerView@1@A", target = 0x004C4EE8 },
@@ -20315,11 +20315,11 @@ relocations = [
   { offset = 0x909, type = "DIR32", symbol = "?g_PhotoBulletManager@th095@@3PAUPhotoBulletManagerView@1@A", target = 0x004BDD98 },
   { offset = 0x90E, type = "REL32", symbol = "?SpawnBulletPattern@PhotoBulletManagerView@th095@@QAEHPAUPhotoBulletSpawnDescriptor@2@@Z", target = 0x00406CC0 },
   { offset = 0x93A, type = "REL32", symbol = "?BeginDespawn@PhotoBulletView@th095@@QAEHXZ", target = 0x004077A0 },
-  { offset = 0x9AF, type = "DIR32", symbol = "$L71767", target = 0x004064C8 },
-  { offset = 0x9B3, type = "DIR32", symbol = "$L71769", target = 0x00406530 },
-  { offset = 0x9B7, type = "DIR32", symbol = "$L71772", target = 0x00406652 },
-  { offset = 0x9BB, type = "DIR32", symbol = "$L71775", target = 0x00406716 },
-  { offset = 0x9BF, type = "DIR32", symbol = "$L71764", target = 0x00406C3E },
+  { offset = 0x9AF, type = "DIR32", symbol = "$L71782", target = 0x004064C8 },
+  { offset = 0x9B3, type = "DIR32", symbol = "$L71784", target = 0x00406530 },
+  { offset = 0x9B7, type = "DIR32", symbol = "$L71787", target = 0x00406652 },
+  { offset = 0x9BB, type = "DIR32", symbol = "$L71790", target = 0x00406716 },
+  { offset = 0x9BF, type = "DIR32", symbol = "$L71779", target = 0x00406C3E },
 ]
 
 [units.photo-bullet-clear-captured]

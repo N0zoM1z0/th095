@@ -5,6 +5,9 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
+#ifndef DIFFBUILD
+#include "PhotoPlayerRuntime.hpp"
+#endif
 #include "SceneData.hpp"
 #ifdef TH095_MATCH_EXACT
 #undef TH095_MATCH_RNG_AS_STRUCT
@@ -265,6 +268,15 @@ struct PhotoEnemyPlayerView
 {
     i32 CheckBulletCollision(Float3 *position, Float3 *size);
 };
+
+#ifdef DIFFBUILD
+#define TH095_PHOTO_ENEMY_PLAYER_COLLISION(position, size) \
+    g_PhotoEnemyPlayer->CheckBulletCollision((position), (size))
+#else
+#define TH095_PHOTO_ENEMY_PLAYER_COLLISION(position, size) \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner) \
+        ->CheckBulletCollision((position), (size))
+#endif
 
 struct PhotoEnemyGameView
 {
@@ -1216,7 +1228,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
 
         if (enemy->collidable != 0)
         {
-            g_PhotoEnemyPlayer->CheckBulletCollision(
+            TH095_PHOTO_ENEMY_PLAYER_COLLISION(
                 reinterpret_cast<Float3 *>(&enemy->worldPosition),
                 &enemy->collisionSize);
         }

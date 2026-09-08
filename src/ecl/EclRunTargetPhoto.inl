@@ -25,7 +25,7 @@
         TH095_ECL_ASSIGN_FLOAT(args.field20, 2);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 3),
-            g_Th095PhotoCamera->GetAngle(&args.position));
+            TH095_ECL_PHOTO_ANGLE(&args.position));
         TH095_ECL_ASSIGN_FLOAT(args.speed, 4);
         TH095_ECL_ASSIGN_FLOAT(args.field1C, 5);
         args.field14 = 0;
@@ -67,7 +67,7 @@
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 2),
-            g_Th095PhotoCamera->GetAngle(&args.position));
+            TH095_ECL_PHOTO_ANGLE(&args.position));
         TH095_ECL_ASSIGN_FLOAT(args.speed, 3);
         args.field24 = args.speed;
         TH095_ECL_ASSIGN_FLOAT(args.field28, 4);
@@ -116,7 +116,7 @@
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 2),
-            g_Th095PhotoCamera->GetAngle(&args.position));
+            TH095_ECL_PHOTO_ANGLE(&args.position));
         args.field24 = 0.0f;
         TH095_ECL_ASSIGN_FLOAT(args.speed, 3);
         TH095_ECL_ASSIGN_FLOAT(args.field28, 4);
@@ -195,7 +195,7 @@
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 2),
-            g_Th095PhotoCamera->GetAngle(&args.position));
+            TH095_ECL_PHOTO_ANGLE(&args.position));
         TH095_ECL_ASSIGN_FLOAT(args.speed, 3);
         args.field24 = args.speed;
         TH095_ECL_ASSIGN_FLOAT(args.field28, 4);

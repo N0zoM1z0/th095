@@ -1,5 +1,8 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#ifndef DIFFBUILD
+#include "PhotoPlayerRuntime.hpp"
+#endif
 #include "ecl/EclOperands.hpp"
 
 #include <d3dx8.h>
@@ -59,6 +62,13 @@ extern EclOperandPlayerView *g_EclOperandPlayer;
     TH095_RUNTIME_GLOBAL_PTR(EclOperandRuntimeView, g_RuntimeEnemyManagerOwner)
 #define g_EclOperandPlayer \
     TH095_RUNTIME_GLOBAL_PTR(EclOperandPlayerView, g_RuntimePlayerOwner)
+#endif
+
+#ifdef DIFFBUILD
+#define TH095_ECL_INT_PLAYER_ANGLE(point) g_EclOperandPlayer->AngleFromPoint(point)
+#else
+#define TH095_ECL_INT_PLAYER_ANGLE(point) \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->AngleFromPoint(point)
 #endif
 
 #define ENEMY_I32(owner, offset) \
@@ -158,7 +168,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x275c: return ENEMY_I32(enemy, 0x2964);
 
     case 0x2730:
-        return (i32)g_EclOperandPlayer->AngleFromPoint(&enemy->worldPosition);
+        return (i32)TH095_ECL_INT_PLAYER_ANGLE(&enemy->worldPosition);
     case 0x2732:
     {
         Float3 delta = g_EclOperandPlayer->position - enemy->worldPosition;

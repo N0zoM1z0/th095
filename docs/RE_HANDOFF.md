@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 167 unique unresolved decorated symbols across 173 diagnostics:
-59 data and 108 callable/runtime. Of those names, 164 map through canonical
-relocations to 137 target addresses; three currently lack target-address
+now fails with 160 unique unresolved decorated symbols across 166 diagnostics:
+59 data and 101 callable/runtime. Of those names, 157 map through canonical
+relocations to 135 target addresses; three currently lack target-address
 evidence and three decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -270,6 +270,24 @@ explicit ReplayBrowser update write at `0x0044E2BF` inside exact
 it. The cold link moves 169 -> 167 unique unresolved names and 176 -> 173
 diagnostics; `0x004BDDC8` disappears from the unresolved target set. The two
 affected sources replay 14/14 exact units with no label refresh.
+
+The PlayerInf angle/collision receiver ABI family at `0x004303E0` and
+`0x00430450` is closed. Fresh hash-attested Ghidra bounds the reverse-angle
+helper at `0x004303E0..0x0043044B` (108 bytes), the bullet collision helper at
+`0x00430450..0x00430523` (212 bytes), and the shared death transition at
+`0x004306D0..0x004307C0` (241 bytes); the death routine has exactly the two
+target callers at `0x00430514` and `0x004306B1` from collision and laser
+handling. Production now uses one `PhotoPlayerRuntimeView` with compile-time
+assertions for the target-proven `mode +0x0000`, hurtbox `+0x03A8/+0x03B4`,
+completion timer `+0x0420`, and player position `+0x1E30` fields, while
+DIFFBUILD preserves all ECL/Bullet/Enemy historical proxy receiver names. This
+removes five angle and two collision decorated unresolved names without a
+wrapper or duplicate storage: the cold link moves 167 -> 160 unique unresolved
+names and 173 -> 166 diagnostics, callable/runtime 108 -> 101, and both target
+addresses disappear from the unresolved set. Six affected sources replay
+82/82 configured exact units; 17 BulletManager compiler-private `$L` labels
+were refreshed only after structural bytes, relocation offset/type, and solved
+destination were proven unchanged.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

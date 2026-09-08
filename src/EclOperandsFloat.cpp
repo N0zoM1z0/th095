@@ -1,5 +1,8 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#ifndef DIFFBUILD
+#include "PhotoPlayerRuntime.hpp"
+#endif
 
 namespace th095
 {
@@ -53,6 +56,13 @@ extern EclFloatOperandPlayerView *g_EclFloatOperandPlayer;
     TH095_RUNTIME_GLOBAL_PTR(EclFloatOperandRuntimeView, g_RuntimeEnemyManagerOwner)
 #define g_EclFloatOperandPlayer \
     TH095_RUNTIME_GLOBAL_PTR(EclFloatOperandPlayerView, g_RuntimePlayerOwner)
+#endif
+
+#ifdef DIFFBUILD
+#define TH095_ECL_FLOAT_PLAYER_ANGLE(point) g_EclFloatOperandPlayer->AngleFromPoint(point)
+#else
+#define TH095_ECL_FLOAT_PLAYER_ANGLE(point) \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->AngleFromPoint(point)
 #endif
 
 #define ENEMY_I32(owner, offset) \
@@ -141,11 +151,11 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x2758: return (f32)ENEMY_I32(this, 0x2c58);
     case 0x2759: return (f32)ENEMY_I32(this, 0x2c5c);
     case 0x275a: return (f32)ENEMY_I32(this, 0x2c60);
-    case 0x2730: return g_EclFloatOperandPlayer->AngleFromPoint(&this->worldPosition);
+    case 0x2730: return TH095_ECL_FLOAT_PLAYER_ANGLE(&this->worldPosition);
     case 0x2765:
     {
         Float3 position = this->worldPosition + this->shootOffset;
-        return g_EclFloatOperandPlayer->AngleFromPoint(&position);
+        return TH095_ECL_FLOAT_PLAYER_ANGLE(&position);
     }
 
     case 0x2744: return this->movementAngle;

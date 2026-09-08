@@ -199,13 +199,22 @@ front-end lifecycle flags, Supervisor member views, and standalone buffers.
 
 ## Callable/runtime families
 
-Most of the 108 callable/runtime names are not missing semantics. They are
-local proxy class names calling already reconstructed target functions. Close
-them by canonicalizing the receiver type and declaration:
+Most of the remaining 101 callable/runtime names are not missing semantics.
+They are local proxy class names calling already reconstructed target functions.
+Close them by canonicalizing the receiver type and declaration.
+
+Closed 2026-09-09: PlayerInf angle/collision receiver ABI at `0x004303E0` and
+`0x00430450`. Five angle and two collision proxy names now call the single
+production `PhotoPlayerRuntimeView` backed by `g_RuntimePlayerOwner`; Ghidra
+proves the 108-byte/212-byte functions and the two calls into `Die @
+0x004306D0`. Fresh link count changed 167 -> 160 unique unresolved (173 -> 166
+diagnostics), both addresses are absent from the unresolved target set, and all
+82 affected exact units replay canonical exact.
+
+Continue with:
 
 - ANM VM lookup/manipulation at `0x00445110`, `0x00445170`, `0x004451B0`,
   `0x004451F0`, `0x004452F0`, and `0x00445360`;
-- player angle/collision methods at `0x004303E0` and `0x00430450`;
 - bullet capture/count/reset/spawn methods in the `0x00404950..0x00408220`
   family;
 - enemy create/update/destroy/ECL methods in the

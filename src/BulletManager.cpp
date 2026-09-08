@@ -9,6 +9,9 @@
 #include "PhotoItemManager.hpp"
 #include "SoundPlayer.hpp"
 #include "GameplayGlobals.hpp"
+#ifndef DIFFBUILD
+#include "PhotoPlayerRuntime.hpp"
+#endif
 
 #include <string.h>
 
@@ -168,6 +171,12 @@ struct PhotoBulletTransformRecord
     u32 kind;
     i32 allowWhileActive;
 };
+
+typedef char PhotoBulletVectorMatchesFloat3[
+    (sizeof(PhotoBulletVector) == sizeof(Float3) &&
+     offsetof(PhotoBulletVector, x) == offsetof(Float3, x) &&
+     offsetof(PhotoBulletVector, y) == offsetof(Float3, y) &&
+     offsetof(PhotoBulletVector, z) == offsetof(Float3, z)) ? 1 : -1];
 
 struct PhotoBulletSpawnDescriptor
 {
@@ -414,6 +423,30 @@ struct PhotoBulletSoundPlayerView
 };
 extern PhotoBulletSoundPlayerView g_PhotoBulletSoundPlayer;
 #define g_SoundPlayer g_PhotoBulletSoundPlayer
+#endif
+
+#ifdef DIFFBUILD
+#define TH095_PHOTO_BULLET_PLAYER_ANGLE(position) \
+    g_PhotoBulletPlayer->AngleFromPoint(position)
+#define TH095_PHOTO_BULLET_PLAYER_COLLISION(position, size) \
+    g_PhotoBulletPlayer->CheckBulletCollision((position), (size))
+#else
+static __forceinline f32 PhotoBulletPlayerAngle(PhotoBulletVector *position)
+{
+    return TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)
+        ->AngleFromPoint(reinterpret_cast<Float3 *>(position));
+}
+static __forceinline i32 PhotoBulletPlayerCollision(
+    PhotoBulletVector *position, PhotoBulletVector *size)
+{
+    return TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)
+        ->CheckBulletCollision(
+            reinterpret_cast<Float3 *>(position),
+            reinterpret_cast<Float3 *>(size));
+}
+#define TH095_PHOTO_BULLET_PLAYER_ANGLE(position) PhotoBulletPlayerAngle(position)
+#define TH095_PHOTO_BULLET_PLAYER_COLLISION(position, size) \
+    PhotoBulletPlayerCollision((position), (size))
 #endif
 
 extern PhotoBulletGlobalStateView *g_PhotoBulletGlobalState;
@@ -950,7 +983,7 @@ i32 PhotoBulletManagerView::SpawnBulletPattern(
     i32 index1;
     f32 angleToPlayer;
 
-    angleToPlayer = g_PhotoBulletPlayer->AngleFromPoint(&descriptor->position);
+    angleToPlayer = TH095_PHOTO_BULLET_PLAYER_ANGLE(&descriptor->position);
     for (index2 = 0; index2 < descriptor->count2; ++index2)
     {
         for (index1 = 0; index1 < descriptor->count1; ++index1)
@@ -1171,7 +1204,7 @@ void PhotoBulletView::UpdateAimedDirectionChange()
                 ~PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_AIMED;
         }
         this->angle = AddNormalizeAngle(
-            g_PhotoBulletPlayer->AngleFromPoint(&this->position),
+            TH095_PHOTO_BULLET_PLAYER_ANGLE(&this->position),
             this->exStates[3].directionChangeAngle);
         *reinterpret_cast<i32 *>(&this->speed) =
             *reinterpret_cast<i32 *>(&this->exStates[3].directionChangeSpeed);
@@ -1650,7 +1683,7 @@ i32 PhotoBulletManagerView::Update()
             bullet->position += bullet->velocity * g_AnmGameSpeed;
             if (bullet->collidable != 0)
             {
-                if (g_PhotoBulletPlayer->CheckBulletCollision(
+                if (TH095_PHOTO_BULLET_PLAYER_COLLISION(
                         &bullet->position, &bullet->collisionSize) != 0)
                 {
                     bullet->state = 3;

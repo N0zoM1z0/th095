@@ -4,6 +4,7 @@
 #include "PhotoCamera.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoPlayerRuntime.hpp"
 #include "SoundPlayer.hpp"
 
 namespace th095
@@ -174,10 +175,7 @@ struct PhotoGameUpdateView
     ~PhotoGameUpdateView();
     i32 Initialize();
     i32 LoadSht(char *path);
-    f32 AngleFromPoint(Float3 *position);
-    i32 CheckBulletCollision(Float3 *position, Float3 *size);
     u32 CalcLaserHitbox(Float3 *origin, f32 angle, f32 width, f32 length);
-    void Die();
     i32 UpdateMainState();
     i32 Update();
     i32 DrawPlayer();
@@ -471,7 +469,7 @@ i32 PhotoGameUpdateView::LoadSht(char *path)
     return ZUN_SUCCESS;
 }
 
-f32 PhotoGameUpdateView::AngleFromPoint(Float3 *position)
+f32 PhotoPlayerRuntimeView::AngleFromPoint(Float3 *position)
 {
     f32 xDelta = this->playerPosition.x - position->x;
     f32 yDelta = this->playerPosition.y - position->y;
@@ -483,7 +481,7 @@ f32 PhotoGameUpdateView::AngleFromPoint(Float3 *position)
     return atan2f(yDelta, xDelta);
 }
 
-i32 PhotoGameUpdateView::CheckBulletCollision(Float3 *position, Float3 *size)
+i32 PhotoPlayerRuntimeView::CheckBulletCollision(Float3 *position, Float3 *size)
 {
     Float3 boundsMin;
     Float3 boundsMax;
@@ -538,11 +536,11 @@ u32 PhotoGameUpdateView::CalcLaserHitbox(
     {
         return 0;
     }
-    this->Die();
+    reinterpret_cast<PhotoPlayerRuntimeView *>(this)->Die();
     return 1;
 }
 
-void PhotoGameUpdateView::Die()
+void PhotoPlayerRuntimeView::Die()
 {
     Float3 screenPosition;
 

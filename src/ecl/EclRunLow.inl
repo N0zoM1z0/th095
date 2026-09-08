@@ -569,7 +569,7 @@ static EclRawInstruction *__fastcall CompareOperands(
         enemy->movementAngle =
             AddNormalizeAngle(
                 ((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0))),
-                g_Th095Player->AngleToPoint(
+                TH095_ECL_PLAYER_ANGLE(
                     &enemy->position));
         enemy->speed = ((instruction->operandFlags & (1U << 1)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 1))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 1)));
         break;
@@ -579,7 +579,7 @@ static EclRawInstruction *__fastcall CompareOperands(
             enemy->movementAngle =
                 AddNormalizeAngle(
                     ((instruction->operandFlags & (1U << 2)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 2))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 2))),
-                    g_Th095Player->AngleToPoint(
+                    TH095_ECL_PLAYER_ANGLE(
                         &enemy->position));
             enemy->speed = ((instruction->operandFlags & (1U << 3)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 3))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 3)));
             *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) =
