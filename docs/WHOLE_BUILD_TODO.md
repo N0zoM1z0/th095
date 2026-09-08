@@ -171,6 +171,12 @@ Closed 2026-09-09: `0x004BDD9C` (CardInf). Production now has one real
 the same object. Fresh whole-build count changed 172 -> 170 unique unresolved
 (181 -> 178 diagnostics), and the three affected sources replayed 26/26 exact.
 
+Closed 2026-09-09: `0x004C4E74` (ReplayManager singleton). Production now owns
+one real `ReplayManager *g_ReplayManager`; canonical Initialize publishes in
+record/playback mode and the destructor clears the active singleton. Fresh
+whole-build count changed 170 -> 169 unique unresolved (178 -> 176 diagnostics),
+and all 12 ReplayManager exact units replayed exact.
+
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
 
@@ -181,7 +187,6 @@ object and function before replacing it. The other multi-target names are
 `g_OptionsGameConfig` (two addresses), and `g_PhotoInput` (two input slots).
 
 After those families, close the independent pointer/storage owners, including
-`g_ReplayManager @ 0x004C4E74`,
 `g_ResultScreen @ 0x004C4E38`, the replay path at `0x004BDDC8`, input globals,
 front-end lifecycle flags, Supervisor member views, and standalone buffers.
 

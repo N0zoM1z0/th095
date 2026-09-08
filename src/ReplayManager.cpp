@@ -24,6 +24,10 @@
 namespace th095
 {
 
+#ifndef DIFFBUILD
+ReplayManager *g_ReplayManager = NULL;
+#endif
+
 extern u16 g_ReplayInputAux;
 extern u16 g_ReplayInputFlags;
 

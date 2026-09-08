@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 170 unique unresolved decorated symbols across 178 diagnostics:
-62 data and 108 callable/runtime. Of those names, 167 map through canonical
-relocations to 139 target addresses; three currently lack target-address
+now fails with 169 unique unresolved decorated symbols across 176 diagnostics:
+61 data and 108 callable/runtime. Of those names, 166 map through canonical
+relocations to 138 target addresses; three currently lack target-address
 evidence and three decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -249,6 +249,15 @@ same offset as the canonical CardInf text buffer. The cold link moves 172 -> 170
 unique unresolved names and 181 -> 178 diagnostics; `0x004BDD9C` disappears
 from the unresolved target set. PhotoCardInfo, PhotoStage, and PhotoGameTask
 replay 26/26 exact units with no label refresh.
+
+The `0x004C4E74` ReplayManager singleton is closed with its real named global.
+Canonical exact `Initialize @ 0x004342A0` publishes `this` in both record and
+playback modes (target writes `0x004342C2` and `0x00434413`); exact destructor
+`0x004344F0` clears the slot at `0x0043459B` only when destroying the active
+singleton. Production `ReplayManager.cpp` now owns one real `g_ReplayManager`.
+The cold link moves 170 -> 169 unique unresolved names and 178 -> 176
+diagnostics; `0x004C4E74` disappears from the unresolved target set. All 12
+ReplayManager exact units replay with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
