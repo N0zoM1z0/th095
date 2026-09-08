@@ -61,7 +61,7 @@ The runtime audit reselects the closed cohort by evidence ID, requires exactly
 1,000 rows, and reports zero unresolved/ambiguous classifications. The apply
 tool is dry-run by default and rewrites both ledgers only with `--apply`.
 
-## Active non-exact authored functions
+## Deferred non-exact authored function
 
 This function is source-present and deliberately receives no exact credit. It
 is now the only active reconstruction lane:
@@ -93,6 +93,44 @@ TH08 provenance, and the exception boundary. Their canonical units replay all
 units cold-replay exact. Assembly remains forbidden everywhere else unless the
 user explicitly authorizes a separately evidenced exception.
 
+## Active whole-program build lane
+
+The user paused function-level exactness with only `Controller::GetInput`
+deferred and moved the active phase to real compile/link validation. Use:
+
+```bash
+python3 scripts/build-whole.py --check
+python3 scripts/build-whole.py --compile-only
+python3 scripts/build-whole.py --link-only
+```
+
+The 2026-09-08 cold compiler audit passed every current source TU with the
+hash-locked VC7.1 compiler and produced 88 i386 COFF objects under the two
+profiles already recorded by the canonical units. The real VC7.1 link then
+failed with 515 unique unresolved decorated symbols across 802 linker
+diagnostics. The machine-readable current report is generated at
+`build/whole-validation/report.json`; raw linker output is generated at
+`build/whole-validation/link.log`.
+
+This failure does not mean 515 authored functions are missing. The relocation
+manifests map 512 unresolved names to 277 exact target addresses. The dominant
+gap is production declaration/ownership coherence: for example, `Global.cpp`
+exports Chain methods with the `class ChainElem *` (`PAV`) decoration while
+several exact probe-style TUs request `struct ChainElem *` (`PAU`). Numerous
+local `*View` declarations likewise compile and compare in isolation but do
+not name the production owner. Six proxy names are worse: each maps to multiple
+target addresses in different canonical units, so a blanket linker alias is
+incorrect. The only three names without exact relocation evidence are
+`g_ControllerAssignments`, `g_ControllerInputEnabled`, and
+`g_KeyboardDevice`, all referenced only by deferred `GetInput`.
+
+The next bounded lane is the core production ownership family: canonicalize
+`Chain`/`ChainElem` declarations and their real global owner, then replay every
+affected exact unit before rerunning `--link-only`. Do not add duplicate shims,
+fake global storage, arbitrary `/alternatename` mappings, or
+`/FORCE:UNRESOLVED`. A successful link will establish link closure only; it
+will not establish a byte-exact whole image or runtime playability.
+
 ## Matching checkpoint gate
 
 Before and after each bounded matching experiment:
@@ -105,7 +143,8 @@ python3 scripts/validate-tracking.py --require-target
 python3 scripts/ci.py
 ```
 
-The review report must remain empty. Commit the stable review-closure checkpoint
-before editing non-exact source, then work on one function and one VC7.1 build at
-a time. Do not promote exactness without a reproducible match unit and canonical
-100% relocation-aware comparison.
+The review report must remain empty. Commit a stable whole-build checkpoint
+before changing production declarations, then work on one ownership family and
+one VC7.1 build at a time. Re-run every affected canonical unit after a shared
+type/header change. Do not promote exactness without a reproducible match unit
+and canonical 100% relocation-aware comparison.

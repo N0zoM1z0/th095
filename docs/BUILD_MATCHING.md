@@ -29,6 +29,52 @@ scripts/compile-probe.sh \
 The example flags illustrate invocation only. Promote a profile only after
 target control flow and repeated compiler experiments support it.
 
+## Whole-program VC7.1 build audit
+
+Function-level comparison does not prove that the reconstructed translation
+units form one link-coherent program. Run the independent whole-build graph and
+toolchain gates with:
+
+```bash
+python3 scripts/build-whole.py --check
+python3 scripts/build-whole.py --compile-only
+python3 scripts/build-whole.py --link-only
+```
+
+The first command is target-independent and verifies that every
+`src/**/*.cpp` file appears in `config/match-units.toml`, that each source has
+one canonical profile, and that the production object names do not collide.
+The compile step attests the locked compiler/linker hashes and version banners,
+cold-compiles each unique source under its manifest profile, and verifies i386
+COFF output. Running the script without a mode performs both the cold compile
+and the link. `--link-only` is the fast iteration path after a successful
+compile.
+
+The link uses the verified target's import-library order, PE32/i386 GUI flags,
+and `/OPT:NOREF` so an unused COMDAT cannot hide a missing production
+dependency. The pinned SDK's `d3dx8.lib` carries an unused `libci.lib` autolink
+directive although the pinned tool package does not contain that legacy
+iostream library. `/NODEFAULTLIB:libci.lib` suppresses only the library lookup;
+any real missing iostream symbol remains unresolved and fails the link.
+
+The 2026-09-08 cold audit compiled the complete current source graph but did
+not link. The generated `build/whole-validation/report.json` recorded 515
+unique unresolved decorated symbols across 802 diagnostics: 290 data symbols
+and 225 callable/runtime symbols. Canonical relocation manifests map 512 of
+those names to 277 target addresses; the three without exact relocation
+evidence are the globals used only by the deferred non-exact
+`Controller::GetInput`. Six proxy names map to more than one target address,
+which independently proves that a blanket linker alias would be unsound.
+
+This is a source/link-coherence failure, not a loss of existing function-level
+exact credit. Repair it by moving real declarations and definitions into
+production-linked translation units, one target-address family at a time, and
+replaying every affected exact unit. Do not use duplicate shims, fake globals,
+`/FORCE:UNRESOLVED`, or arbitrary linker aliases to manufacture an executable.
+As with the earliest TH08 i386 validation, the reusable principle is a complete
+compile, complete link, and machine-format attestation. TH095 deliberately uses
+the original VC7.1/PE toolchain rather than creating a Linux port.
+
 ## Canonical unit requirements
 
 Before adding a unit to `config/match-units.toml`, establish:
@@ -67,8 +113,8 @@ configured target hash, reviewed extent, relocation policy, cold rebuild, and
 ledger promotion together form the acceptance gate.
 
 The Main lane uses the TH08-corroborated VC7.1 profile
-`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. Thirteen independent
-TH095 configuration, window, timing, and D3D functions now confirm the source shape,
+`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1`. Canonical TH095
+configuration, window, timing, and D3D units confirm the source shape,
 including inline helpers made observable by `/Ob1`. Switches that leave no
 trace in a bounded unit remain reproducibility settings rather than claims
 about every original compiler option.

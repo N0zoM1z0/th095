@@ -65,6 +65,10 @@ def main() -> int:
         )
         run("Validate match-unit graph", [sys.executable, "scripts/build.py", "--check"])
         run(
+            "Validate whole-build graph",
+            [sys.executable, "scripts/build-whole.py", "--check"],
+        )
+        run(
             "Run workflow unit tests",
             [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
         )

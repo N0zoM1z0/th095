@@ -48,17 +48,20 @@ the primary semantic-analysis backend. Generated `docs/PROGRESS.md` and
 totals; prose intentionally does not duplicate changing counts.
 
 All confirmed authored functions have maintained source, and the origin/boundary
-review is closed at zero pending rows. The active priority is the remaining
-source-present, non-exact compiler-shape residuals. Mapping, origin, source
-presence, semantic acceptance, and exactness remain independent facts.
+review is closed at zero pending rows. Function-level exactness is paused with
+one deferred compiler-shape residual while the active phase validates whether
+the reconstructed translation units form a real link-coherent program. Mapping,
+origin, source presence, compilation, linkage, semantic acceptance, and
+exactness remain independent facts.
 
-The pinned compiler is Microsoft Visual C++ .NET 2003
-`13.10.3077`, matching the target's PE/Rich-header evidence. The
-`/Od /Ob1 /Oi /Gr` main translation-unit profile is proven across seventeen
-accepted Main/D3D units. The exact ANM and ECL VM units independently prove
-the same optimization/inlining shape for their bounded translation units. The
-reconstructed SoundPlayer lane also uses `/Od /Ob1`; profiles elsewhere
-remain unclassified.
+The pinned compiler is Microsoft Visual C++ .NET 2003 `13.10.3077`, matching
+the target's PE/Rich-header evidence. Exact compiler profiles remain recorded
+per source in `config/match-units.toml`; a successful aggregate compile does not
+promote one assumed profile to executable-wide truth. The first cold aggregate
+audit compiled every current source file to i386 COFF, while the real VC7.1
+link exposed unresolved production type/global ownership that function-level
+relocation comparison cannot detect. See the current handoff for the live
+blocker and generated report path.
 
 Start a reconstruction session with:
 
@@ -89,6 +92,17 @@ samples against `config/target.toml` before any analysis is trusted.
 
 Run public, target-independent checks with `python3 scripts/ci.py`. Private
 target and Ghidra checks remain separate from public CI.
+
+Run the non-porting VC7.1 build audit with:
+
+```bash
+python3 scripts/build-whole.py --check
+python3 scripts/build-whole.py --compile-only
+python3 scripts/build-whole.py --link-only
+```
+
+The last command currently fails closed and reports the remaining production
+link contract; it does not create a stubbed or force-linked executable.
 
 ## Reference model
 

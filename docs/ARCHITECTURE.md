@@ -3,9 +3,9 @@
 ## Scope
 
 TH095 reconstructs the original Japanese `東方文花帖 ～ Shoot the Bullet`
-version 1.02a executable. The project currently covers source reconstruction
-and exact comparison only. Playable ports, asset extraction, localization, and
-distribution of original files are out of scope.
+version 1.02a executable. The project covers source reconstruction, exact
+comparison, and pinned-VC7.1 compile/link validation. Playable ports, asset
+extraction, localization, and distribution of original files are out of scope.
 
 ## Binary inventory
 
