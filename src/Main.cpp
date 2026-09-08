@@ -34,7 +34,6 @@ f64 g_LastFpsTimestamp;
 // The retail image has one pointer slot for each gameplay subsystem.  Exact
 // units keep their target-facing per-TU symbol names; the runnable build routes
 // those typed views through these single production owners.
-void *g_RuntimeGameManagerOwner = 0;
 void *g_RuntimeBulletManagerOwner = 0;
 void *g_RuntimeEnemyManagerOwner = 0;
 void *g_RuntimeBackgroundManagerOwner = 0;

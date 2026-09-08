@@ -475,7 +475,7 @@ enter_subroutine:
         if (!*reinterpret_cast<PhotoSession **>(
                 TH095_ECL_RUNTIME + 0x26ae28))
             return ZUN_ERROR;
-        g_Th095PhotoMode->Begin();
+        TH095_ECL_PHOTO_MODE->Begin();
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0xe), 0);
 
         TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle =
@@ -499,7 +499,7 @@ enter_subroutine:
                 TH095_ECL_RUNTIME + 0x26ae28))->Finish();
             *reinterpret_cast<PhotoSession **>(
                 TH095_ECL_RUNTIME + 0x26ae28) = 0;
-            g_Th095PhotoMode->End();
+            TH095_ECL_PHOTO_MODE->End();
             g_Th095AnmManager->RemoveVm(
                 TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value);
             TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value =

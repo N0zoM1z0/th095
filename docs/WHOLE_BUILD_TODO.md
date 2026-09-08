@@ -108,13 +108,23 @@ destructor `0x0042AAF0`. Fresh whole-build count changed 209 -> 199 unique
 unresolved (223 -> 211 diagnostics), and all 144 directly affected exact units
 replayed canonical exact.
 
+Closed 2026-09-09: `0x004BDD90` (Background/photo mode). The target-proven
+owner is the real `Background *g_Background`, not the speculative production
+bridge: ctor/dtor publish/clear at `0x00402226` / `0x00402446`. ANM and ECL
+photo-mode views now canonicalize to that real owner, and PhotoCamera calls the
+real `Background::SetPhotoArea @ 0x00404950`. The unused
+`g_RuntimeGameManagerOwner` duplicate storage was removed. Fresh whole-build
+count changed 199 -> 195 unique unresolved (211 -> 207 diagnostics); the one
+multi-target `g_PhotoBulletManager` name remains only because its `.98` bullet
+references are still open. All 403 directly affected exact units replayed
+canonical exact.
+
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
 | `0x004BDD98` | bullet manager | enemy-shot, ECL, photo-item, photo-enemy, photo-stage, reset-target, and task views |
 | `0x004C45E0` | effect/stage-controller slot | photo-effect manager, stage controller/effect/reset views, and ECL high views |
 | `0x004C45DC` | item-manager slot | `g_ItemManager`, `g_PhotoItemManager`, and the photo-capture particle-spawner view |
 | `0x004BDDC4` | background/front manager slot | `g_PhotoFrontManager` and `g_PhotoStageSupervisor` plus the actual background lifecycle family |
-| `0x004BDD90` | game/background/photo-mode slot | ANM/background views, `EclExtended::g_Background`, and `EclRunHigh::g_Th095PhotoMode` |
 | `0x004BDEC8` | game-task slot | only `Main.obj`'s `g_PhotoGameTask` view remains after the first owner pass |
 | `0x004CA1B8` | canonical ANM manager | `EclExtended::g_AnmManager` and `EclRunHigh::g_Th095AnmManager` should use the real `g_AnmManager` owner |
 

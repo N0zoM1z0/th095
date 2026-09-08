@@ -11,6 +11,14 @@
 namespace th095
 {
 
+#ifndef TH095_MATCH_EXACT
+struct Background
+{
+    void SetPhotoArea(const Float3 *position, const Float3 *size);
+};
+extern Background *g_Background;
+#endif
+
 #ifdef TH095_MATCH_EXACT
 struct PhotoAnmVmIdValue
 {
@@ -1433,8 +1441,13 @@ cameraActive:
                 }
             }
 
+#ifdef TH095_MATCH_EXACT
             g_PhotoBulletManager->BeginPhotoCapture(
                 &camera->viewfinderPosition, &camera->viewfinderSize);
+#else
+            g_Background->SetPhotoArea(
+                &camera->viewfinderPosition, &camera->viewfinderSize);
+#endif
             if (camera->charge >= 0.35f)
             {
                 g_AnmGameSpeed = 0.25f;

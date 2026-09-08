@@ -111,7 +111,17 @@ struct AnmProjectedPhotoBlendDrawLocals
 };
 
 extern AnmBackgroundViewportView *g_CurrentBackgroundViewport;
+#ifdef TH095_MATCH_EXACT
 extern AnmBackgroundStateDrawView *g_Background;
+#else
+struct Background;
+extern Background *g_Background;
+static __forceinline AnmBackgroundStateDrawView *AnmBackgroundStateOwner()
+{
+    return reinterpret_cast<AnmBackgroundStateDrawView *>(g_Background);
+}
+#define g_Background AnmBackgroundStateOwner()
+#endif
 extern Float3 g_BackgroundCameraPosition;
 
 static __forceinline u8 MixAnmColor(u8 first, u8 second)

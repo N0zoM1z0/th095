@@ -82,6 +82,7 @@ struct Background
     u32 UpdateStageObjectVms();
     void StartSpellBackground();
     void StopSpellBackground();
+    void SetPhotoArea(const Float3 *position, const Float3 *size);
 
     AnmVm *stageObjectVms;
     AnmVm stageVm0;
@@ -163,7 +164,7 @@ C_ASSERT(offsetof(Background, cullingDistanceSq) == 0x6470);
 C_ASSERT(offsetof(Background, specialEffectPointCount) == 0x6478);
 C_ASSERT(offsetof(Background, specialEffectPoints) == 0x6480);
 
-DIFFABLE_EXTERN(Background, g_Background);
+DIFFABLE_EXTERN(Background *, g_Background);
 DIFFABLE_EXTERN_ARRAY(const char *, 9, g_StageEnemyAnms);
 DIFFABLE_EXTERN_ARRAY(const char *, 17, g_SpellEnemyAnms);
 DIFFABLE_EXTERN_ARRAY(const char *, 9, g_StageEclFiles);

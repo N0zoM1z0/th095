@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 199 unique unresolved decorated symbols across 211 diagnostics:
-90 data and 109 callable/runtime. Of those names, 196 map through canonical
-relocations to 148 target addresses; three currently lack target-address
+now fails with 195 unique unresolved decorated symbols across 207 diagnostics:
+87 data and 108 callable/runtime. Of those names, 192 map through canonical
+relocations to 147 target addresses; three currently lack target-address
 evidence and four decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -148,6 +148,24 @@ stage/result/score/task and ECL stage-state views now share
 `g_RuntimeStageStateOwner`. The cold link moves 209 -> 199 unique unresolved
 names and 223 -> 211 diagnostics. All 144 directly affected canonical units
 replay exact with no relocation-label refresh.
+
+The `0x004BDD90` Background/photo-mode family is closed at the semantic edge
+level. Hash-attested Ghidra shows the exact `Background` constructor
+`0x004020C0` publishing `this` at `0x00402226`, and destructor `0x00402330`
+clearing the slot at `0x00402446` after Chain/resource teardown. The production
+header was corrected from an object declaration to the target-proven
+`Background *` owner, ANM/ECL views now resolve through real `g_Background`,
+and the PhotoCamera transition calls the real `Background::SetPhotoArea @
+0x00404950` rather than treating that method as a BulletManager receiver. The
+unused speculative `g_RuntimeGameManagerOwner` storage was removed instead of
+maintaining a duplicate logical owner. The cold link moves 199 -> 195 unique
+unresolved names and 211 -> 207 diagnostics. One decorated
+`g_PhotoBulletManager` still appears with target set `{0x004BDD90,0x004BDD98}`
+only because production Bullet/Camera/Game objects still have real `.98` bullet
+references; the `.90` call site itself is now canonical. All 31 source files
+directly affected by the shared-header/type change were cold replayed: 403/403
+configured units are exact, with private-label refreshes accepted only after
+structural and solved-destination audit.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

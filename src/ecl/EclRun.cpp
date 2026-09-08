@@ -42,6 +42,13 @@
     TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeStageStateOwner)
 #endif
 
+#ifdef DIFFBUILD
+#define TH095_ECL_PHOTO_MODE EclRunHigh::g_Th095PhotoMode
+#else
+#define TH095_ECL_PHOTO_MODE \
+    (reinterpret_cast<EclRunHigh::PhotoModeController *>(::th095::g_Background))
+#endif
+
 #ifdef TH095_MATCH_EXACT
 #define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
 #define ZUN_ERROR TH095_LEGACY_ZUN_ERROR

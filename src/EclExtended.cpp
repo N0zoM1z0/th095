@@ -7,6 +7,10 @@
 namespace th095
 {
 extern f32 g_AnmGameSpeed;
+#ifndef TH095_MATCH_EXACT
+struct Background;
+extern Background *g_Background;
+#endif
 
 namespace EclExtended
 {
@@ -209,6 +213,11 @@ extern ExtendedPhotoEffectManager *g_PhotoEffectManager;
 extern ExtendedPhotoEnemyManagerView *g_ExtendedPhotoEnemyManager;
 
 #ifndef DIFFBUILD
+static __forceinline u8 *ExtendedBackgroundOwner()
+{
+    return reinterpret_cast<u8 *>(::th095::g_Background);
+}
+#define g_Background ExtendedBackgroundOwner()
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, ::th095::g_RuntimeGameTaskOwner)
 #endif

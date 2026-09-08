@@ -11,7 +11,6 @@ namespace th095
 // translation unit.  Production builds must share the pointer value so that
 // lifecycle stores are visible to every consumer.  DIFFBUILD units retain
 // their target-specific extern names and relocation evidence.
-DIFFABLE_EXTERN(void *, g_RuntimeGameManagerOwner);
 DIFFABLE_EXTERN(void *, g_RuntimeBulletManagerOwner);
 DIFFABLE_EXTERN(void *, g_RuntimeEnemyManagerOwner);
 DIFFABLE_EXTERN(void *, g_RuntimeBackgroundManagerOwner);
