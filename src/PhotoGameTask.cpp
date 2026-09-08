@@ -1,5 +1,13 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "AsciiManager.hpp"
+#include "FrontEndGlobals.hpp"
+#include "GameplayGlobals.hpp"
+#include "Main.hpp"
+#include "ResultScreen.hpp"
+#include "ScoreData.hpp"
+#include "SceneData.hpp"
+#include "SoundPlayer.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -50,12 +58,6 @@ struct PhotoItemManagerTaskView
     void Destroy();
 };
 
-struct ResultScreen
-{
-    static ResultScreen *Create();
-    void Destroy();
-};
-
 struct PhotoLaserManagerTaskView
 {
     static PhotoLaserManagerTaskView *Create();
@@ -78,23 +80,6 @@ struct PhotoGameFileSystemView
     static BOOL CheckIfFileAlreadyExists(LPCSTR path);
 };
 
-struct PhotoGameSupervisorView
-{
-    i32 LoadMusic(i32 slot, char *path);
-    i32 ConfigureMusic(i32 mode, i32 value);
-    i32 StopAudio();
-    ZunResult StartReplayScan(
-        void (__fastcall *callback)(void *), void *argument);
-    void StopReplayScan();
-    void CompleteLoading();
-    void FailLoading();
-};
-
-struct PhotoSoundPlayerTaskView
-{
-    void PlaySoundByIdx(i32 soundIndex, i32 pan);
-};
-
 struct PhotoHelpMenuTaskView
 {
     u8 unknown000[0x6108];
@@ -107,13 +92,6 @@ struct PhotoStageStateTaskView
     AnmVmId capturedPhotoVms[11];
     u8 unknown1774c[0x25720 - 0x1774c];
     u32 flags;
-};
-
-struct PhotoCaptureManagerTaskView
-{
-    u8 unknown000[8];
-    i32 captureSlot0;
-    i32 captureSlot1;
 };
 
 struct PhotoCapacityCounterTaskView
@@ -203,20 +181,6 @@ typedef char PhotoGameTaskUpdateLoopIAt10[
 typedef char PhotoRuntimeConfigSizeIsC8[
     (sizeof(PhotoRuntimeConfigView) == 0xc8) ? 1 : -1];
 
-struct PhotoSceneDefinitionTaskView
-{
-    i32 bestShotIndex;                  // +0x00
-    i32 level;                          // +0x04
-    i32 scene;                          // +0x08
-    u8 unknown0c[0x0c];
-    char *musicPath;                    // +0x18
-};
-
-struct PhotoSceneSaveDataTaskView
-{
-    u8 bytes[1];
-};
-
 struct PhotoGameTaskView
 {
     PhotoBackgroundManagerView *background; // +0x000
@@ -265,29 +229,23 @@ typedef char PhotoGameTaskChainsAt118[
 
 extern PhotoRuntimeConfigView g_PhotoRuntimeConfig;
 extern char g_ReplayPath[];
-extern PhotoSceneDefinitionTaskView *g_PhotoSceneDefinition;
-extern PhotoSceneSaveDataTaskView *g_PhotoSceneSaveData;
 extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoGameTaskView *g_PhotoGameTask;
-extern PhotoGameSupervisorView g_PhotoGameSupervisor;
-extern PhotoSoundPlayerTaskView g_PhotoGameSoundPlayer;
-extern PhotoHelpMenuTaskView *g_PhotoHelpMenu;
-extern PhotoCaptureManagerTaskView *g_PhotoCaptureManager;
 extern PhotoStageStateTaskView *g_PhotoStageState;
 extern PhotoGameRuntimeTaskView *g_PhotoGameRuntime;
 extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
-extern PhotoAsciiManagerTaskView g_PhotoAsciiManager;
 extern u32 g_PhotoAsciiTextColor;
 extern PhotoReplayInputButtonsTaskView g_ReplayInputButtons;
 extern i32 g_PhotoNextState;
-extern u32 g_ControllerRuntimeFlags;
 extern i32 g_ReplayUsesArchive;
-extern double g_PhotoGameClock;
-extern double g_PhotoGameClock2;
-extern u32 g_PhotoScreenFadeColor;
 extern i32 g_PhotoLoadWaitFlag;
-extern i32 g_PhotoLoadReady;
-extern i32 g_PhotoLoadBusy;
+extern i32 g_HelpLoadComplete;
+extern i32 g_HelpLoadActive;
+
+#ifndef DIFFBUILD
+#define g_PhotoGameTask \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGameTaskOwner)
+#endif
 
 PhotoGameTaskView::PhotoGameTaskView()
 {
@@ -301,11 +259,12 @@ i32 PhotoGameTaskView::Update()
 
     if (((this->flags >> 3) & 1) != 0)
     {
-        g_PhotoGameSupervisor.StopReplayScan();
+        g_Supervisor.StopReplayScan();
         g_PhotoNextState = 6;
-        if (g_PhotoHelpMenu != NULL)
+        if (g_ActiveMenuController != NULL)
         {
-            locals.shutdownHelpMenu = g_PhotoHelpMenu;
+            locals.shutdownHelpMenu = reinterpret_cast<PhotoHelpMenuTaskView *>(
+                g_ActiveMenuController);
             locals.shutdownHelpMenu->closeRequested = 1;
         }
         return 1;
@@ -317,10 +276,11 @@ i32 PhotoGameTaskView::Update()
         return 1;
     }
 
-    g_PhotoGameSupervisor.StopReplayScan();
-    if (g_PhotoHelpMenu != NULL)
+    g_Supervisor.StopReplayScan();
+    if (g_ActiveMenuController != NULL)
     {
-        locals.activeHelpMenu = g_PhotoHelpMenu;
+        locals.activeHelpMenu = reinterpret_cast<PhotoHelpMenuTaskView *>(
+            g_ActiveMenuController);
         locals.activeHelpMenu->closeRequested = 1;
         return 1;
     }
@@ -379,13 +339,13 @@ i32 PhotoGameTaskView::Update()
             locals.previousSecond !=
                 static_cast<i32>(this->completion.timer) / 60)
         {
-            g_PhotoGameSoundPlayer.PlaySoundByIdx(0x24, 0);
+            g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x24), 0);
         }
         else if (static_cast<i32>(this->completion.timer) / 60 <= 10 &&
                  locals.previousSecond !=
                      static_cast<i32>(this->completion.timer) / 60)
         {
-            g_PhotoGameSoundPlayer.PlaySoundByIdx(0x1b, 0);
+            g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x1b), 0);
         }
 
         if (this->completion.timer <= 0)
@@ -421,24 +381,23 @@ i32 PhotoGameTaskView::DrawHud()
         }
 
         g_PhotoAsciiTextColor = locals.alpha << 24 | 0xffffff;
-        g_PhotoAsciiManager.AddFormatText(
+        g_AsciiManager.AddFormatText(
             ((locals.highScorePosition.x = 128.0f),
              (locals.highScorePosition.y = 19.0f),
              (locals.highScorePosition.z = 0.0f),
              &locals.highScorePosition),
             "HiScore %.7d",
-            *reinterpret_cast<i32 *>(
-                &g_PhotoSceneSaveData->bytes[
-                    0x470 + g_PhotoGameTask->bestShotIndex * 0x60]) >
-                    this->score
-                ? *reinterpret_cast<i32 *>(
-                      &g_PhotoSceneSaveData->bytes[
-                          0x470 + g_PhotoGameTask->bestShotIndex * 0x60])
+            g_ResultSaveData
+                        ->scoreEntries[g_PhotoGameTask->bestShotIndex]
+                        .score > this->score
+                ? g_ResultSaveData
+                      ->scoreEntries[g_PhotoGameTask->bestShotIndex]
+                      .score
                 : this->score);
         locals.scorePosition.x = 128.0f;
         locals.scorePosition.y = 32.0f;
         locals.scorePosition.z = 0.0f;
-        g_PhotoAsciiManager.AddFormatText(
+        g_AsciiManager.AddFormatText(
             &locals.scorePosition,
             "  Score %.7d",
             this->score);
@@ -451,32 +410,32 @@ i32 PhotoGameTaskView::DrawHud()
         locals.photoCountPosition.x = 409.0f;
         locals.photoCountPosition.y = 19.0f;
         locals.photoCountPosition.z = 0.0f;
-        g_PhotoAsciiManager.AddFormatText(
+        g_AsciiManager.AddFormatText(
             &locals.photoCountPosition,
             "Photo %.2d/%.2d",
             locals.capturedPhotoCount,
             locals.photoCapacity);
 
-        if (g_PhotoSceneDefinition->level != 10)
+        if (g_SelectedScene->level != 10)
         {
             locals.scenePosition.x = 472.0f;
             locals.scenePosition.y = 32.0f;
             locals.scenePosition.z = 0.0f;
-            g_PhotoAsciiManager.AddFormatText(
+            g_AsciiManager.AddFormatText(
                 &locals.scenePosition,
                 "%2d-%d",
-                g_PhotoSceneDefinition->level + 1,
-                g_PhotoSceneDefinition->scene + 1);
+                g_SelectedScene->level + 1,
+                g_SelectedScene->scene + 1);
         }
         else
         {
             locals.extraScenePosition.x = 472.0f;
             locals.extraScenePosition.y = 32.0f;
             locals.extraScenePosition.z = 0.0f;
-            g_PhotoAsciiManager.AddFormatText(
+            g_AsciiManager.AddFormatText(
                 &locals.extraScenePosition,
                 "EX-%d",
-                g_PhotoSceneDefinition->scene + 1);
+                g_SelectedScene->scene + 1);
         }
         g_PhotoAsciiTextColor = 0xffffffff;
     }
@@ -508,7 +467,7 @@ PhotoGameTaskView *PhotoGameTaskView::Create(i32 replayMode)
     g_Chain.AddToDrawChain(locals.elem, 2);
     locals.task->drawChain = locals.elem;
 
-    g_PhotoGameSupervisor.StartReplayScan(PhotoGameTaskView::Load, NULL);
+    g_Supervisor.StartReplayScan(PhotoGameTaskView::Load, NULL);
     return locals.task;
 }
 
@@ -527,10 +486,10 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
     PhotoGameTaskView *task = g_PhotoGameTask;
     task->flags = task->flags | 4;
 
-    while (g_PhotoCaptureManager->captureSlot0 >= 0 ||
-           g_PhotoCaptureManager->captureSlot1 >= 0)
+    while (g_AnmManager->captureSurfaceIdx >= 0 ||
+           g_AnmManager->captureAnmIdx >= 0)
     {
-        if (((g_ControllerRuntimeFlags >> 7) & 1) != 0)
+        if (((g_Supervisor.flags.raw >> 7) & 1) != 0)
         {
             goto failure;
         }
@@ -547,31 +506,31 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
         Sleep(16);
     }
 
-    if (((g_ControllerRuntimeFlags >> 9) & 1) == 0)
+    if (((g_Supervisor.flags.raw >> 9) & 1) == 0)
     {
-        if (((g_ControllerRuntimeFlags >> 12) & 1) == 0)
+        if (((g_Supervisor.flags.raw >> 12) & 1) == 0)
         {
             task->flags = task->flags | 0x100;
         }
         else
         {
-            g_ControllerRuntimeFlags &= ~0x1000;
-            g_PhotoGameSupervisor.ConfigureMusic(0, 0);
+            g_Supervisor.flags.raw &= ~0x1000;
+            g_Supervisor.PlayMusic(0, 0);
         }
     }
 
-    g_PhotoGameSupervisor.CompleteLoading();
+    g_Supervisor.HideLoadingVms();
     task->flags = task->flags & ~4;
-    g_ControllerRuntimeFlags &= ~0x200;
-    g_PhotoLoadBusy = 0;
-    g_PhotoLoadReady = 1;
+    g_Supervisor.flags.raw &= ~0x200;
+    g_HelpLoadActive = 0;
+    g_HelpLoadComplete = 1;
     return;
 
 failure:
     task->flags = task->flags | 8;
-    g_PhotoGameSupervisor.FailLoading();
-    g_PhotoLoadBusy = 0;
-    g_PhotoLoadReady = 1;
+    g_Supervisor.BeginLoadingCompletion();
+    g_HelpLoadActive = 0;
+    g_HelpLoadComplete = 1;
 }
 
 i32 __fastcall PhotoGameTaskView::OnUpdate(PhotoGameTaskView *task)
@@ -596,36 +555,32 @@ i32 PhotoGameTaskView::InitializeSubsystems()
         return ZUN_ERROR;
     }
 
-    this->bestShotIndex = g_PhotoSceneDefinition->bestShotIndex;
+    this->bestShotIndex = g_SelectedScene->bestShotIndex;
     utils::DebugPrint(
         "Start %d-%d\n",
-        g_PhotoSceneDefinition->level + 1,
-        g_PhotoSceneDefinition->scene + 1);
+        g_SelectedScene->level + 1,
+        g_SelectedScene->scene + 1);
 
-    if (g_PhotoSceneDefinition->level != 10)
+    if (g_SelectedScene->level != 10)
     {
         sprintf(
             bestShotPath,
             "bestshot/bs_%.2d_%d.dat",
-            g_PhotoSceneDefinition->level + 1,
-            g_PhotoSceneDefinition->scene + 1);
+            g_SelectedScene->level + 1,
+            g_SelectedScene->scene + 1);
     }
     else
     {
         sprintf(
             bestShotPath,
             "bestshot/bs_ex_%d.dat",
-            g_PhotoSceneDefinition->scene + 1);
+            g_SelectedScene->scene + 1);
     }
 
     if (!PhotoGameFileSystemView::CheckIfFileAlreadyExists(bestShotPath))
     {
-        *reinterpret_cast<i32 *>(
-            &g_PhotoSceneSaveData->bytes[
-                0x49c + this->bestShotIndex * 0x60]) = 0;
-        *reinterpret_cast<i32 *>(
-            &g_PhotoSceneSaveData->bytes[
-                0x478 + this->bestShotIndex * 0x60]) = 0;
+        g_ResultSaveData->scoreEntries[this->bestShotIndex].attemptCount = 0;
+        g_ResultSaveData->scoreEntries[this->bestShotIndex].detailScore = 0;
     }
 
     this->background = PhotoBackgroundManagerView::Create();
@@ -674,13 +629,13 @@ i32 PhotoGameTaskView::InitializeSubsystems()
         return ZUN_ERROR;
     }
 
-    if (((g_ControllerRuntimeFlags >> 9) & 1) == 0 &&
+    if (((g_Supervisor.flags.raw >> 9) & 1) == 0 &&
         g_ReplayUsesArchive == 0)
     {
-        g_PhotoGameSupervisor.LoadMusic(
-            0, g_PhotoSceneDefinition->musicPath);
+        g_Supervisor.LoadMusic(
+            0, g_SelectedScene->musicPath);
     }
-    g_PhotoGameClock2 = g_PhotoGameClock = 0.0;
+    g_Supervisor.lagDenominator = g_Supervisor.lagNumerator = 0.0;
     return ZUN_SUCCESS;
 }
 
@@ -705,12 +660,12 @@ PhotoGameTaskView::~PhotoGameTaskView()
     g_Chain.Cut(this->drawChain);
     g_PhotoGameTask = NULL;
 
-    if (((g_ControllerRuntimeFlags >> 9) & 1) == 0 &&
+    if (((g_Supervisor.flags.raw >> 9) & 1) == 0 &&
         g_ReplayUsesArchive == 0)
     {
-        g_PhotoGameSupervisor.StopAudio();
+        g_Supervisor.StopAudio();
     }
-    if (((g_ControllerRuntimeFlags >> 9) & 1) != 0)
+    if (((g_Supervisor.flags.raw >> 9) & 1) != 0)
     {
         g_PhotoScreenFadeColor = 0;
     }

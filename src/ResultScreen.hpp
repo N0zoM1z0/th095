@@ -1,50 +1,15 @@
 #ifndef TH095_RESULT_SCREEN_HPP
 #define TH095_RESULT_SCREEN_HPP
 
+#include "AnmManager.hpp"
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "ReplayManager.hpp"
+#include "ZunTimer.hpp"
 #include <stdlib.h>
 
 namespace th095
 {
-
-struct ResultScreenTimer
-{
-    i32 previous;
-    f32 subFrame;
-    i32 current;
-
-    ResultScreenTimer()
-    {
-        this->current = 0;
-        this->previous = -999999;
-        this->subFrame = 0.0f;
-    }
-
-    u32 operator==(i32 value) { return this->current == value; }
-    u32 operator<(i32 value) { return this->current < value; }
-    u32 operator>=(i32 value) { return this->current >= value; }
-    i32 GetCurrent() { return this->current; }
-    i32 Tick();
-
-    void Reset()
-    {
-        this->current = 0;
-        this->subFrame = 0.0f;
-        this->previous = -999999;
-    }
-
-    void Set(i32 value)
-    {
-        this->current = value;
-        this->subFrame = (f32)value;
-        this->previous = -999999;
-    }
-};
-
-typedef char ResultScreenTimerSizeIsC[
-    (sizeof(ResultScreenTimer) == 0x0c) ? 1 : -1];
 
 struct ResultScreenReplayCursor
 {
@@ -112,68 +77,14 @@ struct ResultScreenReplayCursor
     }
 };
 
-struct ResultScreenAnmVm
-{
-    u8 unknown000[0x14];
-    void *generatedVertices;
-    u8 unknown018[0x40 - 0x18];
-    struct
-    {
-        f32 x;
-        f32 y;
-    } spriteSize;
-    u8 unknown048[0x220 - 0x48];
-    u32 color1;
-    u8 unknown224[0x22e - 0x224];
-    i16 pendingInterrupt;
-    u8 unknown230[0x244 - 0x230];
-    struct ResultScreenLoadedSpriteView *loadedSprite;
-    u8 unknown248[0x2c0 - 0x248];
-    u8 glyphWidth;
-    u8 glyphHeight;
-    u8 unknown2c2[0x2cc - 0x2c2];
-
-    ResultScreenAnmVm();
-    ~ResultScreenAnmVm()
-    {
-        if (this->generatedVertices != NULL)
-        {
-            void *vertices = this->generatedVertices;
-            free(vertices);
-        }
-    }
-
-    void SetInterrupt(i32 interrupt)
-    {
-        this->pendingInterrupt = interrupt;
-    }
-};
+typedef AnmVm ResultScreenAnmVm;
 
 typedef char ResultScreenAnmVmSizeIs2CC[
     (sizeof(ResultScreenAnmVm) == 0x2cc) ? 1 : -1];
 
-struct ResultScreenAnmLoadedView
-{
-    i32 anmIdx;
-    u8 unknown004[0x10];
-    struct ResultScreenTextureEntryView *textures;
-
-    void InitializeVm(ResultScreenAnmVm *vm, i32 scriptIndex);
-    void SetAndExecuteScript(ResultScreenAnmVm *vm, i32 scriptIndex);
-};
-
-struct ResultScreenTextureEntryView
-{
-    u8 unknown000[0x0c];
-    i32 format;
-};
-
-struct ResultScreenLoadedSpriteView
-{
-    u8 unknown000[0x28];
-    f32 uvEndX;
-    f32 uvEndY;
-};
+typedef AnmLoaded ResultScreenAnmLoadedView;
+typedef AnmTextureEntryView ResultScreenTextureEntryView;
+typedef AnmLoadedSprite ResultScreenLoadedSpriteView;
 
 struct ResultPhotoSlotView
 {
@@ -238,7 +149,7 @@ struct ResultScreen
 {
     ResultScreenAnmLoadedView *anm;       // +0x0000
     i32 state;                            // +0x0004
-    ResultScreenTimer stateTimer;         // +0x0008
+    ZunTimer stateTimer;                  // +0x0008
     f32 savedGameSpeed;                   // +0x0014
     ResultScreenAnmVm vms[21];            // +0x0018
     ResultScreenAnmVm auxiliaryVms[2];    // +0x3ad4

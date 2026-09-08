@@ -12,13 +12,6 @@
 namespace th095
 {
 
-namespace ScoreFileWriter
-{
-ZunResult Open(char *path);
-ZunResult Write(void *data, i32 size);
-ZunResult Close();
-} // namespace ScoreFileWriter
-
 u8 *__fastcall CompressData(u8 *input, i32 inputSize, i32 *outputSize);
 
 struct ScorePhotoStageView
@@ -113,10 +106,10 @@ ZunResult ResultSaveDataView::WriteBestShotData()
                         g_SelectedScene->titleArgument2 + 1);
             }
 
-            ScoreFileWriter::Open(locals.path);
-            ScoreFileWriter::Write(
+            FileSystem::OpenWriteFile(locals.path);
+            FileSystem::WriteToOpenFile(
                 &this->bestShotRecords[locals.pendingBestShotIndex], 0x18);
-            ScoreFileWriter::Write(
+            FileSystem::WriteToOpenFile(
                 this->bestShotRecords[locals.pendingBestShotIndex].comment,
                 sizeof(this->bestShotRecords[0].comment));
             locals.compressedPhotoData = CompressData(
@@ -126,9 +119,9 @@ ZunResult ResultSaveDataView::WriteBestShotData()
                     this->bestShotRecords[locals.pendingBestShotIndex]
                         .componentCount,
                 &locals.compressedPhotoSize);
-            ScoreFileWriter::Write(locals.compressedPhotoData,
-                                   locals.compressedPhotoSize);
-            ScoreFileWriter::Close();
+            FileSystem::WriteToOpenFile(locals.compressedPhotoData,
+                                        locals.compressedPhotoSize);
+            FileSystem::CloseWriteFile();
             this->bestShotRecords[locals.pendingBestShotIndex].valid = 0;
             free(locals.compressedPhotoData);
             this->UpdateBestShotRecord(locals.pendingBestShotIndex);
@@ -183,14 +176,14 @@ ZunResult ResultSaveDataView::WriteBestShotData()
         locals.compressedData, this->fileHeader->compressedSize,
         0xac, 0x35, 0x10, this->fileHeader->compressedSize);
 
-    if (ScoreFileWriter::Open("scoreth095.dat") != ZUN_SUCCESS)
+    if (FileSystem::OpenWriteFile("scoreth095.dat") != ZUN_SUCCESS)
     {
         return ZUN_ERROR;
     }
-    ScoreFileWriter::Write(this->fileHeader, sizeof(ScoreFileHeader));
-    ScoreFileWriter::Write(locals.compressedData,
-                           this->fileHeader->compressedSize);
-    ScoreFileWriter::Close();
+    FileSystem::WriteToOpenFile(this->fileHeader, sizeof(ScoreFileHeader));
+    FileSystem::WriteToOpenFile(locals.compressedData,
+                                this->fileHeader->compressedSize);
+    FileSystem::CloseWriteFile();
     free(locals.compressedData);
     free(locals.rawBuffer);
     return ZUN_SUCCESS;

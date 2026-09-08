@@ -10,7 +10,7 @@ struct HelpMenuView
 {
     SceneAnmLoadedView *sceneAnm;
     SceneAnmLoadedView *transitionAnm;
-    ResultScreenTimer stateTimer;
+    ZunTimer stateTimer;
     u8 unknown0014[0x0c];
     ResultScreenReplayCursor cursor;
     u8 unknown00f8[0xafc];
@@ -43,7 +43,6 @@ typedef char HelpMenuSizeAt650C[
 typedef char HelpMenuDataAt6510[
     (offsetof(HelpMenuView, helpAnmData) == 0x6510) ? 1 : -1];
 
-extern HelpMenuView *g_HelpMenu;
 extern i32 g_HelpLoadComplete;
 extern i32 g_HelpLoadActive;
 

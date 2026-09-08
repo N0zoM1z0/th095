@@ -12,7 +12,7 @@ struct ReplayBrowserView
 {
     SceneAnmLoadedView *sceneAnm;
     i32 unknown0004;
-    ResultScreenTimer stateTimer;
+    ZunTimer stateTimer;
     u8 unknown0014[0x0c];
     ResultScreenReplayCursor rowCursor;
     ResultScreenReplayCursor columnCursor;
@@ -54,9 +54,6 @@ struct ReplayBrowserExitSignal
     void Request();
 };
 
-extern ReplayBrowserView *g_ReplayBrowser;
-extern i32 g_ReplayScanFinished;
-extern i32 g_ReplayScanActive;
 extern i32 g_ReplayBrowserSelection;
 extern char g_SelectedReplayPath[0x100];
 extern ReplayBrowserExitSignal g_ReplayBrowserExitSignal;

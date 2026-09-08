@@ -20,7 +20,7 @@ struct ScenePreviewLocals
 typedef char ScenePreviewLocalsSizeIs30[
     (sizeof(ScenePreviewLocals) == 0x30) ? 1 : -1];
 
-ZunResult SceneSaveDataView::LoadScenePreviewTexture(
+ZunResult ResultSaveDataView::LoadScenePreviewTexture(
     SceneAnmLoadedView *anm, i32 textureIndex, i32 sceneIndex)
 {
     ScenePreviewLocals locals;
@@ -38,7 +38,7 @@ ZunResult SceneSaveDataView::LoadScenePreviewTexture(
             this->bestShotRecords[sceneIndex].height;
         D3DXLoadSurfaceFromMemory(
             locals.surface, NULL, &locals.sourceRect,
-            g_SceneSaveData->bestShotRecords[sceneIndex].pixelData,
+            g_ResultSaveData->bestShotRecords[sceneIndex].pixelData,
             this->bestShotRecords[sceneIndex].componentCount == 3
                 ? D3DFMT_R8G8B8
                 : D3DFMT_A4R4G4B4,

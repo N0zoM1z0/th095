@@ -1,5 +1,6 @@
 #include "HelpMenu.hpp"
 #include "FileSystem.hpp"
+#include "FrontEndGlobals.hpp"
 #include "SoundPlayer.hpp"
 
 #include <stdio.h>
@@ -7,6 +8,9 @@
 
 namespace th095
 {
+
+DIFFABLE_STATIC(i32, g_HelpLoadComplete);
+DIFFABLE_STATIC(i32, g_HelpLoadActive);
 
 static __forceinline void HelpMenuCreateVmAt(HelpMenuView *view, i32 scriptIndex)
 {
@@ -51,7 +55,8 @@ static __forceinline u16 IsHelpMenuInputPressed(u16 buttons)
 
 void __fastcall LoadHelpAnm(void *unused)
 {
-    HelpMenuView *helpMenu = g_HelpMenu;
+    HelpMenuView *helpMenu =
+        reinterpret_cast<HelpMenuView *>(g_ActiveMenuController);
 
     helpMenu->helpAnmData = FileSystem::OpenFile(
         helpMenu->helpAnmPath, &helpMenu->helpAnmSize, FALSE);
@@ -134,7 +139,7 @@ i32 HelpMenuView::UpdateHelpMenu()
             this->stateTimer.Reset();
             sprintf(this->helpAnmPath, "help_%.2d.anm",
                     this->cursor.GetCurrent());
-            g_SceneSupervisor.StartReplayScan(LoadHelpAnm, NULL);
+            g_Supervisor.StartReplayScan(LoadHelpAnm, NULL);
             for (i32 i = 0; i < 9; i++)
             {
                 this->vmIds.SetInterrupt(0x91 + i, 1);
@@ -171,7 +176,7 @@ i32 HelpMenuView::UpdateHelpMenu()
 
     case 3:
     {
-        g_SceneAnmManager->LoadTexture(
+        g_AnmManager->LoadTexture(
             reinterpret_cast<SceneTextureEntryView *>(
                 &((HelpAnmStorageView *)this->sceneAnm)->textures[13]),
             this->helpAnmData, this->helpAnmSize, 1, 0, 1);

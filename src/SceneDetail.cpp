@@ -11,7 +11,7 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
     i32 value;
     tm *captureTime;
 
-    if (g_SceneSaveData->sceneScores[this->selectedScoreEntryIndex]
+    if (g_ResultSaveData->sceneScores[this->selectedScoreEntryIndex]
             .captureTime == 0)
     {
         SET_DETAIL_SPRITE(0x4c, 0x34);
@@ -32,7 +32,7 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
     else
     {
         captureTime = localtime(
-            &g_SceneSaveData->sceneScores[this->selectedScoreEntryIndex]
+            &g_ResultSaveData->sceneScores[this->selectedScoreEntryIndex]
                  .captureTime);
 
         SET_DETAIL_SPRITE(0x4c, (captureTime->tm_mon + 1) / 10 + 0x27);
@@ -44,7 +44,7 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
         SET_DETAIL_SPRITE(0x54, captureTime->tm_min / 10 + 0x27);
         SET_DETAIL_SPRITE(0x55, captureTime->tm_min % 10 + 0x27);
 
-        value = g_SceneSaveData
+        value = g_ResultSaveData
                     ->sceneScores[this->selectedScoreEntryIndex]
                     .detailScore;
         SET_DETAIL_SPRITE(0x56, value / 100000 % 10 + 0x27);
@@ -55,7 +55,7 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
         SET_DETAIL_SPRITE(0x5b, value % 10 + 0x27);
     }
 
-    value = g_SceneSaveData->sceneScores[this->selectedScoreEntryIndex]
+    value = g_ResultSaveData->sceneScores[this->selectedScoreEntryIndex]
                 .unlockScore;
     if (value / 100000 != 0)
     {
@@ -114,17 +114,17 @@ void SceneSelectControllerView::SetDetailDigitSprite(i32 vmIndex,
                                                       i32 spriteIndex)
 {
     this->sceneAnm->SetSprite(
-        g_SceneAnmManager->GetVm(this->vmIds.values[vmIndex]), spriteIndex);
+        g_AnmManager->GetVm(this->vmIds.values[vmIndex]), spriteIndex);
 }
 
 void SceneSelectControllerView::ShowDetailDigit(i32 vmIndex)
 {
-    g_SceneAnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord |= 2;
+    g_AnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord |= 2;
 }
 
 void SceneSelectControllerView::HideDetailDigit(i32 vmIndex)
 {
-    g_SceneAnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord &= ~2;
+    g_AnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord &= ~2;
 }
 
 #undef SET_DETAIL_SPRITE

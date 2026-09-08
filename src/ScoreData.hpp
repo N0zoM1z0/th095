@@ -2,6 +2,7 @@
 #define TH095_SCORE_DATA_HPP
 
 #include "Global.hpp"
+#include <time.h>
 
 namespace th095
 {
@@ -41,7 +42,11 @@ struct ResultBestShotRecordView
     u16 width;
     u16 height;
     i32 score;
-    u8 unknown014[4];
+    union
+    {
+        u8 unknown014[4];
+        f32 slowRate;
+    };
     char comment[0x50];
     u8 valid;
     u8 componentsLoaded;
@@ -62,12 +67,25 @@ struct ResultScoreEntryView
     u8 unknown014[0x18 - 0x14];
     i32 detailScore;
     u8 unknown01c[0x3c - 0x1c];
-    i32 attemptCount;
+    union
+    {
+        i32 attemptCount;
+        time_t captureTime;
+    };
     i32 bestShotChecksum;
     i32 unlockScore;
     f32 slowRate;
     f32 successRate;
-    u32 flags;
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 captured : 1;
+            u32 showSuccessRateMarker : 1;
+            u32 unknownFlags : 30;
+        };
+    };
     u8 unknown054[0x60 - 0x54];
 };
 
@@ -86,17 +104,44 @@ struct ResultSaveDataView
             u8 nextSceneByGroup[11];
             u8 unknown02d[0x460 - 0x2d];
         } profile;
+        // The result and scene-select code address these fields directly in
+        // the same 0x458-byte profile block.  They are aliases, not another
+        // runtime object or another allocation.
+        struct
+        {
+            u8 unknownRuntime008[0x0c];
+            char replayName[9];
+            u8 unknownRuntime01d;
+            i16 lastSelectedGroup;
+            union
+            {
+                i16 lastSelectedScene;
+                i16 scene;
+            };
+            u8 unknownRuntime022[0x43e];
+        };
     };
     union
     {
         ResultScoreEntryView scoreEntries[120];
+        ResultScoreEntryView sceneScores[120];
         ResultBestShotImageView bestShotImages[120];
     };
     ResultBestShotRecordView bestShotRecords[120];
 
+    ResultSaveDataView();
+    ~ResultSaveDataView();
     i32 ParseScoreFile();
     void UpdateBestShotRecord(i32 index);
     ZunResult WriteBestShotData();
+    ZunResult LoadScenePreviewTexture(
+        struct AnmLoaded *anm, i32 textureIndex, i32 sceneIndex);
+    i32 LoadBestShotForScene(i32 group, i32 scene);
+    i32 IsSceneGroupUnlocked(i32 group);
+    i32 FindHighestUnlockedSceneGroup();
+    i32 CountCapturedScenes();
+    i32 CountCapturedScenesInGroup(i32 group);
+    i32 GetSceneGroupUnlockScore(i32 group);
 };
 
 typedef char ScoreFileHeaderSizeIs18[
@@ -115,6 +160,11 @@ typedef char ResultSaveScoreEntriesAt460[
     (offsetof(ResultSaveDataView, scoreEntries) == 0x460) ? 1 : -1];
 typedef char ResultSaveBestShotRecordsAt3160[
     (offsetof(ResultSaveDataView, bestShotRecords) == 0x3160) ? 1 : -1];
+typedef char ResultSaveDataSizeIs69A0[
+    (sizeof(ResultSaveDataView) == 0x69a0) ? 1 : -1];
+typedef char ResultSaveSelectionAt1E[
+    (offsetof(ResultSaveDataView, lastSelectedGroup) == 0x1e &&
+     offsetof(ResultSaveDataView, lastSelectedScene) == 0x20) ? 1 : -1];
 typedef char ResultBestShotImageMetadataAt18[
     (offsetof(ResultBestShotImageView, metadata) == 0x18) ? 1 : -1];
 typedef char ResultBestShotRecordCommentAt18[
@@ -126,6 +176,8 @@ typedef char ResultBestShotRecordPhotoIndexAt6C[
 typedef char ResultBestShotRecordDataAt70[
     (offsetof(ResultBestShotRecordView, componentData0) == 0x70 &&
      offsetof(ResultBestShotRecordView, pixelData) == 0x74) ? 1 : -1];
+
+extern ResultSaveDataView *g_ResultSaveData;
 
 } // namespace th095
 

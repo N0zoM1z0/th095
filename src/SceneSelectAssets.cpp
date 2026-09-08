@@ -1,6 +1,7 @@
 #include "SceneSelect.hpp"
 
 #include "FileSystem.hpp"
+#include "FrontEndGlobals.hpp"
 
 #include <stdio.h>
 
@@ -132,7 +133,7 @@ static __forceinline void AssetQueuePushValue(SceneValueQueue *queue,
 static __forceinline u32 SceneSelectionAssetsSupervisorStopRequested()
 {
     return (
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(&g_SceneSupervisor) +
+        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(&g_Supervisor) +
                                  0x444) >>
         7) & 1;
 }
@@ -161,7 +162,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
 {
     SceneSelectionAssetLoadLocals locals;
     locals.view =
-        reinterpret_cast<SceneSelectionAssetView *>(g_SceneSelectController);
+        reinterpret_cast<SceneSelectionAssetView *>(g_ActiveMenuController);
 
     while (true)
     {
@@ -178,19 +179,19 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
             break;
         }
 
-        g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-        g_SceneSupervisor.lockCounts[4]++;
+        g_Supervisor.EnterCriticalSectionWrapper(4);
+        g_Supervisor.criticalSectionLockCounts[4]++;
         if (AssetQueueSize(&locals.view->selectionQueue) == 0 &&
             AssetQueueSize(&locals.view->groupPreviewQueue) == 0 &&
             locals.view->stateHistory.count == 0)
         {
-            g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-            g_SceneSupervisor.lockCounts[4]--;
+            g_Supervisor.LeaveCriticalSectionWrapper(4);
+            g_Supervisor.criticalSectionLockCounts[4]--;
             Sleep(1);
             continue;
         }
-        g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-        g_SceneSupervisor.lockCounts[4]--;
+        g_Supervisor.LeaveCriticalSectionWrapper(4);
+        g_Supervisor.criticalSectionLockCounts[4]--;
 
         /* Face/status pages take priority over mission thumbnails. */
         if (locals.view->stateHistory.count > 0)
@@ -214,15 +215,15 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                         &locals.view->pendingSecondarySize
                              [locals.view->pendingTextureCount],
                         FALSE));
-                g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-                g_SceneSupervisor.lockCounts[4]++;
+                g_Supervisor.EnterCriticalSectionWrapper(4);
+                g_Supervisor.criticalSectionLockCounts[4]++;
                 locals.view->pendingTextureCount++;
-                g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-                g_SceneSupervisor.lockCounts[4]--;
+                g_Supervisor.LeaveCriticalSectionWrapper(4);
+                g_Supervisor.criticalSectionLockCounts[4]--;
             }
 
-            g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-            g_SceneSupervisor.lockCounts[4]++;
+            g_Supervisor.EnterCriticalSectionWrapper(4);
+            g_Supervisor.criticalSectionLockCounts[4]++;
             for (locals.i = 0; locals.i < 2; locals.i++)
             {
                 locals.view->stateHistory.values[locals.i] =
@@ -230,8 +231,8 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
             }
             locals.view->stateHistory.count--;
             locals.view->stateHistory.values[2] = 0;
-            g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-            g_SceneSupervisor.lockCounts[4]--;
+            g_Supervisor.LeaveCriticalSectionWrapper(4);
+            g_Supervisor.criticalSectionLockCounts[4]--;
         }
         else
         {
@@ -240,7 +241,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                 AssetQueueRead(&locals.view->selectionQueue,
                                &locals.queueValue);
 
-                if (g_SceneSaveData->LoadBestShotForScene(
+                if (g_ResultSaveData->LoadBestShotForScene(
                         locals.queueValue >> 8,
                         locals.queueValue & 0xff) == 0)
                 {
@@ -261,15 +262,15 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                         }
                     }
 
-                    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-                    g_SceneSupervisor.lockCounts[4]++;
+                    g_Supervisor.EnterCriticalSectionWrapper(4);
+                    g_Supervisor.criticalSectionLockCounts[4]++;
                     AssetQueuePush(
                         &locals.view->loadedSceneQueue,
                         g_SceneGroups[locals.queueValue >> 8]
                                      [locals.queueValue & 0xff]
                             .scoreEntryIndex);
-                    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-                    g_SceneSupervisor.lockCounts[4]--;
+                    g_Supervisor.LeaveCriticalSectionWrapper(4);
+                    g_Supervisor.criticalSectionLockCounts[4]--;
                 }
                 else
                 {
@@ -290,17 +291,17 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                         }
                     }
 
-                    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-                    g_SceneSupervisor.lockCounts[4]++;
+                    g_Supervisor.EnterCriticalSectionWrapper(4);
+                    g_Supervisor.criticalSectionLockCounts[4]++;
                     AssetQueuePush(&locals.view->loadedSceneQueue, -1);
-                    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-                    g_SceneSupervisor.lockCounts[4]--;
+                    g_Supervisor.LeaveCriticalSectionWrapper(4);
+                    g_Supervisor.criticalSectionLockCounts[4]--;
                 }
-                g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-                g_SceneSupervisor.lockCounts[4]++;
+                g_Supervisor.EnterCriticalSectionWrapper(4);
+                g_Supervisor.criticalSectionLockCounts[4]++;
                 locals.view->selectionQueue.Pop();
-                g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-                g_SceneSupervisor.lockCounts[4]--;
+                g_Supervisor.LeaveCriticalSectionWrapper(4);
+                g_Supervisor.criticalSectionLockCounts[4]--;
             }
             else if (SceneSelectionGroupPreviewSizePhase(&locals.view->groupPreviewQueue) != 0)
             {
@@ -339,8 +340,8 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                             }
                         }
 
-                        g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-                        g_SceneSupervisor.lockCounts[4]++;
+                        g_Supervisor.EnterCriticalSectionWrapper(4);
+                        g_Supervisor.criticalSectionLockCounts[4]++;
                         AssetQueuePushPointer(
                             &locals.view->groupPreviewDataQueue,
                             &locals.primaryData);
@@ -353,8 +354,8 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                                        locals.secondarySize);
                         AssetQueuePushValue(&locals.view->loadedGroupQueue,
                                             &locals.queueValue);
-                        g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-                        g_SceneSupervisor.lockCounts[4]--;
+                        g_Supervisor.LeaveCriticalSectionWrapper(4);
+                        g_Supervisor.criticalSectionLockCounts[4]--;
                     }
                 }
                 else
@@ -384,8 +385,8 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                             }
                         }
 
-                        g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-                        g_SceneSupervisor.lockCounts[4]++;
+                        g_Supervisor.EnterCriticalSectionWrapper(4);
+                        g_Supervisor.criticalSectionLockCounts[4]++;
                         AssetQueuePushPointer(
                             &locals.view->groupPreviewDataQueue,
                             &locals.primaryData);
@@ -395,17 +396,17 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                         AssetQueuePush(&locals.view->scenePreviewSizeQueue, 0);
                         AssetQueuePushValue(&locals.view->loadedGroupQueue,
                                             &locals.queueValue);
-                        g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-                        g_SceneSupervisor.lockCounts[4]--;
+                        g_Supervisor.LeaveCriticalSectionWrapper(4);
+                        g_Supervisor.criticalSectionLockCounts[4]--;
                     }
                 }
 
-                g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-                g_SceneSupervisor.lockCounts[4]++;
+                g_Supervisor.EnterCriticalSectionWrapper(4);
+                g_Supervisor.criticalSectionLockCounts[4]++;
                 locals.view->groupPreviewQueue.Pop();
                 locals.view->scenePreviewQueue.Pop();
-                g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-                g_SceneSupervisor.lockCounts[4]--;
+                g_Supervisor.LeaveCriticalSectionWrapper(4);
+                g_Supervisor.criticalSectionLockCounts[4]--;
             }
         }
     }

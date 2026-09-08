@@ -1,5 +1,4 @@
 #include "SceneSelect.hpp"
-#include "Supervisor.hpp"
 
 #include <string.h>
 
@@ -139,7 +138,7 @@ typedef char SceneTextureAlphaBleedLockedAt74[
 typedef char SceneTextureAlphaBleedSurfaceAt7C[
     (offsetof(SceneTextureAlphaBleedLocals, surface) == 0x7c) ? 1 : -1];
 
-void SceneAnmManagerView::ApplyTextureAlphaBleed(
+void AnmManager::ApplyTextureAlphaBleed(
     SceneTextureEntryView *entry)
 {
     SceneTextureAlphaBleedLocals locals;
@@ -321,7 +320,7 @@ void SceneAnmManagerView::ApplyTextureAlphaBleed(
     locals.surface->Release();
 }
 
-i32 SceneAnmManagerView::LoadTexture(SceneTextureEntryView *entry, u8 *data,
+i32 AnmManager::LoadTexture(SceneTextureEntryView *entry, u8 *data,
                                      i32 size, i32 format, i32, i32 hasData)
 {
     SceneTextureLoadLocals locals;
@@ -370,7 +369,7 @@ i32 SceneAnmManagerView::LoadTexture(SceneTextureEntryView *entry, u8 *data,
 #pragma var_order(regionSurface, regionFileDestinationRect, regionDescription, \
                   regionSourceRect, regionDataDestinationRect, regionHeader, \
                   regionRawEntry, this)
-i32 SceneAnmManagerView::LoadTextureRegion(SceneTextureEntryView *entry,
+i32 AnmManager::LoadTextureRegion(SceneTextureEntryView *entry,
                                            u8 *data, i32 size, i32 format,
                                            i32, i32 hasData, i32 top)
 {
@@ -444,7 +443,7 @@ struct SceneTextureClearLocals
 typedef char SceneTextureClearLocalsSizeIs2C[
     (sizeof(SceneTextureClearLocals) == 0x2c) ? 1 : -1];
 
-void SceneTextureEntryView::Clear()
+void AnmTextureEntryView::Clear()
 {
     SceneTextureClearLocals locals;
 

@@ -1,4 +1,5 @@
 #include "AsciiManager.hpp"
+#include "GameplayGlobals.hpp"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -6,11 +7,6 @@
 
 namespace th095
 {
-
-struct AsciiBackgroundSupervisorView
-{
-    void ConfigureBackgroundViewport(i32 index);
-};
 
 struct AsciiAnmLoadedView : AnmLoaded
 {
@@ -43,6 +39,12 @@ struct AsciiStageStateView
 extern AsciiGlobalStateView *g_AsciiGlobalState;
 extern AsciiStageStateView *g_AsciiStageState;
 
+#ifndef DIFFBUILD
+#define g_AsciiGlobalState \
+    TH095_RUNTIME_GLOBAL_PTR(AsciiGlobalStateView, g_RuntimeGameTaskOwner)
+#endif
+
+DIFFABLE_STATIC(AsciiManager, g_AsciiManager);
 DIFFABLE_STATIC(ChainElem, g_AsciiManagerCalcChain);
 DIFFABLE_STATIC(ChainElem, g_AsciiManagerDrawChainLowPrio);
 DIFFABLE_STATIC(ChainElem, g_AsciiManagerDrawChainHighPrio);
@@ -317,13 +319,11 @@ void AsciiManager::DrawStrings()
             g_AnmManager->FlushVertexBuffer();
             if (asciiDrawIsGui != 0)
             {
-                reinterpret_cast<AsciiBackgroundSupervisorView *>(&g_Supervisor)
-                    ->ConfigureBackgroundViewport(0);
+                g_Supervisor.ConfigureBackgroundViewport(0);
             }
             else
             {
-                reinterpret_cast<AsciiBackgroundSupervisorView *>(&g_Supervisor)
-                    ->ConfigureBackgroundViewport(1);
+                g_Supervisor.ConfigureBackgroundViewport(1);
             }
         }
 
@@ -353,8 +353,7 @@ void AsciiManager::DrawStrings()
     if (asciiDrawIsGui != 0)
     {
         g_AnmManager->FlushVertexBuffer();
-        reinterpret_cast<AsciiBackgroundSupervisorView *>(&g_Supervisor)
-            ->ConfigureBackgroundViewport(1);
+        g_Supervisor.ConfigureBackgroundViewport(1);
     }
 }
 
@@ -387,13 +386,11 @@ void AsciiManager::DrawGuiStrings()
             g_AnmManager->FlushVertexBuffer();
             if (asciiDrawIsGui != 0)
             {
-                reinterpret_cast<AsciiBackgroundSupervisorView *>(&g_Supervisor)
-                    ->ConfigureBackgroundViewport(0);
+                g_Supervisor.ConfigureBackgroundViewport(0);
             }
             else
             {
-                reinterpret_cast<AsciiBackgroundSupervisorView *>(&g_Supervisor)
-                    ->ConfigureBackgroundViewport(1);
+                g_Supervisor.ConfigureBackgroundViewport(1);
             }
         }
 
@@ -430,8 +427,7 @@ void AsciiManager::DrawGuiStrings()
     if (asciiDrawIsGui != 0)
     {
         g_AnmManager->FlushVertexBuffer();
-        reinterpret_cast<AsciiBackgroundSupervisorView *>(&g_Supervisor)
-            ->ConfigureBackgroundViewport(1);
+        g_Supervisor.ConfigureBackgroundViewport(1);
     }
 }
 

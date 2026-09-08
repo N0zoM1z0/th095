@@ -50,7 +50,7 @@ ChainCallbackResult OptionsMenuView::Update()
     switch (this->state)
     {
     case 0:
-        g_SceneSupervisor.StopReplayScan();
+        g_Supervisor.StopReplayScan();
         this->stateTimer.Reset();
         this->cursor.Push();
         this->cursor.Set(0);

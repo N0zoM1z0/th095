@@ -17,7 +17,7 @@ struct MusicRoomView
 {
     SceneAnmLoadedView *sceneAnm;
     SceneAnmLoadedView *transitionAnm;
-    ResultScreenTimer stateTimer;
+    ZunTimer stateTimer;
     u8 unknown0014[0x0c];
     ResultScreenReplayCursor cursor;
     u8 unknown00f8[0xafc];

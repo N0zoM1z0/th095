@@ -38,7 +38,7 @@ struct OptionsMenuView
 {
     SceneAnmLoadedView *sceneAnm;
     SceneAnmLoadedView *transitionAnm;
-    ResultScreenTimer stateTimer;
+    ZunTimer stateTimer;
     i32 unknown0014;
     i32 unknown0018;
     i32 frameCounter;
@@ -62,7 +62,7 @@ struct OptionsMenuView
     __forceinline void SetDigitSprite(i32 vmIndex, i32 digit)
     {
         this->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(this->vmIds[vmIndex]),
+            g_AnmManager->GetVm(this->vmIds[vmIndex]),
             digit + 0x66);
     }
 
@@ -75,10 +75,10 @@ struct OptionsMenuView
         } digits;
         digits.tensSprite = this->controllerBinding.button00 / 10 + 0x66;
         this->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(this->vmIds[0x74]), digits.tensSprite);
+            g_AnmManager->GetVm(this->vmIds[0x74]), digits.tensSprite);
         digits.onesSprite = this->controllerBinding.button00 % 10 + 0x66;
         this->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(this->vmIds[0x75]), digits.onesSprite);
+            g_AnmManager->GetVm(this->vmIds[0x75]), digits.onesSprite);
     }
 
     __forceinline void UpdateButton02Sprites()
@@ -90,10 +90,10 @@ struct OptionsMenuView
         } digits;
         digits.tensSprite = this->controllerBinding.button02 / 10 + 0x66;
         this->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(this->vmIds[0x72]), digits.tensSprite);
+            g_AnmManager->GetVm(this->vmIds[0x72]), digits.tensSprite);
         digits.onesSprite = this->controllerBinding.button02 % 10 + 0x66;
         this->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(this->vmIds[0x73]), digits.onesSprite);
+            g_AnmManager->GetVm(this->vmIds[0x73]), digits.onesSprite);
     }
 
     __forceinline void UpdateButton06Sprites()
@@ -105,10 +105,10 @@ struct OptionsMenuView
         } digits;
         digits.tensSprite = this->controllerBinding.button06 / 10 + 0x66;
         this->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(this->vmIds[0x76]), digits.tensSprite);
+            g_AnmManager->GetVm(this->vmIds[0x76]), digits.tensSprite);
         digits.onesSprite = this->controllerBinding.button06 % 10 + 0x66;
         this->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(this->vmIds[0x77]), digits.onesSprite);
+            g_AnmManager->GetVm(this->vmIds[0x77]), digits.onesSprite);
     }
 
     __forceinline void UpdateButtonSprites(i32 firstVm, i32 value)
@@ -117,10 +117,10 @@ struct OptionsMenuView
         i32 onesSprite = value % 10 + 0x66;
 
         this->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(this->vmIds[firstVm]),
+            g_AnmManager->GetVm(this->vmIds[firstVm]),
             tensSprite);
         this->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(this->vmIds[firstVm + 1]),
+            g_AnmManager->GetVm(this->vmIds[firstVm + 1]),
             onesSprite);
     }
 
@@ -128,21 +128,21 @@ struct OptionsMenuView
     {
         if (value >= 100)
         {
-            g_SceneAnmManager->GetVm(this->vmIds[0x7a])->flagsWord |= 2;
+            g_AnmManager->GetVm(this->vmIds[0x7a])->flagsWord |= 2;
             this->SetDigitSprite(0x7a, (value / 100) % 10);
         }
         else
         {
-            g_SceneAnmManager->GetVm(this->vmIds[0x7a])->flagsWord &= ~2;
+            g_AnmManager->GetVm(this->vmIds[0x7a])->flagsWord &= ~2;
         }
         if (value >= 10)
         {
-            g_SceneAnmManager->GetVm(this->vmIds[0x7b])->flagsWord |= 2;
+            g_AnmManager->GetVm(this->vmIds[0x7b])->flagsWord |= 2;
             this->SetDigitSprite(0x7b, (value / 10) % 10);
         }
         else
         {
-            g_SceneAnmManager->GetVm(this->vmIds[0x7b])->flagsWord &= ~2;
+            g_AnmManager->GetVm(this->vmIds[0x7b])->flagsWord &= ~2;
         }
         this->SetDigitSprite(0x7c, value % 10);
     }
@@ -151,21 +151,21 @@ struct OptionsMenuView
     {
         if (value >= 100)
         {
-            g_SceneAnmManager->GetVm(this->vmIds[0x7e])->flagsWord |= 2;
+            g_AnmManager->GetVm(this->vmIds[0x7e])->flagsWord |= 2;
             this->SetDigitSprite(0x7e, (value / 100) % 10);
         }
         else
         {
-            g_SceneAnmManager->GetVm(this->vmIds[0x7e])->flagsWord &= ~2;
+            g_AnmManager->GetVm(this->vmIds[0x7e])->flagsWord &= ~2;
         }
         if (value >= 10)
         {
-            g_SceneAnmManager->GetVm(this->vmIds[0x7f])->flagsWord |= 2;
+            g_AnmManager->GetVm(this->vmIds[0x7f])->flagsWord |= 2;
             this->SetDigitSprite(0x7f, (value / 10) % 10);
         }
         else
         {
-            g_SceneAnmManager->GetVm(this->vmIds[0x7f])->flagsWord &= ~2;
+            g_AnmManager->GetVm(this->vmIds[0x7f])->flagsWord &= ~2;
         }
         this->SetDigitSprite(0x80, value % 10);
     }

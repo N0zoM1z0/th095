@@ -42,7 +42,7 @@ struct SceneSelectUpdateView
 {
     SceneAnmLoadedView *sceneAnm;
     u8 unknown0004[4];
-    ResultScreenTimer stateTimer;
+    ZunTimer stateTimer;
     u8 unknown0014[0x0c];
     ResultScreenReplayCursor groupCursor;
     u8 unknown00f8[0xd8];
@@ -203,11 +203,11 @@ struct SceneQueueFrontMemberView
 #define SET_SCENE_VM_VISIBILITY(view, vmIndex, condition)                    \
     if (!(condition))                                                         \
     {                                                                         \
-        g_SceneAnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord &= ~2u;   \
+        g_AnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord &= ~2u;   \
     }                                                                         \
     else                                                                      \
     {                                                                         \
-        g_SceneAnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord |= 2;     \
+        g_AnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord |= 2;     \
     }
 
 static __forceinline void SceneSelectInitialTimerViewPhase(SceneSelectUpdateView *view)
@@ -250,22 +250,22 @@ static __forceinline void SceneSelectInitialSceneVmPhase(SceneSelectUpdateView *
 
             SET_SCENE_VM_VISIBILITY(
                 view, initialSceneIndex * 3 + 0x27,
-                g_SceneSaveData
+                g_ResultSaveData
                         ->sceneScores[
                             g_SceneGroups[view->groupCursor.GetCurrent()]
                                          [initialSceneIndex]
                                              .scoreEntryIndex]
                         .score != 0);
-            if (g_SceneSaveData->IsSceneGroupUnlocked(
+            if (g_ResultSaveData->IsSceneGroupUnlocked(
                     view->groupCursor.GetCurrent()) == 0)
             {
-                g_SceneAnmManager
+                g_AnmManager
                     ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x25])
                     ->flagsWord &= ~2u;
-                g_SceneAnmManager
+                g_AnmManager
                     ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x26])
                     ->flagsWord &= ~2u;
-                g_SceneAnmManager
+                g_AnmManager
                     ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x27])
                     ->flagsWord &= ~2u;
             }
@@ -293,22 +293,22 @@ static __forceinline void SceneSelectNewGroupSceneVmPhase(SceneSelectUpdateView 
 
             SET_SCENE_VM_VISIBILITY(
                 view, newGroupIndex * 3 + 0x27,
-                g_SceneSaveData
+                g_ResultSaveData
                         ->sceneScores[
                             g_SceneGroups[view->groupCursor.GetCurrent()]
                                          [newGroupIndex]
                                              .scoreEntryIndex]
                         .score != 0);
-            if (g_SceneSaveData->IsSceneGroupUnlocked(
+            if (g_ResultSaveData->IsSceneGroupUnlocked(
                     view->groupCursor.GetCurrent()) == 0)
             {
-                g_SceneAnmManager
+                g_AnmManager
                     ->GetVm(view->vmIds[newGroupIndex * 3 + 0x25])
                     ->flagsWord &= ~2u;
-                g_SceneAnmManager
+                g_AnmManager
                     ->GetVm(view->vmIds[newGroupIndex * 3 + 0x26])
                     ->flagsWord &= ~2u;
-                g_SceneAnmManager
+                g_AnmManager
                     ->GetVm(view->vmIds[newGroupIndex * 3 + 0x27])
                     ->flagsWord &= ~2u;
             }
@@ -371,25 +371,25 @@ static __forceinline void SceneSelectProcessLoadedSceneQueue(
                     loadedSceneLoadValue = loadedSceneLoadQueue->values[0];
                 else
                     loadedSceneLoadValue = 0;
-                g_SceneSaveData->LoadScenePreviewTexture(
+                g_ResultSaveData->LoadScenePreviewTexture(
                     view->sceneAnm, 1, loadedSceneLoadValue);
                 view->vmIds.SetInterrupt(0x82, 1);
                 SceneSelectCreateVmAt(view, 0x82);
-                reinterpret_cast<AnmTextManagerView *>(g_SceneAnmManager)
+                reinterpret_cast<AnmTextManagerView *>(g_AnmManager)
                     ->DrawTextCentered(
                         reinterpret_cast<AnmTextVmView *>(
-                            g_SceneAnmManager->GetVm(view->vmIds.values[0x82])),
+                            g_AnmManager->GetVm(view->vmIds.values[0x82])),
                         0x00efcfcf, 0,
-                        reinterpret_cast<char *>(g_SceneSaveData) +
+                        reinterpret_cast<char *>(g_ResultSaveData) +
                             reinterpret_cast<SceneQueueFrontMemberView *>(
                                 &view->loadedSceneQueue)->Front() * 0x78 + 0x3178);
             }
         }
-        g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-        g_SceneSupervisor.lockCounts[4]++;
+        g_Supervisor.EnterCriticalSectionWrapper(4);
+        g_Supervisor.criticalSectionLockCounts[4]++;
         view->loadedSceneQueue.Pop();
-        g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-        g_SceneSupervisor.lockCounts[4]--;
+        g_Supervisor.LeaveCriticalSectionWrapper(4);
+        g_Supervisor.criticalSectionLockCounts[4]--;
         owner->UpdateSelectedSceneDetails();
     }
 }
@@ -453,13 +453,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     {
         if (view->pendingTextureCount == 1)
         {
-            g_SceneAnmManager->LoadTexture(
+            g_AnmManager->LoadTexture(
                 &view->sceneAnm->textures[3],
                 reinterpret_cast<u8 *>(view->pendingPrimaryData[0]),
                 view->pendingPrimarySize[0],
                 1, 0, 1);
             view->sceneAnm->textures[3].texture->PreLoad();
-            g_SceneAnmManager->LoadTexture(
+            g_AnmManager->LoadTexture(
                 &view->sceneAnm->textures[4],
                 reinterpret_cast<u8 *>(view->pendingSecondaryData[0]),
                 view->pendingSecondarySize[0],
@@ -475,8 +475,8 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         free(pendingSecondaryFree);
         view->pendingSecondaryData[0] = 0;
 
-        g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-        g_SceneSupervisor.lockCounts[4]++;
+        g_Supervisor.EnterCriticalSectionWrapper(4);
+        g_Supervisor.criticalSectionLockCounts[4]++;
         for (i = 0; i < 2; i++)
         {
             view->pendingPrimaryData[i] = view->pendingPrimaryData[i + 1];
@@ -491,8 +491,8 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->pendingPrimarySize[2] = 0;
         view->pendingSecondarySize[2] = 0;
         view->pendingTextureCount--;
-        g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-        g_SceneSupervisor.lockCounts[4]--;
+        g_Supervisor.LeaveCriticalSectionWrapper(4);
+        g_Supervisor.criticalSectionLockCounts[4]--;
 
         if (view->pendingTextureCount == 0)
         {
@@ -568,7 +568,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     {
                         groupPreviewDataPositiveValue = 0;
                     }
-                    g_SceneAnmManager->LoadTexture(
+                    g_AnmManager->LoadTexture(
                         &view->sceneAnm->textures[2],
                         reinterpret_cast<u8 *>(
                             groupPreviewDataPositiveValue),
@@ -599,7 +599,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     {
                         scenePreviewDataPositiveValue = 0;
                     }
-                    g_SceneAnmManager->LoadTextureRegion(
+                    g_AnmManager->LoadTextureRegion(
                         &view->sceneAnm->textures[2],
                         reinterpret_cast<u8 *>(
                             scenePreviewDataPositiveValue),
@@ -668,7 +668,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     {
                         groupPreviewDataNegativeValue = 0;
                     }
-                    g_SceneAnmManager->LoadTexture(
+                    g_AnmManager->LoadTexture(
                         &view->sceneAnm->textures[2],
                         reinterpret_cast<u8 *>(
                             groupPreviewDataNegativeValue),
@@ -693,15 +693,15 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     groupPreviewDataNegativeFreeValue));
             }
 
-            g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-            g_SceneSupervisor.lockCounts[4]++;
+            g_Supervisor.EnterCriticalSectionWrapper(4);
+            g_Supervisor.criticalSectionLockCounts[4]++;
             view->loadedGroupQueue.Pop();
             SceneSelectQueuePopPhase(&view->groupPreviewDataQueue);
             SceneSelectQueuePopPhase(&view->scenePreviewDataQueue);
             SceneSelectQueuePopPhase(&view->groupPreviewSizeQueue);
             SceneSelectQueuePopPhase(&view->scenePreviewSizeQueue);
-            g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-            g_SceneSupervisor.lockCounts[4]--;
+            g_Supervisor.LeaveCriticalSectionWrapper(4);
+            g_Supervisor.criticalSectionLockCounts[4]--;
             if (SceneSelectDrainedQueueSizePhase(&view->loadedGroupQueue) == 0)
                 view->vmIds.SetInterrupt(0x14, 4);
         }
@@ -717,16 +717,16 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         goto update_preview_text;
     case 0:
     {
-        g_SceneSupervisor.StopReplayScan();
-        g_SceneUiAnm->textures[0].Clear();
+        g_Supervisor.StopReplayScan();
+        view->sceneAnm->textures[0].Clear();
         SceneSelectInitialTimerViewPhase(view);
         view->groupCursor.Push();
 
-        if (g_SceneSaveData->FindHighestUnlockedSceneGroup() < 2)
+        if (g_ResultSaveData->FindHighestUnlockedSceneGroup() < 2)
         {
             view->groupCursor.count = 3;
         }
-        else if (g_SceneSaveData->FindHighestUnlockedSceneGroup() < 5)
+        else if (g_ResultSaveData->FindHighestUnlockedSceneGroup() < 5)
         {
             view->groupCursor.count = 6;
         }
@@ -734,8 +734,8 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         {
             reinterpret_cast<SceneSelectCursorCountSetterView *>(&view->groupCursor)
                 ->SetCount(
-                    12 <= g_SceneSaveData->FindHighestUnlockedSceneGroup() + 2
-                        ? 12 : g_SceneSaveData->FindHighestUnlockedSceneGroup() + 2);
+                    12 <= g_ResultSaveData->FindHighestUnlockedSceneGroup() + 2
+                        ? 12 : g_ResultSaveData->FindHighestUnlockedSceneGroup() + 2);
         }
         view->groupCursor.wraps = 1;
         view->state = 1;
@@ -751,9 +751,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             view->sceneCursors[initialCursorIndex].wraps = 1;
             view->sceneCursors[initialCursorIndex].Set(0);
         }
-        view->groupCursor.Set(g_SceneSaveData->lastSelectedGroup);
+        view->groupCursor.Set(g_ResultSaveData->lastSelectedGroup);
         view->sceneCursors[view->groupCursor.GetCurrent()].Set(
-            g_SceneSaveData->lastSelectedScene);
+            g_ResultSaveData->lastSelectedScene);
 
         g_SelectedScene =
             &g_SceneGroups[view->groupCursor.GetCurrent()]
@@ -772,14 +772,14 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         {
             SceneSelectCreateVmAt(view, 0x20);
             view->sceneAnm->SetSprite(
-                g_SceneAnmManager->GetVm(view->vmIds[0x22]),
+                g_AnmManager->GetVm(view->vmIds[0x22]),
                 view->groupCursor.GetCurrent() + 0x37);
         }
         else
         {
             SceneSelectCreateVmAt(view, 0x21);
             view->sceneAnm->SetSprite(
-                g_SceneAnmManager->GetVm(view->vmIds[0x22]),
+                g_AnmManager->GetVm(view->vmIds[0x22]),
                 view->groupCursor.GetCurrent() + 0x2c);
         }
         SceneSelectCreateVmAt(view, 0x23);
@@ -817,7 +817,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->loadedSceneQueue.capacity = 16;
         view->flags &= ~0x20u;
 
-        g_SceneSupervisor.StartReplayScan(LoadSceneSelectionAssets, NULL);
+        g_Supervisor.StartReplayScan(LoadSceneSelectionAssets, NULL);
         SceneSelectCreateVmAt(view, 0x13);
         SceneSelectCreateVmAt(view, 0x12);
         view->flags |= 4;
@@ -827,13 +827,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         SceneSelectCreateVmAt(view, 0x4b);
 
         view->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(view->vmIds[0x49]),
+            g_AnmManager->GetVm(view->vmIds[0x49]),
             (view->groupCursor.GetCurrent() >= 11
                  ? view->groupCursor.GetCurrent() - 11
                  : view->groupCursor.GetCurrent()) +
                 0x28);
         view->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(view->vmIds[0x4b]),
+            g_AnmManager->GetVm(view->vmIds[0x4b]),
             view->sceneCursors[view->groupCursor.GetCurrent()].GetCurrent() + 0x28);
 
         for (initialVmIndex = 0; initialVmIndex < 16; initialVmIndex++)
@@ -850,13 +850,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         SceneSelectCreateVmAt(view, 0x63);
 
         initialGroupVm = view->vmIds.values[0x68].GetVm();
-        if (g_SceneSaveData->IsSceneGroupUnlocked(
+        if (g_ResultSaveData->IsSceneGroupUnlocked(
                 view->groupCursor.GetCurrent()) != 0)
         {
             reinterpret_cast<SceneSelectColorInterpolationView *>(
                 initialGroupVm)
                 ->SetColor1Interpolation(
-                    60, 0, initialGroupVm->color1,
+                    60, 0, initialGroupVm->color1.color,
                     g_SceneGroupColors[view->groupCursor.GetCurrent()]);
         }
         else
@@ -864,7 +864,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             reinterpret_cast<SceneSelectColorInterpolationView *>(
                 initialGroupVm)
                 ->SetColor1Interpolation(
-                    60, 0, initialGroupVm->color1,
+                    60, 0, initialGroupVm->color1.color,
                     g_SceneLockedInitialColor);
         }
         this->UpdateSelectedSceneDetails();
@@ -908,9 +908,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
     if (SceneInputAnd(g_FrontEndCurrentInput, TH_BUTTON_SKIP) != 0)
     {
-        g_SceneAnmManager->GetVm(view->vmIds[0x15])->flagsWord &= ~2u;
-        g_SceneAnmManager->GetVm(view->vmIds[0x16])->flagsWord &= ~2u;
-        g_SceneAnmManager->GetVm(view->vmIds[0x45])->flagsWord &= ~2u;
+        g_AnmManager->GetVm(view->vmIds[0x15])->flagsWord &= ~2u;
+        g_AnmManager->GetVm(view->vmIds[0x16])->flagsWord &= ~2u;
+        g_AnmManager->GetVm(view->vmIds[0x45])->flagsWord &= ~2u;
         if (view->previewTextVmIds[0].GetVm() != NULL)
         {
             view->previewTextVmIds[0].GetVm()->flagsWord &= ~2u;
@@ -927,9 +927,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     }
     else
     {
-        g_SceneAnmManager->GetVm(view->vmIds[0x15])->flagsWord |= 2;
-        g_SceneAnmManager->GetVm(view->vmIds[0x16])->flagsWord |= 2;
-        g_SceneAnmManager->GetVm(view->vmIds[0x45])->flagsWord |= 2;
+        g_AnmManager->GetVm(view->vmIds[0x15])->flagsWord |= 2;
+        g_AnmManager->GetVm(view->vmIds[0x16])->flagsWord |= 2;
+        g_AnmManager->GetVm(view->vmIds[0x45])->flagsWord |= 2;
         if (view->previewTextVmIds[0].GetVm() != NULL)
         {
             view->previewTextVmIds[0].GetVm()->flagsWord |= 2;
@@ -947,11 +947,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
     if (SceneInputAnd(g_PressedButtons, (u16)0x8000) != 0 &&
         *reinterpret_cast<u16 *>(
-            &g_SceneSaveData
+            &g_ResultSaveData
                  ->sceneScores[view->selectedScoreEntryIndex]) != 0)
     {
         SceneSelectScoreFlagsAt(
-            g_SceneSaveData, view->selectedScoreEntryIndex)
+            g_ResultSaveData, view->selectedScoreEntryIndex)
             ->showSuccessRateMarker ^= 1;
     }
 
@@ -971,22 +971,22 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     if (view->groupCursor.HasChanged())
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
-        g_SceneAnmManager->MarkVmForDeletion(view->vmIds[0x20]);
-        g_SceneAnmManager->MarkVmForDeletion(view->vmIds[0x21]);
-        g_SceneAnmManager->MarkVmForDeletion(view->vmIds[0x22]);
+        g_AnmManager->MarkVmForDeletion(view->vmIds[0x20]);
+        g_AnmManager->MarkVmForDeletion(view->vmIds[0x21]);
+        g_AnmManager->MarkVmForDeletion(view->vmIds[0x22]);
         SceneSelectCreateVmAt(view, 0x22);
         if (view->groupCursor.GetCurrent() <= 10)
         {
             SceneSelectCreateVmAt(view, 0x20);
             view->sceneAnm->SetSprite(
-                g_SceneAnmManager->GetVm(view->vmIds[0x22]),
+                g_AnmManager->GetVm(view->vmIds[0x22]),
                 view->groupCursor.GetCurrent() + 0x37);
         }
         else
         {
             SceneSelectCreateVmAt(view, 0x21);
             view->sceneAnm->SetSprite(
-                g_SceneAnmManager->GetVm(view->vmIds[0x22]),
+                g_AnmManager->GetVm(view->vmIds[0x22]),
                 view->groupCursor.GetCurrent() + 0x2c);
         }
 
@@ -1024,21 +1024,21 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->vmIds.SetInterrupt(0x14, 5);
         view->stateTimer.Set(20);
         view->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(view->vmIds[0x49]),
+            g_AnmManager->GetVm(view->vmIds[0x49]),
             (view->groupCursor.GetCurrent() >= 11
                  ? view->groupCursor.GetCurrent() - 11
                  : view->groupCursor.GetCurrent()) +
                 0x28);
         view->sceneAnm->SetSprite(
-            g_SceneAnmManager->GetVm(view->vmIds[0x4b]),
+            g_AnmManager->GetVm(view->vmIds[0x4b]),
             activeSceneCursor.GetCurrent() + 0x28);
         view->vmIds.SetInterrupt(0x49, 2);
         view->vmIds.SetInterrupt(0x4a, 2);
         view->vmIds.SetInterrupt(0x4b, 2);
         this->UpdateSelectedSceneDetails();
-        g_SceneSaveData->lastSelectedGroup =
+        g_ResultSaveData->lastSelectedGroup =
             (i16)view->groupCursor.GetCurrent();
-        g_SceneSaveData->lastSelectedScene =
+        g_ResultSaveData->lastSelectedScene =
             (i16)activeSceneCursor.GetCurrent();
 
         SET_SCENE_VM_VISIBILITY(
@@ -1048,13 +1048,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             view->groupCursor.GetCurrent() != view->groupCursor.GetCount() - 1);
 
         transitionGroupVm = view->vmIds.values[0x68].GetVm();
-        if (g_SceneSaveData->IsSceneGroupUnlocked(
+        if (g_ResultSaveData->IsSceneGroupUnlocked(
                 view->groupCursor.GetCurrent()) != 0)
         {
             reinterpret_cast<SceneSelectColorInterpolationView *>(
                 transitionGroupVm)
                 ->SetColor1Interpolation(
-                    60, 0, transitionGroupVm->color1,
+                    60, 0, transitionGroupVm->color1.color,
                     g_SceneGroupColors[view->groupCursor.GetCurrent()]);
         }
         else
@@ -1062,12 +1062,12 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             reinterpret_cast<SceneSelectColorInterpolationView *>(
                 transitionGroupVm)
                 ->SetColor1Interpolation(
-                    60, 0, transitionGroupVm->color1,
+                    60, 0, transitionGroupVm->color1.color,
                     g_SceneLockedTransitionColor);
         }    }
     else
     {
-        if (g_SceneSaveData->IsSceneGroupUnlocked(
+        if (g_ResultSaveData->IsSceneGroupUnlocked(
                 SceneSelectPostTransitionGroupPhase(view)) != 0)
         {
             activeSceneCursor.SaveCurrent();
@@ -1118,19 +1118,19 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->vmIds.SetInterrupt(0x12, 5);
                 view->vmIds.SetInterrupt(0x14, 5);
                 view->sceneAnm->SetSprite(
-                    g_SceneAnmManager->GetVm(view->vmIds[0x49]),
+                    g_AnmManager->GetVm(view->vmIds[0x49]),
                     (view->groupCursor.GetCurrent() >= 11
                          ? view->groupCursor.GetCurrent() - 11
                          : view->groupCursor.GetCurrent()) +
                         0x28);
                 view->sceneAnm->SetSprite(
-                    g_SceneAnmManager->GetVm(view->vmIds[0x4b]),
+                    g_AnmManager->GetVm(view->vmIds[0x4b]),
                     activeSceneCursor.GetCurrent() + 0x28);
                 view->vmIds.SetInterrupt(0x49, 2);
                 view->vmIds.SetInterrupt(0x4a, 2);
                 view->vmIds.SetInterrupt(0x4b, 2);
                 this->UpdateSelectedSceneDetails();
-                g_SceneSaveData->lastSelectedScene =
+                g_ResultSaveData->lastSelectedScene =
                     (i16)activeSceneCursor.GetCurrent();
                 goto update_preview_text;
             }
@@ -1146,11 +1146,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->stateTimer.Reset();
                 view->flags |= 0x20;
                 g_ReplayBrowserExitSignal.Request();
-                g_SceneAnmManager->MarkVmForDeletion(
+                g_AnmManager->MarkVmForDeletion(
                     view->previewTextVmIds[0]);
-                g_SceneAnmManager->MarkVmForDeletion(
+                g_AnmManager->MarkVmForDeletion(
                     view->previewTextVmIds[1]);
-                g_SceneAnmManager->MarkVmForDeletion(
+                g_AnmManager->MarkVmForDeletion(
                     view->previewTextVmIds[2]);
                 selected = activeSceneCursor.GetCurrent();
                 view->vmIds.SetInterrupt(selected * 3 + 0x25, 6);
@@ -1249,9 +1249,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             view->vmIds.SetInterrupt(0x62, 1);
             view->vmIds.SetInterrupt(0x63, 1);
             view->vmIds.SetInterrupt(0x48, 1);
-            g_SceneAnmManager->SetInterrupt(view->previewTextVmIds[0], 1);
-            g_SceneAnmManager->SetInterrupt(view->previewTextVmIds[1], 1);
-            g_SceneAnmManager->SetInterrupt(view->previewTextVmIds[2], 1);
+            g_AnmManager->SetInterrupt(view->previewTextVmIds[0], 1);
+            g_AnmManager->SetInterrupt(view->previewTextVmIds[1], 1);
+            g_AnmManager->SetInterrupt(view->previewTextVmIds[2], 1);
             view->vmIds.SetInterrupt(0x82, 1);
             SceneSelectClearPreviewVmPhase(view);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -1272,27 +1272,27 @@ update_preview_text:
         if (view->flagBits.previewPending != 0)
         {
             previewVm =
-                g_SceneAnmManager->GetVm(view->vmIds.values[0x12]);
-            if ((reinterpret_cast<u8 *>(g_SceneSaveData) +
+                g_AnmManager->GetVm(view->vmIds.values[0x12]);
+            if ((reinterpret_cast<u8 *>(g_ResultSaveData) +
                  view->selectedScoreEntryIndex * 0x78)[0x31c9] != 0)
             {
                 previewVm->loadedSprite->uvEndX =
                     (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_SceneSaveData) +
+                        reinterpret_cast<u8 *>(g_ResultSaveData) +
                         view->selectedScoreEntryIndex * 0x78 + 0x316c) /
                     256.0f;
                 previewVm->loadedSprite->uvEndY =
                     (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_SceneSaveData) +
+                        reinterpret_cast<u8 *>(g_ResultSaveData) +
                         view->selectedScoreEntryIndex * 0x78 + 0x316e) /
                     256.0f;
                 previewVm->spriteWidth =
                     (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_SceneSaveData) +
+                        reinterpret_cast<u8 *>(g_ResultSaveData) +
                         view->selectedScoreEntryIndex * 0x78 + 0x316c);
                 previewVm->spriteHeight =
                     (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_SceneSaveData) +
+                        reinterpret_cast<u8 *>(g_ResultSaveData) +
                         view->selectedScoreEntryIndex * 0x78 + 0x316e);
                 previewVm->flagsWord |= 2;
             }
@@ -1300,7 +1300,7 @@ update_preview_text:
             {
                 previewVm->flagsWord &= ~2u;
             }
-            g_SceneAnmManager->SetInterrupt(view->vmIds.values[0x12], 2);
+            g_AnmManager->SetInterrupt(view->vmIds.values[0x12], 2);
             view->flags &= ~4u;
         }
     }

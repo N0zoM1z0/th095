@@ -1,27 +1,11 @@
-#include "inttypes.hpp"
+#include "Rng.hpp"
+#include "ScoreData.hpp"
 #include <windows.h>
 #include <stddef.h>
 #include <string.h>
 
 namespace th095
 {
-
-struct Rng
-{
-    u16 GetRandomU16();
-};
-extern Rng g_Rng;
-
-namespace FileSystem
-{
-LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL isExternalResource);
-}
-
-struct ResultSaveDataView
-{
-    i32 ParseScoreFile();
-    void UpdateBestShotRecord(i32 index);
-};
 
 // The target constructor owns one four-byte compiler phase beside the real
 // OpenFile size output. Keeping both in the producer frontend preserves the
@@ -68,27 +52,21 @@ typedef char ScoreProfileSizeIs458[(sizeof(ScoreProfileView) == 0x458) ? 1 : -1]
 typedef char ScoreProfileNameAt0C[(offsetof(ScoreProfileView, name) == 0x0c) ? 1 : -1];
 typedef char ScoreProfileRandomAt22[(offsetof(ScoreProfileView, randomWords) == 0x22) ? 1 : -1];
 
-struct ResultSaveDataLifecycleView
-{
-    u8 bytes[0x69a0];
-    ResultSaveDataLifecycleView();
-    ~ResultSaveDataLifecycleView();
-};
-typedef char ResultSaveDataLifecycleSizeIs69A0[(sizeof(ResultSaveDataLifecycleView) == 0x69a0) ? 1 : -1];
-extern ResultSaveDataLifecycleView *g_PhotoStageSaveData;
+ResultSaveDataView *g_ResultSaveData;
 
 // FUNCTION: TH095 0x004354B0.
-ResultSaveDataLifecycleView::ResultSaveDataLifecycleView()
+ResultSaveDataView::ResultSaveDataView()
 {
     memset(this, 0, sizeof(*this));
-    *reinterpret_cast<u8 **>(this) = ScoreOpenRawFilePhase();
+    this->fileHeader = reinterpret_cast<ScoreFileHeader *>(
+        ScoreOpenRawFilePhase());
     reinterpret_cast<ScoreProfileView *>(
         reinterpret_cast<u8 *>(this) + 8)->Initialize();
-    reinterpret_cast<ResultSaveDataView *>(this)->ParseScoreFile();
+    this->ParseScoreFile();
 }
 
 // FUNCTION: TH095 0x00435580.
-ResultSaveDataLifecycleView::~ResultSaveDataLifecycleView()
+ResultSaveDataView::~ResultSaveDataView()
 {
     u32 index;
     void *rawFileData;
@@ -106,7 +84,7 @@ ResultSaveDataLifecycleView::~ResultSaveDataLifecycleView()
         ScoreFreeDecompressedPhase(decompressedData);
     }
     for (index = 0; index < 120; ++index)
-        reinterpret_cast<ResultSaveDataView *>(this)->UpdateBestShotRecord(index);
+        this->UpdateBestShotRecord(index);
 }
 
 // FUNCTION: TH095 0x00435500.
@@ -123,18 +101,18 @@ void ScoreProfileView::Initialize()
 // FUNCTION: TH095 0x004355F0.
 void InitializeScoreData()
 {
-    g_PhotoStageSaveData = new ResultSaveDataLifecycleView();
+    g_ResultSaveData = new ResultSaveDataView();
 }
 
 // FUNCTION: TH095 0x00435660.
 void ReleaseScoreData()
 {
-    if (g_PhotoStageSaveData != NULL)
+    if (g_ResultSaveData != NULL)
     {
-        delete g_PhotoStageSaveData;
-        g_PhotoStageSaveData = NULL;
+        delete g_ResultSaveData;
+        g_ResultSaveData = NULL;
     }
-    g_PhotoStageSaveData = NULL;
+    g_ResultSaveData = NULL;
 }
 
 } // namespace th095

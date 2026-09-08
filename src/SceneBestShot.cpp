@@ -40,7 +40,7 @@ static __forceinline u8 *SceneBestShotPixelAlloc(size_t size)
 #define recordIndex averagedPanLocal12
 #define fileSize restartCommandProcessingLocal05
 
-i32 SceneSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
+i32 ResultSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
 {
     SceneBestShotIoLocals io;
     i32 recordIndex;

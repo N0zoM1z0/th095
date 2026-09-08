@@ -3,7 +3,14 @@
 namespace th095
 {
 
-i32 SceneSaveDataView::IsSceneGroupUnlocked(i32 group)
+SceneDefinitionView *g_SceneGroups[12];
+i32 g_SceneGroupCounts[12];
+i32 g_SceneUnlockScoreRequirements[12];
+i32 g_SceneUnlockCaptureRequirements[12];
+i32 g_SceneUnlockGroupCaptureRequirements[12];
+SceneDefinitionView *g_SelectedScene;
+
+i32 ResultSaveDataView::IsSceneGroupUnlocked(i32 group)
 {
     if (group == 0)
     {
@@ -27,7 +34,7 @@ i32 SceneSaveDataView::IsSceneGroupUnlocked(i32 group)
                : 1;
 }
 
-i32 SceneSaveDataView::FindHighestUnlockedSceneGroup()
+i32 ResultSaveDataView::FindHighestUnlockedSceneGroup()
 {
     i32 group;
 
@@ -41,7 +48,7 @@ i32 SceneSaveDataView::FindHighestUnlockedSceneGroup()
     return group - 1;
 }
 
-i32 SceneSaveDataView::CountCapturedScenes()
+i32 ResultSaveDataView::CountCapturedScenes()
 {
     i32 count;
 
@@ -61,7 +68,7 @@ i32 SceneSaveDataView::CountCapturedScenes()
     return count;
 }
 
-i32 SceneSaveDataView::CountCapturedScenesInGroup(i32 group)
+i32 ResultSaveDataView::CountCapturedScenesInGroup(i32 group)
 {
     i32 count;
 
@@ -77,7 +84,7 @@ i32 SceneSaveDataView::CountCapturedScenesInGroup(i32 group)
     return count;
 }
 
-i32 SceneSaveDataView::GetSceneGroupUnlockScore(i32 group)
+i32 ResultSaveDataView::GetSceneGroupUnlockScore(i32 group)
 {
     i32 score;
 

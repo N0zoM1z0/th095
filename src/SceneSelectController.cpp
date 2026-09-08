@@ -1,7 +1,16 @@
 #include "SceneSelect.hpp"
+#include "AnmText.hpp"
 
 namespace th095
 {
+
+void __cdecl SceneWriteText(SceneAnmManagerView *manager,
+                            SceneAnmVmView *vm, u32 color, u32 shadowColor,
+                            const char *text)
+{
+    reinterpret_cast<AnmTextManagerView *>(manager)->DrawTextLeft(
+        reinterpret_cast<AnmTextVmView *>(vm), color, shadowColor, "%s", text);
+}
 
 static __forceinline void RefreshSelectionQueuePush(
     SceneValueQueue *queue, i32 value)
@@ -70,8 +79,8 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
     i32 refreshLockedGroup;
     i32 refreshStateGroup;
 
-    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-    g_SceneSupervisor.lockCounts[4]++;
+    g_Supervisor.EnterCriticalSectionWrapper(4);
+    g_Supervisor.criticalSectionLockCounts[4]++;
 
     refreshSelectedGroup = this->selectedGroup;
     refreshGroupCursorIndex = this->selectedGroup;
@@ -84,7 +93,7 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
     this->vmIds.SetInterrupt(0x82, 1);
 
     refreshUnlockGroup = this->selectedGroup;
-    if (g_SceneSaveData->IsSceneGroupUnlocked(refreshUnlockGroup) != 0)
+    if (g_ResultSaveData->IsSceneGroupUnlocked(refreshUnlockGroup) != 0)
     {
         this->groupPreviewQueue.Push(g_SelectedScene->groupDisplayValue);
         this->scenePreviewQueue.Push(g_SelectedScene->sceneDisplayValue);
@@ -98,13 +107,13 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
 
     refreshDisplayState = 0;
     refreshStateGroup = this->selectedGroup;
-    if (g_SceneSaveData->IsSceneGroupUnlocked(refreshStateGroup) == 0)
+    if (g_ResultSaveData->IsSceneGroupUnlocked(refreshStateGroup) == 0)
     {
         refreshDisplayState = this->lockedDisplayState;
     }
-    else if (g_SceneSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].score == 0)
+    else if (g_ResultSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].score == 0)
     {
-        if (g_SceneSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].attemptCount == 0)
+        if (g_ResultSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].attemptCount == 0)
         {
             refreshDisplayState = this->unattemptedDisplayState;
         }
@@ -113,7 +122,7 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
             refreshDisplayState = this->attemptedDisplayState;
         }
     }
-    else if (g_SceneSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].score <
+    else if (g_ResultSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].score <
              g_SelectedScene->scoreRequirement)
     {
         refreshDisplayState = this->belowRequirementDisplayState;
@@ -136,8 +145,8 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
         this->vmIds.SetInterrupt(0x16, 5);
     }
 
-    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-    g_SceneSupervisor.lockCounts[4]--;
+    g_Supervisor.LeaveCriticalSectionWrapper(4);
+    g_Supervisor.criticalSectionLockCounts[4]--;
     this->previewTimer = 0;
 }
 #undef refreshDisplayState
@@ -151,34 +160,34 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
 
 #define BUILD_SCENE_PREVIEW_LINE(vmSlot, scriptIndex, columnIndex)             \
     this->previewTextVmIds[vmSlot] =                                          \
-        g_SceneUiAnm->CreateVm(scriptIndex, 7);                               \
-    g_SceneAnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphHeight =   \
+        this->sceneAnm->CreateVm(scriptIndex, 7);                             \
+    g_AnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphHeight =   \
         0x13;                                                                 \
-    g_SceneAnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphWidth =    \
+    g_AnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphWidth =    \
         0x13;                                                                 \
     {                                                                         \
-        if (g_SceneSaveData->IsSceneGroupUnlocked(                            \
+        if (g_ResultSaveData->IsSceneGroupUnlocked(                            \
                 this->GetSelectedGroup()) == 0)                               \
         {                                                                     \
             SceneWriteText(                                                   \
-                g_SceneAnmManager,                                            \
-                g_SceneAnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
+                g_AnmManager,                                            \
+                g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00df8f8f, 0,                                               \
                 this->ResolveSceneText(                                       \
                     this->previewTextSources.lockedTextId, columnIndex,       \
                     0x62, 0));                                                \
         }                                                                     \
-        else if (g_SceneSaveData                                              \
+        else if (g_ResultSaveData                                              \
                      ->sceneScores[g_SelectedScene->scoreEntryIndex]          \
                      .score == 0)                                             \
         {                                                                     \
-            if (g_SceneSaveData                                               \
+            if (g_ResultSaveData                                               \
                     ->sceneScores[g_SelectedScene->scoreEntryIndex]           \
                     .attemptCount == 0)                                       \
             {                                                                 \
                 SceneWriteText(                                               \
-                    g_SceneAnmManager,                                        \
-                    g_SceneAnmManager->GetVm(                                 \
+                    g_AnmManager,                                        \
+                    g_AnmManager->GetVm(                                 \
                         this->previewTextVmIds[vmSlot]),                       \
                     0x00df8f8f, 0,                                           \
                     this->ResolveSceneText(                                   \
@@ -188,8 +197,8 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
             else                                                              \
             {                                                                 \
                 SceneWriteText(                                               \
-                    g_SceneAnmManager,                                        \
-                    g_SceneAnmManager->GetVm(                                 \
+                    g_AnmManager,                                        \
+                    g_AnmManager->GetVm(                                 \
                         this->previewTextVmIds[vmSlot]),                       \
                     0x00df8f8f, 0,                                           \
                     this->ResolveSceneText(                                   \
@@ -197,13 +206,13 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
                         0x62, 3));                                            \
             }                                                                 \
         }                                                                     \
-        else if (g_SceneSaveData                                              \
+        else if (g_ResultSaveData                                              \
                      ->sceneScores[g_SelectedScene->scoreEntryIndex]          \
                      .score < g_SelectedScene->scoreRequirement)              \
         {                                                                     \
             SceneWriteText(                                                   \
-                g_SceneAnmManager,                                            \
-                g_SceneAnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
+                g_AnmManager,                                            \
+                g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00df8f8f, 0,                                               \
                 this->ResolveSceneText(                                       \
                     this->previewTextSources.belowRequirementTextId,          \
@@ -212,8 +221,8 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
         else                                                                  \
         {                                                                     \
             SceneWriteText(                                                   \
-                g_SceneAnmManager,                                            \
-                g_SceneAnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
+                g_AnmManager,                                            \
+                g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00cfcfff, 0,                                               \
                 g_SelectedScene->titleTextId != 0                             \
                     ? this->ResolveSceneText(                                 \
@@ -228,9 +237,9 @@ void SceneSelectControllerView::BuildScenePreviewText()
 {
     if (this->previewTimer == 0)
     {
-        g_SceneAnmManager->SetInterrupt(this->previewTextVmIds[0], 1);
-        g_SceneAnmManager->SetInterrupt(this->previewTextVmIds[1], 1);
-        g_SceneAnmManager->SetInterrupt(this->previewTextVmIds[2], 1);
+        g_AnmManager->SetInterrupt(this->previewTextVmIds[0], 1);
+        g_AnmManager->SetInterrupt(this->previewTextVmIds[1], 1);
+        g_AnmManager->SetInterrupt(this->previewTextVmIds[2], 1);
     }
     else if (this->previewTimer == 8)
     {

@@ -1,7 +1,6 @@
 #include "MusicRoom.hpp"
 #include "FileSystem.hpp"
 #include "SoundPlayer.hpp"
-#include "Supervisor.hpp"
 
 #include <string.h>
 
@@ -11,12 +10,12 @@ namespace th095
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 
-static __forceinline i32 MusicRoomTimerAtLeast(ResultScreenTimer *timer, i32 value)
+static __forceinline i32 MusicRoomTimerAtLeast(ZunTimer *timer, i32 value)
 {
     return timer->current >= value;
 }
 
-static __forceinline i32 MusicRoomTimerChangedAndEven(ResultScreenTimer *timer)
+static __forceinline i32 MusicRoomTimerChangedAndEven(ZunTimer *timer)
 {
     return timer->current != timer->previous && timer->current % 2 == 0;
 }
@@ -115,7 +114,7 @@ i32 MusicRoomView::UpdateMusicRoom()
         MusicRoomCreateVmAt(this, 0x69);
         MusicRoomCreateVmAt(this, 0x17);
 
-        ((MusicRoomAnmStorageView *)g_SceneUiAnm)->textures[0].Clear();
+        ((MusicRoomAnmStorageView *)this->sceneAnm)->textures[0].Clear();
         ((MusicRoomAnmStorageView *)this->sceneAnm)->textures[13].Clear();
 
         this->vmIds.SetInterrupt(0x19, 3);
@@ -173,7 +172,7 @@ i32 MusicRoomView::UpdateMusicRoom()
                 this->sceneAnm->CreateVm(trackVmIndex + 0x83, 7);
         for (i32 descriptionVmIndex = 0; descriptionVmIndex < 8; descriptionVmIndex++)
             this->descriptionVms[descriptionVmIndex] =
-                g_SceneUiAnm->CreateVm(descriptionVmIndex + 1, 7);
+                this->sceneAnm->CreateVm(descriptionVmIndex + 1, 7);
         this->trackCount = musicComment.trackCount;
         this->cursor.count = musicComment.trackCount;
         this->cursor.Set(0);
@@ -190,7 +189,7 @@ i32 MusicRoomView::UpdateMusicRoom()
                 {
                     SceneAnmVmView *trackVm =
                         this->trackVms[trackLine].GetVm();
-                    SceneWriteText(g_SceneAnmManager, trackVm, 0x00dfdfff, 0,
+                    SceneWriteText(g_AnmManager, trackVm, 0x00dfdfff, 0,
                                    this->titles[trackLine]);
                     trackVm->pendingInterrupt =
                         (trackLine != this->cursor.GetCurrent()) + 2;
@@ -218,7 +217,7 @@ i32 MusicRoomView::UpdateMusicRoom()
                     SceneAnmVmView *descriptionVm =
                         this->descriptionVms[descriptionLine].GetVm();
                     SceneWriteText(
-                        g_SceneAnmManager, descriptionVm, 0x00dfdfff, 0,
+                        g_AnmManager, descriptionVm, 0x00dfdfff, 0,
                         this->descriptions[this->cursor.GetCurrent()][descriptionLine]);
                     descriptionVm->pendingInterrupt = 2;
                 }

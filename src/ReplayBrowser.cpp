@@ -1,4 +1,5 @@
 #include "ReplayBrowser.hpp"
+#include "FrontEndGlobals.hpp"
 #include "SoundPlayer.hpp"
 
 #include <direct.h>
@@ -7,6 +8,9 @@
 
 namespace th095
 {
+
+extern i32 g_HelpLoadComplete;
+extern i32 g_HelpLoadActive;
 
 static __forceinline void ReplayBrowserCreateVmAt(ReplayBrowserView *view, i32 index)
 {
@@ -58,10 +62,10 @@ ChainCallbackResult ReplayBrowserView::Update()
     switch (this->state)
     {
     case 0:
-        g_SceneSupervisor.StopReplayScan();
+        g_Supervisor.StopReplayScan();
 
-        g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-        g_SceneSupervisor.lockCounts[4]++;
+        g_Supervisor.EnterCriticalSectionWrapper(4);
+        g_Supervisor.criticalSectionLockCounts[4]++;
         for (i = 0; i < 80; i++)
         {
             if (this->replays[i] != NULL)
@@ -70,10 +74,10 @@ ChainCallbackResult ReplayBrowserView::Update()
                 this->replays[i] = NULL;
             }
         }
-        g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-        g_SceneSupervisor.lockCounts[4]--;
+        g_Supervisor.LeaveCriticalSectionWrapper(4);
+        g_Supervisor.criticalSectionLockCounts[4]--;
 
-        g_SceneSupervisor.StartReplayScan(
+        g_Supervisor.StartReplayScan(
             LoadReplayBrowserEntries, NULL);
 
         this->stateTimer.Reset();
@@ -183,24 +187,24 @@ ChainCallbackResult ReplayBrowserView::Update()
 
 ZunResult ReplayBrowserView::LoadReplaySlot(i32 slot, char *path)
 {
-    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-    g_SceneSupervisor.lockCounts[4]++;
+    g_Supervisor.EnterCriticalSectionWrapper(4);
+    g_Supervisor.criticalSectionLockCounts[4]++;
     if (this->replays[slot] != NULL)
     {
         delete this->replays[slot];
         this->replays[slot] = NULL;
     }
     this->replays[slot] = NULL;
-    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-    g_SceneSupervisor.lockCounts[4]--;
+    g_Supervisor.LeaveCriticalSectionWrapper(4);
+    g_Supervisor.criticalSectionLockCounts[4]--;
 
     ReplayManager *replay = ReplayManager::Load(path);
 
-    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-    g_SceneSupervisor.lockCounts[4]++;
+    g_Supervisor.EnterCriticalSectionWrapper(4);
+    g_Supervisor.criticalSectionLockCounts[4]++;
     this->replays[slot] = replay;
-    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-    g_SceneSupervisor.lockCounts[4]--;
+    g_Supervisor.LeaveCriticalSectionWrapper(4);
+    g_Supervisor.criticalSectionLockCounts[4]--;
     return ZUN_SUCCESS;
 }
 
@@ -209,14 +213,15 @@ void __fastcall LoadReplayBrowserEntries(void *)
     i32 scanFinished2;
     ReplayBrowserLoadLocals locals;
 
-    locals.browser = g_ReplayBrowser;
+    locals.browser =
+        reinterpret_cast<ReplayBrowserView *>(g_ActiveMenuController);
     for (locals.i = 0; locals.i < 20; locals.i++)
     {
         if (locals.browser->requestedState != 3)
         {
             goto finish;
         }
-        locals.scanFinished1 = g_ReplayScanFinished;
+        locals.scanFinished1 = g_HelpLoadComplete;
         if (locals.scanFinished1 != 0)
         {
             goto finish;
@@ -238,7 +243,7 @@ void __fastcall LoadReplayBrowserEntries(void *)
             {
                 break;
             }
-            scanFinished2 = g_ReplayScanFinished;
+            scanFinished2 = g_HelpLoadComplete;
             if (scanFinished2 != 0)
             {
                 break;
@@ -259,8 +264,8 @@ void __fastcall LoadReplayBrowserEntries(void *)
     _chdir("../");
 
 finish:
-    g_ReplayScanActive = 0;
-    g_ReplayScanFinished = 1;
+    g_HelpLoadActive = 0;
+    g_HelpLoadComplete = 1;
 }
 
 } // namespace th095
