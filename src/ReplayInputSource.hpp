@@ -1,6 +1,9 @@
 #pragma once
 
 #include "inttypes.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "InputRuntime.hpp"
+#endif
 #include <stddef.h>
 
 namespace th095
@@ -32,6 +35,13 @@ typedef char ReplayInputPressedAt06[(offsetof(ReplayInputSource, pressedInput) =
 typedef char ReplayInputHistoryAt2C[(offsetof(ReplayInputSource, historyCurrent) == 0x2c) ? 1 : -1];
 typedef char ReplayInputHeldAt38[(offsetof(ReplayInputSource, heldFrames) == 0x38) ? 1 : -1];
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 extern ReplayInputSource g_ReplayInputSource;
+#else
+static __forceinline ReplayInputSource *RuntimeReplayInputSource()
+{
+    return reinterpret_cast<ReplayInputSource *>(RuntimeInputStorage());
+}
+#endif
 
 } // namespace th095

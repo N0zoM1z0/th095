@@ -8,6 +8,7 @@
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "InputRuntime.hpp"
 #include "SoundPlayer.hpp"
 #include "pbg/PbgArchive.hpp"
 
@@ -26,6 +27,7 @@ using namespace th095;
 
 namespace th095
 {
+#define g_PressedButtons (RuntimePressedButtons())
 DIFFABLE_STATIC(GameWindow, g_GameWindow);
 i32 g_FpsClockAnomalyCount;
 f64 g_LastFpsTimestamp;

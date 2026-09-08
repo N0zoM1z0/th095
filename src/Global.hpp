@@ -6,6 +6,9 @@
 #include "ZunResult.hpp"
 #include "diffbuild.hpp"
 #include "inttypes.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "InputRuntime.hpp"
+#endif
 #include "pbg/PbgArchive.hpp"
 #include "utils.hpp"
 #include <d3dx8.h>

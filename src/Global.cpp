@@ -20,14 +20,15 @@ DIFFABLE_STATIC(Rng, g_Rng2);
 // members at the end of that same object, not independent proxy globals.
 DIFFABLE_STATIC(GameErrorContext, g_GameErrorContext);
 
-// TH095 keeps the persistent input snapshots in the Global family.  The menu
-// pair at 0x004BE21C/0x004BE21E and the frame-history counters are distinct
-// storage; TH08 independently corroborates Global.cpp ownership for the same
-// input-state family.
+// Exact-facing names remain available for canonical comparison. Production
+// maps 0x004BE21C/0x004BE21E and 0x004BE244/0x004BE246 into the statically
+// constructed ControllerInputSlotView backing at 0x004BE218.
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 DIFFABLE_STATIC(u16, g_ResultMenuInput);
 DIFFABLE_STATIC(u16, g_PressedButtons);
 DIFFABLE_STATIC(u16, g_CurFrameInput);
 DIFFABLE_STATIC(u16, g_LastFrameInput);
+#endif
 DIFFABLE_STATIC(u16, g_NumOfFramesInputsWereHeld);
 DIFFABLE_STATIC(u16, g_IsEighthFrameOfHeldInput);
 DIFFABLE_STATIC(u32, g_PhotoScreenFadeColor);

@@ -4,6 +4,7 @@
 #include "MusicRoom.hpp"
 #include "AnmManager.hpp"
 #include "FileSystem.hpp"
+#include "InputRuntime.hpp"
 #include "SoundPlayer.hpp"
 
 #include <string.h>
@@ -13,6 +14,8 @@ namespace th095
 
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
+#define g_ResultMenuInput (RuntimeResultMenuInput())
+#define g_PressedButtons (RuntimePressedButtons())
 
 static __forceinline i32 MusicRoomTimerAtLeast(ZunTimer *timer, i32 value)
 {

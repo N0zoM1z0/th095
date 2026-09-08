@@ -28,8 +28,11 @@ namespace th095
 ReplayManager *g_ReplayManager = NULL;
 #endif
 
-extern u16 g_ReplayInputAux;
-extern u16 g_ReplayInputFlags;
+#define g_ReplayInputSource (*RuntimeReplayInputSource())
+#define g_CurFrameInput (RuntimeHistoryCurrent())
+#define g_LastFrameInput (RuntimeHistoryPrevious())
+#define g_ReplayInputAux (RuntimeHistoryPressed())
+#define g_ReplayInputFlags (RuntimeHistoryReleased())
 
 struct ReplayAsciiManagerView
 {

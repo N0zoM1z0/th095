@@ -3,6 +3,9 @@
 #endif
 #include "PhotoCamera.hpp"
 #include "GameplayGlobals.hpp"
+#ifndef DIFFBUILD
+#include "InputRuntime.hpp"
+#endif
 #include "SoundPlayer.hpp"
 #ifdef TH095_MATCH_EXACT
 #undef TH095_MATCH_SOUNDPLAYER_AS_STRUCT
@@ -195,6 +198,10 @@ extern PhotoStageStateView *g_PhotoStageState;
 extern PhotoStageControllerView *g_PhotoStageController;
 extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;
+#ifndef DIFFBUILD
+#define g_PhotoInput (RuntimeHistoryCurrent())
+#define g_PhotoInputPressed (RuntimeHistoryPressed())
+#endif
 
 #ifndef DIFFBUILD
 #define g_PhotoBulletManager \

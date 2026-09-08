@@ -3,6 +3,7 @@
 #else
 #include "OptionsMenu.hpp"
 #include "Controller.hpp"
+#include "InputRuntime.hpp"
 #include "SoundPlayer.hpp"
 
 namespace th095
@@ -10,6 +11,8 @@ namespace th095
 
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
+#define g_ResultMenuInput (RuntimeResultMenuInput())
+#define g_PressedButtons (RuntimePressedButtons())
 
 inline u16 GetOptionsPressedButtons(u16 buttons)
 {

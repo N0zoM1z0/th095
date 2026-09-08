@@ -194,8 +194,8 @@ object and function before replacing it. The other multi-target names are
 `g_OptionsGameConfig` (two addresses), and `g_PhotoInput` (two input slots).
 
 After those families, close the independent pointer/storage owners, including
-`g_ResultScreen @ 0x004C4E38`, input globals,
-front-end lifecycle flags, Supervisor member views, and standalone buffers.
+`g_ResultScreen @ 0x004C4E38`, front-end lifecycle flags, Supervisor member
+views, and standalone buffers.
 
 ## Callable/runtime families
 
@@ -224,6 +224,17 @@ Closed 2026-09-09: texture-entry clear receiver `0x004453B0`. HelpMenu and
 MusicRoom production storage now uses the real `AnmTextureEntryView`; fresh
 link count changes 144 -> 142 unique unresolved (150 -> 148 diagnostics), and
 both affected sources replay 5/5 exact units.
+
+Closed 2026-09-09: shared input-state storage rooted at `0x004BE218`.
+Production now uses `g_ControllerInputSlots` as the one backing store for the
+frontend/replay/photo views at `+0x00/+0x04/+0x06` and the history fields at
+`+0x2C/+0x2E/+0x32/+0x34`. Ghidra `ReplayManager::ProcessFrame @ 0x00434830`
+passes the base to `ReplayInputSource::Update @ 0x004353B0` and directly moves
+the same history/pressed fields. `g_PhotoInput` is handled per relocation/use,
+not by a blanket alias. Fresh whole-build count changes 142 -> 135 unique
+unresolved (148 -> 139 diagnostics), data 59 -> 52, the complete target-slot
+family is absent from the unresolved set, and a full canonical replay closes at
+696/696 exact with no label refresh.
 
 Continue with:
 

@@ -9,6 +9,9 @@
 #include "SoundPlayer.hpp"
 #include "ZunMath.hpp"
 #include "GameplayGlobals.hpp"
+#ifndef DIFFBUILD
+#include "InputRuntime.hpp"
+#endif
 
 #include <d3d8.h>
 #include <stdio.h>
@@ -185,6 +188,11 @@ extern i32 g_ReplayUsesArchive;
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 extern u16 g_FrontEndCurrentInput;
+#ifndef DIFFBUILD
+#define g_ResultMenuInput (RuntimeResultMenuInput())
+#define g_PressedButtons (RuntimePressedButtons())
+#define g_FrontEndCurrentInput (RuntimeInputCurrent())
+#endif
 extern i32 g_DemoReplayIndex;
 
 #ifndef DIFFBUILD

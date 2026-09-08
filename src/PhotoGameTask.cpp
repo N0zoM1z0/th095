@@ -6,6 +6,7 @@
 #include "AsciiManager.hpp"
 #include "FrontEndGlobals.hpp"
 #include "GameplayGlobals.hpp"
+#include "InputRuntime.hpp"
 #include "Main.hpp"
 #include "ResultScreen.hpp"
 #include "ScoreData.hpp"
@@ -246,7 +247,7 @@ extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
 #define g_PhotoEnemyManagerTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerTaskView, g_RuntimeEnemyManagerOwner)
 extern u32 g_PhotoAsciiTextColor;
-extern PhotoReplayInputButtonsTaskView g_ReplayInputButtons;
+#define g_ReplayInputButtons (*reinterpret_cast<PhotoReplayInputButtonsTaskView *>(RuntimeInputStorage()))
 extern i32 g_PhotoNextState;
 extern i32 g_ReplayUsesArchive;
 extern i32 g_PhotoLoadWaitFlag;

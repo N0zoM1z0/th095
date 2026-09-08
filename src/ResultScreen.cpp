@@ -8,6 +8,7 @@
 #include "AnmText.hpp"
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "InputRuntime.hpp"
 #include "Main.hpp"
 #include "ScoreData.hpp"
 #include "SceneData.hpp"
@@ -29,6 +30,8 @@ namespace th095
 
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
+#define g_ResultMenuInput (RuntimeResultMenuInput())
+#define g_PressedButtons (RuntimePressedButtons())
 extern f32 g_AnmGameSpeed;
 extern ResultScreen *g_ResultScreen;
 

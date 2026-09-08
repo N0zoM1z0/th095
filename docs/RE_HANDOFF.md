@@ -107,10 +107,10 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 142 unique unresolved decorated symbols across 148 diagnostics:
-59 data and 83 callable/runtime. Of those names, 139 map through canonical
-relocations to 127 target addresses; three currently lack target-address
-evidence and three decorated names map to multiple targets. The machine-readable
+now fails with 135 unique unresolved decorated symbols across 139 diagnostics:
+52 data and 83 callable/runtime. Of those names, 132 map through canonical
+relocations to 123 target addresses; three currently lack target-address
+evidence and two decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
 
@@ -315,6 +315,28 @@ exact implementation already owns this target body. The cold link moves 144 ->
 142 unique unresolved names and 150 -> 148 diagnostics (59 data / 83 callable),
 and `0x004453B0` leaves the unresolved set. The two affected sources replay 5/5
 configured exact units with no label refresh.
+
+The shared input-state storage family rooted at `0x004BE218` is closed in
+production. Hash-attested Ghidra xrefs and `ReplayManager::ProcessFrame @
+0x00434830` show one coherent state block: the routine passes `0x004BE218` to
+`ReplayInputSource::Update @ 0x004353B0`, shifts history through
+`0x004BE244/0x004BE246`, and copies the pressed snapshot from `0x004BE21E` into
+`0x004BE24A`. The canonical `ReplayInputSource` layout identifies the same
+fields as current `+0x00`, repeat/menu-output `+0x04`, pressed `+0x06`, and the
+history block at `+0x2C..+0x58`; the compiler-generated static vector initializer
+constructs the three `0x8E`-byte controller slots at this base. Production
+frontend, photo, and replay consumers therefore use typed accessors over the
+single `g_ControllerInputSlots` storage instead of independent globals. The
+multi-target `g_PhotoInput` name is resolved per use: current-history reads use
+`+0x2C`, while the capture edge uses pressed-history `+0x32`; no global alias is
+used. Relative to the preceding fresh committed baseline, the cold link moves
+142 -> 135 unique unresolved names and 148 -> 139 diagnostics (data 59 -> 52,
+callable/runtime remains 83); the `0x004BE218/21C/21E/244/246/24A/24C` family is
+absent from the fresh unresolved set and the multi-target-name count falls
+3 -> 2. The shared-header regression gate was replayed across the complete
+canonical universe: all 696 configured units were cold rebuilt in serialized
+segments and the final strict compare is 696/696 exact with zero failures and
+no relocation-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

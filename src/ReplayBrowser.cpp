@@ -3,6 +3,7 @@
 #else
 #include "ReplayBrowser.hpp"
 #include "FrontEndGlobals.hpp"
+#include "InputRuntime.hpp"
 #include "SoundPlayer.hpp"
 
 #include <direct.h>
@@ -44,6 +45,8 @@ typedef char ReplayBrowserLoadFindDataAt110[
 
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
+#define g_ResultMenuInput (RuntimeResultMenuInput())
+#define g_PressedButtons (RuntimePressedButtons())
 
 inline u16 GetReplayBrowserPressedButtons(u16 buttons)
 {

@@ -2,6 +2,7 @@
 #include "SceneSelectUpdateExact.inl"
 #else
 #include "SceneSelect.hpp"
+#include "InputRuntime.hpp"
 
 #include "ReplayBrowser.hpp"
 #include "ResultScreen.hpp"
@@ -20,9 +21,11 @@ struct AnmTextManagerView
                           COLORREF shadowColor, const char *format, ...);
 };
 
-extern u16 g_FrontEndCurrentInput;
+#define g_FrontEndCurrentInput (RuntimeInputCurrent())
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
+#define g_ResultMenuInput (RuntimeResultMenuInput())
+#define g_PressedButtons (RuntimePressedButtons())
 
 struct SceneSelectColorInterpolationView
 {

@@ -4,6 +4,7 @@
 #include "PhotoCamera.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
+#include "InputRuntime.hpp"
 #include "PhotoPlayerRuntime.hpp"
 #include "SoundPlayer.hpp"
 
@@ -57,7 +58,7 @@ extern PhotoResetTargetView *g_PhotoStageResetTarget;
 #define g_PhotoStageResetTarget \
     TH095_RUNTIME_GLOBAL_PTR(PhotoResetTargetView, g_RuntimeEffectManagerOwner)
 extern PhotoGameGlobalStateView *g_PhotoGameGlobalState;
-extern u16 g_PhotoInput;
+#define g_PhotoInput (RuntimeHistoryCurrent())
 
 #ifndef DIFFBUILD
 #define g_PhotoBulletManager \
@@ -597,7 +598,7 @@ i32 __fastcall PhotoGameUpdateView::OnUpdate(PhotoGameUpdateView *player)
 
     if (g_PhotoGameGlobalState->photoCaptureInputMode != 0)
     {
-        if (PhotoGameInputMask(g_PhotoInput, 2) != 0)
+        if (PhotoGameInputMask(RuntimeHistoryPressed(), 2) != 0)
         {
             player->camera.captureRequested = 1;
         }
