@@ -1,5 +1,8 @@
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
+#include "GameplayGlobals.hpp"
+#include "SoundPlayer.hpp"
+#include "pbg/PbgArchive.hpp"
 
 #include <direct.h>
 #include <math.h>
@@ -16,15 +19,24 @@ using namespace th095;
 
 namespace th095
 {
-struct AnmVmId
-{
-    AnmVmId()
-    {
-        this->value = 0;
-    }
+DIFFABLE_STATIC(GameWindow, g_GameWindow);
+i32 g_FpsClockAnomalyCount;
+f64 g_LastFpsTimestamp;
 
-    i32 value;
-};
+#ifndef DIFFBUILD
+// The retail image has one pointer slot for each gameplay subsystem.  Exact
+// units keep their target-facing per-TU symbol names; the runnable build routes
+// those typed views through these single production owners.
+void *g_RuntimeGameManagerOwner = 0;
+void *g_RuntimeBulletManagerOwner = 0;
+void *g_RuntimeEnemyManagerOwner = 0;
+void *g_RuntimeBackgroundManagerOwner = 0;
+void *g_RuntimeGameTaskOwner = 0;
+void *g_RuntimeItemManagerOwner = 0;
+void *g_RuntimeEffectManagerOwner = 0;
+void *g_RuntimeStageStateOwner = 0;
+void *g_RuntimePlayerOwner = 0;
+#endif
 
 struct SupervisorGameTaskView
 {
@@ -42,19 +54,15 @@ struct SupervisorGameTaskView
 
 extern SupervisorGameTaskView *g_SupervisorGameTask;
 
+#ifndef DIFFBUILD
+#define g_SupervisorGameTask \
+    TH095_RUNTIME_GLOBAL_PTR(SupervisorGameTaskView, g_RuntimeGameTaskOwner)
+#endif
+
 struct SupervisorInputWorkerView
 {
     void Start(void (__fastcall *callback)(void *), void *argument);
     void Stop();
-};
-
-struct SupervisorReplayScanWorkerView
-{
-    HANDLE handle;
-    u32 threadId;
-    i32 stopRequested;
-    i32 active;
-    void (__fastcall *threadProc)(void *);
 };
 
 struct FrontEndControllerView
@@ -73,64 +81,11 @@ struct PhotoGameTaskView
 };
 
 extern PhotoGameTaskView *g_PhotoGameTask;
-extern u32 g_ControllerRuntimeFlags;
-
-struct SupervisorSoundPlayerView
-{
-    void UpdateFades();
-};
 
 struct SupervisorControllerView
 {
     static u16 GetInput(i32 inputIndex);
 };
-
-struct SupervisorAnmManagerView
-{
-    u32 mixColor;                              // +0x0000
-    i32 useMixColor;                           // +0x0004
-    i32 captureSurfaceIdx;                     // +0x0008
-    i32 captureAnmIdx;                         // +0x000c
-    i32 scriptsStartedThisFrame;               // +0x0010
-    i32 scriptsExecutedThisFrame;              // +0x0014
-    i32 renderStateChangesThisFrame;           // +0x0018
-    i32 flushesThisFrame;                      // +0x001c
-    Float2 screenShakeOffset;                  // +0x0020
-    u8 unknown028[0x1760 - 0x28];
-    IDirect3DTexture8 *currentTexture;          // +0x1760
-    u8 currentBlendMode;                       // +0x1764
-    u8 currentColorOp;                         // +0x1765
-    u8 currentVertexShader;                    // +0x1766
-    u8 disableZWrite;                          // +0x1767
-    u8 cameraMode;                             // +0x1768
-    u8 unknown1769[3];
-    void *currentSprite;                       // +0x176c
-
-    ZunResult ServicePreloadedAnims();
-
-    void ClearSprite() { this->currentSprite = NULL; }
-    void ClearTexture() { this->currentTexture = NULL; }
-    void ClearColorOp() { this->currentColorOp = 0xff; }
-    void ClearBlendMode() { this->currentBlendMode = 3; }
-    void ClearZWrite() { this->disableZWrite = 0xff; }
-    void ResetFrameDebugInfo()
-    {
-        this->scriptsExecutedThisFrame = 0;
-        this->renderStateChangesThisFrame = 0;
-        this->scriptsStartedThisFrame = 0;
-        this->flushesThisFrame = 0;
-    }
-    void ClearCameraSettings() { this->cameraMode = 0xff; }
-    void SetMixColorDefault()
-    {
-        this->useMixColor = 0;
-        this->mixColor = 0x80808080;
-    }
-    void ClearVertexShader() { this->currentVertexShader = 0xff; }
-};
-
-extern SupervisorSoundPlayerView g_SupervisorSoundPlayer;
-extern SupervisorAnmManagerView *g_SupervisorAnmManager;
 
 struct TextHelperView
 {
@@ -163,14 +118,8 @@ struct DummyMidiTimer : MidiTimer
 typedef char MainMidiTimerSizeIs10[(sizeof(MidiTimer) == 0x10) ? 1 : -1];
 typedef char MainDummyMidiTimerSizeIs14[(sizeof(DummyMidiTimer) == 0x14) ? 1 : -1];
 
-struct PbgArchiveView
-{
-    bool Load(const char *path);
-    void Release();
-};
-
 extern SupervisorInputWorkerView g_SupervisorInputWorker;
-extern PbgArchiveView g_PbgArchive;
+extern PbgArchive g_PbgArchive;
 extern u32 g_PhotoScreenFadeColor;
 
 // WinMain's target has one four-byte compiler allocation class between the
@@ -475,7 +424,7 @@ void GameWindow::Present()
         for (i = 0; i < 1000; i++)
         {
             sprintf(screenshotPath, "snapshot/th%.3d.bmp", i);
-            if (!FileSystem::FileExists(screenshotPath))
+            if (!FileSystem::CheckIfFileAlreadyExists(screenshotPath))
                 break;
         }
         if (i < 1000)
@@ -978,7 +927,7 @@ i32 GameWindow::CheckForRunningGameInstance(HINSTANCE hInstance)
     if (startupInfo.lpTitle != NULL)
     {
         fileExtension = strrchr(startupInfo.lpTitle, '.');
-        if (FileSystem::FileExists(startupInfo.lpTitle) && fileExtension != NULL)
+        if (FileSystem::CheckIfFileAlreadyExists(startupInfo.lpTitle) && fileExtension != NULL)
         {
             if (_stricmp(fileExtension, ".lnk") == 0)
             {
@@ -1154,29 +1103,34 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
 #define supervisor reinterpret_cast<Supervisor *>(arg)
     if (supervisor->flags.receivedCloseMsg)
     {
-        locals.replayScanActive = supervisor->replayScanActive;
+        locals.replayScanActive = supervisor->replayScanWorker.active;
         if (locals.replayScanActive == 0)
             return 4;
     }
 
-    g_SupervisorSoundPlayer.UpdateFades();
+    g_SoundPlayer.UpdateFades();
     SupervisorControllerView::GetInput(0);
 
-    g_SupervisorAnmManager->ClearSprite();
-    g_SupervisorAnmManager->ClearTexture();
-    g_SupervisorAnmManager->ClearColorOp();
-    g_SupervisorAnmManager->ClearBlendMode();
-    g_SupervisorAnmManager->ClearZWrite();
-    g_SupervisorAnmManager->ResetFrameDebugInfo();
-    g_SupervisorAnmManager->ClearCameraSettings();
-    g_SupervisorAnmManager->SetMixColorDefault();
-    g_SupervisorAnmManager->screenShakeOffset.x =
-        g_SupervisorAnmManager->screenShakeOffset.y = 0.0f;
+    g_AnmManager->ClearSprite();
+    g_AnmManager->ClearTexture();
+    g_AnmManager->ClearColorOp();
+    g_AnmManager->ClearBlendMode();
+    g_AnmManager->ClearZWrite();
+    g_AnmManager->scriptsExecutedThisFrame = 0;
+    g_AnmManager->renderStateChangesThisFrame = 0;
+    g_AnmManager->scriptsStartedThisFrame = 0;
+    g_AnmManager->flushesThisFrame = 0;
+    g_AnmManager->ClearCameraSettings();
+    g_AnmManager->useMixColor = 0;
+    g_AnmManager->color.color = 0x80808080;
+    g_AnmManager->ClearVertexShader();
+    g_AnmManager->screenShakeOffset.x =
+        g_AnmManager->screenShakeOffset.y = 0.0f;
 
-    if (g_SupervisorAnmManager->ServicePreloadedAnims() != ZUN_SUCCESS)
+    if (g_AnmManager->ServicePreloadedAnims() != ZUN_SUCCESS)
         return 4;
 
-    g_SupervisorAnmManager->ClearVertexShader();
+    g_AnmManager->ClearVertexShader();
     if (supervisor->startupThreadState != 0)
     {
         if (supervisor->startupThreadState == 2)
@@ -1305,22 +1259,22 @@ void Supervisor::CalculateFps()
     } locals;
 
     locals.currentTime = g_GameWindow.GetTimestamp();
-    if (g_Supervisor.lastFpsTimestamp > locals.currentTime)
+    if (g_LastFpsTimestamp > locals.currentTime)
     {
-        g_Supervisor.lastFpsTimestamp = locals.currentTime;
+        g_LastFpsTimestamp = locals.currentTime;
     }
 
-    if (locals.currentTime - g_Supervisor.lastFpsTimestamp >= 0.5)
+    if (locals.currentTime - g_LastFpsTimestamp >= 0.5)
     {
-        locals.elapsed = locals.currentTime - g_Supervisor.lastFpsTimestamp;
-        g_Supervisor.lastFpsTimestamp += locals.elapsed;
+        locals.elapsed = locals.currentTime - g_LastFpsTimestamp;
+        g_LastFpsTimestamp += locals.elapsed;
         this->currentFps =
             static_cast<f64>(this->fpsFrameCount) / locals.elapsed;
 
         if (this->currentFps > 65.0f)
         {
-            g_Supervisor.fpsClockAnomalyCount++;
-            if (g_Supervisor.fpsClockAnomalyCount == 2)
+            g_FpsClockAnomalyCount++;
+            if (g_FpsClockAnomalyCount == 2)
             {
                 g_GameWindow.lastTimestamp =
                     g_GameWindow.currentTimestamp =
@@ -1328,7 +1282,7 @@ void Supervisor::CalculateFps()
                             g_GameWindow.timeOrigin =
                                 g_GameWindow.GetTimestamp();
             }
-            else if (g_Supervisor.fpsClockAnomalyCount == 4)
+            else if (g_FpsClockAnomalyCount == 4)
             {
                 g_GameWindow.performanceFrequency.QuadPart = 0;
                 g_GameWindow.lastTimestamp =
@@ -1336,12 +1290,12 @@ void Supervisor::CalculateFps()
                         g_GameWindow.lastFrameTime =
                             g_GameWindow.timeOrigin =
                                 g_GameWindow.GetTimestamp();
-                g_Supervisor.fpsClockAnomalyCount = 0;
+                g_FpsClockAnomalyCount = 0;
             }
         }
         else
         {
-            g_Supervisor.fpsClockAnomalyCount = 0;
+            g_FpsClockAnomalyCount = 0;
         }
 
         if (g_SupervisorGameTask != NULL &&
@@ -1641,7 +1595,7 @@ i32 Supervisor::UpdateSceneState()
 
             case SUPERVISOR_STATE_RESTART_PHOTO_GAME:
                 locals.resultMode = g_PhotoGameTask->replayMode;
-                g_ControllerRuntimeFlags |= 0x200;
+                g_Supervisor.flags.raw |= 0x200;
                 this->photoGameTask->Destroy();
                 this->photoGameTask = NULL;
                 this->photoGameTask =
@@ -1912,16 +1866,16 @@ void __fastcall Supervisor::StartupThread(Supervisor *s)
     g_Supervisor.ThreadClose();
     g_Supervisor.startupThreadState = 0;
     g_Supervisor.flags.scoreBackupPending = 0;
-    g_Supervisor.replayScanActive = 0;
-    g_Supervisor.replayScanStopRequested = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.stopRequested = 1;
     return;
 
 error:
     g_Supervisor.ThreadClose();
     g_Supervisor.startupThreadState = 2;
     g_Supervisor.flags.receivedCloseMsg = 1;
-    g_Supervisor.replayScanActive = 0;
-    g_Supervisor.replayScanStopRequested = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.stopRequested = 1;
 }
 
 // Keep the real version-data ownership local inside its teardown phase so
@@ -2156,15 +2110,15 @@ cleanup:
 // FUNCTION: TH095 0x00425150.
 void Supervisor::ThreadClose()
 {
-    SupervisorReplayScanWorkerView *worker;
+    ReplayScanWorker *worker;
 
     this->EnterCriticalSectionWrapper(6);
     this->criticalSectionLockCounts[6]++;
-    worker = (SupervisorReplayScanWorkerView *)&this->replayScanThreadHandle;
+    worker = &this->replayScanWorker;
     if (worker->handle != NULL)
     {
-        CloseHandle(worker->handle);
-        worker->handle = NULL;
+        CloseHandle((HANDLE)worker->handle);
+        worker->handle = 0;
         worker->active = 0;
     }
     this->LeaveCriticalSectionWrapper(6);

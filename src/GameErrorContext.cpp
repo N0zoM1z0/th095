@@ -1,4 +1,5 @@
 #include "Global.hpp"
+#include "Main.hpp"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -6,21 +7,25 @@
 
 namespace th095
 {
-extern u8 g_FileSystemCriticalSections;
-extern u8 g_ErrorCriticalActiveCount;
+GameErrorContext::GameErrorContext()
+{
+    this->ResetContext();
+    this->showMessageBox = false;
+}
+
+GameErrorContext::~GameErrorContext()
+{
+    this->Flush();
+}
 
 static __forceinline void EnterErrorCritical(i32 id)
 {
-    EnterCriticalSection(
-        reinterpret_cast<CRITICAL_SECTION *>(
-            &g_FileSystemCriticalSections + id * 0x18));
+    EnterCriticalSection(&g_Supervisor.criticalSections[id]);
 }
 
 static __forceinline void LeaveErrorCritical(i32 id)
 {
-    LeaveCriticalSection(
-        reinterpret_cast<CRITICAL_SECTION *>(
-            &g_FileSystemCriticalSections + id * 0x18));
+    LeaveCriticalSection(&g_Supervisor.criticalSections[id]);
 }
 
 const char *GameErrorContext::Log(const char *fmt, ...)
@@ -31,7 +36,7 @@ const char *GameErrorContext::Log(const char *fmt, ...)
 
     va_start(args, fmt);
     EnterErrorCritical(3);
-    g_ErrorCriticalActiveCount++;
+    g_Supervisor.criticalSectionLockCounts[3]++;
     vsprintf(tmpBuffer, fmt, args);
     tmpBufferSize = strlen(tmpBuffer);
     if (this->bufferEnd + tmpBufferSize < &this->buffer[sizeof(this->buffer) - 1])
@@ -42,7 +47,7 @@ const char *GameErrorContext::Log(const char *fmt, ...)
     }
     va_end(args);
     LeaveErrorCritical(3);
-    g_ErrorCriticalActiveCount--;
+    g_Supervisor.criticalSectionLockCounts[3]--;
     return fmt;
 }
 
@@ -54,7 +59,7 @@ const char *GameErrorContext::Fatal(const char *fmt, ...)
 
     va_start(args, fmt);
     EnterErrorCritical(3);
-    g_ErrorCriticalActiveCount++;
+    g_Supervisor.criticalSectionLockCounts[3]++;
     vsprintf(tmpBuffer, fmt, args);
     tmpBufferSize = strlen(tmpBuffer);
     if (this->bufferEnd + tmpBufferSize < &this->buffer[sizeof(this->buffer) - 1])
@@ -66,7 +71,7 @@ const char *GameErrorContext::Fatal(const char *fmt, ...)
     va_end(args);
     this->showMessageBox = true;
     LeaveErrorCritical(3);
-    g_ErrorCriticalActiveCount--;
+    g_Supervisor.criticalSectionLockCounts[3]--;
     return fmt;
 }
 } // namespace th095

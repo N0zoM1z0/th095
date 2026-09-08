@@ -2,13 +2,16 @@
 
 #include <d3d8.h>
 #include <d3dx8math.h>
+#ifndef DIRECTINPUT_VERSION
 #define DIRECTINPUT_VERSION 0x800
+#endif
 #include <dinput.h>
 
 #include "Global.hpp"
 #include "Midi.hpp"
 #include "ZunBool.hpp"
 #include "ZunMath.hpp"
+#include "ZunTimer.hpp"
 #include "diffbuild.hpp"
 #include "inttypes.hpp"
 #include "utils.hpp"
@@ -61,7 +64,7 @@ struct GameConfigOpts
 
 struct GameConfiguration
 {
-    ControllerMapping controllerMapping;
+    ControllerButtonMapping controllerMapping;
     i32 version;
     i16 padXAxis;
     i16 padYAxis;
@@ -162,6 +165,8 @@ struct Supervisor
     void SetupLoadingVms(Float3 *position);
     void HideLoadingVms(void);
     void BeginLoadingCompletion();
+    i32 StartReplayScan(void (__fastcall *callback)(void *), void *argument);
+    void StopReplayScan();
     void SetupLoadingVmsAndInitCapture(Float3 *position);
     void StartEffect(i32 idx);
     void InitializeCriticalSections();
@@ -364,114 +369,4 @@ DIFFABLE_EXTERN(Supervisor, g_Supervisor);
 
 #define CRASH_GAME() memset(&g_Supervisor, -1, sizeof(g_Supervisor))
 
-struct ZunTimer
-{
-    int previous;
-    float subFrame;
-    int current;
-
-    ZunTimer()
-    {
-        Initialize();
-    }
-
-    void Initialize()
-    {
-        this->current = 0;
-        this->subFrame = 0.0;
-        this->previous = -999999;
-    }
-
-    void operator=(i32 value)
-    {
-        SetCurrent(value);
-    }
-
-    void SetCurrent(i32 value)
-    {
-        this->current = value;
-        this->subFrame = (float)value;
-        this->previous = -999999;
-    }
-
-    operator int()
-    {
-        return this->current;
-    }
-
-    ZunBool HasTicked();
-    ZunBool JustReached(i32 value);
-    ZunBool IsPeriodic(i32 interval);
-
-    operator float()
-    {
-        return this->subFrame;
-    }
-
-    void operator++(int)
-    {
-        Tick();
-    }
-
-    i32 Tick();
-    void Add(float value);
-
-    void operator+=(float value)
-    {
-        this->Add(value);
-    }
-
-    void DecrementPostfix(i32 value)
-    {
-        this->Decrement(value);
-    }
-
-    void operator--(int)
-    {
-        this->DecrementPostfix(1);
-    }
-
-    ZunBool operator==(int value)
-    {
-        return this->current == value;
-    }
-
-    ZunBool operator!=(int value);
-
-    i32 operator%(i32 value);
-
-    void operator+=(int value);
-
-    ZunBool operator-=(int value)
-    {
-        this->Decrement(value);
-    }
-
-    ZunBool operator<(int value)
-    {
-        return this->current < value;
-    }
-
-    ZunBool operator<=(int value)
-    {
-        return this->current <= value;
-    }
-
-    ZunBool operator>(int value)
-    {
-        return this->current > value;
-    }
-
-    ZunBool operator>=(int value)
-    {
-        return this->current >= value;
-    }
-
-    void Increment(i32 value);
-    void Decrement(i32 value)
-    {
-        this->Add((float)-value);
-    }
-
-};
 }; // namespace th095

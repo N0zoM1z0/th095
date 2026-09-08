@@ -4,26 +4,20 @@
 
 namespace th095
 {
-extern u8 g_FileSystemCriticalSections;
-extern u8 g_FileSystemActiveCount;
-extern HANDLE g_OpenWriteFileHandle;
+DIFFABLE_STATIC_ASSIGN(HANDLE, g_OpenWriteFileHandle) = INVALID_HANDLE_VALUE;
 
 static __forceinline void EnterFileCriticalSection(i32 id)
 {
-    EnterCriticalSection(
-        reinterpret_cast<CRITICAL_SECTION *>(
-            &g_FileSystemCriticalSections + id * 0x18));
+    EnterCriticalSection(&g_Supervisor.criticalSections[id]);
 }
 
 static __forceinline void LeaveFileCriticalSection(i32 id)
 {
-    LeaveCriticalSection(
-        reinterpret_cast<CRITICAL_SECTION *>(
-            &g_FileSystemCriticalSections + id * 0x18));
+    LeaveCriticalSection(&g_Supervisor.criticalSections[id]);
 }
 
 // FUNCTION: TH095 0x0041AC50.
-i32 FileSystem::WriteDataToFile(char *path, void *data, i32 size)
+i32 FileSystem::WriteDataToFile(const char *path, void *data, size_t size)
 {
     struct WriteLocals
     {
@@ -33,7 +27,7 @@ i32 FileSystem::WriteDataToFile(char *path, void *data, i32 size)
     } locals;
 
     EnterFileCriticalSection(2);
-    g_FileSystemActiveCount++;
+    g_Supervisor.criticalSectionLockCounts[2]++;
     locals.handle = CreateFileA(
         path, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL, NULL);
@@ -48,7 +42,7 @@ i32 FileSystem::WriteDataToFile(char *path, void *data, i32 size)
             "error : %s write error %s\r\n", path, locals.errorMessage);
         LocalFree(locals.errorMessage);
         LeaveFileCriticalSection(2);
-        g_FileSystemActiveCount--;
+        g_Supervisor.criticalSectionLockCounts[2]--;
         return -1;
     }
 
@@ -58,14 +52,14 @@ i32 FileSystem::WriteDataToFile(char *path, void *data, i32 size)
         CloseHandle(locals.handle);
         utils::DebugPrint("error : %s write error\r\n", path);
         LeaveFileCriticalSection(2);
-        g_FileSystemActiveCount--;
+        g_Supervisor.criticalSectionLockCounts[2]--;
         return -2;
     }
 
     CloseHandle(locals.handle);
     utils::DebugPrint("%s write ...\r\n", path);
     LeaveFileCriticalSection(2);
-    g_FileSystemActiveCount--;
+    g_Supervisor.criticalSectionLockCounts[2]--;
     return 0;
 }
 
@@ -75,7 +69,7 @@ i32 FileSystem::OpenWriteFile(char *path)
     LPSTR errorMessage;
 
     EnterFileCriticalSection(2);
-    g_FileSystemActiveCount++;
+    g_Supervisor.criticalSectionLockCounts[2]++;
     g_OpenWriteFileHandle = CreateFileA(
         path, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL, NULL);
@@ -90,7 +84,7 @@ i32 FileSystem::OpenWriteFile(char *path)
             "error : %s write error %s\r\n", path, errorMessage);
         LocalFree(errorMessage);
         LeaveFileCriticalSection(2);
-        g_FileSystemActiveCount--;
+        g_Supervisor.criticalSectionLockCounts[2]--;
         return -1;
     }
 
@@ -106,7 +100,7 @@ i32 Open(char *path)
     LPSTR errorMessage;
 
     EnterFileCriticalSection(2);
-    g_FileSystemActiveCount++;
+    g_Supervisor.criticalSectionLockCounts[2]++;
     g_OpenWriteFileHandle = CreateFileA(
         path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
@@ -121,7 +115,7 @@ i32 Open(char *path)
             "error : %s write error %s\r\n", path, errorMessage);
         LocalFree(errorMessage);
         LeaveFileCriticalSection(2);
-        g_FileSystemActiveCount--;
+        g_Supervisor.criticalSectionLockCounts[2]--;
         return -1;
     }
 
@@ -170,7 +164,7 @@ i32 FileSystem::WriteToOpenFile(void *data, u32 size)
         CloseHandle(g_OpenWriteFileHandle);
         utils::DebugPrint("error : write error\r\n");
         LeaveFileCriticalSection(2);
-        g_FileSystemActiveCount--;
+        g_Supervisor.criticalSectionLockCounts[2]--;
         return -2;
     }
 
@@ -187,7 +181,7 @@ i32 FileSystem::CloseWriteFile()
     CloseHandle(g_OpenWriteFileHandle);
     utils::DebugPrint("close ...\r\n");
     LeaveFileCriticalSection(2);
-    g_FileSystemActiveCount--;
+    g_Supervisor.criticalSectionLockCounts[2]--;
     return 0;
 }
 } // namespace th095

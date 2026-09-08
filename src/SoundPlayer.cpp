@@ -12,6 +12,11 @@
 namespace th095
 {
 
+// TH095 has one process-lifetime SoundPlayer at 0x004C4EE8.  Keeping its
+// storage with the implementation TU also ensures the compiler emits the real
+// class identity used by every caller instead of separate struct/class symbols.
+DIFFABLE_STATIC(SoundPlayer, g_SoundPlayer);
+
 #define BGM_WAV_BITS_PER_SAMPLE 16
 #define BGM_BUFFER_SIZE 0x8000
 #define BGM_WAV_NUM_CHANNELS 2

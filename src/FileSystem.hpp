@@ -3,4 +3,9 @@
 
 #include "Global.hpp"
 
+namespace th095
+{
+extern i32 g_ReplayUsesArchive;
+}
+
 #endif

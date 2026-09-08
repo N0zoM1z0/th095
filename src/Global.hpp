@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Chain.hpp"
+#include "GameErrorContext.hpp"
+#include "Rng.hpp"
 #include "ZunResult.hpp"
 #include "diffbuild.hpp"
 #include "inttypes.hpp"
@@ -17,6 +19,8 @@
 
 namespace th095
 {
+
+extern u32 g_PhotoScreenFadeColor;
 
 #define IS_PRESSED(key) (g_CurFrameInput & (key))
 #define WAS_PRESSED(key) (((g_CurFrameInput & (key)) != 0) && (g_CurFrameInput & (key)) != (g_LastFrameInput & (key)))
@@ -93,76 +97,6 @@ BOOL CheckIfFileAlreadyExists(LPCSTR path);
 int WriteDataToFile(LPCSTR path, LPVOID data, size_t size);
 }; // namespace FileSystem
 
-class GameErrorContext
-{
-  public:
-    GameErrorContext();
-    ~GameErrorContext();
-
-    void ResetContext()
-    {
-        this->bufferEnd = this->buffer;
-        this->bufferEnd[0] = '\0';
-    }
-
-    void Flush();
-
-    const char *Log(const char *fmt, ...);
-    const char *Fatal(const char *fmt, ...);
-
-  private:
-    char buffer[0x2000];
-    char *bufferEnd;
-    i8 showMessageBox;
-};
-
-class Rng
-{
-  public:
-    u16 GetRandomU16();
-    u32 GetRandomU32();
-    f32 GetRandomF32();
-    f32 GetRandomF32Signed();
-
-    void ResetGenerationCount();
-    void SetSeed(u16 newSeed);
-    u16 GetSeed();
-
-    void SaveSeed()
-    {
-        this->seedBackup = this->seed;
-    }
-
-    void RestoreSavedSeed()
-    {
-        this->seed = this->seedBackup;
-    }
-
-    u16 GetRandomU16InRange(u16 range)
-    {
-        return range != 0 ? GetRandomU16() % range : 0;
-    }
-
-    u32 GetRandomU32InRange(u32 range)
-    {
-        return range != 0 ? GetRandomU32() % range : 0;
-    }
-
-    f32 GetRandomF32InRange(f32 range)
-    {
-        return GetRandomF32() * range;
-    }
-
-    f32 GetRandomF32SignedInRange(f32 range)
-    {
-        return GetRandomF32Signed() * range;
-    }
-
-  private:
-    u16 seed, seedBackup;
-    u32 generationCount;
-};
-
 class ZunMemory
 {
   public:
@@ -230,7 +164,7 @@ class ZunMemory
     BOOL bRegistryInUse;
 };
 
-struct ControllerMapping
+struct ControllerButtonMapping
 {
     i16 shotButton;
     i16 bombButton;
@@ -313,15 +247,14 @@ C_ASSERT(offsetof(ZunGlobals, bombsUsed) == 0x84);
 C_ASSERT(offsetof(ZunGlobals, bombsUsedInStage) == 0x88);
 C_ASSERT(offsetof(ZunGlobals, playerPower) == 0x98);
 
-DIFFABLE_EXTERN(Rng, g_Rng);
 DIFFABLE_EXTERN(u16, g_CurFrameInput);
 DIFFABLE_EXTERN(u16, g_LastFrameInput);
 DIFFABLE_EXTERN(u16, g_NumOfFramesInputsWereHeld);
 DIFFABLE_EXTERN(u16, g_IsEighthFrameOfHeldInput);
-DIFFABLE_EXTERN(GameErrorContext, g_GameErrorContext);
+DIFFABLE_EXTERN(u16, g_ResultMenuInput);
+DIFFABLE_EXTERN(u16, g_PressedButtons);
 DIFFABLE_EXTERN(PbgArchive, g_PbgArchive);
 DIFFABLE_EXTERN(ZunMemory, g_ZunMemory);
-DIFFABLE_EXTERN(ControllerMapping, g_ControllerMapping);
 
 i32 IsResourceReloadEnabled();
 }; // namespace th095

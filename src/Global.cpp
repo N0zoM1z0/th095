@@ -1,4 +1,5 @@
 #include "Global.hpp"
+#include "Main.hpp"
 
 namespace th095
 {
@@ -9,33 +10,27 @@ namespace th095
 // storage while leaving address-bound comparison builds free to externalize it.
 DIFFABLE_STATIC(Chain, g_Chain);
 
-struct ChainSupervisorView
-{
-    u8 unknown000[0x664];
-    CRITICAL_SECTION criticalSections[7];
-    u8 lockCounts[7];
+// The target keeps the two eight-byte RNG states consecutively at
+// 0x004BE208/0x004BE210.  They are process-lifetime objects owned by the same
+// global translation unit as their implementations and static initialization.
+DIFFABLE_STATIC(Rng, g_Rng);
+DIFFABLE_STATIC(Rng, g_Rng2);
 
-    void StopReplayScan();
+// The log buffer begins at 0x004C2420; its cursor and message-box flag are
+// members at the end of that same object, not independent proxy globals.
+DIFFABLE_STATIC(GameErrorContext, g_GameErrorContext);
 
-    void EnterCriticalSectionWrapper(i32 id)
-    {
-        EnterCriticalSection(&this->criticalSections[id]);
-        this->lockCounts[id]++;
-    }
-
-    void LeaveCriticalSectionWrapper(i32 id)
-    {
-        LeaveCriticalSection(&this->criticalSections[id]);
-        this->lockCounts[id]--;
-    }
-};
-
-extern ChainSupervisorView g_ChainSupervisor;
-
-typedef char ChainSupervisorCriticalSectionsAt664[
-    (offsetof(ChainSupervisorView, criticalSections) == 0x664) ? 1 : -1];
-typedef char ChainSupervisorLockCountsAt70C[
-    (offsetof(ChainSupervisorView, lockCounts) == 0x70c) ? 1 : -1];
+// TH095 keeps the persistent input snapshots in the Global family.  The menu
+// pair at 0x004BE21C/0x004BE21E and the frame-history counters are distinct
+// storage; TH08 independently corroborates Global.cpp ownership for the same
+// input-state family.
+DIFFABLE_STATIC(u16, g_ResultMenuInput);
+DIFFABLE_STATIC(u16, g_PressedButtons);
+DIFFABLE_STATIC(u16, g_CurFrameInput);
+DIFFABLE_STATIC(u16, g_LastFrameInput);
+DIFFABLE_STATIC(u16, g_NumOfFramesInputsWereHeld);
+DIFFABLE_STATIC(u16, g_IsEighthFrameOfHeldInput);
+DIFFABLE_STATIC(u32, g_PhotoScreenFadeColor);
 
 ChainElem::ChainElem()
 {
@@ -82,7 +77,8 @@ i32 Chain::AddToCalcChain(ChainElem *elem, i32 priority)
         elem->addedCallback = NULL;
     }
 
-    g_ChainSupervisor.EnterCriticalSectionWrapper(0);
+    g_Supervisor.EnterCriticalSectionWrapper(0);
+    g_Supervisor.criticalSectionLockCounts[0]++;
     elem->priority = priority;
     while (current->next != NULL)
     {
@@ -110,7 +106,8 @@ i32 Chain::AddToCalcChain(ChainElem *elem, i32 priority)
         current->next = elem;
     }
 
-    g_ChainSupervisor.LeaveCriticalSectionWrapper(0);
+    g_Supervisor.LeaveCriticalSectionWrapper(0);
+    g_Supervisor.criticalSectionLockCounts[0]--;
     return result;
 }
 
@@ -125,7 +122,8 @@ i32 Chain::AddToDrawChain(ChainElem *elem, i32 priority)
         elem->addedCallback = NULL;
     }
 
-    g_ChainSupervisor.EnterCriticalSectionWrapper(0);
+    g_Supervisor.EnterCriticalSectionWrapper(0);
+    g_Supervisor.criticalSectionLockCounts[0]++;
     elem->priority = priority;
     while (current->next != NULL)
     {
@@ -153,7 +151,8 @@ i32 Chain::AddToDrawChain(ChainElem *elem, i32 priority)
         current->next = elem;
     }
 
-    g_ChainSupervisor.LeaveCriticalSectionWrapper(0);
+    g_Supervisor.LeaveCriticalSectionWrapper(0);
+    g_Supervisor.criticalSectionLockCounts[0]--;
     return result;
 }
 
@@ -163,7 +162,8 @@ i32 Chain::RunCalcChain()
     i32 updatedCount;
     ChainCallbackResult result;
 
-    g_ChainSupervisor.EnterCriticalSectionWrapper(0);
+    g_Supervisor.EnterCriticalSectionWrapper(0);
+    g_Supervisor.criticalSectionLockCounts[0]++;
 
 restartFromFirstJob:
     updatedCount = 0;
@@ -173,9 +173,11 @@ restartFromFirstJob:
         if (current->callback != NULL)
         {
         executeAgain:
-            g_ChainSupervisor.LeaveCriticalSectionWrapper(0);
+            g_Supervisor.LeaveCriticalSectionWrapper(0);
+            g_Supervisor.criticalSectionLockCounts[0]--;
             result = current->callback(current->arg);
-            g_ChainSupervisor.EnterCriticalSectionWrapper(0);
+            g_Supervisor.EnterCriticalSectionWrapper(0);
+            g_Supervisor.criticalSectionLockCounts[0]++;
 
             switch (result)
             {
@@ -215,7 +217,8 @@ restartFromFirstJob:
     }
 
 loopExit:
-    g_ChainSupervisor.LeaveCriticalSectionWrapper(0);
+    g_Supervisor.LeaveCriticalSectionWrapper(0);
+    g_Supervisor.criticalSectionLockCounts[0]--;
     return updatedCount;
 }
 
@@ -227,15 +230,18 @@ i32 Chain::RunDrawChain()
 
     updatedCount = 0;
     current = &this->drawChain;
-    g_ChainSupervisor.EnterCriticalSectionWrapper(0);
+    g_Supervisor.EnterCriticalSectionWrapper(0);
+    g_Supervisor.criticalSectionLockCounts[0]++;
     while (current != NULL)
     {
         if (current->callback != NULL)
         {
         executeAgain:
-            g_ChainSupervisor.LeaveCriticalSectionWrapper(0);
+            g_Supervisor.LeaveCriticalSectionWrapper(0);
+            g_Supervisor.criticalSectionLockCounts[0]--;
             result = current->callback(current->arg);
-            g_ChainSupervisor.EnterCriticalSectionWrapper(0);
+            g_Supervisor.EnterCriticalSectionWrapper(0);
+            g_Supervisor.criticalSectionLockCounts[0]++;
 
             switch (result)
             {
@@ -272,7 +278,8 @@ i32 Chain::RunDrawChain()
     }
 
 loopExit:
-    g_ChainSupervisor.LeaveCriticalSectionWrapper(0);
+    g_Supervisor.LeaveCriticalSectionWrapper(0);
+    g_Supervisor.criticalSectionLockCounts[0]--;
     return updatedCount;
 }
 
@@ -320,7 +327,7 @@ void Chain::ReleaseSingleChain(ChainElem *root)
 
 void Chain::Release()
 {
-    g_ChainSupervisor.StopReplayScan();
+    g_Supervisor.StopReplayScan();
     this->ReleaseSingleChain(&this->calcChain);
     this->ReleaseSingleChain(&this->drawChain);
 }
@@ -341,9 +348,11 @@ void Chain::Cut(ChainElem *toRemove)
         return;
     }
 
-    g_ChainSupervisor.EnterCriticalSectionWrapper(0);
+    g_Supervisor.EnterCriticalSectionWrapper(0);
+    g_Supervisor.criticalSectionLockCounts[0]++;
     this->CutImpl(toRemove);
-    g_ChainSupervisor.LeaveCriticalSectionWrapper(0);
+    g_Supervisor.LeaveCriticalSectionWrapper(0);
+    g_Supervisor.criticalSectionLockCounts[0]--;
 }
 
 void Chain::CutImpl(ChainElem *toRemove)
@@ -393,10 +402,12 @@ destroyElem:
 
         if (toRemove->isHeapAllocated)
         {
-            g_ChainSupervisor.LeaveCriticalSectionWrapper(0);
+            g_Supervisor.LeaveCriticalSectionWrapper(0);
+            g_Supervisor.criticalSectionLockCounts[0]--;
             delete toRemove;
             toRemove = NULL;
-            g_ChainSupervisor.EnterCriticalSectionWrapper(0);
+            g_Supervisor.EnterCriticalSectionWrapper(0);
+            g_Supervisor.criticalSectionLockCounts[0]++;
         }
         else
         {
@@ -404,9 +415,11 @@ destroyElem:
             {
                 ChainLifetimeCallback callback = toRemove->deletedCallback;
                 toRemove->deletedCallback = NULL;
-                g_ChainSupervisor.LeaveCriticalSectionWrapper(0);
+                g_Supervisor.LeaveCriticalSectionWrapper(0);
+                g_Supervisor.criticalSectionLockCounts[0]--;
                 callback(toRemove->arg);
-                g_ChainSupervisor.EnterCriticalSectionWrapper(0);
+                g_Supervisor.EnterCriticalSectionWrapper(0);
+                g_Supervisor.criticalSectionLockCounts[0]++;
             }
         }
     }

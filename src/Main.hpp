@@ -11,7 +11,10 @@
 
 #include <stddef.h>
 #include "Chain.hpp"
+#include "GameErrorContext.hpp"
 #include "ScreenEffect.hpp"
+#include "SoundPlayer.hpp"
+#include "inttypes.hpp"
 
 namespace th095
 {
@@ -22,15 +25,6 @@ struct Float3;
 struct FrontEndControllerView;
 struct PhotoGameTaskView;
 struct DummyMidiTimer;
-
-typedef signed char i8;
-typedef unsigned char u8;
-typedef signed short i16;
-typedef unsigned short u16;
-typedef signed int i32;
-typedef unsigned int u32;
-typedef float f32;
-typedef double f64;
 
 enum RenderResult
 {
@@ -151,22 +145,47 @@ struct MidiOutput
     ~MidiOutput();
 };
 
+struct ReplayScanWorker
+{
+    uintptr_t handle;
+    u32 threadId;
+    i32 stopRequested;
+    i32 active;
+    u8 unknown010[4];
+    void (__fastcall *threadProc)(void *);
+
+    ReplayScanWorker();
+    ~ReplayScanWorker();
+    void Stop();
+    void Start(void (__fastcall *callback)(void *), void *argument);
+};
+
+typedef char ReplayScanWorkerSizeIs18[
+    (sizeof(ReplayScanWorker) == 0x18) ? 1 : -1];
+
 struct SupervisorFlags
 {
-    u32 usingHardwareTL : 1;
-    u32 lockableBackbuffer : 1;
-    u32 using32BitGraphics : 1;
-    u32 speedhackDetected : 1;
-    u32 d3dDeviceNeedsReset : 1;
-    u32 forceExtraTimerStep : 1;
-    u32 dummyMidiTimerEnabled : 1;
-    u32 receivedCloseMsg : 1;
-    u32 scoreBackupPending : 1;
-    u32 unknown9 : 1;
-    u32 keyboardAvailable : 1;
-    u32 controllerAvailable : 1;
-    u32 restartPhotoGame : 1;
-    u32 unknown13 : 19;
+    union
+    {
+        u32 raw;
+        struct
+        {
+            u32 usingHardwareTL : 1;
+            u32 lockableBackbuffer : 1;
+            u32 using32BitGraphics : 1;
+            u32 speedhackDetected : 1;
+            u32 d3dDeviceNeedsReset : 1;
+            u32 forceExtraTimerStep : 1;
+            u32 dummyMidiTimerEnabled : 1;
+            u32 receivedCloseMsg : 1;
+            u32 scoreBackupPending : 1;
+            u32 unknown9 : 1;
+            u32 keyboardAvailable : 1;
+            u32 controllerAvailable : 1;
+            u32 restartPhotoGame : 1;
+            u32 unknown13 : 19;
+        };
+    };
 };
 
 enum SupervisorState
@@ -236,12 +255,7 @@ struct Supervisor
     BITMAPINFOHEADER *screenshotInfoHeader;      // +0x53c
     u8 *screenshotPixels;                       // +0x540
     char screenshotPath[MAX_PATH];              // +0x544
-    HANDLE replayScanThreadHandle;               // +0x648
-    u32 replayScanThreadId;                      // +0x64c
-    i32 replayScanStopRequested;                 // +0x650
-    i32 replayScanActive;                        // +0x654
-    void (__fastcall *replayScanThreadProc)(void *); // +0x658
-    u8 unknown65c[4];
+    ReplayScanWorker replayScanWorker;           // +0x648
     i32 startupThreadState;                      // +0x660
     CRITICAL_SECTION criticalSections[7];       // +0x664
     u8 criticalSectionLockCounts[7];            // +0x70c
@@ -259,16 +273,15 @@ struct Supervisor
     f64 lagNumerator;                           // +0x78c
     f64 lagDenominator;                         // +0x794
     f32 currentFps;                             // +0x79c
-    u8 unknown7a0[0x18];
+    ReplayScanWorker secondaryReplayScanWorker;  // +0x7a0
     D3DCOLOR backbufferClearColor;              // +0x7b8
-    i32 fpsClockAnomalyCount;                   // +0x7bc
-    f64 lastFpsTimestamp;                       // +0x7c0
 
     void InitializeCriticalSections();
     void DeleteCriticalSections();
     i32 LoadConfig(char *path);
     static i32 RegisterChain();
     void ConfigureGameplayViewport(i32 index);
+    void ConfigureBackgroundViewport(i32 index);
     void CalculateFps();
     i32 SetupDInput();
     static void __fastcall InitializeInput(Supervisor *s);
@@ -328,8 +341,7 @@ typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 :
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
 typedef char SupervisorLoadingAnmAt440[(offsetof(Supervisor, loadingAnm) == 0x440) ? 1 : -1];
 typedef char SupervisorTextAnmAt43C[(offsetof(Supervisor, textAnm) == 0x43c) ? 1 : -1];
-typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanThreadHandle) == 0x648) ? 1 : -1];
-typedef char SupervisorReplayScanStopAt650[(offsetof(Supervisor, replayScanStopRequested) == 0x650) ? 1 : -1];
+typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanWorker) == 0x648) ? 1 : -1];
 typedef char SupervisorStartupThreadStateAt660[(offsetof(Supervisor, startupThreadState) == 0x660) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
 typedef char SupervisorScreenshotThreadAt528[(offsetof(Supervisor, screenshotThread) == 0x528) ? 1 : -1];
@@ -345,7 +357,13 @@ typedef char SupervisorFrontEndAt780[(offsetof(Supervisor, frontEndController) =
 typedef char SupervisorGameTaskAt784[(offsetof(Supervisor, photoGameTask) == 0x784) ? 1 : -1];
 typedef char SupervisorCurrentFpsAt79C[(offsetof(Supervisor, currentFps) == 0x79c) ? 1 : -1];
 typedef char SupervisorClearColorAt7B8[(offsetof(Supervisor, backbufferClearColor) == 0x7b8) ? 1 : -1];
-typedef char SupervisorLastFpsTimestampAt7C0[(offsetof(Supervisor, lastFpsTimestamp) == 0x7c0) ? 1 : -1];
+typedef char SupervisorSizeIs7BC[(sizeof(Supervisor) == 0x7bc) ? 1 : -1];
+
+// These values immediately follow g_Supervisor in the target image but are
+// independent globals. Keeping them outside Supervisor preserves its
+// constructor-proven 0x7bc boundary and the real worker at +0x7a0.
+extern i32 g_FpsClockAnomalyCount;
+extern f64 g_LastFpsTimestamp;
 
 struct VertexTex1DiffuseXyzrhw
 {
@@ -362,64 +380,23 @@ struct VertexTex1DiffuseXyzrhw
     f32 v;
 };
 
-struct SoundPlayer
-{
-    i32 Initialize(HWND window);
-    void RequestThreadStop();
-    void JoinThread();
-    i32 Release();
-    i32 ProcessQueues();
-    i32 LoadFmt(char *path);
-    void QueueCommand(i32 opcode, i32 argument, char *path);
-
-    u8 unknown000[0x52c4];
-    i32 bgmVolume;                           // +0x52c4
-    i32 sfxVolume;                           // +0x52c8
-    i32 unconsumedBgmAttenuation;            // +0x52cc
-};
-
 typedef char MainSoundPlayerBgmVolumeAt52C4[(offsetof(SoundPlayer, bgmVolume) == 0x52c4) ? 1 : -1];
 
-extern char *g_GameErrorContextCursor;
-
-struct GameErrorContext
+namespace Controller
 {
-    enum Message
-    {
-        LOGGER_START,
-        OPTION_CHANGED_RESTART,
-        D3D_CREATE_FAILED
-    };
+u16 GetJoystickCaps();
+void ResetKeyboard();
+} // namespace Controller
 
-    void Log(Message message);
-    void Fatal(Message message);
-    const char *Log(const char *format, ...);
-    const char *Fatal(const char *format, ...);
-    char buffer[0x2000];
-
-    void ResetContext()
-    {
-        g_GameErrorContextCursor = this->buffer;
-        *g_GameErrorContextCursor = '\0';
-    }
-    void Flush();
-};
-
-struct Controller
+namespace FileSystem
 {
-    static void GetJoystickCaps();
-    static void ResetKeyboard();
-};
-
-struct FileSystem
-{
-    static u8 *OpenFile(char *path, i32 *fileSize, i32 isExternalResource);
-    static i32 WriteDataToFile(char *path, void *data, i32 size);
-    static i32 FileExists(char *path);
-    static i32 OpenWriteFile(char *path);
-    static i32 WriteToOpenFile(void *data, u32 size);
-    static i32 CloseWriteFile();
-};
+u8 *OpenFile(const char *path, i32 *fileSize, BOOL isExternalResource);
+i32 WriteDataToFile(const char *path, void *data, size_t size);
+BOOL CheckIfFileAlreadyExists(const char *path);
+i32 OpenWriteFile(char *path);
+i32 WriteToOpenFile(void *data, u32 size);
+i32 CloseWriteFile();
+} // namespace FileSystem
 
 namespace utils
 {
@@ -428,8 +405,6 @@ void DebugPrint(char *format, ...);
 
 extern GameWindow g_GameWindow;
 extern Supervisor g_Supervisor;
-extern SoundPlayer g_SoundPlayer;
-extern GameErrorContext g_GameErrorContext;
 extern AnmManager *g_AnmManager;
 extern u16 g_PressedButtons;
 extern char g_WindowTitle[];

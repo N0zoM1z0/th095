@@ -1,4 +1,5 @@
 #include "inttypes.hpp"
+#include "diffbuild.hpp"
 
 #include <stddef.h>
 #include <string.h>
@@ -86,6 +87,14 @@ typedef char SupervisorLifecycleWorker2At7A0[
     (offsetof(Supervisor, secondaryWorker) == 0x7a0) ? 1 : -1];
 typedef char SupervisorLifecycleSizeIs7BC[
     (sizeof(Supervisor) == 0x7bc) ? 1 : -1];
+
+// The verified target's static initializer at 0x00494040 constructs
+// Supervisor::Supervisor on 0x004C4670 and registers the destructor wrapper at
+// 0x00494270, which destroys the same storage.  Keep the production definition
+// beside the exact constructor/destructor source so VC7.1 emits the real owner
+// relationship.  DIFFBUILD deliberately externalizes it, preserving the
+// address-bound canonical comparison units.
+DIFFABLE_STATIC(Supervisor, g_Supervisor);
 
 Supervisor::Supervisor()
 {

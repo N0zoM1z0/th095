@@ -7,11 +7,11 @@
 namespace th095
 {
 
-extern HFONT g_TextFont19;
-extern HFONT g_TextFont20;
-extern HFONT g_TextFont17;
-extern HFONT g_TextFont18;
-extern TextRenderBufferView g_TextRenderBuffer;
+DIFFABLE_STATIC(HFONT, g_TextFont19);
+DIFFABLE_STATIC(HFONT, g_TextFont20);
+DIFFABLE_STATIC(HFONT, g_TextFont17);
+DIFFABLE_STATIC(HFONT, g_TextFont18);
+DIFFABLE_STATIC(TextRenderBufferView, g_TextRenderBuffer);
 
 DIFFABLE_STATIC_ARRAY_ASSIGN(TextRenderFormatInfo, 7,
                              g_TextRenderFormatInfoArray) = {

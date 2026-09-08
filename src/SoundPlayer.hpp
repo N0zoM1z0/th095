@@ -1,7 +1,9 @@
 #pragma once
 
-#include <dsound.h>
 #include <windows.h>
+#include <mmreg.h>
+#include <mmsystem.h>
+#include <dsound.h>
 
 #include "ZunResult.hpp"
 #include "diffbuild.hpp"

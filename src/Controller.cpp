@@ -1,10 +1,17 @@
 #include "Controller.hpp"
+#include "Main.hpp"
 
 #include <mmsystem.h>
 #include <string.h>
 
 namespace th095
 {
+
+DIFFABLE_STATIC_ARRAY(u8, 128, g_ControllerButtons);
+DIFFABLE_STATIC_ARRAY(JOYCAPSA, 2, g_JoystickCaps);
+DIFFABLE_STATIC_ASSIGN(i32, g_ControllerInputEnabled) = 1;
+DIFFABLE_STATIC_ARRAY_ASSIGN(u8, 2, g_ControllerAssignments) = {0, 0};
+DIFFABLE_STATIC_ARRAY(ControllerInputSlotView, 3, g_ControllerInputSlots);
 
 ControllerInputSlotView::ControllerInputSlotView()
 {
@@ -72,9 +79,9 @@ typedef char ControllerInputSlotSizeIs8E[
     (sizeof(ControllerInputSlotView) == 0x8e) ? 1 : -1];
 typedef char ControllerInputSlotButtonsAt58[
     (offsetof(ControllerInputSlotView, mappings) == 0x58 &&
-     offsetof(ControllerMapping, shotButton) == 0x0 &&
-     offsetof(ControllerMapping, bombButton) == 0x2 &&
-     offsetof(ControllerMapping, menuButton) == 0x6) ? 1 : -1];
+     offsetof(ControllerButtonMapping, shotButton) == 0x0 &&
+     offsetof(ControllerButtonMapping, bombButton) == 0x2 &&
+     offsetof(ControllerButtonMapping, menuButton) == 0x6) ? 1 : -1];
 typedef char ControllerInputLocalsSizeIs158[
     (sizeof(ControllerInputLocals) == 0x158) ? 1 : -1];
 typedef char ControllerInputStateAt00[
@@ -105,7 +112,7 @@ u16 GetJoystickCaps()
         return 1;
     }
 
-    joyGetDevCapsA(0, &g_JoystickCaps, sizeof(g_JoystickCaps));
+    joyGetDevCapsA(0, &g_JoystickCaps[0], sizeof(g_JoystickCaps[0]));
     return 0;
 }
 
@@ -145,8 +152,8 @@ u16 GetControllerInput(i32 controllerIndex, i32 joystickIndex, u16 buttons)
     i32 acquireAttempts;
     ControllerInputLocals locals;
 
-    locals.inputSlot = (&g_ControllerInputSlots) + controllerIndex;
-    if (((g_ControllerRuntimeFlags >> 11) & 1) == 0)
+    locals.inputSlot = g_ControllerInputSlots + controllerIndex;
+    if (((g_Supervisor.flags.raw >> 11) & 1) == 0)
     {
         memset(&locals.joystickInfo, 0, sizeof(locals.joystickInfo));
         locals.joystickInfo.dwSize = sizeof(locals.joystickInfo);
@@ -168,38 +175,38 @@ u16 GetControllerInput(i32 controllerIndex, i32 joystickIndex, u16 buttons)
             TH_BUTTON_MENU, locals.joystickInfo.dwButtons);
 
         locals.axisDeadzone =
-            ((&g_JoystickCaps)[joystickIndex].wXmax -
-             (&g_JoystickCaps)[joystickIndex].wXmin) /
+            (g_JoystickCaps[joystickIndex].wXmax -
+             g_JoystickCaps[joystickIndex].wXmin) /
             2 / 2;
         buttons |= locals.joystickInfo.dwXpos >
-                           (((&g_JoystickCaps)[joystickIndex].wXmin +
-                             (&g_JoystickCaps)[joystickIndex].wXmax) /
+                           ((g_JoystickCaps[joystickIndex].wXmin +
+                             g_JoystickCaps[joystickIndex].wXmax) /
                                 2 +
                             locals.axisDeadzone)
                        ? TH_BUTTON_RIGHT
                        : 0;
         buttons |= locals.joystickInfo.dwXpos <
-                           (((&g_JoystickCaps)[joystickIndex].wXmin +
-                             (&g_JoystickCaps)[joystickIndex].wXmax) /
+                           ((g_JoystickCaps[joystickIndex].wXmin +
+                             g_JoystickCaps[joystickIndex].wXmax) /
                                 2 -
                             locals.axisDeadzone)
                        ? TH_BUTTON_LEFT
                        : 0;
 
         locals.axisDeadzone =
-            ((&g_JoystickCaps)[joystickIndex].wYmax -
-             (&g_JoystickCaps)[joystickIndex].wYmin) /
+            (g_JoystickCaps[joystickIndex].wYmax -
+             g_JoystickCaps[joystickIndex].wYmin) /
             2 / 2;
         buttons |= locals.joystickInfo.dwYpos >
-                           (((&g_JoystickCaps)[joystickIndex].wYmin +
-                             (&g_JoystickCaps)[joystickIndex].wYmax) /
+                           ((g_JoystickCaps[joystickIndex].wYmin +
+                             g_JoystickCaps[joystickIndex].wYmax) /
                                 2 +
                             locals.axisDeadzone)
                        ? TH_BUTTON_DOWN
                        : 0;
         buttons |= locals.joystickInfo.dwYpos <
-                           (((&g_JoystickCaps)[joystickIndex].wYmin +
-                             (&g_JoystickCaps)[joystickIndex].wYmax) /
+                           ((g_JoystickCaps[joystickIndex].wYmin +
+                             g_JoystickCaps[joystickIndex].wYmax) /
                                 2 -
                             locals.axisDeadzone)
                        ? TH_BUTTON_UP
@@ -207,15 +214,15 @@ u16 GetControllerInput(i32 controllerIndex, i32 joystickIndex, u16 buttons)
         return buttons;
     }
 
-    locals.result = (&g_ControllerDevices)[joystickIndex]->Poll();
+    locals.result = g_Supervisor.controller->Poll();
     if (locals.result < 0)
     {
         acquireAttempts = 0;
         utils::DebugPrint("error : DIERR_INPUTLOST\r\n");
-        locals.result = (&g_ControllerDevices)[joystickIndex]->Acquire();
+        locals.result = g_Supervisor.controller->Acquire();
         while (locals.result == DIERR_INPUTLOST)
         {
-            locals.result = (&g_ControllerDevices)[joystickIndex]->Acquire();
+            locals.result = g_Supervisor.controller->Acquire();
             utils::DebugPrint(
                 "error : DIERR_INPUTLOST %d\r\n", acquireAttempts);
             acquireAttempts++;
@@ -228,7 +235,7 @@ u16 GetControllerInput(i32 controllerIndex, i32 joystickIndex, u16 buttons)
     }
 
     memset(&locals.joystickState, 0, sizeof(locals.joystickState));
-    locals.result = (&g_ControllerDevices)[joystickIndex]->GetDeviceState(
+    locals.result = g_Supervisor.controller->GetDeviceState(
         sizeof(locals.joystickState), &locals.joystickState);
     if (locals.result < 0)
     {
@@ -245,16 +252,16 @@ u16 GetControllerInput(i32 controllerIndex, i32 joystickIndex, u16 buttons)
         &buttons, locals.inputSlot->mappings[0].menuButton,
         TH_BUTTON_MENU, locals.joystickState.rgbButtons);
 
-    buttons |= locals.joystickState.lX > g_ControllerPadXAxis
+    buttons |= locals.joystickState.lX > g_Supervisor.config.padXAxis
                    ? TH_BUTTON_RIGHT
                    : 0;
-    buttons |= locals.joystickState.lX < -g_ControllerPadXAxis
+    buttons |= locals.joystickState.lX < -g_Supervisor.config.padXAxis
                    ? TH_BUTTON_LEFT
                    : 0;
-    buttons |= locals.joystickState.lY > g_ControllerPadYAxis
+    buttons |= locals.joystickState.lY > g_Supervisor.config.padYAxis
                    ? TH_BUTTON_DOWN
                    : 0;
-    buttons |= locals.joystickState.lY < -g_ControllerPadYAxis
+    buttons |= locals.joystickState.lY < -g_Supervisor.config.padYAxis
                    ? TH_BUTTON_UP
                    : 0;
     return buttons;
@@ -265,15 +272,15 @@ u8 *GetControllerState(i32 deviceIndex)
     i32 acquireAttempts;
     ControllerStateLocals locals;
 
-    memset(&g_ControllerButtons, 0, 128);
-    if (((g_ControllerRuntimeFlags >> 11) & 1) == 0)
+    memset(g_ControllerButtons, 0, sizeof(g_ControllerButtons));
+    if (((g_Supervisor.flags.raw >> 11) & 1) == 0)
     {
         memset(&locals.joystickInfo, 0, sizeof(locals.joystickInfo));
         locals.joystickInfo.dwSize = sizeof(locals.joystickInfo);
         locals.joystickInfo.dwFlags = JOY_RETURNALL;
         if (joyGetPosEx(0, &locals.joystickInfo) != JOYERR_NOERROR)
         {
-            return &g_ControllerButtons;
+            return g_ControllerButtons;
         }
 
         locals.buttons = locals.joystickInfo.dwButtons;
@@ -282,41 +289,42 @@ u8 *GetControllerState(i32 deviceIndex)
         {
             if ((locals.buttons & 1) != 0)
             {
-                (&g_ControllerButtons)[locals.buttonIndex] = 0x80;
+                g_ControllerButtons[locals.buttonIndex] = 0x80;
             }
         }
-        return &g_ControllerButtons;
+        return g_ControllerButtons;
     }
 
-    locals.result = (&g_ControllerDevices)[deviceIndex]->Poll();
+    locals.result = g_Supervisor.controller->Poll();
     if (locals.result < 0)
     {
         acquireAttempts = 0;
         utils::DebugPrint("error : DIERR_INPUTLOST\r\n");
-        locals.result = (&g_ControllerDevices)[deviceIndex]->Acquire();
+        locals.result = g_Supervisor.controller->Acquire();
         while (locals.result == DIERR_INPUTLOST)
         {
-            locals.result = (&g_ControllerDevices)[deviceIndex]->Acquire();
+            locals.result = g_Supervisor.controller->Acquire();
             acquireAttempts++;
             if (acquireAttempts >= 400)
             {
                 utils::DebugPrint(
                     "error : DIERR_INPUTLOST %d\r\n", acquireAttempts);
-                return &g_ControllerButtons;
+                return g_ControllerButtons;
             }
         }
 
-        return &g_ControllerButtons;
+        return g_ControllerButtons;
     }
 
-    (&g_ControllerDevices)[deviceIndex]->GetDeviceState(
+    g_Supervisor.controller->GetDeviceState(
         sizeof(locals.joystickState), &locals.joystickState);
     if (locals.result < 0)
     {
-        return &g_ControllerButtons;
+        return g_ControllerButtons;
     }
-    memcpy(&g_ControllerButtons, locals.joystickState.rgbButtons, 128);
-    return &g_ControllerButtons;
+    memcpy(g_ControllerButtons, locals.joystickState.rgbButtons,
+           sizeof(g_ControllerButtons));
+    return g_ControllerButtons;
 }
 
 #define KEYBOARD_KEY_PRESSED(button, key) \
@@ -343,10 +351,10 @@ u16 GetInput(i32 inputIndex)
     u16 inputRepeatMask;
 
     inputButtons = 0;
-    inputStateSlot = (&g_ControllerInputSlots) + inputIndex;
+    inputStateSlot = g_ControllerInputSlots + inputIndex;
     if (g_ControllerInputEnabled != 0)
     {
-        if (((g_ControllerRuntimeFlags >> 10) & 1) == 0)
+        if (((g_Supervisor.flags.raw >> 10) & 1) == 0)
         {
             GetKeyboardState(keyboardState);
             inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_UP, VK_UP);
@@ -382,16 +390,16 @@ u16 GetInput(i32 inputIndex)
         }
         else
         {
-            inputResult = g_KeyboardDevice->GetDeviceState(
+            inputResult = g_Supervisor.keyboard->GetDeviceState(
                 sizeof(keyboardState), keyboardState);
             inputButtons = 0;
             if (inputResult == DIERR_INPUTLOST)
             {
-                g_KeyboardDevice->Acquire();
+                g_Supervisor.keyboard->Acquire();
             }
             else if (inputResult != S_OK)
             {
-                g_KeyboardDevice->Acquire();
+                g_Supervisor.keyboard->Acquire();
             }
             else
             {
@@ -431,24 +439,24 @@ u16 GetInput(i32 inputIndex)
 
     if (inputIndex >= 2)
     {
-        if ((&g_ControllerAssignments)[0] == 0 ||
-            (&g_ControllerAssignments)[0] == 1)
+        if (g_ControllerAssignments[0] == 0 ||
+            g_ControllerAssignments[0] == 1)
         {
             inputButtons = GetControllerInput(
-                0, (&g_ControllerAssignments)[0] != 0, inputButtons);
+                0, g_ControllerAssignments[0] != 0, inputButtons);
         }
-        if ((&g_ControllerAssignments)[1] == 0 ||
-            (&g_ControllerAssignments)[1] == 1)
+        if (g_ControllerAssignments[1] == 0 ||
+            g_ControllerAssignments[1] == 1)
         {
             inputButtons = GetControllerInput(
-                1, (&g_ControllerAssignments)[1] != 0, inputButtons);
+                1, g_ControllerAssignments[1] != 0, inputButtons);
         }
     }
-    else if ((&g_ControllerAssignments)[inputIndex] == 0 ||
-             (&g_ControllerAssignments)[inputIndex] == 1)
+    else if (g_ControllerAssignments[inputIndex] == 0 ||
+             g_ControllerAssignments[inputIndex] == 1)
     {
         inputButtons = GetControllerInput(
-            inputIndex, (&g_ControllerAssignments)[inputIndex] != 0,
+            inputIndex, g_ControllerAssignments[inputIndex] != 0,
             inputButtons);
     }
 

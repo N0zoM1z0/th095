@@ -34,24 +34,7 @@ struct Float3
         this->z = z;
     }
 
-    void FromAngleMagnitude(float angle, float magnitude)
-    {
-#ifdef TH08_MODERN_PORT
-        this->x = cosf(angle) * magnitude;
-        this->y = sinf(angle) * magnitude;
-#else
-        __asm
-        {
-            mov eax, this
-            fld angle
-            fsincos
-            fmul [magnitude]
-            fstp [eax] /* this->x */
-            fmul [magnitude]
-            fstp [eax + 4] /* this->y */
-        }
-#endif
-    }
+    void FromAngleMagnitude(float angle, float magnitude);
 
     void FromRotatedVec2(float angle, float vecX, float vecY)
     {
@@ -86,11 +69,39 @@ struct Float3
     {
         return Float3(this->x - other.x, this->y - other.y, this->z - other.z);
     }
-    Float3 operator*(f32 scalar) const;
-    Float3 operator/(f32 scalar) const;
-    Float3 operator-() const;
-    Float3 *operator*=(f32 scalar);
-    Float3 *operator/=(f32 scalar);
+    Float3 operator*(f32 scalar) const
+    {
+        return Float3(this->x * scalar, this->y * scalar, this->z * scalar);
+    }
+
+    Float3 operator/(f32 scalar) const
+    {
+        f32 inverse = 1.0f / scalar;
+        return Float3(this->x * inverse, this->y * inverse,
+                      this->z * inverse);
+    }
+
+    Float3 operator-() const
+    {
+        return Float3(-this->x, -this->y, -this->z);
+    }
+
+    Float3 *operator*=(f32 scalar)
+    {
+        this->x *= scalar;
+        this->y *= scalar;
+        this->z *= scalar;
+        return this;
+    }
+
+    Float3 *operator/=(f32 scalar)
+    {
+        f32 inverse = 1.0f / scalar;
+        this->x *= inverse;
+        this->y *= inverse;
+        this->z *= inverse;
+        return this;
+    }
 
     Float3 *operator+=(const Float3 &other)
     {

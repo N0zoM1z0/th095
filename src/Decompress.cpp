@@ -5,6 +5,8 @@
 namespace th095
 {
 
+DIFFABLE_STATIC_ARRAY(u8, 0x2000, g_DecompressionRing);
+
 // TH08's source records a patched var_order for this decoder. TH095 retains
 // that live-local order, including the otherwise discarded input checksum.
 // Stock VC7.1 reproduces it by using identifier buckets already proven by

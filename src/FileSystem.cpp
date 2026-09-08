@@ -1,4 +1,5 @@
 #include "FileSystem.hpp"
+#include "Main.hpp"
 
 #include <stdlib.h>
 #include <string.h>
@@ -6,19 +7,17 @@
 namespace th095
 {
 
-extern u8 g_FileSystemCriticalSections;
-extern u8 g_FileSystemActiveCount;
+// Disk and archive resource readers share this process-wide mode flag.
+DIFFABLE_STATIC(i32, g_ReplayUsesArchive);
 
 static __forceinline void EnterFileSystemCriticalSection(i32 id)
 {
-    EnterCriticalSection(
-        (CRITICAL_SECTION *)(&g_FileSystemCriticalSections + id * 0x18));
+    EnterCriticalSection(&g_Supervisor.criticalSections[id]);
 }
 
 static __forceinline void LeaveFileSystemCriticalSection(i32 id)
 {
-    LeaveCriticalSection(
-        (CRITICAL_SECTION *)(&g_FileSystemCriticalSections + id * 0x18));
+    LeaveCriticalSection(&g_Supervisor.criticalSections[id]);
 }
 
 namespace FileSystem
@@ -178,7 +177,7 @@ LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL isExternalResource)
     locals.unused = -1;
 
     EnterFileSystemCriticalSection(2);
-    g_FileSystemActiveCount++;
+    g_Supervisor.criticalSectionLockCounts[2]++;
     if (!isExternalResource)
     {
         locals.entryName = strrchr(path, '\\');
@@ -220,7 +219,7 @@ LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL isExternalResource)
             }
             g_PbgArchive.ReadDecompressEntry(locals.entryName, locals.data);
             LeaveFileSystemCriticalSection(2);
-            g_FileSystemActiveCount--;
+            g_Supervisor.criticalSectionLockCounts[2]--;
             goto done;
         }
     }
@@ -251,13 +250,13 @@ LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL isExternalResource)
     }
     CloseHandle(locals.handle);
     LeaveFileSystemCriticalSection(2);
-    g_FileSystemActiveCount--;
+    g_Supervisor.criticalSectionLockCounts[2]--;
 done:
     return locals.data;
 
 error:
     LeaveFileSystemCriticalSection(2);
-    g_FileSystemActiveCount--;
+    g_Supervisor.criticalSectionLockCounts[2]--;
     return NULL;
 }
 
@@ -266,7 +265,7 @@ BOOL CheckIfFileAlreadyExists(LPCSTR path)
     HANDLE handle;
 
     EnterFileSystemCriticalSection(2);
-    g_FileSystemActiveCount++;
+    g_Supervisor.criticalSectionLockCounts[2]++;
     handle = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL,
                          OPEN_EXISTING,
                          FILE_FLAG_SEQUENTIAL_SCAN | FILE_ATTRIBUTE_NORMAL,
@@ -275,11 +274,11 @@ BOOL CheckIfFileAlreadyExists(LPCSTR path)
     {
         CloseHandle(handle);
         LeaveFileSystemCriticalSection(2);
-        g_FileSystemActiveCount--;
+        g_Supervisor.criticalSectionLockCounts[2]--;
         return TRUE;
     }
     LeaveFileSystemCriticalSection(2);
-    g_FileSystemActiveCount--;
+    g_Supervisor.criticalSectionLockCounts[2]--;
     return FALSE;
 }
 

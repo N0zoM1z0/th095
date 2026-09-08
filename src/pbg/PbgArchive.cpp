@@ -10,6 +10,8 @@
 namespace th095
 {
 
+DIFFABLE_STATIC(PbgArchive, g_PbgArchive);
+
 struct PbgDecryptProfile
 {
     u8 xorValue;
