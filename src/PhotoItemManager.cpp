@@ -8,6 +8,11 @@
 namespace th095
 {
 
+#ifndef DIFFBUILD
+#define g_ItemManager \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoItemManagerView, g_RuntimeItemManagerOwner)
+#endif
+
 struct ItemBulletManagerView
 {
     u8 unknown000000[0x27c5b0];

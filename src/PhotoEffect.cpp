@@ -222,6 +222,10 @@ struct PhotoCaptureParticleSpawnerView
 };
 
 extern PhotoCaptureParticleSpawnerView *g_PhotoCaptureParticleSpawner;
+#ifndef DIFFBUILD
+#define g_PhotoCaptureParticleSpawner \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoCaptureParticleSpawnerView, g_RuntimeItemManagerOwner)
+#endif
 
 struct PhotoEffectGlobalStateView
 {

@@ -136,9 +136,16 @@ and `0x0041E060`. Fresh whole-build count changed 187 -> 180 unique unresolved
 (197 -> 190 diagnostics), `0x004C45E0` is absent from the unresolved target
 set, and all 96 directly affected exact units replayed canonical exact.
 
+Closed 2026-09-09: `0x004C45DC` (PhotoItem/ItemInf manager). The three
+production pointer views now share lifecycle-backed `g_RuntimeItemManagerOwner`;
+Ghidra-attested ctor/dtor publish/clear at `0x0041CB80` / `0x0041CC78`, and all
+three view families independently call `Spawn @ 0x0041D460`. Fresh whole-build
+count changed 180 -> 177 unique unresolved (190 -> 186 diagnostics), the target
+slot disappears from the unresolved set, and all 82 directly affected exact
+units replayed canonical exact.
+
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
-| `0x004C45DC` | item-manager slot | `g_ItemManager`, `g_PhotoItemManager`, and the photo-capture particle-spawner view |
 | `0x004BDDC4` | background/front manager slot | `g_PhotoFrontManager` and `g_PhotoStageSupervisor` plus the actual background lifecycle family |
 | `0x004BDEC8` | game-task slot | only `Main.obj`'s `g_PhotoGameTask` view remains after the first owner pass |
 | `0x004CA1B8` | canonical ANM manager | `EclExtended::g_AnmManager` and `EclRunHigh::g_Th095AnmManager` should use the real `g_AnmManager` owner |

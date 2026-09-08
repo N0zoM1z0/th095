@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 180 unique unresolved decorated symbols across 190 diagnostics:
-72 data and 108 callable/runtime. Of those names, 177 map through canonical
-relocations to 144 target addresses; three currently lack target-address
+now fails with 177 unique unresolved decorated symbols across 186 diagnostics:
+69 data and 108 callable/runtime. Of those names, 174 map through canonical
+relocations to 143 target addresses; three currently lack target-address
 evidence and three decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -194,6 +194,18 @@ views to `Spawn @ 0x0041DBD0`, `CommitCapturedObjects @ 0x0041DFA0`,
 unresolved names and 197 -> 190 diagnostics; `0x004C45E0` is absent from the
 fresh unresolved target set. All six directly affected canonical sources replay
 exact: 96/96 configured units, with no relocation-label refresh.
+
+The `0x004C45DC` PhotoItem/ItemInf family is closed. Hash-attested Ghidra shows
+constructor `0x0041CB20` constructing the 150-entry item storage, zeroing the
+manager, and publishing `this` at `0x0041CB80`; destructor `0x0041CC20` cuts
+both Chain entries, clears the pointer at `0x0041CC78`, then tears down the
+embedded item array. Production `g_ItemManager`, `g_PhotoItemManager`, and the
+photo-capture particle-spawner view now share `g_RuntimeItemManagerOwner`. Their
+canonical relocations independently call the same `Spawn @ 0x0041D460` method.
+The cold link moves 180 -> 177 unique unresolved names and 190 -> 186
+diagnostics; `0x004C45DC` is absent from the fresh unresolved target set. All
+four directly affected canonical sources replay exact: 82/82 units, with no
+relocation-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

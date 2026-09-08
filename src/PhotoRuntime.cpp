@@ -1,4 +1,5 @@
 #include "AnmManager.hpp"
+#include "GameplayGlobals.hpp"
 
 namespace th095
 {
@@ -13,6 +14,10 @@ struct PhotoItemManagerView
     i32 Spawn(i32 type, Float3 *position, u32 color);
 };
 extern PhotoItemManagerView *g_PhotoItemManager;
+#ifndef DIFFBUILD
+#define g_PhotoItemManager \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoItemManagerView, g_RuntimeItemManagerOwner)
+#endif
 
 struct PhotoTargetEnemyView
 {
