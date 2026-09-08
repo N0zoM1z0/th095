@@ -188,6 +188,14 @@ The altered register phase costs real instructions and does not explain the
 frame. These inert diagnostic operations were **not** integrated into source.
 Do not resurrect this negative result as a padding/phase workaround.
 
+A later canonical rescore found a still-stronger but equally inadmissible
+boundary oracle: nine optimized-away phase expressions reproduce every
+comparable target byte except the `0x11C`/`0x124` frame immediate
+(2,573/2,574). An eight-byte hidden-return variant gets the target frame but
+moves the seven `inputIndex` references from `-0x11C` to `-0x124`
+(2,567/2,574). No historical `p2-*` object is exact, and neither dead-source
+mechanism belongs in the reconstruction.
+
 Fresh natural-C++ x87 controls were also compiled with pinned VC7.1, common
 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Ob1` flags, and separate `/Od` and
 `/Og` profiles. A cosine/sine pair emits `__CIcos`/`__CIsin` calls under `/Od`

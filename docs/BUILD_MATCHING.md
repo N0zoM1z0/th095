@@ -1999,6 +1999,17 @@ fall back to the same wrong phase.  This demonstrates that the residual belongs
 to compiler temporary/value ownership, but it does **not** license an empty
 class, inert local, compiler patch, or assembly in canonical source.
 
+A complete canonical rescore of the historical `p2-*` corpus tightens that
+boundary. Nine optimized-away front-end phase expressions produce a
+2,662-byte/579-instruction object with target register coloring, all 22 solved
+relocations, and 2,573/2,574 comparable bytes; only `sub esp,0x11C` versus
+target `0x124` differs. Adding an eight-byte user-defined return temporary makes
+the frame exact but moves all seven `inputIndex` references from target
+`EBP-0x11C` to `EBP-0x124`, leaving 2,567/2,574 comparable bytes. No historical
+`p2-*` object is exact. Both source forms are deliberately inadmissible dead
+phase/storage diagnostics; retain the natural canonical source. Full hashes and
+commands are in `.analysis/getinput-pareto-rescore-20260908.md`.
+
 
 ### ANM x87 frontend exhaustion checkpoint (2026-09-08)
 
@@ -2020,6 +2031,12 @@ inputs are SHA-256
 `c9d70a0786c21a26fbee6e7104e11af1f3459c92d7b6a4ada24b1a715712c325`,
 `f350cf1d880750c88f320aa3956e0687f1d998ccb78e2798aa723186597201fa`, and
 `159fdb2480a1a07d8f2960bb82334ae6faf47f1c5591dff70315cdc02ecef892`.
+
+The stock build-3077 frontend binary independently places `sincos`/`rndint` in
+its contiguous inline-assembler mnemonic table, while the bundled CRT and
+Platform SDK headers expose no `sincos`, `fsincos`, or `frndint` declaration.
+`D3DXMatrixRotationZ` is external rather than header-inline. This narrows the
+remaining clean-source search surface without changing exact status.
 
 The adjacent reconstructed codebase contains an explicit ZUN-style `fsincos`
 assembly sequence, which is useful source-family corroboration but not an

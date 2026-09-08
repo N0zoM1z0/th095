@@ -67,13 +67,16 @@ They are now the only active reconstruction lane:
 
 | Address | Function | Deferred compiler problem |
 | --- | --- | --- |
-| `0x00419AE0` | `Controller::GetInput` | Branch-local VC7.1 temporary/register chronology; ordinary declaration, naming, scope, and profile sweeps are closed negatives. |
+| `0x00419AE0` | `Controller::GetInput` | Best phase oracle is 2,573/2,574 comparable bytes (only frame immediate differs); target-frame oracle misses the seven-use `inputIndex` home. Both depend on forbidden inert phase/dead storage and are not composable. |
 | `0x0043ECD0` | `AnmManager::DrawInner` | Target emits four direct x87 `FRNDINT` sites; a fresh pinned-VC7.1 clean-intrinsic oracle rejects the tested frontend names with `C4163`. |
 | `0x0043FA40` | `AnmManager::Draw2D` | Target emits one direct x87 `FSINCOS`; paired float/double source emits separate `FSIN`/`FCOS`, and tested clean `sincos` names are unavailable. |
 | `0x0043FC60` | `AnmManager::ProjectCameraFacingQuad` | Two direct `FSINCOS` sites plus compiler-local copy/lifetime allocation remain unresolved; the same pinned frontend oracle is negative. |
 
 Do not use assembly, copied target bytes, dead locals, fake source phases,
 arbitrary padding, ABI lies, or weakened comparisons to close them.
+
+For GetInput, start from `.analysis/getinput-pareto-rescore-20260908.md`; do not
+repeat the historical `p2-*` corpus or promote its 99.96% diagnostic object.
 
 ## Matching checkpoint gate
 
