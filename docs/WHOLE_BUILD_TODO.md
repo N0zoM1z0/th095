@@ -151,9 +151,15 @@ Chain/ANM/embedded-VM lifecycle. Fresh whole-build count changed 177 -> 175
 unique unresolved (186 -> 184 diagnostics), the target slot disappears from the
 unresolved set, and both affected sources replayed 17/17 exact units.
 
+Closed 2026-09-09: `0x004BDEC8` (PhotoGameTask/GameTaskInf). Main.obj's final
+`g_PhotoGameTask` view now shares the already-established
+`g_RuntimeGameTaskOwner`. Ghidra plus canonical tracking show create/publish at
+`0x00417F80` / `0x00417FE5` and destructor/clear at `0x00417E70` /
+`0x00417F2D`. Fresh whole-build count changed 175 -> 174 unique unresolved
+(184 -> 183 diagnostics), and Main replayed 48/48 exact units.
+
 | Target address | Production family | Representative unresolved views |
 | --- | --- | --- |
-| `0x004BDEC8` | game-task slot | only `Main.obj`'s `g_PhotoGameTask` view remains after the first owner pass |
 | `0x004CA1B8` | canonical ANM manager | `EclExtended::g_AnmManager` and `EclRunHigh::g_Th095AnmManager` should use the real `g_AnmManager` owner |
 
 `g_PhotoBulletManager` is a known trap: its current decorated proxy name maps

@@ -87,6 +87,10 @@ struct PhotoGameTaskView
 };
 
 extern PhotoGameTaskView *g_PhotoGameTask;
+#ifndef DIFFBUILD
+#define g_PhotoGameTask \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGameTaskOwner)
+#endif
 
 struct SupervisorControllerView
 {

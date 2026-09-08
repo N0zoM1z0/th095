@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 175 unique unresolved decorated symbols across 184 diagnostics:
-67 data and 108 callable/runtime. Of those names, 172 map through canonical
-relocations to 142 target addresses; three currently lack target-address
+now fails with 174 unique unresolved decorated symbols across 183 diagnostics:
+66 data and 108 callable/runtime. Of those names, 171 map through canonical
+relocations to 141 target addresses; three currently lack target-address
 evidence and three decorated names map to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -217,6 +217,17 @@ view now share `g_RuntimeBackgroundManagerOwner`. The cold link moves
 177 -> 175 unique unresolved names and 186 -> 184 diagnostics; `0x004BDDC4` is
 absent from the fresh unresolved target set. Both affected sources replay exact:
 17/17 configured units, with no relocation-label refresh.
+
+The `0x004BDEC8` PhotoGameTask/GameTaskInf owner is fully closed. Ghidra and the
+canonical PhotoGameTask ledger identify `Create @ 0x00417F80` as the real
+allocation/publish path: after constructing the 0x124-byte task it stores the
+pointer at `0x00417FE5` and registers two Chain entries. The exact destructor
+`0x00417E70` destroys owned gameplay subsystems, cuts both task Chain entries,
+and clears the slot at `0x00417F2D`. All other production task/global-state
+views already used `g_RuntimeGameTaskOwner`; Main.obj's final `g_PhotoGameTask`
+view now does too. The cold link moves 175 -> 174 unique unresolved names and
+184 -> 183 diagnostics; `0x004BDEC8` disappears from the unresolved target set.
+Main's 48/48 configured exact units replay exact with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
