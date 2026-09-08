@@ -50,7 +50,7 @@ Use this order when evidence conflicts:
 3. Target-local runtime observations and data invariants.
 4. Multiple target-local callers, callees, and xrefs.
 5. Adjacent Touhou source/reconstructions and external documentation.
-6. IDA/Ghidra names, inferred types, decompiler syntax, and intuition.
+6. Ghidra names, inferred types, decompiler syntax, and intuition.
 
 Lower-ranked evidence may route investigation but cannot override the target.
 
@@ -58,7 +58,7 @@ Lower-ranked evidence may route investigation but cannot override the target.
 
 Use precise claims:
 
-- **observed**: directly read from the verified target or attested IDA map;
+- **observed**: directly read from the verified target or attested Ghidra map;
 - **compiler-observed**: reproduced with the pinned compiler and explicit
   command;
 - **corroborated**: supported by an external or adjacent source;

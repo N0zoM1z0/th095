@@ -10,9 +10,9 @@ provisional until each boundary is reconciled with exact target control flow.
 | Confirmed authored functions | 697 |
 | Classified exclusions | 1,183 |
 | Source-present authored mappings | 697 |
-| Canonical exact functions | 693 |
-| Canonical exact authored bytes | 333,284 |
-| Exact / currently confirmed authored bytes | 98.27% |
+| Canonical exact functions | 696 |
+| Canonical exact authored bytes | 336,486 |
+| Exact / currently confirmed authored bytes | 99.22% |
 
 Exact totals count only functions whose configured VC7.1 unit passes the
 canonical zero-difference comparator and is recorded consistently in both

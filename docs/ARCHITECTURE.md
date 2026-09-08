@@ -111,13 +111,13 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | `0x00413030` | 837 exact authored bytes | enemy update dependency / shot dispatcher / ANM script setup | exact `Enemy::UpdateShotAndAnm` | TH095 shot cadence, movement-direction ANM switching, and dual runtime ANM banks |
 | `0x004149F0..0x004162F0` | 591 exact authored bytes | manager factory / four draw groups / calc and draw gates | five exact EnemyManager task-shell functions | `0x26AE30` ownership shell, Chain priorities 12/10, draw-group heads `+0x4DC0` |
 | `0x004168D0` | 1,274 exact authored bytes | 128-enemy photograph target scan | exact `PhotoRuntimeView::CountPhotoTargets` | Shared `0x004BDDC0` enemy/runtime owner, `+0x4E00` inline enemy pool, ECL restart and five charge-item emissions |
-| `0x00413380..0x004149E6` | 2,972 exact authored bytes | 22-entry TH095 extended-ECL callback table | fifteen exact callbacks / seven remaining | Photography flags, Background VM transitions, player marker scale, marker/fade VMs, transition coordinator, owned-bullet reset |
-| `0x00421E00..0x00423422` | 3,256 exact authored bytes | WinMM MIDI parser/timer/playback support | twenty-seven exact MIDI functions / one residual | Device I/O, SMF header/track parse, timer event scheduling, file/track ownership, play/stop, SysEx cleanup, fade setup |
+| `0x00413380..0x004149E6` | 2,972 exact authored bytes | 22-entry TH095 extended-ECL callback table | twenty-two exact callbacks | Photography flags, Background VM transitions, player marker scale, marker/fade VMs, transition coordinator, owned-bullet reset |
+| `0x00421E00..0x00423422` | 3,256 exact authored bytes | WinMM MIDI parser/timer/playback support | twenty-eight exact MIDI functions | Device I/O, SMF header/track parse, timer event scheduling, file/track ownership, play/stop, SysEx cleanup, fade setup |
 | `0x0041AC50..0x0041B407` | 1,902 exact authored bytes | shared file-write / replay-read / error-log core | eight exact file and logger primitives | Critical-section-held file handle aliases, buffered variadic logging, fatal-message publication |
 | `0x00421C00` | 133 exact authored bytes | buffered error-log publication | exact `GameErrorContext::Flush` | Separator logging, optional modal error display, and complete `./log.txt` buffer write |
 | `0x00426350..0x004264A3` | 339 exact authored bytes | global Supervisor construction / destruction | exact ctor+dtor | GameConfiguration init, two viewport members, timer, two worker members, 0x7BC body reset, flags 0x40/0x100 |
 | `0x00444980..0x00444D08` | 771 exact authored bytes | ANM per-frame VM shell | twelve exact update/draw-layer functions | Nine render lists, lifetime execution/deletion, PhotoGameTask suppression gate, target OR accumulator source shape |
-| `0x0041E750..0x004200F6` | 2,524 exact authored bytes | photograph laser target/collision lane | exact straight target count + straight collision / rotating one-byte residual | 12-unit beam sampling, capture AABB counting, particles, gap trimming, fragment spawning, shared target var-order and x87 scaling ownership |
+| `0x0041E750..0x004200F6` | 2,524 exact authored bytes | photograph laser target/collision lane | exact laser target/collision lane | 12-unit beam sampling, capture AABB counting, particles, gap trimming, fragment spawning, shared target var-order and x87 scaling ownership |
 | `0x0041B410..0x0041B891` | 652 exact authored bytes | shared RNG / angle / timer runtime | eight exact utility functions | RNG state, float normalization, single/additive bounded angle wrapping, TH095 single-evaluation vector rotation, game-speed-aware timer accumulation |
 | `0x00436760..0x0043778F` | 3,998 exact authored bytes | complete ScreenEffect runtime | sixteen exact ScreenEffect functions | D3D clear/viewport/quad draw, fade-in/out/hold, pulse repeats, photography-gated linear/envelope shake, Chain factory/lifecycle |
 | `0x00435500..0x004356C7` | 338 exact authored bytes | persistent score profile/global lifetime | three exact ScoreData lifecycle leaves | `0x458` randomized profile init plus `0x69A0` global allocation/release ownership |
@@ -127,23 +127,23 @@ and branches so reconstruction work is not biased toward isolated leaves.
 | `0x00452E50; 0x00454E50..0x00455DD3` | 2,808 exact authored bytes | PBG archive/file core | twenty-two exact archive and Win32 file helpers | Entry construction, THA1 header parse, filename-profile decrypt/read/decompress, lifecycle/load/reopen, whole-file and handle I/O, lookup/name ownership, path expansion |
 | `0x0041BA30` | 71 exact authored bytes | PBG filename checksum | exact `CalculateByteChecksum` | Byte-additive filename hash selecting one of eight 0x0C decrypt profiles |
 | `0x0043A600` | 17,018 | 22 callers / 20 internal callees | exact `AnmManager::ExecuteScript` | Widely shared animation VM and type/layout root |
-| `0x00447D00` | 16,066 | 1 caller / 27 internal callees | boundary-reviewed authored scene-selection hub | 12-group scene UI; exact class name unresolved |
-| `0x00430AB0` | 7,271 | five-state camera hub / 29 target callees | structurally complete `UpdatePhotoCamera` / non-exact | Natural VC7.1 body has all 1,565 target instruction mnemonics and all 219 body/table relocation destinations; only the `0x2A0` versus target `0x2D4` compiler-local frame remains |
+| `0x00447D00` | 16,066 exact authored bytes | 1 caller / 27 internal callees | exact `SceneSelectControllerView::UpdateSceneSelect` | 12-group scene UI; reconstructed view name remains descriptive |
+| `0x00430AB0` | 7,271 exact authored bytes | five-state camera hub / 29 target callees | exact `UpdatePhotoCamera` | Canonical body and adjacent 20-byte switch table replay all 1,565 authored mnemonics and all 219 relocations; the former frame residual was closed by the target-proven eight-byte value-producer phase |
 | `0x00433140` | 2,219 exact authored bytes | photograph scoring core | exact `PhotoCameraState::CalculatePhotoScore` | Bullet/photo-scale points, target/self/two-shot flags, seven unrolled color bonuses, distance/boss/stage multipliers, final ten-point rounding, native bitfield assignment source shape |
-| `0x0042C5C0` | 8,560 | 1 caller / 4 internal callees | source-present photo-stage display builder | Repeated TH095 photograph HUD/glyph builder; exact 118-byte VM initializer |
-| `0x00430AB0` | 7,271 | 1 caller / 29 internal callees | source-present camera/photo state machine | Complete TH095 camera semantics; compiler-local residuals deferred |
-| `0x00426BF0` | 6,471 | 1 caller / 17 internal callees | boundary-reviewed authored replay/menu dispatcher | Eleven-function replay/best-shot cluster |
-| `0x0042AD60` | 5,309 | 1 caller / 16 internal callees | source-present photo-stage state machine | Capture crop, texture, best-shot, animation, and boundary-fade owner |
+| `0x0042C5C0` | 8,560 exact authored bytes | 1 caller / 4 internal callees | exact photo-stage display builder | Repeated TH095 photograph HUD/glyph builder and VM initialization |
+| `0x00430AB0` | 7,271 exact authored bytes | 1 caller / 29 internal callees | exact camera/photo state machine | Complete TH095 camera semantics; canonical body plus switch-table extent is exact |
+| `0x00426BF0` | 6,471 exact authored bytes | 1 caller / 17 internal callees | exact replay/menu dispatcher | Eleven-function replay/best-shot cluster |
+| `0x0042AD60` | 5,309 exact authored bytes | 1 caller / 16 internal callees | exact photo-stage state machine | Capture crop, texture, best-shot, animation, and boundary-fade owner |
 | `0x0042A8A0..0x0042C448` | 1,616 exact authored bytes | PhotoInf lifetime / draw / two Chain callbacks / slot-9 photo ANM | ten exact PhotoOverlay functions | `0x25730` owner, eleven `0x2214` slot lifetimes, eighty display VMs, score-colored 11x6 overlay draw, calc priority 8, draw priority `0x1A` |
-| `0x00403440` | 5,129 | 1 caller / 6 internal callees | source-present Background stage interpreter | TH095 variable-size camera/photo script, Hermite/easing, and four motion modes |
-| `0x004020C0..0x00402E90` | 2,515 exact authored bytes | Background construction/destruction, lifecycle callbacks, loader, VM updater | nine exact / two source-present Background functions | Exact ctor+dtor prove timer arrays, eleven inline ANM VMs, three ownership frees and vector member destruction for the 0x201C target owner |
-| `0x00402750..0x00403431` | 2,279 | draw coordinator / renderer / culler | three exact / one source-present Background function | Four stage layers, fog and viewport camera state, plus TH095's clamped photograph depth mask |
-| `0x00407820..0x0040860D` | 3,637 | capture-list builder / photographed-bullet clear / nearby scoring | two exact / one source-present BulletManager function | TH095 bullet-photography lane: exact capture AABB list and proximity score, plus exact-sized compiler-observed clear/effect conversion |
-| `0x0042F190` | 3,463 | 1 caller / 6 internal callees | source-present photo-game main state | Complete movement/focus/animation/bounds/history loop; compiler-local residuals deferred |
-| `0x00439200` | 2,525 | 2 callers / 16 internal callees | `SoundPlayer::ProcessQueues` | Shared threaded audio state machine |
+| `0x00403440` | 5,129 exact authored bytes | 1 caller / 6 internal callees | exact `Background::RunStageScript` | TH095 variable-size camera/photo script, Hermite/easing, and four motion modes |
+| `0x004020C0..0x00402E90` | 2,515 exact authored bytes | Background construction/destruction, lifecycle callbacks, loader, VM updater | eleven exact Background functions | Exact ctor+dtor prove timer arrays, eleven inline ANM VMs, three ownership frees and vector member destruction for the 0x201C target owner |
+| `0x00402750..0x00403431` | 2,279 exact authored bytes | draw coordinator / renderer / culler | four exact Background functions | Four stage layers, fog and viewport camera state, plus TH095's clamped photograph depth mask |
+| `0x00407820..0x0040860D` | 3,637 exact authored bytes | capture-list builder / photographed-bullet clear / nearby scoring | three exact BulletManager functions | TH095 bullet-photography lane: capture AABB list, bullet clear/effect conversion, and proximity score |
+| `0x0042F190` | 3,463 exact authored bytes | 1 caller / 6 internal callees | exact photo-game main state | Complete movement/focus/animation/bounds/history loop |
+| `0x00439200` | 2,525 exact authored bytes | 2 callers / 16 internal callees | exact `SoundPlayer::ProcessQueues` | Shared threaded audio state machine |
 | `0x00452E70..0x00454E42` | 5,942 exact authored bytes | ZUN-modified DirectSound manager/streaming/wave layer | twenty-two exact `CSoundManager`/`CSound`/`CStreamingSound`/`CWaveFile` functions | File/memory stream construction, persistent playback state, notification buffers, nonlinear volume and four fades, refill/loop hub, `ThBgmFormat` raw file/memory I/O; thirteen Microsoft scaffold bodies and two compiler destructors classified separately |
-| `0x00420240` | 1,326 | CRT root / 30 internal callees | `WinMain` | Process-level ownership and subsystem naming |
-| `0x00401000..0x00401D2F` | 2,802 source-present bytes | three Chain callbacks / shared text consumers | eleven exact / four compiler-observed ASCII functions | Global regular/GUI queues, score/time popups, four inline ANM VMs, and TH095 viewport-aware glyph rendering |
+| `0x00420240` | 1,326 exact authored bytes | CRT root / 30 internal callees | exact `WinMain` | Process-level ownership and subsystem naming |
+| `0x00401000..0x00401D2F` | 2,802 exact authored bytes | three Chain callbacks / shared text consumers | fifteen exact ASCII functions | Global regular/GUI queues, score/time popups, four inline ANM VMs, and TH095 viewport-aware glyph rendering |
 
 The first large-function lane, `AnmManager::ExecuteScript`, is exact for its
 17,018-byte authored body. Its canonical unit also compares the complete
@@ -203,24 +203,18 @@ startup worker. The front-end
 Help page at `0x00451C80` is now
 exact together with its 88-byte asynchronous loader callback; the adjacent
 2,872-byte Music Room at `0x00450FC0` is also exact, including its two CR/LF
-parser helpers and the target-proven fully live `0xB4` local frame. The adjacent `0x00452630` function is now source-present as the shared
-scene-result/replay-browser text renderer; exact wrappers at
-`0x00445E40/0x00445E60` prove its ownership alongside the
-2,969-byte shared update dispatcher at `0x00445E80`. The dispatcher is now
-source-present for its complete ten-state and 50-call topology. Its 3,299-byte
-main-menu child at `0x00446A50` is also source-present for the complete six-row
-navigation, idle-demo launch, and page-transition flow; its 648-byte close and
-787-byte selection fan-out helpers are exact. The 16,066-byte scene-selection
-hub is now source-present for its complete 275-call group/scene cursor,
-asynchronous preview, record-detail, and transition topology. Its complete
-3,637-instruction mnemonic/opcode shape is target-exact; the only remaining
-comparable-byte differences are frame-size and EBP-relative stack
-displacements caused by 56 target-only instruction-unreferenced bytes. Its shared
-136-byte D3D texture clear is exact. The 3,070-byte mission/face asset worker
-is now source-present for its exact 38-call topology. Its 1,034-byte best-shot
-file decoder/checksum validator is also source-present with the exact twelve-call
-distribution. The decoder's shared 8 KiB-ring decompressor is source-present,
-and its 83-byte aligned additive checksum dependency is canonical exact. The
+parser helpers and the target-proven fully live `0xB4` local frame. The
+adjacent `0x00452630` shared scene-result/replay-browser text renderer is
+canonical exact; exact wrappers at `0x00445E40/0x00445E60` prove its ownership
+alongside the exact 2,969-byte shared update dispatcher at `0x00445E80`.
+The dispatcher's complete ten-state and 50-call topology, its exact 3,299-byte
+main-menu child at `0x00446A50`, and the 648-byte close and 787-byte selection
+fan-out helpers are all closed. The 16,066-byte scene-selection hub is canonical
+exact for its complete 275-call group/scene cursor, asynchronous preview,
+record-detail, and transition topology. Its shared 136-byte D3D texture clear
+is exact. The 3,070-byte mission/face asset worker, 1,034-byte best-shot file
+decoder/checksum validator, shared 8 KiB-ring decompressor, and 83-byte aligned
+additive checksum dependency are likewise canonical exact. The
 selector/Help texture path is canonical exact from format conversion through
 full and regional D3D uploads and three-format alpha bleed, including the full
 1,292-byte bleed body and its compiler-owned switch tables. The adjacent exact
@@ -250,8 +244,8 @@ constructor, resource initialization, SHT loading, draw, collision, death, and
 destruction cluster. Sixteen PlayerInf implementation units are now canonical
 exact for 5,599 authored bytes, including the 3,463-byte live movement/focus
 hub at `0x0042F190`; the separate 405-byte outer photo-game coordinator is
-also exact. The larger photography-camera state bodies remain source-present
-without claiming compiler-local frame residuals as exact.
+also exact. The larger photography-camera state bodies, including the complete
+7,271-byte `UpdatePhotoCamera`, are canonical exact as well.
 
 ## Reference repositories
 

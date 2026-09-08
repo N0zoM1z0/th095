@@ -33,7 +33,7 @@ executable.
 
 ## Evidence and state
 
-- Separate exact target observations, IDA observations, compiler-oracle
+- Separate exact target observations, Ghidra observations, compiler-oracle
   results, external corroboration, inferences, and unknowns. Never paste
   decompiler output as source.
 - `config/functions.csv` is the provisional boundary ledger.
@@ -68,8 +68,15 @@ repository ledgers. Read back database writes before relying on them.
 - Compiler and linker build `3077` are target-observed. Optimization flags,
   runtime model, and object boundaries remain unknown until bounded evidence
   proves them.
-- Do not use assembly, copied target bytes, inert locals, fake returns, ABI
-  lies, or arbitrary padding to force a comparison.
+- Do not use copied target bytes, inert locals, fake returns, ABI lies, or
+  arbitrary padding to force a comparison. Assembly is likewise forbidden
+  except for the user-authorized, TH08-proven x87 source-family sequences in
+  `AnmManager::DrawInner`, `AnmManager::Draw2D`, and
+  `AnmManager::ProjectCameraFacingQuad`. Every such site must explain the
+  target instruction evidence, failed clean-frontend alternative, TH08
+  provenance, and narrow scope in a detailed source comment. Do not extend
+  this exception to another function or instruction family without explicit
+  user authorization and independent target evidence.
 - Keep generated files below `build/`, private scratch below `.analysis/`, and
   private Ghidra databases below `ghidra-project/`.
 - Never commit original executables, game archives/data, Ghidra or IDA

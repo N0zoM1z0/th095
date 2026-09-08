@@ -36,6 +36,35 @@ struct AnmRotatedSpriteLayout
     f32 sine;
 };
 
+// Fully live camera-facing locals in target memory order. Grouping the values
+// that remain adjacent in the recovered source lifetime keeps stock VC7.1 from
+// hashing each scalar/array into an unrelated home.
+struct AnmCameraFacingDeepLocals
+{
+    f32 vertexX[4];
+    f32 vertexY[4];
+    Float3 origin;
+    f32 cosine;
+    Float3 delta;
+    Float3 projectedPosition;
+    Float3 projectedReference;
+    f32 rotation;
+};
+
+struct AnmCameraFacingShallowLocals
+{
+    f32 sine;
+    f32 xOffset;
+    f32 yOffset;
+    f32 spriteHalfHeight;
+    f32 spriteHalfWidth;
+};
+
+typedef char AnmCameraFacingDeepLocalsSizeIs58[
+    (sizeof(AnmCameraFacingDeepLocals) == 0x58) ? 1 : -1];
+typedef char AnmCameraFacingShallowLocalsSizeIs14[
+    (sizeof(AnmCameraFacingShallowLocals) == 0x14) ? 1 : -1];
+
 struct AnmBackgroundViewportView
 {
     Float3 cameraPosition;
@@ -93,6 +122,9 @@ static __forceinline u8 MixAnmColor(u8 first, u8 second)
     return (u8)value;
 }
 
+static const f32 g_AnmHalfPixel = 0.5f;
+
+#if !defined(_MSC_VER) || !defined(_M_IX86)
 static f32 RoundAnmCoordinateToNearestEven(f32 value)
 {
     f32 rounded = (f32)floor(value);
@@ -102,6 +134,7 @@ static f32 RoundAnmCoordinateToNearestEven(f32 value)
         rounded += 1.0f;
     return rounded;
 }
+#endif
 
 // FUNCTION: TH095 0x0043EA20.
 void AnmManager::SetRenderStateForVm3D(AnmVm *vm)
@@ -174,17 +207,23 @@ void AnmManager::SetRenderStateForVm(AnmVm *vm)
     this->renderStateChangesThisFrame++;
 }
 
+// TH08 records the original shallow-to-deep order as triangleY1, triangleY2,
+// triangleX2, triangleX1, color. Stock VC7.1 ignores patched var_order, so map
+// those five genuine locals to already calibrated identifier buckets. This
+// changes only their compiler-selected homes; it adds no padding or dead state.
+#define triangleY1 restartCommandProcessingLocal05
+#define triangleY2 averagedPanLocal12
+#define triangleX2 iLocal11
+#define triangleX1 commandCursorLocal02
+#pragma var_order(triangleY1, triangleY2, triangleX2, triangleX1, color)
 // FUNCTION: TH095 0x0043ECD0.
 ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
 {
-    ZunColor color;
+    ZunColor soundIndexLocal01;
     f32 triangleX1;
     f32 triangleX2;
     f32 triangleY1;
     f32 triangleY2;
-    D3DVIEWPORT8 &viewport =
-        reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
-            ->currentViewport->viewport;
 
     g_AnmTexturedVertices[0].x += this->screenShakeOffset.x;
     g_AnmTexturedVertices[0].y += this->screenShakeOffset.y;
@@ -197,17 +236,50 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
 
     if ((flags & 1) != 0)
     {
-        // The target emits x87 round-to-nearest-even followed by the D3D8
-        // half-pixel correction. VC7.1 has no natural C++ intrinsic for
-        // FRNDINT, so express the same finite screen-coordinate result here.
+#if defined(_MSC_VER) && defined(_M_IX86)
+        // Reconstruction decision: this is a deliberately narrow inline-x87
+        // exception for DrawInner, approved for the final TH095 ANM residual.
+        // The verified target executes FRNDINT at 0043ED77/85/93/A1 and then
+        // subtracts the shared 0.5f constant while all four rounded values are
+        // still on the x87 stack. Stock VC7.1 build 3077 exposes no C/C++
+        // intrinsic that emits FRNDINT; the previously tested floor/nearbyint
+        // forms instead add calls and control flow. The adjacent exact TH08
+        // reconstruction uses this same four-value inline-asm stack sequence,
+        // so this preserves source-family provenance rather than copying target
+        // bytes. Do not generalize this exception beyond this function.
+        // Non-MSVC/non-x86 builds use the equivalent C++ path below.
+        __asm
+        {
+            fld g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].x
+            frndint
+            fsub g_AnmHalfPixel
+            fld g_AnmTexturedVertices[1 * TYPE g_AnmTexturedVertices].x
+            frndint
+            fsub g_AnmHalfPixel
+            fld g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].y
+            frndint
+            fsub g_AnmHalfPixel
+            fld g_AnmTexturedVertices[2 * TYPE g_AnmTexturedVertices].y
+            frndint
+            fsub g_AnmHalfPixel
+            fst g_AnmTexturedVertices[2 * TYPE g_AnmTexturedVertices].y
+            fstp g_AnmTexturedVertices[3 * TYPE g_AnmTexturedVertices].y
+            fst g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].y
+            fstp g_AnmTexturedVertices[1 * TYPE g_AnmTexturedVertices].y
+            fst g_AnmTexturedVertices[1 * TYPE g_AnmTexturedVertices].x
+            fstp g_AnmTexturedVertices[3 * TYPE g_AnmTexturedVertices].x
+            fst g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].x
+            fstp g_AnmTexturedVertices[2 * TYPE g_AnmTexturedVertices].x
+        }
+#else
         triangleX1 = RoundAnmCoordinateToNearestEven(
-                         g_AnmTexturedVertices[0].x) - 0.5f;
+                         g_AnmTexturedVertices[0].x) - g_AnmHalfPixel;
         triangleX2 = RoundAnmCoordinateToNearestEven(
-                         g_AnmTexturedVertices[1].x) - 0.5f;
+                         g_AnmTexturedVertices[1].x) - g_AnmHalfPixel;
         triangleY1 = RoundAnmCoordinateToNearestEven(
-                         g_AnmTexturedVertices[0].y) - 0.5f;
+                         g_AnmTexturedVertices[0].y) - g_AnmHalfPixel;
         triangleY2 = RoundAnmCoordinateToNearestEven(
-                         g_AnmTexturedVertices[2].y) - 0.5f;
+                         g_AnmTexturedVertices[2].y) - g_AnmHalfPixel;
         g_AnmTexturedVertices[2].y =
             g_AnmTexturedVertices[3].y = triangleY2;
         g_AnmTexturedVertices[0].y =
@@ -216,6 +288,7 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
             g_AnmTexturedVertices[3].x = triangleX2;
         g_AnmTexturedVertices[0].x =
             g_AnmTexturedVertices[2].x = triangleX1;
+#endif
     }
 
     g_AnmTexturedVertices[0].u = g_AnmTexturedVertices[2].u =
@@ -267,9 +340,18 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
                      ? g_AnmTexturedVertices[3].y
                      : triangleY2;
 
-    if (triangleX1 < viewport.X || triangleY1 < viewport.Y ||
-        triangleX2 > viewport.X + viewport.Width ||
-        triangleY2 > viewport.Y + viewport.Height)
+    if (triangleX1 < reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
+                           ->currentViewport->viewport.X ||
+        triangleY1 < reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
+                           ->currentViewport->viewport.Y ||
+        triangleX2 > reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
+                             ->currentViewport->viewport.X +
+                         reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
+                             ->currentViewport->viewport.Width ||
+        triangleY2 > reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
+                             ->currentViewport->viewport.Y +
+                         reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
+                             ->currentViewport->viewport.Height)
         return ZUN_SUCCESS;
 
     if (this->currentTexture != vm->loadedSprite->texture)
@@ -287,25 +369,34 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
 
     if ((flags & 2) == 0)
     {
-        color.color = vm->flag15 ? vm->color2.color : vm->color1.color;
+        soundIndexLocal01.color =
+            vm->flag15 ? vm->color2.color : vm->color1.color;
         if (this->useMixColor)
         {
-            color.r = MixAnmColor(color.r, this->color.r);
-            color.g = MixAnmColor(color.g, this->color.g);
-            color.b = MixAnmColor(color.b, this->color.b);
-            color.a = MixAnmColor(color.a, this->color.a);
+            soundIndexLocal01.r =
+                MixAnmColor(soundIndexLocal01.r, this->color.r);
+            soundIndexLocal01.g =
+                MixAnmColor(soundIndexLocal01.g, this->color.g);
+            soundIndexLocal01.b =
+                MixAnmColor(soundIndexLocal01.b, this->color.b);
+            soundIndexLocal01.a =
+                MixAnmColor(soundIndexLocal01.a, this->color.a);
         }
 
-        g_AnmTexturedVertices[0].diffuse = color.color;
-        g_AnmTexturedVertices[1].diffuse = color.color;
-        g_AnmTexturedVertices[2].diffuse = color.color;
-        g_AnmTexturedVertices[3].diffuse = color.color;
+        g_AnmTexturedVertices[0].diffuse = soundIndexLocal01.color;
+        g_AnmTexturedVertices[1].diffuse = soundIndexLocal01.color;
+        g_AnmTexturedVertices[2].diffuse = soundIndexLocal01.color;
+        g_AnmTexturedVertices[3].diffuse = soundIndexLocal01.color;
     }
 
     this->SetRenderStateForVm(vm);
     this->AddSpriteToDrawBuffer(g_AnmTexturedVertices);
     return ZUN_SUCCESS;
 }
+#undef triangleY1
+#undef triangleY2
+#undef triangleX2
+#undef triangleX1
 
 // FUNCTION: TH095 0x0043F4A0.
 ZunResult AnmManager::DrawNoRotation(AnmVm *vm)
@@ -445,8 +536,26 @@ ZunResult AnmManager::Draw2D(AnmVm *vm)
         return this->DrawNoRotationNoRound(vm);
 
     sprite.rotation = vm->rotation.z;
+#if defined(_MSC_VER) && defined(_M_IX86)
+    // Reconstruction decision: use inline x87 only at this target-proven
+    // Draw2D site. TH095 has one FSINCOS at 0043FA7B, with cosine popped before
+    // sine; stock VC7.1 build 3077 compiles every tested paired sin/cos C++ form
+    // as separate FSIN and FCOS and rejects sincos/fsincos intrinsics. The
+    // adjacent exact TH08 reconstruction's sincos macro expands to this
+    // FLD/FSINCOS/FSTP source family. This user-approved exception is required
+    // for instruction identity and is not permission to use assembly
+    // elsewhere. The fallback remains semantic.
+    __asm
+    {
+        fld sprite.rotation
+        fsincos
+        fstp sprite.cosine
+        fstp sprite.sine
+    }
+#else
     sprite.cosine = (f32)cos(sprite.rotation);
     sprite.sine = (f32)sin(sprite.rotation);
+#endif
     sprite.xOffset = vm->position.x + vm->positionOffset.x;
     sprite.yOffset = vm->position.y + vm->positionOffset.y;
     sprite.spriteWidth = vm->spriteSize.x * vm->scale.x;
@@ -497,89 +606,154 @@ ZunResult AnmManager::Draw2D(AnmVm *vm)
     return this->DrawInner(vm, 0);
 }
 
+// TH08's source orders the camera-facing locals shallow-to-deep as half width,
+// half height, Y/X offsets, sine, matrix, rotation, projected reference,
+// projected position, delta, cosine, and origin. TH095 then owns two real
+// four-float alignment arrays and the loop index. The target also reuses the
+// X-offset home for the now-dead projected scale. Stock VC7.1 ignores TH08's
+// patched var_order pragma, so keep the two naturally contiguous lifetime
+// groups intact and rank only those real groups, the matrix, and the loop index
+// through established identifier buckets. No padding, inert field, or fake
+// lifetime is introduced; every aggregate field is used by the algorithm.
+#define cameraShallow restartCommandProcessingLocal05
+#define worldMatrix averagedPanLocal12
+#define cameraDeep iLocal11
+#define i commandCursorLocal02
+#pragma var_order(cameraShallow, worldMatrix, cameraDeep, i, this)
 // FUNCTION: TH095 0x0043FC60.
 ZunResult AnmManager::ProjectCameraFacingQuad(AnmVm *vm)
 {
-    f32 rotation = vm->rotation.z;
-    f32 cosine = (f32)cos(rotation);
-    f32 sine = (f32)sin(rotation);
-    Float3 origin(0.0f, 0.0f, 0.0f);
+    AnmCameraFacingShallowLocals cameraShallow;
     D3DXMATRIX worldMatrix;
-    Float3 projectedPosition;
-    Float3 projectedReference;
-    Float3 delta;
-    f32 x[4];
-    f32 y[4];
+    AnmCameraFacingDeepLocals cameraDeep;
+    i32 i;
+
+    cameraDeep.rotation = vm->rotation.z;
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+    // Reconstruction decision: this first ProjectCameraFacingQuad sin/cos pair
+    // must be inline x87. The verified target has FLD/FSINCOS/two FSTP at
+    // 0043FC78..0043FC85; the stock-3077 frontend has no intrinsic capable of
+    // producing it, while the adjacent exact TH08 reconstruction supplies the
+    // same ZUN sincos macro shape. The exception is limited to this function
+    // and this target-observed site.
+    __asm
+    {
+        fld cameraDeep.rotation
+        fsincos
+        fstp cameraDeep.cosine
+        fstp cameraShallow.sine
+    }
+#else
+    cameraDeep.cosine = (f32)cos(cameraDeep.rotation);
+    cameraShallow.sine = (f32)sin(cameraDeep.rotation);
+#endif
+
+    cameraDeep.origin.x = 0.0f;
+    cameraDeep.origin.y = 0.0f;
+    cameraDeep.origin.z = 0.0f;
 
     D3DXMatrixIdentity(&worldMatrix);
     worldMatrix._41 = vm->position.x + vm->positionOffset.x;
     worldMatrix._42 = vm->position.y + vm->positionOffset.y;
     worldMatrix._43 = vm->position.z + vm->positionOffset.z;
 
-    D3DXVec3Project(reinterpret_cast<D3DXVECTOR3 *>(&projectedPosition),
-                    reinterpret_cast<D3DXVECTOR3 *>(&origin),
-                    &g_CurrentBackgroundViewport->viewport,
-                    &g_CurrentBackgroundViewport->projectionMatrix,
-                    &g_CurrentBackgroundViewport->viewMatrix, &worldMatrix);
-    if (projectedPosition.z < 0.0f || projectedPosition.z > 1.0f)
+    D3DXVec3Project(
+        reinterpret_cast<D3DXVECTOR3 *>(&cameraDeep.projectedPosition),
+        reinterpret_cast<D3DXVECTOR3 *>(&cameraDeep.origin),
+        &g_CurrentBackgroundViewport->viewport,
+        &g_CurrentBackgroundViewport->projectionMatrix,
+        &g_CurrentBackgroundViewport->viewMatrix, &worldMatrix);
+    if (cameraDeep.projectedPosition.z < 0.0f ||
+        cameraDeep.projectedPosition.z > 1.0f)
         return ZUN_ERROR;
 
-    D3DXVec3Project(reinterpret_cast<D3DXVECTOR3 *>(&projectedReference),
-                    reinterpret_cast<D3DXVECTOR3 *>(
-                        &g_CurrentBackgroundViewport->cameraRight),
-                    &g_CurrentBackgroundViewport->viewport,
-                    &g_CurrentBackgroundViewport->projectionMatrix,
-                    &g_CurrentBackgroundViewport->viewMatrix, &worldMatrix);
+    D3DXVec3Project(
+        reinterpret_cast<D3DXVECTOR3 *>(&cameraDeep.projectedReference),
+        reinterpret_cast<D3DXVECTOR3 *>(
+            &g_CurrentBackgroundViewport->cameraRight),
+        &g_CurrentBackgroundViewport->viewport,
+        &g_CurrentBackgroundViewport->projectionMatrix,
+        &g_CurrentBackgroundViewport->viewMatrix, &worldMatrix);
 
-    delta = projectedReference - projectedPosition;
-    f32 projectedScale =
-        D3DXVec3Length(reinterpret_cast<D3DXVECTOR3 *>(&delta)) * 0.5f;
-    f32 spriteHalfWidth =
-        projectedScale * vm->spriteSize.x * vm->scale.x;
-    f32 spriteHalfHeight =
-        projectedScale * vm->spriteSize.y * vm->scale.y;
-    f32 xOffset = projectedPosition.x;
-    f32 yOffset = projectedPosition.y;
+    cameraDeep.delta =
+        cameraDeep.projectedReference - cameraDeep.projectedPosition;
+    cameraShallow.xOffset =
+        D3DXVec3Length(
+            reinterpret_cast<D3DXVECTOR3 *>(&cameraDeep.delta)) * 0.5f;
+    cameraShallow.spriteHalfWidth =
+        cameraShallow.xOffset * vm->spriteSize.x * vm->scale.x;
+    cameraShallow.spriteHalfHeight =
+        cameraShallow.xOffset * vm->spriteSize.y * vm->scale.y;
+    cameraShallow.xOffset = cameraDeep.projectedPosition.x;
+    cameraShallow.yOffset = cameraDeep.projectedPosition.y;
 
-    cosine = (f32)cos(rotation);
-    sine = (f32)sin(rotation);
+#if defined(_MSC_VER) && defined(_M_IX86)
+    // Reconstruction decision: retain the target's second, intentionally
+    // repeated x87 evaluation at 0043FEB0..0043FEBD. Reusing the earlier values
+    // would remove target instructions; ordinary C++ again becomes separate
+    // FSIN/FCOS. The exact TH08 reconstruction proves the
+    // FLD/FSINCOS/FSTP source idiom, and the user approved it only for the
+    // three final ANM functions. The portable branch below keeps the same
+    // observable recomputation without inline assembly.
+    __asm
+    {
+        fld cameraDeep.rotation
+        fsincos
+        fstp cameraDeep.cosine
+        fstp cameraShallow.sine
+    }
+#else
+    cameraDeep.cosine = (f32)cos(cameraDeep.rotation);
+    cameraShallow.sine = (f32)sin(cameraDeep.rotation);
+#endif
 
     switch (vm->renderStateA)
     {
     case 1:
-        x[0] = x[2] = 0.0f;
-        x[1] = x[3] = spriteHalfWidth;
+        cameraDeep.vertexX[0] = cameraDeep.vertexX[2] = 0.0f;
+        cameraDeep.vertexX[1] =
+            cameraDeep.vertexX[3] = cameraShallow.spriteHalfWidth;
         break;
     case 0:
-        x[0] = x[2] = -spriteHalfWidth * 0.5f;
-        x[1] = x[3] = spriteHalfWidth * 0.5f;
+        cameraDeep.vertexX[0] = cameraDeep.vertexX[2] =
+            -cameraShallow.spriteHalfWidth * 0.5f;
+        cameraDeep.vertexX[1] = cameraDeep.vertexX[3] =
+            cameraShallow.spriteHalfWidth * 0.5f;
         break;
     case 2:
-        x[0] = x[2] = -spriteHalfWidth;
-        x[1] = x[3] = 0.0f;
+        cameraDeep.vertexX[0] = cameraDeep.vertexX[2] =
+            -cameraShallow.spriteHalfWidth;
+        cameraDeep.vertexX[1] = cameraDeep.vertexX[3] = 0.0f;
         break;
     }
 
     switch (vm->renderStateB)
     {
     case 1:
-        y[0] = y[1] = 0.0f;
-        y[2] = y[3] = spriteHalfHeight;
+        cameraDeep.vertexY[0] = cameraDeep.vertexY[1] = 0.0f;
+        cameraDeep.vertexY[2] =
+            cameraDeep.vertexY[3] = cameraShallow.spriteHalfHeight;
         break;
     case 0:
-        y[0] = y[1] = -spriteHalfHeight * 0.5f;
-        y[2] = y[3] = spriteHalfHeight * 0.5f;
+        cameraDeep.vertexY[0] = cameraDeep.vertexY[1] =
+            -cameraShallow.spriteHalfHeight * 0.5f;
+        cameraDeep.vertexY[2] = cameraDeep.vertexY[3] =
+            cameraShallow.spriteHalfHeight * 0.5f;
         break;
     case 2:
-        y[0] = y[1] = -spriteHalfHeight;
-        y[2] = y[3] = 0.0f;
+        cameraDeep.vertexY[0] = cameraDeep.vertexY[1] =
+            -cameraShallow.spriteHalfHeight;
+        cameraDeep.vertexY[2] = cameraDeep.vertexY[3] = 0.0f;
         break;
     }
 
-    for (i32 i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++)
     {
-        this->TranslateRotation(&g_AnmTexturedVertices[i], x[i], y[i], sine,
-                                cosine, xOffset, yOffset);
+        this->TranslateRotation(
+            &g_AnmTexturedVertices[i], cameraDeep.vertexX[i],
+            cameraDeep.vertexY[i], cameraShallow.sine, cameraDeep.cosine,
+            cameraShallow.xOffset, cameraShallow.yOffset);
     }
 
     g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
@@ -587,6 +761,10 @@ ZunResult AnmManager::ProjectCameraFacingQuad(AnmVm *vm)
             vm->position.z;
     return ZUN_SUCCESS;
 }
+#undef cameraShallow
+#undef worldMatrix
+#undef cameraDeep
+#undef i
 
 // FUNCTION: TH095 0x004400F0.
 ZunResult AnmManager::DrawCameraFacingQuad(AnmVm *vm)

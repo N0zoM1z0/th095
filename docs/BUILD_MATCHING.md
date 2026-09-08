@@ -2028,15 +2028,14 @@ homes. Syntactic use therefore does not move this temporary into the target's
 post-parameter allocation class, and the empty forms remain provenance-free.
 
 
-### ANM x87 frontend exhaustion checkpoint (2026-09-08)
+### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
-The three remaining ANM functions are independently target-attested and remain
-deliberately non-exact.  Ghidra shows direct `FRNDINT` instructions in
-`DrawInner` at `0x0043ED77`, `0x0043ED85`, `0x0043ED93`, and `0x0043EDA1`;
-`Draw2D` has `FSINCOS` at `0x0043FA78`; and
-`ProjectCameraFacingQuad` has `FSINCOS` at `0x0043FC78` and `0x0043FEB0`.
-The canonical portable bodies remain 1,532 versus 1,497, 572 versus 542, and
-1,140 versus 1,163 target bytes respectively.
+The three former ANM residuals are independently target-attested and now
+canonical exact under a deliberately narrow, user-authorized inline-x87
+exception. Ghidra shows direct `FRNDINT` instructions in `DrawInner` at
+`0x0043ED77`, `0x0043ED85`, `0x0043ED93`, and `0x0043EDA1`; `Draw2D` has
+`FSINCOS` at `0x0043FA7B`; and `ProjectCameraFacingQuad` has `FSINCOS` at
+`0x0043FC7B` and `0x0043FEB3`.
 
 A fresh stock build-3077 oracle compiled paired float/double `sin`/`cos`
 expressions, both evaluation orders, structure-return variants, and the direct
@@ -2052,24 +2051,32 @@ inputs are SHA-256
 The stock build-3077 frontend binary independently places `sincos`/`rndint` in
 its contiguous inline-assembler mnemonic table, while the bundled CRT and
 Platform SDK headers expose no `sincos`, `fsincos`, or `frndint` declaration.
-`D3DXMatrixRotationZ` is external rather than header-inline. This narrows the
-remaining clean-source search surface without changing exact status.
+`D3DXMatrixRotationZ` is external rather than header-inline. This exhausts the
+available clean-frontend surface and explains why the exact source requires
+the compiler's inline assembler for these opcodes.
 
 An expanded per-name `#pragma intrinsic` whitelist oracle tested 34 names.
 Only the `sin`, `cos`, and `sqrt` positive controls are accepted. All 31
 `sincos`/`fsincos` and `frnd`/`rndint`/`rint`/`nearbyint`/`round` spellings,
 including one- and two-underscore variants, receive C4163; no generated object
-contains `FSINCOS` or `FRNDINT`. The TH08 source family makes the alternative
-explicit: its `DrawInner` spells the four `FRNDINT` operations in `__asm`, and
-its `sincos` macro expands to `FLD`, `FSINCOS`, and two `FSTP` instructions.
-That is strong provenance for the target instruction family but remains outside
-the allowed canonical mechanism. Reproduction details and hashes are in
+contains `FSINCOS` or `FRNDINT`. The TH08 source family supplies the missing
+source provenance: its `DrawInner` spells the same four-value `FRNDINT` stack
+sequence in `__asm`, and its `sincos` macro expands to `FLD`, `FSINCOS`, and two
+`FSTP` instructions. Reproduction details and hashes are in
 `.analysis/final-four-oracles-20260908.md`.
 
-The adjacent reconstructed codebase contains an explicit ZUN-style `fsincos`
-assembly sequence, which is useful source-family corroboration but not an
-accepted reconstruction mechanism.  Do not promote any of these functions or
-replace their natural portable implementations with assembly, target bytes, or
-inert compiler-shaping artifacts.  Reopen this lane only for a new clean VC7.1
-frontend surface or independent source evidence that explains the emitted x87
-instructions and, for the projection core, its remaining local allocation.
+The reconstruction therefore uses assembly only at those four source sites:
+one four-value `FRNDINT` block in `DrawInner`, one `FSINCOS` block in `Draw2D`,
+and two intentionally repeated `FSINCOS` blocks in
+`ProjectCameraFacingQuad`. Each site has a detailed inline decision comment
+covering target addresses, failed clean-front-end alternatives, TH08
+provenance, portable fallback, and exception scope. Fully live aggregates close
+the projection core's local allocation without dead storage or padding.
+
+Canonical relocation-aware replay is exact for `anm-draw-inner` (1,497 bytes,
+93 relocations), `anm-draw-2d` (542 bytes, 16 relocations), and
+`anm-project-camera-facing-quad` (1,163 bytes, 26 relocations). All 18 accepted
+units sharing `AnmDrawCore.cpp` also cold-replay exact. This exception is not a
+general assembly policy: copied target bytes, inert compiler-shaping artifacts,
+and assembly in any other function remain prohibited absent explicit user
+authorization and independent target/source-family evidence.

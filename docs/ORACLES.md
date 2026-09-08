@@ -52,7 +52,12 @@ copied target bytes.
 
 When the two primary oracles disagree, preserve both observations and narrow
 the hypothesis. Do not solve the disagreement with casts, padding, inert
-locals, assembly, or copied byte arrays.
+locals, assembly, or copied byte arrays. The only current assembly exception is
+the user-authorized x87 source-family form in `AnmManager::DrawInner`,
+`AnmManager::Draw2D`, and `AnmManager::ProjectCameraFacingQuad`: each site is
+independently target-attested, reproduced by TH08 source, rejected by the clean
+VC7.1 frontend surface, and documented inline. It is not precedent for any
+other function or instruction family.
 
 ## TH08 reuse boundary
 
