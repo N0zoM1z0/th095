@@ -732,6 +732,45 @@ definition of done. Do not add duplicate shims, fake global storage, arbitrary
 link closure only; it does not establish a byte-exact whole image or runtime
 playability.
 
+
+## Pause checkpoint: 2026-09-09
+
+Reconstruction is intentionally paused at a clean family boundary after closing
+the current ResultScreen callable ABI pair. The latest fresh generated
+whole-build report records 88/88 i386 COFF objects, 51 unique unresolved names
+(55 diagnostics): 45 data and 6 callable/runtime. 49 unresolved
+names have target-address evidence across 49 target addresses; 2 names
+remain without target mapping. No runtime/Wine launch has been performed.
+
+The just-closed ResultScreen pair maps the historical production proxies
+`ResultAnmVmDrawView::Draw` and `PreparePhotoResultScreen` to canonical
+`AnmVm::Draw @ 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`.
+The canonical ledgers already prove both exact (26 and 380 bytes respectively),
+and hash-attested Ghidra independently bounds the same target functions. The
+complete ResultScreen source replay remains 24/24 canonical exact with zero
+private-label refresh.
+
+Remaining callable/runtime items at the pause boundary:
+- `??0CSoundManager@th095@@QAE@XZ` -> 0x00452E50 (SoundPlayer.obj)
+- `?CapturePhotoPixels@ScorePhotoStageView@th095@@QAEXH@Z` -> 0x0042E7B0 (ScoreData.obj)
+- `?CreateFrontEndGameManager@th095@@YIPAUFrontEndGameManagerView@1@H@Z` -> 0x00417F80 (FrontEndController.obj)
+- `?Pop@FrontEndPointerQueueView@th095@@QAEHXZ` -> 0x00450F60 (FrontEndLifecycle.obj)
+- `?RemoveVmListNode@AnmManager@th095@@QAEHPAUAnmVmListNode@2@@Z` -> 0x00444E00 (AnmManager.obj)
+- `?SetColor1Interpolation@SceneSelectColorInterpolationView@th095@@QAEXHEII@Z` -> 0x00452D70 (SceneSelectUpdate.obj)
+
+Unmapped data items requiring fresh Ghidra address/lifecycle recovery:
+- `?g_PhotoCardBackgroundAnm@th095@@3PAUAnmLoaded@1@A` (PhotoCardInfo.obj)
+- `?g_PhotoCardUiAnm@th095@@3PAUAnmLoaded@1@A` (PhotoCardInfo.obj)
+
+Two pre-existing untracked files are deliberately left untouched and uncommitted:
+`EnemyManagerUpdate.i` and `droid.resume.txt`. Do not delete or reset them merely
+to make the worktree visually clean; inspect provenance before any future action.
+
+Resume by reading this checkpoint and the fresh `build/whole-validation/report.json`;
+do not reuse older unresolved counts. Continue one target/method/data family at a
+time with hash-attested Ghidra evidence, cold whole-build, affected exact replay,
+and CI before each commit.
+
 ## Matching checkpoint gate
 
 Before and after each bounded matching experiment:

@@ -455,6 +455,15 @@ ledger-to-`0x00408DE0` evidence was used to close its return/receiver ABI, and
 the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
+
+Pause checkpoint 2026-09-09: current family closure leaves 51 unique unresolved
+(55 diagnostics), split 45 data / 6 callable-runtime, with 88/88
+objects compiling. ResultScreen production now targets canonical `AnmVm::Draw @
+0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; ResultScreen replays 24/24
+canonical exact with zero label refresh. Do not reopen this pair unless fresh
+evidence contradicts it. See `RE_HANDOFF.md` for the exact remaining callable
+list and the two unmapped PhotoCard ANM data items.
+
 ## Constant and table reconstruction
 
 After pointer and method canonicalization, define real immutable or mutable

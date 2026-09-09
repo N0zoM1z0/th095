@@ -60,10 +60,16 @@ struct ResultScreenGlobalStateView
     i32 resultMode;
 };
 
+#ifdef DIFFBUILD
 struct ResultAnmVmDrawView
 {
     void Draw();
 };
+#define TH095_RESULT_VM_DRAW(vm) \
+    reinterpret_cast<ResultAnmVmDrawView *>(vm)->Draw()
+#else
+#define TH095_RESULT_VM_DRAW(vm) reinterpret_cast<AnmVm *>(vm)->Draw()
+#endif
 
 struct ResultAsciiManagerView
 {
@@ -153,7 +159,12 @@ extern ResultPhotoControllerView *g_ResultPhotoController;
 extern void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
+#ifdef DIFFBUILD
 extern void __fastcall PreparePhotoResultScreen(ResultScreen *resultScreen);
+#define TH095_RESULT_PREPARE_BEST_SHOT(resultScreen) PreparePhotoResultScreen(resultScreen)
+#else
+#define TH095_RESULT_PREPARE_BEST_SHOT(resultScreen) (resultScreen)->PrepareBestShot()
+#endif
 inline u16 GetPressedButtons(u16 buttons)
 {
     return g_PressedButtons & buttons;
@@ -1282,7 +1293,7 @@ ChainCallbackResult ResultScreen::Update()
                     ResultUpdateReplayDisablePhase(&this->replayCursor, 1);
                     this->vms[13].color1.color = 0x80000000;
                 }
-                PreparePhotoResultScreen(this);
+                TH095_RESULT_PREPARE_BEST_SHOT(this);
                 this->replayCursor.count = 4;
                 this->replayCursor.wraps = 1;
                 break;
@@ -1519,16 +1530,16 @@ ChainCallbackResult ResultScreen::Draw()
 
     for (i = 0; i < 21; i++)
     {
-        reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[i])->Draw();
+        TH095_RESULT_VM_DRAW(&this->vms[i]);
     }
-    reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[23])->Draw();
-    reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[24])->Draw();
+    TH095_RESULT_VM_DRAW(&this->vms[23]);
+    TH095_RESULT_VM_DRAW(&this->vms[24]);
 
     switch (this->state)
     {
     case 3:
-        reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[21])->Draw();
-        reinterpret_cast<ResultAnmVmDrawView *>(&this->vms[22])->Draw();
+        TH095_RESULT_VM_DRAW(&this->vms[21]);
+        TH095_RESULT_VM_DRAW(&this->vms[22]);
         break;
 
     case 5:
