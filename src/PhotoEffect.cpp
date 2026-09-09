@@ -259,8 +259,6 @@ static inline i32 PhotoEffectEitherFlag(i32 first, i32 second)
 
 extern i32 __fastcall GetPhotoEffectScriptBase(i32 type);
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
-void __fastcall RotatePhotoEffectVector(
-    Float3 *output, const Float3 *input, f32 angle);
 
 struct PhotoEffectManagerView
 {
@@ -1482,7 +1480,7 @@ i32 PhotoStraightLaserView::CountNearbyTargets(
     Float3 nearbyDifference =
         *position - *reinterpret_cast<Float3 *>(&this->position);
     Float3 nearbyDelta = nearbyDifference;
-    RotatePhotoEffectVector(&nearbyLocal, &nearbyDelta, -this->angle);
+    Rotate(&nearbyLocal, &nearbyDelta, -this->angle);
 
     nearbyDelta.x = nearbyLocal.x - radius;
     nearbyDelta.y = nearbyLocal.y - radius;
@@ -1509,7 +1507,7 @@ i32 PhotoRotatingLaserView::CountNearbyTargets(
     Float3 difference =
         *position - *reinterpret_cast<Float3 *>(&this->position);
     Float3 delta = difference;
-    RotatePhotoEffectVector(&local, &delta, -this->angle);
+    Rotate(&local, &delta, -this->angle);
 
     delta.x = local.x - radius;
     delta.y = local.y - radius;

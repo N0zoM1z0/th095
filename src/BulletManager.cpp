@@ -86,6 +86,14 @@ struct PhotoBulletVector
 typedef char PhotoBulletVectorSizeIsC[
     (sizeof(PhotoBulletVector) == 0x0c) ? 1 : -1];
 
+#ifdef DIFFBUILD
+#define TH095_PHOTO_BULLET_FROM_ANGLE(vector, angle, magnitude) \
+    vector.FromAngleMagnitude(angle, magnitude)
+#else
+#define TH095_PHOTO_BULLET_FROM_ANGLE(vector, angle, magnitude) \
+    reinterpret_cast<Float3 *>(&(vector))->FromAngleMagnitude((angle), (magnitude))
+#endif
+
 enum PhotoBulletTransformKind
 {
     PHOTO_BULLET_TRANSFORM_NONE = 0,
@@ -724,7 +732,7 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
     locals.bullet->angle = AddNormalizeAngle(locals.angle, 0.0f);
     locals.bullet->position = descriptor->position;
     locals.bullet->position.z = 0.1f;
-    locals.bullet->velocity.FromAngleMagnitude(locals.angle, locals.speed);
+    TH095_PHOTO_BULLET_FROM_ANGLE(locals.bullet->velocity, locals.angle, locals.speed);
     locals.bullet->activeTransformFlags = descriptor->transformFlags;
     locals.bullet->color = descriptor->color;
     locals.bullet->bulletType = descriptor->bulletType;
@@ -832,7 +840,8 @@ nextRecord:
                 : this->angle;
         this->exStates[1].timer = 0;
         this->exStates[1].durationFrames = record->payload.durationFrames;
-        this->exStates[1].vector.FromAngleMagnitude(
+        TH095_PHOTO_BULLET_FROM_ANGLE(
+            this->exStates[1].vector,
             this->exStates[1].accelerationAngle,
             this->exStates[1].accelerationMagnitude);
         if (this->transformIndex != 0 && this->transformSound >= 0)
@@ -1053,8 +1062,8 @@ void PhotoBulletView::UpdateDeceleration()
     {
         magnitude =
             5.0f - (5.0f * (f32)this->exStates[0].timer) / 16.0f;
-        this->velocity.FromAngleMagnitude(
-            this->angle, magnitude + this->speed);
+        TH095_PHOTO_BULLET_FROM_ANGLE(
+            this->velocity, this->angle, magnitude + this->speed);
     }
     else
     {
@@ -1103,7 +1112,7 @@ void PhotoBulletView::UpdatePolarAcceleration()
         this->angle = AddNormalizeAngle(
             this->angle, g_AnmGameSpeed * this->exStates[2].angleDelta);
         this->speed += g_AnmGameSpeed * this->exStates[2].speedDelta;
-        this->velocity.FromAngleMagnitude(this->angle, this->speed);
+        TH095_PHOTO_BULLET_FROM_ANGLE(this->velocity, this->angle, this->speed);
     }
 
     this->exStates[2].timer++;
@@ -1142,7 +1151,7 @@ void PhotoBulletView::UpdateRelativeDirectionChange()
                 this->exStates[3].directionChangeIntervalFrames;
     }
 
-    this->velocity.FromAngleMagnitude(this->angle, magnitude);
+    TH095_PHOTO_BULLET_FROM_ANGLE(this->velocity, this->angle, magnitude);
     this->exStates[3].timer++;
 }
 
@@ -1180,7 +1189,7 @@ void PhotoBulletView::UpdateAbsoluteDirectionChange()
                 this->exStates[3].directionChangeIntervalFrames;
     }
 
-    this->velocity.FromAngleMagnitude(this->angle, magnitude);
+    TH095_PHOTO_BULLET_FROM_ANGLE(this->velocity, this->angle, magnitude);
     this->exStates[3].timer++;
 }
 
@@ -1219,7 +1228,7 @@ void PhotoBulletView::UpdateAimedDirectionChange()
                 this->exStates[3].directionChangeIntervalFrames;
     }
 
-    this->velocity.FromAngleMagnitude(this->angle, magnitude);
+    TH095_PHOTO_BULLET_FROM_ANGLE(this->velocity, this->angle, magnitude);
     this->exStates[3].timer++;
 }
 
@@ -1259,7 +1268,7 @@ void PhotoBulletView::UpdateBoundaryBounce()
         publication.bounceSpeedBits =
             *reinterpret_cast<i32 *>(&this->exStates[4].bounceSpeed);
         publication.magnitudeBits = publication.bounceSpeedBits;
-        this->velocity.FromAngleMagnitude(this->angle, publication.magnitude);
+        TH095_PHOTO_BULLET_FROM_ANGLE(this->velocity, this->angle, publication.magnitude);
         this->exStates[4].bouncesCompleted += 1;
         if (this->exStates[4].bouncesCompleted >=
             this->exStates[4].bounceLimit)

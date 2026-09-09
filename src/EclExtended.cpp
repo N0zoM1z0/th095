@@ -51,6 +51,14 @@ struct ExtendedVector
 };
 typedef char ExtendedVectorSizeC[(sizeof(ExtendedVector) == 0x0c) ? 1 : -1];
 
+#ifdef DIFFBUILD
+#define TH095_EXTENDED_FROM_ANGLE(vector, angle, magnitude) \
+    vector.FromAngleMagnitude(angle, magnitude)
+#else
+#define TH095_EXTENDED_FROM_ANGLE(vector, angle, magnitude) \
+    reinterpret_cast<Float3 *>(&(vector))->FromAngleMagnitude((angle), (magnitude))
+#endif
+
 struct ExtendedVmHandle
 {
     i32 value;
@@ -510,8 +518,8 @@ void __fastcall ResetOwnedBulletMotion(
             bullet->field34c = 0;
             bullet->field348 = 0;
             bullet->speed = 4.5f;
-            bullet->velocity.FromAngleMagnitude(
-                bullet->angle, bullet->speed);
+            TH095_EXTENDED_FROM_ANGLE(
+                bullet->velocity, bullet->angle, bullet->speed);
         }
     }
 }
@@ -573,7 +581,7 @@ void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instructio
     firstVm = TH095_EXT_ANM_GET_VM(*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d4));
     if (firstVm != NULL)
     {
-        position.FromAngleMagnitude(enemy->movementAngle, 24.0f);
+        TH095_EXTENDED_FROM_ANGLE(position, enemy->movementAngle, 24.0f);
         firstVm->positionOffset = enemy->position + *reinterpret_cast<Float3 *>(&position);
         PhotoToScreen(&firstVm->positionOffset, &firstVm->positionOffset);
         firstVm->positionOffset.x -= 128.0f;
@@ -928,7 +936,8 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
             index->vm.pendingInterrupt = 2;
             *reinterpret_cast<u32 *>(
                 reinterpret_cast<u8 *>(index) + 0x24) = savedActiveSprite;
-            index->velocity.FromAngleMagnitude(
+            TH095_EXTENDED_FROM_ANGLE(
+                index->velocity,
                 *reinterpret_cast<f32 *>(
                     reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70),
                 *reinterpret_cast<f32 *>(
@@ -958,7 +967,7 @@ void __fastcall Callback03(Enemy *enemy, EclRawInstruction *instruction)
 
         index->ReinitializeDirect();
         index->vm.pendingInterrupt = 2;
-        index->velocity.FromAngleMagnitude(index->angle, index->speed);
+        TH095_EXTENDED_FROM_ANGLE(index->velocity, index->angle, index->speed);
         index->flags |= 2U;
         index->flags &= ~0x10U;
     }
@@ -990,7 +999,8 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
             index->vm.pendingInterrupt = 2;
             *reinterpret_cast<u32 *>(
                 reinterpret_cast<u8 *>(index) + 0x24) = savedActiveSprite;
-            index->velocity.FromAngleMagnitude(
+            TH095_EXTENDED_FROM_ANGLE(
+                index->velocity,
                 *reinterpret_cast<f32 *>(
                     reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70) +
                     index->angle,

@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 131 unique unresolved decorated symbols across 135 diagnostics:
-48 data and 83 callable/runtime. Of those names, 128 map through canonical
-relocations to 121 target addresses; three currently lack target-address
+now fails with 127 unique unresolved decorated symbols across 131 diagnostics:
+48 data and 79 callable/runtime. Of those names, 124 map through canonical
+relocations to 119 target addresses; three currently lack target-address
 evidence and one decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -357,6 +357,25 @@ link moves 135 -> 131 unique unresolved names and 139 -> 135 diagnostics (data
 52 -> 48, callable/runtime remains 83); both target addresses leave the fresh
 unresolved set and the multi-target count falls 2 -> 1. Main, OptionsMenu, and
 PhotoGameTask replay 59/59 canonical exact units with no label refresh.
+
+The shared vector-math callable proxy family at `0x00441DA0` and
+`0x0041B600` is closed. Hash-attested Ghidra bounds `0x00441DA0` as a 32-byte
+`__thiscall (this,float,float)` body; the repository already has the canonical
+exact `Float3::FromAngleMagnitude` unit at that address. `PhotoBulletVector` is
+compile-time proven layout-identical to `Float3`, and `ExtendedVector` is the
+same three-float 0x0C view, so production member calls now use the real `Float3`
+receiver while DIFFBUILD retains the historical proxy receiver decoration.
+Likewise, `0x0041B600` is the canonical exact 95-byte `Rotate(Float3 *, Float3
+*, f32)` implementation; production PhotoEffect and PhotoStage callers now name
+that real helper instead of their TU-local rotate proxy names. No new body,
+wrapper, or assembly was introduced; the existing approved x87 implementation
+of `Float3::FromAngleMagnitude` is unchanged. The cold link moves 131 -> 127
+unique unresolved names and 135 -> 131 diagnostics; data remains 48 while
+callable/runtime drops 83 -> 79, and both target addresses leave the unresolved
+set. BulletManager, EclExtended, PhotoEffect, and PhotoStage replay 97/97
+canonical exact units with no label refresh. An initial DIFFBUILD macro spelling
+with redundant parentheses changed one VC7.1 body size; restoring the exact
+member-call token shape returned BulletManager to 35/35 exact before closure.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

@@ -249,6 +249,16 @@ target addresses disappear, and Main/OptionsMenu/PhotoGameTask replay 59/59
 exact units. The only remaining multi-target unresolved name is now the three-
 method `PhotoResetTargetView::ResetForPhotoTransition` family.
 
+Closed 2026-09-09: vector-math callable proxies at `0x00441DA0` and
+`0x0041B600`. Production `ExtendedVector`/`PhotoBulletVector` calls use the real
+exact `Float3::FromAngleMagnitude`, while DIFFBUILD preserves the original
+receiver names; PhotoEffect/PhotoStage call the real exact `Rotate` helper.
+Fresh whole-build count changes 131 -> 127 unique unresolved (135 -> 131
+diagnostics), callable/runtime 83 -> 79, both target addresses disappear, and
+the four affected sources replay 97/97 exact units with no label refresh. The
+existing three approved ANM x87 functions were not changed and no assembly was
+added.
+
 Continue with:
 
 - bullet capture/count/reset/spawn methods in the `0x00404950..0x00408220`

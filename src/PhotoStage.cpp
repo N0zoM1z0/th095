@@ -321,8 +321,6 @@ extern u8 g_PhotoCaptureCountdown;
 
 void __fastcall SpawnPhotoStageEffect(
     i32 effectType, i32 script, i32 count, u32 color, i32 arg4, i32 arg5);
-void __fastcall RotatePhotoStagePoint(
-    Float3 *output, const Float3 *input, f32 angle);
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
 static inline PhotoStageAnmManagerView *GetPhotoStageAnmManager()
@@ -1222,7 +1220,7 @@ i32 PhotoStageStateView::Update()
                 PhotoStageInitFrame35Position(
                     &frame35Position,
                     (-frame35Vm->spriteSize.y * 0.4f) / 2.0f);
-                RotatePhotoStagePoint(&frame35Position, &frame35Position, frame35Vm->rotation.z);
+                Rotate(&frame35Position, &frame35Position, frame35Vm->rotation.z);
                 frame35Position += frame35Vm->position;
                 this->slots[0].entryVms[entryIndex] =
                     g_PhotoStageSupervisor->photoAnm->CreateVmAtScreen(
