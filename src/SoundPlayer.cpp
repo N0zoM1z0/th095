@@ -8,7 +8,11 @@
 
 #include "Global.hpp"
 #include "SoundPlayer.hpp"
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 #include "Supervisor.hpp"
+#else
+#include "SupervisorRuntime.hpp"
+#endif
 #include "dxutil.hpp"
 #include "utils.hpp"
 
@@ -19,6 +23,34 @@
 
 namespace th095
 {
+
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_SOUND_GAME_WINDOW g_Supervisor.hwndGameWindow
+#define TH095_SOUND_MUSIC_MODE g_Supervisor.cfg.musicMode
+#define TH095_SOUND_PLAY_SOUNDS g_Supervisor.cfg.playSounds
+#define TH095_SOUND_MUSIC_OFF OFF
+#define TH095_SOUND_MUSIC_WAV WAV
+#define SoundMusicPreloadEnabled() g_Supervisor.IsMusicPreloadEnabled()
+#else
+// SoundPlayer's exact object is compiled against the legacy source-family
+// view needed to reproduce its isolated target code.  The runnable TH095 link,
+// however, owns the 0x7bc-byte Supervisor reconstructed in SupervisorRuntime:
+// HWND is at +0x48, GameConfiguration is at +0x11c, musicMode is at config
+// +0xad, and preloadMusic is bit 4 of config.options at +0xc4.
+//
+// Using the legacy 0x364-byte view in production read unrelated bytes at
+// +0x137 and +0x150.  Runtime observation showed this misread musicMode as OFF
+// and preloadMusic as enabled: ProcessQueues deleted the valid streaming BGM,
+// then LoadBGM rejected reopening it.  These accessors deliberately select the
+// real owner only for the whole-program build; exact/DIFFBUILD code generation
+// remains unchanged.
+#define TH095_SOUND_GAME_WINDOW g_Supervisor.gameWindow
+#define TH095_SOUND_MUSIC_MODE g_Supervisor.config.musicMode
+#define TH095_SOUND_PLAY_SOUNDS g_Supervisor.config.playSounds
+#define TH095_SOUND_MUSIC_OFF 0
+#define TH095_SOUND_MUSIC_WAV 1
+#define SoundMusicPreloadEnabled() g_Supervisor.config.options.preloadMusic
+#endif
 
 // TH095 has one process-lifetime SoundPlayer at 0x004C4EE8.  Keeping its
 // storage with the implementation TU also ensures the compiler emits the real
@@ -549,7 +581,7 @@ SoundPlayerResult SoundPlayer::StartBGM(char *path)
     notifySize -= notifySize % blockAlign;
     this->bgmUpdateEvent = CreateEventA(NULL, FALSE, FALSE, NULL);
     this->bgmThreadHandle =
-        CreateThread(NULL, 0, SoundPlayer::BGMPlayerThread, g_Supervisor.hwndGameWindow, 0, &this->bgmThreadId);
+        CreateThread(NULL, 0, SoundPlayer::BGMPlayerThread, TH095_SOUND_GAME_WINDOW, 0, &this->bgmThreadId);
     res = this->manager->CreateStreaming(&this->bgm, path,
                                          DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLPOSITIONNOTIFY, GUID_NULL, 16,
                                          notifySize, this->bgmUpdateEvent, fmtData);
@@ -597,7 +629,7 @@ SoundPlayerResult SoundPlayer::PreloadBGM(i32 idx, char *path)
     }
     strcpy(g_SoundPlayer.bgmFileNames[idx], path);
 
-    if (!g_Supervisor.IsMusicPreloadEnabled())
+    if (!SoundMusicPreloadEnabled())
         return ZUN_SUCCESS;
 
     if (this->manager == NULL)
@@ -658,13 +690,13 @@ SoundPlayerResult SoundPlayer::LoadBGM(i32 idx)
     if (this->manager == NULL)
         return ZUN_ERROR;
 
-    if (g_Supervisor.cfg.musicMode == OFF)
+    if (TH095_SOUND_MUSIC_MODE == TH095_SOUND_MUSIC_OFF)
         return ZUN_ERROR;
 
     if (this->dsoundHdl == NULL)
         return ZUN_ERROR;
 
-    if (!g_Supervisor.IsMusicPreloadEnabled())
+    if (!SoundMusicPreloadEnabled())
         return this->ReopenBGM(this->bgmFileNames[idx]);
 
     if (this->bgmPreloadAllocations[idx] == NULL)
@@ -678,7 +710,7 @@ SoundPlayerResult SoundPlayer::LoadBGM(i32 idx)
     notifySize -= notifySize % blockAlign;
     this->bgmUpdateEvent = CreateEventA(NULL, FALSE, FALSE, NULL);
     this->bgmThreadHandle =
-        CreateThread(NULL, 0, SoundPlayer::BGMPlayerThread, g_Supervisor.hwndGameWindow, 0, &this->bgmThreadId);
+        CreateThread(NULL, 0, SoundPlayer::BGMPlayerThread, TH095_SOUND_GAME_WINDOW, 0, &this->bgmThreadId);
     hr = this->manager->CreateStreamingFromMemory(
         &this->bgm, this->bgmPreloadData[idx], this->bgmPreloadAllocSizes[idx], this->bgmPreloadFmtData[idx],
         DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLPOSITIONNOTIFY, GUID_NULL, 16, notifySize, this->bgmUpdateEvent);
@@ -803,7 +835,7 @@ loop:
             this->bgm->SetVolume(this->bgmVolume);
         goto next_command;
     case SOUNDPLAYER_COMMAND_PRELOAD_BGM:
-        if (g_Supervisor.IsMusicPreloadEnabled())
+        if (SoundMusicPreloadEnabled())
         {
             utils::DebugPrint("Sound : PreLoad Stage\r\n");
             if (commandCursor->step == 0)
@@ -824,7 +856,7 @@ loop:
         commandCursor->step++;
         break;
     case SOUNDPLAYER_COMMAND_LOAD_BGM:
-        if (g_Supervisor.IsMusicPreloadEnabled() && commandCursor->argument >= 0)
+        if (SoundMusicPreloadEnabled() && commandCursor->argument >= 0)
         {
             if (commandCursor->step == 0)
             {
@@ -968,7 +1000,7 @@ loop:
         g_SoundPlayer.FadeOut((f32)commandCursor->argument);
         goto next_command;
     case SOUNDPLAYER_COMMAND_PAUSE:
-        if (g_Supervisor.cfg.musicMode == WAV)
+        if (TH095_SOUND_MUSIC_MODE == TH095_SOUND_MUSIC_WAV)
         {
             if (this->bgm->m_bIsLocked)
             {
@@ -980,7 +1012,7 @@ loop:
         }
         goto next_command;
     case SOUNDPLAYER_COMMAND_UNPAUSE:
-        if (g_Supervisor.cfg.musicMode == WAV)
+        if (TH095_SOUND_MUSIC_MODE == TH095_SOUND_MUSIC_WAV)
         {
             if (this->bgm->m_bIsLocked)
                 break;
@@ -1004,7 +1036,7 @@ loop:
             goto loop;
     }
 
-    if (!g_Supervisor.cfg.playSounds)
+    if (!TH095_SOUND_PLAY_SOUNDS)
         return this->commandQueue[0].opcode;
     for (i = 0; i < SFX_QUEUE_LENGTH; i++)
     {
