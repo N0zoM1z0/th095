@@ -6,6 +6,9 @@
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
 #include "PhotoPlayerRuntime.hpp"
+#ifndef DIFFBUILD
+#include "PhotoEffectRuntime.hpp"
+#endif
 #include "SoundPlayer.hpp"
 
 namespace th095
@@ -25,10 +28,18 @@ static __forceinline void PhotoGameClearFocusVm(PhotoAnmVmId *vm)
     *vm = clearedVm;
 }
 
+#ifdef DIFFBUILD
 struct PhotoResetTargetView
 {
     void ResetForPhotoTransition();
 };
+#else
+struct PhotoEnemyManagerView
+{
+    static void __fastcall ResetNonPhotoTargetsAndPhotoTargetEcls(
+        PhotoEnemyManagerView *enemyManager);
+};
+#endif
 
 struct PhotoGameGlobalStateView
 {
@@ -48,15 +59,11 @@ struct PhotoGameGlobalStateView
     };
 };
 
+#ifdef DIFFBUILD
 extern PhotoResetTargetView *g_PhotoRuntimeResetTarget;
-#define g_PhotoRuntimeResetTarget \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoResetTargetView, g_RuntimeEnemyManagerOwner)
 extern PhotoResetTargetView *g_PhotoBulletResetTarget;
-#define g_PhotoBulletResetTarget \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoResetTargetView, g_RuntimeBulletManagerOwner)
 extern PhotoResetTargetView *g_PhotoStageResetTarget;
-#define g_PhotoStageResetTarget \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoResetTargetView, g_RuntimeEffectManagerOwner)
+#endif
 extern PhotoGameGlobalStateView *g_PhotoGameGlobalState;
 #define g_PhotoInput (RuntimeHistoryCurrent())
 
@@ -887,12 +894,25 @@ i32 PhotoGameUpdateView::Update()
     case 3:
         if (this->completionTimer == 4)
         {
+#ifdef DIFFBUILD
             g_PhotoRuntimeResetTarget->ResetForPhotoTransition();
+#else
+            PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
+                TH095_RUNTIME_GLOBAL_PTR(
+                    PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner));
+#endif
         }
         else if (this->completionTimer == 15)
         {
+#ifdef DIFFBUILD
             g_PhotoBulletResetTarget->ResetForPhotoTransition();
             g_PhotoStageResetTarget->ResetForPhotoTransition();
+#else
+            g_PhotoBulletManager->DespawnAllBullets();
+            PhotoEffectManagerView::DrawSecondary(
+                TH095_RUNTIME_GLOBAL_PTR(
+                    PhotoEffectManagerView, g_RuntimeEffectManagerOwner));
+#endif
         }
         else if (this->completionTimer == 30)
         {

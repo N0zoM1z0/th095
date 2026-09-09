@@ -460,8 +460,8 @@ enter_subroutine:
     }
 
     case 102:
-        TH095_ECL_BULLET_MANAGER->ResetEnemyPatterns();
-        TH095_ECL_STAGE_CONTROLLER->ResetEnemyState();
+        TH095_ECL_BULLET_RESET();
+        TH095_ECL_STAGE_RESET();
         break;
 
     case 104:

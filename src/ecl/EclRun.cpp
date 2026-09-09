@@ -102,11 +102,18 @@
 #ifdef DIFFBUILD
 #define TH095_ECL_EFFECT_MANAGER EclRunHigh::g_Th095PhotoEffectManager
 #define TH095_ECL_STAGE_CONTROLLER EclRunHigh::g_Th095StageController
+#define TH095_ECL_BULLET_RESET() TH095_ECL_BULLET_MANAGER->ResetEnemyPatterns()
+#define TH095_ECL_STAGE_RESET() TH095_ECL_STAGE_CONTROLLER->ResetEnemyState()
 #else
 #define TH095_ECL_EFFECT_MANAGER \
     TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoEffectManagerView, ::th095::g_RuntimeEffectManagerOwner)
 #define TH095_ECL_STAGE_CONTROLLER \
     TH095_RUNTIME_GLOBAL_PTR(EclRunHigh::Th095StageController, ::th095::g_RuntimeEffectManagerOwner)
+#define TH095_ECL_BULLET_RESET() \
+    reinterpret_cast<::th095::PhotoBulletManagerView *>(TH095_ECL_BULLET_MANAGER) \
+        ->DespawnAllBullets()
+#define TH095_ECL_STAGE_RESET() \
+    ::th095::PhotoEffectManagerView::DrawSecondary(TH095_ECL_EFFECT_MANAGER)
 #endif
 
 #ifdef TH095_MATCH_EXACT
@@ -122,6 +129,7 @@ struct PhotoBulletSpawnDescriptor;
 struct PhotoBulletManagerView
 {
     i32 SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor);
+    void DespawnAllBullets();
 };
 extern AnmManager *g_AnmManager;
 static __forceinline AnmVmId Th095EclAnmId(i32 value)

@@ -94,6 +94,7 @@ struct PhotoBulletManagerView
     PhotoAnmSpawnerView *anmSpawner;
 
     void BeginPhotoCapture(const Float3 *position, const Float3 *size);
+    void DespawnAllBullets();
     i32 CountNearbyTargets(const Float3 *position, f32 radius);
     void *CapturePhotoTargets(const Float3 *position, const Float3 *size);
 };

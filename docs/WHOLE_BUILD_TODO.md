@@ -293,20 +293,33 @@ the object. Fresh whole-build count changes 121 -> 119 unique unresolved
 (125 -> 123 diagnostics), callable/runtime 73 -> 71, and both affected sources
 replay 28/28 exact units.
 
+Closed 2026-09-09: the three-way `ResetForPhotoTransition` receiver family.
+It is three different canonical target methods, not one aliasable semantic
+identity: BulletInf `DespawnAllBullets @ 0x004081B0`, EnemyInf
+`ResetNonPhotoTargetsAndPhotoTargetEcls @ 0x00416810`, and PhotoEffect
+`DrawSecondary @ 0x0041E010`. Production PhotoGame/EclRun now call the real
+receiver at each edge; exact/DIFFBUILD retain their historical decorations.
+Fresh whole-build count changes 119 -> 116 unique unresolved (123 -> 120
+diagnostics), callable/runtime 71 -> 68, and the global multi-target decorated
+name count drops 1 -> 0. The shared-header change was closed with all 88
+canonical source objects rebuilt and 696/696 strict exact compare; 38 `$L`
+label names across four units were refreshed only after structural and solved-
+destination audit.
+
 Continue with:
 
-- remaining bullet capture/count/reset methods in the `0x00404950..0x00408220`
+- remaining bullet capture/count methods in the `0x00404950..0x00408220`
   family;
-- enemy create/update/destroy/ECL methods in the
+- remaining enemy create/update/destroy/ECL methods in the
   `0x00414B30..0x00416E30` family;
-- remaining photo effect/stage methods, especially `0x0041DF10`,
-  `0x0041DFA0`, and the semantically ambiguous `0x0041E010` proxy family;
+- remaining photo effect/stage methods, especially `0x0041DF10` and
+  `0x0041DFA0`;
 - front-end creation/callback/texture-clear methods;
 - FileSystem, replay, Supervisor worker, MIDI, and timer proxy signatures.
 
 For a target address shared by differently named methods, do not invent a
-universal proxy method. Use the actual receiver/type at each call site. The
-three-way `ResetForPhotoTransition` symbol is the clearest example.
+universal proxy method. Use the actual receiver/type at each call site. The now-closed
+three-way `ResetForPhotoTransition` family is the clearest audited example.
 
 One callable currently has no relocation target in the report:
 `EclManager::CallEclSub(EnemyEclContext *, short)`. Determine whether this is

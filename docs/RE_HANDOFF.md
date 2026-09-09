@@ -107,10 +107,10 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 123 unique unresolved decorated symbols across 127 diagnostics:
-48 data and 75 callable/runtime. Of those names, 120 map through canonical
-relocations to 117 target addresses; three currently lack target-address
-evidence and one decorated name maps to multiple targets. The machine-readable
+now fails with 116 unique unresolved decorated symbols across 120 diagnostics:
+48 data and 68 callable/runtime. Of those names, 113 map through canonical
+relocations to 112 target addresses; three currently lack target-address
+evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
 
@@ -438,6 +438,28 @@ EclExtended now calls `ScreenEffect::RegisterChain` with
 and callable/runtime drops 73 -> 71, with `0x00436DD0` absent from the fresh
 unresolved set. EclExtended and PhotoStage replay 28/28 configured exact units
 with no private-label refresh.
+
+The three-way `PhotoResetTargetView::ResetForPhotoTransition` ambiguity is
+closed without a blanket alias. Hash-attested Ghidra and the canonical exact
+ledger independently identify three distinct target methods: bullet
+`PhotoBulletManagerView::DespawnAllBullets @ 0x004081B0` (102 bytes), enemy
+`PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls @ 0x00416810`
+(188 bytes), and effect `PhotoEffectManagerView::DrawSecondary @ 0x0041E010`
+(70 bytes). Their decompilations respectively walk the bullet pool, reset
+non-photo enemies plus photo-target ECL contexts, and traverse the effect list
+for the secondary virtual path. Production PhotoGame dispatches its timer-4 and
+timer-15 transitions to those exact receivers; EclRun case 102 likewise calls
+the canonical bullet/effect methods. DIFFBUILD and the exact snapshots retain
+the three historical proxy relocations. The cold link moves 119 -> 116 unique
+unresolved names and 123 -> 120 diagnostics; data remains 48 and
+callable/runtime drops 71 -> 68. All three target addresses disappear from the
+fresh unresolved set and `unresolved_multi_target_name_count` drops 1 -> 0.
+Because the shared `PhotoCamera.hpp` declaration gained the already-existing
+`DespawnAllBullets` member, all 88 canonical source objects were rebuilt. The
+final strict comparator passes 696/696 configured units. The rebuild refreshed
+38 compiler-private `$L` relocation names across four units only after complete
+structural bytes plus relocation offset/type/solved-destination checks proved
+the target identities unchanged.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
