@@ -18,12 +18,11 @@ char g_SelectedReplayPath[0x100];
 #endif
 
 // Target 0x004BDECC remembers the browser cursor.  Target 0x004C4CB8 is the
-// twelve-byte zero-initialized exit request object shared with scene select.
+// base of Supervisor::replayScanWorker; its +8 field is the exit request.
 DIFFABLE_STATIC(i32, g_ReplayBrowserSelection);
+#ifdef DIFFBUILD
 DIFFABLE_STATIC(ReplayBrowserExitSignal, g_ReplayBrowserExitSignal);
-
-extern i32 g_HelpLoadComplete;
-extern i32 g_HelpLoadActive;
+#endif
 
 static __forceinline void ReplayBrowserCreateVmAt(ReplayBrowserView *view, i32 index)
 {

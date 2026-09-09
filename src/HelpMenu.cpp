@@ -14,8 +14,10 @@
 namespace th095
 {
 
+#ifdef DIFFBUILD
 DIFFABLE_STATIC(i32, g_HelpLoadComplete);
 DIFFABLE_STATIC(i32, g_HelpLoadActive);
+#endif
 
 static __forceinline void HelpMenuCreateVmAt(HelpMenuView *view, i32 scriptIndex)
 {

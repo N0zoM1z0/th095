@@ -4,6 +4,7 @@
 #ifndef TH095_HELP_MENU_HPP
 #define TH095_HELP_MENU_HPP
 
+#include "FrontEndGlobals.hpp"
 #include "ReplayBrowser.hpp"
 
 namespace th095
@@ -45,9 +46,6 @@ typedef char HelpMenuSizeAt650C[
     (offsetof(HelpMenuView, helpAnmSize) == 0x650c) ? 1 : -1];
 typedef char HelpMenuDataAt6510[
     (offsetof(HelpMenuView, helpAnmData) == 0x6510) ? 1 : -1];
-
-extern i32 g_HelpLoadComplete;
-extern i32 g_HelpLoadActive;
 
 void __fastcall LoadHelpAnm(void *unused);
 

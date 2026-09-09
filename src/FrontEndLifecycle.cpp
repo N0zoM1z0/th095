@@ -26,9 +26,6 @@ i32 LoadPhotoPlayerAnm();
 // Target 0x004CA2F8 is the zero-initialized completion flag written by this
 // resource-loader lifecycle.
 DIFFABLE_STATIC(i32, g_FrontEndLoadActive);
-extern i32 g_HelpLoadComplete;
-extern i32 g_HelpLoadActive;
-
 struct FrontEndLifecycleView;
 
 #ifdef TH095_MATCH_EXACT

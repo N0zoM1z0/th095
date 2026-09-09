@@ -8,6 +8,25 @@
 namespace th095
 {
 
+#ifndef DIFFBUILD
+typedef char ReplayScanWorkerStopAt08[
+    (offsetof(ReplayScanWorker, stopRequested) == 0x08) ? 1 : -1];
+typedef char ReplayScanWorkerActiveAt0C[
+    (offsetof(ReplayScanWorker, active) == 0x0c) ? 1 : -1];
+
+// Hash-attested target xrefs place every help/front-end/replay completion write
+// at 0x004C4CC0/0x004C4CC4, which are +0x08/+0x0c in the Supervisor worker
+// rooted at 0x004C4CB8. ReplayBrowserExitSignal::Request likewise writes +8.
+// Earlier runnable builds accidentally allocated three duplicate globals, so
+// Start()/Stop() and their callbacks observed different state. Keep the exact
+// probe symbols unchanged, but overlay all production views on the real owner.
+i32 &g_HelpLoadComplete = g_Supervisor.replayScanWorker.stopRequested;
+i32 &g_HelpLoadActive = g_Supervisor.replayScanWorker.active;
+ReplayBrowserExitSignal &g_ReplayBrowserExitSignal =
+    *reinterpret_cast<ReplayBrowserExitSignal *>(
+        &g_Supervisor.replayScanWorker);
+#endif
+
 ReplayScanWorker::ReplayScanWorker()
 {
     // The target constructor initializes the four live synchronization fields.

@@ -11,9 +11,6 @@
 namespace th095
 {
 
-extern i32 g_HelpLoadActive;
-extern i32 g_HelpLoadComplete;
-
 struct SceneSelectionAssetView
 {
     u8 unknown0000[0x6120];
