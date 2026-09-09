@@ -16,6 +16,17 @@ namespace th095
 // ZUN extensions to the Microsoft DSUtil sound wrapper. The TH08 source is
 // the source-shape oracle; every TH095 address and layout remains target-local.
 
+#ifndef TH095_MATCH_EXACT
+// The retail linker folds this natural one-pointer constructor with the
+// byte-identical PbgArchiveEntry constructor at 0x00452E50.  Production still
+// needs the real CSoundManager decorated definition referenced by SoundPlayer;
+// the exact target address remains owned by the canonical PBG match unit.
+CSoundManager::CSoundManager()
+{
+    m_pDS = NULL;
+}
+#endif
+
 // FUNCTION: TH095 0x00452E70.
 CSoundManager::~CSoundManager()
 {

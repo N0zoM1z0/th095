@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 61 unique unresolved decorated symbols across 65 diagnostics:
-46 data and 15 callable/runtime. Of those names, 59 map through canonical
-relocations to 59 target addresses; two currently lack target-address
+now fails with 50 unique unresolved decorated symbols across 54 diagnostics:
+45 data and 5 callable/runtime. Of those names, 48 map through canonical
+relocations to 48 target addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -733,13 +733,12 @@ link closure only; it does not establish a byte-exact whole image or runtime
 playability.
 
 
-## Pause checkpoint: 2026-09-09
+## Resumed whole-build checkpoint: 2026-09-09
 
-Reconstruction is intentionally paused at a clean family boundary after closing
-the current ResultScreen callable ABI pair. The latest fresh generated
-whole-build report records 88/88 i386 COFF objects, 51 unique unresolved names
-(55 diagnostics): 45 data and 6 callable/runtime. 49 unresolved
-names have target-address evidence across 49 target addresses; 2 names
+The user resumed reconstruction from the clean ResultScreen family boundary.
+The latest fresh generated whole-build report records 88/88 i386 COFF objects,
+50 unique unresolved names (54 diagnostics): 45 data and 5 callable/runtime.
+48 unresolved names have target-address evidence across 48 target addresses; 2 names
 remain without target mapping. No runtime/Wine launch has been performed.
 
 The just-closed ResultScreen pair maps the historical production proxies
@@ -750,8 +749,15 @@ and hash-attested Ghidra independently bounds the same target functions. The
 complete ResultScreen source replay remains 24/24 canonical exact with zero
 private-label refresh.
 
-Remaining callable/runtime items at the pause boundary:
-- `??0CSoundManager@th095@@QAE@XZ` -> 0x00452E50 (SoundPlayer.obj)
+The resumed lane first closed `CSoundManager::CSoundManager`. Hash-attested
+Ghidra evidence shows that SoundPlayer's real constructor call and the exact
+PBG constructor share the natural 23-byte `this[0] = NULL` implementation at
+`0x00452E50`. Production emits the real CSoundManager decoration outside
+`TH095_MATCH_EXACT`; the canonical PBG match unit keeps exact-address ownership.
+The compiler oracle is structural-exact for 23/23 comparable bytes, and all 22
+configured `zwave.cpp` units remain exact.
+
+Remaining callable/runtime items at the resumed boundary:
 - `?CapturePhotoPixels@ScorePhotoStageView@th095@@QAEXH@Z` -> 0x0042E7B0 (ScoreData.obj)
 - `?CreateFrontEndGameManager@th095@@YIPAUFrontEndGameManagerView@1@H@Z` -> 0x00417F80 (FrontEndController.obj)
 - `?Pop@FrontEndPointerQueueView@th095@@QAEHXZ` -> 0x00450F60 (FrontEndLifecycle.obj)
@@ -766,7 +772,7 @@ Two pre-existing untracked files are deliberately left untouched and uncommitted
 `EnemyManagerUpdate.i` and `droid.resume.txt`. Do not delete or reset them merely
 to make the worktree visually clean; inspect provenance before any future action.
 
-Resume by reading this checkpoint and the fresh `build/whole-validation/report.json`;
+Continue from this checkpoint and the fresh `build/whole-validation/report.json`;
 do not reuse older unresolved counts. Continue one target/method/data family at a
 time with hash-attested Ghidra evidence, cold whole-build, affected exact replay,
 and CI before each commit.

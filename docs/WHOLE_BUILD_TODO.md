@@ -440,6 +440,15 @@ canonical `ResultScreen::ReleaseAnm @ 0x00426860`; exact/DIFFBUILD retains
 `ReleaseReplayAnm`. Fresh whole-build changes 54 -> 53 unique unresolved
 (58 -> 57 diagnostics), callable/runtime 9 -> 8, and Main remains 48/48 exact.
 
+Closed 2026-09-09: CSoundManager constructor ICF family. Hash-attested Ghidra
+xrefs prove that SoundPlayer's constructor call and the exact PBG constructor
+share the natural 23-byte `this[0] = NULL` body at `0x00452E50`. Production
+emits the real CSoundManager decorated definition outside `TH095_MATCH_EXACT`;
+the PBG unit retains exact-address ownership. The pinned-VC7.1 compiler oracle
+is structural-exact for 23/23 comparable bytes. Fresh whole-build changes
+51 -> 50 unique unresolved (55 -> 54 diagnostics), callable/runtime 6 -> 5,
+and all 22 configured `zwave.cpp` units remain exact.
+
 Continue with:
 
 - remaining callable/runtime proxy methods;
@@ -456,13 +465,13 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Pause checkpoint 2026-09-09: current family closure leaves 51 unique unresolved
-(55 diagnostics), split 45 data / 6 callable-runtime, with 88/88
-objects compiling. ResultScreen production now targets canonical `AnmVm::Draw @
-0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; ResultScreen replays 24/24
-canonical exact with zero label refresh. Do not reopen this pair unless fresh
-evidence contradicts it. See `RE_HANDOFF.md` for the exact remaining callable
-list and the two unmapped PhotoCard ANM data items.
+Resumed checkpoint 2026-09-09: current family closure leaves 50 unique
+unresolved (54 diagnostics), split 45 data / 5 callable-runtime, with 88/88
+objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
+0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
+has also closed the CSoundManager constructor ICF family. Do not reopen these
+families unless fresh evidence contradicts them. See `RE_HANDOFF.md` for the
+exact remaining callable list and the two unmapped PhotoCard ANM data items.
 
 ## Constant and table reconstruction
 
