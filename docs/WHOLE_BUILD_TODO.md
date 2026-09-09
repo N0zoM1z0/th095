@@ -428,6 +428,13 @@ the real `ReplayScanWorker` owner; DIFFBUILD/exact retains the old local view.
 Fresh whole-build changes 58 -> 55 unique unresolved (62 -> 59 diagnostics),
 data 46 -> 45 and callable/runtime 12 -> 10; Main remains 48/48 exact.
 
+Closed 2026-09-09: Main input receiver proxy. Production Main now calls the
+canonical source-present `Controller::GetInput @ 0x00419AE0`; exact/DIFFBUILD
+retains `SupervisorControllerView::GetInput`. The function itself remains the
+explicitly allowed non-exact authored hard case. Fresh whole-build changes
+55 -> 54 unique unresolved (59 -> 58 diagnostics), callable/runtime 10 -> 9;
+Main remains 48/48 exact.
+
 Continue with:
 
 - remaining callable/runtime proxy methods;

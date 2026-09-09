@@ -125,10 +125,19 @@ extern PhotoGameTaskView *g_PhotoGameTask;
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGameTaskOwner)
 #endif
 
+#ifdef DIFFBUILD
 struct SupervisorControllerView
 {
     static u16 GetInput(i32 inputIndex);
 };
+#define TH095_SUPERVISOR_GET_INPUT(index) SupervisorControllerView::GetInput(index)
+#else
+namespace Controller
+{
+u16 GetInput(i32 inputIndex);
+}
+#define TH095_SUPERVISOR_GET_INPUT(index) Controller::GetInput(index)
+#endif
 
 struct TextHelperView
 {
@@ -1151,7 +1160,7 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
     }
 
     g_SoundPlayer.UpdateFades();
-    SupervisorControllerView::GetInput(0);
+    TH095_SUPERVISOR_GET_INPUT(0);
 
     g_AnmManager->ClearSprite();
     g_AnmManager->ClearTexture();

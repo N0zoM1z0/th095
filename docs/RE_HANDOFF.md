@@ -680,6 +680,16 @@ the historical `SupervisorInputWorkerView` decoration. The cold link moves
 and callable/runtime 12 -> 10, with the storage plus Start/Stop targets absent
 from the unresolved set. Main replays 48/48 exact with no label refresh.
 
+The Main-side input receiver proxy is closed on canonical
+`Controller::GetInput @ 0x00419AE0`. Hash-attested Ghidra bounds the target to
+2662 bytes and reports the sole current target call at `0x00423482`; the
+canonical tracking entry remains the explicitly allowed source-present non-exact
+Controller hard case. Production Main now calls `Controller::GetInput(i32)`
+directly while DIFFBUILD/exact retains `SupervisorControllerView::GetInput`.
+This changes no authored exact claim. The cold link moves 55 -> 54 unique
+unresolved names and 59 -> 58 diagnostics; data remains 45 and callable/runtime
+drops 10 -> 9. Main replays 48/48 exact with no label refresh.
+
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
 enum-returning `/Gr` callback type, and `RunDrawChain` returns `int`.
