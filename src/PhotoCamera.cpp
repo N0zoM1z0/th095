@@ -6,6 +6,9 @@
 #ifndef DIFFBUILD
 #include "InputRuntime.hpp"
 #endif
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "PhotoEffectRuntime.hpp"
+#endif
 #include "SoundPlayer.hpp"
 #ifdef TH095_MATCH_EXACT
 #undef TH095_MATCH_SOUNDPLAYER_AS_STRUCT
@@ -117,11 +120,13 @@ struct PhotoStageStateView
                   i32 score, const i32 *scoreData);
 };
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct PhotoStageControllerView
 {
     i32 CountNearbyTargets(const Float3 *position, f32 radius);
     i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
 };
+#endif
 
 #ifdef DIFFBUILD
 struct PhotoAnmManagerView
@@ -195,7 +200,9 @@ extern PhotoStageStateView *g_PhotoStageState;
 #define g_PhotoStageState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
 #endif
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 extern PhotoStageControllerView *g_PhotoStageController;
+#endif
 extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;
 #ifndef DIFFBUILD
@@ -206,8 +213,6 @@ extern u16 g_PhotoInputPressed;
 #ifndef DIFFBUILD
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
-#define g_PhotoStageController \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageControllerView, g_RuntimeEffectManagerOwner)
 #define g_PhotoGame \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \
@@ -519,6 +524,7 @@ u32 PhotoCameraState::TakePhoto()
     TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[5].value);
     TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[6].value);
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     scoreData[3] = g_PhotoBulletManager->CountNearbyTargets(
         &g_PhotoGame->playerPosition, 22.0f);
     scoreData[3] += g_PhotoStageController->CountNearbyTargets(
@@ -533,6 +539,28 @@ u32 PhotoCameraState::TakePhoto()
             &this->viewfinderPosition, &this->viewfinderSize),
         g_PhotoStageController->CountPhotoTargets(
             &this->viewfinderPosition, &this->viewfinderSize));
+#else
+    PhotoEffectManagerView *effectManager = TH095_RUNTIME_GLOBAL_PTR(
+        PhotoEffectManagerView, g_RuntimeEffectManagerOwner);
+    scoreData[3] = g_PhotoBulletManager->CountNearbyTargets(
+        reinterpret_cast<PhotoBulletVector *>(&g_PhotoGame->playerPosition),
+        22.0f);
+    scoreData[3] += effectManager->CountNearbyTargets(
+        &g_PhotoGame->playerPosition, 22.0f);
+
+    this->CalculatePhotoScore(
+        reinterpret_cast<PhotoCapturedBulletView *>(
+            g_PhotoBulletManager->CapturePhotoTargets(
+                reinterpret_cast<PhotoBulletVector *>(
+                    &this->viewfinderPosition),
+                reinterpret_cast<PhotoBulletVector *>(
+                    &this->viewfinderSize))),
+        scoreData,
+        g_PhotoRuntime->CountPhotoTargets(
+            &this->viewfinderPosition, &this->viewfinderSize),
+        effectManager->CountPhotoTargets(
+            &this->viewfinderPosition, &this->viewfinderSize));
+#endif
 
     if ((this->flags & PHOTO_FLAG_ALTERNATE_CAPTURE) != 0)
     {

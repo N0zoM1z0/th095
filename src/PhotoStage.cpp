@@ -7,6 +7,9 @@
 #include "ScoreData.hpp"
 #include "SceneData.hpp"
 #include "ScreenEffect.hpp"
+#ifndef DIFFBUILD
+#include "PhotoEffectRuntime.hpp"
+#endif
 
 #include <stdlib.h>
 #include <string.h>
@@ -162,6 +165,7 @@ struct PhotoStageRuntimeView
 struct PhotoCardInfoView;
 extern PhotoCardInfoView *g_PhotoCardInfo;
 
+#ifdef DIFFBUILD
 struct PhotoStageEffectManagerView
 {
     i32 CommitCapturedObjects();
@@ -171,6 +175,7 @@ struct PhotoStageBulletManagerView
 {
     i32 ClearCapturedBullets();
 };
+#endif
 
 struct PhotoStageSaveLocals
 {
@@ -298,7 +303,9 @@ extern PhotoGameStateView *g_PhotoGame;
 extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
 extern PhotoStageRuntimeView *g_PhotoStageRuntime;
 extern PhotoStageSupervisorView *g_PhotoStageSupervisor;
+#ifdef DIFFBUILD
 extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
+#endif
 
 #ifndef DIFFBUILD
 #define g_PhotoGame \
@@ -309,12 +316,10 @@ extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
     (reinterpret_cast<PhotoStageRuntimeView *>(g_PhotoCardInfo))
 #define g_PhotoStageSupervisor \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageSupervisorView, g_RuntimeBackgroundManagerOwner)
-#define g_PhotoStageEffectManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageEffectManagerView, g_RuntimeEffectManagerOwner)
 #endif
+#ifdef DIFFBUILD
 extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
-#define g_PhotoStageBulletManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageBulletManagerView, g_RuntimeBulletManagerOwner)
+#endif
 extern PhotoStageStateView *g_PhotoStageState;
 #define g_PhotoStageState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
@@ -1191,8 +1196,17 @@ i32 PhotoStageStateView::Update()
                     }
                 }
 
+#ifdef DIFFBUILD
                 g_PhotoStageEffectManager->CommitCapturedObjects();
                 g_PhotoStageBulletManager->ClearCapturedBullets();
+#else
+                PhotoEffectManagerView::CheckCollisionStored(
+                    TH095_RUNTIME_GLOBAL_PTR(
+                        PhotoEffectManagerView, g_RuntimeEffectManagerOwner));
+                TH095_RUNTIME_GLOBAL_PTR(
+                    PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
+                    ->ClearCapturedBullets();
+#endif
             }
         }
         else if (this->captureFrame == 10)

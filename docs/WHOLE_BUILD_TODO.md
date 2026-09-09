@@ -306,14 +306,19 @@ canonical source objects rebuilt and 696/696 strict exact compare; 38 `$L`
 label names across four units were refreshed only after structural and solved-
 destination audit.
 
+Closed 2026-09-09: the six-method photo-capture target receiver family.
+Production PhotoCamera/PhotoStage now call canonical BulletInf capture/clear/count
+methods at `0x00407820`, `0x00407C90`, `0x00408220` and canonical PhotoEffect
+commit/count methods at `0x0041DFA0`, `0x0041DF10`, `0x0041E060`. Exact and
+DIFFBUILD keep their historical proxy decorations. Fresh whole-build count
+changes 116 -> 110 unique unresolved (120 -> 114 diagnostics), callable/runtime
+68 -> 62; all 39 affected configured units replay exact with no label refresh.
+
 Continue with:
 
-- remaining bullet capture/count methods in the `0x00404950..0x00408220`
-  family;
 - remaining enemy create/update/destroy/ECL methods in the
   `0x00414B30..0x00416E30` family;
-- remaining photo effect/stage methods, especially `0x0041DF10` and
-  `0x0041DFA0`;
+- remaining photo effect/stage creation/session methods;
 - front-end creation/callback/texture-clear methods;
 - FileSystem, replay, Supervisor worker, MIDI, and timer proxy signatures.
 

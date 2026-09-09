@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 116 unique unresolved decorated symbols across 120 diagnostics:
-48 data and 68 callable/runtime. Of those names, 113 map through canonical
-relocations to 112 target addresses; three currently lack target-address
+now fails with 110 unique unresolved decorated symbols across 114 diagnostics:
+48 data and 62 callable/runtime. Of those names, 107 map through canonical
+relocations to 106 target addresses; three currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -460,6 +460,20 @@ final strict comparator passes 696/696 configured units. The rebuild refreshed
 38 compiler-private `$L` relocation names across four units only after complete
 structural bytes plus relocation offset/type/solved-destination checks proved
 the target identities unchanged.
+
+The six-method photo-capture target receiver family is closed. Hash-attested
+Ghidra confirms canonical BulletInf capture/clear/count methods at
+`0x00407820`, `0x00407C90`, and `0x00408220`, plus canonical PhotoEffect
+commit/count methods at `0x0041DFA0`, `0x0041DF10`, and `0x0041E060`.
+Production PhotoCamera now uses the real BulletInf `PhotoBulletVector *` ABI and
+`PhotoEffectManagerView`; PhotoStage uses the same real managers when committing
+captured effects and clearing bullets. Exact/DIFFBUILD keep the historical
+const-`Float3` and PhotoStage proxy decorations. The cold link moves 116 -> 110
+unique unresolved names and 120 -> 114 diagnostics; data remains 48 and
+callable/runtime drops 68 -> 62, with all six addresses absent from the fresh
+unresolved set. The shared `PhotoCamera.hpp` change affects PhotoCamera plus the
+PhotoGame and PhotoStage exact snapshots; all 39 configured units replay exact
+with no private-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
