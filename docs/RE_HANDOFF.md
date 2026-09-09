@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 85 unique unresolved decorated symbols across 89 diagnostics:
-46 data and 39 callable/runtime. Of those names, 82 map through canonical
-relocations to 82 target addresses; three currently lack target-address
+now fails with 81 unique unresolved decorated symbols across 85 diagnostics:
+46 data and 35 callable/runtime. Of those names, 78 map through canonical
+relocations to 78 target addresses; three currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -545,6 +545,27 @@ unique unresolved names and 92 -> 89 diagnostics; data remains 46 while
 callable/runtime drops 42 -> 39, and all three target addresses leave the
 unresolved set. EclExtended and EclRun replay 23/23 canonical exact units with
 no private-label refresh.
+
+The EclExtended ANM/camera/coordinate helper proxy family is closed. Canonical
+exact target evidence already identifies `AnmLoaded::InitializeVm @ 0x00404B80`,
+`AnmManager::ExecuteScript @ 0x0043A600`, `PhotoCameraState::CountPhotoTargets
+@ 0x004339F0`, and the global `PhotoToScreen @ 0x004186D0`. Hash-attested
+Ghidra independently confirms the corresponding target function boundaries and
+ABIs: `0x00404B80` is the `__thiscall` ANM-loaded VM initializer, `0x004339F0`
+is a three-argument `__thiscall` camera scan, and `0x004186D0` is the two-pointer
+`__fastcall` screen-coordinate transform. The ECL partial ANM header now exposes
+`InitializeVm` and the static `ExecuteScript` spelling only in production;
+`TH095_MATCH_EXACT` retains the legacy ECL declarations. `ExtendedAnmSpawner`
+was already proven to share the `AnmLoaded` receiver by the existing production
+CreateVm path, while `ExtendedPhotoCameraView` and canonical `PhotoCameraState`
+are both size `0xBDC` with the viewfinder origin at `+0xBC4`. Production
+EclExtended therefore routes all four helper families to canonical symbols,
+while DIFFBUILD keeps every historical proxy relocation. The cold link moves
+85 -> 81 unique unresolved names and 89 -> 85 diagnostics; data remains 46
+while callable/runtime drops 39 -> 35, and all four target addresses leave the
+unresolved set. Because `AnmManagerEclView.hpp` is shared, the full canonical
+replay was repeated across all 88 configured sources: all 696/696 units remain
+exact with no private-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

@@ -354,6 +354,17 @@ historical proxy decorations. Fresh whole-build count changes 88 -> 85 unique
 unresolved (92 -> 89 diagnostics), callable/runtime 42 -> 39; the two affected
 sources replay 23/23 exact units with no label refresh.
 
+Closed 2026-09-09: EclExtended ANM/camera/coordinate helper proxy ABI. The
+production ECL lane now calls canonical `AnmLoaded::InitializeVm @ 0x00404B80`,
+static `AnmManager::ExecuteScript @ 0x0043A600`,
+`PhotoCameraState::CountPhotoTargets @ 0x004339F0`, and global
+`PhotoToScreen @ 0x004186D0`; exact/DIFFBUILD retains all original proxy
+decorations. The production-only declarations in `AnmManagerEclView.hpp` are
+kept behind `!TH095_MATCH_EXACT`. Fresh whole-build count changes 85 -> 81
+unique unresolved (89 -> 85 diagnostics), callable/runtime 39 -> 35. Because
+the ECL ANM header is shared, all 88 configured sources / 696 canonical units
+were replayed; all remain exact with no label refresh.
+
 Continue with:
 
 - remaining enemy ECL/runtime proxy methods such as `0x00408E70` and
@@ -366,10 +377,12 @@ For a target address shared by differently named methods, do not invent a
 universal proxy method. Use the actual receiver/type at each call site. The now-closed
 three-way `ResetForPhotoTransition` family is the clearest audited example.
 
-One callable currently has no relocation target in the report:
-`EclManager::CallEclSub(EnemyEclContext *, short)`. Determine whether this is
-a signature mismatch against an existing implementation or a genuinely
-missing body using source search plus attested Ghidra call-site/ABI evidence.
+The production report still lists `EclManager::CallEclSub(EnemyEclContext *,
+short)` without target-address evidence, but the canonical exact EclRun
+relocation ledger resolves its exact-facing symbol to `0x00408DE0`. Ghidra
+confirms a 140-byte `__thiscall` context initializer at that address. Treat this
+as a receiver/return-type spelling mismatch against the existing body, not as
+evidence for a missing implementation.
 
 ## Constant and table reconstruction
 

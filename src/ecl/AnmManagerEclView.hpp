@@ -587,6 +587,7 @@ struct AnmLoaded
     void LoadSprite(i32 spriteIdx, AnmLoadedSprite *loadedSprite);
 #ifndef TH095_MATCH_EXACT
     AnmVmId CreateVmAtWorld(i32 scriptIndex, Float3 *position);
+    void InitializeVm(AnmVm *vm, i32 scriptIndex);
 #endif
 
     void ExecuteAnmIdx(AnmVm *vm, int scriptIdx);
@@ -645,7 +646,11 @@ struct AnmManager
     ~AnmManager()
     {
     }
+#ifdef TH095_MATCH_EXACT
     ZunBool ExecuteScript(AnmVm *vm);
+#else
+    static i32 ExecuteScript(AnmVm *vm);
+#endif
     void ExecuteScriptArray(AnmVm *sprites, int count);
     void SetRenderStateForVm(AnmVm *vm);
     void SetRenderStateForVm3D(AnmVm *vm);

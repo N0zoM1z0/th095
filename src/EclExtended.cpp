@@ -13,7 +13,12 @@ namespace th095
 extern f32 g_AnmGameSpeed;
 #ifndef DIFFBUILD
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
+Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 extern AnmManager *g_AnmManager;
+struct PhotoCameraState
+{
+    i32 CountPhotoTargets(f32 *closestDistance, f32 *bossRate);
+};
 struct PhotoEnemyView;
 struct PhotoEnemyManagerView
 {
@@ -96,6 +101,16 @@ struct ExtendedAnmSpawner
 };
 typedef char ExtendedVmHandleSizeIs4[
     (sizeof(ExtendedVmHandle) == sizeof(i32)) ? 1 : -1];
+
+#ifdef DIFFBUILD
+#define TH095_EXT_ANM_INITIALIZE(spawner, vm, script) \
+    (spawner)->InitializeVm((vm), (script))
+#define TH095_EXT_ANM_EXECUTE(vm) AnmManagerLookupView::ExecuteScript(vm)
+#else
+#define TH095_EXT_ANM_INITIALIZE(spawner, vm, script) \
+    reinterpret_cast<AnmLoaded *>(spawner)->InitializeVm((vm), (script))
+#define TH095_EXT_ANM_EXECUTE(vm) ::th095::AnmManager::ExecuteScript(vm)
+#endif
 
 #ifdef DIFFBUILD
 #define TH095_EXT_ANM_GET_VM(handle) g_AnmManager->GetVm(handle)
@@ -203,6 +218,19 @@ typedef char ExtendedCameraPositionAtBC4[
     (offsetof(ExtendedPhotoCameraView, viewfinderPosition) == 0xbc4) ? 1 : -1];
 typedef char ExtendedCameraSizeBDC[
     (sizeof(ExtendedPhotoCameraView) == 0xbdc) ? 1 : -1];
+
+#ifdef DIFFBUILD
+#define TH095_EXT_COUNT_PHOTO_TARGETS(camera, distance, rate) \
+    (camera).CountPhotoTargets((distance), (rate))
+#define TH095_EXT_PHOTO_TO_SCREEN(output, position) \
+    PhotoToScreen((output), (position))
+#else
+#define TH095_EXT_COUNT_PHOTO_TARGETS(camera, distance, rate) \
+    reinterpret_cast<::th095::PhotoCameraState *>(&(camera))->CountPhotoTargets( \
+        (distance), (rate))
+#define TH095_EXT_PHOTO_TO_SCREEN(output, position) \
+    ::th095::PhotoToScreen((output), (position))
+#endif
 
 struct ExtendedPlayerView
 {
@@ -313,16 +341,18 @@ __forceinline void ExtendedBulletView::ReinitializeDirect()
 {
     // Extended entries 2/3 repeat this target 0x2C InitializeVm phase.
     u8 compilerStorage[0x2c];
-    g_PhotoBulletManager->anmSpawner->InitializeVm(
-        &this->vm, TH095_EXTENDED_SCRIPT_BASE(this->bulletType) + this->color);
+    TH095_EXT_ANM_INITIALIZE(
+        g_PhotoBulletManager->anmSpawner, &this->vm,
+        TH095_EXTENDED_SCRIPT_BASE(this->bulletType) + this->color);
 }
 
 __forceinline void ExtendedBulletView::ReinitializeShifted()
 {
     // Entry 2 uses the same phase but selects the shifted script bank.
     u8 compilerStorage[0x2c];
-    g_PhotoBulletManager->anmSpawner->InitializeVm(
-        &this->vm, TH095_EXTENDED_SCRIPT_BASE(this->bulletType) + 0x10 + this->color);
+    TH095_EXT_ANM_INITIALIZE(
+        g_PhotoBulletManager->anmSpawner, &this->vm,
+        TH095_EXTENDED_SCRIPT_BASE(this->bulletType) + 0x10 + this->color);
 }
 
 #ifdef TH095_MATCH_EXACT
@@ -388,8 +418,8 @@ extern u32 g_PhotoScreenFadeColor;
 #define g_Player \
     TH095_RUNTIME_GLOBAL_PTR(ExtendedPlayerView, ::th095::g_RuntimePlayerOwner)
 #endif
-Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 #ifdef DIFFBUILD
+Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 i32 __fastcall DispatchExtendedValue(
     i32 mode, i32 value0, i32 value1, i32 value2, i32 value3, i32 type);
 #endif
@@ -433,7 +463,7 @@ void __fastcall UpdatePlayerProximityAndMarker(
     locals.vm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d4));
     if (locals.vm != NULL)
-        PhotoToScreen(&locals.vm->positionOffset, &enemy->position);
+        TH095_EXT_PHOTO_TO_SCREEN(&locals.vm->positionOffset, &enemy->position);
 }
 
 // ECL extended callback table entry 9 @ 0x00413DA0.
@@ -519,11 +549,11 @@ void __fastcall EnablePhotoTransition(
     firstVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
     firstVm->pendingInterrupt = 2;
-    AnmManagerLookupView::ExecuteScript(firstVm);
+    TH095_EXT_ANM_EXECUTE(firstVm);
     secondVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
     secondVm->pendingInterrupt = 2;
-    AnmManagerLookupView::ExecuteScript(secondVm);
+    TH095_EXT_ANM_EXECUTE(secondVm);
     TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x26, 0);
     TH095_ECL_EXT_GAME_SPEED = 1.0f;
 }
@@ -538,11 +568,11 @@ void __fastcall DisablePhotoTransition(
     firstVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
     firstVm->pendingInterrupt = 3;
-    AnmManagerLookupView::ExecuteScript(firstVm);
+    TH095_EXT_ANM_EXECUTE(firstVm);
     secondVm = TH095_EXT_ANM_GET_VM(
         *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
     secondVm->pendingInterrupt = 3;
-    AnmManagerLookupView::ExecuteScript(secondVm);
+    TH095_EXT_ANM_EXECUTE(secondVm);
     TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x0f, 0);
 }
 
@@ -628,7 +658,8 @@ void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instructio
     {
         TH095_EXTENDED_FROM_ANGLE(position, enemy->movementAngle, 24.0f);
         firstVm->positionOffset = enemy->position + *reinterpret_cast<Float3 *>(&position);
-        PhotoToScreen(&firstVm->positionOffset, &firstVm->positionOffset);
+        TH095_EXT_PHOTO_TO_SCREEN(
+            &firstVm->positionOffset, &firstVm->positionOffset);
         firstVm->positionOffset.x -= 128.0f;
         firstVm->positionOffset.y -= 16.0f;
         firstVm->rotation.z = enemy->movementAngle;
@@ -700,11 +731,11 @@ void __fastcall RunPhotoTransition(
             locals.firstEndVm = TH095_EXT_ANM_GET_VM(
                 *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
             locals.firstEndVm->pendingInterrupt = 3;
-            AnmManagerLookupView::ExecuteScript(locals.firstEndVm);
+            TH095_EXT_ANM_EXECUTE(locals.firstEndVm);
             locals.secondEndVm = TH095_EXT_ANM_GET_VM(
                 *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
             locals.secondEndVm->pendingInterrupt = 3;
-            AnmManagerLookupView::ExecuteScript(locals.secondEndVm);
+            TH095_EXT_ANM_EXECUTE(locals.secondEndVm);
             TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x0f, 0);
         }
     }
@@ -712,17 +743,17 @@ void __fastcall RunPhotoTransition(
     if (((g_PhotoGlobalState->flags >> 10) & 1U) == 0 &&
         enemy->activeEclContext->extraIntVariables[2] == 0 &&
         ExtendedCameraIsCharging(&g_Player->camera) &&
-        g_Player->camera.CountPhotoTargets(NULL, NULL) != 0)
+        TH095_EXT_COUNT_PHOTO_TARGETS(g_Player->camera, NULL, NULL) != 0)
     {
         g_PhotoGlobalState->flags |= 0x400U;
         locals.firstStartVm = TH095_EXT_ANM_GET_VM(
             *reinterpret_cast<i32 *>(g_Background + 0x1fe4));
         locals.firstStartVm->pendingInterrupt = 2;
-        AnmManagerLookupView::ExecuteScript(locals.firstStartVm);
+        TH095_EXT_ANM_EXECUTE(locals.firstStartVm);
         locals.secondStartVm = TH095_EXT_ANM_GET_VM(
             *reinterpret_cast<i32 *>(g_Background + 0x1fe8));
         locals.secondStartVm->pendingInterrupt = 2;
-        AnmManagerLookupView::ExecuteScript(locals.secondStartVm);
+        TH095_EXT_ANM_EXECUTE(locals.secondStartVm);
         TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x26, 0);
         TH095_ECL_EXT_GAME_SPEED = 1.0f;
         enemy->activeEclContext->extraIntVariables[2] = 120;
@@ -830,8 +861,8 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
-    g_ExtendedRuntime->markerAnm->InitializeVm(
-        &locals.effect->vm,
+    TH095_EXT_ANM_INITIALIZE(
+        g_ExtendedRuntime->markerAnm, &locals.effect->vm,
         *reinterpret_cast<i32 *>(
             reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60));
     locals.PublishFlags();
@@ -864,8 +895,8 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
-    g_ExtendedRuntime->markerAnm->InitializeVm(
-        &locals.effect->vm,
+    TH095_EXT_ANM_INITIALIZE(
+        g_ExtendedRuntime->markerAnm, &locals.effect->vm,
         *reinterpret_cast<i32 *>(
             reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60));
     locals.PublishFlags();
@@ -898,8 +929,8 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
-    g_ExtendedRuntime->markerAnm->InitializeVm(
-        &locals.effect->vm,
+    TH095_EXT_ANM_INITIALIZE(
+        g_ExtendedRuntime->markerAnm, &locals.effect->vm,
         *reinterpret_cast<i32 *>(
             reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60));
     locals.PublishFlags();
@@ -1057,7 +1088,7 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
                     : index->speed);
             index->flags &= ~2U;
             index->flags |= 0x10U;
-            AnmManagerLookupView::ExecuteScript(&index->vm);
+            TH095_EXT_ANM_EXECUTE(&index->vm);
             FinalizeExtendedBulletAfterExecute(&index->vm, 0);
         }
     }
