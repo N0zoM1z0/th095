@@ -13,10 +13,10 @@ As of 2026-09-09, a cold production build:
   3077 into i386 COFF objects;
 - links with zero unresolved symbols and without `/FORCE:UNRESOLVED`, blanket
   aliases, duplicate storage, or fake return stubs;
-- verifies a 779,776-byte PE32 i386 Windows GUI executable at
+- verifies a 780,288-byte PE32 i386 Windows GUI executable at
   `build/whole-validation/th095-reconstructed.exe`;
 - produces SHA-256
-  `6ac3e3ccaa0ef9dfe84303c93e3a845bf2f9745c35ec125e03aef4b7b1fc3323`.
+  `231d7eba0d05e55e63172752529dcd5008935bece0f6b24341134eabc00a7849`.
 
 The reconstruction ledgers remain at 697 source-present functions and 696
 accepted exact functions. `Controller::GetInput @ 0x00419AE0` is the sole
@@ -32,12 +32,15 @@ assets work. The reconstructed executable then reached:
 1. archive/config loading and the title menu;
 2. Mission Select with the twelve-group catalog;
 3. scene 1-1 gameplay with live enemy and bullet updates at 60 FPS;
-4. extended gameplay and the `Failed / Retry This Mission` overlay.
+4. extended gameplay and the `Failed / Retry This Mission` overlay;
+5. a default `Retry This Mission` transition into a second attempt;
+6. a failure-menu return transition back to Mission Select.
 
-Keyboard confirmation and movement were exercised. The final run remained
-alive until deliberately terminated; Wine emitted no exception or unhandled
-fault. This establishes practical startup and short-gameplay validation, not
-exhaustive coverage of every menu, scene, replay, or audio path.
+Keyboard confirmation and movement were exercised. Both post-fix transition
+runs remained alive until deliberately terminated; their Wine logs were empty.
+This establishes practical startup, short-gameplay, retry, and result-return
+validation, not exhaustive coverage of every menu, scene, replay, or audio
+path.
 
 Use only the Japanese assets from:
 
@@ -59,9 +62,15 @@ so validation cannot modify the source installation.
   viewport pointer embedded at `g_Supervisor + 0x3C4`, not an independent
   zero-initialized global. Background and ANM production consumers share that
   owner.
+- Game-task ownership: target address `0x004C4DF4` is
+  `g_Supervisor.photoGameTask @ +0x784`. FrontEndController publishes both new
+  game and replay tasks directly to this address in the target. Production now
+  binds all typed task views to that embedded slot instead of maintaining
+  separate front-end, runtime-view, and Supervisor pointers.
 
-The four directly affected sources replay 46/46 canonical exact units with no
-private-label refresh.
+Because `GameplayGlobals.hpp` is shared, the correction was cold-replayed
+against all 696 canonical exact units across all 88 sources. No manifest or
+private-label refresh was required.
 
 ## Required verification
 
@@ -98,7 +107,8 @@ following remain true:
 - the 88-object cold build links with zero unresolved symbols;
 - directly affected canonical units remain exact;
 - the reconstructed PE reaches title, Mission Select, and gameplay with the
-  canonical Japanese archives and no exception.
+  canonical Japanese archives, retries a failed mission, returns from the
+  failure menu to Mission Select, and raises no exception.
 
 Additional menu, replay, audio/MIDI, clean-exit, and all-scene sampling are
 optional compatibility expansion, not known TODO blockers. Any future failure

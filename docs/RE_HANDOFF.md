@@ -57,8 +57,8 @@ Whole-program compile and link closure is complete. A fresh
 - links with zero unresolved symbols;
 - verifies a PE32 i386 Windows GUI image at
   `build/whole-validation/th095-reconstructed.exe`;
-- currently produces 779,776 bytes with SHA-256
-  `6ac3e3ccaa0ef9dfe84303c93e3a845bf2f9745c35ec125e03aef4b7b1fc3323`.
+- currently produces 780,288 bytes with SHA-256
+  `231d7eba0d05e55e63172752529dcd5008935bece0f6b24341134eabc00a7849`.
 
 This is a runnable reconstruction artifact, not a byte-exact whole-image
 claim. Function-level exact evidence remains governed by the match-unit
@@ -77,7 +77,8 @@ The runtime-closure commits are:
 - `e0cf663` — gate asynchronous front-end updates until the loader clears its
   real bit-0 barrier;
 - `492f201` — reconstruct the production scene catalog;
-- `c05a0f3` — share the Supervisor-owned background viewport state.
+- `c05a0f3` — share the Supervisor-owned background viewport state;
+- `18c2a32` — share the Supervisor-owned live game-task pointer.
 
 ## Runtime validation
 
@@ -106,14 +107,17 @@ environment baseline. The reconstructed executable has then been observed to:
   bullet patterns at 60 FPS;
 - accept keyboard movement/confirm input;
 - remain alive through extended gameplay and the
-  `Failed / Retry This Mission` result overlay.
+  `Failed / Retry This Mission` result overlay;
+- select the default `Retry This Mission`, start a second scene-1-1 attempt,
+  and reach its later failure overlay without exiting;
+- select the failure menu's return option and reach Mission Select again.
 
-The final-artifact run used held DirectInput key events to avoid missing the
-game's polling window. Wine stdout was empty; stderr contained only X-server
-shutdown messages after the test process was deliberately terminated. No Wine
-exception, unhandled fault, or debugger invocation occurred.
+The final-artifact runs used held DirectInput key events to avoid missing the
+game's polling window. The post-fix Wine logs were empty. No Wine exception,
+unhandled fault, or debugger invocation occurred before the test process was
+deliberately terminated.
 
-Three runtime discrepancies were diagnosed and closed:
+Four runtime discrepancies were diagnosed and closed:
 
 1. Production startup timing could invoke the exact 19-byte update wrapper
    before asynchronous title resources were ready. Production now honors the
@@ -124,16 +128,20 @@ Three runtime discrepancies were diagnosed and closed:
 3. `g_CurrentBackgroundViewport @ 0x004C4A34` is not independent storage. It
    is `g_Supervisor + 0x3C4`; production Background and ANM consumers now read
    that one embedded owner. This removed the gameplay NULL dereference.
+4. `g_FrontEndGameManager @ 0x004C4DF4` is not independent storage either. It
+   is `g_Supervisor.photoGameTask @ +0x784`. The former production build kept
+   the front-end publisher, typed gameplay views, and Supervisor member in
+   separate slots, so result-menu teardown found a null Supervisor pointer.
+   Production now binds every typed view to the embedded owner.
 
-After these changes, 46 directly affected units across
-`SceneControllerDraw.cpp`, `SceneSelect.cpp`, `Background.cpp`, and
-`AnmDrawCore.cpp` cold-replayed exact with zero manifest refreshes.
+After the game-task owner correction, all 696 configured units across all 88
+sources cold-replayed exact with zero manifest or private-label refreshes.
 
 ## Remaining work
 
 For the stated goal—reconstructed source that cold-compiles, links, and runs
 the game—the active whole-build lane is complete. There are no known unresolved
-symbols or known startup/gameplay crashes.
+symbols or known startup, gameplay, retry, or result-menu return crashes.
 
 Optional coverage expansion is not a known blocker: sample more of the 93
 scenes, replay playback/recording, Music Room, Help, Options, audio/MIDI, and
@@ -144,11 +152,7 @@ speculative null guards, duplicate globals, linker aliases, or fake stubs.
 For future verification:
 
 ```bash
-python3 scripts/replay-exact-units.py \
-  --source src/SceneControllerDraw.cpp \
-  --source src/SceneSelect.cpp \
-  --source src/Background.cpp \
-  --source src/AnmDrawCore.cpp
+python3 scripts/replay-exact-units.py
 python3 scripts/build-whole.py
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ci.py
