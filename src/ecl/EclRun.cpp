@@ -19,6 +19,7 @@
 
 #include "../GameplayGlobals.hpp"
 #ifndef DIFFBUILD
+#include "../PhotoEffectRuntime.hpp"
 #include "../PhotoPlayerRuntime.hpp"
 #endif
 
@@ -97,7 +98,7 @@
 #define TH095_ECL_STAGE_CONTROLLER EclRunHigh::g_Th095StageController
 #else
 #define TH095_ECL_EFFECT_MANAGER \
-    TH095_RUNTIME_GLOBAL_PTR(EclRunHigh::PhotoEffectManager, ::th095::g_RuntimeEffectManagerOwner)
+    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoEffectManagerView, ::th095::g_RuntimeEffectManagerOwner)
 #define TH095_ECL_STAGE_CONTROLLER \
     TH095_RUNTIME_GLOBAL_PTR(EclRunHigh::Th095StageController, ::th095::g_RuntimeEffectManagerOwner)
 #endif

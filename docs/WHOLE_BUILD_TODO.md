@@ -266,14 +266,23 @@ retain their historical proxy names. Fresh whole-build count changes 127 -> 125
 unique unresolved (131 -> 129 diagnostics), callable/runtime 79 -> 77, and the
 two affected sources replay 56/56 exact units with no label refresh.
 
+Closed 2026-09-09: `0x0041DBD0` PhotoEffect Spawn receiver ABI.
+Production now shares the real 0x80-byte `PhotoEffectManagerView` declaration in
+`PhotoEffectRuntime.hpp`; EclExtended and EclRun call the canonical exact
+`Spawn(i32, void *)` while DIFFBUILD keeps their original proxy receiver names.
+The header intentionally avoids `AnmManager.hpp` so ECL view types are not
+redefined. Fresh whole-build count changes 125 -> 123 unique unresolved
+(129 -> 127 diagnostics), callable/runtime 77 -> 75, and all three affected
+sources replay 57/57 exact units.
+
 Continue with:
 
 - bullet capture/count/reset/spawn methods in the `0x00404950..0x00408220`
   family;
 - enemy create/update/destroy/ECL methods in the
   `0x00414B30..0x00416E30` family;
-- photo effect/stage methods, especially `0x0041D460`, `0x0041DBD0`,
-  `0x0041DF10`, `0x0041DFA0`, and `0x0041E010`;
+- remaining photo effect/stage methods, especially `0x0041DF10`,
+  `0x0041DFA0`, and the semantically ambiguous `0x0041E010` proxy family;
 - front-end creation/callback/texture-clear methods;
 - FileSystem, replay, Supervisor worker, MIDI, and timer proxy signatures.
 

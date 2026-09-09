@@ -1,5 +1,8 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#ifndef DIFFBUILD
+#include "PhotoEffectRuntime.hpp"
+#endif
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
 #include <string.h>
@@ -154,6 +157,13 @@ struct ExtendedPhotoEffectManager
     i32 Spawn(i32 type, void *args);
 };
 typedef char ExtendedPhotoEffectManagerSpawnedIdAt58[(offsetof(ExtendedPhotoEffectManager, spawnedId) == 0x58) ? 1 : -1];
+
+#ifdef DIFFBUILD
+#define TH095_EXT_EFFECT_SPAWN(manager, type, args) manager->Spawn(type, args)
+#else
+#define TH095_EXT_EFFECT_SPAWN(manager, type, args) \
+    reinterpret_cast<::th095::PhotoEffectManagerView *>(manager)->Spawn(type, args)
+#endif
 
 struct ExtendedBulletManager
 {
@@ -788,7 +798,7 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.angle2 = 0.0f;
     locals.args.flag0 = 0;
 
-    locals.spawnId = g_PhotoEffectManager->Spawn(1, &locals.args);
+    locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
     g_ExtendedRuntime->markerAnm->InitializeVm(
@@ -822,7 +832,7 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.angle2 = 0.0f;
     locals.args.flag0 = 0;
 
-    locals.spawnId = g_PhotoEffectManager->Spawn(1, &locals.args);
+    locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
     g_ExtendedRuntime->markerAnm->InitializeVm(
@@ -856,7 +866,7 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.angle2 = 0.0f;
     locals.args.flag0 = 0;
 
-    locals.spawnId = g_PhotoEffectManager->Spawn(1, &locals.args);
+    locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
     g_ExtendedRuntime->markerAnm->InitializeVm(

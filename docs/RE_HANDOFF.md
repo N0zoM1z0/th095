@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 125 unique unresolved decorated symbols across 129 diagnostics:
-48 data and 77 callable/runtime. Of those names, 122 map through canonical
-relocations to 118 target addresses; three currently lack target-address
+now fails with 123 unique unresolved decorated symbols across 127 diagnostics:
+48 data and 75 callable/runtime. Of those names, 120 map through canonical
+relocations to 117 target addresses; three currently lack target-address
 evidence and one decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -390,6 +390,24 @@ moves 127 -> 125 unique unresolved names and 131 -> 129 diagnostics; data stays
 48 and callable/runtime drops 79 -> 77, with `0x00404C60` absent from the fresh
 unresolved set. EclExtended and PhotoEffect replay 56/56 exact units with no
 label refresh.
+
+The `0x0041DBD0` PhotoEffect spawn receiver family is closed on the real
+canonical class rather than another local proxy. Hash-attested Ghidra bounds the
+target to a 432-byte `__thiscall (this, int, void *)` body; the existing exact
+`PhotoEffectManagerView::Spawn` unit matches that ABI and all EH/allocation
+relocations. Production `PhotoEffectVector`, `PhotoEffectBaseView`, and the full
+0x80-byte `PhotoEffectManagerView` declaration now live in
+`PhotoEffectRuntime.hpp`, which is also consumed by `PhotoEffect.cpp` itself.
+EclExtended keeps its richer local list-inspection view for exact-facing field
+access but casts only the production Spawn call to the canonical manager;
+EclRun's production owner accessor directly returns `PhotoEffectManagerView *`.
+DIFFBUILD retains both historical receiver decorations. The runtime header is
+deliberately decoupled from `AnmManager.hpp` and depends only on `ZunTimer` plus
+forward declarations, avoiding ECL exact-view redefinition conflicts. The cold
+link moves 125 -> 123 unique unresolved names and 129 -> 127 diagnostics; data
+stays 48 and callable/runtime drops 77 -> 75, with `0x0041DBD0` absent from the
+fresh unresolved set. EclExtended, EclRun, and PhotoEffect replay 57/57 exact
+units with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
