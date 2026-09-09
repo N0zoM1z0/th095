@@ -5,6 +5,15 @@
 
 namespace th095
 {
+
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+// Target 0x004A5898 stores pointers to the target strings at
+// 0x00497CFC/0x00497CF8/0x00497CF4; target 0x00497CE8 stores the corresponding
+// Win32 seek origins.  These are the canonical CPbgFile mode tables.
+char *g_PbgFileOpenModes[3] = {"r", "w", "a"};
+i32 g_PbgFileSeekModes[3] = {FILE_BEGIN, FILE_CURRENT, FILE_END};
+#endif
+
 // FUNCTION: TH095 0x00455850; TH08 CPbgFile construction is the source-shape oracle.
 CPbgFile::CPbgFile()
 {

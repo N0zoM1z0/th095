@@ -110,6 +110,8 @@ next action belongs in `RE_HANDOFF.md`.
 
 | ABI-067 | target-observed / source-structure | The six adjacent PhotoBullet metadata tables are reconstructed from target `.data` `0x004A40C0..0x004A424F`: 24 script bases, 24 collision sizes, 24 draw-bucket indices, and 16/8/4-entry capture palettes. Independent target relocation starts bound every table and the decoded values are emitted only in production; exact/DIFFBUILD retains the original externs. Fresh cold whole-build moves 24 -> 18 unique unresolved and 27 -> 21 diagnostics; all 35 configured BulletManager units replay exact with no relocation-label refresh. | Canonical relocation addresses and direct PE `.data` extraction from the hash-attested target; fresh whole-build and 35-unit exact replay, 2026-09-09 |
 
+| ABI-068 | target-observed / source-structure | The eight-record PBG decrypt profile table at `0x004A42C8` and the adjacent file-mode tables at `0x004A5898` / `0x00497CE8` are reconstructed directly from the canonical target. Production owns all three tables in their semantic PBG TUs; exact/DIFFBUILD retains the original externs. Fresh cold whole-build moves 18 -> 15 unique unresolved and 21 -> 17 diagnostics; all 24 configured units across PbgArchive and PbgFile replay exact with no relocation-label refresh. | Canonical relocation addresses and direct PE `.data` / `.rdata` extraction from the hash-attested target; fresh whole-build and 24-unit exact replay, 2026-09-09 |
+
 
 ## Analysis control plane
 

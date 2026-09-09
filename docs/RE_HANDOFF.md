@@ -736,8 +736,8 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-18 unique unresolved names (21 diagnostics), all data. All 18 unresolved names
-have target-address evidence across 18 target addresses. No runtime/Wine
+15 unique unresolved names (17 diagnostics), all data. All 15 unresolved names
+have target-address evidence across 15 target addresses. No runtime/Wine
 launch has been performed.
 
 The first data-owner batch closes twelve independent zero-initialized target
@@ -766,6 +766,11 @@ The PhotoBullet constant-table batch reconstructs all six adjacent tables at
 metadata arrays and the 16/8/4-entry capture palettes. The fresh cold link
 moves 24 -> 18 unique unresolved names and 27 -> 21 diagnostics; all 35
 BulletManager units replay exact.
+
+The PBG data batch reconstructs the eight decrypt profiles and the three-entry
+open/seek mode tables directly from the canonical PE. The fresh cold link moves
+18 -> 15 unique unresolved names and 21 -> 17 diagnostics; all 24 configured
+PbgArchive/PbgFile units replay exact.
 
 The just-closed ResultScreen pair maps the historical production proxies
 `ResultAnmVmDrawView::Draw` and `PreparePhotoResultScreen` to canonical

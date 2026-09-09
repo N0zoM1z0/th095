@@ -501,8 +501,8 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 18 unique
-unresolved (21 diagnostics), all data, with 88/88
+Resumed checkpoint 2026-09-09: current family closure leaves 15 unique
+unresolved (17 diagnostics), all data, with 88/88
 objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
 has also closed the CSoundManager constructor, SceneSelect interpolation, and
@@ -510,6 +510,12 @@ FrontEndLifecycle queue Pop, front-end game-task factory, and ANM VM removal
 families, plus the final PhotoStage capture receiver. Do not reopen these
 families unless fresh evidence contradicts them. See `RE_HANDOFF.md` for the
 current data-only list and the two unmapped PhotoCard ANM data items.
+
+Closed 2026-09-09: PBG runtime tables. Production now owns the eight canonical
+decrypt profiles and the open/seek mode arrays reconstructed from target
+`.data` / `.rdata`; exact builds keep their historical externs. Fresh
+whole-build changes 18 -> 15 unique unresolved (21 -> 17 diagnostics), and all
+24 configured PbgArchive/PbgFile units remain exact.
 
 Closed 2026-09-09: first independent `.bss` owner batch. Twelve real storage
 items are now emitted by their semantic production TUs: Main's exclusive
