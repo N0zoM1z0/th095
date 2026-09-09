@@ -21,6 +21,15 @@ struct PhotoEnemyEclManagerView
 };
 typedef char EclDependencyManagerParametersAt168[(offsetof(PhotoEnemyEclManagerView, callParameters) == 0x168) ? 1 : -1];
 
+#ifdef DIFFBUILD
+#define TH095_ECL_DEP_INIT(manager, context, subroutineId) \
+    (manager)->InitializeContext((context), (subroutineId))
+#else
+#define TH095_ECL_DEP_INIT(manager, context, subroutineId) \
+    reinterpret_cast<EclManager *>(manager)->CallEclSub( \
+        reinterpret_cast<EnemyEclContext *>(context), (subroutineId))
+#endif
+
 struct EclDependencyRuntimeView
 {
     u8 unknown0000[0x4df4];
@@ -285,7 +294,8 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
             *enemy->activeEclContext;
     }
 
-    g_PhotoEnemyManager->eclManager->InitializeContext(
+    TH095_ECL_DEP_INIT(
+        g_PhotoEnemyManager->eclManager,
         reinterpret_cast<PhotoEnemyEclContextView *>(enemy->activeEclContext),
         static_cast<i16>(rawSubId));
 

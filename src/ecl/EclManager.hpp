@@ -10,11 +10,7 @@
 namespace th095
 {
 
-#ifdef TH095_MATCH_EXACT
 typedef ::ZunResult EclRunResult;
-#else
-typedef ZunResult EclRunResult;
-#endif
 
 struct Enemy;
 struct AnmVm;

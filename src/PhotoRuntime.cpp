@@ -8,6 +8,19 @@ struct PhotoEnemyEclManagerView
 {
     i32 InitializeContext(PhotoEnemyEclContextView *context, i16 subroutineId);
 };
+#ifndef DIFFBUILD
+struct EnemyEclContext;
+struct EclManager
+{
+    ::ZunResult CallEclSub(EnemyEclContext *context, i16 subId);
+};
+#define TH095_PHOTO_RUNTIME_ECL_INIT(manager, context, subroutineId) \
+    reinterpret_cast<EclManager *>(manager)->CallEclSub( \
+        reinterpret_cast<EnemyEclContext *>(context), (subroutineId))
+#else
+#define TH095_PHOTO_RUNTIME_ECL_INIT(manager, context, subroutineId) \
+    (manager)->InitializeContext((context), (subroutineId))
+#endif
 
 struct PhotoItemManagerView
 {
@@ -117,7 +130,8 @@ int PhotoRuntimeView::CountPhotoTargets(
         }
         else
         {
-            this->eclManager->InitializeContext(
+            TH095_PHOTO_RUNTIME_ECL_INIT(
+                this->eclManager,
                 reinterpret_cast<PhotoEnemyEclContextView *>(
                     locals.enemy->mainEclContext),
                 locals.enemy->pendingEclSubroutineId);

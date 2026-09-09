@@ -365,10 +365,20 @@ unique unresolved (89 -> 85 diagnostics), callable/runtime 39 -> 35. Because
 the ECL ANM header is shared, all 88 configured sources / 696 canonical units
 were replayed; all remain exact with no label refresh.
 
+Closed 2026-09-09: ECL manager context/return ABI. The exact RunEcl ledger
+proves `CallEclSub @ 0x00408DE0` and `RunEcl @ 0x00408E70` use the target's
+global `::ZunResult` return enum. Production now exposes that enum identity,
+defines the existing 0x00408DE0 context-initialization source body as canonical
+`EclManager::CallEclSub`, and routes all photo-ECL context/RunEcl consumers to
+canonical `EclManager` methods; DIFFBUILD keeps the historical photo-view
+decorations. Fresh whole-build count changes 81 -> 79 unique unresolved
+(85 -> 83 diagnostics), callable/runtime 35 -> 33 and no-target 3 -> 2. Shared
+header regression closure is complete across all 88 sources / 696 exact units
+with no label refresh.
+
 Continue with:
 
-- remaining enemy ECL/runtime proxy methods such as `0x00408E70` and
-  `0x00416320`;
+- remaining enemy ECL/runtime proxy methods such as `0x00416320`;
 - remaining photo effect/stage creation/session methods;
 - front-end creation/callback/texture-clear methods;
 - FileSystem, replay, Supervisor worker, MIDI, and timer proxy signatures.
@@ -377,12 +387,10 @@ For a target address shared by differently named methods, do not invent a
 universal proxy method. Use the actual receiver/type at each call site. The now-closed
 three-way `ResetForPhotoTransition` family is the clearest audited example.
 
-The production report still lists `EclManager::CallEclSub(EnemyEclContext *,
-short)` without target-address evidence, but the canonical exact EclRun
-relocation ledger resolves its exact-facing symbol to `0x00408DE0`. Ghidra
-confirms a 140-byte `__thiscall` context initializer at that address. Treat this
-as a receiver/return-type spelling mismatch against the existing body, not as
-evidence for a missing implementation.
+`EclManager::CallEclSub` is no longer an unmapped production item. The exact
+ledger-to-`0x00408DE0` evidence was used to close its return/receiver ABI, and
+the fresh unresolved-without-target set now contains only the two PhotoCard ANM
+data items.
 
 ## Constant and table reconstruction
 

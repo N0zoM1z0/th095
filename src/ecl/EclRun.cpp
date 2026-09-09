@@ -125,10 +125,11 @@
     ::th095::PhotoEffectManagerView::DrawSecondary(TH095_ECL_EFFECT_MANAGER)
 #endif
 
-#ifdef TH095_MATCH_EXACT
+// RunEcl and CallEclSub return the target's global ::ZunResult enum in both
+// production and exact builds. The numeric values match th095::ZunResult, but
+// the enum identity is part of the VC7.1 decorated symbol.
 #define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
 #define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
-#endif
 
 namespace th095
 {

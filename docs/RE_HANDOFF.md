@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 81 unique unresolved decorated symbols across 85 diagnostics:
-46 data and 35 callable/runtime. Of those names, 78 map through canonical
-relocations to 78 target addresses; three currently lack target-address
+now fails with 79 unique unresolved decorated symbols across 83 diagnostics:
+46 data and 33 callable/runtime. Of those names, 77 map through canonical
+relocations to 77 target addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -566,6 +566,28 @@ while callable/runtime drops 39 -> 35, and all four target addresses leave the
 unresolved set. Because `AnmManagerEclView.hpp` is shared, the full canonical
 replay was repeated across all 88 configured sources: all 696/696 units remain
 exact with no private-label refresh.
+
+The ECL manager context/return ABI family is closed. The canonical exact
+`ecl-manager-run-ecl` relocation ledger resolves `EclManager::CallEclSub` to
+`0x00408DE0` with the target-decorated global `::ZunResult` return type, while
+`RunEcl @ 0x00408E70` uses that same global return enum. Ghidra confirms
+`0x00408DE0` is the 140-byte `__thiscall` context initializer: it reads the
+manager subroutine table at `+0x4` and initializes context fields at `+0x0`,
+`+0x98`, and `+0x22C`. Those offsets exactly match both `EnemyEclContext` and
+the historical photo-context view. Production now keeps the global target enum
+available, gives `EclRunResult` the target identity, and defines this same source
+body as `EclManager::CallEclSub`; DIFFBUILD retains the exact-facing
+`PhotoEnemyEclManagerView::InitializeContext` body/name. Photo enemy, ECL
+dependency, and PhotoRuntime consumers all route their production context calls
+to that canonical method, and photo-enemy `RunEcl` calls use the canonical
+`EclManager::RunEcl` receiver. No duplicate body or storage was added. The cold
+link moves 81 -> 79 unique unresolved names and 85 -> 83 diagnostics; data
+remains 46 while callable/runtime drops 35 -> 33. The former no-target
+`CallEclSub` item disappears, the no-target count falls 3 -> 2, and the
+`0x00408E70` proxy target leaves the unresolved set. Because `ZunResult.hpp` and
+`EclManager.hpp` are shared, all 88 configured sources were cold replayed: the
+first 48 sources pass 429/429 units and the remaining 40 pass 267/267, for a
+full 696/696 canonical exact replay with no private-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

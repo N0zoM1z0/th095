@@ -82,6 +82,29 @@ typedef char PhotoEnemyEclManagerSizeIs188[
 typedef char PhotoEnemyEclManagerParametersAt168[
     (offsetof(PhotoEnemyEclManagerView, callParameterInts) == 0x168) ? 1 : -1];
 
+#ifndef DIFFBUILD
+struct Enemy;
+struct EnemyEclContext;
+struct EclManager
+{
+    ::ZunResult CallEclSub(EnemyEclContext *context, i16 subId);
+    ::ZunResult RunEcl(Enemy *enemy);
+};
+#endif
+
+#ifdef DIFFBUILD
+#define TH095_PHOTO_ECL_INIT(manager, context, subroutineId) \
+    (manager)->InitializeContext((context), (subroutineId))
+#define TH095_PHOTO_ECL_RUN(manager, enemy) (manager)->RunEcl((enemy))
+#else
+#define TH095_PHOTO_ECL_INIT(manager, context, subroutineId) \
+    reinterpret_cast<EclManager *>(manager)->CallEclSub( \
+        reinterpret_cast<EnemyEclContext *>(context), (subroutineId))
+#define TH095_PHOTO_ECL_RUN(manager, enemy) \
+    reinterpret_cast<EclManager *>(manager)->RunEcl( \
+        reinterpret_cast<Enemy *>(enemy))
+#endif
+
 struct PhotoEnemyEclInterpolationSlotView
 {
     void *callback;
@@ -162,6 +185,7 @@ i32 PhotoEnemyEclManagerView::Load(char *path)
     return ZUN_SUCCESS;
 }
 
+#ifdef DIFFBUILD
 i32 PhotoEnemyEclManagerView::InitializeContext(
     PhotoEnemyEclContextView *context, i16 subroutineId)
 {
@@ -177,6 +201,28 @@ i32 PhotoEnemyEclManagerView::InitializeContext(
     context->subroutineId = subroutineId;
     return ZUN_SUCCESS;
 }
+#else
+::ZunResult EclManager::CallEclSub(
+    EnemyEclContext *context, i16 subroutineId)
+{
+    PhotoEnemyEclManagerView *manager =
+        reinterpret_cast<PhotoEnemyEclManagerView *>(this);
+    PhotoEnemyEclContextView *photoContext =
+        reinterpret_cast<PhotoEnemyEclContextView *>(context);
+
+    if (subroutineId < 0)
+    {
+        return TH095_LEGACY_ZUN_SUCCESS;
+    }
+
+    photoContext->currentInstruction = reinterpret_cast<void *>(
+        manager->subroutineTable[subroutineId]);
+    photoContext->time = 0;
+    photoContext->secondaryTime = 0;
+    photoContext->subroutineId = subroutineId;
+    return TH095_LEGACY_ZUN_SUCCESS;
+}
+#endif
 
 struct PhotoEnemyTimelineView
 {
@@ -916,11 +962,11 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
             enemy->life = life;
         }
         *reinterpret_cast<Float3 *>(&enemy->worldPosition) = *position;
-        this->eclManager->InitializeContext(
+        TH095_PHOTO_ECL_INIT(this->eclManager,
             reinterpret_cast<PhotoEnemyEclContextView *>(
                 reinterpret_cast<u8 *>(enemy) + 0x2dc),
             static_cast<i16>(subroutineId));
-        if (this->eclManager->RunEcl(enemy) == ZUN_ERROR)
+        if (TH095_PHOTO_ECL_RUN(this->eclManager, enemy) == ZUN_ERROR)
         {
             enemy->Deactivate();
             enemyIndex = 128;
@@ -976,14 +1022,14 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
             enemy->life = life;
         }
         *reinterpret_cast<Float3 *>(&enemy->worldPosition) = *position;
-        this->eclManager->InitializeContext(
+        TH095_PHOTO_ECL_INIT(this->eclManager,
             reinterpret_cast<PhotoEnemyEclContextView *>(
                 reinterpret_cast<u8 *>(enemy) + 0x2dc),
             static_cast<i16>(subroutineId));
         *reinterpret_cast<EnemyContextCopy *>(
             reinterpret_cast<u8 *>(enemy) + 0x2f4) =
             *reinterpret_cast<const EnemyContextCopy *>(contextValues);
-        if (this->eclManager->RunEcl(enemy) == ZUN_ERROR)
+        if (TH095_PHOTO_ECL_RUN(this->eclManager, enemy) == ZUN_ERROR)
         {
             enemy->Deactivate();
             enemyIndex = 128;
@@ -1093,7 +1139,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
 
         enemy->UpdatePhotoMarkerPulse();
         enemy->UpdateScheduledEclCalls();
-        if (enemyManager->eclManager->RunEcl(enemy) == -1)
+        if (TH095_PHOTO_ECL_RUN(enemyManager->eclManager, enemy) == -1)
         {
             enemy->Deactivate();
             continue;
@@ -1311,7 +1357,7 @@ void PhotoEnemyView::UpdatePhotoMarkerPulse()
 
 void PhotoEnemyView::RestartEcl()
 {
-    g_PhotoEnemyManager->eclManager->InitializeContext(
+    TH095_PHOTO_ECL_INIT(g_PhotoEnemyManager->eclManager,
         reinterpret_cast<PhotoEnemyEclContextView *>(
             reinterpret_cast<u8 *>(this) + 0x2dc),
         this->mainEclSubroutineId);
@@ -1356,7 +1402,8 @@ void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
     {
         if (enemyManager->photoTargets[targetIndex] != NULL)
         {
-            enemyManager->eclManager->InitializeContext(
+            TH095_PHOTO_ECL_INIT(
+                enemyManager->eclManager,
                 reinterpret_cast<PhotoEnemyEclContextView *>(
                     reinterpret_cast<u8 *>(
                         enemyManager->photoTargets[targetIndex]) + 0x2dc),
@@ -1414,7 +1461,7 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
         i32 scheduledCurrentFrame = g_PhotoEnemyGame->frameCounter;
         if (scheduledCurrentFrame >= this->scheduledCallFrames[scheduleIndex])
         {
-            g_PhotoEnemyManager->eclManager->InitializeContext(
+            TH095_PHOTO_ECL_INIT(g_PhotoEnemyManager->eclManager,
                 reinterpret_cast<PhotoEnemyEclContextView *>(
                     reinterpret_cast<u8 *>(this) + 0x2dc),
                 this->scheduledCalls[scheduleIndex].subroutineId);
