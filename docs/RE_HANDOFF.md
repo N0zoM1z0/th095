@@ -736,8 +736,8 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-3 unique unresolved names (3 diagnostics), all data. All 3 unresolved names
-have target-address evidence across 3 target addresses. No runtime/Wine
+1 unique unresolved name (1 diagnostic), all data. The remaining name has
+target-address evidence at `0x004C4E3C`. No runtime/Wine
 launch has been performed.
 
 The first data-owner batch closes twelve independent zero-initialized target
@@ -782,6 +782,11 @@ The SoundPlayer data batch reconstructs all 47 buffer/volume/metadata records
 and all 37 SFX filename pointers from the canonical target. The fresh cold link
 moves 5 -> 3 unique unresolved names and 5 -> 3 diagnostics; all 27 configured
 SoundPlayer units replay exact.
+
+The ECL table batch binds the eight interpolation slots and all 22 opcode-118
+extension slots to their named exact callbacks, without hard-coded code
+addresses. The fresh cold link moves 3 -> 1 unique unresolved names and 3 -> 1
+diagnostics; all 32 configured units across both affected sources replay exact.
 
 The just-closed ResultScreen pair maps the historical production proxies
 `ResultAnmVmDrawView::Draw` and `PreparePhotoResultScreen` to canonical

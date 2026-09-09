@@ -1101,4 +1101,38 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
 #undef EXT_MOVEMENT_FLAGS
 
 } // namespace EclExtended
+
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+namespace EclRunHigh
+{
+typedef void (__fastcall *Th095ExInsn)(Enemy *, EclRawInstruction *);
+
+// Target 0x004A4270: opcode-118 extension entries 0..21.  Every pointer names
+// its reconstructed exact callback; no preferred-base address is embedded.
+Th095ExInsn g_Th095ExInsn[22] = {
+    EclExtended::SpawnDeathPhotoVms,
+    EclExtended::Callback01,
+    EclExtended::Callback02,
+    EclExtended::Callback03,
+    EclExtended::Callback04,
+    EclExtended::FadeOwnedCapturedBullets,
+    EclExtended::UpdatePlayerProximityAndMarker,
+    EclExtended::UpdateEnemyMarkerVms,
+    EclExtended::SpawnEnemyMarkerVm,
+    EclExtended::DispatchContextValues,
+    EclExtended::Callback10,
+    EclExtended::PublishGameSpeed,
+    EclExtended::SetBackgroundVmsState2,
+    EclExtended::SetBackgroundVmsState3,
+    EclExtended::Callback14,
+    EclExtended::SetPhotoFlag200,
+    EclExtended::ClearPhotoFlag200,
+    EclExtended::Callback17,
+    EclExtended::EnablePhotoTransition,
+    EclExtended::DisablePhotoTransition,
+    EclExtended::RunPhotoTransition,
+    EclExtended::ResetOwnedBulletMotion};
+} // namespace EclRunHigh
+#endif
+
 } // namespace th095

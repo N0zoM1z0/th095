@@ -210,6 +210,15 @@ void __fastcall InterpolateHermite(Enemy *enemy, EnemyEclInterpolationSlot *slot
 #undef hermiteWeight0
 #undef hermiteParameter0
 
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+// Target 0x004A4250 contains seven linear interpolation entries followed by
+// the single Hermite callback.  Bind named reconstructed functions so the
+// production linker, rather than hard-coded image addresses, owns relocation.
+EnemyEclInterpolatorCallback g_EclInterpolatorCallbacks[8] = {
+    InterpolateLinear, InterpolateLinear, InterpolateLinear, InterpolateLinear,
+    InterpolateLinear, InterpolateLinear, InterpolateLinear, InterpolateHermite};
+#endif
+
 // FUNCTION: TH095 0x00411700; TH08 0x00421300 is the source-shape oracle.
 void __fastcall ApplyInterpolationOperation(Enemy *enemy, EclRawInstruction *instruction)
 {

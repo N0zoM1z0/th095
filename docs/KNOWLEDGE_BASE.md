@@ -116,6 +116,8 @@ next action belongs in `RE_HANDOFF.md`.
 
 | ABI-070 | target-observed / source-structure | SoundPlayer now owns the target's 47 `SoundBufferIdxVolume` records at `0x004A4480` and 37-entry SFX filename pointer table at `0x004A45F8`. The record's third `i16` is preserved as live queue metadata rather than discarded as padding; every path pointer resolves to the canonical target string. Production-only definitions keep exact/DIFFBUILD objects unchanged. Fresh cold whole-build moves 5 -> 3 unique unresolved and 5 -> 3 diagnostics; all 27 configured SoundPlayer units replay exact with no relocation-label refresh. | Direct record and pointer/string extraction from the hash-attested target plus source read/use semantics; fresh whole-build and 27-unit exact replay, 2026-09-09 |
 
+| ABI-071 | target-observed / source-structure | The ECL callback tables at `0x004A4250` and `0x004A4270` are reconstructed as relocatable named function-pointer arrays: seven linear interpolation entries plus one Hermite entry, and all 22 opcode-118 extension callbacks in target order. No preferred-base virtual address is embedded in source. Production-only definitions preserve exact/DIFFBUILD object ownership. Fresh cold whole-build moves 3 -> 1 unique unresolved and 3 -> 1 diagnostics; all 32 configured units across EclDependencies and EclExtended replay exact with no relocation-label refresh. | Direct canonical target pointer-table extraction mapped to independently exact authored function entries; fresh whole-build and 32-unit exact replay, 2026-09-09 |
+
 
 ## Analysis control plane
 
