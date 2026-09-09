@@ -86,6 +86,8 @@ next action belongs in `RE_HANDOFF.md`.
 
 | ABI-055 | target-observed / source-structure | Main's `SupervisorControllerView::GetInput` relocation is not a second implementation: it targets canonical `Controller::GetInput @ 0x00419AE0`. Hash-attested Ghidra bounds the target at 2662 bytes and shows the current Main-side call at `0x00423482`. Production Main now calls the canonical function directly; exact/DIFFBUILD retains the historical proxy decoration. This does not alter reconstruction status: `Controller::GetInput` remains the explicitly permitted source-present non-exact function. Fresh `/OPT:NOREF` moves 55 -> 54 unique unresolved and 59 -> 58 diagnostics; data stays 45, callable/runtime 10 -> 9, and Main replays 48/48 exact. | Canonical Controller tracking; hash-attested Ghidra function/xref evidence for `0x00419AE0`; fresh whole-build and Main exact replay, 2026-09-09 |
 
+| ABI-056 | target-observed / source-structure | Main's `ReleaseReplayAnm` shutdown relocation targets the already exact static `ResultScreen::ReleaseAnm @ 0x00426860`, not a separate replay helper. The canonical target is a 20-byte no-argument ANM release routine, and Ghidra decompilation of `Supervisor::DeletedCallback @ 0x004244D0` shows a direct call to it in the shutdown sequence. Production Main now calls the real ResultScreen method; exact/DIFFBUILD keeps the historical proxy symbol. Fresh `/OPT:NOREF` moves 54 -> 53 unique unresolved and 58 -> 57 diagnostics; data stays 45, callable/runtime 9 -> 8, and Main replays 48/48 exact. | Canonical ResultScreen exact ledger; hash-attested Ghidra `0x004244D0` decompile and `0x00426860` function evidence; fresh whole-build and Main replay, 2026-09-09 |
+
 
 ## Analysis control plane
 

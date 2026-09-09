@@ -435,6 +435,11 @@ explicitly allowed non-exact authored hard case. Fresh whole-build changes
 55 -> 54 unique unresolved (59 -> 58 diagnostics), callable/runtime 10 -> 9;
 Main remains 48/48 exact.
 
+Closed 2026-09-09: Main replay-ANM release proxy. Production Main now calls
+canonical `ResultScreen::ReleaseAnm @ 0x00426860`; exact/DIFFBUILD retains
+`ReleaseReplayAnm`. Fresh whole-build changes 54 -> 53 unique unresolved
+(58 -> 57 diagnostics), callable/runtime 9 -> 8, and Main remains 48/48 exact.
+
 Continue with:
 
 - remaining callable/runtime proxy methods;

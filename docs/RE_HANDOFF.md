@@ -690,6 +690,16 @@ This changes no authored exact claim. The cold link moves 55 -> 54 unique
 unresolved names and 59 -> 58 diagnostics; data remains 45 and callable/runtime
 drops 10 -> 9. Main replays 48/48 exact with no label refresh.
 
+The Main replay-ANM release proxy is closed on canonical
+`ResultScreen::ReleaseAnm @ 0x00426860`. The exact ledger identifies the target
+as a 20-byte static result-screen ANM release helper, and hash-attested Ghidra
+shows `Supervisor::DeletedCallback @ 0x004244D0` calling that same target during
+shutdown. Production Main now includes the real ResultScreen declaration and
+calls `ResultScreen::ReleaseAnm`; DIFFBUILD/exact retains the historical
+`ReleaseReplayAnm` relocation. The cold link moves 54 -> 53 unique unresolved
+names and 58 -> 57 diagnostics; data remains 45 while callable/runtime drops
+9 -> 8. Main replays 48/48 exact with no label refresh.
+
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
 enum-returning `/Gr` callback type, and `RunDrawChain` returns `int`.

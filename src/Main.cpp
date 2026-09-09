@@ -9,6 +9,9 @@
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
+#ifndef DIFFBUILD
+#include "ResultScreen.hpp"
+#endif
 #include "SoundPlayer.hpp"
 #include "pbg/PbgArchive.hpp"
 
@@ -193,7 +196,12 @@ void ReleaseScoreData();
 HANDLE StartSoundLoadThread();
 i32 ReleasePhotoBulletAnm();
 i32 ReleaseResultAnm();
+#ifdef DIFFBUILD
 i32 ReleaseReplayAnm();
+#define TH095_RELEASE_REPLAY_ANM() ReleaseReplayAnm()
+#else
+#define TH095_RELEASE_REPLAY_ANM() ResultScreen::ReleaseAnm()
+#endif
 i32 ReleasePhotoFrontAnm();
 void ReleaseSceneSelectAnms();
 i32 ReleasePhotoPlayerAnm();
@@ -1965,7 +1973,7 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
     ((Supervisor *)arg)->ReleaseGameManagers();
     ReleasePhotoBulletAnm();
     ReleaseResultAnm();
-    ReleaseReplayAnm();
+    TH095_RELEASE_REPLAY_ANM();
     ReleasePhotoFrontAnm();
     TH095_FRONT_END_RELEASE_RESOURCES();
     ReleasePhotoPlayerAnm();
