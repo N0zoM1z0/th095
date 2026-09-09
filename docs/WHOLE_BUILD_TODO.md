@@ -463,6 +463,14 @@ exact/DIFFBUILD keeps `FrontEndPointerQueueView`. Fresh whole-build changes
 49 -> 48 unique unresolved (53 -> 52 diagnostics), callable/runtime 4 -> 3,
 and all eight FrontEndLifecycle configured units remain exact.
 
+Closed 2026-09-09: front-end game-task factory proxy. The two front-end target
+calls at `0x0044667F/0x004467BB` are exact `PhotoGameTaskView::Create @
+0x00417F80` with replay modes 0/1. Production shares the real 0x124-byte task
+layout through `PhotoGameTask.hpp` and calls the canonical static factory;
+exact/DIFFBUILD retains `CreateFrontEndGameManager`. Fresh whole-build changes
+48 -> 47 unique unresolved (52 -> 51 diagnostics), callable/runtime 3 -> 2,
+and all 14 affected configured units remain exact.
+
 Continue with:
 
 - remaining callable/runtime proxy methods;
@@ -479,12 +487,12 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 48 unique
-unresolved (52 diagnostics), split 45 data / 3 callable-runtime, with 88/88
+Resumed checkpoint 2026-09-09: current family closure leaves 47 unique
+unresolved (51 diagnostics), split 45 data / 2 callable-runtime, with 88/88
 objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
 has also closed the CSoundManager constructor, SceneSelect interpolation, and
-FrontEndLifecycle queue Pop families. Do not reopen these
+FrontEndLifecycle queue Pop, and front-end game-task factory families. Do not reopen these
 families unless fresh evidence contradicts them. See `RE_HANDOFF.md` for the
 exact remaining callable list and the two unmapped PhotoCard ANM data items.
 

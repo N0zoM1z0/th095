@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 48 unique unresolved decorated symbols across 52 diagnostics:
-45 data and 3 callable/runtime. Of those names, 46 map through canonical
-relocations to 46 target addresses; two currently lack target-address
+now fails with 47 unique unresolved decorated symbols across 51 diagnostics:
+45 data and 2 callable/runtime. Of those names, 45 map through canonical
+relocations to 45 target addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -737,8 +737,8 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-48 unique unresolved names (52 diagnostics): 45 data and 3 callable/runtime.
-46 unresolved names have target-address evidence across 46 target addresses; 2 names
+47 unique unresolved names (51 diagnostics): 45 data and 2 callable/runtime.
+45 unresolved names have target-address evidence across 45 target addresses; 2 names
 remain without target mapping. No runtime/Wine launch has been performed.
 
 The just-closed ResultScreen pair maps the historical production proxies
@@ -769,9 +769,15 @@ target the canonical exact `SceneValueQueue::Pop @ 0x00450F60`. Production
 casts only those receivers; exact/DIFFBUILD keeps the historical proxy. All
 eight FrontEndLifecycle exact units remain exact.
 
+The front-end game factory proxy is closed. Target calls `0x0044667F` and
+`0x004467BB` invoke exact `PhotoGameTaskView::Create @ 0x00417F80` with modes
+0/1. Production now shares the real 0x124-byte task layout through
+`PhotoGameTask.hpp` and calls the canonical static factory directly; no wrapper
+or linker alias was added. All 14 affected FrontEndController/PhotoGameTask
+exact units remain exact.
+
 Remaining callable/runtime items at the resumed boundary:
 - `?CapturePhotoPixels@ScorePhotoStageView@th095@@QAEXH@Z` -> 0x0042E7B0 (ScoreData.obj)
-- `?CreateFrontEndGameManager@th095@@YIPAUFrontEndGameManagerView@1@H@Z` -> 0x00417F80 (FrontEndController.obj)
 - `?RemoveVmListNode@AnmManager@th095@@QAEHPAUAnmVmListNode@2@@Z` -> 0x00444E00 (AnmManager.obj)
 
 Unmapped data items requiring fresh Ghidra address/lifecycle recovery:

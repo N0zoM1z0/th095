@@ -12,6 +12,9 @@
 #ifndef DIFFBUILD
 #include "InputRuntime.hpp"
 #endif
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoGameTask.hpp"
+#endif
 
 #include <d3d8.h>
 #include <stdio.h>
@@ -240,7 +243,9 @@ static __forceinline void FrontEndCreateSceneVm(
         view->sceneAnm->CreateVm(scriptIndex, 7);
 }
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 FrontEndGameManagerView *__fastcall CreateFrontEndGameManager(i32 mode);
+#endif
 
 ChainCallbackResult SceneSelectControllerView::Update()
 {
@@ -413,7 +418,12 @@ ChainCallbackResult SceneSelectControllerView::Update()
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
             TH095_FRONT_SUPERVISOR.StopReplayScan();
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+            g_FrontEndGameManager = reinterpret_cast<FrontEndGameManagerView *>(
+                PhotoGameTaskView::Create(0));
+#else
             g_FrontEndGameManager = CreateFrontEndGameManager(0);
+#endif
             if (g_FrontEndGameManager == NULL)
             {
                 TH095_FRONT_SUPERVISOR_STATE = 1;
@@ -459,7 +469,12 @@ ChainCallbackResult SceneSelectControllerView::Update()
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
             TH095_FRONT_SUPERVISOR.StopReplayScan();
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+            g_FrontEndGameManager = reinterpret_cast<FrontEndGameManagerView *>(
+                PhotoGameTaskView::Create(1));
+#else
             g_FrontEndGameManager = CreateFrontEndGameManager(1);
+#endif
             if (g_FrontEndGameManager == NULL)
             {
                 TH095_FRONT_SUPERVISOR_STATE = 1;
