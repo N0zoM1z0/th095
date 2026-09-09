@@ -227,6 +227,9 @@ extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
 extern u32 g_PhotoAsciiTextColor;
 #define g_ReplayInputButtons (*reinterpret_cast<PhotoReplayInputButtonsTaskView *>(RuntimeInputStorage()))
 extern i32 g_PhotoNextState;
+#ifndef DIFFBUILD
+#define g_PhotoNextState (g_Supervisor.currentState)
+#endif
 extern i32 g_ReplayUsesArchive;
 extern i32 g_PhotoLoadWaitFlag;
 extern i32 g_HelpLoadComplete;

@@ -132,6 +132,9 @@ typedef char ResultBestShotRecordPhotoIndexAt6C[
     (offsetof(ResultBestShotRecordView, photoIndex) == 0x6c) ? 1 : -1];
 
 extern i32 g_ResultSceneState;
+#ifndef DIFFBUILD
+#define g_ResultSceneState (g_Supervisor.currentState)
+#endif
 extern i32 g_ResultGroupMap[];
 extern u8 *__fastcall ReadResultHelpLine(
     char *destination, u8 *source, i32 maxLength);

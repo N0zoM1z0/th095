@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 94 unique unresolved decorated symbols across 98 diagnostics:
-48 data and 46 callable/runtime. Of those names, 91 map through canonical
-relocations to 90 target addresses; three currently lack target-address
+now fails with 92 unique unresolved decorated symbols across 96 diagnostics:
+46 data and 46 callable/runtime. Of those names, 89 map through canonical
+relocations to 89 target addresses; three currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -501,6 +501,18 @@ memset, preserving the old proxy constructor call order, then copies
 96 -> 94 unique unresolved names and 100 -> 98 diagnostics; callable/runtime
 48 -> 46, data remains 48, and both target addresses disappear. PhotoGameTask
 replays 10/10 exact units with no label refresh.
+
+The `0x004C4A7C` scene-state data family is closed on the real Supervisor
+member. `g_Supervisor @ 0x004C4670` plus the independently verified +0x40C
+layout identifies the slot as `Supervisor::currentState`; Ghidra xrefs show it
+being written from Main, FrontEnd, and Result state-machine code. Representative
+decompilation initializes it to -1 during Supervisor chain setup and writes
+1/3/6/7 during front-end transitions. Production `g_PhotoNextState` and
+`g_ResultSceneState` now route to that field while DIFFBUILD keeps the historical
+data relocations. The cold link moves 94 -> 92 unique unresolved names and
+98 -> 96 diagnostics; data 48 -> 46, callable/runtime remains 46, and the target
+address disappears. PhotoGameTask and ResultScreen replay 34/34 exact units
+with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

@@ -329,6 +329,12 @@ uses canonical `FileSystem::CheckIfFileAlreadyExists @ 0x0041ABA0` and the real
 changes 96 -> 94 unique unresolved (100 -> 98 diagnostics), callable/runtime
 48 -> 46; PhotoGameTask replays 10/10 exact units.
 
+Closed 2026-09-09: `0x004C4A7C` scene-state owner. The two production proxy
+globals now route to real `g_Supervisor.currentState` at +0x40C; DIFFBUILD keeps
+exact-facing names. Fresh whole-build count changes 94 -> 92 unique unresolved
+(98 -> 96 diagnostics), data 48 -> 46; the two affected sources replay 34/34
+exact units.
+
 Continue with:
 
 - remaining enemy create/update/destroy/ECL methods in the
