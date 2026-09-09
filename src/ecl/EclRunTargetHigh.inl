@@ -32,13 +32,11 @@
         slot[3] = TH08_ECL_READ_I(ctx, 4);
         reinterpret_cast<f32 *>(slot)[0] =
             (instruction->operandFlags & (1U << 5))
-                ? reinterpret_cast<EnemyFloatOperandView *>(enemy)->ResolveFloat(
-                      instruction->operands[5])
+                ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[5])
                 : instruction->operands[5].asFloat;
         reinterpret_cast<f32 *>(slot)[1] =
             (instruction->operandFlags & (1U << 6))
-                ? reinterpret_cast<EnemyFloatOperandView *>(enemy)->ResolveFloat(
-                      instruction->operands[6])
+                ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[6])
                 : instruction->operands[6].asFloat;
         break;
     }
@@ -85,13 +83,11 @@
     case 100:
         *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2924) =
             (instruction->operandFlags & 1U)
-                ? reinterpret_cast<EnemyFloatOperandView *>(enemy)->ResolveFloat(
-                      instruction->operands[0])
+                ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[0])
                 : *reinterpret_cast<f32 *>(&instruction->operands[0].asInt);
         *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2928) =
             (instruction->operandFlags & 2U)
-                ? reinterpret_cast<EnemyFloatOperandView *>(enemy)->ResolveFloat(
-                      instruction->operands[1])
+                ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[1])
                 : *reinterpret_cast<f32 *>(&instruction->operands[1].asInt);
         *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x292c) = 0.0f;
         break;
@@ -367,7 +363,7 @@ enter_subroutine:
             static_cast<i16>(TH08_ECL_READ_I(ctx, 3));
         if ((*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x4ca4) & 8U) != 0)
         {
-            TH095_ECL_ANM_MANAGER->ConfigureEnemyPhotoAnm(
+            TH095_ECL_CONFIGURE_PHOTO_ANM(
                 &enemy->vm,
                 reinterpret_cast<u8 *>(enemy) + 0x376c,
                 (*reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x4ca6) /
@@ -387,8 +383,7 @@ enter_subroutine:
     case 135:
         *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x28) =
             (instruction->operandFlags & 1U)
-                ? reinterpret_cast<EnemyFloatOperandView *>(enemy)->ResolveFloat(
-                      instruction->operands[0])
+                ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[0])
                 : *reinterpret_cast<f32 *>(&instruction->operands[0].asInt);
         break;
 

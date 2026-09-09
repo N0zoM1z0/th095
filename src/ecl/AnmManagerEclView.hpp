@@ -19,6 +19,7 @@
 
 namespace th095
 {
+struct AnmVertex;
 struct VertexDiffuseXyzrhw
 {
     VertexDiffuseXyzrhw();
@@ -682,7 +683,7 @@ struct AnmManager
     ZunResult DrawNoRotationNoRound(AnmVm *vm);
     ZunResult Draw3D(AnmVm *vm);
     ZunResult DrawVertices(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices, i32 vertexCount);
-    ZunResult InitializeHorizontalTextureStrip(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices, i32 vertexCount);
+    ZunResult InitializeHorizontalTextureStrip(AnmVm *vm, AnmVertex *vertices, i32 vertexCount);
     ZunResult InitializeVerticalTextureStrip(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices, i32 vertexCount);
     ZunResult QueueSpriteQuad(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices);
     ZunResult DrawTriangleFan(AnmVm *vm, VertexDiffuseXyzrhw *vertices, i32 vertexCount);

@@ -388,15 +388,15 @@ C_ASSERT(TH08_ECL_ENEMY_POSITION_OFFSET == offsetof(Enemy, position));
          : TH08_ECL_RAW_I((ctx), (index)))
 #define TH08_ECL_READ_F(ctx, index) \
     ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << (index))) \
-         ? reinterpret_cast<EnemyFloatOperandView *>( \
-               TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat( \
-                   TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operands[(index)]) \
+         ? TH095_ECL_RESOLVE_FLOAT( \
+               TH08_ECL_CONTEXT_ENEMY(ctx), \
+               TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operands[(index)]) \
          : TH08_ECL_RAW_F((ctx), (index)))
 #define TH08_ECL_READ_F_RAWARG(ctx, index) \
     ((TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operandFlags & (1U << (index))) \
-         ? reinterpret_cast<EnemyFloatOperandView *>( \
-               TH08_ECL_CONTEXT_ENEMY(ctx))->ResolveFloat( \
-                   TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operands[(index)]) \
+         ? TH095_ECL_RESOLVE_FLOAT( \
+               TH08_ECL_CONTEXT_ENEMY(ctx), \
+               TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operands[(index)]) \
          : *reinterpret_cast<f32 *>( \
                &TH08_ECL_CONTEXT_INSTRUCTION(ctx)->operands[(index)].asInt))
 

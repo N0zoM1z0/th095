@@ -410,9 +410,19 @@ count changes 67 -> 66 unique unresolved (71 -> 70 diagnostics), callable/runtim
 
 Closed 2026-09-09: ECL photography-session/background proxy ABI. The five RunEcl calls now use canonical `Background::Start/StopSpellBackground` at `0x00404A30/0x00404AC0` and `PhotoCardInfoView::Show/Create/Destroy` at `0x004087D0/0x00408850/0x00408990`; exact/DIFFBUILD retain the historical PhotoMode/PhotoSession decorations. Fresh whole-build count changes 66 -> 61 unique unresolved (70 -> 65 diagnostics), callable/runtime 20 -> 15, and the canonical EclRun unit remains exact.
 
+Closed 2026-09-09: remaining ECL enemy/ANM helper proxy ABI. Production
+RunEcl now calls canonical `Enemy::ResolveFloat @ 0x004105A0`,
+`PhotoEnemyView::ClampPosition @ 0x00416320`, and
+`AnmManager::InitializeHorizontalTextureStrip @ 0x004411D0`; the ECL-facing
+AnmManager declaration now uses the target-exact `AnmVertex *` parameter. Fresh
+whole-build count changes 61 -> 58 unique unresolved (65 -> 62 diagnostics),
+callable/runtime 15 -> 12. The complete affected shared-header closure is 46/46
+canonical units across 11 sources; 421 compiler-private labels were refreshed
+only after structural/relocation-target audit.
+
 Continue with:
 
-- remaining enemy ECL/runtime proxy methods such as `0x00416320`;
+- remaining callable/runtime proxy methods;
 - remaining photo effect/stage creation/session methods;
 - FileSystem, replay, and Supervisor worker proxy signatures.
 

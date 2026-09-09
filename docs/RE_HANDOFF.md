@@ -645,6 +645,25 @@ replay exact with no label refresh.
 
 The ECL photography-session proxy family is closed. RunEcl target xrefs go directly to canonical `Background::StartSpellBackground/StopSpellBackground @ 0x00404A30/0x00404AC0` and `PhotoCardInfoView::Show/Create/Destroy @ 0x004087D0/0x00408850/0x00408990`. The historical no-argument `PhotoSessionDescriptor::Create()` thiscall supplies its descriptor pointer in ECX, matching the canonical static-fastcall card `Create(char *)` register ABI. Production EclRun now calls those canonical methods through explicit per-operation macros; DIFFBUILD/exact keeps the historical PhotoMode/PhotoSession decorations. The cold link moves 66 -> 61 unique unresolved and 70 -> 65 diagnostics; callable/runtime drops 20 -> 15, data remains 46, all five target addresses leave the unresolved set, and canonical EclRun remains 1/1 exact with no label refresh.
 
+The remaining ECL enemy/ANM helper proxy family is closed. Canonical exact
+source identifies `Enemy::ResolveFloat @ 0x004105A0`,
+`PhotoEnemyView::ClampPosition @ 0x00416320`, and
+`AnmManager::InitializeHorizontalTextureStrip @ 0x004411D0`. Hash-attested
+Ghidra independently bounds them to 1708/208/352 bytes and confirms the target
+receiver/call shapes. Production RunEcl now routes raw float operands through
+canonical `Enemy::ResolveFloat`, position clamping through the canonical
+PhotoEnemy receiver, and the photo-ANM strip setup through the real AnmManager
+method. The ECL-facing AnmManager declaration was corrected from the historical
+`VertexTex1DiffuseXyzrhw *` proxy to the target-exact `AnmVertex *` ABI; exact
+and DIFFBUILD paths retain their historical ECL proxy decorations. The cold
+link moves 61 -> 58 unique unresolved names and 65 -> 62 diagnostics; data
+remains 46 while callable/runtime drops 15 -> 12, and all three target addresses
+leave the unresolved set. Because `AnmManagerEclView.hpp` is shared through the
+ECL/Enemy include graph, all 11 affected canonical sources were replayed: 46/46
+units remain exact. The replay helper refreshed 421 compiler-private labels in
+six units only after proving complete structural bytes, relocation offset/type,
+and solved target destinations unchanged; no semantic relocation changed.
+
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
 enum-returning `/Gr` callback type, and `RunDrawChain` returns `int`.

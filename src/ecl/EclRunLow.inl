@@ -535,7 +535,7 @@ static EclRawInstruction *__fastcall CompareOperands(
         enemy->position.x = ((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0)));
         enemy->position.y = ((instruction->operandFlags & (1U << 1)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 1))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 1)));
         enemy->position.z = 0.0f;
-        enemy->ClampPosition();
+        TH095_ECL_CLAMP_POSITION(enemy);
         break;
     case 64:
         EclHelpers::ConfigureRelativeMotion(enemy, instruction);

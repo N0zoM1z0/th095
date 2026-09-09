@@ -123,6 +123,22 @@
 #endif
 
 #ifdef DIFFBUILD
+#define TH095_ECL_RESOLVE_FLOAT(enemy, operand) \
+    reinterpret_cast<EclRunHigh::EnemyFloatOperandView *>(enemy)->ResolveFloat(operand)
+#define TH095_ECL_CLAMP_POSITION(enemy) (enemy)->ClampPosition()
+#define TH095_ECL_CONFIGURE_PHOTO_ANM(vm, work, value) \
+    TH095_ECL_ANM_MANAGER->ConfigureEnemyPhotoAnm((vm), (work), (value))
+#else
+#define TH095_ECL_RESOLVE_FLOAT(enemy, operand) \
+    (enemy)->ResolveFloat((operand).asFloat)
+#define TH095_ECL_CLAMP_POSITION(enemy) \
+    reinterpret_cast<::th095::PhotoEnemyView *>(enemy)->ClampPosition()
+#define TH095_ECL_CONFIGURE_PHOTO_ANM(vm, work, value) \
+    ::th095::g_AnmManager->InitializeHorizontalTextureStrip( \
+        (vm), reinterpret_cast<::th095::AnmVertex *>(work), (value))
+#endif
+
+#ifdef DIFFBUILD
 #define TH095_ECL_EFFECT_MANAGER EclRunHigh::g_Th095PhotoEffectManager
 #define TH095_ECL_STAGE_CONTROLLER EclRunHigh::g_Th095StageController
 #define TH095_ECL_BULLET_RESET() TH095_ECL_BULLET_MANAGER->ResetEnemyPatterns()
@@ -149,6 +165,7 @@ namespace th095
 {
 
 #ifndef DIFFBUILD
+struct AnmVertex;
 struct PhotoBulletSpawnDescriptor;
 struct PhotoBulletManagerView
 {
@@ -161,7 +178,10 @@ struct PhotoCardInfoView
     i32 Show();
     void Destroy();
 };
-struct PhotoEnemyView;
+struct PhotoEnemyView
+{
+    void ClampPosition();
+};
 struct PhotoEnemyManagerView
 {
     PhotoEnemyView *SpawnWithContext(
