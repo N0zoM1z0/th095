@@ -487,9 +487,9 @@ real stage owner through `PhotoStage.hpp`; DIFFBUILD/exact retains
 (50 -> 49 diagnostics), callable/runtime 1 -> 0, and all seven affected
 configured units remain exact.
 
-Continue with the 27 remaining data symbols. Canonicalize shared target-address
-owners first, then reconstruct target-proven constants/tables and the two
-currently unmapped PhotoCard ANM owners.
+Continue with the 24 remaining data symbols. They all have one target address;
+reconstruct their target-proven constants/tables and the remaining result BSS
+mapping.
 
 For a target address shared by differently named methods, do not invent a
 universal proxy method. Use the actual receiver/type at each call site. The now-closed
@@ -501,8 +501,8 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 27 unique
-unresolved (30 diagnostics), all data, with 88/88
+Resumed checkpoint 2026-09-09: current family closure leaves 24 unique
+unresolved (27 diagnostics), all data, with 88/88
 objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
 has also closed the CSoundManager constructor, SceneSelect interpolation, and
@@ -527,6 +527,13 @@ screen-effect pointer; AnmDrawCore observes Background's canonical viewport
 pointer through its compatible narrow view. Fresh whole-build changes 33 -> 27
 unique unresolved (36 -> 30 diagnostics), and all 74 configured units across
 the three affected sources remain exact.
+
+Closed 2026-09-09: photo UI embedded fields. The target and canonical manifest
+identify PhotoCard's background/UI ANMs as `g_AsciiManager.asciiAnm` and
+`g_Supervisor.textAnm`; PhotoGameTask's text color is the same AsciiManager
+color field. Fresh whole-build changes 27 -> 24 unique unresolved (30 -> 27
+diagnostics), all 24 remaining names now have a unique target address, and all
+20 affected configured units remain exact.
 
 ## Constant and table reconstruction
 

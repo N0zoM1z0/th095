@@ -107,10 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 27 unique unresolved decorated symbols across 30 diagnostics,
-all data. Of those names, 25 map through canonical relocations to 25 target
-addresses; two currently lack target-address
-evidence and no decorated name maps to multiple targets. The machine-readable
+now fails with 24 unique unresolved decorated symbols across 27 diagnostics,
+all data. Every name maps through canonical relocations to one target address;
+no decorated name lacks target evidence or maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
 
@@ -737,9 +736,9 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-27 unique unresolved names (30 diagnostics), all data. 25 unresolved names
-have target-address evidence across 25 target addresses; 2 names
-remain without target mapping. No runtime/Wine launch has been performed.
+24 unique unresolved names (27 diagnostics), all data. All 24 unresolved names
+have target-address evidence across 24 target addresses. No runtime/Wine
+launch has been performed.
 
 The first data-owner batch closes twelve independent zero-initialized target
 slots without linker aliases or duplicate storage. Their semantic owners are
@@ -754,6 +753,13 @@ loading VM handles and screen-effect pointer, and Background's canonical
 viewport pointer. The fresh cold link moves 33 -> 27 unique unresolved names
 and 36 -> 30 diagnostics; all 74 configured units across the three affected
 sources replay exact.
+
+The photo UI embedded-field batch closes three more names. Target disassembly
+and the exact manifest show the PhotoCard background/UI ANMs are the real
+`g_AsciiManager.asciiAnm` and `g_Supervisor.textAnm`; the HUD text color is the
+real `g_AsciiManager.color`. The fresh cold link moves 27 -> 24 unique
+unresolved names and 30 -> 27 diagnostics, eliminating the unresolved-without-
+target set; all 20 affected configured units replay exact.
 
 The just-closed ResultScreen pair maps the historical production proxies
 `ResultAnmVmDrawView::Draw` and `PreparePhotoResultScreen` to canonical

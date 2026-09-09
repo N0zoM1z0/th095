@@ -174,6 +174,11 @@ extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
 #define g_PhotoEnemyManagerTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerTaskView, g_RuntimeEnemyManagerOwner)
 extern u32 g_PhotoAsciiTextColor;
+#ifndef DIFFBUILD
+// Target 0x004B1FEC is g_AsciiManager @ 0x004A9F80 + 0x806C, the
+// canonical ZunColor storage used by every following AddFormatText call.
+#define g_PhotoAsciiTextColor (g_AsciiManager.color.color)
+#endif
 #define g_ReplayInputButtons (*reinterpret_cast<PhotoReplayInputButtonsTaskView *>(RuntimeInputStorage()))
 extern i32 g_PhotoNextState;
 #ifndef DIFFBUILD

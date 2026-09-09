@@ -3,7 +3,9 @@
 #else
 #include "AnmText.hpp"
 #include "AnmVmId.hpp"
+#include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "Main.hpp"
 #include "utils.hpp"
 
 #include <string.h>
@@ -77,6 +79,12 @@ extern PhotoCardGameTaskView *g_PhotoCardGameTask;
 extern u32 g_PhotoScreenFadeColor;
 
 #ifndef DIFFBUILD
+// The canonical exact unit and target Initialize instructions identify these
+// previously unmapped production views: 0x004B2020 is
+// g_AsciiManager.asciiAnm, while 0x004C4AAC is g_Supervisor.textAnm.  Reuse
+// those loaded-ANM lifecycles instead of introducing independent pointers.
+#define g_PhotoCardBackgroundAnm (g_AsciiManager.asciiAnm)
+#define g_PhotoCardUiAnm (g_Supervisor.textAnm)
 #define g_PhotoCardStageState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoCardStageStateView, g_RuntimeStageStateOwner)
 #define g_PhotoCardGameRuntime \
