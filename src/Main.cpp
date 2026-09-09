@@ -56,7 +56,11 @@ ControllerMapping g_ControllerMapping;
 void *g_RuntimeBulletManagerOwner = 0;
 void *g_RuntimeEnemyManagerOwner = 0;
 void *g_RuntimeBackgroundManagerOwner = 0;
-void *g_RuntimeGameTaskOwner = 0;
+// Target 0x004C4DF4 is the Supervisor's embedded game-task owner, not a
+// separate pointer. Keep one production slot identity across Main,
+// FrontEndController, and the gameplay translation units.
+void *&g_RuntimeGameTaskOwner =
+    reinterpret_cast<void *&>(g_Supervisor.photoGameTask);
 void *g_RuntimeItemManagerOwner = 0;
 void *g_RuntimeEffectManagerOwner = 0;
 void *g_RuntimeStageStateOwner = 0;

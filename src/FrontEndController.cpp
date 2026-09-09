@@ -188,7 +188,16 @@ extern FrontEndSupervisorAudioView g_FrontEndSupervisorAudio;
 // 0x004CA2FC is the idle/demo timer, 0x004C4DF4 publishes the task created for
 // a game/replay transition, and 0x004CA300 rotates the three demo replays.
 DIFFABLE_STATIC(i32, g_FrontEndUiState);
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 DIFFABLE_STATIC(FrontEndGameManagerView *, g_FrontEndGameManager);
+#else
+// Target writes at 0x00446684 and 0x004467C0 publish directly to 0x004C4DF4,
+// Supervisor::photoGameTask (+0x784). A separate production static leaves the
+// Supervisor pointer null and crashes the first retry/return transition when
+// UpdateSceneState reads PhotoGameTaskView::replayMode at +0x120.
+#define g_FrontEndGameManager \
+    TH095_RUNTIME_GLOBAL_PTR(FrontEndGameManagerView, g_RuntimeGameTaskOwner)
+#endif
 extern FrontEndGameManagerView *g_FrontEndGlobalState;
 extern i32 g_ReplayUsesArchive;
 extern u16 g_ResultMenuInput;
