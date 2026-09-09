@@ -323,6 +323,12 @@ real destructor+free source semantics without adding a shim. Fresh whole-build
 count changes 110 -> 96 unique unresolved (114 -> 100 diagnostics),
 callable/runtime 62 -> 48; PhotoGameTask replays 10/10 exact units.
 
+Closed 2026-09-09: PhotoGameTask initialization helper ABI. Production now
+uses canonical `FileSystem::CheckIfFileAlreadyExists @ 0x0041ABA0` and the real
+0xC8 `GameConfiguration::Initialize @ 0x00418720`. Fresh whole-build count
+changes 96 -> 94 unique unresolved (100 -> 98 diagnostics), callable/runtime
+48 -> 46; PhotoGameTask replays 10/10 exact units.
+
 Continue with:
 
 - remaining enemy create/update/destroy/ECL methods in the

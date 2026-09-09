@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 96 unique unresolved decorated symbols across 100 diagnostics:
-48 data and 48 callable/runtime. Of those names, 93 map through canonical
-relocations to 92 target addresses; three currently lack target-address
+now fails with 94 unique unresolved decorated symbols across 98 diagnostics:
+48 data and 46 callable/runtime. Of those names, 91 map through canonical
+relocations to 90 target addresses; three currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -490,6 +490,17 @@ stays 48 and callable/runtime drops 62 -> 48, with all fourteen lifecycle
 addresses absent from the fresh unresolved set. PhotoGameTask's exact snapshot
 is a separate `TH095_MATCH_EXACT` branch, and its 10/10 configured units replay
 exact with no private-label refresh.
+
+The two remaining PhotoGameTask initialization helpers are canonicalized.
+`PhotoGameFileSystemView::CheckIfFileAlreadyExists @ 0x0041ABA0` now calls the
+real FileSystem function, and `PhotoRuntimeConfigView::Initialize @ 0x00418720`
+now uses the real 0xC8 `GameConfiguration` embedded at task +0x34. Production
+explicitly runs `GameConfiguration::Initialize()` before the existing whole-task
+memset, preserving the old proxy constructor call order, then copies
+`g_Supervisor.config` during subsystem initialization. The cold link moves
+96 -> 94 unique unresolved names and 100 -> 98 diagnostics; callable/runtime
+48 -> 46, data remains 48, and both target addresses disappear. PhotoGameTask
+replays 10/10 exact units with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

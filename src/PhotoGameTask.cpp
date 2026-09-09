@@ -75,11 +75,6 @@ struct PhotoCardInfoView
     void Destroy();
 };
 
-struct PhotoGameFileSystemView
-{
-    static BOOL CheckIfFileAlreadyExists(LPCSTR path);
-};
-
 struct PhotoHelpMenuTaskView
 {
     u8 unknown000[0x6108];
@@ -129,18 +124,6 @@ struct PhotoAsciiManagerTaskView
     i32 AddFormatText(Float3 *position, const char *format, ...);
 };
 
-struct PhotoRuntimeConfigView
-{
-    u32 values[50];
-
-    PhotoRuntimeConfigView()
-    {
-        this->Initialize();
-    }
-
-    void Initialize();
-};
-
 struct PhotoCompletionStateTaskView
 {
     i32 unknown000;
@@ -179,7 +162,7 @@ typedef char PhotoGameTaskUpdateLoopIAt10[
     (offsetof(PhotoGameTaskUpdateLocals, i) == 0x10) ? 1 : -1];
 
 typedef char PhotoRuntimeConfigSizeIsC8[
-    (sizeof(PhotoRuntimeConfigView) == 0xc8) ? 1 : -1];
+    (sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
 
 struct PhotoGameTaskView
 {
@@ -194,7 +177,7 @@ struct PhotoGameTaskView
     ResultScreen *pause;                     // +0x020
     PhotoEffectManagerView *lasers;          // +0x024
     ZunTimer stageTimer;                     // +0x028
-    PhotoRuntimeConfigView runtimeConfig;    // +0x034
+    GameConfiguration runtimeConfig;        // +0x034
     u32 flags;                               // +0x0fc
     i32 bestShotIndex;                       // +0x100
     PhotoCompletionStateTaskView completion; // +0x104
@@ -227,10 +210,8 @@ typedef char PhotoGameTaskCompletionTimerAt108[
 typedef char PhotoGameTaskChainsAt118[
     (offsetof(PhotoGameTaskView, calcChain) == 0x118) ? 1 : -1];
 
-extern PhotoRuntimeConfigView g_PhotoRuntimeConfig;
 extern char g_ReplayPath[];
 #ifndef DIFFBUILD
-#define g_PhotoRuntimeConfig     (*reinterpret_cast<PhotoRuntimeConfigView *>(&g_Supervisor.config))
 extern char g_SelectedReplayPath[0x100];
 #define g_ReplayPath g_SelectedReplayPath
 #endif
@@ -260,6 +241,7 @@ extern i32 g_HelpLoadActive;
 
 PhotoGameTaskView::PhotoGameTaskView()
 {
+    this->runtimeConfig.Initialize();
     utils::DebugPrint("pBinitialize GameTaskInf\n");
     memset(this, 0, sizeof(PhotoGameTaskView));
 }
@@ -560,7 +542,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
 {
     char bestShotPath[0x108];
 
-    this->runtimeConfig = g_PhotoRuntimeConfig;
+    this->runtimeConfig = g_Supervisor.config;
     this->replay = ReplayManager::Create(
         this->replayMode, g_ReplayPath);
     if (this->replay == NULL)
@@ -590,7 +572,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
             g_SelectedScene->scene + 1);
     }
 
-    if (!PhotoGameFileSystemView::CheckIfFileAlreadyExists(bestShotPath))
+    if (!FileSystem::CheckIfFileAlreadyExists(bestShotPath))
     {
         g_ResultSaveData->scoreEntries[this->bestShotIndex].attemptCount = 0;
         g_ResultSaveData->scoreEntries[this->bestShotIndex].detailScore = 0;
