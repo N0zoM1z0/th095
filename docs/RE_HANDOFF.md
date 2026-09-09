@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 46 unique unresolved decorated symbols across 50 diagnostics:
-45 data and 1 callable/runtime. Of those names, 44 map through canonical
-relocations to 44 target addresses; two currently lack target-address
+now fails with 45 unique unresolved decorated symbols across 49 diagnostics,
+all data. Of those names, 43 map through canonical relocations to 43 target
+addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -737,8 +737,8 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-46 unique unresolved names (50 diagnostics): 45 data and 1 callable/runtime.
-44 unresolved names have target-address evidence across 44 target addresses; 2 names
+45 unique unresolved names (49 diagnostics), all data. 43 unresolved names
+have target-address evidence across 43 target addresses; 2 names
 remain without target mapping. No runtime/Wine launch has been performed.
 
 The just-closed ResultScreen pair maps the historical production proxies
@@ -782,8 +782,14 @@ Production shares the canonical lifecycle receiver/node layouts through
 `AnmVmLifecycle.hpp` and converts only that call; exact/DIFFBUILD is unchanged.
 All 31 affected AnmManager/AnmVmLifecycle exact units remain exact.
 
-Remaining callable/runtime items at the resumed boundary:
-- `?CapturePhotoPixels@ScorePhotoStageView@th095@@QAEXH@Z` -> 0x0042E7B0 (ScoreData.obj)
+The final callable proxy is closed. ScoreData call `0x004359B1` invokes exact
+`PhotoStageStateView::CapturePhotoPixels @ 0x0042E7B0`, as does the canonical
+PhotoStage edge at `0x0042BBE0`. Production shares the real stage layout
+through `PhotoStage.hpp`; DIFFBUILD/exact retains `ScorePhotoStageView`. All
+seven affected PhotoStage/ScoreData exact units remain exact. The production
+unresolved set now contains data symbols only.
+
+Remaining callable/runtime items: none.
 
 Unmapped data items requiring fresh Ghidra address/lifecycle recovery:
 - `?g_PhotoCardBackgroundAnm@th095@@3PAUAnmLoaded@1@A` (PhotoCardInfo.obj)

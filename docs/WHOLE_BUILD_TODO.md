@@ -479,11 +479,17 @@ Production shares the canonical lifecycle receiver/node layouts through
 unresolved (51 -> 50 diagnostics), callable/runtime 2 -> 1, and all 31
 affected configured units remain exact.
 
-Continue with:
+Closed 2026-09-09: final callable proxy. ScoreData target call `0x004359B1`
+and the canonical PhotoStage call `0x0042BBE0` both invoke exact
+`PhotoStageStateView::CapturePhotoPixels @ 0x0042E7B0`. Production shares the
+real stage owner through `PhotoStage.hpp`; DIFFBUILD/exact retains
+`ScorePhotoStageView`. Fresh whole-build changes 46 -> 45 unique unresolved
+(50 -> 49 diagnostics), callable/runtime 1 -> 0, and all seven affected
+configured units remain exact.
 
-- remaining callable/runtime proxy methods;
-- remaining photo effect/stage creation/session methods;
-- FileSystem, replay, and Supervisor worker proxy signatures.
+Continue with the 45 remaining data symbols. Canonicalize shared target-address
+owners first, then reconstruct target-proven constants/tables and the two
+currently unmapped PhotoCard ANM owners.
 
 For a target address shared by differently named methods, do not invent a
 universal proxy method. Use the actual receiver/type at each call site. The now-closed
@@ -495,13 +501,13 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 46 unique
-unresolved (50 diagnostics), split 45 data / 1 callable-runtime, with 88/88
+Resumed checkpoint 2026-09-09: current family closure leaves 45 unique
+unresolved (49 diagnostics), all data, with 88/88
 objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
 has also closed the CSoundManager constructor, SceneSelect interpolation, and
 FrontEndLifecycle queue Pop, front-end game-task factory, and ANM VM removal
-families. Do not reopen these
+families, plus the final PhotoStage capture receiver. Do not reopen these
 families unless fresh evidence contradicts them. See `RE_HANDOFF.md` for the
 exact remaining callable list and the two unmapped PhotoCard ANM data items.
 

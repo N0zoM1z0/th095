@@ -7,6 +7,9 @@
 #include "Checksum.hpp"
 #include "FileSystem.hpp"
 #include "SceneSelect.hpp"
+#ifndef DIFFBUILD
+#include "PhotoStage.hpp"
+#endif
 
 #include <direct.h>
 #include <stdio.h>
@@ -23,14 +26,17 @@ namespace th095
 
 u8 *__fastcall CompressData(u8 *input, i32 inputSize, i32 *outputSize);
 
+#ifdef DIFFBUILD
 struct ScorePhotoStageView
 {
     void CapturePhotoPixels(i32 photoIndex);
 };
 
 extern ScorePhotoStageView *g_ScorePhotoStage;
+#else
 #define g_ScorePhotoStage \
-    TH095_RUNTIME_GLOBAL_PTR(ScorePhotoStageView, g_RuntimeStageStateOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
+#endif
 
 struct ScoreWriteLocals
 {
