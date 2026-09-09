@@ -5,6 +5,9 @@
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEffectRuntime.hpp"
+#ifndef DIFFBUILD
+#include "PhotoItemManager.hpp"
+#endif
 
 namespace th095
 {
@@ -142,15 +145,18 @@ extern PhotoEffectManagerView *g_PhotoEffectManager;
 extern AnmManager *g_AnmManager;
 extern u32 g_PhotoEffectColors[];
 
+#ifdef DIFFBUILD
 struct PhotoCaptureParticleSpawnerView
 {
     i32 Spawn(i32 type, Float3 *position, u32 color);
 };
-
 extern PhotoCaptureParticleSpawnerView *g_PhotoCaptureParticleSpawner;
-#ifndef DIFFBUILD
-#define g_PhotoCaptureParticleSpawner \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoCaptureParticleSpawnerView, g_RuntimeItemManagerOwner)
+#define TH095_CAPTURE_PARTICLE_SPAWN(type, position, color) \
+    g_PhotoCaptureParticleSpawner->Spawn((type), (position), (color))
+#else
+#define TH095_CAPTURE_PARTICLE_SPAWN(type, position, color) \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoItemManagerView, g_RuntimeItemManagerOwner) \
+        ->Spawn((type), (position), (color))
 #endif
 
 struct PhotoEffectGlobalStateView
@@ -621,7 +627,7 @@ i32 PhotoStraightLaserView::CheckCollision(
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
-                g_PhotoCaptureParticleSpawner->Spawn(
+                TH095_CAPTURE_PARTICLE_SPAWN(
                     0, &sample, vm->color1.color);
             }
         }
@@ -770,7 +776,7 @@ i32 PhotoRotatingLaserView::CheckCollision(
             vm->color1.color = g_PhotoEffectColors[this->spawn.color];
             if (capture != 0)
             {
-                g_PhotoCaptureParticleSpawner->Spawn(
+                TH095_CAPTURE_PARTICLE_SPAWN(
                     0, &sample, vm->color1.color);
             }
         }

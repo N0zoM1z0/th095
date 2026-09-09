@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 68 unique unresolved decorated symbols across 72 diagnostics:
-46 data and 22 callable/runtime. Of those names, 66 map through canonical
-relocations to 66 target addresses; two currently lack target-address
+now fails with 67 unique unresolved decorated symbols across 71 diagnostics:
+46 data and 21 callable/runtime. Of those names, 65 map through canonical
+relocations to 65 target addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -621,6 +621,17 @@ DIFFBUILD paths retain the historical proxy decorations. The cold link moves
 callable/runtime drops 27 -> 22, with all five target addresses absent from the
 fresh unresolved set. Main plus FrontEndLifecycle replay 56/56 exact units with
 no private-label refresh.
+
+The photo-capture particle-spawn receiver is closed on the canonical item
+manager. The exact relocation ledger names `PhotoItemManagerView::Spawn @
+0x0041D460`; hash-attested Ghidra independently bounds it as a 278-byte
+`__thiscall(this, type, position, color)` routine. Production PhotoEffect now
+routes both capture-particle calls through `g_RuntimeItemManagerOwner` typed as
+`PhotoItemManagerView`, while DIFFBUILD retains the historical
+`PhotoCaptureParticleSpawnerView` decoration. The cold link moves 68 -> 67
+unique unresolved names and 72 -> 71 diagnostics; callable/runtime drops
+22 -> 21, data remains 46, and `0x0041D460` leaves the unresolved set. All
+34 PhotoEffect configured units replay exact with no private-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

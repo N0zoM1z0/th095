@@ -395,6 +395,13 @@ unique unresolved (77 -> 72 diagnostics), callable/runtime 27 -> 22, and all
 five target addresses disappear. Main/FrontEndLifecycle replay 56/56 exact with
 no label refresh.
 
+Closed 2026-09-09: photo-capture particle Spawn receiver. Production
+PhotoEffect now invokes canonical `PhotoItemManagerView::Spawn @ 0x0041D460`
+through the already lifecycle-proven item-manager owner; DIFFBUILD retains the
+local spawner proxy. Fresh whole-build count changes 68 -> 67 unique unresolved
+(72 -> 71 diagnostics), callable/runtime 22 -> 21, and all 34 PhotoEffect exact
+units replay with no label refresh.
+
 Continue with:
 
 - remaining enemy ECL/runtime proxy methods such as `0x00416320`;
