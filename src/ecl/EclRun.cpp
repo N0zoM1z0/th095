@@ -69,9 +69,23 @@
 
 #ifdef DIFFBUILD
 #define TH095_ECL_PHOTO_MODE EclRunHigh::g_Th095PhotoMode
+#define TH095_ECL_PHOTO_MODE_BEGIN() TH095_ECL_PHOTO_MODE->Begin()
+#define TH095_ECL_PHOTO_MODE_END() TH095_ECL_PHOTO_MODE->End()
+#define TH095_ECL_SESSION_REPLACE(session) (session)->ReplaceActive()
+#define TH095_ECL_SESSION_FINISH(session) (session)->Finish()
+#define TH095_ECL_SESSION_CREATE(descriptor) (descriptor)->Create()
 #else
 #define TH095_ECL_PHOTO_MODE \
     (reinterpret_cast<EclRunHigh::PhotoModeController *>(::th095::g_Background))
+#define TH095_ECL_PHOTO_MODE_BEGIN() ::th095::g_Background->StartSpellBackground()
+#define TH095_ECL_PHOTO_MODE_END() ::th095::g_Background->StopSpellBackground()
+#define TH095_ECL_SESSION_REPLACE(session) \
+    reinterpret_cast<::th095::PhotoCardInfoView *>(session)->Destroy()
+#define TH095_ECL_SESSION_FINISH(session) \
+    reinterpret_cast<::th095::PhotoCardInfoView *>(session)->Show()
+#define TH095_ECL_SESSION_CREATE(descriptor) \
+    reinterpret_cast<EclRunHigh::PhotoSession *>( \
+        ::th095::PhotoCardInfoView::Create(reinterpret_cast<char *>(descriptor)))
 #endif
 
 #ifdef DIFFBUILD
@@ -140,6 +154,12 @@ struct PhotoBulletManagerView
 {
     i32 SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor);
     void DespawnAllBullets();
+};
+struct PhotoCardInfoView
+{
+    static PhotoCardInfoView *__fastcall Create(char *text);
+    i32 Show();
+    void Destroy();
 };
 struct PhotoEnemyView;
 struct PhotoEnemyManagerView

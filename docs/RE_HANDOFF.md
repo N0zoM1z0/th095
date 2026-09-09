@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 66 unique unresolved decorated symbols across 70 diagnostics:
-46 data and 20 callable/runtime. Of those names, 64 map through canonical
-relocations to 64 target addresses; two currently lack target-address
+now fails with 61 unique unresolved decorated symbols across 65 diagnostics:
+46 data and 15 callable/runtime. Of those names, 59 map through canonical
+relocations to 59 target addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -642,6 +642,8 @@ increment now calls `ZunTimer::Tick`; DIFFBUILD retains `ScreenEffectTimer::Tick
 The cold link moves 67 -> 66 unique unresolved and 71 -> 70 diagnostics;
 callable/runtime drops 21 -> 20, data remains 46, and all 14 ScreenEffect units
 replay exact with no label refresh.
+
+The ECL photography-session proxy family is closed. RunEcl target xrefs go directly to canonical `Background::StartSpellBackground/StopSpellBackground @ 0x00404A30/0x00404AC0` and `PhotoCardInfoView::Show/Create/Destroy @ 0x004087D0/0x00408850/0x00408990`. The historical no-argument `PhotoSessionDescriptor::Create()` thiscall supplies its descriptor pointer in ECX, matching the canonical static-fastcall card `Create(char *)` register ABI. Production EclRun now calls those canonical methods through explicit per-operation macros; DIFFBUILD/exact keeps the historical PhotoMode/PhotoSession decorations. The cold link moves 66 -> 61 unique unresolved and 70 -> 65 diagnostics; callable/runtime drops 20 -> 15, data remains 46, all five target addresses leave the unresolved set, and canonical EclRun remains 1/1 exact with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

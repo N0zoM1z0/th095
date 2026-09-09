@@ -467,15 +467,15 @@ enter_subroutine:
     case 104:
     {
         if (*reinterpret_cast<PhotoSession **>(TH095_ECL_RUNTIME + 0x26ae28))
-            (*reinterpret_cast<PhotoSession **>(
-                TH095_ECL_RUNTIME + 0x26ae28))->ReplaceActive();
+            TH095_ECL_SESSION_REPLACE(*reinterpret_cast<PhotoSession **>(
+                TH095_ECL_RUNTIME + 0x26ae28));
         *reinterpret_cast<PhotoSession **>(TH095_ECL_RUNTIME + 0x26ae28) =
-            reinterpret_cast<PhotoSessionDescriptor *>(
-                instruction->operands)->Create();
+            TH095_ECL_SESSION_CREATE(reinterpret_cast<PhotoSessionDescriptor *>(
+                instruction->operands));
         if (!*reinterpret_cast<PhotoSession **>(
                 TH095_ECL_RUNTIME + 0x26ae28))
             return ZUN_ERROR;
-        TH095_ECL_PHOTO_MODE->Begin();
+        TH095_ECL_PHOTO_MODE_BEGIN();
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0xe), 0);
 
         TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle =
@@ -495,11 +495,11 @@ enter_subroutine:
     {
         if (*reinterpret_cast<PhotoSession **>(TH095_ECL_RUNTIME + 0x26ae28))
         {
-            (*reinterpret_cast<PhotoSession **>(
-                TH095_ECL_RUNTIME + 0x26ae28))->Finish();
+            TH095_ECL_SESSION_FINISH(*reinterpret_cast<PhotoSession **>(
+                TH095_ECL_RUNTIME + 0x26ae28));
             *reinterpret_cast<PhotoSession **>(
                 TH095_ECL_RUNTIME + 0x26ae28) = 0;
-            TH095_ECL_PHOTO_MODE->End();
+            TH095_ECL_PHOTO_MODE_END();
             TH095_ECL_ANM_MARK_DELETE(
                 TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value);
             TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value =

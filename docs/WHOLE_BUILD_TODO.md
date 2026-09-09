@@ -408,6 +408,8 @@ DIFFBUILD keep the historical `ScreenEffectTimer` decoration. Fresh whole-build
 count changes 67 -> 66 unique unresolved (71 -> 70 diagnostics), callable/runtime
 21 -> 20, and all 14 ScreenEffect units replay exact.
 
+Closed 2026-09-09: ECL photography-session/background proxy ABI. The five RunEcl calls now use canonical `Background::Start/StopSpellBackground` at `0x00404A30/0x00404AC0` and `PhotoCardInfoView::Show/Create/Destroy` at `0x004087D0/0x00408850/0x00408990`; exact/DIFFBUILD retain the historical PhotoMode/PhotoSession decorations. Fresh whole-build count changes 66 -> 61 unique unresolved (70 -> 65 diagnostics), callable/runtime 20 -> 15, and the canonical EclRun unit remains exact.
+
 Continue with:
 
 - remaining enemy ECL/runtime proxy methods such as `0x00416320`;
