@@ -7,6 +7,7 @@
 #include "GameplayGlobals.hpp"
 #include "Rng.hpp"
 #include "ScreenEffect.hpp"
+#include "ZunTimer.hpp"
 
 #include <windows.h>
 #include <d3d8.h>
@@ -64,7 +65,11 @@ __forceinline ScreenEffectTimer::operator float()
 
 __forceinline void ScreenEffectTimer::operator++(int)
 {
+#ifdef DIFFBUILD
     this->Tick();
+#else
+    reinterpret_cast<ZunTimer *>(this)->Tick();
+#endif
 }
 
 __forceinline void ScreenEffectTimer::operator=(int value)

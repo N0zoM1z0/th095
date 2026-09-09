@@ -402,11 +402,17 @@ local spawner proxy. Fresh whole-build count changes 68 -> 67 unique unresolved
 (72 -> 71 diagnostics), callable/runtime 22 -> 21, and all 34 PhotoEffect exact
 units replay with no label refresh.
 
+Closed 2026-09-09: ScreenEffect timer receiver. Production ScreenEffect routes
+its 0x0C timer increment to canonical `ZunTimer::Tick @ 0x0041B8A0`; exact and
+DIFFBUILD keep the historical `ScreenEffectTimer` decoration. Fresh whole-build
+count changes 67 -> 66 unique unresolved (71 -> 70 diagnostics), callable/runtime
+21 -> 20, and all 14 ScreenEffect units replay exact.
+
 Continue with:
 
 - remaining enemy ECL/runtime proxy methods such as `0x00416320`;
 - remaining photo effect/stage creation/session methods;
-- FileSystem, replay, Supervisor worker, and timer proxy signatures.
+- FileSystem, replay, and Supervisor worker proxy signatures.
 
 For a target address shared by differently named methods, do not invent a
 universal proxy method. Use the actual receiver/type at each call site. The now-closed

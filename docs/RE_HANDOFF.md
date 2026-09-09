@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 67 unique unresolved decorated symbols across 71 diagnostics:
-46 data and 21 callable/runtime. Of those names, 65 map through canonical
-relocations to 65 target addresses; two currently lack target-address
+now fails with 66 unique unresolved decorated symbols across 70 diagnostics:
+46 data and 20 callable/runtime. Of those names, 64 map through canonical
+relocations to 64 target addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -632,6 +632,16 @@ routes both capture-particle calls through `g_RuntimeItemManagerOwner` typed as
 unique unresolved names and 72 -> 71 diagnostics; callable/runtime drops
 22 -> 21, data remains 46, and `0x0041D460` leaves the unresolved set. All
 34 PhotoEffect configured units replay exact with no private-label refresh.
+
+The ScreenEffect timer proxy is closed on canonical `ZunTimer::Tick @ 0x0041B8A0`.
+The exact ledger already binds ordinary ZunTimer and ResultScreenTimer calls to
+that address, and both `ScreenEffectTimer` and `ZunTimer` are the same 0x0C
+`{previous, subFrame, current}` layout. Hash-attested Ghidra bounds the target
+body to 117 bytes with a single timer receiver. Production ScreenEffect's inline
+increment now calls `ZunTimer::Tick`; DIFFBUILD retains `ScreenEffectTimer::Tick`.
+The cold link moves 67 -> 66 unique unresolved and 71 -> 70 diagnostics;
+callable/runtime drops 21 -> 20, data remains 46, and all 14 ScreenEffect units
+replay exact with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
