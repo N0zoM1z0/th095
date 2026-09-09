@@ -341,6 +341,7 @@ extern u32 g_PhotoScreenFadeColor;
 DIFFABLE_STATIC(Background *, g_Background);
 DIFFABLE_STATIC(u8 *, g_BackgroundStageDataCache);
 DIFFABLE_STATIC(i32, g_BackgroundStageDataSize);
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 DIFFABLE_STATIC(Float3, g_BackgroundCameraPosition);
 DIFFABLE_STATIC(Float3, g_BackgroundCameraLookAt);
 DIFFABLE_STATIC(Float3, g_BackgroundCameraForward);
@@ -357,6 +358,35 @@ extern f32 g_BackgroundCameraValue2;
 DIFFABLE_STATIC(f32, g_BackgroundWaveX);
 DIFFABLE_STATIC(f32, g_BackgroundWaveY);
 DIFFABLE_STATIC(i32, g_BackgroundModeValue);
+#else
+// These target symbols are fields of Supervisor background configuration 0,
+// not independent globals.  Target Initialize writes cameraPosition at
+// 0x004c4854, cameraLookAtOffset at 0x004c4860, and cameraUp at 0x004c486c;
+// Update normalizes the look vector into cameraForward at 0x004c4878.  Stage
+// script commands likewise write cameraPositionOffset.x/z at 0x004c4890/
+// 0x004c4898 and fieldOfView at 0x004c489c.  All of those addresses are
+// g_Supervisor + 0x1e4 plus the offsets described above.
+//
+// Keeping separate production statics made RunStageScript animate one copy
+// while ConfigureBackgroundViewport rendered another, still-default copy.  In
+// particular its coincident eye/look-at produced the observed black stage.
+// Exact-match and DIFFBUILD objects retain their canonical symbol definitions;
+// only the runnable whole-program link aliases source names to the real owner.
+#define TH095_BACKGROUND_VIEWPORT0                                      \
+    (reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)        \
+         ->configurations[0])
+#define g_BackgroundCameraPosition (TH095_BACKGROUND_VIEWPORT0.cameraPosition)
+#define g_BackgroundCameraLookAt (TH095_BACKGROUND_VIEWPORT0.cameraLookAtOffset)
+#define g_BackgroundCameraForward (TH095_BACKGROUND_VIEWPORT0.cameraForward)
+#define g_BackgroundCameraUp (TH095_BACKGROUND_VIEWPORT0.cameraUp)
+#define g_BackgroundCameraValue0 (TH095_BACKGROUND_VIEWPORT0.cameraUp.x)
+#define g_BackgroundCameraValue1 (TH095_BACKGROUND_VIEWPORT0.cameraUp.y)
+#define g_BackgroundCameraValue2 (TH095_BACKGROUND_VIEWPORT0.cameraUp.z)
+#define g_BackgroundWaveX (TH095_BACKGROUND_VIEWPORT0.cameraPositionOffset.x)
+#define g_BackgroundWaveY (TH095_BACKGROUND_VIEWPORT0.cameraPositionOffset.z)
+#define g_BackgroundModeValue                                           \
+    (*reinterpret_cast<i32 *>(&TH095_BACKGROUND_VIEWPORT0.fieldOfView))
+#endif
 #ifdef TH095_MATCH_EXACT
 DIFFABLE_STATIC(BackgroundViewportConfigurationView *,
                 g_CurrentBackgroundViewport);

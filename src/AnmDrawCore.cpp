@@ -134,7 +134,18 @@ static __forceinline AnmBackgroundStateDrawView *AnmBackgroundStateOwner()
 }
 #define g_Background AnmBackgroundStateOwner()
 #endif
+#ifdef TH095_MATCH_EXACT
 extern Float3 g_BackgroundCameraPosition;
+#else
+// Target ANM mode 6/7 reads 0x004c4854, the cameraPosition at the start of
+// Supervisor background configuration 0 (+0x1e4).  Background.cpp now writes
+// that owner directly, so production ANM must consume the same storage rather
+// than require the obsolete standalone reconstruction symbol.  Exact objects
+// keep the original external relocation above.
+#define g_BackgroundCameraPosition                                      \
+    (*reinterpret_cast<Float3 *>(                                      \
+        g_Supervisor.backgroundViewportConfigurations))
+#endif
 
 static __forceinline u8 MixAnmColor(u8 first, u8 second)
 {
