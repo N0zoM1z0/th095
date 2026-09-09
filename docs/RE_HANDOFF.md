@@ -736,8 +736,8 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-15 unique unresolved names (17 diagnostics), all data. All 15 unresolved names
-have target-address evidence across 15 target addresses. No runtime/Wine
+5 unique unresolved names (5 diagnostics), all data. All 5 unresolved names
+have target-address evidence across 5 target addresses. No runtime/Wine
 launch has been performed.
 
 The first data-owner batch closes twelve independent zero-initialized target
@@ -771,6 +771,12 @@ The PBG data batch reconstructs the eight decrypt profiles and the three-entry
 open/seek mode tables directly from the canonical PE. The fresh cold link moves
 18 -> 15 unique unresolved names and 21 -> 17 diagnostics; all 24 configured
 PbgArchive/PbgFile units replay exact.
+
+The rendering/UI constant batch reconstructs both texture-format tables, the
+PhotoEffect palette, Result scene limits and keyboard alphabet, SceneSelect
+colors, the options joystick sentinel, and the Shift-JIS window title. The
+fresh cold link moves 15 -> 5 unique unresolved names and 17 -> 5 diagnostics;
+all 121 configured units across the six affected sources replay exact.
 
 The just-closed ResultScreen pair maps the historical production proxies
 `ResultAnmVmDrawView::Draw` and `PreparePhotoResultScreen` to canonical

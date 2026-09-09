@@ -39,6 +39,12 @@ i32 g_FpsClockAnomalyCount;
 f64 g_LastFpsTimestamp;
 
 #ifndef DIFFBUILD
+// Target .rdata 0x00495A10.  Keep the Shift-JIS title bytes explicit so the
+// source is independent of the host compiler's execution character set.
+char g_WindowTitle[] =
+    "\x93\x8c\x95\xfb\x95\xb6\x89\xd4\x92\x9f\x81\x40\x81\x60 "
+    "Shoot the Bullet. ver 1.02a";
+
 // Target 0x004BE270 is a standalone process-lifetime ControllerMapping POD.
 // GameConfiguration::Initialize reads it, while Supervisor::LoadConfig and the
 // options menu write it back from the canonical Supervisor configuration.

@@ -112,6 +112,8 @@ next action belongs in `RE_HANDOFF.md`.
 
 | ABI-068 | target-observed / source-structure | The eight-record PBG decrypt profile table at `0x004A42C8` and the adjacent file-mode tables at `0x004A5898` / `0x00497CE8` are reconstructed directly from the canonical target. Production owns all three tables in their semantic PBG TUs; exact/DIFFBUILD retains the original externs. Fresh cold whole-build moves 18 -> 15 unique unresolved and 21 -> 17 diagnostics; all 24 configured units across PbgArchive and PbgFile replay exact with no relocation-label refresh. | Canonical relocation addresses and direct PE `.data` / `.rdata` extraction from the hash-attested target; fresh whole-build and 24-unit exact replay, 2026-09-09 |
 
+| ABI-069 | target-observed / source-structure | Ten production constants are reconstructed from canonical target `.rdata` / `.data`: the six-entry ANM D3D8 format and byte-stride maps, sixteen PhotoEffect colors, twelve Result scene limits and the 96-character replay alphabet, eleven SceneSelect group colors and two locked-state colors, the joystick-button sentinel, and the Shift-JIS window title. Each definition remains in its semantic TU and is excluded from exact/DIFFBUILD objects. Fresh cold whole-build moves 15 -> 5 unique unresolved and 17 -> 5 diagnostics; all 121 configured units across the six touched sources replay exact with no relocation-label refresh. | Canonical relocation addresses and direct PE extraction from the hash-attested target; fresh whole-build and 121-unit exact replay, 2026-09-09 |
+
 
 ## Analysis control plane
 

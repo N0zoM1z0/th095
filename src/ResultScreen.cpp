@@ -146,8 +146,19 @@ extern i32 g_ResultSceneState;
 extern i32 g_ResultGroupMap[];
 extern u8 *__fastcall ReadResultHelpLine(
     char *destination, u8 *source, i32 maxLength);
+#ifndef DIFFBUILD
+// Target 0x004A5830: selectable scene count for each of the twelve groups.
+i32 g_ResultSceneLimits[12] = {6, 6, 8, 9, 8, 8, 8, 8, 8, 8, 8, 8};
+// Target pointer 0x004A441C -> canonical 96-character replay-name keyboard at
+// 0x00496398.  The final two hyphens occupy keyboard cells 94 and 95.
+const char *g_ResultAlphabet =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;_@"
+    "abcdefghijklmnopqrstuvwxyz+-/*=%"
+    "0123456789#!?'\"$(){}[]<>&\\|~^ --";
+#else
 extern i32 g_ResultSceneLimits[];
 extern const char *g_ResultAlphabet;
+#endif
 extern ResultPhotoDataView *g_ResultPhotoData;
 extern ResultPhotoControllerView *g_ResultPhotoController;
 

@@ -143,7 +143,16 @@ extern PhotoEffectManagerView *g_PhotoEffectManager;
     TH095_RUNTIME_GLOBAL_PTR(PhotoEffectManagerView, g_RuntimeEffectManagerOwner)
 #endif
 extern AnmManager *g_AnmManager;
+#ifndef DIFFBUILD
+// Target 0x004A43D8: color selected by each of the 16 photo-effect types.
+u32 g_PhotoEffectColors[16] = {
+    0xff808080, 0xffff0000, 0xffff0000, 0xff800080,
+    0xff800080, 0xff0000ff, 0xff0000ff, 0xff008080,
+    0xff008080, 0xff00ff00, 0xff00ff00, 0xff00ff00,
+    0xff808000, 0xff808000, 0xff808000, 0xff808080};
+#else
 extern u32 g_PhotoEffectColors[];
+#endif
 
 #ifdef DIFFBUILD
 struct PhotoCaptureParticleSpawnerView

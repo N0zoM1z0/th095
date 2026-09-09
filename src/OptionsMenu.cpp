@@ -10,6 +10,12 @@
 namespace th095
 {
 
+#ifndef DIFFBUILD
+// Target 0x004A5894 starts at the sentinel immediately beyond the 0..31
+// joystick-button range; Update replaces it after each poll.
+i16 g_OptionsLastJoystickButton = 0x20;
+#endif
+
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 #define g_ResultMenuInput (RuntimeResultMenuInput())
