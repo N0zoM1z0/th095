@@ -11,7 +11,16 @@ f32 AddNormalizeAngle(f32 a, f32 b);
 
 static __forceinline f32 MovementFrameRateMultiplier()
 {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+    // The exact unit names the relocation base g_Supervisor, but its mapped
+    // target address is 0x004BDD50; adding 0x188 resolves to 0x004BDED8.
     return *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(&g_Supervisor) + 0x188);
+#else
+    // In the runnable layout Supervisor has its real 0x004C4670-era shape.
+    // Read the actual 0x004BDED8 owner instead of applying the exact probe's
+    // synthetic relocation addend to the production Supervisor object.
+    return g_AnmGameSpeed;
+#endif
 }
 
 enum MovementModeProbe
