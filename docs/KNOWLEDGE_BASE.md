@@ -118,6 +118,8 @@ next action belongs in `RE_HANDOFF.md`.
 
 | ABI-071 | target-observed / source-structure | The ECL callback tables at `0x004A4250` and `0x004A4270` are reconstructed as relocatable named function-pointer arrays: seven linear interpolation entries plus one Hermite entry, and all 22 opcode-118 extension callbacks in target order. No preferred-base virtual address is embedded in source. Production-only definitions preserve exact/DIFFBUILD object ownership. Fresh cold whole-build moves 3 -> 1 unique unresolved and 3 -> 1 diagnostics; all 32 configured units across EclDependencies and EclExtended replay exact with no relocation-label refresh. | Direct canonical target pointer-table extraction mapped to independently exact authored function entries; fresh whole-build and 32-unit exact replay, 2026-09-09 |
 
+| ABI-072 | target-observed / source-structure | `g_ResultGroupMap @ 0x004C4E3C` is a twelve-entry zero-initialized BSS table. Hash-attested Ghidra finds one indexed read in exact `ResultScreen::Initialize @ 0x00426630`, no writes to the base or any element, and no direct references to elements 1..11; the selected scene-group domain is bounded to twelve. Production ResultScreen now owns the table, while exact/DIFFBUILD retains the extern. The final cold build compiles all 88 i386 COFF objects and links a verified PE32 Windows GUI artifact with zero unresolved symbols; ResultScreen remains 24/24 exact. This proves whole-program compile/link closure, not whole-image byte identity. | Canonical target BSS placement; hash-attested Ghidra xrefs and instruction `0x00426806`; exact ResultScreen unit; successful pinned VC7.1 whole build report, 2026-09-09 |
+
 
 ## Analysis control plane
 

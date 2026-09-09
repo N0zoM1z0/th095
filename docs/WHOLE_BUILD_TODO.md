@@ -501,9 +501,9 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 1 unique
-unresolved (1 diagnostic), all data, with 88/88
-objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
+Resumed checkpoint 2026-09-09: current family closure has zero unresolved
+symbols, all 88/88 objects compile, and the pinned VC7.1 linker emits a
+verified PE32 i386 Windows GUI executable. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
 has also closed the CSoundManager constructor, SceneSelect interpolation, and
 FrontEndLifecycle queue Pop, front-end game-task factory, and ANM VM removal
@@ -533,6 +533,12 @@ Closed 2026-09-09: ECL callback tables. Production binds all eight
 interpolator slots and 22 opcode-118 extension slots to named reconstructed
 callbacks, with no absolute code addresses. Fresh whole-build changes 3 -> 1
 unique unresolved (3 -> 1 diagnostics), and all 32 affected units remain exact.
+
+Closed 2026-09-09: final ResultGroupMap BSS owner and production link. The
+twelve-entry zero table has one target indexed read and no writes. Fresh whole
+build compiles 88/88 COFF objects and links with zero unresolved symbols;
+ResultScreen remains 24/24 exact. Runtime launch validation is the remaining
+whole-build lane, not another source/link blocker.
 
 Closed 2026-09-09: first independent `.bss` owner batch. Twelve real storage
 items are now emitted by their semantic production TUs: Main's exclusive

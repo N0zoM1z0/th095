@@ -143,7 +143,14 @@ extern i32 g_ResultSceneState;
 #ifndef DIFFBUILD
 #define g_ResultSceneState (g_Supervisor.currentState)
 #endif
+#ifndef DIFFBUILD
+// Target 0x004C4E3C is a 12-entry zero-initialized BSS map.  Initialize reads
+// it once as [selected scene group * 4 + base] and no target instruction writes
+// any element: every TH095 scene group selects the same photo-result mode.
+i32 g_ResultGroupMap[12];
+#else
 extern i32 g_ResultGroupMap[];
+#endif
 extern u8 *__fastcall ReadResultHelpLine(
     char *destination, u8 *source, i32 maxLength);
 #ifndef DIFFBUILD

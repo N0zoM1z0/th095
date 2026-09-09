@@ -735,10 +735,13 @@ playability.
 ## Resumed whole-build checkpoint: 2026-09-09
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
-The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-1 unique unresolved name (1 diagnostic), all data. The remaining name has
-target-address evidence at `0x004C4E3C`. No runtime/Wine
-launch has been performed.
+The latest fresh generated whole-build report records 88/88 i386 COFF objects
+and a successful zero-unresolved link. The verified artifact is a 773,632-byte
+PE32 i386 Windows GUI executable at
+`build/whole-validation/th095-reconstructed.exe`, SHA-256
+`b79fa73373a36f1885b34f4c45e069c95eb8acb57a2dfb0310e73db11c94ee24`.
+This is whole-program compile/link closure, not a byte-exact whole-image claim.
+No runtime/Wine launch has been performed.
 
 The first data-owner batch closes twelve independent zero-initialized target
 slots without linker aliases or duplicate storage. Their semantic owners are
@@ -787,6 +790,11 @@ The ECL table batch binds the eight interpolation slots and all 22 opcode-118
 extension slots to their named exact callbacks, without hard-coded code
 addresses. The fresh cold link moves 3 -> 1 unique unresolved names and 3 -> 1
 diagnostics; all 32 configured units across both affected sources replay exact.
+
+The final ResultGroupMap batch closes the sole remaining symbol. Target BSS and
+hash-attested xrefs prove a twelve-entry zero table with one indexed read and no
+writes. ResultScreen remains 24/24 exact; the fresh cold build links all 88
+objects successfully with zero unresolved symbols and verifies the output PE.
 
 The just-closed ResultScreen pair maps the historical production proxies
 `ResultAnmVmDrawView::Draw` and `PreparePhotoResultScreen` to canonical
