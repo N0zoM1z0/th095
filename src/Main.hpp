@@ -238,7 +238,14 @@ struct Supervisor
     D3DPRESENT_PARAMETERS presentParameters;    // +0x0e4
     DummyMidiTimer *dummyMidiTimer;              // +0x118
     GameConfiguration config;                   // +0x11c
+#ifdef TH095_MATCH_EXACT
     u8 unknown1e4[0x220];
+#else
+    u8 backgroundViewportConfigurations[0x1e0]; // +0x1e4 (2 * 0xf0)
+    void *currentBackgroundViewport;            // +0x3c4
+    i32 currentBackgroundViewportIndex;         // +0x3c8
+    u8 unknown3cc[0x38];
+#endif
     i32 calcCount;                              // +0x404
     i32 wantedState;                            // +0x408
     i32 currentState;                           // +0x40c
@@ -345,6 +352,12 @@ struct Supervisor
 typedef char SupervisorPresentAtE4[(offsetof(Supervisor, presentParameters) == 0xe4) ? 1 : -1];
 typedef char SupervisorDummyMidiTimerAt118[(offsetof(Supervisor, dummyMidiTimer) == 0x118) ? 1 : -1];
 typedef char SupervisorControllerCapsAt18[(offsetof(Supervisor, controllerCaps) == 0x18) ? 1 : -1];
+#ifndef TH095_MATCH_EXACT
+typedef char SupervisorCurrentBackgroundViewportAt3C4[
+    (offsetof(Supervisor, currentBackgroundViewport) == 0x3c4) ? 1 : -1];
+typedef char SupervisorCurrentBackgroundViewportIndexAt3C8[
+    (offsetof(Supervisor, currentBackgroundViewportIndex) == 0x3c8) ? 1 : -1];
+#endif
 typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 : -1];
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
 typedef char SupervisorLoadingAnmAt440[(offsetof(Supervisor, loadingAnm) == 0x440) ? 1 : -1];

@@ -357,8 +357,19 @@ extern f32 g_BackgroundCameraValue2;
 DIFFABLE_STATIC(f32, g_BackgroundWaveX);
 DIFFABLE_STATIC(f32, g_BackgroundWaveY);
 DIFFABLE_STATIC(i32, g_BackgroundModeValue);
+#ifdef TH095_MATCH_EXACT
 DIFFABLE_STATIC(BackgroundViewportConfigurationView *,
                 g_CurrentBackgroundViewport);
+#else
+// The target address named g_CurrentBackgroundViewport is not an independent
+// global.  It is the active-view pointer embedded at g_Supervisor + 0x3c4.
+// ConfigureBackgroundViewport publishes that field after selecting one of the
+// two 0xf0-byte configurations, so production consumers must share the same
+// owner instead of creating a zero-initialized duplicate pointer.
+#define g_CurrentBackgroundViewport                                      \
+    reinterpret_cast<BackgroundViewportConfigurationView *>(            \
+        g_Supervisor.currentBackgroundViewport)
+#endif
 
 f32 __stdcall CubicHermiteInterpolate(
     f32 startValue, f32 endValue, f32 startTangent, f32 endTangent, f32 time);

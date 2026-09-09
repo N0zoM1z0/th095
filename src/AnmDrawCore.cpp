@@ -113,16 +113,13 @@ struct AnmProjectedPhotoBlendDrawLocals
 #ifdef TH095_MATCH_EXACT
 extern AnmBackgroundViewportView *g_CurrentBackgroundViewport;
 #else
-// Background.cpp owns the target 0x004C4A34 slot with its canonical
-// BackgroundViewportConfigurationView decoration.  ANM needs only the common
-// leading camera/matrix/viewport layout, so production casts the real pointer
-// through this narrow draw view instead of emitting a second typed global.
-struct BackgroundViewportConfigurationView;
-extern BackgroundViewportConfigurationView *g_CurrentBackgroundViewport;
+// The target address 0x004C4A34 is g_Supervisor + 0x3c4.  ANM needs only the
+// common leading camera/matrix/viewport layout, so production reads the
+// supervisor-owned active pointer through this narrow draw view.
 static __forceinline AnmBackgroundViewportView *AnmCurrentBackgroundViewport()
 {
     return reinterpret_cast<AnmBackgroundViewportView *>(
-        g_CurrentBackgroundViewport);
+        g_Supervisor.currentBackgroundViewport);
 }
 #define g_CurrentBackgroundViewport AnmCurrentBackgroundViewport()
 #endif
