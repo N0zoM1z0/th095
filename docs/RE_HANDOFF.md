@@ -771,6 +771,25 @@ do not reuse older unresolved counts. Continue one target/method/data family at 
 time with hash-attested Ghidra evidence, cold whole-build, affected exact replay,
 and CI before each commit.
 
+## Local `.analysis/` scratch cleanup: 2026-09-09
+
+The ignored private `.analysis/` workspace was pruned after the pause checkpoint.
+It went from 17,457 files / 929,193,594 bytes to 6,440 files / 98,039,683
+bytes, removing 11,017 obsolete or regenerable artifacts / 831,153,911 bytes.
+The cleanup removed complete probe trees for already-closed Background, Camera,
+BestShot, and Chain families; compiler/debug binaries such as OBJ/PDB/COD/IDB/
+DLL/EXE/PCH files; copied compiler/toolchain payloads; the obsolete raw C2
+disassembly dump; the old target-pattern raw search dump; and a stale
+`pop-staged-ci` repository snapshot.
+
+Retained scratch includes the hash-attested architecture CSV exports, current
+GetInput comparison/index/pareto summaries and analysis scripts, and Controller
+probe source/JSON/text material because `Controller::GetInput` remains the one
+explicitly allowed source-present non-exact authored hard case. `.analysis/`
+remains ignored and is not a source-of-truth ledger. The pre-existing untracked
+`EnemyManagerUpdate.i` and `droid.resume.txt` outside `.analysis/` were not
+modified or removed.
+
 ## Matching checkpoint gate
 
 Before and after each bounded matching experiment:
