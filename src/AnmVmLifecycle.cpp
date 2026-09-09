@@ -85,7 +85,7 @@ extern f32 g_ScreenEffectShakeY;
 
 #ifndef DIFFBUILD
 #define g_PhotoGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskDrawGateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskDrawGateView, g_RuntimeGlobalStateOwner)
 #endif
 
 static __forceinline i32 AnmUpdateEitherFlag(i32 first, i32 second)

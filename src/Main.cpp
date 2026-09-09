@@ -56,9 +56,11 @@ ControllerMapping g_ControllerMapping;
 void *g_RuntimeBulletManagerOwner = 0;
 void *g_RuntimeEnemyManagerOwner = 0;
 void *g_RuntimeBackgroundManagerOwner = 0;
-// Target 0x004C4DF4 is the Supervisor's embedded game-task owner, not a
-// separate pointer. Keep one production slot identity across Main,
-// FrontEndController, and the gameplay translation units.
+// Target 0x004BDEC8 is standalone storage owned by PhotoGameTask itself.
+void *g_RuntimeGlobalStateOwner = 0;
+// Target 0x004C4DF4 is the Supervisor's embedded game-task publication slot.
+// It mirrors the pointer during steady-state gameplay, but it is not the same
+// storage and must retain its own transition lifetime.
 void *&g_RuntimeGameTaskOwner =
     reinterpret_cast<void *&>(g_Supervisor.photoGameTask);
 void *g_RuntimeItemManagerOwner = 0;
@@ -85,7 +87,7 @@ extern SupervisorGameTaskView *g_SupervisorGameTask;
 
 #ifndef DIFFBUILD
 #define g_SupervisorGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(SupervisorGameTaskView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(SupervisorGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
 #ifdef DIFFBUILD
@@ -138,7 +140,7 @@ struct PhotoGameTaskView
 extern PhotoGameTaskView *g_PhotoGameTask;
 #ifndef DIFFBUILD
 #define g_PhotoGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
 #ifdef DIFFBUILD

@@ -78,7 +78,7 @@ extern PhotoFrontManagerView *g_PhotoFrontManager;
 #define g_PhotoFrontRuntime \
     TH095_RUNTIME_GLOBAL_PTR(PhotoFrontRuntimeView, g_RuntimePlayerOwner)
 #define g_PhotoFrontGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoFrontGameTaskView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoFrontGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
 i32 LoadPhotoFrontAnm()

@@ -190,7 +190,7 @@ extern PhotoEffectGlobalStateView *g_PhotoGlobalState;
 
 #ifndef DIFFBUILD
 #define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEffectGlobalStateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEffectGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 static inline i32 PhotoEffectEitherFlag(i32 first, i32 second)

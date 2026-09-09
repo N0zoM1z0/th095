@@ -63,7 +63,7 @@ extern ItemGlobalStateView *g_PhotoGlobalState;
 #define g_PhotoGame \
     TH095_RUNTIME_GLOBAL_PTR(ItemPhotoGameView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(ItemGlobalStateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(ItemGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);

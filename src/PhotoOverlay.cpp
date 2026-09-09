@@ -73,7 +73,7 @@ extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
 
 #ifndef DIFFBUILD
 #define g_PhotoStageGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoStageGlobalStateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoStageGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 struct PhotoStageStateView;

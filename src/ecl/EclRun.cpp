@@ -29,7 +29,7 @@
 #define g_Th095PhotoCamera \
     TH095_RUNTIME_GLOBAL_PTR(PhotoCamera, ::th095::g_RuntimePlayerOwner)
 #define g_Th095GameManager \
-    TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeGlobalStateOwner)
 #endif
 
 #ifdef DIFFBUILD

@@ -335,7 +335,7 @@ extern u32 g_PhotoScreenFadeColor;
 
 #ifndef DIFFBUILD
 #define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(BackgroundGlobalStateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(BackgroundGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 DIFFABLE_STATIC(Background *, g_Background);

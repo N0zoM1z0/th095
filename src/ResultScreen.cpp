@@ -105,7 +105,7 @@ extern ResultScreenGlobalStateView *g_ResultScreenGlobalState;
 
 #ifndef DIFFBUILD
 #define g_ResultScreenGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(ResultScreenGlobalStateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(ResultScreenGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 struct ResultScreenInitializeLocals

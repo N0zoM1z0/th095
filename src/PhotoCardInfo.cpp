@@ -90,7 +90,7 @@ extern u32 g_PhotoScreenFadeColor;
 #define g_PhotoCardGameRuntime \
     TH095_RUNTIME_GLOBAL_PTR(PhotoCardGameRuntimeView, g_RuntimePlayerOwner)
 #define g_PhotoCardGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoCardGameTaskView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoCardGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
 static __forceinline void CreatePhotoCardBackgroundVm(

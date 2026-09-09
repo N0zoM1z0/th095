@@ -45,7 +45,7 @@ extern ScreenEffectPhotoGlobalStateView *g_PhotoGlobalState;
 
 #ifndef DIFFBUILD
 #define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(ScreenEffectPhotoGlobalStateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(ScreenEffectPhotoGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 static __forceinline int ScreenEffectEitherFlag(int first, int second)

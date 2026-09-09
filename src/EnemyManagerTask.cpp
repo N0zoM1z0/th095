@@ -35,7 +35,7 @@ extern PhotoEnemyTaskGlobalStateView *g_PhotoEnemyGlobalState;
 
 #ifndef DIFFBUILD
 #define g_PhotoEnemyGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyTaskGlobalStateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyTaskGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);

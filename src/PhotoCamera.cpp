@@ -216,7 +216,7 @@ extern u16 g_PhotoInputPressed;
 #define g_PhotoGame \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);

@@ -57,7 +57,7 @@ extern AsciiStageStateView *g_AsciiStageState;
 #define g_AsciiStageState \
     TH095_RUNTIME_GLOBAL_PTR(AsciiStageStateView, g_RuntimeStageStateOwner)
 #define g_AsciiGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(AsciiGlobalStateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(AsciiGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 DIFFABLE_STATIC(AsciiManager, g_AsciiManager);

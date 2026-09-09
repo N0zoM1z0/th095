@@ -327,7 +327,7 @@ static __forceinline u8 *ExtendedBackgroundOwner()
 #define g_PhotoEffectManager \
     TH095_RUNTIME_GLOBAL_PTR(ExtendedPhotoEffectManager, ::th095::g_RuntimeEffectManagerOwner)
 #define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, ::th095::g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, ::th095::g_RuntimeGlobalStateOwner)
 #endif
 
 #ifdef DIFFBUILD

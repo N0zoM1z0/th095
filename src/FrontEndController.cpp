@@ -212,7 +212,7 @@ DIFFABLE_STATIC(i32, g_DemoReplayIndex);
 
 #ifndef DIFFBUILD
 #define g_FrontEndGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(FrontEndGameManagerView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(FrontEndGameManagerView, g_RuntimeGlobalStateOwner)
 #endif
 
 static __forceinline u16 FrontEndInputAnd(u16 input, u16 mask)

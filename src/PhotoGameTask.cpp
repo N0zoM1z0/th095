@@ -195,7 +195,7 @@ extern i32 g_HelpLoadActive;
 #define g_PhotoGameRuntime \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameRuntimeTaskView, g_RuntimePlayerOwner)
 #define g_PhotoGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
 PhotoGameTaskView::PhotoGameTaskView()

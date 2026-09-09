@@ -512,7 +512,7 @@ extern u32 g_PhotoBulletColors4[];
 
 #ifndef DIFFBUILD
 #define g_PhotoBulletGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletGlobalStateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);

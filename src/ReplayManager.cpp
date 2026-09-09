@@ -64,7 +64,7 @@ extern ReplayGlobalStateView *g_ReplayGlobalState;
 
 #ifndef DIFFBUILD
 #define g_ReplayGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(ReplayGlobalStateView, g_RuntimeGameTaskOwner)
+    TH095_RUNTIME_GLOBAL_PTR(ReplayGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 extern i32 g_ReplayUsesArchive;
