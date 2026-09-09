@@ -487,7 +487,7 @@ real stage owner through `PhotoStage.hpp`; DIFFBUILD/exact retains
 (50 -> 49 diagnostics), callable/runtime 1 -> 0, and all seven affected
 configured units remain exact.
 
-Continue with the 24 remaining data symbols. They all have one target address;
+Continue with the 18 remaining data symbols. They all have one target address;
 reconstruct their target-proven constants/tables and the remaining result BSS
 mapping.
 
@@ -501,8 +501,8 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 24 unique
-unresolved (27 diagnostics), all data, with 88/88
+Resumed checkpoint 2026-09-09: current family closure leaves 18 unique
+unresolved (21 diagnostics), all data, with 88/88
 objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
 has also closed the CSoundManager constructor, SceneSelect interpolation, and
@@ -534,6 +534,13 @@ identify PhotoCard's background/UI ANMs as `g_AsciiManager.asciiAnm` and
 color field. Fresh whole-build changes 27 -> 24 unique unresolved (30 -> 27
 diagnostics), all 24 remaining names now have a unique target address, and all
 20 affected configured units remain exact.
+
+Closed 2026-09-09: PhotoBullet metadata tables. Target `.data` provides the
+relocation-bounded 24-entry script-base, collision-size, and draw-bucket arrays
+followed by the 16/8/4-entry capture palettes. Production contains the decoded
+values; exact/DIFFBUILD remains external. Fresh whole-build changes 24 -> 18
+unique unresolved (27 -> 21 diagnostics), and all 35 BulletManager units
+remain exact.
 
 ## Constant and table reconstruction
 

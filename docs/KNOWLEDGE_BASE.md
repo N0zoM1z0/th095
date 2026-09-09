@@ -108,6 +108,8 @@ next action belongs in `RE_HANDOFF.md`.
 
 | ABI-066 | target-observed / source-structure | The three photo UI globals are embedded fields with independently confirmed target addresses. `g_PhotoAsciiTextColor @ 0x004B1FEC` is `g_AsciiManager.color` (`0x004A9F80 + 0x806C`). The PhotoCard exact manifest and target `Initialize @ 0x00408670` both identify `g_PhotoCardBackgroundAnm @ 0x004B2020` as `g_AsciiManager.asciiAnm` and `g_PhotoCardUiAnm @ 0x004C4AAC` as `g_Supervisor.textAnm`. Production now uses those canonical lifecycles, removing the last two report entries without target evidence. Fresh cold whole-build moves 27 -> 24 unique unresolved and 30 -> 27 diagnostics; all 20 configured units across PhotoCardInfo and PhotoGameTask replay exact. | Exact global bases and field offsets; canonical match-unit relocations; hash-attested target disassembly at `0x00408670`; fresh whole-build and 20-unit exact replay, 2026-09-09 |
 
+| ABI-067 | target-observed / source-structure | The six adjacent PhotoBullet metadata tables are reconstructed from target `.data` `0x004A40C0..0x004A424F`: 24 script bases, 24 collision sizes, 24 draw-bucket indices, and 16/8/4-entry capture palettes. Independent target relocation starts bound every table and the decoded values are emitted only in production; exact/DIFFBUILD retains the original externs. Fresh cold whole-build moves 24 -> 18 unique unresolved and 27 -> 21 diagnostics; all 35 configured BulletManager units replay exact with no relocation-label refresh. | Canonical relocation addresses and direct PE `.data` extraction from the hash-attested target; fresh whole-build and 35-unit exact replay, 2026-09-09 |
+
 
 ## Analysis control plane
 

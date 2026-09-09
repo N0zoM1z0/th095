@@ -107,7 +107,7 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 24 unique unresolved decorated symbols across 27 diagnostics,
+now fails with 18 unique unresolved decorated symbols across 21 diagnostics,
 all data. Every name maps through canonical relocations to one target address;
 no decorated name lacks target evidence or maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
@@ -736,8 +736,8 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-24 unique unresolved names (27 diagnostics), all data. All 24 unresolved names
-have target-address evidence across 24 target addresses. No runtime/Wine
+18 unique unresolved names (21 diagnostics), all data. All 18 unresolved names
+have target-address evidence across 18 target addresses. No runtime/Wine
 launch has been performed.
 
 The first data-owner batch closes twelve independent zero-initialized target
@@ -760,6 +760,12 @@ and the exact manifest show the PhotoCard background/UI ANMs are the real
 real `g_AsciiManager.color`. The fresh cold link moves 27 -> 24 unique
 unresolved names and 30 -> 27 diagnostics, eliminating the unresolved-without-
 target set; all 20 affected configured units replay exact.
+
+The PhotoBullet constant-table batch reconstructs all six adjacent tables at
+`0x004A40C0..0x004A424F` directly from the canonical PE: three 24-entry
+metadata arrays and the 16/8/4-entry capture palettes. The fresh cold link
+moves 24 -> 18 unique unresolved names and 27 -> 21 diagnostics; all 35
+BulletManager units replay exact.
 
 The just-closed ResultScreen pair maps the historical production proxies
 `ResultAnmVmDrawView::Draw` and `PreparePhotoResultScreen` to canonical

@@ -469,12 +469,46 @@ extern PhotoBulletManagerView *g_PhotoBulletManager;
 #define g_PhotoBulletPlayer \
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletPlayerView, g_RuntimePlayerOwner)
 #endif
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+// Target .data 0x004A40C0..0x004A424F contains six adjacent, relocation-
+// bounded bullet metadata tables.  Keep the observed item counts explicit:
+// 24 bullet kinds followed by the 16/8/4-color capture palettes.
+i32 g_PhotoBulletScriptBases[24] = {
+    0, 16, 32, 48, 64, 80, 96, 111,
+    127, 143, 159, 175, 211, 219, 227, 235,
+    243, 283, 296, 251, 259, 267, 275, 191,
+};
+f32 g_PhotoBulletCollisionSizes[24] = {
+    4.0f, 6.0f, 6.0f, 4.0f, 4.0f, 4.0f, 4.0f, 4.0f,
+    4.0f, 0.0f, 4.0f, 6.0f, 10.0f, 8.0f, 8.0f, 8.0f,
+    8.0f, 28.0f, 6.0f, 10.0f, 8.0f, 8.0f, 8.0f, 6.0f,
+};
+i32 g_PhotoBulletDrawBucketIndices[24] = {
+    5, 3, 3, 4, 4, 4, 4, 4,
+    4, 4, 4, 3, 1, 2, 1, 2,
+    2, 0, 2, 2, 2, 1, 2, 3,
+};
+u32 g_PhotoBulletColors16[16] = {
+    0xff808080, 0xffff1010, 0xffff1010, 0xff801080,
+    0xff801080, 0xff1010ff, 0xff1010ff, 0xff108080,
+    0xff108080, 0xff10ff10, 0xff10ff10, 0xff10ff10,
+    0xff808010, 0xff808010, 0xff808010, 0xff808080,
+};
+u32 g_PhotoBulletColors8[8] = {
+    0xff808080, 0xffff1010, 0xff801080, 0xff1010ff,
+    0xff108080, 0xff10ff10, 0xff808010, 0xff808080,
+};
+u32 g_PhotoBulletColors4[4] = {
+    0xffff1010, 0xff1010ff, 0xff10ff10, 0xff808010,
+};
+#else
 extern i32 g_PhotoBulletScriptBases[];
 extern f32 g_PhotoBulletCollisionSizes[];
 extern i32 g_PhotoBulletDrawBucketIndices[];
 extern u32 g_PhotoBulletColors16[];
 extern u32 g_PhotoBulletColors8[];
 extern u32 g_PhotoBulletColors4[];
+#endif
 
 #ifndef DIFFBUILD
 #define g_PhotoBulletGlobalState \
