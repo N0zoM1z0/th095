@@ -301,6 +301,20 @@ void __fastcall SceneSelectControllerView::OnDraw(
 void __fastcall SceneSelectControllerView::OnUpdate(
     SceneSelectControllerView *controller)
 {
+    // The exact target wrapper immediately enters Update(), relying on the
+    // asynchronous title loader to win the race before the first calc tick.
+    // Whole-program reconstruction does not preserve the target's image
+    // layout or startup timing, and Wine can schedule that first tick while
+    // sceneAnm is still null.  The loader owns bit 0: Create() sets it before
+    // registering this callback and LoadThread clears it only after every
+    // title resource is ready.  Keep production builds behind that real
+    // lifecycle barrier; TH095_MATCH_EXACT includes the untouched exact
+    // wrapper above and therefore retains the verified 19-byte target body.
+    if ((reinterpret_cast<FrontEndControllerDrawView *>(controller)->flags &
+         1) != 0)
+    {
+        return;
+    }
     controller->Update();
 }
 
