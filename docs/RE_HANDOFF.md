@@ -58,7 +58,7 @@ Whole-program compile and link closure is complete. A fresh
 - verifies a PE32 i386 Windows GUI image at
   `build/whole-validation/th095-reconstructed.exe`;
 - currently produces 780,288 bytes with SHA-256
-  `231d7eba0d05e55e63172752529dcd5008935bece0f6b24341134eabc00a7849`.
+  `458764b1844bb3e9eebded99bb87aef662b2b09b137fa583926d7697bd0d0b67`.
 
 This is a runnable reconstruction artifact, not a byte-exact whole-image
 claim. Function-level exact evidence remains governed by the match-unit
@@ -78,7 +78,9 @@ The runtime-closure commits are:
   real bit-0 barrier;
 - `492f201` — reconstruct the production scene catalog;
 - `c05a0f3` — share the Supervisor-owned background viewport state;
-- `18c2a32` — share the Supervisor-owned live game-task pointer.
+- `18c2a32` — share the Supervisor-owned live game-task pointer;
+- `ad0d043` — bind audio settings to the TH095 Supervisor layout;
+- `b9a01f3` — bind background camera state to Supervisor viewport 0.
 
 ## Runtime validation
 
@@ -98,8 +100,9 @@ two large archives into a temporary directory; they do not modify the source
 game installation.
 
 Wine 9.0 under Xvfb/WSLg is a validated test environment. The canonical
-Japanese executable ran for 30 seconds without a crash, establishing the
-environment baseline. The reconstructed executable has then been observed to:
+Japanese executable rendered the scene-1-1 forest/water background and
+produced audible BGM, establishing both graphics/resource and host-audio
+baselines. The reconstructed executable has then been observed to:
 
 - load the archives and reach the title menu at 60 FPS;
 - enter the reconstructed twelve-level Mission Select UI;
@@ -110,14 +113,16 @@ environment baseline. The reconstructed executable has then been observed to:
   `Failed / Retry This Mission` result overlay;
 - select the default `Retry This Mission`, start a second scene-1-1 attempt,
   and reach its later failure overlay without exiting;
-- select the failure menu's return option and reach Mission Select again.
+- select the failure menu's return option and reach Mission Select again;
+- retain a non-null streaming BGM object after scene entry and Retry, while
+  reading the real `musicMode=1`, `playSounds=1`, `preloadMusic=0` settings.
 
 The final-artifact runs used held DirectInput key events to avoid missing the
 game's polling window. The post-fix Wine logs were empty. No Wine exception,
 unhandled fault, or debugger invocation occurred before the test process was
 deliberately terminated.
 
-Four runtime discrepancies were diagnosed and closed:
+Six runtime discrepancies were diagnosed and closed:
 
 1. Production startup timing could invoke the exact 19-byte update wrapper
    before asynchronous title resources were ready. Production now honors the
@@ -133,9 +138,19 @@ Four runtime discrepancies were diagnosed and closed:
    the front-end publisher, typed gameplay views, and Supervisor member in
    separate slots, so result-menu teardown found a null Supervisor pointer.
    Production now binds every typed view to the embedded owner.
+5. The background camera/script symbols at `0x004C4854..0x004C489C` are fields
+   of Supervisor viewport configuration 0. Separate production statics let the
+   stage script animate one copy while rendering used an unchanged, degenerate
+   camera copy, producing a black playfield. Background and ANM now share the
+   embedded configuration.
+6. SoundPlayer used a legacy Supervisor layout in the runnable link. It read
+   unrelated bytes as music OFF and preload enabled, deleted the valid BGM
+   stream, then refused to reopen it. Production audio accessors now use the
+   TH095 `0x7BC`-byte Supervisor and its `+0x11C` configuration.
 
-After the game-task owner correction, all 696 configured units across all 88
-sources cold-replayed exact with zero manifest or private-label refreshes.
+After the background-camera and audio-owner corrections, all 696 configured
+units across all 88 sources cold-replayed exact with zero manifest or
+private-label refreshes.
 
 ## Remaining work
 
@@ -144,7 +159,7 @@ the game—the active whole-build lane is complete. There are no known unresolve
 symbols or known startup, gameplay, retry, or result-menu return crashes.
 
 Optional coverage expansion is not a known blocker: sample more of the 93
-scenes, replay playback/recording, Music Room, Help, Options, audio/MIDI, and
+scenes, replay playback/recording, Music Room, Help, Options, MIDI, and
 clean in-game exit/restart paths. Treat any newly observed runtime fault as a
 new evidence lane and fix one real owner/lifecycle family at a time. Do not add
 speculative null guards, duplicate globals, linker aliases, or fake stubs.
