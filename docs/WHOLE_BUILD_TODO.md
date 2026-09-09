@@ -376,12 +376,21 @@ decorations. Fresh whole-build count changes 81 -> 79 unique unresolved
 header regression closure is complete across all 88 sources / 696 exact units
 with no label refresh.
 
+Closed 2026-09-09: MIDI output return/signature ABI. The six remaining Main.obj
+MIDI proxy calls now use the exact `MidiOutput` ABI at `0x004221B0`,
+`0x00422300`, and `0x00422600..0x004227B0`: global `::ZunResult` returns and
+`const char *` for `ReadFileData`. Production `Midi.cpp` was also moved from the
+distinct `th095::ZunResult` identity to the target enum. Fresh whole-build count
+changes 79 -> 73 unique unresolved (83 -> 77 diagnostics), callable/runtime
+33 -> 27, all six target addresses disappear, and the shared-header regression
+gate remains 696/696 strict exact with no label refresh.
+
 Continue with:
 
 - remaining enemy ECL/runtime proxy methods such as `0x00416320`;
 - remaining photo effect/stage creation/session methods;
 - front-end creation/callback/texture-clear methods;
-- FileSystem, replay, Supervisor worker, MIDI, and timer proxy signatures.
+- FileSystem, replay, Supervisor worker, and timer proxy signatures.
 
 For a target address shared by differently named methods, do not invent a
 universal proxy method. Use the actual receiver/type at each call site. The now-closed

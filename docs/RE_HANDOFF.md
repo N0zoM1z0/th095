@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 79 unique unresolved decorated symbols across 83 diagnostics:
-46 data and 33 callable/runtime. Of those names, 77 map through canonical
-relocations to 77 target addresses; two currently lack target-address
+now fails with 73 unique unresolved decorated symbols across 77 diagnostics:
+46 data and 27 callable/runtime. Of those names, 71 map through canonical
+relocations to 71 target addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -588,6 +588,23 @@ remains 46 while callable/runtime drops 35 -> 33. The former no-target
 `EclManager.hpp` are shared, all 88 configured sources were cold replayed: the
 first 48 sources pass 429/429 units and the remaining 40 pass 267/267, for a
 full 696/696 canonical exact replay with no private-label refresh.
+
+The MIDI output ABI family is closed. The canonical exact ledger already fixes
+`MidiOutput::ReadFileData/ParseFile/Play/StopPlayback/UnprepareHeader/SetFadeOut`
+at `0x004221B0`, `0x00422300`, and `0x00422600..0x004227B0` with the retail
+global `::ZunResult` decorated return type; `ReadFileData` also uses `const
+char *`. Hash-attested Ghidra independently bounds the six bodies to
+114/547/81/122/199/79 bytes and confirms the receiver-style calling convention.
+Production Main previously described the same methods through an `i32/void` and
+mutable-`char *` partial view, while production `Midi.cpp` used the distinct
+`th095::ZunResult` enum. `MidiRuntime.hpp`, `Main.hpp`, `SupervisorRuntime.hpp`,
+and `Midi.hpp` now share the target ABI; exact Main keeps its historical partial
+declaration behind `TH095_MATCH_EXACT`. No wrapper or linker alias was added.
+The cold link moves 79 -> 73 unique unresolved names and 83 -> 77 diagnostics;
+data remains 46 while callable/runtime drops 33 -> 27, and all six target
+addresses leave the unresolved set. Because the touched headers are shared, the
+complete canonical universe was replayed and strict-compared: all 696/696 units
+remain exact with zero failures and no private-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

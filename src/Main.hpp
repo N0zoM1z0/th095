@@ -12,6 +12,9 @@
 #include <stddef.h>
 #include "Chain.hpp"
 #include "GameErrorContext.hpp"
+#ifndef TH095_MATCH_EXACT
+#include "MidiRuntime.hpp"
+#endif
 #include "ScreenEffect.hpp"
 #include "SoundPlayer.hpp"
 #include "inttypes.hpp"
@@ -134,6 +137,7 @@ typedef char SerializedControllerMappingSizeIs6C[(sizeof(SerializedControllerMap
 typedef char ControllerMappingSizeIsC4[(sizeof(ControllerMapping) == 0xc4) ? 1 : -1];
 typedef char GameConfigurationSizeIsC8[(sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
 
+#ifdef TH095_MATCH_EXACT
 struct MidiOutput
 {
     i32 ReadFileData(i32 slot, char *path);
@@ -144,6 +148,7 @@ struct MidiOutput
     void UnprepareHeader(LPMIDIHDR header);
     ~MidiOutput();
 };
+#endif
 
 #ifndef TH095_REPLAY_SCAN_WORKER_DEFINED
 #define TH095_REPLAY_SCAN_WORKER_DEFINED

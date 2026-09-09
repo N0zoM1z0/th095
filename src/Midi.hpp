@@ -7,11 +7,9 @@
 namespace th095
 {
 
-#ifdef TH095_MATCH_EXACT
+// The retail MidiOutput methods use the global ZunResult enum in their
+// decorated ABI. Keep production and exact builds on that one target identity.
 typedef ::ZunResult MidiResult;
-#else
-typedef ZunResult MidiResult;
-#endif
 struct MidiTimer
 {
   public:

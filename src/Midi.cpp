@@ -11,10 +11,10 @@
 #include "Supervisor.hpp"
 #include "utils.hpp"
 
-#ifdef TH095_MATCH_EXACT
+// MidiOutput's retail ABI uses the global ZunResult enum in both exact and
+// production builds; keep its success/error constants on that same identity.
 #define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
 #define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
-#endif
 
 namespace th095
 {
