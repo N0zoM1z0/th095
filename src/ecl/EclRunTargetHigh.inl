@@ -78,7 +78,7 @@
         *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x2990) =
             *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x28a0) +
             *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x2924);
-        TH095_ECL_BULLET_MANAGER->SpawnEnemyPattern(
+        TH095_ECL_BULLET_SPAWN(
             reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x298c));
         break;
 

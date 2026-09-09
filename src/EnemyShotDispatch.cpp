@@ -40,6 +40,18 @@ struct EnemyShotBulletManagerView
     i32 SpawnBulletPattern(EnemyShotDescriptorView *descriptor);
 };
 extern EnemyShotBulletManagerView *g_EnemyShotBulletManager;
+#ifndef DIFFBUILD
+struct PhotoBulletSpawnDescriptor;
+struct PhotoBulletManagerView
+{
+    i32 SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor);
+};
+#define TH095_ENEMY_SHOT_SPAWN(manager, descriptor) \
+    reinterpret_cast<PhotoBulletManagerView *>(manager)->SpawnBulletPattern( \
+        reinterpret_cast<PhotoBulletSpawnDescriptor *>(descriptor))
+#else
+#define TH095_ENEMY_SHOT_SPAWN(manager, descriptor) manager->SpawnBulletPattern(descriptor)
+#endif
 extern u8 *g_EnemyShotPlayer;
 
 #ifndef DIFFBUILD
@@ -136,7 +148,7 @@ void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruc
         descriptor->color = (instruction->operandFlags & 2)
             ? EclOperands::ResolveInt(enemy, packed)
             : packed;
-        g_EnemyShotBulletManager->SpawnBulletPattern(descriptor);
+        TH095_ENEMY_SHOT_SPAWN(g_EnemyShotBulletManager, descriptor);
 }
 }
 }

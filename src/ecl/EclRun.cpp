@@ -67,9 +67,15 @@
 
 #ifdef DIFFBUILD
 #define TH095_ECL_BULLET_MANAGER EclRunHigh::g_Th095BulletManager
+#define TH095_ECL_BULLET_SPAWN(descriptor) \
+    TH095_ECL_BULLET_MANAGER->SpawnEnemyPattern(descriptor)
 #else
 #define TH095_ECL_BULLET_MANAGER \
     TH095_RUNTIME_GLOBAL_PTR(EclRunHigh::Th095BulletManager, ::th095::g_RuntimeBulletManagerOwner)
+#define TH095_ECL_BULLET_SPAWN(descriptor) \
+    reinterpret_cast<::th095::PhotoBulletManagerView *>(TH095_ECL_BULLET_MANAGER) \
+        ->SpawnBulletPattern( \
+            reinterpret_cast<::th095::PhotoBulletSpawnDescriptor *>(descriptor))
 #endif
 
 #ifdef DIFFBUILD
@@ -112,6 +118,11 @@ namespace th095
 {
 
 #ifndef DIFFBUILD
+struct PhotoBulletSpawnDescriptor;
+struct PhotoBulletManagerView
+{
+    i32 SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor);
+};
 extern AnmManager *g_AnmManager;
 static __forceinline AnmVmId Th095EclAnmId(i32 value)
 {

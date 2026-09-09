@@ -409,6 +409,21 @@ stays 48 and callable/runtime drops 77 -> 75, with `0x0041DBD0` absent from the
 fresh unresolved set. EclExtended, EclRun, and PhotoEffect replay 57/57 exact
 units with no label refresh.
 
+The `0x00406CC0` bullet-pattern receiver family is closed on the existing
+canonical BulletInf implementation. Hash-attested Ghidra bounds the target to
+181 bytes with a `__thiscall(this, short *)` shape, shows it computing the
+player-facing angle before running the shared bullet-spawn loop, and reports
+three real callers at `0x004062B0`, `0x00408E70`, and `0x00412670`. The exact
+`PhotoBulletManagerView::SpawnBulletPattern` implementation already owns this
+address. Production EnemyShot and EclRun therefore cast only their spawn call
+to that receiver; DIFFBUILD keeps the historical
+`EnemyShotBulletManagerView::SpawnBulletPattern` /
+`EclRunHigh::Th095BulletManager::SpawnEnemyPattern` decorations. No wrapper or
+alias was added. The cold link moves 123 -> 121 unique unresolved names and
+127 -> 125 diagnostics; data stays 48 and callable/runtime drops 75 -> 73,
+with `0x00406CC0` absent from the fresh unresolved set. The two affected
+canonical sources replay 2/2 exact units with no private-label refresh.
+
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
 enum-returning `/Gr` callback type, and `RunDrawChain` returns `int`.

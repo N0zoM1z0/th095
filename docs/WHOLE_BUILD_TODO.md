@@ -275,9 +275,17 @@ redefined. Fresh whole-build count changes 125 -> 123 unique unresolved
 (129 -> 127 diagnostics), callable/runtime 77 -> 75, and all three affected
 sources replay 57/57 exact units.
 
+Closed 2026-09-09: `0x00406CC0` BulletInf spawn receiver ABI. The existing
+exact `PhotoBulletManagerView::SpawnBulletPattern` is the real canonical method;
+production EnemyShot and EclRun cast only this operation to that receiver while
+DIFFBUILD keeps their historical proxy method names. Ghidra bounds the method to
+181 bytes and reports three target callers. Fresh whole-build count changes
+123 -> 121 unique unresolved (127 -> 125 diagnostics), callable/runtime
+75 -> 73, and both affected exact units replay 2/2 exact.
+
 Continue with:
 
-- bullet capture/count/reset/spawn methods in the `0x00404950..0x00408220`
+- remaining bullet capture/count/reset methods in the `0x00404950..0x00408220`
   family;
 - enemy create/update/destroy/ECL methods in the
   `0x00414B30..0x00416E30` family;
