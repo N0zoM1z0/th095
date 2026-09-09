@@ -33,7 +33,9 @@ extern u16 g_PressedButtons;
 #define g_ResultMenuInput (RuntimeResultMenuInput())
 #define g_PressedButtons (RuntimePressedButtons())
 extern f32 g_AnmGameSpeed;
-extern ResultScreen *g_ResultScreen;
+// Target 0x004C4E38 is the zero-initialized current result-screen owner; the
+// constructor publishes it and the destructor clears it.
+DIFFABLE_STATIC(ResultScreen *, g_ResultScreen);
 
 struct ResultScreenGlobalStateView
 {

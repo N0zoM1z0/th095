@@ -32,6 +32,9 @@ namespace th095
 {
 #define g_PressedButtons (RuntimePressedButtons())
 DIFFABLE_STATIC(GameWindow, g_GameWindow);
+// Target 0x004C45E4 is a zero-initialized process-lifetime HANDLE slot.  The
+// single-instance check owns its CreateMutexA publication and all reads.
+DIFFABLE_STATIC(HANDLE, g_ExclusiveMutex);
 i32 g_FpsClockAnomalyCount;
 f64 g_LastFpsTimestamp;
 

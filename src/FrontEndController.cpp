@@ -184,8 +184,11 @@ extern FrontEndSupervisorAudioView g_FrontEndSupervisorAudio;
 #define TH095_FRONT_ANM_MANAGER g_AnmManager
 #endif
 
-extern i32 g_FrontEndUiState;
-extern FrontEndGameManagerView *g_FrontEndGameManager;
+// These target .bss slots are private state owned by the front-end controller:
+// 0x004CA2FC is the idle/demo timer, 0x004C4DF4 publishes the task created for
+// a game/replay transition, and 0x004CA300 rotates the three demo replays.
+DIFFABLE_STATIC(i32, g_FrontEndUiState);
+DIFFABLE_STATIC(FrontEndGameManagerView *, g_FrontEndGameManager);
 extern FrontEndGameManagerView *g_FrontEndGlobalState;
 extern i32 g_ReplayUsesArchive;
 extern u16 g_ResultMenuInput;
@@ -196,7 +199,7 @@ extern u16 g_FrontEndCurrentInput;
 #define g_PressedButtons (RuntimePressedButtons())
 #define g_FrontEndCurrentInput (RuntimeInputCurrent())
 #endif
-extern i32 g_DemoReplayIndex;
+DIFFABLE_STATIC(i32, g_DemoReplayIndex);
 
 #ifndef DIFFBUILD
 #define g_FrontEndGlobalState \

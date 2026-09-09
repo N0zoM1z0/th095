@@ -17,8 +17,9 @@ struct AnmBackgroundQuadVertexView
     Float2 textureUV;
 };
 
-// Target-global software fallback copy of the manager's four 3D quad vertices.
-extern VertexTex1Xyzrhw g_BackgroundQuadVertices[4];
+// Target 0x004CA290 is the zero-initialized software fallback copy of the
+// manager's four 3D quad vertices; SetupVertexBuffer is its sole writer.
+DIFFABLE_STATIC_ARRAY(VertexTex1Xyzrhw, 4, g_BackgroundQuadVertices);
 extern AnmManager *g_AnmManager;
 
 // FUNCTION: TH095 0x00442260; TH08 0x00465250 is the source-shape oracle.

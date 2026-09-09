@@ -107,8 +107,8 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 45 unique unresolved decorated symbols across 49 diagnostics,
-all data. Of those names, 43 map through canonical relocations to 43 target
+now fails with 33 unique unresolved decorated symbols across 36 diagnostics,
+all data. Of those names, 31 map through canonical relocations to 31 target
 addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
@@ -737,9 +737,16 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-45 unique unresolved names (49 diagnostics), all data. 43 unresolved names
-have target-address evidence across 43 target addresses; 2 names
+33 unique unresolved names (36 diagnostics), all data. 31 unresolved names
+have target-address evidence across 31 target addresses; 2 names
 remain without target mapping. No runtime/Wine launch has been performed.
+
+The first data-owner batch closes twelve independent zero-initialized target
+slots without linker aliases or duplicate storage. Their semantic owners are
+Main, front-end controller/lifecycle, PhotoStage, PhotoGameTask, ReplayBrowser,
+ResultScreen, SceneSelectController, and AnmVertexBuffer. The fresh cold link
+moves 45 -> 33 unique unresolved names and 49 -> 36 diagnostics; all 110
+configured units across those nine touched sources replay exact.
 
 The just-closed ResultScreen pair maps the historical production proxies
 `ResultAnmVmDrawView::Draw` and `PreparePhotoResultScreen` to canonical

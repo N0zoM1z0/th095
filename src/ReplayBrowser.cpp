@@ -17,6 +17,11 @@ namespace th095
 char g_SelectedReplayPath[0x100];
 #endif
 
+// Target 0x004BDECC remembers the browser cursor.  Target 0x004C4CB8 is the
+// twelve-byte zero-initialized exit request object shared with scene select.
+DIFFABLE_STATIC(i32, g_ReplayBrowserSelection);
+DIFFABLE_STATIC(ReplayBrowserExitSignal, g_ReplayBrowserExitSignal);
+
 extern i32 g_HelpLoadComplete;
 extern i32 g_HelpLoadActive;
 

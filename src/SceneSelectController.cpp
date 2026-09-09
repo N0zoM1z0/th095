@@ -7,6 +7,10 @@
 namespace th095
 {
 
+// Target 0x004CA308 is the scene-text decoder's zero-initialized 0x40-byte
+// scratch buffer.
+DIFFABLE_STATIC_ARRAY(u8, 0x40, g_SceneTextBuffer);
+
 void __cdecl SceneWriteText(SceneAnmManagerView *manager,
                             SceneAnmVmView *vm, u32 color, u32 shadowColor,
                             const char *text)

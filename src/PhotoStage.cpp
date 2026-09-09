@@ -240,7 +240,9 @@ extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
 extern PhotoStageStateView *g_PhotoStageState;
 #define g_PhotoStageState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
-extern u8 g_PhotoCaptureCountdown;
+// Target 0x004C45F8 is an independent zero-initialized byte published when a
+// captured texture becomes ready.
+DIFFABLE_STATIC(u8, g_PhotoCaptureCountdown);
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 

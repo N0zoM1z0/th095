@@ -180,7 +180,9 @@ extern i32 g_PhotoNextState;
 #define g_PhotoNextState (g_Supervisor.currentState)
 #endif
 extern i32 g_ReplayUsesArchive;
-extern i32 g_PhotoLoadWaitFlag;
+// Target 0x004C6E70 is the zero-initialized load barrier consumed by this
+// task's loading loop.
+DIFFABLE_STATIC(i32, g_PhotoLoadWaitFlag);
 extern i32 g_HelpLoadComplete;
 extern i32 g_HelpLoadActive;
 

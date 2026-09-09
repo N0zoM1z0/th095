@@ -487,7 +487,7 @@ real stage owner through `PhotoStage.hpp`; DIFFBUILD/exact retains
 (50 -> 49 diagnostics), callable/runtime 1 -> 0, and all seven affected
 configured units remain exact.
 
-Continue with the 45 remaining data symbols. Canonicalize shared target-address
+Continue with the 33 remaining data symbols. Canonicalize shared target-address
 owners first, then reconstruct target-proven constants/tables and the two
 currently unmapped PhotoCard ANM owners.
 
@@ -501,15 +501,24 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 45 unique
-unresolved (49 diagnostics), all data, with 88/88
+Resumed checkpoint 2026-09-09: current family closure leaves 33 unique
+unresolved (36 diagnostics), all data, with 88/88
 objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
 has also closed the CSoundManager constructor, SceneSelect interpolation, and
 FrontEndLifecycle queue Pop, front-end game-task factory, and ANM VM removal
 families, plus the final PhotoStage capture receiver. Do not reopen these
 families unless fresh evidence contradicts them. See `RE_HANDOFF.md` for the
-exact remaining callable list and the two unmapped PhotoCard ANM data items.
+current data-only list and the two unmapped PhotoCard ANM data items.
+
+Closed 2026-09-09: first independent `.bss` owner batch. Twelve real storage
+items are now emitted by their semantic production TUs: Main's exclusive
+mutex; the front-end idle/demo/load/game-task slots; PhotoStage's capture byte;
+PhotoGameTask's load barrier; ReplayBrowser's selection and exit-signal object;
+ResultScreen's active pointer; SceneSelectController's 0x40-byte decoder
+buffer; and AnmVertexBuffer's four-vertex fallback array. Fresh whole-build
+changes 45 -> 33 unique unresolved (49 -> 36 diagnostics), and all 110
+configured units across the nine affected sources remain exact.
 
 ## Constant and table reconstruction
 
