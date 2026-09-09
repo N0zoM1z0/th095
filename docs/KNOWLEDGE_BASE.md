@@ -114,6 +114,8 @@ next action belongs in `RE_HANDOFF.md`.
 
 | ABI-069 | target-observed / source-structure | Ten production constants are reconstructed from canonical target `.rdata` / `.data`: the six-entry ANM D3D8 format and byte-stride maps, sixteen PhotoEffect colors, twelve Result scene limits and the 96-character replay alphabet, eleven SceneSelect group colors and two locked-state colors, the joystick-button sentinel, and the Shift-JIS window title. Each definition remains in its semantic TU and is excluded from exact/DIFFBUILD objects. Fresh cold whole-build moves 15 -> 5 unique unresolved and 17 -> 5 diagnostics; all 121 configured units across the six touched sources replay exact with no relocation-label refresh. | Canonical relocation addresses and direct PE extraction from the hash-attested target; fresh whole-build and 121-unit exact replay, 2026-09-09 |
 
+| ABI-070 | target-observed / source-structure | SoundPlayer now owns the target's 47 `SoundBufferIdxVolume` records at `0x004A4480` and 37-entry SFX filename pointer table at `0x004A45F8`. The record's third `i16` is preserved as live queue metadata rather than discarded as padding; every path pointer resolves to the canonical target string. Production-only definitions keep exact/DIFFBUILD objects unchanged. Fresh cold whole-build moves 5 -> 3 unique unresolved and 5 -> 3 diagnostics; all 27 configured SoundPlayer units replay exact with no relocation-label refresh. | Direct record and pointer/string extraction from the hash-attested target plus source read/use semantics; fresh whole-build and 27-unit exact replay, 2026-09-09 |
+
 
 ## Analysis control plane
 

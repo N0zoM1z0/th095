@@ -501,8 +501,8 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 5 unique
-unresolved (5 diagnostics), all data, with 88/88
+Resumed checkpoint 2026-09-09: current family closure leaves 3 unique
+unresolved (3 diagnostics), all data, with 88/88
 objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
 has also closed the CSoundManager constructor, SceneSelect interpolation, and
@@ -523,6 +523,11 @@ limits and replay alphabet, options joystick sentinel, and Shift-JIS window
 title. Fresh whole-build changes 15 -> 5 unique unresolved (17 -> 5
 diagnostics), and all 121 configured units across the six affected sources
 remain exact.
+
+Closed 2026-09-09: SoundPlayer runtime tables. Production now owns all 47
+buffer-index/volume/metadata records and 37 target SFX filenames; the live
+metadata halfword is retained exactly. Fresh whole-build changes 5 -> 3 unique
+unresolved (5 -> 3 diagnostics), and all 27 SoundPlayer units remain exact.
 
 Closed 2026-09-09: first independent `.bss` owner batch. Twelve real storage
 items are now emitted by their semantic production TUs: Main's exclusive

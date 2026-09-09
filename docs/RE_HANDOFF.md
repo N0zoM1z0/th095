@@ -736,8 +736,8 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-5 unique unresolved names (5 diagnostics), all data. All 5 unresolved names
-have target-address evidence across 5 target addresses. No runtime/Wine
+3 unique unresolved names (3 diagnostics), all data. All 3 unresolved names
+have target-address evidence across 3 target addresses. No runtime/Wine
 launch has been performed.
 
 The first data-owner batch closes twelve independent zero-initialized target
@@ -777,6 +777,11 @@ PhotoEffect palette, Result scene limits and keyboard alphabet, SceneSelect
 colors, the options joystick sentinel, and the Shift-JIS window title. The
 fresh cold link moves 15 -> 5 unique unresolved names and 17 -> 5 diagnostics;
 all 121 configured units across the six affected sources replay exact.
+
+The SoundPlayer data batch reconstructs all 47 buffer/volume/metadata records
+and all 37 SFX filename pointers from the canonical target. The fresh cold link
+moves 5 -> 3 unique unresolved names and 5 -> 3 diagnostics; all 27 configured
+SoundPlayer units replay exact.
 
 The just-closed ResultScreen pair maps the historical production proxies
 `ResultAnmVmDrawView::Draw` and `PreparePhotoResultScreen` to canonical
