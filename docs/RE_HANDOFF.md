@@ -107,10 +107,10 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 135 unique unresolved decorated symbols across 139 diagnostics:
-52 data and 83 callable/runtime. Of those names, 132 map through canonical
-relocations to 123 target addresses; three currently lack target-address
-evidence and two decorated names map to multiple targets. The machine-readable
+now fails with 131 unique unresolved decorated symbols across 135 diagnostics:
+48 data and 83 callable/runtime. Of those names, 128 map through canonical
+relocations to 121 target addresses; three currently lack target-address
+evidence and one decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
 
@@ -337,6 +337,26 @@ absent from the fresh unresolved set and the multi-target-name count falls
 canonical universe: all 696 configured units were cold rebuilt in serialized
 segments and the final strict compare is 696/696 exact with zero failures and
 no relocation-label refresh.
+
+The configuration/controller-mapping storage family at `0x004C478C` and
+`0x004BE270` is closed without treating the historical multi-target
+`g_OptionsGameConfig` token as one object. `g_Supervisor` begins at
+`0x004C4670`, and the compile-time `Supervisor::config +0x11C` layout places the
+real 0xC8-byte `GameConfiguration` exactly at `0x004C478C`. Hash-attested Ghidra
+shows `GameConfiguration::Initialize @ 0x00418720` copying the runtime controller
+bindings from standalone `0x004BE270` into that config, `Supervisor::LoadConfig
+@ 0x00424D30` copying validated config bindings back to `0x004BE270`, and
+`PhotoGameTaskView::InitializeSubsystems @ 0x00417A70` copying all 50 dwords of
+the config snapshot from `0x004C478C`. The exact Options update additionally
+writes the config-side binding at `0x00450B3A`, reads it at `0x00450B65`, and
+writes the persisted controller mapping at `0x00450B6B`. Production Options
+therefore views ordinary config/controller fields through `g_Supervisor.config`
+but writes its one 0x12-byte persisted binding copy explicitly through the real
+`g_ControllerMapping`; Main owns that one process-lifetime POD storage. The cold
+link moves 135 -> 131 unique unresolved names and 139 -> 135 diagnostics (data
+52 -> 48, callable/runtime remains 83); both target addresses leave the fresh
+unresolved set and the multi-target count falls 2 -> 1. Main, OptionsMenu, and
+PhotoGameTask replay 59/59 canonical exact units with no label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

@@ -236,6 +236,19 @@ unresolved (148 -> 139 diagnostics), data 59 -> 52, the complete target-slot
 family is absent from the unresolved set, and a full canonical replay closes at
 696/696 exact with no label refresh.
 
+Closed 2026-09-09: configuration/controller-mapping storage at
+`0x004C478C` / `0x004BE270`. Ghidra proves `0x004C478C` is
+`g_Supervisor.config` (`Supervisor +0x11C`) and `0x004BE270` is the distinct
+process-lifetime controller mapping copied into config by `0x00418720` and back
+out by `Supervisor::LoadConfig @ 0x00424D30`. The Options multi-target spelling
+is resolved per expression: normal config reads/writes use `g_Supervisor.config`,
+while the exit binding copy writes the real `g_ControllerMapping`. PhotoGameTask
+copies its full 0xC8 runtime snapshot from the Supervisor config. Fresh whole-
+build count changes 135 -> 131 unique unresolved (139 -> 135 diagnostics), both
+target addresses disappear, and Main/OptionsMenu/PhotoGameTask replay 59/59
+exact units. The only remaining multi-target unresolved name is now the three-
+method `PhotoResetTargetView::ResetForPhotoTransition` family.
+
 Continue with:
 
 - bullet capture/count/reset/spawn methods in the `0x00404950..0x00408220`

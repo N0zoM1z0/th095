@@ -4,6 +4,7 @@
 #include "OptionsMenu.hpp"
 #include "Controller.hpp"
 #include "InputRuntime.hpp"
+#include "Main.hpp"
 #include "SoundPlayer.hpp"
 
 namespace th095
@@ -13,6 +14,26 @@ extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 #define g_ResultMenuInput (RuntimeResultMenuInput())
 #define g_PressedButtons (RuntimePressedButtons())
+
+#ifndef DIFFBUILD
+static __forceinline OptionsGameConfigView &OptionsRuntimeGameConfig()
+{
+    return *reinterpret_cast<OptionsGameConfigView *>(&g_Supervisor.config);
+}
+
+static __forceinline OptionsControllerMappingView &OptionsRuntimeControllerMapping()
+{
+    return *reinterpret_cast<OptionsControllerMappingView *>(&g_Supervisor.config);
+}
+
+static __forceinline OptionsGameConfigView &OptionsPersistentControllerMapping()
+{
+    return *reinterpret_cast<OptionsGameConfigView *>(&g_ControllerMapping);
+}
+
+#define g_OptionsGameConfig (OptionsRuntimeGameConfig())
+#define g_OptionsControllerMapping (OptionsRuntimeControllerMapping())
+#endif
 
 inline u16 GetOptionsPressedButtons(u16 buttons)
 {
@@ -78,7 +99,7 @@ ChainCallbackResult OptionsMenuView::Update()
         }
 
         this->savedWindowed = g_OptionsGameConfig.windowed;
-        this->UpdateWindowModeSprites();
+        this->UpdateWindowModeSprites(g_OptionsGameConfig.windowed);
         this->controllerBinding = g_OptionsGameConfig.controllerBinding;
         this->UpdateButton00Sprites();
         this->UpdateButton02Sprites();
@@ -123,7 +144,7 @@ ChainCallbackResult OptionsMenuView::Update()
             case 3:
                 g_OptionsGameConfig.windowed =
                     1 - g_OptionsGameConfig.windowed;
-                this->UpdateWindowModeSprites();
+                this->UpdateWindowModeSprites(g_OptionsGameConfig.windowed);
                 break;
 
             case 4:
@@ -161,7 +182,7 @@ ChainCallbackResult OptionsMenuView::Update()
             case 3:
                 g_OptionsGameConfig.windowed =
                     1 - g_OptionsGameConfig.windowed;
-                this->UpdateWindowModeSprites();
+                this->UpdateWindowModeSprites(g_OptionsGameConfig.windowed);
                 break;
 
             case 4:
@@ -290,7 +311,13 @@ options_finish:
             }
             this->vmIds.SetInterrupt(0x6a, 1);
             g_OptionsControllerMapping.primaryBinding = this->controllerBinding;
-            g_OptionsGameConfig.controllerBinding = g_OptionsControllerMapping.primaryBinding;
+#ifndef DIFFBUILD
+            OptionsPersistentControllerMapping().controllerBinding =
+                g_OptionsControllerMapping.primaryBinding;
+#else
+            g_OptionsGameConfig.controllerBinding =
+                g_OptionsControllerMapping.primaryBinding;
+#endif
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
             if (this->savedWindowed != g_OptionsGameConfig.windowed)
             {

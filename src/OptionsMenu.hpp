@@ -173,9 +173,9 @@ struct OptionsMenuView
         this->SetDigitSprite(0x80, value % 10);
     }
 
-    __forceinline void UpdateWindowModeSprites()
+    __forceinline void UpdateWindowModeSprites(u8 windowed)
     {
-        if (g_OptionsGameConfig.windowed == 0)
+        if (windowed == 0)
         {
             this->vmIds.SetInterrupt(0x78, 4);
             this->vmIds.SetInterrupt(0x79, 5);
