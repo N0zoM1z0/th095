@@ -2234,9 +2234,9 @@ void GameConfiguration::Initialize()
     this->effectQuality = 2;
     this->musicVolume = 100;
     this->sfxVolume = 80;
-    this->unknown0b2 = 0;
-    this->unknown0b3 = 1;
-    this->unknown0b4 = 2;
+    this->controllerAssignments[0] = 0;
+    this->controllerAssignments[1] = 1;
+    this->controllerAssignments[2] = 2;
 }
 
 #define fileSize restartCommandProcessingLocal05

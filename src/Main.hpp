@@ -121,9 +121,7 @@ struct GameConfiguration
     u8 windowed;          // +0xaf
     u8 frameskipConfig;   // +0xb0
     u8 effectQuality;     // +0xb1
-    u8 unknown0b2;
-    u8 unknown0b3;
-    u8 unknown0b4;
+    u8 controllerAssignments[3]; // +0xb2; GetInput consumes entries 0 and 1
     i8 musicVolume;       // +0xb5
     i8 sfxVolume;         // +0xb6
     u8 unknown0b7[0x0d];
@@ -136,6 +134,8 @@ typedef char ControllerBindingSizeIs12[(sizeof(ControllerBinding) == 0x12) ? 1 :
 typedef char SerializedControllerMappingSizeIs6C[(sizeof(SerializedControllerMapping) == 0x6c) ? 1 : -1];
 typedef char ControllerMappingSizeIsC4[(sizeof(ControllerMapping) == 0xc4) ? 1 : -1];
 typedef char GameConfigurationSizeIsC8[(sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
+typedef char GameConfigurationControllerAssignmentsAtB2[
+    (offsetof(GameConfiguration, controllerAssignments) == 0xb2) ? 1 : -1];
 
 #ifdef TH095_MATCH_EXACT
 struct MidiOutput

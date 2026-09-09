@@ -14,7 +14,6 @@ namespace th095
 DIFFABLE_STATIC_ARRAY(u8, 128, g_ControllerButtons);
 DIFFABLE_STATIC_ARRAY(JOYCAPSA, 2, g_JoystickCaps);
 DIFFABLE_STATIC_ASSIGN(i32, g_ControllerInputEnabled) = 1;
-DIFFABLE_STATIC_ARRAY_ASSIGN(u8, 2, g_ControllerAssignments) = {0, 0};
 DIFFABLE_STATIC_ARRAY(ControllerInputSlotView, 3, g_ControllerInputSlots);
 #endif
 
@@ -41,7 +40,14 @@ DIFFABLE_STATIC_ARRAY(ControllerInputSlotView, 3, g_ControllerInputSlots);
 #define TH095_CONTROLLER_BUTTONS_PTR (g_ControllerButtons)
 #define TH095_CONTROLLER_BUTTON(index) (g_ControllerButtons[index])
 #define TH095_CONTROLLER_KEYBOARD_DEVICE g_Supervisor.keyboard
-#define TH095_CONTROLLER_ASSIGNMENT(index) (g_ControllerAssignments[index])
+// GetInput's only assignment reads target 0x004C483E/0x004C483F, which are
+// Supervisor::config +0xB2/+0xB3.  GameConfiguration::Initialize supplies the
+// target defaults 0/1/2 there.  A former production-only array initialized to
+// 0/0 split these reads from the configuration owner and made both logical
+// controllers select device zero.  Exact probes retain their historical
+// g_ControllerAssignments relocation spelling above.
+#define TH095_CONTROLLER_ASSIGNMENT(index) \
+    (g_Supervisor.config.controllerAssignments[index])
 #endif
 
 ControllerInputSlotView::ControllerInputSlotView()
