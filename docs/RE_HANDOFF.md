@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 127 unique unresolved decorated symbols across 131 diagnostics:
-48 data and 79 callable/runtime. Of those names, 124 map through canonical
-relocations to 119 target addresses; three currently lack target-address
+now fails with 125 unique unresolved decorated symbols across 129 diagnostics:
+48 data and 77 callable/runtime. Of those names, 122 map through canonical
+relocations to 118 target addresses; three currently lack target-address
 evidence and one decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -376,6 +376,20 @@ set. BulletManager, EclExtended, PhotoEffect, and PhotoStage replay 97/97
 canonical exact units with no label refresh. An initial DIFFBUILD macro spelling
 with redundant parentheses changed one VC7.1 body size; restoring the exact
 member-call token shape returned BulletManager to 35/35 exact before closure.
+
+The `0x00404C60` photo-script-base callable alias family is closed. The
+hash-attested Ghidra query bounds the target to a 21-byte `__fastcall` function
+with one integer parameter, exactly matching the existing canonical exact
+`GetPhotoBulletScriptBase` implementation and its `g_PhotoBulletScriptBases`
+table relocation. Production EclExtended and PhotoEffect callers now name that
+real helper instead of their TU-local `EclExtended::GetPhotoBulletScriptBase`
+and `GetPhotoEffectScriptBase` proxy names; EclExtended DIFFBUILD keeps the
+historical nested symbol through a token-preserving object-like macro, while
+PhotoEffect exact code remains isolated in `PhotoEffectExact.inl`. The cold link
+moves 127 -> 125 unique unresolved names and 131 -> 129 diagnostics; data stays
+48 and callable/runtime drops 79 -> 77, with `0x00404C60` absent from the fresh
+unresolved set. EclExtended and PhotoEffect replay 56/56 exact units with no
+label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

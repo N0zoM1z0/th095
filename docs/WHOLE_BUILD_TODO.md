@@ -259,6 +259,13 @@ the four affected sources replay 97/97 exact units with no label refresh. The
 existing three approved ANM x87 functions were not changed and no assembly was
 added.
 
+Closed 2026-09-09: `0x00404C60` photo script-base helper aliases.
+The attested target is the existing exact 21-byte `GetPhotoBulletScriptBase`;
+production EclExtended and PhotoEffect now call it directly while exact paths
+retain their historical proxy names. Fresh whole-build count changes 127 -> 125
+unique unresolved (131 -> 129 diagnostics), callable/runtime 79 -> 77, and the
+two affected sources replay 56/56 exact units with no label refresh.
+
 Continue with:
 
 - bullet capture/count/reset/spawn methods in the `0x00404950..0x00408220`

@@ -8,6 +8,7 @@ namespace th095
 {
 extern f32 g_AnmGameSpeed;
 #ifndef DIFFBUILD
+i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
 extern AnmManager *g_AnmManager;
 static __forceinline AnmManager *EclExtendedCanonicalAnmManager()
 {
@@ -274,14 +275,19 @@ static __forceinline u8 *ExtendedBackgroundOwner()
     TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, ::th095::g_RuntimeGameTaskOwner)
 #endif
 
+#ifdef DIFFBUILD
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
+#define TH095_EXTENDED_SCRIPT_BASE GetPhotoBulletScriptBase
+#else
+#define TH095_EXTENDED_SCRIPT_BASE ::th095::GetPhotoBulletScriptBase
+#endif
 
 __forceinline void ExtendedBulletView::ReinitializeDirect()
 {
     // Extended entries 2/3 repeat this target 0x2C InitializeVm phase.
     u8 compilerStorage[0x2c];
     g_PhotoBulletManager->anmSpawner->InitializeVm(
-        &this->vm, GetPhotoBulletScriptBase(this->bulletType) + this->color);
+        &this->vm, TH095_EXTENDED_SCRIPT_BASE(this->bulletType) + this->color);
 }
 
 __forceinline void ExtendedBulletView::ReinitializeShifted()
@@ -289,7 +295,7 @@ __forceinline void ExtendedBulletView::ReinitializeShifted()
     // Entry 2 uses the same phase but selects the shifted script bank.
     u8 compilerStorage[0x2c];
     g_PhotoBulletManager->anmSpawner->InitializeVm(
-        &this->vm, GetPhotoBulletScriptBase(this->bulletType) + 0x10 + this->color);
+        &this->vm, TH095_EXTENDED_SCRIPT_BASE(this->bulletType) + 0x10 + this->color);
 }
 
 #ifdef TH095_MATCH_EXACT

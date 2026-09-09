@@ -257,7 +257,7 @@ static inline i32 PhotoEffectEitherFlag(i32 first, i32 second)
     return first | second;
 }
 
-extern i32 __fastcall GetPhotoEffectScriptBase(i32 type);
+extern i32 __fastcall GetPhotoBulletScriptBase(i32 type);
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
 struct PhotoEffectManagerView
@@ -413,7 +413,7 @@ i32 PhotoStraightLaserView::Initialize(void *args)
 
     g_PhotoEffectManager->anm->InitializeVm(
         &this->bodyVm,
-        GetPhotoEffectScriptBase(this->spawn.type) + this->spawn.color);
+        GetPhotoBulletScriptBase(this->spawn.type) + this->spawn.color);
     this->bodyVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->bodyVm);
     PhotoEffectSetAdditivePhase(&this->bodyVm);
@@ -579,7 +579,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
 
     g_PhotoEffectManager->anm->InitializeVm(
         &this->bodyVm,
-        GetPhotoEffectScriptBase(this->spawn.type) + this->spawn.color);
+        GetPhotoBulletScriptBase(this->spawn.type) + this->spawn.color);
     this->bodyVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->bodyVm);
     PhotoEffectSetAdditivePhase(&this->bodyVm);
