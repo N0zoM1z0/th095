@@ -335,10 +335,20 @@ exact-facing names. Fresh whole-build count changes 94 -> 92 unique unresolved
 (98 -> 96 diagnostics), data 48 -> 46; the two affected sources replay 34/34
 exact units.
 
+Closed 2026-09-09: EnemyInf task-shell lifecycle/update receiver ABI.
+Ghidra shows `Create @ 0x004149F0` allocating exactly `0x26AE30` bytes and
+passing the same object to canonical `PhotoEnemyManagerView` ctor/load/dtor at
+`0x00414B90/0x004153D0/0x004154E0`; task callback `0x00416290` passes that same
+receiver to canonical `OnUpdate @ 0x00415970`. Production uses the canonical
+receiver for those four edges while DIFFBUILD keeps the task-shell decorations.
+Fresh whole-build count changes 92 -> 88 unique unresolved (96 -> 92
+diagnostics), callable/runtime 46 -> 42; `EnemyManagerTask.cpp` replays 5/5
+exact units with no label refresh.
+
 Continue with:
 
-- remaining enemy create/update/destroy/ECL methods in the
-  `0x00414B30..0x00416E30` family;
+- remaining enemy spawn/reset/ECL methods in the
+  `0x004156C0..0x00416E30` family;
 - remaining photo effect/stage creation/session methods;
 - front-end creation/callback/texture-clear methods;
 - FileSystem, replay, Supervisor worker, MIDI, and timer proxy signatures.

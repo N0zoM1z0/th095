@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 92 unique unresolved decorated symbols across 96 diagnostics:
-46 data and 46 callable/runtime. Of those names, 89 map through canonical
-relocations to 89 target addresses; three currently lack target-address
+now fails with 88 unique unresolved decorated symbols across 92 diagnostics:
+46 data and 42 callable/runtime. Of those names, 85 map through canonical
+relocations to 85 target addresses; three currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -513,6 +513,22 @@ data relocations. The cold link moves 94 -> 92 unique unresolved names and
 98 -> 96 diagnostics; data 48 -> 46, callable/runtime remains 46, and the target
 address disappears. PhotoGameTask and ResultScreen replay 34/34 exact units
 with no label refresh.
+
+The EnemyInf task-shell lifecycle/update receiver family is closed. Hash-attested
+Ghidra decompilation of the exact factory at `0x004149F0` shows one
+`operator new(0x26AE30)` allocation whose pointer is passed directly to the
+canonical `PhotoEnemyManagerView` constructor at `0x00414B90` and resource
+loader at `0x004153D0`; the failure path passes the same pointer to the
+`0x004154E0` destructor before freeing it. The task callback at `0x00416290`
+passes that same manager receiver directly to canonical
+`PhotoEnemyManagerView::OnUpdate @ 0x00415970`. Production `EnemyManagerTask`
+therefore uses a same-size canonical partial `PhotoEnemyManagerView` only for
+those lifecycle/update calls, while DIFFBUILD retains the historical
+`PhotoEnemyManagerTaskView` decorations for exact comparison. The fresh cold
+link moves 92 -> 88 unique unresolved names and 96 -> 92 diagnostics; data
+remains 46 while callable/runtime drops 46 -> 42, and all four target addresses
+leave the unresolved set. All five `EnemyManagerTask.cpp` canonical units replay
+exact with no private-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

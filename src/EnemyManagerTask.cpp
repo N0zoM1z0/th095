@@ -74,6 +74,45 @@ typedef char PhotoEnemyManagerTaskChainsAt26AE20[
     (offsetof(PhotoEnemyManagerTaskView, calcChain) == 0x26ae20 &&
      offsetof(PhotoEnemyManagerTaskView, drawChain) == 0x26ae24) ? 1 : -1];
 
+#ifndef DIFFBUILD
+// Production calls the canonical manager lifecycle/update receiver implemented
+// in EnemyManagerUpdate.cpp. Ghidra shows the task factory at 0x004149F0
+// allocating exactly 0x26AE30 bytes, passing that same pointer to the
+// 0x00414B90 constructor and 0x004153D0 loader, and using the 0x004154E0
+// destructor on failure. The task callback at 0x00416290 passes the same
+// receiver directly to the canonical update at 0x00415970.
+struct PhotoEnemyManagerView
+{
+    u8 storage[0x26ae30];
+
+    PhotoEnemyManagerView();
+    ~PhotoEnemyManagerView();
+    i32 LoadResources();
+    static i32 __fastcall OnUpdate(PhotoEnemyManagerView *enemyManager);
+};
+
+typedef char PhotoEnemyManagerRuntimeSizeIs26AE30[
+    (sizeof(PhotoEnemyManagerView) == sizeof(PhotoEnemyManagerTaskView)) ? 1 : -1];
+
+static __forceinline PhotoEnemyManagerView *PhotoEnemyRuntime(
+    PhotoEnemyManagerTaskView *manager)
+{
+    return reinterpret_cast<PhotoEnemyManagerView *>(manager);
+}
+
+#define TH095_ENEMY_TASK_NEW() \
+    reinterpret_cast<PhotoEnemyManagerTaskView *>(new PhotoEnemyManagerView())
+#define TH095_ENEMY_TASK_LOAD(manager) PhotoEnemyRuntime(manager)->LoadResources()
+#define TH095_ENEMY_TASK_DELETE(manager) delete PhotoEnemyRuntime(manager)
+#define TH095_ENEMY_TASK_UPDATE(manager) \
+    PhotoEnemyManagerView::OnUpdate(PhotoEnemyRuntime(manager))
+#else
+#define TH095_ENEMY_TASK_NEW() new PhotoEnemyManagerTaskView()
+#define TH095_ENEMY_TASK_LOAD(manager) (manager)->LoadResources()
+#define TH095_ENEMY_TASK_DELETE(manager) delete (manager)
+#define TH095_ENEMY_TASK_UPDATE(manager) (manager)->Update()
+#endif
+
 // FUNCTION: TH095 0x004149F0.
 PhotoEnemyManagerTaskView *PhotoEnemyManagerTaskView::Create()
 {
@@ -86,8 +125,8 @@ PhotoEnemyManagerTaskView *PhotoEnemyManagerTaskView::Create()
 #define manager locals.manager
 #define elem locals.elem
 
-    manager = new PhotoEnemyManagerTaskView();
-    if (manager->LoadResources() != ZUN_SUCCESS)
+    manager = TH095_ENEMY_TASK_NEW();
+    if (TH095_ENEMY_TASK_LOAD(manager) != ZUN_SUCCESS)
         goto failure;
 
     elem = g_Chain.CreateElem(
@@ -106,7 +145,7 @@ PhotoEnemyManagerTaskView *PhotoEnemyManagerTaskView::Create()
 failure:
     if (manager != NULL)
     {
-        delete manager;
+        TH095_ENEMY_TASK_DELETE(manager);
         manager = NULL;
     }
 #undef elem
@@ -149,7 +188,7 @@ i32 __fastcall PhotoEnemyManagerTaskView::OnUpdate(
     {
         return 1;
     }
-    return manager->Update();
+    return TH095_ENEMY_TASK_UPDATE(manager);
 }
 
 // FUNCTION: TH095 0x004162F0.
