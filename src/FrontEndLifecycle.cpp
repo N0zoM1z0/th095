@@ -445,13 +445,25 @@ static __forceinline void FrontEndFreeGroupQueuePop(FrontEndLifecycleView *view)
 {
     u32 compilerStorage;
     FrontEndFreePoppedValue(
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+        reinterpret_cast<void *>(reinterpret_cast<SceneValueQueue *>(
+                                      &view->groupPreviewDataQueue)
+                                      ->Pop()));
+#else
         reinterpret_cast<void *>(view->groupPreviewDataQueue.Pop()));
+#endif
 }
 static __forceinline void FrontEndFreeSceneQueuePop(FrontEndLifecycleView *view)
 {
     u32 compilerStorage;
     FrontEndFreePoppedValue(
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+        reinterpret_cast<void *>(reinterpret_cast<SceneValueQueue *>(
+                                      &view->scenePreviewDataQueue)
+                                      ->Pop()));
+#else
         reinterpret_cast<void *>(view->scenePreviewDataQueue.Pop()));
+#endif
 }
 static __forceinline void FrontEndFreePendingPrimary(FrontEndLifecycleView *view, i32 index)
 {

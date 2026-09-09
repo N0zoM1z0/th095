@@ -456,6 +456,13 @@ the exact include retains `SceneSelectColorInterpolationView`. Fresh whole-build
 changes 50 -> 49 unique unresolved (54 -> 53 diagnostics), callable/runtime
 5 -> 4, and the SceneSelectUpdate configured unit remains exact.
 
+Closed 2026-09-09: FrontEndLifecycle queue Pop receiver proxy. Its two target
+edges at `0x00445BDA/0x00445C0B` use 0x48-byte queue members and invoke exact
+`SceneValueQueue::Pop @ 0x00450F60`. Production casts only those receivers;
+exact/DIFFBUILD keeps `FrontEndPointerQueueView`. Fresh whole-build changes
+49 -> 48 unique unresolved (53 -> 52 diagnostics), callable/runtime 4 -> 3,
+and all eight FrontEndLifecycle configured units remain exact.
+
 Continue with:
 
 - remaining callable/runtime proxy methods;
@@ -472,12 +479,12 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 49 unique
-unresolved (53 diagnostics), split 45 data / 4 callable-runtime, with 88/88
+Resumed checkpoint 2026-09-09: current family closure leaves 48 unique
+unresolved (52 diagnostics), split 45 data / 3 callable-runtime, with 88/88
 objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
-has also closed the CSoundManager constructor and SceneSelect interpolation
-families. Do not reopen these
+has also closed the CSoundManager constructor, SceneSelect interpolation, and
+FrontEndLifecycle queue Pop families. Do not reopen these
 families unless fresh evidence contradicts them. See `RE_HANDOFF.md` for the
 exact remaining callable list and the two unmapped PhotoCard ANM data items.
 
