@@ -8,6 +8,8 @@
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
 #include "Main.hpp"
+#include "PhotoEffectRuntime.hpp"
+#include "ReplayManager.hpp"
 #include "ResultScreen.hpp"
 #include "ScoreData.hpp"
 #include "SceneData.hpp"
@@ -19,10 +21,10 @@
 namespace th095
 {
 
-struct PhotoBackgroundManagerView
+struct Background
 {
-    static PhotoBackgroundManagerView *Create();
-    void Destroy();
+    ~Background();
+    static Background *__fastcall Create();
 };
 
 struct PhotoFrontManagerView
@@ -31,9 +33,9 @@ struct PhotoFrontManagerView
     void Destroy();
 };
 
-struct PhotoBulletManagerTaskView
+struct PhotoBulletManagerView
 {
-    static PhotoBulletManagerTaskView *Create();
+    static PhotoBulletManagerView *__fastcall Create();
     void Destroy();
 };
 
@@ -43,36 +45,30 @@ struct PhotoOverlayManagerView
     void Destroy();
 };
 
-struct PhotoPlayerManagerView
+struct PhotoGameUpdateView
 {
-    static PhotoPlayerManagerView *Create();
+    static PhotoGameUpdateView *__fastcall Create();
     void Destroy();
 };
 
 struct PhotoEnemyManagerTaskView
 {
     static PhotoEnemyManagerTaskView *Create();
-    void Destroy();
-    void RestartPhotoTargetEcls();
 };
 
-struct PhotoItemManagerTaskView
+struct PhotoEnemyManagerView
 {
-    static PhotoItemManagerTaskView *Create();
+    void Destroy();
+    static void __fastcall RestartPhotoTargetEcls(
+        PhotoEnemyManagerView *enemyManager);
+};
+
+struct PhotoItemManagerView
+{
+    static PhotoItemManagerView *__fastcall Create();
     void Destroy();
 };
 
-struct PhotoLaserManagerTaskView
-{
-    static PhotoLaserManagerTaskView *Create();
-    void Destroy();
-};
-
-struct ReplayManagerTaskView
-{
-    static ReplayManagerTaskView *__fastcall Create(i32 mode, char *path);
-    void Destroy();
-};
 
 struct PhotoCardInfoView
 {
@@ -187,16 +183,16 @@ typedef char PhotoRuntimeConfigSizeIsC8[
 
 struct PhotoGameTaskView
 {
-    PhotoBackgroundManagerView *background; // +0x000
+    Background *background;                 // +0x000
     PhotoFrontManagerView *front;            // +0x004
-    PhotoBulletManagerTaskView *bullets;     // +0x008
-    PhotoPlayerManagerView *player;          // +0x00c
-    ReplayManagerTaskView *replay;           // +0x010
+    PhotoBulletManagerView *bullets;         // +0x008
+    PhotoGameUpdateView *player;             // +0x00c
+    ReplayManager *replay;                   // +0x010
     PhotoEnemyManagerTaskView *enemies;      // +0x014
     PhotoOverlayManagerView *photoOverlay;   // +0x018
-    PhotoItemManagerTaskView *items;         // +0x01c
+    PhotoItemManagerView *items;             // +0x01c
     ResultScreen *pause;                     // +0x020
-    PhotoLaserManagerTaskView *lasers;       // +0x024
+    PhotoEffectManagerView *lasers;          // +0x024
     ZunTimer stageTimer;                     // +0x028
     PhotoRuntimeConfigView runtimeConfig;    // +0x034
     u32 flags;                               // +0x0fc
@@ -365,7 +361,9 @@ i32 PhotoGameTaskView::Update()
 
         if (this->completion.timer <= 0)
         {
-            g_PhotoEnemyManagerTask->RestartPhotoTargetEcls();
+            PhotoEnemyManagerView::RestartPhotoTargetEcls(
+                reinterpret_cast<PhotoEnemyManagerView *>(
+                    g_PhotoEnemyManagerTask));
         }
     }
 
@@ -563,7 +561,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     char bestShotPath[0x108];
 
     this->runtimeConfig = g_PhotoRuntimeConfig;
-    this->replay = ReplayManagerTaskView::Create(
+    this->replay = ReplayManager::Create(
         this->replayMode, g_ReplayPath);
     if (this->replay == NULL)
     {
@@ -598,7 +596,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
         g_ResultSaveData->scoreEntries[this->bestShotIndex].detailScore = 0;
     }
 
-    this->background = PhotoBackgroundManagerView::Create();
+    this->background = Background::Create();
     if (this->background == NULL)
     {
         return ZUN_ERROR;
@@ -608,7 +606,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->bullets = PhotoBulletManagerTaskView::Create();
+    this->bullets = PhotoBulletManagerView::Create();
     if (this->bullets == NULL)
     {
         return ZUN_ERROR;
@@ -618,7 +616,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->player = PhotoPlayerManagerView::Create();
+    this->player = PhotoGameUpdateView::Create();
     if (this->player == NULL)
     {
         return ZUN_ERROR;
@@ -628,7 +626,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->items = PhotoItemManagerTaskView::Create();
+    this->items = PhotoItemManagerView::Create();
     if (this->items == NULL)
     {
         return ZUN_ERROR;
@@ -638,7 +636,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->lasers = PhotoLaserManagerTaskView::Create();
+    this->lasers = PhotoEffectManagerView::Create();
     if (this->lasers == NULL)
     {
         return ZUN_ERROR;
@@ -657,12 +655,12 @@ i32 PhotoGameTaskView::InitializeSubsystems()
 PhotoGameTaskView::~PhotoGameTaskView()
 {
     utils::DebugPrint("shitdown GameTaskInf\n");
-    this->background->Destroy();
+    delete this->background;
     this->front->Destroy();
     this->bullets->Destroy();
     this->player->Destroy();
-    this->replay->Destroy();
-    this->enemies->Destroy();
+    ReplayManager::Destroy(this->replay);
+    reinterpret_cast<PhotoEnemyManagerView *>(this->enemies)->Destroy();
     this->photoOverlay->Destroy();
     this->items->Destroy();
     this->pause->Destroy();

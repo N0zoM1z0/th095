@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 110 unique unresolved decorated symbols across 114 diagnostics:
-48 data and 62 callable/runtime. Of those names, 107 map through canonical
-relocations to 106 target addresses; three currently lack target-address
+now fails with 96 unique unresolved decorated symbols across 100 diagnostics:
+48 data and 48 callable/runtime. Of those names, 93 map through canonical
+relocations to 92 target addresses; three currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -474,6 +474,22 @@ callable/runtime drops 68 -> 62, with all six addresses absent from the fresh
 unresolved set. The shared `PhotoCamera.hpp` change affects PhotoCamera plus the
 PhotoGame and PhotoStage exact snapshots; all 39 configured units replay exact
 with no private-label refresh.
+
+The PhotoGameTask subsystem lifecycle receiver family is closed across fourteen
+previously unresolved edges. Production now uses the real Background, BulletInf,
+EnemyInf, ItemInf, PhotoEffect, PlayerInf, and ReplayManager class/method names
+for the target factories, teardown calls, and photo-target ECL restart. Existing
+Front/Overlay/Pause and Enemy-create calls were already link-correct and were
+left unchanged. The Background teardown edge is intentionally source-shaped
+differently: tracking classifies `0x00402620` as compiler-generated, and Ghidra
+shows its 95-byte body calling exact `Background::~Background @ 0x00402330` then
+freeing the receiver. Production therefore uses `delete Background *` instead
+of inventing a canonical `Destroy` method or scalar-destructor shim. The cold
+link moves 110 -> 96 unique unresolved names and 114 -> 100 diagnostics; data
+stays 48 and callable/runtime drops 62 -> 48, with all fourteen lifecycle
+addresses absent from the fresh unresolved set. PhotoGameTask's exact snapshot
+is a separate `TH095_MATCH_EXACT` branch, and its 10/10 configured units replay
+exact with no private-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

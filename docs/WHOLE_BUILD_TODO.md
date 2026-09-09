@@ -314,6 +314,15 @@ DIFFBUILD keep their historical proxy decorations. Fresh whole-build count
 changes 116 -> 110 unique unresolved (120 -> 114 diagnostics), callable/runtime
 68 -> 62; all 39 affected configured units replay exact with no label refresh.
 
+Closed 2026-09-09: PhotoGameTask subsystem lifecycle receiver ABI. Thirteen
+authored create/destroy/restart edges now call their real Background/BulletInf/
+EnemyInf/ItemInf/PhotoEffect/PlayerInf/ReplayManager methods. The fourteenth
+edge, `Background @ 0x00402620`, is a compiler-generated scalar deleting
+destructor; production uses ordinary `delete Background *`, which restores the
+real destructor+free source semantics without adding a shim. Fresh whole-build
+count changes 110 -> 96 unique unresolved (114 -> 100 diagnostics),
+callable/runtime 62 -> 48; PhotoGameTask replays 10/10 exact units.
+
 Continue with:
 
 - remaining enemy create/update/destroy/ECL methods in the
