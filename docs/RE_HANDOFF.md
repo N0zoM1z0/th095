@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 88 unique unresolved decorated symbols across 92 diagnostics:
-46 data and 42 callable/runtime. Of those names, 85 map through canonical
-relocations to 85 target addresses; three currently lack target-address
+now fails with 85 unique unresolved decorated symbols across 89 diagnostics:
+46 data and 39 callable/runtime. Of those names, 82 map through canonical
+relocations to 82 target addresses; three currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -529,6 +529,22 @@ link moves 92 -> 88 unique unresolved names and 96 -> 92 diagnostics; data
 remains 46 while callable/runtime drops 46 -> 42, and all four target addresses
 leave the unresolved set. All five `EnemyManagerTask.cpp` canonical units replay
 exact with no private-label refresh.
+
+The remaining EnemyInf spawn/reset proxy receiver family is closed. Hash-attested
+Ghidra bounds `0x004156C0` and `0x00415820` as 350-byte and 336-byte
+`__thiscall` methods on the same manager receiver. Their seven-argument ABIs
+match canonical `PhotoEnemyManagerView::Spawn` and `SpawnWithContext`; the
+former ends in a mirror-X flag while the latter copies the caller's 0x80-byte
+context block. Ghidra also bounds `ResetNonPhotoTargets @ 0x00416DD0` as a
+92-byte single-manager `__fastcall` sweep. Production EclExtended and EclRun
+now call those canonical methods through the already-proven
+`g_RuntimeEnemyManagerOwner`, while DIFFBUILD retains
+`ExtendedPhotoEnemyManagerView::Spawn` and
+`Th095RuntimeManager::SpawnEnemy/ResetEnemies`. The cold link moves 88 -> 85
+unique unresolved names and 92 -> 89 diagnostics; data remains 46 while
+callable/runtime drops 42 -> 39, and all three target addresses leave the
+unresolved set. EclExtended and EclRun replay 23/23 canonical exact units with
+no private-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

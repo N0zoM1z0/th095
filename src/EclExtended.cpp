@@ -14,6 +14,13 @@ extern f32 g_AnmGameSpeed;
 #ifndef DIFFBUILD
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
 extern AnmManager *g_AnmManager;
+struct PhotoEnemyView;
+struct PhotoEnemyManagerView
+{
+    PhotoEnemyView *Spawn(
+        i32 subroutineId, const Float3 *position, i32 life,
+        i32 itemDrop, i32 score, u32 mirrorMovementX);
+};
 static __forceinline AnmManager *EclExtendedCanonicalAnmManager()
 {
     return g_AnmManager;
@@ -39,6 +46,15 @@ struct ExtendedPhotoEnemyManagerView
         i32 subroutineId, const Float3 *position, i32 life,
         i32 itemDrop, i32 score, u32 mirrorMovementX);
 };
+
+#ifdef DIFFBUILD
+#define TH095_EXT_ENEMY_SPAWN(manager, subroutineId, position, life, itemDrop, score, mirror) \
+    (manager)->Spawn((subroutineId), (position), (life), (itemDrop), (score), (mirror))
+#else
+#define TH095_EXT_ENEMY_SPAWN(manager, subroutineId, position, life, itemDrop, score, mirror) \
+    reinterpret_cast<::th095::PhotoEnemyManagerView *>(manager)->Spawn( \
+        (subroutineId), (position), (life), (itemDrop), (score), (mirror))
+#endif
 
 struct PhotoGlobalStateView
 {
@@ -935,8 +951,9 @@ void __fastcall Callback01(Enemy *enemy, EclRawInstruction *instruction)
         if (index->state == 0 || index->vm.loadedSprite->widthPx < 64.0f)
             continue;
 
-        g_ExtendedPhotoEnemyManager->Spawn(
-            0, reinterpret_cast<const Float3 *>(&index->position),
+        TH095_EXT_ENEMY_SPAWN(
+            g_ExtendedPhotoEnemyManager, 0,
+            reinterpret_cast<const Float3 *>(&index->position),
             1, 0, 0, 0);
     }
 }

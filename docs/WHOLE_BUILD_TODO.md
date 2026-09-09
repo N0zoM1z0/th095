@@ -345,10 +345,19 @@ Fresh whole-build count changes 92 -> 88 unique unresolved (96 -> 92
 diagnostics), callable/runtime 46 -> 42; `EnemyManagerTask.cpp` replays 5/5
 exact units with no label refresh.
 
+Closed 2026-09-09: remaining EnemyInf spawn/reset proxy receiver ABI. Ghidra
+bounds `Spawn @ 0x004156C0` and `SpawnWithContext @ 0x00415820` as canonical
+manager `__thiscall` methods and `ResetNonPhotoTargets @ 0x00416DD0` as the
+canonical single-manager `__fastcall` sweep. Production EclExtended/EclRun now
+use those exact `PhotoEnemyManagerView` receivers while DIFFBUILD keeps the
+historical proxy decorations. Fresh whole-build count changes 88 -> 85 unique
+unresolved (92 -> 89 diagnostics), callable/runtime 42 -> 39; the two affected
+sources replay 23/23 exact units with no label refresh.
+
 Continue with:
 
-- remaining enemy spawn/reset/ECL methods in the
-  `0x004156C0..0x00416E30` family;
+- remaining enemy ECL/runtime proxy methods such as `0x00408E70` and
+  `0x00416320`;
 - remaining photo effect/stage creation/session methods;
 - front-end creation/callback/texture-clear methods;
 - FileSystem, replay, Supervisor worker, MIDI, and timer proxy signatures.

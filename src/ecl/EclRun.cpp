@@ -46,9 +46,18 @@
 
 #ifdef DIFFBUILD
 #define TH095_ECL_RUNTIME EclRunHigh::g_Th095Runtime
+#define TH095_ECL_ENEMY_SPAWN(subroutineId, position, life, itemDrop, score, contextValues) \
+    reinterpret_cast<EclRunHigh::Th095RuntimeManager *>(TH095_ECL_RUNTIME)->SpawnEnemy( \
+        (subroutineId), (position), (life), (itemDrop), (score), (contextValues))
+#define TH095_ECL_ENEMY_RESET() \
+    reinterpret_cast<EclRunHigh::Th095RuntimeManager *>(TH095_ECL_RUNTIME)->ResetEnemies()
 #else
 #define TH095_ECL_RUNTIME \
     TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeEnemyManagerOwner)
+#define TH095_ECL_ENEMY_SPAWN(subroutineId, position, life, itemDrop, score, contextValues) \
+    ::th095::Th095EclSpawnEnemy( \
+        (subroutineId), (position), (life), (itemDrop), (score), (contextValues))
+#define TH095_ECL_ENEMY_RESET() ::th095::Th095EclResetEnemies()
 #endif
 
 #ifdef DIFFBUILD
@@ -131,7 +140,31 @@ struct PhotoBulletManagerView
     i32 SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor);
     void DespawnAllBullets();
 };
+struct PhotoEnemyView;
+struct PhotoEnemyManagerView
+{
+    PhotoEnemyView *SpawnWithContext(
+        i32 subroutineId, const Float3 *position, i32 life,
+        i32 itemDrop, i32 score, const i32 *contextValues);
+    static void __fastcall ResetNonPhotoTargets(
+        PhotoEnemyManagerView *enemyManager);
+};
 extern AnmManager *g_AnmManager;
+static __forceinline Enemy *Th095EclSpawnEnemy(
+    i32 subroutineId, Float3 *position, i32 life,
+    i32 itemDrop, i32 score, i32 *contextValues)
+{
+    return reinterpret_cast<Enemy *>(
+        reinterpret_cast<PhotoEnemyManagerView *>(TH095_ECL_RUNTIME)
+            ->SpawnWithContext(
+                subroutineId, position, life, itemDrop, score, contextValues));
+}
+static __forceinline void Th095EclResetEnemies()
+{
+    PhotoEnemyManagerView *manager =
+        reinterpret_cast<PhotoEnemyManagerView *>(TH095_ECL_RUNTIME);
+    PhotoEnemyManagerView::ResetNonPhotoTargets(manager);
+}
 static __forceinline AnmVmId Th095EclAnmId(i32 value)
 {
     AnmVmId id;

@@ -266,7 +266,7 @@ enter_subroutine:
     case 83:
         if (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958) > 0)
         {
-            reinterpret_cast<Th095RuntimeManager *>(TH095_ECL_RUNTIME)->SpawnEnemy(
+            TH095_ECL_ENEMY_SPAWN(
                 TH08_ECL_RAW_I(ctx, 0),
                 reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x28a0),
                 10, 0, 0,
@@ -295,7 +295,7 @@ enter_subroutine:
                 position += *reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0);
                 spawned =
-                reinterpret_cast<Th095RuntimeManager *>(TH095_ECL_RUNTIME)->SpawnEnemy(
+                TH095_ECL_ENEMY_SPAWN(
                     packet.eclSubroutineId, &position, 10, 0, 0,
                     reinterpret_cast<i32 *>(
                         reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x18));
@@ -305,7 +305,7 @@ enter_subroutine:
         break;
 
     case 85:
-        reinterpret_cast<Th095RuntimeManager *>(TH095_ECL_RUNTIME)->ResetEnemies();
+        TH095_ECL_ENEMY_RESET();
         break;
 
     case 124:
