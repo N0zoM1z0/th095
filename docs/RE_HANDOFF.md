@@ -424,6 +424,21 @@ alias was added. The cold link moves 123 -> 121 unique unresolved names and
 with `0x00406CC0` absent from the fresh unresolved set. The two affected
 canonical sources replay 2/2 exact units with no private-label refresh.
 
+The `0x00436DD0` ECL/PhotoStage proxy family is closed on the canonical
+`ScreenEffect::RegisterChain` helper. The match ledger already owns the full
+598-byte target body as `screen-effect-register-chain`; hash-attested Ghidra
+independently bounds `0x00436DD0..0x00437025` as a six-argument `__fastcall`
+routine that allocates the 0x34-byte ScreenEffect record, selects callbacks by
+effect type, registers its Chain entries, and returns the new object. Production
+EclExtended now calls `ScreenEffect::RegisterChain` with
+`SCREEN_EFFECT_SHAKE_ENVELOPE`; PhotoStage calls the same helper with
+`SCREEN_EFFECT_FULL_FADE_OUT`. Their historical `DispatchExtendedValue` and
+`SpawnPhotoStageEffect` names remain exact-facing only. The cold link moves
+121 -> 119 unique unresolved names and 125 -> 123 diagnostics; data remains 48
+and callable/runtime drops 73 -> 71, with `0x00436DD0` absent from the fresh
+unresolved set. EclExtended and PhotoStage replay 28/28 configured exact units
+with no private-label refresh.
+
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
 enum-returning `/Gr` callback type, and `RunDrawChain` returns `int`.

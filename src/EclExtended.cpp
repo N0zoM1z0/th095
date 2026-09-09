@@ -2,6 +2,7 @@
 #include "GameplayGlobals.hpp"
 #ifndef DIFFBUILD
 #include "PhotoEffectRuntime.hpp"
+#include "ScreenEffect.hpp"
 #endif
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
@@ -372,8 +373,10 @@ extern u32 g_PhotoScreenFadeColor;
     TH095_RUNTIME_GLOBAL_PTR(ExtendedPlayerView, ::th095::g_RuntimePlayerOwner)
 #endif
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
+#ifdef DIFFBUILD
 i32 __fastcall DispatchExtendedValue(
     i32 mode, i32 value0, i32 value1, i32 value2, i32 value3, i32 type);
+#endif
 
 // ECL extended callback table entry 0 @ 0x00413380.
 void __fastcall SpawnDeathPhotoVms(
@@ -421,6 +424,7 @@ void __fastcall UpdatePlayerProximityAndMarker(
 void __fastcall DispatchContextValues(
     Enemy *enemy, EclRawInstruction *instruction)
 {
+#ifdef DIFFBUILD
     DispatchExtendedValue(
         7,
         enemy->activeEclContext->intVariables[0],
@@ -428,6 +432,15 @@ void __fastcall DispatchContextValues(
         enemy->activeEclContext->intVariables[2],
         enemy->activeEclContext->intVariables[3],
         29);
+#else
+    ScreenEffect::RegisterChain(
+        SCREEN_EFFECT_SHAKE_ENVELOPE,
+        enemy->activeEclContext->intVariables[0],
+        enemy->activeEclContext->intVariables[1],
+        enemy->activeEclContext->intVariables[2],
+        enemy->activeEclContext->intVariables[3],
+        29);
+#endif
 }
 
 // ECL extended callback table entry 11 @ 0x00413F90.

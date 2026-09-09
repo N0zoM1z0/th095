@@ -283,6 +283,16 @@ DIFFBUILD keeps their historical proxy method names. Ghidra bounds the method to
 123 -> 121 unique unresolved (127 -> 125 diagnostics), callable/runtime
 75 -> 73, and both affected exact units replay 2/2 exact.
 
+Closed 2026-09-09: `0x00436DD0` ScreenEffect registration proxy ABI. The
+canonical exact unit is `ScreenEffect::RegisterChain`; production EclExtended
+and PhotoStage call that real static helper directly while their historical
+`DispatchExtendedValue` / `SpawnPhotoStageEffect` names remain exact-only.
+Ghidra independently confirms the 598-byte six-argument helper allocates the
+0x34-byte effect record, selects callbacks, registers Chain entries, and returns
+the object. Fresh whole-build count changes 121 -> 119 unique unresolved
+(125 -> 123 diagnostics), callable/runtime 73 -> 71, and both affected sources
+replay 28/28 exact units.
+
 Continue with:
 
 - remaining bullet capture/count/reset methods in the `0x00404950..0x00408220`

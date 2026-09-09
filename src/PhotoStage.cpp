@@ -6,6 +6,7 @@
 #include "Main.hpp"
 #include "ScoreData.hpp"
 #include "SceneData.hpp"
+#include "ScreenEffect.hpp"
 
 #include <stdlib.h>
 #include <string.h>
@@ -319,8 +320,6 @@ extern PhotoStageStateView *g_PhotoStageState;
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
 extern u8 g_PhotoCaptureCountdown;
 
-void __fastcall SpawnPhotoStageEffect(
-    i32 effectType, i32 script, i32 count, u32 color, i32 arg4, i32 arg5);
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
 static inline PhotoStageAnmManagerView *GetPhotoStageAnmManager()
@@ -1061,7 +1060,8 @@ i32 PhotoStageStateView::Update()
         {
             if (this->waitingForTexture == 0)
             {
-                SpawnPhotoStageEffect(3, 15, 1, 0xc0ffafcf, 0, 0x1d);
+                ScreenEffect::RegisterChain(
+                    SCREEN_EFFECT_FULL_FADE_OUT, 15, 1, 0xc0ffafcf, 0, 0x1d);
 
                 PhotoStageAccumulateCapturedScore(this);
 
