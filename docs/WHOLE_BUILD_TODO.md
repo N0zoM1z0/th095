@@ -385,11 +385,20 @@ changes 79 -> 73 unique unresolved (83 -> 77 diagnostics), callable/runtime
 33 -> 27, all six target addresses disappear, and the shared-header regression
 gate remains 696/696 strict exact with no label refresh.
 
+Closed 2026-09-09: front-end lifecycle/callback proxy ABI. Main production calls
+canonical `FrontEndLifecycleView::Create/Destroy/ReleaseResources` at
+`0x00445CC0/0x00445DE0/0x00445CA0`; the lifecycle factory registers canonical
+`SceneSelectControllerView::OnUpdate/OnDraw @ 0x00445E40/0x00445E60`. Ghidra
+confirms one 0x6514-byte receiver across allocation, Chain registration,
+destruction and resource release. Fresh whole-build count changes 73 -> 68
+unique unresolved (77 -> 72 diagnostics), callable/runtime 27 -> 22, and all
+five target addresses disappear. Main/FrontEndLifecycle replay 56/56 exact with
+no label refresh.
+
 Continue with:
 
 - remaining enemy ECL/runtime proxy methods such as `0x00416320`;
 - remaining photo effect/stage creation/session methods;
-- front-end creation/callback/texture-clear methods;
 - FileSystem, replay, Supervisor worker, and timer proxy signatures.
 
 For a target address shared by differently named methods, do not invent a

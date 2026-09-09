@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 73 unique unresolved decorated symbols across 77 diagnostics:
-46 data and 27 callable/runtime. Of those names, 71 map through canonical
-relocations to 71 target addresses; two currently lack target-address
+now fails with 68 unique unresolved decorated symbols across 72 diagnostics:
+46 data and 22 callable/runtime. Of those names, 66 map through canonical
+relocations to 66 target addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -605,6 +605,22 @@ data remains 46 while callable/runtime drops 33 -> 27, and all six target
 addresses leave the unresolved set. Because the touched headers are shared, the
 complete canonical universe was replayed and strict-compared: all 696/696 units
 remain exact with zero failures and no private-label refresh.
+
+The remaining front-end lifecycle proxy family is closed. Canonical exact source
+already owns `FrontEndLifecycleView::ReleaseResources/Create/Destroy` at
+`0x00445CA0/0x00445CC0/0x00445DE0` and `SceneSelectControllerView::OnUpdate/OnDraw`
+at `0x00445E40/0x00445E60`. Hash-attested Ghidra shows `Create` allocating and
+constructing the single 0x6514-byte front-end object, registering the exact
+`45E40/45E60` wrappers into Chain, and starting the replay scan; `Destroy`
+invokes the canonical destructor then frees the same receiver; `ReleaseResources`
+releases ANM slots 11 and 12. Production Main now casts its historical
+`FrontEndControllerView *` only at the canonical Create/Destroy calls, while the
+front-end factory registers the real SceneSelect callback wrappers. Exact and
+DIFFBUILD paths retain the historical proxy decorations. The cold link moves
+73 -> 68 unique unresolved names and 77 -> 72 diagnostics; data remains 46 and
+callable/runtime drops 27 -> 22, with all five target addresses absent from the
+fresh unresolved set. Main plus FrontEndLifecycle replay 56/56 exact units with
+no private-label refresh.
 
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's

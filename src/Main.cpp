@@ -84,6 +84,24 @@ struct FrontEndControllerView
     void Destroy();
 };
 
+#ifndef DIFFBUILD
+struct FrontEndLifecycleView
+{
+    static FrontEndLifecycleView *__fastcall Create(i32 mode);
+    static void ReleaseResources();
+    void Destroy();
+};
+#define TH095_FRONT_END_CREATE(mode) \
+    reinterpret_cast<FrontEndControllerView *>(FrontEndLifecycleView::Create(mode))
+#define TH095_FRONT_END_DESTROY(controller) \
+    reinterpret_cast<FrontEndLifecycleView *>(controller)->Destroy()
+#define TH095_FRONT_END_RELEASE_RESOURCES() FrontEndLifecycleView::ReleaseResources()
+#else
+#define TH095_FRONT_END_CREATE(mode) FrontEndControllerView::Create(mode)
+#define TH095_FRONT_END_DESTROY(controller) (controller)->Destroy()
+#define TH095_FRONT_END_RELEASE_RESOURCES() ReleaseSceneSelectAnms()
+#endif
+
 struct PhotoGameTaskView
 {
     u8 unknown000[0x120];
@@ -1508,7 +1526,7 @@ void Supervisor::ReleaseGameManagers()
 {
     if (this->frontEndController != NULL)
     {
-        this->frontEndController->Destroy();
+        TH095_FRONT_END_DESTROY(this->frontEndController);
     }
     this->frontEndController = NULL;
 
@@ -1541,7 +1559,7 @@ i32 Supervisor::UpdateSceneState()
         {
         case 0:
             this->currentState = SUPERVISOR_STATE_FRONT_END;
-            this->frontEndController = FrontEndControllerView::Create(0);
+            this->frontEndController = TH095_FRONT_END_CREATE(0);
             if (this->frontEndController == NULL)
             {
                 goto failure;
@@ -1555,20 +1573,20 @@ i32 Supervisor::UpdateSceneState()
                 goto failure;
 
             case SUPERVISOR_STATE_EXIT:
-                this->frontEndController->Destroy();
+                TH095_FRONT_END_DESTROY(this->frontEndController);
                 this->frontEndController = NULL;
                 this->LeaveCriticalSectionWrapper(5);
                 this->criticalSectionLockCounts[5]--;
                 return 4;
 
             case SUPERVISOR_STATE_PHOTO_GAME:
-                this->frontEndController->Destroy();
+                TH095_FRONT_END_DESTROY(this->frontEndController);
                 this->frontEndController = NULL;
                 break;
 
             case SUPERVISOR_STATE_START_REPLAY:
                 this->currentState = SUPERVISOR_STATE_PHOTO_GAME;
-                this->frontEndController->Destroy();
+                TH095_FRONT_END_DESTROY(this->frontEndController);
                 this->frontEndController = NULL;
                 break;
             }
@@ -1587,7 +1605,7 @@ i32 Supervisor::UpdateSceneState()
                 this->photoGameTask->Destroy();
                 this->photoGameTask = NULL;
                 this->frontEndController =
-                    FrontEndControllerView::Create(
+                    TH095_FRONT_END_CREATE(
                         locals.replayMode != 0 ? 2 : 1);
                 if (this->frontEndController == NULL)
                 {
@@ -1933,7 +1951,7 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
     ReleaseResultAnm();
     ReleaseReplayAnm();
     ReleasePhotoFrontAnm();
-    ReleaseSceneSelectAnms();
+    TH095_FRONT_END_RELEASE_RESOURCES();
     ReleasePhotoPlayerAnm();
     ReleaseScoreData();
 

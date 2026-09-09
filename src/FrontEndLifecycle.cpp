@@ -8,6 +8,9 @@
 #include "ScoreData.hpp"
 #include "SceneData.hpp"
 #include "SoundPlayer.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "SceneSelect.hpp"
+#endif
 #include "utils.hpp"
 
 namespace th095
@@ -241,6 +244,14 @@ typedef char FrontEndLifecycleChainsAt6400[
 typedef char FrontEndLifecycleSizeIs6514[
     (sizeof(FrontEndLifecycleView) == 0x6514) ? 1 : -1];
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_FRONT_END_ON_UPDATE FrontEndLifecycleView::OnUpdate
+#define TH095_FRONT_END_ON_DRAW FrontEndLifecycleView::OnDraw
+#else
+#define TH095_FRONT_END_ON_UPDATE SceneSelectControllerView::OnUpdate
+#define TH095_FRONT_END_ON_DRAW SceneSelectControllerView::OnDraw
+#endif
+
 // FUNCTION: TH095 0x00445440.
 FrontEndLifecycleView::FrontEndLifecycleView()
 {
@@ -395,12 +406,12 @@ FrontEndLifecycleView *__fastcall FrontEndLifecycleView::Create(i32 mode)
     controller->flags |= 1;
     controller->entryMode = mode;
 
-    elem = g_Chain.CreateElem((ChainCallback)FrontEndLifecycleView::OnUpdate);
+    elem = g_Chain.CreateElem((ChainCallback)TH095_FRONT_END_ON_UPDATE);
     elem->arg = controller;
     g_Chain.AddToCalcChain(elem, 4);
     controller->calcChain = elem;
 
-    elem = g_Chain.CreateElem((ChainCallback)FrontEndLifecycleView::OnDraw);
+    elem = g_Chain.CreateElem((ChainCallback)TH095_FRONT_END_ON_DRAW);
     elem->arg = controller;
     g_Chain.AddToDrawChain(elem, 1);
     controller->drawChain = elem;
