@@ -664,6 +664,22 @@ units remain exact. The replay helper refreshed 421 compiler-private labels in
 six units only after proving complete structural bytes, relocation offset/type,
 and solved target destinations unchanged; no semantic relocation changed.
 
+The standalone Supervisor input-worker family is closed. Target
+`0x004C4658` is a separate 0x18-byte worker immediately before, but not inside,
+`g_Supervisor @ 0x004C4670`. Hash-attested Ghidra shows static initializer
+`0x00494060` constructing that storage through `0x00454E50`, whose body clears
+exactly the first four worker dwords; this constructor is ICF-folded with the
+identical PbgArchive constructor. `Supervisor::StartInputWorker @ 0x00423CE0`
+passes the same storage to canonical `ReplayScanWorker::Start @ 0x0041BBA0`,
+shutdown `Supervisor::DeletedCallback @ 0x004244D0` calls canonical `Stop @
+0x0041BB20`, and atexit wrapper `0x00494280` invokes canonical
+`ReplayScanWorker::~ReplayScanWorker @ 0x0041BAE0`. Production Main therefore
+owns one real `ReplayScanWorker g_SupervisorInputWorker`; DIFFBUILD/exact keeps
+the historical `SupervisorInputWorkerView` decoration. The cold link moves
+58 -> 55 unique unresolved names and 62 -> 59 diagnostics; data drops 46 -> 45
+and callable/runtime 12 -> 10, with the storage plus Start/Stop targets absent
+from the unresolved set. Main replays 48/48 exact with no label refresh.
+
 The Chain family is closed. `src/Chain.hpp` is now the single production ABI
 declaration: `ChainElem` is a class (`PAV`), `CreateElem` takes the target's
 enum-returning `/Gr` callback type, and `RunDrawChain` returns `int`.

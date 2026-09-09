@@ -420,6 +420,14 @@ callable/runtime 15 -> 12. The complete affected shared-header closure is 46/46
 canonical units across 11 sources; 421 compiler-private labels were refreshed
 only after structural/relocation-target audit.
 
+Closed 2026-09-09: standalone Supervisor input worker. Ghidra proves
+`0x004C4658` is one independent 0x18-byte ReplayScanWorker: static init
+`0x00494060`, Start `0x0041BBA0`, Stop `0x0041BB20`, and atexit destructor
+`0x00494280 -> 0x0041BAE0` all use that storage. Production Main now defines
+the real `ReplayScanWorker` owner; DIFFBUILD/exact retains the old local view.
+Fresh whole-build changes 58 -> 55 unique unresolved (62 -> 59 diagnostics),
+data 46 -> 45 and callable/runtime 12 -> 10; Main remains 48/48 exact.
+
 Continue with:
 
 - remaining callable/runtime proxy methods;

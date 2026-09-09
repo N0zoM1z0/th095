@@ -72,11 +72,19 @@ extern SupervisorGameTaskView *g_SupervisorGameTask;
     TH095_RUNTIME_GLOBAL_PTR(SupervisorGameTaskView, g_RuntimeGameTaskOwner)
 #endif
 
+#ifdef DIFFBUILD
 struct SupervisorInputWorkerView
 {
     void Start(void (__fastcall *callback)(void *), void *argument);
     void Stop();
 };
+extern SupervisorInputWorkerView g_SupervisorInputWorker;
+#else
+// Target 0x004C4658 is a standalone 0x18-byte ReplayScanWorker. Its static
+// initializer at 0x00494060 uses the ICF-folded four-dword constructor at
+// 0x00454E50; atexit 0x00494280 calls ReplayScanWorker::~ReplayScanWorker.
+ReplayScanWorker g_SupervisorInputWorker;
+#endif
 
 struct FrontEndControllerView
 {
@@ -153,7 +161,6 @@ struct DummyMidiTimer : MidiTimer
 typedef char MainMidiTimerSizeIs10[(sizeof(MidiTimer) == 0x10) ? 1 : -1];
 typedef char MainDummyMidiTimerSizeIs14[(sizeof(DummyMidiTimer) == 0x14) ? 1 : -1];
 
-extern SupervisorInputWorkerView g_SupervisorInputWorker;
 extern PbgArchive g_PbgArchive;
 extern u32 g_PhotoScreenFadeColor;
 
