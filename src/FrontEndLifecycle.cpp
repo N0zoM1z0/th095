@@ -101,6 +101,18 @@ extern FrontEndSceneDefinitionView *g_FrontEndSceneGroups[12];
 extern i32 g_SoundInitializationComplete;
 extern i32 g_MusicArchiveBaseOffset;
 extern u32 g_FrontEndConfigurationFlags;
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+// These three historical target-facing names are embedded production fields,
+// not standalone storage.  g_SoundPlayer @ 0x004C4EE8 places the archive base
+// and worker completion flag at +0x5214 / +0x522C (0x004CA0FC / 0x004CA114).
+// g_Supervisor @ 0x004C4670 places config.options at +0x1E0 (0x004C4850).
+// Exact objects retain their original relocation names through DIFFBUILD.
+#define g_SoundInitializationComplete \
+    (g_SoundPlayer.unconsumedDword522c)
+#define g_MusicArchiveBaseOffset (g_SoundPlayer.bgmFileBaseOffset)
+#define g_FrontEndConfigurationFlags \
+    (*reinterpret_cast<u32 *>(&g_Supervisor.config.options))
+#endif
 
 struct FrontEndMissionEntryView
 {

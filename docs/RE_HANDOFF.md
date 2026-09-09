@@ -107,8 +107,8 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 33 unique unresolved decorated symbols across 36 diagnostics,
-all data. Of those names, 31 map through canonical relocations to 31 target
+now fails with 27 unique unresolved decorated symbols across 30 diagnostics,
+all data. Of those names, 25 map through canonical relocations to 25 target
 addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
@@ -737,8 +737,8 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-33 unique unresolved names (36 diagnostics), all data. 31 unresolved names
-have target-address evidence across 31 target addresses; 2 names
+27 unique unresolved names (30 diagnostics), all data. 25 unresolved names
+have target-address evidence across 25 target addresses; 2 names
 remain without target mapping. No runtime/Wine launch has been performed.
 
 The first data-owner batch closes twelve independent zero-initialized target
@@ -747,6 +747,13 @@ Main, front-end controller/lifecycle, PhotoStage, PhotoGameTask, ReplayBrowser,
 ResultScreen, SceneSelectController, and AnmVertexBuffer. The fresh cold link
 moves 45 -> 33 unique unresolved names and 49 -> 36 diagnostics; all 110
 configured units across those nine touched sources replay exact.
+
+The embedded/shared-owner batch closes six more data references: two
+SoundPlayer fields, the Supervisor configuration options word, Main's three
+loading VM handles and screen-effect pointer, and Background's canonical
+viewport pointer. The fresh cold link moves 33 -> 27 unique unresolved names
+and 36 -> 30 diagnostics; all 74 configured units across the three affected
+sources replay exact.
 
 The just-closed ResultScreen pair maps the historical production proxies
 `ResultAnmVmDrawView::Draw` and `PreparePhotoResultScreen` to canonical

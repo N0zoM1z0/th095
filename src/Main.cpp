@@ -191,8 +191,11 @@ static __forceinline AnmManager *MainPublishAnmManagerPhase(
     u8 compilerStorage[4];
     return manager;
 }
-extern AnmVmId g_SupervisorLoadingVms[3];
-extern ScreenEffect *g_SupervisorScreenEffect;
+// Target 0x004C4648 and 0x004C4654 are the three loading VM handles and the
+// loading-transition effect pointer immediately before g_Supervisor.  Main's
+// Supervisor loading methods own every read/write of these zero-filled slots.
+DIFFABLE_STATIC_ARRAY(AnmVmId, 3, g_SupervisorLoadingVms);
+DIFFABLE_STATIC(ScreenEffect *, g_SupervisorScreenEffect);
 
 void InitializeScoreData();
 void ReleaseScoreData();

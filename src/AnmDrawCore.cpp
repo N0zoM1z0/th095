@@ -110,7 +110,22 @@ struct AnmProjectedPhotoBlendDrawLocals
     f32 distance;
 };
 
+#ifdef TH095_MATCH_EXACT
 extern AnmBackgroundViewportView *g_CurrentBackgroundViewport;
+#else
+// Background.cpp owns the target 0x004C4A34 slot with its canonical
+// BackgroundViewportConfigurationView decoration.  ANM needs only the common
+// leading camera/matrix/viewport layout, so production casts the real pointer
+// through this narrow draw view instead of emitting a second typed global.
+struct BackgroundViewportConfigurationView;
+extern BackgroundViewportConfigurationView *g_CurrentBackgroundViewport;
+static __forceinline AnmBackgroundViewportView *AnmCurrentBackgroundViewport()
+{
+    return reinterpret_cast<AnmBackgroundViewportView *>(
+        g_CurrentBackgroundViewport);
+}
+#define g_CurrentBackgroundViewport AnmCurrentBackgroundViewport()
+#endif
 #ifdef TH095_MATCH_EXACT
 extern AnmBackgroundStateDrawView *g_Background;
 #else

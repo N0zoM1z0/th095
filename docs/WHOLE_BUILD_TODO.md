@@ -487,7 +487,7 @@ real stage owner through `PhotoStage.hpp`; DIFFBUILD/exact retains
 (50 -> 49 diagnostics), callable/runtime 1 -> 0, and all seven affected
 configured units remain exact.
 
-Continue with the 33 remaining data symbols. Canonicalize shared target-address
+Continue with the 27 remaining data symbols. Canonicalize shared target-address
 owners first, then reconstruct target-proven constants/tables and the two
 currently unmapped PhotoCard ANM owners.
 
@@ -501,8 +501,8 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 33 unique
-unresolved (36 diagnostics), all data, with 88/88
+Resumed checkpoint 2026-09-09: current family closure leaves 27 unique
+unresolved (30 diagnostics), all data, with 88/88
 objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
 has also closed the CSoundManager constructor, SceneSelect interpolation, and
@@ -519,6 +519,14 @@ ResultScreen's active pointer; SceneSelectController's 0x40-byte decoder
 buffer; and AnmVertexBuffer's four-vertex fallback array. Fresh whole-build
 changes 45 -> 33 unique unresolved (49 -> 36 diagnostics), and all 110
 configured units across the nine affected sources remain exact.
+
+Closed 2026-09-09: embedded/shared data owners. FrontEndLifecycle now observes
+the real SoundPlayer archive-offset/worker-completion fields and Supervisor
+configuration-options word; Main owns the adjacent loading-VM array and
+screen-effect pointer; AnmDrawCore observes Background's canonical viewport
+pointer through its compatible narrow view. Fresh whole-build changes 33 -> 27
+unique unresolved (36 -> 30 diagnostics), and all 74 configured units across
+the three affected sources remain exact.
 
 ## Constant and table reconstruction
 
