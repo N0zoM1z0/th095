@@ -2,6 +2,7 @@
 #include "SceneSelectUpdateExact.inl"
 #else
 #include "SceneSelect.hpp"
+#include "AnmVmInterpolation.hpp"
 #include "InputRuntime.hpp"
 
 #include "ReplayBrowser.hpp"
@@ -26,16 +27,6 @@ extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 #define g_ResultMenuInput (RuntimeResultMenuInput())
 #define g_PressedButtons (RuntimePressedButtons())
-
-struct SceneSelectColorInterpolationView
-{
-    u8 unknown000[0x220];
-    u32 color1;
-    u8 unknown224[0x74];
-
-    void SetColor1Interpolation(i32 duration, u8 mode, u32 initial,
-                                u32 final);
-};
 
 struct SceneSelectScoreFlagsView
 {
@@ -859,7 +850,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         if (g_ResultSaveData->IsSceneGroupUnlocked(
                 view->groupCursor.GetCurrent()) != 0)
         {
-            reinterpret_cast<SceneSelectColorInterpolationView *>(
+            reinterpret_cast<AnmVmColorInterpolationView *>(
                 initialGroupVm)
                 ->SetColor1Interpolation(
                     60, 0, initialGroupVm->color1.color,
@@ -867,7 +858,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         }
         else
         {
-            reinterpret_cast<SceneSelectColorInterpolationView *>(
+            reinterpret_cast<AnmVmColorInterpolationView *>(
                 initialGroupVm)
                 ->SetColor1Interpolation(
                     60, 0, initialGroupVm->color1.color,
@@ -1057,7 +1048,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         if (g_ResultSaveData->IsSceneGroupUnlocked(
                 view->groupCursor.GetCurrent()) != 0)
         {
-            reinterpret_cast<SceneSelectColorInterpolationView *>(
+            reinterpret_cast<AnmVmColorInterpolationView *>(
                 transitionGroupVm)
                 ->SetColor1Interpolation(
                     60, 0, transitionGroupVm->color1.color,
@@ -1065,7 +1056,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         }
         else
         {
-            reinterpret_cast<SceneSelectColorInterpolationView *>(
+            reinterpret_cast<AnmVmColorInterpolationView *>(
                 transitionGroupVm)
                 ->SetColor1Interpolation(
                     60, 0, transitionGroupVm->color1.color,

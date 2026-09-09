@@ -449,6 +449,13 @@ is structural-exact for 23/23 comparable bytes. Fresh whole-build changes
 51 -> 50 unique unresolved (55 -> 54 diagnostics), callable/runtime 6 -> 5,
 and all 22 configured `zwave.cpp` units remain exact.
 
+Closed 2026-09-09: SceneSelect color interpolation receiver proxy. All four
+target calls use the exact `AnmVmColorInterpolationView::SetColor1Interpolation
+@ 0x00452D70` on real `AnmVm *` receivers. Production uses the canonical view;
+the exact include retains `SceneSelectColorInterpolationView`. Fresh whole-build
+changes 50 -> 49 unique unresolved (54 -> 53 diagnostics), callable/runtime
+5 -> 4, and the SceneSelectUpdate configured unit remains exact.
+
 Continue with:
 
 - remaining callable/runtime proxy methods;
@@ -465,11 +472,12 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 50 unique
-unresolved (54 diagnostics), split 45 data / 5 callable-runtime, with 88/88
+Resumed checkpoint 2026-09-09: current family closure leaves 49 unique
+unresolved (53 diagnostics), split 45 data / 4 callable-runtime, with 88/88
 objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
-has also closed the CSoundManager constructor ICF family. Do not reopen these
+has also closed the CSoundManager constructor and SceneSelect interpolation
+families. Do not reopen these
 families unless fresh evidence contradicts them. See `RE_HANDOFF.md` for the
 exact remaining callable list and the two unmapped PhotoCard ANM data items.
 

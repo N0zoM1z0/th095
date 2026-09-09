@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 50 unique unresolved decorated symbols across 54 diagnostics:
-45 data and 5 callable/runtime. Of those names, 48 map through canonical
-relocations to 48 target addresses; two currently lack target-address
+now fails with 49 unique unresolved decorated symbols across 53 diagnostics:
+45 data and 4 callable/runtime. Of those names, 47 map through canonical
+relocations to 47 target addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -737,8 +737,8 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-50 unique unresolved names (54 diagnostics): 45 data and 5 callable/runtime.
-48 unresolved names have target-address evidence across 48 target addresses; 2 names
+49 unique unresolved names (53 diagnostics): 45 data and 4 callable/runtime.
+47 unresolved names have target-address evidence across 47 target addresses; 2 names
 remain without target mapping. No runtime/Wine launch has been performed.
 
 The just-closed ResultScreen pair maps the historical production proxies
@@ -757,12 +757,17 @@ PBG constructor share the natural 23-byte `this[0] = NULL` implementation at
 The compiler oracle is structural-exact for 23/23 comparable bytes, and all 22
 configured `zwave.cpp` units remain exact.
 
+The SceneSelect color interpolation proxy is also closed. Its four target call
+sites all invoke the exact `AnmVmColorInterpolationView::SetColor1Interpolation
+@ 0x00452D70` on real `AnmVm *` receivers. Production now uses that canonical
+view, while the exact include retains the historical decoration; the sole
+SceneSelectUpdate exact unit still replays exactly.
+
 Remaining callable/runtime items at the resumed boundary:
 - `?CapturePhotoPixels@ScorePhotoStageView@th095@@QAEXH@Z` -> 0x0042E7B0 (ScoreData.obj)
 - `?CreateFrontEndGameManager@th095@@YIPAUFrontEndGameManagerView@1@H@Z` -> 0x00417F80 (FrontEndController.obj)
 - `?Pop@FrontEndPointerQueueView@th095@@QAEHXZ` -> 0x00450F60 (FrontEndLifecycle.obj)
 - `?RemoveVmListNode@AnmManager@th095@@QAEHPAUAnmVmListNode@2@@Z` -> 0x00444E00 (AnmManager.obj)
-- `?SetColor1Interpolation@SceneSelectColorInterpolationView@th095@@QAEXHEII@Z` -> 0x00452D70 (SceneSelectUpdate.obj)
 
 Unmapped data items requiring fresh Ghidra address/lifecycle recovery:
 - `?g_PhotoCardBackgroundAnm@th095@@3PAUAnmLoaded@1@A` (PhotoCardInfo.obj)
