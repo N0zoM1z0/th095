@@ -2,6 +2,9 @@
 #define TH095_MATCH_RNG_AS_STRUCT
 #endif
 #include "AnmManager.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "AnmVmLifecycle.hpp"
+#endif
 #include "diffbuild.hpp"
 
 namespace th095
@@ -1003,7 +1006,12 @@ AnmManager::~AnmManager()
     while (node != NULL)
     {
         next = node->next;
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+        reinterpret_cast<AnmManagerVmLifecycleView *>(this)->RemoveVm(
+            reinterpret_cast<AnmVmDeleteView *>(node));
+#else
         this->RemoveVmListNode(node);
+#endif
         node = next;
     }
 }

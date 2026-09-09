@@ -107,9 +107,9 @@ python3 scripts/build-whole.py --link-only
 The latest 2026-09-09 cold audit passes every current source TU with the
 hash-locked VC7.1 compiler and produces 88 i386 COFF objects under the two
 profiles already recorded by the canonical units. The real `/OPT:NOREF` link
-now fails with 47 unique unresolved decorated symbols across 51 diagnostics:
-45 data and 2 callable/runtime. Of those names, 45 map through canonical
-relocations to 45 target addresses; two currently lack target-address
+now fails with 46 unique unresolved decorated symbols across 50 diagnostics:
+45 data and 1 callable/runtime. Of those names, 44 map through canonical
+relocations to 44 target addresses; two currently lack target-address
 evidence and no decorated name maps to multiple targets. The machine-readable
 current report is generated at `build/whole-validation/report.json`; raw linker
 output is generated at `build/whole-validation/link.log`.
@@ -737,8 +737,8 @@ playability.
 
 The user resumed reconstruction from the clean ResultScreen family boundary.
 The latest fresh generated whole-build report records 88/88 i386 COFF objects,
-47 unique unresolved names (51 diagnostics): 45 data and 2 callable/runtime.
-45 unresolved names have target-address evidence across 45 target addresses; 2 names
+46 unique unresolved names (50 diagnostics): 45 data and 1 callable/runtime.
+44 unresolved names have target-address evidence across 44 target addresses; 2 names
 remain without target mapping. No runtime/Wine launch has been performed.
 
 The just-closed ResultScreen pair maps the historical production proxies
@@ -776,9 +776,14 @@ The front-end game factory proxy is closed. Target calls `0x0044667F` and
 or linker alias was added. All 14 affected FrontEndController/PhotoGameTask
 exact units remain exact.
 
+The ANM VM removal proxy is closed. The AnmManager destructor edge at
+`0x004421F6` invokes exact `AnmManagerVmLifecycleView::RemoveVm @ 0x00444E00`.
+Production shares the canonical lifecycle receiver/node layouts through
+`AnmVmLifecycle.hpp` and converts only that call; exact/DIFFBUILD is unchanged.
+All 31 affected AnmManager/AnmVmLifecycle exact units remain exact.
+
 Remaining callable/runtime items at the resumed boundary:
 - `?CapturePhotoPixels@ScorePhotoStageView@th095@@QAEXH@Z` -> 0x0042E7B0 (ScoreData.obj)
-- `?RemoveVmListNode@AnmManager@th095@@QAEHPAUAnmVmListNode@2@@Z` -> 0x00444E00 (AnmManager.obj)
 
 Unmapped data items requiring fresh Ghidra address/lifecycle recovery:
 - `?g_PhotoCardBackgroundAnm@th095@@3PAUAnmLoaded@1@A` (PhotoCardInfo.obj)

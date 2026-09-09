@@ -471,6 +471,14 @@ exact/DIFFBUILD retains `CreateFrontEndGameManager`. Fresh whole-build changes
 48 -> 47 unique unresolved (52 -> 51 diagnostics), callable/runtime 3 -> 2,
 and all 14 affected configured units remain exact.
 
+Closed 2026-09-09: AnmManager destructor VM-removal proxy. Target edge
+`0x004421F6` invokes exact `AnmManagerVmLifecycleView::RemoveVm @ 0x00444E00`.
+Production shares the canonical lifecycle receiver/node layouts through
+`AnmVmLifecycle.hpp` and casts only this call; exact/DIFFBUILD retains
+`AnmManager::RemoveVmListNode`. Fresh whole-build changes 47 -> 46 unique
+unresolved (51 -> 50 diagnostics), callable/runtime 2 -> 1, and all 31
+affected configured units remain exact.
+
 Continue with:
 
 - remaining callable/runtime proxy methods;
@@ -487,12 +495,13 @@ the fresh unresolved-without-target set now contains only the two PhotoCard ANM
 data items.
 
 
-Resumed checkpoint 2026-09-09: current family closure leaves 47 unique
-unresolved (51 diagnostics), split 45 data / 2 callable-runtime, with 88/88
+Resumed checkpoint 2026-09-09: current family closure leaves 46 unique
+unresolved (50 diagnostics), split 45 data / 1 callable-runtime, with 88/88
 objects compiling. ResultScreen production targets canonical `AnmVm::Draw @
 0x004452D0` and `ResultScreen::PrepareBestShot @ 0x004292D0`; the resumed lane
 has also closed the CSoundManager constructor, SceneSelect interpolation, and
-FrontEndLifecycle queue Pop, and front-end game-task factory families. Do not reopen these
+FrontEndLifecycle queue Pop, front-end game-task factory, and ANM VM removal
+families. Do not reopen these
 families unless fresh evidence contradicts them. See `RE_HANDOFF.md` for the
 exact remaining callable list and the two unmapped PhotoCard ANM data items.
 

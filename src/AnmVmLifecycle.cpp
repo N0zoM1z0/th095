@@ -1,6 +1,7 @@
 #define TH095_DECLARE_ANM_LOADED_INITIALIZE_VM
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "AnmVmLifecycle.hpp"
 #include "GameplayGlobals.hpp"
 
 namespace th095
@@ -30,64 +31,6 @@ struct AnmLoadedPositionView
 
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
-
-struct AnmVmLifecycleView
-{
-    AnmVmLifecycleView *next;
-    u8 unknown004[4];
-    AnmVmLifecycleView *previous;
-    u32 renderMode;
-    struct Id
-    {
-        i32 value;
-
-        Id()
-        {
-            this->value = 0;
-        }
-
-        i32 operator==(Id other)
-        {
-            return this->value == other.value;
-        }
-
-        i32 operator++(int)
-        {
-            return this->value++;
-        }
-
-    } id;
-};
-
-struct AnmManagerVmLifecycleView
-{
-    u8 unknown000[0x381814];
-    AnmVmLifecycleView *vmListHead;
-    AnmVmLifecycleView *vmListTail;
-    u8 unknown38181c[0x192c];
-    AnmVmLifecycleView::Id nextVmId;
-
-    AnmVmId AddVm(AnmVmLifecycleView *vm);
-    i32 RemoveVm(struct AnmVmDeleteView *vm);
-};
-
-struct AnmVmDeleteView
-{
-    AnmVmDeleteView *next;
-    u8 unknown004[4];
-    AnmVmDeleteView *previous;
-    u8 unknown00c[8];
-    void *generatedVertices;
-
-    ~AnmVmDeleteView()
-    {
-        if (this->generatedVertices != NULL)
-        {
-            void *generatedVertices = this->generatedVertices;
-            free(generatedVertices);
-        }
-    }
-};
 
 struct AnmVmDrawNodeView
 {
