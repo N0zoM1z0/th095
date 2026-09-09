@@ -7,7 +7,7 @@ match-unit comparisons.
 
 ## Verified checkpoint
 
-As of 2026-09-09, a cold production build:
+As of 2026-09-10, a cold production build:
 
 - compiles all 88 source translation units with pinned Visual C++ 7.1 build
   3077 into i386 COFF objects;
@@ -16,7 +16,7 @@ As of 2026-09-09, a cold production build:
 - verifies a 780,288-byte PE32 i386 Windows GUI executable at
   `build/whole-validation/th095-reconstructed.exe`;
 - produces SHA-256
-  `231d7eba0d05e55e63172752529dcd5008935bece0f6b24341134eabc00a7849`.
+  `7715bb2a0dc5e6d560a611eb523460e0044dbac8bf9f9977acdb8005699b1f9c`.
 
 The reconstruction ledgers remain at 697 source-present functions and 696
 accepted exact functions. `Controller::GetInput @ 0x00419AE0` is the sole
@@ -64,13 +64,27 @@ so validation cannot modify the source installation.
   owner.
 - Game-task ownership: target address `0x004C4DF4` is
   `g_Supervisor.photoGameTask @ +0x784`. FrontEndController publishes both new
-  game and replay tasks directly to this address in the target. Production now
-  binds all typed task views to that embedded slot instead of maintaining
-  separate front-end, runtime-view, and Supervisor pointers.
+  game and replay tasks there. It is physically distinct from the standalone
+  gameplay/global-state pointer at `0x004BDEC8`, which the task constructor
+  publishes and destructor clears. Production preserves both target slots.
+- Replay-worker ownership: target `0x004C4CB8` is the Supervisor `+0x648`
+  worker. Help/photo/replay completion and active views share its
+  `+0x08/+0x0C` control words, and the replay exit signal overlays the same
+  object instead of allocating duplicate storage.
+- EnemyMovement game speed: its exact-facing base `0x004BDD50 + 0x188` resolves
+  to `g_AnmGameSpeed @ 0x004BDED8`. Production reads that owner directly rather
+  than applying the addend to the real Supervisor base.
+- Controller assignment ownership: target GetInput reads
+  `g_Supervisor.config +0xB2/+0xB3` at `0x004C483E/0x004C483F`. Production now
+  uses the embedded 0/1/2 assignment bytes instead of a separate 0/0 array.
+- Scene-count ownership: ResultScreen's exact-facing `g_ResultSceneLimits` and
+  SceneSelect's `g_SceneGroupCounts` both resolve to initialized target table
+  `0x004A5830`. Production now uses the latter as their single owner.
 
-Because `GameplayGlobals.hpp` is shared, the correction was cold-replayed
-against all 696 canonical exact units across all 88 sources. No manifest or
-private-label refresh was required.
+The complete relocation-equivalence and Chain-lifetime review is in
+`docs/OWNER_AUDIT.md`. Because shared runtime headers changed, the final source
+was cold-replayed against all 696 canonical exact units across all 88 sources.
+No manifest or private-label refresh was required.
 
 ## Required verification
 

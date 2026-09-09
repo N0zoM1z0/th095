@@ -7,26 +7,31 @@ address,name,module,confidence,evidence
 0x004BE3C8,th095::g_Chain,Chain,exact,Exact Render DIR32 relocations and calc/draw calls
 0x004C2420,th095::g_GameErrorContext,Main,high,WinMain logging and flush lifecycle
 0x004C45E8,th095::g_GameWindow,Main,exact,WinMain base and exact Render this object
+0x004C45F0,th095::g_ControllerInputEnabled,Controller,exact,GetInput tests this standalone process-lifetime enable word before keyboard polling
 0x004C4670,th095::g_Supervisor,Supervisor,exact,Exact Render DIR32 relocations with verified field addends
+0x004C4680,th095::g_Supervisor.keyboard,Supervisor,exact,GetInput DirectInput path reads the Supervisor +0x10 keyboard device field
+0x004C4684,th095::g_Supervisor.controller,Supervisor,exact,Exact GetControllerInput and GetControllerState relocations read the Supervisor +0x14 controller device field
+0x004C483E,th095::g_Supervisor.config.controllerAssignments,Supervisor,exact,GetInput reads entries at Supervisor config +0xB2/+0xB3; GameConfiguration::Initialize supplies target defaults 0/1/2
 0x004C4EE8,th095::g_SoundPlayer,SoundPlayer,exact,Exact Render DIR32 relocation and queue call
 0x004CA1B8,th095::g_AnmManager,AnmManager,exact,Exact Render DIR32 relocations and WinMain allocation
-0x004A9F80,th095::g_AsciiManager,AsciiManager,exact,Exact ReplayManager FPS draw base and color-field relocations
-0x004BDEC8,th095::g_PhotoGlobalState,PhotoRuntime,exact,Exact photography and ReplayManager callback-gate relocations
-0x004BE218,th095::g_ReplayInputSource,Input,high,Exact ReplayManager stream relocation base and input-source update call
+0x004A5800,th095::g_SceneGroups,SceneSelect,exact,Initialized twelve-entry scene-definition pointer table shared by front-end replay and result partial views
+0x004A5830,th095::g_SceneGroupCounts,SceneSelect,exact,Initialized twelve-entry scene-count table shared by selection and ResultScreen limit views
+0x004A9F80,th095::g_AsciiManager,AsciiManager,exact,Single process-lifetime object shared by front-end photo replay and result partial views
+0x004BDEC8,th095::g_PhotoGlobalState,PhotoGameTask,exact,229 hash-attested target xrefs include publication at 0x00417FE5 and clear at 0x00417F2D; physically distinct from Supervisor::photoGameTask at 0x004C4DF4
+0x004BE218,th095::g_ControllerInputSlots,Input,exact,Three statically constructed 0x8E-byte slots; GetInput uses the base and ReplayInputSource overlays slot-zero history fields
 0x004BE244,th095::g_CurFrameInput,Input,exact,Exact ReplayManager record/playback stream relocations
 0x004BE246,th095::g_LastFrameInput,Input,exact,Exact ReplayManager record/playback stream relocations
 0x004BE24A,th095::g_ReplayInputAux,Input,high,Exact ReplayManager stream field relocations
 0x004BE24C,th095::g_ReplayInputFlags,Input,high,Exact ReplayManager stream field relocations
 0x004C4E0C,th095::g_ReplayFps,ReplayManager,high,Exact quantized FPS sampling relocations
 0x004C4E74,th095::g_ReplayManager,ReplayManager,exact,Exact ReplayManager destructor singleton relocations
-0x004A5800,th095::g_ReplayPlayerConfigTable,ReplayManager,exact,Exact ReplayManager playback configuration-table relocation
 0x004CA2F0,th095::g_SelectedScene,SceneSelect,exact,Exact scene-selection and enemy resource-path relocations; replay reuses the selected-scene record
 0x004BDED0,th095::g_ReplayUsesArchive,FileSystem,exact,Exact ReplayManager disk/archive load-path relocations
 0x004C4DFC,th095::g_ReplayLagNumerator,ReplayManager,exact,Exact ReplayManager writer x87 slow-rate numerator relocation
 0x004C4E04,th095::g_ReplayLagDenominator,ReplayManager,exact,Exact ReplayManager writer x87 slow-rate denominator relocation
-0x004C4CC0,th095::g_HelpLoadComplete,HelpMenu,exact,Exact Help loader completion-flag relocation
-0x004C4CC4,th095::g_HelpLoadActive,HelpMenu,exact,Exact Help loader active-flag relocation
-0x004CA2F4,th095::g_HelpMenu,HelpMenu,exact,Exact Help loader owner-pointer relocation
+0x004C4CC0,th095::g_Supervisor.replayScanWorker.stopRequested,Supervisor,exact,Exact help/photo/replay completion relocations and hash-attested writes place one shared field at replayScanWorker +0x08
+0x004C4CC4,th095::g_Supervisor.replayScanWorker.active,Supervisor,exact,Exact help/photo/replay active relocations and hash-attested writes place one shared field at replayScanWorker +0x0C
+0x004CA2F4,th095::g_ActiveMenuController,FrontEnd,exact,Shared active Help/Options/pause controller slot; exact Help loader and menu relocations use typed partial views
 0x004E24A8,th095::g_DecompressionRing,Compression,high,Target-local 8192-byte history ring used by DecompressData
 0x00496F10,th095::g_TextureFormatD3D8Mapping,AnmTexture,exact,Canonical GetAnmFormat and LoadTexture DIR32 relocations
 0x00496F28,th095::g_TextureFormatBytesPerPixel,AnmTexture,exact,Canonical LoadTexture DIR32 relocations
@@ -37,6 +42,9 @@ address,name,module,confidence,evidence
 0x004C44B8,th095::g_TextRenderBuffer,TextRenderer,high,Target 0x124-byte CPU text-render buffer view
 0x004A4330,th095::g_TextRenderFormatInfoArray,TextRenderer,exact,Exact GetFormatInfo DIR32 relocations and target-initialized seven-entry format table
 0x004BDD90,th095::g_Background,Background,high,Hash-attested Background lifecycle singleton ownership and RunStageScript caller
+0x004BDD98,th095::g_PhotoBulletManager,BulletManager,exact,Canonical relocation equivalence class and target constructor/destructor publication lifecycle
+0x004BDDC0,th095::g_PhotoEnemyManager,EnemyManager,exact,Hash-attested constructor publication at 0x00414C4C and destructor clear at 0x00415658
+0x004BDDC4,th095::g_PhotoFrontManager,PhotoFront,exact,Hash-attested constructor publication at 0x004170CA and destructor clear at 0x004173CD
 0x004BDD8C,th095::g_BackgroundStageDataSize,Background,high,Hash-attested stage-data cache size used by LoadStageDataInner
 0x004BDD94,th095::g_BackgroundStageDataCache,Background,high,Hash-attested stage-data cache pointer used by LoadStageDataInner
 0x004C4854,th095::g_BackgroundCameraPosition,Background,high,RunStageScript opcodes 2/3/10 and interpolation output
@@ -44,6 +52,13 @@ address,name,module,confidence,evidence
 0x004C486C,th095::g_BackgroundCameraUp,Background,exact,Exact Initialize DIR32 relocation base with +4/+8 addends and RunStageScript camera motion consumers
 0x004C4878,th095::g_BackgroundCameraForward,Background,exact,Exact Update DIR32 relocation passed to D3DXVec3Normalize
 0x004C4A34,th095::g_CurrentBackgroundViewport,Supervisor,exact,Target-facing identity is the active background viewport pointer embedded at g_Supervisor +0x3C4; ConfigureBackgroundViewport publishes one of two +0x1E4 0xF0-byte configurations and runtime gameplay confirms shared Background/ANM ownership
+0x004C45DC,th095::g_PhotoItemManager,PhotoItemManager,exact,Hash-attested constructor publication at 0x0041CB80 and destructor clear at 0x0041CC78
+0x004C45E0,th095::g_PhotoEffectManager,PhotoEffect,exact,Hash-attested constructor publication at 0x0041D5AE and destructor clear at 0x0041D773
+0x004C4CB8,th095::g_Supervisor.replayScanWorker,Supervisor,exact,Supervisor +0x648 embedded worker base; exact relocations overlay replay exit signal and +0x08/+0x0C control fields
+0x004C4DF4,th095::g_Supervisor.photoGameTask,Supervisor,exact,Supervisor +0x784 embedded publication slot written from PhotoGameTaskView::Create results at 0x00446684 and 0x004467C0; distinct from 0x004BDEC8
+0x004C4E6C,th095::g_PhotoStageState,PhotoStage,exact,Hash-attested constructor publication at 0x0042A921 and destructor clear at 0x0042AB5D
+0x004C4E70,th095::g_PhotoGame,PhotoGame,exact,Hash-attested PlayerInf construction publication at 0x0042EB9C and teardown clear at 0x0042EEFE
+0x004C4E78,th095::g_ResultSaveData,ScoreData,exact,Canonical InitializeScoreData publication and ReleaseScoreData guarded clear
 0x004C4890,th095::g_BackgroundWaveX,Background,high,RunStageScript camera motion modes 1 through 3 sine output
 0x004C4898,th095::g_BackgroundWaveY,Background,high,RunStageScript camera motion mode 3 cosine output
 0x004C489C,th095::g_BackgroundModeValue,Background,high,RunStageScript opcode 7 target-global store

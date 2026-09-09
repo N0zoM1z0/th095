@@ -58,7 +58,7 @@ Whole-program compile and link closure is complete. A fresh
 - verifies a PE32 i386 Windows GUI image at
   `build/whole-validation/th095-reconstructed.exe`;
 - currently produces 780,288 bytes with SHA-256
-  `458764b1844bb3e9eebded99bb87aef662b2b09b137fa583926d7697bd0d0b67`.
+  `7715bb2a0dc5e6d560a611eb523460e0044dbac8bf9f9977acdb8005699b1f9c`.
 
 This is a runnable reconstruction artifact, not a byte-exact whole-image
 claim. Function-level exact evidence remains governed by the match-unit
@@ -81,6 +81,18 @@ The runtime-closure commits are:
 - `18c2a32` — share the Supervisor-owned live game-task pointer;
 - `ad0d043` — bind audio settings to the TH095 Supervisor layout;
 - `b9a01f3` — bind background camera state to Supervisor viewport 0.
+
+The subsequent full-owner-audit commits are:
+
+- `7708738` — separate the standalone gameplay/global-state slot from the
+  Supervisor task-publication field;
+- `f7a0923` — bind EnemyMovement's `+0x188` view to the real game-speed owner;
+- `631062f` — overlay Help/photo/replay control views on the embedded replay
+  worker; and
+- `cdfb5c1` — bind GetInput's device assignments to Supervisor configuration;
+- `3181490` — preserve exact-profile field identifiers after the semantic
+  production rename; and
+- `05e1e92` — merge ResultScreen's limit view into the scene-count table.
 
 ## Runtime validation
 
@@ -133,11 +145,13 @@ Six runtime discrepancies were diagnosed and closed:
 3. `g_CurrentBackgroundViewport @ 0x004C4A34` is not independent storage. It
    is `g_Supervisor + 0x3C4`; production Background and ANM consumers now read
    that one embedded owner. This removed the gameplay NULL dereference.
-4. `g_FrontEndGameManager @ 0x004C4DF4` is not independent storage either. It
-   is `g_Supervisor.photoGameTask @ +0x784`. The former production build kept
-   the front-end publisher, typed gameplay views, and Supervisor member in
-   separate slots, so result-menu teardown found a null Supervisor pointer.
-   Production now binds every typed view to the embedded owner.
+4. `g_FrontEndGameManager @ 0x004C4DF4` is
+   `g_Supervisor.photoGameTask @ +0x784`, but it is not the standalone
+   gameplay/global-state slot at `0x004BDEC8`. The former production build
+   first kept too many independent task slots, then over-corrected by collapsing
+   these two target addresses. Production now keeps both physical slots:
+   gameplay views use `0x004BDEC8`, while the front-end publisher and
+   Supervisor transition consumer share `0x004C4DF4`.
 5. The background camera/script symbols at `0x004C4854..0x004C489C` are fields
    of Supervisor viewport configuration 0. Separate production statics let the
    stage script animate one copy while rendering used an unchanged, degenerate
@@ -148,15 +162,34 @@ Six runtime discrepancies were diagnosed and closed:
    stream, then refused to reopen it. Production audio accessors now use the
    TH095 `0x7BC`-byte Supervisor and its `+0x11C` configuration.
 
-After the background-camera and audio-owner corrections, all 696 configured
-units across all 88 sources cold-replayed exact with zero manifest or
-private-label refreshes.
+The 2026-09-10 full owner audit then closed four additional gaps that had not
+yet produced a confirmed crash:
+
+7. Help, photo-load, front-end, replay-scan, and replay-exit control views now
+   share `g_Supervisor.replayScanWorker @ +0x648`; completion/stop and active
+   are its `+0x08/+0x0C` fields, not separate globals.
+8. EnemyMovement's exact-facing synthetic base `0x004BDD50 + 0x188` lands on
+   `g_AnmGameSpeed @ 0x004BDED8`; production no longer applies that addend to
+   the real Supervisor object.
+9. The sole non-exact authored function was audited separately. GetInput's
+   device assignments at `0x004C483E/0x004C483F` are Supervisor configuration
+   fields initialized to 0/1, not a standalone production array initialized to
+   0/0.
+10. ResultScreen's `g_ResultSceneLimits` and SceneSelect's
+    `g_SceneGroupCounts` both name initialized target table `0x004A5830`.
+    Production now has one canonical array instead of two equal copies.
+
+The complete address-equivalence and Chain-lifetime audit is recorded in
+`docs/OWNER_AUDIT.md`. After all owner corrections, all 696 configured units
+across all 88 sources cold-replayed exact with zero manifest or private-label
+refreshes.
 
 ## Remaining work
 
 For the stated goal—reconstructed source that cold-compiles, links, and runs
 the game—the active whole-build lane is complete. There are no known unresolved
-symbols or known startup, gameplay, retry, or result-menu return crashes.
+symbols, remaining relocation-owner candidates, or known startup, gameplay,
+retry, or result-menu return crashes.
 
 Optional coverage expansion is not a known blocker: sample more of the 93
 scenes, replay playback/recording, Music Room, Help, Options, MIDI, and
@@ -174,4 +207,6 @@ python3 scripts/ci.py
 ```
 
 Two pre-existing untracked files belong to the user and must remain untouched:
-`EnemyManagerUpdate.i` and `droid.resume.txt`.
+`EnemyManagerUpdate.i` and `droid.resume.txt`. The uncommitted experimental
+`config/runtime-scenarios.json` and `scripts/runtime-diff.py` are not part of
+the verified workflow or this handoff.

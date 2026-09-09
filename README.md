@@ -48,20 +48,19 @@ the primary semantic-analysis backend. Generated `docs/PROGRESS.md` and
 totals; prose intentionally does not duplicate changing counts.
 
 All confirmed authored functions have maintained source, and the origin/boundary
-review is closed at zero pending rows. Function-level exactness is paused with
-one deferred compiler-shape residual while the active phase validates whether
-the reconstructed translation units form a real link-coherent program. Mapping,
-origin, source presence, compilation, linkage, semantic acceptance, and
-exactness remain independent facts.
+review is closed at zero pending rows. The 88-source production graph now
+cold-compiles and links into a runnable PE32 image. A full mutable-relocation,
+global-owner, and Chain-lifetime audit is recorded in
+`docs/OWNER_AUDIT.md`; it found and closed five production storage/view gaps.
+Function-level exactness has one accepted/deferred compiler-shape residual.
+Mapping, origin, source presence, compilation, linkage, semantic acceptance,
+and exactness remain independent facts.
 
 The pinned compiler is Microsoft Visual C++ .NET 2003 `13.10.3077`, matching
 the target's PE/Rich-header evidence. Exact compiler profiles remain recorded
 per source in `config/match-units.toml`; a successful aggregate compile does not
-promote one assumed profile to executable-wide truth. The first cold aggregate
-audit compiled every current source file to i386 COFF, while the real VC7.1
-link exposed unresolved production type/global ownership that function-level
-relocation comparison cannot detect. See the current handoff for the live
-blocker and generated report path.
+promote one assumed profile to executable-wide truth. See the current handoff
+for the verified build/runtime checkpoint and remaining optional coverage.
 
 Start a reconstruction session with:
 
@@ -85,6 +84,7 @@ samples against `config/target.toml` before any analysis is trusted.
 - [Ghidra setup and attestation](docs/GHIDRA.md)
 - [Secondary IDA notes](docs/IDA.md)
 - [VC7.1 build and strict matching](docs/BUILD_MATCHING.md)
+- [Runtime owner and lifetime audit](docs/OWNER_AUDIT.md)
 - [Tool routing](docs/TOOLS.md)
 - [Verified knowledge base](docs/KNOWLEDGE_BASE.md)
 - [Generated progress](docs/PROGRESS.md)
@@ -101,8 +101,9 @@ python3 scripts/build-whole.py --compile-only
 python3 scripts/build-whole.py --link-only
 ```
 
-The last command currently fails closed and reports the remaining production
-link contract; it does not create a stubbed or force-linked executable.
+Running `scripts/build-whole.py` without a mode cold-compiles and links the
+verified production graph. `--link-only` reuses an existing cold object set;
+all modes remain fail-closed and never create a stubbed or force-linked image.
 
 ## Reference model
 
