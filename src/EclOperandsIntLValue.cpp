@@ -38,6 +38,27 @@ typedef char EclIntLValueOperandEnemyLifeAt2958[
 #define TH095_ECL_ENEMY_LIFE(owner) \
     (reinterpret_cast<EclIntLValueOperandEnemyLifeView *>(owner)->life)
 #endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_TIMER_CURRENT(owner) ENEMY_I32((owner), 0x2974)
+#else
+struct EclIntLValueOperandTimerView
+{
+    i32 previous;
+    f32 subFrame;
+    i32 current;
+};
+typedef char EclIntLValueOperandTimerViewSizeC[
+    (sizeof(EclIntLValueOperandTimerView) == 0x0c) ? 1 : -1];
+struct EclIntLValueOperandEnemyTimerView
+{
+    u8 unknown0000[0x296c];
+    EclIntLValueOperandTimerView eclTimer;
+};
+typedef char EclIntLValueOperandEnemyTimerAt296C[
+    (offsetof(EclIntLValueOperandEnemyTimerView, eclTimer) == 0x296c) ? 1 : -1];
+#define TH095_ECL_TIMER_CURRENT(owner) \
+    (reinterpret_cast<EclIntLValueOperandEnemyTimerView *>(owner)->eclTimer.current)
+#endif
 
 namespace EclOperands
 {
@@ -71,7 +92,7 @@ i32 *__fastcall ResolveIntLValue(
     case 0x2726: return &enemy->activeEclContext->extraIntVariables[2];
     case 0x2727: return &enemy->activeEclContext->extraIntVariables[3];
 
-    case 0x2731: return &ENEMY_I32(enemy, 0x2974);
+    case 0x2731: return &TH095_ECL_TIMER_CURRENT(enemy);
     case 0x2733: return &TH095_ECL_ENEMY_LIFE(enemy);
     case 0x275b: return &ENEMY_I32(enemy, 0x2bd8);
     case 0x275c: return &ENEMY_I32(enemy, 0x2964);
@@ -86,6 +107,7 @@ i32 *__fastcall ResolveIntLValue(
 
 } // namespace EclOperands
 
+#undef TH095_ECL_TIMER_CURRENT
 #undef TH095_ECL_ENEMY_LIFE
 #undef ENEMY_I32
 

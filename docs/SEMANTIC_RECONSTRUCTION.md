@@ -1900,3 +1900,65 @@ and shared provider state remain untouched.
 only if TH095-local spawn initialization, opcode-113 reset, and independent
 consumers distinguish their roles. Otherwise leave them separate/unknown and
 route to the next repeated compact-enemy owner.
+
+
+
+### SEM-027 — script-visible enemy ECL timer current
+
+**Routing note.** The SEM-026 handoff first rechecked compact
+`maximumLife @ +0x295C` and `phaseStartingLife @ +0x2960`. TH095-local source
+shows spawn and opcode-113 snapshot writes to both fields and a separate opcode
+139 write to `+0x2960`, but no independent compact reader was found that
+establishes distinct runtime roles for the two reconstructed names. That pair
+therefore remains unpromoted/unknown in this campaign rather than being changed
+for offset-cleanup alone.
+
+**Scope.** Recover selector `0x2731` as the current component of the compact
+enemy ECL timer. `ResolveInt`, `ResolveFloat`, and `ResolveIntLValue` now share a
+semantic `TH095_ECL_TIMER_CURRENT` expression in their maintainable branches.
+Each exact branch expands to the historical dword at `+0x2974` so the large
+switch resolvers retain their target compiler surface. No timer methods or
+shared headers are changed.
+
+**Observed.** The three canonical TH095 operand resolver units independently
+map selector `0x2731` to the same signed dword at enemy `+0x2974`: the integer
+resolver returns it, the float resolver converts it to float, and the integer
+lvalue resolver returns its address. `PhotoEnemyView` places a 12-byte
+`ZunTimer eclTimer` at `+0x296C`; the established timer layout is
+`previous/+0x00`, `subFrame/+0x04`, `current/+0x08`, fixing its `current` member
+at enemy `+0x2974` exactly.
+
+**Corroborated.** The TH095 photo-enemy initialization path assigns
+`enemy->eclTimer = 0`, invoking the timer's current/subframe/previous reset
+protocol, and the main exact enemy update calls `enemy->eclTimer.Tick()` once
+per active update. The selector therefore exposes the same timer component that
+is advanced by the enemy runtime, while the lvalue path makes that component
+script-writable. This conclusion uses only TH095-local exact layout and
+producer/consumer behavior.
+
+**Inferred.** Selector `0x2731` is the script-visible current integer frame of
+the enemy's ECL timer. The float resolver is a numeric conversion of that same
+integer field rather than a distinct floating timer channel. The local timer
+views intentionally reproduce only the three proven `ZunTimer` storage members
+instead of importing a new header into exact-sensitive operand TUs.
+
+**Unknown.** This batch does not assign selectors to `eclTimer.previous` or
+`eclTimer.subFrame`, does not claim that script writes reproduce
+`ZunTimer::SetCurrent`'s full reset side effects, and does not reinterpret the
+adjacent life-baseline fields rejected by the routing check above.
+
+**Regression boundary.** The canonical `ecl-resolve-int`,
+`ecl-resolve-int-lvalue`, and `ecl-resolve-float` units replay exact together,
+3/3, with zero private-label refresh. All three corresponding normal production
+translation units independently compile under pinned VC7.1 to i386 COFF, and
+`git diff --check` passes. No shared header, layout, or ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect the remaining script-visible compact enemy scalar pair
+`itemDrop @ +0x2BD8` (selector `0x275B`) and `score @ +0x2964` (selector
+`0x275C`). Treat them as separate owners even if they share the same three
+operand resolver surfaces; require TH095-local spawn/default/write evidence for
+each before canonicalizing their selector accesses.

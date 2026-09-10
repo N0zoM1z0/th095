@@ -103,6 +103,27 @@ typedef char EclIntOperandEnemyLifeAt2958[
 #define TH095_ECL_ENEMY_LIFE(owner) \
     (reinterpret_cast<EclIntOperandEnemyLifeView *>(owner)->life)
 #endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_TIMER_CURRENT(owner) ENEMY_I32((owner), 0x2974)
+#else
+struct EclIntOperandTimerView
+{
+    i32 previous;
+    f32 subFrame;
+    i32 current;
+};
+typedef char EclIntOperandTimerViewSizeC[
+    (sizeof(EclIntOperandTimerView) == 0x0c) ? 1 : -1];
+struct EclIntOperandEnemyTimerView
+{
+    u8 unknown0000[0x296c];
+    EclIntOperandTimerView eclTimer;
+};
+typedef char EclIntOperandEnemyTimerAt296C[
+    (offsetof(EclIntOperandEnemyTimerView, eclTimer) == 0x296c) ? 1 : -1];
+#define TH095_ECL_TIMER_CURRENT(owner) \
+    (reinterpret_cast<EclIntOperandEnemyTimerView *>(owner)->eclTimer.current)
+#endif
 #define ENEMY_U8(owner, offset) \
     (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 
@@ -139,7 +160,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x2722: return (i32)g_Rng.GetRandomU32();
     case 0x2723: return (i32)g_Rng.GetRandomF32Signed();
 
-    case 0x2731: return ENEMY_I32(enemy, 0x2974);
+    case 0x2731: return TH095_ECL_TIMER_CURRENT(enemy);
     case 0x2733: return TH095_ECL_ENEMY_LIFE(enemy);
     case 0x275d: return (i32)enemy->activeEclContext->extraFloatVariables[0];
     case 0x275e: return (i32)enemy->activeEclContext->extraFloatVariables[1];
@@ -220,6 +241,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 #undef TH095_ECL_INT_PHOTO_INDEX
 #undef TH095_ECL_INT_PLAYER_POSITION
 #undef ENEMY_U8
+#undef TH095_ECL_TIMER_CURRENT
 #undef TH095_ECL_ENEMY_LIFE
 #undef ENEMY_I32
 
