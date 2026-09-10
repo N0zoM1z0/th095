@@ -59,6 +59,19 @@ typedef char EclIntLValueOperandEnemyTimerAt296C[
 #define TH095_ECL_TIMER_CURRENT(owner) \
     (reinterpret_cast<EclIntLValueOperandEnemyTimerView *>(owner)->eclTimer.current)
 #endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_ENEMY_SCORE(owner) ENEMY_I32((owner), 0x2964)
+#else
+struct EclIntLValueOperandEnemyScoreView
+{
+    u8 unknown0000[0x2964];
+    i32 score;
+};
+typedef char EclIntLValueOperandEnemyScoreAt2964[
+    (offsetof(EclIntLValueOperandEnemyScoreView, score) == 0x2964) ? 1 : -1];
+#define TH095_ECL_ENEMY_SCORE(owner) \
+    (reinterpret_cast<EclIntLValueOperandEnemyScoreView *>(owner)->score)
+#endif
 
 namespace EclOperands
 {
@@ -95,7 +108,7 @@ i32 *__fastcall ResolveIntLValue(
     case 0x2731: return &TH095_ECL_TIMER_CURRENT(enemy);
     case 0x2733: return &TH095_ECL_ENEMY_LIFE(enemy);
     case 0x275b: return &ENEMY_I32(enemy, 0x2bd8);
-    case 0x275c: return &ENEMY_I32(enemy, 0x2964);
+    case 0x275c: return &TH095_ECL_ENEMY_SCORE(enemy);
 
     case 0x273c: return &g_EclIntLValueRuntime->sharedOperands->intVariables[0];
     case 0x273d: return &g_EclIntLValueRuntime->sharedOperands->intVariables[1];
@@ -107,6 +120,7 @@ i32 *__fastcall ResolveIntLValue(
 
 } // namespace EclOperands
 
+#undef TH095_ECL_ENEMY_SCORE
 #undef TH095_ECL_TIMER_CURRENT
 #undef TH095_ECL_ENEMY_LIFE
 #undef ENEMY_I32

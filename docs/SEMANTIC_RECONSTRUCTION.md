@@ -1962,3 +1962,59 @@ and shared provider state remain untouched.
 `0x275C`). Treat them as separate owners even if they share the same three
 operand resolver surfaces; require TH095-local spawn/default/write evidence for
 each before canonicalizing their selector accesses.
+
+
+
+### SEM-028 — script-visible enemy score
+
+**Scope.** Recover compact enemy `score @ +0x2964` as ECL selector `0x275C`
+across the integer reader, float reader, and integer lvalue resolver. Each
+maintainable branch uses a source-local four-byte score view; the exact branch
+expands the semantic macro to the historical raw `ENEMY_I32` expression so the
+switch-resolver compiler surface remains unchanged. `itemDropType @ +0x2BD8`
+was investigated in the same routing pass but remains a separate owner for the
+next batch.
+
+**Observed.** The three canonical TH095 operand resolvers independently map
+selector `0x275C` to the signed dword at enemy `+0x2964`: `ResolveInt` reads it,
+`ResolveFloat` converts it to float, and `ResolveIntLValue` returns its writable
+address. Target-attested Ghidra decompilation of
+`PhotoEnemyManagerView::Spawn @ 0x004156C0` and
+`SpawnWithContext @ 0x00415820` writes call parameter `score` to enemy dword
+index `0xA59`, i.e. byte offset `+0x2964`, only when the supplied value is
+non-negative.
+
+**Corroborated.** The canonical exact TH095 `PhotoEnemyView` places `i32 score`
+at `+0x2964`. `PhotoEnemyManagerView` initializes the spawn template's score to
+100 before any slot copies occur; both exact spawn variants copy that template
+and conditionally replace `enemy->score` from their `score` argument after a
+successful first ECL run. The independent selector lvalue path then exposes the
+same four-byte field to script writes. These producer, layout, and script access
+facts are all TH095-local.
+
+**Inferred.** `+0x2964` is the mutable per-enemy score value visible to ECL as
+selector `0x275C`. A negative spawn argument means “retain the template/default
+score” at this call boundary; the field itself remains an ordinary signed
+four-byte value after spawn. The float resolver is a numeric conversion of the
+same integer field, not a separate score representation.
+
+**Unknown.** This batch does not establish when or how the enemy score is
+awarded to player/global score state, does not assign meaning to negative score
+values written later through the lvalue selector, and does not merge score with
+the neighboring life baseline fields. `itemDropType` is intentionally excluded
+from this checkpoint even though it shares the resolver surfaces.
+
+**Regression boundary.** `ecl-resolve-int`, `ecl-resolve-int-lvalue`, and
+`ecl-resolve-float` replay exact together, 3/3, with zero private-label refresh.
+All three corresponding normal production translation units independently
+compile under pinned VC7.1 to i386 COFF, and `git diff --check` passes. No
+shared header, object layout, or ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** recover compact `itemDropType @ +0x2BD8` / selector `0x275B` as
+a separate owner. Verify the target's signed-byte spawn input conversion against
+the four-byte stored field and the three 32-bit ECL resolver paths before
+acceptance; do not collapse it with score or adjacent timeline parameters.

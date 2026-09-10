@@ -124,6 +124,19 @@ typedef char EclIntOperandEnemyTimerAt296C[
 #define TH095_ECL_TIMER_CURRENT(owner) \
     (reinterpret_cast<EclIntOperandEnemyTimerView *>(owner)->eclTimer.current)
 #endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_ENEMY_SCORE(owner) ENEMY_I32((owner), 0x2964)
+#else
+struct EclIntOperandEnemyScoreView
+{
+    u8 unknown0000[0x2964];
+    i32 score;
+};
+typedef char EclIntOperandEnemyScoreAt2964[
+    (offsetof(EclIntOperandEnemyScoreView, score) == 0x2964) ? 1 : -1];
+#define TH095_ECL_ENEMY_SCORE(owner) \
+    (reinterpret_cast<EclIntOperandEnemyScoreView *>(owner)->score)
+#endif
 #define ENEMY_U8(owner, offset) \
     (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 
@@ -216,7 +229,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x2752: return ENEMY_I32(enemy, 0x2c50);
     case 0x2753: return ENEMY_U8(enemy, 0x2be5);
     case 0x275b: return ENEMY_I32(enemy, 0x2bd8);
-    case 0x275c: return ENEMY_I32(enemy, 0x2964);
+    case 0x275c: return TH095_ECL_ENEMY_SCORE(enemy);
 
     case 0x2730:
         return (i32)TH095_ECL_INT_PLAYER_ANGLE(&enemy->worldPosition);
@@ -241,6 +254,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 #undef TH095_ECL_INT_PHOTO_INDEX
 #undef TH095_ECL_INT_PLAYER_POSITION
 #undef ENEMY_U8
+#undef TH095_ECL_ENEMY_SCORE
 #undef TH095_ECL_TIMER_CURRENT
 #undef TH095_ECL_ENEMY_LIFE
 #undef ENEMY_I32
