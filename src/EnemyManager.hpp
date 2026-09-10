@@ -34,6 +34,9 @@ enum EnemyTrailFlagMask
     ENEMY_TRAIL_HIDE_HEAD_ANM = 1U << 4,
 };
 
+#define TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK 0x80000000U
+#define TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK_SHIFT 31
+
 struct EnemyBulletRankInfluence
 {
     f32 speedLow;

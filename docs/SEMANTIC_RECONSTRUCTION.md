@@ -846,3 +846,77 @@ remains untouched.
 **Next batch:** refresh live state and route the compact enemy movement/control
 family.  Prefer TH095-local fields with more than one exact consumer, and do
 not collapse later generic `Enemy` layout onto compact photo-enemy offsets.
+
+
+### SEM-011 — compact enemy alternate ANM bank flag
+
+**Scope.** Name only bit 31 of the compact TH095 enemy `flags1` word at
+`+0x2BF4`.  `EnemyManager.hpp` publishes target-specific preprocessor constants
+for the bit mask and shift; the exact low-ECL opcode body and
+`Enemy::UpdateShotAndAnm` use those names.  This batch does not reinterpret the
+rest of `flags1`, does not alter `PhotoEnemyView`'s packed bitfield declaration,
+and does not equate compact `flags1` with the later generic `Enemy::flags2`
+layout.
+
+**Observed.** Factory's target-attested TH095 Ghidra provider decompiled
+`Enemy::UpdateShotAndAnm @ 0x00413030`.  When the signed dword at enemy
+`+0x2BF4` is negative, the target loads the ANM owner from runtime `+0x4DFC`;
+otherwise it loads runtime `+0x4DF8`.  The same target body then uses that owner
+to install the selected idle/movement script.  The canonical exact TH095
+`EclManager::RunEcl` independently exposes the producer/consumer protocol in
+its low-opcode switch: opcodes 54..56 execute or configure scripts through
+runtime `+0x4DF8` and clear `0x80000000` in enemy `+0x2BF4`; opcodes 58..60 use
+runtime `+0x4DFC` and set the same bit; opcode 62 reads bit 31 and again chooses
+between those two ANM banks.  The write/read pairing establishes bit 31 as the
+compact enemy's alternate-bank selector rather than merely a sign flag.
+
+**Corroborated.** `Enemy::UpdateShotAndAnm` is an independently exact TH095
+consumer at `0x00413030`, while the 27-KiB exact `EclManager::RunEcl` body owns
+the low-opcode mutations and a second bank-selection read.  Both lanes use the
+same compact storage offset and the same `+0x4DF8/+0x4DFC` bank pair.  No TH08
+semantic interpretation is required for the accepted role.
+
+**Inferred.** `TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK` and its shift are
+reconstruction identifiers.  The target proves the protocol, not the retail
+identifier spelling.  Preprocessor constants are intentionally used instead
+of adding a new enum type: an exploratory enum declaration changed VC7.1's
+compiler-private `$L` symbol numbering in the large exact RunEcl object even
+though the public relocation meaning was unchanged.  Avoiding a new type keeps
+that compiler artifact out of the semantic transaction.
+
+**Unknown.** The remaining bits in compact enemy `flags1 @ +0x2BF4` are not
+promoted by this batch.  In particular, this record does not imply that the
+later generic `EnemyFlag1Mask` or `EnemyFlag2Mask` bit assignments apply to the
+compact photo-enemy object.  The generic `ENEMY_FLAG2_ALTERNATE_ANM_BANK`
+currently names a different bit in a different later-layout word and remains a
+separate protocol.  An exploratory split of the exact `PhotoEnemyView` trailing
+unknown bitfield to spell bit 31 also shifted compiler-private labels, so it was
+fully reverted rather than refreshing the exact ledger.
+
+**Regression boundary.** The final macro-based form replays
+`EclManager::RunEcl` 1/1 exact and `Enemy::UpdateShotAndAnm` 1/1 exact with zero
+compiler-private label refresh; after reverting the exploratory local bitfield
+split, `EnemyManagerUpdate.cpp` also replays 22/22 exact with zero refresh.
+Because `EnemyManager.hpp` is shared, a cold aggregate replay rebuilt all 88
+configured sources in eight disjoint groups and passed 696/696 canonical exact
+units with zero private-label refresh.  A separate cold production gate then
+compiled all 88 translation units with pinned VC7.1 `13.10.3077` to i386 COFF,
+and the pinned linker `7.10.3077` linked and verified a PE32 i386 executable.
+The build-local executable SHA-256 was
+`3515b107b850103dbb921254ee5f713ff8606e294f3fbb25dcb5cb6de3fd712d`;
+this is product closure, not a whole-image exactness claim.  Target/tracking
+validation remains 697 source-present / 696 exact, and `git diff --check`
+passes.  Semantic interpretation, exact replay, production closure, and runtime
+behavior remain separate states; no runtime scenario or storage claim is added.
+
+**Analysis artifacts.** `.analysis/` started this campaign at 1,408,444,500
+bytes and remains exactly 1,408,444,500 bytes.  No current-session `.analysis`
+root or artifact was created or removed; the legacy GDB/Wine-prefix content and
+all shared provider state remain untouched.  Build outputs remain under the
+repository's ignored `build/` validation area.
+
+**Next batch:** recover the compact enemy movement-mirroring role of `flags1`
+bit 16 from TH095-local movement, ECL-helper, shot-ANM, and photo-enemy
+consumers.  Keep it distinct from the later generic Enemy flag numbering, and
+prefer a source-local naming correction if that closes the meaning without
+another shared-header ABI surface change.

@@ -95,7 +95,7 @@ void Enemy::UpdateShotAndAnm()
 
             if (TargetEnemyAnmDirection(this) != direction)
             {
-                anm = ((TargetEnemyFlags1(this) >> 31) & 1)
+                anm = ((TargetEnemyFlags1(this) >> TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK_SHIFT) & 1)
                     ? *reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4dfc)
                     : *reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4df8);
 

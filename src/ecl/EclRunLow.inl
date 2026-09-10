@@ -449,7 +449,7 @@ static EclRawInstruction *__fastcall CompareOperands(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
         *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &=
-            0x7fffffffU;
+            ~TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
     case 55:
         lhsInt = ReadInt(enemy, instruction, 0);
@@ -457,7 +457,7 @@ static EclRawInstruction *__fastcall CompareOperands(
                              lhsInt + 2, lhsInt + 3, lhsInt + 4,
                              lhsInt + 5);
         *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &=
-            0x7fffffffU;
+            ~TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
     case 56:
         SetPrimaryAnmScripts(enemy, instruction,
@@ -468,7 +468,7 @@ static EclRawInstruction *__fastcall CompareOperands(
                              ReadInt(enemy, instruction, 4),
                              ReadInt(enemy, instruction, 5));
         *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &=
-            0x7fffffffU;
+            ~TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
 #if 0 // TH095: opcode 57 is the ordinary advance path.
     case 57:
@@ -483,14 +483,14 @@ static EclRawInstruction *__fastcall CompareOperands(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
         *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
-            0x80000000U;
+            TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
     case 59:
         lhsInt = ReadInt(enemy, instruction, 0);
         SetPrimaryAnmScripts(enemy, instruction, lhsInt, lhsInt + 1, lhsInt + 2,
                              lhsInt + 3, lhsInt + 4, lhsInt + 5);
         *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
-            0x80000000U;
+            TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
     case 60:
         SetPrimaryAnmScripts(enemy, instruction,
@@ -501,7 +501,7 @@ static EclRawInstruction *__fastcall CompareOperands(
                              ReadInt(enemy, instruction, 4),
                              ReadInt(enemy, instruction, 5));
         *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
-            0x80000000U;
+            TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
 #if 0 // TH095: opcode 61 is the ordinary advance path.
     case 61:
@@ -511,7 +511,7 @@ static EclRawInstruction *__fastcall CompareOperands(
 #endif
     case 62:
         if (((*reinterpret_cast<u32 *>(
-                  reinterpret_cast<u8 *>(enemy) + 0x2bf4) >> 31) & 1U) == 0)
+                  reinterpret_cast<u8 *>(enemy) + 0x2bf4) >> TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK_SHIFT) & 1U) == 0)
         {
             (*reinterpret_cast<AnmLoaded **>(
                 TH095_ECL_RUNTIME + 0x4df8))
