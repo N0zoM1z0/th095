@@ -21,6 +21,7 @@ struct PhotoPlayerCameraRuntimeView
     i32 photosTaken;                                 // +0x0bac
     u8 unknownbb0[0x0bb4 - 0x0bb0];
     u32 flags;                                       // +0x0bb4
+    u8 unknownbb8[0x0bdc - 0x0bb8];
 };
 
 typedef char PhotoPlayerCameraChargeAt0B80[
@@ -31,6 +32,8 @@ typedef char PhotoPlayerCameraPhotosTakenAt0BAC[
     (offsetof(PhotoPlayerCameraRuntimeView, photosTaken) == 0x0bac) ? 1 : -1];
 typedef char PhotoPlayerCameraFlagsAt0BB4[
     (offsetof(PhotoPlayerCameraRuntimeView, flags) == 0x0bb4) ? 1 : -1];
+typedef char PhotoPlayerCameraRuntimeSizeIs0BDC[
+    (sizeof(PhotoPlayerCameraRuntimeView) == 0x0bdc) ? 1 : -1];
 
 struct PhotoPlayerRuntimeView
 {
@@ -43,6 +46,9 @@ struct PhotoPlayerRuntimeView
     u8 unknown042c[0x1e30 - 0x042c];
     Float3 playerPosition;                         // +0x1e30
     PhotoPlayerCameraRuntimeView camera;           // +0x1e3c
+    u8 unknown2a18[0x2a28 - 0x2a18];
+    Float3 photoTargetBoundsMin;                   // +0x2a28
+    Float3 photoTargetBoundsMax;                   // +0x2a34
 
     f32 AngleFromPoint(Float3 *position);
     i32 CheckBulletCollision(Float3 *position, Float3 *size);
@@ -69,6 +75,12 @@ typedef char PhotoPlayerRuntimePhotosTakenAt29E8[
     (offsetof(PhotoPlayerRuntimeView, camera.photosTaken) == 0x29e8) ? 1 : -1];
 typedef char PhotoPlayerRuntimeCameraFlagsAt29F0[
     (offsetof(PhotoPlayerRuntimeView, camera.flags) == 0x29f0) ? 1 : -1];
+typedef char PhotoPlayerRuntimePhotoTargetBoundsMinAt2A28[
+    (offsetof(PhotoPlayerRuntimeView, photoTargetBoundsMin) == 0x2a28) ? 1 : -1];
+typedef char PhotoPlayerRuntimePhotoTargetBoundsMaxAt2A34[
+    (offsetof(PhotoPlayerRuntimeView, photoTargetBoundsMax) == 0x2a34) ? 1 : -1];
+typedef char PhotoPlayerRuntimeSizeIs2A40[
+    (sizeof(PhotoPlayerRuntimeView) == 0x2a40) ? 1 : -1];
 
 } // namespace th095
 

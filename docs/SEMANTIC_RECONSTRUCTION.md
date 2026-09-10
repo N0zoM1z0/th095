@@ -622,3 +622,90 @@ with the `PhotoItemManagerView::Update` AABB consumer before editing.  Because
 that also extends the shared runtime header, close the full cold aggregate exact
 and whole-product gates again.  Do not broaden into the half-size/configuration
 fields unless separately evidenced.
+
+
+### SEM-008 — shared Player photo-target bounds
+
+**Recovery.** This campaign resumed at `0e6f0ef` with two unstaged source edits
+and four pre-existing untracked paths.  The source edits in
+`PhotoPlayerRuntime.hpp` and `PhotoItemManager.cpp` exactly implement the
+SEM-007 next batch and are classified as recoverable current work.  The handoff
+explicitly identifies `EnemyManagerUpdate.i` and `droid.resume.txt` as
+user-owned files that must remain untouched.  It identifies
+`config/runtime-scenarios.json` and `scripts/runtime-diff.py` as pre-existing
+uncommitted experiments outside the verified workflow; they are preserved and
+excluded from this batch.  No staged work was present.
+
+**Scope.** Extend the shared production-only Player runtime view with
+`photoTargetBoundsMin @ Player+0x2A28` and `photoTargetBoundsMax @
+Player+0x2A34`, retaining the opaque gap from the end of the embedded camera.
+`PhotoItemManagerView::Update @ 0x0041CE60` now reads those fields through the
+canonical runtime owner.  The exact/DIFFBUILD branch intentionally preserves
+its local `ItemPhotoGameView` expressions.  No half-size/configuration field,
+camera flag protocol, or behavior is changed.
+
+**Observed.** Factory's target-attested TH095 Ghidra provider bound the
+canonical Japanese v1.02a target and decompiled
+`PhotoGameUpdateView::UpdateMainState @ 0x0042F190`.  The target writes the
+three floats at Player `+0x2A28/+0x2A2C/+0x2A30` as the corresponding
+`playerPosition @ +0x1E30/+0x1E34/+0x1E38` components minus the three floats at
+`+0x3F0/+0x3F4/+0x3F8`, then writes `+0x2A34/+0x2A38/+0x2A3C` from the same
+position components plus those values.  The independently decompiled
+`PhotoItemManagerView::Update @ 0x0041CE60` loads the Player owner and compares
+item X/Y AABB coordinates against Player `+0x2A28/+0x2A2C/+0x2A34/+0x2A38`
+before consuming the item and increasing camera charge.  The target therefore
+establishes both the Player owner and the min/max relationship used by the
+consumer.
+
+**Corroborated.** TH095's exact `PhotoGameUpdateView` source already names the
+producer fields `photoTargetBoundsMin` and `photoTargetBoundsMax`, asserts the
+minimum at `+0x2A28`, and fixes the complete Player object size at `0x2A40`.
+Its exact `UpdateMainState` writes those fields as
+`playerPosition - photoTargetHalfSize` and
+`playerPosition + photoTargetHalfSize`.  The PhotoItem target consumer is an
+independent translation unit and agrees on the same owner, offsets, widths, and
+AABB direction.  No TH08 interpretation is required.
+
+**Inferred.** Publishing these fields in `PhotoPlayerRuntimeView` is a
+reconstruction representation choice so production-only consumers share one
+canonical owner.  It does not prove that the original source exposed one common
+C++ Player declaration or used these English member names outside the exact
+PhotoGame translation unit.
+
+**Unknown.** The bytes between the embedded camera end and Player `+0x2A28`
+remain intentionally opaque in the shared runtime view.  This batch does not
+promote the producer's half-size/configuration storage into that shared view or
+infer any protocol from adjacency.  Factory target analysis is provisional
+semantic evidence and has no exactness credit.  No deterministic Factory
+runtime-scenario provider is available, and this representation-only batch
+makes no new runtime behavior or storage-identity claim.
+
+**Regression boundary.** Campaign preflight reverified target SHA-256
+`bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`,
+reported 697 source-present / 696 exact functions and 336,486 exact bytes,
+validated tracking, and passed the repository-native Ghidra six-sample target
+attestation.  The eight direct production sources that include
+`PhotoPlayerRuntime.hpp` replayed 105/105 configured exact units with zero
+private-label refresh.  A first no-argument cold aggregate attempt outlived its
+Factory RPC; recovery found no remaining replay/compiler/link process, all 88
+matching objects present, and no Git-state change, so that incomplete transport
+result was not counted as a pass.  The same current source was then replayed as
+eight disjoint source groups covering all 88 manifest sources; they passed
+696/696 canonical exact units with zero private-label refresh.  An independent
+cold `build-whole.py` run compiled all 88 production translation units with
+pinned VC7.1, linked and verified a PE32 i386 executable, and produced
+build-local SHA-256
+`f4388646761e3650aea65253cb58d2ffc17a8ec5a8549d7f8529a1dc1a352424`.
+`validate-tracking.py --require-target` remained 697 source-present / 696 exact,
+and `git diff --check` passed.  Exact replay, product closure, semantic meaning,
+and runtime validation remain separate states.
+
+**Analysis artifacts.** `.analysis/` was 1,408,444,500 bytes at campaign start
+and remains exactly 1,408,444,500 bytes after this batch.  No current-session
+analysis root or artifact was created or removed; the large legacy GDB/Wine
+prefix and all other legacy/shared provider content remain untouched.
+
+**Next batch:** refresh the committed live state and route a new bounded
+TH095-local owner/field/protocol family from the lexical report plus repository
+history and target evidence.  Do not extend the adjacent Player half-size or
+camera-tail fields merely because their offsets are now bounded.

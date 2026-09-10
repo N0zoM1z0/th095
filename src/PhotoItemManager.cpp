@@ -74,6 +74,8 @@ extern ItemGlobalStateView *g_PhotoGlobalState;
 #define TH095_ITEM_CAMERA_CHARGE(game) ((game)->cameraCharge)
 #define TH095_ITEM_PHOTO_INDEX (g_PhotoGame->photoIndex)
 #define TH095_ITEM_CAMERA_FLAGS (g_PhotoGame->cameraFlags)
+#define TH095_ITEM_PHOTO_TARGET_BOUNDS_MIN (g_PhotoGame->photoTargetBoundsMin)
+#define TH095_ITEM_PHOTO_TARGET_BOUNDS_MAX (g_PhotoGame->photoTargetBoundsMax)
 #else
 #define TH095_ITEM_PLAYER_POSITION \
     (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->playerPosition)
@@ -83,6 +85,10 @@ extern ItemGlobalStateView *g_PhotoGlobalState;
     (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.photoIndex)
 #define TH095_ITEM_CAMERA_FLAGS \
     (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.flags)
+#define TH095_ITEM_PHOTO_TARGET_BOUNDS_MIN \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->photoTargetBoundsMin)
+#define TH095_ITEM_PHOTO_TARGET_BOUNDS_MAX \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->photoTargetBoundsMax)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -246,10 +252,10 @@ i32 PhotoItemManagerView::Update()
         locals.boundsMin.y = locals.item->position.y - 0.0f;
         locals.boundsMax.x = locals.item->position.x + 0.0f;
         locals.boundsMax.y = locals.item->position.y + 0.0f;
-        if (!(g_PhotoGame->photoTargetBoundsMin.x > locals.boundsMax.x ||
-              g_PhotoGame->photoTargetBoundsMin.y > locals.boundsMax.y ||
-              g_PhotoGame->photoTargetBoundsMax.x < locals.boundsMin.x ||
-              g_PhotoGame->photoTargetBoundsMax.y < locals.boundsMin.y))
+        if (!(TH095_ITEM_PHOTO_TARGET_BOUNDS_MIN.x > locals.boundsMax.x ||
+              TH095_ITEM_PHOTO_TARGET_BOUNDS_MIN.y > locals.boundsMax.y ||
+              TH095_ITEM_PHOTO_TARGET_BOUNDS_MAX.x < locals.boundsMin.x ||
+              TH095_ITEM_PHOTO_TARGET_BOUNDS_MAX.y < locals.boundsMin.y))
         {
             locals.item->active = 0;
             if ((TH095_ITEM_CAMERA_FLAGS & 1) != 0)
@@ -276,6 +282,8 @@ tick:
     return 1;
 }
 
+#undef TH095_ITEM_PHOTO_TARGET_BOUNDS_MAX
+#undef TH095_ITEM_PHOTO_TARGET_BOUNDS_MIN
 #undef TH095_ITEM_CAMERA_FLAGS
 #undef TH095_ITEM_PHOTO_INDEX
 #undef TH095_ITEM_CAMERA_CHARGE
