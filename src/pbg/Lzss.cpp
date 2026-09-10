@@ -1,4 +1,5 @@
 #include "pbg/Lzss.hpp"
+#include "Decompress.hpp"
 
 #define LZSS_BREAKEVEN 3
 #define LZSS_LOOKAHEAD_MAX ((1 << LZSS_LENGTH_BITS) + LZSS_BREAKEVEN - 1)
@@ -8,7 +9,20 @@
 namespace th095
 {
 Lzss::TreeNode Lzss::m_Tree[LZSS_DICTSIZE + 1];
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 u8 Lzss::m_Dict[LZSS_DICTSIZE];
+#else
+// The target's relocations for both Lzss::m_Dict and
+// g_DecompressionRing resolve to the same 0x2000-byte owner at 0x004E24A8.
+// CompressData fills/reads g_DecompressionRing while these tree helpers
+// compare and maintain m_Dict, so separate production arrays make the encoder
+// build matches against zeroes instead of the replay input.  Such files have
+// a valid header and terminator but decode entirely to 0x01, then hang or exit
+// when ResultScreen::LoadReplays immediately reads the saved slot.  Keep the
+// exact-facing static member for canonical COFF builds, but route every
+// runnable Lzss dictionary access to the one target-proven storage object.
+#define m_Dict g_DecompressionRing
+#endif
 
 // FUNCTION: TH095 0x00456580; TH08 0x00474450 is the source-shape oracle.
 void Lzss::InitTree(i32 root)
@@ -162,4 +176,8 @@ i32 Lzss::FindNextNode(i32 node)
     }
     return next;
 }
+
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#undef m_Dict
+#endif
 } // namespace th095
