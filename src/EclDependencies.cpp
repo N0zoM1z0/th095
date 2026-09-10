@@ -289,6 +289,20 @@ static __forceinline u32 &TargetFlags1(Enemy *enemy)
 {
     return *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4);
 }
+#if defined(TH095_MATCH_EXACT)
+#define DEP_ANM_DIRECTION(enemy) \
+    (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0a))
+#else
+struct EclDependencyAnmDirectionView
+{
+    u8 unknown0000[0x2c0a];
+    u8 anmDirection;
+};
+typedef char EclDependencyAnmDirectionAt2C0A[
+    (offsetof(EclDependencyAnmDirectionView, anmDirection) == 0x2c0a) ? 1 : -1];
+#define DEP_ANM_DIRECTION(enemy) \
+    (reinterpret_cast<EclDependencyAnmDirectionView *>(enemy)->anmDirection)
+#endif
 #define DEP_PRIMARY_ANM_SCRIPTS(enemy) \
     (*reinterpret_cast<EnemyAnmScripts *>(reinterpret_cast<u8 *>(enemy) + 0x2c0e))
 static __forceinline void **TargetAllocatedEclArgs(Enemy *enemy)
@@ -364,10 +378,11 @@ void __fastcall SetPrimaryAnmScripts(
     DEP_PRIMARY_ANM_SCRIPTS(enemy).idleFromLeft = static_cast<i16>(script3);
     DEP_PRIMARY_ANM_SCRIPTS(enemy).idleFromRight = static_cast<i16>(script4);
     DEP_PRIMARY_ANM_SCRIPTS(enemy).special = static_cast<i16>(script5);
-    *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0a) = 0xff;
+    DEP_ANM_DIRECTION(enemy) = 0xff;
 }
 
 #undef DEP_PRIMARY_ANM_SCRIPTS
+#undef DEP_ANM_DIRECTION
 #undef DEP_PLAYER_POSITION
 #undef DEP_MOVEMENT_BOUNDS
 #undef DEP_MOVEMENT_FLAGS

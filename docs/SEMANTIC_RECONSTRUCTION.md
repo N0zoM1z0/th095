@@ -1761,3 +1761,72 @@ covered by SEM-012/013. Prefer `anmDirection @ +0x2C0A` if its TH095-local reset
 consumer, and write-back protocol remains independently exact; otherwise route
 to the life field or another repository-wide owner rather than reopening the
 completed shot-cadence family.
+
+
+
+### SEM-025 — compact enemy ANM direction state
+
+**Scope.** Recover the compact enemy byte at `+0x2C0A` as the cached ANM
+movement direction shared between the primary-script setter and
+`Enemy::UpdateShotAndAnm`. The consumer uses a natural TU-local
+`EnemyAnmDirectionView`; the producer exposes the same semantic owner in the
+maintainable branch while preserving the historical raw expression in
+`TH095_MATCH_EXACT` builds. The primary ANM-script table at `+0x2C0E` and
+compact movement flags at `+0x2BF4` remain the already completed SEM-013 and
+SEM-012 families.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`Enemy::UpdateShotAndAnm @ 0x00413030` derives direction values 0, 1, or 2 from
+horizontal velocity, with compact movement-flag bit 16 reversing left/right.
+When byte `+0x2C0A` differs from the derived direction, the target selects the
+idle/movement ANM script according to the new and previous direction, then
+writes the derived byte back to `+0x2C0A`. In the idle transition, previous
+value `0xFF` selects `idleInitial`, value 1 selects `idleFromLeft`, and the
+remaining path selects `idleFromRight`. Target-attested
+`SetPrimaryAnmScripts @ 0x00412190` writes the six primary script indexes and
+then resets exactly this byte to `0xFF`.
+
+**Corroborated.** The consumer `enemy-update-shot-and-anm` remains 837/837
+bytes exact with all 13 configured relocations after replacing its raw accessor
+with the typed direction view. The independent producer
+`ecl-set-primary-anm-scripts` remains 112/112 bytes exact and relocation-free.
+The compact `PhotoEnemyView` already fixes the neighboring script record and
+movement-control layout, while the public generic `Enemy::anmDirection @
++0x332E` belongs to a later incompatible layout lane and is deliberately not
+reused.
+
+**Inferred.** `+0x2C0A` is a one-byte cache of the ANM movement-direction state.
+Values 0/1/2 correspond to idle/left/right transitions observed by the updater,
+and `0xFF` is a reset sentinel that forces the next idle transition to select
+the initial idle script. This is a protocol interpretation of observed writes
+and branches, not a claim that the retail source used an enum with these names.
+
+**Unknown.** This batch does not name byte `+0x2C0B`, does not infer additional
+valid direction values beyond 0, 1, 2, and `0xFF`, and does not alias the compact
+field with the generic later-layout `Enemy::anmDirection`. The individual ANM
+script roles remain owned by SEM-013.
+
+**Compiler-observed.** A first producer experiment introduced a new helper and
+view directly into the exact `EclDependencies.cpp` translation unit. The setter
+itself stayed 112/112 exact, but the unrelated exact `CompareOperands` unit's
+private label moved from `$L68217` to `$L68232`. That form was rejected without
+refreshing the manifest. The accepted producer representation hides the typed
+view from `TH095_MATCH_EXACT` and expands its semantic macro to the original
+raw AST, restoring all source-local private labels while keeping the
+maintainable branch typed. The consumer needs no such compatibility branch.
+
+**Regression boundary.** All 10 configured `src/EclDependencies.cpp` units and
+the single `src/EnemyShotAnm.cpp` unit replay exact together, 11/11 total, with
+zero private-label refresh. Both normal production translation units
+independently compile under the pinned VC7.1 profile to i386 COFF, and
+`git diff --check` passes. No shared header or ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect compact enemy `life @ +0x2958` as the next bounded
+owner. Require the target updater gate, exact ECL integer/float operand
+selectors, lvalue writer, and `PhotoEnemyView` layout to agree before replacing
+raw accessors. Keep `maximumLife` and phase-life fields separate unless their
+producer/consumer evidence is independently sufficient.

@@ -31,6 +31,14 @@ typedef char EnemyShotCadenceIntervalAt2BC8[
 typedef char EnemyShotCadenceTimerAt2BCC[
     (offsetof(EnemyShotCadenceView, shootIntervalTimer) == 0x2bcc) ? 1 : -1];
 
+struct EnemyAnmDirectionView
+{
+    u8 unknown0000[0x2c0a];
+    u8 anmDirection;
+};
+typedef char EnemyAnmDirectionAt2C0A[
+    (offsetof(EnemyAnmDirectionView, anmDirection) == 0x2c0a) ? 1 : -1];
+
 static __forceinline i32 &TargetEnemyLife(Enemy *enemy)
 {
     return *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958);
@@ -54,7 +62,7 @@ static __forceinline u32 &TargetEnemyFlags1(Enemy *enemy)
 }
 static __forceinline u8 &TargetEnemyAnmDirection(Enemy *enemy)
 {
-    return *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0a);
+    return reinterpret_cast<EnemyAnmDirectionView *>(enemy)->anmDirection;
 }
 static __forceinline EnemyAnmScripts &TargetEnemyAnmScriptsView(Enemy *enemy)
 {
