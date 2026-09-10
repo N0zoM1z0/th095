@@ -1428,3 +1428,64 @@ batch; legacy and shared provider state remain untouched.
 `BackgroundStateView` owner and multiple extended callback consumers to agree on
 the two-slot representation; preserve the exact-facing `g_Background` global
 type if changing it would perturb relocation identity.
+
+
+
+### SEM-020 — extended Background dynamic VM handles
+
+**Scope.** Replace all sixteen raw `Background+0x1FE4/+0x1FE8` loads in
+`EclExtended.cpp` with a TU-local `ExtendedBackgroundView` exposing two
+four-byte `spellBackgroundVmIds` slots at `+0x1FE4`. The exact-facing
+`g_Background` declaration remains `u8 *`, so its decorated relocation identity
+is unchanged; only consumers reinterpret that owner through the local view.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of extended entries 12,
+13, 18, and 19 (`0x00413FC0`, `0x00414020`, `0x00414430`, and `0x004144E0`)
+loads both dwords from the Background singleton at `+0x1FE4/+0x1FE8`, resolves
+each through `AnmManager::GetVm @ 0x00445110`, and writes pending interrupt 2
+or 3 at VM `+0x22E`. Entries 18/19 additionally execute both VMs and pair the
+state with photo-global flag `0x400`. `RunPhotoTransition` and the bullet
+callbacks independently consume the same two handle locations.
+
+**Corroborated.** Canonical TH095 `BackgroundStateView` models
+`AnmVmId spellBackgroundVms[2] @ +0x1FE4` and asserts that offset. Exact
+Background spell-start/stop and photo-area reconstruction already establish the
+same owner, while ECLX-004 records the extended entries' two-slot protocol.
+`AnmVmId` is four bytes, so the local exact-facing `i32[2]` view preserves the
+storage width while avoiding a new include/PCH dependency.
+
+**Compiler-observed.** A first natural experiment used `AnmVmId[2]` directly in
+`EclExtended.cpp`, matching the canonical Background semantic type. The current
+exact compile include surface does not expose that type, so VC7.1 rejected the
+TU before code comparison. Rather than widen the include/PCH surface for a
+local semantic cleanup, the accepted representation uses two `i32` handle IDs.
+Representative exact units `SetBackgroundVmsState2` and
+`EnablePhotoTransition` remain 92/92 and 161/161 exact respectively, with the
+same `g_Background` relocation symbol.
+
+**Inferred.** These two compact slots are Background-owned dynamic spell/photo
+VM handle IDs shared by the photography transition protocol. The local `i32`
+representation is a codegen-facing storage view, not a claim that the semantic
+owner should abandon `AnmVmId` in `Background.cpp`.
+
+**Unknown.** This batch does not rename the two slots by per-script visual role,
+does not alter their creation/destruction protocol, and does not infer that all
+Background VM handles elsewhere share this pair's lifetime. The nontrivial
+`AnmVmId` wrapper remains authoritative only where it is already naturally in
+scope.
+
+**Regression boundary.** All 22 configured `src/EclExtended.cpp` exact units
+replay unchanged with zero private-label refresh. The normal production TU also
+compiles under pinned VC7.1 to i386 COFF, and `git diff --check` passes. The
+failed `AnmVmId` source experiment was never staged and created no repository
+artifact.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed in this
+batch; legacy and shared provider state remain untouched.
+
+**Next batch:** after a current-source aggregate exact and whole-product
+milestone, refresh repository-wide semantic debt plus the latest semantic
+history and select the highest-evidence bounded TH095-local family outside
+`EclExtended.cpp`. Treat the now-clean EclExtended raw-offset surface only as a
+routing result, not a semantic exit condition.
