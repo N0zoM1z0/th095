@@ -99,6 +99,13 @@ struct SpawnPacketSmall
 C_ASSERT(sizeof(SpawnPacketSmall) == 0x10);
 
 #if !defined(TH095_MATCH_EXACT)
+struct Th095EnemyMovementBoundsView
+{
+    u8 unknown0000[0x2c3c];
+    EnemyMovementBounds movementBounds;
+};
+C_ASSERT(offsetof(Th095EnemyMovementBoundsView, movementBounds) == 0x2c3c);
+
 struct Th095BulletSpawnSoundView
 {
     u8 unknown000[0x1fc];

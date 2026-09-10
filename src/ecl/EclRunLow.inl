@@ -656,8 +656,13 @@ static EclRawInstruction *__fastcall CompareOperands(
         *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
             0xc00U;
         break;
+#if defined(TH095_MATCH_EXACT)
 #define TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy) \
     (*reinterpret_cast<EnemyMovementBounds *>(reinterpret_cast<u8 *>(enemy) + 0x2c3c))
+#else
+#define TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy) \
+    (reinterpret_cast<EclRunHigh::Th095EnemyMovementBoundsView *>(enemy)->movementBounds)
+#endif
 #define TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS 0x20000U
     case 75:
         TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy).lower.x = ((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0)));

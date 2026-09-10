@@ -2999,3 +2999,77 @@ and shared provider state remain untouched.
 `+0x2C3C..+0x2C4B`, where `ClampPosition` and low-ECL movement setup already
 provide independent TH095-local consumers/writers. Do not fold the separate and
 historically conflicting `+0x2C4C` field into the bounds owner.
+
+
+### SEM-044 — compact enemy movement-bounds owner
+
+**Scope.** Recover compact enemy `+0x2C3C..+0x2C4B` as one 16-byte
+`EnemyMovementBounds` owner containing lower XY at `+0x2C3C/+0x2C40` and upper
+XY at `+0x2C44/+0x2C48`. The low-ECL boundary-aware movement helper and opcode
+75 now use production-only typed owner views; `TH095_MATCH_EXACT` retains their
+historical `enemy + 0x2C3C` pointer arithmetic. `PhotoEnemyView::ClampPosition`
+already used the natural `movementBoundsMin/movementBoundsMax` members and did
+not require a source edit. The separate `+0x2C4C` field is explicitly outside
+this owner.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`PhotoEnemyView::ClampPosition @ 0x00416320` tests compact flags1 bit 17 and,
+when enabled, clamps `position.x` between floats at `+0x2C3C/+0x2C44` and
+`position.y` between floats at `+0x2C40/+0x2C48`. Independent target-attested
+`EclRunLow::BeginBoundaryAwareMove @ 0x00412200` reads the same four bounds:
+it reflects a randomized movement angle near the X edges using 96-pixel
+margins and near the Y edges using 48-pixel margins.
+
+**Corroborated.** Canonical compact `PhotoEnemyView` already declares
+`Float2 movementBoundsMin @ +0x2C3C` followed by
+`Float2 movementBoundsMax @ +0x2C44`; the shared 16-byte
+`EnemyMovementBounds` representation is exactly two `Float2` values named
+`lower` and `upper`. Canonical target-exact `EclManager::RunEcl` opcode 75
+writes four resolved float operands to those lower/upper XY fields and sets
+flags1 bit `0x20000`; opcode 76 clears that bit. The independently exact
+`ClampPosition` consumer proves the bit is the enable for these bounds rather
+than an unrelated movement flag.
+
+**Inferred.** `+0x2C3C..+0x2C4B` is a persistent per-enemy movement rectangle.
+Opcode 75 installs the rectangle and enables clamping; ordinary enemy update
+clamps to it, while boundary-aware movement uses the same rectangle to steer
+away from edges before a clamp is needed. The owner may therefore be expressed
+as one `EnemyMovementBounds` value without merging later storage.
+
+**Unknown.** This batch does not infer default bounds before opcode 75, whether
+scripts may intentionally install inverted bounds, or any semantic relationship
+to the next dword at `+0x2C4C`. That next field has incompatible historical
+views and remains excluded even though it is adjacent in memory.
+
+**Compiler-observed.** Both exact-facing sites retain their historical raw
+pointer expressions under `TH095_MATCH_EXACT`; the maintainable branch alone
+uses typed owner views with compile-time `+0x2C3C` assertions. This avoids
+perturbing the large RunEcl translation unit or the exact low-ECL helper merely
+for representation cleanup. No private-label manifest refresh was required.
+
+**Regression boundary.** `ecl-begin-boundary-aware-move` remains 645/645 bytes
+exact with all 29 relocations, `enemy-clamp-position` remains 208/208 bytes
+exact and relocation-free, and the complete `ecl-manager-run-ecl` unit remains
+27,091/27,091 authored bytes with its 27,747-byte compare extent exact. Full
+changed-source replay covers all 11 configured units across
+`src/EclDependencies.cpp` and `src/ecl/EclRun.cpp`; all 11 are exact with zero
+private-label refresh. Both normal production translation units independently
+compile with their repository whole-build pinned VC7.1 profiles to i386 COFF,
+and `git diff --check` passes. No shared header or ABI changed.
+
+**Receipt state.** These are current-worktree local validation results only.
+Factory-accepted aggregate/whole-build receipts are not refreshed at this
+private checkpoint because the campaign will run a current-source cold
+aggregate and whole-product milestone immediately after commit before routing
+further semantic work.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. The focused
+compile objects were command-local `/tmp` files and were removed before command
+exit. No current-session `.analysis` artifact was created, retained, or
+removed; legacy and shared provider state remain untouched.
+
+**Next batch:** after the current-source aggregate exact and whole-product
+milestone, refresh TH095-local debt outside documented exact-compatibility
+branches. Prefer a bounded compact enemy family with an independent writer and
+consumer. Keep `+0x2C4C` excluded unless new TH095-local evidence resolves its
+existing cross-view conflict.

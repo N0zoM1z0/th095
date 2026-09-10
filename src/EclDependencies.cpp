@@ -80,7 +80,19 @@ struct EclDependencyMovementFlagBits
 };
 typedef char EclDependencyMovementFlagBitsSizeCheck[(sizeof(EclDependencyMovementFlagBits) == 4) ? 1 : -1];
 #define DEP_MOVEMENT_FLAGS(enemy) (*reinterpret_cast<EclDependencyMovementFlagBits *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4))
+#if defined(TH095_MATCH_EXACT)
 #define DEP_MOVEMENT_BOUNDS(enemy) (*reinterpret_cast<EnemyMovementBounds *>(reinterpret_cast<u8 *>(enemy) + 0x2c3c))
+#else
+struct EclDependencyMovementBoundsView
+{
+    u8 unknown0000[0x2c3c];
+    EnemyMovementBounds movementBounds;
+};
+typedef char EclDependencyMovementBoundsAt2C3C[
+    (offsetof(EclDependencyMovementBoundsView, movementBounds) == 0x2c3c) ? 1 : -1];
+#define DEP_MOVEMENT_BOUNDS(enemy) \
+    (reinterpret_cast<EclDependencyMovementBoundsView *>(enemy)->movementBounds)
+#endif
 
 // FUNCTION: TH095 0x00412490; TH08 0x004222B0 is the source-shape oracle.
 void __fastcall StartTimedPolarDisplacement(
