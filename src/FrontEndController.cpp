@@ -774,13 +774,20 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             view->state = 0;
             view->stateTimer.Reset();
             return CHAIN_CALLBACK_RESULT_CONTINUE;
-        case 2:
+        case 3:
             this->CloseMainMenu();
             view->requestedState = 7;
             view->state = 0;
             view->stateTimer.Reset();
             return CHAIN_CALLBACK_RESULT_CONTINUE;
-        case 3:
+        case 2:
+            // The target emits the state-7 block before state 8, while its
+            // adjacent switch table routes menu row 2 to state 8 and row 3
+            // to state 7.  Keeping the cases in this source order preserves
+            // both the target block chronology and the real menu semantics;
+            // ordering these labels numerically makes a relocation-normalized
+            // COFF comparison look exact while swapping Music Room/Options in
+            // the fully linked executable.
             this->CloseMainMenu();
             view->requestedState = 8;
             view->state = 0;

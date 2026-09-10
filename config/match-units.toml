@@ -19618,8 +19618,8 @@ relocations = [
   { offset = 0xCD6, type = "REL32", symbol = "?UpdateMainMenuSelection@SceneSelectControllerView@th095@@QAEXXZ", target = 0x004479E0 },
   { offset = 0xCE3, type = "DIR32", symbol = "$L73947", target = 0x004472BC },
   { offset = 0xCE7, type = "DIR32", symbol = "$L73988", target = 0x00447467 },
-  { offset = 0xCEB, type = "DIR32", symbol = "$L73992", target = 0x0044753B },
-  { offset = 0xCEF, type = "DIR32", symbol = "$L73996", target = 0x004474D1 },
+  { offset = 0xCEB, type = "DIR32", symbol = "$L73996", target = 0x0044753B },
+  { offset = 0xCEF, type = "DIR32", symbol = "$L73992", target = 0x004474D1 },
   { offset = 0xCF3, type = "DIR32", symbol = "$L74000", target = 0x004475A5 },
   { offset = 0xCF7, type = "DIR32", symbol = "$exitMainMenu$74005", target = 0x0044760F },
 ]
