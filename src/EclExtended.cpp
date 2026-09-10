@@ -698,8 +698,26 @@ static __forceinline i32 ExtendedCameraIsCharging(
     return camera->mode == 1;
 }
 
+struct ExtendedEnemyMovementFlagBits
+{
+    u32 unknown00 : 10;
+    u32 movementMode : 2;
+    u32 movementEasing : 3;
+    u32 unknown15 : 17;
+};
+typedef char ExtendedEnemyMovementFlagBitsSize4[
+    (sizeof(ExtendedEnemyMovementFlagBits) == 4) ? 1 : -1];
+
+struct ExtendedEnemyMovementView
+{
+    u8 unknown0000[0x2bf4];
+    ExtendedEnemyMovementFlagBits movementFlags;
+};
+typedef char ExtendedEnemyMovementFlagsAt2BF4[
+    (offsetof(ExtendedEnemyMovementView, movementFlags) == 0x2bf4) ? 1 : -1];
+
 #define EXT_MOVEMENT_FLAGS(enemy) \
-    (*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4))
+    (reinterpret_cast<ExtendedEnemyMovementView *>(enemy)->movementFlags)
 
 
 // ECL extended callback table entry 20 @ 0x00414580.
@@ -793,10 +811,8 @@ void __fastcall RunPhotoTransition(
         locals.movementTimer->subFrame = 60.0f;
         locals.movementTimer->previous = -999999;
 
-        EXT_MOVEMENT_FLAGS(enemy) =
-            (EXT_MOVEMENT_FLAGS(enemy) & 0xffff8fffU) | 0x4000U;
-        EXT_MOVEMENT_FLAGS(enemy) =
-            (EXT_MOVEMENT_FLAGS(enemy) & 0xfffff3ffU) | 0x0800U;
+        EXT_MOVEMENT_FLAGS(enemy).movementEasing = 4;
+        EXT_MOVEMENT_FLAGS(enemy).movementMode = 2;
 
         locals.zeroVelocity.x = 0.0f;
         locals.zeroVelocity.y = 0.0f;

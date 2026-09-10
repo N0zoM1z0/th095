@@ -1373,3 +1373,58 @@ enemy `+0x2BF4` as a movement/transition flags family. Accept a typed field only
 if the canonical TH095 Enemy layout and independent game-local consumers agree
 on the offset and bit protocol; otherwise record it as unknown and route to the
 next bounded owner family outside EclExtended.
+
+
+
+### SEM-019 — compact enemy movement interpolation flags
+
+**Scope.** Replace `RunPhotoTransition`'s last raw compact-enemy member access
+with a TU-local view of the movement-control word at enemy `+0x2BF4`. The two
+mask/merge expressions now assign `movementEasing = 4` and `movementMode = 2`
+through a four-byte bitfield whose layout matches the already exact compact
+TH095 ECL helper views. The later shared `Enemy::flags1 @ +0x3324` is explicitly
+not reused because it is a different object-layout lane.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`RunPhotoTransition @ 0x00414580` writes enemy `+0x2BF4` twice after publishing
+the 60-frame movement duration/timer: first `(word & 0xFFFF8FFF) | 0x4000`,
+then `(word & 0xFFFFF3FF) | 0x0800`. These are exactly a three-bit write of
+value 4 to bits 12..14 followed by a two-bit write of value 2 to bits 10..11.
+The same target body then zeroes velocity at `+0x28B8..+0x28C0`.
+
+**Corroborated.** Independent canonical TH095 exact units already establish the
+same compact word and bit protocol. `EclHelpers::ConfigurePolarMotion` and
+`ConfigureRelativeMotion` use a private bitfield at `+0x2BF4` with movement
+mode bits 10..11 and easing bits 12..14; `EclRunLow::StartTimedPolarDisplacement`
+uses the same representation. `Enemy::UpdateMovement @ 0x00412970` uses its own
+compact view with `movementFlags @ +0x2BF4`, while the exact
+`PhotoEnemyView` also asserts `flags1 @ +0x2BF4`. This is TH095-local evidence;
+no adjacent-game semantic interpretation is required.
+
+**Inferred.** Entry 20 starts a 60-frame mode-2 movement interpolation with
+easing value 4 as part of the photography transition. The source-local
+`ExtendedEnemyMovementView` intentionally names only the two fields needed by
+this callback and leaves the remaining bits opaque rather than importing the
+larger compact-photo bitfield wholesale.
+
+**Unknown.** This batch does not assign a prose easing-curve name to numeric
+value 4 and does not claim that the public `EnemyManager.hpp` layout's later
+`flags1` word is alias-compatible with this compact TH095 lane. Other known
+bits at compact `+0x2BF4` remain owned by their existing semantic batches.
+
+**Regression boundary.** The narrow `ecl-extended-run-photo-transition` unit is
+938/938 exact with all configured relocations, and all 22 configured
+`src/EclExtended.cpp` units replay exact with zero private-label refresh. The
+normal production translation unit independently compiles under pinned VC7.1
+to i386 COFF, and `git diff --check` passes. The change is TU-local and alters
+no shared header/layout.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed in this
+batch; legacy and shared provider state remain untouched.
+
+**Next batch:** canonicalize the repeated Background dynamic VM-handle family at
+`Background+0x1FE4/+0x1FE8` in `EclExtended.cpp`. Require the exact TH095
+`BackgroundStateView` owner and multiple extended callback consumers to agree on
+the two-slot representation; preserve the exact-facing `g_Background` global
+type if changing it would perturb relocation identity.
