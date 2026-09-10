@@ -5,12 +5,12 @@
         args.position = enemy->worldPosition + enemy->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
-        TH095_ECL_ASSIGN_FLOAT(args.field20, 2);
+        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_SPEED(args), 2);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 3), 0.0f);
-        TH095_ECL_ASSIGN_FLOAT(args.speed, 4);
-        TH095_ECL_ASSIGN_FLOAT(args.field1C, 5);
-        args.field14 = 0;
+        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_MAXIMUM_LENGTH(args), 4);
+        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_WIDTH(args), 5);
+        TH095_SMALL_EFFECT_INITIAL_LENGTH(args) = 0;
         TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }
@@ -22,13 +22,13 @@
         args.position = enemy->worldPosition + enemy->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
-        TH095_ECL_ASSIGN_FLOAT(args.field20, 2);
+        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_SPEED(args), 2);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 3),
             TH095_ECL_PHOTO_ANGLE(&args.position));
-        TH095_ECL_ASSIGN_FLOAT(args.speed, 4);
-        TH095_ECL_ASSIGN_FLOAT(args.field1C, 5);
-        args.field14 = 0;
+        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_MAXIMUM_LENGTH(args), 4);
+        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_WIDTH(args), 5);
+        TH095_SMALL_EFFECT_INITIAL_LENGTH(args) = 0;
         TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }

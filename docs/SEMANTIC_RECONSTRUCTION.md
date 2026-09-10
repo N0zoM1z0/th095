@@ -3510,3 +3510,79 @@ packet. Require the straight-laser initializer/update to distinguish
 `width @ +0x1C`, and `speed @ +0x20` before renaming ECL producer placeholders.
 Keep any field left only zero-initialized as Unknown rather than inferring from
 the rotating packet.
+
+
+### SEM-051 — straight photo-effect argument packet
+
+**Scope.** Recover the distinct 0x28-byte type-0 `PhotoEffectArgsSmall` packet
+used by target-high ECL opcodes 145/146 and the straight-laser effect. Outside
+`TH095_MATCH_EXACT`, the packet now names `maximumLength @ +0x10`,
+`initialLength @ +0x14`, `terminalDistance @ +0x18`, `width @ +0x1C`, and
+`speed @ +0x20`; its already semantic `position`, `angle`, `type`, and `color`
+remain unchanged. Exact preprocessing retains the historical
+`speed/field14/field18/field1C/field20` declaration and producer tokens through
+semantic access macros.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`PhotoStraightLaserView::Initialize @ 0x0041E0C0` copies exactly ten dwords
+(0x28 bytes) from the caller into the embedded packet at object `+0x50`. It
+initializes the live laser angle from packet `+0x0C`, current length from packet
+`+0x14`, width from packet `+0x1C`, movement speed from packet `+0x20`, and
+rebuilds velocity from angle plus that speed.
+
+**Corroborated.** Independent `PhotoStraightLaserView::Update @ 0x0041E2C0`
+uses packet `+0x10` as the maximum length during initial growth. After the laser
+reaches that length it advances tail offset and position by the live speed and
+velocity, then treats packet `+0x18` as a positive terminal-distance threshold:
+when `terminalDistance < tailOffset + length`, it shortens the remaining length
+to `terminalDistance - tailOffset`, updates the maximum, and retires the effect
+once that remainder reaches zero. The canonical `PhotoEffectArgsSmallView`
+independently carries exactly these five field identities. ECL opcodes 145/146
+construct the same 0x28 packet and pass it to `PhotoEffectManagerView::Spawn`
+with type 0.
+
+**Inferred.** Historical ECL-local `speed @ +0x10` is actually the straight
+laser's `maximumLength`, while `field20 @ +0x20` is its movement `speed`.
+`field14` is the initial length and `field1C` is width. Although the ECL
+producers leave `+0x18` zero through the packet-wide memset, the independent
+straight-laser updater directly distinguishes that slot as `terminalDistance`,
+so the name is TH095-local consumer evidence rather than an analogy with the
+rotating packet.
+
+**Unknown.** This batch does not infer why opcodes 145/146 always leave
+`terminalDistance` zero, whether other type-0 callers use a positive terminal
+distance, or whether `initialLength` is intentionally represented as raw i32
+bits rather than a source-level float in the historical producer. The packet is
+not merged with the 0x48 rotating-effect record.
+
+**Compiler-observed.** The exact branch preserves the historical declaration
+including `i32 field18` and all old producer tokens. The maintainable branch
+alone exposes `f32 terminalDistance` and semantic field names; access macros
+expand to the original `speed/field14/field1C/field20` expressions under
+`TH095_MATCH_EXACT`. The complete RunEcl exact surface therefore remains
+unchanged without private-label refresh.
+
+**Regression boundary.** `ecl-manager-run-ecl` remains 27,091/27,091 authored
+bytes exact with its 27,747-byte compare extent and all relocations.
+Independent type-0 consumers `photo-effect-manager-spawn`,
+`photo-straight-laser-initialize`, and `photo-straight-laser-update` remain
+432/432, 500/500, and 1029/1029 bytes exact with every configured relocation.
+Full changed-source replay covers the single `src/ecl/EclRun.cpp` configured
+unit and is 1/1 exact with zero private-label refresh. The normal production
+EclRun TU compiles with its repository whole-build pinned VC7.1 profile to i386
+COFF, and `git diff --check` passes. No shared header or public ABI changed.
+
+**Receipt state.** The prior aggregate/whole-product local milestone is
+source-stale after SEM-050/051. This batch closes only its focused exact and
+production surfaces; no Factory-accepted aggregate or whole-build receipt is
+claimed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. The focused
+production object was command-local under `/tmp` and removed. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect rotating-effect packet `flags` bit 0 as an independent
+protocol. Accept a semantic bit name only if the TH095 rotating-laser updater
+proves its effect on `photoTargets[0]` and ECL producers expose the same bit.
+Do not rename other flag bits without consumers.

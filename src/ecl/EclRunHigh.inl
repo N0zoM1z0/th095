@@ -183,15 +183,41 @@ struct PhotoEffectArgsSmall
 {
     Float3 position;
     f32 angle;
+#if defined(TH095_MATCH_EXACT)
     f32 speed;
     i32 field14;
     i32 field18;
     f32 field1C;
     f32 field20;
+#else
+    f32 maximumLength;
+    i32 initialLength;
+    f32 terminalDistance;
+    f32 width;
+    f32 speed;
+#endif
     i16 type;
     i16 color;
 };
 C_ASSERT(sizeof(PhotoEffectArgsSmall) == 0x28);
+#if !defined(TH095_MATCH_EXACT)
+C_ASSERT(offsetof(PhotoEffectArgsSmall, maximumLength) == 0x10);
+C_ASSERT(offsetof(PhotoEffectArgsSmall, initialLength) == 0x14);
+C_ASSERT(offsetof(PhotoEffectArgsSmall, terminalDistance) == 0x18);
+C_ASSERT(offsetof(PhotoEffectArgsSmall, width) == 0x1c);
+C_ASSERT(offsetof(PhotoEffectArgsSmall, speed) == 0x20);
+#endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_SMALL_EFFECT_MAXIMUM_LENGTH(args) args.speed
+#define TH095_SMALL_EFFECT_INITIAL_LENGTH(args) args.field14
+#define TH095_SMALL_EFFECT_WIDTH(args) args.field1C
+#define TH095_SMALL_EFFECT_SPEED(args) args.field20
+#else
+#define TH095_SMALL_EFFECT_MAXIMUM_LENGTH(args) args.maximumLength
+#define TH095_SMALL_EFFECT_INITIAL_LENGTH(args) args.initialLength
+#define TH095_SMALL_EFFECT_WIDTH(args) args.width
+#define TH095_SMALL_EFFECT_SPEED(args) args.speed
+#endif
 
 struct PhotoEffectArgs
 {
