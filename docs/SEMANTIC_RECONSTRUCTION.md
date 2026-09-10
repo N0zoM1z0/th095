@@ -982,3 +982,71 @@ at `+0x2C0E`.  Verify the six script roles and their unusual opcode argument
 ordering against TH095 `SetPrimaryAnmScripts`, `UpdateShotAndAnm`, and target
 evidence; do not infer ownership for adjacent `+0x2C0A` or later fields beyond
 what those consumers prove.
+
+
+### SEM-013 — compact enemy primary ANM-script table
+
+**Scope.** Canonicalize only the six primary ANM-script slots rooted at compact
+enemy `+0x2C0E`.  Exact target-local consumers now reuse the existing
+12-byte `EnemyAnmScripts` record type while retaining an explicit compact base
+address.  `EclDependencies::SetPrimaryAnmScripts` names each target write by
+role, `Enemy::UpdateShotAndAnm` drops its duplicate local record declaration,
+and low-ECL opcode 62 reads the record's `special` slot.  The adjacent ANM
+direction byte at `+0x2C0A`, bank-selection flag, and later fields remain
+separate owners/protocols.
+
+**Observed.** Factory's target-attested TH095 Ghidra provider decompiled
+`SetPrimaryAnmScripts @ 0x00412190`.  Its six 16-bit parameters are stored to
+`+0x2C0E`, `+0x2C14`, `+0x2C16`, `+0x2C10`, `+0x2C12`, and `+0x2C18`, in that
+order, followed by a write of `0xFF` to the independent direction byte at
+`+0x2C0A`.  Target-attested `Enemy::UpdateShotAndAnm @ 0x00413030` gives the
+consumer roles: `+0x2C14` gates directional animation and supplies the
+left-moving script, `+0x2C16` supplies the right-moving script, `+0x2C0E` is
+the first idle script, and `+0x2C10/+0x2C12` are the idle transitions reached
+when returning from left/right motion.  The target-local low-ECL opcode-62 body
+independently loads `+0x2C18` through the currently selected ANM bank.
+
+**Corroborated.** The repository's existing `EnemyAnmScripts` type is exactly
+12 bytes and orders its six `i16` members as `idleInitial`, `idleFromLeft`,
+`idleFromRight`, `moveLeft`, `moveRight`, `special`.  That layout maps the
+observed target offsets exactly when rooted at `+0x2C0E`.  Exact low-ECL
+opcodes 55/56 and 59/60 call `SetPrimaryAnmScripts` with either six consecutive
+script ids or six independently resolved operands; their call order matches the
+target setter's unusual parameter-to-memory permutation.  `EnemyShotAnm.cpp`
+and `EclRun.cpp` are independent exact consumers of the same record.
+
+**Inferred.** Reusing `EnemyAnmScripts` as a semantic record type is a
+reconstruction representation choice.  It asserts the six-slot record shape
+and roles at the compact `+0x2C0E` base, not that the complete later generic
+`Enemy` layout or its `anmScripts` member offset applies to this target-local
+view.  The English field names remain reconstructed identifiers.
+
+**Unknown.** The `+0x2C0A` direction byte is intentionally not absorbed into the
+record; only its setter reset to `0xFF` and its directional-consumer behavior
+are currently relevant.  This batch does not identify the two bytes at
+`+0x2C0C`, nor does it assign semantics to adjacent fields beyond the six
+proved script slots.  It also does not imply that the `special` slot is used
+only by opcode 62.
+
+**Regression boundary.** An exploratory `__forceinline` target-view helper in
+`EclDependencies.cpp` changed only VC7.1 compiler-private `$L` numbering in
+unrelated exact functions, so it was rejected without refreshing the ledger.
+The final preprocessor-only target view plus semantic field accesses replay all
+10 configured `EclDependencies.cpp` units, the single `EnemyShotAnm.cpp` unit,
+and the single 27-KiB `EclRun.cpp` unit exactly: 12/12 with zero private-label
+refresh.  The normal production forms of all three translation units compile
+independently under pinned VC7.1 `13.10.3077` to i386 COFF, and
+`git diff --check` passes.  No shared header, ABI, target-local base, or emitted
+behavior changed, so the SEM-011 696-unit / 88-TU PE32 milestone remains the
+current broad gate.  Semantic interpretation, exact replay, production
+compilation, and runtime behavior remain separate states.
+
+**Analysis artifacts.** `.analysis/` remains exactly 1,408,444,500 bytes.  The
+one-shot production objects were removed after validation; no current-session
+`.analysis` artifact was created or removed, and legacy/shared provider state
+remains untouched.
+
+**Next batch:** recover the compact movement-bound record rooted at `+0x2C3C`
+and the bit-17 clamp-enable protocol only if TH095-local producer and consumer
+lanes jointly support it.  Keep the conflicting `+0x2C4C` field outside that
+record and outside the batch.

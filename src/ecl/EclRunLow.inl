@@ -517,8 +517,8 @@ static EclRawInstruction *__fastcall CompareOperands(
                 TH095_ECL_RUNTIME + 0x4df8))
                 ->SetAndExecuteScriptIdx(
                 &enemy->vm,
-                *reinterpret_cast<i16 *>(
-                    reinterpret_cast<u8 *>(enemy) + 0x2c18));
+                reinterpret_cast<EnemyAnmScripts *>(
+                    reinterpret_cast<u8 *>(enemy) + 0x2c0e)->special);
         }
         else
         {
@@ -526,8 +526,8 @@ static EclRawInstruction *__fastcall CompareOperands(
                 TH095_ECL_RUNTIME + 0x4dfc))
                 ->SetAndExecuteScriptIdx(
                 &enemy->vm,
-                *reinterpret_cast<i16 *>(
-                    reinterpret_cast<u8 *>(enemy) + 0x2c18));
+                reinterpret_cast<EnemyAnmScripts *>(
+                    reinterpret_cast<u8 *>(enemy) + 0x2c0e)->special);
         }
         break;
 

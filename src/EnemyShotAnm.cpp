@@ -17,17 +17,6 @@ void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruc
     TH095_RUNTIME_GLOBAL_PTR(u8, g_RuntimeEnemyManagerOwner)
 #endif
 
-struct TargetEnemyAnmScripts
-{
-    i16 idleInitial;
-    i16 idleFromLeft;
-    i16 idleFromRight;
-    i16 moveLeft;
-    i16 moveRight;
-    i16 special;
-};
-C_ASSERT(sizeof(TargetEnemyAnmScripts) == 0x0c);
-
 static __forceinline i32 &TargetEnemyLife(Enemy *enemy)
 {
     return *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958);
@@ -52,9 +41,9 @@ static __forceinline u8 &TargetEnemyAnmDirection(Enemy *enemy)
 {
     return *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0a);
 }
-static __forceinline TargetEnemyAnmScripts &TargetEnemyAnmScriptsView(Enemy *enemy)
+static __forceinline EnemyAnmScripts &TargetEnemyAnmScriptsView(Enemy *enemy)
 {
-    return *reinterpret_cast<TargetEnemyAnmScripts *>(reinterpret_cast<u8 *>(enemy) + 0x2c0e);
+    return *reinterpret_cast<EnemyAnmScripts *>(reinterpret_cast<u8 *>(enemy) + 0x2c0e);
 }
 
 // FUNCTION: TH095 0x00413030; TH08 UpdateShotAndAnm is the source-shape oracle.

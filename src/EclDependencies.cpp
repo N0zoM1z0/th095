@@ -289,6 +289,8 @@ static __forceinline u32 &TargetFlags1(Enemy *enemy)
 {
     return *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4);
 }
+#define DEP_PRIMARY_ANM_SCRIPTS(enemy) \
+    (*reinterpret_cast<EnemyAnmScripts *>(reinterpret_cast<u8 *>(enemy) + 0x2c0e))
 static __forceinline void **TargetAllocatedEclArgs(Enemy *enemy)
 {
     return reinterpret_cast<void **>(reinterpret_cast<u8 *>(enemy) + 0x2cac);
@@ -356,15 +358,16 @@ void __fastcall SetPrimaryAnmScripts(
     Enemy *enemy, EclRawInstruction *instruction,
     i32 script0, i32 script1, i32 script2, i32 script3, i32 script4, i32 script5)
 {
-    *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0e) = static_cast<i16>(script0);
-    *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x2c14) = static_cast<i16>(script1);
-    *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x2c16) = static_cast<i16>(script2);
-    *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x2c10) = static_cast<i16>(script3);
-    *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x2c12) = static_cast<i16>(script4);
-    *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x2c18) = static_cast<i16>(script5);
+    DEP_PRIMARY_ANM_SCRIPTS(enemy).idleInitial = static_cast<i16>(script0);
+    DEP_PRIMARY_ANM_SCRIPTS(enemy).moveLeft = static_cast<i16>(script1);
+    DEP_PRIMARY_ANM_SCRIPTS(enemy).moveRight = static_cast<i16>(script2);
+    DEP_PRIMARY_ANM_SCRIPTS(enemy).idleFromLeft = static_cast<i16>(script3);
+    DEP_PRIMARY_ANM_SCRIPTS(enemy).idleFromRight = static_cast<i16>(script4);
+    DEP_PRIMARY_ANM_SCRIPTS(enemy).special = static_cast<i16>(script5);
     *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0a) = 0xff;
 }
 
+#undef DEP_PRIMARY_ANM_SCRIPTS
 #undef DEP_PLAYER_POSITION
 #undef DEP_MOVEMENT_BOUNDS
 #undef DEP_MOVEMENT_FLAGS
