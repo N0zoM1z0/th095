@@ -78,6 +78,16 @@ extern EclOperandPlayerView *g_EclOperandPlayer;
     (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->playerPosition)
 #endif
 
+#ifdef DIFFBUILD
+#define TH095_ECL_INT_PHOTO_INDEX (g_EclOperandPlayer->camera.photoIndex)
+#define TH095_ECL_INT_PHOTOS_TAKEN (g_EclOperandPlayer->camera.photosTaken)
+#else
+#define TH095_ECL_INT_PHOTO_INDEX \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.photoIndex)
+#define TH095_ECL_INT_PHOTOS_TAKEN \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.photosTaken)
+#endif
+
 #define ENEMY_I32(owner, offset) \
     (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 #define ENEMY_U8(owner, offset) \
@@ -182,9 +192,9 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
         return (i32)D3DXVec3Length(reinterpret_cast<D3DXVECTOR3 *>(&delta));
     }
     case 0x2761:
-        return g_EclOperandPlayer->camera.photoIndex;
+        return TH095_ECL_INT_PHOTO_INDEX;
     case 0x2764:
-        return g_EclOperandPlayer->camera.photosTaken;
+        return TH095_ECL_INT_PHOTOS_TAKEN;
     case 0x2762: return (i32)g_EclOperandRuntime->bosses[0]->worldPosition.x;
     case 0x2763: return (i32)g_EclOperandRuntime->bosses[0]->worldPosition.y;
     default: return operand;
@@ -193,6 +203,8 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 
 } // namespace EclOperands
 
+#undef TH095_ECL_INT_PHOTOS_TAKEN
+#undef TH095_ECL_INT_PHOTO_INDEX
 #undef TH095_ECL_INT_PLAYER_POSITION
 #undef ENEMY_U8
 #undef ENEMY_I32

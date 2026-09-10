@@ -10,9 +10,20 @@ namespace th095
 {
 
 // Shared production view of the target PlayerInf object published through
-// g_RuntimePlayerOwner.  Only offsets used by the canonical angle/collision/
-// death cluster are named here; every named field is independently fixed by
-// exact code at 0x004303E0, 0x00430450, and 0x004306D0.
+// g_RuntimePlayerOwner.  Only offsets used by independently target-proven
+// production consumers are named here.
+struct PhotoPlayerCameraRuntimeView
+{
+    u8 unknown000[0x0ba8];
+    i32 photoIndex;                                  // +0x0ba8
+    i32 photosTaken;                                 // +0x0bac
+};
+
+typedef char PhotoPlayerCameraPhotoIndexAt0BA8[
+    (offsetof(PhotoPlayerCameraRuntimeView, photoIndex) == 0x0ba8) ? 1 : -1];
+typedef char PhotoPlayerCameraPhotosTakenAt0BAC[
+    (offsetof(PhotoPlayerCameraRuntimeView, photosTaken) == 0x0bac) ? 1 : -1];
+
 struct PhotoPlayerRuntimeView
 {
     i32 mode;                                      // +0x0000
@@ -23,6 +34,7 @@ struct PhotoPlayerRuntimeView
     ZunTimer completionTimer;                      // +0x0420
     u8 unknown042c[0x1e30 - 0x042c];
     Float3 playerPosition;                         // +0x1e30
+    PhotoPlayerCameraRuntimeView camera;           // +0x1e3c
 
     f32 AngleFromPoint(Float3 *position);
     i32 CheckBulletCollision(Float3 *position, Float3 *size);
@@ -39,6 +51,12 @@ typedef char PhotoPlayerRuntimeCompletionTimerAt0420[
     (offsetof(PhotoPlayerRuntimeView, completionTimer) == 0x0420) ? 1 : -1];
 typedef char PhotoPlayerRuntimePositionAt1E30[
     (offsetof(PhotoPlayerRuntimeView, playerPosition) == 0x1e30) ? 1 : -1];
+typedef char PhotoPlayerRuntimeCameraAt1E3C[
+    (offsetof(PhotoPlayerRuntimeView, camera) == 0x1e3c) ? 1 : -1];
+typedef char PhotoPlayerRuntimePhotoIndexAt29E4[
+    (offsetof(PhotoPlayerRuntimeView, camera.photoIndex) == 0x29e4) ? 1 : -1];
+typedef char PhotoPlayerRuntimePhotosTakenAt29E8[
+    (offsetof(PhotoPlayerRuntimeView, camera.photosTaken) == 0x29e8) ? 1 : -1];
 
 } // namespace th095
 

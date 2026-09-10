@@ -72,6 +72,16 @@ extern EclFloatOperandPlayerView *g_EclFloatOperandPlayer;
     (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->playerPosition)
 #endif
 
+#ifdef DIFFBUILD
+#define TH095_ECL_FLOAT_PHOTO_INDEX (g_EclFloatOperandPlayer->camera.photoIndex)
+#define TH095_ECL_FLOAT_PHOTOS_TAKEN (g_EclFloatOperandPlayer->camera.photosTaken)
+#else
+#define TH095_ECL_FLOAT_PHOTO_INDEX \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.photoIndex)
+#define TH095_ECL_FLOAT_PHOTOS_TAKEN \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.photosTaken)
+#endif
+
 #define ENEMY_I32(owner, offset) \
     (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 #define ENEMY_U8(owner, offset) \
@@ -180,15 +190,17 @@ f32 Enemy::ResolveFloat(f32 operand)
         return D3DXVec3Length(reinterpret_cast<D3DXVECTOR3 *>(&delta));
     }
     case 0x2761:
-        return (f32)(i32)g_EclFloatOperandPlayer->camera.photoIndex;
+        return (f32)(i32)TH095_ECL_FLOAT_PHOTO_INDEX;
     case 0x2764:
-        return (f32)(i32)g_EclFloatOperandPlayer->camera.photosTaken;
+        return (f32)(i32)TH095_ECL_FLOAT_PHOTOS_TAKEN;
     case 0x2762: return g_EclFloatOperandRuntime->bosses[0]->worldPosition.x;
     case 0x2763: return g_EclFloatOperandRuntime->bosses[0]->worldPosition.y;
     default: return operand;
     }
 }
 
+#undef TH095_ECL_FLOAT_PHOTOS_TAKEN
+#undef TH095_ECL_FLOAT_PHOTO_INDEX
 #undef TH095_ECL_FLOAT_PLAYER_POSITION
 #undef ENEMY_U8
 #undef ENEMY_I32

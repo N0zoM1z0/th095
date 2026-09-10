@@ -404,3 +404,67 @@ exact `PhotoCameraState` layout and its camera-behavior writers to agree with
 both ECL resolver readers before extending `PhotoPlayerRuntime.hpp`; because
 that is a shared-header/layout change, close the cold aggregate exact and whole
 production gates immediately after the edit.
+
+
+### SEM-005 — shared Player-camera photo counters
+
+**Scope.** This batch extends the production-only shared Player runtime view by
+the smallest target-proven camera subview needed by the paired ECL operand
+resolvers.  `PhotoPlayerRuntimeView::camera @ +0x1E3C` now contains only
+`photoIndex @ camera+0x0BA8` and `photosTaken @ camera+0x0BAC`, yielding the
+absolute Player offsets `+0x29E4/+0x29E8`.  Production resolver reads use those
+shared fields.  DIFFBUILD keeps the pre-existing ECL-local partial camera view,
+and the remainder of the camera object stays opaque in this shared header.
+
+**Observed.** Hash-attested TH095 v1.02a decompilation of
+`EclOperands::ResolveInt @ 0x0040FAE0` and `Enemy::ResolveFloat @ 0x004105A0`
+reads the Player owner at `+0x29E4` and `+0x29E8` for selector cases `0x2761`
+and `0x2764`.  Independently, `PhotoCameraState::TakePhoto @ 0x00432D10`
+increments receiver fields `+0x0BA8` and `+0x0BAC` during capture finalization,
+and compares the first against the adjacent photo limit.  The exact
+`PhotoGameUpdateView` layout places its `PhotoCameraState` member at Player
+`+0x1E3C`; target construction at `0x0042EA70` invokes the camera constructor at
+that same subobject offset.  The two address calculations therefore meet
+exactly at Player `+0x29E4/+0x29E8`.
+
+**Corroborated.** TH095-local `PhotoCamera.hpp` already names the writer-side
+fields `photoIndex` and `photosTaken` at camera `+0x0BA8/+0x0BAC`, while
+`PhotoGame.cpp` fixes the enclosing camera member at Player `+0x1E3C`.
+`PhotoItemManager.cpp` independently carries a partial Player view with
+`photoIndex @ +0x29E4`, providing another local consumer for the first field.
+No TH08 interpretation is required.
+
+**Inferred.** Nesting these two counters under a minimal
+`PhotoPlayerCameraRuntimeView` is a maintainable reconstruction representation;
+it does not prove the original program exposed this exact shared type, member
+name, or header boundary to ECL code.
+
+**Unknown.** The rest of Player camera storage remains opaque here, including
+charge, flags, limits, viewfinder state, and timers.  The numeric ECL selector
+names are still not promoted to a public protocol enum by this batch even
+though their target reads now land on named camera fields.
+
+**Regression boundary.** A generated-edit mistake initially made the two
+DIFFBUILD counter macros self-referential; focused exact compilation rejected
+that experiment immediately.  The macros were restored to their original
+ECL-local field expressions and no manifest or private label was refreshed.
+The accepted edit then replayed the two directly affected units 2/2 exact and
+compiled both normal VC7.1 translation units to i386 COFF.  Because
+`PhotoPlayerRuntime.hpp` is shared layout, the cold aggregate exact gate was
+closed from an empty `build/matching` directory over all 88 manifest sources.
+A single long Factory RPC could not return a durable command result across the
+full gate, so the same complete current-source set was rerun as eight disjoint
+manifest-derived groups of 87 units each: all eight passed, totaling 696/696
+canonical units with zero private-label refresh and 88 cold-built matching
+objects.  `validate-tracking.py --require-target` remained at 697
+source-present / 696 exact.  A separate cold production gate compiled all 88
+pinned-VC7.1 i386 objects and linked/verified a PE32 image with build-local
+SHA-256 `c7d4c91160d6f6e38e8a6e2f2a000af94af64fe32b9030c3fd6b7b88d80ed3ad`.
+These are local exact and production-closure states; they are not a new Factory
+acceptance receipt, whole-image exactness, or runtime-scenario validation.
+
+**Next batch:** canonicalize the already-proven Player `playerPosition` and
+camera `photoIndex` reads inside exact `PhotoItemManagerView::Update @
+0x0041CE60` onto `PhotoPlayerRuntimeView`, while leaving that source's camera
+charge, camera flags, and photo-target bounds in its local partial view until
+those adjacent fields have independent TH095 evidence.
