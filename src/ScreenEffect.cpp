@@ -17,8 +17,25 @@ namespace th095
 {
 
 DIFFABLE_STATIC(int, g_ScreenEffectCounter);
+#if defined(DIFFBUILD)
 DIFFABLE_STATIC(float, g_ScreenEffectShakeX);
 DIFFABLE_STATIC(float, g_ScreenEffectShakeY);
+#else
+struct ScreenEffectSupervisorShakeView
+{
+    u8 unknown000[0x2cc];
+    Float2 gameplayScreenShakeOffset;
+};
+typedef char ScreenEffectGameplayShakeAt2CC[
+    (offsetof(ScreenEffectSupervisorShakeView, gameplayScreenShakeOffset) == 0x2cc) ? 1 : -1];
+static __forceinline Float2 &ScreenEffectGameplayShake()
+{
+    return reinterpret_cast<ScreenEffectSupervisorShakeView *>(&g_Supervisor)
+        ->gameplayScreenShakeOffset;
+}
+#define g_ScreenEffectShakeX (ScreenEffectGameplayShake().x)
+#define g_ScreenEffectShakeY (ScreenEffectGameplayShake().y)
+#endif
 
 struct ScreenEffectPhotoGlobalStateView
 {

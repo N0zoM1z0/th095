@@ -80,8 +80,25 @@ struct PhotoGameTaskDrawGateView
 };
 
 extern PhotoGameTaskDrawGateView *g_PhotoGameTask;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 extern f32 g_ScreenEffectShakeX;
 extern f32 g_ScreenEffectShakeY;
+#else
+struct AnmSupervisorShakeView
+{
+    u8 unknown000[0x2cc];
+    Float2 gameplayScreenShakeOffset;
+};
+typedef char AnmGameplayShakeAt2CC[
+    (offsetof(AnmSupervisorShakeView, gameplayScreenShakeOffset) == 0x2cc) ? 1 : -1];
+static __forceinline Float2 &AnmGameplayShake()
+{
+    return reinterpret_cast<AnmSupervisorShakeView *>(&g_Supervisor)
+        ->gameplayScreenShakeOffset;
+}
+#define g_ScreenEffectShakeX (AnmGameplayShake().x)
+#define g_ScreenEffectShakeY (AnmGameplayShake().y)
+#endif
 
 #ifndef DIFFBUILD
 #define g_PhotoGameTask \

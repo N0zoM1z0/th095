@@ -218,8 +218,12 @@ struct BackgroundViewportConfigurationView
     D3DXMATRIX projectionMatrix;         // +0x08c
     D3DVIEWPORT8 viewport;               // +0x0cc
     u8 unknown0e4[4];
+#if defined(TH095_MATCH_EXACT)
     i32 anmViewportValue0;               // +0x0e8
     i32 anmViewportValue1;               // +0x0ec
+#else
+    Float2 screenShakeOffset;            // +0x0e8
+#endif
 };
 
 struct BackgroundSupervisorView
@@ -448,8 +452,12 @@ void BackgroundSupervisorView::ApplyBackgroundViewport(
 
     if (g_AnmManager != NULL)
     {
+#if defined(TH095_MATCH_EXACT)
         g_AnmManager->unknown020 = configuration->anmViewportValue0;
         g_AnmManager->unknown024 = configuration->anmViewportValue1;
+#else
+        g_AnmManager->screenShakeOffset = configuration->screenShakeOffset;
+#endif
     }
 }
 

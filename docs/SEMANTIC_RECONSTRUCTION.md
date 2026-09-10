@@ -3209,3 +3209,100 @@ target evidence confirms that viewport configuration `+0xE8/+0xEC` is copied
 to `AnmManager::screenShakeOffset @ +0x20/+0x24` and the draw path consumes that
 same pair. Keep the independent global `g_ScreenEffectShakeX/Y` publication
 separate unless target dataflow proves an ownership relation.
+
+
+### SEM-047 — viewport-owned screen-shake storage
+
+**Scope.** Recover the two dwords at viewport-configuration `+0xE8/+0xEC` as
+one `Float2 screenShakeOffset` and canonicalize their production storage owner.
+Both gameplay and background viewport views use the typed pair outside
+`TH095_MATCH_EXACT`, while the exact lane retains the historical
+`anmViewportValue0/anmViewportValue1` identifiers and scalar assignments. The
+existing `AnmManager::screenShakeOffset @ +0x20` is the draw-side copy. Normal
+production ScreenEffect and layer-six reset paths now address the real embedded
+Supervisor configuration-0 pair at `g_Supervisor + 0x2CC`; DIFFBUILD/exact
+continues to expose the historical `g_ScreenEffectShakeX/Y` symbols and target
+relocations.
+
+**Observed.** Target-attested TH095 Ghidra shows
+`SupervisorViewportView::ApplyGameplayViewport @ 0x00425910` copying the two
+values at configuration `+0xE8/+0xEC` to `AnmManager +0x20/+0x24` whenever the
+manager exists. `BackgroundSupervisorView::ApplyBackgroundViewport @
+0x00425AA0` performs the same pair copy. `AnmManager::DrawInner @ 0x0043ECD0`
+then reads manager `+0x20/+0x24` as floats and adds them to X/Y of all four
+textured vertices before rounding/culling/submission.
+
+**Corroborated.** Target `g_Supervisor @ 0x004C4670` owns configuration 0 at
+`+0x1E4 = 0x004C4854`; adding configuration offsets `+0xE8/+0xEC` lands exactly
+at `0x004C493C/0x004C4940`. Those are the canonical relocation destinations
+historically named `g_ScreenEffectShakeX/Y`. Bounded Ghidra xrefs to both
+addresses find only the two ScreenEffect shake calculators and
+`AnmManager::DrawLayer6`: `CalcShake` and `CalcShakeEnvelope` publish signed or
+zero shake values there, while DrawLayer6 clears both storage values before
+also clearing `AnmManager +0x20/+0x24`. The exact `DrawInner` consumer and the
+existing `AnmManager` union independently establish that the manager pair is
+`Float2 screenShakeOffset` rather than two arbitrary integers.
+
+**Inferred.** Supervisor viewport configuration 0 contains TH095's persistent
+screen-shake publication storage. ScreenEffect writes that embedded pair;
+viewport application copies the selected configuration's pair into the ANM
+manager; ANM drawing consumes the copied pair as per-frame pixel offsets. The
+historical `g_ScreenEffectShakeX/Y` names are therefore exact-facing aliases to
+embedded Supervisor storage, not separate process-lifetime production owners.
+
+**Unknown.** This batch does not prove a nonzero producer for configuration 1's
+`+0xE8/+0xEC`, does not claim that ScreenEffect deliberately shakes every
+background/3D viewport mode, and does not establish a runtime scheduling latency
+between a ScreenEffect write and the next viewport copy. The separate
+`g_ScreenEffectCounter` remains independent. No Wine runtime scenario is
+claimed by this semantic/storage batch.
+
+**Compiler-observed.** Exact and DIFFBUILD paths preserve their historical
+scalar field names, assignments, and `g_ScreenEffectShakeX/Y` symbols so the
+canonical VC7.1 relocation surface is unchanged. Production alone sees typed
+`Float2` viewport fields and bounded Supervisor-owner accessors. This split
+replays all affected exact units without private-label refresh and avoids
+turning a production storage correction into a target-symbol rewrite.
+
+**Regression boundary.** Focused exact validation keeps
+`supervisor-apply-gameplay-viewport` 396/396 bytes,
+`background-apply-viewport` 539/539, `screen-effect-calc-shake` 473/473,
+`screen-effect-calc-shake-envelope` 592/592, `anm-draw-layer-6` 66/66, and
+`anm-draw-inner` 1497/1497, with every configured relocation unchanged. Full
+changed-source replay covers 54/54 units across `SupervisorViewport.cpp`,
+`Background.cpp`, `ScreenEffect.cpp`, and `AnmVmLifecycle.cpp`, zero
+private-label refresh. All four normal production TUs independently compile
+with their repository whole-build pinned VC7.1 profiles to i386 COFF.
+
+Because this changes cross-object runtime storage ownership, the complete dirty
+source state was also cold-replayed before checkpoint: eight source chunks
+covered all 88 configured sources / 696 exact units, all exact with zero
+private-label refresh. A separate cold `build-whole.py` invocation compiled 88
+pinned VC7.1 i386 COFF objects and linked a verified PE32 Windows-GUI image. The
+local whole-product artifact is 780288 bytes with SHA-256
+`ed095fc3b2061cf4fe80effd401aa701c5e6989eea46612852f9c116a37f7e82`.
+This is production closure, not a whole-image byte-exact claim.
+
+**Runtime storage/scenario state.** The production storage identity is now one
+Supervisor-owned pair rather than duplicate ScreenEffect statics, and the
+historical Windows i386 build/link lane is closed. No runtime scenario was run
+or accepted here, so visual shake behavior under Wine remains a separate state.
+
+**Receipt state.** The exact and whole-product results above are local
+current-source validation, not Factory-accepted receipts. Committing this
+semantic/documentation checkpoint changes the repository HEAD binding, and the
+next semantic source batch would stale a freshly issued aggregate receipt
+immediately, so the accepted receipt plane is deliberately deferred to a later
+committed campaign milestone or final handoff.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. Focused compile
+objects used command-local `/tmp` paths and were removed; no current-session
+`.analysis` artifact was created, retained, or removed. Legacy and shared
+provider state remain untouched.
+
+**Next batch:** inspect the score-file header at `ResultSaveDataView` raw-file
+`+0x08/+0x0C`. Existing TH095 parse/write code already distinguishes version 2
+and format `0x102`; accept field names only if exact target width/access evidence
+separates the low 16-bit version from any unknown high half and independently
+confirms the format dword. Do not widen the batch into payload records or
+checksum semantics already closed by SCORE-001..004.
