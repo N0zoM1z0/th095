@@ -3750,3 +3750,96 @@ consumer evidence can distinguish its lifecycle across player, enemy,
 background, bullet, and effect views. Do not assume the existing subsystem-local
 `freeze...`/`block...` names describe one universal action merely because the
 bit position is shared.
+
+
+### SEM-054 — captured-photo active global protocol
+
+**Scope.** Recover bit 1 of the shared photo-runtime flags dword at global-state
+`+0xFC` as `capturedPhotoActive` across Background, BulletManager,
+EnemyManagerTask, PhotoEffect, and PhotoGame production views. `PhotoStage` was
+already the canonical producer view for the same bit. Exact preprocessing keeps
+each historical subsystem-local field spelling (`freezeBackground`,
+`blocksBulletUpdate`, `blockEnemyUpdate`, `freezeEffects`, and
+`blocksPlayerUpdate1`) and its original expressions, while maintainable source
+uses the shared lifecycle name. No other global-state bit is renamed.
+
+**Recovery review.** The campaign resumed at committed HEAD `6103aff` with five
+unstaged source edits and four pre-existing untracked files. The five source
+edits exactly matched SEM-053's named next batch and changed only bit-1 field
+names/uses behind `TH095_MATCH_EXACT`, so they were classified as
+recoverable-current-work and adopted as this first batch. `EnemyManagerUpdate.i`,
+`droid.resume.txt`, `config/runtime-scenarios.json`, and
+`scripts/runtime-diff.py` retained their previously documented hashes and were
+classified as unrelated pre-existing work; they remain untouched and excluded
+from staging. A read-only helper search later timed out after accidentally
+traversing the legacy `.analysis` Wine tree; the mandatory post-timeout recovery
+gate confirmed the same five tracked edits, the same four untracked paths, no
+new staged changes, and no persistent analysis growth.
+
+**Observed.** Target-attested TH095 `PhotoStageStateView::Update @ 0x0042AD60`
+clears shared flag bit 0 and immediately sets bit 1 after the captured render
+surface has been materialized into the persistent capture VM. The same target
+function clears bit 1 later when the capture-state machine reaches its terminal
+cleanup state. Thus bit 1 owns the post-readback captured-photo lifetime, rather
+than the earlier asynchronous `captureActive` interval recovered in SEM-053.
+
+**Corroborated.** Five independent canonical target consumers read bit 1 from
+the same `DAT_004BDEC8 + 0xFC` dword. `Background::OnUpdate @ 0x00402B80`,
+`PhotoEnemyManagerTaskView::OnUpdate @ 0x00416290`, and
+`PhotoGameUpdateView::OnUpdate @ 0x00430180` return before their normal update
+paths while the bit is set. `PhotoBulletManagerView::Update @ 0x00405120`
+skips bullet simulation while preserving its enqueue/draw bookkeeping path.
+`PhotoEffectManagerView::OnUpdate @ 0x0041DB00` takes a different action: it
+runs the effect update with `g_AnmGameSpeed` temporarily forced to zero and then
+restores the prior speed. These distinct reactions prove that the shared bit is
+a capture-lifecycle state, not one universal "freeze" operation. The existing
+`PhotoStageGlobalStateView` independently names this exact bit
+`capturedPhotoActive` and supplies both set and clear producers.
+
+**Inferred.** `capturedPhotoActive` denotes the interval after the captured
+image has been made available but before the capture pipeline finishes its
+post-capture processing and cleanup. During that interval each subsystem applies
+its own preservation policy: some suspend updates completely, BulletManager
+keeps presentation-list maintenance while suppressing simulation, and
+PhotoEffect advances through its normal path with zero game speed. A lifecycle
+name therefore preserves the shared meaning without falsely asserting identical
+behavior across consumers.
+
+**Unknown.** This batch does not determine the exact frame duration of the bit-1
+interval, does not claim that every subsystem or callback is frozen, and does
+not assign global meaning to bit 2 or later bits. It also does not infer whether
+all possible capture-state exits clear bit 1 through the same lexical branch;
+only the target-observed state machine and current canonical producer paths are
+claimed. No new Wine capture scenario is asserted.
+
+**Compiler-observed.** All five edited TUs keep their historical field names and
+condition expressions when `TH095_MATCH_EXACT` is defined. The maintainable
+branch changes only the semantic identifier exposed for bit 1. This preserves
+the exact preprocessed source shape and all private-label identities without a
+manifest refresh.
+
+**Regression boundary.** Focused target checks keep `photo-stage-update`
+5309/5309 bytes, `background-on-update` 107/107,
+`photo-bullet-manager-update` 1835/1835, `enemy-manager-task-on-update` 81/81,
+`photo-effect-manager-on-update` 152/152, and `photo-player-on-update` 141/141
+exact. Full replay of the five changed source files covers 116/116 configured
+exact units with zero private-label refresh. The five normal production TUs
+independently compile under the pinned VC7.1 13.10.3077 profile to i386 COFF.
+`git diff --check` passes. No shared header, physical storage, ABI, or serialized
+format changes.
+
+**Receipt state.** The SEM-053 aggregate/product local checks are source-stale
+for this dirty source state. SEM-054 closes its focused exact and production
+surfaces before checkpoint; the current committed source is immediately promoted
+to a campaign milestone after this commit, where cold aggregate exact and
+whole-product gates and eligible Factory receipts are handled separately.
+
+**Analysis artifacts.** `.analysis/` started and remains 1408444500 bytes. No
+current-session `.analysis/gpt-web` root or large artifact was created. The
+pre-existing legacy Wine/provider content remains untouched.
+
+**Next batch:** after the committed milestone gates, audit shared photo-global
+bit 2 only if TH095-local producers and multiple consumers establish a common
+lifecycle meaning. Keep subsystem-specific names if the bit represents only a
+coincident storage position or distinct protocols; do not generalize by
+adjacency to `captureActive`/`capturedPhotoActive`.

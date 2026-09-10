@@ -421,7 +421,11 @@ struct PhotoBulletGlobalStateView
 #else
             u32 captureActive : 1;
 #endif
+#if defined(TH095_MATCH_EXACT)
             u32 blocksBulletUpdate : 1;
+#else
+            u32 capturedPhotoActive : 1;
+#endif
             u32 suppressesBulletCallbacks : 1;
             u32 unknownFlags3 : 6;
             u32 suppressesPhotoSound : 1;
@@ -1697,7 +1701,11 @@ i32 PhotoBulletManagerView::Update()
             continue;
         }
 
+#if defined(TH095_MATCH_EXACT)
         if (g_PhotoBulletGlobalState->blocksBulletUpdate != 0)
+#else
+        if (g_PhotoBulletGlobalState->capturedPhotoActive != 0)
+#endif
         {
             goto enqueueBullet;
         }

@@ -193,7 +193,11 @@ struct PhotoEffectGlobalStateView
 #else
             u32 captureActive : 1;
 #endif
+#if defined(TH095_MATCH_EXACT)
             u32 freezeEffects : 1;
+#else
+            u32 capturedPhotoActive : 1;
+#endif
             u32 suppressEffects : 1;
             u32 unknownFlags3 : 7;
             u32 blockEffectUpdate : 1;
@@ -1146,7 +1150,11 @@ i32 __fastcall PhotoEffectManagerView::OnUpdate(
     {
         return 1;
     }
+#if defined(TH095_MATCH_EXACT)
     if (g_PhotoGlobalState->freezeEffects != 0)
+#else
+    if (g_PhotoGlobalState->capturedPhotoActive != 0)
+#endif
     {
         f32 gameSpeed = g_AnmGameSpeed;
         g_AnmGameSpeed = 0.0f;

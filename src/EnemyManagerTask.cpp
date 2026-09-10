@@ -28,7 +28,11 @@ struct PhotoEnemyTaskGlobalStateView
 #else
             u32 captureActive : 1;
 #endif
+#if defined(TH095_MATCH_EXACT)
             u32 blockEnemyUpdate : 1;
+#else
+            u32 capturedPhotoActive : 1;
+#endif
             u32 blockEnemyUpdateAndDraw : 1;
             u32 unknownFlags3 : 29;
         };
@@ -194,7 +198,11 @@ i32 __fastcall PhotoEnemyManagerTaskView::OnUpdate(
             g_PhotoEnemyGlobalState->captureActive,
             g_PhotoEnemyGlobalState->blockEnemyUpdateAndDraw) != 0 ||
 #endif
+#if defined(TH095_MATCH_EXACT)
         g_PhotoEnemyGlobalState->blockEnemyUpdate != 0)
+#else
+        g_PhotoEnemyGlobalState->capturedPhotoActive != 0)
+#endif
     {
         return 1;
     }

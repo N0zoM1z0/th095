@@ -54,7 +54,11 @@ struct PhotoGameGlobalStateView
 #else
             u32 captureActive : 1;
 #endif
+#if defined(TH095_MATCH_EXACT)
             u32 blocksPlayerUpdate1 : 1;
+#else
+            u32 capturedPhotoActive : 1;
+#endif
             u32 blocksPlayerDraw : 1;
             u32 unknown003 : 7;
             u32 photoCaptureInputMode : 1;
@@ -607,7 +611,11 @@ i32 __fastcall PhotoGameUpdateView::OnUpdate(PhotoGameUpdateView *player)
     if (PhotoGameEitherFlag(g_PhotoGameGlobalState->captureActive,
                             g_PhotoGameGlobalState->blocksPlayerDraw) != 0 ||
 #endif
+#if defined(TH095_MATCH_EXACT)
         g_PhotoGameGlobalState->blocksPlayerUpdate1 != 0)
+#else
+        g_PhotoGameGlobalState->capturedPhotoActive != 0)
+#endif
     {
         return 1;
     }

@@ -67,7 +67,11 @@ struct BackgroundGlobalStateView
 #else
             u32 captureActive : 1;
 #endif
+#if defined(TH095_MATCH_EXACT)
             u32 freezeBackground : 1;
+#else
+            u32 capturedPhotoActive : 1;
+#endif
             u32 suppressBackground : 1;
             u32 unknownFlags3 : 7;
             u32 blockBackgroundUpdate : 1;
@@ -961,7 +965,11 @@ i32 __fastcall Background::OnUpdate(Background *background)
             g_PhotoGlobalState->captureActive,
             g_PhotoGlobalState->suppressBackground) != 0 ||
 #endif
+#if defined(TH095_MATCH_EXACT)
         g_PhotoGlobalState->freezeBackground != 0)
+#else
+        g_PhotoGlobalState->capturedPhotoActive != 0)
+#endif
     {
         return 1;
     }
