@@ -1309,3 +1309,67 @@ untouched.
 `+0x228` in extended entries 2/4 are already represented by independently
 proven `AnmVm` fields. Canonicalize only fields whose TH095 producer/consumer
 and offset evidence agree; otherwise leave the raw access and record unknown.
+
+
+
+### SEM-018 — extended bullet VM rotation/flags views
+
+**Scope.** Canonicalize the five remaining raw VM-member accesses in extended
+bullet callbacks 2 and 4. Bullet absolute `+0x24` is represented as the raw bits
+of `index->vm.rotation.z`, and callback 2's embedded-VM `+0x228` mask is
+represented as `index->vm.flagsWord`. The exact-facing local spelling
+`savedActiveSprite` is intentionally retained even though its semantic payload
+is rotation-Z bits; an adjacent source comment records the mismatch.
+
+**Observed.** Target-attested decompilation of `Callback02 @ 0x004134A0` and
+`Callback04 @ 0x00413750` shows both callbacks loading the dword at bullet
+`+0x24`, calling the shifted ANM reinitializer, then restoring the same dword.
+The same target bodies clear bit 27 in the embedded VM flags word before
+publishing pending interrupt 2. The access pattern is therefore a preserve-
+across-reinitialization protocol, not a sprite-index read despite the historical
+local identifier.
+
+**Corroborated.** TH095's canonical exact `PhotoBulletView` embeds `AnmVm vm`
+at bullet `+0x04`. The shared exact `AnmVmBase` layout places `rotation` at VM
+`+0x18`, so `rotation.z` is VM `+0x20` and therefore bullet `+0x24`. The same
+layout explicitly asserts `flagsWord @ +0x228`; callback 4 already used that
+field directly at the sibling mask site. `activeSpriteIndex`, by contrast, is
+at VM `+0x234`, independently disproving the historical `savedActiveSprite`
+interpretation.
+
+**Compiler-observed.** A natural `f32 savedRotationZ` experiment preserved the
+intended field meaning but failed callback-2 exactness at 354/378 compared
+bytes because VC7.1 changed the local/load representation. A second experiment
+kept the raw `u32` bit copy but renamed the local to `savedRotationZBits`; it
+narrowed the mismatch to 358/378 and moved only the compiler's local-home
+pattern. Restoring the historical local spelling while retaining the typed
+`rotation.z`/`flagsWord` accesses returns all 22 EclExtended units to exact.
+The retained identifier is therefore compiler-significant reconstruction
+surface, not accepted semantic naming.
+
+**Inferred.** The callbacks preserve the exact bit pattern of the bullet VM's
+Z rotation across `InitializeVm`. Using a `u32` alias view communicates that
+bit-preserving requirement without pretending that the target performed a
+floating-point load/store sequence.
+
+**Unknown.** The reason these two shifted-script transitions preserve rotation
+Z while callback 3 does not is not assigned a higher-level gameplay name here.
+Likewise, clearing VM flag bit 27 is represented through the proven flags word
+but this batch does not rename that individual bit beyond the existing ANM
+layout vocabulary.
+
+**Regression boundary.** The final typed-field source replays all 22 configured
+`src/EclExtended.cpp` exact units with zero private-label refresh. Its normal
+production branch independently compiles with the pinned VC7.1 profile to an
+i386 COFF object, and `git diff --check` passes. The failed natural/renamed
+experiments were not staged and introduced no additional repository files.
+
+**Analysis artifacts.** `.analysis/` remains 1,408,444,500 bytes. No
+current-session analysis artifact was created or retained; shared provider and
+legacy runtime-analysis state remain untouched.
+
+**Next batch:** inspect the sole remaining EclExtended raw-member candidate at
+enemy `+0x2BF4` as a movement/transition flags family. Accept a typed field only
+if the canonical TH095 Enemy layout and independent game-local consumers agree
+on the offset and bit protocol; otherwise record it as unknown and route to the
+next bounded owner family outside EclExtended.

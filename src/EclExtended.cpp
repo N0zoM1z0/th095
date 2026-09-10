@@ -984,6 +984,7 @@ void __fastcall Callback01(Enemy *enemy, EclRawInstruction *instruction)
 // ECL extended callback table entry 2 @ 0x004134A0.
 void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
 {
+    // Exact-facing lexical name; this stores the raw bits of vm.rotation.z.
     u32 savedActiveSprite;
     ExtendedBulletView *index;
     i32 bullet;
@@ -995,14 +996,11 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
             continue;
         if (index->ownerTag == enemy->activeEclContext->extraIntVariables[2])
         {
-            savedActiveSprite = *reinterpret_cast<u32 *>(
-                reinterpret_cast<u8 *>(index) + 0x24);
+            savedActiveSprite = *reinterpret_cast<u32 *>(&index->vm.rotation.z);
             index->ReinitializeShifted();
-            *reinterpret_cast<u32 *>(
-                reinterpret_cast<u8 *>(&index->vm) + 0x228) &= 0xf7ffffffU;
+            index->vm.flagsWord &= 0xf7ffffffU;
             index->vm.pendingInterrupt = 2;
-            *reinterpret_cast<u32 *>(
-                reinterpret_cast<u8 *>(index) + 0x24) = savedActiveSprite;
+            *reinterpret_cast<u32 *>(&index->vm.rotation.z) = savedActiveSprite;
             TH095_EXTENDED_FROM_ANGLE(
                 index->velocity,
                 enemy->activeEclContext->extraFloatVariables[2],
@@ -1043,6 +1041,7 @@ void __fastcall Callback03(Enemy *enemy, EclRawInstruction *instruction)
 // ECL extended callback table entry 4 @ 0x00413750.
 void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
 {
+    // Exact-facing lexical name; this stores the raw bits of vm.rotation.z.
     u32 savedActiveSprite;
     ExtendedBulletView *index;
     i32 bullet;
@@ -1054,13 +1053,11 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
             continue;
         if (index->ownerTag == enemy->activeEclContext->extraIntVariables[2])
         {
-            savedActiveSprite = *reinterpret_cast<u32 *>(
-                reinterpret_cast<u8 *>(index) + 0x24);
+            savedActiveSprite = *reinterpret_cast<u32 *>(&index->vm.rotation.z);
             index->ReinitializeShifted();
             index->vm.flagsWord &= 0xf7ffffffU;
             index->vm.pendingInterrupt = 2;
-            *reinterpret_cast<u32 *>(
-                reinterpret_cast<u8 *>(index) + 0x24) = savedActiveSprite;
+            *reinterpret_cast<u32 *>(&index->vm.rotation.z) = savedActiveSprite;
             TH095_EXTENDED_FROM_ANGLE(
                 index->velocity,
                 enemy->activeEclContext->extraFloatVariables[2] +
