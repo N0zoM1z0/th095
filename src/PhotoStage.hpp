@@ -74,22 +74,22 @@ struct PhotoStageStateView
 
     Float3 *GetCapturePosition()
     {
-        return reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(this) + 0x2c);
+        return &this->slots[0].capturePosition;
     }
 
     i32 &GetCaptureWidth()
     {
-        return *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x38);
+        return this->slots[0].captureWidth;
     }
 
     i32 &GetCaptureHeight()
     {
-        return *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x3c);
+        return this->slots[0].captureHeight;
     }
 
     i32 &GetCaptureSlot()
     {
-        return *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x40);
+        return this->slots[0].captureSlot;
     }
 };
 

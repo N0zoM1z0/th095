@@ -2692,3 +2692,70 @@ accessors at `+0x2C/+0x38/+0x3C/+0x40`. Accept a representation change only if
 TH095 capture/update/save consumers prove that these are exactly
 `slots[0].capturePosition`, `captureWidth`, `captureHeight`, and `captureSlot`;
 keep the exact snapshot source untouched if its raw AST is compiler-sensitive.
+
+
+### SEM-039 — first-slot photo capture staging fields
+
+**Scope.** Recover the four `PhotoStageStateView` capture accessors at object
+`+0x2C/+0x38/+0x3C/+0x40` as fields of `slots[0]`: `capturePosition`,
+`captureWidth`, `captureHeight`, and `captureSlot`. The production header now
+returns those named members directly instead of re-deriving them from raw byte
+offsets. `PhotoStageExact.inl` is intentionally unchanged.
+
+**Observed.** Target-attested Ghidra decompilation of
+`PhotoStageStateView::SavePhoto @ 0x0042C450` copies the requested world
+position to `this+0x2C..+0x34`, stores width and height at `+0x38/+0x3C`, and
+stores the requested slot at `+0x40` when a capture begins. The canonical
+`PhotoStageStateView::Update @ 0x0042AD60` exact source later reads and rewrites
+those same locations through `slots[0].capturePosition`, `captureWidth`,
+`captureHeight`, and `captureSlot` while clipping the capture rectangle,
+addressing the captured texture, constructing its VM, and publishing the saved
+photo dimensions and slot.
+
+**Corroborated.** `PhotoStageSlot` begins with eleven four-byte entry VM handles,
+so its named capture position begins at slot offset `0x2C`, followed by the
+three integer fields at `+0x38/+0x3C/+0x40`. Because `PhotoStageStateView`
+begins with `slots[11]`, the first slot has exactly those same object-relative
+displacements. Independent save/update/capture code repeatedly uses
+`slots[0].captureSlot` to select the destination slot and texture, while the
+width and height feed both texture copying and persisted metadata.
+
+**Inferred.** These four values form the transient first-slot capture staging
+record: `SavePhoto` publishes one requested capture, and `Update` consumes and
+may clip its geometry before copying pixels and transferring results into the
+selected persistent slot. They are not four unrelated top-level fields despite
+the old accessor implementation spelling absolute object offsets.
+
+**Unknown.** This batch does not infer why slot zero is reused as staging
+storage, does not claim that its normal persistent display fields are inactive
+at all times during capture, and does not rename any other `PhotoStageSlot`
+member. It leaves the exact snapshot's raw accessor AST intact because exact
+source shape and maintainable production representation are separate states.
+
+**Regression boundary.** Narrow exact units `photo-stage-save-photo`,
+`photo-stage-update`, and `photo-stage-capture-pixels` remain 356/356,
+5309/5309, and 689/689 bytes exact with all configured relocations. The other
+direct header consumer, `ScoreData.cpp`, remains 1/1 exact. Normal production
+compiles of both `PhotoStage.cpp` and `ScoreData.cpp` produce i386 COFF. Because
+this batch changes a shared layout/header surface, a cold repository-wide replay
+was run immediately: all 88 configured sources / 696 exact units pass with zero
+private-label refresh. A separate cold whole-product gate compiles all 88 pinned
+VC7.1 i386 objects and links a verified PE32 GUI executable. Successful linkage
+is not a whole-image exactness claim. `git diff --check`, target verification,
+and tracking validation pass.
+
+**Receipt state.** The accepted Factory whole-build receipt remains bound to
+older commit `3b540668` and is stale for this source. The SEM-039 cold aggregate
+and whole-product results are current-source local validation. No new Factory
+receipt is issued at this checkpoint because the campaign proceeds directly to
+another source batch.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect the remaining compact enemy ANM-bank owner in
+`EnemyShotAnm.cpp`, especially runtime `+0x4DF8/+0x4DFC`. Accept canonical names
+only if TH095 resource loading, shot/ANM update selection, and another consumer
+establish whether these are primary/alternate ANM banks. Do not infer the
+second pointer solely from adjacency to the proven `enemyAnm @ +0x4DF8`.
