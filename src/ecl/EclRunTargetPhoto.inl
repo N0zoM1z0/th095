@@ -247,6 +247,6 @@
 
     case 158:
     {
-        TH095_ENEMY_FLAGS(enemy)->secondaryFlag7 = TH08_ECL_READ_I(ctx, 0);
+        TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) = TH08_ECL_READ_I(ctx, 0);
         break;
     }

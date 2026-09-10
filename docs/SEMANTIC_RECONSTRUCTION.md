@@ -2816,3 +2816,71 @@ ECL opcode 158's writer and the enemy update/draw path independently establish
 it as an attached-VM freeze/suppression control. Keep other flags2 bits separate
 and do not reuse later-layout generic Enemy flag meanings without TH095-local
 evidence.
+
+
+### SEM-041 — attached-VM follow freeze flag
+
+**Scope.** Recover compact enemy `flags2 @ +0x2BF8` bit 7 as
+`freezeAttachedVm`. The production `Th095EnemyFlagsView` now names that bit and
+ECL opcode 158 writes it through one semantic lvalue. `TH095_MATCH_EXACT`
+retains the historical `secondaryFlag7` member token so the large exact RunEcl
+translation unit keeps its lexical/compiler surface unchanged. No other flags2
+bit is renamed in this batch.
+
+**Observed.** Target-attested `PhotoEnemyManagerView::OnUpdate @ 0x00415970`
+checks enemy `+0x2BF8` bit 7 only after confirming `attachedVmId @ +0x4CBC` is
+nonzero. When bit 7 is clear, the target reads the attached VM position,
+converts the enemy position to screen coordinates, moves the VM 7 percent of
+the remaining delta toward the enemy, and writes the new VM position. When bit
+7 is set, that complete follow-position update is skipped. Canonical target-
+exact `EclManager::RunEcl` opcode 158 is the TH095-local writer: it replaces bit
+7 with the low bit of the resolved integer operand.
+
+**Corroborated.** The canonical compact `PhotoEnemyView` already places
+`freezeAttachedVm` as bit 7 of `flags2`, immediately alongside the separately
+proved `showPhotoMarker` bit 6, and places `attachedVmId` at `+0x4CBC`.
+`Deactivate @ 0x00416E80` independently retires a nonzero attached VM handle,
+confirming that the handle belongs to the enemy lifecycle rather than being a
+transient local. The writer and consumer therefore agree on one persistent
+per-enemy control bit without importing any later-layout generic Enemy flag
+mapping.
+
+**Inferred.** `freezeAttachedVm` suppresses automatic position following of the
+attached VM while preserving the attachment handle itself. Setting the bit does
+not delete the VM and does not prove that its own ANM script execution is
+paused; the observed effect is specifically the enemy-driven position update.
+
+**Unknown.** This batch does not infer semantics for compact flags2 bits 0..5 or
+8..31, does not conflate bit 7 with later generic `EnemyFlag2` assignments, and
+does not claim that the attached VM's internal animation/timer state is frozen.
+Bit 6 remains the independently established photo-marker visibility protocol.
+
+**Compiler-observed.** `Th095EnemyFlagsView` participates in exact compilation.
+The accepted declaration therefore preserves `secondaryFlag7` under
+`TH095_MATCH_EXACT` and exposes `freezeAttachedVm` only to maintainable
+production code. `TH095_ENEMY_FREEZE_ATTACHED_VM` expands to the historical
+member expression in exact mode and to the semantic member in production. No
+private-label refresh is required.
+
+**Regression boundary.** `ecl-manager-run-ecl` remains 27091/27091 authored
+bytes and 27747/27747 compare-extent bytes exact with all 647 configured
+relocations. Independent `enemy-manager-on-update` remains 1853/1853 bytes exact
+with all 39 relocations. Full `src/ecl/EclRun.cpp` replay is 1/1 exact with zero
+private-label refresh, and the normal EclRun production TU independently
+compiles under pinned VC7.1 to i386 COFF. `git diff --check` passes. No shared
+header or public ABI changed.
+
+**Receipt state.** The last accepted Factory `whole_build_closed` receipt is
+still bound to older commit `3b540668` and is stale for this source. No new
+receipt is issued because the campaign immediately proceeds to another bounded
+semantic batch.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** route the compact flags2/photo-marker neighborhood without
+assuming that every remaining bit deserves a name. First test whether flags2
+bit 6 already has complete writer/consumer semantics in committed history; if
+so, do not redo it. Otherwise prefer another unresolved compact owner with an
+independent TH095 producer and consumer.

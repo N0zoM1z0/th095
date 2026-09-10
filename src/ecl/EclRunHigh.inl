@@ -349,7 +349,11 @@ struct Th095EnemyFlagsView
             u32 secondaryUnknown00_04 : 5;
             u32 secondaryFlag5 : 1;
             u32 secondaryFlag6 : 1;
+#if defined(TH095_MATCH_EXACT)
             u32 secondaryFlag7 : 1;
+#else
+            u32 freezeAttachedVm : 1;
+#endif
             u32 secondaryUnknown08_31 : 24;
         };
     };
@@ -379,6 +383,13 @@ inline i32 Th095PreserveI32(i32 value)
     (reinterpret_cast<Th095EnemyPhotoSessionView *>(enemy))
 #define TH095_ENEMY_FLAGS(enemy) \
     (reinterpret_cast<Th095EnemyFlagsView *>(enemy))
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) \
+    (TH095_ENEMY_FLAGS(enemy)->secondaryFlag7)
+#else
+#define TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) \
+    (TH095_ENEMY_FLAGS(enemy)->freezeAttachedVm)
+#endif
 
 extern PhotoEffectManager *g_Th095PhotoEffectManager;
 extern PhotoCamera *g_Th095PhotoCamera;
@@ -1077,9 +1088,8 @@ enter_subroutine:
     }
     case 158:
     {
-        u32 &flags = *reinterpret_cast<u32 *>(
-            reinterpret_cast<u8 *>(TH08_ECL_CONTEXT_ENEMY(ctx)) + 0x2bf8);
-        flags = flags & ~0x80U | (TH08_ECL_READ_I(ctx, 0) & 1) << 7;
+        TH095_ENEMY_FREEZE_ATTACHED_VM(TH08_ECL_CONTEXT_ENEMY(ctx)) =
+            TH08_ECL_READ_I(ctx, 0);
         break;
     }
     case 142:
