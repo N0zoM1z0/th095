@@ -3381,3 +3381,49 @@ reader appears. Prefer another anonymous field with at least one independent
 producer and consumer; inspect the compact photo-enemy `unknown2984` dword only
 if update/ECL/photo systems expose a distinguishing protocol, otherwise leave it
 opaque and continue routing.
+
+
+### SEM-049 — unresolved compact enemy dword at +0x2984
+
+**Scope.** Audit the four bytes at compact `PhotoEnemyView +0x2984`, between
+`stateTimer @ +0x2978` and `displayColor @ +0x2988`. No source representation
+change is accepted because TH095-local evidence exposes no direct reader or
+field-specific writer.
+
+**Observed.** The canonical compact enemy layout reserves `u8 unknown2984[4]`.
+Repository-wide TH095 source search finds no direct access to `+0x2984`; the
+bytes participate only indirectly when the complete 0x4CC0 spawn template is
+copied into an inactive enemy and when lifecycle reset clears the complete enemy
+object.
+
+**Corroborated.** The immediately preceding `ZunTimer stateTimer` has its own
+initialization/tick protocol, and the following `displayColor` is independently
+written from the enemy VM color after successful spawn. Neither protocol reads
+or writes the intervening dword, so adjacency does not provide a semantic
+bridge.
+
+**Inferred.** Whole-object copy/reset proves persistence and storage only. It
+does not distinguish a cache, latch, counter, pointer-sized value, timer tail,
+or reserved word.
+
+**Unknown.** The type, producer, consumer, lifetime beyond aggregate object
+operations, and gameplay role of `+0x2984` remain unknown. It stays opaque until
+independent TH095-local evidence appears.
+
+**Regression boundary.** This is an evidence-rejection checkpoint with no
+source edit. SEM-048 source code remains unchanged; `git diff --check` covers
+only this documentation addition. No exact or production gate is replayed solely
+for this no-source checkpoint.
+
+**Receipt state.** SEM-048's 696-unit exact and whole-product gates are local
+validation bound to the immediately preceding source state. No Factory-accepted
+receipt is issued for this documentation-only checkpoint.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No current-session
+analysis artifact was created, retained, or removed; legacy and shared provider
+state remain untouched.
+
+**Next batch:** route by repeated TH095-local read/write behavior rather than
+anonymous-field count. Prefer a field whose value is produced in one exact
+function and consumed in another; do not select padding or constructor-only
+initialization merely because it has an `unknown...` identifier.
