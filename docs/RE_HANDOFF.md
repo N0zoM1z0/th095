@@ -58,7 +58,7 @@ Whole-program compile and link closure is complete. A fresh
 - verifies a PE32 i386 Windows GUI image at
   `build/whole-validation/th095-reconstructed.exe`;
 - currently produces 780,288 bytes with SHA-256
-  `7715bb2a0dc5e6d560a611eb523460e0044dbac8bf9f9977acdb8005699b1f9c`.
+  `159f531ad62c84bdd0e676aa948bdea51c53a9f17aaf97b50726ec5a4b63ebf8`.
 
 This is a runnable reconstruction artifact, not a byte-exact whole-image
 claim. Function-level exact evidence remains governed by the match-unit
@@ -123,6 +123,8 @@ baselines. The reconstructed executable has then been observed to:
 - accept keyboard movement/confirm input;
 - remain alive through extended gameplay and the
   `Failed / Retry This Mission` result overlay;
+- enter attract-mode demo playback and remain alive after the unattended
+  player is hit and the demo returns through its later states;
 - select the default `Retry This Mission`, start a second scene-1-1 attempt,
   and reach its later failure overlay without exiting;
 - select the failure menu's return option and reach Mission Select again;
@@ -179,6 +181,28 @@ yet produced a confirmed crash:
     `g_SceneGroupCounts` both name initialized target table `0x004A5830`.
     Production now has one canonical array instead of two equal copies.
 
+An eleventh whole-program runtime gap was then reproduced and closed:
+
+11. A Wine/GDB trace of the former runnable build caught the startup worker
+    and main thread entering `LoadTextureData` for the same `ascii.anm`
+    `anm=1`, entry 0, and raw-entry pointer. `LoadAnm` synchronously postloads
+    after publishing `numberEntriesToBeLoaded=1`, while main-thread
+    `ServicePreloadedAnims` treats that same field as asynchronous work. The
+    duplicate consumer eventually dereferenced a null texture at
+    `LoadTextureData`'s first `SetPriority` call. Runnable builds now serialize
+    those two postload consumers through Supervisor critical section 6, the
+    existing startup/replay-worker lane. `PreloadAnm`'s wait remains outside
+    the lock to avoid deadlock, and DIFFBUILD/TH095_MATCH_EXACT retain the
+    original target-proven bodies.
+
+After this fix, three independent fresh-prefix `demo-idle-hit` runs survived
+all seven checkpoints from demo entry through +60 seconds (21/21, no
+spontaneous exit), and `gameplay-escape-retry` survived all five checkpoints.
+The 13 affected `AnmPreload.cpp` exact units replayed 13/13 before the fresh
+88-TU whole build. Experimental runtime-diff runs should not retain their Wine
+prefixes unless a debugger needs them: twelve old retained-prefix runs consumed
+about 30 GiB and were removed on 2026-09-10.
+
 The complete address-equivalence and Chain-lifetime audit is recorded in
 `docs/OWNER_AUDIT.md`. After all owner corrections, all 696 configured units
 across all 88 sources cold-replayed exact with zero manifest or private-label
@@ -189,7 +213,7 @@ refreshes.
 For the stated goal—reconstructed source that cold-compiles, links, and runs
 the game—the active whole-build lane is complete. There are no known unresolved
 symbols, remaining relocation-owner candidates, or known startup, gameplay,
-retry, or result-menu return crashes.
+demo-hit, retry, or result-menu return crashes.
 
 Optional coverage expansion is not a known blocker: sample more of the 93
 scenes, replay playback/recording, Music Room, Help, Options, MIDI, and
