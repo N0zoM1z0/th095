@@ -845,10 +845,8 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
-    locals.args.angle = *reinterpret_cast<f32 *>(
-        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70);
-    locals.args.speed = *reinterpret_cast<f32 *>(
-        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74);
+    locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
+    locals.args.speed = enemy->activeEclContext->extraFloatVariables[3];
     locals.args.field24 = locals.args.speed;
     locals.args.field28 = 16.0f;
     locals.args.field30 = 1;
@@ -863,8 +861,7 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
 
     TH095_EXT_ANM_INITIALIZE(
         g_ExtendedRuntime->markerAnm, &locals.effect->vm,
-        *reinterpret_cast<i32 *>(
-            reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60));
+        enemy->activeEclContext->extraIntVariables[2]);
     locals.PublishFlags();
 }
 
@@ -879,10 +876,8 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
-    locals.args.angle = *reinterpret_cast<f32 *>(
-        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70);
-    locals.args.speed = *reinterpret_cast<f32 *>(
-        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74);
+    locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
+    locals.args.speed = enemy->activeEclContext->extraFloatVariables[3];
     locals.args.field24 = locals.args.speed;
     locals.args.field28 = 16.0f;
     locals.args.field30 = 1;
@@ -897,8 +892,7 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
 
     TH095_EXT_ANM_INITIALIZE(
         g_ExtendedRuntime->markerAnm, &locals.effect->vm,
-        *reinterpret_cast<i32 *>(
-            reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60));
+        enemy->activeEclContext->extraIntVariables[2]);
     locals.PublishFlags();
 }
 
@@ -913,10 +907,8 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
-    locals.args.angle = *reinterpret_cast<f32 *>(
-        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70);
-    locals.args.speed = *reinterpret_cast<f32 *>(
-        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74);
+    locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
+    locals.args.speed = enemy->activeEclContext->extraFloatVariables[3];
     locals.args.field24 = locals.args.speed;
     locals.args.field28 = 16.0f;
     locals.args.field30 = 1;
@@ -931,8 +923,7 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
 
     TH095_EXT_ANM_INITIALIZE(
         g_ExtendedRuntime->markerAnm, &locals.effect->vm,
-        *reinterpret_cast<i32 *>(
-            reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60));
+        enemy->activeEclContext->extraIntVariables[2]);
     locals.PublishFlags();
 }
 
@@ -1002,8 +993,7 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
     {
         if (index->state == 0)
             continue;
-        if (index->ownerTag == *reinterpret_cast<i32 *>(
-                reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60))
+        if (index->ownerTag == enemy->activeEclContext->extraIntVariables[2])
         {
             savedActiveSprite = *reinterpret_cast<u32 *>(
                 reinterpret_cast<u8 *>(index) + 0x24);
@@ -1015,10 +1005,8 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
                 reinterpret_cast<u8 *>(index) + 0x24) = savedActiveSprite;
             TH095_EXTENDED_FROM_ANGLE(
                 index->velocity,
-                *reinterpret_cast<f32 *>(
-                    reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70),
-                *reinterpret_cast<f32 *>(
-                    reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74));
+                enemy->activeEclContext->extraFloatVariables[2],
+                enemy->activeEclContext->extraFloatVariables[3]);
             index->flags &= ~2U;
             index->flags |= 0x10U;
         }
@@ -1066,8 +1054,7 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
     {
         if (index->state == 0)
             continue;
-        if (index->ownerTag == *reinterpret_cast<i32 *>(
-                reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x60))
+        if (index->ownerTag == enemy->activeEclContext->extraIntVariables[2])
         {
             savedActiveSprite = *reinterpret_cast<u32 *>(
                 reinterpret_cast<u8 *>(index) + 0x24);
@@ -1078,13 +1065,10 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
                 reinterpret_cast<u8 *>(index) + 0x24) = savedActiveSprite;
             TH095_EXTENDED_FROM_ANGLE(
                 index->velocity,
-                *reinterpret_cast<f32 *>(
-                    reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x70) +
+                enemy->activeEclContext->extraFloatVariables[2] +
                     index->angle,
-                *reinterpret_cast<f32 *>(
-                    reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74) > -999.0f
-                    ? *reinterpret_cast<f32 *>(
-                          reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x74)
+                enemy->activeEclContext->extraFloatVariables[3] > -999.0f
+                    ? enemy->activeEclContext->extraFloatVariables[3]
                     : index->speed);
             index->flags &= ~2U;
             index->flags |= 0x10U;

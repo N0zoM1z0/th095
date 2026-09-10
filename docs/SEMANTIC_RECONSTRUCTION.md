@@ -1112,3 +1112,77 @@ remains untouched.
 highest-evidence remaining protocol family with multiple TH095-local exact
 consumers.  Do not revisit `+0x2C4C` until independent lifecycle evidence can
 resolve its conflicting meanings.
+
+
+### SEM-015 — extended ECL context variable views
+
+**Recovery gate.** This campaign resumed at committed HEAD `f22ce87` with one
+unstaged source edit and four pre-existing untracked paths.  The source edit in
+`src/EclExtended.cpp` replaces raw active-context offsets with the already
+layout-asserted `EnemyEclContext` variable arrays and is classified as
+recoverable current work, so it is completed as the first batch before any new
+family is selected.  `EnemyManagerUpdate.i` and `droid.resume.txt` remain
+explicitly user-owned unrelated pre-existing work.  The older
+`config/runtime-scenarios.json` and `scripts/runtime-diff.py` runtime experiment
+also remains unrelated pre-existing work outside this campaign; all four paths
+stay unmodified and unstaged.
+
+**Scope.** Canonicalize only active ECL-context reads at context offsets
+`+0x60`, `+0x70`, and `+0x74` inside extended callback entries 2, 4, 10, 14,
+and 17.  They now use `extraIntVariables[2]`, `extraFloatVariables[2]`, and
+`extraFloatVariables[3]` respectively.  No slot receives a callback-specific
+name because the same ECL variable storage has script-dependent roles across
+independent consumers.
+
+**Observed.** Factory's target-attested TH095 Ghidra provider decompiled
+callbacks `0x004134A0`, `0x00413750`, `0x00413DF0`, `0x00414090`, and
+`0x00414290` from the canonical Japanese v1.02a target.  Each target body loads
+the active context pointer from enemy `+0x280C`; entries 2 and 4 compare bullet
+ownership against context `+0x60`, entries 10/14/17 pass context `+0x60` as an
+ANM script selector, and the same five callbacks read context floats `+0x70`
+and/or `+0x74` as their effect or bullet-motion operands.  The existing TH095
+layout assertions place `extraIntVariables` at context `+0x58` and
+`extraFloatVariables` at `+0x68`, fixing those three accesses as array indexes
+2, 2, and 3 without changing width or signedness.
+
+**Corroborated.** Independent exact TH095 operand resolvers expose the same
+storage as ECL-visible variable slots: integer selector `0x2726` reads/writes
+`extraIntVariables[2]`, while float selectors `0x275F` and `0x2760` read/write
+`extraFloatVariables[2]` and `[3]`.  Other exact extended callbacks already use
+`extraIntVariables[2]` directly for owned-bullet filtering, marker-script
+selection, and transition countdown state, confirming that this is shared
+script-variable storage rather than callback-owned fields.  No TH08 semantic
+interpretation is required.
+
+**Inferred.** `extraIntVariables` and `extraFloatVariables` are reconstruction
+representation names for target-proven ECL variable banks.  Reusing them is a
+maintainability correction, not a claim that the retail source used these
+English identifiers.  The slot values' callback-local roles are intentionally
+left at their use sites rather than promoted into misleading global field
+names.
+
+**Unknown.** This batch does not assign one universal semantic meaning to
+integer slot 2 or float slots 2/3, does not rename the selector namespace, and
+does not infer how every script initializes those slots.  Other raw offsets in
+`EclExtended.cpp`, including unrelated Bullet, ANM, Background, and compact
+Enemy views, remain separate families.
+
+**Regression boundary.** The recovered source replays all 22 configured
+`src/EclExtended.cpp` exact units unchanged with zero private-label refresh.
+The campaign preflight re-attested the canonical target, retained 697
+source-present / 696 exact tracking, and passed the six-sample Ghidra target
+check.  A separate cold historical-platform product gate compiled all 88
+production translation units with pinned VC7.1 to i386 COFF and linked/verified
+the reconstructed PE32 executable.  `git diff --check` passes.  These are
+independent exact and product feedback states; they do not prove the English
+representation or a runtime scenario.
+
+**Analysis artifacts.** `.analysis/` started this campaign at
+1,408,444,500 bytes.  No current-session `.analysis/gpt-web` root or artifact
+was created, and the legacy GDB/Wine-prefix content plus shared provider state
+remain untouched.
+
+**Next batch:** refresh the post-recovery `EclExtended.cpp` raw-member surface
+and prefer a small field family whose target offset is repeated by multiple
+TH095-local exact consumers.  Do not promote callback-local script variables to
+one global semantic name merely because their storage slot is shared.
