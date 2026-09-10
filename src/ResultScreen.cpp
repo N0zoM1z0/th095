@@ -529,8 +529,10 @@ static __forceinline void InitializeReplayExtraTailPhase(
 {
     u8 compilerStorage[0x58];
     resultScreen->replayCursor.count = 2;
-    resultScreen->anm->InitializeVm(&resultScreen->vms[21], 9);
-    resultScreen->anm->InitializeVm(&resultScreen->vms[22], 10);
+    // Target 0x00428B1C/0x00428B36 read the same Supervisor::textAnm owner
+    // used by the normal replay-label path below.
+    g_Supervisor.textAnm->InitializeVm(&resultScreen->vms[21], 9);
+    g_Supervisor.textAnm->InitializeVm(&resultScreen->vms[22], 10);
     resultScreen->vms[21].glyphWidth = 0x12;
     resultScreen->vms[21].glyphHeight = 0x12;
     resultScreen->vms[22].glyphWidth = 0x12;
@@ -564,8 +566,11 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
         resultScreen->replayCursor.Set(0);
         resultScreen->replayCursor.count = 3;
 
-        resultScreen->anm->InitializeVm(&resultScreen->vms[21], 9);
-        resultScreen->anm->InitializeVm(&resultScreen->vms[22], 10);
+        // Exact relocations at 0x00428DC0/0x00428DD9 read target
+        // 0x004C4AAC, Supervisor::textAnm.  These two VMs render writable
+        // replay labels and are not owned by the result-screen ANM.
+        g_Supervisor.textAnm->InitializeVm(&resultScreen->vms[21], 9);
+        g_Supervisor.textAnm->InitializeVm(&resultScreen->vms[22], 10);
         resultScreen->vms[21].glyphWidth = 0x12;
         resultScreen->vms[21].glyphHeight = 0x12;
         resultScreen->vms[22].glyphWidth = 0x12;

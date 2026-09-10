@@ -726,7 +726,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     case 0:
     {
         g_Supervisor.StopReplayScan();
-        view->sceneAnm->textures[0].Clear();
+        // Target 0x0044BF17 reads 0x004C4AAC, Supervisor::textAnm.  This is
+        // the shared writable text atlas; sceneAnm is title.anm, whose entry
+        // 0 contains the title-menu labels and must remain intact when the
+        // scene selector clears its dynamic text surface.
+        g_Supervisor.textAnm->textures[0].Clear();
         SceneSelectInitialTimerViewPhase(view);
         view->groupCursor.Push();
 

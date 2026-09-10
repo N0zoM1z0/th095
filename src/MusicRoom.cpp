@@ -113,7 +113,10 @@ i32 MusicRoomView::UpdateMusicRoom()
         MusicRoomCreateVmAt(this, 0x69);
         MusicRoomCreateVmAt(this, 0x17);
 
-        ((MusicRoomAnmStorageView *)this->sceneAnm)->textures[0].Clear();
+        // Target 0x004510E1 reads 0x004C4AAC, Supervisor::textAnm, for the
+        // writable text surface.  title.anm remains the owner of the music
+        // room's static scripts and its separate dynamic entry 13.
+        ((MusicRoomAnmStorageView *)g_Supervisor.textAnm)->textures[0].Clear();
         ((MusicRoomAnmStorageView *)this->sceneAnm)->textures[13].Clear();
 
         this->vmIds.SetInterrupt(0x19, 3);
@@ -171,7 +174,7 @@ i32 MusicRoomView::UpdateMusicRoom()
                 this->sceneAnm->CreateVm(trackVmIndex + 0x83, 7);
         for (i32 descriptionVmIndex = 0; descriptionVmIndex < 8; descriptionVmIndex++)
             this->descriptionVms[descriptionVmIndex] =
-                this->sceneAnm->CreateVm(descriptionVmIndex + 1, 7);
+                g_Supervisor.textAnm->CreateVm(descriptionVmIndex + 1, 7);
         this->trackCount = musicComment.trackCount;
         this->cursor.count = musicComment.trackCount;
         this->cursor.Set(0);

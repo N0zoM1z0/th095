@@ -165,9 +165,12 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
 #undef refreshLockedGroup
 #undef refreshStateGroup
 
+// Exact BuildScenePreviewText reads target 0x004C4AAC, the embedded
+// Supervisor::textAnm owner.  The title controller's sceneAnm is title.anm;
+// using it here makes dynamic scene descriptions overwrite the title menu.
 #define BUILD_SCENE_PREVIEW_LINE(vmSlot, scriptIndex, columnIndex)             \
     this->previewTextVmIds[vmSlot] =                                          \
-        this->sceneAnm->CreateVm(scriptIndex, 7);                             \
+        g_Supervisor.textAnm->CreateVm(scriptIndex, 7);                       \
     g_AnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphHeight =   \
         0x13;                                                                 \
     g_AnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphWidth =    \
