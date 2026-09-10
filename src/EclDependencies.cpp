@@ -4,6 +4,9 @@
 #include "ecl/EclOperands.hpp"
 #include "utils.hpp"
 #include "Player.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoPlayerRuntime.hpp"
+#endif
 #include "ZunMath.hpp"
 #include <stdlib.h>
 
@@ -46,12 +49,12 @@ namespace EclRunLow
 {
 extern Player *g_Th095Player;
 
-#ifndef DIFFBUILD
-#define g_Th095Player \
-    TH095_RUNTIME_GLOBAL_PTR(Player, ::th095::g_RuntimePlayerOwner)
-#endif
-
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 #define DEP_PLAYER_POSITION (*reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(g_Th095Player) + 0x1e30))
+#else
+#define DEP_PLAYER_POSITION \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, ::th095::g_RuntimePlayerOwner)->playerPosition)
+#endif
 
 #define DEP_READ_INT(enemy, instruction, index) \
     ((instruction)->operandFlags & (1U << (index)) \

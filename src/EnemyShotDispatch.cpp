@@ -1,5 +1,8 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoPlayerRuntime.hpp"
+#endif
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
 
@@ -57,8 +60,6 @@ extern u8 *g_EnemyShotPlayer;
 #ifndef DIFFBUILD
 #define g_EnemyShotBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(EnemyShotBulletManagerView, g_RuntimeBulletManagerOwner)
-#define g_EnemyShotPlayer \
-    TH095_RUNTIME_GLOBAL_PTR(u8, g_RuntimePlayerOwner)
 #endif
 
 namespace EclRunHigh
@@ -95,7 +96,12 @@ static __forceinline f32 &TargetMinimumDistanceSquared(Enemy *enemy)
 }
 static __forceinline Float3 &TargetPlayerPosition()
 {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     return *reinterpret_cast<Float3 *>(g_EnemyShotPlayer + 0x1e30);
+#else
+    return TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)
+        ->playerPosition;
+#endif
 }
 
 void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruction)

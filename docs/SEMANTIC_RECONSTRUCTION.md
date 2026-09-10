@@ -284,3 +284,71 @@ live replay-exit scenario result.
 `AnmManager + 0x2C + slot*0x120 + 0x20`, replacing the production raw
 `AnmLoaded* + 0x20` filename write only if the target-proven slot layout and
 preload/service consumers agree.
+
+
+### SEM-003 — shared player-position field consumers
+
+**Selection.** SEM-002 named the ANM preload-slot pathname as the next
+candidate.  Live TH095 verification confirms that `ReadAnmEntries @
+0x00443070` copies its filename into slot `+0x20`, and that preload/service
+code agrees on the enclosing `0x120` slot stride, `AnmLoaded @ +0x00`, and
+`releasePending @ +0x1C`.  Repository search, however, finds no independent
+TH095 reader of the stored pathname.  That field remains plausible but is
+deferred rather than promoted from a single write.  The stronger bounded
+family is the already target-proven Player position, which has independent
+exact consumers and two remaining raw production reads.
+
+**Scope.** This batch canonicalizes only the production reads of PlayerInf
+position used by `EclRunLow::BeginBoundaryAwareMove` and
+`EclRunHigh::DispatchShotInstruction`.  Both now read
+`PhotoPlayerRuntimeView::playerPosition` through `g_RuntimePlayerOwner`.
+Exact/Diffbuild preprocessing retains the historical `g_Th095Player` and
+`g_EnemyShotPlayer + 0x1E30` forms; no adjacent Player camera, collision,
+death, or ECL operand protocol is changed.
+
+**Observed.** Hash-attested TH095 v1.02a Ghidra decompilation shows
+`BeginBoundaryAwareMove @ 0x00412200` comparing enemy X at `+0x28A0` with
+`*(float *)(DAT_004C4E70 + 0x1E30)`.  `DispatchShotInstruction @ 0x00412670`
+computes its squared-distance gate from the same Player owner at
+`+0x1E30/+0x1E34`.  Independently, exact `AngleFromPoint @ 0x004303E0` reads
+its receiver at `+0x1E30/+0x1E34`, fixing the semantic field as the Player
+world position rather than an anonymous ECL-only vector.
+
+**Corroborated.** `PhotoPlayerRuntimeView` already owns an offset-asserted
+`Float3 playerPosition @ +0x1E30`; the target-exact angle/collision/death
+cluster and production Bullet/Enemy callers share the same
+`g_RuntimePlayerOwner`.  The two ECL consumers therefore join an existing
+TH095-local owner/field interpretation rather than introducing a new view.
+TH08 is unnecessary for this field identity and remains only source-shape
+corroboration inside the exact ECL implementations.
+
+**Inferred.** Using `PhotoPlayerRuntimeView` in production is a reconstruction
+canonicalization.  It does not prove the original source declared that class,
+called the member `playerPosition`, or exposed one header to both ECL layers.
+The exact target does prove that all cited code observes the same receiver
+storage and offsets.
+
+**Unknown.** The historical source-level boundary between PlayerInf, its
+camera state, and ECL-facing partial views remains unknown.  The ECL numeric
+selectors that expose Player coordinates are intentionally left for the next
+protocol/representation batch.
+
+**Regression boundary.** Before editing, the two affected sources replayed
+11/11 canonical units.  An initial experiment allowed the shared runtime
+header into the exact preprocessor and changed compiler-private `$L` names;
+that experiment was not accepted and no label refresh was performed.  The
+accepted source guards the production-only include and field access, restoring
+11/11 exact replay with zero private-label refresh while direct normal-branch
+VC7.1 probes compile both sources to i386 COFF.  A final-source cold whole
+build again compiles all 88 production translation units and links/verifies a
+PE32 image; its build-local SHA-256 is
+`a0dead27c9c281825bb8bf54ffaab3ef819ec57ab2d5e59ae7bc0aa4e0aeb3c9`.
+Successful linkage is production closure, not whole-image exactness.  The
+Factory host still lacks the game-data archives required for a live gameplay
+scenario, so no new runtime-scenario claim is made.
+
+**Next batch:** canonicalize the Player position reads in the paired exact
+`EclOperands::ResolveInt @ 0x0040FAE0` and `Enemy::ResolveFloat @ 0x004105A0`
+selectors onto the same production `PhotoPlayerRuntimeView::playerPosition`,
+while leaving their adjacent camera fields and numeric selector meanings
+unchanged until independently classified.
