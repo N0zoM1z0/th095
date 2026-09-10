@@ -33,7 +33,11 @@ struct PhotoEnemyTaskGlobalStateView
 #else
             u32 capturedPhotoActive : 1;
 #endif
+#if defined(TH095_MATCH_EXACT)
             u32 blockEnemyUpdateAndDraw : 1;
+#else
+            u32 gameplayLoadActive : 1;
+#endif
             u32 unknownFlags3 : 29;
         };
     };
@@ -196,7 +200,7 @@ i32 __fastcall PhotoEnemyManagerTaskView::OnUpdate(
 #else
     if (PhotoEnemyEitherFlag(
             g_PhotoEnemyGlobalState->captureActive,
-            g_PhotoEnemyGlobalState->blockEnemyUpdateAndDraw) != 0 ||
+            g_PhotoEnemyGlobalState->gameplayLoadActive) != 0 ||
 #endif
 #if defined(TH095_MATCH_EXACT)
         g_PhotoEnemyGlobalState->blockEnemyUpdate != 0)
@@ -213,7 +217,11 @@ i32 __fastcall PhotoEnemyManagerTaskView::OnUpdate(
 i32 __fastcall PhotoEnemyManagerTaskView::OnDraw(
     PhotoEnemyManagerTaskView *manager)
 {
+#if defined(TH095_MATCH_EXACT)
     if (g_PhotoEnemyGlobalState->blockEnemyUpdateAndDraw != 0)
+#else
+    if (g_PhotoEnemyGlobalState->gameplayLoadActive != 0)
+#endif
         return 1;
     return manager->Draw();
 }

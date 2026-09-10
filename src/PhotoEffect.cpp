@@ -198,7 +198,11 @@ struct PhotoEffectGlobalStateView
 #else
             u32 capturedPhotoActive : 1;
 #endif
+#if defined(TH095_MATCH_EXACT)
             u32 suppressEffects : 1;
+#else
+            u32 gameplayLoadActive : 1;
+#endif
             u32 unknownFlags3 : 7;
             u32 blockEffectUpdate : 1;
             u32 unknownFlags11 : 21;
@@ -1141,7 +1145,7 @@ i32 __fastcall PhotoEffectManagerView::OnUpdate(
 #else
     if (PhotoEffectEitherFlag(
             g_PhotoGlobalState->captureActive,
-            g_PhotoGlobalState->suppressEffects) != 0)
+            g_PhotoGlobalState->gameplayLoadActive) != 0)
 #endif
     {
         return 1;
@@ -1168,7 +1172,11 @@ i32 __fastcall PhotoEffectManagerView::OnUpdate(
 i32 __fastcall PhotoEffectManagerView::OnDraw(
     PhotoEffectManagerView *manager)
 {
+#if defined(TH095_MATCH_EXACT)
     if (g_PhotoGlobalState->suppressEffects != 0)
+#else
+    if (g_PhotoGlobalState->gameplayLoadActive != 0)
+#endif
     {
         return 1;
     }

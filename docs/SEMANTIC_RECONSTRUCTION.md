@@ -3843,3 +3843,97 @@ bit 2 only if TH095-local producers and multiple consumers establish a common
 lifecycle meaning. Keep subsystem-specific names if the bit represents only a
 coincident storage position or distinct protocols; do not generalize by
 adjacency to `captureActive`/`capturedPhotoActive`.
+
+
+### SEM-055 — gameplay-loading global protocol
+
+**Scope.** Recover bit 2 of `PhotoGameTaskView::flags @ +0xFC` as
+`gameplayLoadActive`. Production-local global-state views in Background,
+BulletManager, EnemyManagerTask, PhotoEffect, PhotoGame, PhotoCamera, and
+PhotoStage now use the same lifecycle name for that bit. The exact lane retains
+each historical spelling or raw shift expression, and `PhotoGameTask.cpp`
+expands the named producer constant back to literal `4` under
+`TH095_MATCH_EXACT`. No shared header layout or later flag bit is changed.
+
+**Observed.** Canonical TH095 `PhotoGameTaskView::Create @ 0x00417F80` publishes
+the newly constructed task and sets dword `task+0xFC` bit 2 before registering
+calc/draw callbacks and starting the asynchronous replay/load worker. Target-
+attested `PhotoGameTaskView::Load @ 0x00417D20` sets the same bit on entry,
+waits for ANM capture slots to drain, creates the gameplay subsystem graph, waits
+for the remaining load gate, performs music/loading-VM completion, and only then
+clears bit 2. The failure path sets failure bit 3 and begins loading completion
+without clearing bit 2. These target writes bound bit 2 to the gameplay loading
+lifetime rather than to photo capture itself.
+
+**Corroborated.** Independent TH095 exact consumers use the same task `+0xFC`
+bit while loading is active. Background update and both draw callbacks suppress
+their normal work; BulletManager's callback and draw shell suppress update/draw;
+EnemyManager's task update and draw shells suppress both paths; PhotoEffect
+suppresses update and primary draw; and the player update and player-draw shell
+return early. `UpdatePhotoStage @ 0x0042C3E0` suppresses the stage state machine
+on bit 2. `PhotoCameraState::Draw @ 0x004340F0` combines bit 2 with the already
+recovered `captureActive` bit: either condition hides the four inline viewfinder
+VMs and clears visibility on nine dynamic camera VMs. Thus both producer timing
+and broad consumer behavior identify a load gate, while capture-active remains a
+separate bit-0 protocol.
+
+**Inferred.** `gameplayLoadActive` marks the interval in which the photography
+game task exists but its playable subsystem graph/resources are not yet ready
+for normal update or presentation. The common name describes the lifecycle
+owner rather than subsystem-specific effects such as `suppressBackground`,
+`blocksPlayerDraw`, or `suppressesBulletCallbacks`. A failed asynchronous load
+keeps the gate asserted while loading-completion/error handling takes over,
+which is consistent with suppressing partially initialized gameplay.
+
+**Unknown.** This batch does not claim that bit 2 represents every loading state
+in the executable, that every task callback reads it, or that all failure paths
+clear it before object destruction. It does not rename bit 3 (the failure flag),
+bit 8, bit 9, bit 10, or later task/global-state flags. In particular, the
+`+0xFC` bit-10 family has separate ECL/photo-transition writers and requires its
+own audit before any shared name is accepted.
+
+**Compiler-observed.** The seven subsystem partial views and PhotoStage/Camera
+consumers keep their historical bitfield names/raw tests in the exact
+preprocessed source. `PhotoGameTask.cpp` uses a macro value of literal `4` in
+the exact lane and a production-only enum name otherwise, so the two target
+producer expressions preprocess back to their original arithmetic. The complete
+changed-source exact replay therefore requires no private-label refresh.
+
+**Regression boundary.** Fifteen direct producer/consumer units are individually
+exact: Background update and both draws, BulletManager callback/draw, EnemyManager
+callback/draw, PhotoEffect callback/draw, player callback/draw,
+`photo-stage-update-callback`, `photo-camera-draw`, `photo-game-task-create`, and
+`photo-game-task-load`. Full changed-source replay covers 143/143 configured
+exact units across the eight edited source files with zero private-label refresh.
+All eight normal production TUs independently compile under pinned VC7.1
+13.10.3077 to i386 COFF, and `git diff --check` passes. No shared header,
+physical storage, ABI, serialization layout, or runtime scenario changed.
+
+**Receipt state.** The immediately preceding committed milestone at `c3437fc3`
+was cold-replayed locally as 88/88 manifest sources and 696/696 exact units with
+zero label refresh, then built as 88/88 VC7.1 i386 COFF TUs and linked to PE32.
+Factory replay job `job:6d17d8785350493c8266011f066d73a4` accepted the
+repository-level whole-build claim with receipt
+`receipt:8ff35d873e0e5535ecc73c22a49914f52c5eba994ff4d3fea4adf12fe22d9b86`.
+The Factory exposes exactness as 696 individual function claims rather than one
+aggregate claim, so that receipt plane was deliberately not bulk-replayed. Once
+this source batch is committed, the `c3437fc3` product receipt remains valid for
+that milestone but is source-stale for the new HEAD; SEM-055 records focused
+local exact/production closure only.
+
+**Recovery / analysis artifacts.** `.analysis/` remains 1408444500 bytes; no
+current-session analysis root or retained large artifact was created. Before
+this batch, the four pre-existing untracked paths were observed with hashes that
+had changed since the earlier campaign snapshot. They were therefore
+reclassified as unknown/external-current-state and left completely untouched:
+`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
+`scripts/runtime-diff.py`. No unknown path is staged. A transient Factory bridge
+failure during the first edit attempt returned no command id; the repository was
+then found locked by the intentional `c3437fc3` whole-build replay. No edit was
+made until that replay completed and released the lock.
+
+**Next batch:** audit task/global-state bit 10 as a separate protocol. Start from
+its TH095-local producers in extended ECL/photo-transition code and compare the
+Background, PhotoEffect, PhotoGame, BulletManager, and any target-only consumers.
+Accept one shared name only if producer timing explains the distinct subsystem
+responses; otherwise retain the current per-TU names and record the boundary.

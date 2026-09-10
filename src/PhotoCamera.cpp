@@ -107,7 +107,11 @@ struct PhotoGlobalStateView
             u32 captureActive : 1;
 #endif
             u32 unknownFlag1 : 1;
+#if defined(TH095_MATCH_EXACT)
             u32 unknownFlag2 : 1;
+#else
+            u32 gameplayLoadActive : 1;
+#endif
             u32 unknownFlags3 : 29;
         };
     };
@@ -1108,7 +1112,7 @@ void PhotoCameraState::Draw()
                         g_PhotoGlobalState->unknownFlag2) == 0)
 #else
     if (PhotoEitherFlag(g_PhotoGlobalState->captureActive,
-                        g_PhotoGlobalState->unknownFlag2) == 0)
+                        g_PhotoGlobalState->gameplayLoadActive) == 0)
 #endif
     {
         this->viewfinderVms[0].Draw();
@@ -1122,7 +1126,7 @@ void PhotoCameraState::Draw()
                         g_PhotoGlobalState->unknownFlag2) != 0)
 #else
     if (PhotoEitherFlag(g_PhotoGlobalState->captureActive,
-                        g_PhotoGlobalState->unknownFlag2) != 0)
+                        g_PhotoGlobalState->gameplayLoadActive) != 0)
 #endif
     {
         AnmVm *vm;

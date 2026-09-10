@@ -22,6 +22,15 @@
 namespace th095
 {
 
+#if defined(TH095_MATCH_EXACT)
+#define PHOTO_GAME_TASK_GAMEPLAY_LOAD_ACTIVE 4
+#else
+enum PhotoGameTaskGlobalFlags
+{
+    PHOTO_GAME_TASK_GAMEPLAY_LOAD_ACTIVE = 1 << 2,
+};
+#endif
+
 struct Background
 {
     ~Background();
@@ -393,7 +402,7 @@ PhotoGameTaskView *PhotoGameTaskView::Create(i32 replayMode)
     locals.task = new PhotoGameTaskView();
     g_PhotoGameTask = locals.task;
     locals.task->replayMode = replayMode;
-    locals.task->flags = locals.task->flags | 4;
+    locals.task->flags = locals.task->flags | PHOTO_GAME_TASK_GAMEPLAY_LOAD_ACTIVE;
 
     locals.elem = g_Chain.CreateElem(
         reinterpret_cast<ChainCallback>(PhotoGameTaskView::OnUpdate));
@@ -424,7 +433,7 @@ void PhotoGameTaskView::Destroy()
 void __fastcall PhotoGameTaskView::Load(void *argument)
 {
     PhotoGameTaskView *task = g_PhotoGameTask;
-    task->flags = task->flags | 4;
+    task->flags = task->flags | PHOTO_GAME_TASK_GAMEPLAY_LOAD_ACTIVE;
 
     while (g_AnmManager->captureSurfaceIdx >= 0 ||
            g_AnmManager->captureAnmIdx >= 0)
@@ -460,7 +469,7 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
     }
 
     g_Supervisor.HideLoadingVms();
-    task->flags = task->flags & ~4;
+    task->flags = task->flags & ~PHOTO_GAME_TASK_GAMEPLAY_LOAD_ACTIVE;
     g_Supervisor.flags.raw &= ~0x200;
     g_HelpLoadActive = 0;
     g_HelpLoadComplete = 1;

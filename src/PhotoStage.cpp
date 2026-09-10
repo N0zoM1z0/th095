@@ -120,7 +120,12 @@ struct PhotoStageGlobalStateView
         {
             u32 captureActive : 1;
             u32 capturedPhotoActive : 1;
+#if defined(TH095_MATCH_EXACT)
             u32 unknownFlag02 : 30;
+#else
+            u32 gameplayLoadActive : 1;
+            u32 unknownFlags03 : 29;
+#endif
         };
     };
     i32 scoreIndex;
@@ -1249,7 +1254,11 @@ i32 PhotoStageStateView::Update()
 
 i32 __fastcall UpdatePhotoStage(PhotoStageStateView *stage)
 {
+#if defined(TH095_MATCH_EXACT)
     if (((g_PhotoStageGlobalState->flags >> 2) & 1) != 0)
+#else
+    if (g_PhotoStageGlobalState->gameplayLoadActive != 0)
+#endif
     {
         return 1;
     }

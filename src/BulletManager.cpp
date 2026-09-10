@@ -426,7 +426,11 @@ struct PhotoBulletGlobalStateView
 #else
             u32 capturedPhotoActive : 1;
 #endif
+#if defined(TH095_MATCH_EXACT)
             u32 suppressesBulletCallbacks : 1;
+#else
+            u32 gameplayLoadActive : 1;
+#endif
             u32 unknownFlags3 : 6;
             u32 suppressesPhotoSound : 1;
             u32 photoCaptureInputMode : 1;
@@ -1654,7 +1658,7 @@ i32 __fastcall PhotoBulletManagerView::OnUpdate(
                               g_PhotoBulletGlobalState->suppressesBulletCallbacks) != 0)
 #else
     if (PhotoBulletEitherFlag(g_PhotoBulletGlobalState->captureActive,
-                              g_PhotoBulletGlobalState->suppressesBulletCallbacks) != 0)
+                              g_PhotoBulletGlobalState->gameplayLoadActive) != 0)
 #endif
     {
         return 1;
@@ -1666,7 +1670,11 @@ i32 __fastcall PhotoBulletManagerView::OnUpdate(
 i32 __fastcall PhotoBulletManagerView::OnDraw(
     PhotoBulletManagerView *bulletManager)
 {
+#if defined(TH095_MATCH_EXACT)
     if (((g_PhotoBulletGlobalState->flags >> 2) & 1) != 0)
+#else
+    if (g_PhotoBulletGlobalState->gameplayLoadActive != 0)
+#endif
     {
         return 1;
     }

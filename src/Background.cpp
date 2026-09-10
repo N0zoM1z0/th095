@@ -72,7 +72,11 @@ struct BackgroundGlobalStateView
 #else
             u32 capturedPhotoActive : 1;
 #endif
+#if defined(TH095_MATCH_EXACT)
             u32 suppressBackground : 1;
+#else
+            u32 gameplayLoadActive : 1;
+#endif
             u32 unknownFlags3 : 7;
             u32 blockBackgroundUpdate : 1;
             u32 unknownFlags11 : 21;
@@ -963,7 +967,7 @@ i32 __fastcall Background::OnUpdate(Background *background)
 #else
     if (BackgroundEitherFlag(
             g_PhotoGlobalState->captureActive,
-            g_PhotoGlobalState->suppressBackground) != 0 ||
+            g_PhotoGlobalState->gameplayLoadActive) != 0 ||
 #endif
 #if defined(TH095_MATCH_EXACT)
         g_PhotoGlobalState->freezeBackground != 0)
@@ -983,7 +987,11 @@ i32 __fastcall Background::OnUpdate(Background *background)
 // FUNCTION: TH095 0x00402BF0.
 i32 __fastcall Background::OnDrawHighPrio(Background *background)
 {
+#if defined(TH095_MATCH_EXACT)
     if (g_PhotoGlobalState->suppressBackground != 0)
+#else
+    if (g_PhotoGlobalState->gameplayLoadActive != 0)
+#endif
     {
         return 1;
     }
@@ -993,7 +1001,11 @@ i32 __fastcall Background::OnDrawHighPrio(Background *background)
 // FUNCTION: TH095 0x00402C20.
 i32 __fastcall Background::OnDrawLowPrio(Background *background)
 {
+#if defined(TH095_MATCH_EXACT)
     if (g_PhotoGlobalState->suppressBackground != 0)
+#else
+    if (g_PhotoGlobalState->gameplayLoadActive != 0)
+#endif
     {
         return 1;
     }
