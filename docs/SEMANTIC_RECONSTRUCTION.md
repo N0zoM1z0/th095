@@ -920,3 +920,65 @@ bit 16 from TH095-local movement, ECL-helper, shot-ANM, and photo-enemy
 consumers.  Keep it distinct from the later generic Enemy flag numbering, and
 prefer a source-local naming correction if that closes the meaning without
 another shared-header ABI surface change.
+
+
+### SEM-012 — compact enemy X-movement mirroring
+
+**Scope.** Correct one local semantic name in the exact `PhotoEnemyView`:
+`flags1 @ +0x2BF4` bit 16 is `mirrorMovementX`, not merely
+`mirrorXVelocity`.  The spawn copy writes the caller's existing
+`mirrorMovementX` argument into that bit, and `PhotoEnemyView::IntegrateMovement`
+reads the renamed bit.  No shared header, ABI, mask table, or later-layout
+`Enemy` field changes in this transaction.
+
+**Observed.** Factory's target-attested TH095 Ghidra provider decompiled
+`PhotoEnemyView::IntegrateMovement @ 0x004160B0`.  It tests bit 16 of enemy
+`+0x2BF4`: when clear, X position advances by `gameSpeed * velocity.x`; when
+set, X position subtracts that quantity.  The independently target-attested
+`Enemy::UpdateMovement @ 0x00412970` tests the same bit during interpolated
+movement and negates the computed `velocity.x` when it is set.  This proves a
+movement-coordinate role rather than a field local to one integration helper.
+
+**Corroborated.** Three independently exact TH095 lanes agree on the same
+compact bit.  `EclHelpers.cpp` names bit 16 `mirrorMovementX` and negates the X
+component of both polar and relative interpolation deltas.  The isolated exact
+`EnemyMovement.cpp` names shift 16 `ENEMY_FLAG_MIRROR_MOVEMENT_X_SHIFT` and
+negates interpolated X velocity.  Exact `Enemy::UpdateShotAndAnm @ 0x00413030`
+tests compact `+0x2BF4` bit 16 and reverses the left/right ANM-direction mapping
+when it is set.  The photo-enemy spawn path already calls its source parameter
+`mirrorMovementX`, providing an independent producer-side name inside the
+TH095 repository.
+
+**Inferred.** The English member name `mirrorMovementX` is a reconstruction
+identifier selected to align the compact photo-enemy view with these
+TH095-local consumers.  The target establishes the X-axis mirroring protocol,
+not the retail source spelling.
+
+**Unknown.** This result does not identify compact bit 16 with the later generic
+`EnemyFlag1Mask` mirror bit, which uses different numbering in the larger
+layout.  It also does not imply that every X-coordinate operation is mirrored;
+the proved consumers are movement/interpolation and movement-ANM direction.
+Other compact `flags1` bits remain independently scoped.
+
+**Regression boundary.** The final source-only rename replays all 22 configured
+`EnemyManagerUpdate.cpp` exact units unchanged.  Replaying the three independent
+semantic consumers in the same focused gate gives 26/26 exact units across
+`EnemyManagerUpdate.cpp`, `EclHelpers.cpp`, `EnemyMovement.cpp`, and
+`EnemyShotAnm.cpp`, with zero compiler-private label refresh.  The production
+`EnemyManagerUpdate.cpp` branch independently compiles under pinned VC7.1
+`13.10.3077` to i386 COFF, and `git diff --check` passes.  Because no shared
+header, layout, ABI, expression, or runtime behavior changed, the campaign-wide
+696-unit exact and 88-TU PE32 product gates from SEM-011 remain the current
+broad milestone rather than being repeated here.  Exactness, production
+compilation, target semantics, and runtime behavior remain separate states.
+
+**Analysis artifacts.** `.analysis/` remains exactly 1,408,444,500 bytes.  The
+one-shot focused production object was removed after validation.  No current
+session `.analysis` artifact was created or removed, and legacy/shared provider
+state remains untouched.
+
+**Next batch:** canonicalize the compact enemy primary ANM-script table rooted
+at `+0x2C0E`.  Verify the six script roles and their unusual opcode argument
+ordering against TH095 `SetPrimaryAnmScripts`, `UpdateShotAndAnm`, and target
+evidence; do not infer ownership for adjacent `+0x2C0A` or later fields beyond
+what those consumers prove.

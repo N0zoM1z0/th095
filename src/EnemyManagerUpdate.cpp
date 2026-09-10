@@ -492,7 +492,7 @@ struct PhotoEnemyView
             u32 unknownFlags005 : 3;
             u32 lifecycleState : 2;
             u32 unknownFlags010 : 6;
-            u32 mirrorXVelocity : 1;
+            u32 mirrorMovementX : 1;
             u32 clampToMovementBounds : 1;
             u32 unknownFlags018 : 4;
             u32 hasEnteredPlayfield : 1;
@@ -956,7 +956,7 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
         *reinterpret_cast<EnemySpawnCopy *>(enemy) =
             *reinterpret_cast<const EnemySpawnCopy *>(this);
         enemy->enemyIndex = enemyIndex;
-        enemy->mirrorXVelocity = mirrorMovementX;
+        enemy->mirrorMovementX = mirrorMovementX;
         if (life >= 0)
         {
             enemy->life = life;
@@ -1307,7 +1307,7 @@ void PhotoEnemyView::IntegrateMovement()
     this->positionDelta = this->position - this->previousPosition;
     this->previousPosition = this->position;
 
-    if (this->mirrorXVelocity == 0)
+    if (this->mirrorMovementX == 0)
     {
         this->position.x += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.x;
     }
