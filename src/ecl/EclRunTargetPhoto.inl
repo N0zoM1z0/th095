@@ -37,20 +37,20 @@
     {
         PhotoEffectArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        TH095_EFFECT_SPEED(args) = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 2), 0.0f);
-        TH095_ECL_ASSIGN_FLOAT(args.speed, 3);
-        args.field24 = args.speed;
-        TH095_ECL_ASSIGN_FLOAT(args.field28, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_LENGTH(args), 3);
+        TH095_EFFECT_INITIAL_LENGTH(args) = TH095_EFFECT_MAXIMUM_LENGTH(args);
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_WIDTH(args), 4);
+        TH095_EFFECT_STARTUP_DURATION(args) = TH08_ECL_READ_I(ctx, 5);
+        TH095_EFFECT_GROWTH_DURATION(args) = TH08_ECL_READ_I(ctx, 6);
+        TH095_EFFECT_SUSTAIN_DURATION(args) = TH08_ECL_READ_I(ctx, 7);
+        TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
+        TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.flag0 = TH08_ECL_RAW_I(ctx, 10);
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
@@ -61,21 +61,21 @@
     {
         PhotoEffectArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        TH095_EFFECT_SPEED(args) = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 2),
             TH095_ECL_PHOTO_ANGLE(&args.position));
-        TH095_ECL_ASSIGN_FLOAT(args.speed, 3);
-        args.field24 = args.speed;
-        TH095_ECL_ASSIGN_FLOAT(args.field28, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_LENGTH(args), 3);
+        TH095_EFFECT_INITIAL_LENGTH(args) = TH095_EFFECT_MAXIMUM_LENGTH(args);
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_WIDTH(args), 4);
+        TH095_EFFECT_STARTUP_DURATION(args) = TH08_ECL_READ_I(ctx, 5);
+        TH095_EFFECT_GROWTH_DURATION(args) = TH08_ECL_READ_I(ctx, 6);
+        TH095_EFFECT_SUSTAIN_DURATION(args) = TH08_ECL_READ_I(ctx, 7);
+        TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
+        TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.flag0 = TH08_ECL_RAW_I(ctx, 10);
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
@@ -86,20 +86,20 @@
     {
         PhotoEffectArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        TH095_EFFECT_SPEED(args) = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 2), 0.0f);
-        args.field24 = 0.0f;
-        TH095_ECL_ASSIGN_FLOAT(args.speed, 3);
-        TH095_ECL_ASSIGN_FLOAT(args.field28, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(
+        TH095_EFFECT_INITIAL_LENGTH(args) = 0.0f;
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_LENGTH(args), 3);
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_WIDTH(args), 4);
+        TH095_EFFECT_STARTUP_DURATION(args) = TH08_ECL_READ_I(ctx, 5);
+        TH095_EFFECT_GROWTH_DURATION(args) = TH08_ECL_READ_I(ctx, 6);
+        TH095_EFFECT_SUSTAIN_DURATION(args) = TH08_ECL_READ_I(ctx, 7);
+        TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
+        TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.flag0 = TH08_ECL_RAW_I(ctx, 10);
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
@@ -110,21 +110,21 @@
     {
         PhotoEffectArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        TH095_EFFECT_SPEED(args) = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 2),
             TH095_ECL_PHOTO_ANGLE(&args.position));
-        args.field24 = 0.0f;
-        TH095_ECL_ASSIGN_FLOAT(args.speed, 3);
-        TH095_ECL_ASSIGN_FLOAT(args.field28, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(
+        TH095_EFFECT_INITIAL_LENGTH(args) = 0.0f;
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_LENGTH(args), 3);
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_WIDTH(args), 4);
+        TH095_EFFECT_STARTUP_DURATION(args) = TH08_ECL_READ_I(ctx, 5);
+        TH095_EFFECT_GROWTH_DURATION(args) = TH08_ECL_READ_I(ctx, 6);
+        TH095_EFFECT_SUSTAIN_DURATION(args) = TH08_ECL_READ_I(ctx, 7);
+        TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
+        TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.flag0 = TH08_ECL_RAW_I(ctx, 10);
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
@@ -135,25 +135,25 @@
     {
         PhotoEffectArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        TH095_EFFECT_SPEED(args) = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 2), 0.0f);
-        TH095_ECL_ASSIGN_FLOAT(args.speed, 3);
-        args.field24 = args.speed;
-        TH095_ECL_ASSIGN_FLOAT(args.field28, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_LENGTH(args), 3);
+        TH095_EFFECT_INITIAL_LENGTH(args) = TH095_EFFECT_MAXIMUM_LENGTH(args);
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_WIDTH(args), 4);
+        TH095_EFFECT_STARTUP_DURATION(args) = TH08_ECL_READ_I(ctx, 5);
+        TH095_EFFECT_GROWTH_DURATION(args) = TH08_ECL_READ_I(ctx, 6);
+        TH095_EFFECT_SUSTAIN_DURATION(args) = TH08_ECL_READ_I(ctx, 7);
+        TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
+        TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.flag0 = TH08_ECL_RAW_I(ctx, 10);
-        TH095_ECL_ASSIGN_FLOAT(args.field0C, 11);
-        TH095_ECL_ASSIGN_FLOAT(args.field10, 12);
-        args.mode = 2.0f;
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_X(args), 11);
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_Y(args), 12);
+        TH095_EFFECT_SPEED(args) = 2.0f;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
@@ -162,25 +162,25 @@
     {
         PhotoEffectArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        TH095_EFFECT_SPEED(args) = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 2), 0.0f);
-        TH095_ECL_ASSIGN_FLOAT(args.speed, 3);
-        args.field24 = args.speed;
-        TH095_ECL_ASSIGN_FLOAT(args.field28, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_LENGTH(args), 3);
+        TH095_EFFECT_INITIAL_LENGTH(args) = TH095_EFFECT_MAXIMUM_LENGTH(args);
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_WIDTH(args), 4);
+        TH095_EFFECT_STARTUP_DURATION(args) = TH08_ECL_READ_I(ctx, 5);
+        TH095_EFFECT_GROWTH_DURATION(args) = TH08_ECL_READ_I(ctx, 6);
+        TH095_EFFECT_SUSTAIN_DURATION(args) = TH08_ECL_READ_I(ctx, 7);
+        TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
+        TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.flag0 = TH08_ECL_RAW_I(ctx, 10);
-        TH095_ECL_ASSIGN_FLOAT(args.field0C, 11);
-        TH095_ECL_ASSIGN_FLOAT(args.field10, 12);
-        args.mode = 5.0f;
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_X(args), 11);
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_Y(args), 12);
+        TH095_EFFECT_SPEED(args) = 5.0f;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
@@ -189,26 +189,26 @@
     {
         PhotoEffectArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        TH095_EFFECT_SPEED(args) = 8.0f;
         args.position = enemy->worldPosition + enemy->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 2),
             TH095_ECL_PHOTO_ANGLE(&args.position));
-        TH095_ECL_ASSIGN_FLOAT(args.speed, 3);
-        args.field24 = args.speed;
-        TH095_ECL_ASSIGN_FLOAT(args.field28, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_LENGTH(args), 3);
+        TH095_EFFECT_INITIAL_LENGTH(args) = TH095_EFFECT_MAXIMUM_LENGTH(args);
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_MAXIMUM_WIDTH(args), 4);
+        TH095_EFFECT_STARTUP_DURATION(args) = TH08_ECL_READ_I(ctx, 5);
+        TH095_EFFECT_GROWTH_DURATION(args) = TH08_ECL_READ_I(ctx, 6);
+        TH095_EFFECT_SUSTAIN_DURATION(args) = TH08_ECL_READ_I(ctx, 7);
+        TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
+        TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
         args.flag0 = TH08_ECL_RAW_I(ctx, 10);
-        TH095_ECL_ASSIGN_FLOAT(args.field0C, 11);
-        TH095_ECL_ASSIGN_FLOAT(args.field10, 12);
-        args.mode = 2.0f;
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_X(args), 11);
+        TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_Y(args), 12);
+        TH095_EFFECT_SPEED(args) = 2.0f;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }

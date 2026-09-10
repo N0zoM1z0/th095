@@ -196,6 +196,7 @@ C_ASSERT(sizeof(PhotoEffectArgsSmall) == 0x28);
 struct PhotoEffectArgs
 {
     Float3 position;
+#if defined(TH095_MATCH_EXACT)
     f32 field0C;
     f32 field10;
     f32 field14;
@@ -209,6 +210,19 @@ struct PhotoEffectArgs
     i32 field34;
     i32 field38;
     i32 field3C;
+#else
+    Float3 velocity;
+    f32 angle;
+    f32 angularVelocity;
+    f32 maximumLength;
+    f32 initialLength;
+    f32 maximumWidth;
+    f32 speed;
+    i32 startupDuration;
+    i32 growthDuration;
+    i32 sustainDuration;
+    i32 fadeDuration;
+#endif
     i16 type;
     i16 color;
     union
@@ -223,9 +237,48 @@ struct PhotoEffectArgs
 };
 C_ASSERT(sizeof(PhotoEffectArgs) == 0x48);
 C_ASSERT(offsetof(PhotoEffectArgs, angle) == 0x18);
+#if defined(TH095_MATCH_EXACT)
 C_ASSERT(offsetof(PhotoEffectArgs, mode) == 0x2c);
+#else
+C_ASSERT(offsetof(PhotoEffectArgs, velocity) == 0x0c);
+C_ASSERT(offsetof(PhotoEffectArgs, angularVelocity) == 0x1c);
+C_ASSERT(offsetof(PhotoEffectArgs, maximumLength) == 0x20);
+C_ASSERT(offsetof(PhotoEffectArgs, initialLength) == 0x24);
+C_ASSERT(offsetof(PhotoEffectArgs, maximumWidth) == 0x28);
+C_ASSERT(offsetof(PhotoEffectArgs, speed) == 0x2c);
+C_ASSERT(offsetof(PhotoEffectArgs, startupDuration) == 0x30);
+C_ASSERT(offsetof(PhotoEffectArgs, growthDuration) == 0x34);
+C_ASSERT(offsetof(PhotoEffectArgs, sustainDuration) == 0x38);
+C_ASSERT(offsetof(PhotoEffectArgs, fadeDuration) == 0x3c);
+#endif
 C_ASSERT(offsetof(PhotoEffectArgs, type) == 0x40);
 C_ASSERT(offsetof(PhotoEffectArgs, flags) == 0x44);
+
+#if defined(TH095_MATCH_EXACT)
+#define TH095_EFFECT_VELOCITY_X(args) args.field0C
+#define TH095_EFFECT_VELOCITY_Y(args) args.field10
+#define TH095_EFFECT_ANGULAR_VELOCITY(args) args.angle2
+#define TH095_EFFECT_MAXIMUM_LENGTH(args) args.speed
+#define TH095_EFFECT_INITIAL_LENGTH(args) args.field24
+#define TH095_EFFECT_MAXIMUM_WIDTH(args) args.field28
+#define TH095_EFFECT_SPEED(args) args.mode
+#define TH095_EFFECT_STARTUP_DURATION(args) args.field30
+#define TH095_EFFECT_GROWTH_DURATION(args) args.field34
+#define TH095_EFFECT_SUSTAIN_DURATION(args) args.field38
+#define TH095_EFFECT_FADE_DURATION(args) args.field3C
+#else
+#define TH095_EFFECT_VELOCITY_X(args) args.velocity.x
+#define TH095_EFFECT_VELOCITY_Y(args) args.velocity.y
+#define TH095_EFFECT_ANGULAR_VELOCITY(args) args.angularVelocity
+#define TH095_EFFECT_MAXIMUM_LENGTH(args) args.maximumLength
+#define TH095_EFFECT_INITIAL_LENGTH(args) args.initialLength
+#define TH095_EFFECT_MAXIMUM_WIDTH(args) args.maximumWidth
+#define TH095_EFFECT_SPEED(args) args.speed
+#define TH095_EFFECT_STARTUP_DURATION(args) args.startupDuration
+#define TH095_EFFECT_GROWTH_DURATION(args) args.growthDuration
+#define TH095_EFFECT_SUSTAIN_DURATION(args) args.sustainDuration
+#define TH095_EFFECT_FADE_DURATION(args) args.fadeDuration
+#endif
 
 struct PhotoEffectManager
 {

@@ -3427,3 +3427,86 @@ state remain untouched.
 anonymous-field count. Prefer a field whose value is produced in one exact
 function and consumed in another; do not select padding or constructor-only
 initialization merely because it has an `unknown...` identifier.
+
+
+### SEM-050 — rotating photo-effect argument packet
+
+**Scope.** Recover the complete 0x48-byte type-1 `PhotoEffect` argument packet
+used by target-high ECL and the extended-ECL effect callbacks. Outside
+`TH095_MATCH_EXACT`, both ECL producers now model the packet as
+`position`, `velocity`, `angle`, `angularVelocity`, `maximumLength`,
+`initialLength`, `maximumWidth`, `speed`, `startupDuration`, `growthDuration`,
+`sustainDuration`, `fadeDuration`, `type`, `color`, and `flags` at their
+TH095-proven offsets. Exact preprocessing retains the historical field tokens
+through semantic access macros so the 27 KB RunEcl unit and EclExtended private
+labels remain unchanged. `flags` bit 0 is deliberately not renamed in this
+batch.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`PhotoEffectManagerView::Spawn @ 0x0041DBD0` shows type 1 allocating a
+`PhotoRotatingLaserView` and passing the caller's argument pointer directly to
+its initializer. `PhotoRotatingLaserView::Initialize @ 0x0041F380` copies
+exactly 0x12 dwords (0x48 bytes) from that pointer into the embedded packet at
+object `+0x50`, then publishes effect position from packet `+0x00`, length from
+`+0x24`, movement speed from `+0x2C`, and angle from `+0x18`.
+
+**Corroborated.** Independent canonical `PhotoEffectArgsView` already pins the
+same 0x48 layout. `PhotoRotatingLaserView::Update @ 0x0041F550` distinguishes
+its fields by behavior: packet `+0x0C/+0x10/+0x14` is XYZ velocity integrated
+with game speed; `+0x1C` is angular velocity; `+0x20` caps laser length;
+`+0x28` is the maximum width used during growth and fade; and `+0x30/+0x34`,
+`+0x38`, and `+0x3C` gate the startup, growth, sustain, and fade state durations.
+The ECL type-1 producers at opcodes 147/148/153/154/155/156/157 and extended
+callbacks 10/14/17 all construct a 0x48 record and pass it to effect type 1,
+providing multiple independent TH095-local producer sites for the same ABI.
+
+**Inferred.** The old ECL-local identifiers were reconstruction placeholders,
+not gameplay semantics. In particular, historical ECL `speed @ +0x20` is the
+rotating effect's `maximumLength`, while historical `mode @ +0x2C` is its real
+movement `speed`. Likewise `field24/28` are `initialLength/maximumWidth`,
+`field30/34/38/3C` are the four lifecycle durations, and `angle2` is
+`angularVelocity`. Treating the record as the same packet consumed by the
+rotating effect is more maintainable than preserving those per-producer names.
+
+**Unknown.** This batch does not assign final semantics to packet `flags` bit 0,
+although the target updater tests it before following `photoTargets[0]`; that
+behavior remains a separate field/bit protocol requiring its own bounded
+interpretation. No additional meaning is assigned to values outside the
+observed rotating-laser producer/consumer contract, and the distinct 0x28-byte
+type-0 `PhotoEffectArgsSmall` packet is not merged into this batch.
+
+**Compiler-observed.** `PhotoEffectArgs` and `ExtendedPhotoEffectArgs` keep their
+historical exact-facing declarations under `TH095_MATCH_EXACT`. Semantic access
+macros expand back to the original `field0C/field10/angle2/speed/field24/field28`
+`/mode/field30/field34/field38/field3C` tokens in the exact lane, while normal
+production sees the typed semantic members. This preserves the source-sensitive
+VC7.1 private-label surface without refreshing manifests.
+
+**Regression boundary.** The complete `ecl-manager-run-ecl` remains
+27,091/27,091 authored bytes exact with its 27,747-byte compare extent. Extended
+callbacks 10, 14, and 17 remain 404/404 bytes exact each with all six
+relocations. Independent consumers `photo-effect-manager-spawn`,
+`photo-rotating-laser-initialize`, and `photo-rotating-laser-update` remain
+432/432, 450/450, and 1062/1062 authored bytes exact; the update's 1078-byte
+body-plus-switch-table extent is exact. Full changed-source replay covers all
+23 configured units across `src/EclExtended.cpp` and `src/ecl/EclRun.cpp`; all
+23 are exact with zero private-label refresh. Both normal production TUs compile
+with their repository whole-build pinned VC7.1 profiles to i386 COFF, and
+`git diff --check` passes. No shared header or public ABI changed.
+
+**Receipt state.** SEM-048's shared-header 696-unit exact and whole-product local
+closure becomes source-stale when this checkpoint is committed. SEM-050 closes
+its focused source surfaces only; no new Factory-accepted aggregate or
+whole-build receipt is claimed here.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. Focused production
+objects were command-local `/tmp` files and were removed before command exit. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** recover the distinct 0x28-byte type-0 `PhotoEffectArgsSmall`
+packet. Require the straight-laser initializer/update to distinguish
+`maximumLength @ +0x10`, `initialLength @ +0x14`, `terminalDistance @ +0x18`,
+`width @ +0x1C`, and `speed @ +0x20` before renaming ECL producer placeholders.
+Keep any field left only zero-initialized as Unknown rather than inferring from
+the rotating packet.
