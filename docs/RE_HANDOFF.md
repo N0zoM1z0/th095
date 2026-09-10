@@ -162,6 +162,11 @@ runtime coverage of the current artifact, while the deliberately bypassed
 death path remains covered by the separate normal-build tests above. It does
 not change any source-present or exact-match status.
 
+These observations support the README status **Windows i386: Playable**. That
+label is scoped to the reconstructed native PE32 executable and its exercised
+runtime paths; it is not a separate port, an asset-distribution claim,
+deterministic equivalence, or whole-image byte identity.
+
 The final-artifact runs used held DirectInput key events to avoid missing the
 game's polling window. The post-fix Wine logs were empty. No Wine exception,
 unhandled fault, or debugger invocation occurred before the test processes

@@ -11,6 +11,30 @@
   <img src="resources/progress.svg" alt="TH095 exact source reconstruction progress">
 </p>
 
+> [!IMPORTANT]
+> 📸 All confirmed authored functions have reconstructed source, and the
+> reconstructed **Windows i386 build is playable.** Playability and byte-exact
+> reconstruction remain separate statuses.
+
+<p align="center">
+  <a href="https://youtu.be/zKpdbvu3EXE">
+    <img
+      src="https://i.ytimg.com/vi/zKpdbvu3EXE/hqdefault.jpg"
+      width="640"
+      alt="TH095 reconstructed build full-game runtime test">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://youtu.be/zKpdbvu3EXE"><strong>Watch the reconstructed Windows i386 build complete a full-game runtime test</strong></a>
+</p>
+
+The recording exercises broad scene, gameplay, rendering, audio, menu,
+transition, save, and replay behavior. It uses the test-only no-death launcher
+to cover more content efficiently; separate normal-build tests cover death,
+failure, Retry, title-return, save, and replay paths. The video is runtime
+evidence, not a whole-executable exactness claim.
+
 This project reconstructs the original Japanese TH095 version 1.02a
 executable. Function-level exactness is accepted only through reproducible byte
 comparison against one hash-attested target.
@@ -40,18 +64,24 @@ python3 scripts/verify-target.py
 Copyrighted executables, game data, and private analysis databases are not
 included.
 
-## Current status
+## Repository status
 
-The source-reconstruction and runnable-build milestone is complete. All
-confirmed authored functions have maintained source, the origin/boundary
-review is closed at zero pending rows, and the 88-source production graph
-cold-compiles and links into a runnable PE32 image. The mutable-relocation,
-global-owner, and Chain-lifetime audit is recorded in `docs/OWNER_AUDIT.md`;
-the known runtime issues found during Windows/Wine validation are closed and
-tracked in `docs/RUNTIME_ISSUES.md`.
+| Area | Status | Current position |
+| --- | --- | --- |
+| Authored source | **Complete** | Every confirmed authored function has maintained source. |
+| Origin and boundary review | **Complete** | No candidate remains pending review. |
+| Strict authored comparison | **One deferred residual** | `Controller::GetInput` differs in one comparable byte in its best bounded compiler oracle; no exact credit is claimed for it. |
+| Whole-program build | **Complete** | The production graph cold-compiles and links with pinned VC7.1 into a runnable PE32 i386 Windows GUI executable. |
+| Windows i386 runtime | **Playable** | A full manual endurance pass and separate normal death, retry, menu, save, and replay tests completed successfully. |
+| Whole-executable byte identity | **Not claimed** | Exactness remains governed by the reproducible function/object match ledger. |
 
-Function-level exactness has one accepted/deferred compiler-shape residual in
-`Controller::GetInput`; it is not a compile, link, or runtime blocker.
+The playable status describes the reconstructed native Windows executable; it
+is not a separate port, an asset distribution, or a claim that every possible
+runtime path has been exhausted. The mutable-relocation, global-owner, and
+Chain-lifetime audit is recorded in `docs/OWNER_AUDIT.md`; runtime issues found
+during Windows/Wine validation are closed and tracked in
+`docs/RUNTIME_ISSUES.md`.
+
 Generated `docs/PROGRESS.md` and `scripts/report-reconstruction-status.py`
 remain the canonical live totals. Mapping, origin, source presence,
 compilation, linkage, semantic acceptance, runtime validation, and exactness
@@ -75,30 +105,6 @@ python3 scripts/ghidra.py check
 
 The final command attests the private Ghidra program and six mapped `.text`
 samples against `config/target.toml` before any analysis is trusted.
-
-## Runtime demonstration
-
-<p align="center">
-  <a href="https://youtu.be/zKpdbvu3EXE">
-    <img
-      src="https://i.ytimg.com/vi/zKpdbvu3EXE/hqdefault.jpg"
-      width="480"
-      alt="TH095 reconstructed build full-game runtime test">
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://youtu.be/zKpdbvu3EXE">Watch: Touhou 9.5: Shoot the Bullet — Reconstructed Build Test | th095</a>
-</p>
-
-This recording is a full manual Windows endurance pass through the
-reconstructed game. It exercises broad scene, gameplay, rendering, audio,
-menu, transition, save, and replay behavior. The run uses the test-only
-no-death launcher below so that more content can be covered efficiently; the
-normal reconstructed executable retains the recovered death behavior and was
-validated separately through death, failure, Retry, title-return, save, and
-replay paths. The video is runtime evidence, not a whole-executable exactness
-claim.
 
 ## Build and verify
 
