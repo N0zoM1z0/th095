@@ -1,7 +1,8 @@
 # Semantic reconstruction
 
-**Status: planned — this is the next project phase. No semantic-completion
-claim is made yet.**
+**Status: active — semantic batches are accepted only with target-local evidence
+and independent exact/product regression results. No whole-program semantic-completion
+claim is made.**
 
 The current function-level reconstruction established the authored behavior of
 the original Japanese TH095 v1.02a target and produced a playable Windows i386
@@ -137,5 +138,89 @@ turned into an unsupported whole-program completion percentage.
 
 ## Completed batches
 
-None. Implementation has not started; this document currently records only the
-approved next phase and its acceptance policy.
+### SEM-001 — shared input storage field family
+
+**Live router baseline.** At committed HEAD `339bb5a`, the Factory lexical
+router scanned 197 C/C++ files and returned 1,056 routing candidates: 227 raw
+member accesses and 829 anonymous identifiers, with zero absolute-address and
+zero opaque-storage hits under that scan profile.  The report is recorded only
+as a work-selection baseline, not a semantic-progress metric.  A focused scan
+of `src/InputRuntime.hpp` returned zero candidates even though repository search
+showed its nine raw offset accessors, which is a concrete reminder that the
+router is deliberately incomplete and must be supplemented by source and target
+evidence.
+
+**Scope.** The first batch is deliberately limited to the target-backed input
+storage rooted at `0x004BE218` and the nine already named fields consumed by
+`InputRuntime.hpp`: `currentInput +0x00`, `repeatOutput +0x04`,
+`pressedInput +0x06`, `historyCurrent +0x2C`, `historyPrevious +0x2E`,
+`historyRepeat +0x30`, `historyPressed +0x32`, `historyReleased +0x34`, and the replay held counters at
+`+0x38`.  `ReplayInputSource` is now the single declaration of that semantic
+overlay, and production accessors select named members rather than repeating raw
+member offsets.  The exact-facing `g_ReplayInputSource` symbol remains an extern
+with its original type and spelling.
+
+**Observed.** Hash-attested TH095 v1.02a Ghidra decompilation of
+`Controller::GetInput @ 0x00419AE0` addresses slot zero at `0x004BE218`, moves
+its previous/current masks through `+0x00/+0x02`, clears and generates repeat at
+`+0x04`, derives pressed/released at `+0x06/+0x08`, and updates sixteen held
+counters from `+0x0A`.  Independently, `ReplayInputSource::Update @ 0x004353B0`
+reads `+0x2C`, clears the word at `+0x04`, updates sixteen replay held counters
+at `+0x38`, derives pressed at `+0x32`, and derives released at `+0x34` from
+`+0x2C/+0x2E`; the exact 247-byte unit already proves this source shape.
+`ReplayManager::ProcessFrame` reads `currentInput +0x00` and
+`pressedInput +0x06`, shifts `historyCurrent/historyPrevious`, invokes `Update`,
+and records history current/pressed/released.  The relocation ledger independently maps the
+controller-slot, replay-input, front-end-current-input, and photo replay-button
+views to the same target base.
+
+**Corroborated.** TH095-local production consumers agree on the field family:
+front-end, result, music, help, options, replay-browser, and scene-select code
+consume `+0x04/+0x06`; photo-game and photo-camera code consume history current
+and pressed; ReplayManager consumes current, previous, pressed, and released
+history.  `ControllerInputSlotView` independently names the live-controller
+prefix while the exact `ReplayInputSource` layout and its `offsetof` checks pin
+the replay overlay.  No TH08 meaning is required for this batch.
+
+**Inferred.** Treating `ReplayInputSource` as the canonical source declaration
+for the production overlay is a reconstruction ownership choice supported by
+all observed accesses.  It does **not** establish that the original TH095 source
+used this class name, one aggregate type, a union, or any particular inheritance
+relationship for the overlapping controller and replay interpretations.
+`RuntimeResultMenuInput()` keeps its consumer-facing name while selecting the
+observed `repeatOutput +0x04` field; that UI role is established by TH095
+consumers, not by an original-symbol claim.
+
+**Unknown.** `unknown002`, bytes `+0x08..+0x2B` as interpreted by
+`ReplayInputSource`, and `unknown036` retain unknown names.  Some bytes in those
+ranges have separately observed meanings in `ControllerInputSlotView`, but the
+original source-level relationship between that live-controller view and the
+replay overlay is unknown and is intentionally not collapsed in this batch.
+The direct `PhotoReplayInputButtonsTaskView` overlay used by `PhotoGameTask`
+remains outside this batch.
+
+**Regression boundary.** Before the edit, the affected exact lane replayed
+`ReplayInputUpdate.cpp` 1/1 and `ReplayManager.cpp` 12/12.  After the source
+change the same two sources replay 13/13 again with zero private-label refresh.
+Because the canonical declaration moved into a shared runtime header, the cold
+aggregate exact gate was also replayed in four bounded chunks: 183/183, 176/176,
+184/184, and 153/153, totaling all 696/696 configured units across all 88 exact
+sources with zero private-label refresh.  The independent normal-product
+baseline and final-source product each cold-compiled 88 pinned-VC7.1 i386 COFF
+objects and linked/verified `build/whole-validation/th095-reconstructed.exe`;
+the final product is PE32 i386 with SHA-256
+`a92348489c73032c4dc6849264cc7bdf072d4302263c5ae1a1a140215499b751`.
+Successful linkage remains a product-closure result, not whole-image exactness.
+`validate-tracking.py --require-target` remains 697 source-present / 696 exact.  This batch changes no
+persistent or wire format, so no format oracle is applicable.  The required
+runtime scenario is currently **infrastructure-blocked** in the Factory host:
+the documented external asset directory is not mounted and no accessible
+`th095.dat` or `thbgm.dat` exists under the mounted or operator-home search
+roots.  The prerequisite check was run explicitly; no asset-less launch is
+misreported as input-runtime validation.  Runtime-scenario state therefore
+remains unknown/blocked while exact and product states remain independently
+passing.  A Git checkpoint by itself is not exact, product, or runtime proof.
+
+**Next batch:** classify and canonicalize the TH095-local
+`PhotoReplayInputButtonsTaskView` overlay at `0x004BE218` without extending the
+claim to the larger ECL interpreter or to persistent replay formats.
