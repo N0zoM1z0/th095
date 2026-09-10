@@ -1556,3 +1556,79 @@ queues at `+0x61B8/+0x6248` and the nine queue-count reset offsets only where th
 independent exact `FrontEndLifecycleView`, `SceneSelectAssets`, and
 `SceneSelectUpdate` layouts agree. Keep pending-data counters at `+0x63BC/+0x63CC`
 separate unless their producer/lifetime evidence is independently sufficient.
+
+
+
+### SEM-022 — front-end preview queue reset protocol
+
+**Scope.** Canonicalize the nine-queue cleanup protocol executed when the title
+menu enters the game/scene-selection path. Two pointer-owning preview-data
+queues are drained through `SceneValueQueue::Pop` and `free`; seven sibling
+queues have only their `count` member cleared. The maintainable build derives
+all nine owners from the canonical `selectionQueue @ +0x6128` and the proven
+`sizeof(SceneValueQueue) == 0x48`. The exact build keeps the original raw
+expressions behind semantic macros because changing their AST perturbs VC7.1
+private-label allocation even when machine code and external relocations are
+otherwise unchanged.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`SceneSelectControllerView::UpdateMainMenu @ 0x00446A50` shows the case-0
+transition waiting for the help loader, then draining queues whose bases are
+controller `+0x61B8` and `+0x6248` while their counts at `+0x61F8` and
+`+0x6288` remain nonzero. It then clears dwords at `+0x6240`, `+0x62D0`,
+`+0x6318`, `+0x6360`, `+0x63A8`, `+0x6168`, and `+0x61B0` before the separate
+`+0x63CC/+0x63BC` scalar resets. The two drains call the exact
+`SceneValueQueue::Pop @ 0x00450F60` and `free` for every popped value.
+
+**Corroborated.** Three independent TH095-local exact layout families agree on
+the queue block. `FrontEndLifecycleView`, `SceneSelectUpdateView`, and
+`SceneSelectionAssetView` all place nine contiguous `SceneValueQueue` objects
+starting at `+0x6128`; `SceneValueQueue` is independently asserted as `0x48`
+bytes. This fixes the queue sequence as selection, loaded-scene,
+group-preview-data, group-preview-size, scene-preview-data, scene-preview-size,
+group-preview, scene-preview, and loaded-group. Consequently the seven target
+dword resets land exactly on the `count @ +0x40` member of queue indexes
+3, 5, 6, 7, 8, 0, and 1. `FrontEndLifecycleView::~FrontEndLifecycleView`
+independently drains the same two data queues and frees each payload, confirming
+that those two queues own heap-backed values while their paired size/status
+queues are not freed here.
+
+**Compiler-observed.** A natural TU-local nine-field view preserved external
+queue `Pop/free` relocations but changed the compiler's private `$L...` symbols.
+A second experiment derived the queues directly from `selectionQueue`; it also
+left the body topology intact but changed the private-label buckets. Neither
+experiment was accepted or staged. The final source uses semantic macros whose
+`TH095_MATCH_EXACT` expansions are the original AST and whose maintainable
+expansions use the typed contiguous queue owner. That form restores the exact
+private labels without any manifest refresh.
+
+**Inferred.** The case-0 transition is an ownership boundary: queued preview
+data buffers must be consumed and freed before entering scene selection, while
+metadata/notification queues only need their logical length reset. The queue
+names come from independent TH095 producer/consumer views rather than from
+adjacent-game interpretation.
+
+**Unknown.** This batch does not interpret the separate dwords at `+0x63BC` and
+`+0x63CC`, even though later layout evidence suggests state-history and pending-
+texture ownership; they remain the next bounded scalar family. It also does not
+claim that resetting a queue's count is equivalent to destroying arbitrary
+`SceneValueQueue` payloads outside this transition protocol.
+
+**Regression boundary.** `front-end-update-main-menu` is 3299/3299 authored
+bytes exact and 3323/3323 across its configured body-plus-switch-table extent,
+including the original private-label and external relocations. All four
+configured `src/FrontEndController.cpp` exact units replay with zero private-
+label refresh. The normal production translation unit independently compiles
+under pinned VC7.1 to i386 COFF, and `git diff --check` passes. No shared header
+or ABI changed, so campaign-wide aggregate/product closure is not reissued at
+this private checkpoint.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** recover the separate case-0 scalar resets at controller
+`+0x63BC`, `+0x63CC`, and `+0xE92` only where TH095-local layout plus independent
+producer/consumer evidence proves `stateHistory.count`, `pendingTextureCount`,
+and `currentDisplayState`. Keep each interpretation distinct from queue
+ownership even though all three are reset in the same transition.

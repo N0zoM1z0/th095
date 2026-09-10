@@ -740,27 +740,64 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             {
                 Sleep(1);
             }
-            while (reinterpret_cast<SceneValueQueue *>(
-                       reinterpret_cast<u8 *>(this) + 0x61b8)
-                       ->Size() != 0)
+// Preserve the target compiler's private-label buckets in exact builds while
+// exposing the proven contiguous queue ownership in the maintainable build.
+#if defined(TH095_MATCH_EXACT)
+#define FRONT_END_GROUP_PREVIEW_DATA_QUEUE                                  \
+    reinterpret_cast<SceneValueQueue *>(                                    \
+        reinterpret_cast<u8 *>(this) + 0x61b8)
+#define FRONT_END_SCENE_PREVIEW_DATA_QUEUE                                  \
+    reinterpret_cast<SceneValueQueue *>(                                    \
+        reinterpret_cast<u8 *>(this) + 0x6248)
+#define FRONT_END_GROUP_PREVIEW_SIZE_COUNT                                  \
+    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6240))
+#define FRONT_END_SCENE_PREVIEW_SIZE_COUNT                                  \
+    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x62d0))
+#define FRONT_END_GROUP_PREVIEW_COUNT                                       \
+    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6318))
+#define FRONT_END_SCENE_PREVIEW_COUNT                                       \
+    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6360))
+#define FRONT_END_LOADED_GROUP_COUNT                                        \
+    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63a8))
+#define FRONT_END_SELECTION_COUNT                                           \
+    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6168))
+#define FRONT_END_LOADED_SCENE_COUNT                                        \
+    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x61b0))
+#else
+#define FRONT_END_GROUP_PREVIEW_DATA_QUEUE (&this->selectionQueue + 2)
+#define FRONT_END_SCENE_PREVIEW_DATA_QUEUE (&this->selectionQueue + 4)
+#define FRONT_END_GROUP_PREVIEW_SIZE_COUNT ((&this->selectionQueue)[3].count)
+#define FRONT_END_SCENE_PREVIEW_SIZE_COUNT ((&this->selectionQueue)[5].count)
+#define FRONT_END_GROUP_PREVIEW_COUNT ((&this->selectionQueue)[6].count)
+#define FRONT_END_SCENE_PREVIEW_COUNT ((&this->selectionQueue)[7].count)
+#define FRONT_END_LOADED_GROUP_COUNT ((&this->selectionQueue)[8].count)
+#define FRONT_END_SELECTION_COUNT (this->selectionQueue.count)
+#define FRONT_END_LOADED_SCENE_COUNT ((&this->selectionQueue)[1].count)
+#endif
+            while (FRONT_END_GROUP_PREVIEW_DATA_QUEUE->Size() != 0)
             {
-                FrontEndDrainQueueValue(reinterpret_cast<SceneValueQueue *>(
-                    reinterpret_cast<u8 *>(this) + 0x61b8));
+                FrontEndDrainQueueValue(FRONT_END_GROUP_PREVIEW_DATA_QUEUE);
             }
-            while (reinterpret_cast<SceneValueQueue *>(
-                       reinterpret_cast<u8 *>(this) + 0x6248)
-                       ->Size() != 0)
+            while (FRONT_END_SCENE_PREVIEW_DATA_QUEUE->Size() != 0)
             {
-                FrontEndDrainQueueValue(reinterpret_cast<SceneValueQueue *>(
-                    reinterpret_cast<u8 *>(this) + 0x6248));
+                FrontEndDrainQueueValue(FRONT_END_SCENE_PREVIEW_DATA_QUEUE);
             }
-            *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6240) = 0;
-            *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x62d0) = 0;
-            *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6318) = 0;
-            *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6360) = 0;
-            *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63a8) = 0;
-            *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6168) = 0;
-            *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x61b0) = 0;
+            FRONT_END_GROUP_PREVIEW_SIZE_COUNT = 0;
+            FRONT_END_SCENE_PREVIEW_SIZE_COUNT = 0;
+            FRONT_END_GROUP_PREVIEW_COUNT = 0;
+            FRONT_END_SCENE_PREVIEW_COUNT = 0;
+            FRONT_END_LOADED_GROUP_COUNT = 0;
+            FRONT_END_SELECTION_COUNT = 0;
+            FRONT_END_LOADED_SCENE_COUNT = 0;
+#undef FRONT_END_GROUP_PREVIEW_DATA_QUEUE
+#undef FRONT_END_SCENE_PREVIEW_DATA_QUEUE
+#undef FRONT_END_GROUP_PREVIEW_SIZE_COUNT
+#undef FRONT_END_SCENE_PREVIEW_SIZE_COUNT
+#undef FRONT_END_GROUP_PREVIEW_COUNT
+#undef FRONT_END_SCENE_PREVIEW_COUNT
+#undef FRONT_END_LOADED_GROUP_COUNT
+#undef FRONT_END_SELECTION_COUNT
+#undef FRONT_END_LOADED_SCENE_COUNT
             *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63cc) = 0;
             *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63bc) = 0;
             *reinterpret_cast<i8 *>(reinterpret_cast<u8 *>(this) + 0xe92) = -1;
