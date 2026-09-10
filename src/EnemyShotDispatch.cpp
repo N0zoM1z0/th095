@@ -82,14 +82,6 @@ static __forceinline EnemyShotDescriptorView *TargetShotDescriptor(Enemy *enemy)
 {
     return reinterpret_cast<EnemyShotDescriptorView *>(reinterpret_cast<u8 *>(enemy) + 0x298c);
 }
-static __forceinline Float3 &TargetWorldPosition(Enemy *enemy)
-{
-    return *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x28f4);
-}
-static __forceinline Float3 &TargetShootOffset(Enemy *enemy)
-{
-    return *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x2924);
-}
 static __forceinline f32 &TargetMinimumDistanceSquared(Enemy *enemy)
 {
     return *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c4c);
@@ -116,14 +108,14 @@ void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruc
     // Preserve the TH08-ancestral nested early-return source shape.
     if (TargetMinimumDistanceSquared(enemy) > 0.0f)
     {
-        if (((TargetWorldPosition(enemy).x - TargetPlayerPosition().x) *
-         (TargetWorldPosition(enemy).x - TargetPlayerPosition().x) +
-     (TargetWorldPosition(enemy).y - TargetPlayerPosition().y) *
-         (TargetWorldPosition(enemy).y - TargetPlayerPosition().y)) < TargetMinimumDistanceSquared(enemy))
+        if (((enemy->worldPosition.x - TargetPlayerPosition().x) *
+         (enemy->worldPosition.x - TargetPlayerPosition().x) +
+     (enemy->worldPosition.y - TargetPlayerPosition().y) *
+         (enemy->worldPosition.y - TargetPlayerPosition().y)) < TargetMinimumDistanceSquared(enemy))
             return;
     }
 
-        descriptor->position = TargetWorldPosition(enemy) + TargetShootOffset(enemy);
+        descriptor->position = enemy->worldPosition + enemy->shootOffset;
 
         packed = args->bulletType;
         descriptor->bulletType = (instruction->operandFlags & 1)

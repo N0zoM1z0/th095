@@ -784,3 +784,65 @@ accessors can use the established `Enemy::worldPosition` and `Enemy::shootOffset
 fields directly while preserving its canonical exact body.  Keep the compact
 shot descriptor at `+0x298C` and the conflicting `+0x2C4C` field out of that
 batch unless independent TH095-local evidence resolves their ownership.
+
+
+### SEM-010 — Enemy shot coordinate ownership
+
+**Scope.** Remove only the two raw enemy coordinate accessors from the exact
+shot-dispatch translation unit.  `DispatchShotInstruction @ 0x00412670` now
+uses `Enemy::worldPosition` and `Enemy::shootOffset` directly for its distance
+gate and descriptor-position calculation.  The compact shot descriptor remains
+a target-local view at enemy `+0x298C`, and the distance threshold remains a
+bounded raw view at enemy `+0x2C4C`; neither is projected onto the later generic
+`Enemy` layout by this batch.
+
+**Observed.** Factory's target-attested TH095 Ghidra disassembly of
+`0x00412670` loads enemy `+0x28F4/+0x28F8` for the squared XY player-distance
+gate.  At `0x00412715..0x00412766` it takes pointers to enemy `+0x2924` and
+`+0x28F4`, adds all three float components, and stores the result into the
+position portion of the target-local descriptor rooted at enemy `+0x298C`.
+Independent target decompilation of `Enemy::ResolveFloat @ 0x004105A0` handles
+selector `0x2765` by computing the same `(+0x28F4..+0x28FC) +
+(+0x2924..+0x292C)` vector before converting it to a player-relative angle.
+These are TH095-local target observations of the coordinate relationship.
+
+**Corroborated.** The canonical `Enemy` source already names `worldPosition`
+and `shootOffset`, and `worldPosition @ +0x28F4` is offset-asserted.  Three
+independently exact TH095 extended callbacks at `0x00413DF0`, `0x00414090`,
+and `0x00414290` each build their effect spawn position as
+`enemy->worldPosition + enemy->shootOffset`.  The canonical exact ECL photo
+opcode body uses the same expression repeatedly.  Replacing the two raw helper
+calls in `EnemyShotDispatch.cpp` with those fields preserves the complete
+756-byte target function exactly, which additionally fixes `shootOffset`'s
+compiled member displacement to target `+0x2924` in this consumer.
+
+**Inferred.** Sharing the established field names across the exact shot lane is
+a maintainability choice; it does not prove the original retail declaration's
+identifier spelling.  Exact agreement of these coordinate members also does
+not license reuse of later generic-`Enemy` members whose offsets diverge from
+the compact TH095 photo-enemy representation.
+
+**Unknown.** The descriptor owner at `+0x298C` remains intentionally local:
+the generic `Enemy::bulletSpawnDescriptor` is at a different later offset.
+Enemy `+0x2C4C` also remains unresolved for cross-view ownership because the
+photo-enemy update view assigns that address a different role.  This batch does
+not infer aliasing, a union, or a lifecycle protocol for either conflict.
+
+**Regression boundary.** `EnemyShotDispatch.cpp` cold-replays its sole
+configured exact unit 1/1 with zero compiler-private label refresh.  The normal
+production branch independently compiles under the repository's pinned VC7.1
+`13.10.3077` profile to i386 COFF.  `git diff --check` passes.  No shared
+header, layout, ABI, or behavior changes, so the SEM-008 campaign-wide 696-unit
+exact and 88-TU product gates remain the broad milestone rather than being
+replayed for this source-local accessor transaction.  Exactness, production
+compilation, semantic evidence, and runtime behavior remain separate states;
+no runtime scenario or storage claim is added.
+
+**Analysis artifacts.** `.analysis/` remains exactly 1,408,444,500 bytes.  The
+one-shot focused production object was removed after validation.  No
+`.analysis` artifact was created or removed, and legacy/shared provider state
+remains untouched.
+
+**Next batch:** refresh live state and route the compact enemy movement/control
+family.  Prefer TH095-local fields with more than one exact consumer, and do
+not collapse later generic `Enemy` layout onto compact photo-enemy offsets.
