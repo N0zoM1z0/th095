@@ -45,14 +45,22 @@ initializeScoreFile:
         this->fileHeader = reinterpret_cast<ScoreFileHeader *>(malloc(headerSize));
         memset(this->fileHeader, 0, sizeof(ScoreFileHeader));
         this->fileHeader->magic = 0x35394854;
+#if defined(TH095_MATCH_EXACT)
         *reinterpret_cast<u16 *>(&this->fileHeader->unknown008) = 2;
+#else
+        this->fileHeader->version = 2;
+#endif
         this->fileHeader->unknown00c = 0x102;
         goto finished;
     }
     else
     {
         if (this->fileHeader->magic != 0x35394854 ||
+#if defined(TH095_MATCH_EXACT)
             *reinterpret_cast<u16 *>(&this->fileHeader->unknown008) != 2)
+#else
+            this->fileHeader->version != 2)
+#endif
         {
             utils::DebugPrint("error ScoreFile Version Error\n");
             goto initializeScoreFile;

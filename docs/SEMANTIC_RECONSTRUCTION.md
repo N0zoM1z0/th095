@@ -3306,3 +3306,78 @@ and format `0x102`; accept field names only if exact target width/access evidenc
 separates the low 16-bit version from any unknown high half and independently
 confirms the format dword. Do not widen the batch into payload records or
 checksum semantics already closed by SCORE-001..004.
+
+
+### SEM-048 — score-file header version field
+
+**Scope.** Recover the score-file header field at `+0x08` as a 16-bit
+`version`, while preserving the upper halfword at `+0x0A` and the dword at
+`+0x0C` as unknown. Production `ScoreFileHeader` therefore splits the former
+`u32 unknown008` into `u16 version` plus `u16 unknown00a`; `TH095_MATCH_EXACT`
+retains the original dword declaration and the parser's historical cast so the
+canonical VC7.1 translation surface remains unchanged. No payload, checksum,
+or best-shot record layout is changed.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`ResultSaveDataView::ParseScoreFile @ 0x004356D0` validates an existing score
+file by comparing a 32-bit `TH95` magic at header `+0x00` and a signed/word load
+at header `+0x08` against literal 2. On fallback initialization it allocates and
+zeroes exactly 0x18 bytes, writes the magic, writes **only 16 bits** with value 2
+at `+0x08`, and separately writes dword `0x102` at `+0x0C`.
+
+**Corroborated.** The parser's version failure path emits the target string
+`error ScoreFile Version Error`, independently tying the 16-bit comparison to
+file-version validation. Exact `WriteBestShotData @ 0x00435910` copies all six
+header dwords into its temporary output and later writes the 0x18-byte header
+before the encrypted compressed payload, proving that the two bytes at `+0x0A`
+remain serialized storage rather than disappearing padding. The exact parser,
+writer, constructor, and destructor units all remain unchanged by the
+production-only field split.
+
+**Inferred.** Header `+0x08` is the score-file version with value 2. The zeroed
+upper halfword at `+0x0A` is not part of the target's version comparison and is
+kept explicitly unknown. Although initialization writes `0x102` to `+0x0C`, no
+independent TH095-local reader or branch observed in this campaign distinguishes
+its semantic role, so it is not promoted to `format` merely from value or
+adjacency.
+
+**Unknown.** The purpose of header `+0x0A` and `+0x0C` remains unknown. In
+particular, this batch does not claim that `0x102` is a format revision,
+platform tag, compression mode, or combined major/minor version. It also does
+not infer compatibility behavior for score files whose `+0x0C` differs, because
+the canonical parser does not test that dword on the observed path.
+
+**Compiler-observed.** The shared header exposes `version/unknown00a` only
+outside `TH095_MATCH_EXACT`; exact sources still preprocess to the historical
+`u32 unknown008`, and `ScoreLoad.cpp` still preprocesses to the original 16-bit
+reinterpret-cast read/write. No private-label manifest refresh is needed.
+
+**Regression boundary.** Focused exact validation keeps `score-parse-file`
+568/568 bytes, `score-data-write-best-shot` 1407/1407, the score-data lifecycle
+constructor 69/69, and destructor 109/109 with every configured relocation
+unchanged. The normal `ScoreLoad.cpp` production TU compiles with its pinned
+VC7.1 profile to i386 COFF.
+
+Because `ScoreData.hpp` is a shared layout header, the complete dirty source
+state was cold-replayed immediately: four bounded source groups cover all
+88 configured sources / 696 exact units, all exact with zero private-label
+refresh. A separate cold whole-product gate compiles all 88 pinned VC7.1 i386
+COFF objects and links a verified PE32 Windows-GUI image. The resulting local
+image is 780288 bytes with SHA-256
+`bfed7de48378272232a6943787c78cea53537792e8120da8b8a16a558ab38dab`.
+This is whole-product closure, not a byte-exact whole-image claim.
+
+**Receipt state.** The exact and whole-product gates are current-source local
+validation only. No Factory-accepted aggregate receipt is claimed here; the
+next semantic source transaction would immediately stale a source-bound receipt.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. The focused
+production object was command-local under `/tmp` and removed. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** route away from score-header `+0x0C` unless a new TH095-local
+reader appears. Prefer another anonymous field with at least one independent
+producer and consumer; inspect the compact photo-enemy `unknown2984` dword only
+if update/ECL/photo systems expose a distinguishing protocol, otherwise leave it
+opaque and continue routing.

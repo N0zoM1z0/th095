@@ -17,7 +17,12 @@ struct ScoreFileHeader
 {
     u32 magic;
     u32 fileSize;
+#if defined(TH095_MATCH_EXACT)
     u32 unknown008;
+#else
+    u16 version;
+    u16 unknown00a;
+#endif
     u32 unknown00c;
     i32 compressedSize;
     i32 uncompressedSize;
@@ -152,6 +157,10 @@ struct ResultSaveDataView
 
 typedef char ScoreFileHeaderSizeIs18[
     (sizeof(ScoreFileHeader) == 0x18) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT)
+typedef char ScoreFileHeaderVersionAt08[
+    (offsetof(ScoreFileHeader, version) == 0x08) ? 1 : -1];
+#endif
 typedef char ResultBestShotImageSizeIs60[
     (sizeof(ResultBestShotImageView) == 0x60) ? 1 : -1];
 typedef char ResultBestShotRecordSizeIs78[
