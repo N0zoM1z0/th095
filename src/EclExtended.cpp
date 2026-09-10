@@ -197,14 +197,6 @@ typedef char ExtendedPhotoEffectManagerSpawnedIdAt58[(offsetof(ExtendedPhotoEffe
     reinterpret_cast<::th095::PhotoEffectManagerView *>(manager)->Spawn(type, args)
 #endif
 
-struct ExtendedBulletManager
-{
-    u8 unknown000000[0x27c5b0];
-    ExtendedAnmSpawner *anmSpawner;
-};
-typedef char ExtendedBulletManagerAnmAt27C5B0[
-    (offsetof(ExtendedBulletManager, anmSpawner) == 0x27c5b0) ? 1 : -1];
-
 struct ExtendedPhotoCameraView
 {
     i32 mode;
@@ -295,6 +287,18 @@ typedef char ExtendedBulletOwnerAt330[
     (offsetof(ExtendedBulletView, ownerTag) == 0x330) ? 1 : -1];
 typedef char ExtendedBulletStateAt352[
     (offsetof(ExtendedBulletView, state) == 0x352) ? 1 : -1];
+
+struct ExtendedBulletManager
+{
+    u8 unknown000[0x4c];
+    ExtendedBulletView bullets[0x641];
+    u8 unknown27C5A8[8];
+    ExtendedAnmSpawner *anmSpawner;
+};
+typedef char ExtendedBulletManagerBulletsAt4C[
+    (offsetof(ExtendedBulletManager, bullets) == 0x4c) ? 1 : -1];
+typedef char ExtendedBulletManagerAnmAt27C5B0[
+    (offsetof(ExtendedBulletManager, anmSpawner) == 0x27c5b0) ? 1 : -1];
 
 struct ExtendedRuntimeView
 {
@@ -581,8 +585,7 @@ void __fastcall ResetOwnedBulletMotion(
     Enemy *enemy, EclRawInstruction *instruction)
 {
     ExtendedBulletView *bullet =
-        reinterpret_cast<ExtendedBulletView *>(
-            reinterpret_cast<u8 *>(g_PhotoBulletManager) + 0x4c);
+        g_PhotoBulletManager->bullets;
     for (i32 i = 0; i < 0x640; ++i, ++bullet)
     {
         if (bullet->state == 0)
@@ -615,8 +618,7 @@ void __fastcall FadeOwnedCapturedBullets(
         ExtendedBulletView *bullet;
     } locals;
 
-    locals.bullet = reinterpret_cast<ExtendedBulletView *>(
-        reinterpret_cast<u8 *>(g_PhotoBulletManager) + 0x4c);
+    locals.bullet = g_PhotoBulletManager->bullets;
     for (locals.i = 0; locals.i < 0x640; ++locals.i, ++locals.bullet)
     {
         if (locals.bullet->state == 0)
@@ -966,8 +968,7 @@ void __fastcall Callback01(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedBulletView *index;
     i32 bullet;
 
-    index = reinterpret_cast<ExtendedBulletView *>(
-        reinterpret_cast<u8 *>(g_PhotoBulletManager) + 0x4c);
+    index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
         if (index->state == 0 || index->vm.loadedSprite->widthPx < 64.0f)
@@ -987,8 +988,7 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedBulletView *index;
     i32 bullet;
 
-    index = reinterpret_cast<ExtendedBulletView *>(
-        reinterpret_cast<u8 *>(g_PhotoBulletManager) + 0x4c);
+    index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
         if (index->state == 0)
@@ -1023,8 +1023,7 @@ void __fastcall Callback03(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedBulletView *index;
     i32 bullet;
 
-    index = reinterpret_cast<ExtendedBulletView *>(
-        reinterpret_cast<u8 *>(g_PhotoBulletManager) + 0x4c);
+    index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
         if (index->state == 0)
@@ -1048,8 +1047,7 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedBulletView *index;
     i32 bullet;
 
-    index = reinterpret_cast<ExtendedBulletView *>(
-        reinterpret_cast<u8 *>(g_PhotoBulletManager) + 0x4c);
+    index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
         if (index->state == 0)

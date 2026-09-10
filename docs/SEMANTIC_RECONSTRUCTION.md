@@ -1241,3 +1241,58 @@ runtime owner `+0x4C` if the TH095 BulletManager layout and multiple exact
 extended callbacks agree on one canonical bullet-array representation.  Keep
 bullet-internal `+0x24` and ANM-VM `+0x228` fields separate unless their own
 independent field evidence is sufficient.
+
+
+### SEM-017 — extended bullet pool owner
+
+**Scope.** Canonicalize the repeated BulletInf pool base used by extended ECL
+entries 1, 2, 3, 4, 5, and 21.  The TU-local  now
+represents the target-proven  array at manager , while
+retaining opaque prefix/tail storage around the already-used ANM owner at
+.  Six raw byte-base casts are replaced by
+.  No shared BulletManager header or production
+owner ABI changes.
+
+**Observed.** The campaign's target-attested Ghidra read of extended callbacks
+ and  shows both loops initializing their bullet cursor
+from the BulletInf global plus , then advancing exactly  bytes for
+up to  iterations.  The independently reconstructed TH095
+ is canonical exact and scans the
+same 1,600 live slots from its member at .  Thus the repeated ECL base is
+an object-owned bullet array rather than six unrelated pointer-arithmetic
+sites.
+
+**Corroborated.** The exact TH095  layout in
+ asserts , models
+, and places the next manager members at .  Each
+ is independently asserted as  bytes.  The extra array
+entry is target-established as the state-five sentinel, while the ECL callbacks
+intentionally iterate only the first  usable entries.  Existing exact
+entries 5 and 21 independently consume the same manager base and loop bound.
+
+**Inferred.**  is a source-local semantic view
+of the same TH095 BulletInf storage.  It deliberately reuses the already exact
+ representation so ECL code can express ownership without
+importing the much larger BulletManager exact-source type universe.
+
+**Unknown.** This batch does not claim that every field in
+ is fully named, nor does it interpret the manager's opaque
+prefix or the two dwords between the pool and ANM owner.  Bullet absolute
+ and embedded-VM  accesses remain separate pending their own
+field evidence.
+
+**Regression boundary.** All 22 configured  exact units
+replay unchanged with zero private-label refresh.  The normal production
+translation unit independently compiles with the pinned VC7.1 profile to i386
+COFF and  passes.  The manager representation is TU-local and
+changes no exported/shared layout; campaign-wide current-source product closure
+remains intentionally deferred to the next milestone.
+
+**Analysis artifacts.**  remains 1408444500 bytes.  No
+current-session analysis artifact was created, retained, or removed; legacy and
+shared provider state remain untouched.
+
+**Next batch:** determine whether bullet absolute  and embedded-VM
+ in extended entries 2/4 are already represented by independently
+proven  fields.  Canonicalize only fields whose TH095 producer/consumer
+and offset evidence agree; otherwise leave the raw access and record unknown.
