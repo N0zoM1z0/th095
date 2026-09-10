@@ -154,6 +154,14 @@ The final two observations are user-reported Windows tests of the current
 coverage; they are not deterministic-simulation or whole-image exactness
 claims.
 
+A subsequent full manual Windows endurance pass through the reconstructed
+game was recorded at <https://youtu.be/zKpdbvu3EXE>. The recording exercises
+broad scene, gameplay, rendering, audio, menu, transition, save, and replay
+behavior with the process-only no-death launcher active. It corroborates broad
+runtime coverage of the current artifact, while the deliberately bypassed
+death path remains covered by the separate normal-build tests above. It does
+not change any source-present or exact-match status.
+
 The final-artifact runs used held DirectInput key events to avoid missing the
 game's polling window. The post-fix Wine logs were empty. No Wine exception,
 unhandled fault, or debugger invocation occurred before the test processes
