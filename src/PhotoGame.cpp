@@ -65,7 +65,11 @@ struct PhotoGameGlobalStateView
             u32 gameplayLoadActive : 1;
 #endif
             u32 unknown003 : 7;
+#if defined(TH095_MATCH_EXACT)
             u32 photoCaptureInputMode : 1;
+#else
+            u32 photoTransitionActive : 1;
+#endif
             u32 unknown011 : 21;
         };
     };
@@ -624,7 +628,11 @@ i32 __fastcall PhotoGameUpdateView::OnUpdate(PhotoGameUpdateView *player)
         return 1;
     }
 
+#if defined(TH095_MATCH_EXACT)
     if (g_PhotoGameGlobalState->photoCaptureInputMode != 0)
+#else
+    if (g_PhotoGameGlobalState->photoTransitionActive != 0)
+#endif
     {
         if (PhotoGameInputMask(RuntimeHistoryPressed(), 2) != 0)
         {

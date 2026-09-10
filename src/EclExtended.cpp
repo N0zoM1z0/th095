@@ -64,7 +64,18 @@ struct ExtendedPhotoEnemyManagerView
 struct PhotoGlobalStateView
 {
     u8 unknown000[0xfc];
-    u32 flags;
+    union
+    {
+        u32 flags;
+#if !defined(TH095_MATCH_EXACT)
+        struct
+        {
+            u32 unknownFlags000 : 10;
+            u32 photoTransitionActive : 1;
+            u32 unknownFlags011 : 21;
+        };
+#endif
+    };
 };
 typedef char PhotoGlobalFlagsAtFC[(offsetof(PhotoGlobalStateView, flags) == 0xfc) ? 1 : -1];
 
@@ -620,7 +631,11 @@ void __fastcall EnablePhotoTransition(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
+#if defined(TH095_MATCH_EXACT)
     g_PhotoGlobalState->flags |= 0x400;
+#else
+    g_PhotoGlobalState->photoTransitionActive = 1;
+#endif
     firstVm = TH095_EXT_ANM_GET_VM(
         EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
     firstVm->pendingInterrupt = 2;
@@ -639,7 +654,11 @@ void __fastcall DisablePhotoTransition(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
+#if defined(TH095_MATCH_EXACT)
     g_PhotoGlobalState->flags &= ~0x400U;
+#else
+    g_PhotoGlobalState->photoTransitionActive = 0;
+#endif
     firstVm = TH095_EXT_ANM_GET_VM(
         EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
     firstVm->pendingInterrupt = 3;
@@ -818,7 +837,11 @@ void __fastcall RunPhotoTransition(
         --enemy->activeEclContext->extraIntVariables[2];
         if (enemy->activeEclContext->extraIntVariables[2] == 60)
         {
+#if defined(TH095_MATCH_EXACT)
             g_PhotoGlobalState->flags &= ~0x400U;
+#else
+            g_PhotoGlobalState->photoTransitionActive = 0;
+#endif
             locals.firstEndVm = TH095_EXT_ANM_GET_VM(
                 EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
             locals.firstEndVm->pendingInterrupt = 3;
@@ -831,12 +854,20 @@ void __fastcall RunPhotoTransition(
         }
     }
 
+#if defined(TH095_MATCH_EXACT)
     if (((g_PhotoGlobalState->flags >> 10) & 1U) == 0 &&
+#else
+    if (g_PhotoGlobalState->photoTransitionActive == 0 &&
+#endif
         enemy->activeEclContext->extraIntVariables[2] == 0 &&
         ExtendedCameraIsCharging(&g_Player->camera) &&
         TH095_EXT_COUNT_PHOTO_TARGETS(g_Player->camera, NULL, NULL) != 0)
     {
+#if defined(TH095_MATCH_EXACT)
         g_PhotoGlobalState->flags |= 0x400U;
+#else
+        g_PhotoGlobalState->photoTransitionActive = 1;
+#endif
         locals.firstStartVm = TH095_EXT_ANM_GET_VM(
             EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
         locals.firstStartVm->pendingInterrupt = 2;

@@ -204,7 +204,11 @@ struct PhotoEffectGlobalStateView
             u32 gameplayLoadActive : 1;
 #endif
             u32 unknownFlags3 : 7;
+#if defined(TH095_MATCH_EXACT)
             u32 blockEffectUpdate : 1;
+#else
+            u32 photoTransitionActive : 1;
+#endif
             u32 unknownFlags11 : 21;
         };
     };
@@ -1150,7 +1154,11 @@ i32 __fastcall PhotoEffectManagerView::OnUpdate(
     {
         return 1;
     }
+#if defined(TH095_MATCH_EXACT)
     if (g_PhotoGlobalState->blockEffectUpdate != 0)
+#else
+    if (g_PhotoGlobalState->photoTransitionActive != 0)
+#endif
     {
         return 1;
     }

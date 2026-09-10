@@ -3937,3 +3937,98 @@ its TH095-local producers in extended ECL/photo-transition code and compare the
 Background, PhotoEffect, PhotoGame, BulletManager, and any target-only consumers.
 Accept one shared name only if producer timing explains the distinct subsystem
 responses; otherwise retain the current per-TU names and record the boundary.
+
+
+### SEM-056 — photo-transition active global protocol
+
+**Scope.** Recover bit 10 of the shared photo-runtime flags dword at task/global
+state `+0xFC` as `photoTransitionActive`. The maintainable Background,
+BulletManager, PhotoEffect, and PhotoGame partial views now expose that shared
+lifecycle name, while `EclExtended` exposes the same bit in its producer view.
+`TH095_MATCH_EXACT` preserves the historical per-TU names and raw mask/shift
+expressions. No claim is made that every gameplay subsystem consumes bit 10.
+
+**Observed.** Canonical target-attested `EclExtended::EnablePhotoTransition @
+0x00414430` sets global bit `0x400`, interrupts and immediately executes the two
+Background dynamic VMs with interrupt 2, plays sound `0x26`, and restores game
+speed to 1.0. `DisablePhotoTransition @ 0x004144E0` clears the same bit, executes
+both VMs with interrupt 3, and plays sound `0x0F`. `RunPhotoTransition @
+0x00414580` repeats the same paired protocol: when no transition is active, its
+local countdown is zero, the camera is charging, and at least one photo target
+exists, it sets bit 10, starts both VMs/sound, sets a 120-frame countdown, and
+starts the target movement interpolation. When that countdown reaches 60 it
+clears bit 10 and runs the matching end-VM/sound sequence.
+
+**Corroborated.** Independent TH095 exact consumers explain the same bit without
+requiring one universal freeze behavior. `Background::OnUpdate @ 0x00402B80`
+and `PhotoEffectManagerView::OnUpdate @ 0x0041DB00` return before normal update
+while bit 10 is set, but their draw callbacks do not test bit 10. The exact
+`PhotoBulletManagerView::Update @ 0x00405120` keeps each retained bullet in its
+enqueue/presentation path while skipping simulation under bit 10. The exact
+`PhotoGameUpdateView::OnUpdate @ 0x00430180` diverts normal player simulation to
+a narrow input path: a newly pressed photo button sets
+`camera.captureRequested`, then the callback returns. The camera update later
+consumes `captureRequested` in the charging/capture state machine. Conversely,
+EnemyManagerTask and `UpdatePhotoStage` do not test bit 10, which is direct
+negative evidence against interpreting it as a global gameplay pause.
+
+**Inferred.** `photoTransitionActive` is the shared lifetime of the ECL-driven
+photo-target transition choreography. During the active half of that
+choreography, Background/effect/bullet/player systems selectively suspend or
+redirect simulation while rendering and enemy/stage progression remain under
+their own policies. The previous local names `blockBackgroundUpdate`,
+`blockEffectUpdate`, and `photoCaptureInputMode` describe individual consumer
+effects but are too narrow to name the common owner. The producer pair itself
+provides the stronger lifecycle name.
+
+**Unknown.** This batch does not prove the visual design intent of the two
+Background VM interrupts, why the 120-frame coordinator clears the global bit at
+60 rather than at countdown zero, or why EnemyManagerTask and PhotoStage remain
+ungated. It does not claim that bit 10 is equivalent to camera charging or
+`captureRequested`; those are explicit prerequisites/consumer state. It also
+does not name bit 9, whose sound-related consumers and producer lifetime require
+an independent audit.
+
+**Compiler-observed.** All exact-facing consumer bitfield names remain unchanged:
+Background keeps `blockBackgroundUpdate`, BulletManager and PhotoGame keep
+`photoCaptureInputMode`, and PhotoEffect keeps `blockEffectUpdate`. EclExtended's
+raw `flags |= 0x400`, `flags &= ~0x400U`, and `(flags >> 10) & 1U` expressions
+remain verbatim under `TH095_MATCH_EXACT`; its production-only union bitfield is
+not visible to the exact compiler. The complete changed-source replay therefore
+needs no private-label refresh.
+
+**Regression boundary.** The three producer units
+`ecl-extended-enable-photo-transition`, `ecl-extended-disable-photo-transition`,
+and `ecl-extended-run-photo-transition` remain respectively 161/161, 151/151,
+and 938/938 exact. Direct consumers `background-on-update`,
+`photo-bullet-manager-update`, `photo-effect-manager-on-update`, and
+`photo-player-on-update` remain respectively 107/107, 1835/1835, 152/152, and
+141/141 exact. Full changed-source replay covers 133/133 configured exact units
+across Background, BulletManager, EclExtended, PhotoEffect, and PhotoGame with
+zero private-label refresh. All five normal production TUs independently compile
+under pinned VC7.1 13.10.3077 to i386 COFF, and `git diff --check` passes. No
+shared header, ABI, physical storage, serialization format, or runtime scenario
+changed.
+
+**Receipt state.** No Factory receipt is issued for this private checkpoint. The
+accepted whole-build receipt
+`receipt:8ff35d873e0e5535ecc73c22a49914f52c5eba994ff4d3fea4adf12fe22d9b86`
+is bound to the earlier `c3437fc3` milestone and is source-stale for this new
+source. Exactness for SEM-056 is established by the local current-source
+canonical replay above; the Factory's 696 per-function exact claims remain
+intentionally deferred until a meaningful final/milestone receipt boundary.
+
+**Recovery / analysis artifacts.** The active batch began from a tracked-clean
+`5aae5f30` checkpoint. A transient Factory bridge connection failure occurred
+before the first validation command and returned no command id; the mandatory
+recovery gate confirmed the intended five-file diff, no staged or extra tracked
+changes, no lingering compiler/replay process, and unchanged `.analysis` size.
+`.analysis/` remains 1408444500 bytes, with no current-session retained artifact.
+The four externally changing untracked paths remain unknown and untouched.
+
+**Next batch:** audit shared global bit 9 as a separate sound/capture protocol.
+Start from PhotoCamera's charging/capture sound gates and BulletManager's
+`suppressesPhotoSound` consumer, then locate all TH095-local writers. Accept a
+shared semantic name only if writer timing and at least two independent exact
+consumers agree; do not infer it merely because bit 9 neighbors the recovered
+photo-transition bit.

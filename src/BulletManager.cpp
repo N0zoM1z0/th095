@@ -433,7 +433,11 @@ struct PhotoBulletGlobalStateView
 #endif
             u32 unknownFlags3 : 6;
             u32 suppressesPhotoSound : 1;
+#if defined(TH095_MATCH_EXACT)
             u32 photoCaptureInputMode : 1;
+#else
+            u32 photoTransitionActive : 1;
+#endif
             u32 unknownFlags11 : 21;
         };
     };
@@ -1717,7 +1721,11 @@ i32 PhotoBulletManagerView::Update()
         {
             goto enqueueBullet;
         }
+#if defined(TH095_MATCH_EXACT)
         if (g_PhotoBulletGlobalState->photoCaptureInputMode != 0)
+#else
+        if (g_PhotoBulletGlobalState->photoTransitionActive != 0)
+#endif
         {
             goto enqueueBullet;
         }
