@@ -71,7 +71,19 @@ struct PhotoEffectArgsView
     i32 fadeDuration;
     i16 type;
     i16 color;
+#if defined(TH095_MATCH_EXACT)
     u32 flags;
+#else
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 followPhotoTarget : 1;
+            u32 unknownFlags001_031 : 31;
+        };
+    };
+#endif
 
     PhotoEffectArgsView()
     {
@@ -373,7 +385,11 @@ i32 PhotoRotatingLaserView::Update()
     this->angle = AddNormalizeAngle(
         this->angle, g_AnmGameSpeed * this->spawn.angularVelocity);
 
+#if defined(TH095_MATCH_EXACT)
     if ((this->spawn.flags & 1) != 0 &&
+#else
+    if (this->spawn.followPhotoTarget != 0 &&
+#endif
         g_PhotoEnemyManager->photoTargets[0] != NULL)
     {
         this->position =

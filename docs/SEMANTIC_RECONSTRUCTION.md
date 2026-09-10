@@ -3586,3 +3586,72 @@ and shared provider state remain untouched.
 protocol. Accept a semantic bit name only if the TH095 rotating-laser updater
 proves its effect on `photoTargets[0]` and ECL producers expose the same bit.
 Do not rename other flag bits without consumers.
+
+
+### SEM-052 — rotating effect follow-photo-target flag
+
+**Scope.** Recover bit 0 of the rotating type-1 `PhotoEffect` packet flags dword
+at packet `+0x44` as `followPhotoTarget`. Normal ECL and EclExtended packet
+views expose that bit by name; the normal `PhotoEffect.cpp` consumer uses the
+same semantic bitfield. `TH095_MATCH_EXACT` retains the historical `flag0`
+producer members and raw `(spawn.flags & 1)` consumer expression so target
+codegen remains unchanged. No other flag bit is named.
+
+**Observed.** Target-attested TH095 `PhotoRotatingLaserView::Update @
+0x0041F550` tests packet flags bit 0 and the manager's `photoTargets[0]` pointer.
+When both are nonzero, it replaces the effect's current position with that
+photo target's `worldPosition`; only after that anchor publication does it add
+`spawn.velocity * gameSpeed`. The bit therefore requests per-frame following of
+photo-target slot 0 rather than freezing the effect at a fixed coordinate.
+
+**Corroborated.** Seven target-high ECL type-1 effect producers (opcodes
+147/148/153/154/155/156/157) copy raw script operand 10 into precisely packet
+bit 0 before calling `PhotoEffectManagerView::Spawn(1, &args)`. The three
+extended effect callbacks 10/14/17 build the same 0x48 packet but explicitly
+clear the same bit, providing an independent negative producer. The target-
+proven eight-entry `photoTargets` manager table and its slot-0 consumers are
+already TH095-local; no adjacent-engine flag identity is required.
+
+**Inferred.** `followPhotoTarget` is intentionally narrower than `followBoss` or
+a generic attachment flag: the observed consumer is specifically manager
+`photoTargets[0]`, and the effect remains free to move relative to that anchor
+through its velocity after following. A nonzero script operand selects this
+behavior through the bitfield truncation used by the historical packet.
+
+**Unknown.** This batch does not assign semantics to packet flags bits 1..31,
+does not prove that photo-target slot 0 is always a boss, and does not infer how
+the behavior should react if the tracked pointer changes identity between
+frames. It also does not claim that the effect remains stationary when
+`followPhotoTarget` is set; packet velocity is still applied afterward.
+
+**Compiler-observed.** Exact ECL packet declarations preserve the historical
+`flag0/flags01_31` bitfield names and exact producer expressions through semantic
+macros. `PhotoEffect.cpp` keeps the exact-facing raw `u32 flags` declaration and
+`(this->spawn.flags & 1) != 0` conditional, while production alone exposes the
+named bitfield. This keeps all compiler-private labels and relocations unchanged
+without manifest refresh.
+
+**Regression boundary.** `ecl-manager-run-ecl` remains 27,091/27,091 authored
+bytes exact with its 27,747-byte compare extent; extended callbacks 10/14/17
+remain 404/404 bytes each; `photo-rotating-laser-update` remains 1062/1062
+bytes with its 1078-byte body-plus-switch-table extent. Full changed-source
+replay covers 57 configured units across `EclExtended.cpp`, `PhotoEffect.cpp`,
+and `ecl/EclRun.cpp`; all 57 are exact with zero private-label refresh. All
+three normal production TUs independently compile with their repository
+whole-build pinned VC7.1 profiles to i386 COFF, and `git diff --check` passes.
+No shared header or public ABI changed.
+
+**Receipt state.** The last aggregate/whole-product local milestone is
+source-stale after SEM-050..052. This private checkpoint closes its focused exact
+and production surfaces only; no Factory-accepted aggregate or whole-build
+receipt is claimed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. Focused
+production objects were command-local `/tmp` files and removed before command
+exit. No current-session `.analysis` artifact was created, retained, or
+removed; legacy and shared provider state remain untouched.
+
+**Next batch:** refresh the game-local semantic router and look for another
+field with an independent TH095 producer and consumer. Treat the remaining
+rotating-effect flag bits as Unknown unless a consumer appears; do not continue
+renaming the packet by adjacency.

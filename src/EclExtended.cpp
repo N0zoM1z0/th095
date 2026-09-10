@@ -182,7 +182,16 @@ struct ExtendedPhotoEffectArgs
     union
     {
         u32 flags;
-        struct { u32 flag0 : 1; u32 flags01_31 : 31; };
+        struct
+        {
+#if defined(TH095_MATCH_EXACT)
+            u32 flag0 : 1;
+            u32 flags01_31 : 31;
+#else
+            u32 followPhotoTarget : 1;
+            u32 unknownFlags001_031 : 31;
+#endif
+        };
     };
 };
 typedef char ExtendedPhotoEffectArgsSize48[(sizeof(ExtendedPhotoEffectArgs) == 0x48) ? 1 : -1];
@@ -218,6 +227,11 @@ typedef char ExtendedPhotoEffectFadeAt3C[(offsetof(ExtendedPhotoEffectArgs, fade
 #define TH095_EXT_EFFECT_GROWTH_DURATION(args) args.growthDuration
 #define TH095_EXT_EFFECT_SUSTAIN_DURATION(args) args.sustainDuration
 #define TH095_EXT_EFFECT_FADE_DURATION(args) args.fadeDuration
+#endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(args) args.flag0
+#else
+#define TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(args) args.followPhotoTarget
 #endif
 
 struct ExtendedPhotoEffectNode
@@ -929,7 +943,7 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
     TH095_EXT_EFFECT_SUSTAIN_DURATION(locals.args) = 40;
     TH095_EXT_EFFECT_FADE_DURATION(locals.args) = 6;
     TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
-    locals.args.flag0 = 0;
+    TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
 
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
     FindSpawnedExtendedEffect(&locals);
@@ -960,7 +974,7 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
     TH095_EXT_EFFECT_SUSTAIN_DURATION(locals.args) = 300;
     TH095_EXT_EFFECT_FADE_DURATION(locals.args) = 6;
     TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
-    locals.args.flag0 = 0;
+    TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
 
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
     FindSpawnedExtendedEffect(&locals);
@@ -991,7 +1005,7 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
     TH095_EXT_EFFECT_SUSTAIN_DURATION(locals.args) = 120;
     TH095_EXT_EFFECT_FADE_DURATION(locals.args) = 6;
     TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
-    locals.args.flag0 = 0;
+    TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
 
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
     FindSpawnedExtendedEffect(&locals);

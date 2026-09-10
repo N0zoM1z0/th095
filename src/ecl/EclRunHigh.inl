@@ -256,8 +256,13 @@ struct PhotoEffectArgs
         u32 flags;
         struct
         {
+#if defined(TH095_MATCH_EXACT)
             u32 flag0 : 1;
             u32 flags01_31 : 31;
+#else
+            u32 followPhotoTarget : 1;
+            u32 unknownFlags001_031 : 31;
+#endif
         };
     };
 };
@@ -304,6 +309,11 @@ C_ASSERT(offsetof(PhotoEffectArgs, flags) == 0x44);
 #define TH095_EFFECT_GROWTH_DURATION(args) args.growthDuration
 #define TH095_EFFECT_SUSTAIN_DURATION(args) args.sustainDuration
 #define TH095_EFFECT_FADE_DURATION(args) args.fadeDuration
+#endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) args.flag0
+#else
+#define TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) args.followPhotoTarget
 #endif
 
 struct PhotoEffectManager

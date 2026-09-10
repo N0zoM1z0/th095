@@ -52,7 +52,7 @@
         TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
         TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.flag0 = TH08_ECL_RAW_I(ctx, 10);
+        TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) = TH08_ECL_RAW_I(ctx, 10);
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
@@ -77,7 +77,7 @@
         TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
         TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.flag0 = TH08_ECL_RAW_I(ctx, 10);
+        TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) = TH08_ECL_RAW_I(ctx, 10);
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
@@ -101,7 +101,7 @@
         TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
         TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.flag0 = TH08_ECL_RAW_I(ctx, 10);
+        TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) = TH08_ECL_RAW_I(ctx, 10);
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
@@ -126,7 +126,7 @@
         TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
         TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.flag0 = TH08_ECL_RAW_I(ctx, 10);
+        TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) = TH08_ECL_RAW_I(ctx, 10);
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
@@ -150,7 +150,7 @@
         TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
         TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.flag0 = TH08_ECL_RAW_I(ctx, 10);
+        TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) = TH08_ECL_RAW_I(ctx, 10);
         TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_X(args), 11);
         TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_Y(args), 12);
         TH095_EFFECT_SPEED(args) = 2.0f;
@@ -177,7 +177,7 @@
         TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
         TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.flag0 = TH08_ECL_RAW_I(ctx, 10);
+        TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) = TH08_ECL_RAW_I(ctx, 10);
         TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_X(args), 11);
         TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_Y(args), 12);
         TH095_EFFECT_SPEED(args) = 5.0f;
@@ -205,7 +205,7 @@
         TH095_EFFECT_FADE_DURATION(args) = TH08_ECL_READ_I(ctx, 8);
         TH095_EFFECT_ANGULAR_VELOCITY(args) = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 9), 0.0f);
-        args.flag0 = TH08_ECL_RAW_I(ctx, 10);
+        TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) = TH08_ECL_RAW_I(ctx, 10);
         TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_X(args), 11);
         TH095_ECL_ASSIGN_FLOAT(TH095_EFFECT_VELOCITY_Y(args), 12);
         TH095_EFFECT_SPEED(args) = 2.0f;
