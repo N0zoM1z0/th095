@@ -95,6 +95,17 @@ struct FrontEndControllerUpdateView
     i32 entryMode;
 };
 
+#if !defined(TH095_MATCH_EXACT)
+struct FrontEndPostQueueStateView
+{
+    SceneStateHistoryView stateHistory;
+    u8 unknown10[0x0c];
+    i32 pendingTextureCount;
+};
+typedef char FrontEndPostQueuePendingTextureCountAt1C[
+    (offsetof(FrontEndPostQueueStateView, pendingTextureCount) == 0x1c) ? 1 : -1];
+#endif
+
 struct FrontEndUpdateLocals
 {
     FrontEndVmUpdateView *second69;
@@ -798,9 +809,26 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
 #undef FRONT_END_LOADED_GROUP_COUNT
 #undef FRONT_END_SELECTION_COUNT
 #undef FRONT_END_LOADED_SCENE_COUNT
-            *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63cc) = 0;
-            *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63bc) = 0;
-            *reinterpret_cast<i8 *>(reinterpret_cast<u8 *>(this) + 0xe92) = -1;
+#if defined(TH095_MATCH_EXACT)
+#define FRONT_END_PENDING_TEXTURE_COUNT                                     \
+    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63cc))
+#define FRONT_END_STATE_HISTORY_COUNT                                       \
+    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63bc))
+#define FRONT_END_CURRENT_DISPLAY_STATE                                     \
+    (*reinterpret_cast<i8 *>(reinterpret_cast<u8 *>(this) + 0xe92))
+#else
+#define FRONT_END_PENDING_TEXTURE_COUNT                                     \
+    (reinterpret_cast<FrontEndPostQueueStateView *>(&this->stateHistory)    \
+         ->pendingTextureCount)
+#define FRONT_END_STATE_HISTORY_COUNT (this->stateHistory.count)
+#define FRONT_END_CURRENT_DISPLAY_STATE (this->currentDisplayState)
+#endif
+            FRONT_END_PENDING_TEXTURE_COUNT = 0;
+            FRONT_END_STATE_HISTORY_COUNT = 0;
+            FRONT_END_CURRENT_DISPLAY_STATE = -1;
+#undef FRONT_END_PENDING_TEXTURE_COUNT
+#undef FRONT_END_STATE_HISTORY_COUNT
+#undef FRONT_END_CURRENT_DISPLAY_STATE
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
         case 1:

@@ -1632,3 +1632,73 @@ and shared provider state remain untouched.
 producer/consumer evidence proves `stateHistory.count`, `pendingTextureCount`,
 and `currentDisplayState`. Keep each interpretation distinct from queue
 ownership even though all three are reset in the same transition.
+
+
+
+### SEM-023 — front-end transition scalar resets
+
+**Scope.** Recover the three non-queue scalar resets that finish the title-menu
+case-0 handoff: controller `+0x63BC` is `stateHistory.count`, `+0x63CC` is
+`pendingTextureCount`, and byte `+0xE92` is `currentDisplayState`. They share a
+transition point but remain three separate semantic owners. The maintainable
+path uses the canonical `stateHistory` and `currentDisplayState` members plus a
+small production-only post-queue overlay for `pendingTextureCount`; the exact
+path preserves the original raw AST behind semantic macros because this same
+function is proven sensitive to VC7.1 private-label allocation.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`SceneSelectControllerView::UpdateMainMenu @ 0x00446A50` clears controller dword
+indexes `0x18F3` and `0x18EF` after the queue cleanup, corresponding to byte
+offsets `+0x63CC` and `+0x63BC`, then writes `0xFF` to byte `+0xE92` before
+returning from the case-0 transition. These writes are distinct from the seven
+queue-count resets immediately preceding them.
+
+**Corroborated.** `SceneSelectControllerView::stateHistory` is asserted at
+`+0x63B0`, and `SceneStateHistoryView` contains `values[3]` followed by `count`,
+fixing that count at `+0x63BC`. `SceneSelectController.cpp` caps, appends to,
+and increments the same history, while `SceneSelectAssets.cpp` consumes and
+decrements it. Independently, both `SceneSelectUpdateView` and
+`SceneSelectionAssetView` assert `pendingTextureCount @ +0x63CC`; the asset
+loader increments it after queuing a primary/secondary texture pair, and
+`UpdateSceneSelect` uploads/frees the oldest pair, shifts the pending arrays,
+and decrements it. `currentDisplayState @ +0xE92` is independently established
+by the front-end lifecycle view: initialization writes `-1`, and
+`SceneSelectController::RefreshPreview` compares and updates it when the display
+state changes.
+
+**Inferred.** Entering the game path invalidates all outstanding preview-state
+work at once: queued display-state history is forgotten, the asynchronous
+texture-pair count is reset, and the current display-state cache returns to its
+`-1` sentinel. These operations are semantically adjacent cleanup actions, not
+one packed state representation.
+
+**Unknown.** This batch does not assert that zeroing `pendingTextureCount`
+actively frees any still-live pending buffers; the separate queue/drain and
+lifecycle cleanup paths remain the ownership evidence for heap storage. It also
+does not assign higher-level names to individual `stateHistory.values` entries
+or to every possible display-state byte value.
+
+**Compiler-observed.** No private-label refresh was needed. The accepted source
+uses exact-only macro expansions identical to the historical raw expressions,
+while the maintainable branch names `stateHistory.count` and
+`currentDisplayState` directly and uses a production-only overlay whose
+`pendingTextureCount` is asserted at `stateHistory + 0x1C`. This avoids exposing
+new type declarations to the exact preprocessed translation unit.
+
+**Regression boundary.** `front-end-update-main-menu` remains 3299/3299 authored
+bytes exact and 3323/3323 across its configured body-plus-switch-table extent,
+with all private/external relocations unchanged. All four configured
+`src/FrontEndController.cpp` exact units replay with zero private-label refresh.
+The normal production translation unit independently compiles under pinned
+VC7.1 to i386 COFF, and `git diff --check` passes. No shared header or ABI
+changed; aggregate/product closure remains deferred to the next milestone.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** refresh the remaining `FrontEndController.cpp` raw-offset
+surface after excluding exact-compatibility macros already documented by
+SEM-022/023. Prefer a bounded repeated TH095-local owner family with independent
+layout/protocol consumers; otherwise route to the next repository-wide file
+rather than forcing one-off offsets into speculative names.
