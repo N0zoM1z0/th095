@@ -468,3 +468,84 @@ camera `photoIndex` reads inside exact `PhotoItemManagerView::Update @
 0x0041CE60` onto `PhotoPlayerRuntimeView`, while leaving that source's camera
 charge, camera flags, and photo-target bounds in its local partial view until
 those adjacent fields have independent TH095 evidence.
+
+
+### SEM-006 — PhotoItem shared Player field reads
+
+**Recovery gate.** The campaign resumed at committed HEAD `543d78b` on `main`
+with no staged or tracked modifications and four pre-existing untracked paths.
+`docs/RE_HANDOFF.md` explicitly identifies `EnemyManagerUpdate.i` and
+`droid.resume.txt` as user-owned files that must remain untouched, and identifies
+`config/runtime-scenarios.json` plus `scripts/runtime-diff.py` as uncommitted
+runtime experiments outside the verified workflow.  All four are therefore
+classified as unrelated pre-existing work for this campaign and remain
+unstaged and unmodified.  The preflight `.analysis/` footprint was
+1,408,444,500 bytes; it is legacy/non-authoritative workspace dominated by an
+older Wine/GDB prefix.  This campaign created no `.analysis/gpt-web` scratch
+root and uses command-local temporary storage instead.
+
+**Scope.** This batch canonicalizes only two already-proven reads in
+`PhotoItemManagerView::Update @ 0x0041CE60`: the Player position used to home an
+active photo-charge item after its initial drift, and the camera photo index
+used by the indexed camera-charge increment.  Production now reads
+`PhotoPlayerRuntimeView::playerPosition` and
+`PhotoPlayerRuntimeView::camera.photoIndex` through `g_RuntimePlayerOwner`.
+DIFFBUILD retains the existing `ItemPhotoGameView` spellings.  Camera charge,
+camera flags, and the photo-target bounds remain on that local partial view.
+
+**Observed.** The current repository-native hash-attested Ghidra check bound the
+existing project to the canonical Japanese TH095 v1.02a target (SHA-256
+`bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`).
+Target disassembly inside `PhotoItemManagerView::Update` loads the Player owner
+at `0x0041CFC2`, adds `0x1E30` at `0x0041CFC8`, and uses that three-float vector
+for the homing direction.  The same function loads the Player owner again and
+reads dword `+0x29E4` at `0x0041D221` before the indexed camera-charge update.
+SEM-003/004 independently fixed `Player+0x1E30` as the shared Player position,
+and SEM-005 independently fixed `Player+0x29E4` as camera `photoIndex`.
+
+**Corroborated.** The target-exact Player angle/collision family, ECL movement
+and shot dispatch, and both ECL operand resolvers already consume the shared
+`playerPosition` field.  `PhotoCameraState::TakePhoto @ 0x00432D10`
+independently increments its `photoIndex @ camera+0x0BA8`; the exact Player
+layout places the camera subobject at `Player+0x1E3C`, giving the same absolute
+`Player+0x29E4` location read by PhotoItem.  No TH08 meaning is needed for either
+field identity.
+
+**Inferred.** Routing these two production reads through
+`PhotoPlayerRuntimeView` is a reconstruction ownership/representation choice.
+It does not establish that the original source included this header, used these
+member names, or exposed one common C++ Player type to PhotoItem and ECL code.
+
+**Unknown.** `ItemPhotoGameView::cameraCharge @ +0x29BC`, `cameraFlags @
++0x29F0`, and `photoTargetBoundsMin/Max @ +0x2A28/+0x2A34` are deliberately not
+canonicalized in this batch.  Their adjacency to already named camera fields is
+not accepted as meaning by itself.  The Factory analysis bridge was
+intermittently unavailable during this batch; its provisional semantic-analysis
+plane therefore has no new result.  The repository-native Ghidra target
+attestation and target disassembly are recorded separately and receive no
+Factory exactness credit.
+
+**Regression boundary.** The committed campaign baseline reported 697
+source-present / 696 exact functions and 336,486 exact bytes; it cold-compiled
+all 88 production translation units with pinned VC7.1 and linked a verified
+PE32 i386 product.  Before editing, `src/PhotoItemManager.cpp` replayed 12/12
+canonical exact units.  After the production-only source change, a direct
+normal-branch pinned-VC7.1 compile produced an i386 COFF object and the same
+source replayed 12/12 exact with zero private-label refresh.  The batch does not
+change a shared header, layout, callback, serialized format, or behavior, so the
+already-current campaign whole-product baseline is retained rather than
+redundantly cold-linked again before the next private source checkpoint.  No new
+runtime-scenario claim is made.
+
+**Analysis artifacts.** `.analysis/` remains 1,408,444,500 bytes at this
+checkpoint.  No current-session `.analysis` artifact was created or removed;
+no legacy/provider content was touched and there is no retained current-session
+large artifact.
+
+**Next batch:** extend the existing minimal shared Player-camera runtime view
+only for `charge @ camera+0x0B80` (`Player+0x29BC`) and `flags @ camera+0x0BB4`
+(`Player+0x29F0`) after rechecking the exact `PhotoCameraState` writers/readers.
+Then canonicalize the corresponding `PhotoItemManagerView::Update` accesses.
+Because this changes `PhotoPlayerRuntime.hpp`, close the cold aggregate exact
+and cold whole-product gates immediately.  Leave `photoTargetBoundsMin/Max`
+outside that batch until their Player ownership is independently verified.

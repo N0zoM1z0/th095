@@ -3,6 +3,9 @@
 #else
 #include "PhotoItemManager.hpp"
 #include "GameplayGlobals.hpp"
+#ifndef DIFFBUILD
+#include "PhotoPlayerRuntime.hpp"
+#endif
 #include "SoundPlayer.hpp"
 
 namespace th095
@@ -64,6 +67,16 @@ extern ItemGlobalStateView *g_PhotoGlobalState;
     TH095_RUNTIME_GLOBAL_PTR(ItemPhotoGameView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(ItemGlobalStateView, g_RuntimeGlobalStateOwner)
+#endif
+
+#ifdef DIFFBUILD
+#define TH095_ITEM_PLAYER_POSITION (g_PhotoGame->playerPosition)
+#define TH095_ITEM_PHOTO_INDEX (g_PhotoGame->photoIndex)
+#else
+#define TH095_ITEM_PLAYER_POSITION \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->playerPosition)
+#define TH095_ITEM_PHOTO_INDEX \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.photoIndex)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -212,7 +225,7 @@ i32 PhotoItemManagerView::Update()
         }
         else
         {
-            locals.direction = g_PhotoGame->playerPosition - locals.item->position;
+            locals.direction = TH095_ITEM_PLAYER_POSITION - locals.item->position;
             NormalizeAndScaleItemVelocity(
                 locals.direction, &locals.item->velocity,
                 locals.item->acceleration);
@@ -236,7 +249,7 @@ i32 PhotoItemManagerView::Update()
             if ((g_PhotoGame->cameraFlags & 1) != 0)
             {
                 AddIndexedItemCameraCharge(
-                    g_PhotoGame, g_PhotoGame->photoIndex);
+                    g_PhotoGame, TH095_ITEM_PHOTO_INDEX);
             }
             else
             {
@@ -256,6 +269,9 @@ tick:
     }
     return 1;
 }
+
+#undef TH095_ITEM_PHOTO_INDEX
+#undef TH095_ITEM_PLAYER_POSITION
 
 i32 PhotoItemManagerView::Draw()
 {
