@@ -84,6 +84,18 @@ Paired original/reconstruction runtime scenarios passed as follows:
 | Music Room -> ESC -> title | Both return to title alive; returned-title RMSE `0.020138`. |
 | Options -> ESC -> title | Both return to title alive; returned-title RMSE `0.021678`. |
 | Save Replay -> slot 1 -> Finish | Pre-fix reconstruction froze on the game frame while the original returned to the slot list. Post-fix both returned alive to a populated list; final normalized RMSE `0.0476551`. |
+| Scene 1 capture -> save replay -> scene 2 | User-observed Windows run of the current artifact completed the transition without an exit. |
+| Saved replay playback | User-observed Windows playback completed normally. |
+| Scene 2 death -> title | User-observed Windows run returned to the corrected title menu without an exit. |
+
+The test-only `run-no-death-test.bat` launcher provides wider manual scene
+coverage without producing another executable. Its PowerShell helper is pinned
+to the current reconstructed SHA-256 and map-derived `Die` RVA, verifies both
+the disk hash and live prologue, writes one in-process `RET` byte, restores the
+original page protection, and reads the byte back. A real Windows launch passed
+all of those checks on 2026-09-10; the smoke-test process was then deliberately
+terminated. This tool does not patch the canonical target, does not modify the
+normal reconstructed executable on disk, and is not a release configuration.
 
 ## Replay compression incident
 

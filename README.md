@@ -105,6 +105,13 @@ Running `scripts/build-whole.py` without a mode cold-compiles and links the
 verified production graph. `--link-only` reuses an existing cold object set;
 all modes remain fail-closed and never create a stubbed or force-linked image.
 
+For manual endurance testing of the current reconstructed artifact only, copy
+`scripts/run-no-death-test.bat` and `scripts/run-no-death-test.ps1` next to
+`th095-reconstructed.exe`, then double-click the BAT file. The launcher patches
+only the spawned process; it neither rebuilds nor modifies the executable on
+disk. It is hash-pinned, fail-closed, and is never a release build or an exact
+reconstruction claim.
+
 ## Reference model
 
 The control plane follows the conservative in-progress model from

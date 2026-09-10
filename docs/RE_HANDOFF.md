@@ -143,7 +143,16 @@ baselines. The reconstructed executable has then been observed to:
 - open Music Room from title row 3 and Options from row 4; and
 - return alive from both Music Room and Options to title with ESC; and
 - save a replay, choose slot 1 and Finish, and return alive to a populated
-  replay-slot list.
+  replay-slot list;
+- complete scene 1, save its replay, and continue into scene 2 without an
+  exit; and
+- play the saved replay successfully, then die in scene 2 and return to the
+  corrected title menu without an exit.
+
+The final two observations are user-reported Windows tests of the current
+`8e009628...fac97f` artifact on 2026-09-10. They expand exercised-path
+coverage; they are not deterministic-simulation or whole-image exactness
+claims.
 
 The final-artifact runs used held DirectInput key events to avoid missing the
 game's polling window. The post-fix Wine logs were empty. No Wine exception,
@@ -260,8 +269,21 @@ by the failing split-dictionary build may decode to all `0x01` and must be
 quarantined; even the canonical executable cannot scan them. This does not
 affect valid original replays or replays written by the current build.
 
+For broad manual scene coverage, `scripts/run-no-death-test.bat` is a
+test-only launcher for the current reconstructed artifact. Keep it beside
+`scripts/run-no-death-test.ps1` and `th095-reconstructed.exe`, then double-click
+the BAT. It verifies the executable SHA-256, starts it normally, resolves the
+loaded module base, verifies the `PhotoPlayerRuntimeView::Die` prologue at RVA
+`0x342F0`, and replaces only its first in-memory byte with `RET`. It immediately
+restores page protection and verifies the write. The normal executable on disk
+is never changed. The launcher deliberately refuses any hash other than
+`8e009628f6e41af753b0eb765877c41b877d9f412b020f1b3607cfdbdcfac97f`;
+after any future relink, re-establish both the map-derived RVA and prologue
+before updating that pin. This diagnostic follows TH08's endurance-test patch
+policy and must never be described or distributed as the formal release.
+
 Optional coverage expansion is not a known blocker: sample more of the 93
-scenes, replay playback/recording, Music Room, Help, Options, MIDI, and
+scenes, Help, MIDI, and
 clean in-game exit/restart paths. Treat any newly observed runtime fault as a
 new evidence lane and fix one real owner/lifecycle family at a time. Do not add
 speculative null guards, duplicate globals, linker aliases, or fake stubs.
