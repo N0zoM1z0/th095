@@ -549,3 +549,76 @@ Then canonicalize the corresponding `PhotoItemManagerView::Update` accesses.
 Because this changes `PhotoPlayerRuntime.hpp`, close the cold aggregate exact
 and cold whole-product gates immediately.  Leave `photoTargetBoundsMin/Max`
 outside that batch until their Player ownership is independently verified.
+
+
+### SEM-007 — shared Player-camera charge and flags
+
+**Scope.** This batch extends the minimal shared Player-camera production view
+only for two fields already used by `PhotoItemManagerView::Update @ 0x0041CE60`:
+`charge @ camera+0x0B80` (`Player+0x29BC`) and `flags @ camera+0x0BB4`
+(`Player+0x29F0`).  `PhotoItemManager.cpp` now routes its charge mutations and
+flag-bit-0 test through `PhotoPlayerRuntimeView::camera`.  DIFFBUILD preserves
+its `ItemPhotoGameView` expressions.  The dword at camera `+0x0BB0` remains
+opaque as `unknownbb0`; this batch does not promote the adjacent photo limit or
+any flag-bit protocol name.
+
+**Observed.** Factory's target-attested TH095 Ghidra provider decompiled
+`PhotoCameraState::UpdateCharge @ 0x00433D10` on the canonical Japanese v1.02a
+target and directly showed repeated reads/writes of receiver `+0x0B80` for the
+bounded 0.0..1.0 charge value, together with bit tests/sets/clears on receiver
+`+0x0BB4`.  `PhotoCameraState::TakePhoto @ 0x00432D10` decrements/clamps
+receiver `+0x0B80` after capture and returns bit 0 of receiver `+0x0BB4`;
+`CancelCapture @ 0x00433000` resets charge to 0.5 and clears that same bit.  The
+exact Player layout places this camera subobject at `Player+0x1E3C`, yielding
+absolute Player offsets `+0x29BC/+0x29F0`, exactly the two addresses used by
+PhotoItem's target update path.
+
+**Corroborated.** TH095-local `PhotoCamera.hpp` independently declares
+`PhotoCameraState::charge @ +0x0B80` and `flags @ +0x0BB4`.  Exact
+`UpdateViewfinder`, `TakePhoto`, `CancelCapture`, `CalculatePhotoScore`, and
+`UpdateCharge` consume those fields for viewfinder scale, capture state, focus
+state, and charge progression.  `PhotoItemManagerView::Update` independently
+reads/writes the corresponding Player-relative storage while awarding camera
+charge for collected photo items.  No TH08 interpretation is needed.
+
+**Inferred.** Extending `PhotoPlayerCameraRuntimeView` with the two fields is a
+reconstruction representation choice that lets production consumers share one
+owner.  It does not prove the original source used this shared type or field
+names across translation units.
+
+**Unknown.** Camera `+0x0BB0` remains opaque despite being adjacent to the known
+counters and flags.  Individual bits of `flags` are not generalized into a
+shared protocol enum by this batch; the PhotoItem consumer proves only that bit
+0 selects the indexed-charge path.  Player `photoTargetBoundsMin/Max @
++0x2A28/+0x2A34` remain outside this batch.
+
+**Regression boundary.** The normal production `PhotoItemManager.cpp` branch
+compiled with pinned VC7.1 to i386 COFF.  The nine source files that directly
+include `PhotoPlayerRuntime.hpp` replayed 105/105 configured exact units with
+zero private-label refresh.  Because this is a shared-header/layout change, the
+cold aggregate exact gate was then started from an empty `build/matching`
+directory.  The single long Factory repository RPC timed out before returning a
+summary; recovery found no active compiler/replay process and all 88 matching
+objects present, so that incomplete transport result was not counted as an
+Oracle pass.  The same manifest-bound current source was replayed as eight
+mutually exclusive groups of 87 units; all eight passed, totaling 696/696
+canonical exact units with zero private-label refresh and 88 covered sources.
+`validate-tracking.py --require-target` remained 697 source-present / 696 exact.
+An independent cold product gate compiled all 88 production translation units
+with pinned VC7.1, linked and verified PE32 i386 output, and produced build-local
+SHA-256 `4f02d72af9de1a8b7e63699ee0341a68e9a800a6e49ef3dba7af1d4ec40fa815`.
+Exact replay, product closure, Git state, and semantic interpretation remain
+separate claims.  No runtime behavior or storage scenario is newly claimed.
+
+**Analysis artifacts.** `.analysis/` remains 1,408,444,500 bytes.  No
+current-session `.analysis` root or large artifact was created; all legacy and
+shared provider state remains untouched.
+
+**Next batch:** canonicalize `photoTargetBoundsMin @ Player+0x2A28` and
+`photoTargetBoundsMax @ Player+0x2A34` onto `PhotoPlayerRuntimeView`.  Require
+the exact `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` writer, which
+publishes `playerPosition ± photoTargetHalfSize` to `+0x2A28..+0x2A3C`, to agree
+with the `PhotoItemManagerView::Update` AABB consumer before editing.  Because
+that also extends the shared runtime header, close the full cold aggregate exact
+and whole-product gates again.  Do not broaden into the half-size/configuration
+fields unless separately evidenced.

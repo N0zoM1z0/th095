@@ -14,15 +14,23 @@ namespace th095
 // production consumers are named here.
 struct PhotoPlayerCameraRuntimeView
 {
-    u8 unknown000[0x0ba8];
+    u8 unknown000[0x0b80];
+    f32 charge;                                      // +0x0b80
+    u8 unknownb84[0x0ba8 - 0x0b84];
     i32 photoIndex;                                  // +0x0ba8
     i32 photosTaken;                                 // +0x0bac
+    u8 unknownbb0[0x0bb4 - 0x0bb0];
+    u32 flags;                                       // +0x0bb4
 };
 
+typedef char PhotoPlayerCameraChargeAt0B80[
+    (offsetof(PhotoPlayerCameraRuntimeView, charge) == 0x0b80) ? 1 : -1];
 typedef char PhotoPlayerCameraPhotoIndexAt0BA8[
     (offsetof(PhotoPlayerCameraRuntimeView, photoIndex) == 0x0ba8) ? 1 : -1];
 typedef char PhotoPlayerCameraPhotosTakenAt0BAC[
     (offsetof(PhotoPlayerCameraRuntimeView, photosTaken) == 0x0bac) ? 1 : -1];
+typedef char PhotoPlayerCameraFlagsAt0BB4[
+    (offsetof(PhotoPlayerCameraRuntimeView, flags) == 0x0bb4) ? 1 : -1];
 
 struct PhotoPlayerRuntimeView
 {
@@ -53,10 +61,14 @@ typedef char PhotoPlayerRuntimePositionAt1E30[
     (offsetof(PhotoPlayerRuntimeView, playerPosition) == 0x1e30) ? 1 : -1];
 typedef char PhotoPlayerRuntimeCameraAt1E3C[
     (offsetof(PhotoPlayerRuntimeView, camera) == 0x1e3c) ? 1 : -1];
+typedef char PhotoPlayerRuntimeCameraChargeAt29BC[
+    (offsetof(PhotoPlayerRuntimeView, camera.charge) == 0x29bc) ? 1 : -1];
 typedef char PhotoPlayerRuntimePhotoIndexAt29E4[
     (offsetof(PhotoPlayerRuntimeView, camera.photoIndex) == 0x29e4) ? 1 : -1];
 typedef char PhotoPlayerRuntimePhotosTakenAt29E8[
     (offsetof(PhotoPlayerRuntimeView, camera.photosTaken) == 0x29e8) ? 1 : -1];
+typedef char PhotoPlayerRuntimeCameraFlagsAt29F0[
+    (offsetof(PhotoPlayerRuntimeView, camera.flags) == 0x29f0) ? 1 : -1];
 
 } // namespace th095
 

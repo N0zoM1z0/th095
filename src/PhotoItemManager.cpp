@@ -71,12 +71,18 @@ extern ItemGlobalStateView *g_PhotoGlobalState;
 
 #ifdef DIFFBUILD
 #define TH095_ITEM_PLAYER_POSITION (g_PhotoGame->playerPosition)
+#define TH095_ITEM_CAMERA_CHARGE(game) ((game)->cameraCharge)
 #define TH095_ITEM_PHOTO_INDEX (g_PhotoGame->photoIndex)
+#define TH095_ITEM_CAMERA_FLAGS (g_PhotoGame->cameraFlags)
 #else
 #define TH095_ITEM_PLAYER_POSITION \
     (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->playerPosition)
+#define TH095_ITEM_CAMERA_CHARGE(game) \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.charge)
 #define TH095_ITEM_PHOTO_INDEX \
     (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.photoIndex)
+#define TH095_ITEM_CAMERA_FLAGS \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.flags)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -182,16 +188,16 @@ static __forceinline void NormalizeAndScaleItemVelocity(
 static __forceinline void AddIndexedItemCameraCharge(
     ItemPhotoGameView *game, i32 photoIndex)
 {
-    game->cameraCharge += static_cast<f32>(photoIndex) * 0.0002f + 0.0016f;
-    if (game->cameraCharge > 1.0f)
-        game->cameraCharge = 1.0f;
+    TH095_ITEM_CAMERA_CHARGE(game) += static_cast<f32>(photoIndex) * 0.0002f + 0.0016f;
+    if (TH095_ITEM_CAMERA_CHARGE(game) > 1.0f)
+        TH095_ITEM_CAMERA_CHARGE(game) = 1.0f;
 }
 
 static __forceinline void AddFixedItemCameraCharge(ItemPhotoGameView *game)
 {
-    game->cameraCharge += 0.004f;
-    if (game->cameraCharge > 1.0f)
-        game->cameraCharge = 1.0f;
+    TH095_ITEM_CAMERA_CHARGE(game) += 0.004f;
+    if (TH095_ITEM_CAMERA_CHARGE(game) > 1.0f)
+        TH095_ITEM_CAMERA_CHARGE(game) = 1.0f;
 }
 
 i32 PhotoItemManagerView::Update()
@@ -246,7 +252,7 @@ i32 PhotoItemManagerView::Update()
               g_PhotoGame->photoTargetBoundsMax.y < locals.boundsMin.y))
         {
             locals.item->active = 0;
-            if ((g_PhotoGame->cameraFlags & 1) != 0)
+            if ((TH095_ITEM_CAMERA_FLAGS & 1) != 0)
             {
                 AddIndexedItemCameraCharge(
                     g_PhotoGame, TH095_ITEM_PHOTO_INDEX);
@@ -270,7 +276,9 @@ tick:
     return 1;
 }
 
+#undef TH095_ITEM_CAMERA_FLAGS
 #undef TH095_ITEM_PHOTO_INDEX
+#undef TH095_ITEM_CAMERA_CHARGE
 #undef TH095_ITEM_PLAYER_POSITION
 
 i32 PhotoItemManagerView::Draw()
