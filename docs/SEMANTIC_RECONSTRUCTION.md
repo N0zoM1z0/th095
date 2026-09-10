@@ -2018,3 +2018,60 @@ and shared provider state remain untouched.
 a separate owner. Verify the target's signed-byte spawn input conversion against
 the four-byte stored field and the three 32-bit ECL resolver paths before
 acceptance; do not collapse it with score or adjacent timeline parameters.
+
+
+
+### SEM-029 — script-visible enemy item-drop type
+
+**Scope.** Recover compact enemy `itemDropType @ +0x2BD8` as ECL selector
+`0x275B` across the integer reader, float reader, and integer lvalue resolver.
+The field remains a signed four-byte storage slot even though spawn accepts only
+the signed low byte of its input parameter. Each maintainable resolver branch
+uses a source-local `i32 itemDropType` view; each exact branch expands the
+semantic macro to the historical dword expression. Adjacent timeline parameters
+at `+0x2BDC/+0x2BE0` remain separate owners.
+
+**Observed.** Target-attested TH095 disassembly of
+`PhotoEnemyManagerView::Spawn @ 0x004156C0` performs `MOVSX` from the byte at
+stack argument `+0x14`, then writes the sign-extended result as a full dword to
+enemy `+0x2BD8`. `SpawnWithContext @ 0x00415820` decompiles to the same signed-
+byte-to-dword assignment. Independently, the three exact ECL operand resolvers
+map selector `0x275B` to a four-byte access at exactly `+0x2BD8`: integer read,
+float conversion, and integer lvalue address.
+
+**Corroborated.** Canonical TH095 `PhotoEnemyView` declares
+`i32 itemDropType @ +0x2BD8`, followed by independent timeline parameters at
+`+0x2BDC/+0x2BE0`. Both exact spawn variants copy the manager's full enemy
+template first and then overwrite `itemDropType` from the signed low byte of the
+spawn argument after successful first ECL execution. The lvalue resolver proves
+that ECL can later replace the complete four-byte stored value. The apparent
+byte/dword width tension is therefore an input-conversion protocol, not a
+layout conflict.
+
+**Inferred.** `+0x2BD8` is the mutable per-enemy item-drop type visible to ECL
+as selector `0x275B`. Spawn intentionally restricts its call-boundary input to a
+signed 8-bit code and sign-extends that code into the four-byte runtime/script
+slot; later script writes are not restricted by this batch to the same 8-bit
+range.
+
+**Unknown.** This batch does not recover the enumeration of item-drop codes,
+does not prove which lifecycle event consumes the field to create an item, and
+does not claim that arbitrary 32-bit values written through the ECL lvalue path
+are meaningful drop types. It also does not merge the field with score or the
+two neighboring timeline parameters.
+
+**Regression boundary.** `ecl-resolve-int`, `ecl-resolve-int-lvalue`, and
+`ecl-resolve-float` replay exact together, 3/3, with zero private-label refresh.
+All three normal production translation units independently compile under
+pinned VC7.1 to i386 COFF, and `git diff --check` passes. No shared header,
+object layout, or ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** refresh the three ECL operand resolver surfaces and prefer a
+remaining selector backed by an independently exact compact `PhotoEnemyView`
+field plus a non-resolver TH095 producer/consumer. Do not infer semantics from
+selector adjacency alone; if the `+0x2BDC/+0x2BE0` timeline parameters lack an
+independent protocol, leave them unknown and route onward.

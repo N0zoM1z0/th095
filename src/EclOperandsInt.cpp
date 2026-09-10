@@ -137,6 +137,19 @@ typedef char EclIntOperandEnemyScoreAt2964[
 #define TH095_ECL_ENEMY_SCORE(owner) \
     (reinterpret_cast<EclIntOperandEnemyScoreView *>(owner)->score)
 #endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_ITEM_DROP_TYPE(owner) ENEMY_I32((owner), 0x2bd8)
+#else
+struct EclIntOperandItemDropTypeView
+{
+    u8 unknown0000[0x2bd8];
+    i32 itemDropType;
+};
+typedef char EclIntOperandItemDropTypeAt2BD8[
+    (offsetof(EclIntOperandItemDropTypeView, itemDropType) == 0x2bd8) ? 1 : -1];
+#define TH095_ECL_ITEM_DROP_TYPE(owner) \
+    (reinterpret_cast<EclIntOperandItemDropTypeView *>(owner)->itemDropType)
+#endif
 #define ENEMY_U8(owner, offset) \
     (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 
@@ -228,7 +241,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x274d: return (i32)enemy->orbitAngularVelocity;
     case 0x2752: return ENEMY_I32(enemy, 0x2c50);
     case 0x2753: return ENEMY_U8(enemy, 0x2be5);
-    case 0x275b: return ENEMY_I32(enemy, 0x2bd8);
+    case 0x275b: return TH095_ECL_ITEM_DROP_TYPE(enemy);
     case 0x275c: return TH095_ECL_ENEMY_SCORE(enemy);
 
     case 0x2730:
@@ -254,6 +267,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 #undef TH095_ECL_INT_PHOTO_INDEX
 #undef TH095_ECL_INT_PLAYER_POSITION
 #undef ENEMY_U8
+#undef TH095_ECL_ITEM_DROP_TYPE
 #undef TH095_ECL_ENEMY_SCORE
 #undef TH095_ECL_TIMER_CURRENT
 #undef TH095_ECL_ENEMY_LIFE

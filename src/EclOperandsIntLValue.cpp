@@ -72,6 +72,19 @@ typedef char EclIntLValueOperandEnemyScoreAt2964[
 #define TH095_ECL_ENEMY_SCORE(owner) \
     (reinterpret_cast<EclIntLValueOperandEnemyScoreView *>(owner)->score)
 #endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_ITEM_DROP_TYPE(owner) ENEMY_I32((owner), 0x2bd8)
+#else
+struct EclIntLValueOperandItemDropTypeView
+{
+    u8 unknown0000[0x2bd8];
+    i32 itemDropType;
+};
+typedef char EclIntLValueOperandItemDropTypeAt2BD8[
+    (offsetof(EclIntLValueOperandItemDropTypeView, itemDropType) == 0x2bd8) ? 1 : -1];
+#define TH095_ECL_ITEM_DROP_TYPE(owner) \
+    (reinterpret_cast<EclIntLValueOperandItemDropTypeView *>(owner)->itemDropType)
+#endif
 
 namespace EclOperands
 {
@@ -107,7 +120,7 @@ i32 *__fastcall ResolveIntLValue(
 
     case 0x2731: return &TH095_ECL_TIMER_CURRENT(enemy);
     case 0x2733: return &TH095_ECL_ENEMY_LIFE(enemy);
-    case 0x275b: return &ENEMY_I32(enemy, 0x2bd8);
+    case 0x275b: return &TH095_ECL_ITEM_DROP_TYPE(enemy);
     case 0x275c: return &TH095_ECL_ENEMY_SCORE(enemy);
 
     case 0x273c: return &g_EclIntLValueRuntime->sharedOperands->intVariables[0];
@@ -120,6 +133,7 @@ i32 *__fastcall ResolveIntLValue(
 
 } // namespace EclOperands
 
+#undef TH095_ECL_ITEM_DROP_TYPE
 #undef TH095_ECL_ENEMY_SCORE
 #undef TH095_ECL_TIMER_CURRENT
 #undef TH095_ECL_ENEMY_LIFE

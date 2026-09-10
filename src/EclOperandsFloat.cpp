@@ -131,6 +131,19 @@ typedef char EclFloatOperandEnemyScoreAt2964[
 #define TH095_ECL_ENEMY_SCORE(owner) \
     (reinterpret_cast<EclFloatOperandEnemyScoreView *>(owner)->score)
 #endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_ITEM_DROP_TYPE(owner) ENEMY_I32((owner), 0x2bd8)
+#else
+struct EclFloatOperandItemDropTypeView
+{
+    u8 unknown0000[0x2bd8];
+    i32 itemDropType;
+};
+typedef char EclFloatOperandItemDropTypeAt2BD8[
+    (offsetof(EclFloatOperandItemDropTypeView, itemDropType) == 0x2bd8) ? 1 : -1];
+#define TH095_ECL_ITEM_DROP_TYPE(owner) \
+    (reinterpret_cast<EclFloatOperandItemDropTypeView *>(owner)->itemDropType)
+#endif
 #define ENEMY_U8(owner, offset) \
     (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 
@@ -166,7 +179,7 @@ f32 Enemy::ResolveFloat(f32 operand)
 
     case 0x2731: return (f32)TH095_ECL_TIMER_CURRENT(this);
     case 0x2733: return (f32)TH095_ECL_ENEMY_LIFE(this);
-    case 0x275b: return (f32)ENEMY_I32(this, 0x2bd8);
+    case 0x275b: return (f32)TH095_ECL_ITEM_DROP_TYPE(this);
     case 0x275c: return (f32)TH095_ECL_ENEMY_SCORE(this);
 
     case 0x273c: return (f32)g_EclFloatOperandRuntime->sharedOperands->intVariables[0];
@@ -250,6 +263,7 @@ f32 Enemy::ResolveFloat(f32 operand)
 #undef TH095_ECL_FLOAT_PHOTO_INDEX
 #undef TH095_ECL_FLOAT_PLAYER_POSITION
 #undef ENEMY_U8
+#undef TH095_ECL_ITEM_DROP_TYPE
 #undef TH095_ECL_ENEMY_SCORE
 #undef TH095_ECL_TIMER_CURRENT
 #undef TH095_ECL_ENEMY_LIFE
