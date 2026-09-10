@@ -3158,3 +3158,54 @@ another TH095-local producer/consumer protocol, beginning with bullet `+0x360`
 only if independent consumers distinguish it from transform sound/index and the
 captured-list/cooldown union. Do not promote adjacency or a single transform
 writer into meaning.
+
+
+### SEM-046 — unresolved bullet dword at +0x360
+
+**Scope.** Audit compact photo-bullet dword `+0x360`, immediately after the
+`+0x35C` captured-list / zone-transition-cooldown union and before
+`transformSound @ +0x364`. No source representation change is accepted in this
+batch because the TH095-local protocol does not expose a reader.
+
+**Observed.** Canonical target-exact `PhotoBulletManagerView::SpawnSingleBullet
+@ 0x00405A30` writes zero to bullet `+0x360` during ordinary bullet
+initialization, after publishing type/color/transform flags and before ANM setup,
+draw-bucket selection, transform sound, collision size, and transform-program
+startup. The compact `PhotoBulletView` currently preserves that dword as
+`field360`.
+
+**Corroborated.** Repository-wide TH095 source search finds no read or nonzero
+write of `field360`. The independent `ExtendedBulletView` reproduces the same
+layout position only as another opaque `field360` member and never consumes it.
+Neighboring fields have distinct proven protocols: `+0x35C` is reused as the
+captured-list link / zone-transition cooldown, `+0x364` is transform sound, and
+`+0x368` is the transform-program index. Their meanings therefore cannot be
+extended into `+0x360` by adjacency.
+
+**Inferred.** The spawn-time zero establishes only an initialization invariant.
+It does not distinguish a counter, latch, handle, index, pointer-sized cache, or
+reserved runtime state, so no maintainable semantic name is warranted.
+
+**Unknown.** The reader, lifetime, nonzero producer, and gameplay role of
+`+0x360` remain unknown. No claim is made that zero means inactive, no-owner, or
+no-effect. The field is intentionally left as `field360` until independent
+TH095-local evidence appears.
+
+**Regression boundary.** This is an evidence-rejection checkpoint with no
+source edit. The SEM-045 source state remains unchanged, so no exact or
+production gate is reissued merely for this documentation addition;
+`git diff --check` covers the record itself.
+
+**Receipt state.** The campaign-wide 88-source / 696-unit exact and whole-product
+milestone was current at `58ab994` and became source-stale after SEM-045. No
+receipt plane is refreshed for this no-source checkpoint.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session analysis artifact was created, retained, or removed; legacy and
+shared provider state remain untouched.
+
+**Next batch:** recover the TH095 viewport-to-ANM screen-shake-offset protocol if
+target evidence confirms that viewport configuration `+0xE8/+0xEC` is copied
+to `AnmManager::screenShakeOffset @ +0x20/+0x24` and the draw path consumes that
+same pair. Keep the independent global `g_ScreenEffectShakeX/Y` publication
+separate unless target dataflow proves an ownership relation.
