@@ -224,3 +224,63 @@ passing.  A Git checkpoint by itself is not exact, product, or runtime proof.
 **Next batch:** classify and canonicalize the TH095-local
 `PhotoReplayInputButtonsTaskView` overlay at `0x004BE218` without extending the
 claim to the larger ECL interpreter or to persistent replay formats.
+
+### SEM-002 — photo replay-exit input overlay
+
+**Scope.** This batch closes only the photography task's one-field
+`PhotoReplayInputButtonsTaskView` over shared input base `0x004BE218`.  The
+production `PhotoGameTaskView::Update` path now consumes
+`RuntimeInputCurrent()` directly, so the temporary one-word object view and its
+operator overload are gone.  The exact-only `PhotoGameTaskExact.inl` keeps its
+target-facing declaration and spelling because that source shape belongs to the
+canonical VC7 comparison lane.  The `0x160B` bit mask remains numeric: this
+batch proves which input word it masks, not the independent semantic name of
+every bit in that protocol.
+
+**Observed.** Hash-attested TH095 v1.02a Ghidra decompilation of
+`PhotoGameTaskView::Update @ 0x00418100` reads the 16-bit value at
+`0x004BE218` and tests it with `0x160B` while the replay/archive flag at
+`0x004BDED0` is nonzero.  SEM-001 independently established that the same base
+and width are `ReplayInputSource::currentInput +0x00`; the exact
+`ReplayInputSource::Update @ 0x004353B0` and `ReplayManager::ProcessFrame`
+dataflow distinguish that current word from repeat `+0x04`, pressed `+0x06`,
+and replay history `+0x2C..+0x34`.
+
+**Corroborated.** The TH095-local photo task is therefore another consumer of
+the same current-input owner already used by ReplayManager.  No TH08 meaning is
+needed for the interpretation.  Repository search after the edit finds no
+production user of `PhotoReplayInputButtonsTaskView` or `g_ReplayInputButtons`;
+the only remaining `RuntimeInputStorage()` symbol is the now-unused generic
+byte accessor in `InputRuntime.hpp`, which is not treated as evidence for a
+separate owner.
+
+**Inferred.** Removing the task-local overlay is a reconstruction ownership
+choice: it says that this production read belongs to the canonical shared input
+word.  It does not claim that the original source called the field
+`currentInput`, exposed a `ReplayInputSource` object to the photo task, or used
+the same C++ aggregate declaration across controller, replay, and photo code.
+
+**Unknown.** The individual meanings of mask bits selected by `0x160B` are not
+classified here, nor is the precise historical relationship between the live
+controller-slot layout and replay overlay.  Those protocol names remain a
+separate semantic batch.
+
+**Regression boundary.** The campaign baseline at committed HEAD `fcdd0188`
+reported 697 source-present / 696 exact units, cold-compiled all 88 production
+translation units with the pinned VC7.1 toolchain, and linked a verified PE32
+i386 product.  Before the edit `src/PhotoGameTask.cpp` replayed 10/10 exact
+units.  After the edit, a direct normal-branch VC7.1 compile produced an i386
+COFF object, and the exact lane again replayed 10/10 with zero private-label
+refresh.  The final-source cold product again compiled all 88 production
+objects and linked/verified `build/whole-validation/th095-reconstructed.exe`;
+its build-local SHA-256 was
+`8e986079cde809038d0a907116e6cd02cb899d7fb500c19f5caa482cb36d3e66`.
+Successful linkage remains product closure, not whole-image exactness.  The
+Factory host's missing game-data archives remain the same runtime-scenario
+infrastructure boundary recorded by SEM-001, so this batch does not claim a new
+live replay-exit scenario result.
+
+**Next batch:** classify the ANM preload-slot path storage at
+`AnmManager + 0x2C + slot*0x120 + 0x20`, replacing the production raw
+`AnmLoaded* + 0x20` filename write only if the target-proven slot layout and
+preload/service consumers agree.

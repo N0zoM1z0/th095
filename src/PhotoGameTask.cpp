@@ -102,16 +102,6 @@ struct PhotoCapacityCounterTaskView
     }
 };
 
-struct PhotoReplayInputButtonsTaskView
-{
-    u16 current;
-
-    u16 operator&(u16 mask)
-    {
-        return this->current & mask;
-    }
-};
-
 struct PhotoGameRuntimeTaskView
 {
     u8 unknown000[0x1e34];
@@ -179,7 +169,6 @@ extern u32 g_PhotoAsciiTextColor;
 // canonical ZunColor storage used by every following AddFormatText call.
 #define g_PhotoAsciiTextColor (g_AsciiManager.color.color)
 #endif
-#define g_ReplayInputButtons (*reinterpret_cast<PhotoReplayInputButtonsTaskView *>(RuntimeInputStorage()))
 extern i32 g_PhotoNextState;
 #ifndef DIFFBUILD
 #define g_PhotoNextState (g_Supervisor.currentState)
@@ -235,7 +224,7 @@ i32 PhotoGameTaskView::Update()
     }
 
     if (g_ReplayUsesArchive != 0 &&
-        ((g_ReplayInputButtons & 0x160b) != 0 ||
+        ((RuntimeInputCurrent() & 0x160b) != 0 ||
          ((this->flags >> 4) & 1) != 0 ||
          ((this->flags >> 5) & 1) != 0 ||
          ((this->flags >> 6) & 1) != 0))
