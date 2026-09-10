@@ -530,15 +530,15 @@ ChainCallbackResult SceneSelectControllerView::Update()
         break;
     }
 
+    // The controller overlays these VM ids as POD storage; keep the exact
+    // AnmVmId::GetVm ABI while naming their canonical array ownership.
     locals.first66 =
         reinterpret_cast<FrontEndVmUpdateView *>(
-            reinterpret_cast<AnmVmId *>(
-                reinterpret_cast<u8 *>(this) + 0xd8c)
+            reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x66])
                 ->GetVm());
     locals.second67 =
         reinterpret_cast<FrontEndVmUpdateView *>(
-            reinterpret_cast<AnmVmId *>(
-                reinterpret_cast<u8 *>(this) + 0xd90)
+            reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x67])
                 ->GetVm());
     if (locals.first66 != NULL && locals.second67 != NULL)
     {
@@ -548,12 +548,10 @@ ChainCallbackResult SceneSelectControllerView::Update()
     }
 
     locals.first68 = reinterpret_cast<FrontEndVmUpdateView *>(
-        reinterpret_cast<AnmVmId *>(
-            reinterpret_cast<u8 *>(this) + 0xd94)
+        reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x68])
             ->GetVm());
     locals.second69 = reinterpret_cast<FrontEndVmUpdateView *>(
-        reinterpret_cast<AnmVmId *>(
-            reinterpret_cast<u8 *>(this) + 0xd98)
+        reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x69])
             ->GetVm());
     if (locals.first68 != NULL && locals.second69 != NULL)
     {

@@ -1489,3 +1489,70 @@ milestone, refresh repository-wide semantic debt plus the latest semantic
 history and select the highest-evidence bounded TH095-local family outside
 `EclExtended.cpp`. Treat the now-clean EclExtended raw-offset surface only as a
 routing result, not a semantic exit condition.
+
+
+
+### SEM-021 — front-end scrolling VM-id array slots
+
+**Scope.** Canonicalize the four raw front-end controller offsets
+`+0xD8C/+0xD90/+0xD94/+0xD98` in `SceneSelectControllerView::Update` as
+`vmIds.values[0x66..0x69]`. The existing exact-facing cast to `AnmVmId *` is
+retained only at the method-call boundary so the POD `SceneAnmVmId` overlay
+continues to call the canonical `AnmVmId::GetVm @ 0x004452F0` ABI. No shared
+layout or wrapper type changes.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`SceneSelectControllerView::Update @ 0x00445E80` resolves controller dwords at
+integer indexes `0x363`, `0x364`, `0x365`, and `0x366` through
+`AnmVmId::GetVm`. Those indexes are byte offsets `+0xD8C`, `+0xD90`, `+0xD94`,
+and `+0xD98`. The returned VM pairs copy position/display state from the first
+VM to the second, adding 512.0 to the destination X position for each pair.
+
+**Corroborated.** Both canonical `SceneSelect.hpp` and its exact header assert
+`SceneSelectControllerView::vmIds @ +0xBF4`, define 165 four-byte
+`SceneAnmVmId` slots, and therefore place indexes `0x66..0x69` exactly at the
+four target offsets. TH095-local producers independently use the same owner:
+`SceneSelectUpdate.cpp` creates VM slots `0x68/0x69` and later resolves
+`0x68`, while `HelpMenu.cpp` creates `0x66..0x69`; the front-end coordinator
+itself creates `0x66/0x67`, and `CloseMainMenu` independently interrupts slots
+102 and 103. This interpretation does not rely on TH08.
+
+**Compiler-observed.** A first natural experiment used the array's overloaded
+`operator[]`; VC7.1 expanded `Update` beyond the configured target extent
+(`0xBE3` object function versus `0xBC1` manifest extent), so that expression was
+rejected. Addressing the public POD storage directly as
+`vmIds.values[index]` restores the exact target code shape. The retained
+`reinterpret_cast<AnmVmId *>` is therefore a narrow exact ABI bridge, not
+unknown object ownership.
+
+**Inferred.** Slots `0x66/0x67` and `0x68/0x69` are two paired front-end VM
+handles whose visual synchronization protocol mirrors each first VM into its
+second VM with a +512 X displacement. The source does not invent stronger
+per-pair UI names because their script-dependent visual roles span multiple
+front-end states.
+
+**Unknown.** This batch does not assign universal visual names to indexes
+`0x66..0x69`, does not reinterpret other `vmIds` indices, and does not claim the
+POD scene handle type is ABI-identical for every possible method call. Only the
+observed `GetVm` boundary remains intentionally bridged to `AnmVmId`.
+
+**Regression boundary.** The narrow `front-end-controller-update` unit is
+2969/2969 authored bytes exact and 3009/3009 across its configured body-plus-
+switch-table extent, including all configured relocations. All four configured
+`src/FrontEndController.cpp` units replay exact with zero private-label
+refresh. The normal production TU independently compiles under pinned VC7.1 to
+an i386 COFF object, and `git diff --check` passes. No shared header changed, so
+the previous 88-source/696-unit cold aggregate and 88-TU PE32 product milestone
+is an earlier-source receipt state rather than current-source closure for this
+checkpoint.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect the front-end queue/reset family reached from
+`UpdateMainMenu` when selecting the game path. Prefer the two repeatedly drained
+queues at `+0x61B8/+0x6248` and the nine queue-count reset offsets only where the
+independent exact `FrontEndLifecycleView`, `SceneSelectAssets`, and
+`SceneSelectUpdate` layouts agree. Keep pending-data counters at `+0x63BC/+0x63CC`
+separate unless their producer/lifetime evidence is independently sufficient.
