@@ -1702,3 +1702,62 @@ surface after excluding exact-compatibility macros already documented by
 SEM-022/023. Prefer a bounded repeated TH095-local owner family with independent
 layout/protocol consumers; otherwise route to the next repository-wide file
 rather than forcing one-off offsets into speculative names.
+
+
+
+### SEM-024 — compact enemy deferred-shot cadence state
+
+**Scope.** Replace the three raw compact-enemy accessors for deferred shot
+storage and cadence timing with one `EnemyShotCadenceView`. The view fixes the
+cached ECL shot instruction at enemy `+0x2B9C`, `shootIntervalFrames` at
+`+0x2BC8`, and `shootIntervalTimer` at `+0x2BCC`. Life gating, movement flags,
+ANM direction, and the ANM-script table remain separate families; in particular
+this batch does not redo SEM-012/013.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`Enemy::UpdateShotAndAnm @ 0x00413030` first requires positive life, then ticks
+the timer rooted at `+0x2BCC` whenever the interval dword at `+0x2BC8` is
+positive. When the timer reaches the configured interval, the target calls
+`DispatchShotInstruction @ 0x00412670` with `enemy + 0x2B9C` and resets the
+three timer words through the normal zero-assignment protocol. Thus all three
+offsets participate in one deferred-shot cadence state machine.
+
+**Corroborated.** The independently exact TH095 `EclManager::RunEcl` high-opcode
+lane supplies the producer side. Opcodes 86..94 copy exactly `0x2C` bytes of the
+current shot instruction to enemy `+0x2B9C` when the deferred-shot flag is set;
+opcode 95 writes the interval at `+0x2BC8` and initializes the timer at
+`+0x2BCC`, while opcode 96 writes the same interval and seeds the timer from the
+TH095 RNG. The exact `PhotoEnemyView` independently places
+`shootIntervalFrames` and `shootIntervalTimer` at the same two offsets. This is
+entirely TH095-local evidence.
+
+**Inferred.** The `0x2C` storage is a cached raw ECL shot instruction consumed
+by the periodic shot updater, not an owning pointer. The interval/timer pair
+controls repeated dispatch of that cached instruction while the enemy remains
+alive. `EnemyShotCadenceView` therefore owns only the storage/interval/timer
+representation and leaves the separate flag that decides immediate versus
+deferred dispatch to its existing movement/control-word family.
+
+**Unknown.** This batch does not assign one gameplay name to opcodes 86..94,
+does not interpret every byte in the cached `0x2C` instruction record, and does
+not claim that the cadence state survives every enemy lifecycle transition.
+The exact ECL writers and enemy initialization remain the authorities for when
+it is populated/reset.
+
+**Regression boundary.** The natural typed view requires no exact-only source
+branch: `enemy-update-shot-and-anm` remains 837/837 bytes exact with all 13
+configured relocations, and the source replay refreshes zero private labels.
+The normal production `src/EnemyShotAnm.cpp` independently compiles under the
+pinned VC7.1 profile to i386 COFF, and `git diff --check` passes. No shared
+header or ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect the remaining compact-enemy fields in
+`EnemyShotAnm.cpp` after excluding movement flags and ANM-script storage already
+covered by SEM-012/013. Prefer `anmDirection @ +0x2C0A` if its TH095-local reset,
+consumer, and write-back protocol remains independently exact; otherwise route
+to the life field or another repository-wide owner rather than reopening the
+completed shot-cadence family.

@@ -17,21 +17,36 @@ void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruc
     TH095_RUNTIME_GLOBAL_PTR(u8, g_RuntimeEnemyManagerOwner)
 #endif
 
+struct EnemyShotCadenceView
+{
+    u8 unknown0000[0x2b9c];
+    u8 pendingShotInstruction[0x2c];
+    i32 shootIntervalFrames;
+    ZunTimer shootIntervalTimer;
+};
+typedef char EnemyShotCadencePendingInstructionAt2B9C[
+    (offsetof(EnemyShotCadenceView, pendingShotInstruction) == 0x2b9c) ? 1 : -1];
+typedef char EnemyShotCadenceIntervalAt2BC8[
+    (offsetof(EnemyShotCadenceView, shootIntervalFrames) == 0x2bc8) ? 1 : -1];
+typedef char EnemyShotCadenceTimerAt2BCC[
+    (offsetof(EnemyShotCadenceView, shootIntervalTimer) == 0x2bcc) ? 1 : -1];
+
 static __forceinline i32 &TargetEnemyLife(Enemy *enemy)
 {
     return *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958);
 }
 static __forceinline EclRawInstruction *TargetEnemyPendingShot(Enemy *enemy)
 {
-    return reinterpret_cast<EclRawInstruction *>(reinterpret_cast<u8 *>(enemy) + 0x2b9c);
+    return reinterpret_cast<EclRawInstruction *>(
+        reinterpret_cast<EnemyShotCadenceView *>(enemy)->pendingShotInstruction);
 }
 static __forceinline i32 &TargetEnemyShootInterval(Enemy *enemy)
 {
-    return *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bc8);
+    return reinterpret_cast<EnemyShotCadenceView *>(enemy)->shootIntervalFrames;
 }
 static __forceinline ZunTimer &TargetEnemyShootTimer(Enemy *enemy)
 {
-    return *reinterpret_cast<ZunTimer *>(reinterpret_cast<u8 *>(enemy) + 0x2bcc);
+    return reinterpret_cast<EnemyShotCadenceView *>(enemy)->shootIntervalTimer;
 }
 static __forceinline u32 &TargetEnemyFlags1(Enemy *enemy)
 {
