@@ -4116,3 +4116,76 @@ local exact consumers and an independent producer/lifecycle. Revisit the compact
 main ECL context owner at enemy `+0x02DC` only if it remains unrecovered in the
 newer semantic history; otherwise select the strongest remaining non-exact-
 compatibility family.
+
+
+### SEM-058 — serialized scene-score record index routing
+
+**Scope.** Recover the valid `SC` score-file record at the parser cursor as a
+`ResultScoreEntryView` for its final destination lookup. The maintainable
+`ParseScoreFile` branch now routes the record through its typed `index @ +0x0C`
+and copies the same typed 0x60-byte record into `scoreEntries[index]`.
+`TH095_MATCH_EXACT` retains the historical raw `cursor + 0x0C` expression and
+whole-structure cast. No other record-header field or score-data layout is
+changed.
+
+**Observed.** Target-attested `ResultSaveDataView::ParseScoreFile @ 0x004356D0`
+recognizes record magic `SC` (`0x4353`), requires version 1, validates the
+0x60-byte additive checksum, reads dword 3 of the record as the destination
+index, and copies exactly 24 dwords into the `ResultSaveDataView` scene-score
+array. The target destination arithmetic is `base + index * 0x60 + 0x460`,
+which matches the shared score-entry owner and record size.
+
+**Corroborated.** `ScoreData.hpp` independently defines
+`ResultScoreEntryView::index @ +0x0C`, `sizeof(ResultScoreEntryView) == 0x60`,
+and `ResultSaveDataView::scoreEntries[120] @ +0x460`. The exact writer
+`WriteBestShotData @ 0x00435910` iterates those 120 entries, rewrites each valid
+entry's `index` from its array slot before checksum calculation, then copies the
+same 0x60-byte record into the serialized payload. Thus parse and write are two
+TH095-local directions of one typed record/index protocol.
+
+**Inferred.** The serialized `SC` record carries its own scene-score destination
+index at `+0x0C`; parsing is a keyed restore into the persistent 120-entry score
+array rather than an implicit sequential append. Reusing the existing typed
+record in the maintainable branch makes that routing relationship explicit
+without introducing a second serialization structure.
+
+**Unknown.** The target parser does not expose an independent bounds check for
+the serialized index before using it in destination arithmetic, so this batch
+does not infer one or claim malformed files are memory-safe. It does not rename
+the generic parser cursor, the common record-size dword at `+0x04`, or the
+profile (`ST`) record fields. A separate ANM preload candidate was also rejected
+before editing: the preload slot path at slot `+0x20` has a clear filename writer
+but no independent TH095-local reader was found, so no semantic source change is
+accepted there.
+
+**Compiler-observed.** The exact branch preserves the original nested parser AST
+and raw cursor-index expression. The production-only typed local is introduced
+inside the validated `SC` block and is absent from exact preprocessing. The
+canonical parser therefore remains byte/relocation identical without a private-
+label refresh.
+
+**Regression boundary.** `score-parse-file` remains 568/568 bytes exact and the
+independent `score-data-write-best-shot` producer remains 1407/1407 exact. Full
+changed-source replay for `src/ScoreLoad.cpp` is 1/1 exact with zero private-
+label refresh. The normal ScoreLoad production TU independently compiles under
+pinned VC7.1 13.10.3077 to i386 COFF, and `git diff --check` passes. No shared
+header, physical storage, serialized record size, checksum algorithm, or runtime
+scenario changed.
+
+**Receipt state.** No Factory receipt is issued for this private checkpoint.
+The accepted whole-build receipt for `c3437fc3` is source-stale for the current
+campaign head; SEM-058 has focused current-source exact and production closure.
+
+**Recovery / analysis artifacts.** The batch started from tracked-clean
+`e50612ab`. `.analysis/` remains 1408444500 bytes and no current-session artifact
+was created or retained. The four unknown/external-current-state untracked paths
+remain untouched and excluded from staging.
+
+**Next batch:** perform an independent game-local semantic exit audit rather than
+selecting another raw offset mechanically. Classify the remaining high-count raw
+findings against committed semantic records and exact-compatibility branches,
+identify any still-actionable high-evidence owner/protocol family, and only
+continue source editing if that audit finds a materially stronger bounded batch.
+If no such batch remains, run current-source cold aggregate exact and whole-
+product gates and record the semantic-readiness handoff without conflating it
+with runtime or portable-platform closure.

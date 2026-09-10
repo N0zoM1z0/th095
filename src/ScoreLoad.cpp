@@ -88,8 +88,14 @@ initializeScoreFile:
                             *reinterpret_cast<i32 *>(cursor + 8) ==
                         *reinterpret_cast<i32 *>(cursor + 8))
                     {
+#if defined(TH095_MATCH_EXACT)
                         this->scoreEntries[*reinterpret_cast<i32 *>(cursor + 0x0c)] =
                             *reinterpret_cast<ResultScoreEntryView *>(cursor);
+#else
+                        ResultScoreEntryView *scoreRecord =
+                            reinterpret_cast<ResultScoreEntryView *>(cursor);
+                        this->scoreEntries[scoreRecord->index] = *scoreRecord;
+#endif
                     }
                 }
             }
