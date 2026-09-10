@@ -2202,3 +2202,56 @@ and shared provider state remain untouched.
 consumer, constructor sentinel, and timer-reset protocol to distinguish the
 frame field from its paired payload before assigning maintainable names. If the
 second dword lacks an independent consumer, keep it unknown and route onward.
+
+
+
+### SEM-032 — unresolved delayed-callback storage pair
+
+**Scope.** Audit the two dwords written by target-high opcode 116 at compact
+enemy `+0x2CA4/+0x2CA8` without forcing source names where TH095-local
+producer/consumer evidence is incomplete. No source representation changes are
+accepted in this batch.
+
+**Observed.** Canonical target-exact `RunEcl` opcode 116 writes its first two
+integer operands to `+0x2CA4` and `+0x2CA8`, then reinitializes the enemy ECL
+timer at `+0x296C`. Target-high opcode 128 independently overwrites `+0x2CA8`
+with the signed 16-bit value stored at enemy `+0x285A`, and resets the same ECL
+timer. The exact compact `PhotoEnemyView` reserves a four-byte
+`pendingCallbackFrame` at `+0x2CA4`, an otherwise unnamed four-byte region at
+`+0x2CA8`, and initializes only `pendingCallbackFrame` to `-1` in the spawn
+template.
+
+**Corroborated.** Repository-wide TH095 source search finds no consumer of
+`pendingCallbackFrame` beyond its template initialization and opcode-116 write,
+and no read of `+0x2CA8`; the latter has only the opcode-116 and opcode-128
+writers. The two writers' shared ECL-timer reset shows a related control
+boundary but does not establish what either stored value is later compared
+against or dispatched to.
+
+**Inferred.** `+0x2CA4` is plausibly a delayed/pending frame value because of
+its `-1` sentinel and opcode-116 placement, but that interpretation is not
+accepted as maintainable semantics without an independent reader. `+0x2CA8`
+cannot be promoted beyond four-byte stored payload: opcode 116 accepts an
+integer operand, while opcode 128 sign-extends a distinct 16-bit enemy field
+into the same storage.
+
+**Unknown.** The consumer, lifetime, and exact protocol of both fields remain
+unknown. In particular, this audit does not claim that `+0x2CA8` is a callback
+id, duration, state, or argument, and it does not treat the existing
+`pendingCallbackFrame` reconstruction name as independently proved. No semantic
+source edit is made merely to remove raw offsets.
+
+**Regression boundary.** Because this is an evidence-rejection checkpoint with
+no source edit, the previously accepted SEM-031 source state remains unchanged.
+No exact or production receipt is reissued for unchanged code; `git diff
+--check` covers only this documentation addition.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** refresh remaining ECL operand raw-field selectors against the
+canonical compact `PhotoEnemyView` and choose a field with an independent
+TH095-local producer or runtime consumer. Do not route selector `0x2734` to
+`stateTimer`: its current component is at `+0x2980`, while that selector is
+already the active ECL call-parameter slot.
