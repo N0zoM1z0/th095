@@ -84,6 +84,7 @@ this table while exact builds retain their target-facing symbol spellings.
 | `0x004CA1B8` | ANM manager | real `g_AnmManager` pointer | shared |
 | `0x004CA2F0` | Selected scene record | real selected-scene pointer | shared |
 | `0x004CA2F4` | Active front-end/pause controller | `g_ActiveMenuController` | neutral shared pointer |
+| `0x004E24A8` | 8 KiB LZSS compression/decompression dictionary | `g_DecompressionRing`; production `Lzss::m_Dict` accesses route here | shared array |
 
 The remaining mutable relocation groups are scalars, arrays, tables, or fields
 with a single production owner. Important examples include the replay path at
@@ -92,7 +93,7 @@ with a single production owner. Important examples include the replay path at
 `0x004BE244..0x004BE24C`, standalone controller mapping at `0x004BE270`, PBG
 archive at `0x004BE408`, Supervisor current state/text ANM/flags at
 `0x004C4A7C/0x004C4AAC/0x004C4AB4`, replay lag fields at
-`0x004C4DFC/0x004C4E04`, and the decompression ring at `0x004E24A8`.
+`0x004C4DFC/0x004C4E04`.
 
 ## Deliberate multi-address symbol cases
 
@@ -117,7 +118,9 @@ These exact-facing names do not mean that the target addresses are aliases:
 The initial relocation/Chain audit found five real production-owner defects.
 None was an error in the accepted function semantics; each was a runnable-link
 storage/view error. Later runtime validation found a sixth wrong-instance
-owner family which the address-equivalence grouping could not expose.
+owner family which the address-equivalence grouping could not expose. A
+seventh defect was visible in the inventory but its production disposition was
+mistakenly accepted until replay-save validation exercised it.
 
 1. `0x004BDEC8` and `0x004C4DF4` had been collapsed. The first has 229
    hash-attested xrefs and is published at `0x00417FE5` and cleared at
@@ -148,7 +151,12 @@ owner family which the address-equivalence grouping could not expose.
    scene text into it, and left replay-label VMs under the wrong owner.
    Hash-attested review of all thirteen target xrefs bounded the complete
    family; production now routes every dynamic UI text consumer to the shared
-   owner. See RT-008/RT-010 in `docs/RUNTIME_ISSUES.md`.
+   owner. See RT-008 in `docs/RUNTIME_ISSUES.md`.
+7. The relocation inventory printed both `Lzss::m_Dict` and
+   `g_DecompressionRing` at `0x004E24A8`, but production still emitted two
+   arrays. Replay compression filled one and matched against the other,
+   producing all-`0x01` decompressed data. The LZSS tree now uses the canonical
+   ring owner. RT-010 records the paired pre/post save-and-reload oracle.
 
 `GetInput`'s other target globals were checked at the same time: input slots at
 `0x004BE218`, the standalone enable word at `0x004C45F0`, Supervisor keyboard
@@ -182,15 +190,16 @@ At the current checkpoint:
 - the cold whole build compiled all 88 pinned-VC7.1 i386 COFF objects and
   linked a verified 780,288-byte PE32 GUI executable;
 - the artifact SHA-256 is
-  `5cb15a02c5f787f64475e9b600ff5f82b0e4fd4fd1d895d09d7c88b24ecb95dc`;
+  `8e009628f6e41af753b0eb765877c41b877d9f412b020f1b3607cfdbdcfac97f`;
 - the full owner-audit checkpoint replayed all 696 configured exact units; the
   later five-source text-owner/menu-routing batch replayed 37/37 affected
   units. Its two private switch labels were corrected to their actual target
-  destinations rather than blindly refreshed; and
+  destinations rather than blindly refreshed; the compression repair replayed
+  all 9/9 Compress/Decompress/Lzss units; and
 - tracking and repository CI remained required final gates.
 
 The later focused paired runtime matrix covers title return, Music Room,
 Options, and both ESC return paths; details are in `docs/RUNTIME_ISSUES.md`.
-Replay save -> Finish still requires post-fix manual confirmation. Future
-runtime failures must be treated as new evidence lanes; this audit does not
-justify speculative guards or duplicate storage.
+Replay save -> Finish now has a paired negative/positive runtime oracle and is
+closed. Future runtime failures must be treated as new evidence lanes; this
+audit does not justify speculative guards or duplicate storage.

@@ -25,7 +25,7 @@ Status meanings:
 | RT-007 | closed | An unattended demo could exit after the player was hit; similar transitions were intermittent. | The startup worker and main thread could postload the same ANM entry concurrently. Production serializes the two consumers through Supervisor critical section 6. Three fresh-prefix demo runs passed all 21 checkpoints, and the gameplay escape/retry scenario passed all five. |
 | RT-008 | closed | ESC back to title produced a title background with no six menu labels and a stray Japanese scene-description fragment. | SceneSelect and MusicRoom cleared/wrote `title.anm` entry 0 instead of the shared writable text ANM at `g_Supervisor.textAnm` (`0x004C4AAC`). Result replay-label VMs had the same wrong-owner family. All production consumers now use the embedded text owner; paired original/reconstruction return scenarios render the menu again and remain alive. |
 | RT-009 | closed | The title screen's third and fourth entries opened Options and Music Room in the wrong order. | The source cases and private switch-table labels were paired incorrectly. Target row 2 requests state 8 (Music Room), while row 3 requests state 7 (Options). The linked routing and relocation manifest now encode that mapping; paired entry tests open the same screens as the original. |
-| RT-010 | fixed / confirmation pending | After saving a replay and choosing the keyboard's Finish entry, the user's build exited. | `ResultScreen::Update` states 13/14/15 are exact and state 15 writes the replay then returns to the slot list. Four replay-label VM initializations instead used the result-screen ANM rather than target `g_Supervisor.textAnm`; that owner defect is now repaired and built. The precise save -> Finish interaction has not yet been repeated post-fix, so do not record it as runtime-closed. |
+| RT-010 | closed | Confirming Save Replay, or choosing the keyboard's Finish entry, exited or froze after either scene 1-1 or 1-2. | Target `Lzss::m_Dict` and `g_DecompressionRing` both resolve to `0x004E24A8`, but production allocated two arrays. `CompressData` filled one while the tree matched the other, producing replay payloads that decoded entirely to `0x01`. Production now routes the LZSS tree through the shared ring. A paired pre-fix run froze only the reconstruction after Finish; the identical post-fix run returned both executables to a populated slot list. |
 
 ## Shared text ANM incident
 
@@ -70,8 +70,9 @@ case, not only masked bytes, mnemonic equality, or relocation counts.
 
 The repaired production build is a 780,288-byte PE32 i386 GUI executable with
 SHA-256
-`5cb15a02c5f787f64475e9b600ff5f82b0e4fd4fd1d895d09d7c88b24ecb95dc`.
-The five affected sources replay 37/37 configured exact units.
+`8e009628f6e41af753b0eb765877c41b877d9f412b020f1b3607cfdbdcfac97f`.
+The front-end five-source batch replayed 37/37 configured exact units; the
+compression owner repair replayed all 9/9 Compress/Decompress/Lzss units.
 
 Paired original/reconstruction runtime scenarios passed as follows:
 
@@ -82,8 +83,37 @@ Paired original/reconstruction runtime scenarios passed as follows:
 | Title row 4 | Options opens in both processes; process alive; opened-screen RMSE `0.0200367`. |
 | Music Room -> ESC -> title | Both return to title alive; returned-title RMSE `0.020138`. |
 | Options -> ESC -> title | Both return to title alive; returned-title RMSE `0.021678`. |
+| Save Replay -> slot 1 -> Finish | Pre-fix reconstruction froze on the game frame while the original returned to the slot list. Post-fix both returned alive to a populated list; final normalized RMSE `0.0476551`. |
 
-The remaining required manual check is RT-010: reproduce replay save -> Finish
-with the newly deployed build and confirm that the process returns to the
-replay-slot list instead of exiting.
+## Replay compression incident
 
+The 777-byte `replay/th95_02.rpy` produced by an earlier reconstructed build
+has a structurally consistent 569-byte encrypted stream and advertises 4,526
+decompressed bytes. Independent execution of the exact decrypt/LZSS algorithm
+consumes the complete stream and emits exactly 4,526 bytes, but every byte is
+`0x01`. The resulting header fields claim impossible `0x01010101` input/FPS
+stream sizes. Both the canonical executable and the pre-fix reconstruction
+stop making progress when `ResultScreen::LoadReplays` scans this file.
+
+The canonical relocation ledger already showed why: exact-facing
+`Lzss::m_Dict` and `g_DecompressionRing` both resolve to the same target owner
+at `0x004E24A8`. The former production map instead placed them at
+`0x004DD4B8` and `0x004D3508`. `CompressData` filled/read the ring while
+`Lzss::InitEncoderState`, `AddString`, and the other tree helpers maintained
+the separate dictionary. The encoder therefore chose matches against zeroed
+data rather than its input.
+
+Production `Lzss.cpp` now maps its dictionary accesses to
+`g_DecompressionRing`; DIFFBUILD/`TH095_MATCH_EXACT` retain the original class
+static spelling and exact relocations. A cold 88-TU build succeeds and all nine
+compression-family exact units replay without a label refresh.
+
+The paired `replay-save-finish` scenario is a direct negative/positive oracle:
+before the repair, the original returned from Finish to the slot list while
+the reconstruction remained on a frozen gameplay frame. After the repair,
+both returned alive and displayed a newly written slot 1 with matching name,
+scene, time, and score fields. The post-fix normalized RMSE is `0.0476551`.
+
+Previously generated all-`0x01` replay files are not repairable because their
+real input was lost. Quarantine or remove them before testing the fixed build;
+otherwise even the canonical loader encounters the old corrupt stream.

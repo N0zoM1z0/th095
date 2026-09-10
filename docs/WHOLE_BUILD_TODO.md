@@ -16,7 +16,7 @@ As of 2026-09-10, a cold production build:
 - verifies a 780,288-byte PE32 i386 Windows GUI executable at
   `build/whole-validation/th095-reconstructed.exe`;
 - produces SHA-256
-  `5cb15a02c5f787f64475e9b600ff5f82b0e4fd4fd1d895d09d7c88b24ecb95dc`.
+  `8e009628f6e41af753b0eb765877c41b877d9f412b020f1b3607cfdbdcfac97f`.
 
 The reconstruction ledgers remain at 697 source-present functions and 696
 accepted exact functions. `Controller::GetInput @ 0x00419AE0` is the sole
@@ -35,8 +35,9 @@ assets work. The reconstructed executable then reached:
 4. extended gameplay and the `Failed / Retry This Mission` overlay;
 5. a default `Retry This Mission` transition into a second attempt;
 6. a failure-menu return transition back to Mission Select;
-7. Mission Select, Music Room, and Options ESC returns to an intact title; and
-8. target-correct Music Room/Options title-row routing.
+7. Mission Select, Music Room, and Options ESC returns to an intact title;
+8. target-correct Music Room/Options title-row routing; and
+9. Save Replay -> slot 1 -> Finish -> populated replay-slot list.
 
 Keyboard confirmation and movement were exercised. Both post-fix transition
 runs remained alive until deliberately terminated; their Wine logs were empty.
@@ -92,13 +93,18 @@ so validation cannot modify the source installation.
 - Title menu routing: row 2 opens Music Room/state 8 and row 3 opens
   Options/state 7. The source block order and private-label manifest preserve
   both target code order and linked jump-table meaning.
+- LZSS dictionary ownership: exact-facing `Lzss::m_Dict` and
+  `g_DecompressionRing` both resolve to target `0x004E24A8`. Production tree
+  helpers now use that shared ring instead of a duplicate zeroed array, so
+  saved replay streams round-trip and can be scanned immediately.
 
 The complete relocation-equivalence and Chain-lifetime review is in
 `docs/OWNER_AUDIT.md`, and issue-level history is in
 `docs/RUNTIME_ISSUES.md`. The owner-audit checkpoint cold-replayed all 696
 canonical units. The latest five-source batch replayed 37/37 affected units;
 two switch-table private labels were corrected to their independently verified
-target destinations.
+target destinations. The compression-family repair replayed 9/9 affected
+units.
 
 ## Required verification
 
@@ -143,7 +149,6 @@ optional compatibility expansion, not known TODO blockers. Any future failure
 must become a new evidence-backed owner/lifecycle lane; do not hide it with a
 speculative guard, duplicate global, copied target bytes, or linker trick.
 
-One targeted runtime confirmation remains tracked as RT-010: repeat replay
-save -> keyboard Finish on the current build and verify return to the replay
-slot list. The correlated ResultScreen text-owner repair is present, but the
-exact interaction has not yet been observed post-fix.
+RT-010 is closed by a paired pre/post runtime oracle. Previously generated
+all-`0x01` replay files remain invalid and should be quarantined before testing;
+the lost input cannot be reconstructed from such a stream.

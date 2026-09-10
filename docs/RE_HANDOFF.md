@@ -58,7 +58,7 @@ Whole-program compile and link closure is complete. A fresh
 - verifies a PE32 i386 Windows GUI image at
   `build/whole-validation/th095-reconstructed.exe`;
 - currently produces 780,288 bytes with SHA-256
-  `5cb15a02c5f787f64475e9b600ff5f82b0e4fd4fd1d895d09d7c88b24ecb95dc`.
+  `8e009628f6e41af753b0eb765877c41b877d9f412b020f1b3607cfdbdcfac97f`.
 
 This is a runnable reconstruction artifact, not a byte-exact whole-image
 claim. Function-level exact evidence remains governed by the match-unit
@@ -98,7 +98,9 @@ The latest focused front-end commits are:
 
 - `83683ba` — restore target title-row routing for Music Room and Options; and
 - `cb4a538` — route SceneSelect, MusicRoom, and ResultScreen dynamic text
-  through the shared Supervisor text ANM.
+  through the shared Supervisor text ANM; and
+- `2079327` — share the target LZSS dictionary owner so saved replays can be
+  loaded back.
 
 ## Runtime validation
 
@@ -139,12 +141,14 @@ baselines. The reconstructed executable has then been observed to:
 - return from Mission Select to a complete title menu without leftover scene
   text;
 - open Music Room from title row 3 and Options from row 4; and
-- return alive from both Music Room and Options to title with ESC.
+- return alive from both Music Room and Options to title with ESC; and
+- save a replay, choose slot 1 and Finish, and return alive to a populated
+  replay-slot list.
 
 The final-artifact runs used held DirectInput key events to avoid missing the
 game's polling window. The post-fix Wine logs were empty. No Wine exception,
-unhandled fault, or debugger invocation occurred before the test process was
-deliberately terminated.
+unhandled fault, or debugger invocation occurred before the test processes
+were deliberately terminated.
 
 Six runtime discrepancies were diagnosed and closed:
 
@@ -220,20 +224,27 @@ Two focused front-end defects were then isolated:
     erasing the six title labels and leaving scene-description text behind on
     ESC return. The same wrong-owner family affected ResultScreen replay-label
     VMs. All thirteen target xrefs were reviewed and all production consumers
-    now use the embedded owner. The precise replay save -> Finish interaction
-    still needs one post-fix manual confirmation.
+    now use the embedded owner. This repaired the UI owner family but did not
+    close the separately reported replay-save exit.
 13. The title's Music Room/Options switch compared exact only because two
     private jump-table labels were normalized under the wrong names. Target row
     2 requests state 8 (Music Room); row 3 requests state 7 (Options). Source
     and manifest now preserve the linked semantics, and paired entry/ESC tests
     match the original.
+14. `Lzss::m_Dict` and `g_DecompressionRing` both target `0x004E24A8`, but
+    production allocated two arrays. `CompressData` filled one while the tree
+    matched the other, creating replay payloads that decoded entirely to
+    `0x01`. Tree helpers now use the shared ring. The same paired Save Replay ->
+    slot 1 -> Finish scenario freezes only the pre-fix reconstruction and
+    returns both post-fix executables to a populated slot list.
 
 The complete address-equivalence and Chain-lifetime audit is recorded in
 `docs/OWNER_AUDIT.md`; the durable symptom/cause/repair ledger is
 `docs/RUNTIME_ISSUES.md`. The audit checkpoint cold-replayed all 696 configured
 units. The later five-source front-end batch replayed 37/37 affected units;
 its two private switch labels were deliberately corrected to their actual
-target destinations.
+target destinations. The compression-family repair replayed 9/9 affected
+units.
 
 ## Remaining work
 
@@ -244,10 +255,10 @@ known startup, gameplay, demo-hit, retry, title-return, Music Room, and Options
 failures are closed. Do not generalize that static audit to same-type
 wrong-instance calls or normalized switch-table semantics.
 
-One explicit confirmation remains: manually repeat replay save -> keyboard
-Finish on the current build. The exact state machine returns from state 15 to
-the replay-slot list, and the correlated ResultScreen text-owner defect is
-fixed, but that exact interaction has not yet been rerun after the repair.
+No known runtime blocker remains in the exercised paths. Old replays produced
+by the failing split-dictionary build may decode to all `0x01` and must be
+quarantined; even the canonical executable cannot scan them. This does not
+affect valid original replays or replays written by the current build.
 
 Optional coverage expansion is not a known blocker: sample more of the 93
 scenes, replay playback/recording, Music Room, Help, Options, MIDI, and
