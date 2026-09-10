@@ -268,7 +268,7 @@ its two private switch labels were deliberately corrected to their actual
 target destinations. The compression-family repair replayed 9/9 affected
 units.
 
-## Remaining work
+## Remaining reconstruction work and future game ports
 
 For the stated goal—reconstructed source that cold-compiles, links, and runs
 the game—the active whole-build lane is complete. There are no known unresolved
@@ -276,6 +276,13 @@ symbols or remaining relocation-equivalence/Chain-owner candidates, and the
 known startup, gameplay, demo-hit, retry, title-return, Music Room, and Options
 failures are closed. Do not generalize that static audit to same-type
 wrong-instance calls or normalized switch-table semantics.
+
+Tag `v0.1.0-windows-i386` freezes the playable reconstruction checkpoint at
+commit `3442dcf`. The user-directed Windows x86-64, optional Linux i386
+preview, Linux x86-64, and Web/WASM game-port work is tracked separately in
+`docs/ROADMAP.md`. Port work must preserve the pinned VC7.1 exact lane and may
+not turn modern compiler output into reconstruction credit or a whole-image
+exactness claim.
 
 No known runtime blocker remains in the exercised paths. Old replays produced
 by the failing split-dictionary build may decode to all `0x01` and must be

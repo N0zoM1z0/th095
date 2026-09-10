@@ -82,6 +82,11 @@ Chain-lifetime audit is recorded in `docs/OWNER_AUDIT.md`; runtime issues found
 during Windows/Wine validation are closed and tracked in
 `docs/RUNTIME_ISSUES.md`.
 
+The frozen playable baseline is tagged `v0.1.0-windows-i386`. Future Windows
+x86-64, native Linux, and Web/WASM game ports are tracked in the
+[roadmap](docs/ROADMAP.md); they are separate products from the exact VC7.1
+build lane.
+
 Generated `docs/PROGRESS.md` and `scripts/report-reconstruction-status.py`
 remain the canonical live totals. Mapping, origin, source presence,
 compilation, linkage, semantic acceptance, runtime validation, and exactness
@@ -135,6 +140,7 @@ reconstruction claim.
 ## Documentation
 
 - [Current handoff](docs/RE_HANDOFF.md)
+- [Reconstruction and game-port roadmap](docs/ROADMAP.md)
 - [Architecture and exact target](docs/ARCHITECTURE.md)
 - [Reverse-engineering workflow](docs/RE_WORKFLOW.md)
 - [Independent oracle policy](docs/ORACLES.md)

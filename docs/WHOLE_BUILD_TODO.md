@@ -3,7 +3,8 @@
 This document records the completed production-build lane and the checks that
 must remain green. Whole-image byte equality is not a goal. The 696 accepted
 function-level exact results remain independently governed by canonical
-match-unit comparisons.
+match-unit comparisons. Future Windows x86-64, native Linux, and Web/WASM game
+ports are tracked separately in `docs/ROADMAP.md`.
 
 ## Verified checkpoint
 
