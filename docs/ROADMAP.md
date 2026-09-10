@@ -16,14 +16,18 @@ and the only uncredited authored residual is `Controller::GetInput`.
 | --- | --- | --- |
 | VC7.1 Windows i386 reconstruction | **Playable** | Preserve the tagged cold-build, link, exact-unit, and exercised runtime baseline. |
 | Remaining exact work | **Optional / deferred** | Resolve `Controller::GetInput` only with a natural, reproducible 100% comparison; never block ports on it. |
-| Portable runtime foundation | **Planned** | The reconstructed game sources build under a modern compiler behind explicit platform interfaces. |
-| Windows x86-64 game port | **Planned** | A native 64-bit Windows build meets the playable acceptance criteria below. |
+| Semantic reconstruction | **Next phase** | Replace layout-shaped source with evidence-backed types, names, protocols, and canonical owners while preserving exactness and playability. |
+| Portable runtime foundation | **Planned after semantics** | The reconstructed game sources build under a modern compiler behind explicit platform interfaces. |
+| Windows x86-64 game port | **Planned after the portable boundary** | A native 64-bit Windows build meets the playable acceptance criteria below. |
 | Native Linux i386 preview | **Optional stepping stone** | Use the original pointer width only if it materially shortens platform-backend validation. |
-| Linux x86-64 game port | **Planned** | The maintained Linux product no longer depends on original x86 pointer width or fixed addresses. |
+| Linux x86-64 game port | **Planned after the portable boundary** | The maintained Linux product no longer depends on original x86 pointer width or fixed addresses. |
 | Web/WASM game port | **Planned after the portable boundary** | A browser build loads user-supplied game data and meets the applicable playable criteria without bundling copyrighted assets. |
 
 ## Rules shared by every game port
 
+- Complete the semantic-reconstruction evidence gates before treating shared
+  source as a stable port API. Porting must not become a shortcut around raw
+  ownership, protocol, persistence, or pointer-width debt.
 - Keep the exact VC7.1 target and modern port products separate. Port compiler
   output is never compared or advertised as the original executable.
 - Reuse reconstructed gameplay, ANM, ECL, archive, menu, save, and replay
@@ -41,7 +45,27 @@ and the only uncredited authored residual is `Controller::GetInput`.
   build lane. Modern and non-x86 products must use independently tested,
   semantic C/C++ equivalents.
 
-## Phase 1: portable build boundary
+## Phase 1: semantic reconstruction
+
+Follow [the semantic reconstruction plan](SEMANTIC_RECONSTRUCTION.md). In
+bounded owner and protocol families, replace raw offsets, anonymous fields,
+absolute field views, magic values, and unjustified opaque storage with
+evidence-backed C++ types and names. Preserve explicit unknowns, every accepted
+VC7 comparison, and the playable Windows i386 behavior.
+
+- [ ] Add and baseline a semantic-debt candidate router.
+- [ ] Recover canonical aggregate owners and typed field families.
+- [ ] Name target-proven interpreter, state, flag, resource, audio, save, and
+  replay protocols without guessing visually ambiguous values.
+- [ ] Separate fixed-width persistent/wire layouts from runtime object state.
+- [ ] Audit pointer-width, fixed-address, platform-ABI, and exact-only x87
+  boundaries that would otherwise leak into ports.
+- [ ] Close subsystem milestones with target evidence, affected exact-unit
+  replay, the whole Windows i386 build, and relevant runtime transitions.
+- [ ] Meet the qualitative port-readiness exit criteria; never publish a raw
+  candidate count as a semantic-completion percentage.
+
+## Phase 2: portable build boundary
 
 - [ ] Add a separate modern build product and CI compile lane without changing the
   pinned VC7.1 comparison path.
@@ -60,7 +84,7 @@ and the only uncredited authored residual is `Controller::GetInput`.
 - [ ] Add portable crash diagnostics and a selectable user-data directory before
   packaging work begins.
 
-## Phase 2: native Linux game port
+## Phase 3: native Linux game port
 
 Use the TH08 port as engineering precedent, then validate every behavior
 against TH095 rather than copying assumptions blindly.
@@ -84,7 +108,7 @@ against TH095 rather than copying assumptions blindly.
 - [ ] Package only the executable, launcher, project-owned resources, runtime
   instructions, and checksums. CI artifacts must contain no original data.
 
-## Phase 3: 64-bit game ports
+## Phase 4: 64-bit game ports
 
 - [ ] Remove portable-runtime dependence on the original 32-bit address map. Use
   real aggregate owners and field access rather than fixed-address aliases.
@@ -101,7 +125,7 @@ against TH095 rather than copying assumptions blindly.
 - [ ] Validate both native Windows and native Linux x86-64 on clean hosts before a
   release tag.
 
-## Phase 4: Web/WASM game port
+## Phase 5: Web/WASM game port
 
 - [ ] Build with Emscripten as a separate product. Start with single-threaded
   `wasm32`; do not make browser cross-origin isolation or pthread support a
@@ -145,8 +169,9 @@ repeatable and documented:
 
 ## Maintenance alongside ports
 
-- Keep `v0.1.0-windows-i386` reproducible and replay affected exact units after
-  any shared-source or shared-header change.
+- Keep `v0.1.0-windows-i386` reproducible throughout semantic reconstruction
+  and port work, and replay affected exact units after any shared-source or
+  shared-header change.
 - Expand optional coverage for Help, MIDI, controllers, clean exit/restart,
   and less frequently exercised scenes when evidence or port work reaches
   those paths.

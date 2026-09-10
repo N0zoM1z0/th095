@@ -73,6 +73,8 @@ included.
 | Strict authored comparison | **One deferred residual** | `Controller::GetInput` differs in one comparable byte in its best bounded compiler oracle; no exact credit is claimed for it. |
 | Whole-program build | **Complete** | The production graph cold-compiles and links with pinned VC7.1 into a runnable PE32 i386 Windows GUI executable. |
 | Windows i386 runtime | **Playable** | A full manual endurance pass and separate normal death, retry, menu, save, and replay tests completed successfully. |
+| Semantic reconstruction | **Next phase** | Recover evidence-backed types, names, protocols, and canonical owners from the current target-layout-shaped source. |
+| Windows x86-64, Linux, and Web/WASM game ports | **Planned after semantics** | Modern platform products remain separate from the exact VC7.1 build. |
 | Whole-executable byte identity | **Not claimed** | Exactness remains governed by the reproducible function/object match ledger. |
 
 The playable status describes the reconstructed native Windows executable; it
@@ -82,10 +84,12 @@ Chain-lifetime audit is recorded in `docs/OWNER_AUDIT.md`; runtime issues found
 during Windows/Wine validation are closed and tracked in
 `docs/RUNTIME_ISSUES.md`.
 
-The frozen playable baseline is tagged `v0.1.0-windows-i386`. Future Windows
-x86-64, native Linux, and Web/WASM game ports are tracked in the
-[roadmap](docs/ROADMAP.md); they are separate products from the exact VC7.1
-build lane.
+The frozen playable baseline is tagged `v0.1.0-windows-i386`. The
+[next phase](docs/SEMANTIC_RECONSTRUCTION.md) is semantic reconstruction:
+turning raw offsets, anonymous fields, magic protocol values, and target-facing
+views into evidence-backed C++ while preserving exact bytes and playable
+behavior. It is the key prerequisite for the Windows x86-64, native Linux, and
+Web/WASM game ports tracked in the [roadmap](docs/ROADMAP.md).
 
 Generated `docs/PROGRESS.md` and `scripts/report-reconstruction-status.py`
 remain the canonical live totals. Mapping, origin, source presence,
@@ -141,6 +145,7 @@ reconstruction claim.
 
 - [Current handoff](docs/RE_HANDOFF.md)
 - [Reconstruction and game-port roadmap](docs/ROADMAP.md)
+- [Semantic reconstruction plan](docs/SEMANTIC_RECONSTRUCTION.md)
 - [Architecture and exact target](docs/ARCHITECTURE.md)
 - [Reverse-engineering workflow](docs/RE_WORKFLOW.md)
 - [Independent oracle policy](docs/ORACLES.md)

@@ -277,12 +277,19 @@ known startup, gameplay, demo-hit, retry, title-return, Music Room, and Options
 failures are closed. Do not generalize that static audit to same-type
 wrong-instance calls or normalized switch-table semantics.
 
+The next active project phase is **semantic reconstruction**. No semantic batch
+has started. Follow `docs/SEMANTIC_RECONSTRUCTION.md` to replace target-layout-
+shaped offsets, anonymous fields, numeric protocols, and field views with
+evidence-backed types, names, and canonical owners while preserving accepted
+VC7 output and the playable Windows i386 behavior. This is a bounded family-by-
+family evidence pass, not a broad beautification or renaming sweep.
+
 Tag `v0.1.0-windows-i386` freezes the playable reconstruction checkpoint at
 commit `3442dcf`. The user-directed Windows x86-64, optional Linux i386
 preview, Linux x86-64, and Web/WASM game-port work is tracked separately in
-`docs/ROADMAP.md`. Port work must preserve the pinned VC7.1 exact lane and may
-not turn modern compiler output into reconstruction credit or a whole-image
-exactness claim.
+`docs/ROADMAP.md` and follows the semantic phase. Port work must preserve the
+pinned VC7.1 exact lane and may not turn modern compiler output into
+reconstruction credit or a whole-image exactness claim.
 
 No known runtime blocker remains in the exercised paths. Old replays produced
 by the failing split-dictionary build may decode to all `0x01` and must be
