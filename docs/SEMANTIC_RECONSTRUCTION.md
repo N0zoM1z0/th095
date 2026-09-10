@@ -2551,3 +2551,76 @@ only or cross-view-conflicted, route to a different subsystem rather than
 forcing speculative names. After the next coherent source checkpoint, issue a
 current-source cold aggregate exact and whole-product milestone before further
 campaign expansion.
+
+
+### SEM-037 — compact enemy main ECL context owner
+
+**Scope.** Recover compact enemy `mainEclContext @ +0x02DC` as the canonical
+owner used by spawn, restart, photo-target restart, and scheduled-call restart.
+The maintainable `EnemyManagerUpdate.cpp` lane now reaches that embedded member
+directly, while `TH095_MATCH_EXACT` expands the semantic accessor to the
+historical `enemy + 0x02DC` expression. `SpawnWithContext` additionally names
+the contiguous 0x80-byte script-state bank at context `+0x18` / enemy `+0x02F4`.
+The callback words at context `+0x10/+0x14` remain opaque in this batch.
+
+**Observed.** Target-attested TH095 Ghidra decompilation shows
+`PhotoEnemyManagerView::Spawn @ 0x004156C0` and
+`SpawnWithContext @ 0x00415820` both passing `enemy + 0x02DC` to
+`CallEclSub @ 0x00408DE0` before the first `RunEcl`. `RestartEcl @ 0x004167E0`
+passes the same embedded address with `mainEclSubroutineId`; the photo-target
+reset path reaches the same owner for each retained target, and
+`UpdateScheduledEclCalls @ 0x00416F30` reinitializes it with the scheduled
+subroutine id. `SpawnWithContext` then copies exactly 0x20 dwords (0x80 bytes)
+from its caller-provided state into enemy `+0x02F4`, which is exactly
+`mainEclContext + 0x18`.
+
+**Corroborated.** Canonical TH095 `PhotoEnemyView` already embeds one
+`PhotoEnemyEclContextView mainEclContext` at `+0x02DC`, followed by sixteen
+same-sized call-stack contexts. The context's secondary timer at `+0x98` and
+subroutine id at `+0x22C` are independently layout-asserted. TH095 integer,
+float, and lvalue operand resolvers independently consume the 0x80-byte range at
+context `+0x18..+0x97` as eight integer variables, eight float variables, four
+extra integer variables, four extra float variables, four integer call
+parameters, and four float call parameters. `CallSubOnEnemy @ 0x00411F70`
+independently writes the final 0x20 bytes of that range by copying the manager's
+call-parameter block to active-context `+0x78`.
+
+**Inferred.** The `+0x02DC` object is the enemy's persistent main ECL execution
+context, not a generic byte buffer. The caller-supplied 0x80-byte block used by
+`SpawnWithContext` is the context's complete script variable/call-parameter
+state bank. The maintainable representation therefore names the six proven
+arrays but deliberately leaves the two preceding callback-sized words and
+unrelated context tail members outside this batch.
+
+**Unknown.** This batch does not assign semantics to context `+0x10/+0x14`,
+does not infer a source-language aggregate name for the caller's `contextValues`
+parameter, and does not claim that every script-state element is initialized by
+every spawn caller. It also does not merge the main context with the separate
+sixteen-entry ECL call stack or the dynamically allocated child ECL blocks.
+
+**Compiler-observed.** `EnemyManagerUpdate.cpp` is sensitive to translation-unit
+lexical changes in exact mode. The accepted layout refinements and script-state
+field names are therefore excluded from `TH095_MATCH_EXACT`, while the semantic
+main-context macro expands to the original cast/address tokens. All 22 exact
+units remain unchanged with zero private-label refresh.
+
+**Regression boundary.** Focused exact checks for `enemy-spawn`,
+`enemy-spawn-with-context`, `enemy-restart-ecl`,
+`enemy-reset-non-photo-and-photo-ecls`, and
+`enemy-update-scheduled-ecl-calls` remain respectively 350/350, 336/336, 48/48,
+188/188, and 309/309 bytes exact with all configured relocations. Full
+`src/EnemyManagerUpdate.cpp` replay is 22/22 exact with zero private-label
+refresh. The normal production translation unit independently compiles with the
+pinned VC7.1 profile to i386 COFF, and `git diff --check` passes. No shared
+header or public ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** after the current-source cold aggregate exact and whole-product
+milestone, route outside already documented exact-compatibility expressions.
+Prefer a compact TH095 owner with multiple independent consumers. Treat the
+remaining `EnemyManagerUpdate.cpp` raw offsets as candidates only after
+excluding exact-only compatibility macros and already recorded context,
+descriptor, cadence, and child-block owners.

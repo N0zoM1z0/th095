@@ -122,11 +122,30 @@ struct PhotoEnemyEclInterpolationSlotView
 typedef char PhotoEnemyEclInterpolationSlotSizeIs30[
     (sizeof(PhotoEnemyEclInterpolationSlotView) == 0x30) ? 1 : -1];
 
+#if !defined(TH095_MATCH_EXACT)
+struct PhotoEnemyEclScriptStateView
+{
+    i32 intVariables[8];
+    f32 floatVariables[8];
+    i32 extraIntVariables[4];
+    f32 extraFloatVariables[4];
+    i32 callParameterInts[4];
+    f32 callParameterFloats[4];
+};
+typedef char PhotoEnemyEclScriptStateSizeIs80[
+    (sizeof(PhotoEnemyEclScriptStateView) == 0x80) ? 1 : -1];
+#endif
+
 struct PhotoEnemyEclContextView
 {
     void *currentInstruction;
     ZunTimer time;
+#if defined(TH095_MATCH_EXACT)
     u8 unknown010[0x98 - 0x10];
+#else
+    u8 unknown010[8];
+    PhotoEnemyEclScriptStateView scriptState; // +0x018
+#endif
     ZunTimer secondaryTime;
     PhotoEnemyEclInterpolationSlotView interpolationSlots[8];
     u8 unknown224[8];
@@ -135,6 +154,10 @@ struct PhotoEnemyEclContextView
     PhotoEnemyEclContextView();
 };
 
+#if !defined(TH095_MATCH_EXACT)
+typedef char PhotoEnemyEclContextScriptStateAt18[
+    (offsetof(PhotoEnemyEclContextView, scriptState) == 0x18) ? 1 : -1];
+#endif
 typedef char PhotoEnemyEclContextSecondaryTimerAt98[
     (offsetof(PhotoEnemyEclContextView, secondaryTime) == 0x98) ? 1 : -1];
 typedef char PhotoEnemyEclContextSubroutineAt22C[
@@ -573,6 +596,13 @@ typedef char PhotoEnemyVmAt8[
 typedef char PhotoEnemyPositionAt28A0[
     (offsetof(PhotoEnemyView, position) == 0x28a0) ? 1 : -1];
 #if !defined(TH095_MATCH_EXACT)
+typedef char PhotoEnemyMainEclContextAt2DC[
+    (offsetof(PhotoEnemyView, mainEclContext) == 0x2dc) ? 1 : -1];
+typedef char PhotoEnemyMainEclScriptStateAt2F4[
+    (offsetof(PhotoEnemyView, mainEclContext) +
+         offsetof(PhotoEnemyEclContextView, scriptState) == 0x2f4) ? 1 : -1];
+#endif
+#if !defined(TH095_MATCH_EXACT)
 typedef char PhotoEnemyPhotoTargetSlotAt2BE5[
     (offsetof(PhotoEnemyView, photoTargetSlot) == 0x2be5) ? 1 : -1];
 #endif
@@ -591,8 +621,12 @@ typedef char PhotoEnemyAttachedVmAt4CBC[
 
 #if defined(TH095_MATCH_EXACT)
 #define PHOTO_ENEMY_CHILD_ECL_BLOCKS(owner) owner->allocatedEclArgs
+#define PHOTO_ENEMY_MAIN_ECL_CONTEXT(owner) \
+    reinterpret_cast<PhotoEnemyEclContextView *>( \
+        reinterpret_cast<u8 *>(owner) + 0x2dc)
 #else
 #define PHOTO_ENEMY_CHILD_ECL_BLOCKS(owner) owner->childEclBlocks
+#define PHOTO_ENEMY_MAIN_ECL_CONTEXT(owner) (&(owner)->mainEclContext)
 #endif
 
 PhotoEnemyView::PhotoEnemyView()
@@ -997,8 +1031,7 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
         }
         *reinterpret_cast<Float3 *>(&enemy->position) = *position;
         TH095_PHOTO_ECL_INIT(this->eclManager,
-            reinterpret_cast<PhotoEnemyEclContextView *>(
-                reinterpret_cast<u8 *>(enemy) + 0x2dc),
+            PHOTO_ENEMY_MAIN_ECL_CONTEXT(enemy),
             static_cast<i16>(subroutineId));
         if (TH095_PHOTO_ECL_RUN(this->eclManager, enemy) == ZUN_ERROR)
         {
@@ -1057,12 +1090,16 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
         }
         *reinterpret_cast<Float3 *>(&enemy->position) = *position;
         TH095_PHOTO_ECL_INIT(this->eclManager,
-            reinterpret_cast<PhotoEnemyEclContextView *>(
-                reinterpret_cast<u8 *>(enemy) + 0x2dc),
+            PHOTO_ENEMY_MAIN_ECL_CONTEXT(enemy),
             static_cast<i16>(subroutineId));
+#if defined(TH095_MATCH_EXACT)
         *reinterpret_cast<EnemyContextCopy *>(
             reinterpret_cast<u8 *>(enemy) + 0x2f4) =
             *reinterpret_cast<const EnemyContextCopy *>(contextValues);
+#else
+        enemy->mainEclContext.scriptState =
+            *reinterpret_cast<const PhotoEnemyEclScriptStateView *>(contextValues);
+#endif
         if (TH095_PHOTO_ECL_RUN(this->eclManager, enemy) == ZUN_ERROR)
         {
             enemy->Deactivate();
@@ -1392,8 +1429,7 @@ void PhotoEnemyView::UpdatePhotoMarkerPulse()
 void PhotoEnemyView::RestartEcl()
 {
     TH095_PHOTO_ECL_INIT(g_PhotoEnemyManager->eclManager,
-        reinterpret_cast<PhotoEnemyEclContextView *>(
-            reinterpret_cast<u8 *>(this) + 0x2dc),
+        PHOTO_ENEMY_MAIN_ECL_CONTEXT(this),
         this->mainEclSubroutineId);
 }
 
@@ -1438,9 +1474,8 @@ void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
         {
             TH095_PHOTO_ECL_INIT(
                 enemyManager->eclManager,
-                reinterpret_cast<PhotoEnemyEclContextView *>(
-                    reinterpret_cast<u8 *>(
-                        enemyManager->photoTargets[targetIndex]) + 0x2dc),
+                PHOTO_ENEMY_MAIN_ECL_CONTEXT(
+                    enemyManager->photoTargets[targetIndex]),
                 enemyManager->photoTargets[targetIndex]
                     ->photoTargetEclSubroutineId);
         }
@@ -1511,8 +1546,7 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
         if (scheduledCurrentFrame >= this->scheduledCallFrames[scheduleIndex])
         {
             TH095_PHOTO_ECL_INIT(g_PhotoEnemyManager->eclManager,
-                reinterpret_cast<PhotoEnemyEclContextView *>(
-                    reinterpret_cast<u8 *>(this) + 0x2dc),
+                PHOTO_ENEMY_MAIN_ECL_CONTEXT(this),
                 this->scheduledCalls[scheduleIndex].subroutineId);
             this->scheduledCallFrames[scheduleIndex] = -1;
 
@@ -1548,4 +1582,5 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
 #if defined(TH095_MATCH_EXACT)
 #undef FreePhotoEnemyChildEclBlock
 #endif
+#undef PHOTO_ENEMY_MAIN_ECL_CONTEXT
 #undef PHOTO_ENEMY_CHILD_ECL_BLOCKS
