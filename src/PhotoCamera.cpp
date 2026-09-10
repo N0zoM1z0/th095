@@ -109,10 +109,13 @@ struct PhotoGlobalStateView
             u32 unknownFlag1 : 1;
 #if defined(TH095_MATCH_EXACT)
             u32 unknownFlag2 : 1;
+            u32 unknownFlags3 : 29;
 #else
             u32 gameplayLoadActive : 1;
+            u32 unknownFlags3 : 6;
+            u32 photoSoundSuppressed : 1;
+            u32 unknownFlags10 : 22;
 #endif
-            u32 unknownFlags3 : 29;
         };
     };
 };
@@ -225,6 +228,12 @@ extern u16 g_PhotoInputPressed;
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, g_RuntimeGlobalStateOwner)
+#endif
+
+#if defined(TH095_MATCH_EXACT)
+#define PHOTO_SOUND_SUPPRESSED (((g_PhotoGlobalState->flags >> 9) & 1))
+#else
+#define PHOTO_SOUND_SUPPRESSED (g_PhotoGlobalState->photoSoundSuppressed)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -369,7 +378,7 @@ void PhotoCameraState::BeginCapture()
         TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[10].value);
         this->vmIds[10].value = PreservePhotoId(0);
     }
-    if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+    if (PHOTO_SOUND_SUPPRESSED == 0)
     {
         PhotoSoundPlayer()->PlaySoundByIdx(static_cast<SoundIdx>(0x2c), 0);
     }
@@ -606,7 +615,7 @@ u32 PhotoCameraState::TakePhoto()
     g_AnmGameSpeed = 1.0f;
     this->modeTimer = 0;
     PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2c));
-    if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+    if (PHOTO_SOUND_SUPPRESSED == 0)
     {
         PhotoSoundPlayer()->PlaySoundByIdx(static_cast<SoundIdx>(0x29), 0);
     }
@@ -1011,7 +1020,7 @@ void PhotoCameraState::UpdateCharge()
                 if (this->unknownbb8 >= 5)
                 {
                     this->flags |= PHOTO_FLAG_FOCUSED;
-                    if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+                    if (PHOTO_SOUND_SUPPRESSED == 0)
                     {
                         PhotoSoundPlayer()->PlaySoundByIdx(
                             static_cast<SoundIdx>(0x2a), 0);
@@ -1057,7 +1066,7 @@ normalCharge:
     }
     else
     {
-        if (((g_PhotoGlobalState->flags >> 9) & 1) != 0)
+        if (PHOTO_SOUND_SUPPRESSED != 0)
         {
             PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2a));
         }
@@ -1355,7 +1364,7 @@ updateCharge:
             {
                 if (((camera->flags >> 3) & 3) != 1)
                 {
-                    if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+                    if (PHOTO_SOUND_SUPPRESSED == 0)
                     {
                         PhotoSoundPlayer()->PlaySoundByIdx(
                             static_cast<SoundIdx>(0x2b), 0);
@@ -1461,7 +1470,7 @@ updateCharge:
             camera->CancelCapture();
             break;
         }
-        if (((g_PhotoGlobalState->flags >> 9) & 1) != 0)
+        if (PHOTO_SOUND_SUPPRESSED != 0)
         {
             PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2c));
         }
@@ -1483,7 +1492,7 @@ cameraActive:
             {
                 if (((camera->flags >> 6) & 1) == 0)
                 {
-                    if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+                    if (PHOTO_SOUND_SUPPRESSED == 0)
                         PhotoSoundPlayer()->PlaySoundByIdx(
                             static_cast<SoundIdx>(0x2e), 0);
                     camera->flags |= PHOTO_FLAG_TARGET_SOUND_PLAYED;
@@ -1564,7 +1573,7 @@ cameraActive:
             }
             if ((camera->flags & PHOTO_FLAG_ALTERNATE_CAPTURE) != 0)
             {
-                if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+                if (PHOTO_SOUND_SUPPRESSED == 0)
                 {
                     PhotoSoundPlayer()->PlaySoundPositionedByIdx(
                         static_cast<SoundIdx>(0x21),
@@ -1578,7 +1587,7 @@ cameraActive:
             }
             else
             {
-                if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+                if (PHOTO_SOUND_SUPPRESSED == 0)
                 {
                     PhotoSoundPlayer()->PlaySoundPositionedByIdx(
                         static_cast<SoundIdx>(0x25),
@@ -1673,5 +1682,7 @@ finish:
     camera->modeTimer.Tick();
     camera->auxiliaryTimer.Tick();
 }
+
+#undef PHOTO_SOUND_SUPPRESSED
 
 } // namespace th095

@@ -432,7 +432,11 @@ struct PhotoBulletGlobalStateView
             u32 gameplayLoadActive : 1;
 #endif
             u32 unknownFlags3 : 6;
+#if defined(TH095_MATCH_EXACT)
             u32 suppressesPhotoSound : 1;
+#else
+            u32 photoSoundSuppressed : 1;
+#endif
 #if defined(TH095_MATCH_EXACT)
             u32 photoCaptureInputMode : 1;
 #else
@@ -1427,7 +1431,11 @@ PhotoBulletView *PhotoBulletManagerView::CapturePhotoTargets(
         capturePrevious = captureBullet;
     }
 
+#if defined(TH095_MATCH_EXACT)
     if (g_PhotoBulletGlobalState->suppressesPhotoSound == 0)
+#else
+    if (g_PhotoBulletGlobalState->photoSoundSuppressed == 0)
+#endif
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x0f), 0);
     return captureFirst;
 }

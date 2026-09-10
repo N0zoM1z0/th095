@@ -64,7 +64,12 @@ struct PhotoGameGlobalStateView
 #else
             u32 gameplayLoadActive : 1;
 #endif
+#if defined(TH095_MATCH_EXACT)
             u32 unknown003 : 7;
+#else
+            u32 unknown003 : 6;
+            u32 photoSoundSuppressed : 1;
+#endif
 #if defined(TH095_MATCH_EXACT)
             u32 photoCaptureInputMode : 1;
 #else
@@ -580,7 +585,11 @@ void PhotoPlayerRuntimeView::Die()
             &screenPosition);
     }
     this->completionTimer = 0;
+#if defined(TH095_MATCH_EXACT)
     if ((g_PhotoGameGlobalState->flags >> 9 & 1) == 0)
+#else
+    if (g_PhotoGameGlobalState->photoSoundSuppressed == 0)
+#endif
     {
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(4), 0);
     }

@@ -4032,3 +4032,87 @@ Start from PhotoCamera's charging/capture sound gates and BulletManager's
 shared semantic name only if writer timing and at least two independent exact
 consumers agree; do not infer it merely because bit 9 neighbors the recovered
 photo-transition bit.
+
+
+### SEM-057 — photo-sound suppression global protocol
+
+**Scope.** Recover bit 9 of the shared photo-runtime flags dword at task/global
+state `+0xFC` as `photoSoundSuppressed`. `EclExtended` now exposes the bit in its
+production-only global-state view; BulletManager, PhotoCamera, and PhotoGame use
+the same maintainable state name. Exact preprocessing retains the historical
+`0x200` writer masks, BulletManager's `suppressesPhotoSound` field, and the raw
+bit-9 tests in PhotoCamera/PhotoGame. Supervisor flag bit 9 is a different
+storage owner and is explicitly outside this batch.
+
+**Observed.** Target-attested TH095 `EclExtended::SetPhotoFlag200 @ 0x00414230`
+sets global-state `+0xFC` bit `0x200`, while `ClearPhotoFlag200 @ 0x00414260`
+clears precisely that bit. Repository-wide TH095 source search finds these two
+extended-ECL callbacks as the shared photo-runtime bit-9 writers. The same
+absolute state owner is used by all accepted consumers below; unrelated
+`g_Supervisor.flags` bit-9 reads/writes are not conflated with it.
+
+**Corroborated.** Independent target/exact consumers agree on sound suppression.
+`PhotoBulletManagerView::CapturePhotoTargets @ 0x00407820` still captures and
+links eligible bullets, but plays capture sound `0x0F` only when bit 9 is clear.
+`PhotoCameraState::BeginCapture @ 0x00432730` conditionally starts sound `0x2C`,
+and `TakePhoto @ 0x00432D10` always stops that charging sound but plays result
+sound `0x29` only when bit 9 is clear. Additional exact camera paths gate focus
+sound `0x2A`, full-charge sound `0x2B`, target-lock sound `0x2E`, and captured
+photo sounds `0x21/0x25`; when suppression becomes active during focused charge
+or charging, the camera explicitly stops the corresponding sustained sound.
+`PhotoGameUpdateView::Die @ 0x004306D0` performs the full death state/VM/game-
+speed transition regardless of bit 9 and gates only death sound 4. These
+independent consumers all separate audio side effects from their primary logic.
+
+**Inferred.** `photoSoundSuppressed` is a shared mute/suppression state for
+photo-gameplay sound effects. Setting it prevents new capture, focus, target,
+result, death, and bullet-capture SFX and can actively stop already-running
+camera charge/focus sounds, while the underlying capture, scoring, death, and
+bullet-selection protocols continue. This common behavior is stronger evidence
+than any individual sound id or subsystem-local name.
+
+**Unknown.** This batch does not establish why ECL scripts toggle the sound gate,
+its intended user-facing mode, or whether every sound effect in the photo game
+honors it. It does not claim that music/BGM or Supervisor flag bit 9 is controlled
+by this owner. No semantics are assigned to shared photo-runtime bits 3 through
+8 or bits 11 and above merely from adjacency.
+
+**Compiler-observed.** `EclExtended` keeps its literal `flags |= 0x200` and
+`flags &= ~0x200U` expressions in the exact branch. BulletManager keeps the
+historical `suppressesPhotoSound` field under `TH095_MATCH_EXACT`; PhotoGame
+keeps its raw bit shift. PhotoCamera uses an exact-compatible macro whose exact
+expansion is the original `(flags >> 9) & 1` expression, while production maps
+it to the named bitfield. All changed source objects replay without private-label
+refresh.
+
+**Regression boundary.** The two producer units remain 45/45 bytes exact.
+Representative independent consumers remain exact:
+`photo-bullet-capture-photo-targets` 1122/1122, `photo-player-die` 241/241,
+`photo-begin-capture` 393/393, `photo-take-photo` 738/738, and
+`photo-update-charge` 982/982. Full changed-source replay covers 90/90 configured
+exact units across BulletManager, EclExtended, PhotoCamera, and PhotoGame with
+zero private-label refresh. All four normal production TUs independently compile
+under pinned VC7.1 13.10.3077 to i386 COFF, and `git diff --check` passes. No
+shared header, ABI, physical storage, serialized format, or runtime scenario
+changed.
+
+**Receipt state.** No Factory receipt is issued for this private checkpoint. The
+last accepted whole-build receipt remains bound to `c3437fc3` and is source-stale
+for this commit. The current source has focused exact and production closure;
+aggregate receipts remain deferred to the next meaningful campaign milestone or
+final exit audit.
+
+**Recovery / analysis artifacts.** `.analysis/` remains 1408444500 bytes and no
+current-session artifact was created. Two consecutive Factory connection
+failures occurred before the first production-validation command returned a
+command id; the recovery status and subsequent bounded shell gate confirmed the
+same four-file active diff, no staged changes, and no lingering build process
+before validation resumed. The four unknown/external-current-state untracked
+paths remain untouched and excluded from staging.
+
+**Next batch:** refresh live semantic debt and committed history rather than
+continuing by bit-number adjacency. Prefer a bounded owner with multiple TH095-
+local exact consumers and an independent producer/lifecycle. Revisit the compact
+main ECL context owner at enemy `+0x02DC` only if it remains unrecovered in the
+newer semantic history; otherwise select the strongest remaining non-exact-
+compatibility family.

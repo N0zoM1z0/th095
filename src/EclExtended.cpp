@@ -70,7 +70,8 @@ struct PhotoGlobalStateView
 #if !defined(TH095_MATCH_EXACT)
         struct
         {
-            u32 unknownFlags000 : 10;
+            u32 unknownFlags000 : 9;
+            u32 photoSoundSuppressed : 1;
             u32 photoTransitionActive : 1;
             u32 unknownFlags011 : 21;
         };
@@ -615,14 +616,22 @@ void __fastcall SetBackgroundVmsState3(
 void __fastcall SetPhotoFlag200(
     Enemy *enemy, EclRawInstruction *instruction)
 {
+#if defined(TH095_MATCH_EXACT)
     g_PhotoGlobalState->flags |= 0x200;
+#else
+    g_PhotoGlobalState->photoSoundSuppressed = 1;
+#endif
 }
 
 // ECL extended callback table entry 16 @ 0x00414260.
 void __fastcall ClearPhotoFlag200(
     Enemy *enemy, EclRawInstruction *instruction)
 {
+#if defined(TH095_MATCH_EXACT)
     g_PhotoGlobalState->flags &= ~0x200U;
+#else
+    g_PhotoGlobalState->photoSoundSuppressed = 0;
+#endif
 }
 
 // ECL extended callback table entry 18 @ 0x00414430.
