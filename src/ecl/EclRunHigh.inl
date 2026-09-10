@@ -98,6 +98,15 @@ struct SpawnPacketSmall
 };
 C_ASSERT(sizeof(SpawnPacketSmall) == 0x10);
 
+#if !defined(TH095_MATCH_EXACT)
+struct Th095ScheduledCallFrameView
+{
+    u8 unknown0000[0x2c54];
+    i32 scheduledCallFrames[10];
+};
+C_ASSERT(offsetof(Th095ScheduledCallFrameView, scheduledCallFrames) == 0x2c54);
+#endif
+
 // TH095's high ECL range is the photography/effect lane.  The two packet
 // layouts below are pinned by RunEcl's target stores and the dispatcher at
 // 0x0041DBD0.  Keep the fields explicit: their declaration order also owns

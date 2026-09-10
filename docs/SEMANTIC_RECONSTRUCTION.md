@@ -2075,3 +2075,69 @@ remaining selector backed by an independently exact compact `PhotoEnemyView`
 field plus a non-resolver TH095 producer/consumer. Do not infer semantics from
 selector adjacency alone; if the `+0x2BDC/+0x2BE0` timeline parameters lack an
 independent protocol, leave them unknown and route onward.
+
+
+
+### SEM-030 — scheduled ECL call frame slots
+
+**Scope.** Recover compact enemy `scheduledCallFrames[10] @ +0x2C54` as the
+owner behind ECL selectors `0x2757..0x275A` and high opcode 115's indexed frame
+write. The two operand resolvers name only the first four script-visible frame
+slots; the normal `RunEcl` path names the complete ten-slot array. Exact builds
+preserve the historical constant-offset resolver expressions and opcode-115
+indexed pointer arithmetic. The adjacent scheduled-call records at `+0x2C7C`
+remain a separate representation family.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`PhotoEnemyView::UpdateScheduledEclCalls @ 0x00416F30` loops over ten dwords at
+`+0x2C54 + index*4`. Negative values are skipped. When the global game frame at
+`g_PhotoEnemyGame+0x29E4` reaches a non-negative scheduled frame, the target
+starts the associated ECL subroutine, writes `-1` back to that frame slot, frees
+all sixteen allocated ECL arguments, restores the default shot descriptor, and
+clears the shot interval. Independently, canonical exact `RunEcl` opcode 115
+writes its second integer operand to the same indexed `+0x2C54` array.
+
+**Corroborated.** Canonical TH095 `PhotoEnemyView` declares
+`i32 scheduledCallFrames[10] @ +0x2C54` followed by ten four-byte
+`PhotoEnemyScheduledCall` records. The manager constructor initializes every
+frame slot to `-1`. `UpdateScheduledEclCalls` is independently exact at
+309/309 bytes with all five configured relocations, and the complete
+`ecl-manager-run-ecl` unit remains exact after the production-only owner view is
+introduced. The integer and float operand resolvers map selectors `0x2757`,
+`0x2758`, `0x2759`, and `0x275A` to the first four consecutive dwords of this
+same array.
+
+**Inferred.** Each frame slot is an absolute game-frame activation time for its
+paired scheduled ECL call; `-1` is the inactive sentinel used by both
+initialization and post-dispatch reset. Selectors `0x2757..0x275A` expose only
+slots 0..3 to ECL reads, while opcode 115 can address the full ten-slot storage
+through its script-supplied index. This batch does not infer bounds checking
+that the target does not show.
+
+**Unknown.** The higher six frame slots have no corresponding resolver
+selectors recovered here. The four-byte records at `+0x2C7C` are intentionally
+kept separate: the updater consumes their low 16-bit subroutine id while opcode
+115 writes an entire dword, so the upper half's meaning must be handled by its
+own evidence. The global frame counter's broader lifecycle is outside scope.
+
+**Compiler-observed.** The accepted resolver macros preserve each original
+constant `ENEMY_I32` expression in `TH095_MATCH_EXACT`; the maintainable branch
+uses a ten-element typed array. `RunEcl` likewise retains opcode 115's original
+indexed pointer arithmetic only in exact builds and uses a production-only
+`Th095ScheduledCallFrameView` otherwise. No private-label refresh was required.
+
+**Regression boundary.** `ecl-resolve-int`, `ecl-resolve-float`, and
+`ecl-manager-run-ecl` replay exact together, 3/3, with zero private-label
+refresh. The independent `enemy-update-scheduled-ecl-calls` consumer is
+309/309 bytes exact with all five configured relocations. The three changed
+normal production translation units independently compile under pinned VC7.1
+to i386 COFF, and `git diff --check` passes. No shared header or ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect the paired scheduled-call record array at `+0x2C7C`.
+Require opcode 115's full-dword producer and `UpdateScheduledEclCalls`' low-i16
+subroutine consumer to agree on a maintainable representation; leave the upper
+16 bits unknown unless an independent TH095-local consumer establishes them.

@@ -150,6 +150,30 @@ typedef char EclIntOperandItemDropTypeAt2BD8[
 #define TH095_ECL_ITEM_DROP_TYPE(owner) \
     (reinterpret_cast<EclIntOperandItemDropTypeView *>(owner)->itemDropType)
 #endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_SCHEDULED_FRAME0(owner) ENEMY_I32(owner, 0x2c54)
+#define TH095_ECL_SCHEDULED_FRAME1(owner) ENEMY_I32(owner, 0x2c58)
+#define TH095_ECL_SCHEDULED_FRAME2(owner) ENEMY_I32(owner, 0x2c5c)
+#define TH095_ECL_SCHEDULED_FRAME3(owner) ENEMY_I32(owner, 0x2c60)
+#else
+struct EclIntOperandScheduledCallFrameView
+{
+    u8 unknown0000[0x2c54];
+    i32 scheduledCallFrames[10];
+};
+typedef char EclIntOperandScheduledCallFramesAt2C54[
+    (offsetof(EclIntOperandScheduledCallFrameView, scheduledCallFrames) == 0x2c54)
+        ? 1
+        : -1];
+#define TH095_ECL_SCHEDULED_FRAME0(owner) \
+    (reinterpret_cast<EclIntOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[0])
+#define TH095_ECL_SCHEDULED_FRAME1(owner) \
+    (reinterpret_cast<EclIntOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[1])
+#define TH095_ECL_SCHEDULED_FRAME2(owner) \
+    (reinterpret_cast<EclIntOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[2])
+#define TH095_ECL_SCHEDULED_FRAME3(owner) \
+    (reinterpret_cast<EclIntOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[3])
+#endif
 #define ENEMY_U8(owner, offset) \
     (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 
@@ -228,10 +252,10 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x2755: return (i32)enemy->lastFrameDisplacement.y;
     case 0x2756: return (i32)enemy->lastFrameDisplacement.z;
 
-    case 0x2757: return ENEMY_I32(enemy, 0x2c54);
-    case 0x2758: return ENEMY_I32(enemy, 0x2c58);
-    case 0x2759: return ENEMY_I32(enemy, 0x2c5c);
-    case 0x275a: return ENEMY_I32(enemy, 0x2c60);
+    case 0x2757: return TH095_ECL_SCHEDULED_FRAME0(enemy);
+    case 0x2758: return TH095_ECL_SCHEDULED_FRAME1(enemy);
+    case 0x2759: return TH095_ECL_SCHEDULED_FRAME2(enemy);
+    case 0x275a: return TH095_ECL_SCHEDULED_FRAME3(enemy);
     case 0x2744: return (i32)enemy->movementAngle;
     case 0x2745: return (i32)enemy->angularVelocity;
     case 0x2746: return (i32)enemy->speed;
@@ -267,6 +291,10 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 #undef TH095_ECL_INT_PHOTO_INDEX
 #undef TH095_ECL_INT_PLAYER_POSITION
 #undef ENEMY_U8
+#undef TH095_ECL_SCHEDULED_FRAME3
+#undef TH095_ECL_SCHEDULED_FRAME2
+#undef TH095_ECL_SCHEDULED_FRAME1
+#undef TH095_ECL_SCHEDULED_FRAME0
 #undef TH095_ECL_ITEM_DROP_TYPE
 #undef TH095_ECL_ENEMY_SCORE
 #undef TH095_ECL_TIMER_CURRENT

@@ -179,9 +179,15 @@ enter_subroutine:
     }
 
     case 115:
+#ifdef TH095_MATCH_EXACT
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c54 +
                                  TH08_ECL_READ_I(ctx, 0) * 4) =
             TH08_ECL_READ_I(ctx, 1);
+#else
+        reinterpret_cast<EclRunHigh::Th095ScheduledCallFrameView *>(enemy)
+            ->scheduledCallFrames[TH08_ECL_READ_I(ctx, 0)] =
+                TH08_ECL_READ_I(ctx, 1);
+#endif
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c7c +
                                  TH08_ECL_READ_I(ctx, 0) * 4) =
             TH08_ECL_READ_I(ctx, 2);

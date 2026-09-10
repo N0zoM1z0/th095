@@ -144,6 +144,30 @@ typedef char EclFloatOperandItemDropTypeAt2BD8[
 #define TH095_ECL_ITEM_DROP_TYPE(owner) \
     (reinterpret_cast<EclFloatOperandItemDropTypeView *>(owner)->itemDropType)
 #endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_SCHEDULED_FRAME0(owner) ENEMY_I32(owner, 0x2c54)
+#define TH095_ECL_SCHEDULED_FRAME1(owner) ENEMY_I32(owner, 0x2c58)
+#define TH095_ECL_SCHEDULED_FRAME2(owner) ENEMY_I32(owner, 0x2c5c)
+#define TH095_ECL_SCHEDULED_FRAME3(owner) ENEMY_I32(owner, 0x2c60)
+#else
+struct EclFloatOperandScheduledCallFrameView
+{
+    u8 unknown0000[0x2c54];
+    i32 scheduledCallFrames[10];
+};
+typedef char EclFloatOperandScheduledCallFramesAt2C54[
+    (offsetof(EclFloatOperandScheduledCallFrameView, scheduledCallFrames) == 0x2c54)
+        ? 1
+        : -1];
+#define TH095_ECL_SCHEDULED_FRAME0(owner) \
+    (reinterpret_cast<EclFloatOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[0])
+#define TH095_ECL_SCHEDULED_FRAME1(owner) \
+    (reinterpret_cast<EclFloatOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[1])
+#define TH095_ECL_SCHEDULED_FRAME2(owner) \
+    (reinterpret_cast<EclFloatOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[2])
+#define TH095_ECL_SCHEDULED_FRAME3(owner) \
+    (reinterpret_cast<EclFloatOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[3])
+#endif
 #define ENEMY_U8(owner, offset) \
     (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 
@@ -224,10 +248,10 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x2755: return this->lastFrameDisplacement.y;
     case 0x2756: return this->lastFrameDisplacement.z;
 
-    case 0x2757: return (f32)ENEMY_I32(this, 0x2c54);
-    case 0x2758: return (f32)ENEMY_I32(this, 0x2c58);
-    case 0x2759: return (f32)ENEMY_I32(this, 0x2c5c);
-    case 0x275a: return (f32)ENEMY_I32(this, 0x2c60);
+    case 0x2757: return (f32)TH095_ECL_SCHEDULED_FRAME0(this);
+    case 0x2758: return (f32)TH095_ECL_SCHEDULED_FRAME1(this);
+    case 0x2759: return (f32)TH095_ECL_SCHEDULED_FRAME2(this);
+    case 0x275a: return (f32)TH095_ECL_SCHEDULED_FRAME3(this);
     case 0x2730: return TH095_ECL_FLOAT_PLAYER_ANGLE(&this->worldPosition);
     case 0x2765:
     {
@@ -263,6 +287,10 @@ f32 Enemy::ResolveFloat(f32 operand)
 #undef TH095_ECL_FLOAT_PHOTO_INDEX
 #undef TH095_ECL_FLOAT_PLAYER_POSITION
 #undef ENEMY_U8
+#undef TH095_ECL_SCHEDULED_FRAME3
+#undef TH095_ECL_SCHEDULED_FRAME2
+#undef TH095_ECL_SCHEDULED_FRAME1
+#undef TH095_ECL_SCHEDULED_FRAME0
 #undef TH095_ECL_ITEM_DROP_TYPE
 #undef TH095_ECL_ENEMY_SCORE
 #undef TH095_ECL_TIMER_CURRENT
