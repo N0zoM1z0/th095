@@ -214,7 +214,7 @@
     }
 
     case 149:
-        *reinterpret_cast<f32 *>(TH095_ECL_STAGE_STATE + 0x25718) =
+        TH095_ECL_STAGE_SCORE_MULTIPLIER =
             TH08_ECL_READ_F_RAWARG(ctx, 0);
         break;
 

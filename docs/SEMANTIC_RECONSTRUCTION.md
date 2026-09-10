@@ -2624,3 +2624,71 @@ Prefer a compact TH095 owner with multiple independent consumers. Treat the
 remaining `EnemyManagerUpdate.cpp` raw offsets as candidates only after
 excluding exact-only compatibility macros and already recorded context,
 descriptor, cadence, and child-block owners.
+
+
+### SEM-038 — photo-stage score multiplier
+
+**Scope.** Recover the TH095 photo-stage field at stage-state `+0x25718` as
+`scoreMultiplier`. ECL opcode 149 now targets a semantic lvalue in the
+maintainable `RunEcl` lane. Exact builds expand that lvalue to the historical
+`g_Th095StageState + 0x25718` expression, while production uses a bounded
+stage-state view rooted in the already-established `g_RuntimeStageStateOwner`.
+The neighboring dword at `+0x25714` remains unknown.
+
+**Observed.** Target-attested Ghidra decompilation of canonical
+`EclManager::RunEcl @ 0x00408E70` shows opcode `0x95` (149) resolving one float
+operand and writing it to the shared stage owner at `+0x25718`. Independent
+target decompilation of `PhotoOverlayManagerView::Initialize @ 0x0042AA30`
+writes the IEEE-754 value `0x3F800000` (`1.0f`) to the same offset immediately
+after successfully loading `photo.anm` at `+0x2571C`.
+
+**Corroborated.** Canonical TH095 `PhotoOverlayManagerView` and the production
+`PhotoStageStateView` both place `f32 scoreMultiplier` at `+0x25718`; the exact
+overlay layout asserts that displacement. `PhotoCameraState::CalculatePhotoScore
+@ 0x00433140` independently reads the stage owner through its local view and
+multiplies the accumulated photo score by `scoreMultiplier` before the final
+integer conversion and ten-point rounding. The exact scoring unit carries the
+stage-state relocation at `0x004C4E6C`, independently tying this consumer to the
+same owner used by opcode 149.
+
+**Inferred.** `scoreMultiplier` is a persistent photo-stage scoring scale. Stage
+initialization establishes the neutral scale `1.0f`; ECL opcode 149 can replace
+it during scripted gameplay; photo scoring consumes the current value at the
+end of its accumulated scoring pipeline. This interpretation is based entirely
+on TH095-local writer/default/consumer evidence.
+
+**Unknown.** This batch does not assign meaning to `+0x25714`, does not infer
+bounds or expected ranges for the multiplier, and does not claim when scripts
+restore the value to `1.0f`. It also does not generalize the field to other
+Touhou engines.
+
+**Compiler-observed.** The production-only `EclStageScoreStateView` is hidden
+from `TH095_MATCH_EXACT`. In exact preprocessing the semantic lvalue expands
+back to the original dereference and displacement tokens, so the 27KB RunEcl
+unit retains its existing private labels and relocation surface without
+manifest refresh.
+
+**Regression boundary.** `ecl-manager-run-ecl` remains 27091/27091 authored
+bytes and 27747/27747 compare-extent bytes exact with all configured
+relocations. Independent `photo-overlay-initialize` and `photo-calculate-score`
+units remain 88/88 and 2219/2219 bytes exact. Full `src/ecl/EclRun.cpp` replay
+is 1/1 exact with zero private-label refresh. The normal production EclRun TU
+independently compiles under pinned VC7.1 to i386 COFF, and `git diff --check`
+passes. No shared header or public ABI changed.
+
+**Receipt state.** The immediately preceding `3b540668` milestone has an
+accepted Factory `whole_build_closed` receipt. This source commit will make that
+receipt stale for the new HEAD; no new receipt is issued here because the next
+semantic batch would immediately stale it again. The current batch's exact and
+production checks are local current-source validation, not accepted Factory
+facts.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect the production `PhotoStageStateView` first-slot capture
+accessors at `+0x2C/+0x38/+0x3C/+0x40`. Accept a representation change only if
+TH095 capture/update/save consumers prove that these are exactly
+`slots[0].capturePosition`, `captureWidth`, `captureHeight`, and `captureSlot`;
+keep the exact snapshot source untouched if its raw AST is compiler-sensitive.

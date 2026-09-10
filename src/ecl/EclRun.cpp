@@ -62,9 +62,24 @@
 
 #ifdef DIFFBUILD
 #define TH095_ECL_STAGE_STATE EclRunHigh::g_Th095StageState
+#define TH095_ECL_STAGE_SCORE_MULTIPLIER \
+    *reinterpret_cast<f32 *>(TH095_ECL_STAGE_STATE + 0x25718)
 #else
+namespace th095
+{
+struct EclStageScoreStateView
+{
+    u8 unknown00000[0x25718];
+    f32 scoreMultiplier;
+};
+typedef char EclStageScoreMultiplierAt25718[
+    (offsetof(EclStageScoreStateView, scoreMultiplier) == 0x25718) ? 1 : -1];
+}
 #define TH095_ECL_STAGE_STATE \
     TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeStageStateOwner)
+#define TH095_ECL_STAGE_SCORE_MULTIPLIER \
+    (reinterpret_cast<::th095::EclStageScoreStateView *>(TH095_ECL_STAGE_STATE) \
+         ->scoreMultiplier)
 #endif
 
 #ifdef DIFFBUILD
