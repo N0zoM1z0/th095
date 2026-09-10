@@ -1830,3 +1830,73 @@ owner. Require the target updater gate, exact ECL integer/float operand
 selectors, lvalue writer, and `PhotoEnemyView` layout to agree before replacing
 raw accessors. Keep `maximumLife` and phase-life fields separate unless their
 producer/consumer evidence is independently sufficient.
+
+
+
+### SEM-026 — compact enemy life owner
+
+**Scope.** Recover compact enemy `life @ +0x2958` across the shot/ANM updater,
+integer and float ECL operand readers, the writable integer operand resolver,
+and the high-opcode `RunEcl` lane. The normal source paths now name one
+four-byte `life` owner; exact-sensitive switch/jump-table translation units keep
+the historical pointer-arithmetic AST behind semantic macros. Adjacent
+`maximumLife @ +0x295C` and `phaseStartingLife @ +0x2960` remain separate until
+their own protocol is closed.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`Enemy::UpdateShotAndAnm @ 0x00413030` gates the complete deferred-shot and ANM
+direction update on the signed dword at enemy `+0x2958` being positive. The
+canonical exact TH095 operand resolvers independently expose selector `0x2733`
+as that same dword: `ResolveInt` reads it, `ResolveFloat` converts it to float,
+and `ResolveIntLValue` returns its writable address. The exact target-high
+`RunEcl` body uses the same dword to gate shot opcodes 86..94 and enemy-spawn
+opcodes 83/84, and opcode 113 writes it in the same assignment chain as the two
+adjacent life-baseline dwords.
+
+**Corroborated.** `PhotoEnemyView` independently fixes `life @ +0x2958`,
+`maximumLife @ +0x295C`, and `phaseStartingLife @ +0x2960`. The spawn template
+initializes life to 1; both reconstructed TH095 spawn paths optionally replace
+life from their call argument, then snapshot `maximumLife = life` and
+`phaseStartingLife = maximumLife` after successful ECL startup. The already
+existing target-local `Th095EnemyLifeView` in `EclRunHigh.inl` places life at the
+same offset. No TH08 field interpretation is needed.
+
+**Inferred.** `+0x2958` is the mutable current enemy life value. Its use as
+selector `0x2733` on both read and integer-lvalue paths makes it script-visible
+mutable state, while the updater's signed-positive guard establishes the local
+alive/active threshold used by this subsystem. This does not imply that every
+enemy lifecycle path is controlled by life alone.
+
+**Unknown.** This batch does not assign semantics to life values below or equal
+to zero beyond the observed updater guards, and it does not fold
+`maximumLife`/`phaseStartingLife` into the current-life field. The public generic
+`Enemy` layout remains a separate later-offset representation where its fields
+do not line up with this compact photo-enemy lane.
+
+**Compiler-observed.** Replacing the four target-high raw life expressions
+with the already existing `TH095_ENEMY_LIFE` typed macro preserved machine-code
+shape but renumbered 68 private-label relocations inside the 27-KiB `RunEcl`
+function. That direct form was rejected without manifest refresh. The accepted
+`TH095_TARGET_ENEMY_LIFE` expands to the original raw expression only in
+`TH095_MATCH_EXACT` and to the typed owner otherwise, restoring all 647
+configured `RunEcl` relocations. The three operand TUs use the same exact-only
+AST preservation pattern; `EnemyShotAnm.cpp` accepts the natural typed view
+without a compatibility branch.
+
+**Regression boundary.** `ecl-manager-run-ecl` is 27091/27091 authored bytes
+exact and 27747/27747 across its configured compare extent with all 647
+relocations. The three operand resolver units and `enemy-update-shot-and-anm`
+also replay exact; all five changed source surfaces pass together with zero
+private-label refresh. The five corresponding normal production translation
+units independently compile under pinned VC7.1 to i386 COFF, and
+`git diff --check` passes. No shared header or ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect compact `maximumLife @ +0x295C` and
+`phaseStartingLife @ +0x2960` as a bounded life-baseline pair. Accept the pair
+only if TH095-local spawn initialization, opcode-113 reset, and independent
+consumers distinguish their roles. Otherwise leave them separate/unknown and
+route to the next repeated compact-enemy owner.

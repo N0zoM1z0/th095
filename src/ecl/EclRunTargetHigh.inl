@@ -1,5 +1,11 @@
 // TH095 target-order high opcode body.  This file is included lexically
 // inside EclManager::RunEcl so VC7 owns one shared frame and jump table.
+#if defined(TH095_MATCH_EXACT)
+#define TH095_TARGET_ENEMY_LIFE(enemy)                                      \
+    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958))
+#else
+#define TH095_TARGET_ENEMY_LIFE(enemy) TH095_ENEMY_LIFE(enemy)
+#endif
 
     case 86:
     case 87:
@@ -10,7 +16,7 @@
     case 92:
     case 93:
     case 94:
-        if (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958) <= 0)
+        if (TH095_TARGET_ENEMY_LIFE(enemy) <= 0)
             break;
         if (((*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4)
               >> 15) & 1U) != 0)
@@ -159,7 +165,7 @@ enter_subroutine:
 
     case 113:
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2960) =
-            *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958) =
+            TH095_TARGET_ENEMY_LIFE(enemy) =
                 *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x295c) =
                     TH08_ECL_READ_I(ctx, 0);
         break;
@@ -260,7 +266,7 @@ enter_subroutine:
         break;
 
     case 83:
-        if (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958) > 0)
+        if (TH095_TARGET_ENEMY_LIFE(enemy) > 0)
         {
             TH095_ECL_ENEMY_SPAWN(
                 TH08_ECL_RAW_I(ctx, 0),
@@ -272,7 +278,7 @@ enter_subroutine:
         break;
 
     case 84:
-        if (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958) > 0)
+        if (TH095_TARGET_ENEMY_LIFE(enemy) > 0)
         {
             SpawnPacketSmall packet;
             Enemy *spawned;
@@ -523,3 +529,5 @@ enter_subroutine:
     }
 
 #include "EclRunTargetPhoto.inl"
+
+#undef TH095_TARGET_ENEMY_LIFE

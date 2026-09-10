@@ -17,6 +17,14 @@ void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruc
     TH095_RUNTIME_GLOBAL_PTR(u8, g_RuntimeEnemyManagerOwner)
 #endif
 
+struct EnemyLifeView
+{
+    u8 unknown0000[0x2958];
+    i32 life;
+};
+typedef char EnemyLifeAt2958[
+    (offsetof(EnemyLifeView, life) == 0x2958) ? 1 : -1];
+
 struct EnemyShotCadenceView
 {
     u8 unknown0000[0x2b9c];
@@ -41,7 +49,7 @@ typedef char EnemyAnmDirectionAt2C0A[
 
 static __forceinline i32 &TargetEnemyLife(Enemy *enemy)
 {
-    return *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958);
+    return reinterpret_cast<EnemyLifeView *>(enemy)->life;
 }
 static __forceinline EclRawInstruction *TargetEnemyPendingShot(Enemy *enemy)
 {

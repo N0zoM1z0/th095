@@ -90,6 +90,19 @@ extern EclOperandPlayerView *g_EclOperandPlayer;
 
 #define ENEMY_I32(owner, offset) \
     (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(owner) + (offset)))
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_ENEMY_LIFE(owner) ENEMY_I32((owner), 0x2958)
+#else
+struct EclIntOperandEnemyLifeView
+{
+    u8 unknown0000[0x2958];
+    i32 life;
+};
+typedef char EclIntOperandEnemyLifeAt2958[
+    (offsetof(EclIntOperandEnemyLifeView, life) == 0x2958) ? 1 : -1];
+#define TH095_ECL_ENEMY_LIFE(owner) \
+    (reinterpret_cast<EclIntOperandEnemyLifeView *>(owner)->life)
+#endif
 #define ENEMY_U8(owner, offset) \
     (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 
@@ -127,7 +140,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x2723: return (i32)g_Rng.GetRandomF32Signed();
 
     case 0x2731: return ENEMY_I32(enemy, 0x2974);
-    case 0x2733: return ENEMY_I32(enemy, 0x2958);
+    case 0x2733: return TH095_ECL_ENEMY_LIFE(enemy);
     case 0x275d: return (i32)enemy->activeEclContext->extraFloatVariables[0];
     case 0x275e: return (i32)enemy->activeEclContext->extraFloatVariables[1];
     case 0x275f: return (i32)enemy->activeEclContext->extraFloatVariables[2];
@@ -207,6 +220,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 #undef TH095_ECL_INT_PHOTO_INDEX
 #undef TH095_ECL_INT_PLAYER_POSITION
 #undef ENEMY_U8
+#undef TH095_ECL_ENEMY_LIFE
 #undef ENEMY_I32
 
 } // namespace th095

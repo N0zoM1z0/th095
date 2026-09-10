@@ -25,6 +25,19 @@ extern EclIntLValueRuntimeView *g_EclIntLValueRuntime;
 
 #define ENEMY_I32(owner, offset) \
     (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(owner) + (offset)))
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_ENEMY_LIFE(owner) ENEMY_I32((owner), 0x2958)
+#else
+struct EclIntLValueOperandEnemyLifeView
+{
+    u8 unknown0000[0x2958];
+    i32 life;
+};
+typedef char EclIntLValueOperandEnemyLifeAt2958[
+    (offsetof(EclIntLValueOperandEnemyLifeView, life) == 0x2958) ? 1 : -1];
+#define TH095_ECL_ENEMY_LIFE(owner) \
+    (reinterpret_cast<EclIntLValueOperandEnemyLifeView *>(owner)->life)
+#endif
 
 namespace EclOperands
 {
@@ -59,7 +72,7 @@ i32 *__fastcall ResolveIntLValue(
     case 0x2727: return &enemy->activeEclContext->extraIntVariables[3];
 
     case 0x2731: return &ENEMY_I32(enemy, 0x2974);
-    case 0x2733: return &ENEMY_I32(enemy, 0x2958);
+    case 0x2733: return &TH095_ECL_ENEMY_LIFE(enemy);
     case 0x275b: return &ENEMY_I32(enemy, 0x2bd8);
     case 0x275c: return &ENEMY_I32(enemy, 0x2964);
 
@@ -73,6 +86,7 @@ i32 *__fastcall ResolveIntLValue(
 
 } // namespace EclOperands
 
+#undef TH095_ECL_ENEMY_LIFE
 #undef ENEMY_I32
 
 } // namespace th095
