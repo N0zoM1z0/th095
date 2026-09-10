@@ -1186,3 +1186,58 @@ remain untouched.
 and prefer a small field family whose target offset is repeated by multiple
 TH095-local exact consumers.  Do not promote callback-local script variables to
 one global semantic name merely because their storage slot is shared.
+
+
+### SEM-016 — compact enemy ANM handle slots
+
+**Scope.** Canonicalize only the compact enemy dwords at `+0x2D4` and
+`+0x2D8` used by extended callback entries 6 and 7.  The three raw byte-base
+loads now use the existing `Enemy::anmHandles[0]` and `anmHandles[1]`
+representation.  The storage remains four-byte POD integers; this batch does
+not convert the members to non-trivial `AnmVmId` objects or change layout.
+
+**Observed.** Factory's target-attested TH095 Ghidra provider decompiled
+`UpdatePlayerProximityAndMarker @ 0x00413AA0` and
+`UpdateEnemyMarkerVms @ 0x00413B90` from the canonical target.  Both pass the
+dword at enemy `+0x2D4` to exact `AnmManager::GetVm @ 0x00445110`; the
+second callback later passes enemy `+0x2D8` to the same resolver before
+publishing the paired projected position and rotation.  Thus both offsets are
+observed as ANM VM handles with the same four-byte access width.
+
+**Corroborated.** The canonical TH095 `Enemy` layout asserts
+`offsetof(Enemy, anmHandles) == 0x2D4` and declares exactly two contiguous
+`i32` slots.  The independent exact `PhotoEnemyView` used by
+`EnemyManagerUpdate.cpp` models the same pair at `+0x02D4`, followed by the
+proved ECL context at `+0x02DC`.  Exact `AnmManager::GetVm` is the shared
+handle-to-VM consumer.  No adjacent-game interpretation is needed.
+
+**Inferred.** `anmHandles[0]` and `anmHandles[1]` are reconstruction
+identifiers for the target-proven pair.  The two extended callbacks show that
+slot 0 participates in the proximity/marker update and that slots 0/1 form a
+paired marker update, but this batch deliberately does not invent stronger
+per-slot names without producer/lifetime evidence.
+
+**Unknown.** The complete producer, reset, and lifetime protocol for these two
+handles is outside this batch.  In particular, their use here does not prove
+that every consumer treats them as the same marker pair, and it does not
+supersede the existing evidence that compact enemy VM-id storage is POD at
+construction time.
+
+**Regression boundary.** All 22 configured `src/EclExtended.cpp` exact units
+replay unchanged with zero private-label refresh.  The normal production
+`EclExtended.cpp` independently compiles under the pinned VC7.1 profile to an
+i386 COFF object, and `git diff --check` passes.  No shared header, ABI, or
+layout changed, so the campaign-wide cold 88-TU product gate run for SEM-015 is
+now an earlier-source milestone and is intentionally not described as current
+for this checkpoint; current whole-product closure is deferred to the next
+campaign milestone.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes.  No
+current-session analysis scratch was created or removed; legacy and shared
+provider state remain untouched.
+
+**Next batch:** canonicalize the repeated extended BulletManager pool base at
+runtime owner `+0x4C` if the TH095 BulletManager layout and multiple exact
+extended callbacks agree on one canonical bullet-array representation.  Keep
+bullet-internal `+0x24` and ANM-VM `+0x228` fields separate unless their own
+independent field evidence is sufficient.

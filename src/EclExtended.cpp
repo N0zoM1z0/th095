@@ -461,7 +461,7 @@ void __fastcall UpdatePlayerProximityAndMarker(
             (locals.distanceSquared - 1024.0f) / 3072.0f * 0.75f + 0.25f;
 
     locals.vm = TH095_EXT_ANM_GET_VM(
-        *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d4));
+        enemy->anmHandles[0]);
     if (locals.vm != NULL)
         TH095_EXT_PHOTO_TO_SCREEN(&locals.vm->positionOffset, &enemy->position);
 }
@@ -653,7 +653,7 @@ void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instructio
 {
     ExtendedVector position;
     AnmVm *firstVm;
-    firstVm = TH095_EXT_ANM_GET_VM(*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d4));
+    firstVm = TH095_EXT_ANM_GET_VM(enemy->anmHandles[0]);
     if (firstVm != NULL)
     {
         TH095_EXTENDED_FROM_ANGLE(position, enemy->movementAngle, 24.0f);
@@ -664,7 +664,7 @@ void __fastcall UpdateEnemyMarkerVms(Enemy *enemy, EclRawInstruction *instructio
         firstVm->positionOffset.y -= 16.0f;
         firstVm->rotation.z = enemy->movementAngle;
         position = *reinterpret_cast<ExtendedVector *>(&firstVm->positionOffset);
-        firstVm = TH095_EXT_ANM_GET_VM(*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2d8));
+        firstVm = TH095_EXT_ANM_GET_VM(enemy->anmHandles[1]);
         firstVm->positionOffset = *reinterpret_cast<Float3 *>(&position);
         firstVm->rotation.z = enemy->movementAngle;
     }
