@@ -2326,3 +2326,79 @@ and shared provider state remain untouched.
 independent TH095-local writer/consumer establishes its role. Otherwise route
 to another compact owner with a proven non-resolver protocol; do not infer
 meaning from its proximity to `selectedLaserSlot @ +0x2C4C`.
+
+
+
+### SEM-034 — child ECL block ownership table
+
+**Scope.** Recover the sixteen pointer slots at compact enemy `+0x2CAC` as an
+owned table of `EnemyChildEclBlock *`, replacing the overly generic
+`allocatedEclArgs` interpretation in maintainable enemy-update and ECL-return
+paths. Exact builds preserve the historical `void *allocatedEclArgs[16]` field
+and `TargetAllocatedEclArgs` helper spelling behind semantic aliases so the
+VC7.1 exact translation surfaces stay unchanged. The already typed
+`Th095EnemyChildBlockView` used by target-high `RunEcl` supplies the allocation
+side of the same owner; no source change is needed there.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`PopEclContext @ 0x00412060` derives `activeEclContext->childContextSlot - 1`,
+looks up the pointer at enemy `+0x2CAC + index*4`, frees a non-null pointer,
+nulls that slot, and restores the main ECL context/call stack. The target also
+shows `PhotoEnemyView::Deactivate @ 0x00416E80` iterating all sixteen pointers
+at `+0x2CAC`, freeing every non-null entry before clearing the enemy, while
+`UpdateScheduledEclCalls @ 0x00416F30` frees and nulls the same sixteen slots
+when a scheduled call fires.
+
+**Corroborated.** Canonical target-exact TH095 `RunEcl` opcode 117 uses the
+existing `Th095EnemyChildBlockView::childEclBlocks[16] @ +0x2CAC`: it frees and
+nulls an occupied indexed slot, allocates exactly `sizeof(EnemyChildEclBlock)`
+for a non-negative subroutine id, zeroes the block, stores its `subId`, starts
+the block's embedded ECL context, and copies the parent's script-variable bank.
+`EnemyChildEclBlock` independently contains the subroutine id, child ECL
+context, and sixteen-level child call stack. The enemy-manager destructor also
+walks all sixteen compact slots and frees non-null entries. These producer,
+return, scheduled-restart, deactivation, and manager-destruction paths are all
+TH095-local.
+
+**Inferred.** `+0x2CAC` is an ownership table for dynamically allocated child
+ECL context/control blocks, not a generic argument heap. A child-context return
+owns exactly one slot through `childContextSlot - 1`; broad enemy lifecycle and
+scheduled-call resets conservatively release all sixteen. The maintainable
+name `childEclBlocks` therefore describes both allocation type and lifetime
+protocol without importing the later generic `Enemy::childEclBlocks[4]`
+layout, which resides at an incompatible offset.
+
+**Unknown.** This batch does not infer bounds checking for script-selected child
+slots, the purpose of `EnemyChildEclBlock::unconsumedWord04`, or whether every
+partially initialized allocation can reach every cleanup path. It does not
+claim that the generic later-layout four-slot `Enemy::childEclBlocks` has the
+same capacity or ABI as this compact sixteen-slot owner.
+
+**Compiler-observed.** The exact lane accepts semantic aliases only when the
+historical field/helper tokens remain visible after preprocessing; both changed
+sources replay with zero private-label refresh. The first production compile of
+`EnemyManagerUpdate.cpp` rejected `EnemyChildEclBlock *` because that TU's
+normal include surface does not expose the complete type. The accepted form
+adds only a production-only forward declaration, sufficient for pointer
+storage and keeping the exact preprocessed TU unchanged. No include/PCH surface
+was widened.
+
+**Regression boundary.** The narrow `ecl-pop-context`,
+`enemy-view-destructor`, `enemy-deactivate`, and
+`enemy-update-scheduled-ecl-calls` units remain respectively 281/281, 52/52,
+175/175, and 309/309 exact. Full changed-source replay covers all 32 configured
+units across `src/EclDependencies.cpp` and `src/EnemyManagerUpdate.cpp`; all 32
+are exact with zero private-label refresh. Both normal production translation
+units independently compile under pinned VC7.1 to i386 COFF, and
+`git diff --check` passes. No shared header or ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect the compact enemy shot-descriptor owner rooted at
+`+0x298C`. Prefer a bounded representation shared by target-exact shot dispatch,
+`RunEcl` shot opcodes, spawn/template initialization, and the scheduled-call
+reset copy. Keep the descriptor's internal fields separate unless their own
+TH095 producer/consumer evidence supports names; first prove the owner extent
+and reset/copy protocol.

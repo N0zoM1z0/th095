@@ -305,10 +305,25 @@ typedef char EclDependencyAnmDirectionAt2C0A[
 #endif
 #define DEP_PRIMARY_ANM_SCRIPTS(enemy) \
     (*reinterpret_cast<EnemyAnmScripts *>(reinterpret_cast<u8 *>(enemy) + 0x2c0e))
-static __forceinline void **TargetAllocatedEclArgs(Enemy *enemy)
+#if defined(TH095_MATCH_EXACT)
+#define TargetChildEclBlocks TargetAllocatedEclArgs
+static __forceinline void **TargetChildEclBlocks(Enemy *enemy)
 {
     return reinterpret_cast<void **>(reinterpret_cast<u8 *>(enemy) + 0x2cac);
 }
+#else
+struct EclDependencyChildBlockView
+{
+    u8 unknown0000[0x2cac];
+    EnemyChildEclBlock *childEclBlocks[16];
+};
+typedef char EclDependencyChildBlocksAt2CAC[
+    (offsetof(EclDependencyChildBlockView, childEclBlocks) == 0x2cac) ? 1 : -1];
+static __forceinline EnemyChildEclBlock **TargetChildEclBlocks(Enemy *enemy)
+{
+    return reinterpret_cast<EclDependencyChildBlockView *>(enemy)->childEclBlocks;
+}
+#endif
 
 // FUNCTION: TH095 0x00411F70; TH08 0x00421BD0 is the source-shape oracle.
 void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32 rawSubId)
@@ -350,12 +365,12 @@ int __fastcall PopEclContext(Enemy *enemy, EclRawInstruction *instruction)
     if (enemy->activeEclCallStackDepth < 0)
     {
         contextIndex = enemy->activeEclContext->childContextSlot - 1;
-        if (TargetAllocatedEclArgs(enemy)[contextIndex] != NULL)
+        if (TargetChildEclBlocks(enemy)[contextIndex] != NULL)
         {
-            void *argument = TargetAllocatedEclArgs(enemy)[contextIndex];
+            void *argument = TargetChildEclBlocks(enemy)[contextIndex];
             free(argument);
         }
-        TargetAllocatedEclArgs(enemy)[contextIndex] = NULL;
+        TargetChildEclBlocks(enemy)[contextIndex] = NULL;
         enemy->activeEclCallStack = &enemy->mainEclCallStackStorage[0];
         enemy->activeEclContext = &enemy->mainEclContextStorage;
         enemy->activeEclCallStackDepth = enemy->mainEclCallStackDepth;
@@ -391,3 +406,7 @@ void __fastcall SetPrimaryAnmScripts(
 }
 
 }
+
+#if defined(TH095_MATCH_EXACT)
+#undef TargetChildEclBlocks
+#endif

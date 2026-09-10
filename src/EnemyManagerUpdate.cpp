@@ -25,6 +25,9 @@ Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 struct PhotoEnemyView;
 struct PhotoEnemyManagerView;
 struct PhotoEnemyEclContextView;
+#if !defined(TH095_MATCH_EXACT)
+struct EnemyChildEclBlock;
+#endif
 
 struct PhotoEnemyEclFileView
 {
@@ -539,7 +542,11 @@ struct PhotoEnemyView
     PhotoEnemyScheduledCall scheduledCalls[10]; // +0x2c7c
     i32 pendingCallbackFrame;               // +0x2ca4
     u8 unknown2ca8[4];
+#if defined(TH095_MATCH_EXACT)
     void *allocatedEclArgs[16];              // +0x2cac
+#else
+    EnemyChildEclBlock *childEclBlocks[16];  // +0x2cac
+#endif
     PhotoEnemyTrailSampleView trailSamples[96]; // +0x2cec
     VertexTex1DiffuseXyzrhw trailVertices[194]; // +0x376c
     u8 unknown4ca4[8];
@@ -571,12 +578,22 @@ typedef char PhotoEnemyPhotoTargetSlotAt2BE5[
 #endif
 typedef char PhotoEnemyFlagsAt2BF4[
     (offsetof(PhotoEnemyView, flags1) == 0x2bf4) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT)
+typedef char PhotoEnemyChildEclBlocksAt2CAC[
+    (offsetof(PhotoEnemyView, childEclBlocks) == 0x2cac) ? 1 : -1];
+#endif
 typedef char PhotoEnemyTrailSamplesAt2CEC[
     (offsetof(PhotoEnemyView, trailSamples) == 0x2cec) ? 1 : -1];
 typedef char PhotoEnemyTrailVerticesAt376C[
     (offsetof(PhotoEnemyView, trailVertices) == 0x376c) ? 1 : -1];
 typedef char PhotoEnemyAttachedVmAt4CBC[
     (offsetof(PhotoEnemyView, attachedVmId) == 0x4cbc) ? 1 : -1];
+
+#if defined(TH095_MATCH_EXACT)
+#define PHOTO_ENEMY_CHILD_ECL_BLOCKS(owner) owner->allocatedEclArgs
+#else
+#define PHOTO_ENEMY_CHILD_ECL_BLOCKS(owner) owner->childEclBlocks
+#endif
 
 PhotoEnemyView::PhotoEnemyView()
 {
@@ -740,10 +757,13 @@ i32 PhotoEnemyManagerView::LoadResources()
     return ZUN_SUCCESS;
 }
 
-static __forceinline void FreePhotoEnemyEclArgument(
+#if defined(TH095_MATCH_EXACT)
+#define FreePhotoEnemyChildEclBlock FreePhotoEnemyEclArgument
+#endif
+static __forceinline void FreePhotoEnemyChildEclBlock(
     PhotoEnemyView *enemy, i32 argumentIndex)
 {
-    void *argument = enemy->allocatedEclArgs[argumentIndex];
+    void *argument = PHOTO_ENEMY_CHILD_ECL_BLOCKS(enemy)[argumentIndex];
     free(argument);
 }
 
@@ -758,9 +778,9 @@ PhotoEnemyManagerView::~PhotoEnemyManagerView()
     {
         for (i32 argumentIndex = 0; argumentIndex < 16; ++argumentIndex)
         {
-            if (enemy->allocatedEclArgs[argumentIndex] != NULL)
+            if (PHOTO_ENEMY_CHILD_ECL_BLOCKS(enemy)[argumentIndex] != NULL)
             {
-                FreePhotoEnemyEclArgument(enemy, argumentIndex);
+                FreePhotoEnemyChildEclBlock(enemy, argumentIndex);
             }
         }
     }
@@ -1446,9 +1466,9 @@ void PhotoEnemyView::Deactivate()
 
     for (argumentIndex = 0; argumentIndex < 16; ++argumentIndex)
     {
-        if (this->allocatedEclArgs[argumentIndex] != NULL)
+        if (PHOTO_ENEMY_CHILD_ECL_BLOCKS(this)[argumentIndex] != NULL)
         {
-            void *argument = this->allocatedEclArgs[argumentIndex];
+            void *argument = PHOTO_ENEMY_CHILD_ECL_BLOCKS(this)[argumentIndex];
             free(argument);
         }
     }
@@ -1483,11 +1503,11 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
 
             for (scheduledArgumentIndex = 0; scheduledArgumentIndex < 16; ++scheduledArgumentIndex)
             {
-                if (this->allocatedEclArgs[scheduledArgumentIndex] != NULL)
+                if (PHOTO_ENEMY_CHILD_ECL_BLOCKS(this)[scheduledArgumentIndex] != NULL)
                 {
-                    void *argument = this->allocatedEclArgs[scheduledArgumentIndex];
+                    void *argument = PHOTO_ENEMY_CHILD_ECL_BLOCKS(this)[scheduledArgumentIndex];
                     free(argument);
-                    this->allocatedEclArgs[scheduledArgumentIndex] = NULL;
+                    PHOTO_ENEMY_CHILD_ECL_BLOCKS(this)[scheduledArgumentIndex] = NULL;
                 }
             }
 
@@ -1506,3 +1526,8 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
 #undef scheduledCurrentFrame
 
 } // namespace th095
+
+#if defined(TH095_MATCH_EXACT)
+#undef FreePhotoEnemyChildEclBlock
+#endif
+#undef PHOTO_ENEMY_CHILD_ECL_BLOCKS
