@@ -2402,3 +2402,82 @@ and shared provider state remain untouched.
 reset copy. Keep the descriptor's internal fields separate unless their own
 TH095 producer/consumer evidence supports names; first prove the owner extent
 and reset/copy protocol.
+
+
+
+### SEM-035 — compact enemy bullet spawn descriptor owner
+
+**Scope.** Recover the compact enemy bullet-spawn descriptor as one 0x210-byte
+owner rooted at enemy `+0x298C`. `EnemyShotDispatch.cpp` now reaches its
+fielded `EnemyShotDescriptorView` through a typed owner view instead of a raw
+base offset. The scheduled-call reset in `EnemyManagerUpdate.cpp` names both
+the enemy descriptor and the manager spawn-template descriptor in the
+maintainable branch; its exact branch expands semantic macros to the historical
+raw `memcpy` operands and literal size. Internal descriptor fields remain owned
+by their existing shot/bullet reconstructions rather than being renamed en
+masse in this batch.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`DispatchShotInstruction @ 0x00412670` writes the requested bullet type to
+enemy `+0x298C`, color to `+0x298E`, world-space spawn position to
+`+0x2990..+0x2998`, several resolved shot parameters within the same contiguous
+record, then passes a pointer to exactly `enemy + 0x298C` to
+`PhotoBulletManager::SpawnBulletPattern @ 0x00406CC0`. Independently,
+`UpdateScheduledEclCalls @ 0x00416F30` copies 0x84 dwords (0x210 bytes) from
+manager `+0x298C` to enemy `+0x298C` after a scheduled ECL call fires, then
+clears the deferred-shot interval.
+
+**Corroborated.** Canonical TH095 `PhotoEnemyView` declares
+`PhotoEnemyBulletSpawnDescriptorView bulletSpawnDescriptor @ +0x298C`; the
+view's size is asserted as 0x210 bytes and its tail lands at the independently
+proved `shootIntervalFrames @ +0x2BC8`. The manager begins with a full
+`PhotoEnemyView spawnTemplate`, so manager `+0x298C` is exactly the template's
+same descriptor member. Template construction initializes descriptor sounds,
+and the two spawn paths copy the manager template before ECL startup. The
+independently exact `PhotoBulletSpawnDescriptor` consumed by BulletManager is
+also 0x210 bytes and agrees on bullet type, color, position, transform records,
+count/mode fields, flags, sounds, start index, and template-sprite pointer.
+Canonical target-exact `RunEcl` opcode 99 supplies another producer by passing
+`enemy + 0x298C` as the bullet-spawn descriptor after updating its position.
+
+**Inferred.** `+0x298C..+0x2B9B` is one persistent per-enemy bullet pattern
+spawn descriptor. Ordinary ECL shot commands mutate and dispatch that owner;
+a scheduled ECL restart restores the entire descriptor from the manager's spawn
+template before re-enabling cadence. The typed owner is therefore a meaningful
+lifecycle boundary, not merely a convenient struct overlay.
+
+**Unknown.** This batch does not claim that every descriptor subfield has its
+final gameplay name, does not collapse the separate deferred-shot instruction
+record at `+0x2B9C`, and does not infer why scheduled restart restores the full
+descriptor rather than selected fields. The target's `+0x2C4C` minimum-distance
+comparison remains a separate unresolved/cross-view field despite appearing in
+the shot dispatcher.
+
+**Compiler-observed.** Natural typed member expressions in the scheduled-reset
+`memcpy` preserve that function's 309 bytes exactly but renumber two private
+labels in the unrelated `enemy-timeline-run` unit because VC7.1 shares lexical
+label buckets across the translation unit. That direct form was rejected
+without manifest refresh. The accepted semantic macros expand to the original
+three `memcpy` expressions under `TH095_MATCH_EXACT` and to typed descriptor
+members/`sizeof` otherwise, restoring the complete 22-unit exact source surface.
+`EnemyShotDispatch.cpp` accepts its natural typed owner view without an exact-
+compatibility branch.
+
+**Regression boundary.** `enemy-update-scheduled-ecl-calls` remains 309/309
+bytes exact with all five configured relocations, and `enemy-shot-dispatch`
+remains 756/756 bytes exact with all fifteen relocations. Full changed-source
+replay covers all 23 configured units across `EnemyManagerUpdate.cpp` and
+`EnemyShotDispatch.cpp`; all 23 are exact with zero private-label refresh. Both
+normal production translation units independently compile under pinned VC7.1
+to i386 COFF, and `git diff --check` passes. No shared header or ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** refresh repository-wide semantic debt after excluding exact-
+compatibility macros already documented by prior batches. Prefer another
+compact TH095 owner with multiple exact producers/consumers; in particular,
+inspect the shot-dispatch scratch family at `+0x2B80..+0x2B88` only if its
+fields' write/use/reset protocol is independently visible. Do not infer field
+semantics from proximity to the recovered 0x210-byte descriptor alone.
