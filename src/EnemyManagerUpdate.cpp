@@ -443,14 +443,14 @@ struct PhotoEnemyView
     i16 photoTargetEclSubroutineId;         // +0x289a
     i16 timelineValue;                     // +0x289c
     u8 unknown289e[2];
-    D3DXVECTOR3 worldPosition;             // +0x28a0
+    D3DXVECTOR3 position;                  // +0x28a0
     u8 unknown28ac[0x28b8 - 0x28ac];
     D3DXVECTOR3 velocity;                  // +0x28b8
     D3DXVECTOR3 previousPosition;          // +0x28c4
     D3DXVECTOR3 positionDelta;             // +0x28d0
     Float3 collisionSize;                  // +0x28dc
     u8 unknown28e8[0x28f4 - 0x28e8];
-    Float3 photoMarkerPosition;            // +0x28f4
+    Float3 worldPosition;                 // +0x28f4
     f32 angularVelocity;                    // +0x2900
     f32 movementAngle;                      // +0x2904
     u8 unknown2908[0x0c];
@@ -558,7 +558,7 @@ typedef char PhotoEnemySizeIs4CC0[
 typedef char PhotoEnemyVmAt8[
     (offsetof(PhotoEnemyView, vm) == 0x08) ? 1 : -1];
 typedef char PhotoEnemyPositionAt28A0[
-    (offsetof(PhotoEnemyView, worldPosition) == 0x28a0) ? 1 : -1];
+    (offsetof(PhotoEnemyView, position) == 0x28a0) ? 1 : -1];
 typedef char PhotoEnemyFlagsAt2BF4[
     (offsetof(PhotoEnemyView, flags1) == 0x2bf4) ? 1 : -1];
 typedef char PhotoEnemyTrailSamplesAt2CEC[
@@ -961,7 +961,7 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
         {
             enemy->life = life;
         }
-        *reinterpret_cast<Float3 *>(&enemy->worldPosition) = *position;
+        *reinterpret_cast<Float3 *>(&enemy->position) = *position;
         TH095_PHOTO_ECL_INIT(this->eclManager,
             reinterpret_cast<PhotoEnemyEclContextView *>(
                 reinterpret_cast<u8 *>(enemy) + 0x2dc),
@@ -1021,7 +1021,7 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
         {
             enemy->life = life;
         }
-        *reinterpret_cast<Float3 *>(&enemy->worldPosition) = *position;
+        *reinterpret_cast<Float3 *>(&enemy->position) = *position;
         TH095_PHOTO_ECL_INIT(this->eclManager,
             reinterpret_cast<PhotoEnemyEclContextView *>(
                 reinterpret_cast<u8 *>(enemy) + 0x2dc),
@@ -1162,7 +1162,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
                         &enemy->attachedVmId));
             PhotoToScreen(
                 &positions.screen,
-                reinterpret_cast<Float3 *>(&enemy->worldPosition));
+                reinterpret_cast<Float3 *>(&enemy->position));
             positions.attached =
                 (positions.screen - positions.attached) * 0.07f +
                 positions.attached;
@@ -1187,7 +1187,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
             {
                 PhotoToScreen(
                     &photoPulseVm->positionOffset,
-                    reinterpret_cast<Float3 *>(&enemy->worldPosition));
+                    reinterpret_cast<Float3 *>(&enemy->position));
                 photoPulseVm->scale.y =
                     static_cast<f32>(enemy->photoMarkerTimer) /
                     static_cast<f32>(enemy->photoMarkerDurationTimer) * 2.0f;
@@ -1214,9 +1214,9 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
                     &enemy->photoMarkerVmId) =
                     g_PhotoEnemyBulletManager->anmSpawner
 #ifdef TH095_MATCH_EXACT
-                        ->CreateVm(0x127, &enemy->photoMarkerPosition);
+                        ->CreateVm(0x127, &enemy->worldPosition);
 #else
-                        ->CreateVmAtWorld(0x127, &enemy->photoMarkerPosition);
+                        ->CreateVmAtWorld(0x127, &enemy->worldPosition);
 #endif
             }
             else
@@ -1227,7 +1227,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
                             &enemy->photoMarkerVmId));
                 PhotoToScreen(
                     &photoMarkerVm->positionOffset,
-                    reinterpret_cast<Float3 *>(&enemy->worldPosition));
+                    reinterpret_cast<Float3 *>(&enemy->position));
             }
         }
         else
@@ -1258,7 +1258,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
             }
 
             if (IsPhotoEnemyOutsidePlayfield(
-                    &enemy->worldPosition, spriteWidth, spriteHeight))
+                    &enemy->position, spriteWidth, spriteHeight))
             {
                 if (enemy->hasEnteredPlayfield != 0)
                 {
@@ -1275,7 +1275,7 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
         if (enemy->collidable != 0)
         {
             TH095_PHOTO_ENEMY_PLAYER_COLLISION(
-                reinterpret_cast<Float3 *>(&enemy->worldPosition),
+                reinterpret_cast<Float3 *>(&enemy->position),
                 &enemy->collisionSize);
         }
         AnmManager::ExecuteScript(&enemy->vm);
@@ -1304,41 +1304,41 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
 
 void PhotoEnemyView::IntegrateMovement()
 {
-    this->positionDelta = this->worldPosition - this->previousPosition;
-    this->previousPosition = this->worldPosition;
+    this->positionDelta = this->position - this->previousPosition;
+    this->previousPosition = this->position;
 
     if (this->mirrorXVelocity == 0)
     {
-        this->worldPosition.x += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.x;
+        this->position.x += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.x;
     }
     else
     {
-        this->worldPosition.x -= TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.x;
+        this->position.x -= TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.x;
     }
-    this->worldPosition.y += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.y;
-    this->worldPosition.z += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.z;
+    this->position.y += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.y;
+    this->position.z += TH095_PHOTO_ENEMY_GAME_SPEED * this->velocity.z;
 }
 
 void PhotoEnemyView::ClampPosition()
 {
     if (this->clampToMovementBounds != 0)
     {
-        if (this->worldPosition.x < this->movementBoundsMin.x)
+        if (this->position.x < this->movementBoundsMin.x)
         {
-            this->worldPosition.x = this->movementBoundsMin.x;
+            this->position.x = this->movementBoundsMin.x;
         }
-        else if (this->worldPosition.x > this->movementBoundsMax.x)
+        else if (this->position.x > this->movementBoundsMax.x)
         {
-            this->worldPosition.x = this->movementBoundsMax.x;
+            this->position.x = this->movementBoundsMax.x;
         }
 
-        if (this->worldPosition.y < this->movementBoundsMin.y)
+        if (this->position.y < this->movementBoundsMin.y)
         {
-            this->worldPosition.y = this->movementBoundsMin.y;
+            this->position.y = this->movementBoundsMin.y;
         }
-        else if (this->worldPosition.y > this->movementBoundsMax.y)
+        else if (this->position.y > this->movementBoundsMax.y)
         {
-            this->worldPosition.y = this->movementBoundsMax.y;
+            this->position.y = this->movementBoundsMax.y;
         }
     }
 }

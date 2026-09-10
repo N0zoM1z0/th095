@@ -709,3 +709,78 @@ prefix and all other legacy/shared provider content remain untouched.
 TH095-local owner/field/protocol family from the lexical report plus repository
 history and target evidence.  Do not extend the adjacent Player half-size or
 camera-tail fields merely because their offsets are now bounded.
+
+
+### SEM-009 — Enemy local and derived positions
+
+**Scope.** Correct the exact `PhotoEnemyView` coordinate names without changing
+its layout or behavior.  Enemy `+0x28A0` is the mutable local `position`; enemy
+`+0x28F4` is the derived `worldPosition`.  Existing update, collision, culling,
+and projection sites that operate directly on `+0x28A0` now use `position`,
+while the photo-marker creation site that intentionally receives `+0x28F4`
+uses `worldPosition`.  This batch does not widen the exact local view with a new
+`positionOffset` member, does not replace target-local later fields with the
+larger generic `Enemy` layout, and does not reinterpret enemy `+0x2C4C`.
+
+**Observed.** Factory's target-attested TH095 Ghidra provider disassembled the
+canonical `EclManager::RunEcl @ 0x00408E70`.  At
+`0x00408EE0..0x00408F87` the target loads three floats from enemy `+0x28A0`
+and three from enemy `+0x28AC`, adds them component-wise, and stores the result
+at enemy `+0x28F4/+0x28F8/+0x28FC` before instruction dispatch.  Independent
+target decompilation of `Enemy::ResolveFloat @ 0x004105A0` returns those
+`+0x28F4..+0x28FC` values for read selectors `0x272A..0x272C`; the target
+`ResolveFloatLValue @ 0x00410DB0` instead returns addresses
+`+0x28A0/+0x28A4/+0x28A8` for the writable versions of the same selectors.
+`PhotoEnemyView::IntegrateMovement @ 0x004160B0` mutates `+0x28A0` from
+velocity after preserving its prior value and displacement, while
+`PhotoEnemyManagerView::OnUpdate @ 0x00415970` uses `+0x28A0` for ordinary
+projection/culling/collision and passes `+0x28F4` to the photo-marker VM
+creation path.  These target-local observations establish distinct local and
+derived coordinate roles.
+
+**Corroborated.** Canonical exact `EclRun.cpp` already expresses the target
+assignment as `enemy->worldPosition = enemy->position + enemy->positionOffset`.
+The shared `Enemy` declaration independently asserts `position @ +0x28A0`,
+`positionOffset @ +0x28AC`, and `worldPosition @ +0x28F4`.  Existing exact
+ECL operand and draw records likewise distinguish writable local position from
+read-only derived world position.  No TH08 interpretation is required for the
+accepted names.
+
+**Inferred.** Reusing the established English names in the exact
+`PhotoEnemyView` is a reconstruction representation choice.  It does not prove
+that the retail C++ declaration used these identifiers, nor does agreement in
+this early coordinate prefix prove that the complete generic `Enemy` layout is
+valid for the compact photo-enemy view.
+
+**Unknown.** Enemy `+0x2C4C` remains deliberately unresolved at the shared
+semantic level: one exact target-local view currently uses that address as a
+laser-slot field while the exact shot-dispatch lane treats it as a minimum
+player-distance threshold.  That conflict requires a separate lifecycle or
+protocol proof before consolidation.  Likewise, later generic-`Enemy` offsets
+must not be projected onto `PhotoEnemyView` merely because the coordinate
+prefix agrees.
+
+**Regression boundary.** The final source-only naming change replays all 22
+configured `EnemyManagerUpdate.cpp` exact units with zero compiler-private
+label refresh.  A temporary extra offset typedef was tested and rejected
+because its additional source line perturbed VC7.1 `$L` numbering; it was
+removed rather than changing the exact relocation ledger.  The normal
+production branch was then compiled independently with the repository's pinned
+VC7.1 `13.10.3077` profile to an i386 COFF object.  `git diff --check` passes.
+Because no shared header, layout, ABI, owner, emitted expression, or runtime
+behavior changed, the campaign-level cold 696-unit and 88-TU product gates from
+SEM-008 remain the current broad milestone rather than being replayed for this
+local lexical transaction.  Exact replay, production compilation, target
+semantic evidence, and runtime behavior remain separate states; no runtime
+scenario or storage claim is added here.
+
+**Analysis artifacts.** `.analysis/` remains exactly 1,408,444,500 bytes.  The
+one-shot `build/semantic-validation/` production object created for this batch
+was removed after validation.  No `.analysis` artifact was created or removed,
+and all legacy/shared provider state remains untouched.
+
+**Next batch:** refresh live state and test whether the shot-dispatch coordinate
+accessors can use the established `Enemy::worldPosition` and `Enemy::shootOffset`
+fields directly while preserving its canonical exact body.  Keep the compact
+shot descriptor at `+0x298C` and the conflicting `+0x2C4C` field out of that
+batch unless independent TH095-local evidence resolves their ownership.
