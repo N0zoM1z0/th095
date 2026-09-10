@@ -656,24 +656,29 @@ static EclRawInstruction *__fastcall CompareOperands(
         *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
             0xc00U;
         break;
+#define TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy) \
+    (*reinterpret_cast<EnemyMovementBounds *>(reinterpret_cast<u8 *>(enemy) + 0x2c3c))
+#define TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS 0x20000U
     case 75:
-        *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c3c) = ((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0)));
-        *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c40) = ((instruction->operandFlags & (1U << 1))
+        TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy).lower.x = ((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0)));
+        TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy).lower.y = ((instruction->operandFlags & (1U << 1))
                 ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 1)))
                 : *reinterpret_cast<f32 *>(&RawInt(instruction, 1)));
-        *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c44) = ((instruction->operandFlags & (1U << 2))
+        TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy).upper.x = ((instruction->operandFlags & (1U << 2))
                 ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 2)))
                 : *reinterpret_cast<f32 *>(&RawInt(instruction, 2)));
-        *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c48) = ((instruction->operandFlags & (1U << 3))
+        TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy).upper.y = ((instruction->operandFlags & (1U << 3))
                 ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 3)))
                 : *reinterpret_cast<f32 *>(&RawInt(instruction, 3)));
         *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
-            0x20000U;
+            TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS;
         break;
     case 76:
         *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &=
-            0xfffdffffU;
+            ~TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS;
         break;
+#undef TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS
+#undef TH095_ECL_ENEMY_MOVEMENT_BOUNDS
     case 77:
         enemy->hitboxDimensions.x = ((instruction->operandFlags & (1U << 0))
             ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0)))

@@ -1050,3 +1050,65 @@ remains untouched.
 and the bit-17 clamp-enable protocol only if TH095-local producer and consumer
 lanes jointly support it.  Keep the conflicting `+0x2C4C` field outside that
 record and outside the batch.
+
+
+### SEM-014 — compact enemy movement bounds and clamp enable
+
+**Scope.** Canonicalize only the compact enemy movement-bound producer at
+`+0x2C3C..+0x2C4B` and its `flags1 @ +0x2BF4` bit-17 enable protocol.  The
+low-ECL opcode-75 body now writes a target-local `EnemyMovementBounds` view and
+uses a local semantic mask when enabling clamping; opcode 76 clears the same
+mask.  The adjacent `+0x2C4C` storage is explicitly outside the 16-byte record
+and remains unresolved across conflicting target-local views.
+
+**Observed.** Factory's target-attested TH095 Ghidra provider decompiled
+`PhotoEnemyView::ClampPosition @ 0x00416320`.  It tests bit 17 of enemy
+`+0x2BF4` and, only when set, clamps local X at `+0x28A0` between floats
+`+0x2C3C` and `+0x2C44`, then clamps local Y at `+0x28A4` between floats
+`+0x2C40` and `+0x2C48`.  The independent target-attested
+`BeginBoundaryAwareMove @ 0x00412200` reads `+0x2C3C/+0x2C44` for X-edge
+avoidance and `+0x2C40/+0x2C48` for Y-edge avoidance.  These two consumers fix
+the lower/upper XY interpretation of the four-float record.
+
+**Corroborated.** The canonical exact TH095 low-ECL dispatcher supplies the
+producer protocol.  Opcode 75 resolves four float operands into
+`+0x2C3C/+0x2C40/+0x2C44/+0x2C48` and then sets `0x20000` in compact
+`flags1`; opcode 76 clears exactly that bit.  `EclDependencies.cpp` already
+models the same base as a target-local `EnemyMovementBounds`, while exact
+`PhotoEnemyView` names the same four floats as movement-bound min/max and names
+bit 17 `clampToMovementBounds`.  No TH08 semantic interpretation is required
+for the accepted record or flag role.
+
+**Inferred.** Reusing `EnemyMovementBounds` at the compact target-local base is
+a reconstruction representation choice.  It establishes the 16-byte lower/
+upper XY record shape, not the offset of the later generic `Enemy::movementBounds`
+member and not the complete generic Enemy layout.  The local macro name for
+bit 17 is likewise reconstructed terminology.
+
+**Unknown.** This record ends at `+0x2C4B`.  The immediately adjacent dword at
+`+0x2C4C` remains intentionally excluded because exact target-local views assign
+it conflicting roles in different reconstructed lanes.  This batch makes no
+union, lifecycle, or aliasing claim for that address.  It also does not infer
+semantics for other compact `flags1` bits from adjacency.
+
+**Regression boundary.** The source-local, preprocessor-only target views leave
+the compiled low-ECL body unchanged.  Focused replay across the producer and
+two independent consumers passes 33/33 configured exact units:
+`EclRun.cpp` 1/1, `EclDependencies.cpp` 10/10, and
+`EnemyManagerUpdate.cpp` 22/22, with zero compiler-private label refresh.  The
+normal production `EclRun.cpp` independently compiles under pinned VC7.1
+`13.10.3077` to i386 COFF, and `git diff --check` passes.  No shared header,
+ABI, target-local base, or runtime behavior changed, so the SEM-011 696-unit /
+88-TU PE32 milestone remains the current broad gate.  Semantic interpretation,
+exact replay, production compilation, and runtime behavior remain separate
+states.
+
+**Analysis artifacts.** `.analysis/` remains exactly 1,408,444,500 bytes.  The
+one-shot production object was removed after validation; no current-session
+`.analysis` artifact was created or removed, and legacy/shared provider state
+remains untouched.
+
+**Next batch:** refresh the compact enemy semantic-debt surface and select the
+highest-evidence remaining protocol family with multiple TH095-local exact
+consumers.  Do not revisit `+0x2C4C` until independent lifecycle evidence can
+resolve its conflicting meanings.
