@@ -99,6 +99,7 @@
         break;
 
     case 109:
+#ifdef TH095_MATCH_EXACT
         if (TH08_ECL_READ_I(ctx, 0) >= 0)
         {
             *reinterpret_cast<Enemy **>(
@@ -114,6 +115,24 @@
                 *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2be5) * 4) = 0;
             *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &= ~2U;
         }
+#else
+        if (TH08_ECL_READ_I(ctx, 0) >= 0)
+        {
+            reinterpret_cast<EclRunHigh::Th095PhotoTargetRuntimeView *>(
+                TH095_ECL_RUNTIME)->photoTargets[TH08_ECL_READ_I(ctx, 0)] = enemy;
+            *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |= 2U;
+            reinterpret_cast<EclRunHigh::Th095PhotoTargetSlotView *>(enemy)
+                ->photoTargetSlot = static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
+        }
+        else
+        {
+            EclRunHigh::Th095PhotoTargetSlotView *target =
+                reinterpret_cast<EclRunHigh::Th095PhotoTargetSlotView *>(enemy);
+            reinterpret_cast<EclRunHigh::Th095PhotoTargetRuntimeView *>(
+                TH095_ECL_RUNTIME)->photoTargets[target->photoTargetSlot] = 0;
+            *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &= ~2U;
+        }
+#endif
         break;
 
     case 132:

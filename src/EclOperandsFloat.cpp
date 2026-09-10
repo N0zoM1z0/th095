@@ -19,7 +19,7 @@ struct EclFloatOperandRuntimeView
     u8 unknown000000[0x4df4];
     EclSharedFloatOperandView *sharedOperands;
     u8 unknown004df8[0x26ae00 - 0x4df8];
-    Enemy *bosses[8];
+    Enemy *photoTargets[8];
 };
 
 struct EclFloatPhotoCounterView
@@ -168,6 +168,19 @@ typedef char EclFloatOperandScheduledCallFramesAt2C54[
 #define TH095_ECL_SCHEDULED_FRAME3(owner) \
     (reinterpret_cast<EclFloatOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[3])
 #endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_PHOTO_TARGET_SLOT(owner) ENEMY_U8((owner), 0x2be5)
+#else
+struct EclFloatOperandPhotoTargetSlotView
+{
+    u8 unknown0000[0x2be5];
+    u8 photoTargetSlot;
+};
+typedef char EclFloatOperandPhotoTargetSlotAt2BE5[
+    (offsetof(EclFloatOperandPhotoTargetSlotView, photoTargetSlot) == 0x2be5) ? 1 : -1];
+#define TH095_ECL_PHOTO_TARGET_SLOT(owner) \
+    (reinterpret_cast<EclFloatOperandPhotoTargetSlotView *>(owner)->photoTargetSlot)
+#endif
 #define ENEMY_U8(owner, offset) \
     (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 
@@ -266,7 +279,7 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x2748: return this->orbitRadius;
     case 0x274c: return this->orbitAngle;
     case 0x274d: return this->orbitAngularVelocity;
-    case 0x2753: return (f32)ENEMY_U8(this, 0x2be5);
+    case 0x2753: return (f32)TH095_ECL_PHOTO_TARGET_SLOT(this);
     case 0x2752: return (f32)ENEMY_I32(this, 0x2c50);
     case 0x2732:
     {
@@ -277,8 +290,8 @@ f32 Enemy::ResolveFloat(f32 operand)
         return (f32)(i32)TH095_ECL_FLOAT_PHOTO_INDEX;
     case 0x2764:
         return (f32)(i32)TH095_ECL_FLOAT_PHOTOS_TAKEN;
-    case 0x2762: return g_EclFloatOperandRuntime->bosses[0]->worldPosition.x;
-    case 0x2763: return g_EclFloatOperandRuntime->bosses[0]->worldPosition.y;
+    case 0x2762: return g_EclFloatOperandRuntime->photoTargets[0]->worldPosition.x;
+    case 0x2763: return g_EclFloatOperandRuntime->photoTargets[0]->worldPosition.y;
     default: return operand;
     }
 }
@@ -286,6 +299,7 @@ f32 Enemy::ResolveFloat(f32 operand)
 #undef TH095_ECL_FLOAT_PHOTOS_TAKEN
 #undef TH095_ECL_FLOAT_PHOTO_INDEX
 #undef TH095_ECL_FLOAT_PLAYER_POSITION
+#undef TH095_ECL_PHOTO_TARGET_SLOT
 #undef ENEMY_U8
 #undef TH095_ECL_SCHEDULED_FRAME3
 #undef TH095_ECL_SCHEDULED_FRAME2

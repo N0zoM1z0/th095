@@ -25,7 +25,7 @@ struct EclOperandRuntimeView
     u8 unknown000000[0x4df4];
     EclSharedOperandView *sharedOperands;
     u8 unknown004df8[0x26ae00 - 0x4df8];
-    Enemy *bosses[8];
+    Enemy *photoTargets[8];
 };
 
 struct EclPhotoCounterView
@@ -174,6 +174,19 @@ typedef char EclIntOperandScheduledCallFramesAt2C54[
 #define TH095_ECL_SCHEDULED_FRAME3(owner) \
     (reinterpret_cast<EclIntOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[3])
 #endif
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ECL_PHOTO_TARGET_SLOT(owner) ENEMY_U8((owner), 0x2be5)
+#else
+struct EclIntOperandPhotoTargetSlotView
+{
+    u8 unknown0000[0x2be5];
+    u8 photoTargetSlot;
+};
+typedef char EclIntOperandPhotoTargetSlotAt2BE5[
+    (offsetof(EclIntOperandPhotoTargetSlotView, photoTargetSlot) == 0x2be5) ? 1 : -1];
+#define TH095_ECL_PHOTO_TARGET_SLOT(owner) \
+    (reinterpret_cast<EclIntOperandPhotoTargetSlotView *>(owner)->photoTargetSlot)
+#endif
 #define ENEMY_U8(owner, offset) \
     (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 
@@ -264,7 +277,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x274c: return (i32)enemy->orbitAngle;
     case 0x274d: return (i32)enemy->orbitAngularVelocity;
     case 0x2752: return ENEMY_I32(enemy, 0x2c50);
-    case 0x2753: return ENEMY_U8(enemy, 0x2be5);
+    case 0x2753: return TH095_ECL_PHOTO_TARGET_SLOT(enemy);
     case 0x275b: return TH095_ECL_ITEM_DROP_TYPE(enemy);
     case 0x275c: return TH095_ECL_ENEMY_SCORE(enemy);
 
@@ -279,8 +292,8 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
         return TH095_ECL_INT_PHOTO_INDEX;
     case 0x2764:
         return TH095_ECL_INT_PHOTOS_TAKEN;
-    case 0x2762: return (i32)g_EclOperandRuntime->bosses[0]->worldPosition.x;
-    case 0x2763: return (i32)g_EclOperandRuntime->bosses[0]->worldPosition.y;
+    case 0x2762: return (i32)g_EclOperandRuntime->photoTargets[0]->worldPosition.x;
+    case 0x2763: return (i32)g_EclOperandRuntime->photoTargets[0]->worldPosition.y;
     default: return operand;
     }
 }
@@ -290,6 +303,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 #undef TH095_ECL_INT_PHOTOS_TAKEN
 #undef TH095_ECL_INT_PHOTO_INDEX
 #undef TH095_ECL_INT_PLAYER_POSITION
+#undef TH095_ECL_PHOTO_TARGET_SLOT
 #undef ENEMY_U8
 #undef TH095_ECL_SCHEDULED_FRAME3
 #undef TH095_ECL_SCHEDULED_FRAME2

@@ -99,6 +99,20 @@ struct SpawnPacketSmall
 C_ASSERT(sizeof(SpawnPacketSmall) == 0x10);
 
 #if !defined(TH095_MATCH_EXACT)
+struct Th095PhotoTargetRuntimeView
+{
+    u8 unknown000000[0x26ae00];
+    Enemy *photoTargets[8];
+};
+C_ASSERT(offsetof(Th095PhotoTargetRuntimeView, photoTargets) == 0x26ae00);
+
+struct Th095PhotoTargetSlotView
+{
+    u8 unknown0000[0x2be5];
+    u8 photoTargetSlot;
+};
+C_ASSERT(offsetof(Th095PhotoTargetSlotView, photoTargetSlot) == 0x2be5);
+
 struct Th095ScheduledCallFrameView
 {
     u8 unknown0000[0x2c54];

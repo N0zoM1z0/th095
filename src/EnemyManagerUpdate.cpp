@@ -477,7 +477,13 @@ struct PhotoEnemyView
     i32 itemDropType;                      // +0x2bd8
     i32 timelineParam0;                    // +0x2bdc
     i32 timelineParam1;                    // +0x2be0
+#if defined(TH095_MATCH_EXACT)
     u8 unknown2be4[4];
+#else
+    u8 unknown2be4;
+    u8 photoTargetSlot;                    // +0x2be5
+    u8 unknown2be6[2];
+#endif
     ZunTimer auxiliaryTimer;               // +0x2be8
     union
     {
@@ -559,6 +565,10 @@ typedef char PhotoEnemyVmAt8[
     (offsetof(PhotoEnemyView, vm) == 0x08) ? 1 : -1];
 typedef char PhotoEnemyPositionAt28A0[
     (offsetof(PhotoEnemyView, position) == 0x28a0) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT)
+typedef char PhotoEnemyPhotoTargetSlotAt2BE5[
+    (offsetof(PhotoEnemyView, photoTargetSlot) == 0x2be5) ? 1 : -1];
+#endif
 typedef char PhotoEnemyFlagsAt2BF4[
     (offsetof(PhotoEnemyView, flags1) == 0x2bf4) ? 1 : -1];
 typedef char PhotoEnemyTrailSamplesAt2CEC[
@@ -625,6 +635,10 @@ typedef char PhotoEnemyManagerTimelineEventsAt4DD4[
     (offsetof(PhotoEnemyManagerView, timelineEventSlots) == 0x4dd4) ? 1 : -1];
 typedef char PhotoEnemyManagerEnemiesAt4E00[
     (offsetof(PhotoEnemyManagerView, enemies) == 0x4e00) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT)
+typedef char PhotoEnemyManagerPhotoTargetsAt26AE00[
+    (offsetof(PhotoEnemyManagerView, photoTargets) == 0x26ae00) ? 1 : -1];
+#endif
 typedef char PhotoEnemyManagerCountAt26AE2C[
     (offsetof(PhotoEnemyManagerView, activeEnemyCount) == 0x26ae2c) ? 1 : -1];
 

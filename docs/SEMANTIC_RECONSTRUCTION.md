@@ -2255,3 +2255,74 @@ canonical compact `PhotoEnemyView` and choose a field with an independent
 TH095-local producer or runtime consumer. Do not route selector `0x2734` to
 `stateTimer`: its current component is at `+0x2980`, while that selector is
 already the active ECL call-parameter slot.
+
+
+
+### SEM-033 — photo-target table slot binding
+
+**Scope.** Recover compact enemy byte `+0x2BE5` as the cached slot index for
+the eight-entry photo-target table at enemy-manager `+0x26AE00`, and correct the
+operand-runtime table name from `bosses[8]` to `photoTargets[8]`. ECL selector
+`0x2753` now names the per-enemy slot in the maintainable integer/float
+resolvers. Target-high opcode 109 uses typed table/slot owners outside the exact
+lane, while the exact lane retains its historical pointer arithmetic. The
+neighboring bytes `+0x2BE4/+0x2BE6/+0x2BE7` remain unknown.
+
+**Observed.** Canonical target-exact `RunEcl` opcode 109 handles both directions
+of one binding protocol. For a non-negative operand it stores the current enemy
+into `runtime + 0x26AE00 + slot*4`, sets compact enemy flags1 bit 1, and stores
+the low byte of the same slot at enemy `+0x2BE5`. For a negative operand it
+reads `+0x2BE5`, clears that indexed table pointer, and clears flags1 bit 1.
+Independent target-attested Ghidra decompilation of
+`ResetNonPhotoTargets @ 0x00416810` and
+`ResetNonPhotoTargetsAndPhotoTargetEcls @ 0x00416E30` identifies bit 1 as the
+photo-target membership flag and iterates the eight pointers rooted at manager
+`+0x26AE00` to restart retained target ECL contexts.
+
+**Corroborated.** Canonical TH095 `PhotoEnemyManagerView` declares
+`Enemy *photoTargets[8]` immediately before `activeEnemyCount @ +0x26AE2C`; the
+maintainable layout now asserts `photoTargets @ +0x26AE00`. Its compact
+`PhotoEnemyView` names only byte `+0x2BE5` as `photoTargetSlot` and leaves the
+other three bytes in the former opaque four-byte region unknown. The integer
+and float ECL operand resolvers independently expose selector `0x2753` as an
+unsigned-byte read of that same slot. Selectors `0x2762/0x2763` read the X/Y
+position of `photoTargets[0]`, providing a second resolver-side consumer of the
+same runtime table and disproving the previous generic `bosses` owner name.
+
+**Inferred.** `photoTargetSlot` is the per-enemy cached index needed to undo an
+opcode-109 photo-target registration without receiving the slot again. The
+eight-entry runtime array is therefore a photo-target registry, not a general
+boss array. The one-byte cache is sufficient because the target accepts a
+script integer on registration but stores only its low byte after using the
+full integer for the table write; no bounds guarantee is inferred here.
+
+**Unknown.** This batch does not recover semantics for compact bytes
+`+0x2BE4/+0x2BE6/+0x2BE7`, does not prove that every photo target is a gameplay
+boss, and does not assign behavior to out-of-range opcode-109 slot values.
+Selector `0x2752 @ +0x2C50` remains unresolved and is not grouped with this
+binding merely because it is adjacent in the resolver switch.
+
+**Compiler-observed.** Renaming the operand runtime field from `bosses` to
+`photoTargets` and using exact-only slot macros does not perturb the two
+resolver objects. A first attempt to split `PhotoEnemyView::unknown2be4[4]`
+and add new offset typedefs directly to the exact `EnemyManagerUpdate.cpp`
+preprocessed source kept machine semantics but renumbered private `$L...`
+relocations in `enemy-timeline-run`. That form was rejected without manifest
+refresh. The accepted canonical-view names/assertions are compiled only outside
+`TH095_MATCH_EXACT`; the exact lane retains the original opaque declaration.
+
+**Regression boundary.** The changed-source replay covers 25 configured exact
+units across `EclOperandsInt.cpp`, `EclOperandsFloat.cpp`,
+`EnemyManagerUpdate.cpp`, and `ecl/EclRun.cpp`; all 25 are exact with zero
+private-label refresh. The four corresponding normal production translation
+units independently compile under pinned VC7.1 to i386 COFF, and
+`git diff --check` passes. No shared header or ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** investigate unresolved selector `0x2752 @ +0x2C50` only if an
+independent TH095-local writer/consumer establishes its role. Otherwise route
+to another compact owner with a proven non-resolver protocol; do not infer
+meaning from its proximity to `selectedLaserSlot @ +0x2C4C`.
