@@ -71,6 +71,13 @@ extern EclOperandPlayerView *g_EclOperandPlayer;
     TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->AngleFromPoint(point)
 #endif
 
+#ifdef DIFFBUILD
+#define TH095_ECL_INT_PLAYER_POSITION (g_EclOperandPlayer->position)
+#else
+#define TH095_ECL_INT_PLAYER_POSITION \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->playerPosition)
+#endif
+
 #define ENEMY_I32(owner, offset) \
     (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 #define ENEMY_U8(owner, offset) \
@@ -141,9 +148,9 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x272a: return (i32)enemy->worldPosition.x;
     case 0x272b: return (i32)enemy->worldPosition.y;
     case 0x272c: return (i32)enemy->worldPosition.z;
-    case 0x272d: return (i32)g_EclOperandPlayer->position.x;
-    case 0x272e: return (i32)g_EclOperandPlayer->position.y;
-    case 0x272f: return (i32)g_EclOperandPlayer->position.z;
+    case 0x272d: return (i32)TH095_ECL_INT_PLAYER_POSITION.x;
+    case 0x272e: return (i32)TH095_ECL_INT_PLAYER_POSITION.y;
+    case 0x272f: return (i32)TH095_ECL_INT_PLAYER_POSITION.z;
     case 0x2749: return (i32)enemy->movementInterpolationOrigin.x;
     case 0x274a: return (i32)enemy->movementInterpolationOrigin.y;
     case 0x274b: return (i32)enemy->movementInterpolationOrigin.z;
@@ -171,7 +178,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
         return (i32)TH095_ECL_INT_PLAYER_ANGLE(&enemy->worldPosition);
     case 0x2732:
     {
-        Float3 delta = g_EclOperandPlayer->position - enemy->worldPosition;
+        Float3 delta = TH095_ECL_INT_PLAYER_POSITION - enemy->worldPosition;
         return (i32)D3DXVec3Length(reinterpret_cast<D3DXVECTOR3 *>(&delta));
     }
     case 0x2761:
@@ -186,6 +193,7 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 
 } // namespace EclOperands
 
+#undef TH095_ECL_INT_PLAYER_POSITION
 #undef ENEMY_U8
 #undef ENEMY_I32
 

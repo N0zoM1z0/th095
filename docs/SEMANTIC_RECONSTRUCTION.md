@@ -352,3 +352,55 @@ scenario, so no new runtime-scenario claim is made.
 selectors onto the same production `PhotoPlayerRuntimeView::playerPosition`,
 while leaving their adjacent camera fields and numeric selector meanings
 unchanged until independently classified.
+
+
+### SEM-004 — ECL operand Player-position representation
+
+**Scope.** This batch canonicalizes only the Player position reads inside the
+paired exact operand resolvers `EclOperands::ResolveInt @ 0x0040FAE0` and
+`Enemy::ResolveFloat @ 0x004105A0`.  Production selector cases and their
+2D-distance calculation now route through
+`PhotoPlayerRuntimeView::playerPosition`; DIFFBUILD retains the existing
+`EclOperandPlayerView::position` and `EclFloatOperandPlayerView::position`
+spelling.  The adjacent camera counters and every numeric selector value remain
+unchanged.
+
+**Observed.** Hash-attested TH095 v1.02a Ghidra decompilation of
+`ResolveFloat @ 0x004105A0` shows selector cases `0x272D..0x272F` reading
+`DAT_004C4E70 + 0x1E30/+0x1E34/+0x1E38`; case `0x2730` passes the same Player
+owner to exact `AngleFromPoint @ 0x004303E0`.  `ResolveInt @ 0x0040FAE0`
+contains the same coordinate selector group and the corresponding
+player-to-enemy distance path.  SEM-003 independently fixed this storage as the
+same Player position consumed by the movement and shot-dispatch lanes.
+
+**Corroborated.** The existing offset-asserted
+`PhotoPlayerRuntimeView::playerPosition @ +0x1E30` is already shared by the
+exact angle/collision/death ABI and by production Bullet, Enemy, movement, and
+shot-dispatch consumers.  The two resolver paths therefore join a
+TH095-local field owner with independent consumers; TH08 contributes no field
+meaning here.
+
+**Inferred.** The shared production spelling is a reconstruction
+representation choice.  It does not prove that the original ECL resolvers
+included a common Player header or used the member name `playerPosition`.
+
+**Unknown.** The semantic names of selector values `0x272D..0x272F`, `0x2730`,
+and `0x2732` are deliberately not promoted by this batch.  The surrounding
+Player camera subobject also remains separately represented until its fields
+are independently tied to target-local camera behavior.
+
+**Regression boundary.** Both affected exact units replayed 2/2 before the
+edit and 2/2 after it with zero private-label refresh.  Direct normal-branch
+VC7.1 probes compile both translation units to i386 COFF.  A final-source cold
+whole build compiles all 88 production translation units and links/verifies a
+PE32 image with build-local SHA-256
+`7c021780da7fec6f2eaa6245f081be453e1b3cadfb1e3e1a494143dab2fabf86`.
+This is production closure, not whole-image exactness.  No new runtime scenario
+is claimed because the campaign's game-data-archive host boundary is unchanged.
+
+**Next batch:** recover the shared Player-camera counter representation for
+`photoIndex @ Player+0x29E4` and `photosTaken @ Player+0x29E8`.  Require the
+exact `PhotoCameraState` layout and its camera-behavior writers to agree with
+both ECL resolver readers before extending `PhotoPlayerRuntime.hpp`; because
+that is a shared-header/layout change, close the cold aggregate exact and whole
+production gates immediately after the edit.

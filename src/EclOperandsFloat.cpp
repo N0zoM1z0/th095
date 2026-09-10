@@ -65,6 +65,13 @@ extern EclFloatOperandPlayerView *g_EclFloatOperandPlayer;
     TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->AngleFromPoint(point)
 #endif
 
+#ifdef DIFFBUILD
+#define TH095_ECL_FLOAT_PLAYER_POSITION (g_EclFloatOperandPlayer->position)
+#else
+#define TH095_ECL_FLOAT_PLAYER_POSITION \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->playerPosition)
+#endif
+
 #define ENEMY_I32(owner, offset) \
     (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(owner) + (offset)))
 #define ENEMY_U8(owner, offset) \
@@ -130,9 +137,9 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x272a: return this->worldPosition.x;
     case 0x272b: return this->worldPosition.y;
     case 0x272c: return this->worldPosition.z;
-    case 0x272d: return g_EclFloatOperandPlayer->position.x;
-    case 0x272e: return g_EclFloatOperandPlayer->position.y;
-    case 0x272f: return g_EclFloatOperandPlayer->position.z;
+    case 0x272d: return TH095_ECL_FLOAT_PLAYER_POSITION.x;
+    case 0x272e: return TH095_ECL_FLOAT_PLAYER_POSITION.y;
+    case 0x272f: return TH095_ECL_FLOAT_PLAYER_POSITION.z;
     case 0x275d: return this->activeEclContext->extraFloatVariables[0];
     case 0x275e: return this->activeEclContext->extraFloatVariables[1];
     case 0x275f: return this->activeEclContext->extraFloatVariables[2];
@@ -169,7 +176,7 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x2752: return (f32)ENEMY_I32(this, 0x2c50);
     case 0x2732:
     {
-        Float3 delta = g_EclFloatOperandPlayer->position - this->worldPosition;
+        Float3 delta = TH095_ECL_FLOAT_PLAYER_POSITION - this->worldPosition;
         return D3DXVec3Length(reinterpret_cast<D3DXVECTOR3 *>(&delta));
     }
     case 0x2761:
@@ -182,6 +189,7 @@ f32 Enemy::ResolveFloat(f32 operand)
     }
 }
 
+#undef TH095_ECL_FLOAT_PLAYER_POSITION
 #undef ENEMY_U8
 #undef ENEMY_I32
 
