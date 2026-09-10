@@ -2951,3 +2951,51 @@ and shared provider state remain untouched.
 `secondaryFlag5` by target-high opcode 140. Require an independent TH095-local
 consumer before assigning meaning; otherwise record it as unknown and route to
 another bounded owner.
+
+
+### SEM-043 — unresolved compact flags2 bit 5
+
+**Scope.** Audit compact enemy `flags2 @ +0x2BF8` bit 5, currently exposed by
+TH095 target-high ECL opcode 140 as `secondaryFlag5`. No source representation
+change is accepted because no independent TH095-local consumer establishes the
+bit's behavior.
+
+**Observed.** Canonical target-exact `EclManager::RunEcl` opcode 140 resolves one
+integer operand, keeps its low bit, shifts it into flags2 bit 5, clears the old
+bit, and writes the resulting dword back to enemy `+0x2BF8`. This proves the
+field width and script-controlled writer but not a runtime meaning.
+
+**Corroborated.** A bounded canonical `.text` audit found 27 direct instruction
+references to enemy displacement `+0x2BF8`. The reconstructed/target-correlated
+references account for bit 3 writes in low ECL flag opcodes, bit 6 marker
+writer/read/clear paths, and bit 7 attached-VM follow suppression. The only
+bit-5 operation is opcode 140's read-modify-write; no direct bit-5 test, branch,
+or non-ECL consumer was found. Repository-wide TH095 source search likewise
+finds no consumer beyond the `secondaryFlag5` declaration/writer.
+
+**Inferred.** Bit 5 is a persistent script-controlled boolean in the compact
+flags2 word. Nothing stronger is accepted. Its adjacency to the independently
+proved photo-marker and attached-VM bits does not imply a shared subsystem.
+
+**Unknown.** The runtime consumer, gameplay effect, lifecycle/reset protocol,
+and appropriate semantic name for flags2 bit 5 remain unknown. The batch does
+not import later generic `Enemy::flags2` meanings or TH08 field names.
+
+**Regression boundary.** This is an evidence-rejection checkpoint with no source
+code edit. The SEM-042 source state remains unchanged; only this documentation
+addition is checked with `git diff --check`. No exact or production result is
+reissued for unchanged source.
+
+**Receipt state.** The last accepted Factory `whole_build_closed` receipt is
+bound to older commit `3b540668` and remains stale for the current source. No
+receipt is replayed for this documentation-only checkpoint.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. The machine-code
+search used command-local `/tmp` output and removed it before command exit. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** route away from flags2. Inspect compact enemy movement bounds at
+`+0x2C3C..+0x2C4B`, where `ClampPosition` and low-ECL movement setup already
+provide independent TH095-local consumers/writers. Do not fold the separate and
+historically conflicting `+0x2C4C` field into the bounds owner.
