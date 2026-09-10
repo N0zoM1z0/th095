@@ -501,10 +501,8 @@ enter_subroutine:
 
     case 143:
     {
-        TH095_ENEMY_FLAGS(enemy)->secondaryFlag6 = TH08_ECL_READ_I(ctx, 0);
-        *reinterpret_cast<ZunTimer *>(
-            reinterpret_cast<u8 *>(enemy) + 0x2bfc) =
-            TH08_ECL_READ_I(ctx, 1);
+        TH095_ENEMY_SHOW_PHOTO_MARKER(enemy) = TH08_ECL_READ_I(ctx, 0);
+        TH095_ENEMY_PHOTO_MARKER_PULSE_TIMER(enemy) = TH08_ECL_READ_I(ctx, 1);
         break;
     }
 

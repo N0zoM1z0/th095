@@ -2884,3 +2884,70 @@ assuming that every remaining bit deserves a name. First test whether flags2
 bit 6 already has complete writer/consumer semantics in committed history; if
 so, do not redo it. Otherwise prefer another unresolved compact owner with an
 independent TH095 producer and consumer.
+
+
+### SEM-042 — photo-marker pulse control
+
+**Scope.** Recover compact enemy `flags2 @ +0x2BF8` bit 6 as
+`showPhotoMarker` together with its `photoMarkerPulseTimer @ +0x2BFC`. Target-
+high ECL opcode 143 now writes both through semantic lvalues in the maintainable
+lane. `TH095_MATCH_EXACT` preserves the historical `secondaryFlag6` token and
+raw timer dereference, so the exact 27KB RunEcl translation surface is not
+renumbered. No neighboring flags2 bit is included.
+
+**Observed.** Canonical target-exact `EclManager::RunEcl` opcode 143 writes the
+low bit of its first integer operand into flags2 bit 6 and assigns its second
+integer operand to the `ZunTimer` rooted at enemy `+0x2BFC`. Target-attested
+`PhotoEnemyView::UpdatePhotoMarkerPulse @ 0x00416770` checks bit 6, decrements
+that timer by one, and clears bit 6 when the timer's current value falls below
+one.
+
+**Corroborated.** `PhotoEnemyManagerView::OnUpdate @ 0x00415970` independently
+uses the same bit as the marker-VM lifecycle gate: while `showPhotoMarker` and
+`photoTarget` are both set it creates or repositions the per-enemy photo-marker
+VM; otherwise it retires that marker handle. `PhotoRuntimeView::CountPhotoTargets
+@ 0x004168D0` independently rejects enemies whose flags2 bit 6 is set before
+performing capture bounds and ECL transition work. The canonical compact
+`PhotoEnemyView` already places `showPhotoMarker` at bit 6 and the pulse timer
+immediately at `+0x2BFC`.
+
+**Inferred.** Opcode 143 starts or configures a bounded marker-visible interval.
+During that interval the enemy's photo marker can be displayed, and the normal
+photo-target capture scan excludes the enemy. The timer retires the bit
+implicitly on expiry. This is a control/lifetime protocol, not merely an
+isolated display flag.
+
+**Unknown.** This batch does not infer why marked enemies are excluded from the
+capture scan, whether the interval is always a post-capture cooldown, or whether
+scripts can intentionally leave bit 6 set with a nonpositive timer. It does not
+assign semantics to flags2 bit 5 or bits 8..31, and it does not treat the marker
+VM itself as owned by the ECL opcode.
+
+**Compiler-observed.** `Th095EnemyFlagsView` participates in exact compilation.
+The accepted representation therefore keeps `secondaryFlag6` under
+`TH095_MATCH_EXACT` and exposes `showPhotoMarker` only to maintainable
+production code. The pulse-timer typed view is production-only. The semantic
+macros expand back to the original exact member/dereference expressions, so no
+private-label refresh is required.
+
+**Regression boundary.** `ecl-manager-run-ecl` remains 27091/27091 authored
+bytes and 27747/27747 compare-extent bytes exact with all 647 relocations.
+Independent `enemy-update-photo-marker-pulse`,
+`photo-runtime-count-photo-targets`, and `enemy-manager-on-update` remain
+101/101, 1274/1274, and 1853/1853 bytes exact with all configured relocations.
+Full `src/ecl/EclRun.cpp` replay is 1/1 exact with zero private-label refresh,
+and the normal EclRun production TU compiles under pinned VC7.1 to i386 COFF.
+`git diff --check` passes. No shared header or public ABI changed.
+
+**Receipt state.** Factory `whole_build_closed` remains accepted only for older
+commit `3b540668` and is stale for this source. No receipt is replayed at this
+private semantic checkpoint.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** investigate compact flags2 bit 5, currently exposed only as
+`secondaryFlag5` by target-high opcode 140. Require an independent TH095-local
+consumer before assigning meaning; otherwise record it as unknown and route to
+another bounded owner.

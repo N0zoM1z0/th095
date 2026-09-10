@@ -119,6 +119,13 @@ C_ASSERT(offsetof(Th095EnemyBulletSpawnSoundView, bulletSpawnDescriptor) == 0x29
     (&reinterpret_cast<Th095EnemyBulletSpawnSoundView *>(enemy)             \
           ->bulletSpawnDescriptor)
 
+struct Th095EnemyPhotoMarkerPulseView
+{
+    u8 unknown0000[0x2bfc];
+    ZunTimer photoMarkerPulseTimer;
+};
+C_ASSERT(offsetof(Th095EnemyPhotoMarkerPulseView, photoMarkerPulseTimer) == 0x2bfc);
+
 struct Th095PhotoTargetRuntimeView
 {
     u8 unknown000000[0x26ae00];
@@ -348,7 +355,11 @@ struct Th095EnemyFlagsView
         {
             u32 secondaryUnknown00_04 : 5;
             u32 secondaryFlag5 : 1;
+#if defined(TH095_MATCH_EXACT)
             u32 secondaryFlag6 : 1;
+#else
+            u32 showPhotoMarker : 1;
+#endif
 #if defined(TH095_MATCH_EXACT)
             u32 secondaryFlag7 : 1;
 #else
@@ -384,9 +395,17 @@ inline i32 Th095PreserveI32(i32 value)
 #define TH095_ENEMY_FLAGS(enemy) \
     (reinterpret_cast<Th095EnemyFlagsView *>(enemy))
 #if defined(TH095_MATCH_EXACT)
+#define TH095_ENEMY_SHOW_PHOTO_MARKER(enemy) \
+    (TH095_ENEMY_FLAGS(enemy)->secondaryFlag6)
+#define TH095_ENEMY_PHOTO_MARKER_PULSE_TIMER(enemy) \
+    (*reinterpret_cast<ZunTimer *>(reinterpret_cast<u8 *>(enemy) + 0x2bfc))
 #define TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) \
     (TH095_ENEMY_FLAGS(enemy)->secondaryFlag7)
 #else
+#define TH095_ENEMY_SHOW_PHOTO_MARKER(enemy) \
+    (TH095_ENEMY_FLAGS(enemy)->showPhotoMarker)
+#define TH095_ENEMY_PHOTO_MARKER_PULSE_TIMER(enemy) \
+    (reinterpret_cast<Th095EnemyPhotoMarkerPulseView *>(enemy)->photoMarkerPulseTimer)
 #define TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) \
     (TH095_ENEMY_FLAGS(enemy)->freezeAttachedVm)
 #endif
