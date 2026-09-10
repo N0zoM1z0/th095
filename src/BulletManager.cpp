@@ -416,7 +416,11 @@ struct PhotoBulletGlobalStateView
         u32 flags;
         struct
         {
+#if defined(TH095_MATCH_EXACT)
             u32 unknownFlag0 : 1;
+#else
+            u32 captureActive : 1;
+#endif
             u32 blocksBulletUpdate : 1;
             u32 suppressesBulletCallbacks : 1;
             u32 unknownFlags3 : 6;
@@ -1641,8 +1645,13 @@ static __forceinline i32 PhotoBulletEitherFlag(i32 first, i32 second)
 i32 __fastcall PhotoBulletManagerView::OnUpdate(
     PhotoBulletManagerView *bulletManager)
 {
+#if defined(TH095_MATCH_EXACT)
     if (PhotoBulletEitherFlag(g_PhotoBulletGlobalState->unknownFlag0,
                               g_PhotoBulletGlobalState->suppressesBulletCallbacks) != 0)
+#else
+    if (PhotoBulletEitherFlag(g_PhotoBulletGlobalState->captureActive,
+                              g_PhotoBulletGlobalState->suppressesBulletCallbacks) != 0)
+#endif
     {
         return 1;
     }

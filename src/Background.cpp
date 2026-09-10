@@ -62,7 +62,11 @@ struct BackgroundGlobalStateView
         u32 flags;
         struct
         {
+#if defined(TH095_MATCH_EXACT)
             u32 unknownFlag0 : 1;
+#else
+            u32 captureActive : 1;
+#endif
             u32 freezeBackground : 1;
             u32 suppressBackground : 1;
             u32 unknownFlags3 : 7;
@@ -948,9 +952,15 @@ i32 Background::UpdateStageObjectVms()
 // FUNCTION: TH095 0x00402B80.
 i32 __fastcall Background::OnUpdate(Background *background)
 {
+#if defined(TH095_MATCH_EXACT)
     if (BackgroundEitherFlag(
             g_PhotoGlobalState->unknownFlag0,
             g_PhotoGlobalState->suppressBackground) != 0 ||
+#else
+    if (BackgroundEitherFlag(
+            g_PhotoGlobalState->captureActive,
+            g_PhotoGlobalState->suppressBackground) != 0 ||
+#endif
         g_PhotoGlobalState->freezeBackground != 0)
     {
         return 1;

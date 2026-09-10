@@ -188,7 +188,11 @@ struct PhotoEffectGlobalStateView
         u32 flags;
         struct
         {
+#if defined(TH095_MATCH_EXACT)
             u32 unknownFlag0 : 1;
+#else
+            u32 captureActive : 1;
+#endif
             u32 freezeEffects : 1;
             u32 suppressEffects : 1;
             u32 unknownFlags3 : 7;
@@ -1126,9 +1130,15 @@ i32 __fastcall PhotoEffectManagerView::Draw(
 i32 __fastcall PhotoEffectManagerView::OnUpdate(
     PhotoEffectManagerView *manager)
 {
+#if defined(TH095_MATCH_EXACT)
     if (PhotoEffectEitherFlag(
             g_PhotoGlobalState->unknownFlag0,
             g_PhotoGlobalState->suppressEffects) != 0)
+#else
+    if (PhotoEffectEitherFlag(
+            g_PhotoGlobalState->captureActive,
+            g_PhotoGlobalState->suppressEffects) != 0)
+#endif
     {
         return 1;
     }

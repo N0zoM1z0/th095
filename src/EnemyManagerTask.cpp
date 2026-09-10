@@ -23,7 +23,11 @@ struct PhotoEnemyTaskGlobalStateView
         u32 flags;
         struct
         {
+#if defined(TH095_MATCH_EXACT)
             u32 unknownFlag0 : 1;
+#else
+            u32 captureActive : 1;
+#endif
             u32 blockEnemyUpdate : 1;
             u32 blockEnemyUpdateAndDraw : 1;
             u32 unknownFlags3 : 29;
@@ -181,9 +185,15 @@ i32 __fastcall PhotoEnemyManagerTaskView::OnUpdate(
     // Source argument order matters under VC7.1: fastcall/right-to-left
     // evaluation loads the draw-suppression bit before flag 0, as the target
     // does, while the logical short-circuit shares one return-1 tail.
+#if defined(TH095_MATCH_EXACT)
     if (PhotoEnemyEitherFlag(
             g_PhotoEnemyGlobalState->unknownFlag0,
             g_PhotoEnemyGlobalState->blockEnemyUpdateAndDraw) != 0 ||
+#else
+    if (PhotoEnemyEitherFlag(
+            g_PhotoEnemyGlobalState->captureActive,
+            g_PhotoEnemyGlobalState->blockEnemyUpdateAndDraw) != 0 ||
+#endif
         g_PhotoEnemyGlobalState->blockEnemyUpdate != 0)
     {
         return 1;

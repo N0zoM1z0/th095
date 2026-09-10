@@ -3655,3 +3655,98 @@ removed; legacy and shared provider state remain untouched.
 field with an independent TH095 producer and consumer. Treat the remaining
 rotating-effect flag bits as Unknown unless a consumer appears; do not continue
 renaming the packet by adjacency.
+
+
+### SEM-053 — photo capture-active global protocol
+
+**Scope.** Recover bit 0 of the shared photo-runtime flags dword at global-state
+`+0xFC` as `captureActive` across the player, camera, bullet, enemy, background,
+and effect subsystem views. `PhotoStageGlobalStateView` already used that name
+for the same bit. Normal production views now expose `captureActive`; exact
+preprocessing retains each historical local name (`unknownFlag0` or
+`blocksPlayerUpdate0`) and the original wrapper expressions so VC7.1 codegen
+and private-label identity remain unchanged. Neighboring bits keep their
+existing subsystem-specific names.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`PhotoStageStateView::SavePhoto @ 0x0042C450` sets bit 0 of
+`DAT_004BDEC8 + 0xFC` when the asynchronous stage capture begins. The canonical
+exact `PhotoStageStateView::Update @ 0x0042AD60` clears the same
+`captureActive` bit after the captured surface has been converted into the
+persistent capture VM, immediately before setting the separate
+`capturedPhotoActive` bit.
+
+**Corroborated.** Six independent target-attested subsystem consumers read the
+same `DAT_004BDEC8 + 0xFC` bit 0. `PhotoBulletManagerView::OnUpdate @
+0x004059C0`, `PhotoEnemyManagerTaskView::OnUpdate @ 0x00416290`,
+`Background::OnUpdate @ 0x00402B80`, `PhotoEffectManagerView::OnUpdate @
+0x0041DB00`, and `PhotoGameUpdateView::OnUpdate @ 0x00430180` all return early
+while that bit is set, in combination with their own distinct update/draw
+suppression bits. `PhotoCameraState::Draw @ 0x004340F0` uses the same bit to
+suppress the four inline viewfinder VMs and clear visibility on the nine dynamic
+camera VMs. All seven local global-state views resolve through the same
+production `g_RuntimeGlobalStateOwner`, and the exact relocation ledgers place
+their historical globals at target `0x004BDEC8`.
+
+**Inferred.** Bit 0 is the lifetime latch for the stage-side photo capture
+operation: it becomes active when `SavePhoto` starts the capture, remains active
+while the capture pipeline owns the render/readback work, and is released when
+the captured texture has been materialized. While active, gameplay update
+wrappers and camera UI are suppressed so mutable scene state and viewfinder
+presentation do not advance across the capture boundary. `captureActive` is
+therefore narrower and better supported than generic names such as pause,
+freeze, or `blocksPlayerUpdate0`.
+
+**Unknown.** This batch does not rename bit 1 or bit 2 globally, even though
+several subsystem views already assign local meanings to them; those bits have
+separate freeze/suppress/draw protocols and must be audited independently. It
+does not prove the exact number of frames for which `captureActive` remains set
+or claim that every subsystem ceases all work while the bit is active. No Wine
+runtime scenario is claimed here.
+
+**Compiler-observed.** Each affected exact view retains its original bitfield
+identifier and original wrapper condition under `TH095_MATCH_EXACT`; production
+alone exposes `captureActive`. This avoids re-bucketing VC7.1 private labels in
+large translation units while allowing all maintainable consumers to express
+the shared lifecycle meaning. No manifest label refresh was required.
+
+**Regression boundary.** Focused producer/consumer validation keeps
+`photo-stage-save-photo` 356/356 bytes, the 5309-byte `photo-stage-update`,
+`photo-bullet-manager-on-update` 62/62, `enemy-manager-task-on-update` 81/81,
+`background-on-update` 107/107, `photo-effect-manager-on-update` 152/152,
+`photo-camera-draw` 296/296, and `photo-player-on-update` 141/141 target-exact
+with every configured relocation. Full replay of the six changed source files
+covers 127/127 exact units with zero private-label refresh. Their six normal
+production translation units independently compile with repository whole-build
+pinned VC7.1 profiles to i386 COFF.
+
+Because this unifies a process-global owner across multiple subsystem views,
+the complete dirty source state was cold-replayed immediately: four bounded
+source groups cover all 88 configured sources / 696 exact units, all exact with
+zero private-label refresh. A separate cold whole-product gate compiles all 88
+pinned VC7.1 i386 COFF objects and links a verified PE32 Windows-GUI image. The
+local image is 780288 bytes with SHA-256
+`8f3a801c2b40c50c468f2a8eebc8ebb773376a264a7e6d359fd6780854d67af6`.
+This is production closure, not a byte-exact whole-image claim.
+
+**Runtime storage/scenario state.** No new storage object is introduced or
+removed in this batch; all renamed views already resolve to the same production
+runtime-global owner. Historical-platform exact and build/link lanes are closed.
+No runtime scenario was run, so capture presentation under Wine remains a
+separate validation plane.
+
+**Receipt state.** The exact and whole-product gates above are current-source
+local validation, not Factory-accepted receipts. A source-bound aggregate
+receipt is deferred until a committed campaign milestone/final handoff where it
+will not be immediately invalidated by the next semantic source transaction.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. Focused
+production objects were command-local `/tmp` files and removed. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** audit shared photo-global bit 1 only if TH095-local producer and
+consumer evidence can distinguish its lifecycle across player, enemy,
+background, bullet, and effect views. Do not assume the existing subsystem-local
+`freeze...`/`block...` names describe one universal action merely because the
+bit position is shared.

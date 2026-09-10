@@ -101,7 +101,11 @@ struct PhotoGlobalStateView
         u32 flags;
         struct
         {
+#if defined(TH095_MATCH_EXACT)
             u32 unknownFlag0 : 1;
+#else
+            u32 captureActive : 1;
+#endif
             u32 unknownFlag1 : 1;
             u32 unknownFlag2 : 1;
             u32 unknownFlags3 : 29;
@@ -1099,8 +1103,13 @@ focusedCharge:
 
 void PhotoCameraState::Draw()
 {
+#if defined(TH095_MATCH_EXACT)
     if (PhotoEitherFlag(g_PhotoGlobalState->unknownFlag0,
                         g_PhotoGlobalState->unknownFlag2) == 0)
+#else
+    if (PhotoEitherFlag(g_PhotoGlobalState->captureActive,
+                        g_PhotoGlobalState->unknownFlag2) == 0)
+#endif
     {
         this->viewfinderVms[0].Draw();
         this->viewfinderVms[1].Draw();
@@ -1108,8 +1117,13 @@ void PhotoCameraState::Draw()
         this->viewfinderVms[3].Draw();
     }
 
+#if defined(TH095_MATCH_EXACT)
     if (PhotoEitherFlag(g_PhotoGlobalState->unknownFlag0,
                         g_PhotoGlobalState->unknownFlag2) != 0)
+#else
+    if (PhotoEitherFlag(g_PhotoGlobalState->captureActive,
+                        g_PhotoGlobalState->unknownFlag2) != 0)
+#endif
     {
         AnmVm *vm;
         for (i32 index = 0; index < 9; index++)
