@@ -118,7 +118,11 @@ enum PhotoBulletTransformKind
     PHOTO_BULLET_TRANSFORM_WRAP_X = 0x00100000,
     PHOTO_BULLET_TRANSFORM_WRAP_Y = 0x00200000,
     PHOTO_BULLET_TRANSFORM_SPAWN_CHILD_PATTERN = 0x00400000,
+#if defined(TH095_MATCH_EXACT)
     PHOTO_BULLET_TRANSFORM_SET_FIELD_330 = 0x01000000,
+#else
+    PHOTO_BULLET_TRANSFORM_SET_OWNER_TAG = 0x01000000,
+#endif
     PHOTO_BULLET_TRANSFORM_JUMP = 0x02000000,
 };
 
@@ -157,6 +161,9 @@ struct PhotoBulletTransformPayload
     union
     {
         i32 int0;
+#if !defined(TH095_MATCH_EXACT)
+        i32 ownerTag;
+#endif
         i32 durationFrames;
         i32 directionChangeIntervalFrames;
         i32 bounceLimit;
@@ -285,7 +292,11 @@ struct PhotoBulletView
     PhotoBulletVector collisionSize;   // +0x30c
     ZunTimer stateTimer;               // +0x318
     ZunTimer activeTimer;              // +0x324
+#if defined(TH095_MATCH_EXACT)
     i32 field330;
+#else
+    i32 ownerTag;                      // +0x330
+#endif
     u8 unknown334[0x344 - 0x334];
     i32 offscreenCullDelayFrames;      // +0x344
     u32 activeTransformFlags;          // +0x348
@@ -1002,8 +1013,13 @@ nextRecord:
         }
         break;
 
+#if defined(TH095_MATCH_EXACT)
     case PHOTO_BULLET_TRANSFORM_SET_FIELD_330:
         this->field330 = record->payload.int0;
+#else
+    case PHOTO_BULLET_TRANSFORM_SET_OWNER_TAG:
+        this->ownerTag = record->payload.ownerTag;
+#endif
         ++this->transformIndex;
         goto nextRecord;
 

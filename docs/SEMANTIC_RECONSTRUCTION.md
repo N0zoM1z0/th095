@@ -3073,3 +3073,88 @@ milestone, refresh TH095-local debt outside documented exact-compatibility
 branches. Prefer a bounded compact enemy family with an independent writer and
 consumer. Keep `+0x2C4C` excluded unless new TH095-local evidence resolves its
 existing cross-view conflict.
+
+
+### SEM-045 — bullet owner-tag transform field
+
+**Scope.** Recover compact photo-bullet dword `+0x330` as an `ownerTag` used by
+TH095 extended-ECL bullet-selection protocols. The maintainable BulletManager
+lane names transform kind `0x01000000` as `PHOTO_BULLET_TRANSFORM_SET_OWNER_TAG`,
+adds an `ownerTag` view of that transform payload, and names the bullet member
+it writes. `TH095_MATCH_EXACT` deliberately retains the historical
+`PHOTO_BULLET_TRANSFORM_SET_FIELD_330`, `payload.int0`, and `field330` tokens so
+VC7.1's private-label surface remains target-exact. The existing
+`EclExtended.cpp` compact bullet view already called this same dword `ownerTag`
+and requires no source edit.
+
+**Observed.** Target-attested TH095 Ghidra decompilation of
+`PhotoBulletView::AdvanceTransformProgram @ 0x004062B0` shows transform kind
+`0x01000000` copying one 32-bit transform payload value directly into bullet
+`+0x330`, then advancing the transform index. Independent target-attested
+`FadeOwnedCapturedBullets @ 0x00413990` and
+`ResetOwnedBulletMotion @ 0x00414930` scan the 0x640 active bullet slots and
+compare bullet `+0x330` against the current enemy ECL context dword at `+0x60`
+before applying their effects.
+
+**Corroborated.** The exact `EclExtended.cpp` view independently asserts
+`ExtendedBulletView::ownerTag @ +0x330`. Four TH095-local extended callbacks use
+that field as an equality filter against
+`activeEclContext->extraIntVariables[2]`: callbacks 2 and 4 reinitialize only
+matching bullets, entry 5 fades only matching captured bullets, and entry 21
+resets motion only for matching bullets. The integer ECL operand/lvalue lanes
+independently expose that context slot as script-visible state. No TH08 field
+identity is required for this interpretation.
+
+**Inferred.** `+0x330` is a script-controlled bullet ownership/tagging key. The
+name `ownerTag` intentionally describes the observed relational protocol rather
+than claiming a globally unique id, pointer, object handle, or permanent owner.
+Transform programs may write any 32-bit payload, and extended ECL later uses
+value equality to select a bullet cohort associated with its current script
+state.
+
+**Unknown.** This batch does not infer who authors every transform payload using
+kind `0x01000000`, whether tag values are globally unique, how long tags remain
+meaningful after ECL context changes, or whether non-ECL systems attach meaning
+to the same dword. It also does not rename `extraIntVariables[2]` itself because
+that script slot has additional TH095-local uses outside bullet ownership
+filters.
+
+**Compiler-observed.** A direct natural rename of the enum, payload alias, and
+bullet member preserved machine semantics but renumbered compiler-private
+`$L...` relocations in `AdvanceTransformProgram`; that form was rejected without
+manifest refresh. The accepted representation hides the maintainable names from
+`TH095_MATCH_EXACT`, restoring the historical exact preprocessed tokens. The
+canonical transform unit then returned to full exactness with every private
+label unchanged.
+
+**Regression boundary.** `photo-bullet-advance-transform` remains 2479/2479
+authored bytes exact with its 2563-byte body-plus-switch-table extent and all 23
+relocations. The unchanged independent consumers
+`ecl-extended-fade-owned-captured-bullets`,
+`ecl-extended-reset-owned-bullet-motion`, `ecl-extended-bullet-callback02`, and
+`ecl-extended-bullet-callback04` remain respectively 264/264, 183/183, 378/378,
+and 575/575 bytes exact. Full `src/BulletManager.cpp` replay covers all 35
+configured units and is 35/35 exact with zero private-label refresh. The normal
+production BulletManager translation unit independently compiles with its
+repository whole-build pinned VC7.1 profile to i386 COFF, and `git diff --check`
+passes. No public header or ABI changed.
+
+**Receipt state.** Immediately before this source batch, committed HEAD
+`58ab994` completed a current-source local milestone: eight cold replay chunks
+covered all 88 configured sources / 696 exact units with zero private-label
+refresh, and the independently readable whole-build report recorded 88 pinned
+VC7.1 i386 COFF objects plus a successful PE32 link. Those source-bound local
+milestone results become stale when this semantic source commit is created;
+SEM-045 itself closes only its focused exact and production surfaces. No new
+Factory-accepted aggregate or whole-build receipt is claimed here.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. The focused
+production object was created under `/tmp` and removed before command exit. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect the remaining compact BulletManager anonymous fields for
+another TH095-local producer/consumer protocol, beginning with bullet `+0x360`
+only if independent consumers distinguish it from transform sound/index and the
+captured-list/cooldown union. Do not promote adjacency or a single transform
+writer into meaning.
