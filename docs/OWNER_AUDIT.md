@@ -4,7 +4,8 @@ This document records the full owner audit completed on 2026-09-10. It is an
 address-level audit of the original Japanese TH095 v1.02a target with SHA-256
 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
 It does not grant new exact credit and does not claim exhaustive runtime-path
-coverage.
+coverage. Later runtime findings and the audit blind spots they exposed are
+tracked in `docs/RUNTIME_ISSUES.md`.
 
 ## Scope and method
 
@@ -42,11 +43,12 @@ form also separates the `.data` zero-fill subset:
 python3 scripts/audit-owner-relocations.py --json
 ```
 
-This closed the complete set of candidates visible through accepted authored
-relocations plus the one authored function outside that set. No additional
-unresolved address-equivalence or Chain-owner candidate remains. That result is
-stronger than a link audit, but it is not proof against a future timing fault
-on an unexecuted asynchronous path.
+This closed the complete set of address-equivalence candidates visible through
+accepted authored relocations plus the one authored function outside that set.
+No unresolved relocation-equivalence or Chain-owner candidate remains. It did
+not prove that every call on a common-layout object selected the right object,
+or that normalized private switch labels retained their semantic destination.
+RT-008/RT-009 later demonstrated both blind spots.
 
 ## Canonical owner map
 
@@ -69,6 +71,7 @@ this table while exact builds retain their target-facing symbol spellings.
 | `0x004C45E0` | Effect manager | `g_RuntimeEffectManagerOwner` | shared |
 | `0x004C4670` | Supervisor object | real `g_Supervisor` | embedded fields shared |
 | `0x004C4A34` | Active background viewport, Supervisor `+0x3C4` | `g_Supervisor.currentBackgroundViewport` | embedded field |
+| `0x004C4AAC` | Shared writable UI text ANM, Supervisor `+0x43C` | `g_Supervisor.textAnm` | embedded pointer; SceneSelect, MusicRoom, ResultScreen, and PhotoCard share it |
 | `0x004C4CB8` | Replay-scan worker, Supervisor `+0x648` | `g_Supervisor.replayScanWorker` | embedded object |
 | `0x004C4CC0` | Worker stop/completion word, worker `+0x08` | `replayScanWorker.stopRequested` | shared field |
 | `0x004C4CC4` | Worker active word, worker `+0x0C` | `replayScanWorker.active` | shared field |
@@ -111,8 +114,10 @@ These exact-facing names do not mean that the target addresses are aliases:
 
 ## Gaps closed by this audit
 
-Five real production-owner defects were found. None was an error in the
-accepted function semantics; each was a runnable-link storage/view error.
+The initial relocation/Chain audit found five real production-owner defects.
+None was an error in the accepted function semantics; each was a runnable-link
+storage/view error. Later runtime validation found a sixth wrong-instance
+owner family which the address-equivalence grouping could not expose.
 
 1. `0x004BDEC8` and `0x004C4DF4` had been collapsed. The first has 229
    hash-attested xrefs and is published at `0x00417FE5` and cleared at
@@ -137,6 +142,13 @@ accepted function semantics; each was a runnable-link storage/view error.
    contents; ResultScreen now uses the canonical scene-count table. The other
    initialized multi-name classes at `0x004A5800` and `0x004A9F80` already
    converged on `g_SceneGroups` and `g_AsciiManager`, respectively.
+6. SceneSelect, MusicRoom, and ResultScreen invoked valid ANM operations on the
+   current screen's `sceneAnm`/`anm` instead of target `0x004C4AAC`, the
+   embedded `g_Supervisor.textAnm`. This erased the title-menu atlas, wrote
+   scene text into it, and left replay-label VMs under the wrong owner.
+   Hash-attested review of all thirteen target xrefs bounded the complete
+   family; production now routes every dynamic UI text consumer to the shared
+   owner. See RT-008/RT-010 in `docs/RUNTIME_ISSUES.md`.
 
 `GetInput`'s other target globals were checked at the same time: input slots at
 `0x004BE218`, the standalone enable word at `0x004C45F0`, Supervisor keyboard
@@ -165,18 +177,20 @@ additional self-cut or dangling-manager path was proven.
 
 ## Verification checkpoint
 
-After the four repairs:
+At the current checkpoint:
 
 - the cold whole build compiled all 88 pinned-VC7.1 i386 COFF objects and
   linked a verified 780,288-byte PE32 GUI executable;
 - the artifact SHA-256 is
-  `7715bb2a0dc5e6d560a611eb523460e0044dbac8bf9f9977acdb8005699b1f9c`;
-- all 696 configured exact units replayed without a manifest/private-label
-  refresh; and
+  `5cb15a02c5f787f64475e9b600ff5f82b0e4fd4fd1d895d09d7c88b24ecb95dc`;
+- the full owner-audit checkpoint replayed all 696 configured exact units; the
+  later five-source text-owner/menu-routing batch replayed 37/37 affected
+  units. Its two private switch labels were corrected to their actual target
+  destinations rather than blindly refreshed; and
 - tracking and repository CI remained required final gates.
 
-No broad runtime matrix was run during this audit, by request. Existing title,
-Mission Select, gameplay, retry, result-return, graphics, and BGM observations
-remain the runtime baseline. Future runtime failures must be treated as new
-evidence lanes; this audit does not justify speculative guards or duplicate
-storage.
+The later focused paired runtime matrix covers title return, Music Room,
+Options, and both ESC return paths; details are in `docs/RUNTIME_ISSUES.md`.
+Replay save -> Finish still requires post-fix manual confirmation. Future
+runtime failures must be treated as new evidence lanes; this audit does not
+justify speculative guards or duplicate storage.

@@ -58,7 +58,7 @@ Whole-program compile and link closure is complete. A fresh
 - verifies a PE32 i386 Windows GUI image at
   `build/whole-validation/th095-reconstructed.exe`;
 - currently produces 780,288 bytes with SHA-256
-  `159f531ad62c84bdd0e676aa948bdea51c53a9f17aaf97b50726ec5a4b63ebf8`.
+  `5cb15a02c5f787f64475e9b600ff5f82b0e4fd4fd1d895d09d7c88b24ecb95dc`.
 
 This is a runnable reconstruction artifact, not a byte-exact whole-image
 claim. Function-level exact evidence remains governed by the match-unit
@@ -93,6 +93,12 @@ The subsequent full-owner-audit commits are:
 - `3181490` — preserve exact-profile field identifiers after the semantic
   production rename; and
 - `05e1e92` — merge ResultScreen's limit view into the scene-count table.
+
+The latest focused front-end commits are:
+
+- `83683ba` — restore target title-row routing for Music Room and Options; and
+- `cb4a538` — route SceneSelect, MusicRoom, and ResultScreen dynamic text
+  through the shared Supervisor text ANM.
 
 ## Runtime validation
 
@@ -129,7 +135,11 @@ baselines. The reconstructed executable has then been observed to:
   and reach its later failure overlay without exiting;
 - select the failure menu's return option and reach Mission Select again;
 - retain a non-null streaming BGM object after scene entry and Retry, while
-  reading the real `musicMode=1`, `playSounds=1`, `preloadMusic=0` settings.
+  reading the real `musicMode=1`, `playSounds=1`, `preloadMusic=0` settings;
+- return from Mission Select to a complete title menu without leftover scene
+  text;
+- open Music Room from title row 3 and Options from row 4; and
+- return alive from both Music Room and Options to title with ESC.
 
 The final-artifact runs used held DirectInput key events to avoid missing the
 game's polling window. The post-fix Wine logs were empty. No Wine exception,
@@ -203,17 +213,41 @@ The 13 affected `AnmPreload.cpp` exact units replayed 13/13 before the fresh
 prefixes unless a debugger needs them: twelve old retained-prefix runs consumed
 about 30 GiB and were removed on 2026-09-10.
 
+Two focused front-end defects were then isolated:
+
+12. Target `0x004C4AAC` is `g_Supervisor.textAnm`, the shared writable UI text
+    owner. SceneSelect and MusicRoom incorrectly cleared/wrote `title.anm`,
+    erasing the six title labels and leaving scene-description text behind on
+    ESC return. The same wrong-owner family affected ResultScreen replay-label
+    VMs. All thirteen target xrefs were reviewed and all production consumers
+    now use the embedded owner. The precise replay save -> Finish interaction
+    still needs one post-fix manual confirmation.
+13. The title's Music Room/Options switch compared exact only because two
+    private jump-table labels were normalized under the wrong names. Target row
+    2 requests state 8 (Music Room); row 3 requests state 7 (Options). Source
+    and manifest now preserve the linked semantics, and paired entry/ESC tests
+    match the original.
+
 The complete address-equivalence and Chain-lifetime audit is recorded in
-`docs/OWNER_AUDIT.md`. After all owner corrections, all 696 configured units
-across all 88 sources cold-replayed exact with zero manifest or private-label
-refreshes.
+`docs/OWNER_AUDIT.md`; the durable symptom/cause/repair ledger is
+`docs/RUNTIME_ISSUES.md`. The audit checkpoint cold-replayed all 696 configured
+units. The later five-source front-end batch replayed 37/37 affected units;
+its two private switch labels were deliberately corrected to their actual
+target destinations.
 
 ## Remaining work
 
 For the stated goal—reconstructed source that cold-compiles, links, and runs
 the game—the active whole-build lane is complete. There are no known unresolved
-symbols, remaining relocation-owner candidates, or known startup, gameplay,
-demo-hit, retry, or result-menu return crashes.
+symbols or remaining relocation-equivalence/Chain-owner candidates, and the
+known startup, gameplay, demo-hit, retry, title-return, Music Room, and Options
+failures are closed. Do not generalize that static audit to same-type
+wrong-instance calls or normalized switch-table semantics.
+
+One explicit confirmation remains: manually repeat replay save -> keyboard
+Finish on the current build. The exact state machine returns from state 15 to
+the replay-slot list, and the correlated ResultScreen text-owner defect is
+fixed, but that exact interaction has not yet been rerun after the repair.
 
 Optional coverage expansion is not a known blocker: sample more of the 93
 scenes, replay playback/recording, Music Room, Help, Options, MIDI, and

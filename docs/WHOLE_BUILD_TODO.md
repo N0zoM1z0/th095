@@ -16,7 +16,7 @@ As of 2026-09-10, a cold production build:
 - verifies a 780,288-byte PE32 i386 Windows GUI executable at
   `build/whole-validation/th095-reconstructed.exe`;
 - produces SHA-256
-  `7715bb2a0dc5e6d560a611eb523460e0044dbac8bf9f9977acdb8005699b1f9c`.
+  `5cb15a02c5f787f64475e9b600ff5f82b0e4fd4fd1d895d09d7c88b24ecb95dc`.
 
 The reconstruction ledgers remain at 697 source-present functions and 696
 accepted exact functions. `Controller::GetInput @ 0x00419AE0` is the sole
@@ -34,7 +34,9 @@ assets work. The reconstructed executable then reached:
 3. scene 1-1 gameplay with live enemy and bullet updates at 60 FPS;
 4. extended gameplay and the `Failed / Retry This Mission` overlay;
 5. a default `Retry This Mission` transition into a second attempt;
-6. a failure-menu return transition back to Mission Select.
+6. a failure-menu return transition back to Mission Select;
+7. Mission Select, Music Room, and Options ESC returns to an intact title; and
+8. target-correct Music Room/Options title-row routing.
 
 Keyboard confirmation and movement were exercised. Both post-fix transition
 runs remained alive until deliberately terminated; their Wine logs were empty.
@@ -80,11 +82,23 @@ so validation cannot modify the source installation.
 - Scene-count ownership: ResultScreen's exact-facing `g_ResultSceneLimits` and
   SceneSelect's `g_SceneGroupCounts` both resolve to initialized target table
   `0x004A5830`. Production now uses the latter as their single owner.
+- ANM postload serialization: startup-worker and main-thread postload consumers
+  share Supervisor critical section 6, preventing duplicate consumption of an
+  ANM entry during demo/result transitions.
+- Shared text ANM ownership: target `0x004C4AAC` is
+  `g_Supervisor.textAnm @ +0x43C`. SceneSelect and MusicRoom no longer erase or
+  write the title atlas, and ResultScreen replay-label VMs use the same target
+  owner.
+- Title menu routing: row 2 opens Music Room/state 8 and row 3 opens
+  Options/state 7. The source block order and private-label manifest preserve
+  both target code order and linked jump-table meaning.
 
 The complete relocation-equivalence and Chain-lifetime review is in
-`docs/OWNER_AUDIT.md`. Because shared runtime headers changed, the final source
-was cold-replayed against all 696 canonical exact units across all 88 sources.
-No manifest or private-label refresh was required.
+`docs/OWNER_AUDIT.md`, and issue-level history is in
+`docs/RUNTIME_ISSUES.md`. The owner-audit checkpoint cold-replayed all 696
+canonical units. The latest five-source batch replayed 37/37 affected units;
+two switch-table private labels were corrected to their independently verified
+target destinations.
 
 ## Required verification
 
@@ -128,3 +142,8 @@ Additional menu, replay, audio/MIDI, clean-exit, and all-scene sampling are
 optional compatibility expansion, not known TODO blockers. Any future failure
 must become a new evidence-backed owner/lifecycle lane; do not hide it with a
 speculative guard, duplicate global, copied target bytes, or linker trick.
+
+One targeted runtime confirmation remains tracked as RT-010: repeat replay
+save -> keyboard Finish on the current build and verify return to the replay
+slot list. The correlated ResultScreen text-owner repair is present, but the
+exact interaction has not yet been observed post-fix.
