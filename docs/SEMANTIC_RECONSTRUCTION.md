@@ -2759,3 +2759,60 @@ and shared provider state remain untouched.
 only if TH095 resource loading, shot/ANM update selection, and another consumer
 establish whether these are primary/alternate ANM banks. Do not infer the
 second pointer solely from adjacency to the proven `enemyAnm @ +0x4DF8`.
+
+
+### SEM-040 — unresolved alternate enemy ANM bank storage
+
+**Scope.** Audit enemy-manager runtime pointer `+0x4DFC`, the bank selected by
+compact enemy flags1 bit 31. No source representation change is accepted in
+this batch because the TH095-local producer and resource identity for this
+second pointer remain unproved. The already committed SEM-011 bank-selector
+protocol is not repeated or revised.
+
+**Observed.** Canonical target-attested `Enemy::UpdateShotAndAnm @ 0x00413030`
+loads manager `+0x4DFC` only when compact flags1 bit 31 is set and otherwise
+uses `+0x4DF8`. Exact `RunEcl` low opcodes 58..60 select the same `+0x4DFC`
+bank while setting bit 31, and opcode 62 reads the bit to choose between the
+pair. In contrast, target-attested `PhotoEnemyManagerView::LoadResources @
+0x004153D0` preloads scene-selected ANM index 8 and stores that result only at
+manager `+0x4DF8`.
+
+**Corroborated.** A bounded machine-wide disassembly search of the canonical
+TH095 `.text` for direct displacement `+0x4DFC` finds three read sites: two in
+the large RunEcl body and one in `UpdateShotAndAnm`. No direct store to that
+displacement is present. The manager constructor zeroes its complete storage,
+and the reconstructed TH095 source likewise contains consumers of `+0x4DFC`
+but no producer. By comparison, `+0x4DF8` has an explicit target store from the
+ANM preload result and multiple independent consumers.
+
+**Inferred.** `+0x4DFC` is structurally an alternate ANM-bank pointer because
+three target consumers select it under the already-proved alternate-bank bit.
+That does not establish which ANM resource, load index, scene field, or lifetime
+owns the pointer. The absence of a visible direct producer also leaves open that
+the path is dormant in shipped TH095 content or populated by a mechanism not
+yet reconstructed.
+
+**Unknown.** The producer, resource filename/index, initialization timing, and
+release protocol of manager `+0x4DFC` remain unknown. This record does not name
+it `secondaryEnemyAnm`, does not equate it with `photo.anm` index 9, and does not
+claim the alternate-bank ECL opcodes are exercised by retail content. Unknown
+is retained rather than manufacturing a field name from adjacency.
+
+**Regression boundary.** No source code changes are accepted in this evidence-
+rejection batch, so SEM-039 source validation remains the current code state.
+Only this documentation addition is checked with `git diff --check`; no exact
+or production result is reissued for unchanged source.
+
+**Receipt state.** Factory `whole_build_closed` remains accepted only for older
+commit `3b540668`; it is stale for the current campaign HEAD. No receipt is
+replayed for this documentation-only checkpoint.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect compact enemy flags2 bit 7 at `+0x2BF8`. Verify whether
+ECL opcode 158's writer and the enemy update/draw path independently establish
+it as an attached-VM freeze/suppression control. Keep other flags2 bits separate
+and do not reuse later-layout generic Enemy flag meanings without TH095-local
+evidence.
