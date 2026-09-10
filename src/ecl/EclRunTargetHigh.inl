@@ -188,9 +188,15 @@ enter_subroutine:
             ->scheduledCallFrames[TH08_ECL_READ_I(ctx, 0)] =
                 TH08_ECL_READ_I(ctx, 1);
 #endif
+#ifdef TH095_MATCH_EXACT
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c7c +
                                  TH08_ECL_READ_I(ctx, 0) * 4) =
             TH08_ECL_READ_I(ctx, 2);
+#else
+        reinterpret_cast<EclRunHigh::Th095ScheduledCallRecordView *>(enemy)
+            ->scheduledCalls[TH08_ECL_READ_I(ctx, 0)].rawValue =
+                TH08_ECL_READ_I(ctx, 2);
+#endif
         break;
 
     case 116:

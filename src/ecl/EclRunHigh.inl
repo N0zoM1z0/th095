@@ -105,6 +105,26 @@ struct Th095ScheduledCallFrameView
     i32 scheduledCallFrames[10];
 };
 C_ASSERT(offsetof(Th095ScheduledCallFrameView, scheduledCallFrames) == 0x2c54);
+
+struct Th095ScheduledCallRecord
+{
+    union
+    {
+        i32 rawValue;
+        struct
+        {
+            i16 subroutineId;
+            i16 unknown02;
+        };
+    };
+};
+C_ASSERT(sizeof(Th095ScheduledCallRecord) == 4);
+struct Th095ScheduledCallRecordView
+{
+    u8 unknown0000[0x2c7c];
+    Th095ScheduledCallRecord scheduledCalls[10];
+};
+C_ASSERT(offsetof(Th095ScheduledCallRecordView, scheduledCalls) == 0x2c7c);
 #endif
 
 // TH095's high ECL range is the photography/effect lane.  The two packet

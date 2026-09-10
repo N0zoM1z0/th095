@@ -2141,3 +2141,64 @@ and shared provider state remain untouched.
 Require opcode 115's full-dword producer and `UpdateScheduledEclCalls`' low-i16
 subroutine consumer to agree on a maintainable representation; leave the upper
 16 bits unknown unless an independent TH095-local consumer establishes them.
+
+
+
+### SEM-031 — scheduled ECL call record slots
+
+**Scope.** Recover the ten four-byte scheduled-call records at enemy `+0x2C7C`
+as the owner paired with SEM-030's frame array. The maintainable `RunEcl` path
+writes opcode 115's third integer operand through a `rawValue` union member,
+while exposing the target-proven low half as `i16 subroutineId` and retaining
+the upper half as `i16 unknown02`. The exact path preserves the original full-
+dword indexed store. No meaning is assigned to the upper 16 bits.
+
+**Observed.** Canonical target-exact TH095 `RunEcl` opcode 115 writes a full
+32-bit value to `enemy + 0x2C7C + index*4` immediately after writing the paired
+activation frame at `+0x2C54 + index*4`. Independently, target-attested Ghidra
+decompilation of `PhotoEnemyView::UpdateScheduledEclCalls @ 0x00416F30` reads a
+signed 16-bit value from `+0x2C7C + index*4` and passes that low half to
+`PhotoEnemyEclManagerView::InitializeContext` when the paired frame becomes
+due. The target consumer does not read the record's upper half in this path.
+
+**Corroborated.** Canonical exact TH095 `PhotoEnemyView` declares ten
+`PhotoEnemyScheduledCall` records directly after the ten frame slots, with
+`i16 subroutineId` followed by `i16 unknown02`; the record size is asserted as
+four bytes. `UpdateScheduledEclCalls` is independently exact at 309/309 bytes
+with all five configured relocations. The complete `ecl-manager-run-ecl` unit
+also remains target-exact after the record owner is introduced only in the
+maintainable branch, so opcode 115's observed full-dword producer is preserved.
+
+**Inferred.** Each record is paired by index with one scheduled activation
+frame. The low 16 bits are the ECL subroutine id consumed when that frame is
+due. The producer's full-dword assignment means the upper 16 bits are part of
+the stored record even though this consumer ignores them; representing the
+write as `rawValue` avoids silently discarding target state.
+
+**Unknown.** The meaning of `unknown02` is unresolved. This batch does not
+assume it is an argument, flag, padding, or second subroutine id, and it does not
+claim any bounds validation for opcode 115's script-supplied index. No source
+outside the proven producer/consumer pair is used to infer the upper half.
+
+**Compiler-observed.** `Th095ScheduledCallRecord` and its owner view are hidden
+from `TH095_MATCH_EXACT`; opcode 115 keeps its historical indexed dword store in
+that lane. The maintainable build uses the typed record array and assigns its
+`rawValue`, preserving both halves without changing the exact translation-unit
+surface. No private-label refresh was required.
+
+**Regression boundary.** `ecl-manager-run-ecl` replays exact, 1/1, with zero
+private-label refresh. The independent `enemy-update-scheduled-ecl-calls`
+consumer remains 309/309 bytes exact with all five configured relocations. The
+normal production `src/ecl/EclRun.cpp` independently compiles under pinned
+VC7.1 to i386 COFF, and `git diff --check` passes. No shared header or ABI
+changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** inspect the opcode-116 delayed-callback pair at enemy
+`+0x2CA4/+0x2CA8`. Require the TH095 target-high producer, enemy-update
+consumer, constructor sentinel, and timer-reset protocol to distinguish the
+frame field from its paired payload before assigning maintainable names. If the
+second dword lacks an independent consumer, keep it unknown and route onward.
