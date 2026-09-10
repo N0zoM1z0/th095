@@ -347,6 +347,7 @@ enter_subroutine:
         break;
 
     case 103:
+#ifdef TH095_MATCH_EXACT
         if (TH08_ECL_READ_I(ctx, 0) >= 0)
         {
             *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2b8c) =
@@ -361,6 +362,22 @@ enter_subroutine:
         }
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2b90) =
             TH08_ECL_READ_I(ctx, 1);
+#else
+        if (TH08_ECL_READ_I(ctx, 0) >= 0)
+        {
+            TH095_ENEMY_BULLET_SPAWN_SOUND_VIEW(enemy)->spawnSound =
+                TH08_ECL_READ_I(ctx, 0);
+            TH095_ENEMY_BULLET_SPAWN_SOUND_VIEW(enemy)->transformFlags |=
+                BULLET_TRANSFORM_PLAY_SPAWN_SOUND;
+        }
+        else
+        {
+            TH095_ENEMY_BULLET_SPAWN_SOUND_VIEW(enemy)->transformFlags &=
+                ~BULLET_TRANSFORM_PLAY_SPAWN_SOUND;
+        }
+        TH095_ENEMY_BULLET_SPAWN_SOUND_VIEW(enemy)->transformSound =
+            TH08_ECL_READ_I(ctx, 1);
+#endif
         break;
 
     case 126:

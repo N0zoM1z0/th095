@@ -99,6 +99,26 @@ struct SpawnPacketSmall
 C_ASSERT(sizeof(SpawnPacketSmall) == 0x10);
 
 #if !defined(TH095_MATCH_EXACT)
+struct Th095BulletSpawnSoundView
+{
+    u8 unknown000[0x1fc];
+    u32 transformFlags;
+    i32 spawnSound;
+    i32 transformSound;
+};
+C_ASSERT(offsetof(Th095BulletSpawnSoundView, transformFlags) == 0x1fc);
+C_ASSERT(offsetof(Th095BulletSpawnSoundView, spawnSound) == 0x200);
+C_ASSERT(offsetof(Th095BulletSpawnSoundView, transformSound) == 0x204);
+struct Th095EnemyBulletSpawnSoundView
+{
+    u8 unknown0000[0x298c];
+    Th095BulletSpawnSoundView bulletSpawnDescriptor;
+};
+C_ASSERT(offsetof(Th095EnemyBulletSpawnSoundView, bulletSpawnDescriptor) == 0x298c);
+#define TH095_ENEMY_BULLET_SPAWN_SOUND_VIEW(enemy)                          \
+    (&reinterpret_cast<Th095EnemyBulletSpawnSoundView *>(enemy)             \
+          ->bulletSpawnDescriptor)
+
 struct Th095PhotoTargetRuntimeView
 {
     u8 unknown000000[0x26ae00];

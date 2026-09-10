@@ -2481,3 +2481,73 @@ compact TH095 owner with multiple exact producers/consumers; in particular,
 inspect the shot-dispatch scratch family at `+0x2B80..+0x2B88` only if its
 fields' write/use/reset protocol is independently visible. Do not infer field
 semantics from proximity to the recovered 0x210-byte descriptor alone.
+
+
+
+### SEM-036 — bullet spawn/transform sound descriptor fields
+
+**Scope.** Recover target-high opcode 103's three writes as fields within the
+SEM-035 bullet-spawn descriptor owner: `transformFlags @ descriptor+0x1FC`,
+`spawnSound @ +0x200`, and `transformSound @ +0x204`. The maintainable
+`RunEcl` lane uses a production-only descriptor-tail view and the existing
+`BULLET_TRANSFORM_PLAY_SPAWN_SOUND` bit name; `TH095_MATCH_EXACT` retains the
+historical absolute enemy offsets `+0x2B88/+0x2B8C/+0x2B90`. No other
+transform-flag bits or descriptor fields are renamed in this batch.
+
+**Observed.** Canonical target-exact TH095 `RunEcl` opcode 103 treats its first
+integer operand as the spawn sound id: non-negative values are stored at enemy
+`+0x2B8C` and set bit `0x200` in the dword at `+0x2B88`; negative values clear
+that bit. Its second integer operand is always stored at enemy `+0x2B90`.
+Relative to the target-proven descriptor root `+0x298C`, those addresses are
+exactly `+0x200`, `+0x1FC`, and `+0x204`.
+
+**Corroborated.** Independent TH095 exact `PhotoBulletSpawnDescriptor` and
+`EnemyShotDescriptorView` layouts both place `transformFlags` at descriptor
+`+0x1FC`, `spawnSound` at `+0x200`, and `transformSound` at `+0x204` within the
+0x210-byte record. `PhotoBulletManager::SpawnBulletPattern` tests transform flag
+bit `0x200` and, when set with a non-negative sound id, calls the sound manager
+with `spawnSound`. `SpawnSingleBullet` copies `transformSound` into each spawned
+bullet, and the bullet transform path later plays that stored sound when its
+transform stage requests one. Thus opcode 103's fields have independent TH095
+producer and runtime-consumer evidence.
+
+**Inferred.** Opcode 103 configures the descriptor's immediate spawn sound and
+the sound carried into later bullet transformations. Bit `0x200` is the spawn-
+sound enable bit for the descriptor, while a negative first operand disables
+that immediate spawn sound without preventing the second transform-sound value
+from being stored. The existing constant name is reused because TH095's exact
+BulletManager consumer independently establishes the bit's behavior.
+
+**Unknown.** This batch does not infer semantics for the other bits in
+`transformFlags`, does not specify which transform stages consume
+`transformSound`, and does not claim that negative transform-sound ids have the
+same disabling semantics as the separately gated spawn sound. Descriptor fields
+outside this three-member tail remain under their existing evidence records.
+
+**Compiler-observed.** The first maintainable form declared a descriptor pointer
+inside switch case 103. VC7.1 rejected the production TU because later case
+labels can jump past that initialization. A second form used a macro but
+incorrectly qualified the macro name with `EclRunHigh::`, which the preprocessor
+cannot namespace-qualify. Both failed before product code emission and left the
+exact lane unchanged. The accepted form uses a production-only typed owner
+macro directly at each field access, introducing no case-local object; the
+exact branch remains byte/relocation identical.
+
+**Regression boundary.** `ecl-manager-run-ecl` replays target-exact, 1/1, with
+zero private-label refresh. Independent `photo-bullet-spawn-pattern` and
+`photo-bullet-spawn-single` units remain 1360/1360 and 2102/2102 bytes exact
+with all configured relocations. The normal production `src/ecl/EclRun.cpp`
+independently compiles under pinned VC7.1 to i386 COFF, and `git diff --check`
+passes. No shared header or ABI changed.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
+current-session `.analysis` artifact was created, retained, or removed; legacy
+and shared provider state remain untouched.
+
+**Next batch:** refresh TH095 semantic debt outside already documented exact-
+compatibility macros. Prefer another repeated compact owner with an independent
+producer and runtime consumer; if the remaining ECL resolver offsets are read-
+only or cross-view-conflicted, route to a different subsystem rather than
+forcing speculative names. After the next coherent source checkpoint, issue a
+current-source cold aggregate exact and whole-product milestone before further
+campaign expansion.
