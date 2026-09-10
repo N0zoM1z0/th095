@@ -122,6 +122,31 @@ extern u32 g_TextureFormatBytesPerPixel[6];
 #endif
 i32 __fastcall GetAnmFormat(i32 format);
 
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+// Runnable builds use Supervisor critical section 6 as the startup-worker
+// serialization domain.  A Wine/GDB trace caught StartupThread and the main
+// thread entering PostloadAnmEntry for the same ascii.anm slot and entry: the
+// synchronous LoadAnm loop publishes numberEntriesToBeLoaded, which is also
+// the main thread's asynchronous ServicePreloadedAnims work signal.  The two
+// consumers then created and alpha-processed the same texture concurrently;
+// one reached SetPriority after the other had replaced/released its texture.
+//
+// The original function bodies remain untouched in DIFFBUILD and
+// TH095_MATCH_EXACT.  Production reuses critical section 6 because it already
+// owns replay/startup-worker launch and close.  Only postload consumption is
+// serialized: PreloadAnm's worker wait is deliberately outside this lock, or
+// it would deadlock while waiting for the main thread to service its entry.
+static __forceinline void EnterAnmPostloadCriticalSection()
+{
+    g_Supervisor.EnterCriticalSectionWrapper(6);
+}
+
+static __forceinline void LeaveAnmPostloadCriticalSection()
+{
+    g_Supervisor.LeaveCriticalSectionWrapper(6);
+}
+#endif
+
 typedef char AnmRawEntryViewNextAt38[(offsetof(AnmRawEntryView, nextOffset) == 0x38) ? 1 : -1];
 typedef char AnmRawEntryViewSizeIs40[(sizeof(AnmRawEntryView) == 0x40) ? 1 : -1];
 typedef char AnmTextureHeaderViewSizeIs10[(sizeof(AnmTextureHeaderView) == 0x10) ? 1 : -1];
@@ -212,14 +237,24 @@ AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::LoadAnm(i32 anmIdx, const char *filename)
 {
     utils::DebugPrint("::loadAnim : %s\n", filename);
     AnmLoaded *anm = this->ReadAnmEntries(anmIdx, filename);
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+    EnterAnmPostloadCriticalSection();
+#endif
     if (anm != NULL)
     {
         anm->numberEntriesToBeLoaded = 1;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         while (anm->numberEntriesToBeLoaded != 0)
+#else
+        while (anm != NULL && anm->numberEntriesToBeLoaded != 0)
+#endif
         {
             anm = this->PostloadAnmEntry(anm);
         }
     }
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+    LeaveAnmPostloadCriticalSection();
+#endif
     return anm;
 }
 
@@ -615,6 +650,9 @@ ZunResult TH095_ANM_PRELOAD_RECEIVER::ServicePreloadedAnims()
 {
     u32 i;
 
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+    EnterAnmPostloadCriticalSection();
+#endif
     for (i = 0; i < 13; i++)
     {
         if (this->slots[i].releasePending != 0)
@@ -625,10 +663,16 @@ ZunResult TH095_ANM_PRELOAD_RECEIVER::ServicePreloadedAnims()
         else if (this->slots[i].loaded.numberEntriesToBeLoaded != 0 &&
                  this->PostloadAnmEntry(&this->slots[i].loaded) == NULL)
         {
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+            LeaveAnmPostloadCriticalSection();
+#endif
             return ZUN_ERROR;
         }
     }
 
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+    LeaveAnmPostloadCriticalSection();
+#endif
     return ZUN_SUCCESS;
 }
 
