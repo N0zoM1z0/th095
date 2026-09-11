@@ -74,7 +74,7 @@ struct PhotoStageScoreRecord
 {
     i32 scoreData[8];
     u8 unknown020[4];
-    i32 timestamp;
+    i32 captureTime;
     u8 unknown028[4];
     u32 attemptCount;
     u8 unknown030[4];
@@ -1014,8 +1014,8 @@ i32 PhotoStageStateView::Update()
                             ->attemptCount++;
                     }
 
-                    time(reinterpret_cast<time_t *>(
-                        &this->slots[this->slots[0].captureSlot].timestamp));
+                    this->slots[this->slots[0].captureSlot].timestamp =
+                        (i32)time(NULL);
 
                     PhotoStagePublishSlowRate(this);
                     this->slots[this->slots[0].captureSlot].width =
@@ -1091,7 +1091,7 @@ i32 PhotoStageStateView::Update()
                             g_PhotoStageGlobalState->scoreIndex)->slowRate =
                             this->slots[this->slots[0].captureSlot].slowRate;
                         GetPhotoStageScoreRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->timestamp =
+                            g_PhotoStageGlobalState->scoreIndex)->captureTime =
                             this->slots[this->slots[0].captureSlot].timestamp;
                         if (g_PhotoStageRuntime != NULL)
                         {

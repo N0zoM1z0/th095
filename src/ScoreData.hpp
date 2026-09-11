@@ -94,7 +94,7 @@ struct ResultScoreEntryView
         time_t captureTime;
     };
 #else
-    time_t captureTime;
+    i32 captureTime;
 #endif
     i32 bestShotChecksum;
 #ifdef TH095_MATCH_EXACT

@@ -12,6 +12,7 @@ namespace th095
 void SceneSelectControllerView::UpdateSelectedSceneDetails()
 {
     i32 value;
+    time_t captureTimeValue;
     tm *captureTime;
 
     if (g_ResultSaveData->sceneScores[this->selectedScoreEntryIndex]
@@ -34,9 +35,10 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
     }
     else
     {
-        captureTime = localtime(
-            &g_ResultSaveData->sceneScores[this->selectedScoreEntryIndex]
-                 .captureTime);
+        captureTimeValue = (time_t)g_ResultSaveData
+                               ->sceneScores[this->selectedScoreEntryIndex]
+                               .captureTime;
+        captureTime = localtime(&captureTimeValue);
 
         SET_DETAIL_SPRITE(0x4c, (captureTime->tm_mon + 1) / 10 + 0x27);
         SET_DETAIL_SPRITE(0x4d, (captureTime->tm_mon + 1) % 10 + 0x27);

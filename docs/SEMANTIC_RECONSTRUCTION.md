@@ -4951,3 +4951,80 @@ wire field is currently represented as `time_t` in the canonical scene-score
 view but as a fixed 32-bit value in both PhotoStage and result-photo overlays;
 verify the file-format width and every `_time`/`_localtime` boundary before
 choosing a production representation.
+
+### SEM-067: bind persisted capture time to the 32-bit score-file ABI
+
+SEM-063 established that score-record `+0x3c` is capture time.  The remaining
+representation question was whether the persistent field itself should be a
+CRT `time_t` or a fixed-width wire value.  TH095-local layout, serialization,
+and two independent runtime overlays resolve the persisted representation as a
+32-bit scalar; `time_t` belongs at the historical CRT call boundary.
+
+Observed TH095-local evidence:
+
+- Every valid `SC` score record is exactly `0x60` bytes.  The production and
+  exact layouts assert that size, `ResultSaveDataView::ParseScoreFile` validates
+  each `SC` checksum over a hard-coded `0x60` bytes, and the writer serializes
+  `sizeof(ResultScoreEntryView)` for each record.
+- The result-photo overlay already represents record `+0x3c` as
+  `i32 captureTime`, and the PhotoStage payload overlay independently represents
+  the same storage as a four-byte integer.  Both overlays preserve the
+  target-proven 0x60-byte record stride.
+- PhotoStage's live capture slot also stores its timestamp in a four-byte
+  integer at `+0x21f8`.  The historical code passes that address to `_time`
+  through a `time_t *` cast and later copies the four-byte value into score
+  record `+0x3c`.
+- The result-photo save path independently copies its four-byte live slot
+  `captureTime` into the persistent `+0x3c` field before rebuilding the score
+  file.
+- `SceneSelectControllerView::UpdateSelectedSceneDetails` consumes record
+  `+0x3c` as a timestamp by passing it to `_localtime` and rendering month,
+  day, hour, and minute.  The target-era direct pointer use therefore relies on
+  the historical Win32 CRT representation being four bytes wide.
+
+Corroborated source interpretation:
+
+- Production `ResultScoreEntryView::captureTime` is now `i32`, matching both
+  TH095-local overlay views and making the persistent record width explicit.
+- PhotoStage now obtains `time(NULL)`, narrows the return explicitly into its
+  four-byte live slot, and copies that value into the persisted field.  It no
+  longer aliases four-byte slot storage through a `time_t *` merely because the
+  historical CRT happens to use the same width.
+- Scene detail promotes the persisted `i32` into a local `time_t` before calling
+  `localtime`.  The wire representation and CRT representation are therefore
+  separate in production source while preserving historical behavior on VC7.1.
+- `TH095_MATCH_EXACT` deliberately retains the historical `time_t` field and
+  direct CRT call shape so compiler-facing source identity remains unchanged.
+
+Inferred meaning:
+
+- The TH095 score-file protocol stores capture time as a fixed 32-bit
+  `time_t`-compatible scalar.  Its interpretation as civil date/time belongs to
+  the CRT conversion boundary, not to the persistent record's C++ host type.
+
+Unknown / deliberately deferred:
+
+- This batch does not redefine rollover, range, or post-2038 behavior and does
+  not introduce a portable time format.  Those would change historical
+  semantics rather than reconstruct them.
+- Replay timestamps are a separate persistent protocol family.  They also use
+  four-byte storage with `_time`/`_localtime` casts in current production code,
+  but their file/header ownership and serialization path must be audited
+  independently before applying the same representation decision.
+
+Validation on the active source state:
+
+- focused canonical replay: 11/11 units across `PhotoStage.cpp`,
+  `SceneDetail.cpp`, and `ScoreData.cpp`, with zero private-label refreshes;
+- cold aggregate canonical replay, executed as eight mutually exclusive source
+  partitions, covered all 88 manifest sources and all 696 exact units:
+  696/696 exact with zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units as
+  i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows
+  executable.  This is production compile/link closure for this source state,
+  not whole-image byte exactness or runtime validation.
+
+Next evidence route: audit replay timestamp storage and serialization from the
+live input-data owner through replay save/load, browser metadata, and all
+`_time`/`_localtime` consumers.  Keep replay ABI conclusions separate from the
+score-file `SC` protocol recovered here.
