@@ -19,16 +19,19 @@ enum ReplayManagerMode
     REPLAY_MANAGER_LOAD_ONLY = 2,
 };
 
+// Persistent replay container header. The game writer emits the complete
+// 0x24-byte block. LoadReplay trusts the payload sizes directly and does not
+// validate the writer metadata before allocation, decryption, or decompression.
 struct ReplayFileHeader
 {
-    u32 magic;                       // +0x00
-    u16 version;                     // +0x04
-    u8 unknown006[0x06];
-    u32 fileSize;                    // +0x0c
-    u32 gameVersion;                 // +0x10
-    u8 unknown014[0x08];
-    u32 compressedSize;              // +0x1c
-    u32 decompressedSize;            // +0x20
+    u32 magic;                       // +0x00, writer emits 0x72353974
+    u16 version;                     // +0x04, writer emits 1
+    u8 unknown006[0x06];             // writer leaves zero after header memset
+    u32 userDataOffset;              // +0x0c, writer emits 0x24 + compressed payload size
+    u32 gameVersion;                 // +0x10, writer emits 0x102
+    u8 unknown014[0x08];             // writer leaves zero after header memset
+    u32 compressedPayloadSize;       // +0x1c
+    u32 decompressedPayloadSize;     // +0x20
 };
 
 struct ReplayInputData

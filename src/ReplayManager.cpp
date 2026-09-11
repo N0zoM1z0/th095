@@ -238,7 +238,7 @@ ReplayManagerResult ReplayManager::LoadReplay(char *path)
         this->fileHeader =
             (ReplayFileHeader *)ReplayFile::Read(sizeof(ReplayFileHeader));
         locals.compressedData =
-            (u8 *)ReplayFile::Read(this->fileHeader->compressedSize);
+            (u8 *)ReplayFile::Read(this->fileHeader->compressedPayloadSize);
         FileSystem::CloseWriteFile();
     }
     else
@@ -248,17 +248,17 @@ ReplayManagerResult ReplayManager::LoadReplay(char *path)
         locals.compressedData = (u8 *)this->fileHeader + sizeof(ReplayFileHeader);
     }
 
-    locals.allocationSize = this->fileHeader->decompressedSize;
+    locals.allocationSize = this->fileHeader->decompressedPayloadSize;
     this->inputData = (ReplayInputData *)malloc(locals.allocationSize);
-    FileSystem::Decrypt(locals.compressedData, this->fileHeader->compressedSize,
+    FileSystem::Decrypt(locals.compressedData, this->fileHeader->compressedPayloadSize,
                         0xaa, 0xe1, 0x400,
-                        this->fileHeader->compressedSize);
-    FileSystem::Decrypt(locals.compressedData, this->fileHeader->compressedSize,
+                        this->fileHeader->compressedPayloadSize);
+    FileSystem::Decrypt(locals.compressedData, this->fileHeader->compressedPayloadSize,
                         0x3d, 0x7a, 0x80,
-                        this->fileHeader->compressedSize);
-    DecompressData(locals.compressedData, this->fileHeader->compressedSize,
+                        this->fileHeader->compressedPayloadSize);
+    DecompressData(locals.compressedData, this->fileHeader->compressedPayloadSize,
                    (u8 *)this->inputData,
-                   this->fileHeader->decompressedSize);
+                   this->fileHeader->decompressedPayloadSize);
 
     locals.inputData = this->inputData;
     this->fpsData = (u8 *)(locals.inputData->inputStreamSize +
@@ -314,12 +314,12 @@ ReplayManagerResult ReplayManager::WriteReplay(char *path, char *replayName)
     FileSystem::Encrypt(locals.compressedData, locals.compressedSize, 0xaa,
                         0xe1, 0x400, locals.compressedSize);
 
-    this->fileHeader->decompressedSize =
+    this->fileHeader->decompressedPayloadSize =
         sizeof(ReplayInputData) + locals.inputData->inputStreamSize +
         locals.inputData->fpsStreamSize;
-    this->fileHeader->compressedSize = locals.compressedSize;
-    this->fileHeader->fileSize =
-        this->fileHeader->compressedSize + sizeof(ReplayFileHeader);
+    this->fileHeader->compressedPayloadSize = locals.compressedSize;
+    this->fileHeader->userDataOffset =
+        this->fileHeader->compressedPayloadSize + sizeof(ReplayFileHeader);
 
     FileSystem::OpenWriteFile(locals.fullPath);
     FileSystem::WriteToOpenFile(this->fileHeader, sizeof(ReplayFileHeader));

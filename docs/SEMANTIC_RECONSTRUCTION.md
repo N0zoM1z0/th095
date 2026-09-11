@@ -5111,3 +5111,120 @@ Next evidence route: audit the replay file-header validation boundary, including
 which of the `0x24` header fields are actually checked before allocation,
 decryption, and decompression, and keep unknown header bytes unknown unless a
 TH095-local producer or consumer resolves them.
+
+
+### SEM-069: recover the replay container header trust boundary
+
+Recovery context:
+
+- this session resumed at `28f83641` with unstaged edits in
+  `ReplayManager.cpp`, `ReplayManager.hpp`, and `ReplayManagerExact.inl`; the
+  diff implemented the exact replay-header route named by SEM-068 and the
+  existing compact `.analysis` manifest recorded
+  `semantic-replay-header-audit-active`, so the three tracked paths were
+  classified as recoverable current work and completed as this first batch;
+- the pre-existing untracked `EnemyManagerUpdate.i`,
+  `config/runtime-scenarios.json`, `droid.resume.txt`, and
+  `scripts/runtime-diff.py` remained excluded from staging and untouched; the
+  legacy `.analysis` provider/runtime state was also left untouched.
+
+The replay-header route named by SEM-068 resolves three writer-owned fields and
+one historical loader policy without assigning semantics to the two remaining
+opaque byte ranges.  The old `fileSize` name at header `+0x0c` was specifically
+misleading: TH095 writes the offset immediately after the encrypted compressed
+payload, then appends two `USER` blocks beyond that offset.
+
+Observed TH095-local evidence:
+
+- `ReplayManager::Initialize @ 0x004342a0` allocates and clears the complete
+  `0x24`-byte header, then explicitly writes magic `0x72353974` at `+0x00`,
+  version `1` at `+0x04`, and game version `0x102` at `+0x10`.  The ranges
+  `+0x06..+0x0b` and `+0x14..+0x1b` remain zero because of the whole-header
+  clear; no target-local consumer in the audited replay path assigns them a
+  stronger meaning.
+- `ReplayManager::WriteReplay @ 0x00434a90` stores the compressed payload size
+  at header `+0x1c`, the pre-compression payload size at `+0x20`, and
+  `0x24 + compressedSize` at `+0x0c`.  It then writes the 0x24-byte header,
+  exactly that compressed payload, and only afterwards appends the type-0 and
+  type-1 `USER` metadata blocks.  Header `+0x0c` is therefore the writer's
+  first-`USER` offset, not the completed file length.
+- `ReplayManager::LoadReplay @ 0x00435130` consumes only header `+0x1c/+0x20`:
+  `+0x1c` controls the loose-file payload read, both decrypt passes, and the
+  compressed input length passed to LZSS; `+0x20` controls the allocation and
+  requested decompressed output size.  The loader does not test magic,
+  version, game version, `+0x0c`, or either unknown byte range first.
+- The loose-file read helper at `0x0041b020` allocates the requested size and
+  calls Win32 `ReadFile` but does not compare the returned byte count with the
+  requested byte count before returning the buffer.  The archive/file helper
+  at `0x0041a960` can return the complete file length; `LoadReplay` receives it
+  in `locals.fileSize` on the archive path but does not compare it with any
+  replay-header size or offset.
+- The LZSS decoder at `0x00456220` consumes the header-provided compressed input
+  extent and the caller-provided output allocation.  After decompression,
+  `LoadReplay` derives `fpsData` from decompressed payload
+  `inputStreamSize + 0xf8` without checking that relationship against header
+  `decompressedPayloadSize`.
+- `ReplayBrowserView::LoadReplaySlot @ 0x00450e20` delegates slot loading to the
+  normal load-only ReplayManager path, so the browser does not add an
+  independent header-validation layer.
+- TH095's tracked replay-compression incident records a malformed replay whose
+  decrypted payload was all `0x01`; both the canonical executable and the
+  pre-fix reconstruction stopped making progress while the result-screen replay
+  scan encountered it.  This is target-local runtime corroboration of the
+  loader's trust behavior, not a claim about exploitability or every malformed
+  input.
+
+Corroborated source interpretation:
+
+- Production and exact-facing source now name header `+0x1c/+0x20` as
+  `compressedPayloadSize` and `decompressedPayloadSize`.
+- Header `+0x0c` is named `userDataOffset` because the TH095 writer establishes
+  that exact boundary before appending its first `USER` block.  No claim is made
+  that the game loader uses or validates the field.
+- The `+0x06..+0x0b` and `+0x14..+0x1b` arrays remain `unknown006` and
+  `unknown014`.  Comments record only the observed writer-zero behavior rather
+  than promoting that initialization fact into an invented protocol meaning.
+- This batch changes representation names and documentation only.  It does not
+  add defensive validation that is absent from the historical loader.
+
+Inferred meaning:
+
+- The replay container distinguishes compressed and decompressed payload extents
+  explicitly, while `+0x0c` marks the writer's boundary between the encrypted
+  payload and appended user metadata.  The loader's policy is to trust the size
+  fields and decompressed stream metadata rather than authenticate the container
+  header before use.
+
+Unknown / deliberately deferred:
+
+- The protocol meaning, if any, of header bytes `+0x06..+0x0b` and
+  `+0x14..+0x1b` remains unknown.
+- No TH095-local reader for `userDataOffset` was found in the reconstructed game
+  path.  External replay tools may use it, but that is outside this evidence
+  packet and is not assumed.
+- This batch does not characterize all malformed-input outcomes, memory-safety
+  consequences, or a modern validation policy.  Such behavior changes are not
+  semantic reconstruction.
+
+Validation on the active source state:
+
+- the recovered ReplayManager surface replayed all 12/12 configured canonical
+  units exact with zero private-label refreshes before the broader gate;
+- because this batch changes the shared `ReplayManager.hpp`, cold aggregate
+  canonical replay was closed as eight mutually exclusive source partitions
+  covering all 88 manifest sources and all 696 units: 696/696 exact with zero
+  private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units as
+  i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows
+  executable; this is compile/link production closure, not whole-image byte
+  exactness or runtime validation;
+- `scripts/ci.py` passed all 43 target-independent tests and `git diff --check`
+  passed; tracking remained 697 source-present / 696 exact;
+- no new runtime scenario was executed for this naming-only batch.  The tracked
+  malformed-replay incident is retained only as prior TH095-local corroboration
+  of historical loader behavior, not as current-source runtime closure.
+
+Next evidence route: rotate away from the replay container after checkpoint and
+adversarially sample another persistent/ABI or owner surface with multiple
+TH095-local consumers; use the semantic-debt router only as a heuristic and
+prefer a bounded family not already covered by SEM-063 through SEM-069.
