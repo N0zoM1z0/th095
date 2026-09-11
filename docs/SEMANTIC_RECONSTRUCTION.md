@@ -6023,3 +6023,35 @@ Validation on the active source state:
 - the campaign baseline immediately before this private-field batch had already closed the committed `01c69eaf` source at 696/696 exact with zero refresh and an 88-TU i386 compile/link. Those broad results become source-stale once SEM-080 is committed and will be refreshed at the next committed milestone rather than misreported as current receipts.
 
 Next evidence route: rotate away from the front-end title-load flags. Prefer a bounded Background, Bullet, persistent-format, resource-owner/lifetime, or other independent protocol with at least one target-local producer and one independent consumer.
+
+### SEM-081: propagate the Background stage-instruction owner slot
+
+Scope: align the lifecycle representation of the Background singleton with the already recovered stage-script interpreter representation. `BackgroundStateView` in `Background.cpp` already names owner `+0x1C` `stageInstruction`, while `BackgroundLifecycle.cpp` still reserved the same four bytes as `unknown01c[4]`. This batch changes only that lifecycle-owner field type/name; serialized stage records, interpreter behavior, timers, VM storage, and object extent are unchanged.
+
+Observed TH095-local evidence:
+
+- Current target-attested `Background::LoadStageDataInner @ 0x00402C80` relocates the loaded stage-data pointers, publishes the stage-script base at Background `+0x0C`, and on successful setup stores that same pointer into Background `+0x1C`. This initializes the current stage instruction to the first record.
+- Canonical exact `Background::RunStageScript @ 0x00403440` reads `stageInstruction @ +0x1C` for the current instruction's time/opcode. Opcode 1 rewrites the pointer to `stageScript + args[0]`, while the ordinary dispatch tail advances it by the current variable-length record's `size`.
+- The existing production `BackgroundStateView` asserts `stageInstruction @ +0x1C`; `PHOTO-056/057` independently bind the exact interpreter and stage-data loader to the same Background owner.
+
+Corroborated source interpretation:
+
+- `BackgroundLifecycle.cpp` now forward-declares `BackgroundStageInstruction` and represents the lifecycle owner's `+0x1C` slot as `BackgroundStageInstruction *stageInstruction`. The prior four-byte anonymous array was not padding; it was the pointer state already used by the canonical interpreter view.
+- The constructor's whole-object clear continues to initialize the pointer to null before stage data is loaded. No new initialization or control flow is introduced.
+
+Inferred meaning:
+
+- `stageInstruction` is a mutable cursor into the loaded variable-record stage script, initialized to the script base and advanced or redirected by interpreter control flow. The name describes pointer role, not ownership of the underlying stage-data allocation.
+
+Unknown / deliberately deferred:
+
+- This batch does not reinterpret the separate `stageScript @ +0x0C` base pointer, interpolation mode/timer family, `unknown004` gap, or later Background storage.
+- It does not claim the original source used this exact local class declaration; the field identity comes from target dataflow and the already exact interpreter/loader representation. No fresh runtime scenario is claimed.
+
+Validation on the active source state:
+
+- `BackgroundLifecycle.cpp` replayed both configured lifecycle units 2/2 exact with zero private-label refreshes;
+- the changed translation unit compiled under its repository-selected normal production profile with the pinned VC7.1 compiler and produced an Intel i386 COFF object; command-local temporary object/PDB storage was removed at command exit;
+- no shared header or ABI extent changed, so repository-wide exact/product gates are deferred to the next committed campaign milestone.
+
+Next evidence route: rotate away from Background stage-script cursor storage. Prefer another bounded resource lifetime, persistent-format, Bullet, Supervisor, or independent protocol family with multiple TH095-local producer/consumer observations.
