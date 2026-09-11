@@ -88,7 +88,7 @@ struct FrontEndControllerUpdateView
         struct
         {
             u32 titleLoadIncomplete : 1;
-            u32 exitToResult : 1;
+            u32 titleLoadFailed : 1;
             u32 unknownFlags2 : 30;
         };
     };
@@ -285,7 +285,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
     {
     case 0:
     {
-        if (view->exitToResult)
+        if (view->titleLoadFailed)
         {
             TH095_FRONT_SUPERVISOR.StopReplayScan();
             TH095_FRONT_SUPERVISOR_STATE = 6;

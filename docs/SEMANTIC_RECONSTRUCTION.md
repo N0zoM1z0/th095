@@ -5991,3 +5991,35 @@ Validation on the active source state:
 - the same `AnmLoaded.cpp` source compiled through its repository-selected normal production profile under the pinned VC7.1 compiler and produced an Intel i386 COFF object. The probe used command-local temporary object/PDB storage and retained no analysis artifact.
 
 Next evidence route: after checkpoint, rotate away from ANM glyph metadata. Prefer a bounded resource-owner/lifetime, persistent-format, front-end, Bullet, Background, or other independent protocol family with a TH095-local producer plus one or more independent consumers.
+
+### SEM-080: correct the front-end title-load failure latch
+
+Scope: resolve the bit-1 meaning at the shared front-end controller flags dword `+0x6120`. SEM-076 deliberately left this bit outside its title-load-incomplete batch and retained the inherited `exitToResult` spelling. Current TH095-local producer/consumer evidence disproves that name: the bit is published only by asynchronous title/front-end load failure and routes the coordinator into the Supervisor error state. This batch changes names only; no state transition, storage width, object layout, or runtime compatibility gate changes.
+
+Observed TH095-local evidence:
+
+- Target-attested `FrontEndLifecycleView::LoadThread @ 0x00445980` waits for pending ANM captures, aborts when Supervisor bit 7 requests shutdown, and otherwise calls `Initialize @ 0x004456F0`. Its shared failure label ORs exactly bit 1 into controller flags `+0x6120`, publishes loading completion, and returns. The success path clears bit 0 instead and never sets bit 1.
+- Target-attested `SceneSelectControllerView::Update @ 0x00445E80` tests controller bit 1 only in requested state 0. When set, it stops replay scanning, writes global Supervisor state `6`, and returns before normal front-end initialization.
+- The reconstructed Supervisor enum is target-bound by the exact main state router and names state `6` `SUPERVISOR_STATE_ERROR`. The bit therefore routes a failed title/front-end load into the process error state, not into ResultScreen or a generic result transition.
+
+Corroborated source interpretation:
+
+- Production `FrontEndControllerUpdateView` now names bit 1 `titleLoadFailed`; `FrontEndLifecycle.cpp` names mask value `2` as `FRONT_END_CONTROLLER_TITLE_LOAD_FAILED`. The former `exitToResult` spelling is removed.
+- Bit 0 remains the independent `titleLoadIncomplete` lifecycle barrier recovered by SEM-076. A failure leaves bit 0 asserted and sets bit 1, while successful initialization clears bit 0 and leaves bit 1 clear.
+
+Inferred meaning:
+
+- `titleLoadFailed` is the narrowest name supported by the observed lifecycle: it records failure/abort of asynchronous title/front-end initialization until the front-end update hands control to the Supervisor error path. It is not a general-purpose error bit for unrelated menu states.
+
+Unknown / deliberately deferred:
+
+- This batch does not infer whether all callers reaching the load-failure label are user-visible fatal errors or orderly shutdown cases; both converge on the same target bit and Supervisor error-state publication.
+- Adjacent controller flag bits remain outside this batch. No fresh runtime scenario is claimed; the pre-existing untracked runtime harness remains excluded from staging.
+
+Validation on the active source state:
+
+- `FrontEndController.cpp` and `FrontEndLifecycle.cpp` replayed all 12 directly affected configured units exact (4/4 + 8/8), with zero private-label refreshes;
+- both changed translation units compiled independently under their repository-selected normal production profiles with the pinned VC7.1 toolchain and produced Intel i386 COFF objects; command-local temporary objects/PDBs were removed at command exit;
+- the campaign baseline immediately before this private-field batch had already closed the committed `01c69eaf` source at 696/696 exact with zero refresh and an 88-TU i386 compile/link. Those broad results become source-stale once SEM-080 is committed and will be refreshed at the next committed milestone rather than misreported as current receipts.
+
+Next evidence route: rotate away from the front-end title-load flags. Prefer a bounded Background, Bullet, persistent-format, resource-owner/lifetime, or other independent protocol with at least one target-local producer and one independent consumer.

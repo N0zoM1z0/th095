@@ -19,6 +19,7 @@ namespace th095
 enum FrontEndControllerFlag
 {
     FRONT_END_CONTROLLER_TITLE_LOAD_INCOMPLETE = 1,
+    FRONT_END_CONTROLLER_TITLE_LOAD_FAILED = 2,
 };
 
 DIFFABLE_STATIC(void *, g_ActiveMenuController);
@@ -404,7 +405,7 @@ void __fastcall FrontEndLifecycleView::LoadThread(void *)
     goto loadDone;
 
 loadFailed:
-    controller->flags |= 2;
+    controller->flags |= FRONT_END_CONTROLLER_TITLE_LOAD_FAILED;
     TH095_FRONT_BEGIN_LOADING_COMPLETION();
     TH095_FRONT_LOAD_IN_PROGRESS = 0;
     TH095_FRONT_LOAD_FINISHED = 1;
