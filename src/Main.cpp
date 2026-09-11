@@ -1672,7 +1672,7 @@ i32 Supervisor::UpdateSceneState()
 
             case SUPERVISOR_STATE_RESTART_PHOTO_GAME:
                 locals.resultMode = g_PhotoGameTask->replayMode;
-                g_Supervisor.flags.raw |= 0x200;
+                g_Supervisor.flags.resultRestartActive = 1;
                 this->photoGameTask->Destroy();
                 this->photoGameTask = NULL;
                 this->photoGameTask =

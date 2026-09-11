@@ -200,7 +200,11 @@ struct SupervisorFlags
             u32 dummyMidiTimerEnabled : 1;
             u32 receivedCloseMsg : 1;
             u32 scoreBackupPending : 1;
+#if defined(TH095_MATCH_EXACT)
             u32 unknown9 : 1;
+#else
+            u32 resultRestartActive : 1;
+#endif
             u32 keyboardAvailable : 1;
             u32 controllerAvailable : 1;
             u32 restartPhotoGame : 1;

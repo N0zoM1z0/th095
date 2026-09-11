@@ -5660,3 +5660,89 @@ family. Prefer a bounded resource, owner/lifetime, front-end state, persistent
 format, or another subsystem protocol with independent TH095-local producers
 and consumers. A failed bounded route remains a routing event, not a semantic
 phase boundary.
+
+
+### SEM-075: recover the Supervisor result-restart latch
+
+After checkpointing SEM-074, the campaign rotated away from camera-local state
+and inspected front-end/Supervisor transitions. `SupervisorFlags` still exposed
+bit 9 as `unknown9` even though production code contained one producer, a
+bounded clear, and several independent lifecycle consumers. This batch recovers
+that protocol as the result-driven PhotoGame replacement latch; it does not
+merge the adjacent bit-12 retry path.
+
+Observed TH095-local evidence:
+
+- `ResultScreen` is the only production surface that publishes Supervisor state
+  `4` (`SUPERVISOR_STATE_RESTART_PHOTO_GAME`), across several result-menu exit
+  paths. Target-attested `Supervisor::UpdateSceneState @ 0x00425EF0` handles
+  current PhotoGame state plus requested state 4 by reading the old task's
+  replay mode, setting `Supervisor+0x444` bit `0x200`, destroying the old task,
+  creating its replacement with the same replay mode, and returning the active
+  state to PhotoGame.
+- Target-attested `PhotoGameTaskView::~PhotoGameTaskView @ 0x00417E70` consumes
+  the same bit while the old task is being torn down. When set, it does not stop
+  non-archive scene audio and publishes a transparent screen-fade color instead
+  of the ordinary opaque black teardown color.
+- Target-attested `PhotoGameTaskView::InitializeSubsystems @ 0x00417A70`
+  consumes bit 9 while constructing the replacement ownership graph. When the
+  latch is set, the normal non-archive scene-music load is skipped, preserving
+  the audio lifetime across the task replacement.
+- Target-attested `PhotoFrontManagerView::Initialize @ 0x004170F0` is an
+  independent presentation consumer: with bit 9 set it sends interrupt 2 to
+  each of the four initial front VMs instead of creating the selected scene's
+  ordinary front script.
+- Target-attested asynchronous `PhotoGameTaskView::Load @ 0x00417D20` observes
+  the latch during post-construction loading and clears exactly bit `0x200`
+  after hiding the loading VMs and clearing the task's gameplay-load-active
+  state. This bounds the bit lifetime to the result-triggered task replacement
+  rather than making it a persistent Supervisor mode.
+
+Corroborated source interpretation:
+
+- Production `SupervisorFlags` now names bit 9 `resultRestartActive`. The
+  producer and all natural production consumers use that bitfield rather than
+  raw shift/mask expressions.
+- Both shared Supervisor flag declarations keep the historical `unknown9`
+  spelling under `TH095_MATCH_EXACT`; the exact translation units continue to
+  compile their historical raw `0x200` and `>> 9` expressions.
+- MAIN-023's earlier wording called `0x200` a controller latch. The target owner
+  is instead the Supervisor flags dword at `0x004C4AB4` (`Supervisor+0x444`), so
+  the durable knowledge record is corrected to that owner and lifetime.
+
+Inferred meaning:
+
+- `resultRestartActive` is a transient coordination latch for the PhotoGame
+  task replacement requested from result UI state 4. Its purpose is broader
+  than audio alone: it bridges task destruction, front initialization, music
+  ownership, fade selection, and the asynchronous load completion boundary.
+
+Unknown / deliberately deferred:
+
+- Supervisor bit 12 (`0x1000`) is a separate state-8 retry protocol. It is not
+  renamed by SEM-075 and is not treated as equivalent to `resultRestartActive`.
+- The task-local `0x100` bit set by `PhotoGameTaskView::Load` on ordinary loads
+  is outside this batch; skipping that write during result restart proves only
+  a consumer relationship, not enough meaning to rename the task-local bit.
+- No new runtime scenario is claimed. SEM-075 names a target-proven existing
+  transition latch without changing the state machine, storage width, offsets,
+  or ABI.
+
+Validation on the active source state:
+
+- the focused exact surface replayed 96/96 configured units with zero
+  private-label refreshes: `Main.cpp` 48/48, `PhotoFront.cpp` 11/11,
+  `PhotoGameTask.cpp` 10/10, and `SoundPlayer.cpp` 27/27;
+- because `Main.hpp` and `SupervisorRuntime.hpp` are shared layout headers, the
+  cold aggregate was closed through eight mutually exclusive manifest-source
+  partitions covering all 88 sources and all 696 configured units: 696/696
+  exact, zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units to
+  Intel i386 COFF with the pinned VC7.1 toolchain and linked/verified the
+  reconstructed Windows PE. This is production compile/link closure, not
+  whole-image byte exactness or runtime validation.
+
+Next evidence route: rotate away from PhotoGame/result restart state after this
+checkpoint. Prefer another bounded persistent, resource, owner/lifetime, input,
+or front-end protocol with independent TH095-local producers and consumers;
+remaining anonymous adjacent Supervisor bits are not a default continuation.

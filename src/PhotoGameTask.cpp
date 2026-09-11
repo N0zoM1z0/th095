@@ -455,7 +455,7 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
         Sleep(16);
     }
 
-    if (((g_Supervisor.flags.raw >> 9) & 1) == 0)
+    if (g_Supervisor.flags.resultRestartActive == 0)
     {
         if (((g_Supervisor.flags.raw >> 12) & 1) == 0)
         {
@@ -470,7 +470,7 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
 
     g_Supervisor.HideLoadingVms();
     task->flags = task->flags & ~PHOTO_GAME_TASK_GAMEPLAY_LOAD_ACTIVE;
-    g_Supervisor.flags.raw &= ~0x200;
+    g_Supervisor.flags.resultRestartActive = 0;
     g_HelpLoadActive = 0;
     g_HelpLoadComplete = 1;
     return;
@@ -578,7 +578,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
         return ZUN_ERROR;
     }
 
-    if (((g_Supervisor.flags.raw >> 9) & 1) == 0 &&
+    if (g_Supervisor.flags.resultRestartActive == 0 &&
         g_ReplayUsesArchive == 0)
     {
         g_Supervisor.LoadMusic(
@@ -609,12 +609,12 @@ PhotoGameTaskView::~PhotoGameTaskView()
     g_Chain.Cut(this->drawChain);
     g_PhotoGameTask = NULL;
 
-    if (((g_Supervisor.flags.raw >> 9) & 1) == 0 &&
+    if (g_Supervisor.flags.resultRestartActive == 0 &&
         g_ReplayUsesArchive == 0)
     {
         g_Supervisor.StopAudio();
     }
-    if (((g_Supervisor.flags.raw >> 9) & 1) != 0)
+    if (g_Supervisor.flags.resultRestartActive != 0)
     {
         g_PhotoScreenFadeColor = 0;
     }

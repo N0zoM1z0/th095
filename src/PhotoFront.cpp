@@ -150,7 +150,7 @@ i32 PhotoFrontManagerView::Initialize()
     vmIds[2] = this->frontAnm->CreateVm(2, 7);
     vmIds[3] = this->frontAnm->CreateVm(3, 7);
 
-    if (((g_Supervisor.flags.raw >> 9) & 1) != 0)
+    if (g_Supervisor.flags.resultRestartActive != 0)
     {
         vmIds[0].SetInterrupt(2);
         vmIds[1].SetInterrupt(2);
