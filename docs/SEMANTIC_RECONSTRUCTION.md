@@ -7129,3 +7129,71 @@ at `+0x408`, `+0x61C`, and `+0x5210` without direct readers and `+0x52CC` with
 write-only xrefs, so they remain Unknown.  Prefer a different owner/lifetime,
 interpreter, resource, or persistent ABI family with a TH095-local producer and
 independent consumer.  Semantic phase state remains active-incomplete.
+
+### SEM-096 — type the shared front-end animation timer
+
+**Scope.** Recover the second shared front-end timer at controller
+`+0x14..+0x1F` and propagate that representation through the production
+scene-select, replay-browser, options, Music Room, and Help views. This batch
+changes representation only; it does not introduce a C++ base class or change
+any target-facing exact source.
+
+**Observed.** Hash-attested TH095 target `SceneSelectControllerView::Update @
+0x00445E80` dispatches the mode-specific update first (`ReplayBrowser @
+0x0044DCA0`, `OptionsMenuView::Update @ 0x0044E4B0`, `MusicRoomView::UpdateMusicRoom
+@ 0x00450FC0`, and `HelpMenuView::UpdateHelpMenu @ 0x00451C80`). After that
+dispatch, the common tail reads dword `this+0x1C` modulo 5, creates script
+`0x1C` when the result is zero, then calls `ZunTimer::Tick @ 0x0041B8A0` on
+both `this+0x08` and `this+0x14`. The second call proves that `+0x14..+0x1F`
+is one complete twelve-byte `ZunTimer`; its canonical layout places
+`previous @ +0x14`, `subFrame @ +0x18`, and `current @ +0x1C`. Existing TH095
+front-end lifecycle evidence independently constructs timers at `+0x08` and
+`+0x14`.
+
+`OptionsMenuView::Update @ 0x0044E4B0` is an independent mode-local consumer:
+when cursor row 5 is selected it reads that same dword `this+0x1C` modulo 40
+before playing sound `0x29`. Thus the old production `frameCounter @ +0x1C`
+is the `current` member of the shared second timer, not a standalone counter;
+the two preceding anonymous dwords are the timer's `previous` and `subFrame`
+storage.
+
+**Production representation.** `SceneSelectControllerView`,
+`SceneSelectUpdateView`, `ReplayBrowserView`, `OptionsMenuView`,
+`MusicRoomView`, and `HelpMenuView` now expose `ZunTimer animationTimer @
++0x14`. The Options sound-cadence reader uses `animationTimer.current`. Each
+mode-specific layout retains cursor offset `+0x20` and all later extents.
+`TH095_MATCH_EXACT` headers and inlines retain their historical spelling and
+layout source.
+
+**Inferred.** The second timer is controller-wide animation cadence state: the
+shared coordinator advances it every front-end tick and consumes its current
+frame for a five-frame VM spawn cadence, while Options independently reuses
+the same current frame for a forty-frame sound cadence. This names the shared
+storage/protocol already present in TH095; it does not imply that every mode
+has a mode-specific animation-timer consumer.
+
+**Unknown / bounded.** This batch does not infer a stronger design-level
+meaning for `previous` or `subFrame` beyond canonical `ZunTimer` semantics,
+does not claim a mode-transition reset rule that was not observed, and does
+not rename `transitionReady` or neighboring front-end unknown storage. No new
+runtime scenario was executed, so runtime scenario coverage remains unchanged.
+
+**Validation.** Target decompilation of `0x00445E80` and `0x0044E4B0` was
+obtained through the registered hash-attested Ghidra provider. Focused cold
+replay of `FrontEndController.cpp`, `SceneSelectUpdate.cpp`,
+`ReplayBrowser.cpp`, `OptionsMenu.cpp`, `MusicRoom.cpp`, and `HelpMenu.cpp`
+passed 15/15 configured exact units with zero private-label refresh. The cold
+aggregate replay reached the deterministic final source only after the prior
+87 sources / 674 units had passed; an independent final-source replay then
+passed `zwave.cpp` 22/22, closing the current transaction at 696/696 exact
+units with zero private-label refresh. Cold whole-product validation compiled
+88/88 pinned VC7.1 Intel i386 COFF objects and linked a verified PE32 Windows
+GUI artifact (`37b6d78acce0a7bbc198bcf0f8fcab0a9520258f9813ae628f47fe284c3e45ce`,
+780288 bytes, four sections). Successful reconstructed linkage is not a
+whole-image exactness claim.
+
+**Next evidence route.** Rotate away from this front-end timer family. Prefer a
+different TH095-local owner/lifetime, interpreter/state protocol, resource
+boundary, persistent ABI, or historical-runtime gap with an independent
+producer and consumer. A negative bounded route remains routing evidence only;
+the semantic phase stays active-incomplete.

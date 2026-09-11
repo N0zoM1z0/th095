@@ -221,7 +221,7 @@ ChainCallbackResult OptionsMenuView::Update()
 
         g_SoundPlayer.bgmVolume = g_OptionsGameConfig.bgmVolume;
         g_SoundPlayer.sfxVolume = g_OptionsGameConfig.sfxVolume;
-        if (this->cursor.GetCurrent() == 5 && this->frameCounter % 40 == 0)
+        if (this->cursor.GetCurrent() == 5 && this->animationTimer.current % 40 == 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_TAKE_PHOTO, 0);
         }

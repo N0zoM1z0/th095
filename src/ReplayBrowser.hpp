@@ -16,7 +16,7 @@ struct ReplayBrowserView
     SceneAnmLoadedView *sceneAnm;
     i32 unknown0004;
     ZunTimer stateTimer;
-    u8 unknown0014[0x0c];
+    ZunTimer animationTimer; // +0x14; advanced by the shared front-end update
     ResultScreenReplayCursor rowCursor;
     ResultScreenReplayCursor columnCursor;
     u8 unknown01d0[0xa20];
@@ -34,6 +34,8 @@ struct ReplayBrowserView
     ChainCallbackResult Update();
 };
 
+typedef char ReplayBrowserAnimationTimerAt14[
+    (offsetof(ReplayBrowserView, animationTimer) == 0x14) ? 1 : -1];
 typedef char ReplayBrowserReplaysAtEA8[
     (offsetof(ReplayBrowserView, replays) == 0xea8) ? 1 : -1];
 typedef char ReplayBrowserStateAt610C[

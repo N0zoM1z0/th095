@@ -15,7 +15,7 @@ struct HelpMenuView
     SceneAnmLoadedView *sceneAnm;
     SceneAnmLoadedView *transitionAnm;
     ZunTimer stateTimer;
-    u8 unknown0014[0x0c];
+    ZunTimer animationTimer; // +0x14; advanced by the shared front-end update
     ResultScreenReplayCursor cursor;
     u8 unknown00f8[0xafc];
     SceneAnmVmIdArray vmIds;
@@ -32,6 +32,8 @@ struct HelpMenuView
     i32 UpdateHelpMenu();
 };
 
+typedef char HelpMenuAnimationTimerAt14[
+    (offsetof(HelpMenuView, animationTimer) == 0x14) ? 1 : -1];
 typedef char HelpMenuSelectionVmsAtE38[
     (offsetof(HelpMenuView, vmIds) + 0x91 * sizeof(SceneAnmVmId) == 0xe38)
         ? 1

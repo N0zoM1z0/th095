@@ -21,7 +21,7 @@ struct MusicRoomView
     SceneAnmLoadedView *sceneAnm;
     SceneAnmLoadedView *transitionAnm;
     ZunTimer stateTimer;
-    u8 unknown0014[0x0c];
+    ZunTimer animationTimer; // +0x14; advanced by the shared front-end update
     ResultScreenReplayCursor cursor;
     u8 unknown00f8[0xafc];
     SceneAnmVmIdArray vmIds;
@@ -42,6 +42,8 @@ struct MusicRoomView
     i32 UpdateMusicRoom();
 };
 
+typedef char MusicRoomAnimationTimerAt14[
+    (offsetof(MusicRoomView, animationTimer) == 0x14) ? 1 : -1];
 typedef char MusicRoomCommentFileAtFFC[
     (offsetof(MusicRoomView, commentFile) == 0xffc) ? 1 : -1];
 typedef char MusicRoomTitlesAt1000[

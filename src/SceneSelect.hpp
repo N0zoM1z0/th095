@@ -126,7 +126,9 @@ struct ScenePreviewTextSourcesView
 struct SceneSelectControllerView
 {
     SceneAnmLoadedView *sceneAnm;
-    u8 unknown0004[0x1c];
+    SceneAnmLoadedView *transitionAnm;
+    ZunTimer stateTimer;
+    ZunTimer animationTimer;
     i32 selectedGroup;
     u8 unknown0024[0x1ac];
     SceneGroupCursorView groupCursors[12];
@@ -199,6 +201,9 @@ struct SceneSelectControllerView
     char *ResolveSceneText(i32 textId, i32 column, i32 argument1,
                            i32 argument2);
 };
+
+typedef char SceneSelectAnimationTimerAt14[
+    (offsetof(SceneSelectControllerView, animationTimer) == 0x14) ? 1 : -1];
 
 typedef ResultSaveDataView SceneSaveDataView;
 

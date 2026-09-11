@@ -51,7 +51,7 @@ struct SceneSelectUpdateView
     SceneAnmLoadedView *sceneAnm;
     u8 unknown0004[4];
     ZunTimer stateTimer;
-    u8 unknown0014[0x0c];
+    ZunTimer animationTimer; // +0x14; advanced by the shared front-end update
     ResultScreenReplayCursor groupCursor;
     u8 unknown00f8[0xd8];
     ResultScreenReplayCursor sceneCursors[12];
@@ -96,6 +96,8 @@ struct SceneSelectUpdateView
     i32 pendingSecondarySize[3];
 };
 
+typedef char SceneSelectUpdateAnimationTimerAt14[
+    (offsetof(SceneSelectUpdateView, animationTimer) == 0x14) ? 1 : -1];
 typedef char SceneSelectUpdateGroupCursorAt20[
     (offsetof(SceneSelectUpdateView, groupCursor) == 0x20) ? 1 : -1];
 typedef char SceneSelectUpdateSceneCursorsAt1D0[

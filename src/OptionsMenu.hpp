@@ -42,9 +42,7 @@ struct OptionsMenuView
     SceneAnmLoadedView *sceneAnm;
     SceneAnmLoadedView *transitionAnm;
     ZunTimer stateTimer;
-    i32 unknown0014;
-    i32 unknown0018;
-    i32 frameCounter;
+    ZunTimer animationTimer; // +0x14; current is the menu animation frame
     ResultScreenReplayCursor cursor;
     u8 unknown00f8[0xafc];
     SceneAnmVmIdArray vmIds;
@@ -222,6 +220,8 @@ typedef char OptionsGameConfigWindowedAtAF[
 typedef char OptionsGameConfigVolumesAtB5[
     (offsetof(OptionsGameConfigView, bgmVolume) == 0xb5 &&
      offsetof(OptionsGameConfigView, sfxVolume) == 0xb6) ? 1 : -1];
+typedef char OptionsMenuAnimationTimerAt14[
+    (offsetof(OptionsMenuView, animationTimer) == 0x14) ? 1 : -1];
 typedef char OptionsMenuCursorAt20[
     (offsetof(OptionsMenuView, cursor) == 0x20) ? 1 : -1];
 typedef char OptionsMenuVmIdsAtBF4[
