@@ -67,7 +67,10 @@ struct PhotoGameGlobalStateView
 #if defined(TH095_MATCH_EXACT)
             u32 unknown003 : 7;
 #else
-            u32 unknown003 : 6;
+            u32 unknown003 : 2;
+            u32 playerDeathTransitionComplete : 1;
+            u32 photoLimitTransitionComplete : 1;
+            u32 unknown007 : 2;
             u32 photoSoundSuppressed : 1;
 #endif
 #if defined(TH095_MATCH_EXACT)
@@ -928,7 +931,7 @@ i32 PhotoGameUpdateView::Update()
     case 2:
         if (this->completionTimer >= 30)
         {
-            g_PhotoGameGlobalState->flags |= 0x20;
+            g_PhotoGameGlobalState->playerDeathTransitionComplete = 1;
             g_AnmGameSpeed = 1.0f;
         }
         break;
@@ -958,7 +961,7 @@ i32 PhotoGameUpdateView::Update()
         }
         else if (this->completionTimer == 30)
         {
-            g_PhotoGameGlobalState->flags |= 0x40;
+            g_PhotoGameGlobalState->photoLimitTransitionComplete = 1;
         }
         break;
     }

@@ -50,8 +50,8 @@ struct ScreenEffectPhotoGlobalStateView
             unsigned int gameplayLoadActive : 1;
             unsigned int flag3 : 1;
             unsigned int flag4 : 1;
-            unsigned int flag5 : 1;
-            unsigned int flag6 : 1;
+            unsigned int playerDeathTransitionComplete : 1;
+            unsigned int photoLimitTransitionComplete : 1;
             unsigned int remaining : 25;
         };
     };
@@ -282,8 +282,8 @@ int ScreenEffect::CalcShake(ScreenEffect *screenEffect)
                                    g_PhotoGlobalState->gameplayLoadActive) != 0 ||
             g_PhotoGlobalState->capturedPhotoActive != 0 ||
             g_PhotoGlobalState->flag4 != 0 ||
-            g_PhotoGlobalState->flag5 != 0 ||
-            g_PhotoGlobalState->flag6 != 0)
+            g_PhotoGlobalState->playerDeathTransitionComplete != 0 ||
+            g_PhotoGlobalState->photoLimitTransitionComplete != 0)
             return 1;
     }
     else
@@ -343,8 +343,8 @@ int ScreenEffect::CalcShakeEnvelope(ScreenEffect *screenEffect)
                                    g_PhotoGlobalState->gameplayLoadActive) != 0 ||
             g_PhotoGlobalState->capturedPhotoActive != 0 ||
             g_PhotoGlobalState->flag4 != 0 ||
-            g_PhotoGlobalState->flag5 != 0 ||
-            g_PhotoGlobalState->flag6 != 0)
+            g_PhotoGlobalState->playerDeathTransitionComplete != 0 ||
+            g_PhotoGlobalState->photoLimitTransitionComplete != 0)
             return 1;
     }
     else

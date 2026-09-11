@@ -40,7 +40,24 @@ struct PhotoGameTaskView
     PhotoEffectManagerView *lasers;          // +0x024
     ZunTimer stageTimer;                     // +0x028
     GameConfiguration runtimeConfig;        // +0x034
-    u32 flags;                               // +0x0fc
+    union
+    {
+        u32 flags;                           // +0x0fc
+        struct
+        {
+            u32 captureActive : 1;
+            u32 capturedPhotoActive : 1;
+            u32 gameplayLoadActive : 1;
+            u32 unknownFlag3 : 1;
+            u32 unknownFlag4 : 1;
+            u32 playerDeathTransitionComplete : 1;
+            u32 photoLimitTransitionComplete : 1;
+            u32 unknownFlags7_8 : 2;
+            u32 photoSoundSuppressed : 1;
+            u32 photoTransitionActive : 1;
+            u32 unknownFlags11_31 : 21;
+        };
+    };
     i32 bestShotIndex;                       // +0x100
     PhotoCompletionStateTaskView completion; // +0x104
     i32 score;                               // +0x114
@@ -65,6 +82,8 @@ typedef char PhotoGameTaskSizeIs124[
     (sizeof(PhotoGameTaskView) == 0x124) ? 1 : -1];
 typedef char PhotoGameTaskConfigAt34[
     (offsetof(PhotoGameTaskView, runtimeConfig) == 0x34) ? 1 : -1];
+typedef char PhotoGameTaskFlagsAtFC[
+    (offsetof(PhotoGameTaskView, flags) == 0xfc) ? 1 : -1];
 typedef char PhotoGameTaskCompletionAt104[
     (offsetof(PhotoGameTaskView, completion) == 0x104) ? 1 : -1];
 typedef char PhotoGameTaskCompletionTimerAt108[

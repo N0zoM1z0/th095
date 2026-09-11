@@ -235,15 +235,15 @@ i32 PhotoGameTaskView::Update()
     if (g_ReplayUsesArchive != 0 &&
         ((RuntimeInputCurrent() & TH_BUTTON_DEMO_INTERRUPT) != 0 ||
          ((this->flags >> 4) & 1) != 0 ||
-         ((this->flags >> 5) & 1) != 0 ||
-         ((this->flags >> 6) & 1) != 0))
+         this->playerDeathTransitionComplete != 0 ||
+         this->photoLimitTransitionComplete != 0))
     {
         g_PhotoNextState = 2;
     }
 
     if (((this->flags >> 4) & 1) != 0)
     {
-        if (((this->flags >> 6) & 1) != 0)
+        if (this->photoLimitTransitionComplete != 0)
         {
             for (locals.i = 0;
                  locals.i < g_PhotoGameRuntime->photoCounter;
@@ -258,12 +258,12 @@ i32 PhotoGameTaskView::Update()
         return 3;
     }
 
-    if (((this->flags >> 5) & 1) != 0)
+    if (this->playerDeathTransitionComplete != 0)
     {
         return 3;
     }
 
-    if (((this->flags >> 6) & 1) != 0)
+    if (this->photoLimitTransitionComplete != 0)
     {
         for (locals.j = 0;
              locals.j < g_PhotoGameRuntime->photoCounter;

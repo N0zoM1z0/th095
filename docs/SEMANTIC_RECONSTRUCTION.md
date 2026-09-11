@@ -6718,3 +6718,109 @@ Prefer a bounded flags/state, persistent/ABI, resource-lifetime, or other owner
 family with a TH095-local producer plus an independent consumer; keep write-only
 or read-only neighboring fields Unknown rather than extending this protocol by
 adjacency.  The semantic phase remains active-incomplete.
+
+### SEM-092: recover photo-game completion signals
+
+Scope: finish the recovered dirty transaction for shared photo task/global-state
+`flags @ +0xFC` bits 5 and 6.  The live worktree already had a coherent partial
+rename across `PhotoGame.cpp`, `PhotoGameTask.cpp`, `PhotoGameTask.hpp`, and
+`ScreenEffect.cpp`; recovery review classified those four tracked paths as
+recoverable current work before any new batch was selected.  This batch verifies
+the two bits independently from TH095 target behavior, gives the canonical owner
+a production bitfield view, and leaves neighboring unproved bits unknown.
+
+Observed TH095-local evidence:
+
+- `PhotoGameUpdateView::Die @ 0x004306D0` enters photo-game mode 2, resets the
+  shared completion timer, creates the death VMs, optionally plays sound 4, and
+  slows game speed to 0.5.  Target-attested `PhotoGameUpdateView::Update @
+  0x0042FF60` tests that mode's timer and, once it reaches 30 frames, sets
+  global-state `+0xFC` bit `0x20` and restores game speed to 1.0.
+- `PhotoCameraState::TakePhoto @ 0x00432D10` enters photo-game mode 3 and resets
+  the same completion timer when `photoIndex >= photoLimit`.  Repository-wide
+  production search finds this as the sole represented `PhotoGame` mode-3
+  publication.  Target `Update @ 0x0042FF60` performs the mode-3 teardown at
+  frames 4 and 15 and sets global-state `+0xFC` bit `0x40` exactly at frame 30.
+- `PhotoGameTaskView::Update @ 0x00418100` independently reads both bits.  Bit 5
+  returns task result 3 directly.  Bit 6 retires the captured-photo VMs and then
+  returns result 3.  While archive-backed replay is active, either bit also
+  requests normal photo-game state 2, alongside the input interrupt and the
+  separate unresolved bit-4 condition.
+- `ScreenEffect::CalcShake @ 0x004372D0` and
+  `ScreenEffect::CalcShakeEnvelope @ 0x004374B0` independently require both bit
+  5 and bit 6 to be clear before producing screen shake.  They are consumers of
+  the completion publications, not additional producers.
+
+Corroborated production representation:
+
+- Canonical `PhotoGameTaskView` now exposes `flags @ +0xFC` as a union retaining
+  the raw dword plus named production bits.  Existing committed meanings for
+  bits 0/1/2 remain `captureActive`, `capturedPhotoActive`, and
+  `gameplayLoadActive`; bit 5 is `playerDeathTransitionComplete`; bit 6 is
+  `photoLimitTransitionComplete`; previously established bits 9/10 remain
+  `photoSoundSuppressed` and `photoTransitionActive` rather than being hidden
+  inside an anonymous remainder.
+- `PhotoGame.cpp` publishes the two new names only in the production view while
+  its `TH095_MATCH_EXACT` layout retains the historical unknown grouping and raw
+  mask expressions.  `PhotoGameTask.cpp` consumes the canonical owner names,
+  and the production-only `ScreenEffectPhotoGlobalStateView` uses the same bit
+  names for its shake gate.
+- `PhotoGameTaskView` remains `0x124` bytes, with `flags` asserted at `+0xFC` and
+  the existing completion/timer/Chain/replay fields at their prior offsets.
+
+Inferred meaning:
+
+- `playerDeathTransitionComplete` means the 30-frame visual/game-speed death
+  transition started by `Die` has reached the point where the outer task may
+  finish.  It is deliberately not named as a generic `playerDead` bit: the
+  producer is delayed by 30 frames after mode 2 begins.
+- `photoLimitTransitionComplete` means the 30-frame shutdown entered when a
+  successful capture reaches the configured photo limit has completed.  The
+  name is narrower than generic stage completion because the observed mode-3
+  producer is the `photoIndex >= photoLimit` path.
+
+Unknown / deliberately deferred:
+
+- The original retail field identifiers are unknown.  Bit 4 remains unresolved,
+  as do bits 3, 7, 8, and 11..31 unless established by other committed batches.
+  Bit 8 in particular is not renamed merely because existing task loading code
+  writes `0x100`.
+- The shake consumers prove that the two completion states suppress screen
+  shake; they do not establish that shake suppression is the purpose of either
+  bit.
+- No runtime scenario, portable-platform behavior, whole-image byte identity,
+  or semantic-phase completion is claimed by this batch.
+
+Validation on the final source state:
+
+- recovery first exposed a production-only syntax defect in the partial dirty
+  transaction: replacing the historical bit-6 expression had dropped the
+  outer closing parenthesis of the archive-replay gate.  The defect was repaired
+  before acceptance; focused `PhotoGameTask.cpp` plus `FrontEndController.cpp`
+  replay then passed 14/14 configured exact units with zero private-label
+  refreshes;
+- because `PhotoGameTask.hpp` is a shared owner/layout header, the final cold
+  exact gate covered all 88 manifest sources in four durable 174-unit
+  partitions: 696/696 configured units exact, zero private-label refreshes;
+- `scripts/build-whole.py --compile-only` cold-compiled all 88 production
+  translation units with pinned VC7.1 as Intel i386 COFF and `--link-only`
+  linked and verified a PE32 Windows GUI executable after the canonical owner
+  bitfield was completed.  The final reconstructed artifact SHA-256 is
+  `28959c33c60e7eb1b107b8f5ce4b7ddc0678f262fca0dedac2a1c379f2f512a6`.
+  Product closure is not a target whole-image exactness or runtime claim.
+
+Recovery/artifact state:
+
+- the four pre-existing untracked paths (`EnemyManagerUpdate.i`,
+  `config/runtime-scenarios.json`, `droid.resume.txt`, and
+  `scripts/runtime-diff.py`) remain excluded from staging and are not evidence
+  for this batch;
+- no `.analysis/gpt-web/` scratch root or new analysis export was created.  The
+  pre-existing legacy analysis footprint remains untouched.
+
+Next evidence route: rotate away from the photo-completion flag family after
+checkpoint.  Prefer a bounded resource-lifetime, sound/state, persistent/ABI,
+or interpreter protocol with a TH095-local producer and independent consumer.
+Keep bit 4 and the remaining unnamed photo-task flags Unknown unless new target
+local evidence closes their protocol.  Semantic phase state remains
+active-incomplete.
