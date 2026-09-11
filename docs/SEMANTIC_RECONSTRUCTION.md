@@ -6089,3 +6089,36 @@ Validation on the active source state:
 - no shared header or ABI extent changed, so repository-wide exact/product gates are deferred to the next committed campaign milestone.
 
 Next evidence route: rotate away from ANM texture-entry stride storage. Prefer another bounded state, resource lifetime, persistent-format, sound/replay, or interpreter protocol with at least one TH095-local producer and an independent consumer; do not reopen the unconsumed Bullet `+0x334/+0x350/+0x356` slots without new evidence.
+
+### SEM-083: name the ANM VM id allocator cursor
+
+Scope: recover the unfinished `AnmManager +0x383148` owner-field transaction found by the worktree recovery gate. The pre-existing dirty edit had already identified the slot as `nextVmId` but represented it as a non-trivial `AnmVmId` member. Current TH095-local evidence supports the name/role but not that object type, so the recovered batch narrows production storage to a plain 32-bit allocator value while `TH095_MATCH_EXACT` retains the historical `unknown383148` spelling. VM layout, handle ABI, intrusive-list behavior, and allocation control flow are unchanged.
+
+Observed TH095-local evidence:
+
+- Target-attested `AnmManagerVmLifecycleView::AddVm @ 0x00444D10` reads and writes manager dword `+0x383148`: it increments the value, increments once more if wraparound produced zero, copies the resulting nonzero value into the new VM's id at `+0x10`, and returns the same four-byte value as the VM handle.
+- Target-attested `AnmManager::GetVm @ 0x00445110` rejects handle zero and walks the intrusive VM list, comparing each node's `id @ +0x10` with the requested four-byte handle. This independently consumes the identifiers produced by the allocator cursor.
+- Target-attested `AnmManager::AnmManager @ 0x00441DC0` zeroes the complete `0x38314C` manager storage after constructing the embedded VM array, so the allocator cursor begins at zero before the first `AddVm` advances it to a nonzero id.
+- The canonical exact lifecycle source already models the same manager slot at `+0x383148` as `AnmManagerVmLifecycleView::nextVmId`; its exact `AddVm` unit preserves the target's increment/skip-zero/assign/return sequence.
+
+Corroborated source interpretation:
+
+- Production `AnmManager` now exposes `i32 nextVmId @ +0x383148` and asserts the offset. This propagates the already recovered lifecycle meaning to the canonical owner instead of leaving the tail dword anonymous.
+- The recovery edit's initial `AnmVmId nextVmId` form was deliberately narrowed. `AnmVmId` is a non-trivial handle wrapper with a default constructor and handle-resolution methods, while the manager slot is allocator state that target code mutates arithmetically before materializing handles. A POD scalar therefore preserves the observed ownership boundary without adding a fictitious handle-object lifetime to `AnmManager`.
+
+Inferred meaning:
+
+- `nextVmId` is the persistent allocator cursor used to generate monotonically advancing nonzero VM identifiers. Its stored value is the most recently allocated id; the next allocation increments it before assignment, with zero reserved as the null handle.
+
+Unknown / deliberately deferred:
+
+- This batch does not infer wraparound policy beyond the observed skip-zero step, lifetime guarantees for stale ids after extreme wraparound, or the original retail member spelling.
+- It does not change `AnmVmId`, `AnmVmLifecycleView::Id`, VM `id @ +0x10`, intrusive-list storage, or any creation/deletion behavior. No fresh runtime scenario is claimed.
+
+Validation on the recovered source state:
+
+- the directly affected owner/lifecycle surface replayed 40/40 configured units exact with zero private-label refreshes: `AnmManager.cpp` 14/14, `AnmVmId.cpp` 9/9, and `AnmVmLifecycle.cpp` 17/17;
+- because `AnmManager.hpp` is shared, the cold aggregate was closed through eight mutually exclusive manifest-source partitions of 87 units each, covering all 88 sources and all 696 configured units: 696/696 exact with zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units to Intel i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows PE. This is production compile/link closure, not target whole-image byte exactness or runtime validation.
+
+Next evidence route: rotate away from ANM VM id allocation. Prefer a bounded persistent-format, resource lifetime, sound/state, Bullet, or independent protocol family with a TH095-local producer plus an independent consumer; do not reopen this allocator unless contradictory target evidence appears.

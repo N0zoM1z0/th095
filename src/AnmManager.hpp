@@ -581,7 +581,11 @@ struct AnmManager
     AnmVmListNode *vmListHead;               // +0x381814
     AnmVmListNode *vmListTail;               // +0x381818
     AnmVm preallocatedVms[9];                // +0x38181c
+#ifdef TH095_MATCH_EXACT
     u32 unknown383148;
+#else
+    i32 nextVmId;                            // +0x383148
+#endif
 
     AnmManager();
     ~AnmManager();
@@ -676,6 +680,10 @@ typedef char AnmManagerVerticesAt1774[(offsetof(AnmManager, untexturedVertices) 
 typedef char AnmManagerVertexBufferAt17C8[(offsetof(AnmManager, vertexBuffer) == 0x17c8) ? 1 : -1];
 typedef char AnmManagerVmListAt381814[(offsetof(AnmManager, vmListHead) == 0x381814) ? 1 : -1];
 typedef char AnmManagerPreallocatedAt38181C[(offsetof(AnmManager, preallocatedVms) == 0x38181c) ? 1 : -1];
+#ifndef TH095_MATCH_EXACT
+typedef char AnmManagerNextVmIdAt383148[
+    (offsetof(AnmManager, nextVmId) == 0x383148) ? 1 : -1];
+#endif
 typedef char AnmManagerSizeIs38314C[(sizeof(AnmManager) == 0x38314c) ? 1 : -1];
 
 extern VertexTex1DiffuseXyzrhw g_AnmTexturedVertices[4];
