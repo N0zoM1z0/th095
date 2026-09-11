@@ -28,6 +28,12 @@
 namespace th095
 {
 
+static __forceinline tm *ReplayTimestampToLocalTime(i32 timestamp)
+{
+    time_t timeValue = (time_t)timestamp;
+    return localtime(&timeValue);
+}
+
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 #define g_ResultMenuInput (RuntimeResultMenuInput())
@@ -518,8 +524,8 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
 static __forceinline void InitializeReplayNormalTailPhase()
 {
     u8 compilerStorage[0xa0];
-    time(reinterpret_cast<time_t *>(
-        &g_ReplayManager->activeInputData->timestamp));
+    g_ReplayManager->activeInputData->timestamp =
+        (i32)time(NULL);
     g_ReplayManager->activeInputData->score =
         g_ResultScreenGlobalState->currentScore;
 }
@@ -681,8 +687,8 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
     }
     resultScreen->replayCursor.wraps = 1;
     resultScreen->PrepareBestShot();
-    time(reinterpret_cast<time_t *>(
-        &g_ReplayManager->activeInputData->timestamp));
+    g_ReplayManager->activeInputData->timestamp =
+        (i32)time(NULL);
     g_ReplayManager->activeInputData->score =
         g_ResultScreenGlobalState->currentScore;
 }
@@ -1671,10 +1677,9 @@ ChainCallbackResult ResultScreen::Draw()
             }
             else
             {
-                replayListTimestamp = localtime(
-                    reinterpret_cast<time_t *>(
-                        &this->replays[replayListIndex]
-                             ->activeInputData->timestamp));
+                replayListTimestamp = ReplayTimestampToLocalTime(
+                    this->replays[replayListIndex]
+                        ->activeInputData->timestamp);
 
                 if (this->replays[replayListIndex]->activeInputData->level == 10)
                 {
@@ -1725,9 +1730,8 @@ ChainCallbackResult ResultScreen::Draw()
         replayNamePosition.x = 144.0f;
         g_AsciiManager.color.color = 0xffffffff;
         replayIndex = this->replayCursor.current;
-        replayNameTimestamp = localtime(
-            reinterpret_cast<time_t *>(
-                &g_ReplayManager->activeInputData->timestamp));
+        replayNameTimestamp = ReplayTimestampToLocalTime(
+            g_ReplayManager->activeInputData->timestamp);
         if (g_SelectedScene->group == 10)
         {
             strcpy(replayNameLevelText, "EX");

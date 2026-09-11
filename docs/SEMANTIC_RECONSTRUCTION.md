@@ -5028,3 +5028,86 @@ Next evidence route: audit replay timestamp storage and serialization from the
 live input-data owner through replay save/load, browser metadata, and all
 `_time`/`_localtime` consumers.  Keep replay ABI conclusions separate from the
 score-file `SC` protocol recovered here.
+
+
+### SEM-068: separate replay wire timestamps from CRT time storage
+
+The replay timestamp route named by SEM-067 is an independent persistent
+protocol, not another view of the score-file `SC` record.  Its wire type was
+already fixed-width in source, but production still relied on the historical
+Win32 CRT having the same width by aliasing `i32` storage through `time_t *`.
+TH095-local serialization, producers, and UI consumers close that boundary.
+
+Observed TH095-local evidence:
+
+- `ReplayInputData` is a fixed `0xf8`-byte header.  Its timestamp is an `i32` at
+  `+0x10`; input and FPS stream lengths are at `+0xf0/+0xf4`.
+- `ReplayManager::WriteReplay @ 0x00434a90` copies the complete `0xf8` input
+  header followed by the input stream and FPS stream into one buffer, compresses
+  and encrypts that payload, and writes it after the `0x24`-byte replay file
+  header.  The timestamp is therefore part of the persistent compressed replay
+  protocol rather than transient UI state.
+- The same writer passes input-data `+0x10` to `_localtime` when generating the
+  appended type-0 `USER` metadata block and formats the result as a `Date`
+  line.  The text metadata and compressed payload therefore describe the same
+  recorded timestamp.
+- `InitializeReplayResultScreen @ 0x004288b0` and
+  `InitializePhotoResultScreen @ 0x00428e90` both call the target's historical
+  `__time32` entry with `activeInputData + 0x10`.  They are independent replay
+  timestamp producers for normal replay-result and photo-result flows.
+- `ResultScreen::Draw @ 0x00429c80` reads replay-input `+0x10` through
+  `_localtime` in both the replay-slot list and replay-name registration UI.
+- `SceneSelectControllerView::Draw @ 0x00452630` independently converts the
+  same field for both numbered and user replay-browser pages.
+- The current Factory-registered Ghidra provider re-attested the canonical
+  TH095 1.02a target at SHA-256
+  `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`
+  before those producer/consumer functions were re-decompiled.
+
+Corroborated source interpretation:
+
+- `ReplayInputData::timestamp` remains `i32`.  No persistent layout change is
+  required: the source already described the replay wire width correctly.
+- Production result-screen timestamp producers now assign `(i32)time(NULL)` to
+  the field instead of presenting four-byte replay storage to the CRT as a
+  `time_t *`.
+- Production replay metadata and browser consumers convert the stored `i32`
+  value to a local `time_t` before calling `localtime` through a bounded
+  `ReplayTimestampToLocalTime` helper in each owning translation unit.
+- `ReplayManagerExact.inl`, `ResultScreenExact.inl`, and
+  `SceneControllerDrawExact.inl` retain the historical direct pointer casts.
+  Exact-facing compiler source shape and the replay wire layout are unchanged.
+
+Inferred meaning:
+
+- Replay input timestamp `+0x10` is a fixed 32-bit persisted epoch-time scalar.
+  The original executable interprets it through the VC7.1 Win32 CRT's 32-bit
+  time functions, but that CRT representation is a boundary behavior rather
+  than the storage type of the replay protocol itself.
+
+Unknown / deliberately deferred:
+
+- This reconstruction does not alter the historical timestamp range or define
+  post-2038 behavior.  It only separates persistent representation from CRT
+  conversion in production source.
+- The two appended `USER` blocks are written after the compressed payload; this
+  batch does not infer whether external tools depend on every byte of their
+  Japanese text or on fields beyond the observed writer contract.
+- Replay-file header bytes `+0x06..+0x0b` and `+0x14..+0x1b`, plus the exact
+  malformed-header validation policy, remain a separate persistent-format
+  audit rather than being guessed from their zero-initialized record-mode state.
+
+Validation on the active source state:
+
+- focused canonical replay covered all 39 configured units owned by
+  `ReplayManager.cpp`, `ResultScreen.cpp`, and `SceneControllerDraw.cpp`:
+  39/39 exact with zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units as
+  i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows
+  executable.  This is production compile/link closure for this source state,
+  not whole-image byte exactness or runtime validation.
+
+Next evidence route: audit the replay file-header validation boundary, including
+which of the `0x24` header fields are actually checked before allocation,
+decryption, and decompression, and keep unknown header bytes unknown unless a
+TH095-local producer or consumer resolves them.

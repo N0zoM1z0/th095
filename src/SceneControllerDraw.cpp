@@ -14,6 +14,12 @@
 namespace th095
 {
 
+static __forceinline tm *ReplayTimestampToLocalTime(i32 timestamp)
+{
+    time_t timeValue = (time_t)timestamp;
+    return localtime(&timeValue);
+}
+
 struct FrontEndAsciiManagerView
 {
     u8 unknown0000[0x806c];
@@ -219,8 +225,8 @@ ChainCallbackResult SceneSelectControllerView::Draw()
                 }
                 else
                 {
-                    tm *timestamp = localtime(
-                        reinterpret_cast<time_t *>(&view->replays[replayIndex]->activeInputData->timestamp));
+                    tm *timestamp = ReplayTimestampToLocalTime(
+                        view->replays[replayIndex]->activeInputData->timestamp);
 
 
                     if (view->replays[replayIndex]->activeInputData->level == 10)
@@ -250,8 +256,8 @@ ChainCallbackResult SceneSelectControllerView::Draw()
             }
             else
             {
-                tm *timestamp = localtime(
-                    reinterpret_cast<time_t *>(&view->replays[replayIndex]->activeInputData->timestamp));
+                tm *timestamp = ReplayTimestampToLocalTime(
+                    view->replays[replayIndex]->activeInputData->timestamp);
 
 
                 if (view->replays[replayIndex]->activeInputData->level == 10)

@@ -24,6 +24,12 @@
 namespace th095
 {
 
+static __forceinline tm *ReplayTimestampToLocalTime(i32 timestamp)
+{
+    time_t timeValue = (time_t)timestamp;
+    return localtime(&timeValue);
+}
+
 #ifndef DIFFBUILD
 ReplayManager *g_ReplayManager = NULL;
 #endif
@@ -349,7 +355,7 @@ ReplayManagerResult ReplayManager::WriteReplay(char *path, char *replayName)
     }
     locals.userDataCursor += sprintf(locals.userDataCursor, "Scene %d\r\n",
                                      locals.inputData->scene + 1);
-    locals.localTime = localtime((time_t *)&locals.inputData->timestamp);
+    locals.localTime = ReplayTimestampToLocalTime(locals.inputData->timestamp);
     locals.userDataCursor += sprintf(
         locals.userDataCursor, "Date %.2d/%.2d/%.2d %.2d:%.2d\r\n",
         locals.localTime->tm_year % 100, locals.localTime->tm_mon + 1,
