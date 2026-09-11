@@ -226,7 +226,7 @@ class SoundPlayer
     DWORD workerThreadId;
     i32 workerStopRequest;
     HWND workerWindow;
-    i32 unconsumedDword522c;
+    i32 initializationComplete;
     void *ownedMusicMetadata[37];
     i32 bgmVolume;
     i32 sfxVolume;

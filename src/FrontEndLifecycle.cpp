@@ -105,7 +105,7 @@ extern u32 g_FrontEndConfigurationFlags;
 // g_Supervisor @ 0x004C4670 places config.options at +0x1E0 (0x004C4850).
 // Exact objects retain their original relocation names through DIFFBUILD.
 #define g_SoundInitializationComplete \
-    (g_SoundPlayer.unconsumedDword522c)
+    (g_SoundPlayer.initializationComplete)
 #define g_MusicArchiveBaseOffset (g_SoundPlayer.bgmFileBaseOffset)
 #define g_FrontEndConfigurationFlags \
     (*reinterpret_cast<u32 *>(&g_Supervisor.config.options))

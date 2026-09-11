@@ -122,7 +122,7 @@ void __fastcall SoundPlayerWorkerThread(SoundPlayer *soundPlayer)
         Sleep(1);
     }
     utils::DebugPrint("SoundInit Thread Finish\n");
-    g_SoundPlayer.unconsumedDword522c = 1;
+    g_SoundPlayer.initializationComplete = 1;
 }
 
 #define bufDesc restartCommandProcessingLocal05

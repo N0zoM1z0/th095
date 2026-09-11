@@ -5308,3 +5308,102 @@ Next evidence route: after checkpoint, rotate again to an owner/lifetime,
 flags/state, sound/resource, or another persistent/ABI family with multiple
 TH095-local producers/consumers; do not use the declining lexical-debt count as
 semantic completion evidence.
+
+
+### SEM-071: name the SoundPlayer initialization completion latch
+
+The post-SEM-070 coverage rotation moved from the ANM resource representation to
+a sound/lifetime boundary.  The lexical debt report was only a router: the
+candidate became actionable because the current production `SoundPlayer` still
+called `+0x522c` `unconsumedDword522c`, while the exact FrontEnd relocation
+already identified target address `0x004ca114` as
+`g_SoundInitializationComplete`.
+
+Observed TH095-local evidence:
+
+- hash-attested Ghidra reports exactly two target references to `0x004ca114`:
+  one WRITE at `0x00437907` and one READ at `0x004458c2`; there are no other
+  target writers or readers in the bounded xref result;
+- `SoundPlayer::Initialize @ 0x00437790` clears the complete 0x52d0-byte object
+  before publishing `workerWindow @ +0x5228` and creating the worker thread, so
+  the latch begins each initialization at zero;
+- `SoundPlayerWorkerThread @ 0x004378d0` initializes DirectSound, waits until
+  `workerStopRequest @ +0x5224` becomes nonzero, emits the finish diagnostic,
+  and performs the sole target write `SoundPlayer+0x522c = 1` immediately
+  before returning;
+- `SoundPlayer::JoinThread @ 0x00437810` changes a zero stop request to `1`,
+  waits for the primary and secondary worker handles, closes them, and clears
+  both handle fields.  Therefore a successful join cannot return before the
+  primary worker has passed through the sole `+0x522c = 1` write;
+- `SoundPlayer::InitSoundBuffers @ 0x00438e10` clears the twelve SFX queue slots,
+  calls `JoinThread`, and only then validates the sound manager/device and
+  duplicates the 47 target SFX buffers;
+- `FrontEndLifecycleView::Initialize @ 0x004456f0` is the sole target reader.
+  When `0x004ca114` is zero it calls `InitSoundBuffers` and then performs the
+  initial BGM/archive selection.  The existing canonical relocation for this
+  read is named `g_SoundInitializationComplete`.
+
+Corroborated source interpretation:
+
+- `SoundPlayer::unconsumedDword522c` is now
+  `SoundPlayer::initializationComplete`; the field remains at the target-proven
+  `+0x522c` position between `workerWindow @ +0x5228` and
+  `ownedMusicMetadata @ +0x5230`;
+- the worker publication and production FrontEnd embedded-field alias now use
+  the semantic member name.  Exact/DIFFBUILD retains the historical standalone
+  relocation identity `g_SoundInitializationComplete`, so no linker alias or
+  replacement storage is introduced;
+- this is a one-way initialization/lifetime latch for the process-lifetime
+  SoundPlayer owner, not a generic thread-running flag: target evidence shows
+  initialization/reset to zero and one terminal write to one, with no observed
+  reset until the next whole-object initialization.
+
+Inferred meaning:
+
+- value zero denotes that the SoundPlayer initialization handoff has not yet
+  completed.  The FrontEnd zero-path drives `InitSoundBuffers`, which joins the
+  worker; the worker publishes one before that join can finish.  Value one
+  therefore records completion of that startup handoff for the current
+  SoundPlayer lifetime.
+
+Unknown / deliberately deferred:
+
+- this batch does not assign meaning to `unconsumedDword5210`,
+  `unconsumedDword61C`, `unconsumedDword04`, the third `i16` in
+  `SoundBufferIdxVolume`, or `unconsumedMetadataBySound`; their evidence is
+  independent and insufficient for promotion here;
+- the third `SoundBufferIdxVolume` word is copied into
+  `unconsumedMetadataBySound` by the two play paths but has no reconstructed
+  downstream read, so its numeric values are not interpreted as priority,
+  cooldown, grouping, or any other guessed sound policy;
+- no runtime scenario is claimed for this naming transaction.  The existing
+  runtime SoundPlayer receipts predate SEM-071 and remain separate state.
+
+Validation on the active source state:
+
+- focused replay of `FrontEndLifecycle.cpp` and `SoundPlayer.cpp` passed 35/35
+  configured exact units with zero private-label refreshes;
+- an initial attempt to add a new `offsetof(initializationComplete) == 0x522c`
+  `C_ASSERT` was rejected by the cold aggregate gate: the added header typedef
+  shifted only VC7.1 private `$L` relocation names in `AnmManager.cpp`.  The
+  assertion was removed rather than refreshing labels.  Replaying
+  `AnmManager.cpp`, `FrontEndLifecycle.cpp`, and `SoundPlayer.cpp` then passed
+  49/49 units with zero refreshes; the adjacent existing offset assertions
+  continue to bound the field structurally without injecting an exact-facing
+  declaration;
+- the monolithic cold aggregate subsequently reached the manifest-tail
+  `zwave.obj`, but the Factory call did not return a terminal receipt.  Four deterministic,
+  mutually exclusive source partitions supplied auditable closure instead:
+  174/174 + 174/174 + 174/174 + 174/174 = 696/696 configured exact units across
+  all 88 sources, with zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units as
+  i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows
+  executable.  This is production compile/link closure, not a whole-image
+  byte-exact or runtime claim;
+- `scripts/ci.py` passed all 43 target-independent tests, tracking remained
+  697 source-present / 696 exact, and `git diff --check` passed.
+
+Next evidence route: after checkpoint, rotate away from this sound latch.  Sample
+a flags/state, canonical owner/lifetime, or persistent/ABI family with multiple
+TH095-local producers/consumers; do not promote the still-unconsumed SoundPlayer
+metadata merely because it is lexically adjacent.
