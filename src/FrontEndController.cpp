@@ -241,6 +241,12 @@ static __forceinline u16 FrontEndDownInputMask()
     return TH_BUTTON_DOWN;
 }
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_FRONT_DEMO_INTERRUPT_MASK 0x160b
+#else
+#define TH095_FRONT_DEMO_INTERRUPT_MASK TH_BUTTON_DEMO_INTERRUPT
+#endif
+
 static __forceinline i32 FrontEndHelpLoadSnapshot()
 {
     i32 active = g_HelpLoadActive;
@@ -715,7 +721,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
         this->UpdateMainMenuSelection();
     }
 
-    if (FrontEndInputAnd(g_FrontEndCurrentInput, 0x160b) != 0)
+    if (FrontEndInputAnd(g_FrontEndCurrentInput, TH095_FRONT_DEMO_INTERRUPT_MASK) != 0)
     {
         g_FrontEndUiState = 0;
     }

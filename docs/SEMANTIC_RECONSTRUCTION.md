@@ -5927,3 +5927,35 @@ Prefer another bounded persistent-format, resource-owner/lifetime, front-end,
 or independent protocol family with multiple TH095-local producers and
 consumers. Remaining unknown bits in `+0x2BF4` are not a default continuation;
 require new evidence before reopening them.
+
+### SEM-078: name the shared demo-interrupt input mask
+
+The recovery gate after SEM-077 found an unfinished three-file input transaction rather than a clean worktree. `Global.hpp`, `FrontEndController.cpp`, and `PhotoGameTask.cpp` were already replacing the misleading historical `TH_BUTTON_WRONG_CHEATCODE` spelling and two raw `0x160B` uses with one production `TH_BUTTON_DEMO_INTERRUPT` aggregate while preserving the exact-facing front-end literal. The transaction was recovered first and validated against current TH095-local target behavior before being accepted.
+
+Observed TH095-local evidence:
+
+- Target-attested `SceneSelectControllerView::UpdateMainMenu @ 0x00446A50` tests `ReplayInputSource::currentInput @ 0x004BE218` with `0x160B`. A zero result increments the title idle counter; once it exceeds 1,799 frames the target resets the counter, enables archive-backed replay, selects `demo/demo%d.rpy`, advances the three-entry demo index, and requests the replay state. Any masked input instead resets the idle counter immediately.
+- Target-attested `PhotoGameTaskView::Update @ 0x00418100` reads the same current-input word with the same `0x160B` mask while archive-backed replay is active. A masked input, or any of the adjacent task-completion flags, requests photo-game state 2 and therefore interrupts the running demo/replay path.
+- The TH095 `TouhouButton` layout makes `0x160B` exactly `Shoot | Bomb | Menu | Q | S | Enter`. Controller, Win32-keyboard, and DirectInput-keyboard producers independently populate those named bits; direction, Focus, Skip, Home, D, Reset, and L are deliberately absent from this aggregate.
+
+Corroborated source interpretation:
+
+- Production now names the aggregate `TH_BUTTON_DEMO_INTERRUPT`. The title consumer uses a source-local compatibility macro so `TH095_MATCH_EXACT` / `DIFFBUILD` retain the historical numeric `0x160B` source shape; `PhotoGameTaskExact.inl` also remains numeric.
+- This supersedes SEM-002 / INPUT-010's earlier statement that the selected `0x160B` bits were unclassified. SEM-002's storage-owner conclusion remains valid: the word is still `ReplayInputSource::currentInput`, not a photo-specific button object.
+
+Inferred meaning:
+
+- `demo interrupt` is the narrowest shared protocol name supported by the two independent target consumers: the mask both prevents/defers title idle-demo launch and interrupts the archive-backed demo once it is running. The name describes the aggregate protocol, not a new physical input bit.
+
+Unknown / deliberately deferred:
+
+- The target evidence does not explain why this exact six-button subset was chosen instead of all non-directional inputs. The individual button meanings remain their existing TH095 input meanings; SEM-078 does not infer an additional cheat-code protocol.
+- No new runtime scenario is claimed. The pre-existing untracked runtime-scenario files remain outside this recovered transaction and were neither executed nor staged.
+
+Validation on the recovered source state:
+
+- the directly affected exact surface replayed 14/14 configured units with zero private-label refreshes: `FrontEndController.cpp` 4/4 and `PhotoGameTask.cpp` 10/10;
+- because the recovered transaction changes shared `Global.hpp`, the cold aggregate was closed through eight mutually exclusive manifest-source partitions, each containing 87 configured units, for 696/696 exact with zero private-label refreshes;
+- the reconstructed Windows i386 product was cold-compiled in the repository's two production profiles: all 88 translation units produced Intel i386 COFF with the pinned VC7.1 toolchain, and the resulting objects linked and verified as the reconstructed Windows PE. This is production compile/link closure, not target whole-image byte exactness or fresh runtime validation.
+
+Next evidence route: after checkpoint, rotate away from demo/replay input. Prefer a bounded persistent-format, resource-owner/lifetime, front-end, or independent state protocol with multiple TH095-local producers and consumers; do not reopen the `0x160B` mask without contradictory target evidence.
