@@ -22,9 +22,20 @@ struct AnmTextureHeaderView
 typedef char AnmTextureHeaderViewSizeIs10[
     (sizeof(AnmTextureHeaderView) == 0x10) ? 1 : -1];
 
+// Scene texture upload only consumes the embedded-texture pointer from the
+// serialized 0x40-byte ANM entry.  Keep the unconsumed prefix opaque here.
+struct SceneAnmRawEntryView
+{
+    u8 unconsumed000[0x30];
+    u32 textureOffset;
+};
+
+typedef char SceneAnmRawEntryTextureOffsetAt30[
+    (offsetof(SceneAnmRawEntryView, textureOffset) == 0x30) ? 1 : -1];
+
 struct SceneTextureLoadLocals
 {
-    u8 *rawEntry;
+    SceneAnmRawEntryView *rawEntry;
     AnmTextureHeaderView *header;
     RECT sourceRect;
     IDirect3DSurface8 *surface;
@@ -340,17 +351,18 @@ i32 AnmManager::LoadTexture(SceneTextureEntryView *entry, u8 *data,
     }
     else
     {
-        locals.rawEntry = data;
+        locals.rawEntry = reinterpret_cast<SceneAnmRawEntryView *>(data);
         locals.header = reinterpret_cast<AnmTextureHeaderView *>(
-            locals.rawEntry + reinterpret_cast<u32 *>(locals.rawEntry)[12]);
+            reinterpret_cast<u8 *>(locals.rawEntry) +
+            locals.rawEntry->textureOffset);
         locals.sourceRect.left = 0;
         locals.sourceRect.top = 0;
         locals.sourceRect.right = locals.header->width;
         locals.sourceRect.bottom = locals.header->height;
         D3DXLoadSurfaceFromMemory(
             locals.surface, NULL, NULL,
-            locals.rawEntry + reinterpret_cast<u32 *>(locals.rawEntry)[12] +
-                sizeof(AnmTextureHeaderView),
+            reinterpret_cast<u8 *>(locals.rawEntry) +
+                locals.rawEntry->textureOffset + sizeof(AnmTextureHeaderView),
             g_TextureFormatD3D8Mapping[locals.header->format],
             g_TextureFormatBytesPerPixel[locals.header->format] *
                 locals.header->width,
@@ -382,7 +394,7 @@ i32 AnmManager::LoadTextureRegion(SceneTextureEntryView *entry,
     RECT regionSourceRect;
     RECT regionDataDestinationRect;
     AnmTextureHeaderView *regionHeader;
-    u8 *regionRawEntry;
+    SceneAnmRawEntryView *regionRawEntry;
 
     format = GetAnmFormat(format);
     entry->rawDataSize = size;
@@ -402,9 +414,10 @@ i32 AnmManager::LoadTextureRegion(SceneTextureEntryView *entry,
     }
     else
     {
-        regionRawEntry = data;
+        regionRawEntry = reinterpret_cast<SceneAnmRawEntryView *>(data);
         regionHeader = reinterpret_cast<AnmTextureHeaderView *>(
-            regionRawEntry + reinterpret_cast<u32 *>(regionRawEntry)[12]);
+            reinterpret_cast<u8 *>(regionRawEntry) +
+            regionRawEntry->textureOffset);
         regionSourceRect.left = 0;
         regionSourceRect.top = 0;
         regionSourceRect.right = regionHeader->width;
@@ -415,8 +428,8 @@ i32 AnmManager::LoadTextureRegion(SceneTextureEntryView *entry,
         regionDataDestinationRect.bottom = regionHeader->height + top;
         D3DXLoadSurfaceFromMemory(
             regionSurface, NULL, &regionDataDestinationRect,
-            regionRawEntry + reinterpret_cast<u32 *>(regionRawEntry)[12] +
-                sizeof(AnmTextureHeaderView),
+            reinterpret_cast<u8 *>(regionRawEntry) +
+                regionRawEntry->textureOffset + sizeof(AnmTextureHeaderView),
             g_TextureFormatD3D8Mapping[regionHeader->format],
             g_TextureFormatBytesPerPixel[regionHeader->format] *
                 regionHeader->width,

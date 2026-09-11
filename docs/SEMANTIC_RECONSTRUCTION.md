@@ -5228,3 +5228,83 @@ Next evidence route: rotate away from the replay container after checkpoint and
 adversarially sample another persistent/ABI or owner surface with multiple
 TH095-local consumers; use the semantic-debt router only as a heuristic and
 prefer a bounded family not already covered by SEM-063 through SEM-069.
+
+
+### SEM-070: name the embedded ANM texture payload offset in SceneTexture
+
+The post-SEM-069 coverage rotation sampled the ANM resource protocol rather than
+continuing replay or score-file work.  The semantic-debt report exposed raw
+member indexing in `SceneTexture`; the report itself supplied no evidence, so
+the candidate was checked against the canonical TH095 target and the sibling
+version-4 ANM loader before editing.
+
+Observed TH095-local evidence:
+
+- `SceneAnmManagerView::LoadTexture @ 0x00442b90` takes the embedded-data path
+  when its final flag is nonzero.  It reads `param_2[0x0c]`, i.e. the dword at
+  serialized entry `+0x30`, and uses `entryBase + value` as the `THTX` header.
+  Pixel upload starts exactly another `0x10` bytes after that address.
+- `SceneAnmManagerView::LoadTextureRegion @ 0x00442ca0` performs the same two
+  `+0x30` reads for its regional embedded-data path, differing only by the
+  caller-provided destination top coordinate.
+- `AnmManagerPreloadView::LoadTextureData @ 0x004435a0` independently consumes
+  the same dword on version-4 raw entries: when `hasData @ +0x34` is nonzero,
+  it passes `rawEntry + rawEntry[0x0c]` to the embedded-texture constructor.
+- The already reconstructed `AnmRawEntryView` used by the preload path places
+  `textureOffset` at `+0x30` in the complete 0x40-byte version-4 entry.  This is
+  TH095-local sibling-protocol corroboration, not a TH08-derived layout claim.
+
+Corroborated source interpretation:
+
+- Production `SceneTexture.cpp` now uses a bounded `SceneAnmRawEntryView`
+  whose only interpreted member is `textureOffset @ +0x30`; the preceding
+  0x30 bytes remain explicitly unconsumed in this view.
+- Both production scene texture loaders use `textureOffset` to address the
+  embedded 0x10-byte `THTX` header and the immediately following pixel payload
+  instead of spelling the field as `reinterpret_cast<u32 *>(rawEntry)[12]`.
+- An attempted identical type insertion in `SceneTextureExact.inl` changed only
+  VC7.1 private `$L` relocation names in the unrelated alpha-bleed unit.  That
+  experiment was reverted rather than refreshing labels, so the exact-facing
+  source deliberately retains the historical raw expression while production
+  carries the maintainable semantic view.
+- This change does not alter the serialized ABI or loader behavior; it replaces
+  a raw member access with the target-proven protocol role.
+
+Inferred meaning:
+
+- Within the TH095 v4 ANM entry, `+0x30` is an entry-relative offset to the
+  embedded `THTX` record when embedded texture data is present.  The two scene
+  texture consumers and the preload consumer agree on both the base object and
+  the offset unit (bytes).
+
+Unknown / deliberately deferred:
+
+- This batch does not reinterpret the other 0x40-byte ANM entry fields; their
+  existing reconstruction remains outside this bounded SceneTexture view.
+- `AnmTextureHeaderView` words at `+0x04`, `+0x0c`, and `+0x0e` remain unknown
+  in SceneTexture because these consumers do not read them.  Sibling naming is
+  not sufficient reason to promote unused target bytes to stronger semantics.
+- No new runtime behavior is expected or claimed; this is a representation and
+  identifier recovery transaction.
+
+Validation on the active source state:
+
+- the first focused exact attempt intentionally tested the typed view in both
+  production and `SceneTextureExact.inl`; the compiled function surface exposed
+  only private `$L` relocation-name drift in the unrelated alpha-bleed unit, so
+  that exact-facing experiment was reverted instead of refreshing labels;
+- after restoring the historical exact-facing source, all eight configured
+  `SceneTexture.cpp` units replayed exact with zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units as
+  i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows
+  executable; this is compile/link production closure, not whole-image byte
+  exactness or runtime validation;
+- `scripts/ci.py` passed all 43 target-independent tests, tracking remained
+  697 source-present / 696 exact, and `git diff --check` passed;
+- no new runtime scenario was executed because this batch changes only the
+  production representation of an already exact serialized member access.
+
+Next evidence route: after checkpoint, rotate again to an owner/lifetime,
+flags/state, sound/resource, or another persistent/ABI family with multiple
+TH095-local producers/consumers; do not use the declining lexical-debt count as
+semantic completion evidence.
