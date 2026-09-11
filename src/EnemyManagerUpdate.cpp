@@ -589,7 +589,7 @@ struct PhotoEnemyView
     PhotoEnemyTrailSampleView trailSamples[96]; // +0x2cec
     VertexTex1DiffuseXyzrhw trailVertices[194]; // +0x376c
     u8 unknown4ca4[8];
-    ZunTimer damageReductionTimer;          // +0x4cac
+    ZunTimer timer4cac;                     // +0x4cac
     u8 unknown4cb8[4];
     PhotoEnemyAnmVmIdStorage attachedVmId; // +0x4cbc
 

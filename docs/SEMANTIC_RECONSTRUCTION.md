@@ -4373,3 +4373,82 @@ especially the `+0x4CA4` tail packet and compact `damageReductionTimer @
 layout. If no new independent producer/consumer protocol appears, retain those
 Unknowns and close the current-source aggregate exact and whole-product Factory
 milestone rather than resuming mechanical raw-offset cleanup.
+
+### SEM-061 — compact enemy tail timer naming boundary
+
+**Scope.** Correct the compact `PhotoEnemyView` representation at `+0x4CAC`
+without inventing gameplay meaning. The field remains a `ZunTimer`, but the
+production name is downgraded from `damageReductionTimer` to the location-neutral
+`timer4cac`. The neighboring `+0x4CA4..+0x4CAB` packet remains opaque. This batch
+does not change ECL control flow, target-high expressions, timer layout, or any
+runtime behavior.
+
+**Observed.** Hash-attested Ghidra decompilation of canonical
+`EclManager::RunEcl @ 0x00408E70` shows opcode `0x85` constructing the three-word
+state at enemy `+0x4CAC..+0x4CB7`: it writes the timer sentinel `0xFFF0BDC1` at
+`+0x4CAC`, the integer operand converted to float at `+0x4CB0`, and the same
+integer value at `+0x4CB4`. A separate target-attested decompilation of
+`PhotoEnemyView::PhotoEnemyView @ 0x00415040` initializes that same storage to
+`{0xFFF0BDC1, 0.0f, 0}` while initializing the other embedded timer triples with
+the same representation. The reconstruction ledger independently binds this
+constructor to a canonical 641/641-byte exact unit with all seven relocations.
+These facts establish timer representation and storage identity, not a gameplay
+role.
+
+**Corroborated.** A direct-displacement audit of the verified TH095 v1.02a
+`.text` found `+0x4CAC` in two instructions: the `RunEcl` opcode write and the
+enemy-constructor initialization. The same audit found direct `+0x4CA4`,
+`+0x4CA6`, `+0x4CA8`, and `+0x4CAA` accesses only in the `RunEcl` opcode-`0x83`
+implementation. That opcode writes one byte and three words, then tests bit 3 of
+`+0x4CA4`; when set, it passes the enemy ANM VM, trail-vertex storage, and a
+ratio derived from `+0x4CA6 / +0x4CAA` into the photo-ANM configuration path.
+This bounds the neighboring packet as an ECL-written photo/trail control record,
+but it does not supply stable names for its members.
+
+**Inferred.** `timer4cac` is intentionally a neutral reconstruction identifier:
+the target proves a `ZunTimer`-shaped object at that compact offset, while no
+independent TH095-local behavior currently proves what the timer measures. The
+source keeps the strongest maintainable fact (type and location) and removes a
+stronger role claim that was inherited by analogy from a different `Enemy`
+layout.
+
+**Unknown.** The compact timer's gameplay role remains unknown. In particular,
+this batch does not claim that it controls damage reduction, because the generic
+`Enemy::damageReductionTimer @ +0x5354` is a different layout location and is not
+independent evidence for compact `+0x4CAC`. The meanings and historical source
+names of the `+0x4CA4..+0x4CAB` packet remain unknown, including the purpose of
+its second word at `+0x4CA8`. The direct-displacement audit can miss consumers
+that first derive an interior pointer and then use small relative offsets, so
+absence of another direct displacement is evidence of the current boundary, not
+proof that no indirect consumer can exist.
+
+**Layout / ABI.** The compact layout remains `u8 unknown4ca4[8]`, followed by the
+12-byte `ZunTimer` at `+0x4CAC`, four opaque bytes at `+0x4CB8`, and the existing
+attached-VM storage at `+0x4CBC`. Only the C++ member identifier changes; object
+size, alignment, construction order, and target-high byte-oriented accesses are
+unchanged.
+
+**Exact oracle.** Cold focused replay of every configured unit sourced from
+`src/EnemyManagerUpdate.cpp` passes 22/22 with zero private-label refresh after
+the neutral rename. This includes `enemy-view-constructor @ 0x00415040` and the
+other exact compact-enemy units.
+
+**Product / runtime.** The normal production form of `EnemyManagerUpdate.cpp`
+compiles successfully with the same pinned VC7.1 profile used by the manifest;
+a command-local `/tmp` probe was verified as i386 COFF and then removed. Broad
+88-TU compile/link closure is deferred to the campaign milestone so a private
+member-name correction does not redundantly replay the whole product. No
+runtime-storage or runtime-scenario claim is made by this batch.
+
+**Analysis artifacts.** No `.analysis/` artifact was created, retained, or
+removed. Target queries used the Factory-owned attested Ghidra provider, and the
+one-shot displacement and production-compile probes used command-local `/tmp`
+storage that was removed before command exit.
+
+**Next state:** refresh committed live state and finish the independent semantic
+exit audit across the remaining recorded Unknowns. Do not promote selector
+`0x2752 / +0x2C50`, `+0x2CA4/+0x2CA8`, compact `+0x2984`, alternate ANM bank
+`+0x4DFC`, or the `+0x2C4C` cross-view conflict without new TH095-local
+producer/consumer evidence. If none has materially strengthened, close the
+current-source cold aggregate exact and Windows i386 whole-product milestone and
+record semantic readiness at that evidence boundary.
