@@ -5830,3 +5830,100 @@ family. Prefer a bounded persistent-format, resource-owner/lifetime, or other
 independent protocol with multiple TH095-local producers and consumers. A
 negative bounded route remains routing evidence only and does not alter the
 `active-incomplete` phase state.
+
+
+### SEM-077: consolidate the compact enemy ECL control word
+
+The post-SEM-076 worktree recovery gate found an unfinished but coherent ECL
+transaction rather than a clean starting point: five tracked ECL/shot files and
+an untracked `src/ecl/EnemyEclRuntimeView.hpp` were already converging repeated
+raw accesses to compact enemy `+0x2BF4`. The batch was recovered first, audited
+against the committed compact-enemy records, and narrowed so that the shared
+production view names only meanings supported by TH095-local producer/consumer
+or lifecycle evidence. It does not alias this compact word with the later
+`EnemyManager.hpp::Enemy::flags1 @ +0x3324` layout.
+
+Observed TH095-local evidence:
+
+- Target-attested `PhotoEnemyManagerView::OnUpdate @ 0x00415970` treats bit 0 as
+  the active-slot gate, bits 8..9 as the lifecycle state, bit 26 as the
+  offscreen-culling bypass, bit 22 as the entered-playfield latch, bit 2 as the
+  player-collision gate, and bit 4 as the draw-group suppression gate. The same
+  routine both reads and advances the compact lifecycle state.
+- Target-attested `ResetNonPhotoTargetsAndPhotoTargetEcls @ 0x00416810` tests
+  bit 1 while preserving registered photo targets. Exact target-high opcode 109
+  sets/clears that bit together with the eight-entry photo-target table and the
+  cached slot byte, matching SEM-033.
+- Target-attested `Enemy::UpdateMovement @ 0x00412970`,
+  `BeginBoundaryAwareMove @ 0x00412200`, and
+  `StartTimedPolarDisplacement @ 0x00412490` independently bind bits 10..11 to
+  movement mode and bits 12..14 to movement easing. `IntegrateMovement @
+  0x004160B0` and `Enemy::UpdateShotAndAnm @ 0x00413030` confirm bit 16 as the
+  X-mirror control, while `ClampPosition @ 0x00416320` consumes bit 17 as the
+  movement-bounds clamp enable.
+- Target-attested `CallSubOnEnemy @ 0x00411F70` and `PopEclContext @ 0x00412060`
+  both consume bit 24 as the ECL call-stack suppression control: it skips the
+  context push/depth increment and makes a return diagnose the missing stack.
+- Exact high-ECL opcodes 86..94 read bit 15 to choose immediate shot dispatch
+  versus caching the 0x2C-byte instruction at `+0x2B9C`; opcodes 97/98 set and
+  clear the same bit. The independently exact shot updater consumes that cache,
+  matching SEM-024.
+- Low-ECL ANM-bank opcodes and target-attested `Enemy::UpdateShotAndAnm` agree
+  that bit 31 selects the alternate ANM bank, preserving SEM-011.
+
+Corroborated source interpretation:
+
+- Production now has one offset-asserted `EnemyEclRuntimeView` with the control
+  word at `+0x2BF4` and one `EnemyEclControlBits` representation for the proven
+  protocol fields. `EclDependencies`, `EclHelpers`, `EclExtended`,
+  `EnemyShotAnm`, and the production low/high RunEcl path reuse that owner rather
+  than maintaining independent production bitfield layouts or raw owner casts.
+- `DIFFBUILD` and `TH095_MATCH_EXACT` deliberately retain their historical
+  private bitfield/raw forms. The compatibility split is source-shape only; it
+  does not introduce duplicate storage or a second runtime owner.
+- Existing SEM-011/012/014/019/024/033 and ECL-004 are corroborating TH095-local
+  records for individual bits. SEM-077 consolidates their shared representation
+  rather than reopening or changing those behaviors.
+
+Inferred meaning:
+
+- `+0x2BF4` is the compact enemy's ECL/runtime control word: one storage word is
+  shared by ECL dispatch, movement integration, photo-target registration,
+  culling/draw participation, call-stack behavior, deferred shots, and ANM-bank
+  selection. This is a representation/owner conclusion, not a claim that all
+  bits belong to one gameplay concept.
+
+Unknown / deliberately deferred:
+
+- The shared production view deliberately leaves bits 3, 5, 6, 7, 18..21, 23,
+  25, and 27..30 unknown unless an already observed independent consumer fixes
+  their meaning. In particular, the historical low-ECL local spellings
+  `damageable` and `acceptsDamage` are not promoted into the shared view merely
+  because opcode 79 writes them; no independent TH095-local behavioral consumer
+  was established in this batch.
+- This batch does not merge the compact control word with the later/larger
+  `EnemyManager.hpp` flag word, does not reinterpret compact `flags2 @ +0x2BF8`,
+  and does not rewrite `EnemyManagerUpdate.cpp` or `PhotoRuntime.cpp` merely to
+  make all local target views syntactically identical.
+- No fresh runtime scenario is claimed. The change is a maintainable source
+  representation of target-observed existing state transitions.
+
+Validation on the active source state:
+
+- the directly affected exact surface replayed 36/36 configured units with zero
+  private-label refreshes: `EclDependencies.cpp` 10/10, `EclExtended.cpp` 22/22,
+  `EclHelpers.cpp` 2/2, `EnemyShotAnm.cpp` 1/1, and `ecl/EclRun.cpp` 1/1;
+- because the new view is shared across several production translation units,
+  the cold aggregate was closed through eight mutually exclusive manifest-source
+  partitions of exactly 87 units each, covering all 88 sources and all 696
+  configured units: 696/696 exact, zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units to
+  Intel i386 COFF with the pinned VC7.1 toolchain and linked/verified the
+  reconstructed Windows PE. This is production compile/link closure, not
+  target whole-image byte exactness or runtime validation.
+
+Next evidence route: after checkpoint, rotate away from compact enemy ECL flags.
+Prefer another bounded persistent-format, resource-owner/lifetime, front-end,
+or independent protocol family with multiple TH095-local producers and
+consumers. Remaining unknown bits in `+0x2BF4` are not a default continuation;
+require new evidence before reopening them.

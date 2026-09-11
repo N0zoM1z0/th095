@@ -2,6 +2,9 @@
 #include "GameplayGlobals.hpp"
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "ecl/EnemyEclRuntimeView.hpp"
+#endif
 #include "utils.hpp"
 #include "Player.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
@@ -71,6 +74,7 @@ extern EnemyEclInterpolatorCallback g_EclInterpolatorCallbacks[];
 
 // TH095 keeps movement control and bounds in the compact enemy runtime block
 // used by RunEcl. These fields predate the later shared Enemy view fields.
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 struct EclDependencyMovementFlagBits
 {
     u32 unknown00 : 10;
@@ -80,6 +84,9 @@ struct EclDependencyMovementFlagBits
 };
 typedef char EclDependencyMovementFlagBitsSizeCheck[(sizeof(EclDependencyMovementFlagBits) == 4) ? 1 : -1];
 #define DEP_MOVEMENT_FLAGS(enemy) (*reinterpret_cast<EclDependencyMovementFlagBits *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4))
+#else
+#define DEP_MOVEMENT_FLAGS(enemy) TH095_ENEMY_ECL_CONTROL_BITS(enemy)
+#endif
 #if defined(TH095_MATCH_EXACT)
 #define DEP_MOVEMENT_BOUNDS(enemy) (*reinterpret_cast<EnemyMovementBounds *>(reinterpret_cast<u8 *>(enemy) + 0x2c3c))
 #else
@@ -297,10 +304,18 @@ compare_failure:
 
 // TH095 call-stack suppression is bit 24 of the target-local flags word at
 // enemy +0x2BF4; the generic TH08 flag enum uses a different bit position.
-static __forceinline u32 &TargetFlags1(Enemy *enemy)
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TargetEclControlWord TargetFlags1
+static __forceinline u32 &TargetEclControlWord(Enemy *enemy)
 {
     return *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4);
 }
+#else
+static __forceinline u32 &TargetEclControlWord(Enemy *enemy)
+{
+    return reinterpret_cast<EnemyEclRuntimeView *>(enemy)->controlWord;
+}
+#endif
 #if defined(TH095_MATCH_EXACT)
 #define DEP_ANM_DIRECTION(enemy) \
     (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0a))
@@ -343,7 +358,7 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
     enemy->activeEclContext->currentInstr =
         reinterpret_cast<EclRawInstruction *>(reinterpret_cast<u8 *>(instruction) + instruction->nextOffset);
 
-    if (((TargetFlags1(enemy) >> 24) & 1) == 0)
+    if (((TargetEclControlWord(enemy) >> 24) & 1) == 0)
     {
         enemy->activeEclCallStack[enemy->activeEclCallStackDepth] =
             *enemy->activeEclContext;
@@ -358,7 +373,7 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
         &enemy->activeEclContext->callParameterInts[0]) =
         g_PhotoEnemyManager->eclManager->callParameters;
 
-    if (((TargetFlags1(enemy) >> 24) & 1) == 0 &&
+    if (((TargetEclControlWord(enemy) >> 24) & 1) == 0 &&
         enemy->activeEclCallStackDepth < 15)
     {
         ++enemy->activeEclCallStackDepth;
@@ -370,7 +385,7 @@ int __fastcall PopEclContext(Enemy *enemy, EclRawInstruction *instruction)
 {
     i32 contextIndex;
 
-    if (((TargetFlags1(enemy) >> 24) & 1) != 0)
+    if (((TargetEclControlWord(enemy) >> 24) & 1) != 0)
         utils::DebugPrint("error : no Stack Ret\r\n");
 
     --enemy->activeEclCallStackDepth;

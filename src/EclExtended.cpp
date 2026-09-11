@@ -6,6 +6,9 @@
 #endif
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "ecl/EnemyEclRuntimeView.hpp"
+#endif
 #include <string.h>
 
 namespace th095
@@ -797,6 +800,7 @@ static __forceinline i32 ExtendedCameraIsCharging(
     return camera->mode == 1;
 }
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 struct ExtendedEnemyMovementFlagBits
 {
     u32 unknown00 : 10;
@@ -817,7 +821,9 @@ typedef char ExtendedEnemyMovementFlagsAt2BF4[
 
 #define EXT_MOVEMENT_FLAGS(enemy) \
     (reinterpret_cast<ExtendedEnemyMovementView *>(enemy)->movementFlags)
-
+#else
+#define EXT_MOVEMENT_FLAGS(enemy) TH095_ENEMY_ECL_CONTROL_BITS(enemy)
+#endif
 
 // ECL extended callback table entry 20 @ 0x00414580.
 void __fastcall RunPhotoTransition(

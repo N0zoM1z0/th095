@@ -25,6 +25,9 @@
 #include "AnmManagerEclView.hpp"
 #include "EclManager.hpp"
 #include "EclOperands.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "EnemyEclRuntimeView.hpp"
+#endif
 #include "EnemyManager.hpp"
 #include "Player.hpp"
 #include "SoundPlayer.hpp"
@@ -59,6 +62,11 @@ struct Th095EnemyFlagBits
     u32 allowOffscreen : 1;
     u32 unused27 : 5;
 };
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_RUN_ECL_CONTROL_WORD(enemy)     (*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4))
+#else
+#define TH095_RUN_ECL_CONTROL_WORD(enemy)     TH095_ENEMY_ECL_CONTROL_WORD(enemy)
+#endif
 
 struct Th095EnemyFlag2Bits
 {
@@ -448,7 +456,7 @@ static EclRawInstruction *__fastcall CompareOperands(
             ->SetAndExecuteScriptIdx(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &=
+        TH095_RUN_ECL_CONTROL_WORD(enemy) &=
             ~TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
     case 55:
@@ -456,7 +464,7 @@ static EclRawInstruction *__fastcall CompareOperands(
         SetPrimaryAnmScripts(enemy, instruction, lhsInt, lhsInt + 1,
                              lhsInt + 2, lhsInt + 3, lhsInt + 4,
                              lhsInt + 5);
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &=
+        TH095_RUN_ECL_CONTROL_WORD(enemy) &=
             ~TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
     case 56:
@@ -467,7 +475,7 @@ static EclRawInstruction *__fastcall CompareOperands(
                              ReadInt(enemy, instruction, 3),
                              ReadInt(enemy, instruction, 4),
                              ReadInt(enemy, instruction, 5));
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &=
+        TH095_RUN_ECL_CONTROL_WORD(enemy) &=
             ~TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
 #if 0 // TH095: opcode 57 is the ordinary advance path.
@@ -482,14 +490,14 @@ static EclRawInstruction *__fastcall CompareOperands(
             ->SetAndExecuteScriptIdx(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
+        TH095_RUN_ECL_CONTROL_WORD(enemy) |=
             TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
     case 59:
         lhsInt = ReadInt(enemy, instruction, 0);
         SetPrimaryAnmScripts(enemy, instruction, lhsInt, lhsInt + 1, lhsInt + 2,
                              lhsInt + 3, lhsInt + 4, lhsInt + 5);
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
+        TH095_RUN_ECL_CONTROL_WORD(enemy) |=
             TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
     case 60:
@@ -500,7 +508,7 @@ static EclRawInstruction *__fastcall CompareOperands(
                              ReadInt(enemy, instruction, 3),
                              ReadInt(enemy, instruction, 4),
                              ReadInt(enemy, instruction, 5));
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
+        TH095_RUN_ECL_CONTROL_WORD(enemy) |=
             TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK;
         break;
 #if 0 // TH095: opcode 61 is the ordinary advance path.
@@ -543,8 +551,8 @@ static EclRawInstruction *__fastcall CompareOperands(
     case 65:
         enemy->movementAngle = AddNormalizeAngle(((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0))), 0.0f);
         enemy->speed = ((instruction->operandFlags & (1U << 1)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 1))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 1)));
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) =
-            (*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &
+        TH095_RUN_ECL_CONTROL_WORD(enemy) =
+            (TH095_RUN_ECL_CONTROL_WORD(enemy) &
              0xfffff3ffU) | 0x400U;
         enemy->movementDuration = 0;
         enemy->movementTimer = 0;
@@ -554,8 +562,8 @@ static EclRawInstruction *__fastcall CompareOperands(
         {
             enemy->movementAngle = AddNormalizeAngle(((instruction->operandFlags & (1U << 2)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 2))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 2))), 0.0f);
             enemy->speed = ((instruction->operandFlags & (1U << 3)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 3))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 3)));
-            *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) =
-                (*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &
+            TH095_RUN_ECL_CONTROL_WORD(enemy) =
+                (TH095_RUN_ECL_CONTROL_WORD(enemy) &
                  0xfffff3ffU) | 0x400U;
             enemy->movementDuration = 0;
             enemy->movementTimer = 0;
@@ -582,8 +590,8 @@ static EclRawInstruction *__fastcall CompareOperands(
                     TH095_ECL_PLAYER_ANGLE(
                         &enemy->position));
             enemy->speed = ((instruction->operandFlags & (1U << 3)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 3))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 3)));
-            *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) =
-                (*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &
+            TH095_RUN_ECL_CONTROL_WORD(enemy) =
+                (TH095_RUN_ECL_CONTROL_WORD(enemy) &
                  0xfffff3ffU) | 0x400U;
             // The target resolves operand 0 again before timer assignment.
             enemy->movementTimer =
@@ -597,14 +605,14 @@ static EclRawInstruction *__fastcall CompareOperands(
 
     case 70:
         enemy->angularVelocity = ((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0)));
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) =
-            (*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &
+        TH095_RUN_ECL_CONTROL_WORD(enemy) =
+            (TH095_RUN_ECL_CONTROL_WORD(enemy) &
              0xfffff3ffU) | 0x400U;
         break;
     case 71:
         enemy->acceleration = ((instruction->operandFlags & (1U << 0)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 0))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 0)));
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) =
-            (*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &
+        TH095_RUN_ECL_CONTROL_WORD(enemy) =
+            (TH095_RUN_ECL_CONTROL_WORD(enemy) &
              0xfffff3ffU) | 0x400U;
         break;
     case 72:
@@ -626,7 +634,7 @@ static EclRawInstruction *__fastcall CompareOperands(
         enemy->radialVelocity = ((instruction->operandFlags & (1U << 6))
             ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 6)))
             : *reinterpret_cast<f32 *>(&RawInt(instruction, 6)));
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
+        TH095_RUN_ECL_CONTROL_WORD(enemy) |=
             0xc00U;
         break;
     case 73:
@@ -645,7 +653,7 @@ static EclRawInstruction *__fastcall CompareOperands(
         enemy->radialVelocity = ((instruction->operandFlags & (1U << 3))
                 ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 3)))
                 : *reinterpret_cast<f32 *>(&RawInt(instruction, 3)));
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
+        TH095_RUN_ECL_CONTROL_WORD(enemy) |=
             0xc00U;
         break;
     case 74:
@@ -653,7 +661,7 @@ static EclRawInstruction *__fastcall CompareOperands(
             (enemy->movementDuration = ReadInt(enemy, instruction, 0));
         enemy->orbitAngularVelocity = ((instruction->operandFlags & (1U << 1)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 1))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 1)));
         enemy->radialVelocity = ((instruction->operandFlags & (1U << 2)) ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 2))) : *reinterpret_cast<f32 *>(&RawInt(instruction, 2)));
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
+        TH095_RUN_ECL_CONTROL_WORD(enemy) |=
             0xc00U;
         break;
 #if defined(TH095_MATCH_EXACT)
@@ -675,11 +683,11 @@ static EclRawInstruction *__fastcall CompareOperands(
         TH095_ECL_ENEMY_MOVEMENT_BOUNDS(enemy).upper.y = ((instruction->operandFlags & (1U << 3))
                 ? enemy->ResolveFloat(*reinterpret_cast<f32 *>(&RawInt(instruction, 3)))
                 : *reinterpret_cast<f32 *>(&RawInt(instruction, 3)));
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |=
+        TH095_RUN_ECL_CONTROL_WORD(enemy) |=
             TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS;
         break;
     case 76:
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &=
+        TH095_RUN_ECL_CONTROL_WORD(enemy) &=
             ~TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS;
         break;
 #undef TH095_ECL_ENEMY_FLAG_CLAMP_TO_MOVEMENT_BOUNDS
@@ -719,21 +727,21 @@ static EclRawInstruction *__fastcall CompareOperands(
 
     case 80:
         lhsInt = ReadInt(enemy, instruction, 0);
-        if (lhsInt & 1) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &= ~0x40U;
-        if (lhsInt & 2) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &= ~4U;
-        if (lhsInt & 4) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &= ~8U;
-        if (lhsInt & 8) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |= 0x10U;
-        if (lhsInt & 0x10) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |= 0x4000000U;
+        if (lhsInt & 1) TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~0x40U;
+        if (lhsInt & 2) TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~4U;
+        if (lhsInt & 4) TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~8U;
+        if (lhsInt & 8) TH095_RUN_ECL_CONTROL_WORD(enemy) |= 0x10U;
+        if (lhsInt & 0x10) TH095_RUN_ECL_CONTROL_WORD(enemy) |= 0x4000000U;
         if (lhsInt & 0x20) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf8) |= 8U;
         break;
 
     case 81:
         lhsInt = ReadInt(enemy, instruction, 0);
-        if (lhsInt & 1) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |= 0x40U;
-        if (lhsInt & 2) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |= 4U;
-        if (lhsInt & 4) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |= 8U;
-        if (lhsInt & 8) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &= ~0x10U;
-        if (lhsInt & 0x10) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &= ~0x4000000U;
+        if (lhsInt & 1) TH095_RUN_ECL_CONTROL_WORD(enemy) |= 0x40U;
+        if (lhsInt & 2) TH095_RUN_ECL_CONTROL_WORD(enemy) |= 4U;
+        if (lhsInt & 4) TH095_RUN_ECL_CONTROL_WORD(enemy) |= 8U;
+        if (lhsInt & 8) TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~0x10U;
+        if (lhsInt & 0x10) TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~0x4000000U;
         if (lhsInt & 0x20) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf8) &= ~8U;
         break;
 

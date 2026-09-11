@@ -18,7 +18,7 @@
     case 94:
         if (TH095_TARGET_ENEMY_LIFE(enemy) <= 0)
             break;
-        if (((*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4)
+        if (((TH095_RUN_ECL_CONTROL_WORD(enemy)
               >> 15) & 1U) != 0)
         {
             memcpy(reinterpret_cast<u8 *>(enemy) + 0x2b9c,
@@ -72,10 +72,10 @@
         break;
 
     case 97:
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |= 0x8000U;
+        TH095_RUN_ECL_CONTROL_WORD(enemy) |= 0x8000U;
         break;
     case 98:
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &= 0xffff7fffU;
+        TH095_RUN_ECL_CONTROL_WORD(enemy) &= 0xffff7fffU;
         break;
 
     case 99:
@@ -104,7 +104,7 @@
         {
             *reinterpret_cast<Enemy **>(
                 TH095_ECL_RUNTIME + 0x26ae00 + TH08_ECL_READ_I(ctx, 0) * 4) = enemy;
-            *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |= 2U;
+            TH095_RUN_ECL_CONTROL_WORD(enemy) |= 2U;
             *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2be5) =
                 static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
         }
@@ -113,14 +113,14 @@
             *reinterpret_cast<Enemy **>(
                 TH095_ECL_RUNTIME + 0x26ae00 +
                 *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2be5) * 4) = 0;
-            *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &= ~2U;
+            TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~2U;
         }
 #else
         if (TH08_ECL_READ_I(ctx, 0) >= 0)
         {
             reinterpret_cast<EclRunHigh::Th095PhotoTargetRuntimeView *>(
                 TH095_ECL_RUNTIME)->photoTargets[TH08_ECL_READ_I(ctx, 0)] = enemy;
-            *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) |= 2U;
+            TH095_RUN_ECL_CONTROL_WORD(enemy) |= 2U;
             reinterpret_cast<EclRunHigh::Th095PhotoTargetSlotView *>(enemy)
                 ->photoTargetSlot = static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
         }
@@ -130,7 +130,7 @@
                 reinterpret_cast<EclRunHigh::Th095PhotoTargetSlotView *>(enemy);
             reinterpret_cast<EclRunHigh::Th095PhotoTargetRuntimeView *>(
                 TH095_ECL_RUNTIME)->photoTargets[target->photoTargetSlot] = 0;
-            *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4) &= ~2U;
+            TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~2U;
         }
 #endif
         break;
@@ -166,7 +166,7 @@ enter_subroutine:
         enemy->activeEclContext->currentInstr =
             reinterpret_cast<EclRawInstruction *>(
                 reinterpret_cast<u8 *>(instruction) + instruction->nextOffset);
-        if (((*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4)
+        if (((TH095_RUN_ECL_CONTROL_WORD(enemy)
               >> 24) & 1U) == 0)
         {
             memcpy(enemy->activeEclCallStack + enemy->activeEclCallStackDepth,

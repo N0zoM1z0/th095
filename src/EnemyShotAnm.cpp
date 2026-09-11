@@ -1,6 +1,9 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "ecl/EclManager.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "ecl/EnemyEclRuntimeView.hpp"
+#endif
 
 namespace th095
 {
@@ -64,10 +67,18 @@ static __forceinline ZunTimer &TargetEnemyShootTimer(Enemy *enemy)
 {
     return reinterpret_cast<EnemyShotCadenceView *>(enemy)->shootIntervalTimer;
 }
-static __forceinline u32 &TargetEnemyFlags1(Enemy *enemy)
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TargetEnemyEclControlWord TargetEnemyFlags1
+static __forceinline u32 &TargetEnemyEclControlWord(Enemy *enemy)
 {
     return *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4);
 }
+#else
+static __forceinline u32 &TargetEnemyEclControlWord(Enemy *enemy)
+{
+    return reinterpret_cast<EnemyEclRuntimeView *>(enemy)->controlWord;
+}
+#endif
 static __forceinline u8 &TargetEnemyAnmDirection(Enemy *enemy)
 {
     return reinterpret_cast<EnemyAnmDirectionView *>(enemy)->anmDirection;
@@ -98,7 +109,7 @@ void Enemy::UpdateShotAndAnm()
         if (TargetEnemyAnmScriptsView(this).moveLeft >= 0)
         {
             direction = 0;
-            if (((TargetEnemyFlags1(this) >> 16) & 1) == 0)
+            if (((TargetEnemyEclControlWord(this) >> 16) & 1) == 0)
             {
                 if (this->velocity.x < -0.01f)
                     direction = 1;
@@ -115,7 +126,7 @@ void Enemy::UpdateShotAndAnm()
 
             if (TargetEnemyAnmDirection(this) != direction)
             {
-                anm = ((TargetEnemyFlags1(this) >> TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK_SHIFT) & 1)
+                anm = ((TargetEnemyEclControlWord(this) >> TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK_SHIFT) & 1)
                     ? *reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4dfc)
                     : *reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4df8);
 

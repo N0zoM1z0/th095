@@ -1,6 +1,9 @@
 #include "EnemyManager.hpp"
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "ecl/EnemyEclRuntimeView.hpp"
+#endif
 #include "ZunMath.hpp"
 #include <math.h>
 
@@ -8,10 +11,10 @@ namespace th095
 {
 namespace EclHelpers
 {
-// TH095 movement helpers use a target-local flags word at +0x2BF4.
-// movementMode = bits 10..11, movementEasing = bits 12..14,
-// mirrorMovementX = bit 16. Keep this private view out of EnemyManager.hpp.
-
+// The target-local ECL control word is intentionally separate from the later
+// shared Enemy::flags1 layout in EnemyManager.hpp. Exact/diff builds retain the
+// historical private view so compiler-local label numbering stays unchanged.
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 struct EclHelperEnemyFlagBits
 {
     u32 unknown00 : 10;
@@ -24,6 +27,9 @@ struct EclHelperEnemyFlagBits
 typedef char EclHelperEnemyFlagBitsSizeCheck[(sizeof(EclHelperEnemyFlagBits) == 4) ? 1 : -1];
 
 #define HelperFlags(enemy) (*reinterpret_cast<EclHelperEnemyFlagBits *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4))
+#else
+#define HelperFlags(enemy) TH095_ENEMY_ECL_CONTROL_BITS(enemy)
+#endif
 #define ReadInt(enemy, instruction, index) \
     ((instruction)->operandFlags & (1 << (index)) \
          ? EclOperands::ResolveInt((enemy), (instruction)->operands[index].asInt) \
