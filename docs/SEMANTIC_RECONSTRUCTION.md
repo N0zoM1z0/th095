@@ -4285,3 +4285,91 @@ boundary. Do not resume mechanical raw-offset cleanup without new TH095-local
 evidence that strengthens one of the recorded Unknowns. Factory receipt refresh,
 runtime-storage/scenario validation, and any portable Windows/Linux/Web work
 remain separate states and must not be reported as semantic interpretation.
+
+### SEM-060 — compact enemy ECL subroutine slot table
+
+**Scope.** Recover compact enemy `+0x285C..+0x289D` as the same 32-entry
+`i16 eclSubroutineIds` table plus `i16 pendingEclSubroutineIndex` already
+represented by the canonical TH095 `Enemy` owner. The production
+`PhotoEnemyView` now exposes that representation directly. Slots 30 and 31
+retain their existing TH095-local restart roles through exact-compatible access
+macros, while `TH095_MATCH_EXACT` keeps the historical four-declaration compact
+view so VC7.1 private-label allocation remains unchanged. No ECL control flow,
+instruction encoding, or target-high raw expression is changed.
+
+**Observed.** Target-attested Ghidra decompilation of canonical
+`EclManager::RunEcl @ 0x00408E70` checks signed enemy word `+0x289C` before
+normal instruction dispatch. Target opcode `0x6B` writes an `i16` value to
+`+0x289C` and enters the shared subroutine path, while opcode `0x6C` writes an
+`i16` value to `+0x285C + index * 2`. The TH095 target-high reconstruction of
+that shared path reads `+0x285C + (+0x289C * 2)`, passes the resulting word as
+the second argument to `EclManager::CallEclSub`, then resets `+0x289C` to `-1`.
+The TH095 declaration of `CallEclSub(EnemyEclContext *, i16 subId)` establishes
+that table values are ECL subroutine IDs rather than generic 16-bit payloads.
+
+**Corroborated.** A separate target-attested decompilation of
+`PhotoEnemyTimelineView::Run @ 0x004163F0` shows timeline opcode 8 selecting an
+enemy through manager `+0x4DE4 + slot * 4` and writing its instruction's second
+word directly to enemy `+0x289C`. Production `EclRun.cpp` independently checks
+`enemy->pendingEclSubroutineIndex >= 0` before dispatch and jumps to the same
+subroutine-entry path, proving a cross-timeline-to-ECL pending-request protocol.
+The canonical TH095 `Enemy` layout already places `i16 eclSubroutineIds[32]`
+immediately before `pendingEclSubroutineIndex @ +0x289C`. In the compact view,
+existing `RestartEcl()` consumes offset `+0x2898`, exactly table slot 30, while
+`ResetNonPhotoTargetsAndPhotoTargetEcls()` consumes `+0x289A`, exactly slot 31.
+These acceptance facts are TH095-local; TH08 is not required as semantic
+authority.
+
+**Inferred.** `eclSubroutineIds` and `pendingEclSubroutineIndex` are the
+maintainable reconstruction names because both are already used by the
+canonical TH095 owner and match the target producer/consumer protocol. Compact
+slot 30 is retained as the main-ECL restart role and slot 31 as the photo-target
+restart role because independent TH095 compact consumers use those exact
+entries. The access-macro spellings are reconstruction compatibility machinery,
+not claims about retail source names.
+
+**Unknown.** The target paths shown here do not range-check the opcode-supplied
+slot index, so this batch does not claim which indices retail ECL content may
+legitimately request or that malformed indices are safe. The individual roles
+of slots 0 through 29 remain unknown, as do the historical source names for the
+table, pending index, and the two specialized terminal slots. This batch does
+not reinterpret adjacent `pendingEclSubroutineId @ +0x285A` or the ECL call
+stack. SEM-059's exit-audit statement that `+0x285C` had no TH095-local reader
+is superseded for this one family by the newly identified shared
+`enter_subroutine` consumer; the other retained Unknowns are unaffected.
+
+**Compiler-observed.** A first production representation added a C++ enum for
+slot constants and shifted `enemy-timeline-run` compiler-private `$L` relocation
+names by approximately +2 while leaving external relocation offsets/types
+unchanged. Replacing the enum with preprocessing constants exposed the opposite
+approximately -2 shift because collapsing the historical four compact member
+declarations into two declarations also participates in VC7.1 private-label
+allocation. The accepted representation therefore keeps the historical compact
+members under `TH095_MATCH_EXACT`, exposes `eclSubroutineIds[32]` and
+`pendingEclSubroutineIndex` only in production, and expands exact-compatible
+access macros back to the historical field expressions. No private-label ledger
+refresh is used.
+
+**Regression boundary.** Cold exact replay of every configured unit whose
+source is `src/EnemyManagerUpdate.cpp` passes 22/22 with zero private-label
+refresh after the exact-compatible representation is installed. The normal
+historical-platform lane cold-compiles all 88 production translation units with
+the pinned VC7.1 toolchain to i386 COFF and links the resulting graph into a
+verified Windows GUI PE32 executable. Successful linkage is production closure,
+not a whole-image byte-exact claim. The campaign-wide 696-unit aggregate exact
+gate is intentionally left for the committed campaign milestone rather than
+being conflated with this focused batch result.
+
+**Analysis artifacts.** `.analysis/` remains 1408444500 bytes at this
+checkpoint preparation. No current-session `.analysis` artifact was created,
+retained, or removed; target analysis used the Factory-owned attested Ghidra
+provider and source-only disposable workspace state. Exact/build products remain
+in the repository's existing ignored build areas.
+
+**Next state:** refresh the committed live state and perform an independent
+TH095-local exit audit. Recheck the remaining strongest retained families,
+especially the `+0x4CA4` tail packet and compact `damageReductionTimer @
++0x4CAC`, without inferring their meaning from adjacency or the generic Enemy
+layout. If no new independent producer/consumer protocol appears, retain those
+Unknowns and close the current-source aggregate exact and whole-product Factory
+milestone rather than resuming mechanical raw-offset cleanup.

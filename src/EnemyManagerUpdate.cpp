@@ -449,6 +449,16 @@ extern f32 g_GameSpeed;
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyGameView, g_RuntimePlayerOwner)
 #endif
 
+#if defined(TH095_MATCH_EXACT)
+#define TH095_PHOTO_ENEMY_MAIN_ECL_SUBROUTINE_ID mainEclSubroutineId
+#define TH095_PHOTO_ENEMY_PHOTO_TARGET_ECL_SUBROUTINE_ID photoTargetEclSubroutineId
+#define TH095_PHOTO_ENEMY_PENDING_ECL_SUBROUTINE_INDEX timelineValue
+#else
+#define TH095_PHOTO_ENEMY_MAIN_ECL_SUBROUTINE_ID eclSubroutineIds[30]
+#define TH095_PHOTO_ENEMY_PHOTO_TARGET_ECL_SUBROUTINE_ID eclSubroutineIds[31]
+#define TH095_PHOTO_ENEMY_PENDING_ECL_SUBROUTINE_INDEX pendingEclSubroutineIndex
+#endif
+
 struct PhotoEnemyView
 {
     PhotoEnemyView *nextInDrawGroup;       // +0x0000
@@ -465,10 +475,15 @@ struct PhotoEnemyView
     i16 activeEclCallStackDepth;           // +0x2856
     u8 unknown2858[2];
     i16 pendingEclSubroutineId;             // +0x285a
+#if defined(TH095_MATCH_EXACT)
     u8 unknown285c[0x3c];
     i16 mainEclSubroutineId;                // +0x2898
     i16 photoTargetEclSubroutineId;         // +0x289a
     i16 timelineValue;                     // +0x289c
+#else
+    i16 eclSubroutineIds[32];               // +0x285c
+    i16 pendingEclSubroutineIndex;          // +0x289c
+#endif
     u8 unknown289e[2];
     D3DXVECTOR3 position;                  // +0x28a0
     u8 unknown28ac[0x28b8 - 0x28ac];
@@ -754,7 +769,7 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
     enemy->flags1 &= ~0x001c0000;
     enemy->pendingEclSubroutineId = -1;
     enemy->flags1 &= ~0x00020000;
-    enemy->timelineValue = -1;
+    enemy->TH095_PHOTO_ENEMY_PENDING_ECL_SUBROUTINE_INDEX = -1;
     for (i = 0; i < 10; ++i)
     {
         enemy->scheduledCallFrames[i] = -1;
@@ -968,7 +983,7 @@ void PhotoEnemyTimelineView::Run()
                 g_PhotoEnemyManager->timelineEnemySlots[
                     reinterpret_cast<i32 *>(
                         reinterpret_cast<u8 *>(this->instruction) + 8)[0]]
-                    ->timelineValue = static_cast<i16>(
+                    ->TH095_PHOTO_ENEMY_PENDING_ECL_SUBROUTINE_INDEX = static_cast<i16>(
                         reinterpret_cast<i32 *>(
                             reinterpret_cast<u8 *>(this->instruction) + 8)[1]);
                 break;
@@ -1437,7 +1452,7 @@ void PhotoEnemyView::RestartEcl()
 {
     TH095_PHOTO_ECL_INIT(g_PhotoEnemyManager->eclManager,
         PHOTO_ENEMY_MAIN_ECL_CONTEXT(this),
-        this->mainEclSubroutineId);
+        this->TH095_PHOTO_ENEMY_MAIN_ECL_SUBROUTINE_ID);
 }
 
 void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargets(
@@ -1484,7 +1499,7 @@ void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
                 PHOTO_ENEMY_MAIN_ECL_CONTEXT(
                     enemyManager->photoTargets[targetIndex]),
                 enemyManager->photoTargets[targetIndex]
-                    ->photoTargetEclSubroutineId);
+                    ->TH095_PHOTO_ENEMY_PHOTO_TARGET_ECL_SUBROUTINE_ID);
         }
     }
 }
