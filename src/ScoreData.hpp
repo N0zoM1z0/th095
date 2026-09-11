@@ -88,7 +88,11 @@ struct ResultScoreEntryView
     time_t captureTime;
 #endif
     i32 bestShotChecksum;
+#ifdef TH095_MATCH_EXACT
     i32 unlockScore;
+#else
+    u32 attemptCount;
+#endif
     f32 slowRate;
     f32 successRate;
     union
@@ -156,7 +160,11 @@ struct ResultSaveDataView
     i32 FindHighestUnlockedSceneGroup();
     i32 CountCapturedScenes();
     i32 CountCapturedScenesInGroup(i32 group);
+#ifdef TH095_MATCH_EXACT
     i32 GetSceneGroupUnlockScore(i32 group);
+#else
+    i32 GetSceneGroupAttemptCount(i32 group);
+#endif
 };
 
 typedef char ScoreFileHeaderSizeIs18[

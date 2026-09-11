@@ -202,7 +202,7 @@ i32 ResultSaveDataView::IsSceneGroupUnlocked(i32 group)
     }
 
     return ((((totalScore < g_SceneUnlockScoreRequirements[group]) ||
-              (this->GetSceneGroupUnlockScore(group - 1) < 10000)) &&
+              (this->GetSceneGroupAttemptCount(group - 1) < 10000)) &&
              (this->CountCapturedScenes() <
               g_SceneUnlockCaptureRequirements[group])) &&
             (this->CountCapturedScenesInGroup(group - 1) <
@@ -261,17 +261,17 @@ i32 ResultSaveDataView::CountCapturedScenesInGroup(i32 group)
     return count;
 }
 
-i32 ResultSaveDataView::GetSceneGroupUnlockScore(i32 group)
+i32 ResultSaveDataView::GetSceneGroupAttemptCount(i32 group)
 {
-    i32 score;
+    i32 attemptCount;
 
-    score = 0;
+    attemptCount = 0;
     for (i32 scene = 0; scene < g_SceneGroupCounts[group]; scene++)
     {
-        score += this->sceneScores[
-            g_SceneGroups[group][scene].scoreEntryIndex].unlockScore;
+        attemptCount += this->sceneScores[
+            g_SceneGroups[group][scene].scoreEntryIndex].attemptCount;
     }
-    return score;
+    return attemptCount;
 }
 
 } // namespace th095

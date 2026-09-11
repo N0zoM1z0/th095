@@ -4699,3 +4699,83 @@ Next evidence route: resolve score-record `+0x44` from all TH095-local writers,
 UI consumers, group-unlock aggregation, and requirement-table semantics before
 choosing a production identifier; then independently audit the `+0x4c` rate
 field conflict.
+
+### SEM-064: recover the persisted per-scene photo attempt counter
+
+The persisted `SC` record investigation from SEM-063 continued at record offset
+`+0x44`.  The canonical production view called this field `unlockScore`, while
+the overlapping PhotoStage payload view called the same storage
+`attemptCount`.  TH095-local producer and consumer evidence resolves that
+conflict in favor of the producer meaning.
+
+Observed TH095-local evidence:
+
+- `PhotoStageStateView::Update @ 0x0042ad60` addresses save-data
+  `+0x4a4 + scoreIndex * 0x60`, which is score-record `+0x44`.  On the normal
+  photo-result path it tests the unsigned value against `999999` and increments
+  it by exactly one when below that cap.
+- That increment occurs before the later new-best-score comparison and record
+  replacement.  The stored quantity therefore advances for a photo attempt
+  even when the captured score does not become the saved best shot.
+- `SceneSelectControllerView::UpdateSelectedSceneDetails @ 0x0044c670` reads
+  the same record `+0x44` and renders it directly as a six-digit integer with
+  leading zero display VMs hidden.
+- `ResultSaveDataView::GetSceneGroupAttemptCount` at target `0x004366f0`
+  iterates every scene in one group and sums exactly that `+0x44` field.
+- `ResultSaveDataView::IsSceneGroupUnlocked @ 0x004364f0` consumes the previous
+  group's sum only as one alternative unlock condition, comparing it with
+  `10000` alongside total score and captured-scene requirements.  That
+  downstream use does not make the persisted field itself an unlock score.
+- The `SC` parser and writer continue to copy/serialize the entire 0x60-byte
+  record, so this counter is part of the persistent score-file protocol.
+
+Corroborated source interpretation:
+
+- The target-exact PhotoStage payload view already named this same location
+  `attemptCount`; after SEM-063 removed the false `attemptCount` alias at record
+  `+0x3c`, there is no longer a production naming collision.
+- Production `ResultScoreEntryView` now exposes `u32 attemptCount @ +0x44`, the
+  detail UI reads that field, and the group aggregation API is
+  `GetSceneGroupAttemptCount`.
+- `TH095_MATCH_EXACT` retains the historical `unlockScore` member and
+  `GetSceneGroupUnlockScore` method names so exact-facing C++ symbol and
+  compiler-private label identity remain unchanged.  The wire layout and
+  function behavior are unchanged.
+- The separately named `g_SceneUnlockScoreRequirements` object remains a BSS
+  requirement table with one observed indexed reader and no observed writer.
+  Its eventual runtime population or intended score thresholds are not inferred
+  from this counter rename.
+
+Inferred meaning:
+
+- The former production `unlockScore` name described one downstream use rather
+  than the stored quantity.  Record `+0x44` is the capped per-scene photo
+  attempt counter, and group unlock logic sums those attempts as a fallback
+  progression condition.
+
+Unknown / deliberately deferred:
+
+- Score-record `+0x4c` still has conflicting TH095-local names: the canonical
+  scene-score view calls it `successRate`, while PhotoStage's overlapping
+  payload view writes it as `slowRate`.  Its producer/consumer protocol remains
+  the next bounded investigation.
+- The semantic role and writer, if any, of the separate BSS unlock-requirement
+  table remain unknown beyond its indexed read in the unlock predicate.
+
+Validation on the active source state:
+
+- focused canonical exact replay: 16/16 units across `PhotoStage.cpp`,
+  `SceneDetail.cpp`, `SceneSelect.cpp`, and `ScoreData.cpp`, with zero
+  private-label refreshes;
+- cold aggregate canonical replay, executed as eight mutually exclusive
+  transport-safe source partitions, covered all 88 manifest sources and all
+  696 exact units: 696/696 exact with zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units as
+  i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows
+  executable.  This remains production compile/link closure only, not a
+  whole-image byte-exact or runtime-validation claim.
+
+Next evidence route: resolve score-record `+0x4c` by tracing all TH095-local
+writers and readers of the two adjacent rate fields, including the PhotoStage
+publisher, SceneControllerDraw display labels, persistent parser/writer path,
+and the global counters used to compute the captured-photo rate.

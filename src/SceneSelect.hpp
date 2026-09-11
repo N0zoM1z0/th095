@@ -189,8 +189,8 @@ typedef char SceneScoreEntryScoreAt10[
     (offsetof(SceneScoreEntryView, score) == 0x10) ? 1 : -1];
 typedef char SceneScoreEntryDetailScoreAt18[
     (offsetof(SceneScoreEntryView, detailScore) == 0x18) ? 1 : -1];
-typedef char SceneScoreEntryUnlockScoreAt44[
-    (offsetof(SceneScoreEntryView, unlockScore) == 0x44) ? 1 : -1];
+typedef char SceneScoreEntryAttemptCountAt44[
+    (offsetof(SceneScoreEntryView, attemptCount) == 0x44) ? 1 : -1];
 typedef char SceneScoreEntryFlagsAt50[
     (offsetof(SceneScoreEntryView, flags) == 0x50) ? 1 : -1];
 typedef char SceneScoreEntryRatesAt48[

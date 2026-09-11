@@ -59,7 +59,7 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
     }
 
     value = g_ResultSaveData->sceneScores[this->selectedScoreEntryIndex]
-                .unlockScore;
+                .attemptCount;
     if (value / 100000 != 0)
     {
         SET_DETAIL_SPRITE(0x5e, value / 100000 % 10 + 0x4b);
