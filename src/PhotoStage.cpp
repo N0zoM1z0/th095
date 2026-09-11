@@ -70,7 +70,7 @@ struct PhotoStageBestShotRecord
     u8 *pixelData;
 };
 
-struct PhotoStageScoreRecord
+struct PhotoStageScorePayloadView
 {
     i32 scoreData[8];
     u8 unknown020[4];
@@ -89,7 +89,7 @@ struct PhotoStageScoreRecord
             u32 unknownFlags : 30;
         };
     };
-    u8 unknown03c[0x60 - 0x3c];
+    u8 unknown03c[0x48 - 0x3c];
 };
 
 struct PhotoStageAnmManagerView
@@ -190,8 +190,13 @@ typedef char PhotoStageTextureEntrySizeIs10[
     (sizeof(PhotoStageTextureEntry) == 0x10) ? 1 : -1];
 typedef char PhotoStageBestShotRecordSizeIs78[
     (sizeof(PhotoStageBestShotRecord) == 0x78) ? 1 : -1];
-typedef char PhotoStageScoreRecordSizeIs60[
-    (sizeof(PhotoStageScoreRecord) == 0x60) ? 1 : -1];
+typedef char PhotoStageScorePayloadSizeIs48[
+    (sizeof(PhotoStageScorePayloadView) == 0x48) ? 1 : -1];
+typedef char PhotoStageScorePayloadMatchesResultTail[
+    (sizeof(PhotoStageScorePayloadView) ==
+     sizeof(ResultScoreEntryView) - offsetof(ResultScoreEntryView, detailScore))
+        ? 1
+        : -1];
 typedef char PhotoStageSlotSizeIs2214[
     (sizeof(PhotoStageSlot) == 0x2214) ? 1 : -1];
 typedef char PhotoStageSlotPrimaryVmsAt44[
@@ -302,11 +307,10 @@ static __forceinline void PhotoStageInterruptCurrentEntryPhase(
         state->slots[0].entryVms[entryIndex].value, 1);
 }
 
-static inline PhotoStageScoreRecord *GetPhotoStageScoreRecord(i32 index)
+static inline PhotoStageScorePayloadView *GetPhotoStageScorePayload(i32 index)
 {
-    return reinterpret_cast<PhotoStageScoreRecord *>(
-               reinterpret_cast<u8 *>(g_ResultSaveData) + 0x478) +
-        index;
+    return reinterpret_cast<PhotoStageScorePayloadView *>(
+        &g_ResultSaveData->scoreEntries[index].detailScore);
 }
 
 static inline PhotoStageBestShotRecord *GetPhotoStageBestShotRecord(i32 index)
@@ -1005,11 +1009,11 @@ i32 PhotoStageStateView::Update()
 
                 if (g_PhotoStageGlobalState->resultMode == 0)
                 {
-                    if (GetPhotoStageScoreRecord(
+                    if (GetPhotoStageScorePayload(
                             g_PhotoStageGlobalState->scoreIndex)
                             ->attemptCount < 999999)
                     {
-                        GetPhotoStageScoreRecord(
+                        GetPhotoStageScorePayload(
                             g_PhotoStageGlobalState->scoreIndex)
                             ->attemptCount++;
                     }
@@ -1035,16 +1039,16 @@ i32 PhotoStageStateView::Update()
                             0, 0x50);
                     }
 
-                    if (!GetPhotoStageScoreRecord(
+                    if (!GetPhotoStageScorePayload(
                              g_PhotoStageGlobalState->scoreIndex)
                              ->bestShotLocked &&
                         this->slots[this->slots[0].captureSlot].display.score >
-                            GetPhotoStageScoreRecord(
+                            GetPhotoStageScorePayload(
                                 g_PhotoStageGlobalState->scoreIndex)
                                 ->scoreData[0])
                     {
                         memcpy(
-                            GetPhotoStageScoreRecord(
+                            GetPhotoStageScorePayload(
                                 g_PhotoStageGlobalState->scoreIndex)
                                 ->scoreData,
                             this->slots[this->slots[0].captureSlot]
@@ -1087,10 +1091,10 @@ i32 PhotoStageStateView::Update()
                                       [this->slots[0].captureSlot]
                                           .bytesPerPixel == 4) +
                                 2);
-                        GetPhotoStageScoreRecord(
+                        GetPhotoStageScorePayload(
                             g_PhotoStageGlobalState->scoreIndex)->slowRate =
                             this->slots[this->slots[0].captureSlot].slowRate;
-                        GetPhotoStageScoreRecord(
+                        GetPhotoStageScorePayload(
                             g_PhotoStageGlobalState->scoreIndex)->captureTime =
                             this->slots[this->slots[0].captureSlot].timestamp;
                         if (g_PhotoStageRuntime != NULL)

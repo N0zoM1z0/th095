@@ -661,9 +661,8 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
         }
 
         ResultScoreEntryView *scoreEntry =
-            reinterpret_cast<ResultScoreEntryView *>(
-                reinterpret_cast<u8 *>(g_ResultSaveData) + 0x460) +
-            g_ResultScreenGlobalState->bestShotIndex;
+            &g_ResultSaveData
+                 ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex];
         scoreEntry->magic = 0x4353;
         scoreEntry->version = 1;
         scoreEntry->size = sizeof(ResultScoreEntryView);

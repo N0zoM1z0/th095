@@ -6342,3 +6342,108 @@ Validation on the active source state:
 - `git diff --check` passes. Current-source Factory receipts remain a separate state and are deferred until the committed campaign checkpoint.
 
 Next evidence route: rotate away from shared input storage. Prefer a bounded resource lifetime, interpreter/state, persistent-format, sound, or independent owner/protocol family with a TH095-local producer plus an independent consumer. Do not use the remaining input padding/unknown words as a reason to infer names.
+
+### SEM-088: bind the photo score payload to the canonical save-data owner
+
+The post-SEM-087 coverage rotation sampled several independent owner families
+before accepting another edit. The `THTX` reserved words in SceneTexture still
+have no SceneTexture consumer; `SoundPlayer+0x52CC` still has only the two
+StartupThread writes and no target reader; and the ANM preload pathname at
+`AnmLoaded+0x20` still has the single writer already deferred by SEM-003. The
+remaining FrontEndController raw offsets found by the lexical router are the
+exact-facing compatibility forms already bounded by SEM-022/023. Persistent
+score data, however, exposed a production representation mismatch: two
+maintainable paths still reconstructed the canonical score owner through raw
+byte roots, and PhotoStage modeled a record-tail view as a full 0x60-byte
+object solely to obtain the record stride.
+
+Scope: route the result-screen and PhotoStage score accesses through
+`ResultSaveDataView::scoreEntries[index]`, and represent PhotoStage's local
+view as the actual 0x48-byte tail beginning at
+`ResultScoreEntryView::detailScore @ +0x18`. This is an owner/representation
+correction only. It does not change the persistent 0x60-byte `SC` record, any
+field offset, parser/writer behavior, or the historical exact-facing source.
+
+Observed TH095-local evidence:
+
+- Fresh target-attested `InitializePhotoResultScreen @ 0x00428E90` forms
+  `saveData + 0x460 + bestShotIndex * 0x60`, then writes the `SC` magic,
+  version, size, index, captured flag, scene high score, and high-score slow
+  rate through that one record base.
+- Fresh target-attested `PhotoStageStateView::Update @ 0x0042AD60` addresses
+  the same persistent array through `saveData + index * 0x60`. Its first
+  best-shot payload dword is at save-data `+0x478`, exactly record `+0x18`;
+  the same path accesses attempt count at save-data `+0x4A4` (record `+0x44`),
+  the best-shot lock/captured flags at `+0x4B0` (record `+0x50`), capture time
+  at `+0x49C` (record `+0x3C`), and best-shot slow rate at `+0x4AC`
+  (record `+0x4C`). These addresses advance by the same 0x60 record stride.
+- The target-exact score parser and writer already establish the other two
+  directions of this protocol: valid `SC` records are copied into and
+  serialized from the 120-entry array with a fixed 0x60-byte extent.
+
+Corroborated source interpretation:
+
+- `ResultSaveDataView` already owns `scoreEntries[120] @ +0x460`, and
+  `ResultScoreEntryView` is already asserted as 0x60 bytes. SEM-063 through
+  SEM-067 independently established the persisted `captureTime`,
+  `attemptCount`, two slow-rate fields, and best-shot lock within that owner.
+- Production `InitializePhotoResultScreen` now takes the selected record as
+  `&g_ResultSaveData->scoreEntries[index]` rather than rebuilding `+0x460` by
+  byte arithmetic.
+- Production `PhotoStageScorePayloadView` begins at the canonical record's
+  `detailScore @ +0x18`. Its extent is now 0x48 bytes, exactly
+  `sizeof(ResultScoreEntryView) - offsetof(ResultScoreEntryView, detailScore)`,
+  so the view ends at the same record boundary instead of nominally extending
+  0x18 bytes into the next record. `GetPhotoStageScorePayload` first selects
+  `scoreEntries[index]`, which owns the 0x60 stride, and only then views that
+  record's tail.
+- `TH095_MATCH_EXACT` deliberately keeps `ResultScreenExact.inl` and
+  `PhotoStageExact.inl` unchanged, including their historical raw roots and
+  0x60-sized PhotoStage helper type. Those forms are compiler-facing source
+  history, not a competing production ownership model.
+
+Inferred meaning:
+
+- PhotoStage's `+0x478` family is a tail/subview of one persistent `SC` record,
+  not an independently allocated or independently strided record family. The
+  former production 0x60 local extent encoded array stepping rather than the
+  physical extent of the subview.
+
+Unknown / deliberately deferred:
+
+- The seven dwords following the first PhotoStage score-payload dword and the
+  explicitly unknown holes in that tail retain their current names. This batch
+  does not infer their individual score-component semantics from adjacency.
+- The original retail C++ type relationship is unknown. The target proves the
+  physical owner, record stride, and member addresses, not whether ZUN used a
+  substructure, casts, macros, or direct field expressions.
+- No new runtime scenario is claimed. This change only removes misleading
+  production pointer arithmetic and type extent around an already working
+  persistent protocol.
+
+Validation on the active source state:
+
+- focused canonical replay of `PhotoStage.cpp` and `ResultScreen.cpp` passed
+  30/30 exact units with zero private-label refreshes;
+- the cold aggregate was executed through an eight-part wrapper that refuses to
+  advance unless the preceding partition returns success, reports its expected
+  unit count, and reports zero label refreshes. The Factory transport lost the
+  wrapper's terminal output after it had advanced into the eighth partition;
+  recovery found no active producer and an unchanged tracked diff. Therefore
+  the first seven partitions were already validated at 624/624. The final
+  ten-source partition was then independently replayed and passed its remaining
+  72/72 units, closing the current source at 696/696 exact with zero private-
+  label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units
+  with pinned VC7.1 to Intel i386 COFF and linked/verified a 780,288-byte PE32
+  image, SHA-256
+  `fad2112f02bf09c98ef90e1cb5b00d05d64174f7d22b40a3c2b631eb10f8b25e`.
+  This is production compile/link closure, not target whole-image byte
+  exactness or runtime validation;
+- tracking remains 697 source-present / 696 exact, and `git diff --check`
+  passes. Current-source Factory receipts remain a separate state.
+
+Next evidence route: rotate away from the score-record owner after checkpoint.
+Prefer an interpreter/state, resource lifetime, sound protocol, or portability
+boundary with a TH095-local producer and independent consumer. The remaining
+PhotoStage score payload holes are not a reason to invent field names.
