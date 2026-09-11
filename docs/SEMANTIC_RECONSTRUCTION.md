@@ -6824,3 +6824,116 @@ or interpreter protocol with a TH095-local producer and independent consumer.
 Keep bit 4 and the remaining unnamed photo-task flags Unknown unless new target
 local evidence closes their protocol.  Semantic phase state remains
 active-incomplete.
+
+### SEM-093: canonicalize the ANM VM lifecycle and draw-layer prefix
+
+Scope: rotate from photo state into ANM ownership and reconcile three production
+representations of the first 0x14 bytes of a TH095 animation VM.  The canonical
+`AnmVmBase` still hid `+0x00..+0x0B` and `+0x10` as raw bytes, the historical
+`AnmVmListNode` view incorrectly suggested that `+0x04` pointed to a separate
+VM, and `AnmVmId.cpp` carried another private lookup view.  Current TH095 target
+evidence shows one physical `0x2CC` VM object participating directly in both a
+persistent lifecycle list and a per-frame draw-layer list.  This batch exposes
+that owner relationship only in production-facing source while preserving the
+historical exact/DIFFBUILD spellings where they are compiler-significant.
+
+Observed TH095-local evidence:
+
+- Target-attested `AnmManagerVmLifecycleView::AddVm @ 0x00444D10` inserts the
+  passed VM pointer itself into the manager list.  Empty-list setup clears VM
+  `+0x08` and publishes the same pointer at manager `+0x381814/+0x381818`;
+  append writes the old tail to VM `+0x08`, stores the new VM through old-tail
+  `+0x00`, and updates the tail.  It then writes the allocator result directly
+  to VM `+0x10`.
+- `RemoveVm @ 0x00444E00` independently consumes VM `+0x00/+0x08` to unlink the
+  same object from the head/tail list before freeing its generated-vertex
+  storage and the VM allocation.  `AnmManager::~AnmManager @ 0x004421B0` starts
+  from manager `+0x381814`, saves each object's `+0x00` successor, and passes
+  that exact object pointer to `RemoveVm`; there is no separate node allocation
+  and no `node->vm` indirection.
+- `AnmManager::GetVm @ 0x00445110` supplies an independent lifecycle-list
+  consumer: it rejects id zero, walks objects through VM `+0x00`, and compares
+  the requested id with each VM `+0x10`.
+- `AnmManagerUpdateView::UpdateVms @ 0x00444B10` establishes a second intrusive
+  protocol every frame.  It clears `+0x04` in each of nine `0x2CC` objects rooted
+  at manager `+0x38181C`, keeps those objects as layer tails, selects the tail by
+  live VM `renderMode @ +0x0C`, links the live VM through tail `+0x04`, advances
+  the tail to that VM, and clears the appended VM's `+0x04`.
+- `AnmManagerDrawLayerView::DrawLayer @ 0x00444C80` independently consumes that
+  second protocol: it begins at the selected embedded head's `+0x04` and follows
+  each live VM's `+0x04` to the end.  Thus the nine embedded 0x2CC objects are
+  draw-layer sentinel heads for this protocol, not a separate ordinary-VM pool.
+
+Corroborated production representation:
+
+- Production `AnmVmBase` now exposes `next @ +0x00`, `nextInDrawLayer @ +0x04`,
+  `previous @ +0x08`, `renderMode @ +0x0C`, and scalar `id @ +0x10`, with layout
+  assertions on the concrete `AnmVm`.  `id` remains a plain 32-bit owner field;
+  this batch does not embed the non-trivial `AnmVmId` handle wrapper and thereby
+  invent a handle-object constructor/lifetime inside every VM.
+- Production `AnmManager::vmListHead/vmListTail` are now `AnmVm *`, and the nine
+  embedded objects at `+0x38181C` are named `drawLayerHeads`.  The existing
+  `AnmVmListNode` type name remains available to exact/DIFFBUILD code because it
+  participates in historical source/decorated compatibility, but its production
+  field view no longer calls `+0x04` a separate `vm` pointer.
+- `AnmVmLifecycleView` names `nextInDrawLayer @ +0x04` in production and asserts
+  the complete `+0/+4/+8/+0x0C/+0x10` prefix.  `AnmVmId.cpp` uses the canonical
+  `AnmVm` owner in production while `TH095_MATCH_EXACT` retains its historical
+  local lookup view, keeping semantic ownership separate from the exact oracle
+  surface.
+
+Inferred meaning:
+
+- `next/previous` form the persistent allocation/lifetime list.  The independent
+  `nextInDrawLayer` link is transient scheduling state rebuilt by `UpdateVms`
+  from each VM's `renderMode` before the draw callbacks consume it.
+- The manager's nine embedded 0x2CC objects act as sentinel heads because the
+  update path uses their addresses as initial tails and only their `+0x04` link
+  participates in the live draw list.  This describes the observed role; it
+  does not claim that the original retail type system used a dedicated sentinel
+  class.
+
+Unknown / deliberately deferred:
+
+- Original retail identifiers and class factoring remain unknown.  The exact
+  reason the sentinel storage is constructed/destructed as full `AnmVm` objects
+  is not inferred beyond the observed layout and list behavior.
+- This batch does not rename render-mode values, other VM flags, generated
+  vertex ownership beyond the already observed destructor behavior, or any
+  script/interpolation state.
+- No runtime scenario, portable-platform behavior, whole-image byte identity,
+  or semantic-phase completion is claimed.
+
+Validation on the final source state:
+
+- the directly affected exact surface (`AnmManager.cpp`, `AnmVmId.cpp`, and
+  `AnmVmLifecycle.cpp`) replayed 40/40 configured units exact with zero
+  private-label refreshes.  An early experiment exposed corrected list-node
+  declarations to `TH095_MATCH_EXACT` and caused only compiler-private label
+  renumbering; that experiment was narrowed so the final exact-facing
+  declarations retain their historical shape, and no manifest refresh was
+  accepted;
+- because `AnmManager.hpp` is a shared owner/layout header, four cold manifest
+  partitions of 174 units each covered all 88 sources: 696/696 configured units
+  exact with zero private-label refreshes;
+- `scripts/build-whole.py --compile-only` cold-compiled all 88 production
+  translation units as Intel i386 COFF with pinned VC7.1, and `--link-only`
+  linked and verified a PE32 Windows GUI executable.  The final reconstructed
+  artifact SHA-256 is
+  `d6586e2dab1195c88f23a7dd48a83fea6158931e4d6ae75c3851a93d924f5190`.
+  Product closure is distinct from target whole-image exactness and runtime
+  validation.
+
+Artifact state:
+
+- no `.analysis/gpt-web/` scratch root, target export, Wine prefix, analysis
+  database copy, or probe worktree was created for this transaction; target
+  evidence came from bounded Factory-attested Ghidra decompiles;
+- the four pre-existing untracked paths remain outside this transaction and are
+  not staged as evidence.
+
+Next evidence route: rotate away from ANM VM lifecycle/draw scheduling after
+checkpoint.  A later session should prefer a bounded persistent/ABI,
+sound/state, interpreter, or resource-lifetime family with an independent
+TH095-local producer and consumer; do not treat the now-coherent ANM prefix as
+semantic-phase closure.  Semantic phase state remains active-incomplete.

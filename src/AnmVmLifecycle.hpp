@@ -12,7 +12,11 @@ namespace th095
 struct AnmVmLifecycleView
 {
     AnmVmLifecycleView *next;
+#if defined(TH095_MATCH_EXACT)
     u8 unknown004[4];
+#else
+    AnmVmLifecycleView *nextInDrawLayer;
+#endif
     AnmVmLifecycleView *previous;
     u32 renderMode;
     struct Id

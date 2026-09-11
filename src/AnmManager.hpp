@@ -260,9 +260,19 @@ struct AnmVmBase
         this->blendMode = 1;
     }
 
+#if defined(TH095_MATCH_EXACT)
     u8 unknown000[0x0c];
+#else
+    AnmVm *next;                    // +0x000
+    AnmVm *nextInDrawLayer;         // +0x004
+    AnmVm *previous;                // +0x008
+#endif
     u32 renderMode;                 // +0x00c
+#if defined(TH095_MATCH_EXACT)
     u8 unknown010[4];
+#else
+    i32 id;                         // +0x010
+#endif
     void *generatedVertices;        // +0x014
     Float3 rotation;                // +0x018
     Float3 angleVel;                // +0x024
@@ -431,6 +441,14 @@ typedef char AnmVmAnmFileAt230[(offsetof(AnmVm, anmFile) == 0x230) ? 1 : -1];
 typedef char AnmVmCurrentInstructionAt240[(offsetof(AnmVm, currentInstruction) == 0x240) ? 1 : -1];
 typedef char AnmVmLoadedSpriteAt244[(offsetof(AnmVm, loadedSprite) == 0x244) ? 1 : -1];
 typedef char AnmVmSizeIs2CC[(sizeof(AnmVm) == 0x2cc) ? 1 : -1];
+#ifndef TH095_MATCH_EXACT
+typedef char AnmVmNextAt0[(offsetof(AnmVm, next) == 0x0) ? 1 : -1];
+typedef char AnmVmNextInDrawLayerAt4[
+    (offsetof(AnmVm, nextInDrawLayer) == 0x4) ? 1 : -1];
+typedef char AnmVmPreviousAt8[(offsetof(AnmVm, previous) == 0x8) ? 1 : -1];
+typedef char AnmVmRenderModeAtC[(offsetof(AnmVm, renderMode) == 0xc) ? 1 : -1];
+typedef char AnmVmIdAt10[(offsetof(AnmVm, id) == 0x10) ? 1 : -1];
+#endif
 
 inline void AnmLoaded::SetAndExecuteScriptIdx(
     AnmVm *vm, i32 scriptIndex)
@@ -466,12 +484,22 @@ struct VertexTex1Xyzrhw
     f32 v;
 };
 
+// Historical exact-facing type name for the 0x18-byte prefix of an AnmVm.
+// The target does not allocate a separate list node: these fields overlay the
+// VM itself and participate in its lifecycle and per-frame draw-layer chains.
 struct AnmVmListNode
 {
     AnmVmListNode *next;
+#if defined(TH095_MATCH_EXACT)
     AnmVm *vm;
     AnmVmListNode *previous;
     u8 unknown00c[8];
+#else
+    AnmVmListNode *nextInDrawLayer;  // +0x04
+    AnmVmListNode *previous;         // +0x08
+    u32 renderMode;                  // +0x0c
+    i32 id;                          // +0x10
+#endif
     void *generatedVertices;
 };
 
@@ -578,9 +606,15 @@ struct AnmManager
             u8 unknown3817f4[0x20];
         };
     };
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     AnmVmListNode *vmListHead;               // +0x381814
     AnmVmListNode *vmListTail;               // +0x381818
     AnmVm preallocatedVms[9];                // +0x38181c
+#else
+    AnmVm *vmListHead;                       // +0x381814
+    AnmVm *vmListTail;                       // +0x381818
+    AnmVm drawLayerHeads[9];                 // +0x38181c
+#endif
 #ifdef TH095_MATCH_EXACT
     u32 unknown383148;
 #else
@@ -679,7 +713,13 @@ typedef char AnmManagerSurfacesAt11DC[(offsetof(AnmManager, surfaces) == 0x11dc)
 typedef char AnmManagerVerticesAt1774[(offsetof(AnmManager, untexturedVertices) == 0x1774) ? 1 : -1];
 typedef char AnmManagerVertexBufferAt17C8[(offsetof(AnmManager, vertexBuffer) == 0x17c8) ? 1 : -1];
 typedef char AnmManagerVmListAt381814[(offsetof(AnmManager, vmListHead) == 0x381814) ? 1 : -1];
-typedef char AnmManagerPreallocatedAt38181C[(offsetof(AnmManager, preallocatedVms) == 0x38181c) ? 1 : -1];
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+typedef char AnmManagerPreallocatedAt38181C[
+    (offsetof(AnmManager, preallocatedVms) == 0x38181c) ? 1 : -1];
+#else
+typedef char AnmManagerDrawLayerHeadsAt38181C[
+    (offsetof(AnmManager, drawLayerHeads) == 0x38181c) ? 1 : -1];
+#endif
 #ifndef TH095_MATCH_EXACT
 typedef char AnmManagerNextVmIdAt383148[
     (offsetof(AnmManager, nextVmId) == 0x383148) ? 1 : -1];

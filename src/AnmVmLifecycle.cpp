@@ -152,6 +152,16 @@ struct AnmManagerUpdateView
     i32 UpdateVms();
 };
 
+typedef char AnmVmLifecycleNextAt0[
+    (offsetof(AnmVmLifecycleView, next) == 0x0) ? 1 : -1];
+#ifndef TH095_MATCH_EXACT
+typedef char AnmVmLifecycleNextInDrawLayerAt4[
+    (offsetof(AnmVmLifecycleView, nextInDrawLayer) == 0x4) ? 1 : -1];
+#endif
+typedef char AnmVmLifecyclePreviousAt8[
+    (offsetof(AnmVmLifecycleView, previous) == 0x8) ? 1 : -1];
+typedef char AnmVmLifecycleRenderModeAtC[
+    (offsetof(AnmVmLifecycleView, renderMode) == 0xc) ? 1 : -1];
 typedef char AnmVmLifecycleIdAt10[
     (offsetof(AnmVmLifecycleView, id) == 0x10) ? 1 : -1];
 typedef char AnmManagerVmLifecycleIdAt383148[

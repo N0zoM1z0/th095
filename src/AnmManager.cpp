@@ -999,8 +999,13 @@ AnmManager::AnmManager()
 
 AnmManager::~AnmManager()
 {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     AnmVmListNode *next;
     AnmVmListNode *node;
+#else
+    AnmVm *next;
+    AnmVm *node;
+#endif
 
     node = this->vmListHead;
     while (node != NULL)
