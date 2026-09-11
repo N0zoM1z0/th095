@@ -6157,3 +6157,85 @@ Validation on the recovered source state:
 - `scripts/build-whole.py` cold-compiled all 88 production translation units to Intel i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows PE. This is production compile/link closure, not target whole-image byte exactness or runtime validation.
 
 Next evidence route: rotate away from SceneSelect asset-worker cancellation. Prefer a bounded Bullet/state, persistent-format, resource lifetime, or independent owner/protocol family with a TH095-local producer plus an independent consumer; do not infer neighboring SceneSelect flag bits merely from their placement.
+
+### SEM-085: type the second Supervisor worker lifetime member
+
+Scope: reconcile the canonical production Supervisor views at `+0x7A0` without
+inventing a callback or business role. `Main.hpp` already modeled the 24-byte
+range as a second `ReplayScanWorker`, and MAIN-025 recorded target constructor
+and destructor calls for both worker-shaped members, while
+`SupervisorRuntime.hpp` still exposed the same bytes as `unknown7a0[0x18]`.
+This batch propagates only the target-proven type/lifetime representation into
+the shared runtime view.
+
+Observed TH095-local evidence:
+
+- Target-attested `Supervisor::Supervisor @ 0x00426350` invokes the same
+  worker-shaped constructor at receiver offsets `+0x648` and `+0x7A0`. In the
+  decompile these are `param_1 + 0x192` and `param_1 + 0x1E8`, respectively,
+  where the receiver is represented as a dword pointer.
+- Target-attested `Supervisor::~Supervisor @ 0x00426450` invokes the same
+  destructor first for `this+0x7A0` and then for `this+0x648`, establishing the
+  reverse lifetime order expected for two members of the same type.
+- The canonical exact lifecycle record MAIN-025 independently preserves the
+  same two 0x18-byte construction/destruction phases. The constructor symbol at
+  `0x00454E50` is linker-folded with a four-dword-zeroing body, so this batch
+  relies on the paired Supervisor lifecycle and member extent rather than
+  assigning duplicate authored-byte identity to that folded symbol.
+- A bounded target xref probe for the absolute addresses spanning Supervisor
+  `+0x7A0` found no independent business access. That negative result is kept as
+  an evidence boundary: it does not erase the lifecycle type, but it prevents
+  claiming a specific callback, scan domain, or protocol for the second worker.
+
+Corroborated source interpretation:
+
+- Production `SupervisorRuntime.hpp` now represents `+0x7A0` as
+  `ReplayScanWorker secondaryReplayScanWorker` and asserts the offset. The
+  member remains exactly 0x18 bytes, so `backbufferClearColor @ +0x7B8` and the
+  complete `Supervisor` size remain unchanged.
+- `Main.hpp` already carried the same production owner spelling at `+0x7A0`,
+  while `MainExact.hpp` keeps the historical `unknown7a0[0x18]` exact-facing
+  shape. This batch therefore converges production owner views without changing
+  the target-facing source oracle.
+
+Inferred meaning:
+
+- `+0x7A0` owns a second ReplayScanWorker-shaped lifetime object. The word
+  "secondary" describes its position relative to the active `replayScanWorker
+  @ +0x648`; it is not evidence that TH095 actively uses it for a second replay
+  scan in the observed runtime paths.
+
+Unknown / deliberately deferred:
+
+- No TH095-local producer/consumer beyond Supervisor construction and
+  destruction currently establishes what callback, if any, the `+0x7A0`
+  worker runs. Its operational role, synchronization lane, and relationship to
+  replay or other asynchronous tasks therefore remain Unknown.
+- The opaque `ReplayScanWorker::unknown010 @ +0x10` field is unchanged. This
+  batch does not reinterpret the primary worker at `+0x648`, SceneSelect asset
+  cancellation, replay-browser state, or thread-close protocols.
+- No new runtime scenario is claimed. This is an owner/type representation
+  correction over target-observed lifecycle evidence.
+
+Validation on the active source state:
+
+- `SoundPlayer.cpp`, the only current production include consumer of
+  `SupervisorRuntime.hpp`, replayed all 27 configured exact units exact with
+  zero private-label refreshes; its exact/DIFFBUILD branches continue to use
+  the historical `Supervisor.hpp` view;
+- because the changed header describes the process-global Supervisor owner, the
+  cold aggregate was closed across all 88 manifest sources. A monolithic run
+  reached the first 43 sources before its watchdog; those 43 sources supplied
+  362 terminal exact units. The remaining mutually exclusive source groups
+  supplied 151, 67, and 116 exact units, for 696/696 total with zero
+  private-label refreshes;
+- `scripts/build-whole.py --compile-only` cold-compiled all 88 production
+  translation units to Intel i386 COFF with pinned VC7.1, and `--link-only`
+  linked and verified the reconstructed Windows PE. This is production
+  compile/link closure, not target whole-image byte exactness or runtime
+  validation.
+
+Next evidence route: rotate away from Supervisor worker storage. Prefer a
+bounded persistent-format, resource lifetime, interpreter/state, or independent
+owner protocol with a TH095-local producer plus an independent consumer. Do not
+assign a business role to the `+0x7A0` worker without new target-local evidence.

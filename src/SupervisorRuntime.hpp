@@ -218,7 +218,7 @@ struct Supervisor
     f64 lagNumerator;                                // +0x78c
     f64 lagDenominator;                              // +0x794
     f32 currentFps;                                  // +0x79c
-    u8 unknown7a0[0x18];
+    ReplayScanWorker secondaryReplayScanWorker;      // +0x7a0
     D3DCOLOR backbufferClearColor;                   // +0x7b8
 
     Supervisor();
@@ -298,6 +298,7 @@ typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanWorker) =
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
 typedef char SupervisorCriticalLockCountsAt70C[(offsetof(Supervisor, criticalSectionLockCounts) == 0x70c) ? 1 : -1];
 typedef char SupervisorLoadingVmsAt714[(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x714) ? 1 : -1];
+typedef char SupervisorSecondaryReplayScanAt7A0[(offsetof(Supervisor, secondaryReplayScanWorker) == 0x7a0) ? 1 : -1];
 typedef char SupervisorClearColorAt7B8[(offsetof(Supervisor, backbufferClearColor) == 0x7b8) ? 1 : -1];
 
 extern Supervisor g_Supervisor;
