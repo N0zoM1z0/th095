@@ -4452,3 +4452,120 @@ exit audit across the remaining recorded Unknowns. Do not promote selector
 producer/consumer evidence. If none has materially strengthened, close the
 current-source cold aggregate exact and Windows i386 whole-product milestone and
 record semantic readiness at that evidence boundary.
+
+### SEM-062 — independent semantic readiness exit audit
+
+**Scope.** Perform the independent TH095-local semantic exit audit requested by
+SEM-061 after the two newly accepted compact-enemy corrections. This checkpoint
+retests the strongest retained Unknown families against the canonical target,
+current exact ledgers, source/history, and the lexical debt router. It accepts no
+new gameplay meaning merely to reduce raw-offset or anonymous-field counts.
+
+**Observed.** A fresh direct-displacement audit of the verified TH095 v1.02a
+`.text`, followed by target-attested Ghidra function ownership, finds no new
+producer/consumer pair in the retained families:
+
+- `+0x2C50` has exactly two direct reads, in canonical
+  `EclOperands::ResolveInt @ 0x0040FAE0` and
+  `Enemy::ResolveFloat @ 0x004105A0`; no direct writer appears.
+- `+0x2CA4` has the canonical `RunEcl` opcode-116 write plus the enemy-manager
+  spawn-template `-1` initialization, but no direct reader. `+0x2CA8` has only
+  the opcode-116 and opcode-128 writes and no direct reader.
+- compact `+0x2984` has no direct displacement access in the target; current
+  evidence remains aggregate copy/reset only.
+- manager `+0x4DFC` has three direct reads: two in canonical
+  `EclManager::RunEcl @ 0x00408E70` and one in
+  `Enemy::UpdateShotAndAnm @ 0x00413030`. No direct store appears, while the
+  neighboring proven primary bank at `+0x4DF8` retains its independent resource
+  load/store path.
+- `+0x2C4C` remains a real target-accessed float surface in `RunEcl` and
+  `EclRunHigh::DispatchShotInstruction @ 0x00412670`, plus constructor zeroing;
+  those accesses do not resolve the already documented compact cross-view
+  ownership conflict.
+
+The target-attested function boundaries agree with the canonical reconstruction
+ledger: `RunEcl`, both operand resolvers, shot dispatch, shot/ANM update, and the
+photo-enemy-manager constructor are all already exact authored units. No newly
+identified target function changes the existing evidence classifications.
+
+**Corroborated.** The current repository records independently reach the same
+boundaries. SEM-032 records the write-only delayed-callback pair at
+`+0x2CA4/+0x2CA8`; SEM-040 records the read-only alternate ANM bank at `+0x4DFC`;
+SEM-049 records the inaccessible compact dword at `+0x2984`; earlier movement
+and shot-family records preserve the `+0x2C4C` conflict; and the selector
+records retain `0x2752 / +0x2C50` as read-only. The semantic-debt scan remains a
+routing heuristic only: its high counts are dominated by target-exact ECL views,
+compatibility branches, and previously bounded unknown storage rather than a new
+independent owner/protocol family.
+
+**Inferred.** No remaining candidate currently has a materially stronger
+TH095-local producer/consumer/lifecycle chain than the accepted families in
+SEM-060 and SEM-061. The maintainable state is therefore to retain these fields
+as Unknown or structurally bounded, rather than manufacture names from TH08,
+adjacency, or the generic `Enemy` layout. This satisfies the game-local semantic
+readiness objective at the present evidence boundary.
+
+**Unknown.** Selector `0x2752 / +0x2C50` still lacks a writer and protocol role;
+`+0x2CA4/+0x2CA8` still lack a consuming dispatch; compact `+0x2984` still lacks
+a field-specific access; alternate ANM bank `+0x4DFC` still lacks a producer,
+resource identity, and lifetime protocol; `+0x2C4C` retains its cross-view
+conflict; and the `+0x4CA4..+0x4CAB` tail packet plus `timer4cac` gameplay role
+remain unresolved. These are intentional Unknowns, not omitted reconstruction
+claims.
+
+**Cold exact milestone.** A single all-source invocation exceeded the Factory
+transport window and terminated without leaving an active producer or retained
+log. The campaign then replayed the same manifest as eight mutually exclusive
+11-source partitions without changing the manifest. The partition exact-unit
+counts were `71 + 134 + 40 + 118 + 133 + 58 + 43 + 99 = 696`. All 88 manifest
+sources and all 696 configured units pass exactly, with zero private-label
+refresh in every partition. The partitioning is transport choreography only; it
+does not change the exactness oracle or create eight independent semantic
+claims.
+
+**Whole-product milestone.** `scripts/build-whole.py` cold-compiles all 88
+production translation units with the pinned VC7.1 toolchain to i386 COFF and
+successfully links/verifies `build/whole-validation/th095-reconstructed.exe` as
+a Windows GUI PE32 image at base `0x00400000`. The produced image is 780288 bytes
+with SHA-256
+`37ac38caf6bf0d96817d74c8dda148c35f1d6c523e239efcb3f4415fcaab6251`.
+Successful linkage is production closure only and is not reported as whole-image
+byte exactness. Wine's no-window-driver diagnostics are host-environment noise
+and did not fail compile or link.
+
+**Maintenance gate.** `python3 scripts/ci.py` passes: Python compilation, shell
+syntax, target/tracking validation, the 696-unit match graph, the 88-source
+whole-build graph, all 43 workflow unit tests, generated progress checks, status
+smoke test, and whitespace checks are clean. `git diff --check` also passes.
+The status report remains 1880 provisional candidates, 697 source-present
+functions, and 696 exact units totaling 336486 exact authored bytes.
+
+**Receipt state.** The exact and whole-product results above are repo-native
+current-source validation. Factory accepted-receipt refresh is intentionally a
+separate state and is performed only after this documentation checkpoint is
+committed, so the receipt source binding is not immediately made stale by the
+checkpoint itself.
+
+**Runtime / portability state.** Runtime storage and runtime scenarios remain
+separate and unvalidated by this semantic campaign. The four pre-existing
+unknown/external-current-state untracked paths (`EnemyManagerUpdate.i`,
+`config/runtime-scenarios.json`, `droid.resume.txt`, and
+`scripts/runtime-diff.py`) remain untouched and excluded from staging. Portable
+Windows/Linux/Web work has not begun and cannot substitute for the historical
+VC7.1 prerequisite completed above.
+
+**Analysis artifacts.** `.analysis/` started and ends at exactly 1408444500
+bytes. No current-session `.analysis` artifact was created, retained, or
+removed. The legacy `.analysis/gdb-demo-old-20260910a` tree remains untouched at
+1309978892 bytes; its retained files above 20 MiB remain the pre-existing Wine
+`system32/mshtml.dll` (26745522 bytes), `system32/wined3d.dll` (23398925 bytes),
+and `syswow64/mshtml.dll` (23348604 bytes). Factory-owned Ghidra provider state
+was queried read-only, and one-shot probes used command-local `/tmp` storage that
+was removed.
+
+**Semantic exit.** TH095 semantic reconstruction is ready at this independent
+game-local evidence boundary. Resume semantic source editing only when new
+TH095-local evidence materially strengthens one of the recorded Unknowns or
+identifies a new bounded owner/protocol family. Factory receipt maintenance,
+runtime validation, and portable-platform reconstruction remain separate next
+states and must not be conflated with this semantic-readiness result.
