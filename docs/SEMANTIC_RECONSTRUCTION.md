@@ -5577,3 +5577,86 @@ The still-generic ScreenEffect bits 4 through 6 are not a default continuation;
 select them only if independent TH095-local producers and multiple consumers
 bound a common protocol. Prefer another owner/lifetime, resource/state, or
 persistent boundary rather than semantic naming by adjacency.
+
+
+### SEM-074: name the photo-camera focus-charge frame counter
+
+The post-SEM-073 routing pass deliberately tested several coverage surfaces
+instead of continuing the adjacent screen-effect flags. Background/ANM
+screen-shake storage was already closed by an earlier semantic record, the score
+header fields were already bounded, and bounded Controller/PBG/Bullet scans did
+not produce a new multi-consumer interpretation strong enough to name their
+remaining unknown storage. The camera charge loop did expose one missed
+propagation: an already exact, target-understood field at camera `+0xBB8` was
+still named `unknownbb8` in the maintainable production layout.
+
+Observed TH095-local evidence:
+
+- Target-attested `PhotoCameraState::UpdateCharge @ 0x00433D10` accesses the
+  signed dword at receiver `+0xBB8` throughout one bounded state protocol. When
+  both required input bits are held, the field increments; reaching five sets
+  the focused flag, starts SFX `0x2A` when sound is enabled, and restarts the
+  charge timer.
+- While focus remains active, the same counter continues to increment. A value
+  greater than 60 permits the repeated script-`0x124` effect independently of
+  the auxiliary timer's even-frame pulse, and the focused charge formula uses a
+  distinct branch below frame 70 before falling through to the terminal fast
+  rate.
+- Losing either required input clears the focused flag, resets `+0xBB8` to
+  zero, and stops SFX `0x2A`. Reaching full charge also clears focus and resets
+  the same field before returning to the normal-charge path.
+- The target decompile therefore supplies producer, threshold-consumer, and
+  reset/lifetime evidence for the same storage. These observations are local to
+  the canonical Japanese TH095 v1.02a target; TH08 is not needed for the field
+  interpretation.
+
+Corroborated source interpretation:
+
+- Exact record PHOTO-010 already describes the same target routine as the
+  five-frame focus-acquisition and focused-charge loop. SEM-074 propagates that
+  already observed behavior into the natural production structure rather than
+  assigning a new behavior to the routine.
+- Production `PhotoCameraState` now names `+0xBB8` `focusChargeFrames`. The
+  name intentionally covers both the short acquisition prefix and the focused
+  charging lifetime; it is not conflated with the separate `focusHeldFrames @
+  +0xBBC` field.
+- `TH095_MATCH_EXACT` retains the historical `unknownbb8` member spelling, and
+  `UpdateCharge` selects the corresponding member token through a source-local
+  compatibility macro. No storage width, offset, control flow, or ABI changes.
+
+Inferred meaning:
+
+- `focusChargeFrames` is the frame-domain progress counter for the camera's
+  focus-assisted charging mode. Its thresholds are behavioral protocol values,
+  not evidence that the counter is a generic timer object or that it has an
+  independent owner outside `PhotoCameraState`.
+
+Unknown / deliberately deferred:
+
+- SEM-074 does not reinterpret `focusHeldFrames @ +0xBBC`, the input-bit
+  identities, or the other camera flags. Their existing names/protocol records
+  stand independently and no new adjacency-based semantics are inferred.
+- No new runtime scenario is claimed. This is a source-meaning correction over
+  target-proven reads/writes and does not alter the runtime transition graph.
+- The negative Background, Controller, PBG, and Bullet routing probes above are
+  only coverage-rotation results; they are not completion evidence and do not
+  make their remaining unknown fields semantic debt-free.
+
+Validation on the active source state:
+
+- the directly affected include surface replayed exact with zero private-label
+  refreshes: `PhotoCamera.cpp` 11/11, `PhotoGame.cpp` 22/22, and
+  `PhotoStage.cpp` 6/6, for 39/39 configured units;
+- because `PhotoCamera.hpp` is shared, the cold aggregate was closed through
+  eight mutually exclusive manifest-source partitions covering all 88 sources
+  and all 696 configured units: 696/696 exact, zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units to
+  Intel i386 COFF with the pinned VC7.1 toolchain and linked/verified the
+  reconstructed Windows PE. This is production compile/link closure, not
+  whole-image byte exactness or runtime validation.
+
+Next evidence route: after checkpoint, rotate away from the camera/photo state
+family. Prefer a bounded resource, owner/lifetime, front-end state, persistent
+format, or another subsystem protocol with independent TH095-local producers
+and consumers. A failed bounded route remains a routing event, not a semantic
+phase boundary.

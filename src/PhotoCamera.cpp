@@ -999,6 +999,12 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
     return locals.targetCount;
 }
 
+#if defined(TH095_MATCH_EXACT)
+#define TH095_PHOTO_FOCUS_CHARGE_FRAMES unknownbb8
+#else
+#define TH095_PHOTO_FOCUS_CHARGE_FRAMES focusChargeFrames
+#endif
+
 void PhotoCameraState::UpdateCharge()
 {
     struct ChargeLocals
@@ -1016,8 +1022,8 @@ void PhotoCameraState::UpdateCharge()
             if (PhotoInputMask(g_PhotoInput, 2) != 0 &&
                 PhotoInputMask(g_PhotoInput, 1) != 0)
             {
-                this->unknownbb8++;
-                if (this->unknownbb8 >= 5)
+                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES++;
+                if (this->TH095_PHOTO_FOCUS_CHARGE_FRAMES >= 5)
                 {
                     this->flags |= PHOTO_FLAG_FOCUSED;
                     if (PHOTO_SOUND_SUPPRESSED == 0)
@@ -1034,7 +1040,7 @@ void PhotoCameraState::UpdateCharge()
             }
             else
             {
-                this->unknownbb8 = 0;
+                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES = 0;
             }
         }
 
@@ -1070,7 +1076,7 @@ normalCharge:
         {
             PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2a));
         }
-        if (this->unknownbb8 > 60 ||
+        if (this->TH095_PHOTO_FOCUS_CHARGE_FRAMES > 60 ||
             PhotoTimerAdvancedOnEvenFrame(&this->auxiliaryTimer))
         {
 #ifdef TH095_MATCH_EXACT
@@ -1082,14 +1088,14 @@ normalCharge:
                     0x124, &g_PhotoGame->playerPosition);
 #endif
         }
-        this->unknownbb8++;
+        this->TH095_PHOTO_FOCUS_CHARGE_FRAMES++;
         this->flags |= PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
         this->focusHeldFrames = 0;
         if (PhotoInputMask(g_PhotoInput, 2) == 0 ||
             PhotoInputMask(g_PhotoInput, 1) == 0)
         {
             this->flags &= ~PHOTO_FLAG_FOCUSED;
-            this->unknownbb8 = 0;
+            this->TH095_PHOTO_FOCUS_CHARGE_FRAMES = 0;
             PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2a));
             goto normalCharge;
         }
@@ -1097,15 +1103,15 @@ normalCharge:
 focusedCharge:
         {
             this->charge +=
-                this->unknownbb8 < 70
-                    ? (((f32)this->unknownbb8 * 40.0f / 800.0f) / 30.0f +
+                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES < 70
+                    ? (((f32)this->TH095_PHOTO_FOCUS_CHARGE_FRAMES * 40.0f / 800.0f) / 30.0f +
                        0.00125f) * g_AnmGameSpeed
                     : 0.005f * g_AnmGameSpeed;
             if (this->charge > 1.0f)
             {
                 this->charge = 1.0f;
                 this->flags &= ~PHOTO_FLAG_FOCUSED;
-                this->unknownbb8 = 0;
+                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES = 0;
                 PhotoSoundPlayer()->StopSoundByIdx(static_cast<SoundIdx>(0x2a));
                 goto normalCharge;
             }
@@ -1113,6 +1119,8 @@ focusedCharge:
         }
     }
 }
+
+#undef TH095_PHOTO_FOCUS_CHARGE_FRAMES
 
 void PhotoCameraState::Draw()
 {

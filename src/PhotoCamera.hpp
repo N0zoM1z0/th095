@@ -137,7 +137,11 @@ struct PhotoCameraState
     i32 photosTaken;                  // +0xbac
     i32 photoLimit;                   // +0xbb0
     u32 flags;                        // +0xbb4
+#if defined(TH095_MATCH_EXACT)
     i32 unknownbb8;                   // +0xbb8
+#else
+    i32 focusChargeFrames;            // +0xbb8
+#endif
     i32 focusHeldFrames;              // +0xbbc
     i32 captureRequested;             // +0xbc0
     Float3 viewfinderPosition;        // +0xbc4
