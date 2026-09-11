@@ -6055,3 +6055,37 @@ Validation on the active source state:
 - no shared header or ABI extent changed, so repository-wide exact/product gates are deferred to the next committed campaign milestone.
 
 Next evidence route: rotate away from Background stage-script cursor storage. Prefer another bounded resource lifetime, persistent-format, Bullet, Supervisor, or independent protocol family with multiple TH095-local producer/consumer observations.
+
+### SEM-082: propagate ANM texture bytes-per-pixel storage
+
+Scope: align the ANM preload producers with the already named runtime meaning of `AnmTextureEntryView +0x0C`. The shared entry type already exposes `bytesPerPixel` at that offset, but the three texture-creation paths still wrote the same slot through the inherited `unknown00c` alias. This batch changes only the production spelling of those writes; the 0x10-byte entry layout, texture-format tables, serialized ANM records, texture creation behavior, and exact-facing member spelling are unchanged.
+
+Observed TH095-local evidence:
+
+- Current target-attested `AnmManagerPreloadView::CreateTextureFromFile @ 0x00442E10` normalizes the requested format and, after successful texture creation and alpha processing, writes `g_TextureFormatBytesPerPixel[format] @ 0x00496F28` to entry dword `+0x0C`.
+- Current target-attested `CreateTextureFromAnm @ 0x00442E90` uses the same bytes-per-pixel table to form the source row pitch for `D3DXLoadSurfaceFromMemory`, then writes the normalized format's table value to entry `+0x0C`.
+- Current target-attested `CreateEmptyTexture @ 0x00442FC0` creates the requested D3D texture and writes the corresponding `g_TextureFormatBytesPerPixel` value directly to `entry +0x0C`.
+- Current target-attested `ResultSaveDataView::LoadScenePreviewTexture @ 0x004362A0` independently reads the dword at each 0x10-byte ANM texture entry's `+0x0C` and scales it by the fixed 256-pixel row width when clearing preview texture rows. The exact source names the same slot `bytesPerPixel`.
+
+Corroborated source interpretation:
+
+- The canonical production table is `g_TextureFormatBytesPerPixel[6] = {4, 4, 2, 2, 3, 2}`. Its companion `g_TextureFormatD3D8Mapping` table carries the D3D format identity separately.
+- The PhotoStage capture path independently models the same 0x10-byte texture entry with `bytesPerPixel @ +0x0C`; it multiplies capture widths and border widths by this value and tests `bytesPerPixel == 4` when choosing the saved image component count.
+- Production `AnmPreload.cpp` now writes `bytesPerPixel` in all three creation paths. `TH095_MATCH_EXACT` deliberately retains the historical `unknown00c` spelling, preserving compiler-private exact-unit source identity without changing the generated store.
+
+Inferred meaning:
+
+- After a texture entry has been created, `+0x0C` is the byte stride of one pixel for that entry's selected texture format. `bytesPerPixel` is therefore the narrowest maintainable production name supported by both the format-table producers and independent row/capture-size consumers.
+
+Unknown / deliberately deferred:
+
+- The existing union also exposes `format`; this batch does not prove that alias has an independent valid lifecycle and does not remove or reinterpret it. No retail source spelling is claimed.
+- This batch does not reinterpret texture-entry `rawData`, serialized ANM header reserved words, D3D surface pitch, or alpha-bleed behavior. No fresh runtime scenario is claimed.
+
+Validation on the active source state:
+
+- `anm-create-texture-from-file`, `anm-create-texture-from-anm`, `anm-create-empty-texture`, and the independent `scene-preview-load-texture` consumer replayed 4/4 exact against the canonical target; all compared bytes matched and the producer relocations remained bound to `g_TextureFormatBytesPerPixel @ 0x00496F28`;
+- changed `AnmPreload.cpp` compiled with its repository-selected normal production profile under pinned VC7.1 13.10.3077 and produced an Intel i386 COFF object in command-local temporary storage;
+- no shared header or ABI extent changed, so repository-wide exact/product gates are deferred to the next committed campaign milestone.
+
+Next evidence route: rotate away from ANM texture-entry stride storage. Prefer another bounded state, resource lifetime, persistent-format, sound/replay, or interpreter protocol with at least one TH095-local producer and an independent consumer; do not reopen the unconsumed Bullet `+0x334/+0x350/+0x356` slots without new evidence.

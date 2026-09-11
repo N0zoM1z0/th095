@@ -166,7 +166,11 @@ i32 TH095_ANM_PRELOAD_RECEIVER::CreateTextureFromFile(
     }
 
     this->ApplyTextureAlphaBleed(entry);
+#if defined(TH095_MATCH_EXACT)
     entry->unknown00c = g_TextureFormatBytesPerPixel[format];
+#else
+    entry->bytesPerPixel = g_TextureFormatBytesPerPixel[format];
+#endif
     return ZUN_SUCCESS;
 }
 
@@ -201,8 +205,13 @@ i32 TH095_ANM_PRELOAD_RECEIVER::CreateTextureFromAnm(
         g_TextureFormatD3D8Mapping[header->format],
         g_TextureFormatBytesPerPixel[header->format] * header->width, NULL,
         &sourceRect, D3DX_FILTER_NONE, 0);
+#if defined(TH095_MATCH_EXACT)
     reinterpret_cast<AnmTextureEntryView *>(outTexture)->unknown00c =
         g_TextureFormatBytesPerPixel[format];
+#else
+    reinterpret_cast<AnmTextureEntryView *>(outTexture)->bytesPerPixel =
+        g_TextureFormatBytesPerPixel[format];
+#endif
 
     if (textureSurfaceLevel != NULL)
     {
@@ -227,8 +236,13 @@ i32 TH095_ANM_PRELOAD_RECEIVER::CreateEmptyTexture(
     D3DXCreateTexture(
         g_Supervisor.d3dDevice, width, height, 1, 0,
         g_TextureFormatD3D8Mapping[format], D3DPOOL_MANAGED, outTexture);
+#if defined(TH095_MATCH_EXACT)
     reinterpret_cast<AnmTextureEntryView *>(outTexture)->unknown00c =
         g_TextureFormatBytesPerPixel[format];
+#else
+    reinterpret_cast<AnmTextureEntryView *>(outTexture)->bytesPerPixel =
+        g_TextureFormatBytesPerPixel[format];
+#endif
     return ZUN_SUCCESS;
 }
 
