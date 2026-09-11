@@ -336,8 +336,13 @@ struct ExtendedBulletView
     ZunTimer activeTimer;
     i32 ownerTag;
     u8 unknown334[0x14];
+#if defined(TH095_MATCH_EXACT)
     i32 field348;
     i32 field34c;
+#else
+    u32 activeTransformFlags;
+    u32 transformFlags;
+#endif
     i16 unknown350;
     u16 state;
     u16 offscreenFrames;
@@ -369,6 +374,17 @@ typedef char ExtendedBulletAngleAt300[
     (offsetof(ExtendedBulletView, angle) == 0x300) ? 1 : -1];
 typedef char ExtendedBulletOwnerAt330[
     (offsetof(ExtendedBulletView, ownerTag) == 0x330) ? 1 : -1];
+#if defined(TH095_MATCH_EXACT)
+typedef char ExtendedBulletField348At348[
+    (offsetof(ExtendedBulletView, field348) == 0x348) ? 1 : -1];
+typedef char ExtendedBulletField34CAt34C[
+    (offsetof(ExtendedBulletView, field34c) == 0x34c) ? 1 : -1];
+#else
+typedef char ExtendedBulletActiveTransformFlagsAt348[
+    (offsetof(ExtendedBulletView, activeTransformFlags) == 0x348) ? 1 : -1];
+typedef char ExtendedBulletTransformFlagsAt34C[
+    (offsetof(ExtendedBulletView, transformFlags) == 0x34c) ? 1 : -1];
+#endif
 typedef char ExtendedBulletStateAt352[
     (offsetof(ExtendedBulletView, state) == 0x352) ? 1 : -1];
 
@@ -695,8 +711,13 @@ void __fastcall ResetOwnedBulletMotion(
         if (bullet->ownerTag ==
             enemy->activeEclContext->extraIntVariables[2])
         {
+#if defined(TH095_MATCH_EXACT)
             bullet->field34c = 0;
             bullet->field348 = 0;
+#else
+            bullet->transformFlags = 0;
+            bullet->activeTransformFlags = 0;
+#endif
             bullet->speed = 4.5f;
             TH095_EXTENDED_FROM_ANGLE(
                 bullet->velocity, bullet->angle, bullet->speed);

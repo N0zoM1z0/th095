@@ -7039,3 +7039,93 @@ family.  Prefer a bounded resource-lifetime, interpreter/state, or sound owner
 with a TH095-local producer and an independent consumer.  Keep write-only sound
 metadata and neighboring serialized unknowns opaque unless a target-local
 reader closes their protocol.  Semantic phase state remains active-incomplete.
+
+### SEM-095: align the extended-ECL bullet transform reset owner
+
+Scope: recover the two compact bullet transform-state dwords used by
+`EclExtended::ResetOwnedBulletMotion`.  `BulletManager.cpp` already exposes the
+same physical `PhotoBulletView` slots as `activeTransformFlags @ +0x348` and
+`transformFlags @ +0x34C`, while the independent extended-ECL partial view still
+called them `field348` and `field34c`.  This batch aligns only the production
+partial view and reset callback with the established owner.  Exact preprocessing
+retains the historical field spellings and statement shape.
+
+Observed TH095-local evidence:
+
+- Target-attested `ResetOwnedBulletMotion @ 0x00414930` scans all 0x640 usable
+  0x65C-byte bullet slots.  For an active bullet whose `ownerTag @ +0x330`
+  matches the current ECL context tag, it writes zero to bullet `+0x34C`, then
+  zero to `+0x348`, sets `speed @ +0x2F4` to 4.5, and reconstructs
+  `velocity @ +0x2DC` from the existing `angle @ +0x300`.
+- Target-attested `PhotoBulletView::AdvanceTransformProgram @ 0x004062B0`
+  independently consumes those same two dwords.  It refuses a transform record
+  with `allowWhileActive == 0` while `+0x348` is nonzero, skips records whose
+  kind is not present in the `+0x34C` mask, and ORs started transform kinds into
+  `+0x348`.
+- The canonical BulletManager source independently initializes/copies these
+  fields from the spawn descriptor and maintains the per-transform active bits
+  throughout the movement/update family.  This establishes the owner relation
+  without borrowing a TH08 field identity.
+
+Corroborated production representation:
+
+- `ExtendedBulletView` now exposes `u32 activeTransformFlags @ +0x348` and
+  `u32 transformFlags @ +0x34C` outside `TH095_MATCH_EXACT`, with explicit
+  offset assertions.
+- `ResetOwnedBulletMotion` clears `transformFlags` first and
+  `activeTransformFlags` second in the maintainable branch, matching the target
+  store order.  The exact branch keeps `field34c` / `field348` and its original
+  statements unchanged.
+
+Inferred meaning:
+
+- `transformFlags` is the per-bullet transform-program eligibility mask used to
+  decide which serialized transform records may execute.  `activeTransformFlags`
+  is the runtime set of transform kinds currently owning ongoing transform
+  state.  Clearing both before rebuilding the velocity cancels the currently
+  active transform state and prevents remaining masked transform records from
+  starting through the normal interpreter path.
+- This is narrower than a generic "reset bullet" operation: the callback does
+  not clear the transform index, transform sound, ownership tag, draw bucket,
+  capture links, or neighboring opaque members.
+
+Unknown / deliberately deferred:
+
+- This batch does not assign meaning to `unknown334`, `unknown350`,
+  `unknown356`, `field360`, or `unknown655`.  Prior negative evidence for
+  `field360` remains unchanged.
+- It does not claim that every future path after the callback is permanently
+  free of transform effects; later script/gameplay code could republish state.
+  Only the target-observed callback and normal transform interpreter protocol are
+  claimed.
+- No dedicated runtime scenario exercises callback entry 21 under Wine in the
+  tracked repository, so runtime-scenario validation remains separate and
+  unclaimed.
+
+Validation on the active source state:
+
+- `python3 scripts/replay-exact-units.py --source=src/EclExtended.cpp` passes all
+  22 configured exact units with zero private-label refreshes, including the
+  183-byte `ecl-extended-reset-owned-bullet-motion` unit;
+- the normal production `EclExtended.cpp` compiles with its pinned VC7.1 profile
+  to an Intel 80386 COFF object in command-local temporary storage, removed by
+  the same command;
+- this is a private translation-unit representation change, not a shared header,
+  physical-layout, persistent-format, or PCH change.  Campaign-final cold
+  aggregate exact and whole-product gates are therefore deferred to the
+  committed milestone after this checkpoint rather than redundantly replayed
+  inside the private transaction.
+
+Analysis / recovery state:
+
+- the four pre-existing untracked paths remain outside the transaction;
+- no `.analysis/gpt-web/` root, target export, Wine-prefix copy, or retained
+  compile artifact was created.  Target evidence came from the registered
+  read-only Ghidra provider.
+
+Next evidence route: rotate away from Bullet/ECL after checkpoint.  The target
+falsification performed during routing leaves the SoundPlayer metadata dwords
+at `+0x408`, `+0x61C`, and `+0x5210` without direct readers and `+0x52CC` with
+write-only xrefs, so they remain Unknown.  Prefer a different owner/lifetime,
+interpreter, resource, or persistent ABI family with a TH095-local producer and
+independent consumer.  Semantic phase state remains active-incomplete.
