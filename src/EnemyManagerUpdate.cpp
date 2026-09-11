@@ -474,7 +474,7 @@ struct PhotoEnemyView
     i16 mainEclCallStackDepth;             // +0x2854
     i16 activeEclCallStackDepth;           // +0x2856
     u8 unknown2858[2];
-    i16 pendingEclSubroutineId;             // +0x285a
+    i16 photoCaptureEclSubroutineId;             // +0x285a
 #if defined(TH095_MATCH_EXACT)
     u8 unknown285c[0x3c];
     i16 mainEclSubroutineId;                // +0x2898
@@ -767,7 +767,7 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
     enemy->flags1 &= ~0x00000080;
     enemy->flags1 |= 0x04000000;
     enemy->flags1 &= ~0x001c0000;
-    enemy->pendingEclSubroutineId = -1;
+    enemy->photoCaptureEclSubroutineId = -1;
     enemy->flags1 &= ~0x00020000;
     enemy->TH095_PHOTO_ENEMY_PENDING_ECL_SUBROUTINE_INDEX = -1;
     for (i = 0; i < 10; ++i)

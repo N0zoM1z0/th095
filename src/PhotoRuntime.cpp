@@ -36,7 +36,7 @@ struct PhotoTargetEnemyView
 {
     u8 unknown0000[0x2dc];
     u8 mainEclContext[0x285a - 0x2dc];
-    i16 pendingEclSubroutineId;
+    i16 photoCaptureEclSubroutineId;
     u8 unknown285c[0x28a0 - 0x285c];
     Float3 position;
     u8 unknown28ac[0x28dc - 0x28ac];
@@ -47,6 +47,8 @@ struct PhotoTargetEnemyView
     u8 trailing[0x4cc0 - 0x2bfc];
 };
 typedef char PhotoTargetEnemySize[(sizeof(PhotoTargetEnemyView) == 0x4cc0) ? 1 : -1];
+typedef char PhotoTargetEnemyCaptureEclAt285A[
+    (offsetof(PhotoTargetEnemyView, photoCaptureEclSubroutineId) == 0x285a) ? 1 : -1];
 typedef char PhotoTargetEnemyPosition[(offsetof(PhotoTargetEnemyView, position) == 0x28a0) ? 1 : -1];
 typedef char PhotoTargetEnemyCollision[(offsetof(PhotoTargetEnemyView, collisionSize) == 0x28dc) ? 1 : -1];
 typedef char PhotoTargetEnemyFlags1[(offsetof(PhotoTargetEnemyView, flags1) == 0x2bf4) ? 1 : -1];
@@ -123,7 +125,7 @@ int PhotoRuntimeView::CountPhotoTargets(
             locals.enemyMinimum.y > locals.captureMaximum.y)
             continue;
 
-        if (locals.enemy->pendingEclSubroutineId < 0)
+        if (locals.enemy->photoCaptureEclSubroutineId < 0)
         {
             locals.enemy->flags1 =
                 (locals.enemy->flags1 & ~0x300U) | 0x100U;
@@ -134,7 +136,7 @@ int PhotoRuntimeView::CountPhotoTargets(
                 this->eclManager,
                 reinterpret_cast<PhotoEnemyEclContextView *>(
                     locals.enemy->mainEclContext),
-                locals.enemy->pendingEclSubroutineId);
+                locals.enemy->photoCaptureEclSubroutineId);
         }
 
         g_PhotoItemManager->Spawn(

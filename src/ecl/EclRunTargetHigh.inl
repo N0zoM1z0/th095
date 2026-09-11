@@ -3,8 +3,13 @@
 #if defined(TH095_MATCH_EXACT)
 #define TH095_TARGET_ENEMY_LIFE(enemy)                                      \
     (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2958))
+#define TH095_TARGET_PHOTO_CAPTURE_ECL_SUBROUTINE_ID(enemy)                 \
+    (*reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x285a))
 #else
 #define TH095_TARGET_ENEMY_LIFE(enemy) TH095_ENEMY_LIFE(enemy)
+#define TH095_TARGET_PHOTO_CAPTURE_ECL_SUBROUTINE_ID(enemy)                 \
+    (reinterpret_cast<EclPhotoCaptureEnemyView *>(enemy)                    \
+         ->photoCaptureEclSubroutineId)
 #endif
 
     case 86:
@@ -147,7 +152,7 @@
         break;
 
     case 112:
-        *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x285a) =
+        TH095_TARGET_PHOTO_CAPTURE_ECL_SUBROUTINE_ID(enemy) =
             *reinterpret_cast<i16 *>(instruction->operands);
         break;
 
@@ -388,7 +393,7 @@ enter_subroutine:
     case 128:
     {
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2ca8) =
-            *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x285a);
+            TH095_TARGET_PHOTO_CAPTURE_ECL_SUBROUTINE_ID(enemy);
 #ifdef TH095_MATCH_EXACT
         InitializeEclTargetTimerExact(reinterpret_cast<ZunTimer *>(
             reinterpret_cast<u8 *>(enemy) + 0x296c));

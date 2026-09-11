@@ -6447,3 +6447,76 @@ Next evidence route: rotate away from the score-record owner after checkpoint.
 Prefer an interpreter/state, resource lifetime, sound protocol, or portability
 boundary with a TH095-local producer and independent consumer. The remaining
 PhotoStage score payload holes are not a reason to invent field names.
+
+### SEM-089: identify the compact photo-capture ECL callback
+
+**Scope.** Recover the compact enemy word at `+0x285A` as the ECL subroutine id
+used when photography captures that enemy. This field was explicitly outside
+SEM-060's `eclSubroutineIds[32]` / `pendingEclSubroutineIndex` batch. The change
+also prevents the generic `Enemy::deathCallbackSubId` spelling at the same
+physical offset from leaking into the compact TH095 photo-enemy protocol.
+
+**Observed.** Current hash-attested Ghidra decompilation of canonical
+`EclManager::RunEcl @ 0x00408E70` shows target-high opcode `0x70` writing its
+signed 16-bit operand directly to enemy `+0x285A`. The compact enemy constructor
+independently initializes the same word to `-1`. Target-attested
+`PhotoRuntimeView::CountPhotoTargets @ 0x004168D0` scans the 128 compact enemy
+slots, applies the active/state/photo-target and capture-AABB gates, then tests
+`+0x285A`: a negative value advances the captured enemy to lifecycle state 1,
+while a nonnegative value is passed unchanged as the `i16 subId` argument to
+canonical `EclManager::CallEclSub @ 0x00408DE0`. Ghidra reports the sole caller
+of this compact capture scan as `PhotoCameraState::TakePhoto @ 0x00432D10`,
+which independently fixes the event as photography capture rather than generic
+pending ECL dispatch.
+
+**Corroborated.** The exact `PhotoCameraState::TakePhoto` reconstruction calls
+`PhotoRuntimeView::CountPhotoTargets` while collecting captured targets. The
+existing exact `CallEclSub` ABI already establishes the third argument as an ECL
+subroutine id. Production `PhotoRuntime.cpp` had a weaker
+`pendingEclSubroutineId` spelling for `+0x285A`, and the compact constructor used
+the same spelling, so the producer, sentinel lifetime, and capture consumer now
+agree on one TH095-local role without relying on TH08 semantics.
+
+**Inferred.** `photoCaptureEclSubroutineId` is the maintainable compact-field
+name. It states only the proven event and payload type: the id is consumed by
+the photo-capture scan to initialize the enemy's ECL context. The later generic
+`Enemy` owner keeps `deathCallbackSubId` at its same numeric offset because that
+separate layout/name is not evidence for this compact protocol and is not
+silently unified by the reconstruction.
+
+**Unknown.** Target-high opcode `0x80` sign-extends `+0x285A` into the unresolved
+dword at compact enemy `+0x2CA8` and reinitializes the ECL timer. There is still
+no independent reader for `+0x2CA8`, so SEM-032's unknown classification remains
+in force: this batch does not call that dword a callback id, duration, argument,
+or any other role. The retail source name and the script-level meaning of a
+negative value other than the observed constructor sentinel `-1` are also
+unknown.
+
+**Representation.** `EnemyManagerUpdate.cpp` and `PhotoRuntime.cpp` now expose
+`photoCaptureEclSubroutineId @ +0x285A`. The production target-high interpreter
+uses an offset-asserted TU-local compact view for opcode `0x70` and opcode
+`0x80`; `TH095_MATCH_EXACT` expands those accesses to the historical raw
+`reinterpret_cast` form. No shared header, object size, ABI, instruction
+encoding, or unresolved adjacent field changes.
+
+**Validation.** Cold focused exact replay of every configured unit sourced from
+`src/EnemyManagerUpdate.cpp`, `src/PhotoRuntime.cpp`, and `src/ecl/EclRun.cpp`
+passes `22 + 1 + 1 = 24/24` with zero private-label refresh. The production lane
+cold-compiles all 88 translation units with pinned VC7.1 to Intel i386 COFF and
+links/verifies the reconstructed Windows GUI PE32 image. The resulting ignored
+build artifact is 780,288 bytes with SHA-256
+`121ff2f0c9b6d6e9eb33c8fc53b9a6b22c2a830a24e1976b53aa925b9aeba994`.
+Successful linkage is production closure only, not target whole-image
+byte-exactness or runtime validation.
+
+**Analysis artifacts.** This batch created no `.analysis/` workspace or retained
+analysis export. Target evidence came from the Factory-owned read-only Ghidra
+provider; compiler outputs remain in the repository's existing ignored build
+areas. The pre-existing legacy analysis trees and four pre-existing untracked
+paths remain untouched and excluded from staging.
+
+**Next evidence route.** After checkpoint, rotate away from this compact capture
+callback family. Prefer a different bounded state/resource/sound/persistent or
+interpreter protocol with a TH095-local producer and independent consumer. Do
+not reopen `+0x2CA8`, the SEM-060 subroutine table, or generic
+`deathCallbackSubId` merely because they are adjacent or share an offset.

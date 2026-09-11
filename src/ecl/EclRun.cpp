@@ -187,6 +187,16 @@ typedef char EclStageScoreMultiplierAt25718[
 namespace th095
 {
 
+#ifndef TH095_MATCH_EXACT
+struct EclPhotoCaptureEnemyView
+{
+    u8 unknown0000[0x285a];
+    i16 photoCaptureEclSubroutineId;
+};
+typedef char EclPhotoCaptureSubroutineAt285A[
+    (offsetof(EclPhotoCaptureEnemyView, photoCaptureEclSubroutineId) == 0x285a) ? 1 : -1];
+#endif
+
 #ifndef DIFFBUILD
 struct AnmVertex;
 struct PhotoBulletSpawnDescriptor;
