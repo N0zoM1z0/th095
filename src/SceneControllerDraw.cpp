@@ -146,7 +146,7 @@ static __forceinline void FrontEndDrawSceneSummary(
             g_AsciiManager.color.color = 0xffffffff;
         }
 
-        if (g_ResultSaveData->sceneScores[view->selectedScoreEntry].showSuccessRateMarker)
+        if (g_ResultSaveData->sceneScores[view->selectedScoreEntry].bestShotLocked)
         {
             g_AsciiManager.color.color = 0xffc0e0e0;
             g_AsciiManager.scaleX = 0.75f;

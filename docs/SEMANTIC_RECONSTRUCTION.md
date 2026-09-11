@@ -4867,3 +4867,87 @@ Next evidence route: investigate persisted score-record flag bit 1 and the
 literal `L` marker from its input toggle, parser/writer persistence, draw
 consumer, and any gameplay/result consumers.  Do not infer its role from the
 former `successRate` name.
+
+### SEM-066: recover the persisted best-shot lock and L input bit
+
+The score-record flag audit resolves bit 1 at record `+0x50`.  The prior
+`showSuccessRateMarker` name described only one draw-site symptom and became
+untenable once the two slow-rate fields were separated.  TH095-local input,
+UI, and gameplay behavior identify the bit as the persisted best-shot lock.
+
+Observed TH095-local evidence:
+
+- `Controller::GetInput` maps both Win32 virtual key `L` and DirectInput
+  `DIK_L` to input bit `0x8000`.  No other keyboard key in either path produces
+  that bit.
+- `SceneSelectControllerView::UpdateSceneSelect @ 0x00447d00` tests pressed
+  input bit `0x8000` and, when the selected persistent `SC` record is present,
+  toggles score-record flag bit 1.
+- `SceneSelectControllerView::Draw @ 0x00452630` reads that same bit and renders
+  the literal `L` next to the selected scene when it is set.
+- `PhotoStageStateView::Update @ 0x0042ad60` reads the same persisted bit before
+  the automatic best-shot replacement path.  A newly captured photo may
+  replace the saved best-shot score/data only when bit 1 is clear and its score
+  exceeds the saved score.  When bit 1 is set, the automatic replacement is
+  skipped even for a higher-scoring photo.
+- A bounded scan of displacement `+0x4b0` in the attested target `.text`, mapped
+  back through Ghidra function ownership, found the relevant score-record
+  accesses in PhotoStage, the two captured-scene counters, SceneSelect update,
+  and SceneSelect draw.  The counters consume bit 0 (`captured`); the two other
+  displacement matches belong to an ANM radial-trail object and excluded D3DX
+  runtime code.  No additional score-record bit-1 behavior consumer was found
+  on that direct-displacement surface.
+- The exact score parser/writer serialize the complete 0x60-byte `SC` record,
+  so the lock bit survives score-file reload rather than being a transient UI
+  state.
+
+Corroborated source interpretation:
+
+- Production `ResultScoreEntryView` and the PhotoStage payload view now name
+  record flag bit 1 `bestShotLocked`.  SceneSelect toggles that field and the
+  draw path reads it directly.
+- Production input code names bit `0x8000` as `TH_BUTTON_L`, matching the two
+  target-backed L-key mappings.  `TH095_MATCH_EXACT` intentionally preserves
+  the historical numeric token so the shared input header does not perturb
+  VC7.1 compiler-private label numbering.
+- The exact-only score header retains the historical
+  `showSuccessRateMarker` identifier.  This is compiler-surface compatibility,
+  not a competing semantic interpretation.
+
+Inferred meaning:
+
+- The UI `L` is a best-shot lock indicator.  Its observed gameplay effect is to
+  protect the saved best shot from PhotoStage's automatic higher-score
+  replacement path.
+
+Unknown / deliberately deferred:
+
+- The result-screen manual best-shot overwrite path does not have a direct
+  record-bit-1 test on the audited target displacement surface.  This batch
+  therefore does not claim that the lock makes the record universally
+  immutable outside the automatic PhotoStage replacement path.
+- Score-record flag bits 2..31 remain unknown unless independently consumed.
+
+Validation on the active source state:
+
+- focused canonical replay covered 28 units across `Controller.cpp`,
+  `EclDependencies.cpp`, `PhotoStage.cpp`, `SceneControllerDraw.cpp`,
+  `SceneSelectUpdate.cpp`, and `ScoreData.cpp`: 28/28 exact with zero private
+  label refreshes;
+- an initial unconditional `TH_BUTTON_L` enum insertion shifted only VC7.1
+  private `$L` relocation identities in an unrelated ECL unit.  The ledger was
+  not refreshed; production-only enum exposure plus an exact preprocessor
+  fallback restored the historical exact compiler surface;
+- cold aggregate canonical replay, executed as eight mutually exclusive source
+  partitions, covered all 88 manifest sources and all 696 exact units:
+  696/696 exact with zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units as
+  i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows
+  executable.  This is compile/link production closure for this source state,
+  not whole-image byte exactness or runtime validation.
+
+Next evidence route: audit the persisted capture-time ABI boundary.  The same
+wire field is currently represented as `time_t` in the canonical scene-score
+view but as a fixed 32-bit value in both PhotoStage and result-photo overlays;
+verify the file-format width and every `_time`/`_localtime` boundary before
+choosing a production representation.

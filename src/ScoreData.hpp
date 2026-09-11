@@ -115,7 +115,11 @@ struct ResultScoreEntryView
         struct
         {
             u32 captured : 1;
+#ifdef TH095_MATCH_EXACT
             u32 showSuccessRateMarker : 1;
+#else
+            u32 bestShotLocked : 1;
+#endif
             u32 unknownFlags : 30;
         };
     };

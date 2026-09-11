@@ -42,7 +42,7 @@ extern u16 g_PressedButtons;
 struct SceneSelectScoreFlagsView
 {
     u32 captured : 1;
-    u32 showSuccessRateMarker : 1;
+    u32 bestShotLocked : 1;
     u32 unknownFlags : 30;
 };
 
@@ -957,14 +957,14 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->flags |= 0x10;
     }
 
-    if (SceneInputAnd(g_PressedButtons, (u16)0x8000) != 0 &&
+    if (SceneInputAnd(g_PressedButtons, TH_BUTTON_L) != 0 &&
         *reinterpret_cast<u16 *>(
             &g_ResultSaveData
                  ->sceneScores[view->selectedScoreEntryIndex]) != 0)
     {
         SceneSelectScoreFlagsAt(
             g_ResultSaveData, view->selectedScoreEntryIndex)
-            ->showSuccessRateMarker ^= 1;
+            ->bestShotLocked ^= 1;
     }
 
     view->groupCursor.SaveCurrent();

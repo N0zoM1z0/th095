@@ -79,7 +79,16 @@ struct PhotoStageScoreRecord
     u32 attemptCount;
     u8 unknown030[4];
     f32 slowRate;
-    u32 flags;
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 captured : 1;
+            u32 bestShotLocked : 1;
+            u32 unknownFlags : 30;
+        };
+    };
     u8 unknown03c[0x60 - 0x3c];
 };
 
@@ -1026,11 +1035,9 @@ i32 PhotoStageStateView::Update()
                             0, 0x50);
                     }
 
-                    if (((GetPhotoStageScoreRecord(
-                              g_PhotoStageGlobalState->scoreIndex)
-                                  ->flags >>
-                          1) &
-                         1) == 0 &&
+                    if (!GetPhotoStageScoreRecord(
+                             g_PhotoStageGlobalState->scoreIndex)
+                             ->bestShotLocked &&
                         this->slots[this->slots[0].captureSlot].display.score >
                             GetPhotoStageScoreRecord(
                                 g_PhotoStageGlobalState->scoreIndex)

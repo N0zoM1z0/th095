@@ -422,7 +422,7 @@ u16 GetInput(i32 inputIndex)
             inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_Q, 'Q');
             inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_S, 'S');
             inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RESET, 'R');
-            inputButtons |= KEYBOARD_KEY_PRESSED(0x8000, 'L');
+            inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_L, 'L');
         }
         else
         {
@@ -468,7 +468,7 @@ u16 GetInput(i32 inputIndex)
                 inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_Q, DIK_Q);
                 inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_S, DIK_S);
                 inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_RESET, DIK_R);
-                inputButtons |= KEYBOARD_KEY_PRESSED(0x8000, DIK_L);
+                inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_L, DIK_L);
             }
         }
     }

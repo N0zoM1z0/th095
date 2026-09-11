@@ -63,6 +63,9 @@ enum TouhouButton
     TH_BUTTON_ENTER = 1 << 12,
     TH_BUTTON_D = 1 << 13,
     TH_BUTTON_RESET = 1 << 14,
+#ifndef TH095_MATCH_EXACT
+    TH_BUTTON_L = 1 << 15,
+#endif
 
     TH_BUTTON_UP_LEFT = TH_BUTTON_UP | TH_BUTTON_LEFT,
     TH_BUTTON_UP_RIGHT = TH_BUTTON_UP | TH_BUTTON_RIGHT,
@@ -76,6 +79,10 @@ enum TouhouButton
         TH_BUTTON_SHOOT | TH_BUTTON_BOMB | TH_BUTTON_MENU | TH_BUTTON_Q | TH_BUTTON_S | TH_BUTTON_ENTER,
     TH_BUTTON_ANY = 0xFFFF,
 };
+
+#ifdef TH095_MATCH_EXACT
+#define TH_BUTTON_L 0x8000
+#endif
 
 namespace Controller
 {
