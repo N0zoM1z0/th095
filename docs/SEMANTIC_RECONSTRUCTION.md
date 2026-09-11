@@ -5746,3 +5746,87 @@ Next evidence route: rotate away from PhotoGame/result restart state after this
 checkpoint. Prefer another bounded persistent, resource, owner/lifetime, input,
 or front-end protocol with independent TH095-local producers and consumers;
 remaining anonymous adjacent Supervisor bits are not a default continuation.
+
+### SEM-076: name the front-end title-load completion barrier
+
+After SEM-075 the campaign rotated away from PhotoGame/Supervisor restart state
+and tested input, persistence, and front-end lifecycle surfaces. The shared
+input overlay was already explicitly bounded by SEM-001, while the front-end
+controller still exposed `+0x6120` bit 0 anonymously even though TH095-local
+target code and the reconstructed native-product startup fix already establish
+its lifecycle. This batch propagates that established meaning into the natural
+front-end views without reinterpreting adjacent flag bits.
+
+Observed TH095-local evidence:
+
+- Target-attested `FrontEndLifecycleView::Create @ 0x00445CC0` allocates the
+  `0x6514`-byte controller, sets `controller+0x6120` bit 0, registers the calc
+  and draw Chain callbacks, and only then starts `LoadThread @ 0x00445980`.
+  The bit therefore precedes both callback visibility and asynchronous title
+  initialization.
+- Target-attested `LoadThread @ 0x00445980` waits for the ANM capture workers,
+  calls `Initialize @ 0x004456F0`, hides the loading VMs on success, and then
+  clears exactly `controller+0x6120` bit 0 before publishing the loader's
+  completion globals.
+- The abort/initialization-failure path instead sets controller bit 1 and
+  publishes completion without clearing bit 0. Bit 0 consequently means that
+  title/front-end initialization has not completed successfully; it is not a
+  reliable "worker currently running" flag.
+- Target `SceneSelectControllerView::OnUpdate @ 0x00445E40` is the exact
+  19-byte wrapper that immediately calls `Update @ 0x00445E80`. The canonical
+  target does not test bit 0 in that wrapper. This separates the target flag
+  lifecycle from the reconstructed product's timing compatibility gate.
+
+Corroborated source and runtime interpretation:
+
+- Production already had a bounded startup gate introduced after Wine exposed
+  a first-calc-tick race: the reconstructed image could enter `Update` before
+  `sceneAnm` was initialized. That gate tested raw flag bit 0 and is recorded as
+  runtime issue RT-001 / knowledge record FRONT-010. It now reads the named
+  `titleLoadIncomplete` member instead.
+- The update and draw views of the same `+0x6120` flags dword now name bit 0
+  `titleLoadIncomplete`. `FrontEndLifecycle.cpp` uses the corresponding
+  `FRONT_END_CONTROLLER_TITLE_LOAD_INCOMPLETE` mask for the target-exact
+  producer and successful clear. No storage width, offset, or state transition
+  changes.
+
+Inferred meaning:
+
+- `titleLoadIncomplete` is the narrowest name supported by both success and
+  failure paths: it remains set until asynchronous title/front-end
+  initialization succeeds. The production-only `OnUpdate` guard uses that
+  existing target state as a compatibility barrier for reconstructed startup
+  timing, rather than claiming that the target wrapper itself performed the
+  guard.
+
+Unknown / deliberately deferred:
+
+- Controller flag bit 1 is a separate failure/result-transition signal and is
+  not reinterpreted by SEM-076. The existing `exitToResult` spelling remains
+  outside this batch.
+- No fresh runtime-scenario result is claimed. The repository has no tracked
+  runtime-scenario runner; the pre-existing untracked
+  `config/runtime-scenarios.json` and `scripts/runtime-diff.py` are recovery
+  state of unknown/unrelated provenance and were deliberately not executed or
+  staged. Historical RT-001 runtime observations are corroboration, not a new
+  receipt for this source state.
+
+Validation on the active source state:
+
+- the complete directly affected exact surface replayed 15/15 configured units
+  with zero private-label refreshes: `FrontEndController.cpp` 4/4,
+  `FrontEndLifecycle.cpp` 8/8, and `SceneControllerDraw.cpp` 3/3;
+- these views and the lifecycle flag mask are translation-unit-local and do not
+  change a shared header, class extent, ABI, PCH, or cross-object owner, so the
+  repository-wide exact aggregate is deferred to the campaign milestone rather
+  than replayed inside this private-field batch;
+- the final-source reconstructed Windows i386 product cold-built all 88 pinned
+  VC7.1 translation units to Intel i386 COFF and successfully linked/verified
+  the PE. This is production compile/link closure, not target whole-image
+  exactness or fresh runtime validation.
+
+Next evidence route: after checkpoint, rotate away from the front-end title-load
+family. Prefer a bounded persistent-format, resource-owner/lifetime, or other
+independent protocol with multiple TH095-local producers and consumers. A
+negative bounded route remains routing evidence only and does not alter the
+`active-incomplete` phase state.

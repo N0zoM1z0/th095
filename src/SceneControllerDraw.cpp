@@ -48,7 +48,8 @@ struct FrontEndControllerDrawView
         u32 flags;
         struct
         {
-            u32 unknownFlags0 : 3;
+            u32 titleLoadIncomplete : 1;
+            u32 unknownFlags1 : 2;
             u32 showRates : 1;
             u32 unknownFlags4 : 28;
         };
@@ -311,13 +312,14 @@ void __fastcall SceneSelectControllerView::OnUpdate(
     // asynchronous title loader to win the race before the first calc tick.
     // Whole-program reconstruction does not preserve the target's image
     // layout or startup timing, and Wine can schedule that first tick while
-    // sceneAnm is still null.  The loader owns bit 0: Create() sets it before
-    // registering this callback and LoadThread clears it only after every
-    // title resource is ready.  Keep production builds behind that real
-    // lifecycle barrier; TH095_MATCH_EXACT includes the untouched exact
-    // wrapper above and therefore retains the verified 19-byte target body.
-    if ((reinterpret_cast<FrontEndControllerDrawView *>(controller)->flags &
-         1) != 0)
+    // sceneAnm is still null.  The loader owns titleLoadIncomplete: Create()
+    // sets it before registering this callback and LoadThread clears it only
+    // after every title resource is ready.  Keep production builds behind
+    // that real lifecycle barrier; TH095_MATCH_EXACT includes the untouched
+    // exact wrapper above and therefore retains the verified 19-byte target
+    // body.
+    if (reinterpret_cast<FrontEndControllerDrawView *>(controller)
+            ->titleLoadIncomplete != 0)
     {
         return;
     }

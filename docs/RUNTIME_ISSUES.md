@@ -16,7 +16,7 @@ Status meanings:
 
 | ID | Status | User-visible symptom | Established cause / disposition |
 | --- | --- | --- | --- |
-| RT-001 | closed | Startup could exit before reaching a usable title screen. | The production front-end callback ran before asynchronous title loading cleared its real bit-0 barrier. Production now waits for that barrier; exact compilation retains the target wrapper. |
+| RT-001 | closed | Startup could exit before reaching a usable title screen. | The production front-end callback ran before asynchronous title loading cleared `FrontEndLifecycleView+0x6120` bit 0, now named `titleLoadIncomplete`. Production waits for that target-backed completion barrier; exact compilation retains the target wrapper. |
 | RT-002 | closed | Mission Select could not enumerate/start the real scenes. | Production lacked backing storage for the 93 scene records, group tables, and unlock/capture tables. The canonical target data is reconstructed. |
 | RT-003 | closed | Entering gameplay faulted. | Background/ANM read a null duplicate of target `0x004C4A34`; both now use `g_Supervisor.currentBackgroundViewport @ +0x3C4`. |
 | RT-004 | closed | Retry/result transitions could exit. | The runnable link did not consistently publish the live task through `g_Supervisor.photoGameTask @ 0x004C4DF4`, and one attempted repair incorrectly collapsed it with standalone slot `0x004BDEC8`. Production now preserves both target slots and their distinct lifetimes. |

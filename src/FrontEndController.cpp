@@ -87,7 +87,7 @@ struct FrontEndControllerUpdateView
         u32 flags;
         struct
         {
-            u32 unknownFlag0 : 1;
+            u32 titleLoadIncomplete : 1;
             u32 exitToResult : 1;
             u32 unknownFlags2 : 30;
         };

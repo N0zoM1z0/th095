@@ -16,6 +16,11 @@
 namespace th095
 {
 
+enum FrontEndControllerFlag
+{
+    FRONT_END_CONTROLLER_TITLE_LOAD_INCOMPLETE = 1,
+};
+
 DIFFABLE_STATIC(void *, g_ActiveMenuController);
 
 i32 LoadPhotoBulletAnm();
@@ -392,7 +397,7 @@ void __fastcall FrontEndLifecycleView::LoadThread(void *)
         goto loadFailed;
 
     TH095_FRONT_HIDE_LOADING();
-    controller->flags &= ~1u;
+    controller->flags &= ~FRONT_END_CONTROLLER_TITLE_LOAD_INCOMPLETE;
     utils::DebugPrint("Title Load Thread Finish\n");
     TH095_FRONT_LOAD_IN_PROGRESS = 0;
     TH095_FRONT_LOAD_FINISHED = 1;
@@ -414,7 +419,7 @@ FrontEndLifecycleView *__fastcall FrontEndLifecycleView::Create(i32 mode)
     FrontEndLifecycleView *controller = new FrontEndLifecycleView();
     ChainElem *elem;
 
-    controller->flags |= 1;
+    controller->flags |= FRONT_END_CONTROLLER_TITLE_LOAD_INCOMPLETE;
     controller->entryMode = mode;
 
     elem = g_Chain.CreateElem((ChainCallback)TH095_FRONT_END_ON_UPDATE);
