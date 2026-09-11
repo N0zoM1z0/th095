@@ -1944,7 +1944,7 @@ void __fastcall Supervisor::StartupThread(Supervisor *s)
     g_Supervisor.startupThreadState = 0;
     g_Supervisor.flags.scoreBackupPending = 0;
     g_Supervisor.replayScanWorker.active = 0;
-    g_Supervisor.replayScanWorker.stopRequested = 1;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
     return;
 
 error:
@@ -1952,7 +1952,7 @@ error:
     g_Supervisor.startupThreadState = 2;
     g_Supervisor.flags.receivedCloseMsg = 1;
     g_Supervisor.replayScanWorker.active = 0;
-    g_Supervisor.replayScanWorker.stopRequested = 1;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
 }
 
 // Keep the real version-data ownership local inside its teardown phase so

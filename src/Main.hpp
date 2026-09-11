@@ -169,7 +169,11 @@ struct ReplayScanWorker
 {
     uintptr_t handle;
     u32 threadId;
+#ifdef TH095_MATCH_EXACT
     i32 stopRequested;
+#else
+    i32 exitSignal;
+#endif
     i32 active;
     u8 unknown010[4];
     void (__fastcall *threadProc)(void *);

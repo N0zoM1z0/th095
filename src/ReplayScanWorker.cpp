@@ -9,8 +9,8 @@ namespace th095
 {
 
 #ifndef DIFFBUILD
-typedef char ReplayScanWorkerStopAt08[
-    (offsetof(ReplayScanWorker, stopRequested) == 0x08) ? 1 : -1];
+typedef char ReplayScanWorkerExitSignalAt08[
+    (offsetof(ReplayScanWorker, exitSignal) == 0x08) ? 1 : -1];
 typedef char ReplayScanWorkerActiveAt0C[
     (offsetof(ReplayScanWorker, active) == 0x0c) ? 1 : -1];
 
@@ -20,7 +20,7 @@ typedef char ReplayScanWorkerActiveAt0C[
 // Earlier runnable builds accidentally allocated three duplicate globals, so
 // Start()/Stop() and their callbacks observed different state. Keep the exact
 // probe symbols unchanged, but overlay all production views on the real owner.
-i32 &g_HelpLoadComplete = g_Supervisor.replayScanWorker.stopRequested;
+i32 &g_HelpLoadComplete = g_Supervisor.replayScanWorker.exitSignal;
 i32 &g_HelpLoadActive = g_Supervisor.replayScanWorker.active;
 ReplayBrowserExitSignal &g_ReplayBrowserExitSignal =
     *reinterpret_cast<ReplayBrowserExitSignal *>(
@@ -33,7 +33,7 @@ ReplayScanWorker::ReplayScanWorker()
     // Start() installs threadProc before use; unknown010 remains opaque.
     this->handle = NULL;
     this->threadId = 0;
-    this->stopRequested = 0;
+    this->exitSignal = 0;
     this->active = 0;
 }
 
@@ -46,11 +46,11 @@ void ReplayScanWorker::Stop()
 {
     if (this->handle != 0)
     {
-        this->stopRequested = 1;
+        this->exitSignal = 1;
         this->active = 0;
         while (WaitForSingleObject((HANDLE)this->handle, 200) == WAIT_TIMEOUT)
         {
-            this->stopRequested = 1;
+            this->exitSignal = 1;
             this->active = 0;
             Sleep(1);
         }
@@ -66,7 +66,7 @@ void ReplayScanWorker::Start(void (__fastcall *callback)(void *),
     this->Stop();
     this->threadProc = callback;
     this->active = 1;
-    this->stopRequested = 0;
+    this->exitSignal = 0;
     this->handle = _beginthreadex(
         NULL, 0, (unsigned (__stdcall *)(void *))this->threadProc,
         argument, 0, &this->threadId);

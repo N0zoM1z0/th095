@@ -8,6 +8,12 @@
 namespace th095
 {
 
+#ifdef TH095_MATCH_EXACT
+#define TH095_REPLAY_WORKER_EXIT_SIGNAL(worker) ((worker).stopRequested)
+#else
+#define TH095_REPLAY_WORKER_EXIT_SIGNAL(worker) ((worker).exitSignal)
+#endif
+
 struct AnmRawEntryView
 {
     i32 numSprites;
@@ -305,7 +311,7 @@ AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::ReadAnmEntries(
         this->slots[anmIdx].releasePending = 1;
         while (this->slots[anmIdx].releasePending != 0 &&
                (state.stopRequested =
-                    g_Supervisor.replayScanWorker.stopRequested) == 0)
+                    TH095_REPLAY_WORKER_EXIT_SIGNAL(g_Supervisor.replayScanWorker)) == 0)
         {
             Sleep(1);
         }
@@ -395,12 +401,12 @@ AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::PreloadAnm(
     state.anm->numberEntriesToBeLoaded = 1;
     while (state.anm->numberEntriesToBeLoaded != 0 &&
            (state.loopStopRequested =
-                g_Supervisor.replayScanWorker.stopRequested) == 0)
+                TH095_REPLAY_WORKER_EXIT_SIGNAL(g_Supervisor.replayScanWorker)) == 0)
     {
         Sleep(1);
     }
     utils::DebugPrint("::preloadAnimEnd : %s\n", filename);
-    state.finalStopRequested = g_Supervisor.replayScanWorker.stopRequested;
+    state.finalStopRequested = TH095_REPLAY_WORKER_EXIT_SIGNAL(g_Supervisor.replayScanWorker);
     return state.finalStopRequested ? NULL : state.anm;
 }
 
@@ -756,5 +762,7 @@ void AnmLoaded::LoadSprite(i32 spriteIdx, AnmLoadedSprite *loadedSprite)
          this->sprites[spriteIdx].startPixelInclusive.y) /
         loadedSprite->scaleFactor.y;
 }
+
+#undef TH095_REPLAY_WORKER_EXIT_SIGNAL
 
 } // namespace th095

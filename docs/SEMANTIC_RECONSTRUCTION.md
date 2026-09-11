@@ -6616,3 +6616,105 @@ Use the same anti-circularity test on another bounded state/resource/sound or
 persistent family: reconstructed names are corroboration only, never target
 evidence. Prefer a protocol with an independently observed producer and
 consumer; leave write-only/read-only plateaus Unknown.
+
+### SEM-091: name the ReplayScanWorker bidirectional exit signal
+
+Scope: refine the production meaning of `ReplayScanWorker+0x08` without changing
+its ABI or the historical exact-facing identifiers.  ABI-078 already proved
+that target `0x004C4CC0` is the `+0x08` word of the worker embedded at
+`g_Supervisor+0x648`, but the production owner still called it
+`stopRequested` while front-end relocation aliases called the same storage
+`g_HelpLoadComplete`.  Those two names each describe only one side of the
+actual TH095 protocol.
+
+Observed TH095-local evidence:
+
+- Hash-attested target `ReplayScanWorker::Start @ 0x0041BBA0` first stops any
+  previous run, installs the callback, writes `worker+0x0C = 1`, clears
+  `worker+0x08 = 0`, and then launches `_beginthreadex`.
+- Target `ReplayScanWorker::Stop @ 0x0041BB20` writes `worker+0x08 = 1` and
+  `worker+0x0C = 0`; while the handle wait continues to time out it reasserts
+  the same pair before sleeping and waiting again.
+- Fresh target xrefs to absolute `0x004C4CC0` show independent readers in ANM
+  preload (`0x00443070/0x004432E0`), SceneSelect asset loading
+  (`0x0044D0A0`), and replay-browser scanning (`0x00450C30`).  Those readers
+  use nonzero `+0x08` as a reason to stop waiting or stop producing work.
+- Independent worker callbacks publish the same terminal pair
+  `+0x08 = 1, +0x0C = 0` when they leave: PhotoGameTask load
+  (`0x00417D20`) does so on both success and failure, front-end title loading
+  (`0x00445980`) does so on both success and failure, and the SceneSelect,
+  replay-browser, and help loaders (`0x0044D0A0`, `0x00450C30`,
+  `0x004525D0`) do so at their terminal paths.
+- Fresh xrefs to `0x004C4CC4` show the front-end state machine
+  (`0x00445E80/0x00446A50`) independently reading the `+0x0C` word while it
+  waits for asynchronous work.  Thus `+0x08` and `+0x0C` are a paired worker
+  handshake rather than two Help-specific globals.
+
+Corroborated source interpretation:
+
+- Production `ReplayScanWorker::stopRequested` is now `exitSignal` in the
+  canonical `Main.hpp` owner and the production `SupervisorRuntime.hpp` view.
+  The offset remains `+0x08`; `active` remains at `+0x0C`.
+- Production `ReplayScanWorker::Start/Stop`, Supervisor startup publication,
+  and ANM preload consumers now spell the canonical owner as `exitSignal`.
+  The existing `g_HelpLoadComplete` reference still aliases that exact field
+  in the runnable build because its relocation identity is compatibility state,
+  not a second owner.
+- Under `TH095_MATCH_EXACT`, `Main.hpp` retains the historical member name
+  `stopRequested`; `ReplayScanWorkerExact.inl`, SceneSelect exact views, and
+  historical `g_HelpLoadComplete/g_HelpLoadActive` relocation spellings remain
+  unchanged.  This keeps semantic production naming separate from the exact
+  oracle surface.
+
+Inferred meaning:
+
+- `exitSignal == 0` means no terminal/exit signal has yet been published for
+  the current worker run after `Start`.  `exitSignal != 0` means either the
+  controller has requested that the worker exit or the callback has reached a
+  terminal path and published that fact.  The value alone intentionally does
+  not distinguish those causes.
+- `active @ +0x0C` is the companion in-progress publication used by the
+  front-end coordinator.  It is not promoted here to a strict operating-system
+  thread-liveness guarantee because `Stop` clears it before the handle has
+  necessarily terminated.
+
+Unknown / deliberately deferred:
+
+- The original retail field identifier and any memory-ordering or synchronization
+  guarantee beyond the observed polling, waits, and critical-section wrappers
+  are unknown.
+- `ReplayScanWorker+0x10` remains opaque.  The second Supervisor worker at
+  `+0x7A0` remains without a proven business role, and this batch does not
+  transfer the replay/front-end protocol to that object.
+- The historical `g_HelpLoadComplete`/`g_HelpLoadActive` spellings are retained
+  where exact compatibility requires them; this batch does not claim they are
+  source-authentic retail names.
+- No runtime scenario or portability conclusion is claimed.  This transaction
+  changes maintainable production representation and identifiers while keeping
+  the target protocol and ABI unchanged.
+
+Validation on the active source state:
+
+- focused exact replay covered `AnmPreload.cpp`, `Main.cpp`,
+  `ReplayScanWorker.cpp`, and `SoundPlayer.cpp`: 93/93 configured units exact
+  with zero private-label refreshes;
+- because the canonical `Main.hpp` owner is shared, the cold aggregate was
+  closed across every manifest source.  Source-local durable partitions bound
+  to diff SHA-256
+  `6897003022dc52173256abefefa1130903176c3bab36965c5d92ffae813bc905`
+  covered all 88 sources and all 696 configured exact units with zero
+  private-label refreshes; transient Factory transport failures contributed no
+  credit unless a source had already been durably recorded as passed;
+- `scripts/build-whole.py --compile-only` cold-compiled all 88 production
+  translation units as Intel i386 COFF with pinned VC7.1, and `--link-only`
+  linked and verified a PE32 Windows GUI executable.  The reconstructed artifact
+  SHA-256 is
+  `1b8a7ba0671eab68312c6f12eff8597fa0bd21f5ccd7a65d96e125374d936d07`.
+  This is production compile/link closure, not target whole-image byte exactness
+  or runtime validation.
+
+Next evidence route: rotate away from this replay/front-end worker handshake.
+Prefer a bounded flags/state, persistent/ABI, resource-lifetime, or other owner
+family with a TH095-local producer plus an independent consumer; keep write-only
+or read-only neighboring fields Unknown rather than extending this protocol by
+adjacency.  The semantic phase remains active-incomplete.

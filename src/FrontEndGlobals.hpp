@@ -10,10 +10,11 @@ namespace th095
 // neutral and cast only at the owning call site.
 DIFFABLE_EXTERN(void *, g_ActiveMenuController);
 
-// These target globals are not independent storage. They are the +0x08 and
-// +0x0c fields of Supervisor::replayScanWorker at target 0x004C4CB8. Exact
-// probes retain their historical target-facing externs; the runnable build
-// binds references to the embedded worker fields.
+// These historical target-facing globals are not independent storage. They are
+// the +0x08 exit handshake and +0x0c active fields of
+// Supervisor::replayScanWorker at target 0x004C4CB8. Exact probes retain the
+// original relocation spellings; the runnable build binds them to the embedded
+// worker fields.
 #if defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 DIFFABLE_EXTERN(int, g_HelpLoadComplete);
 DIFFABLE_EXTERN(int, g_HelpLoadActive);

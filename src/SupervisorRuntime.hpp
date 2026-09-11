@@ -28,7 +28,7 @@ struct ReplayScanWorker
 {
     uintptr_t handle;
     u32 threadId;
-    i32 stopRequested;
+    i32 exitSignal;
     i32 active;
     u8 unknown010[4];
     void (__fastcall *threadProc)(void *);
