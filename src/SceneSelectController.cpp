@@ -120,7 +120,7 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
     }
     else if (g_ResultSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].score == 0)
     {
-        if (g_ResultSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].attemptCount == 0)
+        if (g_ResultSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].captureTime == 0)
         {
             refreshDisplayState = this->unattemptedDisplayState;
         }
@@ -193,7 +193,7 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
         {                                                                     \
             if (g_ResultSaveData                                               \
                     ->sceneScores[g_SelectedScene->scoreEntryIndex]           \
-                    .attemptCount == 0)                                       \
+                    .captureTime == 0)                                       \
             {                                                                 \
                 SceneWriteText(                                               \
                     g_AnmManager,                                        \

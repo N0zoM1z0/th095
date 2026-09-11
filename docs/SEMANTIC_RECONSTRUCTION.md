@@ -4618,3 +4618,84 @@ coverage route. Do not start port work from SEM-062.
 at the same source HEAD records SHA-256 `384a6458...3160`. Product compile/link
 closure remains the claim; neither rebuild-local artifact hash is a stable
 source invariant without a deterministic-artifact contract.
+
+### SEM-063: canonicalize the persisted scene capture timestamp
+
+The previous semantic-exit hypothesis did not cover the persisted `SC` score
+payload deeply enough.  The score record has a canonical 0x60-byte view at
+`ResultSaveDataView::scoreEntries + index * 0x60`, while `PhotoStage` also
+uses a payload-oriented view beginning 0x18 bytes into the same record.  That
+overlap exposed a concrete TH095-local counterexample to the older field
+naming at record offset `+0x3c`.
+
+Observed TH095-local evidence:
+
+- `PhotoStageStateView::Update` at target `0x0042ad60` stores the result of the
+  `_time`-based capture timestamp path into save-data offset
+  `+0x49c + index * 0x60`, which is score-record offset `+0x3c`.
+- `SceneSelectControllerView::UpdateSelectedSceneDetails` at target
+  `0x0044c670` reads that same record offset, passes it to `_localtime`, and
+  renders month/day/hour/minute digits from the resulting `tm` fields.
+- `SceneSaveDataView::LoadBestShotForScene` at target `0x00435e90` uses the
+  same field as the presence gate for a saved best shot and clears it when the
+  corresponding best-shot file is absent.
+- `ResultSaveDataView::ParseScoreFile` at target `0x004356d0` copies the
+  complete 0x60-byte `SC` record into `scoreEntries`, while
+  `ResultSaveDataView::WriteBestShotData` at target `0x00435910` writes those
+  0x60-byte records back out.  Therefore `+0x3c` is a persisted protocol
+  field, not merely a transient runtime alias.
+- The exact-facing `PhotoGameTask` initialization path addresses the same
+  location as raw save-data offset `+0x478 + 0x24`, independently confirming
+  the record-relative `+0x3c` identity.
+
+Corroborated source interpretation:
+
+- Production `SceneDetail.cpp` already consumed the field as `captureTime`.
+  Other production consumers used an overlapping `attemptCount` union alias
+  only as a zero/nonzero best-shot or scene-state gate.
+- The production view now exposes only `time_t captureTime` at `+0x3c`, and
+  those production consumers use that name.  `TH095_MATCH_EXACT` retains the
+  historical union identifiers because VC7.1 lets unused type/member names
+  perturb compiler-private `$L` relocation labels even when layout and
+  generated instructions are unchanged.
+- The offset remains asserted at `+0x3c`; the persistent record layout and
+  0x60-byte stride are unchanged.
+
+Inferred meaning:
+
+- The old production `attemptCount` alias at score-record `+0x3c` was semantic
+  debt rather than a second wire meaning.  The TH095 producer/consumer
+  protocol identifies this persisted field as the capture timestamp.
+
+Unknown / deliberately deferred:
+
+- Score-record `+0x44` is incremented by the PhotoStage capture path, displayed
+  numerically, summed by `GetSceneGroupUnlockScore`, and currently named
+  `unlockScore` in the canonical record while the PhotoStage payload view calls
+  it `attemptCount`.  Its best maintainable name is not assigned in this batch.
+- Score-record `+0x4c` also has conflicting local names between the canonical
+  scene-score view and the PhotoStage payload view.  It remains a separate
+  protocol investigation rather than being folded into this timestamp fix.
+
+Validation on the active source state:
+
+- focused canonical exact replay: 26/26 units across `PhotoGameTask.cpp`,
+  `SceneBestShot.cpp`, `SceneDetail.cpp`, `SceneSelect.cpp`,
+  `SceneSelectController.cpp`, and `ScoreData.cpp`, with zero private-label
+  refreshes;
+- the initially simplified production-only layout exposed unrelated VC7.1
+  private-label renumbering in `FrontEndController.cpp`; preserving the
+  historical union only under `TH095_MATCH_EXACT` restored that source to 4/4
+  exact without refreshing the ledger;
+- cold aggregate canonical replay, executed as eight mutually exclusive
+  transport-safe source partitions, covered all 88 manifest sources and all
+  696 exact units: 696/696 exact with zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units as
+  i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows
+  executable.  This is production closure for this source state, not a
+  whole-image byte-exact or runtime-validation claim.
+
+Next evidence route: resolve score-record `+0x44` from all TH095-local writers,
+UI consumers, group-unlock aggregation, and requirement-table semantics before
+choosing a production identifier; then independently audit the `+0x4c` rate
+field conflict.

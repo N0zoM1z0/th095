@@ -78,11 +78,15 @@ struct ResultScoreEntryView
     u8 unknown014[0x18 - 0x14];
     i32 detailScore;
     u8 unknown01c[0x3c - 0x1c];
+#ifdef TH095_MATCH_EXACT
     union
     {
         i32 attemptCount;
         time_t captureTime;
     };
+#else
+    time_t captureTime;
+#endif
     i32 bestShotChecksum;
     i32 unlockScore;
     f32 slowRate;

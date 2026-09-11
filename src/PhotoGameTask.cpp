@@ -528,7 +528,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
 
     if (!FileSystem::CheckIfFileAlreadyExists(bestShotPath))
     {
-        g_ResultSaveData->scoreEntries[this->bestShotIndex].attemptCount = 0;
+        g_ResultSaveData->scoreEntries[this->bestShotIndex].captureTime = 0;
         g_ResultSaveData->scoreEntries[this->bestShotIndex].detailScore = 0;
     }
 

@@ -228,8 +228,8 @@ typedef char SceneSaveDataSelectionAt1E[
      offsetof(SceneSaveDataView, lastSelectedScene) == 0x20) ? 1 : -1];
 typedef char SceneSaveBestShotRecordsAt3160[
     (offsetof(SceneSaveDataView, bestShotRecords) == 0x3160) ? 1 : -1];
-typedef char SceneScoreEntryAttemptCountAt3C[
-    (offsetof(SceneScoreEntryView, attemptCount) == 0x3c) ? 1 : -1];
+typedef char SceneScoreEntryCaptureTimeAt3C[
+    (offsetof(SceneScoreEntryView, captureTime) == 0x3c) ? 1 : -1];
 typedef char SceneSelectGroupCursorsAt1D0[
     (offsetof(SceneSelectControllerView, groupCursors) == 0x1d0) ? 1 : -1];
 typedef char SceneSelectVmIdsAtBF4[

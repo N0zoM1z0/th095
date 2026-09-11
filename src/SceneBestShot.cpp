@@ -50,7 +50,7 @@ i32 ResultSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
     i32 fileSize;
     recordIndex = g_SceneGroups[group][scene].scoreEntryIndex;
 
-    if (this->sceneScores[recordIndex].attemptCount == 0)
+    if (this->sceneScores[recordIndex].captureTime == 0)
     {
         return -1;
     }
@@ -70,7 +70,7 @@ i32 ResultSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
     if (!FileSystem::CheckIfFileAlreadyExists(io.path))
     {
         this->sceneScores[recordIndex].detailScore = 0;
-        this->sceneScores[recordIndex].attemptCount = 0;
+        this->sceneScores[recordIndex].captureTime = 0;
         return -1;
     }
 
