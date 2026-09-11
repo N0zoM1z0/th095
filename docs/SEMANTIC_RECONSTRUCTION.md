@@ -6303,3 +6303,42 @@ Next evidence route: rotate away from ANM VM draw flags. Prefer a bounded
 persistent-format, resource-lifetime, interpreter/state, sound/input, or other
 independent owner protocol with a TH095-local producer and an independent
 consumer. Do not infer semantics for ANM bit 14/16 from adjacency alone.
+
+### SEM-087: name the shared live-controller input history fields
+
+The post-SEM-086 coverage rotation deliberately left ANM and sampled two independent families first. Compact bullet `+0x360` still has only its spawn-time zero producer and no TH095-local reader, matching SEM-046's unknown boundary. Score-file header `+0x0C` is still initialized to `0x102` without a score-specific consumer that distinguishes its role, so the similar game-version constant in replay/Main remains corroboration rather than a field-name proof. The input-storage route instead exposed a bounded physical-owner counterexample to SEM-001's conservative replay-overlay spelling.
+
+Scope: name the already target-proven live-controller roles of the shared bytes at input-storage base `0x004BE218 + 0x02/+0x08/+0x0A`, while preserving the historical exact-facing member names and making no claim that `ReplayInputSource::Update` consumes those fields. The source change is a production representation correction only; input behavior, object size, and all addresses remain unchanged.
+
+Observed TH095-local evidence:
+
+- Target-attested `Controller::GetInput @ 0x00419AE0` addresses controller slot zero at `0x004BE218`. After collecting the new input mask it copies the old `+0x00` current value to `+0x02`, stores the new current value at `+0x00`, clears/rebuilds repeat at `+0x04`, and derives pressed/released masks at `+0x06/+0x08` from the current/previous pair.
+- The same target function updates sixteen consecutive 16-bit hold counters at `+0x0A + index * 2`, resetting a counter when its bit is clear and incrementing it while held. A value past frame 25 contributes the corresponding repeat bit and subtracts eight frames from that counter.
+- Fresh target xrefs to absolute `0x004BE21A` (`base+0x02`) and `0x004BE220` (`base+0x08`) resolve only inside `Controller::GetInput` on the audited direct surface. This bounds the live-controller role rather than inventing a replay consumer.
+- Target-attested `ReplayManager::ProcessFrame @ 0x00434830` independently proves that the replay/history owner is rooted at the same `0x004BE218` storage, but its replay path shifts `historyCurrent/historyPrevious @ +0x2C/+0x2E`, calls `ReplayInputSource::Update`, and publishes the separate replay pressed/released history at `+0x32/+0x34`.
+
+Corroborated source interpretation:
+
+- `ControllerInputSlotView` already names the physical prefix as `current/previous/repeat/pressed/released/heldFrames`. Production `ReplayInputSource` is the canonical shared-storage overlay selected by SEM-001, so leaving those same proven bytes anonymous there obscured the storage relation even though the original source-level type relationship is unknown.
+- Production `ReplayInputSource` now names `previousInput @ +0x02`, `releasedInput @ +0x08`, and `liveHeldFrames[16] @ +0x0A`; `+0x2A..+0x2B` remains explicitly `unknown02a`. New offset assertions keep the live-prefix names tied to their target-proven locations.
+- `TH095_MATCH_EXACT` deliberately retains `unknown002` and `unknown008[0x24]`, preserving the historical exact compiler surface. The replay-history members at `+0x2C..+0x58` are unchanged.
+
+Inferred meaning:
+
+- These names describe the live-controller protocol of bytes that physically overlap the canonical replay/input storage. They do not assert that the original TH095 source declared one aggregate, a union, inheritance, or the reconstructed `ReplayInputSource` type used by both subsystems.
+
+Unknown / deliberately deferred:
+
+- The original source-level relationship between the live controller slot and replay/history view remains unknown.
+- `+0x2A..+0x2B` and `+0x36..+0x37` retain unknown meaning. No role is inferred from adjacency or from unused capacity in either overlay.
+- `ReplayInputSource::Update` has no observed read of the newly named live-only fields; this batch does not assign them an additional replay protocol role.
+- No new runtime scenario is claimed. This is a target-backed representation improvement over an already working shared input owner.
+
+Validation on the active source state:
+
+- focused canonical replay of `ReplayInputUpdate.cpp` and `ReplayManager.cpp` passed 13/13 exact units with zero private-label refreshes;
+- because `InputRuntime.hpp` is a shared runtime header, the cold strict aggregate was closed across all 88 manifest sources and all 696 configured units with zero private-label refreshes. The monolithic runner's transport lost its terminal summary after it had advanced through the first 87 sorted sources (674 units); recovery confirmed no active producer or tracked-tree contamination, and an independent replay of the final `src/zwave.cpp` source passed its remaining 22/22 units. The runner aborts on the first non-exact unit, so this recovery accounts for the complete 696-unit set without refreshing the manifest;
+- `scripts/build-whole.py` then cold-compiled all 88 production translation units to pinned-VC7.1 Intel i386 COFF and linked/verified a PE32 reconstructed executable, SHA-256 `740acb664e19ab9d7096992a18195d596f3415199517fba4aecdbf8f74cad490`. This is production compile/link closure, not target whole-image byte exactness or runtime validation;
+- `git diff --check` passes. Current-source Factory receipts remain a separate state and are deferred until the committed campaign checkpoint.
+
+Next evidence route: rotate away from shared input storage. Prefer a bounded resource lifetime, interpreter/state, persistent-format, sound, or independent owner/protocol family with a TH095-local producer plus an independent consumer. Do not use the remaining input padding/unknown words as a reason to infer names.

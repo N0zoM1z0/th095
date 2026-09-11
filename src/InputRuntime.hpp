@@ -15,10 +15,23 @@ namespace th095
 struct ReplayInputSource
 {
     u16 currentInput;          // +0x00
+#if defined(TH095_MATCH_EXACT)
     u16 unknown002;
+#else
+    // These bytes are the live ControllerInputSlotView prefix that physically
+    // overlaps the replay/history owner. ReplayInputSource::Update does not
+    // consume them; the names describe the TH095-local controller protocol.
+    u16 previousInput;         // +0x02
+#endif
     u16 repeatOutput;          // +0x04
     u16 pressedInput;          // +0x06
+#if defined(TH095_MATCH_EXACT)
     u8 unknown008[0x24];
+#else
+    u16 releasedInput;         // +0x08
+    u16 liveHeldFrames[16];    // +0x0A
+    u8 unknown02a[2];
+#endif
     u16 historyCurrent;        // +0x2C
     u16 historyPrevious;       // +0x2E
     u16 historyRepeat;         // +0x30
@@ -32,6 +45,16 @@ struct ReplayInputSource
 
 typedef char ReplayInputCurrentAt00[
     (offsetof(ReplayInputSource, currentInput) == 0x00) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT)
+typedef char ReplayInputPreviousAt02[
+    (offsetof(ReplayInputSource, previousInput) == 0x02) ? 1 : -1];
+typedef char ReplayInputReleasedAt08[
+    (offsetof(ReplayInputSource, releasedInput) == 0x08) ? 1 : -1];
+typedef char ReplayInputLiveHeldAt0A[
+    (offsetof(ReplayInputSource, liveHeldFrames) == 0x0a) ? 1 : -1];
+typedef char ReplayInputUnknown02AAt2A[
+    (offsetof(ReplayInputSource, unknown02a) == 0x2a) ? 1 : -1];
+#endif
 typedef char ReplayInputRepeatAt04[
     (offsetof(ReplayInputSource, repeatOutput) == 0x04) ? 1 : -1];
 typedef char ReplayInputPressedAt06[
