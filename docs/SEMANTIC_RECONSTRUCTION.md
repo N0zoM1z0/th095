@@ -6937,3 +6937,105 @@ checkpoint.  A later session should prefer a bounded persistent/ABI,
 sound/state, interpreter, or resource-lifetime family with an independent
 TH095-local producer and consumer; do not treat the now-coherent ANM prefix as
 semantic-phase closure.  Semantic phase state remains active-incomplete.
+
+### SEM-094: type the score payload record header protocol
+
+Scope: rotate from ANM ownership into the persistent score-file ABI and recover
+the common serialized prefix consumed by `ResultSaveDataView::ParseScoreFile`.
+The parser already had typed owners for the 0x60-byte `SC` scene-score record
+and the 0x458-byte `ST` profile, but still decoded their shared first 0x0C bytes
+through raw `cursor + offset` expressions.  This batch gives only the
+production parser a `ScoreRecordHeaderView { magic, version, size, checksum }`;
+the on-disk bytes, fixed record extents, payload owners, and exact-facing source
+shape remain unchanged.
+
+Observed TH095-local evidence:
+
+- Target-attested `ResultSaveDataView::ParseScoreFile @ 0x004356D0` reads a
+  16-bit magic at record `+0x00` and a 16-bit version at `+0x02`.  It accepts
+  `SC` (`0x4353`) with version 1 and `ST` (`0x5453`) with version 0; an
+  unrecognized magic routes to score-file reinitialization.
+- The same parser uses dword `+0x08` as the stored additive checksum for both
+  record kinds.  `SC` is checked over 0x60 bytes and `ST` over 0x458 bytes by
+  subtracting the stored dword from `CalculateAlignedChecksum` and comparing the
+  result with that stored dword.
+- After either recognized record path, the parser subtracts dword `+0x04` from
+  the remaining decompressed byte count, rejects a signed underflow, and then
+  advances the cursor by the same dword.  Thus `+0x04` is the serialized record
+  extent/stream stride shared by the two record families, not an `SC`-specific
+  payload member.
+- Target-attested `WriteBestShotData @ 0x00435910` independently produces the
+  `SC` header as magic `0x4353`, version 1, size 0x60 and a checksum at `+0x08`
+  before serializing each record.  `ScoreProfileView::Initialize @ 0x00435500`
+  independently produces the `ST` prefix as magic `0x5453`, version 0 and size
+  0x458; the writer later zeros and recomputes that profile checksum before
+  serializing the profile.
+
+Corroborated production representation:
+
+- `ScoreLoad.cpp` now declares a production-only 0x0C
+  `ScoreRecordHeaderView` with `u16 magic @ +0x00`, `u16 version @ +0x02`,
+  `u32 size @ +0x04`, and `i32 checksum @ +0x08`, plus a size assertion.
+  `ParseScoreFile` uses that view for both `SC` and `ST` dispatch, checksum
+  validation, remaining-byte accounting, and cursor advancement.
+- Existing `ResultScoreEntryView` and `ScoreProfileView` retain the same prefix
+  independently at their natural owners.  The `SC` destination index remains
+  the already-proven `ResultScoreEntryView::index @ +0x0C`; this batch does not
+  invent a common payload type beyond the first 0x0C bytes.
+
+Inferred meaning:
+
+- The decompressed `scoreth095.dat` payload is a variable-record stream whose
+  recognized `SC` and `ST` records share a serialized header protocol.  The
+  `size` dword is the parser's common stream extent, while the checksum extent
+  remains selected by the record kind (0x60 for `SC`, 0x458 for `ST`).
+- `ScoreRecordHeaderView` is deliberately a parser/wire view.  It does not claim
+  that retail source used inheritance or embedded a named common C++ base class
+  in the two record types.
+
+Unknown / deliberately deferred:
+
+- The parser does not independently validate that `size` equals 0x60 for `SC`
+  or 0x458 for `ST`, nor does this batch establish a positive-size or
+  decompressed-buffer bounds guarantee beyond the observed signed remaining-byte
+  underflow check.  Malformed-file memory safety therefore remains unknown.
+- `ScoreFileHeader +0x0C`, the two bytes at header `+0x0A`, unrelated score
+  payload holes, and original retail identifiers remain outside this batch.
+- No score-file round-trip fixture or deterministic score runtime scenario is
+  present in the tracked repository.  Runtime/format-scenario validation,
+  portable-platform behavior, and whole-image byte identity remain unclaimed.
+
+Validation on the active source state:
+
+- an initial experiment exposed `ScoreRecordHeaderView *recordHeader` to
+  `TH095_MATCH_EXACT`; VC7.1 then emitted a 0x23F-byte parser instead of the
+  manifest's 0x238-byte extent.  That experiment was rejected without any
+  manifest/private-label refresh.  The final source isolates the typed view to
+  production and restores every historical raw exact expression;
+- `python3 scripts/replay-exact-units.py --source=src/ScoreLoad.cpp` then passed
+  `score-parse-file` 1/1 exact with zero private-label refreshes;
+- `ScoreLoad.cpp` compiled independently under its manifest-selected VC7.1
+  production profile to an Intel i386 COFF object in command-local temporary
+  storage, which was removed by the same command;
+- because this is a persistent-format parser representation change, the cold
+  production gate was also closed: `scripts/build-whole.py --compile-only`
+  compiled all 88 production translation units as Intel i386 COFF and
+  `--link-only` linked and verified a PE32 Windows GUI executable.  The artifact
+  SHA-256 is
+  `bf5244a32b7f40b4df3f5d0265559af66c3e39ac7f9596336fa0d7253331661c`.
+  Product closure is distinct from target exactness and runtime validation.
+
+Recovery / artifact state:
+
+- the four pre-existing untracked paths remain excluded from this transaction;
+  no tracked work from another producer was overwritten or staged;
+- `.analysis/` started this campaign at 1,408,573,066 bytes.  This batch created
+  no `.analysis/gpt-web/` root, target export, copied Wine prefix, analysis
+  database, or retained compile artifact; the legacy analysis footprint remains
+  untouched.
+
+Next evidence route: after checkpoint, rotate away from the score persistence
+family.  Prefer a bounded resource-lifetime, interpreter/state, or sound owner
+with a TH095-local producer and an independent consumer.  Keep write-only sound
+metadata and neighboring serialized unknowns opaque unless a target-local
+reader closes their protocol.  Semantic phase state remains active-incomplete.

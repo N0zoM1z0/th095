@@ -9,6 +9,19 @@
 namespace th095
 {
 
+#if !defined(TH095_MATCH_EXACT)
+struct ScoreRecordHeaderView
+{
+    u16 magic;
+    u16 version;
+    u32 size;
+    i32 checksum;
+};
+
+typedef char ScoreRecordHeaderSizeIs0C[
+    (sizeof(ScoreRecordHeaderView) == 0x0c) ? 1 : -1];
+#endif
+
 struct ScoreProfileRawView
 {
     u8 bytes[0x458];
@@ -80,13 +93,34 @@ initializeScoreFile:
         cursor = this->decompressedData;
         while (remaining > 0)
         {
-            if (*reinterpret_cast<u16 *>(cursor) == 0x4353)
+#if !defined(TH095_MATCH_EXACT)
+            ScoreRecordHeaderView *recordHeader =
+                reinterpret_cast<ScoreRecordHeaderView *>(cursor);
+#endif
+            if (
+#if defined(TH095_MATCH_EXACT)
+                *reinterpret_cast<u16 *>(cursor)
+#else
+                recordHeader->magic
+#endif
+                == 0x4353)
             {
-                if (*reinterpret_cast<u16 *>(cursor + 2) == 1)
+                if (
+#if defined(TH095_MATCH_EXACT)
+                    *reinterpret_cast<u16 *>(cursor + 2)
+#else
+                    recordHeader->version
+#endif
+                    == 1)
                 {
                     if (CalculateAlignedChecksum(reinterpret_cast<i32 *>(cursor), 0x60) -
+#if defined(TH095_MATCH_EXACT)
                             *reinterpret_cast<i32 *>(cursor + 8) ==
                         *reinterpret_cast<i32 *>(cursor + 8))
+#else
+                            recordHeader->checksum ==
+                        recordHeader->checksum)
+#endif
                     {
 #if defined(TH095_MATCH_EXACT)
                         this->scoreEntries[*reinterpret_cast<i32 *>(cursor + 0x0c)] =
@@ -99,13 +133,30 @@ initializeScoreFile:
                     }
                 }
             }
-            else if (*reinterpret_cast<u16 *>(cursor) == 0x5453)
+            else if (
+#if defined(TH095_MATCH_EXACT)
+                *reinterpret_cast<u16 *>(cursor)
+#else
+                recordHeader->magic
+#endif
+                == 0x5453)
             {
-                if (*reinterpret_cast<u16 *>(cursor + 2) == 0)
+                if (
+#if defined(TH095_MATCH_EXACT)
+                    *reinterpret_cast<u16 *>(cursor + 2)
+#else
+                    recordHeader->version
+#endif
+                    == 0)
                 {
                     if (CalculateAlignedChecksum(reinterpret_cast<i32 *>(cursor), 0x458) -
+#if defined(TH095_MATCH_EXACT)
                             *reinterpret_cast<i32 *>(cursor + 8) ==
                         *reinterpret_cast<i32 *>(cursor + 8))
+#else
+                            recordHeader->checksum ==
+                        recordHeader->checksum)
+#endif
                     {
                         *reinterpret_cast<ScoreProfileRawView *>(this->profileData) =
                             *reinterpret_cast<ScoreProfileRawView *>(cursor);
@@ -118,13 +169,21 @@ initializeScoreFile:
                 goto initializeScoreFile;
             }
 
+#if defined(TH095_MATCH_EXACT)
             remaining -= *reinterpret_cast<i32 *>(cursor + 4);
+#else
+            remaining -= recordHeader->size;
+#endif
             if (remaining < 0)
             {
                 utils::DebugPrint("error ScoreFile Data Error\n");
                 goto initializeScoreFile;
             }
+#if defined(TH095_MATCH_EXACT)
             cursor += *reinterpret_cast<i32 *>(cursor + 4);
+#else
+            cursor += recordHeader->size;
+#endif
         }
     }
 
