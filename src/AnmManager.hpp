@@ -309,7 +309,7 @@ struct AnmVmBase
         struct
         {
             u32 visible : 1;
-            u32 unknownFlag1 : 1;
+            u32 drawEnabled : 1;
             u32 updateRotation : 1;
             u32 updateScale : 1;
             u32 blendMode : 2;

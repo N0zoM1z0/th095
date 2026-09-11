@@ -6239,3 +6239,67 @@ Next evidence route: rotate away from Supervisor worker storage. Prefer a
 bounded persistent-format, resource lifetime, interpreter/state, or independent
 owner protocol with a TH095-local producer plus an independent consumer. Do not
 assign a business role to the `+0x7A0` worker without new target-local evidence.
+
+### SEM-086: name the ANM VM draw-enable gate
+
+Scope: recover the remaining semantic role of `AnmVm+0x228` bit 1 without
+conflating it with visibility or inventing an unobserved script opcode. The
+canonical VM flag layout already names bit 0 `visible`, while bit 1 remained
+`unknownFlag1` despite being consumed by three independent drawing entry
+points. This batch changes only the bit-1 identifier and its direct consumers.
+
+Observed TH095-local evidence:
+
+- Target-attested `AnmVm::Initialize @ 0x00401C10` clears the complete VM and
+  later writes the low flag halfword at `+0x228` to `7`. This initializes bits
+  0, 1, and 2 together; bit 1 therefore begins set on every initialized VM.
+- Target-attested `AnmManager::Draw @ 0x004415A0` first rejects a VM when bit 0
+  is clear, then independently rejects it when `(+0x228 >> 1) & 1` is clear,
+  then checks color alpha before dispatching the render mode or custom draw
+  callback.
+- Target-attested `AnmManager::Draw3D @ 0x00440C10` and
+  `AnmManager::DrawVertices @ 0x00441330` repeat the same ordered visibility,
+  bit-1, and alpha gates before doing any D3D state or geometry work.
+- A bounded search of the current TH095 reconstruction found no field-level
+  writer for bit 1 after initialization and no raw `flagsWord` operation that
+  changes it. That negative result limits the claim: the observed semantics are
+  a draw-enable gate, not proof of an ANM-script toggle protocol.
+
+Corroborated source interpretation:
+
+- Production `AnmManager.hpp` now names bit 1 `drawEnabled`, and the three
+  direct consumers use that field. Bit 0 remains the distinct `visible` state:
+  both must be set for the observed draw entry points to proceed.
+- The initializer remains the target-shaped `flags = 7` write. Rewriting it as
+  separate semantic bitfield assignments was deliberately avoided because the
+  existing exact unit already proves the compact target store.
+
+Unknown / deliberately deferred:
+
+- No TH095-local later producer currently establishes when or whether bit 1 is
+  toggled after initialization. The retail source's higher-level owner or any
+  external raw write therefore remains Unknown.
+- `unknownFlag14`, which gates draw-time scale/rotation matrix rebuilding in
+  `Project3DQuad`/`Draw3D`, and `unknownFlag16` remain unchanged because this
+  batch found no independent producer that would justify naming them.
+- This is not a claim that `drawEnabled` is interchangeable with `visible`;
+  the target checks the two bits separately and in order.
+- No new runtime scenario is claimed.
+
+Validation on the active source state:
+
+- focused replay of `AnmManager.cpp` and `AnmDrawCore.cpp` passed 32/32 exact
+  units with zero private-label refreshes;
+- because `AnmManager.hpp` is a high-fanout shared VM layout header, the cold
+  aggregate was closed across eight mutually exclusive 87-unit source
+  partitions: 696/696 exact with zero private-label refreshes;
+- `scripts/build-whole.py --compile-only` cold-compiled all 88 production
+  translation units to Intel i386 COFF with pinned VC7.1, and `--link-only`
+  linked and verified the reconstructed Windows PE. This is production
+  compile/link closure, not target whole-image byte exactness or runtime
+  validation.
+
+Next evidence route: rotate away from ANM VM draw flags. Prefer a bounded
+persistent-format, resource-lifetime, interpreter/state, sound/input, or other
+independent owner protocol with a TH095-local producer and an independent
+consumer. Do not infer semantics for ANM bit 14/16 from adjacency alone.

@@ -1096,7 +1096,7 @@ ZunResult AnmManager::Draw3D(AnmVm *vm)
 
     if (!vm->visible)
         return ZUN_ERROR;
-    if (!vm->unknownFlag1)
+    if (!vm->drawEnabled)
         return ZUN_ERROR;
     if (vm->color1.a == 0)
         return ZUN_ERROR;
@@ -1271,7 +1271,7 @@ ZunResult AnmManager::DrawVertices(
 {
     if (!vm->visible)
         return ZUN_ERROR;
-    if (!vm->unknownFlag1)
+    if (!vm->drawEnabled)
         return ZUN_ERROR;
     if (vm->color1.a == 0)
         return ZUN_ERROR;

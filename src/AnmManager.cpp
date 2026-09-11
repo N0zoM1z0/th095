@@ -1040,7 +1040,7 @@ ZunResult AnmManager::Draw(AnmVm *vm)
     if (!vm->visible)
         return ZUN_ERROR;
 
-    if (!vm->unknownFlag1)
+    if (!vm->drawEnabled)
         return ZUN_ERROR;
 
     if (vm->color1.a == 0)
