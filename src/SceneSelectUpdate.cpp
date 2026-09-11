@@ -75,13 +75,7 @@ struct SceneSelectUpdateView
     union
     {
         u32 flags;
-        struct
-        {
-            u32 unknownFlagBits0 : 2;
-            u32 previewPending : 1;
-            u32 showRates : 1;
-            u32 unknownFlagBits4 : 28;
-        } flagBits;
+        SceneSelectFlagBits flagBits;
     };
     u8 unknown6124[4];
     SceneValueQueue selectionQueue;
@@ -827,7 +821,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->loadedGroupQueue.capacity = 16;
         view->selectionQueue.capacity = 5;
         view->loadedSceneQueue.capacity = 16;
-        view->flags &= ~0x20u;
+        view->flagBits.assetLoadStopRequested = 0;
 
         g_Supervisor.StartReplayScan(LoadSceneSelectionAssets, NULL);
         SceneSelectCreateVmAt(view, 0x13);
@@ -1156,7 +1150,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->requestedState = 5;
                 view->state = 0;
                 view->stateTimer.Reset();
-                view->flags |= 0x20;
+                view->flagBits.assetLoadStopRequested = 1;
                 g_ReplayBrowserExitSignal.Request();
                 g_AnmManager->MarkVmForDeletion(
                     view->previewTextVmIds[0]);
@@ -1206,7 +1200,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
         if (SceneInputAnd(g_PressedButtons, 9) != 0)
         {
-            view->flags |= 0x20;
+            view->flagBits.assetLoadStopRequested = 1;
             g_SelectedScene =
                 &g_SceneGroups[view->groupCursor.GetCurrent()]
                               [view->sceneCursors[view->groupCursor.GetCurrent()]

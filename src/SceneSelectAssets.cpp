@@ -17,12 +17,7 @@ struct SceneSelectionAssetView
     union
     {
         u32 flags;
-        struct
-        {
-            u32 unknownFlagBits0 : 5;
-            u32 stopRequested : 1;
-            u32 unknownFlagBits6 : 26;
-        } flagBits;
+        SceneSelectFlagBits flagBits;
     };
     u8 unknown6124[4];
     SceneValueQueue selectionQueue;
@@ -170,7 +165,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
         {
             break;
         }
-        if (locals.view->flagBits.stopRequested != 0)
+        if (locals.view->flagBits.assetLoadStopRequested != 0)
         {
             break;
         }
@@ -252,7 +247,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                         {
                             break;
                         }
-                        if (locals.view->flagBits.stopRequested != 0)
+                        if (locals.view->flagBits.assetLoadStopRequested != 0)
                         {
                             break;
                         }
@@ -281,7 +276,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                         {
                             break;
                         }
-                        if (locals.view->flagBits.stopRequested != 0)
+                        if (locals.view->flagBits.assetLoadStopRequested != 0)
                         {
                             break;
                         }
@@ -330,7 +325,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                             {
                                 break;
                             }
-                            if (locals.view->flagBits.stopRequested != 0)
+                            if (locals.view->flagBits.assetLoadStopRequested != 0)
                             {
                                 break;
                             }
@@ -375,7 +370,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                             {
                                 break;
                             }
-                            if (locals.view->flagBits.stopRequested != 0)
+                            if (locals.view->flagBits.assetLoadStopRequested != 0)
                             {
                                 break;
                             }

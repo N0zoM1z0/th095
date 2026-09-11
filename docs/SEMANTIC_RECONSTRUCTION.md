@@ -6122,3 +6122,38 @@ Validation on the recovered source state:
 - `scripts/build-whole.py` cold-compiled all 88 production translation units to Intel i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows PE. This is production compile/link closure, not target whole-image byte exactness or runtime validation.
 
 Next evidence route: rotate away from ANM VM id allocation. Prefer a bounded persistent-format, resource lifetime, sound/state, Bullet, or independent protocol family with a TH095-local producer plus an independent consumer; do not reopen this allocator unless contradictory target evidence appears.
+
+### SEM-084: recover the SceneSelect asset-loader stop request
+
+Scope: propagate the already observed SceneSelect controller flag at `+0x6120` bit 5 across the synchronous scene-selection state machine and its asynchronous asset worker. The worker-local view had named the bit `stopRequested`, while `UpdateSceneSelect` still published and cleared it through raw `0x20` masks and the canonical production owner hid `+0x6120` inside anonymous storage. This batch gives that single bit one shared production representation without assigning meaning to neighboring unknown bits or changing the exact-facing source.
+
+Observed TH095-local evidence:
+
+- Target-attested `SceneSelectControllerView::UpdateSceneSelect @ 0x00447D00` clears controller dword `+0x6120` bit 5 immediately before starting `LoadSceneSelectionAssets @ 0x0044D0A0` through the Supervisor replay-scan worker.
+- The same target function sets bit 5 on both bounded scene-selection exit paths observed in the canonical body: selecting a scene for the next transition and backing out to the preceding menu state. Both writes occur before the state-machine transition completes.
+- Target-attested `LoadSceneSelectionAssets @ 0x0044D0A0` obtains the active menu controller and tests that same `controller+0x6120` bit 5 at the outer worker loop and again inside its queue-drain / buffer-wait loops. A set bit exits or breaks those asynchronous waits instead of continuing asset production.
+- The asset worker independently also observes Supervisor close state and `g_Supervisor.replayScanWorker.stopRequested`; those are separate stop channels and do not change the ownership of the controller-local bit.
+
+Corroborated source interpretation:
+
+- Production now exposes a four-byte `SceneSelectFlagBits` representation at `SceneSelectControllerView+0x6120`. Existing proven bit 2 `previewPending` and bit 3 `showRates` retain their meanings; bit 5 is named `assetLoadStopRequested`.
+- `UpdateSceneSelect` now clears/publishes `assetLoadStopRequested` directly, while `LoadSceneSelectionAssets` consumes the same shared flag view. The canonical owner has an explicit `+0x6120` offset assertion instead of leaving this protocol inside the `unknown0ea4` gap.
+- Exact-facing `SceneSelectUpdateExact.inl`, `SceneSelectAssetsExact.inl`, and `SceneSelectExact.hpp` remain unchanged, so the semantic production representation does not replace the historical target-shaped oracle source.
+
+Inferred meaning:
+
+- Bit 5 is the controller-local cooperative cancellation request for the asynchronous scene-selection asset producer. It is reset when a new scene-selection asset worker is launched and set when the current SceneSelect state no longer wants that worker to continue producing queued preview/selection data.
+
+Unknown / deliberately deferred:
+
+- Bit 4 and bits 6..31 at `+0x6120` remain unknown. This batch does not infer meanings from adjacency.
+- The original retail identifier and any synchronization guarantees beyond the observed polling/critical-section behavior are unknown.
+- This batch does not merge the controller-local request with `Supervisor::replayScanWorker.stopRequested`, the global close flag, or other worker shutdown state. No fresh runtime scenario is claimed.
+
+Validation on the recovered source state:
+
+- the two directly affected canonical units replayed 2/2 exact with zero private-label refreshes: `scene-select-update` and `scene-select-load-assets`;
+- because `SceneSelect.hpp` is a shared production owner header, the cold aggregate was closed through eight mutually exclusive manifest-source partitions of 87 units each, covering all 88 sources and all 696 configured units: 696/696 exact with zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units to Intel i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows PE. This is production compile/link closure, not target whole-image byte exactness or runtime validation.
+
+Next evidence route: rotate away from SceneSelect asset-worker cancellation. Prefer a bounded Bullet/state, persistent-format, resource lifetime, or independent owner/protocol family with a TH095-local producer plus an independent consumer; do not infer neighboring SceneSelect flag bits merely from their placement.

@@ -16,6 +16,19 @@ namespace th095
 
 typedef ResultScoreEntryView SceneScoreEntryView;
 
+struct SceneSelectFlagBits
+{
+    u32 unknownFlagBits0 : 2;
+    u32 previewPending : 1;
+    u32 showRates : 1;
+    u32 unknownFlagBit4 : 1;
+    u32 assetLoadStopRequested : 1;
+    u32 unknownFlagBits6 : 26;
+};
+
+typedef char SceneSelectFlagBitsSizeIs4[
+    (sizeof(SceneSelectFlagBits) == 4) ? 1 : -1];
+
 struct SceneValueQueue
 {
     i32 values[16];
@@ -132,7 +145,13 @@ struct SceneSelectControllerView
     u8 unknown0e93;
     SceneAnmVmId previewTextVmIds[3];
     i32 previewTimer;
-    u8 unknown0ea4[0x5284];
+    u8 unknown0ea4[0x527c];
+    union
+    {
+        u32 flags;
+        SceneSelectFlagBits flagBits;
+    };
+    u8 unknown6124[4];
     SceneValueQueue selectionQueue;
     u8 unknown6170[0x168];
     SceneValueQueue groupPreviewQueue;
@@ -246,6 +265,8 @@ typedef char SceneSelectPreviewTextVmIdsAtE94[
     (offsetof(SceneSelectControllerView, previewTextVmIds) == 0xe94) ? 1 : -1];
 typedef char SceneSelectPreviewTimerAtEA0[
     (offsetof(SceneSelectControllerView, previewTimer) == 0xea0) ? 1 : -1];
+typedef char SceneSelectFlagsAt6120[
+    (offsetof(SceneSelectControllerView, flags) == 0x6120) ? 1 : -1];
 typedef char SceneSelectSelectionQueueAt6128[
     (offsetof(SceneSelectControllerView, selectionQueue) == 0x6128) ? 1 : -1];
 typedef char SceneSelectGroupPreviewQueueAt62D8[
