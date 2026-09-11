@@ -5959,3 +5959,35 @@ Validation on the recovered source state:
 - the reconstructed Windows i386 product was cold-compiled in the repository's two production profiles: all 88 translation units produced Intel i386 COFF with the pinned VC7.1 toolchain, and the resulting objects linked and verified as the reconstructed Windows PE. This is production compile/link closure, not target whole-image byte exactness or fresh runtime validation.
 
 Next evidence route: after checkpoint, rotate away from demo/replay input. Prefer a bounded persistent-format, resource-owner/lifetime, front-end, or independent state protocol with multiple TH095-local producers and consumers; do not reopen the `0x160B` mask without contradictory target evidence.
+
+### SEM-079: propagate ANM VM glyph dimensions into the initializer
+
+Scope: close one maintainability gap in the existing `AnmVm` representation. The shared VM layout already names bytes `+0x2C0/+0x2C1` as `glyphWidth/glyphHeight`, but `AnmLoaded::InitializeVm` still initialized the same bytes through the older `unknown2c0[]` overlay. No layout, text-rendering algorithm, script protocol, or adjacent VM storage changes in this batch.
+
+Observed TH095-local evidence:
+
+- Target-attested `AnmLoaded::InitializeVm @ 0x00404B80` writes byte `0x0F` to VM `+0x2C1` and then byte `0x0F` to VM `+0x2C0` immediately before `SetAndExecuteScript`. Production preserves that target write order as `glyphHeight = 0x0F` followed by `glyphWidth = 0x0F`.
+- Target-attested `AnmTextManagerView::DrawTextInner @ 0x00443C70` treats its glyph-size argument as a text-rendering dimension and substitutes 15 when the width is nonpositive. The broader TH095-local ANM text path independently reads `AnmVm::glyphWidth/glyphHeight` from `+0x2C0/+0x2C1`.
+- ResultScreen independently writes both fields to `0x12` for its replay/result text VMs, and SceneSelect independently writes the same two fields for preview text. Existing production layout assertions pin the two byte offsets.
+
+Corroborated source interpretation:
+
+- `AnmLoaded::InitializeVm` is the default producer for the same glyph-dimension fields already named by multiple consumers. Production therefore initializes the named fields directly rather than reaching them through `unknown2c0[0/1]`.
+- This is a semantic propagation into an existing representation, not a new claim about VM ownership or a reconstruction of the original source's exact member spelling.
+
+Inferred meaning:
+
+- Newly initialized VMs start with a 15-by-15 text glyph size. Later UI-specific writers may override those defaults before the VM is consumed by the ANM text path.
+
+Unknown / deliberately deferred:
+
+- Bytes `AnmVm +0x2C2..+0x2CB` remain `unknownGlyph2c2`; this batch found no independent TH095-local protocol that assigns them meaning.
+- The default 15-by-15 initialization does not imply that every VM is a text VM. The fields are shared VM metadata whose observable consumers are text-rendering paths.
+- No fresh runtime scenario is claimed.
+
+Validation on the active source state:
+
+- `AnmLoaded.cpp` replayed its configured `anm-loaded-initialize-vm` unit 1/1 exact with zero private-label refreshes;
+- the same `AnmLoaded.cpp` source compiled through its repository-selected normal production profile under the pinned VC7.1 compiler and produced an Intel i386 COFF object. The probe used command-local temporary object/PDB storage and retained no analysis artifact.
+
+Next evidence route: after checkpoint, rotate away from ANM glyph metadata. Prefer a bounded resource-owner/lifetime, persistent-format, front-end, Bullet, Background, or other independent protocol family with a TH095-local producer plus one or more independent consumers.

@@ -19,8 +19,8 @@ void AnmLoaded::InitializeVm(AnmVm *vm, i32 scriptIndex)
     vm->positionOffset = Float3(0.0f, 0.0f, 0.0f);
     vm->position = Float3(0.0f, 0.0f, 0.0f);
     vm->alternatePosition = Float3(0.0f, 0.0f, 0.0f);
-    vm->unknown2c0[1] = 0x0f;
-    vm->unknown2c0[0] = 0x0f;
+    vm->glyphHeight = 0x0f;
+    vm->glyphWidth = 0x0f;
     AnmLoadedSetScriptPhase(this, vm, scriptIndex);
 }
 
