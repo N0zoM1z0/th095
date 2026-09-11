@@ -575,7 +575,7 @@ struct PhotoEnemyView
     ZunTimer photoMarkerDurationTimer;      // +0x2c30
     Float2 movementBoundsMin;               // +0x2c3c
     Float2 movementBoundsMax;               // +0x2c44
-    i32 selectedLaserSlot;                  // +0x2c4c
+    f32 minimumPlayerDistanceSquared;       // +0x2c4c
     u8 unknown2c50[4];
     i32 scheduledCallFrames[10];            // +0x2c54
     PhotoEnemyScheduledCall scheduledCalls[10]; // +0x2c7c
@@ -779,7 +779,7 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
     enemy->flags1 &= ~0x00800000;
     enemy->bulletSpawnDescriptor.spawnSound = 7;
     enemy->bulletSpawnDescriptor.transformSound = 24;
-    enemy->selectedLaserSlot = 0;
+    enemy->minimumPlayerDistanceSquared = 0.0f;
     enemy->stateTimer = 0;
 }
 

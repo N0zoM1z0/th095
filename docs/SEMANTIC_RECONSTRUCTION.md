@@ -6520,3 +6520,99 @@ callback family. Prefer a different bounded state/resource/sound/persistent or
 interpreter protocol with a TH095-local producer and independent consumer. Do
 not reopen `+0x2CA8`, the SEM-060 subroutine table, or generic
 `deathCallbackSubId` merely because they are adjacent or share an offset.
+
+### SEM-090: resolve the compact shot-distance threshold conflict
+
+**Scope.** Reopen compact enemy `+0x2C4C` only because the resume audit found a
+specific flaw in the prior Unknown rationale. Earlier records correctly observed
+a float producer and float consumer at this address, but retained a
+"cross-view conflict" because `PhotoEnemyView` called the same dword
+`selectedLaserSlot`. Current target and repository-history evidence shows that
+name was reconstruction-created rather than an independent TH095-local
+protocol, so this batch removes the circular conflict and binds the compact
+field to its observed shot-distance role.
+
+**Observed.** A fresh direct-displacement scan of the hash-verified TH095 v1.02a
+image finds exactly seven machine-code instructions containing displacement
+`+0x2C4C` on this compact enemy surface. Four are in canonical
+`EclManager::RunEcl @ 0x00408E70`: target-high opcode `0x52` stores a resolved
+float, reloads it, multiplies by the same field, and stores the square. Two are
+in canonical `EclRunHigh::DispatchShotInstruction @ 0x00412670`: the function
+loads the field for the positive-threshold gate and compares the squared XY
+distance from `worldPosition` to the player against it. The seventh is the zero
+store in canonical `PhotoEnemyManagerView::PhotoEnemyManagerView @ 0x00414B90`
+for the spawn template. No direct integer read, array index, pointer selection,
+or laser consumer exists for compact `+0x2C4C` in the verified target.
+
+Current target-attested Ghidra decompilation independently confirms the shot
+consumer at `0x00412670`: both accesses are `float`, and the second comparison
+uses the sum of the squared X/Y player deltas. Current target-high `RunEcl`
+evidence independently confirms opcode `0x52`'s float store-and-square. The
+constructor zero is inside the exact `0x00414B90..0x0041503B` manager-constructor
+range, matching the unique remaining direct displacement instruction at
+`0x00414FF0`.
+
+**Corroborated.** Repository history falsifies the old competing-name premise.
+`git blame` and `git log -SselectedLaserSlot` show compact
+`PhotoEnemyView::selectedLaserSlot @ +0x2C4C` first appeared in reconstruction
+commit `d47af04` (`Reconstruct TH095 enemy construction`), replacing the prior
+`unknown2c4c[8]` region while the same commit added the constructor zero. The
+current repository has no compact `selectedLaserSlot` consumer other than that
+zero initialization. The later generic `Enemy` layout is structurally distinct:
+its `laserSlots`, `selectedLaserSlot`, and `minimumPlayerDistanceSquared` live at
+`+0x3280`, `+0x3300`, and `+0x3350`, respectively, and therefore cannot supply a
+competing interpretation for compact `+0x2C4C`.
+
+**Inferred.** The compact field is maintainably named
+`minimumPlayerDistanceSquared`. Opcode `0x52` accepts a linear float threshold
+and stores its square; the shot dispatcher compares squared player distance to
+the stored value. The constructor's all-zero bit pattern is consistent with the
+consumer's `> 0.0f` guard and therefore leaves the distance suppression gate
+disabled until the ECL producer installs a positive threshold.
+
+**Unknown.** The retail C++ identifier is unknown. This batch does not infer
+script authoring conventions for zero, negative, NaN, or infinite operands
+beyond the target's observed IEEE-754 operations and comparisons. It also does
+not alias the compact owner with the later generic `Enemy` layout or infer any
+compact laser-slot array from the absence of a laser consumer.
+
+**Representation.** Compact `PhotoEnemyView` now declares
+`f32 minimumPlayerDistanceSquared @ +0x2C4C` and initializes it to `0.0f` in the
+spawn template. Production `EnemyShotDispatch.cpp` and target-high `RunEcl` use
+source-local offset-asserted float views. Exact/DIFF-facing shot dispatch keeps
+the historical raw accessor. `TH095_MATCH_EXACT` keeps the historical raw
+opcode-`0x52` statements as well: an initial attempt to hide those exact
+expressions behind an lvalue macro changed nine bytes of VC7.1 evaluation order
+around unit offset `0x3ED0`, so that source shape was rejected rather than
+accepted or papered over with a ledger refresh.
+
+**Validation.** On the final source shape, all configured exact units sourced
+from `EnemyManagerUpdate.cpp`, `EnemyShotDispatch.cpp`, and `ecl/EclRun.cpp`
+are current: `22 + 1 + 1 = 24/24`, with zero private-label refresh. The first
+focused replay proved the first two sources `23/23`; after the rejected macro
+shape was replaced by the historical exact opcode body, `EclRun.cpp` replayed
+`1/1` exact without any intervening change to those first two sources. The
+production lane then cold-compiled all 88 translation units with pinned VC7.1
+to Intel i386 COFF and linked/verified the reconstructed Windows GUI PE32.
+That ignored artifact is 780,288 bytes with SHA-256
+`b8d0e5eed333adaa92d68bc8f0d8aaffc413ec2742acbaf6eef2074bbc81b247`.
+Production linkage is not a target whole-image byte-exact or runtime claim.
+
+**Resume-audit consequence.** SEM-062's readiness-era statement that
+`+0x2C4C` retained a genuine cross-view conflict is falsified. Its target access
+inventory was substantially correct, but the competing laser-slot role came
+from a reconstruction field name rather than an independent target producer or
+consumer. This counterexample reopens that historical readiness hypothesis; as
+required for this campaign, semantic phase state remains active-incomplete.
+
+**Analysis artifacts.** No `.analysis/` workspace or export was created for
+this batch. The displacement/history probes used command-local output only;
+Factory-owned Ghidra remained read-only. Pre-existing legacy analysis state and
+the four pre-existing untracked paths remain untouched and excluded from
+staging.
+
+**Next evidence route.** Rotate away from compact `+0x2C4C` after checkpoint.
+Use the same anti-circularity test on another bounded state/resource/sound or
+persistent family: reconstructed names are corroboration only, never target
+evidence. Prefer a protocol with an independently observed producer and
+consumer; leave write-only/read-only plateaus Unknown.

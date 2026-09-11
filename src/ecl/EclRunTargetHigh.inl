@@ -10,6 +10,9 @@
 #define TH095_TARGET_PHOTO_CAPTURE_ECL_SUBROUTINE_ID(enemy)                 \
     (reinterpret_cast<EclPhotoCaptureEnemyView *>(enemy)                    \
          ->photoCaptureEclSubroutineId)
+#define TH095_TARGET_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy)                  \
+    (reinterpret_cast<EclPhotoShotDistanceEnemyView *>(enemy)               \
+         ->minimumPlayerDistanceSquared)
 #endif
 
     case 86:
@@ -479,10 +482,17 @@ enter_subroutine:
         break;
 
     case 82:
+#if defined(TH095_MATCH_EXACT)
         *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c4c) =
             TH08_ECL_READ_F_RAWARG(ctx, 0);
         *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c4c) *=
             *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c4c);
+#else
+        TH095_TARGET_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy) =
+            TH08_ECL_READ_F_RAWARG(ctx, 0);
+        TH095_TARGET_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy) *=
+            TH095_TARGET_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy);
+#endif
         break;
 
     case 139:

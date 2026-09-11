@@ -44,6 +44,14 @@ struct EnemyShotOwnerView
 typedef char EnemyShotDescriptorAt298C[
     (offsetof(EnemyShotOwnerView, bulletSpawnDescriptor) == 0x298c) ? 1 : -1];
 
+struct EnemyShotDistanceView
+{
+    u8 unknown0000[0x2c4c];
+    f32 minimumPlayerDistanceSquared;
+};
+typedef char EnemyShotMinimumDistanceAt2C4C[
+    (offsetof(EnemyShotDistanceView, minimumPlayerDistanceSquared) == 0x2c4c) ? 1 : -1];
+
 struct Player;
 
 struct EnemyShotBulletManagerView
@@ -92,7 +100,12 @@ static __forceinline EnemyShotDescriptorView *TargetShotDescriptor(Enemy *enemy)
 }
 static __forceinline f32 &TargetMinimumDistanceSquared(Enemy *enemy)
 {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     return *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c4c);
+#else
+    return reinterpret_cast<EnemyShotDistanceView *>(enemy)
+        ->minimumPlayerDistanceSquared;
+#endif
 }
 static __forceinline Float3 &TargetPlayerPosition()
 {

@@ -195,6 +195,13 @@ struct EclPhotoCaptureEnemyView
 };
 typedef char EclPhotoCaptureSubroutineAt285A[
     (offsetof(EclPhotoCaptureEnemyView, photoCaptureEclSubroutineId) == 0x285a) ? 1 : -1];
+struct EclPhotoShotDistanceEnemyView
+{
+    u8 unknown0000[0x2c4c];
+    f32 minimumPlayerDistanceSquared;
+};
+typedef char EclPhotoShotDistanceAt2C4C[
+    (offsetof(EclPhotoShotDistanceEnemyView, minimumPlayerDistanceSquared) == 0x2c4c) ? 1 : -1];
 #endif
 
 #ifndef DIFFBUILD
