@@ -5498,3 +5498,82 @@ Next evidence route: after checkpoint, rotate away from this ANM deletion bit.
 Prefer a different flags/state, owner/lifetime, sound/resource, or persistent
 protocol family with multiple independent TH095-local consumers; do not rename
 adjacent ANM bits merely because they share the same flags word.
+
+
+### SEM-073: bind the screen-shake gate to shared photo lifecycle states
+
+The post-SEM-072 coverage rotation deliberately left ANM, replay, score, and
+sound surfaces. A bounded scan of production-only state views found an
+independent consumer that the earlier photo-global semantic batches had not
+propagated into maintainable source: `ScreenEffect.cpp` still called the first
+three bits of the shared photo-runtime flags word `flag0`, `flag1`, and `flag2`.
+This batch binds that consumer to already established TH095-local protocols; it
+does not reopen or re-prove SEM-053 through SEM-055.
+
+Observed TH095-local evidence:
+
+- Target-attested `ScreenEffect::CalcShake @ 0x004372d0` reads the dword at
+  `DAT_004BDEC8 + 0xFC` and refuses to advance/publish shake while any of bits
+  0, 1, 2, 4, 5, or 6 is set. The target tests bit 0 and bit 2 through the same
+  short-circuit group before testing bit 1 independently.
+- Target-attested `ScreenEffect::CalcShakeEnvelope @ 0x004374b0` reads the same
+  owner, offset, and six bits before advancing its ramp-up/hold/ramp-down shake
+  envelope. Thus the plain and envelope forms are independent consumers of the
+  same global gate.
+- The production view resolves through `g_RuntimeGlobalStateOwner`, the same
+  target storage at `0x004BDEC8` used by the producer/consumer evidence already
+  recorded for the shared photo-runtime protocols.
+
+Corroborated source interpretation:
+
+- SEM-053 established shared bit 0 as `captureActive` from the PhotoStage
+  set/clear producer pair and independent camera/gameplay consumers.
+- SEM-054 established shared bit 1 as `capturedPhotoActive` from the post-capture
+  PhotoStage lifetime and five subsystem consumers.
+- SEM-055 established shared bit 2 as `gameplayLoadActive` from
+  `PhotoGameTask::Create/Load` producers and the broad gameplay loading gate.
+- Production `ScreenEffectPhotoGlobalStateView` therefore now uses those three
+  established names, and both shake functions express their gate with those
+  names instead of local numeric placeholders.
+- `ScreenEffectExact.inl` is untouched. The exact build continues to compile
+  the historical source shape because `ScreenEffect.cpp` selects that file
+  wholesale under `TH095_MATCH_EXACT`.
+
+Inferred meaning:
+
+- Screen shake is another presentation subsystem suspended by all three known
+  photo/gameplay lifecycle states. This is a consumer relationship, not a new
+  lifecycle owner: the ScreenEffect code observes the shared state but does not
+  produce or clear those bits.
+
+Unknown / deliberately deferred:
+
+- Bits 4, 5, and 6 remain `flag4`, `flag5`, and `flag6`. Their participation in
+  the same shake gate proves only that they suppress shake; it does not identify
+  their wider lifecycle or justify names by adjacency.
+- Bit 3 is not consumed by these two shake functions and remains outside this
+  batch.
+- No new runtime scenario is claimed. This batch changes only production
+  identifiers for target-proven existing reads and does not alter control flow,
+  storage, or ABI.
+
+Validation on the active source state:
+
+- all 14 configured `ScreenEffect.cpp` exact units replayed exact with zero
+  private-label refreshes; in particular `CalcShake` remains 473/473 authored
+  bytes and `CalcShakeEnvelope` remains 592/592 with their configured
+  relocations preserved;
+- the normal production `ScreenEffect.cpp` was compiled in isolation using the
+  exact compiler profile selected by `scripts/build-whole.py` and the pinned
+  VC7.1 toolchain; the command produced an Intel 80386 COFF object and removed
+  its command-local `/tmp` object/PDB before exit;
+- no shared header, object layout, persistent format, callback ownership, or
+  runtime state transition changed, so aggregate exact and whole-product gates
+  are deferred to the final committed campaign milestone rather than repeated
+  on this private dirty checkpoint.
+
+Next evidence route: rotate away from the photo-global bits after checkpoint.
+The still-generic ScreenEffect bits 4 through 6 are not a default continuation;
+select them only if independent TH095-local producers and multiple consumers
+bound a common protocol. Prefer another owner/lifetime, resource/state, or
+persistent boundary rather than semantic naming by adjacency.

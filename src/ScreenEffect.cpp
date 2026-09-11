@@ -45,9 +45,9 @@ struct ScreenEffectPhotoGlobalStateView
         unsigned int flags;
         struct
         {
-            unsigned int flag0 : 1;
-            unsigned int flag1 : 1;
-            unsigned int flag2 : 1;
+            unsigned int captureActive : 1;
+            unsigned int capturedPhotoActive : 1;
+            unsigned int gameplayLoadActive : 1;
             unsigned int flag3 : 1;
             unsigned int flag4 : 1;
             unsigned int flag5 : 1;
@@ -278,9 +278,9 @@ int ScreenEffect::CalcShake(ScreenEffect *screenEffect)
 
     if (g_PhotoGlobalState != NULL)
     {
-        if (ScreenEffectEitherFlag(g_PhotoGlobalState->flag0,
-                                   g_PhotoGlobalState->flag2) != 0 ||
-            g_PhotoGlobalState->flag1 != 0 ||
+        if (ScreenEffectEitherFlag(g_PhotoGlobalState->captureActive,
+                                   g_PhotoGlobalState->gameplayLoadActive) != 0 ||
+            g_PhotoGlobalState->capturedPhotoActive != 0 ||
             g_PhotoGlobalState->flag4 != 0 ||
             g_PhotoGlobalState->flag5 != 0 ||
             g_PhotoGlobalState->flag6 != 0)
@@ -339,9 +339,9 @@ int ScreenEffect::CalcShakeEnvelope(ScreenEffect *screenEffect)
 
     if (g_PhotoGlobalState != NULL)
     {
-        if (ScreenEffectEitherFlag(g_PhotoGlobalState->flag0,
-                                   g_PhotoGlobalState->flag2) != 0 ||
-            g_PhotoGlobalState->flag1 != 0 ||
+        if (ScreenEffectEitherFlag(g_PhotoGlobalState->captureActive,
+                                   g_PhotoGlobalState->gameplayLoadActive) != 0 ||
+            g_PhotoGlobalState->capturedPhotoActive != 0 ||
             g_PhotoGlobalState->flag4 != 0 ||
             g_PhotoGlobalState->flag5 != 0 ||
             g_PhotoGlobalState->flag6 != 0)
