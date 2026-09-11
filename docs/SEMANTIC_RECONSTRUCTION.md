@@ -5407,3 +5407,94 @@ Next evidence route: after checkpoint, rotate away from this sound latch.  Sampl
 a flags/state, canonical owner/lifetime, or persistent/ABI family with multiple
 TH095-local producers/consumers; do not promote the still-unconsumed SoundPlayer
 metadata merely because it is lexically adjacent.
+
+
+### SEM-072: name the ANM VM pending-deletion lifecycle bit
+
+This conversation resumed on a non-clean worktree at `58c892a2`: three tracked
+ANM files already carried one coherent bit-26 naming experiment. Mandatory
+recovery review classified those edits as recoverable current work because all
+three describe the same VM lifecycle bit and match the durable post-SEM-071
+coverage rotation. The four pre-existing untracked runtime/compile experiment
+paths were preserved and excluded from the batch; no reset, cleanup, or
+unrelated staging was performed.
+
+Observed TH095-local evidence:
+
+- `AnmManager::MarkVmForDeletion @ 0x004451b0` resolves an `AnmVmId` and, when
+  the VM exists, ORs `0x04000000` into the dword at VM `+0x228`. No unlink or
+  free occurs in this setter.
+- `AnmManager::MarkVmsForDeletion @ 0x00445270` walks the live intrusive VM
+  list, compares each VM's `anmFile @ +0x230`, and ORs the same bit 26 into
+  every matching VM. The operation marks a family for later lifecycle
+  processing rather than deleting it synchronously.
+- `AnmManagerUpdateView::UpdateVms @ 0x00444b10` tests bit 26 of the same
+  `+0x228` flags word. A set bit bypasses script execution and dispatches that
+  VM directly to `RemoveVm @ 0x00444e00`; a clear bit may execute the script
+  and remain in the rebuilt draw list when execution continues.
+- `AnmManagerDrawLayerView::DrawLayer @ 0x00444c80` independently tests the
+  same bit and calls the draw path only while bit 26 is clear, so a marked VM
+  is suppressed from rendering before the update pass actually unlinks it.
+- `RemoveVm @ 0x00444e00` unlinks the VM from the manager's intrusive list,
+  updates list ownership links, frees the optional generated-vertex allocation,
+  and frees the VM itself. This closes the mark -> suppress -> update-time
+  removal lifecycle with target-local behavior.
+
+Corroborated source interpretation:
+
+- Production `AnmVmBase` now names bit 26 `pendingDeletion` at the established
+  flags word `+0x228`.
+- The bounded ID-management and frame-lifecycle views use the same
+  `pendingDeletion` name for both mark setters, the update-time removal test,
+  and the draw-time suppression test.
+- `TH095_MATCH_EXACT` keeps the historical `unknownFlag26`/`flag26` spellings
+  in exact-facing declarations and expressions. This is only a source-shape
+  compatibility boundary; it does not create separate storage or different
+  runtime semantics.
+
+Inferred meaning:
+
+- bit 26 is a deferred-deletion state: writers request retirement, rendering
+  stops while retirement is pending, and the next manager update consumes the
+  request by unlinking/freeing the VM. `pendingDeletion` therefore describes
+  the observed lifecycle more precisely than a generic flag name without
+  claiming a broader ownership protocol.
+
+Unknown / deliberately deferred:
+
+- The identically numbered bit in unrelated owners (for example enemy flags)
+  is not inferred to have the same meaning.
+- `flag27`, `flag28`, and other still-generic ANM VM flags are not renamed by
+  adjacency.
+- The ECL-local duplicate VM layout retains its unconsumed `flag26` spelling in
+  this batch. No ECL consumer of that member was needed to establish this
+  lifecycle, so broadening the edit solely for lexical uniformity would add
+  exact-facing risk without new semantic evidence.
+- No new runtime scenario is claimed. This transaction names already exact
+  lifecycle behavior and does not alter layout, state transitions, or owner
+  identity.
+
+Validation on the active source state:
+
+- recovery-focused replay of `AnmManager.cpp`, `AnmVmId.cpp`, and
+  `AnmVmLifecycle.cpp` passed 40/40 configured exact units with zero
+  private-label refreshes;
+- because the batch changes the shared `AnmManager.hpp`, a cold monolithic
+  aggregate replay was attempted; its Factory call timed out after reaching
+  the manifest tail, so it was not counted as a terminal result. Eight
+  deterministic mutually exclusive source partitions then supplied auditable
+  closure across all 88 manifest sources and all 696 configured units:
+  696/696 exact with zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units as
+  i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows
+  executable. This is production compile/link closure, not whole-image byte
+  exactness or runtime validation;
+- the canonical Japanese v1.02a target revalidated at SHA-256
+  `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`;
+  tracking remained 697 source-present / 696 exact, and target-attested Ghidra
+  passed the current target binding used for the lifecycle observations.
+
+Next evidence route: after checkpoint, rotate away from this ANM deletion bit.
+Prefer a different flags/state, owner/lifetime, sound/resource, or persistent
+protocol family with multiple independent TH095-local consumers; do not rename
+adjacent ANM bits merely because they share the same flags word.

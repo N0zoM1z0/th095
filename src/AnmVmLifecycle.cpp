@@ -43,7 +43,11 @@ struct AnmVmDrawNodeView
         struct
         {
             u32 unknownFlags00 : 26;
+#if defined(TH095_MATCH_EXACT)
             u32 flag26 : 1;
+#else
+            u32 pendingDeletion : 1;
+#endif
             u32 flag27 : 1;
             u32 flag28 : 1;
             u32 unknownFlags29 : 3;
@@ -123,7 +127,11 @@ struct AnmVmUpdateView
         struct
         {
             u32 unknownFlags00 : 26;
+#if defined(TH095_MATCH_EXACT)
             u32 flag26 : 1;
+#else
+            u32 pendingDeletion : 1;
+#endif
             u32 flag27 : 1;
             u32 flag28 : 1;
             u32 unknownFlags29 : 3;
@@ -255,7 +263,11 @@ i32 AnmManagerUpdateView::UpdateVms()
             goto addToDrawLayer;
         }
         {
+#if defined(TH095_MATCH_EXACT)
             if (vm->flag26)
+#else
+            if (vm->pendingDeletion)
+#endif
             {
                 reinterpret_cast<AnmManagerVmLifecycleView *>(this)->RemoveVm(
                     reinterpret_cast<AnmVmDeleteView *>(vm));
@@ -292,7 +304,11 @@ i32 AnmManagerDrawLayerView::DrawLayer(i32 layer)
             g_PhotoGameTask->drawVms != 0)
         {
         }
+#if defined(TH095_MATCH_EXACT)
         else if (!vm->flag26)
+#else
+        else if (!vm->pendingDeletion)
+#endif
         {
             reinterpret_cast<AnmManager *>(this)->Draw(
                 reinterpret_cast<AnmVm *>(vm));

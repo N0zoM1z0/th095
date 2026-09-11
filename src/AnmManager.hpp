@@ -326,7 +326,11 @@ struct AnmVmBase
             u32 renderStateA : 2;
             u32 renderStateB : 2;
             u32 renderModeBits : 4;
+#if defined(TH095_MATCH_EXACT)
             u32 unknownFlag26 : 1;
+#else
+            u32 pendingDeletion : 1;
+#endif
             u32 flag27 : 1;
             u32 flag28 : 1;
             u32 useUnitSpeed : 1;

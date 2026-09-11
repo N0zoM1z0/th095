@@ -10,7 +10,18 @@ struct AnmVmIdNodeView
     u8 unknown004[0x0c];
     AnmVmId id;
     u8 unknown014[0x214];
-    u32 flagsWord;
+    union
+    {
+        u32 flagsWord;
+#ifndef TH095_MATCH_EXACT
+        struct
+        {
+            u32 unknownFlags00 : 26;
+            u32 pendingDeletion : 1;
+            u32 unknownFlags27 : 5;
+        };
+#endif
+    };
     i16 type;
     i16 pendingInterrupt;
     AnmLoaded *anmFile;
@@ -52,7 +63,11 @@ void AnmManager::MarkVmForDeletion(AnmVmId id)
     AnmVm *vm = this->GetVm(id);
     if (vm != NULL)
     {
+#if defined(TH095_MATCH_EXACT)
         vm->flagsWord |= 0x04000000;
+#else
+        vm->pendingDeletion = true;
+#endif
     }
 }
 
@@ -82,7 +97,11 @@ void AnmManager::MarkVmsForDeletion(AnmLoaded *anmFile)
         next = vm->next;
         if (vm->anmFile == anmFile)
         {
+#if defined(TH095_MATCH_EXACT)
             vm->flagsWord |= 0x04000000;
+#else
+            vm->pendingDeletion = true;
+#endif
         }
         vm = next;
     }
