@@ -43,7 +43,7 @@ struct FrontEndControllerDrawView
         struct
         {
             u32 unknownFlags0 : 3;
-            u32 showSuccessRate : 1;
+            u32 showRates : 1;
             u32 unknownFlags4 : 28;
         };
     };
@@ -83,7 +83,7 @@ static __forceinline i32 FrontEndDrawSnapshot(i32 value)
 #define capturedPosition averagedPanLocal12
 #define highScorePosition iLocal11
 #define slowRatePosition commandCursorLocal02
-#define successRatePosition soundIndexLocal01
+#define bestShotSlowRatePosition soundIndexLocal01
 #define markerPosition jLocal00
 #define totalScore preloadBufferLocal03
 #define i bufferLocal04
@@ -94,7 +94,7 @@ static __forceinline void FrontEndDrawSceneSummary(
     Float3 capturedPosition;
     Float3 highScorePosition;
     Float3 slowRatePosition;
-    Float3 successRatePosition;
+    Float3 bestShotSlowRatePosition;
     Float3 markerPosition;
     u32 i;
     i32 totalScore;
@@ -128,19 +128,19 @@ static __forceinline void FrontEndDrawSceneSummary(
         slowRatePosition.y = 346.0f;
         slowRatePosition.z = 0.0f;
         g_AsciiManager.AddFormatText(
-            &slowRatePosition, "Slow Rate  %2.0f%%", g_ResultSaveData->sceneScores[view->selectedScoreEntry].slowRate);
+            &slowRatePosition, "Slow Rate  %2.0f%%", g_ResultSaveData->sceneScores[view->selectedScoreEntry].highScoreSlowRate);
         g_AsciiManager.color.color = 0xffffffff;
 
-        if (view->showSuccessRate)
+        if (view->showRates)
         {
             g_AsciiManager.color.color = 0xffc0e0e0;
             g_AsciiManager.scaleX = 0.75f;
             g_AsciiManager.scaleY = 0.75f;
-            successRatePosition.x = 382.0f;
-            successRatePosition.y = 285.0f;
-            successRatePosition.z = 0.0f;
+            bestShotSlowRatePosition.x = 382.0f;
+            bestShotSlowRatePosition.y = 285.0f;
+            bestShotSlowRatePosition.z = 0.0f;
             g_AsciiManager.AddFormatText(
-                &successRatePosition, "%2.0f%%", g_ResultSaveData->sceneScores[view->selectedScoreEntry].successRate);
+                &bestShotSlowRatePosition, "%2.0f%%", g_ResultSaveData->sceneScores[view->selectedScoreEntry].bestShotSlowRate);
             g_AsciiManager.scaleX = 1.0f;
             g_AsciiManager.scaleY = 1.0f;
             g_AsciiManager.color.color = 0xffffffff;
@@ -155,7 +155,7 @@ static __forceinline void FrontEndDrawSceneSummary(
             markerPosition.y = 124.0f;
             markerPosition.z = 0.0f;
             g_AsciiManager.AddFormatText(
-                &markerPosition, "L", g_ResultSaveData->sceneScores[view->selectedScoreEntry].successRate);
+                &markerPosition, "L", g_ResultSaveData->sceneScores[view->selectedScoreEntry].bestShotSlowRate);
             g_AsciiManager.scaleX = 1.0f;
             g_AsciiManager.scaleY = 1.0f;
             g_AsciiManager.color.color = 0xffffffff;
@@ -167,7 +167,7 @@ static __forceinline void FrontEndDrawSceneSummary(
 #undef capturedPosition
 #undef highScorePosition
 #undef slowRatePosition
-#undef successRatePosition
+#undef bestShotSlowRatePosition
 #undef markerPosition
 #undef totalScore
 #undef i

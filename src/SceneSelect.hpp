@@ -193,9 +193,9 @@ typedef char SceneScoreEntryAttemptCountAt44[
     (offsetof(SceneScoreEntryView, attemptCount) == 0x44) ? 1 : -1];
 typedef char SceneScoreEntryFlagsAt50[
     (offsetof(SceneScoreEntryView, flags) == 0x50) ? 1 : -1];
-typedef char SceneScoreEntryRatesAt48[
-    (offsetof(SceneScoreEntryView, slowRate) == 0x48 &&
-     offsetof(SceneScoreEntryView, successRate) == 0x4c) ? 1 : -1];
+typedef char SceneScoreEntrySlowRatesAt48[
+    (offsetof(SceneScoreEntryView, highScoreSlowRate) == 0x48 &&
+     offsetof(SceneScoreEntryView, bestShotSlowRate) == 0x4c) ? 1 : -1];
 typedef char SceneDefinitionTitleArgumentsAt04[
     (offsetof(SceneDefinitionView, titleArgument1) == 0x04 &&
      offsetof(SceneDefinitionView, titleArgument2) == 0x08) ? 1 : -1];

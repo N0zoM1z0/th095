@@ -4779,3 +4779,91 @@ Next evidence route: resolve score-record `+0x4c` by tracing all TH095-local
 writers and readers of the two adjacent rate fields, including the PhotoStage
 publisher, SceneControllerDraw display labels, persistent parser/writer path,
 and the global counters used to compute the captured-photo rate.
+
+### SEM-065: align result-photo overlays with capture time and slow-rate roles
+
+The next persisted-score audit resolved the record `+0x4c` conflict and exposed
+one more stale alias at `+0x3c`.  The decisive evidence is ownership: the
+result-photo browser and PhotoStage are two views of the same live stage object,
+not unrelated structures that merely happen to share offsets.
+
+Observed TH095-local evidence:
+
+- `g_PhotoStageState` and `g_ResultPhotoData` both bind target pointer
+  `0x004c4e6c`; reconstructed production aliases both to
+  `g_RuntimeStageStateOwner`.
+- The exact PhotoStage slot layout has `timestamp @ +0x21f8` and
+  `slowRate @ +0x21fc`.  The result-photo slot view previously called those
+  identical locations `replayValue` and `stageValue`.
+- `PhotoStageStateView::Update @ 0x0042ad60` computes
+  `100 - lagNumerator / lagDenominator * 100`, stores it in the active photo
+  slot `+0x21fc`, and writes that same value into persisted score-record
+  `+0x4c` when the photo becomes the best shot.  The active slot timestamp is
+  likewise copied into record `+0x3c`.
+- `UpdatePhotoResultScreen @ 0x004294c0` independently copies live stage-slot
+  `+0x21f8` to persisted record `+0x3c` and live slot `+0x21fc` to record
+  `+0x4c` when the user overwrites the saved best shot.  This is a second
+  producer path for the same persistent meanings.
+- `InitializePhotoResultScreen @ 0x00428e90` writes the same slow-rate formula
+  to score-record `+0x48` only when the scene high score is replaced.  This is
+  distinct from the best-shot publisher at `+0x4c`.
+- `SceneSelectControllerView::Draw @ 0x00452630` displays record `+0x48` on the
+  explicitly labelled `Slow Rate` line.  Its second, smaller percentage display
+  reads record `+0x4c` and is controlled by front-end flags bit 3.
+- The matching scene-selection update view already names that same controller
+  bit `showRates` and toggles it with the rate-display input, independently
+  correcting the draw-only `showSuccessRate` alias.
+
+Corroborated source interpretation:
+
+- Production `ResultPhotoSlotView` now agrees with its PhotoStage owner:
+  `captureTime @ +0x21f8` and `slowRate @ +0x21fc`.
+- The persistent 0x60-byte image/scene-score overlay now distinguishes
+  `captureTime @ +0x3c`, `highScoreSlowRate @ +0x48`, and
+  `bestShotSlowRate @ +0x4c`.
+- ResultScreen writes `highScoreSlowRate` only with a new scene high score and
+  writes `bestShotSlowRate` when persisting a selected/best photo.  Scene draw
+  consumes those two rates separately.
+- `TH095_MATCH_EXACT` keeps the historical `replayValue`, `slowRate`,
+  `stageValue`, and `successRate` identifiers in the shared score header; exact
+  implementation files likewise retain their historical local type names.
+  Production identifiers therefore improve without perturbing the VC7.1 exact
+  source surface or wire layout.
+
+Inferred meaning:
+
+- Record `+0x48` is the slow-rate value associated with the saved scene high
+  score; record `+0x4c` is the slow-rate value associated with the saved best
+  shot.  The previous `successRate` and `stageValue` names described no observed
+  TH095 producer protocol.
+- The old result-photo `replayValue @ +0x21f8` name was another overlay artifact;
+  the shared stage owner and both persistence paths identify it as capture time.
+
+Unknown / deliberately deferred:
+
+- Score-record flag bit 1 is user-toggleable and causes the scene summary to
+  render the literal `L`.  Existing source calls it `showSuccessRateMarker`, but
+  the format string ignores the extra rate argument and current evidence does
+  not yet establish what `L` denotes.  It remains a separate flag/protocol
+  batch rather than being renamed by association.
+- This batch does not change the persistent record's historical-width time
+  representation.  The 32-bit Windows/VC7.1 `time_t` dependency is an ABI and
+  portability hazard to audit independently before any later portable work.
+
+Validation on the active source state:
+
+- focused canonical exact replay: 39/39 units across `PhotoStage.cpp`,
+  `ResultScreen.cpp`, `SceneControllerDraw.cpp`, `SceneSelect.cpp`, and
+  `ScoreData.cpp`, with zero private-label refreshes;
+- cold aggregate canonical replay, executed as eight mutually exclusive source
+  partitions, covered all 88 manifest sources and all 696 exact units:
+  696/696 exact with zero private-label refreshes;
+- `scripts/build-whole.py` cold-compiled all 88 production translation units as
+  i386 COFF with pinned VC7.1 and linked/verified the reconstructed Windows
+  executable.  This is production compile/link closure only, not whole-image
+  byte exactness or runtime validation.
+
+Next evidence route: investigate persisted score-record flag bit 1 and the
+literal `L` marker from its input toggle, parser/writer persistence, draw
+consumer, and any gameplay/result consumers.  Do not infer its role from the
+former `successRate` name.

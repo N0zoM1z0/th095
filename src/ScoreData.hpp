@@ -35,10 +35,19 @@ struct ResultBestShotImageView
     u8 unknown014[4];
     u32 metadata[8];
     u8 unknown038[4];
+#ifdef TH095_MATCH_EXACT
     i32 replayValue;
+#else
+    i32 captureTime;
+#endif
     u8 unknown040[0x48 - 0x40];
+#ifdef TH095_MATCH_EXACT
     f32 slowRate;
     i32 stageValue;
+#else
+    f32 highScoreSlowRate;
+    f32 bestShotSlowRate;
+#endif
     u8 unknown050[0x60 - 0x50];
 };
 
@@ -93,8 +102,13 @@ struct ResultScoreEntryView
 #else
     u32 attemptCount;
 #endif
+#ifdef TH095_MATCH_EXACT
     f32 slowRate;
     f32 successRate;
+#else
+    f32 highScoreSlowRate;
+    f32 bestShotSlowRate;
+#endif
     union
     {
         u32 flags;

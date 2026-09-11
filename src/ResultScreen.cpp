@@ -124,12 +124,12 @@ typedef char ResultBestShotImageScoreAt10[
     (offsetof(ResultBestShotImageView, score) == 0x10) ? 1 : -1];
 typedef char ResultBestShotImageMetadataAt18[
     (offsetof(ResultBestShotImageView, metadata) == 0x18) ? 1 : -1];
-typedef char ResultBestShotImageReplayValueAt3C[
-    (offsetof(ResultBestShotImageView, replayValue) == 0x3c) ? 1 : -1];
-typedef char ResultBestShotImageSlowRateAt48[
-    (offsetof(ResultBestShotImageView, slowRate) == 0x48) ? 1 : -1];
-typedef char ResultBestShotImageStageValueAt4C[
-    (offsetof(ResultBestShotImageView, stageValue) == 0x4c) ? 1 : -1];
+typedef char ResultBestShotImageCaptureTimeAt3C[
+    (offsetof(ResultBestShotImageView, captureTime) == 0x3c) ? 1 : -1];
+typedef char ResultBestShotImageHighScoreSlowRateAt48[
+    (offsetof(ResultBestShotImageView, highScoreSlowRate) == 0x48) ? 1 : -1];
+typedef char ResultBestShotImageBestShotSlowRateAt4C[
+    (offsetof(ResultBestShotImageView, bestShotSlowRate) == 0x4c) ? 1 : -1];
 typedef char ResultBestShotRecordCommentAt18[
     (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
 typedef char ResultBestShotRecordValidAt68[
@@ -666,7 +666,7 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
         if (scoreEntry->score < g_ResultScreenGlobalState->currentScore)
         {
             scoreEntry->score = g_ResultScreenGlobalState->currentScore;
-            scoreEntry->slowRate =
+            scoreEntry->highScoreSlowRate =
                 100.0f -
                 (f32)(g_Supervisor.lagNumerator / g_Supervisor.lagDenominator) * 100.0f;
         }
@@ -827,10 +827,10 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
             (u8)((g_ResultPhotoData->anm->textures[photoIndex].format == 4) + 2);
         g_ResultSaveData
             ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
-            .stageValue = g_ResultPhotoData->slots[photoIndex].stageValue;
+            .bestShotSlowRate = g_ResultPhotoData->slots[photoIndex].slowRate;
         g_ResultSaveData
             ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
-            .replayValue = g_ResultPhotoData->slots[photoIndex].replayValue;
+            .captureTime = g_ResultPhotoData->slots[photoIndex].captureTime;
         strcpy(
             g_ResultSaveData
                 ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
@@ -1623,7 +1623,7 @@ ChainCallbackResult ResultScreen::Draw()
             &slowRatePosition, "  Slow Rate      %2.0f%%",
             g_ResultSaveData
                 ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
-                .slowRate);
+                .highScoreSlowRate);
         g_AsciiManager.color.color = 0xffffffff;
 
         if (this->notificationTimer > 0)
