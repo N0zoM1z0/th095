@@ -99,8 +99,16 @@ typedef char EclStageScoreMultiplierAt25718[
 #define TH095_ECL_SESSION_FINISH(session) \
     reinterpret_cast<::th095::PhotoCardInfoView *>(session)->Show()
 #define TH095_ECL_SESSION_CREATE(descriptor) \
-    reinterpret_cast<EclRunHigh::PhotoSession *>( \
-        ::th095::PhotoCardInfoView::Create(reinterpret_cast<char *>(descriptor)))
+    ::th095::PhotoCardInfoView::Create(reinterpret_cast<char *>(descriptor))
+#endif
+
+#ifdef DIFFBUILD
+#define TH095_ECL_PHOTO_CARD_SESSION \
+    *reinterpret_cast<PhotoSession **>(TH095_ECL_RUNTIME + 0x26ae28)
+#else
+#define TH095_ECL_PHOTO_CARD_SESSION \
+    reinterpret_cast<::th095::EclPhotoCardSessionRuntimeView *>(TH095_ECL_RUNTIME) \
+        ->eclPhotoCardSession
 #endif
 
 #ifdef DIFFBUILD
@@ -193,6 +201,13 @@ struct PhotoCardInfoView
     i32 Show();
     void Destroy();
 };
+struct EclPhotoCardSessionRuntimeView
+{
+    u8 unknown000000[0x26ae28];
+    PhotoCardInfoView *eclPhotoCardSession;
+};
+typedef char EclPhotoCardSessionAt26AE28[
+    (offsetof(EclPhotoCardSessionRuntimeView, eclPhotoCardSession) == 0x26ae28) ? 1 : -1];
 struct PhotoEnemyView
 {
     void ClampPosition();

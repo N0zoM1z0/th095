@@ -4189,3 +4189,99 @@ continue source editing if that audit finds a materially stronger bounded batch.
 If no such batch remains, run current-source cold aggregate exact and whole-
 product gates and record the semantic-readiness handoff without conflating it
 with runtime or portable-platform closure.
+
+### SEM-059 — ECL photo-card session handle
+
+**Scope.** Recover enemy-manager tail pointer `+0x26AE28` as the ECL-controlled
+photo-card session handle. Production `EclRun` now reaches that slot through a
+typed `PhotoCardInfoView *eclPhotoCardSession` runtime view, while
+`PhotoEnemyManagerView` names the same field between `drawChain @ +0x26AE24`
+and `activeEnemyCount @ +0x26AE2C`. `DIFFBUILD` / target-exact preprocessing
+retains the historical `PhotoSession **` pointer arithmetic, and the exact
+EnemyManager view retains its opaque four bytes so VC7.1 lexical allocation is
+not perturbed.
+
+**Observed.** Target-attested Ghidra decompilation of canonical
+`EclManager::RunEcl @ 0x00408E70` shows opcode `0x68` reading manager
+`+0x26AE28`, calling `0x00408990` on a non-null prior value, calling
+`0x00408850` to create a replacement, writing that result back to the same
+slot, and failing the ECL instruction when creation returns null. Opcode `0x69`
+reads the same slot, calls `0x004087D0`, clears the slot, stops the photo-mode
+background, and retires the enemy's session marker VM. The analysis operation
+was hash-attested to the canonical TH095 v1.02a target; as required, it carries
+semantic evidence only and no exactness credit.
+
+**Corroborated.** The canonical TH095 exact units independently identify
+`0x00408850` as `PhotoCardInfoView::Create`, `0x004087D0` as
+`PhotoCardInfoView::Show`, and `0x00408990` as `PhotoCardInfoView::Destroy`.
+`Create` allocates and initializes the CardInf object and registers its calc/draw
+chains; `Destroy` deletes it, while `Show` changes its display state without
+deleting the object. `PhotoCardInfoView` separately publishes itself through
+`g_PhotoCardInfo`, and broader PhotoGameTask teardown destroys that global owner
+when still present. The canonical enemy-manager layout places exactly one dword
+between `drawChain` and `activeEnemyCount`, and its constructor zeroes the whole
+manager before use. These are all TH095-local observations; TH08 is not used as
+semantic authority for this field.
+
+**Inferred.** Manager `+0x26AE28` is a transient handle by which the ECL photo
+sequence tracks the CardInf object created for its current photo-card session.
+It is intentionally named `eclPhotoCardSession`, not as an exclusive ownership
+field: opcode `0x69` clears the manager slot after calling `Show`, while the
+CardInf object can remain alive through its separate global lifecycle. Opcode
+`0x68` nevertheless owns replacement cleanup for a still-active handle by
+calling `Destroy` before installing a new one.
+
+**Unknown.** No independent non-ECL reader of manager `+0x26AE28` is known, and
+this batch does not claim the historical C++ source spelled the field as a
+`PhotoCardInfoView *` rather than a related session abstraction. It does not
+assign exclusive lifetime ownership to the enemy manager, infer behavior for
+out-of-order photo-session opcodes, or merge this slot with the neighboring
+eight-entry `photoTargets` table.
+
+**Compiler-observed.** The first production representation exposed the slot as
+`PhotoCardInfoView *` but retained the old production `TH095_ECL_SESSION_CREATE`
+cast to the exact-facing `PhotoSession *`; VC7.1 correctly rejected that
+unrelated-pointer assignment. The accepted production macro returns the
+canonical `PhotoCardInfoView *` directly. `DIFFBUILD` keeps the original proxy
+return type and raw slot expression, so the 27 KB exact interpreter remains
+byte/relocation identical with no private-label refresh.
+
+**Regression boundary.** `ecl-manager-run-ecl` remains 27091/27091 authored
+bytes exact with its complete 27747/27747 compare extent. Independent
+`photo-card-info-create`, `photo-card-info-show`, and
+`photo-card-info-destroy` remain respectively 314/314, 115/115, and 95/95
+exact. Full changed-source replay covers 23 configured units across
+`src/ecl/EclRun.cpp` and `src/EnemyManagerUpdate.cpp`; all 23 are exact with
+zero private-label refresh. A current-source cold aggregate was then completed
+as eight mutually exclusive 87-unit source partitions after the single-call
+Factory transport exceeded its call window: all 88 manifest sources / 696
+canonical units passed with zero private-label refresh. The normal production
+lane cold-compiled all 88 translation units with pinned VC7.1 to i386 COFF and
+linked them into a verified Windows GUI PE32 image. Successful linkage is a
+whole-product closure result, not a whole-image byte-exact claim.
+
+**Independent semantic exit audit.** After accepting this field, the remaining
+high-count raw-member findings are dominated by target-exact ECL AST and
+previously documented compatibility branches. Rechecked unresolved candidates
+do not currently justify another source batch: selector `0x2752 / +0x2C50`
+remains read-only; `+0x2CA4/+0x2CA8` still lack a reader; compact `+0x2984` has
+no direct access; alternate ANM bank `+0x4DFC` still lacks a producer/resource
+identity; the `+0x285C` region has target-high writes but no TH095-local reader;
+and the `+0x4CA4` tail packet / `damageReductionTimer` surface still lacks an
+independent consuming protocol sufficient to refine its internal names. The
+already recorded `+0x2C4C` cross-view conflict and ANM preload filename slot are
+likewise not reopened. No materially stronger bounded owner/protocol family is
+visible under current TH095-local evidence, so the semantic campaign reaches
+its game-local readiness exit without converting Unknowns into guesses.
+
+**Analysis artifacts.** `.analysis/` started and ends this campaign at
+1408444500 bytes. No current-session `.analysis` artifact was created, retained,
+or removed; legacy and shared provider state remain untouched. Whole-build and
+exact replay products live only in the repository's existing ignored build
+areas, not in `.analysis/`.
+
+**Next state:** treat TH095 semantic reconstruction as ready at this evidence
+boundary. Do not resume mechanical raw-offset cleanup without new TH095-local
+evidence that strengthens one of the recorded Unknowns. Factory receipt refresh,
+runtime-storage/scenario validation, and any portable Windows/Linux/Web work
+remain separate states and must not be reported as semantic interpretation.

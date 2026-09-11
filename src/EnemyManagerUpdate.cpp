@@ -27,6 +27,7 @@ struct PhotoEnemyManagerView;
 struct PhotoEnemyEclContextView;
 #if !defined(TH095_MATCH_EXACT)
 struct EnemyChildEclBlock;
+struct PhotoCardInfoView;
 #endif
 
 struct PhotoEnemyEclFileView
@@ -650,7 +651,11 @@ struct PhotoEnemyManagerView
     PhotoEnemyView *photoTargets[8];        // +0x26ae00
     ChainElem *calcChain;                  // +0x26ae20
     ChainElem *drawChain;                  // +0x26ae24
+#if defined(TH095_MATCH_EXACT)
     u8 unknown26ae28[4];
+#else
+    PhotoCardInfoView *eclPhotoCardSession; // +0x26ae28
+#endif
     i32 activeEnemyCount;                  // +0x26ae2c
 
     PhotoEnemyManagerView();
@@ -689,6 +694,8 @@ typedef char PhotoEnemyManagerEnemiesAt4E00[
 #if !defined(TH095_MATCH_EXACT)
 typedef char PhotoEnemyManagerPhotoTargetsAt26AE00[
     (offsetof(PhotoEnemyManagerView, photoTargets) == 0x26ae00) ? 1 : -1];
+typedef char PhotoEnemyManagerPhotoCardSessionAt26AE28[
+    (offsetof(PhotoEnemyManagerView, eclPhotoCardSession) == 0x26ae28) ? 1 : -1];
 #endif
 typedef char PhotoEnemyManagerCountAt26AE2C[
     (offsetof(PhotoEnemyManagerView, activeEnemyCount) == 0x26ae2c) ? 1 : -1];
