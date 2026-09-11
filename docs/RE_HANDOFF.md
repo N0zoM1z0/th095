@@ -47,6 +47,15 @@ documented TH08-proven x87 sites in `AnmDrawCore.cpp`: `DrawInner`, `Draw2D`,
 and `ProjectCameraFacingQuad`. Their exact units remain accepted. Do not widen
 that exception without new explicit user authorization and target evidence.
 
+Semantic reconstruction is active and incomplete. Sixty-three `gpt-web:`
+checkpoints after `339bb5a` produced the game-local records SEM-001 through
+SEM-062 and changed 33 C/C++-like source paths. The SEM-062 readiness statement
+is superseded as phase state by the immediately following independent review
+correction in `docs/SEMANTIC_RECONSTRUCTION.md`. Every new Web conversation
+must default to `active-incomplete`, try to falsify earlier closure prose, and
+continue across another coverage surface. GPT-web cannot authorize semantic
+closure or porting.
+
 ## Whole-program build state
 
 Whole-program compile and link closure is complete. A fresh
@@ -57,12 +66,23 @@ Whole-program compile and link closure is complete. A fresh
 - links with zero unresolved symbols;
 - verifies a PE32 i386 Windows GUI image at
   `build/whole-validation/th095-reconstructed.exe`;
-- currently produces 780,288 bytes with SHA-256
-  `8e009628f6e41af753b0eb765877c41b877d9f412b020f1b3607cfdbdcfac97f`.
+- produced a 780,288-byte image with SHA-256
+  `37ac38caf6bf0d96817d74c8dda148c35f1d6c523e239efcb3f4415fcaab6251`
+  during the SEM-062 milestone at semantic HEAD `e6c8b10`.
+
+The ignored whole-build output is mutable. The later on-disk report observed
+independently during the closure review at the same source HEAD records another
+780,288-byte image, SHA-256
+`384a64589d17c9ad646c83c5ae1993ce8e9be538862badd30a04b43360b26360`.
+Do not describe either rebuild-local hash as a stable source invariant without
+a deterministic-artifact contract.
 
 This is a runnable reconstruction artifact, not a byte-exact whole-image
-claim. Function-level exact evidence remains governed by the match-unit
-ledger.
+claim. Function-level exact evidence remains governed by the match-unit ledger.
+The extensive runtime observations below bind the earlier pre-semantic
+`8e009628...fac97f` artifact unless a later record explicitly says otherwise.
+The current semantic artifact has compile/link closure but no current runtime-
+scenario validation; do not transfer the older runtime result to it.
 
 The final compile/link closure commits are:
 
@@ -277,19 +297,24 @@ known startup, gameplay, demo-hit, retry, title-return, Music Room, and Options
 failures are closed. Do not generalize that static audit to same-type
 wrong-instance calls or normalized switch-table semantics.
 
-The next active project phase is **semantic reconstruction**. No semantic batch
-has started. Follow `docs/SEMANTIC_RECONSTRUCTION.md` to replace target-layout-
-shaped offsets, anonymous fields, numeric protocols, and field views with
-evidence-backed types, names, and canonical owners while preserving accepted
-VC7 output and the playable Windows i386 behavior. This is a bounded family-by-
-family evidence pass, not a broad beautification or renaming sweep.
+The active project phase is **semantic reconstruction**. Continue after SEM-062
+under the review correction at the end of `docs/SEMANTIC_RECONSTRUCTION.md`.
+Treat earlier readiness or exit prose as an untrusted hypothesis, search for a
+TH095-local counterexample outside its enumerated scope, and keep rotating among
+structural, ownership/lifetime, API/naming, interpreter/sibling protocol,
+persistence/ABI, runtime, and portability surfaces. This is an open-ended
+bounded-family evidence campaign, not a broad beautification or renaming sweep.
+No Web-authored stop condition or self-audit can close it. A bounded route that
+finds no work must trigger another coverage route in the same conversation; it
+is not a handoff boundary.
 
 Tag `v0.1.0-windows-i386` freezes the playable reconstruction checkpoint at
 commit `3442dcf`. The user-directed Windows x86-64, optional Linux i386
 preview, Linux x86-64, and Web/WASM game-port work is tracked separately in
-`docs/ROADMAP.md` and follows the semantic phase. Port work must preserve the
-pinned VC7.1 exact lane and may not turn modern compiler output into
-reconstruction credit or a whole-image exactness claim.
+`docs/ROADMAP.md` and may begin only after a later independent Codex or human
+semantic-closure review. Port work must preserve the pinned VC7.1 exact lane and
+may not turn modern compiler output into reconstruction credit or a whole-image
+exactness claim.
 
 No known runtime blocker remains in the exercised paths. Old replays produced
 by the failing split-dictionary build may decode to all `0x01` and must be
@@ -324,7 +349,8 @@ python3 scripts/validate-tracking.py --require-target
 python3 scripts/ci.py
 ```
 
-Two pre-existing untracked files belong to the user and must remain untouched:
-`EnemyManagerUpdate.i` and `droid.resume.txt`. The uncommitted experimental
-`config/runtime-scenarios.json` and `scripts/runtime-diff.py` are not part of
-the verified workflow or this handoff.
+Four pre-existing untracked paths remain unknown/external current state and must
+remain untouched and excluded from semantic commits: `EnemyManagerUpdate.i`,
+`droid.resume.txt`, `config/runtime-scenarios.json`, and
+`scripts/runtime-diff.py`. The latter two are uncommitted experiments and are
+not part of the verified workflow or this handoff.

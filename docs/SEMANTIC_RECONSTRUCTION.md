@@ -4569,3 +4569,52 @@ TH095-local evidence materially strengthens one of the recorded Unknowns or
 identifies a new bounded owner/protocol family. Factory receipt maintenance,
 runtime validation, and portable-platform reconstruction remain separate next
 states and must not be conflated with this semantic-readiness result.
+
+### 2026-09-11 review correction — SEM-062 is not phase closure
+
+**Authority correction.** The readiness paragraph above is retained as the
+Web campaign's bounded conclusion, but it does not close semantic
+reconstruction. The same exploration agent that discovers positive evidence
+cannot certify the absence of undiscovered work across an open-ended program.
+GPT-web therefore has no phase-closure or port-authorization authority. The
+durable project state remains `active-incomplete` until a later independent
+Codex or human review explicitly decides otherwise.
+
+**Concrete counterexample.** SEM-059 had already declared a game-local
+readiness exit and specifically reported compact enemy `+0x285C` as having no
+TH095-local reader. The next Web conversation found the previously missed
+`enter_subroutine` consumer, recovered the 32-entry ECL subroutine table in
+SEM-060, and explicitly superseded that part of SEM-059. This proves that an
+apparently careful self-audit can still be a local evidence plateau rather than
+a whole-phase result.
+
+**Coverage boundary.** SEM-062 retested seven named Enemy/ECL residual
+families. It did not exhaustively disposition the whole source tree's structural
+views, canonical owners and lifetimes, weak APIs and identifiers, primary and
+sibling interpreter protocols, state/resource/sound/replay domains, persistent
+formats and ABI boundaries, runtime gaps, or portability hazards. At committed
+HEAD `e6c8b10`, a current Factory `c-cpp-layout-heuristics-v1` scan covers all
+197 C/C++ files and reports 991 routing-only findings: 165 raw-member and 826
+anonymous-identifier candidates. The 63 semantic Web checkpoints since
+`339bb5a` changed 33 C/C++-like source paths. These counts are not completion
+percentages—many findings may be exact-facing, serialized, or honestly opaque—
+but SEM-062 did not provide a complete classification proving that the
+remaining and untouched surfaces were reviewed rather than unvisited. Runtime
+storage and runtime scenarios also remained explicitly unvalidated in SEM-062.
+
+**Resume rule.** Every new Web conversation must default to
+`active-incomplete`, treat every prior readiness/completion/exit statement as an
+untrusted hypothesis, and first try to falsify it with current TH095-local
+evidence outside its enumerated scope. One counterexample becomes the next
+bounded batch. If one search route finds none, immediately rotate to another
+coverage surface and continue working in the same conversation. A negative
+search result is not a handoff boundary; no hit, no new commit, router zero, or
+another self-audit can close the phase. Only a real context, connection, or tool
+boundary permits an `active-incomplete` continuation handoff with the exact next
+coverage route. Do not start port work from SEM-062.
+
+**Mutable artifact note.** SEM-062 recorded SHA-256 `37ac38ca...6251` for its
+780,288-byte whole-build artifact. A later ignored-output rebuild report observed
+at the same source HEAD records SHA-256 `384a6458...3160`. Product compile/link
+closure remains the claim; neither rebuild-local artifact hash is a stable
+source invariant without a deterministic-artifact contract.
