@@ -353,28 +353,28 @@ int ScreenEffect::CalcShakeEnvelope(ScreenEffect *screenEffect)
     }
 
     screenEffect->timer++;
-    if (screenEffect->timer < screenEffect->rawParameter0)
+    if (screenEffect->timer < screenEffect->shakeEnvelopeRampUpFrames)
     {
         shakeAmount =
-            (float)screenEffect->timer / screenEffect->rawParameter0;
+            (float)screenEffect->timer / screenEffect->shakeEnvelopeRampUpFrames;
     }
     else if (screenEffect->timer <
-             screenEffect->rawParameter0 + screenEffect->rawParameter1)
+             screenEffect->shakeEnvelopeRampUpFrames + screenEffect->shakeEnvelopeHoldFrames)
     {
         shakeAmount = 1.0f;
     }
     else
     {
-        if (screenEffect->timer < screenEffect->rawParameter0 +
-                                      screenEffect->rawParameter1 +
-                                      screenEffect->rawParameter2)
+        if (screenEffect->timer < screenEffect->shakeEnvelopeRampUpFrames +
+                                      screenEffect->shakeEnvelopeHoldFrames +
+                                      screenEffect->shakeEnvelopeRampDownFrames)
         {
             shakeAmount =
-                ((float)(unsigned int)(screenEffect->rawParameter0 +
-                                       screenEffect->rawParameter1 +
-                                       screenEffect->rawParameter2) -
+                ((float)(unsigned int)(screenEffect->shakeEnvelopeRampUpFrames +
+                                       screenEffect->shakeEnvelopeHoldFrames +
+                                       screenEffect->shakeEnvelopeRampDownFrames) -
                  (float)screenEffect->timer) /
-                (unsigned int)screenEffect->rawParameter2;
+                (unsigned int)screenEffect->shakeEnvelopeRampDownFrames;
         }
         else
         {
@@ -382,7 +382,7 @@ int ScreenEffect::CalcShakeEnvelope(ScreenEffect *screenEffect)
         }
     }
 
-    shakeAmount = (float)screenEffect->duration * shakeAmount;
+    shakeAmount = (float)screenEffect->shakeEnvelopeAmplitude * shakeAmount;
 
     switch (g_Rng.GetRandomU32InRange(3))
     {
