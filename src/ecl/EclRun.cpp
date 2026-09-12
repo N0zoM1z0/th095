@@ -246,6 +246,13 @@ struct EclPhotoShotDistanceEnemyView
 };
 typedef char EclPhotoShotDistanceAt2C4C[
     (offsetof(EclPhotoShotDistanceEnemyView, minimumPlayerDistanceSquared) == 0x2c4c) ? 1 : -1];
+struct EclEnemyDrawGroupView
+{
+    u8 unknown0000[0x2c0b];
+    u8 drawGroup;
+};
+typedef char EclEnemyDrawGroupAt2C0B[
+    (offsetof(EclEnemyDrawGroupView, drawGroup) == 0x2c0b) ? 1 : -1];
 #endif
 
 #ifndef DIFFBUILD

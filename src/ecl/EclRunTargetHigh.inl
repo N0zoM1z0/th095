@@ -15,6 +15,14 @@
          ->minimumPlayerDistanceSquared)
 #endif
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_TARGET_ENEMY_DRAW_GROUP(enemy)                                \
+    (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0b))
+#else
+#define TH095_TARGET_ENEMY_DRAW_GROUP(enemy)                                \
+    (reinterpret_cast<EclEnemyDrawGroupView *>(enemy)->drawGroup)
+#endif
+
     case 86:
     case 87:
     case 88:
@@ -144,7 +152,7 @@
         break;
 
     case 132:
-        *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0b) =
+        TH095_TARGET_ENEMY_DRAW_GROUP(enemy) =
             static_cast<u8>(TH08_ECL_READ_I(ctx, 0));
         break;
 
@@ -416,7 +424,7 @@ enter_subroutine:
     case 130:
         TH095_ENEMY_FLAGS(enemy)->flag7 =
             reinterpret_cast<u8 *>(instruction->operands)[0];
-        *reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0b) = 2;
+        TH095_TARGET_ENEMY_DRAW_GROUP(enemy) = 2;
         break;
 
     case 131:
