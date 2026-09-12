@@ -62,7 +62,7 @@ struct ReplayGlobalStateView
     u8 replayStateSnapshot[0xc8];
     u32 unknownFlag0 : 1;
     u32 unknownFlag1 : 1;
-    u32 suppressReplayCallbacks : 1;
+    u32 gameplayLoadActive : 1;
     u32 unknownFlags : 29;
 };
 
@@ -559,7 +559,7 @@ ChainCallbackResult ReplayManager::DrawFps()
 
 ChainCallbackResult ReplayManager::OnUpdate(ReplayManager *replayManager)
 {
-    if (g_ReplayGlobalState->suppressReplayCallbacks)
+    if (g_ReplayGlobalState->gameplayLoadActive)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
@@ -568,7 +568,7 @@ ChainCallbackResult ReplayManager::OnUpdate(ReplayManager *replayManager)
 
 ChainCallbackResult ReplayManager::OnDraw(ReplayManager *replayManager)
 {
-    if (g_ReplayGlobalState->suppressReplayCallbacks)
+    if (g_ReplayGlobalState->gameplayLoadActive)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }

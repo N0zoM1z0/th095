@@ -8385,8 +8385,18 @@ reinterpreting the adjacent unresolved task flags. Production already declared
 `PhotoGameTaskView::gameplayLoadActive` at task-local `flags @ +0xFC` bit 2,
 but `Create`, `Load`, `Update`, and `DrawHud` still mixed a local numeric mask
 with raw shifts. This transaction binds the complete proved task-local bit-2
-producer/consumer family to the canonical member. It does not change the
-separate photo/global-state bit 2 used by other managers.
+producer/consumer family to the canonical member. Its original owner model
+conservatively treated sibling photo/global-state projections as separate; the
+SEM-124 correction below supersedes that physical-separation conclusion.
+
+**Owner correction (SEM-124).** The original scope/corroboration text below
+conservatively described the PhotoGameTask bit and sibling photo/global-state
+projections as separate physical representations. Later ABI-077 owner recovery
+and fresh SEM-124 target evidence disprove that separation: `0x004BDEC8` is the
+standalone PhotoGameTask publication slot, and the sibling
+`g_RuntimeGlobalStateOwner` views dereference that same task object. The distinct
+bit-2 protocol is PhotoStage `g_RuntimeStageStateOwner +0x25720`
+`firstCaptureFrame`, not another `+0xFC` gameplay-load word.
 
 **Observed.** Fresh hash-attested TH095 decompilation of
 `PhotoGameTaskView::Create @ 0x00417F80` sets task `+0xFC` bit 2 immediately
@@ -8400,14 +8410,13 @@ state bit-2 gate and suppresses HUD drawing while it is set. The target was
 re-attested as Japanese TH095 v1.02a, 696,832 bytes, SHA-256
 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
 
-**Corroborated.** The production `PhotoGameTaskView` layout already places
-`gameplayLoadActive` at bit 2 of the `+0xFC` task flags dword. The same load
-routine is the established producer of the corresponding shared photo-runtime
-loading state used by sibling managers, but this batch does not collapse the
-two physical representations: the task-local bit is owned by the `0x124`-byte
-PhotoGameTask object, while other managers read the shared runtime/global-state
-owner. Existing exact and semantic records already describe Update/DrawHud as
-loading-gated task consumers.
+**Corroborated (owner model corrected by SEM-124).** The production
+`PhotoGameTaskView` layout places `gameplayLoadActive` at bit 2 of the `+0xFC`
+task flags dword. The same load routine is the established producer of the
+loading state used by sibling manager projections. ABI-077 and SEM-124 establish
+that those projections use the same `0x004BDEC8` PhotoGameTask object rather
+than a second physical `+0xFC` owner. Existing exact and semantic records already
+describe Update/DrawHud as loading-gated task consumers.
 
 **Inferred.** Task-local bit 2 means that the PhotoGameTask is in its
 asynchronous gameplay-loading interval. It is asserted before the loader is
@@ -8706,3 +8715,90 @@ Target `PhotoGameTaskView::Update @ 0x00418100` reads task `+0xFC` bit 4 indepen
 **Recovery / analysis state.** The source transaction started from committed SEM-122 HEAD `a1b4bc7174e5fd445b339a8d3bd6147591524ebc` with no staged or tracked unstaged changes and the same four pre-existing untracked paths excluded. `.analysis/` baseline was 3,394,984 bytes. Fresh target evidence is bounded to `.analysis/gpt-web/20260912-result-active/`, whose manifested session scratch contains the 34,882-byte seven-function decompile plus its manifest. An earlier FrontEnd-bit-4 routing probe produced only zero-byte query outputs because the wrong Ghidra query operation was requested; it received no target evidence credit and its manifested scratch root was removed after producer review. After the tracked conclusion was recorded and producer/reference state was checked, the 34,882-byte bounded decompile and 890-byte manifest were removed explicitly with no active producer; the empty current-session root was removed and `.analysis/` returned to 3,394,984 bytes.
 
 **Next evidence route.** Rotate away from shared result-screen state after checkpoint. Prefer an independent persistent/ABI, historical-runtime, replay/input, primary/sibling interpreter, sound, or non-ANM resource-lifetime family with a TH095-local producer plus independent consumer. Keep FrontEnd `+0x6120` bit 4, shared photo bit 8, PhotoGameTask ordinary-load `0x100`, compact enemy life baselines, delayed-callback storage, alternate ANM-bank producer identity, compact flags2 bit 5, ReplayScanWorker `unknown010`, SoundPlayer writer-only metadata, PBG copied metadata, TextRenderer RNG prefix, ANM bit 14, and score-header `+0x0C` Unknown absent new local evidence. The semantic phase remains active-incomplete.
+
+### SEM-124 — align ReplayManager with the gameplay-load latch
+
+**Scope.** Resume-audit the established `gameplayLoadActive` protocol through the
+ReplayManager callback family and reconcile an owner-model contradiction left in
+SEM-111. Normal `ReplayManager.cpp` projected bit 2 of the `+0xFC` flags word as
+`suppressReplayCallbacks`, an effect-specific name, even though production binds
+that view through `g_RuntimeGlobalStateOwner`. This transaction aligns only that
+field and its two callback reads with `gameplayLoadActive`, and corrects the
+obsolete claim that the PhotoGameTask flag and sibling global-state projections
+were separate physical representations. No replay file format, ReplayManager
+object layout, PhotoStage state, callback ABI, or exact-facing source is changed.
+
+**Observed.** Fresh hash-attested TH095 decompilation of
+`PhotoGameTaskView::Create @ 0x00417F80` allocates/constructs a `0x124`-byte task,
+publishes its pointer to `DAT_004BDEC8`, and then ORs `4` into dword index
+`0x3F`, physical task offset `+0xFC`. Fresh `PhotoGameTaskView::Load @
+0x00417D20` starts by loading `DAT_004BDEC8`, sets the same object's `+0xFC`
+bit 2, and clears that bit with `& 0xFFFFFFFB` on the normal completion path.
+Fresh `ReplayManager::OnUpdate @ 0x00435350` and `ReplayManager::OnDraw @
+0x00435380` independently dereference `DAT_004BDEC8 + 0xFC`, test bit 2, and
+return without `ProcessFrame` / `DrawFps` respectively while it is set.
+
+**Corroborated.** ABI-077 established that target `0x004BDEC8` is the standalone
+PhotoGameTask/global-state publication slot and distinguished it from Supervisor
+`photoGameTask @ 0x004C4DF4`, which has a different write lifetime. Current
+production `GameplayGlobals.hpp` and `Main.cpp` preserve that model:
+`g_RuntimeGlobalStateOwner` represents `0x004BDEC8`, and `PhotoGameTask.cpp`
+routes `g_PhotoGameTask` through that owner. SEM-055 already established bit 2's
+loading lifetime from the Create/Load set/clear pair and sibling gameplay
+consumers. The ReplayManager callbacks are therefore missed consumers of the
+same physical latch, not a separate replay-only suppression protocol.
+
+**Inferred.** `gameplayLoadActive` is a task-owned cross-subsystem lifecycle
+latch. Replay recording/playback callbacks participate in the loading fence by
+not advancing replay input/FPS processing or drawing replay FPS while the
+PhotoGameTask loader owns the interval. Naming the producer lifetime rather than
+a ReplayManager-specific effect keeps the projection consistent with Background,
+BulletManager, EnemyManagerTask, PhotoGame, PhotoCamera, PhotoEffect, PhotoItem,
+PhotoStage-global, ScreenEffect, and the canonical PhotoGameTask view.
+
+**Unknown / bounded.** This correction does not merge the distinct PhotoStage
+owner `g_RuntimeStageStateOwner +0x25720` bit 2 (`firstCaptureFrame`) into the
+PhotoGameTask flags word. It does not reinterpret `ReplayGlobalStateView` bits 0
+or 1, PhotoGameTask bit 8 or the ordinary-load `0x100` publication, and it does
+not claim that every subsystem applies an identical loading response. No replay
+container bytes, replay input overlay, runtime timing equivalence, or portable
+behavior is inferred.
+
+**Production / exact representation.** Normal `ReplayManager.cpp` now exposes
+bit 2 of `ReplayGlobalStateView` as `gameplayLoadActive` and uses that member in
+`OnUpdate` and `OnDraw`. `TH095_MATCH_EXACT` selects `ReplayManagerExact.inl` at
+the translation-unit boundary, so the historical `suppressReplayCallbacks`
+spelling and compiler-facing source remain untouched. The 0x12C-byte
+ReplayManager layout and 0x124-byte PhotoGameTask layout are unchanged.
+
+**Validation.** All 12 configured `src/ReplayManager.cpp` exact units replayed
+exact with zero source/manifest changes; `OnUpdate` and `OnDraw` remain 45/45
+bytes and retain their `0x004BDEC8` DIR32 relocations. A command-local normal
+production probe used the manifest profile `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF
+/Oi /Gr /Od /Ob1 /I src` and pinned VC7.1 compiler 13.10.3077, producing an
+Intel 80386 COFF object (`machine 0x014C`). The probe object/PDB were removed
+before command exit. `python3 scripts/build.py --check` retains 696 configured
+units, `python3 scripts/validate-tracking.py --require-target` retains 697
+source-present / 696 exact, and `git diff --check` passes. Because this is a
+private production `.cpp` projection change with no shared header, physical
+layout, owner publication, or persistent-format change, aggregate exact and
+whole-product gates are deferred to the final campaign milestone.
+
+**Recovery / analysis state.** This transaction began at committed HEAD
+`9674fb70fe18d6fddd51a979f1d741a40a57fe0b` with no staged or tracked unstaged
+changes and the same four pre-existing untracked paths excluded. `.analysis/`
+started at 3,394,984 bytes. Fresh target evidence used the manifested
+current-session root `.analysis/gpt-web/20260912-replay-load-gate/`, containing a
+2,512-byte four-function decompile and 319-byte manifest. After the conclusion
+was recorded and producer/reference state was checked, those two files and the
+empty root were removed explicitly; `.analysis/` returned to 3,394,984 bytes.
+Semantic interpretation, Git state, exact replay, production compilation,
+runtime storage, and runtime scenarios remain separate states.
+
+**Next evidence route.** After checkpoint, rotate away from photo/global loading
+flags. Prefer an independent persistent ABI, resource-lifetime, sound, or
+interpreter protocol with a TH095-local producer and independent consumer. Keep
+ReplayScanWorker `unknown010`, replay reserved bytes, score header `+0x0A/+0x0C`,
+compact-enemy write-only control bits, and SoundPlayer writer-only metadata
+Unknown absent new target-local evidence. The semantic phase remains
+active-incomplete.
