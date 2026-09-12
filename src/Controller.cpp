@@ -22,7 +22,8 @@ DIFFABLE_STATIC_ARRAY(ControllerInputSlotView, 3, g_ControllerInputSlots);
 #define TH095_CONTROLLER_JOYCAPS_FIRST g_JoystickCaps
 #define TH095_CONTROLLER_JOYCAP(index) ((&g_JoystickCaps)[index])
 #define TH095_CONTROLLER_DEVICE(index) ((&g_ControllerDevices)[index])
-#define TH095_CONTROLLER_RUNTIME_FLAGS g_ControllerRuntimeFlags
+#define TH095_CONTROLLER_KEYBOARD_AVAILABLE (((g_ControllerRuntimeFlags >> 10) & 1) != 0)
+#define TH095_CONTROLLER_CONTROLLER_AVAILABLE (((g_ControllerRuntimeFlags >> 11) & 1) != 0)
 #define TH095_CONTROLLER_PAD_X g_ControllerPadXAxis
 #define TH095_CONTROLLER_PAD_Y g_ControllerPadYAxis
 #define TH095_CONTROLLER_BUTTONS_PTR (&g_ControllerButtons)
@@ -34,7 +35,8 @@ DIFFABLE_STATIC_ARRAY(ControllerInputSlotView, 3, g_ControllerInputSlots);
 #define TH095_CONTROLLER_JOYCAPS_FIRST g_JoystickCaps[0]
 #define TH095_CONTROLLER_JOYCAP(index) (g_JoystickCaps[index])
 #define TH095_CONTROLLER_DEVICE(index) (g_Supervisor.controller)
-#define TH095_CONTROLLER_RUNTIME_FLAGS g_Supervisor.flags.raw
+#define TH095_CONTROLLER_KEYBOARD_AVAILABLE (g_Supervisor.flags.keyboardAvailable != 0)
+#define TH095_CONTROLLER_CONTROLLER_AVAILABLE (g_Supervisor.flags.controllerAvailable != 0)
 #define TH095_CONTROLLER_PAD_X g_Supervisor.config.padXAxis
 #define TH095_CONTROLLER_PAD_Y g_Supervisor.config.padYAxis
 #define TH095_CONTROLLER_BUTTONS_PTR (g_ControllerButtons)
@@ -190,7 +192,7 @@ u16 GetControllerInput(i32 controllerIndex, i32 joystickIndex, u16 buttons)
     ControllerInputLocals locals;
 
     locals.inputSlot = TH095_CONTROLLER_INPUT_SLOT(controllerIndex);
-    if (((TH095_CONTROLLER_RUNTIME_FLAGS >> 11) & 1) == 0)
+    if (!TH095_CONTROLLER_CONTROLLER_AVAILABLE)
     {
         memset(&locals.joystickInfo, 0, sizeof(locals.joystickInfo));
         locals.joystickInfo.dwSize = sizeof(locals.joystickInfo);
@@ -310,7 +312,7 @@ u8 *GetControllerState(i32 deviceIndex)
     ControllerStateLocals locals;
 
     memset(TH095_CONTROLLER_BUTTONS_PTR, 0, 128);
-    if (((TH095_CONTROLLER_RUNTIME_FLAGS >> 11) & 1) == 0)
+    if (!TH095_CONTROLLER_CONTROLLER_AVAILABLE)
     {
         memset(&locals.joystickInfo, 0, sizeof(locals.joystickInfo));
         locals.joystickInfo.dwSize = sizeof(locals.joystickInfo);
@@ -390,7 +392,7 @@ u16 GetInput(i32 inputIndex)
     inputStateSlot = TH095_CONTROLLER_INPUT_SLOT(inputIndex);
     if (g_ControllerInputEnabled != 0)
     {
-        if (((TH095_CONTROLLER_RUNTIME_FLAGS >> 10) & 1) == 0)
+        if (!TH095_CONTROLLER_KEYBOARD_AVAILABLE)
         {
             GetKeyboardState(keyboardState);
             inputButtons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_UP, VK_UP);

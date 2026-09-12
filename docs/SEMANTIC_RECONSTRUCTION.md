@@ -7982,3 +7982,92 @@ Prefer a bounded resource-lifetime or historical-runtime/input family with a
 TH095-local producer/consumer or owner/lifetime relation. Do not return to
 `ReplayInputData+0x06`, `+0xe4..+0xef`, or the remaining replay-container opaque
 bytes without new target-local evidence.
+
+### SEM-106 — bind controller input availability reads to Supervisor ownership
+
+**Scope.** Re-audit the historical controller input path instead of accepting the
+runtime-owner audit as exhaustive. Three production consumers still decoded
+`SupervisorFlags` availability state through raw shifts of the complete flags
+dword even though the canonical owner already names the published bits. This
+transaction binds only the TH095-proven keyboard/controller availability
+protocol: bit 10 `keyboardAvailable` and bit 11 `controllerAvailable`. It does
+not reinterpret any adjacent Supervisor flag or alter the historical fallback
+behavior.
+
+**Observed.** Fresh target-attested TH095 decompilation shows
+`Controller::GetControllerInput @ 0x00419410` and
+`Controller::GetControllerState @ 0x00419910` both test absolute dword
+`0x004C4AB4` bit 11. When the bit is clear they use the WinMM
+`joyGetPosEx` path; when set they poll/read the DirectInput game-controller
+device rooted at `0x004C4684`. `Controller::GetInput @ 0x00419AE0` tests the
+same dword bit 10: clear selects Win32 `GetKeyboardState`, while set selects the
+DirectInput keyboard at `0x004C4680` and its `GetDeviceState` path.
+
+`Supervisor::InitializeInput @ 0x004238E0` is the independent target producer.
+It first clears bits 10 and 11 in `0x004C4AB4`, calls `SetupDInput`, then
+publishes bit 10 from `0x004C4680 != NULL` and bit 11 from
+`0x004C4684 != NULL`. The reconstructed `Supervisor` layout places `flags @
++0x444`, so `g_Supervisor @ 0x004C4670` maps that physical dword exactly to
+`0x004C4AB4`; its canonical `SupervisorFlags` type already names those fields
+`keyboardAvailable` and `controllerAvailable`.
+
+**Corroborated.** `Supervisor::InitializeInput` is an accepted exact 127-byte
+unit and `Supervisor::SetupDInput @ 0x00423960` is the exact DirectInput owner
+that constructs the keyboard and first attached game-controller devices.
+`Controller::GetControllerInput` and `Controller::GetControllerState` are
+independent accepted exact consumers of the controller-availability bit. The
+non-exact `Controller::GetInput` target body independently consumes the
+keyboard-availability bit and preserves the Win32 keyboard fallback when
+DirectInput keyboard setup is unavailable or disabled.
+
+**Production representation.** Normal `Controller.cpp` now reads
+`g_Supervisor.flags.keyboardAvailable` and
+`g_Supervisor.flags.controllerAvailable` through availability macros rather
+than extracting bits from `g_Supervisor.flags.raw`. `TH095_MATCH_EXACT` keeps
+the historical `g_ControllerRuntimeFlags` shift/mask expressions, so the exact
+compiler input and relocation spelling remain unchanged. No shared header,
+layout, persistent format, or public ABI changes.
+
+**Inferred.** Bits 10 and 11 are publication latches for successful DirectInput
+device ownership, not general statements that keyboard/controller input is
+possible by every backend. A clear bit deliberately routes the corresponding
+consumer to the historical Win32/WinMM fallback. This batch therefore names the
+owner relation without renaming those fallbacks as failures or modernizing the
+input policy.
+
+**Unknown / bounded.** No meaning is inferred for `SupervisorFlags` bit 13 or
+higher unknown bits, and this transaction does not reinterpret configuration
+`disableDirectInput`, controller assignment bytes, deadzones, button mappings,
+or the known compiler-only exact residual in `Controller::GetInput`. No runtime
+scenario is claimed; the pre-existing untracked runtime experiment files remain
+outside the transaction.
+
+**Validation.** The Ghidra wrapper re-attested the canonical Japanese TH095
+v1.02a target before decompiling `0x00419410`, `0x00419910`, `0x00419AE0`,
+`0x004238E0`, and `0x00423960`. Focused cold replay of `src/Controller.cpp`
+covered all seven configured accepted units and passed 7/7 with zero
+private-label refreshes. A command-local production probe compiled the normal
+`Controller.cpp` branch with its pinned VC7.1 profile to Intel i386 COFF. `git
+diff --check` passed. Because the change is private to one `.cpp` representation
+and does not modify a shared header/layout/PCH/owner object, aggregate exact and
+whole-product replay are deferred to the campaign milestone.
+
+**Recovery / analysis state.** The campaign resumed from live HEAD
+`9c7a839f4868a2dae0fadaf8cd76a06a4bab8c4f` with no staged or tracked
+unstaged changes and four documented pre-existing untracked paths:
+`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
+`scripts/runtime-diff.py`. They were reviewed and preserved outside staging.
+`.analysis/` started at 3,394,984 bytes. Bounded target evidence was generated
+under `.analysis/gpt-web/20260912-controller-availability/` with a manifest;
+after the compact conclusions were recorded here, the manifested decompile and
+manifest were removed with no active producer or remaining file in that scratch
+root. `.analysis/` returned to 3,394,984 bytes. Semantic interpretation, exact
+replay, production compilation, runtime storage, and runtime scenarios remain
+separate states.
+
+**Next evidence route.** Rotate away from controller availability after
+checkpoint. Prefer an independent resource-lifetime, historical-runtime, sound,
+or persistent/ABI family with a TH095-local producer plus independent consumer.
+Do not use the remaining `Controller::GetInput` compiler residual as semantic
+evidence unless new target-local meaning is found. The semantic phase remains
+active-incomplete.
