@@ -56,8 +56,8 @@ struct ResultScreenGlobalStateView
             u32 suppressResultCallbacks : 1;
             u32 unknownFlag3 : 1;
             u32 unknownFlag4 : 1;
-            u32 replayResultActive : 1;
-            u32 photoResultActive : 1;
+            u32 playerDeathTransitionComplete : 1;
+            u32 photoLimitTransitionComplete : 1;
             u32 unknownFlags : 25;
         };
     };
@@ -985,12 +985,12 @@ ChainCallbackResult ResultScreen::Update()
             InitializeGameResultScreen(this);
             break;
         }
-        else if (g_ResultScreenGlobalState->replayResultActive != 0)
+        else if (g_ResultScreenGlobalState->playerDeathTransitionComplete != 0)
         {
             InitializeReplayResultScreen(this);
             break;
         }
-        else if (g_ResultScreenGlobalState->photoResultActive != 0)
+        else if (g_ResultScreenGlobalState->photoLimitTransitionComplete != 0)
         {
             InitializePhotoResultScreen(this);
             break;
@@ -1296,7 +1296,7 @@ ChainCallbackResult ResultScreen::Update()
         else if (GetPressedButtons(9) != 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            if (g_ResultScreenGlobalState->replayResultActive != 0)
+            if (g_ResultScreenGlobalState->playerDeathTransitionComplete != 0)
             {
                 this->stateTimer.Reset();
                 this->anm->InitializeVm(GetResultVm(this, 7), 7);
@@ -1310,7 +1310,7 @@ ChainCallbackResult ResultScreen::Update()
                 this->replayNameCursor = 0;
                 goto updateResultVms;
             }
-            else if (g_ResultScreenGlobalState->photoResultActive != 0)
+            else if (g_ResultScreenGlobalState->photoLimitTransitionComplete != 0)
             {
                 ResultUpdatePhotoSetStatePhase(this, 5);
                 this->anm->InitializeVm(GetResultVm(this, 11), 11);
