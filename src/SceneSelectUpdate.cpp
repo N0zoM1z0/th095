@@ -828,7 +828,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         g_Supervisor.StartReplayScan(LoadSceneSelectionAssets, NULL);
         SceneSelectCreateVmAt(view, 0x13);
         SceneSelectCreateVmAt(view, 0x12);
-        view->flags |= 4;
+        view->flagBits.previewPending = 1;
         SceneSelectCreateVmAt(view, 0x14);
         SceneSelectCreateVmAt(view, 0x49);
         SceneSelectCreateVmAt(view, 0x4a);
@@ -1272,7 +1272,7 @@ update_preview_text:
         if (view->flagBits.previewPending == 0)
         {
             view->vmIds.SetInterrupt(0x12, 3);
-            view->flags |= 4;
+            view->flagBits.previewPending = 1;
         }
     }
     else
@@ -1309,7 +1309,7 @@ update_preview_text:
                 previewVm->drawEnabled = 0;
             }
             g_AnmManager->SetInterrupt(view->vmIds.values[0x12], 2);
-            view->flags &= ~4u;
+            view->flagBits.previewPending = 0;
         }
     }
 
