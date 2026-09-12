@@ -46,13 +46,7 @@ struct FrontEndControllerDrawView
     union
     {
         u32 flags;
-        struct
-        {
-            u32 titleLoadIncomplete : 1;
-            u32 unknownFlags1 : 2;
-            u32 showRates : 1;
-            u32 unknownFlags4 : 28;
-        };
+        FrontEndControllerFlagBits flagBits;
     };
 };
 
@@ -138,7 +132,7 @@ static __forceinline void FrontEndDrawSceneSummary(
             &slowRatePosition, "Slow Rate  %2.0f%%", g_ResultSaveData->sceneScores[view->selectedScoreEntry].highScoreSlowRate);
         g_AsciiManager.color.color = 0xffffffff;
 
-        if (view->showRates)
+        if (view->flagBits.showRates)
         {
             g_AsciiManager.color.color = 0xffc0e0e0;
             g_AsciiManager.scaleX = 0.75f;
@@ -319,7 +313,7 @@ void __fastcall SceneSelectControllerView::OnUpdate(
     // exact wrapper above and therefore retains the verified 19-byte target
     // body.
     if (reinterpret_cast<FrontEndControllerDrawView *>(controller)
-            ->titleLoadIncomplete != 0)
+            ->flagBits.titleLoadIncomplete != 0)
     {
         return;
     }

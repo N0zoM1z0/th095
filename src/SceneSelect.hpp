@@ -16,9 +16,10 @@ namespace th095
 
 typedef ResultScoreEntryView SceneScoreEntryView;
 
-struct SceneSelectFlagBits
+struct FrontEndControllerFlagBits
 {
-    u32 unknownFlagBits0 : 2;
+    u32 titleLoadIncomplete : 1;
+    u32 titleLoadFailed : 1;
     u32 previewPending : 1;
     u32 showRates : 1;
     u32 unknownFlagBit4 : 1;
@@ -26,8 +27,8 @@ struct SceneSelectFlagBits
     u32 unknownFlagBits6 : 26;
 };
 
-typedef char SceneSelectFlagBitsSizeIs4[
-    (sizeof(SceneSelectFlagBits) == 4) ? 1 : -1];
+typedef char FrontEndControllerFlagBitsSizeIs4[
+    (sizeof(FrontEndControllerFlagBits) == 4) ? 1 : -1];
 
 struct SceneValueQueue
 {
@@ -151,7 +152,7 @@ struct SceneSelectControllerView
     union
     {
         u32 flags;
-        SceneSelectFlagBits flagBits;
+        FrontEndControllerFlagBits flagBits;
     };
     u8 unknown6124[4];
     SceneValueQueue selectionQueue;

@@ -85,12 +85,16 @@ struct FrontEndControllerUpdateView
     union
     {
         u32 flags;
+#if defined(TH095_MATCH_EXACT)
         struct
         {
             u32 titleLoadIncomplete : 1;
             u32 titleLoadFailed : 1;
             u32 unknownFlags2 : 30;
         };
+#else
+        FrontEndControllerFlagBits flagBits;
+#endif
     };
     i32 entryMode;
 };
@@ -285,7 +289,11 @@ ChainCallbackResult SceneSelectControllerView::Update()
     {
     case 0:
     {
+#if defined(TH095_MATCH_EXACT)
         if (view->titleLoadFailed)
+#else
+        if (view->flagBits.titleLoadFailed)
+#endif
         {
             TH095_FRONT_SUPERVISOR.StopReplayScan();
             TH095_FRONT_SUPERVISOR_STATE = 6;

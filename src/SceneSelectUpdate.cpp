@@ -75,7 +75,7 @@ struct SceneSelectUpdateView
     union
     {
         u32 flags;
-        SceneSelectFlagBits flagBits;
+        FrontEndControllerFlagBits flagBits;
     };
     u8 unknown6124[4];
     SceneValueQueue selectionQueue;

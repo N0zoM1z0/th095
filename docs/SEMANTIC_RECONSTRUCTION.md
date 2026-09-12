@@ -7365,3 +7365,95 @@ away from photo-game flags and compact photo-pulse state. Prefer another
 resource lifetime, persistent/ABI boundary, interpreter protocol, or historical-
 platform runtime gap with independent TH095-local producer and consumer
 evidence. Semantic phase state remains active-incomplete.
+
+### SEM-099 — canonicalize the shared front-end controller flags
+
+**Scope.** Consolidate the already proved TH095 front-end flag meanings at
+controller `+0x6120` into one maintainable production owner. Earlier semantic
+batches established title-load bit 0 (`titleLoadIncomplete`), title-load-failure
+bit 1 (`titleLoadFailed`), scene-preview bit 2 (`previewPending`), rate-display
+bit 3 (`showRates`), and asset-worker cancellation bit 5
+(`assetLoadStopRequested`), but the live production source still represented
+that physical dword through several partially overlapping local bitfields. This
+batch repairs that owner fragmentation. It does not assign a meaning to bit 4
+or bits 6..31 and does not change the exact-facing lexical representation.
+
+**Observed.** Fresh hash-attested TH095 target decompilation re-established the
+bit-0/bit-1 lifecycle independently of the prior prose. `Create @ 0x00445CC0`
+allocates the 0x6514-byte controller and sets bit 0 of the dword at `+0x6120`
+before registering the Chain callbacks and starting the loader. `LoadThread @
+0x00445980` clears exactly bit 0 after successful initialization and loading-VM
+teardown; its shared failure path instead sets exactly bit 1. The independent
+main-thread `SceneSelectControllerView::Update @ 0x00445E80` tests bit 1 while
+requested state is zero, stops replay scanning, publishes Supervisor state 6,
+and returns. The canonical Supervisor enum identifies state 6 as the error
+state. These producer/consumer paths therefore continue to support the existing
+`titleLoadIncomplete` and `titleLoadFailed` interpretations.
+
+**Corroborated.** The same physical dword already has independent TH095-local
+behavior for the other accepted bits. Scene-select update/worker code publishes
+and consumes bit 2 as `previewPending`, scene-summary drawing consumes bit 3 as
+`showRates`, and the scene-asset worker plus scene-selection state machine share
+bit 5 as `assetLoadStopRequested`. All participating production views assert or
+inherit the same controller `+0x6120` boundary. The pre-existing
+`FrontEndControllerUpdateView` and production draw view already carried part of
+the title-load semantics, while `SceneSelectFlagBits` still hid bits 0 and 1 as
+one two-bit unknown field. The discrepancy was therefore a maintenance-owner
+problem, not evidence for a new physical field.
+
+**Production representation.** `FrontEndControllerFlagBits` is now the common
+production representation for the controller dword. Its accepted layout is bit
+0 `titleLoadIncomplete`, bit 1 `titleLoadFailed`, bit 2 `previewPending`, bit 3
+`showRates`, bit 4 unknown, bit 5 `assetLoadStopRequested`, and bits 6..31
+unknown. `SceneSelectControllerView`, `SceneSelectUpdateView`, and the
+asynchronous asset-worker view use that type directly. The production
+front-end coordinator and draw view consume `titleLoadFailed`,
+`titleLoadIncomplete`, and `showRates` through the same owner. The production
+lifecycle view publishes the title-load bits through the same representation.
+`TH095_MATCH_EXACT` and DIFF-facing branches retain the historical local
+bitfields and raw masks so this maintainability repair does not perturb target-
+exact compiler shape.
+
+**Inferred.** `+0x6120` is one persistent outer-controller state word shared by
+front-end lifecycle, scene selection, drawing, and the asynchronous scene-asset
+worker. The accepted names describe independently observed protocol roles; this
+batch does not claim that the retail source used the reconstructed C++ type name
+or that every front-end mode assigns meaning to every bit.
+
+**Unknown / bounded.** Bit 4 and bits 6..31 remain Unknown. `OptionsMenuView`
+also overlays the outer controller and clears raw bit 3, but this batch does not
+expand that menu-local representation because it contributes no independent
+bit-0/bit-1 evidence and requires no semantic change. No meaning is inferred
+from bit adjacency, and no new deterministic Wine runtime scenario was run.
+Runtime-scenario coverage therefore remains separate and unchanged.
+
+**Compiler-observed / validation.** Focused cold replay of
+`FrontEndController.cpp`, `FrontEndLifecycle.cpp`, `SceneControllerDraw.cpp`,
+`SceneSelectUpdate.cpp`, and `SceneSelectAssets.cpp` passed all 17/17 configured
+exact units with zero private-label refresh. Because `SceneSelect.hpp` is a
+shared production header and the change consolidates a cross-object owner, the
+complete current source was then replayed in eight deterministic cold
+partitions: 71 + 56 + 84 + 72 + 80 + 66 + 84 + 183 = 696/696 exact units, with
+zero private-label refresh in every partition. Cold whole-product validation
+compiled all 88 pinned VC7.1 Intel i386 COFF objects and linked a verified PE32
+Windows GUI executable. The resulting reconstructed artifact is 780288 bytes,
+four sections, SHA-256
+`df5a1d376a9be1f5d0f9f716c9002f4ddf84338c0c11add2df5ce26a1e3f5344`.
+The build/link command itself completed both validation stages; a later
+post-validation shell probe used the obsolete filename `th095.exe` and returned
+nonzero after the successful product had already been written as
+`th095-reconstructed.exe`. That audit typo is not a compilation or linkage
+failure. Product closure remains separate from whole-image identity and runtime
+scenario validation.
+
+**Analysis artifacts.** The campaign began with `.analysis/` at 1,408,573,066
+bytes. This batch used the registered target-attested Ghidra provider and
+repository-native build outputs only; it created no `.analysis/gpt-web/`
+workspace and did not touch the pre-existing legacy/shared analysis roots.
+
+**Next evidence route.** Rotate away from the front-end controller flag family
+after checkpoint. Prefer a different TH095-local owner/lifetime, resource
+protocol, interpreter/state family, persistent ABI boundary, or historical-
+platform runtime gap with an independent producer and consumer. Previously
+falsified write-only or reader-only fields remain Unknown unless new TH095-local
+evidence appears. Semantic phase state remains active-incomplete.

@@ -188,7 +188,13 @@ struct FrontEndLifecycleView
     u8 unknown0fe8[0x14];
     void *replayListData;
     u8 unknown1000[0x5120];
-    u32 flags;
+    union
+    {
+        u32 flags;
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+        FrontEndControllerFlagBits flagBits;
+#endif
+    };
     i32 entryMode;
     FrontEndPointerQueueView selectionQueue;
     FrontEndPointerQueueView loadedSceneQueue;
@@ -398,14 +404,22 @@ void __fastcall FrontEndLifecycleView::LoadThread(void *)
         goto loadFailed;
 
     TH095_FRONT_HIDE_LOADING();
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     controller->flags &= ~FRONT_END_CONTROLLER_TITLE_LOAD_INCOMPLETE;
+#else
+    controller->flagBits.titleLoadIncomplete = 0;
+#endif
     utils::DebugPrint("Title Load Thread Finish\n");
     TH095_FRONT_LOAD_IN_PROGRESS = 0;
     TH095_FRONT_LOAD_FINISHED = 1;
     goto loadDone;
 
 loadFailed:
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     controller->flags |= FRONT_END_CONTROLLER_TITLE_LOAD_FAILED;
+#else
+    controller->flagBits.titleLoadFailed = 1;
+#endif
     TH095_FRONT_BEGIN_LOADING_COMPLETION();
     TH095_FRONT_LOAD_IN_PROGRESS = 0;
     TH095_FRONT_LOAD_FINISHED = 1;
@@ -420,7 +434,11 @@ FrontEndLifecycleView *__fastcall FrontEndLifecycleView::Create(i32 mode)
     FrontEndLifecycleView *controller = new FrontEndLifecycleView();
     ChainElem *elem;
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     controller->flags |= FRONT_END_CONTROLLER_TITLE_LOAD_INCOMPLETE;
+#else
+    controller->flagBits.titleLoadIncomplete = 1;
+#endif
     controller->entryMode = mode;
 
     elem = g_Chain.CreateElem((ChainCallback)TH095_FRONT_END_ON_UPDATE);
