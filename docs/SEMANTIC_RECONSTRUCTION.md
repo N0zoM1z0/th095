@@ -7197,3 +7197,82 @@ different TH095-local owner/lifetime, interpreter/state protocol, resource
 boundary, persistent ABI, or historical-runtime gap with an independent
 producer and consumer. A negative bounded route remains routing evidence only;
 the semantic phase stays active-incomplete.
+
+### SEM-097 — name the photo-game load-failure latch
+
+**Scope.** Recover shared photo-task/global-state `flags @ +0xFC` bit 3 as the
+asynchronous photo-game load-failure latch. This batch adopts the interrupted
+live worktree transaction first, changes only the production spelling in
+`PhotoGameTaskView`, and leaves the exact-facing bit expression unchanged.
+
+**Observed.** Hash-attested TH095 target `PhotoGameTaskView::Load @ 0x00417D20`
+sets `flags @ +0xFC` bit 2 when asynchronous loading starts. The target reaches
+one failure block when either Supervisor flag bit 7 aborts the capture/ANM wait
+or `InitializeSubsystems @ 0x00417A70` returns failure; that block sets bit 3,
+begins loading completion, clears the replay-worker active publication, and
+publishes its exit signal. The normal path instead initializes subsystems,
+waits for the load barrier, performs the restart/music path, hides the loading
+VMs, clears bit 2, and never sets bit 3.
+
+Target `PhotoGameTaskView::Update @ 0x00418100` independently tests bit 3 before
+all other photo-game completion gates. When it is set, Update stops replay
+scanning, publishes Supervisor state 6, requests the active Help controller to
+close when present, and returns 1. The repository's canonical
+`SupervisorState` names value 6 `SUPERVISOR_STATE_ERROR`, so the producer and
+consumer together identify bit 3 as a persistent load-failure publication
+rather than a generic loading or transition bit.
+
+**Production representation.** `PhotoGameTaskView` now exposes bit 3 as
+`gameplayLoadFailed`. The `Load` failure block publishes that field and `Update`
+reads it directly. `TH095_MATCH_EXACT` retains `unknownFlag3`, the raw bit-3
+read, and the `flags | 8` store so the historical VC7.1 source shape remains
+unchanged. Physical layout remains `flags @ +0xFC`; no adjacent flag position
+moves.
+
+**Inferred.** The bit is a one-way failure latch for the current asynchronous
+photo-game load attempt. The target producer is reached by two failure causes
+(capture/ANM wait abort or subsystem initialization failure), while the
+independent main-thread consumer converts either cause into the common
+Supervisor error state. This does not distinguish the failure cause.
+
+**Unknown / bounded.** Bit 4 and bits 7/8 remain unknown in the canonical photo
+flags owner; this batch does not change the previously established bit 5/6 or
+bit 9/10 meanings. It does not claim a reset protocol for bit 3 beyond task
+construction zeroing the object, and no deterministic Wine runtime scenario
+was added for forcing the failure path. Runtime-scenario validation therefore
+remains separate and unclaimed.
+
+**Validation.** Registered Ghidra target attestation passed for the canonical
+Japanese v1.02a executable, and bounded decompilation of `0x00417D20` and
+`0x00418100` established the producer/consumer control flow above. Focused
+`PhotoGameTask.cpp` replay passed all 10/10 configured exact units with zero
+private-label refreshes. Because `PhotoGameTask.hpp` is a shared production
+header, the cold aggregate exact runner was also executed. Its terminal tool
+response was lost, but recovery found it had reached the deterministic final
+source only after the prior 87 sources / 674 units had passed strict fail-fast
+comparison; an independent `src/zwave.cpp` replay then passed 22/22, closing the
+current source at 696/696 exact with zero private-label refreshes.
+
+The same interrupted milestone regenerated all 88 `build/whole-validation`
+objects during the command window under pinned VC7.1 and then produced a fresh
+link report with 88 i386 COFF objects and a verified PE32 Windows GUI artifact
+SHA-256
+`4518ea7192816d6407b3fcef7fa2ada4c802a264aae8d157feaec304ee15d22b`
+(780288 bytes, four sections). Product closure is separate from exactness,
+semantic interpretation, runtime-scenario validation, and whole-image identity.
+
+**Recovery / analysis state.** The session began at live HEAD
+`e32c7596004caa648fc405720e345daf42cecef3` with exactly this two-file unstaged
+transaction plus four pre-existing untracked experiment/recovery paths. Their
+hashes were reviewed and preserved outside staging. No active replay, compiler,
+linker, Wine, or wineserver producer owned the worktree at recovery. `.analysis/`
+started at 1,408,572,597 bytes; no new `.analysis/gpt-web/` root is required for
+this batch and legacy/shared analysis state remains untouched.
+
+**Next evidence route.** After checkpoint, rotate away from the photo flags and
+front-end timer families. Prefer a different TH095-local resource lifetime,
+interpreter/state protocol, persistent/ABI boundary, or historical-platform
+runtime gap with an independent producer and consumer. Previously falsified
+write-only sound metadata and single-writer ANM pathname storage remain Unknown
+unless new target-local readers appear. Semantic phase state remains
+active-incomplete.

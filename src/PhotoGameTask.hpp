@@ -48,7 +48,11 @@ struct PhotoGameTaskView
             u32 captureActive : 1;
             u32 capturedPhotoActive : 1;
             u32 gameplayLoadActive : 1;
+#if defined(TH095_MATCH_EXACT)
             u32 unknownFlag3 : 1;
+#else
+            u32 gameplayLoadFailed : 1;
+#endif
             u32 unknownFlag4 : 1;
             u32 playerDeathTransitionComplete : 1;
             u32 photoLimitTransitionComplete : 1;

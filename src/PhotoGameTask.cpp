@@ -204,7 +204,11 @@ i32 PhotoGameTaskView::Update()
 {
     PhotoGameTaskUpdateLocals locals;
 
+#if defined(TH095_MATCH_EXACT)
     if (((this->flags >> 3) & 1) != 0)
+#else
+    if (this->gameplayLoadFailed != 0)
+#endif
     {
         g_Supervisor.StopReplayScan();
         g_PhotoNextState = 6;
@@ -476,7 +480,11 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
     return;
 
 failure:
+#if defined(TH095_MATCH_EXACT)
     task->flags = task->flags | 8;
+#else
+    task->gameplayLoadFailed = 1;
+#endif
     g_Supervisor.BeginLoadingCompletion();
     g_HelpLoadActive = 0;
     g_HelpLoadComplete = 1;
