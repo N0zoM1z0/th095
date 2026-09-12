@@ -107,6 +107,7 @@ struct PhotoStageStateTaskView
 #endif
 };
 
+#ifdef DIFFBUILD
 struct PhotoCapacityCounterTaskView
 {
     i32 capturedPhotoCount;
@@ -131,6 +132,8 @@ struct PhotoGameRuntimeTaskView
     PhotoCapacityCounterTaskView photoCounter;
 };
 
+#endif
+
 struct PhotoAsciiManagerTaskView
 {
     i32 AddFormatText(Float3 *position, const char *format, ...);
@@ -138,8 +141,8 @@ struct PhotoAsciiManagerTaskView
 
 struct PhotoGameTaskDrawHudLocals
 {
-    i32 capturedPhotoCount;
-    i32 photoCapacity;
+    i32 photoIndex;
+    i32 photoLimit;
     Float3 extraScenePosition;
     Float3 scenePosition;
     Float3 photoCountPosition;
@@ -180,7 +183,9 @@ extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoStageStateTaskView *g_PhotoStageState;
 #define g_PhotoStageState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateTaskView, g_RuntimeStageStateOwner)
+#ifdef DIFFBUILD
 extern PhotoGameRuntimeTaskView *g_PhotoGameRuntime;
+#endif
 extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
 #define g_PhotoEnemyManagerTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerTaskView, g_RuntimeEnemyManagerOwner)
@@ -199,18 +204,26 @@ extern i32 g_ReplayUsesArchive;
 // task's loading loop.
 DIFFABLE_STATIC(i32, g_PhotoLoadWaitFlag);
 #ifndef DIFFBUILD
-#define g_PhotoGameRuntime \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameRuntimeTaskView, g_RuntimePlayerOwner)
 #define g_PhotoGameTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
 #ifdef DIFFBUILD
 #define TH095_PHOTO_TASK_PLAYER_Y (g_PhotoGameRuntime->hudFade)
+#define TH095_PHOTO_TASK_PHOTO_INDEX \
+    (g_PhotoGameRuntime->photoCounter.capturedPhotoCount)
+#define TH095_PHOTO_TASK_PHOTO_LIMIT \
+    (g_PhotoGameRuntime->photoCounter.photoCapacity)
 #else
 #define TH095_PHOTO_TASK_PLAYER_Y \
     (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner) \
          ->playerPosition.y)
+#define TH095_PHOTO_TASK_PHOTO_INDEX \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner) \
+         ->camera.photoIndex)
+#define TH095_PHOTO_TASK_PHOTO_LIMIT \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner) \
+         ->camera.photoLimit)
 #endif
 
 PhotoGameTaskView::PhotoGameTaskView()
@@ -270,7 +283,7 @@ i32 PhotoGameTaskView::Update()
         if (this->photoLimitTransitionComplete != 0)
         {
             for (locals.i = 0;
-                 locals.i < g_PhotoGameRuntime->photoCounter;
+                 locals.i < TH095_PHOTO_TASK_PHOTO_LIMIT;
                  locals.i++)
             {
                 AnmManager::ExecuteScript(
@@ -290,7 +303,7 @@ i32 PhotoGameTaskView::Update()
     if (this->photoLimitTransitionComplete != 0)
     {
         for (locals.j = 0;
-             locals.j < g_PhotoGameRuntime->photoCounter;
+             locals.j < TH095_PHOTO_TASK_PHOTO_LIMIT;
              locals.j++)
         {
             AnmManager::ExecuteScript(
@@ -380,18 +393,16 @@ i32 PhotoGameTaskView::DrawHud()
             this->score);
 
         g_PhotoAsciiTextColor = locals.alpha << 24 | 0xdfefff;
-        locals.photoCapacity =
-            g_PhotoGameRuntime->photoCounter.photoCapacity;
-        locals.capturedPhotoCount =
-            g_PhotoGameRuntime->photoCounter.capturedPhotoCount;
+        locals.photoLimit = TH095_PHOTO_TASK_PHOTO_LIMIT;
+        locals.photoIndex = TH095_PHOTO_TASK_PHOTO_INDEX;
         locals.photoCountPosition.x = 409.0f;
         locals.photoCountPosition.y = 19.0f;
         locals.photoCountPosition.z = 0.0f;
         g_AsciiManager.AddFormatText(
             &locals.photoCountPosition,
             "Photo %.2d/%.2d",
-            locals.capturedPhotoCount,
-            locals.photoCapacity);
+            locals.photoIndex,
+            locals.photoLimit);
 
         if (g_SelectedScene->level != 10)
         {

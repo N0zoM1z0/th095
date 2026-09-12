@@ -19,7 +19,7 @@ struct PhotoPlayerCameraRuntimeView
     u8 unknownb84[0x0ba8 - 0x0b84];
     i32 photoIndex;                                  // +0x0ba8
     i32 photosTaken;                                 // +0x0bac
-    u8 unknownbb0[0x0bb4 - 0x0bb0];
+    i32 photoLimit;                                  // +0x0bb0
     u32 flags;                                       // +0x0bb4
     u8 unknownbb8[0x0bdc - 0x0bb8];
 };
@@ -30,6 +30,8 @@ typedef char PhotoPlayerCameraPhotoIndexAt0BA8[
     (offsetof(PhotoPlayerCameraRuntimeView, photoIndex) == 0x0ba8) ? 1 : -1];
 typedef char PhotoPlayerCameraPhotosTakenAt0BAC[
     (offsetof(PhotoPlayerCameraRuntimeView, photosTaken) == 0x0bac) ? 1 : -1];
+typedef char PhotoPlayerCameraPhotoLimitAt0BB0[
+    (offsetof(PhotoPlayerCameraRuntimeView, photoLimit) == 0x0bb0) ? 1 : -1];
 typedef char PhotoPlayerCameraFlagsAt0BB4[
     (offsetof(PhotoPlayerCameraRuntimeView, flags) == 0x0bb4) ? 1 : -1];
 typedef char PhotoPlayerCameraRuntimeSizeIs0BDC[
@@ -73,6 +75,8 @@ typedef char PhotoPlayerRuntimePhotoIndexAt29E4[
     (offsetof(PhotoPlayerRuntimeView, camera.photoIndex) == 0x29e4) ? 1 : -1];
 typedef char PhotoPlayerRuntimePhotosTakenAt29E8[
     (offsetof(PhotoPlayerRuntimeView, camera.photosTaken) == 0x29e8) ? 1 : -1];
+typedef char PhotoPlayerRuntimePhotoLimitAt29EC[
+    (offsetof(PhotoPlayerRuntimeView, camera.photoLimit) == 0x29ec) ? 1 : -1];
 typedef char PhotoPlayerRuntimeCameraFlagsAt29F0[
     (offsetof(PhotoPlayerRuntimeView, camera.flags) == 0x29f0) ? 1 : -1];
 typedef char PhotoPlayerRuntimePhotoTargetBoundsMinAt2A28[
