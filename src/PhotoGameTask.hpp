@@ -20,7 +20,7 @@ struct ResultScreen;
 
 struct PhotoCompletionStateTaskView
 {
-    i32 unknown000;
+    i32 completionActive;
     ZunTimer timer;
 };
 
@@ -99,6 +99,8 @@ typedef char PhotoGameTaskFlagsAtFC[
     (offsetof(PhotoGameTaskView, flags) == 0xfc) ? 1 : -1];
 typedef char PhotoGameTaskCompletionAt104[
     (offsetof(PhotoGameTaskView, completion) == 0x104) ? 1 : -1];
+typedef char PhotoGameTaskCompletionActiveAt104[
+    (offsetof(PhotoGameTaskView, completion.completionActive) == 0x104) ? 1 : -1];
 typedef char PhotoGameTaskCompletionTimerAt108[
     (offsetof(PhotoGameTaskView, completion.timer) == 0x108) ? 1 : -1];
 typedef char PhotoGameTaskChainsAt118[

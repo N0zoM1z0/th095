@@ -32,6 +32,30 @@
     TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeGlobalStateOwner)
 #endif
 
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+namespace th095
+{
+struct EclCompletionStateView
+{
+    i32 completionActive;
+    ZunTimer timer;
+};
+struct EclGlobalCompletionStateView
+{
+    u8 unknown000[0x104];
+    EclCompletionStateView completion;
+};
+typedef char EclCompletionActiveAt104[
+    (offsetof(EclGlobalCompletionStateView, completion.completionActive) == 0x104)
+        ? 1 : -1];
+typedef char EclCompletionTimerAt108[
+    (offsetof(EclGlobalCompletionStateView, completion.timer) == 0x108) ? 1 : -1];
+}
+#define TH095_ECL_COMPLETION_STATE \
+    (TH095_RUNTIME_GLOBAL_PTR(::th095::EclGlobalCompletionStateView, \
+                              ::th095::g_RuntimeGlobalStateOwner)->completion)
+#endif
+
 #ifdef DIFFBUILD
 #define TH095_ECL_PLAYER_ANGLE(point) g_Th095Player->AngleToPoint(point)
 #define TH095_ECL_PHOTO_ANGLE(point) g_Th095PhotoCamera->GetAngle(point)

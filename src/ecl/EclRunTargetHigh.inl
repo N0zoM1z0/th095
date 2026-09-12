@@ -199,9 +199,15 @@ enter_subroutine:
 
     case 114:
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         *reinterpret_cast<ZunTimer *>(g_Th095GameManager + 0x108) =
             *reinterpret_cast<i32 *>(g_Th095GameManager + 0x104) =
                 TH08_ECL_READ_I(ctx, 0);
+#else
+        TH095_ECL_COMPLETION_STATE.timer =
+            TH095_ECL_COMPLETION_STATE.completionActive =
+                TH08_ECL_READ_I(ctx, 0);
+#endif
         break;
     }
 

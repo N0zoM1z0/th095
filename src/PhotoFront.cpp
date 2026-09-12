@@ -5,6 +5,7 @@
 #include "FileSystem.hpp"
 #include "GameplayGlobals.hpp"
 #include "Main.hpp"
+#include "PhotoGameTask.hpp"
 #include "SceneData.hpp"
 
 #include <string.h>
@@ -12,14 +13,16 @@
 namespace th095
 {
 
+#ifdef DIFFBUILD
 struct PhotoFrontGameTaskView
 {
     u8 unknown000[0xfc];
     u32 flags;                 // +0x0fc
     i32 bestShotIndex;         // +0x100
-    i32 completionActive;       // +0x104
-    ZunTimer completionTimer;   // +0x108
+    i32 completionActive;      // +0x104
+    ZunTimer completionTimer;  // +0x108
 };
+#endif
 
 struct PhotoFrontRuntimeView
 {
@@ -79,7 +82,9 @@ struct PhotoFrontUpdateLocals
     i32 alpha;
 };
 
+#ifdef DIFFBUILD
 extern PhotoFrontGameTaskView *g_PhotoFrontGameTask;
+#endif
 extern PhotoFrontRuntimeView *g_PhotoFrontRuntime;
 extern PhotoFrontStageStateView *g_PhotoFrontStageState;
 extern PhotoFrontManagerView *g_PhotoFrontManager;
@@ -92,7 +97,19 @@ extern PhotoFrontManagerView *g_PhotoFrontManager;
 #define g_PhotoFrontRuntime \
     TH095_RUNTIME_GLOBAL_PTR(PhotoFrontRuntimeView, g_RuntimePlayerOwner)
 #define g_PhotoFrontGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoFrontGameTaskView, g_RuntimeGlobalStateOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
+#endif
+
+#ifdef DIFFBUILD
+#define TH095_PHOTO_FRONT_COMPLETION_ACTIVE \
+    (g_PhotoFrontGameTask->completionActive)
+#define TH095_PHOTO_FRONT_COMPLETION_TIMER \
+    (g_PhotoFrontGameTask->completionTimer)
+#else
+#define TH095_PHOTO_FRONT_COMPLETION_ACTIVE \
+    (g_PhotoFrontGameTask->completion.completionActive)
+#define TH095_PHOTO_FRONT_COMPLETION_TIMER \
+    (g_PhotoFrontGameTask->completion.timer)
 #endif
 
 i32 LoadPhotoFrontAnm()
@@ -246,10 +263,10 @@ i32 PhotoFrontManagerView::Update()
 {
     PhotoFrontUpdateLocals locals;
 
-    if (g_PhotoFrontGameTask->completionActive != 0)
+    if (TH095_PHOTO_FRONT_COMPLETION_ACTIVE != 0)
     {
         locals.displayedTime =
-            static_cast<i32>(g_PhotoFrontGameTask->completionTimer) / 60;
+            static_cast<i32>(TH095_PHOTO_FRONT_COMPLETION_TIMER) / 60;
         if (locals.displayedTime >= 1000)
         {
             locals.displayedTime = 999;
@@ -269,7 +286,7 @@ i32 PhotoFrontManagerView::Update()
         else
         {
             locals.displayedTime = static_cast<i32>(
-                (static_cast<f32>(g_PhotoFrontGameTask->completionTimer) -
+                (static_cast<f32>(TH095_PHOTO_FRONT_COMPLETION_TIMER) -
                  locals.displayedTime * 60.0f) *
                 100.0f / 60.0f);
         }
@@ -307,12 +324,12 @@ i32 PhotoFrontManagerView::Update()
             this->vms[5].color1.a = (u8)locals.alpha;
         }
 
-        if (g_PhotoFrontGameTask->completionTimer > 0)
+        if (TH095_PHOTO_FRONT_COMPLETION_TIMER > 0)
         {
             locals.nextSecond =
-                (static_cast<i32>(g_PhotoFrontGameTask->completionTimer) + 1) /
+                (static_cast<i32>(TH095_PHOTO_FRONT_COMPLETION_TIMER) + 1) /
                 60;
-            if (static_cast<i32>(g_PhotoFrontGameTask->completionTimer) / 60 <
+            if (static_cast<i32>(TH095_PHOTO_FRONT_COMPLETION_TIMER) / 60 <
                     10 &&
                 locals.nextSecond >= 10)
             {
@@ -324,7 +341,7 @@ i32 PhotoFrontManagerView::Update()
                 this->vms[5].pendingInterrupt = 7;
             }
             else if (
-                static_cast<i32>(g_PhotoFrontGameTask->completionTimer) / 60 <
+                static_cast<i32>(TH095_PHOTO_FRONT_COMPLETION_TIMER) / 60 <
                     5 &&
                 locals.nextSecond >= 5)
             {
