@@ -7532,3 +7532,82 @@ after checkpoint. Prefer a different TH095-local owner/lifetime, interpreter
 or resource protocol, persistent/ABI boundary, or historical-runtime gap with
 an independent producer and consumer. Negative bounded searches remain routing
 results only; semantic phase state stays active-incomplete.
+
+### SEM-101 — bind result-restart resource preservation
+
+**Scope.** Extend the already accepted Supervisor bit-9 result-restart protocol
+into two previously missed resource-lifetime consumers. `Background` and the
+photo-enemy manager each carried a bounded local bitfield spelling the same
+physical `Supervisor+0x444` bit as `disableResourceReload`; production now
+spells that bit `resultRestartActive`, matching the canonical Supervisor owner.
+`TH095_MATCH_EXACT` keeps the historical local member spelling so the target-
+exact translation surface remains unchanged. No adjacent Supervisor bit, ANM
+slot, background record, or enemy layout is renamed.
+
+**Observed.** Fresh hash-attested TH095 target decompilation provides one
+producer and two independent lifetime consumers of the same bit. In
+`Supervisor::UpdateSceneState @ 0x00425EF0`, result-driven state 4 saves the
+current replay mode, ORs `0x200` into the Supervisor flags dword at `+0x444`,
+destroys the old photo-game task, and creates its replacement. In
+`Background::~Background @ 0x00402330`, bit 9 controls two teardown decisions:
+when clear the target frees and clears the cached stage-data owner and calls
+`ReleaseAnm(4)`; when set the cache is retained and the active background ANM
+is passed to `MarkVmsForDeletion` instead. Independently,
+`PhotoEnemyManagerView::~PhotoEnemyManagerView @ 0x004154E0` calls
+`ReleaseAnm(8)` when bit 9 is clear and `MarkVmsForDeletion(enemyAnm)` when it
+is set.
+
+**Corroborated.** SEM-075 already established `resultRestartActive` as the
+cross-task latch set before result-driven PhotoGame destruction and consumed by
+the replacement task, PhotoFront initialization, audio teardown/load gates, and
+screen-fade behavior. The two destructor paths above use the same target dword,
+bit position, and lifetime interval; their older `disableResourceReload` name
+therefore describes only one observed effect of the canonical result-restart
+latch, not a second flag or an independent producer.
+
+**Production representation.** The bounded Supervisor flag views in
+`BackgroundLifecycle.cpp` and `EnemyManagerUpdate.cpp` now expose bit 9 as
+`resultRestartActive` outside `TH095_MATCH_EXACT`. Their destructor decisions
+retain the target control flow exactly: Background preserves the stage cache
+and converts ANM release into VM retirement during result restart, while the
+enemy manager converts its ANM release into VM retirement. Exact preprocessing
+retains `disableResourceReload` and the original expressions.
+
+**Inferred.** Result restart is a resource-preserving task replacement protocol,
+not merely a presentation/audio latch. Keeping shared ANM-backed state alive
+while the old task graph is destroyed allows the replacement path to reuse or
+retire target-owned VM state without performing the ordinary immediate ANM
+release. This statement is bounded to the observed Background and enemy ANM
+branches plus the pre-existing SEM-075 consumers; it does not claim that every
+resource in the process is retained.
+
+**Unknown / bounded.** The target evidence does not establish how long the
+retained stage-data cache remains useful after the replacement loader clears
+bit 9, nor whether every VM marked for deletion survives for the same number of
+frames. The otherwise-unused `Background.cpp` local flag view is not promoted
+into a new owner, adjacent Supervisor bits remain unchanged, and no runtime
+scenario is claimed by this batch.
+
+**Validation.** The registered Ghidra provider re-attested the Japanese v1.02a
+target and decompiled `0x00425EF0`, `0x00402330`, and `0x004154E0` for the
+producer and two resource consumers above. Focused cold replay passed
+`BackgroundLifecycle.cpp` 2/2 and `EnemyManagerUpdate.cpp` 22/22 configured
+exact units, for 24/24 total with zero private-label refresh. Command-local
+`/tmp` production probes reused the repository's pinned `build-whole.py` VC7.1
+toolchain attestation and source profiles; both translation units compiled
+successfully to Intel i386 COFF, and the temporary obj/PDB files were removed
+with the probe directory. These are private `.cpp` view changes, so aggregate
+exact and whole-product closure are deferred to the campaign milestone.
+
+**Analysis / phase state.** This transaction created no `.analysis/gpt-web/`
+workspace and did not touch legacy/shared analysis state or the four pre-
+existing untracked experiment/recovery paths. Semantic interpretation, exact
+feedback, product compilation, runtime scenarios, and Factory receipts remain
+separate states. The semantic phase remains active-incomplete.
+
+**Next evidence route.** After checkpoint, rotate away from result-restart,
+PhotoGame, Background teardown, and enemy teardown. Prefer a bounded
+interpreter/state, independent resource owner, persistent/ABI boundary, input
+or historical-runtime gap with a TH095-local producer and independent consumer.
+Previously falsified write-only or reader-only fields stay Unknown unless new
+TH095-local evidence appears.
