@@ -10,6 +10,9 @@
 #include "Main.hpp"
 #include "PhotoGameTask.hpp"
 #include "PhotoEffectRuntime.hpp"
+#ifndef DIFFBUILD
+#include "PhotoPlayerRuntime.hpp"
+#endif
 #include "ReplayManager.hpp"
 #include "ResultScreen.hpp"
 #include "ScoreData.hpp"
@@ -118,9 +121,13 @@ struct PhotoCapacityCounterTaskView
 
 struct PhotoGameRuntimeTaskView
 {
+#ifdef DIFFBUILD
     u8 unknown000[0x1e34];
     f32 hudFade;
     u8 unknown1e38[0x29e4 - 0x1e38];
+#else
+    u8 unknown000[0x29e4];
+#endif
     PhotoCapacityCounterTaskView photoCounter;
 };
 
@@ -196,6 +203,14 @@ DIFFABLE_STATIC(i32, g_PhotoLoadWaitFlag);
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameRuntimeTaskView, g_RuntimePlayerOwner)
 #define g_PhotoGameTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
+#endif
+
+#ifdef DIFFBUILD
+#define TH095_PHOTO_TASK_PLAYER_Y (g_PhotoGameRuntime->hudFade)
+#else
+#define TH095_PHOTO_TASK_PLAYER_Y \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner) \
+         ->playerPosition.y)
 #endif
 
 PhotoGameTaskView::PhotoGameTaskView()
@@ -331,14 +346,14 @@ i32 PhotoGameTaskView::DrawHud()
 #endif
     {
         locals.alpha = 0xff;
-        if (g_PhotoGameRuntime->hudFade < 64.0f)
+        if (TH095_PHOTO_TASK_PLAYER_Y < 64.0f)
         {
             locals.alpha = 0x40;
         }
-        else if (g_PhotoGameRuntime->hudFade < 128.0f)
+        else if (TH095_PHOTO_TASK_PLAYER_Y < 128.0f)
         {
             locals.alpha =
-                ((u32)(g_PhotoGameRuntime->hudFade - 64.0f) * 0xbf >> 6) +
+                ((u32)(TH095_PHOTO_TASK_PLAYER_Y - 64.0f) * 0xbf >> 6) +
                 0x40;
         }
 

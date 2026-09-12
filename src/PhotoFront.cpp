@@ -6,6 +6,9 @@
 #include "GameplayGlobals.hpp"
 #include "Main.hpp"
 #include "PhotoGameTask.hpp"
+#ifndef DIFFBUILD
+#include "PhotoPlayerRuntime.hpp"
+#endif
 #include "SceneData.hpp"
 
 #include <string.h>
@@ -24,11 +27,13 @@ struct PhotoFrontGameTaskView
 };
 #endif
 
+#ifdef DIFFBUILD
 struct PhotoFrontRuntimeView
 {
     u8 unknown000[0x1e34];
     f32 hudFade;                // +0x1e34
 };
+#endif
 
 struct PhotoFrontStageStateView
 {
@@ -85,7 +90,9 @@ struct PhotoFrontUpdateLocals
 #ifdef DIFFBUILD
 extern PhotoFrontGameTaskView *g_PhotoFrontGameTask;
 #endif
+#ifdef DIFFBUILD
 extern PhotoFrontRuntimeView *g_PhotoFrontRuntime;
+#endif
 extern PhotoFrontStageStateView *g_PhotoFrontStageState;
 extern PhotoFrontManagerView *g_PhotoFrontManager;
 
@@ -94,8 +101,6 @@ extern PhotoFrontManagerView *g_PhotoFrontManager;
     TH095_RUNTIME_GLOBAL_PTR(PhotoFrontManagerView, g_RuntimeBackgroundManagerOwner)
 #define g_PhotoFrontStageState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoFrontStageStateView, g_RuntimeStageStateOwner)
-#define g_PhotoFrontRuntime \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoFrontRuntimeView, g_RuntimePlayerOwner)
 #define g_PhotoFrontGameTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
@@ -110,6 +115,14 @@ extern PhotoFrontManagerView *g_PhotoFrontManager;
     (g_PhotoFrontGameTask->completion.completionActive)
 #define TH095_PHOTO_FRONT_COMPLETION_TIMER \
     (g_PhotoFrontGameTask->completion.timer)
+#endif
+
+#ifdef DIFFBUILD
+#define TH095_PHOTO_FRONT_PLAYER_Y (g_PhotoFrontRuntime->hudFade)
+#else
+#define TH095_PHOTO_FRONT_PLAYER_Y \
+    (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner) \
+         ->playerPosition.y)
 #endif
 
 i32 LoadPhotoFrontAnm()
@@ -302,14 +315,14 @@ i32 PhotoFrontManagerView::Update()
         }
 
         locals.alpha = 0xff;
-        if (g_PhotoFrontRuntime->hudFade < 64.0f)
+        if (TH095_PHOTO_FRONT_PLAYER_Y < 64.0f)
         {
             locals.alpha = 0x40;
         }
-        else if (g_PhotoFrontRuntime->hudFade < 128.0f)
+        else if (TH095_PHOTO_FRONT_PLAYER_Y < 128.0f)
         {
             locals.alpha =
-                (static_cast<u32>(g_PhotoFrontRuntime->hudFade - 64.0f) *
+                (static_cast<u32>(TH095_PHOTO_FRONT_PLAYER_Y - 64.0f) *
                  0xbf >> 6) +
                 0x40;
         }
