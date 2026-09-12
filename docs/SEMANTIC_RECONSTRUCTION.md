@@ -7611,3 +7611,95 @@ interpreter/state, independent resource owner, persistent/ABI boundary, input
 or historical-runtime gap with a TH095-local producer and independent consumer.
 Previously falsified write-only or reader-only fields stay Unknown unless new
 TH095-local evidence appears.
+
+### SEM-102 — align PhotoItem with the shared photo-global protocol
+
+**Scope.** Repair one missed production consumer of the already established
+photo-runtime state word at `g_RuntimeGlobalStateOwner +0xFC`. The
+`PhotoItemManager` local view previously named bits 0, 2, and 10 only by their
+item-specific blocking effects and read bit 9 through a raw shift. Production
+now uses the accepted shared names `captureActive`, `gameplayLoadActive`,
+`photoSoundSuppressed`, and `photoTransitionActive`. This batch assigns no new
+meaning to bit 1, bits 3..8, or bits 11..31 and does not change the physical
+layout or exact-facing source.
+
+**Observed.** Fresh target-attested TH095 decompilation of
+`PhotoItemManagerView::OnUpdate @ 0x0041D3D0` reads the dword at
+`DAT_004BDEC8 + 0xFC`, returning without item simulation when bit 0 or bit 2 is
+set and independently returning when bit 10 is set. `OnDraw @ 0x0041D430`
+returns without drawing while bit 2 is set. `PhotoItemManagerView::Update @
+0x0041CE60` independently reads bit 9 after an item reaches the player/capture
+bounds and suppresses only positioned sound `0x14` while leaving item removal
+and camera-charge publication intact.
+
+Fresh target producer observations bind those four reads to the existing
+TH095-local protocols. `PhotoStageStateView::SavePhoto @ 0x0042C450` sets bit 0
+on the same owner when stage capture begins. `PhotoGameTaskView::Load @
+0x00417D20` sets bit 2 while gameplay resources are loading and clears it on the
+normal completion path. `EclExtended::SetPhotoFlag200 @ 0x00414230` sets bit 9,
+and `EclExtended::EnablePhotoTransition @ 0x00414430` sets bit 10 while starting
+the paired background-VM transition sequence. These producer addresses and the
+Item consumers all resolve to the same `0x004BDEC8` global-state owner.
+
+**Corroborated.** SEM-053, SEM-055, SEM-057, and SEM-056 respectively established
+the cross-subsystem lifetimes `captureActive`, `gameplayLoadActive`,
+`photoSoundSuppressed`, and `photoTransitionActive` from independent TH095
+producers and consumers. The Item callbacks were not included in those owner
+repairs even though the target uses the same physical bits. Their prior names
+`blockItemUpdate0`, `blockItemUpdateAndDraw`, and `blockItemUpdate1` described
+local effects rather than separate state or separate writers. The bit-9 raw
+read likewise matches the already established sound-only suppression behavior:
+item collection still deactivates the item and charges the camera when the
+sound is gated.
+
+**Production representation.** `ItemGlobalStateView` now splits the production
+bitfield as bit 0 `captureActive`, bit 1 unknown, bit 2 `gameplayLoadActive`,
+bits 3..8 unknown, bit 9 `photoSoundSuppressed`, bit 10
+`photoTransitionActive`, and bits 11..31 unknown. `OnUpdate`, `OnDraw`, and the
+item-collection sound gate consume those fields directly. The exact build still
+includes `PhotoItemManagerExact.inl`, so its historical local spellings and raw
+bit expressions are unchanged.
+
+**Inferred.** Photo items participate in the same shared gameplay lifetime
+protocol as the player, camera, bullets, enemies, background, and effects:
+capture and gameplay loading suppress item simulation, gameplay loading also
+suppresses item drawing, and the ECL photo transition suppresses simulation but
+not the draw callback. Sound suppression is orthogonal and affects only the
+collection SFX in the observed Item path. These statements describe target
+behavior; they do not imply that every subsystem applies each shared bit in the
+same way.
+
+**Unknown / bounded.** Bit 1, bits 3..8, and bits 11..31 remain Unknown in the
+Item-local view. This batch does not infer a new meaning for item manager
+`unknown000000`, does not modify item spawn/motion state, does not merge this
+state word with Supervisor flags, and does not claim a deterministic Wine
+runtime scenario. The existing untracked runtime experiment files remain
+outside this transaction.
+
+**Validation.** The registered Ghidra provider re-attested the canonical
+Japanese v1.02a target and decompiled `0x0041D3D0`, `0x0041D430`, `0x0041CE60`,
+`0x0042C450`, `0x00417D20`, `0x00414230`, and `0x00414430` for the consumer and
+producer relationships above. Focused cold replay of `PhotoItemManager.cpp`
+passed all 12/12 configured exact units with zero private-label refresh. A
+command-local `/tmp` production probe reused the repository's pinned VC7.1
+compiler profile and successfully compiled the normal `PhotoItemManager.cpp`
+branch to Intel i386 COFF; its temporary object/PDB were removed before command
+exit. An earlier probe failed before source validation because the orchestration
+mistakenly supplied toolchain metadata as the compiler environment, causing the
+SDK include path to be absent; recovery confirmed no residual producer or
+worktree change before the corrected probe. Because this is a private `.cpp`
+view change with no shared header/layout/PCH change, aggregate exact and
+whole-product closure are deferred to the campaign milestone.
+
+**Recovery / analysis state.** This campaign began at live HEAD
+`531a7b5b8633dc268c963d340052ddb0dbf24795` with zero staged or unstaged tracked
+changes and four pre-existing untracked experiment/recovery paths. They were
+reviewed and preserved outside staging. `.analysis/` began at 1,408,573,066
+bytes; no `.analysis/gpt-web/` root or retained session artifact is required for
+this batch.
+
+**Next evidence route.** Rotate away from the shared photo-global state after
+checkpoint. Prefer a different interpreter/state family, persistent/ABI
+boundary, independent resource lifetime, input protocol, or historical-runtime
+gap with a TH095-local producer and independent consumer. The semantic phase
+remains active-incomplete.

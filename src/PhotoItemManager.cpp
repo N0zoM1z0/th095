@@ -49,12 +49,13 @@ struct ItemGlobalStateView
         u32 flags;
         struct
         {
-            u32 blockItemUpdate0 : 1;
+            u32 captureActive : 1;
             u32 unknownFlag1 : 1;
-            u32 blockItemUpdateAndDraw : 1;
-            u32 unknownFlags3 : 7;
-            u32 blockItemUpdate1 : 1;
-            u32 unknownFlags11 : 21;
+            u32 gameplayLoadActive : 1;
+            u32 unknownFlags3_8 : 6;
+            u32 photoSoundSuppressed : 1;
+            u32 photoTransitionActive : 1;
+            u32 unknownFlags11_31 : 21;
         };
     };
 };
@@ -267,7 +268,7 @@ i32 PhotoItemManagerView::Update()
             {
                 AddFixedItemCameraCharge(g_PhotoGame);
             }
-            if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+            if (g_PhotoGlobalState->photoSoundSuppressed == 0)
             {
                 g_SoundPlayer.PlaySoundPositionedByIdx(
                     static_cast<SoundIdx>(0x14), locals.item->position.x);
@@ -311,12 +312,12 @@ i32 PhotoItemManagerView::Draw()
 i32 __fastcall PhotoItemManagerView::OnUpdate(PhotoItemManagerView *manager)
 {
     if (ItemEitherFlag(
-            g_PhotoGlobalState->blockItemUpdate0,
-            g_PhotoGlobalState->blockItemUpdateAndDraw) != 0)
+            g_PhotoGlobalState->captureActive,
+            g_PhotoGlobalState->gameplayLoadActive) != 0)
     {
         return 1;
     }
-    if (g_PhotoGlobalState->blockItemUpdate1 != 0)
+    if (g_PhotoGlobalState->photoTransitionActive != 0)
     {
         return 1;
     }
@@ -325,7 +326,7 @@ i32 __fastcall PhotoItemManagerView::OnUpdate(PhotoItemManagerView *manager)
 
 i32 __fastcall PhotoItemManagerView::OnDraw(PhotoItemManagerView *manager)
 {
-    if (g_PhotoGlobalState->blockItemUpdateAndDraw != 0)
+    if (g_PhotoGlobalState->gameplayLoadActive != 0)
     {
         return 1;
     }
