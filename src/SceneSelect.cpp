@@ -234,9 +234,9 @@ i32 ResultSaveDataView::CountCapturedScenes()
     {
         for (i32 scene = 0; scene < g_SceneGroupCounts[group]; scene++)
         {
-            if ((this->sceneScores[
-                     g_SceneGroups[group][scene].scoreEntryIndex]
-                     .flags & 1) != 0)
+            if (this->sceneScores[
+                    g_SceneGroups[group][scene].scoreEntryIndex]
+                    .captured != 0)
             {
                 count++;
             }
@@ -252,8 +252,8 @@ i32 ResultSaveDataView::CountCapturedScenesInGroup(i32 group)
     count = 0;
     for (i32 scene = 0; scene < g_SceneGroupCounts[group]; scene++)
     {
-        if ((this->sceneScores[g_SceneGroups[group][scene].scoreEntryIndex]
-                 .flags & 1) != 0)
+        if (this->sceneScores[g_SceneGroups[group][scene].scoreEntryIndex]
+                .captured != 0)
         {
             count++;
         }
