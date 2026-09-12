@@ -105,6 +105,16 @@ struct ReplayFrameScratch
     }
 };
 
+struct ReplayInputFrameView
+{
+    u16 currentInput;
+    u16 pressedInput;
+    u16 releasedInput;
+};
+
+typedef char ReplayInputFrameSizeIs6[
+    (sizeof(ReplayInputFrameView) == 6) ? 1 : -1];
+
 struct ReplayInitializeScratch
 {
     u16 unused000;
@@ -493,7 +503,9 @@ void ReplayManager::Destroy(ReplayManager *replayManager)
 ChainCallbackResult ReplayManager::ProcessFrame()
 {
     ReplayFrameScratch conversionScratch;
+    ReplayInputFrameView *inputFrame;
 
+    inputFrame = reinterpret_cast<ReplayInputFrameView *>(this->inputCursor);
     if (this->mode == REPLAY_MANAGER_RECORD)
     {
         g_LastFrameInput = g_CurFrameInput;
@@ -507,9 +519,9 @@ ChainCallbackResult ReplayManager::ProcessFrame()
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
 
-        *(u16 *)(this->inputCursor + 0) = g_CurFrameInput;
-        *(u16 *)(this->inputCursor + 2) = g_ReplayInputAux;
-        *(u16 *)(this->inputCursor + 4) = g_ReplayInputFlags;
+        inputFrame->currentInput = g_CurFrameInput;
+        inputFrame->pressedInput = g_ReplayInputAux;
+        inputFrame->releasedInput = g_ReplayInputFlags;
 
         if (this->frameCounter % 30 == 0)
         {
@@ -522,9 +534,9 @@ ChainCallbackResult ReplayManager::ProcessFrame()
     else
     {
         g_LastFrameInput = g_CurFrameInput;
-        g_CurFrameInput = *(u16 *)(this->inputCursor + 0);
-        g_ReplayInputAux = *(u16 *)(this->inputCursor + 2);
-        g_ReplayInputFlags = *(u16 *)(this->inputCursor + 4);
+        g_CurFrameInput = inputFrame->currentInput;
+        g_ReplayInputAux = inputFrame->pressedInput;
+        g_ReplayInputFlags = inputFrame->releasedInput;
 
         if (this->frameCounter % 30 == 0)
         {
@@ -533,7 +545,7 @@ ChainCallbackResult ReplayManager::ProcessFrame()
         }
     }
 
-    this->inputCursor += 6;
+    this->inputCursor += sizeof(ReplayInputFrameView);
     this->frameCounter++;
     return CHAIN_CALLBACK_RESULT_CONTINUE;
 }
