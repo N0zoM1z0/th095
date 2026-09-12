@@ -72,7 +72,11 @@ void *g_RuntimePlayerOwner = 0;
 struct SupervisorGameTaskView
 {
     u8 unknown000[0xfc];
+#if defined(TH095_MATCH_EXACT)
     u32 active : 1;
+#else
+    u32 captureActive : 1;
+#endif
     u32 unknownFlag1 : 1;
     u32 timingBlocked2 : 1;
     u32 unknownFlag3 : 1;
@@ -1377,7 +1381,11 @@ void Supervisor::CalculateFps()
 
         if (g_SupervisorGameTask != NULL &&
             g_SupervisorGameTask->timingBlocked4 == 0 &&
+#if defined(TH095_MATCH_EXACT)
             g_SupervisorGameTask->active == 0 &&
+#else
+            g_SupervisorGameTask->captureActive == 0 &&
+#endif
             g_SupervisorGameTask->timingBlocked2 == 0 &&
             g_SupervisorGameTask->timingBlocked5 == 0 &&
             g_SupervisorGameTask->timingBlocked6 == 0 &&
