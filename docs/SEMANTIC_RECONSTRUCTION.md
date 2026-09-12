@@ -8222,3 +8222,82 @@ checkpoint. Prefer an independent persistent/ABI, resource-lifetime, or
 historical-runtime/state family with a TH095-local producer plus an independent
 consumer. Do not revisit the unresolved compact control bits without new
 TH095-local readers. The semantic phase remains active-incomplete.
+
+### SEM-109 — mark the ANM texture-loader compatibility argument unused
+
+**Scope.** Re-audit the shared `AnmManager::LoadTexture` /
+`LoadTextureRegion` API rather than treating every legacy declaration name as
+semantic evidence. Both declarations still called their fifth integer argument
+`unknown`, while the production and exact implementations left that argument
+unnamed. This transaction records only what TH095 proves: the two callees do
+not consume that argument. It does not assign a historical mode, flag, format,
+or caller-side meaning to the slot.
+
+**Observed.** Fresh hash-attested TH095 decompilation of
+`LoadTexture @ 0x00442B90` and `LoadTextureRegion @ 0x00442CA0` exposes the
+fifth integer as `param_5` in both target signatures but never references it in
+either function body. By contrast, `param_4` is passed through the ANM-format
+mapping helper, `param_6` selects file-image decoding versus embedded raw ANM
+texture decoding, and `LoadTextureRegion` uses `param_7` as the destination top
+coordinate. The target was re-attested as Japanese TH095 v1.02a, 696,832 bytes,
+SHA-256
+`bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
+The exact source implementations independently preserve the same boundary by
+leaving the fifth integer unnamed. All current TH095-local authored callers in
+HelpMenu and SceneSelect pass zero in that position.
+
+**Corroborated.** The sibling loaders have the same argument position and the
+same absence of a read despite distinct full-texture and region-upload paths.
+Their neighboring arguments have observable, separate effects in both target
+and reconstructed source, which is a negative control against collapsing the
+whole tail of the signature into opaque compatibility parameters.
+
+**Inferred.** For the maintained reconstructed interface, `unused` is a more
+accurate name than `unknown`: target and exact-source evidence establish that
+the callee does not consume this argument. This is an API-boundary statement,
+not a claim about why the original signature retained the slot or whether some
+unobserved historical caller could have supplied a nonzero value.
+
+**Unknown / bounded.** The original design purpose of the fifth integer remains
+Unknown. No semantic relationship is inferred between it and `format`,
+`hasData`, `top`, alpha bleeding, texture bytes-per-pixel, or any serialized ANM
+field. No persistent-format meaning and no runtime visual-equivalence claim are
+added by this batch.
+
+**Production / exact representation.** The shared production declaration in
+`AnmManager.hpp` and the normal `SceneTexture.cpp` definitions now spell the
+fifth integer `unused`. `TH095_MATCH_EXACT` continues to include the existing
+`SceneTextureExact.inl` definitions unchanged, where the argument remains
+unnamed. The edit changes no parameter count, type, order, calling convention,
+class layout, storage width, or executable behavior.
+
+**Validation.** Focused cold replay of `src/SceneTexture.cpp` passed all 8/8
+configured exact units with zero compiler-private label refreshes. Because the
+edit touches high-fanout `AnmManager.hpp`, the complete exact surface was then
+cold-replayed in four mutually exclusive source partitions: 205 + 158 + 191 +
+142 = 696/696 configured units across all 88 sources, with zero private-label
+refreshes. The normal reconstructed product subsequently compiled all 88
+objects with the pinned VC7.1 i386 toolchain and linked a verified PE32 Intel
+80386 executable. That product is 780,288 bytes with SHA-256
+`aa00588936505e6ed88436d4458ae1bad0adadc9e83c9a64cf17b09b38fe81fa`;
+successful linkage is not a whole-image exact claim.
+
+**Recovery / analysis state.** This transaction started from committed HEAD
+`2b07cecee1d414a2b3a3d1d10ed2787996d4e43a` with no staged or tracked
+unstaged work and the same four documented pre-existing untracked paths:
+`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
+`scripts/runtime-diff.py`. All four remain excluded from staging. Fresh Ghidra
+output for the two loader functions used command-local one-shot storage below
+`.analysis/` and was removed by the producing shell command; failed transport
+attempts were recovery-audited and left no session root or producer. `.analysis/`
+remained at the campaign baseline of 3,394,984 bytes. Semantic interpretation,
+exact replay, reconstructed-product closure, runtime storage, and runtime
+scenarios remain separate states.
+
+**Next evidence route.** Rotate away from ANM texture-loader signatures after
+this checkpoint. Prefer an independent historical-runtime, persistent/state,
+resource-lifetime, or weak-API family with at least one TH095-local producer and
+an independent consumer. The unresolved ResultScreen/global-state bits 4 and 7,
+TextRenderBuffer's RNG-written prefix, and ANM VM `unknownFlag14` remain Unknown
+until new TH095-local readers or producers appear. The semantic phase remains
+active-incomplete.

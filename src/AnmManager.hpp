@@ -640,9 +640,9 @@ struct AnmManager
                            i32 height, i32 format);
     void ApplyTextureAlphaBleed(AnmTextureEntryView *entry);
     i32 LoadTexture(AnmTextureEntryView *entry, u8 *data, i32 size,
-                    i32 format, i32 unknown, i32 hasData);
+                    i32 format, i32 unused, i32 hasData);
     i32 LoadTextureRegion(AnmTextureEntryView *entry, u8 *data, i32 size,
-                          i32 format, i32 unknown, i32 hasData, i32 top);
+                          i32 format, i32 unused, i32 hasData, i32 top);
     void ReleaseAnmEntry(AnmTextureEntryView *entry);
     ZunResult ServicePreloadedAnims();
     i32 LoadSurface(i32 surfaceIndex, const char *path);

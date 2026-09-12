@@ -339,7 +339,7 @@ void AnmManager::ApplyTextureAlphaBleed(
 }
 
 i32 AnmManager::LoadTexture(SceneTextureEntryView *entry, u8 *data,
-                                     i32 size, i32 format, i32, i32 hasData)
+                                     i32 size, i32 format, i32 unused, i32 hasData)
 {
     SceneTextureLoadLocals locals;
 
@@ -390,7 +390,7 @@ i32 AnmManager::LoadTexture(SceneTextureEntryView *entry, u8 *data,
                   regionRawEntry, this)
 i32 AnmManager::LoadTextureRegion(SceneTextureEntryView *entry,
                                            u8 *data, i32 size, i32 format,
-                                           i32, i32 hasData, i32 top)
+                                           i32 unused, i32 hasData, i32 top)
 {
     IDirect3DSurface8 *regionSurface;
     RECT regionFileDestinationRect;
