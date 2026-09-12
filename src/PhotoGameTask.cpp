@@ -87,7 +87,21 @@ struct PhotoStageStateTaskView
     u8 unknown000[0x17720];
     AnmVmId capturedPhotoVms[11];
     u8 unknown1774c[0x25720 - 0x1774c];
+#ifdef DIFFBUILD
     u32 flags;
+#else
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlag0 : 1;
+            u32 unknownFlag1 : 1;
+            u32 firstCaptureFrame : 1;
+            u32 unknownFlags3 : 29;
+        };
+    };
+#endif
 };
 
 struct PhotoCapacityCounterTaskView
@@ -310,7 +324,11 @@ i32 PhotoGameTaskView::DrawHud()
     {
         return 1;
     }
+#ifdef DIFFBUILD
     if (((g_PhotoStageState->flags >> 2) & 1) == 0)
+#else
+    if (g_PhotoStageState->firstCaptureFrame == 0)
+#endif
     {
         locals.alpha = 0xff;
         if (g_PhotoGameRuntime->hudFade < 64.0f)

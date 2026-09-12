@@ -30,7 +30,21 @@ struct PhotoFrontRuntimeView
 struct PhotoFrontStageStateView
 {
     u8 unknown000[0x25720];
+#ifdef DIFFBUILD
     u32 flags;                  // +0x25720
+#else
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlag0 : 1;
+            u32 unknownFlag1 : 1;
+            u32 firstCaptureFrame : 1;
+            u32 unknownFlags3 : 29;
+        };
+    };
+#endif
 };
 
 struct PhotoFrontManagerView
@@ -331,7 +345,11 @@ i32 PhotoFrontManagerView::Draw()
 {
     u32 vmIndex;
 
+#ifdef DIFFBUILD
     if (((g_PhotoFrontStageState->flags >> 2) & 1) == 0)
+#else
+    if (g_PhotoFrontStageState->firstCaptureFrame == 0)
+#endif
     {
         for (vmIndex = 0; vmIndex < 6; vmIndex++)
         {

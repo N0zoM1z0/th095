@@ -125,7 +125,21 @@ struct PhotoStageStateView
     u8 unknown00000[0x25718];
     f32 scoreMultiplier;
     PhotoAnmLoadedView *anm;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     u32 flags;
+#else
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlag0 : 1;
+            u32 unknownFlag1 : 1;
+            u32 firstCaptureFrame : 1;
+            u32 unknownFlags3 : 29;
+        };
+    };
+#endif
 
     i32 SavePhoto(i32 slot, const Float3 *position, i32 width, i32 height,
                   i32 score, const i32 *scoreData);
@@ -1642,7 +1656,11 @@ finish:
     TH095_PHOTO_ANM_SET_POSITION(camera->vmIds[1].value, &screenPosition);
     TH095_PHOTO_ANM_SET_POSITION(camera->vmIds[9].value, &screenPosition);
     TH095_PHOTO_ANM_SET_POSITION(camera->vmIds[10].value, &screenPosition);
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     if (((g_PhotoStageState->flags >> 2) & 1) != 0)
+#else
+    if (g_PhotoStageState->firstCaptureFrame != 0)
+#endif
     {
         TH095_PHOTO_ANM_SET_INTERRUPT(camera->vmIds[0].value, 5);
         TH095_PHOTO_ANM_SET_INTERRUPT(camera->vmIds[1].value, 5);

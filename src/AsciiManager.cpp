@@ -46,7 +46,11 @@ struct AsciiStageStateView
     u8 unknown000[0x25720];
     u32 active : 1;
     u32 unknownFlag1 : 1;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     u32 suppressGuiStrings : 1;
+#else
+    u32 firstCaptureFrame : 1;
+#endif
     u32 unknownFlags3 : 29;
 };
 
@@ -98,7 +102,11 @@ i32 AsciiManager::OnDrawLowPrio(AsciiManager *ascii)
 i32 AsciiManager::OnDrawHighPrio(AsciiManager *ascii)
 {
     if (g_AsciiStageState != NULL &&
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
         g_AsciiStageState->suppressGuiStrings != 0)
+#else
+        g_AsciiStageState->firstCaptureFrame != 0)
+#endif
     {
         return 1;
     }

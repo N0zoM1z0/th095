@@ -16,7 +16,21 @@ namespace th095
 struct PhotoCardStageStateView
 {
     u8 unknown000[0x25720];
+#ifdef DIFFBUILD
     u32 flags;
+#else
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlag0 : 1;
+            u32 unknownFlag1 : 1;
+            u32 firstCaptureFrame : 1;
+            u32 unknownFlags3 : 29;
+        };
+    };
+#endif
 };
 
 struct PhotoCardGameRuntimeView
@@ -233,7 +247,11 @@ i32 PhotoCardInfoView::Update()
     }
 
     i32 alpha = 0xff;
+#ifdef DIFFBUILD
     if (((g_PhotoCardStageState->flags >> 2) & 1) != 0)
+#else
+    if (g_PhotoCardStageState->firstCaptureFrame != 0)
+#endif
     {
         if (g_AnmManager->GetVm(this->backgroundVmId) != NULL)
         {
