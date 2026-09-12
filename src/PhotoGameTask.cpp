@@ -243,7 +243,7 @@ i32 PhotoGameTaskView::Update()
 
     if (this->gameplayLoadActive != 0)
     {
-        this->flags = this->flags | 0x80;
+        this->resetFpsSample = 1;
         return 1;
     }
 
