@@ -1596,8 +1596,12 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
                 PHOTO_ENEMY_SHOT_DESCRIPTOR(this),
                 PHOTO_ENEMY_DEFAULT_SHOT_DESCRIPTOR(g_PhotoEnemyManager),
                 PHOTO_ENEMY_SHOT_DESCRIPTOR_SIZE(this));
+#if defined(TH095_MATCH_EXACT)
             *reinterpret_cast<i32 *>(
                 reinterpret_cast<u8 *>(this) + 0x2bc8) = 0;
+#else
+            this->shootIntervalFrames = 0;
+#endif
         }
     }
 
