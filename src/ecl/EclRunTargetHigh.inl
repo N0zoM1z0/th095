@@ -23,6 +23,14 @@
     (reinterpret_cast<EclEnemyDrawGroupView *>(enemy)->drawGroup)
 #endif
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_TARGET_ENEMY_VM_ROTATION_Z(enemy)                             \
+    (*reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x28))
+#else
+#define TH095_TARGET_ENEMY_VM_ROTATION_Z(enemy)                             \
+    (reinterpret_cast<EclEnemyVmView *>(enemy)->vm.rotation.z)
+#endif
+
     case 86:
     case 87:
     case 88:
@@ -457,7 +465,7 @@ enter_subroutine:
     }
 
     case 135:
-        *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x28) =
+        TH095_TARGET_ENEMY_VM_ROTATION_Z(enemy) =
             (instruction->operandFlags & 1U)
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[0])
                 : *reinterpret_cast<f32 *>(&instruction->operands[0].asInt);

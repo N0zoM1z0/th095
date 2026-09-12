@@ -253,6 +253,16 @@ struct EclEnemyDrawGroupView
 };
 typedef char EclEnemyDrawGroupAt2C0B[
     (offsetof(EclEnemyDrawGroupView, drawGroup) == 0x2c0b) ? 1 : -1];
+struct EclEnemyVmView
+{
+    u8 unknown0000[0x08];
+    AnmVm vm;
+};
+typedef char EclEnemyVmAt08[
+    (offsetof(EclEnemyVmView, vm) == 0x08) ? 1 : -1];
+typedef char EclEnemyVmRotationZAt28[
+    (offsetof(EclEnemyVmView, vm) + offsetof(AnmVm, rotation) +
+         offsetof(Float3, z) == 0x28) ? 1 : -1];
 #endif
 
 #ifndef DIFFBUILD
