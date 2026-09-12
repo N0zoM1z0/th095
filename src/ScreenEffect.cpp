@@ -49,7 +49,11 @@ struct ScreenEffectPhotoGlobalStateView
             unsigned int capturedPhotoActive : 1;
             unsigned int gameplayLoadActive : 1;
             unsigned int flag3 : 1;
+#ifdef DIFFBUILD
             unsigned int flag4 : 1;
+#else
+            unsigned int resultScreenActive : 1;
+#endif
             unsigned int playerDeathTransitionComplete : 1;
             unsigned int photoLimitTransitionComplete : 1;
             unsigned int remaining : 25;
@@ -281,7 +285,11 @@ int ScreenEffect::CalcShake(ScreenEffect *screenEffect)
         if (ScreenEffectEitherFlag(g_PhotoGlobalState->captureActive,
                                    g_PhotoGlobalState->gameplayLoadActive) != 0 ||
             g_PhotoGlobalState->capturedPhotoActive != 0 ||
+#ifdef DIFFBUILD
             g_PhotoGlobalState->flag4 != 0 ||
+#else
+            g_PhotoGlobalState->resultScreenActive != 0 ||
+#endif
             g_PhotoGlobalState->playerDeathTransitionComplete != 0 ||
             g_PhotoGlobalState->photoLimitTransitionComplete != 0)
             return 1;
@@ -342,7 +350,11 @@ int ScreenEffect::CalcShakeEnvelope(ScreenEffect *screenEffect)
         if (ScreenEffectEitherFlag(g_PhotoGlobalState->captureActive,
                                    g_PhotoGlobalState->gameplayLoadActive) != 0 ||
             g_PhotoGlobalState->capturedPhotoActive != 0 ||
+#ifdef DIFFBUILD
             g_PhotoGlobalState->flag4 != 0 ||
+#else
+            g_PhotoGlobalState->resultScreenActive != 0 ||
+#endif
             g_PhotoGlobalState->playerDeathTransitionComplete != 0 ||
             g_PhotoGlobalState->photoLimitTransitionComplete != 0)
             return 1;

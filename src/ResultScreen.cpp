@@ -55,7 +55,11 @@ struct ResultScreenGlobalStateView
             u32 unknownFlag1 : 1;
             u32 suppressResultCallbacks : 1;
             u32 unknownFlag3 : 1;
+#ifdef DIFFBUILD
             u32 unknownFlag4 : 1;
+#else
+            u32 resultScreenActive : 1;
+#endif
             u32 playerDeathTransitionComplete : 1;
             u32 photoLimitTransitionComplete : 1;
 #ifdef DIFFBUILD
@@ -498,7 +502,11 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
     resultScreen->stateTimer.Reset();
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
+#ifdef DIFFBUILD
     g_ResultScreenGlobalState->flagsWord |= 0x10;
+#else
+    g_ResultScreenGlobalState->resultScreenActive = 1;
+#endif
 #ifdef DIFFBUILD
     g_ResultScreenGlobalState->flagsWord |= 0x80;
 #else
@@ -565,7 +573,11 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
     resultScreen->stateTimer.Reset();
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
+#ifdef DIFFBUILD
     g_ResultScreenGlobalState->flagsWord |= 0x10;
+#else
+    g_ResultScreenGlobalState->resultScreenActive = 1;
+#endif
 #ifdef DIFFBUILD
     g_ResultScreenGlobalState->flagsWord |= 0x80;
 #else
@@ -649,7 +661,11 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
     resultScreen->stateTimer.Reset();
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
+#ifdef DIFFBUILD
     g_ResultScreenGlobalState->flagsWord |= 0x10;
+#else
+    g_ResultScreenGlobalState->resultScreenActive = 1;
+#endif
 #ifdef DIFFBUILD
     g_ResultScreenGlobalState->flagsWord |= 0x80;
 #else
@@ -1057,7 +1073,11 @@ ChainCallbackResult ResultScreen::Update()
             switch (this->replayCursor.GetCurrent())
             {
             case 0:
+#ifdef DIFFBUILD
                 g_ResultScreenGlobalState->flagsWord &= ~0x10;
+#else
+                g_ResultScreenGlobalState->resultScreenActive = 0;
+#endif
                 break;
             case 1:
                 g_AnmGameSpeed = 1.0f;
@@ -1120,7 +1140,11 @@ ChainCallbackResult ResultScreen::Update()
             switch (this->replayCursor.GetCurrent())
             {
             case 0:
+#ifdef DIFFBUILD
                 g_ResultScreenGlobalState->flagsWord &= ~0x10;
+#else
+                g_ResultScreenGlobalState->resultScreenActive = 0;
+#endif
                 break;
             case 1:
                 g_AnmGameSpeed = 1.0f;

@@ -243,14 +243,14 @@ i32 PhotoGameTaskView::Update()
 
     if (g_ReplayUsesArchive != 0 &&
         ((RuntimeInputCurrent() & TH_BUTTON_DEMO_INTERRUPT) != 0 ||
-         ((this->flags >> 4) & 1) != 0 ||
+         this->resultScreenActive != 0 ||
          this->playerDeathTransitionComplete != 0 ||
          this->photoLimitTransitionComplete != 0))
     {
         g_PhotoNextState = 2;
     }
 
-    if (((this->flags >> 4) & 1) != 0)
+    if (this->resultScreenActive != 0)
     {
         if (this->photoLimitTransitionComplete != 0)
         {
