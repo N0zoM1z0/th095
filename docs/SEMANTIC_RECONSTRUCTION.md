@@ -7780,3 +7780,94 @@ checkpoint. Prefer a different bounded interpreter/state, persistent/ABI,
 resource-lifetime, input, or historical-runtime family. Previously observed
 write-only THTX reserved words remain Unknown unless a TH095-local consumer
 appears.
+
+### SEM-104 — close the remaining compact ECL control-word production bindings
+
+**Scope.** Re-audit the previously consolidated compact enemy ECL control word
+instead of trusting SEM-077's production-coverage statement. The live source
+contained a counterexample: low-ECL opcode 62 still read `Enemy+0x2BF4` bit 31
+through unconditional raw pointer arithmetic, and opcodes 79..81 still
+expressed target-proven bits 2, 4, and 26 through a legacy local bitfield or
+numeric masks. This transaction binds only meanings that have independent
+TH095-local consumers. It does not reinterpret adjacent bits merely because the
+same interpreter opcodes write them.
+
+**Observed.** Fresh target-attested TH095 `EclManager::RunEcl @ 0x00408E70`
+shows one compact control-word protocol. Opcodes `0x36..0x38` (54..56) select
+runtime ANM bank `+0x4DF8` or install its scripts and clear `Enemy+0x2BF4` bit
+31; opcodes `0x3A..0x3C` (58..60) use runtime bank `+0x4DFC` and set bit 31.
+Opcode `0x3E` (62) tests the same dword as a signed value and therefore reads
+bit 31 to choose `+0x4DF8` versus `+0x4DFC`. Opcodes `0x4F..0x51` (79..81)
+write the same control word: their bit-2 operations toggle collision
+participation, their bit-4 operations toggle draw-group suppression, and their
+bit-26 operations toggle the offscreen-check bypass. The same three opcodes
+also write `+0x2BF4` bits 3/6 and `+0x2BF8` bit 3, but this evidence alone does
+not establish those meanings.
+
+**Corroborated.** Independent target `Enemy::UpdateShotAndAnm @ 0x00413030`
+selects runtime ANM bank `+0x4DFC` when `Enemy+0x2BF4` is negative and
+`+0x4DF8` otherwise, confirming bit 31 as `alternateAnmBank` outside opcode 62.
+Independent `PhotoEnemyManagerView::OnUpdate @ 0x00415970` reads bit 2 before
+calling the player-collision routine, omits draw-group publication when bit 4
+is set, and skips the ordinary offscreen-bounds path when bit 26 is set. Those
+consumers match the existing canonical `EnemyEclControlBits::collidable`,
+`hiddenFromDrawGroups`, and `skipOffscreenCheck` fields.
+
+**Inferred.** Low-ECL opcodes 79..81 are script-facing mutators of the same
+runtime participation state consumed by the enemy manager; they are not a
+second local flag protocol. Opcode 62 is likewise another reader of the
+established ANM-bank selector rather than an opcode-private sign flag. The
+interpretation is bounded to the four independently consumed bits above.
+
+**Unknown / bounded.** `Enemy+0x2BF4` bit 3, bit 6, and `Enemy+0x2BF8` bit 3
+remain Unknown in TH095. Their former low-ECL-only spellings `damageable`,
+`acceptsDamage`, and `noDeath` were not supported by an independent TH095-local
+consumer in this audit, so the local target-facing views now call them
+`unknown3`, `unknown6`, and `unknown3`. No claim is made for compact control-word
+bits 5, 7, 18..21, 23, 25, or 27..30. The later generic `EnemyManager.hpp`
+flag layouts remain separate and are not evidence for this compact ABI.
+
+**Production / exact representation.** Normal production opcode 62 now reads
+`TH095_ENEMY_ECL_CONTROL_BITS(enemy).alternateAnmBank`; production opcodes
+79..81 use the canonical `collidable`, `hiddenFromDrawGroups`, and
+`skipOffscreenCheck` fields. The unresolved bit-3/bit-6 writes remain bounded
+raw/local operations, and the unresolved `+0x2BF8` bit remains on its local
+view. DIFFBUILD and `TH095_MATCH_EXACT` preserve the target-facing offset/mask
+forms needed by the canonical replay. Renaming the local unresolved fields is
+semantic bookkeeping only; no storage offset, width, persistent format, or
+calling convention changes.
+
+**Persistent / ABI boundary.** The physical compact enemy control dword remains
+at `+0x2BF4` and the adjacent flags2 dword remains at `+0x2BF8`. This is an
+in-memory runtime representation, not a newly discovered serialized format.
+The C++ bitfield view is intentionally tied to the pinned MSVC7.1/i386 target
+ABI and is not a portability claim.
+
+**Validation.** The registered Ghidra provider re-attested Japanese TH095
+v1.02a (696,832 bytes, SHA-256
+`bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`) and
+freshly decompiled `0x00408E70`, `0x00413030`, and `0x00415970` for the producer
+and independent-consumer evidence above. `python3 scripts/build.py --check`
+validated the 696-unit match graph. Focused cold replay of `src/ecl/EclRun.cpp`
+passed its configured exact unit 1/1 with zero private-label refresh after the
+final source edit. A command-local `/tmp` probe reused the canonical
+`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src/ecl /I src`
+profile and compiled the normal branch with pinned VC7.1 to Intel i386 COFF.
+`git diff --check` also passed. No runtime scenario is claimed by this source
+representation transaction.
+
+**Recovery / analysis state.** The pre-edit recovery gate found no staged or
+tracked unstaged work and no active build/replay/Wine producer. The four
+pre-existing untracked files (`EnemyManagerUpdate.i`,
+`config/runtime-scenarios.json`, `droid.resume.txt`, and
+`scripts/runtime-diff.py`) remain excluded and untouched. `.analysis/` measured
+3,394,984 bytes at the campaign gate; no session-owned `.analysis/gpt-web/`
+workspace or other analysis artifact was created for this batch. Semantic
+interpretation, exact replay, production compilation, runtime validation, and
+Factory receipt acceptance remain separate states. The semantic phase remains
+active-incomplete.
+
+**Next evidence route.** Rotate away from the compact ECL control word after
+checkpoint. Prefer a different bounded persistent/ABI, resource-lifetime,
+input, or historical-runtime family. Do not return to the remaining unknown
+compact bits without a new TH095-local producer/consumer or lifetime relation.

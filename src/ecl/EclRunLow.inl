@@ -53,13 +53,13 @@ extern Player *g_Th095Player;
 struct Th095EnemyFlagBits
 {
     u32 unused0 : 2;
-    u32 collision : 1;
-    u32 damageable : 1;
-    u32 noSprite : 1;
+    u32 collidable : 1;
+    u32 unknown3 : 1;
+    u32 hiddenFromDrawGroups : 1;
     u32 unused5 : 1;
-    u32 acceptsDamage : 1;
+    u32 unknown6 : 1;
     u32 unused7 : 19;
-    u32 allowOffscreen : 1;
+    u32 skipOffscreenCheck : 1;
     u32 unused27 : 5;
 };
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -71,7 +71,7 @@ struct Th095EnemyFlagBits
 struct Th095EnemyFlag2Bits
 {
     u32 unused0 : 3;
-    u32 noDeath : 1;
+    u32 unknown3 : 1;
     u32 unused4 : 28;
 };
 
@@ -518,8 +518,12 @@ static EclRawInstruction *__fastcall CompareOperands(
         break;
 #endif
     case 62:
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (((*reinterpret_cast<u32 *>(
                   reinterpret_cast<u8 *>(enemy) + 0x2bf4) >> TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK_SHIFT) & 1U) == 0)
+#else
+        if (TH095_ENEMY_ECL_CONTROL_BITS(enemy).alternateAnmBank == 0)
+#endif
         {
             (*reinterpret_cast<AnmLoaded **>(
                 TH095_ECL_RUNTIME + 0x4df8))
@@ -711,37 +715,61 @@ static EclRawInstruction *__fastcall CompareOperands(
 
     case 79:
         lhsInt = ReadInt(enemy, instruction, 0);
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         reinterpret_cast<Th095EnemyFlagBits *>(
-            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->acceptsDamage = (lhsInt & 1) == 0;
+            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->unknown6 = (lhsInt & 1) == 0;
         reinterpret_cast<Th095EnemyFlagBits *>(
-            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->collision = (lhsInt & 2) == 0;
+            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->collidable = (lhsInt & 2) == 0;
         reinterpret_cast<Th095EnemyFlagBits *>(
-            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->damageable = (lhsInt & 4) == 0;
+            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->unknown3 = (lhsInt & 4) == 0;
         reinterpret_cast<Th095EnemyFlagBits *>(
-            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->noSprite = (lhsInt & 8) != 0;
+            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->hiddenFromDrawGroups = (lhsInt & 8) != 0;
         reinterpret_cast<Th095EnemyFlagBits *>(
-            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->allowOffscreen = (lhsInt & 0x10) != 0;
+            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->skipOffscreenCheck = (lhsInt & 0x10) != 0;
+#else
+        reinterpret_cast<Th095EnemyFlagBits *>(
+            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->unknown6 = (lhsInt & 1) == 0;
+        TH095_ENEMY_ECL_CONTROL_BITS(enemy).collidable = (lhsInt & 2) == 0;
+        reinterpret_cast<Th095EnemyFlagBits *>(
+            reinterpret_cast<u8 *>(enemy) + 0x2bf4)->unknown3 = (lhsInt & 4) == 0;
+        TH095_ENEMY_ECL_CONTROL_BITS(enemy).hiddenFromDrawGroups = (lhsInt & 8) != 0;
+        TH095_ENEMY_ECL_CONTROL_BITS(enemy).skipOffscreenCheck = (lhsInt & 0x10) != 0;
+#endif
         reinterpret_cast<Th095EnemyFlag2Bits *>(
-            reinterpret_cast<u8 *>(enemy) + 0x2bf8)->noDeath = (lhsInt & 0x20) != 0;
+            reinterpret_cast<u8 *>(enemy) + 0x2bf8)->unknown3 = (lhsInt & 0x20) != 0;
         break;
 
     case 80:
         lhsInt = ReadInt(enemy, instruction, 0);
         if (lhsInt & 1) TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~0x40U;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (lhsInt & 2) TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~4U;
         if (lhsInt & 4) TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~8U;
         if (lhsInt & 8) TH095_RUN_ECL_CONTROL_WORD(enemy) |= 0x10U;
         if (lhsInt & 0x10) TH095_RUN_ECL_CONTROL_WORD(enemy) |= 0x4000000U;
+#else
+        if (lhsInt & 2) TH095_ENEMY_ECL_CONTROL_BITS(enemy).collidable = 0;
+        if (lhsInt & 4) TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~8U;
+        if (lhsInt & 8) TH095_ENEMY_ECL_CONTROL_BITS(enemy).hiddenFromDrawGroups = 1;
+        if (lhsInt & 0x10) TH095_ENEMY_ECL_CONTROL_BITS(enemy).skipOffscreenCheck = 1;
+#endif
         if (lhsInt & 0x20) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf8) |= 8U;
         break;
 
     case 81:
         lhsInt = ReadInt(enemy, instruction, 0);
         if (lhsInt & 1) TH095_RUN_ECL_CONTROL_WORD(enemy) |= 0x40U;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (lhsInt & 2) TH095_RUN_ECL_CONTROL_WORD(enemy) |= 4U;
         if (lhsInt & 4) TH095_RUN_ECL_CONTROL_WORD(enemy) |= 8U;
         if (lhsInt & 8) TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~0x10U;
         if (lhsInt & 0x10) TH095_RUN_ECL_CONTROL_WORD(enemy) &= ~0x4000000U;
+#else
+        if (lhsInt & 2) TH095_ENEMY_ECL_CONTROL_BITS(enemy).collidable = 1;
+        if (lhsInt & 4) TH095_RUN_ECL_CONTROL_WORD(enemy) |= 8U;
+        if (lhsInt & 8) TH095_ENEMY_ECL_CONTROL_BITS(enemy).hiddenFromDrawGroups = 0;
+        if (lhsInt & 0x10) TH095_ENEMY_ECL_CONTROL_BITS(enemy).skipOffscreenCheck = 0;
+#endif
         if (lhsInt & 0x20) *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf8) &= ~8U;
         break;
 
