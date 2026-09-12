@@ -8301,3 +8301,79 @@ an independent consumer. The unresolved ResultScreen/global-state bits 4 and 7,
 TextRenderBuffer's RNG-written prefix, and ANM VM `unknownFlag14` remain Unknown
 until new TH095-local readers or producers appear. The semantic phase remains
 active-incomplete.
+
+### SEM-110 — bind the photo-game capture wait to the Supervisor close latch
+
+**Scope.** Re-audit Supervisor control protocols outside the earlier input and
+restart-latch batches. `PhotoGameTaskView::Load @ 0x00417D20` still decoded
+Supervisor flags bit 7 through `flags.raw >> 7` while the canonical Supervisor
+owner already names that bit `receivedCloseMsg`. This transaction binds only
+that asynchronous capture-wait consumer. It does not reinterpret adjacent
+Supervisor bits, task-local failure flags, replay-worker exit state, or Windows
+message handling beyond the established close-message publication.
+
+**Observed.** Fresh hash-attested TH095 decompilation of
+`GameWindow::WindowProc @ 0x00420CF0` shows message `0x10` (`WM_CLOSE`) ORing
+`0x80` into absolute Supervisor flag dword `0x004C4AB4`. Fresh
+`Supervisor::OnUpdate @ 0x00423440` reads `Supervisor+0x444` bit 7 and returns
+the calc-chain exit result once the replay-scan worker at `+0x654` is inactive.
+Fresh `PhotoGameTaskView::Load @ 0x00417D20` independently tests absolute
+`0x004C4AB4` bit 7 while waiting for both ANM capture slots to become idle and
+jumps to its failure path when the bit is set. `g_Supervisor @ 0x004C4670` plus
+`flags @ +0x444` maps all three observations to the same physical dword. The
+target was re-attested as Japanese TH095 v1.02a, 696,832 bytes, SHA-256
+`bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
+
+**Corroborated.** The canonical `SupervisorFlags` layout already names bit 7
+`receivedCloseMsg`, and natural Main source already uses that member in both the
+`WM_CLOSE` producer and the frame-update consumer. Existing semantic records
+for the front-end/photo-game loading path also identify Supervisor bit 7 as the
+shutdown condition during pending capture/ANM work. The newly bound
+PhotoGameTask reader therefore joins an existing TH095-local publication
+protocol rather than creating a task-private shutdown flag.
+
+**Inferred.** `receivedCloseMsg` is a process-level close-request latch. During
+photo-game asynchronous loading it aborts the capture wait so shutdown is not
+blocked on a pending capture operation; the ordinary frame loop separately
+delays final exit until replay scanning is inactive. The member name describes
+the observed producer, not a generic cancellation token for every worker.
+
+**Unknown / bounded.** This batch does not prove that every asynchronous worker
+must observe bit 7, does not merge it with `ReplayScanWorker::exitSignal`, and
+does not assign new meaning to task-local failure bit `0x08`, ordinary-load bit
+`0x100`, Supervisor bit 9 `resultRestartActive`, or bit 12 `restartPhotoGame`.
+No runtime shutdown scenario is claimed by this source-representation change.
+
+**Production / exact representation.** Normal `PhotoGameTask.cpp` now reads
+`g_Supervisor.flags.receivedCloseMsg` directly in the capture-wait loop. The
+canonical exact build of this translation unit already selects
+`PhotoGameTaskExact.inl` at the file boundary, so its historical raw bit-test
+source remains untouched. No shared header, class layout, calling convention,
+storage width, or message-loop behavior changes.
+
+**Validation.** Focused cold replay of `src/PhotoGameTask.cpp` rebuilt all ten
+configured accepted units and passed 10/10 exact with zero compiler-private
+label refreshes. A command-local production probe reused the manifest compiler
+profile and compiled the normal translation unit with pinned VC7.1 compiler
+`13.10.3077` to Intel i386 COFF; the object machine was `0x14C`.
+`python3 scripts/build.py --check` kept the graph at 696 configured units and
+`git diff --check` passed. Because the edit is private to one production `.cpp`
+and does not alter a shared layout/PCH/owner, aggregate exact and whole-product
+replay are deferred to the campaign milestone.
+
+**Recovery / analysis state.** The campaign resumed from committed HEAD
+`64ecd9d68acfd7d8efa470767d5717bbaf4defd7` with no staged or tracked
+unstaged work. The four documented pre-existing untracked paths
+`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
+`scripts/runtime-diff.py` were re-hashed/reviewed and remain excluded from
+staging. `.analysis/` started at 3,394,984 bytes. Fresh target evidence used one
+command-local decompile below `.analysis/`; its trap removed the output after
+use and `.analysis/` returned to 3,394,984 bytes. Semantic interpretation,
+exact replay, production compilation, runtime storage, and runtime scenarios
+remain separate states.
+
+**Next evidence route.** Rotate away from Supervisor bit 7 after checkpoint.
+Prefer an independent persistent/state, resource-lifetime, sound, or sibling
+protocol family with a TH095-local producer plus an independent consumer. Do
+not reinterpret other Supervisor bits merely because they share `flags.raw`.
+The semantic phase remains active-incomplete.

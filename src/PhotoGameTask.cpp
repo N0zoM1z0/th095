@@ -442,7 +442,7 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
     while (g_AnmManager->captureSurfaceIdx >= 0 ||
            g_AnmManager->captureAnmIdx >= 0)
     {
-        if (((g_Supervisor.flags.raw >> 7) & 1) != 0)
+        if (g_Supervisor.flags.receivedCloseMsg != 0)
         {
             goto failure;
         }
