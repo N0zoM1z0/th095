@@ -78,11 +78,11 @@ struct SupervisorGameTaskView
     u32 captureActive : 1;
 #endif
     u32 unknownFlag1 : 1;
-    u32 timingBlocked2 : 1;
+    u32 gameplayLoadActive : 1;
     u32 unknownFlag3 : 1;
-    u32 timingBlocked4 : 1;
-    u32 timingBlocked5 : 1;
-    u32 timingBlocked6 : 1;
+    u32 resultScreenActive : 1;
+    u32 playerDeathTransitionComplete : 1;
+    u32 photoLimitTransitionComplete : 1;
     u32 resetFpsSample : 1;
     u32 unknownFlags8 : 24;
 };
@@ -1380,15 +1380,15 @@ void Supervisor::CalculateFps()
         }
 
         if (g_SupervisorGameTask != NULL &&
-            g_SupervisorGameTask->timingBlocked4 == 0 &&
+            g_SupervisorGameTask->resultScreenActive == 0 &&
 #if defined(TH095_MATCH_EXACT)
             g_SupervisorGameTask->active == 0 &&
 #else
             g_SupervisorGameTask->captureActive == 0 &&
 #endif
-            g_SupervisorGameTask->timingBlocked2 == 0 &&
-            g_SupervisorGameTask->timingBlocked5 == 0 &&
-            g_SupervisorGameTask->timingBlocked6 == 0 &&
+            g_SupervisorGameTask->gameplayLoadActive == 0 &&
+            g_SupervisorGameTask->playerDeathTransitionComplete == 0 &&
+            g_SupervisorGameTask->photoLimitTransitionComplete == 0 &&
             g_SupervisorGameTask->resetFpsSample == 0)
         {
             this->lagDenominator += 60.0;
