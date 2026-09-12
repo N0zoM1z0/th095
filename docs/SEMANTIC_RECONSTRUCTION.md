@@ -8981,3 +8981,128 @@ ANM preload path bytes, ReplayScanWorker `unknown010`, score-header
 `+0x0A/+0x0C`, SoundPlayer writer-only metadata, TextRenderer RNG prefix, and
 compact-enemy write-only bits Unknown absent new TH095-local evidence. The
 semantic phase remains active-incomplete.
+
+### SEM-127 — recover the photo score breakdown payload
+
+**Scope.** Follow the persistent-score ABI route after SEM-126 and reconcile the
+anonymous eight-dword photo-score block used by `PhotoStage.cpp` with the
+already exact TH095 score producer. The block crosses four distinct surfaces:
+`PhotoCameraState::CalculatePhotoScore`, `PhotoStageStateView::SavePhoto`,
+`PhotoStageDisplayView::Build`, and the best-shot tail of
+`ResultSaveDataView::scoreEntries[]`. This transaction gives the production
+PhotoStage consumer a bounded `PhotoScoreBreakdownView`; it does not change the
+shared `PhotoStage.hpp` ABI, `ScoreData.hpp`, the on-disk score format, or the
+exact-facing snapshot.
+
+**Observed.** Fresh hash-attested Ghidra decompilation of
+`PhotoCameraState::CalculatePhotoScore @ 0x00433140` shows its `int *` output as
+exactly eight consecutive dwords. Slot 0 receives the final accumulated score
+after all subject/bonus multipliers and the stage multiplier, rounded down to a
+multiple of ten. Slot 1 receives the pre-bonus subtotal formed from captured
+bullet points plus `runtimeTargets * 170 + stageTargets * 10`. Slot 2 is
+incremented once per captured-bullet chain node. Slot 3 is preserved across the
+function's eight-dword clear and is the nearby-target count supplied by
+`TakePhoto`; when it exceeds two, slot 4 receives `count * 100` capped at 2000
+and flag bit 4 is set. Slot 5 receives the 1.2..2.0 multiplier derived from the
+closest photographed enemy distance, while slot 6 receives the 1.2..1.5
+multiplier derived from the highest active boss-rate ratio. Slot 7 is the
+scoring flag word.
+
+Fresh target `PhotoStageStateView::SavePhoto @ 0x0042C450` forwards that same
+pointer unchanged to `PhotoStageDisplayView::Build @ 0x0042C5C0`. Build copies
+exactly eight dwords into display storage at `this + 0x2190`, then independently
+reads slot 4 for the nearby bonus, slots 5/6 for the decimal multiplier rows,
+and slot 7 for enemy/self/two-shot/boss-rate, nearby, color, empty-photo, and
+no-bullets display rows. Fresh `PhotoStageStateView::Update @ 0x0042AD60`
+closes the persistent boundary: on capture frame 2 it compares the current
+slot score against `ResultSaveData + 0x478 + scoreIndex*0x60`, then copies
+exactly eight dwords from the selected display slot into that address. `0x478`
+is the established `scoreEntries[index] + 0x18` / `detailScore` root from
+SEM-088.
+
+**Corroborated.** PHOTO-008 already established the complete exact scoring
+pipeline and its seven color bonuses from the authored `CalculatePhotoScore`
+unit. SEM-088 independently proved that PhotoStage's 0x48-byte persistent tail
+begins at canonical `ResultScoreEntryView::detailScore @ +0x18` and ends at the
+0x60-byte record boundary. Current source also shows `TakePhoto` setting slot 3
+from the bullet-manager plus effect-manager nearby-target counts before calling
+the calculator, passing slot 0 separately as the displayed score, and
+`PhotoStage::Update` copying the same 0x20-byte block only when replacing an
+unlocked best shot. These are TH095-local producer/copy/consumer facts; TH08
+contributes no field meaning here.
+
+**Inferred.** The narrow maintainable production names are therefore
+`finalScore`, `baseScore`, `capturedBulletCount`, `nearbyTargetCount`,
+`nearbyTargetBonus`, `enemyDistanceMultiplier`, `bossRateMultiplier`, and
+`scoringFlags`. `baseScore` deliberately means the producer's subtotal before
+the later fixed bonuses and multipliers; it is not a claim about UI wording or
+an original source identifier. Likewise the two multiplier names describe the
+quantities that produce and consume them, not a claim about serialized schema
+terminology in the original game.
+
+**Unknown / bounded.** Scoring flag bits 5, 17, 18, and 19 remain Unknown. The
+PhotoStage display has rows for those bits, but `CalculatePhotoScore` does not
+publish them and this evidence set has no independent producer. Persistent tail
+bytes represented by `unknown020`, `unknown028`, `unknown030`, and the upper
+thirty bits of the separate record-state `flags @ record +0x50` are unchanged
+and remain Unknown where previously recorded. This batch does not reinterpret
+best-shot pixel storage, replay data, score-header reserved words, or the
+meaning of the shared `ResultScoreEntryView::detailScore` member outside this
+photo-score overlay.
+
+**Production / exact representation.** Normal `src/PhotoStage.cpp` now models
+the first 0x20 bytes of `PhotoStageScorePayloadView` as
+`PhotoScoreBreakdownView`, with compile-time checks for total size, multiplier
+offsets `+0x14/+0x18`, and scoring flags at `+0x1C`. The display builder and the
+capture-frame-2 best-shot compare/copy use those semantic fields rather than
+raw `scoreData[n]` indexing. `PhotoStageDisplayView::scoreData[8]` remains
+physically unchanged in the shared header and is projected through a local
+helper, while `PhotoStageExact.inl` remains the complete `TH095_MATCH_EXACT`
+implementation. No shared type size, owner publication, calling convention,
+persistent offset, or serialized byte is changed.
+
+**Validation.** `python3 scripts/replay-exact-units.py --source
+src/PhotoStage.cpp` rebuilt the exact object and replayed all 6 configured
+PhotoStage units exactly with zero compiler-private label refresh. The 696-unit
+match graph and 697 source-present / 696 exact tracking state remain valid. A
+command-local normal production probe used the pinned VC7.1 profile `/MT /EHsc
+/Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` and emitted a 48,380-byte
+Intel 80386 COFF / pe-i386 object; its 200,704-byte PDB and the object were
+removed by the command-local cleanup trap. Repository CI passes all 43 tests,
+including tracking, match-unit and whole-build graph validation, and `git diff
+--check` passes. Because this is a translation-unit-local semantic projection
+with no shared header/layout/PCH/owner change, aggregate exact and whole-product
+gates are deferred to the campaign milestone/final handoff.
+
+**Recovery / analysis state.** The transaction began from committed HEAD
+`50d930ebe3ec98f9bcd3f4ca16a5b83fc73a43c6` with zero staged/tracked unstaged
+changes and the same four pre-existing untracked paths preserved outside
+staging. `.analysis/` began at 3,394,984 bytes. Fresh target evidence was
+bounded under `.analysis/gpt-web/20260912-photo-score-payload/`: a 30,026-byte
+decompile of `0x00433140/0x0042C450/0x0042C5C0` (SHA-256
+`e8a053c056658c04c6148c7426344a5c6335c887d740ac914407935d82d24006`), a
+17,452-byte decompile of `0x0042AD60` (SHA-256
+`a398874bcf3095144ee0f55ce342b74d7662d32ca4b13405511f96d149f120f7`), and a
+377-byte manifest (SHA-256
+`0813380c3f0e08868a3b666bb7304844b44a39ac47b1a0059e71af552a09e551`). One
+read of the update artifact lost transport before returning a durable command
+id; recovery confirmed unchanged HEAD/tree, no active producer, and the three
+intact session files before the existing artifact was reread. The first
+source-edit command also lost transport before a durable id; recovery proved it
+had not written `PhotoStage.cpp`, after which the edit was applied once. The
+first cleanup command likewise lost transport before a durable id; recovery
+proved all three scratch files still present, source state unchanged, and no
+producer active before cleanup was retried. After the semantic conclusion was
+recorded and a final producer/reference audit found no active process or tracked
+consumer of the scratch root, all three manifested files were explicitly
+removed and the empty current-session root was removed. `.analysis/` returned
+exactly to 3,394,984 bytes.
+
+**Next evidence route.** After checkpoint, rotate away from photo scoring and
+the recently exhausted sound/THTX/score-header plateau. Prefer an independent
+resource lifetime, historical-runtime, non-photo interpreter protocol, or ABI
+boundary with a TH095-local producer plus independent consumer. Keep score
+scoring-flags bits 5/17/18/19, score-header `+0x0A/+0x0C`, SoundPlayer/MIDI
+writer-only fields, ReplayScanWorker `unknown010`, ANM preload reserved words,
+and other single-ended storage Unknown absent new target-local evidence. The
+semantic phase remains active-incomplete.

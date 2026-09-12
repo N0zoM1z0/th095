@@ -70,9 +70,21 @@ struct PhotoStageBestShotRecord
     u8 *pixelData;
 };
 
+struct PhotoScoreBreakdownView
+{
+    i32 finalScore;
+    i32 baseScore;
+    i32 capturedBulletCount;
+    i32 nearbyTargetCount;
+    i32 nearbyTargetBonus;
+    f32 enemyDistanceMultiplier;
+    f32 bossRateMultiplier;
+    u32 scoringFlags;
+};
+
 struct PhotoStageScorePayloadView
 {
-    i32 scoreData[8];
+    PhotoScoreBreakdownView photoScore;
     u8 unknown020[4];
     i32 captureTime;
     u8 unknown028[4];
@@ -192,6 +204,15 @@ typedef char PhotoStageTextureEntrySizeIs10[
     (sizeof(PhotoStageTextureEntry) == 0x10) ? 1 : -1];
 typedef char PhotoStageBestShotRecordSizeIs78[
     (sizeof(PhotoStageBestShotRecord) == 0x78) ? 1 : -1];
+typedef char PhotoScoreBreakdownSizeIs20[
+    (sizeof(PhotoScoreBreakdownView) == 0x20) ? 1 : -1];
+typedef char PhotoScoreBreakdownMultipliersAt14[
+    (offsetof(PhotoScoreBreakdownView, enemyDistanceMultiplier) == 0x14 &&
+     offsetof(PhotoScoreBreakdownView, bossRateMultiplier) == 0x18)
+        ? 1
+        : -1];
+typedef char PhotoScoreBreakdownFlagsAt1C[
+    (offsetof(PhotoScoreBreakdownView, scoringFlags) == 0x1c) ? 1 : -1];
 typedef char PhotoStageScorePayloadSizeIs48[
     (sizeof(PhotoStageScorePayloadView) == 0x48) ? 1 : -1];
 typedef char PhotoStageScorePayloadMatchesResultTail[
@@ -315,6 +336,12 @@ static inline PhotoStageScorePayloadView *GetPhotoStageScorePayload(i32 index)
         &g_ResultSaveData->scoreEntries[index].detailScore);
 }
 
+static inline PhotoScoreBreakdownView *GetPhotoStageDisplayScoreBreakdown(
+    PhotoStageDisplayView *display)
+{
+    return reinterpret_cast<PhotoScoreBreakdownView *>(display->scoreData);
+}
+
 static inline PhotoStageBestShotRecord *GetPhotoStageBestShotRecord(i32 index)
 {
     return reinterpret_cast<PhotoStageBestShotRecord *>(
@@ -422,6 +449,8 @@ void PhotoStageDisplayView::Build(
     i32 score, Float3 *photoPosition, Float3 *entryPosition,
     const i32 *scoreData)
 {
+    const PhotoScoreBreakdownView *scoreBreakdown =
+        reinterpret_cast<const PhotoScoreBreakdownView *>(scoreData);
     Float3 displayPosition = *photoPosition;
     struct PhotoStageDigitPosition
     {
@@ -433,12 +462,7 @@ void PhotoStageDisplayView::Build(
     this->score = score;
     if (scoreData != NULL)
     {
-        struct PhotoStageScoreDataBlock
-        {
-            i32 values[8];
-        };
-        *reinterpret_cast<PhotoStageScoreDataBlock *>(this->scoreData) =
-            *reinterpret_cast<const PhotoStageScoreDataBlock *>(scoreData);
+        *GetPhotoStageDisplayScoreBreakdown(this) = *scoreBreakdown;
     }
 
     if (entryPosition != NULL)
@@ -530,92 +554,92 @@ void PhotoStageDisplayView::Build(
         // while 0x100+4 gives the target this -> tv chronology exactly.
         u8 compilerStorage[0x100];
         u8 compilerStorage4[4];
-        if (((u32)scoreData[7] >> 5 & 1) != 0)
+        if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_UNKNOWN_5) != 0)
         {
             ADD_PHOTO_STAGE_DISPLAY_VM(0x24);
             renderMode += 4;
             displayPosition.y += 12.0f;
         }
     }
-    if (((u32)scoreData[7] >> 6 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x25, 300);
     }
-    if (((u32)scoreData[7] >> 7 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_2) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x26, 300);
     }
-    if (((u32)scoreData[7] >> 8 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_3) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x27, 300);
     }
-    if (((u32)scoreData[7] >> 9 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_4) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x28, 300);
     }
-    if (((u32)scoreData[7] >> 10 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_5) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x29, 300);
     }
-    if (((u32)scoreData[7] >> 11 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_6) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2a, 300);
     }
-    if (((u32)scoreData[7] >> 12 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_7) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2b, 300);
     }
-    if (((u32)scoreData[7] >> 13 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLORFUL) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2c, 900);
     }
-    if (((u32)scoreData[7] >> 14 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_RAINBOW) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2d, 2100);
     }
-    if (((u32)scoreData[7] >> 15 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_EMPTY) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2e, 0);
     }
-    if (((u32)scoreData[7] >> 16 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_NO_BULLETS) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2f, 100);
     }
-    if (((u32)scoreData[7] >> 17 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_UNKNOWN_17) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x30, 100);
     }
-    if (((u32)scoreData[7] >> 18 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_UNKNOWN_18) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x31, 0);
     }
-    if (((u32)scoreData[7] >> 19 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_UNKNOWN_19) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x32, 0);
     }
-    if (((u32)scoreData[7] >> 4 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_NEARBY) != 0)
     {
-        ADD_PHOTO_STAGE_SCORE_ROW(0x23, scoreData[4]);
+        ADD_PHOTO_STAGE_SCORE_ROW(0x23, scoreBreakdown->nearbyTargetBonus);
     }
 
-    if ((scoreData[7] & PHOTO_STAGE_SCORE_ENEMY) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_ENEMY) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x1f);
         displayPosition.x += 99.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(
-            (i32)(*reinterpret_cast<const f32 *>(&scoreData[5]) * 10.0f) /
+            (i32)(scoreBreakdown->enemyDistanceMultiplier * 10.0f) /
                 10 + 15);
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(0x1a);
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(
-            (i32)(*reinterpret_cast<const f32 *>(&scoreData[5]) * 10.0f) %
+            (i32)(scoreBreakdown->enemyDistanceMultiplier * 10.0f) %
                 10 + 15);
         renderMode += 4;
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if (((u32)scoreData[7] >> 1 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_SELF) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x20);
         displayPosition.x += 99.0f;
@@ -628,7 +652,7 @@ void PhotoStageDisplayView::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if (((u32)scoreData[7] >> 2 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_TWO_SHOT) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x21);
         displayPosition.x += 99.0f;
@@ -641,12 +665,12 @@ void PhotoStageDisplayView::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if (((u32)scoreData[7] >> 3 & 1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_BOSS_RATE) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x22);
         displayPosition.x += 99.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(
-            (i32)(*reinterpret_cast<const f32 *>(&scoreData[6]) * 10.0f) /
+            (i32)(scoreBreakdown->bossRateMultiplier * 10.0f) /
                 10 + 15);
         displayPosition.x += 9.0f;
         ADD_PHOTO_STAGE_DISPLAY_VM(0x1a);
@@ -654,7 +678,7 @@ void PhotoStageDisplayView::Build(
         InitializePhotoStageDisplayVm(
             &g_PhotoStageState->displayVms[displayVmCount++],
             &displayPosition,
-            (i32)(*reinterpret_cast<const f32 *>(&scoreData[6]) * 10.0f) %
+            (i32)(scoreBreakdown->bossRateMultiplier * 10.0f) %
                     10 +
                 15,
             renderMode);
@@ -685,7 +709,10 @@ static __forceinline void PhotoStagePublishCaptureRequestArgs(PhotoStageAnmManag
 
 static __forceinline void PhotoStageAccumulateCapturedScore(PhotoStageStateView *state)
 {
-    if ((state->slots[state->slots[0].captureSlot].display.scoreData[7] & 1) != 0)
+    if ((GetPhotoStageDisplayScoreBreakdown(
+             &state->slots[state->slots[0].captureSlot].display)
+             ->scoringFlags &
+         PHOTO_STAGE_SCORE_ENEMY) != 0)
     {
         PhotoStageGlobalStateView *globalState;
         i32 bgmFormatIndexLocal05 =
@@ -1051,15 +1078,15 @@ i32 PhotoStageStateView::Update()
                         this->slots[this->slots[0].captureSlot].display.score >
                             GetPhotoStageScorePayload(
                                 g_PhotoStageGlobalState->scoreIndex)
-                                ->scoreData[0])
+                                ->photoScore.finalScore)
                     {
                         memcpy(
-                            GetPhotoStageScorePayload(
-                                g_PhotoStageGlobalState->scoreIndex)
-                                ->scoreData,
-                            this->slots[this->slots[0].captureSlot]
-                                .display.scoreData,
-                            8 * sizeof(i32));
+                            &GetPhotoStageScorePayload(
+                                 g_PhotoStageGlobalState->scoreIndex)
+                                 ->photoScore,
+                            GetPhotoStageDisplayScoreBreakdown(
+                                &this->slots[this->slots[0].captureSlot].display),
+                            sizeof(PhotoScoreBreakdownView));
                         g_ResultSaveData->UpdateBestShotRecord(
                             g_PhotoStageGlobalState->scoreIndex);
 
