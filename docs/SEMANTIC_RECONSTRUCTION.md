@@ -7276,3 +7276,92 @@ runtime gap with an independent producer and consumer. Previously falsified
 write-only sound metadata and single-writer ANM pathname storage remain Unknown
 unless new target-local readers appear. Semantic phase state remains
 active-incomplete.
+
+### SEM-098 — distinguish the photo-pulse VM lifetime timers
+
+**Scope.** Recover the compact enemy photo-pulse lifetime protocol rooted at
+`photoPulseVmId @ +0x2C1C`, `ZunTimer @ +0x2C24`, and `ZunTimer @ +0x2C30`.
+This batch deliberately separates that transient pulse VM from the previously
+recovered photo-marker protocol (`flags2` bit 6, timer `+0x2BFC`, marker VM
+`+0x2C20`) and does not reopen SEM-042.
+
+**Observed.** Hash-attested TH095 `EclManager::RunEcl @ 0x00408E70`, opcode 144,
+assigns the same resolved integer operand to complete `ZunTimer` objects rooted
+at enemy `+0x2C24` and `+0x2C30`, spawns ANM script `0x125` at the enemy world
+position, stores the returned VM handle at `+0x2C1C`, and plays sound `0x2D`.
+The two timer assignments initialize their own subframe/current/previous state;
+they are not scalar aliases into the neighboring photo-rate fields.
+
+Target-attested `PhotoEnemyManagerView::OnUpdate @ 0x00415970` independently
+consumes the same owner. While the `+0x2C24` timer is positive it decrements that
+timer once per update. If `photoPulseVmId @ +0x2C1C` is nonzero, a positive
+countdown repositions the VM at the enemy and sets both scale axes to twice the
+ratio of the current countdown to the current value of the `+0x2C30` timer.
+When the countdown expires, the target marks that pulse VM for deletion and
+clears the handle. The observed update path does not decrement the `+0x2C30`
+timer.
+
+The same target function separately manages `photoMarkerVmId @ +0x2C20` using
+`flags2` bit 6 and ANM script `0x127`; `UpdatePhotoMarkerPulse @ 0x00416770`
+separately decrements the SEM-042 timer rooted at `+0x2BFC`. Those independent
+owners falsify the old maintenance spelling `photoMarkerTimer` /
+`photoMarkerDurationTimer` for the opcode-144 timer pair.
+
+**Production representation.** `PhotoEnemyView` now names the pair
+`photoPulseTimer @ +0x2C24` and `photoPulseDurationTimer @ +0x2C30`, matching the
+already named `photoPulseVmId @ +0x2C1C`. The production high-ECL lane uses a
+bounded `Th095EnemyPhotoPulseView` with compile-time offset checks for all three
+members. `TH095_MATCH_EXACT` keeps opcode 144's historical raw timer
+dereferences and `photoAnmHandle` spelling byte-for-byte at the source-shape
+boundary.
+
+**Inferred.** `photoPulseTimer` is the remaining lifetime/countdown for the
+transient script-`0x125` pulse VM. `photoPulseDurationTimer` is its initial or
+reference duration: opcode 144 initializes both timers from the same operand,
+while the observed update consumer decrements only the former and uses the
+latter as the normalization denominator. The maintenance name describes this
+observed role without assigning a higher-level gameplay meaning to ANM script
+`0x125` itself.
+
+**Unknown / bounded.** This batch does not infer why sound `0x2D` accompanies
+the pulse, whether scripts can safely supply zero duration, or whether another
+unobserved path can rewrite the duration after opcode 144. It does not rename
+`photoMarkerVmId @ +0x2C20`, the SEM-042 marker visibility protocol, adjacent
+photo-rate storage, or any compact enemy flag. No deterministic Wine runtime
+scenario was added, so runtime behavior remains a separate unclaimed plane.
+
+**Compiler-observed.** A first maintenance attempt added two new offset typedefs
+to the exact-visible `EnemyManagerUpdate.cpp` declaration surface. Generated
+function bytes and external relocation structure stayed on the same semantic
+path, but VC7.1 renumbered compiler-private `$L...` relocation names in
+`enemy-timeline-run`; the attempt was rejected and no private-label manifest was
+refreshed. Removing those exact-visible typedefs restored the source's compiler
+surface. The accepted offset checks live only in the production ECL view.
+
+**Validation.** Focused canonical replay passes `EclRun.cpp` 1/1 and
+`EnemyManagerUpdate.cpp` 22/22 exact units, for 23/23 total with zero private-
+label refresh. A command-local `/tmp` production probe reused the exact
+whole-product compiler profiles and pinned VC7.1 toolchain: both `EclRun.cpp`
+and `EnemyManagerUpdate.cpp` compiled successfully to Intel i386 COFF, after
+which all temporary objects/PDB state were removed. No shared header or public
+ABI changed.
+
+At the campaign milestone, four balanced cold exact partitions each passed
+174/174 units with zero private-label refresh, closing the current source at
+696/696 exact. A fresh cold whole-product compile then produced all 88 Intel
+i386 COFF objects with pinned VC7.1, and the same object set linked and verified
+as a PE32 Windows GUI executable. The local milestone artifact has SHA-256
+`1f2d373c5ad864ac518be71aad3a5265731c94399198392c09b01237265ca050`
+(780288 bytes, four sections). This reconstructed product closure remains
+separate from whole-image identity and runtime-scenario validation.
+
+**Analysis artifacts.** No `.analysis/gpt-web/` workspace was required; the
+batch reused the registered Ghidra provider and command-local `/tmp` compile
+outputs. Pre-existing `.analysis` state and the four untracked experiment /
+recovery paths remain outside the transaction.
+
+**Next evidence route.** After checkpoint and the committed milestone, rotate
+away from photo-game flags and compact photo-pulse state. Prefer another
+resource lifetime, persistent/ABI boundary, interpreter protocol, or historical-
+platform runtime gap with independent TH095-local producer and consumer
+evidence. Semantic phase state remains active-incomplete.

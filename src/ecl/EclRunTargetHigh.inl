@@ -568,6 +568,7 @@ enter_subroutine:
 
     case 144:
     {
+#if defined(TH095_MATCH_EXACT)
         *reinterpret_cast<ZunTimer *>(
             reinterpret_cast<u8 *>(enemy) + 0x2c24) =
                 TH08_ECL_READ_I(ctx, 0);
@@ -581,6 +582,17 @@ enter_subroutine:
                 *reinterpret_cast<PhotoAnmSpawner **>(
                     reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0), 0x125, reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0));
+#else
+        TH095_ENEMY_PHOTO_PULSE(enemy)->photoPulseTimer =
+            TH08_ECL_READ_I(ctx, 0);
+        TH095_ENEMY_PHOTO_PULSE(enemy)->photoPulseDurationTimer =
+            TH08_ECL_READ_I(ctx, 0);
+        TH095_ENEMY_PHOTO_PULSE(enemy)->photoPulseVmId =
+            TH095_ECL_ANM_SPAWN_WORLD(
+                *reinterpret_cast<PhotoAnmSpawner **>(
+                    reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0), 0x125, reinterpret_cast<Float3 *>(
+                    reinterpret_cast<u8 *>(enemy) + 0x28a0));
+#endif
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x2d), 0);
         break;
     }

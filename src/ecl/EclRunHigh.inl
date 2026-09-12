@@ -414,6 +414,22 @@ struct Th095EnemyPhotoView
     PhotoAnmHandle photoAnmHandle;
 };
 
+#if !defined(TH095_MATCH_EXACT)
+struct Th095EnemyPhotoPulseView
+{
+    u8 targetPadding00[0x2c1c];
+    PhotoAnmHandle photoPulseVmId;
+    u8 unknown2c20[4];
+    ZunTimer photoPulseTimer;
+    ZunTimer photoPulseDurationTimer;
+};
+C_ASSERT(offsetof(Th095EnemyPhotoPulseView, photoPulseVmId) == 0x2c1c);
+C_ASSERT(offsetof(Th095EnemyPhotoPulseView, photoPulseTimer) == 0x2c24);
+C_ASSERT(offsetof(Th095EnemyPhotoPulseView, photoPulseDurationTimer) == 0x2c30);
+#define TH095_ENEMY_PHOTO_PULSE(enemy) \
+    (reinterpret_cast<Th095EnemyPhotoPulseView *>(enemy))
+#endif
+
 struct Th095EnemyAnmHandleView
 {
     u8 targetPadding00[0x2d4];

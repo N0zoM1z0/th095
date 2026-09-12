@@ -571,8 +571,8 @@ struct PhotoEnemyView
     u8 unknown2c18[4];
     PhotoEnemyAnmVmIdStorage photoPulseVmId; // +0x2c1c
     PhotoEnemyAnmVmIdStorage photoMarkerVmId; // +0x2c20
-    ZunTimer photoMarkerTimer;              // +0x2c24
-    ZunTimer photoMarkerDurationTimer;      // +0x2c30
+    ZunTimer photoPulseTimer;              // +0x2c24
+    ZunTimer photoPulseDurationTimer;      // +0x2c30
     Float2 movementBoundsMin;               // +0x2c3c
     Float2 movementBoundsMax;               // +0x2c44
     f32 minimumPlayerDistanceSquared;       // +0x2c4c
@@ -1264,9 +1264,9 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
                 &positions.attached);
         }
 
-        if (enemy->photoMarkerTimer > 0)
+        if (enemy->photoPulseTimer > 0)
         {
-            enemy->photoMarkerTimer.Decrement(1);
+            enemy->photoPulseTimer.Decrement(1);
         }
 
         if (GetPhotoEnemyAnmVmIdValue(
@@ -1276,14 +1276,14 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
                 g_AnmManager->GetVm(
                     *reinterpret_cast<AnmVmId *>(
                         &enemy->photoPulseVmId));
-            if (enemy->photoMarkerTimer > 0)
+            if (enemy->photoPulseTimer > 0)
             {
                 PhotoToScreen(
                     &photoPulseVm->positionOffset,
                     reinterpret_cast<Float3 *>(&enemy->position));
                 photoPulseVm->scale.y =
-                    static_cast<f32>(enemy->photoMarkerTimer) /
-                    static_cast<f32>(enemy->photoMarkerDurationTimer) * 2.0f;
+                    static_cast<f32>(enemy->photoPulseTimer) /
+                    static_cast<f32>(enemy->photoPulseDurationTimer) * 2.0f;
                 photoPulseVm->scale.x = photoPulseVm->scale.y;
             }
             else
