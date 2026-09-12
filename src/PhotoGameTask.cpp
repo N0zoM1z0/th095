@@ -461,13 +461,13 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
 
     if (g_Supervisor.flags.resultRestartActive == 0)
     {
-        if (((g_Supervisor.flags.raw >> 12) & 1) == 0)
+        if (g_Supervisor.flags.restartPhotoGame == 0)
         {
             task->flags = task->flags | 0x100;
         }
         else
         {
-            g_Supervisor.flags.raw &= ~0x1000;
+            g_Supervisor.flags.restartPhotoGame = 0;
             g_Supervisor.PlayMusic(0, 0);
         }
     }

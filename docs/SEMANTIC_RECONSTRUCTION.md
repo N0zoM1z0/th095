@@ -7457,3 +7457,78 @@ protocol, interpreter/state family, persistent ABI boundary, or historical-
 platform runtime gap with an independent producer and consumer. Previously
 falsified write-only or reader-only fields remain Unknown unless new TH095-local
 evidence appears. Semantic phase state remains active-incomplete.
+
+### SEM-100 — bind the photo-game retry restart latch
+
+**Scope.** Finish the interrupted live-worktree transaction by aligning the
+PhotoGame loader with the existing canonical Supervisor bit-12 owner. This
+batch names no new storage: `SupervisorFlags::restartPhotoGame` already owns
+bit 12 of the flags dword at `Supervisor+0x444`; the remaining raw consumer in
+`PhotoGameTaskView::Load` is changed to that production field. Exact-facing
+source remains unchanged.
+
+**Observed.** Fresh hash-attested TH095 target decompilation of
+`Supervisor::UpdateSceneState @ 0x00425EF0` shows the photo-game state-8 retry
+path destroying the current `GameTaskInf`, ORing `0x1000` into the Supervisor
+flags dword at `+0x444`, creating a replacement photo-game task with argument
+zero, and returning the routed state to photo game. Target
+`PhotoGameTaskView::Load @ 0x00417D20` independently consumes that same bit
+after subsystem initialization and the global photo-load wait. When result
+restart bit 9 is clear, an unset bit 12 causes the task-local `0x100` bit to be
+published; a set bit 12 instead clears exactly `0x1000` and calls
+`Supervisor::PlayMusic(0, 0)`. The loader then completes its ordinary loading
+VM/global-state cleanup.
+
+**Corroborated.** The production Supervisor coordinator already publishes the
+state-8 latch through `flags.restartPhotoGame`, while `SupervisorRuntime.hpp`
+already places that field at bit 12. The dirty worktree therefore represented
+one missing consumer alignment rather than an unresolved layout or a new
+interpretation inferred from adjacency. SEM-075 had deliberately left this
+state-8 protocol outside the result-restart bit-9 batch; current target-local
+producer/consumer evidence closes that deferred relation without conflating the
+two latches.
+
+**Production representation.** `PhotoGameTaskView::Load` now tests and clears
+`g_Supervisor.flags.restartPhotoGame` instead of open-coding bit 12 through the
+raw flags word. `resultRestartActive` remains the separate bit-9 result-driven
+replacement latch. No field width, offset, lifetime, call order, or serialized
+format changes.
+
+**Inferred.** Bit 12 is a transient retry-restart publication that survives the
+old photo-game task's destruction and is consumed exactly once by the
+replacement loader. Its observed loader effect distinguishes retry recreation
+from an ordinary photo-game load. The maintenance name describes that routing
+role; it does not assert a stronger design-level meaning for the task-local
+`0x100` bit or for music slot zero.
+
+**Unknown / bounded.** The semantic role of the task-local `0x100` publication
+remains unknown. This batch does not infer why retry recreation calls
+`PlayMusic(0, 0)`, does not merge bit 12 with result-restart bit 9, and does not
+rename adjacent Supervisor flag bits. No deterministic Wine runtime scenario
+was added, so runtime-scenario validation remains separate and unclaimed.
+
+**Validation.** The registered Ghidra provider re-attested the canonical
+Japanese v1.02a target and decompiled `0x00425EF0` and `0x00417D20` for the
+producer/consumer control flow above. Focused cold replay of
+`PhotoGameTask.cpp` passed all 10/10 configured exact units with zero private-
+label refresh. A command-local `/tmp` production probe reused the repository's
+pinned `build-whole.py` VC7.1 toolchain attestation and the exact manifest
+compiler profile for `PhotoGameTask.cpp`; the production source compiled
+successfully to Intel i386 COFF, and the temporary obj/PDB were removed with
+the probe directory. Because this transaction changes only a private `.cpp`
+consumer and no shared header/layout/PCH owner, aggregate exact and whole-
+product closure are deferred to the campaign milestone rather than replayed
+before this private checkpoint.
+
+**Recovery / analysis state.** The campaign adopted this one-file unstaged
+transaction at live HEAD `a088717aa403ccfe32ec000c10a529d00e4f555e` only
+after target-local evidence proved it recoverable. The four pre-existing
+untracked experiment/recovery paths remain outside staging. `.analysis/`
+started at 1,408,573,066 bytes, with the legacy
+`.analysis/gdb-demo-old-20260910a` root retained untouched.
+
+**Next evidence route.** Rotate away from Supervisor/photo-game restart flags
+after checkpoint. Prefer a different TH095-local owner/lifetime, interpreter
+or resource protocol, persistent/ABI boundary, or historical-runtime gap with
+an independent producer and consumer. Negative bounded searches remain routing
+results only; semantic phase state stays active-incomplete.
