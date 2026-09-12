@@ -459,10 +459,18 @@ enter_subroutine:
         break;
 
     case 137:
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (((*reinterpret_cast<f32 *>(
                    reinterpret_cast<u8 *>(g_Th095PhotoCamera) + 0x1e30) < enemy->position.x) &&
              (enemy->position.x > 96.0f)) ||
             (enemy->position.x > 288.0f))
+#else
+        if (((TH095_RUNTIME_GLOBAL_PTR(
+                   ::th095::PhotoPlayerRuntimeView, ::th095::g_RuntimePlayerOwner)
+                   ->playerPosition.x < enemy->position.x) &&
+             (enemy->position.x > 96.0f)) ||
+            (enemy->position.x > 288.0f))
+#endif
         {
             *TH08_ECL_WRITE_F(ctx, 0) = AddNormalizeAngle(
                 g_Rng.GetRandomF32() * 1.5707963705062866f +

@@ -8802,3 +8802,96 @@ ReplayScanWorker `unknown010`, replay reserved bytes, score header `+0x0A/+0x0C`
 compact-enemy write-only control bits, and SoundPlayer writer-only metadata
 Unknown absent new target-local evidence. The semantic phase remains
 active-incomplete.
+
+### SEM-125 — bind high-ECL opcode 137 to the canonical Player position
+
+**Scope.** Continue the post-SEM-124 rotation through the primary TH095 ECL
+interpreter and audit target-high raw owner reads against already recovered
+runtime fields. Opcode 137 still read `g_Th095PhotoCamera + 0x1E30` directly in
+normal production even though SEM-003/004 established that exact Player storage
+as `PhotoPlayerRuntimeView::playerPosition`. This transaction canonicalizes only
+that one production consumer. It does not name opcode 137, reinterpret its
+output operand, change Player/camera layout, or touch adjacent high-ECL cases.
+
+**Observed.** Fresh hash-attested Ghidra decompilation of
+`EclManager::RunEcl @ 0x00408E70` shows switch case `0x89` reading
+`*(float *)(DAT_004C4E70 + 0x1E30)` and comparing it with compact enemy
+`position.x @ +0x28A0`. The condition also compares enemy X against target
+constants 96.0 and 288.0 before selecting one of two RNG-derived angular
+intervals and writing the result through the instruction's float lvalue. The
+field access is therefore an X-coordinate consumer, not an opaque camera
+control value.
+
+**Corroborated.** ECL-010/SEM-003 already bound runtime owner `0x004C4E70 +
+0x1E30/+0x1E34/+0x1E38` to the Player world-position `Float3` from
+`BeginBoundaryAwareMove @ 0x00412200`, `DispatchShotInstruction @ 0x00412670`,
+and independently exact `PhotoPlayerRuntimeView::AngleFromPoint @ 0x004303E0`.
+ECL-011/SEM-004 then aligned both ECL operand resolvers with the same owner, and
+later PhotoItem consumers independently reuse that position. The opcode-137
+read shares the identical base and X-component offset, so it is a missed
+interpreter consumer of an established TH095-local field rather than a new
+adjacency inference. TH08 contributes no field meaning to this conclusion.
+
+**Inferred.** The maintainable production spelling
+`PhotoPlayerRuntimeView::playerPosition.x` states the narrowest demonstrated
+meaning: opcode 137 branches on the Player's X coordinate relative to the enemy
+and fixed horizontal thresholds. This source-level canonicalization does not
+assert that the original TH095 source included `PhotoPlayerRuntime.hpp` or used
+the reconstructed class/member names.
+
+**Unknown / bounded.** The semantic purpose/name of opcode 137 remains unknown;
+this batch does not claim whether the generated angle is an escape heading,
+spawn heading, movement command, or any other game-domain concept. The lvalue
+selector that receives the random angle remains governed by the existing ECL
+operand protocol. Adjacent opcode 141's camera state, opcode 139's enemy
+`+0x2960`, and unresolved compact-enemy control bits remain untouched and
+Unknown where previously recorded.
+
+**Production / exact representation.** Normal preprocessing of
+`src/ecl/EclRunTargetHigh.inl` now reads
+`TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->playerPosition.x`
+for case 137. `DIFFBUILD` and `TH095_MATCH_EXACT` retain the original raw
+`g_Th095PhotoCamera + 0x1E30` expression. `EclRunTargetHigh.inl` has one include
+site, inside `src/ecl/EclRun.cpp`; no shared header, physical layout, owner
+publication, persistent format, or calling convention changes.
+
+**Validation.** Focused exact replay of the sole configured
+`ecl-manager-run-ecl` unit remains exact: 27,091/27,091 authored bytes and
+27,747/27,747 compared bytes, with the existing target relocations unchanged.
+`python3 scripts/build.py --check` retains 696 configured units and
+`python3 scripts/validate-tracking.py --require-target` retains 697
+source-present / 696 exact. A command-local normal production probe used the
+repository profile `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I
+src/ecl /I src` with pinned VC7.1 compiler 13.10.3077 and emitted a 77,882-byte
+Intel 80386 COFF object (`machine 0x014C`); the object/PDB were removed before
+command exit. `git diff --check` passes. Since this is a private include used by
+one translation unit and does not change shared layout/ownership, aggregate
+exact and whole-product gates are deferred to the final campaign milestone.
+
+**Recovery / analysis state.** The transaction began from committed HEAD
+`086f069490f76b4f2d1ba50045350e5b7f33bcf3` with no staged or tracked unstaged
+changes and the four pre-existing untracked paths preserved outside staging.
+`.analysis/` began at 3,394,984 bytes. A first artifact-producing Ghidra command
+lost transport before returning a durable command id; recovery proved the
+session root absent, no Ghidra producer active, tracked source unchanged, and
+`.analysis/` still at baseline before retry. The successful retry produced a
+117,619-byte `RunEcl` decompile plus a 302-byte manifest under
+`.analysis/gpt-web/20260912-ecl-op137-player-position/` (decompile SHA-256
+`6ac6dc40a20a5485fc449fc40da7c58e2aff78249cc4d4490b987cc2bd9c9046`).
+A first normal-production compile attempt likewise lost transport before a
+durable command id; recovery proved its command-local object/PDB absent and no
+Wine/CL producer active before the compile was retried successfully. During the
+dirty transaction, external automation advanced `origin/main` from the earlier
+campaign baseline to this transaction's parent `086f069`; local HEAD did not
+move and this campaign did not push. After the target conclusion was recorded
+and producer/reference state was checked, the 117,619-byte decompile and
+302-byte manifest were removed explicitly with their empty session root;
+`.analysis/` returned to 3,394,984 bytes.
+
+**Next evidence route.** After checkpoint, rotate away from Player-position/ECL
+case 137. Prefer an independent resource-lifetime, sound, persistent ABI, or
+historical-runtime family with a TH095-local producer plus independent consumer.
+Keep ANM preload path bytes, ReplayScanWorker `unknown010`, score-header
+`+0x0A/+0x0C`, SoundPlayer writer-only metadata, TextRenderer RNG prefix, Bullet
+anonymous tails, and compact-enemy write-only bits Unknown absent new target-local
+evidence. The semantic phase remains active-incomplete.
