@@ -226,8 +226,13 @@ void __fastcall AnmManager::DrawLayer6(void *arg)
 {
     g_ScreenEffectShakeX = 0.0f;
     g_ScreenEffectShakeY = 0.0f;
+#if defined(TH095_MATCH_EXACT)
     g_AnmManager->unknown020 = 0;
     g_AnmManager->unknown024 = 0;
+#else
+    g_AnmManager->screenShakeOffset.x = 0.0f;
+    g_AnmManager->screenShakeOffset.y = 0.0f;
+#endif
     reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(6);
 }
 

@@ -8071,3 +8071,73 @@ or persistent/ABI family with a TH095-local producer plus independent consumer.
 Do not use the remaining `Controller::GetInput` compiler residual as semantic
 evidence unless new target-local meaning is found. The semantic phase remains
 active-incomplete.
+
+### SEM-107 — bind the layer-six ANM shake reset to the canonical copy
+
+**Scope.** Re-audit the already recovered viewport-to-ANM screen-shake protocol
+from SEM-047 for missed production representations. The viewport publishers and
+`DrawInner` consumer already use `AnmManager::screenShakeOffset @ +0x20/+0x24`,
+but `AnmManager::DrawLayer6` still cleared the same pair through the anonymous
+union members `unknown020/unknown024`. This transaction changes only that
+production spelling. It does not change storage, draw ordering, ScreenEffect
+ownership, or any viewport policy.
+
+**Observed.** Fresh target-attested TH095 decompilation of
+`AnmManager::DrawLayer6 @ 0x00444A60` performs four zero writes in order: the
+Supervisor configuration-0 screen-shake pair at `0x004C493C/0x004C4940`, then
+the current `AnmManager` pair at manager `+0x20/+0x24`, then calls
+`AnmManager::DrawLayer(arg, 6)`. SEM-047 already established from independent
+target evidence that `ApplyGameplayViewport @ 0x00425910` and
+`ApplyBackgroundViewport @ 0x00425AA0` copy viewport `+0xE8/+0xEC` into this
+manager pair, while `DrawInner @ 0x0043ECD0` consumes it as floating-point X/Y
+pixel offsets on all four textured vertices.
+
+**Corroborated.** The canonical `AnmManager` owner already overlays
+`unknown020/unknown024` with `Float2 screenShakeOffset`, and normal Background
+and Supervisor viewport publishers already select that semantic member while
+`TH095_MATCH_EXACT` retains their historical scalar names. `Main.cpp` likewise
+uses `screenShakeOffset` for its normal frame reset. `DrawLayer6` was therefore
+a missed sibling producer in source representation, not a new interpretation of
+the two dwords.
+
+**Production representation.** Normal `AnmVmLifecycle.cpp` now clears
+`g_AnmManager->screenShakeOffset.x/y`. `TH095_MATCH_EXACT` retains the historical
+`unknown020/unknown024` member spelling so the established VC7.1 exact compiler
+surface is unchanged. The separate `g_ScreenEffectShakeX/Y` exact relocations
+and their production Supervisor-backed aliases remain untouched.
+
+**Inferred.** Layer six marks a per-frame reset boundary for both the persistent
+configuration-0 shake publication and the ANM manager's copied draw offset.
+This statement is limited to the observed clear-before-layer-6 behavior; it does
+not assign a scheduling guarantee to when a new ScreenEffect publication becomes
+visible through a later viewport copy.
+
+**Unknown / bounded.** Configuration 1 still has no proven nonzero shake
+producer. This batch does not infer whether every background/3D viewport is
+intended to receive shake, does not reinterpret `g_ScreenEffectCounter`, and
+does not claim a Wine visual-runtime scenario. No neighboring anonymous
+`AnmManager` field is renamed by adjacency.
+
+**Validation.** The Ghidra wrapper re-attested the canonical Japanese TH095
+v1.02a target before decompiling `0x00444A60`. Focused cold replay of
+`src/AnmVmLifecycle.cpp` passed all 17 configured exact units with zero
+private-label refreshes, including `anm-draw-layer-6` at 66/66 bytes. A
+command-local production probe compiled the normal translation unit with its
+pinned VC7.1 profile to Intel i386 COFF, and `git diff --check` passed. No shared
+header/layout/PCH or storage-identity change was made, so campaign-wide exact and
+whole-product gates are deferred to the final committed milestone.
+
+**Recovery / analysis state.** This batch began from committed checkpoint
+`55b33a870f3dcde7296fba7524a07517b81c6fa6` with no staged or tracked unstaged
+changes and the same four pre-existing untracked paths kept outside staging.
+One-shot Ghidra query/decompile output was removed immediately after use;
+`.analysis/` remained exactly 3,394,984 bytes and no current-session artifact is
+retained. Semantic interpretation, exact replay, production compilation,
+runtime storage, and runtime scenarios remain separate states.
+
+**Next evidence route.** Rotate away from ANM screen-shake storage after this
+checkpoint. Prefer an independent persistent/ABI, resource lifetime,
+historical-runtime, or interpreter/state family with a TH095-local producer and
+independent consumer. The rejected SoundPlayer opaque dwords, ANM preload path,
+Supervisor anonymous storage, and GameConfiguration reserved bytes remain
+unknown absent new readers. The semantic phase remains active-incomplete.
