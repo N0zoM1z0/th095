@@ -37,7 +37,11 @@ struct AsciiGlobalStateView
     u8 unknown000[0xfc];
     u32 active : 1;
     u32 unknownFlag1 : 1;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     u32 suppressStringReset : 1;
+#else
+    u32 gameplayLoadActive : 1;
+#endif
     u32 unknownFlags3 : 29;
 };
 
@@ -79,8 +83,13 @@ i32 AsciiManager::OnUpdate(AsciiManager *ascii)
 {
     if (g_AsciiGlobalState != NULL &&
         AsciiEitherFlag(g_AsciiGlobalState->active,
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
                         g_AsciiGlobalState->suppressStringReset) != 0 &&
         g_AsciiGlobalState->suppressStringReset == 0)
+#else
+                        g_AsciiGlobalState->gameplayLoadActive) != 0 &&
+        g_AsciiGlobalState->gameplayLoadActive == 0)
+#endif
     {
         return 1;
     }

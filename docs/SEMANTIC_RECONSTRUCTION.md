@@ -8895,3 +8895,89 @@ Keep ANM preload path bytes, ReplayScanWorker `unknown010`, score-header
 `+0x0A/+0x0C`, SoundPlayer writer-only metadata, TextRenderer RNG prefix, Bullet
 anonymous tails, and compact-enemy write-only bits Unknown absent new target-local
 evidence. The semantic phase remains active-incomplete.
+
+### SEM-126 — align ASCII string reset gating with gameplay loading
+
+**Scope.** Audit the ASCII/text callback family after SEM-125 and reconcile its
+private view of PhotoGameTask/global-state `flags @ +0xFC` with the owner model
+corrected in SEM-124. `AsciiManager.cpp` still named bit 2
+`suppressStringReset`, even though normal production binds `g_AsciiGlobalState`
+through `g_RuntimeGlobalStateOwner`. This transaction aligns only that bit-2
+member and its `OnUpdate` reads with `gameplayLoadActive`. Bit 0, bit 1, the
+ASCII object layout, and the separate PhotoStage state word remain unchanged.
+
+**Observed.** Fresh hash-attested TH095 decompilation of
+`AsciiManager::OnUpdate @ 0x00401000` reads `DAT_004BDEC8`, then tests bit 0 and
+bit 2 of the dword at `DAT_004BDEC8 + 0xFC`. It clears the regular-string count
+at ASCII `+0x8064`, clears the GUI-string count at `+0x8068`, and increments the
+frame counter at `+0x809C` when the owner is null, when both tested bits are
+clear, or whenever bit 2 is set. The only path that preserves the queued string
+counts is therefore bit 0 set with bit 2 clear. In particular, bit 2 does not
+suppress the reset; setting it makes the reset path execute.
+
+**Corroborated.** ABI-077 establishes `0x004BDEC8` as the standalone
+PhotoGameTask/gameplay-global publication slot. SEM-055 established bit 2's
+Create/Load set/clear lifetime, and SEM-124 freshly confirmed the same physical
+`0x004BDEC8 + 0xFC` bit in PhotoGameTask and ReplayManager while correcting the
+older split-owner wording. Current Background, BulletManager, EnemyManagerTask,
+PhotoCamera, PhotoEffect, PhotoGame, PhotoItemManager, PhotoStage-global,
+ReplayManager, and ScreenEffect production views all call the same physical bit
+`gameplayLoadActive`. AsciiManager's base and offset agree exactly with that
+owner/lifetime evidence.
+
+**Inferred.** ASCII participates in the gameplay-load fence by allowing its
+per-frame string queues to be reset while loading is active rather than
+preserving the active-state strings across that interval. Naming the producer
+lifetime instead of the callback-local effect avoids the misleading historical
+`suppressStringReset` label and keeps sibling projections consistent.
+
+**Unknown / bounded.** This batch does not name `AsciiGlobalStateView` bit 0 or
+bit 1. It does not reinterpret `AsciiStageStateView`: stage owner
+`g_RuntimeStageStateOwner + 0x25720` bit 2 remains the independent
+`firstCaptureFrame` protocol used by `OnDrawHighPrio`. No claim is made that all
+`gameplayLoadActive` consumers take identical actions, and no ASCII rendering,
+font resource, persistent data, or portable behavior is changed.
+
+**Production / exact representation.** Normal `src/AsciiManager.cpp` now exposes
+`AsciiGlobalStateView` bit 2 as `gameplayLoadActive` and uses that spelling in
+`OnUpdate`. `TH095_MATCH_EXACT` and `DIFFBUILD` retain the historical
+`suppressStringReset` member and expressions through compile-time branches, so
+the target-facing source shape remains isolated. Field width, offset, owner,
+callback ABI, and ASCII object layout are unchanged.
+
+**Validation.** All 17 configured `src/AsciiManager.cpp` exact units replayed
+exact. `AsciiManager::OnUpdate` remains 135/135 authored and compared bytes; the
+other sixteen units also remain byte-exact. `python3 scripts/build.py --check`
+retains 696 configured units and `python3 scripts/validate-tracking.py
+--require-target` retains 697 source-present / 696 exact. A command-local normal
+production probe used `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I
+src` with pinned VC7.1 compiler 13.10.3077 and emitted a 38,363-byte Intel 80386
+COFF object (`machine 0x014C`); the object/PDB were removed before command exit.
+`git diff --check` passes. Since this is a private translation-unit view with no
+shared header, physical layout, owner publication, or persistent-format change,
+aggregate exact and whole-product gates are deferred to the final campaign
+milestone immediately after checkpoint.
+
+**Recovery / analysis state.** This transaction began at committed HEAD
+`8f3792e59455e94774bd5e7528198211c7731587` with no staged or tracked unstaged
+changes and the same four pre-existing untracked paths preserved outside
+staging. `.analysis/` began at 3,394,984 bytes. Fresh target evidence used the
+manifested current-session root `.analysis/gpt-web/20260912-ascii-load-gate/`,
+containing a 445-byte decompile and 297-byte manifest. A combined validation
+call and then a separate EOF-fix call each lost transport before returning a
+durable command id; recovery showed no producer, no command-local compile
+artifact, no refreshed exact object, and preserved tracked edits before those
+steps were retried separately. After validation was recorded, producer/reference state was checked and the
+445-byte decompile plus 297-byte manifest were removed explicitly with their
+empty session root; `.analysis/` returned to 3,394,984 bytes. Semantic
+interpretation, Git state, exact replay, production compilation, runtime
+storage, and runtime scenarios remain separate states.
+
+**Next evidence route.** After checkpoint, stop extending the shared loading
+flag family in this campaign slice and close the final aggregate/product gates.
+A later campaign should rotate to an independent persistent ABI,
+resource-lifetime, sound, or historical-runtime protocol. Keep Ascii bit 0/1,
+ANM preload path bytes, ReplayScanWorker `unknown010`, score-header
+`+0x0A/+0x0C`, SoundPlayer writer-only metadata, TextRenderer RNG prefix, and
+compact-enemy write-only bits Unknown absent new TH095-local evidence. The
+semantic phase remains active-incomplete.
