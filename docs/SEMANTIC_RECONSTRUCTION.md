@@ -8377,3 +8377,80 @@ Prefer an independent persistent/state, resource-lifetime, sound, or sibling
 protocol family with a TH095-local producer plus an independent consumer. Do
 not reinterpret other Supervisor bits merely because they share `flags.raw`.
 The semantic phase remains active-incomplete.
+
+### SEM-111 — canonicalize the photo-game loading-state bit
+
+**Scope.** Continue the PhotoGameTask state audit after SEM-110 without
+reinterpreting the adjacent unresolved task flags. Production already declared
+`PhotoGameTaskView::gameplayLoadActive` at task-local `flags @ +0xFC` bit 2,
+but `Create`, `Load`, `Update`, and `DrawHud` still mixed a local numeric mask
+with raw shifts. This transaction binds the complete proved task-local bit-2
+producer/consumer family to the canonical member. It does not change the
+separate photo/global-state bit 2 used by other managers.
+
+**Observed.** Fresh hash-attested TH095 decompilation of
+`PhotoGameTaskView::Create @ 0x00417F80` sets task `+0xFC` bit 2 immediately
+after publishing the newly allocated task. Fresh `Load @ 0x00417D20` sets the
+same bit on entry and clears it on the successful completion path after
+initializing subsystems and resolving restart/music state. Fresh
+`PhotoGameTaskView::Update @ 0x00418100` independently tests task `+0xFC` bit 2
+and returns early while loading remains active. Fresh `DrawHud @ 0x00418420`
+independently tests the same task-local bit before the separate photo-stage
+state bit-2 gate and suppresses HUD drawing while it is set. The target was
+re-attested as Japanese TH095 v1.02a, 696,832 bytes, SHA-256
+`bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
+
+**Corroborated.** The production `PhotoGameTaskView` layout already places
+`gameplayLoadActive` at bit 2 of the `+0xFC` task flags dword. The same load
+routine is the established producer of the corresponding shared photo-runtime
+loading state used by sibling managers, but this batch does not collapse the
+two physical representations: the task-local bit is owned by the `0x124`-byte
+PhotoGameTask object, while other managers read the shared runtime/global-state
+owner. Existing exact and semantic records already describe Update/DrawHud as
+loading-gated task consumers.
+
+**Inferred.** Task-local bit 2 means that the PhotoGameTask is in its
+asynchronous gameplay-loading interval. It is asserted before the loader is
+launched/entered, suppresses task update and HUD work during that interval, and
+is cleared only on the successful loader path. Failure instead publishes the
+separate `gameplayLoadFailed` bit 3 protocol recovered by SEM-097.
+
+**Unknown / bounded.** Task-local bit 4 remains Unknown despite its later
+transition consumers. Bits 7/8 and the success-path `0x100` publication remain
+Unknown, and this batch does not infer a relationship between those bits and
+loading completion. The separate `g_PhotoStageState->flags` bit 2 remains a
+different owner. No runtime timing or visual-equivalence scenario is claimed.
+
+**Production / exact representation.** Normal `PhotoGameTask.cpp` now sets,
+clears, and reads `gameplayLoadActive` directly. The obsolete production-only
+numeric helper `PHOTO_GAME_TASK_GAMEPLAY_LOAD_ACTIVE` is removed. Exact builds
+continue to select `PhotoGameTaskExact.inl` at the translation-unit boundary,
+so the target-facing raw `+0xFC` bit operations remain unchanged. No shared
+header, class layout, calling convention, storage width, or persistent format
+changes.
+
+**Validation.** Focused cold replay of `src/PhotoGameTask.cpp` passed all 10/10
+configured accepted units with zero compiler-private label refreshes. A
+command-local production probe reused the manifest compiler profile and
+compiled the normal translation unit with pinned VC7.1 compiler `13.10.3077`
+to Intel i386 COFF; the object machine was `0x14C`. `python3 scripts/build.py
+--check` kept the graph at 696 configured units and `git diff --check` passed.
+Because the edit is private to one production `.cpp` and does not alter a
+shared layout/PCH/owner, aggregate exact and whole-product replay are deferred
+to the campaign milestone.
+
+**Recovery / analysis state.** This transaction started from committed HEAD
+`d763d77916cd3e18e860ced8cd4760ccafda77be` with no staged or tracked unstaged
+work and the same four pre-existing untracked paths kept outside staging. One
+failed edit harness assertion occurred before `PhotoGameTask.cpp` was written;
+Factory status confirmed zero persistent tracked change before the corrected
+edit. Fresh Ghidra evidence used command-local scratch below `.analysis/`,
+removed by the producing command. `.analysis/` remained at 3,394,984 bytes.
+Semantic interpretation, exact replay, production compilation, runtime storage,
+and runtime scenarios remain separate states.
+
+**Next evidence route.** Rotate away from task-local loading bit 2 after this
+checkpoint. Prefer an independent persistent/state, resource-lifetime, sound,
+or sibling-interpreter protocol with a TH095-local producer plus independent
+consumer. Do not promote task-local bit 4, bits 7/8, or `0x100` without new
+target-local evidence. The semantic phase remains active-incomplete.
