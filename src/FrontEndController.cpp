@@ -184,7 +184,7 @@ extern i32 g_FrontEndSupervisorState;
 struct FrontEndSupervisorAudioView
 {
     ::ZunResult LoadMusic(i32 slot, const char *path);
-    ::ZunResult PlayMusic(i32 slot, i32 unknown);
+    ::ZunResult PlayMusic(i32 slot, i32 unused);
     ::ZunResult FadeOutMusic(f32 durationSeconds);
 };
 extern FrontEndSupervisorAudioView g_FrontEndSupervisorAudio;
