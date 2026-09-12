@@ -67,8 +67,10 @@ struct PhotoStageGlobalStateView
 {
     u8 unknown000[0xfc];
     u32 flags;
-    i32 scoreIndex;
+    i32 bestShotIndex;
 };
+typedef char PhotoOverlayBestShotIndexAt100[
+    (offsetof(PhotoStageGlobalStateView, bestShotIndex) == 0x100) ? 1 : -1];
 extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
 
 #ifndef DIFFBUILD
@@ -192,7 +194,7 @@ i32 PhotoOverlayManagerView::Draw()
                     0xffffffff;
             else if (this->slots[locals.slotIndex].score >=
                      g_ResultSaveData->scoreEntries[
-                         g_PhotoStageGlobalState->scoreIndex].detailScore)
+                         g_PhotoStageGlobalState->bestShotIndex].detailScore)
                 this->slots[locals.slotIndex].overlayVms[locals.vmIndex].color1 =
                     0xffffff00;
             else
