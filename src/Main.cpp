@@ -2010,7 +2010,7 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
     g_AnmManager->ReleaseAnm(2);
     g_AnmManager->ReleaseSurface(8);
     AsciiManager::CutChain();
-    g_SoundPlayer.QueueCommand(4, 0, "dummy");
+    g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_RELEASE_BGM, 0, "dummy");
     TextHelperView::ReleaseTextBuffer();
 
     if (((Supervisor *)arg)->keyboard != NULL)
@@ -2399,7 +2399,7 @@ i32 Supervisor::LoadMusic(i32 preloadSlot, char *path)
         extension[1] = 'w';
         extension[2] = 'a';
         extension[3] = 'v';
-        g_SoundPlayer.QueueCommand(1, preloadSlot, wavPath);
+        g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_PRELOAD_BGM, preloadSlot, wavPath);
     }
 #undef wavPath
 #undef extension
@@ -2425,8 +2425,8 @@ i32 Supervisor::PlayMusic(i32 musicIndex, i32 unused)
     else if (g_Supervisor.config.musicMode == 1)
     {
         if (g_Supervisor.config.options.preloadMusic)
-            g_SoundPlayer.QueueCommand(4, 0, "dummy");
-        g_SoundPlayer.QueueCommand(2, musicIndex, "dummy");
+            g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_RELEASE_BGM, 0, "dummy");
+        g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_LOAD_BGM, musicIndex, "dummy");
     }
     return 0;
 }
@@ -2442,9 +2442,9 @@ i32 Supervisor::StopAudio()
     else if (g_Supervisor.config.musicMode == 1)
     {
         if (g_Supervisor.config.options.preloadMusic)
-            g_SoundPlayer.QueueCommand(4, 0, "dummy");
+            g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_RELEASE_BGM, 0, "dummy");
         else
-            g_SoundPlayer.QueueCommand(3, 0, "dummy");
+            g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_STOP_BGM, 0, "dummy");
     }
     else
     {
@@ -2472,7 +2472,7 @@ i32 Supervisor::FadeOutMusic(f32 durationSeconds)
             fadeTime = durationSeconds;
         else
             fadeTime = durationSeconds / g_AnmGameSpeed;
-        g_SoundPlayer.QueueCommand(5, (i32)fadeTime, "");
+        g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_FADE_OUT, (i32)fadeTime, "");
     }
     else
     {
