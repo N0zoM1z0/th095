@@ -58,7 +58,12 @@ struct ResultScreenGlobalStateView
             u32 unknownFlag4 : 1;
             u32 playerDeathTransitionComplete : 1;
             u32 photoLimitTransitionComplete : 1;
+#ifdef DIFFBUILD
             u32 unknownFlags : 25;
+#else
+            u32 resetFpsSample : 1;
+            u32 unknownFlags8_31 : 24;
+#endif
         };
     };
     i32 bestShotIndex;
@@ -494,7 +499,11 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
     g_ResultScreenGlobalState->flagsWord |= 0x10;
+#ifdef DIFFBUILD
     g_ResultScreenGlobalState->flagsWord |= 0x80;
+#else
+    g_ResultScreenGlobalState->resetFpsSample = 1;
+#endif
 
     InitializeResultCapturePhase();
 
@@ -557,7 +566,11 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
     g_ResultScreenGlobalState->flagsWord |= 0x10;
+#ifdef DIFFBUILD
     g_ResultScreenGlobalState->flagsWord |= 0x80;
+#else
+    g_ResultScreenGlobalState->resetFpsSample = 1;
+#endif
 
     InitializeResultCapturePhase();
 
@@ -637,7 +650,11 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
     g_ResultScreenGlobalState->flagsWord |= 0x10;
+#ifdef DIFFBUILD
     g_ResultScreenGlobalState->flagsWord |= 0x80;
+#else
+    g_ResultScreenGlobalState->resetFpsSample = 1;
+#endif
 
     InitializeResultCapturePhase();
 
@@ -1052,7 +1069,11 @@ ChainCallbackResult ResultScreen::Update()
                 break;
             }
             g_ResultSaveData->WriteBestShotData();
+#ifdef DIFFBUILD
             g_ResultScreenGlobalState->flagsWord |= 0x80;
+#else
+            g_ResultScreenGlobalState->resetFpsSample = 1;
+#endif
         }
         break;
 
@@ -1163,7 +1184,11 @@ ChainCallbackResult ResultScreen::Update()
                 break;
             }
             g_ResultSaveData->WriteBestShotData();
+#ifdef DIFFBUILD
             g_ResultScreenGlobalState->flagsWord |= 0x80;
+#else
+            g_ResultScreenGlobalState->resetFpsSample = 1;
+#endif
         }
         break;
 
@@ -1222,7 +1247,11 @@ ChainCallbackResult ResultScreen::Update()
                 g_ResultSceneState = 8;
                 break;
             }
+#ifdef DIFFBUILD
             g_ResultScreenGlobalState->flagsWord |= 0x80;
+#else
+            g_ResultScreenGlobalState->resetFpsSample = 1;
+#endif
         }
         break;
 
@@ -1262,7 +1291,11 @@ ChainCallbackResult ResultScreen::Update()
                 g_ResultSceneState = 2;
                 break;
             }
+#ifdef DIFFBUILD
             g_ResultScreenGlobalState->flagsWord |= 0x80;
+#else
+            g_ResultScreenGlobalState->resetFpsSample = 1;
+#endif
         }
         break;
 

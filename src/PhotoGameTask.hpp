@@ -56,7 +56,12 @@ struct PhotoGameTaskView
             u32 unknownFlag4 : 1;
             u32 playerDeathTransitionComplete : 1;
             u32 photoLimitTransitionComplete : 1;
+#if defined(TH095_MATCH_EXACT)
             u32 unknownFlags7_8 : 2;
+#else
+            u32 resetFpsSample : 1;
+            u32 unknownFlag8 : 1;
+#endif
             u32 photoSoundSuppressed : 1;
             u32 photoTransitionActive : 1;
             u32 unknownFlags11_31 : 21;

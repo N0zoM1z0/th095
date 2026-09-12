@@ -133,7 +133,9 @@ struct PhotoStageGlobalStateView
             u32 unknownFlag02 : 30;
 #else
             u32 gameplayLoadActive : 1;
-            u32 unknownFlags03 : 29;
+            u32 unknownFlags3_6 : 4;
+            u32 resetFpsSample : 1;
+            u32 unknownFlags8_31 : 24;
 #endif
         };
     };
@@ -893,7 +895,11 @@ i32 PhotoStageStateView::Update()
                     readByteCountLocal02, right, top, bottom);
 
                 g_PhotoCaptureCountdown = 99;
+#ifdef DIFFBUILD
                 g_PhotoStageGlobalState->flags |= 0x80;
+#else
+                g_PhotoStageGlobalState->resetFpsSample = 1;
+#endif
                 this->flags &= ~PHOTO_STAGE_WAITING_FOR_TEXTURE;
             }
             else
