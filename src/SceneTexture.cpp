@@ -85,9 +85,13 @@ void __fastcall AccumulateArgb4444Neighbor(u32 *sums, PixelArgb4444 *pixel,
 
 i32 __fastcall GetAnmFormat(i32 format)
 {
+#if defined(DIFFBUILD)
     if ((*reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(&g_Supervisor) +
                                   0x1e0) &
          1) != 0)
+#else
+    if (g_Supervisor.config.options.force16BitTextures)
+#endif
     {
         if (g_TextureFormatD3D8Mapping[format] == D3DFMT_A8R8G8B8 ||
             g_TextureFormatD3D8Mapping[format] == D3DFMT_UNKNOWN)

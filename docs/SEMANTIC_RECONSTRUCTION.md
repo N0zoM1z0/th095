@@ -7703,3 +7703,80 @@ checkpoint. Prefer a different interpreter/state family, persistent/ABI
 boundary, independent resource lifetime, input protocol, or historical-runtime
 gap with a TH095-local producer and independent consumer. The semantic phase
 remains active-incomplete.
+
+### SEM-103 — bind scene texture format fallback to the canonical config option
+
+**Scope.** Repair the production owner expression for the existing forced-16-bit
+texture-format protocol. `GetAnmFormat` already had exact target behavior and
+SCENE-012 already documented its downgrade semantics, but the maintainable
+`SceneTexture.cpp` branch still read Supervisor storage through raw
+`reinterpret_cast` arithmetic at `+0x1E0` bit 0. Production now reads the
+canonical `g_Supervisor.config.options.force16BitTextures` member. DIFFBUILD and
+`TH095_MATCH_EXACT` retain the historical raw expression; no serialized ANM or
+texture-entry layout changes.
+
+**Observed.** Fresh target-attested TH095 `GetAnmFormat @ 0x00442B40` reads
+absolute dword `0x004C4850` bit 0. When set, the routine maps target texture
+formats whose D3D8 mapping is `A8R8G8B8` or `UNKNOWN` to format index 5 and maps
+`R8G8B8` to index 3; otherwise it preserves the incoming format. The exact
+relocation/layout history places `g_Supervisor @ 0x004C4670` and
+`config.options @ Supervisor+0x1E0`, so the target load is the canonical option
+word rather than separate SceneTexture-owned storage.
+
+**Corroborated.** Target `GameWindow::InitD3DRendering @ 0x00420E20`
+independently reads the same `0x004C4850` bit 0 before choosing a 16-bit
+fullscreen backbuffer. Later in the same function, when hardware rendering is
+active but `CheckDeviceFormat(..., D3DFMT_A8R8G8B8)` fails, the target clears its
+32-bit-graphics capability state and ORs bit 0 into `0x004C4850`. The canonical
+`GameConfigOptions` layout therefore names that bit `force16BitTextures` based
+on both a renderer writer and independent render/texture consumers. Existing
+Main production code already uses the named field; this transaction only
+connects the remaining SceneTexture consumer to that owner.
+
+**Inferred.** `force16BitTextures` is a render-configuration fallback that
+coordinates device/backbuffer choice with ANM texture format normalization. The
+SceneTexture effect is specifically format downgrade, not a separate local
+quality flag. This does not imply that every 16-bit texture or every format-3/5
+asset was caused by the option; the input format and mapping tables remain
+independent inputs.
+
+**Unknown / bounded.** The serialized `THTX` header fields `unknown004`,
+`unknown00c`, and `unknown00e` remain Unknown. This batch does not reinterpret
+`colorMode16bit`, `useReferenceRasterizer`, `disableFog`, or other config-option
+bits, does not change `g_TextureFormatD3D8Mapping` or
+`g_TextureFormatBytesPerPixel`, and makes no runtime-scenario claim.
+
+**Production / exact representation.** Normal production `GetAnmFormat` reads
+`g_Supervisor.config.options.force16BitTextures`. DIFFBUILD preserves the raw
+`Supervisor+0x1E0` dword/bit expression, while the exact lane still includes
+`SceneTextureExact.inl` unchanged. No new duplicate Supervisor declaration or
+local proxy owner is introduced. An initial production probe attempted to
+include `SupervisorRuntime.hpp` explicitly, but the existing SceneSelect include
+graph already provides `Main.hpp`; that redundant include produced type
+redefinition diagnostics before code generation. Recovery confirmed the
+single-file diff and no residual compiler/Wine producer, the redundant include
+was removed, and the canonical member access compiled through the existing
+owner type.
+
+**Validation.** The registered Ghidra provider re-attested the Japanese v1.02a
+target and decompiled `GetAnmFormat @ 0x00442B40`,
+`GameWindow::InitD3DRendering @ 0x00420E20`, and
+`GameConfiguration::Initialize @ 0x00418720`. Focused cold replay of
+`SceneTexture.cpp` passed all 8/8 configured exact units with zero private-label
+refresh after the final edit. A command-local `/tmp` probe reused the
+repository's pinned VC7.1 profile and compiled the normal branch to Intel i386
+COFF; its object/PDB were removed before command exit. This is a private `.cpp`
+owner-expression change, so aggregate exact and whole-product closure are
+reserved for the campaign milestone.
+
+**Analysis / phase state.** No `.analysis/gpt-web/` workspace was created and no
+legacy/shared analysis state or pre-existing untracked file was modified. Exact
+feedback, production compilation, semantic interpretation, runtime scenarios,
+and Factory acceptance remain separate states. The semantic phase remains
+active-incomplete.
+
+**Next evidence route.** Rotate away from SceneTexture/config ownership after
+checkpoint. Prefer a different bounded interpreter/state, persistent/ABI,
+resource-lifetime, input, or historical-runtime family. Previously observed
+write-only THTX reserved words remain Unknown unless a TH095-local consumer
+appears.
