@@ -35,6 +35,23 @@
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 namespace th095
 {
+struct EclGlobalStateFlagsView
+{
+    u8 unknown000[0xfc];
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlags0_4 : 5;
+            u32 playerDeathTransitionComplete : 1;
+            u32 unknownFlags6_31 : 26;
+        };
+    };
+};
+typedef char EclGlobalStateFlagsAtFC[
+    (offsetof(EclGlobalStateFlagsView, flags) == 0xfc) ? 1 : -1];
+
 struct EclCompletionStateView
 {
     i32 completionActive;
@@ -51,6 +68,9 @@ typedef char EclCompletionActiveAt104[
 typedef char EclCompletionTimerAt108[
     (offsetof(EclGlobalCompletionStateView, completion.timer) == 0x108) ? 1 : -1];
 }
+#define TH095_ECL_GLOBAL_STATE_FLAGS \
+    (*TH095_RUNTIME_GLOBAL_PTR(::th095::EclGlobalStateFlagsView, \
+                               ::th095::g_RuntimeGlobalStateOwner))
 #define TH095_ECL_COMPLETION_STATE \
     (TH095_RUNTIME_GLOBAL_PTR(::th095::EclGlobalCompletionStateView, \
                               ::th095::g_RuntimeGlobalStateOwner)->completion)
