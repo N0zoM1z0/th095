@@ -28,12 +28,30 @@ struct ScoreFileHeader
     i32 uncompressedSize;
 };
 
+#if !defined(TH095_MATCH_EXACT)
+struct PhotoScoreBreakdownView
+{
+    i32 finalScore;
+    i32 baseScore;
+    i32 capturedBulletCount;
+    i32 nearbyTargetCount;
+    i32 nearbyTargetBonus;
+    f32 enemyDistanceMultiplier;
+    f32 bossRateMultiplier;
+    u32 scoringFlags;
+};
+#endif
+
 struct ResultBestShotImageView
 {
     u8 unknown000[0x10];
     i32 score;
     u8 unknown014[4];
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     u32 metadata[8];
+#else
+    PhotoScoreBreakdownView scoreBreakdown;
+#endif
     u8 unknown038[4];
 #ifdef TH095_MATCH_EXACT
     i32 replayValue;
@@ -210,8 +228,22 @@ typedef char ResultSaveDataSizeIs69A0[
 typedef char ResultSaveSelectionAt1E[
     (offsetof(ResultSaveDataView, lastSelectedGroup) == 0x1e &&
      offsetof(ResultSaveDataView, lastSelectedScene) == 0x20) ? 1 : -1];
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 typedef char ResultBestShotImageMetadataAt18[
     (offsetof(ResultBestShotImageView, metadata) == 0x18) ? 1 : -1];
+#else
+typedef char PhotoScoreBreakdownSizeIs20[
+    (sizeof(PhotoScoreBreakdownView) == 0x20) ? 1 : -1];
+typedef char PhotoScoreBreakdownMultipliersAt14[
+    (offsetof(PhotoScoreBreakdownView, enemyDistanceMultiplier) == 0x14 &&
+     offsetof(PhotoScoreBreakdownView, bossRateMultiplier) == 0x18)
+        ? 1
+        : -1];
+typedef char PhotoScoreBreakdownFlagsAt1C[
+    (offsetof(PhotoScoreBreakdownView, scoringFlags) == 0x1c) ? 1 : -1];
+typedef char ResultBestShotImageScoreBreakdownAt18[
+    (offsetof(ResultBestShotImageView, scoreBreakdown) == 0x18) ? 1 : -1];
+#endif
 typedef char ResultBestShotRecordCommentAt18[
     (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
 typedef char ResultBestShotRecordValidAt68[

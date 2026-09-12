@@ -8,6 +8,7 @@
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "ReplayManager.hpp"
+#include "ScoreData.hpp"
 #include "ZunTimer.hpp"
 #include <stdlib.h>
 
@@ -135,7 +136,11 @@ typedef AnmLoadedSprite ResultScreenLoadedSpriteView;
 struct ResultPhotoSlotView
 {
     u8 unknown0000[0x21d4];
+#ifdef DIFFBUILD
     u32 metadata[8];
+#else
+    PhotoScoreBreakdownView scoreBreakdown;
+#endif
     i32 score;                        // +0x21f4
     i32 captureTime;                  // +0x21f8
     f32 slowRate;                     // +0x21fc
@@ -167,8 +172,13 @@ struct ResultPhotoControllerView
 
 typedef char ResultPhotoSlotViewSizeIs2214[
     (sizeof(ResultPhotoSlotView) == 0x2214) ? 1 : -1];
+#ifdef DIFFBUILD
 typedef char ResultPhotoSlotMetadataAt21D4[
     (offsetof(ResultPhotoSlotView, metadata) == 0x21d4) ? 1 : -1];
+#else
+typedef char ResultPhotoSlotScoreBreakdownAt21D4[
+    (offsetof(ResultPhotoSlotView, scoreBreakdown) == 0x21d4) ? 1 : -1];
+#endif
 typedef char ResultPhotoSlotScoreAt21F4[
     (offsetof(ResultPhotoSlotView, score) == 0x21f4) ? 1 : -1];
 typedef char ResultPhotoSlotCaptureTimeAt21F8[

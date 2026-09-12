@@ -70,18 +70,6 @@ struct PhotoStageBestShotRecord
     u8 *pixelData;
 };
 
-struct PhotoScoreBreakdownView
-{
-    i32 finalScore;
-    i32 baseScore;
-    i32 capturedBulletCount;
-    i32 nearbyTargetCount;
-    i32 nearbyTargetBonus;
-    f32 enemyDistanceMultiplier;
-    f32 bossRateMultiplier;
-    u32 scoringFlags;
-};
-
 struct PhotoStageScorePayloadView
 {
     PhotoScoreBreakdownView photoScore;
@@ -204,15 +192,6 @@ typedef char PhotoStageTextureEntrySizeIs10[
     (sizeof(PhotoStageTextureEntry) == 0x10) ? 1 : -1];
 typedef char PhotoStageBestShotRecordSizeIs78[
     (sizeof(PhotoStageBestShotRecord) == 0x78) ? 1 : -1];
-typedef char PhotoScoreBreakdownSizeIs20[
-    (sizeof(PhotoScoreBreakdownView) == 0x20) ? 1 : -1];
-typedef char PhotoScoreBreakdownMultipliersAt14[
-    (offsetof(PhotoScoreBreakdownView, enemyDistanceMultiplier) == 0x14 &&
-     offsetof(PhotoScoreBreakdownView, bossRateMultiplier) == 0x18)
-        ? 1
-        : -1];
-typedef char PhotoScoreBreakdownFlagsAt1C[
-    (offsetof(PhotoScoreBreakdownView, scoringFlags) == 0x1c) ? 1 : -1];
 typedef char PhotoStageScorePayloadSizeIs48[
     (sizeof(PhotoStageScorePayloadView) == 0x48) ? 1 : -1];
 typedef char PhotoStageScorePayloadMatchesResultTail[

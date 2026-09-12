@@ -137,8 +137,13 @@ typedef char ResultScreenInitializeLocalsSizeIs50[
 
 typedef char ResultBestShotImageScoreAt10[
     (offsetof(ResultBestShotImageView, score) == 0x10) ? 1 : -1];
+#ifdef DIFFBUILD
 typedef char ResultBestShotImageMetadataAt18[
     (offsetof(ResultBestShotImageView, metadata) == 0x18) ? 1 : -1];
+#else
+typedef char ResultBestShotImageScoreBreakdownAt18[
+    (offsetof(ResultBestShotImageView, scoreBreakdown) == 0x18) ? 1 : -1];
+#endif
 typedef char ResultBestShotImageCaptureTimeAt3C[
     (offsetof(ResultBestShotImageView, captureTime) == 0x3c) ? 1 : -1];
 typedef char ResultBestShotImageHighScoreSlowRateAt48[
@@ -823,12 +828,19 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
     {
         i32 photoIndex = resultScreen->photoCursor.GetCurrent();
 
+#ifdef DIFFBUILD
         memcpy(
             g_ResultSaveData
                 ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
                 .metadata,
             g_ResultPhotoData->slots[photoIndex].metadata,
             sizeof(g_ResultSaveData->bestShotImages[0].metadata));
+#else
+        g_ResultSaveData
+            ->bestShotImages[g_ResultScreenGlobalState->bestShotIndex]
+            .scoreBreakdown =
+            g_ResultPhotoData->slots[photoIndex].scoreBreakdown;
+#endif
         g_ResultSaveData->UpdateBestShotRecord(
             g_ResultScreenGlobalState->bestShotIndex);
 
