@@ -41,8 +41,12 @@ struct ReplayInputData
     i8 scene;                        // +0x03
     u16 rngSeed;                     // +0x04
     u8 unknown006;
+#if defined(TH095_MATCH_EXACT)
     char replayName[8];              // +0x07
     u8 unknown00f;
+#else
+    char replayName[9];              // +0x07, eight visible bytes plus NUL
+#endif
     i32 timestamp;                   // +0x10
     i32 score;                       // +0x14
     u8 globalStateSnapshot[0xc8];     // +0x18
@@ -54,6 +58,13 @@ struct ReplayInputData
 
 typedef char ReplayFileHeaderSizeIs24[
     (sizeof(ReplayFileHeader) == 0x24) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT)
+typedef char ReplayInputDataReplayNameAt07[
+    (offsetof(ReplayInputData, replayName) == 0x07 &&
+     sizeof(((ReplayInputData *)0)->replayName) == 9) ? 1 : -1];
+typedef char ReplayInputDataTimestampAt10[
+    (offsetof(ReplayInputData, timestamp) == 0x10) ? 1 : -1];
+#endif
 typedef char ReplayInputDataSizeIsF8[
     (sizeof(ReplayInputData) == 0xf8) ? 1 : -1];
 

@@ -7871,3 +7871,114 @@ active-incomplete.
 checkpoint. Prefer a different bounded persistent/ABI, resource-lifetime,
 input, or historical-runtime family. Do not return to the remaining unknown
 compact bits without a new TH095-local producer/consumer or lifetime relation.
+
+### SEM-105 — restore the replay-name C-string wire boundary
+
+**Scope.** Reconstruct the persistent replay-name storage inside
+`ReplayInputData` instead of trusting the source-level split between
+`replayName[8]` and `unknown00f`. The live TH095 writer and independent UI
+consumers falsify that split: bytes `+0x07..+0x0f` are one bounded C-string
+storage region. This transaction changes no byte offset or serialized extent;
+it gives the production representation the meaning already enforced by the
+target while preserving exact-facing compiler source shape where VC7.1 label
+identity is sensitive to the type declaration.
+
+**Observed.** Fresh target-attested `ReplayManager::WriteReplay @ 0x00434a90`
+starts a byte copy at input-data `+0x07` and copies the source replay name through
+and including its terminating NUL. It then pads only visible positions below
+index 8 with spaces. The same writer later passes input-data `+0x07` to the
+`"Name %s"` metadata formatter and persists the complete `0xf8` input header in
+the compressed replay payload. The next fixed field, the persisted replay
+timestamp, begins at `+0x10`, so the ninth byte of this string storage is
+exactly `+0x0f`.
+
+`ResultScreen::Draw @ 0x00429c80` and
+`SceneSelectControllerView::Draw @ 0x00452630` are independent exact UI
+consumers that pass replay input-data `+0x07` to `%s` formatting. A fresh
+`ReplayManager::LoadReplay @ 0x00435130` decompile confirms that the loader
+decrypts/decompresses the persistent payload and derives stream pointers from
+its trusted metadata without adding a replay-name terminator validation step.
+The target identity for these observations was re-attested as Japanese TH095
+v1.02a, 696,832 bytes, SHA-256
+`bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
+
+**Corroborated.** Natural source already uses
+`strcpy(locals.inputData->replayName, replayName)`, pads only indexes below 8,
+and later formats the same field as `%s`. The result-screen name-entry buffer is
+independently declared `char replayName[9]`, matching an eight-visible-byte name
+plus terminator without being used as proof for the persistent layout. Existing
+SEM-068 establishes `ReplayInputData` as the fixed `0xf8` replay input header
+and `timestamp @ +0x10`; SEM-069 establishes that the historical replay loader
+trusts container and decompressed payload metadata rather than validating every
+persistent field before use.
+
+**Inferred.** `ReplayInputData+0x07..+0x0f` is one nine-byte C-string storage
+region with at most eight visible replay-name bytes plus NUL. The former
+production `unknown00f` has no independent field meaning under the TH095-local
+producer/consumer contract. No text encoding beyond the target's existing byte
+behavior is inferred.
+
+**Unknown / bounded.** `ReplayInputData+0x06` and `+0xe4..+0xef` remain
+Unknown, as do the replay-container opaque ranges retained by SEM-069. The
+loader's missing replay-name terminator check is recorded only as historical
+behavior. This batch does not characterize malformed-input exploitability,
+does not add modern validation, and does not infer semantics for any adjacent
+byte merely from layout proximity.
+
+**Production / exact representation.** Normal production source now declares
+`ReplayInputData::replayName[9]` and adds compile-time assertions for
+`replayName @ +0x07`, width 9, `timestamp @ +0x10`, and total structure size
+`0xf8`. `TH095_MATCH_EXACT` deliberately retains the historical
+`char replayName[8]; u8 unknown00f;` declaration. An initial unconditional
+nine-byte declaration kept `ReplayManager.cpp` exact but renumbered several
+compiler-private `$L...` identities in `ResultScreen.cpp`; relocation
+offsets/types/targets otherwise remained structurally unchanged. Rather than
+refreshing private-label expectations for an avoidable type-shape disturbance,
+the exact-facing declaration preserves the compiler input shape while normal
+production exposes the recovered semantic boundary.
+
+**Persistent / ABI boundary.** The recovered field is inside the existing
+`0xf8` compressed replay input header. Its physical start, end, following
+`timestamp @ +0x10`, complete header size, compression boundary, and stream
+layout are unchanged. This is a historical Windows i386 persistent-wire ABI
+interpretation, not permission to change the file format. The original
+`strcpy`/`%s` behavior relies on the writer-generated terminator invariant;
+external malformed replay bytes can violate that invariant because the loader
+does not enforce it. Semantic reconstruction intentionally preserves that
+historical behavior rather than introducing a portability or hardening change.
+
+**Validation.** Focused canonical replay after the final representation split
+covered `ReplayManager.cpp` 12/12, `ResultScreen.cpp` 24/24, and
+`SceneControllerDraw.cpp` 3/3: 39/39 exact with zero private-label refreshes.
+The same three normal production translation units compiled under pinned VC7.1
+to Intel i386 COFF. Because this transaction changes a shared ABI header, the
+cold aggregate exact gate was then replayed in mutually exclusive bounded
+source partitions covering the complete manifest: all 88 sources and all
+696/696 configured exact units passed with zero private-label refreshes.
+Factory whole-product replay for the same active source snapshot
+`9773546c5d613e525ecf4b39d9566916cf943756fbf64078798d1f0968c8e8cb`
+passed the clean-output-graph 88-source Windows build and was accepted as
+receipt `49a2c5d259af77e37df34dfc0fb857de5739f5730becf509b0bb12eba901aaec`.
+That receipt proves production compile/link closure for the source snapshot; it
+does not imply whole-image byte exactness or runtime-scenario validation.
+`python3 scripts/build.py --check` confirmed the 696-unit match graph,
+`python3 scripts/validate-tracking.py --require-target` remained at 697
+source-present / 696 exact / 336,486 exact bytes, all 43 target-independent CI
+tests passed, and `git diff --check` passed.
+
+**Recovery / analysis state.** The transaction began from checkpoint
+`2caa657468aee038000e3db5234fd8199f5dca55` with no staged or tracked unstaged
+work. The pre-existing untracked `EnemyManagerUpdate.i`,
+`config/runtime-scenarios.json`, `droid.resume.txt`, and
+`scripts/runtime-diff.py` remain excluded and untouched. `.analysis/` remained
+at 3,394,984 bytes through the evidence and build gates, and no session-owned
+`.analysis/gpt-web/` workspace or analysis artifact was created. Semantic
+interpretation, exact replay, production closure, persistent-format meaning,
+and runtime scenarios remain separate states. The semantic phase remains
+active-incomplete.
+
+**Next evidence route.** Rotate away from the replay family after checkpoint.
+Prefer a bounded resource-lifetime or historical-runtime/input family with a
+TH095-local producer/consumer or owner/lifetime relation. Do not return to
+`ReplayInputData+0x06`, `+0xe4..+0xef`, or the remaining replay-container opaque
+bytes without new target-local evidence.
