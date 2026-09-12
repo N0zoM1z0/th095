@@ -129,21 +129,21 @@ struct OptionsMenuView
     {
         if (value >= 100)
         {
-            g_AnmManager->GetVm(this->vmIds[0x7a])->flagsWord |= 2;
+            g_AnmManager->GetVm(this->vmIds[0x7a])->drawEnabled = 1;
             this->SetDigitSprite(0x7a, (value / 100) % 10);
         }
         else
         {
-            g_AnmManager->GetVm(this->vmIds[0x7a])->flagsWord &= ~2;
+            g_AnmManager->GetVm(this->vmIds[0x7a])->drawEnabled = 0;
         }
         if (value >= 10)
         {
-            g_AnmManager->GetVm(this->vmIds[0x7b])->flagsWord |= 2;
+            g_AnmManager->GetVm(this->vmIds[0x7b])->drawEnabled = 1;
             this->SetDigitSprite(0x7b, (value / 10) % 10);
         }
         else
         {
-            g_AnmManager->GetVm(this->vmIds[0x7b])->flagsWord &= ~2;
+            g_AnmManager->GetVm(this->vmIds[0x7b])->drawEnabled = 0;
         }
         this->SetDigitSprite(0x7c, value % 10);
     }
@@ -152,21 +152,21 @@ struct OptionsMenuView
     {
         if (value >= 100)
         {
-            g_AnmManager->GetVm(this->vmIds[0x7e])->flagsWord |= 2;
+            g_AnmManager->GetVm(this->vmIds[0x7e])->drawEnabled = 1;
             this->SetDigitSprite(0x7e, (value / 100) % 10);
         }
         else
         {
-            g_AnmManager->GetVm(this->vmIds[0x7e])->flagsWord &= ~2;
+            g_AnmManager->GetVm(this->vmIds[0x7e])->drawEnabled = 0;
         }
         if (value >= 10)
         {
-            g_AnmManager->GetVm(this->vmIds[0x7f])->flagsWord |= 2;
+            g_AnmManager->GetVm(this->vmIds[0x7f])->drawEnabled = 1;
             this->SetDigitSprite(0x7f, (value / 10) % 10);
         }
         else
         {
-            g_AnmManager->GetVm(this->vmIds[0x7f])->flagsWord &= ~2;
+            g_AnmManager->GetVm(this->vmIds[0x7f])->drawEnabled = 0;
         }
         this->SetDigitSprite(0x80, value % 10);
     }

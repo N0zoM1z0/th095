@@ -207,11 +207,11 @@ struct SceneQueueFrontMemberView
 #define SET_SCENE_VM_VISIBILITY(view, vmIndex, condition)                    \
     if (!(condition))                                                         \
     {                                                                         \
-        g_AnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord &= ~2u;   \
+        g_AnmManager->GetVm((view)->vmIds[vmIndex])->drawEnabled = 0;   \
     }                                                                         \
     else                                                                      \
     {                                                                         \
-        g_AnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord |= 2;     \
+        g_AnmManager->GetVm((view)->vmIds[vmIndex])->drawEnabled = 1;     \
     }
 
 static __forceinline void SceneSelectInitialTimerViewPhase(SceneSelectUpdateView *view)
@@ -265,13 +265,13 @@ static __forceinline void SceneSelectInitialSceneVmPhase(SceneSelectUpdateView *
             {
                 g_AnmManager
                     ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x25])
-                    ->flagsWord &= ~2u;
+                    ->drawEnabled = 0;
                 g_AnmManager
                     ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x26])
-                    ->flagsWord &= ~2u;
+                    ->drawEnabled = 0;
                 g_AnmManager
                     ->GetVm(view->vmIds[initialSceneIndex * 3 + 0x27])
-                    ->flagsWord &= ~2u;
+                    ->drawEnabled = 0;
             }
         }
 
@@ -308,13 +308,13 @@ static __forceinline void SceneSelectNewGroupSceneVmPhase(SceneSelectUpdateView 
             {
                 g_AnmManager
                     ->GetVm(view->vmIds[newGroupIndex * 3 + 0x25])
-                    ->flagsWord &= ~2u;
+                    ->drawEnabled = 0;
                 g_AnmManager
                     ->GetVm(view->vmIds[newGroupIndex * 3 + 0x26])
-                    ->flagsWord &= ~2u;
+                    ->drawEnabled = 0;
                 g_AnmManager
                     ->GetVm(view->vmIds[newGroupIndex * 3 + 0x27])
-                    ->flagsWord &= ~2u;
+                    ->drawEnabled = 0;
             }
         }
 
@@ -916,39 +916,39 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
     if (SceneInputAnd(g_FrontEndCurrentInput, TH_BUTTON_SKIP) != 0)
     {
-        g_AnmManager->GetVm(view->vmIds[0x15])->flagsWord &= ~2u;
-        g_AnmManager->GetVm(view->vmIds[0x16])->flagsWord &= ~2u;
-        g_AnmManager->GetVm(view->vmIds[0x45])->flagsWord &= ~2u;
+        g_AnmManager->GetVm(view->vmIds[0x15])->drawEnabled = 0;
+        g_AnmManager->GetVm(view->vmIds[0x16])->drawEnabled = 0;
+        g_AnmManager->GetVm(view->vmIds[0x45])->drawEnabled = 0;
         if (view->previewTextVmIds[0].GetVm() != NULL)
         {
-            view->previewTextVmIds[0].GetVm()->flagsWord &= ~2u;
+            view->previewTextVmIds[0].GetVm()->drawEnabled = 0;
         }
         if (view->previewTextVmIds[1].GetVm() != NULL)
         {
-            view->previewTextVmIds[1].GetVm()->flagsWord &= ~2u;
+            view->previewTextVmIds[1].GetVm()->drawEnabled = 0;
         }
         if (view->previewTextVmIds[2].GetVm() != NULL)
         {
-            view->previewTextVmIds[2].GetVm()->flagsWord &= ~2u;
+            view->previewTextVmIds[2].GetVm()->drawEnabled = 0;
         }
         view->flags &= ~0x10u;
     }
     else
     {
-        g_AnmManager->GetVm(view->vmIds[0x15])->flagsWord |= 2;
-        g_AnmManager->GetVm(view->vmIds[0x16])->flagsWord |= 2;
-        g_AnmManager->GetVm(view->vmIds[0x45])->flagsWord |= 2;
+        g_AnmManager->GetVm(view->vmIds[0x15])->drawEnabled = 1;
+        g_AnmManager->GetVm(view->vmIds[0x16])->drawEnabled = 1;
+        g_AnmManager->GetVm(view->vmIds[0x45])->drawEnabled = 1;
         if (view->previewTextVmIds[0].GetVm() != NULL)
         {
-            view->previewTextVmIds[0].GetVm()->flagsWord |= 2;
+            view->previewTextVmIds[0].GetVm()->drawEnabled = 1;
         }
         if (view->previewTextVmIds[1].GetVm() != NULL)
         {
-            view->previewTextVmIds[1].GetVm()->flagsWord |= 2;
+            view->previewTextVmIds[1].GetVm()->drawEnabled = 1;
         }
         if (view->previewTextVmIds[2].GetVm() != NULL)
         {
-            view->previewTextVmIds[2].GetVm()->flagsWord |= 2;
+            view->previewTextVmIds[2].GetVm()->drawEnabled = 1;
         }
         view->flags |= 0x10;
     }
@@ -1302,11 +1302,11 @@ update_preview_text:
                     (f32)*reinterpret_cast<u16 *>(
                         reinterpret_cast<u8 *>(g_ResultSaveData) +
                         view->selectedScoreEntryIndex * 0x78 + 0x316e);
-                previewVm->flagsWord |= 2;
+                previewVm->drawEnabled = 1;
             }
             else
             {
-                previewVm->flagsWord &= ~2u;
+                previewVm->drawEnabled = 0;
             }
             g_AnmManager->SetInterrupt(view->vmIds.values[0x12], 2);
             view->flags &= ~4u;
