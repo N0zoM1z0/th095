@@ -73,11 +73,15 @@ static __forceinline u32 &TargetEnemyEclControlWord(Enemy *enemy)
 {
     return *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4);
 }
+#define TargetEnemyMirrorMovementX(enemy) \
+    ((TargetEnemyEclControlWord(enemy) >> 16) & 1)
+#define TargetEnemyAlternateAnmBank(enemy) \
+    ((TargetEnemyEclControlWord(enemy) >> TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK_SHIFT) & 1)
 #else
-static __forceinline u32 &TargetEnemyEclControlWord(Enemy *enemy)
-{
-    return reinterpret_cast<EnemyEclRuntimeView *>(enemy)->controlWord;
-}
+#define TargetEnemyMirrorMovementX(enemy) \
+    TH095_ENEMY_ECL_CONTROL_BITS(enemy).mirrorMovementX
+#define TargetEnemyAlternateAnmBank(enemy) \
+    TH095_ENEMY_ECL_CONTROL_BITS(enemy).alternateAnmBank
 #endif
 static __forceinline u8 &TargetEnemyAnmDirection(Enemy *enemy)
 {
@@ -109,7 +113,7 @@ void Enemy::UpdateShotAndAnm()
         if (TargetEnemyAnmScriptsView(this).moveLeft >= 0)
         {
             direction = 0;
-            if (((TargetEnemyEclControlWord(this) >> 16) & 1) == 0)
+            if (TargetEnemyMirrorMovementX(this) == 0)
             {
                 if (this->velocity.x < -0.01f)
                     direction = 1;
@@ -126,7 +130,7 @@ void Enemy::UpdateShotAndAnm()
 
             if (TargetEnemyAnmDirection(this) != direction)
             {
-                anm = ((TargetEnemyEclControlWord(this) >> TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK_SHIFT) & 1)
+                anm = TargetEnemyAlternateAnmBank(this)
                     ? *reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4dfc)
                     : *reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4df8);
 

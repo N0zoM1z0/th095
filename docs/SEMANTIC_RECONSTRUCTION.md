@@ -8141,3 +8141,84 @@ historical-runtime, or interpreter/state family with a TH095-local producer and
 independent consumer. The rejected SoundPlayer opaque dwords, ANM preload path,
 Supervisor anonymous storage, and GameConfiguration reserved bytes remain
 unknown absent new readers. The semantic phase remains active-incomplete.
+
+### SEM-108 — bind shot-ANM control reads to canonical ECL bits
+
+**Scope.** Re-audit `Enemy::UpdateShotAndAnm @ 0x00413030` after the compact
+ECL control-word consolidation instead of assuming every previously proved bit
+was already represented canonically in production source. Two production reads
+still decoded `Enemy+0x2BF4` through the complete `controlWord`: bit 16 for
+movement-direction mirroring and bit 31 for the alternate ANM bank. This
+transaction binds only those two already TH095-proven meanings. It does not
+reinterpret adjacent bits, ANM script slots, shot cadence, or direction-state
+storage.
+
+**Observed.** Fresh hash-attested TH095 decompilation of
+`Enemy::UpdateShotAndAnm @ 0x00413030` reads compact enemy `+0x2BF4` bit 16 with
+`>> 0x10 & 1` before choosing whether negative/positive X velocity maps to the
+left/right movement animation. The same target body later reads that same dword
+as signed and selects runtime ANM bank `+0x4DFC` when negative and `+0x4DF8`
+otherwise, which is exactly the bit-31 test already represented by
+`alternateAnmBank`. The target identity was re-attested as Japanese TH095
+v1.02a, 696,832 bytes, SHA-256
+`bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
+
+**Corroborated.** SEM-012 and durable fact `PHOTO-068` established bit 16 as
+`mirrorMovementX` from independent TH095-local movement consumers plus the
+spawn-side `mirrorMovementX` producer. `PhotoEnemyView::IntegrateMovement @
+0x004160B0`, `Enemy::UpdateMovement @ 0x00412970`, and exact ECL movement
+helpers all reverse the X movement contribution under this bit. SEM-104
+reconfirmed bit 31 as `alternateAnmBank`: low-ECL opcodes 54..60 clear/set it,
+opcode 62 reads it, and this same `UpdateShotAndAnm` body independently selects
+between the two runtime ANM banks. The canonical `EnemyEclControlBits` owner
+already exposes both names at physical control word `+0x2BF4`.
+
+**Inferred.** These two tests are consumers of the shared compact enemy ECL
+control protocol, not `UpdateShotAndAnm`-private flags. Using the canonical
+bitfield in normal production makes that owner relation explicit while keeping
+the interpretation bounded to meanings already supported by independent
+TH095-local producers and consumers.
+
+**Unknown / bounded.** No new meaning is assigned to compact control-word bits
+3, 5..7, 18..21, 23, 25, or 27..30. This batch does not alter or reinterpret
+`anmDirection @ +0x2C0A`, the six primary ANM script slots at `+0x2C0E`, shot
+cadence storage, the runtime ANM-bank pointers, or any persistent format. It
+also makes no runtime visual-equivalence claim.
+
+**Production / exact representation.** Normal `EnemyShotAnm.cpp` now reads
+`TH095_ENEMY_ECL_CONTROL_BITS(enemy).mirrorMovementX` and
+`.alternateAnmBank` through two local semantic macros. `DIFFBUILD` and
+`TH095_MATCH_EXACT` preserve the historical `TargetEnemyEclControlWord` shift
+expressions, including the exact bit-16 shift and the existing bit-31 shift
+constant. No shared header, class layout, calling convention, relocation owner,
+or storage width changes.
+
+**Validation.** Focused cold replay of `src/EnemyShotAnm.cpp` rebuilt its sole
+configured accepted unit and passed 1/1 exact with zero compiler-private label
+refreshes. `python3 scripts/build.py --check` kept the canonical graph at 696
+configured units. A command-local production probe reused the source's pinned
+`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile and
+compiled the normal branch with VC7.1 compiler `13.10.3077` to Intel i386 COFF;
+the object machine was `0x14C`. `git diff --check` passed before the evidence
+record was appended. Because the source change is private to one translation
+unit and preserves storage, ABI, and behavior, aggregate exact and whole-product
+replay are deferred to the next committed campaign milestone.
+
+**Recovery / analysis state.** The campaign resumed from committed HEAD
+`8f8c443ee2dea5716f318e86b1426767b17ac097` with no staged or tracked unstaged
+work and the four documented pre-existing untracked paths
+`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
+`scripts/runtime-diff.py`; content/provenance references were re-reviewed and
+all four remain excluded from staging. `.analysis/` started at 3,394,984 bytes.
+Fresh bounded Ghidra output was created only under manifested
+`.analysis/gpt-web/20260912-ecl-shot-control/`; after this compact tracked
+record was written, the manifested decompile and manifest were removed with no
+active producer or retained current-session artifact. `.analysis/` returned to
+3,394,984 bytes. Semantic interpretation, exact replay, production compilation,
+runtime storage, and runtime scenarios remain separate states.
+
+**Next evidence route.** Rotate away from compact ECL control bits after this
+checkpoint. Prefer an independent persistent/ABI, resource-lifetime, or
+historical-runtime/state family with a TH095-local producer plus an independent
+consumer. Do not revisit the unresolved compact control bits without new
+TH095-local readers. The semantic phase remains active-incomplete.
