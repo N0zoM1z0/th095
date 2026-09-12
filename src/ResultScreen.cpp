@@ -53,7 +53,11 @@ struct ResultScreenGlobalStateView
         {
             u32 unknownFlag0 : 1;
             u32 unknownFlag1 : 1;
+#ifdef DIFFBUILD
             u32 suppressResultCallbacks : 1;
+#else
+            u32 gameplayLoadActive : 1;
+#endif
             u32 unknownFlag3 : 1;
 #ifdef DIFFBUILD
             u32 unknownFlag4 : 1;
@@ -1922,7 +1926,11 @@ ChainCallbackResult ResultScreen::Draw()
 
 ChainCallbackResult ResultScreen::OnUpdate(ResultScreen *resultScreen)
 {
+#ifdef DIFFBUILD
     if (g_ResultScreenGlobalState->suppressResultCallbacks)
+#else
+    if (g_ResultScreenGlobalState->gameplayLoadActive)
+#endif
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
@@ -1931,7 +1939,11 @@ ChainCallbackResult ResultScreen::OnUpdate(ResultScreen *resultScreen)
 
 ChainCallbackResult ResultScreen::OnDraw(ResultScreen *resultScreen)
 {
+#ifdef DIFFBUILD
     if (g_ResultScreenGlobalState->suppressResultCallbacks)
+#else
+    if (g_ResultScreenGlobalState->gameplayLoadActive)
+#endif
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
