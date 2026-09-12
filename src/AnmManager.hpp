@@ -217,7 +217,7 @@ struct AnmLoaded
     AnmLoadedSprite *sprites;
     AnmRawInstr **scripts;
     AnmTextureEntryView *textures;
-    i32 numberEntriesToBeLoaded;
+    i32 postloadEntryNumber;
 
     void LoadSprite(i32 spriteIdx, AnmLoadedSprite *loadedSprite);
     ZunResult SetSprite(struct AnmVm *vm, i32 spriteIdx);

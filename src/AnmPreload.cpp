@@ -132,7 +132,7 @@ i32 __fastcall GetAnmFormat(i32 format);
 // Runnable builds use Supervisor critical section 6 as the startup-worker
 // serialization domain.  A Wine/GDB trace caught StartupThread and the main
 // thread entering PostloadAnmEntry for the same ascii.anm slot and entry: the
-// synchronous LoadAnm loop publishes numberEntriesToBeLoaded, which is also
+// synchronous LoadAnm loop publishes postloadEntryNumber, which is also
 // the main thread's asynchronous ServicePreloadedAnims work signal.  The two
 // consumers then created and alpha-processed the same texture concurrently;
 // one reached SetPriority after the other had replaced/released its texture.
@@ -262,11 +262,11 @@ AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::LoadAnm(i32 anmIdx, const char *filename)
 #endif
     if (anm != NULL)
     {
-        anm->numberEntriesToBeLoaded = 1;
+        anm->postloadEntryNumber = 1;
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        while (anm->numberEntriesToBeLoaded != 0)
+        while (anm->postloadEntryNumber != 0)
 #else
-        while (anm != NULL && anm->numberEntriesToBeLoaded != 0)
+        while (anm != NULL && anm->postloadEntryNumber != 0)
 #endif
         {
             anm = this->PostloadAnmEntry(anm);
@@ -398,8 +398,8 @@ AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::PreloadAnm(
     if (state.anm == NULL)
         return NULL;
 
-    state.anm->numberEntriesToBeLoaded = 1;
-    while (state.anm->numberEntriesToBeLoaded != 0 &&
+    state.anm->postloadEntryNumber = 1;
+    while (state.anm->postloadEntryNumber != 0 &&
            (state.loopStopRequested =
                 TH095_REPLAY_WORKER_EXIT_SIGNAL(g_Supervisor.replayScanWorker)) == 0)
     {
@@ -624,7 +624,7 @@ AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::PostloadAnmEntry(AnmLoaded *anm)
     } state;
 
     utils::DebugPrint("::postloadAnim : %d, %d\n", anm->anmIdx,
-                      anm->numberEntriesToBeLoaded);
+                      anm->postloadEntryNumber);
 
     state.rawData = reinterpret_cast<AnmRawEntryView *>(anm->rawData);
     state.entryLoadNumber = 0;
@@ -636,12 +636,12 @@ AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::PostloadAnmEntry(AnmLoaded *anm)
 
     while (true)
     {
-        if (state.entryLoadNumber == anm->numberEntriesToBeLoaded - 1 &&
+        if (state.entryLoadNumber == anm->postloadEntryNumber - 1 &&
             (state.result = this->LoadTextureData(
                  anm, state.currentEntryNumber, state.currentNumSprites,
                  state.currentNumScripts, state.rawEntry)) < 0)
         {
-            anm->numberEntriesToBeLoaded = 0;
+            anm->postloadEntryNumber = 0;
             return NULL;
         }
 
@@ -654,14 +654,14 @@ AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::PostloadAnmEntry(AnmLoaded *anm)
         state.rawEntry = reinterpret_cast<AnmRawEntryView *>(
             reinterpret_cast<u8 *>(state.rawEntry) + state.rawEntry->nextOffset);
         state.entryLoadNumber++;
-        if (state.entryLoadNumber == anm->numberEntriesToBeLoaded)
+        if (state.entryLoadNumber == anm->postloadEntryNumber)
         {
-            anm->numberEntriesToBeLoaded++;
+            anm->postloadEntryNumber++;
             return anm;
         }
     }
 
-    anm->numberEntriesToBeLoaded = 0;
+    anm->postloadEntryNumber = 0;
     return anm;
 }
 
@@ -680,7 +680,7 @@ ZunResult TH095_ANM_PRELOAD_RECEIVER::ServicePreloadedAnims()
             this->ReleaseAnm(i);
             this->slots[i].releasePending = 0;
         }
-        else if (this->slots[i].loaded.numberEntriesToBeLoaded != 0 &&
+        else if (this->slots[i].loaded.postloadEntryNumber != 0 &&
                  this->PostloadAnmEntry(&this->slots[i].loaded) == NULL)
         {
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)

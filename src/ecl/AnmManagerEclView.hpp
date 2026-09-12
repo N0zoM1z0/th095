@@ -583,7 +583,7 @@ struct AnmLoaded
     AnmLoadedSprite *sprites;
     AnmRawInstr **scripts;
     AnmEntry *textures;
-    int numberEntriesToBeLoaded;
+    int postloadEntryNumber;
 
     void LoadSprite(i32 spriteIdx, AnmLoadedSprite *loadedSprite);
 #ifndef TH095_MATCH_EXACT

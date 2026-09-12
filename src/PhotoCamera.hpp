@@ -64,7 +64,7 @@ struct PhotoAnmLoadedView
     AnmLoadedSprite *sprites;
     AnmRawInstr **scripts;
     void *textures;
-    i32 numberEntriesToBeLoaded;
+    i32 postloadEntryNumber;
 
     ZunResult SetSprite(AnmVm *vm, i32 spriteIdx);
     void SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript);

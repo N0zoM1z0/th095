@@ -156,7 +156,7 @@ void AnmVm::Initialize()
 
 ZunResult AnmLoaded::SetSprite(AnmVm *vm, i32 spriteIdx)
 {
-    if (this->rawData == NULL || this->numberEntriesToBeLoaded != 0)
+    if (this->rawData == NULL || this->postloadEntryNumber != 0)
     {
         return ZUN_ERROR;
     }
@@ -199,7 +199,7 @@ void AnmLoaded::SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript)
     ZunTimer *timerScratch;
     AnmManager *anmManager;
 
-    if (beginningOfScript == NULL || this->numberEntriesToBeLoaded != 0)
+    if (beginningOfScript == NULL || this->postloadEntryNumber != 0)
     {
         memset(vm, 0, sizeof(AnmVm));
     }

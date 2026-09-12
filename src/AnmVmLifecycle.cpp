@@ -19,7 +19,7 @@ struct AnmLoadedPositionView
     AnmLoadedSprite *sprites;
     AnmRawInstr **scripts;
     void *textures;
-    i32 numberEntriesToBeLoaded;
+    i32 postloadEntryNumber;
 
     AnmVmId CreateVmAtScreen(i32 scriptIndex, Float3 *position);
     AnmVmId CreateVmAtWorld(i32 scriptIndex, Float3 *position);
