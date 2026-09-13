@@ -336,7 +336,7 @@ static __forceinline void PhotoGameSetStateTimerPhase(ZunTimer *timer)
 i32 PhotoGameUpdateView::Initialize()
 {
     this->effectAnm = reinterpret_cast<PhotoAnmLoadedView *>(
-        g_AnmManager->LoadAnm(7, "player.anm"));
+        TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 7, "player.anm"));
     if (this->effectAnm == NULL)
     {
         g_GameErrorContext.Log(
@@ -379,7 +379,7 @@ i32 PhotoGameUpdateView::Initialize()
 
 i32 LoadPhotoPlayerAnm()
 {
-    if (g_AnmManager->LoadAnm(7, "player.anm") == NULL)
+    if (TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 7, "player.anm") == NULL)
     {
         g_GameErrorContext.Log(
             "\x8e\xa9\x8b\x40\x83\x66\x81\x5b\x83\x5e\x82\xaa"

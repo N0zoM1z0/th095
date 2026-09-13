@@ -704,6 +704,19 @@ struct AnmManager
     void ClearCameraSettings() { this->cameraMode = 0xff; }
 };
 
+// Several exact-facing TH095 call sites historically decorate target
+// PreloadAnm @ 0x004432E0 as AnmManager::LoadAnm. Preserve that relocation
+// spelling in exact/DIFF builds while using the canonical preload API in the
+// reconstructed runtime, where loaded slots must be reused rather than
+// replacement-loaded.
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_ANM_PRELOAD_COMPAT(manager, index, path) \
+    (manager)->LoadAnm((index), (path))
+#else
+#define TH095_ANM_PRELOAD_COMPAT(manager, index, path) \
+    (manager)->PreloadAnm((index), (path))
+#endif
+
 typedef char VertexDiffuseXyzrhwSizeIs14[(sizeof(VertexDiffuseXyzrhw) == 0x14) ? 1 : -1];
 typedef char VertexTex1XyzrhwSizeIs18[(sizeof(VertexTex1Xyzrhw) == 0x18) ? 1 : -1];
 typedef char AnmManagerPrimaryVmAtF0C[(offsetof(AnmManager, primaryVm) == 0xf0c) ? 1 : -1];

@@ -790,7 +790,7 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
 i32 PhotoEnemyManagerView::LoadResources()
 {
     this->enemyAnm =
-        g_AnmManager->LoadAnm(8, TH095_PHOTO_ENEMY_SCENE->enemyAnmPath);
+        TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 8, TH095_PHOTO_ENEMY_SCENE->enemyAnmPath);
     if (this->enemyAnm == NULL)
     {
         g_GameErrorContext.Log(

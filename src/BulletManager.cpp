@@ -576,7 +576,7 @@ PhotoBulletManagerView::PhotoBulletManagerView()
 i32 PhotoBulletManagerView::Initialize()
 {
     this->anmSpawner = reinterpret_cast<PhotoBulletAnmSpawnerView *>(
-        g_AnmManager->LoadAnm(6, "bullet.anm"));
+        TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 6, "bullet.anm"));
     if (this->anmSpawner == NULL)
     {
         g_GameErrorContext.Log(
@@ -597,7 +597,7 @@ i32 PhotoBulletManagerView::Initialize()
 // FUNCTION: TH095 0x00404E70.
 i32 LoadPhotoBulletAnm()
 {
-    if (g_AnmManager->LoadAnm(6, "bullet.anm") == NULL)
+    if (TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 6, "bullet.anm") == NULL)
     {
         g_GameErrorContext.Log(
             "\x93\x47\x92\x65\x83\x66\x81\x5b"

@@ -272,7 +272,7 @@ ResultScreenResult ResultScreen::Initialize()
     u8 *cursor;
     ResultScreenInitializeLocals locals;
 
-    this->anm = g_AnmManager->LoadAnm(10, "pause.anm");
+    this->anm = TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 10, "pause.anm");
     if (this->anm == NULL)
     {
         g_GameErrorContext.Log(
@@ -349,7 +349,7 @@ ResultScreenResult ResultScreen::Initialize()
 // FUNCTION: TH095 0x00426820.
 ResultScreenResult ResultScreen::LoadAnm()
 {
-    if (g_AnmManager->LoadAnm(10, "pause.anm") == NULL)
+    if (TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 10, "pause.anm") == NULL)
     {
         g_GameErrorContext.Log(
             "\x89\xe6\x96\xca\x8d\x5c\x90\xac"
