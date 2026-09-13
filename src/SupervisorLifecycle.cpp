@@ -54,6 +54,24 @@ struct ReplayScanWorker
     ~ReplayScanWorker();
 };
 
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+struct SupervisorLifecycleFlags
+{
+    union
+    {
+        u32 raw;
+        struct
+        {
+            u32 unknown00_05 : 6;
+            u32 dummyMidiTimerEnabled : 1;
+            u32 unknown07_31 : 25;
+        };
+    };
+};
+typedef char SupervisorLifecycleFlagsSizeIs4[
+    (sizeof(SupervisorLifecycleFlags) == 4) ? 1 : -1];
+#endif
+
 struct Supervisor
 {
     u8 unknown000[0x11c];
@@ -62,7 +80,11 @@ struct Supervisor
     u8 unknown3c4[0x30];
     SupervisorTimerLifecycle timer;
     u8 unknown400[0x44];
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     u32 flags;
+#else
+    SupervisorLifecycleFlags flags;
+#endif
     u8 unknown448[0x200];
     ReplayScanWorker replayWorker;
     u8 unknown660[0x140];
@@ -99,8 +121,17 @@ DIFFABLE_STATIC(Supervisor, g_Supervisor);
 Supervisor::Supervisor()
 {
     memset(this, 0, sizeof(*this));
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     flags |= 0x40;
+#else
+    flags.dummyMidiTimerEnabled = 1;
+#endif
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     flags |= 0x100;
+#else
+    // No independent TH095-local consumer has established bit 8's role.
+    flags.raw |= 0x100;
+#endif
 }
 
 Supervisor::~Supervisor()
