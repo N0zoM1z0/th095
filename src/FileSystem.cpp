@@ -191,7 +191,7 @@ LPBYTE Encrypt(LPBYTE data, i32 size, u8 xorValue, u8 xorValueIncrement,
     return data;
 }
 
-LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL isExternalResource)
+LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL loadFromDisk)
 {
     OpenFileLocals locals;
 
@@ -199,7 +199,7 @@ LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL isExternalResource)
 
     EnterFileSystemCriticalSection(2);
     TH095_FILE_SYSTEM_ACTIVE_COUNT++;
-    if (!isExternalResource)
+    if (!loadFromDisk)
     {
         locals.entryName = strrchr(path, '\\');
         if (locals.entryName == NULL)

@@ -443,7 +443,7 @@ struct FileSystem
 #else
 namespace FileSystem
 {
-u8 *OpenFile(const char *path, i32 *fileSize, BOOL isExternalResource);
+u8 *OpenFile(const char *path, i32 *fileSize, BOOL loadFromDisk);
 i32 WriteDataToFile(const char *path, void *data, size_t size);
 BOOL CheckIfFileAlreadyExists(const char *path);
 i32 OpenWriteFile(char *path);

@@ -102,7 +102,7 @@ namespace FileSystem
 LPBYTE Decrypt(LPBYTE inData, i32 size, u8 xorValue, u8 xorValueInc, i32 chunkSize, i32 maxBytes);
 LPBYTE TryDecryptFromTable(LPBYTE inData, LPINT unused, i32 size);
 LPBYTE Encrypt(LPBYTE inData, i32 size, u8 xorValue, u8 xorValueInc, i32 chunkSize, i32 maxBytes);
-LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL isExternalResource);
+LPBYTE OpenFile(LPCSTR path, i32 *fileSize, BOOL loadFromDisk);
 BOOL CheckIfFileAlreadyExists(LPCSTR path);
 int WriteDataToFile(LPCSTR path, LPVOID data, size_t size);
 }; // namespace FileSystem
