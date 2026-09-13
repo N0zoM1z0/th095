@@ -403,7 +403,11 @@ void __fastcall FrontEndLifecycleView::LoadThread(void *)
     while (TH095_FRONT_SURFACE_CAPTURE_INDEX >= 0 ||
            TH095_FRONT_TEXTURE_CAPTURE_INDEX >= 0)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (((TH095_FRONT_SUPERVISOR_FLAGS >> 7) & 1) != 0)
+#else
+        if (g_Supervisor.flags.receivedCloseMsg != 0)
+#endif
             goto loadFailed;
         Sleep(1);
     }
