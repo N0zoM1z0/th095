@@ -124,12 +124,12 @@ void SceneSelectControllerView::SetDetailDigitSprite(i32 vmIndex,
 
 void SceneSelectControllerView::ShowDetailDigit(i32 vmIndex)
 {
-    g_AnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord |= 2;
+    g_AnmManager->GetVm(this->vmIds.values[vmIndex])->drawEnabled = 1;
 }
 
 void SceneSelectControllerView::HideDetailDigit(i32 vmIndex)
 {
-    g_AnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord &= ~2;
+    g_AnmManager->GetVm(this->vmIds.values[vmIndex])->drawEnabled = 0;
 }
 
 #undef SET_DETAIL_SPRITE

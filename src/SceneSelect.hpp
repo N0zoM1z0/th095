@@ -191,12 +191,12 @@ struct SceneSelectControllerView
 
     void ShowDetailDigitInline(i32 vmIndex)
     {
-        g_AnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord |= 2;
+        g_AnmManager->GetVm(this->vmIds.values[vmIndex])->drawEnabled = 1;
     }
 
     void HideDetailDigitInline(i32 vmIndex)
     {
-        g_AnmManager->GetVm(this->vmIds.values[vmIndex])->flagsWord &= ~2;
+        g_AnmManager->GetVm(this->vmIds.values[vmIndex])->drawEnabled = 0;
     }
 
     char *ResolveSceneText(i32 textId, i32 column, i32 argument1,
