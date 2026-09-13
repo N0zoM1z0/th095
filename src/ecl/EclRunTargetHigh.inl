@@ -411,8 +411,13 @@ enter_subroutine:
         break;
 
     case 126:
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         TH095_ENEMY_FLAGS(enemy)->flag24 =
             reinterpret_cast<u8 *>(instruction->operands)[0];
+#else
+        TH095_ENEMY_ECL_CONTROL_BITS(enemy).suppressEclCallStack =
+            reinterpret_cast<u8 *>(instruction->operands)[0];
+#endif
         break;
 
     case 128:

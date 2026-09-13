@@ -358,7 +358,11 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
     enemy->activeEclContext->currentInstr =
         reinterpret_cast<EclRawInstruction *>(reinterpret_cast<u8 *>(instruction) + instruction->nextOffset);
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     if (((TargetEclControlWord(enemy) >> 24) & 1) == 0)
+#else
+    if (TH095_ENEMY_ECL_CONTROL_BITS(enemy).suppressEclCallStack == 0)
+#endif
     {
         enemy->activeEclCallStack[enemy->activeEclCallStackDepth] =
             *enemy->activeEclContext;
@@ -373,8 +377,13 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
         &enemy->activeEclContext->callParameterInts[0]) =
         g_PhotoEnemyManager->eclManager->callParameters;
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     if (((TargetEclControlWord(enemy) >> 24) & 1) == 0 &&
         enemy->activeEclCallStackDepth < 15)
+#else
+    if (TH095_ENEMY_ECL_CONTROL_BITS(enemy).suppressEclCallStack == 0 &&
+        enemy->activeEclCallStackDepth < 15)
+#endif
     {
         ++enemy->activeEclCallStackDepth;
     }
@@ -385,7 +394,11 @@ int __fastcall PopEclContext(Enemy *enemy, EclRawInstruction *instruction)
 {
     i32 contextIndex;
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     if (((TargetEclControlWord(enemy) >> 24) & 1) != 0)
+#else
+    if (TH095_ENEMY_ECL_CONTROL_BITS(enemy).suppressEclCallStack != 0)
+#endif
         utils::DebugPrint("error : no Stack Ret\r\n");
 
     --enemy->activeEclCallStackDepth;
