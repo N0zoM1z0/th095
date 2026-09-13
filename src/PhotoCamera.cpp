@@ -266,6 +266,18 @@ enum PhotoCameraFlags
     PHOTO_FLAG_TARGET_SOUND_PLAYED = 1 << 6,
 };
 
+#if defined(TH095_MATCH_EXACT)
+#define PHOTO_CAMERA_FOCUSED(flags) (((flags) >> 1) & 1)
+#define PHOTO_CAMERA_TARGET_FRAME_ACTIVE(flags) (((flags) >> 2) & 1)
+#define PHOTO_CAMERA_TARGET_SOUND_PLAYED(flags) (((flags) >> 6) & 1)
+#else
+#define PHOTO_CAMERA_FOCUSED(flags) (((flags) & PHOTO_FLAG_FOCUSED) != 0)
+#define PHOTO_CAMERA_TARGET_FRAME_ACTIVE(flags) \
+    (((flags) & PHOTO_FLAG_TARGET_FRAME_ACTIVE) != 0)
+#define PHOTO_CAMERA_TARGET_SOUND_PLAYED(flags) \
+    (((flags) & PHOTO_FLAG_TARGET_SOUND_PLAYED) != 0)
+#endif
+
 enum PhotoScoreFlags
 {
     PHOTO_SCORE_ENEMY = 1 << 0,
@@ -1037,7 +1049,7 @@ void PhotoCameraState::UpdateCharge()
         PhotoAnmVmId effect;
     } locals;
 
-    if (((this->flags >> 1) & 1) == 0)
+    if (PHOTO_CAMERA_FOCUSED(this->flags) == 0)
     {
         if (this->charge < 1.0f)
         {
@@ -1261,7 +1273,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
     switch (camera->mode)
     {
     case PHOTO_CAMERA_TRACKING:
-        if (((camera->flags >> 1) & 1) == 0)
+        if (PHOTO_CAMERA_FOCUSED(camera->flags) == 0)
         {
             if (g_PhotoRuntime->enemies[0] == NULL)
             {
@@ -1470,7 +1482,7 @@ updateCharge:
                  PhotoInputMask(g_PhotoInput, 2) != 0)
             camera->captureRequested = 1;
 
-        if (((camera->flags >> 1) & 1) == 0 &&
+        if (PHOTO_CAMERA_FOCUSED(camera->flags) == 0 &&
             camera->charge >= 1.0f &&
             PhotoInputMask(g_PhotoInput, 2) != 0 &&
             PhotoInputMask(g_PhotoInput, 1) == 0 &&
@@ -1520,14 +1532,14 @@ cameraActive:
 
             if (camera->CountPhotoTargets(NULL, NULL) != 0)
             {
-                if (((camera->flags >> 6) & 1) == 0)
+                if (PHOTO_CAMERA_TARGET_SOUND_PLAYED(camera->flags) == 0)
                 {
                     if (PHOTO_SOUND_SUPPRESSED == 0)
                         PhotoSoundPlayer()->PlaySoundByIdx(
                             static_cast<SoundIdx>(0x2e), 0);
                     camera->flags |= PHOTO_FLAG_TARGET_SOUND_PLAYED;
                 }
-                if (((camera->flags >> 2) & 1) == 0)
+                if (PHOTO_CAMERA_TARGET_FRAME_ACTIVE(camera->flags) == 0)
                 {
                     AnmVm *frameVm = camera->vmIds[0].GetVm();
                     SetPhotoVmColor(frameVm, 0xff, 0x20, 0x20);
@@ -1547,7 +1559,7 @@ cameraActive:
             else
             {
                 camera->flags &= ~PHOTO_FLAG_TARGET_SOUND_PLAYED;
-                if (((camera->flags >> 2) & 1) != 0)
+                if (PHOTO_CAMERA_TARGET_FRAME_ACTIVE(camera->flags) != 0)
                 {
                     AnmVm *frameVm = camera->vmIds[0].GetVm();
                     SetPhotoVmColor(frameVm, 0xff, 0xff, 0xff);
