@@ -1015,7 +1015,7 @@ i32 PhotoStageStateView::Update()
             if (this->waitingForTexture == 0)
             {
                 ScreenEffect::RegisterChain(
-                    SCREEN_EFFECT_FULL_FADE_OUT, 15, 1, 0xc0ffafcf, 0, 0x1d);
+                    SCREEN_EFFECT_ARCADE_PULSE, 15, 1, 0xc0ffafcf, 0, 0x1d);
 
                 PhotoStageAccumulateCapturedScore(this);
 

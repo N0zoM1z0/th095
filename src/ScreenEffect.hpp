@@ -12,9 +12,10 @@ enum ScreenEffectType
     SCREEN_EFFECT_FULL_FADE_IN = 0,
     SCREEN_EFFECT_SHAKE = 1,
     SCREEN_EFFECT_ARCADE_FADE_OUT = 2,
-    // TH095 swaps values 3/4 relative to the TH08 source oracle.
-    SCREEN_EFFECT_FULL_FADE_OUT = 3,
-    SCREEN_EFFECT_ARCADE_PULSE = 4,
+    // The target switch table maps value 3 to the arcade pulse callbacks and
+    // value 4 to the full-screen fade-out callbacks.
+    SCREEN_EFFECT_ARCADE_PULSE = 3,
+    SCREEN_EFFECT_FULL_FADE_OUT = 4,
     SCREEN_EFFECT_FULL_FADE_HOLD = 5,
     SCREEN_EFFECT_ARCADE_FADE_HOLD = 6,
     SCREEN_EFFECT_SHAKE_ENVELOPE = 7,
@@ -65,16 +66,19 @@ struct ScreenEffect
     {
         int duration;
         int shakeEnvelopeAmplitude;
+        int arcadePulseFadeFrames;
     };
     union
     {
         int rawParameter0;
         int shakeEnvelopeRampUpFrames;
+        int arcadePulseRepeatCount;
     };
     union
     {
         int rawParameter1;
         int shakeEnvelopeHoldFrames;
+        unsigned int arcadePulseColor;
     };
     union
     {
@@ -114,6 +118,10 @@ typedef char ScreenEffectShakeEnvelopeAt14[
      offsetof(ScreenEffect, shakeEnvelopeRampUpFrames) == 0x18 &&
      offsetof(ScreenEffect, shakeEnvelopeHoldFrames) == 0x1c &&
      offsetof(ScreenEffect, shakeEnvelopeRampDownFrames) == 0x20) ? 1 : -1];
+typedef char ScreenEffectArcadePulseAt14[
+    (offsetof(ScreenEffect, arcadePulseFadeFrames) == 0x14 &&
+     offsetof(ScreenEffect, arcadePulseRepeatCount) == 0x18 &&
+     offsetof(ScreenEffect, arcadePulseColor) == 0x1c) ? 1 : -1];
 #endif
 typedef char ScreenEffectRawAt18[(offsetof(ScreenEffect, rawParameter0) == 0x18) ? 1 : -1];
 typedef char ScreenEffectReleaseAt24[(offsetof(ScreenEffect, fadeReleaseRequested) == 0x24) ? 1 : -1];

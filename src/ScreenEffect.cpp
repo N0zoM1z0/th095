@@ -216,7 +216,7 @@ int ScreenEffect::DrawArcadePulse(ScreenEffect *screenEffect)
     ScreenEffectRect rect = {128.0f, 16.0f, 512.0f, 464.0f};
     ScreenEffect::DrawSquare(
         &rect, (screenEffect->overlayAlpha << 24) |
-                   ((unsigned int)screenEffect->rawParameter1 & 0x00ffffff));
+                   (screenEffect->arcadePulseColor & 0x00ffffff));
     return 1;
 }
 
@@ -246,24 +246,24 @@ int ScreenEffect::CalcFadeOut(ScreenEffect *screenEffect)
 int ScreenEffect::CalcArcadePulse(ScreenEffect *screenEffect)
 {
     unsigned int alpha =
-        ((unsigned int)screenEffect->rawParameter1 >> 24) & 0xff;
+        (screenEffect->arcadePulseColor >> 24) & 0xff;
 
     if (g_ScreenEffectCounter != 0)
         return 0;
 
-    if (screenEffect->timer < screenEffect->duration)
+    if (screenEffect->timer < screenEffect->arcadePulseFadeFrames)
     {
         screenEffect->overlayAlpha =
             alpha - (int)(((float)screenEffect->timer * alpha) /
-                          screenEffect->duration);
+                          screenEffect->arcadePulseFadeFrames);
         if (screenEffect->overlayAlpha < 0)
             screenEffect->overlayAlpha = 0;
     }
     else
     {
         screenEffect->overlayAlpha = 0;
-        screenEffect->rawParameter0--;
-        if (screenEffect->rawParameter0 <= 0)
+        screenEffect->arcadePulseRepeatCount--;
+        if (screenEffect->arcadePulseRepeatCount <= 0)
             return 0;
         screenEffect->timer = 0;
     }
