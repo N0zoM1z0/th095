@@ -693,7 +693,7 @@ single TH095 code, layout, or behavior claim.
 
 | ID | Class | Durable fact | Evidence |
 | --- | --- | --- | --- |
-| LEAF-001 | exact | `ReleaseResultAnm @ 0x0042AAD0` is a 20-byte authored slot-nine ANM release wrapper. It calls `AnmManager::ReleaseAnm(9)` and returns zero; the unique accepted caller is `Supervisor::DeletedCallback`. | Canonical `photo-release-result-anm` unit with both relocations plus exact caller relocation |
+| LEAF-001 | exact / target-observed / semantic | Exact-facing `ReleaseResultAnm @ 0x0042AAD0` is the 20-byte slot-nine release wrapper for the same `photo.anm` resource loaded by `LoadPhotoAnm @ 0x0042AA90`, not a distinct result-only ANM. The loader uniquely receives `PreloadAnm(9, "photo.anm")` from front-end `LoadResources @ 0x00445A50`; the releaser uniquely receives `ReleaseAnm(9)` from `Supervisor::DeletedCallback @ 0x004244D0`. Normal production therefore calls it `ReleasePhotoAnm`, while exact-facing source/ledgers retain `ReleaseResultAnm`. | Factory-attested TH095 decompiles/callers for `0x0042AA90/0x0042AAD0/0x00445A50/0x004244D0`; canonical load/release units and exact caller relocations; SEM-162 |
 | LEAF-002 | exact | `utils::DebugPrint @ 0x00412180` is an authored empty variadic sink in the release build, not a CRT thunk. | Canonical relocation-free 5-byte unit, 119 accepted caller relocations, and TH08 source where the body is empty without `DEBUG` |
 | LEAF-003 | compiler-owned | `PbgArchiveEntry::vector deleting destructor @ 0x00455080` selects vector/scalar destruction and conditional deallocation from compiler flags. | Attested Ghidra/target control flow; excluded from authored denominator |
 ### PbgArchive inline-allocation-phase oracle

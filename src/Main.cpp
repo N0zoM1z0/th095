@@ -217,7 +217,7 @@ void InitializeScoreData();
 void ReleaseScoreData();
 HANDLE StartSoundLoadThread();
 i32 ReleasePhotoBulletAnm();
-i32 ReleaseResultAnm();
+i32 ReleasePhotoAnm();
 #ifdef DIFFBUILD
 i32 ReleaseReplayAnm();
 #define TH095_RELEASE_REPLAY_ANM() ReleaseReplayAnm()
@@ -1998,7 +1998,7 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
 
     ((Supervisor *)arg)->ReleaseGameManagers();
     ReleasePhotoBulletAnm();
-    ReleaseResultAnm();
+    ReleasePhotoAnm();
     TH095_RELEASE_REPLAY_ANM();
     ReleasePhotoFrontAnm();
     TH095_FRONT_END_RELEASE_RESOURCES();

@@ -278,7 +278,7 @@ i32 LoadPhotoAnm()
 }
 
 // FUNCTION: TH095 0x0042AAD0.
-i32 ReleaseResultAnm()
+i32 ReleasePhotoAnm()
 {
     g_AnmManager->ReleaseAnm(9);
     return 0;
