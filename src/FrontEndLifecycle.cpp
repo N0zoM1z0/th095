@@ -344,14 +344,22 @@ i32 FrontEndLifecycleView::Initialize()
         g_SoundPlayer.InitSoundBuffers();
         if (g_MusicArchiveBaseOffset == 0)
         {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             if (((g_FrontEndConfigurationFlags >> 4) & 1) == 0)
+#else
+            if (g_Supervisor.config.options.preloadMusic == 0)
+#endif
                 g_SoundPlayer.StartBGM("thbgm.dat");
             else
                 strcpy(g_SoundPlayer.currentBgmFileName, "thbgm.dat");
         }
         else
         {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             if (((g_FrontEndConfigurationFlags >> 4) & 1) == 0)
+#else
+            if (g_Supervisor.config.options.preloadMusic == 0)
+#endif
                 g_SoundPlayer.StartBGM("th095.dat");
             else
                 strcpy(g_SoundPlayer.currentBgmFileName, "th095.dat");
