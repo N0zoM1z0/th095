@@ -636,7 +636,7 @@ enter_subroutine:
                     reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0), 0x125, reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0));
 #endif
-        g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x2d), 0);
+        g_SoundPlayer.PlaySoundByIdx(TH095_SOUND_PHOTO_PULSE, 0);
         break;
     }
 
