@@ -273,7 +273,11 @@ void PhotoCameraState::Initialize()
     this->viewfinderPosition.y = 400.0f;
     this->charge = 0.5f;
     this->photoLimit = 0;
+#if defined(DIFFBUILD)
     this->flags = (this->flags & ~0x18) | 0x10;
+#else
+    this->chargeUiState = PHOTO_CAMERA_CHARGE_UI_INITIAL;
+#endif
     this->captureRequested = 1;
     this->trackingRadius = 56.0f;
 

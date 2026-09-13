@@ -120,6 +120,15 @@ typedef char PhotoBulletManagerAnmAt27C5B0[
 
 extern PhotoBulletManagerView *g_PhotoBulletManager;
 
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+enum PhotoCameraChargeUiState
+{
+    PHOTO_CAMERA_CHARGE_UI_BELOW_FULL = 0,
+    PHOTO_CAMERA_CHARGE_UI_FULL = 1,
+    PHOTO_CAMERA_CHARGE_UI_INITIAL = 2
+};
+#endif
+
 struct PhotoCameraState
 {
     i32 mode;                         // +0x000
@@ -136,7 +145,24 @@ struct PhotoCameraState
     i32 photoIndex;                   // +0xba8
     i32 photosTaken;                  // +0xbac
     i32 photoLimit;                   // +0xbb0
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     u32 flags;                        // +0xbb4
+#else
+    union
+    {
+        u32 flags;                    // +0xbb4
+        struct
+        {
+            u32 alternateCapture : 1;
+            u32 focused : 1;
+            u32 targetFrameActive : 1;
+            u32 chargeUiState : 2;
+            u32 chargeEffectActive : 1;
+            u32 targetSoundPlayed : 1;
+            u32 unknownFlags7_31 : 25;
+        };
+    };
+#endif
 #if defined(TH095_MATCH_EXACT)
     i32 unknownbb8;                   // +0xbb8
 #else

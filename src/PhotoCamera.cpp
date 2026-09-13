@@ -1404,7 +1404,11 @@ updateCharge:
         {
             if (camera->charge >= 1.0f)
             {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
                 if (((camera->flags >> 3) & 3) != 1)
+#else
+                if (camera->chargeUiState != PHOTO_CAMERA_CHARGE_UI_FULL)
+#endif
                 {
                     if (PHOTO_SOUND_SUPPRESSED == 0)
                     {
@@ -1423,9 +1427,13 @@ updateCharge:
                     }
                     camera->vmIds[0].SetInterrupt(2);
                     camera->vmIds[1].SetInterrupt(2);
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
                     camera->flags =
                         (camera->flags & ~PHOTO_FLAG_CHARGE_UI_MASK) |
                         (1 << 3);
+#else
+                    camera->chargeUiState = PHOTO_CAMERA_CHARGE_UI_FULL;
+#endif
                     camera->viewfinderVms[0].pendingInterrupt = 2;
                     camera->viewfinderVms[1].pendingInterrupt = 2;
                     camera->viewfinderVms[2].pendingInterrupt = 2;
@@ -1447,7 +1455,11 @@ updateCharge:
             }
             else
             {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
                 if (((camera->flags >> 3) & 3) != 0)
+#else
+                if (camera->chargeUiState != PHOTO_CAMERA_CHARGE_UI_BELOW_FULL)
+#endif
                 {
                     if (camera->vmIds[9])
                     {
@@ -1463,7 +1475,11 @@ updateCharge:
                         camera->vmIds[0].value, 3);
                     TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[1].value, 3);
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
                     camera->flags &= ~PHOTO_FLAG_CHARGE_UI_MASK;
+#else
+                    camera->chargeUiState = PHOTO_CAMERA_CHARGE_UI_BELOW_FULL;
+#endif
                     camera->viewfinderVms[0].pendingInterrupt = 3;
                     camera->viewfinderVms[1].pendingInterrupt = 3;
                     camera->viewfinderVms[2].pendingInterrupt = 3;
