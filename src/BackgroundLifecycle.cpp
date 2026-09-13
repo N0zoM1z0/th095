@@ -74,11 +74,21 @@ extern Supervisor g_Supervisor;
 // Bounded lifecycle-only view. Background.cpp intentionally keeps a storage
 // view for the TH095-specific runtime fields; this TU gives VC7 ownership of the
 // real non-trivial members and therefore the target vector ctor/dtor iterators.
+struct BackgroundStageHeader;
+struct BackgroundStageObject;
+struct BackgroundStageObjectInstance;
 struct BackgroundStageInstruction;
 struct Background
 {
+#ifdef TH095_MATCH_EXACT
     void *stageData;
     u8 unknown004[0x0c];
+#else
+    BackgroundStageHeader *stageData;
+    BackgroundStageObject **stageObjects;
+    BackgroundStageObjectInstance *stageObjectInstances;
+    u8 *stageScript;
+#endif
     ZunTimer stageScriptTimer;
     BackgroundStageInstruction *stageInstruction;
     ZunTimer interpolationCurrentTimers[4];
@@ -101,6 +111,14 @@ struct Background
 extern Background *g_Background;
 extern u8 *g_BackgroundStageDataCache;
 
+#ifndef TH095_MATCH_EXACT
+typedef char BackgroundLifecycleStageObjectsAt4[
+    (offsetof(Background, stageObjects) == 0x04) ? 1 : -1];
+typedef char BackgroundLifecycleStageObjectInstancesAt8[
+    (offsetof(Background, stageObjectInstances) == 0x08) ? 1 : -1];
+typedef char BackgroundLifecycleStageScriptAtC[
+    (offsetof(Background, stageScript) == 0x0c) ? 1 : -1];
+#endif
 typedef char BackgroundLifecycleTimerAt10[
     (offsetof(Background, stageScriptTimer) == 0x10) ? 1 : -1];
 typedef char BackgroundLifecycleTimersAt20[
