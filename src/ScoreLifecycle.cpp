@@ -41,22 +41,45 @@ static __forceinline void ScoreFreeDecompressedPhase(void *data)
     free(data);
 }
 
+struct ScoreProfileRandomFillView
+{
+    u8 beforeRandomWords[8];
+    u16 randomWords[512];
+};
+
+typedef char ScoreProfileRandomFillSizeIs408[
+    (sizeof(ScoreProfileRandomFillView) == 0x408) ? 1 : -1];
+typedef char ScoreProfileRandomFillWordsAt8[
+    (offsetof(ScoreProfileRandomFillView, randomWords) == 8) ? 1 : -1];
+
 struct ScoreProfileView
 {
     u16 magic;
     u16 version;
     u32 size;
     i32 checksum;
-    char name[9];
-    u8 unknown015[0x0d];
-    u16 randomWords[512];
+    char replayName[9];
+    u8 unknown015;
+    i16 lastSelectedGroup;
+    i16 lastSelectedScene;
+    union
+    {
+        u8 nextSceneByGroup[11];
+        ScoreProfileRandomFillView randomFill;
+    };
     u8 tail[0x36];
 
     void Initialize();
 };
 typedef char ScoreProfileSizeIs458[(sizeof(ScoreProfileView) == 0x458) ? 1 : -1];
-typedef char ScoreProfileNameAt0C[(offsetof(ScoreProfileView, name) == 0x0c) ? 1 : -1];
-typedef char ScoreProfileRandomAt22[(offsetof(ScoreProfileView, randomWords) == 0x22) ? 1 : -1];
+typedef char ScoreProfileReplayNameAt0C[
+    (offsetof(ScoreProfileView, replayName) == 0x0c) ? 1 : -1];
+typedef char ScoreProfileSelectionAt16[
+    (offsetof(ScoreProfileView, lastSelectedGroup) == 0x16 &&
+     offsetof(ScoreProfileView, lastSelectedScene) == 0x18) ? 1 : -1];
+typedef char ScoreProfileNextSceneAt1A[
+    (offsetof(ScoreProfileView, nextSceneByGroup) == 0x1a &&
+     offsetof(ScoreProfileView, randomFill) == 0x1a) ? 1 : -1];
 
 ResultSaveDataView *g_ResultSaveData;
 
@@ -99,9 +122,9 @@ void ScoreProfileView::Initialize()
     this->magic = 0x5453;
     this->version = 0;
     this->size = 0x458;
-    strcpy(this->name, "        ");
+    strcpy(this->replayName, "        ");
     for (u32 i = 0; i < 512; ++i)
-        this->randomWords[i] = g_Rng.GetRandomU16();
+        this->randomFill.randomWords[i] = g_Rng.GetRandomU16();
 }
 
 // FUNCTION: TH095 0x004355F0.
