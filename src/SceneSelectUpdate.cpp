@@ -116,6 +116,35 @@ typedef char SceneSelectUpdatePendingTextureCountAt63CC[
     (offsetof(SceneSelectUpdateView, pendingTextureCount) == 0x63cc) ? 1 : -1];
 typedef char SceneSelectUpdateSizeIs6400[
     (sizeof(SceneSelectUpdateView) == 0x6400) ? 1 : -1];
+typedef char SceneSelectBestShotPreviewRecordLayoutCheck[
+    (offsetof(ResultSaveDataView, bestShotRecords) == 0x3160 &&
+     offsetof(ResultBestShotRecordView, width) == 0x0c &&
+     offsetof(ResultBestShotRecordView, height) == 0x0e &&
+     offsetof(ResultBestShotRecordView, comment) == 0x18 &&
+     offsetof(ResultBestShotRecordView, componentsLoaded) == 0x69 &&
+     sizeof(ResultBestShotRecordView) == 0x78) ? 1 : -1];
+
+#ifdef DIFFBUILD
+#define TH095_SCENE_BEST_SHOT_COMMENT(index) \
+    (reinterpret_cast<char *>(g_ResultSaveData) + (index) * 0x78 + 0x3178)
+#define TH095_SCENE_BEST_SHOT_COMPONENTS_LOADED(index) \
+    ((reinterpret_cast<u8 *>(g_ResultSaveData) + (index) * 0x78)[0x31c9])
+#define TH095_SCENE_BEST_SHOT_WIDTH(index) \
+    (*reinterpret_cast<u16 *>(reinterpret_cast<u8 *>(g_ResultSaveData) + \
+                              (index) * 0x78 + 0x316c))
+#define TH095_SCENE_BEST_SHOT_HEIGHT(index) \
+    (*reinterpret_cast<u16 *>(reinterpret_cast<u8 *>(g_ResultSaveData) + \
+                              (index) * 0x78 + 0x316e))
+#else
+#define TH095_SCENE_BEST_SHOT_COMMENT(index) \
+    (g_ResultSaveData->bestShotRecords[(index)].comment)
+#define TH095_SCENE_BEST_SHOT_COMPONENTS_LOADED(index) \
+    (g_ResultSaveData->bestShotRecords[(index)].componentsLoaded)
+#define TH095_SCENE_BEST_SHOT_WIDTH(index) \
+    (g_ResultSaveData->bestShotRecords[(index)].width)
+#define TH095_SCENE_BEST_SHOT_HEIGHT(index) \
+    (g_ResultSaveData->bestShotRecords[(index)].height)
+#endif
 
 /*
  * The target keeps these eighteen simultaneously live values in one
@@ -384,9 +413,9 @@ static __forceinline void SceneSelectProcessLoadedSceneQueue(
                         reinterpret_cast<AnmTextVmView *>(
                             g_AnmManager->GetVm(view->vmIds.values[0x82])),
                         0x00efcfcf, 0,
-                        reinterpret_cast<char *>(g_ResultSaveData) +
+                        TH095_SCENE_BEST_SHOT_COMMENT(
                             reinterpret_cast<SceneQueueFrontMemberView *>(
-                                &view->loadedSceneQueue)->Front() * 0x78 + 0x3178);
+                                &view->loadedSceneQueue)->Front()));
             }
         }
         g_Supervisor.EnterCriticalSectionWrapper(4);
@@ -1281,27 +1310,21 @@ update_preview_text:
         {
             previewVm =
                 g_AnmManager->GetVm(view->vmIds.values[0x12]);
-            if ((reinterpret_cast<u8 *>(g_ResultSaveData) +
-                 view->selectedScoreEntryIndex * 0x78)[0x31c9] != 0)
+            if (TH095_SCENE_BEST_SHOT_COMPONENTS_LOADED(
+                    view->selectedScoreEntryIndex) != 0)
             {
                 previewVm->loadedSprite->uvEndX =
-                    (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_ResultSaveData) +
-                        view->selectedScoreEntryIndex * 0x78 + 0x316c) /
-                    256.0f;
+                    (f32)TH095_SCENE_BEST_SHOT_WIDTH(
+                        view->selectedScoreEntryIndex) / 256.0f;
                 previewVm->loadedSprite->uvEndY =
-                    (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_ResultSaveData) +
-                        view->selectedScoreEntryIndex * 0x78 + 0x316e) /
-                    256.0f;
+                    (f32)TH095_SCENE_BEST_SHOT_HEIGHT(
+                        view->selectedScoreEntryIndex) / 256.0f;
                 previewVm->spriteWidth =
-                    (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_ResultSaveData) +
-                        view->selectedScoreEntryIndex * 0x78 + 0x316c);
+                    (f32)TH095_SCENE_BEST_SHOT_WIDTH(
+                        view->selectedScoreEntryIndex);
                 previewVm->spriteHeight =
-                    (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_ResultSaveData) +
-                        view->selectedScoreEntryIndex * 0x78 + 0x316e);
+                    (f32)TH095_SCENE_BEST_SHOT_HEIGHT(
+                        view->selectedScoreEntryIndex);
                 previewVm->drawEnabled = 1;
             }
             else
@@ -1361,6 +1384,11 @@ update_preview_text:
 }
 
 #undef SET_SCENE_VM_VISIBILITY
+
+#undef TH095_SCENE_BEST_SHOT_COMMENT
+#undef TH095_SCENE_BEST_SHOT_COMPONENTS_LOADED
+#undef TH095_SCENE_BEST_SHOT_WIDTH
+#undef TH095_SCENE_BEST_SHOT_HEIGHT
 
 } // namespace th095
 
