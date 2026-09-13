@@ -1,5 +1,8 @@
 #include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "ecl/EnemyEclRuntimeView.hpp"
+#endif
 
 namespace th095
 {
@@ -107,7 +110,11 @@ int PhotoRuntimeView::CountPhotoTargets(
             continue;
         if (((locals.enemy->flags1 >> 8) & 3U) != 0)
             continue;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (((locals.enemy->flags1 >> 4) & 1U) != 0 ||
+#else
+        if (TH095_ENEMY_ECL_CONTROL_BITS(locals.enemy).hiddenFromDrawGroups != 0 ||
+#endif
             ((locals.enemy->flags1 >> 5) & 1U) != 0 ||
             ((locals.enemy->flags2 >> 6) & 1U) != 0)
             continue;

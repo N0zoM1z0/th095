@@ -3,6 +3,9 @@
 #endif
 #include "PhotoCamera.hpp"
 #include "GameplayGlobals.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "ecl/EnemyEclRuntimeView.hpp"
+#endif
 #ifndef DIFFBUILD
 #include "InputRuntime.hpp"
 #endif
@@ -964,7 +967,12 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
         {
             continue;
         }
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (((g_PhotoRuntime->enemies[locals.enemyIndex]->flags >> 4) & 1) != 0 ||
+#else
+        if (TH095_ENEMY_ECL_CONTROL_BITS(
+                g_PhotoRuntime->enemies[locals.enemyIndex]).hiddenFromDrawGroups != 0 ||
+#endif
             ((g_PhotoRuntime->enemies[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
             ((g_PhotoRuntime->enemies[locals.enemyIndex]->flags2 >> 6) & 1) != 0)
         {
