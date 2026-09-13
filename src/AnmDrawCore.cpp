@@ -196,7 +196,7 @@ void AnmManager::SetRenderStateForVm3D(AnmVm *vm)
         }
     }
 
-    color.color = vm->flag15 ? vm->color2.color : vm->color1.color;
+    color.color = vm->useSecondaryColor ? vm->color2.color : vm->color1.color;
     if (this->useMixColor)
     {
         color.r = MixAnmColor(color.r, this->color.r);
@@ -403,7 +403,7 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
     if ((flags & 2) == 0)
     {
         soundIndexLocal01.color =
-            vm->flag15 ? vm->color2.color : vm->color1.color;
+            vm->useSecondaryColor ? vm->color2.color : vm->color1.color;
         if (this->useMixColor)
         {
             soundIndexLocal01.r =
@@ -818,7 +818,7 @@ ZunResult AnmManager::DrawMode6(AnmVm *vm)
     draw.distanceRange =
         g_Background->photoBlendCurrent.nearDistance -
         g_Background->photoBlendCurrent.farDistance;
-    draw.color.color = vm->flag15 ? vm->color2.color : vm->color1.color;
+    draw.color.color = vm->useSecondaryColor ? vm->color2.color : vm->color1.color;
     draw.cameraDelta =
         vm->position + vm->positionOffset - g_BackgroundCameraPosition;
     draw.distance = D3DXVec3Length(
@@ -1014,7 +1014,7 @@ ZunResult AnmManager::DrawMode7(AnmVm *vm)
     draw.distanceRange =
         g_Background->photoBlendCurrent.nearDistance -
         g_Background->photoBlendCurrent.farDistance;
-    draw.color.color = vm->flag15 ? vm->color2.color : vm->color1.color;
+    draw.color.color = vm->useSecondaryColor ? vm->color2.color : vm->color1.color;
 
     for (draw.i = 0; draw.i < 4; draw.i++)
     {

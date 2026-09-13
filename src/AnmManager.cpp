@@ -634,8 +634,8 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
         case ANM_OP_RENDER_BYTE:
             vm->renderMode = currentInstr->byteArgs[0];
             break;
-        case ANM_OP_FLAG15:
-            vm->flag15 = currentInstr->byteArgs[0];
+        case ANM_OP_USE_SECONDARY_COLOR:
+            vm->useSecondaryColor = currentInstr->byteArgs[0];
             break;
         case ANM_OP_FLAG27:
             vm->flag27 = currentInstr->byteArgs[0];

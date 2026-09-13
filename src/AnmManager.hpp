@@ -122,7 +122,7 @@ enum AnmOpcode
     ANM_OP_ALPHA2 = 77,
     ANM_OP_COLOR2_TIME = 78,
     ANM_OP_ALPHA2_TIME = 79,
-    ANM_OP_FLAG15 = 80,
+    ANM_OP_USE_SECONDARY_COLOR = 80,
     ANM_OP_RETURN = 81,
     ANM_OP_FLAG27 = 82,
     ANM_OP_COMMIT_POSITION = 83,
@@ -330,7 +330,7 @@ struct AnmVmBase
             u32 stopped : 1;
             u32 flag13 : 1;
             u32 unknownFlag14 : 1;
-            u32 flag15 : 1;
+            u32 useSecondaryColor : 1;
             u32 unknownFlag16 : 1;
             u32 scriptDisabled : 1;
             u32 renderStateA : 2;
