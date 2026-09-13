@@ -75,7 +75,8 @@ i32 SceneValueQueue::Pop()
 #define refreshUnlockGroup soundIndexLocal01
 #define refreshLockedGroup jLocal00
 #define refreshStateGroup preloadBufferLocal03
-void SceneSelectControllerView::RefreshSceneSelection(i32)
+void SceneSelectControllerView::RefreshSceneSelection(
+    i32 ignoredSelectedScoreEntryIndex)
 {
     i8 refreshDisplayState;
     i32 refreshSelectedGroup;

@@ -167,7 +167,7 @@ struct SceneSelectControllerView
         return this->selectedGroup;
     }
 
-    void RefreshSceneSelection(i32 unused);
+    void RefreshSceneSelection(i32 ignoredSelectedScoreEntryIndex);
     void BuildScenePreviewText();
     void UpdateSelectedSceneDetails();
     ChainCallbackResult Update();
