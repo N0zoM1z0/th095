@@ -190,8 +190,12 @@ enter_subroutine:
         enemy->activeEclContext->currentInstr =
             reinterpret_cast<EclRawInstruction *>(
                 reinterpret_cast<u8 *>(instruction) + instruction->nextOffset);
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (((TH095_RUN_ECL_CONTROL_WORD(enemy)
               >> 24) & 1U) == 0)
+#else
+        if (TH095_ENEMY_ECL_CONTROL_BITS(enemy).suppressEclCallStack == 0)
+#endif
         {
             memcpy(enemy->activeEclCallStack + enemy->activeEclCallStackDepth,
                    &enemy->mainEclContextStorage, 0x230);
