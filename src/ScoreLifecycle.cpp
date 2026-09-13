@@ -54,10 +54,7 @@ typedef char ScoreProfileRandomFillWordsAt8[
 
 struct ScoreProfileView
 {
-    u16 magic;
-    u16 version;
-    u32 size;
-    i32 checksum;
+    ScoreRecordHeaderView recordHeader;
     char replayName[9];
     u8 unknown015;
     i16 lastSelectedGroup;
@@ -72,6 +69,8 @@ struct ScoreProfileView
     void Initialize();
 };
 typedef char ScoreProfileSizeIs458[(sizeof(ScoreProfileView) == 0x458) ? 1 : -1];
+typedef char ScoreProfileRecordHeaderAt00[
+    (offsetof(ScoreProfileView, recordHeader) == 0x00) ? 1 : -1];
 typedef char ScoreProfileReplayNameAt0C[
     (offsetof(ScoreProfileView, replayName) == 0x0c) ? 1 : -1];
 typedef char ScoreProfileSelectionAt16[
@@ -119,9 +118,9 @@ ResultSaveDataView::~ResultSaveDataView()
 // FUNCTION: TH095 0x00435500.
 void ScoreProfileView::Initialize()
 {
-    this->magic = 0x5453;
-    this->version = 0;
-    this->size = 0x458;
+    this->recordHeader.magic = 0x5453;
+    this->recordHeader.version = 0;
+    this->recordHeader.size = 0x458;
     strcpy(this->replayName, "        ");
     for (u32 i = 0; i < 512; ++i)
         this->randomFill.randomWords[i] = g_Rng.GetRandomU16();

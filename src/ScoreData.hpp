@@ -29,6 +29,19 @@ struct ScoreFileHeader
 };
 
 #if !defined(TH095_MATCH_EXACT)
+struct ScoreRecordHeaderView
+{
+    u16 magic;
+    u16 version;
+    u32 size;
+    i32 checksum;
+};
+
+typedef char ScoreRecordHeaderSizeIs0C[
+    (sizeof(ScoreRecordHeaderView) == 0x0c) ? 1 : -1];
+#endif
+
+#if !defined(TH095_MATCH_EXACT)
 struct PhotoScoreBreakdownView
 {
     i32 finalScore;
@@ -164,7 +177,11 @@ struct ResultSaveDataView
         // runtime object or another allocation.
         struct
         {
+#if defined(TH095_MATCH_EXACT)
             u8 unknownRuntime008[0x0c];
+#else
+            ScoreRecordHeaderView profileRecordHeader;
+#endif
             char replayName[9];
             u8 unknownRuntime01d;
             i16 lastSelectedGroup;
@@ -217,6 +234,10 @@ typedef char ResultScoreEntrySizeIs60[
     (sizeof(ResultScoreEntryView) == 0x60) ? 1 : -1];
 typedef char ResultSaveProfileDataAt08[
     (offsetof(ResultSaveDataView, profileData) == 0x08) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT)
+typedef char ResultSaveProfileRecordHeaderAt08[
+    (offsetof(ResultSaveDataView, profileRecordHeader) == 0x08) ? 1 : -1];
+#endif
 typedef char ResultSaveNextSceneAt22[
     (offsetof(ResultSaveDataView, profile.nextSceneByGroup) == 0x22) ? 1 : -1];
 typedef char ResultSaveScoreEntriesAt460[

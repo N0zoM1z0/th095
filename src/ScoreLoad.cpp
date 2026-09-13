@@ -9,19 +9,6 @@
 namespace th095
 {
 
-#if !defined(TH095_MATCH_EXACT)
-struct ScoreRecordHeaderView
-{
-    u16 magic;
-    u16 version;
-    u32 size;
-    i32 checksum;
-};
-
-typedef char ScoreRecordHeaderSizeIs0C[
-    (sizeof(ScoreRecordHeaderView) == 0x0c) ? 1 : -1];
-#endif
-
 struct ScoreProfileRawView
 {
     u8 bytes[0x458];
