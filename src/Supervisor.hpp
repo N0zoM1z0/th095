@@ -303,7 +303,13 @@ struct Supervisor
     i32 isInitialStageLoad;
     i32 releaseResourcesOnRestart;
     i32 keepStageResources;
+#ifdef TH095_MATCH_EXACT
     i32 unconsumedDword170;
+#else
+    // Compatibility projection of canonical GameConfiguration::controllerMapping
+    // bindings[4].inputs[3] at target Supervisor +0x170.
+    u32 serializedControllerBinding4Input3Compat;
+#endif
     i32 screenTransitionCountdown; // Commonly set for screen transitions and decremented once per frame, but never actually used for
                 // anything
     i32 suppressFpsDisplay;
@@ -352,6 +358,9 @@ C_ASSERT(sizeof(Supervisor) == 0x364);
 C_ASSERT(offsetof(Supervisor, isInitialStageLoad) == 0x164);
 C_ASSERT(offsetof(Supervisor, releaseResourcesOnRestart) == 0x168);
 C_ASSERT(offsetof(Supervisor, keepStageResources) == 0x16c);
+#ifndef TH095_MATCH_EXACT
+C_ASSERT(offsetof(Supervisor, serializedControllerBinding4Input3Compat) == 0x170);
+#endif
 C_ASSERT(offsetof(Supervisor, suppressFpsDisplay) == 0x178);
 C_ASSERT(offsetof(Supervisor, framerateMultiplier) == 0x188);
 C_ASSERT(offsetof(Supervisor, recordedFps) == 0x198);
