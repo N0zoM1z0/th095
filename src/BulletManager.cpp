@@ -805,7 +805,11 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
     locals.bullet->flags &= ~0x00000008;
     locals.bullet->flags &= ~0x00000004;
     locals.bullet->flags |= 0x00000002;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     locals.bullet->flags &= ~0x00000010;
+#else
+    locals.bullet->captureDisabled = 0;
+#endif
 
     PhotoBulletSpawnVmSetupPhase(this, locals.bullet, descriptor);
     locals.bullet->drawBucketIndex =

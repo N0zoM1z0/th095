@@ -322,7 +322,22 @@ typedef char ExtendedPlayerScaleAt2A18[
 
 struct ExtendedBulletView
 {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     u32 flags;
+#else
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlag0 : 1;
+            u32 collidable : 1;
+            u32 unknownFlags2 : 2;
+            u32 captureDisabled : 1;
+            u32 unknownFlags5 : 27;
+        };
+    };
+#endif
     AnmVm vm;
     ExtendedVector position;
     ExtendedVector velocity;
@@ -749,7 +764,11 @@ void __fastcall FadeOwnedCapturedBullets(
         if (locals.bullet->ownerTag ==
             enemy->activeEclContext->extraIntVariables[2])
         {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
             if (((locals.bullet->flags >> 4) & 1U) != 0)
+#else
+            if (locals.bullet->captureDisabled != 0)
+#endif
             {
                 locals.interpolationMode = 0;
                 locals.vm = &locals.bullet->vm;
@@ -1160,7 +1179,11 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
                 enemy->activeEclContext->extraFloatVariables[2],
                 enemy->activeEclContext->extraFloatVariables[3]);
             index->flags &= ~2U;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
             index->flags |= 0x10U;
+#else
+            index->captureDisabled = 1;
+#endif
         }
     }
 
@@ -1185,7 +1208,11 @@ void __fastcall Callback03(Enemy *enemy, EclRawInstruction *instruction)
         index->vm.pendingInterrupt = 2;
         TH095_EXTENDED_FROM_ANGLE(index->velocity, index->angle, index->speed);
         index->flags |= 2U;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
         index->flags &= ~0x10U;
+#else
+        index->captureDisabled = 0;
+#endif
     }
 
     SetExtendedBackgroundVm0State3();
@@ -1220,7 +1247,11 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
                     ? enemy->activeEclContext->extraFloatVariables[3]
                     : index->speed);
             index->flags &= ~2U;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
             index->flags |= 0x10U;
+#else
+            index->captureDisabled = 1;
+#endif
             TH095_EXT_ANM_EXECUTE(&index->vm);
             FinalizeExtendedBulletAfterExecute(&index->vm, 0);
         }
