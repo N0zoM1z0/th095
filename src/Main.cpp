@@ -1232,6 +1232,17 @@ static __forceinline void GetSupervisorAnmSurface(
     *output = manager->surfaces[surfaceIndex];
 }
 
+// Main's exact-facing OnDraw2 relocation historically names the background
+// selector as ConfigureGameplayViewport. Keep that decoration for DIFFBUILD,
+// but use the canonical background selector in the reconstructed runtime.
+#ifdef DIFFBUILD
+#define TH095_ON_DRAW2_CONFIGURE_VIEWPORT(supervisor, index) \
+    (supervisor)->ConfigureGameplayViewport(index)
+#else
+#define TH095_ON_DRAW2_CONFIGURE_VIEWPORT(supervisor, index) \
+    (supervisor)->ConfigureBackgroundViewport(index)
+#endif
+
 // FUNCTION: TH095 0x004235D0.
 i32 __fastcall Supervisor::OnDraw2(Supervisor *s)
 {
@@ -1243,7 +1254,7 @@ i32 __fastcall Supervisor::OnDraw2(Supervisor *s)
         Float3 position;
     } locals;
 
-    s->ConfigureGameplayViewport(1);
+    TH095_ON_DRAW2_CONFIGURE_VIEWPORT(s, 1);
     if (g_Supervisor.backbufferClearColor != 0)
     {
         g_Supervisor.d3dDevice->Clear(
@@ -1298,6 +1309,7 @@ i32 __fastcall Supervisor::OnDraw2(Supervisor *s)
     }
     return 1;
 }
+#undef TH095_ON_DRAW2_CONFIGURE_VIEWPORT
 
 // FUNCTION: TH095 0x00423790.
 i32 __fastcall Supervisor::DrawFpsCounter(Supervisor *s)
