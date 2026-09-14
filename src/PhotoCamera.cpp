@@ -27,6 +27,12 @@ namespace th095
     PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE 0
+#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET 1
+#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW 2
+#endif
+
 #ifndef TH095_MATCH_EXACT
 struct Background
 {
@@ -1292,11 +1298,13 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
             }
             else
             {
-                if (g_PhotoGame->cameraTrackingMode == 2)
+                if (g_PhotoGame->cameraTrackingMode ==
+                    TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW)
                 {
                     camera->trackingRadius = 56.0f;
                 }
-                else if (g_PhotoGame->cameraTrackingMode == 1)
+                else if (g_PhotoGame->cameraTrackingMode ==
+                         TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET)
                 {
                     f32 playerDistance = PhotoDistance2D(
                         &g_PhotoGame->playerPosition, &camera->viewfinderPosition);
@@ -1329,7 +1337,8 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     camera->trackingRadius += 1.0f;
                 }
 
-                if (g_PhotoGame->cameraTrackingMode != 0)
+                if (g_PhotoGame->cameraTrackingMode !=
+                    TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
                 {
                     camera->cameraOffset = PhotoCameraTrackingDifference(
                         g_PhotoRuntime->enemies[0]->position,
@@ -1365,7 +1374,8 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                 camera->previousTrackingOrigin = g_PhotoGame->playerPosition;
             }
 
-            if (g_PhotoGame->cameraTrackingMode != 0)
+            if (g_PhotoGame->cameraTrackingMode !=
+                TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
             {
                 camera->viewfinderPosition =
                     (camera->cameraOffset - camera->viewfinderPosition) *

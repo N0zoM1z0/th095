@@ -33,6 +33,26 @@ enum PhotoPlayerMovementDirection
 
 typedef char PhotoPlayerMovementDirectionSizeIs4[
     (sizeof(PhotoPlayerMovementDirection) == 4) ? 1 : -1];
+
+enum PhotoPlayerCameraTrackingMode
+{
+    PHOTO_PLAYER_CAMERA_TRACKING_FREE = 0,
+    PHOTO_PLAYER_CAMERA_TRACKING_TARGET = 1,
+    PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW = 2,
+};
+
+typedef char PhotoPlayerCameraTrackingModeSizeIs4[
+    (sizeof(PhotoPlayerCameraTrackingMode) == 4) ? 1 : -1];
+#endif
+
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE 0
+#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET 1
+#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW 2
+#else
+#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE PHOTO_PLAYER_CAMERA_TRACKING_FREE
+#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET PHOTO_PLAYER_CAMERA_TRACKING_TARGET
+#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW
 #endif
 
 // Shared production view of the target PlayerInf object published through
@@ -72,7 +92,8 @@ struct PhotoPlayerRuntimeView
     PhotoPlayerMode mode;                          // +0x0000
     u8 unknown0004[0x02d4 - 0x0004];
     PhotoPlayerMovementDirection movementState;    // +0x02d4
-    u8 unknown02d8[0x03a8 - 0x02d8];
+    PhotoPlayerCameraTrackingMode cameraTrackingMode; // +0x02d8
+    u8 unknown02dc[0x03a8 - 0x02dc];
 #endif
     Float3 hurtboxBoundsMin;                       // +0x03a8
     Float3 hurtboxBoundsMax;                       // +0x03b4
@@ -95,6 +116,8 @@ typedef char PhotoPlayerRuntimeModeAt0000[
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 typedef char PhotoPlayerRuntimeMovementStateAt02D4[
     (offsetof(PhotoPlayerRuntimeView, movementState) == 0x02d4) ? 1 : -1];
+typedef char PhotoPlayerRuntimeCameraTrackingModeAt02D8[
+    (offsetof(PhotoPlayerRuntimeView, cameraTrackingMode) == 0x02d8) ? 1 : -1];
 #endif
 typedef char PhotoPlayerRuntimeHurtboxMinAt03A8[
     (offsetof(PhotoPlayerRuntimeView, hurtboxBoundsMin) == 0x03a8) ? 1 : -1];

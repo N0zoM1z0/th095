@@ -195,10 +195,11 @@ struct PhotoGameUpdateView
     AnmVm effectVm;
 #if defined(DIFFBUILD)
     i32 movementState;
+    i32 cameraTrackingMode;
 #else
     PhotoPlayerMovementDirection movementState;
+    PhotoPlayerCameraTrackingMode cameraTrackingMode;
 #endif
-    i32 cameraTrackingMode;
     Float3 previousPosition;
     Float3 positionHistory[16];
     Float3 hurtboxBoundsMin;
@@ -764,9 +765,12 @@ i32 PhotoGameUpdateView::UpdateMainState()
         this->movementState = PHOTO_PLAYER_DIRECTION_NONE;
     }
 
-    this->cameraTrackingMode = PhotoGameInputMask(g_PhotoInput, 1) != 0;
+    this->cameraTrackingMode =
+        PhotoGameInputMask(g_PhotoInput, 1) != 0
+            ? TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET
+            : TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE;
 
-    if (this->cameraTrackingMode != 0)
+    if (this->cameraTrackingMode != TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
     {
         if (PhotoGameFocusVmIsZero(&this->focusVm))
         {
@@ -813,7 +817,8 @@ i32 PhotoGameUpdateView::UpdateMainState()
         {
             verticalSpeed *= 0.22f;
             horizontalSpeed *= 0.22f;
-            this->cameraTrackingMode = 2;
+            this->cameraTrackingMode =
+                TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW;
         }
     }
     else
