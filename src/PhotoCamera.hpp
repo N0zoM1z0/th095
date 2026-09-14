@@ -215,7 +215,11 @@ struct PhotoGameStateView
 #endif
     PhotoAnmLoadedView *effectAnm;     // +0x0004
     AnmVm effectVm;                    // +0x0008
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i32 movementState;                 // +0x02d4
+#else
+    PhotoPlayerMovementDirection movementState; // +0x02d4
+#endif
     i32 cameraTrackingMode;            // +0x02d8
     u8 unknown02dc[0x0420 - 0x02dc];
     ZunTimer completionTimer;           // +0x0420
@@ -226,6 +230,10 @@ struct PhotoGameStateView
     f32 AngleToPoint(const Float3 *point);
 };
 
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+typedef char PhotoGameMovementStateAt2D4[
+    (offsetof(PhotoGameStateView, movementState) == 0x02d4) ? 1 : -1];
+#endif
 typedef char PhotoGamePlayerPositionAt1E30[
     (offsetof(PhotoGameStateView, playerPosition) == 0x1e30) ? 1 : -1];
 typedef char PhotoGameCompletionTimerAt420[

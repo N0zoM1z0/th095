@@ -17,6 +17,22 @@ enum PhotoPlayerMode
     PHOTO_PLAYER_MODE_DEATH_TRANSITION = 2,
     PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION = 3,
 };
+
+enum PhotoPlayerMovementDirection
+{
+    PHOTO_PLAYER_DIRECTION_NONE = 0,
+    PHOTO_PLAYER_DIRECTION_UP = 1,
+    PHOTO_PLAYER_DIRECTION_DOWN = 2,
+    PHOTO_PLAYER_DIRECTION_LEFT = 3,
+    PHOTO_PLAYER_DIRECTION_RIGHT = 4,
+    PHOTO_PLAYER_DIRECTION_UP_LEFT = 5,
+    PHOTO_PLAYER_DIRECTION_UP_RIGHT = 6,
+    PHOTO_PLAYER_DIRECTION_DOWN_LEFT = 7,
+    PHOTO_PLAYER_DIRECTION_DOWN_RIGHT = 8,
+};
+
+typedef char PhotoPlayerMovementDirectionSizeIs4[
+    (sizeof(PhotoPlayerMovementDirection) == 4) ? 1 : -1];
 #endif
 
 // Shared production view of the target PlayerInf object published through
@@ -51,10 +67,13 @@ struct PhotoPlayerRuntimeView
 {
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i32 mode;                                      // +0x0000
+    u8 unknown0004[0x03a8 - 0x0004];
 #else
     PhotoPlayerMode mode;                          // +0x0000
+    u8 unknown0004[0x02d4 - 0x0004];
+    PhotoPlayerMovementDirection movementState;    // +0x02d4
+    u8 unknown02d8[0x03a8 - 0x02d8];
 #endif
-    u8 unknown0004[0x03a8 - 0x0004];
     Float3 hurtboxBoundsMin;                       // +0x03a8
     Float3 hurtboxBoundsMax;                       // +0x03b4
     u8 unknown03c0[0x0420 - 0x03c0];
@@ -73,6 +92,10 @@ struct PhotoPlayerRuntimeView
 
 typedef char PhotoPlayerRuntimeModeAt0000[
     (offsetof(PhotoPlayerRuntimeView, mode) == 0x0000) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+typedef char PhotoPlayerRuntimeMovementStateAt02D4[
+    (offsetof(PhotoPlayerRuntimeView, movementState) == 0x02d4) ? 1 : -1];
+#endif
 typedef char PhotoPlayerRuntimeHurtboxMinAt03A8[
     (offsetof(PhotoPlayerRuntimeView, hurtboxBoundsMin) == 0x03a8) ? 1 : -1];
 typedef char PhotoPlayerRuntimeHurtboxMaxAt03B4[

@@ -143,6 +143,7 @@ typedef char PhotoPlayerNormalAxisSpeedAt14[
 typedef char PhotoPlayerFocusedDiagonalSpeedAt20[
     (offsetof(PhotoPlayerMovementConfigView, focusedDiagonalSpeed) == 0x20) ? 1 : -1];
 
+#ifdef DIFFBUILD
 enum PhotoPlayerMovementDirection
 {
     PHOTO_PLAYER_DIRECTION_NONE = 0,
@@ -155,6 +156,7 @@ enum PhotoPlayerMovementDirection
     PHOTO_PLAYER_DIRECTION_DOWN_LEFT = 7,
     PHOTO_PLAYER_DIRECTION_DOWN_RIGHT = 8,
 };
+#endif
 
 static inline u16 PhotoGameInputMask(u16 input, u16 mask)
 {
@@ -191,7 +193,11 @@ struct PhotoGameUpdateView
 #endif
     PhotoAnmLoadedView *effectAnm;
     AnmVm effectVm;
+#if defined(DIFFBUILD)
     i32 movementState;
+#else
+    PhotoPlayerMovementDirection movementState;
+#endif
     i32 cameraTrackingMode;
     Float3 previousPosition;
     Float3 positionHistory[16];
