@@ -207,7 +207,8 @@ struct Supervisor
     CRITICAL_SECTION criticalSections[7];            // +0x664
     u8 criticalSectionLockCounts[7];                 // +0x70c
     u8 unknown713;
-    i32 loadingVmsHaveBeenSetup;                     // +0x714
+    // 0: inactive, 1: loading VMs active, >=2: completion/prompt frame counter.
+    i32 loadingScreenState;                          // +0x714
     u8 unknown718[0x50];
     SupervisorFogCacheState fogState;                // +0x768
     u8 unknown76c[8];
@@ -299,7 +300,7 @@ typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : 
 typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanWorker) == 0x648) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
 typedef char SupervisorCriticalLockCountsAt70C[(offsetof(Supervisor, criticalSectionLockCounts) == 0x70c) ? 1 : -1];
-typedef char SupervisorLoadingVmsAt714[(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x714) ? 1 : -1];
+typedef char SupervisorLoadingScreenStateAt714[(offsetof(Supervisor, loadingScreenState) == 0x714) ? 1 : -1];
 typedef char SupervisorSecondaryReplayScanAt7A0[(offsetof(Supervisor, secondaryReplayScanWorker) == 0x7a0) ? 1 : -1];
 typedef char SupervisorClearColorAt7B8[(offsetof(Supervisor, backbufferClearColor) == 0x7b8) ? 1 : -1];
 

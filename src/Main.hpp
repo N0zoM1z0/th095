@@ -304,7 +304,8 @@ struct Supervisor
     CRITICAL_SECTION criticalSections[7];       // +0x664
     u8 criticalSectionLockCounts[7];            // +0x70c
     u8 unknown713;
-    i32 loadingVmsHaveBeenSetup;                // +0x714
+    // 0: inactive, 1: loading VMs active, >=2: completion/prompt frame counter.
+    i32 loadingScreenState;                     // +0x714
     u8 unknown718[0x50];
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i32 fogState;                               // +0x768
@@ -404,7 +405,7 @@ typedef char SupervisorScreenshotInfoAt53C[(offsetof(Supervisor, screenshotInfoH
 typedef char SupervisorScreenshotPixelsAt540[(offsetof(Supervisor, screenshotPixels) == 0x540) ? 1 : -1];
 typedef char SupervisorScreenshotPathAt544[(offsetof(Supervisor, screenshotPath) == 0x544) ? 1 : -1];
 typedef char SupervisorCriticalLockCountsAt70C[(offsetof(Supervisor, criticalSectionLockCounts) == 0x70c) ? 1 : -1];
-typedef char SupervisorLoadingVmsAt714[(offsetof(Supervisor, loadingVmsHaveBeenSetup) == 0x714) ? 1 : -1];
+typedef char SupervisorLoadingScreenStateAt714[(offsetof(Supervisor, loadingScreenState) == 0x714) ? 1 : -1];
 typedef char SupervisorLagNumeratorAt78C[(offsetof(Supervisor, lagNumerator) == 0x78c) ? 1 : -1];
 typedef char SupervisorVersionDataAt778[(offsetof(Supervisor, versionData) == 0x778) ? 1 : -1];
 typedef char SupervisorFrontEndAt780[(offsetof(Supervisor, frontEndController) == 0x780) ? 1 : -1];
