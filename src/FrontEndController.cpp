@@ -789,15 +789,15 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
 #define FRONT_END_LOADED_SCENE_COUNT                                        \
     (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x61b0))
 #else
-#define FRONT_END_GROUP_PREVIEW_DATA_QUEUE (&this->selectionQueue + 2)
-#define FRONT_END_SCENE_PREVIEW_DATA_QUEUE (&this->selectionQueue + 4)
-#define FRONT_END_GROUP_PREVIEW_SIZE_COUNT ((&this->selectionQueue)[3].count)
-#define FRONT_END_SCENE_PREVIEW_SIZE_COUNT ((&this->selectionQueue)[5].count)
-#define FRONT_END_GROUP_PREVIEW_COUNT ((&this->selectionQueue)[6].count)
-#define FRONT_END_SCENE_PREVIEW_COUNT ((&this->selectionQueue)[7].count)
-#define FRONT_END_LOADED_GROUP_COUNT ((&this->selectionQueue)[8].count)
+#define FRONT_END_GROUP_PREVIEW_DATA_QUEUE (&this->groupPreviewDataQueue)
+#define FRONT_END_SCENE_PREVIEW_DATA_QUEUE (&this->scenePreviewDataQueue)
+#define FRONT_END_GROUP_PREVIEW_SIZE_COUNT (this->groupPreviewSizeQueue.count)
+#define FRONT_END_SCENE_PREVIEW_SIZE_COUNT (this->scenePreviewSizeQueue.count)
+#define FRONT_END_GROUP_PREVIEW_COUNT (this->groupPreviewQueue.count)
+#define FRONT_END_SCENE_PREVIEW_COUNT (this->scenePreviewQueue.count)
+#define FRONT_END_LOADED_GROUP_COUNT (this->loadedGroupQueue.count)
 #define FRONT_END_SELECTION_COUNT (this->selectionQueue.count)
-#define FRONT_END_LOADED_SCENE_COUNT ((&this->selectionQueue)[1].count)
+#define FRONT_END_LOADED_SCENE_COUNT (this->loadedSceneQueue.count)
 #endif
             while (FRONT_END_GROUP_PREVIEW_DATA_QUEUE->Size() != 0)
             {
