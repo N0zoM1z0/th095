@@ -10755,3 +10755,112 @@ non-ANM resource family. Keep shared bit 8, ReplayScanWorker `unknown010`,
 score/replay reserved words, Sound/PBG writer-only metadata, ANM bit 14,
 compact tail storage, and other single-ended fields Unknown absent new local
 evidence. The semantic phase remains active-incomplete.
+
+### SEM-193 — narrow the ECL Background interface
+
+**Scope.** Rotate away from the writer-only compact `phaseStartingLife @ +0x2960`
+plateau into a historical-runtime owner contradiction exposed by the protocol
+scan. `src/Background.hpp` presented a complete `Background` layout of 0x6600
+bytes, including a three-value `SpellBackgroundState` and a field at `+0x0B24`,
+while the maintained TH095 `Background.cpp` reconstructs a separate live owner
+of 0x201C bytes and uses its spell-photo counter at `+0x175C`. Repository search
+shows that `Background.hpp` is currently included only by `src/ecl/EclRun.cpp`,
+and that ECL translation unit only needs the `g_Background` pointer plus
+`StartSpellBackground()` and `StopSpellBackground()`. This transaction narrows
+only the normal-production ECL-facing declaration. It does not change the live
+Background object, spell rendering behavior, exact/DIFF declaration surface,
+or any field inside `Background.cpp`.
+
+**Observed.** Fresh Factory-attested TH095 v1.02a decompilation of
+`Background::Background @ 0x004020C0` and `Background::Create @ 0x004024A0`
+proves the runtime extent independently of maintained headers. `Create` calls
+`operator new(0x201C)` and then the constructor; the constructor's target body
+clears 0x807 dwords, matching the same 0x201C-byte object. The factory then
+publishes its three Chain nodes at `+0x2010/+0x2014/+0x2018`.
+
+Fresh target `Background::StartSpellBackground @ 0x00404A30` writes
+`this+0x175C = 1` and stores two newly created VM ids at `+0x1FE4/+0x1FE8`.
+`StopSpellBackground @ 0x00404AC0` writes `this+0x175C = 0` and retires those
+same two VM ids. Maintained `DrawHighPrio @ 0x00402750`, already exact-backed,
+treats `+0x175C` as a nonzero frame counter: while it is below 60 the ordinary
+background is rendered, and a nonzero value is incremented once per draw. These
+TH095-local facts contradict projecting the header's `+0x0B24` three-state
+field onto the live runtime owner.
+
+**Corroborated.** `Background.cpp` independently asserts both
+`sizeof(Background) == 0x201C` for its target-local class and
+`offsetof(BackgroundStateView, spellBackgroundState) == 0x175C`. Its `Create`
+path stores the calc/high-draw/low-draw Chain nodes at the final three dwords,
+matching the target allocation extent. Repository-wide include/search audit
+finds only `src/ecl/EclRun.cpp` consuming `Background.hpp`; that TU uses no
+layout member from the header and calls only the two photo-mode methods through
+`g_Background`. The legacy full declaration is therefore unnecessary to the
+normal ECL owner boundary. Adjacent-engine provenance, including the historical
+header shape, is not used as semantic authority.
+
+**Inferred.** The maintainable normal representation is a method-only opaque
+`Background` interface for the ECL translation unit. It preserves the C++ member
+function names required to call the reconstructed TH095 implementations while
+refusing to assert a physical layout that the current target disproves. The
+actual 0x201C layout remains owned by the target-local reconstruction in
+`Background.cpp`; this batch does not attempt to export that private layout as a
+new shared ABI.
+
+**Unknown / bounded.** The historical source/provenance of the 0x6600
+`Background.hpp` layout and its `SpellBackgroundState` enum is not resolved by
+this batch. It may describe an adjacent-engine/source-shape representation or
+another historical owner, but it is not accepted as the TH095 live object from
+these observations. Exact and DIFFBUILD continue to retain that declaration to
+preserve their historical compiler-facing source surface. This batch does not
+rename `Background.cpp`'s `+0x175C` counter, reinterpret its 60-frame threshold,
+or claim any runtime visual equivalence scenario.
+
+**Production / exact representation.** Under normal production,
+`Background.hpp` now exposes only `Background::StartSpellBackground()` and
+`Background::StopSpellBackground()` before the existing `g_Background` extern.
+`TH095_MATCH_EXACT` and `DIFFBUILD` retain the previous full 0x6600 declaration,
+offset assertions, and enum unchanged. `EclRun.cpp` therefore calls the same
+member symbols through the same global owner while normal source no longer
+claims the incompatible physical layout. No target storage, function signature,
+decorated method name, persistent format, allocation, or control flow changes.
+
+**Validation.** Campaign preflight on committed SEM-192 HEAD
+`dd2cdf26c0803dee19055e1642e7966b3462e444` re-attested the 696,832-byte target
+(SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`),
+reported 697 source-present / 696 exact units / 336,486 exact bytes, and passed
+the repository Ghidra target check. Focused `src/ecl/EclRun.cpp` replay passed
+1/1 exact with zero private-label refresh. A command-local pinned VC7.1 normal
+probe emitted a 77,859-byte Intel 80386 COFF object.
+
+Because a shared header/owner representation changed, the cold aggregate exact
+gate ran immediately in four disjoint 22-source partitions and passed
+205 + 158 + 191 + 142 = **696/696** configured units across all 88 manifest
+sources with zero private-label refresh. A separate cold `build-whole.py`
+compiled all 88 production translation units with pinned VC7.1 and linked a
+verified 780,288-byte PE32 i386 GUI executable with build-local SHA-256
+`85adcf8f9f8b404c1fa68df1c59a67452ab4de4c346cefd955d8d2fa9463d2d4`.
+Successful linkage is production closure, not whole-image byte identity.
+Target-independent CI passed all 43 tests; tracking remains 1,880 provisional /
+697 source-present / 696 exact. `git diff --check` passed. No deterministic
+runtime scenario is claimed.
+
+**Recovery / analysis state.** The transaction began from committed SEM-192
+HEAD with zero staged/tracked-unstaged changes and preserved the same four
+pre-existing exclusions: unknown-origin generated-looking `EnemyManagerUpdate.i`,
+user-owned `droid.resume.txt`, and the paired runtime experiments
+`config/runtime-scenarios.json` / `scripts/runtime-diff.py`. Their hashes were
+rechecked unchanged. `.analysis/` started and currently remains exactly
+3,394,984 bytes; no current-session filesystem analysis root or retained large
+artifact was created because target evidence came through the registered
+read-only provider and the compile probe used command-local temporary storage.
+
+**Next evidence route.** After checkpoint, keep the phase active-incomplete and
+separate the newly corrected owner boundary from the target-local spell-photo
+counter itself. A useful bounded follow-up is `BackgroundStateView +0x175C`:
+Start publishes 1, DrawHighPrio increments nonzero values while `< 60`, and Stop
+publishes 0. Accept a counter-oriented name only after fresh target/maintained
+consumer review confirms that no additional writer or alternate value domain
+changes that interpretation. Otherwise rotate to ResultScreen or another
+independent state/resource protocol. Do not resurrect the legacy `+0x0B24`
+three-state enum as TH095 evidence merely because its identifier is attractive.
+The semantic phase remains active-incomplete.

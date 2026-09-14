@@ -14,6 +14,18 @@ struct RawStageInstr;
 struct RawStageObject;
 struct RawStageObjectInstance;
 
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+// The production ECL translation unit only needs the target-backed Background
+// photo-mode methods.  TH095's live Background owner is a separate 0x201C-byte
+// runtime layout reconstructed in Background.cpp; do not project the legacy
+// cross-engine full-layout declaration onto that object.
+struct Background
+{
+    void StartSpellBackground();
+    void StopSpellBackground();
+};
+#else
+
 struct RawStageHeader
 {
     i16 objectCount;
@@ -164,6 +176,8 @@ C_ASSERT(offsetof(Background, cullingDistanceSq) == 0x6470);
 C_ASSERT(offsetof(Background, specialEffectPointCount) == 0x6478);
 C_ASSERT(offsetof(Background, specialEffectPoints) == 0x6480);
 
+#endif // TH095_MATCH_EXACT || DIFFBUILD legacy Background layout
+
 DIFFABLE_EXTERN(Background *, g_Background);
 DIFFABLE_EXTERN_ARRAY(const char *, 9, g_StageEnemyAnms);
 DIFFABLE_EXTERN_ARRAY(const char *, 17, g_SpellEnemyAnms);
@@ -172,4 +186,4 @@ DIFFABLE_EXTERN_ARRAY(const char *, 9, g_StageSpellEclFiles);
 DIFFABLE_EXTERN_ARRAY(const char *, 17, g_SpellEclFiles);
 DIFFABLE_EXTERN_ARRAY(const char *, 9, g_GuiStageTextAnmPaths);
 DIFFABLE_EXTERN_ARRAY(const char *, 15, g_EffectAnms);
-}; // Namespace th08
+} // namespace th095
