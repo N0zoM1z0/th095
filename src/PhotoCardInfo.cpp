@@ -42,7 +42,22 @@ struct PhotoCardGameRuntimeView
 struct PhotoCardGameTaskView
 {
     u8 unknown000[0xfc];
+#ifdef DIFFBUILD
     u32 flags;
+#else
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlags0_1 : 2;
+            u32 gameplayLoadActive : 1;
+            u32 unknownFlags3_9 : 7;
+            u32 photoTransitionActive : 1;
+            u32 unknownFlags11_31 : 21;
+        };
+    };
+#endif
 };
 
 struct PhotoCardInfoView
@@ -312,11 +327,19 @@ i32 PhotoCardInfoView::Draw()
 // FUNCTION: TH095 0x00408C60.
 i32 __fastcall PhotoCardInfoView::OnUpdate(PhotoCardInfoView *cardInfo)
 {
+#ifdef DIFFBUILD
     if (((g_PhotoCardGameTask->flags >> 2) & 1) != 0)
+#else
+    if (g_PhotoCardGameTask->gameplayLoadActive != 0)
+#endif
     {
         return 1;
     }
+#ifdef DIFFBUILD
     if (((g_PhotoCardGameTask->flags >> 10) & 1) != 0)
+#else
+    if (g_PhotoCardGameTask->photoTransitionActive != 0)
+#endif
     {
         return 1;
     }
@@ -326,7 +349,11 @@ i32 __fastcall PhotoCardInfoView::OnUpdate(PhotoCardInfoView *cardInfo)
 // FUNCTION: TH095 0x00408CB0.
 i32 __fastcall PhotoCardInfoView::OnDraw(PhotoCardInfoView *cardInfo)
 {
+#ifdef DIFFBUILD
     if (((g_PhotoCardGameTask->flags >> 2) & 1) != 0)
+#else
+    if (g_PhotoCardGameTask->gameplayLoadActive != 0)
+#endif
     {
         return 1;
     }
