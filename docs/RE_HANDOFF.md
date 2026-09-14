@@ -499,3 +499,70 @@ current source state. After this handoff commit, issue fresh current-snapshot
 function-exact receipts for the bounded SEM-168/169 functions and one
 whole-build-closed receipt, then query the acceptance registry. Do not request
 semantic completion, whole-image exactness, or runtime-scenario credit.
+
+## GPT-web semantic continuation — SEM-170/171/172
+
+This is the newest GPT-web continuation point. The semantic phase remains
+**active-incomplete**. This handoff pauses browser execution only; it is not a
+readiness, completion, closure, or porting checkpoint.
+
+Three bounded semantic transactions were checkpointed in this campaign:
+
+- `16b75ef` / SEM-170, `gpt-web: recover Best Shot raw-file ownership`:
+  normal `ResultBestShotRecordView +0x70` is now `rawFileData`, the owning
+  loose Best Shot file image used as the parser/decompression source. Fresh
+  TH095 target evidence distinguishes it from separately allocated decoded
+  `pixelData @ +0x74`; `UpdateBestShotRecord` and the save-data destructor
+  independently close both lifetimes. `TH095_MATCH_EXACT` retains the
+  historical `componentData0` token.
+- `923b0f5` / SEM-171, `gpt-web: recover ReplayManager header ownership`:
+  normal `ReplayManager +0x04` is now `ownedFileHeader`. The pointer is always
+  the manager-owned allocation root whose first bytes are a `ReplayFileHeader`,
+  but the backing extent is mode/source dependent: record and loose-file paths
+  may own a standalone 0x24-byte header, while the archive-backed path owns a
+  larger entry image with the payload immediately after the header. Exact
+  source keeps `fileHeader`.
+- `e446f05` / SEM-172, `gpt-web: expose front-end replay column cursor`:
+  normal `FrontEndControllerUpdateView` now exposes the second
+  `ResultScreenReplayCursor @ +0xF8` as `replayColumnCursor`. Fresh target
+  constructor, replay-browser update, and draw evidence identifies it as the
+  twenty-entry cursor paired with the reusable `+0x20` cursor. The latter
+  remains named `cursor` because title-menu code also uses it; the
+  state-dependent `+0xBF0` alias remains intentionally unnamed in the generic
+  projection.
+
+Current-source milestone validation is bound to committed HEAD `e446f05`.
+Canonical exact replay was run in four durable 22-source partitions and passed
+205 + 158 + 191 + 142 = 696/696 configured units exact with zero private-label
+refresh. A fresh pinned-VC7.1 whole build compiled all 88 production translation
+units and linked a PE32 i386 image with build-local SHA-256
+`9dba0f4a06689240e1c46550451558cf2cac37268ac36491500003579d710a91`;
+this is compile/link closure, not whole-image identity. Target-independent CI
+passes all 43 tests, and target tracking remains 1,880 provisional / 697
+source-present / 696 exact. Runtime storage identity and runtime scenarios remain
+separate and unclaimed.
+
+Recovery exclusions are unchanged. Preserve and do not stage, delete, reset, or
+overwrite `EnemyManagerUpdate.i`, `config/runtime-scenarios.json`,
+`droid.resume.txt`, or `scripts/runtime-diff.py`. `.analysis/` began and ends
+this campaign at 3,394,984 bytes. No current-session `.analysis/gpt-web/` root
+or retained large analysis artifact was created; target semantic evidence came
+through the registered read-only attested Ghidra provider. Generated matching
+objects and the whole-build image are build outputs, not semantic evidence
+stores.
+
+Several bounded routes remain deliberately Unknown: replay-file reserved byte
+ranges, `ReplayScanWorker::unknown010`, score-header reserved fields, Sound/PBG
+writer-only metadata, ANM VM bit 14, the TextRenderer RNG prefix, compact-enemy
+single-ended tails/control gaps, and photo-score bits 5/17/18/19. Do not reopen
+any of these merely because lexical debt remains; require a new TH095-local
+producer, reader, lifetime edge, or sibling-protocol discriminator.
+
+For the next bounded batch, rotate away from the just-touched Best Shot,
+ReplayManager, and front-end replay-cursor families. Prefer an independent
+historical-runtime, non-ANM resource-lifetime, primary/sibling interpreter-state,
+or persistent/ABI family with at least one TH095-local producer plus an
+independent consumer/cleanup path. A replay `fpsData` follow-up is acceptable
+only if fresh evidence yields a maintainability improvement beyond the already
+correct mode-dependent destructor guard. Otherwise leave it alone and rotate.
+The semantic phase remains active-incomplete.
