@@ -502,6 +502,13 @@ inline i32 Th095PreserveI32(i32 value)
     (reinterpret_cast<Th095EnemyPhotoView *>(enemy))
 #define TH095_ENEMY_ANM_HANDLES(enemy) \
     (reinterpret_cast<Th095EnemyAnmHandleView *>(enemy))
+#if defined(TH095_MATCH_EXACT)
+#define TH095_ENEMY_ANM_HANDLE_SLOT(enemy, slot) \
+    (*reinterpret_cast<i32 *>( \
+        reinterpret_cast<u8 *>(enemy) + 0x2d4 + (slot) * 4))
+#else
+#define TH095_ENEMY_ANM_HANDLE_SLOT(enemy, slot) ((enemy)->anmHandles[(slot)])
+#endif
 #define TH095_ENEMY_PHOTO_SESSION(enemy) \
     (reinterpret_cast<Th095EnemyPhotoSessionView *>(enemy))
 #define TH095_ENEMY_FLAGS(enemy) \
@@ -1199,9 +1206,7 @@ enter_subroutine:
                           TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         PhotoAnmHandle result;
         i32 slot = TH08_ECL_READ_I(ctx, 0);
-        *reinterpret_cast<i32 *>(
-            reinterpret_cast<u8 *>(TH08_ECL_CONTEXT_ENEMY(ctx)) + 0x2d4 +
-            slot * 4) =
+        TH095_ENEMY_ANM_HANDLE_SLOT(TH08_ECL_CONTEXT_ENEMY(ctx), slot) =
             (*reinterpret_cast<PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8))
                 ->Spawn(&result, TH08_ECL_READ_I(ctx, 1), &position)->value;
         break;
@@ -1210,9 +1215,7 @@ enter_subroutine:
     {
         i32 slot = TH08_ECL_READ_I(ctx, 0);
         AnmVm *vm = reinterpret_cast<AnmManagerLookup *>(g_AnmManager)->FindVm(
-            *reinterpret_cast<i32 *>(
-                reinterpret_cast<u8 *>(TH08_ECL_CONTEXT_ENEMY(ctx)) + 0x2d4 +
-                slot * 4));
+            TH095_ENEMY_ANM_HANDLE_SLOT(TH08_ECL_CONTEXT_ENEMY(ctx), slot));
         if (vm)
             vm->SetInterrupt((i16)TH08_ECL_READ_I(ctx, 1));
         break;
