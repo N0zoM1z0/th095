@@ -78,8 +78,25 @@ struct ResultScreenGlobalStateView
     u8 unknown104[0x114 - 0x104];
     i32 currentScore;
     u8 unknown118[8];
+#ifdef DIFFBUILD
     i32 resultMode;
+#else
+    ReplayManagerMode replayMode;
+#endif
 };
+
+#ifndef DIFFBUILD
+typedef char ResultScreenGlobalReplayModeAt120[
+    (offsetof(ResultScreenGlobalStateView, replayMode) == 0x120) ? 1 : -1];
+#endif
+
+#ifdef DIFFBUILD
+#define TH095_RESULT_IS_RECORD_MODE() \
+    (g_ResultScreenGlobalState->resultMode == 0)
+#else
+#define TH095_RESULT_IS_RECORD_MODE() \
+    (g_ResultScreenGlobalState->replayMode == REPLAY_MANAGER_RECORD)
+#endif
 
 #ifdef DIFFBUILD
 struct ResultAnmVmDrawView
@@ -542,7 +559,7 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
 
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 0), 0);
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 3), 3);
-    if (g_ResultScreenGlobalState->resultMode == 0)
+    if (TH095_RESULT_IS_RECORD_MODE())
     {
         resultScreen->state = 1;
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 4), 4);
@@ -613,7 +630,7 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
 
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 1), 1);
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 7), 7);
-    if (g_ResultScreenGlobalState->resultMode == 0)
+    if (TH095_RESULT_IS_RECORD_MODE())
     {
         resultScreen->state = 3;
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 9), 9);
@@ -701,7 +718,7 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
 
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 2), 2);
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 11), 11);
-    if (g_ResultScreenGlobalState->resultMode == 0)
+    if (TH095_RESULT_IS_RECORD_MODE())
     {
         resultScreen->state = 5;
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 14), 14);
@@ -1983,6 +2000,8 @@ ResultScreenResult ResultScreen::LoadReplays()
     this->replayCursor.Set(0);
     return ZUN_SUCCESS;
 }
+
+#undef TH095_RESULT_IS_RECORD_MODE
 
 } // namespace th095
 

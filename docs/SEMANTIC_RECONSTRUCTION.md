@@ -11035,3 +11035,89 @@ new semantic batch, either reconstruct one independently bounded ResultScreen
 menu/exit pair from fresh TH095 producer plus consumer evidence, or rotate to a
 distinct persistent/resource/lifetime protocol. The semantic phase remains
 active-incomplete.
+
+### SEM-196 — bind ResultScreen mode projection to the replay protocol
+
+**Scope.** Continue from the bounded SEM-195 replay-save state names without
+expanding the remaining ResultScreen state values. The independent gap is the
+four-byte global/task field at `g_RuntimeGlobalStateOwner +0x120`: SEM-180
+already established the physical PhotoGameTask field as the value forwarded
+into `ReplayManagerMode`, but the three ResultScreen initializer consumers still
+projected the same dword as an unrelated `i32 resultMode`. This transaction
+binds only the ResultScreen-local projection and its three zero/nonzero tests to
+the established replay-mode protocol. The separate PhotoStage projection is
+left untouched because its normal translation unit participates in the separate
+current-session PhotoEffect lifecycle transaction; this ResultScreen batch does
+not mix that shared-header work into its checkpoint.
+
+**Observed.** Fresh Factory-attested TH095 v1.02a decompilation of
+`PhotoGameTaskView::Create @ 0x00417F80` allocates/publishes the task at
+`0x004BDEC8` and stores its incoming mode directly at task `+0x120`. Fresh
+`InitializeGameResultScreen @ 0x00428590`, `InitializeReplayResultScreen @
+0x004288B0`, and `InitializePhotoResultScreen @ 0x00428E90` independently read
+that exact physical address, `0x004BDEC8 + 0x120`, and each branches only on
+whether the dword is zero. Their zero branches publish ResultScreen states
+1/3/5 respectively; their nonzero branches publish 11/7/9 respectively. The
+three readers do not distinguish different nonzero values.
+
+**Corroborated.** SEM-180 independently proved the upstream TH095-local data
+flow: PhotoGameTask producers create ordinary gameplay with mode 0 and replay
+gameplay with mode 1, the task stores the value at `+0x120`, and
+`InitializeSubsystems` forwards the same dword to ReplayManager. The canonical
+`ReplayManagerMode` domain is `REPLAY_MANAGER_RECORD = 0`,
+`REPLAY_MANAGER_PLAYBACK = 1`, and `REPLAY_MANAGER_LOAD_ONLY = 2`; no
+PhotoGameTask producer of load-only mode was observed in that audit. Current
+ResultScreen source maps its local view through the same
+`g_RuntimeGlobalStateOwner`, so this is one physical owner rather than a
+value-equal duplicate. TH08 supplies no identifier authority.
+
+**Inferred.** The maintainable ResultScreen projection is therefore
+`ReplayManagerMode replayMode @ +0x120`. The only interpretation accepted by
+this batch at the ResultScreen boundary is `replayMode ==
+REPLAY_MANAGER_RECORD` versus non-record mode. This accurately describes what
+the three target readers test without inventing a distinction they do not make.
+
+**Unknown / bounded.** This batch does not claim that
+`REPLAY_MANAGER_LOAD_ONLY = 2` reaches ResultScreen; SEM-180 found no
+PhotoGameTask producer for that value. It does not assign separate semantics to
+nonzero values 1 and 2 inside ResultScreen, rename ResultScreen states 0..12,
+change the SEM-195 states 13..15, or type the PhotoStage copy of `+0x120`
+inside this transaction. The separate PhotoEffect shared-header batch owns that
+current dependency surface. Original ZUN field/type names remain unknown.
+
+**Production / exact representation.** Normal `src/ResultScreen.cpp` types its
+TU-local `ResultScreenGlobalStateView +0x120` member as `ReplayManagerMode
+replayMode`, pins that offset with a compile-time assertion, and routes the
+three initializer conditions through `TH095_RESULT_IS_RECORD_MODE()` using
+`REPLAY_MANAGER_RECORD`. `DIFFBUILD` retains `i32 resultMode` and the historical
+`== 0` expression. `TH095_MATCH_EXACT` still selects the frozen
+`ResultScreenExact.inl` at the source-file boundary and is unchanged. No shared
+header, object layout, persistent format, calling convention, or control flow
+changes.
+
+**Validation.** Focused canonical replay of `src/ResultScreen.cpp` rebuilt all
+24 configured units and passed **24/24 exact** with zero compiler-private label
+refresh. A command-local normal-production probe used the canonical pinned
+VC7.1 13.10.3077 profile and emitted a **75,207-byte Intel 80386 COFF** object;
+the temporary directory was removed in the same command. `git diff --check`
+passed. This is a TU-local projection change, so campaign-wide aggregate exact
+and whole-product receipts are deferred to a committed milestone rather than
+being run through the separate unstaged PhotoEffect worktree.
+
+**Recovery / analysis state.** The transaction began from SEM-195 checkpoint
+`b184410c59955ed91af8ee5619af093af76eb0ef`. The two unstaged paths
+`src/PhotoEffect.cpp` and `src/PhotoEffectRuntime.hpp` belong to a separate
+recoverable current-session PhotoEffect lifecycle transaction. Their target
+producer/consumer evidence and focused exact/native compile feedback were
+collected independently, but they remain deliberately unstaged and are not part
+of SEM-196. The four older untracked exclusions remain preserved as well.
+`.analysis/` remains at the campaign baseline of 3,394,984 bytes; target
+evidence came through the registered read-only provider and the compile probe
+used command-local temporary storage.
+
+**Next evidence route.** After checkpoint, recover the already-bounded
+PhotoEffect lifecycle transaction before selecting unrelated work. Keep its
+shared-header regression surface separate from this ResultScreen checkpoint;
+then rotate to another independently evidenced owner or protocol rather than
+mechanically naming the remaining ResultScreen values. The semantic phase
+remains active-incomplete.
