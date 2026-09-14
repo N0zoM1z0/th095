@@ -10864,3 +10864,79 @@ changes that interpretation. Otherwise rotate to ResultScreen or another
 independent state/resource protocol. Do not resurrect the legacy `+0x0B24`
 three-state enum as TH095 evidence merely because its identifier is attractive.
 The semantic phase remains active-incomplete.
+
+### SEM-194 — name the spell-background frame counter
+
+**Scope.** Continue from SEM-193 at the real TH095 `BackgroundStateView` dword
+`+0x175C`, now that the unrelated legacy `Background.hpp +0x0B24` field is no
+longer projected onto the production ECL owner. This transaction changes only
+the target-local field spelling from `spellBackgroundState` to
+`spellBackgroundFrameCounter`. It does not create an enum, change the two spell
+VM ids, reinterpret the 60-frame boundary, or modify the legacy exact/DIFF
+Background declaration.
+
+**Observed.** Fresh Factory-attested TH095 v1.02a decompilation gives the full
+observed publication/consumption cycle. `Background::Background @ 0x004020C0`
+clears the complete 0x201C-byte object, which initializes `+0x175C` to zero.
+`StartSpellBackground @ 0x00404A30` writes `+0x175C = 1` before creating the two
+spell-photo VMs at `+0x1FE4/+0x1FE8`. `DrawHighPrio @ 0x00402750` checks
+`+0x175C < 60`; inside that branch it renders the ordinary stage/background
+path and increments the dword exactly when it is nonzero. The value therefore
+advances 1, 2, ... 60 and then remains at 60 until another producer changes it.
+`StopSpellBackground @ 0x00404AC0` writes zero while retiring the same two VMs.
+
+**Corroborated.** Repository-wide tracked search finds no other behavioral
+reader/writer of the TH095 `+0x175C` dword. The maintained constructor in
+`BackgroundLifecycle.cpp` independently zeroes `sizeof(*this) == 0x201C`, and
+`Background.cpp` asserts `offsetof(BackgroundStateView, +0x175C)` through the
+local layout view. All three affected target functions are already exact-backed
+in the Background translation unit. The similarly named legacy
+`SpellBackgroundState` in `Background.hpp` is explicitly not corroboration for
+this field because SEM-193 proved it belongs to an incompatible 0x6600 layout.
+
+**Inferred.** `spellBackgroundFrameCounter` is a neutral maintainable name for
+the observed scalar. It captures the only target-proven arithmetic property: a
+nonzero activation value is advanced once per high-priority draw until the
+terminal value 60. The name does not imply whether those frames are intended as
+a fade, delay, reveal, or other presentation design.
+
+**Unknown / bounded.** The design meaning of the 60-frame threshold and the
+original ZUN field name remain Unknown. A value of 60 is a target-observed
+terminal counter value, not a separately typed state. This batch does not claim
+a fixed wall-clock duration, since draw cadence and runtime scheduling remain a
+separate runtime plane. No deterministic visual/runtime scenario is added.
+
+**Production / exact representation.** The local `BackgroundStateView` field,
+its `offsetof` assertion name, and its Start/Draw/Stop accesses now use
+`spellBackgroundFrameCounter`. Storage remains signed 32-bit at `+0x175C` and
+all expressions/control flow are otherwise unchanged. The field identifier is
+not encoded in target code; the canonical exact lane therefore uses the same
+layout and operations without a compatibility alias.
+
+**Validation.** Focused canonical replay of `src/Background.cpp` rebuilt all 20
+configured Background units and passed **20/20 exact** with zero compiler-private
+label refresh. A command-local normal-production probe used the canonical
+pinned VC7.1 profile (`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1
+/I src`) and emitted a 51,927-byte Intel 80386 COFF object; temporary object/PDB
+storage was removed by the command trap. `git diff --check` passed. Because this
+is a TU-local field/name change with no shared owner/layout/PCH mutation, broad
+aggregate exact and whole-product closure are deferred to the immediately
+following committed final milestone for this conversation slice.
+
+**Recovery / analysis state.** The batch began from clean tracked SEM-193 commit
+`22bf5a13559a5a472abdd56b5624fdd3809c78e8`, with the same four pre-existing
+untracked exclusions preserved outside staging. `.analysis/` remained exactly
+3,394,984 bytes; no current-session filesystem analysis root or large artifact
+was created. Fresh target evidence came through the registered read-only Ghidra
+provider.
+
+**Next evidence route.** After checkpoint and final milestone validation, rotate
+away from Background. `ResultScreen::state @ +0x0004` is a stronger independent
+state-protocol candidate than the single-producer PhotoCard state: three result
+initializers publish distinct entry states, `ResultScreen::Update` contains the
+transition machine, and `Draw` independently consumes several display states.
+Before editing, reconstruct the complete value/transition domain and prefer
+neutral state names for only the values whose TH095-local behavior is stable;
+if the 0..15 machine is too broad for one bounded batch, select a smaller
+resource/lifetime or persistent owner instead. Semantic phase remains
+active-incomplete.

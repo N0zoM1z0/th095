@@ -175,7 +175,7 @@ struct BackgroundStateView
     AnmVm *stageObjectVms;                       // +0x00f4
     AnmVm stageVms[8];                           // +0x00f8
     f32 cullingDistanceSq;                      // +0x1758
-    i32 spellBackgroundState;       // +0x175c
+    i32 spellBackgroundFrameCounter;       // +0x175c
     ZunColor photoColor;            // +0x1760
     i32 photoAreaActive;            // +0x1764
     Float3 photoAreaPosition;       // +0x1768
@@ -293,8 +293,8 @@ struct BackgroundAnmManagerView
     }
 };
 
-typedef char BackgroundSpellStateAt175C[
-    (offsetof(BackgroundStateView, spellBackgroundState) == 0x175c) ? 1 : -1];
+typedef char BackgroundSpellFrameCounterAt175C[
+    (offsetof(BackgroundStateView, spellBackgroundFrameCounter) == 0x175c) ? 1 : -1];
 typedef char BackgroundStageScriptAtC[
     (offsetof(BackgroundStateView, stageScript) == 0x0c) ? 1 : -1];
 typedef char BackgroundStageInstructionAt1C[
@@ -642,7 +642,7 @@ i32 Background::DrawHighPrio()
             reinterpret_cast<BackgroundStateView *>(this)->photoColor.color);
     }
 
-    if (reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundState < 60)
+    if (reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundFrameCounter < 60)
     {
         if (reinterpret_cast<BackgroundStateView *>(this)
                 ->stageVms[0]
@@ -671,8 +671,8 @@ i32 Background::DrawHighPrio()
         this->RenderObjects(1);
         this->RenderObjects(2);
         this->RenderObjects(3);
-        if (reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundState != 0)
-            reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundState++;
+        if (reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundFrameCounter != 0)
+            reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundFrameCounter++;
     }
 
     g_Supervisor.ConfigureGameplayViewport(0);
@@ -1639,7 +1639,7 @@ void Background::SetPhotoArea(const Float3 *position, const Float3 *size)
 // FUNCTION: TH095 0x00404A30.
 void Background::StartSpellBackground()
 {
-    reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundState = 1;
+    reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundFrameCounter = 1;
     reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundVms[0] =
         TH095_BACKGROUND_CREATE_WORLD_VM(g_BackgroundRuntime->anmSpawner,
             0, &Float3(0.0f, 0.0f, 0.0f));
@@ -1652,7 +1652,7 @@ void Background::StartSpellBackground()
 // FUNCTION: TH095 0x00404AC0.
 void Background::StopSpellBackground()
 {
-    reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundState = 0;
+    reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundFrameCounter = 0;
     g_AnmManager->MarkVmForDeletion(
         reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundVms[0]);
     g_AnmManager->MarkVmForDeletion(
