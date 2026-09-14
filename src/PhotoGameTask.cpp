@@ -134,10 +134,22 @@ struct PhotoGameRuntimeTaskView
 
 #endif
 
+// The target DrawHud relocations retain the historical AddFormatText proxy
+// spelling but resolve to canonical AsciiManager::AddGuiFormatText. Keep that
+// proxy receiver/method only for DIFFBUILD; runnable production must enqueue
+// the five HUD strings in the dedicated GUI text queue.
+#ifdef DIFFBUILD
 struct PhotoAsciiManagerTaskView
 {
     i32 AddFormatText(Float3 *position, const char *format, ...);
 };
+extern PhotoAsciiManagerTaskView g_PhotoAsciiManager;
+#define TH095_PHOTO_HUD_ASCII_MANAGER g_PhotoAsciiManager
+#define TH095_PHOTO_HUD_FORMAT_METHOD AddFormatText
+#else
+#define TH095_PHOTO_HUD_ASCII_MANAGER g_AsciiManager
+#define TH095_PHOTO_HUD_FORMAT_METHOD AddGuiFormatText
+#endif
 
 struct PhotoGameTaskDrawHudLocals
 {
@@ -371,7 +383,7 @@ i32 PhotoGameTaskView::DrawHud()
         }
 
         g_PhotoAsciiTextColor = locals.alpha << 24 | 0xffffff;
-        g_AsciiManager.AddFormatText(
+        TH095_PHOTO_HUD_ASCII_MANAGER.TH095_PHOTO_HUD_FORMAT_METHOD(
             ((locals.highScorePosition.x = 128.0f),
              (locals.highScorePosition.y = 19.0f),
              (locals.highScorePosition.z = 0.0f),
@@ -387,7 +399,7 @@ i32 PhotoGameTaskView::DrawHud()
         locals.scorePosition.x = 128.0f;
         locals.scorePosition.y = 32.0f;
         locals.scorePosition.z = 0.0f;
-        g_AsciiManager.AddFormatText(
+        TH095_PHOTO_HUD_ASCII_MANAGER.TH095_PHOTO_HUD_FORMAT_METHOD(
             &locals.scorePosition,
             "  Score %.7d",
             this->score);
@@ -398,7 +410,7 @@ i32 PhotoGameTaskView::DrawHud()
         locals.photoCountPosition.x = 409.0f;
         locals.photoCountPosition.y = 19.0f;
         locals.photoCountPosition.z = 0.0f;
-        g_AsciiManager.AddFormatText(
+        TH095_PHOTO_HUD_ASCII_MANAGER.TH095_PHOTO_HUD_FORMAT_METHOD(
             &locals.photoCountPosition,
             "Photo %.2d/%.2d",
             locals.photoIndex,
@@ -409,7 +421,7 @@ i32 PhotoGameTaskView::DrawHud()
             locals.scenePosition.x = 472.0f;
             locals.scenePosition.y = 32.0f;
             locals.scenePosition.z = 0.0f;
-            g_AsciiManager.AddFormatText(
+            TH095_PHOTO_HUD_ASCII_MANAGER.TH095_PHOTO_HUD_FORMAT_METHOD(
                 &locals.scenePosition,
                 "%2d-%d",
                 g_SelectedScene->level + 1,
@@ -420,7 +432,7 @@ i32 PhotoGameTaskView::DrawHud()
             locals.extraScenePosition.x = 472.0f;
             locals.extraScenePosition.y = 32.0f;
             locals.extraScenePosition.z = 0.0f;
-            g_AsciiManager.AddFormatText(
+            TH095_PHOTO_HUD_ASCII_MANAGER.TH095_PHOTO_HUD_FORMAT_METHOD(
                 &locals.extraScenePosition,
                 "EX-%d",
                 g_SelectedScene->scene + 1);
@@ -429,6 +441,9 @@ i32 PhotoGameTaskView::DrawHud()
     }
     return 1;
 }
+
+#undef TH095_PHOTO_HUD_FORMAT_METHOD
+#undef TH095_PHOTO_HUD_ASCII_MANAGER
 
 PhotoGameTaskView *PhotoGameTaskView::Create(i32 replayMode)
 {
