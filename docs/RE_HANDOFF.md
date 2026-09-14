@@ -354,3 +354,75 @@ remain untouched and excluded from semantic commits: `EnemyManagerUpdate.i`,
 `droid.resume.txt`, `config/runtime-scenarios.json`, and
 `scripts/runtime-diff.py`. The latter two are uncommitted experiments and are
 not part of the verified workflow or this handoff.
+
+## GPT-web semantic continuation — 2026-09-14
+
+This section is the current GPT-web continuation point and supersedes older
+semantic-routing prose above when the two disagree. The semantic phase remains
+**active-incomplete**. This handoff pauses execution only; it is not a
+readiness, completion, closure, or porting checkpoint.
+
+The latest two semantic transactions are:
+
+- `fb9d07b` / SEM-165, `gpt-web: restore Background error escalation`:
+  normal Background production now follows the target's two-stage diagnostic
+  protocol. A missing stage ANM logs through `GameErrorContext::Log`; the
+  propagated stage-data failure is escalated by `Background::Initialize`
+  through `GameErrorContext::Fatal`. Exact/DIFF retains the historically
+  reversed relocation decorations.
+- `ca1024a` / SEM-166, `gpt-web: restore Render replay worker stop`:
+  the two `GameWindow::Render` exit/restart paths now call canonical
+  `Supervisor::StopReplayScan` in normal production, preserving the worker
+  exit handshake and join-before-close behavior. The two genuine
+  `Supervisor::StartupThread` cleanup calls remain canonical `ThreadClose`;
+  exact/DIFF retains the historical Render `ThreadClose` decoration.
+
+Both batches were established from TH095-local target evidence through the
+registered attested Ghidra provider plus exact relocation ledgers. On the
+SEM-166 source state, focused Main replay is 48/48 exact and a fresh cold
+aggregate replay is 696/696 exact across all 88 manifest sources with zero
+private-label refresh. A fresh pinned-VC7.1 whole build compiled all 88
+production translation units and linked a PE32 i386 executable; linked-image
+disassembly confirms Render's two exit calls resolve to production
+`StopReplayScan`, while StartupThread's two direct-close calls still resolve to
+production `ThreadClose`. Target-independent CI passes all 43 tests and
+tracking remains 1,880 provisional / 697 source-present / 696 exact. Runtime
+scenario coverage for deliberately missing stage resources and for render exit
+while replay scanning is active remains unexercised and must stay separate from
+those compile/exact/product states.
+
+The campaign recovery exclusions are unchanged. Preserve and do not stage,
+delete, reset, or overwrite `EnemyManagerUpdate.i`,
+`config/runtime-scenarios.json`, `droid.resume.txt`, or
+`scripts/runtime-diff.py`. At campaign start and this handoff, `.analysis/` is
+3,394,984 bytes. No current-session `.analysis/gpt-web/` root was created and
+no large artifact was retained; target analysis stayed in the registered
+read-only provider.
+
+The exact-relocation multi-destination sweep is now a useful routing boundary,
+not a completion argument. The ANM load proxy (SEM-163), viewport proxy
+(SEM-164), GameError proxy (SEM-165), and Render/ThreadClose proxy (SEM-166)
+are separated in normal production. The three-destination
+`PhotoResetTargetView::ResetForPhotoTransition` family was already split into
+its canonical enemy/bullet/effect operations by ABI-039 and should not be
+redone absent contradictory evidence. The remaining `__CIcos` multi-destination
+decoration should first be treated as compiler/runtime exactness provenance,
+not promoted into a semantic owner without behavioral evidence.
+
+For the next bounded batch, rotate to an interpreter/state surface rather than
+continuing to mine already-resolved proxy names. A useful first probe is the
+small anonymous-view surface in `src/ecl/EclRun.cpp` (the current bounded debt
+scan reports anonymous storage near lines 40, 62, 116, 237, 244, 251, 258, and
+284). Select only a field/protocol for which current TH095 target xrefs expose a
+producer plus an independent consumer or sibling-opcode relation; compare the
+primary and sibling interpreter paths and exact ledgers before naming it. If
+those candidates are only layout carriers or single-ended writes, leave them
+Unknown and rotate to a persistent Score/Replay boundary or another
+resource/state owner. Do not infer semantics from the lexical debt count itself.
+
+At resume, start with the ordinary dirty-worktree recovery gate, re-read the
+latest `docs/SEMANTIC_RECONSTRUCTION.md` entry, and check the Factory acceptance
+registry for receipts issued after this handoff commit. Do not replay the full
+accepted receipt set merely because execution resumed; issue fresh receipts at
+a committed milestone or final handoff when the source state they bind will
+remain useful.
