@@ -420,6 +420,16 @@ stop:
 #undef renderResult
 #undef i
 
+// The exact-facing Render relocations historically spell both exit-path calls
+// as ThreadClose even though the TH095 target routes them to StopReplayScan.
+// DIFFBUILD preserves those relocation tokens; normal production uses the
+// cooperative replay-worker stop protocol before leaving the render loop.
+#ifdef DIFFBUILD
+#define TH095_RENDER_STOP_REPLAY_SCAN() g_Supervisor.ThreadClose()
+#else
+#define TH095_RENDER_STOP_REPLAY_SCAN() g_Supervisor.StopReplayScan()
+#endif
+
 RenderResult GameWindow::Render()
 {
     i32 calcChainResult;
@@ -441,12 +451,12 @@ RenderResult GameWindow::Render()
 
         if (calcChainResult == 0)
         {
-            g_Supervisor.ThreadClose();
+            TH095_RENDER_STOP_REPLAY_SCAN();
             return RENDER_RESULT_EXIT_SUCCESS;
         }
         if (calcChainResult == -1)
         {
-            g_Supervisor.ThreadClose();
+            TH095_RENDER_STOP_REPLAY_SCAN();
             return RENDER_RESULT_RESTART;
         }
 
@@ -473,6 +483,8 @@ RenderResult GameWindow::Render()
     }
     return RENDER_RESULT_KEEP_RUNNING;
 }
+
+#undef TH095_RENDER_STOP_REPLAY_SCAN
 
 inline u16 WasPressed(u16 buttons)
 {
