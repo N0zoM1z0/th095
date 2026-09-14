@@ -923,3 +923,123 @@ Factory receipts for the six changed bounded functions plus one
 `whole_build_closed` receipt. Do not replay the complete historical receipt set
 and do not request semantic completion, whole-image exactness, runtime-scenario,
 or portable-runtime credit.
+
+## GPT-web semantic continuation — SEM-179/180
+
+This is the newest GPT-web continuation point. The semantic campaign remains
+**active-incomplete**. This handoff pauses browser execution only; it is not a
+readiness, completion, closure, or porting checkpoint. No portable Windows,
+Linux, or Web work was started.
+
+This conversation resumed from committed handoff
+`f18d7c5e25087d8134146220917e2e33bfb2ab28`. Recovery found no staged or
+tracked-unstaged changes and preserved the four pre-existing untracked paths.
+The five Factory-controlled reconstruction/semantic/recovery contract and
+documentation files were readable and were reviewed before edits. No separate
+`$factory-semantic-reconstruction` skill body was injected, so the shared
+Factory contracts plus the complete launch prompt remained the operative rules.
+`.analysis/` began at exactly 3,394,984 bytes; no session scratch root was
+created.
+
+Two bounded semantic transactions were completed:
+
+- `6b81088` / SEM-179, `gpt-web: type photography player modes`: normal
+  production now shares a four-state `PhotoPlayerMode` for Player `mode @
+  +0x0000`: `ENTERING=0`, `ACTIVE=1`, `DEATH_TRANSITION=2`, and
+  `PHOTO_LIMIT_TRANSITION=3`. Fresh TH095 target evidence from
+  `PhotoGameUpdateView::Update @ 0x0042FF60`, `Die @ 0x004306D0`,
+  `PhotoCameraState::TakePhoto @ 0x00432D10`, and `CheckBulletCollision @
+  0x00430450` distinguishes all four states through independent producer and
+  consumer behavior. Exact/DIFF representations keep four-byte integer fields
+  and historical numeric constants. Original ZUN enum spelling and behavior for
+  values outside the observed 0..3 domain remain unknown.
+- `20ea61d` / SEM-180, `gpt-web: bind photo task replay modes`: task
+  `replayMode @ +0x120` is now typed as the existing `ReplayManagerMode` in
+  normal production. Fresh target `PhotoGameTaskView::Create @ 0x00417F80`
+  stores its integer argument at `+0x120`, and `InitializeSubsystems @
+  0x00417A70` forwards that same dword unchanged to `ReplayManager::Create`.
+  `SceneSelectControllerView::Update @ 0x00445E80` independently publishes 0
+  for normal recording gameplay and 1 for replay playback; `Supervisor::UpdateSceneState
+  @ 0x00425EF0` consumes/preserves the field across return/restart paths and
+  explicitly uses 0 for ordinary retry. `PhotoGameTaskView::Create(i32)` remains
+  integer-typed to preserve the VC7.1 decorated ABI. No task producer for
+  `REPLAY_MANAGER_LOAD_ONLY=2` was observed, so mode 2 remains ReplayManager-only
+  in the audited task surface.
+
+SEM-179 focused replay passed PhotoGame+PhotoCamera 33/33 exact with zero
+private-label refresh. Pinned VC7.1 normal probes emitted 50,824-byte PhotoGame
+and 58,082-byte PhotoCamera i386 COFF objects. Because the batch changed shared
+runtime headers, four disjoint cold exact partitions of 226/201/217/52 units
+closed all 696/696 configured units with zero refresh. Its fresh 88-TU Windows
+i386 product linked a 780,288-byte PE32 image with build-local SHA-256
+`871bf14e174188b89dd49b604ea265b1ee64075765db2bc43b92c340e306aed0`.
+
+SEM-180 focused replay passed Main/FrontEndController/PhotoGameTask 62/62 exact
+with zero private-label refresh. The first normal Main probe received no compile
+credit because a conditional directive was placed inside a macro-call argument;
+recovery found no producer or tree drift, and the compatibility difference was
+moved to file-level macros. Corrected pinned-VC7.1 probes emitted 115,040-byte
+Main, 37,443-byte FrontEndController, 35,473-byte PhotoGameTask, and 32,541-byte
+PhotoFront i386 COFF objects. The shared-header risk plane then passed the same
+current manifest as 226/201/217/52 = 696/696 exact with zero private-label
+refresh. A fresh whole product compiled all 88 TUs and linked/verified a
+780,288-byte PE32 image with build-local SHA-256
+`1a9f209a36da38db35b96c61e4f5dc4a29c367cd2a82a12989f4cb0df17abb42`.
+Target-independent CI passed all 43 tests; tracking remains 1,880 provisional /
+697 source-present / 696 exact, with a 696-unit match graph and 88-source / 2-profile
+whole-build graph. These are exact and native product closures, not semantic
+completion, whole-image identity, runtime-storage identity, or runtime-scenario
+validation.
+
+During SEM-180 partition one, the local remote-tracking ref `origin/main` was
+externally fast-forwarded to the unchanged SEM-179 HEAD `6b81088`. Recovery
+verified `HEAD == origin/main`, zero divergence, unchanged four-file transaction
+diff, unchanged exclusion hashes, and no active replay/compiler producer before
+continuing. This campaign did not push. After the SEM-180 checkpoint the local
+branch is ahead of that upstream by the new semantic commit.
+
+Negative routes were treated only as routing results. ANM VM bit 14 was already
+re-falsified by the preceding campaign's complete target `ExecuteScript` audit
+and has no producer. This conversation also reconfirmed no new field-level edge
+for `ReplayScanWorker::unknown010`, replay/input reserved `+0x2A/+0x36`, shared
+PhotoGameTask/Supervisor bit 8, FrontEnd-controller bit 4, Sound/PBG single-ended
+metadata, compact ECL control bits 3/6, OptionsMenu/Ascii layout-only gaps, the
+synthetic EnemyMovement `g_Supervisor+0x188` relocation, PhotoCamera `+0xBB8`,
+and multiple exact/DIFF raw-member compatibility surfaces. None of those
+negative audits changes the active-incomplete phase state.
+
+Recovery exclusions remain unchanged. Preserve and do not stage, delete, reset,
+or overwrite `EnemyManagerUpdate.i`, `config/runtime-scenarios.json`,
+`droid.resume.txt`, or `scripts/runtime-diff.py`. Their SHA-256 values remain
+respectively
+`1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`,
+`56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`,
+`9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`,
+and `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`.
+`.analysis/` ends at exactly 3,394,984 bytes. No current-session
+`.analysis/gpt-web/` root or retained large artifact exists; target semantic
+evidence was obtained through bounded read-only provider operations. The
+pre-existing runtime scenario/driver files remain unrelated experiment state and
+were not used as current runtime Oracle evidence.
+
+For the next bounded batch, rotate away from both Player mode and PhotoGameTask
+replay-entry typing. First adversarially test the persistent score-entry surface:
+inspect TH095 target `ResultSaveDataView::ParseScoreFile @ 0x004356D0`,
+`WriteBestShotData @ 0x00435910`, and `ResultScreen::Draw @ 0x00429C80` for any
+field-level producer/validator/consumer of the still-anonymous
+`ResultScoreEntryView` storage (for example its remaining `unknown014/038/040/050/06a`
+regions). Accept a field interpretation only if a current TH095-local read/write
+or validator relation distinguishes it; do not rename layout-only bytes. If that
+bounded route yields no counterexample, immediately rotate to a non-ANM resource
+lifetime or another independent persistent/ABI family rather than treating the
+negative result as completion. Keep score-header `+0x0C`, shared task/Supervisor
+bit 8, FrontEnd bit 4, ReplayScanWorker `unknown010`, replay/input reserved
+bytes, Sound/PBG writer-only metadata, ANM VM bit 14, ANM preload pathname,
+TextRenderer RNG prefix, compact single-ended fields, and photo-score bits
+5/17/18/19 Unknown absent new distinguishing evidence.
+
+After this docs-only handoff checkpoint, issue only bounded current-snapshot
+function-exact receipts for representative functions changed by SEM-179/180 plus
+one `whole-build-closed` receipt. Do not replay the complete historical receipt
+set and do not request semantic completion, whole-image exactness,
+runtime-scenario, or portable-runtime credit.
