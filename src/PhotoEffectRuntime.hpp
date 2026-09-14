@@ -13,6 +13,20 @@ struct Float3;
 struct AnmLoaded;
 class ChainElem;
 
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+enum PhotoEffectState
+{
+    PHOTO_EFFECT_STATE_UNINITIALIZED = 0,
+    PHOTO_EFFECT_STATE_RETIRED = 1,
+    PHOTO_EFFECT_STATE_ACTIVE = 2,
+    PHOTO_EFFECT_STATE_STARTUP = 3,
+    PHOTO_EFFECT_STATE_GROWING = 4,
+    PHOTO_EFFECT_STATE_FADING = 5,
+};
+typedef char PhotoEffectStateSizeIs4[
+    (sizeof(PhotoEffectState) == sizeof(i32)) ? 1 : -1];
+#endif
+
 struct PhotoEffectVector
 {
     f32 x;
@@ -69,7 +83,11 @@ struct PhotoEffectBaseView
 
     PhotoEffectBaseView *previous;          // +0x04
     PhotoEffectBaseView *next;              // +0x08
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     i32 state;                              // +0x0c
+#else
+    PhotoEffectState state;                 // +0x0c
+#endif
     ZunTimer timer;                         // +0x10
     PhotoEffectVector position;             // +0x1c
     PhotoEffectVector velocity;             // +0x28

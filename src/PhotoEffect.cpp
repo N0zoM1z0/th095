@@ -12,6 +12,20 @@
 namespace th095
 {
 
+#ifdef DIFFBUILD
+#define TH095_EFFECT_STATE_RETIRED 1
+#define TH095_EFFECT_STATE_ACTIVE 2
+#define TH095_EFFECT_STATE_STARTUP 3
+#define TH095_EFFECT_STATE_GROWING 4
+#define TH095_EFFECT_STATE_FADING 5
+#else
+#define TH095_EFFECT_STATE_RETIRED PHOTO_EFFECT_STATE_RETIRED
+#define TH095_EFFECT_STATE_ACTIVE PHOTO_EFFECT_STATE_ACTIVE
+#define TH095_EFFECT_STATE_STARTUP PHOTO_EFFECT_STATE_STARTUP
+#define TH095_EFFECT_STATE_GROWING PHOTO_EFFECT_STATE_GROWING
+#define TH095_EFFECT_STATE_FADING PHOTO_EFFECT_STATE_FADING
+#endif
+
 struct PhotoEffectArgsSmallView
 {
     PhotoEffectVector position;
@@ -332,7 +346,7 @@ static __forceinline void PhotoEffectSetAdditivePhase(AnmVm *vm)
 i32 PhotoStraightLaserView::Initialize(void *args)
 {
     this->spawn = *static_cast<PhotoEffectArgsSmallView *>(args);
-    this->state = 2;
+    this->state = TH095_EFFECT_STATE_ACTIVE;
 
     g_PhotoEffectManager->anm->InitializeVm(
         &this->bodyVm,
@@ -416,19 +430,19 @@ i32 PhotoRotatingLaserView::Update()
 
     switch (this->state)
     {
-    case 3:
+    case TH095_EFFECT_STATE_STARTUP:
         if (this->timer >= this->spawn.startupDuration)
         {
             this->timer = 0;
-            this->state = 4;
+            this->state = TH095_EFFECT_STATE_GROWING;
         }
         break;
 
-    case 4:
+    case TH095_EFFECT_STATE_GROWING:
         if (this->timer >= this->spawn.growthDuration)
         {
             this->timer = 0;
-            this->state = 2;
+            this->state = TH095_EFFECT_STATE_ACTIVE;
             this->width = this->spawn.maximumWidth;
         }
         else
@@ -440,18 +454,18 @@ i32 PhotoRotatingLaserView::Update()
             break;
         }
 
-    case 2:
+    case TH095_EFFECT_STATE_ACTIVE:
         if (this->timer >= this->spawn.sustainDuration)
         {
             this->timer = 0;
-            this->state = 5;
+            this->state = TH095_EFFECT_STATE_FADING;
         }
         else
         {
             break;
         }
 
-    case 5:
+    case TH095_EFFECT_STATE_FADING:
         if (this->timer >= this->spawn.fadeDuration)
         {
             return 1;
@@ -464,7 +478,8 @@ i32 PhotoRotatingLaserView::Update()
         break;
     }
 
-    if ((this->state == 4 || this->state == 2) &&
+    if ((this->state == TH095_EFFECT_STATE_GROWING ||
+         this->state == TH095_EFFECT_STATE_ACTIVE) &&
         this->length > 16.0f)
     {
         Float3 collisionOrigin;
@@ -502,7 +517,7 @@ i32 PhotoRotatingLaserView::Update()
 i32 PhotoRotatingLaserView::Initialize(void *args)
 {
     this->spawn = *static_cast<PhotoEffectArgsView *>(args);
-    this->state = 3;
+    this->state = TH095_EFFECT_STATE_STARTUP;
 
     g_PhotoEffectManager->anm->InitializeVm(
         &this->bodyVm,
@@ -578,7 +593,7 @@ i32 PhotoStraightLaserView::DrawSecondary()
         secondaryPosition += secondaryStep;
         secondaryDistance += 12.0f;
     }
-    this->state = 1;
+    this->state = TH095_EFFECT_STATE_RETIRED;
     return secondaryCount;
 }
 
@@ -604,7 +619,7 @@ i32 PhotoRotatingLaserView::DrawSecondary()
         secondaryPosition += secondaryStep;
         secondaryDistance += 12.0f;
     }
-    this->state = 1;
+    this->state = TH095_EFFECT_STATE_RETIRED;
     return secondaryCount;
 }
 #undef secondaryStep
@@ -1098,7 +1113,7 @@ i32 __fastcall PhotoEffectManagerView::Update(
             }
         }
 
-        if (effect->state == 1)
+        if (effect->state == TH095_EFFECT_STATE_RETIRED)
         {
             effect->Cleanup();
             manager->Remove(effect);
@@ -1130,7 +1145,7 @@ i32 __fastcall PhotoEffectManagerView::Draw(
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
-        if (effect->state != 1)
+        if (effect->state != TH095_EFFECT_STATE_RETIRED)
         {
             effect->Draw();
         }
@@ -1255,7 +1270,7 @@ i32 PhotoEffectManagerView::CountPhotoTargets(
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
-        if (effect->state != 1)
+        if (effect->state != TH095_EFFECT_STATE_RETIRED)
         {
             count += effect->CountPhotoTargets(position, size, 1);
         }
@@ -1272,7 +1287,7 @@ i32 __fastcall PhotoEffectManagerView::CheckCollisionStored(
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
-        if (effect->state != 1)
+        if (effect->state != TH095_EFFECT_STATE_RETIRED)
         {
             count += effect->CheckCollision(
                 reinterpret_cast<Float3 *>(&manager->collisionPosition),
@@ -1291,7 +1306,7 @@ i32 __fastcall PhotoEffectManagerView::DrawSecondary(
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
-        if (effect->state != 1)
+        if (effect->state != TH095_EFFECT_STATE_RETIRED)
         {
             effect->DrawSecondary();
         }
@@ -1308,7 +1323,7 @@ i32 PhotoEffectManagerView::CountNearbyTargets(
     while (effect != NULL)
     {
         PhotoEffectBaseView *next = effect->next;
-        if (effect->state != 1)
+        if (effect->state != TH095_EFFECT_STATE_RETIRED)
         {
             count += effect->CountNearbyTargets(position, radius);
         }
@@ -1468,6 +1483,12 @@ i32 PhotoRotatingLaserView::CountNearbyTargets(
     }
     return 2;
 }
+
+#undef TH095_EFFECT_STATE_RETIRED
+#undef TH095_EFFECT_STATE_ACTIVE
+#undef TH095_EFFECT_STATE_STARTUP
+#undef TH095_EFFECT_STATE_GROWING
+#undef TH095_EFFECT_STATE_FADING
 
 }
 
