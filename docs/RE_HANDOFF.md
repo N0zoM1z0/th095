@@ -566,3 +566,113 @@ independent consumer/cleanup path. A replay `fpsData` follow-up is acceptable
 only if fresh evidence yields a maintainability improvement beyond the already
 correct mode-dependent destructor guard. Otherwise leave it alone and rotate.
 The semantic phase remains active-incomplete.
+
+## GPT-web semantic continuation — SEM-173/174
+
+This is the newest GPT-web continuation point. The semantic phase remains
+**active-incomplete**. This handoff pauses browser execution only; it is not a
+readiness, completion, closure, or porting checkpoint. No portable Windows,
+Linux, or Web work was started.
+
+Two bounded semantic transactions were checkpointed in this campaign:
+
+- `97feb59` / SEM-173, `gpt-web: bind high-ECL ANM handle slots`: high ECL
+  opcodes 151/152 no longer use an unlabelled normal-production
+  `Enemy + 0x2D4 + slot*4` expression. Fresh target `RunEcl @ 0x00408E70`
+  shows opcode 151 publishing a newly spawned ANM VM id to that indexed slot
+  and opcode 152 resolving the same id through `AnmManager::GetVm` before
+  writing the VM interrupt field. Independent TH095 consumers at
+  `UpdatePlayerProximityAndMarker @ 0x00413AA0` and
+  `UpdateEnemyMarkerVms @ 0x00413B90` resolve the same `+0x2D4/+0x2D8`
+  storage. Normal production now uses the already-established canonical
+  `Enemy::anmHandles[slot]`; exact source retains the historical raw lvalue.
+  This is an owner binding only: no new slot bounds policy, per-slot gameplay
+  meaning, or complete lifetime protocol is claimed.
+- `229999a` / SEM-174, `gpt-web: bind high-ECL shot cadence producers`:
+  the resume audit found that SEM-024's compact deferred-shot cadence meaning
+  was proved but its high-ECL producers had never been canonicalized in normal
+  production. Fresh target `RunEcl` cases 95/96 write
+  `shootIntervalFrames @ +0x2BC8` and initialize or RNG-seed the
+  `shootIntervalTimer @ +0x2BCC`; independent
+  `Enemy::UpdateShotAndAnm @ 0x00413030` advances the timer, compares it with
+  the interval, dispatches the cached shot at `+0x2B9C`, and resets the timer.
+  Normal target-high source now addresses a typed local cadence view, while
+  DIFFBUILD/exact keeps the historical raw expressions. The opcode names,
+  zero/negative script policy beyond the observed branch conditions, cached
+  instruction internals, and full lifecycle remain outside this batch.
+
+The campaign deliberately falsified several tempting lexical-debt routes rather
+than forcing edits. `SceneSelectUpdate` Best Shot raw arithmetic and the
+FrontEnd `+0x6168..+0x63CC` queue arithmetic are frozen exact/DIFF compatibility
+surfaces whose normal paths are already canonical. The compact
+`photoMarkerPulseTimer @ +0x2BFC` and Player `+0x1E30` accesses are likewise
+already normal-typed behind exact/profile guards. Compact movement bounds at
+`+0x2C3C` are intentionally a distinct compact layout from the generic Enemy
+movement bounds and must not be merged. The `FileSystem::FileExists` and
+`EclExtended::DispatchExtendedValue` relocation spellings are historical exact
+proxies whose normal production destinations were already corrected. The outer
+score-header `+0x0C` value still has initialization but no new independent
+reader and therefore remains Unknown. None of those negative routes is a
+completion argument.
+
+Current-source milestone validation is bound to committed source HEAD
+`229999a8029b3f2810256df7074f4eb094ed7fed`. Focused `EclRun.cpp` replay passed
+1/1 exact with zero private-label refresh after each semantic transaction, and
+normal pinned VC7.1 probes emitted 77,946-byte Intel 80386 COFF objects. The
+final cold aggregate was recomputed from the *current* manifest rather than
+reusing older partition totals. Its 88 source entries now divide into four
+mutually exclusive 22-source partitions containing 226, 201, 217, and 52 units;
+all four durable replays passed, for 696/696 configured units exact with zero
+private-label refresh.
+
+A fresh `scripts/build-whole.py` run on the same source compiled all 88
+production translation units with pinned VC7.1 and linked a verified 780,288-byte
+PE32 i386 GUI image. Its build-local SHA-256 is
+`e0c910d8f57b501d746d4c4ef5635e337fabebc62cdbb6bb4e67d718585e2522`.
+This is production compile/link closure, not whole-image identity. The match
+unit graph is 696 units, the whole-build graph remains 88 sources / 2 profiles,
+tracking is 1,880 provisional / 697 source-present / 696 exact, and the status
+summary reports 336,486 exact bytes. Target verification and the registered
+read-only Ghidra six-sample attestation still bind Japanese TH095 v1.02a SHA-256
+`bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
+Target-independent CI passes all 43 tests and `git diff --check` passes. Wine
+reported only headless GUI/systray diagnostics during tool execution. No runtime
+scenario, runtime-storage identity, or whole-image exactness credit is claimed.
+
+Recovery exclusions are unchanged. Preserve and do not stage, delete, reset,
+or overwrite `EnemyManagerUpdate.i`, `config/runtime-scenarios.json`,
+`droid.resume.txt`, or `scripts/runtime-diff.py`. Their campaign-end SHA-256
+values are respectively
+`1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`,
+`56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`,
+`9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`,
+and `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`.
+`.analysis/` began and ends this campaign at exactly 3,394,984 bytes. No
+current-session `.analysis/gpt-web/` root or retained large analysis artifact
+was created; semantic target evidence came through the registered read-only
+attested provider. Generated matching objects and the whole-build image are
+build outputs rather than semantic evidence storage.
+
+A few Factory transport requests failed before returning command ids. They were
+given no execution or evidence credit; recovery rechecked the live HEAD and
+tracked state before retrying. The final aggregate, product, CI, tracking, and
+attestation results above all come from durable command records on the committed
+source state.
+
+For the next bounded batch, rotate away from the ANM handle pair and deferred
+shot cadence. Prefer a distinct historical-runtime, non-ANM resource-lifetime,
+persistent/ABI, or another interpreter/state protocol with a new TH095-local
+producer plus an independent consumer, cleanup edge, or sibling discriminator.
+Do not reopen the already-falsified exact/DIFF compatibility routes without new
+evidence. Replay-file/input reserved bytes, `ReplayScanWorker::unknown010`,
+outer score-header reserved fields including `+0x0C`, Sound/PBG writer-only or
+copied-but-unconsumed metadata, ANM VM bit 14, the TextRenderer RNG prefix,
+compact enemy `+0x2CA4/+0x2CA8` and other single-ended tail/control storage,
+shared unresolved bits, and photo-score bits 5/17/18/19 remain Unknown absent a
+new distinguishing TH095-local reader/producer/lifetime relation.
+
+After this docs-only handoff checkpoint, current-snapshot Factory acceptance
+receipts may be issued narrowly for `EclManager::RunEcl @ 0x00408E70` and the
+whole-build closure. Do not replay the full historical receipt set and do not
+request semantic completion, whole-image exactness, runtime-scenario, or
+portable-runtime credit.
