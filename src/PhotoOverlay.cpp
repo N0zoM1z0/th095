@@ -66,7 +66,20 @@ typedef char PhotoStageSlotLifetimeViewSizeIs2214[
 struct PhotoStageGlobalStateView
 {
     u8 unknown000[0xfc];
+#ifdef DIFFBUILD
     u32 flags;
+#else
+    union
+    {
+        u32 flags;
+        struct
+        {
+            u32 unknownFlags0_1 : 2;
+            u32 gameplayLoadActive : 1;
+            u32 unknownFlags3_31 : 29;
+        };
+    };
+#endif
     i32 bestShotIndex;
 };
 typedef char PhotoOverlayBestShotIndexAt100[
@@ -213,7 +226,11 @@ i32 PhotoOverlayManagerView::Draw()
 i32 __fastcall DrawPhotoStage(PhotoOverlayManagerView *manager)
 {
     g_Supervisor.ConfigureGameplayViewport(1);
+#ifdef DIFFBUILD
     if (((g_PhotoStageGlobalState->flags >> 2) & 1) != 0)
+#else
+    if (g_PhotoStageGlobalState->gameplayLoadActive != 0)
+#endif
     {
         return 1;
     }

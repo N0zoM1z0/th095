@@ -391,7 +391,11 @@ i32 PhotoFrontManagerView::Draw()
 
 i32 __fastcall PhotoFrontManagerView::OnUpdate(PhotoFrontManagerView *front)
 {
+#ifdef DIFFBUILD
     if (((g_PhotoFrontGameTask->flags >> 2) & 1) != 0)
+#else
+    if (g_PhotoFrontGameTask->gameplayLoadActive != 0)
+#endif
     {
         return 1;
     }
@@ -400,7 +404,11 @@ i32 __fastcall PhotoFrontManagerView::OnUpdate(PhotoFrontManagerView *front)
 
 i32 __fastcall PhotoFrontManagerView::OnDraw(PhotoFrontManagerView *front)
 {
+#ifdef DIFFBUILD
     if (((g_PhotoFrontGameTask->flags >> 2) & 1) != 0)
+#else
+    if (g_PhotoFrontGameTask->gameplayLoadActive != 0)
+#endif
     {
         return 1;
     }
