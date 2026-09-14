@@ -429,6 +429,23 @@ static inline i32 BackgroundEitherFlag(i32 first, i32 second)
     return first | second;
 }
 
+// Two exact-facing Background error relocations retain historical proxy names
+// whose target callees have the opposite severity. Preserve those relocation
+// tokens for exact/DIFF objects while normal production follows the target's
+// diagnostic escalation: the inner ANM failure logs context and the outer
+// stage-load failure raises the fatal/message-box latch.
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_BACKGROUND_STAGE_DATA_FAILURE(message) \
+    g_GameErrorContext.Log(message)
+#define TH095_BACKGROUND_ANM_FAILURE(message) \
+    g_GameErrorContext.Fatal(message)
+#else
+#define TH095_BACKGROUND_STAGE_DATA_FAILURE(message) \
+    g_GameErrorContext.Fatal(message)
+#define TH095_BACKGROUND_ANM_FAILURE(message) \
+    g_GameErrorContext.Log(message)
+#endif
+
 // FUNCTION: TH095 0x00425AA0.
 #pragma var_order(eye, lookAt, this)
 void BackgroundSupervisorView::ApplyBackgroundViewport(
@@ -545,7 +562,7 @@ i32 Background::Initialize()
 {
     if (this->LoadStageData(g_SelectedScene->stageDataPath) != 0)
     {
-        g_GameErrorContext.Log(
+        TH095_BACKGROUND_STAGE_DATA_FAILURE(
             "\x83\x58\x83\x65\x81\x5b\x83\x57\x83\x66\x81\x5b"
             "\x83\x5e\x82\xaa\x93\xc7\x82\xdd\x8d\x9e\x82\xdf"
             "\x82\xdc\x82\xb9\x82\xf1\x81\x42\x83\x66\x81\x5b"
@@ -1064,7 +1081,7 @@ i32 Background::LoadStageDataInner(const char *path)
         4, background->stageData->anmPath);
     if (background->anm == NULL)
     {
-        g_GameErrorContext.Fatal(
+        TH095_BACKGROUND_ANM_FAILURE(
             "\x83\x58\x83\x65\x81\x5b\x83\x57\x83\x66\x81\x5b"
             "\x83\x5e\x82\xaa\x8c\xa9\x82\xc2\x82\xa9\x82\xe8"
             "\x82\xdc\x82\xb9\x82\xf1\x81\x42\x83\x66\x81\x5b"
@@ -1126,6 +1143,9 @@ i32 Background::LoadStageDataInner(const char *path)
     #undef background
     return 0;
 }
+
+#undef TH095_BACKGROUND_STAGE_DATA_FAILURE
+#undef TH095_BACKGROUND_ANM_FAILURE
 
 // FUNCTION: TH095 0x00403440. Variable-size stage-script interpreter and
 // TH095-specific photograph-mask/camera interpolation owner.
