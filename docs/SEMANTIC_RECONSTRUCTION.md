@@ -10940,3 +10940,98 @@ neutral state names for only the values whose TH095-local behavior is stable;
 if the 0..15 machine is too broad for one bounded batch, select a smaller
 resource/lifetime or persistent owner instead. Semantic phase remains
 active-incomplete.
+
+### SEM-195 — name the result replay-save states
+
+**Scope.** Rotate away from the completed Background owner/counter family into a
+bounded subset of `ResultScreen::state @ +0x0004`. The full ResultScreen dispatcher
+uses values 0..15 and is too broad to rename safely in one transaction. This batch
+recovers only the self-contained replay-save subprotocol at values 13, 14, and 15:
+replay-slot selection, replay-name entry, and the one-frame replay write state. The
+underlying `state` field remains `i32`; values 0..12 remain outside this batch.
+
+**Observed.** Fresh Factory-attested TH095 v1.02a decompilation of
+`ResultScreen::Update @ 0x00426BF0` dispatches state `0x0D` as a 20-slot replay
+selection loop. Confirm input changes the state to `0x0E`, copies the current replay
+name, and pushes the replay cursor. State `0x0E` handles the 6x16 replay-name
+keyboard, including delete at selection 94 and confirm at selection 95; confirm
+changes the state to `0x0F`, while backing out with an empty name cursor returns to
+`0x0D`. State `0x0F` formats `"th95_%.2d.rpy"`, calls the target function at
+`0x00434A90`, copies the chosen replay name into result-save data, returns the state
+to `0x0D`, reloads the replay list, and pops the cursor.
+
+Fresh target `ResultScreen::Draw @ 0x00429C80` independently consumes state
+`0x0D` by rendering the `"Select Replay Number"` twenty-entry replay list and state
+`0x0E` by rendering `"Replay Name Regist"`, the current replay metadata, and the
+96-cell keyboard. It has no separate state-15 presentation branch, consistent with
+the write state being consumed immediately by `Update`.
+
+**Corroborated.** The current exact function ledger independently identifies
+`ReplayManager::WriteReplay @ 0x00434A90` as a 1691-byte exact replay stream
+compression/encryption/output and USER-metadata writer. Maintained `ResultScreen`
+source has two independent routes into state 13 from replay-save cursor choices,
+uses `SetState(14)` for entry into name editing, `SetState(15)` only from the
+keyboard confirm action, and returns from both cancel and completed write to state
+13. The normal and exact ResultScreen implementations agree on the same numeric
+protocol. TH08 supplies no identifier authority.
+
+**Inferred.** The neutral maintenance names are
+`REPLAY_SLOT_SELECT = 13`, `REPLAY_NAME_ENTRY = 14`, and `REPLAY_WRITE = 15`.
+`REPLAY_WRITE` describes the target-observed persistent action rather than implying
+that the state lasts for a full rendered frame. These three names form a bounded
+subprotocol; they do not assert a closed enum for the complete ResultScreen state
+machine.
+
+**Unknown / bounded.** Values 0..12 retain their numeric spellings and are not
+reinterpreted here. In particular this batch does not assign final names to the six
+menu/exit pairs, result-entry state 0, result-mode meanings, or scene-transition
+values. Original ZUN state names remain unknown. Replay file-format semantics beyond
+the already reconstructed `WriteReplay` writer are unchanged, and no runtime replay
+scenario is claimed.
+
+**Production / exact representation.** Normal `src/ResultScreen.cpp` defines a
+TU-private `ResultScreenReplaySaveStateValue` containing only the three accepted
+values and routes the corresponding Update/Draw case labels and transitions through
+profile-aware `TH095_RESULT_STATE_*` tokens. `DIFFBUILD` expands those tokens to the
+historical integer literals 13/14/15. `TH095_MATCH_EXACT` continues to select the
+frozen `ResultScreenExact.inl` at the source-file boundary and is untouched. The
+`ResultScreen::state` member remains four-byte `i32 @ +0x0004`; no header, layout,
+ABI, persistent format, function signature, or control flow changes.
+
+**Validation.** Focused canonical replay of `src/ResultScreen.cpp` rebuilt all 24
+configured ResultScreen units and passed **24/24 exact** with zero compiler-private
+label refresh. A command-local normal-production probe used pinned VC7.1 13.10.3077
+with the canonical `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src`
+profile and emitted a **75,134-byte Intel 80386 COFF** object; the temporary
+object/PDB directory was removed by the same command. `git diff --check` for the
+ResultScreen transaction passed. This is a private translation-unit representation
+change; broad aggregate exact and whole-product gates remain deferred to a later
+clean committed milestone rather than being mixed with unrelated dirty state.
+
+**Recovery / analysis state.** The campaign milestone at committed SEM-194 HEAD
+`b4f68d66f1c9014eb983e8442008f5aba2d8a6d5` had already closed 696/696 exact units,
+88/88 pinned-VC7.1 production translation units, and all 43 CI tests before this
+batch. During the pre-edit recovery window unexpected unstaged
+`src/PhotoEffectRuntime.hpp` and `src/PhotoEffect.cpp` changes appeared, adding a
+candidate five-value `PhotoEffectState` representation and its consumers. They have
+no current commit, semantic record, active producer, or provable current-session
+provenance, so both are classified **unknown-origin-or-intent** and are preserved
+verbatim outside staging. A reconnect also exposed that the staged ResultScreen file
+had briefly absorbed a broader current-session 0..15 typing experiment; recovery
+removed only that known experiment and restored the staged source to this documented
+13/14/15 replay-save subset before checkpoint. SEM-195 does not edit, validate,
+adopt, or claim the PhotoEffect changes. The four pre-existing exclusions
+`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
+`scripts/runtime-diff.py` also remain preserved. `.analysis/` was 3,394,984 bytes at
+campaign preflight; SEM-195 created no filesystem analysis root because target
+evidence came through the registered read-only provider and the normal probe used
+command-local temporary storage.
+
+**Next evidence route.** After checkpoint, do not extend the ResultScreen naming
+mechanically into values 0..12. First re-run the recovery gate: if the unknown-origin
+`PhotoEffectRuntime.hpp` change has acquired durable provenance, follow that committed
+history rather than duplicating it; otherwise continue to preserve/exclude it. For a
+new semantic batch, either reconstruct one independently bounded ResultScreen
+menu/exit pair from fresh TH095 producer plus consumer evidence, or rotate to a
+distinct persistent/resource/lifetime protocol. The semantic phase remains
+active-incomplete.

@@ -206,6 +206,22 @@ extern ResultPhotoControllerView *g_ResultPhotoController;
 extern void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
+
+#if defined(DIFFBUILD)
+#define TH095_RESULT_STATE_REPLAY_SLOT_SELECT 13
+#define TH095_RESULT_STATE_REPLAY_NAME_ENTRY 14
+#define TH095_RESULT_STATE_REPLAY_WRITE 15
+#else
+enum ResultScreenReplaySaveStateValue
+{
+    RESULT_SCREEN_REPLAY_SLOT_SELECT = 13,
+    RESULT_SCREEN_REPLAY_NAME_ENTRY = 14,
+    RESULT_SCREEN_REPLAY_WRITE = 15,
+};
+#define TH095_RESULT_STATE_REPLAY_SLOT_SELECT RESULT_SCREEN_REPLAY_SLOT_SELECT
+#define TH095_RESULT_STATE_REPLAY_NAME_ENTRY RESULT_SCREEN_REPLAY_NAME_ENTRY
+#define TH095_RESULT_STATE_REPLAY_WRITE RESULT_SCREEN_REPLAY_WRITE
+#endif
 #ifdef DIFFBUILD
 extern void __fastcall PreparePhotoResultScreen(ResultScreen *resultScreen);
 #define TH095_RESULT_PREPARE_BEST_SHOT(resultScreen) PreparePhotoResultScreen(resultScreen)
@@ -1215,7 +1231,7 @@ ChainCallbackResult ResultScreen::Update()
             case 2:
                 this->replayCursor.Push();
                 this->replayCursor.count = 20;
-                this->state = 13;
+                this->state = TH095_RESULT_STATE_REPLAY_SLOT_SELECT;
                 this->LoadReplays();
                 this->stateTimer.Reset();
                 break;
@@ -1269,7 +1285,7 @@ ChainCallbackResult ResultScreen::Update()
             case 3:
                 this->replayCursor.Push();
                 this->replayCursor.count = 20;
-                this->state = 13;
+                this->state = TH095_RESULT_STATE_REPLAY_SLOT_SELECT;
                 this->LoadReplays();
                 this->stateTimer.Reset();
                 break;
@@ -1339,7 +1355,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 13:
+    case TH095_RESULT_STATE_REPLAY_SLOT_SELECT:
         this->replayCursor.SaveCurrent();
         if (IsResultMenuInputPressed(0x10))
         {
@@ -1357,7 +1373,7 @@ ChainCallbackResult ResultScreen::Update()
         if (GetPressedButtons(0x1002) != 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-            this->SetState(14);
+            this->SetState(TH095_RESULT_STATE_REPLAY_NAME_ENTRY);
             strcpy(this->replayName, g_ResultSaveData->replayName);
             if (strcmp(this->replayName, "        ") != 0)
             {
@@ -1407,7 +1423,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 14:
+    case TH095_RESULT_STATE_REPLAY_NAME_ENTRY:
         if (IsResultMenuInputPressed(0x10))
         {
             this->keyboardSelection -= 16;
@@ -1449,7 +1465,7 @@ ChainCallbackResult ResultScreen::Update()
             if (this->keyboardSelection == 95)
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                this->SetState(15);
+                this->SetState(TH095_RESULT_STATE_REPLAY_WRITE);
             }
             else if (this->keyboardSelection == 94)
             {
@@ -1492,17 +1508,17 @@ ChainCallbackResult ResultScreen::Update()
             }
             else
             {
-                this->SetState(13);
+                this->SetState(TH095_RESULT_STATE_REPLAY_SLOT_SELECT);
                 this->replayCursor.Pop();
             }
         }
         break;
 
-    case 15:
+    case TH095_RESULT_STATE_REPLAY_WRITE:
         sprintf(path, "th95_%.2d.rpy", this->replayCursor.GetCurrent() + 1);
         g_ReplayManager->WriteReplay(path, this->replayName);
         strcpy(g_ResultSaveData->replayName, this->replayName);
-        this->SetState(13);
+        this->SetState(TH095_RESULT_STATE_REPLAY_SLOT_SELECT);
         this->LoadReplays();
         this->replayCursor.Pop();
         break;
@@ -1718,7 +1734,7 @@ ChainCallbackResult ResultScreen::Draw()
         break;
     }
 
-    case 13:
+    case TH095_RESULT_STATE_REPLAY_SLOT_SELECT:
     {
         replayListTitlePosition.x = 160.0f;
         replayListTitlePosition.y = 32.0f;
@@ -1783,7 +1799,7 @@ ChainCallbackResult ResultScreen::Draw()
         break;
     }
 
-    case 14:
+    case TH095_RESULT_STATE_REPLAY_NAME_ENTRY:
     {
         replayNameTitlePosition.x = 160.0f;
         replayNameTitlePosition.y = 32.0f;
