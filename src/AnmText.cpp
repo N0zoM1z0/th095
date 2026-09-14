@@ -6,6 +6,13 @@
 namespace th095
 {
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_ANM_TEXT_PUBLISH_VISIBLE(vm) ((vm)->flagsWord |= 1)
+#else
+#define TH095_ANM_TEXT_PUBLISH_VISIBLE(vm) \
+    (reinterpret_cast<AnmVm *>(vm)->visible = 1)
+#endif
+
 void AnmTextManagerView::DrawTextInner(
     IDirect3DTexture8 *texture, i32 x, i32 y, i32 width, i32 height,
     i32 glyphWidth, i32 glyphHeight, COLORREF textColor,
@@ -63,7 +70,7 @@ void AnmTextManagerView::DrawTextLeft(AnmTextVmView *vm, COLORREF textColor,
         vm->loadedSprite->scaleFactor.x,
         vm->loadedSprite->scaleFactor.y);
 
-    vm->flagsWord |= 1;
+    TH095_ANM_TEXT_PUBLISH_VISIBLE(vm);
 }
 
 #pragma var_order(textBuffer, textGlyphWidth)
@@ -94,7 +101,7 @@ void AnmTextManagerView::DrawTextRight(AnmTextVmView *vm,
         vm->loadedSprite->scaleFactor.x,
         vm->loadedSprite->scaleFactor.y);
 
-    vm->flagsWord |= 1;
+    TH095_ANM_TEXT_PUBLISH_VISIBLE(vm);
 }
 
 #pragma var_order(textBuffer, textGlyphWidth)
@@ -125,10 +132,11 @@ void AnmTextManagerView::DrawTextCentered(AnmTextVmView *vm,
         vm->loadedSprite->scaleFactor.x,
         vm->loadedSprite->scaleFactor.y);
 
-    vm->flagsWord |= 1;
+    TH095_ANM_TEXT_PUBLISH_VISIBLE(vm);
 }
 #undef textBuffer
 #undef textGlyphWidth
 #undef textX
+#undef TH095_ANM_TEXT_PUBLISH_VISIBLE
 
 } // namespace th095
