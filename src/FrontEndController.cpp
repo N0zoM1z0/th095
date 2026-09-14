@@ -466,7 +466,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             TH095_FRONT_SUPERVISOR.StopReplayScan();
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
             g_FrontEndGameManager = reinterpret_cast<FrontEndGameManagerView *>(
-                PhotoGameTaskView::Create(0));
+                PhotoGameTaskView::Create(REPLAY_MANAGER_RECORD));
 #else
             g_FrontEndGameManager = CreateFrontEndGameManager(0);
 #endif
@@ -517,7 +517,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             TH095_FRONT_SUPERVISOR.StopReplayScan();
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
             g_FrontEndGameManager = reinterpret_cast<FrontEndGameManagerView *>(
-                PhotoGameTaskView::Create(1));
+                PhotoGameTaskView::Create(REPLAY_MANAGER_PLAYBACK));
 #else
             g_FrontEndGameManager = CreateFrontEndGameManager(1);
 #endif

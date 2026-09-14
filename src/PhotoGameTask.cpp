@@ -455,7 +455,11 @@ PhotoGameTaskView *PhotoGameTaskView::Create(i32 replayMode)
 
     locals.task = new PhotoGameTaskView();
     g_PhotoGameTask = locals.task;
+#ifdef DIFFBUILD
     locals.task->replayMode = replayMode;
+#else
+    locals.task->replayMode = static_cast<ReplayManagerMode>(replayMode);
+#endif
     locals.task->gameplayLoadActive = 1;
 
     locals.elem = g_Chain.CreateElem(

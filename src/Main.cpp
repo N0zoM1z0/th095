@@ -10,6 +10,7 @@
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
 #ifndef DIFFBUILD
+#include "ReplayManager.hpp"
 #include "ResultScreen.hpp"
 #endif
 #include "SoundPlayer.hpp"
@@ -135,11 +136,24 @@ struct FrontEndLifecycleView
 struct PhotoGameTaskView
 {
     u8 unknown000[0x120];
+#ifdef DIFFBUILD
     i32 replayMode;
+#else
+    ReplayManagerMode replayMode;
+#endif
 
     static PhotoGameTaskView *__fastcall Create(i32 replayMode);
     void Destroy();
 };
+
+#ifdef DIFFBUILD
+#define TH095_GAME_TASK_RECORD_MODE 0
+#define TH095_GAME_TASK_FRONT_END_MODE(mode) ((mode) != 0 ? 2 : 1)
+#else
+#define TH095_GAME_TASK_RECORD_MODE REPLAY_MANAGER_RECORD
+#define TH095_GAME_TASK_FRONT_END_MODE(mode) \
+    ((mode) != REPLAY_MANAGER_RECORD ? 2 : 1)
+#endif
 
 extern PhotoGameTaskView *g_PhotoGameTask;
 #ifndef DIFFBUILD
@@ -1616,8 +1630,13 @@ i32 Supervisor::UpdateSceneState()
 {
     struct
     {
+#ifdef DIFFBUILD
         i32 resultMode;
         i32 replayMode;
+#else
+        ReplayManagerMode resultMode;
+        ReplayManagerMode replayMode;
+#endif
     } locals;
 
     if (this->wantedState != this->currentState)
@@ -1680,7 +1699,7 @@ i32 Supervisor::UpdateSceneState()
                 this->photoGameTask = NULL;
                 this->frontEndController =
                     TH095_FRONT_END_CREATE(
-                        locals.replayMode != 0 ? 2 : 1);
+                        TH095_GAME_TASK_FRONT_END_MODE(locals.replayMode));
                 if (this->frontEndController == NULL)
                 {
                     goto failure;
@@ -1694,7 +1713,8 @@ i32 Supervisor::UpdateSceneState()
                 this->photoGameTask->Destroy();
                 this->photoGameTask = NULL;
                 this->flags.restartPhotoGame = 1;
-                this->photoGameTask = PhotoGameTaskView::Create(0);
+                this->photoGameTask =
+                    PhotoGameTaskView::Create(TH095_GAME_TASK_RECORD_MODE);
                 if (this->photoGameTask == NULL)
                 {
                     goto failure;

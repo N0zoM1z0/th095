@@ -3,6 +3,9 @@
 
 #include "Main.hpp"
 #include "ZunTimer.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "ReplayManager.hpp"
+#endif
 
 namespace th095
 {
@@ -76,7 +79,11 @@ struct PhotoGameTaskView
     i32 score;                               // +0x114
     ChainElem *calcChain;                    // +0x118
     ChainElem *drawChain;                    // +0x11c
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i32 replayMode;                          // +0x120
+#else
+    ReplayManagerMode replayMode;            // +0x120
+#endif
 
     PhotoGameTaskView();
     ~PhotoGameTaskView();
