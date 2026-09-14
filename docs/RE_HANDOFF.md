@@ -426,3 +426,76 @@ registry for receipts issued after this handoff commit. Do not replay the full
 accepted receipt set merely because execution resumed; issue fresh receipts at
 a committed milestone or final handoff when the source state they bind will
 remain useful.
+
+## GPT-web semantic continuation — SEM-168/169
+
+This is the newest GPT-web continuation point. The semantic phase remains
+**active-incomplete**. This handoff pauses browser execution only and does not
+assert readiness, closure, completion, or portability.
+
+Two bounded semantic transactions were checkpointed in this campaign:
+
+- `7482990` / SEM-168, `gpt-web: share compact enemy secondary flags`:
+  recovery adopted a coherent pre-existing three-file transaction after fresh
+  TH095 evidence confirmed compact enemy `secondaryWord @ +0x2BF8` bit 6 as
+  the already-proven `showPhotoMarker` control and bit 7 as
+  `freezeAttachedVm`. Both `PhotoRuntimeView::CountPhotoTargets @ 0x004168D0`
+  and `PhotoCameraState::CountPhotoTargets @ 0x004339F0` independently require
+  bit 6 clear for target eligibility. The shared normal enemy view now exposes
+  both proved bits and those two filters use the named bit; exact/DIFF retains
+  raw masks. This reconciles stale post-SEM-143 route prose that had copied a
+  bounded bit-6 `Unknown` statement past the stronger SEM-042 evidence.
+- `b2bf346` / SEM-169, `gpt-web: share front-end asset queues`: the normal
+  shared `SceneSelectControllerView` now represents all nine contiguous
+  `SceneValueQueue` owners at `+0x6128..+0x63AF`. Fresh target
+  `LoadSceneSelectionAssets @ 0x0044D0A0` establishes the selection,
+  loaded-scene, group/scene preview data+size, group/scene request, and
+  loaded-group channels; `UpdateMainMenu @ 0x00446A50` independently drains
+  and resets the same queue family on the Game Start transition. Normal
+  FrontEnd code now uses direct queue members instead of pointer arithmetic;
+  frozen exact source/raw offsets remain unchanged.
+
+Current-source validation after SEM-169 is strong but remains separated by
+plane. Focused exact replay passed 6/6 for FrontEndController, SceneSelectAssets,
+and SceneSelectUpdate. The shared-header cold gate passed all 696/696 configured
+units across all 88 manifest sources with zero private-label refresh. A fresh
+pinned-VC7.1 whole-product build compiled all 88 production translation units
+and linked a PE32 i386 image with build-local SHA-256
+`c959a03a00c3fda1b553fd8c01b43260ca3a420a4963d651f90cc4fd3fc30b82`;
+this is compile/link closure, not whole-image identity. Target-independent CI
+passes all 43 tests and target tracking remains 1,880 provisional / 697
+source-present / 696 exact. Runtime-scenario validation was not added for these
+representation-only transactions.
+
+Bounded negative rotations in this campaign should not be repeated without new
+evidence. Compact enemy `controlWord @ +0x2BF4` bit 5 still has two photography
+filter readers but no distinguishing producer. ANM VM `flagsWord @ +0x228` bit
+14 has no current tracked writer/reader. The TextRenderer 0x100-byte RNG prefix
+is written during text-buffer creation but has no observed reader. Compact enemy
+`+0x4CA4..+0x4CAB` and `timer4cac` remain single-ended under the earlier direct
+access audit. Photo-score flags 5/17/18/19 have display consumers but no writer
+in `CalculatePhotoScore` or elsewhere in tracked source. The single-target
+relocation-proxy audit also found the prominent ANM, Scene VM/text, and
+PhotoGameTask proxy families already canonicalized in normal production; do not
+redo them absent contradictory TH095 evidence.
+
+The next campaign should rotate away from front-end/scene ownership. Prefer a
+distinct persistent/ABI or non-ANM resource-lifetime family with a TH095-local
+producer plus independent consumer. Replay/input reserved fields and Sound/PBG
+metadata should be revisited only if a new field-level reader appears. Use the
+semantic-debt scanner only as a routing heuristic; one negative route is a
+reason to rotate, never a completion argument.
+
+Recovery exclusions are unchanged. Preserve and exclude from staging
+`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
+`scripts/runtime-diff.py`. Their hashes were rechecked unchanged during this
+campaign. `.analysis/` was 3,394,984 bytes at campaign start and remains exactly
+3,394,984 bytes; no current-session `.analysis/gpt-web/` root or retained large
+artifact exists. Fresh target evidence came through the registered read-only
+attested Ghidra provider.
+
+The Factory receipts accepted at the older `f93406f` snapshot are stale for the
+current source state. After this handoff commit, issue fresh current-snapshot
+function-exact receipts for the bounded SEM-168/169 functions and one
+whole-build-closed receipt, then query the acceptance registry. Do not request
+semantic completion, whole-image exactness, or runtime-scenario credit.
