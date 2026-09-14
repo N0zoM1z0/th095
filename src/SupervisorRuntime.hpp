@@ -14,6 +14,7 @@
 
 #include "inttypes.hpp"
 #include "MidiRuntime.hpp"
+#include "SupervisorStartupState.hpp"
 
 namespace th095
 {
@@ -201,7 +202,7 @@ struct Supervisor
     u8 *screenshotPixels;                            // +0x540
     char screenshotPath[MAX_PATH];                   // +0x544
     ReplayScanWorker replayScanWorker;               // +0x648
-    i32 startupThreadState;                          // +0x660
+    SupervisorStartupPhase startupThreadState;      // +0x660
     CRITICAL_SECTION criticalSections[7];            // +0x664
     u8 criticalSectionLockCounts[7];                 // +0x70c
     u8 unknown713;
