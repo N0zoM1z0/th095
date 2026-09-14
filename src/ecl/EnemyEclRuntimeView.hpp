@@ -40,6 +40,19 @@ struct EnemyEclControlBits
 typedef char EnemyEclControlBitsSizeIs4[
     (sizeof(EnemyEclControlBits) == 4) ? 1 : -1];
 
+// The adjacent secondary word has two independently proved TH095-local bits.
+// Keep the remaining bits anonymous rather than importing unrelated flag names
+// from other Enemy representations.
+struct EnemyEclSecondaryBits
+{
+    u32 unknown0_5 : 6;
+    u32 showPhotoMarker : 1;
+    u32 freezeAttachedVm : 1;
+    u32 unknown8_31 : 24;
+};
+typedef char EnemyEclSecondaryBitsSizeIs4[
+    (sizeof(EnemyEclSecondaryBits) == 4) ? 1 : -1];
+
 struct EnemyEclRuntimeView
 {
     u8 unknown0000[0x2bf4];
@@ -48,13 +61,24 @@ struct EnemyEclRuntimeView
         u32 controlWord;
         EnemyEclControlBits control;
     };
+    union
+    {
+        u32 secondaryWord;
+        EnemyEclSecondaryBits secondary;
+    };
 };
 typedef char EnemyEclRuntimeControlAt2BF4[
     (offsetof(EnemyEclRuntimeView, controlWord) == 0x2bf4) ? 1 : -1];
+typedef char EnemyEclRuntimeSecondaryAt2BF8[
+    (offsetof(EnemyEclRuntimeView, secondaryWord) == 0x2bf8) ? 1 : -1];
 
 #define TH095_ENEMY_ECL_CONTROL_WORD(enemy) \
     (reinterpret_cast<EnemyEclRuntimeView *>(enemy)->controlWord)
 #define TH095_ENEMY_ECL_CONTROL_BITS(enemy) \
     (reinterpret_cast<EnemyEclRuntimeView *>(enemy)->control)
+#define TH095_ENEMY_ECL_SECONDARY_WORD(enemy) \
+    (reinterpret_cast<EnemyEclRuntimeView *>(enemy)->secondaryWord)
+#define TH095_ENEMY_ECL_SECONDARY_BITS(enemy) \
+    (reinterpret_cast<EnemyEclRuntimeView *>(enemy)->secondary)
 
 } // namespace th095

@@ -112,11 +112,13 @@ int PhotoRuntimeView::CountPhotoTargets(
             continue;
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (((locals.enemy->flags1 >> 4) & 1U) != 0 ||
-#else
-        if (TH095_ENEMY_ECL_CONTROL_BITS(locals.enemy).hiddenFromDrawGroups != 0 ||
-#endif
             ((locals.enemy->flags1 >> 5) & 1U) != 0 ||
             ((locals.enemy->flags2 >> 6) & 1U) != 0)
+#else
+        if (TH095_ENEMY_ECL_CONTROL_BITS(locals.enemy).hiddenFromDrawGroups != 0 ||
+            ((locals.enemy->flags1 >> 5) & 1U) != 0 ||
+            TH095_ENEMY_ECL_SECONDARY_BITS(locals.enemy).showPhotoMarker != 0)
+#endif
             continue;
 
         locals.enemyMinimum =

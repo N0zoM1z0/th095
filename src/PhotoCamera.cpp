@@ -981,12 +981,15 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
         }
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (((g_PhotoRuntime->enemies[locals.enemyIndex]->flags >> 4) & 1) != 0 ||
+            ((g_PhotoRuntime->enemies[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
+            ((g_PhotoRuntime->enemies[locals.enemyIndex]->flags2 >> 6) & 1) != 0)
 #else
         if (TH095_ENEMY_ECL_CONTROL_BITS(
                 g_PhotoRuntime->enemies[locals.enemyIndex]).hiddenFromDrawGroups != 0 ||
-#endif
             ((g_PhotoRuntime->enemies[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
-            ((g_PhotoRuntime->enemies[locals.enemyIndex]->flags2 >> 6) & 1) != 0)
+            TH095_ENEMY_ECL_SECONDARY_BITS(
+                g_PhotoRuntime->enemies[locals.enemyIndex]).showPhotoMarker != 0)
+#endif
         {
             continue;
         }
