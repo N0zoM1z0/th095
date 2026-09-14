@@ -24,6 +24,16 @@
 #endif
 
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_TARGET_ENEMY_POSITION(enemy)                                  \
+    (*reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x28a0))
+#define TH095_TARGET_ENEMY_POSITION_PTR(enemy)                              \
+    (reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x28a0))
+#else
+#define TH095_TARGET_ENEMY_POSITION(enemy) ((enemy)->position)
+#define TH095_TARGET_ENEMY_POSITION_PTR(enemy) (&(enemy)->position)
+#endif
+
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 #define TH095_TARGET_ENEMY_VM_ROTATION_Z(enemy)                             \
     (*reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x28))
 #else
@@ -124,7 +134,7 @@
 
     case 99:
         *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x2990) =
-            *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x28a0) +
+            TH095_TARGET_ENEMY_POSITION(enemy) +
             *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x2924);
         TH095_ECL_BULLET_SPAWN(
             reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x298c));
@@ -367,7 +377,7 @@ enter_subroutine:
         {
             TH095_ECL_ENEMY_SPAWN(
                 TH08_ECL_RAW_I(ctx, 0),
-                reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x28a0),
+                TH095_TARGET_ENEMY_POSITION_PTR(enemy),
                 10, 0, 0,
                 reinterpret_cast<i32 *>(
                     reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x18));
@@ -391,8 +401,7 @@ enter_subroutine:
                 position.z = (instruction->operandFlags & (1U << 3))
                     ? enemy->ResolveFloat(packet.position.z)
                     : packet.position.z;
-                position += *reinterpret_cast<Float3 *>(
-                    reinterpret_cast<u8 *>(enemy) + 0x28a0);
+                position += TH095_TARGET_ENEMY_POSITION(enemy);
                 spawned =
                 TH095_ECL_ENEMY_SPAWN(
                     packet.eclSubroutineId, &position, 10, 0, 0,
@@ -615,8 +624,8 @@ enter_subroutine:
 
         TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle =
             TH095_ECL_ANM_SPAWN_WORLD(
-                TH095_ECL_BULLET_ANM_SPAWNER, 0xd2, reinterpret_cast<Float3 *>(
-                    reinterpret_cast<u8 *>(enemy) + 0x28a0));
+                TH095_ECL_BULLET_ANM_SPAWNER, 0xd2,
+                TH095_TARGET_ENEMY_POSITION_PTR(enemy));
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(
             TH095_ECL_ANM_GET_VM(
                 TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle.value)) + 0x138) =
@@ -653,8 +662,8 @@ enter_subroutine:
 
         TH095_ENEMY_PHOTO(enemy)->photoAnmHandle =
             TH095_ECL_ANM_SPAWN_WORLD(
-                TH095_ECL_BULLET_ANM_SPAWNER, 0x125, reinterpret_cast<Float3 *>(
-                    reinterpret_cast<u8 *>(enemy) + 0x28a0));
+                TH095_ECL_BULLET_ANM_SPAWNER, 0x125,
+                TH095_TARGET_ENEMY_POSITION_PTR(enemy));
 #else
         TH095_ENEMY_PHOTO_PULSE(enemy)->photoPulseTimer =
             TH08_ECL_READ_I(ctx, 0);
@@ -662,8 +671,8 @@ enter_subroutine:
             TH08_ECL_READ_I(ctx, 0);
         TH095_ENEMY_PHOTO_PULSE(enemy)->photoPulseVmId =
             TH095_ECL_ANM_SPAWN_WORLD(
-                TH095_ECL_BULLET_ANM_SPAWNER, 0x125, reinterpret_cast<Float3 *>(
-                    reinterpret_cast<u8 *>(enemy) + 0x28a0));
+                TH095_ECL_BULLET_ANM_SPAWNER, 0x125,
+                TH095_TARGET_ENEMY_POSITION_PTR(enemy));
 #endif
         g_SoundPlayer.PlaySoundByIdx(TH095_SOUND_PHOTO_PULSE, 0);
         break;
@@ -672,3 +681,5 @@ enter_subroutine:
 #include "EclRunTargetPhoto.inl"
 
 #undef TH095_TARGET_ENEMY_LIFE
+#undef TH095_TARGET_ENEMY_POSITION
+#undef TH095_TARGET_ENEMY_POSITION_PTR

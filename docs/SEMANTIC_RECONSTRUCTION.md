@@ -10545,3 +10545,107 @@ The first focused replay request lost Factory transport before returning a durab
 **Recovery / analysis state.** The batch began from SEM-189 checkpoint `485c951d10c5600f54698deeee8aacb40db90873` with exactly this one tracked unstaged path plus the four established exclusions. `droid.resume.txt` remains user-owned/unrelated; the two runtime files remain unrelated pre-existing experiments; `EnemyManagerUpdate.i` remains protected unknown-origin generated-looking storage. `.analysis/` began at 3,394,984 bytes. Fresh target evidence came from the registered read-only Ghidra provider and no current-session `.analysis` artifact was retained.
 
 **Next evidence route.** After checkpoint and milestone validation, rotate away from `shootOffset`. Audit SEM-189's proposed SceneSelect result-save `+0x3178` and EnemyMovement Supervisor `+0x188` routes against history and canonical owners before editing; if either is already compatibility/history-only, rotate to a distinct persistent/resource/state protocol. Known single-ended storage remains Unknown absent new TH095-local evidence. The semantic phase remains active-incomplete.
+
+### SEM-191 — bind target-high enemy position consumers
+
+**Scope.** Resume from SEM-190 by first falsifying its named routes against the
+live tree. Scene Select result-save `+0x3178` is already the exact/DIFF view of
+`ResultSaveDataView::bestShotRecords[].comment`, and EnemyMovement Supervisor
+`+0x188` is already the exact/DIFF view of `g_AnmGameSpeed`. Rotations through
+ANM screen-shake storage, PhotoGlobalState load bit 2, ANM texture
+bytes-per-pixel, Player `+0x1E30`, shared task bit 8,
+`ReplayScanWorker::unknown010`, and old Bullet weak fields likewise either
+reconfirmed committed owners or remained genuinely single-ended. The useful
+counterexample is narrower: target-high ECL still has normal-production raw
+Enemy `+0x28A0` consumers even though SEM-009 and the canonical `Enemy` layout
+already establish those bytes as mutable local `position`. This batch binds
+only those consumers; adjacent ECL storage and opcode names remain out of scope.
+
+**Observed.** Fresh target-attested TH095 Ghidra decompilation of
+`EclManager::RunEcl @ 0x00408E70` re-establishes the storage identity on the
+current target. Before dispatch it adds Enemy `+0x28A0/+0x28A4/+0x28A8` to
+`+0x28AC/+0x28B0/+0x28B4` and publishes the result at
+`+0x28F4/+0x28F8/+0x28FC`. The target-high switch then uses the same local
+triplet in independent paths: case `0x53` (83) passes it directly to the enemy
+spawn helper; case `0x54` (84) adds it to the instruction-resolved spawn
+position; case 99 adds it to shoot offset `+0x2924..+0x292C`; case `0x68`
+(104) passes it to ANM world spawn for script `0xD2`; and case `0x90` (144)
+passes it to ANM world spawn for script `0x125`. These are TH095-local target
+observations; TH08 supplies no identifier authority.
+
+**Corroborated.** SEM-009 independently established Enemy `+0x28A0` as
+mutable local `position` and `+0x28F4` as derived `worldPosition` from target
+RunEcl, ResolveFloat/ResolveFloatLValue, movement, culling, collision, and
+projection behavior. The shared declaration asserts
+`offsetof(Enemy, position) == 0x28A0`, followed by `positionOffset @ +0x28AC`
+and `worldPosition @ +0x28F4`. The same current target-high source already uses
+`enemy->position.x` in case 137, so this is an owner binding, not projection of
+an unrelated view.
+
+**Inferred.** `Enemy::position` is the maintainable normal-production
+representation for these value/pointer consumers. The compatibility accessors
+added here are reconstruction machinery: normal production expands to
+`enemy->position` / `&enemy->position`, while `DIFFBUILD` and
+`TH095_MATCH_EXACT` retain the historical raw `enemy + 0x28A0` expression.
+This does not claim ZUN's original identifier or a stronger shared gameplay
+meaning for every callee beyond the observed local-coordinate role.
+
+**Unknown / bounded.** Original opcode names and script authoring intent remain
+unknown unless established elsewhere. This batch does not reinterpret case-99
+destination `+0x2990`, its bullet descriptor `+0x298C`, shoot-offset storage
+beyond SEM-190, compact photo-session/pulse owners, or later target-high raw
+fields. Nearby `+0x296C/+0x2CA8`, `+0x2960`, and compact-tail storage must not
+inherit meaning from physical proximity. Shared task bit 8 and
+`ReplayScanWorker::unknown010` remain Unknown after this campaign's fresh
+negative audits.
+
+**Production / exact representation.** `src/ecl/EclRunTargetHigh.inl` routes
+the affected position values/pointers through `TH095_TARGET_ENEMY_POSITION`
+and `TH095_TARGET_ENEMY_POSITION_PTR`. Normal production uses the canonical
+member; exact/DIFF expands to the previous raw address form. No shared header,
+object layout, function signature, ABI, persistent format, or allocation is
+changed.
+
+**Validation.** Campaign preflight on parent commit
+`7bf8575ecb1267869eec0845b03e97be87370c26` verified the target, tracking,
+registered Ghidra bridge, all 43 repository CI tests, and 697 source-present /
+696 exact functions. The parent milestone cold aggregate was recovered as
+disjoint source partitions covering all 88 manifest sources and passed
+`234 + 181 + 141 + 56 + 84 = 696/696` exact units with zero private-label
+refresh; that is a starting baseline, not post-edit credit. After this edit,
+focused canonical replay of `src/ecl/EclRun.cpp` passed 1/1 exact with zero
+private-label refresh. A normal-production command-local probe using pinned
+VC7.1 13.10.3077 and the canonical `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi
+/Gr /Od /Ob1 /I src/ecl /I src` profile emitted a 78,082-byte Intel 80386 COFF
+`EclRun.obj`. Two earlier probe requests lost Factory transport before command
+ids; recovery found no compiler/Wine producer, so they receive no credit.
+Because this is translation-unit-local and changes no shared owner/layout,
+aggregate exact and whole-product closure are deferred to the committed
+campaign milestone before handoff.
+
+**Recovery / analysis state.** The batch began at committed HEAD
+`7bf8575ecb1267869eec0845b03e97be87370c26` with no staged or tracked-unstaged
+changes and the same four protected untracked paths outside staging:
+unknown-origin generated-looking `EnemyManagerUpdate.i`, user-owned
+`droid.resume.txt`, and runtime experiments `config/runtime-scenarios.json` /
+`scripts/runtime-diff.py`. `.analysis/` began at 3,394,984 bytes. The successful
+normal probe used manifested current-session root
+`.analysis/gpt-web/sem191-position/`; its largest files were a 233,472-byte PDB
+and 78,082-byte object. After one unreceipted cleanup request, recovery proved
+the root still intact; manifest-checked cleanup then removed only that root.
+`.analysis/` returned exactly to 3,394,984 bytes with no retained file larger
+than 64 MiB. Fresh target evidence came from the registered read-only,
+target-attested Ghidra provider.
+
+**Next evidence route.** After checkpoint and committed milestone validation,
+rotate away from Enemy position. Re-audit remaining target-high normal raw
+accesses only where TH095-local evidence connects them to an already bounded
+canonical owner or distinguishes a real producer/consumer protocol. Do not
+infer the nearby `+0x296C/+0x2CA8` pair from proximity; its target use must be
+reconciled with the canonical Enemy layout first. If that surface plateaus,
+rotate to an independent persistent/ABI, non-ANM resource, replay/input, sound,
+or historical-runtime family. Shared task bit 8, ReplayScanWorker
+`unknown010`, Sound/PBG writer-only metadata, ANM bit 14, TextRenderer RNG
+prefix, compact single-ended storage, and other writer-only fields remain
+Unknown absent new TH095-local distinguishing evidence. The semantic phase
+remains active-incomplete.
