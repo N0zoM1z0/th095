@@ -71,7 +71,11 @@ typedef char ReplayInputDataSizeIsF8[
 struct ReplayManager
 {
     i32 mode;                        // +0x000
+#if defined(TH095_MATCH_EXACT)
     ReplayFileHeader *fileHeader;    // +0x004
+#else
+    ReplayFileHeader *ownedFileHeader; // +0x004; owning allocation root
+#endif
     ReplayInputData *inputData;      // +0x008
     u8 *fpsData;                     // +0x00c
     u8 *inputCursor;                 // +0x010

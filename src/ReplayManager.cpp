@@ -167,19 +167,19 @@ ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
     {
         g_ReplayManager = this;
         scratch.headerSize = sizeof(ReplayFileHeader);
-        this->fileHeader = (ReplayFileHeader *)malloc(scratch.headerSize);
+        this->ownedFileHeader = (ReplayFileHeader *)malloc(scratch.headerSize);
         scratch.inputSize = 0x69780;
         this->inputData = (ReplayInputData *)malloc(scratch.inputSize);
         scratch.fpsSize = 0x11940;
         this->fpsData = (u8 *)malloc(scratch.fpsSize);
 
-        memset(this->fileHeader, 0, sizeof(ReplayFileHeader));
+        memset(this->ownedFileHeader, 0, sizeof(ReplayFileHeader));
         memset(this->inputData, 0, 0x69780);
         memset(this->fpsData, 0, 0x11940);
 
-        this->fileHeader->magic = 0x72353974;
-        this->fileHeader->version = 1;
-        this->fileHeader->gameVersion = 0x102;
+        this->ownedFileHeader->magic = 0x72353974;
+        this->ownedFileHeader->version = 1;
+        this->ownedFileHeader->gameVersion = 0x102;
 
         this->activeInputData = this->inputData;
         this->inputCursor =
@@ -245,30 +245,30 @@ ReplayManagerResult ReplayManager::LoadReplay(char *path)
         {
             return ZUN_ERROR;
         }
-        this->fileHeader =
+        this->ownedFileHeader =
             (ReplayFileHeader *)ReplayFile::Read(sizeof(ReplayFileHeader));
         locals.compressedData =
-            (u8 *)ReplayFile::Read(this->fileHeader->compressedPayloadSize);
+            (u8 *)ReplayFile::Read(this->ownedFileHeader->compressedPayloadSize);
         FileSystem::CloseWriteFile();
     }
     else
     {
-        this->fileHeader = (ReplayFileHeader *)FileSystem::OpenFile(
+        this->ownedFileHeader = (ReplayFileHeader *)FileSystem::OpenFile(
             path, &locals.fileSize, FALSE);
-        locals.compressedData = (u8 *)this->fileHeader + sizeof(ReplayFileHeader);
+        locals.compressedData = (u8 *)this->ownedFileHeader + sizeof(ReplayFileHeader);
     }
 
-    locals.allocationSize = this->fileHeader->decompressedPayloadSize;
+    locals.allocationSize = this->ownedFileHeader->decompressedPayloadSize;
     this->inputData = (ReplayInputData *)malloc(locals.allocationSize);
-    FileSystem::Decrypt(locals.compressedData, this->fileHeader->compressedPayloadSize,
+    FileSystem::Decrypt(locals.compressedData, this->ownedFileHeader->compressedPayloadSize,
                         0xaa, 0xe1, 0x400,
-                        this->fileHeader->compressedPayloadSize);
-    FileSystem::Decrypt(locals.compressedData, this->fileHeader->compressedPayloadSize,
+                        this->ownedFileHeader->compressedPayloadSize);
+    FileSystem::Decrypt(locals.compressedData, this->ownedFileHeader->compressedPayloadSize,
                         0x3d, 0x7a, 0x80,
-                        this->fileHeader->compressedPayloadSize);
-    DecompressData(locals.compressedData, this->fileHeader->compressedPayloadSize,
+                        this->ownedFileHeader->compressedPayloadSize);
+    DecompressData(locals.compressedData, this->ownedFileHeader->compressedPayloadSize,
                    (u8 *)this->inputData,
-                   this->fileHeader->decompressedPayloadSize);
+                   this->ownedFileHeader->decompressedPayloadSize);
 
     locals.inputData = this->inputData;
     this->fpsData = (u8 *)(locals.inputData->inputStreamSize +
@@ -324,15 +324,15 @@ ReplayManagerResult ReplayManager::WriteReplay(char *path, char *replayName)
     FileSystem::Encrypt(locals.compressedData, locals.compressedSize, 0xaa,
                         0xe1, 0x400, locals.compressedSize);
 
-    this->fileHeader->decompressedPayloadSize =
+    this->ownedFileHeader->decompressedPayloadSize =
         sizeof(ReplayInputData) + locals.inputData->inputStreamSize +
         locals.inputData->fpsStreamSize;
-    this->fileHeader->compressedPayloadSize = locals.compressedSize;
-    this->fileHeader->userDataOffset =
-        this->fileHeader->compressedPayloadSize + sizeof(ReplayFileHeader);
+    this->ownedFileHeader->compressedPayloadSize = locals.compressedSize;
+    this->ownedFileHeader->userDataOffset =
+        this->ownedFileHeader->compressedPayloadSize + sizeof(ReplayFileHeader);
 
     FileSystem::OpenWriteFile(locals.fullPath);
-    FileSystem::WriteToOpenFile(this->fileHeader, sizeof(ReplayFileHeader));
+    FileSystem::WriteToOpenFile(this->ownedFileHeader, sizeof(ReplayFileHeader));
     FileSystem::WriteToOpenFile(locals.compressedData, locals.compressedSize);
     free(locals.compressedData);
 
@@ -431,9 +431,9 @@ ReplayManager::~ReplayManager()
         freeSlots.fpsData = this->fpsData;
         free(freeSlots.fpsData);
     }
-    if (this->fileHeader != NULL)
+    if (this->ownedFileHeader != NULL)
     {
-        freeSlots.fileHeader = this->fileHeader;
+        freeSlots.fileHeader = this->ownedFileHeader;
         free(freeSlots.fileHeader);
     }
     g_Chain.Cut(this->calcChain);
