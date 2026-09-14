@@ -162,7 +162,11 @@ ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
 {
     ReplayInitializeScratch scratch;
 
+#ifdef DIFFBUILD
     this->mode = mode;
+#else
+    this->mode = static_cast<ReplayManagerMode>(mode);
+#endif
     if (this->mode == REPLAY_MANAGER_RECORD)
     {
         g_ReplayManager = this;

@@ -70,7 +70,11 @@ typedef char ReplayInputDataSizeIsF8[
 
 struct ReplayManager
 {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i32 mode;                        // +0x000
+#else
+    ReplayManagerMode mode;          // +0x000
+#endif
 #if defined(TH095_MATCH_EXACT)
     ReplayFileHeader *fileHeader;    // +0x004
 #else
