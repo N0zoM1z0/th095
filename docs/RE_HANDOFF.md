@@ -676,3 +676,125 @@ receipts may be issued narrowly for `EclManager::RunEcl @ 0x00408E70` and the
 whole-build closure. Do not replay the full historical receipt set and do not
 request semantic completion, whole-image exactness, runtime-scenario, or
 portable-runtime credit.
+
+## GPT-web semantic continuation — SEM-175/176
+
+This is the newest GPT-web continuation point. The semantic phase remains
+**active-incomplete**. This handoff pauses browser execution only; it is not a
+readiness, completion, closure, or porting checkpoint. No portable Windows,
+Linux, or Web work was started.
+
+Two bounded semantic transactions were checkpointed in this campaign:
+
+- `5a044de` / SEM-175, `gpt-web: align PhotoCard shared state gates`:
+  the resume audit found missed consumers of two already-proven shared
+  PhotoGameTask/global-state flags. Target `PhotoCardInfoView::OnUpdate @
+  0x00408C60` suppresses its update first on shared bit 2 and then on shared bit
+  10; `OnDraw @ 0x00408CB0` suppresses drawing on bit 2. Fresh TH095 producer
+  evidence keeps those gates distinct: `PhotoGameTaskView::Load @ 0x00417D20`
+  publishes/clears bit 2 over the gameplay-loading lifetime, while
+  `EnablePhotoTransition @ 0x00414430` and `DisablePhotoTransition @ 0x004144E0`
+  set/clear bit 10 around the ECL-driven photo transition. SEM-055/056 already
+  establish the names `gameplayLoadActive` and `photoTransitionActive`; this
+  batch only aligns the previously raw PhotoCard consumers. Normal PhotoCard
+  source now uses a bounded local bitfield; DIFFBUILD retains the historical
+  shifts and TH095_MATCH_EXACT remains on the frozen exact implementation.
+- `f5bf190` / SEM-176, `gpt-web: bind target-high bullet ANM owner`:
+  three target-high RunEcl paths still recovered BulletInf `+0x27C5B0` through
+  raw byte arithmetic even though the TH095 manager, ABI-033, PHOTO-054 and
+  SEM-017 already establish that field as the slot-six `bullet.anm` `AnmLoaded *`
+  / ANM spawner owner. Fresh target `PhotoBulletManagerView::Initialize @
+  0x00404E00` loads slot 6 `"bullet.anm"` and publishes its pointer to
+  `+0x27C5B0`; target `RunEcl @ 0x00408E70` borrows the same field for the
+  photo-card script `0xD2` and photo-pulse script `0x125` VM spawns. Normal
+  EclRun now uses an offset-asserted private `PhotoBulletManagerView::anmSpawner`
+  owner. DIFFBUILD/exact expands the accessor to the historical raw expression.
+  No VM handle ownership, ANM lifetime, script meaning, or opcode identity was
+  widened.
+
+Focused feedback remained narrow for both transactions. PhotoCard replay passed
+10/10 configured exact units with zero compiler-private label refresh and its
+normal pinned-VC7.1 probe emitted a 26,089-byte Intel 80386 COFF object. EclRun
+replay passed 1/1 exact with zero refresh. Its first normal probe correctly
+received no compile credit because EclRun's private Bullet manager view did not
+expose `anmSpawner`; the repair stayed local by adding an offset-asserted field.
+The repeated exact replay remained 1/1 and the corrected normal probe emitted a
+77,946-byte Intel 80386 COFF object.
+
+The adversarial routing also rejected multiple tempting lexical-debt surfaces
+rather than manufacturing semantics. Bullet `field360` remains a spawn-time
+single writer with no reader. PBG copied metadata and checksum/decrypt-profile
+bytes remain unconsumed. Sound/BGM opaque metadata and `CSound::unconsumedDword2C`
+remain writer-only. Shared global bit 1 is not new work: SEM-054 already proves
+it as `capturedPhotoActive`, and fresh Background/PhotoEffect reads only
+reconfirm that owner. Compact `maximumLife @ +0x295C` and
+`phaseStartingLife @ +0x2960` still lack an independent reader that can separate
+their roles, matching SEM-027's Unknown boundary. ScoreData's remaining anonymous
+persistent words expose no new independent consumer. `Supervisor::PlayMusic`'s
+second argument is already the target-proven ignored parameter from SEM-121.
+`ReplayBrowser::unknown0004` and SceneSelect `+0xE93` have no current reader or
+writer. The ANM preload-slot pathname at slot `+0x20` still has only its filename
+writer and remains Unknown despite its containing-object layout being known.
+None of these negative routes is a completion argument.
+
+Current-source milestone validation is bound to committed semantic source HEAD
+`f5bf1909ff1154058d9c597b1e25faa936b0154c`. The current 88-source / 696-unit
+manifest was replayed in four mutually exclusive 22-source partitions with unit
+totals 226, 201, 217, and 52. All four durable runs passed, for 696/696 exact
+configured units with zero private-label refresh. One initial partition-two
+request lost Factory transport before returning a command id; it received no
+validation credit. Recovery confirmed unchanged HEAD/tracked state and no active
+replay/compiler producer before the durable retry.
+
+A fresh `scripts/build-whole.py` run on the same source compiled all 88
+production translation units with pinned VC7.1 and linked a verified 780,288-byte
+PE32 i386 Windows GUI image. Its build-local SHA-256 is
+`c562f21179940ff9417e7c9247b11c0774bbf19ae2a8149666e5dc6ba7dacf3e`.
+This is production compile/link closure, not whole-image identity. Target
+verification and the read-only Ghidra six-sample attestation still bind Japanese
+TH095 v1.02a SHA-256
+`bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
+Tracking remains 1,880 provisional / 697 source-present / 696 exact; the match
+unit graph is 696 units and the whole-build graph remains 88 sources / 2
+profiles. Target-independent CI passes all 43 tests and `git diff --check`
+passes. Wine emitted only the existing headless GUI/systray diagnostics during
+whole-build tool execution. No runtime scenario, runtime-storage identity,
+portable-runtime, or whole-image exactness credit is claimed.
+
+Recovery exclusions are unchanged. Preserve and do not stage, delete, reset,
+or overwrite `EnemyManagerUpdate.i`, `config/runtime-scenarios.json`,
+`droid.resume.txt`, or `scripts/runtime-diff.py`. Their campaign-end SHA-256
+values remain respectively
+`1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`,
+`56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`,
+`9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`,
+and `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`.
+`.analysis/` began and ends this campaign at exactly 3,394,984 bytes. No
+current-session `.analysis/gpt-web/` root or retained large analysis artifact was
+created; fresh semantic evidence came through the registered read-only attested
+Ghidra provider. Generated matching objects and the whole-build image are build
+outputs, not semantic evidence storage.
+
+Several other read-only Factory requests lost transport before returning durable
+command ids or results. They received zero execution/evidence credit; the live
+repository state was rechecked before continuing. The semantic source commits,
+focused exact/prod checks, final aggregate partitions, whole product, CI,
+tracking, and final attestation cited above all have durable command records.
+
+For the next bounded batch, rotate away from PhotoCard/shared photo gates and
+BulletInf ANM ownership. Prefer a distinct persistent/ABI, replay/input,
+historical-runtime, sound/resource-lifetime, or non-ANM sibling-interpreter
+protocol with a new TH095-local producer plus an independent consumer/cleanup
+edge. Do not revisit the rejected single-ended routes without new evidence.
+Keep shared bit 8, FrontEnd controller bit 4, `ReplayScanWorker::unknown010`,
+replay/input reserved bytes, score-header reserved fields including `+0x0C`,
+Sound/PBG writer-only or copied-but-unconsumed metadata, ANM VM bit 14, ANM
+preload-slot path bytes, the TextRenderer RNG prefix, compact-enemy single-ended
+tail/control storage, and photo-score bits 5/17/18/19 Unknown absent a new
+TH095-local discriminator.
+
+After this docs-only handoff checkpoint, issue only narrow current-snapshot
+Factory receipts for the changed bounded functions plus one whole-build-closed
+receipt. Do not replay the complete historical receipt set and do not request
+semantic completion, whole-image exactness, runtime-scenario, or portable-runtime
+credit.
