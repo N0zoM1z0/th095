@@ -15,6 +15,7 @@
 #include "inttypes.hpp"
 #include "MidiRuntime.hpp"
 #include "SupervisorStartupState.hpp"
+#include "SupervisorFogState.hpp"
 
 namespace th095
 {
@@ -208,7 +209,7 @@ struct Supervisor
     u8 unknown713;
     i32 loadingVmsHaveBeenSetup;                     // +0x714
     u8 unknown718[0x50];
-    i32 fogState;                                    // +0x768
+    SupervisorFogCacheState fogState;                // +0x768
     u8 unknown76c[8];
     i32 versionDataSize;                             // +0x774
     u8 *versionData;                                 // +0x778

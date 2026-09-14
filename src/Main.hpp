@@ -18,6 +18,7 @@
 #include "ScreenEffect.hpp"
 #include "SoundPlayer.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "SupervisorFogState.hpp"
 #include "SupervisorStartupState.hpp"
 #endif
 #include "inttypes.hpp"
@@ -305,7 +306,11 @@ struct Supervisor
     u8 unknown713;
     i32 loadingVmsHaveBeenSetup;                // +0x714
     u8 unknown718[0x50];
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i32 fogState;                               // +0x768
+#else
+    SupervisorFogCacheState fogState;           // +0x768
+#endif
     u8 unknown76c[8];
     i32 versionDataSize;                        // +0x774
     u8 *versionData;                            // +0x778
