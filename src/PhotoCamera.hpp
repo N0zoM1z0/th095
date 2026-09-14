@@ -2,6 +2,9 @@
 #define TH095_PHOTO_CAMERA_HPP
 
 #include "AnmManager.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "PhotoPlayerRuntime.hpp"
+#endif
 
 namespace th095
 {
@@ -201,7 +204,11 @@ typedef char PhotoCameraStateSizeIsBDC[
 
 struct PhotoGameStateView
 {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i32 mode;                          // +0x0000
+#else
+    PhotoPlayerMode mode;              // +0x0000
+#endif
     PhotoAnmLoadedView *effectAnm;     // +0x0004
     AnmVm effectVm;                    // +0x0008
     i32 movementState;                 // +0x02d4

@@ -9,6 +9,16 @@
 namespace th095
 {
 
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+enum PhotoPlayerMode
+{
+    PHOTO_PLAYER_MODE_ENTERING = 0,
+    PHOTO_PLAYER_MODE_ACTIVE = 1,
+    PHOTO_PLAYER_MODE_DEATH_TRANSITION = 2,
+    PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION = 3,
+};
+#endif
+
 // Shared production view of the target PlayerInf object published through
 // g_RuntimePlayerOwner.  Only offsets used by independently target-proven
 // production consumers are named here.
@@ -39,7 +49,11 @@ typedef char PhotoPlayerCameraRuntimeSizeIs0BDC[
 
 struct PhotoPlayerRuntimeView
 {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i32 mode;                                      // +0x0000
+#else
+    PhotoPlayerMode mode;                          // +0x0000
+#endif
     u8 unknown0004[0x03a8 - 0x0004];
     Float3 hurtboxBoundsMin;                       // +0x03a8
     Float3 hurtboxBoundsMax;                       // +0x03b4

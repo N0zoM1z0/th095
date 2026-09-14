@@ -20,6 +20,13 @@
 namespace th095
 {
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION 3
+#else
+#define TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION \
+    PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION
+#endif
+
 #ifndef TH095_MATCH_EXACT
 struct Background
 {
@@ -634,7 +641,7 @@ u32 PhotoCameraState::TakePhoto()
     {
         this->charge = 0.0f;
         this->mode = PHOTO_CAMERA_DISABLED;
-        g_PhotoGame->mode = 3;
+        g_PhotoGame->mode = TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION;
         g_PhotoGame->completionTimer = 0;
     }
     else

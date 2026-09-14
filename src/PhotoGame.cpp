@@ -170,9 +170,25 @@ struct PhotoPlayerFrameStateView
 typedef char PhotoPlayerFrameStateSizeIs34[
     (sizeof(PhotoPlayerFrameStateView) == 0x34) ? 1 : -1];
 
+#if defined(DIFFBUILD)
+#define TH095_PHOTO_PLAYER_MODE_ENTERING 0
+#define TH095_PHOTO_PLAYER_MODE_ACTIVE 1
+#define TH095_PHOTO_PLAYER_MODE_DEATH_TRANSITION 2
+#define TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION 3
+#else
+#define TH095_PHOTO_PLAYER_MODE_ENTERING PHOTO_PLAYER_MODE_ENTERING
+#define TH095_PHOTO_PLAYER_MODE_ACTIVE PHOTO_PLAYER_MODE_ACTIVE
+#define TH095_PHOTO_PLAYER_MODE_DEATH_TRANSITION PHOTO_PLAYER_MODE_DEATH_TRANSITION
+#define TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION
+#endif
+
 struct PhotoGameUpdateView
 {
+#if defined(DIFFBUILD)
     i32 mode;
+#else
+    PhotoPlayerMode mode;
+#endif
     PhotoAnmLoadedView *effectAnm;
     AnmVm effectVm;
     i32 movementState;
@@ -534,11 +550,11 @@ i32 PhotoPlayerRuntimeView::CheckBulletCollision(Float3 *position, Float3 *size)
     {
         return 0;
     }
-    if (this->mode == 2)
+    if (this->mode == TH095_PHOTO_PLAYER_MODE_DEATH_TRANSITION)
     {
         return 0;
     }
-    if (this->mode == 3)
+    if (this->mode == TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION)
     {
         return 0;
     }
@@ -564,11 +580,11 @@ u32 PhotoGameUpdateView::CalcLaserHitbox(
     {
         return 0;
     }
-    if (this->mode == 2)
+    if (this->mode == TH095_PHOTO_PLAYER_MODE_DEATH_TRANSITION)
     {
         return 0;
     }
-    if (this->mode == 3)
+    if (this->mode == TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION)
     {
         return 0;
     }
@@ -580,7 +596,7 @@ void PhotoPlayerRuntimeView::Die()
 {
     Float3 screenPosition;
 
-    this->mode = 2;
+    this->mode = TH095_PHOTO_PLAYER_MODE_DEATH_TRANSITION;
     PhotoToScreen(&screenPosition, &this->playerPosition);
     g_AnmManager->SetPosition(
         g_PhotoBulletManager->anmSpawner->CreateVm(0x121, 0),
@@ -605,7 +621,7 @@ void PhotoPlayerRuntimeView::Die()
 
 i32 PhotoGameUpdateView::DrawPlayer()
 {
-    if (this->mode == 2)
+    if (this->mode == TH095_PHOTO_PLAYER_MODE_DEATH_TRANSITION)
     {
         return 1;
     }
@@ -913,13 +929,13 @@ i32 PhotoGameUpdateView::Update()
 {
     switch (this->mode)
     {
-    case 0:
+    case TH095_PHOTO_PLAYER_MODE_ENTERING:
         this->playerPosition.y =
             -80.0f * static_cast<f32>(this->completionTimer) / 60.0f +
             480.0f;
         if (this->completionTimer >= 60)
         {
-            this->mode = 1;
+            this->mode = TH095_PHOTO_PLAYER_MODE_ACTIVE;
             this->completionTimer = 0;
         }
         else
@@ -927,12 +943,12 @@ i32 PhotoGameUpdateView::Update()
             break;
         }
 
-    case 1:
+    case TH095_PHOTO_PLAYER_MODE_ACTIVE:
         this->UpdateMainState();
         UpdatePhotoCamera(&this->camera);
         break;
 
-    case 2:
+    case TH095_PHOTO_PLAYER_MODE_DEATH_TRANSITION:
         if (this->completionTimer >= 30)
         {
             g_PhotoGameGlobalState->playerDeathTransitionComplete = 1;
@@ -940,7 +956,7 @@ i32 PhotoGameUpdateView::Update()
         }
         break;
 
-    case 3:
+    case TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION:
         if (this->completionTimer == 4)
         {
 #ifdef DIFFBUILD
