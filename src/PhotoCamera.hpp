@@ -134,7 +134,11 @@ enum PhotoCameraChargeUiState
 
 struct PhotoCameraState
 {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i32 mode;                         // +0x000
+#else
+    PhotoCameraMode mode;             // +0x000
+#endif
     Float3 cameraOffset;              // +0x004
     PhotoAnmVmId vmIds[11];           // +0x010
     AnmVm viewfinderVms[4];           // +0x03c
