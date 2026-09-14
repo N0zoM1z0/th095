@@ -73,7 +73,12 @@ struct FrontEndControllerUpdateView
     FrontEndControllerTimer stateTimer;
     FrontEndControllerTimer animationTimer;
     ResultScreenReplayCursor cursor;
+#ifdef TH095_MATCH_EXACT
     u8 unknown00f8[0xafc];
+#else
+    ResultScreenReplayCursor replayColumnCursor;
+    u8 unknown01d0[0xa24];
+#endif
     SceneAnmVmIdArray vmIds;
     u8 unknown0e88[0x5278];
     AnmVmId transitionVm;
@@ -160,6 +165,10 @@ typedef char FrontEndVmDisplayStateAt220[
     (offsetof(FrontEndVmUpdateView, displayState) == 0x220) ? 1 : -1];
 typedef char FrontEndUpdateCursorAt20[
     (offsetof(FrontEndControllerUpdateView, cursor) == 0x20) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT)
+typedef char FrontEndUpdateReplayColumnCursorAtF8[
+    (offsetof(FrontEndControllerUpdateView, replayColumnCursor) == 0xf8) ? 1 : -1];
+#endif
 typedef char FrontEndUpdateVmIdsAtBF4[
     (offsetof(FrontEndControllerUpdateView, vmIds) == 0xbf4) ? 1 : -1];
 typedef char FrontEndUpdateTransitionVmAt6100[
