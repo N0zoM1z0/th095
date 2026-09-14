@@ -133,6 +133,15 @@ struct Th095EnemyPhotoMarkerPulseView
 };
 C_ASSERT(offsetof(Th095EnemyPhotoMarkerPulseView, photoMarkerPulseTimer) == 0x2bfc);
 
+struct Th095EnemyShotCadenceView
+{
+    u8 unknown0000[0x2bc8];
+    i32 shootIntervalFrames;
+    ZunTimer shootIntervalTimer;
+};
+C_ASSERT(offsetof(Th095EnemyShotCadenceView, shootIntervalFrames) == 0x2bc8);
+C_ASSERT(offsetof(Th095EnemyShotCadenceView, shootIntervalTimer) == 0x2bcc);
+
 struct Th095PhotoTargetRuntimeView
 {
     u8 unknown000000[0x26ae00];

@@ -72,6 +72,7 @@
     }
 
     case 95:
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bc8) =
             TH08_ECL_READ_I(ctx, 0);
         if (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bc8) != 0)
@@ -82,9 +83,18 @@
             reinterpret_cast<ZunTimer *>(
                 reinterpret_cast<u8 *>(enemy) + 0x2bcc)->Initialize();
 #endif
+#else
+        reinterpret_cast<Th095EnemyShotCadenceView *>(enemy)->shootIntervalFrames =
+            TH08_ECL_READ_I(ctx, 0);
+        if (reinterpret_cast<Th095EnemyShotCadenceView *>(enemy)
+                ->shootIntervalFrames != 0)
+            reinterpret_cast<Th095EnemyShotCadenceView *>(enemy)
+                ->shootIntervalTimer.Initialize();
+#endif
         break;
 
     case 96:
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bc8) =
             TH08_ECL_READ_I(ctx, 0);
         if (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bc8) != 0)
@@ -93,6 +103,16 @@
                     g_Rng.GetRandomU32InRange(
                         *reinterpret_cast<i32 *>(
                             reinterpret_cast<u8 *>(enemy) + 0x2bc8));
+#else
+        reinterpret_cast<Th095EnemyShotCadenceView *>(enemy)->shootIntervalFrames =
+            TH08_ECL_READ_I(ctx, 0);
+        if (reinterpret_cast<Th095EnemyShotCadenceView *>(enemy)
+                ->shootIntervalFrames != 0)
+            reinterpret_cast<Th095EnemyShotCadenceView *>(enemy)
+                ->shootIntervalTimer = g_Rng.GetRandomU32InRange(
+                    reinterpret_cast<Th095EnemyShotCadenceView *>(enemy)
+                        ->shootIntervalFrames);
+#endif
         break;
 
     case 97:
