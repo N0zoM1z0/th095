@@ -329,7 +329,11 @@ AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::ReadAnmEntries(
 
     state.anm->anmIdx = anmIdx;
     state.anm->rawData = state.entry;
+#if defined(TH095_MATCH_EXACT)
     strcpy(reinterpret_cast<char *>(state.anm) + 0x20, filename);
+#else
+    strcpy(reinterpret_cast<char *>(this->slots[anmIdx].path), filename);
+#endif
     state.currentEntry = state.entry;
     while (true)
     {
