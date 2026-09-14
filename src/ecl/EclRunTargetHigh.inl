@@ -131,6 +131,7 @@
         break;
 
     case 100:
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2924) =
             (instruction->operandFlags & 1U)
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[0])
@@ -140,6 +141,17 @@
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[1])
                 : *reinterpret_cast<f32 *>(&instruction->operands[1].asInt);
         *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x292c) = 0.0f;
+#else
+        enemy->shootOffset.x =
+            (instruction->operandFlags & 1U)
+                ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[0])
+                : *reinterpret_cast<f32 *>(&instruction->operands[0].asInt);
+        enemy->shootOffset.y =
+            (instruction->operandFlags & 2U)
+                ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[1])
+                : *reinterpret_cast<f32 *>(&instruction->operands[1].asInt);
+        enemy->shootOffset.z = 0.0f;
+#endif
         break;
 
     case 109:
