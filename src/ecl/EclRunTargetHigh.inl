@@ -603,8 +603,7 @@ enter_subroutine:
 
         TH095_ENEMY_PHOTO_SESSION(enemy)->anmHandle =
             TH095_ECL_ANM_SPAWN_WORLD(
-                *reinterpret_cast<PhotoAnmSpawner **>(
-                    reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0), 0xd2, reinterpret_cast<Float3 *>(
+                TH095_ECL_BULLET_ANM_SPAWNER, 0xd2, reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0));
         *reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(
             TH095_ECL_ANM_GET_VM(
@@ -642,8 +641,7 @@ enter_subroutine:
 
         TH095_ENEMY_PHOTO(enemy)->photoAnmHandle =
             TH095_ECL_ANM_SPAWN_WORLD(
-                *reinterpret_cast<PhotoAnmSpawner **>(
-                    reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0), 0x125, reinterpret_cast<Float3 *>(
+                TH095_ECL_BULLET_ANM_SPAWNER, 0x125, reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0));
 #else
         TH095_ENEMY_PHOTO_PULSE(enemy)->photoPulseTimer =
@@ -652,8 +650,7 @@ enter_subroutine:
             TH08_ECL_READ_I(ctx, 0);
         TH095_ENEMY_PHOTO_PULSE(enemy)->photoPulseVmId =
             TH095_ECL_ANM_SPAWN_WORLD(
-                *reinterpret_cast<PhotoAnmSpawner **>(
-                    reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0), 0x125, reinterpret_cast<Float3 *>(
+                TH095_ECL_BULLET_ANM_SPAWNER, 0x125, reinterpret_cast<Float3 *>(
                     reinterpret_cast<u8 *>(enemy) + 0x28a0));
 #endif
         g_SoundPlayer.PlaySoundByIdx(TH095_SOUND_PHOTO_PULSE, 0);

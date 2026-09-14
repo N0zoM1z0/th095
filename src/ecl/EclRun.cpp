@@ -167,6 +167,16 @@ typedef char EclStageScoreMultiplierAt25718[
         ->SpawnBulletPattern( \
             reinterpret_cast<::th095::PhotoBulletSpawnDescriptor *>(descriptor))
 #endif
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_ECL_BULLET_ANM_SPAWNER \
+    (*reinterpret_cast<EclRunHigh::PhotoAnmSpawner **>( \
+        reinterpret_cast<u8 *>(TH095_ECL_BULLET_MANAGER) + 0x27c5b0))
+#else
+#define TH095_ECL_BULLET_ANM_SPAWNER \
+    reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>( \
+        reinterpret_cast<::th095::PhotoBulletManagerView *>( \
+            TH095_ECL_BULLET_MANAGER)->anmSpawner)
+#endif
 
 #ifdef DIFFBUILD
 #define TH095_ECL_ANM_MANAGER EclRunHigh::g_Th095AnmManager
@@ -270,9 +280,14 @@ struct AnmVertex;
 struct PhotoBulletSpawnDescriptor;
 struct PhotoBulletManagerView
 {
+    u8 unknown0000[0x27c5b0];
+    EclRunHigh::PhotoAnmSpawner *anmSpawner;
+
     i32 SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor);
     void DespawnAllBullets();
 };
+typedef char EclPhotoBulletManagerAnmAt27C5B0[
+    (offsetof(PhotoBulletManagerView, anmSpawner) == 0x27c5b0) ? 1 : -1];
 struct PhotoCardInfoView
 {
     static PhotoCardInfoView *__fastcall Create(char *text);
