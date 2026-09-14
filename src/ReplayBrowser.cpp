@@ -162,7 +162,7 @@ ChainCallbackResult ReplayBrowserView::Update()
             else
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-                this->requestedState = 6;
+                this->requestedState = FRONT_END_REQUESTED_STATE_START_REPLAY;
                 this->rowCursor.Pop();
                 this->stateTimer.Reset();
                 this->state = 0;
@@ -175,7 +175,7 @@ ChainCallbackResult ReplayBrowserView::Update()
         if (GetReplayBrowserPressedButtons(9) != 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            this->requestedState = 1;
+            this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             this->rowCursor.Pop();
             this->stateTimer.Reset();
             this->state = 0;
@@ -231,7 +231,7 @@ void __fastcall LoadReplayBrowserEntries(void *)
         reinterpret_cast<ReplayBrowserView *>(g_ActiveMenuController);
     for (locals.i = 0; locals.i < 20; locals.i++)
     {
-        if (locals.browser->requestedState != 3)
+        if (locals.browser->requestedState != FRONT_END_REQUESTED_STATE_REPLAY_BROWSER)
         {
             goto finish;
         }
@@ -253,7 +253,7 @@ void __fastcall LoadReplayBrowserEntries(void *)
     {
         while (locals.slot < 80)
         {
-            if (locals.browser->requestedState != 3)
+            if (locals.browser->requestedState != FRONT_END_REQUESTED_STATE_REPLAY_BROWSER)
             {
                 break;
             }

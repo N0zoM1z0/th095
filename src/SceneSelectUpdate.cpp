@@ -70,7 +70,11 @@ struct SceneSelectUpdateView
     AnmVmId transitionVm;
     u8 unknown6104[8];
     i32 state;
+#ifdef DIFFBUILD
     i32 requestedState;
+#else
+    FrontEndRequestedState requestedState;
+#endif
     u8 unknown6114[0x0c];
     union
     {
@@ -1178,7 +1182,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 g_SelectedScene =
                     &g_SceneGroups[view->groupCursor.GetCurrent()]
                                   [activeSceneCursor.GetCurrent()];
-                view->requestedState = 5;
+                view->requestedState = FRONT_END_REQUESTED_STATE_START_GAME;
                 view->state = 0;
                 view->stateTimer.Reset();
                 view->flagBits.assetLoadStopRequested = 1;
@@ -1237,7 +1241,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                               [view->sceneCursors[view->groupCursor.GetCurrent()]
                                    .GetCurrent()];
             view->groupCursor.Pop();
-            view->requestedState = 1;
+            view->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             view->state = 0;
             view->stateTimer.Reset();
             view->vmIds.SetInterrupt(0x68, 1);

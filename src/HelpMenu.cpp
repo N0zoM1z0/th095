@@ -165,7 +165,7 @@ i32 HelpMenuView::UpdateHelpMenu()
             {
                 this->vmIds.SetInterrupt(0x91 + i, 1);
             }
-            this->requestedState = 1;
+            this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             this->state = 0;
             this->stateTimer.Reset();
             break;

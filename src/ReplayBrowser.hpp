@@ -4,6 +4,7 @@
 #ifndef TH095_REPLAY_BROWSER_HPP
 #define TH095_REPLAY_BROWSER_HPP
 
+#include "FrontEndGlobals.hpp"
 #include "ReplayManager.hpp"
 #include "ResultScreen.hpp"
 #include "SceneSelect.hpp"
@@ -28,7 +29,11 @@ struct ReplayBrowserView
     AnmVmId transitionVm;
     u8 unknown6104[8];
     i32 state;
+#ifdef DIFFBUILD
     i32 requestedState;
+#else
+    FrontEndRequestedState requestedState;
+#endif
 
     ZunResult LoadReplaySlot(i32 slot, char *path);
     ChainCallbackResult Update();

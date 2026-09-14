@@ -298,7 +298,7 @@ ChainCallbackResult OptionsMenuView::Update()
             {
 options_finish:
             this->cursor.Pop();
-            this->requestedState = 1;
+            this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             this->state = 0;
             this->stateTimer.Reset();
             this->vmIds.SetInterrupt(0x68, 1);

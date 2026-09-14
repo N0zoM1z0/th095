@@ -23,7 +23,11 @@ struct HelpMenuView
     AnmVmId transitionVm;
     u8 unknown6104[8];
     i32 state;
+#ifdef DIFFBUILD
     i32 requestedState;
+#else
+    FrontEndRequestedState requestedState;
+#endif
     u8 unknown6114[0x2f4];
     char helpAnmPath[MAX_PATH];
     i32 helpAnmSize;

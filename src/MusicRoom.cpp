@@ -277,7 +277,7 @@ i32 MusicRoomView::UpdateMusicRoom()
             this->vmIds.SetInterrupt(0x1a, 2);
             this->transitionVm.SetInterrupt(2);
             this->vmIds.SetInterrupt(0x1b, 2);
-            this->requestedState = 1;
+            this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             this->state = 0;
             this->stateTimer.Reset();
             g_Supervisor.LoadMusic(0, "bgm/th095_00.wav");

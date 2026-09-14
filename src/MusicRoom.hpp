@@ -37,7 +37,11 @@ struct MusicRoomView
     i32 trackCount;
     u8 unknown6108[4];
     i32 state;
+#ifdef DIFFBUILD
     i32 requestedState;
+#else
+    FrontEndRequestedState requestedState;
+#endif
 
     i32 UpdateMusicRoom();
 };
