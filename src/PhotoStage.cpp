@@ -66,7 +66,7 @@ struct PhotoStageBestShotRecord
     u8 componentsLoaded;
     u8 unknown06a[2];
     i32 photoIndex;
-    void *componentData0;
+    void *rawFileData;
     u8 *pixelData;
 };
 

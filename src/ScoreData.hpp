@@ -103,7 +103,11 @@ struct ResultBestShotRecordView
     u8 componentsLoaded;
     u8 unknown06a[2];
     i32 photoIndex;
+#ifdef TH095_MATCH_EXACT
     void *componentData0;
+#else
+    void *rawFileData;
+#endif
     u8 *pixelData;
 };
 
@@ -271,8 +275,13 @@ typedef char ResultBestShotRecordValidAt68[
     (offsetof(ResultBestShotRecordView, valid) == 0x68) ? 1 : -1];
 typedef char ResultBestShotRecordPhotoIndexAt6C[
     (offsetof(ResultBestShotRecordView, photoIndex) == 0x6c) ? 1 : -1];
-typedef char ResultBestShotRecordDataAt70[
-    (offsetof(ResultBestShotRecordView, componentData0) == 0x70 &&
+typedef char ResultBestShotRecordBuffersAt70[
+    (
+#ifdef TH095_MATCH_EXACT
+     offsetof(ResultBestShotRecordView, componentData0) == 0x70 &&
+#else
+     offsetof(ResultBestShotRecordView, rawFileData) == 0x70 &&
+#endif
      offsetof(ResultBestShotRecordView, pixelData) == 0x74) ? 1 : -1];
 
 extern ResultSaveDataView *g_ResultSaveData;

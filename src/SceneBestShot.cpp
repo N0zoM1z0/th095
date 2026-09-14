@@ -74,15 +74,15 @@ i32 ResultSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
         return -1;
     }
 
-    this->bestShotRecords[recordIndex].componentData0 =
+    this->bestShotRecords[recordIndex].rawFileData =
         FileSystem::OpenFile(io.path, &fileSize, TRUE);
-    if (this->bestShotRecords[recordIndex].componentData0 == NULL)
+    if (this->bestShotRecords[recordIndex].rawFileData == NULL)
         goto load_failed;
     {
         memcpy(&this->bestShotRecords[recordIndex],
-               this->bestShotRecords[recordIndex].componentData0, 0x18);
+               this->bestShotRecords[recordIndex].rawFileData, 0x18);
         io.input = reinterpret_cast<u8 *>(
-                        this->bestShotRecords[recordIndex].componentData0) +
+                        this->bestShotRecords[recordIndex].rawFileData) +
                     0x18;
         this->bestShotRecords[recordIndex].pixelData =
             SceneBestShotPixelAlloc(

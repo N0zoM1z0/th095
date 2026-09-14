@@ -459,12 +459,12 @@ i32 ResultPhotoDataView::FindBestShot()
 
 void ResultSaveDataView::UpdateBestShotRecord(i32 index)
 {
-    if (this->bestShotRecords[index].componentData0 != NULL)
+    if (this->bestShotRecords[index].rawFileData != NULL)
     {
         g_ZunMemory.Free(
-            this->bestShotRecords[index].componentData0);
+            this->bestShotRecords[index].rawFileData);
     }
-    this->bestShotRecords[index].componentData0 = NULL;
+    this->bestShotRecords[index].rawFileData = NULL;
 
     if (this->bestShotRecords[index].pixelData != NULL)
     {
