@@ -249,6 +249,13 @@ struct EclPhotoCaptureEnemyView
 };
 typedef char EclPhotoCaptureSubroutineAt285A[
     (offsetof(EclPhotoCaptureEnemyView, photoCaptureEclSubroutineId) == 0x285a) ? 1 : -1];
+struct EclPhotoEnemyTimerView
+{
+    u8 unknown0000[0x296c];
+    ZunTimer eclTimer;
+};
+typedef char EclPhotoEnemyTimerAt296C[
+    (offsetof(EclPhotoEnemyTimerView, eclTimer) == 0x296c) ? 1 : -1];
 struct EclPhotoShotDistanceEnemyView
 {
     u8 unknown0000[0x2c4c];

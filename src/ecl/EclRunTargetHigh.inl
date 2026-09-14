@@ -10,6 +10,8 @@
 #define TH095_TARGET_PHOTO_CAPTURE_ECL_SUBROUTINE_ID(enemy)                 \
     (reinterpret_cast<EclPhotoCaptureEnemyView *>(enemy)                    \
          ->photoCaptureEclSubroutineId)
+#define TH095_TARGET_ENEMY_ECL_TIMER(enemy)                                 \
+    (reinterpret_cast<EclPhotoEnemyTimerView *>(enemy)->eclTimer)
 #define TH095_TARGET_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy)                  \
     (reinterpret_cast<EclPhotoShotDistanceEnemyView *>(enemy)               \
          ->minimumPlayerDistanceSquared)
@@ -303,9 +305,11 @@ enter_subroutine:
 #ifdef TH095_MATCH_EXACT
         InitializeEclTargetTimerExact(reinterpret_cast<ZunTimer *>(
             reinterpret_cast<u8 *>(enemy) + 0x296c));
-#else
+#elif defined(DIFFBUILD)
         reinterpret_cast<ZunTimer *>(
             reinterpret_cast<u8 *>(enemy) + 0x296c)->Initialize();
+#else
+        TH095_TARGET_ENEMY_ECL_TIMER(enemy).Initialize();
 #endif
         break;
     }
@@ -472,9 +476,11 @@ enter_subroutine:
 #ifdef TH095_MATCH_EXACT
         InitializeEclTargetTimerExact(reinterpret_cast<ZunTimer *>(
             reinterpret_cast<u8 *>(enemy) + 0x296c));
-#else
+#elif defined(DIFFBUILD)
         reinterpret_cast<ZunTimer *>(
             reinterpret_cast<u8 *>(enemy) + 0x296c)->Initialize();
+#else
+        TH095_TARGET_ENEMY_ECL_TIMER(enemy).Initialize();
 #endif
         break;
     }
@@ -681,5 +687,8 @@ enter_subroutine:
 #include "EclRunTargetPhoto.inl"
 
 #undef TH095_TARGET_ENEMY_LIFE
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#undef TH095_TARGET_ENEMY_ECL_TIMER
+#endif
 #undef TH095_TARGET_ENEMY_POSITION
 #undef TH095_TARGET_ENEMY_POSITION_PTR

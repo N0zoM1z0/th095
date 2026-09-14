@@ -10649,3 +10649,109 @@ or historical-runtime family. Shared task bit 8, ReplayScanWorker
 prefix, compact single-ended storage, and other writer-only fields remain
 Unknown absent new TH095-local distinguishing evidence. The semantic phase
 remains active-incomplete.
+
+### SEM-192 — bind target-high ECL timer reset producers
+
+**Scope.** Continue the target-high raw-member audit from SEM-191 while first
+retesting SEM-032's unresolved `+0x2CA4/+0x2CA8` delayed-callback pair. Fresh
+TH095-local evidence still provides no reader for either dword, so those fields
+remain Unknown. The useful representation gap is narrower: opcode 116 and
+opcode 128 both reset enemy `+0x296C` through raw pointer arithmetic even though
+SEM-027 and the compact photo-enemy runtime already establish the same 12-byte
+storage as the per-enemy `eclTimer`. This transaction binds only those two reset
+producers to that established compact owner. It does not name the opcodes, the
+`+0x2CA4/+0x2CA8` pair, or any neighboring timer/state storage.
+
+**Observed.** Fresh Factory-attested TH095 v1.02a decompilation of
+`EclManager::RunEcl @ 0x00408E70` shows opcode 116 writing its first two integer
+operands to enemy `+0x2CA4/+0x2CA8` and then resetting the timer triple at
+`+0x296C/+0x2970/+0x2974`. Opcode 128 independently copies the signed 16-bit
+enemy value at `+0x285A` into `+0x2CA8` and resets the same timer triple. Fresh
+target `PhotoEnemyManagerView::OnUpdate @ 0x00415970` independently advances the
+same `+0x296C` timer once for each active ordinary-update enemy by calling the
+reconstructed `ZunTimer::Tick` path on that address.
+
+The adversarial SEM-032 re-audit also covered fresh target
+`PhotoEnemyManagerView::Spawn @ 0x004156C0`, `PhotoEnemyView::Deactivate @
+0x00416E80`, `PhotoEnemyView::UpdateScheduledEclCalls @ 0x00416F30`, and
+`PhotoEnemyView::RestartEcl @ 0x004167E0`. None reads `+0x2CA4` or `+0x2CA8`.
+Current repository search likewise finds only the spawn-template `-1`
+initialization and opcode-116 write for `pendingCallbackFrame @ +0x2CA4`, and
+only the opcode-116/opcode-128 writes for `+0x2CA8`. Thus the old negative
+conclusion for those two dwords is not promoted into semantics by proximity to
+the timer reset.
+
+**Corroborated.** The TH095 compact `PhotoEnemyView` declares `ZunTimer
+eclTimer @ +0x296C`, initializes it to zero in the enemy spawn template, and
+ticks it in the maintained update loop. SEM-027 independently bound operand
+selector `0x2731` to the timer's `current @ +0x2974` through three exact TH095
+resolver functions: integer read, float conversion, and integer lvalue. The
+current target observations therefore connect initialization, script-visible
+read/write, per-frame advancement, and the two target-high reset producers to
+one physical timer. TH08 is not used as identifier authority.
+
+**Inferred.** `eclTimer` remains the narrow maintainable name for the compact
+TH095 timer at `+0x296C`: it is advanced by the enemy ECL/update runtime and its
+current component is directly script-visible. Resetting it in opcodes 116 and
+128 starts a new timing interval associated with those writes, but the meaning
+of the paired stored values is not inferred from that timing relationship.
+The generic/shared `Enemy::bossTimer` spelling belongs to a different source
+representation and is not used to override the independently established
+compact TH095 interpretation here.
+
+**Unknown / bounded.** `+0x2CA4` remains only a four-byte slot with a `-1`
+spawn-template sentinel plus opcode-116 publication; its historical
+`pendingCallbackFrame` reconstruction name is still not independently proven by
+a reader. `+0x2CA8` remains four-byte stored payload written by opcodes 116 and
+128 with no audited consumer. This batch does not claim either field is a
+callback id, threshold, duration, argument, or state. It also does not assign
+new semantics to `eclTimer.previous` or `eclTimer.subFrame`, and does not merge
+the compact timer with unrelated generic-Enemy callback fields at later
+offsets.
+
+**Production / exact representation.** Normal `src/ecl/EclRun.cpp` now defines
+a TU-private `EclPhotoEnemyTimerView` with an offset assertion for `eclTimer @
++0x296C`. Normal target-high opcodes 116 and 128 reset that member through
+`TH095_TARGET_ENEMY_ECL_TIMER`. `TH095_MATCH_EXACT` retains the historical
+`InitializeEclTargetTimerExact(reinterpret_cast<ZunTimer *>(enemy + 0x296C))`
+source shape, and `DIFFBUILD` retains its raw offset call. No shared header,
+object layout, storage width, function signature, calling convention,
+persistent format, or control flow changes.
+
+**Validation.** Focused canonical replay rebuilt `src/ecl/EclRun.cpp` and
+passed the sole configured `ecl-manager-run-ecl` unit 1/1 exact with zero
+compiler-private label refresh. A command-local normal-production probe reused
+the canonical pinned VC7.1 profile (`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi
+/Gr /Od /Ob1 /I src/ecl /I src`) and emitted a 77,934-byte Intel 80386 COFF
+object; the temporary object/PDB directory was removed by the same command.
+`git diff --check` passed. Because this transaction is translation-unit-local
+and changes no shared owner/layout declaration, the campaign-wide exact and
+whole-product gates are deferred to the next committed milestone/final handoff
+rather than replayed before another source transaction.
+
+**Recovery / analysis state.** The transaction began from committed SEM-191
+HEAD `60abb6968f33fd42d62479831e910c8cb2aeca92`, with zero staged or tracked
+unstaged changes and the same four pre-existing untracked exclusions preserved:
+`EnemyManagerUpdate.i` remains protected unknown-origin generated-looking
+storage; `droid.resume.txt` remains user-owned/unrelated; and
+`config/runtime-scenarios.json` plus `scripts/runtime-diff.py` remain unrelated
+runtime experiments. Before this edit, the SEM-191 milestone was closed locally
+at 696/696 exact units and 88/88 reconstructed Windows i386 translation units,
+and Factory had current-source accepted exact and whole-build receipts. Those
+receipts remain facts about SEM-191 and become source-stale after this new
+checkpoint. `.analysis/` began at 3,394,984 bytes and no current-session
+filesystem analysis artifact was created: fresh target evidence came through
+the registered read-only Ghidra provider and the production probe used
+command-local temporary storage.
+
+**Next evidence route.** After checkpoint, rotate away from the still-negative
+`+0x2CA4/+0x2CA8` pair and from the now-bound `eclTimer` resets. Continue the
+target-high raw-member audit only for expressions that survive normal
+preprocessing and can be tied to a TH095-local owner plus independent consumer.
+A useful next check is the remaining normal `+0x2960` publication only after
+reconciling it with the compact `phaseStartingLife` storage and its actual
+readers; otherwise rotate to an independent persistent/ABI, replay/input, or
+non-ANM resource family. Keep shared bit 8, ReplayScanWorker `unknown010`,
+score/replay reserved words, Sound/PBG writer-only metadata, ANM bit 14,
+compact tail storage, and other single-ended fields Unknown absent new local
+evidence. The semantic phase remains active-incomplete.
