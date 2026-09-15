@@ -88,8 +88,7 @@ ResultSaveDataView::ResultSaveDataView()
     memset(this, 0, sizeof(*this));
     this->fileHeader = reinterpret_cast<ScoreFileHeader *>(
         ScoreOpenRawFilePhase());
-    reinterpret_cast<ScoreProfileView *>(
-        reinterpret_cast<u8 *>(this) + 8)->Initialize();
+    reinterpret_cast<ScoreProfileView *>(this->profileData)->Initialize();
     this->ParseScoreFile();
 }
 
@@ -100,15 +99,14 @@ ResultSaveDataView::~ResultSaveDataView()
     void *rawFileData;
     void *decompressedData;
 
-    if (*reinterpret_cast<void **>(this) != NULL)
+    if (this->fileHeader != NULL)
     {
-        rawFileData = *reinterpret_cast<void **>(this);
+        rawFileData = this->fileHeader;
         ScoreFreeRawFilePhase(rawFileData);
     }
-    if (*reinterpret_cast<void **>(reinterpret_cast<u8 *>(this) + 4) != NULL)
+    if (this->decompressedData != NULL)
     {
-        decompressedData =
-            *reinterpret_cast<void **>(reinterpret_cast<u8 *>(this) + 4);
+        decompressedData = this->decompressedData;
         ScoreFreeDecompressedPhase(decompressedData);
     }
     for (index = 0; index < 120; ++index)
