@@ -364,6 +364,7 @@ static inline u32 GetPhotoStagePixelCount(u32 width, u32 height)
     return width * height;
 }
 
+#ifdef DIFFBUILD
 enum PhotoStageScoreFlags
 {
     PHOTO_STAGE_SCORE_ENEMY = 1 << 0,
@@ -387,6 +388,27 @@ enum PhotoStageScoreFlags
     PHOTO_STAGE_SCORE_UNKNOWN_18 = 1 << 18,
     PHOTO_STAGE_SCORE_UNKNOWN_19 = 1 << 19,
 };
+#define PHOTO_SCORE_ENEMY PHOTO_STAGE_SCORE_ENEMY
+#define PHOTO_SCORE_SELF PHOTO_STAGE_SCORE_SELF
+#define PHOTO_SCORE_TWO_SHOT PHOTO_STAGE_SCORE_TWO_SHOT
+#define PHOTO_SCORE_BOSS_RATE PHOTO_STAGE_SCORE_BOSS_RATE
+#define PHOTO_SCORE_NEARBY PHOTO_STAGE_SCORE_NEARBY
+#define PHOTO_SCORE_UNKNOWN_5 PHOTO_STAGE_SCORE_UNKNOWN_5
+#define PHOTO_SCORE_COLOR_1 PHOTO_STAGE_SCORE_COLOR_1
+#define PHOTO_SCORE_COLOR_2 PHOTO_STAGE_SCORE_COLOR_2
+#define PHOTO_SCORE_COLOR_3 PHOTO_STAGE_SCORE_COLOR_3
+#define PHOTO_SCORE_COLOR_4 PHOTO_STAGE_SCORE_COLOR_4
+#define PHOTO_SCORE_COLOR_5 PHOTO_STAGE_SCORE_COLOR_5
+#define PHOTO_SCORE_COLOR_6 PHOTO_STAGE_SCORE_COLOR_6
+#define PHOTO_SCORE_COLOR_7 PHOTO_STAGE_SCORE_COLOR_7
+#define PHOTO_SCORE_COLORFUL PHOTO_STAGE_SCORE_COLORFUL
+#define PHOTO_SCORE_RAINBOW PHOTO_STAGE_SCORE_RAINBOW
+#define PHOTO_SCORE_EMPTY PHOTO_STAGE_SCORE_EMPTY
+#define PHOTO_SCORE_NO_BULLETS PHOTO_STAGE_SCORE_NO_BULLETS
+#define PHOTO_SCORE_UNKNOWN_17 PHOTO_STAGE_SCORE_UNKNOWN_17
+#define PHOTO_SCORE_UNKNOWN_18 PHOTO_STAGE_SCORE_UNKNOWN_18
+#define PHOTO_SCORE_UNKNOWN_19 PHOTO_STAGE_SCORE_UNKNOWN_19
+#endif
 
 #define ADD_PHOTO_STAGE_DISPLAY_VM(spriteIndex)                              \
     {                                                                        \
@@ -533,75 +555,75 @@ void PhotoStageDisplayView::Build(
         // while 0x100+4 gives the target this -> tv chronology exactly.
         u8 compilerStorage[0x100];
         u8 compilerStorage4[4];
-        if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_UNKNOWN_5) != 0)
+        if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_UNKNOWN_5) != 0)
         {
             ADD_PHOTO_STAGE_DISPLAY_VM(0x24);
             renderMode += 4;
             displayPosition.y += 12.0f;
         }
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_1) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_1) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x25, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_2) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_2) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x26, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_3) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_3) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x27, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_4) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_4) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x28, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_5) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_5) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x29, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_6) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_6) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2a, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLOR_7) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLOR_7) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2b, 300);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_COLORFUL) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_COLORFUL) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2c, 900);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_RAINBOW) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_RAINBOW) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2d, 2100);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_EMPTY) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_EMPTY) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2e, 0);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_NO_BULLETS) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_NO_BULLETS) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x2f, 100);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_UNKNOWN_17) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_UNKNOWN_17) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x30, 100);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_UNKNOWN_18) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_UNKNOWN_18) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x31, 0);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_UNKNOWN_19) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_UNKNOWN_19) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x32, 0);
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_NEARBY) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_NEARBY) != 0)
     {
         ADD_PHOTO_STAGE_SCORE_ROW(0x23, scoreBreakdown->nearbyTargetBonus);
     }
 
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_ENEMY) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_ENEMY) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x1f);
         displayPosition.x += 99.0f;
@@ -618,7 +640,7 @@ void PhotoStageDisplayView::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_SELF) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_SELF) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x20);
         displayPosition.x += 99.0f;
@@ -631,7 +653,7 @@ void PhotoStageDisplayView::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_TWO_SHOT) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_TWO_SHOT) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x21);
         displayPosition.x += 99.0f;
@@ -644,7 +666,7 @@ void PhotoStageDisplayView::Build(
         displayPosition.x = photoPositionCopy.x;
         displayPosition.y += 12.0f;
     }
-    if ((scoreBreakdown->scoringFlags & PHOTO_STAGE_SCORE_BOSS_RATE) != 0)
+    if ((scoreBreakdown->scoringFlags & PHOTO_SCORE_BOSS_RATE) != 0)
     {
         ADD_PHOTO_STAGE_DISPLAY_VM(0x22);
         displayPosition.x += 99.0f;
@@ -691,7 +713,7 @@ static __forceinline void PhotoStageAccumulateCapturedScore(PhotoStageStateView 
     if ((GetPhotoStageDisplayScoreBreakdown(
              &state->slots[state->slots[0].captureSlot].display)
              ->scoringFlags &
-         PHOTO_STAGE_SCORE_ENEMY) != 0)
+         PHOTO_SCORE_ENEMY) != 0)
     {
         PhotoStageGlobalStateView *globalState;
         i32 bgmFormatIndexLocal05 =

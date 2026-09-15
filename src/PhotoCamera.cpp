@@ -13,6 +13,9 @@
 #include "PhotoEffectRuntime.hpp"
 #endif
 #include "SoundPlayer.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "ScoreData.hpp"
+#endif
 #ifdef TH095_MATCH_EXACT
 #undef TH095_MATCH_SOUNDPLAYER_AS_STRUCT
 #endif
@@ -291,6 +294,7 @@ enum PhotoCameraFlags
     (((flags) & PHOTO_FLAG_TARGET_SOUND_PLAYED) != 0)
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 enum PhotoScoreFlags
 {
     PHOTO_SCORE_ENEMY = 1 << 0,
@@ -310,6 +314,7 @@ enum PhotoScoreFlags
     PHOTO_SCORE_EMPTY = 1 << 15,
     PHOTO_SCORE_NO_BULLETS = 1 << 16,
 };
+#endif
 
 enum PhotoViewfinderDirection
 {
