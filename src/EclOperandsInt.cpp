@@ -209,10 +209,10 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x2716: return enemy->activeEclContext->intVariables[6];
     case 0x2717: return enemy->activeEclContext->intVariables[7];
 
-    case 0x2734: return enemy->activeEclContext->callParameterInts[0];
-    case 0x2735: return enemy->activeEclContext->callParameterInts[1];
-    case 0x2736: return enemy->activeEclContext->callParameterInts[2];
-    case 0x2737: return enemy->activeEclContext->callParameterInts[3];
+    case TH095_ECL_CALL_PARAMETER_INT0: return enemy->activeEclContext->callParameterInts[0];
+    case TH095_ECL_CALL_PARAMETER_INT1: return enemy->activeEclContext->callParameterInts[1];
+    case TH095_ECL_CALL_PARAMETER_INT2: return enemy->activeEclContext->callParameterInts[2];
+    case TH095_ECL_CALL_PARAMETER_INT3: return enemy->activeEclContext->callParameterInts[3];
     case 0x2724: return enemy->activeEclContext->extraIntVariables[0];
     case 0x2725: return enemy->activeEclContext->extraIntVariables[1];
     case 0x2726: return enemy->activeEclContext->extraIntVariables[2];
@@ -238,10 +238,10 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x271d: return (i32)enemy->activeEclContext->floatVariables[5];
     case 0x271e: return (i32)enemy->activeEclContext->floatVariables[6];
     case 0x271f: return (i32)enemy->activeEclContext->floatVariables[7];
-    case 0x2738: return (i32)enemy->activeEclContext->callParameterFloats[0];
-    case 0x2739: return (i32)enemy->activeEclContext->callParameterFloats[1];
-    case 0x273a: return (i32)enemy->activeEclContext->callParameterFloats[2];
-    case 0x273b: return (i32)enemy->activeEclContext->callParameterFloats[3];
+    case TH095_ECL_CALL_PARAMETER_FLOAT0: return (i32)enemy->activeEclContext->callParameterFloats[0];
+    case TH095_ECL_CALL_PARAMETER_FLOAT1: return (i32)enemy->activeEclContext->callParameterFloats[1];
+    case TH095_ECL_CALL_PARAMETER_FLOAT2: return (i32)enemy->activeEclContext->callParameterFloats[2];
+    case TH095_ECL_CALL_PARAMETER_FLOAT3: return (i32)enemy->activeEclContext->callParameterFloats[3];
 
     case 0x273c: return g_EclOperandRuntime->sharedOperands->intVariables[0];
     case 0x273d: return g_EclOperandRuntime->sharedOperands->intVariables[1];

@@ -55,10 +55,10 @@ f32 *__fastcall ResolveFloatLValue(
     case 0x271e: return &enemy->activeEclContext->floatVariables[6];
     case 0x271f: return &enemy->activeEclContext->floatVariables[7];
 
-    case 0x2738: return &enemy->activeEclContext->callParameterFloats[0];
-    case 0x2739: return &enemy->activeEclContext->callParameterFloats[1];
-    case 0x273a: return &enemy->activeEclContext->callParameterFloats[2];
-    case 0x273b: return &enemy->activeEclContext->callParameterFloats[3];
+    case TH095_ECL_CALL_PARAMETER_FLOAT0: return &enemy->activeEclContext->callParameterFloats[0];
+    case TH095_ECL_CALL_PARAMETER_FLOAT1: return &enemy->activeEclContext->callParameterFloats[1];
+    case TH095_ECL_CALL_PARAMETER_FLOAT2: return &enemy->activeEclContext->callParameterFloats[2];
+    case TH095_ECL_CALL_PARAMETER_FLOAT3: return &enemy->activeEclContext->callParameterFloats[3];
 
     case 0x272a: return &enemy->position.x;
     case 0x272b: return &enemy->position.y;

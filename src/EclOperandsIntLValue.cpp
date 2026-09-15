@@ -109,10 +109,10 @@ i32 *__fastcall ResolveIntLValue(
     case 0x2716: return &enemy->activeEclContext->intVariables[6];
     case 0x2717: return &enemy->activeEclContext->intVariables[7];
 
-    case 0x2734: return &enemy->activeEclContext->callParameterInts[0];
-    case 0x2735: return &enemy->activeEclContext->callParameterInts[1];
-    case 0x2736: return &enemy->activeEclContext->callParameterInts[2];
-    case 0x2737: return &enemy->activeEclContext->callParameterInts[3];
+    case TH095_ECL_CALL_PARAMETER_INT0: return &enemy->activeEclContext->callParameterInts[0];
+    case TH095_ECL_CALL_PARAMETER_INT1: return &enemy->activeEclContext->callParameterInts[1];
+    case TH095_ECL_CALL_PARAMETER_INT2: return &enemy->activeEclContext->callParameterInts[2];
+    case TH095_ECL_CALL_PARAMETER_INT3: return &enemy->activeEclContext->callParameterInts[3];
     case 0x2724: return &enemy->activeEclContext->extraIntVariables[0];
     case 0x2725: return &enemy->activeEclContext->extraIntVariables[1];
     case 0x2726: return &enemy->activeEclContext->extraIntVariables[2];

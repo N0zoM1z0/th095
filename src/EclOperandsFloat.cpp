@@ -1,11 +1,25 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "ecl/EclOperands.hpp"
+#endif
 #ifndef DIFFBUILD
 #include "PhotoPlayerRuntime.hpp"
 #endif
 
 namespace th095
 {
+
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_ECL_CALL_PARAMETER_INT0 0x2734
+#define TH095_ECL_CALL_PARAMETER_INT1 0x2735
+#define TH095_ECL_CALL_PARAMETER_INT2 0x2736
+#define TH095_ECL_CALL_PARAMETER_INT3 0x2737
+#define TH095_ECL_CALL_PARAMETER_FLOAT0 0x2738
+#define TH095_ECL_CALL_PARAMETER_FLOAT1 0x2739
+#define TH095_ECL_CALL_PARAMETER_FLOAT2 0x273a
+#define TH095_ECL_CALL_PARAMETER_FLOAT3 0x273b
+#endif
 
 struct EclSharedFloatOperandView
 {
@@ -199,10 +213,10 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x2716: return (f32)this->activeEclContext->intVariables[6];
     case 0x2717: return (f32)this->activeEclContext->intVariables[7];
 
-    case 0x2734: return (f32)this->activeEclContext->callParameterInts[0];
-    case 0x2735: return (f32)this->activeEclContext->callParameterInts[1];
-    case 0x2736: return (f32)this->activeEclContext->callParameterInts[2];
-    case 0x2737: return (f32)this->activeEclContext->callParameterInts[3];
+    case TH095_ECL_CALL_PARAMETER_INT0: return (f32)this->activeEclContext->callParameterInts[0];
+    case TH095_ECL_CALL_PARAMETER_INT1: return (f32)this->activeEclContext->callParameterInts[1];
+    case TH095_ECL_CALL_PARAMETER_INT2: return (f32)this->activeEclContext->callParameterInts[2];
+    case TH095_ECL_CALL_PARAMETER_INT3: return (f32)this->activeEclContext->callParameterInts[3];
     case 0x2724: return (f32)this->activeEclContext->extraIntVariables[0];
     case 0x2725: return (f32)this->activeEclContext->extraIntVariables[1];
     case 0x2726: return (f32)this->activeEclContext->extraIntVariables[2];
@@ -236,10 +250,10 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x271d: return this->activeEclContext->floatVariables[5];
     case 0x271e: return this->activeEclContext->floatVariables[6];
     case 0x271f: return this->activeEclContext->floatVariables[7];
-    case 0x2738: return this->activeEclContext->callParameterFloats[0];
-    case 0x2739: return this->activeEclContext->callParameterFloats[1];
-    case 0x273a: return this->activeEclContext->callParameterFloats[2];
-    case 0x273b: return this->activeEclContext->callParameterFloats[3];
+    case TH095_ECL_CALL_PARAMETER_FLOAT0: return this->activeEclContext->callParameterFloats[0];
+    case TH095_ECL_CALL_PARAMETER_FLOAT1: return this->activeEclContext->callParameterFloats[1];
+    case TH095_ECL_CALL_PARAMETER_FLOAT2: return this->activeEclContext->callParameterFloats[2];
+    case TH095_ECL_CALL_PARAMETER_FLOAT3: return this->activeEclContext->callParameterFloats[3];
 
     case 0x272a: return this->worldPosition.x;
     case 0x272b: return this->worldPosition.y;
