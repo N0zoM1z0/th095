@@ -24,6 +24,13 @@
 namespace th095
 {
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define initializationThreadHandle workerThreadHandle
+#define soundDataLoaderThreadHandle secondaryWorkerThreadHandle
+#define initializationThreadId workerThreadId
+#define initializationWindow workerWindow
+#endif
+
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 #define TH095_SOUND_GAME_WINDOW g_Supervisor.hwndGameWindow
 #define TH095_SOUND_MUSIC_MODE g_Supervisor.cfg.musicMode
@@ -116,7 +123,7 @@ char *g_SFXList[37] = {
 
 void __fastcall SoundPlayerWorkerThread(SoundPlayer *soundPlayer)
 {
-    g_SoundPlayer.InitializeDSound(g_SoundPlayer.workerWindow);
+    g_SoundPlayer.InitializeDSound(g_SoundPlayer.initializationWindow);
     while (g_SoundPlayer.workerStopRequest == 0)
     {
         Sleep(1);
@@ -215,9 +222,9 @@ HANDLE StartSoundLoadThread()
 {
     DWORD threadId;
 
-    g_SoundPlayer.secondaryWorkerThreadHandle =
+    g_SoundPlayer.soundDataLoaderThreadHandle =
         CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SoundDataLoaderThread, &g_SoundPlayer, 0, &threadId);
-    return g_SoundPlayer.secondaryWorkerThreadHandle;
+    return g_SoundPlayer.soundDataLoaderThreadHandle;
 }
 
 void __fastcall SoundDataLoaderThread(SoundPlayer *soundPlayer)
@@ -243,9 +250,9 @@ void __fastcall SoundDataLoaderThread(SoundPlayer *soundPlayer)
 SoundPlayerResult SoundPlayer::Initialize(HWND window)
 {
     memset(this, 0, sizeof(SoundPlayer));
-    this->workerWindow = window;
-    this->workerThreadHandle =
-        CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SoundPlayerWorkerThread, this, 0, &this->workerThreadId);
+    this->initializationWindow = window;
+    this->initializationThreadHandle =
+        CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SoundPlayerWorkerThread, this, 0, &this->initializationThreadId);
     return ZUN_SUCCESS;
 }
 
@@ -257,24 +264,24 @@ SoundPlayerResult SoundPlayer::RequestThreadStop()
 
 SoundPlayerResult SoundPlayer::JoinThread()
 {
-    if (this->workerThreadHandle != NULL)
+    if (this->initializationThreadHandle != NULL)
     {
         if (this->workerStopRequest == 0)
         {
             this->workerStopRequest = 1;
         }
-        while (WaitForSingleObject(this->workerThreadHandle, 100) == WAIT_TIMEOUT)
+        while (WaitForSingleObject(this->initializationThreadHandle, 100) == WAIT_TIMEOUT)
         {
             Sleep(1);
         }
-        while (WaitForSingleObject(this->secondaryWorkerThreadHandle, 100) == WAIT_TIMEOUT)
+        while (WaitForSingleObject(this->soundDataLoaderThreadHandle, 100) == WAIT_TIMEOUT)
         {
             Sleep(1);
         }
-        CloseHandle(this->workerThreadHandle);
-        CloseHandle(this->secondaryWorkerThreadHandle);
-        this->workerThreadHandle = NULL;
-        this->secondaryWorkerThreadHandle = NULL;
+        CloseHandle(this->initializationThreadHandle);
+        CloseHandle(this->soundDataLoaderThreadHandle);
+        this->initializationThreadHandle = NULL;
+        this->soundDataLoaderThreadHandle = NULL;
     }
     return ZUN_SUCCESS;
 }
