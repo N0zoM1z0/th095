@@ -14,7 +14,11 @@ DIFFABLE_STATIC(Chain, g_Chain);
 // 0x004BE208/0x004BE210.  They are process-lifetime objects owned by the same
 // global translation unit as their implementations and static initialization.
 DIFFABLE_STATIC(Rng, g_Rng);
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 DIFFABLE_STATIC(Rng, g_Rng2);
+#else
+DIFFABLE_STATIC(Rng, g_AnmAlternateRng);
+#endif
 
 // The log buffer begins at 0x004C2420; its cursor and message-box flag are
 // members at the end of that same object, not independent proxy globals.

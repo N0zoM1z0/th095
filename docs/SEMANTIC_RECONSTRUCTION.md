@@ -11879,3 +11879,72 @@ Fresh independent `PhotoBulletView::AdvanceTransformProgram @ 0x004062B0` walks 
 **Recovery / analysis state.** This transaction starts from committed SEM-227 HEAD `556ee54e88453d52ab4d08758d499a3c031c9513`, with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. All five Factory-controlled contracts/docs were readable before editing. `.analysis/` remains at the campaign baseline of **3,394,984 bytes** with no current-session filesystem analysis root or retained large artifact. One relocation-proxy routing request and one first source-edit request lost Factory transport before command creation; recovery confirmed the clean tracked tree and no surviving producer before retry. Fresh semantic evidence came through the registered read-only `th095-ghidra` provider.
 
 **Next evidence route.** After checkpoint, rotate away from front-end demo/replay naming. Prefer an independent non-front-end resource lifetime, historical-runtime owner, persistent/ABI boundary, or sibling state protocol with a TH095-local producer plus independent reader/cleanup. Keep `ReplayScanWorker::unknown010`, replay/input reserved bytes, GameConfiguration reserved storage, Supervisor anonymous/task-bit storage, ANM VM bit 14, alternate enemy ANM `+0x4DFC`, compact tail storage, score-entry `+0x38`, photo-score bits 5/17/18/19, bullet single-ended residuals, Ascii popup/reset-only slots, and Sound/PBG writer-only metadata Unknown absent a new discriminator. The semantic phase remains active-incomplete.
+
+### SEM-229 — name the ANM alternate RNG owner
+
+**Scope.** Recover the maintainable normal-production identity of the second
+process-lifetime `Rng` object at `0x004BE210`. This batch does not alter the RNG
+algorithm, ANM opcode behavior, VM flag layout, target addresses, or exact/DIFF
+symbol identity.
+
+**Observed.** Fresh hash-attested TH095 target xrefs distinguish the two adjacent
+RNG states. `g_Rng @ 0x004BE208` has broad gameplay and ANM references, while
+`0x004BE210` has one startup seed write at `0x00423EAB` and exactly five ANM-side
+references: `0x0043A280/0x0043A2B5/0x0043A2E7` inside
+`AnmVm::GetFloatVar @ 0x0043A1B0`, plus `0x0043CEAA/0x0043CFB6` inside
+`AnmManager::ExecuteScript @ 0x0043A600`. No target-local reference to the second
+owner was observed outside startup and the ANM VM. `Supervisor::AddedCallback`
+seeds both eight-byte RNG objects from the same `totalPlayTime` value.
+
+**Corroborated.** The maintained canonical ANM dispatcher already names opcode 87
+`ANM_OP_ALTERNATE_RNG` and stores its byte operand in `AnmVm::useAlternateRng`.
+`GetFloatVar` routes `ANM_VAR_RANDOM`, `ANM_VAR_RANDOM_SIGNED`, and
+`ANM_VAR_RANDOM_ANGLE` through the second RNG only when that flag is nonzero;
+`ANM_OP_I_SET_RANDOM` and `ANM_OP_F_SET_RANDOM` do the same. The primary RNG
+continues to serve these default ANM paths and independent gameplay/trail users.
+The exact known-global identity remains `g_Rng2 @ 0x004BE210`.
+
+**Inferred.** `g_AnmAlternateRng` is a maintainable role name for the second owner:
+it is alternate relative to the normal ANM random stream and is selected by an
+ANM-VM-owned flag. This is not a claim about the original identifier or about a
+business-level reason for maintaining the separate stream.
+
+**Unknown / bounded.** The original ZUN spelling, why particular scripts select
+the alternate stream, and whether its intended purpose is deterministic
+isolation, presentation randomness, or another policy remain Unknown. The byte
+operand is used as a truth value by current code; no stronger value domain is
+claimed. No semantics are inferred for unrelated RNG consumers or ANM flag 14.
+
+**Production representation.** Normal `Rng.hpp`/`Global.cpp` expose the second
+process-lifetime owner as `g_AnmAlternateRng`, and normal Main/ANM code uses that
+name. `TH095_MATCH_EXACT` and `DIFFBUILD` continue to declare/define historical
+`g_Rng2`; the shared header aliases the semantic spelling back to `g_Rng2` for
+those profiles so exact relocation/decorated identity is unchanged.
+
+**Validation.** Focused canonical replay passed `AnmManager.cpp` 14/14,
+`Main.cpp` 48/48, and `Global.cpp` 14/14 (76/76 total), all with zero private-label
+refresh. Pinned VC7.1 normal probes produced Intel 80386 COFF objects for
+AnmManager (72,565 bytes), Main (115,702 bytes), and Global (33,993 bytes).
+Because `Rng.hpp` is a shared owner declaration, the batch immediately closed the
+full cold exact surface in four disjoint partitions:
+`205 + 158 + 191 + 142 = 696/696`, with zero private-label refresh. The first
+whole-product request lost transport before returning a durable command id and
+therefore receives zero validation credit; recovery found no surviving
+build/VC7.1/Wine producer. The retried durable build compiled all 88 pinned VC7.1
+i386 translation units across two profiles, linked, and verified
+`build/whole-validation/th095-reconstructed.exe` as a 780,288-byte PE32/i386
+Windows GUI image with SHA-256
+`dcc8c89b829cd0e3cbf35641f162f4d123ef39ba6008ca8e38078ca24e58c716`.
+This product result is not a whole-image byte-identity claim. Target-independent
+CI passed all 43 workflow tests with tracking at 697 source-present / 696 exact
+and the 88-source / two-profile whole-build graph current.
+
+**Next evidence route.** Rotate away from ANM RNG and the recently exhausted
+photo/shared-global families after checkpoint. Prefer an independent non-ANM
+resource lifetime, historical-runtime owner, persistent/ABI boundary, replay
+field with a new field-level consumer, or sibling interpreter/state protocol
+with a TH095-local producer plus independent consumer/cleanup. Keep ANM bit 14,
+ReplayScanWorker `unknown010`, shared bit 8, score/replay reserved words,
+SoundPlayer/PBG writer-only metadata, TextRenderer RNG-written prefix, compact
+tail fields, and other single-ended storage Unknown absent a new target-local
+discriminator. The semantic phase remains active-incomplete.

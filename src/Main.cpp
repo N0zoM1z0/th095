@@ -1791,7 +1791,7 @@ i32 __fastcall Supervisor::AddedCallback(Supervisor *s)
     g_Supervisor.InitializeViewports();
     g_Supervisor.totalPlayTime = timeGetTime();
     g_Rng.seed = (u16)g_Supervisor.totalPlayTime;
-    g_Rng2.seed = (u16)g_Supervisor.totalPlayTime;
+    g_AnmAlternateRng.seed = (u16)g_Supervisor.totalPlayTime;
 
     if (Supervisor::LoadDat() != 0)
     {

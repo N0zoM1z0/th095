@@ -51,11 +51,11 @@ f32 AnmVm::GetFloatVar(f32 varId)
     case ANM_VAR_IC1:
         return this->counterVar1;
     case ANM_VAR_RANDOM:
-        return this->useAlternateRng ? g_Rng2.GetRandomF32() : g_Rng.GetRandomF32();
+        return this->useAlternateRng ? g_AnmAlternateRng.GetRandomF32() : g_Rng.GetRandomF32();
     case ANM_VAR_RANDOM_SIGNED:
-        return this->useAlternateRng ? g_Rng2.GetRandomF32Signed() : g_Rng.GetRandomF32Signed();
+        return this->useAlternateRng ? g_AnmAlternateRng.GetRandomF32Signed() : g_Rng.GetRandomF32Signed();
     case ANM_VAR_RANDOM_ANGLE:
-        return this->useAlternateRng ? g_Rng2.GetRandomF32Signed() * 3.1415927f
+        return this->useAlternateRng ? g_AnmAlternateRng.GetRandomF32Signed() * 3.1415927f
                                      : g_Rng.GetRandomF32Signed() * 3.1415927f;
     case ANM_VAR_POSITION_X:
         return this->position.x;
@@ -606,12 +606,12 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             break;
         case ANM_OP_I_SET_RANDOM:
             *GET_INT_VAR_PTR(0) = vm->useAlternateRng
-                ? g_Rng2.GetRandomU32InRange(GET_INT_VAR(1))
+                ? g_AnmAlternateRng.GetRandomU32InRange(GET_INT_VAR(1))
                 : g_Rng.GetRandomU32InRange(GET_INT_VAR(1));
             break;
         case ANM_OP_F_SET_RANDOM:
             *GET_FLOAT_VAR_PTR(0) = vm->useAlternateRng
-                ? g_Rng2.GetRandomF32InRange(GET_FLOAT_VAR(1))
+                ? g_AnmAlternateRng.GetRandomF32InRange(GET_FLOAT_VAR(1))
                 : g_Rng.GetRandomF32InRange(GET_FLOAT_VAR(1));
             break;
         case ANM_OP_F_SIN:

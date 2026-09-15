@@ -64,6 +64,11 @@ class Rng
 typedef char RngSizeIs8[(sizeof(Rng) == 8) ? 1 : -1];
 
 DIFFABLE_EXTERN(Rng, g_Rng);
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 DIFFABLE_EXTERN(Rng, g_Rng2);
+#define g_AnmAlternateRng g_Rng2
+#else
+DIFFABLE_EXTERN(Rng, g_AnmAlternateRng);
+#endif
 
 } // namespace th095
