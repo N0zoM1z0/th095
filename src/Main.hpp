@@ -58,9 +58,15 @@ struct GameWindow
     u8 startupPathDiffersFromExecutable; // +0x24
 #endif
     u8 padding25[3];                     // +0x25
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i32 screenSaveActive;                // +0x28
     i32 lowPowerActive;                  // +0x2c
     i32 powerOffActive;                  // +0x30
+#else
+    i32 savedScreenSaverActive;           // +0x28
+    i32 savedLowPowerActive;              // +0x2c
+    i32 savedPowerOffActive;              // +0x30
+#endif
     f64 currentTimestamp;                // +0x34
     f64 lastTimestamp;                   // +0x3c
     f64 lastFrameTime;                   // +0x44

@@ -40,6 +40,9 @@ namespace th095
 
 #ifdef DIFFBUILD
 #define startupPathDiffersFromExecutable usesRelativePath
+#define savedScreenSaverActive screenSaveActive
+#define savedLowPowerActive lowPowerActive
+#define savedPowerOffActive powerOffActive
 #endif
 
 #ifdef DIFFBUILD
@@ -299,9 +302,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR pCmdLine
     renderResult = RENDER_RESULT_KEEP_RUNNING;
     g_Supervisor.instance = hInstance;
 
-    SystemParametersInfoA(SPI_GETSCREENSAVEACTIVE, 0, &g_GameWindow.screenSaveActive, 0);
-    SystemParametersInfoA(SPI_GETLOWPOWERACTIVE, 0, &g_GameWindow.lowPowerActive, 0);
-    SystemParametersInfoA(SPI_GETPOWEROFFACTIVE, 0, &g_GameWindow.powerOffActive, 0);
+    SystemParametersInfoA(SPI_GETSCREENSAVEACTIVE, 0, &g_GameWindow.savedScreenSaverActive, 0);
+    SystemParametersInfoA(SPI_GETLOWPOWERACTIVE, 0, &g_GameWindow.savedLowPowerActive, 0);
+    SystemParametersInfoA(SPI_GETPOWEROFFACTIVE, 0, &g_GameWindow.savedPowerOffActive, 0);
     SystemParametersInfoA(SPI_SETSCREENSAVEACTIVE, 0, NULL, SPIF_SENDCHANGE);
     SystemParametersInfoA(SPI_SETLOWPOWERACTIVE, 0, NULL, SPIF_SENDCHANGE);
     SystemParametersInfoA(SPI_SETPOWEROFFACTIVE, 0, NULL, SPIF_SENDCHANGE);
@@ -464,9 +467,9 @@ stop:
     g_GameErrorContext.Flush();
     g_Supervisor.DeleteCriticalSections();
 
-    SystemParametersInfoA(SPI_SETSCREENSAVEACTIVE, g_GameWindow.screenSaveActive, NULL, SPIF_SENDCHANGE);
-    SystemParametersInfoA(SPI_SETLOWPOWERACTIVE, g_GameWindow.lowPowerActive, NULL, SPIF_SENDCHANGE);
-    SystemParametersInfoA(SPI_SETPOWEROFFACTIVE, g_GameWindow.powerOffActive, NULL, SPIF_SENDCHANGE);
+    SystemParametersInfoA(SPI_SETSCREENSAVEACTIVE, g_GameWindow.savedScreenSaverActive, NULL, SPIF_SENDCHANGE);
+    SystemParametersInfoA(SPI_SETLOWPOWERACTIVE, g_GameWindow.savedLowPowerActive, NULL, SPIF_SENDCHANGE);
+    SystemParametersInfoA(SPI_SETPOWEROFFACTIVE, g_GameWindow.savedPowerOffActive, NULL, SPIF_SENDCHANGE);
     WINNLSEnableIME(NULL, TRUE);
     return 0;
 }
