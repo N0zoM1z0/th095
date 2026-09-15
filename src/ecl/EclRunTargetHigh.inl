@@ -66,6 +66,7 @@
 
     case 101:
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         i32 *slot = reinterpret_cast<i32 *>(
             reinterpret_cast<u8 *>(enemy) + TH08_ECL_READ_I(ctx, 0) * 0x18 + 0x29ac);
         slot[4] = TH08_ECL_READ_I(ctx, 1);
@@ -80,6 +81,22 @@
             (instruction->operandFlags & (1U << 6))
                 ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[6])
                 : instruction->operands[6].asFloat;
+#else
+        BulletTransformRecord *slot = TH095_ENEMY_BULLET_TRANSFORM_RECORD(
+            enemy, TH08_ECL_READ_I(ctx, 0));
+        slot->kind = TH08_ECL_READ_I(ctx, 1);
+        slot->allowWhileActive = TH08_ECL_READ_I(ctx, 2);
+        slot->payload.raw.int0 = TH08_ECL_READ_I(ctx, 3);
+        slot->payload.raw.int1 = TH08_ECL_READ_I(ctx, 4);
+        slot->payload.raw.float0 =
+            (instruction->operandFlags & (1U << 5))
+                ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[5])
+                : instruction->operands[5].asFloat;
+        slot->payload.raw.float1 =
+            (instruction->operandFlags & (1U << 6))
+                ? TH095_ECL_RESOLVE_FLOAT(enemy, instruction->operands[6])
+                : instruction->operands[6].asFloat;
+#endif
         break;
     }
 

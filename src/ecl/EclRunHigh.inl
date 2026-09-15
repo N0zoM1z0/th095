@@ -126,6 +126,24 @@ C_ASSERT(offsetof(Th095EnemyBulletSpawnSoundView, bulletSpawnDescriptor) == 0x29
     (&reinterpret_cast<Th095EnemyBulletSpawnSoundView *>(enemy)             \
           ->bulletSpawnDescriptor)
 
+#if !defined(DIFFBUILD)
+struct Th095BulletSpawnTransformView
+{
+    u8 unknown000[0x20];
+    BulletTransformRecord transforms[18];
+};
+C_ASSERT(offsetof(Th095BulletSpawnTransformView, transforms) == 0x20);
+struct Th095EnemyBulletSpawnTransformView
+{
+    u8 unknown0000[0x298c];
+    Th095BulletSpawnTransformView bulletSpawnDescriptor;
+};
+C_ASSERT(offsetof(Th095EnemyBulletSpawnTransformView, bulletSpawnDescriptor) == 0x298c);
+#define TH095_ENEMY_BULLET_TRANSFORM_RECORD(enemy, index)                   \
+    (&reinterpret_cast<Th095EnemyBulletSpawnTransformView *>(enemy)         \
+          ->bulletSpawnDescriptor.transforms[(index)])
+#endif
+
 struct Th095EnemyPhotoMarkerPulseView
 {
     u8 unknown0000[0x2bfc];
