@@ -7,7 +7,12 @@
 
 namespace th095
 {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 DIFFABLE_STATIC_ASSIGN(HANDLE, g_OpenWriteFileHandle) = INVALID_HANDLE_VALUE;
+#define g_SharedOpenFileHandle g_OpenWriteFileHandle
+#else
+DIFFABLE_STATIC_ASSIGN(HANDLE, g_SharedOpenFileHandle) = INVALID_HANDLE_VALUE;
+#endif
 
 #ifdef TH095_MATCH_EXACT
 // These six canonical units predate production Supervisor ownership. Preserve
@@ -98,10 +103,10 @@ i32 FileSystem::OpenWriteFile(char *path)
 
     EnterFileCriticalSection(2);
     TH095_FILE_WRITE_ACTIVE_COUNT++;
-    g_OpenWriteFileHandle = CreateFileA(
+    g_SharedOpenFileHandle = CreateFileA(
         path, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL, NULL);
-    if (g_OpenWriteFileHandle == INVALID_HANDLE_VALUE)
+    if (g_SharedOpenFileHandle == INVALID_HANDLE_VALUE)
     {
         FormatMessageA(
             FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
@@ -129,10 +134,10 @@ i32 Open(char *path)
 
     EnterFileCriticalSection(2);
     TH095_FILE_WRITE_ACTIVE_COUNT++;
-    g_OpenWriteFileHandle = CreateFileA(
+    g_SharedOpenFileHandle = CreateFileA(
         path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-    if (g_OpenWriteFileHandle == INVALID_HANDLE_VALUE)
+    if (g_SharedOpenFileHandle == INVALID_HANDLE_VALUE)
     {
         FormatMessageA(
             FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
@@ -160,18 +165,18 @@ void *Read(u32 size)
         DWORD bytesRead;
     } locals;
 
-    if (g_OpenWriteFileHandle == INVALID_HANDLE_VALUE)
+    if (g_SharedOpenFileHandle == INVALID_HANDLE_VALUE)
         return NULL;
 
     locals.data = malloc(size);
     if (locals.data == NULL)
     {
-        CloseHandle(g_OpenWriteFileHandle);
+        CloseHandle(g_SharedOpenFileHandle);
         return NULL;
     }
 
     ReadFile(
-        g_OpenWriteFileHandle, locals.data, size, &locals.bytesRead, NULL);
+        g_SharedOpenFileHandle, locals.data, size, &locals.bytesRead, NULL);
     utils::DebugPrint("Read ...\r\n");
     return locals.data;
 }
@@ -182,14 +187,14 @@ i32 FileSystem::WriteToOpenFile(void *data, u32 size)
 {
     DWORD bytesWritten;
 
-    if (g_OpenWriteFileHandle == INVALID_HANDLE_VALUE)
+    if (g_SharedOpenFileHandle == INVALID_HANDLE_VALUE)
         return -1;
 
     WriteFile(
-        g_OpenWriteFileHandle, data, size, &bytesWritten, NULL);
+        g_SharedOpenFileHandle, data, size, &bytesWritten, NULL);
     if (size != bytesWritten)
     {
-        CloseHandle(g_OpenWriteFileHandle);
+        CloseHandle(g_SharedOpenFileHandle);
         utils::DebugPrint("error : write error\r\n");
         LeaveFileCriticalSection(2);
         TH095_FILE_WRITE_ACTIVE_COUNT--;
@@ -203,10 +208,10 @@ i32 FileSystem::WriteToOpenFile(void *data, u32 size)
 // FUNCTION: TH095 0x0041B090.
 i32 FileSystem::CloseWriteFile()
 {
-    if (g_OpenWriteFileHandle == INVALID_HANDLE_VALUE)
+    if (g_SharedOpenFileHandle == INVALID_HANDLE_VALUE)
         return 0;
 
-    CloseHandle(g_OpenWriteFileHandle);
+    CloseHandle(g_SharedOpenFileHandle);
     utils::DebugPrint("close ...\r\n");
     LeaveFileCriticalSection(2);
     TH095_FILE_WRITE_ACTIVE_COUNT--;
