@@ -175,6 +175,51 @@ enum BackgroundCameraMotionModeValue
     BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X
 #endif
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_BACKGROUND_INTERPOLATION_CURVE_MASK 0xff
+#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUADRATIC 1
+#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_CUBIC 2
+#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUARTIC 3
+#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUADRATIC 4
+#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_CUBIC 5
+#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUARTIC 6
+#define TH095_BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH 0x800
+#define TH095_BACKGROUND_INTERPOLATION_USES_LINEAR_PATH(mode) \
+    (((mode) >> 8) & 0xff) == 0
+#else
+typedef u16 BackgroundInterpolationMode;
+enum BackgroundInterpolationModeValue
+{
+    BACKGROUND_INTERPOLATION_CURVE_MASK = 0x00ff,
+    BACKGROUND_INTERPOLATION_PATH_MASK = 0xff00,
+    BACKGROUND_INTERPOLATION_EASE_IN_QUADRATIC = 1,
+    BACKGROUND_INTERPOLATION_EASE_IN_CUBIC = 2,
+    BACKGROUND_INTERPOLATION_EASE_IN_QUARTIC = 3,
+    BACKGROUND_INTERPOLATION_EASE_OUT_QUADRATIC = 4,
+    BACKGROUND_INTERPOLATION_EASE_OUT_CUBIC = 5,
+    BACKGROUND_INTERPOLATION_EASE_OUT_QUARTIC = 6,
+    BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH = 0x0800,
+};
+#define TH095_BACKGROUND_INTERPOLATION_CURVE_MASK \
+    BACKGROUND_INTERPOLATION_CURVE_MASK
+#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUADRATIC \
+    BACKGROUND_INTERPOLATION_EASE_IN_QUADRATIC
+#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_CUBIC \
+    BACKGROUND_INTERPOLATION_EASE_IN_CUBIC
+#define TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUARTIC \
+    BACKGROUND_INTERPOLATION_EASE_IN_QUARTIC
+#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUADRATIC \
+    BACKGROUND_INTERPOLATION_EASE_OUT_QUADRATIC
+#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_CUBIC \
+    BACKGROUND_INTERPOLATION_EASE_OUT_CUBIC
+#define TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUARTIC \
+    BACKGROUND_INTERPOLATION_EASE_OUT_QUARTIC
+#define TH095_BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH \
+    BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH
+#define TH095_BACKGROUND_INTERPOLATION_USES_LINEAR_PATH(mode) \
+    (((mode) & BACKGROUND_INTERPOLATION_PATH_MASK) == 0)
+#endif
+
 struct BackgroundStateView
 {
     BackgroundStageHeader *stageData;            // +0x0000
@@ -185,7 +230,11 @@ struct BackgroundStateView
     BackgroundStageInstruction *stageInstruction; // +0x001c
     ZunTimer interpolationCurrentTimers[4];     // +0x0020
     ZunTimer interpolationEndTimers[4];         // +0x0050
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     u16 interpolationModes[4];                  // +0x0080
+#else
+    BackgroundInterpolationMode interpolationModes[4]; // +0x0080
+#endif
     Float3 cameraLookAtFinal;                   // +0x0088
     Float3 cameraLookAtInitial;                 // +0x0094
     Float3 cameraLookAtTangentFinal;            // +0x00a0
@@ -1308,7 +1357,7 @@ read_instruction:
             BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[0]);
             background->interpolationEndTimers[0] = instruction->args[0];
             background->interpolationModes[0] =
-                instruction->args[1] | 0x800;
+                instruction->args[1] | TH095_BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH;
             background->cameraPositionInitial = g_BackgroundCameraPosition;
             background->cameraPositionTangentInitial.x =
                 *reinterpret_cast<f32 *>(&instruction->args[2]);
@@ -1334,7 +1383,7 @@ read_instruction:
             BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[1]);
             background->interpolationEndTimers[1] = instruction->args[0];
             background->interpolationModes[1] =
-                instruction->args[1] | 0x800;
+                instruction->args[1] | TH095_BACKGROUND_INTERPOLATION_CUBIC_HERMITE_PATH;
             background->cameraLookAtInitial = g_BackgroundCameraLookAt;
             background->cameraLookAtTangentInitial.x =
                 *reinterpret_cast<f32 *>(&instruction->args[2]);
@@ -1413,29 +1462,29 @@ interpolate:
                     (f32)background->interpolationEndTimers[interpolationSlotIndex];
             }
 
-            switch (background->interpolationModes[interpolationSlotIndex] & 0xff)
+            switch (background->interpolationModes[interpolationSlotIndex] & TH095_BACKGROUND_INTERPOLATION_CURVE_MASK)
             {
-            case 1:
+            case TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUADRATIC:
                 interpolationTime *= interpolationTime;
                 break;
-            case 2:
+            case TH095_BACKGROUND_INTERPOLATION_EASE_IN_CUBIC:
                 interpolationTime *= interpolationTime * interpolationTime;
                 break;
-            case 3:
+            case TH095_BACKGROUND_INTERPOLATION_EASE_IN_QUARTIC:
                 interpolationTime *= interpolationTime;
                 interpolationTime *= interpolationTime;
                 break;
-            case 4:
+            case TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUADRATIC:
                 interpolationTime = 1.0f - interpolationTime;
                 interpolationTime *= interpolationTime;
                 interpolationTime = 1.0f - interpolationTime;
                 break;
-            case 5:
+            case TH095_BACKGROUND_INTERPOLATION_EASE_OUT_CUBIC:
                 interpolationTime = 1.0f - interpolationTime;
                 interpolationTime *= interpolationTime * interpolationTime;
                 interpolationTime = 1.0f - interpolationTime;
                 break;
-            case 6:
+            case TH095_BACKGROUND_INTERPOLATION_EASE_OUT_QUARTIC:
                 interpolationTime = 1.0f - interpolationTime;
                 interpolationTime *= interpolationTime;
                 interpolationTime *= interpolationTime;
@@ -1443,7 +1492,8 @@ interpolate:
                 break;
             }
 
-            if (((background->interpolationModes[interpolationSlotIndex] >> 8) & 0xff) == 0)
+            if (TH095_BACKGROUND_INTERPOLATION_USES_LINEAR_PATH(
+                    background->interpolationModes[interpolationSlotIndex]))
             {
                 switch (interpolationSlotIndex)
                 {
