@@ -12,10 +12,10 @@ namespace th095
 #define bitmapBits buffer
 #endif
 
-DIFFABLE_STATIC(HFONT, g_TextFont19);
-DIFFABLE_STATIC(HFONT, g_TextFont20);
-DIFFABLE_STATIC(HFONT, g_TextFont17);
-DIFFABLE_STATIC(HFONT, g_TextFont18);
+DIFFABLE_STATIC(HFONT, g_TextFontWidth19);
+DIFFABLE_STATIC(HFONT, g_TextFontWidth20OrMore);
+DIFFABLE_STATIC(HFONT, g_TextFontWidth17OrLess);
+DIFFABLE_STATIC(HFONT, g_TextFontWidth18);
 DIFFABLE_STATIC(TextRenderBufferView, g_TextRenderBuffer);
 
 DIFFABLE_STATIC_ARRAY_ASSIGN(TextRenderFormatInfo, 7,
@@ -203,22 +203,22 @@ void TextHelperView::CreateTextBuffer()
         g_TextRenderBuffer.unknown000[index] =
             static_cast<u8>((g_Rng.GetRandomU16() >> 8) / 2);
     }
-    g_TextFont17 = CreateFontA(
+    g_TextFontWidth17OrLess = CreateFontA(
         30, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, SHIFTJIS_CHARSET,
         OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
         FIXED_PITCH | FF_ROMAN,
         "\x82\x6c\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4e");
-    g_TextFont18 = CreateFontA(
+    g_TextFontWidth18 = CreateFontA(
         34, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, SHIFTJIS_CHARSET,
         OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
         FIXED_PITCH | FF_ROMAN,
         "\x82\x6c\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4e");
-    g_TextFont19 = CreateFontA(
+    g_TextFontWidth19 = CreateFontA(
         36, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, SHIFTJIS_CHARSET,
         OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
         FIXED_PITCH | FF_ROMAN,
         "\x82\x6c\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4e");
-    g_TextFont20 = CreateFontA(
+    g_TextFontWidth20OrMore = CreateFontA(
         38, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, SHIFTJIS_CHARSET,
         OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
         FIXED_PITCH | FF_ROMAN,
@@ -228,10 +228,10 @@ void TextHelperView::CreateTextBuffer()
 void TextHelperView::ReleaseTextBuffer()
 {
     g_TextRenderBuffer.ReleaseBuffer();
-    DeleteObject(g_TextFont17);
-    DeleteObject(g_TextFont18);
-    DeleteObject(g_TextFont19);
-    DeleteObject(g_TextFont20);
+    DeleteObject(g_TextFontWidth17OrLess);
+    DeleteObject(g_TextFontWidth18);
+    DeleteObject(g_TextFontWidth19);
+    DeleteObject(g_TextFontWidth20OrMore);
 }
 
 bool TextRenderBufferView::InvertAlpha(i32 rowCount, BOOL unused)
@@ -551,10 +551,10 @@ void TextHelperView::RenderTextToTextureBold(
 {
     TextBoldLocals locals;
 
-    locals.gdi.font = glyphWidth <= 17 ? g_TextFont17
-                     : glyphWidth <= 18 ? g_TextFont18
-                     : glyphWidth <= 19 ? g_TextFont19
-                                        : g_TextFont20;
+    locals.gdi.font = glyphWidth <= 17 ? g_TextFontWidth17OrLess
+                     : glyphWidth <= 18 ? g_TextFontWidth18
+                     : glyphWidth <= 19 ? g_TextFontWidth19
+                                        : g_TextFontWidth20OrMore;
 
     memset(g_TextRenderBuffer.bitmapBits, 0,
            g_TextRenderBuffer.imageSizeInBytes);

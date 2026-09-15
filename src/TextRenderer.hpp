@@ -11,6 +11,13 @@
 namespace th095
 {
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define g_TextFontWidth17OrLess g_TextFont17
+#define g_TextFontWidth18 g_TextFont18
+#define g_TextFontWidth19 g_TextFont19
+#define g_TextFontWidth20OrMore g_TextFont20
+#endif
+
 struct TextRenderFormatInfo
 {
     D3DFORMAT format;
