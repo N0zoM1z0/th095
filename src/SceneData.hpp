@@ -49,8 +49,13 @@ struct SceneDefinitionView
         u8 unknown01c[4];
         i32 frontScriptIndex;
     };
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     i8 groupDisplayValue;
     i8 sceneDisplayValue;
+#else
+    i8 groupPreviewAssetSelector;
+    i8 scenePreviewAssetSelector;
+#endif
     u8 unknown022[2];
     union
     {

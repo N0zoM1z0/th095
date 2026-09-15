@@ -23,8 +23,13 @@ struct SceneDefinitionStorage
     const char *enemyEclPath;
     const char *musicPath;
     i32 frontScriptIndex;
+#ifdef DIFFBUILD
     i8 groupDisplayValue;
     i8 sceneDisplayValue;
+#else
+    i8 groupPreviewAssetSelector;
+    i8 scenePreviewAssetSelector;
+#endif
     u8 unknown022[2];
     i32 scoreRequirement;
     const u8 *encodedTitleText;
@@ -45,14 +50,27 @@ typedef char SceneDefinitionStorageRuntimeFieldsAt24[
      offsetof(SceneDefinitionStorage, displayState) == 0x2c)
         ? 1
         : -1];
+#ifdef DIFFBUILD
+typedef char SceneDefinitionStoragePreviewSelectorsAt20[
+    (offsetof(SceneDefinitionStorage, groupDisplayValue) == 0x20 &&
+     offsetof(SceneDefinitionStorage, sceneDisplayValue) == 0x21)
+        ? 1
+        : -1];
+#else
+typedef char SceneDefinitionStoragePreviewSelectorsAt20[
+    (offsetof(SceneDefinitionStorage, groupPreviewAssetSelector) == 0x20 &&
+     offsetof(SceneDefinitionStorage, scenePreviewAssetSelector) == 0x21)
+        ? 1
+        : -1];
+#endif
 
 #define TH095_SCENE(scoreIndex, groupIndex, sceneIndex, stagePath, anmPath,   \
-                    eclPath, bgmPath, frontScript, groupDisplay,             \
-                    sceneDisplay)                                            \
+                    eclPath, bgmPath, frontScript, groupPreviewSelector,     \
+                    scenePreviewSelector)                                    \
     {                                                                         \
         scoreIndex, groupIndex, sceneIndex, stagePath, anmPath, eclPath,      \
-            bgmPath, frontScript, groupDisplay, sceneDisplay, {0, 0}, 0, 0,   \
-            0, {0, 0, 0}                                                     \
+            bgmPath, frontScript, groupPreviewSelector, scenePreviewSelector, \
+            {0, 0}, 0, 0, 0, {0, 0, 0}                                       \
     }
 
 static SceneDefinitionStorage g_SceneDefinitions[93] = {

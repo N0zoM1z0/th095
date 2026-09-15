@@ -17,12 +17,16 @@ DIFFABLE_STATIC_ARRAY(u8, 0x40, g_SceneTextBuffer);
 #define TH095_SCENE_BELOW_REQUIREMENT_ENCODED_TEXT(view) ((view)->previewTextSources.belowRequirementTextId)
 #define TH095_SCENE_ATTEMPTED_ENCODED_TEXT(view) ((view)->previewTextSources.attemptedTextId)
 #define TH095_SCENE_TITLE_ENCODED_TEXT(scene) ((scene)->titleTextId)
+#define TH095_SCENE_GROUP_PREVIEW_ASSET_SELECTOR(scene) ((scene)->groupDisplayValue)
+#define TH095_SCENE_SCENE_PREVIEW_ASSET_SELECTOR(scene) ((scene)->sceneDisplayValue)
 #else
 #define TH095_SCENE_LOCKED_ENCODED_TEXT(view) ((view)->previewTextSources.lockedEncodedText)
 #define TH095_SCENE_UNATTEMPTED_ENCODED_TEXT(view) ((view)->previewTextSources.unattemptedEncodedText)
 #define TH095_SCENE_BELOW_REQUIREMENT_ENCODED_TEXT(view) ((view)->previewTextSources.belowRequirementEncodedText)
 #define TH095_SCENE_ATTEMPTED_ENCODED_TEXT(view) ((view)->previewTextSources.attemptedEncodedText)
 #define TH095_SCENE_TITLE_ENCODED_TEXT(scene) ((scene)->encodedTitleText)
+#define TH095_SCENE_GROUP_PREVIEW_ASSET_SELECTOR(scene) ((scene)->groupPreviewAssetSelector)
+#define TH095_SCENE_SCENE_PREVIEW_ASSET_SELECTOR(scene) ((scene)->scenePreviewAssetSelector)
 #endif
 
 void __cdecl SceneWriteText(SceneAnmManagerView *manager,
@@ -117,8 +121,10 @@ void SceneSelectControllerView::RefreshSceneSelection(
     refreshUnlockGroup = this->selectedGroup;
     if (g_ResultSaveData->IsSceneGroupUnlocked(refreshUnlockGroup) != 0)
     {
-        this->groupPreviewQueue.Push(g_SelectedScene->groupDisplayValue);
-        this->scenePreviewQueue.Push(g_SelectedScene->sceneDisplayValue);
+        this->groupPreviewQueue.Push(
+            TH095_SCENE_GROUP_PREVIEW_ASSET_SELECTOR(g_SelectedScene));
+        this->scenePreviewQueue.Push(
+            TH095_SCENE_SCENE_PREVIEW_ASSET_SELECTOR(g_SelectedScene));
     }
     else
     {
