@@ -388,8 +388,17 @@ extern u32 g_PhotoScreenFadeColor;
 #endif
 
 DIFFABLE_STATIC(Background *, g_Background);
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 DIFFABLE_STATIC(u8 *, g_BackgroundStageDataCache);
 DIFFABLE_STATIC(i32, g_BackgroundStageDataSize);
+#define TH095_BACKGROUND_STAGE_DATA_CACHE g_BackgroundStageDataCache
+#define TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE g_BackgroundStageDataSize
+#else
+DIFFABLE_STATIC(u8 *, g_OwnedBackgroundStageDataCache);
+DIFFABLE_STATIC(i32, g_BackgroundStageDataCacheSize);
+#define TH095_BACKGROUND_STAGE_DATA_CACHE g_OwnedBackgroundStageDataCache
+#define TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE g_BackgroundStageDataCacheSize
+#endif
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 DIFFABLE_STATIC(Float3, g_BackgroundCameraPosition);
 DIFFABLE_STATIC(Float3, g_BackgroundCameraLookAt);
@@ -1090,21 +1099,21 @@ i32 Background::LoadStageDataInner(const char *path)
     i32 objectIndex;
     i32 vmIndex;
 
-    if (g_BackgroundStageDataCache == NULL)
+    if (TH095_BACKGROUND_STAGE_DATA_CACHE == NULL)
     {
-        g_BackgroundStageDataCache = FileSystem::OpenFile(
-            const_cast<char *>(path), &g_BackgroundStageDataSize, FALSE);
-        if (g_BackgroundStageDataCache == NULL)
+        TH095_BACKGROUND_STAGE_DATA_CACHE = FileSystem::OpenFile(
+            const_cast<char *>(path), &TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE, FALSE);
+        if (TH095_BACKGROUND_STAGE_DATA_CACHE == NULL)
             return -1;
     }
 
-    i32 stageDataAllocationSize = g_BackgroundStageDataSize;
+    i32 stageDataAllocationSize = TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE;
     background->stageData = reinterpret_cast<BackgroundStageHeader *>(
         malloc(stageDataAllocationSize));
     memcpy(
         background->stageData,
-        g_BackgroundStageDataCache,
-        g_BackgroundStageDataSize);
+        TH095_BACKGROUND_STAGE_DATA_CACHE,
+        TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE);
 
     background->anm = TH095_ANM_PRELOAD_COMPAT(g_AnmManager,
         4, background->stageData->anmPath);

@@ -109,7 +109,13 @@ struct Background
 };
 
 extern Background *g_Background;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 extern u8 *g_BackgroundStageDataCache;
+#define TH095_BACKGROUND_STAGE_DATA_CACHE g_BackgroundStageDataCache
+#else
+extern u8 *g_OwnedBackgroundStageDataCache;
+#define TH095_BACKGROUND_STAGE_DATA_CACHE g_OwnedBackgroundStageDataCache
+#endif
 
 #ifndef TH095_MATCH_EXACT
 typedef char BackgroundLifecycleStageObjectsAt4[
@@ -170,9 +176,9 @@ Background::~Background()
 #endif
             == 0)
     {
-        if (g_BackgroundStageDataCache != NULL)
-            FreeBackgroundOwned(g_BackgroundStageDataCache);
-        g_BackgroundStageDataCache = NULL;
+        if (TH095_BACKGROUND_STAGE_DATA_CACHE != NULL)
+            FreeBackgroundOwned(TH095_BACKGROUND_STAGE_DATA_CACHE);
+        TH095_BACKGROUND_STAGE_DATA_CACHE = NULL;
     }
 
     if (stageObjectVms != NULL)
