@@ -13,6 +13,7 @@
 #include "InputRuntime.hpp"
 #endif
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "FileSystem.hpp"
 #include "PhotoGameTask.hpp"
 #endif
 
@@ -227,7 +228,11 @@ DIFFABLE_STATIC(FrontEndGameManagerView *, g_FrontEndGameManager);
     TH095_RUNTIME_GLOBAL_PTR(FrontEndGameManagerView, g_RuntimeGameTaskOwner)
 #endif
 extern FrontEndGameManagerView *g_FrontEndGlobalState;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 extern i32 g_ReplayUsesArchive;
+#define REPLAY_PLAYBACK_SOURCE_LOOSE_FILE 0
+#define REPLAY_PLAYBACK_SOURCE_ARCHIVE 1
+#endif
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 extern u16 g_FrontEndCurrentInput;
@@ -387,7 +392,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         locals.surface->Release();
         g_FrontEndUiState = 0;
 
-        if (g_ReplayUsesArchive == 0)
+        if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
         {
             TH095_FRONT_AUDIO.LoadMusic(0, "bgm/th09_00.wav");
             TH095_FRONT_AUDIO.PlayMusic(0, 0);
@@ -395,7 +400,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         else
         {
             view->entryMode = 0;
-            g_ReplayUsesArchive = 0;
+            g_ReplayUsesArchive = REPLAY_PLAYBACK_SOURCE_LOOSE_FILE;
         }
 
         switch (view->entryMode)
@@ -521,7 +526,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             }
             view->transitionVm.SetInterrupt(1);
             TH095_FRONT_SUPERVISOR_STATE = 3;
-            if (g_ReplayUsesArchive == 0)
+            if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
             {
                 TH095_FRONT_AUDIO.PlayMusic(0, 0);
             }
@@ -532,7 +537,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
     case TH095_FRONT_END_REQUESTED_STATE_START_REPLAY:
         if ((view->stateTimer.current == 1) != 0)
         {
-            if (g_ReplayUsesArchive == 0)
+            if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
             {
                 TH095_FRONT_AUDIO.FadeOutMusic(2.0f);
             }
@@ -572,7 +577,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             }
             view->transitionVm.SetInterrupt(1);
             TH095_FRONT_SUPERVISOR_STATE = 7;
-            if (g_ReplayUsesArchive == 0)
+            if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
             {
                 TH095_FRONT_AUDIO.PlayMusic(0, 0);
             }
@@ -774,7 +779,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
         if (g_FrontEndUiState >= 1800)
         {
             g_FrontEndUiState = 0;
-            g_ReplayUsesArchive = 1;
+            g_ReplayUsesArchive = REPLAY_PLAYBACK_SOURCE_ARCHIVE;
             sprintf(g_SelectedReplayPath, "demo/demo%d.rpy", g_DemoReplayIndex);
             g_DemoReplayIndex++;
             g_DemoReplayIndex %= 3;

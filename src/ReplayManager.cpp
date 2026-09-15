@@ -3,6 +3,9 @@
 #else
 #include "ReplayManager.hpp"
 #include "AsciiManager.hpp"
+#ifndef DIFFBUILD
+#include "FileSystem.hpp"
+#endif
 #include "GameplayGlobals.hpp"
 #include "Main.hpp"
 #include "SceneData.hpp"
@@ -73,7 +76,11 @@ extern ReplayGlobalStateView *g_ReplayGlobalState;
     TH095_RUNTIME_GLOBAL_PTR(ReplayGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
+#ifdef DIFFBUILD
 extern i32 g_ReplayUsesArchive;
+#define REPLAY_PLAYBACK_SOURCE_LOOSE_FILE 0
+#define REPLAY_PLAYBACK_SOURCE_ARCHIVE 1
+#endif
 
 namespace ReplayFile
 {
@@ -238,7 +245,7 @@ ReplayManagerResult ReplayManager::LoadReplay(char *path)
     locals.compressedData = NULL;
     strcpy(this->path, path);
 
-    if (g_ReplayUsesArchive == 0)
+    if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
     {
         sprintf(locals.fullPath, "replay/%s", path);
         if (!FileSystem::CheckIfFileAlreadyExists(locals.fullPath))
@@ -277,7 +284,7 @@ ReplayManagerResult ReplayManager::LoadReplay(char *path)
     locals.inputData = this->inputData;
     this->fpsData = (u8 *)(locals.inputData->inputStreamSize +
                            sizeof(ReplayInputData) + (u32)this->inputData);
-    if (g_ReplayUsesArchive == 0)
+    if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
     {
         free(locals.compressedData);
     }

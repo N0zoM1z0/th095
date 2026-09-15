@@ -5,6 +5,9 @@
 #include "AnmVmId.hpp"
 #include "AsciiManager.hpp"
 #include "FrontEndGlobals.hpp"
+#ifndef DIFFBUILD
+#include "FileSystem.hpp"
+#endif
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
 #include "Main.hpp"
@@ -211,7 +214,11 @@ extern i32 g_PhotoNextState;
 #ifndef DIFFBUILD
 #define g_PhotoNextState (g_Supervisor.currentState)
 #endif
+#ifdef DIFFBUILD
 extern i32 g_ReplayUsesArchive;
+#define REPLAY_PLAYBACK_SOURCE_LOOSE_FILE 0
+#define REPLAY_PLAYBACK_SOURCE_ARCHIVE 1
+#endif
 // Target 0x004C6E70 is the zero-initialized load barrier consumed by this
 // task's loading loop.
 DIFFABLE_STATIC(i32, g_PhotoLoadWaitFlag);
@@ -281,7 +288,7 @@ i32 PhotoGameTaskView::Update()
         return 1;
     }
 
-    if (g_ReplayUsesArchive != 0 &&
+    if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_ARCHIVE &&
         ((RuntimeInputCurrent() & TH_BUTTON_DEMO_INTERRUPT) != 0 ||
          this->resultScreenActive != 0 ||
          this->playerDeathTransitionComplete != 0 ||
@@ -641,7 +648,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     }
 
     if (g_Supervisor.flags.resultRestartActive == 0 &&
-        g_ReplayUsesArchive == 0)
+        g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
     {
         g_Supervisor.LoadMusic(
             0, g_SelectedScene->musicPath);
@@ -672,7 +679,7 @@ PhotoGameTaskView::~PhotoGameTaskView()
     g_PhotoGameTask = NULL;
 
     if (g_Supervisor.flags.resultRestartActive == 0 &&
-        g_ReplayUsesArchive == 0)
+        g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
     {
         g_Supervisor.StopAudio();
     }

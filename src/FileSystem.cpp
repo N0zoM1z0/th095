@@ -7,8 +7,12 @@
 namespace th095
 {
 
-// Disk and archive resource readers share this process-wide mode flag.
+// Replay playback selects either the loose replay file or archive-backed lane.
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 DIFFABLE_STATIC(i32, g_ReplayUsesArchive);
+#else
+DIFFABLE_STATIC(ReplayPlaybackSource, g_ReplayUsesArchive);
+#endif
 
 #ifdef TH095_MATCH_EXACT
 // The canonical FileSystem units observe the critical-section array and its

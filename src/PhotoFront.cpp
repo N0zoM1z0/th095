@@ -207,7 +207,7 @@ i32 PhotoFrontManagerView::Initialize()
             g_SelectedScene->frontScriptIndex + 0xd, 7);
     }
 
-    if (g_ReplayUsesArchive != 0)
+    if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_ARCHIVE)
     {
         this->frontAnm->CreateVm(0x12, 7);
     }
