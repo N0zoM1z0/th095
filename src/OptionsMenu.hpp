@@ -9,6 +9,17 @@
 namespace th095
 {
 
+#ifndef DIFFBUILD
+typedef i32 OptionsMenuState;
+enum OptionsMenuStateValue
+{
+    OPTIONS_MENU_STATE_INITIALIZE = 0,
+    OPTIONS_MENU_STATE_ACTIVE = 1,
+};
+typedef char OptionsMenuStateSizeIs4[
+    (sizeof(OptionsMenuState) == sizeof(i32)) ? 1 : -1];
+#endif
+
 struct OptionsControllerBinding
 {
     i16 button00;
@@ -53,7 +64,11 @@ struct OptionsMenuView
     u8 unknown0ffa[0x5106];
     AnmVmId transitionVm;
     u8 unknown6104[8];
+#ifdef DIFFBUILD
     i32 state;
+#else
+    OptionsMenuState state;
+#endif
 #ifdef DIFFBUILD
     i32 requestedState;
 #else

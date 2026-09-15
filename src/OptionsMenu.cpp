@@ -10,6 +10,14 @@
 namespace th095
 {
 
+#ifdef DIFFBUILD
+#define TH095_OPTIONS_MENU_STATE_INITIALIZE 0
+#define TH095_OPTIONS_MENU_STATE_ACTIVE 1
+#else
+#define TH095_OPTIONS_MENU_STATE_INITIALIZE OPTIONS_MENU_STATE_INITIALIZE
+#define TH095_OPTIONS_MENU_STATE_ACTIVE OPTIONS_MENU_STATE_ACTIVE
+#endif
+
 #ifndef DIFFBUILD
 // Target 0x004A5894 starts at the sentinel immediately beyond the 0..31
 // joystick-button range; Update replaces it after each poll.
@@ -82,14 +90,14 @@ ChainCallbackResult OptionsMenuView::Update()
 
     switch (this->state)
     {
-    case 0:
+    case TH095_OPTIONS_MENU_STATE_INITIALIZE:
         g_Supervisor.StopReplayScan();
         this->stateTimer.Reset();
         this->cursor.Push();
         this->cursor.Set(0);
         this->cursor.count = 7;
         this->cursor.wraps = 1;
-        this->state = 1;
+        this->state = TH095_OPTIONS_MENU_STATE_ACTIVE;
 
         OptionsCreateInitialVm(this, 0x68);
         OptionsCreateInitialVm(this, 0x69);
@@ -116,7 +124,7 @@ ChainCallbackResult OptionsMenuView::Update()
         this->UpdateSfxVolumeSprites(shallow.initialSfxVolume);
         this->outerFlags &= ~8u;
 
-    case 1:
+    case TH095_OPTIONS_MENU_STATE_ACTIVE:
     if (this->stateTimer < 30)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -299,7 +307,7 @@ ChainCallbackResult OptionsMenuView::Update()
 options_finish:
             this->cursor.Pop();
             this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
-            this->state = 0;
+            this->state = TH095_OPTIONS_MENU_STATE_INITIALIZE;
             this->stateTimer.Reset();
             this->vmIds.SetInterrupt(0x68, 1);
             this->vmIds.SetInterrupt(0x69, 1);
