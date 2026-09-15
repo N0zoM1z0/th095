@@ -213,10 +213,10 @@ extern FrontEndSupervisorAudioView g_FrontEndSupervisorAudio;
 #define TH095_FRONT_ANM_MANAGER g_AnmManager
 #endif
 
-// These target .bss slots are private state owned by the front-end controller:
-// 0x004CA2FC is the idle/demo timer, 0x004C4DF4 publishes the task created for
-// a game/replay transition, and 0x004CA300 rotates the three demo replays.
-DIFFABLE_STATIC(i32, g_FrontEndUiState);
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define g_MainMenuDemoWaitFrames g_FrontEndUiState
+#endif
+DIFFABLE_STATIC(i32, g_MainMenuDemoWaitFrames); // 0x004CA2FC
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 DIFFABLE_STATIC(FrontEndGameManagerView *, g_FrontEndGameManager);
 #else
@@ -396,7 +396,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         }
         locals.surface->UnlockRect();
         locals.surface->Release();
-        g_FrontEndUiState = 0;
+        g_MainMenuDemoWaitFrames = 0;
 
         if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
         {
@@ -777,14 +777,14 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
 
     if (FrontEndInputAnd(g_FrontEndCurrentInput, TH095_FRONT_DEMO_INTERRUPT_MASK) != 0)
     {
-        g_FrontEndUiState = 0;
+        g_MainMenuDemoWaitFrames = 0;
     }
     else
     {
-        g_FrontEndUiState++;
-        if (g_FrontEndUiState >= 1800)
+        g_MainMenuDemoWaitFrames++;
+        if (g_MainMenuDemoWaitFrames >= 1800)
         {
-            g_FrontEndUiState = 0;
+            g_MainMenuDemoWaitFrames = 0;
             g_ReplayUsesArchive = REPLAY_PLAYBACK_SOURCE_ARCHIVE;
             sprintf(g_SelectedReplayPath, "demo/demo%d.rpy", g_DemoReplayIndex);
             g_DemoReplayIndex++;
