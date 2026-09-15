@@ -15,6 +15,22 @@ namespace th095
 {
 
 #ifdef DIFFBUILD
+#define TH095_HELP_STATE_PAGE_LOADING 2
+#define TH095_HELP_STATE_PAGE_DATA_READY 3
+#define TH095_HELP_STATE_PAGE_VIEW 4
+#else
+enum HelpMenuPageStateValue
+{
+    HELP_MENU_PAGE_LOADING = 2,
+    HELP_MENU_PAGE_DATA_READY = 3,
+    HELP_MENU_PAGE_VIEW = 4,
+};
+#define TH095_HELP_STATE_PAGE_LOADING HELP_MENU_PAGE_LOADING
+#define TH095_HELP_STATE_PAGE_DATA_READY HELP_MENU_PAGE_DATA_READY
+#define TH095_HELP_STATE_PAGE_VIEW HELP_MENU_PAGE_VIEW
+#endif
+
+#ifdef DIFFBUILD
 DIFFABLE_STATIC(i32, g_HelpLoadComplete);
 DIFFABLE_STATIC(i32, g_HelpLoadActive);
 #endif
@@ -61,7 +77,7 @@ void __fastcall LoadHelpAnm(void *unused)
 
     helpMenu->helpAnmData = FileSystem::OpenFile(
         helpMenu->helpAnmPath, &helpMenu->helpAnmSize, FALSE);
-    helpMenu->state = 3;
+    helpMenu->state = TH095_HELP_STATE_PAGE_DATA_READY;
     g_HelpLoadActive = 0;
     g_HelpLoadComplete = 1;
 }
@@ -136,7 +152,7 @@ i32 HelpMenuView::UpdateHelpMenu()
         {
         load_page:
             g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
-            this->state = 2;
+            this->state = TH095_HELP_STATE_PAGE_LOADING;
             this->stateTimer.Reset();
             sprintf(this->helpAnmPath, "help_%.2d.anm",
                     this->cursor.GetCurrent());
@@ -172,10 +188,10 @@ i32 HelpMenuView::UpdateHelpMenu()
         }
         break;
 
-    case 2:
+    case TH095_HELP_STATE_PAGE_LOADING:
         break;
 
-    case 3:
+    case TH095_HELP_STATE_PAGE_DATA_READY:
     {
         g_AnmManager->LoadTexture(
             reinterpret_cast<SceneTextureEntryView *>(
@@ -185,10 +201,10 @@ i32 HelpMenuView::UpdateHelpMenu()
         ((HelpAnmStorageView *)this->sceneAnm)->textures[13]
             .texture->PreLoad();
         HelpMenuCreateVmAt(this, 0x90);
-        this->state = 4;
+        this->state = TH095_HELP_STATE_PAGE_VIEW;
     }
 
-    case 4:
+    case TH095_HELP_STATE_PAGE_VIEW:
         if (this->stateTimer < 20)
         {
             break;
