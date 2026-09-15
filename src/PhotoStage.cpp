@@ -70,28 +70,6 @@ struct PhotoStageBestShotRecord
     u8 *pixelData;
 };
 
-struct PhotoStageScorePayloadView
-{
-    PhotoScoreBreakdownView photoScore;
-    u8 unknown020[4];
-    i32 captureTime;
-    u8 unknown028[4];
-    u32 attemptCount;
-    u8 unknown030[4];
-    f32 slowRate;
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 captured : 1;
-            u32 bestShotLocked : 1;
-            u32 unknownFlags : 30;
-        };
-    };
-    u8 unknown03c[0x48 - 0x3c];
-};
-
 struct PhotoStageAnmManagerView
 {
     u8 unknown000000[0x0c];
@@ -196,11 +174,9 @@ typedef char PhotoStageTextureEntrySizeIs10[
     (sizeof(PhotoStageTextureEntry) == 0x10) ? 1 : -1];
 typedef char PhotoStageBestShotRecordSizeIs78[
     (sizeof(PhotoStageBestShotRecord) == 0x78) ? 1 : -1];
-typedef char PhotoStageScorePayloadSizeIs48[
-    (sizeof(PhotoStageScorePayloadView) == 0x48) ? 1 : -1];
-typedef char PhotoStageScorePayloadMatchesResultTail[
-    (sizeof(PhotoStageScorePayloadView) ==
-     sizeof(ResultScoreEntryView) - offsetof(ResultScoreEntryView, detailScore))
+typedef char PhotoStageScoreEntryTailSizeIs48[
+    (sizeof(ResultScoreEntryView) - offsetof(ResultScoreEntryView, detailScore) ==
+     0x48)
         ? 1
         : -1];
 typedef char PhotoStageSlotSizeIs2214[
@@ -313,10 +289,9 @@ static __forceinline void PhotoStageInterruptCurrentEntryPhase(
         state->slots[0].entryVms[entryIndex].value, 1);
 }
 
-static inline PhotoStageScorePayloadView *GetPhotoStageScorePayload(i32 index)
+static inline ResultScoreEntryView *GetPhotoStageScoreEntry(i32 index)
 {
-    return reinterpret_cast<PhotoStageScorePayloadView *>(
-        &g_ResultSaveData->scoreEntries[index].detailScore);
+    return &g_ResultSaveData->scoreEntries[index];
 }
 
 static inline PhotoScoreBreakdownView *GetPhotoStageDisplayScoreBreakdown(
@@ -1051,11 +1026,11 @@ i32 PhotoStageStateView::Update()
 
                 if (g_PhotoStageGlobalState->resultMode == 0)
                 {
-                    if (GetPhotoStageScorePayload(
+                    if (GetPhotoStageScoreEntry(
                             g_PhotoStageGlobalState->scoreIndex)
                             ->attemptCount < 999999)
                     {
-                        GetPhotoStageScorePayload(
+                        GetPhotoStageScoreEntry(
                             g_PhotoStageGlobalState->scoreIndex)
                             ->attemptCount++;
                     }
@@ -1081,18 +1056,18 @@ i32 PhotoStageStateView::Update()
                             0, 0x50);
                     }
 
-                    if (!GetPhotoStageScorePayload(
+                    if (!GetPhotoStageScoreEntry(
                              g_PhotoStageGlobalState->scoreIndex)
                              ->bestShotLocked &&
                         this->slots[this->slots[0].captureSlot].display.score >
-                            GetPhotoStageScorePayload(
+                            GetPhotoStageScoreEntry(
                                 g_PhotoStageGlobalState->scoreIndex)
-                                ->photoScore.finalScore)
+                                ->scoreBreakdown.finalScore)
                     {
                         memcpy(
-                            &GetPhotoStageScorePayload(
+                            &GetPhotoStageScoreEntry(
                                  g_PhotoStageGlobalState->scoreIndex)
-                                 ->photoScore,
+                                 ->scoreBreakdown,
                             GetPhotoStageDisplayScoreBreakdown(
                                 &this->slots[this->slots[0].captureSlot].display),
                             sizeof(PhotoScoreBreakdownView));
@@ -1133,10 +1108,10 @@ i32 PhotoStageStateView::Update()
                                       [this->slots[0].captureSlot]
                                           .bytesPerPixel == 4) +
                                 2);
-                        GetPhotoStageScorePayload(
-                            g_PhotoStageGlobalState->scoreIndex)->slowRate =
+                        GetPhotoStageScoreEntry(
+                            g_PhotoStageGlobalState->scoreIndex)->bestShotSlowRate =
                             this->slots[this->slots[0].captureSlot].slowRate;
-                        GetPhotoStageScorePayload(
+                        GetPhotoStageScoreEntry(
                             g_PhotoStageGlobalState->scoreIndex)->captureTime =
                             this->slots[this->slots[0].captureSlot].timestamp;
                         if (g_PhotoStageRuntime != NULL)

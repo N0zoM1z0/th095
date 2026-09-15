@@ -146,8 +146,17 @@ struct ResultScoreEntryView
     i32 index;
     i32 score;
     u8 unknown014[0x18 - 0x14];
+#ifdef TH095_MATCH_EXACT
     i32 detailScore;
     u8 unknown01c[0x3c - 0x1c];
+#else
+    union
+    {
+        i32 detailScore;
+        PhotoScoreBreakdownView scoreBreakdown;
+    };
+    u8 unknown038[4];
+#endif
 #ifdef TH095_MATCH_EXACT
     union
     {
@@ -262,6 +271,12 @@ typedef char ResultBestShotRecordSizeIs78[
     (sizeof(ResultBestShotRecordView) == 0x78) ? 1 : -1];
 typedef char ResultScoreEntrySizeIs60[
     (sizeof(ResultScoreEntryView) == 0x60) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT)
+typedef char ResultScoreEntryScoreBreakdownAt18[
+    (offsetof(ResultScoreEntryView, scoreBreakdown) == 0x18) ? 1 : -1];
+typedef char ResultScoreEntryUnknown038At38[
+    (offsetof(ResultScoreEntryView, unknown038) == 0x38) ? 1 : -1];
+#endif
 typedef char ResultSaveProfileDataAt08[
     (offsetof(ResultSaveDataView, profileData) == 0x08) ? 1 : -1];
 #if !defined(TH095_MATCH_EXACT)
