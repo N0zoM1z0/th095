@@ -427,7 +427,7 @@ extern BackgroundGlobalStateView *g_PhotoGlobalState;
 #endif
 #ifdef TH095_MATCH_EXACT
 extern ZunColor g_PhotoScreenFadeColor;
-#else
+#elif defined(DIFFBUILD)
 extern u32 g_PhotoScreenFadeColor;
 #endif
 
@@ -1335,9 +1335,9 @@ read_instruction:
                 *reinterpret_cast<f32 *>(&instruction->args[2]);
             background->photoBlendFinal = background->photoBlendCurrent;
 #ifdef TH095_MATCH_EXACT
-            g_PhotoScreenFadeColor = background->photoBlendCurrent.color;
+            TH095_BACKBUFFER_CLEAR_COLOR = background->photoBlendCurrent.color;
 #else
-            g_PhotoScreenFadeColor = background->photoBlendCurrent.color.color;
+            TH095_BACKBUFFER_CLEAR_COLOR = background->photoBlendCurrent.color.color;
 #endif
             break;
 
@@ -1412,9 +1412,9 @@ read_instruction:
 
         case 13:
 #ifdef TH095_MATCH_EXACT
-            g_PhotoScreenFadeColor.color = instruction->args[0];
+            TH095_BACKBUFFER_CLEAR_COLOR.color = instruction->args[0];
 #else
-            g_PhotoScreenFadeColor = instruction->args[0];
+            TH095_BACKBUFFER_CLEAR_COLOR = instruction->args[0];
 #endif
             break;
 
@@ -1538,10 +1538,10 @@ interpolate:
                             interpolationTime +
                         background->photoBlendInitial.y;
 #ifdef TH095_MATCH_EXACT
-                    g_PhotoScreenFadeColor =
+                    TH095_BACKBUFFER_CLEAR_COLOR =
                         background->photoBlendCurrent.color;
 #else
-                    g_PhotoScreenFadeColor =
+                    TH095_BACKBUFFER_CLEAR_COLOR =
                         background->photoBlendCurrent.color.color;
 #endif
                     break;

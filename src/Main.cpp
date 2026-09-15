@@ -1798,7 +1798,7 @@ i32 __fastcall Supervisor::AddedCallback(Supervisor *s)
         return -1;
     }
 
-    g_PhotoScreenFadeColor = 0xff000000;
+    TH095_BACKBUFFER_CLEAR_COLOR = 0xff000000;
     InitializeScoreData();
     g_AnmManager->LoadSurface(8, "title/th08logo.jpg");
     g_Supervisor.suppressFpsDisplay = 1;

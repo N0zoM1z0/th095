@@ -49,6 +49,13 @@ DIFFABLE_EXTERN(void *, g_RuntimePlayerOwner);
     (*reinterpret_cast<type **>(&(storage)))
 #endif
 
+#if defined(DIFFBUILD)
+#define TH095_BACKBUFFER_CLEAR_COLOR g_PhotoScreenFadeColor
+#else
+extern unsigned long &g_BackbufferClearColor;
+#define TH095_BACKBUFFER_CLEAR_COLOR g_BackbufferClearColor
+#endif
+
 } // namespace th095
 
 #endif

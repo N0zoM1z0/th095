@@ -685,11 +685,11 @@ PhotoGameTaskView::~PhotoGameTaskView()
     }
     if (g_Supervisor.flags.resultRestartActive != 0)
     {
-        g_PhotoScreenFadeColor = 0;
+        TH095_BACKBUFFER_CLEAR_COLOR = 0;
     }
     else
     {
-        g_PhotoScreenFadeColor = 0xff000000;
+        TH095_BACKBUFFER_CLEAR_COLOR = 0xff000000;
     }
 }
 

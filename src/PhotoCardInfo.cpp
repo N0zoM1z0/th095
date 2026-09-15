@@ -187,7 +187,7 @@ i32 PhotoCardInfoView::Initialize(char *encodedText)
             reinterpret_cast<AnmTextVmView *>(
                 g_AnmManager->GetVm(this->textVmId)),
             0xffffff, 0, this->text);
-    this->savedScreenFadeColor = g_PhotoScreenFadeColor;
+    this->savedScreenFadeColor = TH095_BACKBUFFER_CLEAR_COLOR;
     return 0;
 }
 
@@ -209,7 +209,7 @@ i32 PhotoCardInfoView::Show()
     g_AnmManager->SetInterrupt(this->textVmId, 1);
     this->state = TH095_PHOTO_CARD_INFO_STATE_FINISHING;
     this->timer = 0;
-    g_PhotoScreenFadeColor = this->savedScreenFadeColor;
+    TH095_BACKBUFFER_CLEAR_COLOR = this->savedScreenFadeColor;
     return 0;
 }
 
@@ -274,11 +274,11 @@ i32 PhotoCardInfoView::Update()
     if (this->state != TH095_PHOTO_CARD_INFO_STATE_FINISHING &&
         this->timer >= 0x3c)
     {
-        if (g_PhotoScreenFadeColor != 0)
+        if (TH095_BACKBUFFER_CLEAR_COLOR != 0)
         {
-            this->savedScreenFadeColor = g_PhotoScreenFadeColor;
+            this->savedScreenFadeColor = TH095_BACKBUFFER_CLEAR_COLOR;
         }
-        g_PhotoScreenFadeColor = 0;
+        TH095_BACKBUFFER_CLEAR_COLOR = 0;
     }
 
     i32 alpha = 0xff;

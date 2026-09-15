@@ -541,12 +541,12 @@ extern u32 g_PhotoScreenFadeColor;
 #define TH095_ECL_EXT_SOUND_PLAYER g_SoundPlayer
 #define TH095_ECL_EXT_RNG g_Rng
 #define TH095_ECL_EXT_GAME_SPEED g_AnmGameSpeed
-#define TH095_ECL_EXT_FADE_COLOR g_PhotoScreenFadeColor
+#define TH095_ECL_EXT_FADE_COLOR TH095_BACKBUFFER_CLEAR_COLOR
 #else
 #define TH095_ECL_EXT_SOUND_PLAYER ::th095::g_SoundPlayer
 #define TH095_ECL_EXT_RNG ::th095::g_Rng
 #define TH095_ECL_EXT_GAME_SPEED ::th095::g_AnmGameSpeed
-#define TH095_ECL_EXT_FADE_COLOR ::th095::g_PhotoScreenFadeColor
+#define TH095_ECL_EXT_FADE_COLOR TH095_BACKBUFFER_CLEAR_COLOR
 #endif
 
 #ifndef DIFFBUILD
