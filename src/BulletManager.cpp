@@ -129,7 +129,12 @@ enum PhotoBulletTransformKind
     PHOTO_BULLET_TRANSFORM_JUMP = 0x02000000,
 };
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 enum PhotoBulletAimMode
+#else
+typedef u16 PhotoBulletAimMode;
+enum PhotoBulletAimModeValue
+#endif
 {
     PHOTO_BULLET_AIM_FAN_AIMED = 0,
     PHOTO_BULLET_AIM_FAN = 1,
@@ -141,6 +146,10 @@ enum PhotoBulletAimMode
     PHOTO_BULLET_AIM_RANDOM_SPEED = 7,
     PHOTO_BULLET_AIM_RANDOM = 8,
 };
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+typedef char PhotoBulletAimModeSizeIs2[
+    (sizeof(PhotoBulletAimMode) == sizeof(u16)) ? 1 : -1];
+#endif
 
 struct PhotoBulletTransformPayload
 {
@@ -209,7 +218,11 @@ struct PhotoBulletSpawnDescriptor
     u8 laserFields[0x24];
     i16 count1;
     i16 count2;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     u16 aimMode;
+#else
+    PhotoBulletAimMode aimMode;
+#endif
     u16 unknown1FA;
     u32 transformFlags;
     i32 spawnSound;

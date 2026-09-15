@@ -155,7 +155,12 @@ enum BulletTransformKind
     BULLET_TRANSFORM_SPAWN_CHILD_PATTERN = 0x1000000,
 };
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 enum BulletAimMode
+#else
+typedef u16 BulletAimMode;
+enum BulletAimModeValue
+#endif
 {
     BULLET_AIM_FAN_AIMED = 0,
     BULLET_AIM_FAN = 1,
@@ -167,6 +172,10 @@ enum BulletAimMode
     BULLET_AIM_RANDOM_SPEED = 7,
     BULLET_AIM_RANDOM = 8,
 };
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+typedef char BulletAimModeSizeIs2[
+    (sizeof(BulletAimMode) == sizeof(u16)) ? 1 : -1];
+#endif
 
 struct BulletSpawnDescriptor
 {
@@ -189,7 +198,11 @@ struct BulletSpawnDescriptor
     i32 laserHitboxEndDelay;    // +0x1F0
     i16 count1;
     i16 count2;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     u16 aimMode;
+#else
+    BulletAimMode aimMode;
+#endif
     u16 unconsumedWord1FA;
     u32 transformFlags;
     i32 spawnSound;

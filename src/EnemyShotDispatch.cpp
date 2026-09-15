@@ -26,7 +26,11 @@ struct EnemyShotDescriptorView
     u8 laserFields[0x24];
     i16 count1;
     i16 count2;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     u16 aimMode;
+#else
+    BulletAimMode aimMode;
+#endif
     u16 unconsumedWord1FA;
     u32 transformFlags;
     i32 spawnSound;
