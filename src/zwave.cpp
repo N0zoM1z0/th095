@@ -563,7 +563,7 @@ HRESULT CSound::Play(DWORD priority, DWORD flags)
         Reset();
     }
 
-    m_iFadeType = 0;
+    m_iFadeType = TH095_SOUND_FADE_NONE;
     m_iCurFadeProgress = 0;
     m_iTotalFade = 0;
     SetVolume(0);
@@ -606,7 +606,7 @@ HRESULT CSound::Stop()
         hr |= m_apDSBuffer[i]->Stop();
         hr |= m_apDSBuffer[i]->SetCurrentPosition(0);
     }
-    m_iFadeType = 0;
+    m_iFadeType = TH095_SOUND_FADE_NONE;
     return hr;
 }
 
@@ -669,11 +669,11 @@ CStreamingSound::~CStreamingSound()
 // FUNCTION: TH095 0x004542E0.
 HRESULT CStreamingSound::UpdateFadeOut()
 {
-    if (m_iFadeType == 1)
+    if (m_iFadeType == TH095_SOUND_FADE_OUT)
     {
         if (--m_iCurFadeProgress <= 0)
         {
-            m_iFadeType = 0;
+            m_iFadeType = TH095_SOUND_FADE_NONE;
             m_apDSBuffer[0]->Stop();
             return S_FALSE;
         }
@@ -686,11 +686,11 @@ HRESULT CStreamingSound::UpdateFadeOut()
 // FUNCTION: TH095 0x00454370.
 HRESULT CStreamingSound::UpdateFadeIn()
 {
-    if (m_iFadeType == 2)
+    if (m_iFadeType == TH095_SOUND_FADE_IN)
     {
         if (--m_iCurFadeProgress <= 0)
         {
-            m_iFadeType = 0;
+            m_iFadeType = TH095_SOUND_FADE_NONE;
             return S_FALSE;
         }
         i32 newVolume = 0 - m_iCurFadeProgress * 5000 / m_iTotalFade;
@@ -702,11 +702,11 @@ HRESULT CStreamingSound::UpdateFadeIn()
 // FUNCTION: TH095 0x00454450.
 HRESULT CStreamingSound::UpdatePartialFadeOut()
 {
-    if (m_iFadeType == 4)
+    if (m_iFadeType == TH095_SOUND_FADE_PARTIAL_OUT)
     {
         if (--m_iCurFadeProgress <= 0)
         {
-            m_iFadeType = 0;
+            m_iFadeType = TH095_SOUND_FADE_NONE;
             return S_FALSE;
         }
         i32 newVolume = m_iCurFadeProgress * 1000 / m_iTotalFade - 1000;
@@ -718,11 +718,11 @@ HRESULT CStreamingSound::UpdatePartialFadeOut()
 // FUNCTION: TH095 0x004543E0.
 HRESULT CStreamingSound::UpdatePartialFadeIn()
 {
-    if (m_iFadeType == 3)
+    if (m_iFadeType == TH095_SOUND_FADE_PARTIAL_IN)
     {
         if (--m_iCurFadeProgress <= 0)
         {
-            m_iFadeType = 0;
+            m_iFadeType = TH095_SOUND_FADE_NONE;
             return S_FALSE;
         }
         i32 newVolume = 0 - m_iCurFadeProgress * 1000 / m_iTotalFade;
