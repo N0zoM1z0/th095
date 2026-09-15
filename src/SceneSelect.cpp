@@ -8,7 +8,7 @@ namespace th095
 
 // The target stores all 93 scene definitions contiguously at
 // 0x004A4690..0x004A57FF, followed by the twelve group pointers and counts at
-// 0x004A5800/0x004A5830.  mission.msg fills textId, text, and displayState at
+// 0x004A5800/0x004A5830.  mission.msg fills scoreRequirement, encodedTitleText, and displayState at
 // runtime; the remaining fields below are the target-observed static catalog.
 // Keep a plain storage view here because SceneDefinitionView exposes several
 // offsets through unions whose first aggregate member is not always the
@@ -26,8 +26,8 @@ struct SceneDefinitionStorage
     i8 groupDisplayValue;
     i8 sceneDisplayValue;
     u8 unknown022[2];
-    i32 textId;
-    char *text;
+    i32 scoreRequirement;
+    const u8 *encodedTitleText;
     i8 displayState;
     u8 unknown02d[3];
 };
@@ -40,8 +40,8 @@ typedef char SceneDefinitionStoragePathsAt0C[
         ? 1
         : -1];
 typedef char SceneDefinitionStorageRuntimeFieldsAt24[
-    (offsetof(SceneDefinitionStorage, textId) == 0x24 &&
-     offsetof(SceneDefinitionStorage, text) == 0x28 &&
+    (offsetof(SceneDefinitionStorage, scoreRequirement) == 0x24 &&
+     offsetof(SceneDefinitionStorage, encodedTitleText) == 0x28 &&
      offsetof(SceneDefinitionStorage, displayState) == 0x2c)
         ? 1
         : -1];

@@ -114,13 +114,22 @@ struct SceneAnmVmIdArray
     }
 };
 
+typedef const u8 *SceneEncodedText;
+
 struct ScenePreviewTextSourcesView
 {
     u8 unknown0bf4[0x26c];
+#ifdef DIFFBUILD
     i32 lockedTextId;
     i32 unattemptedTextId;
     i32 belowRequirementTextId;
     i32 attemptedTextId;
+#else
+    SceneEncodedText lockedEncodedText;
+    SceneEncodedText unattemptedEncodedText;
+    SceneEncodedText belowRequirementEncodedText;
+    SceneEncodedText attemptedEncodedText;
+#endif
     u8 unknown0e70[0x18];
 };
 
@@ -203,8 +212,13 @@ struct SceneSelectControllerView
         g_AnmManager->GetVm(this->vmIds.values[vmIndex])->drawEnabled = 0;
     }
 
+#ifdef DIFFBUILD
     char *ResolveSceneText(i32 textId, i32 column, i32 argument1,
                            i32 argument2);
+#else
+    char *ResolveSceneText(SceneEncodedText encodedText, i32 column,
+                           i32 argument1, i32 argument2);
+#endif
 };
 
 typedef char SceneSelectAnimationTimerAt14[
@@ -228,8 +242,13 @@ typedef char SceneScoreEntrySlowRatesAt48[
 typedef char SceneDefinitionTitleArgumentsAt04[
     (offsetof(SceneDefinitionView, titleArgument1) == 0x04 &&
      offsetof(SceneDefinitionView, titleArgument2) == 0x08) ? 1 : -1];
+#ifdef DIFFBUILD
 typedef char SceneDefinitionTitleTextIdAt28[
     (offsetof(SceneDefinitionView, titleTextId) == 0x28) ? 1 : -1];
+#else
+typedef char SceneDefinitionEncodedTitleTextAt28[
+    (offsetof(SceneDefinitionView, encodedTitleText) == 0x28) ? 1 : -1];
+#endif
 typedef char SceneAnmVmIdSizeIs4[
     (sizeof(SceneAnmVmId) == 4) ? 1 : -1];
 typedef char SceneAnmVmGlyphSizeAt2C0[
@@ -268,9 +287,15 @@ typedef char SceneSelectScoreEntryAtBF0[
         ? 1 : -1];
 typedef char SceneSelectDisplayStatesAtE88[
     (offsetof(SceneSelectControllerView, lockedDisplayState) == 0xe88) ? 1 : -1];
+#ifdef DIFFBUILD
 typedef char SceneSelectPreviewTextSourcesAtE60[
     (offsetof(SceneSelectControllerView, previewTextSources) +
          offsetof(ScenePreviewTextSourcesView, lockedTextId) == 0xe60) ? 1 : -1];
+#else
+typedef char SceneSelectPreviewEncodedTextSourcesAtE60[
+    (offsetof(SceneSelectControllerView, previewTextSources) +
+         offsetof(ScenePreviewTextSourcesView, lockedEncodedText) == 0xe60) ? 1 : -1];
+#endif
 typedef char SceneSelectPreviewTextVmIdsAtE94[
     (offsetof(SceneSelectControllerView, previewTextVmIds) == 0xe94) ? 1 : -1];
 typedef char SceneSelectPreviewTimerAtEA0[

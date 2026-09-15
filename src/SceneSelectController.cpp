@@ -11,6 +11,20 @@ namespace th095
 // scratch buffer.
 DIFFABLE_STATIC_ARRAY(u8, 0x40, g_SceneTextBuffer);
 
+#ifdef DIFFBUILD
+#define TH095_SCENE_LOCKED_ENCODED_TEXT(view) ((view)->previewTextSources.lockedTextId)
+#define TH095_SCENE_UNATTEMPTED_ENCODED_TEXT(view) ((view)->previewTextSources.unattemptedTextId)
+#define TH095_SCENE_BELOW_REQUIREMENT_ENCODED_TEXT(view) ((view)->previewTextSources.belowRequirementTextId)
+#define TH095_SCENE_ATTEMPTED_ENCODED_TEXT(view) ((view)->previewTextSources.attemptedTextId)
+#define TH095_SCENE_TITLE_ENCODED_TEXT(scene) ((scene)->titleTextId)
+#else
+#define TH095_SCENE_LOCKED_ENCODED_TEXT(view) ((view)->previewTextSources.lockedEncodedText)
+#define TH095_SCENE_UNATTEMPTED_ENCODED_TEXT(view) ((view)->previewTextSources.unattemptedEncodedText)
+#define TH095_SCENE_BELOW_REQUIREMENT_ENCODED_TEXT(view) ((view)->previewTextSources.belowRequirementEncodedText)
+#define TH095_SCENE_ATTEMPTED_ENCODED_TEXT(view) ((view)->previewTextSources.attemptedEncodedText)
+#define TH095_SCENE_TITLE_ENCODED_TEXT(scene) ((scene)->encodedTitleText)
+#endif
+
 void __cdecl SceneWriteText(SceneAnmManagerView *manager,
                             SceneAnmVmView *vm, u32 color, u32 shadowColor,
                             const char *text)
@@ -185,7 +199,7 @@ void SceneSelectControllerView::RefreshSceneSelection(
                 g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00df8f8f, 0,                                               \
                 this->ResolveSceneText(                                       \
-                    this->previewTextSources.lockedTextId, columnIndex,       \
+                    TH095_SCENE_LOCKED_ENCODED_TEXT(this), columnIndex,       \
                     0x62, 0));                                                \
         }                                                                     \
         else if (g_ResultSaveData                                              \
@@ -202,7 +216,7 @@ void SceneSelectControllerView::RefreshSceneSelection(
                         this->previewTextVmIds[vmSlot]),                       \
                     0x00df8f8f, 0,                                           \
                     this->ResolveSceneText(                                   \
-                        this->previewTextSources.unattemptedTextId,           \
+                        TH095_SCENE_UNATTEMPTED_ENCODED_TEXT(this),           \
                         columnIndex, 0x62, 1));                               \
             }                                                                 \
             else                                                              \
@@ -213,7 +227,7 @@ void SceneSelectControllerView::RefreshSceneSelection(
                         this->previewTextVmIds[vmSlot]),                       \
                     0x00df8f8f, 0,                                           \
                     this->ResolveSceneText(                                   \
-                        this->previewTextSources.attemptedTextId, columnIndex,\
+                        TH095_SCENE_ATTEMPTED_ENCODED_TEXT(this), columnIndex,\
                         0x62, 3));                                            \
             }                                                                 \
         }                                                                     \
@@ -226,7 +240,7 @@ void SceneSelectControllerView::RefreshSceneSelection(
                 g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00df8f8f, 0,                                               \
                 this->ResolveSceneText(                                       \
-                    this->previewTextSources.belowRequirementTextId,          \
+                    TH095_SCENE_BELOW_REQUIREMENT_ENCODED_TEXT(this),          \
                     columnIndex, 0x62, 2));                                   \
         }                                                                     \
         else                                                                  \
@@ -235,9 +249,9 @@ void SceneSelectControllerView::RefreshSceneSelection(
                 g_AnmManager,                                            \
                 g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
                 0x00cfcfff, 0,                                               \
-                g_SelectedScene->titleTextId != 0                             \
+                TH095_SCENE_TITLE_ENCODED_TEXT(g_SelectedScene) != 0                             \
                     ? this->ResolveSceneText(                                 \
-                          g_SelectedScene->titleTextId, columnIndex,           \
+                          TH095_SCENE_TITLE_ENCODED_TEXT(g_SelectedScene), columnIndex,           \
                           g_SelectedScene->titleArgument1,                     \
                           g_SelectedScene->titleArgument2)                     \
                     : " ");                                                   \
@@ -268,14 +282,26 @@ void SceneSelectControllerView::BuildScenePreviewText()
     this->previewTimer++;
 }
 
-char *SceneSelectControllerView::ResolveSceneText(i32 textId, i32 column,
-                                                  i32 argument1,
-                                                  i32 argument2)
+char *SceneSelectControllerView::ResolveSceneText(
+#ifdef DIFFBUILD
+    i32 textId,
+#else
+    SceneEncodedText encodedText,
+#endif
+    i32 column, i32 argument1, i32 argument2)
 {
+#ifdef DIFFBUILD
     u8 *source;
+#else
+    const u8 *source;
+#endif
     {
         u8 key;
+#ifdef DIFFBUILD
         source = (u8 *)(textId + column * 0x40);
+#else
+        source = encodedText + column * 0x40;
+#endif
         key = argument2 * 11 + argument1 * 7 + 58;
         for (i32 index = 0; index < 0x40; index++, source++)
         {

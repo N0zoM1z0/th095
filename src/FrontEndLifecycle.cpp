@@ -63,8 +63,12 @@ extern i32 g_FrontEndLoadInProgress;
 struct FrontEndSceneDefinitionView
 {
     u8 unknown000[0x24];
-    i32 textId;
+    i32 scoreRequirement;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     char *text;
+#else
+    const u8 *encodedTitleText;
+#endif
     u8 displayState;
     u8 unknown02d[3];
 };
@@ -123,8 +127,8 @@ struct FrontEndMissionEntryView
     u16 scene;
     u8 displayState;
     u8 unknown005[3];
-    i32 textId;
-    char text[1];
+    i32 scoreRequirement;
+    char encodedText[1];
 };
 
 struct FrontEndInitializeLocals
@@ -179,8 +183,12 @@ struct FrontEndLifecycleView
     ResultScreenReplayCursor sceneCursor;
     ResultScreenReplayCursor sceneCursors[12];
     u8 unknown0bf0[0x26c];
-    void *missionMessageData;
+    void *ownedMissionMessageData;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     char *specialText[10];
+#else
+    const u8 *specialEncodedText[10];
+#endif
     i8 specialDisplayStates[10];
     i8 currentDisplayState;
     u8 unknown0e93[0x15];
@@ -226,12 +234,17 @@ struct FrontEndLifecycleView
     void Destroy();
 };
 
-typedef char FrontEndLifecycleMissionDataAtE5C[
-    (offsetof(FrontEndLifecycleView, missionMessageData) == 0xe5c)
+typedef char FrontEndLifecycleOwnedMissionDataAtE5C[
+    (offsetof(FrontEndLifecycleView, ownedMissionMessageData) == 0xe5c)
         ? 1
         : -1];
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 typedef char FrontEndLifecycleSpecialTextAtE60[
     (offsetof(FrontEndLifecycleView, specialText) == 0xe60) ? 1 : -1];
+#else
+typedef char FrontEndLifecycleSpecialEncodedTextAtE60[
+    (offsetof(FrontEndLifecycleView, specialEncodedText) == 0xe60) ? 1 : -1];
+#endif
 typedef char FrontEndLifecycleDisplayStateAtE92[
     (offsetof(FrontEndLifecycleView, currentDisplayState) == 0xe92) ? 1
                                                                    : -1];
@@ -304,33 +317,44 @@ i32 FrontEndLifecycleView::Initialize()
         return -1;
     }
 
-    this->missionMessageData =
+    this->ownedMissionMessageData =
         FileSystem::OpenFile("sprt/mission.msg", &locals.missionSize, FALSE);
-    if (this->missionMessageData == NULL)
+    if (this->ownedMissionMessageData == NULL)
     {
         g_GameErrorContext.Log("mission.msg data is corrupt\r\n");
         return -1;
     }
 
-    locals.count = *reinterpret_cast<i32 *>(this->missionMessageData);
-    locals.offset = reinterpret_cast<i32 *>(this->missionMessageData) + 1;
+    locals.count = *reinterpret_cast<i32 *>(this->ownedMissionMessageData);
+    locals.offset = reinterpret_cast<i32 *>(this->ownedMissionMessageData) + 1;
     for (locals.i = 0; locals.i < locals.count; locals.i++)
     {
         locals.entry = reinterpret_cast<FrontEndMissionEntryView *>(
             *locals.offset +
-            reinterpret_cast<i32>(this->missionMessageData));
+            reinterpret_cast<i32>(this->ownedMissionMessageData));
         if (locals.entry->group < 12)
         {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             TH095_FRONT_SCENE_GROUPS[locals.entry->group][locals.entry->scene]
-                .text = locals.entry->text;
+                .text = locals.entry->encodedText;
+#else
+            TH095_FRONT_SCENE_GROUPS[locals.entry->group][locals.entry->scene]
+                .encodedTitleText =
+                    reinterpret_cast<const u8 *>(locals.entry->encodedText);
+#endif
             TH095_FRONT_SCENE_GROUPS[locals.entry->group][locals.entry->scene]
                 .displayState = locals.entry->displayState;
             TH095_FRONT_SCENE_GROUPS[locals.entry->group][locals.entry->scene]
-                .textId = locals.entry->textId;
+                .scoreRequirement = locals.entry->scoreRequirement;
         }
         else
         {
-            this->specialText[locals.entry->scene] = locals.entry->text;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+            this->specialText[locals.entry->scene] = locals.entry->encodedText;
+#else
+            this->specialEncodedText[locals.entry->scene] =
+                reinterpret_cast<const u8 *>(locals.entry->encodedText);
+#endif
             this->specialDisplayStates[locals.entry->scene] =
                 locals.entry->displayState;
         }
@@ -478,9 +502,9 @@ static __forceinline void FrontEndFreeReplayListData(FrontEndLifecycleView *view
 }
 static __forceinline void FrontEndFreeMissionMessageData(FrontEndLifecycleView *view)
 {
-    if (view->missionMessageData != NULL)
+    if (view->ownedMissionMessageData != NULL)
     {
-        void *data = view->missionMessageData;
+        void *data = view->ownedMissionMessageData;
         free(data);
     }
 }

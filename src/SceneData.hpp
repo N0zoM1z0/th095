@@ -59,8 +59,12 @@ struct SceneDefinitionView
     };
     union
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         i32 titleTextId;
         char *text;
+#else
+        const u8 *encodedTitleText;
+#endif
     };
     i8 displayState;
     u8 unknown02d[3];
