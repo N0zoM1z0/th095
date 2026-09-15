@@ -225,16 +225,25 @@ extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
 
 #if defined(DIFFBUILD)
+#define TH095_RESULT_STATE_PHOTO_RESULT_MENU 5
+#define TH095_RESULT_STATE_PHOTO_RESULT_EXIT 6
 #define TH095_RESULT_STATE_REPLAY_SLOT_SELECT 13
 #define TH095_RESULT_STATE_REPLAY_NAME_ENTRY 14
 #define TH095_RESULT_STATE_REPLAY_WRITE 15
 #else
+enum ResultScreenPhotoResultStateValue
+{
+    RESULT_SCREEN_PHOTO_RESULT_MENU = 5,
+    RESULT_SCREEN_PHOTO_RESULT_EXIT = 6,
+};
 enum ResultScreenReplaySaveStateValue
 {
     RESULT_SCREEN_REPLAY_SLOT_SELECT = 13,
     RESULT_SCREEN_REPLAY_NAME_ENTRY = 14,
     RESULT_SCREEN_REPLAY_WRITE = 15,
 };
+#define TH095_RESULT_STATE_PHOTO_RESULT_MENU RESULT_SCREEN_PHOTO_RESULT_MENU
+#define TH095_RESULT_STATE_PHOTO_RESULT_EXIT RESULT_SCREEN_PHOTO_RESULT_EXIT
 #define TH095_RESULT_STATE_REPLAY_SLOT_SELECT RESULT_SCREEN_REPLAY_SLOT_SELECT
 #define TH095_RESULT_STATE_REPLAY_NAME_ENTRY RESULT_SCREEN_REPLAY_NAME_ENTRY
 #define TH095_RESULT_STATE_REPLAY_WRITE RESULT_SCREEN_REPLAY_WRITE
@@ -720,7 +729,7 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 11), 11);
     if (TH095_RESULT_IS_RECORD_MODE())
     {
-        resultScreen->state = 5;
+        resultScreen->state = TH095_RESULT_STATE_PHOTO_RESULT_MENU;
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 14), 14);
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 15), 15);
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 12), 12);
@@ -1265,7 +1274,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 5:
+    case TH095_RESULT_STATE_PHOTO_RESULT_MENU:
         if (this->UpdateCursor(12) != 0)
         {
             break;
@@ -1275,7 +1284,7 @@ ChainCallbackResult ResultScreen::Update()
             UpdatePhotoResultScreen(this);
             if (GetPressedButtons(0x1002) != 0)
             {
-                this->SetState(6);
+                this->SetState(TH095_RESULT_STATE_PHOTO_RESULT_EXIT);
                 for (i32 i = 3; i < 21; i++)
                 {
                     this->vms[i].SetInterrupt(1);
@@ -1291,7 +1300,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 6:
+    case TH095_RESULT_STATE_PHOTO_RESULT_EXIT:
         if (this->stateTimer >= 8)
         {
             g_AnmGameSpeed = 1.0f;
@@ -1418,9 +1427,10 @@ ChainCallbackResult ResultScreen::Update()
             }
             else if (g_ResultScreenGlobalState->photoLimitTransitionComplete != 0)
             {
-                ResultUpdatePhotoSetStatePhase(this, 5);
+                ResultUpdatePhotoSetStatePhase(
+                    this, TH095_RESULT_STATE_PHOTO_RESULT_MENU);
                 this->anm->InitializeVm(GetResultVm(this, 11), 11);
-                this->state = 5;
+                this->state = TH095_RESULT_STATE_PHOTO_RESULT_MENU;
                 this->anm->InitializeVm(GetResultVm(this, 14), 14);
                 this->anm->InitializeVm(GetResultVm(this, 15), 15);
                 this->anm->InitializeVm(GetResultVm(this, 12), 12);
@@ -1681,7 +1691,7 @@ ChainCallbackResult ResultScreen::Draw()
         TH095_RESULT_VM_DRAW(&this->vms[22]);
         break;
 
-    case 5:
+    case TH095_RESULT_STATE_PHOTO_RESULT_MENU:
     {
         if (this->stateTimer.GetCurrent() < 30)
         {
