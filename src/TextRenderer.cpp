@@ -7,6 +7,11 @@
 namespace th095
 {
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define ownedBitmap bitmap
+#define bitmapBits buffer
+#endif
+
 DIFFABLE_STATIC(HFONT, g_TextFont19);
 DIFFABLE_STATIC(HFONT, g_TextFont20);
 DIFFABLE_STATIC(HFONT, g_TextFont17);
@@ -36,9 +41,9 @@ TextRenderBufferView::TextRenderBufferView()
     this->width = 0;
     this->height = 0;
     this->hdc = 0;
-    this->bitmap = 0;
+    this->ownedBitmap = 0;
     this->originalBitmap = 0;
-    this->buffer = NULL;
+    this->bitmapBits = NULL;
 }
 
 TextRenderBufferView::~TextRenderBufferView()
@@ -52,14 +57,14 @@ bool TextRenderBufferView::ReleaseBuffer()
     {
         SelectObject(this->hdc, this->originalBitmap);
         DeleteDC(this->hdc);
-        DeleteObject(this->bitmap);
+        DeleteObject(this->ownedBitmap);
         this->format = (D3DFORMAT)-1;
         this->width = 0;
         this->height = 0;
         this->hdc = 0;
-        this->bitmap = 0;
+        this->ownedBitmap = 0;
         this->originalBitmap = 0;
-        this->buffer = NULL;
+        this->bitmapBits = NULL;
         return true;
     }
     else
@@ -156,8 +161,8 @@ bool TextRenderBufferView::TryAllocateBuffer(i32 width, i32 height,
 #undef deviceContext
 #undef imageWidthInBytes
     this->hdc = averagedPanLocal12.deviceContext;
-    this->bitmap = bitmapObj;
-    this->buffer = bitmapData;
+    this->ownedBitmap = bitmapObj;
+    this->bitmapBits = bitmapData;
     this->imageSizeInBytes = bitmapInfo.header.biSizeImage;
     this->originalBitmap = averagedPanLocal12.originalBitmapObj;
     this->width = width;
@@ -243,7 +248,7 @@ bool TextRenderBufferView::InvertAlpha(i32 rowCount, BOOL unused)
     (void)unused;
     locals.imageWidthInBytes = this->imageWidthInBytes;
     locals.regionByteCount = locals.imageWidthInBytes * rowCount;
-    locals.bufferRegion = this->buffer;
+    locals.bufferRegion = this->bitmapBits;
 
     switch (this->format)
     {
@@ -347,7 +352,7 @@ bool TextRenderBufferView::ApplyAlphaBleed(i32 rowCount)
 
     bleedImageWidth = this->imageWidthInBytes;
     bleedRegionBytes = bleedImageWidth * rowCount;
-    bleedBuffer = this->buffer;
+    bleedBuffer = this->bitmapBits;
     self = this;
     bleedUnusedFlag = false;
     (void)bleedRegionBytes;
@@ -358,7 +363,7 @@ bool TextRenderBufferView::ApplyAlphaBleed(i32 rowCount)
     switch (this->format)
     {
     case D3DFMT_A8R8G8B8:
-        cases.argb8888.pixel = reinterpret_cast<u32 *>(this->buffer);
+        cases.argb8888.pixel = reinterpret_cast<u32 *>(this->bitmapBits);
         for (cases.argb8888.y = 0;
              cases.argb8888.y < static_cast<u32>(rowCount);
              cases.argb8888.y++)
@@ -432,7 +437,7 @@ bool TextRenderBufferView::ApplyAlphaBleed(i32 rowCount)
 
     case D3DFMT_A4R4G4B4:
         cases.argb4444.pixel =
-            reinterpret_cast<PixelArgb4444 *>(this->buffer);
+            reinterpret_cast<PixelArgb4444 *>(this->bitmapBits);
         for (cases.argb4444.y = 0;
              cases.argb4444.y < static_cast<u32>(rowCount);
              cases.argb4444.y++)
@@ -551,7 +556,7 @@ void TextHelperView::RenderTextToTextureBold(
                      : glyphWidth <= 19 ? g_TextFont19
                                         : g_TextFont20;
 
-    memset(g_TextRenderBuffer.buffer, 0,
+    memset(g_TextRenderBuffer.bitmapBits, 0,
            g_TextRenderBuffer.imageSizeInBytes);
     locals.gdi.hdc = g_TextRenderBuffer.hdc;
     locals.gdi.previousFont = SelectObject(locals.gdi.hdc, locals.gdi.font);
@@ -586,7 +591,7 @@ void TextHelperView::RenderTextToTextureBold(
     texture->GetSurfaceLevel(0, &locals.upload.destinationSurface);
     locals.upload.sourcePitch = g_TextRenderBuffer.imageWidthInBytes;
     locals.upload.sourceFormat = g_TextRenderBuffer.format;
-    locals.upload.sourceBits = g_TextRenderBuffer.buffer;
+    locals.upload.sourceBits = g_TextRenderBuffer.bitmapBits;
     D3DXLoadSurfaceFromMemory(
         locals.upload.destinationSurface, NULL, &locals.upload.destination,
         locals.upload.sourceBits, locals.upload.sourceFormat,

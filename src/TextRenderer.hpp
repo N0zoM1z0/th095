@@ -34,8 +34,13 @@ struct TextRenderBufferView
     i32 imageWidthInBytes;
     HDC hdc;
     HGDIOBJ originalBitmap;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     HGDIOBJ bitmap;
     u8 *buffer;
+#else
+    HGDIOBJ ownedBitmap;
+    u8 *bitmapBits;
+#endif
 
     bool ReleaseBuffer();
     bool AllocateBufferWithFallback(i32 width, i32 height,
@@ -62,8 +67,13 @@ typedef char TextRenderBufferImageSizeAt10C[
     (offsetof(TextRenderBufferView, imageSizeInBytes) == 0x10c) ? 1 : -1];
 typedef char TextRenderBufferHdcAt114[
     (offsetof(TextRenderBufferView, hdc) == 0x114) ? 1 : -1];
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 typedef char TextRenderBufferDataAt120[
     (offsetof(TextRenderBufferView, buffer) == 0x120) ? 1 : -1];
+#else
+typedef char TextRenderBufferDataAt120[
+    (offsetof(TextRenderBufferView, bitmapBits) == 0x120) ? 1 : -1];
+#endif
 typedef char TextRenderFormatInfoSizeIs18[
     (sizeof(TextRenderFormatInfo) == 0x18) ? 1 : -1];
 
