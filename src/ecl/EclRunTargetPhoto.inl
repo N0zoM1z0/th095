@@ -222,7 +222,7 @@
     {
         Float3 position = enemy->worldPosition + enemy->shootOffset;
         TH095_ECL_ANM_SPAWN_WORLD(
-            *reinterpret_cast<PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8), TH08_ECL_READ_I(ctx, 0), &position);
+            TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER, TH08_ECL_READ_I(ctx, 0), &position);
         break;
     }
 
@@ -231,7 +231,7 @@
         Float3 position = enemy->worldPosition + enemy->shootOffset;
         TH095_ENEMY_ANM_HANDLES(enemy)->handles[TH08_ECL_READ_I(ctx, 0)] =
             TH095_ECL_ANM_SPAWN_WORLD(
-                *reinterpret_cast<PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8), TH08_ECL_READ_I(ctx, 1), &position);
+                TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER, TH08_ECL_READ_I(ctx, 1), &position);
         break;
     }
 

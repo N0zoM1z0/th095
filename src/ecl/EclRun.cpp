@@ -104,6 +104,28 @@ typedef char EclCompletionTimerAt108[
 #define TH095_ECL_ENEMY_RESET() ::th095::Th095EclResetEnemies()
 #endif
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_ECL_PRIMARY_ENEMY_ANM \
+    (*reinterpret_cast<AnmLoaded **>(TH095_ECL_RUNTIME + 0x4df8))
+#define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
+    (*reinterpret_cast<EclRunHigh::PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8))
+#else
+namespace th095
+{
+struct EclEnemyAnmRuntimeView
+{
+    u8 unknown0000[0x4df8];
+    AnmLoaded *enemyAnm;
+};
+typedef char EclEnemyAnmAt4DF8[
+    (offsetof(EclEnemyAnmRuntimeView, enemyAnm) == 0x4df8) ? 1 : -1];
+}
+#define TH095_ECL_PRIMARY_ENEMY_ANM \
+    (reinterpret_cast<::th095::EclEnemyAnmRuntimeView *>(TH095_ECL_RUNTIME)->enemyAnm)
+#define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
+    reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(TH095_ECL_PRIMARY_ENEMY_ANM)
+#endif
+
 #ifdef DIFFBUILD
 #define TH095_ECL_STAGE_STATE EclRunHigh::g_Th095StageState
 #define TH095_ECL_STAGE_SCORE_MULTIPLIER \

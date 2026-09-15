@@ -451,8 +451,7 @@ static EclRawInstruction *__fastcall CompareOperands(
         TH08_ECL_RUN_LOW_YIELD(LOW_SELECT_NEXT_CONTEXT, 0);
 
     case 54:
-        (*reinterpret_cast<AnmLoaded **>(
-            TH095_ECL_RUNTIME + 0x4df8))
+        TH095_ECL_PRIMARY_ENEMY_ANM
             ->SetAndExecuteScriptIdx(
             &enemy->vm,
             ReadInt(enemy, instruction, 0));
@@ -525,8 +524,7 @@ static EclRawInstruction *__fastcall CompareOperands(
         if (TH095_ENEMY_ECL_CONTROL_BITS(enemy).alternateAnmBank == 0)
 #endif
         {
-            (*reinterpret_cast<AnmLoaded **>(
-                TH095_ECL_RUNTIME + 0x4df8))
+            TH095_ECL_PRIMARY_ENEMY_ANM
                 ->SetAndExecuteScriptIdx(
                 &enemy->vm,
                 reinterpret_cast<EnemyAnmScripts *>(
