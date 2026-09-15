@@ -13,6 +13,19 @@
 namespace th095
 {
 
+#if !defined(DIFFBUILD)
+enum PhotoCardInfoState
+{
+    PHOTO_CARD_INFO_STATE_ACTIVE = 0,
+    PHOTO_CARD_INFO_STATE_FINISHING = 1,
+};
+typedef char PhotoCardInfoStateSizeIs4[
+    (sizeof(PhotoCardInfoState) == sizeof(i32)) ? 1 : -1];
+#define TH095_PHOTO_CARD_INFO_STATE_FINISHING PHOTO_CARD_INFO_STATE_FINISHING
+#else
+#define TH095_PHOTO_CARD_INFO_STATE_FINISHING 1
+#endif
+
 struct PhotoCardStageStateView
 {
     u8 unknown000[0x25720];
@@ -65,8 +78,12 @@ struct PhotoCardInfoView
     i32 unknown000;                 // +0x00
     AnmVmId backgroundVmId;          // +0x04
     AnmVmId textVmId;                // +0x08
-    i32 state;                      // +0x0c
-    ZunTimer timer;                 // +0x10
+#ifdef DIFFBUILD
+    i32 state;                       // +0x0c
+#else
+    PhotoCardInfoState state;        // +0x0c
+#endif
+    ZunTimer timer;                  // +0x10
     u32 savedScreenFadeColor;       // +0x1c
     char text[0x30];                // +0x20
     u8 unknown050[0x10];            // +0x50
@@ -88,6 +105,8 @@ struct PhotoCardInfoView
 
 typedef char PhotoCardInfoSizeIs68[
     (sizeof(PhotoCardInfoView) == 0x68) ? 1 : -1];
+typedef char PhotoCardInfoStateAt0C[
+    (offsetof(PhotoCardInfoView, state) == 0x0c) ? 1 : -1];
 typedef char PhotoCardInfoTimerAt10[
     (offsetof(PhotoCardInfoView, timer) == 0x10) ? 1 : -1];
 typedef char PhotoCardInfoTextAt20[
@@ -188,7 +207,7 @@ i32 PhotoCardInfoView::Show()
 {
     g_AnmManager->SetInterrupt(this->backgroundVmId, 1);
     g_AnmManager->SetInterrupt(this->textVmId, 1);
-    this->state = 1;
+    this->state = TH095_PHOTO_CARD_INFO_STATE_FINISHING;
     this->timer = 0;
     g_PhotoScreenFadeColor = this->savedScreenFadeColor;
     return 0;
@@ -244,7 +263,7 @@ i32 PhotoCardInfoView::Update()
 {
     switch (this->state)
     {
-    case 1:
+    case TH095_PHOTO_CARD_INFO_STATE_FINISHING:
         if (this->timer > 0x28)
         {
             return 0;
@@ -252,7 +271,8 @@ i32 PhotoCardInfoView::Update()
         break;
     }
 
-    if (this->state != 1 && this->timer >= 0x3c)
+    if (this->state != TH095_PHOTO_CARD_INFO_STATE_FINISHING &&
+        this->timer >= 0x3c)
     {
         if (g_PhotoScreenFadeColor != 0)
         {
