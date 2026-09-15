@@ -105,7 +105,11 @@ struct PhotoStageAnmManagerView
     i32 captureDestinationY;
     i32 captureDestinationWidth;
     i32 captureDestinationHeight;
+#ifdef DIFFBUILD
     i32 captureFlags;
+#else
+    i32 textureCaptureEntryIndex;
+#endif
 
     AnmVm *GetVm(i32 id);
     void SetInterrupt(i32 id, i32 interrupt);
@@ -704,7 +708,11 @@ static __forceinline void PhotoStagePublishCaptureRequestArgs(PhotoStageAnmManag
         anmManager->captureSourceWidth=right-left; anmManager->captureSourceHeight=bottom-top;
         anmManager->captureDestinationX=3; anmManager->captureDestinationY=3;
         anmManager->captureDestinationWidth=right-left; anmManager->captureDestinationHeight=bottom-top;
+#ifdef DIFFBUILD
         anmManager->captureFlags=captureSlot;
+#else
+        anmManager->textureCaptureEntryIndex=captureSlot;
+#endif
     }
 }
 

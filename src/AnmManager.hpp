@@ -626,7 +626,11 @@ struct AnmManager
             i32 captureDestinationY;
             i32 captureDestinationWidth;
             i32 captureDestinationHeight;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             i32 captureFlags;
+#else
+            i32 textureCaptureEntryIndex;
+#endif
             u8 unknown3817f4[0x20];
         };
     };
@@ -749,6 +753,10 @@ typedef char AnmManagerCachedWorldMatrixAtECC[(offsetof(AnmManager, cachedWorldM
 typedef char AnmManagerSurfacesAt11DC[(offsetof(AnmManager, surfaces) == 0x11dc) ? 1 : -1];
 typedef char AnmManagerVerticesAt1774[(offsetof(AnmManager, untexturedVertices) == 0x1774) ? 1 : -1];
 typedef char AnmManagerVertexBufferAt17C8[(offsetof(AnmManager, vertexBuffer) == 0x17c8) ? 1 : -1];
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+typedef char AnmManagerTextureCaptureEntryIndexAt3817F0[
+    (offsetof(AnmManager, textureCaptureEntryIndex) == 0x3817f0) ? 1 : -1];
+#endif
 typedef char AnmManagerVmListAt381814[(offsetof(AnmManager, vmListHead) == 0x381814) ? 1 : -1];
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 typedef char AnmManagerPreallocatedAt38181C[

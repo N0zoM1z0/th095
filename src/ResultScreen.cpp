@@ -546,7 +546,11 @@ static __forceinline void InitializeResultCapturePhase()
         anmManager->captureDestinationY = 0;
         anmManager->captureDestinationWidth = 0x80;
         anmManager->captureDestinationHeight = 0x80;
+#ifdef DIFFBUILD
         anmManager->captureFlags = 0;
+#else
+        anmManager->textureCaptureEntryIndex = 0;
+#endif
     }
 }
 
