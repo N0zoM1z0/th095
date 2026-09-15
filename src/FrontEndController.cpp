@@ -307,6 +307,7 @@ FrontEndGameManagerView *__fastcall CreateFrontEndGameManager(i32 mode);
 #define TH095_FRONT_END_REQUESTED_STATE_OPTIONS 7
 #define TH095_FRONT_END_REQUESTED_STATE_MUSIC_ROOM 8
 #define TH095_FRONT_END_REQUESTED_STATE_HELP 9
+#define TH095_MUSIC_ROOM_STATE_INITIALIZE 0
 #else
 #define TH095_FRONT_END_REQUESTED_STATE_INITIALIZE FRONT_END_REQUESTED_STATE_INITIALIZE
 #define TH095_FRONT_END_REQUESTED_STATE_MAIN_MENU FRONT_END_REQUESTED_STATE_MAIN_MENU
@@ -318,6 +319,7 @@ FrontEndGameManagerView *__fastcall CreateFrontEndGameManager(i32 mode);
 #define TH095_FRONT_END_REQUESTED_STATE_OPTIONS FRONT_END_REQUESTED_STATE_OPTIONS
 #define TH095_FRONT_END_REQUESTED_STATE_MUSIC_ROOM FRONT_END_REQUESTED_STATE_MUSIC_ROOM
 #define TH095_FRONT_END_REQUESTED_STATE_HELP FRONT_END_REQUESTED_STATE_HELP
+#define TH095_MUSIC_ROOM_STATE_INITIALIZE MUSIC_ROOM_STATE_INITIALIZE
 #endif
 
 ChainCallbackResult SceneSelectControllerView::Update()
@@ -907,7 +909,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             // the fully linked executable.
             this->CloseMainMenu();
             view->requestedState = TH095_FRONT_END_REQUESTED_STATE_MUSIC_ROOM;
-            view->state = 0;
+            view->state = TH095_MUSIC_ROOM_STATE_INITIALIZE;
             view->stateTimer.Reset();
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 4:
