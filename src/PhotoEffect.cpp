@@ -26,6 +26,14 @@ namespace th095
 #define TH095_EFFECT_STATE_FADING PHOTO_EFFECT_STATE_FADING
 #endif
 
+#ifdef DIFFBUILD
+#define TH095_EFFECT_SPAWN_STRAIGHT_LASER 0
+#define TH095_EFFECT_SPAWN_ROTATING_LASER 1
+#else
+#define TH095_EFFECT_SPAWN_STRAIGHT_LASER PHOTO_EFFECT_SPAWN_STRAIGHT_LASER
+#define TH095_EFFECT_SPAWN_ROTATING_LASER PHOTO_EFFECT_SPAWN_ROTATING_LASER
+#endif
+
 struct PhotoEffectArgsSmallView
 {
     PhotoEffectVector position;
@@ -766,7 +774,7 @@ i32 PhotoStraightLaserView::CheckCollision(
                 *reinterpret_cast<Float3 *>(&args.position) =
                     preloadBufferLocal03 +
                     CollisionScaleStep(step, static_cast<f32>(gapStart));
-                g_PhotoEffectManager->Spawn(0, &args);
+                g_PhotoEffectManager->Spawn(TH095_EFFECT_SPAWN_STRAIGHT_LASER, &args);
             }
         }
     }
@@ -911,7 +919,7 @@ scan_more:
                     args.terminalDistance =
                         this->spawn.maximumLength -
                         static_cast<f32>(gapStart) * 12.0f;
-                    g_PhotoEffectManager->Spawn(0, &args);
+                    g_PhotoEffectManager->Spawn(TH095_EFFECT_SPAWN_STRAIGHT_LASER, &args);
                 }
             }
         }
@@ -1235,7 +1243,7 @@ i32 PhotoEffectManagerView::Spawn(i32 type, void *args)
 
     switch (type)
     {
-    case 0:
+    case TH095_EFFECT_SPAWN_STRAIGHT_LASER:
     {
         PhotoStraightLaserView *effect = new PhotoStraightLaserView;
         effect->id = this->nextId;
@@ -1244,7 +1252,7 @@ i32 PhotoEffectManagerView::Spawn(i32 type, void *args)
         effect->Initialize(args);
         break;
     }
-    case 1:
+    case TH095_EFFECT_SPAWN_ROTATING_LASER:
     {
         PhotoRotatingLaserView *effect = new PhotoRotatingLaserView;
         effect->id = this->nextId;

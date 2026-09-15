@@ -14,6 +14,14 @@ struct AnmLoaded;
 class ChainElem;
 
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+enum PhotoEffectSpawnKind
+{
+    PHOTO_EFFECT_SPAWN_STRAIGHT_LASER = 0,
+    PHOTO_EFFECT_SPAWN_ROTATING_LASER = 1,
+};
+typedef char PhotoEffectSpawnKindSizeIs4[
+    (sizeof(PhotoEffectSpawnKind) == sizeof(i32)) ? 1 : -1];
+
 enum PhotoEffectState
 {
     PHOTO_EFFECT_STATE_UNINITIALIZED = 0,

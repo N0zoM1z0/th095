@@ -283,6 +283,11 @@ typedef char ExtendedPhotoEffectManagerSpawnedIdAt58[(offsetof(ExtendedPhotoEffe
 #define TH095_EXT_EFFECT_SPAWN(manager, type, args) \
     reinterpret_cast<::th095::PhotoEffectManagerView *>(manager)->Spawn(type, args)
 #endif
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_EXT_EFFECT_SPAWN_ROTATING_LASER 1
+#else
+#define TH095_EXT_EFFECT_SPAWN_ROTATING_LASER PHOTO_EFFECT_SPAWN_ROTATING_LASER
+#endif
 
 struct ExtendedPhotoCameraView
 {
@@ -1048,7 +1053,9 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
     TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
     TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
 
-    locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
+    locals.spawnId = TH095_EXT_EFFECT_SPAWN(
+        g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,
+        &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
@@ -1079,7 +1086,9 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
     TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
     TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
 
-    locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
+    locals.spawnId = TH095_EXT_EFFECT_SPAWN(
+        g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,
+        &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
@@ -1110,7 +1119,9 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
     TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
     TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
 
-    locals.spawnId = TH095_EXT_EFFECT_SPAWN(g_PhotoEffectManager, 1, &locals.args);
+    locals.spawnId = TH095_EXT_EFFECT_SPAWN(
+        g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,
+        &locals.args);
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
