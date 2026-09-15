@@ -39,6 +39,10 @@ namespace th095
 #endif
 
 #ifdef DIFFBUILD
+#define startupPathDiffersFromExecutable usesRelativePath
+#endif
+
+#ifdef DIFFBUILD
 #define TH095_SUPERVISOR_FOG_DISABLED 0
 #define TH095_SUPERVISOR_FOG_ENABLED 1
 #define TH095_SUPERVISOR_FOG_INVALID 0xff
@@ -780,7 +784,7 @@ i32 GameWindow::InitD3DRendering()
                 presentParameters.BackBufferFormat = D3DFMT_R5G6B5;
             }
         }
-        if (g_GameWindow.usesRelativePath)
+        if (g_GameWindow.startupPathDiffersFromExecutable)
             g_Supervisor.disableVsync = TRUE;
 
         if (!g_Supervisor.disableVsync)
@@ -1087,7 +1091,7 @@ i32 GameWindow::CheckForRunningGameInstance(HINSTANCE hInstance)
             }
 
             if (strcmp(moduleFilenameBuffer, consoleTitleBuffer) != 0)
-                g_GameWindow.usesRelativePath = true;
+                g_GameWindow.startupPathDiffersFromExecutable = true;
         }
         g_Supervisor.flags.dummyMidiTimerEnabled = false;
     }
