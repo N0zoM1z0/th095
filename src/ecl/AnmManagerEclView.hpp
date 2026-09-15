@@ -512,7 +512,11 @@ struct AnmVm
             u32 renderStateB : 2;
             u32 renderModeBits : 4;
             u32 flag26 : 1;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             u32 flag27 : 1;
+#else
+            u32 rotateWithBulletAngle : 1;
+#endif
             u32 flag28 : 1;
             u32 useUnitSpeed : 1;
             u32 useAlternateRng : 1;

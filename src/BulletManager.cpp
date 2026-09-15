@@ -1724,7 +1724,11 @@ i32 PhotoBulletManagerView::DrawBucket(i32 bucketIndex)
         PhotoToScreen(
             &bullet->vm.position,
             reinterpret_cast<const Float3 *>(&bullet->position));
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (((bullet->vm.flagsWord >> 27) & 1) != 0)
+#else
+        if (bullet->vm.rotateWithBulletAngle != 0)
+#endif
         {
             f32 rotationZ =
                 AddNormalizeAngle(bullet->angle, 1.5707964f);
