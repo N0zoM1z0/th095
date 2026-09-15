@@ -80,8 +80,13 @@ struct ReplayManager
 #else
     ReplayFileHeader *ownedFileHeader; // +0x004; owning allocation root
 #endif
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     ReplayInputData *inputData;      // +0x008
     u8 *fpsData;                     // +0x00c
+#else
+    ReplayInputData *ownedInputData; // +0x008; allocation root in every mode
+    u8 *fpsStreamBase;               // +0x00c; record owner, playback/load interior view
+#endif
     u8 *inputCursor;                 // +0x010
     u8 *fpsCursor;                   // +0x014
     u8 replayFps;                    // +0x018

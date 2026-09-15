@@ -43,6 +43,11 @@ ReplayManager *g_ReplayManager = NULL;
 #define g_ReplayInputAux (RuntimeHistoryPressed())
 #define g_ReplayInputFlags (RuntimeHistoryReleased())
 
+#ifdef DIFFBUILD
+#define ownedInputData inputData
+#define fpsStreamBase fpsData
+#endif
+
 struct ReplayAsciiManagerView
 {
     u8 unknown0000[0x806c];
@@ -180,22 +185,22 @@ ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
         scratch.headerSize = sizeof(ReplayFileHeader);
         this->ownedFileHeader = (ReplayFileHeader *)malloc(scratch.headerSize);
         scratch.inputSize = 0x69780;
-        this->inputData = (ReplayInputData *)malloc(scratch.inputSize);
+        this->ownedInputData = (ReplayInputData *)malloc(scratch.inputSize);
         scratch.fpsSize = 0x11940;
-        this->fpsData = (u8 *)malloc(scratch.fpsSize);
+        this->fpsStreamBase = (u8 *)malloc(scratch.fpsSize);
 
         memset(this->ownedFileHeader, 0, sizeof(ReplayFileHeader));
-        memset(this->inputData, 0, 0x69780);
-        memset(this->fpsData, 0, 0x11940);
+        memset(this->ownedInputData, 0, 0x69780);
+        memset(this->fpsStreamBase, 0, 0x11940);
 
         this->ownedFileHeader->magic = 0x72353974;
         this->ownedFileHeader->version = 1;
         this->ownedFileHeader->gameVersion = 0x102;
 
-        this->activeInputData = this->inputData;
+        this->activeInputData = this->ownedInputData;
         this->inputCursor =
             (u8 *)this->activeInputData + sizeof(ReplayInputData);
-        this->fpsCursor = this->fpsData;
+        this->fpsCursor = this->fpsStreamBase;
 
         this->activeInputData->playerConfigId = g_SelectedScene->id;
         this->activeInputData->level = g_SelectedScene->group;
@@ -214,10 +219,10 @@ ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
             return ZUN_ERROR;
         }
 
-        this->activeInputData = this->inputData;
+        this->activeInputData = this->ownedInputData;
         this->inputCursor =
             (u8 *)this->activeInputData + sizeof(ReplayInputData);
-        this->fpsCursor = this->fpsData;
+        this->fpsCursor = this->fpsStreamBase;
         scratch.rngSeed = this->activeInputData->rngSeed;
         g_Rng.seed = scratch.rngSeed;
         g_SelectedScene =
@@ -233,7 +238,7 @@ ReplayManagerResult ReplayManager::Initialize(i32 mode, char *path)
         {
             return ZUN_ERROR;
         }
-        this->activeInputData = this->inputData;
+        this->activeInputData = this->ownedInputData;
     }
     return ZUN_SUCCESS;
 }
@@ -270,7 +275,7 @@ ReplayManagerResult ReplayManager::LoadReplay(char *path)
     }
 
     locals.allocationSize = this->ownedFileHeader->decompressedPayloadSize;
-    this->inputData = (ReplayInputData *)malloc(locals.allocationSize);
+    this->ownedInputData = (ReplayInputData *)malloc(locals.allocationSize);
     FileSystem::Decrypt(locals.compressedData, this->ownedFileHeader->compressedPayloadSize,
                         0xaa, 0xe1, 0x400,
                         this->ownedFileHeader->compressedPayloadSize);
@@ -278,12 +283,12 @@ ReplayManagerResult ReplayManager::LoadReplay(char *path)
                         0x3d, 0x7a, 0x80,
                         this->ownedFileHeader->compressedPayloadSize);
     DecompressData(locals.compressedData, this->ownedFileHeader->compressedPayloadSize,
-                   (u8 *)this->inputData,
+                   (u8 *)this->ownedInputData,
                    this->ownedFileHeader->decompressedPayloadSize);
 
-    locals.inputData = this->inputData;
-    this->fpsData = (u8 *)(locals.inputData->inputStreamSize +
-                           sizeof(ReplayInputData) + (u32)this->inputData);
+    locals.inputData = this->ownedInputData;
+    this->fpsStreamBase = (u8 *)(locals.inputData->inputStreamSize +
+                           sizeof(ReplayInputData) + (u32)this->ownedInputData);
     if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
     {
         free(locals.compressedData);
@@ -296,7 +301,7 @@ ReplayManagerResult ReplayManager::WriteReplay(char *path, char *replayName)
     i32 userDataAllocationSize;
     ReplayWriteLocals locals;
 
-    locals.inputData = this->inputData;
+    locals.inputData = this->ownedInputData;
     strcpy(locals.inputData->replayName, replayName);
     for (locals.i = strlen(replayName);
          locals.i < 8; locals.i++)
@@ -306,7 +311,7 @@ ReplayManagerResult ReplayManager::WriteReplay(char *path, char *replayName)
 
     locals.inputData->inputStreamSize =
         this->inputCursor - ((u8 *)locals.inputData + sizeof(ReplayInputData));
-    locals.inputData->fpsStreamSize = this->fpsCursor - this->fpsData;
+    locals.inputData->fpsStreamSize = this->fpsCursor - this->fpsStreamBase;
     locals.inputData->slowRate =
         100.0f - (f32)(g_Supervisor.lagNumerator / g_Supervisor.lagDenominator) * 100.0f;
 
@@ -317,11 +322,11 @@ ReplayManagerResult ReplayManager::WriteReplay(char *path, char *replayName)
         sizeof(ReplayInputData) + locals.inputData->inputStreamSize +
         locals.inputData->fpsStreamSize;
     locals.uncompressedData = (u8 *)malloc(locals.totalStreamSize);
-    memcpy(locals.uncompressedData, this->inputData,
+    memcpy(locals.uncompressedData, this->ownedInputData,
            sizeof(ReplayInputData) + locals.inputData->inputStreamSize);
     memcpy(locals.uncompressedData + sizeof(ReplayInputData) +
                locals.inputData->inputStreamSize,
-           this->fpsData, locals.inputData->fpsStreamSize);
+           this->fpsStreamBase, locals.inputData->fpsStreamSize);
 
     locals.compressedData = CompressData(
         locals.uncompressedData,
@@ -427,20 +432,20 @@ ReplayManager::~ReplayManager()
     struct FreeSlots
     {
         void *fileHeader;
-        void *fpsData;
-        void *inputData;
+        void *recordOwnedFpsData;
+        void *ownedInputData;
     } freeSlots;
 
     utils::DebugPrint("shitdown ReplayInf\n");
-    if (this->inputData != NULL)
+    if (this->ownedInputData != NULL)
     {
-        freeSlots.inputData = this->inputData;
-        free(freeSlots.inputData);
+        freeSlots.ownedInputData = this->ownedInputData;
+        free(freeSlots.ownedInputData);
     }
-    if (this->mode == REPLAY_MANAGER_RECORD && this->fpsData != NULL)
+    if (this->mode == REPLAY_MANAGER_RECORD && this->fpsStreamBase != NULL)
     {
-        freeSlots.fpsData = this->fpsData;
-        free(freeSlots.fpsData);
+        freeSlots.recordOwnedFpsData = this->fpsStreamBase;
+        free(freeSlots.recordOwnedFpsData);
     }
     if (this->ownedFileHeader != NULL)
     {
@@ -524,7 +529,7 @@ ChainCallbackResult ReplayManager::ProcessFrame()
         g_ReplayInputSource.Update();
         g_ReplayInputAux = g_ReplayInputSource.pressedInput;
 
-        if ((u32)(this->inputCursor - (u8 *)this->inputData) >= 0x69780)
+        if ((u32)(this->inputCursor - (u8 *)this->ownedInputData) >= 0x69780)
         {
             utils::DebugPrint("error : replay byffer over\n");
             return CHAIN_CALLBACK_RESULT_CONTINUE;
