@@ -150,6 +150,31 @@ struct BackgroundStageObjectInstance
     Float3 position;
 };
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_BACKGROUND_CAMERA_MOTION_NONE 0
+#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_X 1
+#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_X_WITH_UP_X 2
+#define TH095_BACKGROUND_CAMERA_MOTION_UP_XZ 3
+#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X 4
+#else
+typedef u8 BackgroundCameraMotionMode;
+enum BackgroundCameraMotionModeValue
+{
+    BACKGROUND_CAMERA_MOTION_NONE = 0,
+    BACKGROUND_CAMERA_MOTION_POSITION_X = 1,
+    BACKGROUND_CAMERA_MOTION_POSITION_X_WITH_UP_X = 2,
+    BACKGROUND_CAMERA_MOTION_UP_XZ = 3,
+    BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X = 4,
+};
+#define TH095_BACKGROUND_CAMERA_MOTION_NONE BACKGROUND_CAMERA_MOTION_NONE
+#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_X BACKGROUND_CAMERA_MOTION_POSITION_X
+#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_X_WITH_UP_X \
+    BACKGROUND_CAMERA_MOTION_POSITION_X_WITH_UP_X
+#define TH095_BACKGROUND_CAMERA_MOTION_UP_XZ BACKGROUND_CAMERA_MOTION_UP_XZ
+#define TH095_BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X \
+    BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X
+#endif
+
 struct BackgroundStateView
 {
     BackgroundStageHeader *stageData;            // +0x0000
@@ -169,7 +194,11 @@ struct BackgroundStateView
     Float3 cameraPositionInitial;               // +0x00c4
     Float3 cameraPositionTangentFinal;           // +0x00d0
     Float3 cameraPositionTangentInitial;         // +0x00dc
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     u8 cameraMotionMode;                         // +0x00e8
+#else
+    BackgroundCameraMotionMode cameraMotionMode; // +0x00e8
+#endif
     u8 unknown00e9[7];
     AnmLoaded *anm;                              // +0x00f0
     AnmVm *stageObjectVms;                       // +0x00f4
@@ -1514,11 +1543,11 @@ interpolate:
         }
     }
 
-    if (background->cameraMotionMode != 0)
+    if (background->cameraMotionMode != TH095_BACKGROUND_CAMERA_MOTION_NONE)
     {
         switch (background->cameraMotionMode)
         {
-        case 1:
+        case TH095_BACKGROUND_CAMERA_MOTION_POSITION_X:
         {
             f32 angle = (f32)background->interpolationCurrentTimers[3] *
                             3.1415927f * 2.0f / 480.0f -
@@ -1529,7 +1558,7 @@ interpolate:
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
             break;
         }
-        case 2:
+        case TH095_BACKGROUND_CAMERA_MOTION_POSITION_X_WITH_UP_X:
         {
             f32 angle = (f32)background->interpolationCurrentTimers[3] *
                             3.1415927f * 2.0f / 480.0f -
@@ -1541,7 +1570,7 @@ interpolate:
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
             break;
         }
-        case 4:
+        case TH095_BACKGROUND_CAMERA_MOTION_POSITION_XZ_WITH_UP_X:
         {
             f32 angle = (f32)background->interpolationCurrentTimers[3] *
                             3.1415927f * 2.0f / 2048.0f -
@@ -1554,7 +1583,7 @@ interpolate:
                 BackgroundInitializeStageTimer(&background->interpolationCurrentTimers[3]);
             break;
         }
-        case 3:
+        case TH095_BACKGROUND_CAMERA_MOTION_UP_XZ:
         {
             f32 angle = (f32)background->interpolationCurrentTimers[3] *
                             3.1415927f * 2.0f / 4800.0f -
