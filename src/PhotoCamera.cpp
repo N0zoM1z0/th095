@@ -99,8 +99,13 @@ struct PhotoCapturedBulletView
     u8 unknown2f8[0x35c - 0x2f8];
     PhotoCapturedBulletView *next;     // +0x35c
     u8 unknown360[0x656 - 0x360];
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i16 group;                         // +0x656
     i16 kind;                          // +0x658
+#else
+    i16 bulletType;                    // +0x656
+    i16 color;                         // +0x658
+#endif
 };
 
 typedef char PhotoCapturedBulletVmAt248[
@@ -109,8 +114,19 @@ typedef char PhotoCapturedBulletScaleAt2F4[
     (offsetof(PhotoCapturedBulletView, photoScale) == 0x2f4) ? 1 : -1];
 typedef char PhotoCapturedBulletNextAt35C[
     (offsetof(PhotoCapturedBulletView, next) == 0x35c) ? 1 : -1];
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 typedef char PhotoCapturedBulletKindAt658[
     (offsetof(PhotoCapturedBulletView, kind) == 0x658) ? 1 : -1];
+#define TH095_CAPTURED_BULLET_TYPE(bullet) ((bullet)->group)
+#define TH095_CAPTURED_BULLET_COLOR(bullet) ((bullet)->kind)
+#else
+typedef char PhotoCapturedBulletTypeAt656[
+    (offsetof(PhotoCapturedBulletView, bulletType) == 0x656) ? 1 : -1];
+typedef char PhotoCapturedBulletColorAt658[
+    (offsetof(PhotoCapturedBulletView, color) == 0x658) ? 1 : -1];
+#define TH095_CAPTURED_BULLET_TYPE(bullet) ((bullet)->bulletType)
+#define TH095_CAPTURED_BULLET_COLOR(bullet) ((bullet)->color)
+#endif
 
 struct PhotoGlobalStateView
 {
@@ -864,23 +880,23 @@ score_flag_done:
     locals.colorCounts[6] = 0;
     while (bulletTargets != NULL)
     {
-        if (bulletTargets->group <= 11)
+        if (TH095_CAPTURED_BULLET_TYPE(bulletTargets) <= 11)
         {
-            if (bulletTargets->kind == 1 || bulletTargets->kind == 2)
+            if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 1 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 2)
                 locals.colorCounts[0]++;
-            else if (bulletTargets->kind == 3 || bulletTargets->kind == 4)
+            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 3 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 4)
                 locals.colorCounts[1]++;
-            else if (bulletTargets->kind == 5 || bulletTargets->kind == 6)
+            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 5 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 6)
                 locals.colorCounts[2]++;
-            else if (bulletTargets->kind == 7 || bulletTargets->kind == 8)
+            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 7 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 8)
                 locals.colorCounts[3]++;
-            else if (bulletTargets->kind == 9 ||
-                     bulletTargets->kind == 10 ||
-                     bulletTargets->kind == 11)
+            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 9 ||
+                     TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 10 ||
+                     TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 11)
                 locals.colorCounts[4]++;
-            else if (bulletTargets->kind == 12 || bulletTargets->kind == 13)
+            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 12 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 13)
                 locals.colorCounts[5]++;
-            else if (bulletTargets->kind == 14)
+            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 14)
                 locals.colorCounts[6]++;
         }
         bulletTargets = bulletTargets->next;
