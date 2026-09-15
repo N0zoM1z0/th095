@@ -6,6 +6,10 @@
 namespace th095
 {
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define ownedRenderData generatedVertices
+#endif
+
 class ZunMemory
 {
   public:
@@ -41,16 +45,16 @@ ZunResult AnmVm::InitializePulsingRadialTrail()
     i32 i;
     Float3 direction;
 
-    if (this->generatedVertices != NULL)
+    if (this->ownedRenderData != NULL)
     {
-        g_ZunMemory.Free(this->generatedVertices);
+        g_ZunMemory.Free(this->ownedRenderData);
     }
 
-    this->generatedVertices = g_ZunMemory.Alloc(sizeof(PulsingRadialTrailData));
+    this->ownedRenderData = g_ZunMemory.Alloc(sizeof(PulsingRadialTrailData));
     this->positionCallback = UpdatePulsingRadialTrail;
     this->drawCallback = DrawPulsingRadialTrail;
 
-    data = (PulsingRadialTrailData *)this->generatedVertices;
+    data = (PulsingRadialTrailData *)this->ownedRenderData;
     data->uvVelocity.x = g_Rng.GetRandomF32Signed() * (1.0f / 120.0f);
     data->uvVelocity.y = g_Rng.GetRandomF32Signed() * (1.0f / 120.0f);
 
@@ -120,7 +124,7 @@ ZunResult __fastcall UpdatePulsingRadialTrail(AnmVm *vm)
     i32 trailUWrapIndex;
     i32 trailVWrapIndex;
 
-    trailData = (PulsingRadialTrailData *)vm->generatedVertices;
+    trailData = (PulsingRadialTrailData *)vm->ownedRenderData;
     trailAngleStep = 0.2026834041f;
     trailAngle = -3.1415927f;
     trailVertex = trailData->vertices;
@@ -187,7 +191,7 @@ ZunResult __fastcall DrawPulsingRadialTrail(AnmVm *vm)
 {
     PulsingRadialTrailData *data;
 
-    data = (PulsingRadialTrailData *)vm->generatedVertices;
+    data = (PulsingRadialTrailData *)vm->ownedRenderData;
     g_AnmManager->DrawTriangleFan(vm, data->vertices, 33);
     return ZUN_SUCCESS;
 }

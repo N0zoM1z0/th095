@@ -455,7 +455,11 @@ struct AnmVm
     u8 unknown000[0x0c];
     u32 renderMode;
     u8 unknown010[4];
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     void *generatedVertices;
+#else
+    void *ownedRenderData;
+#endif
     Float3 rotation;
     Float3 angleVel;
     Float2 scale;

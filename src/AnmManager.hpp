@@ -273,7 +273,11 @@ struct AnmVmBase
 #else
     i32 id;                         // +0x010
 #endif
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     void *generatedVertices;        // +0x014
+#else
+    void *ownedRenderData;          // +0x014; render-mode-owned allocation
+#endif
     Float3 rotation;                // +0x018
     Float3 angleVel;                // +0x024
     Float2 scale;                   // +0x030
@@ -417,11 +421,19 @@ struct AnmVm : AnmVmBase
 
     ~AnmVm()
     {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
         if (this->generatedVertices != NULL)
         {
             void *generatedVertices = this->generatedVertices;
             free(generatedVertices);
         }
+#else
+        if (this->ownedRenderData != NULL)
+        {
+            void *ownedRenderData = this->ownedRenderData;
+            free(ownedRenderData);
+        }
+#endif
     }
 
     void Initialize();
@@ -508,7 +520,11 @@ struct AnmVmListNode
     u32 renderMode;                  // +0x0c
     i32 id;                          // +0x10
 #endif
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     void *generatedVertices;
+#else
+    void *ownedRenderData;
+#endif
 };
 
 struct AnmRawEntryView;

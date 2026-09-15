@@ -62,15 +62,27 @@ struct AnmVmDeleteView
     u8 unknown004[4];
     AnmVmDeleteView *previous;
     u8 unknown00c[8];
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     void *generatedVertices;
+#else
+    void *ownedRenderData;
+#endif
 
     ~AnmVmDeleteView()
     {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
         if (this->generatedVertices != NULL)
         {
             void *generatedVertices = this->generatedVertices;
             free(generatedVertices);
         }
+#else
+        if (this->ownedRenderData != NULL)
+        {
+            void *ownedRenderData = this->ownedRenderData;
+            free(ownedRenderData);
+        }
+#endif
     }
 };
 

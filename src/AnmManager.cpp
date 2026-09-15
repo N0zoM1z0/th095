@@ -10,6 +10,10 @@
 namespace th095
 {
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define ownedRenderData generatedVertices
+#endif
+
 // Target address 0x004CA1B8 is the process-wide manager pointer.  TH08 places
 // the equivalent storage in AnmManager.cpp, and TH095 WinMain assigns and
 // clears this same pointer around the manager lifetime.
@@ -532,7 +536,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             break;
         case ANM_OP_ALLOC_VERTICES:
             vm->renderModeBits = 9;
-            vm->generatedVertices = malloc(GET_INT_VAR(0) * sizeof(AnmVertex) * 2);
+            vm->ownedRenderData = malloc(GET_INT_VAR(0) * sizeof(AnmVertex) * 2);
             break;
         case ANM_OP_I_SET:
             *GET_INT_VAR_PTR(0) = GET_INT_VAR(1);
@@ -858,7 +862,7 @@ stop:
         meshVertexCount = vm->intVar0;
         angleValue = vm->rotation.z;
         angle = 6.2831855f / (meshVertexCount - 1);
-        vertexPtr = (AnmVertex *)vm->generatedVertices;
+        vertexPtr = (AnmVertex *)vm->ownedRenderData;
         texV = 0.0f;
         texStep = (f32)vm->intVar1 / (f32)(meshVertexCount - 1);
 
@@ -886,9 +890,9 @@ stop:
             angleValue = AddNormalizeAngle(angleValue, angle);
         }
 
-        vertexPtr[0] = ((AnmVertex *)vm->generatedVertices)[0];
+        vertexPtr[0] = ((AnmVertex *)vm->ownedRenderData)[0];
         vertexPtr[0].uv.y = texV + vm->uvScrollPos.y;
-        vertexPtr[1] = ((AnmVertex *)vm->generatedVertices)[1];
+        vertexPtr[1] = ((AnmVertex *)vm->ownedRenderData)[1];
         // The target writes the closing V coordinate back to the first vertex
         // after copying the second one. Preserve that observable TH095 quirk.
         vertexPtr[0].uv.y = texV + vm->uvScrollPos.y;
@@ -1081,7 +1085,7 @@ ZunResult AnmManager::Draw(AnmVm *vm)
     case 8:
         return this->Draw3D(vm);
     case 9:
-        return this->DrawVertices(vm, (AnmVertex *)vm->generatedVertices, vm->intVar0 * 2);
+        return this->DrawVertices(vm, (AnmVertex *)vm->ownedRenderData, vm->intVar0 * 2);
     case 2:
         return this->DrawNoRotationNoRound(vm);
     case 3:
