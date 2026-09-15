@@ -7,6 +7,9 @@
 #endif
 #include "AnmVmId.hpp"
 #include "PhotoItemManager.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoBulletRuntime.hpp"
+#endif
 #include "SoundPlayer.hpp"
 #include "GameplayGlobals.hpp"
 #ifndef DIFFBUILD
@@ -302,7 +305,11 @@ struct PhotoBulletView
     u32 activeTransformFlags;          // +0x348
     u32 transformFlags;                // +0x34c
     i16 unknown350;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     u16 state;                          // +0x352
+#else
+    PhotoBulletState state;             // +0x352
+#endif
     u16 offscreenFrames;
     u16 unknown356;
     PhotoBulletView *nextInDrawBucket; // +0x358
@@ -345,8 +352,10 @@ typedef char PhotoBulletPositionAt2D0[
     (offsetof(PhotoBulletView, position) == 0x2d0) ? 1 : -1];
 typedef char PhotoBulletCollisionAt30C[
     (offsetof(PhotoBulletView, collisionSize) == 0x30c) ? 1 : -1];
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 typedef char PhotoBulletStateAt352[
     (offsetof(PhotoBulletView, state) == 0x352) ? 1 : -1];
+#endif
 typedef char PhotoBulletTransformsAt370[
     (offsetof(PhotoBulletView, transforms) == 0x370) ? 1 : -1];
 typedef char PhotoBulletExStatesAt520[
@@ -590,7 +599,11 @@ i32 PhotoBulletManagerView::Initialize()
         return ZUN_ERROR;
     }
     this->bulletCursor = &this->bullets[0];
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     this->bullets[0x640].state = 5;
+#else
+    this->bullets[0x640].state = PHOTO_BULLET_STATE_CURSOR_SENTINEL;
+#endif
     return ZUN_SUCCESS;
 }
 
@@ -716,10 +729,18 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
     locals.bullet = this->bulletCursor;
     for (locals.i = 0; locals.i < 0x640; ++locals.i)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (locals.bullet->state == 0)
+#else
+        if (locals.bullet->state == PHOTO_BULLET_STATE_INACTIVE)
+#endif
             break;
         ++locals.bullet;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (locals.bullet->state == 5)
+#else
+        if (locals.bullet->state == PHOTO_BULLET_STATE_CURSOR_SENTINEL)
+#endif
             locals.bullet = &this->bullets[0];
     }
     if (locals.i >= 0x640)
@@ -789,7 +810,11 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
         break;
     }
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     locals.bullet->state = 1;
+#else
+    locals.bullet->state = PHOTO_BULLET_STATE_ACTIVE;
+#endif
     locals.bullet->flags |= 1;
     locals.bullet->stateTimer = 0;
     locals.bullet->activeTimer = 0;
@@ -824,21 +849,33 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
     if ((descriptor->transformFlags & PHOTO_BULLET_TRANSFORM_SPAWN_FAST) != 0)
     {
         locals.bullet->vm.pendingInterrupt = 7;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         locals.bullet->state = 2;
+#else
+        locals.bullet->state = PHOTO_BULLET_STATE_SPAWN_TRANSITION;
+#endif
         locals.bullet->position -= locals.bullet->velocity * 4.0f;
     }
     else if ((descriptor->transformFlags &
               PHOTO_BULLET_TRANSFORM_SPAWN_NORMAL) != 0)
     {
         locals.bullet->vm.pendingInterrupt = 8;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         locals.bullet->state = 2;
+#else
+        locals.bullet->state = PHOTO_BULLET_STATE_SPAWN_TRANSITION;
+#endif
         locals.bullet->position -= locals.bullet->velocity * 4.0f;
     }
     else if ((descriptor->transformFlags &
               PHOTO_BULLET_TRANSFORM_SPAWN_SLOW) != 0)
     {
         locals.bullet->vm.pendingInterrupt = 9;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         locals.bullet->state = 2;
+#else
+        locals.bullet->state = PHOTO_BULLET_STATE_SPAWN_TRANSITION;
+#endif
         locals.bullet->position -= locals.bullet->velocity * 4.0f;
     }
     else
@@ -855,7 +892,11 @@ i32 PhotoBulletManagerView::SpawnSingleBullet(
     AnmManager::ExecuteScript(&locals.bullet->vm);
 
     ++locals.bullet;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     if (locals.bullet->state == 5)
+#else
+    if (locals.bullet->state == PHOTO_BULLET_STATE_CURSOR_SENTINEL)
+#endif
         this->bulletCursor = &this->bullets[0];
     else
         this->bulletCursor = locals.bullet;
@@ -987,7 +1028,11 @@ nextRecord:
         goto nextRecord;
 
     case PHOTO_BULLET_TRANSFORM_DESPAWN:
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         this->state = 3;
+#else
+        this->state = PHOTO_BULLET_STATE_DESPAWN_TRANSITION;
+#endif
         break;
 
     case PHOTO_BULLET_TRANSFORM_PLAY_SOUND:
@@ -1091,9 +1136,18 @@ doneSpawning:
 // FUNCTION: TH095 0x004077A0.
 i32 PhotoBulletView::BeginDespawn()
 {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     if (this->state == 2 || this->state == 1)
+#else
+    if (this->state == PHOTO_BULLET_STATE_SPAWN_TRANSITION ||
+        this->state == PHOTO_BULLET_STATE_ACTIVE)
+#endif
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         this->state = 3;
+#else
+        this->state = PHOTO_BULLET_STATE_DESPAWN_TRANSITION;
+#endif
         this->vm.pendingInterrupt = 1;
         this->stateTimer = 0;
         return 1;
@@ -1104,7 +1158,11 @@ i32 PhotoBulletView::BeginDespawn()
 // FUNCTION: TH095 0x00405850.
 void PhotoBulletView::Deactivate()
 {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     this->state = 0;
+#else
+    this->state = PHOTO_BULLET_STATE_INACTIVE;
+#endif
     this->stateTimer = 0;
     this->activeTimer = 0;
 }
@@ -1413,7 +1471,12 @@ PhotoBulletView *PhotoBulletManagerView::CapturePhotoTargets(
 
     for (captureIndex = 0; captureIndex < 0x640; ++captureIndex, ++captureBullet)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (captureBullet->state == 0 || captureBullet->state == 3)
+#else
+        if (captureBullet->state == PHOTO_BULLET_STATE_INACTIVE ||
+            captureBullet->state == PHOTO_BULLET_STATE_DESPAWN_TRANSITION)
+#endif
             continue;
         if (captureBullet->captureDisabled != 0)
             continue;
@@ -1487,7 +1550,12 @@ i32 PhotoBulletManagerView::ClearCapturedBullets()
 
     for (index = 0; index < 0x640; ++index, ++bullet)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (bullet->state == 0 || bullet->state == 3)
+#else
+        if (bullet->state == PHOTO_BULLET_STATE_INACTIVE ||
+            bullet->state == PHOTO_BULLET_STATE_DESPAWN_TRANSITION)
+#endif
             continue;
         if (bullet->captureDisabled != 0)
             continue;
@@ -1545,7 +1613,12 @@ void PhotoBulletManagerView::DespawnAllBullets()
     PhotoBulletView *bullet = &this->bullets[0];
     for (i32 index = 0; index < 0x640; ++index, ++bullet)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (bullet->state == 0 || bullet->state == 3)
+#else
+        if (bullet->state == PHOTO_BULLET_STATE_INACTIVE ||
+            bullet->state == PHOTO_BULLET_STATE_DESPAWN_TRANSITION)
+#endif
             continue;
         bullet->BeginDespawn();
     }
@@ -1574,7 +1647,12 @@ i32 PhotoBulletManagerView::CountNearbyTargets(
 
     for (nearbyIndex = 0; nearbyIndex < 0x640; ++nearbyIndex, ++nearbyBullet)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (nearbyBullet->state == 0 || nearbyBullet->state == 3)
+#else
+        if (nearbyBullet->state == PHOTO_BULLET_STATE_INACTIVE ||
+            nearbyBullet->state == PHOTO_BULLET_STATE_DESPAWN_TRANSITION)
+#endif
             continue;
         {
             nearbyUpperInner =
@@ -1720,7 +1798,11 @@ i32 PhotoBulletManagerView::Update()
          bulletIndex < 0x640;
          ++bulletIndex, ++bullet)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (bullet->state == 0)
+#else
+        if (bullet->state == PHOTO_BULLET_STATE_INACTIVE)
+#endif
         {
             continue;
         }
@@ -1744,16 +1826,28 @@ i32 PhotoBulletManagerView::Update()
 
         switch (bullet->state)
         {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         case 2:
+#else
+        case PHOTO_BULLET_STATE_SPAWN_TRANSITION:
+#endif
             bullet->position +=
                 bullet->velocity * g_AnmGameSpeed / 2.0f;
             if (bullet->vm.intVar0 == 0)
             {
                 break;
             }
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             bullet->state = 1;
+#else
+            bullet->state = PHOTO_BULLET_STATE_ACTIVE;
+#endif
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         case 1:
+#else
+        case PHOTO_BULLET_STATE_ACTIVE:
+#endif
             bullet->AdvanceTransformProgram();
             if (bullet->activeTransformFlags != 0)
             {
@@ -1790,14 +1884,22 @@ i32 PhotoBulletManagerView::Update()
                 if (TH095_PHOTO_BULLET_PLAYER_COLLISION(
                         &bullet->position, &bullet->collisionSize) != 0)
                 {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
                     bullet->state = 3;
+#else
+                    bullet->state = PHOTO_BULLET_STATE_DESPAWN_TRANSITION;
+#endif
                     bullet->vm.pendingInterrupt = 1;
                     break;
                 }
             }
             break;
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         case 3:
+#else
+        case PHOTO_BULLET_STATE_DESPAWN_TRANSITION:
+#endif
             bullet->position +=
                 bullet->velocity * g_AnmGameSpeed / 2.0f;
             break;

@@ -1,5 +1,8 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoBulletRuntime.hpp"
+#endif
 #ifndef DIFFBUILD
 #include "PhotoEffectRuntime.hpp"
 #include "ScreenEffect.hpp"
@@ -359,7 +362,11 @@ struct ExtendedBulletView
     u32 transformFlags;
 #endif
     i16 unknown350;
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     u16 state;
+#else
+    PhotoBulletState state;
+#endif
     u16 offscreenFrames;
     u16 unknown356;
     ExtendedBulletView *nextInDrawBucket;
@@ -400,8 +407,10 @@ typedef char ExtendedBulletActiveTransformFlagsAt348[
 typedef char ExtendedBulletTransformFlagsAt34C[
     (offsetof(ExtendedBulletView, transformFlags) == 0x34c) ? 1 : -1];
 #endif
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 typedef char ExtendedBulletStateAt352[
     (offsetof(ExtendedBulletView, state) == 0x352) ? 1 : -1];
+#endif
 
 struct ExtendedBulletManager
 {
@@ -721,7 +730,11 @@ void __fastcall ResetOwnedBulletMotion(
         g_PhotoBulletManager->bullets;
     for (i32 i = 0; i < 0x640; ++i, ++bullet)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (bullet->state == 0)
+#else
+        if (bullet->state == PHOTO_BULLET_STATE_INACTIVE)
+#endif
             continue;
         if (bullet->ownerTag ==
             enemy->activeEclContext->extraIntVariables[2])
@@ -759,7 +772,11 @@ void __fastcall FadeOwnedCapturedBullets(
     locals.bullet = g_PhotoBulletManager->bullets;
     for (locals.i = 0; locals.i < 0x640; ++locals.i, ++locals.bullet)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (locals.bullet->state == 0)
+#else
+        if (locals.bullet->state == PHOTO_BULLET_STATE_INACTIVE)
+#endif
             continue;
         if (locals.bullet->ownerTag ==
             enemy->activeEclContext->extraIntVariables[2])
@@ -1144,7 +1161,12 @@ void __fastcall Callback01(Enemy *enemy, EclRawInstruction *instruction)
     index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (index->state == 0 || index->vm.loadedSprite->widthPx < 64.0f)
+#else
+        if (index->state == PHOTO_BULLET_STATE_INACTIVE ||
+            index->vm.loadedSprite->widthPx < 64.0f)
+#endif
             continue;
 
         TH095_EXT_ENEMY_SPAWN(
@@ -1165,7 +1187,11 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
     index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (index->state == 0)
+#else
+        if (index->state == PHOTO_BULLET_STATE_INACTIVE)
+#endif
             continue;
         if (index->ownerTag == enemy->activeEclContext->extraIntVariables[2])
         {
@@ -1201,7 +1227,11 @@ void __fastcall Callback03(Enemy *enemy, EclRawInstruction *instruction)
     index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (index->state == 0)
+#else
+        if (index->state == PHOTO_BULLET_STATE_INACTIVE)
+#endif
             continue;
 
         index->ReinitializeDirect();
@@ -1230,7 +1260,11 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
     index = g_PhotoBulletManager->bullets;
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         if (index->state == 0)
+#else
+        if (index->state == PHOTO_BULLET_STATE_INACTIVE)
+#endif
             continue;
         if (index->ownerTag == enemy->activeEclContext->extraIntVariables[2])
         {
