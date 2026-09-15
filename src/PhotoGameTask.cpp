@@ -212,7 +212,7 @@ extern u32 g_PhotoAsciiTextColor;
 #endif
 extern i32 g_PhotoNextState;
 #ifndef DIFFBUILD
-#define g_PhotoNextState (g_Supervisor.currentState)
+#define g_PhotoNextState (g_Supervisor.requestedSceneState)
 #endif
 #ifdef DIFFBUILD
 extern i32 g_ReplayUsesArchive;

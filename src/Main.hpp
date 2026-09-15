@@ -272,9 +272,15 @@ struct Supervisor
     u8 unknown3cc[0x38];
 #endif
     i32 calcCount;                              // +0x404
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     i32 wantedState;                            // +0x408
     i32 currentState;                           // +0x40c
     i32 previousState;                          // +0x410
+#else
+    i32 activeSceneState;                       // +0x408
+    i32 requestedSceneState;                    // +0x40c
+    i32 previousActiveSceneState;               // +0x410
+#endif
     u8 unknown414[0x10];
     i32 screenTransitionCountdown;              // +0x424
     i32 suppressFpsDisplay;                      // +0x428

@@ -33,6 +33,12 @@ namespace th095
 {
 
 #ifdef DIFFBUILD
+#define activeSceneState wantedState
+#define requestedSceneState currentState
+#define previousActiveSceneState previousState
+#endif
+
+#ifdef DIFFBUILD
 #define TH095_SUPERVISOR_FOG_DISABLED 0
 #define TH095_SUPERVISOR_FOG_ENABLED 1
 #define TH095_SUPERVISOR_FOG_INVALID 0xff
@@ -1199,8 +1205,8 @@ i32 Supervisor::RegisterChain()
 {
     Supervisor *supervisor = &g_Supervisor;
 
-    supervisor->wantedState = 0;
-    supervisor->currentState = -1;
+    supervisor->activeSceneState = 0;
+    supervisor->requestedSceneState = -1;
     supervisor->calcCount = 0;
 
     ChainElem *elem = g_Chain.CreateElem((ChainCallback)Supervisor::OnUpdate);
@@ -1670,19 +1676,19 @@ i32 Supervisor::UpdateSceneState()
 #endif
     } locals;
 
-    if (this->wantedState != this->currentState)
+    if (this->activeSceneState != this->requestedSceneState)
     {
         this->EnterCriticalSectionWrapper(5);
         this->criticalSectionLockCounts[5]++;
-        this->previousState = this->wantedState;
+        this->previousActiveSceneState = this->activeSceneState;
         utils::DebugPrint(
-            "scene %d -> %d\r\n", this->wantedState, this->currentState);
+            "scene %d -> %d\r\n", this->activeSceneState, this->requestedSceneState);
         this->backbufferClearColor = 0xff000000;
 
-        switch (this->wantedState)
+        switch (this->activeSceneState)
         {
         case 0:
-            this->currentState = SUPERVISOR_STATE_FRONT_END;
+            this->requestedSceneState = SUPERVISOR_STATE_FRONT_END;
             this->frontEndController = TH095_FRONT_END_CREATE(0);
             if (this->frontEndController == NULL)
             {
@@ -1691,7 +1697,7 @@ i32 Supervisor::UpdateSceneState()
             break;
 
         case SUPERVISOR_STATE_FRONT_END:
-            switch (this->currentState)
+            switch (this->requestedSceneState)
             {
             case SUPERVISOR_STATE_ERROR:
                 goto failure;
@@ -1709,7 +1715,7 @@ i32 Supervisor::UpdateSceneState()
                 break;
 
             case SUPERVISOR_STATE_START_REPLAY:
-                this->currentState = SUPERVISOR_STATE_PHOTO_GAME;
+                this->requestedSceneState = SUPERVISOR_STATE_PHOTO_GAME;
                 TH095_FRONT_END_DESTROY(this->frontEndController);
                 this->frontEndController = NULL;
                 break;
@@ -1717,7 +1723,7 @@ i32 Supervisor::UpdateSceneState()
             break;
 
         case SUPERVISOR_STATE_PHOTO_GAME:
-            switch (this->currentState)
+            switch (this->requestedSceneState)
             {
             case SUPERVISOR_STATE_EXIT:
                 this->photoGameTask->Destroy();
@@ -1750,7 +1756,7 @@ i32 Supervisor::UpdateSceneState()
                 {
                     goto failure;
                 }
-                this->currentState = SUPERVISOR_STATE_PHOTO_GAME;
+                this->requestedSceneState = SUPERVISOR_STATE_PHOTO_GAME;
                 break;
 
             case SUPERVISOR_STATE_RESTART_PHOTO_GAME:
@@ -1764,7 +1770,7 @@ i32 Supervisor::UpdateSceneState()
                 {
                     goto failure;
                 }
-                this->currentState = SUPERVISOR_STATE_PHOTO_GAME;
+                this->requestedSceneState = SUPERVISOR_STATE_PHOTO_GAME;
                 break;
             }
             break;
@@ -1777,7 +1783,7 @@ i32 Supervisor::UpdateSceneState()
             return 4;
         }
 
-        this->wantedState = this->currentState;
+        this->activeSceneState = this->requestedSceneState;
         this->LeaveCriticalSectionWrapper(5);
         this->criticalSectionLockCounts[5]--;
     }

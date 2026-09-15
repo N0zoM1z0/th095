@@ -193,7 +193,7 @@ typedef char ResultBestShotRecordPhotoIndexAt6C[
 
 extern i32 g_ResultSceneState;
 #ifndef DIFFBUILD
-#define g_ResultSceneState (g_Supervisor.currentState)
+#define g_ResultSceneState (g_Supervisor.requestedSceneState)
 #endif
 #ifndef DIFFBUILD
 // Target 0x004C4E3C is a 12-entry zero-initialized BSS map.  Initialize reads

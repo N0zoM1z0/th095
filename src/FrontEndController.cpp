@@ -209,7 +209,7 @@ extern FrontEndSupervisorAudioView g_FrontEndSupervisorAudio;
 #else
 #define TH095_FRONT_SUPERVISOR g_Supervisor
 #define TH095_FRONT_AUDIO g_Supervisor
-#define TH095_FRONT_SUPERVISOR_STATE g_Supervisor.currentState
+#define TH095_FRONT_SUPERVISOR_STATE g_Supervisor.requestedSceneState
 #define TH095_FRONT_ANM_MANAGER g_AnmManager
 #endif
 
