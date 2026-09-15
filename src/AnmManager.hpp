@@ -346,7 +346,11 @@ struct AnmVmBase
 #else
             u32 rotateWithBulletAngle : 1;
 #endif
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             u32 flag28 : 1;
+#else
+            u32 bypassPhotoGameSuppression : 1;
+#endif
             u32 useUnitSpeed : 1;
             u32 useAlternateRng : 1;
             u32 unknownFlag31 : 1;

@@ -134,7 +134,18 @@ typedef char ResultAsciiScaleYAt8074[
 struct ResultAnmVmHandleView
 {
     u8 unknown000[0x228];
-    u32 flagsWord;
+    union
+    {
+        u32 flagsWord;
+#if !defined(DIFFBUILD)
+        struct
+        {
+            u32 unknownFlags00_27 : 28;
+            u32 bypassPhotoGameSuppression : 1;
+            u32 unknownFlags29_31 : 3;
+        };
+#endif
+    };
 };
 
 extern ResultScreenGlobalStateView *g_ResultScreenGlobalState;
@@ -807,9 +818,15 @@ void ResultScreen::PrepareBestShot()
                  i < g_ResultPhotoController->GetPhotoCount();
                  i++)
             {
+#ifdef DIFFBUILD
                 reinterpret_cast<ResultAnmVmHandleView *>(
                     g_ResultPhotoData->photoVms[i].GetVm())
                     ->flagsWord |= 0x10000000;
+#else
+                reinterpret_cast<ResultAnmVmHandleView *>(
+                    g_ResultPhotoData->photoVms[i].GetVm())
+                    ->bypassPhotoGameSuppression = 1;
+#endif
             }
         }
     }

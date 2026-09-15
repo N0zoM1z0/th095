@@ -629,7 +629,11 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             *GET_FLOAT_VAR_PTR(0) = AddNormalizeAngle(GET_FLOAT_VAR(0), 0.0f);
             break;
         case ANM_OP_FLAG28:
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             vm->flag28 = currentInstr->byteArgs[0];
+#else
+            vm->bypassPhotoGameSuppression = currentInstr->byteArgs[0];
+#endif
             break;
         case ANM_OP_RENDER_BYTE:
             vm->renderMode = currentInstr->byteArgs[0];
