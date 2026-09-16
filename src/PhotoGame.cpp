@@ -2,6 +2,7 @@
 #include "PhotoGameExact.inl"
 #else
 #include "PhotoCamera.hpp"
+#include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
@@ -723,35 +724,35 @@ i32 PhotoGameUpdateView::UpdateMainState()
 
     if (this->camera.mode != PHOTO_CAMERA_CHARGING)
     {
-        if (PhotoGameInputMask(g_PhotoInput, 0x50) == 0x50)
+        if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_UP_LEFT) == TH_BUTTON_UP_LEFT)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_UP_LEFT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x60) == 0x60)
+        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_DOWN_LEFT) == TH_BUTTON_DOWN_LEFT)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_DOWN_LEFT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x90) == 0x90)
+        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_UP_RIGHT) == TH_BUTTON_UP_RIGHT)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_UP_RIGHT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0xa0) == 0xa0)
+        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_DOWN_RIGHT) == TH_BUTTON_DOWN_RIGHT)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_DOWN_RIGHT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x20) != 0)
+        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_DOWN) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_DOWN;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x10) != 0)
+        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_UP) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_UP;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x40) != 0)
+        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_LEFT) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_LEFT;
         }
-        else if (PhotoGameInputMask(g_PhotoInput, 0x80) != 0)
+        else if (PhotoGameInputMask(g_PhotoInput, TH_BUTTON_RIGHT) != 0)
         {
             this->movementState = PHOTO_PLAYER_DIRECTION_RIGHT;
         }

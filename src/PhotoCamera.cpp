@@ -447,6 +447,26 @@ void PhotoCameraState::BeginCapture()
     }
 }
 
+#ifdef TH095_MATCH_EXACT
+#define TH095_PHOTO_INPUT_UP 0x10
+#define TH095_PHOTO_INPUT_DOWN 0x20
+#define TH095_PHOTO_INPUT_LEFT 0x40
+#define TH095_PHOTO_INPUT_RIGHT 0x80
+#define TH095_PHOTO_INPUT_UP_LEFT 0x50
+#define TH095_PHOTO_INPUT_DOWN_LEFT 0x60
+#define TH095_PHOTO_INPUT_UP_RIGHT 0x90
+#define TH095_PHOTO_INPUT_DOWN_RIGHT 0xa0
+#else
+#define TH095_PHOTO_INPUT_UP TH_BUTTON_UP
+#define TH095_PHOTO_INPUT_DOWN TH_BUTTON_DOWN
+#define TH095_PHOTO_INPUT_LEFT TH_BUTTON_LEFT
+#define TH095_PHOTO_INPUT_RIGHT TH_BUTTON_RIGHT
+#define TH095_PHOTO_INPUT_UP_LEFT TH_BUTTON_UP_LEFT
+#define TH095_PHOTO_INPUT_DOWN_LEFT TH_BUTTON_DOWN_LEFT
+#define TH095_PHOTO_INPUT_UP_RIGHT TH_BUTTON_UP_RIGHT
+#define TH095_PHOTO_INPUT_DOWN_RIGHT TH_BUTTON_DOWN_RIGHT
+#endif
+
 void PhotoCameraState::UpdateViewfinder()
 {
     struct ViewfinderLocals
@@ -462,35 +482,35 @@ void PhotoCameraState::UpdateViewfinder()
     locals.offsetX = 0.0f;
     locals.offsetY = 0.0f;
 
-    if (PhotoInputMask(g_PhotoInput, 0x50) == 0x50)
+    if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_UP_LEFT) == TH095_PHOTO_INPUT_UP_LEFT)
     {
         locals.direction = PHOTO_DIRECTION_UP_LEFT;
     }
-    else if (PhotoInputMask(g_PhotoInput, 0x60) == 0x60)
+    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_DOWN_LEFT) == TH095_PHOTO_INPUT_DOWN_LEFT)
     {
         locals.direction = PHOTO_DIRECTION_DOWN_LEFT;
     }
-    else if (PhotoInputMask(g_PhotoInput, 0x90) == 0x90)
+    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_UP_RIGHT) == TH095_PHOTO_INPUT_UP_RIGHT)
     {
         locals.direction = PHOTO_DIRECTION_UP_RIGHT;
     }
-    else if (PhotoInputMask(g_PhotoInput, 0xa0) == 0xa0)
+    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_DOWN_RIGHT) == TH095_PHOTO_INPUT_DOWN_RIGHT)
     {
         locals.direction = PHOTO_DIRECTION_DOWN_RIGHT;
     }
-    else if (PhotoInputMask(g_PhotoInput, 0x20) != 0)
+    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_DOWN) != 0)
     {
         locals.direction = PHOTO_DIRECTION_DOWN;
     }
-    else if (PhotoInputMask(g_PhotoInput, 0x10) != 0)
+    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_UP) != 0)
     {
         locals.direction = PHOTO_DIRECTION_UP;
     }
-    else if (PhotoInputMask(g_PhotoInput, 0x40) != 0)
+    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_LEFT) != 0)
     {
         locals.direction = PHOTO_DIRECTION_LEFT;
     }
-    else if (PhotoInputMask(g_PhotoInput, 0x80) != 0)
+    else if (PhotoInputMask(g_PhotoInput, TH095_PHOTO_INPUT_RIGHT) != 0)
     {
         locals.direction = PHOTO_DIRECTION_RIGHT;
     }
@@ -593,6 +613,14 @@ void PhotoCameraState::UpdateViewfinder()
         this->vmIds[6].value,
         PhotoToScreen(&locals.screenPosition, &this->viewfinderPosition));
 }
+#undef TH095_PHOTO_INPUT_DOWN_RIGHT
+#undef TH095_PHOTO_INPUT_UP_RIGHT
+#undef TH095_PHOTO_INPUT_DOWN_LEFT
+#undef TH095_PHOTO_INPUT_UP_LEFT
+#undef TH095_PHOTO_INPUT_RIGHT
+#undef TH095_PHOTO_INPUT_LEFT
+#undef TH095_PHOTO_INPUT_DOWN
+#undef TH095_PHOTO_INPUT_UP
 
 u32 PhotoCameraState::TakePhoto()
 {
