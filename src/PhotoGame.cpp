@@ -220,7 +220,11 @@ struct PhotoGameUpdateView
     PhotoAnmVmId focusVm;
     Float3 playerPosition;
     PhotoCameraState camera;
+#ifdef DIFFBUILD
     f32 cameraUpdateScale;
+#else
+    f32 movementScale;
+#endif
     ChainElem *calcChain;
     ChainElem *drawPlayerChain;
     ChainElem *drawCameraChain;
@@ -267,8 +271,13 @@ typedef char PhotoGameUpdateFocusVmAt1E2C[
     (offsetof(PhotoGameUpdateView, focusVm) == 0x1e2c) ? 1 : -1];
 typedef char PhotoGameUpdateCameraAt1E3C[
     (offsetof(PhotoGameUpdateView, camera) == 0x1e3c) ? 1 : -1];
+#ifdef DIFFBUILD
 typedef char PhotoGameUpdateScaleAt2A18[
     (offsetof(PhotoGameUpdateView, cameraUpdateScale) == 0x2a18) ? 1 : -1];
+#else
+typedef char PhotoGameUpdateMovementScaleAt2A18[
+    (offsetof(PhotoGameUpdateView, movementScale) == 0x2a18) ? 1 : -1];
+#endif
 typedef char PhotoGameUpdatePhotoBoundsAt2A28[
     (offsetof(PhotoGameUpdateView, photoTargetBoundsMin) == 0x2a28) ? 1 : -1];
 typedef char PhotoGameUpdateSizeIs2A40[
@@ -866,8 +875,13 @@ i32 PhotoGameUpdateView::UpdateMainState()
         }
     }
 
+#ifdef DIFFBUILD
     horizontalSpeed *= this->cameraUpdateScale;
     verticalSpeed *= this->cameraUpdateScale;
+#else
+    horizontalSpeed *= this->movementScale;
+    verticalSpeed *= this->movementScale;
+#endif
 
 #define SET_PHOTO_PLAYER_SCRIPT(idx)                                            \
     this->effectAnm->SetAndExecuteScriptIdx(&this->effectVm, (idx))
@@ -998,7 +1012,11 @@ i32 PhotoGameUpdateView::Update()
         break;
     }
 
+#ifdef DIFFBUILD
     this->cameraUpdateScale = 1.0f;
+#else
+    this->movementScale = 1.0f;
+#endif
     AnmManager::ExecuteScript(&this->effectVm);
     this->completionTimer.Tick();
     return 1;

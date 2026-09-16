@@ -321,12 +321,23 @@ struct ExtendedPlayerView
     u8 unknown0000[0x1e30];
     Float3 position;
     ExtendedPhotoCameraView camera;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     f32 proximityScale;
+#else
+    f32 movementScale;
+#endif
 };
 typedef char ExtendedPlayerPositionAt1E30[
     (offsetof(ExtendedPlayerView, position) == 0x1e30) ? 1 : -1];
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 typedef char ExtendedPlayerScaleAt2A18[
     (offsetof(ExtendedPlayerView, proximityScale) == 0x2a18) ? 1 : -1];
+#define TH095_EXT_PLAYER_MOVEMENT_SCALE(player) ((player)->proximityScale)
+#else
+typedef char ExtendedPlayerMovementScaleAt2A18[
+    (offsetof(ExtendedPlayerView, movementScale) == 0x2a18) ? 1 : -1];
+#define TH095_EXT_PLAYER_MOVEMENT_SCALE(player) ((player)->movementScale)
+#endif
 
 struct ExtendedBulletView
 {
@@ -590,9 +601,9 @@ void __fastcall UpdatePlayerProximityAndMarker(
         (locals.playerPosition->x - locals.enemyPosition->x) *
             (locals.playerPosition->x - locals.enemyPosition->x);
     if (locals.distanceSquared < 1024.0f)
-        g_Player->proximityScale = 0.25f;
+        TH095_EXT_PLAYER_MOVEMENT_SCALE(g_Player) = 0.25f;
     else if (locals.distanceSquared < 4096.0f)
-        g_Player->proximityScale =
+        TH095_EXT_PLAYER_MOVEMENT_SCALE(g_Player) =
             (locals.distanceSquared - 1024.0f) / 3072.0f * 0.75f + 0.25f;
 
     locals.vm = TH095_EXT_ANM_GET_VM(

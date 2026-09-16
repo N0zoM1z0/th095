@@ -102,7 +102,12 @@ struct PhotoPlayerRuntimeView
     u8 unknown042c[0x1e30 - 0x042c];
     Float3 playerPosition;                         // +0x1e30
     PhotoPlayerCameraRuntimeView camera;           // +0x1e3c
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     u8 unknown2a18[0x2a28 - 0x2a18];
+#else
+    f32 movementScale;                             // +0x2a18
+    u8 unknown2a1c[0x2a28 - 0x2a1c];
+#endif
     Float3 photoTargetBoundsMin;                   // +0x2a28
     Float3 photoTargetBoundsMax;                   // +0x2a34
 
@@ -139,6 +144,10 @@ typedef char PhotoPlayerRuntimePhotoLimitAt29EC[
     (offsetof(PhotoPlayerRuntimeView, camera.photoLimit) == 0x29ec) ? 1 : -1];
 typedef char PhotoPlayerRuntimeCameraFlagsAt29F0[
     (offsetof(PhotoPlayerRuntimeView, camera.flags) == 0x29f0) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+typedef char PhotoPlayerRuntimeMovementScaleAt2A18[
+    (offsetof(PhotoPlayerRuntimeView, movementScale) == 0x2a18) ? 1 : -1];
+#endif
 typedef char PhotoPlayerRuntimePhotoTargetBoundsMinAt2A28[
     (offsetof(PhotoPlayerRuntimeView, photoTargetBoundsMin) == 0x2a28) ? 1 : -1];
 typedef char PhotoPlayerRuntimePhotoTargetBoundsMaxAt2A34[
