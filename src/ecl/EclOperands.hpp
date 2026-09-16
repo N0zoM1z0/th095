@@ -40,6 +40,19 @@ enum EclCallParameterSelector
 #define TH095_ECL_CALL_PARAMETER_FLOAT3 EclOperands::ECL_CALL_PARAMETER_FLOAT3
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_ECL_RANDOM_SELECTOR(rawValue, semanticName) rawValue
+#else
+enum EclRandomOperandSelector
+{
+    ECL_RANDOM_U31 = 0x2720,
+    ECL_RANDOM_F32 = 0x2721,
+    ECL_RANDOM_I32 = 0x2722,
+    ECL_RANDOM_F32_SIGNED = 0x2723,
+};
+#define TH095_ECL_RANDOM_SELECTOR(rawValue, semanticName) EclOperands::semanticName
+#endif
+
 i32 __fastcall ResolveInt(Enemy *enemy, i32 operand);
 i32 *__fastcall ResolveIntLValue(Enemy *enemy, i32 *operand, u16 flags, i32 flagIndex);
 f32 *__fastcall ResolveFloatLValue(Enemy *enemy, f32 *operand, u16 flags, i32 flagIndex);

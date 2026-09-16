@@ -19,8 +19,8 @@ namespace th095
 #define TH095_ECL_CALL_PARAMETER_FLOAT1 0x2739
 #define TH095_ECL_CALL_PARAMETER_FLOAT2 0x273a
 #define TH095_ECL_CALL_PARAMETER_FLOAT3 0x273b
+#define TH095_ECL_RANDOM_SELECTOR(rawValue, semanticName) rawValue
 #endif
-
 struct EclSharedFloatOperandView
 {
     u8 unknown000[0x168];
@@ -222,10 +222,10 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x2726: return (f32)this->activeEclContext->extraIntVariables[2];
     case 0x2727: return (f32)this->activeEclContext->extraIntVariables[3];
 
-    case 0x2720: return (f32)(g_Rng.GetRandomU32() & 0x7fffffff);
-    case 0x2721: return g_Rng.GetRandomF32();
-    case 0x2722: return (f32)(i32)g_Rng.GetRandomU32();
-    case 0x2723: return g_Rng.GetRandomF32Signed();
+    case TH095_ECL_RANDOM_SELECTOR(0x2720, ECL_RANDOM_U31): return (f32)(g_Rng.GetRandomU32() & 0x7fffffff);
+    case TH095_ECL_RANDOM_SELECTOR(0x2721, ECL_RANDOM_F32): return g_Rng.GetRandomF32();
+    case TH095_ECL_RANDOM_SELECTOR(0x2722, ECL_RANDOM_I32): return (f32)(i32)g_Rng.GetRandomU32();
+    case TH095_ECL_RANDOM_SELECTOR(0x2723, ECL_RANDOM_F32_SIGNED): return g_Rng.GetRandomF32Signed();
     case 0x2751: return g_Rng.GetRandomF32() * 6.2831855f - 3.1415927f;
 
     case 0x2731: return (f32)TH095_ECL_TIMER_CURRENT(this);
