@@ -94,8 +94,8 @@ ChainCallbackResult OptionsMenuView::Update()
         g_Supervisor.StopReplayScan();
         this->stateTimer.Reset();
         this->cursor.Push();
-        this->cursor.Set(0);
-        this->cursor.count = 7;
+        this->cursor.Set(OPTIONS_MENU_ITEM_BUTTON02_BINDING);
+        this->cursor.count = OPTIONS_MENU_ITEM_COUNT;
         this->cursor.wraps = 1;
         this->state = TH095_OPTIONS_MENU_STATE_ACTIVE;
 
@@ -155,13 +155,13 @@ ChainCallbackResult OptionsMenuView::Update()
         {
             switch (this->cursor.GetCurrent())
             {
-            case 3:
+            case OPTIONS_MENU_ITEM_WINDOW_MODE:
                 g_OptionsGameConfig.windowed =
                     1 - g_OptionsGameConfig.windowed;
                 this->UpdateWindowModeSprites(g_OptionsGameConfig.windowed);
                 break;
 
-            case 4:
+            case OPTIONS_MENU_ITEM_BGM_VOLUME:
                 if (g_OptionsGameConfig.bgmVolume > 0)
                 {
                     g_OptionsGameConfig.bgmVolume -= 5;
@@ -174,7 +174,7 @@ ChainCallbackResult OptionsMenuView::Update()
                 this->UpdateBgmVolumeSprites(shallow.leftBgmVolume);
                 break;
 
-            case 5:
+            case OPTIONS_MENU_ITEM_SFX_VOLUME:
                 if (g_OptionsGameConfig.sfxVolume > 0)
                 {
                     g_OptionsGameConfig.sfxVolume -= 5;
@@ -193,13 +193,13 @@ ChainCallbackResult OptionsMenuView::Update()
         {
             switch (this->cursor.GetCurrent())
             {
-            case 3:
+            case OPTIONS_MENU_ITEM_WINDOW_MODE:
                 g_OptionsGameConfig.windowed =
                     1 - g_OptionsGameConfig.windowed;
                 this->UpdateWindowModeSprites(g_OptionsGameConfig.windowed);
                 break;
 
-            case 4:
+            case OPTIONS_MENU_ITEM_BGM_VOLUME:
                 if (g_OptionsGameConfig.bgmVolume < 100)
                 {
                     g_OptionsGameConfig.bgmVolume += 5;
@@ -212,7 +212,7 @@ ChainCallbackResult OptionsMenuView::Update()
                 this->UpdateBgmVolumeSprites(shallow.rightBgmVolume);
                 break;
 
-            case 5:
+            case OPTIONS_MENU_ITEM_SFX_VOLUME:
                 if (g_OptionsGameConfig.sfxVolume < 100)
                 {
                     g_OptionsGameConfig.sfxVolume += 5;
@@ -229,7 +229,7 @@ ChainCallbackResult OptionsMenuView::Update()
 
         g_SoundPlayer.bgmVolume = g_OptionsGameConfig.bgmVolume;
         g_SoundPlayer.sfxVolume = g_OptionsGameConfig.sfxVolume;
-        if (this->cursor.GetCurrent() == 5 && this->animationTimer.current % 40 == 0)
+        if (this->cursor.GetCurrent() == OPTIONS_MENU_ITEM_SFX_VOLUME && this->animationTimer.current % 40 == 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_TAKE_PHOTO, 0);
         }
@@ -249,7 +249,7 @@ ChainCallbackResult OptionsMenuView::Update()
         {
             switch (this->cursor.GetCurrent())
             {
-            case 0:
+            case OPTIONS_MENU_ITEM_BUTTON02_BINDING:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 if (this->controllerBinding.button06 == shallow.joystickButton)
                 {
@@ -264,7 +264,7 @@ ChainCallbackResult OptionsMenuView::Update()
                 this->controllerBinding.button02 = shallow.joystickButton;
                 break;
 
-            case 1:
+            case OPTIONS_MENU_ITEM_BUTTON00_BINDING:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 if (this->controllerBinding.button06 == shallow.joystickButton)
                 {
@@ -279,7 +279,7 @@ ChainCallbackResult OptionsMenuView::Update()
                 this->controllerBinding.button00 = shallow.joystickButton;
                 break;
 
-            case 2:
+            case OPTIONS_MENU_ITEM_BUTTON06_BINDING:
                 g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
                 if (this->controllerBinding.button00 == shallow.joystickButton)
                 {
@@ -302,7 +302,7 @@ ChainCallbackResult OptionsMenuView::Update()
 
         if (GetOptionsPressedButtons(TH_BUTTON_ENTER | TH_BUTTON_BOMB) != 0)
         {
-            if (this->cursor.GetCurrent() == 6)
+            if (this->cursor.GetCurrent() == OPTIONS_MENU_ITEM_EXIT)
             {
 options_finish:
             this->cursor.Pop();
@@ -349,7 +349,7 @@ options_finish:
             if (GetOptionsPressedButtons(TH_BUTTON_MENU | TH_BUTTON_SHOOT) != 0)
             {
                 g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-                if (this->cursor.GetCurrent() == 6)
+                if (this->cursor.GetCurrent() == OPTIONS_MENU_ITEM_EXIT)
                 {
                     goto options_finish;
                 }

@@ -20,6 +20,21 @@ typedef char OptionsMenuStateSizeIs4[
     (sizeof(OptionsMenuState) == sizeof(i32)) ? 1 : -1];
 #endif
 
+typedef i32 OptionsMenuItem;
+enum OptionsMenuItemValue
+{
+    OPTIONS_MENU_ITEM_BUTTON02_BINDING = 0,
+    OPTIONS_MENU_ITEM_BUTTON00_BINDING = 1,
+    OPTIONS_MENU_ITEM_BUTTON06_BINDING = 2,
+    OPTIONS_MENU_ITEM_WINDOW_MODE = 3,
+    OPTIONS_MENU_ITEM_BGM_VOLUME = 4,
+    OPTIONS_MENU_ITEM_SFX_VOLUME = 5,
+    OPTIONS_MENU_ITEM_EXIT = 6,
+    OPTIONS_MENU_ITEM_COUNT = 7,
+};
+typedef char OptionsMenuItemSizeIs4[
+    (sizeof(OptionsMenuItem) == sizeof(i32)) ? 1 : -1];
+
 struct OptionsControllerBinding
 {
     i16 button00;
@@ -206,29 +221,29 @@ struct OptionsMenuView
 
     __forceinline void UpdateSelectionSprites()
     {
-        this->vmIds.SetInterrupt(0x6b, (this->cursor.GetCurrent() != 0) + 2);
-        this->vmIds.SetInterrupt(0x6c, (this->cursor.GetCurrent() != 1) + 2);
-        this->vmIds.SetInterrupt(0x6d, (this->cursor.GetCurrent() != 2) + 2);
-        this->vmIds.SetInterrupt(0x6e, (this->cursor.GetCurrent() != 3) + 2);
-        this->vmIds.SetInterrupt(0x6f, (this->cursor.GetCurrent() != 4) + 2);
-        this->vmIds.SetInterrupt(0x70, (this->cursor.GetCurrent() != 5) + 2);
-        this->vmIds.SetInterrupt(0x71, (this->cursor.GetCurrent() != 6) + 2);
-        this->vmIds.SetInterrupt(0x72, (this->cursor.GetCurrent() != 0) + 2);
-        this->vmIds.SetInterrupt(0x73, (this->cursor.GetCurrent() != 0) + 2);
-        this->vmIds.SetInterrupt(0x74, (this->cursor.GetCurrent() != 1) + 2);
-        this->vmIds.SetInterrupt(0x75, (this->cursor.GetCurrent() != 1) + 2);
-        this->vmIds.SetInterrupt(0x76, (this->cursor.GetCurrent() != 2) + 2);
-        this->vmIds.SetInterrupt(0x77, (this->cursor.GetCurrent() != 2) + 2);
-        this->vmIds.SetInterrupt(0x78, (this->cursor.GetCurrent() != 3) + 2);
-        this->vmIds.SetInterrupt(0x79, (this->cursor.GetCurrent() != 3) + 2);
-        this->vmIds.SetInterrupt(0x7a, (this->cursor.GetCurrent() != 4) + 2);
-        this->vmIds.SetInterrupt(0x7b, (this->cursor.GetCurrent() != 4) + 2);
-        this->vmIds.SetInterrupt(0x7c, (this->cursor.GetCurrent() != 4) + 2);
-        this->vmIds.SetInterrupt(0x7d, (this->cursor.GetCurrent() != 4) + 2);
-        this->vmIds.SetInterrupt(0x7e, (this->cursor.GetCurrent() != 5) + 2);
-        this->vmIds.SetInterrupt(0x7f, (this->cursor.GetCurrent() != 5) + 2);
-        this->vmIds.SetInterrupt(0x80, (this->cursor.GetCurrent() != 5) + 2);
-        this->vmIds.SetInterrupt(0x81, (this->cursor.GetCurrent() != 5) + 2);
+        this->vmIds.SetInterrupt(0x6b, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON02_BINDING) + 2);
+        this->vmIds.SetInterrupt(0x6c, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON00_BINDING) + 2);
+        this->vmIds.SetInterrupt(0x6d, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON06_BINDING) + 2);
+        this->vmIds.SetInterrupt(0x6e, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_WINDOW_MODE) + 2);
+        this->vmIds.SetInterrupt(0x6f, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
+        this->vmIds.SetInterrupt(0x70, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
+        this->vmIds.SetInterrupt(0x71, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_EXIT) + 2);
+        this->vmIds.SetInterrupt(0x72, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON02_BINDING) + 2);
+        this->vmIds.SetInterrupt(0x73, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON02_BINDING) + 2);
+        this->vmIds.SetInterrupt(0x74, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON00_BINDING) + 2);
+        this->vmIds.SetInterrupt(0x75, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON00_BINDING) + 2);
+        this->vmIds.SetInterrupt(0x76, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON06_BINDING) + 2);
+        this->vmIds.SetInterrupt(0x77, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BUTTON06_BINDING) + 2);
+        this->vmIds.SetInterrupt(0x78, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_WINDOW_MODE) + 2);
+        this->vmIds.SetInterrupt(0x79, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_WINDOW_MODE) + 2);
+        this->vmIds.SetInterrupt(0x7a, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
+        this->vmIds.SetInterrupt(0x7b, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
+        this->vmIds.SetInterrupt(0x7c, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
+        this->vmIds.SetInterrupt(0x7d, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_BGM_VOLUME) + 2);
+        this->vmIds.SetInterrupt(0x7e, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
+        this->vmIds.SetInterrupt(0x7f, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
+        this->vmIds.SetInterrupt(0x80, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
+        this->vmIds.SetInterrupt(0x81, (this->cursor.GetCurrent() != OPTIONS_MENU_ITEM_SFX_VOLUME) + 2);
     }
 };
 
