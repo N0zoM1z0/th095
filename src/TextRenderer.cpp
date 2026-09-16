@@ -8,6 +8,10 @@ namespace th095
 {
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define previousSelectedBitmap originalBitmap
+#endif
+
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #define ownedBitmap bitmap
 #define bitmapBits buffer
 #endif
@@ -42,7 +46,7 @@ TextRenderBufferView::TextRenderBufferView()
     this->height = 0;
     this->hdc = 0;
     this->ownedBitmap = 0;
-    this->originalBitmap = 0;
+    this->previousSelectedBitmap = 0;
     this->bitmapBits = NULL;
 }
 
@@ -55,7 +59,7 @@ bool TextRenderBufferView::ReleaseBuffer()
 {
     if (this->hdc)
     {
-        SelectObject(this->hdc, this->originalBitmap);
+        SelectObject(this->hdc, this->previousSelectedBitmap);
         DeleteDC(this->hdc);
         DeleteObject(this->ownedBitmap);
         this->format = (D3DFORMAT)-1;
@@ -63,7 +67,7 @@ bool TextRenderBufferView::ReleaseBuffer()
         this->height = 0;
         this->hdc = 0;
         this->ownedBitmap = 0;
-        this->originalBitmap = 0;
+        this->previousSelectedBitmap = 0;
         this->bitmapBits = NULL;
         return true;
     }
@@ -164,7 +168,7 @@ bool TextRenderBufferView::TryAllocateBuffer(i32 width, i32 height,
     this->ownedBitmap = bitmapObj;
     this->bitmapBits = bitmapData;
     this->imageSizeInBytes = bitmapInfo.header.biSizeImage;
-    this->originalBitmap = averagedPanLocal12.originalBitmapObj;
+    this->previousSelectedBitmap = averagedPanLocal12.originalBitmapObj;
     this->width = width;
     this->height = height;
     this->format = format;

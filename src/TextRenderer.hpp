@@ -40,7 +40,11 @@ struct TextRenderBufferView
     u32 imageSizeInBytes;
     i32 imageWidthInBytes;
     HDC hdc;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     HGDIOBJ originalBitmap;
+#else
+    HGDIOBJ previousSelectedBitmap;
+#endif
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     HGDIOBJ bitmap;
     u8 *buffer;
@@ -74,6 +78,13 @@ typedef char TextRenderBufferImageSizeAt10C[
     (offsetof(TextRenderBufferView, imageSizeInBytes) == 0x10c) ? 1 : -1];
 typedef char TextRenderBufferHdcAt114[
     (offsetof(TextRenderBufferView, hdc) == 0x114) ? 1 : -1];
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+typedef char TextRenderBufferPreviousBitmapAt118[
+    (offsetof(TextRenderBufferView, originalBitmap) == 0x118) ? 1 : -1];
+#else
+typedef char TextRenderBufferPreviousBitmapAt118[
+    (offsetof(TextRenderBufferView, previousSelectedBitmap) == 0x118) ? 1 : -1];
+#endif
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 typedef char TextRenderBufferDataAt120[
     (offsetof(TextRenderBufferView, buffer) == 0x120) ? 1 : -1];
