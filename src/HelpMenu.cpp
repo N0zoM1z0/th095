@@ -86,7 +86,7 @@ i32 HelpMenuView::UpdateHelpMenu()
 {
     switch (this->state)
     {
-    case 0:
+    case TH095_HELP_STATE_INITIALIZE:
         this->cursor.Push();
         this->vmIds.SetInterrupt(0x66, 1);
         this->vmIds.SetInterrupt(0x67, 1);
@@ -97,7 +97,7 @@ i32 HelpMenuView::UpdateHelpMenu()
         this->vmIds.SetInterrupt(0x1a, 3);
         this->transitionVm.SetInterrupt(3);
         this->vmIds.SetInterrupt(0x1b, 3);
-        this->state = 1;
+        this->state = TH095_HELP_STATE_PAGE_SELECT;
         this->stateTimer.Reset();
         this->cursor.count = 9;
         this->cursor.Set(0);
@@ -117,7 +117,7 @@ i32 HelpMenuView::UpdateHelpMenu()
         }
         break;
 
-    case 1:
+    case TH095_HELP_STATE_PAGE_SELECT:
         if (this->stateTimer < 20)
         {
             break;
@@ -182,7 +182,7 @@ i32 HelpMenuView::UpdateHelpMenu()
                 this->vmIds.SetInterrupt(0x91 + i, 1);
             }
             this->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
-            this->state = 0;
+            this->state = TH095_HELP_STATE_INITIALIZE;
             this->stateTimer.Reset();
             break;
         }
@@ -231,7 +231,7 @@ i32 HelpMenuView::UpdateHelpMenu()
             GetHelpPressedButtons(9) != 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            this->state = 1;
+            this->state = TH095_HELP_STATE_PAGE_SELECT;
             this->stateTimer.Reset();
             this->vmIds.SetInterrupt(0x90, 1);
             for (i32 i = 0; i < 9; i++)

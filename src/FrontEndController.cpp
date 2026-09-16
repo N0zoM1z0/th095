@@ -919,7 +919,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
         case 4:
             this->CloseMainMenu();
             view->requestedState = TH095_FRONT_END_REQUESTED_STATE_HELP;
-            view->state = 0;
+            view->state = TH095_HELP_STATE_INITIALIZE;
             view->stateTimer.Reset();
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 5:

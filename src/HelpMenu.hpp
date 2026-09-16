@@ -1,3 +1,16 @@
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_HELP_STATE_INITIALIZE 0
+#define TH095_HELP_STATE_PAGE_SELECT 1
+#else
+enum HelpMenuOuterStateValue
+{
+    HELP_MENU_INITIALIZE = 0,
+    HELP_MENU_PAGE_SELECT = 1,
+};
+#define TH095_HELP_STATE_INITIALIZE HELP_MENU_INITIALIZE
+#define TH095_HELP_STATE_PAGE_SELECT HELP_MENU_PAGE_SELECT
+#endif
+
 #ifdef TH095_MATCH_EXACT
 #include "HelpMenuExact.hpp"
 #else
