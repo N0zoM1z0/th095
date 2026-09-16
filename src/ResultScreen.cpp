@@ -236,12 +236,19 @@ extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
 
 #if defined(DIFFBUILD)
+#define TH095_RESULT_STATE_REPLAY_RESULT_MENU 3
+#define TH095_RESULT_STATE_REPLAY_RESULT_EXIT 4
 #define TH095_RESULT_STATE_PHOTO_RESULT_MENU 5
 #define TH095_RESULT_STATE_PHOTO_RESULT_EXIT 6
 #define TH095_RESULT_STATE_REPLAY_SLOT_SELECT 13
 #define TH095_RESULT_STATE_REPLAY_NAME_ENTRY 14
 #define TH095_RESULT_STATE_REPLAY_WRITE 15
 #else
+enum ResultScreenReplayResultStateValue
+{
+    RESULT_SCREEN_REPLAY_RESULT_MENU = 3,
+    RESULT_SCREEN_REPLAY_RESULT_EXIT = 4,
+};
 enum ResultScreenPhotoResultStateValue
 {
     RESULT_SCREEN_PHOTO_RESULT_MENU = 5,
@@ -253,6 +260,8 @@ enum ResultScreenReplaySaveStateValue
     RESULT_SCREEN_REPLAY_NAME_ENTRY = 14,
     RESULT_SCREEN_REPLAY_WRITE = 15,
 };
+#define TH095_RESULT_STATE_REPLAY_RESULT_MENU RESULT_SCREEN_REPLAY_RESULT_MENU
+#define TH095_RESULT_STATE_REPLAY_RESULT_EXIT RESULT_SCREEN_REPLAY_RESULT_EXIT
 #define TH095_RESULT_STATE_PHOTO_RESULT_MENU RESULT_SCREEN_PHOTO_RESULT_MENU
 #define TH095_RESULT_STATE_PHOTO_RESULT_EXIT RESULT_SCREEN_PHOTO_RESULT_EXIT
 #define TH095_RESULT_STATE_REPLAY_SLOT_SELECT RESULT_SCREEN_REPLAY_SLOT_SELECT
@@ -656,7 +665,7 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 7), 7);
     if (TH095_RESULT_IS_RECORD_MODE())
     {
-        resultScreen->state = 3;
+        resultScreen->state = TH095_RESULT_STATE_REPLAY_RESULT_MENU;
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 9), 9);
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 10), 10);
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 8), 8);
@@ -1238,14 +1247,14 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 3:
+    case TH095_RESULT_STATE_REPLAY_RESULT_MENU:
         if (this->UpdateCursor(8) != 0)
         {
             break;
         }
         if (GetPressedButtons(0x1002) != 0)
         {
-            this->SetState(4);
+            this->SetState(TH095_RESULT_STATE_REPLAY_RESULT_EXIT);
             for (i32 i = 3; i < 21; i++)
             {
                 this->vms[i].SetInterrupt(1);
@@ -1265,7 +1274,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 4:
+    case TH095_RESULT_STATE_REPLAY_RESULT_EXIT:
         if (this->stateTimer >= 8)
         {
             g_AnmGameSpeed = 1.0f;
@@ -1436,7 +1445,7 @@ ChainCallbackResult ResultScreen::Update()
             {
                 this->stateTimer.Reset();
                 this->anm->InitializeVm(GetResultVm(this, 7), 7);
-                this->state = 3;
+                this->state = TH095_RESULT_STATE_REPLAY_RESULT_MENU;
                 this->anm->InitializeVm(GetResultVm(this, 9), 9);
                 this->anm->InitializeVm(GetResultVm(this, 10), 10);
                 this->anm->InitializeVm(GetResultVm(this, 8), 8);
@@ -1707,7 +1716,7 @@ ChainCallbackResult ResultScreen::Draw()
 
     switch (this->state)
     {
-    case 3:
+    case TH095_RESULT_STATE_REPLAY_RESULT_MENU:
         TH095_RESULT_VM_DRAW(&this->vms[21]);
         TH095_RESULT_VM_DRAW(&this->vms[22]);
         break;
