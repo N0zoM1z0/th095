@@ -1613,3 +1613,65 @@ At the next resume, run the mandatory recovery gate before editing and rotate aw
 Continue to preserve `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd controller bit 4, alternate enemy ANM `+0x4DFC`, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect type-1 raw endpoints and other one-sided storage, bullet descriptor/tail residuals including `field360`, compact-enemy single-ended fields/tail packets, score-profile `+0x15`, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB` as Unknown absent fresh TH095-local discriminators.
 
 After this docs-only handoff checkpoint, refresh only a bounded current-source Factory receipt plane: one representative SEM-261 exact claim and one `whole-build-closed` claim. Do not replay the complete historical receipt set. The accepted whole-build receipt on prior handoff `cc11c16...` is historical once SEM-261 source is committed. If an external shared-operator lock prevents an exact receipt, report that plane as deferred rather than retrying indefinitely or modifying protected untracked state.
+
+## GPT-web semantic continuation — SEM-262/263
+
+This is the newest GPT-web continuation point and supersedes older routing notes where they conflict. The TH095 semantic campaign remains **active-incomplete**. This handoff pauses the browser conversation only; it is not semantic readiness, completion, closure, an exit audit, whole-image identity, runtime-scenario validation, or permission to begin portable Windows/Linux/Web work.
+
+### Resume / recovery state
+
+This conversation initially resumed from the older `cc11c16be41049c8659ed44274f6fc4be91bd21a` handoff, but the mandatory recovery gate discovered that the live repository had already advanced through independent committed SEM-261 work. The live source of truth was therefore re-read and work continued from clean tracked handoff `5fa4153ce1cc9e0dc24f77349251aff1ed6b91ea` rather than replaying stale chat plans. All five requested Factory-controlled reconstruction/semantic/recovery contracts and documentation paths were mounted and readable. The optional `$factory-semantic-reconstruction` skill body was not exposed as a readable resource, so the mounted Factory rules plus the complete inline campaign rules remained authoritative.
+
+The same four long-lived untracked exclusions were preserved throughout and must remain outside staging unless new ownership evidence appears:
+
+- `EnemyManagerUpdate.i` — unknown-origin generated-looking VC7 preprocessed output; SHA-256 `1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`.
+- `config/runtime-scenarios.json` — pre-existing runtime experiment; SHA-256 `56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`.
+- `scripts/runtime-diff.py` — pre-existing runtime oracle experiment; SHA-256 `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`.
+- `droid.resume.txt` — user-owned unrelated state; SHA-256 `9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`.
+
+`.analysis/` began and ends at exactly **3,394,984 bytes**. No current-session `.analysis/gpt-web/` root was created, no retained file exceeds 64 MiB, and legacy/shared provider state was not modified or bulk-deleted. One-shot normal compiles used command-local temporary directories. Fresh target semantics came through the registered read-only `th095-ghidra` provider and carry no exactness credit.
+
+The conversation-wide broad baseline passed target verification, tracking (**1,880 provisional / 697 source-present / 696 exact**), Ghidra target attestation, CI **43/43**, the **696-unit** match graph, the **88-source / 2-profile** whole-build graph, and whitespace checks.
+
+### SEM-262 — front-end draw requested-state projection
+
+Commit `81d928aa81aa934ccc2b0b84a83e792e5b907168` (`gpt-web: bind front-end draw requested state`) closes a missed sibling consumer of the established `FrontEndRequestedState` protocol. Normal `SceneControllerDraw.cpp` still projected controller `+0x6110` as raw `i32` and used literal cases 2/3 even though the update-side owner already has a target-backed 0..9 vocabulary.
+
+Fresh TH095 `SceneSelectControllerView::Draw @ 0x00452630` independently reads `+0x6110`: value 2 renders the Scene Select score/scene summary, while value 3 renders one Replay Browser page under critical section 4. Fresh `SceneSelectControllerView::Update @ 0x00445E80` independently dispatches the same physical values to the Scene Select and Replay Browser update handlers. Normal draw source now types only its local projection as `FrontEndRequestedState` and uses `FRONT_END_REQUESTED_STATE_SCENE_SELECT` / `...REPLAY_BROWSER`; DIFF retains four-byte integer storage and `TH095_MATCH_EXACT` remains frozen at the source-file boundary.
+
+Focused canonical replay passed **3/3 exact** with **zero private-label refresh**. A pinned-VC7.1 normal probe emitted a **23,967-byte Intel 80386 COFF** object. This batch deliberately did not reinterpret `entryMode 0/1/2`, the screen-local `+0x610C` state owner, or FrontEnd controller bit 4.
+
+### SEM-263 — non-record Game Result states
+
+Commit `7d8ec6d6118d08d27911ca42084f17b4443cf006` (`gpt-web: name non-record Game Result states`) names only the independent ResultScreen Game Result non-record pair 11/12.
+
+Fresh `InitializeGameResultScreen @ 0x00428590` publishes state 1 with VM scripts 4/6/5 when runtime task `+0x120` is record mode zero, but publishes state 11 with scripts 16/17/18 on the nonzero branch. Fresh `ResultScreen::Update @ 0x00426BF0` consumes state 11 as the three-entry menu rooted at VM 16; Back or confirm publishes state 12. State 12 waits eight ticks, restores saved game speed, returns the internal state to zero, dispatches the selected action, and writes pending Best Shot data. Normal production therefore uses `RESULT_SCREEN_GAME_RESULT_NON_RECORD_MENU = 11` and `...EXIT = 12`; DIFF expands to literals and exact remains frozen.
+
+“Non-record” is intentionally only the logical complement of record mode in this initializer. It is not renamed “playback” because the target branch tests zero versus nonzero and does not distinguish playback from any other nonzero task mode. Raw ResultScreen states 7/8/9/10 were audited and deliberately left unnamed: replay non-record entry publishes 7, photo non-record entry publishes 9, Update merges both menu states into a shared behavior that publishes 8, and no current producer of 10 was established.
+
+Focused ResultScreen replay passed **24/24 exact** with **zero private-label refresh**. A pinned-VC7.1 normal probe emitted a **75,911-byte Intel 80386 COFF** object.
+
+### Final committed milestone validation
+
+After both source checkpoints, the committed `7d8ec6d...` tree received the cold aggregate exact gate in four deterministic alphabetical 22-source partitions. Durable totals were **205 + 158 + 191 + 142 = 696/696 configured exact units across all 88 manifest sources**, with **zero private-label refresh** in every source. Both changed TUs (`SceneControllerDraw.cpp` and `ResultScreen.cpp`) were independently included in partition 3.
+
+The first attempt to construct partition 1 failed before any replay because the helper assumed `match-units.toml["units"]` was a list rather than the actual keyed table; repository state was unchanged and the command receives zero exactness credit. After manifest-shape inspection, partition 1 was rerun correctly. The first partition-2 Factory call then lost transport without a durable command id; recovery found no surviving replay/compiler/Wine producer, unchanged source/exclusion hashes, and unchanged `.analysis/`, so that lost call also receives zero credit. Partition 2 was rerun from the same committed source and passed normally.
+
+Fresh repo-native whole-product validation then compiled **88/88 pinned VC7.1 i386 COFF** translation units across both production profiles and linked/verified `build/whole-validation/th095-reconstructed.exe`, a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `4e6a338581b71e5d22671d6c67efb8d9bc613cb929c526a39206d2b22034e5d7`. Successful linkage is reconstructed historical-Windows production closure only, not target whole-image identity. Wine emitted only the usual headless window/explorer/systray diagnostics; no runtime scenario receives credit. Final target verification, tracking **1,880 / 697 / 696**, CI **43/43**, graph checks, and whitespace all passed.
+
+### Bounded negative routes and next route
+
+The resume audit rotated through several selector/resource surfaces rather than treating the two checkpoints as completion evidence:
+
+- Supervisor active/requested scene bootstrap values `0/-1` de-duplicate to MAIN-036 bootstrap sentinels and must not be forced into the state enum.
+- Front-end `entryMode 0/1/2` remains explicitly outside the stable requested-state enum; current evidence proves initialization choices but not an independent public protocol.
+- `PhotoCardInfo::state` is already a complete local `ACTIVE=0 / FINISHING=1` domain.
+- Dummy MIDI timer creation/start/stop/destruction and the `dummyMidiTimerEnabled` policy latch are already closed by MAIN-017/018/033 and SEM-146.
+- ResultScreen states 7/8/9/10 remain an intentionally open sibling family for the reasons recorded above; do not name them by adjacency.
+- A final non-photo historical-resource sweep found `MidiDevice::handle`, `MidiOutput::outputDevice`, and `MidiTimer::timerId` already naturally represented through `midiOutOpen`/send/reset/close and `timeSetEvent`/`timeKillEvent`. Before editing that family, require a concrete representation contradiction or missed owner rather than merely documenting ordinary WinMM API use.
+
+At the next resume, run the mandatory recovery gate first. Rotate away from front-end requested-state and ResultScreen state naming. Preferred route: challenge a **non-photo historical-platform resource owner** not already closed by Sound workers, DirectInput, FileWrite, screenshot/version-data, startup surface, or dummy MIDI; require acquire/publication plus an independent use/cleanup edge and an actual maintained-source semantic gap. If that plateaus, inspect a **persistent/ABI boundary only when a genuinely new reader/validator appears**, or a **compact non-ECL/non-ANM gameplay selector** with at least two TH095-local behavioral discriminators.
+
+Continue to preserve `entryMode`, ResultScreen 7/8/9/10, replay/input reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, alternate enemy ANM `+0x4DFC`, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet residuals including `field360`, compact-enemy residuals, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB` as Unknown absent fresh TH095-local discriminators.
+
+After this docs-only handoff checkpoint, refresh only one representative exact receipt for SEM-262, one representative exact receipt for SEM-263, and `whole-build-closed`. Do not replay the historical receipt set and do not request semantic completion, whole-image exactness, runtime-scenario validation, or portable-runtime credit. If the shared Factory operator path is externally owned, report the affected receipt plane as deferred instead of mutating source or protected exclusions.
