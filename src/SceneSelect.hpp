@@ -16,6 +16,14 @@ namespace th095
 
 typedef ResultScoreEntryView SceneScoreEntryView;
 
+#ifndef DIFFBUILD
+enum SceneSelectState
+{
+    SCENE_SELECT_STATE_INITIALIZE = 0,
+    SCENE_SELECT_STATE_ACTIVE = 1,
+};
+#endif
+
 struct FrontEndControllerFlagBits
 {
     u32 titleLoadIncomplete : 1;

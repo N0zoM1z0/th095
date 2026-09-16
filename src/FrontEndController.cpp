@@ -24,6 +24,12 @@
 namespace th095
 {
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_SCENE_SELECT_STATE_INITIALIZE 0
+#else
+#define TH095_SCENE_SELECT_STATE_INITIALIZE SCENE_SELECT_STATE_INITIALIZE
+#endif
+
 struct FrontEndTextureEntryView
 {
     IDirect3DTexture8 *texture;
@@ -432,7 +438,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         case 1:
         {
             view->requestedState = TH095_FRONT_END_REQUESTED_STATE_SCENE_SELECT;
-            view->state = 0;
+            view->state = TH095_SCENE_SELECT_STATE_INITIALIZE;
             view->stateTimer.Reset();
             FrontEndCreateSceneVm(view, 0x19);
             FrontEndCreateSceneVm(view, 0x1a);
@@ -805,7 +811,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
         {
             this->CloseMainMenu();
             view->requestedState = TH095_FRONT_END_REQUESTED_STATE_SCENE_SELECT;
-            view->state = 0;
+            view->state = TH095_SCENE_SELECT_STATE_INITIALIZE;
             view->stateTimer.Reset();
             while (FrontEndHelpLoadSnapshot() != 0)
             {
