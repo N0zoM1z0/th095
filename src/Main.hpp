@@ -12,6 +12,9 @@
 #include <stddef.h>
 #include "Chain.hpp"
 #include "GameErrorContext.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "GameMusicMode.hpp"
+#endif
 #ifndef TH095_MATCH_EXACT
 #include "MidiRuntime.hpp"
 #endif
@@ -130,7 +133,11 @@ struct GameConfiguration
     u16 padXAxis;        // +0xa8
     u16 padYAxis;        // +0xaa
     u8 colorMode16bit;    // +0xac
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     u8 musicMode;         // +0xad
+#else
+    GameMusicMode musicMode; // +0xad
+#endif
     u8 playSounds;        // +0xae
     u8 windowed;          // +0xaf
     u8 frameskipConfig;   // +0xb0
@@ -159,6 +166,10 @@ typedef char ControllerBindingSizeIs12[(sizeof(ControllerBinding) == 0x12) ? 1 :
 typedef char SerializedControllerMappingSizeIs6C[(sizeof(SerializedControllerMapping) == 0x6c) ? 1 : -1];
 typedef char ControllerMappingSizeIsC4[(sizeof(ControllerMapping) == 0xc4) ? 1 : -1];
 typedef char GameConfigurationSizeIsC8[(sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+typedef char GameConfigurationMusicModeAtAD[
+    (offsetof(GameConfiguration, musicMode) == 0xad) ? 1 : -1];
+#endif
 #ifndef TH095_MATCH_EXACT
 typedef char GameConfigurationControllerAssignmentsAtB2[
     (offsetof(GameConfiguration, controllerAssignments) == 0xb2) ? 1 : -1];

@@ -54,8 +54,8 @@ namespace th095
 #define TH095_SOUND_GAME_WINDOW g_Supervisor.gameWindow
 #define TH095_SOUND_MUSIC_MODE g_Supervisor.config.musicMode
 #define TH095_SOUND_PLAY_SOUNDS g_Supervisor.config.playSounds
-#define TH095_SOUND_MUSIC_OFF 0
-#define TH095_SOUND_MUSIC_WAV 1
+#define TH095_SOUND_MUSIC_OFF GAME_MUSIC_MODE_DISABLED
+#define TH095_SOUND_MUSIC_WAV GAME_MUSIC_MODE_WAV
 #define SoundMusicPreloadEnabled() g_Supervisor.config.options.preloadMusic
 #endif
 

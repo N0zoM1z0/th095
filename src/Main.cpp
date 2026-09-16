@@ -46,6 +46,18 @@ namespace th095
 #endif
 
 #ifdef DIFFBUILD
+#define TH095_GAME_MUSIC_MODE_DISABLED 0
+#define TH095_GAME_MUSIC_MODE_WAV 1
+#define TH095_GAME_MUSIC_MODE_MIDI 2
+#define TH095_GAME_MUSIC_MODE_COUNT 3
+#else
+#define TH095_GAME_MUSIC_MODE_DISABLED GAME_MUSIC_MODE_DISABLED
+#define TH095_GAME_MUSIC_MODE_WAV GAME_MUSIC_MODE_WAV
+#define TH095_GAME_MUSIC_MODE_MIDI GAME_MUSIC_MODE_MIDI
+#define TH095_GAME_MUSIC_MODE_COUNT GAME_MUSIC_MODE_COUNT
+#endif
+
+#ifdef DIFFBUILD
 #define TH095_SUPERVISOR_FOG_DISABLED 0
 #define TH095_SUPERVISOR_FOG_ENABLED 1
 #define TH095_SUPERVISOR_FOG_INVALID 0xff
@@ -2317,7 +2329,7 @@ void GameConfiguration::Initialize()
     this->version = 0x95001;
     this->padXAxis = 600;
     this->padYAxis = 600;
-    this->musicMode = 1;
+    this->musicMode = TH095_GAME_MUSIC_MODE_WAV;
     this->playSounds = 1;
     this->windowed = 0;
     this->frameskipConfig = 0;
@@ -2365,11 +2377,11 @@ i32 Supervisor::LoadConfig(char *configFile)
         {
             ReadFile(bgmHandle, bgmBuffer, 16, &bytesRead, NULL);
             CloseHandle(bgmHandle);
-            g_Supervisor.config.musicMode = 1;
+            g_Supervisor.config.musicMode = TH095_GAME_MUSIC_MODE_WAV;
         }
         else
         {
-            g_Supervisor.config.musicMode = 2;
+            g_Supervisor.config.musicMode = TH095_GAME_MUSIC_MODE_MIDI;
             utils::DebugPrint(
                 "\x77\x61\x76\x65\x20\x83\x66\x81\x5b\x83\x5e\x82\xaa\x96\xb3\x82\xa2"
                 "\x82\xcc\x82\xc5\x81\x41\x6d\x69\x64\x69\x20\x82\xc9\x82\xb5\x82\xdc"
@@ -2380,7 +2392,7 @@ i32 Supervisor::LoadConfig(char *configFile)
     {
         g_Supervisor.config = *(GameConfiguration *)configFileBuffer;
         free(configFileBuffer);
-        if (g_Supervisor.config.colorMode16bit >= 2 || g_Supervisor.config.musicMode >= 3 ||
+        if (g_Supervisor.config.colorMode16bit >= 2 || g_Supervisor.config.musicMode >= TH095_GAME_MUSIC_MODE_COUNT ||
             g_Supervisor.config.playSounds >= 2 || g_Supervisor.config.windowed >= 2 ||
             g_Supervisor.config.frameskipConfig >= 3 || g_Supervisor.config.effectQuality >= 3 ||
             g_Supervisor.config.version != 0x95001 || fileSize != sizeof(GameConfiguration))
@@ -2474,13 +2486,13 @@ i32 Supervisor::LoadMusic(i32 preloadSlot, char *path)
 #define wavPath locals.wavPath
 #define extension locals.extension
 
-    if (g_Supervisor.config.musicMode == 2)
+    if (g_Supervisor.config.musicMode == TH095_GAME_MUSIC_MODE_MIDI)
     {
         if (g_Supervisor.midiOutput != NULL)
             g_Supervisor.midiOutput->ReadFileData(preloadSlot, path);
         return 0;
     }
-    else if (g_Supervisor.config.musicMode == 1)
+    else if (g_Supervisor.config.musicMode == TH095_GAME_MUSIC_MODE_WAV)
     {
         strcpy(wavPath, path);
         extension = strrchr(wavPath, '.');
@@ -2499,7 +2511,7 @@ i32 Supervisor::PlayMusic(i32 musicIndex, i32 unused)
 {
     MidiOutput *midiOutput;
 
-    if (g_Supervisor.config.musicMode == 2)
+    if (g_Supervisor.config.musicMode == TH095_GAME_MUSIC_MODE_MIDI)
     {
         if (g_Supervisor.midiOutput != NULL)
         {
@@ -2510,7 +2522,7 @@ i32 Supervisor::PlayMusic(i32 musicIndex, i32 unused)
         }
         return 0;
     }
-    else if (g_Supervisor.config.musicMode == 1)
+    else if (g_Supervisor.config.musicMode == TH095_GAME_MUSIC_MODE_WAV)
     {
         if (g_Supervisor.config.options.preloadMusic)
             g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_RELEASE_BGM, 0, "dummy");
@@ -2522,12 +2534,12 @@ i32 Supervisor::PlayMusic(i32 musicIndex, i32 unused)
 // FUNCTION: TH095 0x00425390.
 i32 Supervisor::StopAudio()
 {
-    if (g_Supervisor.config.musicMode == 2)
+    if (g_Supervisor.config.musicMode == TH095_GAME_MUSIC_MODE_MIDI)
     {
         if (g_Supervisor.midiOutput != NULL)
             g_Supervisor.midiOutput->StopPlayback();
     }
-    else if (g_Supervisor.config.musicMode == 1)
+    else if (g_Supervisor.config.musicMode == TH095_GAME_MUSIC_MODE_WAV)
     {
         if (g_Supervisor.config.options.preloadMusic)
             g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_RELEASE_BGM, 0, "dummy");
@@ -2546,13 +2558,13 @@ i32 Supervisor::FadeOutMusic(f32 durationSeconds)
 {
     f32 fadeTime;
 
-    if (g_Supervisor.config.musicMode == 2)
+    if (g_Supervisor.config.musicMode == TH095_GAME_MUSIC_MODE_MIDI)
     {
         if (g_Supervisor.midiOutput != NULL)
             g_Supervisor.midiOutput->SetFadeOut(
                 (u32)(1000.0f * durationSeconds));
     }
-    else if (g_Supervisor.config.musicMode == 1)
+    else if (g_Supervisor.config.musicMode == TH095_GAME_MUSIC_MODE_WAV)
     {
         if (g_AnmGameSpeed == 0.0f)
             fadeTime = durationSeconds;
