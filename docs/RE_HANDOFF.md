@@ -1687,3 +1687,56 @@ All three jobs were bound to handoff commit `812bc1f990ef9c463a4e88e7850a7664ee7
 - Product `claim:th095-main:product:whole-build-closed` — job `job:6fa86af38ea24680865631072b2f8d6b` — obtained and repeatedly renewed a TH095 `whole-build` lease for the normal controlled-build interval, then terminated when `/home/pentester/coding/codex_ida/th10-reconstruction/th10` acquired the shared operator path. It produced no receipt outcome.
 
 Each failure therefore receives **zero receipt credit** and is not a semantic, codegen-exact, compile/link, or runtime failure. No retry was issued, matching the bounded handoff policy. Historical accepted receipts on older commits remain historical only. On the next resume, perform the normal recovery gate and continue semantic work; defer current-source receipt refresh until another meaningful committed milestone when the shared Factory operator path is available. Do not mutate source or delete the protected untracked files merely to alter Factory snapshot cleanliness.
+
+## GPT-web semantic continuation — SEM-264
+
+This is the newest GPT-web semantic continuation point and supersedes older routing notes where they conflict. TH095 semantic reconstruction remains **active-incomplete**. This handoff pauses the browser conversation only; it is not semantic readiness, completion, closure, exit-audit, whole-image identity, runtime-scenario validation, or ready-for-porting evidence. No portable Windows, Linux, or Web work was started.
+
+### Resume and recovery state
+
+This campaign slice resumed from live receipt-status HEAD `d7cda9ea2b41d540fa7f769bfbcda8d12feefa1f`, after discovering that committed history had advanced beyond the older `cc11c16...` handoff through SEM-261, SEM-262, and SEM-263. The newer committed history was treated as authoritative and none of those batches were repeated.
+
+All five requested Factory-controlled reconstruction/semantic/recovery contracts and documentation paths were mounted and readable before editing. The optional `$factory-semantic-reconstruction` skill body was not exposed as a readable resource, so execution followed the mounted Factory guidance plus the complete inline campaign rules.
+
+Mandatory recovery found zero staged or tracked-unstaged work. Preserve the same four long-lived untracked exclusions without staging, deleting, resetting, or overwriting them:
+
+- `EnemyManagerUpdate.i` — unknown-origin generated-looking VC7 preprocessed output; SHA-256 `1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`.
+- `config/runtime-scenarios.json` — pre-existing runtime experiment; SHA-256 `56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`.
+- `scripts/runtime-diff.py` — pre-existing runtime oracle experiment; SHA-256 `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`.
+- `droid.resume.txt` — user-owned unrelated state; SHA-256 `9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`.
+
+`.analysis/` began and remains exactly **3,394,984 bytes**. No current-session `.analysis/gpt-web/` root was created and no retained file exceeds 64 MiB. Compile probes used command-local temporary storage and fresh semantic evidence came only through the registered read-only target-attested `th095-ghidra` provider.
+
+The one broad baseline for this slice passed target verification, tracking **1,880 provisional / 697 source-present / 696 exact**, Ghidra attestation, the **696-unit** match graph, the **88-source / 2-profile** whole-build graph, target-independent CI **43/43**, and whitespace checks.
+
+### SEM-264 — persisted backbuffer color mode
+
+Commit `6d87c763ec8c468f630532af9293dd754a118924` (`gpt-web: type backbuffer color mode`) recovers the one-byte persisted selector at `GameConfiguration +0xAC` without conflating it with the separate `force16BitTextures` option.
+
+Fresh TH095 `GameWindow::InitD3DRendering @ 0x00420E20` reads target config byte `0x004C4838`: persisted value 0 selects `D3DFMT_X8R8G8B8`, value 1 selects `D3DFMT_R5G6B5`, and the independent force-16-bit option explicitly publishes value 1 while selecting the same 16-bit backbuffer format. Fresh `GameConfiguration::Initialize @ 0x00418720` publishes zero. Fresh `Supervisor::LoadConfig @ 0x00424D30` independently validates the 0xC8-byte persisted image by requiring this byte to be below 2. The maintained persisted domain is therefore exactly 0/1.
+
+The renderer also contains a raw `0xFF` consumer: it selects X8R8G8B8 and normalizes the byte to zero. Repository-wide producer search found no current TH095-local producer for `0xFF`, so it deliberately remains an unnamed raw sentinel. Do not call it `AUTO` or extend `GameColorMode` unless a target-local producer or other independent discriminator appears.
+
+Normal source now uses the one-byte `GameColorMode` vocabulary `GAME_COLOR_MODE_32_BIT = 0`, `GAME_COLOR_MODE_16_BIT = 1`, and `GAME_COLOR_MODE_COUNT = 2` in the canonical 0xC8 config owner and runtime projection. `TH095_MATCH_EXACT` / `DIFFBUILD` preserve the historical `u8` representation and numeric source shape. Config size, neighboring offsets, `force16BitTextures`, device fallback behavior, and texture-format policy are unchanged.
+
+Focused Main replay passed **48/48 exact** with **zero private-label refresh**; the pinned VC7.1 normal probe emitted a **116,140-byte Intel 80386 COFF** object. Because `Main.hpp` / the runtime config view are shared-owner surfaces, four cold alphabetical partitions immediately passed **205 + 158 + 191 + 142 = 696/696 exact units across all 88 manifest sources**, every source reporting zero private-label refresh. Fresh whole-product validation compiled **88/88 pinned VC7.1 i386 COFF** translation units and linked/verified a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `882696a4f7dd51bf2bdc7511d489b0396edea12ecbaca56c2d723bb01fbd6a03`. This is reconstructed historical-Windows compile/link closure only, not target whole-image identity; no runtime scenario receives credit.
+
+One initial Ghidra request used the obsolete singular `address` argument and was rejected before execution. It receives zero evidence credit. Operation discovery supplied the current bounded `addresses[]` schema and the retried target-attested decompile succeeded.
+
+### Bounded negative routes and exact next coverage route
+
+The post-SEM-264 audit deliberately rotated away from GameConfiguration instead of immediately typing adjacent config bytes:
+
+- `SupervisorViewportConfiguration::viewportMode @ +0xE4` currently has only initialization writes (slot 0 writes 0; slot 1 writes 1). SEM-255 explicitly left it outside scope and no independent reader was recovered. Keep it untyped.
+- `Supervisor::loadingScreenState @ +0x714` is already SEM-188's mixed lifecycle/counter protocol. Its named 0/1/2/5/35/65 boundaries are intentionally not a closed enum because values between the boundaries are live frame counters.
+- `CPbgFile::m_DesiredAccess` and the `r/w/a` plus seek-mode tables are already naturally semantic and covered by PBG-001/PBG-004/ABI-068; there is no weak resource owner to recover there.
+- The Chain callback result protocol is already fully enum-typed and exact end-to-end under ARCH-012/ABI-016.
+- Controller/Replay input hold-repeat timing (`>=26`, subtract 8) is already durable REPLAY-023 behavior. INPUT-008/009/011 establish the shared repeat output and independent UI consumers, so naming the same timing again would repeat committed semantics.
+- `GameErrorContext` has no persistent file HANDLE owner: Log/Fatal append to the in-memory buffer and Flush delegates the file write to the already-semantic FileSystem lane. ERROR-001/003 and later audits already close this surface.
+- GameWindow `windowIsActive/windowIsInactive/windowIsClosing/framesSinceRedraw` agree with their WM_ACTIVATEAPP / close-loop / frameskip consumers; adjacent path/power-session semantics were already audited in SEM-234/235. No contradictory maintained identifier was found.
+
+At the next resume, first run the mandatory recovery gate. Then **do not continue through adjacent GameConfiguration bytes merely because this batch typed `+0xAC`**. Start a fresh access-graph sweep over non-config normal-production stored selectors or resource-bearing globals not already represented by the negative list above. Before editing, require either (a) a producer/publication plus an independent reader/validator/cleanup edge, or (b) at least two independent TH095-local behavioral discriminators for a compact selector. Search committed semantic history first. If the candidate is one-sided or already naturally semantic, record the bounded negative and rotate.
+
+Prefer a different subsystem from Main/config/front-end/ResultScreen for the next source transaction. Continue to preserve `entryMode`, ResultScreen 7/8/9/10, replay/input reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, alternate enemy ANM `+0x4DFC`, the raw color-mode `0xFF` sentinel, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet and compact-enemy residuals, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB` as Unknown absent fresh TH095-local discriminators.
+
+After this docs-only handoff checkpoint, refresh only a bounded current-source Factory receipt set: one representative SEM-264 exact claim (`GameWindow::InitD3DRendering` or `Supervisor::LoadConfig`) plus `whole-build-closed`. Do not replay the historical receipt set and do not request semantic completion, whole-image exactness, runtime-scenario validation, or portable-runtime credit. If shared operator contention blocks a receipt, report the receipt plane accurately as deferred rather than retrying repeatedly or changing source.
