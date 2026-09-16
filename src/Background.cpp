@@ -18,6 +18,12 @@
 namespace th095
 {
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_BACKGROUND_DIRECT_3D_DRAW_MODE 8
+#else
+#define TH095_BACKGROUND_DIRECT_3D_DRAW_MODE ANM_VM_DRAW_MODE_DIRECT_3D
+#endif
+
 #ifdef TH095_MATCH_EXACT
 struct BackgroundSelectedSceneView
 {
@@ -1009,7 +1015,7 @@ i32 Background::RenderObjects(i32 mode)
                     }
                 }
 
-                if (curQuadVm->renderModeBits == 8)
+                if (curQuadVm->renderModeBits == TH095_BACKGROUND_DIRECT_3D_DRAW_MODE)
                     TH095_BACKGROUND_SUPERVISOR->EnableFog();
                 else
                     TH095_BACKGROUND_SUPERVISOR->DisableFog();

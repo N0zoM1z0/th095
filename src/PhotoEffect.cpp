@@ -13,6 +13,12 @@ namespace th095
 {
 
 #ifdef DIFFBUILD
+#define TH095_EFFECT_DRAW_MODE_2D 1
+#else
+#define TH095_EFFECT_DRAW_MODE_2D ANM_VM_DRAW_MODE_2D
+#endif
+
+#ifdef DIFFBUILD
 #define TH095_EFFECT_STATE_RETIRED 1
 #define TH095_EFFECT_STATE_ACTIVE 2
 #define TH095_EFFECT_STATE_STARTUP 3
@@ -362,7 +368,7 @@ i32 PhotoStraightLaserView::Initialize(void *args)
     this->bodyVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->bodyVm);
     PhotoEffectSetAdditivePhase(&this->bodyVm);
-    this->bodyVm.renderModeBits = 1;
+    this->bodyVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
     this->bodyVm.renderStateA = 0;
     this->bodyVm.renderStateB = 2;
 
@@ -371,7 +377,7 @@ i32 PhotoStraightLaserView::Initialize(void *args)
     this->tailVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->tailVm);
     PhotoEffectSetAdditivePhase(&this->tailVm);
-    this->tailVm.renderModeBits = 1;
+    this->tailVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
 
     this->position = this->spawn.position;
     *reinterpret_cast<i32 *>(&this->length) = this->spawn.initialLength;
@@ -533,7 +539,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
     this->bodyVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->bodyVm);
     PhotoEffectSetAdditivePhase(&this->bodyVm);
-    this->bodyVm.renderModeBits = 1;
+    this->bodyVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
     this->bodyVm.renderStateA = 0;
     this->bodyVm.renderStateB = 2;
 
@@ -542,7 +548,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
     this->tailVm.pendingInterrupt = 2;
     AnmManager::ExecuteScript(&this->tailVm);
     PhotoEffectSetAdditivePhase(&this->tailVm);
-    this->tailVm.renderModeBits = 1;
+    this->tailVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
 
     this->position = this->spawn.position;
     this->length = this->spawn.initialLength;

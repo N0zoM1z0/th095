@@ -14,6 +14,32 @@ namespace th095
 #define ownedRenderData generatedVertices
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_ANM_VM_DRAW_AXIS_ALIGNED_ROUNDED 0
+#define TH095_ANM_VM_DRAW_2D 1
+#define TH095_ANM_VM_DRAW_AXIS_ALIGNED_SUBPIXEL 2
+#define TH095_ANM_VM_DRAW_2D_VARIANT_3 3
+#define TH095_ANM_VM_DRAW_CAMERA_FACING_QUAD 4
+#define TH095_ANM_VM_DRAW_PROJECTED_3D_QUAD 5
+#define TH095_ANM_VM_DRAW_CAMERA_FACING_PHOTO_BLEND 6
+#define TH095_ANM_VM_DRAW_PROJECTED_3D_PHOTO_BLEND 7
+#define TH095_ANM_VM_DRAW_DIRECT_3D 8
+#define TH095_ANM_VM_DRAW_GENERATED_VERTEX_STRIP 9
+#define TH095_ANM_VM_DRAW_PULSING_RADIAL_TRAIL 10
+#else
+#define TH095_ANM_VM_DRAW_AXIS_ALIGNED_ROUNDED ANM_VM_DRAW_MODE_AXIS_ALIGNED_ROUNDED
+#define TH095_ANM_VM_DRAW_2D ANM_VM_DRAW_MODE_2D
+#define TH095_ANM_VM_DRAW_AXIS_ALIGNED_SUBPIXEL ANM_VM_DRAW_MODE_AXIS_ALIGNED_SUBPIXEL
+#define TH095_ANM_VM_DRAW_2D_VARIANT_3 ANM_VM_DRAW_MODE_2D_VARIANT_3
+#define TH095_ANM_VM_DRAW_CAMERA_FACING_QUAD ANM_VM_DRAW_MODE_CAMERA_FACING_QUAD
+#define TH095_ANM_VM_DRAW_PROJECTED_3D_QUAD ANM_VM_DRAW_MODE_PROJECTED_3D_QUAD
+#define TH095_ANM_VM_DRAW_CAMERA_FACING_PHOTO_BLEND ANM_VM_DRAW_MODE_CAMERA_FACING_PHOTO_BLEND
+#define TH095_ANM_VM_DRAW_PROJECTED_3D_PHOTO_BLEND ANM_VM_DRAW_MODE_PROJECTED_3D_PHOTO_BLEND
+#define TH095_ANM_VM_DRAW_DIRECT_3D ANM_VM_DRAW_MODE_DIRECT_3D
+#define TH095_ANM_VM_DRAW_GENERATED_VERTEX_STRIP ANM_VM_DRAW_MODE_GENERATED_VERTEX_STRIP
+#define TH095_ANM_VM_DRAW_PULSING_RADIAL_TRAIL ANM_VM_DRAW_MODE_PULSING_RADIAL_TRAIL
+#endif
+
 // Target address 0x004CA1B8 is the process-wide manager pointer.  TH08 places
 // the equivalent storage in AnmManager.cpp, and TH095 WinMain assigns and
 // clears this same pointer around the manager lifetime.
@@ -523,7 +549,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->renderModeBits = currentInstr->intArgs[0];
             switch (vm->renderModeBits)
             {
-            case 10:
+            case TH095_ANM_VM_DRAW_PULSING_RADIAL_TRAIL:
                 vm->InitializePulsingRadialTrail();
                 break;
             }
@@ -535,7 +561,7 @@ i32 AnmManager::ExecuteScript(AnmVm *vm)
             vm->positionOffset.z = 0.0f;
             break;
         case ANM_OP_ALLOC_VERTICES:
-            vm->renderModeBits = 9;
+            vm->renderModeBits = TH095_ANM_VM_DRAW_GENERATED_VERTEX_STRIP;
             vm->ownedRenderData = malloc(GET_INT_VAR(0) * sizeof(AnmVertex) * 2);
             break;
         case ANM_OP_I_SET:
@@ -847,7 +873,7 @@ stop:
     else if (vm->uvScrollPos.y < 0.0f)
         vm->uvScrollPos.y += 1.0f;
 
-    if (vm->renderModeBits == 9)
+    if (vm->renderModeBits == TH095_ANM_VM_DRAW_GENERATED_VERTEX_STRIP)
     {
         i32 meshVertexCount;
         f32 texV;
@@ -1070,25 +1096,25 @@ ZunResult AnmManager::Draw(AnmVm *vm)
 
     switch (vm->renderModeBits)
     {
-    case 0:
+    case TH095_ANM_VM_DRAW_AXIS_ALIGNED_ROUNDED:
         return this->DrawNoRotation(vm);
-    case 1:
+    case TH095_ANM_VM_DRAW_2D:
         return this->Draw2D(vm);
-    case 4:
+    case TH095_ANM_VM_DRAW_CAMERA_FACING_QUAD:
         return this->DrawCameraFacingQuad(vm);
-    case 5:
+    case TH095_ANM_VM_DRAW_PROJECTED_3D_QUAD:
         return this->DrawProjected3DQuad(vm);
-    case 6:
+    case TH095_ANM_VM_DRAW_CAMERA_FACING_PHOTO_BLEND:
         return this->DrawMode6(vm);
-    case 7:
+    case TH095_ANM_VM_DRAW_PROJECTED_3D_PHOTO_BLEND:
         return this->DrawMode7(vm);
-    case 8:
+    case TH095_ANM_VM_DRAW_DIRECT_3D:
         return this->Draw3D(vm);
-    case 9:
+    case TH095_ANM_VM_DRAW_GENERATED_VERTEX_STRIP:
         return this->DrawVertices(vm, (AnmVertex *)vm->ownedRenderData, vm->intVar0 * 2);
-    case 2:
+    case TH095_ANM_VM_DRAW_AXIS_ALIGNED_SUBPIXEL:
         return this->DrawNoRotationNoRound(vm);
-    case 3:
+    case TH095_ANM_VM_DRAW_2D_VARIANT_3:
         return this->Draw2D(vm);
     default:
         return ZUN_SUCCESS;
