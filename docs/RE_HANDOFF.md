@@ -1168,3 +1168,54 @@ function-exact receipts representative of SEM-181/182 plus one current-source
 `whole-build-closed` receipt when the shared Factory operator path is available.
 Do not replay the complete historical receipt set and do not request semantic
 completion, whole-image exactness, runtime-scenario, or portable-runtime credit.
+
+## GPT-web semantic continuation — SEM-241/242
+
+This handoff supersedes older GPT-web routing notes where they conflict with the committed semantic history through SEM-242. It pauses the current browser campaign only. The TH095 semantic phase remains **active-incomplete**; this record is not a semantic-readiness, completion, closure, exit-audit, or portability checkpoint, and it does not authorize portable Windows, Linux, or Web work.
+
+### Resume point and recovery state
+
+The campaign resumed from committed SEM-240 HEAD `6c2c44a09b32e761db84948e97b5de1b14b5b9a9`. All five requested Factory-controlled reconstruction/semantic/recovery contracts and documentation paths were mounted and readable before editing. The optional `$factory-semantic-reconstruction` skill body was not exposed as a readable skill resource, so execution followed the mounted contracts plus the complete user-supplied campaign rules rather than depending on automatic skill loading.
+
+The live worktree had no staged or tracked-unstaged changes and four pre-existing untracked exclusions. Preserve all four without deletion, overwrite, reset, or staging unless a later owner explicitly reclassifies them:
+
+- `EnemyManagerUpdate.i` — generated-looking VC7 preprocessed output, but current ownership is not established; classify as unknown-origin. SHA-256 `1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`.
+- `config/runtime-scenarios.json` — pre-existing runtime experiment. SHA-256 `56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`.
+- `scripts/runtime-diff.py` — pre-existing runtime oracle experiment. SHA-256 `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`.
+- `droid.resume.txt` — user-owned unrelated state and explicitly marked not to delete/track/commit. SHA-256 `9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`.
+
+`.analysis/` was **3,394,984 bytes** at campaign start and remains **3,394,984 bytes** at this handoff. No current-session `.analysis/gpt-web/` root was created, no large current-session analysis artifact was retained, and legacy/shared provider state was not modified or bulk-deleted. Fresh semantic target evidence came through the registered read-only `th095-ghidra` provider instead of whole-program exports.
+
+### SEM-241 checkpoint — Background stage-script opcode actions
+
+Commit `b3f6205633f78fb552887052d19de97567bcfe92` (`gpt-web: name Background stage opcodes`) names the 16-bit dispatch actions consumed by `Background::RunStageScript @ 0x00403440` while preserving exact-facing numeric cases and instruction layout. Fresh TH095 target decompilation established explicit cases 0 through 14 and their direct effects: halt current dispatch, cursor/timer jump, immediate/interpolated camera position and look-at, camera-up and field-of-view publication, immediate/interpolated photo blend, Hermite camera interpolation variants, camera-motion-mode publication, backbuffer clear-color publication, and stage-VM configure/disable behavior. The normal representation uses neutral behavior names; it does not claim original ZUN mnemonics, authored stage-file vocabulary, or validity of unhandled opcodes.
+
+Focused validation passed `src/Background.cpp` **20/20 exact** with zero private-label refresh. A normal pinned-VC7.1 compile probe emitted a **52,999-byte Intel 80386 COFF** object in command-local temporary storage and removed it at command exit. No runtime scenario was executed or claimed for this batch.
+
+### SEM-242 checkpoint — Options menu selection domain
+
+Commit `23a28ae832dbf0e8cf23d86772cbe26666cc2b39` (`gpt-web: name Options menu items`) names the seven row values consumed by `OptionsMenuView::Update @ 0x0044E4B0` and `UpdateSelectionSprites` without changing the reusable cursor representation. TH095-local independent consumers distinguish rows 0/1/2 as the existing `button02`/`button00`/`button06` binding slots, row 3 as window mode, row 4 as BGM volume, row 5 as SFX volume, and row 6 as the leave/finish row. The first three names intentionally follow established storage members rather than guessing original UI action labels such as shoot/bomb/focus; those authored labels remain Unknown.
+
+Focused canonical replay passed `src/OptionsMenu.cpp` **1/1 exact** and `src/FrontEndController.cpp` **4/4 exact**, each with zero private-label refresh. Normal pinned-VC7.1 probes emitted **36,141-byte** `OptionsMenu.obj` and **38,754-byte** `FrontEndController.obj` Intel 80386 COFF objects in command-local temporary storage.
+
+Because SEM-242 changes the shared `OptionsMenu.hpp`, the same source state received cold aggregate exact closure across all 88 manifest sources in eight durable replay partitions: **71 + 134 + 40 + 118 + 133 + 58 + 43 + 99 = 696/696 exact units**, with zero private-label refresh in every source. A fresh whole-product gate compiled **88/88** pinned-VC7.1 i386 COFF translation units and linked/verified a **780,288-byte PE32** reconstructed image with build-local SHA-256 `be7315b38a8f49b9e0c6bf9607b3288fdc9a5864bbfccde34c81a528f18e9391`. Successful linkage is not a whole-image byte-identity claim. Target-independent CI passed all **43** tests; tracking remained **1,880 provisional / 697 source-present / 696 exact**; target identity revalidation passed; and `git diff --check` passed. Wine emitted headless/no-GUI systray diagnostics during the product build, but no runtime scenario was executed or credited.
+
+The first monolithic aggregate replay invocation exceeded the synchronous Factory call and returned no durable command id, so it received no validation credit. Recovery found no surviving compiler/replay/Wine producer and no source drift; the explicit eight durable partitions above are the aggregate exact evidence of record.
+
+### Resume-audit results that should not be mistaken for completion
+
+Several tempting routes were actively challenged and either disproved or reached a bounded evidence plateau. Do not convert any of these negative results into a phase-completion argument:
+
+- `AnmPreload` pathname storage at the previously noted raw offset remains a single-ended write route with no new independent reader; keep it Unknown absent fresh evidence.
+- MIDI ownership, running-status/meta/loop/tempo/fade semantics are already strongly represented; merely replacing standard MIDI constants would repeat accepted work rather than recover new TH095 meaning.
+- Sampled anonymous Supervisor gaps at `+0x414..+0x420`, `+0x713/+0x718`, and `+0x76C/+0x770/+0x77C` had no direct target xrefs in the bounded Ghidra probes. This is a routing plateau, not proof that the surrounding runtime object is fully understood.
+- A source-level hypothesis that `EnemyMovement` consumed `GameConfiguration +0x6C` was falsified. Its exact-unit relocation base is synthetic `0x004BDD50`; adding `0x188` resolves to the already-established `g_AnmGameSpeed @ 0x004BDED8`, and the normal branch already names that owner. Do not revive the configuration interpretation without new relocation-independent evidence.
+- Sound `BGMPlayerThread` raw cases 0/1 were traced to the Win32 wait-result domain rather than a newly discovered game-owned protocol; do not create a TH095 game enum solely for those system return values.
+
+### Next evidence route
+
+Refresh live state and read the latest semantic record before opening another transaction. Prefer a bounded family outside the just-completed ECL RNG, Background opcode, and Options/front-end row domains. Strong candidates are a persistent replay/score ABI field that has both a parser/validator or producer and an independent runtime consumer, a historical-platform resource owner with a separate cleanup/lifetime edge, or another compact sibling protocol with at least two TH095-local semantic discriminators. Do not mechanically redo previously audited score-entry residual bytes or other persistent padding unless a new consumer, validator, checksum boundary, or producer appears.
+
+Keep the explicitly deferred/single-ended residuals Unknown absent such a discriminator, including `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, photo-score bits 5/17/18/19, and analogous raw/reserved storage. A local plateau should rotate to another coverage surface rather than trigger readiness or closure.
+
+Factory replay claims for the representative exact units `background-run-stage-script` (`0x00403440`) and `options-menu-update` (`0x0044E4B0`) and for `whole-build-closed` were verified to exist before this handoff. Receipt replay should be treated as a plane separate from the repo-native exact/product evidence above; inspect Factory job/receipt state rather than inferring receipt acceptance from this document.
