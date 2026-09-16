@@ -14,8 +14,8 @@
 #include "ResultScreen.hpp"
 #endif
 #include "SoundPlayer.hpp"
+#include "SupervisorViewportSlot.hpp"
 #include "pbg/PbgArchive.hpp"
-
 #include <direct.h>
 #include <math.h>
 #include <mmsystem.h>
@@ -515,7 +515,7 @@ RenderResult GameWindow::Render()
             this->lastFrameTime += 1.0 / 60.0;
 
         g_AnmManager->FlushVertexBuffer();
-        g_Supervisor.ConfigureGameplayViewport(1);
+        g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
         calcChainResult = g_Chain.RunCalcChain();
         g_SoundPlayer.ProcessQueues();
 
@@ -1336,7 +1336,7 @@ i32 __fastcall Supervisor::OnDraw2(Supervisor *s)
         Float3 position;
     } locals;
 
-    TH095_ON_DRAW2_CONFIGURE_VIEWPORT(s, 1);
+    TH095_ON_DRAW2_CONFIGURE_VIEWPORT(s, TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
     if (g_Supervisor.backbufferClearColor != 0)
     {
         g_Supervisor.d3dDevice->Clear(

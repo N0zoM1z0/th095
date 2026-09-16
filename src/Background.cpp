@@ -11,10 +11,16 @@
 #include "GameplayGlobals.hpp"
 #include "SceneData.hpp"
 #ifdef TH095_MATCH_EXACT
+#define TH095_SUPERVISOR_VIEWPORT_PLAYFIELD 0
+#define TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW 1
+#define TH095_SUPERVISOR_VIEWPORT_SLOT_COUNT 2
+#else
+#include "SupervisorViewportSlot.hpp"
+#endif
+#ifdef TH095_MATCH_EXACT
 #undef g_SelectedScene
 #undef g_PhotoScreenFadeColor
 #endif
-
 namespace th095
 {
 
@@ -388,7 +394,7 @@ struct BackgroundSupervisorView
     u8 unknown000[8];
     IDirect3DDevice8 *d3dDevice;                         // +0x008
     u8 unknown00c[0x1e4 - 0x00c];
-    BackgroundViewportConfigurationView configurations[2]; // +0x1e4
+    BackgroundViewportConfigurationView configurations[TH095_SUPERVISOR_VIEWPORT_SLOT_COUNT]; // +0x1e4
     BackgroundViewportConfigurationView *currentViewport;   // +0x3c4
     i32 currentViewportIndex;                               // +0x3c8
 
@@ -798,7 +804,7 @@ i32 Background::DrawHighPrio()
                 ->stageVms[0]
                 .loadedSprite != NULL)
         {
-            g_Supervisor.ConfigureGameplayViewport(0);
+            g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
             TH095_BACKGROUND_SUPERVISOR->DisableFog();
             g_AnmManager->FlushVertexBuffer();
             TH095_BACKGROUND_SUPERVISOR->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
@@ -825,7 +831,7 @@ i32 Background::DrawHighPrio()
             reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundFrameCounter++;
     }
 
-    g_Supervisor.ConfigureGameplayViewport(0);
+    g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
     reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)
         ->SetMixColorDefault();
     TH095_BACKGROUND_SUPERVISOR->DisableFog();
@@ -960,7 +966,7 @@ i32 Background::RenderObjects(i32 mode)
     AnmVm *curQuadVm;
     BackgroundStageObjectInstance *instance =
         reinterpret_cast<BackgroundStateView *>(this)->stageObjectInstances;
-    TH095_BACKGROUND_SUPERVISOR->ConfigureBackgroundViewport(0);
+    TH095_BACKGROUND_SUPERVISOR->ConfigureBackgroundViewport(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
     BackgroundSetCameraModePhase(
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager), 1);
     {

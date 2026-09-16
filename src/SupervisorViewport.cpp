@@ -1,6 +1,12 @@
 #include "Main.hpp"
 #include "AnmManager.hpp"
-
+#ifdef TH095_MATCH_EXACT
+#define TH095_SUPERVISOR_VIEWPORT_PLAYFIELD 0
+#define TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW 1
+#define TH095_SUPERVISOR_VIEWPORT_SLOT_COUNT 2
+#else
+#include "SupervisorViewportSlot.hpp"
+#endif
 #include <math.h>
 
 namespace th095
@@ -32,7 +38,7 @@ struct SupervisorViewportView
     u8 unknown000[8];
     IDirect3DDevice8 *d3dDevice;                       // +0x008
     u8 unknown00c[0x1e4 - 0x00c];
-    GameplayViewportConfiguration configurations[2];  // +0x1e4
+    GameplayViewportConfiguration configurations[TH095_SUPERVISOR_VIEWPORT_SLOT_COUNT];  // +0x1e4
     GameplayViewportConfiguration *current;           // +0x3c4
     i32 currentIndex;                                  // +0x3c8
 
@@ -49,38 +55,38 @@ void Supervisor::InitializeViewports()
 {
 #define supervisor (reinterpret_cast<SupervisorViewportView *>(&g_Supervisor))
 
-    supervisor->configurations[1].cameraPosition =
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].cameraPosition =
         Float3(0.0f, 0.0f, 1000.0f);
-    supervisor->configurations[1].cameraLookAtOffset =
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].cameraLookAtOffset =
         Float3(0.0f, 0.0f, 0.0f);
-    supervisor->configurations[1].cameraUp =
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].cameraUp =
         Float3(0.0f, 1.0f, 0.0f);
-    supervisor->configurations[1].fieldOfView = D3DX_PI / 6.0f;
-    supervisor->configurations[1].viewport.X = 0;
-    supervisor->configurations[1].viewport.Y = 0;
-    supervisor->configurations[1].viewport.Width = 640;
-    supervisor->configurations[1].viewport.Height = 480;
-    supervisor->configurations[1].viewport.MinZ = 0.0f;
-    supervisor->configurations[1].viewport.MaxZ = 1.0f;
-    supervisor->configurations[1].viewportMode = 1;
-    supervisor->configurations[1].cameraPositionOffset =
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].fieldOfView = D3DX_PI / 6.0f;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].viewport.X = 0;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].viewport.Y = 0;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].viewport.Width = 640;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].viewport.Height = 480;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].viewport.MinZ = 0.0f;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].viewport.MaxZ = 1.0f;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].viewportMode = 1;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].cameraPositionOffset =
         Float3(0.0f, 0.0f, 0.0f);
 
-    supervisor->configurations[0].cameraPosition =
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].cameraPosition =
         Float3(0.0f, 0.0f, 1000.0f);
-    supervisor->configurations[0].cameraLookAtOffset =
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].cameraLookAtOffset =
         Float3(0.0f, 0.0f, 0.0f);
-    supervisor->configurations[0].cameraUp =
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].cameraUp =
         Float3(0.0f, 1.0f, 0.0f);
-    supervisor->configurations[0].fieldOfView = D3DX_PI / 6.0f;
-    supervisor->configurations[0].viewport.X = 128;
-    supervisor->configurations[0].viewport.Y = 16;
-    supervisor->configurations[0].viewport.Width = 384;
-    supervisor->configurations[0].viewport.Height = 448;
-    supervisor->configurations[0].viewport.MinZ = 0.0f;
-    supervisor->configurations[0].viewport.MaxZ = 1.0f;
-    supervisor->configurations[0].viewportMode = 0;
-    supervisor->configurations[0].cameraPositionOffset =
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].fieldOfView = D3DX_PI / 6.0f;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].viewport.X = 128;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].viewport.Y = 16;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].viewport.Width = 384;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].viewport.Height = 448;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].viewport.MinZ = 0.0f;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].viewport.MaxZ = 1.0f;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].viewportMode = 0;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].cameraPositionOffset =
         Float3(0.0f, 0.0f, 0.0f);
 #undef supervisor
 }

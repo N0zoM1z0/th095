@@ -5,11 +5,11 @@
 #include "GameErrorContext.hpp"
 #include "GameplayGlobals.hpp"
 #include "ScoreData.hpp"
+#include "SupervisorViewportSlot.hpp"
 #include "inttypes.hpp"
 #include <windows.h>
 #include <stddef.h>
 #include <string.h>
-
 namespace th095
 {
 
@@ -225,7 +225,7 @@ i32 PhotoOverlayManagerView::Draw()
 // FUNCTION: TH095 0x0042C410.
 i32 __fastcall DrawPhotoStage(PhotoOverlayManagerView *manager)
 {
-    g_Supervisor.ConfigureGameplayViewport(1);
+    g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
 #ifdef DIFFBUILD
     if (((g_PhotoStageGlobalState->flags >> 2) & 1) != 0)
 #else

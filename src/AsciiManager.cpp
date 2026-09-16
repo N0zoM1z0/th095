@@ -1,6 +1,12 @@
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
-
+#ifdef TH095_MATCH_EXACT
+#define TH095_SUPERVISOR_VIEWPORT_PLAYFIELD 0
+#define TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW 1
+#define TH095_SUPERVISOR_VIEWPORT_SLOT_COUNT 2
+#else
+#include "SupervisorViewportSlot.hpp"
+#endif
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -352,11 +358,11 @@ void AsciiManager::DrawStrings()
             g_AnmManager->FlushVertexBuffer();
             if (asciiDrawIsGui != 0)
             {
-                TH095_ASCII_CONFIGURE_BACKGROUND(0);
+                TH095_ASCII_CONFIGURE_BACKGROUND(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
             }
             else
             {
-                TH095_ASCII_CONFIGURE_BACKGROUND(1);
+                TH095_ASCII_CONFIGURE_BACKGROUND(TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
             }
         }
 
@@ -386,7 +392,7 @@ void AsciiManager::DrawStrings()
     if (asciiDrawIsGui != 0)
     {
         g_AnmManager->FlushVertexBuffer();
-        TH095_ASCII_CONFIGURE_BACKGROUND(1);
+        TH095_ASCII_CONFIGURE_BACKGROUND(TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
     }
 }
 
@@ -419,11 +425,11 @@ void AsciiManager::DrawGuiStrings()
             g_AnmManager->FlushVertexBuffer();
             if (asciiDrawIsGui != 0)
             {
-                TH095_ASCII_CONFIGURE_BACKGROUND(0);
+                TH095_ASCII_CONFIGURE_BACKGROUND(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
             }
             else
             {
-                TH095_ASCII_CONFIGURE_BACKGROUND(1);
+                TH095_ASCII_CONFIGURE_BACKGROUND(TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
             }
         }
 
@@ -460,7 +466,7 @@ void AsciiManager::DrawGuiStrings()
     if (asciiDrawIsGui != 0)
     {
         g_AnmManager->FlushVertexBuffer();
-        TH095_ASCII_CONFIGURE_BACKGROUND(1);
+        TH095_ASCII_CONFIGURE_BACKGROUND(TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
     }
 }
 

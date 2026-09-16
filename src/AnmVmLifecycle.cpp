@@ -3,7 +3,13 @@
 #include "AnmVmId.hpp"
 #include "AnmVmLifecycle.hpp"
 #include "GameplayGlobals.hpp"
-
+#ifdef TH095_MATCH_EXACT
+#define TH095_SUPERVISOR_VIEWPORT_PLAYFIELD 0
+#define TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW 1
+#define TH095_SUPERVISOR_VIEWPORT_SLOT_COUNT 2
+#else
+#include "SupervisorViewportSlot.hpp"
+#endif
 namespace th095
 {
 
@@ -255,14 +261,14 @@ void __fastcall AnmManager::DrawLayer6(void *arg)
 // FUNCTION: TH095 0x00444AB0.
 void __fastcall AnmManager::DrawLayer7(void *arg)
 {
-    g_Supervisor.ConfigureGameplayViewport(1);
+    g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
     reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(7);
 }
 
 // FUNCTION: TH095 0x00444AE0.
 void __fastcall AnmManager::DrawLayer8(void *arg)
 {
-    g_Supervisor.ConfigureGameplayViewport(1);
+    g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
     reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(8);
 }
 
