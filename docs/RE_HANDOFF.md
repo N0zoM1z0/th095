@@ -1563,3 +1563,53 @@ At the next resume, run the mandatory recovery gate before editing. Rotate away 
 Continue to preserve `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd controller bit 4, alternate enemy ANM `+0x4DFC`, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet descriptor/tail residuals including `field360`, compact-enemy single-ended fields/tail packets, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB` as Unknown absent fresh TH095-local discriminators.
 
 After this docs-only handoff checkpoint, issue only a bounded current-source Factory receipt refresh: one representative SEM-259 exact claim, one representative SEM-260 exact claim, and `whole-build-closed`. Do not replay the complete historical receipt set. If the shared operator path is again owned by another repository, record the receipt plane as deferred; do not delete protected untracked files or mutate source merely to satisfy Factory cleanliness metadata.
+
+## GPT-web semantic continuation — SEM-261
+
+This is the newest GPT-web semantic continuation point and supersedes older routing notes where they conflict. The TH095 semantic campaign remains **active-incomplete**. This handoff pauses browser execution only; it is not semantic readiness, completion, closure, exit-audit, whole-image identity, runtime-scenario validation, or ready-for-porting evidence. No portable Windows, Linux, or Web work was started.
+
+### Resume and recovery state
+
+This campaign resumed from committed SEM-259/260 handoff `cc11c16be41049c8659ed44274f6fc4be91bd21a`. All five requested Factory-controlled reconstruction/semantic/recovery contract and documentation paths were mounted and readable before editing. The optional `$factory-semantic-reconstruction` skill body was not exposed as a readable resource, so execution followed the mounted Factory guidance plus the complete inline rules.
+
+Mandatory recovery found zero staged or tracked-unstaged work and preserved the same four long-lived untracked exclusions. Do not stage, delete, reset, overwrite, or infer ownership for them without new evidence:
+
+- `EnemyManagerUpdate.i` — unknown-origin generated-looking VC7 preprocessed output; SHA-256 `1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`.
+- `config/runtime-scenarios.json` — pre-existing runtime experiment; SHA-256 `56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`.
+- `scripts/runtime-diff.py` — pre-existing runtime oracle experiment; SHA-256 `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`.
+- `droid.resume.txt` — user-owned unrelated state; SHA-256 `9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`.
+
+`.analysis/` began and ends at exactly **3,394,984 bytes**. No current-session `.analysis/gpt-web/` root was created, no retained file exceeds 64 MiB, and legacy/shared provider state was not modified or bulk-deleted. One-shot compile probes used command-local temporary storage. Fresh semantic target evidence came through the registered read-only target-attested `th095-ghidra` provider and carries no exactness credit.
+
+The campaign-wide broad baseline passed target verification, tracking (**1,880 provisional / 697 source-present / 696 exact**), Ghidra attestation, target-independent CI **43/43**, the **696-unit** match graph, the **88-source / 2-profile** whole-build graph, and whitespace checks.
+
+### SEM-261 — Supervisor screenshot worker token
+
+Commit `d5e56076eb2f03fc868985a3e86783a831da8f21` (`gpt-web: name screenshot worker token`) corrects the normal meaning of Supervisor `+0x528`. The old `screenshotThread` spelling suggested an owned thread object, but fresh TH095 behavior shows only a zero/nonzero in-flight publication protocol.
+
+Fresh target `Supervisor::TakeScreenshot @ 0x00424A00` waits while `+0x528` is nonzero, sleeping 10 ticks between checks. After successful 32-bit backbuffer capture and buffer preparation it stores the 32-bit return from CRT `__beginthread(ScreenshotThread, 0, NULL)` directly into `+0x528`. It does not wait on or close that value as a HANDLE. Fresh `Supervisor::ScreenshotThread @ 0x00424980` writes the staged BMP header/info/pixel payload through the shared file API, closes that file lane, frees the two screenshot heap allocations, and then clears `+0x528` to zero. Fresh `Supervisor::Supervisor @ 0x00426350` zeroes the complete 0x7BC-byte owner before use.
+
+Normal Main/runtime/lifecycle views therefore name this slot `screenshotWorkerToken`. `DIFFBUILD` and `TH095_MATCH_EXACT` retain the historical `screenshotThread` spelling/source shape. The lifecycle sibling view exposes only `+0x528`; surrounding `+0x448..+0x527` and `+0x52C..+0x647` storage remains anonymous. This does not claim an original ZUN identifier, a durable Win32 HANDLE type, a teardown join, or a corrected `_beginthread` failure policy. Screenshot buffer pointers are not reinterpreted or cleared after their target-observed frees, and no runtime screenshot scenario receives credit.
+
+Focused canonical replay passed Main **48/48**, SupervisorLifecycle **2/2**, and SoundPlayer **27/27**, totaling **77/77 exact units** with **zero private-label refresh**. The first normal probe failed before VC7.1 execution because the Python helper module was dynamically imported without `sys.modules` registration; mandatory recovery proved the intended source diff unchanged and that command receives zero compile credit. The corrected pinned-VC7.1 normal probes emitted **116,002-byte** `Main.obj`, **5,562-byte** `SupervisorLifecycle.obj`, and **64,759-byte** `SoundPlayer.obj`, all Intel 80386 COFF.
+
+Because `Main.hpp` is a high-fanout shared owner header, dirty SEM-261 source immediately received deterministic cold exact partitions **205 + 158 + 191 + 142 = 696/696 exact units across all 88 manifest sources**, every source reporting zero private-label refresh. Fresh whole-product validation compiled **88/88 pinned VC7.1 i386 COFF** translation units across both production profiles and linked/verified `build/whole-validation/th095-reconstructed.exe`, a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `38e67fe64161b1d43d61d61dc10abe14aaec4d17a379b4e99732af558cfbe735`. Successful linkage is reconstructed historical-Windows compile/link closure, not target whole-image identity. Wine emitted only the normal headless window/explorer/systray diagnostics.
+
+Final repo-native checks on committed SEM-261 source again passed target verification, tracking **1,880 / 697 / 696**, CI **43/43**, the 696-unit graph, the 88-source/two-profile product graph, and whitespace checks.
+
+### Bounded negative routes and exact next route
+
+The post-checkpoint resume audit rotated through multiple independent surfaces rather than treating SEM-261 or the aggregate gates as semantic completion:
+
+- Scene Select's apparent raw persistent `g_ResultSaveData + index*0x78 + 0x3178` access is already the DIFF/exact compatibility path for SEM-145 / SCENE-020. Normal production uses canonical `ResultBestShotRecordView::comment/componentsLoaded/width/height`; do not redo it.
+- MusicRoom states 0/1/2 and Help outer/page states 0..4 are already semanticized, and their remaining anonymous gaps have no new field-level consumers.
+- ScreenEffect type-1 `CalcShake` endpoints remain a standing bounded negative: current reconstructed producers explicitly cover type 7 shake-envelope and type 3 arcade-pulse calls, but no new TH095-local type-1 producer distinguishes the two raw endpoint dwords. SEM-230 reached the same result; keep them Unknown.
+- Score profile `+0x15` remains the SEM-152/SCORE-008 residual byte with no new field-level reader. Score header `+0x0C` remains writer-only.
+- Shared photo/global bit 3 is already `gameplayLoadFailed` from SEM-097 / PHOTO-075. `unknownFlag3` in unused Main/Result local projections is not a new consumer and does not justify another batch.
+- A normal-source active weak-field sweep leaves only already-closed aliases (`unknown020/024` screen-shake publication), exact-facing shared-photo names, or standing one-sided residuals (`ANM bit 14`, TextRenderer RNG prefix, bullet `field360`, etc.). No second source transaction was manufactured from those plateaus.
+
+At the next resume, run the mandatory recovery gate before editing and rotate away from Supervisor screenshot storage. Prefer a **new compact protocol discovered outside lexical unknowns**: search switch/branch domains in non-ECL/non-ANM gameplay/front-end helpers for a stored selector with both a producer and an independent consumer. As alternatives, inspect a **persistent/ABI boundary only after a genuinely new reader/validator appears**, or a distinct **historical-platform resource lifetime** with acquire/publication plus independent use/cleanup not already covered by Sound, DirectInput, version data, Help/Music assets, or screenshot state. Search semantic history before editing every candidate.
+
+Continue to preserve `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd controller bit 4, alternate enemy ANM `+0x4DFC`, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect type-1 raw endpoints and other one-sided storage, bullet descriptor/tail residuals including `field360`, compact-enemy single-ended fields/tail packets, score-profile `+0x15`, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB` as Unknown absent fresh TH095-local discriminators.
+
+After this docs-only handoff checkpoint, refresh only a bounded current-source Factory receipt plane: one representative SEM-261 exact claim and one `whole-build-closed` claim. Do not replay the complete historical receipt set. The accepted whole-build receipt on prior handoff `cc11c16...` is historical once SEM-261 source is committed. If an external shared-operator lock prevents an exact receipt, report that plane as deferred rather than retrying indefinitely or modifying protected untracked state.
