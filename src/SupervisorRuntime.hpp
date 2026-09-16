@@ -205,7 +205,7 @@ struct Supervisor
     DWORD systemTime;                                // +0x44c
     D3DCAPS8 d3dCaps;                                // +0x450
     u8 unknownAfterCaps[0x528 - 0x450 - sizeof(D3DCAPS8)];
-    u32 screenshotThread;                            // +0x528
+    u32 screenshotWorkerToken;                       // +0x528
     ScreenshotBitmapFileHeader screenshotFileHeader;// +0x52c
     u8 screenshotHeaderPadding[2];                   // +0x53a
     BITMAPINFOHEADER *screenshotInfoHeader;           // +0x53c

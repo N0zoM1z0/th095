@@ -85,7 +85,13 @@ struct Supervisor
 #else
     SupervisorLifecycleFlags flags;
 #endif
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     u8 unknown448[0x200];
+#else
+    u8 unknown448[0x528 - 0x448];
+    u32 screenshotWorkerToken;
+    u8 unknown52c[0x648 - 0x52c];
+#endif
     ReplayScanWorker replayWorker;
     u8 unknown660[0x140];
     ReplayScanWorker secondaryWorker;
@@ -103,6 +109,10 @@ typedef char SupervisorLifecycleTimerAt3F4[
     (offsetof(Supervisor, timer) == 0x3f4) ? 1 : -1];
 typedef char SupervisorLifecycleFlagsAt444[
     (offsetof(Supervisor, flags) == 0x444) ? 1 : -1];
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+typedef char SupervisorLifecycleScreenshotWorkerTokenAt528[
+    (offsetof(Supervisor, screenshotWorkerToken) == 0x528) ? 1 : -1];
+#endif
 typedef char SupervisorLifecycleWorkerAt648[
     (offsetof(Supervisor, replayWorker) == 0x648) ? 1 : -1];
 typedef char SupervisorLifecycleWorker2At7A0[
