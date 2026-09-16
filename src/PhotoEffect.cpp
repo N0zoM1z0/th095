@@ -45,7 +45,11 @@ struct PhotoEffectArgsSmallView
     PhotoEffectVector position;
     f32 angle;
     f32 maximumLength;
+#ifdef DIFFBUILD
     i32 initialLength;
+#else
+    f32 initialLength;
+#endif
     f32 terminalDistance;
     f32 width;
     f32 speed;
@@ -380,7 +384,11 @@ i32 PhotoStraightLaserView::Initialize(void *args)
     this->tailVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
 
     this->position = this->spawn.position;
+#ifdef DIFFBUILD
     *reinterpret_cast<i32 *>(&this->length) = this->spawn.initialLength;
+#else
+    this->length = this->spawn.initialLength;
+#endif
     this->width = this->spawn.width;
     this->speed = this->spawn.speed;
     this->angle = this->spawn.angle;
@@ -773,10 +781,15 @@ i32 PhotoStraightLaserView::CheckCollision(
                 }
 
                 PhotoEffectArgsSmallView args = this->spawn;
+#ifdef DIFFBUILD
                 *reinterpret_cast<f32 *>(&args.initialLength) =
                     static_cast<f32>(gapLength) * 12.0f;
                 args.maximumLength =
                     *reinterpret_cast<f32 *>(&args.initialLength);
+#else
+                args.initialLength = static_cast<f32>(gapLength) * 12.0f;
+                args.maximumLength = args.initialLength;
+#endif
                 *reinterpret_cast<Float3 *>(&args.position) =
                     preloadBufferLocal03 +
                     CollisionScaleStep(step, static_cast<f32>(gapStart));
@@ -910,10 +923,15 @@ scan_more:
                     }
 
                     PhotoEffectArgsSmallView args;
+#ifdef DIFFBUILD
                     *reinterpret_cast<f32 *>(&args.initialLength) =
                         static_cast<f32>(gapLength) * 12.0f;
                     args.maximumLength =
                         *reinterpret_cast<f32 *>(&args.initialLength);
+#else
+                    args.initialLength = static_cast<f32>(gapLength) * 12.0f;
+                    args.maximumLength = args.initialLength;
+#endif
                     *reinterpret_cast<Float3 *>(&args.position) =
                         preloadBufferLocal03 + CollisionScaleStep(
                             step, static_cast<f32>(gapStart));

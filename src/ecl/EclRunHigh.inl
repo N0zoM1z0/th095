@@ -228,7 +228,11 @@ struct PhotoEffectArgsSmall
     f32 field20;
 #else
     f32 maximumLength;
+#if defined(DIFFBUILD)
     i32 initialLength;
+#else
+    f32 initialLength;
+#endif
     f32 terminalDistance;
     f32 width;
     f32 speed;
