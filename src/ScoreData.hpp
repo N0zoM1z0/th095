@@ -108,10 +108,23 @@ struct ResultBestShotImageView
     u8 unknown050[0x60 - 0x50];
 };
 
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+typedef u8 ResultBestShotPayloadFormat;
+enum ResultBestShotPayloadFormatValue
+{
+    RESULT_BEST_SHOT_PAYLOAD_COMPRESSED_PIXELS = 1,
+    RESULT_BEST_SHOT_PAYLOAD_COMMENT_AND_COMPRESSED_PIXELS = 2,
+};
+#endif
+
 struct ResultBestShotRecordView
 {
     u32 magic;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     u8 type;
+#else
+    ResultBestShotPayloadFormat payloadFormat;
+#endif
     u8 componentCount;
     u16 group;
     u16 scene;
@@ -269,6 +282,12 @@ typedef char ResultBestShotImageSizeIs60[
     (sizeof(ResultBestShotImageView) == 0x60) ? 1 : -1];
 typedef char ResultBestShotRecordSizeIs78[
     (sizeof(ResultBestShotRecordView) == 0x78) ? 1 : -1];
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+typedef char ResultBestShotPayloadFormatSizeIs1[
+    (sizeof(ResultBestShotPayloadFormat) == 1) ? 1 : -1];
+typedef char ResultBestShotPayloadFormatAt04[
+    (offsetof(ResultBestShotRecordView, payloadFormat) == 0x04) ? 1 : -1];
+#endif
 typedef char ResultScoreEntrySizeIs60[
     (sizeof(ResultScoreEntryView) == 0x60) ? 1 : -1];
 #if !defined(TH095_MATCH_EXACT)

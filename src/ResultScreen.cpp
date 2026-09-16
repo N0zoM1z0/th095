@@ -941,9 +941,16 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .scene = (u16)(g_SelectedScene->scene + 1);
+#ifdef DIFFBUILD
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .type = 2;
+#else
+        g_ResultSaveData
+            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            .payloadFormat =
+            RESULT_BEST_SHOT_PAYLOAD_COMMENT_AND_COMPRESSED_PIXELS;
+#endif
         g_ResultSaveData
             ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
             .version = 0x102;

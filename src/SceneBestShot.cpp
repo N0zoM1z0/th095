@@ -90,7 +90,12 @@ i32 ResultSaveDataView::LoadBestShotForScene(i32 group, i32 scene)
                 this->bestShotRecords[recordIndex].height *
                 this->bestShotRecords[recordIndex].componentCount);
 
+#ifdef DIFFBUILD
         if (this->bestShotRecords[recordIndex].type == 1)
+#else
+        if (this->bestShotRecords[recordIndex].payloadFormat ==
+            RESULT_BEST_SHOT_PAYLOAD_COMPRESSED_PIXELS)
+#endif
         {
             DecompressData(
                 io.input, fileSize - 0x18,
