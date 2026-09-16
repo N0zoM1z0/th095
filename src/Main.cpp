@@ -87,6 +87,11 @@ enum SupervisorLoadingScreenValue
     SUPERVISOR_LOADING_SCREEN_PROMPT_CYCLE_END = 65,
 };
 
+enum SupervisorStartupSurfaceSlotValue
+{
+    SUPERVISOR_STARTUP_BACKGROUND_SURFACE = 8,
+};
+
 #define g_PressedButtons (RuntimePressedButtons())
 DIFFABLE_STATIC(GameWindow, g_GameWindow);
 // Target 0x004C45E4 is a zero-initialized process-lifetime HANDLE slot.  The
@@ -1379,14 +1384,14 @@ i32 __fastcall Supervisor::OnDraw2(Supervisor *s)
 
     if (s->loadingScreenState != SUPERVISOR_LOADING_SCREEN_INACTIVE)
     {
-        g_AnmManager->CopySurfaceToBackbuffer(8, 0, 0, 0, 0);
+        g_AnmManager->CopySurfaceToBackbuffer(SUPERVISOR_STARTUP_BACKGROUND_SURFACE, 0, 0, 0, 0);
     }
     else
     {
-        GetSupervisorAnmSurface(&locals.surface, g_AnmManager, 8);
+        GetSupervisorAnmSurface(&locals.surface, g_AnmManager, SUPERVISOR_STARTUP_BACKGROUND_SURFACE);
         if (locals.surface != NULL)
         {
-            g_AnmManager->ReleaseSurface(8);
+            g_AnmManager->ReleaseSurface(SUPERVISOR_STARTUP_BACKGROUND_SURFACE);
         }
     }
     return 1;
@@ -1825,7 +1830,7 @@ i32 __fastcall Supervisor::AddedCallback(Supervisor *s)
 
     TH095_BACKBUFFER_CLEAR_COLOR = 0xff000000;
     InitializeScoreData();
-    g_AnmManager->LoadSurface(8, "title/th08logo.jpg");
+    g_AnmManager->LoadSurface(SUPERVISOR_STARTUP_BACKGROUND_SURFACE, "title/th08logo.jpg");
     g_Supervisor.suppressFpsDisplay = 1;
 
     if (!g_Supervisor.disableVsync && Supervisor::CheckFps() != 0)
@@ -1923,7 +1928,7 @@ i32 Supervisor::CheckFps()
     while (frameIndex < 600 && sampleCount < 8)
     {
         g_Supervisor.d3dDevice->BeginScene();
-        g_AnmManager->CopySurfaceToBackbuffer(8, 0, 0, 0, 0);
+        g_AnmManager->CopySurfaceToBackbuffer(SUPERVISOR_STARTUP_BACKGROUND_SURFACE, 0, 0, 0, 0);
         g_Supervisor.d3dDevice->EndScene();
         if (g_Supervisor.d3dDevice->Present(NULL, NULL, NULL, NULL) < 0)
         {
@@ -2108,7 +2113,7 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
     ReleaseSupervisorAnmVertexBuffer();
     g_AnmManager->ReleaseAnm(0);
     g_AnmManager->ReleaseAnm(2);
-    g_AnmManager->ReleaseSurface(8);
+    g_AnmManager->ReleaseSurface(SUPERVISOR_STARTUP_BACKGROUND_SURFACE);
     AsciiManager::CutChain();
     g_SoundPlayer.QueueCommand(SOUNDPLAYER_COMMAND_RELEASE_BGM, 0, "dummy");
     TextHelperView::ReleaseTextBuffer();
