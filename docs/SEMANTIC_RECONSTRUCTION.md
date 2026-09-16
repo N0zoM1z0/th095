@@ -12342,3 +12342,106 @@ The same target function handles control-change value 4 as the inverse operation
 **Recovery / analysis state.** This transaction began from committed SEM-245 HEAD `091270402a9459a208866348da4dbd8120b2ef77`. After the browser conversation was re-prompted with `Midi.cpp/Midi.hpp` dirty, mandatory recovery reread all five Factory-controlled contracts/docs and classified those two tracked edits as recoverable current work. Their complete diff and dirty-state digest `56e5e187d03e2c794f484a269391034a4b4e5106f8748ef8e6b43019f82639d9` matched the interrupted transaction. The first two fixed aggregate partitions had already durably passed under that same digest and were retained; no active replay/compiler/linker/Wine/Ghidra producer survived the interruption. The four established untracked exclusions remained hash-stable and outside staging: unknown-origin `EnemyManagerUpdate.i`, pre-existing runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`, and user-owned `droid.resume.txt`. `.analysis/` remained **3,394,984 bytes** with no current-session `.analysis/gpt-web/` root and no retained large current-session artifact.
 
 **Resume audit / next evidence route.** This batch replaces TH08-only semantic commentary with TH095-local evidence, but it does not change the campaign state. After checkpoint, rotate away from MIDI/ECL protocol naming. Prefer a distinct persistent/ABI owner with a parser/validator plus independent runtime consumer, a historical-platform resource lifetime outside the already-closed Sound/FileWrite/DirectInput/TextRenderer/ANM owners, or a non-front-end state/flag family with at least two TH095-local discriminators. Keep replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
+
+### SEM-247 — bind the ECL bullet-spawn position producer
+
+**Scope.** Continue from committed SEM-246 and rotate away from MIDI into a
+missed representation edge in the target-high ECL interpreter. The initial
+resume routes were actively falsified against current history: ResultScreen
+photo-runtime flag producers are already semantic in normal production; shared
+photo bits 9/10 are already named in EclExtended; shared task bit 8 remains
+single-ended; and the apparent ANM preload `+0x20` debt is exact-facing pathname
+compatibility over an already-canonical normal owner. The actionable
+counterexample is target-high ECL opcode 99 (`0x63`): SEM-191 deliberately left
+its destination `Enemy+0x2990` out of scope even though SEM-035 already proves
+`Enemy+0x298C..+0x2B9B` as one 0x210-byte bullet-spawn descriptor. This batch
+binds only that missed producer and dispatch pointer to the established owner.
+
+**Observed.** Fresh Factory-attested TH095 v1.02a `EclManager::RunEcl @
+0x00408E70` shows opcode 99 adding compact-enemy local `position @ +0x28A0`
+to `shootOffset @ +0x2924`, storing the resulting three floats at
+`+0x2990/+0x2994/+0x2998`, and immediately passing `enemy + 0x298C` to
+`PhotoBulletManager::SpawnBulletPattern @ 0x00406CC0`. Fresh target
+`DispatchShotInstruction @ 0x00412670` independently writes the same three
+physical destination floats from `worldPosition @ +0x28F4` plus the same
+`shootOffset`, fills other descriptor fields, and passes the identical
+`enemy + 0x298C` owner to the same bullet-spawn entry point.
+
+The target consumer closes the field identity rather than relying on physical
+adjacency. Fresh `SpawnBulletPattern @ 0x00406CC0` supplies descriptor byte
+`+0x04` to the player-angle helper and passes the complete descriptor through
+to the per-bullet initializer. Fresh `PhotoBulletManager` single-bullet
+initializer `0x00405A30` then copies descriptor bytes `+0x04/+0x08/+0x0C`
+directly into the new bullet's three position components before ANM setup and
+transform-program initialization. The three case-99 stores are therefore the
+producer of the descriptor position consumed by the bullet runtime.
+
+**Corroborated.** SEM-035 independently established the 0x210-byte compact
+bullet-spawn descriptor owner rooted at enemy `+0x298C`, including the template
+copy/reset protocol and shot-dispatch handoff. Canonical `BulletSpawnDescriptor`
+asserts `position @ +0x04`, so descriptor `+0x04` is exactly enemy `+0x2990`.
+SEM-009/191 establish compact enemy local `position @ +0x28A0`, while SEM-010
+and SEM-190 establish `shootOffset @ +0x2924`. The interpretation therefore
+uses only TH095-local established owners plus fresh target producer/consumer
+evidence; TH08 supplies no semantic authority.
+
+**Inferred.** Normal target-high source should express opcode 99 as publishing
+`enemy->position + enemy->shootOffset` into the existing
+`BulletSpawnDescriptor::position`, then dispatch that same descriptor owner.
+This is representation recovery for an already-proven protocol boundary, not a
+new claim that the original source shared the reconstructed C++ type.
+
+**Unknown / bounded.** The original opcode-99 mnemonic, script-authoring
+intent, and why this direct dispatch uses local position while ordinary shot
+instructions use derived world position remain Unknown. This batch does not
+reinterpret the remaining descriptor fields, transform kinds, aim-mode
+vocabulary, minimum-distance gate, deferred-shot record, or neighboring ECL
+opcodes. No runtime scenario or whole-image identity claim is made.
+
+**Production / exact representation.** Normal `src/ecl/EclRunHigh.inl` adds a
+translation-unit-local `Th095EnemyBulletSpawnDescriptorView` that places the
+canonical `BulletSpawnDescriptor` at enemy `+0x298C` with a compile-time offset
+assertion. Normal case 99 in `EclRunTargetHigh.inl` writes the descriptor's
+`position` member and passes the canonical descriptor pointer to the existing
+spawn bridge. `DIFFBUILD` and `TH095_MATCH_EXACT` retain the historical raw
+`enemy + 0x2990`, `enemy + 0x2924`, and `enemy + 0x298C` expressions verbatim.
+No shared header, physical object layout, descriptor size, opcode value,
+function signature, calling convention, branch topology, or ABI changes.
+
+**Validation.** Focused canonical replay of `src/ecl/EclRun.cpp` passed the
+complete configured source surface at **1/1 exact unit** with **zero
+private-label refresh**. A command-local normal-production probe using the
+pinned VC7.1 profile emitted a **78,239-byte Intel 80386 COFF** object; the
+probe directory was removed by the same command. `git diff --check` passes.
+Because this transaction changes only declarations and expressions lexically
+owned by the single EclRun translation unit and does not touch a shared header
+or layout, no cross-object aggregate gate is credited at this private
+checkpoint; the campaign-level cold aggregate and whole-product gates remain
+for the committed milestone/final handoff.
+
+**Recovery / analysis state.** This campaign began from committed SEM-246 HEAD
+`e941c66ddea0757692fe2cf82e4737d3b3a681e1`. All five Factory-controlled
+contracts/docs were readable before editing. Mandatory recovery found no
+staged or tracked-unstaged work and preserved the same four established
+untracked exclusions outside staging: unknown-origin generated-looking
+`EnemyManagerUpdate.i`, pre-existing runtime experiments
+`config/runtime-scenarios.json` / `scripts/runtime-diff.py`, and user-owned
+`droid.resume.txt`; their hashes matched the preceding checkpoint. `.analysis/`
+began at **3,394,984 bytes**, contained no retained file above 64 MiB, and no
+current-session `.analysis/gpt-web/` root was created. Fresh semantic evidence
+came through the registered read-only target-attested Ghidra provider; the
+provider receives no exactness credit.
+
+**Resume audit / next evidence route.** The case-99 owner binding is a concrete
+counterexample outside the previous handoff's enumerated routes, but it does
+not change the phase state. After checkpoint, rotate away from the bullet-spawn
+descriptor rather than mining adjacent fields. Prefer a distinct persistent or
+ABI boundary with a parser/producer plus independent runtime consumer, a
+historical-platform owner/lifetime edge not already closed by the existing
+resource families, or a non-ECL flags/state protocol with multiple TH095-local
+discriminators. Keep replay/score reserved bytes, `ReplayScanWorker::unknown010`,
+shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved
+storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy
+single-ended fields, score-entry `+0x38`, and photo-score bits 5/17/18/19
+Unknown absent new distinguishing evidence. The semantic phase remains
+active-incomplete.

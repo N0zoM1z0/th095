@@ -127,6 +127,16 @@ C_ASSERT(offsetof(Th095EnemyBulletSpawnSoundView, bulletSpawnDescriptor) == 0x29
           ->bulletSpawnDescriptor)
 
 #if !defined(DIFFBUILD)
+struct Th095EnemyBulletSpawnDescriptorView
+{
+    u8 unknown0000[0x298c];
+    BulletSpawnDescriptor bulletSpawnDescriptor;
+};
+C_ASSERT(offsetof(Th095EnemyBulletSpawnDescriptorView, bulletSpawnDescriptor) == 0x298c);
+#define TH095_ENEMY_BULLET_SPAWN_DESCRIPTOR(enemy)                          \
+    (&reinterpret_cast<Th095EnemyBulletSpawnDescriptorView *>(enemy)        \
+          ->bulletSpawnDescriptor)
+
 struct Th095BulletSpawnTransformView
 {
     u8 unknown000[0x20];

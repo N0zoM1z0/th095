@@ -152,11 +152,18 @@
         break;
 
     case 99:
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x2990) =
             TH095_TARGET_ENEMY_POSITION(enemy) +
             *reinterpret_cast<Float3 *>(reinterpret_cast<u8 *>(enemy) + 0x2924);
         TH095_ECL_BULLET_SPAWN(
             reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x298c));
+#else
+        TH095_ENEMY_BULLET_SPAWN_DESCRIPTOR(enemy)->position =
+            enemy->position + enemy->shootOffset;
+        TH095_ECL_BULLET_SPAWN(
+            TH095_ENEMY_BULLET_SPAWN_DESCRIPTOR(enemy));
+#endif
         break;
 
     case 100:
