@@ -884,7 +884,11 @@ struct AnmManager
     u8 unconsumedBytes1F08[0x130];
 
     IDirect3DSurface8 *surfaces[32];
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     IDirect3DSurface8 *surfacesBis[32];
+#else
+    IDirect3DSurface8 *surfaceRestoreCopies[32];
+#endif
     u8 *surfaceData[32];
     u32 surfaceDataSizes[32];
     ZunImageInfo surfaceInfo[32];

@@ -62,7 +62,7 @@ struct AnmManagerCaptureView
 };
 
 typedef char AnmSurfacePrimaryOffset[(offsetof(AnmManager, surfaces) == 0x11dc) ? 1 : -1];
-typedef char AnmSurfaceSecondaryOffset[(offsetof(AnmSurfaceStorageView, surfacesBis) == 0x125c) ? 1 : -1];
+typedef char AnmSurfaceRestoreCopyOffset[(offsetof(AnmSurfaceStorageView, surfacesBis) == 0x125c) ? 1 : -1];
 typedef char AnmSurfaceDataOffset[(offsetof(AnmSurfaceStorageView, surfaceData) == 0x12dc) ? 1 : -1];
 typedef char AnmSurfaceDataSizeOffset[(offsetof(AnmSurfaceStorageView, surfaceDataSizes) == 0x135c) ? 1 : -1];
 typedef char AnmSurfaceInfoOffset[(offsetof(AnmSurfaceStorageView, surfaceInfo) == 0x13dc) ? 1 : -1];
@@ -73,6 +73,17 @@ typedef char AnmSurfaceCaptureStateOffset[(offsetof(AnmManagerCaptureView, surfa
 
 #define surfaceStorage reinterpret_cast<AnmSurfaceStorageView *>(this)
 #define captureManager reinterpret_cast<AnmManagerCaptureView *>(this)
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_ANM_SURFACE_RESTORE_COPY(owner, index) \
+    (reinterpret_cast<AnmSurfaceStorageView *>(owner)->surfacesBis[(index)])
+#define TH095_ANM_SURFACE_INFO(owner, index) \
+    (reinterpret_cast<AnmSurfaceStorageView *>(owner)->surfaceInfo[(index)])
+#else
+#define TH095_ANM_SURFACE_RESTORE_COPY(owner, index) \
+    (reinterpret_cast<AnmManager *>(owner)->surfaceRestoreCopies[(index)])
+#define TH095_ANM_SURFACE_INFO(owner, index) \
+    (reinterpret_cast<AnmManager *>(owner)->surfaceInfo[(index)])
+#endif
 
 // FUNCTION: TH095 0x004440F0.
 i32 AnmManager::LoadSurface(i32 surfaceIndex, const char *path)
@@ -117,20 +128,20 @@ i32 AnmManager::LoadSurface(i32 surfaceIndex, const char *path)
 
     if (D3DXLoadSurfaceFromFileInMemory(
             locals.surface, NULL, NULL, locals.fileData, locals.fileSize, NULL, 1, 0,
-            &surfaceStorage->surfaceInfo[surfaceIndex]) != D3D_OK)
+            &TH095_ANM_SURFACE_INFO(this, surfaceIndex)) != D3D_OK)
     {
         goto error;
     }
 
     if (g_Supervisor.d3dDevice->CreateRenderTarget(
-            surfaceStorage->surfaceInfo[surfaceIndex].Width,
-            surfaceStorage->surfaceInfo[surfaceIndex].Height,
+            TH095_ANM_SURFACE_INFO(this, surfaceIndex).Width,
+            TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height,
             g_Supervisor.presentParameters.BackBufferFormat,
             D3DMULTISAMPLE_NONE, 1, &this->surfaces[surfaceIndex]) != D3D_OK)
     {
         if (g_Supervisor.d3dDevice->CreateImageSurface(
-                surfaceStorage->surfaceInfo[surfaceIndex].Width,
-                surfaceStorage->surfaceInfo[surfaceIndex].Height,
+                TH095_ANM_SURFACE_INFO(this, surfaceIndex).Width,
+                TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height,
                 g_Supervisor.presentParameters.BackBufferFormat,
                 &this->surfaces[surfaceIndex]) != D3D_OK)
         {
@@ -139,10 +150,10 @@ i32 AnmManager::LoadSurface(i32 surfaceIndex, const char *path)
     }
 
     if (g_Supervisor.d3dDevice->CreateImageSurface(
-            surfaceStorage->surfaceInfo[surfaceIndex].Width,
-            surfaceStorage->surfaceInfo[surfaceIndex].Height,
+            TH095_ANM_SURFACE_INFO(this, surfaceIndex).Width,
+            TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height,
             g_Supervisor.presentParameters.BackBufferFormat,
-            &surfaceStorage->surfacesBis[surfaceIndex]) != D3D_OK)
+            &TH095_ANM_SURFACE_RESTORE_COPY(this, surfaceIndex)) != D3D_OK)
     {
         goto error;
     }
@@ -155,7 +166,7 @@ i32 AnmManager::LoadSurface(i32 surfaceIndex, const char *path)
     }
 
     if (D3DXLoadSurfaceFromSurface(
-            surfaceStorage->surfacesBis[surfaceIndex], NULL, NULL, locals.surface, NULL, NULL,
+            TH095_ANM_SURFACE_RESTORE_COPY(this, surfaceIndex), NULL, NULL, locals.surface, NULL, NULL,
             D3DX_FILTER_NONE, 0) != D3D_OK)
     {
         goto error;
@@ -189,10 +200,10 @@ void AnmManager::ReleaseSurface(i32 surfaceIndex)
         this->surfaces[surfaceIndex]->Release();
         this->surfaces[surfaceIndex] = NULL;
     }
-    if (surfaceStorage->surfacesBis[surfaceIndex] != NULL)
+    if (TH095_ANM_SURFACE_RESTORE_COPY(this, surfaceIndex) != NULL)
     {
-        surfaceStorage->surfacesBis[surfaceIndex]->Release();
-        surfaceStorage->surfacesBis[surfaceIndex] = NULL;
+        TH095_ANM_SURFACE_RESTORE_COPY(this, surfaceIndex)->Release();
+        TH095_ANM_SURFACE_RESTORE_COPY(this, surfaceIndex) = NULL;
     }
     if (surfaceStorage->surfaceData[surfaceIndex] != NULL)
     {
@@ -206,7 +217,7 @@ void AnmManager::ReleaseSurface(i32 surfaceIndex)
 void AnmManager::CopySurfaceToBackbuffer(
     i32 surfaceIndex, i32 left, i32 top, i32 x, i32 y)
 {
-    if (surfaceStorage->surfacesBis[surfaceIndex] == NULL)
+    if (TH095_ANM_SURFACE_RESTORE_COPY(this, surfaceIndex) == NULL)
     {
         return;
     }
@@ -221,15 +232,15 @@ void AnmManager::CopySurfaceToBackbuffer(
     if (this->surfaces[surfaceIndex] == NULL)
     {
         if (g_Supervisor.d3dDevice->CreateRenderTarget(
-                surfaceStorage->surfaceInfo[surfaceIndex].Width,
-                surfaceStorage->surfaceInfo[surfaceIndex].Height,
+                TH095_ANM_SURFACE_INFO(this, surfaceIndex).Width,
+                TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height,
                 g_Supervisor.presentParameters.BackBufferFormat,
                 D3DMULTISAMPLE_NONE, TRUE,
                 &this->surfaces[surfaceIndex]) != D3D_OK)
         {
             if (g_Supervisor.d3dDevice->CreateImageSurface(
-                    surfaceStorage->surfaceInfo[surfaceIndex].Width,
-                    surfaceStorage->surfaceInfo[surfaceIndex].Height,
+                    TH095_ANM_SURFACE_INFO(this, surfaceIndex).Width,
+                    TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height,
                     g_Supervisor.presentParameters.BackBufferFormat,
                     &this->surfaces[surfaceIndex]) != D3D_OK)
             {
@@ -240,7 +251,7 @@ void AnmManager::CopySurfaceToBackbuffer(
 
         if (D3DXLoadSurfaceFromSurface(
                 this->surfaces[surfaceIndex], NULL, NULL,
-                surfaceStorage->surfacesBis[surfaceIndex], NULL, NULL,
+                TH095_ANM_SURFACE_RESTORE_COPY(this, surfaceIndex), NULL, NULL,
                 D3DX_FILTER_NONE, 0) != D3D_OK)
         {
             destSurface->Release();
@@ -252,8 +263,8 @@ void AnmManager::CopySurfaceToBackbuffer(
     POINT destPoint;
     sourceRect.left = left;
     sourceRect.top = top;
-    sourceRect.right = surfaceStorage->surfaceInfo[surfaceIndex].Width;
-    sourceRect.bottom = surfaceStorage->surfaceInfo[surfaceIndex].Height;
+    sourceRect.right = TH095_ANM_SURFACE_INFO(this, surfaceIndex).Width;
+    sourceRect.bottom = TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height;
     destPoint.x = x;
     destPoint.y = y;
     g_Supervisor.d3dDevice->CopyRects(
@@ -352,19 +363,19 @@ void AnmManagerCaptureView::CaptureToSurface(
         return;
     }
 
-    surfaceStorage->surfaceInfo[surfaceIndex].Width = dstW;
-    surfaceStorage->surfaceInfo[surfaceIndex].Height = dstH;
+    TH095_ANM_SURFACE_INFO(this, surfaceIndex).Width = dstW;
+    TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height = dstH;
 
     if (g_Supervisor.d3dDevice->CreateRenderTarget(
-            surfaceStorage->surfaceInfo[surfaceIndex].Width,
-            surfaceStorage->surfaceInfo[surfaceIndex].Height,
+            TH095_ANM_SURFACE_INFO(this, surfaceIndex).Width,
+            TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height,
             g_Supervisor.presentParameters.BackBufferFormat,
             D3DMULTISAMPLE_NONE, TRUE,
             &reinterpret_cast<AnmManager *>(this)->surfaces[surfaceIndex]) != D3D_OK)
     {
         if (g_Supervisor.d3dDevice->CreateImageSurface(
-                surfaceStorage->surfaceInfo[surfaceIndex].Width,
-                surfaceStorage->surfaceInfo[surfaceIndex].Height,
+                TH095_ANM_SURFACE_INFO(this, surfaceIndex).Width,
+                TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height,
                 g_Supervisor.presentParameters.BackBufferFormat,
                 &reinterpret_cast<AnmManager *>(this)->surfaces[surfaceIndex]) != D3D_OK)
         {
@@ -373,10 +384,10 @@ void AnmManagerCaptureView::CaptureToSurface(
     }
 
     if (g_Supervisor.d3dDevice->CreateImageSurface(
-            surfaceStorage->surfaceInfo[surfaceIndex].Width,
-            surfaceStorage->surfaceInfo[surfaceIndex].Height,
+            TH095_ANM_SURFACE_INFO(this, surfaceIndex).Width,
+            TH095_ANM_SURFACE_INFO(this, surfaceIndex).Height,
             g_Supervisor.presentParameters.BackBufferFormat,
-            &surfaceStorage->surfacesBis[surfaceIndex]) != D3D_OK)
+            &TH095_ANM_SURFACE_RESTORE_COPY(this, surfaceIndex)) != D3D_OK)
     {
         goto out;
     }
@@ -390,7 +401,7 @@ void AnmManagerCaptureView::CaptureToSurface(
     }
 
     D3DXLoadSurfaceFromSurface(
-        surfaceStorage->surfacesBis[surfaceIndex], NULL, NULL,
+        TH095_ANM_SURFACE_RESTORE_COPY(this, surfaceIndex), NULL, NULL,
         reinterpret_cast<AnmManager *>(this)->surfaces[surfaceIndex], NULL,
         NULL, D3DX_DEFAULT, 0);
 
@@ -436,6 +447,8 @@ void AnmManager::TakeScreenshots()
 }
 
 #undef captureManager
+#undef TH095_ANM_SURFACE_INFO
+#undef TH095_ANM_SURFACE_RESTORE_COPY
 #undef surfaceStorage
 
 } // namespace th095
