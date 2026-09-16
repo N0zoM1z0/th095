@@ -631,7 +631,18 @@ struct AnmManager
 #else
             i32 textureCaptureEntryIndex;
 #endif
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             u8 unknown3817f4[0x20];
+#else
+            i32 surfaceCaptureSourceX;
+            i32 surfaceCaptureSourceY;
+            i32 surfaceCaptureSourceWidth;
+            i32 surfaceCaptureSourceHeight;
+            i32 surfaceCaptureDestinationX;
+            i32 surfaceCaptureDestinationY;
+            i32 surfaceCaptureDestinationWidth;
+            i32 surfaceCaptureDestinationHeight;
+#endif
         };
     };
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -756,6 +767,10 @@ typedef char AnmManagerVertexBufferAt17C8[(offsetof(AnmManager, vertexBuffer) ==
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 typedef char AnmManagerTextureCaptureEntryIndexAt3817F0[
     (offsetof(AnmManager, textureCaptureEntryIndex) == 0x3817f0) ? 1 : -1];
+typedef char AnmManagerSurfaceCaptureSourceAt3817F4[
+    (offsetof(AnmManager, surfaceCaptureSourceX) == 0x3817f4) ? 1 : -1];
+typedef char AnmManagerSurfaceCaptureDestinationHeightAt381810[
+    (offsetof(AnmManager, surfaceCaptureDestinationHeight) == 0x381810) ? 1 : -1];
 #endif
 typedef char AnmManagerVmListAt381814[(offsetof(AnmManager, vmListHead) == 0x381814) ? 1 : -1];
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
