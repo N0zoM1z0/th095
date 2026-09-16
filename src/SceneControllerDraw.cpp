@@ -2,6 +2,7 @@
 #include "SceneControllerDrawExact.inl"
 #else
 #include "SceneSelect.hpp"
+#include "FrontEndGlobals.hpp"
 #include "AsciiManager.hpp"
 #include "Main.hpp"
 #include "ReplayManager.hpp"
@@ -41,7 +42,11 @@ struct FrontEndControllerDrawView
     u8 unknown0bf4[0x2b4];
     ReplayManager *replays[80];
     u8 unknown0fe8[0x5128];
+#ifdef DIFFBUILD
     i32 requestedState;
+#else
+    FrontEndRequestedState requestedState;
+#endif
     u8 unknown6114[0x0c];
     union
     {
@@ -185,10 +190,10 @@ ChainCallbackResult SceneSelectControllerView::Draw()
 #define view (reinterpret_cast<FrontEndControllerDrawView *>(this))
     switch (view->requestedState)
     {
-    case 2:
+    case FRONT_END_REQUESTED_STATE_SCENE_SELECT:
         FrontEndDrawSceneSummary(view);
         break;
-    case 3:
+    case FRONT_END_REQUESTED_STATE_REPLAY_BROWSER:
     {
         char sceneText[8];
         char userId[5];
