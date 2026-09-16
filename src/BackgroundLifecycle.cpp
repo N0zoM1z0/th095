@@ -78,6 +78,22 @@ struct BackgroundStageHeader;
 struct BackgroundStageObject;
 struct BackgroundStageObjectInstance;
 struct BackgroundStageInstruction;
+#ifndef TH095_MATCH_EXACT
+// These POD projections mirror the already-proven Background.cpp runtime view
+// without adding Float3/AnmVmId constructors to the real lifecycle object.
+struct BackgroundLifecycleFloat3
+{
+    f32 x;
+    f32 y;
+    f32 z;
+};
+struct BackgroundLifecyclePhotoBlend
+{
+    f32 x;
+    f32 y;
+    u32 color;
+};
+#endif
 struct Background
 {
 #ifdef TH095_MATCH_EXACT
@@ -93,13 +109,43 @@ struct Background
     BackgroundStageInstruction *stageInstruction;
     ZunTimer interpolationCurrentTimers[4];
     ZunTimer interpolationEndTimers[4];
+#ifdef TH095_MATCH_EXACT
     u8 unknown080[0x70];
+#else
+    u16 interpolationModes[4];
+    BackgroundLifecycleFloat3 cameraLookAtFinal;
+    BackgroundLifecycleFloat3 cameraLookAtInitial;
+    BackgroundLifecycleFloat3 cameraLookAtTangentFinal;
+    BackgroundLifecycleFloat3 cameraLookAtTangentInitial;
+    BackgroundLifecycleFloat3 cameraPositionFinal;
+    BackgroundLifecycleFloat3 cameraPositionInitial;
+    BackgroundLifecycleFloat3 cameraPositionTangentFinal;
+    BackgroundLifecycleFloat3 cameraPositionTangentInitial;
+    u8 cameraMotionMode;
+    u8 unknown00e9[7];
+#endif
     AnmLoaded *anm;
     AnmVm *stageObjectVms;
     AnmVm stageVms[8];
+#ifdef TH095_MATCH_EXACT
     u8 unknown1758[0x28];
+#else
+    f32 cullingDistanceSq;
+    i32 spellBackgroundFrameCounter;
+    u32 photoColor;
+    i32 photoAreaActive;
+    BackgroundLifecycleFloat3 photoAreaPosition;
+    BackgroundLifecycleFloat3 photoAreaSize;
+#endif
     AnmVm photoAreaVms[3];
+#ifdef TH095_MATCH_EXACT
     u8 unknown1fe4[0x2c];
+#else
+    i32 spellBackgroundVms[2];
+    BackgroundLifecyclePhotoBlend photoBlendCurrent;
+    BackgroundLifecyclePhotoBlend photoBlendInitial;
+    BackgroundLifecyclePhotoBlend photoBlendFinal;
+#endif
     ChainElem *calcChain;
     ChainElem *drawHighChain;
     ChainElem *drawLowChain;
@@ -131,14 +177,36 @@ typedef char BackgroundLifecycleTimersAt20[
     (offsetof(Background, interpolationCurrentTimers) == 0x20) ? 1 : -1];
 typedef char BackgroundLifecycleTimersAt50[
     (offsetof(Background, interpolationEndTimers) == 0x50) ? 1 : -1];
+#ifndef TH095_MATCH_EXACT
+typedef char BackgroundLifecycleInterpolationModesAt80[
+    (offsetof(Background, interpolationModes) == 0x80) ? 1 : -1];
+typedef char BackgroundLifecycleCameraMotionModeAtE8[
+    (offsetof(Background, cameraMotionMode) == 0xe8) ? 1 : -1];
+#endif
 typedef char BackgroundLifecycleAnmAtF0[
     (offsetof(Background, anm) == 0xf0) ? 1 : -1];
 typedef char BackgroundLifecycleStageObjectVmsAtF4[
     (offsetof(Background, stageObjectVms) == 0xf4) ? 1 : -1];
 typedef char BackgroundLifecycleStageVmsAtF8[
     (offsetof(Background, stageVms) == 0xf8) ? 1 : -1];
+#ifndef TH095_MATCH_EXACT
+typedef char BackgroundLifecycleCullingDistanceAt1758[
+    (offsetof(Background, cullingDistanceSq) == 0x1758) ? 1 : -1];
+typedef char BackgroundLifecycleSpellFrameCounterAt175C[
+    (offsetof(Background, spellBackgroundFrameCounter) == 0x175c) ? 1 : -1];
+typedef char BackgroundLifecyclePhotoAreaAt1764[
+    (offsetof(Background, photoAreaActive) == 0x1764) ? 1 : -1];
+#endif
 typedef char BackgroundLifecyclePhotoVmsAt1780[
     (offsetof(Background, photoAreaVms) == 0x1780) ? 1 : -1];
+#ifndef TH095_MATCH_EXACT
+typedef char BackgroundLifecycleSpellVmsAt1FE4[
+    (offsetof(Background, spellBackgroundVms) == 0x1fe4) ? 1 : -1];
+typedef char BackgroundLifecyclePhotoBlendAt1FEC[
+    (offsetof(Background, photoBlendCurrent) == 0x1fec) ? 1 : -1];
+typedef char BackgroundLifecyclePhotoBlendFinalAt2004[
+    (offsetof(Background, photoBlendFinal) == 0x2004) ? 1 : -1];
+#endif
 typedef char BackgroundLifecycleChainsAt2010[
     (offsetof(Background, calcChain) == 0x2010) ? 1 : -1];
 typedef char BackgroundLifecycleSizeIs201C[
