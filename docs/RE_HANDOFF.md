@@ -1481,3 +1481,27 @@ At the next resume, first run the mandatory recovery gate, then continue the lex
 Continue to preserve `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet `field360` and descriptor/tail residuals, compact-enemy single-ended fields/tail packets, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` as Unknown absent fresh TH095-local discriminators.
 
 After this docs-only handoff checkpoint, refresh only a bounded current-source Factory receipt set representative of SEM-257/258 plus one `whole-build-closed` receipt. Do not replay the complete historical receipt set and do not request semantic completion, whole-image exactness, runtime-scenario validation, or portable-runtime credit. The receipts accepted for the older `c04e0be...` handoff are historical and become stale for the new source commit even though their underlying exact claims remain valid.
+
+### Factory receipt refresh outcome
+
+The bounded Factory receipt refresh requested after the `e744abc3e15e902cd25473d80e8dfb4c342e85b3` handoff checkpoint did **not** produce any accepted current-source receipt. This is a receipt-control-plane deferral only; it does not change the committed semantic interpretation or the independently completed 696-unit exact / 88-TU production validation above.
+
+The four first-attempt replays were bound to source commit `e744abc3e15e902cd25473d80e8dfb4c342e85b3`, tree `e24aa793de7365b13e79a6e1706ac7e6310e4a80`, with the expected `dirty=true / untracked_files=4` snapshot caused solely by the protected exclusions:
+
+- SEM-257 representative `claim:th095-main:function:004235d0:codegen-exact` (`Supervisor::OnDraw2`) — job `job:6ea8b37f4c6c4516a73803c7ceb47e50`.
+- SEM-258 representative `claim:th095-main:function:0042f190:codegen-exact` (`PhotoGameUpdateView::UpdateMainState`) — job `job:fbfacb02c75f4026aba0c8de66303c0c`.
+- SEM-258 representative `claim:th095-main:function:004328c0:codegen-exact` (`PhotoCameraState::UpdateViewfinder`) — job `job:d56008f1f7ca4d639e52548d824ec55c`.
+- product `claim:th095-main:product:whole-build-closed` — job `job:dc4c01bd0a2f42a789aa2d3906948a31`.
+
+All three first-attempt exact jobs failed before classification because the shared Factory operator path was owned by `/home/pentester/coding/codex_ida/th10-reconstruction/th10`. The first whole-build job obtained the TH095 lease and ran the controlled `whole-build` stage, but later terminated on the same cross-repository operator-path ownership; it produced no receipt outcome. All four failures therefore receive zero receipt credit and are not source/oracle mismatches.
+
+A read-only check then found no durable TH10 job in `running` or `leased` state, so each claim received exactly one bounded retry, serialized to avoid TH095 self-contention:
+
+- OnDraw2 retry `job:4cb95211d8bc45f6821384f932ccd7e3`.
+- PhotoGame retry `job:23984a7d94174f04a4f17d7dfa3a1a97`.
+- Viewfinder retry `job:ea88ee4d8ec4426893e970a4aa4f4870`.
+- whole-build retry `job:d040834bbc6d4c67a7a5f25ee46d3980`.
+
+Each retry again terminated with `ReplayError: another factory operation owns /home/pentester/coding/codex_ida/th10-reconstruction/th10`; the product retry had first acquired and renewed the TH095 whole-build lease for roughly the normal build interval. No retry produced `receipt_verdict=pass` / `acceptance_decision=accepted`, and no second retry is authorized for this handoff. Treat the **current-source Factory receipt plane as deferred because of external shared-operator contention**. Do not convert these failures into semantic, exactness, product, or runtime failures, and do not delete the protected untracked files to alter Factory's snapshot cleanliness.
+
+This receipt-status addendum is documentation-only and intentionally does not start another replay cycle. On the next resume, the newest Git checkpoint will therefore have no current-source accepted receipt by design. First perform the mandatory recovery gate and resume semantic investigation; refresh receipts later at the next meaningful committed milestone when the shared Factory operator path is available. Historical accepted receipts on older commits remain historical only and must not be reported as current-source evidence.
