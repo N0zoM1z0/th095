@@ -699,8 +699,8 @@ void MidiOutput::ProcessMsg(MidiTrack *track)
             // Pan
             this->channels[channel].pan = eventData2;
             break;
-        case MIDI_CONTROLLER_LOOP_START:
-            // TH08 repurposes breath control as the MIDI loop checkpoint.
+        case MIDI_CONTROLLER_LOOP_CHECKPOINT:
+            // TH095 uses controller 2 to snapshot every track plus global tempo/time.
             for (loopCheckpointTrack = &this->tracks[0], index = 0;
                  index < this->numTracks;
                  index += 1, loopCheckpointTrack += 1)
@@ -712,8 +712,8 @@ void MidiOutput::ProcessMsg(MidiTrack *track)
             this->elapsedMillisecondsAtLoopPoint = this->elapsedMillisecondsAtCurrentTempo;
             this->elapsedTicksAtLoopPoint = this->elapsedTicksBeforeTempoChange;
             break;
-        case MIDI_CONTROLLER_LOOP_END:
-            // TH08 repurposes the foot controller as the loop jump.
+        case MIDI_CONTROLLER_LOOP_RESTORE:
+            // TH095 uses controller 4 to restore the saved loop scheduler state.
             for (loopResetTrack = &this->tracks[0], index = 0;
                  index < this->numTracks;
                  index += 1, loopResetTrack += 1)
