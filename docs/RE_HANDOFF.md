@@ -1505,3 +1505,61 @@ A read-only check then found no durable TH10 job in `running` or `leased` state,
 Each retry again terminated with `ReplayError: another factory operation owns /home/pentester/coding/codex_ida/th10-reconstruction/th10`; the product retry had first acquired and renewed the TH095 whole-build lease for roughly the normal build interval. No retry produced `receipt_verdict=pass` / `acceptance_decision=accepted`, and no second retry is authorized for this handoff. Treat the **current-source Factory receipt plane as deferred because of external shared-operator contention**. Do not convert these failures into semantic, exactness, product, or runtime failures, and do not delete the protected untracked files to alter Factory's snapshot cleanliness.
 
 This receipt-status addendum is documentation-only and intentionally does not start another replay cycle. On the next resume, the newest Git checkpoint will therefore have no current-source accepted receipt by design. First perform the mandatory recovery gate and resume semantic investigation; refresh receipts later at the next meaningful committed milestone when the shared Factory operator path is available. Historical accepted receipts on older commits remain historical only and must not be reported as current-source evidence.
+
+## GPT-web semantic continuation — SEM-259/260
+
+This is the newest GPT-web semantic continuation point and supersedes older routing notes where they conflict. The TH095 semantic campaign remains **active-incomplete**. This handoff pauses browser execution only; it is not semantic readiness, completion, closure, exit-audit, whole-image identity, runtime-scenario validation, or ready-for-porting evidence. No portable Windows, Linux, or Web work was started.
+
+### Resume and recovery state
+
+This campaign resumed from committed receipt-status handoff `5c0bdf23e448df96001f94a00399c04c85143923`. All five requested Factory-controlled reconstruction/semantic/recovery contracts and documentation paths were mounted and readable before editing. The optional `$factory-semantic-reconstruction` skill body was not exposed as a readable resource, so execution followed the mounted Factory guidance plus the complete inline campaign rules.
+
+Mandatory recovery found zero staged or tracked-unstaged work and preserved the same four long-lived untracked exclusions. Do not stage, delete, reset, overwrite, or infer ownership for them without new evidence:
+
+- `EnemyManagerUpdate.i` — unknown-origin generated-looking VC7 preprocessed output; SHA-256 `1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`.
+- `config/runtime-scenarios.json` — pre-existing runtime experiment; SHA-256 `56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`.
+- `scripts/runtime-diff.py` — pre-existing runtime oracle experiment; SHA-256 `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`.
+- `droid.resume.txt` — user-owned unrelated state; SHA-256 `9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`.
+
+`.analysis/` began and ends at exactly **3,394,984 bytes**. No current-session `.analysis/gpt-web/` root was created, no retained file exceeds 64 MiB, and legacy/shared provider state was not modified or bulk-deleted. All one-shot compile probes used command-local temporary storage. Fresh semantic evidence came through the registered read-only target-attested `th095-ghidra` provider and carries no exactness credit.
+
+The campaign-wide broad baseline passed target verification, tracking (**1,880 provisional / 697 source-present / 696 exact**), Ghidra attestation, target-independent CI **43/43**, match-unit validation (**696 units**), whole-build graph validation (**88 sources / 2 profiles**), and whitespace checks.
+
+### SEM-259 — Background lifecycle runtime fields
+
+Commit `e2a55c9d6150feaa976f6dd1c24d8c44e24819bd` (`gpt-web: align Background lifecycle fields`) repairs a normal-production sibling-view mismatch in the real 0x201C-byte Background lifecycle object. `BackgroundLifecycle.cpp` still hid three complete target-proven field families behind `unknown080[0x70]`, `unknown1758[0x28]`, and `unknown1fe4[0x2C]`, while canonical `Background.cpp` already exposed their runtime meanings.
+
+Fresh TH095 `RunStageScript @ 0x00403440` reads/writes interpolation modes and camera position/look-at endpoints/tangents through `+0x80..+0xE8`, and also uses the three photo-blend records rooted at `+0x1FEC`. `SetPhotoArea @ 0x00404950` publishes the photo-area gate, position, and size at `+0x1764..+0x177F`. `StartSpellBackground @ 0x00404A30` writes the spell frame counter and publishes two VM handles at `+0x1FE4/+0x1FE8`; `StopSpellBackground @ 0x00404AC0` independently consumes those handles for cleanup. `DrawMode6 @ 0x00440120` independently consumes the current photo-blend distance fields.
+
+Normal lifecycle source now projects the already-established camera/interpolation, culling/spell/photo-area, spell-VM, and photo-blend records with trivial POD storage. The POD vector/handle projections are deliberate: using `Float3` or `AnmVmId` directly in the actual constructed lifecycle object would add hidden constructors absent from the target. `TH095_MATCH_EXACT` retains the three historical byte gaps; `Background +0xE9..+0xEF` remains explicitly Unknown. Focused replay passed **2/2 exact** with zero private-label refresh and the normal pinned-VC7.1 probe emitted a **6,761-byte i386 COFF** object.
+
+### SEM-260 — Player movement-scale owner
+
+Commit `96ec2353408bb66fa1eea1ff11f36e5adbc3f826` (`gpt-web: name Player movement scale`) closes Player `+0x2A18`, whose maintained names previously disagreed with the target behavior. Shared `PhotoPlayerRuntimeView` hid the dword in `unknown2a18`; ECL called it `proximityScale`; PhotoGame called it `cameraUpdateScale` despite having no camera consumer.
+
+Fresh TH095 `EclExtended::UpdatePlayerProximityAndMarker @ 0x00413AA0` computes Player/enemy XY distance squared and writes Player `+0x2A18` as `0.25f` below 1024, or linearly from `0.25f` toward `1.0f` between 1024 and 4096. Fresh `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` independently multiplies both resolved horizontal and vertical **player movement speeds** by the same float before animation, velocity, position, and collision/photo-bounds publication. Fresh outer `PhotoGameUpdateView::Update @ 0x0042FF60` writes the neutral `1.0f` value on its common tail. The bounded evidence therefore supports the narrow maintenance name `movementScale`; it does not establish an authored name, a universal proximity protocol, or a timing/design rationale.
+
+Normal `PhotoGame.cpp` and the ECL Player projection now use `movementScale`; exact/DIFF retains historical `cameraUpdateScale` / `proximityScale`. Normal shared `PhotoPlayerRuntimeView` exposes `f32 movementScale @ +0x2A18` and keeps `+0x2A1C..+0x2A27` anonymous. Focused replay passed EclExtended **22/22** plus PhotoGame **22/22** = **44/44 exact**, zero refresh. Normal pinned-VC7.1 probes emitted **44,057-byte** and **52,044-byte** i386 COFF objects.
+
+Because `PhotoPlayerRuntime.hpp` is a shared owner header, the dirty SEM-260 source immediately received the full cold regression surface in four deterministic alphabetical partitions: **205 + 158 + 191 + 142 = 696/696 exact units across all 88 manifest sources**, every source reporting **zero private-label refresh**. Fresh whole-product validation compiled **88/88 pinned VC7.1 i386 COFF** translation units across both production profiles and linked/verified `build/whole-validation/th095-reconstructed.exe`, a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `e437750858c8efab6a9ca71f8bc8d1097d41e002a0f73ae4d2cce9418c2cdff6`. Successful linkage is reconstructed historical-Windows compile/link closure only. Wine emitted the usual headless window/explorer/systray diagnostics; no runtime scenario receives credit.
+
+The exact/product gates above were run on the same source bytes subsequently committed as `96ec235...`; only tracked documentation was added after those gates. Final repo-native checks on committed source passed target verification, tracking **1,880 / 697 / 696**, CI **43/43**, the 696-unit graph, the 88-source/two-profile product graph, and whitespace checks.
+
+### Bounded negative routes and next evidence route
+
+The resume audit rotated through multiple surfaces rather than treating the two successful transactions as completion evidence:
+
+- `PhotoRuntime +0x4DF8` de-duplicates to SEM-226's proven primary enemy ANM owner. Neighbor `+0x4DFC` still has consumers but no recovered producer/resource lifetime and remains Unknown.
+- `PhotoItemManagerView +0x00` was explicitly preserved as Unknown by SEM-102 and has no new field-level reader.
+- `PhotoEffectBaseView +0x49..+0x4B` has no field-level access and remains alignment/unknown storage between `deletionCounter` and aligned `id`.
+- Options controller-binding/config gaps still lack a target-local business discriminator; SEM-242's binding-row vocabulary does not justify naming the adjacent storage.
+- `ResultScreen +0x6D38` is a full dword rather than automatic byte alignment, but the bounded maintained-source audit found no field-level read/write. `+0x6D45..+0x6D47` is the byte-alignment tail after the nine-byte replay name. Do not infer meaning for either from adjacency.
+- `ReplayBrowser::unknown0004` is already a SEM-230 bounded negative.
+- `PhotoCamera` exact `unknownFlag0/unknownFlag2` expressions already map to normal `captureActive/gameplayLoadActive`; they are not new shared-state debt.
+- The remaining Supervisor normal gaps (`+0x3CC`, `+0x414`, `+0x718`, `+0x76C`, `+0x77C`) have no current source-level field consumers; `unknown713` was already rejected in SEM-200. Do not name them from layout position alone.
+
+At the next resume, run the mandatory recovery gate before editing. Rotate away from Background and Player/photo owner cleanup. Prefer a **non-photo historical-platform resource lifetime** with acquire/publication plus independent use/cleanup, a **persistent/ABI field only if a genuinely new reader/validator appears**, or a **compact non-ECL/non-ANM state protocol** with at least two TH095-local discriminators. Search history before every edit and treat a one-sided result as a bounded negative, not as a reason to manufacture a name.
+
+Continue to preserve `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd controller bit 4, alternate enemy ANM `+0x4DFC`, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet descriptor/tail residuals including `field360`, compact-enemy single-ended fields/tail packets, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB` as Unknown absent fresh TH095-local discriminators.
+
+After this docs-only handoff checkpoint, issue only a bounded current-source Factory receipt refresh: one representative SEM-259 exact claim, one representative SEM-260 exact claim, and `whole-build-closed`. Do not replay the complete historical receipt set. If the shared operator path is again owned by another repository, record the receipt plane as deferred; do not delete protected untracked files or mutate source merely to satisfy Factory cleanliness metadata.
