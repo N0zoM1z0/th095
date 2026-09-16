@@ -281,18 +281,18 @@ EclRawInstruction *__fastcall CompareOperands(Enemy *enemy, EclRawInstruction *i
 {
     switch (instruction->opcode)
     {
-    case 40: if (DEP_READ_INT(enemy, instruction, 0) == DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
-    case 41: if (DEP_READ_FLOAT(enemy, instruction, 0) == DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
-    case 42: if (DEP_READ_INT(enemy, instruction, 0) != DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
-    case 43: if (DEP_READ_FLOAT(enemy, instruction, 0) != DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
-    case 44: if (DEP_READ_INT(enemy, instruction, 0) < DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
-    case 45: if (DEP_READ_FLOAT(enemy, instruction, 0) < DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
-    case 46: if (DEP_READ_INT(enemy, instruction, 0) <= DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
-    case 47: if (DEP_READ_FLOAT(enemy, instruction, 0) <= DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
-    case 48: if (DEP_READ_INT(enemy, instruction, 0) > DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
-    case 49: if (DEP_READ_FLOAT(enemy, instruction, 0) > DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
-    case 50: if (DEP_READ_INT(enemy, instruction, 0) >= DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
-    case 51: if (DEP_READ_FLOAT(enemy, instruction, 0) >= DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(40, ECL_COMPARE_INT_EQUAL): if (DEP_READ_INT(enemy, instruction, 0) == DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(41, ECL_COMPARE_FLOAT_EQUAL): if (DEP_READ_FLOAT(enemy, instruction, 0) == DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(42, ECL_COMPARE_INT_NOT_EQUAL): if (DEP_READ_INT(enemy, instruction, 0) != DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(43, ECL_COMPARE_FLOAT_NOT_EQUAL): if (DEP_READ_FLOAT(enemy, instruction, 0) != DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(44, ECL_COMPARE_INT_LESS): if (DEP_READ_INT(enemy, instruction, 0) < DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(45, ECL_COMPARE_FLOAT_LESS): if (DEP_READ_FLOAT(enemy, instruction, 0) < DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(46, ECL_COMPARE_INT_LESS_EQUAL): if (DEP_READ_INT(enemy, instruction, 0) <= DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(47, ECL_COMPARE_FLOAT_LESS_EQUAL): if (DEP_READ_FLOAT(enemy, instruction, 0) <= DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(48, ECL_COMPARE_INT_GREATER): if (DEP_READ_INT(enemy, instruction, 0) > DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(49, ECL_COMPARE_FLOAT_GREATER): if (DEP_READ_FLOAT(enemy, instruction, 0) > DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(50, ECL_COMPARE_INT_GREATER_EQUAL): if (DEP_READ_INT(enemy, instruction, 0) >= DEP_READ_INT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
+    case TH095_ECL_COMPARE_OPCODE(51, ECL_COMPARE_FLOAT_GREATER_EQUAL): if (DEP_READ_FLOAT(enemy, instruction, 0) >= DEP_READ_FLOAT(enemy, instruction, 1)) goto compare_success; goto compare_failure;
 compare_success:
         enemy->activeEclContext->time = instruction->operands[2].asInt;
         return reinterpret_cast<EclRawInstruction *>(reinterpret_cast<u8 *>(instruction) + instruction->operands[3].asInt);

@@ -164,7 +164,7 @@ static EclRawInstruction *__fastcall CompareOperands(
     Enemy *enemy, EclRawInstruction *instruction)
 {
     bool takeBranch = false;
-    const i32 operation = instruction->opcode - 40;
+    const i32 operation = instruction->opcode - TH095_ECL_COMPARE_OPCODE(40, ECL_COMPARE_INT_EQUAL);
     if (operation == 0)
         takeBranch = ReadInt(enemy, instruction, 0) == ReadInt(enemy, instruction, 1);
     else if (operation == 1)
@@ -419,18 +419,18 @@ static EclRawInstruction *__fastcall CompareOperands(
     // 0x004215F0 comparison order is ==, !=, <, <=, >, >=, with integer
     // and float variants interleaved.  Successful branches use raw operands
     // 2 and 3 for the replacement time and signed bytecode displacement.
-    case 40:
-    case 41:
-    case 42:
-    case 43:
-    case 44:
-    case 45:
-    case 46:
-    case 47:
-    case 48:
-    case 49:
-    case 50:
-    case 51:
+    case TH095_ECL_COMPARE_OPCODE(40, ECL_COMPARE_INT_EQUAL):
+    case TH095_ECL_COMPARE_OPCODE(41, ECL_COMPARE_FLOAT_EQUAL):
+    case TH095_ECL_COMPARE_OPCODE(42, ECL_COMPARE_INT_NOT_EQUAL):
+    case TH095_ECL_COMPARE_OPCODE(43, ECL_COMPARE_FLOAT_NOT_EQUAL):
+    case TH095_ECL_COMPARE_OPCODE(44, ECL_COMPARE_INT_LESS):
+    case TH095_ECL_COMPARE_OPCODE(45, ECL_COMPARE_FLOAT_LESS):
+    case TH095_ECL_COMPARE_OPCODE(46, ECL_COMPARE_INT_LESS_EQUAL):
+    case TH095_ECL_COMPARE_OPCODE(47, ECL_COMPARE_FLOAT_LESS_EQUAL):
+    case TH095_ECL_COMPARE_OPCODE(48, ECL_COMPARE_INT_GREATER):
+    case TH095_ECL_COMPARE_OPCODE(49, ECL_COMPARE_FLOAT_GREATER):
+    case TH095_ECL_COMPARE_OPCODE(50, ECL_COMPARE_INT_GREATER_EQUAL):
+    case TH095_ECL_COMPARE_OPCODE(51, ECL_COMPARE_FLOAT_GREATER_EQUAL):
     {
         EclRawInstruction *branch = CompareOperands(enemy, instruction);
         if (branch)

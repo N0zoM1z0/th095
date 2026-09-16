@@ -163,6 +163,31 @@ struct EclRawInstruction
     EclRawOperand operands[1];
 };
 
+namespace EclRunLow
+{
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_ECL_COMPARE_OPCODE(rawValue, semanticName) rawValue
+#else
+enum EclComparisonOpcode
+{
+    ECL_COMPARE_INT_EQUAL = 40,
+    ECL_COMPARE_FLOAT_EQUAL = 41,
+    ECL_COMPARE_INT_NOT_EQUAL = 42,
+    ECL_COMPARE_FLOAT_NOT_EQUAL = 43,
+    ECL_COMPARE_INT_LESS = 44,
+    ECL_COMPARE_FLOAT_LESS = 45,
+    ECL_COMPARE_INT_LESS_EQUAL = 46,
+    ECL_COMPARE_FLOAT_LESS_EQUAL = 47,
+    ECL_COMPARE_INT_GREATER = 48,
+    ECL_COMPARE_FLOAT_GREATER = 49,
+    ECL_COMPARE_INT_GREATER_EQUAL = 50,
+    ECL_COMPARE_FLOAT_GREATER_EQUAL = 51,
+};
+#define TH095_ECL_COMPARE_OPCODE(rawValue, semanticName) \
+    ::th095::EclRunLow::semanticName
+#endif
+} // namespace EclRunLow
+
 struct EclExInstruction
 {
     i32 time;
