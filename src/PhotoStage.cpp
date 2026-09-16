@@ -10,6 +10,7 @@
 #include "ScreenEffect.hpp"
 #ifndef DIFFBUILD
 #include "PhotoEffectRuntime.hpp"
+#include "ReplayManager.hpp"
 #endif
 
 #include <stdlib.h>
@@ -129,7 +130,11 @@ struct PhotoStageGlobalStateView
     u8 unknown104[0x114 - 0x104];
     i32 currentScore;
     u8 unknown118[8];
+#ifdef DIFFBUILD
     i32 resultMode;
+#else
+    ReplayManagerMode replayMode;
+#endif
 };
 
 struct PhotoStageRuntimeView
@@ -238,6 +243,16 @@ extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
     (reinterpret_cast<PhotoStageRuntimeView *>(g_PhotoCardInfo))
 #define g_PhotoStageSupervisor \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageSupervisorView, g_RuntimeBackgroundManagerOwner)
+#endif
+
+#ifdef DIFFBUILD
+#define TH095_PHOTO_STAGE_IS_RECORD_MODE() \
+    (g_PhotoStageGlobalState->resultMode == 0)
+#else
+#define TH095_PHOTO_STAGE_IS_RECORD_MODE() \
+    (g_PhotoStageGlobalState->replayMode == REPLAY_MANAGER_RECORD)
+typedef char PhotoStageGlobalReplayModeAt120[
+    (offsetof(PhotoStageGlobalStateView, replayMode) == 0x120) ? 1 : -1];
 #endif
 #ifdef DIFFBUILD
 extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
@@ -1028,7 +1043,7 @@ i32 PhotoStageStateView::Update()
 
                 PhotoStageAccumulateCapturedScore(this);
 
-                if (g_PhotoStageGlobalState->resultMode == 0)
+                if (TH095_PHOTO_STAGE_IS_RECORD_MODE())
                 {
                     if (GetPhotoStageScoreEntry(
                             g_PhotoStageGlobalState->scoreIndex)
