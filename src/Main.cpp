@@ -50,6 +50,16 @@ namespace th095
 #endif
 
 #ifdef DIFFBUILD
+#define TH095_GAME_COLOR_MODE_32_BIT 0
+#define TH095_GAME_COLOR_MODE_16_BIT 1
+#define TH095_GAME_COLOR_MODE_COUNT 2
+#else
+#define TH095_GAME_COLOR_MODE_32_BIT GAME_COLOR_MODE_32_BIT
+#define TH095_GAME_COLOR_MODE_16_BIT GAME_COLOR_MODE_16_BIT
+#define TH095_GAME_COLOR_MODE_COUNT GAME_COLOR_MODE_COUNT
+#endif
+
+#ifdef DIFFBUILD
 #define TH095_GAME_MUSIC_MODE_DISABLED 0
 #define TH095_GAME_MUSIC_MODE_WAV 1
 #define TH095_GAME_MUSIC_MODE_MIDI 2
@@ -786,20 +796,20 @@ i32 GameWindow::InitD3DRendering()
         if (g_Supervisor.config.options.force16BitTextures)
         {
             presentParameters.BackBufferFormat = D3DFMT_R5G6B5;
-            g_Supervisor.config.colorMode16bit = 1;
+            g_Supervisor.config.colorMode16bit = TH095_GAME_COLOR_MODE_16_BIT;
         }
         else
         {
             if (g_Supervisor.config.colorMode16bit == 0xff)
             {
                 presentParameters.BackBufferFormat = D3DFMT_X8R8G8B8;
-                g_Supervisor.config.colorMode16bit = 0;
+                g_Supervisor.config.colorMode16bit = TH095_GAME_COLOR_MODE_32_BIT;
                 g_GameErrorContext.Log(
                     "\x8f\x89\x89\xf1\x8b\x4e\x93\xae\x81\x41\x89\xe6\x96\xca\x82\xf0\x20"
                     "\x33\x32\x42\x69\x74\x73\x20\x82\xc5\x8f\x89\x8a\xfa\x89\xbb\x82\xb5"
                     "\x82\xdc\x82\xb5\x82\xbd\r\n");
             }
-            else if (g_Supervisor.config.colorMode16bit == 0)
+            else if (g_Supervisor.config.colorMode16bit == TH095_GAME_COLOR_MODE_32_BIT)
             {
                 presentParameters.BackBufferFormat = D3DFMT_X8R8G8B8;
             }
@@ -2334,7 +2344,7 @@ void Supervisor::DeleteCriticalSections()
 void GameConfiguration::Initialize()
 {
     memset(this, 0, sizeof(GameConfiguration));
-    this->colorMode16bit = 0;
+    this->colorMode16bit = TH095_GAME_COLOR_MODE_32_BIT;
     this->version = 0x95001;
     this->padXAxis = 600;
     this->padYAxis = 600;
@@ -2401,7 +2411,7 @@ i32 Supervisor::LoadConfig(char *configFile)
     {
         g_Supervisor.config = *(GameConfiguration *)configFileBuffer;
         free(configFileBuffer);
-        if (g_Supervisor.config.colorMode16bit >= 2 || g_Supervisor.config.musicMode >= TH095_GAME_MUSIC_MODE_COUNT ||
+        if (g_Supervisor.config.colorMode16bit >= TH095_GAME_COLOR_MODE_COUNT || g_Supervisor.config.musicMode >= TH095_GAME_MUSIC_MODE_COUNT ||
             g_Supervisor.config.playSounds >= 2 || g_Supervisor.config.windowed >= 2 ||
             g_Supervisor.config.frameskipConfig >= 3 || g_Supervisor.config.effectQuality >= 3 ||
             g_Supervisor.config.version != 0x95001 || fileSize != sizeof(GameConfiguration))

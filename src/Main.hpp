@@ -13,6 +13,7 @@
 #include "Chain.hpp"
 #include "GameErrorContext.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "GameColorMode.hpp"
 #include "GameMusicMode.hpp"
 #endif
 #ifndef TH095_MATCH_EXACT
@@ -132,7 +133,11 @@ struct GameConfiguration
     u32 version;         // +0xa4
     u16 padXAxis;        // +0xa8
     u16 padYAxis;        // +0xaa
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     u8 colorMode16bit;    // +0xac
+#else
+    GameColorMode colorMode16bit; // +0xac
+#endif
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     u8 musicMode;         // +0xad
 #else

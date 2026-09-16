@@ -13,6 +13,7 @@
 #include <stddef.h>
 
 #include "inttypes.hpp"
+#include "GameColorMode.hpp"
 #include "GameMusicMode.hpp"
 #include "MidiRuntime.hpp"
 #include "SupervisorStartupState.hpp"
@@ -84,7 +85,7 @@ struct GameConfiguration
     u32 version;         // +0xa4
     u16 padXAxis;        // +0xa8
     u16 padYAxis;        // +0xaa
-    u8 colorMode16bit;   // +0xac
+    GameColorMode colorMode16bit; // +0xac
     GameMusicMode musicMode; // +0xad
     u8 playSounds;       // +0xae
     u8 windowed;         // +0xaf
