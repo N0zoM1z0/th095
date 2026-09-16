@@ -236,6 +236,8 @@ extern void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen);
 extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
 
 #if defined(DIFFBUILD)
+#define TH095_RESULT_STATE_GAME_RESULT_MENU 1
+#define TH095_RESULT_STATE_GAME_RESULT_EXIT 2
 #define TH095_RESULT_STATE_REPLAY_RESULT_MENU 3
 #define TH095_RESULT_STATE_REPLAY_RESULT_EXIT 4
 #define TH095_RESULT_STATE_PHOTO_RESULT_MENU 5
@@ -244,6 +246,11 @@ extern void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen);
 #define TH095_RESULT_STATE_REPLAY_NAME_ENTRY 14
 #define TH095_RESULT_STATE_REPLAY_WRITE 15
 #else
+enum ResultScreenGameResultStateValue
+{
+    RESULT_SCREEN_GAME_RESULT_MENU = 1,
+    RESULT_SCREEN_GAME_RESULT_EXIT = 2,
+};
 enum ResultScreenReplayResultStateValue
 {
     RESULT_SCREEN_REPLAY_RESULT_MENU = 3,
@@ -260,6 +267,8 @@ enum ResultScreenReplaySaveStateValue
     RESULT_SCREEN_REPLAY_NAME_ENTRY = 14,
     RESULT_SCREEN_REPLAY_WRITE = 15,
 };
+#define TH095_RESULT_STATE_GAME_RESULT_MENU RESULT_SCREEN_GAME_RESULT_MENU
+#define TH095_RESULT_STATE_GAME_RESULT_EXIT RESULT_SCREEN_GAME_RESULT_EXIT
 #define TH095_RESULT_STATE_REPLAY_RESULT_MENU RESULT_SCREEN_REPLAY_RESULT_MENU
 #define TH095_RESULT_STATE_REPLAY_RESULT_EXIT RESULT_SCREEN_REPLAY_RESULT_EXIT
 #define TH095_RESULT_STATE_PHOTO_RESULT_MENU RESULT_SCREEN_PHOTO_RESULT_MENU
@@ -573,7 +582,7 @@ static __forceinline void InitializeGameReplayCursorPhase(
 void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
 {
     g_SoundPlayer.PlaySoundByIdx(SOUND_20, 0);
-    resultScreen->state = 1;
+    resultScreen->state = TH095_RESULT_STATE_GAME_RESULT_MENU;
     resultScreen->stateTimer.Reset();
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
@@ -594,7 +603,7 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 3), 3);
     if (TH095_RESULT_IS_RECORD_MODE())
     {
-        resultScreen->state = 1;
+        resultScreen->state = TH095_RESULT_STATE_GAME_RESULT_MENU;
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 4), 4);
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 6), 6);
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 5), 5);
@@ -1125,7 +1134,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 1:
+    case TH095_RESULT_STATE_GAME_RESULT_MENU:
         if (this->UpdateCursor(4) != 0)
         {
             break;
@@ -1133,7 +1142,7 @@ ChainCallbackResult ResultScreen::Update()
         if (GetPressedButtons(8) != 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            this->state = 2;
+            this->state = TH095_RESULT_STATE_GAME_RESULT_EXIT;
             this->replayCursor.Set(0);
             this->stateTimer.Reset();
             ResultUpdateInterruptFirstPhase(this);
@@ -1142,7 +1151,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         else if (GetPressedButtons(0x1002) != 0)
         {
-            this->SetState(2);
+            this->SetState(TH095_RESULT_STATE_GAME_RESULT_EXIT);
             switch (this->replayCursor.GetCurrent())
             {
             case 0:
@@ -1160,7 +1169,7 @@ ChainCallbackResult ResultScreen::Update()
         }
         break;
 
-    case 2:
+    case TH095_RESULT_STATE_GAME_RESULT_EXIT:
         if (this->stateTimer >= 8)
         {
             g_AnmGameSpeed = this->savedGameSpeed;
