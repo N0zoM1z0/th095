@@ -25,8 +25,17 @@ namespace th095
 {
 
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_MAIN_MENU_STATE_INITIALIZE 0
+#define TH095_MAIN_MENU_STATE_ACTIVE 1
 #define TH095_SCENE_SELECT_STATE_INITIALIZE 0
 #else
+enum FrontEndMainMenuStateValue
+{
+    FRONT_END_MAIN_MENU_STATE_INITIALIZE = 0,
+    FRONT_END_MAIN_MENU_STATE_ACTIVE = 1,
+};
+#define TH095_MAIN_MENU_STATE_INITIALIZE FRONT_END_MAIN_MENU_STATE_INITIALIZE
+#define TH095_MAIN_MENU_STATE_ACTIVE FRONT_END_MAIN_MENU_STATE_ACTIVE
 #define TH095_SCENE_SELECT_STATE_INITIALIZE SCENE_SELECT_STATE_INITIALIZE
 #endif
 
@@ -421,7 +430,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         {
             view->requestedState = TH095_FRONT_END_REQUESTED_STATE_MAIN_MENU;
             view->stateTimer.Reset();
-            view->state = 0;
+            view->state = TH095_MAIN_MENU_STATE_INITIALIZE;
             FrontEndCreateSceneVm(view, 0x66);
             FrontEndCreateSceneVm(view, 0x67);
             FrontEndCreateSceneVm(view, 0x19);
@@ -721,11 +730,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
 
     switch (view->state)
     {
-    case 0:
+    case TH095_MAIN_MENU_STATE_INITIALIZE:
     {
         view->cursor.count = 6;
         view->cursor.wraps = 1;
-        view->state = 1;
+        view->state = TH095_MAIN_MENU_STATE_ACTIVE;
 
 #define CREATE_MAIN_MENU_VM(position, index, yValue)                           \
     positions.position.x = 64.0f;                                             \
@@ -754,7 +763,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
 #undef CREATE_MAIN_MENU_VM
         view->stateTimer.Reset();
     }
-    case 1:
+    case TH095_MAIN_MENU_STATE_ACTIVE:
     if ((view->stateTimer.current < 30) != 0)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
