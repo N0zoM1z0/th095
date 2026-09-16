@@ -1219,3 +1219,70 @@ Refresh live state and read the latest semantic record before opening another tr
 Keep the explicitly deferred/single-ended residuals Unknown absent such a discriminator, including `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, photo-score bits 5/17/18/19, and analogous raw/reserved storage. A local plateau should rotate to another coverage surface rather than trigger readiness or closure.
 
 Factory replay claims for the representative exact units `background-run-stage-script` (`0x00403440`) and `options-menu-update` (`0x0044E4B0`) and for `whole-build-closed` were verified to exist before this handoff. Receipt replay should be treated as a plane separate from the repo-native exact/product evidence above; inspect Factory job/receipt state rather than inferring receipt acceptance from this document.
+
+## GPT-web semantic continuation — SEM-248/249/250
+
+This is the newest GPT-web semantic continuation point and supersedes older routing notes where they conflict. The TH095 semantic campaign remains **active-incomplete**. This handoff pauses browser execution only; it is not readiness, completion, closure, exit-audit, whole-image, runtime-scenario, or ready-for-porting evidence. No portable Windows, Linux, or Web work was started.
+
+### Resume and recovery state
+
+This campaign slice resumed from committed SEM-247 HEAD `d077e1e5ee23ae2065b738c525b41d84319666b4` and advanced through three bounded semantic transactions. All five requested Factory-controlled reconstruction/semantic/recovery contract and documentation paths were mounted and readable before editing. The optional `$factory-semantic-reconstruction` skill body was not exposed as a readable skill resource, so the campaign followed the mounted contracts plus the complete inline instructions rather than depending on automatic skill loading.
+
+The worktree recovery gate preserved the same four pre-existing untracked exclusions throughout. Do not stage, delete, reset, overwrite, or infer ownership for them without new evidence:
+
+- `EnemyManagerUpdate.i` — unknown-origin generated-looking VC7 preprocessed output; SHA-256 `1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`.
+- `config/runtime-scenarios.json` — pre-existing runtime experiment; SHA-256 `56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`.
+- `scripts/runtime-diff.py` — pre-existing runtime oracle experiment; SHA-256 `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`.
+- `droid.resume.txt` — user-owned unrelated state; SHA-256 `9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`.
+
+`.analysis/` began at exactly **3,394,984 bytes** and remains exactly **3,394,984 bytes**. No current-session `.analysis/gpt-web/` root was created, no retained file exceeded 64 MiB, and legacy/shared provider state was not modified or bulk-deleted. Fresh semantic target evidence came through the registered read-only target-attested `th095-ghidra` provider. Several read-only Factory requests lost transport during route exploration; they receive no semantic/evidence credit and made no repository changes. One first attempt to create the SEM-250 commit also lost transport before returning a durable command id; mandatory recovery proved HEAD/staged state unchanged before the commit was safely retried.
+
+### SEM-248 — ANM surface restore storage
+
+Commit `f401d0e9c2ab8bb2bb3d25c9fa106ae0b65a45d3` (`gpt-web: recover ANM surface restore storage`) recovers two canonical subranges that had remained hidden inside `AnmManager::unknown125c`.
+
+Fresh TH095 `LoadSurface @ 0x004440F0` creates both the primary surface at manager `+0x11DC + index*4` and a second image surface at `+0x125C + index*4`, copies the decoded image into both, and writes/consumes per-slot `D3DXIMAGE_INFO` at `+0x13DC + index*0x1C`. `CopySurfaceToBackbuffer @ 0x00444460` returns if `+0x125C[index]` is absent and, when the primary surface is missing, recreates it and restores its image **from `+0x125C[index]`**. `CaptureToSurface @ 0x00444760` supplies the inverse producer by copying a fresh primary capture into `+0x125C[index]`. `ReleaseSurface @ 0x00444390` releases both arrays, while `ReleaseSurfaces @ 0x00421C90`—used immediately before D3D device-reset paths—releases only the primary `+0x11DC` array. Normal production therefore names `surfaceRestoreCopies[32] @ +0x125C` and `surfaceInfo[32] @ +0x13DC`; the intervening `+0x12DC..+0x13DB` bytes remain Unknown.
+
+Focused canonical replay passed `AnmSurface.cpp` **6/6 exact** with zero private-label refresh; the normal pinned-VC7.1 probe emitted a **23,259-byte i386 COFF** object. Because `AnmManager.hpp` is shared, the source received immediate cold aggregate closure in fixed alphabetical partitions: **205 + 158 + 191 + 142 = 696/696 exact units across 88 sources**, all with zero refresh. Fresh whole-product validation compiled **88/88 i386 COFF** translation units and linked/verified a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `4504e210433518e6b21f13f1e1037f81993ab68016f74214317cfdb56386ca20`. This is reconstructed product compile/link closure, not target whole-image identity or a device-loss runtime scenario.
+
+### SEM-249 — Best Shot payload format
+
+Commit `701abd9715d96cea03d40cc6cc3fe72a20fe719e` (`gpt-web: type Best Shot payload format`) types persistent Best Shot record byte `+0x04` from a fresh reader/writer/producer chain.
+
+Fresh TH095 `LoadBestShotForScene @ 0x00435E90` treats value `1` as `0x18-byte header + compressed pixels`: it decompresses directly from file offset `0x18` and clears the in-memory 0x50-byte comment. Any non-1 value takes the comment-bearing loader branch: copy 0x50 comment bytes from `+0x18`, then decompress pixels from file offset `0x68`. Fresh `WriteBestShotData @ 0x00435910` writes `0x18-byte header + 0x50-byte comment + compressed pixels`, and fresh `PhotoStageStateView::Update @ 0x0042AD60` publishes type byte `2` for newly captured Best Shots; the independent ResultScreen capture path publishes the same value before invoking the writer. Normal production therefore uses one-byte `ResultBestShotPayloadFormat` values `COMPRESSED_PIXELS=1` and `COMMENT_AND_COMPRESSED_PIXELS=2`. Other numeric values remain unnamed even though the target loader routes them through the non-1 branch; no legality/version policy is inferred.
+
+Focused replay passed PhotoStage 6/6, ResultScreen 24/24, SceneBestShot 1/1, and ScoreData 1/1 = **32/32 exact**, zero refresh. Normal probes emitted **18,740-byte** SceneBestShot, **48,778-byte** PhotoStage, and **75,760-byte** ResultScreen i386 COFF objects. Because `ScoreData.hpp` is shared, fixed cold partitions again passed **696/696 exact** across all 88 sources with zero refresh. Fresh whole-product validation compiled **88/88** and linked/verified a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `b076a0a0f70e4b6fbfffec05638ced84a0bb05fe700eb0065a0ef1a2de9b64a6`. No Best Shot filesystem/runtime scenario was executed.
+
+### SEM-250 — persistent music playback mode
+
+Commit `185276d336aad3716777aab68b7fe974b3f4616f` (`gpt-web: type persistent music mode`) types canonical 0xC8 `GameConfiguration::musicMode @ +0xAD` without treating the older 0x3C compatibility view as semantic authority.
+
+Fresh TH095 `LoadConfig @ 0x00424D30` validates the byte as `< 3`; its fallback path writes `1` when `thbgm.dat` can be opened/read and `2` when wave data is absent and the program falls back to MIDI. Fresh `PlayMusic @ 0x004252F0`, `StopAudio @ 0x00425390`, and `FadeOutMusic @ 0x00425410` independently route value `2` through MidiOutput and value `1` through WAV/streaming SoundPlayer behavior. Fresh `SoundPlayer::LoadBGM @ 0x00438B10` rejects value `0`, while `ProcessQueues @ 0x00439200` gates WAV pause/unpause on value `1`. Normal production now uses one-byte `GameMusicMode` values `DISABLED=0`, `WAV=1`, `MIDI=2`, plus `COUNT=3` for validation; exact/DIFF storage and numeric source shape remain historical.
+
+Focused replay passed Main **48/48** and SoundPlayer **27/27** = **75/75 exact**, zero refresh. Normal pinned-VC7.1 probes emitted **115,915-byte** Main and **64,763-byte** SoundPlayer i386 COFF objects. The high-fanout `Main.hpp` change received fixed-partition aggregate closure at **696/696 exact**, all 88 sources, zero refresh. Fresh whole-product validation compiled **88/88** and linked/verified a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `a6da68dfd53097743e1754634960e04a45d2553c7bfabb1627ef201af49a288c`. Headless Wine emitted only window/systray diagnostics; no audio runtime scenario was credited.
+
+On the latest semantic source commit, target-independent CI passed all **43** tests. Tracking remains **1,880 provisional / 697 source-present / 696 exact**; the match graph contains 696 configured units and the whole-build graph contains 88 sources across two profiles. Target verification still binds SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`. No push was performed.
+
+### Negative routes and bounded Unknowns
+
+The following routes were actively challenged during this slice and should not be mistaken for completion evidence:
+
+- The 0xC8 GameConfiguration `unknown06c` and `unknown0b7` spans are copied with the serialized image but still lack field-level validators/consumers. Keep them Unknown.
+- Raw-member debt outside ECL mostly resolves to deliberate `TH095_MATCH_EXACT`/DIFF compatibility views. Do not treat lexical rawness as missing semantics.
+- SceneDefinition residual `unknown022/unknown02d` bytes remain unconsumed/padding in the audited source; the useful scene fields are already heavily canonicalized.
+- PhotoCamera `+0xBB8` is already `focusChargeFrames` in normal production; raw `unknownbb8` is exact-facing compatibility only.
+- The photo-enemy timeline opcode switch still lacks an independent script-value producer/validator, so numeric opcode names remain unassigned despite rich switch behavior.
+- PhotoBullet state values are already represented by `PhotoBulletState`; the raw numbers are exact/DIFF shape only.
+- ScreenEffect shake values 0/1/2 are outputs of `GetRandomU32InRange(3)`, not a game-owned persistent protocol. `ScreenEffect::type` has a typed registration producer but no independent stored-field reader, so no new storage typing was claimed.
+- Ordinary `ItemState` must not be merged into the photography item active/timer lifecycle merely because both are called items.
+- `ReplayInputSource::historyRepeat` is already represented; `unknown02a` and `unknown036` still lack new independent consumers and remain Unknown.
+
+Continue to preserve as Unknown absent fresh discriminators: replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect one-sided storage, compact-enemy single-ended fields/tail packets, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB`.
+
+### Exact next route
+
+Start from the live committed head after this handoff and run the mandatory recovery gate before editing. First audit **`ResultScreen::state @ +0x04`** as a candidate outer-state storage typing, but treat this as a falsifiable route rather than an assumed batch. Search current history/source first for an already committed complete ResultScreen state domain. If it is not already closed, use fresh TH095 `ResultScreen::Update @ 0x00426BF0` as the dispatcher and pair each candidate value with an independent producer/helper transition before introducing any type; do not name values solely from switch position. If history already covers the complete domain or producer evidence is incomplete, record that bounded negative result and rotate to a non-audio historical-runtime owner/lifetime edge rather than mining adjacent config/score/ANM bytes.
+
+The first validation for any ResultScreen edit should be focused canonical replay of `src/ResultScreen.cpp` and a pinned-VC7.1 normal probe. Because `ResultScreen.hpp` may be shared, inspect its include fanout before editing; if a shared header changes, immediately run cold 696-unit aggregate exact plus the 88-TU whole-product gate.
+
+After this docs-only handoff checkpoint, refresh only a bounded current-source Factory receipt set representative of the three completed batches plus one `whole-build-closed` receipt. Do not replay the entire historical receipt set and do not request semantic completion, whole-image exactness, runtime-scenario validation, or portable-runtime credit.
