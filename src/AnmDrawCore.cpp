@@ -3,6 +3,24 @@
 namespace th095
 {
 
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#define TH095_ANM_DRAW_INNER_DEFAULT 0
+#define TH095_ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL 1
+#define TH095_ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE 2
+#else
+enum AnmDrawInnerFlags
+{
+    ANM_DRAW_INNER_DEFAULT = 0,
+    ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL = 1,
+    ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE = 2,
+};
+#define TH095_ANM_DRAW_INNER_DEFAULT ANM_DRAW_INNER_DEFAULT
+#define TH095_ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL \
+    ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL
+#define TH095_ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE \
+    ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE
+#endif
+
 struct AnmViewportConfigurationView
 {
     u8 unknown000[0xcc];
@@ -267,7 +285,7 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
     g_AnmTexturedVertices[3].x += this->screenShakeOffset.x;
     g_AnmTexturedVertices[3].y += this->screenShakeOffset.y;
 
-    if ((flags & 1) != 0)
+    if ((flags & TH095_ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL) != 0)
     {
 #if defined(_MSC_VER) && defined(_M_IX86)
         // Reconstruction decision: this is a deliberately narrow inline-x87
@@ -400,7 +418,7 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
         this->currentVertexShader = 1;
     }
 
-    if ((flags & 2) == 0)
+    if ((flags & TH095_ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE) == 0)
     {
         soundIndexLocal01.color =
             vm->useSecondaryColor ? vm->color2.color : vm->color1.color;
@@ -489,7 +507,7 @@ ZunResult AnmManager::DrawNoRotation(AnmVm *vm)
     g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
         g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
             vm->position.z + vm->positionOffset.z;
-    return this->DrawInner(vm, 1);
+    return this->DrawInner(vm, TH095_ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL);
 }
 
 // FUNCTION: TH095 0x0043F760.
@@ -548,7 +566,7 @@ ZunResult AnmManager::DrawNoRotationNoRound(AnmVm *vm)
     g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
         g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
             vm->position.z + vm->positionOffset.z;
-    return this->DrawInner(vm, 0);
+    return this->DrawInner(vm, TH095_ANM_DRAW_INNER_DEFAULT);
 }
 
 // FUNCTION: TH095 0x0043FA00.
@@ -636,7 +654,7 @@ ZunResult AnmManager::Draw2D(AnmVm *vm)
     g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
         g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
             vm->position.z;
-    return this->DrawInner(vm, 0);
+    return this->DrawInner(vm, TH095_ANM_DRAW_INNER_DEFAULT);
 }
 
 // TH08's source orders the camera-facing locals shallow-to-deep as half width,
@@ -804,7 +822,7 @@ ZunResult AnmManager::DrawCameraFacingQuad(AnmVm *vm)
 {
     if (this->ProjectCameraFacingQuad(vm) != ZUN_SUCCESS)
         return ZUN_ERROR;
-    return this->DrawInner(vm, 0);
+    return this->DrawInner(vm, TH095_ANM_DRAW_INNER_DEFAULT);
 }
 
 // FUNCTION: TH095 0x00440120.
@@ -870,7 +888,7 @@ ZunResult AnmManager::DrawMode6(AnmVm *vm)
         g_AnmTexturedVertices[0].diffuse;
     g_AnmTexturedVertices[3].diffuse =
         g_AnmTexturedVertices[0].diffuse;
-    return this->DrawInner(vm, 2);
+    return this->DrawInner(vm, TH095_ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE);
 }
 
 // FUNCTION: TH095 0x00440440.
@@ -997,7 +1015,7 @@ ZunResult AnmManager::DrawProjected3DQuad(AnmVm *vm)
     ZunResult result;
 
     this->Project3DQuad(vm);
-    result = this->DrawInner(vm, 0);
+    result = this->DrawInner(vm, TH095_ANM_DRAW_INNER_DEFAULT);
     g_AnmTexturedVertices[0].w = g_AnmTexturedVertices[1].w =
         g_AnmTexturedVertices[2].w = g_AnmTexturedVertices[3].w = 1.0f;
     return result;
@@ -1074,7 +1092,7 @@ ZunResult AnmManager::DrawMode7(AnmVm *vm)
         }
     }
 
-    draw.result = this->DrawInner(vm, 2);
+    draw.result = this->DrawInner(vm, TH095_ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE);
     g_AnmTexturedVertices[0].w = g_AnmTexturedVertices[1].w =
         g_AnmTexturedVertices[2].w = g_AnmTexturedVertices[3].w = 1.0f;
     return draw.result;
