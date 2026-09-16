@@ -1417,3 +1417,67 @@ Continue to preserve `ReplayScanWorker::unknown010`, replay/input reserved bytes
 For the next bounded batch, rotate away from viewport/ANM rendering and PhotoEffect/ECL packet typing. A concrete first historical-resource candidate is **Supervisor D3D surface slot 8**: current knowledge separately proves `AddedCallback @ 0x00423E70` stages surface 8 during startup, `OnDraw2 @ 0x004235D0` uses/releases the slot in the loading-background path, and `ReleaseSurfaces` tears down all 32 Supervisor surface slots, while SEM-188 explicitly leaves the exact visual ownership of surface 8 as a separate domain. Start by history-de-duplicating any later surface-8 semantic fact, then use fresh TH095 target analysis to bind the exact producer/publication, OnDraw2 consumer branch, and teardown/recreation lifetime before naming either the slot or its role. Do not name all 32 surface slots by adjacency. If that route is already closed or lacks a distinguishing producer, rotate to a persistent/replay/input field only when a genuinely new field-level reader/validator appears, then to a compact non-ECL/non-ANM protocol with at least two target-local discriminators.
 
 After this docs-only handoff checkpoint, refresh only a bounded current-source Factory receipt set representative of SEM-254/255/256 plus one `whole-build-closed` receipt when the shared operator path is available. Do not replay the historical receipt set and do not request semantic completion, whole-image exactness, runtime-scenario validation, or portable-runtime credit.
+
+## GPT-web semantic continuation — SEM-257/258
+
+This is the newest GPT-web semantic continuation point and supersedes older routing notes where they conflict. The TH095 semantic campaign remains **active-incomplete**. This handoff pauses browser execution only; it is not readiness, completion, closure, exit-audit, whole-image, runtime-scenario, or ready-for-porting evidence. No portable Windows, Linux, or Web work was started.
+
+### Resume and recovery state
+
+This campaign resumed from docs-only SEM-254/255/256 handoff `c04e0be0ff54b355a25155fc556fe359b2efb2fa`. All five requested Factory-controlled reconstruction/semantic/recovery contract and documentation paths were mounted and readable before editing. The optional `$factory-semantic-reconstruction` skill body was not exposed as a readable resource, so execution used the mounted Factory contracts/docs plus the complete inline rules.
+
+Mandatory recovery found zero staged or tracked-unstaged changes and preserved the same four long-lived untracked exclusions. Do not stage, delete, reset, overwrite, or infer ownership for them without new evidence:
+
+- `EnemyManagerUpdate.i` — unknown-origin generated-looking VC7 preprocessed output; SHA-256 `1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`.
+- `config/runtime-scenarios.json` — pre-existing runtime experiment; SHA-256 `56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`.
+- `scripts/runtime-diff.py` — pre-existing runtime oracle experiment; SHA-256 `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`.
+- `droid.resume.txt` — user-owned unrelated state; SHA-256 `9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`.
+
+`.analysis/` began and ends at exactly **3,394,984 bytes**. No current-session `.analysis/gpt-web/` root was created, no retained file exceeds 64 MiB, and legacy/shared provider state was not modified or bulk-deleted. All compile probes used command-local temporary storage. Fresh semantic target evidence came through the registered read-only target-attested `th095-ghidra` provider and carries no exactness credit.
+
+The campaign-wide broad baseline passed target verification, reconstruction/tracking validation (**1,880 provisional / 697 source-present / 696 exact**), Ghidra attestation, target-independent CI **43/43**, and whitespace checks before either source transaction.
+
+### SEM-257 — Supervisor startup-background surface slot
+
+Commit `2ece07cbfcddf354ef6ce588a7b52c808e7eb819` (`gpt-web: name startup background surface`) names only ANM surface slot **8** in the Supervisor startup/loading lifetime.
+
+Fresh TH095 `Supervisor::AddedCallback @ 0x00423E70` is the sole target caller of `AnmManager::LoadSurface @ 0x004440F0` and loads index 8 from `title/th08logo.jpg` before startup FPS calibration and loading-VM setup. Fresh `Supervisor::CheckFps @ 0x00424050` independently copies the same slot to the backbuffer every calibration frame. Fresh `Supervisor::OnDraw2 @ 0x004235D0` copies slot 8 while `loadingScreenState != 0` and releases it after loading becomes inactive; `Supervisor::DeletedCallback @ 0x004244D0` provides final teardown. The generic ANM surface routines confirm that one loaded slot owns both the primary `+0x11DC[index]` surface and the reset-surviving restore copy at `+0x125C[index]`, with `ReleaseSurface` tearing both down.
+
+Normal `Main.cpp` therefore uses the narrow TU-private name `SUPERVISOR_STARTUP_BACKGROUND_SURFACE = 8` in the load, calibration draw, loading draw/release, and final cleanup paths. The name covers both target-observed display intervals and does not claim an original ZUN identifier or a user-facing interpretation of `title/th08logo.jpg`. The two early `AddedCallback` failure branches that call `ReleaseSurface(0)` remain target-observed behavior and were deliberately not “fixed” or reinterpreted. No neighboring surface slot was named.
+
+Focused canonical replay passed `Main.cpp` **48/48 exact** with **zero private-label refresh**. A pinned VC7.1 normal probe emitted a **116,006-byte Intel 80386 COFF** object. `git diff --check` passed. One documentation-write command later stopped only on an extra EOF blank line; mandatory recovery proved the intended three-file transaction was otherwise unchanged, the exclusions and `.analysis/` were stable, and no producer survived before the whitespace-only fix and checkpoint.
+
+### SEM-258 — Photo directional input masks
+
+Commit `4860d1495fe81d7d235149c17c36ad082a905c2a` (`gpt-web: bind photo directional input masks`) binds two Photo movement consumers to the already-maintained TH095 `TouhouButton` direction domain instead of leaving eight duplicated raw masks.
+
+Fresh `Controller::GetInput @ 0x00419AE0` independently produces cardinal masks `0x10/0x20/0x40/0x80` and diagonal aggregates `0x50/0x60/0x90/0xA0` in both its Win32-keyboard and DirectInput-keyboard paths. Fresh `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` decodes exactly those masks into the existing eight-direction player movement state and independently consumes the state in signed normal/focused movement switches. Fresh `PhotoCameraState::UpdateViewfinder @ 0x004328C0` performs the same mask decision tree and independently maps the directions to signed cardinal/diagonal viewfinder offsets. The input representation is therefore a shared TH095 protocol, not a coincidental set of constants.
+
+Normal `PhotoGame.cpp` explicitly includes `Global.hpp` and uses the existing `TH_BUTTON_*` cardinal/diagonal names. `PhotoCamera.cpp` uses a narrow TU-local `TH095_PHOTO_INPUT_*` compatibility layer: normal/DIFF maps those names onto `TH_BUTTON_*`, while the reduced `TH095_MATCH_EXACT` include graph preprocesses them to the same target numeric masks. No controller mapping, input-storage layout, replay packet, movement enum, branch priority, or numeric value changed.
+
+Two compile failures during this transaction are deliberately retained as zero-credit recovery events. The first focused exact attempt failed before replay because PhotoCamera's reduced exact include graph did not expose `TouhouButton`; recovery found only the intended two source diffs and no surviving producer, after which the exact-local compatibility mapping was added. A later normal probe failed only because PhotoGame lacked an explicit normal dependency on `Global.hpp`; focused replay had already passed, but that failed normal command received zero compile credit. Recovery again found no collateral changes, and the direct include was added. The final lane passed `PhotoCamera` **11/11** plus `PhotoGame` **22/22** = **33/33 exact**, zero refresh; pinned VC7.1 normal probes emitted **59,049-byte** and **52,044-byte** Intel 80386 COFF objects. A later documentation write likewise stopped only on an EOF blank-line check; recovery closed it before the whitespace-only correction.
+
+### Final committed milestone validation
+
+On committed SEM-258 source `4860d1495fe81d7d235149c17c36ad082a905c2a`, cold canonical exact replay was run in four deterministic alphabetical 22-source partitions to avoid the historical monolithic transport-timeout surface. The durable partition totals were **205 + 158 + 191 + 142 = 696/696 exact units across all 88 manifest sources**, every source reporting **zero private-label refresh**. The changed Main, PhotoCamera, and PhotoGame translation units are all included in those partitions.
+
+Fresh repo-native whole-product validation compiled **88/88 pinned VC7.1 i386 COFF** translation units across the two production profiles and linked/verified `build/whole-validation/th095-reconstructed.exe`, a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `c2e2cdb7d93cfc97512ce2ccca2fedc9586e1f0d633134ccbd193e18f7f51d28`. Successful linkage is reconstructed historical-Windows production closure, not target whole-image identity. Wine emitted only the usual headless window/explorer/systray diagnostics; no runtime scenario receives credit.
+
+Final repo-native checks on the same committed source passed target-independent CI **43/43**, tracking **1,880 provisional / 697 source-present / 696 exact**, the 696-unit match graph, the 88-source/two-profile whole-build graph, target hash verification, and whitespace checks.
+
+### Bounded negative routes and exact next route
+
+The post-milestone resume audit intentionally challenged multiple lexical-debt candidates rather than treating the aggregate gates as semantic completion. The following surfaces still lack a new TH095-local discriminator and should be skipped unless fresh evidence changes their access graph:
+
+- `FrontEndController +0x61B8..+0x63CC/+0xE92` raw accesses are exact-facing aliases for the already-typed SEM-169 nine-queue/state-history owner, not new semantic debt.
+- ASCII `unknown8080/unknown80b0` belongs to the previously audited unused/reset-only gap surface.
+- `ControllerInputSlotView` / replay-input `+0x2A/+0x36` has already received a direct-xref negative audit; the physical overlay is known, but those residual bytes still have no field-level reader.
+- Bullet descriptor `+0x1FA`, bullet `field360`, and anonymous/tail storage remain single-ended or explicitly deferred; do not name them from adjacency to already-typed bullet fields.
+- SceneTexture's `AnmTextureHeaderView unknown004/+0x0C/+0x0E` collapses into the existing THTX reserved-storage plateau. A read-only routing command referenced a non-existent `src/SceneTexture.hpp` and exited before the later source dump; it changed no repository state and receives zero evidence credit. Mandatory recovery immediately confirmed a clean tracked tree, stable exclusions, unchanged `.analysis/`, and no independent producer.
+- ScoreData anonymous fields encountered by the final persistent-format sweep fall into the already-audited score-header reserved words, score-entry `+0x38`, or photo-score residual domains; no new reader/validator appeared.
+
+At the next resume, first run the mandatory recovery gate, then continue the lexical-debt sweep **only on normal-production identifiers not already covered by the negative list above or by an existing semantic record**. Use fresh target xrefs/decompilation before editing and require at least a producer/publication plus an independent reader/validator/cleanup edge. Prefer, in order: (1) a persistent/ABI field with a genuinely new reader/validator, (2) a non-ANM historical-platform lifetime with acquire/publication plus independent use/cleanup, or (3) a compact non-ECL/non-ANM state protocol with two TH095-local discriminators. If a candidate remains one-sided, record it as a bounded negative and rotate; do not promote lexical debt by itself.
+
+Continue to preserve `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet `field360` and descriptor/tail residuals, compact-enemy single-ended fields/tail packets, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` as Unknown absent fresh TH095-local discriminators.
+
+After this docs-only handoff checkpoint, refresh only a bounded current-source Factory receipt set representative of SEM-257/258 plus one `whole-build-closed` receipt. Do not replay the complete historical receipt set and do not request semantic completion, whole-image exactness, runtime-scenario validation, or portable-runtime credit. The receipts accepted for the older `c04e0be...` handoff are historical and become stale for the new source commit even though their underlying exact claims remain valid.
