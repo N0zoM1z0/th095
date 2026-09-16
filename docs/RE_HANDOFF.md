@@ -1286,3 +1286,42 @@ Start from the live committed head after this handoff and run the mandatory reco
 The first validation for any ResultScreen edit should be focused canonical replay of `src/ResultScreen.cpp` and a pinned-VC7.1 normal probe. Because `ResultScreen.hpp` may be shared, inspect its include fanout before editing; if a shared header changes, immediately run cold 696-unit aggregate exact plus the 88-TU whole-product gate.
 
 After this docs-only handoff checkpoint, refresh only a bounded current-source Factory receipt set representative of the three completed batches plus one `whole-build-closed` receipt. Do not replay the entire historical receipt set and do not request semantic completion, whole-image exactness, runtime-scenario validation, or portable-runtime credit.
+
+## GPT-web semantic continuation — SEM-251
+
+This is the newest GPT-web semantic continuation point and supersedes older ResultScreen routing notes where they conflict. The TH095 semantic campaign remains **active-incomplete**. This handoff pauses browser execution only; it is not readiness, completion, closure, exit-audit, whole-image, runtime-scenario, or ready-for-porting evidence. No portable Windows, Linux, or Web work was started.
+
+### Resume and recovery state
+
+This campaign resumed from the committed SEM-248/249/250 handoff at `7224dbea235f09166caad2bba6c45f553b3b8541`. All five requested Factory-controlled reconstruction/semantic/recovery contract and documentation paths were mounted and readable before editing. The optional `$factory-semantic-reconstruction` skill body was still not exposed as a readable skill resource, so execution followed the mounted contracts plus the complete inline rules rather than depending on automatic skill loading.
+
+Mandatory recovery found zero staged or tracked-unstaged changes and preserved the same four pre-existing untracked exclusions. Do not stage, delete, reset, overwrite, or infer ownership for them without new evidence:
+
+- `EnemyManagerUpdate.i` — unknown-origin generated-looking VC7 preprocessed output; SHA-256 `1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`.
+- `config/runtime-scenarios.json` — pre-existing runtime experiment; SHA-256 `56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`.
+- `scripts/runtime-diff.py` — pre-existing runtime oracle experiment; SHA-256 `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`.
+- `droid.resume.txt` — user-owned unrelated state; SHA-256 `9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`.
+
+`.analysis/` began and ends at exactly **3,394,984 bytes**. No current-session `.analysis/gpt-web/` root was created, no retained file exceeds 64 MiB, and legacy/shared provider state was not modified or bulk-deleted. Fresh semantic target evidence came through the registered read-only target-attested `th095-ghidra` provider.
+
+### SEM-251 — record-mode Game Result states
+
+Commit `0e0779e3f4e7a2bf9e0dd27fd10bfa76cf8c2cde` (`gpt-web: name Game Result states`) recovers only ResultScreen state values 1 and 2. History de-duplication was mandatory before editing: SEM-195 already names replay-save 13/14/15, SEM-200 names record-mode Photo Result 5/6, and SEM-238 names record-mode Replay Result 3/4 while deliberately leaving 7/8/9/10 unresolved. The current batch does not claim a closed 0..15 enum.
+
+Fresh TH095 `InitializeGameResultScreen @ 0x00428590` prepares common Game Result state and then reads the established PhotoGameTask replay-mode owner at `g_RuntimeGlobalStateOwner +0x120`. Record mode (`0`) publishes state 1 and initializes the Game Result menu VMs rooted at scripts 4/6/5; the non-record branch instead publishes state 11 and initializes scripts 16/17/18. Fresh `ResultScreen::Update @ 0x00426BF0` consumes state 1 through the VM-4-rooted three-entry cursor and publishes state 2 on Back or confirm. State 2 waits eight timer ticks, restores the saved game speed, returns state storage to zero, dispatches cursor 0/1/2 to the observed result-screen/scene effects, writes pending Best Shot data, and requests an FPS sample reset. Normal production therefore names only `RESULT_SCREEN_GAME_RESULT_MENU = 1` and `RESULT_SCREEN_GAME_RESULT_EXIT = 2`; exact/DIFF source retains historical literals. State 0, non-record 11/12, and 7..10 remain unnamed.
+
+Focused canonical replay of `src/ResultScreen.cpp` passed **24/24 exact units** with **zero private-label refresh**. A command-local normal-production probe using pinned VC7.1 emitted a **75,822-byte Intel 80386 COFF** object. Target-independent CI passed all **43** tests; tracking remains **1,880 provisional / 697 source-present / 696 exact**, the match graph remains **696 configured units**, the whole-build graph remains **88 sources across two profiles**, and target verification still binds SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
+
+At the committed SEM-251 milestone, fixed alphabetical cold exact partitions passed **205 + 158 + 191 + 142 = 696/696 exact units across all 88 sources**, every source reporting zero private-label refresh. A fresh repo-native whole-product gate then cold-compiled **88/88** pinned VC7.1 i386 translation units and linked/verified a **780,288-byte PE32/i386 Windows GUI** image with build-local SHA-256 `8d4d8d476bad6d97ff734ef80fdd1e216dae2333ede52e07f5fa2f5db32f32b2`. Wine emitted only headless window/systray diagnostics. This is reconstructed historical-Windows compile/link closure, not target whole-image byte identity and not runtime-scenario validation.
+
+One initial fresh Ghidra request used an obsolete single-address argument field and was rejected before target analysis; it receives zero evidence credit and made no repository change. The provider schema was rediscovered, after which the bounded two-address decompile succeeded. The live history also already contained committed SEM-250 and its handoff when this campaign resumed, so no interrupted GameMusicMode source was replayed or duplicated.
+
+### Bounded negatives and next route
+
+Do not mechanically continue through adjacent ResultScreen state numbers. In particular, SEM-238 already records that states 7/9 share one update branch, both lead to state 8, and state 10 lacks a maintained-source producer in the bounded audit; 11/12 remain the non-record sibling of the Game Result surface and were intentionally not merged with 1/2 here. State 0 remains the outer result initializer dispatcher and is not typed by this batch.
+
+Continue to keep config reserved spans, replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect one-sided storage, compact-enemy single-ended fields/tail packets, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` Unknown absent new TH095-local discriminators.
+
+For the next bounded batch, rotate away from ResultScreen. Prefer a **non-ResultScreen historical-platform owner/lifetime** with an acquire/publication plus independent use or cleanup edge, or a persistent/replay/input field only if a new field-level reader/validator appears. Before editing any lexical `unknown*`/raw-offset candidate, search the semantic ledger for an existing normal representation or an explicit one-sided negative result. If the first resource route reaches a plateau, rotate to a compact non-ECL/non-ANM state protocol with at least two TH095-local discriminators rather than returning to adjacent ResultScreen values.
+
+After this docs-only handoff commit, refresh only a bounded current-source Factory receipt set: one representative ResultScreen exact claim plus `whole-build-closed`. Do not replay the full historical receipt set and do not request semantic completion, whole-image exactness, runtime-scenario validation, or portable-runtime credit.
