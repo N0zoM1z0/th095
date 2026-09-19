@@ -1,5 +1,15 @@
 #pragma once
 
+#ifdef TH095_MAIN_HPP
+
+// Main.hpp has already established the canonical TH095 Supervisor owner.
+// Compatibility include chains must not redeclare the older source shape.
+#include <string.h>
+
+#define CRASH_GAME() memset(&th095::g_Supervisor, -1, sizeof(th095::g_Supervisor))
+
+#else
+
 #include <d3d8.h>
 #include <d3dx8math.h>
 #ifndef DIRECTINPUT_VERSION
@@ -379,3 +389,5 @@ DIFFABLE_EXTERN(Supervisor, g_Supervisor);
 #define CRASH_GAME() memset(&g_Supervisor, -1, sizeof(g_Supervisor))
 
 }; // namespace th095
+
+#endif

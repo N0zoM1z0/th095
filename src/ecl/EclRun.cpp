@@ -5,7 +5,7 @@
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #include "BackgroundEclEmission.hpp"
 #else
-#include "BackgroundEclInterface.hpp"
+#include "Background.hpp"
 #endif
 #include "GameManager.hpp"
 #include "ItemManager.hpp"

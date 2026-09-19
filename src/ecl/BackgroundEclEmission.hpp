@@ -3,7 +3,7 @@
 // Exact-build VC7 emission adapter for EclRun only.  This is the ancestral
 // TH08-shaped declaration that the monolithic dispatcher needs to retain its
 // target COFF private-label timeline; it is not the TH095 Background storage
-// owner.  Normal builds use BackgroundEclInterface.hpp instead.
+// owner.  Normal builds use the canonical Background.hpp instead.
 #include "Global.hpp"
 #include "ecl/AnmManagerEclView.hpp"
 #include "ZunResult.hpp"

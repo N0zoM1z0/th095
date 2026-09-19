@@ -1438,6 +1438,12 @@ type if changing it would perturb relocation identity.
 
 ### SEM-020 — extended Background dynamic VM handles
 
+**Superseded representation note (SEM-267).** The target observations and
+two-handle protocol below remain valid, but `ExtendedBackgroundView` is no
+longer maintained semantic source. Normal ECL code now consumes the canonical
+0x201C `Background`; only a renamed exact/DIFF emission adapter retains the old
+source shape. Read this entry as chronological evidence, not current ownership.
+
 **Scope.** Replace all sixteen raw `Background+0x1FE4/+0x1FE8` loads in
 `EclExtended.cpp` with a TU-local `ExtendedBackgroundView` exposing two
 four-byte `spellBackgroundVmIds` slots at `+0x1FE4`. The exact-facing
@@ -12862,3 +12868,53 @@ Because `Main.hpp` is a high-fanout shared owner and `SupervisorRuntime.hpp` is 
 **Validation.** Focused canonical replay passed Background **20/20**, BackgroundLifecycle **2/2**, AnmDrawCore **18/18**, PhotoCamera **11/11**, PhotoGameTask **10/10**, and EclRun **1/1**. All manifest updates were either canonical type-spelling changes with unchanged target relocation destinations or fail-closed private-label refreshes after byte/non-private-relocation identity was established. The final cold aggregate replay passed **696/696 exact units across all 88 sources**; its last pass refreshed ten private labels in five units and rejected no real mismatch. The normal product then compiled **88/88 pinned-VC7.1 i386 COFF** translation units across two profiles and linked/verified a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `17769461880d5d70a0b0b29b451b28ee34ea9995ce16f46ea7068748a8a26fd7`. Successful linkage is compile/link closure, not target whole-image identity or runtime-scenario evidence. The semantic-debt router for `Background.cpp` fell from 73 to 67 candidates, including ownership views from 10 to 9; remaining views are not accepted by adjacency.
 
 **Unknown / next route.** The 0x6600 layout is not accepted as a TH095 `Background`; no TH08 field meaning was copied into the canonical owner. `EclExtended.cpp::ExtendedBackgroundView` remains explicit debt because `ecl/AnmManagerEclView.hpp` collides with canonical ANM/Main/Supervisor/Midi declarations. Resolve that upstream type-universe split before replacing the remaining handle view. Keep the EclRun adapter isolated until a clean declaration reproduces its complete body and relocation graph; do not introduce another profile-selected canonical layout and do not treat the router's remaining anonymous fields as permission to resume unbounded scalar naming.
+
+### SEM-267 — route normal ECL through canonical runtime owners
+
+**Scope.** Continue the SEM-266 architecture correction rather than resuming
+field naming. The remaining blocker was an incompatible ECL type universe:
+`ecl/AnmManagerEclView.hpp` declared a TH08-shaped `AnmOpcode -1..89` and
+0x2A2570 `AnmManager`, while canonical TH095 source proves `-1..87` and
+0x38314C. That collision forced `EclExtended.cpp` to retain a local raw
+Background handle view and forced normal EclRun through a method-only
+Background declaration.
+
+**Ownership correction.** Normal includes through
+`ecl/AnmManagerEclView.hpp` now route to canonical `AnmManager.hpp`. When that
+path has already established `Main.hpp`, later `Supervisor.hpp` compatibility
+includes preserve the canonical 0x7BC Supervisor instead of redeclaring the
+legacy 0x364 shape. Normal EclExtended includes `Background.hpp` and reads both
+VM handles from `Background::spellBackgroundVmIds`; normal EclRun also includes
+that owner directly. The old `ExtendedBackgroundView` name and the complete
+method-only `BackgroundEclInterface.hpp` are removed.
+
+**Emission boundary.** Exact/DIFF ECL compilation still sees the legacy ANM
+declaration, and EclExtended retains a renamed
+`EclExactBackgroundHandleEmission` aggregate solely to reproduce the accepted
+load shape. EclRun retains `BackgroundEclEmission.hpp` for the already-proven
+private-label constraint. These branches are not normal runtime layouts, and
+their exact replay cannot accept the independently compiled normal bodies. A
+new protocol guard requires canonical normal ANM/Supervisor/Background routing
+and rejects restoration of `ExtendedBackgroundView` or
+`BackgroundEclInterface.hpp`.
+
+**Validation and recovery.** Focused normal probes passed for EclExtended,
+EclDependencies, EclRun, Midi, and ZunTimer; EclExtended replay passed 22/22
+and EclRun 1/1. An initial over-broad profile switch in `Supervisor.hpp`
+correctly failed the normal aggregate because it changed independent Midi and
+ZunTimer declaration worlds; it was replaced by the narrower existing-owner
+include guard before acceptance. The final cold replay passed **696/696 exact
+units across all 88 sources with zero private-label refresh**. Independent
+normal validation compiled **88/88 pinned-VC7.1 i386 COFF** objects across both
+profiles and linked a verified **780,288-byte PE32/i386 GUI**, build-local
+SHA-256 `8db738fb91d53ca9cc86c2b6d8ffce8538199b5fea221e7355353f6d79d69456`.
+Target-independent CI passed all **49 tests**. No runtime-scenario or
+whole-image-exactness credit is claimed.
+
+**Unknown / next route.** The original names represented by the legacy ECL
+ANM enum remain Unknown, and the exact/DIFF 0x2A2570 declaration is not accepted
+as TH095 runtime truth. Continue with one bounded EclExtended ANM
+handle/spawner projection only when its normal canonical API and exact emission
+surface can both be verified. Do not bulk-translate TH08 opcode names or remove
+the EclRun Background emission adapter without reproducing its complete body
+and relocation graph.

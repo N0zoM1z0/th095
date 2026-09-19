@@ -141,9 +141,21 @@ def check_background_owner() -> None:
     if "AnmBackgroundStateDrawView" in draw_source:
         fail("AnmDrawCore.cpp must consume the canonical Background owner")
 
+    extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
+    if '#include "Background.hpp"' not in extended:
+        fail("normal EclExtended must consume the canonical Background owner")
+    if "ExtendedBackgroundView" in extended:
+        fail("EclExtended must not restore the retired Background observation view")
+    if "::th095::g_Background->spellBackgroundVmIds[(index)].value" not in extended:
+        fail("normal EclExtended must read spell VM handles from canonical Background")
+
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if '#include "BackgroundEclEmission.hpp"' not in ecl_run:
         fail("EclRun must name its isolated Background emission adapter")
+    if '#include "Background.hpp"' not in ecl_run:
+        fail("normal EclRun must consume the canonical Background owner")
+    if (SRC / "BackgroundEclInterface.hpp").exists():
+        fail("retired BackgroundEclInterface.hpp must not be restored")
     emission = (SRC / "ecl" / "BackgroundEclEmission.hpp").read_text(
         encoding="utf-8"
     )
@@ -151,6 +163,24 @@ def check_background_owner() -> None:
         fail("Background ECL emission adapter must state its narrow ownership")
     if "TH095_MATCH_EXACT" in emission or "DIFFBUILD" in emission:
         fail("Background ECL emission adapter must not contain a second profile split")
+
+
+def check_ecl_type_boundaries() -> None:
+    anm_boundary = (SRC / "ecl" / "AnmManagerEclView.hpp").read_text(
+        encoding="utf-8"
+    )
+    normal_prefix, separator, exact_suffix = anm_boundary.partition("#else")
+    if not separator or '#include "../AnmManager.hpp"' not in normal_prefix:
+        fail("normal ECL code must route to canonical AnmManager.hpp")
+    if "enum AnmOpcode" not in exact_suffix or "sizeof(AnmManager) == 0x2a2570" not in exact_suffix:
+        fail("legacy ECL ANM declarations must remain isolated in the emission branch")
+
+    supervisor_boundary = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
+    normal_prefix, separator, exact_suffix = supervisor_boundary.partition("#else")
+    if not separator or "#ifdef TH095_MAIN_HPP" not in normal_prefix:
+        fail("Supervisor compatibility header must preserve an existing canonical Main owner")
+    if "sizeof(Supervisor) == 0x364" not in exact_suffix:
+        fail("legacy Supervisor declaration must remain isolated in the emission branch")
 
 
 def check_small_closed_domains() -> None:
@@ -178,11 +208,13 @@ def main() -> int:
     check_anm_opcode_protocol()
     check_background_protocol()
     check_background_owner()
+    check_ecl_type_boundaries()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
     print("  canonical ANM opcode domain: -1..87 explicit")
     print("  Background stage opcode dispatch: 15/15 named")
     print("  Background owner: one profile-independent 0x201C declaration")
+    print("  normal ECL types: canonical ANM, Supervisor, and Background owners")
     print("  Replay manager, color mode, and viewport domains: explicit")
     return 0
 

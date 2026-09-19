@@ -211,19 +211,21 @@ The batch can close while the subsystem remains open. Say so plainly.
 Historical prose can be wrong or superseded. Current policy, ledgers, target
 evidence, and the short handoff take precedence.
 
-## 13. First TH095 pilot: Background
+## 13. Completed TH095 pilot: Background
 
-The initial canonical-owner pilot is `Background` because current production
-has a method-owning `Background` byte blob, a separate full 0x201C state view,
-and a legacy header layout used by other compile paths. The pilot must:
+`Background` is the first completed canonical-owner pilot. Target allocation
+and lifetime evidence established one 0x201C TH095 owner; the former behavior
+blob, state/draw projections, photo method stubs, ECL handle view, and normal
+method-only ECL interface were retired. Normal behavior, lifecycle, photo,
+ANM draw, `EclExtended`, and `EclRun` now consume `Background.hpp`.
 
-- re-attest target allocation/lifetime and the 0x201C layout;
-- map every declaration, cast, and TU consumer;
-- make the normal build use one real canonical 0x201C owner;
-- preserve the complete stage-script opcode namespace;
-- keep only a narrow, evidenced VC7 emission boundary where source unification
-  changes accepted bytes; and
-- replay every affected exact unit plus the normal whole product.
+The one surviving 0x6600 declaration is
+`ecl/BackgroundEclEmission.hpp`. It is selected only for exact/DIFF EclRun
+emission after a canonical-include experiment changed VC7 private-label
+ordering. It is not a runtime layout and cannot validate the normal body.
 
-The pilot does not authorize copying TH08's `Background` layout or extending
+The reusable lesson is to correct upstream include/type ownership before
+adding another local view. A compiler-sensitive legacy declaration may remain
+only behind a named, narrow emission boundary with independent normal-build
+validation. This pilot does not authorize copying any TH08 layout or extending
 the repository's narrow assembly exception.

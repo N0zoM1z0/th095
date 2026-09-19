@@ -6,13 +6,13 @@ implementation, and evidence. Chronological batch records are in
 
 | Subsystem | Current source / declaration | Current semantic boundary |
 | --- | --- | --- |
-| ANM interpreter and rendering | `AnmManager.hpp`, `AnmManager.cpp`, `AnmVmLifecycle.cpp`, `ecl/AnmManagerEclView.hpp` | Canonical opcode domain is named. The ECL-facing view still declares an incompatible `-1..89` domain and is unaccepted ownership/protocol debt. |
+| ANM interpreter and rendering | `AnmManager.hpp`, `AnmManager.cpp`, `AnmVmLifecycle.cpp`; exact/DIFF boundary in `ecl/AnmManagerEclView.hpp` | Normal ECL consumers now use canonical TH095 ANM declarations. The incompatible legacy `-1..89` domain is quarantined as compiler-emission source and is not semantic authority. |
 | ECL interpreter | `ecl/EclRun.cpp`, `ecl/EclRunLow.inl`, `ecl/EclRunHigh.inl`, `EclManager.hpp` | Primary opcode dispatch still contains large numeric families; do not infer TH08 opcode names. |
 | Enemy and timeline | `EnemyManager.hpp`, `EnemyManager*.cpp`, `EnemyTimeline.cpp` | Canonical large layouts are comparatively strong; residual local views and protocol values remain. |
-| Background and camera | `Background.hpp`, `Background.cpp`, `BackgroundLifecycle.cpp`; EclRun-only adapter in `ecl/BackgroundEclEmission.hpp` | One profile-independent 0x201C owner is canonical. `EclExtended.cpp` still has a bounded handle view because the legacy ECL ANM header conflicts with canonical ANM types; do not treat it as a second owner. |
+| Background and camera | `Background.hpp`, `Background.cpp`, `BackgroundLifecycle.cpp`; EclRun-only adapter in `ecl/BackgroundEclEmission.hpp` | One profile-independent 0x201C owner is canonical. Normal EclExtended and EclRun consume it; only EclRun exact/DIFF retains the false 0x6600 declaration for verified VC7 emission. |
 | Player, shots, and camera | `Player*.cpp`, `Player.hpp`, `Photo*.cpp` | Many evidence-backed fields exist, but overlapping photo/gameplay views remain ownership debt. |
 | Replay | `ReplayManager.hpp`, `ReplayManager.cpp`, `ReplayScanWorker.cpp` | Replay container/runtime roles are partly typed; `ReplayScanWorker` is duplicated across Supervisor projections. |
-| Supervisor and platform | `Main.*`, `Supervisor*.cpp`, `SupervisorRuntime.hpp` | High-fanout owner with duplicate declarations and exact/normal branches; change only with aggregate replay. |
+| Supervisor and platform | `Main.*`, `Supervisor*.cpp`, `SupervisorRuntime.hpp`; compatibility declaration in `Supervisor.hpp` | Once canonical `Main.hpp` is present, compatibility include chains preserve its 0x7BC owner instead of redeclaring the older 0x364 source shape. Standalone legacy consumers remain migration debt. Change only with aggregate replay. |
 | GUI, title, result | `Gui.*`, `AsciiManager.cpp`, `TitleScreen.cpp`, `ResultScreen.cpp` | Numerous state protocols are named, but some result transitions remain intentionally Unknown. |
 | Effects and bullets | `EffectManager.*`, `ScreenEffect.*`, `BulletManager.*` | Storage and callbacks are partly recovered; keep variant/raw instruction representations distinct. |
 | Audio and MIDI | `SoundPlayer.*`, `Midi*`, `Main.*` | Resource lifetimes are mostly behavior-backed; platform handles and duplicate Supervisor views remain. |

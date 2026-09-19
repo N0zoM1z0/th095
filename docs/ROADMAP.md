@@ -53,7 +53,7 @@ absolute field views, magic values, and unjustified opaque storage with
 evidence-backed C++ types and names. Preserve explicit unknowns, every accepted
 VC7 comparison, and the playable Windows i386 behavior.
 
-- [ ] Add and baseline a semantic-debt candidate router.
+- [x] Add and baseline a semantic-debt candidate router.
 - [ ] Recover canonical aggregate owners and typed field families.
 - [ ] Name target-proven interpreter, state, flag, resource, audio, save, and
   replay protocols without guessing visually ambiguous values.

@@ -42,38 +42,42 @@ Hard rule: if `TH095_MATCH_EXACT` and normal select different declarations,
 expressions, or function bodies, exact replay does not validate the normal
 semantic body.
 
-The first protocol-guard audit also found that
-`ecl/AnmManagerEclView.hpp::AnmOpcode` is an incompatible legacy-shaped
-`-1..89` declaration, not the canonical `AnmManager.hpp` `-1..87` domain. It
-remains explicit follow-up debt; do not merge or rename it from adjacency.
+The first protocol-guard audit also found that the old ECL ANM declaration is
+not semantic TH095 source: its opcode domain is `-1..89` and its manager size
+is 0x2A2570, versus canonical `AnmManager.hpp` `-1..87` and 0x38314C. Normal
+ECL includes now route to the canonical declaration. The old block is retained
+only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The Background canonical-owner pilot replaces the false TH08-derived 0x6600
-runtime declaration with one profile-independent TH095 0x201C owner. Behavior,
-lifecycle, PhotoCamera, PhotoGameTask, and ANM draw now consume that owner.
-Only EclRun retains the old declaration in a named compiler-emission adapter;
-direct canonical replacement was tested and changed its VC7 private-label
-timeline. `EclExtended.cpp::ExtendedBackgroundView` remains follow-up debt
-because its legacy ECL ANM declarations conflict with canonical
-`AnmManager.hpp`; do not claim that consumer closed.
+The Background canonical-owner pilot and its ECL follow-up are closed for the
+normal product. Behavior, lifecycle, photo, ANM draw, EclExtended, and EclRun
+now consume the one profile-independent 0x201C `Background.hpp` owner.
+`ExtendedBackgroundView` and `BackgroundEclInterface.hpp` are retired. The
+false TH08-derived 0x6600 declaration survives only as the named exact/DIFF
+EclRun emission adapter; direct canonical replacement changes its VC7 private
+label timeline.
 
-Focused replay passed Background 20/20, lifecycle 2/2, AnmDrawCore 18/18,
-PhotoCamera 11/11, PhotoGameTask 10/10, and EclRun 1/1. The final cold
-aggregate passed 696/696 across all 88 manifest sources. The normal product
-then compiled all 88 pinned-VC7.1 i386 COFF objects across both profiles and
-linked a 780,288-byte PE32 executable with build-local SHA-256
-`17769461880d5d70a0b0b29b451b28ee34ea9995ce16f46ea7068748a8a26fd7`.
-This is compile/link closure, not whole-image exactness or runtime credit.
+The same correction routes normal ECL includes through canonical 0x38314C
+`AnmManager.hpp` and preserves the already-established 0x7BC
+`Main.hpp::Supervisor` instead of redeclaring the legacy 0x2A2570/0x364
+shapes. A fresh cold aggregate passed 696/696 exact units across all 88 sources
+with zero label refresh. The independent normal product compiled all 88
+pinned-VC7.1 i386 COFF objects across both profiles and linked a verified
+780,288-byte PE32 executable with build-local SHA-256
+`8db738fb91d53ca9cc86c2b6d8ffce8538199b5fea221e7355353f6d79d69456`.
+CI passed 49 tests. This is compile/link closure, not whole-image exactness or
+runtime credit.
 
 ## Next bounded lane
 
-Attack the upstream ECL type-universe split that prevents `EclExtended.cpp`
-from including the canonical owner. Start with the incompatible duplicate ANM
-declarations; do not paper over them with another profile-selected
-`Background` layout. Keep the EclRun emission adapter isolated until a clean
-declaration reproduces its complete 27,091-byte body and 647 relocations. Do
-not resume scalar naming just because the debt router lists anonymous fields.
+Continue shrinking ECL compatibility declarations one owner at a time. Start
+with a bounded EclExtended ANM handle/spawner view that has a canonical normal
+API and an independently replayable exact surface; do not bulk-rename the
+legacy `-1..89` opcode list. Keep the EclRun Background adapter isolated until
+a clean declaration reproduces its complete 27,091-byte body and 647
+relocations. Do not resume scalar naming merely because the router lists
+anonymous fields.
 
 ## Protected working-tree exclusions
 
@@ -93,5 +97,5 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/Background.cpp --details
+python3 scripts/analysis/report-semantic-debt.py --path src/EclExtended.cpp --details
 ```

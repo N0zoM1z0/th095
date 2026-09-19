@@ -1,6 +1,7 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "Background.hpp"
 #include "PhotoBulletRuntime.hpp"
 #endif
 #ifndef DIFFBUILD
@@ -86,13 +87,17 @@ struct PhotoGlobalStateView
 };
 typedef char PhotoGlobalFlagsAtFC[(offsetof(PhotoGlobalStateView, flags) == 0xfc) ? 1 : -1];
 
-struct ExtendedBackgroundView
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+// Exact-emission adapter only.  Normal reconstruction code accesses the
+// canonical 0x201C Background owner declared in Background.hpp.
+struct EclExactBackgroundHandleEmission
 {
     u8 unknown0000[0x1fe4];
     i32 spellBackgroundVmIds[2];
 };
-typedef char ExtendedBackgroundSpellVmIdsAt1FE4[
-    (offsetof(ExtendedBackgroundView, spellBackgroundVmIds) == 0x1fe4) ? 1 : -1];
+typedef char EclExactBackgroundSpellVmIdsAt1FE4[
+    (offsetof(EclExactBackgroundHandleEmission, spellBackgroundVmIds) == 0x1fe4) ? 1 : -1];
+#endif
 
 struct ExtendedVector
 {
@@ -455,17 +460,22 @@ extern AnmManagerLookupView *g_AnmManager;
     (reinterpret_cast<AnmManagerLookupView *>(::th095::g_AnmManager))
 #endif
 extern PhotoGlobalStateView *g_PhotoGlobalState;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 extern u8 *g_Background;
+#endif
 extern ExtendedBulletManager *g_PhotoBulletManager;
 extern ExtendedPhotoEffectManager *g_PhotoEffectManager;
 extern ExtendedPhotoEnemyManagerView *g_ExtendedPhotoEnemyManager;
 
-#ifndef DIFFBUILD
+#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 static __forceinline u8 *ExtendedBackgroundOwner()
 {
     return reinterpret_cast<u8 *>(::th095::g_Background);
 }
 #define g_Background ExtendedBackgroundOwner()
+#endif
+
+#ifndef DIFFBUILD
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(ExtendedBulletManager, ::th095::g_RuntimeBulletManagerOwner)
 #define g_PhotoEffectManager \
@@ -473,8 +483,14 @@ static __forceinline u8 *ExtendedBackgroundOwner()
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, ::th095::g_RuntimeGlobalStateOwner)
 #endif
-#define EXT_BACKGROUND_STATE \
-    (reinterpret_cast<ExtendedBackgroundView *>(g_Background))
+
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_EXT_BACKGROUND_VM_ID(index) \
+    (reinterpret_cast<EclExactBackgroundHandleEmission *>(g_Background)->spellBackgroundVmIds[(index)])
+#else
+#define TH095_EXT_BACKGROUND_VM_ID(index) \
+    (::th095::g_Background->spellBackgroundVmIds[(index)].value)
+#endif
 
 #ifdef DIFFBUILD
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
@@ -649,10 +665,10 @@ void __fastcall SetBackgroundVmsState2(
     AnmVm *secondVm;
     AnmVm *firstVm;
     firstVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 2;
     secondVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     secondVm->pendingInterrupt = 2;
 }
 
@@ -663,10 +679,10 @@ void __fastcall SetBackgroundVmsState3(
     AnmVm *secondVm;
     AnmVm *firstVm;
     firstVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 3;
     secondVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     secondVm->pendingInterrupt = 3;
     TH095_ECL_EXT_GAME_SPEED = 1.0f;
 }
@@ -705,11 +721,11 @@ void __fastcall EnablePhotoTransition(
     g_PhotoGlobalState->photoTransitionActive = 1;
 #endif
     firstVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 2;
     TH095_EXT_ANM_EXECUTE(firstVm);
     secondVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     secondVm->pendingInterrupt = 2;
     TH095_EXT_ANM_EXECUTE(secondVm);
     TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x26, 0);
@@ -728,11 +744,11 @@ void __fastcall DisablePhotoTransition(
     g_PhotoGlobalState->photoTransitionActive = 0;
 #endif
     firstVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 3;
     TH095_EXT_ANM_EXECUTE(firstVm);
     secondVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     secondVm->pendingInterrupt = 3;
     TH095_EXT_ANM_EXECUTE(secondVm);
     TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x0f, 0);
@@ -931,11 +947,11 @@ void __fastcall RunPhotoTransition(
             g_PhotoGlobalState->photoTransitionActive = 0;
 #endif
             locals.firstEndVm = TH095_EXT_ANM_GET_VM(
-                EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+                TH095_EXT_BACKGROUND_VM_ID(0));
             locals.firstEndVm->pendingInterrupt = 3;
             TH095_EXT_ANM_EXECUTE(locals.firstEndVm);
             locals.secondEndVm = TH095_EXT_ANM_GET_VM(
-                EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+                TH095_EXT_BACKGROUND_VM_ID(1));
             locals.secondEndVm->pendingInterrupt = 3;
             TH095_EXT_ANM_EXECUTE(locals.secondEndVm);
             TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x0f, 0);
@@ -957,11 +973,11 @@ void __fastcall RunPhotoTransition(
         g_PhotoGlobalState->photoTransitionActive = 1;
 #endif
         locals.firstStartVm = TH095_EXT_ANM_GET_VM(
-            EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+            TH095_EXT_BACKGROUND_VM_ID(0));
         locals.firstStartVm->pendingInterrupt = 2;
         TH095_EXT_ANM_EXECUTE(locals.firstStartVm);
         locals.secondStartVm = TH095_EXT_ANM_GET_VM(
-            EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+            TH095_EXT_BACKGROUND_VM_ID(1));
         locals.secondStartVm->pendingInterrupt = 2;
         TH095_EXT_ANM_EXECUTE(locals.secondStartVm);
         TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x26, 0);
@@ -1146,7 +1162,7 @@ static __forceinline void SetExtendedBackgroundVm0State2()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     vm->pendingInterrupt = 2;
 }
 
@@ -1154,7 +1170,7 @@ static __forceinline void SetExtendedBackgroundVm1State2()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     vm->pendingInterrupt = 2;
 }
 
@@ -1162,7 +1178,7 @@ static __forceinline void SetExtendedBackgroundVm0State3()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     vm->pendingInterrupt = 3;
 }
 
@@ -1170,7 +1186,7 @@ static __forceinline void SetExtendedBackgroundVm1State3()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     vm->pendingInterrupt = 3;
 }
 
