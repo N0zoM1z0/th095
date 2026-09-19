@@ -12972,3 +12972,69 @@ EclExtended, and EclRun; it does not identify the alternate enemy ANM at
 views. The next owner batch should first reconcile the complete
 `PhotoBulletManagerView`/`PhotoBulletView` layout into one profile-independent
 normal declaration, with exact receiver spellings kept outside that owner.
+
+### SEM-269 — canonicalize the TH095 BulletInf owner
+
+**Scope.** Complete the owner consolidation selected by SEM-268. The repository
+previously carried the complete `0x27C5B8` BulletInf declaration inside
+`BulletManager.cpp`, partial or method-only normal declarations in
+`PhotoCamera.hpp`, `PhotoGameTask.cpp`, `EnemyShotDispatch.cpp`, EclExtended,
+EclRun, PhotoItemManager, and EnemyManagerUpdate, plus historical exact receiver
+spellings. This batch establishes one profile-independent normal owner; it does
+not infer new projectile behavior or accept target-facing emission adapters as
+runtime types.
+
+**Observed and corrected.** Target construction at `0x00404C80` allocates and
+publishes one `0x27C5B8` BulletInf object through `g_RuntimeBulletManagerOwner @
+0x004BDD98`; destruction at `0x00404ED0` tears down the same object. Its
+`0x641` inline `0x65C`-byte bullets begin at `+0x4C`, followed by calc/draw
+Chain nodes at `+0x27C5A8/+0x27C5AC`, the slot-six `bullet.anm` owner at
+`+0x27C5B0`, and the active count at `+0x27C5B4`. The camera's historical
+`PhotoBulletManagerView::photoColor @ +0x1760` was not part of this owner:
+that relocation uses `0x004BDD90`, so the normal write belongs to
+`Background::photoColor`, and the adjacent call is the real
+`Background::SetPhotoArea @ 0x00404950`. Bullet operations continue to use
+the distinct `0x004BDD98` owner. This removes the last normal mixed-owner
+interpretation of the `.90/.98` pair.
+
+**Ownership correction.** New `PhotoBulletManager.hpp` contains the canonical
+normal declarations for `PhotoBulletVector`, transform records, the 0x210-byte
+spawn descriptor, 0x2C-byte extended state, 0x65C-byte bullet, and complete
+0x27C5B8 manager, with size and critical-offset assertions. BulletManager,
+PhotoCamera, PhotoGame, PhotoGameTask, EnemyShotDispatch, EclExtended, EclRun,
+PhotoItemManager, and EnemyManagerUpdate consume that owner in normal builds.
+The old partial `PhotoBulletManagerView`, `ExtendedBulletManager`, and
+`ItemBulletManagerView` normal declarations are retired. The manager resource
+member is consistently named `bulletAnm`.
+
+**Emission boundary.** Direct canonical substitution perturbs target-facing
+VC7 receiver decorations and, in several large bodies, compiler-private label
+names. The necessary historical declarations now live in
+`PhotoBulletManagerEmission.inl`, `PhotoCameraBulletEmission.inl`, and
+`ecl/EclExtendedBulletEmission.inl`; pre-existing exact-only bodies remain
+exact-only. These named files contain no nested build-profile selector and do
+not define normal ownership. The PhotoCamera adapter explicitly documents why
+its historical receiver name spans the real Background `.90` edge and BulletInf
+`.98` edges.
+
+**Validation.** The affected exact surface first passed **142/142** configured
+units. Fifty-five compiler-private labels across six units were refreshed only
+after body bytes and every public relocation offset, type, and solved target
+were proved unchanged. After the final EclExtended adapter split, focused
+EclExtended replay passed **22/22** with zero additional refresh. A fresh cold
+aggregate then passed **696/696 exact units across all 88 sources** with
+**zero additional private-label refresh**. Independent normal validation
+compiled all **88 pinned-VC7.1 i386 COFF** translation units across both
+profiles and linked/verified a **780,288-byte PE32/i386 GUI**, build-local
+SHA-256 `d80894c38f04ad7dd6b4334916a0cb894484aec4e0a17f28ad177e18c0915cde`.
+Successful linkage is normal-product closure, not target whole-image identity
+or runtime-scenario evidence.
+
+**Unknown / next route.** BulletInf's normal type ownership is closed, but its
+remaining anonymous fields and protocol values are not thereby solved. The
+next bounded owner audit should challenge the overlapping EnemyInf projections
+in EclExtended and related photo consumers against canonical
+`EnemyManager.hpp`, beginning with the proven primary enemy ANM owner at
+`+0x4DF8`. Keep the alternate `+0x4DFC` slot Unknown until independent
+target-local producer and consumer evidence distinguishes it; do not turn the
+router's profile-divergence count into a completion percentage.

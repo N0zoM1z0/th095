@@ -190,7 +190,8 @@ def check_ecl_extended_type_boundaries() -> None:
         "typedef AnmLoaded ExtendedAnmSpawner;",
         "typedef Float3 ExtendedVector;",
         "typedef ::th095::PhotoEffectManagerView ExtendedPhotoEffectManager;",
-        "ExtendedAnmSpawner *bulletAnm;",
+        "typedef ::th095::PhotoBulletView ExtendedBulletView;",
+        "typedef ::th095::PhotoBulletManagerView ExtendedBulletManager;",
         "ExtendedAnmSpawner *enemyAnm;",
     )
     for binding in required_normal_bindings:
@@ -223,6 +224,11 @@ def check_ecl_extended_type_boundaries() -> None:
             "struct ExtendedPhotoEffectManager",
             "i32 nextId;",
         ),
+        "EclExtendedBulletEmission.inl": (
+            "struct ExtendedBulletView",
+            "struct ExtendedBulletManager",
+            "VC7 emission adapter for EclExtended callbacks only",
+        ),
     }
     for name, required_tokens in emission_requirements.items():
         text = (SRC / "ecl" / name).read_text(encoding="utf-8")
@@ -231,6 +237,78 @@ def check_ecl_extended_type_boundaries() -> None:
         for token in required_tokens:
             if token not in text:
                 fail(f"{name} lost required exact-emission token: {token}")
+
+
+def check_photo_bullet_owner() -> None:
+    header = (SRC / "PhotoBulletManager.hpp").read_text(encoding="utf-8")
+    if "TH095_MATCH_EXACT" in header or "DIFFBUILD" in header:
+        fail("canonical PhotoBulletManager.hpp must not select a build-profile layout")
+    if len(re.findall(r"\bstruct\s+PhotoBulletManagerView\s*\{", header)) != 1:
+        fail("PhotoBulletManager.hpp must define exactly one canonical BulletInf owner")
+    required_layout = (
+        "sizeof(PhotoBulletView) == 0x65c",
+        "offsetof(PhotoBulletManagerView, bullets) == 0x4c",
+        "offsetof(PhotoBulletManagerView, calcChain) == 0x27c5a8",
+        "offsetof(PhotoBulletManagerView, drawChain) == 0x27c5ac",
+        "offsetof(PhotoBulletManagerView, bulletAnm) == 0x27c5b0",
+        "sizeof(PhotoBulletManagerView) == 0x27c5b8",
+    )
+    for fact in required_layout:
+        if fact not in header:
+            fail(f"canonical BulletInf layout lost assertion: {fact}")
+
+    direct_consumers = (
+        SRC / "BulletManager.cpp",
+        SRC / "PhotoCamera.hpp",
+        SRC / "EclExtended.cpp",
+        SRC / "ecl" / "EclRun.cpp",
+        SRC / "EnemyShotDispatch.cpp",
+        SRC / "PhotoGameTask.cpp",
+        SRC / "PhotoItemManager.cpp",
+        SRC / "EnemyManagerUpdate.cpp",
+    )
+    for path in direct_consumers:
+        text = path.read_text(encoding="utf-8")
+        if 'PhotoBulletManager.hpp"' not in text:
+            fail(f"{path.relative_to(SRC)} must consume canonical PhotoBulletManager.hpp")
+
+    camera_header = (SRC / "PhotoCamera.hpp").read_text(encoding="utf-8")
+    if re.search(r"\bstruct\s+PhotoBulletManagerView\s*\{", camera_header):
+        fail("PhotoCamera.hpp must not restore its mixed Background/BulletInf proxy")
+    if '#include "PhotoCameraBulletEmission.inl"' not in camera_header:
+        fail("PhotoCamera exact receiver spellings must stay in the named emission adapter")
+    camera_emission = (SRC / "PhotoCameraBulletEmission.inl").read_text(
+        encoding="utf-8"
+    )
+    if "0x004BDD90" not in camera_emission or "0x004BDD98" not in camera_emission:
+        fail("PhotoCamera bullet emission adapter must document the two target owners")
+    if "TH095_MATCH_EXACT" in camera_emission or "DIFFBUILD" in camera_emission:
+        fail("PhotoCamera bullet emission adapter must not contain a second profile split")
+
+    bullet_emission = (SRC / "PhotoBulletManagerEmission.inl").read_text(
+        encoding="utf-8"
+    )
+    if "Exact/DIFF-only receiver facade" not in bullet_emission:
+        fail("BulletInf emission adapter must state its narrow receiver role")
+    if "TH095_MATCH_EXACT" in bullet_emission or "DIFFBUILD" in bullet_emission:
+        fail("BulletInf emission adapter must not contain a second profile split")
+
+    camera_source = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
+    if "g_Background->photoColor.color = color;" not in camera_source:
+        fail("normal PhotoCamera must publish photo blend color through Background")
+    if "g_Background->SetPhotoArea(" not in camera_source:
+        fail("normal PhotoCamera must publish the capture area through Background")
+
+    forbidden_local_owners = {
+        SRC / "BulletManager.cpp": "struct PhotoBulletManagerView",
+        SRC / "ecl" / "EclRun.cpp": "struct PhotoBulletManagerView",
+        SRC / "EnemyShotDispatch.cpp": "struct PhotoBulletManagerView",
+        SRC / "PhotoGameTask.cpp": "struct PhotoBulletManagerView",
+        SRC / "PhotoItemManager.cpp": "struct ItemBulletManagerView",
+    }
+    for path, token in forbidden_local_owners.items():
+        if token in path.read_text(encoding="utf-8"):
+            fail(f"{path.relative_to(SRC)} restored local BulletInf owner: {token}")
 
 
 def check_small_closed_domains() -> None:
@@ -260,6 +338,7 @@ def main() -> int:
     check_background_owner()
     check_ecl_type_boundaries()
     check_ecl_extended_type_boundaries()
+    check_photo_bullet_owner()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
     print("  canonical ANM opcode domain: -1..87 explicit")
@@ -267,6 +346,7 @@ def main() -> int:
     print("  Background owner: one profile-independent 0x201C declaration")
     print("  normal ECL types: canonical ANM, Supervisor, and Background owners")
     print("  EclExtended normal types: canonical ANM, Float3, and PhotoEffect owners")
+    print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
     print("  Replay manager, color mode, and viewport domains: explicit")
     return 0
 

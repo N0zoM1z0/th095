@@ -1,6 +1,7 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoBulletManager.hpp"
 #include "PhotoPlayerRuntime.hpp"
 #endif
 #include "ecl/EclManager.hpp"
@@ -64,11 +65,6 @@ struct EnemyShotBulletManagerView
 };
 extern EnemyShotBulletManagerView *g_EnemyShotBulletManager;
 #ifndef DIFFBUILD
-struct PhotoBulletSpawnDescriptor;
-struct PhotoBulletManagerView
-{
-    i32 SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor);
-};
 #define TH095_ENEMY_SHOT_SPAWN(manager, descriptor) \
     reinterpret_cast<PhotoBulletManagerView *>(manager)->SpawnBulletPattern( \
         reinterpret_cast<PhotoBulletSpawnDescriptor *>(descriptor))

@@ -2,6 +2,7 @@
 #include "PhotoItemManagerExact.inl"
 #else
 #include "PhotoItemManager.hpp"
+#include "PhotoBulletManager.hpp"
 #include "GameplayGlobals.hpp"
 #ifndef DIFFBUILD
 #include "PhotoPlayerRuntime.hpp"
@@ -16,15 +17,8 @@ namespace th095
     TH095_RUNTIME_GLOBAL_PTR(PhotoItemManagerView, g_RuntimeItemManagerOwner)
 #endif
 
-struct ItemBulletManagerView
-{
-    u8 unknown000000[0x27c5b0];
-    AnmLoaded *anmSpawner;
-};
-
-extern ItemBulletManagerView *g_PhotoBulletManager;
 #define g_PhotoBulletManager \
-    TH095_RUNTIME_GLOBAL_PTR(ItemBulletManagerView, g_RuntimeBulletManagerOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
 
 struct ItemPhotoGameView
 {
@@ -336,7 +330,7 @@ i32 __fastcall PhotoItemManagerView::OnDraw(PhotoItemManagerView *manager)
 static __forceinline void PhotoItemSpawnVmSetupPhase(PhotoItemView *item, u32 color)
 {
     u8 compilerStorage[0x2c];
-    g_PhotoBulletManager->anmSpawner->InitializeVm(&item->vm, 0x120);
+    g_PhotoBulletManager->bulletAnm->InitializeVm(&item->vm, 0x120);
     item->vm.color1.color = color;
 }
 

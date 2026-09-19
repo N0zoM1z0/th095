@@ -616,12 +616,12 @@ void PhotoPlayerRuntimeView::Die()
     this->mode = TH095_PHOTO_PLAYER_MODE_DEATH_TRANSITION;
     PhotoToScreen(&screenPosition, &this->playerPosition);
     g_AnmManager->SetPosition(
-        g_PhotoBulletManager->anmSpawner->CreateVm(0x121, 0),
+        g_PhotoBulletManager->bulletAnm->CreateVm(0x121, 0),
         &screenPosition);
     for (i32 i = 0; i < 32; ++i)
     {
         g_AnmManager->SetPosition(
-            g_PhotoBulletManager->anmSpawner->CreateVm(0x122, 0),
+            g_PhotoBulletManager->bulletAnm->CreateVm(0x122, 0),
             &screenPosition);
     }
     this->completionTimer = 0;
@@ -786,7 +786,7 @@ i32 PhotoGameUpdateView::UpdateMainState()
         {
             this->focusVm =
                 reinterpret_cast<PhotoAnmLoadedView *>(
-                    g_PhotoBulletManager->anmSpawner)->CreateVm(0x11f, 6);
+                    g_PhotoBulletManager->bulletAnm)->CreateVm(0x11f, 6);
         }
 
         switch (this->movementState)

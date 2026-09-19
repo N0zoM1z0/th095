@@ -1176,7 +1176,7 @@ normalCharge:
                 &locals.effect, 0x124, &g_PhotoGame->playerPosition);
 #else
             locals.effect =
-                g_PhotoBulletManager->anmSpawner->CreateVmAtWorld(
+                g_PhotoBulletManager->bulletAnm->CreateVmAtWorld(
                     0x124, &g_PhotoGame->playerPosition);
 #endif
         }
@@ -1296,10 +1296,15 @@ static __forceinline void NormalizeAndScalePhotoOffset(
     *offset *= radius;
 }
 
-static __forceinline void PhotoCameraSetBulletColor(u32 color)
+static __forceinline void PhotoCameraSetPhotoBlendColor(u32 color)
 {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     PhotoBulletManagerView *bulletManager = g_PhotoBulletManager;
     bulletManager->photoColor.color = color;
+#else
+    // Target relocation 0x004BDD90 is Background, not BulletInf at .98.
+    g_Background->photoColor.color = color;
+#endif
 }
 
 static __forceinline void PhotoCameraModeTimerResetPhase(ZunTimer *timer)
@@ -1665,7 +1670,7 @@ cameraActive:
             if (camera->charge >= 0.35f)
             {
                 g_AnmGameSpeed = 0.25f;
-                PhotoCameraSetBulletColor(0x60404040);
+                PhotoCameraSetPhotoBlendColor(0x60404040);
             }
             else
             {
@@ -1676,7 +1681,7 @@ cameraActive:
                 captureColor.r = (u8)(64.0f * slowRate) + 0x40;
                 captureColor.g = (u8)(64.0f * slowRate) + 0x40;
                 captureColor.b = (u8)(64.0f * slowRate) + 0x40;
-                PhotoCameraSetBulletColor(captureColor.color);
+                PhotoCameraSetPhotoBlendColor(captureColor.color);
             }
         }
         goto finish;

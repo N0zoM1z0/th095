@@ -12,6 +12,7 @@
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
 #include "Main.hpp"
+#include "PhotoBulletManager.hpp"
 #include "PhotoGameTask.hpp"
 #include "PhotoEffectRuntime.hpp"
 #ifndef DIFFBUILD
@@ -32,12 +33,6 @@ namespace th095
 struct PhotoFrontManagerView
 {
     static PhotoFrontManagerView *Create();
-    void Destroy();
-};
-
-struct PhotoBulletManagerView
-{
-    static PhotoBulletManagerView *__fastcall Create();
     void Destroy();
 };
 

@@ -3,6 +3,7 @@
 
 #include "AnmManager.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "PhotoBulletManager.hpp"
 #include "PhotoPlayerRuntime.hpp"
 #endif
 
@@ -10,15 +11,6 @@ namespace th095
 {
 
 struct PhotoCapturedBulletView;
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-struct PhotoBulletView;
-struct PhotoBulletVector
-{
-    f32 x;
-    f32 y;
-    f32 z;
-};
-#endif
 #ifdef TH095_MATCH_EXACT
 struct PhotoAnmVmIdValue;
 #endif
@@ -89,39 +81,9 @@ typedef AnmLoaded PhotoAnmLoadedView;
 typedef char PhotoAnmLoadedViewSizeIs1C[
     (sizeof(PhotoAnmLoadedView) == 0x1c) ? 1 : -1];
 
-#ifdef TH095_MATCH_EXACT
-struct PhotoAnmSpawnerView
-{
-    void SpawnInto(PhotoAnmVmId *output, i32 script, Float3 *position);
-};
-#else
-typedef AnmLoaded PhotoAnmSpawnerView;
-#endif
-
-struct PhotoBulletManagerView
-{
-    u8 unknown0000[0x1760];
-    ZunColor photoColor;
-    u8 unknown1764[0x27c5b0 - 0x1764];
-    PhotoAnmSpawnerView *anmSpawner;
-
-    void BeginPhotoCapture(const Float3 *position, const Float3 *size);
-    void DespawnAllBullets();
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 CountNearbyTargets(const Float3 *position, f32 radius);
-    void *CapturePhotoTargets(const Float3 *position, const Float3 *size);
-#else
-    i32 ClearCapturedBullets();
-    i32 CountNearbyTargets(PhotoBulletVector *position, f32 radius);
-    PhotoBulletView *CapturePhotoTargets(
-        PhotoBulletVector *position, PhotoBulletVector *size);
+#include "PhotoCameraBulletEmission.inl"
 #endif
-};
-
-typedef char PhotoBulletManagerAnmAt27C5B0[
-    (offsetof(PhotoBulletManagerView, anmSpawner) == 0x27c5b0) ? 1 : -1];
-
-extern PhotoBulletManagerView *g_PhotoBulletManager;
 
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 enum PhotoCameraChargeUiState

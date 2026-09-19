@@ -6,6 +6,7 @@
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
 #ifndef DIFFBUILD
+#include "PhotoBulletManager.hpp"
 #include "PhotoPlayerRuntime.hpp"
 #endif
 #include "SceneData.hpp"
@@ -331,11 +332,15 @@ typedef PhotoEnemyAnmSpawnerView PhotoEnemyAnmSpawner;
 typedef AnmLoaded PhotoEnemyAnmSpawner;
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct PhotoEnemyBulletManagerView
 {
     u8 unknown000000[0x27c5b0];
     PhotoEnemyAnmSpawner *anmSpawner;
 };
+#else
+typedef PhotoBulletManagerView PhotoEnemyBulletManagerView;
+#endif
 
 struct PhotoEnemyPlayerView
 {
@@ -1315,10 +1320,14 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
             {
                 *reinterpret_cast<AnmVmId *>(
                     &enemy->photoMarkerVmId) =
-                    g_PhotoEnemyBulletManager->anmSpawner
 #ifdef TH095_MATCH_EXACT
+                    g_PhotoEnemyBulletManager->anmSpawner
                         ->CreateVm(0x127, &enemy->worldPosition);
+#elif defined(DIFFBUILD)
+                    g_PhotoEnemyBulletManager->anmSpawner
+                        ->CreateVmAtWorld(0x127, &enemy->worldPosition);
 #else
+                    g_PhotoEnemyBulletManager->bulletAnm
                         ->CreateVmAtWorld(0x127, &enemy->worldPosition);
 #endif
             }

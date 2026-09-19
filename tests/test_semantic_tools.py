@@ -79,6 +79,20 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("TH095_MATCH_EXACT", emission)
         self.assertNotIn("DIFFBUILD", emission)
 
+    def test_photo_bullet_owner_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_photo_bullet_owner()
+        header = (ROOT / "src" / "PhotoBulletManager.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(PhotoBulletManagerView) == 0x27c5b8", header)
+        emission = (ROOT / "src" / "PhotoCameraBulletEmission.inl").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("0x004BDD90", emission)
+        self.assertIn("0x004BDD98", emission)
+
 
 if __name__ == "__main__":
     unittest.main()

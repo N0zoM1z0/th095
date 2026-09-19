@@ -50,47 +50,40 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The Background canonical-owner pilot and its ECL follow-up are closed for the
-normal product. Behavior, lifecycle, photo, ANM draw, EclExtended, and EclRun
-now consume the one profile-independent 0x201C `Background.hpp` owner.
-`ExtendedBackgroundView` and `BackgroundEclInterface.hpp` are retired. The
-false TH08-derived 0x6600 declaration survives only as the named exact/DIFF
-EclRun emission adapter; direct canonical replacement changes its VC7 private
-label timeline.
+SEM-269 closes the BulletInf owner milestone for the normal product.
+`PhotoBulletManager.hpp` is now the one profile-independent `0x27C5B8` owner,
+including the `0x641` inline bullets, Chain nodes, `bulletAnm @ +0x27C5B0`, and
+active count. BulletManager, photo/game/task, enemy-shot, ECL, item, and enemy
+consumers use it; the former complete/local/method-only normal declarations
+are retired. Historical receiver spellings survive only in named exact/DIFF
+emission adapters.
 
-The same correction routes normal ECL includes through canonical 0x38314C
-`AnmManager.hpp` and preserves the already-established 0x7BC
-`Main.hpp::Supervisor` instead of redeclaring the legacy 0x2A2570/0x364
-shapes. A fresh cold aggregate passed 696/696 exact units across all 88 sources
-with zero label refresh. The independent normal product compiled all 88
-pinned-VC7.1 i386 COFF objects across both profiles and linked a verified
-780,288-byte PE32 executable with build-local SHA-256
-`8db738fb91d53ca9cc86c2b6d8ffce8538199b5fea221e7355353f6d79d69456`.
-CI passed 49 tests. This is compile/link closure, not whole-image exactness or
-runtime credit.
+The PhotoCamera mixed-owner artifact is also corrected: `.90` is the canonical
+Background owner, so `photoColor @ +0x1760` and `SetPhotoArea @ 0x00404950`
+route through `g_Background @ 0x004BDD90`; BulletInf operations route through
+the distinct `.98` global at `0x004BDD98`. Do not restore a single proxy type
+across those two relocations.
 
-SEM-268 closes the first bounded EclExtended compatibility lane. Normal source
-now uses canonical `AnmVmId`, `AnmLoaded`, `Float3`, and
-`PhotoEffectManagerView`; BulletInf `+0x27C5B0` is named `bulletAnm`, EnemyInf
-`+0x4DF8` is named `enemyAnm`, and PhotoEffect manager `+0x58` is the
-target-produced `nextId`. The historical receiver names moved into three
-named `EclExtended*Emission.inl` files used only by exact/DIFF compilation.
-Focused validation passes EclExtended 22/22 exact with zero label refresh and
-a pinned-VC7.1 normal i386 compile. Per the current batch cadence, this local
-checkpoint deliberately inherits the preceding 696-unit/88-TU aggregate gate;
-it does not claim a new cold whole-product result.
+Affected replay passed 142/142 exact after 55 compiler-private labels in six
+units were structurally audited and refreshed. The final cold aggregate then
+passed 696/696 exact across all 88 sources with zero additional refresh. The
+independent normal product compiled all 88 pinned-VC7.1 i386 COFF objects and
+linked a verified 780,288-byte PE32 executable with build-local SHA-256
+`d80894c38f04ad7dd6b4334916a0cb894484aec4e0a17f28ad177e18c0915cde`.
+Target-independent CI passed all 50 tests. This is compile/link closure, not
+whole-image exactness or runtime credit.
 
 ## Next bounded lane
 
-Continue shrinking ECL compatibility declarations one owner at a time. The
-next candidate is the compact photo BulletInf owner: reconcile the complete
-`PhotoBulletManagerView`/`PhotoBulletView` declaration in `BulletManager.cpp`
-with the partial normal projections in `PhotoCamera.hpp`, EclExtended, and
-EclRun before changing any layout. Preserve exact receiver spellings in named
-emission adapters and require a cold aggregate gate once the shared canonical
-header actually changes. Do not bulk-rename the legacy `-1..89` opcode list,
-and keep the EclRun Background adapter isolated until a clean declaration
-reproduces its complete 27,091-byte body and 647 relocations.
+Continue shrinking ECL compatibility declarations one owner at a time. Audit
+the overlapping EnemyInf projections in EclExtended and photo consumers
+against canonical `EnemyManager.hpp`, beginning with the independently proven
+primary enemy ANM owner at `+0x4DF8`. Do not assign a meaning to alternate slot
+`+0x4DFC` without a separate target-local producer and consumer. Preserve
+exact receiver spellings in named emission adapters, do not bulk-rename the
+legacy `-1..89` opcode list, and keep the EclRun Background adapter isolated
+until a clean declaration reproduces its complete 27,091-byte body and 647
+relocations.
 
 ## Protected working-tree exclusions
 
@@ -111,4 +104,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/EclExtended.cpp --details
+rg -n "PhotoEnemyManagerView|ExtendedRuntimeView|0x4df8|0x4dfc" src config docs
 ```
