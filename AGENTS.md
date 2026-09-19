@@ -45,6 +45,11 @@ executable.
   function bodies, exact replay validates only the exact-selected source. It
   cannot be cited as semantic acceptance of the normal body; require separate
   target evidence and a normal/portable oracle.
+- Follow TH08's end-state bias toward one shared source: do not add
+  profile-selected layouts to a canonical owner header. Isolate a different
+  exact declaration/body in a named adapter or probe only after a minimal
+  pinned-VC7.1 experiment proves the emission dependency, and track the split
+  as debt rather than a reusable pattern.
 - Put current policy in `docs/SEMANTIC_RECONSTRUCTION.md`, current navigation
   in `docs/SEMANTIC_INDEX.md`, chronological batches in
   `docs/SEMANTIC_HISTORY.md`, and build ownership in `docs/SOURCE_MAP.md`.

@@ -1,4 +1,5 @@
 #include "AnmManager.hpp"
+#include "Background.hpp"
 
 namespace th095
 {
@@ -97,19 +98,6 @@ struct AnmBackgroundViewportView
     D3DVIEWPORT8 viewport;
 };
 
-struct AnmBackgroundPhotoBlendView
-{
-    f32 nearDistance;
-    f32 farDistance;
-    ZunColor color;
-};
-
-struct AnmBackgroundStateDrawView
-{
-    u8 unknown000[0x1fec];
-    AnmBackgroundPhotoBlendView photoBlendCurrent;
-};
-
 struct AnmPhotoBlendDrawLocals
 {
     Float3 cameraDelta;
@@ -140,17 +128,6 @@ static __forceinline AnmBackgroundViewportView *AnmCurrentBackgroundViewport()
         g_Supervisor.currentBackgroundViewport);
 }
 #define g_CurrentBackgroundViewport AnmCurrentBackgroundViewport()
-#endif
-#ifdef TH095_MATCH_EXACT
-extern AnmBackgroundStateDrawView *g_Background;
-#else
-struct Background;
-extern Background *g_Background;
-static __forceinline AnmBackgroundStateDrawView *AnmBackgroundStateOwner()
-{
-    return reinterpret_cast<AnmBackgroundStateDrawView *>(g_Background);
-}
-#define g_Background AnmBackgroundStateOwner()
 #endif
 #ifdef TH095_MATCH_EXACT
 extern Float3 g_BackgroundCameraPosition;

@@ -46,6 +46,17 @@ or function bodies:
 A report of `696/696 exact` therefore cannot establish that normal production
 source is meaningful, canonical, portable, or behaviorally validated.
 
+TH08's completed source does not scatter build-profile-selected semantic
+classes or bodies: outside `diffbuild.hpp` itself its `src/` tree has no
+consumer-side `DIFFBUILD` conditional. TH095 should converge on that model.
+Do not introduce a new profile-selected aggregate, member layout, or function
+body as the default way to preserve a match. Prefer one canonical declaration
+and one shared semantic body. If VC7 emission really depends on an ancestral
+declaration or lexical context, isolate it in a named adapter/probe, prove the
+need with a failed clean form and a pinned-compiler comparison, and keep it out
+of the runtime-owner header. Existing profile divergences are debt, not a
+template for new work.
+
 ## Bounded batch workflow
 
 1. Run the repository preflight from `AGENTS.md` and inspect the dirty tree.
@@ -85,6 +96,8 @@ source is meaningful, canonical, portable, or behaviorally validated.
   padding merely to make source appear typed or to force a comparison.
 - Keep exact compatibility code narrow and commented. It must describe the
   target instruction evidence, failed natural source form, and affected unit.
+- Canonical owner headers must not select different layouts by build profile.
+  Prefer separate exact probes/adapters over `#if` branches inside the owner.
 
 ## Two-oracle acceptance
 

@@ -20,13 +20,15 @@ authoritative for exact acceptance.
 normal source profiles without that define. A conditional or `*Exact.inl`
 include can therefore select a different function body. Exact replay validates
 the exact-selected body only; normal semantics require separate evidence and a
-normal build/oracle.
+normal build/oracle. This split-heavy graph is inherited TH095 debt, not the
+TH08 end state: new canonical owners should be profile-independent and any
+unavoidable emission adapter should be isolated and named.
 
 ## Current source families
 
 | Subsystem | Normal semantic owner | Exact/emission boundary | Current ownership debt / validation |
 | --- | --- | --- | --- |
-| Background | `Background.cpp`; canonical declaration is being moved to `Background.hpp` | `TH095_MATCH_EXACT`/`DIFFBUILD` macros and target-shaped expressions in `Background.cpp` | Current method owner is a 0x201C blob plus a separate full state view; legacy header shape conflicts. Replay all `Background.cpp` units and normal whole product. |
+| Background | `Background.hpp` is the single 0x201C declaration; `Background.cpp` owns behavior/storage and `BackgroundLifecycle.cpp` owns construction/destruction | `ecl/BackgroundEclEmission.hpp` is the one TH08-shaped declaration retained solely for `EclRun` COFF emission; normal EclRun uses the method-only `BackgroundEclInterface.hpp` because its legacy ECL/ANM type universe still conflicts with the canonical header | `BackgroundStateView`, the blob owner, lifecycle duplicate, PhotoCamera/PhotoGameTask method duplicates, and `AnmBackgroundStateDrawView` are retired. `EclExtended.cpp::ExtendedBackgroundView` remains explicit debt blocked on unifying `ecl/AnmManagerEclView.hpp`; it is an observation view, not another owner. |
 | Supervisor | `Main.hpp`, `Main.cpp`, split lifecycle/platform TUs | `MainExact.inl` and repeated local Supervisor projections | No single canonical full owner yet. Any shared declaration change requires all dependent exact sources plus cold normal link. |
 | Replay scan worker | `ReplayScanWorker.cpp`; projected in Supervisor headers/TUs | `ReplayScanWorkerExact.inl`, exact/DIFF member-token compatibility | `threadHandle` semantics are accepted; declarations remain duplicated. |
 | ANM | `AnmManager.hpp`, `AnmManager.cpp`, `AnmVmLifecycle.cpp` | exact inlines and ECL-facing projection in `ecl/AnmManagerEclView.hpp` | The canonical `ANM_OP_*` domain is guarded. The ECL-facing projection has a different legacy-shaped `-1..89` enum and must not be treated as equivalent without a complete consumer audit. |
@@ -46,10 +48,13 @@ Use one of these descriptions when exact and normal differ:
 - **different body** — exact and normal compile different implementations;
 - **exact-only owner** — a probe/inlined file exists only for comparison;
 - **wire/ABI view** — the alternate declaration describes a genuine external
-  representation rather than the runtime owner.
+  representation rather than the runtime owner; and
+- **compiler-emission adapter** — a named, non-runtime declaration or probe is
+  retained only after the clean canonical form is shown to perturb target VC7
+  emission while leaving target destinations and semantic behavior unchanged.
 
-Only the last two categories justify long-lived duplicate declarations, and
-both still require an explicit canonical normal owner.
+Only the last three categories justify long-lived duplicate declarations, and
+all still require an explicit canonical runtime owner.
 
 ## Validation recipes
 

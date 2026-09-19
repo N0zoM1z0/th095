@@ -4,6 +4,7 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "AsciiManager.hpp"
+#include "Background.hpp"
 #include "FrontEndGlobals.hpp"
 #ifndef DIFFBUILD
 #include "FileSystem.hpp"
@@ -27,12 +28,6 @@
 
 namespace th095
 {
-
-struct Background
-{
-    ~Background();
-    static Background *__fastcall Create();
-};
 
 struct PhotoFrontManagerView
 {

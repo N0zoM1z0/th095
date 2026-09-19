@@ -49,31 +49,31 @@ remains explicit follow-up debt; do not merge or rename it from adjacency.
 
 ## Last verified semantic result
 
-SEM-265 accepts only this field meaning: `ReplayScanWorker +0x00` is the worker
-thread handle returned by `_beginthreadex` and consumed by wait/close paths.
-The repeated worker declarations are still ownership debt. The re-audit used
-fresh target decompilation/disassembly at `0x0041BB20`, `0x0041BBA0`, and
-`0x00425150`, replayed 55/55 affected exact units, and linked the 88-TU normal
-product across both profiles.
+The Background canonical-owner pilot replaces the false TH08-derived 0x6600
+runtime declaration with one profile-independent TH095 0x201C owner. Behavior,
+lifecycle, PhotoCamera, PhotoGameTask, and ANM draw now consume that owner.
+Only EclRun retains the old declaration in a named compiler-emission adapter;
+direct canonical replacement was tested and changed its VC7 private-label
+timeline. `EclExtended.cpp::ExtendedBackgroundView` remains follow-up debt
+because its legacy ECL ANM declarations conflict with canonical
+`AnmManager.hpp`; do not claim that consumer closed.
 
-## Active bounded lane: Background canonical owner
+Focused replay passed Background 20/20, lifecycle 2/2, AnmDrawCore 18/18,
+PhotoCamera 11/11, PhotoGameTask 10/10, and EclRun 1/1. The final cold
+aggregate passed 696/696 across all 88 manifest sources. The normal product
+then compiled all 88 pinned-VC7.1 i386 COFF objects across both profiles and
+linked a 780,288-byte PE32 executable with build-local SHA-256
+`17769461880d5d70a0b0b29b451b28ee34ea9995ce16f46ea7068748a8a26fd7`.
+This is compile/link closure, not whole-image exactness or runtime credit.
 
-Do not resume scalar naming (`SEM-266`) first. Use Background as the initial
-ownership pilot:
+## Next bounded lane
 
-1. re-attest construction, destruction, allocation, callers, and complete
-   target layout;
-2. map every `Background` declaration, `BackgroundStateView`, cast, include,
-   exact unit, and normal build owner;
-3. make normal production use one real 0x201C canonical owner and declaration;
-4. keep stage wire structures and the 0..14 opcode protocol explicit;
-5. retain only a narrow, evidenced VC7 source-shape boundary if a shared clean
-   body fails exact comparison; and
-6. run all affected exact units, the normal whole build, protocol guard, CI,
-   tracking validation, and whitespace check.
-
-Do not copy TH08 Background layout or meaning. Do not extend the three
-user-authorized x87 assembly exceptions.
+Attack the upstream ECL type-universe split that prevents `EclExtended.cpp`
+from including the canonical owner. Start with the incompatible duplicate ANM
+declarations; do not paper over them with another profile-selected
+`Background` layout. Keep the EclRun emission adapter isolated until a clean
+declaration reproduces its complete 27,091-byte body and 647 relocations. Do
+not resume scalar naming just because the debt router lists anonymous fields.
 
 ## Protected working-tree exclusions
 

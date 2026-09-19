@@ -2,7 +2,11 @@
 #include "EclOperands.hpp"
 #include "Gui.hpp"
 #include "BulletManager.hpp"
-#include "Background.hpp"
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#include "BackgroundEclEmission.hpp"
+#else
+#include "BackgroundEclInterface.hpp"
+#endif
 #include "GameManager.hpp"
 #include "ItemManager.hpp"
 #include "Player.hpp"

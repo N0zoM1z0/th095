@@ -60,6 +60,10 @@ not. If these profiles select different declarations, expressions, or bodies:
 Delete unnecessary divergence. Retain a split only when a minimal pinned-VC7.1
 oracle and exact comparison show that a natural shared form changes target
 emission. Keep the boundary narrow and explain it beside the source.
+Canonical owner headers must remain profile-independent. Prefer a separately
+named exact probe or compiler-emission adapter to `#if`-selected class layouts;
+TH08's completed `src/` tree has no consumer-side `DIFFBUILD` conditionals
+outside `diffbuild.hpp`, so TH095's inherited splits are debt, not precedent.
 
 ## Close protocol debt
 

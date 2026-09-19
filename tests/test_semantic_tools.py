@@ -68,6 +68,17 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("TH095_BACKGROUND_STAGE_OPCODE_HALT", body)
         self.assertIn("interpolate:", body)
 
+    def test_background_owner_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_background_owner()
+        header = (ROOT / "src" / "Background.hpp").read_text(encoding="utf-8")
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertIn("sizeof(Background) == 0x201c", header)
+        emission = (ROOT / "src" / "ecl" / "BackgroundEclEmission.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", emission)
+        self.assertNotIn("DIFFBUILD", emission)
+
 
 if __name__ == "__main__":
     unittest.main()

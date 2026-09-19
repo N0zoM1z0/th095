@@ -1,6 +1,7 @@
 #ifdef TH095_MATCH_EXACT
 #define TH095_MATCH_SOUNDPLAYER_AS_STRUCT
 #endif
+#include "Background.hpp"
 #include "PhotoCamera.hpp"
 #include "GameplayGlobals.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
@@ -34,14 +35,6 @@ namespace th095
 #define TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE 0
 #define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET 1
 #define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW 2
-#endif
-
-#ifndef TH095_MATCH_EXACT
-struct Background
-{
-    void SetPhotoArea(const Float3 *position, const Float3 *size);
-};
-extern Background *g_Background;
 #endif
 
 #ifdef TH095_MATCH_EXACT
