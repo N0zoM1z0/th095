@@ -13435,3 +13435,79 @@ inventing an opcode name or merging the CardInf owner with EnemyInf storage.
 Player/camera projections remain a later independent lane. Manager `+0x4DFC`,
 unsupported compact control bits, and the compatibility `Enemy` tail remain
 Unknown.
+
+### SEM-275 — canonicalize CardInf without merging its EnemyInf session handle
+
+**Scope.** Follow SEM-274's next route through RunEcl's method-only
+`PhotoCardInfoView`, the EnemyInf `eclPhotoCardSession @ +0x26AE28` slot, and
+the independently published CardInf allocation. Reuse SEM-059 and ABI-029 only
+after fresh target confirmation. Do not name opcodes 0x68/0x69, infer
+out-of-order script behavior, or treat the manager slot as CardInf storage.
+
+**Target and lifetime evidence.** Fresh hash-attested TH095 decompilation shows
+`PhotoCardInfoView::PhotoCardInfoView @ 0x00408610` zeroing 0x68 bytes and
+publishing `this` at `0x004BDD9C`. `Create @ 0x00408850` allocates 0x68 and
+installs calc/draw Chains at `+0x60/+0x64`; destructor `0x00408760` cuts those
+Chains, retires VM handles `+0x04/+0x08`, and clears the global. Fresh xrefs to
+`0x004BDD9C` show only those constructor/destructor writes. PhotoGameTask
+destructor `0x00417E70` independently reads the global and calls
+`Destroy @ 0x00408990` during broader gameplay teardown.
+
+RunEcl remains a separate handle owner. Its 0x68 case destroys a non-null
+EnemyInf `+0x26AE28` handle before creating and installing a replacement; its
+0x69 case calls `Show @ 0x004087D0` and clears only the manager slot. `Show`
+does not delete or clear the global: it interrupts both VMs, writes state 1,
+resets the timer, and restores the saved screen-fade color. Therefore the
+manager field is an ECL-held, non-exclusive session pointer to CardInf, while
+the 0x68 allocation and global publication remain CardInf's storage/semantic
+lifetime owner.
+
+**Layout and state protocol.** `PhotoCardInfo.hpp` now holds the one
+profile-independent normal 0x68 declaration: VM handles `+0x04/+0x08`, state
+`+0x0C`, timer `+0x10`, saved fade color `+0x1C`, decoded text `+0x20`, and
+Chain roots `+0x60/+0x64`. The target-proved state domain is exactly active 0
+from construction zero-initialization and finishing 1 from `Show`; `Update @
+0x004089F0` is the independent consumer. Unknown dwords/bytes remain Unknown.
+
+Fresh global xrefs also place two independent reads inside
+`PhotoStageStateView::Update @ 0x0042AD60`: both copy CardInf `text @ +0x20`
+into captured-photo comment storage. Normal PhotoStage now uses the canonical
+field directly rather than `PhotoStageRuntimeView::comment`. PhotoGameTask and
+RunEcl likewise include the canonical header instead of declaring destroy-only
+or Create/Show/Destroy-only receivers. The unused EnemyManagerUpdate forward
+declaration is removed; `PhotoEnemyManager.hpp` retains only the legitimate
+incomplete type required by its pointer field.
+
+**Ownership axes and profile boundary.** CardInf owns the 0x68 allocation,
+state machine, global publication, VM/Chain cleanup, and normal build
+declaration. EnemyInf owns only the pointer-sized slot used by the ECL protocol.
+`PhotoCardInfoExact.inl` remains a frozen different-body exact emission
+boundary. PhotoStage's DIFFBUILD extern spelling is retained only for
+relocation/token compatibility but now points at the canonical type; it is not
+a second layout. Exact replay is recorded separately from the normal compile
+and link.
+
+**Workflow debt and validation.** The selector baseline shrank from 885 to 883
+directives across the same 112 files. The profile-selected declaration
+baseline shrank from 231 keys / 236 occurrences to 225 / 230. No selector or
+declaration debt was added. The semantic guard pins the canonical layout,
+closed two-value state domain, direct normal consumers, EnemyInf pointer slot,
+and removal of the PhotoStage text projection.
+
+Five focused pinned-VC7.1 normal probes emitted valid i386 COFF objects for
+PhotoCardInfo, PhotoGameTask, PhotoStage, EclRun, and EnemyManagerUpdate.
+Focused exact replay passed 49/49 units across the same affected source set
+with zero private-label refresh. The final cold aggregate passed **696/696
+exact across all 88 sources**, again with zero refresh and no manifest change.
+The normal whole build compiled all **88 pinned-VC7.1 i386 COFF** objects and
+linked a verified **780,800-byte PE32/i386 GUI**, build-local SHA-256
+`447e01a496b8ded47f487e89f636aa42676f4695d81d728db23e4c3ab33ab866`.
+Target-independent CI passed **52/52** tests.
+
+**Unknown / next route.** Opcode business names, CardInf `unknown000` and
+`unknown050`, out-of-order session behavior, and EnemyInf `+0x4DFC` remain
+Unknown. Next audit RunEcl's camera boundary beginning with the case-141 write
+through `PhotoCameraOpcodeState::opcode141Value` at Player `+0x29EC`; require
+an independent producer/consumer before accepting the field name. Treat the
+angle receiver as a separate claim rather than assuming Player and PhotoCamera
+share one semantic owner.

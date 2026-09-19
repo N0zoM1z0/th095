@@ -13,6 +13,7 @@
 #include "InputRuntime.hpp"
 #include "Main.hpp"
 #include "PhotoBulletManager.hpp"
+#include "PhotoCardInfo.hpp"
 #ifndef DIFFBUILD
 #include "PhotoEnemyManager.hpp"
 #endif
@@ -63,12 +64,6 @@ struct PhotoEnemyManagerView
 struct PhotoItemManagerView
 {
     static PhotoItemManagerView *__fastcall Create();
-    void Destroy();
-};
-
-
-struct PhotoCardInfoView
-{
     void Destroy();
 };
 
@@ -183,7 +178,6 @@ extern char g_ReplayPath[];
 extern char g_SelectedReplayPath[0x100];
 #define g_ReplayPath g_SelectedReplayPath
 #endif
-extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoStageStateTaskView *g_PhotoStageState;
 #define g_PhotoStageState \

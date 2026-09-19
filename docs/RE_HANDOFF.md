@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-274. Owner closure remains
+The current semantic source checkpoint is SEM-275. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -65,8 +65,9 @@ deliberately narrower than subsystem completion:
 | Compact enemy element `0x4CC0` | Canonical profile-independent owner established in `PhotoEnemy.hpp`; `EnemyMovement` is a method-only ABI shell, and all four operand resolver TUs plus RunEcl share `PhotoEnemyEclAccess.hpp`. The bridge is offset-asserted and is not a second layout. |
 | PhotoGameTask `0x124` | `PhotoGameTask.hpp` is profile-independent; normal RunEcl consumes canonical `completion @ +0x104` and `playerDeathTransitionComplete @ +0xFC bit 5`. Exact task emission stays in `PhotoGameTaskExact.inl`. |
 | PhotoInf/stage `0x25730` | `PhotoStage.hpp` is the canonical normal owner for lifecycle, draw/capture behavior, `scoreMultiplier @ +0x25718`, ANM, and Chain roots. PhotoCamera's old receiver is isolated in one narrow emission adapter. |
+| CardInf `0x68` | `PhotoCardInfo.hpp` is the profile-independent allocation/lifecycle owner published at `0x004BDD9C`; RunEcl, PhotoGameTask, and PhotoStage consume it directly. EnemyInf `+0x26AE28` remains only a non-exclusive ECL-held session pointer. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 885 remaining selector directives across 112 files and 231 declaration keys / 236 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 883 remaining selector directives across 112 files and 225 declaration keys / 230 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -80,25 +81,29 @@ The old normal `PhotoOverlayManagerView` and shifted slot-lifetime projection
 are gone; frozen exact overlay/stage bodies remain compiler-emission material,
 not alternate normal owners.
 
-The cold aggregate passed **696/696 exact across all 88 sources**. Relative to
-SEM-273, the reviewed manifest update contains **68 compiler-private `$L`
-spelling changes across seven units**; complete bytes, relocation offsets,
-types, and target destinations are unchanged. The normal build compiled all
+CardInf now has one normal declaration. RunEcl's method-only view,
+PhotoGameTask's destroy-only view, PhotoStage's `text @ +0x20` projection, and
+an unused EnemyManagerUpdate forward declaration are removed. The exact
+`PhotoCardInfoExact.inl` body remains a compiler-emission boundary and does not
+validate the separately compiled normal body.
+
+The cold aggregate passed **696/696 exact across all 88 sources** with zero
+private-label refresh; `config/match-units.toml` is unchanged. The normal build compiled all
 **88 pinned-VC7.1 i386 COFF** objects and linked a verified **780,800-byte
 PE32/i386 GUI**, build-local SHA-256
-`fd5835c71be680ec3bb92b5af58d762fa795e2598975de94159760c3a1cf9afc`.
-Target-independent CI passed **51/51** tests. This is exact-unit preservation
+`447e01a496b8ded47f487e89f636aa42676f4695d81d728db23e4c3ab33ab866`.
+Target-independent CI passed **52/52** tests. This is exact-unit preservation
 and normal compile/link closure, not whole-image exactness or runtime credit.
 
 ## Next bounded lane
 
-Audit RunEcl's remaining photo-session method projection and the
-`eclPhotoCardSession` lifecycle against `PhotoCardInfo.cpp`. Distinguish the
-CardInf allocation/lifecycle owner from the EnemyInf pointer slot; do not infer
-an opcode name from Create/Show/Destroy calls. Keep player/camera as the next
-separate lane. Do not name manager `+0x4DFC`, unsupported control bits, or the
-compatibility `Enemy` tail, and do not add a selector or enlarge either closed
-baseline.
+Audit RunEcl's remaining camera projection beginning with
+`PhotoCameraOpcodeState::opcode141Value`: target-high case 141 writes Player
+`+0x29EC` through the local `PhotoCamera` / 0xBB0 nested-state view. Require an
+independent producer or consumer before accepting that field name, and audit
+the `GetAngle` receiver separately rather than assuming the two camera/player
+macros share one owner. Do not infer an opcode name, name manager `+0x4DFC`, or
+enlarge either closed baseline.
 
 ## Protected working-tree exclusions
 
@@ -117,6 +122,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/ecl/EclRun.cpp --details
-rg -n "PhotoCardInfoView|eclPhotoCardSession|TH095_ECL_SESSION" src docs/KNOWLEDGE_BASE.md
+python3 scripts/analysis/report-semantic-debt.py --path src/ecl/EclRunHigh.inl --details
+rg -n "PhotoCameraOpcodeState|opcode141Value|0x29ec|TH095_ECL_(PLAYER|PHOTO)_ANGLE" src docs/KNOWLEDGE_BASE.md
 ```

@@ -32,7 +32,6 @@ struct PhotoEnemyManagerView;
 struct PhotoEnemyEclContextView;
 #if !defined(TH095_MATCH_EXACT)
 struct EnemyChildEclBlock;
-struct PhotoCardInfoView;
 #endif
 
 struct PhotoEnemyEclFileView

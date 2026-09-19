@@ -31,6 +31,7 @@
 #endif
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "../PhotoEnemyManager.hpp"
+#include "../PhotoCardInfo.hpp"
 #include "../PhotoGameTask.hpp"
 #include "../PhotoStage.hpp"
 #define TH095_ECL_GAME_TASK \
@@ -113,9 +114,9 @@
 #define TH095_ECL_PHOTO_MODE_BEGIN() ::th095::g_Background->StartSpellBackground()
 #define TH095_ECL_PHOTO_MODE_END() ::th095::g_Background->StopSpellBackground()
 #define TH095_ECL_SESSION_REPLACE(session) \
-    reinterpret_cast<::th095::PhotoCardInfoView *>(session)->Destroy()
+    (session)->Destroy()
 #define TH095_ECL_SESSION_FINISH(session) \
-    reinterpret_cast<::th095::PhotoCardInfoView *>(session)->Show()
+    (session)->Show()
 #define TH095_ECL_SESSION_CREATE(descriptor) \
     ::th095::PhotoCardInfoView::Create(reinterpret_cast<char *>(descriptor))
 #endif
@@ -216,12 +217,6 @@ namespace th095
 
 #ifndef DIFFBUILD
 struct AnmVertex;
-struct PhotoCardInfoView
-{
-    static PhotoCardInfoView *__fastcall Create(char *text);
-    i32 Show();
-    void Destroy();
-};
 extern AnmManager *g_AnmManager;
 static __forceinline Enemy *Th095EclSpawnEnemy(
     i32 subroutineId, Float3 *position, i32 life,

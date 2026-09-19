@@ -104,6 +104,17 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("u8 unknown4dfc[4]", header)
         self.assertNotIn("alternateEnemyAnm", header)
 
+    def test_photo_card_info_owner_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_photo_card_info_owner()
+        header = (ROOT / "src" / "PhotoCardInfo.hpp").read_text(encoding="utf-8")
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(PhotoCardInfoView) == 0x68", header)
+        self.assertIn("PHOTO_CARD_INFO_STATE_FINISHING = 1", header)
+        stage = (ROOT / "src" / "PhotoStage.cpp").read_text(encoding="utf-8")
+        self.assertNotIn("PhotoStageRuntimeView", stage)
+        self.assertIn("TH095_PHOTO_STAGE_CARD_INFO->text", stage)
+
 
 if __name__ == "__main__":
     unittest.main()

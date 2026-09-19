@@ -1823,3 +1823,20 @@ target-independent CI passed 51/51. The live handoff moved next to the
 RunEcl photo-session method projection and `eclPhotoCardSession` lifecycle,
 with CardInf kept distinct from EnemyInf and player/camera deferred to a
 separate owner audit.
+
+## CardInf owner checkpoint — SEM-275
+
+SEM-275 made `PhotoCardInfo.hpp` the profile-independent 0x68 CardInf owner for
+the allocation published at `0x004BDD9C`. Normal PhotoCardInfo, PhotoGameTask,
+PhotoStage, and RunEcl now consume that declaration; the method-only and
+text-only projections are retired. EnemyInf `eclPhotoCardSession @ +0x26AE28`
+remains a non-exclusive ECL-held pointer: the finish path clears the slot after
+`Show` without destroying the globally published CardInf object.
+
+At this checkpoint the cold aggregate passed 696/696 exact with zero private
+label refresh, and the normal build linked a 780,800-byte PE32 product with
+build-local SHA-256
+`447e01a496b8ded47f487e89f636aa42676f4695d81d728db23e4c3ab33ab866`.
+CI passed 52/52. The live handoff moved next to the bounded RunEcl camera-state
+write at Player `+0x29EC`, with its field meaning and angle receiver requiring
+independent TH095-local evidence.

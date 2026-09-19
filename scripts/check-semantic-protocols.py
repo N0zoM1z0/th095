@@ -910,7 +910,61 @@ def check_photo_stage_owner() -> None:
         fail("normal EclRun lost canonical stage score access")
 
 
+def check_photo_card_info_owner() -> None:
+    header = (SRC / "PhotoCardInfo.hpp").read_text(encoding="utf-8")
+    if any(name in header for name in PROFILE_NAMES):
+        fail("canonical PhotoCardInfo.hpp must not select a build profile")
+    if len(re.findall(r"\bstruct\s+PhotoCardInfoView\s*\{", header)) != 1:
+        fail("PhotoCardInfo.hpp must define exactly one canonical CardInf owner")
+    required_layout = (
+        "sizeof(PhotoCardInfoView) == 0x68",
+        "offsetof(PhotoCardInfoView, state) == 0x0c",
+        "offsetof(PhotoCardInfoView, timer) == 0x10",
+        "offsetof(PhotoCardInfoView, text) == 0x20",
+        "offsetof(PhotoCardInfoView, calcChain) == 0x60",
+        "offsetof(PhotoCardInfoView, drawChain) == 0x64",
+        "extern PhotoCardInfoView *g_PhotoCardInfo",
+    )
+    for fact in required_layout:
+        if fact not in header:
+            fail(f"canonical CardInf layout lost assertion: {fact}")
+
+    direct_consumers = (
+        SRC / "PhotoCardInfo.cpp",
+        SRC / "PhotoGameTask.cpp",
+        SRC / "PhotoStage.cpp",
+        SRC / "ecl" / "EclRun.cpp",
+    )
+    for path in direct_consumers:
+        text = path.read_text(encoding="utf-8")
+        include = (
+            '#include "../PhotoCardInfo.hpp"'
+            if path.name == "EclRun.cpp"
+            else '#include "PhotoCardInfo.hpp"'
+        )
+        if include not in text:
+            fail(f"{path.relative_to(SRC)} must consume canonical CardInf owner")
+        if re.search(r"\bstruct\s+PhotoCardInfoView\s*\{", text):
+            fail(f"{path.relative_to(SRC)} restored a duplicate CardInf projection")
+
+    stage = (SRC / "PhotoStage.cpp").read_text(encoding="utf-8")
+    if "PhotoStageRuntimeView" in stage:
+        fail("PhotoStage restored the retired CardInf text projection")
+    if "TH095_PHOTO_STAGE_CARD_INFO->text" not in stage:
+        fail("PhotoStage lost canonical CardInf text access")
+
+    enemy_manager = (SRC / "PhotoEnemyManager.hpp").read_text(encoding="utf-8")
+    if "PhotoCardInfoView *eclPhotoCardSession" not in enemy_manager:
+        fail("EnemyInf lost its typed ECL-held CardInf session handle")
+
+
 def check_small_closed_domains() -> None:
+    explicit_enum(
+        SRC / "PhotoCardInfo.hpp",
+        "PhotoCardInfoState",
+        "PHOTO_CARD_INFO_STATE_",
+        [0, 1],
+    )
     explicit_enum(
         SRC / "ReplayManagerMode.hpp",
         "ReplayManagerMode",
@@ -943,6 +997,7 @@ def main() -> int:
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
+    check_photo_card_info_owner()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
     print("  TH095_MATCH_EXACT/DIFFBUILD selectors: closed historical debt baseline")
@@ -957,6 +1012,7 @@ def main() -> int:
     print("  compact enemy ECL access: four resolvers and RunEcl share one path")
     print("  RunEcl task state: canonical profile-independent 0x124 owner")
     print("  Photo stage: canonical profile-independent 0x25730 owner")
+    print("  CardInf: canonical profile-independent 0x68 owner")
     print("  Replay manager, color mode, and viewport domains: explicit")
     return 0
 

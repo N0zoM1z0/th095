@@ -6,25 +6,13 @@
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "Main.hpp"
+#include "PhotoCardInfo.hpp"
 #include "utils.hpp"
 
 #include <string.h>
 
 namespace th095
 {
-
-#if !defined(DIFFBUILD)
-enum PhotoCardInfoState
-{
-    PHOTO_CARD_INFO_STATE_ACTIVE = 0,
-    PHOTO_CARD_INFO_STATE_FINISHING = 1,
-};
-typedef char PhotoCardInfoStateSizeIs4[
-    (sizeof(PhotoCardInfoState) == sizeof(i32)) ? 1 : -1];
-#define TH095_PHOTO_CARD_INFO_STATE_FINISHING PHOTO_CARD_INFO_STATE_FINISHING
-#else
-#define TH095_PHOTO_CARD_INFO_STATE_FINISHING 1
-#endif
 
 struct PhotoCardStageStateView
 {
@@ -73,49 +61,6 @@ struct PhotoCardGameTaskView
 #endif
 };
 
-struct PhotoCardInfoView
-{
-    i32 unknown000;                 // +0x00
-    AnmVmId backgroundVmId;          // +0x04
-    AnmVmId textVmId;                // +0x08
-#ifdef DIFFBUILD
-    i32 state;                       // +0x0c
-#else
-    PhotoCardInfoState state;        // +0x0c
-#endif
-    ZunTimer timer;                  // +0x10
-    u32 savedScreenFadeColor;       // +0x1c
-    char text[0x30];                // +0x20
-    u8 unknown050[0x10];            // +0x50
-    ChainElem *calcChain;           // +0x60
-    ChainElem *drawChain;           // +0x64
-
-    PhotoCardInfoView();
-    ~PhotoCardInfoView();
-
-    i32 Initialize(char *encodedText);
-    i32 Show();
-    static PhotoCardInfoView *__fastcall Create(char *encodedText);
-    void Destroy();
-    i32 Update();
-    i32 Draw();
-    static i32 __fastcall OnUpdate(PhotoCardInfoView *cardInfo);
-    static i32 __fastcall OnDraw(PhotoCardInfoView *cardInfo);
-};
-
-typedef char PhotoCardInfoSizeIs68[
-    (sizeof(PhotoCardInfoView) == 0x68) ? 1 : -1];
-typedef char PhotoCardInfoStateAt0C[
-    (offsetof(PhotoCardInfoView, state) == 0x0c) ? 1 : -1];
-typedef char PhotoCardInfoTimerAt10[
-    (offsetof(PhotoCardInfoView, timer) == 0x10) ? 1 : -1];
-typedef char PhotoCardInfoTextAt20[
-    (offsetof(PhotoCardInfoView, text) == 0x20) ? 1 : -1];
-typedef char PhotoCardInfoChainsAt60[
-    (offsetof(PhotoCardInfoView, calcChain) == 0x60 &&
-     offsetof(PhotoCardInfoView, drawChain) == 0x64) ? 1 : -1];
-
-extern PhotoCardInfoView *g_PhotoCardInfo;
 #ifndef DIFFBUILD
 PhotoCardInfoView *g_PhotoCardInfo = NULL;
 #endif
@@ -207,7 +152,7 @@ i32 PhotoCardInfoView::Show()
 {
     g_AnmManager->SetInterrupt(this->backgroundVmId, 1);
     g_AnmManager->SetInterrupt(this->textVmId, 1);
-    this->state = TH095_PHOTO_CARD_INFO_STATE_FINISHING;
+    this->state = PHOTO_CARD_INFO_STATE_FINISHING;
     this->timer = 0;
     TH095_BACKBUFFER_CLEAR_COLOR = this->savedScreenFadeColor;
     return 0;
@@ -263,7 +208,7 @@ i32 PhotoCardInfoView::Update()
 {
     switch (this->state)
     {
-    case TH095_PHOTO_CARD_INFO_STATE_FINISHING:
+    case PHOTO_CARD_INFO_STATE_FINISHING:
         if (this->timer > 0x28)
         {
             return 0;
@@ -271,7 +216,7 @@ i32 PhotoCardInfoView::Update()
         break;
     }
 
-    if (this->state != TH095_PHOTO_CARD_INFO_STATE_FINISHING &&
+    if (this->state != PHOTO_CARD_INFO_STATE_FINISHING &&
         this->timer >= 0x3c)
     {
         if (TH095_BACKBUFFER_CLEAR_COLOR != 0)

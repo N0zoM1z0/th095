@@ -2,6 +2,7 @@
 #include "PhotoStageExact.inl"
 #else
 #include "PhotoCamera.hpp"
+#include "PhotoCardInfo.hpp"
 #include "PhotoStage.hpp"
 #include "GameplayGlobals.hpp"
 #include "Main.hpp"
@@ -137,16 +138,10 @@ struct PhotoStageGlobalStateView
 #endif
 };
 
-struct PhotoStageRuntimeView
-{
-    u8 unknown000[0x20];
-    char comment[1];
-};
-
-struct PhotoCardInfoView;
-extern PhotoCardInfoView *g_PhotoCardInfo;
-
 #ifdef DIFFBUILD
+extern PhotoCardInfoView *g_PhotoStageRuntime;
+#define TH095_PHOTO_STAGE_CARD_INFO g_PhotoStageRuntime
+
 struct PhotoStageEffectManagerView
 {
     i32 CommitCapturedObjects();
@@ -228,7 +223,6 @@ typedef char PhotoStageCaptureFrameAt25724[
 
 extern PhotoGameStateView *g_PhotoGame;
 extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
-extern PhotoStageRuntimeView *g_PhotoStageRuntime;
 extern PhotoStageSupervisorView *g_PhotoStageSupervisor;
 #ifdef DIFFBUILD
 extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
@@ -239,8 +233,7 @@ extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoStageGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageGlobalStateView, g_RuntimeGlobalStateOwner)
-#define g_PhotoStageRuntime \
-    (reinterpret_cast<PhotoStageRuntimeView *>(g_PhotoCardInfo))
+#define TH095_PHOTO_STAGE_CARD_INFO g_PhotoCardInfo
 #define g_PhotoStageSupervisor \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageSupervisorView, g_RuntimeBackgroundManagerOwner)
 #endif
@@ -1062,11 +1055,11 @@ i32 PhotoStageStateView::Update()
                         this->slots[0].captureWidth;
                     this->slots[this->slots[0].captureSlot].height =
                         this->slots[0].captureHeight;
-                    if (g_PhotoStageRuntime != NULL)
+                    if (TH095_PHOTO_STAGE_CARD_INFO != NULL)
                     {
                         strcpy(
                             this->slots[this->slots[0].captureSlot].comment,
-                            g_PhotoStageRuntime->comment);
+                            TH095_PHOTO_STAGE_CARD_INFO->text);
                     }
                     else
                     {
@@ -1139,13 +1132,13 @@ i32 PhotoStageStateView::Update()
                         GetPhotoStageScoreEntry(
                             g_PhotoStageGlobalState->scoreIndex)->captureTime =
                             this->slots[this->slots[0].captureSlot].timestamp;
-                        if (g_PhotoStageRuntime != NULL)
+                        if (TH095_PHOTO_STAGE_CARD_INFO != NULL)
                         {
                             strcpy(
                                 GetPhotoStageBestShotRecord(
                                     g_PhotoStageGlobalState->scoreIndex)
                                     ->comment,
-                                g_PhotoStageRuntime->comment);
+                                TH095_PHOTO_STAGE_CARD_INFO->text);
                         }
                         else
                         {
