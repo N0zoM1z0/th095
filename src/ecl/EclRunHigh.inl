@@ -1,4 +1,5 @@
 #include "../PhotoStraightLaserArgs.hpp"
+#include "../PhotoRotatingLaserArgs.hpp"
 
 // TH08 1.00d RunEcl high-opcode reconstruction.
 //
@@ -100,105 +101,9 @@ struct SpawnPacketSmall
 };
 C_ASSERT(sizeof(SpawnPacketSmall) == 0x10);
 
-// The distinct 0x28-byte kind-0 packet is owned by
-// PhotoStraightLaserArgs.hpp.  Keep the 0x48-byte rotating packet below
-// separate until its own producer/consumer family is canonicalized.
-struct PhotoEffectArgs
-{
-    Float3 position;
-#if defined(TH095_MATCH_EXACT)
-    f32 field0C;
-    f32 field10;
-    f32 field14;
-    f32 angle;
-    f32 angle2;
-    f32 speed;
-    f32 field24;
-    f32 field28;
-    f32 mode;
-    i32 field30;
-    i32 field34;
-    i32 field38;
-    i32 field3C;
-#else
-    Float3 velocity;
-    f32 angle;
-    f32 angularVelocity;
-    f32 maximumLength;
-    f32 initialLength;
-    f32 maximumWidth;
-    f32 speed;
-    i32 startupDuration;
-    i32 growthDuration;
-    i32 sustainDuration;
-    i32 fadeDuration;
-#endif
-    i16 type;
-    i16 color;
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u32 flag0 : 1;
-            u32 flags01_31 : 31;
-#else
-            u32 followPhotoTarget : 1;
-            u32 unknownFlags001_031 : 31;
-#endif
-        };
-    };
-};
-C_ASSERT(sizeof(PhotoEffectArgs) == 0x48);
-C_ASSERT(offsetof(PhotoEffectArgs, angle) == 0x18);
-#if defined(TH095_MATCH_EXACT)
-C_ASSERT(offsetof(PhotoEffectArgs, mode) == 0x2c);
-#else
-C_ASSERT(offsetof(PhotoEffectArgs, velocity) == 0x0c);
-C_ASSERT(offsetof(PhotoEffectArgs, angularVelocity) == 0x1c);
-C_ASSERT(offsetof(PhotoEffectArgs, maximumLength) == 0x20);
-C_ASSERT(offsetof(PhotoEffectArgs, initialLength) == 0x24);
-C_ASSERT(offsetof(PhotoEffectArgs, maximumWidth) == 0x28);
-C_ASSERT(offsetof(PhotoEffectArgs, speed) == 0x2c);
-C_ASSERT(offsetof(PhotoEffectArgs, startupDuration) == 0x30);
-C_ASSERT(offsetof(PhotoEffectArgs, growthDuration) == 0x34);
-C_ASSERT(offsetof(PhotoEffectArgs, sustainDuration) == 0x38);
-C_ASSERT(offsetof(PhotoEffectArgs, fadeDuration) == 0x3c);
-#endif
-C_ASSERT(offsetof(PhotoEffectArgs, type) == 0x40);
-C_ASSERT(offsetof(PhotoEffectArgs, flags) == 0x44);
-
-#if defined(TH095_MATCH_EXACT)
-#define TH095_EFFECT_VELOCITY_X(args) args.field0C
-#define TH095_EFFECT_VELOCITY_Y(args) args.field10
-#define TH095_EFFECT_ANGULAR_VELOCITY(args) args.angle2
-#define TH095_EFFECT_MAXIMUM_LENGTH(args) args.speed
-#define TH095_EFFECT_INITIAL_LENGTH(args) args.field24
-#define TH095_EFFECT_MAXIMUM_WIDTH(args) args.field28
-#define TH095_EFFECT_SPEED(args) args.mode
-#define TH095_EFFECT_STARTUP_DURATION(args) args.field30
-#define TH095_EFFECT_GROWTH_DURATION(args) args.field34
-#define TH095_EFFECT_SUSTAIN_DURATION(args) args.field38
-#define TH095_EFFECT_FADE_DURATION(args) args.field3C
-#else
-#define TH095_EFFECT_VELOCITY_X(args) args.velocity.x
-#define TH095_EFFECT_VELOCITY_Y(args) args.velocity.y
-#define TH095_EFFECT_ANGULAR_VELOCITY(args) args.angularVelocity
-#define TH095_EFFECT_MAXIMUM_LENGTH(args) args.maximumLength
-#define TH095_EFFECT_INITIAL_LENGTH(args) args.initialLength
-#define TH095_EFFECT_MAXIMUM_WIDTH(args) args.maximumWidth
-#define TH095_EFFECT_SPEED(args) args.speed
-#define TH095_EFFECT_STARTUP_DURATION(args) args.startupDuration
-#define TH095_EFFECT_GROWTH_DURATION(args) args.growthDuration
-#define TH095_EFFECT_SUSTAIN_DURATION(args) args.sustainDuration
-#define TH095_EFFECT_FADE_DURATION(args) args.fadeDuration
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) args.flag0
-#else
-#define TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) args.followPhotoTarget
-#endif
+// The two effect packets have distinct profile-independent owners.  Do not
+// merge their overlapping prefixes: PhotoStraightLaserSpawnArgs is 0x28 and
+// PhotoRotatingLaserSpawnArgs is 0x48.
 
 struct PhotoEffectManager
 {
@@ -777,31 +682,31 @@ enter_subroutine:
     }
     case 147:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 2), 0.0f);
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field24 = args.speed;
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.initialLength = args.maximumLength;
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 148:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
@@ -809,45 +714,45 @@ enter_subroutine:
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 2),
             TH095_ECL_PHOTO_ANGLE(&args.position));
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field24 = args.speed;
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.initialLength = args.maximumLength;
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 153:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 2), 0.0f);
-        args.field24 = 0.0f;
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+        args.initialLength = 0.0f;
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 154:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
@@ -855,73 +760,73 @@ enter_subroutine:
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 2),
             TH095_ECL_PHOTO_ANGLE(&args.position));
-        args.field24 = 0.0f;
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+        args.initialLength = 0.0f;
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 155:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 2), 0.0f);
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field24 = args.speed;
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.initialLength = args.maximumLength;
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        args.field0C = TH08_ECL_READ_F(ctx, 11);
-        args.field10 = TH08_ECL_READ_F(ctx, 12);
-        args.mode = 2.0f;
+        args.velocity.x = TH08_ECL_READ_F(ctx, 11);
+        args.velocity.y = TH08_ECL_READ_F(ctx, 12);
+        args.speed = 2.0f;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 157:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 2), 0.0f);
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field24 = args.speed;
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.initialLength = args.maximumLength;
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        args.field0C = TH08_ECL_READ_F(ctx, 11);
-        args.field10 = TH08_ECL_READ_F(ctx, 12);
-        args.mode = 5.0f;
+        args.velocity.x = TH08_ECL_READ_F(ctx, 11);
+        args.velocity.y = TH08_ECL_READ_F(ctx, 12);
+        args.speed = 5.0f;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 156:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
@@ -929,18 +834,18 @@ enter_subroutine:
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 2),
             TH095_ECL_PHOTO_ANGLE(&args.position));
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field24 = args.speed;
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.initialLength = args.maximumLength;
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        args.field0C = TH08_ECL_READ_F(ctx, 11);
-        args.field10 = TH08_ECL_READ_F(ctx, 12);
-        args.mode = 2.0f;
+        args.velocity.x = TH08_ECL_READ_F(ctx, 11);
+        args.velocity.y = TH08_ECL_READ_F(ctx, 12);
+        args.speed = 2.0f;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }

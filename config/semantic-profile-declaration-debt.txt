@@ -84,7 +84,6 @@
 1	src/PhotoCardInfo.cpp	struct	PhotoCardStageStateView
 2	src/PhotoEffect.cpp	struct	GapScanState
 1	src/PhotoEffect.cpp	struct	PhotoCaptureParticleSpawnerView
-1	src/PhotoEffect.cpp	struct	PhotoEffectArgsView
 1	src/PhotoEffect.cpp	struct	PhotoEffectGlobalStateView
 1	src/PhotoEffect.cpp	struct	PhotoGameUpdateView
 1	src/PhotoEffect.cpp	struct	PhotoRotatingLaserView

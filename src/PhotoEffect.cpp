@@ -6,6 +6,7 @@
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyManager.hpp"
 #include "PhotoEffectRuntime.hpp"
+#include "PhotoRotatingLaserArgs.hpp"
 #include "PhotoStraightLaserArgs.hpp"
 #ifndef DIFFBUILD
 #include "PhotoItemManager.hpp"
@@ -64,49 +65,9 @@ typedef char PhotoStraightLaserBodyVmAt78[
 typedef char PhotoStraightLaserTailVmAt344[
     (offsetof(PhotoStraightLaserView, tailVm) == 0x344) ? 1 : -1];
 
-struct PhotoEffectArgsView
-{
-    PhotoEffectVector position;
-    PhotoEffectVector velocity;
-    f32 angle;
-    f32 angularVelocity;
-    f32 maximumLength;
-    f32 initialLength;
-    f32 maximumWidth;
-    f32 speed;
-    i32 startupDuration;
-    i32 growthDuration;
-    i32 sustainDuration;
-    i32 fadeDuration;
-    i16 type;
-    i16 color;
-#if defined(TH095_MATCH_EXACT)
-    u32 flags;
-#else
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 followPhotoTarget : 1;
-            u32 unknownFlags001_031 : 31;
-        };
-    };
-#endif
-
-    PhotoEffectArgsView()
-    {
-        memset(this, 0, sizeof(*this));
-        this->speed = 8.0f;
-    }
-};
-
-typedef char PhotoEffectArgsSizeIs48[
-    (sizeof(PhotoEffectArgsView) == 0x48) ? 1 : -1];
-
 struct PhotoRotatingLaserView : PhotoEffectBaseView
 {
-    PhotoEffectArgsView spawn;              // +0x050
+    PhotoRotatingLaserSpawnArgs spawn;      // +0x050
     AnmVm bodyVm;                            // +0x098
     AnmVm tailVm;                            // +0x364
 
@@ -398,11 +359,7 @@ i32 PhotoRotatingLaserView::Update()
     this->angle = AddNormalizeAngle(
         this->angle, g_AnmGameSpeed * this->spawn.angularVelocity);
 
-#if defined(TH095_MATCH_EXACT)
-    if ((this->spawn.flags & 1) != 0 &&
-#else
     if (this->spawn.followPhotoTarget != 0 &&
-#endif
         g_PhotoEnemyManager->photoTargets[0] != NULL)
     {
         this->position.x =
@@ -413,7 +370,8 @@ i32 PhotoRotatingLaserView::Update()
             g_PhotoEnemyManager->photoTargets[0]->position.z;
     }
 
-    this->position += this->spawn.velocity * g_AnmGameSpeed;
+    *reinterpret_cast<Float3 *>(&this->position) +=
+        this->spawn.velocity * g_AnmGameSpeed;
 
     switch (this->state)
     {
@@ -503,7 +461,7 @@ i32 PhotoRotatingLaserView::Update()
 
 i32 PhotoRotatingLaserView::Initialize(void *args)
 {
-    this->spawn = *static_cast<PhotoEffectArgsView *>(args);
+    this->spawn = *static_cast<PhotoRotatingLaserSpawnArgs *>(args);
     this->state = TH095_EFFECT_STATE_STARTUP;
 
     g_PhotoEffectManager->anm->InitializeVm(
@@ -523,7 +481,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
     PhotoEffectSetAdditivePhase(&this->tailVm);
     this->tailVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
 
-    this->position = this->spawn.position;
+    *reinterpret_cast<Float3 *>(&this->position) = this->spawn.position;
     this->length = this->spawn.initialLength;
     this->width = 2.0f;
     this->speed = this->spawn.speed;
@@ -1322,6 +1280,8 @@ PhotoStraightLaserView::PhotoStraightLaserView()
 
 PhotoRotatingLaserView::PhotoRotatingLaserView()
 {
+    memset(&this->spawn, 0, sizeof(this->spawn));
+    this->spawn.speed = 8.0f;
 }
 
 // FUNCTION: TH095 0x0041E750.

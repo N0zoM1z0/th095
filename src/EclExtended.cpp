@@ -1,6 +1,7 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyControl.hpp"
+#include "PhotoRotatingLaserArgs.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "Background.hpp"
 #include "PhotoBulletManager.hpp"
@@ -149,100 +150,13 @@ static __forceinline AnmVmId ExtendedCanonicalAnmId(i32 value)
 #define TH095_EXT_HANDLE_SET_SPRITE(handle, sprite) (handle).SetSprite(sprite)
 #endif
 
-struct ExtendedPhotoEffectArgs
-{
-    Float3 position;
-#if defined(TH095_MATCH_EXACT)
-    f32 field0C;
-    f32 field10;
-    f32 field14;
-    f32 angle;
-    f32 angle2;
-    f32 speed;
-    f32 field24;
-    f32 field28;
-    f32 mode;
-    i32 field30;
-    i32 field34;
-    i32 field38;
-    i32 field3C;
-#else
-    Float3 velocity;
-    f32 angle;
-    f32 angularVelocity;
-    f32 maximumLength;
-    f32 initialLength;
-    f32 maximumWidth;
-    f32 speed;
-    i32 startupDuration;
-    i32 growthDuration;
-    i32 sustainDuration;
-    i32 fadeDuration;
-#endif
-    i16 type;
-    i16 color;
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u32 flag0 : 1;
-            u32 flags01_31 : 31;
-#else
-            u32 followPhotoTarget : 1;
-            u32 unknownFlags001_031 : 31;
-#endif
-        };
-    };
-};
-typedef char ExtendedPhotoEffectArgsSize48[(sizeof(ExtendedPhotoEffectArgs) == 0x48) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT)
-typedef char ExtendedPhotoEffectVelocityAt0C[(offsetof(ExtendedPhotoEffectArgs, velocity) == 0x0c) ? 1 : -1];
-typedef char ExtendedPhotoEffectAngularVelocityAt1C[(offsetof(ExtendedPhotoEffectArgs, angularVelocity) == 0x1c) ? 1 : -1];
-typedef char ExtendedPhotoEffectMaximumLengthAt20[(offsetof(ExtendedPhotoEffectArgs, maximumLength) == 0x20) ? 1 : -1];
-typedef char ExtendedPhotoEffectInitialLengthAt24[(offsetof(ExtendedPhotoEffectArgs, initialLength) == 0x24) ? 1 : -1];
-typedef char ExtendedPhotoEffectMaximumWidthAt28[(offsetof(ExtendedPhotoEffectArgs, maximumWidth) == 0x28) ? 1 : -1];
-typedef char ExtendedPhotoEffectSpeedAt2C[(offsetof(ExtendedPhotoEffectArgs, speed) == 0x2c) ? 1 : -1];
-typedef char ExtendedPhotoEffectStartupAt30[(offsetof(ExtendedPhotoEffectArgs, startupDuration) == 0x30) ? 1 : -1];
-typedef char ExtendedPhotoEffectGrowthAt34[(offsetof(ExtendedPhotoEffectArgs, growthDuration) == 0x34) ? 1 : -1];
-typedef char ExtendedPhotoEffectSustainAt38[(offsetof(ExtendedPhotoEffectArgs, sustainDuration) == 0x38) ? 1 : -1];
-typedef char ExtendedPhotoEffectFadeAt3C[(offsetof(ExtendedPhotoEffectArgs, fadeDuration) == 0x3c) ? 1 : -1];
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_EXT_EFFECT_ANGULAR_VELOCITY(args) args.angle2
-#define TH095_EXT_EFFECT_MAXIMUM_LENGTH(args) args.speed
-#define TH095_EXT_EFFECT_INITIAL_LENGTH(args) args.field24
-#define TH095_EXT_EFFECT_MAXIMUM_WIDTH(args) args.field28
-#define TH095_EXT_EFFECT_SPEED(args) args.mode
-#define TH095_EXT_EFFECT_STARTUP_DURATION(args) args.field30
-#define TH095_EXT_EFFECT_GROWTH_DURATION(args) args.field34
-#define TH095_EXT_EFFECT_SUSTAIN_DURATION(args) args.field38
-#define TH095_EXT_EFFECT_FADE_DURATION(args) args.field3C
-#else
-#define TH095_EXT_EFFECT_ANGULAR_VELOCITY(args) args.angularVelocity
-#define TH095_EXT_EFFECT_MAXIMUM_LENGTH(args) args.maximumLength
-#define TH095_EXT_EFFECT_INITIAL_LENGTH(args) args.initialLength
-#define TH095_EXT_EFFECT_MAXIMUM_WIDTH(args) args.maximumWidth
-#define TH095_EXT_EFFECT_SPEED(args) args.speed
-#define TH095_EXT_EFFECT_STARTUP_DURATION(args) args.startupDuration
-#define TH095_EXT_EFFECT_GROWTH_DURATION(args) args.growthDuration
-#define TH095_EXT_EFFECT_SUSTAIN_DURATION(args) args.sustainDuration
-#define TH095_EXT_EFFECT_FADE_DURATION(args) args.fadeDuration
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(args) args.flag0
-#else
-#define TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(args) args.followPhotoTarget
-#endif
-
 struct ExtendedPhotoEffectNode
 {
     u8 unknown000[8];
     ExtendedPhotoEffectNode *next;
     u8 unknown00c[0x40];
     i32 id;
-    ExtendedPhotoEffectArgs spawn;
+    PhotoRotatingLaserSpawnArgs spawn;
     AnmVm vm;
     u8 unknown364[0x228];
     u32 flags;
@@ -917,7 +831,7 @@ void __fastcall RunPhotoTransition(
 
 struct ExtendedEffectCallbackLocals
 {
-    ExtendedPhotoEffectArgs args;
+    PhotoRotatingLaserSpawnArgs args;
     ExtendedPhotoEffectNode *effect;
     i32 spawnId;
     __forceinline void PublishFlags()
@@ -953,20 +867,20 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedEffectCallbackLocals locals;
 
     memset(&locals.args, 0, sizeof(locals.args));
-    TH095_EXT_EFFECT_SPEED(locals.args) = 8.0f;
+    locals.args.speed = 8.0f;
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
     locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
-    TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args) = enemy->activeEclContext->extraFloatVariables[3];
-    TH095_EXT_EFFECT_INITIAL_LENGTH(locals.args) = TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args);
-    TH095_EXT_EFFECT_MAXIMUM_WIDTH(locals.args) = 16.0f;
-    TH095_EXT_EFFECT_STARTUP_DURATION(locals.args) = 1;
-    TH095_EXT_EFFECT_GROWTH_DURATION(locals.args) = 15;
-    TH095_EXT_EFFECT_SUSTAIN_DURATION(locals.args) = 40;
-    TH095_EXT_EFFECT_FADE_DURATION(locals.args) = 6;
-    TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
-    TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
+    locals.args.maximumLength = enemy->activeEclContext->extraFloatVariables[3];
+    locals.args.initialLength = locals.args.maximumLength;
+    locals.args.maximumWidth = 16.0f;
+    locals.args.startupDuration = 1;
+    locals.args.growthDuration = 15;
+    locals.args.sustainDuration = 40;
+    locals.args.fadeDuration = 6;
+    locals.args.angularVelocity = 0.0f;
+    locals.args.followPhotoTarget = 0;
 
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(
         g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,
@@ -986,20 +900,20 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedEffectCallbackLocals locals;
 
     memset(&locals.args, 0, sizeof(locals.args));
-    TH095_EXT_EFFECT_SPEED(locals.args) = 8.0f;
+    locals.args.speed = 8.0f;
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
     locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
-    TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args) = enemy->activeEclContext->extraFloatVariables[3];
-    TH095_EXT_EFFECT_INITIAL_LENGTH(locals.args) = TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args);
-    TH095_EXT_EFFECT_MAXIMUM_WIDTH(locals.args) = 16.0f;
-    TH095_EXT_EFFECT_STARTUP_DURATION(locals.args) = 1;
-    TH095_EXT_EFFECT_GROWTH_DURATION(locals.args) = 15;
-    TH095_EXT_EFFECT_SUSTAIN_DURATION(locals.args) = 300;
-    TH095_EXT_EFFECT_FADE_DURATION(locals.args) = 6;
-    TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
-    TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
+    locals.args.maximumLength = enemy->activeEclContext->extraFloatVariables[3];
+    locals.args.initialLength = locals.args.maximumLength;
+    locals.args.maximumWidth = 16.0f;
+    locals.args.startupDuration = 1;
+    locals.args.growthDuration = 15;
+    locals.args.sustainDuration = 300;
+    locals.args.fadeDuration = 6;
+    locals.args.angularVelocity = 0.0f;
+    locals.args.followPhotoTarget = 0;
 
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(
         g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,
@@ -1019,20 +933,20 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedEffectCallbackLocals locals;
 
     memset(&locals.args, 0, sizeof(locals.args));
-    TH095_EXT_EFFECT_SPEED(locals.args) = 8.0f;
+    locals.args.speed = 8.0f;
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
     locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
-    TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args) = enemy->activeEclContext->extraFloatVariables[3];
-    TH095_EXT_EFFECT_INITIAL_LENGTH(locals.args) = TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args);
-    TH095_EXT_EFFECT_MAXIMUM_WIDTH(locals.args) = 16.0f;
-    TH095_EXT_EFFECT_STARTUP_DURATION(locals.args) = 1;
-    TH095_EXT_EFFECT_GROWTH_DURATION(locals.args) = 15;
-    TH095_EXT_EFFECT_SUSTAIN_DURATION(locals.args) = 120;
-    TH095_EXT_EFFECT_FADE_DURATION(locals.args) = 6;
-    TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
-    TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
+    locals.args.maximumLength = enemy->activeEclContext->extraFloatVariables[3];
+    locals.args.initialLength = locals.args.maximumLength;
+    locals.args.maximumWidth = 16.0f;
+    locals.args.startupDuration = 1;
+    locals.args.growthDuration = 15;
+    locals.args.sustainDuration = 120;
+    locals.args.fadeDuration = 6;
+    locals.args.angularVelocity = 0.0f;
+    locals.args.followPhotoTarget = 0;
 
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(
         g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,

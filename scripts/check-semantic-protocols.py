@@ -1131,8 +1131,122 @@ def check_photo_straight_laser_packet() -> None:
         if fact not in photo_effect:
             fail(f"normal PhotoEffect lost canonical packet consumer/producer: {fact}")
 
-    if "struct PhotoEffectArgs" not in high or "struct PhotoEffectArgsView" not in photo_effect:
-        fail("straight-laser packet closure must not merge the 0x48 rotating packet")
+    rotating_header = (SRC / "PhotoRotatingLaserArgs.hpp").read_text(
+        encoding="utf-8"
+    )
+    if (
+        "PhotoRotatingLaserSpawnArgs" in header
+        or "PhotoStraightLaserSpawnArgs" in rotating_header
+    ):
+        fail("straight- and rotating-laser packets must keep distinct owners")
+
+
+def check_photo_rotating_laser_packet() -> None:
+    header = (SRC / "PhotoRotatingLaserArgs.hpp").read_text(encoding="utf-8")
+    if any(name in header for name in PROFILE_NAMES):
+        fail("canonical rotating-laser packet must be profile-independent")
+    if len(re.findall(r"\bstruct\s+PhotoRotatingLaserSpawnArgs\s*\{", header)) != 1:
+        fail("PhotoRotatingLaserArgs.hpp must define exactly one canonical packet")
+    required_layout = (
+        "sizeof(PhotoRotatingLaserSpawnArgs) == 0x48",
+        "offsetof(PhotoRotatingLaserSpawnArgs, velocity) == 0x0c",
+        "offsetof(PhotoRotatingLaserSpawnArgs, angle) == 0x18",
+        "offsetof(PhotoRotatingLaserSpawnArgs, angularVelocity) == 0x1c",
+        "offsetof(PhotoRotatingLaserSpawnArgs, maximumLength) == 0x20",
+        "offsetof(PhotoRotatingLaserSpawnArgs, initialLength) == 0x24",
+        "offsetof(PhotoRotatingLaserSpawnArgs, maximumWidth) == 0x28",
+        "offsetof(PhotoRotatingLaserSpawnArgs, speed) == 0x2c",
+        "offsetof(PhotoRotatingLaserSpawnArgs, startupDuration) == 0x30",
+        "offsetof(PhotoRotatingLaserSpawnArgs, growthDuration) == 0x34",
+        "offsetof(PhotoRotatingLaserSpawnArgs, sustainDuration) == 0x38",
+        "offsetof(PhotoRotatingLaserSpawnArgs, fadeDuration) == 0x3c",
+        "offsetof(PhotoRotatingLaserSpawnArgs, type) == 0x40",
+        "offsetof(PhotoRotatingLaserSpawnArgs, color) == 0x42",
+        "offsetof(PhotoRotatingLaserSpawnArgs, flags) == 0x44",
+        "0x0041DBD0",
+        "0x0041F380",
+        "0x0041F550",
+    )
+    for fact in required_layout:
+        if fact not in header:
+            fail(f"canonical rotating-laser packet lost evidence/layout fact: {fact}")
+
+    high = (SRC / "ecl" / "EclRunHigh.inl").read_text(encoding="utf-8")
+    target_photo = (SRC / "ecl" / "EclRunTargetPhoto.inl").read_text(
+        encoding="utf-8"
+    )
+    extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
+    photo_effect = (SRC / "PhotoEffect.cpp").read_text(encoding="utf-8")
+    retired_projections = (
+        "struct PhotoEffectArgs",
+        "PhotoEffectArgs args;",
+        "ExtendedPhotoEffectArgs",
+        "PhotoEffectArgsView",
+        "TH095_EFFECT_ANGULAR_VELOCITY",
+        "TH095_EFFECT_MAXIMUM_LENGTH",
+        "TH095_EFFECT_INITIAL_LENGTH",
+        "TH095_EFFECT_MAXIMUM_WIDTH",
+        "TH095_EFFECT_FOLLOW_PHOTO_TARGET",
+        "TH095_EXT_EFFECT_ANGULAR_VELOCITY",
+        "TH095_EXT_EFFECT_MAXIMUM_LENGTH",
+        "TH095_EXT_EFFECT_INITIAL_LENGTH",
+        "TH095_EXT_EFFECT_MAXIMUM_WIDTH",
+        "TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET",
+    )
+    for path, text in (
+        ("ecl/EclRunHigh.inl", high),
+        ("ecl/EclRunTargetPhoto.inl", target_photo),
+        ("EclExtended.cpp", extended),
+        ("PhotoEffect.cpp", photo_effect),
+    ):
+        for token in retired_projections:
+            if token in text:
+                fail(f"{path} restored retired rotating-laser projection: {token}")
+
+    if '#include "../PhotoRotatingLaserArgs.hpp"' not in high:
+        fail("RunEcl high declarations must consume the canonical rotating packet")
+    if target_photo.count("PhotoRotatingLaserSpawnArgs args;") != 7:
+        fail("RunEcl target photo handlers must construct the canonical packet seven times")
+    if high.count("PhotoRotatingLaserSpawnArgs args;") != 7:
+        fail("RunEcl direct body must keep seven canonical rotating packets")
+    for member in (
+        "velocity.x",
+        "angularVelocity",
+        "maximumLength",
+        "initialLength",
+        "maximumWidth",
+        "speed",
+        "startupDuration",
+        "growthDuration",
+        "sustainDuration",
+        "fadeDuration",
+        "followPhotoTarget",
+    ):
+        if f"args.{member}" not in target_photo:
+            fail(f"RunEcl rotating handlers lost canonical packet member: {member}")
+
+    if '#include "PhotoRotatingLaserArgs.hpp"' not in extended:
+        fail("EclExtended must consume the canonical rotating packet")
+    for fact in (
+        "PhotoRotatingLaserSpawnArgs spawn;",
+        "PhotoRotatingLaserSpawnArgs args;",
+        "locals.args.maximumLength",
+        "locals.args.followPhotoTarget",
+    ):
+        if fact not in extended:
+            fail(f"EclExtended lost canonical rotating packet producer/owner: {fact}")
+
+    if '#include "PhotoRotatingLaserArgs.hpp"' not in photo_effect:
+        fail("normal PhotoEffect must consume the canonical rotating packet")
+    for fact in (
+        "PhotoRotatingLaserSpawnArgs spawn;",
+        "static_cast<PhotoRotatingLaserSpawnArgs *>(args)",
+        "this->spawn.angularVelocity",
+        "this->spawn.followPhotoTarget",
+        "this->spawn.velocity",
+    ):
+        if fact not in photo_effect:
+            fail(f"normal PhotoEffect lost canonical rotating packet consumer: {fact}")
 
 
 def check_small_closed_domains() -> None:
@@ -1178,6 +1292,7 @@ def main() -> int:
     check_ecl_photo_player_owner()
     check_ecl_float_resolver_boundary()
     check_photo_straight_laser_packet()
+    check_photo_rotating_laser_packet()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
     print("  TH095_MATCH_EXACT/DIFFBUILD selectors: closed historical debt baseline")
@@ -1196,6 +1311,7 @@ def main() -> int:
     print("  RunEcl camera limit/angles: canonical PlayerInf owner with method-only emission adapter")
     print("  RunEcl float resolver: canonical normal method with method-only emission adapter")
     print("  straight photo effect: one profile-independent 0x28-byte packet owner")
+    print("  rotating photo effect: one profile-independent 0x48-byte packet owner")
     print("  Replay manager, color mode, and viewport domains: explicit")
     return 0
 

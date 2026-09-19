@@ -13728,3 +13728,75 @@ the original opcode mnemonics, and manager `+0x4DFC` remain Unknown. Next
 audit the separate 0x48-byte rotating-laser `PhotoEffectArgs` family across
 RunEcl, EclExtended, `PhotoRotatingLaserView::Initialize @ 0x0041F380`, and
 independent update/collision consumers before changing its selected layout.
+
+### SEM-279 — canonicalize the rotating photo-effect packet
+
+**Scope.** Close the distinct 0x48-byte kind-1 rotating-laser packet across
+RunEcl, EclExtended, and normal PhotoEffect without merging it with the 0x28
+kind-0 packet, inferring ECL opcode mnemonics, or treating frozen exact
+PhotoEffect source as normal semantic evidence.
+
+**Target evidence.** Fresh hash-attested TH095 v1.02a decompilation confirms
+that `PhotoEffectManagerView::Spawn @ 0x0041DBD0` forwards kind 1 to
+`PhotoRotatingLaserView::Initialize @ 0x0041F380`, which copies eighteen
+dwords into effect object `+0x50`. Independent `Update @ 0x0041F550`
+distinguishes velocity `+0x0C`, angular velocity `+0x1C`, maximum/initial
+length `+0x20/+0x24`, maximum width `+0x28`, speed `+0x2C`, the four lifecycle
+durations `+0x30..+0x3C`, and flags bit 0 as the photo-target-follow control.
+The initializer and animation selection establish angle `+0x18` and
+type/color `+0x40/+0x42`; flags occupy `+0x44`. `CheckCollision @ 0x0041FA10`
+independently consumes and updates the rotating effect state. RunEcl opcodes
+147/148/153/154/155/156/157 and EclExtended callbacks 10/14/17 independently
+construct the same packet.
+
+**Semantic and ownership result.** `PhotoRotatingLaserArgs.hpp` now owns the
+constructor-free, profile-independent `PhotoRotatingLaserSpawnArgs` value
+protocol and asserts the 0x48 size and every field offset. Storage begins in
+the ECL producer stack packets and is copied into each rotating-laser object at
+`+0x50`; normal RunEcl/EclExtended own production and normal PhotoEffect owns
+consumption. RunEcl's two bodies and EclExtended now use the semantic members
+directly. Normal PhotoEffect embeds the shared packet, preserves its former
+constructor behavior explicitly, and consumes `velocity`, `angularVelocity`,
+the lifecycle fields, and `followPhotoTarget` through that owner. The previous
+RunEcl `PhotoEffectArgs`, EclExtended `ExtendedPhotoEffectArgs`, and normal
+PhotoEffect `PhotoEffectArgsView` projections plus their selected access macros
+are retired. Higher flag bits and original source-level spellings remain
+Unknown.
+
+**Compiler oracle and exact boundary.** Pinned VC7.1 compiled EclRun and
+EclExtended directly against the shared semantic layout while preserving all
+accepted target bytes and meaningful relocations. The first strict EclRun
+replay found only the familiar 166 compiler-private `$L...` identities shifted;
+the restricted refresh proved structural bytes, relocation offsets/types,
+non-private identities, and solved target destinations unchanged, and the
+immediate zero-refresh replay passed 1/1. Focused EclExtended and PhotoEffect
+replays passed 22/22 and 34/34 with zero refresh. Normal pinned-VC7.1 probes
+compiled all three affected TUs. Frozen `PhotoEffectExact.inl` remains a
+different-body compiler-emission boundary and validates only its exact-selected
+source.
+
+**Guards and validation.** The semantic guard pins the canonical header's
+profile independence and complete layout, all RunEcl and EclExtended producer
+edges, the normal PhotoEffect consumer, retirement of the old projections and
+access macros, and separation from the 0x28 packet. The selector baseline
+shrunk by twelve from 875 to **863 directives across 112 files**. Selected
+declaration debt shrank from 224 keys / 229 occurrences to **223 keys / 228
+occurrences**. No selector, selected declaration, or baseline allowance was
+added.
+
+The cold aggregate passed **696/696 exact units across all 88 sources** with
+zero further label refresh. The normal build compiled all **88 pinned-VC7.1
+i386 COFF** objects and linked a verified **780,800-byte PE32/i386 GUI** with
+build-local SHA-256
+`b56ac27b428a9998fb83f60a79e65baf5981eed6c730c828b347072852118929`.
+Target-independent CI passed **56/56** tests. These results establish exact
+unit preservation and normal compile/link closure, not whole-image identity or
+runtime validation.
+
+**Unknown / next route.** Original ECL opcode mnemonics, higher rotating-packet
+flag meanings, and EnemyInf manager `+0x4DFC` remain Unknown. Rotate away from
+effect packets: audit EclExtended's last raw compact-enemy access,
+`EXT_MOVEMENT_FLAGS` at enemy `+0x2BF4`, against canonical
+`PhotoEnemyView::control`, `PhotoEnemyControlBits`, and independent transition
+consumers. Remove the raw projection only if direct canonical ownership passes
+focused exact and normal compiler oracles; do not add a profile selector.

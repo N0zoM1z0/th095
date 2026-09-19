@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-278. Owner closure remains
+The current semantic source checkpoint is SEM-279. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -67,9 +67,10 @@ deliberately narrower than subsystem completion:
 | PhotoInf/stage `0x25730` | `PhotoStage.hpp` is the canonical normal owner for lifecycle, draw/capture behavior, `scoreMultiplier @ +0x25718`, ANM, and Chain roots. PhotoCamera's old receiver is isolated in one narrow emission adapter. |
 | CardInf `0x68` | `PhotoCardInfo.hpp` is the profile-independent allocation/lifecycle owner published at `0x004BDD9C`; RunEcl, PhotoGameTask, and PhotoStage consume it directly. EnemyInf `+0x26AE28` remains only a non-exclusive ECL-held session pointer. |
 | RunEcl Player/camera lane | Normal case 141 writes canonical `PhotoPlayerRuntimeView::camera.photoLimit @ Player+0x29EC`; all six angle calls use the Player root and `AngleFromPoint @ 0x004303E0`. The padded local owner is retired; the last four exact call decorations are isolated in method-only `ecl/PhotoCameraEclEmission.hpp`. This does not close every Player projection. |
-| Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. The 0x48 rotating packet is still separate debt. |
+| Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
+| Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 875 remaining selector directives across 112 files and 224 declaration keys / 229 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 863 remaining selector directives across 112 files and 223 declaration keys / 228 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -112,6 +113,15 @@ Pinned VC7.1 compiled RunEcl directly against the semantic field names and
 The old ECL projection/access macros and normal PhotoEffect duplicate are gone;
 the exact-only PhotoEffect body remains explicitly separate.
 
+The 0x48 kind-1 rotating packet is likewise one canonical declaration. Fresh
+target evidence closes its full layout across manager dispatch, eighteen-dword
+initialization, update/collision consumers, seven RunEcl producers, and three
+EclExtended producers. RunEcl and EclExtended exact compile the same semantic
+layout byte-exactly; normal PhotoEffect consumes it independently. The three
+old projections and their profile-selected access macros are gone. Higher
+packet flag meanings and the frozen exact PhotoEffect body's provenance remain
+Unknown.
+
 The latest focused EclRun proof refreshed **166 compiler-private labels** only
 after the strict tool verified unchanged structural bytes, relocation offsets/types,
 non-private identities, and solved target destinations. The subsequent cold
@@ -119,18 +129,20 @@ aggregate passed **696/696 exact across all 88 sources** with zero further
 refresh. The normal build compiled all
 **88 pinned-VC7.1 i386 COFF** objects and linked a verified **780,800-byte
 PE32/i386 GUI**, build-local SHA-256
-`a5465f1d6108f92f875b9970770dc670a9aeb430bf09dbcaf0b7d562fc49e062`.
-Target-independent CI passed **55/55** tests. This is exact-unit preservation
+`b56ac27b428a9998fb83f60a79e65baf5981eed6c730c828b347072852118929`.
+Target-independent CI passed **56/56** tests. This is exact-unit preservation
 and normal compile/link closure, not whole-image exactness or runtime credit.
 
 ## Next bounded lane
 
-Audit the distinct 0x48-byte rotating-laser `PhotoEffectArgs` family. Reconcile
-RunEcl's profile-selected field projection with normal `PhotoEffectArgsView`
-and EclExtended producers against `PhotoRotatingLaserView::Initialize @
-0x0041F380` plus independent update/collision consumers. Do not reuse the
-0x28 packet merely because the prefixes overlap, infer opcode names, name
-manager `+0x4DFC`, or enlarge either closed baseline.
+Rotate away from effect packets and audit EclExtended's last raw compact-enemy
+member access: `EXT_MOVEMENT_FLAGS` at enemy `+0x2BF4` in
+`RunPhotoTransition @ 0x00414580`. Reconcile it with canonical
+`PhotoEnemyView::control`, `PhotoEnemyControlBits`, and independent transition
+producers/consumers. Remove the raw projection only if focused exact and normal
+compiler oracles accept direct canonical ownership. Do not infer new flag
+meanings, name manager `+0x4DFC`, add a profile selector, or enlarge either
+closed baseline.
 
 ## Protected working-tree exclusions
 
@@ -149,6 +161,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/ecl/EclRunHigh.inl --details
-rg -n "PhotoEffectArgs|TH095_EFFECT_|0x0041F380" src/ecl src/PhotoEffect.cpp docs/KNOWLEDGE_BASE.md
+python3 scripts/analysis/report-semantic-debt.py --path src/EclExtended.cpp --details
+rg -n "EXT_MOVEMENT_FLAGS|0x2bf4|PhotoEnemyControlBits|PhotoEnemyView::control" src docs/KNOWLEDGE_BASE.md
 ```

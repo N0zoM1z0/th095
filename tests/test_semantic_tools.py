@@ -162,6 +162,20 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("PhotoEffectArgsSmall", high)
         self.assertNotIn("TH095_SMALL_EFFECT_", high)
 
+    def test_rotating_laser_packet_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_photo_rotating_laser_packet()
+        header = (ROOT / "src" / "PhotoRotatingLaserArgs.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(PhotoRotatingLaserSpawnArgs) == 0x48", header)
+        high = (ROOT / "src" / "ecl" / "EclRunHigh.inl").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("struct PhotoEffectArgs", high)
+        self.assertNotIn("TH095_EFFECT_MAXIMUM_LENGTH", high)
+
 
 if __name__ == "__main__":
     unittest.main()

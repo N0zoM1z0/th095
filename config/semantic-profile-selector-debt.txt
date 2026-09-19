@@ -71,7 +71,6 @@
 1	src/ecl/EclRun.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 10	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
 3	src/ecl/EclRun.cpp	#ifndef DIFFBUILD
-5	src/ecl/EclRunHigh.inl	#if defined(TH095_MATCH_EXACT)
 3	src/ecl/EclRunTargetHigh.inl	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 3	src/EclDependencies.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/EclDependencies.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -79,9 +78,9 @@
 1	src/EclDependencies.cpp	#ifdef DIFFBUILD
 1	src/EclDependencies.cpp	#ifndef DIFFBUILD
 2	src/EclExtended.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-2	src/EclExtended.cpp	#if !defined(TH095_MATCH_EXACT)
+1	src/EclExtended.cpp	#if !defined(TH095_MATCH_EXACT)
 10	src/EclExtended.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-13	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT)
+9	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 13	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 10	src/EclExtended.cpp	#ifdef DIFFBUILD
@@ -192,7 +191,7 @@
 6	src/PhotoCardInfo.cpp	#ifdef DIFFBUILD
 1	src/PhotoCardInfo.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoCardInfo.cpp	#ifndef DIFFBUILD
-10	src/PhotoEffect.cpp	#if defined(TH095_MATCH_EXACT)
+8	src/PhotoEffect.cpp	#if defined(TH095_MATCH_EXACT)
 4	src/PhotoEffect.cpp	#ifdef DIFFBUILD
 1	src/PhotoEffect.cpp	#ifdef TH095_MATCH_EXACT
 5	src/PhotoEffect.cpp	#ifndef DIFFBUILD

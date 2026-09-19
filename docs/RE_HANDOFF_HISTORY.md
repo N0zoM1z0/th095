@@ -1906,3 +1906,29 @@ linked a 780,800-byte PE32 product with build-local SHA-256
 `a5465f1d6108f92f875b9970770dc670a9aeb430bf09dbcaf0b7d562fc49e062`;
 CI passed 55/55. The live handoff moves next to the separate 0x48-byte
 rotating-laser packet and requires its own producer/consumer audit.
+
+## Rotating photo-effect packet checkpoint — SEM-279
+
+SEM-279 establishes `PhotoRotatingLaserArgs.hpp` as the one
+profile-independent 0x48-byte kind-1 packet shared by normal RunEcl,
+EclExtended, and PhotoEffect. Fresh target evidence closes every slot through
+manager dispatch, eighteen-dword initialization, update/collision consumers,
+seven RunEcl producers, and EclExtended callbacks 10/14/17. The three local
+packet projections and their profile-selected access macros are retired;
+frozen `PhotoEffectExact.inl` remains a different-body compiler-emission
+boundary.
+
+RunEcl and EclExtended compiled directly against the canonical layout and
+remained exact. A strict EclRun refresh accepted 166 compiler-private label
+changes only after structural bytes, relocation offsets/types, non-private
+identities, and solved target destinations were unchanged; focused and
+aggregate zero-refresh replays then passed. The selector baseline shrank by
+twelve to 863 directives, and selected declarations shrank to 223 keys / 228
+occurrences.
+
+The cold aggregate passed 696/696 exact across 88 sources. The normal build
+linked a 780,800-byte PE32 product with build-local SHA-256
+`b56ac27b428a9998fb83f60a79e65baf5981eed6c730c828b347072852118929`;
+CI passed 56/56. The live handoff rotates away from packets to EclExtended's
+last raw compact-enemy control access at `+0x2BF4`, with manager `+0x4DFC`
+still explicitly Unknown.
