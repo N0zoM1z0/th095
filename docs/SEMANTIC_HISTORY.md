@@ -13659,3 +13659,72 @@ packet declarations. Validate its 0x28-byte producer fields against
 `PhotoEffectManager::Spawn @ 0x0041DBD0` and the independent effect consumer
 before attempting to remove field-name/type selectors. Keep the 0x48-byte
 `PhotoEffectArgs` family separate until the small packet is closed.
+
+### SEM-278 — canonicalize the straight photo-effect packet
+
+**Scope.** Close the 0x28-byte kind-0 photo-effect packet without merging it
+with the 0x48-byte rotating-laser record or naming ECL opcodes. Replace the
+profile-selected RunEcl field projection and normal PhotoEffect duplicate with
+one profile-independent semantic owner only if target consumers and pinned
+VC7.1 emission both accept it.
+
+**Target evidence.** Fresh hash-attested TH095 v1.02a decompilation and
+function queries bound `PhotoEffectManagerView::Spawn @ 0x0041DBD0` to 432
+bytes and show kind 0 forwarding its argument pointer through the new
+straight-laser virtual initializer. `PhotoStraightLaserView::Initialize @
+0x0041E0C0` is a 500-byte function that copies ten dwords into object `+0x50`,
+then publishes packet position `+0x00`, angle `+0x0C`, initial length `+0x14`,
+width `+0x1C`, and speed `+0x20` into live effect state. Independent `Update @
+0x0041E2C0` consumes maximum length `+0x10` and positive terminal distance
+`+0x18`. `CheckCollision @ 0x0041E9C0` independently copies or constructs the
+packet, produces floating-point gap lengths at `+0x14`, copies them to `+0x10`,
+and respawns kind 0. ECL opcodes 145/146 publish speed, maximum length, width,
+zero initial length, type, and color through the same layout.
+
+**Semantic and ownership result.** `PhotoStraightLaserArgs.hpp` now owns the
+constructor-free 0x28-byte `PhotoStraightLaserSpawnArgs` declaration and
+asserts every field offset, including `type/color @ +0x24/+0x26`. Normal
+RunEcl and normal PhotoEffect consume it directly. Packet storage begins in
+ECL or collision-stack producers and is copied into the straight-laser object
+at `+0x50`; the header owns the cross-TU value protocol, not either allocation.
+The old ECL `speed/field14/field18/field1C/field20` projection and
+`TH095_SMALL_EFFECT_*` access macros are gone, as is normal PhotoEffect's
+`PhotoEffectArgsSmallView`. A fresh packet in the normal collision producer
+uses explicit zero initialization because the shared packet deliberately has
+no constructor; the copy producer remains a natural aggregate copy.
+
+**Compiler oracle and exact boundary.** A clean pinned-VC7.1 RunEcl build used
+the same semantic field names and `f32 initialLength` declaration in the exact
+profile. The strict comparator found identical structural bytes, relocation
+offsets/types, non-private identities, and solved target destinations; only
+166 compiler-private `$L...` symbols shifted after the shared source edit.
+After the restricted refresh, focused RunEcl replay passed 1/1 with zero
+further refresh. No packet-specific exact adapter is required. PhotoEffect's
+exact profile still selects frozen `PhotoEffectExact.inl`, including its
+historical private packet representation; its 34/34 exact result validates
+that body only, not normal PhotoEffect source. The original ZUN C++ spelling
+and unique source-level type of `initialLength` remain unclaimed even though
+the maintained semantic `f32` representation is target- and compiler-safe.
+
+**Guards and validation.** The semantic guard pins the canonical header's
+profile independence and complete layout, both ECL producers, normal
+PhotoEffect producer/consumer edges, retirement of the old projection/macros,
+and continued separation of the 0x48 packet. The selector baseline shrank by
+eight from 883 to **875 directives across 112 files**; selected declaration
+debt shrank from 225 keys / 230 occurrences to **224 keys / 229 occurrences**.
+No selector, selected declaration, or baseline allowance was added.
+
+The cold aggregate passed **696/696 exact units across all 88 sources** with
+zero further label refresh. The normal build compiled all **88 pinned-VC7.1
+i386 COFF** objects and linked a verified **780,800-byte PE32/i386 GUI** with
+build-local SHA-256
+`a5465f1d6108f92f875b9970770dc670a9aeb430bf09dbcaf0b7d562fc49e062`.
+Target-independent CI passed **55/55** tests. These results establish exact
+preservation and normal build closure, not whole-image identity or runtime
+validation.
+
+**Unknown / next route.** The exact PhotoEffect packet's original provenance,
+the original opcode mnemonics, and manager `+0x4DFC` remain Unknown. Next
+audit the separate 0x48-byte rotating-laser `PhotoEffectArgs` family across
+RunEcl, EclExtended, `PhotoRotatingLaserView::Initialize @ 0x0041F380`, and
+independent update/collision consumers before changing its selected layout.

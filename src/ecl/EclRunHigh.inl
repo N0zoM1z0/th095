@@ -1,3 +1,5 @@
+#include "../PhotoStraightLaserArgs.hpp"
+
 // TH08 1.00d RunEcl high-opcode reconstruction.
 //
 // Scope owned by this file:
@@ -98,54 +100,9 @@ struct SpawnPacketSmall
 };
 C_ASSERT(sizeof(SpawnPacketSmall) == 0x10);
 
-// TH095's high ECL range is the photography/effect lane.  The two packet
-// layouts below are pinned by RunEcl's target stores and the dispatcher at
-// 0x0041DBD0.  Keep the fields explicit: their declaration order also owns
-// the five contiguous 0x48-byte locals in RunEcl's target frame.
-struct PhotoEffectArgsSmall
-{
-    Float3 position;
-    f32 angle;
-#if defined(TH095_MATCH_EXACT)
-    f32 speed;
-    i32 field14;
-    i32 field18;
-    f32 field1C;
-    f32 field20;
-#else
-    f32 maximumLength;
-#if defined(DIFFBUILD)
-    i32 initialLength;
-#else
-    f32 initialLength;
-#endif
-    f32 terminalDistance;
-    f32 width;
-    f32 speed;
-#endif
-    i16 type;
-    i16 color;
-};
-C_ASSERT(sizeof(PhotoEffectArgsSmall) == 0x28);
-#if !defined(TH095_MATCH_EXACT)
-C_ASSERT(offsetof(PhotoEffectArgsSmall, maximumLength) == 0x10);
-C_ASSERT(offsetof(PhotoEffectArgsSmall, initialLength) == 0x14);
-C_ASSERT(offsetof(PhotoEffectArgsSmall, terminalDistance) == 0x18);
-C_ASSERT(offsetof(PhotoEffectArgsSmall, width) == 0x1c);
-C_ASSERT(offsetof(PhotoEffectArgsSmall, speed) == 0x20);
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_SMALL_EFFECT_MAXIMUM_LENGTH(args) args.speed
-#define TH095_SMALL_EFFECT_INITIAL_LENGTH(args) args.field14
-#define TH095_SMALL_EFFECT_WIDTH(args) args.field1C
-#define TH095_SMALL_EFFECT_SPEED(args) args.field20
-#else
-#define TH095_SMALL_EFFECT_MAXIMUM_LENGTH(args) args.maximumLength
-#define TH095_SMALL_EFFECT_INITIAL_LENGTH(args) args.initialLength
-#define TH095_SMALL_EFFECT_WIDTH(args) args.width
-#define TH095_SMALL_EFFECT_SPEED(args) args.speed
-#endif
-
+// The distinct 0x28-byte kind-0 packet is owned by
+// PhotoStraightLaserArgs.hpp.  Keep the 0x48-byte rotating packet below
+// separate until its own producer/consumer family is canonicalized.
 struct PhotoEffectArgs
 {
     Float3 position;
@@ -786,35 +743,35 @@ enter_subroutine:
         break;
     case 145:
     {
-        PhotoEffectArgsSmall args;
+        PhotoStraightLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
-        args.field20 = TH08_ECL_READ_F(ctx, 2);
+        args.speed = TH08_ECL_READ_F(ctx, 2);
         args.angle = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 3), 0.0f);
-        args.speed = TH08_ECL_READ_F(ctx, 4);
-        args.field1C = TH08_ECL_READ_F(ctx, 5);
-        args.field14 = 0;
+        args.maximumLength = TH08_ECL_READ_F(ctx, 4);
+        args.width = TH08_ECL_READ_F(ctx, 5);
+        args.initialLength = 0;
         TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }
     case 146:
     {
-        PhotoEffectArgsSmall args;
+        PhotoStraightLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
-        args.field20 = TH08_ECL_READ_F(ctx, 2);
+        args.speed = TH08_ECL_READ_F(ctx, 2);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 3),
             TH095_ECL_PHOTO_ANGLE(&args.position));
-        args.speed = TH08_ECL_READ_F(ctx, 4);
-        args.field1C = TH08_ECL_READ_F(ctx, 5);
-        args.field14 = 0;
+        args.maximumLength = TH08_ECL_READ_F(ctx, 4);
+        args.width = TH08_ECL_READ_F(ctx, 5);
+        args.initialLength = 0;
         TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }

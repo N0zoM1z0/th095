@@ -1883,3 +1883,26 @@ SHA-256
 CI passed 54/54. The live handoff moves next to the 0x28-byte
 `PhotoEffectArgsSmall` producer/consumer and profile-selected field family,
 kept separate from the 0x48-byte effect packet.
+
+## Straight photo-effect packet checkpoint — SEM-278
+
+SEM-278 establishes `PhotoStraightLaserArgs.hpp` as the one
+profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and
+PhotoEffect. Fresh target evidence closes every slot through manager dispatch,
+straight-laser initialization/update, collision gap-fragment production, and
+the two ECL producers. The old ECL anonymous-field projection/access macros
+and normal PhotoEffect duplicate are retired; frozen `PhotoEffectExact.inl`
+remains a different-body compiler-emission boundary.
+
+RunEcl compiled directly against the canonical `f32 initialLength` layout and
+remained exact. A strict refresh accepted 166 compiler-private label changes
+only after structural bytes, relocation offsets/types, non-private identities,
+and solved target destinations were unchanged; focused and aggregate
+zero-refresh replays then passed. The selector baseline shrank by eight to 875
+directives, and selected declarations shrank to 224 keys / 229 occurrences.
+
+The cold aggregate passed 696/696 exact across 88 sources. The normal build
+linked a 780,800-byte PE32 product with build-local SHA-256
+`a5465f1d6108f92f875b9970770dc670a9aeb430bf09dbcaf0b7d562fc49e062`;
+CI passed 55/55. The live handoff moves next to the separate 0x48-byte
+rotating-laser packet and requires its own producer/consumer audit.

@@ -1073,6 +1073,68 @@ def check_ecl_float_resolver_boundary() -> None:
             fail(f"float-resolver emission adapter gained runtime storage: {token}")
 
 
+def check_photo_straight_laser_packet() -> None:
+    header = (SRC / "PhotoStraightLaserArgs.hpp").read_text(encoding="utf-8")
+    if any(name in header for name in PROFILE_NAMES):
+        fail("canonical straight-laser packet must be profile-independent")
+    if len(re.findall(r"\bstruct\s+PhotoStraightLaserSpawnArgs\s*\{", header)) != 1:
+        fail("PhotoStraightLaserArgs.hpp must define exactly one canonical packet")
+    required_layout = (
+        "sizeof(PhotoStraightLaserSpawnArgs) == 0x28",
+        "offsetof(PhotoStraightLaserSpawnArgs, angle) == 0x0c",
+        "offsetof(PhotoStraightLaserSpawnArgs, maximumLength) == 0x10",
+        "offsetof(PhotoStraightLaserSpawnArgs, initialLength) == 0x14",
+        "offsetof(PhotoStraightLaserSpawnArgs, terminalDistance) == 0x18",
+        "offsetof(PhotoStraightLaserSpawnArgs, width) == 0x1c",
+        "offsetof(PhotoStraightLaserSpawnArgs, speed) == 0x20",
+        "offsetof(PhotoStraightLaserSpawnArgs, type) == 0x24",
+        "offsetof(PhotoStraightLaserSpawnArgs, color) == 0x26",
+        "0x0041DBD0",
+        "0x0041E0C0",
+        "0x0041E2C0",
+    )
+    for fact in required_layout:
+        if fact not in header:
+            fail(f"canonical straight-laser packet lost evidence/layout fact: {fact}")
+
+    high = (SRC / "ecl" / "EclRunHigh.inl").read_text(encoding="utf-8")
+    target_photo = (SRC / "ecl" / "EclRunTargetPhoto.inl").read_text(
+        encoding="utf-8"
+    )
+    photo_effect = (SRC / "PhotoEffect.cpp").read_text(encoding="utf-8")
+    for path, text in (
+        ("ecl/EclRunHigh.inl", high),
+        ("ecl/EclRunTargetPhoto.inl", target_photo),
+        ("PhotoEffect.cpp", photo_effect),
+    ):
+        if "PhotoEffectArgsSmall" in text:
+            fail(f"{path} restored the retired straight-laser packet projection")
+        if "TH095_SMALL_EFFECT_" in text:
+            fail(f"{path} restored profile-selected straight-laser access macros")
+
+    if '#include "../PhotoStraightLaserArgs.hpp"' not in high:
+        fail("RunEcl high declarations must consume the canonical straight-laser packet")
+    if target_photo.count("PhotoStraightLaserSpawnArgs args;") != 2:
+        fail("RunEcl photo handlers must construct the canonical packet twice")
+    for member in ("speed", "maximumLength", "initialLength", "width"):
+        if f"args.{member}" not in target_photo:
+            fail(f"RunEcl photo handlers lost canonical packet member: {member}")
+
+    if '#include "PhotoStraightLaserArgs.hpp"' not in photo_effect:
+        fail("normal PhotoEffect must consume the canonical straight-laser packet")
+    for fact in (
+        "PhotoStraightLaserSpawnArgs spawn;",
+        "static_cast<PhotoStraightLaserSpawnArgs *>(args)",
+        "this->length = this->spawn.initialLength",
+        "args.terminalDistance",
+    ):
+        if fact not in photo_effect:
+            fail(f"normal PhotoEffect lost canonical packet consumer/producer: {fact}")
+
+    if "struct PhotoEffectArgs" not in high or "struct PhotoEffectArgsView" not in photo_effect:
+        fail("straight-laser packet closure must not merge the 0x48 rotating packet")
+
+
 def check_small_closed_domains() -> None:
     explicit_enum(
         SRC / "PhotoCardInfo.hpp",
@@ -1115,6 +1177,7 @@ def main() -> int:
     check_photo_card_info_owner()
     check_ecl_photo_player_owner()
     check_ecl_float_resolver_boundary()
+    check_photo_straight_laser_packet()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
     print("  TH095_MATCH_EXACT/DIFFBUILD selectors: closed historical debt baseline")
@@ -1132,6 +1195,7 @@ def main() -> int:
     print("  CardInf: canonical profile-independent 0x68 owner")
     print("  RunEcl camera limit/angles: canonical PlayerInf owner with method-only emission adapter")
     print("  RunEcl float resolver: canonical normal method with method-only emission adapter")
+    print("  straight photo effect: one profile-independent 0x28-byte packet owner")
     print("  Replay manager, color mode, and viewport domains: explicit")
     return 0
 

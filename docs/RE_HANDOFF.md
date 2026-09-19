@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-277. Owner closure remains
+The current semantic source checkpoint is SEM-278. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -67,8 +67,9 @@ deliberately narrower than subsystem completion:
 | PhotoInf/stage `0x25730` | `PhotoStage.hpp` is the canonical normal owner for lifecycle, draw/capture behavior, `scoreMultiplier @ +0x25718`, ANM, and Chain roots. PhotoCamera's old receiver is isolated in one narrow emission adapter. |
 | CardInf `0x68` | `PhotoCardInfo.hpp` is the profile-independent allocation/lifecycle owner published at `0x004BDD9C`; RunEcl, PhotoGameTask, and PhotoStage consume it directly. EnemyInf `+0x26AE28` remains only a non-exclusive ECL-held session pointer. |
 | RunEcl Player/camera lane | Normal case 141 writes canonical `PhotoPlayerRuntimeView::camera.photoLimit @ Player+0x29EC`; all six angle calls use the Player root and `AngleFromPoint @ 0x004303E0`. The padded local owner is retired; the last four exact call decorations are isolated in method-only `ecl/PhotoCameraEclEmission.hpp`. This does not close every Player projection. |
+| Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. The 0x48 rotating packet is still separate debt. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 883 remaining selector directives across 112 files and 225 declaration keys / 230 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 875 remaining selector directives across 112 files and 224 declaration keys / 229 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -103,6 +104,14 @@ that method. A clean exact-source compiler experiment changed a non-private
 relocation identity, so the historical method declaration is retained only in
 a named, profile-independent, storage-free adapter.
 
+The 0x28 kind-0 effect packet is now one canonical declaration. Fresh target
+evidence closes its full layout across manager dispatch, straight-laser
+initialization/update, collision fragment production, and ECL producers.
+Pinned VC7.1 compiled RunEcl directly against the semantic field names and
+`f32 initialLength` byte-exactly, so no packet emission adapter was needed.
+The old ECL projection/access macros and normal PhotoEffect duplicate are gone;
+the exact-only PhotoEffect body remains explicitly separate.
+
 The latest focused EclRun proof refreshed **166 compiler-private labels** only
 after the strict tool verified unchanged structural bytes, relocation offsets/types,
 non-private identities, and solved target destinations. The subsequent cold
@@ -110,18 +119,18 @@ aggregate passed **696/696 exact across all 88 sources** with zero further
 refresh. The normal build compiled all
 **88 pinned-VC7.1 i386 COFF** objects and linked a verified **780,800-byte
 PE32/i386 GUI**, build-local SHA-256
-`8add94ab2bdfc218dfa87e5378aba85f955fe7466db0b70500e44ef538255fe7`.
-Target-independent CI passed **54/54** tests. This is exact-unit preservation
+`a5465f1d6108f92f875b9970770dc670a9aeb430bf09dbcaf0b7d562fc49e062`.
+Target-independent CI passed **55/55** tests. This is exact-unit preservation
 and normal compile/link closure, not whole-image exactness or runtime credit.
 
 ## Next bounded lane
 
-Audit `PhotoEffectArgsSmall` as one coherent 0x28-byte RunEcl effect-packet
-family. Validate every producer field against `PhotoEffectManager::Spawn @
-0x0041DBD0` and an independent effect consumer before changing its
-profile-selected field names or the `initialLength` type. Keep the 0x48-byte
-`PhotoEffectArgs` family separate until the small packet is closed. Do not
-infer opcode names, name manager `+0x4DFC`, or enlarge either closed baseline.
+Audit the distinct 0x48-byte rotating-laser `PhotoEffectArgs` family. Reconcile
+RunEcl's profile-selected field projection with normal `PhotoEffectArgsView`
+and EclExtended producers against `PhotoRotatingLaserView::Initialize @
+0x0041F380` plus independent update/collision consumers. Do not reuse the
+0x28 packet merely because the prefixes overlap, infer opcode names, name
+manager `+0x4DFC`, or enlarge either closed baseline.
 
 ## Protected working-tree exclusions
 
@@ -141,5 +150,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/ecl/EclRunHigh.inl --details
-rg -n "PhotoEffectArgsSmall|TH095_SMALL_EFFECT_|0x0041DBD0" src docs/KNOWLEDGE_BASE.md
+rg -n "PhotoEffectArgs|TH095_EFFECT_|0x0041F380" src/ecl src/PhotoEffect.cpp docs/KNOWLEDGE_BASE.md
 ```

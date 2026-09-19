@@ -1,34 +1,34 @@
     case 145:
     {
-        PhotoEffectArgsSmall args;
+        PhotoStraightLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
         args.position = enemy->worldPosition + enemy->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
-        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_SPEED(args), 2);
+        TH095_ECL_ASSIGN_FLOAT(args.speed, 2);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 3), 0.0f);
-        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_MAXIMUM_LENGTH(args), 4);
-        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_WIDTH(args), 5);
-        TH095_SMALL_EFFECT_INITIAL_LENGTH(args) = 0;
+        TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 4);
+        TH095_ECL_ASSIGN_FLOAT(args.width, 5);
+        args.initialLength = 0;
         TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }
 
     case 146:
     {
-        PhotoEffectArgsSmall args;
+        PhotoStraightLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
         args.position = enemy->worldPosition + enemy->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
-        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_SPEED(args), 2);
+        TH095_ECL_ASSIGN_FLOAT(args.speed, 2);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F_RAWARG(ctx, 3),
             TH095_ECL_PHOTO_ANGLE(&args.position));
-        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_MAXIMUM_LENGTH(args), 4);
-        TH095_ECL_ASSIGN_FLOAT(TH095_SMALL_EFFECT_WIDTH(args), 5);
-        TH095_SMALL_EFFECT_INITIAL_LENGTH(args) = 0;
+        TH095_ECL_ASSIGN_FLOAT(args.maximumLength, 4);
+        TH095_ECL_ASSIGN_FLOAT(args.width, 5);
+        args.initialLength = 0;
         TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }

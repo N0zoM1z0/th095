@@ -148,6 +148,20 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("DIFFBUILD", emission)
         self.assertIn("f32 ResolveFloat(EclRawOperand operand);", emission)
 
+    def test_straight_laser_packet_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_photo_straight_laser_packet()
+        header = (ROOT / "src" / "PhotoStraightLaserArgs.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(PhotoStraightLaserSpawnArgs) == 0x28", header)
+        high = (ROOT / "src" / "ecl" / "EclRunHigh.inl").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("PhotoEffectArgsSmall", high)
+        self.assertNotIn("TH095_SMALL_EFFECT_", high)
+
 
 if __name__ == "__main__":
     unittest.main()
