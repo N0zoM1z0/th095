@@ -13996,3 +13996,70 @@ importing an incompatible exact declaration graph, and preserve only
 target-required historical decorations in named storage-free adapters. Do not
 name unsupported Player/camera fields, infer original identifiers, add a
 profile selector, or treat exact-only source as normal semantic evidence.
+
+### SEM-283 — canonicalize PhotoCamera/PhotoStage Player storage
+
+**Scope.** Retire PhotoCamera's full `PhotoGameStateView` storage layout and
+normal PhotoStage's `PhotoStageCameraView` projection while preserving only
+the historical method/global decorations required by the exact objects. The
+bounded Player surface is mode `+0x0000`, effect ANM pointer `+0x0004`, effect
+VM storage `+0x0008`, movement/tracking state `+0x02D4/+0x02D8`, completion
+timer `+0x0420`, position `+0x1E30`, and embedded camera counters at Player
+`+0x29E4/+0x29EC`.
+
+**Target and independent-consumer evidence.** Fresh hash-attested target
+decompilation of `PhotoGameStateView::AngleToPoint @ 0x00430370` reads Player
+XY at `+0x1E30/+0x1E34`. `UpdatePhotoCamera @ 0x00430AB0` independently reads
+movement state `+0x02D4`, tracking mode `+0x02D8`, position `+0x1E30`, and the
+effect ANM pointer/embedded VM at `+0x0004/+0x0008`. `PhotoCameraState::TakePhoto
+@ 0x00432D10` writes Player mode 3 and resets completion timer `+0x0420` on the
+photo-limit transition. Independent `PhotoStageStateView::Update @ 0x0042AD60`
+consumes Player position and embedded camera `photoIndex/photoLimit @
++0x29E4/+0x29EC`. All accesses resolve to the owner published at
+`g_PhotoGame/g_Player @ 0x004C4E70`.
+
+**Ownership and representation.** `PhotoPlayerRuntime.hpp` is now
+profile-independent for the proved fields and enums. PhotoCamera, normal
+PhotoStage, and frozen exact PhotoStage storage access all route through
+`PhotoPlayerRuntimeView`. The full duplicate `PhotoGameStateView` layout and
+normal `PhotoStageCameraView` are deleted. `PhotoCameraPlayerEmission.inl`
+retains only a method-only `PhotoGameStateView::AngleToPoint` receiver and the
+historical `g_PhotoGame` extern; it deliberately owns no Player/camera storage.
+
+A pinned-VC7.1 include experiment established a real remaining boundary:
+including full `PhotoCameraState`/`AnmVm` in the dependency-light Player header
+causes declaration redefinitions against the exact legacy ANM graph. The
+canonical Player owner therefore holds a 0x2CC constructor-free effect-VM
+storage slot and casts it to `AnmVm` only at the proved PhotoCamera use sites.
+This is not acceptance of a second runtime owner, and full `PhotoCameraState`
+embedding remains open.
+
+**Guards and debt movement.** The semantic guard pins the shared offsets,
+profile independence, retired layouts, storage-free adapter, and Camera/Stage
+routing. Nine selector directives were removed, shrinking the baseline from
+851 to **842 across 110 files**. Selected declaration debt shrank from 222
+keys / 227 occurrences to **221 keys / 226 occurrences**. No new selector or
+selected declaration was introduced.
+
+**Validation.** PhotoCamera passed **11/11 exact**, PhotoStage passed **6/6
+exact**, and every affected shared-header fanout source passed **177/177 exact
+across 16 sources**. The controlled matcher refreshed 204 compiler-private
+`$L...` names in five PhotoCamera/PhotoGame/EclRun units only after proving
+unchanged structural bytes, relocation offsets/types, non-private identities,
+and target destinations. The aggregate replay passed its first 82/88 sources
+before a Wine connection reset at EclRun; a bounded retry of EclRun and the
+remaining five sources passed 55/55, covering all current **696/696 exact
+units** without claiming one uninterrupted run. The normal build compiled all
+**88 pinned-VC7.1 i386 COFF** objects and linked a verified **780,288-byte
+PE32/i386 GUI**, build-local SHA-256
+`ff6459fdf8d1b7df58e79081a5d30c5589f5c8ebd07f1cfad8d980f227982290`.
+Target-independent CI passed **57/57** tests. No whole-image identity or
+runtime credit is claimed.
+
+**Unknown / next route.** Audit `PhotoCameraState`'s remaining
+profile-selected mode, flags, and `focusChargeFrames` representation without
+coupling that work to the historical ANM handle spelling. Do not embed full
+`PhotoCameraState` in `PhotoPlayerRuntime.hpp`, replace the dependency-light VM
+slot, infer unsupported fields, add a profile selector, or expand either
+closed debt baseline until the exact ANM declaration boundary is separately
+resolved.

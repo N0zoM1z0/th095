@@ -1073,7 +1073,20 @@ def check_photo_card_info_owner() -> None:
 
 def check_ecl_photo_player_owner() -> None:
     player = (SRC / "PhotoPlayerRuntime.hpp").read_text(encoding="utf-8")
+    if "TH095_MATCH_EXACT" in player or "DIFFBUILD" in player:
+        fail("canonical PhotoPlayerRuntime.hpp must be profile-independent")
     required_layout = (
+        "AnmLoaded *effectAnm;",
+        "PhotoPlayerEffectVmStorage effectVm;",
+        "sizeof(PhotoPlayerEffectVmStorage) == 0x02cc",
+        "PhotoPlayerMovementDirection movementState;",
+        "PhotoPlayerCameraTrackingMode cameraTrackingMode;",
+        "offsetof(PhotoPlayerRuntimeView, effectAnm) == 0x0004",
+        "offsetof(PhotoPlayerRuntimeView, effectVm) == 0x0008",
+        "offsetof(PhotoPlayerRuntimeView, movementState) == 0x02d4",
+        "offsetof(PhotoPlayerRuntimeView, cameraTrackingMode) == 0x02d8",
+        "offsetof(PhotoPlayerRuntimeView, completionTimer) == 0x0420",
+        "offsetof(PhotoPlayerRuntimeView, playerPosition) == 0x1e30",
         "offsetof(PhotoPlayerCameraRuntimeView, photoLimit) == 0x0bb0",
         "offsetof(PhotoPlayerRuntimeView, camera) == 0x1e3c",
         "offsetof(PhotoPlayerRuntimeView, camera.photoLimit) == 0x29ec",
@@ -1082,6 +1095,56 @@ def check_ecl_photo_player_owner() -> None:
     for fact in required_layout:
         if fact not in player:
             fail(f"canonical PlayerInf/camera layout lost fact: {fact}")
+
+    camera_header = (SRC / "PhotoCamera.hpp").read_text(encoding="utf-8")
+    if re.search(r"\bstruct\s+PhotoGameStateView\s*\{", camera_header):
+        fail("PhotoCamera.hpp restored the retired duplicate PlayerInf layout")
+
+    player_emission = (SRC / "PhotoCameraPlayerEmission.inl").read_text(
+        encoding="utf-8"
+    )
+    if "TH095_MATCH_EXACT" in player_emission or "DIFFBUILD" in player_emission:
+        fail("PhotoCamera Player emission adapter must not select a build profile")
+    if len(re.findall(r"\bstruct\s+PhotoGameStateView\s*\{", player_emission)) != 1:
+        fail("PhotoCamera Player emission adapter must keep one method-only receiver")
+    for token in (
+        "f32 AngleToPoint(const Float3 *point);",
+        "extern PhotoGameStateView *g_PhotoGame;",
+        "deliberately owns no Player or camera storage",
+    ):
+        if token not in player_emission:
+            fail(f"PhotoCamera Player emission adapter lost required token: {token}")
+    for token in (
+        "effectAnm",
+        "effectVm",
+        "movementState",
+        "cameraTrackingMode",
+        "completionTimer",
+        "playerPosition",
+        "PhotoCameraState camera",
+        "u8 unknown",
+    ):
+        if token in player_emission:
+            fail(f"PhotoCamera Player emission adapter restored storage: {token}")
+
+    camera_source = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
+    stage_source = (SRC / "PhotoStage.cpp").read_text(encoding="utf-8")
+    stage_exact = (SRC / "PhotoStageExact.inl").read_text(encoding="utf-8")
+    for path, text in (
+        ("PhotoCamera.cpp", camera_source),
+        ("PhotoStage.cpp", stage_source),
+        ("PhotoStageExact.inl", stage_exact),
+    ):
+        if '#include "PhotoCameraPlayerEmission.inl"' not in text:
+            fail(f"{path} lost the storage-free historical Player emission adapter")
+    if "TH095_PHOTO_CAMERA_PLAYER_STORAGE" not in camera_source:
+        fail("PhotoCamera must route Player fields through the canonical owner")
+    if "PhotoStagePlayer()->camera.photoIndex" not in stage_source:
+        fail("normal PhotoStage must read photoIndex from the canonical Player owner")
+    if "PhotoStageCameraView" in stage_source:
+        fail("normal PhotoStage restored its retired camera projection")
+    if "TH095_PHOTO_STAGE_PLAYER_STORAGE" not in stage_exact:
+        fail("exact PhotoStage must isolate historical decoration from Player storage")
 
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if '#include "../PhotoPlayerRuntime.hpp"' not in ecl_run:
@@ -1421,6 +1484,7 @@ def main() -> int:
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")
     print("  Photo stage: canonical profile-independent 0x25730 owner")
     print("  CardInf: canonical profile-independent 0x68 owner")
+    print("  PlayerInf runtime: profile-independent owner shared by PhotoCamera, PhotoStage, and ECL")
     print("  RunEcl camera limit/angles: canonical PlayerInf owner with method-only emission adapter")
     print("  RunEcl float resolver: canonical normal method with method-only emission adapter")
     print("  straight photo effect: one profile-independent 0x28-byte packet owner")

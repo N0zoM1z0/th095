@@ -21,18 +21,7 @@
 namespace th095
 {
 
-struct PhotoStageCameraView : PhotoCameraState
-{
-    i32 GetPhotoIndex()
-    {
-        return this->photoIndex;
-    }
-
-    i32 GetPhotoLimit()
-    {
-        return this->photoLimit;
-    }
-};
+#include "PhotoCameraPlayerEmission.inl"
 
 enum PhotoStageFlags
 {
@@ -221,7 +210,6 @@ typedef char PhotoStageAnmAt2571C[
 typedef char PhotoStageCaptureFrameAt25724[
     (offsetof(PhotoStageStateView, captureFrame) == 0x25724) ? 1 : -1];
 
-extern PhotoGameStateView *g_PhotoGame;
 extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
 extern PhotoStageSupervisorView *g_PhotoStageSupervisor;
 #ifdef DIFFBUILD
@@ -287,16 +275,16 @@ static inline PhotoStageAnmLoadedView *GetPhotoStageAnm(
     return reinterpret_cast<PhotoStageAnmLoadedView *>(anm);
 }
 
-static inline PhotoStageCameraView *GetPhotoStageCamera()
+static __forceinline PhotoPlayerRuntimeView *PhotoStagePlayer()
 {
-    return reinterpret_cast<PhotoStageCameraView *>(&g_PhotoGame->camera);
+    return reinterpret_cast<PhotoPlayerRuntimeView *>(g_PhotoGame);
 }
 
 static __forceinline void PhotoStageInterruptCurrentEntryPhase(
     PhotoStageStateView *state, i32 &entryIndex)
 {
     u8 compilerStorage[8];
-    entryIndex = GetPhotoStageCamera()->GetPhotoIndex() - 1;
+    entryIndex = PhotoStagePlayer()->camera.photoIndex - 1;
     TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(
         state->slots[0].entryVms[entryIndex].value, 1);
 }
@@ -861,9 +849,9 @@ i32 PhotoStageStateView::Update()
     }
 
     if (PhotoStageEntryVmIsZero(this->slots[0].entryVms[0]) &&
-        GetPhotoStageCamera()->GetPhotoLimit() > 0)
+        PhotoStagePlayer()->camera.photoLimit > 0)
     {
-        for (k = 0; k < GetPhotoStageCamera()->GetPhotoLimit(); k++)
+        for (k = 0; k < PhotoStagePlayer()->camera.photoLimit; k++)
         {
             entryPosition.x = PhotoStageEntryXValue(k);
             entryPosition.y = 400.0f - (f32)(k % 5) * 80.0f;
@@ -1193,7 +1181,7 @@ i32 PhotoStageStateView::Update()
             if (this->waitingForTexture == 0 &&
                 this->slots[0].captureSlot != 10)
             {
-                entryIndex = GetPhotoStageCamera()->GetPhotoIndex() - 1;
+                entryIndex = PhotoStagePlayer()->camera.photoIndex - 1;
                 TH095_PHOTO_STAGE_ANM_SET_INTERRUPT(
                     this->slots[0].entryVms[entryIndex].value, 1);
 
@@ -1232,11 +1220,12 @@ i32 PhotoStageStateView::Update()
 
     if (this->playerPassed == 0)
     {
-        if (this->boundaryY + 32.0f > g_PhotoGame->playerPosition.y &&
+        if (this->boundaryY + 32.0f >
+                PhotoStagePlayer()->playerPosition.y &&
             ((this->boundaryX < 320.0f &&
-              g_PhotoGame->playerPosition.x < 0.0f) ||
+              PhotoStagePlayer()->playerPosition.x < 0.0f) ||
              (this->boundaryX >= 320.0f &&
-              g_PhotoGame->playerPosition.x >= 0.0f)))
+              PhotoStagePlayer()->playerPosition.x >= 0.0f)))
         {
             this->flags |= PHOTO_STAGE_PLAYER_PASSED;
             fadeVm1 = this->displayVms;
@@ -1250,11 +1239,11 @@ i32 PhotoStageStateView::Update()
         }
     }
     else if (!(this->boundaryY + 32.0f >
-                   g_PhotoGame->playerPosition.y &&
+                   PhotoStagePlayer()->playerPosition.y &&
                ((this->boundaryX < 320.0f &&
-                 g_PhotoGame->playerPosition.x < 0.0f) ||
+                 PhotoStagePlayer()->playerPosition.x < 0.0f) ||
                 (this->boundaryX >= 320.0f &&
-                 g_PhotoGame->playerPosition.x >= 0.0f))))
+                 PhotoStagePlayer()->playerPosition.x >= 0.0f))))
     {
         this->flags &= ~PHOTO_STAGE_PLAYER_PASSED;
         fadeVm2 = this->displayVms;
@@ -1331,8 +1320,8 @@ i32 PhotoStageStateView::SavePhoto(
     this->GetCaptureHeight() = height;
     this->GetCaptureSlot() = slotIndex;
 
-    if (g_PhotoGame->playerPosition.y < 224.0f &&
-        g_PhotoGame->playerPosition.x < 0.0f)
+    if (PhotoStagePlayer()->playerPosition.y < 224.0f &&
+        PhotoStagePlayer()->playerPosition.x < 0.0f)
     {
         locals.photoX = 352.0f;
     }

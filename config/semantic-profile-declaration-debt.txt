@@ -125,7 +125,6 @@
 1	src/PhotoStage.cpp	struct	PhotoStageAnmManagerView
 1	src/PhotoStage.cpp	struct	PhotoStageBestShotRecord
 1	src/PhotoStage.cpp	struct	PhotoStageBulletManagerView
-1	src/PhotoStage.cpp	struct	PhotoStageCameraView
 1	src/PhotoStage.cpp	struct	PhotoStageCaptureLocals
 1	src/PhotoStage.cpp	struct	PhotoStageDigitPosition
 1	src/PhotoStage.cpp	struct	PhotoStageDisplayRowView

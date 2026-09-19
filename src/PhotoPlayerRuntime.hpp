@@ -10,7 +10,8 @@
 namespace th095
 {
 
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+struct AnmLoaded;
+
 enum PhotoPlayerMode
 {
     PHOTO_PLAYER_MODE_ENTERING = 0,
@@ -44,20 +45,24 @@ enum PhotoPlayerCameraTrackingMode
 
 typedef char PhotoPlayerCameraTrackingModeSizeIs4[
     (sizeof(PhotoPlayerCameraTrackingMode) == 4) ? 1 : -1];
-#endif
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE 0
-#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET 1
-#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW 2
-#else
 #define TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE PHOTO_PLAYER_CAMERA_TRACKING_FREE
 #define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET PHOTO_PLAYER_CAMERA_TRACKING_TARGET
 #define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW
-#endif
+
+// Dependency-light storage for the embedded effect VM. Importing the full
+// AnmVm declaration here collides with the exact ECL legacy ANM graph; proved
+// PhotoCamera use sites reinterpret this slot only at the call boundary.
+struct PhotoPlayerEffectVmStorage
+{
+    u8 bytes[0x02cc];
+};
+
+typedef char PhotoPlayerEffectVmStorageSizeIs02CC[
+    (sizeof(PhotoPlayerEffectVmStorage) == 0x02cc) ? 1 : -1];
 
 // Shared production view of the target PlayerInf object published through
-// g_RuntimePlayerOwner.  Only offsets used by independently target-proven
+// g_RuntimePlayerOwner. Only offsets used by independently target-proven
 // production consumers are named here.
 struct PhotoPlayerCameraRuntimeView
 {
@@ -95,16 +100,12 @@ typedef char PhotoPlayerCameraRuntimeSizeIs0BDC[
 
 struct PhotoPlayerRuntimeView
 {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 mode;                                      // +0x0000
-    u8 unknown0004[0x03a8 - 0x0004];
-#else
     PhotoPlayerMode mode;                          // +0x0000
-    u8 unknown0004[0x02d4 - 0x0004];
+    AnmLoaded *effectAnm;                          // +0x0004
+    PhotoPlayerEffectVmStorage effectVm;           // +0x0008
     PhotoPlayerMovementDirection movementState;    // +0x02d4
     PhotoPlayerCameraTrackingMode cameraTrackingMode; // +0x02d8
     u8 unknown02dc[0x03a8 - 0x02dc];
-#endif
     Float3 hurtboxBoundsMin;                       // +0x03a8
     Float3 hurtboxBoundsMax;                       // +0x03b4
     u8 unknown03c0[0x0420 - 0x03c0];
@@ -124,12 +125,14 @@ struct PhotoPlayerRuntimeView
 
 typedef char PhotoPlayerRuntimeModeAt0000[
     (offsetof(PhotoPlayerRuntimeView, mode) == 0x0000) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+typedef char PhotoPlayerRuntimeEffectAnmAt0004[
+    (offsetof(PhotoPlayerRuntimeView, effectAnm) == 0x0004) ? 1 : -1];
+typedef char PhotoPlayerRuntimeEffectVmAt0008[
+    (offsetof(PhotoPlayerRuntimeView, effectVm) == 0x0008) ? 1 : -1];
 typedef char PhotoPlayerRuntimeMovementStateAt02D4[
     (offsetof(PhotoPlayerRuntimeView, movementState) == 0x02d4) ? 1 : -1];
 typedef char PhotoPlayerRuntimeCameraTrackingModeAt02D8[
     (offsetof(PhotoPlayerRuntimeView, cameraTrackingMode) == 0x02d8) ? 1 : -1];
-#endif
 typedef char PhotoPlayerRuntimeHurtboxMinAt03A8[
     (offsetof(PhotoPlayerRuntimeView, hurtboxBoundsMin) == 0x03a8) ? 1 : -1];
 typedef char PhotoPlayerRuntimeHurtboxMaxAt03B4[

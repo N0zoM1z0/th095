@@ -122,19 +122,6 @@ typedef char PhotoPlayerNormalAxisSpeedAt14[
 typedef char PhotoPlayerFocusedDiagonalSpeedAt20[
     (offsetof(PhotoPlayerMovementConfigView, focusedDiagonalSpeed) == 0x20) ? 1 : -1];
 
-enum PhotoPlayerMovementDirection
-{
-    PHOTO_PLAYER_DIRECTION_NONE = 0,
-    PHOTO_PLAYER_DIRECTION_UP = 1,
-    PHOTO_PLAYER_DIRECTION_DOWN = 2,
-    PHOTO_PLAYER_DIRECTION_LEFT = 3,
-    PHOTO_PLAYER_DIRECTION_RIGHT = 4,
-    PHOTO_PLAYER_DIRECTION_UP_LEFT = 5,
-    PHOTO_PLAYER_DIRECTION_UP_RIGHT = 6,
-    PHOTO_PLAYER_DIRECTION_DOWN_LEFT = 7,
-    PHOTO_PLAYER_DIRECTION_DOWN_RIGHT = 8,
-};
-
 static inline u16 PhotoGameInputMask(u16 input, u16 mask)
 {
     return input & mask;

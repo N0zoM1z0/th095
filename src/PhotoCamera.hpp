@@ -5,8 +5,8 @@
 #include "PhotoCameraMode.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoBulletManager.hpp"
-#include "PhotoPlayerRuntime.hpp"
 #endif
+#include "PhotoPlayerRuntime.hpp"
 
 namespace th095
 {
@@ -159,44 +159,6 @@ typedef char PhotoCameraPositionAtBC4[
     (offsetof(PhotoCameraState, viewfinderPosition) == 0xbc4) ? 1 : -1];
 typedef char PhotoCameraStateSizeIsBDC[
     (sizeof(PhotoCameraState) == 0xbdc) ? 1 : -1];
-
-struct PhotoGameStateView
-{
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 mode;                          // +0x0000
-#else
-    PhotoPlayerMode mode;              // +0x0000
-#endif
-    PhotoAnmLoadedView *effectAnm;     // +0x0004
-    AnmVm effectVm;                    // +0x0008
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 movementState;                 // +0x02d4
-    i32 cameraTrackingMode;            // +0x02d8
-#else
-    PhotoPlayerMovementDirection movementState; // +0x02d4
-    PhotoPlayerCameraTrackingMode cameraTrackingMode; // +0x02d8
-#endif
-    u8 unknown02dc[0x0420 - 0x02dc];
-    ZunTimer completionTimer;           // +0x0420
-    u8 unknown042c[0x1e30 - 0x042c];
-    Float3 playerPosition;             // +0x1e30
-    PhotoCameraState camera;            // +0x1e3c
-
-    f32 AngleToPoint(const Float3 *point);
-};
-
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-typedef char PhotoGameMovementStateAt2D4[
-    (offsetof(PhotoGameStateView, movementState) == 0x02d4) ? 1 : -1];
-typedef char PhotoGameCameraTrackingModeAt2D8[
-    (offsetof(PhotoGameStateView, cameraTrackingMode) == 0x02d8) ? 1 : -1];
-#endif
-typedef char PhotoGamePlayerPositionAt1E30[
-    (offsetof(PhotoGameStateView, playerPosition) == 0x1e30) ? 1 : -1];
-typedef char PhotoGameCompletionTimerAt420[
-    (offsetof(PhotoGameStateView, completionTimer) == 0x0420) ? 1 : -1];
-typedef char PhotoGameCameraAt1E3C[
-    (offsetof(PhotoGameStateView, camera) == 0x1e3c) ? 1 : -1];
 
 f32 __fastcall PhotoDistance2D(const Float3 *left, const Float3 *right);
 void __fastcall UpdatePhotoCamera(PhotoCameraState *camera);

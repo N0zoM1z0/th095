@@ -26,18 +26,7 @@
 namespace th095
 {
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION 3
-#else
-#define TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION \
-    PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE 0
-#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET 1
-#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW 2
-#endif
+#include "PhotoCameraPlayerEmission.inl"
 
 #ifdef TH095_MATCH_EXACT
 struct PhotoAnmVmIdValue
@@ -202,7 +191,6 @@ static inline SoundPlayer *PhotoSoundPlayer()
 }
 #endif
 
-extern PhotoGameStateView *g_PhotoGame;
 extern PhotoRuntimeView *g_PhotoRuntime;
 extern PhotoGlobalStateView *g_PhotoGlobalState;
 #ifndef DIFFBUILD
@@ -232,6 +220,12 @@ extern u16 g_PhotoInputPressed;
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
+
+#define TH095_PHOTO_CAMERA_PLAYER_STORAGE() \
+    reinterpret_cast<PhotoPlayerRuntimeView *>(g_PhotoGame)
+#define TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM() \
+    reinterpret_cast<PhotoAnmLoadedView *>( \
+        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectAnm)
 
 #if defined(TH095_MATCH_EXACT)
 #define PHOTO_SOUND_SUPPRESSED (((g_PhotoGlobalState->flags >> 9) & 1))
@@ -361,8 +355,12 @@ static inline u32 PhotoEitherFlag(u32 left, u32 right)
 
 f32 PhotoGameStateView::AngleToPoint(const Float3 *point)
 {
-    f32 deltaX = point->x - this->playerPosition.x;
-    f32 deltaY = point->y - this->playerPosition.y;
+    f32 deltaX = point->x -
+                 reinterpret_cast<PhotoPlayerRuntimeView *>(this)
+                     ->playerPosition.x;
+    f32 deltaY = point->y -
+                 reinterpret_cast<PhotoPlayerRuntimeView *>(this)
+                     ->playerPosition.y;
 
     if (deltaY == 0.0f && deltaX == 0.0f)
     {
@@ -588,9 +586,9 @@ u32 PhotoCameraState::TakePhoto()
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     scoreData[3] = g_PhotoBulletManager->CountNearbyTargets(
-        &g_PhotoGame->playerPosition, 22.0f);
+        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition, 22.0f);
     scoreData[3] += g_PhotoStageController->CountNearbyTargets(
-        &g_PhotoGame->playerPosition, 22.0f);
+        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition, 22.0f);
 
     this->CalculatePhotoScore(
         reinterpret_cast<PhotoCapturedBulletView *>(
@@ -605,10 +603,11 @@ u32 PhotoCameraState::TakePhoto()
     PhotoEffectManagerView *effectManager = TH095_RUNTIME_GLOBAL_PTR(
         PhotoEffectManagerView, g_RuntimeEffectManagerOwner);
     scoreData[3] = g_PhotoBulletManager->CountNearbyTargets(
-        reinterpret_cast<PhotoBulletVector *>(&g_PhotoGame->playerPosition),
+        reinterpret_cast<PhotoBulletVector *>(
+            &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition),
         22.0f);
     scoreData[3] += effectManager->CountNearbyTargets(
-        &g_PhotoGame->playerPosition, 22.0f);
+        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition, 22.0f);
 
     this->CalculatePhotoScore(
         reinterpret_cast<PhotoCapturedBulletView *>(
@@ -650,8 +649,9 @@ u32 PhotoCameraState::TakePhoto()
     {
         this->charge = 0.0f;
         this->mode = PHOTO_CAMERA_DISABLED;
-        g_PhotoGame->mode = TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION;
-        g_PhotoGame->completionTimer = 0;
+        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->mode =
+            PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION;
+        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->completionTimer = 0;
     }
     else
     {
@@ -801,7 +801,8 @@ i32 PhotoCameraState::CalculatePhotoScore(
     bounds.viewfinderPosition = &this->viewfinderPosition;
     bounds.playerHalfHeight = 16.0f;
     bounds.playerHalfWidth = 16.0f;
-    bounds.playerPosition = &g_PhotoGame->playerPosition;
+    bounds.playerPosition =
+        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
     bounds.playerHalfWidth *= 0.5f;
     bounds.playerHalfHeight *= 0.5f;
     locals.viewfinderHalfWidth *= 0.5f;
@@ -1129,11 +1130,13 @@ normalCharge:
         {
 #ifdef TH095_MATCH_EXACT
             g_PhotoBulletManager->anmSpawner->SpawnInto(
-                &locals.effect, 0x124, &g_PhotoGame->playerPosition);
+                &locals.effect, 0x124,
+                &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
 #else
             locals.effect =
                 g_PhotoBulletManager->bulletAnm->CreateVmAtWorld(
-                    0x124, &g_PhotoGame->playerPosition);
+                    0x124,
+                    &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
 #endif
         }
         this->TH095_PHOTO_FOCUS_CHARGE_FRAMES++;
@@ -1296,24 +1299,26 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
         {
             if (g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[0] == NULL)
             {
-                camera->cameraOffset = g_PhotoGame->playerPosition;
+                camera->cameraOffset =
+                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
                 camera->cameraOffset.y -= 64.0f;
             }
             else
             {
-                if (g_PhotoGame->cameraTrackingMode ==
+                if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode ==
                     TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW)
                 {
                     camera->trackingRadius = 56.0f;
                 }
-                else if (g_PhotoGame->cameraTrackingMode ==
+                else if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode ==
                          TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET)
                 {
                     f32 playerDistance = PhotoDistance2D(
-                        &g_PhotoGame->playerPosition, &camera->viewfinderPosition);
+                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition,
+                        &camera->viewfinderPosition);
                     f32 bossDistance = PhotoDistance2D(
                         &g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[0]->position,
-                        &g_PhotoGame->playerPosition);
+                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
                     if (playerDistance < 56.0f)
                     {
                         camera->trackingRadius = 56.0f;
@@ -1340,12 +1345,12 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     camera->trackingRadius += 1.0f;
                 }
 
-                if (g_PhotoGame->cameraTrackingMode !=
+                if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode !=
                     TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
                 {
                     camera->cameraOffset = PhotoCameraTrackingDifference(
                         g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[0]->position,
-                        g_PhotoGame->playerPosition);
+                        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
                     NormalizeAndScalePhotoOffset(
                         camera->cameraOffset,
                         &camera->cameraOffset,
@@ -1354,7 +1359,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                 else
                 {
                     Float3 playerDelta =
-                        g_PhotoGame->playerPosition -
+                        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition -
                         camera->previousTrackingOrigin;
                     f32 targetAngle;
                     if (playerDelta.y * playerDelta.y + playerDelta.x * playerDelta.x < 0.1f)
@@ -1373,11 +1378,13 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                         camera->trackingAngle, camera->trackingRadius);
                 }
                 camera->cameraOffset =
-                    g_PhotoGame->playerPosition + camera->cameraOffset;
-                camera->previousTrackingOrigin = g_PhotoGame->playerPosition;
+                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition +
+                    camera->cameraOffset;
+                camera->previousTrackingOrigin =
+                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
             }
 
-            if (g_PhotoGame->cameraTrackingMode !=
+            if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode !=
                 TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
             {
                 camera->viewfinderPosition =
@@ -1386,10 +1393,11 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     camera->viewfinderPosition;
                 Float3 angleDelta =
                     camera->viewfinderPosition -
-                    g_PhotoGame->playerPosition;
+                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
                 camera->trackingAngle = atan2f(angleDelta.y, angleDelta.x);
             }
-            else if (g_PhotoGame->movementState != 0)
+            else if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState !=
+                     PHOTO_PLAYER_DIRECTION_NONE)
             {
                 camera->viewfinderPosition =
                     (camera->cameraOffset - camera->viewfinderPosition) *
@@ -1406,7 +1414,8 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
         }
         else
         {
-            camera->cameraOffset = g_PhotoGame->playerPosition;
+            camera->cameraOffset =
+                TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
             camera->viewfinderPosition =
                 (camera->cameraOffset - camera->viewfinderPosition) * 0.4f +
                 camera->viewfinderPosition;
@@ -1564,10 +1573,14 @@ cameraActive:
             if (targetAngle < 0.0f)
                 targetAngle += 6.2831855f;
             i32 angleSector = (i32)(targetAngle / 0.7853982f);
-            g_PhotoGame->effectAnm->SetAndExecuteScriptIdx(
-                &g_PhotoGame->effectVm, 5);
-            g_PhotoGame->effectAnm->SetSprite(
-                &g_PhotoGame->effectVm, angleSector + 0x18);
+            TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM()->SetAndExecuteScriptIdx(
+                reinterpret_cast<AnmVm *>(
+                    &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectVm),
+                5);
+            TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM()->SetSprite(
+                reinterpret_cast<AnmVm *>(
+                    &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectVm),
+                angleSector + 0x18);
 
             if (camera->CountPhotoTargets(NULL, NULL) != 0)
             {
@@ -1646,11 +1659,17 @@ cameraActive:
     {
         if (PhotoTimerAdvancedTo(&camera->modeTimer, 20) != 0)
         {
-            if (g_PhotoGame->movementState == 0 ||
-                g_PhotoGame->movementState == 1 ||
-                g_PhotoGame->movementState == 2)
+            if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState ==
+                    PHOTO_PLAYER_DIRECTION_NONE ||
+                TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState ==
+                    PHOTO_PLAYER_DIRECTION_UP ||
+                TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState ==
+                    PHOTO_PLAYER_DIRECTION_DOWN)
             {
-                g_PhotoGame->effectAnm->InitializeVm(&g_PhotoGame->effectVm, 0);
+                TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM()->InitializeVm(
+                    reinterpret_cast<AnmVm *>(
+                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectVm),
+                    0);
             }
             if ((camera->flags & PHOTO_FLAG_ALTERNATE_CAPTURE) != 0)
             {
@@ -1664,7 +1683,8 @@ cameraActive:
                 TH095_PHOTO_ANM_SET_POSITION_DIRECT(
                     g_PhotoStageState->anm->CreateVm(0x21, 0).value,
                     PhotoToScreen(
-                        &effectPosition, &g_PhotoGame->playerPosition));
+                        &effectPosition,
+                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition));
             }
             else
             {
@@ -1678,7 +1698,8 @@ cameraActive:
                 TH095_PHOTO_ANM_SET_POSITION_DIRECT(
                     g_PhotoStageState->anm->CreateVm(0x22, 0).value,
                     PhotoToScreen(
-                        &effectPosition, &g_PhotoGame->playerPosition));
+                        &effectPosition,
+                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition));
             }
         }
         if (camera->modeTimer >= 60)

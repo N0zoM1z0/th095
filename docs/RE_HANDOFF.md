@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-282. Owner closure remains
+The current semantic source checkpoint is SEM-283. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -68,10 +68,11 @@ deliberately narrower than subsystem completion:
 | CardInf `0x68` | `PhotoCardInfo.hpp` is the profile-independent allocation/lifecycle owner published at `0x004BDD9C`; RunEcl, PhotoGameTask, and PhotoStage consume it directly. EnemyInf `+0x26AE28` remains only a non-exclusive ECL-held session pointer. |
 | RunEcl Player/camera lane | Normal case 141 writes canonical `PhotoPlayerRuntimeView::camera.photoLimit @ Player+0x29EC`; all six angle calls use the Player root and `AngleFromPoint @ 0x004303E0`. The padded local owner is retired; the last four exact call decorations are isolated in method-only `ecl/PhotoCameraEclEmission.hpp`. This does not close every Player projection. |
 | EclExtended Player/camera lane | Both callbacks use canonical `PhotoPlayerRuntimeView` storage for `playerPosition @ +0x1E30`, camera `@ +0x1E3C`, `movementScale @ +0x2A18`, camera mode, and viewfinder geometry. `PhotoCameraState` remains the method owner. The exact adapter retains only an incomplete historical Player global and method-only camera receiver; it has no storage layout. |
+| PhotoCamera/PhotoStage Player lane | `PhotoPlayerRuntime.hpp` is profile-independent and now owns the proved mode, effect ANM/VM slot, movement/tracking state, completion timer, position, partial camera, and movement-scale storage. PhotoCamera and both PhotoStage bodies route Player fields through it. The old full `PhotoGameStateView` and normal `PhotoStageCameraView` layouts are retired; `PhotoCameraPlayerEmission.inl` is method-only and storage-free. Full `PhotoCameraState` embedding remains separate debt because the exact legacy ANM graph conflicts with the canonical header graph. |
 | Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 851 remaining selector directives across 111 files and 222 declaration keys / 227 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 842 remaining selector directives across 110 files and 221 declaration keys / 226 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -152,6 +153,21 @@ canonical PhotoCamera producers/consumers. All field access uses
 `ExtendedPhotoCameraView::CountPhotoTargets` decorations in a storage-free,
 profile-independent emission adapter.
 
+PhotoCamera's duplicate full Player layout is now gone too. Fresh target
+evidence ties `AngleToPoint`, `UpdatePhotoCamera`, and `TakePhoto` to the same
+Player root and proves mode `+0x0000`, effect ANM/VM storage `+0x0004/+0x0008`,
+movement/tracking state `+0x02D4/+0x02D8`, completion timer `+0x0420`, and
+position `+0x1E30`. Independent PhotoStage reads the same position and embedded
+camera counters at Player `+0x29E4/+0x29EC`. PhotoCamera and both PhotoStage
+bodies now route those fields through profile-independent
+`PhotoPlayerRuntimeView`; the normal PhotoStage camera projection is retired.
+The historical `PhotoGameStateView::AngleToPoint` and `g_PhotoGame` decorations
+remain in `PhotoCameraPlayerEmission.inl`, which has no fields. A pinned-VC7.1
+include experiment showed that importing full `PhotoCameraState`/`AnmVm` into
+the lightweight Player header collides with the exact legacy ANM declaration
+graph, so the canonical header keeps a dependency-light 0x2CC VM storage slot
+and the full camera-owner merge remains explicit debt.
+
 SEM-279's focused EclRun proof refreshed **166 compiler-private labels** only
 after the strict tool verified unchanged structural bytes, relocation offsets/types,
 non-private identities, and solved target destinations. That batch's cold
@@ -183,16 +199,31 @@ objects. Per the current batching policy, no new 696-unit aggregate replay or
 88-TU normal link is claimed for this checkpoint; run both after accumulating
 the next shared-owner batch. Target-independent CI passed **57/57** tests.
 
+For SEM-283, PhotoCamera passed **11/11 exact**, PhotoStage passed **6/6
+exact**, and the complete affected shared-header fanout passed **177/177 exact
+across 16 sources**. The controlled matcher refreshed 204 compiler-private
+`$L...` names in five units across PhotoCamera, PhotoGame, and EclRun only
+after proving unchanged structural bytes, relocation offsets/types,
+non-private identities, and target destinations. The cold aggregate passed its
+first 82/88 sources before Wine reset its connection at the start of EclRun;
+a bounded retry of EclRun and the remaining five sources passed **55/55**, so
+all current **696/696 exact units** were replayed, but not in one uninterrupted
+invocation. The normal build compiled all **88 pinned-VC7.1 i386 COFF** objects
+and linked a verified **780,288-byte PE32/i386 GUI**, build-local SHA-256
+`ff6459fdf8d1b7df58e79081a5d30c5589f5c8ebd07f1cfad8d980f227982290`.
+Target-independent CI passed **57/57** tests. This is exact-unit preservation
+and normal compile/link closure, not whole-image identity or runtime credit.
+
 ## Next bounded lane
 
-Audit the remaining overlap between `PhotoCamera.hpp::PhotoGameStateView` and
-`PhotoPlayerRuntime.hpp::PhotoPlayerRuntimeView`. Establish producer/consumer
-coverage for the fields actually used by PhotoCamera and PhotoStage, then test
-whether one canonical embedded `PhotoCameraState` layout can replace the
-duplicate Player/camera projection without importing an incompatible exact
-declaration graph. Keep any required historical decoration in a named
-storage-free adapter; do not infer unsupported fields, name EnemyInf manager
-`+0x4DFC`, add a profile selector, or enlarge either closed baseline.
+Audit `PhotoCameraState`'s remaining profile-selected mode, flags, and
+`focusChargeFrames` representation separately from its ANM handle spelling.
+First prove whether those already target-backed fields can become
+profile-independent without changing the historical VM-handle decoration.
+Do not embed full `PhotoCameraState` in `PhotoPlayerRuntime.hpp`, replace the
+0x2CC dependency-light VM storage, infer unsupported fields, name EnemyInf
+manager `+0x4DFC`, add a profile selector, or enlarge either closed baseline
+until the exact ANM declaration boundary is independently closed.
 
 ## Protected working-tree exclusions
 
@@ -212,5 +243,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/PhotoCamera.hpp --details
-rg -n "PhotoGameStateView|PhotoPlayerRuntimeView|PhotoCameraState|0x004C4E70" src docs/KNOWLEDGE_BASE.md
+rg -n "TH095_PHOTO_(MODE|FLAGS|FOCUS)|PhotoCameraState|PhotoAnmVmId" src/PhotoCamera.*
 ```
