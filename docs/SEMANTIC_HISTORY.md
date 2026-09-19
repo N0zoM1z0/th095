@@ -13114,3 +13114,83 @@ element ownership is not. Next audit the duplicated `PhotoEnemyView`,
 the independent `position @ +0x28A0`, `worldPosition @ +0x28F4`, and control
 words at `+0x2BF4/+0x2BF8`. Keep `+0x4DFC` and unproved element bits Unknown;
 do not substitute the larger TH08-shaped `Enemy` layout.
+
+### SEM-271 — canonicalize the compact TH095 enemy element and forbid new profile-selected declarations
+
+**Scope.** Follow SEM-270 into the inline `0x4CC0` enemy element without
+assuming the inherited TH08 `Enemy` layout. Consolidate the complete normal
+element owner used by the manager, camera/photo scans, lifecycle/update code,
+ECL dependencies, helpers, and shot/ANM logic. Separately close the workflow
+regression that had allowed new `struct` declarations directly beneath
+`TH095_MATCH_EXACT` / `DIFFBUILD` branches.
+
+**Observed and corrected.** The manager constructor and spawn loops establish
+one template followed by 128 elements at stride `0x4CC0`. Hash-attested target
+movement at `0x004160B0` and `0x00412970`, photo scans at `0x004168D0` and
+`0x004339F0`, ECL reads/writes, shot/ANM consumers, and destructor/lifetime
+paths independently corroborate the element layout. In particular,
+`position @ +0x28A0`, `worldPosition @ +0x28F4`, `movementAngle @ +0x2900`,
+`angularVelocity @ +0x2904`, `speed @ +0x2914`, and `acceleration @ +0x2918`
+replace the earlier swapped movement names. The target constructor writes the
+same corrected fields in angular/angle and acceleration/speed order; spelling
+that order in shared source preserves both semantics and target bytes. Photo
+pulse numerator/count/denominator observations are the `subFrame`, `current`,
+and duration `subFrame` members of the two timers at `+0x2C24/+0x2C30`.
+
+**Ownership correction.** New profile-independent `PhotoEnemy.hpp` defines
+the complete compact element and its ECL context, trail, VM-id, scheduled-call,
+movement, life/shot, control, ANM, photo-pulse, child-block, and attached-VM
+storage with size/offset assertions. `PhotoEnemyControl.hpp` provides the
+shared four-byte `+0x2BF4` value vocabulary. `PhotoEnemyManager.hpp` now embeds
+the real template and `PhotoEnemyView enemyPool[128]`; the raw
+`PhotoEnemySlotStorage` wrapper and its placement-new lifetime facade are
+retired. PhotoRuntime, PhotoCamera, PhotoEffect, EnemyManagerUpdate,
+EclDependencies, EclHelpers, EclExtended, EnemyShotAnm, and the ECL
+compatibility macros now consume the canonical normal owner instead of
+restoring local complete or partial layouts. The bullet spawn value family
+moved to profile-independent `PhotoBulletSpawnDescriptor.hpp`, allowing the
+enemy owner to depend on the descriptor without importing the complete
+`0x27C5B8` BulletInf manager.
+
+**Emission boundary.** Direct canonical inclusion is blocked in four inherited
+ECL-facing exact/DIFF contexts by their private TH08-shaped ANM declaration
+graph and target-facing receiver decoration. The minimum legacy declarations
+are isolated in `EclDependenciesPhotoEnemyEmission.hpp`,
+`EclHelpersPhotoEnemyEmission.hpp`, `EnemyShotAnmEmission.hpp`, and
+`ecl/PhotoEnemyEclEmission.hpp`. Each file is selected from an outer include
+route, contains no build-profile selector, and is emission debt rather than a
+second semantic owner. `EnemyMovement.cpp` and the operand/RunEcl projection
+families remain explicitly open.
+
+**Workflow guard.** `AGENTS.md` and `SEMANTIC_RECONSTRUCTION.md` now forbid a
+new `struct`, `class`, or `union` declaration beneath a
+`TH095_MATCH_EXACT`/`DIFFBUILD` branch in ordinary production source. CI scans
+all such declarations and compares them with the exact closed baseline in
+`config/semantic-profile-declaration-debt.txt`: additions, renames, restored
+entries, and stale baseline entries all fail. The current baseline records 285
+historical keys / 290 occurrences and may only shrink. Relative to the SEM-270
+tree, this batch removes 11 profile-selected declaration occurrences and adds
+zero. All `*Emission*` adapters are independently required to contain no
+profile selector. A temporary regression probe was rejected by the guard and
+removed.
+
+**Validation.** Focused replay over the ten principal affected translation
+units passed **139/139 exact** after two shared-source shape corrections. The
+final cold aggregate rebuilt all 88 manifest sources and passed **696/696
+exact**. Across the bounded focused replays, 228 compiler-private label names
+in seven units were refreshed only after complete structural bytes, relocation
+offsets/types, and solved destinations were unchanged; no public relocation
+fact changed. The normal product compiled all **88 pinned-VC7.1 i386 COFF**
+objects across both profiles and linked/verified a **780,288-byte PE32/i386
+GUI**, build-local SHA-256
+`a8e72ff61f9fd54b7413a1f0517b1620d83da7a780a93d49df46b3273923a481`.
+Target-independent CI passed **51/51** tests. These establish exact preservation
+and normal compile/link closure, not whole-image target identity or runtime
+equivalence.
+
+**Unknown / next route.** Manager `+0x4DFC`, unnamed control bits, and adjacent
+opaque element bytes remain Unknown. Next reconcile `EnemyMovement.cpp`'s
+local compact `Enemy` receiver and movement protocol with the canonical owner
+without changing decorated-symbol ownership; then migrate the four ECL operand
+TUs. Do not widen an emission adapter or add a new profile-selected declaration
+to preserve a match.

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from pathlib import Path
 import re
 import sys
@@ -11,11 +12,162 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 INTEGER_LITERAL = r"[+-]?(?:0[xX][0-9A-Fa-f]+|[0-9]+)(?:[uUlL]+)?"
+PROFILE_DECLARATION_BASELINE = (
+    ROOT / "config" / "semantic-profile-declaration-debt.txt"
+)
+PROFILE_NAMES = ("TH095_MATCH_EXACT", "DIFFBUILD")
 
 
 def fail(message: str) -> None:
     print(f"error: {message}", file=sys.stderr)
     raise SystemExit(1)
+
+
+def source_without_comments(text: str) -> str:
+    def preserve_newlines(match: re.Match[str]) -> str:
+        return "\n" * match.group(0).count("\n")
+
+    text = re.sub(r"/\*.*?\*/", preserve_newlines, text, flags=re.DOTALL)
+    return re.sub(r"//.*", "", text)
+
+
+def profile_selected_declarations() -> Counter[tuple[str, str, str]]:
+    declarations: Counter[tuple[str, str, str]] = Counter()
+    directive = re.compile(r"^\s*#\s*(if|ifdef|ifndef|elif|else|endif)\b(.*)$")
+    type_declaration = re.compile(
+        r"^\s*(?:typedef\s+)?(struct|class|union)\s+([A-Za-z_]\w*)\b"
+    )
+
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in (".cpp", ".hpp", ".inl"):
+            continue
+        # Named emission adapters are selected outside the file and must be
+        # profile-free; they are checked separately below.
+        if "Emission" in path.name:
+            continue
+
+        groups: list[dict[str, bool]] = []
+        candidates: list[tuple[str, str, list[dict[str, bool]]]] = []
+        clean_text = source_without_comments(path.read_text(encoding="utf-8"))
+        for line in clean_text.splitlines():
+            preprocessor = directive.match(line)
+            if preprocessor is not None:
+                operation, expression = preprocessor.groups()
+                if operation in ("if", "ifdef", "ifndef"):
+                    groups.append(
+                        {
+                            "profile": any(
+                                name in expression for name in PROFILE_NAMES
+                            )
+                        }
+                    )
+                elif operation == "elif":
+                    if not groups:
+                        fail(f"unmatched #elif in {path.relative_to(ROOT)}")
+                    groups[-1]["profile"] = groups[-1]["profile"] or any(
+                        name in expression for name in PROFILE_NAMES
+                    )
+                elif operation == "else":
+                    if not groups:
+                        fail(f"unmatched #else in {path.relative_to(ROOT)}")
+                else:
+                    if not groups:
+                        fail(f"unmatched #endif in {path.relative_to(ROOT)}")
+                    groups.pop()
+                continue
+
+            match = type_declaration.match(line)
+            if match is not None and groups:
+                candidates.append((match.group(1), match.group(2), list(groups)))
+
+        if groups:
+            fail(f"unterminated preprocessor group in {path.relative_to(ROOT)}")
+        relative = path.relative_to(ROOT).as_posix()
+        for kind, name, owners in candidates:
+            if any(owner["profile"] for owner in owners):
+                declarations[(relative, kind, name)] += 1
+
+    return declarations
+
+
+def read_profile_declaration_baseline() -> Counter[tuple[str, str, str]]:
+    if not PROFILE_DECLARATION_BASELINE.exists():
+        fail("missing config/semantic-profile-declaration-debt.txt")
+
+    baseline: Counter[tuple[str, str, str]] = Counter()
+    for line_number, raw_line in enumerate(
+        PROFILE_DECLARATION_BASELINE.read_text(encoding="utf-8").splitlines(), 1
+    ):
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        fields = raw_line.split("\t")
+        if len(fields) != 4:
+            fail(
+                "malformed semantic profile declaration baseline at line "
+                f"{line_number}"
+            )
+        count_text, path, kind, name = fields
+        try:
+            count = int(count_text)
+        except ValueError:
+            fail(
+                "non-integer semantic profile declaration count at line "
+                f"{line_number}"
+            )
+        if count <= 0 or kind not in ("struct", "class", "union"):
+            fail(
+                "invalid semantic profile declaration baseline entry at line "
+                f"{line_number}"
+            )
+        key = (path, kind, name)
+        if key in baseline:
+            fail(
+                "duplicate semantic profile declaration baseline entry at line "
+                f"{line_number}"
+            )
+        baseline[key] = count
+    return baseline
+
+
+def format_profile_declaration(key: tuple[str, str, str], count: int) -> str:
+    path, kind, name = key
+    return f"{count} x {path}: {kind} {name}"
+
+
+def check_profile_selected_declaration_debt() -> None:
+    current = profile_selected_declarations()
+    baseline = read_profile_declaration_baseline()
+    additions = current - baseline
+    removals = baseline - current
+    if additions:
+        details = "; ".join(
+            format_profile_declaration(key, count)
+            for key, count in sorted(additions.items())
+        )
+        fail(
+            "new profile-selected type declaration debt is forbidden; move the "
+            f"declaration to shared source or a profile-free *Emission* adapter: {details}"
+        )
+    if removals:
+        details = "; ".join(
+            format_profile_declaration(key, count)
+            for key, count in sorted(removals.items())
+        )
+        fail(
+            "profile-selected declaration debt was removed; shrink the baseline "
+            f"now so it cannot regress: {details}"
+        )
+
+    for path in sorted(SRC.rglob("*Emission*")):
+        if path.suffix not in (".hpp", ".inl", ".cpp"):
+            continue
+        text = path.read_text(encoding="utf-8")
+        if any(name in text for name in PROFILE_NAMES):
+            fail(
+                f"{path.relative_to(ROOT)} is an emission adapter and must not "
+                "contain a second build-profile selector"
+            )
 
 
 def enum_entries(path: Path, enum_name: str, prefix: str) -> list[tuple[str, int]]:
@@ -242,8 +394,19 @@ def check_ecl_extended_type_boundaries() -> None:
 
 def check_photo_bullet_owner() -> None:
     header = (SRC / "PhotoBulletManager.hpp").read_text(encoding="utf-8")
+    descriptor = (SRC / "PhotoBulletSpawnDescriptor.hpp").read_text(
+        encoding="utf-8"
+    )
     if "TH095_MATCH_EXACT" in header or "DIFFBUILD" in header:
         fail("canonical PhotoBulletManager.hpp must not select a build-profile layout")
+    if "TH095_MATCH_EXACT" in descriptor or "DIFFBUILD" in descriptor:
+        fail("canonical PhotoBulletSpawnDescriptor.hpp must be profile-independent")
+    if '#include "PhotoBulletSpawnDescriptor.hpp"' not in header:
+        fail("PhotoBulletManager.hpp must consume the shared spawn descriptor")
+    if len(re.findall(r"\bstruct\s+PhotoBulletSpawnDescriptor\s*\{", descriptor)) != 1:
+        fail("PhotoBulletSpawnDescriptor.hpp must define exactly one descriptor")
+    if re.search(r"\bstruct\s+PhotoBulletSpawnDescriptor\s*\{", header):
+        fail("PhotoBulletManager.hpp must not restore a duplicate spawn descriptor")
     if len(re.findall(r"\bstruct\s+PhotoBulletManagerView\s*\{", header)) != 1:
         fail("PhotoBulletManager.hpp must define exactly one canonical BulletInf owner")
     required_layout = (
@@ -313,13 +476,36 @@ def check_photo_bullet_owner() -> None:
 
 
 def check_photo_enemy_owner() -> None:
-    header = (SRC / "PhotoEnemyManager.hpp").read_text(encoding="utf-8")
-    if "TH095_MATCH_EXACT" in header or "DIFFBUILD" in header:
+    element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
+    manager = (SRC / "PhotoEnemyManager.hpp").read_text(encoding="utf-8")
+    if any(name in element for name in PROFILE_NAMES):
+        fail("canonical PhotoEnemy.hpp must not select a build-profile layout")
+    if any(name in manager for name in PROFILE_NAMES):
         fail("canonical PhotoEnemyManager.hpp must not select a build-profile layout")
-    if len(re.findall(r"\bstruct\s+PhotoEnemyManagerView\s*\{", header)) != 1:
+    if len(re.findall(r"\bstruct\s+PhotoEnemyView\s*\{", element)) != 1:
+        fail("PhotoEnemy.hpp must define exactly one canonical compact enemy owner")
+    if len(re.findall(r"\bstruct\s+PhotoEnemyManagerView\s*\{", manager)) != 1:
         fail("PhotoEnemyManager.hpp must define exactly one canonical EnemyInf owner")
-    required_layout = (
-        "sizeof(PhotoEnemySlotStorage) == 0x4cc0",
+    required_element_layout = (
+        "sizeof(PhotoEnemyView) == 0x4cc0",
+        "offsetof(PhotoEnemyView, position) == 0x28a0",
+        "offsetof(PhotoEnemyView, worldPosition) == 0x28f4",
+        "offsetof(PhotoEnemyView, movementAngle) == 0x2900",
+        "offsetof(PhotoEnemyView, speed) == 0x2914",
+        "offsetof(PhotoEnemyView, life) == 0x2958",
+        "offsetof(PhotoEnemyView, flags1) == 0x2bf4",
+        "offsetof(PhotoEnemyView, childEclBlocks) == 0x2cac",
+        "offsetof(PhotoEnemyView, attachedVmId) == 0x4cbc",
+    )
+    for fact in required_element_layout:
+        if fact not in element:
+            fail(f"canonical compact enemy layout lost assertion: {fact}")
+    if '#include "PhotoBulletSpawnDescriptor.hpp"' not in element:
+        fail("PhotoEnemy.hpp must consume the dependency-light bullet descriptor")
+    if '#include "PhotoBulletManager.hpp"' in element:
+        fail("PhotoEnemy.hpp must not import the complete BulletInf owner")
+
+    required_manager_layout = (
         "offsetof(PhotoEnemyManagerView, timelines) == 0x4cc0",
         "offsetof(PhotoEnemyManagerView, drawGroupHeads) == 0x4dc0",
         "offsetof(PhotoEnemyManagerView, eclManager) == 0x4df4",
@@ -331,12 +517,18 @@ def check_photo_enemy_owner() -> None:
         "offsetof(PhotoEnemyManagerView, eclPhotoCardSession) == 0x26ae28",
         "sizeof(PhotoEnemyManagerView) == 0x26ae30",
     )
-    for fact in required_layout:
-        if fact not in header:
+    for fact in required_manager_layout:
+        if fact not in manager:
             fail(f"canonical EnemyInf layout lost assertion: {fact}")
-    if "u8 unknown4dfc[4]" not in header:
+    if "PhotoEnemyView spawnTemplate" not in manager:
+        fail("EnemyInf must embed the canonical compact spawn template directly")
+    if "PhotoEnemyView enemyPool[128]" not in manager:
+        fail("EnemyInf must embed the canonical 128-element pool directly")
+    if "PhotoEnemySlotStorage" in manager or "PhotoEnemySlotStorage" in element:
+        fail("retired raw PhotoEnemySlotStorage must not be restored")
+    if "u8 unknown4dfc[4]" not in manager:
         fail("EnemyInf +0x4DFC must remain opaque pending producer/lifetime proof")
-    if "alternateEnemyAnm" in header or "secondaryEnemyAnm" in header:
+    if "alternateEnemyAnm" in manager or "secondaryEnemyAnm" in manager:
         fail("EnemyInf +0x4DFC was named without producer/lifetime proof")
 
     legacy = (SRC / "EnemyManager.hpp").read_text(encoding="utf-8")
@@ -368,11 +560,38 @@ def check_photo_enemy_owner() -> None:
         if 'PhotoEnemyManager.hpp"' not in text:
             fail(f"{path.relative_to(SRC)} must consume canonical PhotoEnemyManager.hpp")
 
-    update = (SRC / "EnemyManagerUpdate.cpp").read_text(encoding="utf-8")
-    if "PhotoEnemySlotStorage::PhotoEnemySlotStorage()" not in update:
-        fail("normal EnemyInf slots must construct their compact enemy objects")
-    if "this->Get()->~PhotoEnemyView();" not in update:
-        fail("normal EnemyInf slots must destroy their compact enemy objects")
+    canonical_element_consumers = (
+        SRC / "EnemyManagerUpdate.cpp",
+        SRC / "PhotoRuntime.cpp",
+        SRC / "PhotoCamera.cpp",
+        SRC / "PhotoEffect.cpp",
+        SRC / "EclHelpers.cpp",
+    )
+    for path in canonical_element_consumers:
+        text = path.read_text(encoding="utf-8")
+        if 'PhotoEnemy.hpp"' not in text and 'PhotoEnemyManager.hpp"' not in text:
+            fail(f"{path.relative_to(SRC)} must consume canonical PhotoEnemyView")
+        if re.search(r"\bstruct\s+PhotoEnemyView\s*\{", text):
+            fail(f"{path.relative_to(SRC)} must not redefine PhotoEnemyView")
+
+    compatibility = (SRC / "ecl" / "EnemyEclRuntimeView.hpp").read_text(
+        encoding="utf-8"
+    )
+    if re.search(r"\bstruct\s+EnemyEclRuntimeView\s*\{", compatibility):
+        fail("EnemyEclRuntimeView.hpp must not restore a duplicate enemy layout")
+
+    required_emission_adapters = (
+        SRC / "EnemyShotAnmEmission.hpp",
+        SRC / "EclDependenciesPhotoEnemyEmission.hpp",
+        SRC / "EclHelpersPhotoEnemyEmission.hpp",
+        SRC / "ecl" / "PhotoEnemyEclEmission.hpp",
+    )
+    for path in required_emission_adapters:
+        if not path.exists():
+            fail(f"missing named EnemyInf emission adapter: {path.relative_to(ROOT)}")
+        text = path.read_text(encoding="utf-8")
+        if any(name in text for name in PROFILE_NAMES):
+            fail(f"{path.relative_to(ROOT)} must not contain a profile selector")
 
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if "PhotoEnemyManagerView *>(TH095_ECL_RUNTIME)->enemyAnm" not in ecl_run:
@@ -405,6 +624,7 @@ def check_small_closed_domains() -> None:
 
 
 def main() -> int:
+    check_profile_selected_declaration_debt()
     check_anm_opcode_protocol()
     check_background_protocol()
     check_background_owner()
@@ -414,6 +634,7 @@ def main() -> int:
     check_photo_enemy_owner()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
+    print("  profile-selected type declarations: closed historical debt baseline")
     print("  canonical ANM opcode domain: -1..87 explicit")
     print("  Background stage opcode dispatch: 15/15 named")
     print("  Background owner: one profile-independent 0x201C declaration")

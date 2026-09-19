@@ -5,6 +5,7 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoEnemy.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoEnemyManager.hpp"
 #endif
@@ -20,9 +21,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-#include <new>
-#endif
 
 namespace th095
 {
@@ -115,61 +113,6 @@ struct EclManager
     reinterpret_cast<EclManager *>(manager)->RunEcl( \
         reinterpret_cast<Enemy *>(enemy))
 #endif
-
-struct PhotoEnemyEclInterpolationSlotView
-{
-    void *callback;
-    ZunTimer timer;
-    u8 unknown010[0x20];
-
-    PhotoEnemyEclInterpolationSlotView()
-    {
-    }
-};
-
-typedef char PhotoEnemyEclInterpolationSlotSizeIs30[
-    (sizeof(PhotoEnemyEclInterpolationSlotView) == 0x30) ? 1 : -1];
-
-#if !defined(TH095_MATCH_EXACT)
-struct PhotoEnemyEclScriptStateView
-{
-    i32 intVariables[8];
-    f32 floatVariables[8];
-    i32 extraIntVariables[4];
-    f32 extraFloatVariables[4];
-    i32 callParameterInts[4];
-    f32 callParameterFloats[4];
-};
-typedef char PhotoEnemyEclScriptStateSizeIs80[
-    (sizeof(PhotoEnemyEclScriptStateView) == 0x80) ? 1 : -1];
-#endif
-
-struct PhotoEnemyEclContextView
-{
-    void *currentInstruction;
-    ZunTimer time;
-#if defined(TH095_MATCH_EXACT)
-    u8 unknown010[0x98 - 0x10];
-#else
-    u8 unknown010[8];
-    PhotoEnemyEclScriptStateView scriptState; // +0x018
-#endif
-    ZunTimer secondaryTime;
-    PhotoEnemyEclInterpolationSlotView interpolationSlots[8];
-    u8 unknown224[8];
-    i16 subroutineId;
-
-    PhotoEnemyEclContextView();
-};
-
-#if !defined(TH095_MATCH_EXACT)
-typedef char PhotoEnemyEclContextScriptStateAt18[
-    (offsetof(PhotoEnemyEclContextView, scriptState) == 0x18) ? 1 : -1];
-#endif
-typedef char PhotoEnemyEclContextSecondaryTimerAt98[
-    (offsetof(PhotoEnemyEclContextView, secondaryTime) == 0x98) ? 1 : -1];
-typedef char PhotoEnemyEclContextSubroutineAt22C[
-    (offsetof(PhotoEnemyEclContextView, subroutineId) == 0x22c) ? 1 : -1];
 
 PhotoEnemyEclContextView::PhotoEnemyEclContextView()
 {
@@ -276,6 +219,9 @@ struct PhotoEnemyTimelineView
 
     void Run();
 };
+
+typedef char PhotoEnemyTimelineSizeIs10[
+    (sizeof(PhotoEnemyTimelineView) == 0x10) ? 1 : -1];
 #endif
 
 struct PhotoEnemyTimelineInstruction
@@ -326,11 +272,6 @@ struct PhotoEnemyTimelineExtendedSpawnArgs
     i32 timelineParam1;
     i32 score;
 };
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-typedef char PhotoEnemyTimelineSizeIs10[
-    (sizeof(PhotoEnemyTimelineView) == 0x10) ? 1 : -1];
-#endif
 
 #ifdef TH095_MATCH_EXACT
 struct PhotoEnemyAnmSpawnerView
@@ -396,52 +337,6 @@ extern PhotoEnemySceneDefinitionView *g_PhotoEnemySceneDefinition;
 #define TH095_PHOTO_ENEMY_SCENE g_SelectedScene
 #endif
 
-struct PhotoEnemyBulletSpawnDescriptorView
-{
-    u8 unknown000[0x200];
-    i32 spawnSound;
-    i32 transformSound;
-    u8 unknown208[8];
-
-    PhotoEnemyBulletSpawnDescriptorView()
-    {
-        memset(this, 0, sizeof(*this));
-        this->transformSound = -1;
-    }
-};
-
-struct PhotoEnemyTrailSampleView
-{
-    Float3 position;
-    Float3 velocity;
-    f32 angle;
-
-    PhotoEnemyTrailSampleView()
-    {
-    }
-};
-
-typedef char PhotoEnemyBulletSpawnDescriptorSizeIs210[
-    (sizeof(PhotoEnemyBulletSpawnDescriptorView) == 0x210) ? 1 : -1];
-typedef char PhotoEnemyTrailSampleSizeIs1C[
-    (sizeof(PhotoEnemyTrailSampleView) == 0x1c) ? 1 : -1];
-
-// The target enemy constructor treats these embedded handles as POD storage.
-// Individual users take an AnmVmId view when they need handle operations.
-struct PhotoEnemyAnmVmIdStorage
-{
-    i32 value;
-};
-
-struct PhotoEnemyScheduledCall
-{
-    i16 subroutineId;
-    i16 unknown02;
-};
-
-typedef char PhotoEnemyScheduledCallSizeIs4[
-    (sizeof(PhotoEnemyScheduledCall) == 4) ? 1 : -1];
-
 extern PhotoEnemyBulletManagerView *g_PhotoEnemyBulletManager;
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 extern PhotoEnemyPlayerView *g_PhotoEnemyPlayer;
@@ -468,202 +363,6 @@ extern f32 g_GameSpeed;
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyGameView, g_RuntimePlayerOwner)
 #endif
 
-#if defined(TH095_MATCH_EXACT)
-#define TH095_PHOTO_ENEMY_MAIN_ECL_SUBROUTINE_ID mainEclSubroutineId
-#define TH095_PHOTO_ENEMY_PHOTO_TARGET_ECL_SUBROUTINE_ID photoTargetEclSubroutineId
-#define TH095_PHOTO_ENEMY_PENDING_ECL_SUBROUTINE_INDEX timelineValue
-#else
-#define TH095_PHOTO_ENEMY_MAIN_ECL_SUBROUTINE_ID eclSubroutineIds[30]
-#define TH095_PHOTO_ENEMY_PHOTO_TARGET_ECL_SUBROUTINE_ID eclSubroutineIds[31]
-#define TH095_PHOTO_ENEMY_PENDING_ECL_SUBROUTINE_INDEX pendingEclSubroutineIndex
-#endif
-
-struct PhotoEnemyView
-{
-    PhotoEnemyView *nextInDrawGroup;       // +0x0000
-    u8 unknown0004[4];
-    AnmVm vm;                              // +0x0008
-    i32 anmHandles[2];                     // +0x02d4
-    PhotoEnemyEclContextView mainEclContext; // +0x02dc
-    PhotoEnemyEclContextView eclCallStack[16]; // +0x050c
-    PhotoEnemyEclContextView *activeEclContext; // +0x280c
-    PhotoEnemyEclContextView *activeEclCallStack; // +0x2810
-    i32 eclIntVariables[8];                // +0x2814
-    f32 eclFloatVariables[8];              // +0x2834
-    i16 mainEclCallStackDepth;             // +0x2854
-    i16 activeEclCallStackDepth;           // +0x2856
-    u8 unknown2858[2];
-    i16 photoCaptureEclSubroutineId;             // +0x285a
-#if defined(TH095_MATCH_EXACT)
-    u8 unknown285c[0x3c];
-    i16 mainEclSubroutineId;                // +0x2898
-    i16 photoTargetEclSubroutineId;         // +0x289a
-    i16 timelineValue;                     // +0x289c
-#else
-    i16 eclSubroutineIds[32];               // +0x285c
-    i16 pendingEclSubroutineIndex;          // +0x289c
-#endif
-    u8 unknown289e[2];
-    D3DXVECTOR3 position;                  // +0x28a0
-    u8 unknown28ac[0x28b8 - 0x28ac];
-    D3DXVECTOR3 velocity;                  // +0x28b8
-    D3DXVECTOR3 previousPosition;          // +0x28c4
-    D3DXVECTOR3 positionDelta;             // +0x28d0
-    Float3 collisionSize;                  // +0x28dc
-    u8 unknown28e8[0x28f4 - 0x28e8];
-    Float3 worldPosition;                 // +0x28f4
-    f32 angularVelocity;                    // +0x2900
-    f32 movementAngle;                      // +0x2904
-    u8 unknown2908[0x0c];
-    f32 acceleration;                       // +0x2914
-    f32 speed;                              // +0x2918
-    u8 unknown291c[8];
-    Float3 shootOffset;                     // +0x2924
-    u8 unknown2930[0x18];
-    ZunTimer movementTimer;                 // +0x2948
-    i32 movementDuration;                  // +0x2954
-    i32 life;                              // +0x2958
-    i32 maximumLife;                       // +0x295c
-    i32 phaseStartingLife;                 // +0x2960
-    i32 score;                             // +0x2964
-    i32 enemyIndex;                        // +0x2968
-    ZunTimer eclTimer;                     // +0x296c
-    ZunTimer stateTimer;                   // +0x2978
-    u8 unknown2984[4];
-    u32 displayColor;                      // +0x2988
-    PhotoEnemyBulletSpawnDescriptorView bulletSpawnDescriptor; // +0x298c
-    u8 unknown2b9c[0x2c];
-    i32 shootIntervalFrames;                // +0x2bc8
-    ZunTimer shootIntervalTimer;           // +0x2bcc
-    i32 itemDropType;                      // +0x2bd8
-    i32 timelineParam0;                    // +0x2bdc
-    i32 timelineParam1;                    // +0x2be0
-#if defined(TH095_MATCH_EXACT)
-    u8 unknown2be4[4];
-#else
-    u8 unknown2be4;
-    u8 photoTargetSlot;                    // +0x2be5
-    u8 unknown2be6[2];
-#endif
-    ZunTimer auxiliaryTimer;               // +0x2be8
-    union
-    {
-        u32 flags1;                        // +0x2bf4
-        struct
-        {
-            u32 active : 1;
-            u32 photoTarget : 1;
-            u32 collidable : 1;
-            u32 unknownFlags003 : 1;
-            u32 hiddenFromDrawGroups : 1;
-            u32 unknownFlags005 : 3;
-            u32 lifecycleState : 2;
-            u32 unknownFlags010 : 6;
-            u32 mirrorMovementX : 1;
-            u32 clampToMovementBounds : 1;
-            u32 unknownFlags018 : 4;
-            u32 hasEnteredPlayfield : 1;
-            u32 unknownFlags023 : 3;
-            u32 skipOffscreenCheck : 1;
-            u32 unknownFlags027 : 5;
-        };
-    };
-    union
-    {
-        u32 flags2;                        // +0x2bf8
-        struct
-        {
-            u32 unknownFlags2_000 : 6;
-            u32 showPhotoMarker : 1;
-            u32 freezeAttachedVm : 1;
-            u32 unknownFlags2_008 : 24;
-        };
-    };
-    ZunTimer photoMarkerPulseTimer;         // +0x2bfc
-    u8 unknown2c08[3];
-    u8 drawGroup;                          // +0x2c0b
-    u8 unknown2c0c[2];
-    i16 idleAnmScript;                      // +0x2c0e
-    u8 unknown2c10[4];
-    i16 moveLeftAnmScript;                  // +0x2c14
-    i16 moveRightAnmScript;                 // +0x2c16
-    u8 unknown2c18[4];
-    PhotoEnemyAnmVmIdStorage photoPulseVmId; // +0x2c1c
-    PhotoEnemyAnmVmIdStorage photoMarkerVmId; // +0x2c20
-    ZunTimer photoPulseTimer;              // +0x2c24
-    ZunTimer photoPulseDurationTimer;      // +0x2c30
-    Float2 movementBoundsMin;               // +0x2c3c
-    Float2 movementBoundsMax;               // +0x2c44
-    f32 minimumPlayerDistanceSquared;       // +0x2c4c
-    u8 unknown2c50[4];
-    i32 scheduledCallFrames[10];            // +0x2c54
-    PhotoEnemyScheduledCall scheduledCalls[10]; // +0x2c7c
-    i32 pendingCallbackFrame;               // +0x2ca4
-    u8 unknown2ca8[4];
-#if defined(TH095_MATCH_EXACT)
-    void *allocatedEclArgs[16];              // +0x2cac
-#else
-    EnemyChildEclBlock *childEclBlocks[16];  // +0x2cac
-#endif
-    PhotoEnemyTrailSampleView trailSamples[96]; // +0x2cec
-    VertexTex1DiffuseXyzrhw trailVertices[194]; // +0x376c
-    u8 unknown4ca4[8];
-    ZunTimer timer4cac;                     // +0x4cac
-    u8 unknown4cb8[4];
-    PhotoEnemyAnmVmIdStorage attachedVmId; // +0x4cbc
-
-    PhotoEnemyView();
-    ~PhotoEnemyView()
-    {
-    }
-    void IntegrateMovement();
-    void ClampPosition();
-    void RestartEcl();
-    void UpdatePhotoMarkerPulse();
-    i32 UpdateScheduledEclCalls();
-    void Deactivate();
-};
-
-typedef char PhotoEnemySizeIs4CC0[
-    (sizeof(PhotoEnemyView) == 0x4cc0) ? 1 : -1];
-typedef char PhotoEnemyVmAt8[
-    (offsetof(PhotoEnemyView, vm) == 0x08) ? 1 : -1];
-typedef char PhotoEnemyPositionAt28A0[
-    (offsetof(PhotoEnemyView, position) == 0x28a0) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT)
-typedef char PhotoEnemyMainEclContextAt2DC[
-    (offsetof(PhotoEnemyView, mainEclContext) == 0x2dc) ? 1 : -1];
-typedef char PhotoEnemyMainEclScriptStateAt2F4[
-    (offsetof(PhotoEnemyView, mainEclContext) +
-         offsetof(PhotoEnemyEclContextView, scriptState) == 0x2f4) ? 1 : -1];
-#endif
-#if !defined(TH095_MATCH_EXACT)
-typedef char PhotoEnemyPhotoTargetSlotAt2BE5[
-    (offsetof(PhotoEnemyView, photoTargetSlot) == 0x2be5) ? 1 : -1];
-#endif
-typedef char PhotoEnemyFlagsAt2BF4[
-    (offsetof(PhotoEnemyView, flags1) == 0x2bf4) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT)
-typedef char PhotoEnemyChildEclBlocksAt2CAC[
-    (offsetof(PhotoEnemyView, childEclBlocks) == 0x2cac) ? 1 : -1];
-#endif
-typedef char PhotoEnemyTrailSamplesAt2CEC[
-    (offsetof(PhotoEnemyView, trailSamples) == 0x2cec) ? 1 : -1];
-typedef char PhotoEnemyTrailVerticesAt376C[
-    (offsetof(PhotoEnemyView, trailVertices) == 0x376c) ? 1 : -1];
-typedef char PhotoEnemyAttachedVmAt4CBC[
-    (offsetof(PhotoEnemyView, attachedVmId) == 0x4cbc) ? 1 : -1];
-
-#if defined(TH095_MATCH_EXACT)
-#define PHOTO_ENEMY_CHILD_ECL_BLOCKS(owner) owner->allocatedEclArgs
-#define PHOTO_ENEMY_MAIN_ECL_CONTEXT(owner) \
-    reinterpret_cast<PhotoEnemyEclContextView *>( \
-        reinterpret_cast<u8 *>(owner) + 0x2dc)
-#else
-#define PHOTO_ENEMY_CHILD_ECL_BLOCKS(owner) owner->childEclBlocks
-#define PHOTO_ENEMY_MAIN_ECL_CONTEXT(owner) (&(owner)->mainEclContext)
-#endif
-
 PhotoEnemyView::PhotoEnemyView()
 {
     // The target's VC7.1 constructor frame retains two unconsumed local slots.
@@ -671,16 +370,6 @@ PhotoEnemyView::PhotoEnemyView()
 }
 
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-PhotoEnemySlotStorage::PhotoEnemySlotStorage()
-{
-    new (this) PhotoEnemyView;
-}
-
-PhotoEnemySlotStorage::~PhotoEnemySlotStorage()
-{
-    this->Get()->~PhotoEnemyView();
-}
-
 PhotoEnemyTimelineView::PhotoEnemyTimelineView()
 {
 }
@@ -780,10 +469,10 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
     enemy->collisionSize = Float3(24.0f, 24.0f, 24.0f);
     *reinterpret_cast<Float3 *>(&enemy->velocity) =
         Float3(0.0f, 0.0f, 0.0f);
-    enemy->movementAngle = 0.0f;
     enemy->angularVelocity = 0.0f;
-    enemy->speed = 0.0f;
+    enemy->movementAngle = 0.0f;
     enemy->acceleration = 0.0f;
+    enemy->speed = 0.0f;
     enemy->flags1 &= ~0x00000c00;
     enemy->flags1 &= ~0x00008000;
     enemy->flags1 &= ~0x00010000;
@@ -806,7 +495,7 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
     enemy->flags1 &= ~0x001c0000;
     enemy->photoCaptureEclSubroutineId = -1;
     enemy->flags1 &= ~0x00020000;
-    enemy->TH095_PHOTO_ENEMY_PENDING_ECL_SUBROUTINE_INDEX = -1;
+    enemy->pendingEclSubroutineIndex = -1;
     for (i = 0; i < 10; ++i)
     {
         enemy->scheduledCallFrames[i] = -1;
@@ -856,7 +545,7 @@ i32 PhotoEnemyManagerView::LoadResources()
 static __forceinline void FreePhotoEnemyChildEclBlock(
     PhotoEnemyView *enemy, i32 argumentIndex)
 {
-    void *argument = PHOTO_ENEMY_CHILD_ECL_BLOCKS(enemy)[argumentIndex];
+    void *argument = enemy->childEclBlocks[argumentIndex];
     free(argument);
 }
 
@@ -871,7 +560,7 @@ PhotoEnemyManagerView::~PhotoEnemyManagerView()
     {
         for (i32 argumentIndex = 0; argumentIndex < 16; ++argumentIndex)
         {
-            if (PHOTO_ENEMY_CHILD_ECL_BLOCKS(enemy)[argumentIndex] != NULL)
+            if (enemy->childEclBlocks[argumentIndex] != NULL)
             {
                 FreePhotoEnemyChildEclBlock(enemy, argumentIndex);
             }
@@ -1026,7 +715,7 @@ void PhotoEnemyTimelineView::Run()
                 g_PhotoEnemyManager->timelineEnemySlots[
                     reinterpret_cast<i32 *>(
                         reinterpret_cast<u8 *>(this->instruction) + 8)[0]]
-                    ->TH095_PHOTO_ENEMY_PENDING_ECL_SUBROUTINE_INDEX = static_cast<i16>(
+                    ->pendingEclSubroutineIndex = static_cast<i16>(
                         reinterpret_cast<i32 *>(
                             reinterpret_cast<u8 *>(this->instruction) + 8)[1]);
                 break;
@@ -1096,7 +785,7 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
         }
         *reinterpret_cast<Float3 *>(&enemy->position) = *position;
         TH095_PHOTO_ECL_INIT(this->eclManager,
-            PHOTO_ENEMY_MAIN_ECL_CONTEXT(enemy),
+            &enemy->mainEclContext,
             static_cast<i16>(subroutineId));
         if (TH095_PHOTO_ECL_RUN(this->eclManager, enemy) == ZUN_ERROR)
         {
@@ -1155,7 +844,7 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
         }
         *reinterpret_cast<Float3 *>(&enemy->position) = *position;
         TH095_PHOTO_ECL_INIT(this->eclManager,
-            PHOTO_ENEMY_MAIN_ECL_CONTEXT(enemy),
+            &enemy->mainEclContext,
             static_cast<i16>(subroutineId));
 #if defined(TH095_MATCH_EXACT)
         *reinterpret_cast<EnemyContextCopy *>(
@@ -1187,7 +876,7 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
 }
 
 static __forceinline i32 IsPhotoEnemyOutsidePlayfield(
-    D3DXVECTOR3 *position, f32 spriteWidth, f32 spriteHeight)
+    Float3 *position, f32 spriteWidth, f32 spriteHeight)
 {
     return spriteWidth + position->x <= -192.0f ||
         position->x - spriteWidth >= 192.0f ||
@@ -1498,8 +1187,8 @@ void PhotoEnemyView::UpdatePhotoMarkerPulse()
 void PhotoEnemyView::RestartEcl()
 {
     TH095_PHOTO_ECL_INIT(g_PhotoEnemyManager->eclManager,
-        PHOTO_ENEMY_MAIN_ECL_CONTEXT(this),
-        this->TH095_PHOTO_ENEMY_MAIN_ECL_SUBROUTINE_ID);
+        &this->mainEclContext,
+        this->eclSubroutineIds[30]);
 }
 
 void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargets(
@@ -1543,10 +1232,9 @@ void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
         {
             TH095_PHOTO_ECL_INIT(
                 enemyManager->eclManager,
-                PHOTO_ENEMY_MAIN_ECL_CONTEXT(
-                    enemyManager->photoTargets[targetIndex]),
+                &enemyManager->photoTargets[targetIndex]->mainEclContext,
                 enemyManager->photoTargets[targetIndex]
-                    ->TH095_PHOTO_ENEMY_PHOTO_TARGET_ECL_SUBROUTINE_ID);
+                    ->eclSubroutineIds[31]);
         }
     }
 }
@@ -1570,9 +1258,9 @@ void PhotoEnemyView::Deactivate()
 
     for (argumentIndex = 0; argumentIndex < 16; ++argumentIndex)
     {
-        if (PHOTO_ENEMY_CHILD_ECL_BLOCKS(this)[argumentIndex] != NULL)
+        if (this->childEclBlocks[argumentIndex] != NULL)
         {
-            void *argument = PHOTO_ENEMY_CHILD_ECL_BLOCKS(this)[argumentIndex];
+            void *argument = this->childEclBlocks[argumentIndex];
             free(argument);
         }
     }
@@ -1615,17 +1303,17 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
         if (scheduledCurrentFrame >= this->scheduledCallFrames[scheduleIndex])
         {
             TH095_PHOTO_ECL_INIT(g_PhotoEnemyManager->eclManager,
-                PHOTO_ENEMY_MAIN_ECL_CONTEXT(this),
+                &this->mainEclContext,
                 this->scheduledCalls[scheduleIndex].subroutineId);
             this->scheduledCallFrames[scheduleIndex] = -1;
 
             for (scheduledArgumentIndex = 0; scheduledArgumentIndex < 16; ++scheduledArgumentIndex)
             {
-                if (PHOTO_ENEMY_CHILD_ECL_BLOCKS(this)[scheduledArgumentIndex] != NULL)
+                if (this->childEclBlocks[scheduledArgumentIndex] != NULL)
                 {
-                    void *argument = PHOTO_ENEMY_CHILD_ECL_BLOCKS(this)[scheduledArgumentIndex];
+                    void *argument = this->childEclBlocks[scheduledArgumentIndex];
                     free(argument);
-                    PHOTO_ENEMY_CHILD_ECL_BLOCKS(this)[scheduledArgumentIndex] = NULL;
+                    this->childEclBlocks[scheduledArgumentIndex] = NULL;
                 }
             }
 
@@ -1655,5 +1343,3 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
 #if defined(TH095_MATCH_EXACT)
 #undef FreePhotoEnemyChildEclBlock
 #endif
-#undef PHOTO_ENEMY_MAIN_ECL_CONTEXT
-#undef PHOTO_ENEMY_CHILD_ECL_BLOCKS

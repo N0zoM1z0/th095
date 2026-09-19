@@ -4,6 +4,7 @@
 #include "BulletManager.hpp"
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #include "BackgroundEclEmission.hpp"
+#include "PhotoEnemyEclEmission.hpp"
 #else
 #include "Background.hpp"
 #endif
@@ -307,10 +308,6 @@ struct PhotoCardInfoView
     static PhotoCardInfoView *__fastcall Create(char *text);
     i32 Show();
     void Destroy();
-};
-struct PhotoEnemyView
-{
-    void ClampPosition();
 };
 extern AnmManager *g_AnmManager;
 static __forceinline Enemy *Th095EclSpawnEnemy(

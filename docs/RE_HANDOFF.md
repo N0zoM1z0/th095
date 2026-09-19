@@ -52,40 +52,46 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The semantic source checkpoint is commit `690cb98` (SEM-270). Current owner
-state is deliberately narrower than subsystem completion:
+The current semantic source checkpoint is SEM-271. Owner closure remains
+deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
 | --- | --- |
 | Background `0x201C` | Canonical normal owner closed in `Background.hpp`; one narrow EclRun emission adapter remains. |
 | BulletInf `0x27C5B8` | Canonical normal owner closed in `PhotoBulletManager.hpp`; exact receiver spellings are emission adapters. |
-| EnemyInf manager `0x26AE30` | Canonical normal owner closed in `PhotoEnemyManager.hpp`; `enemyAnm @ +0x4DF8` is proved. |
-| Compact enemy element `0x4CC0` | Open: normal code still has overlapping observation views. |
+| EnemyInf manager `0x26AE30` | Canonical normal owner closed in `PhotoEnemyManager.hpp`; it directly embeds the compact template and 128-element pool; `enemyAnm @ +0x4DF8` is proved. |
+| Compact enemy element `0x4CC0` | Canonical profile-independent owner established in `PhotoEnemy.hpp`; major normal consumers are unified, while EnemyMovement/operand/RunEcl legacy projections remain explicit debt. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
+| Profile-selected declarations | CI locks 285 historical keys / 290 occurrences as an exact shrink-only baseline; new declarations and profile selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
 compatibility ABI, not the TH095 EnemyInf allocation created at `0x004149F0`.
 Do not migrate its layout or names into the compact TH095 owner.
 
-Affected replay passed 163/163 exact with zero private-label refresh. The cold
-aggregate passed 696/696 exact across all 88 sources, also with zero refresh.
-The separate normal build path compiled all 88 pinned-VC7.1 i386 COFF objects
-and linked a verified 780,800-byte PE32 executable with build-local SHA-256
-`40740e513f1381a4e73c34cf0475ef56e179c86b8076bd53a032ff31c456737a`.
+The cold aggregate passed 696/696 exact across all 88 sources. Across the
+bounded focused replays, 228 compiler-private label names in seven units were
+refreshed only after structural bytes, relocation offsets/types, and solved
+destinations were proved unchanged; no public relocation fact changed. The
+separate normal build compiled all 88 pinned-VC7.1 i386
+COFF objects and linked a verified 780,288-byte PE32 executable with
+build-local SHA-256
+`a8e72ff61f9fd54b7413a1f0517b1620d83da7a780a93d49df46b3273923a481`.
 Target-independent CI passed 51/51 tests. This is compile/link closure, not
 whole-image exactness or runtime credit.
 
 ## Next bounded lane
 
-Continue with the compact `0x4CC0` enemy element, not adjacent manager offsets.
-Audit the overlapping `PhotoEnemyView`, `PhotoTargetEnemyView`, PhotoCamera,
-PhotoEffect, and ECL operand projections against the complete element currently
-implemented in `EnemyManagerUpdate.cpp`. Begin with the already independent
-position pair (`position @ +0x28A0`, `worldPosition @ +0x28F4`) and the shared
-control words at `+0x2BF4/+0x2BF8`; do not substitute the larger TH08-shaped
-`Enemy` layout. Keep manager `+0x4DFC`, unproved compact-element bits, and
-neighboring storage Unknown until producer/lifetime evidence is found.
+Continue with the residual compact-enemy movement ABI in
+`EnemyMovement.cpp`. Reconcile its local `Enemy` declaration and movement
+mode/easing masks against `PhotoEnemy.hpp` and `PhotoEnemyControl.hpp`, while
+preserving the target-facing decorated `Enemy::UpdateMovement` ownership and
+the independently proved TH08 ancestral `legacyWork` local. Do not add another
+profile-selected declaration: if the inherited ECL/ANM include graph prevents
+one shared receiver, first prove that boundary with a minimal compiler oracle
+and keep any necessary declaration in a profile-free named emission adapter.
+After movement, route the four ECL operand TUs through the same compact owner.
+Keep manager `+0x4DFC` and unproved compact-element bits Unknown.
 
 ## Protected working-tree exclusions
 
@@ -105,6 +111,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/EnemyManagerUpdate.cpp --details
-rg -n "PhotoEnemyView|PhotoTargetEnemyView|0x28a0|0x28f4|0x2bf4|0x2bf8" src config docs
+python3 scripts/analysis/report-semantic-debt.py --path src/EnemyMovement.cpp --details
+rg -n "struct Enemy|movementFlags|movementMode|movementEasing|0x2bf4" src/EnemyMovement.cpp src/ecl src/EclOperands*.cpp
 ```

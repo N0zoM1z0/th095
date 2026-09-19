@@ -4,9 +4,7 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
-#ifndef DIFFBUILD
 #include "PhotoEnemyManager.hpp"
-#endif
 #include "PhotoEffectRuntime.hpp"
 #ifndef DIFFBUILD
 #include "PhotoItemManager.hpp"
@@ -166,20 +164,6 @@ extern f32 g_AnmGameSpeed;
 #ifndef DIFFBUILD
 #define g_PhotoGame \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameUpdateView, g_RuntimePlayerOwner)
-#endif
-
-struct PhotoEnemyView
-{
-    u8 unknown0000[0x28a0];
-    PhotoEffectVector position;
-};
-
-#ifdef DIFFBUILD
-struct PhotoEnemyManagerView
-{
-    u8 unknown000000[0x26ae00];
-    PhotoEnemyView *photoTargets[8];
-};
 #endif
 
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
@@ -449,8 +433,12 @@ i32 PhotoRotatingLaserView::Update()
 #endif
         g_PhotoEnemyManager->photoTargets[0] != NULL)
     {
-        this->position =
-            g_PhotoEnemyManager->photoTargets[0]->position;
+        this->position.x =
+            g_PhotoEnemyManager->photoTargets[0]->position.x;
+        this->position.y =
+            g_PhotoEnemyManager->photoTargets[0]->position.y;
+        this->position.z =
+            g_PhotoEnemyManager->photoTargets[0]->position.z;
     }
 
     this->position += this->spawn.velocity * g_AnmGameSpeed;

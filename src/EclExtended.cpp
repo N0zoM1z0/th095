@@ -1,5 +1,6 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoEnemyControl.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "Background.hpp"
 #include "PhotoBulletManager.hpp"
@@ -11,9 +12,6 @@
 #endif
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-#include "ecl/EnemyEclRuntimeView.hpp"
-#endif
 #include <string.h>
 
 namespace th095
@@ -800,30 +798,9 @@ static __forceinline i32 ExtendedCameraIsCharging(
     return camera->mode == 1;
 }
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-struct ExtendedEnemyMovementFlagBits
-{
-    u32 unknown00 : 10;
-    u32 movementMode : 2;
-    u32 movementEasing : 3;
-    u32 unknown15 : 17;
-};
-typedef char ExtendedEnemyMovementFlagBitsSize4[
-    (sizeof(ExtendedEnemyMovementFlagBits) == 4) ? 1 : -1];
-
-struct ExtendedEnemyMovementView
-{
-    u8 unknown0000[0x2bf4];
-    ExtendedEnemyMovementFlagBits movementFlags;
-};
-typedef char ExtendedEnemyMovementFlagsAt2BF4[
-    (offsetof(ExtendedEnemyMovementView, movementFlags) == 0x2bf4) ? 1 : -1];
-
 #define EXT_MOVEMENT_FLAGS(enemy) \
-    (reinterpret_cast<ExtendedEnemyMovementView *>(enemy)->movementFlags)
-#else
-#define EXT_MOVEMENT_FLAGS(enemy) TH095_ENEMY_ECL_CONTROL_BITS(enemy)
-#endif
+    (*reinterpret_cast<PhotoEnemyControlBits *>( \
+        reinterpret_cast<u8 *>(enemy) + 0x2bf4))
 
 // ECL extended callback table entry 20 @ 0x00414580.
 void __fastcall RunPhotoTransition(

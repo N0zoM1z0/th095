@@ -57,6 +57,16 @@ need with a failed clean form and a pinned-compiler comparison, and keep it out
 of the runtime-owner header. Existing profile divergences are debt, not a
 template for new work.
 
+CI enforces this direction. Ordinary production `.cpp`, `.hpp`, and `.inl`
+files may not add a `struct`, `class`, or `union` declaration beneath a
+`TH095_MATCH_EXACT` or `DIFFBUILD` branch. The existing sites are an exact
+closed baseline in `config/semantic-profile-declaration-debt.txt`: deleting a
+site requires shrinking the baseline immediately, while a new, renamed, or
+restored site fails the guard. A named `*Emission*` adapter may contain the
+minimum proved legacy declaration, but the adapter itself must be
+profile-independent and selected only by an outer include route. The baseline
+records debt; it does not semantically accept any listed declaration.
+
 ## Bounded batch workflow
 
 1. Run the repository preflight from `AGENTS.md` and inspect the dirty tree.

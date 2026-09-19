@@ -3,7 +3,8 @@
 #include "ecl/EclManager.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "PhotoEnemyManager.hpp"
-#include "ecl/EnemyEclRuntimeView.hpp"
+#else
+#include "EnemyShotAnmEmission.hpp"
 #endif
 
 namespace th095
@@ -35,77 +36,41 @@ void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruc
         &TH095_ENEMY_MANAGER_RUNTIME->unknown4dfc[0]))
 #endif
 
-struct EnemyLifeView
-{
-    u8 unknown0000[0x2958];
-    i32 life;
-};
-typedef char EnemyLifeAt2958[
-    (offsetof(EnemyLifeView, life) == 0x2958) ? 1 : -1];
-
-struct EnemyShotCadenceView
-{
-    u8 unknown0000[0x2b9c];
-    u8 pendingShotInstruction[0x2c];
-    i32 shootIntervalFrames;
-    ZunTimer shootIntervalTimer;
-};
-typedef char EnemyShotCadencePendingInstructionAt2B9C[
-    (offsetof(EnemyShotCadenceView, pendingShotInstruction) == 0x2b9c) ? 1 : -1];
-typedef char EnemyShotCadenceIntervalAt2BC8[
-    (offsetof(EnemyShotCadenceView, shootIntervalFrames) == 0x2bc8) ? 1 : -1];
-typedef char EnemyShotCadenceTimerAt2BCC[
-    (offsetof(EnemyShotCadenceView, shootIntervalTimer) == 0x2bcc) ? 1 : -1];
-
-struct EnemyAnmDirectionView
-{
-    u8 unknown0000[0x2c0a];
-    u8 anmDirection;
-};
-typedef char EnemyAnmDirectionAt2C0A[
-    (offsetof(EnemyAnmDirectionView, anmDirection) == 0x2c0a) ? 1 : -1];
-
 static __forceinline i32 &TargetEnemyLife(Enemy *enemy)
 {
-    return reinterpret_cast<EnemyLifeView *>(enemy)->life;
+    return reinterpret_cast<PhotoEnemyView *>(enemy)->life;
 }
 static __forceinline EclRawInstruction *TargetEnemyPendingShot(Enemy *enemy)
 {
     return reinterpret_cast<EclRawInstruction *>(
-        reinterpret_cast<EnemyShotCadenceView *>(enemy)->pendingShotInstruction);
+        reinterpret_cast<PhotoEnemyView *>(enemy)->pendingShotInstruction);
 }
 static __forceinline i32 &TargetEnemyShootInterval(Enemy *enemy)
 {
-    return reinterpret_cast<EnemyShotCadenceView *>(enemy)->shootIntervalFrames;
+    return reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalFrames;
 }
 static __forceinline ZunTimer &TargetEnemyShootTimer(Enemy *enemy)
 {
-    return reinterpret_cast<EnemyShotCadenceView *>(enemy)->shootIntervalTimer;
-}
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TargetEnemyEclControlWord TargetEnemyFlags1
-static __forceinline u32 &TargetEnemyEclControlWord(Enemy *enemy)
-{
-    return *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4);
+    return reinterpret_cast<PhotoEnemyView *>(enemy)->shootIntervalTimer;
 }
 #define TargetEnemyMirrorMovementX(enemy) \
-    ((TargetEnemyEclControlWord(enemy) >> 16) & 1)
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->mirrorMovementX)
 #define TargetEnemyAlternateAnmBank(enemy) \
-    ((TargetEnemyEclControlWord(enemy) >> TH095_PHOTO_ENEMY_FLAG_ALTERNATE_ANM_BANK_SHIFT) & 1)
-#else
-#define TargetEnemyMirrorMovementX(enemy) \
-    TH095_ENEMY_ECL_CONTROL_BITS(enemy).mirrorMovementX
-#define TargetEnemyAlternateAnmBank(enemy) \
-    TH095_ENEMY_ECL_CONTROL_BITS(enemy).alternateAnmBank
-#endif
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->alternateAnmBank)
 static __forceinline u8 &TargetEnemyAnmDirection(Enemy *enemy)
 {
-    return reinterpret_cast<EnemyAnmDirectionView *>(enemy)->anmDirection;
+    return reinterpret_cast<PhotoEnemyView *>(enemy)->anmDirection;
 }
-static __forceinline EnemyAnmScripts &TargetEnemyAnmScriptsView(Enemy *enemy)
-{
-    return *reinterpret_cast<EnemyAnmScripts *>(reinterpret_cast<u8 *>(enemy) + 0x2c0e);
-}
+#define TargetEnemyIdleAnmScript(enemy) \
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->idleAnmScript)
+#define TargetEnemyIdleFromLeftAnmScript(enemy) \
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->idleFromLeftAnmScript)
+#define TargetEnemyIdleFromRightAnmScript(enemy) \
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->idleFromRightAnmScript)
+#define TargetEnemyMoveLeftAnmScript(enemy) \
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->moveLeftAnmScript)
+#define TargetEnemyMoveRightAnmScript(enemy) \
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->moveRightAnmScript)
 
 // FUNCTION: TH095 0x00413030; TH08 UpdateShotAndAnm is the source-shape oracle.
 void Enemy::UpdateShotAndAnm()
@@ -125,7 +90,7 @@ void Enemy::UpdateShotAndAnm()
             }
         }
 
-        if (TargetEnemyAnmScriptsView(this).moveLeft >= 0)
+        if (TargetEnemyMoveLeftAnmScript(this) >= 0)
         {
             direction = 0;
             if (TargetEnemyMirrorMovementX(this) == 0)
@@ -153,17 +118,17 @@ void Enemy::UpdateShotAndAnm()
                 {
                 case 0:
                     if (TargetEnemyAnmDirection(this) == 0xff)
-                        anm->SetAndExecuteScriptIdx(&this->vm, TargetEnemyAnmScriptsView(this).idleInitial);
+                        anm->SetAndExecuteScriptIdx(&this->vm, TargetEnemyIdleAnmScript(this));
                     else if (TargetEnemyAnmDirection(this) == 1)
-                        anm->SetAndExecuteScriptIdx(&this->vm, TargetEnemyAnmScriptsView(this).idleFromLeft);
+                        anm->SetAndExecuteScriptIdx(&this->vm, TargetEnemyIdleFromLeftAnmScript(this));
                     else
-                        anm->SetAndExecuteScriptIdx(&this->vm, TargetEnemyAnmScriptsView(this).idleFromRight);
+                        anm->SetAndExecuteScriptIdx(&this->vm, TargetEnemyIdleFromRightAnmScript(this));
                     break;
                 case 1:
-                    anm->SetAndExecuteScriptIdx(&this->vm, TargetEnemyAnmScriptsView(this).moveLeft);
+                    anm->SetAndExecuteScriptIdx(&this->vm, TargetEnemyMoveLeftAnmScript(this));
                     break;
                 case 2:
-                    anm->SetAndExecuteScriptIdx(&this->vm, TargetEnemyAnmScriptsView(this).moveRight);
+                    anm->SetAndExecuteScriptIdx(&this->vm, TargetEnemyMoveRightAnmScript(this));
                     break;
                 }
                 TargetEnemyAnmDirection(this) = static_cast<u8>(direction);

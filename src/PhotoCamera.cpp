@@ -3,10 +3,10 @@
 #endif
 #include "Background.hpp"
 #include "PhotoCamera.hpp"
+#include "PhotoEnemy.hpp"
 #include "GameplayGlobals.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "PhotoEnemyManager.hpp"
-#include "ecl/EnemyEclRuntimeView.hpp"
 #endif
 #ifndef DIFFBUILD
 #include "InputRuntime.hpp"
@@ -49,32 +49,6 @@ struct PhotoAnmVmIdValue
     }
 };
 #endif
-
-struct PhotoEnemyView
-{
-    u8 unknown0000[0x28a0];
-    Float3 position;                   // +0x28a0
-    u8 unknown28ac[0x2bf4 - 0x28ac];
-    u32 flags;                         // +0x2bf4
-    u32 flags2;                        // +0x2bf8
-    u8 unknown2bfc[0x2c28 - 0x2bfc];
-    f32 photoRateNumerator;            // +0x2c28
-    i32 photoRateCount;                // +0x2c2c
-    u8 unknown2c30[0x2c34 - 0x2c30];
-    f32 photoRateDenominator;          // +0x2c34
-
-    i32 HasPhotoRate() const
-    {
-        return this->photoRateCount > 0;
-    }
-};
-
-typedef char PhotoEnemyPositionAt28A0[
-    (offsetof(PhotoEnemyView, position) == 0x28a0) ? 1 : -1];
-typedef char PhotoEnemyFlagsAt2BF4[
-    (offsetof(PhotoEnemyView, flags) == 0x2bf4) ? 1 : -1];
-typedef char PhotoEnemyPhotoRateAt2C28[
-    (offsetof(PhotoEnemyView, photoRateNumerator) == 0x2c28) ? 1 : -1];
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct PhotoRuntimeView
@@ -1041,17 +1015,12 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
         {
             continue;
         }
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags >> 4) & 1) != 0 ||
-            ((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
-            ((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags2 >> 6) & 1) != 0)
-#else
-        if (TH095_ENEMY_ECL_CONTROL_BITS(
-                g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]).hiddenFromDrawGroups != 0 ||
-            ((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
-            TH095_ENEMY_ECL_SECONDARY_BITS(
-                g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]).showPhotoMarker != 0)
-#endif
+        if (g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
+                    ->hiddenFromDrawGroups != 0 ||
+            ((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
+                    ->flags1 >> 5) & 1) != 0 ||
+            g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
+                    ->showPhotoMarker != 0)
         {
             continue;
         }
@@ -1072,12 +1041,12 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
                     locals.nearestTarget = locals.currentValue;
                 }
                 if (g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
-                            ->HasPhotoRate() &&
+                            ->HasActivePhotoPulse() &&
                     (locals.currentValue = PhotoRatio(
                          g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
-                             ->photoRateDenominator,
+                             ->photoPulseDurationTimer.subFrame,
                          g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
-                             ->photoRateNumerator),
+                             ->photoPulseTimer.subFrame),
                      locals.currentValue > locals.highestBossRate))
                 {
                     locals.highestBossRate = locals.currentValue;

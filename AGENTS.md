@@ -50,6 +50,17 @@ executable.
   exact declaration/body in a named adapter or probe only after a minimal
   pinned-VC7.1 experiment proves the emission dependency, and track the split
   as debt rather than a reusable pattern.
+- Never place a `struct`, `class`, or `union` declaration under a
+  `TH095_MATCH_EXACT` or `DIFFBUILD` preprocessor branch in ordinary
+  production `.cpp`, `.hpp`, or `.inl` files. A canonical owner is one
+  profile-independent declaration. If a minimal pinned-VC7.1 experiment proves
+  that a legacy declaration is temporarily required for emission, put it in a
+  named `*Emission*` adapter selected by one file-top include route; the adapter
+  itself must contain no profile selector, and the split remains tracked debt.
+- `config/semantic-profile-declaration-debt.txt` is a closed historical debt
+  baseline enforced by CI. It may only shrink. Never add or increase an entry
+  to admit a new profile-selected type declaration, and update it immediately
+  when an old declaration is removed so that the declaration cannot return.
 - Put current policy in `docs/SEMANTIC_RECONSTRUCTION.md`, current navigation
   in `docs/SEMANTIC_INDEX.md`, chronological batches in
   `docs/SEMANTIC_HISTORY.md`, and build ownership in `docs/SOURCE_MAP.md`.
