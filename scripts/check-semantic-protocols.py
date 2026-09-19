@@ -183,6 +183,56 @@ def check_ecl_type_boundaries() -> None:
         fail("legacy Supervisor declaration must remain isolated in the emission branch")
 
 
+def check_ecl_extended_type_boundaries() -> None:
+    extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
+    required_normal_bindings = (
+        "typedef AnmVmId ExtendedVmHandle;",
+        "typedef AnmLoaded ExtendedAnmSpawner;",
+        "typedef Float3 ExtendedVector;",
+        "typedef ::th095::PhotoEffectManagerView ExtendedPhotoEffectManager;",
+        "ExtendedAnmSpawner *bulletAnm;",
+        "ExtendedAnmSpawner *enemyAnm;",
+    )
+    for binding in required_normal_bindings:
+        if binding not in extended:
+            fail(f"normal EclExtended lost canonical type binding: {binding}")
+
+    forbidden_normal_debt = (
+        "struct AnmManagerLookupView",
+        "struct ExtendedVmHandle",
+        "struct ExtendedAnmSpawner",
+        "struct ExtendedVector",
+        "struct ExtendedPhotoEffectManager",
+        "reinterpret_cast<AnmLoaded *>",
+        "->anmSpawner",
+        "->markerAnm",
+        "spawnedId",
+    )
+    for token in forbidden_normal_debt:
+        if token in extended:
+            fail(f"EclExtended restored retired normal type debt: {token}")
+
+    emission_requirements = {
+        "EclExtendedAnmEmission.inl": (
+            "struct AnmManagerLookupView",
+            "struct ExtendedVmHandle",
+            "struct ExtendedAnmSpawner",
+        ),
+        "EclExtendedMathEmission.inl": ("struct ExtendedVector",),
+        "EclExtendedPhotoEffectEmission.inl": (
+            "struct ExtendedPhotoEffectManager",
+            "i32 nextId;",
+        ),
+    }
+    for name, required_tokens in emission_requirements.items():
+        text = (SRC / "ecl" / name).read_text(encoding="utf-8")
+        if "TH095_MATCH_EXACT" in text or "DIFFBUILD" in text:
+            fail(f"{name} must not contain a second build-profile split")
+        for token in required_tokens:
+            if token not in text:
+                fail(f"{name} lost required exact-emission token: {token}")
+
+
 def check_small_closed_domains() -> None:
     explicit_enum(
         SRC / "ReplayManager.hpp",
@@ -209,12 +259,14 @@ def main() -> int:
     check_background_protocol()
     check_background_owner()
     check_ecl_type_boundaries()
+    check_ecl_extended_type_boundaries()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
     print("  canonical ANM opcode domain: -1..87 explicit")
     print("  Background stage opcode dispatch: 15/15 named")
     print("  Background owner: one profile-independent 0x201C declaration")
     print("  normal ECL types: canonical ANM, Supervisor, and Background owners")
+    print("  EclExtended normal types: canonical ANM, Float3, and PhotoEffect owners")
     print("  Replay manager, color mode, and viewport domains: explicit")
     return 0
 

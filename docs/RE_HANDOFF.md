@@ -69,15 +69,28 @@ pinned-VC7.1 i386 COFF objects across both profiles and linked a verified
 CI passed 49 tests. This is compile/link closure, not whole-image exactness or
 runtime credit.
 
+SEM-268 closes the first bounded EclExtended compatibility lane. Normal source
+now uses canonical `AnmVmId`, `AnmLoaded`, `Float3`, and
+`PhotoEffectManagerView`; BulletInf `+0x27C5B0` is named `bulletAnm`, EnemyInf
+`+0x4DF8` is named `enemyAnm`, and PhotoEffect manager `+0x58` is the
+target-produced `nextId`. The historical receiver names moved into three
+named `EclExtended*Emission.inl` files used only by exact/DIFF compilation.
+Focused validation passes EclExtended 22/22 exact with zero label refresh and
+a pinned-VC7.1 normal i386 compile. Per the current batch cadence, this local
+checkpoint deliberately inherits the preceding 696-unit/88-TU aggregate gate;
+it does not claim a new cold whole-product result.
+
 ## Next bounded lane
 
-Continue shrinking ECL compatibility declarations one owner at a time. Start
-with a bounded EclExtended ANM handle/spawner view that has a canonical normal
-API and an independently replayable exact surface; do not bulk-rename the
-legacy `-1..89` opcode list. Keep the EclRun Background adapter isolated until
-a clean declaration reproduces its complete 27,091-byte body and 647
-relocations. Do not resume scalar naming merely because the router lists
-anonymous fields.
+Continue shrinking ECL compatibility declarations one owner at a time. The
+next candidate is the compact photo BulletInf owner: reconcile the complete
+`PhotoBulletManagerView`/`PhotoBulletView` declaration in `BulletManager.cpp`
+with the partial normal projections in `PhotoCamera.hpp`, EclExtended, and
+EclRun before changing any layout. Preserve exact receiver spellings in named
+emission adapters and require a cold aggregate gate once the shared canonical
+header actually changes. Do not bulk-rename the legacy `-1..89` opcode list,
+and keep the EclRun Background adapter isolated until a clean declaration
+reproduces its complete 27,091-byte body and 647 relocations.
 
 ## Protected working-tree exclusions
 

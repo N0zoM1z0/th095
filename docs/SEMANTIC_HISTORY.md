@@ -12918,3 +12918,57 @@ handle/spawner projection only when its normal canonical API and exact emission
 surface can both be verified. Do not bulk-translate TH08 opcode names or remove
 the EclRun Background emission adapter without reproducing its complete body
 and relocation graph.
+
+### SEM-268 — retire EclExtended helper-type ownership
+
+**Scope.** Close the bounded EclExtended ANM handle/spawner lane selected by
+SEM-267, then reconcile the directly adjacent math and PhotoEffect manager
+receiver identities. This batch changes one production translation unit and
+adds named exact-emission surfaces; it does not claim the compact photo bullet,
+enemy, player, or effect-node aggregates are fully canonical.
+
+**Observed and corroborated.** Fresh hash-attested target review confirms that
+BulletInf initialization stores the slot-6 `bullet.anm` result at
+`+0x27C5B0`, while EnemyInf resource loading stores the slot-8 enemy ANM result
+at `+0x4DF8`. The EclExtended call destinations are the existing canonical
+`AnmLoaded::InitializeVm`, world-space VM creation, and `AnmVmId::GetVm` /
+`SetSprite` targets at `0x00404B80`, `0x00445060`, `0x004452F0`, and
+`0x00445360`. `Float3::FromAngleMagnitude @ 0x00441DA0` independently closes
+the three-float vector receiver identity. Fresh target
+`PhotoEffectManagerView::Spawn @ 0x0041DBD0` increments manager `+0x58`, skips
+zero, copies the value to the
+new node's `id @ +0x4C`, and returns it; the old EclExtended name `spawnedId`
+was therefore misleading, while canonical `nextId` matches both production
+and consumption.
+
+**Ownership and profile boundary.** Normal EclExtended binds its shared-body
+tokens directly to `AnmVmId`, `AnmLoaded`, `Float3`, and
+`PhotoEffectManagerView`. The normal path no longer casts fake spawner/handle
+receivers into canonical types, and its PhotoEffect `Spawn` call uses the real
+manager class. The target-facing `AnmManagerLookupView`, `ExtendedVmHandle`,
+`ExtendedAnmSpawner`, `ExtendedVector`, and `ExtendedPhotoEffectManager`
+declarations moved to three narrow `ecl/EclExtended*Emission.inl` files. Those
+files contain no nested build-profile selector and exist only to preserve the
+historical exact/DIFF decorated relocations. The remaining
+`ExtendedBulletManager` and `ExtendedRuntimeView` layouts now at least expose
+their proven ANM members as `bulletAnm` and `enemyAnm`; they remain ownership
+debt rather than newly accepted canonical aggregates.
+
+**Validation.** A fresh pre-edit baseline and each final source shape replayed
+all **22/22** configured EclExtended units exact with **zero private-label
+refresh**. The final normal source compiled with pinned VC7.1 13.10.3077 and
+the repository `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src`
+profile into a **44,144-byte Intel 80386 COFF** object. The semantic protocol
+guard now rejects restoration of the retired normal proxy structs/casts or a
+nested profile split inside the emission files. Cold 696-unit exact and 88-TU
+whole-product gates are intentionally deferred until the next shared-owner
+milestone, following the requested batch cadence; the preceding committed
+aggregate result remains the latest whole-repository closure.
+
+**Unknown / next route.** This batch does not consolidate the full compact
+BulletInf allocation shared by `BulletManager.cpp`, `PhotoCamera.hpp`,
+EclExtended, and EclRun; it does not identify the alternate enemy ANM at
+`+0x4DFC`; and it does not accept the remaining local player/camera/effect-node
+views. The next owner batch should first reconcile the complete
+`PhotoBulletManagerView`/`PhotoBulletView` layout into one profile-independent
+normal declaration, with exact receiver spellings kept outside that owner.
