@@ -13921,3 +13921,78 @@ the canonical Player runtime and PhotoCamera behavior owners, including
 position, camera mode, viewfinder geometry, and the `CountPhotoTargets`
 receiver. Preserve any proved historical method decoration in a storage-free
 adapter and do not add a profile selector.
+
+### SEM-282 — canonicalize EclExtended Player/camera access
+
+**Scope.** Retire EclExtended's coupled `ExtendedPlayerView` and
+`ExtendedPhotoCameraView` storage projections without claiming that every
+Player or camera declaration in the repository is reconciled. The bounded
+surface is Player position `+0x1E30`, embedded camera `+0x1E3C`, movement scale
+`+0x2A18`, camera mode `+0x000`, viewfinder position/size `+0xBC4/+0xBD0`, and
+the `CountPhotoTargets` receiver used by callbacks 6 and 20.
+
+**Target and independent-owner evidence.** Fresh hash-attested TH095 target
+decompilation of `UpdatePlayerProximityAndMarker @ 0x00413AA0` reads Player XY
+at `+0x1E30/+0x1E34` and writes `+0x2A18`: 0.25 below squared distance 1024,
+then a linear transition toward 1.0 through 4096. Independent
+`PhotoGameUpdateView::UpdateMainState @ 0x0042F190` multiplies both movement
+axes by that float before publishing Player position, and outer `Update @
+0x0042FF60` restores it to 1.0, corroborating PHOTO-111.
+
+Fresh `RunPhotoTransition @ 0x00414580` tests the dword at embedded camera
+`Player+0x1E3C` for charging state 1, calls `CountPhotoTargets @ 0x004339F0`
+with `Player+0x1E3C` as receiver, consumes camera viewfinder position/size at
+`+0xBC4/+0xBD0`, and reads Player Y. Independent `UpdatePhotoCamera @
+0x00430AB0` dispatches the already-established five-state camera protocol,
+`UpdateViewfinder @ 0x004328C0` produces both geometry vectors from charge and
+input, and `CountPhotoTargets` consumes those vectors to test target bounds.
+This closes the fields used by EclExtended; neighboring camera storage remains
+Unknown unless separately established.
+
+**Ownership and representation.** `PhotoCameraMode.hpp` is now the
+profile-independent five-state vocabulary shared by the full camera behavior
+owner and the partial Player runtime layout. `PhotoPlayerCameraRuntimeView`
+names the proved mode and viewfinder geometry, while
+`PhotoPlayerRuntimeView::movementScale` is shared in every profile. Normal
+EclExtended includes the full `PhotoCameraState` behavior owner for the method
+call, but all storage access routes through `PhotoPlayerRuntimeView`.
+
+The exact manifest requires the historical global symbol
+`g_Player@EclExtended` with `ExtendedPlayerView *` type decoration and the
+historical `ExtendedPhotoCameraView::CountPhotoTargets` method decoration.
+`ecl/EclExtendedPlayerEmission.inl` therefore retains only an incomplete
+Player type/global declaration and a method-only camera receiver, then casts
+storage to the same canonical runtime layout used by normal source. It has no
+data members, offset assertions, or profile selector and is not a second
+semantic owner. `PhotoGameStateView` remains separate follow-up debt.
+
+**Guards and debt movement.** The semantic guard pins the canonical Player
+fields, the profile-independent camera-mode domain, the normal EclExtended
+bindings, and the storage-free exact adapter. It rejects restoration of either
+retired layout. Two EclExtended field-selection splits and two shared-runtime
+field/assertion splits were deleted, shrinking the selector baseline from 855
+to **851 across 111 files**. The earlier 112-file prose count included the
+baseline's non-data header as an empty path; both the pre-batch and current
+baselines contain 111 repository paths. Selected declaration debt shrank to
+**222 keys / 227 occurrences**; no new selector or selected declaration was
+introduced.
+
+**Validation.** EclExtended passed all **22/22 exact units** with zero label
+refresh after the final storage-free adapter change. Replaying every affected
+shared-header fanout passed **176/176 exact units across 15 sources**. Moving
+the camera enum to a dependency-light header changed 38 VC7 compiler-private
+`$L...` names in four PhotoCamera/PhotoGame units; the controlled refresh was
+accepted only after the replay tool proved unchanged bytes, relocation
+offsets/types, non-private identities, and target destinations. Normal pinned
+VC7.1 probes emitted 45,715-byte EclExtended, 60,379-byte PhotoCamera, and
+53,209-byte PhotoGame Intel 80386 COFF objects. Aggregate 696-unit replay and
+the 88-TU product link are intentionally deferred to a later accumulated
+batch; they are not claimed here. Target-independent CI passed **57/57** tests.
+
+**Unknown / next route.** Audit the overlapping `PhotoGameStateView` and
+`PhotoPlayerRuntimeView` declarations next. Determine whether the full
+`PhotoCameraState` can become the single embedded camera layout without
+importing an incompatible exact declaration graph, and preserve only
+target-required historical decorations in named storage-free adapters. Do not
+name unsupported Player/camera fields, infer original identifiers, add a
+profile selector, or treat exact-only source as normal semantic evidence.

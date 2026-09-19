@@ -1,6 +1,7 @@
 #ifndef TH095_PHOTO_PLAYER_RUNTIME_HPP
 #define TH095_PHOTO_PLAYER_RUNTIME_HPP
 
+#include "PhotoCameraMode.hpp"
 #include "ZunMath.hpp"
 #include "ZunTimer.hpp"
 
@@ -60,16 +61,21 @@ typedef char PhotoPlayerCameraTrackingModeSizeIs4[
 // production consumers are named here.
 struct PhotoPlayerCameraRuntimeView
 {
-    u8 unknown000[0x0b80];
+    PhotoCameraMode mode;                             // +0x0000
+    u8 unknown004[0x0b80 - 0x0004];
     f32 charge;                                      // +0x0b80
     u8 unknownb84[0x0ba8 - 0x0b84];
     i32 photoIndex;                                  // +0x0ba8
     i32 photosTaken;                                 // +0x0bac
     i32 photoLimit;                                  // +0x0bb0
     u32 flags;                                       // +0x0bb4
-    u8 unknownbb8[0x0bdc - 0x0bb8];
+    u8 unknownbb8[0x0bc4 - 0x0bb8];
+    Float3 viewfinderPosition;                       // +0x0bc4
+    Float3 viewfinderSize;                           // +0x0bd0
 };
 
+typedef char PhotoPlayerCameraModeAt0000[
+    (offsetof(PhotoPlayerCameraRuntimeView, mode) == 0x0000) ? 1 : -1];
 typedef char PhotoPlayerCameraChargeAt0B80[
     (offsetof(PhotoPlayerCameraRuntimeView, charge) == 0x0b80) ? 1 : -1];
 typedef char PhotoPlayerCameraPhotoIndexAt0BA8[
@@ -80,6 +86,10 @@ typedef char PhotoPlayerCameraPhotoLimitAt0BB0[
     (offsetof(PhotoPlayerCameraRuntimeView, photoLimit) == 0x0bb0) ? 1 : -1];
 typedef char PhotoPlayerCameraFlagsAt0BB4[
     (offsetof(PhotoPlayerCameraRuntimeView, flags) == 0x0bb4) ? 1 : -1];
+typedef char PhotoPlayerCameraViewfinderPositionAt0BC4[
+    (offsetof(PhotoPlayerCameraRuntimeView, viewfinderPosition) == 0x0bc4) ? 1 : -1];
+typedef char PhotoPlayerCameraViewfinderSizeAt0BD0[
+    (offsetof(PhotoPlayerCameraRuntimeView, viewfinderSize) == 0x0bd0) ? 1 : -1];
 typedef char PhotoPlayerCameraRuntimeSizeIs0BDC[
     (sizeof(PhotoPlayerCameraRuntimeView) == 0x0bdc) ? 1 : -1];
 
@@ -102,12 +112,8 @@ struct PhotoPlayerRuntimeView
     u8 unknown042c[0x1e30 - 0x042c];
     Float3 playerPosition;                         // +0x1e30
     PhotoPlayerCameraRuntimeView camera;           // +0x1e3c
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u8 unknown2a18[0x2a28 - 0x2a18];
-#else
     f32 movementScale;                             // +0x2a18
     u8 unknown2a1c[0x2a28 - 0x2a1c];
-#endif
     Float3 photoTargetBoundsMin;                   // +0x2a28
     Float3 photoTargetBoundsMax;                   // +0x2a34
 
@@ -144,10 +150,8 @@ typedef char PhotoPlayerRuntimePhotoLimitAt29EC[
     (offsetof(PhotoPlayerRuntimeView, camera.photoLimit) == 0x29ec) ? 1 : -1];
 typedef char PhotoPlayerRuntimeCameraFlagsAt29F0[
     (offsetof(PhotoPlayerRuntimeView, camera.flags) == 0x29f0) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 typedef char PhotoPlayerRuntimeMovementScaleAt2A18[
     (offsetof(PhotoPlayerRuntimeView, movementScale) == 0x2a18) ? 1 : -1];
-#endif
 typedef char PhotoPlayerRuntimePhotoTargetBoundsMinAt2A28[
     (offsetof(PhotoPlayerRuntimeView, photoTargetBoundsMin) == 0x2a28) ? 1 : -1];
 typedef char PhotoPlayerRuntimePhotoTargetBoundsMaxAt2A34[

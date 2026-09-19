@@ -425,6 +425,12 @@ def check_ecl_extended_type_boundaries() -> None:
         "typedef ::th095::PhotoBulletManagerView ExtendedBulletManager;",
         "typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;",
         "typedef ::th095::PhotoEnemyManagerView ExtendedRuntimeView;",
+        "#define TH095_EXT_PLAYER_TYPE ::th095::PhotoPlayerRuntimeView",
+        "#define TH095_EXT_PLAYER_STORAGE(player) (player)",
+        "reinterpret_cast<::th095::PhotoCameraState *>(&(camera))",
+        "TH095_EXT_PLAYER_STORAGE(g_Player)->playerPosition",
+        "TH095_EXT_PLAYER_STORAGE(g_Player)->movementScale",
+        "camera->mode == PHOTO_CAMERA_CHARGING",
     )
     for binding in required_normal_bindings:
         if binding not in extended:
@@ -436,6 +442,8 @@ def check_ecl_extended_type_boundaries() -> None:
         "struct ExtendedAnmSpawner",
         "struct ExtendedVector",
         "struct ExtendedPhotoEffectManager",
+        "struct ExtendedPhotoCameraView",
+        "struct ExtendedPlayerView",
         "reinterpret_cast<AnmLoaded *>",
         "->anmSpawner",
         "->markerAnm",
@@ -461,6 +469,14 @@ def check_ecl_extended_type_boundaries() -> None:
             "struct ExtendedBulletManager",
             "VC7 emission adapter for EclExtended callbacks only",
         ),
+        "EclExtendedPlayerEmission.inl": (
+            "struct ExtendedPhotoCameraView",
+            "i32 CountPhotoTargets(f32 *closestDistance, f32 *bossRate);",
+            "struct ExtendedPlayerView;",
+            "extern ExtendedPlayerView *g_Player;",
+            "reinterpret_cast<::th095::PhotoPlayerRuntimeView *>(player)",
+            "reinterpret_cast<ExtendedPhotoCameraView *>(&(camera))",
+        ),
     }
     for name, required_tokens in emission_requirements.items():
         text = (SRC / "ecl" / name).read_text(encoding="utf-8")
@@ -469,6 +485,36 @@ def check_ecl_extended_type_boundaries() -> None:
         for token in required_tokens:
             if token not in text:
                 fail(f"{name} lost required exact-emission token: {token}")
+
+    player_emission = (
+        SRC / "ecl" / "EclExtendedPlayerEmission.inl"
+    ).read_text(encoding="utf-8")
+    for token in ("u8 unknown", "Float3 playerPosition", "f32 movementScale"):
+        if token in player_emission:
+            fail(f"EclExtended Player emission restored storage layout: {token}")
+
+    player_runtime = (SRC / "PhotoPlayerRuntime.hpp").read_text(encoding="utf-8")
+    for token in (
+        "PhotoCameraMode mode;",
+        "Float3 viewfinderPosition;",
+        "Float3 viewfinderSize;",
+        "f32 movementScale;",
+    ):
+        if token not in player_runtime:
+            fail(f"canonical Player runtime lost EclExtended field: {token}")
+
+    camera_mode = (SRC / "PhotoCameraMode.hpp").read_text(encoding="utf-8")
+    if "TH095_MATCH_EXACT" in camera_mode or "DIFFBUILD" in camera_mode:
+        fail("PhotoCameraMode.hpp must remain profile-independent")
+    for token in (
+        "PHOTO_CAMERA_TRACKING = 0",
+        "PHOTO_CAMERA_CHARGING = 1",
+        "PHOTO_CAMERA_CAPTURED = 2",
+        "PHOTO_CAMERA_RECOVERING = 3",
+        "PHOTO_CAMERA_DISABLED = 4",
+    ):
+        if token not in camera_mode:
+            fail(f"PhotoCameraMode lost established state: {token}")
 
 
 def check_photo_bullet_owner() -> None:
@@ -1368,7 +1414,7 @@ def main() -> int:
     print("  Background stage opcode dispatch: 15/15 named")
     print("  Background owner: one profile-independent 0x201C declaration")
     print("  normal ECL types: canonical ANM, Supervisor, and Background owners")
-    print("  EclExtended normal types: canonical ANM, Float3, Effect, BulletInf, EnemyInf, and PhotoGameTask owners")
+    print("  EclExtended normal types: canonical ANM, Float3, Effect, BulletInf, EnemyInf, PlayerInf, Camera, and PhotoGameTask owners")
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")

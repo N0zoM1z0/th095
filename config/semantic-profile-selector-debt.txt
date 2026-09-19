@@ -81,7 +81,7 @@
 10	src/EclExtended.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 2	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-13	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+11	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 10	src/EclExtended.cpp	#ifdef DIFFBUILD
 3	src/EclExtended.cpp	#ifdef TH095_MATCH_EXACT
 5	src/EclExtended.cpp	#ifndef DIFFBUILD
@@ -214,8 +214,8 @@
 2	src/PhotoOverlay.cpp	#ifdef DIFFBUILD
 1	src/PhotoOverlay.cpp	#ifdef TH095_MATCH_EXACT
 1	src/PhotoOverlay.cpp	#ifndef DIFFBUILD
-3	src/PhotoPlayerRuntime.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-3	src/PhotoPlayerRuntime.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+2	src/PhotoPlayerRuntime.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+2	src/PhotoPlayerRuntime.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/PhotoRuntime.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/PhotoRuntime.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/PhotoRuntime.cpp	#ifndef DIFFBUILD

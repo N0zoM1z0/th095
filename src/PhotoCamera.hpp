@@ -2,6 +2,7 @@
 #define TH095_PHOTO_CAMERA_HPP
 
 #include "AnmManager.hpp"
+#include "PhotoCameraMode.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoBulletManager.hpp"
 #include "PhotoPlayerRuntime.hpp"
@@ -14,15 +15,6 @@ struct PhotoCapturedBulletView;
 #ifdef TH095_MATCH_EXACT
 struct PhotoAnmVmIdValue;
 #endif
-
-enum PhotoCameraMode
-{
-    PHOTO_CAMERA_TRACKING = 0,
-    PHOTO_CAMERA_CHARGING = 1,
-    PHOTO_CAMERA_CAPTURED = 2,
-    PHOTO_CAMERA_RECOVERING = 3,
-    PHOTO_CAMERA_DISABLED = 4,
-};
 
 #ifdef TH095_MATCH_EXACT
 struct PhotoAnmVmId

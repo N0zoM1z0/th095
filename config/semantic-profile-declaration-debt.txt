@@ -20,7 +20,6 @@
 1	src/EclExtended.cpp	struct	ExtendedPhotoEnemyView
 1	src/EclExtended.cpp	struct	ExtendedRng
 1	src/EclExtended.cpp	struct	ExtendedRuntimeView
-1	src/EclExtended.cpp	struct	PhotoCameraState
 1	src/EclExtended.cpp	struct	PhotoEnemyManagerView
 1	src/EclExtended.cpp	struct	PhotoEnemyView
 1	src/EclExtended.cpp	struct	SoundPlayerView

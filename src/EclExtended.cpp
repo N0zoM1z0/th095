@@ -1,12 +1,14 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoGameTaskState.hpp"
+#include "PhotoPlayerRuntime.hpp"
 #include "PhotoEnemyControl.hpp"
 #include "PhotoEnemyEclAccess.hpp"
 #include "PhotoRotatingLaserArgs.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "Background.hpp"
 #include "PhotoBulletManager.hpp"
+#include "PhotoCamera.hpp"
 #include "PhotoEnemyManager.hpp"
 #include "PhotoGameTask.hpp"
 #endif
@@ -25,10 +27,6 @@ extern f32 g_AnmGameSpeed;
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 extern AnmManager *g_AnmManager;
-struct PhotoCameraState
-{
-    i32 CountPhotoTargets(f32 *closestDistance, f32 *bossRate);
-};
 struct PhotoEnemyView;
 #if defined(TH095_MATCH_EXACT)
 struct PhotoEnemyManagerView
@@ -62,6 +60,7 @@ typedef AnmLoaded ExtendedAnmSpawner;
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #include "ecl/EclExtendedGlobalStateEmission.inl"
+#include "ecl/EclExtendedPlayerEmission.inl"
 struct ExtendedPhotoEnemyView;
 struct ExtendedPhotoEnemyManagerView
 {
@@ -71,6 +70,10 @@ struct ExtendedPhotoEnemyManagerView
 };
 #else
 typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;
+#define TH095_EXT_PLAYER_TYPE ::th095::PhotoPlayerRuntimeView
+#define TH095_EXT_PLAYER_STORAGE(player) (player)
+#define TH095_EXT_CAMERA_METHOD(camera) \
+    reinterpret_cast<::th095::PhotoCameraState *>(&(camera))
 #endif
 
 #ifdef DIFFBUILD
@@ -167,54 +170,18 @@ typedef ::th095::PhotoEffectManagerView ExtendedPhotoEffectManager;
 #define TH095_EXT_EFFECT_SPAWN_ROTATING_LASER PHOTO_EFFECT_SPAWN_ROTATING_LASER
 #endif
 
-struct ExtendedPhotoCameraView
-{
-    i32 mode;
-    u8 unknown004[0xbc0];
-    Float3 viewfinderPosition;
-    Float3 viewfinderSize;
-
-    i32 CountPhotoTargets(f32 *closestDistance, f32 *bossRate);
-};
-typedef char ExtendedCameraPositionAtBC4[
-    (offsetof(ExtendedPhotoCameraView, viewfinderPosition) == 0xbc4) ? 1 : -1];
-typedef char ExtendedCameraSizeBDC[
-    (sizeof(ExtendedPhotoCameraView) == 0xbdc) ? 1 : -1];
-
 #ifdef DIFFBUILD
 #define TH095_EXT_COUNT_PHOTO_TARGETS(camera, distance, rate) \
-    (camera).CountPhotoTargets((distance), (rate))
+    TH095_EXT_CAMERA_METHOD(camera)->CountPhotoTargets( \
+        (distance), (rate))
 #define TH095_EXT_PHOTO_TO_SCREEN(output, position) \
     PhotoToScreen((output), (position))
 #else
 #define TH095_EXT_COUNT_PHOTO_TARGETS(camera, distance, rate) \
-    reinterpret_cast<::th095::PhotoCameraState *>(&(camera))->CountPhotoTargets( \
+    TH095_EXT_CAMERA_METHOD(camera)->CountPhotoTargets( \
         (distance), (rate))
 #define TH095_EXT_PHOTO_TO_SCREEN(output, position) \
     ::th095::PhotoToScreen((output), (position))
-#endif
-
-struct ExtendedPlayerView
-{
-    u8 unknown0000[0x1e30];
-    Float3 position;
-    ExtendedPhotoCameraView camera;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    f32 proximityScale;
-#else
-    f32 movementScale;
-#endif
-};
-typedef char ExtendedPlayerPositionAt1E30[
-    (offsetof(ExtendedPlayerView, position) == 0x1e30) ? 1 : -1];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-typedef char ExtendedPlayerScaleAt2A18[
-    (offsetof(ExtendedPlayerView, proximityScale) == 0x2a18) ? 1 : -1];
-#define TH095_EXT_PLAYER_MOVEMENT_SCALE(player) ((player)->proximityScale)
-#else
-typedef char ExtendedPlayerMovementScaleAt2A18[
-    (offsetof(ExtendedPlayerView, movementScale) == 0x2a18) ? 1 : -1];
-#define TH095_EXT_PLAYER_MOVEMENT_SCALE(player) ((player)->movementScale)
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -350,7 +317,6 @@ static __forceinline void FinalizeExtendedBulletAfterExecute(
     vm->color1Final.a = 0x40;
 }
 
-extern ExtendedPlayerView *g_Player;
 extern ExtendedRuntimeView *g_ExtendedRuntime;
 #ifndef DIFFBUILD
 #define g_ExtendedPhotoEnemyManager \
@@ -385,7 +351,7 @@ extern u32 g_PhotoScreenFadeColor;
 
 #ifndef DIFFBUILD
 #define g_Player \
-    TH095_RUNTIME_GLOBAL_PTR(ExtendedPlayerView, ::th095::g_RuntimePlayerOwner)
+    TH095_RUNTIME_GLOBAL_PTR(TH095_EXT_PLAYER_TYPE, ::th095::g_RuntimePlayerOwner)
 #endif
 #ifdef DIFFBUILD
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -417,16 +383,17 @@ void __fastcall UpdatePlayerProximityAndMarker(
     } locals;
 
     locals.enemyPosition = &enemy->position;
-    locals.playerPosition = &g_Player->position;
+    locals.playerPosition =
+        &TH095_EXT_PLAYER_STORAGE(g_Player)->playerPosition;
     locals.distanceSquared =
         (locals.playerPosition->y - locals.enemyPosition->y) *
             (locals.playerPosition->y - locals.enemyPosition->y) +
         (locals.playerPosition->x - locals.enemyPosition->x) *
             (locals.playerPosition->x - locals.enemyPosition->x);
     if (locals.distanceSquared < 1024.0f)
-        TH095_EXT_PLAYER_MOVEMENT_SCALE(g_Player) = 0.25f;
+        TH095_EXT_PLAYER_STORAGE(g_Player)->movementScale = 0.25f;
     else if (locals.distanceSquared < 4096.0f)
-        TH095_EXT_PLAYER_MOVEMENT_SCALE(g_Player) =
+        TH095_EXT_PLAYER_STORAGE(g_Player)->movementScale =
             (locals.distanceSquared - 1024.0f) / 3072.0f * 0.75f + 0.25f;
 
     locals.vm = TH095_EXT_ANM_GET_VM(
@@ -679,9 +646,9 @@ void __fastcall SpawnEnemyMarkerVm(
 }
 
 static __forceinline i32 ExtendedCameraIsCharging(
-    ExtendedPhotoCameraView *camera)
+    PhotoPlayerCameraRuntimeView *camera)
 {
-    return camera->mode == 1;
+    return camera->mode == PHOTO_CAMERA_CHARGING;
 }
 
 // ECL extended callback table entry 20 @ 0x00414580.
@@ -728,8 +695,10 @@ void __fastcall RunPhotoTransition(
     if (((TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) >>
           PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_BIT) & 1U) == 0 &&
         enemy->activeEclContext->extraIntVariables[2] == 0 &&
-        ExtendedCameraIsCharging(&g_Player->camera) &&
-        TH095_EXT_COUNT_PHOTO_TARGETS(g_Player->camera, NULL, NULL) != 0)
+        ExtendedCameraIsCharging(
+            &TH095_EXT_PLAYER_STORAGE(g_Player)->camera) &&
+        TH095_EXT_COUNT_PHOTO_TARGETS(
+            TH095_EXT_PLAYER_STORAGE(g_Player)->camera, NULL, NULL) != 0)
     {
         TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) |=
             PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
@@ -745,16 +714,19 @@ void __fastcall RunPhotoTransition(
         TH095_ECL_EXT_GAME_SPEED = 1.0f;
         enemy->activeEclContext->extraIntVariables[2] = 120;
 
-        if (g_Player->camera.viewfinderPosition.x < 0.0f)
+        if (TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderPosition.x < 0.0f)
             locals.targetX =
-                g_Player->camera.viewfinderSize.x * 0.60000002f +
-                g_Player->camera.viewfinderPosition.x;
+                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderSize.x *
+                    0.60000002f +
+                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderPosition.x;
         else
             locals.targetX =
-                g_Player->camera.viewfinderPosition.x -
-                g_Player->camera.viewfinderSize.x * 0.60000002f;
+                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderPosition.x -
+                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderSize.x *
+                    0.60000002f;
 
-        if (g_Player->position.y < enemy->position.y)
+        if (TH095_EXT_PLAYER_STORAGE(g_Player)->playerPosition.y <
+            enemy->position.y)
             locals.targetY =
                 TH095_ECL_EXT_RNG.GetRandomF32() * 64.0f + enemy->position.y;
         else
