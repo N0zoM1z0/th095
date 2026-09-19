@@ -70,21 +70,11 @@
 2	src/ecl/EclRun.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/ecl/EclRun.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 10	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
-1	src/ecl/EclRun.cpp	#ifdef TH095_MATCH_EXACT
 3	src/ecl/EclRun.cpp	#ifndef DIFFBUILD
-1	src/ecl/EclRun.cpp	#ifndef TH095_MATCH_EXACT
-1	src/ecl/EclRunHigh.inl	#if !defined(DIFFBUILD)
-3	src/ecl/EclRunHigh.inl	#if !defined(TH095_MATCH_EXACT)
+1	src/ecl/EclRunHigh.inl	#if !defined(TH095_MATCH_EXACT)
 1	src/ecl/EclRunHigh.inl	#if defined(DIFFBUILD)
-11	src/ecl/EclRunHigh.inl	#if defined(TH095_MATCH_EXACT)
-1	src/ecl/EclRunLow.inl	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-5	src/ecl/EclRunLow.inl	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/ecl/EclRunLow.inl	#if defined(TH095_MATCH_EXACT)
-2	src/ecl/EclRunTargetHigh.inl	#elif defined(DIFFBUILD)
-1	src/ecl/EclRunTargetHigh.inl	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-13	src/ecl/EclRunTargetHigh.inl	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-3	src/ecl/EclRunTargetHigh.inl	#if defined(TH095_MATCH_EXACT)
-7	src/ecl/EclRunTargetHigh.inl	#ifdef TH095_MATCH_EXACT
+7	src/ecl/EclRunHigh.inl	#if defined(TH095_MATCH_EXACT)
+3	src/ecl/EclRunTargetHigh.inl	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 3	src/EclDependencies.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/EclDependencies.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/EclDependencies.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -102,18 +92,12 @@
 1	src/EclExtended.cpp	#ifndef TH095_MATCH_EXACT
 1	src/EclHelpers.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/EclOperandsFloat.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-2	src/EclOperandsFloat.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+1	src/EclOperandsFloat.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/EclOperandsFloat.cpp	#ifdef DIFFBUILD
 2	src/EclOperandsFloat.cpp	#ifndef DIFFBUILD
-1	src/EclOperandsFloatLValue.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-1	src/EclOperandsFloatLValue.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/EclOperandsFloatLValue.cpp	#ifndef DIFFBUILD
-1	src/EclOperandsInt.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-1	src/EclOperandsInt.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/EclOperandsInt.cpp	#ifdef DIFFBUILD
 2	src/EclOperandsInt.cpp	#ifndef DIFFBUILD
-1	src/EclOperandsIntLValue.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-1	src/EclOperandsIntLValue.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/EclOperandsIntLValue.cpp	#ifndef DIFFBUILD
 4	src/EnemyManagerTask.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 7	src/EnemyManagerTask.cpp	#if defined(TH095_MATCH_EXACT)

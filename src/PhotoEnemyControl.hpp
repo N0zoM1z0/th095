@@ -41,7 +41,9 @@ struct PhotoEnemyControlBits
     u32 collidable : 1;
     u32 unknown003 : 1;
     u32 hiddenFromDrawGroups : 1;
-    u32 unknown005 : 3;
+    u32 unknown005 : 1;
+    u32 unknown006 : 1;
+    u32 unknown007 : 1;
     u32 lifecycleState : 2;
     u32 movementMode : 2;
     u32 movementEasing : 3;
@@ -54,11 +56,32 @@ struct PhotoEnemyControlBits
     u32 suppressEclCallStack : 1;
     u32 unknown025 : 1;
     u32 skipOffscreenCheck : 1;
-    u32 unknown027 : 4;
+    u32 unknown027 : 1;
+    u32 unknown028 : 1;
+    u32 unknown029 : 2;
     u32 alternateAnmBank : 1;
 };
 
 typedef char PhotoEnemyControlBitsSizeIs4[
     (sizeof(PhotoEnemyControlBits) == sizeof(u32)) ? 1 : -1];
+
+// Shared vocabulary for the second compact enemy control word at +0x2BF8.
+// Only independently observed bits are named; the remaining positions stay
+// explicitly unknown.
+struct PhotoEnemySecondaryControlBits
+{
+    u32 unknown000 : 1;
+    u32 unknown001 : 1;
+    u32 unknown002 : 1;
+    u32 unknown003 : 1;
+    u32 unknown004 : 1;
+    u32 unknown005 : 1;
+    u32 showPhotoMarker : 1;
+    u32 freezeAttachedVm : 1;
+    u32 unknown008 : 24;
+};
+
+typedef char PhotoEnemySecondaryControlBitsSizeIs4[
+    (sizeof(PhotoEnemySecondaryControlBits) == sizeof(u32)) ? 1 : -1];
 
 } // namespace th095

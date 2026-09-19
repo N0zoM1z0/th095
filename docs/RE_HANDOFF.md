@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-272. Owner closure remains
+The current semantic source checkpoint is SEM-273. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -62,36 +62,44 @@ deliberately narrower than subsystem completion:
 | Background `0x201C` | Canonical normal owner closed in `Background.hpp`; one narrow EclRun emission adapter remains. |
 | BulletInf `0x27C5B8` | Canonical normal owner closed in `PhotoBulletManager.hpp`; exact receiver spellings are emission adapters. |
 | EnemyInf manager `0x26AE30` | Canonical normal owner closed in `PhotoEnemyManager.hpp`; it directly embeds the compact template and 128-element pool; `enemyAnm @ +0x4DF8` is proved. |
-| Compact enemy element `0x4CC0` | Canonical profile-independent owner established in `PhotoEnemy.hpp`; `EnemyMovement` is a method-only ABI shell over it, and three resolver units share an offset-asserted, profile-independent transition bridge. Operand runtime views, FloatLValue, and RunEcl remain debt. |
+| Compact enemy element `0x4CC0` | Canonical profile-independent owner established in `PhotoEnemy.hpp`; `EnemyMovement` is a method-only ABI shell, and all four operand resolver TUs plus RunEcl share `PhotoEnemyEclAccess.hpp`. The bridge is offset-asserted and is not a second layout. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 937 remaining selector directives across 114 files and 266 declaration keys / 271 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 891 remaining selector directives across 113 files and 243 declaration keys / 248 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
 compatibility ABI, not the TH095 EnemyInf allocation created at `0x004149F0`.
 Do not migrate its layout or names into the compact TH095 owner.
 
-The cold aggregate passed 696/696 exact across all 88 sources. This batch
-refreshed 239 compiler-private label names across six units after structural
-bytes and relocation geometry/destinations were proved unchanged. Four
-EnemyMovement relocation entries were separately corrected from the synthetic
-`g_Supervisor @ 0x004BDD50` base to their real `g_AnmGameSpeed @ 0x004BDED8`
-owner. The normal build compiled all 88 pinned-VC7.1 i386 COFF objects and
-linked a verified 780,288-byte PE32 executable with build-local SHA-256
-`e9c170c888278422198bf87ff7a356c64108fbcbd665dc455ed13e968721403b`.
-Target-independent CI passed 51/51 tests. This is compile/link closure, not
-whole-image exactness or runtime credit.
+`PhotoEnemyEclAccess.hpp` now routes `sharedOperands @ +0x4DF4`,
+`photoTargets @ +0x26AE00`, the FloatLValue movement/context fields, and the
+compact fields consumed by RunEcl through one source path in exact and normal
+profiles. The former four runtime-manager projections, FloatLValue raw legacy
+field accesses, and RunEcl compact local views are removed. The remaining
+direct `Enemy*` spelling is an established method ABI boundary; it does not
+own storage and does not justify copying the 0x53D0 compatibility tail into the
+compact owner.
+
+The cold aggregate passed **696/696 exact across all 88 sources**. Relative to
+the SEM-272 checkpoint, the reviewed manifest update contains **447
+compiler-private label-name changes across nine units/eight sources** plus 28
+resolver relocation spellings changed from four deleted runtime-view types to
+the shared opaque owner; relocation offsets, types, and target addresses are
+unchanged. The normal build compiled all **88 pinned-VC7.1 i386 COFF** objects
+and linked a verified **780,288-byte PE32/i386 GUI**, build-local SHA-256
+`8c24e1e4117915f08b6c06a3bcd90d6e772a8f1f6e352874905d24a3b6a4675d`.
+Target-independent CI passed **51/51** tests. This is exact-unit preservation
+and normal compile/link closure, not whole-image exactness or runtime credit.
 
 ## Next bounded lane
 
-Continue with the four ECL operand TUs' duplicate runtime-manager projections.
-Audit the shared-operand pointer at manager `+0x4DF4` and photo-target array at
-`+0x26AE00`, then replace the profile-selected `Ecl*OperandRuntimeView`
-declarations with one profile-independent ownership path. After that, migrate
-`ResolveFloatLValue`'s direct legacy `Enemy` receiver and the remaining RunEcl
-compact-element views. Do not add a selector or enlarge either closed baseline;
-if one shared source cannot preserve emission, stop for explicit authorization.
-Keep manager `+0x4DFC` and unproved compact-element bits Unknown.
+Audit RunEcl's remaining **non-compact** local ownership projections, beginning
+with `EclGlobalCompletionStateView` / `EclGlobalStateFlagsView` and their
+independent game/task producers and consumers. Close one real global owner at a
+time before touching player/camera, stage-score, or photo-session projections.
+Do not treat the compact-owner closure as permission to name opcode meanings,
+manager `+0x4DFC`, unsupported control bits, or the compatibility `Enemy`
+tail. Do not add a selector or enlarge either closed baseline.
 
 ## Protected working-tree exclusions
 
@@ -110,6 +118,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/EclOperandsInt.cpp --details
-rg -n "Ecl.*OperandRuntimeView|sharedOperands|photoTargets|0x4df4|0x26ae00" src/EclOperands*.cpp src/PhotoEnemyManager.hpp
+python3 scripts/analysis/report-semantic-debt.py --path src/ecl/EclRun.cpp --details
+rg -n "EclGlobalCompletionStateView|EclGlobalStateFlagsView|completionActive|playerDeathTransitionComplete" src docs/KNOWLEDGE_BASE.md
 ```

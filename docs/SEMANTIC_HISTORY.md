@@ -13261,3 +13261,91 @@ the legacy `Enemy` receiver directly, and RunEcl retains local compact-element
 views. Migrate those boundaries without adding a selector or treating the
 transition access header as a permanent second owner. Manager `+0x4DFC` and
 unsupported control bits remain Unknown.
+
+### SEM-273 — unify compact-enemy ECL access across resolvers and RunEcl
+
+**Scope.** Complete the next bounded compact-owner lane: remove the four ECL
+operand TUs' duplicate runtime-manager projections, migrate
+`ResolveFloatLValue @ 0x00410DB0`, and retire RunEcl's profile-selected local
+compact-element projections. This batch changes source representation and
+ownership only; it does not assign new opcode meanings or infer names for
+unsupported bits.
+
+**Runtime-manager boundary.** `ResolveInt @ 0x0040FAE0`,
+`ResolveIntLValue @ 0x00410300`, `ResolveFloat @ 0x004105A0`, and
+`ResolveFloatLValue @ 0x00410DB0` now declare the same opaque
+`PhotoEnemyEclOperandRuntimeOwner` and reach the ECL shared-operand pointer at
+manager `+0x4DF4` and photo-target array at `+0x26AE00` through one
+profile-independent access path. The four profile-selected
+`Ecl*OperandRuntimeView` layouts are deleted. `PhotoEnemyManager.hpp`
+independently asserts both offsets against the canonical 0x26AE30 owner, so
+the opaque symbol spelling is an ABI bridge rather than another manager
+declaration.
+
+**Compact-element boundary.** The bridge was generalized and renamed
+`PhotoEnemyEclAccess.hpp`. `ResolveFloatLValue` now routes its active-context
+float arrays, position, interpolation, angle, velocity, speed, acceleration,
+and orbit fields through that shared path rather than direct legacy `Enemy`
+members. `EclManager::RunEcl @ 0x00408E70` and its included bodies use the same
+profile-independent expressions for compact VM/ANM handles, life/timers,
+bullet descriptor and transforms, shot cadence, both control words, photo
+marker/pulse state, movement bounds, scheduled calls, child blocks, attached
+VM, photo-target slots, and manager photo-target storage. Nineteen RunEcl
+compact projection declarations and their profile-selected access branches are
+removed. `PhotoEnemy.hpp` asserts every exposed offset against the one
+`PhotoEnemyView` owner; `EnemyEclRuntimeView.hpp` is now only a compatibility
+name router with no layout.
+
+The secondary control word now has a profile-independent bitfield vocabulary
+only for target-backed consumers: `showPhotoMarker` at bit 6 and
+`freezeAttachedVm` at bit 7. Bits 0..5 and 8..31 remain explicitly Unknown.
+The primary control word likewise keeps unsupported bits Unknown; opcode 130,
+138, and 140 writers are represented by their physical unknown bit names, not
+invented behaviors. Manager `+0x4DFC`, compact block `+0x4CA4`, and adjacent
+opaque bytes remain Unknown.
+
+**Compiler-source constraint.** A complete RunEcl diagnostic initially differed
+by nine non-relocation bytes in opcode 82 because parenthesizing the
+`minimumPlayerDistanceSquared` dereference changed VC7.1 x87/load scheduling.
+A minimal source-shape correction leaves that one dereference unparenthesized;
+the canonical `PhotoEnemyView` assertion still independently pins offset
+`+0x2C4C`. The final diagnostic was structural-exact for the complete 27,747
+byte compare extent: 25,159 comparable bytes, 2,588 relocation-field bytes,
+and 647 relocations. This is a source-expression constraint, not a profile
+split.
+
+**Workflow debt.** The closed selector baseline shrank from 937 directives in
+114 files to 891 in 113 files. The profile-selected declaration baseline
+shrunk from 266 keys / 271 occurrences to 243 / 248. No new
+`TH095_MATCH_EXACT` or `DIFFBUILD` conditional directive was added. Remaining
+RunEcl selectors guard non-compact global/player/stage/emission surfaces and
+must be audited as separate owners.
+
+**Validation.** Focused canonical replay passed the four resolver units 4/4
+after a reviewed 242-entry compiler-private label refresh. RunEcl then passed
+1/1 after the complete structural/relocation audit above and a reviewed
+166-entry private-label refresh. Separate pinned-VC7.1 normal probes compiled
+the affected resolver/RunEcl paths successfully. The final cold aggregate
+rebuilt all 88 manifest sources and passed **696/696 exact**. Relative to
+SEM-272, the final manifest contains **447 private-label spelling changes
+across nine units/eight sources**: the four resolvers, RunEcl, EnemyMovement,
+EnemyManagerUpdate's timeline runner, and two PhotoCamera units. The 28 other
+changed relocation spellings are the four resolver globals' decorated type
+names after replacing their deleted runtime views with the shared opaque
+owner. All 475 reviewed entries retain their relocation offset, type, and
+target address.
+
+The separate normal product compiled all **88 pinned-VC7.1 i386 COFF** objects
+across two profiles and linked a verified **780,288-byte PE32/i386 GUI** with
+build-local SHA-256
+`8c24e1e4117915f08b6c06a3bcd90d6e772a8f1f6e352874905d24a3b6a4675d`.
+Target-independent CI passed **51/51** tests. Successful linkage is normal
+production closure, not whole-image identity or runtime-scenario evidence.
+
+**Unknown / next route.** The compact profile-selected projection family is
+closed, but the historical 0x53D0 `Enemy*` method ABI still exposes compatible
+prefix fields and remains transition debt rather than an owner. Next audit
+RunEcl's non-compact `EclGlobalCompletionStateView` and
+`EclGlobalStateFlagsView` against independent game/task producers and
+consumers, one owner at a time. Keep manager `+0x4DFC`, unsupported control
+bits, `+0x4CA4`, and original opcode names Unknown.

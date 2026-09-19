@@ -1,5 +1,6 @@
 #include "EclManager.hpp"
 #include "EclOperands.hpp"
+#include "EnemyEclRuntimeView.hpp"
 #include "Gui.hpp"
 #include "BulletManager.hpp"
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -179,7 +180,8 @@ typedef char EclStageScoreMultiplierAt25718[
 #ifdef DIFFBUILD
 #define TH095_ECL_BULLET_MANAGER EclRunHigh::g_Th095BulletManager
 #define TH095_ECL_BULLET_SPAWN(descriptor) \
-    TH095_ECL_BULLET_MANAGER->SpawnEnemyPattern(descriptor)
+    TH095_ECL_BULLET_MANAGER->SpawnEnemyPattern( \
+        reinterpret_cast<i16 *>(descriptor))
 #else
 #define TH095_ECL_BULLET_MANAGER \
     TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoBulletManagerView, \
@@ -260,47 +262,6 @@ typedef char EclStageScoreMultiplierAt25718[
 namespace th095
 {
 
-#ifndef TH095_MATCH_EXACT
-struct EclPhotoCaptureEnemyView
-{
-    u8 unknown0000[0x285a];
-    i16 photoCaptureEclSubroutineId;
-};
-typedef char EclPhotoCaptureSubroutineAt285A[
-    (offsetof(EclPhotoCaptureEnemyView, photoCaptureEclSubroutineId) == 0x285a) ? 1 : -1];
-struct EclPhotoEnemyTimerView
-{
-    u8 unknown0000[0x296c];
-    ZunTimer eclTimer;
-};
-typedef char EclPhotoEnemyTimerAt296C[
-    (offsetof(EclPhotoEnemyTimerView, eclTimer) == 0x296c) ? 1 : -1];
-struct EclPhotoShotDistanceEnemyView
-{
-    u8 unknown0000[0x2c4c];
-    f32 minimumPlayerDistanceSquared;
-};
-typedef char EclPhotoShotDistanceAt2C4C[
-    (offsetof(EclPhotoShotDistanceEnemyView, minimumPlayerDistanceSquared) == 0x2c4c) ? 1 : -1];
-struct EclEnemyDrawGroupView
-{
-    u8 unknown0000[0x2c0b];
-    u8 drawGroup;
-};
-typedef char EclEnemyDrawGroupAt2C0B[
-    (offsetof(EclEnemyDrawGroupView, drawGroup) == 0x2c0b) ? 1 : -1];
-struct EclEnemyVmView
-{
-    u8 unknown0000[0x08];
-    AnmVm vm;
-};
-typedef char EclEnemyVmAt08[
-    (offsetof(EclEnemyVmView, vm) == 0x08) ? 1 : -1];
-typedef char EclEnemyVmRotationZAt28[
-    (offsetof(EclEnemyVmView, vm) + offsetof(AnmVm, rotation) +
-         offsetof(Float3, z) == 0x28) ? 1 : -1];
-#endif
-
 #ifndef DIFFBUILD
 struct AnmVertex;
 struct PhotoCardInfoView
@@ -351,14 +312,12 @@ static __forceinline EclRunHigh::PhotoAnmHandle Th095EclSpawnWorld(
 #define TH08_ECL_CONTEXT_INSTRUCTION(unusedContext) (instruction)
 #define TH08_ECL_CONTEXT_CHILD(unusedContext) (activeChildContext)
 
-#ifdef TH095_MATCH_EXACT
-static __forceinline void InitializeEclTargetTimerExact(ZunTimer *timer)
+static __forceinline void InitializeEclTargetTimer(ZunTimer *timer)
 {
     timer->current = 0;
     timer->subFrame = 0.0f;
     timer->previous = -999999;
 }
-#endif
 
 // FUNCTION: TH095 0x00408E70; TH08 0x004184B0 is the adjacent source oracle.
 EclRunResult EclManager::RunEcl(Enemy *enemy)
@@ -505,7 +464,8 @@ low_advance_instruction:
     if (activeChildContext == -1)
         enemy->mainEclCallStackDepth = enemy->activeEclCallStackDepth;
     else
-        TH095_ENEMY_CHILD_BLOCK_VIEW(enemy)->childEclBlocks[activeChildContext]->callStackDepth =
+        TH095_ECL_CHILD_BLOCK(
+            enemy, activeChildContext, EnemyChildEclBlock)->callStackDepth =
             enemy->activeEclCallStackDepth;
 
     enemy->activeEclContext->currentInstr = instruction;
@@ -514,10 +474,10 @@ low_advance_instruction:
 low_select_next_context:
     for (i32 next = activeChildContext + 1; next < 16; ++next)
     {
-        if (TH095_ENEMY_CHILD_BLOCK_VIEW(enemy)->childEclBlocks[next])
+        if (TH095_ECL_CHILD_BLOCK(enemy, next, EnemyChildEclBlock))
         {
             EnemyChildEclBlock *childContext =
-                TH095_ENEMY_CHILD_BLOCK_VIEW(enemy)->childEclBlocks[next];
+                TH095_ECL_CHILD_BLOCK(enemy, next, EnemyChildEclBlock);
             enemy->activeEclCallStack = childContext->callStack;
             enemy->activeEclContext = &childContext->eclContext;
             instruction = enemy->activeEclContext->currentInstr;

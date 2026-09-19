@@ -1,10 +1,7 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
-#include "PhotoEnemyEclOperandAccess.hpp"
+#include "PhotoEnemyEclAccess.hpp"
 #include "ecl/EclOperands.hpp"
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-#include "PhotoEnemyManager.hpp"
-#endif
 
 namespace th095
 {
@@ -15,23 +12,11 @@ struct EclSharedIntLValueView
     i32 intVariables[4];
 };
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct EclIntLValueRuntimeView
-{
-    u8 unknown000000[0x4df4];
-    EclSharedIntLValueView *sharedOperands;
-};
-#define TH095_ECL_INT_LVALUE_SHARED(runtime) ((runtime)->sharedOperands)
-#else
-typedef PhotoEnemyManagerView EclIntLValueRuntimeView;
-#define TH095_ECL_INT_LVALUE_SHARED(runtime) \
-    reinterpret_cast<EclSharedIntLValueView *>((runtime)->eclManager)
-#endif
-
-extern EclIntLValueRuntimeView *g_EclIntLValueRuntime;
+extern PhotoEnemyEclOperandRuntimeOwner *g_EclIntLValueRuntime;
 #ifndef DIFFBUILD
 #define g_EclIntLValueRuntime \
-    TH095_RUNTIME_GLOBAL_PTR(EclIntLValueRuntimeView, g_RuntimeEnemyManagerOwner)
+    TH095_RUNTIME_GLOBAL_PTR( \
+        PhotoEnemyEclOperandRuntimeOwner, g_RuntimeEnemyManagerOwner)
 #endif
 
 namespace EclOperands
@@ -71,10 +56,10 @@ i32 *__fastcall ResolveIntLValue(
     case 0x275b: return &TH095_ECL_ITEM_DROP_TYPE(enemy);
     case 0x275c: return &TH095_ECL_ENEMY_SCORE(enemy);
 
-    case 0x273c: return &TH095_ECL_INT_LVALUE_SHARED(g_EclIntLValueRuntime)->intVariables[0];
-    case 0x273d: return &TH095_ECL_INT_LVALUE_SHARED(g_EclIntLValueRuntime)->intVariables[1];
-    case 0x273e: return &TH095_ECL_INT_LVALUE_SHARED(g_EclIntLValueRuntime)->intVariables[2];
-    case 0x273f: return &TH095_ECL_INT_LVALUE_SHARED(g_EclIntLValueRuntime)->intVariables[3];
+    case 0x273c: return &TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclIntLValueRuntime, EclSharedIntLValueView)->intVariables[0];
+    case 0x273d: return &TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclIntLValueRuntime, EclSharedIntLValueView)->intVariables[1];
+    case 0x273e: return &TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclIntLValueRuntime, EclSharedIntLValueView)->intVariables[2];
+    case 0x273f: return &TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclIntLValueRuntime, EclSharedIntLValueView)->intVariables[3];
     default: return operand;
     }
 }

@@ -229,7 +229,8 @@
     case 151:
     {
         Float3 position = enemy->worldPosition + enemy->shootOffset;
-        TH095_ENEMY_ANM_HANDLES(enemy)->handles[TH08_ECL_READ_I(ctx, 0)] =
+        TH095_ECL_ENEMY_ANM_HANDLE(
+            enemy, TH08_ECL_READ_I(ctx, 0), PhotoAnmHandle) =
             TH095_ECL_ANM_SPAWN_WORLD(
                 TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER, TH08_ECL_READ_I(ctx, 1), &position);
         break;
@@ -238,8 +239,8 @@
     case 152:
     {
         AnmVm *vm = TH095_ECL_ANM_GET_VM(
-            TH095_ENEMY_ANM_HANDLES(enemy)
-                ->handles[TH08_ECL_READ_I(ctx, 0)].value);
+            TH095_ECL_ENEMY_ANM_HANDLE(
+                enemy, TH08_ECL_READ_I(ctx, 0), PhotoAnmHandle).value);
         if (vm)
             vm->SetInterrupt((i16)TH08_ECL_READ_I(ctx, 1));
         break;

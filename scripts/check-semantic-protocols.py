@@ -557,7 +557,7 @@ def check_photo_bullet_owner() -> None:
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
-    operand_access = (SRC / "PhotoEnemyEclOperandAccess.hpp").read_text(
+    operand_access = (SRC / "PhotoEnemyEclAccess.hpp").read_text(
         encoding="utf-8"
     )
     manager = (SRC / "PhotoEnemyManager.hpp").read_text(encoding="utf-8")
@@ -575,33 +575,40 @@ def check_photo_enemy_owner() -> None:
         fail("PhotoEnemyManager.hpp must define exactly one canonical EnemyInf owner")
     required_element_layout = (
         "sizeof(PhotoEnemyView) == 0x4cc0",
-        "offsetof(PhotoEnemyView, position) == 0x28a0",
+        "PhotoEnemyPositionAt28A0",
+        "PHOTO_ENEMY_ECL_POSITION_OFFSET",
         "offsetof(PhotoEnemyView, worldPosition) == 0x28f4",
-        "offsetof(PhotoEnemyView, movementAngle) == 0x2900",
-        "offsetof(PhotoEnemyView, speed) == 0x2914",
+        "PhotoEnemyMovementAt2900",
+        "PHOTO_ENEMY_ECL_MOVEMENT_ANGLE_OFFSET",
+        "PHOTO_ENEMY_ECL_SPEED_OFFSET",
         "offsetof(PhotoEnemyView, life) == PHOTO_ENEMY_ECL_LIFE_OFFSET",
-        "offsetof(PhotoEnemyView, flags1) == 0x2bf4",
-        "offsetof(PhotoEnemyView, childEclBlocks) == 0x2cac",
-        "offsetof(PhotoEnemyView, attachedVmId) == 0x4cbc",
+        "PhotoEnemyFlagsAt2BF4",
+        "PHOTO_ENEMY_ECL_CONTROL_OFFSET",
+        "PhotoEnemyChildEclBlocksAt2CAC",
+        "PHOTO_ENEMY_ECL_CHILD_BLOCKS_OFFSET",
+        "PhotoEnemyAttachedVmAt4CBC",
+        "PHOTO_ENEMY_ECL_ATTACHED_VM_OFFSET",
     )
     for fact in required_element_layout:
         if fact not in element:
             fail(f"canonical compact enemy layout lost assertion: {fact}")
     if '#include "PhotoBulletSpawnDescriptor.hpp"' not in element:
         fail("PhotoEnemy.hpp must consume the dependency-light bullet descriptor")
-    if '#include "PhotoEnemyEclOperandAccess.hpp"' not in element:
-        fail("PhotoEnemy.hpp must pin the legacy ECL operand access boundary")
+    if '#include "PhotoEnemyEclAccess.hpp"' not in element:
+        fail("PhotoEnemy.hpp must pin the legacy ECL access boundary")
     if '#include "PhotoBulletManager.hpp"' in element:
         fail("PhotoEnemy.hpp must not import the complete BulletInf owner")
 
     required_manager_layout = (
         "offsetof(PhotoEnemyManagerView, timelines) == 0x4cc0",
         "offsetof(PhotoEnemyManagerView, drawGroupHeads) == 0x4dc0",
-        "offsetof(PhotoEnemyManagerView, eclManager) == 0x4df4",
+        "PhotoEnemyManagerEclManagerAt4DF4",
+        "PHOTO_ENEMY_ECL_MANAGER_OFFSET",
         "offsetof(PhotoEnemyManagerView, enemyAnm) == 0x4df8",
         "offsetof(PhotoEnemyManagerView, unknown4dfc) == 0x4dfc",
         "offsetof(PhotoEnemyManagerView, enemyPool) == 0x4e00",
-        "offsetof(PhotoEnemyManagerView, photoTargets) == 0x26ae00",
+        "PhotoEnemyManagerPhotoTargetsAt26AE00",
+        "PHOTO_ENEMY_ECL_PHOTO_TARGETS_OFFSET",
         "offsetof(PhotoEnemyManagerView, calcChain) == 0x26ae20",
         "offsetof(PhotoEnemyManagerView, eclPhotoCardSession) == 0x26ae28",
         "sizeof(PhotoEnemyManagerView) == 0x26ae30",
@@ -638,10 +645,6 @@ def check_photo_enemy_owner() -> None:
         SRC / "PhotoGameTask.cpp",
         SRC / "Background.cpp",
         SRC / "EclDependencies.cpp",
-        SRC / "EclOperandsInt.cpp",
-        SRC / "EclOperandsFloat.cpp",
-        SRC / "EclOperandsIntLValue.cpp",
-        SRC / "EclOperandsFloatLValue.cpp",
         SRC / "EnemyShotAnm.cpp",
     )
     for path in direct_consumers:
@@ -687,6 +690,7 @@ def check_photo_enemy_owner() -> None:
         SRC / "EclOperandsInt.cpp",
         SRC / "EclOperandsFloat.cpp",
         SRC / "EclOperandsIntLValue.cpp",
+        SRC / "EclOperandsFloatLValue.cpp",
     )
     retired_operand_views = re.compile(
         r"\bstruct\s+Ecl(?:Int|Float)(?:LValue)?Operand"
@@ -695,10 +699,26 @@ def check_photo_enemy_owner() -> None:
     )
     for path in operand_consumers:
         text = path.read_text(encoding="utf-8")
-        if '#include "PhotoEnemyEclOperandAccess.hpp"' not in text:
+        if '#include "PhotoEnemyEclAccess.hpp"' not in text:
             fail(f"{path.relative_to(SRC)} lost shared compact-enemy operand access")
         if retired_operand_views.search(text):
             fail(f"{path.relative_to(SRC)} restored a duplicate operand field view")
+        if re.search(r"\bstruct\s+Ecl\w*OperandRuntimeView\b", text):
+            fail(f"{path.relative_to(SRC)} restored a duplicate runtime-manager view")
+        if "PhotoEnemyEclOperandRuntimeOwner" not in text:
+            fail(f"{path.relative_to(SRC)} lost the shared opaque runtime owner")
+        if "TH095_ECL_RUNTIME_SHARED_OPERANDS" not in text:
+            fail(f"{path.relative_to(SRC)} bypasses the shared runtime operand path")
+
+    float_lvalue = (SRC / "EclOperandsFloatLValue.cpp").read_text(
+        encoding="utf-8"
+    )
+    if re.search(
+        r"enemy->(?:activeEclContext|position|movementInterpolation(?:Origin|Delta)|"
+        r"movementAngle|angularVelocity|speed|acceleration|orbit(?:Radius|Angle|AngularVelocity))",
+        float_lvalue,
+    ):
+        fail("ResolveFloatLValue restored a legacy Enemy compact-field access")
 
     required_operand_offsets = (
         "PHOTO_ENEMY_ECL_LIFE_OFFSET = 0x2958",
@@ -708,6 +728,10 @@ def check_photo_enemy_owner() -> None:
         "PHOTO_ENEMY_ECL_PHOTO_TARGET_SLOT_OFFSET = 0x2be5",
         "PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET = 0x2c50",
         "PHOTO_ENEMY_ECL_SCHEDULED_FRAMES_OFFSET = 0x2c54",
+        "PHOTO_ENEMY_ECL_MANAGER_OFFSET = 0x4df4",
+        "PHOTO_ENEMY_ECL_PHOTO_TARGETS_OFFSET = 0x26ae00",
+        "PHOTO_ENEMY_ECL_CONTROL_OFFSET = 0x2bf4",
+        "PHOTO_ENEMY_ECL_CHILD_BLOCKS_OFFSET = 0x2cac",
     )
     for fact in required_operand_offsets:
         if fact not in operand_access:
@@ -718,6 +742,8 @@ def check_photo_enemy_owner() -> None:
     )
     if re.search(r"\bstruct\s+EnemyEclRuntimeView\s*\{", compatibility):
         fail("EnemyEclRuntimeView.hpp must not restore a duplicate enemy layout")
+    if '#include "../PhotoEnemyEclAccess.hpp"' not in compatibility:
+        fail("EnemyEclRuntimeView.hpp must route through shared compact access")
 
     required_emission_adapters = (
         SRC / "EnemyShotAnmEmission.hpp",
@@ -739,6 +765,54 @@ def check_photo_enemy_owner() -> None:
         fail("EclRun restored the retired normal +0x4DF8 projection")
     if "EclPhotoCardSessionRuntimeView" in ecl_run:
         fail("EclRun restored the retired normal +0x26AE28 projection")
+
+    run_surfaces = "\n".join(
+        (SRC / "ecl" / name).read_text(encoding="utf-8")
+        for name in (
+            "EclRun.cpp",
+            "EclRunLow.inl",
+            "EclRunHigh.inl",
+            "EclRunTargetHigh.inl",
+            "EclRunTargetPhoto.inl",
+        )
+    )
+    retired_run_views = (
+        "EclPhotoCaptureEnemyView",
+        "EclPhotoEnemyTimerView",
+        "EclPhotoShotDistanceEnemyView",
+        "EclEnemyDrawGroupView",
+        "EclEnemyVmView",
+        "Th095EnemyMovementBoundsView",
+        "Th095EnemyBulletSpawnSoundView",
+        "Th095EnemyBulletSpawnDescriptorView",
+        "Th095EnemyBulletSpawnTransformView",
+        "Th095EnemyPhotoMarkerPulseView",
+        "Th095EnemyShotCadenceView",
+        "Th095PhotoTargetRuntimeView",
+        "Th095PhotoTargetSlotView",
+        "Th095ScheduledCallFrameView",
+        "Th095ScheduledCallRecordView",
+        "Th095EnemyChildBlockView",
+        "Th095EnemyLifeView",
+        "Th095EnemyPhotoView",
+        "Th095EnemyPhotoPulseView",
+        "Th095EnemyAnmHandleView",
+        "Th095EnemyPhotoSessionView",
+        "Th095EnemyFlagsView",
+    )
+    restored = [name for name in retired_run_views if name in run_surfaces]
+    if restored:
+        fail(f"RunEcl restored compact-enemy projections: {', '.join(restored)}")
+    for marker in (
+        "TH095_ECL_RUNTIME_PHOTO_TARGET",
+        "TH095_ECL_SHOOT_INTERVAL_FRAMES",
+        "TH095_ECL_CHILD_BLOCK",
+        "TH095_ENEMY_ECL_CONTROL_BITS",
+        "TH095_ENEMY_ECL_SECONDARY_BITS",
+        "TH095_ECL_PHOTO_PULSE_TIMER",
+    ):
+        if marker not in run_surfaces:
+            fail(f"RunEcl lost shared compact-enemy access: {marker}")
 
 
 def check_small_closed_domains() -> None:
@@ -783,6 +857,7 @@ def main() -> int:
     print("  EclExtended normal types: canonical ANM, Float3, Effect, BulletInf, and EnemyInf owners")
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
+    print("  compact enemy ECL access: four resolvers and RunEcl share one path")
     print("  Replay manager, color mode, and viewport domains: explicit")
     return 0
 

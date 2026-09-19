@@ -93,7 +93,8 @@ typedef char PhotoEnemyManagerDrawGroupsAt4DC0[
 typedef char PhotoEnemyManagerTimelineEventsAt4DD4[
     (offsetof(PhotoEnemyManagerView, timelineEventSlots) == 0x4dd4) ? 1 : -1];
 typedef char PhotoEnemyManagerEclManagerAt4DF4[
-    (offsetof(PhotoEnemyManagerView, eclManager) == 0x4df4) ? 1 : -1];
+    (offsetof(PhotoEnemyManagerView, eclManager) ==
+     PHOTO_ENEMY_ECL_MANAGER_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyManagerEnemyAnmAt4DF8[
     (offsetof(PhotoEnemyManagerView, enemyAnm) == 0x4df8) ? 1 : -1];
 typedef char PhotoEnemyManagerUnknown4DFCAt4DFC[
@@ -101,7 +102,8 @@ typedef char PhotoEnemyManagerUnknown4DFCAt4DFC[
 typedef char PhotoEnemyManagerEnemiesAt4E00[
     (offsetof(PhotoEnemyManagerView, enemyPool) == 0x4e00) ? 1 : -1];
 typedef char PhotoEnemyManagerPhotoTargetsAt26AE00[
-    (offsetof(PhotoEnemyManagerView, photoTargets) == 0x26ae00) ? 1 : -1];
+    (offsetof(PhotoEnemyManagerView, photoTargets) ==
+     PHOTO_ENEMY_ECL_PHOTO_TARGETS_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyManagerChainsAt26AE20[
     (offsetof(PhotoEnemyManagerView, calcChain) == 0x26ae20 &&
      offsetof(PhotoEnemyManagerView, drawChain) == 0x26ae24) ? 1 : -1];

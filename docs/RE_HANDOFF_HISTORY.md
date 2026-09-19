@@ -1781,3 +1781,19 @@ overlapping views beginning with `position @ +0x28A0`,
 `worldPosition @ +0x28F4`, and control words `+0x2BF4/+0x2BF8`. Manager
 `+0x4DFC` remains Unknown pending an independent producer and
 resource-lifetime proof.
+
+## Compact EnemyInf checkpoint — SEM-271 and SEM-272
+
+The 2026-09-19 local semantic campaign first established `PhotoEnemy.hpp` as
+the one profile-independent 0x4CC0 compact-element owner, then migrated
+`Enemy::UpdateMovement @ 0x00412970` and the read/int-lvalue resolver fields to
+that owner through method-only or offset-asserted ABI bridges. The EnemyInf
+manager remained the one 0x26AE30 allocation owner with proved
+`enemyAnm @ +0x4DF8`; manager `+0x4DFC` stayed Unknown.
+
+At that checkpoint the cold aggregate passed 696/696 exact and the normal
+88-object pinned-VC7.1 product linked successfully. The next route recorded in
+the live handoff was to remove the four operand TUs' duplicate runtime-manager
+projections at `+0x4DF4/+0x26AE00`, then migrate `ResolveFloatLValue` and
+RunEcl's remaining compact-element projections. SEM-273 supersedes that route;
+the detailed accepted evidence remains in `SEMANTIC_HISTORY.md`.

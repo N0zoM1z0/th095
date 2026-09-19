@@ -98,120 +98,6 @@ struct SpawnPacketSmall
 };
 C_ASSERT(sizeof(SpawnPacketSmall) == 0x10);
 
-#if !defined(TH095_MATCH_EXACT)
-struct Th095EnemyMovementBoundsView
-{
-    u8 unknown0000[0x2c3c];
-    EnemyMovementBounds movementBounds;
-};
-C_ASSERT(offsetof(Th095EnemyMovementBoundsView, movementBounds) == 0x2c3c);
-
-struct Th095BulletSpawnSoundView
-{
-    u8 unknown000[0x1fc];
-    u32 transformFlags;
-    i32 spawnSound;
-    i32 transformSound;
-};
-C_ASSERT(offsetof(Th095BulletSpawnSoundView, transformFlags) == 0x1fc);
-C_ASSERT(offsetof(Th095BulletSpawnSoundView, spawnSound) == 0x200);
-C_ASSERT(offsetof(Th095BulletSpawnSoundView, transformSound) == 0x204);
-struct Th095EnemyBulletSpawnSoundView
-{
-    u8 unknown0000[0x298c];
-    Th095BulletSpawnSoundView bulletSpawnDescriptor;
-};
-C_ASSERT(offsetof(Th095EnemyBulletSpawnSoundView, bulletSpawnDescriptor) == 0x298c);
-#define TH095_ENEMY_BULLET_SPAWN_SOUND_VIEW(enemy)                          \
-    (&reinterpret_cast<Th095EnemyBulletSpawnSoundView *>(enemy)             \
-          ->bulletSpawnDescriptor)
-
-#if !defined(DIFFBUILD)
-struct Th095EnemyBulletSpawnDescriptorView
-{
-    u8 unknown0000[0x298c];
-    BulletSpawnDescriptor bulletSpawnDescriptor;
-};
-C_ASSERT(offsetof(Th095EnemyBulletSpawnDescriptorView, bulletSpawnDescriptor) == 0x298c);
-#define TH095_ENEMY_BULLET_SPAWN_DESCRIPTOR(enemy)                          \
-    (&reinterpret_cast<Th095EnemyBulletSpawnDescriptorView *>(enemy)        \
-          ->bulletSpawnDescriptor)
-
-struct Th095BulletSpawnTransformView
-{
-    u8 unknown000[0x20];
-    BulletTransformRecord transforms[18];
-};
-C_ASSERT(offsetof(Th095BulletSpawnTransformView, transforms) == 0x20);
-struct Th095EnemyBulletSpawnTransformView
-{
-    u8 unknown0000[0x298c];
-    Th095BulletSpawnTransformView bulletSpawnDescriptor;
-};
-C_ASSERT(offsetof(Th095EnemyBulletSpawnTransformView, bulletSpawnDescriptor) == 0x298c);
-#define TH095_ENEMY_BULLET_TRANSFORM_RECORD(enemy, index)                   \
-    (&reinterpret_cast<Th095EnemyBulletSpawnTransformView *>(enemy)         \
-          ->bulletSpawnDescriptor.transforms[(index)])
-#endif
-
-struct Th095EnemyPhotoMarkerPulseView
-{
-    u8 unknown0000[0x2bfc];
-    ZunTimer photoMarkerPulseTimer;
-};
-C_ASSERT(offsetof(Th095EnemyPhotoMarkerPulseView, photoMarkerPulseTimer) == 0x2bfc);
-
-struct Th095EnemyShotCadenceView
-{
-    u8 unknown0000[0x2bc8];
-    i32 shootIntervalFrames;
-    ZunTimer shootIntervalTimer;
-};
-C_ASSERT(offsetof(Th095EnemyShotCadenceView, shootIntervalFrames) == 0x2bc8);
-C_ASSERT(offsetof(Th095EnemyShotCadenceView, shootIntervalTimer) == 0x2bcc);
-
-struct Th095PhotoTargetRuntimeView
-{
-    u8 unknown000000[0x26ae00];
-    Enemy *photoTargets[8];
-};
-C_ASSERT(offsetof(Th095PhotoTargetRuntimeView, photoTargets) == 0x26ae00);
-
-struct Th095PhotoTargetSlotView
-{
-    u8 unknown0000[0x2be5];
-    u8 photoTargetSlot;
-};
-C_ASSERT(offsetof(Th095PhotoTargetSlotView, photoTargetSlot) == 0x2be5);
-
-struct Th095ScheduledCallFrameView
-{
-    u8 unknown0000[0x2c54];
-    i32 scheduledCallFrames[10];
-};
-C_ASSERT(offsetof(Th095ScheduledCallFrameView, scheduledCallFrames) == 0x2c54);
-
-struct Th095ScheduledCallRecord
-{
-    union
-    {
-        i32 rawValue;
-        struct
-        {
-            i16 subroutineId;
-            i16 unknown02;
-        };
-    };
-};
-C_ASSERT(sizeof(Th095ScheduledCallRecord) == 4);
-struct Th095ScheduledCallRecordView
-{
-    u8 unknown0000[0x2c7c];
-    Th095ScheduledCallRecord scheduledCalls[10];
-};
-C_ASSERT(offsetof(Th095ScheduledCallRecordView, scheduledCalls) == 0x2c7c);
-#endif
-
 // TH095's high ECL range is the photography/effect lane.  The two packet
 // layouts below are pinned by RunEcl's target stores and the dispatcher at
 // 0x0041DBD0.  Keep the fields explicit: their declaration order also owns
@@ -437,92 +323,6 @@ struct Th095RuntimeManager
     void ResetEnemies();
 };
 
-struct Th095EnemyChildBlockView
-{
-    u8 targetPadding00[0x2cac];
-    EnemyChildEclBlock *childEclBlocks[16];
-};
-
-struct Th095EnemyLifeView
-{
-    u8 targetPadding00[0x2958];
-    i32 life;
-};
-
-struct Th095EnemyPhotoView
-{
-    u8 targetPadding00[0x2c1c];
-    PhotoAnmHandle photoAnmHandle;
-};
-
-#if !defined(TH095_MATCH_EXACT)
-struct Th095EnemyPhotoPulseView
-{
-    u8 targetPadding00[0x2c1c];
-    PhotoAnmHandle photoPulseVmId;
-    u8 unknown2c20[4];
-    ZunTimer photoPulseTimer;
-    ZunTimer photoPulseDurationTimer;
-};
-C_ASSERT(offsetof(Th095EnemyPhotoPulseView, photoPulseVmId) == 0x2c1c);
-C_ASSERT(offsetof(Th095EnemyPhotoPulseView, photoPulseTimer) == 0x2c24);
-C_ASSERT(offsetof(Th095EnemyPhotoPulseView, photoPulseDurationTimer) == 0x2c30);
-#define TH095_ENEMY_PHOTO_PULSE(enemy) \
-    (reinterpret_cast<Th095EnemyPhotoPulseView *>(enemy))
-#endif
-
-struct Th095EnemyAnmHandleView
-{
-    u8 targetPadding00[0x2d4];
-    PhotoAnmHandle handles[2];
-};
-
-struct Th095EnemyPhotoSessionView
-{
-    u8 targetPadding00[0x4cbc];
-    PhotoAnmHandle anmHandle;
-};
-
-struct Th095EnemyFlagsView
-{
-    u8 targetPadding00[0x2bf4];
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknown00_06 : 7;
-            u32 flag7 : 1;
-            u32 unknown08_22 : 15;
-            u32 flag23 : 1;
-            u32 flag24 : 1;
-            u32 unknown25_27 : 3;
-            u32 flag28 : 1;
-            u32 unknown29_31 : 3;
-        };
-    };
-    union
-    {
-        u32 secondaryFlags;
-        struct
-        {
-            u32 secondaryUnknown00_04 : 5;
-            u32 secondaryFlag5 : 1;
-#if defined(TH095_MATCH_EXACT)
-            u32 secondaryFlag6 : 1;
-#else
-            u32 showPhotoMarker : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 secondaryFlag7 : 1;
-#else
-            u32 freezeAttachedVm : 1;
-#endif
-            u32 secondaryUnknown08_31 : 24;
-        };
-    };
-};
-
 // The target's inlined allocation wrapper keeps its size parameter addressable,
 // so VC7.1 materializes it in RunEcl's shared temporary region before malloc.
 inline void *Th095Alloc(size_t size)
@@ -535,40 +335,22 @@ inline i32 Th095PreserveI32(i32 value)
     return *reinterpret_cast<volatile i32 *>(&value);
 }
 
-#define TH095_ENEMY_CHILD_BLOCK_VIEW(enemy) \
-    (reinterpret_cast<Th095EnemyChildBlockView *>(enemy))
 #define TH095_ENEMY_LIFE(enemy) \
-    (reinterpret_cast<Th095EnemyLifeView *>(enemy)->life)
-#define TH095_ENEMY_PHOTO(enemy) \
-    (reinterpret_cast<Th095EnemyPhotoView *>(enemy))
-#define TH095_ENEMY_ANM_HANDLES(enemy) \
-    (reinterpret_cast<Th095EnemyAnmHandleView *>(enemy))
-#if defined(TH095_MATCH_EXACT)
+    TH095_ECL_ENEMY_LIFE(enemy)
 #define TH095_ENEMY_ANM_HANDLE_SLOT(enemy, slot) \
-    (*reinterpret_cast<i32 *>( \
-        reinterpret_cast<u8 *>(enemy) + 0x2d4 + (slot) * 4))
-#else
-#define TH095_ENEMY_ANM_HANDLE_SLOT(enemy, slot) ((enemy)->anmHandles[(slot)])
-#endif
-#define TH095_ENEMY_PHOTO_SESSION(enemy) \
-    (reinterpret_cast<Th095EnemyPhotoSessionView *>(enemy))
-#define TH095_ENEMY_FLAGS(enemy) \
-    (reinterpret_cast<Th095EnemyFlagsView *>(enemy))
-#if defined(TH095_MATCH_EXACT)
+    TH095_PHOTO_ENEMY_I32( \
+        (enemy), th095::PHOTO_ENEMY_ECL_ANM_HANDLES_OFFSET + \
+            sizeof(i32) * (slot))
 #define TH095_ENEMY_SHOW_PHOTO_MARKER(enemy) \
-    (TH095_ENEMY_FLAGS(enemy)->secondaryFlag6)
+    (TH095_ENEMY_ECL_SECONDARY_BITS(enemy).showPhotoMarker)
 #define TH095_ENEMY_PHOTO_MARKER_PULSE_TIMER(enemy) \
-    (*reinterpret_cast<ZunTimer *>(reinterpret_cast<u8 *>(enemy) + 0x2bfc))
+    TH095_ECL_PHOTO_MARKER_TIMER(enemy)
 #define TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) \
-    (TH095_ENEMY_FLAGS(enemy)->secondaryFlag7)
-#else
-#define TH095_ENEMY_SHOW_PHOTO_MARKER(enemy) \
-    (TH095_ENEMY_FLAGS(enemy)->showPhotoMarker)
-#define TH095_ENEMY_PHOTO_MARKER_PULSE_TIMER(enemy) \
-    (reinterpret_cast<Th095EnemyPhotoMarkerPulseView *>(enemy)->photoMarkerPulseTimer)
-#define TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) \
-    (TH095_ENEMY_FLAGS(enemy)->freezeAttachedVm)
-#endif
+    (TH095_ENEMY_ECL_SECONDARY_BITS(enemy).freezeAttachedVm)
+#define TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy) \
+    TH095_ECL_ATTACHED_VM((enemy), PhotoAnmHandle)
+#define TH095_ENEMY_PHOTO_PULSE_HANDLE(enemy) \
+    TH095_ECL_PHOTO_PULSE_VM((enemy), PhotoAnmHandle)
 
 extern PhotoEffectManager *g_Th095PhotoEffectManager;
 extern PhotoCamera *g_Th095PhotoCamera;

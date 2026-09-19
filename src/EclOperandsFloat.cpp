@@ -1,8 +1,7 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
-#include "PhotoEnemyEclOperandAccess.hpp"
+#include "PhotoEnemyEclAccess.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-#include "PhotoEnemyManager.hpp"
 #include "ecl/EclOperands.hpp"
 #endif
 #ifndef DIFFBUILD
@@ -30,25 +29,6 @@ struct EclSharedFloatOperandView
     f32 floatVariables[4];
 };
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct EclFloatOperandRuntimeView
-{
-    u8 unknown000000[0x4df4];
-    EclSharedFloatOperandView *sharedOperands;
-    u8 unknown004df8[0x26ae00 - 0x4df8];
-    Enemy *photoTargets[8];
-};
-#define TH095_ECL_FLOAT_SHARED_OPERANDS(runtime) ((runtime)->sharedOperands)
-#define TH095_ECL_FLOAT_PHOTO_TARGET(runtime, index) \
-    ((runtime)->photoTargets[(index)])
-#else
-typedef PhotoEnemyManagerView EclFloatOperandRuntimeView;
-#define TH095_ECL_FLOAT_SHARED_OPERANDS(runtime) \
-    reinterpret_cast<EclSharedFloatOperandView *>((runtime)->eclManager)
-#define TH095_ECL_FLOAT_PHOTO_TARGET(runtime, index) \
-    reinterpret_cast<Enemy *>((runtime)->photoTargets[(index)])
-#endif
-
 struct EclFloatPhotoCounterView
 {
     i32 value;
@@ -75,12 +55,13 @@ struct EclFloatOperandPlayerView
     f32 AngleFromPoint(Float3 *point);
 };
 
-extern EclFloatOperandRuntimeView *g_EclFloatOperandRuntime;
+extern PhotoEnemyEclOperandRuntimeOwner *g_EclFloatOperandRuntime;
 extern EclFloatOperandPlayerView *g_EclFloatOperandPlayer;
 
 #ifndef DIFFBUILD
 #define g_EclFloatOperandRuntime \
-    TH095_RUNTIME_GLOBAL_PTR(EclFloatOperandRuntimeView, g_RuntimeEnemyManagerOwner)
+    TH095_RUNTIME_GLOBAL_PTR( \
+        PhotoEnemyEclOperandRuntimeOwner, g_RuntimeEnemyManagerOwner)
 #define g_EclFloatOperandPlayer \
     TH095_RUNTIME_GLOBAL_PTR(EclFloatOperandPlayerView, g_RuntimePlayerOwner)
 #endif
@@ -144,14 +125,14 @@ f32 Enemy::ResolveFloat(f32 operand)
     case 0x275b: return (f32)TH095_ECL_ITEM_DROP_TYPE(this);
     case 0x275c: return (f32)TH095_ECL_ENEMY_SCORE(this);
 
-    case 0x273c: return (f32)TH095_ECL_FLOAT_SHARED_OPERANDS(g_EclFloatOperandRuntime)->intVariables[0];
-    case 0x273d: return (f32)TH095_ECL_FLOAT_SHARED_OPERANDS(g_EclFloatOperandRuntime)->intVariables[1];
-    case 0x273e: return (f32)TH095_ECL_FLOAT_SHARED_OPERANDS(g_EclFloatOperandRuntime)->intVariables[2];
-    case 0x273f: return (f32)TH095_ECL_FLOAT_SHARED_OPERANDS(g_EclFloatOperandRuntime)->intVariables[3];
-    case 0x2740: return TH095_ECL_FLOAT_SHARED_OPERANDS(g_EclFloatOperandRuntime)->floatVariables[0];
-    case 0x2741: return TH095_ECL_FLOAT_SHARED_OPERANDS(g_EclFloatOperandRuntime)->floatVariables[1];
-    case 0x2742: return TH095_ECL_FLOAT_SHARED_OPERANDS(g_EclFloatOperandRuntime)->floatVariables[2];
-    case 0x2743: return TH095_ECL_FLOAT_SHARED_OPERANDS(g_EclFloatOperandRuntime)->floatVariables[3];
+    case 0x273c: return (f32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->intVariables[0];
+    case 0x273d: return (f32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->intVariables[1];
+    case 0x273e: return (f32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->intVariables[2];
+    case 0x273f: return (f32)TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->intVariables[3];
+    case 0x2740: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->floatVariables[0];
+    case 0x2741: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->floatVariables[1];
+    case 0x2742: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->floatVariables[2];
+    case 0x2743: return TH095_ECL_RUNTIME_SHARED_OPERANDS(g_EclFloatOperandRuntime, EclSharedFloatOperandView)->floatVariables[3];
 
     case 0x2718: return this->activeEclContext->floatVariables[0];
     case 0x2719: return this->activeEclContext->floatVariables[1];
@@ -216,8 +197,8 @@ f32 Enemy::ResolveFloat(f32 operand)
         return (f32)(i32)TH095_ECL_FLOAT_PHOTO_INDEX;
     case 0x2764:
         return (f32)(i32)TH095_ECL_FLOAT_PHOTOS_TAKEN;
-    case 0x2762: return TH095_ECL_FLOAT_PHOTO_TARGET(g_EclFloatOperandRuntime, 0)->worldPosition.x;
-    case 0x2763: return TH095_ECL_FLOAT_PHOTO_TARGET(g_EclFloatOperandRuntime, 0)->worldPosition.y;
+    case 0x2762: return TH095_ECL_RUNTIME_PHOTO_TARGET(g_EclFloatOperandRuntime, 0, Enemy)->worldPosition.x;
+    case 0x2763: return TH095_ECL_RUNTIME_PHOTO_TARGET(g_EclFloatOperandRuntime, 0, Enemy)->worldPosition.y;
     default: return operand;
     }
 }
