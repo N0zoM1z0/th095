@@ -6,6 +6,9 @@
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
+#ifndef DIFFBUILD
+#include "PhotoEnemyManager.hpp"
+#endif
 #include "PhotoPlayerRuntime.hpp"
 #ifndef DIFFBUILD
 #include "PhotoEffectRuntime.hpp"
@@ -33,12 +36,6 @@ static __forceinline void PhotoGameClearFocusVm(PhotoAnmVmId *vm)
 struct PhotoResetTargetView
 {
     void ResetForPhotoTransition();
-};
-#else
-struct PhotoEnemyManagerView
-{
-    static void __fastcall ResetNonPhotoTargetsAndPhotoTargetEcls(
-        PhotoEnemyManagerView *enemyManager);
 };
 #endif
 

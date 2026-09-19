@@ -10,6 +10,9 @@
 #include "AnmVmId.hpp"
 #include "Background.hpp"
 #include "GameplayGlobals.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "PhotoEnemyManager.hpp"
+#endif
 #include "SceneData.hpp"
 #ifdef TH095_MATCH_EXACT
 #define TH095_SUPERVISOR_VIEWPORT_PLAYFIELD 0
@@ -270,6 +273,7 @@ struct BackgroundAnmSpawnerView
 };
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct BackgroundRuntimeView
 {
     u8 unknown0000[0x4df8];
@@ -279,6 +283,11 @@ struct BackgroundRuntimeView
     AnmLoaded *anmSpawner;
 #endif
 };
+#define TH095_BACKGROUND_ENEMY_ANM(runtime) ((runtime)->anmSpawner)
+#else
+typedef PhotoEnemyManagerView BackgroundRuntimeView;
+#define TH095_BACKGROUND_ENEMY_ANM(runtime) ((runtime)->enemyAnm)
+#endif
 
 #ifdef TH095_MATCH_EXACT
 #define TH095_BACKGROUND_CREATE_WORLD_VM(spawner, script, position) \
@@ -1719,12 +1728,14 @@ void Background::StartSpellBackground()
     this->spellBackgroundFrameCounter = 1;
     *reinterpret_cast<AnmVmId *>(
         &this->spellBackgroundVmIds[0]) =
-        TH095_BACKGROUND_CREATE_WORLD_VM(g_BackgroundRuntime->anmSpawner,
+        TH095_BACKGROUND_CREATE_WORLD_VM(
+            TH095_BACKGROUND_ENEMY_ANM(g_BackgroundRuntime),
             0, &Float3(0.0f, 0.0f, 0.0f));
 
     *reinterpret_cast<AnmVmId *>(
         &this->spellBackgroundVmIds[1]) =
-        TH095_BACKGROUND_CREATE_WORLD_VM(g_BackgroundRuntime->anmSpawner,
+        TH095_BACKGROUND_CREATE_WORLD_VM(
+            TH095_BACKGROUND_ENEMY_ANM(g_BackgroundRuntime),
             1, &Float3(0.0f, 0.0f, 0.0f));
 }
 

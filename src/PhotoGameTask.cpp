@@ -13,6 +13,9 @@
 #include "InputRuntime.hpp"
 #include "Main.hpp"
 #include "PhotoBulletManager.hpp"
+#ifndef DIFFBUILD
+#include "PhotoEnemyManager.hpp"
+#endif
 #include "PhotoGameTask.hpp"
 #include "PhotoEffectRuntime.hpp"
 #ifndef DIFFBUILD
@@ -53,12 +56,14 @@ struct PhotoEnemyManagerTaskView
     static PhotoEnemyManagerTaskView *Create();
 };
 
+#ifdef DIFFBUILD
 struct PhotoEnemyManagerView
 {
     void Destroy();
     static void __fastcall RestartPhotoTargetEcls(
         PhotoEnemyManagerView *enemyManager);
 };
+#endif
 
 struct PhotoItemManagerView
 {

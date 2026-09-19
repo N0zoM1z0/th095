@@ -1,6 +1,7 @@
 #include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoEnemyManager.hpp"
 #include "ecl/EnemyEclRuntimeView.hpp"
 #endif
 
@@ -57,6 +58,7 @@ typedef char PhotoTargetEnemyCollision[(offsetof(PhotoTargetEnemyView, collision
 typedef char PhotoTargetEnemyFlags1[(offsetof(PhotoTargetEnemyView, flags1) == 0x2bf4) ? 1 : -1];
 typedef char PhotoTargetEnemyFlags2[(offsetof(PhotoTargetEnemyView, flags2) == 0x2bf8) ? 1 : -1];
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct PhotoRuntimeView
 {
     u8 unknown0000[0x4df4];
@@ -66,6 +68,13 @@ struct PhotoRuntimeView
 
     i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
 };
+#define TH095_PHOTO_RUNTIME_OWNER PhotoRuntimeView
+#define TH095_PHOTO_RUNTIME_FIRST_ENEMY(owner) (&(owner)->enemies[0])
+#else
+#define TH095_PHOTO_RUNTIME_OWNER PhotoEnemyManagerView
+#define TH095_PHOTO_RUNTIME_FIRST_ENEMY(owner) \
+    reinterpret_cast<PhotoTargetEnemyView *>((owner)->EnemyAt(0))
+#endif
 
 // Keep the TH08 Float3 divide body in this call-site allocation phase.
 static __forceinline Float3 DividePhotoVector(
@@ -80,7 +89,7 @@ static __forceinline Float3 DividePhotoVector(
 }
 
 // FUNCTION: TH095 0x004168D0.
-int PhotoRuntimeView::CountPhotoTargets(
+int TH095_PHOTO_RUNTIME_OWNER::CountPhotoTargets(
     const Float3 *position, const Float3 *size)
 {
     struct CountPhotoTargetLocals
@@ -94,7 +103,7 @@ int PhotoRuntimeView::CountPhotoTargets(
         i32 count;
     } locals;
 
-    locals.enemy = &this->enemies[0];
+    locals.enemy = TH095_PHOTO_RUNTIME_FIRST_ENEMY(this);
     locals.count = 0;
 
     locals.captureMaximum = DividePhotoVector(*size, 2.0f);

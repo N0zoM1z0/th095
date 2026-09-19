@@ -5,6 +5,7 @@
 #include "PhotoCamera.hpp"
 #include "GameplayGlobals.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoEnemyManager.hpp"
 #include "ecl/EnemyEclRuntimeView.hpp"
 #endif
 #ifndef DIFFBUILD
@@ -75,6 +76,7 @@ typedef char PhotoEnemyFlagsAt2BF4[
 typedef char PhotoEnemyPhotoRateAt2C28[
     (offsetof(PhotoEnemyView, photoRateNumerator) == 0x2c28) ? 1 : -1];
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct PhotoRuntimeView
 {
     u8 unknown000000[0x26ae00];
@@ -82,6 +84,11 @@ struct PhotoRuntimeView
 
     i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
 };
+#define TH095_PHOTO_RUNTIME_TARGETS enemies
+#else
+typedef PhotoEnemyManagerView PhotoRuntimeView;
+#define TH095_PHOTO_RUNTIME_TARGETS photoTargets
+#endif
 
 struct PhotoCapturedBulletView
 {
@@ -1030,46 +1037,46 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
     for (locals.enemyIndex = 0; locals.enemyIndex < 8;
          locals.enemyIndex++)
     {
-        if (g_PhotoRuntime->enemies[locals.enemyIndex] == NULL)
+        if (g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex] == NULL)
         {
             continue;
         }
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (((g_PhotoRuntime->enemies[locals.enemyIndex]->flags >> 4) & 1) != 0 ||
-            ((g_PhotoRuntime->enemies[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
-            ((g_PhotoRuntime->enemies[locals.enemyIndex]->flags2 >> 6) & 1) != 0)
+        if (((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags >> 4) & 1) != 0 ||
+            ((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
+            ((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags2 >> 6) & 1) != 0)
 #else
         if (TH095_ENEMY_ECL_CONTROL_BITS(
-                g_PhotoRuntime->enemies[locals.enemyIndex]).hiddenFromDrawGroups != 0 ||
-            ((g_PhotoRuntime->enemies[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
+                g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]).hiddenFromDrawGroups != 0 ||
+            ((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
             TH095_ENEMY_ECL_SECONDARY_BITS(
-                g_PhotoRuntime->enemies[locals.enemyIndex]).showPhotoMarker != 0)
+                g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]).showPhotoMarker != 0)
 #endif
         {
             continue;
         }
 
         if (!PhotoEnemyIsOffscreen(
-                &g_PhotoRuntime->enemies[locals.enemyIndex]->position))
+                &g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->position))
         {
             if (PhotoRectangleContains(
-                    &g_PhotoRuntime->enemies[locals.enemyIndex]->position,
+                    &g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->position,
                     8.0f, 8.0f, &this->viewfinderPosition,
                     this->viewfinderSize.x, this->viewfinderSize.y))
             {
                 locals.currentValue = PhotoDistance2D(
-                    &g_PhotoRuntime->enemies[locals.enemyIndex]->position,
+                    &g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->position,
                     &this->viewfinderPosition);
                 if (locals.currentValue < locals.nearestTarget)
                 {
                     locals.nearestTarget = locals.currentValue;
                 }
-                if (g_PhotoRuntime->enemies[locals.enemyIndex]
+                if (g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
                             ->HasPhotoRate() &&
                     (locals.currentValue = PhotoRatio(
-                         g_PhotoRuntime->enemies[locals.enemyIndex]
+                         g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
                              ->photoRateDenominator,
-                         g_PhotoRuntime->enemies[locals.enemyIndex]
+                         g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
                              ->photoRateNumerator),
                      locals.currentValue > locals.highestBossRate))
                 {
@@ -1338,7 +1345,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
     case PHOTO_CAMERA_TRACKING:
         if (PHOTO_CAMERA_FOCUSED(camera->flags) == 0)
         {
-            if (g_PhotoRuntime->enemies[0] == NULL)
+            if (g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[0] == NULL)
             {
                 camera->cameraOffset = g_PhotoGame->playerPosition;
                 camera->cameraOffset.y -= 64.0f;
@@ -1356,7 +1363,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     f32 playerDistance = PhotoDistance2D(
                         &g_PhotoGame->playerPosition, &camera->viewfinderPosition);
                     f32 bossDistance = PhotoDistance2D(
-                        &g_PhotoRuntime->enemies[0]->position,
+                        &g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[0]->position,
                         &g_PhotoGame->playerPosition);
                     if (playerDistance < 56.0f)
                     {
@@ -1388,7 +1395,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
                 {
                     camera->cameraOffset = PhotoCameraTrackingDifference(
-                        g_PhotoRuntime->enemies[0]->position,
+                        g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[0]->position,
                         g_PhotoGame->playerPosition);
                     NormalizeAndScalePhotoOffset(
                         camera->cameraOffset,
@@ -1404,7 +1411,7 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     if (playerDelta.y * playerDelta.y + playerDelta.x * playerDelta.x < 0.1f)
                     {
                         targetAngle = g_PhotoGame->AngleToPoint(
-                            &g_PhotoRuntime->enemies[0]->position);
+                            &g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[0]->position);
                     }
                     else
                     {

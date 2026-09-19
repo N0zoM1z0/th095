@@ -5,6 +5,9 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "PhotoEnemyManager.hpp"
+#endif
 #ifndef DIFFBUILD
 #include "PhotoBulletManager.hpp"
 #include "PhotoPlayerRuntime.hpp"
@@ -17,6 +20,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include <new>
+#endif
 
 namespace th095
 {
@@ -252,6 +258,7 @@ i32 PhotoEnemyEclManagerView::InitializeContext(
 }
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct PhotoEnemyTimelineView
 {
     ZunTimer timer;
@@ -269,6 +276,7 @@ struct PhotoEnemyTimelineView
 
     void Run();
 };
+#endif
 
 struct PhotoEnemyTimelineInstruction
 {
@@ -319,8 +327,10 @@ struct PhotoEnemyTimelineExtendedSpawnArgs
     i32 score;
 };
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 typedef char PhotoEnemyTimelineSizeIs10[
     (sizeof(PhotoEnemyTimelineView) == 0x10) ? 1 : -1];
+#endif
 
 #ifdef TH095_MATCH_EXACT
 struct PhotoEnemyAnmSpawnerView
@@ -660,6 +670,23 @@ PhotoEnemyView::PhotoEnemyView()
     i32 unconsumedConstructorLocals[2];
 }
 
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+PhotoEnemySlotStorage::PhotoEnemySlotStorage()
+{
+    new (this) PhotoEnemyView;
+}
+
+PhotoEnemySlotStorage::~PhotoEnemySlotStorage()
+{
+    this->Get()->~PhotoEnemyView();
+}
+
+PhotoEnemyTimelineView::PhotoEnemyTimelineView()
+{
+}
+#endif
+
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct PhotoEnemyManagerView
 {
     PhotoEnemyView spawnTemplate;          // +0x0000
@@ -675,11 +702,7 @@ struct PhotoEnemyManagerView
     PhotoEnemyView *photoTargets[8];        // +0x26ae00
     ChainElem *calcChain;                  // +0x26ae20
     ChainElem *drawChain;                  // +0x26ae24
-#if defined(TH095_MATCH_EXACT)
     u8 unknown26ae28[4];
-#else
-    PhotoCardInfoView *eclPhotoCardSession; // +0x26ae28
-#endif
     i32 activeEnemyCount;                  // +0x26ae2c
 
     PhotoEnemyManagerView();
@@ -715,14 +738,19 @@ typedef char PhotoEnemyManagerTimelineEventsAt4DD4[
     (offsetof(PhotoEnemyManagerView, timelineEventSlots) == 0x4dd4) ? 1 : -1];
 typedef char PhotoEnemyManagerEnemiesAt4E00[
     (offsetof(PhotoEnemyManagerView, enemies) == 0x4e00) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT)
-typedef char PhotoEnemyManagerPhotoTargetsAt26AE00[
-    (offsetof(PhotoEnemyManagerView, photoTargets) == 0x26ae00) ? 1 : -1];
-typedef char PhotoEnemyManagerPhotoCardSessionAt26AE28[
-    (offsetof(PhotoEnemyManagerView, eclPhotoCardSession) == 0x26ae28) ? 1 : -1];
-#endif
 typedef char PhotoEnemyManagerCountAt26AE2C[
     (offsetof(PhotoEnemyManagerView, activeEnemyCount) == 0x26ae2c) ? 1 : -1];
+#endif
+
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define PHOTO_ENEMY_MANAGER_SPAWN_TEMPLATE(owner) (&(owner)->spawnTemplate)
+#define PHOTO_ENEMY_MANAGER_FIRST_ENEMY(owner) (&(owner)->enemies[0])
+#define PHOTO_ENEMY_MANAGER_ENEMY_AT(owner, index) (&(owner)->enemies[(index)])
+#else
+#define PHOTO_ENEMY_MANAGER_SPAWN_TEMPLATE(owner) ((owner)->SpawnTemplate())
+#define PHOTO_ENEMY_MANAGER_FIRST_ENEMY(owner) ((owner)->EnemyAt(0))
+#define PHOTO_ENEMY_MANAGER_ENEMY_AT(owner, index) ((owner)->EnemyAt(index))
+#endif
 
 #pragma var_order(i, enemy, this)
 PhotoEnemyManagerView::PhotoEnemyManagerView()
@@ -739,7 +767,7 @@ PhotoEnemyManagerView::PhotoEnemyManagerView()
         this->timelineEventSlots[i] = -1;
     }
 
-    enemy = &this->spawnTemplate;
+    enemy = PHOTO_ENEMY_MANAGER_SPAWN_TEMPLATE(this);
     memset(enemy, 0, sizeof(*enemy));
     for (i = 0; i < 96; ++i)
     {
@@ -838,7 +866,7 @@ PhotoEnemyManagerView::~PhotoEnemyManagerView()
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
 
-    PhotoEnemyView *enemy = &this->enemies[0];
+    PhotoEnemyView *enemy = PHOTO_ENEMY_MANAGER_FIRST_ENEMY(this);
     for (i32 enemyIndex = 0; enemyIndex < 128; ++enemyIndex, ++enemy)
     {
         for (i32 argumentIndex = 0; argumentIndex < 16; ++argumentIndex)
@@ -1050,7 +1078,7 @@ PhotoEnemyView *PhotoEnemyManagerView::Spawn(
     i32 enemyIndex;
     PhotoEnemyView *enemy;
 
-    enemy = &this->enemies[0];
+    enemy = PHOTO_ENEMY_MANAGER_FIRST_ENEMY(this);
     for (enemyIndex = 0; enemyIndex < 128; ++enemyIndex, ++enemy)
     {
         if (enemy->active != 0)
@@ -1110,7 +1138,7 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
     i32 enemyIndex;
     PhotoEnemyView *enemy;
 
-    enemy = &this->enemies[0];
+    enemy = PHOTO_ENEMY_MANAGER_FIRST_ENEMY(this);
     for (enemyIndex = 0; enemyIndex < 128; ++enemyIndex, ++enemy)
     {
         if (enemy->active != 0)
@@ -1199,7 +1227,7 @@ static __forceinline void PhotoEnemyMovementPhase(PhotoEnemyView *enemy)
 i32 __fastcall PhotoEnemyManagerView::OnUpdate(
     PhotoEnemyManagerView *enemyManager)
 {
-    PhotoEnemyView *enemy = &enemyManager->enemies[0];
+    PhotoEnemyView *enemy = PHOTO_ENEMY_MANAGER_FIRST_ENEMY(enemyManager);
 
     for (i32 timelineIndex = 0;
          timelineIndex < enemyManager->eclManager->eclFile->timelineCount;
@@ -1479,9 +1507,9 @@ void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargets(
 {
     for (i32 enemyIndex = 0; enemyIndex < 128; ++enemyIndex)
     {
-        if (enemyManager->enemies[enemyIndex].photoTarget == 0)
+        if (PHOTO_ENEMY_MANAGER_ENEMY_AT(enemyManager, enemyIndex)->photoTarget == 0)
         {
-            enemyManager->enemies[enemyIndex].Deactivate();
+            PHOTO_ENEMY_MANAGER_ENEMY_AT(enemyManager, enemyIndex)->Deactivate();
         }
     }
 }
@@ -1503,9 +1531,9 @@ void __fastcall PhotoEnemyManagerView::ResetNonPhotoTargetsAndPhotoTargetEcls(
 {
     for (i32 enemyIndex = 0; enemyIndex < 128; ++enemyIndex)
     {
-        if (enemyManager->enemies[enemyIndex].photoTarget == 0)
+        if (PHOTO_ENEMY_MANAGER_ENEMY_AT(enemyManager, enemyIndex)->photoTarget == 0)
         {
-            enemyManager->enemies[enemyIndex].Deactivate();
+            PHOTO_ENEMY_MANAGER_ENEMY_AT(enemyManager, enemyIndex)->Deactivate();
         }
     }
 
@@ -1566,7 +1594,7 @@ void PhotoEnemyView::Deactivate()
 #define PHOTO_ENEMY_SHOT_DESCRIPTOR(owner) \
     &(owner)->bulletSpawnDescriptor
 #define PHOTO_ENEMY_DEFAULT_SHOT_DESCRIPTOR(owner) \
-    &(owner)->spawnTemplate.bulletSpawnDescriptor
+    &PHOTO_ENEMY_MANAGER_SPAWN_TEMPLATE(owner)->bulletSpawnDescriptor
 #define PHOTO_ENEMY_SHOT_DESCRIPTOR_SIZE(owner) \
     sizeof((owner)->bulletSpawnDescriptor)
 #endif

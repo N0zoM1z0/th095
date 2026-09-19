@@ -50,40 +50,41 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-SEM-269 closes the BulletInf owner milestone for the normal product.
-`PhotoBulletManager.hpp` is now the one profile-independent `0x27C5B8` owner,
-including the `0x641` inline bullets, Chain nodes, `bulletAnm @ +0x27C5B0`, and
-active count. BulletManager, photo/game/task, enemy-shot, ECL, item, and enemy
-consumers use it; the former complete/local/method-only normal declarations
-are retired. Historical receiver spellings survive only in named exact/DIFF
-emission adapters.
+SEM-270 closes the TH095 EnemyInf manager-owner milestone for the normal
+product. `PhotoEnemyManager.hpp` is now the one profile-independent
+`0x26AE30` declaration published through target global `0x004BDDC0`. It pins
+the `0x4CC0` spawn-template slot, sixteen timelines, draw-group heads, ECL
+manager, proven primary `enemyAnm @ +0x4DF8`, opaque `+0x4DFC`, 128 inline
+enemy slots at `+0x4E00`, eight photo targets, Chain nodes, photo-card session,
+and active count. The fixed-size slot wrapper preserves normal construction
+and destruction without pretending that the compact `0x4CC0` element is
+already fully canonicalized.
 
-The PhotoCamera mixed-owner artifact is also corrected: `.90` is the canonical
-Background owner, so `photoColor @ +0x1760` and `SetPhotoArea @ 0x00404950`
-route through `g_Background @ 0x004BDD90`; BulletInf operations route through
-the distinct `.98` global at `0x004BDD98`. Do not restore a single proxy type
-across those two relocations.
+The old `EnemyManager.hpp` is explicitly a TH08-shaped Enemy/ECL compatibility
+ABI: its 481-slot, `0x9DCF10` manager is not the allocation created at
+`0x004149F0`. Normal task, ECL, Background, photo, operand, and enemy-shot
+consumers now route manager fields through `PhotoEnemyManager.hpp`; historical
+receiver shapes remain only behind exact/DIFF guards. `+0x4DFC` still has no
+proved target-local producer or resource lifetime and remains `unknown4dfc`.
 
-Affected replay passed 142/142 exact after 55 compiler-private labels in six
-units were structurally audited and refreshed. The final cold aggregate then
-passed 696/696 exact across all 88 sources with zero additional refresh. The
-independent normal product compiled all 88 pinned-VC7.1 i386 COFF objects and
-linked a verified 780,288-byte PE32 executable with build-local SHA-256
-`d80894c38f04ad7dd6b4334916a0cb894484aec4e0a17f28ad177e18c0915cde`.
-Target-independent CI passed all 50 tests. This is compile/link closure, not
+Affected replay passed 163/163 exact with zero private-label refresh. The cold
+aggregate passed 696/696 exact across all 88 sources, also with zero refresh.
+The independent normal product compiled all 88 pinned-VC7.1 i386 COFF objects
+and linked a verified 780,800-byte PE32 executable with build-local SHA-256
+`40740e513f1381a4e73c34cf0475ef56e179c86b8076bd53a032ff31c456737a`.
+Target-independent CI passed 51/51 tests. This is compile/link closure, not
 whole-image exactness or runtime credit.
 
 ## Next bounded lane
 
-Continue shrinking ECL compatibility declarations one owner at a time. Audit
-the overlapping EnemyInf projections in EclExtended and photo consumers
-against canonical `EnemyManager.hpp`, beginning with the independently proven
-primary enemy ANM owner at `+0x4DF8`. Do not assign a meaning to alternate slot
-`+0x4DFC` without a separate target-local producer and consumer. Preserve
-exact receiver spellings in named emission adapters, do not bulk-rename the
-legacy `-1..89` opcode list, and keep the EclRun Background adapter isolated
-until a clean declaration reproduces its complete 27,091-byte body and 647
-relocations.
+Continue with the compact `0x4CC0` enemy element, not adjacent manager offsets.
+Audit the overlapping `PhotoEnemyView`, `PhotoTargetEnemyView`, PhotoCamera,
+PhotoEffect, and ECL operand projections against the complete element currently
+implemented in `EnemyManagerUpdate.cpp`. Begin with the already independent
+position pair (`position @ +0x28A0`, `worldPosition @ +0x28F4`) and the shared
+control words at `+0x2BF4/+0x2BF8`; do not substitute the larger TH08-shaped
+`Enemy` layout. Keep manager `+0x4DFC`, unproved compact-element bits, and
+neighboring storage Unknown until producer/lifetime evidence is found.
 
 ## Protected working-tree exclusions
 
@@ -103,6 +104,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/EclExtended.cpp --details
-rg -n "PhotoEnemyManagerView|ExtendedRuntimeView|0x4df8|0x4dfc" src config docs
+python3 scripts/analysis/report-semantic-debt.py --path src/EnemyManagerUpdate.cpp --details
+rg -n "PhotoEnemyView|PhotoTargetEnemyView|0x28a0|0x28f4|0x2bf4|0x2bf8" src config docs
 ```

@@ -93,6 +93,17 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("0x004BDD90", emission)
         self.assertIn("0x004BDD98", emission)
 
+    def test_photo_enemy_owner_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_photo_enemy_owner()
+        header = (ROOT / "src" / "PhotoEnemyManager.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(PhotoEnemyManagerView) == 0x26ae30", header)
+        self.assertIn("u8 unknown4dfc[4]", header)
+        self.assertNotIn("alternateEnemyAnm", header)
+
 
 if __name__ == "__main__":
     unittest.main()

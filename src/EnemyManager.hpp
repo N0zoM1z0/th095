@@ -1,4 +1,10 @@
 #pragma once
+
+// Legacy TH08-shaped Enemy/ECL compatibility ABI.  This 481-slot,
+// 0x9DCF10 layout is not the TH095 EnemyInf allocation published at
+// 0x004BDDC0.  Normal TH095 manager ownership belongs to
+// PhotoEnemyManager.hpp; keep this header only where inherited Enemy/ECL
+// method declarations are still required.
 #include "Global.hpp"
 #include "ecl/AnmManagerEclView.hpp"
 #include "BulletManager.hpp"

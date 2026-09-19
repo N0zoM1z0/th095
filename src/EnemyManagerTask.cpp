@@ -1,5 +1,8 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "PhotoEnemyManager.hpp"
+#endif
 
 namespace th095
 {
@@ -57,6 +60,7 @@ static inline i32 PhotoEnemyEitherFlag(i32 first, i32 second)
     return first | second;
 }
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct PhotoEnemyManagerTaskView
 {
     u8 unknown000000[0x4dc0];
@@ -85,6 +89,18 @@ typedef char PhotoEnemyManagerTaskDrawGroupsAt4DC0[
 typedef char PhotoEnemyManagerTaskChainsAt26AE20[
     (offsetof(PhotoEnemyManagerTaskView, calcChain) == 0x26ae20 &&
      offsetof(PhotoEnemyManagerTaskView, drawChain) == 0x26ae24) ? 1 : -1];
+#else
+// The task-facing receiver owns factory/draw callback decorations only.  Its
+// storage is the canonical PhotoEnemyManagerView allocation.
+struct PhotoEnemyManagerTaskView
+{
+    static PhotoEnemyManagerTaskView *Create();
+    i32 Draw();
+    i32 DrawGroup(i32 groupIndex);
+    static i32 __fastcall OnUpdate(PhotoEnemyManagerTaskView *manager);
+    static i32 __fastcall OnDraw(PhotoEnemyManagerTaskView *manager);
+};
+#endif
 
 #ifndef DIFFBUILD
 // Production calls the canonical manager lifecycle/update receiver implemented
@@ -93,6 +109,7 @@ typedef char PhotoEnemyManagerTaskChainsAt26AE20[
 // 0x00414B90 constructor and 0x004153D0 loader, and using the 0x004154E0
 // destructor on failure. The task callback at 0x00416290 passes the same
 // receiver directly to the canonical update at 0x00415970.
+#if defined(TH095_MATCH_EXACT)
 struct PhotoEnemyManagerView
 {
     u8 storage[0x26ae30];
@@ -102,9 +119,7 @@ struct PhotoEnemyManagerView
     i32 LoadResources();
     static i32 __fastcall OnUpdate(PhotoEnemyManagerView *enemyManager);
 };
-
-typedef char PhotoEnemyManagerRuntimeSizeIs26AE30[
-    (sizeof(PhotoEnemyManagerView) == sizeof(PhotoEnemyManagerTaskView)) ? 1 : -1];
+#endif
 
 static __forceinline PhotoEnemyManagerView *PhotoEnemyRuntime(
     PhotoEnemyManagerTaskView *manager)
@@ -145,13 +160,21 @@ PhotoEnemyManagerTaskView *PhotoEnemyManagerTaskView::Create()
         reinterpret_cast<ChainCallback>(PhotoEnemyManagerTaskView::OnUpdate));
     elem->arg = manager;
     g_Chain.AddToCalcChain(elem, 0x0c);
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+    PhotoEnemyRuntime(manager)->calcChain = elem;
+#else
     manager->calcChain = elem;
+#endif
 
     elem = g_Chain.CreateElem(
         reinterpret_cast<ChainCallback>(PhotoEnemyManagerTaskView::OnDraw));
     elem->arg = manager;
     g_Chain.AddToDrawChain(elem, 0x0a);
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+    PhotoEnemyRuntime(manager)->drawChain = elem;
+#else
     manager->drawChain = elem;
+#endif
     return manager;
 
 failure:
@@ -176,7 +199,12 @@ i32 PhotoEnemyManagerTaskView::Draw()
 // FUNCTION: TH095 0x00416230.
 i32 PhotoEnemyManagerTaskView::DrawGroup(i32 groupIndex)
 {
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+    Enemy *enemy = reinterpret_cast<Enemy *>(
+        PhotoEnemyRuntime(this)->drawGroupHeads[groupIndex]);
+#else
     Enemy *enemy = this->drawGroupHeads[groupIndex];
+#endif
     while (enemy != NULL)
     {
         PhotoToScreen(&enemy->vm.positionOffset, &enemy->position);

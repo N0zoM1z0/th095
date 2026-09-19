@@ -3,6 +3,7 @@
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoEnemyManager.hpp"
 #include "ecl/EnemyEclRuntimeView.hpp"
 #endif
 #include "utils.hpp"
@@ -36,12 +37,16 @@ typedef char EclDependencyManagerParametersAt168[(offsetof(PhotoEnemyEclManagerV
         reinterpret_cast<EnemyEclContext *>(context), (subroutineId))
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct EclDependencyRuntimeView
 {
     u8 unknown0000[0x4df4];
     PhotoEnemyEclManagerView *eclManager;
 };
 typedef char EclDependencyRuntimeManagerAt4DF4[(offsetof(EclDependencyRuntimeView, eclManager) == 0x4df4) ? 1 : -1];
+#else
+typedef PhotoEnemyManagerView EclDependencyRuntimeView;
+#endif
 extern EclDependencyRuntimeView *g_PhotoEnemyManager;
 #ifndef DIFFBUILD
 #define g_PhotoEnemyManager \

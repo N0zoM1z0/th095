@@ -27,6 +27,9 @@
 #include "../PhotoEffectRuntime.hpp"
 #include "../PhotoPlayerRuntime.hpp"
 #endif
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "../PhotoEnemyManager.hpp"
+#endif
 
 #ifndef DIFFBUILD
 #define g_Th095Player \
@@ -115,18 +118,8 @@ typedef char EclCompletionTimerAt108[
 #define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
     (*reinterpret_cast<EclRunHigh::PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8))
 #else
-namespace th095
-{
-struct EclEnemyAnmRuntimeView
-{
-    u8 unknown0000[0x4df8];
-    AnmLoaded *enemyAnm;
-};
-typedef char EclEnemyAnmAt4DF8[
-    (offsetof(EclEnemyAnmRuntimeView, enemyAnm) == 0x4df8) ? 1 : -1];
-}
 #define TH095_ECL_PRIMARY_ENEMY_ANM \
-    (reinterpret_cast<::th095::EclEnemyAnmRuntimeView *>(TH095_ECL_RUNTIME)->enemyAnm)
+    (reinterpret_cast<::th095::PhotoEnemyManagerView *>(TH095_ECL_RUNTIME)->enemyAnm)
 #define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
     reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(TH095_ECL_PRIMARY_ENEMY_ANM)
 #endif
@@ -178,7 +171,7 @@ typedef char EclStageScoreMultiplierAt25718[
     *reinterpret_cast<PhotoSession **>(TH095_ECL_RUNTIME + 0x26ae28)
 #else
 #define TH095_ECL_PHOTO_CARD_SESSION \
-    reinterpret_cast<::th095::EclPhotoCardSessionRuntimeView *>(TH095_ECL_RUNTIME) \
+    reinterpret_cast<::th095::PhotoEnemyManagerView *>(TH095_ECL_RUNTIME) \
         ->eclPhotoCardSession
 #endif
 
@@ -315,24 +308,9 @@ struct PhotoCardInfoView
     i32 Show();
     void Destroy();
 };
-struct EclPhotoCardSessionRuntimeView
-{
-    u8 unknown000000[0x26ae28];
-    PhotoCardInfoView *eclPhotoCardSession;
-};
-typedef char EclPhotoCardSessionAt26AE28[
-    (offsetof(EclPhotoCardSessionRuntimeView, eclPhotoCardSession) == 0x26ae28) ? 1 : -1];
 struct PhotoEnemyView
 {
     void ClampPosition();
-};
-struct PhotoEnemyManagerView
-{
-    PhotoEnemyView *SpawnWithContext(
-        i32 subroutineId, const Float3 *position, i32 life,
-        i32 itemDrop, i32 score, const i32 *contextValues);
-    static void __fastcall ResetNonPhotoTargets(
-        PhotoEnemyManagerView *enemyManager);
 };
 extern AnmManager *g_AnmManager;
 static __forceinline Enemy *Th095EclSpawnEnemy(

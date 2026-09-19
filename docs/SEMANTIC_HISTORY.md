@@ -1,7 +1,7 @@
 # Semantic reconstruction history
 
 This file preserves the chronological Web-era policy and accepted batch
-records through SEM-265. It is historical evidence, not current operating
+records through SEM-270. It is historical evidence, not current operating
 policy. Use `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SEMANTIC_INDEX.md`, and `SOURCE_MAP.md` for current decisions.
 
@@ -13038,3 +13038,74 @@ in EclExtended and related photo consumers against canonical
 `+0x4DF8`. Keep the alternate `+0x4DFC` slot Unknown until independent
 target-local producer and consumer evidence distinguishes it; do not turn the
 router's profile-divergence count into a completion percentage.
+
+### SEM-270 — separate and canonicalize the TH095 EnemyInf owner
+
+**Scope.** Audit the manager published at target global `0x004BDDC0` instead
+of assuming the inherited `EnemyManager.hpp` declaration was its canonical
+layout. Consolidate normal manager ownership and the already-proved primary
+enemy ANM field, while preserving exact/DIFF receiver shapes and leaving the
+compact enemy element and `+0x4DFC` meaning open.
+
+**Observed.** Hash-attested factory `PhotoEnemyManagerTaskView::Create @
+0x004149F0` allocates exactly `0x26AE30`, passes the same pointer to constructor
+`0x00414B90` and `LoadResources @ 0x004153D0`, and publishes it through
+`0x004BDDC0`. The target layout contains the `0x4CC0` spawn template, sixteen
+timelines at `+0x4CC0`, draw-group heads at `+0x4DC0`, ECL manager at
+`+0x4DF4`, 128 inline `0x4CC0` enemies at `+0x4E00`, photo targets at
+`+0x26AE00`, Chain nodes at `+0x26AE20/+0x26AE24`, photo-card session at
+`+0x26AE28`, and active count at `+0x26AE2C`. `LoadResources` writes the
+slot-eight ANM preload result to `+0x4DF8`; independent ECL and enemy-update
+paths read it.
+
+Target-wide disassembly finds `+0x4DFC` reads in RunEcl and
+`Enemy::UpdateShotAndAnm` when compact control-word bit 31 selects the other
+bank, but no direct producer beyond constructor zeroing. That proves a
+consumer selection, not a resource identity or lifetime. The field therefore
+remains opaque `unknown4dfc[4]`.
+
+**Ownership correction.** New profile-independent
+`PhotoEnemyManager.hpp` is the sole normal `0x26AE30` manager declaration.
+Because the compact `0x4CC0` element is not yet ready for a shared header, the
+manager uses fixed-size `PhotoEnemySlotStorage` members whose normal
+constructor/destructor materialize and retire the real element in the correct
+aggregate order. This preserves lifetime semantics without blessing another
+partial element projection. EnemyManager task/update, EclExtended, EclRun,
+Background, PhotoRuntime, PhotoCamera, PhotoEffect, PhotoGame/Task, ECL
+dependencies/operands, and EnemyShotAnm now route normal manager fields through
+the canonical owner. The old PhotoEffect projection also stops calling compact
+enemy `+0x28A0` `worldPosition`; the complete layout proves it is `position`,
+while `worldPosition` is at `+0x28F4`.
+
+**Rejected assumption.** TH08's `EnemyManager.hpp` and the TH095 copy both
+describe a 481-slot, `0x9DCF10` manager with ANM fields near `+0x9DCEEC`.
+Those values contradict the target-local allocation and access graph above.
+The header is now labeled as a legacy TH08-shaped Enemy/ECL compatibility ABI,
+not a TH095 EnemyInf owner. Its declarations are retained only for inherited
+ECL/Enemy source that has not yet been migrated.
+
+**Profile boundary and guards.** `PhotoEnemyManager.hpp` contains no
+`TH095_MATCH_EXACT` or `DIFFBUILD` layout selection. Target-facing task and
+runtime receiver spellings remain behind their existing exact/DIFF guards.
+`scripts/check-semantic-protocols.py` now pins the canonical size and critical
+offsets, requires every normal direct consumer to include the owner, rejects a
+named alternate ANM field at `+0x4DFC`, and verifies compact-slot lifetime
+hooks. The matching unit test covers this contract.
+
+**Validation.** Pinned VC7.1 normal probes passed for all changed translation
+units. Focused replay passed **163/163 exact units across 16 sources** with
+zero private-label refresh. A fresh cold aggregate passed **696/696 exact units
+across all 88 sources**, again with zero refresh. The normal product compiled
+all **88 i386 COFF** objects and linked/verified a **780,800-byte PE32/i386
+GUI**, build-local SHA-256
+`40740e513f1381a4e73c34cf0475ef56e179c86b8076bd53a032ff31c456737a`.
+Target-independent CI passed **51/51** tests. These results prove exact
+preservation and normal compile/link closure, not whole-image target identity
+or runtime equivalence.
+
+**Unknown / next route.** Manager ownership is closed, but compact enemy
+element ownership is not. Next audit the duplicated `PhotoEnemyView`,
+`PhotoTargetEnemyView`, camera/effect, and operand projections, beginning with
+the independent `position @ +0x28A0`, `worldPosition @ +0x28F4`, and control
+words at `+0x2BF4/+0x2BF8`. Keep `+0x4DFC` and unproved element bits Unknown;
+do not substitute the larger TH08-shaped `Enemy` layout.

@@ -3,6 +3,7 @@
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "Background.hpp"
 #include "PhotoBulletManager.hpp"
+#include "PhotoEnemyManager.hpp"
 #endif
 #ifndef DIFFBUILD
 #include "PhotoEffectRuntime.hpp"
@@ -27,12 +28,14 @@ struct PhotoCameraState
     i32 CountPhotoTargets(f32 *closestDistance, f32 *bossRate);
 };
 struct PhotoEnemyView;
+#if defined(TH095_MATCH_EXACT)
 struct PhotoEnemyManagerView
 {
     PhotoEnemyView *Spawn(
         i32 subroutineId, const Float3 *position, i32 life,
         i32 itemDrop, i32 score, u32 mirrorMovementX);
 };
+#endif
 static __forceinline AnmManager *EclExtendedCanonicalAnmManager()
 {
     return g_AnmManager;
@@ -55,6 +58,7 @@ typedef AnmVmId ExtendedVmHandle;
 typedef AnmLoaded ExtendedAnmSpawner;
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct ExtendedPhotoEnemyView;
 struct ExtendedPhotoEnemyManagerView
 {
@@ -62,6 +66,9 @@ struct ExtendedPhotoEnemyManagerView
         i32 subroutineId, const Float3 *position, i32 life,
         i32 itemDrop, i32 score, u32 mirrorMovementX);
 };
+#else
+typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;
+#endif
 
 #ifdef DIFFBUILD
 #define TH095_EXT_ENEMY_SPAWN(manager, subroutineId, position, life, itemDrop, score, mirror) \
@@ -320,6 +327,7 @@ typedef ::th095::PhotoBulletView ExtendedBulletView;
 typedef ::th095::PhotoBulletManagerView ExtendedBulletManager;
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct ExtendedRuntimeView
 {
     u8 unknown0000[0x4df8];
@@ -328,6 +336,9 @@ struct ExtendedRuntimeView
 };
 typedef char ExtendedRuntimeEnemyAnmAt4DF8[
     (offsetof(ExtendedRuntimeView, enemyAnm) == 0x4df8) ? 1 : -1];
+#else
+typedef ::th095::PhotoEnemyManagerView ExtendedRuntimeView;
+#endif
 
 #ifdef DIFFBUILD
 extern AnmManagerLookupView *g_AnmManager;

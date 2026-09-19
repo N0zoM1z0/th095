@@ -192,7 +192,8 @@ def check_ecl_extended_type_boundaries() -> None:
         "typedef ::th095::PhotoEffectManagerView ExtendedPhotoEffectManager;",
         "typedef ::th095::PhotoBulletView ExtendedBulletView;",
         "typedef ::th095::PhotoBulletManagerView ExtendedBulletManager;",
-        "ExtendedAnmSpawner *enemyAnm;",
+        "typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;",
+        "typedef ::th095::PhotoEnemyManagerView ExtendedRuntimeView;",
     )
     for binding in required_normal_bindings:
         if binding not in extended:
@@ -311,6 +312,77 @@ def check_photo_bullet_owner() -> None:
             fail(f"{path.relative_to(SRC)} restored local BulletInf owner: {token}")
 
 
+def check_photo_enemy_owner() -> None:
+    header = (SRC / "PhotoEnemyManager.hpp").read_text(encoding="utf-8")
+    if "TH095_MATCH_EXACT" in header or "DIFFBUILD" in header:
+        fail("canonical PhotoEnemyManager.hpp must not select a build-profile layout")
+    if len(re.findall(r"\bstruct\s+PhotoEnemyManagerView\s*\{", header)) != 1:
+        fail("PhotoEnemyManager.hpp must define exactly one canonical EnemyInf owner")
+    required_layout = (
+        "sizeof(PhotoEnemySlotStorage) == 0x4cc0",
+        "offsetof(PhotoEnemyManagerView, timelines) == 0x4cc0",
+        "offsetof(PhotoEnemyManagerView, drawGroupHeads) == 0x4dc0",
+        "offsetof(PhotoEnemyManagerView, eclManager) == 0x4df4",
+        "offsetof(PhotoEnemyManagerView, enemyAnm) == 0x4df8",
+        "offsetof(PhotoEnemyManagerView, unknown4dfc) == 0x4dfc",
+        "offsetof(PhotoEnemyManagerView, enemyPool) == 0x4e00",
+        "offsetof(PhotoEnemyManagerView, photoTargets) == 0x26ae00",
+        "offsetof(PhotoEnemyManagerView, calcChain) == 0x26ae20",
+        "offsetof(PhotoEnemyManagerView, eclPhotoCardSession) == 0x26ae28",
+        "sizeof(PhotoEnemyManagerView) == 0x26ae30",
+    )
+    for fact in required_layout:
+        if fact not in header:
+            fail(f"canonical EnemyInf layout lost assertion: {fact}")
+    if "u8 unknown4dfc[4]" not in header:
+        fail("EnemyInf +0x4DFC must remain opaque pending producer/lifetime proof")
+    if "alternateEnemyAnm" in header or "secondaryEnemyAnm" in header:
+        fail("EnemyInf +0x4DFC was named without producer/lifetime proof")
+
+    legacy = (SRC / "EnemyManager.hpp").read_text(encoding="utf-8")
+    if "Legacy TH08-shaped Enemy/ECL compatibility ABI" not in legacy:
+        fail("EnemyManager.hpp must state that its TH08-shaped manager is not TH095 EnemyInf")
+    if "PhotoEnemyManager.hpp" not in legacy:
+        fail("EnemyManager.hpp must route normal TH095 ownership to PhotoEnemyManager.hpp")
+
+    direct_consumers = (
+        SRC / "EnemyManagerUpdate.cpp",
+        SRC / "EnemyManagerTask.cpp",
+        SRC / "EclExtended.cpp",
+        SRC / "ecl" / "EclRun.cpp",
+        SRC / "PhotoRuntime.cpp",
+        SRC / "PhotoCamera.cpp",
+        SRC / "PhotoEffect.cpp",
+        SRC / "PhotoGame.cpp",
+        SRC / "PhotoGameTask.cpp",
+        SRC / "Background.cpp",
+        SRC / "EclDependencies.cpp",
+        SRC / "EclOperandsInt.cpp",
+        SRC / "EclOperandsFloat.cpp",
+        SRC / "EclOperandsIntLValue.cpp",
+        SRC / "EclOperandsFloatLValue.cpp",
+        SRC / "EnemyShotAnm.cpp",
+    )
+    for path in direct_consumers:
+        text = path.read_text(encoding="utf-8")
+        if 'PhotoEnemyManager.hpp"' not in text:
+            fail(f"{path.relative_to(SRC)} must consume canonical PhotoEnemyManager.hpp")
+
+    update = (SRC / "EnemyManagerUpdate.cpp").read_text(encoding="utf-8")
+    if "PhotoEnemySlotStorage::PhotoEnemySlotStorage()" not in update:
+        fail("normal EnemyInf slots must construct their compact enemy objects")
+    if "this->Get()->~PhotoEnemyView();" not in update:
+        fail("normal EnemyInf slots must destroy their compact enemy objects")
+
+    ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
+    if "PhotoEnemyManagerView *>(TH095_ECL_RUNTIME)->enemyAnm" not in ecl_run:
+        fail("normal EclRun must consume canonical EnemyInf::enemyAnm")
+    if "EclEnemyAnmRuntimeView" in ecl_run:
+        fail("EclRun restored the retired normal +0x4DF8 projection")
+    if "EclPhotoCardSessionRuntimeView" in ecl_run:
+        fail("EclRun restored the retired normal +0x26AE28 projection")
+
+
 def check_small_closed_domains() -> None:
     explicit_enum(
         SRC / "ReplayManager.hpp",
@@ -339,14 +411,16 @@ def main() -> int:
     check_ecl_type_boundaries()
     check_ecl_extended_type_boundaries()
     check_photo_bullet_owner()
+    check_photo_enemy_owner()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
     print("  canonical ANM opcode domain: -1..87 explicit")
     print("  Background stage opcode dispatch: 15/15 named")
     print("  Background owner: one profile-independent 0x201C declaration")
     print("  normal ECL types: canonical ANM, Supervisor, and Background owners")
-    print("  EclExtended normal types: canonical ANM, Float3, and PhotoEffect owners")
+    print("  EclExtended normal types: canonical ANM, Float3, Effect, BulletInf, and EnemyInf owners")
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
+    print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  Replay manager, color mode, and viewport domains: explicit")
     return 0
 

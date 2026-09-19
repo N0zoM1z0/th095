@@ -1,5 +1,8 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "PhotoEnemyManager.hpp"
+#endif
 #ifndef DIFFBUILD
 #include "PhotoPlayerRuntime.hpp"
 #endif
@@ -20,6 +23,7 @@ struct EclSharedOperandView
     f32 floatVariables[4];
 };
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct EclOperandRuntimeView
 {
     u8 unknown000000[0x4df4];
@@ -27,6 +31,15 @@ struct EclOperandRuntimeView
     u8 unknown004df8[0x26ae00 - 0x4df8];
     Enemy *photoTargets[8];
 };
+#define TH095_ECL_SHARED_OPERANDS(runtime) ((runtime)->sharedOperands)
+#define TH095_ECL_PHOTO_TARGET(runtime, index) ((runtime)->photoTargets[(index)])
+#else
+typedef PhotoEnemyManagerView EclOperandRuntimeView;
+#define TH095_ECL_SHARED_OPERANDS(runtime) \
+    reinterpret_cast<EclSharedOperandView *>((runtime)->eclManager)
+#define TH095_ECL_PHOTO_TARGET(runtime, index) \
+    reinterpret_cast<Enemy *>((runtime)->photoTargets[(index)])
+#endif
 
 struct EclPhotoCounterView
 {
@@ -243,14 +256,14 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case TH095_ECL_CALL_PARAMETER_FLOAT2: return (i32)enemy->activeEclContext->callParameterFloats[2];
     case TH095_ECL_CALL_PARAMETER_FLOAT3: return (i32)enemy->activeEclContext->callParameterFloats[3];
 
-    case 0x273c: return g_EclOperandRuntime->sharedOperands->intVariables[0];
-    case 0x273d: return g_EclOperandRuntime->sharedOperands->intVariables[1];
-    case 0x273e: return g_EclOperandRuntime->sharedOperands->intVariables[2];
-    case 0x273f: return g_EclOperandRuntime->sharedOperands->intVariables[3];
-    case 0x2740: return (i32)g_EclOperandRuntime->sharedOperands->floatVariables[0];
-    case 0x2741: return (i32)g_EclOperandRuntime->sharedOperands->floatVariables[1];
-    case 0x2742: return (i32)g_EclOperandRuntime->sharedOperands->floatVariables[2];
-    case 0x2743: return (i32)g_EclOperandRuntime->sharedOperands->floatVariables[3];
+    case 0x273c: return TH095_ECL_SHARED_OPERANDS(g_EclOperandRuntime)->intVariables[0];
+    case 0x273d: return TH095_ECL_SHARED_OPERANDS(g_EclOperandRuntime)->intVariables[1];
+    case 0x273e: return TH095_ECL_SHARED_OPERANDS(g_EclOperandRuntime)->intVariables[2];
+    case 0x273f: return TH095_ECL_SHARED_OPERANDS(g_EclOperandRuntime)->intVariables[3];
+    case 0x2740: return (i32)TH095_ECL_SHARED_OPERANDS(g_EclOperandRuntime)->floatVariables[0];
+    case 0x2741: return (i32)TH095_ECL_SHARED_OPERANDS(g_EclOperandRuntime)->floatVariables[1];
+    case 0x2742: return (i32)TH095_ECL_SHARED_OPERANDS(g_EclOperandRuntime)->floatVariables[2];
+    case 0x2743: return (i32)TH095_ECL_SHARED_OPERANDS(g_EclOperandRuntime)->floatVariables[3];
 
     case 0x272a: return (i32)enemy->worldPosition.x;
     case 0x272b: return (i32)enemy->worldPosition.y;
@@ -292,8 +305,8 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
         return TH095_ECL_INT_PHOTO_INDEX;
     case 0x2764:
         return TH095_ECL_INT_PHOTOS_TAKEN;
-    case 0x2762: return (i32)g_EclOperandRuntime->photoTargets[0]->worldPosition.x;
-    case 0x2763: return (i32)g_EclOperandRuntime->photoTargets[0]->worldPosition.y;
+    case 0x2762: return (i32)TH095_ECL_PHOTO_TARGET(g_EclOperandRuntime, 0)->worldPosition.x;
+    case 0x2763: return (i32)TH095_ECL_PHOTO_TARGET(g_EclOperandRuntime, 0)->worldPosition.y;
     default: return operand;
     }
 }

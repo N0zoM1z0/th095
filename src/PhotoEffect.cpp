@@ -4,6 +4,9 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
+#ifndef DIFFBUILD
+#include "PhotoEnemyManager.hpp"
+#endif
 #include "PhotoEffectRuntime.hpp"
 #ifndef DIFFBUILD
 #include "PhotoItemManager.hpp"
@@ -168,14 +171,16 @@ extern f32 g_AnmGameSpeed;
 struct PhotoEnemyView
 {
     u8 unknown0000[0x28a0];
-    PhotoEffectVector worldPosition;
+    PhotoEffectVector position;
 };
 
+#ifdef DIFFBUILD
 struct PhotoEnemyManagerView
 {
     u8 unknown000000[0x26ae00];
     PhotoEnemyView *photoTargets[8];
 };
+#endif
 
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 #define g_PhotoEnemyManager \
@@ -445,7 +450,7 @@ i32 PhotoRotatingLaserView::Update()
         g_PhotoEnemyManager->photoTargets[0] != NULL)
     {
         this->position =
-            g_PhotoEnemyManager->photoTargets[0]->worldPosition;
+            g_PhotoEnemyManager->photoTargets[0]->position;
     }
 
     this->position += this->spawn.velocity * g_AnmGameSpeed;
