@@ -1840,3 +1840,26 @@ build-local SHA-256
 CI passed 52/52. The live handoff moved next to the bounded RunEcl camera-state
 write at Player `+0x29EC`, with its field meaning and angle receiver requiring
 independent TH095-local evidence.
+
+## RunEcl Player/camera checkpoint — SEM-276
+
+SEM-276 removed RunEcl's padded `PhotoCameraOpcodeState` / `PhotoCamera`
+projection. Fresh target instructions prove opcode 141 writes canonical
+`PhotoPlayerRuntimeView::camera.photoLimit @ Player+0x29EC`, backed by the
+independent camera initialization/capture and PhotoGameTask loop/HUD consumers.
+All six RunEcl angle calls likewise pass the Player root to
+`AngleFromPoint @ 0x004303E0`. Normal source now uses the canonical Player
+owner for both claims.
+
+The last four exact call sites still require historical
+`PhotoCamera::GetAngle` / `g_Th095PhotoCamera` COFF identities, so their
+method-only declarations live in profile-independent
+`ecl/PhotoCameraEclEmission.hpp`; it owns no runtime storage. The strict
+EclRun replay refreshed 166 compiler-private labels only after structural and
+solved-relocation proof, then passed with zero further refresh. The cold
+aggregate passed 696/696 exact, and the 88-object normal build linked a
+780,800-byte PE32 product with build-local SHA-256
+`7f78466e1083ee2ba8615bb96d3e37924e64fc27bfed340ceb222ceb832294c5`.
+CI passed 53/53. The live handoff moves next to the remaining
+`EnemyFloatOperandView` method decoration over canonical
+`Enemy::ResolveFloat @ 0x004105A0`.

@@ -958,6 +958,87 @@ def check_photo_card_info_owner() -> None:
         fail("EnemyInf lost its typed ECL-held CardInf session handle")
 
 
+def check_ecl_photo_player_owner() -> None:
+    player = (SRC / "PhotoPlayerRuntime.hpp").read_text(encoding="utf-8")
+    required_layout = (
+        "offsetof(PhotoPlayerCameraRuntimeView, photoLimit) == 0x0bb0",
+        "offsetof(PhotoPlayerRuntimeView, camera) == 0x1e3c",
+        "offsetof(PhotoPlayerRuntimeView, camera.photoLimit) == 0x29ec",
+        "f32 AngleFromPoint(Float3 *position);",
+    )
+    for fact in required_layout:
+        if fact not in player:
+            fail(f"canonical PlayerInf/camera layout lost fact: {fact}")
+
+    ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
+    if '#include "../PhotoPlayerRuntime.hpp"' not in ecl_run:
+        fail("normal EclRun must consume the canonical PlayerInf declaration")
+    if '#include "PhotoCameraEclEmission.hpp"' not in ecl_run:
+        fail("EclRun must name its isolated photo-angle emission adapter")
+    if "TH095_ECL_PHOTO_PLAYER_OWNER" not in ecl_run:
+        fail("EclRun lost the explicit PlayerInf owner boundary")
+    if "->AngleFromPoint(point)" not in ecl_run:
+        fail("normal EclRun photo angles must use the canonical PlayerInf method")
+
+    high = (SRC / "ecl" / "EclRunHigh.inl").read_text(encoding="utf-8")
+    retired_tokens = (
+        "struct PhotoCameraOpcodeState",
+        "opcode141Value",
+        "GetOpcodeState",
+        "AssignPhotoCameraOpcode141",
+    )
+    for token in retired_tokens:
+        if token in high:
+            fail(f"EclRun restored retired camera projection: {token}")
+    if re.search(r"\bstruct\s+PhotoCamera\s*\{", high):
+        fail("EclRunHigh.inl must not restore the padded PhotoCamera owner")
+    if "PhotoPlayerCameraRuntimeView *camera" not in high:
+        fail("RunEcl camera-limit assignment must receive the canonical camera view")
+    if "camera->photoLimit = value;" not in high:
+        fail("RunEcl camera-limit assignment lost the canonical photoLimit field")
+    if "g_Th095PhotoCamera->GetAngle" in high:
+        fail("RunEcl handler source must route photo angles through the named boundary")
+
+    target = (SRC / "ecl" / "EclRunTargetHigh.inl").read_text(encoding="utf-8")
+    if "AssignPhotoCameraLimit(" not in target:
+        fail("RunEcl opcode 141 lost its canonical camera-limit assignment")
+    if "TH095_ECL_PHOTO_PLAYER_OWNER)->camera" not in target:
+        fail("RunEcl opcode 141 must derive the camera subobject from PlayerInf")
+    for token in retired_tokens:
+        if token in target:
+            fail(f"RunEcl target handler restored retired camera projection: {token}")
+
+    photo_handlers = (SRC / "ecl" / "EclRunTargetPhoto.inl").read_text(
+        encoding="utf-8"
+    )
+    if photo_handlers.count("TH095_ECL_PHOTO_ANGLE(") != 4:
+        fail("RunEcl must route all four photo-handler angle calls through one boundary")
+    if "g_Th095PhotoCamera" in photo_handlers:
+        fail("normal photo handlers must not name the exact-emission receiver")
+
+    emission = (SRC / "ecl" / "PhotoCameraEclEmission.hpp").read_text(
+        encoding="utf-8"
+    )
+    if "Compiler-emission adapter only" not in emission:
+        fail("photo-angle emission adapter must state its narrow ownership")
+    if "TH095_MATCH_EXACT" in emission or "DIFFBUILD" in emission:
+        fail("photo-angle emission adapter must not contain a second profile split")
+    if len(re.findall(r"\bstruct\s+PhotoCamera\s*\{", emission)) != 1:
+        fail("photo-angle emission adapter must keep one method-only receiver")
+    if "f32 GetAngle(Float3 *position);" not in emission:
+        fail("photo-angle emission adapter lost the historical method decoration")
+    forbidden_emission_storage = (
+        "PhotoCameraOpcodeState",
+        "photoLimit",
+        "targetPadding",
+        "offsetof(",
+        "sizeof(",
+    )
+    for token in forbidden_emission_storage:
+        if token in emission:
+            fail(f"photo-angle emission adapter gained runtime storage: {token}")
+
+
 def check_small_closed_domains() -> None:
     explicit_enum(
         SRC / "PhotoCardInfo.hpp",
@@ -998,6 +1079,7 @@ def main() -> int:
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
     check_photo_card_info_owner()
+    check_ecl_photo_player_owner()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
     print("  TH095_MATCH_EXACT/DIFFBUILD selectors: closed historical debt baseline")
@@ -1013,6 +1095,7 @@ def main() -> int:
     print("  RunEcl task state: canonical profile-independent 0x124 owner")
     print("  Photo stage: canonical profile-independent 0x25730 owner")
     print("  CardInf: canonical profile-independent 0x68 owner")
+    print("  RunEcl camera limit/angles: canonical PlayerInf owner with method-only emission adapter")
     print("  Replay manager, color mode, and viewport domains: explicit")
     return 0
 

@@ -5,6 +5,7 @@
 #include "BulletManager.hpp"
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #include "BackgroundEclEmission.hpp"
+#include "PhotoCameraEclEmission.hpp"
 #include "PhotoEnemyEclEmission.hpp"
 #else
 #include "Background.hpp"
@@ -13,6 +14,7 @@
 #include "ItemManager.hpp"
 #include "Player.hpp"
 #include "Spellcard.hpp"
+#include "../PhotoPlayerRuntime.hpp"
 
 #include <string.h>
 #include <stdlib.h>
@@ -27,7 +29,6 @@
 #ifndef DIFFBUILD
 #include "../PhotoBulletManager.hpp"
 #include "../PhotoEffectRuntime.hpp"
-#include "../PhotoPlayerRuntime.hpp"
 #endif
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "../PhotoEnemyManager.hpp"
@@ -43,13 +44,14 @@
 #ifndef DIFFBUILD
 #define g_Th095Player \
     TH095_RUNTIME_GLOBAL_PTR(Player, ::th095::g_RuntimePlayerOwner)
-#define g_Th095PhotoCamera \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoCamera, ::th095::g_RuntimePlayerOwner)
+#define TH095_ECL_PHOTO_PLAYER_OWNER \
+    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoPlayerRuntimeView, ::th095::g_RuntimePlayerOwner)
 #define g_Th095GameManager \
     TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeGlobalStateOwner)
 #endif
 
 #ifdef DIFFBUILD
+#define TH095_ECL_PHOTO_PLAYER_OWNER g_Th095PhotoCamera
 #define TH095_ECL_PLAYER_ANGLE(point) g_Th095Player->AngleToPoint(point)
 #define TH095_ECL_PHOTO_ANGLE(point) g_Th095PhotoCamera->GetAngle(point)
 #else

@@ -13511,3 +13511,87 @@ through `PhotoCameraOpcodeState::opcode141Value` at Player `+0x29EC`; require
 an independent producer/consumer before accepting the field name. Treat the
 angle receiver as a separate claim rather than assuming Player and PhotoCamera
 share one semantic owner.
+
+### SEM-276 — retire RunEcl's padded camera projection
+
+**Scope.** Audit the case-141 write and angle receiver as separate claims, as
+required by SEM-275. Do not infer an opcode mnemonic, generalize from field
+adjacency, or treat exact receiver decorations as storage ownership.
+
+**Target field evidence.** Fresh hash-attested RunEcl decompilation identifies
+case `0x8D` / decimal 141 as a resolved integer store to Player `+0x29EC`.
+Target instructions `0x0040CE23..0x0040CE41` make the nested ownership explicit:
+they load the Player root from pointer slot `0x004C4E70`, add `+0x1E3C`, and
+store at the resulting camera `+0x0BB0`. This is the same offset-asserted
+`PhotoPlayerRuntimeView::camera.photoLimit` established independently by
+PHOTO-092: `PhotoCameraState::Initialize @ 0x004307D0` zeroes the complete
+0xBDC camera, `TakePhoto @ 0x00432D10` compares `photoIndex @ +0xBA8` against
+`photoLimit @ +0xBB0`, `PhotoGameTaskView::Update @ 0x00418100` uses Player
+`+0x29EC` as two captured-photo VM loop bounds, and `DrawHud @ 0x00418420`
+loads Player `+0x29EC/+0x29E4` for its limit/current display.
+
+Normal RunEcl now assigns the canonical nested field through
+`AssignPhotoCameraLimit`; the full local `PhotoCameraOpcodeState` and padded
+`PhotoCamera` declarations, `opcode141Value`, and their access helper are
+removed. This accepts the field name from independent producers/consumers,
+not from the script case alone. The script opcode's business name remains
+Unknown.
+
+**Independent angle-receiver audit.** Fresh target disassembly of all six
+RunEcl calls at `0x0040ABB7`, `0x0040AC92`, `0x0040D58A`, `0x0040DB18`,
+`0x0040E1FA`, and `0x0040ED4D` shows each loading the receiver through the
+Player pointer slot at `0x004C4E70` and calling `0x004303E0`. Fresh
+decompilation of `AngleFromPoint @ 0x004303E0` reads receiver
+`+0x1E30/+0x1E34`, the canonical Player position. Thus the historical local
+`PhotoCamera::GetAngle` spelling does not identify a camera-subobject receiver;
+normal source routes the photo-handler calls through
+`PhotoPlayerRuntimeView::AngleFromPoint`.
+
+**Compiler-emission boundary.** A clean exact-source experiment using only the
+canonical Player class changed the two non-private COFF identities required by
+the last four call sites, from `EclRunHigh::g_Th095PhotoCamera` and
+`EclRunHigh::PhotoCamera::GetAngle` to the canonical Player names. Target
+destinations and runtime receiver were unchanged, but relocation identity is
+part of the accepted exact unit. The historical method/global declarations
+therefore moved into the named, profile-independent, method-only
+`ecl/PhotoCameraEclEmission.hpp`. It contains no padding, fields, layout claims,
+or profile selector. The first two angle calls keep their distinct historical
+`Player::AngleToPoint` decoration; all six normal calls use the canonical
+Player method. Exact replay validates only the adapter-selected source, while
+the pinned normal compile separately validates the canonical source path.
+
+**Ownership axes.** Storage remains the PlayerInf allocation published through
+target slot `0x004C4E70` / production `g_RuntimePlayerOwner`. Semantic ownership
+is `PhotoPlayerRuntimeView`, with camera subobject `+0x1E3C`, `photoLimit @
++0x29EC`, position `+0x1E30`, and `AngleFromPoint`. Compiler-emission ownership
+of the historical last-four-call decoration is confined to the new adapter.
+The normal build product uses the canonical Player declaration; the exact
+product uses the adapter only where its decorated names are required. This
+closes the RunEcl projection, not every Player/camera field or view.
+
+**Guards and validation.** The semantic guard now pins both photo-limit
+offsets, the canonical normal include and method, removal of the padded local
+owner, all four photo-handler routing sites, and the adapter's method-only,
+profile-free shape. The closed selector baseline remains 883 directives across
+112 files and the selected-declaration baseline remains 225 keys / 230
+occurrences; no selector directive or selected declaration was added.
+
+Moving the declarations changed 166 compiler-private `$L...` names in the one
+EclRun object. The restricted refresh accepted them only after proving complete
+structural bytes, relocation offsets/types, all non-private identities, and
+solved target destinations unchanged; a subsequent focused replay passed 1/1
+with zero refresh. The final cold aggregate passed **696/696 exact across all
+88 sources** with no further refresh. The normal profile emitted a valid i386
+COFF EclRun object, then compiled all **88 pinned-VC7.1 i386 COFF** objects and
+linked a verified **780,800-byte PE32/i386 GUI**, build-local SHA-256
+`7f78466e1083ee2ba8615bb96d3e37924e64fc27bfed340ceb222ceb832294c5`.
+Target-independent CI passed **53/53** tests.
+
+**Unknown / next route.** Opcode 141's original business name, unrelated
+Player/camera storage, EnemyInf `+0x4DFC`, unsupported compact control bits,
+and the legacy `Enemy` tail remain Unknown. The heuristic router's one remaining
+EclRunHigh ownership view is `EnemyFloatOperandView`, a method-only exact
+decoration over already target-mapped `Enemy::ResolveFloat @ 0x004105A0`.
+Audit that boundary next: preserve the canonical normal resolver, prove the
+historical COFF identity requirement, and isolate it only if a narrow
+profile-independent emission adapter is still necessary.

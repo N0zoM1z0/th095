@@ -446,8 +446,9 @@ enter_subroutine:
         break;
 
     case 141:
-        AssignPhotoCameraOpcode141(
-            &g_Th095PhotoCamera->opcodeState,
+        AssignPhotoCameraLimit(
+            &reinterpret_cast<PhotoPlayerRuntimeView *>(
+                TH095_ECL_PHOTO_PLAYER_OWNER)->camera,
             TH08_ECL_READ_I(ctx, 0));
         break;
 

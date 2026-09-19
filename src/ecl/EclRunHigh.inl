@@ -248,27 +248,10 @@ struct PhotoEffectManager
     u32 Spawn(i32 effectType, void *args);
 };
 
-struct PhotoCameraOpcodeState
+inline void AssignPhotoCameraLimit(
+    PhotoPlayerCameraRuntimeView *camera, i32 value)
 {
-    u8 targetPadding00[0xbb0];
-    i32 opcode141Value;
-};
-
-struct PhotoCamera
-{
-    f32 GetAngle(Float3 *position);
-    PhotoCameraOpcodeState *GetOpcodeState()
-    {
-        return &opcodeState;
-    }
-    u8 targetPadding00[0x1e3c];
-    PhotoCameraOpcodeState opcodeState;
-};
-
-inline void AssignPhotoCameraOpcode141(
-    PhotoCameraOpcodeState *state, i32 value)
-{
-    state->opcode141Value = value;
+    camera->photoLimit = value;
 }
 
 struct PhotoAnmHandle
@@ -353,7 +336,6 @@ inline i32 Th095PreserveI32(i32 value)
     TH095_ECL_PHOTO_PULSE_VM((enemy), PhotoAnmHandle)
 
 extern PhotoEffectManager *g_Th095PhotoEffectManager;
-extern PhotoCamera *g_Th095PhotoCamera;
 extern u8 *g_Th095StageState;
 extern u8 *g_Th095Runtime;
 extern Th095BulletManager *g_Th095BulletManager;
@@ -834,7 +816,7 @@ enter_subroutine:
         args.field20 = TH08_ECL_READ_F(ctx, 2);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 3),
-            g_Th095PhotoCamera->GetAngle(&args.position));
+            TH095_ECL_PHOTO_ANGLE(&args.position));
         args.speed = TH08_ECL_READ_F(ctx, 4);
         args.field1C = TH08_ECL_READ_F(ctx, 5);
         args.field14 = 0;
@@ -874,7 +856,7 @@ enter_subroutine:
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 2),
-            g_Th095PhotoCamera->GetAngle(&args.position));
+            TH095_ECL_PHOTO_ANGLE(&args.position));
         args.speed = TH08_ECL_READ_F(ctx, 3);
         args.field24 = args.speed;
         args.field28 = TH08_ECL_READ_F(ctx, 4);
@@ -920,7 +902,7 @@ enter_subroutine:
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 2),
-            g_Th095PhotoCamera->GetAngle(&args.position));
+            TH095_ECL_PHOTO_ANGLE(&args.position));
         args.field24 = 0.0f;
         args.speed = TH08_ECL_READ_F(ctx, 3);
         args.field28 = TH08_ECL_READ_F(ctx, 4);
@@ -994,7 +976,7 @@ enter_subroutine:
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 2),
-            g_Th095PhotoCamera->GetAngle(&args.position));
+            TH095_ECL_PHOTO_ANGLE(&args.position));
         args.speed = TH08_ECL_READ_F(ctx, 3);
         args.field24 = args.speed;
         args.field28 = TH08_ECL_READ_F(ctx, 4);
