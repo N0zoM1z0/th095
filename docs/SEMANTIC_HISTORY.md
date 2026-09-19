@@ -13800,3 +13800,50 @@ effect packets: audit EclExtended's last raw compact-enemy access,
 `PhotoEnemyView::control`, `PhotoEnemyControlBits`, and independent transition
 consumers. Remove the raw projection only if direct canonical ownership passes
 focused exact and normal compiler oracles; do not add a profile selector.
+
+### SEM-280 — route EclExtended movement control through the compact owner
+
+**Scope.** Remove EclExtended's final heuristic raw-member candidate without
+pretending its inherited `Enemy *` callback ABI is the canonical storage type.
+Accept semantic mode/easing names only if the target writer and independent
+producers/consumer agree on the same control-word positions.
+
+**Target evidence.** Fresh hash-attested TH095 v1.02a decompilation of
+`RunPhotoTransition @ 0x00414580` shows the 60-frame movement setup writing
+enemy `+0x2BF4` first with mask/value `0xFFFF8FFF/0x4000`, then with
+`0xFFFFF3FF/0x0800`. These are easing value 4 in bits 12..14 and movement mode
+2 in bits 10..11. Independent `StartTimedPolarDisplacement @ 0x00412490` and
+`ConfigurePolarMotion @ 0x00411150` write the same bit ranges. Independent
+`Enemy::UpdateMovement @ 0x00412970` reads mode from bits 10..11, selects the
+interpolated path for value 2, then reads easing from bits 12..14 and implements
+the out-quadratic curve for value 4.
+
+**Semantic and ownership result.** EclExtended now includes the existing
+profile-independent `PhotoEnemyEclAccess.hpp` transition bridge and writes
+`TH095_ECL_CONTROL_BITS(enemy)` using
+`PHOTO_ENEMY_EASING_OUT_QUADRATIC` and
+`PHOTO_ENEMY_MOVEMENT_INTERPOLATED`. The local `EXT_MOVEMENT_FLAGS` macro and
+its raw `reinterpret_cast<u8 *>(enemy) + 0x2BF4` expression are gone. This does
+not create or claim another object layout: `PhotoEnemyView::control` remains
+the storage owner, `PhotoEnemyControl.hpp` owns the value vocabulary, and the
+offset bridge is used only because the established callback ABI still names
+the receiver `Enemy *`. Its offset is already asserted against the canonical
+owner in `PhotoEnemy.hpp`.
+
+**Validation and guards.** Focused canonical replay rebuilt all 22 accepted
+EclExtended units and passed 22/22 exact with zero compiler-private label
+refresh. A pinned-VC7.1 normal-profile probe emitted an i386 COFF object. The
+semantic guard now requires EclExtended to include the shared bridge, use the
+two canonical enum values, and never restore the local macro or raw `+0x2BF4`
+cast. The EclExtended heuristic raw-member count fell from one to zero. No
+profile selector, selected declaration, or debt-baseline allowance changed.
+The SEM-279 696-unit aggregate and 88-TU linked product remain the latest full
+receipts; this bounded source-local checkpoint deliberately does not claim a
+new whole-product build or runtime validation.
+
+**Unknown / next route.** Unsupported compact-enemy control bits and EnemyInf
+manager `+0x4DFC` remain Unknown. Next audit EclExtended's local
+`PhotoGlobalStateView @ +0xFC` and its photo-sound/photo-transition bit
+producers against canonical `PhotoGameTaskView`, existing target consumers,
+and exact compiler behavior. Retire it only if normal ownership and exact
+emission can be kept distinct without adding a profile selector.

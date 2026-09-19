@@ -1932,3 +1932,22 @@ linked a 780,800-byte PE32 product with build-local SHA-256
 CI passed 56/56. The live handoff rotates away from packets to EclExtended's
 last raw compact-enemy control access at `+0x2BF4`, with manager `+0x4DFC`
 still explicitly Unknown.
+
+## EclExtended compact movement-control checkpoint — SEM-280
+
+SEM-280 removes EclExtended's final raw compact-enemy member access. Fresh
+target evidence maps `RunPhotoTransition @ 0x00414580` writes at enemy
+`+0x2BF4` to easing value 4 and interpolated movement mode 2; two independent
+movement producers and `Enemy::UpdateMovement @ 0x00412970` confirm the same
+bit protocol. The inherited `Enemy *` callback now routes through the existing
+profile-independent, canonical-offset `PhotoEnemyEclAccess.hpp` bridge and
+uses `PHOTO_ENEMY_EASING_OUT_QUADRATIC` /
+`PHOTO_ENEMY_MOVEMENT_INTERPOLATED`. The local raw-cast macro is retired.
+
+All 22 EclExtended accepted units replayed exact with zero label refresh, its
+normal pinned-VC7.1 probe compiled, and the semantic guard locks the route. No
+selector or declaration baseline changed. The latest full aggregate/product
+receipts remain SEM-279; this source-local checkpoint makes no new whole-build
+claim. The live handoff moves to EclExtended's duplicate
+`PhotoGlobalStateView @ +0xFC` photo-state bits while manager `+0x4DFC` remains
+Unknown.

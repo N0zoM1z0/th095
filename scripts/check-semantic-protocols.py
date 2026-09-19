@@ -667,6 +667,21 @@ def check_photo_enemy_owner() -> None:
         if re.search(r"\bstruct\s+PhotoEnemyView\s*\{", text):
             fail(f"{path.relative_to(SRC)} must not redefine PhotoEnemyView")
 
+    extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
+    if '#include "PhotoEnemyEclAccess.hpp"' not in extended:
+        fail("EclExtended must route inherited Enemy* control access through the shared bridge")
+    for retired in ("EXT_MOVEMENT_FLAGS", "reinterpret_cast<u8 *>(enemy) + 0x2bf4"):
+        if retired in extended:
+            fail(f"EclExtended restored raw compact-enemy control access: {retired}")
+    for fact in (
+        "TH095_ECL_CONTROL_BITS(enemy).movementEasing",
+        "PHOTO_ENEMY_EASING_OUT_QUADRATIC",
+        "TH095_ECL_CONTROL_BITS(enemy).movementMode",
+        "PHOTO_ENEMY_MOVEMENT_INTERPOLATED",
+    ):
+        if fact not in extended:
+            fail(f"EclExtended lost canonical movement-control binding: {fact}")
+
     movement = (SRC / "EnemyMovement.cpp").read_text(encoding="utf-8")
     if "struct Enemy : PhotoEnemyView" not in movement:
         fail("EnemyMovement must retain only a method ABI shell over PhotoEnemyView")
@@ -1304,7 +1319,7 @@ def main() -> int:
     print("  EclExtended normal types: canonical ANM, Float3, Effect, BulletInf, and EnemyInf owners")
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
-    print("  compact enemy ECL access: four resolvers and RunEcl share one path")
+    print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  RunEcl task state: canonical profile-independent 0x124 owner")
     print("  Photo stage: canonical profile-independent 0x25730 owner")
     print("  CardInf: canonical profile-independent 0x68 owner")

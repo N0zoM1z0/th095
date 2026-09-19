@@ -103,6 +103,12 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("sizeof(PhotoEnemyManagerView) == 0x26ae30", header)
         self.assertIn("u8 unknown4dfc[4]", header)
         self.assertNotIn("alternateEnemyAnm", header)
+        extended = (ROOT / "src" / "EclExtended.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('#include "PhotoEnemyEclAccess.hpp"', extended)
+        self.assertNotIn("EXT_MOVEMENT_FLAGS", extended)
+        self.assertIn("TH095_ECL_CONTROL_BITS(enemy).movementMode", extended)
 
     def test_photo_card_info_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_photo_card_info_owner()

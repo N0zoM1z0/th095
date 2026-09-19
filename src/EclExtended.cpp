@@ -1,6 +1,7 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemyControl.hpp"
+#include "PhotoEnemyEclAccess.hpp"
 #include "PhotoRotatingLaserArgs.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "Background.hpp"
@@ -712,10 +713,6 @@ static __forceinline i32 ExtendedCameraIsCharging(
     return camera->mode == 1;
 }
 
-#define EXT_MOVEMENT_FLAGS(enemy) \
-    (*reinterpret_cast<PhotoEnemyControlBits *>( \
-        reinterpret_cast<u8 *>(enemy) + 0x2bf4))
-
 // ECL extended callback table entry 20 @ 0x00414580.
 void __fastcall RunPhotoTransition(
     Enemy *enemy, EclRawInstruction *instruction)
@@ -819,8 +816,10 @@ void __fastcall RunPhotoTransition(
         locals.movementTimer->subFrame = 60.0f;
         locals.movementTimer->previous = -999999;
 
-        EXT_MOVEMENT_FLAGS(enemy).movementEasing = 4;
-        EXT_MOVEMENT_FLAGS(enemy).movementMode = 2;
+        TH095_ECL_CONTROL_BITS(enemy).movementEasing =
+            PHOTO_ENEMY_EASING_OUT_QUADRATIC;
+        TH095_ECL_CONTROL_BITS(enemy).movementMode =
+            PHOTO_ENEMY_MOVEMENT_INTERPOLATED;
 
         locals.zeroVelocity.x = 0.0f;
         locals.zeroVelocity.y = 0.0f;
@@ -1143,8 +1142,6 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
     SetExtendedBackgroundVm1State2();
     TH095_ECL_EXT_FADE_COLOR = 0;
 }
-
-#undef EXT_MOVEMENT_FLAGS
 
 } // namespace EclExtended
 
