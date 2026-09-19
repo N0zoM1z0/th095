@@ -31,6 +31,12 @@
 #endif
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "../PhotoEnemyManager.hpp"
+#include "../PhotoGameTask.hpp"
+#include "../PhotoStage.hpp"
+#define TH095_ECL_GAME_TASK \
+    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoGameTaskView, \
+                             ::th095::g_RuntimeGlobalStateOwner)
+#define TH095_ECL_COMPLETION_STATE (TH095_ECL_GAME_TASK->completion)
 #endif
 
 #ifndef DIFFBUILD
@@ -40,50 +46,6 @@
     TH095_RUNTIME_GLOBAL_PTR(PhotoCamera, ::th095::g_RuntimePlayerOwner)
 #define g_Th095GameManager \
     TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeGlobalStateOwner)
-#endif
-
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-namespace th095
-{
-struct EclGlobalStateFlagsView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknownFlags0_4 : 5;
-            u32 playerDeathTransitionComplete : 1;
-            u32 unknownFlags6_31 : 26;
-        };
-    };
-};
-typedef char EclGlobalStateFlagsAtFC[
-    (offsetof(EclGlobalStateFlagsView, flags) == 0xfc) ? 1 : -1];
-
-struct EclCompletionStateView
-{
-    i32 completionActive;
-    ZunTimer timer;
-};
-struct EclGlobalCompletionStateView
-{
-    u8 unknown000[0x104];
-    EclCompletionStateView completion;
-};
-typedef char EclCompletionActiveAt104[
-    (offsetof(EclGlobalCompletionStateView, completion.completionActive) == 0x104)
-        ? 1 : -1];
-typedef char EclCompletionTimerAt108[
-    (offsetof(EclGlobalCompletionStateView, completion.timer) == 0x108) ? 1 : -1];
-}
-#define TH095_ECL_GLOBAL_STATE_FLAGS \
-    (*TH095_RUNTIME_GLOBAL_PTR(::th095::EclGlobalStateFlagsView, \
-                               ::th095::g_RuntimeGlobalStateOwner))
-#define TH095_ECL_COMPLETION_STATE \
-    (TH095_RUNTIME_GLOBAL_PTR(::th095::EclGlobalCompletionStateView, \
-                              ::th095::g_RuntimeGlobalStateOwner)->completion)
 #endif
 
 #ifdef DIFFBUILD
@@ -131,21 +93,11 @@ typedef char EclCompletionTimerAt108[
 #define TH095_ECL_STAGE_SCORE_MULTIPLIER \
     *reinterpret_cast<f32 *>(TH095_ECL_STAGE_STATE + 0x25718)
 #else
-namespace th095
-{
-struct EclStageScoreStateView
-{
-    u8 unknown00000[0x25718];
-    f32 scoreMultiplier;
-};
-typedef char EclStageScoreMultiplierAt25718[
-    (offsetof(EclStageScoreStateView, scoreMultiplier) == 0x25718) ? 1 : -1];
-}
 #define TH095_ECL_STAGE_STATE \
-    TH095_RUNTIME_GLOBAL_PTR(u8, ::th095::g_RuntimeStageStateOwner)
+    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoStageStateView, \
+                             ::th095::g_RuntimeStageStateOwner)
 #define TH095_ECL_STAGE_SCORE_MULTIPLIER \
-    (reinterpret_cast<::th095::EclStageScoreStateView *>(TH095_ECL_STAGE_STATE) \
-         ->scoreMultiplier)
+    (TH095_ECL_STAGE_STATE->scoreMultiplier)
 #endif
 
 #ifdef DIFFBUILD

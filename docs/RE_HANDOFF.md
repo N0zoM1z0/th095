@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-273. Owner closure remains
+The current semantic source checkpoint is SEM-274. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -63,43 +63,42 @@ deliberately narrower than subsystem completion:
 | BulletInf `0x27C5B8` | Canonical normal owner closed in `PhotoBulletManager.hpp`; exact receiver spellings are emission adapters. |
 | EnemyInf manager `0x26AE30` | Canonical normal owner closed in `PhotoEnemyManager.hpp`; it directly embeds the compact template and 128-element pool; `enemyAnm @ +0x4DF8` is proved. |
 | Compact enemy element `0x4CC0` | Canonical profile-independent owner established in `PhotoEnemy.hpp`; `EnemyMovement` is a method-only ABI shell, and all four operand resolver TUs plus RunEcl share `PhotoEnemyEclAccess.hpp`. The bridge is offset-asserted and is not a second layout. |
+| PhotoGameTask `0x124` | `PhotoGameTask.hpp` is profile-independent; normal RunEcl consumes canonical `completion @ +0x104` and `playerDeathTransitionComplete @ +0xFC bit 5`. Exact task emission stays in `PhotoGameTaskExact.inl`. |
+| PhotoInf/stage `0x25730` | `PhotoStage.hpp` is the canonical normal owner for lifecycle, draw/capture behavior, `scoreMultiplier @ +0x25718`, ANM, and Chain roots. PhotoCamera's old receiver is isolated in one narrow emission adapter. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 891 remaining selector directives across 113 files and 243 declaration keys / 248 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 885 remaining selector directives across 112 files and 231 declaration keys / 236 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
 compatibility ABI, not the TH095 EnemyInf allocation created at `0x004149F0`.
 Do not migrate its layout or names into the compact TH095 owner.
 
-`PhotoEnemyEclAccess.hpp` now routes `sharedOperands @ +0x4DF4`,
-`photoTargets @ +0x26AE00`, the FloatLValue movement/context fields, and the
-compact fields consumed by RunEcl through one source path in exact and normal
-profiles. The former four runtime-manager projections, FloatLValue raw legacy
-field accesses, and RunEcl compact local views are removed. The remaining
-direct `Enemy*` spelling is an established method ABI boundary; it does not
-own storage and does not justify copying the 0x53D0 compatibility tail into the
-compact owner.
+RunEcl's compact fields still route through `PhotoEnemyEclAccess.hpp`. Its
+three task-state views and `EclStageScoreStateView` are also removed: normal
+source now reaches the real PhotoGameTask and PhotoInf/stage owners directly.
+The old normal `PhotoOverlayManagerView` and shifted slot-lifetime projection
+are gone; frozen exact overlay/stage bodies remain compiler-emission material,
+not alternate normal owners.
 
 The cold aggregate passed **696/696 exact across all 88 sources**. Relative to
-the SEM-272 checkpoint, the reviewed manifest update contains **447
-compiler-private label-name changes across nine units/eight sources** plus 28
-resolver relocation spellings changed from four deleted runtime-view types to
-the shared opaque owner; relocation offsets, types, and target addresses are
-unchanged. The normal build compiled all **88 pinned-VC7.1 i386 COFF** objects
-and linked a verified **780,288-byte PE32/i386 GUI**, build-local SHA-256
-`8c24e1e4117915f08b6c06a3bcd90d6e772a8f1f6e352874905d24a3b6a4675d`.
+SEM-273, the reviewed manifest update contains **68 compiler-private `$L`
+spelling changes across seven units**; complete bytes, relocation offsets,
+types, and target destinations are unchanged. The normal build compiled all
+**88 pinned-VC7.1 i386 COFF** objects and linked a verified **780,800-byte
+PE32/i386 GUI**, build-local SHA-256
+`fd5835c71be680ec3bb92b5af58d762fa795e2598975de94159760c3a1cf9afc`.
 Target-independent CI passed **51/51** tests. This is exact-unit preservation
 and normal compile/link closure, not whole-image exactness or runtime credit.
 
 ## Next bounded lane
 
-Audit RunEcl's remaining **non-compact** local ownership projections, beginning
-with `EclGlobalCompletionStateView` / `EclGlobalStateFlagsView` and their
-independent game/task producers and consumers. Close one real global owner at a
-time before touching player/camera, stage-score, or photo-session projections.
-Do not treat the compact-owner closure as permission to name opcode meanings,
-manager `+0x4DFC`, unsupported control bits, or the compatibility `Enemy`
-tail. Do not add a selector or enlarge either closed baseline.
+Audit RunEcl's remaining photo-session method projection and the
+`eclPhotoCardSession` lifecycle against `PhotoCardInfo.cpp`. Distinguish the
+CardInf allocation/lifecycle owner from the EnemyInf pointer slot; do not infer
+an opcode name from Create/Show/Destroy calls. Keep player/camera as the next
+separate lane. Do not name manager `+0x4DFC`, unsupported control bits, or the
+compatibility `Enemy` tail, and do not add a selector or enlarge either closed
+baseline.
 
 ## Protected working-tree exclusions
 
@@ -119,5 +118,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/ecl/EclRun.cpp --details
-rg -n "EclGlobalCompletionStateView|EclGlobalStateFlagsView|completionActive|playerDeathTransitionComplete" src docs/KNOWLEDGE_BASE.md
+rg -n "PhotoCardInfoView|eclPhotoCardSession|TH095_ECL_SESSION" src docs/KNOWLEDGE_BASE.md
 ```

@@ -33,9 +33,8 @@ struct PhotoStageSlot
     char comment[12];
 };
 
-// Production-visible stage owner. Exact builds keep their frozen source view
-// in PhotoStageExact.inl; this definition lets other production TUs call the
-// real stage methods without inventing alternate decorated names.
+// Canonical 0x25730 PhotoInf/stage owner. Exact-only source emission stays
+// isolated in PhotoStageExact.inl and PhotoOverlayExact.inl.
 struct PhotoStageStateView
 {
     PhotoStageSlot slots[11];
@@ -60,6 +59,16 @@ struct PhotoStageStateView
         };
     };
     i32 captureFrame;
+    ChainElem *calcChain;
+    ChainElem *drawChain;
+
+    PhotoStageStateView();
+    ~PhotoStageStateView();
+
+    static PhotoStageStateView *Create();
+    void Destroy();
+    i32 Initialize();
+    i32 Draw();
 
     i32 Update();
     i32 SavePhoto(
@@ -92,6 +101,17 @@ struct PhotoStageStateView
         return this->slots[0].captureSlot;
     }
 };
+
+typedef char PhotoStageStateSizeIs25730[
+    (sizeof(PhotoStageStateView) == 0x25730) ? 1 : -1];
+typedef char PhotoStageScoreMultiplierAt25718[
+    (offsetof(PhotoStageStateView, scoreMultiplier) == 0x25718) ? 1 : -1];
+typedef char PhotoStageAnmAt2571C[
+    (offsetof(PhotoStageStateView, anm) == 0x2571c) ? 1 : -1];
+typedef char PhotoStageCalcChainAt25728[
+    (offsetof(PhotoStageStateView, calcChain) == 0x25728) ? 1 : -1];
+typedef char PhotoStageDrawChainAt2572C[
+    (offsetof(PhotoStageStateView, drawChain) == 0x2572c) ? 1 : -1];
 
 } // namespace th095
 

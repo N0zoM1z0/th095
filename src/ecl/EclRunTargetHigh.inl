@@ -455,7 +455,7 @@ enter_subroutine:
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
         *reinterpret_cast<u32 *>(g_Th095GameManager + 0xfc) |= 0x20U;
 #else
-        TH095_ECL_GLOBAL_STATE_FLAGS.playerDeathTransitionComplete = 1;
+        TH095_ECL_GAME_TASK->playerDeathTransitionComplete = 1;
 #endif
         break;
 

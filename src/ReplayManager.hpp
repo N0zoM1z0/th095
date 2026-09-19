@@ -2,6 +2,7 @@
 #define TH095_REPLAY_MANAGER_HPP
 
 #include "Global.hpp"
+#include "ReplayManagerMode.hpp"
 
 namespace th095
 {
@@ -11,13 +12,6 @@ typedef ::ZunResult ReplayManagerResult;
 #else
 typedef ZunResult ReplayManagerResult;
 #endif
-
-enum ReplayManagerMode
-{
-    REPLAY_MANAGER_RECORD = 0,
-    REPLAY_MANAGER_PLAYBACK = 1,
-    REPLAY_MANAGER_LOAD_ONLY = 2,
-};
 
 // Persistent replay container header. The game writer emits the complete
 // 0x24-byte block. LoadReplay trusts the payload sizes directly and does not

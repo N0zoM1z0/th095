@@ -66,7 +66,7 @@
 3	src/ecl/AnmManagerEclView.hpp	#ifndef TH095_MATCH_EXACT
 1	src/ecl/EclManager.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/ecl/EclOperands.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-2	src/ecl/EclRun.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+1	src/ecl/EclRun.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/ecl/EclRun.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/ecl/EclRun.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 10	src/ecl/EclRun.cpp	#ifdef DIFFBUILD
@@ -213,9 +213,6 @@
 10	src/PhotoGameTask.cpp	#ifdef DIFFBUILD
 1	src/PhotoGameTask.cpp	#ifdef TH095_MATCH_EXACT
 7	src/PhotoGameTask.cpp	#ifndef DIFFBUILD
-1	src/PhotoGameTask.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-3	src/PhotoGameTask.hpp	#if defined(TH095_MATCH_EXACT)
-1	src/PhotoGameTask.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/PhotoItemManager.cpp	#ifdef DIFFBUILD
 1	src/PhotoItemManager.cpp	#ifdef TH095_MATCH_EXACT
 3	src/PhotoItemManager.cpp	#ifndef DIFFBUILD

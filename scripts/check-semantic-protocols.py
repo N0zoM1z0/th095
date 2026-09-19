@@ -815,9 +815,104 @@ def check_photo_enemy_owner() -> None:
             fail(f"RunEcl lost shared compact-enemy access: {marker}")
 
 
+def check_photo_game_task_ecl_owner() -> None:
+    header = (SRC / "PhotoGameTask.hpp").read_text(encoding="utf-8")
+    mode_header = (SRC / "ReplayManagerMode.hpp").read_text(encoding="utf-8")
+    if any(name in header for name in PROFILE_NAMES):
+        fail("canonical PhotoGameTask.hpp must not select a build-profile layout")
+    if any(name in mode_header for name in PROFILE_NAMES):
+        fail("ReplayManagerMode.hpp must be profile-independent")
+    if len(re.findall(r"\bstruct\s+PhotoGameTaskView\s*\{", header)) != 1:
+        fail("PhotoGameTask.hpp must define exactly one canonical task owner")
+    required_layout = (
+        "sizeof(PhotoGameTaskView) == 0x124",
+        "offsetof(PhotoGameTaskView, flags) == 0xfc",
+        "offsetof(PhotoGameTaskView, completion) == 0x104",
+        "offsetof(PhotoGameTaskView, completion.completionActive) == 0x104",
+        "offsetof(PhotoGameTaskView, completion.timer) == 0x108",
+        "ReplayManagerMode replayMode",
+    )
+    for fact in required_layout:
+        if fact not in header:
+            fail(f"canonical PhotoGameTask layout lost assertion: {fact}")
+
+    ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
+    if '#include "../PhotoGameTask.hpp"' not in ecl_run:
+        fail("normal EclRun must consume canonical PhotoGameTask.hpp")
+    ecl_target_high = (SRC / "ecl" / "EclRunTargetHigh.inl").read_text(
+        encoding="utf-8"
+    )
+    for retired in (
+        "EclGlobalStateFlagsView",
+        "EclCompletionStateView",
+        "EclGlobalCompletionStateView",
+    ):
+        if retired in ecl_run:
+            fail(f"EclRun restored retired task projection: {retired}")
+    if "TH095_ECL_GAME_TASK->completion" not in ecl_run:
+        fail("normal EclRun lost canonical task completion access")
+    if "TH095_ECL_GAME_TASK->playerDeathTransitionComplete" not in ecl_target_high:
+        fail("normal RunEcl high dispatch lost canonical task flag access")
+
+
+def check_photo_stage_owner() -> None:
+    header = (SRC / "PhotoStage.hpp").read_text(encoding="utf-8")
+    if any(name in header for name in PROFILE_NAMES):
+        fail("canonical PhotoStage.hpp must not select a build-profile layout")
+    if len(re.findall(r"\bstruct\s+PhotoStageStateView\s*\{", header)) != 1:
+        fail("PhotoStage.hpp must define exactly one canonical stage owner")
+    required_layout = (
+        "sizeof(PhotoStageStateView) == 0x25730",
+        "offsetof(PhotoStageStateView, scoreMultiplier) == 0x25718",
+        "offsetof(PhotoStageStateView, anm) == 0x2571c",
+        "offsetof(PhotoStageStateView, calcChain) == 0x25728",
+        "offsetof(PhotoStageStateView, drawChain) == 0x2572c",
+    )
+    for fact in required_layout:
+        if fact not in header:
+            fail(f"canonical PhotoStage layout lost assertion: {fact}")
+
+    direct_consumers = (
+        SRC / "PhotoCamera.cpp",
+        SRC / "PhotoGameTask.cpp",
+        SRC / "PhotoOverlay.cpp",
+        SRC / "PhotoStage.cpp",
+        SRC / "ecl" / "EclRun.cpp",
+    )
+    for path in direct_consumers:
+        text = path.read_text(encoding="utf-8")
+        if 'PhotoStage.hpp"' not in text:
+            fail(f"{path.relative_to(SRC)} must consume canonical PhotoStage.hpp")
+
+    overlay = (SRC / "PhotoOverlay.cpp").read_text(encoding="utf-8")
+    if "PhotoOverlayManagerView" in overlay:
+        fail("normal PhotoOverlay must not restore the retired stage owner")
+    if "PhotoStageSlotLifetimeView" in overlay:
+        fail("normal PhotoOverlay must not restore its shifted slot projection")
+    if "PhotoStageStateView::Create" not in overlay:
+        fail("normal PhotoOverlay must implement the canonical stage lifecycle")
+
+    camera = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
+    if '#include "PhotoCameraStageEmission.inl"' not in camera:
+        fail("PhotoCamera must isolate its legacy stage receiver declaration")
+    emission = (SRC / "PhotoCameraStageEmission.inl").read_text(
+        encoding="utf-8"
+    )
+    if "VC7 emission adapter for PhotoCamera only" not in emission:
+        fail("PhotoCamera stage adapter must state its narrow ownership")
+    if any(name in emission for name in PROFILE_NAMES):
+        fail("PhotoCamera stage emission adapter must not select a profile")
+
+    ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
+    if "EclStageScoreStateView" in ecl_run:
+        fail("EclRun restored the retired stage-score projection")
+    if "TH095_ECL_STAGE_STATE->scoreMultiplier" not in ecl_run:
+        fail("normal EclRun lost canonical stage score access")
+
+
 def check_small_closed_domains() -> None:
     explicit_enum(
-        SRC / "ReplayManager.hpp",
+        SRC / "ReplayManagerMode.hpp",
         "ReplayManagerMode",
         "REPLAY_MANAGER_",
         [0, 1, 2],
@@ -846,6 +941,8 @@ def main() -> int:
     check_ecl_extended_type_boundaries()
     check_photo_bullet_owner()
     check_photo_enemy_owner()
+    check_photo_game_task_ecl_owner()
+    check_photo_stage_owner()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
     print("  TH095_MATCH_EXACT/DIFFBUILD selectors: closed historical debt baseline")
@@ -858,6 +955,8 @@ def main() -> int:
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers and RunEcl share one path")
+    print("  RunEcl task state: canonical profile-independent 0x124 owner")
+    print("  Photo stage: canonical profile-independent 0x25730 owner")
     print("  Replay manager, color mode, and viewport domains: explicit")
     return 0
 

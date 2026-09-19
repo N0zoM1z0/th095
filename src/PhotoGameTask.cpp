@@ -17,6 +17,7 @@
 #include "PhotoEnemyManager.hpp"
 #endif
 #include "PhotoGameTask.hpp"
+#include "PhotoStage.hpp"
 #include "PhotoEffectRuntime.hpp"
 #ifndef DIFFBUILD
 #include "PhotoPlayerRuntime.hpp"
@@ -36,12 +37,6 @@ namespace th095
 struct PhotoFrontManagerView
 {
     static PhotoFrontManagerView *Create();
-    void Destroy();
-};
-
-struct PhotoOverlayManagerView
-{
-    static PhotoOverlayManagerView *Create();
     void Destroy();
 };
 
@@ -611,7 +606,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->photoOverlay = PhotoOverlayManagerView::Create();
+    this->photoOverlay = PhotoStageStateView::Create();
     if (this->photoOverlay == NULL)
     {
         return ZUN_ERROR;

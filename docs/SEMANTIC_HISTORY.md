@@ -13349,3 +13349,89 @@ RunEcl's non-compact `EclGlobalCompletionStateView` and
 `EclGlobalStateFlagsView` against independent game/task producers and
 consumers, one owner at a time. Keep manager `+0x4DFC`, unsupported control
 bits, `+0x4CA4`, and original opcode names Unknown.
+
+### SEM-274 — canonicalize RunEcl task state and the PhotoInf stage owner
+
+**Scope.** Continue the non-compact RunEcl ownership audit without importing
+TH08 conclusions. First retire the completion/global-state projections around
+target `0x004BDEC8`; then follow the stage score field at `+0x25718` to its
+actual allocation/lifecycle owner at target `0x004C4E6C`. This batch changes
+normal ownership and declarations, not opcode names or neighboring Unknown
+fields.
+
+**PhotoGameTask owner.** Fresh hash-attested TH095 decompilation of
+`PhotoGameTaskView::Create @ 0x00417F80` shows `operator new(0x124)` and
+publication to `0x004BDEC8`; destructor `0x00417E70` clears that same slot.
+RunEcl opcode `0x72` writes the task's `completionActive @ +0x104` and embedded
+`ZunTimer @ +0x108`, while opcode `0x8E` sets flags `+0xFC` bit 5. Independent
+`PhotoGameUpdateView::Update @ 0x0042FF60` sets the same
+`playerDeathTransitionComplete` bit after its 30-frame transition, and
+`PhotoGameTaskView::Update @ 0x00418100` consumes that bit and the completion
+timer.
+
+`PhotoGameTask.hpp` is now one profile-independent 0x124 declaration. Its
+established semantic flag names no longer change under the exact define, and
+the replay-mode field always uses the dependency-light `ReplayManagerMode`
+domain moved to `ReplayManagerMode.hpp`. Normal RunEcl includes that owner and
+directly accesses `completion` and `playerDeathTransitionComplete`.
+`EclGlobalCompletionStateView`, `EclCompletionStateView`, and
+`EclGlobalStateFlagsView` are deleted. The frozen PhotoGameTask exact body
+remains isolated in `PhotoGameTaskExact.inl`; exact replay therefore does not
+stand in for the separately compiled normal body.
+
+**PhotoInf/stage owner.** The former `EclStageScoreStateView` initially looked
+like a one-field cleanup, but target lifecycle evidence proves a larger split.
+Constructor `0x0042A8A0` publishes one object to `0x004C4E6C`; factory
+`0x0042ABC0` allocates `0x25730` bytes and installs calc/draw Chains at
+`+0x25728/+0x2572C`; destructor `0x0042AAF0` cuts those Chains, retires the ANM
+owner at `+0x2571C`, and clears the same global. `Initialize @ 0x0042AA30`
+writes `scoreMultiplier @ +0x25718 = 1.0f`; RunEcl opcode 149 writes the same
+field, and `PhotoCameraState::CalculatePhotoScore @ 0x00433140` independently
+consumes it.
+
+Normal `PhotoStageStateView` now owns the complete 0x25730 layout, lifecycle,
+draw, capture methods, ANM pointer, and Chain roots. `PhotoOverlay.cpp` no
+longer declares a shifted `PhotoStageSlotLifetimeView` or a second
+`PhotoOverlayManagerView`; its indexed draw expressions use the canonical
+slot/display nesting. `PhotoGameTask` stores the canonical stage pointer, and
+normal PhotoCamera and RunEcl include the same header. The legacy PhotoCamera
+receiver declaration moved unchanged into profile-free
+`PhotoCameraStageEmission.inl`; `PhotoOverlayExact.inl` and
+`PhotoStageExact.inl` remain frozen exact-body boundaries. These exact names do
+not define a second normal owner.
+
+**Workflow debt.** The selector baseline shrank from 891 directives across 113
+files to 885 across 112 files. The profile-selected declaration baseline
+shrunk from 243 keys / 248 occurrences to 231 / 236. No selector was added.
+The protocol guard now pins both canonical layouts, rejects restoration of the
+five retired RunEcl task/stage projections, requires every direct normal stage
+consumer to include `PhotoStage.hpp`, and verifies the narrow PhotoCamera
+adapter remains profile-free.
+
+**Compiler and validation evidence.** Focused pinned-VC7.1 normal probes passed
+for EclRun, PhotoGameTask, ReplayManager, PhotoFront, PhotoOverlay, PhotoStage,
+and PhotoCamera. Focused exact replay passed 34/34 task/enum-affected units and
+28/28 stage-owner units; PhotoCamera passed 11/11 after the comparator proved
+fifteen compiler-private label renames in two units preserved complete bytes,
+relocation positions/types, and target destinations.
+
+The final cold aggregate rebuilt all 88 sources and passed **696/696 exact**.
+Relative to SEM-273, the manifest contains **68 compiler-private `$L` spelling
+changes across seven units** (`photo-update-viewfinder`, `photo-camera-update`,
+`front-end-controller-update`, `front-end-update-main-menu`,
+`help-menu-update`, `result-screen-draw`, and `result-screen-update`). The
+restricted refresh proved every compare extent and relocation destination
+unchanged. The normal product compiled all **88 pinned-VC7.1 i386 COFF**
+objects and linked a verified **780,800-byte PE32/i386 GUI**, build-local
+SHA-256
+`fd5835c71be680ec3bb92b5af58d762fa795e2598975de94159760c3a1cf9afc`.
+Target-independent CI passed **51/51** tests.
+
+**Unknown / next route.** The RunEcl task completion/global-state and stage
+score ownership lanes are closed, but this does not close every partial view of
+either allocation. Next audit the RunEcl photo-session method projection and
+its `eclPhotoCardSession` lifecycle against `PhotoCardInfo.cpp`, without
+inventing an opcode name or merging the CardInf owner with EnemyInf storage.
+Player/camera projections remain a later independent lane. Manager `+0x4DFC`,
+unsupported compact control bits, and the compatibility `Enemy` tail remain
+Unknown.

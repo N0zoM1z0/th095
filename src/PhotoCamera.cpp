@@ -17,6 +17,7 @@
 #include "SoundPlayer.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "ScoreData.hpp"
+#include "PhotoStage.hpp"
 #endif
 #ifdef TH095_MATCH_EXACT
 #undef TH095_MATCH_SOUNDPLAYER_AS_STRUCT
@@ -129,30 +130,9 @@ struct PhotoGlobalStateView
     };
 };
 
-struct PhotoStageStateView
-{
-    u8 unknown00000[0x25718];
-    f32 scoreMultiplier;
-    PhotoAnmLoadedView *anm;
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u32 flags;
-#else
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknownFlag0 : 1;
-            u32 unknownFlag1 : 1;
-            u32 firstCaptureFrame : 1;
-            u32 unknownFlags3 : 29;
-        };
-    };
+#include "PhotoCameraStageEmission.inl"
 #endif
-
-    i32 SavePhoto(i32 slot, const Float3 *position, i32 width, i32 height,
-                  i32 score, const i32 *scoreData);
-};
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct PhotoStageControllerView

@@ -1797,3 +1797,29 @@ the live handoff was to remove the four operand TUs' duplicate runtime-manager
 projections at `+0x4DF4/+0x26AE00`, then migrate `ResolveFloatLValue` and
 RunEcl's remaining compact-element projections. SEM-273 supersedes that route;
 the detailed accepted evidence remains in `SEMANTIC_HISTORY.md`.
+
+## Compact ECL and PhotoInf owner checkpoint — SEM-273 and SEM-274
+
+SEM-273 completed that compact-enemy route. The four operand resolvers and
+RunEcl now share the profile-independent, offset-asserted
+`PhotoEnemyEclAccess.hpp` bridge for manager operands/targets and compact
+element fields; the former runtime-manager and RunEcl-local compact
+projections were removed. The 481-slot `EnemyManager.hpp` surface remained a
+method ABI boundary rather than a TH095 storage owner.
+
+SEM-274 then closed two non-compact RunEcl owners. `PhotoGameTask.hpp` became
+the profile-independent 0x124 task owner for completion and transition state,
+and `PhotoStage.hpp` became the profile-independent 0x25730 PhotoInf owner for
+lifecycle, stage behavior, score multiplier, ANM, and Chain roots. The old
+normal task/stage projections and `PhotoOverlayManagerView` were retired;
+frozen exact bodies and the narrow profile-free PhotoCamera receiver remain
+compiler-emission boundaries only.
+
+At the SEM-274 checkpoint the cold aggregate passed 696/696 exact. The normal
+build compiled all 88 pinned-VC7.1 i386 COFF objects and linked a 780,800-byte
+PE32 image with build-local SHA-256
+`fd5835c71be680ec3bb92b5af58d762fa795e2598975de94159760c3a1cf9afc`;
+target-independent CI passed 51/51. The live handoff moved next to the
+RunEcl photo-session method projection and `eclPhotoCardSession` lifecycle,
+with CardInf kept distinct from EnemyInf and player/camera deferred to a
+separate owner audit.
