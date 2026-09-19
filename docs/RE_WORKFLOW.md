@@ -19,6 +19,12 @@ earlier, Steam, or patched executable.
 
 ## Bounded reconstruction loop
 
+For semantic work, apply the acceptance rules in
+`docs/SEMANTIC_RECONSTRUCTION.md`, the evidence method in
+`docs/SEMANTIC_PLAYBOOK.md`, and the build-owner map in `docs/SOURCE_MAP.md`.
+In particular, exact replay does not validate a different normal-selected
+function body.
+
 1. Select one address from `config/functions.csv`.
 2. Reconcile its entry, exits, tail calls, switch bodies, shared epilogues,
    padding, and fall-through against exact target bytes. Treat the stored size

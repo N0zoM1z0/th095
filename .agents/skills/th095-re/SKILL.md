@@ -7,6 +7,8 @@ description: Reconstruct bounded functions and data from the original Japanese T
 
 Read `AGENTS.md`, `docs/RE_HANDOFF.md`, `docs/RE_WORKFLOW.md`, and
 `docs/ORACLES.md` before changing reconstruction state.
+For semantic reconstruction also read `docs/SEMANTIC_RECONSTRUCTION.md`,
+`docs/SEMANTIC_PLAYBOOK.md`, and `docs/SOURCE_MAP.md`.
 
 ## Preflight
 
@@ -39,6 +41,9 @@ file or Ghidra attestation fails. Work on one address from
 6. Update mappings and source-present state without making an exactness claim.
 7. Hand exact-code work to `$th095-matching`; use `$th095-oracle` for ambiguous
    type, layout, or semantic claims.
+
+When `TH095_MATCH_EXACT` selects a different body, exact replay proves only
+that body. Validate the normal semantic source independently.
 
 Record durable findings through `$th095-kb`. Never commit the executable, game
 data, Ghidra/IDA databases, toolchain, or decompiler output. Never patch target

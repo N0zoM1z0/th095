@@ -13,6 +13,10 @@ Treat ledgers as live state and prose as explanation.
   class and reproducible source.
 - Put the current state, blocker, and next bounded lane in
   `docs/RE_HANDOFF.md`; replace stale handoff text instead of appending a diary.
+- Put semantic policy in `docs/SEMANTIC_RECONSTRUCTION.md`, accepted batch
+  narratives in `docs/SEMANTIC_HISTORY.md`, current subsystem routing in
+  `docs/SEMANTIC_INDEX.md`, and exact/normal source ownership in
+  `docs/SOURCE_MAP.md`.
 - Put operating method in `docs/RE_WORKFLOW.md`, oracle rules in
   `docs/ORACLES.md`, and compiler lessons in `docs/BUILD_MATCHING.md`.
 - Put address/name/origin/source/exact state in `config/`, never only in prose.
@@ -29,6 +33,9 @@ Treat ledgers as live state and prose as explanation.
 4. Do not copy live counts into prose manually. Run `scripts/progress.py` and
    `scripts/report-reconstruction-status.py --summary`.
 5. Run `scripts/validate-tracking.py` and `scripts/ci.py` before commit.
+
+If exact and normal select different bodies, record exact and normal evidence
+separately. Exact replay is never semantic acceptance of the normal-only body.
 
 Never promote source-present or semantic acceptance to exactness without the
 canonical strict comparison required by `$th095-matching`.

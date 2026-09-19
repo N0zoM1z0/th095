@@ -10,6 +10,8 @@ executable.
 
 1. Read `docs/RE_HANDOFF.md`, `docs/ARCHITECTURE.md`,
    `docs/RE_WORKFLOW.md`, and the relevant source.
+   For semantic work also read `docs/SEMANTIC_RECONSTRUCTION.md`,
+   `docs/SEMANTIC_PLAYBOOK.md`, and `docs/SOURCE_MAP.md`.
 2. Inspect `git status`, then run:
 
    ```bash
@@ -30,6 +32,24 @@ executable.
    as separate facts. None implies another.
 6. Build and compare the smallest affected function or object before broad
    edits.
+
+## Semantic acceptance
+
+- Start with `scripts/analysis/report-semantic-debt.py`, but treat its counts
+  only as routing hints. Protocol, transition, and ownership debt can be
+  invisible to the heuristic.
+- Close one owner or coherent protocol family with producers, independent
+  consumers, transitions, layout, and all four ownership axes: storage,
+  semantic, compiler emission, and build product.
+- If exact and normal profiles select different declarations, expressions, or
+  function bodies, exact replay validates only the exact-selected source. It
+  cannot be cited as semantic acceptance of the normal body; require separate
+  target evidence and a normal/portable oracle.
+- Put current policy in `docs/SEMANTIC_RECONSTRUCTION.md`, current navigation
+  in `docs/SEMANTIC_INDEX.md`, chronological batches in
+  `docs/SEMANTIC_HISTORY.md`, and build ownership in `docs/SOURCE_MAP.md`.
+- Add `scripts/check-semantic-protocols.py` coverage only after a protocol
+  namespace is closed. Never invent names merely to make the guard complete.
 
 ## Evidence and state
 
