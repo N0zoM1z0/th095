@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-276. Owner closure remains
+The current semantic source checkpoint is SEM-277. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -62,7 +62,7 @@ deliberately narrower than subsystem completion:
 | Background `0x201C` | Canonical normal owner closed in `Background.hpp`; one narrow EclRun emission adapter remains. |
 | BulletInf `0x27C5B8` | Canonical normal owner closed in `PhotoBulletManager.hpp`; exact receiver spellings are emission adapters. |
 | EnemyInf manager `0x26AE30` | Canonical normal owner closed in `PhotoEnemyManager.hpp`; it directly embeds the compact template and 128-element pool; `enemyAnm @ +0x4DF8` is proved. |
-| Compact enemy element `0x4CC0` | Canonical profile-independent owner established in `PhotoEnemy.hpp`; `EnemyMovement` is a method-only ABI shell, and all four operand resolver TUs plus RunEcl share `PhotoEnemyEclAccess.hpp`. The bridge is offset-asserted and is not a second layout. |
+| Compact enemy element `0x4CC0` | Canonical profile-independent owner established in `PhotoEnemy.hpp`; `EnemyMovement` is a method-only ABI shell, and all four operand resolver TUs plus RunEcl share `PhotoEnemyEclAccess.hpp`. Normal RunEcl calls canonical `Enemy::ResolveFloat`; its historical 53-site decoration is isolated in storage-free `ecl/EnemyFloatOperandEclEmission.hpp`. |
 | PhotoGameTask `0x124` | `PhotoGameTask.hpp` is profile-independent; normal RunEcl consumes canonical `completion @ +0x104` and `playerDeathTransitionComplete @ +0xFC bit 5`. Exact task emission stays in `PhotoGameTaskExact.inl`. |
 | PhotoInf/stage `0x25730` | `PhotoStage.hpp` is the canonical normal owner for lifecycle, draw/capture behavior, `scoreMultiplier @ +0x25718`, ANM, and Chain roots. PhotoCamera's old receiver is isolated in one narrow emission adapter. |
 | CardInf `0x68` | `PhotoCardInfo.hpp` is the profile-independent allocation/lifecycle owner published at `0x004BDD9C`; RunEcl, PhotoGameTask, and PhotoStage consume it directly. EnemyInf `+0x26AE28` remains only a non-exclusive ECL-held session pointer. |
@@ -96,26 +96,32 @@ the canonical method. The exact adapter preserves only the two historical
 decorated names required by four call sites; it contains no storage or profile
 selector and is not a second owner.
 
-The focused EclRun proof refreshed **166 compiler-private labels** only after
-the strict tool verified unchanged structural bytes, relocation offsets/types,
+RunEcl's last local heuristic ownership view, `EnemyFloatOperandView`, is now
+also gone. Fresh target and exact-ledger evidence map all 53 historical calls
+to canonical `Enemy::ResolveFloat @ 0x004105A0`; normal source already used
+that method. A clean exact-source compiler experiment changed a non-private
+relocation identity, so the historical method declaration is retained only in
+a named, profile-independent, storage-free adapter.
+
+The latest focused EclRun proof refreshed **166 compiler-private labels** only
+after the strict tool verified unchanged structural bytes, relocation offsets/types,
 non-private identities, and solved target destinations. The subsequent cold
 aggregate passed **696/696 exact across all 88 sources** with zero further
 refresh. The normal build compiled all
 **88 pinned-VC7.1 i386 COFF** objects and linked a verified **780,800-byte
 PE32/i386 GUI**, build-local SHA-256
-`7f78466e1083ee2ba8615bb96d3e37924e64fc27bfed340ceb222ceb832294c5`.
-Target-independent CI passed **53/53** tests. This is exact-unit preservation
+`8add94ab2bdfc218dfa87e5378aba85f955fe7466db0b70500e44ef538255fe7`.
+Target-independent CI passed **54/54** tests. This is exact-unit preservation
 and normal compile/link closure, not whole-image exactness or runtime credit.
 
 ## Next bounded lane
 
-Audit RunEcl's remaining `EnemyFloatOperandView`. It is a method-only exact
-decoration over already target-mapped `Enemy::ResolveFloat @ 0x004105A0`, while
-normal source already calls the canonical method. Prove the historical COFF
-identity requirement and, only if it remains necessary, move it into a narrow,
-profile-independent emission adapter without adding a selector directive.
-Do not infer an opcode name, name manager `+0x4DFC`, or enlarge either closed
-baseline.
+Audit `PhotoEffectArgsSmall` as one coherent 0x28-byte RunEcl effect-packet
+family. Validate every producer field against `PhotoEffectManager::Spawn @
+0x0041DBD0` and an independent effect consumer before changing its
+profile-selected field names or the `initialLength` type. Keep the 0x48-byte
+`PhotoEffectArgs` family separate until the small packet is closed. Do not
+infer opcode names, name manager `+0x4DFC`, or enlarge either closed baseline.
 
 ## Protected working-tree exclusions
 
@@ -135,5 +141,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/ecl/EclRunHigh.inl --details
-rg -n "EnemyFloatOperandView|TH095_ECL_RESOLVE_FLOAT|0x004105A0" src docs/KNOWLEDGE_BASE.md
+rg -n "PhotoEffectArgsSmall|TH095_SMALL_EFFECT_|0x0041DBD0" src docs/KNOWLEDGE_BASE.md
 ```

@@ -361,11 +361,6 @@ inline void DecrementTimer(ZunTimer *timer, i32 value)
     timer->Add(static_cast<f32>(-value));
 }
 
-struct EnemyFloatOperandView
-{
-    f32 ResolveFloat(EclRawOperand operand);
-};
-
 #define TH095_ECL_ASSIGN_FLOAT(field, index) \
     ((field) = TH08_ECL_READ_F_RAWARG(ctx, index))
 

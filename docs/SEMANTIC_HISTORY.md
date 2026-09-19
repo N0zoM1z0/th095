@@ -13595,3 +13595,67 @@ decoration over already target-mapped `Enemy::ResolveFloat @ 0x004105A0`.
 Audit that boundary next: preserve the canonical normal resolver, prove the
 historical COFF identity requirement, and isolate it only if a narrow
 profile-independent emission adapter is still necessary.
+
+### SEM-277 — isolate RunEcl's historical float-resolver decoration
+
+**Scope.** Close the one remaining heuristic ownership view in
+`EclRunHigh.inl` without changing resolver behavior, selector meaning, compact
+enemy storage, or the already canonical normal call. Treat the alternate class
+and parameter decoration as a compiler-emission hypothesis, not as semantic
+authority.
+
+**Target and exact evidence.** Fresh hash-attested Ghidra queries bound
+`Enemy::ResolveFloat @ 0x004105A0` as a 1,708-byte `__thiscall` receiving the
+enemy pointer plus one float argument. The target has 11 callers, including
+`EclManager::RunEcl @ 0x00408E70`, the three lvalue/resolver helpers, comparison,
+movement, and shot-dispatch helpers. The independently exact
+`ecl-resolve-float` unit already owns the canonical implementation and target
+address. RunEcl's accepted relocation ledger contains 53 REL32 calls decorated
+as `EclRunHigh::EnemyFloatOperandView::ResolveFloat(EclRawOperand)`, and every
+one resolves to the same `0x004105A0` target.
+
+**Compiler oracle.** A bounded pinned-VC7.1 experiment replaced the exact-side
+cast/call with the clean canonical expression
+`enemy->ResolveFloat(operand.asFloat)`. The strict refresh tool rejected the
+result at RunEcl object offset `+0x2B3B`: the non-private relocation identity
+changed from the historical view/by-value-operand symbol to
+`Enemy::ResolveFloat(float)`. This establishes an emission dependency while
+also showing why exact replay of the historical spelling cannot validate the
+normal call's source identity.
+
+**Source and ownership result.** Normal RunEcl continues to call canonical
+`Enemy::ResolveFloat((operand).asFloat)`; storage and semantic behavior remain
+owned by the existing `Enemy` compatibility receiver and the exact resolver
+implementation. The historical declaration moved from `EclRunHigh.inl` into
+profile-independent, method-only `ecl/EnemyFloatOperandEclEmission.hpp`. The
+adapter declares no fields, padding, offsets, size, or storage and exists only
+to preserve the 53 exact COFF identities. `EclRunHigh.inl` now reports zero
+heuristic ownership views; the adapter remains explicit tracked emission debt
+rather than a second compact-enemy owner.
+
+**Guards and validation.** The semantic guard pins the canonical normal call,
+the exact decorated call, removal of the local view, the adapter's canonical
+target address, and its profile-free/storage-free shape. The closed selector
+baseline remains 883 directives across 112 files and the selected-declaration
+baseline remains 225 keys / 230 occurrences; no selector directive or selected
+declaration was added.
+
+Moving the declaration changed 166 compiler-private `$L...` names in the one
+EclRun object. Restricted refresh accepted them only after proving structural
+bytes, relocation offsets/types, non-private identities, and solved target
+destinations unchanged; focused replay then passed 1/1 with zero refresh. The
+final cold aggregate passed **696/696 exact across all 88 sources** with no
+further refresh. The normal profile emitted a valid i386 COFF EclRun object,
+then compiled all **88 pinned-VC7.1 i386 COFF** objects and linked a verified
+**780,800-byte PE32/i386 GUI**, build-local SHA-256
+`8add94ab2bdfc218dfa87e5378aba85f955fe7466db0b70500e44ef538255fe7`.
+Target-independent CI passed **54/54** tests.
+
+**Unknown / next route.** The exact adapter's original source provenance and
+all unresolved operand-selector business meanings remain Unknown; no new
+semantic fact is inferred from the decoration. Next audit
+`PhotoEffectArgsSmall` as the first of the two profile-selected RunEcl effect
+packet declarations. Validate its 0x28-byte producer fields against
+`PhotoEffectManager::Spawn @ 0x0041DBD0` and the independent effect consumer
+before attempting to remove field-name/type selectors. Keep the 0x48-byte
+`PhotoEffectArgs` family separate until the small packet is closed.

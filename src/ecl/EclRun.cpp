@@ -5,6 +5,7 @@
 #include "BulletManager.hpp"
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #include "BackgroundEclEmission.hpp"
+#include "EnemyFloatOperandEclEmission.hpp"
 #include "PhotoCameraEclEmission.hpp"
 #include "PhotoEnemyEclEmission.hpp"
 #else

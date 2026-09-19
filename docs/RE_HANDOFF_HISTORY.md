@@ -1863,3 +1863,23 @@ aggregate passed 696/696 exact, and the 88-object normal build linked a
 CI passed 53/53. The live handoff moves next to the remaining
 `EnemyFloatOperandView` method decoration over canonical
 `Enemy::ResolveFloat @ 0x004105A0`.
+
+## RunEcl float-resolver boundary checkpoint — SEM-277
+
+SEM-277 removed `EnemyFloatOperandView` from `EclRunHigh.inl`. Fresh Ghidra
+evidence bounds canonical `Enemy::ResolveFloat @ 0x004105A0` and identifies 11
+target callers; RunEcl's exact ledger maps 53 historical view-decorated REL32
+sites to that same function. A pinned compiler experiment proved that spelling
+the exact calls canonically changes a non-private relocation identity, so the
+historical method-only declaration now lives in profile-independent,
+storage-free `ecl/EnemyFloatOperandEclEmission.hpp`. Normal RunEcl continues to
+call canonical `Enemy::ResolveFloat(float)`.
+
+The strict focused proof refreshed 166 compiler-private labels, then replayed
+1/1 with zero further refresh. The cold aggregate passed 696/696 exact, and the
+88-object normal build linked a 780,800-byte PE32 product with build-local
+SHA-256
+`8add94ab2bdfc218dfa87e5378aba85f955fe7466db0b70500e44ef538255fe7`.
+CI passed 54/54. The live handoff moves next to the 0x28-byte
+`PhotoEffectArgsSmall` producer/consumer and profile-selected field family,
+kept separate from the 0x48-byte effect packet.

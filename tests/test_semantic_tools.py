@@ -135,6 +135,19 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("DIFFBUILD", emission)
         self.assertIn("f32 GetAngle(Float3 *position);", emission)
 
+    def test_ecl_float_resolver_guard_accepts_method_only_adapter(self) -> None:
+        GUARD.check_ecl_float_resolver_boundary()
+        high = (ROOT / "src" / "ecl" / "EclRunHigh.inl").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("struct EnemyFloatOperandView", high)
+        emission = (
+            ROOT / "src" / "ecl" / "EnemyFloatOperandEclEmission.hpp"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("TH095_MATCH_EXACT", emission)
+        self.assertNotIn("DIFFBUILD", emission)
+        self.assertIn("f32 ResolveFloat(EclRawOperand operand);", emission)
+
 
 if __name__ == "__main__":
     unittest.main()

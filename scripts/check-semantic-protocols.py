@@ -1039,6 +1039,40 @@ def check_ecl_photo_player_owner() -> None:
             fail(f"photo-angle emission adapter gained runtime storage: {token}")
 
 
+def check_ecl_float_resolver_boundary() -> None:
+    ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
+    high = (SRC / "ecl" / "EclRunHigh.inl").read_text(encoding="utf-8")
+    if '#include "EnemyFloatOperandEclEmission.hpp"' not in ecl_run:
+        fail("EclRun must name its isolated float-resolver emission adapter")
+    if "struct EnemyFloatOperandView" in high:
+        fail("EclRunHigh.inl must not restore the float-resolver receiver view")
+    if "(enemy)->ResolveFloat((operand).asFloat)" not in ecl_run:
+        fail("normal EclRun must call canonical Enemy::ResolveFloat(float)")
+    if (
+        "reinterpret_cast<EclRunHigh::EnemyFloatOperandView *>(enemy)"
+        "->ResolveFloat(operand)" not in ecl_run
+    ):
+        fail("exact EclRun lost its historical float-resolver decoration")
+
+    emission = (SRC / "ecl" / "EnemyFloatOperandEclEmission.hpp").read_text(
+        encoding="utf-8"
+    )
+    if "Compiler-emission adapter for EclRun only" not in emission:
+        fail("float-resolver emission adapter must state its narrow ownership")
+    if "0x004105A0" not in emission:
+        fail("float-resolver emission adapter must document its canonical target")
+    if "TH095_MATCH_EXACT" in emission or "DIFFBUILD" in emission:
+        fail("float-resolver emission adapter must not contain a profile split")
+    if len(re.findall(r"\bstruct\s+EnemyFloatOperandView\s*\{", emission)) != 1:
+        fail("float-resolver emission adapter must keep one method-only receiver")
+    if "f32 ResolveFloat(EclRawOperand operand);" not in emission:
+        fail("float-resolver emission adapter lost the historical method decoration")
+    forbidden_storage = ("unknown", "offsetof(", "sizeof(", "targetPadding", "[")
+    for token in forbidden_storage:
+        if token in emission:
+            fail(f"float-resolver emission adapter gained runtime storage: {token}")
+
+
 def check_small_closed_domains() -> None:
     explicit_enum(
         SRC / "PhotoCardInfo.hpp",
@@ -1080,6 +1114,7 @@ def main() -> int:
     check_photo_stage_owner()
     check_photo_card_info_owner()
     check_ecl_photo_player_owner()
+    check_ecl_float_resolver_boundary()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
     print("  TH095_MATCH_EXACT/DIFFBUILD selectors: closed historical debt baseline")
@@ -1096,6 +1131,7 @@ def main() -> int:
     print("  Photo stage: canonical profile-independent 0x25730 owner")
     print("  CardInf: canonical profile-independent 0x68 owner")
     print("  RunEcl camera limit/angles: canonical PlayerInf owner with method-only emission adapter")
+    print("  RunEcl float resolver: canonical normal method with method-only emission adapter")
     print("  Replay manager, color mode, and viewport domains: explicit")
     return 0
 
