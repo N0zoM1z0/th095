@@ -1951,3 +1951,31 @@ receipts remain SEM-279; this source-local checkpoint makes no new whole-build
 claim. The live handoff moves to EclExtended's duplicate
 `PhotoGlobalStateView @ +0xFC` photo-state bits while manager `+0x4DFC` remains
 Unknown.
+
+## EclExtended PhotoGameTask flag checkpoint — SEM-281
+
+SEM-281 retires EclExtended's complete `PhotoGlobalStateView` and seven
+exact/normal-selected flag operations. Fresh target evidence maps callbacks
+15/16 to `PhotoGameTaskView::flags @ +0xFC` bit 9, callbacks 18/19 to bit 10,
+and callback 20 to the bit-10 transition clear/test/set sequence. Independent
+PhotoItemManager consumers establish bit 9 as the collection-SFX suppression
+latch and bit 10 as the photo-transition update gate.
+
+Normal EclExtended now includes the canonical 0x124 task owner. Both compiler
+paths share the dependency-light, profile-independent
+`PhotoGameTaskState.hpp` offset/mask vocabulary. A pinned-VC7.1 include oracle
+proved the canonical task header conflicts with the exact legacy
+Enemy/Supervisor declaration graph, so the historical decorated extern type
+survives only as an incomplete, storage-free declaration in
+`ecl/EclExtendedGlobalStateEmission.inl`. No alternate layout or selector was
+added. A second compiler oracle retained the target's named bit-index read
+shape after the equivalent mask form changed six bytes.
+
+The selector baseline shrank by eight to 855 directives; declaration debt
+remains 223 keys / 228 occurrences. Focused shared-header fanout replay passed
+48/48 exact with zero refresh and all five normal probes compiled. The cold
+aggregate passed 696/696 exact across 88 sources, and the 88-object normal
+build linked a 780,800-byte PE32 product with build-local SHA-256
+`cdc9f5cf511a60d6e94bede2086f3429389ea441f4381a7e86b059b5f70f2fd7`.
+CI passed 57/57. The live handoff moves to EclExtended's coupled Player/camera
+projection while manager `+0x4DFC` and unsupported task flags remain Unknown.

@@ -13847,3 +13847,77 @@ manager `+0x4DFC` remain Unknown. Next audit EclExtended's local
 producers against canonical `PhotoGameTaskView`, existing target consumers,
 and exact compiler behavior. Retire it only if normal ownership and exact
 emission can be kept distinct without adding a profile selector.
+
+### SEM-281 — canonicalize EclExtended PhotoGameTask flags
+
+**Scope.** Retire EclExtended's duplicate `PhotoGlobalStateView @ +0xFC` and
+the exact/normal-selected photo-sound/photo-transition operations without
+forcing the canonical task header through an incompatible exact declaration
+graph or inventing meanings for neighboring flag bits.
+
+**Target and protocol evidence.** Fresh hash-attested TH095 v1.02a
+decompilation shows `SetPhotoFlag200 @ 0x00414230` ORing `0x200` into target
+`0x004BDEC8 + 0xFC` and `ClearPhotoFlag200 @ 0x00414260` clearing that bit.
+`EnablePhotoTransition @ 0x00414430` sets `0x400`,
+`DisablePhotoTransition @ 0x004144E0` clears it, and
+`RunPhotoTransition @ 0x00414580` clears bit 10 at the 60-frame boundary,
+tests it before starting another transition, then sets it. Independent
+`PhotoItemManagerView::Update @ 0x0041CE60` suppresses collection SFX while bit
+9 is set, and `OnUpdate @ 0x0041D3D0` skips item updating while bit 10 is set.
+These producers/consumers corroborate the canonical
+`photoSoundSuppressed`/`photoTransitionActive` meanings already present in
+`PhotoGameTaskView`; unrelated bits stay Unknown.
+
+**Ownership and representation.** `PhotoGameTaskState.hpp` is a
+dependency-light, profile-independent transition vocabulary for flags offset
+`+0xFC`, bit-10 index, and the two proved masks. `PhotoGameTask.hpp` includes
+it and asserts its canonical `flags` member against the shared offset. Normal
+EclExtended includes `PhotoGameTask.hpp`, binds `g_RuntimeGlobalStateOwner` as
+that canonical type, and all seven operations use the same named bridge
+expressions in every profile. The complete local view, its bitfield overlay,
+and its offset assertion are deleted.
+
+A pinned-VC7.1 include oracle separately proved why the canonical header cannot
+replace the exact legacy graph directly: `PhotoGameTask.hpp -> Main.hpp`
+collides with the older `EnemyManager.hpp -> Supervisor.hpp` declarations for
+`GameConfiguration`, MIDI, Supervisor flags/state/owner, and vertex types, then
+triggers incompatible layout assertions. The exact object therefore keeps only
+the historical incomplete `PhotoGlobalStateView *g_PhotoGlobalState` extern
+spelling in profile-independent `ecl/EclExtendedGlobalStateEmission.inl`.
+That adapter declares no fields or storage. It is compiler-emission ownership,
+not a second semantic owner.
+
+**Compiler source-shape oracle.** The first shared read expression compared a
+named `0x400` mask with zero. VC7.1 preserved 932/938 bytes of
+`RunPhotoTransition` but changed the six-byte read/test sequence at `+0xDF`.
+Expressing the same target-backed protocol as a shift by the named bit-10 index
+reproduced the complete function and kept one shared source body. No profile
+split was restored.
+
+**Guards and validation.** The semantic guard pins the bridge's profile
+independence, offset/bit/masks, canonical owner assertion, normal owner binding,
+seven shared operations, and storage-free emission adapter. It rejects the
+retired layout and direct member accesses. Eight selector directives were
+removed from EclExtended, shrinking the closed baseline from 863 to **855
+across 112 files**; selected declaration debt remains **223 keys / 228
+occurrences**.
+
+Focused replay covered EclExtended and every direct `PhotoGameTask.hpp` fanout
+source (`FrontEndController`, EclRun, PhotoFront, and PhotoGameTask) and passed
+**48/48 exact** with zero private-label refresh. Five separate pinned-VC7.1
+normal probes emitted i386 COFF objects. The final cold aggregate rebuilt all
+88 sources and passed **696/696 exact** with zero refresh. The normal product
+compiled all **88 pinned-VC7.1 i386 COFF** objects and linked a verified
+**780,800-byte PE32/i386 GUI**, build-local SHA-256
+`cdc9f5cf511a60d6e94bede2086f3429389ea441f4381a7e86b059b5f70f2fd7`.
+Target-independent CI passed **57/57** tests. These results establish
+exact-unit preservation and normal compile/link
+closure, not whole-image identity or runtime validation.
+
+**Unknown / next route.** Neighboring PhotoGameTask flags, EnemyInf manager
+`+0x4DFC`, and unsupported camera fields remain Unknown. Next audit
+EclExtended's coupled `ExtendedPlayerView` / `ExtendedPhotoCameraView` against
+the canonical Player runtime and PhotoCamera behavior owners, including
+position, camera mode, viewfinder geometry, and the `CountPhotoTargets`
+receiver. Preserve any proved historical method decoration in a storage-free
+adapter and do not add a profile selector.

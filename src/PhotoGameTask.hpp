@@ -2,6 +2,7 @@
 #define TH095_PHOTO_GAME_TASK_HPP
 
 #include "Main.hpp"
+#include "PhotoGameTaskState.hpp"
 #include "ReplayManagerMode.hpp"
 #include "ZunTimer.hpp"
 
@@ -85,7 +86,7 @@ typedef char PhotoGameTaskSizeIs124[
 typedef char PhotoGameTaskConfigAt34[
     (offsetof(PhotoGameTaskView, runtimeConfig) == 0x34) ? 1 : -1];
 typedef char PhotoGameTaskFlagsAtFC[
-    (offsetof(PhotoGameTaskView, flags) == 0xfc) ? 1 : -1];
+    (offsetof(PhotoGameTaskView, flags) == PHOTO_GAME_TASK_FLAGS_OFFSET) ? 1 : -1];
 typedef char PhotoGameTaskCompletionAt104[
     (offsetof(PhotoGameTaskView, completion) == 0x104) ? 1 : -1];
 typedef char PhotoGameTaskCompletionActiveAt104[

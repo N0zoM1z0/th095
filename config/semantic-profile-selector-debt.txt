@@ -78,9 +78,8 @@
 1	src/EclDependencies.cpp	#ifdef DIFFBUILD
 1	src/EclDependencies.cpp	#ifndef DIFFBUILD
 2	src/EclExtended.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/EclExtended.cpp	#if !defined(TH095_MATCH_EXACT)
 10	src/EclExtended.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-9	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT)
+2	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 13	src/EclExtended.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 10	src/EclExtended.cpp	#ifdef DIFFBUILD

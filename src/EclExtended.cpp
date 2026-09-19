@@ -1,5 +1,6 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTaskState.hpp"
 #include "PhotoEnemyControl.hpp"
 #include "PhotoEnemyEclAccess.hpp"
 #include "PhotoRotatingLaserArgs.hpp"
@@ -7,6 +8,7 @@
 #include "Background.hpp"
 #include "PhotoBulletManager.hpp"
 #include "PhotoEnemyManager.hpp"
+#include "PhotoGameTask.hpp"
 #endif
 #ifndef DIFFBUILD
 #include "PhotoEffectRuntime.hpp"
@@ -59,6 +61,7 @@ typedef AnmLoaded ExtendedAnmSpawner;
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#include "ecl/EclExtendedGlobalStateEmission.inl"
 struct ExtendedPhotoEnemyView;
 struct ExtendedPhotoEnemyManagerView
 {
@@ -78,25 +81,6 @@ typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;
     reinterpret_cast<::th095::PhotoEnemyManagerView *>(manager)->Spawn( \
         (subroutineId), (position), (life), (itemDrop), (score), (mirror))
 #endif
-
-struct PhotoGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-#if !defined(TH095_MATCH_EXACT)
-        struct
-        {
-            u32 unknownFlags000 : 9;
-            u32 photoSoundSuppressed : 1;
-            u32 photoTransitionActive : 1;
-            u32 unknownFlags011 : 21;
-        };
-#endif
-    };
-};
-typedef char PhotoGlobalFlagsAtFC[(offsetof(PhotoGlobalStateView, flags) == 0xfc) ? 1 : -1];
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 // Exact-emission adapter only.  Normal reconstruction code accesses the
@@ -256,7 +240,6 @@ typedef ::th095::PhotoEnemyManagerView ExtendedRuntimeView;
 #ifdef DIFFBUILD
 extern AnmManagerLookupView *g_AnmManager;
 #endif
-extern PhotoGlobalStateView *g_PhotoGlobalState;
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 extern u8 *g_Background;
 #endif
@@ -278,7 +261,7 @@ static __forceinline u8 *ExtendedBackgroundOwner()
 #define g_PhotoEffectManager \
     TH095_RUNTIME_GLOBAL_PTR(ExtendedPhotoEffectManager, ::th095::g_RuntimeEffectManagerOwner)
 #define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, ::th095::g_RuntimeGlobalStateOwner)
+    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoGameTaskView, ::th095::g_RuntimeGlobalStateOwner)
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -515,22 +498,16 @@ void __fastcall SetBackgroundVmsState3(
 void __fastcall SetPhotoFlag200(
     Enemy *enemy, EclRawInstruction *instruction)
 {
-#if defined(TH095_MATCH_EXACT)
-    g_PhotoGlobalState->flags |= 0x200;
-#else
-    g_PhotoGlobalState->photoSoundSuppressed = 1;
-#endif
+    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) |=
+        PHOTO_GAME_TASK_FLAG_PHOTO_SOUND_SUPPRESSED;
 }
 
 // ECL extended callback table entry 16 @ 0x00414260.
 void __fastcall ClearPhotoFlag200(
     Enemy *enemy, EclRawInstruction *instruction)
 {
-#if defined(TH095_MATCH_EXACT)
-    g_PhotoGlobalState->flags &= ~0x200U;
-#else
-    g_PhotoGlobalState->photoSoundSuppressed = 0;
-#endif
+    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) &=
+        ~PHOTO_GAME_TASK_FLAG_PHOTO_SOUND_SUPPRESSED;
 }
 
 // ECL extended callback table entry 18 @ 0x00414430.
@@ -539,11 +516,8 @@ void __fastcall EnablePhotoTransition(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
-#if defined(TH095_MATCH_EXACT)
-    g_PhotoGlobalState->flags |= 0x400;
-#else
-    g_PhotoGlobalState->photoTransitionActive = 1;
-#endif
+    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) |=
+        PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
     firstVm = TH095_EXT_ANM_GET_VM(
         TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 2;
@@ -562,11 +536,8 @@ void __fastcall DisablePhotoTransition(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
-#if defined(TH095_MATCH_EXACT)
-    g_PhotoGlobalState->flags &= ~0x400U;
-#else
-    g_PhotoGlobalState->photoTransitionActive = 0;
-#endif
+    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) &=
+        ~PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
     firstVm = TH095_EXT_ANM_GET_VM(
         TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 3;
@@ -740,11 +711,8 @@ void __fastcall RunPhotoTransition(
         --enemy->activeEclContext->extraIntVariables[2];
         if (enemy->activeEclContext->extraIntVariables[2] == 60)
         {
-#if defined(TH095_MATCH_EXACT)
-            g_PhotoGlobalState->flags &= ~0x400U;
-#else
-            g_PhotoGlobalState->photoTransitionActive = 0;
-#endif
+            TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) &=
+                ~PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
             locals.firstEndVm = TH095_EXT_ANM_GET_VM(
                 TH095_EXT_BACKGROUND_VM_ID(0));
             locals.firstEndVm->pendingInterrupt = 3;
@@ -757,20 +725,14 @@ void __fastcall RunPhotoTransition(
         }
     }
 
-#if defined(TH095_MATCH_EXACT)
-    if (((g_PhotoGlobalState->flags >> 10) & 1U) == 0 &&
-#else
-    if (g_PhotoGlobalState->photoTransitionActive == 0 &&
-#endif
+    if (((TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) >>
+          PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_BIT) & 1U) == 0 &&
         enemy->activeEclContext->extraIntVariables[2] == 0 &&
         ExtendedCameraIsCharging(&g_Player->camera) &&
         TH095_EXT_COUNT_PHOTO_TARGETS(g_Player->camera, NULL, NULL) != 0)
     {
-#if defined(TH095_MATCH_EXACT)
-        g_PhotoGlobalState->flags |= 0x400U;
-#else
-        g_PhotoGlobalState->photoTransitionActive = 1;
-#endif
+        TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) |=
+            PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
         locals.firstStartVm = TH095_EXT_ANM_GET_VM(
             TH095_EXT_BACKGROUND_VM_ID(0));
         locals.firstStartVm->pendingInterrupt = 2;

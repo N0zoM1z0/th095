@@ -110,6 +110,22 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("EXT_MOVEMENT_FLAGS", extended)
         self.assertIn("TH095_ECL_CONTROL_BITS(enemy).movementMode", extended)
 
+    def test_photo_game_task_ecl_guard_accepts_state_bridge(self) -> None:
+        GUARD.check_photo_game_task_ecl_owner()
+        state = (ROOT / "src" / "PhotoGameTaskState.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", state)
+        self.assertNotIn("DIFFBUILD", state)
+        self.assertIn("PHOTO_GAME_TASK_FLAGS_OFFSET = 0xfc", state)
+        extended = (ROOT / "src" / "EclExtended.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("g_PhotoGlobalState->flags", extended)
+        self.assertEqual(
+            extended.count("TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState)"), 7
+        )
+
     def test_photo_card_info_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_photo_card_info_owner()
         header = (ROOT / "src" / "PhotoCardInfo.hpp").read_text(encoding="utf-8")
