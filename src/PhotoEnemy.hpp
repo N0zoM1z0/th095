@@ -3,6 +3,7 @@
 #include "AnmManager.hpp"
 #include "PhotoBulletSpawnDescriptor.hpp"
 #include "PhotoEnemyControl.hpp"
+#include "PhotoEnemyEclOperandAccess.hpp"
 #include "ZunTimer.hpp"
 #include "inttypes.hpp"
 
@@ -261,13 +262,28 @@ typedef char PhotoEnemyMovementInterpolationAt2930[
     (offsetof(PhotoEnemyView, movementInterpolationDelta) == 0x2930 &&
      offsetof(PhotoEnemyView, movementInterpolationOrigin) == 0x293c) ? 1 : -1];
 typedef char PhotoEnemyLifeAt2958[
-    (offsetof(PhotoEnemyView, life) == 0x2958) ? 1 : -1];
+    (offsetof(PhotoEnemyView, life) == PHOTO_ENEMY_ECL_LIFE_OFFSET) ? 1 : -1];
+typedef char PhotoEnemyScoreAt2964[
+    (offsetof(PhotoEnemyView, score) == PHOTO_ENEMY_ECL_SCORE_OFFSET) ? 1 : -1];
+typedef char PhotoEnemyEclTimerCurrentAt2974[
+    (offsetof(PhotoEnemyView, eclTimer) + offsetof(ZunTimer, current) ==
+        PHOTO_ENEMY_ECL_TIMER_CURRENT_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyShotCadenceAt2B9C[
     (offsetof(PhotoEnemyView, pendingShotInstruction) == 0x2b9c &&
      offsetof(PhotoEnemyView, shootIntervalFrames) == 0x2bc8 &&
      offsetof(PhotoEnemyView, shootIntervalTimer) == 0x2bcc) ? 1 : -1];
 typedef char PhotoEnemyPhotoTargetSlotAt2BE5[
-    (offsetof(PhotoEnemyView, photoTargetSlot) == 0x2be5) ? 1 : -1];
+    (offsetof(PhotoEnemyView, photoTargetSlot) ==
+        PHOTO_ENEMY_ECL_PHOTO_TARGET_SLOT_OFFSET) ? 1 : -1];
+typedef char PhotoEnemyItemDropTypeAt2BD8[
+    (offsetof(PhotoEnemyView, itemDropType) ==
+        PHOTO_ENEMY_ECL_ITEM_DROP_TYPE_OFFSET) ? 1 : -1];
+typedef char PhotoEnemyScheduledFramesAt2C54[
+    (offsetof(PhotoEnemyView, scheduledCallFrames) ==
+        PHOTO_ENEMY_ECL_SCHEDULED_FRAMES_OFFSET) ? 1 : -1];
+typedef char PhotoEnemyUnknownAt2C50[
+    (offsetof(PhotoEnemyView, unknown2c50) ==
+        PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyFlagsAt2BF4[
     (offsetof(PhotoEnemyView, flags1) == 0x2bf4) ? 1 : -1];
 typedef char PhotoEnemyAnmDirectionAt2C0A[

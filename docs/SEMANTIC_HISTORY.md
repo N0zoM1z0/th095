@@ -1,7 +1,7 @@
 # Semantic reconstruction history
 
 This file preserves the chronological Web-era policy and accepted batch
-records through SEM-270. It is historical evidence, not current operating
+records through the current accepted batch. It is historical evidence, not current operating
 policy. Use `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SEMANTIC_INDEX.md`, and `SOURCE_MAP.md` for current decisions.
 
@@ -13194,3 +13194,70 @@ local compact `Enemy` receiver and movement protocol with the canonical owner
 without changing decorated-symbol ownership; then migrate the four ECL operand
 TUs. Do not widen an emission adapter or add a new profile-selected declaration
 to preserve a match.
+
+### SEM-272 — unify compact-enemy movement and ECL operand fields
+
+**Scope.** Continue the compact `0x4CC0` owner migration through
+`Enemy::UpdateMovement @ 0x00412970` and the read/int-lvalue ECL resolver
+fields. At the workflow boundary, broaden the shrink-only CI rule from type
+declarations to every source preprocessor directive whose condition references
+`TH095_MATCH_EXACT` or `DIFFBUILD`.
+
+**Movement ownership.** `EnemyMovement.cpp` no longer defines a second compact
+enemy layout. Its target-facing `Enemy` name is a method-only ABI shell derived
+from `PhotoEnemyView`; every storage access resolves to the canonical owner.
+`PhotoEnemyControl.hpp` now owns explicit movement modes `0..3`, easing modes
+`0..6`, shifts `10/12/16`, and mask `0xC00`. The source retains the independently
+proved TH08-ancestral `legacyWork` local. A bounded VC7.1 experiment also proved
+that wrapping `this->field` in parentheses changes two floating argument paths
+and grows the body by 18 bytes, so the shared member-access macro deliberately
+expands without those parentheses.
+
+The historical exact spelling read `g_Supervisor + 0x188`, but its resolved
+address is the independently owned `g_AnmGameSpeed @ 0x004BDED8`. All profiles
+now name that scalar directly. The four matching-ledger relocations were
+corrected from the synthetic base at `0x004BDD50` to the real destination;
+final target bytes remain exact.
+
+**Operand ownership.** `ResolveInt @ 0x0040FAE0`, `ResolveFloat @ 0x004105A0`,
+and `ResolveIntLValue @ 0x00410300` previously selected raw exact offsets or
+nineteen normal-only partial structs for the same compact-enemy fields. New
+profile-independent `PhotoEnemyEclOperandAccess.hpp` provides one
+dependency-light bridge for life `+0x2958`, score `+0x2964`, ECL timer current
+`+0x2974`, item drop type `+0x2BD8`, photo-target slot `+0x2BE5`, retained
+Unknown `+0x2C50`, and scheduled frames `+0x2C54`. `PhotoEnemy.hpp` asserts
+every bridge offset against the canonical owner. This bridge is transition
+debt required by the legacy decorated `Enemy*` resolver ABI, not a second
+layout or permission to introduce new raw projections. The three units use the
+same expressions in every profile and remain exact.
+
+**Workflow guard.** `AGENTS.md` and `SEMANTIC_RECONSTRUCTION.md` now prohibit
+adding any `TH095_MATCH_EXACT`/`DIFFBUILD` conditional directive below `src/`.
+`config/semantic-profile-selector-debt.txt` records the existing 114-file,
+937-directive closed baseline; additions fail, and removals require lowering
+the baseline in the same batch. A separate diff gate checks the working tree
+against `HEAD` and GitHub changes against their PR/push base, so raising the
+baseline in the same commit cannot admit an addition. The narrower declaration
+baseline shrank from 285 keys / 290 occurrences to 266 / 271. This batch
+removed the one movement selector plus sixteen operand field selectors and
+added zero. A temporary selector probe in `PhotoEnemyControl.hpp` was rejected
+by CI and removed.
+
+**Validation.** Focused replay passed the movement and three migrated resolver
+units **4/4 exact**. The final cold aggregate rebuilt all 88 manifest sources
+and passed **696/696 exact**. The manifest refresh contains 239 compiler-private
+label-name changes across six units plus the four reviewed game-speed owner
+corrections; structural bytes and all other relocation offsets/types/targets
+were unchanged. The normal product compiled all **88 pinned-VC7.1 i386 COFF**
+objects and linked a verified **780,288-byte PE32/i386 GUI**, build-local
+SHA-256
+`e9c170c888278422198bf87ff7a356c64108fbcbd665dc455ed13e968721403b`.
+Target-independent CI passed **51/51** tests, and target/Ghidra attestation
+accepted the canonical Japanese v1.02a image.
+
+**Unknown / next route.** The operand TUs still select duplicate runtime-manager
+views around manager `+0x4DF4` and `+0x26AE00`; `ResolveFloatLValue` still uses
+the legacy `Enemy` receiver directly, and RunEcl retains local compact-element
+views. Migrate those boundaries without adding a selector or treating the
+transition access header as a permanent second owner. Manager `+0x4DFC` and
+unsupported control bits remain Unknown.

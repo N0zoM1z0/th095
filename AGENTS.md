@@ -50,6 +50,11 @@ executable.
   exact declaration/body in a named adapter or probe only after a minimal
   pinned-VC7.1 experiment proves the emission dependency, and track the split
   as debt rather than a reusable pattern.
+- Never add a preprocessor directive whose condition references
+  `TH095_MATCH_EXACT` or `DIFFBUILD` anywhere below `src/`. Existing selector
+  sites are closed historical debt and may only be removed. If one shared
+  source cannot preserve required emission, stop and obtain explicit user
+  authorization instead of adding a selector or enlarging its baseline.
 - Never place a `struct`, `class`, or `union` declaration under a
   `TH095_MATCH_EXACT` or `DIFFBUILD` preprocessor branch in ordinary
   production `.cpp`, `.hpp`, or `.inl` files. A canonical owner is one
@@ -61,6 +66,12 @@ executable.
   baseline enforced by CI. It may only shrink. Never add or increase an entry
   to admit a new profile-selected type declaration, and update it immediately
   when an old declaration is removed so that the declaration cannot return.
+- `config/semantic-profile-selector-debt.txt` is the broader closed baseline
+  for every existing `TH095_MATCH_EXACT`/`DIFFBUILD` conditional directive in
+  `src/`. Never add or increase an entry; lower or remove it in the same batch
+  whenever a selector is retired. CI also rejects added selector lines against
+  the working-tree `HEAD` and the GitHub PR/push base, so changing the baseline
+  in the same commit cannot authorize an addition.
 - Put current policy in `docs/SEMANTIC_RECONSTRUCTION.md`, current navigation
   in `docs/SEMANTIC_INDEX.md`, chronological batches in
   `docs/SEMANTIC_HISTORY.md`, and build ownership in `docs/SOURCE_MAP.md`.

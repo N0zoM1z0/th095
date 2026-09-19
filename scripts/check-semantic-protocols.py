@@ -15,6 +15,7 @@ INTEGER_LITERAL = r"[+-]?(?:0[xX][0-9A-Fa-f]+|[0-9]+)(?:[uUlL]+)?"
 PROFILE_DECLARATION_BASELINE = (
     ROOT / "config" / "semantic-profile-declaration-debt.txt"
 )
+PROFILE_SELECTOR_BASELINE = ROOT / "config" / "semantic-profile-selector-debt.txt"
 PROFILE_NAMES = ("TH095_MATCH_EXACT", "DIFFBUILD")
 
 
@@ -29,6 +30,84 @@ def source_without_comments(text: str) -> str:
 
     text = re.sub(r"/\*.*?\*/", preserve_newlines, text, flags=re.DOTALL)
     return re.sub(r"//.*", "", text)
+
+
+def profile_selector_directives() -> Counter[tuple[str, str]]:
+    selectors: Counter[tuple[str, str]] = Counter()
+    directive = re.compile(
+        r"^\s*#\s*(?:if|ifdef|ifndef|elif)\b[^\n]*\b"
+        r"(?:TH095_MATCH_EXACT|DIFFBUILD)\b"
+    )
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in (".cpp", ".hpp", ".inl"):
+            continue
+        clean_text = source_without_comments(path.read_text(encoding="utf-8"))
+        relative = path.relative_to(ROOT).as_posix()
+        for line in clean_text.splitlines():
+            if directive.match(line):
+                normalized = re.sub(r"\s+", " ", line.strip())
+                selectors[(relative, normalized)] += 1
+    return selectors
+
+
+def read_profile_selector_baseline() -> Counter[tuple[str, str]]:
+    if not PROFILE_SELECTOR_BASELINE.exists():
+        fail("missing config/semantic-profile-selector-debt.txt")
+
+    baseline: Counter[tuple[str, str]] = Counter()
+    for line_number, raw_line in enumerate(
+        PROFILE_SELECTOR_BASELINE.read_text(encoding="utf-8").splitlines(), 1
+    ):
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        fields = raw_line.split("\t")
+        if len(fields) != 3:
+            fail(
+                "malformed semantic profile selector baseline at line "
+                f"{line_number}"
+            )
+        count_text, path, directive = fields
+        try:
+            count = int(count_text)
+        except ValueError:
+            fail(
+                "non-integer semantic profile selector count at line "
+                f"{line_number}"
+            )
+        key = (path, directive)
+        if count <= 0 or key in baseline:
+            fail(
+                "invalid or duplicate semantic profile selector baseline entry "
+                f"at line {line_number}"
+            )
+        baseline[key] = count
+    return baseline
+
+
+def check_profile_selector_debt() -> None:
+    current = profile_selector_directives()
+    baseline = read_profile_selector_baseline()
+    additions = current - baseline
+    removals = baseline - current
+    if additions:
+        details = "; ".join(
+            f"{count} x {path}: {directive}"
+            for (path, directive), count in sorted(additions.items())
+        )
+        fail(
+            "new TH095_MATCH_EXACT/DIFFBUILD selector directives are forbidden; "
+            f"use one shared source and do not grow the debt baseline: {details}"
+        )
+    if removals:
+        details = "; ".join(
+            f"{count} x {path}: {directive}"
+            for (path, directive), count in sorted(removals.items())
+        )
+        fail(
+            "profile-selector debt was removed; shrink the baseline now so it "
+            f"cannot regress: {details}"
+        )
 
 
 def profile_selected_declarations() -> Counter[tuple[str, str, str]]:
@@ -477,9 +556,17 @@ def check_photo_bullet_owner() -> None:
 
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
+    control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
+    operand_access = (SRC / "PhotoEnemyEclOperandAccess.hpp").read_text(
+        encoding="utf-8"
+    )
     manager = (SRC / "PhotoEnemyManager.hpp").read_text(encoding="utf-8")
     if any(name in element for name in PROFILE_NAMES):
         fail("canonical PhotoEnemy.hpp must not select a build-profile layout")
+    if any(name in control for name in PROFILE_NAMES):
+        fail("canonical PhotoEnemyControl.hpp must be profile-independent")
+    if any(name in operand_access for name in PROFILE_NAMES):
+        fail("PhotoEnemy ECL operand access must be profile-independent")
     if any(name in manager for name in PROFILE_NAMES):
         fail("canonical PhotoEnemyManager.hpp must not select a build-profile layout")
     if len(re.findall(r"\bstruct\s+PhotoEnemyView\s*\{", element)) != 1:
@@ -492,7 +579,7 @@ def check_photo_enemy_owner() -> None:
         "offsetof(PhotoEnemyView, worldPosition) == 0x28f4",
         "offsetof(PhotoEnemyView, movementAngle) == 0x2900",
         "offsetof(PhotoEnemyView, speed) == 0x2914",
-        "offsetof(PhotoEnemyView, life) == 0x2958",
+        "offsetof(PhotoEnemyView, life) == PHOTO_ENEMY_ECL_LIFE_OFFSET",
         "offsetof(PhotoEnemyView, flags1) == 0x2bf4",
         "offsetof(PhotoEnemyView, childEclBlocks) == 0x2cac",
         "offsetof(PhotoEnemyView, attachedVmId) == 0x4cbc",
@@ -502,6 +589,8 @@ def check_photo_enemy_owner() -> None:
             fail(f"canonical compact enemy layout lost assertion: {fact}")
     if '#include "PhotoBulletSpawnDescriptor.hpp"' not in element:
         fail("PhotoEnemy.hpp must consume the dependency-light bullet descriptor")
+    if '#include "PhotoEnemyEclOperandAccess.hpp"' not in element:
+        fail("PhotoEnemy.hpp must pin the legacy ECL operand access boundary")
     if '#include "PhotoBulletManager.hpp"' in element:
         fail("PhotoEnemy.hpp must not import the complete BulletInf owner")
 
@@ -562,6 +651,7 @@ def check_photo_enemy_owner() -> None:
 
     canonical_element_consumers = (
         SRC / "EnemyManagerUpdate.cpp",
+        SRC / "EnemyMovement.cpp",
         SRC / "PhotoRuntime.cpp",
         SRC / "PhotoCamera.cpp",
         SRC / "PhotoEffect.cpp",
@@ -573,6 +663,55 @@ def check_photo_enemy_owner() -> None:
             fail(f"{path.relative_to(SRC)} must consume canonical PhotoEnemyView")
         if re.search(r"\bstruct\s+PhotoEnemyView\s*\{", text):
             fail(f"{path.relative_to(SRC)} must not redefine PhotoEnemyView")
+
+    movement = (SRC / "EnemyMovement.cpp").read_text(encoding="utf-8")
+    if "struct Enemy : PhotoEnemyView" not in movement:
+        fail("EnemyMovement must retain only a method ABI shell over PhotoEnemyView")
+    for retired in ("u8 prefix[0x28a0]", "MovementModeProbe", "MovementEasingProbe"):
+        if retired in movement:
+            fail(f"EnemyMovement restored retired compact-enemy projection: {retired}")
+    explicit_enum(
+        SRC / "PhotoEnemyControl.hpp",
+        "PhotoEnemyMovementMode",
+        "PHOTO_ENEMY_MOVEMENT_",
+        [0, 1, 2, 3],
+    )
+    explicit_enum(
+        SRC / "PhotoEnemyControl.hpp",
+        "PhotoEnemyMovementEasing",
+        "PHOTO_ENEMY_EASING_",
+        list(range(7)),
+    )
+
+    operand_consumers = (
+        SRC / "EclOperandsInt.cpp",
+        SRC / "EclOperandsFloat.cpp",
+        SRC / "EclOperandsIntLValue.cpp",
+    )
+    retired_operand_views = re.compile(
+        r"\bstruct\s+Ecl(?:Int|Float)(?:LValue)?Operand"
+        r"(?:EnemyLife|EnemyScore|EnemyTimer|ItemDropType|PhotoTargetSlot|"
+        r"ScheduledCallFrame|Timer)View\b"
+    )
+    for path in operand_consumers:
+        text = path.read_text(encoding="utf-8")
+        if '#include "PhotoEnemyEclOperandAccess.hpp"' not in text:
+            fail(f"{path.relative_to(SRC)} lost shared compact-enemy operand access")
+        if retired_operand_views.search(text):
+            fail(f"{path.relative_to(SRC)} restored a duplicate operand field view")
+
+    required_operand_offsets = (
+        "PHOTO_ENEMY_ECL_LIFE_OFFSET = 0x2958",
+        "PHOTO_ENEMY_ECL_SCORE_OFFSET = 0x2964",
+        "PHOTO_ENEMY_ECL_TIMER_CURRENT_OFFSET = 0x2974",
+        "PHOTO_ENEMY_ECL_ITEM_DROP_TYPE_OFFSET = 0x2bd8",
+        "PHOTO_ENEMY_ECL_PHOTO_TARGET_SLOT_OFFSET = 0x2be5",
+        "PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET = 0x2c50",
+        "PHOTO_ENEMY_ECL_SCHEDULED_FRAMES_OFFSET = 0x2c54",
+    )
+    for fact in required_operand_offsets:
+        if fact not in operand_access:
+            fail(f"PhotoEnemy ECL operand access lost canonical offset: {fact}")
 
     compatibility = (SRC / "ecl" / "EnemyEclRuntimeView.hpp").read_text(
         encoding="utf-8"
@@ -624,6 +763,7 @@ def check_small_closed_domains() -> None:
 
 
 def main() -> int:
+    check_profile_selector_debt()
     check_profile_selected_declaration_debt()
     check_anm_opcode_protocol()
     check_background_protocol()
@@ -634,6 +774,7 @@ def main() -> int:
     check_photo_enemy_owner()
     check_small_closed_domains()
     print("TH095 semantic protocol checks passed")
+    print("  TH095_MATCH_EXACT/DIFFBUILD selectors: closed historical debt baseline")
     print("  profile-selected type declarations: closed historical debt baseline")
     print("  canonical ANM opcode domain: -1..87 explicit")
     print("  Background stage opcode dispatch: 15/15 named")

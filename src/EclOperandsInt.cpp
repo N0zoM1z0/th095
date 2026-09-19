@@ -1,5 +1,6 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoEnemyEclOperandAccess.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoEnemyManager.hpp"
 #endif
@@ -101,108 +102,6 @@ extern EclOperandPlayerView *g_EclOperandPlayer;
     (TH095_RUNTIME_GLOBAL_PTR(PhotoPlayerRuntimeView, g_RuntimePlayerOwner)->camera.photosTaken)
 #endif
 
-#define ENEMY_I32(owner, offset) \
-    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(owner) + (offset)))
-#if defined(TH095_MATCH_EXACT)
-#define TH095_ECL_ENEMY_LIFE(owner) ENEMY_I32((owner), 0x2958)
-#else
-struct EclIntOperandEnemyLifeView
-{
-    u8 unknown0000[0x2958];
-    i32 life;
-};
-typedef char EclIntOperandEnemyLifeAt2958[
-    (offsetof(EclIntOperandEnemyLifeView, life) == 0x2958) ? 1 : -1];
-#define TH095_ECL_ENEMY_LIFE(owner) \
-    (reinterpret_cast<EclIntOperandEnemyLifeView *>(owner)->life)
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_ECL_TIMER_CURRENT(owner) ENEMY_I32((owner), 0x2974)
-#else
-struct EclIntOperandTimerView
-{
-    i32 previous;
-    f32 subFrame;
-    i32 current;
-};
-typedef char EclIntOperandTimerViewSizeC[
-    (sizeof(EclIntOperandTimerView) == 0x0c) ? 1 : -1];
-struct EclIntOperandEnemyTimerView
-{
-    u8 unknown0000[0x296c];
-    EclIntOperandTimerView eclTimer;
-};
-typedef char EclIntOperandEnemyTimerAt296C[
-    (offsetof(EclIntOperandEnemyTimerView, eclTimer) == 0x296c) ? 1 : -1];
-#define TH095_ECL_TIMER_CURRENT(owner) \
-    (reinterpret_cast<EclIntOperandEnemyTimerView *>(owner)->eclTimer.current)
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_ECL_ENEMY_SCORE(owner) ENEMY_I32((owner), 0x2964)
-#else
-struct EclIntOperandEnemyScoreView
-{
-    u8 unknown0000[0x2964];
-    i32 score;
-};
-typedef char EclIntOperandEnemyScoreAt2964[
-    (offsetof(EclIntOperandEnemyScoreView, score) == 0x2964) ? 1 : -1];
-#define TH095_ECL_ENEMY_SCORE(owner) \
-    (reinterpret_cast<EclIntOperandEnemyScoreView *>(owner)->score)
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_ECL_ITEM_DROP_TYPE(owner) ENEMY_I32((owner), 0x2bd8)
-#else
-struct EclIntOperandItemDropTypeView
-{
-    u8 unknown0000[0x2bd8];
-    i32 itemDropType;
-};
-typedef char EclIntOperandItemDropTypeAt2BD8[
-    (offsetof(EclIntOperandItemDropTypeView, itemDropType) == 0x2bd8) ? 1 : -1];
-#define TH095_ECL_ITEM_DROP_TYPE(owner) \
-    (reinterpret_cast<EclIntOperandItemDropTypeView *>(owner)->itemDropType)
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_ECL_SCHEDULED_FRAME0(owner) ENEMY_I32(owner, 0x2c54)
-#define TH095_ECL_SCHEDULED_FRAME1(owner) ENEMY_I32(owner, 0x2c58)
-#define TH095_ECL_SCHEDULED_FRAME2(owner) ENEMY_I32(owner, 0x2c5c)
-#define TH095_ECL_SCHEDULED_FRAME3(owner) ENEMY_I32(owner, 0x2c60)
-#else
-struct EclIntOperandScheduledCallFrameView
-{
-    u8 unknown0000[0x2c54];
-    i32 scheduledCallFrames[10];
-};
-typedef char EclIntOperandScheduledCallFramesAt2C54[
-    (offsetof(EclIntOperandScheduledCallFrameView, scheduledCallFrames) == 0x2c54)
-        ? 1
-        : -1];
-#define TH095_ECL_SCHEDULED_FRAME0(owner) \
-    (reinterpret_cast<EclIntOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[0])
-#define TH095_ECL_SCHEDULED_FRAME1(owner) \
-    (reinterpret_cast<EclIntOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[1])
-#define TH095_ECL_SCHEDULED_FRAME2(owner) \
-    (reinterpret_cast<EclIntOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[2])
-#define TH095_ECL_SCHEDULED_FRAME3(owner) \
-    (reinterpret_cast<EclIntOperandScheduledCallFrameView *>(owner)->scheduledCallFrames[3])
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_ECL_PHOTO_TARGET_SLOT(owner) ENEMY_U8((owner), 0x2be5)
-#else
-struct EclIntOperandPhotoTargetSlotView
-{
-    u8 unknown0000[0x2be5];
-    u8 photoTargetSlot;
-};
-typedef char EclIntOperandPhotoTargetSlotAt2BE5[
-    (offsetof(EclIntOperandPhotoTargetSlotView, photoTargetSlot) == 0x2be5) ? 1 : -1];
-#define TH095_ECL_PHOTO_TARGET_SLOT(owner) \
-    (reinterpret_cast<EclIntOperandPhotoTargetSlotView *>(owner)->photoTargetSlot)
-#endif
-#define ENEMY_U8(owner, offset) \
-    (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(owner) + (offset)))
-
 namespace EclOperands
 {
 
@@ -289,7 +188,8 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
     case 0x2748: return (i32)enemy->orbitRadius;
     case 0x274c: return (i32)enemy->orbitAngle;
     case 0x274d: return (i32)enemy->orbitAngularVelocity;
-    case 0x2752: return ENEMY_I32(enemy, 0x2c50);
+    case 0x2752: return TH095_PHOTO_ENEMY_I32(
+        enemy, PHOTO_ENEMY_ECL_UNKNOWN_2C50_OFFSET);
     case 0x2753: return TH095_ECL_PHOTO_TARGET_SLOT(enemy);
     case 0x275b: return TH095_ECL_ITEM_DROP_TYPE(enemy);
     case 0x275c: return TH095_ECL_ENEMY_SCORE(enemy);
@@ -317,15 +217,16 @@ i32 __fastcall ResolveInt(Enemy *enemy, i32 operand)
 #undef TH095_ECL_INT_PHOTO_INDEX
 #undef TH095_ECL_INT_PLAYER_POSITION
 #undef TH095_ECL_PHOTO_TARGET_SLOT
-#undef ENEMY_U8
+#undef TH095_PHOTO_ENEMY_U8
 #undef TH095_ECL_SCHEDULED_FRAME3
 #undef TH095_ECL_SCHEDULED_FRAME2
 #undef TH095_ECL_SCHEDULED_FRAME1
 #undef TH095_ECL_SCHEDULED_FRAME0
+#undef TH095_ECL_SCHEDULED_FRAME
 #undef TH095_ECL_ITEM_DROP_TYPE
 #undef TH095_ECL_ENEMY_SCORE
 #undef TH095_ECL_TIMER_CURRENT
 #undef TH095_ECL_ENEMY_LIFE
-#undef ENEMY_I32
+#undef TH095_PHOTO_ENEMY_I32
 
 } // namespace th095

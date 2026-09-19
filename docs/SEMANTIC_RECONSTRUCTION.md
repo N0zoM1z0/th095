@@ -57,15 +57,25 @@ need with a failed clean form and a pinned-compiler comparison, and keep it out
 of the runtime-owner header. Existing profile divergences are debt, not a
 template for new work.
 
-CI enforces this direction. Ordinary production `.cpp`, `.hpp`, and `.inl`
-files may not add a `struct`, `class`, or `union` declaration beneath a
-`TH095_MATCH_EXACT` or `DIFFBUILD` branch. The existing sites are an exact
-closed baseline in `config/semantic-profile-declaration-debt.txt`: deleting a
-site requires shrinking the baseline immediately, while a new, renamed, or
+CI enforces this direction at two levels. No new preprocessor directive whose
+condition references `TH095_MATCH_EXACT` or `DIFFBUILD` may be added anywhere
+under `src/`. The path/directive fingerprints in
+`config/semantic-profile-selector-debt.txt` are a closed historical baseline:
+their counts may only decrease, and every removal must shrink the baseline in
+the same batch. A different directive in the same file is still a forbidden
+addition. Local CI also inspects additions relative to `HEAD`; GitHub CI fetches
+full history and compares the change set with the PR base or push-before SHA.
+Changing the baseline in the same commit therefore cannot authorize a new
+selector. If shared source cannot preserve required emission, stop for explicit
+authorization rather than adding a selector or raising a baseline count.
+
+The narrower `config/semantic-profile-declaration-debt.txt` also fingerprints
+every existing `struct`, `class`, or `union` beneath such a branch. Deleting a
+site requires shrinking that baseline immediately, while a new, renamed, or
 restored site fails the guard. A named `*Emission*` adapter may contain the
-minimum proved legacy declaration, but the adapter itself must be
-profile-independent and selected only by an outer include route. The baseline
-records debt; it does not semantically accept any listed declaration.
+minimum already-proved legacy declaration, but the adapter itself must be
+profile-independent. Both baselines record debt; neither semantically accepts
+the listed source.
 
 ## Bounded batch workflow
 
