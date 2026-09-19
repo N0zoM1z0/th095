@@ -43,7 +43,11 @@ struct SupervisorTimerLifecycle
 
 struct ReplayScanWorker
 {
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
     u32 handle;
+#else
+    u32 threadHandle;
+#endif
     u32 threadId;
     i32 stopRequested;
     i32 active;

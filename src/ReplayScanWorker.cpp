@@ -8,6 +8,10 @@
 namespace th095
 {
 
+#ifdef DIFFBUILD
+#define threadHandle handle
+#endif
+
 #ifndef DIFFBUILD
 typedef char ReplayScanWorkerExitSignalAt08[
     (offsetof(ReplayScanWorker, exitSignal) == 0x08) ? 1 : -1];
@@ -31,7 +35,7 @@ ReplayScanWorker::ReplayScanWorker()
 {
     // The target constructor initializes the four live synchronization fields.
     // Start() installs threadProc before use; unknown010 remains opaque.
-    this->handle = NULL;
+    this->threadHandle = NULL;
     this->threadId = 0;
     this->exitSignal = 0;
     this->active = 0;
@@ -44,18 +48,18 @@ ReplayScanWorker::~ReplayScanWorker()
 
 void ReplayScanWorker::Stop()
 {
-    if (this->handle != 0)
+    if (this->threadHandle != 0)
     {
         this->exitSignal = 1;
         this->active = 0;
-        while (WaitForSingleObject((HANDLE)this->handle, 200) == WAIT_TIMEOUT)
+        while (WaitForSingleObject((HANDLE)this->threadHandle, 200) == WAIT_TIMEOUT)
         {
             this->exitSignal = 1;
             this->active = 0;
             Sleep(1);
         }
-        CloseHandle((HANDLE)this->handle);
-        this->handle = 0;
+        CloseHandle((HANDLE)this->threadHandle);
+        this->threadHandle = 0;
         this->threadProc = NULL;
     }
 }
@@ -67,7 +71,7 @@ void ReplayScanWorker::Start(void (__fastcall *callback)(void *),
     this->threadProc = callback;
     this->active = 1;
     this->exitSignal = 0;
-    this->handle = _beginthreadex(
+    this->threadHandle = _beginthreadex(
         NULL, 0, (unsigned (__stdcall *)(void *))this->threadProc,
         argument, 0, &this->threadId);
 }
@@ -89,6 +93,10 @@ void Supervisor::StopReplayScan()
 {
     this->replayScanWorker.Stop();
 }
+
+#ifdef DIFFBUILD
+#undef threadHandle
+#endif
 
 } // namespace th095
 
