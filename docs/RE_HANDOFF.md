@@ -14,6 +14,8 @@ from the ledgers, not prose.
 - Current ledger baseline: 1,880 provisional candidates, 697 source-present,
   696 exact units covering 336,486 bytes. Recompute; do not copy these counts
   into a new claim.
+- Semantic progress has no defensible percentage: exact/source counts measure
+  different facts, and substantial owner/protocol review remains.
 - The normal pinned-VC7.1 product compiles and links. This is not whole-image
   exactness and is not yet an independent modern-compiler/runtime oracle.
 
@@ -50,26 +52,25 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-SEM-270 closes the TH095 EnemyInf manager-owner milestone for the normal
-product. `PhotoEnemyManager.hpp` is now the one profile-independent
-`0x26AE30` declaration published through target global `0x004BDDC0`. It pins
-the `0x4CC0` spawn-template slot, sixteen timelines, draw-group heads, ECL
-manager, proven primary `enemyAnm @ +0x4DF8`, opaque `+0x4DFC`, 128 inline
-enemy slots at `+0x4E00`, eight photo targets, Chain nodes, photo-card session,
-and active count. The fixed-size slot wrapper preserves normal construction
-and destruction without pretending that the compact `0x4CC0` element is
-already fully canonicalized.
+The semantic source checkpoint is commit `690cb98` (SEM-270). Current owner
+state is deliberately narrower than subsystem completion:
 
-The old `EnemyManager.hpp` is explicitly a TH08-shaped Enemy/ECL compatibility
-ABI: its 481-slot, `0x9DCF10` manager is not the allocation created at
-`0x004149F0`. Normal task, ECL, Background, photo, operand, and enemy-shot
-consumers now route manager fields through `PhotoEnemyManager.hpp`; historical
-receiver shapes remain only behind exact/DIFF guards. `+0x4DFC` still has no
-proved target-local producer or resource lifetime and remains `unknown4dfc`.
+| Surface | Handoff state |
+| --- | --- |
+| Background `0x201C` | Canonical normal owner closed in `Background.hpp`; one narrow EclRun emission adapter remains. |
+| BulletInf `0x27C5B8` | Canonical normal owner closed in `PhotoBulletManager.hpp`; exact receiver spellings are emission adapters. |
+| EnemyInf manager `0x26AE30` | Canonical normal owner closed in `PhotoEnemyManager.hpp`; `enemyAnm @ +0x4DF8` is proved. |
+| Compact enemy element `0x4CC0` | Open: normal code still has overlapping observation views. |
+| EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
+| Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
+
+`EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
+compatibility ABI, not the TH095 EnemyInf allocation created at `0x004149F0`.
+Do not migrate its layout or names into the compact TH095 owner.
 
 Affected replay passed 163/163 exact with zero private-label refresh. The cold
 aggregate passed 696/696 exact across all 88 sources, also with zero refresh.
-The independent normal product compiled all 88 pinned-VC7.1 i386 COFF objects
+The separate normal build path compiled all 88 pinned-VC7.1 i386 COFF objects
 and linked a verified 780,800-byte PE32 executable with build-local SHA-256
 `40740e513f1381a4e73c34cf0475ef56e179c86b8076bd53a032ff31c456737a`.
 Target-independent CI passed 51/51 tests. This is compile/link closure, not

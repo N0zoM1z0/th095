@@ -13039,6 +13039,11 @@ in EclExtended and related photo consumers against canonical
 target-local producer and consumer evidence distinguishes it; do not turn the
 router's profile-divergence count into a completion percentage.
 
+**Superseded routing note.** SEM-270 subsequently disproved
+`EnemyManager.hpp` as the TH095 EnemyInf allocation and established
+`PhotoEnemyManager.hpp` as the canonical normal manager owner. The paragraph
+above is retained only as SEM-269's historical next hypothesis.
+
 ### SEM-270 — separate and canonicalize the TH095 EnemyInf owner
 
 **Scope.** Audit the manager published at target global `0x004BDDC0` instead

@@ -1,5 +1,10 @@
 # Runtime issue ledger
 
+> Historical runtime checkpoint: the scenarios and reconstructed artifact hash
+> below were recorded against the 2026-09-10 production source. Later semantic
+> owner changes have compile/link validation but no fresh runtime-equivalence
+> credit. Use `RE_HANDOFF.md` for the current source checkpoint.
+
 This ledger tracks whole-program failures separately from function-level exact
 matching. A successful link or exact function comparison does not close a
 runtime issue; closure requires a reproduced cause plus a relevant build and

@@ -4,9 +4,9 @@ This is an archive of prior operational handoffs. It may contain superseded
 state and completion language. Use `RE_HANDOFF.md` for the current bounded
 lane and live ledger commands for current counts.
 
-This is the current operational handoff. Historical linker counts, closed
-owner families, and compiler experiments remain in Git history and in the
-knowledge base; do not reintroduce them here as active blockers.
+The opening block below is the preserved pre-SEM-168 handoff, and later
+sections are dated snapshots. Their internal uses of “current”, “newest”, and
+“next” describe their own checkpoint only; they are not present-tense routing.
 
 ## Authority and preflight
 
@@ -1694,7 +1694,13 @@ Each failure therefore receives **zero receipt credit** and is not a semantic, c
 
 ## GPT-web semantic continuation — SEM-264
 
-This is the newest GPT-web semantic continuation point and supersedes older routing notes where they conflict. TH095 semantic reconstruction remains **active-incomplete**. This handoff pauses the browser conversation only; it is not semantic readiness, completion, closure, exit-audit, whole-image identity, runtime-scenario validation, or ready-for-porting evidence. No portable Windows, Linux, or Web work was started.
+This was the newest GPT-web semantic continuation point at that checkpoint. It
+is superseded by `RE_HANDOFF.md` and the SEM-266..270 correction summary below.
+TH095 semantic reconstruction remained **active-incomplete**. This handoff
+paused the browser conversation only; it was not semantic readiness,
+completion, closure, exit-audit, whole-image identity, runtime-scenario
+validation, or ready-for-porting evidence. No portable Windows, Linux, or Web
+work was started.
 
 ### Resume and recovery state
 
@@ -1744,3 +1750,34 @@ At the next resume, first run the mandatory recovery gate. Then **do not continu
 Prefer a different subsystem from Main/config/front-end/ResultScreen for the next source transaction. Continue to preserve `entryMode`, ResultScreen 7/8/9/10, replay/input reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, alternate enemy ANM `+0x4DFC`, the raw color-mode `0xFF` sentinel, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet and compact-enemy residuals, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB` as Unknown absent fresh TH095-local discriminators.
 
 After this docs-only handoff checkpoint, refresh only a bounded current-source Factory receipt set: one representative SEM-264 exact claim (`GameWindow::InitD3DRendering` or `Supervisor::LoadConfig`) plus `whole-build-closed`. Do not replay the historical receipt set and do not request semantic completion, whole-image exactness, runtime-scenario validation, or portable-runtime credit. If shared operator contention blocks a receipt, report the receipt plane accurately as deferred rather than retrying repeatedly or changing source.
+
+## Local workflow and owner correction — SEM-266 through SEM-270
+
+This 2026-09-19 campaign superseded the SEM-264 routing above without
+discarding its accepted target facts. Commit `18fc64d` split current policy,
+reusable method, chronological history, semantic navigation, and source/build
+ownership into their present documents and established the hard rule that an
+exact-selected body cannot validate a different normal-selected body.
+
+The subsequent bounded owner campaign closed the normal Background owner
+(`3a102e7`), routed normal ECL consumers through canonical owners
+(`12e3063`), isolated EclExtended emission-only types (`c05d6a5`), closed the
+BulletInf owner (`def0174`), and separated/canonicalized the TH095 EnemyInf
+manager (`690cb98`). Detailed evidence and rejected assumptions remain in
+SEM-266 through SEM-270 of `SEMANTIC_HISTORY.md`; current routing lives only in
+`RE_HANDOFF.md`, `SEMANTIC_INDEX.md`, and `SOURCE_MAP.md`.
+
+At the semantic source checkpoint, focused EnemyInf replay passed 163/163 and
+the cold aggregate passed 696/696 exact across 88 sources, both with zero
+private-label refresh. The separate normal build compiled all 88 pinned-VC7.1
+i386 COFF objects and linked a 780,800-byte PE32 image with build-local SHA-256
+`40740e513f1381a4e73c34cf0475ef56e179c86b8076bd53a032ff31c456737a`;
+target-independent CI passed 51/51. These are exact-preservation and normal
+compile/link results, not semantic completion, whole-image identity, or fresh
+runtime validation.
+
+The next bounded lane became the compact `0x4CC0` enemy element: reconcile its
+overlapping views beginning with `position @ +0x28A0`,
+`worldPosition @ +0x28F4`, and control words `+0x2BF4/+0x2BF8`. Manager
+`+0x4DFC` remains Unknown pending an independent producer and
+resource-lifetime proof.

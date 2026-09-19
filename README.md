@@ -134,12 +134,14 @@ all modes remain fail-closed and never create a stubbed or force-linked image.
 
 ## Test-only no-death launcher
 
-For manual endurance testing of the current reconstructed artifact only, copy
-`scripts/run-no-death-test.bat` and `scripts/run-no-death-test.ps1` next to
-`th095-reconstructed.exe`, then double-click the BAT file. The launcher patches
-only the spawned process; it neither rebuilds nor modifies the executable on
-disk. It is hash-pinned, fail-closed, and is never a release build or an exact
-reconstruction claim.
+For manual endurance testing of the archived 2026-09-10 reconstructed artifact
+only, copy `scripts/run-no-death-test.bat` and
+`scripts/run-no-death-test.ps1` next to `th095-reconstructed.exe`, then
+double-click the BAT file. The launcher is pinned to that artifact and will
+reject the current post-SEM-270 image unless it is separately revalidated and
+repinned. It patches only the spawned process; it neither rebuilds nor modifies
+the executable on disk, and is never a release build or an exact reconstruction
+claim.
 
 ## Documentation
 
