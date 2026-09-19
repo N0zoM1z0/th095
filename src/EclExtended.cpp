@@ -1,7 +1,9 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-#include "PhotoBulletRuntime.hpp"
+#include "Background.hpp"
+#include "PhotoBulletManager.hpp"
+#include "PhotoEnemyManager.hpp"
 #endif
 #ifndef DIFFBUILD
 #include "PhotoEffectRuntime.hpp"
@@ -26,12 +28,14 @@ struct PhotoCameraState
     i32 CountPhotoTargets(f32 *closestDistance, f32 *bossRate);
 };
 struct PhotoEnemyView;
+#if defined(TH095_MATCH_EXACT)
 struct PhotoEnemyManagerView
 {
     PhotoEnemyView *Spawn(
         i32 subroutineId, const Float3 *position, i32 life,
         i32 itemDrop, i32 score, u32 mirrorMovementX);
 };
+#endif
 static __forceinline AnmManager *EclExtendedCanonicalAnmManager()
 {
     return g_AnmManager;
@@ -44,12 +48,17 @@ extern Background *g_Background;
 
 namespace EclExtended
 {
-struct AnmManagerLookupView
-{
-    AnmVm *GetVm(i32 handle);
-    static i32 __fastcall ExecuteScript(AnmVm *vm);
-};
+#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+#include "ecl/EclExtendedAnmEmission.inl"
+#else
+// Production uses the canonical runtime types.  The legacy names remain only
+// as local token aliases so the shared callback bodies do not acquire a second
+// handle or loaded-ANM representation.
+typedef AnmVmId ExtendedVmHandle;
+typedef AnmLoaded ExtendedAnmSpawner;
+#endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct ExtendedPhotoEnemyView;
 struct ExtendedPhotoEnemyManagerView
 {
@@ -57,6 +66,9 @@ struct ExtendedPhotoEnemyManagerView
         i32 subroutineId, const Float3 *position, i32 life,
         i32 itemDrop, i32 score, u32 mirrorMovementX);
 };
+#else
+typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;
+#endif
 
 #ifdef DIFFBUILD
 #define TH095_EXT_ENEMY_SPAWN(manager, subroutineId, position, life, itemDrop, score, mirror) \
@@ -86,47 +98,28 @@ struct PhotoGlobalStateView
 };
 typedef char PhotoGlobalFlagsAtFC[(offsetof(PhotoGlobalStateView, flags) == 0xfc) ? 1 : -1];
 
-struct ExtendedBackgroundView
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+// Exact-emission adapter only.  Normal reconstruction code accesses the
+// canonical 0x201C Background owner declared in Background.hpp.
+struct EclExactBackgroundHandleEmission
 {
     u8 unknown0000[0x1fe4];
     i32 spellBackgroundVmIds[2];
 };
-typedef char ExtendedBackgroundSpellVmIdsAt1FE4[
-    (offsetof(ExtendedBackgroundView, spellBackgroundVmIds) == 0x1fe4) ? 1 : -1];
-
-struct ExtendedVector
-{
-    f32 x;
-    f32 y;
-    f32 z;
-    void FromAngleMagnitude(f32 angle, f32 magnitude);
-};
-typedef char ExtendedVectorSizeC[(sizeof(ExtendedVector) == 0x0c) ? 1 : -1];
+typedef char EclExactBackgroundSpellVmIdsAt1FE4[
+    (offsetof(EclExactBackgroundHandleEmission, spellBackgroundVmIds) == 0x1fe4) ? 1 : -1];
+#endif
 
 #ifdef DIFFBUILD
+#include "ecl/EclExtendedMathEmission.inl"
 #define TH095_EXTENDED_FROM_ANGLE(vector, angle, magnitude) \
     vector.FromAngleMagnitude(angle, magnitude)
 #else
+typedef Float3 ExtendedVector;
 #define TH095_EXTENDED_FROM_ANGLE(vector, angle, magnitude) \
-    reinterpret_cast<Float3 *>(&(vector))->FromAngleMagnitude((angle), (magnitude))
+    reinterpret_cast<Float3 *>(&(vector))->FromAngleMagnitude( \
+        (angle), (magnitude))
 #endif
-
-struct ExtendedVmHandle
-{
-    i32 value;
-    AnmVm *GetVm();
-    void SetSprite(i32 spriteIndex);
-};
-
-struct ExtendedAnmSpawner
-{
-    ExtendedVmHandle CreateVmAtWorld(i32 scriptIndex, Float3 *position);
-    void CreateVmAtWorldInto(
-        ExtendedVmHandle *output, i32 scriptIndex, Float3 *position);
-    void InitializeVm(AnmVm *vm, i32 scriptIndex);
-};
-typedef char ExtendedVmHandleSizeIs4[
-    (sizeof(ExtendedVmHandle) == sizeof(i32)) ? 1 : -1];
 
 #ifdef DIFFBUILD
 #define TH095_EXT_ANM_INITIALIZE(spawner, vm, script) \
@@ -134,7 +127,7 @@ typedef char ExtendedVmHandleSizeIs4[
 #define TH095_EXT_ANM_EXECUTE(vm) AnmManagerLookupView::ExecuteScript(vm)
 #else
 #define TH095_EXT_ANM_INITIALIZE(spawner, vm, script) \
-    reinterpret_cast<AnmLoaded *>(spawner)->InitializeVm((vm), (script))
+    (spawner)->InitializeVm((vm), (script))
 #define TH095_EXT_ANM_EXECUTE(vm) ::th095::AnmManager::ExecuteScript(vm)
 #endif
 
@@ -151,18 +144,11 @@ static __forceinline AnmVmId ExtendedCanonicalAnmId(i32 value)
     id.value = value;
     return id;
 }
-static __forceinline void ExtendedCreateVmAtWorldInto(
-    ExtendedAnmSpawner *spawner, ExtendedVmHandle *output,
-    i32 scriptIndex, Float3 *position)
-{
-    output->value = reinterpret_cast<AnmLoaded *>(spawner)
-        ->CreateVmAtWorld(scriptIndex, position).value;
-}
 #define TH095_EXT_ANM_GET_VM(handle)     ::th095::EclExtendedCanonicalAnmManager()->GetVm(         ExtendedCanonicalAnmId(handle))
-#define TH095_EXT_CREATE_VM_WORLD(spawner, script, position)     reinterpret_cast<AnmLoaded *>(spawner)->CreateVmAtWorld((script), (position))
-#define TH095_EXT_CREATE_VM_WORLD_INTO(spawner, output, script, position)     ExtendedCreateVmAtWorldInto((spawner), (output), (script), (position))
-#define TH095_EXT_HANDLE_GET_VM(handle)     reinterpret_cast<AnmVmId *>(&(handle))->GetVm()
-#define TH095_EXT_HANDLE_SET_SPRITE(handle, sprite)     reinterpret_cast<AnmVmId *>(&(handle))->SetSprite(sprite)
+#define TH095_EXT_CREATE_VM_WORLD(spawner, script, position)     (spawner)->CreateVmAtWorld((script), (position))
+#define TH095_EXT_CREATE_VM_WORLD_INTO(spawner, output, script, position)     (*(output) = (spawner)->CreateVmAtWorld((script), (position)))
+#define TH095_EXT_HANDLE_GET_VM(handle) (handle).GetVm()
+#define TH095_EXT_HANDLE_SET_SPRITE(handle, sprite) (handle).SetSprite(sprite)
 #endif
 
 struct ExtendedPhotoEffectArgs
@@ -267,21 +253,16 @@ typedef char ExtendedPhotoEffectNodeIdAt4C[(offsetof(ExtendedPhotoEffectNode, id
 typedef char ExtendedPhotoEffectNodeVmAt98[(offsetof(ExtendedPhotoEffectNode, vm) == 0x98) ? 1 : -1];
 typedef char ExtendedPhotoEffectNodeFlagsAt58C[(offsetof(ExtendedPhotoEffectNode, flags) == 0x58c) ? 1 : -1];
 
-struct ExtendedPhotoEffectManager
-{
-    u8 unknown000[8];
-    ExtendedPhotoEffectNode *first;
-    u8 unknown00c[0x4c];
-    i32 spawnedId;
-    i32 Spawn(i32 type, void *args);
-};
-typedef char ExtendedPhotoEffectManagerSpawnedIdAt58[(offsetof(ExtendedPhotoEffectManager, spawnedId) == 0x58) ? 1 : -1];
-
 #ifdef DIFFBUILD
+#include "ecl/EclExtendedPhotoEffectEmission.inl"
 #define TH095_EXT_EFFECT_SPAWN(manager, type, args) manager->Spawn(type, args)
+#define TH095_EXT_EFFECT_FIRST(manager) ((manager)->first)
 #else
+typedef ::th095::PhotoEffectManagerView ExtendedPhotoEffectManager;
 #define TH095_EXT_EFFECT_SPAWN(manager, type, args) \
-    reinterpret_cast<::th095::PhotoEffectManagerView *>(manager)->Spawn(type, args)
+    (manager)->Spawn(type, args)
+#define TH095_EXT_EFFECT_FIRST(manager) \
+    reinterpret_cast<ExtendedPhotoEffectNode *>((manager)->listRoot.next)
 #endif
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 #define TH095_EXT_EFFECT_SPAWN_ROTATING_LASER 1
@@ -339,133 +320,46 @@ typedef char ExtendedPlayerMovementScaleAt2A18[
 #define TH095_EXT_PLAYER_MOVEMENT_SCALE(player) ((player)->movementScale)
 #endif
 
-struct ExtendedBulletView
-{
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u32 flags;
+#include "ecl/EclExtendedBulletEmission.inl"
 #else
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknownFlag0 : 1;
-            u32 collidable : 1;
-            u32 unknownFlags2 : 2;
-            u32 captureDisabled : 1;
-            u32 unknownFlags5 : 27;
-        };
-    };
-#endif
-    AnmVm vm;
-    ExtendedVector position;
-    ExtendedVector velocity;
-    ExtendedVector acceleration;
-    f32 speed;
-    u32 unknown2f8[2];
-    f32 angle;
-    u32 unknown304[2];
-    ExtendedVector collisionSize;
-    ZunTimer stateTimer;
-    ZunTimer activeTimer;
-    i32 ownerTag;
-    u8 unknown334[0x14];
-#if defined(TH095_MATCH_EXACT)
-    i32 field348;
-    i32 field34c;
-#else
-    u32 activeTransformFlags;
-    u32 transformFlags;
-#endif
-    i16 unknown350;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    u16 state;
-#else
-    PhotoBulletState state;
-#endif
-    u16 offscreenFrames;
-    u16 unknown356;
-    ExtendedBulletView *nextInDrawBucket;
-    i32 field35c;
-    i32 field360;
-    i32 transformSound;
-    i32 transformIndex;
-    i32 drawBucketIndex;
-    u8 unknown370[0x2e4];
-    i8 collisionDisabled;
-    u8 unknown655;
-    i16 bulletType;
-    i16 color;
-    u8 trailingAlignment65A[2];
-    void ReinitializeDirect();
-    void ReinitializeShifted();
-};
-typedef char ExtendedBulletSize65C[
-    (sizeof(ExtendedBulletView) == 0x65c) ? 1 : -1];
-typedef char ExtendedBulletPositionAt2D0[
-    (offsetof(ExtendedBulletView, position) == 0x2d0) ? 1 : -1];
-typedef char ExtendedBulletVelocityAt2DC[
-    (offsetof(ExtendedBulletView, velocity) == 0x2dc) ? 1 : -1];
-typedef char ExtendedBulletSpeedAt2F4[
-    (offsetof(ExtendedBulletView, speed) == 0x2f4) ? 1 : -1];
-typedef char ExtendedBulletAngleAt300[
-    (offsetof(ExtendedBulletView, angle) == 0x300) ? 1 : -1];
-typedef char ExtendedBulletOwnerAt330[
-    (offsetof(ExtendedBulletView, ownerTag) == 0x330) ? 1 : -1];
-#if defined(TH095_MATCH_EXACT)
-typedef char ExtendedBulletField348At348[
-    (offsetof(ExtendedBulletView, field348) == 0x348) ? 1 : -1];
-typedef char ExtendedBulletField34CAt34C[
-    (offsetof(ExtendedBulletView, field34c) == 0x34c) ? 1 : -1];
-#else
-typedef char ExtendedBulletActiveTransformFlagsAt348[
-    (offsetof(ExtendedBulletView, activeTransformFlags) == 0x348) ? 1 : -1];
-typedef char ExtendedBulletTransformFlagsAt34C[
-    (offsetof(ExtendedBulletView, transformFlags) == 0x34c) ? 1 : -1];
-#endif
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-typedef char ExtendedBulletStateAt352[
-    (offsetof(ExtendedBulletView, state) == 0x352) ? 1 : -1];
+typedef ::th095::PhotoBulletView ExtendedBulletView;
+typedef ::th095::PhotoBulletManagerView ExtendedBulletManager;
 #endif
 
-struct ExtendedBulletManager
-{
-    u8 unknown000[0x4c];
-    ExtendedBulletView bullets[0x641];
-    u8 unknown27C5A8[8];
-    ExtendedAnmSpawner *anmSpawner;
-};
-typedef char ExtendedBulletManagerBulletsAt4C[
-    (offsetof(ExtendedBulletManager, bullets) == 0x4c) ? 1 : -1];
-typedef char ExtendedBulletManagerAnmAt27C5B0[
-    (offsetof(ExtendedBulletManager, anmSpawner) == 0x27c5b0) ? 1 : -1];
-
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct ExtendedRuntimeView
 {
     u8 unknown0000[0x4df8];
-    ExtendedAnmSpawner *markerAnm;
+    ExtendedAnmSpawner *enemyAnm;
 
 };
-typedef char ExtendedRuntimeMarkerAt4DF8[
-    (offsetof(ExtendedRuntimeView, markerAnm) == 0x4df8) ? 1 : -1];
+typedef char ExtendedRuntimeEnemyAnmAt4DF8[
+    (offsetof(ExtendedRuntimeView, enemyAnm) == 0x4df8) ? 1 : -1];
+#else
+typedef ::th095::PhotoEnemyManagerView ExtendedRuntimeView;
+#endif
 
+#ifdef DIFFBUILD
 extern AnmManagerLookupView *g_AnmManager;
-#ifndef DIFFBUILD
-#define g_AnmManager \
-    (reinterpret_cast<AnmManagerLookupView *>(::th095::g_AnmManager))
 #endif
 extern PhotoGlobalStateView *g_PhotoGlobalState;
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 extern u8 *g_Background;
+#endif
 extern ExtendedBulletManager *g_PhotoBulletManager;
 extern ExtendedPhotoEffectManager *g_PhotoEffectManager;
 extern ExtendedPhotoEnemyManagerView *g_ExtendedPhotoEnemyManager;
 
-#ifndef DIFFBUILD
+#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 static __forceinline u8 *ExtendedBackgroundOwner()
 {
     return reinterpret_cast<u8 *>(::th095::g_Background);
 }
 #define g_Background ExtendedBackgroundOwner()
+#endif
+
+#ifndef DIFFBUILD
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(ExtendedBulletManager, ::th095::g_RuntimeBulletManagerOwner)
 #define g_PhotoEffectManager \
@@ -473,8 +367,14 @@ static __forceinline u8 *ExtendedBackgroundOwner()
 #define g_PhotoGlobalState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, ::th095::g_RuntimeGlobalStateOwner)
 #endif
-#define EXT_BACKGROUND_STATE \
-    (reinterpret_cast<ExtendedBackgroundView *>(g_Background))
+
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_EXT_BACKGROUND_VM_ID(index) \
+    (reinterpret_cast<EclExactBackgroundHandleEmission *>(g_Background)->spellBackgroundVmIds[(index)])
+#else
+#define TH095_EXT_BACKGROUND_VM_ID(index) \
+    (::th095::g_Background->spellBackgroundVmIds[(index)].value)
+#endif
 
 #ifdef DIFFBUILD
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
@@ -483,12 +383,13 @@ i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
 #define TH095_EXTENDED_SCRIPT_BASE ::th095::GetPhotoBulletScriptBase
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 __forceinline void ExtendedBulletView::ReinitializeDirect()
 {
     // Extended entries 2/3 repeat this target 0x2C InitializeVm phase.
     u8 compilerStorage[0x2c];
     TH095_EXT_ANM_INITIALIZE(
-        g_PhotoBulletManager->anmSpawner, &this->vm,
+        g_PhotoBulletManager->bulletAnm, &this->vm,
         TH095_EXTENDED_SCRIPT_BASE(this->bulletType) + this->color);
 }
 
@@ -497,9 +398,35 @@ __forceinline void ExtendedBulletView::ReinitializeShifted()
     // Entry 2 uses the same phase but selects the shifted script bank.
     u8 compilerStorage[0x2c];
     TH095_EXT_ANM_INITIALIZE(
-        g_PhotoBulletManager->anmSpawner, &this->vm,
+        g_PhotoBulletManager->bulletAnm, &this->vm,
         TH095_EXTENDED_SCRIPT_BASE(this->bulletType) + 0x10 + this->color);
 }
+#define TH095_EXT_REINITIALIZE_DIRECT(bullet) (bullet)->ReinitializeDirect()
+#define TH095_EXT_REINITIALIZE_SHIFTED(bullet) (bullet)->ReinitializeShifted()
+#else
+static __forceinline void ReinitializeExtendedBulletDirect(
+    ExtendedBulletView *bullet)
+{
+    // The normal callback operates on the canonical BulletInf element.
+    u8 compilerStorage[0x2c];
+    TH095_EXT_ANM_INITIALIZE(
+        g_PhotoBulletManager->bulletAnm, &bullet->vm,
+        TH095_EXTENDED_SCRIPT_BASE(bullet->bulletType) + bullet->color);
+}
+
+static __forceinline void ReinitializeExtendedBulletShifted(
+    ExtendedBulletView *bullet)
+{
+    u8 compilerStorage[0x2c];
+    TH095_EXT_ANM_INITIALIZE(
+        g_PhotoBulletManager->bulletAnm, &bullet->vm,
+        TH095_EXTENDED_SCRIPT_BASE(bullet->bulletType) + 0x10 + bullet->color);
+}
+#define TH095_EXT_REINITIALIZE_DIRECT(bullet) \
+    ReinitializeExtendedBulletDirect(bullet)
+#define TH095_EXT_REINITIALIZE_SHIFTED(bullet) \
+    ReinitializeExtendedBulletShifted(bullet)
+#endif
 
 #ifdef TH095_MATCH_EXACT
 static __forceinline void InitializeExtendedTimerExact(ZunTimer *timer)
@@ -574,9 +501,9 @@ i32 __fastcall DispatchExtendedValue(
 void __fastcall SpawnDeathPhotoVms(
     Enemy *enemy, EclRawInstruction *instruction)
 {
-    TH095_EXT_CREATE_VM_WORLD(g_PhotoBulletManager->anmSpawner, 0x123, &enemy->position);
+    TH095_EXT_CREATE_VM_WORLD(g_PhotoBulletManager->bulletAnm, 0x123, &enemy->position);
     for (i32 i = 0; i < 32; ++i)
-        TH095_EXT_CREATE_VM_WORLD(g_PhotoBulletManager->anmSpawner, 0x122, &enemy->position);
+        TH095_EXT_CREATE_VM_WORLD(g_PhotoBulletManager->bulletAnm, 0x122, &enemy->position);
     TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x12, 0);
     TH095_ECL_EXT_GAME_SPEED = 0.25f;
 }
@@ -649,10 +576,10 @@ void __fastcall SetBackgroundVmsState2(
     AnmVm *secondVm;
     AnmVm *firstVm;
     firstVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 2;
     secondVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     secondVm->pendingInterrupt = 2;
 }
 
@@ -663,10 +590,10 @@ void __fastcall SetBackgroundVmsState3(
     AnmVm *secondVm;
     AnmVm *firstVm;
     firstVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 3;
     secondVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     secondVm->pendingInterrupt = 3;
     TH095_ECL_EXT_GAME_SPEED = 1.0f;
 }
@@ -705,11 +632,11 @@ void __fastcall EnablePhotoTransition(
     g_PhotoGlobalState->photoTransitionActive = 1;
 #endif
     firstVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 2;
     TH095_EXT_ANM_EXECUTE(firstVm);
     secondVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     secondVm->pendingInterrupt = 2;
     TH095_EXT_ANM_EXECUTE(secondVm);
     TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x26, 0);
@@ -728,11 +655,11 @@ void __fastcall DisablePhotoTransition(
     g_PhotoGlobalState->photoTransitionActive = 0;
 #endif
     firstVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 3;
     TH095_EXT_ANM_EXECUTE(firstVm);
     secondVm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     secondVm->pendingInterrupt = 3;
     TH095_EXT_ANM_EXECUTE(secondVm);
     TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x0f, 0);
@@ -858,7 +785,7 @@ void __fastcall SpawnEnemyMarkerVm(
     } locals;
 
     TH095_EXT_CREATE_VM_WORLD_INTO(
-        g_ExtendedRuntime->markerAnm, &locals.handle,
+        g_ExtendedRuntime->enemyAnm, &locals.handle,
         enemy->activeEclContext->extraIntVariables[2],
         &enemy->worldPosition);
     locals.vm = TH095_EXT_HANDLE_GET_VM(locals.handle);
@@ -931,11 +858,11 @@ void __fastcall RunPhotoTransition(
             g_PhotoGlobalState->photoTransitionActive = 0;
 #endif
             locals.firstEndVm = TH095_EXT_ANM_GET_VM(
-                EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+                TH095_EXT_BACKGROUND_VM_ID(0));
             locals.firstEndVm->pendingInterrupt = 3;
             TH095_EXT_ANM_EXECUTE(locals.firstEndVm);
             locals.secondEndVm = TH095_EXT_ANM_GET_VM(
-                EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+                TH095_EXT_BACKGROUND_VM_ID(1));
             locals.secondEndVm->pendingInterrupt = 3;
             TH095_EXT_ANM_EXECUTE(locals.secondEndVm);
             TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x0f, 0);
@@ -957,11 +884,11 @@ void __fastcall RunPhotoTransition(
         g_PhotoGlobalState->photoTransitionActive = 1;
 #endif
         locals.firstStartVm = TH095_EXT_ANM_GET_VM(
-            EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+            TH095_EXT_BACKGROUND_VM_ID(0));
         locals.firstStartVm->pendingInterrupt = 2;
         TH095_EXT_ANM_EXECUTE(locals.firstStartVm);
         locals.secondStartVm = TH095_EXT_ANM_GET_VM(
-            EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+            TH095_EXT_BACKGROUND_VM_ID(1));
         locals.secondStartVm->pendingInterrupt = 2;
         TH095_EXT_ANM_EXECUTE(locals.secondStartVm);
         TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x26, 0);
@@ -1030,10 +957,10 @@ typedef char ExtendedEffectCallbackLocalsSize50[(sizeof(ExtendedEffectCallbackLo
 static __forceinline void FindSpawnedExtendedEffect(ExtendedEffectCallbackLocals *locals)
 {
     ExtendedPhotoEffectNode *cursor;
-    cursor = g_PhotoEffectManager->first;
+    cursor = TH095_EXT_EFFECT_FIRST(g_PhotoEffectManager);
     while (cursor != NULL)
     {
-        if (cursor->id == g_PhotoEffectManager->spawnedId)
+        if (cursor->id == g_PhotoEffectManager->nextId)
         {
             locals->effect = cursor;
             return;
@@ -1070,7 +997,7 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
-        g_ExtendedRuntime->markerAnm, &locals.effect->vm,
+        g_ExtendedRuntime->enemyAnm, &locals.effect->vm,
         enemy->activeEclContext->extraIntVariables[2]);
     locals.PublishFlags();
 }
@@ -1103,7 +1030,7 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
-        g_ExtendedRuntime->markerAnm, &locals.effect->vm,
+        g_ExtendedRuntime->enemyAnm, &locals.effect->vm,
         enemy->activeEclContext->extraIntVariables[2]);
     locals.PublishFlags();
 }
@@ -1136,7 +1063,7 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
     FindSpawnedExtendedEffect(&locals);
 
     TH095_EXT_ANM_INITIALIZE(
-        g_ExtendedRuntime->markerAnm, &locals.effect->vm,
+        g_ExtendedRuntime->enemyAnm, &locals.effect->vm,
         enemy->activeEclContext->extraIntVariables[2]);
     locals.PublishFlags();
 }
@@ -1146,7 +1073,7 @@ static __forceinline void SetExtendedBackgroundVm0State2()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     vm->pendingInterrupt = 2;
 }
 
@@ -1154,7 +1081,7 @@ static __forceinline void SetExtendedBackgroundVm1State2()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     vm->pendingInterrupt = 2;
 }
 
@@ -1162,7 +1089,7 @@ static __forceinline void SetExtendedBackgroundVm0State3()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[0]);
+        TH095_EXT_BACKGROUND_VM_ID(0));
     vm->pendingInterrupt = 3;
 }
 
@@ -1170,7 +1097,7 @@ static __forceinline void SetExtendedBackgroundVm1State3()
 {
     AnmVm *vm;
     vm = TH095_EXT_ANM_GET_VM(
-        EXT_BACKGROUND_STATE->spellBackgroundVmIds[1]);
+        TH095_EXT_BACKGROUND_VM_ID(1));
     vm->pendingInterrupt = 3;
 }
 
@@ -1218,7 +1145,7 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
         if (index->ownerTag == enemy->activeEclContext->extraIntVariables[2])
         {
             savedActiveSprite = *reinterpret_cast<u32 *>(&index->vm.rotation.z);
-            index->ReinitializeShifted();
+            TH095_EXT_REINITIALIZE_SHIFTED(index);
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             index->vm.flagsWord &= 0xf7ffffffU;
 #else
@@ -1260,7 +1187,7 @@ void __fastcall Callback03(Enemy *enemy, EclRawInstruction *instruction)
 #endif
             continue;
 
-        index->ReinitializeDirect();
+        TH095_EXT_REINITIALIZE_DIRECT(index);
         index->vm.pendingInterrupt = 2;
         TH095_EXTENDED_FROM_ANGLE(index->velocity, index->angle, index->speed);
         index->flags |= 2U;
@@ -1295,7 +1222,7 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
         if (index->ownerTag == enemy->activeEclContext->extraIntVariables[2])
         {
             savedActiveSprite = *reinterpret_cast<u32 *>(&index->vm.rotation.z);
-            index->ReinitializeShifted();
+            TH095_EXT_REINITIALIZE_SHIFTED(index);
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
             index->vm.flagsWord &= 0xf7ffffffU;
 #else

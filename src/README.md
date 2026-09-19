@@ -16,11 +16,10 @@ Header organization follows the TH08 reconstruction where the evidence permits:
 
 - Shared runtime types and subsystem managers live directly under `src/`.
 - PBG archive types live under `src/pbg/`.
-- `src/ecl/` contains only the ECL dispatcher, operand definitions, opcode
-  bodies, and `AnmManagerEclView.hpp`. The latter is an explicitly temporary
-  ABI view used by the canonical ECL unit; it must not be merged into the
-  independently exact `AnmManager.hpp` until both layouts can be reconciled
-  without changing either strict comparison.
+- `src/ecl/` contains the ECL dispatcher, operand definitions, opcode bodies,
+  and named compiler-emission adapters. Normal includes through
+  `AnmManagerEclView.hpp` route to canonical `AnmManager.hpp`; its incompatible
+  legacy declarations are exact/DIFF-only source shape, not a runtime layout.
 
 ## Production-link boundary
 
@@ -31,9 +30,9 @@ but they are not automatically link-compatible: C++ decorated names encode
 class/struct spellings, parameter types, and local proxy owners.
 
 `scripts/build-whole.py` therefore treats aggregate compilation and linkage as
-separate gates. The complete source graph currently cold-compiles with the
-pinned VC7.1 compiler, while the real link fails on unresolved production
-declarations and global owners. Close those families by introducing the real
-shared declaration/definition and replaying every affected exact unit. Do not
-satisfy the link with duplicate shims, fake globals, blanket symbol aliases, or
-forced unresolved output.
+separate gates. The complete source graph now cold-compiles and links with the
+pinned VC7.1 toolchain; that proves production closure, not target whole-image
+identity or runtime equivalence. Continue to close duplicate families through
+real shared declarations and replay every affected exact unit. Do not satisfy
+linkage with duplicate shims, fake globals, blanket symbol aliases, or forced
+unresolved output.

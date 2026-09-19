@@ -1432,7 +1432,7 @@ reservation remains function-internal frontend allocation behavior, not crowded-
 
 `SceneSaveDataView::LoadBestShotForScene @ 0x00435E90` was previously bounded at the allocator/ESI frontier. That diagnosis is superseded by the exact closure recorded below. The still-useful source-order oracle remains: spell pixel size as `width * height * componentCount`, because stock `/Od` build 3077 materializes the operands in target order `componentCount(byte) -> height(word) -> width(word)`.
 
-### Background stage-loader allocation snapshots
+### Superseded Background stage-loader allocation diagnostic
 
 `Background::LoadStageDataInner @ 0x00402C80` separates authored source shape
 from an unresolved compiler frame lane. The target explicitly snapshots
@@ -1445,11 +1445,11 @@ yields the exact 523-byte extent and all 163 target mnemonics.
 
 The target still has no references in `EBP-0x18..-0x40`, a separate `0x2C`
 interval before hidden `this @ -0x44`. TH08's ancestor has only object/quad/index
-locals and supplies no direct owner for that lane. Keep the function non-exact
-until a genuine repeated-phase or source-provenance oracle appears; do not turn
-the `0x2C` into an inert local. The source change renumbers compiler-private
-`$L` symbols in exact `RunStageScript` only; a full 5,229-byte structural audit
-proves all bytes and relocation destinations unchanged.
+locals and supplies no direct owner for that lane. This was a useful negative
+oracle, but its instruction to keep the function non-exact is superseded by
+the later “Background stage-VM allocation frontend closes
+LoadStageDataInner” result in this document. Do not turn the old `0x2C`
+diagnostic into an inert local or reopen the closed unit from this snapshot.
 
 ### Controller and Background residual allocator diagnostics (2026-09-03)
 

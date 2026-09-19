@@ -8,7 +8,11 @@
 #define TH095_DECLARE_ANM_LOADED_INITIALIZE_VM
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "Background.hpp"
 #include "GameplayGlobals.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "PhotoEnemyManager.hpp"
+#endif
 #include "SceneData.hpp"
 #ifdef TH095_MATCH_EXACT
 #define TH095_SUPERVISOR_VIEWPORT_PLAYFIELD 0
@@ -39,32 +43,6 @@ struct BackgroundSelectedSceneView
 extern BackgroundSelectedSceneView *g_SelectedScene;
 #endif
 
-
-struct Background
-{
-    Background();
-    ~Background();
-
-    i32 Initialize();
-    i32 Update();
-    i32 UpdateStageObjectVms();
-    i32 RunStageScript();
-    i32 DrawHighPrio();
-    i32 DrawLowPrio();
-    i32 RenderObjects(i32 mode);
-    i32 LoadStageData(const char *path);
-    i32 LoadStageDataInner(const char *path);
-    void SetPhotoArea(const Float3 *position, const Float3 *size);
-    void StartSpellBackground();
-    void StopSpellBackground();
-
-    static i32 __fastcall OnUpdate(Background *background);
-    static i32 __fastcall OnDrawHighPrio(Background *background);
-    static i32 __fastcall OnDrawLowPrio(Background *background);
-    static Background *Create();
-
-    u8 storage[0x201c];
-};
 
 struct BackgroundGlobalStateView
 {
@@ -170,13 +148,6 @@ struct BackgroundStageInstruction
 #endif
     i16 size;
     i32 args[1];
-};
-
-struct BackgroundPhotoBlend
-{
-    f32 x;
-    f32 y;
-    ZunColor color;
 };
 
 struct BackgroundStageHeader
@@ -289,54 +260,6 @@ enum BackgroundInterpolationModeValue
     (((mode) & BACKGROUND_INTERPOLATION_PATH_MASK) == 0)
 #endif
 
-struct BackgroundStateView
-{
-    BackgroundStageHeader *stageData;            // +0x0000
-    BackgroundStageObject **stageObjects;        // +0x0004
-    BackgroundStageObjectInstance *stageObjectInstances; // +0x0008
-    u8 *stageScript;                            // +0x000c
-    ZunTimer stageScriptTimer;                  // +0x0010
-    BackgroundStageInstruction *stageInstruction; // +0x001c
-    ZunTimer interpolationCurrentTimers[4];     // +0x0020
-    ZunTimer interpolationEndTimers[4];         // +0x0050
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    u16 interpolationModes[4];                  // +0x0080
-#else
-    BackgroundInterpolationMode interpolationModes[4]; // +0x0080
-#endif
-    Float3 cameraLookAtFinal;                   // +0x0088
-    Float3 cameraLookAtInitial;                 // +0x0094
-    Float3 cameraLookAtTangentFinal;            // +0x00a0
-    Float3 cameraLookAtTangentInitial;          // +0x00ac
-    Float3 cameraPositionFinal;                 // +0x00b8
-    Float3 cameraPositionInitial;               // +0x00c4
-    Float3 cameraPositionTangentFinal;           // +0x00d0
-    Float3 cameraPositionTangentInitial;         // +0x00dc
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    u8 cameraMotionMode;                         // +0x00e8
-#else
-    BackgroundCameraMotionMode cameraMotionMode; // +0x00e8
-#endif
-    u8 unknown00e9[7];
-    AnmLoaded *anm;                              // +0x00f0
-    AnmVm *stageObjectVms;                       // +0x00f4
-    AnmVm stageVms[8];                           // +0x00f8
-    f32 cullingDistanceSq;                      // +0x1758
-    i32 spellBackgroundFrameCounter;       // +0x175c
-    ZunColor photoColor;            // +0x1760
-    i32 photoAreaActive;            // +0x1764
-    Float3 photoAreaPosition;       // +0x1768
-    Float3 photoAreaSize;           // +0x1774
-    AnmVm photoAreaVms[3];          // +0x1780
-    AnmVmId spellBackgroundVms[2];  // +0x1fe4
-    BackgroundPhotoBlend photoBlendCurrent; // +0x1fec
-    BackgroundPhotoBlend photoBlendInitial; // +0x1ff8
-    BackgroundPhotoBlend photoBlendFinal;   // +0x2004
-    ChainElem *calcChain;                        // +0x2010
-    ChainElem *drawHighChain;                    // +0x2014
-    ChainElem *drawLowChain;                     // +0x2018
-};
-
 struct BackgroundStageStateView
 {
     u8 unknown00000[0x2571c];
@@ -350,6 +273,7 @@ struct BackgroundAnmSpawnerView
 };
 #endif
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct BackgroundRuntimeView
 {
     u8 unknown0000[0x4df8];
@@ -359,6 +283,11 @@ struct BackgroundRuntimeView
     AnmLoaded *anmSpawner;
 #endif
 };
+#define TH095_BACKGROUND_ENEMY_ANM(runtime) ((runtime)->anmSpawner)
+#else
+typedef PhotoEnemyManagerView BackgroundRuntimeView;
+#define TH095_BACKGROUND_ENEMY_ANM(runtime) ((runtime)->enemyAnm)
+#endif
 
 #ifdef TH095_MATCH_EXACT
 #define TH095_BACKGROUND_CREATE_WORLD_VM(spawner, script, position) \
@@ -441,31 +370,31 @@ struct BackgroundAnmManagerView
 };
 
 typedef char BackgroundSpellFrameCounterAt175C[
-    (offsetof(BackgroundStateView, spellBackgroundFrameCounter) == 0x175c) ? 1 : -1];
+    (offsetof(Background, spellBackgroundFrameCounter) == 0x175c) ? 1 : -1];
 typedef char BackgroundStageScriptAtC[
-    (offsetof(BackgroundStateView, stageScript) == 0x0c) ? 1 : -1];
+    (offsetof(Background, stageScript) == 0x0c) ? 1 : -1];
 typedef char BackgroundStageInstructionAt1C[
-    (offsetof(BackgroundStateView, stageInstruction) == 0x1c) ? 1 : -1];
+    (offsetof(Background, stageInstruction) == 0x1c) ? 1 : -1];
 typedef char BackgroundInterpolationModesAt80[
-    (offsetof(BackgroundStateView, interpolationModes) == 0x80) ? 1 : -1];
+    (offsetof(Background, interpolationModes) == 0x80) ? 1 : -1];
 typedef char BackgroundCameraMotionModeAtE8[
-    (offsetof(BackgroundStateView, cameraMotionMode) == 0xe8) ? 1 : -1];
+    (offsetof(Background, cameraMotionMode) == 0xe8) ? 1 : -1];
 typedef char BackgroundAnmAtF0[
-    (offsetof(BackgroundStateView, anm) == 0xf0) ? 1 : -1];
+    (offsetof(Background, anm) == 0xf0) ? 1 : -1];
 typedef char BackgroundStageObjectVmsAtF4[
-    (offsetof(BackgroundStateView, stageObjectVms) == 0xf4) ? 1 : -1];
+    (offsetof(Background, stageObjectVms) == 0xf4) ? 1 : -1];
 typedef char BackgroundStageVmsAtF8[
-    (offsetof(BackgroundStateView, stageVms) == 0xf8) ? 1 : -1];
+    (offsetof(Background, stageVms) == 0xf8) ? 1 : -1];
 typedef char BackgroundPhotoAreaAt1764[
-    (offsetof(BackgroundStateView, photoAreaActive) == 0x1764) ? 1 : -1];
+    (offsetof(Background, photoAreaActive) == 0x1764) ? 1 : -1];
 typedef char BackgroundPhotoVmsAt1780[
-    (offsetof(BackgroundStateView, photoAreaVms) == 0x1780) ? 1 : -1];
+    (offsetof(Background, photoAreaVms) == 0x1780) ? 1 : -1];
 typedef char BackgroundSpellVmsAt1FE4[
-    (offsetof(BackgroundStateView, spellBackgroundVms) == 0x1fe4) ? 1 : -1];
+    (offsetof(Background, spellBackgroundVmIds) == 0x1fe4) ? 1 : -1];
 typedef char BackgroundPhotoBlendAt1FEC[
-    (offsetof(BackgroundStateView, photoBlendCurrent) == 0x1fec) ? 1 : -1];
+    (offsetof(Background, photoBlendCurrent) == 0x1fec) ? 1 : -1];
 typedef char BackgroundStateSizeIs201C[
-    (sizeof(BackgroundStateView) == 0x201c) ? 1 : -1];
+    (sizeof(Background) == 0x201c) ? 1 : -1];
 typedef char BackgroundClassSizeIs201C[
     (sizeof(Background) == 0x201c) ? 1 : -1];
 typedef char BackgroundStageObjectSizeIs24[
@@ -687,19 +616,19 @@ Background *Background::Create()
         reinterpret_cast<ChainCallback>(Background::OnUpdate));
     chain->arg = background;
     g_Chain.AddToCalcChain(chain, 10);
-    reinterpret_cast<BackgroundStateView *>(background)->calcChain = chain;
+    background->calcChain = chain;
 
     chain = g_Chain.CreateElem(
         reinterpret_cast<ChainCallback>(Background::OnDrawHighPrio));
     chain->arg = background;
     g_Chain.AddToDrawChain(chain, 4);
-    reinterpret_cast<BackgroundStateView *>(background)->drawHighChain = chain;
+    background->drawHighChain = chain;
 
     chain = g_Chain.CreateElem(
         reinterpret_cast<ChainCallback>(Background::OnDrawLowPrio));
     chain->arg = background;
     g_Chain.AddToDrawChain(chain, 6);
-    reinterpret_cast<BackgroundStateView *>(background)->drawLowChain = chain;
+    background->drawLowChain = chain;
     return background;
 
 failure:
@@ -730,7 +659,7 @@ i32 Background::Initialize()
     g_BackgroundCameraPosition = Float3(0.0f, 0.0f, -600.0f);
     g_BackgroundCameraLookAt = Float3(0.0f, 300.0f, 600.0f);
     g_BackgroundCameraUp = Float3(0.0f, 1.0f, 0.0f);
-    reinterpret_cast<BackgroundStateView *>(this)->cullingDistanceSq =
+    this->cullingDistanceSq =
         2100.0f * 2100.0f;
     return 0;
 }
@@ -744,28 +673,28 @@ i32 Background::Update()
     D3DXVec3Normalize(
         reinterpret_cast<D3DXVECTOR3 *>(&g_BackgroundCameraForward),
         reinterpret_cast<D3DXVECTOR3 *>(&g_BackgroundCameraLookAt));
-    reinterpret_cast<BackgroundStateView *>(this)->photoColor.color = 0;
+    this->photoColor.color = 0;
     this->UpdateStageObjectVms();
     this->RunStageScript();
 
     for (vmIndex = 0; vmIndex < 8; vmIndex++)
         AnmManager::ExecuteScript(
-            &reinterpret_cast<BackgroundStateView *>(this)->stageVms[vmIndex]);
+            &this->stageVms[vmIndex]);
 
-    if (reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive != 0)
+    if (this->photoAreaActive != 0)
     {
         savedGameSpeed = g_AnmGameSpeed;
         g_AnmGameSpeed = 1.0f;
         AnmManager::ExecuteScript(
-            &reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[0]);
+            &this->photoAreaVms[0]);
         AnmManager::ExecuteScript(
-            &reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[1]);
+            &this->photoAreaVms[1]);
         AnmManager::ExecuteScript(
-            &reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[2]);
+            &this->photoAreaVms[2]);
         g_AnmGameSpeed = savedGameSpeed;
     }
 
-    reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive = 0;
+    this->photoAreaActive = 0;
     return 1;
 }
 
@@ -780,27 +709,27 @@ i32 Background::DrawHighPrio()
         D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
     TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_FOGCOLOR,
-        reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.color.color);
+        this->photoBlendCurrent.color.color);
     TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_FOGSTART,
         *reinterpret_cast<i32 *>(
-            &reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.x));
+            &this->photoBlendCurrent.nearDistance));
     TH095_BACKGROUND_SUPERVISOR->SetRenderState(
         D3DRS_FOGEND,
         *reinterpret_cast<i32 *>(
-            &reinterpret_cast<BackgroundStateView *>(this)->photoBlendCurrent.y));
+            &this->photoBlendCurrent.farDistance));
     g_Supervisor.d3dDevice->Clear(
         0, NULL, D3DCLEAR_ZBUFFER, 0, 1.0f, 0);
 
-    if (reinterpret_cast<BackgroundStateView *>(this)->photoColor.a != 0)
+    if (this->photoColor.a != 0)
     {
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetMixColor(
-            reinterpret_cast<BackgroundStateView *>(this)->photoColor.color);
+            this->photoColor.color);
     }
 
-    if (reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundFrameCounter < 60)
+    if (this->spellBackgroundFrameCounter < 60)
     {
-        if (reinterpret_cast<BackgroundStateView *>(this)
+        if (this
                 ->stageVms[0]
                 .loadedSprite != NULL)
         {
@@ -810,11 +739,11 @@ i32 Background::DrawHighPrio()
             TH095_BACKGROUND_SUPERVISOR->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
             for (vmIndex = 0; vmIndex < 8; vmIndex++)
             {
-                if (reinterpret_cast<BackgroundStateView *>(this)
+                if (this
                         ->stageVms[vmIndex]
                         .loadedSprite != NULL)
                 {
-                    reinterpret_cast<BackgroundStateView *>(this)
+                    this
                         ->stageVms[vmIndex]
                         .Draw();
                 }
@@ -827,15 +756,15 @@ i32 Background::DrawHighPrio()
         this->RenderObjects(1);
         this->RenderObjects(2);
         this->RenderObjects(3);
-        if (reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundFrameCounter != 0)
-            reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundFrameCounter++;
+        if (this->spellBackgroundFrameCounter != 0)
+            this->spellBackgroundFrameCounter++;
     }
 
     g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
     reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)
         ->SetMixColorDefault();
     TH095_BACKGROUND_SUPERVISOR->DisableFog();
-    if (reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive != 0)
+    if (this->photoAreaActive != 0)
     {
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetMixColor(
             0xff404040);
@@ -862,29 +791,29 @@ i32 Background::DrawLowPrio()
         i32 bottom;
     } locals;
 
-    if (reinterpret_cast<BackgroundStateView *>(this)->photoAreaActive != 0)
+    if (this->photoAreaActive != 0)
     {
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)
             ->SetMixColorDefault();
 
-        locals.left = (i32)(reinterpret_cast<BackgroundStateView *>(this)
+        locals.left = (i32)(this
                          ->photoAreaPosition.x -
-                     reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.x /
+                     this->photoAreaSize.x /
                          2.0f +
                      128.0f + 192.0f);
-        locals.top = (i32)(reinterpret_cast<BackgroundStateView *>(this)
+        locals.top = (i32)(this
                         ->photoAreaPosition.y -
-                    reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.y /
+                    this->photoAreaSize.y /
                         2.0f +
                     16.0f);
-        locals.right = (i32)(reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.x /
+        locals.right = (i32)(this->photoAreaSize.x /
                           2.0f +
-                      reinterpret_cast<BackgroundStateView *>(this)
+                      this
                           ->photoAreaPosition.x +
                       128.0f + 192.0f);
-        locals.bottom = (i32)(reinterpret_cast<BackgroundStateView *>(this)->photoAreaSize.y /
+        locals.bottom = (i32)(this->photoAreaSize.y /
                            2.0f +
-                       reinterpret_cast<BackgroundStateView *>(this)
+                       this
                            ->photoAreaPosition.y +
                        16.0f);
 
@@ -909,9 +838,9 @@ i32 Background::DrawLowPrio()
             D3DRS_ZWRITEENABLE, TRUE);
         TH095_BACKGROUND_SUPERVISOR->SetRenderState(
             D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-        reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[0].Draw();
-        reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[1].Draw();
-        reinterpret_cast<BackgroundStateView *>(this)->photoAreaVms[2].Draw();
+        this->photoAreaVms[0].Draw();
+        this->photoAreaVms[1].Draw();
+        this->photoAreaVms[2].Draw();
         g_AnmManager->FlushVertexBuffer();
     }
 
@@ -965,7 +894,7 @@ i32 Background::RenderObjects(i32 mode)
     // TH08 RenderObjects keeps the current VM at function scope.
     AnmVm *curQuadVm;
     BackgroundStageObjectInstance *instance =
-        reinterpret_cast<BackgroundStateView *>(this)->stageObjectInstances;
+        this->stageObjectInstances;
     TH095_BACKGROUND_SUPERVISOR->ConfigureBackgroundViewport(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
     BackgroundSetCameraModePhase(
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager), 1);
@@ -974,7 +903,7 @@ i32 Background::RenderObjects(i32 mode)
         while (instance->objectId >= 0)
         {
         BackgroundStageObject *resultDrawBacking096 =
-            reinterpret_cast<BackgroundStateView *>(this)
+            this
                 ->stageObjects[instance->objectId];
         if (resultDrawBacking096->mode != mode)
             goto nextInstance;
@@ -984,7 +913,7 @@ i32 Background::RenderObjects(i32 mode)
             instance->position.z);
         if (resultDrawBacking096->IsVisible(
                 &instancePosition,
-                reinterpret_cast<BackgroundStateView *>(this)
+                this
                     ->cullingDistanceSq) != 0)
             goto nextInstance;
 
@@ -994,7 +923,7 @@ i32 Background::RenderObjects(i32 mode)
         while (resultDrawBacking157->opcode >= 0)
         {
             curQuadVm =
-                &reinterpret_cast<BackgroundStateView *>(this)
+                &this
                      ->stageObjectVms[resultDrawBacking157->vmIndex];
             switch (BackgroundAncestralOpcodePhase(resultDrawBacking157))
             {
@@ -1099,11 +1028,11 @@ i32 Background::UpdateStageObjectVms()
     i32 objectIndex;
 
     for (objectIndex = 0;
-         objectIndex < reinterpret_cast<BackgroundStateView *>(this)
+         objectIndex < this
                            ->stageData->objectCount;
          objectIndex++)
     {
-        object = reinterpret_cast<BackgroundStateView *>(this)
+        object = this
                      ->stageObjects[objectIndex];
         if ((object->flags & 1) != 0)
         {
@@ -1111,7 +1040,7 @@ i32 Background::UpdateStageObjectVms()
             instruction = &object->firstInstruction;
             while (instruction->opcode >= 0)
             {
-                vm = &reinterpret_cast<BackgroundStateView *>(this)
+                vm = &this
                           ->stageObjectVms[instruction->vmIndex];
                 AnmManager *anmManager = g_AnmManager;
                 anmManager->ExecuteScript(vm);
@@ -1212,7 +1141,7 @@ static __forceinline AnmVm *BackgroundAllocateStageVms(i32 size)
 // FUNCTION: TH095 0x00402C80.
 i32 Background::LoadStageDataInner(const char *path)
 {
-    #define background (reinterpret_cast<BackgroundStateView *>(this))
+    #define background (this)
     BackgroundStageObjectInstruction *instruction;
     i32 objectIndex;
     i32 vmIndex;
@@ -1312,7 +1241,7 @@ static __forceinline void BackgroundInitializeStageTimer(ZunTimer *timer)
     timer->previous = -999999;
 }
 
-static __forceinline i32 BackgroundStageTimePhase(BackgroundStateView *background)
+static __forceinline i32 BackgroundStageTimePhase(Background *background)
 {
     i32 stageTime = background->stageScriptTimer.current;
     return stageTime;
@@ -1326,7 +1255,7 @@ static __forceinline void BackgroundDisableStageVmPhase(AnmVm *vm)
 
 i32 Background::RunStageScript()
 {
-#define background reinterpret_cast<BackgroundStateView *>(this)
+#define background this
 #define instruction (background->stageInstruction)
     // Compiler backing identifiers are target-significant under VC7.1.
     // Keep the physical buckets readable through semantic aliases below.
@@ -1398,9 +1327,9 @@ read_instruction:
 
         case TH095_BACKGROUND_STAGE_OPCODE_SET_PHOTO_BLEND:
             background->photoBlendCurrent.color.color = instruction->args[0];
-            background->photoBlendCurrent.x =
+            background->photoBlendCurrent.nearDistance =
                 *reinterpret_cast<f32 *>(&instruction->args[1]);
-            background->photoBlendCurrent.y =
+            background->photoBlendCurrent.farDistance =
                 *reinterpret_cast<f32 *>(&instruction->args[2]);
             background->photoBlendFinal = background->photoBlendCurrent;
 #ifdef TH095_MATCH_EXACT
@@ -1416,9 +1345,9 @@ read_instruction:
             background->interpolationModes[2] = instruction->args[1];
             background->photoBlendInitial = background->photoBlendCurrent;
             background->photoBlendFinal.color.color = instruction->args[2];
-            background->photoBlendFinal.x =
+            background->photoBlendFinal.nearDistance =
                 *reinterpret_cast<f32 *>(&instruction->args[3]);
-            background->photoBlendFinal.y =
+            background->photoBlendFinal.farDistance =
                 *reinterpret_cast<f32 *>(&instruction->args[4]);
             break;
 
@@ -1596,16 +1525,16 @@ interpolate:
                                      &background->photoBlendInitial.color)
                                      [colorChannelIndex]);
                     }
-                    background->photoBlendCurrent.x =
-                        (background->photoBlendFinal.x -
-                         background->photoBlendInitial.x) *
+                    background->photoBlendCurrent.nearDistance =
+                        (background->photoBlendFinal.nearDistance -
+                         background->photoBlendInitial.nearDistance) *
                             interpolationTime +
-                        background->photoBlendInitial.x;
-                    background->photoBlendCurrent.y =
-                        (background->photoBlendFinal.y -
-                         background->photoBlendInitial.y) *
+                        background->photoBlendInitial.nearDistance;
+                    background->photoBlendCurrent.farDistance =
+                        (background->photoBlendFinal.farDistance -
+                         background->photoBlendInitial.farDistance) *
                             interpolationTime +
-                        background->photoBlendInitial.y;
+                        background->photoBlendInitial.farDistance;
 #ifdef TH095_MATCH_EXACT
                     TH095_BACKBUFFER_CLEAR_COLOR =
                         background->photoBlendCurrent.color;
@@ -1769,20 +1698,20 @@ static __forceinline void BackgroundSetPhotoAreaPhase(
 {
     u8 compilerStorage[0x84];
 
-    reinterpret_cast<BackgroundStateView *>(view)->photoAreaActive = 1;
-    reinterpret_cast<BackgroundStateView *>(view)->photoAreaPosition = *position;
-    reinterpret_cast<BackgroundStateView *>(view)->photoAreaSize = *size;
-    if ((reinterpret_cast<BackgroundStateView *>(view)
+    view->photoAreaActive = 1;
+    view->photoAreaPosition = *position;
+    view->photoAreaSize = *size;
+    if ((view
              ->photoAreaVms[0].flagsWord & 1) == 0)
     {
         g_BackgroundStageState->anm->InitializeVm(
-            &reinterpret_cast<BackgroundStateView *>(view)->photoAreaVms[0],
+            &view->photoAreaVms[0],
             0x25);
         g_BackgroundStageState->anm->InitializeVm(
-            &reinterpret_cast<BackgroundStateView *>(view)->photoAreaVms[1],
+            &view->photoAreaVms[1],
             0x26);
         g_BackgroundStageState->anm->InitializeVm(
-            &reinterpret_cast<BackgroundStateView *>(view)->photoAreaVms[2],
+            &view->photoAreaVms[2],
             0x27);
     }
 
@@ -1796,24 +1725,28 @@ void Background::SetPhotoArea(const Float3 *position, const Float3 *size)
 // FUNCTION: TH095 0x00404A30.
 void Background::StartSpellBackground()
 {
-    reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundFrameCounter = 1;
-    reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundVms[0] =
-        TH095_BACKGROUND_CREATE_WORLD_VM(g_BackgroundRuntime->anmSpawner,
+    this->spellBackgroundFrameCounter = 1;
+    *reinterpret_cast<AnmVmId *>(
+        &this->spellBackgroundVmIds[0]) =
+        TH095_BACKGROUND_CREATE_WORLD_VM(
+            TH095_BACKGROUND_ENEMY_ANM(g_BackgroundRuntime),
             0, &Float3(0.0f, 0.0f, 0.0f));
 
-    reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundVms[1] =
-        TH095_BACKGROUND_CREATE_WORLD_VM(g_BackgroundRuntime->anmSpawner,
+    *reinterpret_cast<AnmVmId *>(
+        &this->spellBackgroundVmIds[1]) =
+        TH095_BACKGROUND_CREATE_WORLD_VM(
+            TH095_BACKGROUND_ENEMY_ANM(g_BackgroundRuntime),
             1, &Float3(0.0f, 0.0f, 0.0f));
 }
 
 // FUNCTION: TH095 0x00404AC0.
 void Background::StopSpellBackground()
 {
-    reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundFrameCounter = 0;
-    g_AnmManager->MarkVmForDeletion(
-        reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundVms[0]);
-    g_AnmManager->MarkVmForDeletion(
-        reinterpret_cast<BackgroundStateView *>(this)->spellBackgroundVms[1]);
+    this->spellBackgroundFrameCounter = 0;
+    g_AnmManager->MarkVmForDeletion(*reinterpret_cast<AnmVmId *>(
+        &this->spellBackgroundVmIds[0]));
+    g_AnmManager->MarkVmForDeletion(*reinterpret_cast<AnmVmId *>(
+        &this->spellBackgroundVmIds[1]));
 }
 
 } // namespace th095

@@ -4,6 +4,7 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "AsciiManager.hpp"
+#include "Background.hpp"
 #include "FrontEndGlobals.hpp"
 #ifndef DIFFBUILD
 #include "FileSystem.hpp"
@@ -11,6 +12,10 @@
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
 #include "Main.hpp"
+#include "PhotoBulletManager.hpp"
+#ifndef DIFFBUILD
+#include "PhotoEnemyManager.hpp"
+#endif
 #include "PhotoGameTask.hpp"
 #include "PhotoEffectRuntime.hpp"
 #ifndef DIFFBUILD
@@ -28,21 +33,9 @@
 namespace th095
 {
 
-struct Background
-{
-    ~Background();
-    static Background *__fastcall Create();
-};
-
 struct PhotoFrontManagerView
 {
     static PhotoFrontManagerView *Create();
-    void Destroy();
-};
-
-struct PhotoBulletManagerView
-{
-    static PhotoBulletManagerView *__fastcall Create();
     void Destroy();
 };
 
@@ -63,12 +56,14 @@ struct PhotoEnemyManagerTaskView
     static PhotoEnemyManagerTaskView *Create();
 };
 
+#ifdef DIFFBUILD
 struct PhotoEnemyManagerView
 {
     void Destroy();
     static void __fastcall RestartPhotoTargetEcls(
         PhotoEnemyManagerView *enemyManager);
 };
+#endif
 
 struct PhotoItemManagerView
 {

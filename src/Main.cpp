@@ -2311,6 +2311,9 @@ cleanup:
     return 0;
 }
 
+#ifdef DIFFBUILD
+#define threadHandle handle
+#endif
 // FUNCTION: TH095 0x00425150.
 void Supervisor::ThreadClose()
 {
@@ -2319,15 +2322,18 @@ void Supervisor::ThreadClose()
     this->EnterCriticalSectionWrapper(6);
     this->criticalSectionLockCounts[6]++;
     worker = &this->replayScanWorker;
-    if (worker->handle != NULL)
+    if (worker->threadHandle != NULL)
     {
-        CloseHandle((HANDLE)worker->handle);
-        worker->handle = 0;
+        CloseHandle((HANDLE)worker->threadHandle);
+        worker->threadHandle = 0;
         worker->active = 0;
     }
     this->LeaveCriticalSectionWrapper(6);
     this->criticalSectionLockCounts[6]--;
 }
+#ifdef DIFFBUILD
+#undef threadHandle
+#endif
 
 void Supervisor::InitializeCriticalSections()
 {

@@ -13,7 +13,9 @@ struct ZunTimer
 
     ZunTimer()
     {
-        Initialize();
+        this->current = 0;
+        this->previous = -999999;
+        this->subFrame = 0.0f;
     }
 
     void Initialize()

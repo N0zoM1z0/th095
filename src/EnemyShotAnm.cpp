@@ -2,6 +2,7 @@
 #include "GameplayGlobals.hpp"
 #include "ecl/EclManager.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoEnemyManager.hpp"
 #include "ecl/EnemyEclRuntimeView.hpp"
 #endif
 
@@ -18,6 +19,20 @@ void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruc
 #else
 #define TH095_ENEMY_SHOT_RUNTIME \
     TH095_RUNTIME_GLOBAL_PTR(u8, g_RuntimeEnemyManagerOwner)
+#endif
+
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#define TH095_ENEMY_PRIMARY_ANM \
+    (*reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4df8))
+#define TH095_ENEMY_UNKNOWN_4DFC_ANM \
+    (*reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4dfc))
+#else
+#define TH095_ENEMY_MANAGER_RUNTIME \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
+#define TH095_ENEMY_PRIMARY_ANM (TH095_ENEMY_MANAGER_RUNTIME->enemyAnm)
+#define TH095_ENEMY_UNKNOWN_4DFC_ANM \
+    (*reinterpret_cast<AnmLoaded **>( \
+        &TH095_ENEMY_MANAGER_RUNTIME->unknown4dfc[0]))
 #endif
 
 struct EnemyLifeView
@@ -131,8 +146,8 @@ void Enemy::UpdateShotAndAnm()
             if (TargetEnemyAnmDirection(this) != direction)
             {
                 anm = TargetEnemyAlternateAnmBank(this)
-                    ? *reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4dfc)
-                    : *reinterpret_cast<AnmLoaded **>(TH095_ENEMY_SHOT_RUNTIME + 0x4df8);
+                    ? TH095_ENEMY_UNKNOWN_4DFC_ANM
+                    : TH095_ENEMY_PRIMARY_ANM;
 
                 switch (direction)
                 {

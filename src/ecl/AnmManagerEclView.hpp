@@ -1,4 +1,14 @@
 #pragma once
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+
+// Normal reconstruction code must use the canonical TH095 ANM declarations.
+// The declaration block below is retained only as an exact-emission boundary
+// pending a bounded migration of every exact ECL consumer.  It is not a
+// second runtime layout, and its continued necessity is not assumed.
+#include "../AnmManager.hpp"
+
+#else
+
 #ifndef TH095_MATCH_EXACT
 #include "../AnmVmId.hpp"
 #endif
@@ -939,3 +949,5 @@ C_ASSERT(offsetof(AnmManager, currentSprite) == 0x24C8);
 DIFFABLE_EXTERN(AnmManager *, g_AnmManager);
 
 }; // namespace th095
+
+#endif

@@ -17,6 +17,8 @@
 | Replay a strict unit | `scripts/build.py` and `scripts/compare-coff-function.py --unit …` | Full extent and explicit relocations |
 | Validate ledgers | `python3 scripts/validate-tracking.py` | Does not prove exactness |
 | Report live state | `python3 scripts/report-reconstruction-status.py` | Reads ledgers, not prose |
+| Route semantic/ownership debt | `python3 scripts/analysis/report-semantic-debt.py` | Read-only heuristic; counts are not progress |
+| Guard closed semantic protocols | `python3 scripts/check-semantic-protocols.py` | Fails only for explicitly closed namespaces |
 | Generate progress | `python3 scripts/progress.py` | Generated from accepted state |
 | Public CI | `python3 scripts/ci.py` | No target or private database required |
 

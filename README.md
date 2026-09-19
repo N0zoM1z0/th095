@@ -73,7 +73,7 @@ included.
 | Strict authored comparison | **One deferred residual** | `Controller::GetInput` differs in one comparable byte in its best bounded compiler oracle; no exact credit is claimed for it. |
 | Whole-program build | **Complete** | The production graph cold-compiles and links with pinned VC7.1 into a runnable PE32 i386 Windows GUI executable. |
 | Windows i386 runtime | **Playable** | A full manual endurance pass and separate normal death, retry, menu, save, and replay tests completed successfully. |
-| Semantic reconstruction | **Next phase** | Recover evidence-backed types, names, protocols, and canonical owners from the current target-layout-shaped source. |
+| Semantic reconstruction | **Active** | Recover evidence-backed types, names, protocols, and canonical owners from the current target-layout-shaped source. |
 | Windows x86-64, Linux, and Web/WASM game ports | **Planned after semantics** | Modern platform products remain separate from the exact VC7.1 build. |
 | Whole-executable byte identity | **Not claimed** | Exactness remains governed by the reproducible function/object match ledger. |
 
@@ -134,18 +134,25 @@ all modes remain fail-closed and never create a stubbed or force-linked image.
 
 ## Test-only no-death launcher
 
-For manual endurance testing of the current reconstructed artifact only, copy
-`scripts/run-no-death-test.bat` and `scripts/run-no-death-test.ps1` next to
-`th095-reconstructed.exe`, then double-click the BAT file. The launcher patches
-only the spawned process; it neither rebuilds nor modifies the executable on
-disk. It is hash-pinned, fail-closed, and is never a release build or an exact
-reconstruction claim.
+For manual endurance testing of the archived 2026-09-10 reconstructed artifact
+only, copy `scripts/run-no-death-test.bat` and
+`scripts/run-no-death-test.ps1` next to `th095-reconstructed.exe`, then
+double-click the BAT file. The launcher is pinned to that artifact and will
+reject the current post-SEM-270 image unless it is separately revalidated and
+repinned. It patches only the spawned process; it neither rebuilds nor modifies
+the executable on disk, and is never a release build or an exact reconstruction
+claim.
 
 ## Documentation
 
 - [Current handoff](docs/RE_HANDOFF.md)
 - [Reconstruction and game-port roadmap](docs/ROADMAP.md)
-- [Semantic reconstruction plan](docs/SEMANTIC_RECONSTRUCTION.md)
+- [Semantic reconstruction policy](docs/SEMANTIC_RECONSTRUCTION.md)
+- [Semantic reconstruction playbook](docs/SEMANTIC_PLAYBOOK.md)
+- [Current semantic index](docs/SEMANTIC_INDEX.md)
+- [Semantic batch history](docs/SEMANTIC_HISTORY.md)
+- [Source and build ownership map](docs/SOURCE_MAP.md)
+- [Archived handoffs](docs/RE_HANDOFF_HISTORY.md)
 - [Architecture and exact target](docs/ARCHITECTURE.md)
 - [Reverse-engineering workflow](docs/RE_WORKFLOW.md)
 - [Independent oracle policy](docs/ORACLES.md)

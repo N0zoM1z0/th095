@@ -197,7 +197,11 @@ struct MidiOutput
 #define TH095_REPLAY_SCAN_WORKER_DEFINED
 struct ReplayScanWorker
 {
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     uintptr_t handle;
+#else
+    uintptr_t threadHandle;
+#endif
     u32 threadId;
 #ifdef TH095_MATCH_EXACT
     i32 stopRequested;

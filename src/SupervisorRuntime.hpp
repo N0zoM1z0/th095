@@ -30,7 +30,7 @@ struct PhotoGameTaskView;
 
 struct ReplayScanWorker
 {
-    uintptr_t handle;
+    uintptr_t threadHandle;
     u32 threadId;
     i32 exitSignal;
     i32 active;

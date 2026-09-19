@@ -2,7 +2,11 @@
 #include "EclOperands.hpp"
 #include "Gui.hpp"
 #include "BulletManager.hpp"
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#include "BackgroundEclEmission.hpp"
+#else
 #include "Background.hpp"
+#endif
 #include "GameManager.hpp"
 #include "ItemManager.hpp"
 #include "Player.hpp"
@@ -19,8 +23,12 @@
 
 #include "../GameplayGlobals.hpp"
 #ifndef DIFFBUILD
+#include "../PhotoBulletManager.hpp"
 #include "../PhotoEffectRuntime.hpp"
 #include "../PhotoPlayerRuntime.hpp"
+#endif
+#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "../PhotoEnemyManager.hpp"
 #endif
 
 #ifndef DIFFBUILD
@@ -110,18 +118,8 @@ typedef char EclCompletionTimerAt108[
 #define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
     (*reinterpret_cast<EclRunHigh::PhotoAnmSpawner **>(TH095_ECL_RUNTIME + 0x4df8))
 #else
-namespace th095
-{
-struct EclEnemyAnmRuntimeView
-{
-    u8 unknown0000[0x4df8];
-    AnmLoaded *enemyAnm;
-};
-typedef char EclEnemyAnmAt4DF8[
-    (offsetof(EclEnemyAnmRuntimeView, enemyAnm) == 0x4df8) ? 1 : -1];
-}
 #define TH095_ECL_PRIMARY_ENEMY_ANM \
-    (reinterpret_cast<::th095::EclEnemyAnmRuntimeView *>(TH095_ECL_RUNTIME)->enemyAnm)
+    (reinterpret_cast<::th095::PhotoEnemyManagerView *>(TH095_ECL_RUNTIME)->enemyAnm)
 #define TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER \
     reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(TH095_ECL_PRIMARY_ENEMY_ANM)
 #endif
@@ -173,7 +171,7 @@ typedef char EclStageScoreMultiplierAt25718[
     *reinterpret_cast<PhotoSession **>(TH095_ECL_RUNTIME + 0x26ae28)
 #else
 #define TH095_ECL_PHOTO_CARD_SESSION \
-    reinterpret_cast<::th095::EclPhotoCardSessionRuntimeView *>(TH095_ECL_RUNTIME) \
+    reinterpret_cast<::th095::PhotoEnemyManagerView *>(TH095_ECL_RUNTIME) \
         ->eclPhotoCardSession
 #endif
 
@@ -183,11 +181,11 @@ typedef char EclStageScoreMultiplierAt25718[
     TH095_ECL_BULLET_MANAGER->SpawnEnemyPattern(descriptor)
 #else
 #define TH095_ECL_BULLET_MANAGER \
-    TH095_RUNTIME_GLOBAL_PTR(EclRunHigh::Th095BulletManager, ::th095::g_RuntimeBulletManagerOwner)
+    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoBulletManagerView, \
+                             ::th095::g_RuntimeBulletManagerOwner)
 #define TH095_ECL_BULLET_SPAWN(descriptor) \
-    reinterpret_cast<::th095::PhotoBulletManagerView *>(TH095_ECL_BULLET_MANAGER) \
-        ->SpawnBulletPattern( \
-            reinterpret_cast<::th095::PhotoBulletSpawnDescriptor *>(descriptor))
+    TH095_ECL_BULLET_MANAGER->SpawnBulletPattern( \
+        reinterpret_cast<::th095::PhotoBulletSpawnDescriptor *>(descriptor))
 #endif
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 #define TH095_ECL_BULLET_ANM_SPAWNER \
@@ -196,8 +194,7 @@ typedef char EclStageScoreMultiplierAt25718[
 #else
 #define TH095_ECL_BULLET_ANM_SPAWNER \
     reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>( \
-        reinterpret_cast<::th095::PhotoBulletManagerView *>( \
-            TH095_ECL_BULLET_MANAGER)->anmSpawner)
+        TH095_ECL_BULLET_MANAGER->bulletAnm)
 #endif
 
 #ifdef DIFFBUILD
@@ -248,8 +245,7 @@ typedef char EclStageScoreMultiplierAt25718[
 #define TH095_ECL_STAGE_CONTROLLER \
     TH095_RUNTIME_GLOBAL_PTR(EclRunHigh::Th095StageController, ::th095::g_RuntimeEffectManagerOwner)
 #define TH095_ECL_BULLET_RESET() \
-    reinterpret_cast<::th095::PhotoBulletManagerView *>(TH095_ECL_BULLET_MANAGER) \
-        ->DespawnAllBullets()
+    TH095_ECL_BULLET_MANAGER->DespawnAllBullets()
 #define TH095_ECL_STAGE_RESET() \
     ::th095::PhotoEffectManagerView::DrawSecondary(TH095_ECL_EFFECT_MANAGER)
 #endif
@@ -306,41 +302,15 @@ typedef char EclEnemyVmRotationZAt28[
 
 #ifndef DIFFBUILD
 struct AnmVertex;
-struct PhotoBulletSpawnDescriptor;
-struct PhotoBulletManagerView
-{
-    u8 unknown0000[0x27c5b0];
-    EclRunHigh::PhotoAnmSpawner *anmSpawner;
-
-    i32 SpawnBulletPattern(PhotoBulletSpawnDescriptor *descriptor);
-    void DespawnAllBullets();
-};
-typedef char EclPhotoBulletManagerAnmAt27C5B0[
-    (offsetof(PhotoBulletManagerView, anmSpawner) == 0x27c5b0) ? 1 : -1];
 struct PhotoCardInfoView
 {
     static PhotoCardInfoView *__fastcall Create(char *text);
     i32 Show();
     void Destroy();
 };
-struct EclPhotoCardSessionRuntimeView
-{
-    u8 unknown000000[0x26ae28];
-    PhotoCardInfoView *eclPhotoCardSession;
-};
-typedef char EclPhotoCardSessionAt26AE28[
-    (offsetof(EclPhotoCardSessionRuntimeView, eclPhotoCardSession) == 0x26ae28) ? 1 : -1];
 struct PhotoEnemyView
 {
     void ClampPosition();
-};
-struct PhotoEnemyManagerView
-{
-    PhotoEnemyView *SpawnWithContext(
-        i32 subroutineId, const Float3 *position, i32 life,
-        i32 itemDrop, i32 score, const i32 *contextValues);
-    static void __fastcall ResetNonPhotoTargets(
-        PhotoEnemyManagerView *enemyManager);
 };
 extern AnmManager *g_AnmManager;
 static __forceinline Enemy *Th095EclSpawnEnemy(

@@ -69,6 +69,10 @@ def main() -> int:
             [sys.executable, "scripts/build-whole.py", "--check"],
         )
         run(
+            "Guard closed semantic protocols",
+            [sys.executable, "scripts/check-semantic-protocols.py"],
+        )
+        run(
             "Run workflow unit tests",
             [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
         )

@@ -1,5 +1,10 @@
 # Whole-program build and runtime closure
 
+> Historical checkpoint: the artifact hash, size, and runtime scenarios in
+> this document describe the 2026-09-10 production source. Later semantic-owner
+> work changed the normal executable. Use `RE_HANDOFF.md` for the current build
+> checkpoint; do not transfer this page's runtime credit to newer artifacts.
+
 This document records the completed production-build lane and the checks that
 must remain green. Whole-image byte equality is not a goal. The 696 accepted
 function-level exact results remain independently governed by canonical

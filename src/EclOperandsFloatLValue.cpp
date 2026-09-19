@@ -1,6 +1,9 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "ecl/EclOperands.hpp"
+#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "PhotoEnemyManager.hpp"
+#endif
 
 namespace th095
 {
@@ -11,11 +14,18 @@ struct EclSharedFloatLValueView
     f32 floatVariables[4];
 };
 
+#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct EclFloatLValueRuntimeView
 {
     u8 unknown000000[0x4df4];
     EclSharedFloatLValueView *sharedOperands;
 };
+#define TH095_ECL_FLOAT_LVALUE_SHARED(runtime) ((runtime)->sharedOperands)
+#else
+typedef PhotoEnemyManagerView EclFloatLValueRuntimeView;
+#define TH095_ECL_FLOAT_LVALUE_SHARED(runtime) \
+    reinterpret_cast<EclSharedFloatLValueView *>((runtime)->eclManager)
+#endif
 
 struct EclFloatLValuePlayerView
 {
@@ -72,10 +82,10 @@ f32 *__fastcall ResolveFloatLValue(
     case 0x275f: return &enemy->activeEclContext->extraFloatVariables[2];
     case 0x2760: return &enemy->activeEclContext->extraFloatVariables[3];
 
-    case 0x2740: return &g_EclFloatLValueRuntime->sharedOperands->floatVariables[0];
-    case 0x2741: return &g_EclFloatLValueRuntime->sharedOperands->floatVariables[1];
-    case 0x2742: return &g_EclFloatLValueRuntime->sharedOperands->floatVariables[2];
-    case 0x2743: return &g_EclFloatLValueRuntime->sharedOperands->floatVariables[3];
+    case 0x2740: return &TH095_ECL_FLOAT_LVALUE_SHARED(g_EclFloatLValueRuntime)->floatVariables[0];
+    case 0x2741: return &TH095_ECL_FLOAT_LVALUE_SHARED(g_EclFloatLValueRuntime)->floatVariables[1];
+    case 0x2742: return &TH095_ECL_FLOAT_LVALUE_SHARED(g_EclFloatLValueRuntime)->floatVariables[2];
+    case 0x2743: return &TH095_ECL_FLOAT_LVALUE_SHARED(g_EclFloatLValueRuntime)->floatVariables[3];
 
     case 0x2749: return &enemy->movementInterpolationOrigin.x;
     case 0x274a: return &enemy->movementInterpolationOrigin.y;
