@@ -252,6 +252,24 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             ),
             2,
         )
+        self.assertNotIn("PhotoSoundPlayerView", source)
+        self.assertNotIn("@PhotoSoundPlayerView@th095@@", manifest)
+        self.assertIn("static inline SoundPlayer *PhotoSoundPlayer()", source)
+        self.assertIn("return &g_SoundPlayer;", source)
+        self.assertEqual(source.count("PhotoSoundPlayer()->"), 13)
+        self.assertIn(
+            "?PlaySoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@H@Z",
+            manifest,
+        )
+        self.assertIn(
+            "?PlaySoundPositionedByIdx@SoundPlayer@th095@@"
+            "QAEXW4SoundIdx@2@M@Z",
+            manifest,
+        )
+        self.assertIn(
+            "?StopSoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@@Z",
+            manifest,
+        )
         self.assertNotIn("PhotoStageControllerView", source)
         self.assertNotIn("g_PhotoStageController", source)
         self.assertIn('#include "PhotoEffectRuntime.hpp"', source)

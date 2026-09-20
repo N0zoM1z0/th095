@@ -1398,6 +1398,21 @@ def check_photo_camera_state_owner() -> None:
         fail("PhotoCamera widened the two-call created-position emission boundary")
 
     for retired in (
+        "struct PhotoSoundPlayerView",
+        "reinterpret_cast<PhotoSoundPlayerView *>",
+    ):
+        if retired in source:
+            fail(f"PhotoCamera restored duplicate SoundPlayer ABI: {retired}")
+    for fact in (
+        "static inline SoundPlayer *PhotoSoundPlayer()",
+        "return &g_SoundPlayer;",
+    ):
+        if fact not in source:
+            fail(f"PhotoCamera lost canonical SoundPlayer access: {fact}")
+    if source.count("PhotoSoundPlayer()->") != 13:
+        fail("PhotoCamera sound calls escaped the canonical SoundPlayer route")
+
+    for retired in (
         "struct PhotoStageControllerView",
         "g_PhotoStageController",
     ):
@@ -1434,6 +1449,7 @@ def check_photo_camera_state_owner() -> None:
         "?SetVmInterrupt@PhotoAnmManagerView@th095@@",
         "?RemoveVm@PhotoAnmManagerView@th095@@",
         "?SetVmPosition@PhotoAnmManagerView@th095@@",
+        "@PhotoSoundPlayerView@th095@@",
     ):
         if retired in manifest:
             fail(f"PhotoCamera manifest restored proxy ABI: {retired}")
@@ -1449,6 +1465,9 @@ def check_photo_camera_state_owner() -> None:
         "?SetInterrupt@AnmManager@th095@@QAEXUAnmVmId@2@H@Z",
         "?MarkVmForDeletion@AnmManager@th095@@QAEXUAnmVmId@2@@Z",
         "?SetPosition@AnmManager@th095@@QAEXUAnmVmId@2@PAUFloat3@2@@Z",
+        "?PlaySoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@H@Z",
+        "?PlaySoundPositionedByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@M@Z",
+        "?StopSoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@@Z",
     )
     for symbol in required_manifest:
         if symbol not in manifest:

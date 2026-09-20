@@ -71,24 +71,10 @@ struct PhotoAnmCreatedPositionEmissionAdapter
 #define TH095_PHOTO_ANM_SET_POSITION_DIRECT(id, position) \
     TH095_PHOTO_ANM_SET_POSITION((id), (position))
 
-#ifdef TH095_MATCH_EXACT
-struct PhotoSoundPlayerView
-{
-    void PlaySoundByIdx(i32 idx, i32 pan);
-    void PlaySoundPositionedByIdx(i32 idx, f32 pan);
-    void StopSoundByIdx(i32 idx);
-};
-
-static inline PhotoSoundPlayerView *PhotoSoundPlayer()
-{
-    return reinterpret_cast<PhotoSoundPlayerView *>(&g_SoundPlayer);
-}
-#else
 static inline SoundPlayer *PhotoSoundPlayer()
 {
     return &g_SoundPlayer;
 }
-#endif
 
 extern PhotoEnemyManagerView *g_PhotoRuntime;
 extern PhotoGameTaskView *g_PhotoGlobalState;

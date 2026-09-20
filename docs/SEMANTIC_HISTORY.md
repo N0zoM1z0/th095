@@ -14597,3 +14597,50 @@ proved `SoundIdx` method family at `0x00438F20/0x00439030/0x00439160`.
 Determine whether direct canonical enum parameters reproduce target callers or
 whether a strictly method-only decoration boundary remains necessary. Do not
 add a selector or infer sound meanings from numeric adjacency.
+
+### SEM-293 — retire PhotoCamera's duplicate SoundPlayer projection
+
+**Scope.** Close PhotoCamera's last profile-selected local owner by replacing
+`PhotoSoundPlayerView` with canonical `SoundPlayer`. This batch changes no
+sound index values, queue behavior, pan calculation, playback timing, audio
+resource lifetime, or wider SoundPlayer layout.
+
+**Evidence and ownership.** The exact-only proxy borrowed the canonical
+`g_SoundPlayer @ 0x004C4EE8` object and declared only three methods. Its five
+`PlaySoundByIdx`, two `PlaySoundPositionedByIdx`, and six `StopSoundByIdx`
+relocations target the canonical exact authored methods at
+`0x00438F20/0x00439030/0x00439160`. `SoundPlayer.hpp` independently declares
+the same family with `SoundIdx`; PhotoCamera already supplies typed enum values
+or the guarded `TH095_SOUND_*` tokens. The proxy therefore contributed only a
+false integer-parameter decoration, not storage or behavior.
+
+**Production / exact representation.** `PhotoSoundPlayer()` now returns
+`&g_SoundPlayer` in every profile. The local class, reinterpret cast, selected
+helper body, and all 13 proxy decorations are gone. Direct pinned-VC7.1
+comparison preserves every caller byte and every relocation offset/type/target
+while adopting the three canonical `SoundIdx` method identities. No emission
+adapter is required.
+
+**Guards and debt.** The camera guard rejects the local type, cast, and proxy
+manifest decoration; it requires one canonical helper, all 13 routed calls,
+and the three canonical method identities. Removing one exact selector shrinks
+the selector baseline from 805 to **804 directives across 109 files**.
+Removing the selected local type shrinks declaration debt from 213 keys / 218
+occurrences to **212 keys / 217 occurrences**. PhotoCamera now has no selected
+local declaration in the debt ledger. No selector, selected declaration, or
+baseline allowance was added.
+
+**Validation.** All 13 ABI identity migrations preserve structural bytes and
+target destinations. Restricted refresh changed 15 compiler-private labels in
+two units only after structural and non-private relocation proof; final
+PhotoCamera replay passed **11/11 exact** with zero refresh. The normal
+pinned-VC7.1 probe emitted the unchanged **59,658-byte i386 COFF** object. The
+semantic guard and all 58 tests pass. Per batching policy, no aggregate/product
+closure is claimed; SEM-287 remains the latest full receipt.
+
+**Unknown / next route.** Continue the same independently proved SoundPlayer
+owner family across remaining consumers rather than reopening PhotoCamera:
+start with `PhotoBulletSoundPlayerView` in BulletManager, then audit
+EclExtended's method-only projection against the canonical `SoundIdx` methods.
+Keep each TU exact independently, do not add selectors,
+and do not infer semantic sound names from numeric adjacency.
