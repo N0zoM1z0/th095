@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-285. Owner closure remains
+The current semantic source checkpoint is SEM-286. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -69,11 +69,11 @@ deliberately narrower than subsystem completion:
 | RunEcl Player/camera lane | Normal case 141 writes canonical `PhotoPlayerRuntimeView::camera.photoLimit @ Player+0x29EC`; all six angle calls use the Player root and `AngleFromPoint @ 0x004303E0`. The padded local owner is retired; the last four exact call decorations are isolated in method-only `ecl/PhotoCameraEclEmission.hpp`. This does not close every Player projection. |
 | EclExtended Player/camera lane | Both callbacks use canonical `PhotoPlayerRuntimeView` storage for `playerPosition @ +0x1E30`, camera `@ +0x1E3C`, `movementScale @ +0x2A18`, camera mode, and viewfinder geometry. `PhotoCameraState` remains the method owner. The exact adapter retains only an incomplete historical Player global and method-only camera receiver; it has no storage layout. |
 | PhotoCamera/PhotoStage Player lane | `PhotoPlayerRuntime.hpp` is profile-independent and now owns the proved mode, effect ANM/VM slot, movement/tracking state, completion timer, position, partial camera, and movement-scale storage. PhotoCamera and both PhotoStage bodies route Player fields through it. The old full `PhotoGameStateView` and normal `PhotoStageCameraView` layouts are retired; `PhotoCameraPlayerEmission.inl` is method-only and storage-free. Full `PhotoCameraState` embedding remains separate debt because the exact legacy ANM graph conflicts with the canonical header graph. |
-| PhotoCamera state `0xBDC` | Mode `+0x000`, trivial ANM handles `+0x010`, flags/charge UI `+0xBB4`, and `focusChargeFrames +0xBB8` now use shared declarations. The target constructor proves the handles must not inherit `AnmVmId` default construction; conversion and inline forwarding reach its canonical method ABI. `PhotoAnmLoadedView` remains selected receiver debt and prevents claiming the whole header profile-independent. |
+| PhotoCamera state `0xBDC` | Mode `+0x000`, trivial ANM handles `+0x010`, flags/charge UI `+0xBB4`, `focusChargeFrames +0xBB8`, and the loaded-ANM receiver now use shared declarations. The target constructor proves the handles must not inherit `AnmVmId` default construction; conversion and inline forwarding reach its canonical method ABI. `PhotoAnmLoadedView` aliases canonical `AnmLoaded`; only `CreateVm` uses a profile-free, fieldless VC7 return-decoration adapter whose normal link owner is canonical `AnmLoaded::CreateVm`. The remaining header profile debt is the BulletInf include/receiver selector pair. |
 | Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 827 remaining selector directives across 110 files and 218 declaration keys / 223 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 826 remaining selector directives across 110 files and 217 declaration keys / 222 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -265,17 +265,35 @@ verified **780,800-byte PE32/i386 GUI**, build-local SHA-256
 Target-independent CI passed **58/58** tests. This is exact-unit preservation
 and normal compile/link closure, not whole-image identity or runtime credit.
 
+For SEM-286, `PhotoAnmLoadedView` became a shared alias to canonical
+`AnmLoaded`. Forty-three loaded-ANM relocations changed only receiver identity
+at unchanged offsets, types, bytes, and target destinations; twelve `CreateVm`
+calls use the fieldless return-decoration adapter, while the other three
+method families use canonical `AnmLoaded`. The complete header fanout passed
+**84/84 exact across eight sources**. The controlled matcher refreshed 38
+compiler-private `$L...` names in four PhotoCamera/PhotoGame units only after
+structural and destination proof. A final uninterrupted cold aggregate passed
+**696/696 exact across all 88 sources** with zero further refresh. Normal
+pinned-VC7.1 probes emitted 60,763-byte PhotoCamera, 53,605-byte PhotoGame, and
+49,456-byte PhotoStage i386 COFF objects. The normal build compiled all **88**
+objects and linked a verified **780,288-byte PE32/i386 GUI**, build-local
+SHA-256
+`8a9036f5736c2332b64e91713b47cf824eb516918b37a4b6d80c533527a56444`.
+Target-independent CI passed **58/58** tests. This is exact-unit preservation
+and normal compile/link closure, not whole-image identity or runtime credit.
+
 ## Next bounded lane
 
-Audit the remaining `PhotoAnmLoadedView` selected declaration in
-`PhotoCamera.hpp`, one decorated method family at a time. Map `SetSprite`,
-`SetAndExecuteScript`, `InitializeVm`, and `CreateVm` to canonical `AnmLoaded`
-targets, preserving the now-proved trivial `PhotoAnmVmId` storage lifecycle.
-Test whether one shared receiver plus a named, storage-free emission boundary
-can preserve required VC7 source shape; do not restore a selected handle. Do not
-embed full `PhotoCameraState` in `PhotoPlayerRuntime.hpp`, replace its 0x2CC
-dependency-light VM storage, infer unsupported fields, name EnemyInf manager
-`+0x4DFC`, add a selector, or enlarge either closed baseline.
+Audit the last two `PhotoCamera.hpp` selectors as one BulletInf lane: the
+normal canonical `PhotoBulletManager.hpp` include versus
+`PhotoCameraBulletEmission.inl`'s historical `PhotoBulletManagerView` and
+`PhotoAnmSpawnerView`. Map the camera's bullet-manager calls to the already
+closed 0x27C5B8 owner, then use a profile-free, storage-free adapter only where
+a bounded pinned-VC7.1 experiment proves a decorated receiver dependency. Do
+not restore the loaded-ANM layout, embed full `PhotoCameraState` in the
+dependency-light Player header, replace its 0x2CC VM storage, infer unsupported
+fields, name EnemyInf manager `+0x4DFC`, add a selector, or enlarge either
+closed baseline.
 
 ## Protected working-tree exclusions
 
@@ -294,6 +312,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/PhotoCamera.hpp --details
-rg -n "PhotoAnmLoadedView|SetSprite|SetAndExecuteScript|InitializeVm|CreateVm" src/PhotoCamera.* src/PhotoGame* src/PhotoStage* src/Anm*.cpp
+python3 scripts/analysis/report-semantic-debt.py --path src/PhotoCamera.hpp --path src/PhotoCameraBulletEmission.inl --details
+rg -n "PhotoBulletManagerView|PhotoAnmSpawnerView|PhotoCameraBulletEmission|PhotoBulletManager.hpp" src/PhotoCamera.* src/PhotoCameraBulletEmission.inl src/PhotoBulletManager.hpp
 ```

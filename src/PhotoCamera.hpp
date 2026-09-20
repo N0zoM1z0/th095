@@ -2,6 +2,7 @@
 #define TH095_PHOTO_CAMERA_HPP
 
 #include "AnmManager.hpp"
+#include "PhotoAnmCreateVmEmission.hpp"
 #include "PhotoCameraMode.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoBulletManager.hpp"
@@ -61,33 +62,7 @@ typedef char PhotoAnmVmIdSizeIs4[(sizeof(PhotoAnmVmId) == 4) ? 1 : -1];
 typedef char PhotoAnmVmIdValueAt0[
     (offsetof(PhotoAnmVmId, value) == 0x0) ? 1 : -1];
 
-#ifdef TH095_MATCH_EXACT
-struct PhotoAnmLoadedView
-{
-    i32 anmIdx;
-    void *rawData;
-    i32 totalEntries;
-    AnmLoadedSprite *sprites;
-    AnmRawInstr **scripts;
-    void *textures;
-    i32 postloadEntryNumber;
-
-    ZunResult SetSprite(AnmVm *vm, i32 spriteIdx);
-    void SetAndExecuteScript(AnmVm *vm, AnmRawInstr *beginningOfScript);
-
-    void SetAndExecuteScriptIdx(AnmVm *vm, i32 scriptIndex)
-    {
-        vm->anmFile = reinterpret_cast<AnmLoaded *>(this);
-        vm->scriptIndex = scriptIndex;
-        this->SetAndExecuteScript(vm, this->scripts[scriptIndex]);
-    }
-
-    void InitializeVm(AnmVm *vm, i32 scriptIndex);
-    PhotoAnmVmId CreateVm(i32 scriptIndex, i32 renderMode);
-};
-#else
 typedef AnmLoaded PhotoAnmLoadedView;
-#endif
 
 typedef char PhotoAnmLoadedViewSizeIs1C[
     (sizeof(PhotoAnmLoadedView) == 0x1c) ? 1 : -1];

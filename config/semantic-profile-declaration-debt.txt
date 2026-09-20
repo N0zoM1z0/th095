@@ -74,7 +74,6 @@
 1	src/PhotoCamera.cpp	struct	PhotoRuntimeView
 1	src/PhotoCamera.cpp	struct	PhotoSoundPlayerView
 1	src/PhotoCamera.cpp	struct	PhotoStageControllerView
-1	src/PhotoCamera.hpp	struct	PhotoAnmLoadedView
 1	src/PhotoCardInfo.cpp	struct	PhotoCardGameRuntimeView
 1	src/PhotoCardInfo.cpp	struct	PhotoCardGameTaskView
 1	src/PhotoCardInfo.cpp	struct	PhotoCardStageStateView

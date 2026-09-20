@@ -185,7 +185,6 @@
 5	src/PhotoCamera.cpp	#ifndef DIFFBUILD
 1	src/PhotoCamera.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/PhotoCamera.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-1	src/PhotoCamera.hpp	#ifdef TH095_MATCH_EXACT
 6	src/PhotoCardInfo.cpp	#ifdef DIFFBUILD
 1	src/PhotoCardInfo.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoCardInfo.cpp	#ifndef DIFFBUILD

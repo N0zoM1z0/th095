@@ -1095,6 +1095,45 @@ def check_photo_camera_state_owner() -> None:
     if "typedef AnmVmId PhotoAnmVmId;" in header:
         fail("PhotoCamera restored constructor-bearing AnmVmId storage")
 
+    if "typedef AnmLoaded PhotoAnmLoadedView;" not in header:
+        fail("Photo ANM receiver lost the canonical AnmLoaded owner")
+    if "struct PhotoAnmLoadedView" in header:
+        fail("PhotoCamera restored the duplicated ANM receiver layout")
+    if '#include "PhotoAnmCreateVmEmission.hpp"' not in header:
+        fail("PhotoCamera lost its named CreateVm emission boundary")
+    emission = (SRC / "PhotoAnmCreateVmEmission.hpp").read_text(encoding="utf-8")
+    adapter_start = emission.index("struct PhotoAnmCreateVmEmissionAdapter")
+    adapter_body = braced_body_after(
+        emission, adapter_start, "PhotoAnmCreateVmEmissionAdapter"
+    )
+    if "TH095_MATCH_EXACT" in emission or "DIFFBUILD" in emission:
+        fail("Photo CreateVm emission adapter must be profile-independent")
+    if "Compiler-emission adapter for photo CreateVm callers only" not in emission:
+        fail("Photo CreateVm emission adapter must state its narrow ownership")
+    if "PhotoAnmVmId CreateVm(i32 scriptIndex, i32 renderMode);" not in adapter_body:
+        fail("Photo CreateVm emission adapter lost its compiler-proved return ABI")
+    for field in (
+        "anmIdx;",
+        "rawData;",
+        "totalEntries;",
+        "sprites;",
+        "scripts;",
+        "textures;",
+        "postloadEntryNumber;",
+    ):
+        if field in adapter_body:
+            fail(f"Photo CreateVm emission adapter gained owner storage: {field}")
+    if "#define TH095_PHOTO_ANM_CREATE_VM" not in emission:
+        fail("Photo CreateVm calls lost the named emission boundary")
+    required_alias = (
+        "/alternatename:"
+        "?CreateVm@PhotoAnmCreateVmEmissionAdapter@th095@@"
+        "QAE?AUPhotoAnmVmId@2@HH@Z="
+        "?CreateVm@AnmLoaded@th095@@QAE?AUAnmVmId@2@HH@Z"
+    )
+    if required_alias not in emission or "0x00444EF0" not in emission:
+        fail("Photo CreateVm emission adapter lost canonical link ownership")
+
     state_start = header.index("struct PhotoCameraState")
     state_body = braced_body_after(header, state_start, "PhotoCameraState")
     if "TH095_MATCH_EXACT" in state_body or "DIFFBUILD" in state_body:
@@ -1147,6 +1186,8 @@ def check_photo_camera_state_owner() -> None:
     for fact in required_source:
         if fact not in source:
             fail(f"PhotoCamera shared state protocol lost fact: {fact}")
+    if source.count("TH095_PHOTO_ANM_CREATE_VM(") != 9:
+        fail("PhotoCamera CreateVm calls escaped the narrow emission boundary")
 
     exact_sources = (
         source,
@@ -1162,13 +1203,28 @@ def check_photo_camera_state_owner() -> None:
     for retired in (
         "?GetVm@PhotoAnmVmId@th095@@",
         "?SetInterrupt@PhotoAnmVmId@th095@@",
+        "@PhotoAnmLoadedView@th095@@",
     ):
         if retired in manifest:
             fail(f"Photo ANM handle restored proxy method ABI: {retired}")
+    required_manifest = (
+        "?CreateVm@PhotoAnmCreateVmEmissionAdapter@th095@@",
+        "?SetSprite@AnmLoaded@th095@@",
+        "?SetAndExecuteScript@AnmLoaded@th095@@",
+        "?InitializeVm@AnmLoaded@th095@@",
+    )
+    for symbol in required_manifest:
+        if symbol not in manifest:
+            fail(f"Photo ANM receiver lost canonical/emission ABI: {symbol}")
 
     game = (SRC / "PhotoGame.cpp").read_text(encoding="utf-8")
     if "this->chargeUiState = PHOTO_CAMERA_CHARGE_UI_INITIAL;" not in game:
         fail("PhotoCamera initialization lost the named charge UI initial state")
+    if game.count("TH095_PHOTO_ANM_CREATE_VM(") != 3:
+        fail("normal PhotoGame CreateVm calls escaped the emission boundary")
+    exact_game = (SRC / "PhotoGameExact.inl").read_text(encoding="utf-8")
+    if exact_game.count("TH095_PHOTO_ANM_CREATE_VM(") != 3:
+        fail("exact PhotoGame CreateVm calls escaped the emission boundary")
 
 
 def check_ecl_photo_player_owner() -> None:
@@ -1585,7 +1641,7 @@ def main() -> int:
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")
     print("  Photo stage: canonical profile-independent 0x25730 owner")
     print("  CardInf: canonical profile-independent 0x68 owner")
-    print("  PhotoCamera state: profile-independent mode/handle/flags/focus representation")
+    print("  PhotoCamera state: shared mode/handle/loaded-ANM/flags/focus representation")
     print("  PlayerInf runtime: profile-independent owner shared by PhotoCamera, PhotoStage, and ECL")
     print("  RunEcl camera limit/angles: canonical PlayerInf owner with method-only emission adapter")
     print("  RunEcl float resolver: canonical normal method with method-only emission adapter")

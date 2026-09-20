@@ -14192,3 +14192,65 @@ behavior credit is claimed.
 targets and test a shared receiver or storage-free emission boundary. Preserve
 the proved trivial handle lifecycle, add no selector, do not change Player VM
 storage, and keep EnemyInf manager `+0x4DFC` Unknown.
+
+### SEM-286 — canonicalize the PhotoCamera loaded-ANM receiver
+
+**Scope.** Retire the profile-selected complete `PhotoAnmLoadedView` layout
+without changing the proved trivial `PhotoAnmVmId` storage, camera offsets, or
+Player VM storage. Map each loaded-ANM method to its canonical target and keep
+only a storage-free compiler-emission boundary where pinned VC7.1 proves one
+is required.
+
+**Owner and ABI evidence.** The retired projection duplicated canonical
+`AnmLoaded`'s 0x1C layout and mapped `SetSprite`, `SetAndExecuteScript`,
+`InitializeVm`, and `CreateVm` to `0x00439E30/0x0043A0C0/0x00404B80/0x00444EF0`.
+The first three methods compiled with unchanged function bytes and canonical
+`AnmLoaded` relocation receivers. A direct canonical `CreateVm` call did not:
+because its return type is constructor-bearing `AnmVmId`, pinned VC7.1
+default-constructed five hidden return temporaries and enlarged exact
+`BeginCapture` from 0x189 to 0x1CF. A value-return helper enlarged it further
+to 0x1E2, and even a forced-inline pointer helper produced 0x1A6. Direct macro
+expansion through a fieldless receiver returning trivial `PhotoAnmVmId`
+restored the target body exactly.
+
+**Four-axis ownership.** `AnmLoaded` owns storage, layout, and method semantics.
+`PhotoAnmCreateVmEmission.hpp` owns only the target-observed VC7 caller return
+decoration; it contains no fields and no profile selector. Exact comparison
+maps its relocation to canonical target `0x00444EF0`. The normal build-product
+owner is also canonical `AnmLoaded::CreateVm`: a linker `/alternatename`
+resolves the emission spelling directly to that symbol, avoiding a fabricated
+wrapper function. `PhotoAnmLoadedView` is now only a typedef to `AnmLoaded`.
+
+**Manifest and guards.** Forty-three loaded-ANM relocations changed receiver
+identity at unchanged offsets, relocation types, and target destinations:
+twelve `CreateVm` calls use the narrow adapter; five
+`SetAndExecuteScript`, twelve `InitializeVm`, and fourteen `SetSprite` calls
+use canonical `AnmLoaded`. The PhotoCamera guard pins the typedef, rejects a
+restored duplicate layout, requires the fieldless profile-independent adapter
+and canonical link alias, checks all call sites remain inside the narrow
+boundary, and rejects historical `PhotoAnmLoadedView` method symbols. One
+selector and one selected declaration were removed, shrinking the baselines
+to **826 directives across 110 files** and **217 declaration keys / 222
+occurrences**.
+
+**Validation.** PhotoCamera, PhotoGame, and PhotoStage passed **39/39 focused
+exact**. The complete `PhotoCamera.hpp` fanout passed **84/84 exact across eight
+sources**. The controlled matcher refreshed 38 compiler-private `$L...`
+identities in four PhotoCamera/PhotoGame units only after unchanged structural
+bytes, relocation offsets/types, non-private identities, and target
+destinations were proved. A final uninterrupted cold aggregate passed
+**696/696 exact across all 88 sources** with zero further refresh. Normal
+pinned-VC7.1 probes emitted 60,763-byte PhotoCamera, 53,605-byte PhotoGame, and
+49,456-byte PhotoStage i386 COFF objects. The normal product compiled all 88
+objects and linked a verified 780,288-byte PE32/i386 GUI, build-local SHA-256
+`8a9036f5736c2332b64e91713b47cf824eb516918b37a4b6d80c533527a56444`.
+Target-independent CI passed 58/58 tests. No whole-image identity or runtime
+behavior credit is claimed.
+
+**Unknown / next route.** Audit the last two `PhotoCamera.hpp` selectors as one
+BulletInf receiver/include lane: the normal canonical
+`PhotoBulletManager.hpp` include versus `PhotoCameraBulletEmission.inl`'s
+historical `PhotoBulletManagerView` and `PhotoAnmSpawnerView`. Preserve the
+closed 0x27C5B8 BulletInf owner and use a profile-free, storage-free adapter
+only if a bounded compiler experiment proves it. Do not restore the loaded-ANM
+layout, add a selector, change Player VM storage, or name EnemyInf `+0x4DFC`.

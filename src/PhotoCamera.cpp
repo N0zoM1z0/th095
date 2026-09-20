@@ -371,11 +371,16 @@ void PhotoCameraState::BeginCapture()
     this->mode = PHOTO_CAMERA_CHARGING;
     this->modeTimer = 0;
     this->flags &= ~PHOTO_FLAG_TARGET_SOUND_PLAYED;
-    this->vmIds[2] = g_PhotoStageState->anm->CreateVm(0x18, 0);
-    this->vmIds[3] = g_PhotoStageState->anm->CreateVm(0x19, 0);
-    this->vmIds[4] = g_PhotoStageState->anm->CreateVm(0x1a, 0);
-    this->vmIds[5] = g_PhotoStageState->anm->CreateVm(0x1b, 0);
-    this->vmIds[6] = g_PhotoStageState->anm->CreateVm(0x1c, 0);
+    this->vmIds[2] =
+        TH095_PHOTO_ANM_CREATE_VM(g_PhotoStageState->anm, 0x18, 0);
+    this->vmIds[3] =
+        TH095_PHOTO_ANM_CREATE_VM(g_PhotoStageState->anm, 0x19, 0);
+    this->vmIds[4] =
+        TH095_PHOTO_ANM_CREATE_VM(g_PhotoStageState->anm, 0x1a, 0);
+    this->vmIds[5] =
+        TH095_PHOTO_ANM_CREATE_VM(g_PhotoStageState->anm, 0x1b, 0);
+    this->vmIds[6] =
+        TH095_PHOTO_ANM_CREATE_VM(g_PhotoStageState->anm, 0x1c, 0);
     if (this->vmIds[9] != 0)
     {
         TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[9].value);
@@ -1425,8 +1430,8 @@ updateCharge:
                     }
                     if (PhotoCameraVmIdIsZero(&camera->vmIds[9]))
                     {
-                        camera->vmIds[9] =
-                            g_PhotoStageState->anm->CreateVm(0x1f, 0);
+                        camera->vmIds[9] = TH095_PHOTO_ANM_CREATE_VM(
+                            g_PhotoStageState->anm, 0x1f, 0);
                     }
                     camera->vmIds[0].SetInterrupt(2);
                     camera->vmIds[1].SetInterrupt(2);
@@ -1464,8 +1469,8 @@ updateCharge:
                     }
                     if (PhotoCameraVmIdIsZero(&camera->vmIds[10]))
                     {
-                        camera->vmIds[10] =
-                            g_PhotoStageState->anm->CreateVm(0x20, 0);
+                        camera->vmIds[10] = TH095_PHOTO_ANM_CREATE_VM(
+                            g_PhotoStageState->anm, 0x20, 0);
                     }
                     TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[0].value, 3);
@@ -1641,7 +1646,8 @@ cameraActive:
                 }
                 Float3 effectPosition;
                 TH095_PHOTO_ANM_SET_POSITION_DIRECT(
-                    g_PhotoStageState->anm->CreateVm(0x21, 0).value,
+                    TH095_PHOTO_ANM_CREATE_VM(
+                        g_PhotoStageState->anm, 0x21, 0).value,
                     PhotoToScreen(
                         &effectPosition,
                         &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition));
@@ -1656,7 +1662,8 @@ cameraActive:
                 }
                 Float3 effectPosition;
                 TH095_PHOTO_ANM_SET_POSITION_DIRECT(
-                    g_PhotoStageState->anm->CreateVm(0x22, 0).value,
+                    TH095_PHOTO_ANM_CREATE_VM(
+                        g_PhotoStageState->anm, 0x22, 0).value,
                     PhotoToScreen(
                         &effectPosition,
                         &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition));

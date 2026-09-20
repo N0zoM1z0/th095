@@ -151,6 +151,22 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("PhotoAnmVmId()", handle_body)
         self.assertIn("operator AnmVmId() const", handle_body)
         self.assertIn('reinterpret_cast<AnmVmId *>(this)->GetVm()', handle_body)
+        self.assertIn("typedef AnmLoaded PhotoAnmLoadedView;", header)
+        self.assertNotIn("struct PhotoAnmLoadedView", header)
+        self.assertIn('#include "PhotoAnmCreateVmEmission.hpp"', header)
+        emission = (
+            ROOT / "src" / "PhotoAnmCreateVmEmission.hpp"
+        ).read_text(encoding="utf-8")
+        self.assertIn("struct PhotoAnmCreateVmEmissionAdapter", emission)
+        self.assertIn("#define TH095_PHOTO_ANM_CREATE_VM", emission)
+        self.assertIn("/alternatename:", emission)
+        self.assertNotIn("TH095_MATCH_EXACT", emission)
+        self.assertNotIn("DIFFBUILD", emission)
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("@PhotoAnmLoadedView@th095@@", manifest)
+        self.assertIn("?CreateVm@PhotoAnmCreateVmEmissionAdapter@th095@@", manifest)
 
     def test_ecl_photo_player_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_ecl_photo_player_owner()
