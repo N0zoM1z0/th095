@@ -14325,3 +14325,62 @@ projection can be retired, but do not replace it or remove its remaining two
 profile selectors until canonical pointer/link semantics and pinned-VC7.1
 caller emission are independently proved. Do not restore the mixed manager,
 add a selector, name unsupported camera fields, or infer EnemyInf `+0x4DFC`.
+
+### SEM-288 — retire the captured-bullet score projection
+
+**Scope.** Determine whether `PhotoCamera.cpp`'s body-local
+`PhotoCapturedBulletView` is a real capture object or a second view over
+canonical BulletInf elements. Close the producer/consumer/link protocol before
+changing the score API, and remove the two field-name selectors only if the
+canonical expression family remains exact.
+
+**Target and layout evidence.** Fresh hash-attested decompilation of
+`CapturePhotoTargets @ 0x00407820` shows that it returns elements directly
+from the manager pool at `BulletInf+0x4C`, strides them by 0x65C, and links
+selected elements through `+0x35C`. Fresh `CalculatePhotoScore @ 0x00433140`
+traverses that same link twice and reads `+0x248 -> +0x34`, `+0x2F4`,
+`+0x656`, and `+0x658`. The canonical layout resolves those accesses without
+another object: `PhotoBulletView::vm @ +0x4` plus
+`AnmVm::loadedSprite @ +0x244` yields bullet `+0x248`, and
+`AnmLoadedSprite::widthPx @ +0x34` is the compared sprite dimension;
+`PhotoBulletView::speed`, `nextCaptured`, `bulletType`, and `color` own the
+other four offsets. Thus the historical names `vm` and `photoScale` were not
+merely incomplete—they misidentified a loaded-sprite pointer and bullet speed.
+
+**Production / exact representation.** `CalculatePhotoScore` now accepts
+`PhotoBulletView *` directly from canonical `CapturePhotoTargets`, reads
+`vm.loadedSprite->widthPx` and `speed`, walks `nextCaptured`, and counts
+`bulletType/color`. The body-local 0x65C projection, its casts, its exact/DIFF
+`group/kind` aliases, and both accessor macros are gone. `PhotoCamera.hpp`
+forwards the canonical element type without importing the full BulletInf
+owner. The only ABI identity change is the score method's decorated pointer
+type; its caller relocation retains the same offset and target `0x00433140`.
+
+**Guards and debt.** The BulletInf guard now requires the canonical forward
+declaration, score signature, nested sprite-width access, speed, capture link,
+and type/color fields. It rejects the local projection, accessor macros, old
+member spellings, and historical `PhotoCapturedBulletView` method decoration.
+Removing two directives shrinks the selector baseline to **819 directives
+across 109 files**. Selected declaration debt remains **217 keys / 222
+occurrences**.
+
+**Validation.** Direct comparison proved `CalculatePhotoScore` **2,219/2,219
+bytes exact** with all relocations unchanged and `TakePhoto` **738/738 bytes
+exact** with only the reviewed score-parameter decoration change. Removing the
+local declarations renumbered compiler-private labels; the restricted matcher
+refreshed **15 labels in two PhotoCamera units** and **23 labels in two
+PhotoGame units** only after full structural/relocation/destination proof. The
+complete established camera-header fanout then passed **84/84 exact across
+eight sources**. A subsequent PhotoCamera replay passed **11/11 with zero
+refresh**. A pinned-VC7.1 normal probe emitted a **60,971-byte i386 COFF**
+PhotoCamera object. Per the batching policy, this checkpoint does not claim a
+new 696-unit aggregate replay or 88-TU product link; SEM-287 remains the latest
+full exact/product closure.
+
+**Unknown / next route.** Audit `PhotoRuntimeView` in PhotoCamera as the next
+local manager projection. Normal source already aliases canonical
+`PhotoEnemyManagerView`, whose `photoTargets @ +0x26AE00` and
+`CountPhotoTargets @ 0x004168D0` are proved; determine whether exact caller
+emission permits the storage projection to disappear or requires one
+fieldless method adapter. Do not infer `EnemyInf+0x4DFC`, restore a complete
+alternate manager, or add a profile selector.

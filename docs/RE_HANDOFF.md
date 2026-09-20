@@ -54,13 +54,13 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-287. Owner closure remains
+The current semantic source checkpoint is SEM-288. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
 | --- | --- |
 | Background `0x201C` | Canonical normal owner closed in `Background.hpp`; one narrow EclRun emission adapter remains. |
-| BulletInf `0x27C5B8` | `PhotoBulletManager.hpp` is the profile-independent owner. PhotoCamera, PhotoGame, and PhotoStage include it directly; PhotoCamera's old complete mixed `.90/.98` receiver is retired. Only its script-0x124 `CreateVmAtWorld` call uses a fieldless emission adapter that aliases the canonical `AnmLoaded` method in the normal product. |
+| BulletInf `0x27C5B8` | `PhotoBulletManager.hpp` is the profile-independent owner. PhotoCamera, PhotoGame, and PhotoStage include it directly; PhotoCamera's mixed `.90/.98` receiver and captured-bullet projection are retired. CalculatePhotoScore consumes canonical `PhotoBulletView::vm.loadedSprite/speed/nextCaptured/bulletType/color`. Only script-0x124 `CreateVmAtWorld` uses a fieldless emission adapter. |
 | EnemyInf manager `0x26AE30` | Canonical normal owner closed in `PhotoEnemyManager.hpp`; it directly embeds the compact template and 128-element pool; `enemyAnm @ +0x4DF8` is proved. |
 | Compact enemy element `0x4CC0` | Canonical profile-independent owner established in `PhotoEnemy.hpp`; `EnemyMovement` is a method-only ABI shell, and all four operand resolver TUs, RunEcl, plus EclExtended's inherited callback share `PhotoEnemyEclAccess.hpp`. Normal RunEcl calls canonical `Enemy::ResolveFloat`; its historical 53-site decoration is isolated in storage-free `ecl/EnemyFloatOperandEclEmission.hpp`. |
 | PhotoGameTask `0x124` | `PhotoGameTask.hpp` is profile-independent; normal RunEcl consumes canonical `completion @ +0x104` and `playerDeathTransitionComplete @ +0xFC bit 5`. EclExtended now binds the same normal owner and shares the dependency-light `PhotoGameTaskState.hpp` vocabulary for `photoSoundSuppressed` bit 9 and `photoTransitionActive` bit 10; its target-facing incomplete extern spelling is isolated in a storage-free emission adapter. Exact task emission stays in `PhotoGameTaskExact.inl`. |
@@ -69,11 +69,11 @@ deliberately narrower than subsystem completion:
 | RunEcl Player/camera lane | Normal case 141 writes canonical `PhotoPlayerRuntimeView::camera.photoLimit @ Player+0x29EC`; all six angle calls use the Player root and `AngleFromPoint @ 0x004303E0`. The padded local owner is retired; the last four exact call decorations are isolated in method-only `ecl/PhotoCameraEclEmission.hpp`. This does not close every Player projection. |
 | EclExtended Player/camera lane | Both callbacks use canonical `PhotoPlayerRuntimeView` storage for `playerPosition @ +0x1E30`, camera `@ +0x1E3C`, `movementScale @ +0x2A18`, camera mode, and viewfinder geometry. `PhotoCameraState` remains the method owner. The exact adapter retains only an incomplete historical Player global and method-only camera receiver; it has no storage layout. |
 | PhotoCamera/PhotoStage Player lane | `PhotoPlayerRuntime.hpp` is profile-independent and now owns the proved mode, effect ANM/VM slot, movement/tracking state, completion timer, position, partial camera, and movement-scale storage. PhotoCamera and both PhotoStage bodies route Player fields through it. The old full `PhotoGameStateView` and normal `PhotoStageCameraView` layouts are retired; `PhotoCameraPlayerEmission.inl` is method-only and storage-free. Full `PhotoCameraState` embedding remains separate debt because the exact legacy ANM graph conflicts with the canonical header graph. |
-| PhotoCamera state `0xBDC` | `PhotoCamera.hpp` is profile-selector-free. Mode `+0x000`, trivial ANM handles `+0x010`, flags/charge UI `+0xBB4`, `focusChargeFrames +0xBB8`, and the loaded-ANM receiver use shared declarations. `PhotoAnmLoadedView` aliases canonical `AnmLoaded`; only `CreateVm` and the script-0x124 `CreateVmAtWorld` caller retain fieldless, profile-independent VC7 return-decoration adapters with canonical normal link owners. The body-local captured-bullet projection remains debt. |
+| PhotoCamera state `0xBDC` | `PhotoCamera.hpp` is profile-selector-free. Mode `+0x000`, trivial ANM handles `+0x010`, flags/charge UI `+0xBB4`, `focusChargeFrames +0xBB8`, and the loaded-ANM receiver use shared declarations. `PhotoAnmLoadedView` aliases canonical `AnmLoaded`; only `CreateVm` and script-0x124 `CreateVmAtWorld` retain fieldless, profile-independent VC7 return-decoration adapters. CalculatePhotoScore now takes canonical `PhotoBulletView *`; unsupported camera fields remain debt. |
 | Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 821 remaining selector directives across 109 files and 217 declaration keys / 222 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 819 remaining selector directives across 109 files and 217 declaration keys / 222 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -301,17 +301,30 @@ build-local SHA-256
 This is exact-unit preservation and normal compile/link closure, not whole-image
 identity or runtime credit.
 
+For SEM-288, fresh target review proved that `CapturePhotoTargets` returns and
+links canonical 0x65C `PhotoBulletView` pool elements; CalculatePhotoScore's
+old duplicate projection had misnamed `vm.loadedSprite` as an `AnmVm *` and
+bullet `speed` as `photoScale`. The score API now consumes canonical
+`PhotoBulletView *`, compares `loadedSprite->widthPx`, and uses `speed`,
+`nextCaptured`, `bulletType`, and `color` directly. CalculatePhotoScore is
+**2,219/2,219 bytes exact**, TakePhoto is **738/738**, and the complete
+camera-header fanout passed **84/84 exact across eight sources**. The controlled
+matcher refreshed 38 private labels across four PhotoCamera/PhotoGame units
+only after structural/relocation/destination proof; final PhotoCamera replay
+was **11/11** with zero refresh. A normal pinned-VC7.1 probe emitted a
+**60,971-byte i386 COFF** object. No new aggregate/product closure is claimed;
+SEM-287 remains the latest 696-unit and 88-TU receipt.
+
 ## Next bounded lane
 
-Audit `PhotoCapturedBulletView` against canonical `PhotoBulletView` as one
-bounded camera-score lane. Reconfirm the capture-copy producer and score-loop
-consumers for `vm @ +0x248`, `photoScale @ +0x2F4`, `next @ +0x35C`,
-`bulletType @ +0x656`, and `color @ +0x658`; then use a pinned-VC7.1 oracle to
-decide whether the projection and its two profile selectors can be retired
-without changing pointer/link or caller emission. Do not accept adjacency as
-ownership, restore the mixed manager, add a selector, embed full
-`PhotoCameraState` in the dependency-light Player header, infer unsupported
-fields, or name EnemyInf manager `+0x4DFC`.
+Audit `PhotoRuntimeView` in PhotoCamera as the next bounded EnemyInf manager
+lane. Normal source already aliases canonical `PhotoEnemyManagerView`; verify
+that the exact projection's `enemies @ +0x26AE00` is the canonical
+`photoTargets` array and that `CountPhotoTargets @ 0x004168D0` has the same
+semantic receiver. Use a fieldless adapter only if a pinned-VC7.1 caller
+experiment proves the historical decoration is required. Do not infer
+EnemyInf manager `+0x4DFC`, restore a complete alternate manager, add a
+selector, or enlarge either debt baseline.
 
 ## Protected working-tree exclusions
 
@@ -330,6 +343,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/PhotoCamera.cpp --path src/PhotoBulletManager.hpp --details
-rg -n "PhotoCapturedBulletView|PhotoBulletView|CapturePhotoTargets|CalculatePhotoScore" src/PhotoCamera.* src/PhotoBulletManager.hpp src/BulletManager.cpp config/match-units.toml
+python3 scripts/analysis/report-semantic-debt.py --path src/PhotoCamera.cpp --path src/PhotoEnemyManager.hpp --details
+rg -n "PhotoRuntimeView|PhotoEnemyManagerView|photoTargets|CountPhotoTargets" src/PhotoCamera.cpp src/PhotoEnemyManager.hpp src/PhotoRuntime.cpp config/match-units.toml
 ```

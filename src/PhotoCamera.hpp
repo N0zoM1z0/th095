@@ -9,7 +9,7 @@
 namespace th095
 {
 
-struct PhotoCapturedBulletView;
+struct PhotoBulletView;
 // Compiler-only four-byte equality temporary; this is not handle storage.
 struct PhotoAnmVmIdValue;
 
@@ -113,7 +113,7 @@ struct PhotoCameraState
     void BeginCapture();
     void UpdateViewfinder();
     u32 TakePhoto();
-    i32 CalculatePhotoScore(PhotoCapturedBulletView *bulletTargets,
+    i32 CalculatePhotoScore(PhotoBulletView *bulletTargets,
                             i32 *scoreData, i32 runtimeTargets,
                             i32 stageTargets);
     void CancelCapture();

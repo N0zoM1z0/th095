@@ -566,6 +566,12 @@ def check_photo_bullet_owner() -> None:
     camera_header = (SRC / "PhotoCamera.hpp").read_text(encoding="utf-8")
     if any(name in camera_header for name in PROFILE_NAMES):
         fail("PhotoCamera.hpp must remain profile-selector-free")
+    if "struct PhotoBulletView;" not in camera_header:
+        fail("PhotoCamera.hpp must forward the canonical captured-bullet owner")
+    if "PhotoCapturedBulletView" in camera_header:
+        fail("PhotoCamera.hpp restored the captured-bullet projection")
+    if "CalculatePhotoScore(PhotoBulletView *bulletTargets" not in camera_header:
+        fail("PhotoCamera score API lost the canonical captured-bullet type")
     if re.search(r"\bstruct\s+PhotoBulletManagerView\s*\{", camera_header):
         fail("PhotoCamera.hpp must not restore its mixed Background/BulletInf proxy")
     for include in (
@@ -649,16 +655,31 @@ def check_photo_bullet_owner() -> None:
         "g_PhotoBulletManager->bulletAnm",
         "g_PhotoBulletManager->CountNearbyTargets(",
         "g_PhotoBulletManager->CapturePhotoTargets(",
+        "bulletTargets->vm.loadedSprite->widthPx",
+        "bulletTargets->speed",
+        "bulletTargets->nextCaptured",
+        "bulletTargets->bulletType",
+        "bulletTargets->color",
     )
     for fact in required_camera_source:
         if fact not in camera_source:
             fail(f"PhotoCamera lost canonical BulletInf access: {fact}")
+    for retired in (
+        "struct PhotoCapturedBulletView",
+        "TH095_CAPTURED_BULLET_TYPE",
+        "TH095_CAPTURED_BULLET_COLOR",
+        "bulletTargets->photoScale",
+        "bulletTargets->next;",
+    ):
+        if retired in camera_source:
+            fail(f"PhotoCamera restored captured-bullet projection: {retired}")
 
     manifest = (ROOT / "config" / "match-units.toml").read_text(encoding="utf-8")
     for retired in (
         "?BeginPhotoCapture@PhotoBulletManagerView@th095@@",
         "?CountNearbyTargets@PhotoBulletManagerView@th095@@QAEHPBUFloat3@2@M@Z",
         "?CapturePhotoTargets@PhotoBulletManagerView@th095@@QAEPAXPBUFloat3@2@0@Z",
+        "?CalculatePhotoScore@PhotoCameraState@th095@@QAEHPAUPhotoCapturedBulletView@2@PAHHH@Z",
     ):
         if retired in manifest:
             fail(f"PhotoCamera manifest restored mixed owner/type ABI: {retired}")
@@ -667,6 +688,7 @@ def check_photo_bullet_owner() -> None:
         "?CountNearbyTargets@PhotoBulletManagerView@th095@@QAEHPAUPhotoBulletVector@2@M@Z",
         "?CapturePhotoTargets@PhotoBulletManagerView@th095@@QAEPAUPhotoBulletView@2@PAUPhotoBulletVector@2@0@Z",
         "?SpawnInto@PhotoAnmSpawnerView@th095@@QAEXPAUPhotoAnmVmId@2@HPAUFloat3@2@@Z",
+        "?CalculatePhotoScore@PhotoCameraState@th095@@QAEHPAUPhotoBulletView@2@PAHHH@Z",
     )
     for symbol in required_manifest:
         if symbol not in manifest:

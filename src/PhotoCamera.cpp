@@ -54,44 +54,6 @@ typedef PhotoEnemyManagerView PhotoRuntimeView;
 #define TH095_PHOTO_RUNTIME_TARGETS photoTargets
 #endif
 
-struct PhotoCapturedBulletView
-{
-    u8 unknown000[0x248];
-    AnmVm *vm;                         // +0x248
-    u8 unknown24c[0x2f4 - 0x24c];
-    f32 photoScale;                    // +0x2f4
-    u8 unknown2f8[0x35c - 0x2f8];
-    PhotoCapturedBulletView *next;     // +0x35c
-    u8 unknown360[0x656 - 0x360];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i16 group;                         // +0x656
-    i16 kind;                          // +0x658
-#else
-    i16 bulletType;                    // +0x656
-    i16 color;                         // +0x658
-#endif
-};
-
-typedef char PhotoCapturedBulletVmAt248[
-    (offsetof(PhotoCapturedBulletView, vm) == 0x248) ? 1 : -1];
-typedef char PhotoCapturedBulletScaleAt2F4[
-    (offsetof(PhotoCapturedBulletView, photoScale) == 0x2f4) ? 1 : -1];
-typedef char PhotoCapturedBulletNextAt35C[
-    (offsetof(PhotoCapturedBulletView, next) == 0x35c) ? 1 : -1];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-typedef char PhotoCapturedBulletKindAt658[
-    (offsetof(PhotoCapturedBulletView, kind) == 0x658) ? 1 : -1];
-#define TH095_CAPTURED_BULLET_TYPE(bullet) ((bullet)->group)
-#define TH095_CAPTURED_BULLET_COLOR(bullet) ((bullet)->kind)
-#else
-typedef char PhotoCapturedBulletTypeAt656[
-    (offsetof(PhotoCapturedBulletView, bulletType) == 0x656) ? 1 : -1];
-typedef char PhotoCapturedBulletColorAt658[
-    (offsetof(PhotoCapturedBulletView, color) == 0x658) ? 1 : -1];
-#define TH095_CAPTURED_BULLET_TYPE(bullet) ((bullet)->bulletType)
-#define TH095_CAPTURED_BULLET_COLOR(bullet) ((bullet)->color)
-#endif
-
 struct PhotoGlobalStateView
 {
     u8 unknown000[0xfc];
@@ -594,12 +556,11 @@ u32 PhotoCameraState::TakePhoto()
         &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition, 22.0f);
 
     this->CalculatePhotoScore(
-        reinterpret_cast<PhotoCapturedBulletView *>(
-            g_PhotoBulletManager->CapturePhotoTargets(
-                reinterpret_cast<PhotoBulletVector *>(
-                    &this->viewfinderPosition),
-                reinterpret_cast<PhotoBulletVector *>(
-                    &this->viewfinderSize))),
+        g_PhotoBulletManager->CapturePhotoTargets(
+            reinterpret_cast<PhotoBulletVector *>(
+                &this->viewfinderPosition),
+            reinterpret_cast<PhotoBulletVector *>(
+                &this->viewfinderSize)),
         scoreData,
         g_PhotoRuntime->CountPhotoTargets(
             &this->viewfinderPosition, &this->viewfinderSize),
@@ -616,12 +577,11 @@ u32 PhotoCameraState::TakePhoto()
         &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition, 22.0f);
 
     this->CalculatePhotoScore(
-        reinterpret_cast<PhotoCapturedBulletView *>(
-            g_PhotoBulletManager->CapturePhotoTargets(
-                reinterpret_cast<PhotoBulletVector *>(
-                    &this->viewfinderPosition),
-                reinterpret_cast<PhotoBulletVector *>(
-                    &this->viewfinderSize))),
+        g_PhotoBulletManager->CapturePhotoTargets(
+            reinterpret_cast<PhotoBulletVector *>(
+                &this->viewfinderPosition),
+            reinterpret_cast<PhotoBulletVector *>(
+                &this->viewfinderSize)),
         scoreData,
         g_PhotoRuntime->CountPhotoTargets(
             &this->viewfinderPosition, &this->viewfinderSize),
@@ -709,7 +669,7 @@ struct PhotoScoreDataFlagBits
 };
 
 i32 PhotoCameraState::CalculatePhotoScore(
-    PhotoCapturedBulletView *bulletTargets, i32 *scoreData,
+    PhotoBulletView *bulletTargets, i32 *scoreData,
     i32 runtimeTargets, i32 stageTargets)
 {
     struct PhotoScoreLocals
@@ -721,7 +681,7 @@ i32 PhotoCameraState::CalculatePhotoScore(
         f32 bossRate;
         f32 closestDistance;
         i32 preservedNearbyTargets;
-        PhotoCapturedBulletView *firstBullet;
+        PhotoBulletView *firstBullet;
         i32 bulletScore;
         i32 colorCounts[7];
         i32 colorPresenceCount;
@@ -737,36 +697,37 @@ i32 PhotoCameraState::CalculatePhotoScore(
     while (bulletTargets != NULL)
     {
         scoreData[2]++;
-        if (bulletTargets->vm == NULL || bulletTargets->vm->scale.y <= 8.0f)
+        if (bulletTargets->vm.loadedSprite == NULL ||
+            bulletTargets->vm.loadedSprite->widthPx <= 8.0f)
         {
             locals.bulletScore = 10;
         }
-        else if (bulletTargets->vm->scale.y <= 16.0f)
+        else if (bulletTargets->vm.loadedSprite->widthPx <= 16.0f)
         {
             locals.bulletScore = 20;
         }
-        else if (bulletTargets->vm->scale.y <= 32.0f)
+        else if (bulletTargets->vm.loadedSprite->widthPx <= 32.0f)
         {
             locals.bulletScore = 40;
         }
-        else if (bulletTargets->vm->scale.y <= 64.0f)
+        else if (bulletTargets->vm.loadedSprite->widthPx <= 64.0f)
         {
             locals.bulletScore = 150;
         }
 
-        if (bulletTargets->photoScale >= 6.0f)
+        if (bulletTargets->speed >= 6.0f)
         {
             locals.bulletScore *= 4;
         }
-        else if (bulletTargets->photoScale >= 2.0f)
+        else if (bulletTargets->speed >= 2.0f)
         {
             locals.bulletScore += (i32)(
-                (f32)locals.bulletScore * (bulletTargets->photoScale - 2.0f) *
+                (f32)locals.bulletScore * (bulletTargets->speed - 2.0f) *
                 4.0f / 4.0f);
         }
         locals.bulletScore -= locals.bulletScore % 10;
         locals.totalScore += locals.bulletScore;
-        bulletTargets = bulletTargets->next;
+        bulletTargets = bulletTargets->nextCaptured;
     }
 
     locals.totalScore += runtimeTargets * 170;
@@ -869,26 +830,26 @@ score_flag_done:
     locals.colorCounts[6] = 0;
     while (bulletTargets != NULL)
     {
-        if (TH095_CAPTURED_BULLET_TYPE(bulletTargets) <= 11)
+        if (bulletTargets->bulletType <= 11)
         {
-            if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 1 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 2)
+            if (bulletTargets->color == 1 || bulletTargets->color == 2)
                 locals.colorCounts[0]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 3 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 4)
+            else if (bulletTargets->color == 3 || bulletTargets->color == 4)
                 locals.colorCounts[1]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 5 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 6)
+            else if (bulletTargets->color == 5 || bulletTargets->color == 6)
                 locals.colorCounts[2]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 7 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 8)
+            else if (bulletTargets->color == 7 || bulletTargets->color == 8)
                 locals.colorCounts[3]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 9 ||
-                     TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 10 ||
-                     TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 11)
+            else if (bulletTargets->color == 9 ||
+                     bulletTargets->color == 10 ||
+                     bulletTargets->color == 11)
                 locals.colorCounts[4]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 12 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 13)
+            else if (bulletTargets->color == 12 || bulletTargets->color == 13)
                 locals.colorCounts[5]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 14)
+            else if (bulletTargets->color == 14)
                 locals.colorCounts[6]++;
         }
-        bulletTargets = bulletTargets->next;
+        bulletTargets = bulletTargets->nextCaptured;
     }
 
     if (locals.colorCounts[0] >= 100)

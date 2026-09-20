@@ -103,6 +103,14 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("PhotoBulletManager.hpp", camera_header)
         self.assertNotIn("TH095_MATCH_EXACT", camera_header)
         self.assertNotIn("DIFFBUILD", camera_header)
+        self.assertIn("struct PhotoBulletView;", camera_header)
+        self.assertNotIn("PhotoCapturedBulletView", camera_header)
+        camera_source = (ROOT / "src" / "PhotoCamera.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("struct PhotoCapturedBulletView", camera_source)
+        self.assertIn("bulletTargets->vm.loadedSprite->widthPx", camera_source)
+        self.assertIn("bulletTargets->nextCaptured", camera_source)
 
     def test_photo_enemy_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_photo_enemy_owner()
