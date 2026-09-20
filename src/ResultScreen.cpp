@@ -1,9 +1,6 @@
 #ifdef TH095_MATCH_EXACT
 #include "ResultScreenExact.inl"
 #else
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS
-#endif
 #include "ResultScreen.hpp"
 #include "AnmText.hpp"
 #include "AsciiManager.hpp"

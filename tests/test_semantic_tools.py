@@ -158,6 +158,36 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             manifest,
         )
 
+    def test_game_error_context_guard_accepts_canonical_owner(self) -> None:
+        GUARD.check_game_error_context_owner()
+        header = (ROOT / "src" / "GameErrorContext.hpp").read_text(
+            encoding="utf-8"
+        )
+        global_source = (ROOT / "src" / "Global.cpp").read_text(
+            encoding="utf-8"
+        )
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(header.count("struct GameErrorContext\n"), 1)
+        self.assertNotIn("class GameErrorContext", header)
+        self.assertIn(
+            "DIFFABLE_STATIC(GameErrorContext, g_GameErrorContext);", global_source
+        )
+        for path in (ROOT / "src").rglob("*"):
+            if path.suffix in (".cpp", ".hpp", ".inl"):
+                self.assertNotIn(
+                    "TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS",
+                    path.read_text(encoding="utf-8"),
+                )
+        self.assertNotIn(
+            "?g_GameErrorContext@th095@@3VGameErrorContext@1@A", manifest
+        )
+        self.assertEqual(
+            manifest.count("?g_GameErrorContext@th095@@3UGameErrorContext@1@A"),
+            89,
+        )
+
     def test_sound_player_consumer_guard_accepts_canonical_owner(self) -> None:
         GUARD.check_sound_player_consumer_owners()
         bullet = (ROOT / "src" / "BulletManager.cpp").read_text(encoding="utf-8")

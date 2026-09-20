@@ -14891,3 +14891,53 @@ declaration and its five exact caller definition sites. Establish whether it
 only changes VC7 `U`/`V` data-symbol identities, as with SoundPlayer, before
 migrating any manifest entry. Preserve ResultScreen's independent frozen-body
 boundary and do not infer behavior from declaration form.
+
+### SEM-299 — unify the GameErrorContext declaration form
+
+**Scope.** Close the hidden class/struct selector around the canonical error
+context owner and its five exact consumers. Preserve the `0x2008` layout,
+Global.cpp storage ownership, Log/Fatal/Flush bodies and ABIs, critical-section
+behavior, message-box state, and ResultScreen's frozen exact body.
+
+**Ownership and compiler evidence.** `Global.cpp` defines
+`g_GameErrorContext @ 0x004C2420` through the default struct declaration;
+GameErrorContext's own exact TU and 73 existing manifest references already
+use the same `UGameErrorContext` identity. Controller, FrontEndLifecycle,
+Midi, ResultScreen, and SoundPlayer injected a custom macro before including
+the header, producing 16 `VGameErrorContext` data references. Removing those
+definitions changes only MSVC's data-symbol type code. The first strict replay
+stopped on the expected first `V`/`U` mismatch at unchanged offset/type/target
+and receives no exact credit. After reviewing and migrating all 16 identities,
+every caller byte and target remained exact; member-call decorations do not
+encode the class/struct distinction.
+
+**Production / exact representation.** `GameErrorContext.hpp` now declares
+one unconditional `struct GameErrorContext`. The custom selector, five cpp
+definition sites, and ResultScreenExact's unconditional definition are gone.
+`GameErrorContextExact.inl` remains the separate exact function body for its
+historical critical-section access, not a second owner or declaration.
+
+**Guards and debt.** A new owner guard requires exactly one struct declaration,
+pins Global.cpp storage, rejects the custom selector repository-wide, rejects
+the `V` identity, and requires all 89 configured global references to use the
+canonical `U` identity. Removing the five actual exact directives shrinks the
+closed selector baseline from 791 to **786 directives across 107 files**; the
+custom header selector and ResultScreenExact macro were hidden from that
+baseline and are nevertheless removed. Declaration debt remains **208 keys /
+213 occurrences**; no allowance was added.
+
+**Validation.** Focused replay passed Controller **7/7**,
+FrontEndLifecycle **8/8**, Midi **28/28**, ResultScreen **24/24**, and
+SoundPlayer **27/27**, totaling **94/94 exact units** with zero private-label
+refresh. Pinned-VC7.1 normal probes emitted **28,916-byte**, **30,317-byte**,
+**43,640-byte**, **76,047-byte**, and **64,883-byte** Intel 80386 COFF objects
+respectively. The semantic guard and all **60 tests** pass; tracking remains
+**1,880 provisional / 697 source-present / 696 exact**. Per the batching
+policy, no new aggregate replay or product link is claimed; SEM-298 remains
+the latest full receipt.
+
+**Unknown / next route.** Audit the analogous
+`TH095_MATCH_FILESYSTEM_AS_CLASS` selector in `Main.hpp` and its six definition
+sites. First establish the canonical storage form and complete affected data
+identity set. Keep FileSystem method-token inversions and frozen bodies
+separate from declaration-form cleanup.

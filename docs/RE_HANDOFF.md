@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-298. Owner closure remains
+The current semantic source checkpoint is SEM-299. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -71,10 +71,11 @@ deliberately narrower than subsystem completion:
 | PhotoCamera/PhotoStage Player lane | `PhotoPlayerRuntime.hpp` is profile-independent and now owns the proved mode, effect ANM/VM slot, movement/tracking state, completion timer, position, partial camera, and movement-scale storage. PhotoCamera and both PhotoStage bodies route Player fields through it. The old full `PhotoGameStateView` and normal `PhotoStageCameraView` layouts are retired; `PhotoCameraPlayerEmission.inl` is method-only and storage-free. Full `PhotoCameraState` embedding remains separate debt because the exact legacy ANM graph conflicts with the canonical header graph. |
 | PhotoCamera state `0xBDC` | `PhotoCamera.hpp` is profile-selector-free. Mode `+0x000`, trivial ANM handles `+0x010`, flags/charge UI `+0xBB4`, `focusChargeFrames +0xBB8`, and the loaded-ANM receiver use shared declarations. PhotoCamera binds canonical EnemyInf, PhotoGameTask, BulletInf, Background, PhotoEffect, AnmManager, and SoundPlayer owners directly; it has no selected local declaration left. `CreateVm`, script-0x124 `CreateVmAtWorld`, and exactly two CreateVm-result SetPosition calls retain fieldless, profile-independent VC7 emission adapters; the last links to canonical `AnmManager::SetPosition`. Unsupported camera fields remain debt. |
 | SoundPlayer owner/consumers | `SoundPlayer.hpp` is fully profile-independent: one canonical class/result type, one target-proved photography `SoundIdx` tail, and the SND-013 lifecycle fields at `+0x5218/+0x521C/+0x5220/+0x5228`. PhotoCamera, BulletManager, EclExtended, and EclRun use canonical sound APIs directly. Frozen exact-body projections and SoundPlayer.cpp's evidenced Supervisor runtime/build boundary remain separate debt. |
+| GameErrorContext `0x2008` | `GameErrorContext.hpp` exposes one profile-independent struct and `Global.cpp` owns `g_GameErrorContext @ 0x004C2420`. The hidden class/struct selector and all six definition sites are retired; 89 manifest references use the canonical `U` identity. `GameErrorContextExact.inl` remains a different-body boundary, and Background's proved Log/Fatal token inversion remains emission debt. |
 | Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 791 remaining selector directives across 108 files and 208 declaration keys / 213 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 786 remaining selector directives across 107 files and 208 declaration keys / 213 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -435,14 +436,26 @@ emitted a **778,752-byte PE32** image with build-local SHA-256
 This is exact-unit preservation and normal compile/link closure, not target
 whole-image identity or runtime credit. SEM-298 is the latest full receipt.
 
+For SEM-299, `GameErrorContext.hpp`'s hidden class/struct selector and all six
+`TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS` definition sites were retired in
+favor of the canonical struct already used by Global.cpp storage and 73
+manifest references. The first strict replay stopped on the expected first
+`V` versus `U` global-data identity and receives no exact credit. After all 16
+selected identities were reviewed and migrated, focused replay passed
+Controller **7/7**, FrontEndLifecycle **8/8**, Midi **28/28**, ResultScreen
+**24/24**, and SoundPlayer **27/27**, totaling **94/94 exact** with zero
+private-label refresh. Normal pinned-VC7.1 probes emitted **28,916-byte**,
+**30,317-byte**, **43,640-byte**, **76,047-byte**, and **64,883-byte** i386
+COFF objects. No aggregate/product closure is claimed; SEM-298 remains the
+latest full receipt.
+
 ## Next bounded lane
 
-Audit `TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS` across
-`GameErrorContext.hpp`, Controller, FrontEndLifecycle, Midi, ResultScreen, and
-SoundPlayer. Determine whether this is only the same MSVC `U`/`V` data-symbol
-identity issue already proved for SoundPlayer, then migrate exact manifest
-identities only if bytes, relocation shapes, and targets remain unchanged.
-Do not fold ResultScreen's frozen-body boundary into the canonical owner.
+Audit `TH095_MATCH_FILESYSTEM_AS_CLASS` in `Main.hpp` and its six definition
+sites. Establish the canonical storage/declaration form and enumerate every
+affected `g_FileSystem` data identity before editing. Preserve any independently
+proved exact/normal method-token inversion; declaration form alone does not
+authorize changing method targets or frozen bodies.
 
 ## Protected working-tree exclusions
 
@@ -461,6 +474,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/GameErrorContext.hpp --path src/GameErrorContext.cpp --details
-rg -n "TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS|GameErrorContext" src config/match-units.toml
+python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/FileSystem.cpp --details
+rg -n "TH095_MATCH_FILESYSTEM_AS_CLASS|FileSystem|g_FileSystem" src/Main.hpp src/FileSystem.cpp src/Background.cpp src/AnmPreload.cpp src/AnmSurface.cpp src/EnemyManagerUpdate.cpp src/FileWrite.cpp src/PhotoGameExact.inl config/match-units.toml
 ```

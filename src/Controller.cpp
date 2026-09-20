@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS
-#endif
 #include "Controller.hpp"
 #include "Main.hpp"
 

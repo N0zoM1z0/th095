@@ -848,6 +848,36 @@ def check_sound_player_consumer_owners() -> None:
         fail("match manifest lost the canonical namespaced SoundPlayer result ABI")
 
 
+def check_game_error_context_owner() -> None:
+    header = (SRC / "GameErrorContext.hpp").read_text(encoding="utf-8")
+    global_source = (SRC / "Global.cpp").read_text(encoding="utf-8")
+    manifest = (ROOT / "config" / "match-units.toml").read_text(
+        encoding="utf-8"
+    )
+
+    if len(re.findall(r"\bstruct\s+GameErrorContext\s*\{", header)) != 1:
+        fail("GameErrorContext.hpp must expose one canonical struct declaration")
+    if re.search(r"\bclass\s+GameErrorContext\b", header):
+        fail("GameErrorContext.hpp restored its selected class declaration")
+    if "DIFFABLE_STATIC(GameErrorContext, g_GameErrorContext);" not in global_source:
+        fail("Global.cpp lost canonical GameErrorContext storage ownership")
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in (".cpp", ".hpp", ".inl"):
+            continue
+        if "TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS" in path.read_text(
+            encoding="utf-8"
+        ):
+            fail(
+                f"{path.relative_to(SRC)} restored the GameErrorContext declaration selector"
+            )
+    struct_identity = "?g_GameErrorContext@th095@@3UGameErrorContext@1@A"
+    class_identity = "?g_GameErrorContext@th095@@3VGameErrorContext@1@A"
+    if class_identity in manifest:
+        fail("match manifest restored the selected GameErrorContext class identity")
+    if manifest.count(struct_identity) != 89:
+        fail("match manifest lost canonical GameErrorContext struct identities")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -2022,6 +2052,7 @@ def main() -> int:
     check_ecl_extended_type_boundaries()
     check_photo_bullet_owner()
     check_sound_player_consumer_owners()
+    check_game_error_context_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -2042,6 +2073,7 @@ def main() -> int:
     print("  EclExtended normal types: canonical ANM, Float3, Effect, BulletInf, EnemyInf, PlayerInf, Camera, and PhotoGameTask owners")
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
     print("  SoundPlayer owner: one canonical class declaration and direct shared-body consumers")
+    print("  GameErrorContext owner: one canonical struct declaration and global storage")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")
