@@ -15565,3 +15565,47 @@ split at `+0x24` and `+0x28/+0x2C/+0x30`. Re-establish the startup-path
 producer/consumer evidence and the save/disable/restore power-policy lifecycle
 before retiring MainExact's historical spellings and Main.cpp's DIFFBUILD
 aliases.
+
+### SEM-312 — unify GameWindow startup-state vocabulary
+
+**Scope and ownership.** Main and MainExact now expose one shared GameWindow
+vocabulary: `startupPathDiffersFromExecutable @ +0x24`, followed by the signed
+`savedScreenSaverActive`, `savedLowPowerActive`, and `savedPowerOffActive`
+dwords at `+0x28/+0x2C/+0x30`. The historical `usesRelativePath` and unsaved
+power-field spellings plus Main.cpp's DIFFBUILD aliases are retired. The
+existing size, QPC, and first-timestamp anchors continue to pin the surrounding
+`0x54` layout without adding an exact-only declaration.
+
+**Target evidence.** A fresh hash-attested Ghidra query finds exactly one write
+at `0x004219D7` and one read at `0x00420EC7` for target byte `0x004C460C`.
+`CheckForRunningGameInstance @ 0x004217A0` resolves or copies the startup path,
+compares it with `GetModuleFileNameA`, and publishes 1 on inequality;
+`InitD3DRendering @ 0x00420E20` consumes that byte and forces disable-vsync.
+Each saved power dword has one SystemParametersInfo GET destination in
+`WinMain @ 0x00420240` and one final SET read. WinMain disables all three
+policies immediately after sampling and does not resample them across its
+internal render restart loop.
+
+**Boundary and unknowns.** The path field remains `u8`; it is not promoted to
+a shortcut or resource-mode enum. The saved policy fields remain signed
+four-byte integers matching the Win32 call surface rather than being narrowed
+to bools. The original identifiers, the design reason for the path/vsync
+coupling, and behavior after a failed GET or SET remain Unknown. No runtime
+scenario that mutates host power policy is credited.
+
+**Compiler evidence and debt.** Focused Main replay passed all **48/48 exact**
+units with zero private-label refresh. A pinned-VC7.1 normal probe emitted a
+**116,268-byte** Intel 80386 COFF object. Final direct-consumer replay passed
+**199/199 exact across 18 sources**, again with zero refresh. Removing two
+Main.hpp selected field branches and the Main.cpp alias branch shrinks selector
+debt from 736 to **733 directives across 106 files**. Selected-declaration debt
+remains **201 keys / 206 occurrences**.
+
+**Validation and next route.** The GameWindow guard pins the shared field
+widths/order anchors and both bodies' path producer/consumer plus complete
+GET/disable/restore power lifecycle, and all **72 workflow tests** pass. Per
+batching policy, no aggregate replay or product link is claimed; SEM-298
+remains the latest full receipt. Next, audit Supervisor `+0x1E4..+0x403`:
+normal Main exposes the two-entry viewport configuration bank and current
+selector while MainExact retains one opaque `unknown1e4[0x220]` span. Prove
+layout and consumers before converging it.

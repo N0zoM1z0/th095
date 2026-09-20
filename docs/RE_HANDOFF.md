@@ -701,13 +701,29 @@ directives across 106 files**; declaration debt remains **201 keys / 206
 occurrences**. The semantic guard and all **71 workflow tests** pass. No
 aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
 
+For SEM-312, GameWindow now uses one profile-independent vocabulary for the
+startup-path mismatch latch at `+0x24` and the saved screen-saver, low-power,
+and power-off settings at `+0x28/+0x2C/+0x30`. Fresh target xrefs confirm one
+path-latch writer and one consumer, plus one GET write and final SET read for
+each saved policy dword. The historical exact field names and Main.cpp's
+DIFFBUILD aliases are retired.
+
+Focused Main replay passed **48/48 exact** with zero private-label refresh;
+final direct-consumer replay passed **199/199 exact across 18 sources**, also
+with zero refresh. A pinned-VC7.1 normal probe emitted a **116,268-byte** Intel
+80386 COFF object. Selector debt shrinks to **733 directives across 106
+files**; declaration debt remains **201 keys / 206 occurrences**. The semantic
+guard and all **72 workflow tests** pass. No aggregate/product closure is
+claimed; SEM-298 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit the remaining exact/normal GameWindow field split at `+0x24` and
-`+0x28/+0x2C/+0x30`: startup-path divergence plus the three saved power-policy
-flags. Verify their write/restore lifecycle before replacing MainExact's
-`usesRelativePath` and `screenSave/lowPower/powerOffActive` spellings and the
-DIFFBUILD aliases with the canonical names.
+Audit Supervisor `+0x1E4..+0x403`. Normal Main exposes a two-entry
+`backgroundViewportConfigurations` bank at `+0x1E4`,
+`currentBackgroundViewport @ +0x3C4`, and its index at `+0x3C8`, while
+MainExact retains the complete range as `unknown1e4[0x220]`. Establish the
+actual configuration element type, producer/consumer graph, and VC7 emission
+before replacing the opaque exact span.
 
 ## Protected working-tree exclusions
 
@@ -727,5 +743,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --path src/Main.cpp --details
-rg -n "startupPathDiffersFromExecutable|usesRelativePath|savedScreenSaverActive|screenSaveActive|savedLowPowerActive|lowPowerActive|savedPowerOffActive|powerOffActive" src/Main.hpp src/MainExact.hpp src/Main.cpp src/MainExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
+rg -n "backgroundViewportConfigurations|currentBackgroundViewport|currentBackgroundViewportIndex|unknown1e4" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Main.cpp src/MainExact.inl src/SupervisorViewport.cpp config/match-units.toml docs/KNOWLEDGE_BASE.md
 ```

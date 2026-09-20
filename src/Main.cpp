@@ -29,13 +29,6 @@ namespace th095
 {
 
 #ifdef DIFFBUILD
-#define startupPathDiffersFromExecutable usesRelativePath
-#define savedScreenSaverActive screenSaveActive
-#define savedLowPowerActive lowPowerActive
-#define savedPowerOffActive powerOffActive
-#endif
-
-#ifdef DIFFBUILD
 #define TH095_GAME_COLOR_MODE_32_BIT 0
 #define TH095_GAME_COLOR_MODE_16_BIT 1
 #define TH095_GAME_COLOR_MODE_COUNT 2

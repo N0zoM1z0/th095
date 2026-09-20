@@ -1483,6 +1483,86 @@ def check_screenshot_bitmap_header_owner() -> None:
                 fail(f"{path} lost screenshot header producer/consumer: {fact}")
 
 
+def check_game_window_startup_policy_owner() -> None:
+    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
+    main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
+
+    canonical_fields = (
+        "u8 startupPathDiffersFromExecutable;",
+        "i32 savedScreenSaverActive;",
+        "i32 savedLowPowerActive;",
+        "i32 savedPowerOffActive;",
+    )
+    historical_fields = (
+        "usesRelativePath",
+        "screenSaveActive",
+        "lowPowerActive",
+        "powerOffActive",
+    )
+    for path, text in (("Main.hpp", main_header), ("MainExact.hpp", main_exact_header)):
+        start = text.index("struct GameWindow")
+        game_window = braced_body_after(text, start, "GameWindow")
+        if any(name in game_window for name in PROFILE_NAMES):
+            fail(f"{path} restored a profile-selected GameWindow layout")
+        for field in canonical_fields:
+            if field not in game_window:
+                fail(f"{path} lost canonical GameWindow startup state: {field}")
+        for field in historical_fields:
+            if re.search(rf"\b{field}\b", game_window):
+                fail(f"{path} restored historical GameWindow field {field}")
+        for anchor in (
+            "sizeof(GameWindow) == 0x54",
+            "offsetof(GameWindow, performanceFrequency) == 0x14",
+            "offsetof(GameWindow, currentTimestamp) == 0x34",
+        ):
+            if anchor not in text:
+                fail(f"{path} lost GameWindow layout anchor: {anchor}")
+
+    path_facts = (
+        "if (g_GameWindow.startupPathDiffersFromExecutable)",
+        "g_GameWindow.startupPathDiffersFromExecutable = true;",
+    )
+    power_fields = (
+        ("SCREENSAVE", "savedScreenSaverActive"),
+        ("LOWPOWER", "savedLowPowerActive"),
+        ("POWEROFF", "savedPowerOffActive"),
+    )
+    for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
+        for fact in path_facts:
+            if fact not in text:
+                fail(f"{path} lost startup-path mismatch protocol: {fact}")
+        for action, field in power_fields:
+            get_fact = (
+                f"SystemParametersInfoA(SPI_GET{action}ACTIVE, 0, "
+                f"&g_GameWindow.{field}, 0);"
+            )
+            disable_fact = (
+                f"SystemParametersInfoA(SPI_SET{action}ACTIVE, 0, NULL, "
+                "SPIF_SENDCHANGE);"
+            )
+            restore_fact = (
+                f"SystemParametersInfoA(SPI_SET{action}ACTIVE, "
+                f"g_GameWindow.{field}, NULL, SPIF_SENDCHANGE);"
+            )
+            for fact in (get_fact, disable_fact, restore_fact):
+                if fact not in text:
+                    fail(f"{path} lost saved power-policy lifecycle: {fact}")
+        for field in historical_fields:
+            if re.search(rf"(?:\.|->){field}\b", text):
+                fail(f"{path} restored historical GameWindow field {field}")
+
+    for alias in (
+        "#define startupPathDiffersFromExecutable",
+        "#define savedScreenSaverActive",
+        "#define savedLowPowerActive",
+        "#define savedPowerOffActive",
+    ):
+        if alias in main_body:
+            fail(f"Main.cpp restored GameWindow DIFFBUILD alias: {alias}")
+
+
 def check_screenshot_worker_token_owner() -> None:
     main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
     main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
@@ -2953,6 +3033,7 @@ def main() -> int:
     check_game_configuration_owner()
     check_supervisor_flags_owner()
     check_screenshot_bitmap_header_owner()
+    check_game_window_startup_policy_owner()
     check_screenshot_worker_token_owner()
     check_supervisor_state_owner()
     check_supervisor_startup_phase_owner()
@@ -2985,6 +3066,7 @@ def main() -> int:
     print("  GameConfiguration owner: one profile-independent TH095 0xC8 layout")
     print("  Supervisor flags: one profile-independent TH095 0x7BC-owner layout")
     print("  Screenshot BMP file header: one packed 0x0E serialized owner")
+    print("  GameWindow startup state: one path-mismatch latch and three saved power-policy slots")
     print("  Screenshot worker: one shared 32-bit CRT token at Supervisor +0x528")
     print("  Supervisor scene states: canonical TH095 1/2/3/4/6/7/8 domain")
     print("  Supervisor startup phase: one shared TH095 0/1/2 domain at +0x660")

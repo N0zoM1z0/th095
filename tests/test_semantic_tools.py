@@ -603,6 +603,17 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn('#include "ScreenshotBitmapFileHeader.hpp"', main)
         self.assertNotIn("struct ScreenshotBitmapFileHeader\n{", main)
 
+    def test_game_window_startup_policy_guard_accepts_shared_storage(self) -> None:
+        GUARD.check_game_window_startup_policy_owner()
+        for name in ("Main.hpp", "MainExact.hpp"):
+            header = (ROOT / "src" / name).read_text(encoding="utf-8")
+            self.assertIn("u8 startupPathDiffersFromExecutable;", header)
+            self.assertIn("i32 savedScreenSaverActive;", header)
+            self.assertIn("i32 savedLowPowerActive;", header)
+            self.assertIn("i32 savedPowerOffActive;", header)
+            self.assertNotIn("usesRelativePath", header)
+            self.assertNotIn("screenSaveActive", header)
+
     def test_screenshot_worker_token_guard_accepts_shared_storage(self) -> None:
         GUARD.check_screenshot_worker_token_owner()
         exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
