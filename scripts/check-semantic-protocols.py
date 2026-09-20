@@ -1483,6 +1483,53 @@ def check_screenshot_bitmap_header_owner() -> None:
                 fail(f"{path} lost screenshot header producer/consumer: {fact}")
 
 
+def check_screenshot_worker_token_owner() -> None:
+    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+    lifecycle = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
+    main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
+    main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
+
+    for path, text in (
+        ("Main.hpp", main_header),
+        ("MainExact.hpp", main_exact_header),
+        ("SupervisorRuntime.hpp", runtime_header),
+    ):
+        if "u32 screenshotWorkerToken;" not in text:
+            fail(f"{path} lost canonical screenshot worker-token storage")
+        if "u32 screenshotThread;" in text:
+            fail(f"{path} restored the thread-object field claim")
+        if "HANDLE screenshotWorkerToken" in text:
+            fail(f"{path} widened the CRT worker token into a HANDLE claim")
+
+    for fact in (
+        "u32 screenshotWorkerToken;",
+        "offsetof(Supervisor, screenshotWorkerToken) == 0x528",
+        "u8 unknown448[0x528 - 0x448];",
+        "u8 unknown52c[0x648 - 0x52c];",
+    ):
+        if fact not in lifecycle:
+            fail(f"SupervisorLifecycle lost screenshot-token layout fact: {fact}")
+    if "unknown448[0x200]" in lifecycle:
+        fail("SupervisorLifecycle restored an exact-only opaque screenshot slot")
+
+    producer_consumer_facts = (
+        "g_Supervisor.screenshotWorkerToken = 0;",
+        "while (this->screenshotWorkerToken != 0)",
+        "g_Supervisor.screenshotWorkerToken =",
+        "_beginthread((void (__cdecl *)(void *))Supervisor::ScreenshotThread,",
+    )
+    for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
+        for fact in producer_consumer_facts:
+            if fact not in text:
+                fail(f"{path} lost screenshot worker-token protocol: {fact}")
+        if re.search(r"(?:\.|->)screenshotThread\b", text):
+            fail(f"{path} restored the thread-object field spelling")
+    if "#define screenshotWorkerToken" in main_body:
+        fail("Main.cpp restored the DIFFBUILD screenshot-token alias")
+
+
 def check_supervisor_state_owner() -> None:
     owner_path = SRC / "SupervisorState.hpp"
     owner = owner_path.read_text(encoding="utf-8")
@@ -2906,6 +2953,7 @@ def main() -> int:
     check_game_configuration_owner()
     check_supervisor_flags_owner()
     check_screenshot_bitmap_header_owner()
+    check_screenshot_worker_token_owner()
     check_supervisor_state_owner()
     check_supervisor_startup_phase_owner()
     check_supervisor_fog_cache_owner()
@@ -2937,6 +2985,7 @@ def main() -> int:
     print("  GameConfiguration owner: one profile-independent TH095 0xC8 layout")
     print("  Supervisor flags: one profile-independent TH095 0x7BC-owner layout")
     print("  Screenshot BMP file header: one packed 0x0E serialized owner")
+    print("  Screenshot worker: one shared 32-bit CRT token at Supervisor +0x528")
     print("  Supervisor scene states: canonical TH095 1/2/3/4/6/7/8 domain")
     print("  Supervisor startup phase: one shared TH095 0/1/2 domain at +0x660")
     print("  Supervisor fog cache: one shared TH095 0/1/255 domain at +0x768")

@@ -603,6 +603,17 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn('#include "ScreenshotBitmapFileHeader.hpp"', main)
         self.assertNotIn("struct ScreenshotBitmapFileHeader\n{", main)
 
+    def test_screenshot_worker_token_guard_accepts_shared_storage(self) -> None:
+        GUARD.check_screenshot_worker_token_owner()
+        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
+        self.assertIn("u32 screenshotWorkerToken;", exact)
+        self.assertNotIn("u32 screenshotThread;", exact)
+        lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("offsetof(Supervisor, screenshotWorkerToken) == 0x528", lifecycle)
+        self.assertNotIn("unknown448[0x200]", lifecycle)
+
     def test_supervisor_state_owner_guard_accepts_canonical_domain(self) -> None:
         GUARD.check_supervisor_state_owner()
         header = (ROOT / "src" / "SupervisorState.hpp").read_text(

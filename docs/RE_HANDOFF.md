@@ -684,13 +684,30 @@ the Main/SupervisorRuntime selected field declarations shrinks selector debt to
 occurrences**. The semantic guard and all **70 workflow tests** pass. No
 aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
 
+For SEM-311, Supervisor `+0x528` is uniformly exposed as the 32-bit
+`screenshotWorkerToken` across Main, MainExact, SupervisorRuntime, and the
+lifecycle projection. TakeScreenshot waits while it is nonzero and publishes
+the CRT `_beginthread` return after preparing the capture buffers;
+ScreenshotThread frees the buffers and clears it. No target path waits on or
+closes the value as a Win32 HANDLE. The lowercase `screenshotThread` field and
+DIFFBUILD alias are retired; the capitalized callback method remains.
+
+Focused Main plus SupervisorLifecycle replay passed **50/50 exact** with zero
+refresh. Final replay passed **199/199 exact across 18 sources**, also with
+zero refresh. Normal pinned-VC7.1 probes emitted **116,276-byte** Main,
+**5,890-byte** SupervisorLifecycle, and **64,883-byte** SoundPlayer i386 COFF
+objects. Retiring five selected directives shrinks selector debt to **736
+directives across 106 files**; declaration debt remains **201 keys / 206
+occurrences**. The semantic guard and all **71 workflow tests** pass. No
+aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit the remaining exact/normal spelling split for the screenshot worker
-token at Supervisor `+0x528`. Preserve its target-proved 32-bit token semantics
-rather than claiming HANDLE ownership; converge MainExact's `screenshotThread`
-and Main.cpp's DIFFBUILD alias on `screenshotWorkerToken` only after replaying
-TakeScreenshot, ScreenshotThread, and the shared Supervisor consumers.
+Audit the remaining exact/normal GameWindow field split at `+0x24` and
+`+0x28/+0x2C/+0x30`: startup-path divergence plus the three saved power-policy
+flags. Verify their write/restore lifecycle before replacing MainExact's
+`usesRelativePath` and `screenSave/lowPower/powerOffActive` spellings and the
+DIFFBUILD aliases with the canonical names.
 
 ## Protected working-tree exclusions
 
@@ -710,5 +727,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --path src/Main.cpp --details
-rg -n "screenshotWorkerToken|screenshotThread" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/SupervisorLifecycle.cpp src/Main.cpp src/MainExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
+rg -n "startupPathDiffersFromExecutable|usesRelativePath|savedScreenSaverActive|screenSaveActive|savedLowPowerActive|lowPowerActive|savedPowerOffActive|powerOffActive" src/Main.hpp src/MainExact.hpp src/Main.cpp src/MainExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
 ```

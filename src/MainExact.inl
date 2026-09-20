@@ -2005,7 +2005,7 @@ void __fastcall Supervisor::ScreenshotThread(void *unused)
     free(infoHeader);
     pixels = g_Supervisor.screenshotPixels;
     free(pixels);
-    g_Supervisor.screenshotThread = 0;
+    g_Supervisor.screenshotWorkerToken = 0;
 }
 
 // FUNCTION: TH095 0x00424A00.
@@ -2034,7 +2034,7 @@ i32 Supervisor::TakeScreenshot(char *path)
 #define widthBytes locals.widthBytes
 #define backbuffer locals.backbuffer
 
-    while (this->screenshotThread != 0)
+    while (this->screenshotWorkerToken != 0)
         Sleep(10);
 
     backbuffer = NULL;
@@ -2101,7 +2101,7 @@ i32 Supervisor::TakeScreenshot(char *path)
             }
         }
         backbuffer->UnlockRect();
-        g_Supervisor.screenshotThread =
+        g_Supervisor.screenshotWorkerToken =
             _beginthread((void (__cdecl *)(void *))Supervisor::ScreenshotThread,
                          0, NULL);
         goto cleanup;

@@ -15525,3 +15525,43 @@ screenshot worker token at Supervisor `+0x528`. Preserve the target-proved
 32-bit token behavior instead of claiming HANDLE ownership; replay
 TakeScreenshot, ScreenshotThread, and shared Supervisor consumers before
 retiring `screenshotThread` and its DIFFBUILD alias.
+
+### SEM-311 — unify the Supervisor screenshot worker token
+
+**Scope and ownership.** Main, MainExact, SupervisorRuntime, and the bounded
+SupervisorLifecycle projection now use one profile-independent 32-bit
+`screenshotWorkerToken @ +0x528`. The exact-only lowercase
+`screenshotThread` field and Main.cpp's DIFFBUILD alias are retired. The
+capitalized `ScreenshotThread` callback method keeps its existing name; this
+batch converges storage vocabulary rather than renaming the worker entry
+point.
+
+**Protocol and boundary.** `TakeScreenshot @ 0x00424A00` waits while the slot
+is nonzero, prepares the bitmap buffers, and publishes the CRT `_beginthread`
+return. `ScreenshotThread @ 0x00424980` writes the BMP payload, frees the info
+and pixel allocations, and clears the same slot to zero. No target path waits
+on or closes the value as an owned Win32 HANDLE, so the canonical type remains
+`u32` and the name deliberately says token. The three screenshot buffer slots
+at `+0x520/+0x524/+0x648` remain separate owners; surrounding lifecycle-view
+storage remains anonymous.
+
+**Compiler evidence and debt.** Focused Main plus SupervisorLifecycle replay
+passed all 50 units exact with zero private-label refresh. Final direct-
+consumer replay passed all 199 units across 18 sources with zero refresh.
+Removing Main.cpp's alias branch, Main.hpp's selected field/offset branches,
+and SupervisorLifecycle's selected projection shrinks the closed selector
+ledger from 741 to **736 directives across 106 files**. Selected-declaration
+debt remains **201 keys / 206 occurrences**.
+
+**Validation.** Pinned-VC7.1 normal probes emitted **116,276-byte** Main,
+**5,890-byte** SupervisorLifecycle, and **64,883-byte** SoundPlayer Intel 80386
+COFF objects. The semantic guard and all **71 workflow tests** pass. Tracking
+remains **1,880 provisional / 697 source-present / 696 exact**. Per the
+batching policy, no aggregate replay or product link is claimed; SEM-298
+remains the latest full receipt.
+
+**Unknown / next route.** Audit the remaining exact/normal GameWindow field
+split at `+0x24` and `+0x28/+0x2C/+0x30`. Re-establish the startup-path
+producer/consumer evidence and the save/disable/restore power-policy lifecycle
+before retiring MainExact's historical spellings and Main.cpp's DIFFBUILD
+aliases.

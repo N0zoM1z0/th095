@@ -116,7 +116,7 @@ struct Supervisor
     DWORD systemTime;                            // +0x44c
     D3DCAPS8 d3dCaps;                           // +0x450
     u8 unknownAfterCaps[0x528 - 0x450 - sizeof(D3DCAPS8)];
-    u32 screenshotThread;                       // +0x528
+    u32 screenshotWorkerToken;                  // +0x528
     ScreenshotBitmapFileHeader screenshotFileHeader; // +0x52c
     u8 screenshotHeaderPadding[2];              // +0x53a
     BITMAPINFOHEADER *screenshotInfoHeader;      // +0x53c
@@ -214,7 +214,7 @@ typedef char SupervisorReplayScanExitAt650[
     (offsetof(Supervisor, replayScanWorker.exitSignal) == 0x650) ? 1 : -1];
 typedef char SupervisorStartupThreadStateAt660[(offsetof(Supervisor, startupThreadState) == 0x660) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
-typedef char SupervisorScreenshotThreadAt528[(offsetof(Supervisor, screenshotThread) == 0x528) ? 1 : -1];
+typedef char SupervisorScreenshotWorkerTokenAt528[(offsetof(Supervisor, screenshotWorkerToken) == 0x528) ? 1 : -1];
 typedef char SupervisorScreenshotFileHeaderAt52C[(offsetof(Supervisor, screenshotFileHeader) == 0x52c) ? 1 : -1];
 typedef char SupervisorScreenshotInfoAt53C[(offsetof(Supervisor, screenshotInfoHeader) == 0x53c) ? 1 : -1];
 typedef char SupervisorScreenshotPixelsAt540[(offsetof(Supervisor, screenshotPixels) == 0x540) ? 1 : -1];

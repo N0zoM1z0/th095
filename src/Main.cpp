@@ -29,10 +29,6 @@ namespace th095
 {
 
 #ifdef DIFFBUILD
-#define screenshotWorkerToken screenshotThread
-#endif
-
-#ifdef DIFFBUILD
 #define startupPathDiffersFromExecutable usesRelativePath
 #define savedScreenSaverActive screenSaveActive
 #define savedLowPowerActive lowPowerActive
