@@ -994,6 +994,82 @@ def check_rng_owner() -> None:
             fail(f"match manifest lost canonical RNG identities: {identity}")
 
 
+def check_midi_output_owner() -> None:
+    owner = (SRC / "Midi.hpp").read_text(encoding="utf-8")
+    api = (SRC / "MidiOutputApi.hpp").read_text(encoding="utf-8")
+    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    main_exact = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    supervisor_runtime = (SRC / "SupervisorRuntime.hpp").read_text(
+        encoding="utf-8"
+    )
+    main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
+    manifest = (ROOT / "config" / "match-units.toml").read_text(
+        encoding="utf-8"
+    )
+
+    if "class MidiOutput : MidiTimer" not in owner:
+        fail("Midi.hpp lost the complete canonical MidiOutput owner")
+    if "C_ASSERT(sizeof(MidiOutput) == 0x300);" not in owner:
+        fail("Midi.hpp lost the canonical 0x300 MidiOutput layout")
+    if (SRC / "MidiRuntime.hpp").exists():
+        fail("retired MidiRuntime.hpp method projection was restored")
+
+    canonical_api = (
+        "::ZunResult ReadFileData(i32 slot, const char *path);",
+        "::ZunResult StopPlayback();",
+        "::ZunResult ParseFile(i32 index);",
+        "::ZunResult Play();",
+        "::ZunResult SetFadeOut(u32 milliseconds);",
+        "::ZunResult UnprepareHeader(LPMIDIHDR header);",
+        "~MidiOutput();",
+    )
+    for declaration in canonical_api:
+        if declaration not in api:
+            fail(f"MidiOutputApi lost canonical declaration: {declaration}")
+    for forbidden_field in ("fileData[", "tracks;", "outputDevice", "channels["):
+        if forbidden_field in api:
+            fail("MidiOutputApi acquired storage and became a second layout owner")
+
+    for path, text in (
+        ("Main.hpp", main_header),
+        ("MainExact.hpp", main_exact),
+        ("SupervisorRuntime.hpp", supervisor_runtime),
+    ):
+        if '#include "MidiOutputApi.hpp"' not in text:
+            fail(f"{path} no longer routes through the shared MidiOutput API")
+        if re.search(r"\b(?:class|struct)\s+MidiOutput\b", text):
+            fail(f"{path} restored a private MidiOutput declaration")
+    if (
+        "struct MidiTimer" not in main_exact_body
+        or "struct DummyMidiTimer : MidiTimer" not in main_exact_body
+    ):
+        fail("MainExact lost the target-emission MIDI timer boundary")
+
+    retired_identities = (
+        "?ReadFileData@MidiOutput@th095@@QAEHHPAD@Z",
+        "?StopPlayback@MidiOutput@th095@@QAEXXZ",
+        "?ParseFile@MidiOutput@th095@@QAEHH@Z",
+        "?Play@MidiOutput@th095@@QAEHXZ",
+        "?SetFadeOut@MidiOutput@th095@@QAEHI@Z",
+        "?UnprepareHeader@MidiOutput@th095@@QAEXPAUmidihdr_tag@@@Z",
+    )
+    for identity in retired_identities:
+        if identity in manifest:
+            fail(f"match manifest restored a legacy Main MIDI ABI: {identity}")
+
+    canonical_identities = {
+        "?ReadFileData@MidiOutput@th095@@QAE?AW4ZunResult@@HPBD@Z": 2,
+        "?StopPlayback@MidiOutput@th095@@QAE?AW4ZunResult@@XZ": 6,
+        "?ParseFile@MidiOutput@th095@@QAE?AW4ZunResult@@H@Z": 2,
+        "?Play@MidiOutput@th095@@QAE?AW4ZunResult@@XZ": 2,
+        "?SetFadeOut@MidiOutput@th095@@QAE?AW4ZunResult@@I@Z": 2,
+        "?UnprepareHeader@MidiOutput@th095@@QAE?AW4ZunResult@@PAUmidihdr_tag@@@Z": 4,
+    }
+    for identity, count in canonical_identities.items():
+        if manifest.count(identity) != count:
+            fail(f"match manifest lost canonical MidiOutput ABI: {identity}")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -2171,6 +2247,7 @@ def main() -> int:
     check_game_error_context_owner()
     check_file_system_api_owner()
     check_rng_owner()
+    check_midi_output_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -2194,6 +2271,7 @@ def main() -> int:
     print("  GameErrorContext owner: one canonical struct declaration and global storage")
     print("  FileSystem API: canonical namespace owner with frozen MainExact boundary")
     print("  RNG owner: one canonical class declaration and two Global.cpp states")
+    print("  MidiOutput owner: one 0x300 layout plus one shared fieldless API adapter")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

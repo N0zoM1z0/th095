@@ -55,7 +55,6 @@
 1	src/Main.cpp	struct	SupervisorGameTaskView
 1	src/Main.cpp	struct	SupervisorInputWorkerView
 1	src/Main.cpp	struct	TextHelperView
-1	src/Main.hpp	struct	MidiOutput
 1	src/MusicRoom.cpp	struct	MusicCommentLocals
 1	src/MusicRoom.cpp	struct	MusicRoomAnmStorageView
 1	src/MusicRoom.hpp	struct	MusicRoomTrack

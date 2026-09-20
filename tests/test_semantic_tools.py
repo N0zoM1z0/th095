@@ -239,6 +239,27 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertEqual(manifest.count("?g_Rng@th095@@3VRng@1@A"), 43)
         self.assertEqual(manifest.count("?g_Rng2@th095@@3VRng@1@A"), 6)
 
+    def test_midi_output_guard_accepts_owner_and_api_adapter(self) -> None:
+        GUARD.check_midi_output_owner()
+        owner = (ROOT / "src" / "Midi.hpp").read_text(encoding="utf-8")
+        api = (ROOT / "src" / "MidiOutputApi.hpp").read_text(encoding="utf-8")
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("class MidiOutput : MidiTimer", owner)
+        self.assertIn("C_ASSERT(sizeof(MidiOutput) == 0x300);", owner)
+        self.assertIn(
+            "::ZunResult ReadFileData(i32 slot, const char *path);", api
+        )
+        self.assertFalse((ROOT / "src" / "MidiRuntime.hpp").exists())
+        self.assertNotIn("?StopPlayback@MidiOutput@th095@@QAEXXZ", manifest)
+        self.assertEqual(
+            manifest.count(
+                "?StopPlayback@MidiOutput@th095@@QAE?AW4ZunResult@@XZ"
+            ),
+            6,
+        )
+
     def test_sound_player_consumer_guard_accepts_canonical_owner(self) -> None:
         GUARD.check_sound_player_consumer_owners()
         bullet = (ROOT / "src" / "BulletManager.cpp").read_text(encoding="utf-8")

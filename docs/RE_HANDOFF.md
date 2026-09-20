@@ -483,13 +483,32 @@ Normal pinned-VC7.1 probes emitted **72,967-byte** AnmManager,
 ScoreLifecycle, and **27,882-byte** ScreenEffect i386 COFF objects. No
 aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
 
+For SEM-302, `Midi.hpp` remains the sole complete `0x300` MidiOutput layout and
+behavior owner, while `MidiOutputApi.hpp` is now the one shared fieldless API
+adapter for Main, MainExact, and SupervisorRuntime. `MidiRuntime.hpp` and the
+two private Main-family MidiOutput declarations were retired. A first attempt
+to include the complete owner in MainExact failed a pinned-VC7.1 compile on its
+different local `MidiTimer`/`DummyMidiTimer` declarations and receives no exact
+credit. The first adapter replay then stopped on the expected legacy-versus-
+canonical `StopPlayback` identity and also receives no credit. After reviewing
+eight canonical public-identity migrations, controlled refresh updated 25
+Main and 15 Global compiler-private labels across three units. Final replay
+passed **197/197 exact across Main and sixteen direct consumers** with zero
+further refresh. Normal pinned-VC7.1 probes emitted **116,276-byte** Main,
+**34,679-byte** Global, and **19,014-byte** SupervisorViewport i386 COFF
+objects. Selector debt is **770 directives across 107 files** and declaration
+debt is **203 keys / 208 occurrences**. No aggregate/product closure is
+claimed; SEM-298 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit the four `MidiOutput` declarations in `Midi.hpp`, `MidiRuntime.hpp`,
-`Main.hpp`, and `MainExact.hpp`. Establish which declaration owns the full
-runtime layout, which are method-only compiler projections, and the complete
-Main/Midi decorated-identity fanout before editing. Do not merge the frozen
-Main body or the runtime adapter merely because method names overlap.
+Audit and converge the `ReplayScanWorker` declarations in `Main.hpp`,
+`SupervisorRuntime.hpp`, `Supervisor.hpp`, and `ReplayScanWorker.cpp`. Start
+from ABI-054/ABI-085 and REPLAY-020: preserve the distinct standalone input
+worker and the Supervisor's embedded replay workers, and do not merge their
+storage merely because their layouts overlap. Prove the exact/normal
+`exitSignal` spelling and timer/helper dependencies before changing any
+declaration or manifest identity.
 
 ## Protected working-tree exclusions
 
@@ -508,6 +527,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/Midi.hpp --path src/MidiRuntime.hpp --details
-rg -n "MidiOutput|midiOutput|@MidiOutput" src/Main.hpp src/MainExact.hpp src/Midi.hpp src/MidiRuntime.hpp src/Main.cpp src/MainExact.inl src/Midi.cpp config/match-units.toml
+python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/SupervisorRuntime.hpp --path src/Supervisor.hpp --path src/ReplayScanWorker.cpp --details
+rg -n "ReplayScanWorker|exitSignal|stopRequested|secondaryReplayScanWorker" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Supervisor.hpp src/ReplayScanWorker.cpp src/ReplayScanWorkerExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
 ```

@@ -15,7 +15,7 @@
 #include "inttypes.hpp"
 #include "GameColorMode.hpp"
 #include "GameMusicMode.hpp"
-#include "MidiRuntime.hpp"
+#include "MidiOutputApi.hpp"
 #include "SupervisorStartupState.hpp"
 #include "SupervisorFogState.hpp"
 

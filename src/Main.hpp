@@ -16,9 +16,7 @@
 #include "GameColorMode.hpp"
 #include "GameMusicMode.hpp"
 #endif
-#ifndef TH095_MATCH_EXACT
-#include "MidiRuntime.hpp"
-#endif
+#include "MidiOutputApi.hpp"
 #include "ScreenEffect.hpp"
 #include "SoundPlayer.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
@@ -178,19 +176,6 @@ typedef char GameConfigurationMusicModeAtAD[
 #ifndef TH095_MATCH_EXACT
 typedef char GameConfigurationControllerAssignmentsAtB2[
     (offsetof(GameConfiguration, controllerAssignments) == 0xb2) ? 1 : -1];
-#endif
-
-#ifdef TH095_MATCH_EXACT
-struct MidiOutput
-{
-    i32 ReadFileData(i32 slot, char *path);
-    void StopPlayback();
-    i32 ParseFile(i32 index);
-    i32 Play();
-    i32 SetFadeOut(u32 milliseconds);
-    void UnprepareHeader(LPMIDIHDR header);
-    ~MidiOutput();
-};
 #endif
 
 #ifndef TH095_REPLAY_SCAN_WORKER_DEFINED

@@ -15054,3 +15054,58 @@ the full layout owner, method-only projections, and complete Main/Midi ABI
 fanout before changing source. Frozen Main and runtime-adapter boundaries need
 independent compiler evidence; shared method names alone do not prove they can
 be merged.
+
+### SEM-302 — unify the MidiOutput API surface
+
+**Scope.** Retire the three partial MidiOutput projections around the complete
+`Midi.hpp` owner without merging MainExact's independently different timer
+declarations. Preserve the `0x300` owner layout, Midi.cpp behavior, all target
+destinations, and the frozen Main body.
+
+**Ownership and compiler boundary.** `Midi.hpp` contains the sole complete
+MidiOutput declaration, its `0x300` size assertion, and the `MidiTimer` base;
+`Midi.cpp` owns the methods. The deleted `MidiRuntime.hpp` and the private
+Main/MainExact declarations supplied only subsets of those methods. A strict
+experiment that included the full owner from MainExact failed to compile
+because `MainExact.inl` intentionally supplies different `MidiTimer` and
+`DummyMidiTimer` emission declarations, including a dummy constructor absent
+from the canonical type. That failed compile receives zero exact credit.
+`MidiOutputApi.hpp` is consequently a fieldless shared adapter with canonical
+`ZunResult` returns and `ReadFileData(i32, const char *)`; it owns no layout,
+storage, lifetime, or implementation. MainExact keeps only the proven local
+timer surface.
+
+**Exact identity review.** The first strict adapter replay stopped on the
+expected legacy `void StopPlayback` versus canonical `ZunResult StopPlayback`
+identity at an unchanged relocation site and receives no credit. Review then
+migrated eight public Main-side identities: three StopPlayback calls and one
+each for UnprepareHeader, ReadFileData, ParseFile, Play, and SetFadeOut. All
+relocation offsets, types, destinations, and code bytes remained unchanged.
+A controlled refresh changed 25 Main and 15 Global compiler-private labels
+across three units only after structural equivalence was established. The
+immediate combined replay passed with no further refresh.
+
+**Guards and debt.** The MidiOutput owner guard requires the full owner and
+size assertion, rejects a restored MidiRuntime header or private Main-family
+declaration, requires the shared adapter in all three Supervisor-family
+headers, rejects fields in that adapter, preserves MainExact's local timer
+boundary, rejects the six legacy ABI spellings, and pins the canonical
+manifest counts. Retiring the two selected Main blocks shrinks selector debt
+from 772 to **770 directives across 107 files**. Removing the selected private
+Main declaration shrinks declaration debt from 204 keys / 209 occurrences to
+**203 keys / 208 occurrences**.
+
+**Validation.** Final focused replay passed **197/197 exact units across Main
+and sixteen direct consumers** with zero private-label refresh. Pinned-VC7.1
+normal probes emitted **116,276-byte** Main, **34,679-byte** Global, and
+**19,014-byte** SupervisorViewport Intel 80386 COFF objects. The semantic guard
+and all **63 workflow tests** pass at this checkpoint. Tracking remains
+**1,880 provisional / 697 source-present / 696 exact**. Per the batching
+policy, no aggregate replay or product link is claimed; SEM-298 remains the
+latest full receipt.
+
+**Unknown / next route.** Converge the duplicated `ReplayScanWorker`
+declarations in Main, SupervisorRuntime, Supervisor, and its implementation.
+Use ABI-054/ABI-085 and REPLAY-020 as starting evidence, but preserve the
+standalone input worker versus embedded replay-worker storage distinction and
+prove the exact/normal `exitSignal` representation before changing source.

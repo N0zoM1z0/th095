@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include "inttypes.hpp"
 #include "Chain.hpp"
+#include "MidiOutputApi.hpp"
 #include "ScreenEffect.hpp"
 
 namespace th095
@@ -131,17 +132,6 @@ typedef char ControllerBindingSizeIs12[(sizeof(ControllerBinding) == 0x12) ? 1 :
 typedef char SerializedControllerMappingSizeIs6C[(sizeof(SerializedControllerMapping) == 0x6c) ? 1 : -1];
 typedef char ControllerMappingSizeIsC4[(sizeof(ControllerMapping) == 0xc4) ? 1 : -1];
 typedef char GameConfigurationSizeIsC8[(sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
-
-struct MidiOutput
-{
-    i32 ReadFileData(i32 slot, char *path);
-    void StopPlayback();
-    i32 ParseFile(i32 index);
-    i32 Play();
-    i32 SetFadeOut(u32 milliseconds);
-    void UnprepareHeader(LPMIDIHDR header);
-    ~MidiOutput();
-};
 
 struct SupervisorFlags
 {
