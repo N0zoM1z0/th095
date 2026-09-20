@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-293. Owner closure remains
+The current semantic source checkpoint is SEM-294. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -70,10 +70,11 @@ deliberately narrower than subsystem completion:
 | EclExtended Player/camera lane | Both callbacks use canonical `PhotoPlayerRuntimeView` storage for `playerPosition @ +0x1E30`, camera `@ +0x1E3C`, `movementScale @ +0x2A18`, camera mode, and viewfinder geometry. `PhotoCameraState` remains the method owner. The exact adapter retains only an incomplete historical Player global and method-only camera receiver; it has no storage layout. |
 | PhotoCamera/PhotoStage Player lane | `PhotoPlayerRuntime.hpp` is profile-independent and now owns the proved mode, effect ANM/VM slot, movement/tracking state, completion timer, position, partial camera, and movement-scale storage. PhotoCamera and both PhotoStage bodies route Player fields through it. The old full `PhotoGameStateView` and normal `PhotoStageCameraView` layouts are retired; `PhotoCameraPlayerEmission.inl` is method-only and storage-free. Full `PhotoCameraState` embedding remains separate debt because the exact legacy ANM graph conflicts with the canonical header graph. |
 | PhotoCamera state `0xBDC` | `PhotoCamera.hpp` is profile-selector-free. Mode `+0x000`, trivial ANM handles `+0x010`, flags/charge UI `+0xBB4`, `focusChargeFrames +0xBB8`, and the loaded-ANM receiver use shared declarations. PhotoCamera binds canonical EnemyInf, PhotoGameTask, BulletInf, Background, PhotoEffect, AnmManager, and SoundPlayer owners directly; it has no selected local declaration left. `CreateVm`, script-0x124 `CreateVmAtWorld`, and exactly two CreateVm-result SetPosition calls retain fieldless, profile-independent VC7 emission adapters; the last links to canonical `AnmManager::SetPosition`. Unsupported camera fields remain debt. |
+| SoundPlayer consumers | PhotoCamera, BulletManager, and EclExtended now use the canonical `SoundPlayer`/`SoundIdx` API directly. Their local shared-body projections and alternate globals are retired without adapters. Frozen exact-body projections and the canonical header's remaining selected declaration spellings remain separate debt. |
 | Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 804 remaining selector directives across 109 files and 212 declaration keys / 217 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 803 remaining selector directives across 109 files and 210 declaration keys / 215 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -369,13 +370,26 @@ The normal probe remained a **59,658-byte i386 COFF** object. PhotoCamera now
 has no selected local declaration in the debt ledger. No aggregate/product
 closure is claimed; SEM-287 remains the latest full receipt.
 
+For SEM-294, BulletManager's DIFF-only `PhotoBulletSoundPlayerView` and
+EclExtended's exact-only nested `SoundPlayerView` were retired. Fourteen call
+sites and 28 global/method relocation identities now use canonical
+`SoundPlayer`/`SoundIdx` directly, with unchanged bytes, offsets, types, and
+destinations. BulletManager passed **35/35 exact** after a restricted refresh
+of 17 private labels in two units; its final replay had zero refresh.
+EclExtended passed **22/22 exact** with zero refresh. Normal pinned-VC7.1
+probes emitted **67,056-byte** BulletManager and **45,996-byte** EclExtended
+i386 COFF objects. No adapter, selector, or sound-name inference was added.
+No aggregate/product closure is claimed; SEM-287 remains the latest full
+receipt.
+
 ## Next bounded lane
 
-Continue the canonical SoundPlayer owner family across remaining consumers.
-Start with BulletManager's `PhotoBulletSoundPlayerView`, then audit
-EclExtended's method-only projection against canonical `SoundPlayer`/`SoundIdx`.
-Keep each affected TU exact independently; do not add a selector or infer
-sound meanings from numeric adjacency.
+Audit the canonical `SoundPlayer.hpp` profile splits, starting with the
+`TH095_MATCH_SOUNDPLAYER_AS_STRUCT` class/struct declaration selector and its
+four callers. Determine which data-relocation decorations are true VC7
+emission dependencies before changing the shared header. Keep frozen exact
+bodies separate from normal semantic acceptance; do not add a selector or
+infer sound meanings from numeric adjacency.
 
 ## Protected working-tree exclusions
 
@@ -394,6 +408,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/BulletManager.cpp --path src/EclExtended.cpp --path src/SoundPlayer.hpp --details
-rg -n "SoundPlayerView|SoundPlayer\(|PlaySoundByIdx|PlaySoundPositionedByIdx|StopSoundByIdx|SoundIdx" src/BulletManager.cpp src/EclExtended.cpp src/SoundPlayer.hpp config/match-units.toml
+python3 scripts/analysis/report-semantic-debt.py --path src/SoundPlayer.hpp --path src/Main.cpp --path src/PhotoCamera.cpp --details
+rg -n "TH095_MATCH_SOUNDPLAYER_AS_STRUCT|struct SoundPlayer|class SoundPlayer|g_SoundPlayer" src/SoundPlayer.hpp src/Main.cpp src/PhotoCamera.cpp src/PhotoGameExact.inl src/PhotoItemManagerExact.inl config/match-units.toml
 ```

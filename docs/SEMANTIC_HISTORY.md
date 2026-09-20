@@ -14644,3 +14644,55 @@ start with `PhotoBulletSoundPlayerView` in BulletManager, then audit
 EclExtended's method-only projection against the canonical `SoundIdx` methods.
 Keep each TU exact independently, do not add selectors,
 and do not infer semantic sound names from numeric adjacency.
+
+### SEM-294 — route BulletManager and EclExtended through canonical SoundPlayer
+
+**Scope.** Continue the canonical SoundPlayer owner family in the two shared
+translation units named by SEM-293. Retire BulletManager's DIFF-only
+`PhotoBulletSoundPlayerView` and EclExtended's exact-only nested
+`SoundPlayerView` without changing sound indices, pan values, call timing,
+queue behavior, or audio-resource lifetime.
+
+**Evidence and ownership.** BulletManager has nine sound calls: seven
+`PlaySoundByIdx` and two `PlaySoundPositionedByIdx`. EclExtended has five
+`PlaySoundByIdx` calls. Every existing relocation already resolves to the
+canonical authored methods at `0x00438F20/0x00439030`, and every receiver
+resolves to the single `g_SoundPlayer @ 0x004C4EE8` object. The callers already
+convert arguments to `SoundIdx`; their local types contributed only alternate
+C++ symbol identities and no storage, state, or behavior.
+
+**Production / exact representation.** BulletManager now uses the
+`SoundPlayer.hpp` declaration that is parsed before its late exact `DIFFBUILD`
+compatibility boundary; the alternate global and macro are gone. EclExtended
+uses one profile-independent `::th095::g_SoundPlayer` route while preserving
+its unrelated RNG/game-speed exact declarations. Direct pinned-VC7.1 output
+uses canonical class-global and enum-parameter decorations. All 28 affected
+global/method relocation identities retain their offsets, types, and target
+destinations. Neither translation unit needs an adapter or a new profile
+selector.
+
+**Guards and debt.** The semantic guard rejects both local types, both
+alternate-global identities, and their manifest decorations; it pins nine
+BulletManager calls, five EclExtended calls, and the canonical ABI identities.
+Removing BulletManager's now-empty `#ifdef DIFFBUILD` block shrinks selector
+debt from 804 to **803 directives across 109 files**. Removing both selected
+types shrinks declaration debt from 212 keys / 217 occurrences to **210 keys /
+215 occurrences**. No baseline allowance was added. Frozen exact-body sound
+projections were not treated as normal semantic owners and were not changed.
+
+**Validation.** Focused canonical replay passed BulletManager **35/35 exact**
+after the restricted refresh proved 17 compiler-private label changes in two
+units were the only structural difference; its immediate final replay passed
+35/35 with zero refresh. EclExtended passed **22/22 exact** with zero refresh.
+Pinned-VC7.1 normal probes emitted **67,056-byte** BulletManager and
+**45,996-byte** EclExtended Intel 80386 COFF objects. The semantic guard and
+all **59 tests** pass; tracking remains **1,880 provisional / 697
+source-present / 696 exact**. Per the batching policy, no aggregate/product
+closure is claimed; SEM-287 remains the latest full receipt.
+
+**Unknown / next route.** Audit the canonical `SoundPlayer.hpp` profile
+splits, beginning with `TH095_MATCH_SOUNDPLAYER_AS_STRUCT` and the four callers
+that define it. Determine which class/struct data-relocation spellings are
+real pinned-VC7 emission dependencies before changing the shared header.
+Keep frozen exact bodies separate from normal semantic acceptance; do not add
+a selector or infer sound meanings from numeric adjacency.

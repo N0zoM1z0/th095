@@ -158,6 +158,30 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             manifest,
         )
 
+    def test_sound_player_consumer_guard_accepts_canonical_owner(self) -> None:
+        GUARD.check_sound_player_consumer_owners()
+        bullet = (ROOT / "src" / "BulletManager.cpp").read_text(encoding="utf-8")
+        extended = (ROOT / "src" / "EclExtended.cpp").read_text(
+            encoding="utf-8"
+        )
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("PhotoBulletSoundPlayerView", bullet)
+        self.assertNotIn("g_PhotoBulletSoundPlayer", bullet)
+        self.assertEqual(bullet.count("g_SoundPlayer."), 9)
+        self.assertNotIn("struct SoundPlayerView", extended)
+        self.assertIn(
+            "#define TH095_ECL_EXT_SOUND_PLAYER ::th095::g_SoundPlayer",
+            extended,
+        )
+        self.assertEqual(
+            extended.count("TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx("), 5
+        )
+        self.assertNotIn("@PhotoBulletSoundPlayerView@th095@@", manifest)
+        self.assertNotIn("@SoundPlayerView@EclExtended@th095@@", manifest)
+        self.assertIn("?g_SoundPlayer@th095@@3VSoundPlayer@1@A", manifest)
+
     def test_photo_game_task_ecl_guard_accepts_state_bridge(self) -> None:
         GUARD.check_photo_game_task_ecl_owner()
         state = (ROOT / "src" / "PhotoGameTaskState.hpp").read_text(

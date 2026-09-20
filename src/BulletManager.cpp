@@ -77,16 +77,6 @@ struct PhotoBulletPlayerView
 };
 
 #ifdef DIFFBUILD
-struct PhotoBulletSoundPlayerView
-{
-    void PlaySoundByIdx(i32 soundIndex, i32 pan);
-    void PlaySoundPositionedByIdx(i32 soundIndex, f32 positionX);
-};
-extern PhotoBulletSoundPlayerView g_PhotoBulletSoundPlayer;
-#define g_SoundPlayer g_PhotoBulletSoundPlayer
-#endif
-
-#ifdef DIFFBUILD
 #define TH095_PHOTO_BULLET_PLAYER_ANGLE(position) \
     g_PhotoBulletPlayer->AngleFromPoint(position)
 #define TH095_PHOTO_BULLET_PLAYER_COLLISION(position, size) \

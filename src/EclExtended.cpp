@@ -326,28 +326,22 @@ extern ExtendedRuntimeView *g_ExtendedRuntime;
 #endif
 
 #ifdef TH095_MATCH_EXACT
-struct SoundPlayerView
-{
-    void PlaySoundByIdx(i32 soundIndex, i32 pan);
-};
 struct ExtendedRng
 {
     f32 GetRandomF32();
 };
-extern SoundPlayerView g_SoundPlayer;
 extern ExtendedRng g_Rng;
 extern f32 g_AnmGameSpeed;
 extern u32 g_PhotoScreenFadeColor;
-#define TH095_ECL_EXT_SOUND_PLAYER g_SoundPlayer
 #define TH095_ECL_EXT_RNG g_Rng
 #define TH095_ECL_EXT_GAME_SPEED g_AnmGameSpeed
 #define TH095_ECL_EXT_FADE_COLOR TH095_BACKBUFFER_CLEAR_COLOR
 #else
-#define TH095_ECL_EXT_SOUND_PLAYER ::th095::g_SoundPlayer
 #define TH095_ECL_EXT_RNG ::th095::g_Rng
 #define TH095_ECL_EXT_GAME_SPEED ::th095::g_AnmGameSpeed
 #define TH095_ECL_EXT_FADE_COLOR TH095_BACKBUFFER_CLEAR_COLOR
 #endif
+#define TH095_ECL_EXT_SOUND_PLAYER ::th095::g_SoundPlayer
 
 #ifndef DIFFBUILD
 #define g_Player \

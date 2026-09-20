@@ -706,6 +706,51 @@ def check_photo_bullet_owner() -> None:
             fail(f"{path.relative_to(SRC)} restored local BulletInf owner: {token}")
 
 
+def check_sound_player_consumer_owners() -> None:
+    bullet = (SRC / "BulletManager.cpp").read_text(encoding="utf-8")
+    extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
+    manifest = (ROOT / "config" / "match-units.toml").read_text(
+        encoding="utf-8"
+    )
+
+    for retired in (
+        "PhotoBulletSoundPlayerView",
+        "g_PhotoBulletSoundPlayer",
+        "#define g_SoundPlayer g_PhotoBulletSoundPlayer",
+    ):
+        if retired in bullet:
+            fail(f"BulletManager restored duplicate SoundPlayer ABI: {retired}")
+    if bullet.count("g_SoundPlayer.") != 9:
+        fail("BulletManager sound calls escaped the canonical SoundPlayer owner")
+
+    for retired in (
+        "struct SoundPlayerView",
+        "extern SoundPlayerView g_SoundPlayer",
+    ):
+        if retired in extended:
+            fail(f"EclExtended restored duplicate SoundPlayer ABI: {retired}")
+    if "#define TH095_ECL_EXT_SOUND_PLAYER ::th095::g_SoundPlayer" not in extended:
+        fail("EclExtended lost its canonical SoundPlayer route")
+    if extended.count("TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx(") != 5:
+        fail("EclExtended sound calls escaped the canonical SoundPlayer route")
+
+    for retired in (
+        "@PhotoBulletSoundPlayerView@th095@@",
+        "?g_PhotoBulletSoundPlayer@th095@@",
+        "@SoundPlayerView@EclExtended@th095@@",
+        "?g_SoundPlayer@EclExtended@th095@@",
+    ):
+        if retired in manifest:
+            fail(f"match manifest restored duplicate SoundPlayer ABI: {retired}")
+    for canonical in (
+        "?g_SoundPlayer@th095@@3VSoundPlayer@1@A",
+        "?PlaySoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@H@Z",
+        "?PlaySoundPositionedByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@M@Z",
+    ):
+        if canonical not in manifest:
+            fail(f"match manifest lost canonical SoundPlayer ABI: {canonical}")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -1879,6 +1924,7 @@ def main() -> int:
     check_ecl_type_boundaries()
     check_ecl_extended_type_boundaries()
     check_photo_bullet_owner()
+    check_sound_player_consumer_owners()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -1898,6 +1944,7 @@ def main() -> int:
     print("  normal ECL types: canonical ANM, Supervisor, and Background owners")
     print("  EclExtended normal types: canonical ANM, Float3, Effect, BulletInf, EnemyInf, PlayerInf, Camera, and PhotoGameTask owners")
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
+    print("  SoundPlayer consumers: BulletManager and EclExtended use the canonical owner")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")
