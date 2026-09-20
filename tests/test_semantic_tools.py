@@ -587,6 +587,22 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("u32 d3dDevDisconnectFlag : 1;", legacy)
         self.assertIn("C_ASSERT(sizeof(SupervisorFlags) == 0x4);", legacy)
 
+    def test_screenshot_bitmap_header_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_screenshot_bitmap_header_owner()
+        header = (ROOT / "src" / "ScreenshotBitmapFileHeader.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(ScreenshotBitmapFileHeader) == 0x0e", header)
+        self.assertIn(
+            "offsetof(ScreenshotBitmapFileHeader, offBits) == 0x0a", header
+        )
+        self.assertNotRegex(header, r"\bBITMAPFILEHEADER\b")
+        main = (ROOT / "src" / "Main.hpp").read_text(encoding="utf-8")
+        self.assertIn('#include "ScreenshotBitmapFileHeader.hpp"', main)
+        self.assertNotIn("struct ScreenshotBitmapFileHeader\n{", main)
+
 
 if __name__ == "__main__":
     unittest.main()

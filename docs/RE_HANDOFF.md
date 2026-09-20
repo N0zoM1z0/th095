@@ -577,14 +577,34 @@ files**; removing the lifecycle-only selected type shrinks declaration debt to
 tests** pass. No aggregate/product closure is claimed; SEM-298 remains the
 latest full receipt.
 
+For SEM-306, `ScreenshotBitmapFileHeader.hpp` became the sole profile-
+independent owner of the packed `0x0E` BMP file header embedded at Supervisor
+`+0x52C`. Main, MainExact, and SupervisorRuntime now consume that declaration.
+The owner asserts `size +0x02`, the two reserved words at `+0x06/+0x08`, and
+`offBits +0x0A`. Main's TakeScreenshot produces `BM`, `offBits = 0x36`, and
+the final file size; ScreenshotThread writes exactly the packed record before
+the separately allocated `BITMAPINFOHEADER @ +0x53C` and pixel payload. The
+owner does not alias host `BITMAPFILEHEADER`, and no meaning beyond serialized
+position is claimed for the reserved fields.
+
+The first strict Main replay stopped on 25 compiler-private labels and
+receives zero exact credit. Controlled direct-consumer refresh accepted 40
+private labels across three units only after bytes and all non-private
+relocation fields remained unchanged. Immediate final replay passed **199/199
+exact across 18 sources** with zero refresh. Normal pinned-VC7.1 probes emitted
+**116,276-byte** Main, **34,679-byte** Global, **64,883-byte** SoundPlayer, and
+**19,014-byte** SupervisorViewport i386 COFF objects. Selector debt remains
+**749 directives across 107 files** and declaration debt remains **201 keys /
+206 occurrences**. The semantic guard and all **67 workflow tests** pass. No
+aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
+
 ## Next bounded lane
 
-Converge the three identical `ScreenshotBitmapFileHeader` declarations in
-`Main.hpp`, `MainExact.hpp`, and `SupervisorRuntime.hpp` into one dependency-
-light, profile-independent serialized-header owner. Verify the `0x0E` packed
-layout and every screenshot producer/consumer before editing; do not fold the
-Win32 `BITMAPFILEHEADER` ABI into this owner or infer semantics for reserved
-fields beyond their serialized positions.
+Audit the three identical TH095 `SupervisorState` declarations in `Main.hpp`,
+`MainExact.hpp`, and `SupervisorRuntime.hpp` for one dependency-light owner.
+Keep the numerically incompatible TH08-shaped state enum in legacy
+`Supervisor.hpp` separate, and verify state producers/consumers plus switch-
+table emission before moving the canonical enum.
 
 ## Protected working-tree exclusions
 
@@ -604,5 +624,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --details
-rg -n "ScreenshotBitmapFileHeader|BITMAPFILEHEADER|bitmapFileHeader|offBits" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Main.cpp src/MainExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
+rg -n "enum SupervisorState|SUPERVISOR_STATE_|SupervisorState_" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Supervisor.hpp src/Main.cpp src/MainExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
 ```

@@ -1409,6 +1409,80 @@ def check_supervisor_flags_owner() -> None:
             fail(f"canonical Supervisor flag producer/consumer was lost: {fact}")
 
 
+def check_screenshot_bitmap_header_owner() -> None:
+    owner = (SRC / "ScreenshotBitmapFileHeader.hpp").read_text(encoding="utf-8")
+    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+    main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
+    main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
+
+    if any(name in owner for name in PROFILE_NAMES):
+        fail("screenshot bitmap header owner must be profile-independent")
+    required_layout = (
+        "#pragma pack(push, 1)",
+        "struct ScreenshotBitmapFileHeader",
+        "u16 type;",
+        "u32 size;",
+        "u16 reserved1;",
+        "u16 reserved2;",
+        "u32 offBits;",
+        "(sizeof(ScreenshotBitmapFileHeader) == 0x0e)",
+        "(offsetof(ScreenshotBitmapFileHeader, size) == 0x02)",
+        "(offsetof(ScreenshotBitmapFileHeader, reserved1) == 0x06)",
+        "(offsetof(ScreenshotBitmapFileHeader, reserved2) == 0x08)",
+        "(offsetof(ScreenshotBitmapFileHeader, offBits) == 0x0a)",
+    )
+    for fact in required_layout:
+        if fact not in owner:
+            fail(f"screenshot bitmap header lost serialized layout: {fact}")
+    if re.search(r"\bBITMAPFILEHEADER\b", owner):
+        fail("serialized screenshot header must not alias the host SDK ABI")
+
+    declarations: list[str] = []
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in {".cpp", ".hpp", ".inl"}:
+            continue
+        text = source_without_comments(path.read_text(encoding="utf-8"))
+        if re.search(
+            r"\bstruct\s+ScreenshotBitmapFileHeader\s*\{", text
+        ):
+            declarations.append(path.relative_to(ROOT).as_posix())
+    if declarations != ["src/ScreenshotBitmapFileHeader.hpp"]:
+        fail(f"screenshot bitmap header declarations are not canonical: {declarations}")
+
+    for path, text in (
+        ("Main.hpp", main_header),
+        ("MainExact.hpp", main_exact_header),
+        ("SupervisorRuntime.hpp", runtime_header),
+    ):
+        if '#include "ScreenshotBitmapFileHeader.hpp"' not in text:
+            fail(f"{path} no longer routes through the screenshot header owner")
+        if re.search(r"\bstruct\s+ScreenshotBitmapFileHeader\s*\{", text):
+            fail(f"{path} restored a private screenshot header declaration")
+        for layout_fact in (
+            "ScreenshotBitmapFileHeader screenshotFileHeader;",
+            "BITMAPINFOHEADER *screenshotInfoHeader;",
+        ):
+            if layout_fact not in text:
+                fail(f"{path} lost distinct screenshot storage: {layout_fact}")
+
+    producer_facts = (
+        'this->screenshotFileHeader.type = *(u16 *)"BM";',
+        "this->screenshotFileHeader.offBits = 0x36;",
+        "this->screenshotFileHeader.size = this->screenshotFileHeader.offBits;",
+        "this->screenshotFileHeader.size += widthBytes * 0x1e0;",
+    )
+    consumer_facts = (
+        "FileSystem::WriteToOpenFile(&g_Supervisor.screenshotFileHeader,",
+        "sizeof(g_Supervisor.screenshotFileHeader));",
+    )
+    for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
+        for fact in producer_facts + consumer_facts:
+            if fact not in text:
+                fail(f"{path} lost screenshot header producer/consumer: {fact}")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -2590,6 +2664,7 @@ def main() -> int:
     check_replay_scan_worker_owner()
     check_game_configuration_owner()
     check_supervisor_flags_owner()
+    check_screenshot_bitmap_header_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -2617,6 +2692,7 @@ def main() -> int:
     print("  ReplayScanWorker owner: one shared layout over three distinct storages")
     print("  GameConfiguration owner: one profile-independent TH095 0xC8 layout")
     print("  Supervisor flags: one profile-independent TH095 0x7BC-owner layout")
+    print("  Screenshot BMP file header: one packed 0x0E serialized owner")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

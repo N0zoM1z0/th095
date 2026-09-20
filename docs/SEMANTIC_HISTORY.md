@@ -15290,3 +15290,49 @@ remains the latest full receipt.
 SupervisorRuntime. Preserve the serialized `0x0E` layout and reserved fields,
 and do not conflate this source-owned record with a host SDK ABI without an
 independent compiler/target reason.
+
+### SEM-306 — unify the screenshot BMP file-header owner
+
+**Scope and ownership.** `ScreenshotBitmapFileHeader.hpp` now owns the one
+profile-independent packed `0x0E` serialized BMP file header embedded at
+canonical Supervisor `+0x52C`. Main, MainExact, and SupervisorRuntime include
+that declaration instead of maintaining three identical copies. The owner
+asserts `type +0x00`, `size +0x02`, `reserved1 +0x06`, `reserved2 +0x08`, and
+`offBits +0x0A` under one-byte packing.
+
+**Protocol and boundary.** Both Main bodies' `TakeScreenshot @ 0x00424A00`
+zero the record, publish the `BM` type, initialize `offBits` and `size` to
+`0x36`, and add the captured pixel payload to `size`. `ScreenshotThread @
+0x00424980` writes exactly `sizeof(screenshotFileHeader)` before writing the
+separate `BITMAPINFOHEADER` and pixels. The latter remains a heap pointer at
+Supervisor `+0x53C`; the serialized record is not aliased to host
+`BITMAPFILEHEADER`. The reserved words are layout-preserved but receive no new
+business meaning.
+
+**Compiler evidence.** The first strict Main replay stopped on 25 compiler-
+private labels and receives zero exact credit. The mismatch contained no code-
+byte, public-identity, relocation offset/type/target, or non-private symbol
+change. Controlled refresh over the direct consumer set accepted the usual 25
+Main plus 15 Global labels across three units. Immediate zero-refresh replay
+then passed all 199 units across 18 sources.
+
+**Guards and debt.** The owner guard pins packing, size, every serialized
+field offset, the unique declaration, the three owning headers' include and
+embedded-storage relationships, both producer/consumer bodies, and separation
+from the Win32 SDK file-header ABI. This batch removes no profile selector or
+selected declaration, so the closed ledgers remain **749 directives across
+107 files** and **201 keys / 206 occurrences**.
+
+**Validation.** Final focused replay passed **199/199 exact units across 18
+direct consumers** with zero private-label refresh. Pinned-VC7.1 normal probes
+emitted **116,276-byte** Main, **34,679-byte** Global, **64,883-byte**
+SoundPlayer, and **19,014-byte** SupervisorViewport Intel 80386 COFF objects.
+The semantic guard and all **67 workflow tests** pass. Tracking remains
+**1,880 provisional / 697 source-present / 696 exact**. Per the batching
+policy, no aggregate replay or product link is claimed; SEM-298 remains the
+latest full receipt.
+
+**Unknown / next route.** Audit the three identical canonical TH095
+`SupervisorState` declarations for one dependency-light owner. Preserve the
+numerically incompatible legacy enum as a separate TH08-shaped compatibility
+surface and verify switch-table/compiler effects before convergence.

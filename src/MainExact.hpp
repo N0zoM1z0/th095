@@ -16,6 +16,7 @@
 #include "MidiOutputApi.hpp"
 #include "ReplayScanWorker.hpp"
 #include "ScreenEffect.hpp"
+#include "ScreenshotBitmapFileHeader.hpp"
 #include "SupervisorFlags.hpp"
 
 namespace th095
@@ -85,19 +86,6 @@ enum SupervisorState
     SUPERVISOR_STATE_START_REPLAY = 7,
     SUPERVISOR_STATE_RETRY_PHOTO_GAME = 8
 };
-
-#pragma pack(push, 1)
-struct ScreenshotBitmapFileHeader
-{
-    u16 type;
-    u32 size;
-    u16 reserved1;
-    u16 reserved2;
-    u32 offBits;
-};
-#pragma pack(pop)
-
-typedef char ScreenshotBitmapFileHeaderSizeIs0E[(sizeof(ScreenshotBitmapFileHeader) == 0x0e) ? 1 : -1];
 
 #pragma pack(push, 4)
 struct Supervisor
