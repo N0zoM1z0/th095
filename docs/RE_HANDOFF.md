@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-295. Owner closure remains
+The current semantic source checkpoint is SEM-296. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -70,11 +70,11 @@ deliberately narrower than subsystem completion:
 | EclExtended Player/camera lane | Both callbacks use canonical `PhotoPlayerRuntimeView` storage for `playerPosition @ +0x1E30`, camera `@ +0x1E3C`, `movementScale @ +0x2A18`, camera mode, and viewfinder geometry. `PhotoCameraState` remains the method owner. The exact adapter retains only an incomplete historical Player global and method-only camera receiver; it has no storage layout. |
 | PhotoCamera/PhotoStage Player lane | `PhotoPlayerRuntime.hpp` is profile-independent and now owns the proved mode, effect ANM/VM slot, movement/tracking state, completion timer, position, partial camera, and movement-scale storage. PhotoCamera and both PhotoStage bodies route Player fields through it. The old full `PhotoGameStateView` and normal `PhotoStageCameraView` layouts are retired; `PhotoCameraPlayerEmission.inl` is method-only and storage-free. Full `PhotoCameraState` embedding remains separate debt because the exact legacy ANM graph conflicts with the canonical header graph. |
 | PhotoCamera state `0xBDC` | `PhotoCamera.hpp` is profile-selector-free. Mode `+0x000`, trivial ANM handles `+0x010`, flags/charge UI `+0xBB4`, `focusChargeFrames +0xBB8`, and the loaded-ANM receiver use shared declarations. PhotoCamera binds canonical EnemyInf, PhotoGameTask, BulletInf, Background, PhotoEffect, AnmManager, and SoundPlayer owners directly; it has no selected local declaration left. `CreateVm`, script-0x124 `CreateVmAtWorld`, and exactly two CreateVm-result SetPosition calls retain fieldless, profile-independent VC7 emission adapters; the last links to canonical `AnmManager::SetPosition`. Unsupported camera fields remain debt. |
-| SoundPlayer owner/consumers | `SoundPlayer.hpp` exposes one profile-independent `class SoundPlayer`; the class/struct selector and all four definition sites are retired. PhotoCamera, BulletManager, and EclExtended use the canonical `SoundPlayer`/`SoundIdx` API directly. Frozen exact-body projections, the result-type alias split, and platform ownership remain separate debt. |
+| SoundPlayer owner/consumers | `SoundPlayer.hpp` exposes one profile-independent `class SoundPlayer` and one canonical `th095::ZunResult` result type; the class/struct and result-type selectors plus their exact-only aliases are retired. PhotoCamera, BulletManager, and EclExtended use the canonical `SoundPlayer`/`SoundIdx` API directly. Frozen exact-body projections, sound-name selectors, and platform ownership remain separate debt. |
 | Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 799 remaining selector directives across 109 files and 208 declaration keys / 213 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 797 remaining selector directives across 109 files and 208 declaration keys / 213 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -393,14 +393,29 @@ private-label refresh. Normal probes emitted **59,658-byte** PhotoCamera,
 **116,276-byte** Main i386 COFF objects. No aggregate/product closure is
 claimed; SEM-287 remains the latest full receipt.
 
+For SEM-296, `SoundPlayerResult` was unified on canonical
+`th095::ZunResult`, and SoundPlayer's exact-only legacy success/error aliases
+were retired. A first strict replay correctly found that the old global-enum
+decorated identity no longer existed; after reviewing and migrating all 25
+function, caller, and EH identities to the namespaced enum spelling,
+SoundPlayer passed **27/27** and FrontEndLifecycle **8/8 exact**, both with zero
+private-label refresh. Normal pinned-VC7.1 probes emitted **64,883-byte** and
+**30,317-byte** i386 COFF objects. The current source then passed the complete
+**696/696 exact across 88 sources** replay with zero refresh and a fresh
+**88-TU** normal product link. That PE32 image is **778,752 bytes** with
+build-local SHA-256
+`152e0a0577b01fa41fa382eee1438f9fd0cb0faad1e2a00582954a1665355ccc`.
+This is exact-unit preservation and normal compile/link closure, not target
+whole-image identity or runtime credit. SEM-296 is the latest full receipt.
+
 ## Next bounded lane
 
-Audit `SoundPlayerResult` in `SoundPlayer.hpp` and the exact-only
-`ZUN_SUCCESS`/`ZUN_ERROR` aliases in `SoundPlayer.cpp`. Determine whether the
-global-versus-namespaced enum choice affects pinned VC7 emission before
-unifying it. Keep frozen exact bodies separate from normal semantic
-acceptance; do not add a selector or infer sound meanings from numeric
-adjacency.
+Audit the `SoundIdx` tail split in `SoundPlayer.hpp`: exact currently exposes
+`SOUND_2A..SOUND_2E` plus numeric `TH095_SOUND_*` tokens while normal source
+exposes the already target-proved photography names from SND-011. Determine
+with focused compiler evidence which compatibility tokens can be retired
+without changing caller emission. Do not infer any adjacent sound name or
+change a frozen exact body merely because the numeric values agree.
 
 ## Protected working-tree exclusions
 
@@ -419,6 +434,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/SoundPlayer.hpp --path src/SoundPlayer.cpp --details
-rg -n "SoundPlayerResult|TH095_LEGACY_ZUN|ZUN_SUCCESS|ZUN_ERROR|ZunResult" src/SoundPlayer.hpp src/SoundPlayer.cpp src/ZunResult.hpp config/match-units.toml
+python3 scripts/analysis/report-semantic-debt.py --path src/SoundPlayer.hpp --details
+rg -n "SOUND_2A|SOUND_2B|SOUND_2C|SOUND_2D|SOUND_2E|TH095_SOUND_|SOUND_FOCUS_CHARGE|SOUND_CHARGE_FULL|SOUND_CAMERA_FOCUS|SOUND_PHOTO_PULSE|SOUND_TARGET_ACQUIRED" src config/match-units.toml
 ```

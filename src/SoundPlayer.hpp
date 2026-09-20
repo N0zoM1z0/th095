@@ -17,11 +17,7 @@
 namespace th095
 {
 
-#ifdef TH095_MATCH_EXACT
-typedef ::ZunResult SoundPlayerResult;
-#else
 typedef ZunResult SoundPlayerResult;
-#endif
 enum SoundIdx
 {
     NO_SOUND = -1,

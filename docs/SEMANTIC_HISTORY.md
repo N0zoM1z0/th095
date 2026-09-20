@@ -14747,3 +14747,52 @@ closure is claimed; SEM-287 remains the latest full receipt.
 namespaced canonical enum type changes pinned VC7 emission before selecting a
 single header declaration. Do not infer source intent from equal numeric
 values, and do not add a selector.
+
+### SEM-296 — unify the SoundPlayer result type
+
+**Scope.** Close only the selected `SoundPlayerResult` declaration and its
+exact-only success/error aliases. Preserve every SoundPlayer layout, function
+body, status value, calling convention, queue protocol, and resource-lifetime
+decision. Frozen exact bodies remain independent compiler-emission material.
+
+**Compiler evidence.** Replacing exact `::ZunResult` with canonical
+`th095::ZunResult` changes the VC7 decorated return type from `ZunResult@@` to
+`ZunResult@2@`. The first strict replay therefore failed before comparison
+because the old object symbol no longer existed; it receives no exact credit.
+Reviewing the complete affected ABI surface found 25 function, internal/caller,
+and EH identities. Migrating those identities preserved every function byte,
+relocation offset/type, and target address.
+
+**Production / exact representation.** `SoundPlayer.hpp` now declares only
+`typedef ZunResult SoundPlayerResult;` inside namespace `th095`.
+`SoundPlayer.cpp` uses the canonical namespaced `ZUN_SUCCESS` and `ZUN_ERROR`
+values in every profile. The global-enum typedef branch and exact-only macros
+are gone; no replacement selector, adapter, alias, or alternate body was
+introduced.
+
+**Guards and debt.** The SoundPlayer guard requires the canonical typedef,
+rejects the legacy global typedef and exact-only value macros, rejects the old
+global-enum decorated member identity, and requires the namespaced identity.
+The two removed directives shrink the selector baseline from 799 to **797
+directives across 109 files**. Declaration debt remains **208 keys / 213
+occurrences**; no baseline allowance was added.
+
+**Validation.** Focused canonical replay passed SoundPlayer **27/27** and
+FrontEndLifecycle **8/8**, totaling **35/35 exact units** with zero
+private-label refresh. Pinned-VC7.1 normal probes emitted **64,883-byte** and
+**30,317-byte** Intel 80386 COFF objects. The current source then passed a
+complete **696/696 exact-unit replay across 88 sources** with zero refresh.
+The fresh normal product gate compiled all **88 i386 COFF translation units**
+and linked/verified a **778,752-byte PE32** image with build-local SHA-256
+`152e0a0577b01fa41fa382eee1438f9fd0cb0faad1e2a00582954a1665355ccc`.
+This is source-unit exact preservation plus normal compile/link closure, not
+target whole-image identity or runtime-scenario validation. The semantic guard
+and all **59 tests** pass; tracking remains **1,880 provisional / 697
+source-present / 696 exact**.
+
+**Unknown / next route.** Audit the remaining `SoundIdx` tail selector and
+`TH095_SOUND_*` numeric compatibility tokens. SND-011 already establishes the
+five photography meanings from target-local producer/consumer evidence, but
+pinned-VC7 focused replay must still prove whether exact callers can share the
+semantic enum spellings. Do not infer neighboring sound names from adjacency
+and do not edit a frozen exact body solely because values are equal.

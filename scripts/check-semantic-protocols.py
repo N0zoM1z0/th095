@@ -716,6 +716,10 @@ def check_sound_player_consumer_owners() -> None:
 
     if "class SoundPlayer\n" not in header or "struct SoundPlayer\n" in header:
         fail("SoundPlayer.hpp must expose one canonical class declaration")
+    if "typedef ZunResult SoundPlayerResult;" not in header:
+        fail("SoundPlayer.hpp lost its canonical result type")
+    if "typedef ::ZunResult SoundPlayerResult;" in header:
+        fail("SoundPlayer.hpp restored its selected legacy result type")
     for path in sorted(SRC.rglob("*")):
         if path.suffix not in (".cpp", ".hpp", ".inl"):
             continue
@@ -774,6 +778,17 @@ def check_sound_player_consumer_owners() -> None:
         fail("migrated photo callers restored the selected struct data identity")
     if sum(section.count("?g_SoundPlayer@th095@@3VSoundPlayer@1@A") for section in migrated_sections) != 15:
         fail("migrated photo callers lost the fifteen canonical class data identities")
+    implementation = (SRC / "SoundPlayer.cpp").read_text(encoding="utf-8")
+    for retired in (
+        "#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS",
+        "#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR",
+    ):
+        if retired in implementation:
+            fail(f"SoundPlayer restored selected result values: {retired}")
+    if "SoundPlayer@th095@@QAE?AW4ZunResult@@" in manifest:
+        fail("match manifest restored the global legacy SoundPlayer result ABI")
+    if "SoundPlayer@th095@@QAE?AW4ZunResult@2@" not in manifest:
+        fail("match manifest lost the canonical namespaced SoundPlayer result ABI")
 
 
 def check_photo_enemy_owner() -> None:

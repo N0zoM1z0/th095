@@ -5519,7 +5519,7 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::Initialize"]
-symbol = "?Initialize@SoundPlayer@th095@@QAE?AW4ZunResult@@PAUHWND__@@@Z"
+symbol = "?Initialize@SoundPlayer@th095@@QAE?AW4ZunResult@2@PAUHWND__@@@Z"
 target_address = 0x00437790
 size = 0x51
 relocations = [
@@ -5532,7 +5532,7 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::RequestThreadStop"]
-symbol = "?RequestThreadStop@SoundPlayer@th095@@QAE?AW4ZunResult@@XZ"
+symbol = "?RequestThreadStop@SoundPlayer@th095@@QAE?AW4ZunResult@2@XZ"
 target_address = 0x004377F0
 size = 0x1A
 relocations = []
@@ -5542,7 +5542,7 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::JoinThread"]
-symbol = "?JoinThread@SoundPlayer@th095@@QAE?AW4ZunResult@@XZ"
+symbol = "?JoinThread@SoundPlayer@th095@@QAE?AW4ZunResult@2@XZ"
 target_address = 0x00437810
 size = 0xB6
 relocations = [
@@ -5559,7 +5559,7 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::Release"]
-symbol = "?Release@SoundPlayer@th095@@QAE?AW4ZunResult@@XZ"
+symbol = "?Release@SoundPlayer@th095@@QAE?AW4ZunResult@2@XZ"
 target_address = 0x00437D60
 size = 0x29D
 relocations = [
@@ -5588,14 +5588,14 @@ relocations = [
   { offset = 0x8E, type = "DIR32", symbol = "??_C@_0BI@DJAPDMHM@Sound?5?3?5PreLoad?5Stage?$AN?6?$AA@", target = 0x00496E98 },
   { offset = 0x93, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
   { offset = 0xA7, type = "REL32", symbol = "?StopBGM@SoundPlayer@th095@@QAEXXZ", target = 0x00438CF0 },
-  { offset = 0xBD, type = "REL32", symbol = "?PreloadBGM@SoundPlayer@th095@@QAE?AW4ZunResult@@HPAD@Z", target = 0x00438860 },
+  { offset = 0xBD, type = "REL32", symbol = "?PreloadBGM@SoundPlayer@th095@@QAE?AW4ZunResult@2@HPAD@Z", target = 0x00438860 },
   { offset = 0xD0, type = "DIR32", symbol = "??_C@_0BI@DJAPDMHM@Sound?5?3?5PreLoad?5Stage?$AN?6?$AA@", target = 0x00496E98 },
   { offset = 0xD5, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
-  { offset = 0xEE, type = "REL32", symbol = "?PreloadBGM@SoundPlayer@th095@@QAE?AW4ZunResult@@HPAD@Z", target = 0x00438860 },
+  { offset = 0xEE, type = "REL32", symbol = "?PreloadBGM@SoundPlayer@th095@@QAE?AW4ZunResult@2@HPAD@Z", target = 0x00438860 },
   { offset = 0x113, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4700 },
   { offset = 0x13A, type = "DIR32", symbol = "??_C@_0BF@IDGKIBGP@Sound?5?3?5Load?5Stage?$AN?6?$AA@", target = 0x00496E80 },
   { offset = 0x13F, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
-  { offset = 0x151, type = "REL32", symbol = "?LoadBGM@SoundPlayer@th095@@QAE?AW4ZunResult@@H@Z", target = 0x00438B10 },
+  { offset = 0x151, type = "REL32", symbol = "?LoadBGM@SoundPlayer@th095@@QAE?AW4ZunResult@2@H@Z", target = 0x00438B10 },
   { offset = 0x16D, type = "DIR32", symbol = "??_C@_0BG@HJHKCFLL@Sound?5?3?5Reset?5Stage?$AN?6?$AA@", target = 0x00496E68 },
   { offset = 0x172, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
   { offset = 0x18F, type = "REL32", symbol = "?Reset@CStreamingSound@th095@@QAEJXZ", target = 0x004548B0 },
@@ -5701,7 +5701,7 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::LoadSoundData"]
-symbol = "?LoadSoundData@SoundPlayer@th095@@QAE?AW4ZunResult@@HPAD@Z"
+symbol = "?LoadSoundData@SoundPlayer@th095@@QAE?AW4ZunResult@2@HPAD@Z"
 target_address = 0x004385E0
 size = 0x3D
 relocations = [
@@ -5713,7 +5713,7 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::LoadFmt"]
-symbol = "?LoadFmt@SoundPlayer@th095@@QAE?AW4ZunResult@@PAD@Z"
+symbol = "?LoadFmt@SoundPlayer@th095@@QAE?AW4ZunResult@2@PAD@Z"
 target_address = 0x00438620
 size = 0x32
 relocations = [
@@ -5725,7 +5725,7 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::StartBGM"]
-symbol = "?StartBGM@SoundPlayer@th095@@QAE?AW4ZunResult@@PAD@Z"
+symbol = "?StartBGM@SoundPlayer@th095@@QAE?AW4ZunResult@2@PAD@Z"
 target_address = 0x00438660
 size = 0x182
 relocations = [
@@ -5750,7 +5750,7 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::ReopenBGM"]
-symbol = "?ReopenBGM@SoundPlayer@th095@@QAE?AW4ZunResult@@PAD@Z"
+symbol = "?ReopenBGM@SoundPlayer@th095@@QAE?AW4ZunResult@2@PAD@Z"
 target_address = 0x004387F0
 size = 0x69
 relocations = [
@@ -5765,7 +5765,7 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::PreloadBGM"]
-symbol = "?PreloadBGM@SoundPlayer@th095@@QAE?AW4ZunResult@@HPAD@Z"
+symbol = "?PreloadBGM@SoundPlayer@th095@@QAE?AW4ZunResult@2@HPAD@Z"
 target_address = 0x00438860
 size = 0x2A3
 relocations = [
@@ -5792,13 +5792,13 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::LoadBGM"]
-symbol = "?LoadBGM@SoundPlayer@th095@@QAE?AW4ZunResult@@H@Z"
+symbol = "?LoadBGM@SoundPlayer@th095@@QAE?AW4ZunResult@2@H@Z"
 target_address = 0x00438B10
 size = 0x1D6
 relocations = [
   { offset = 0x20, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4702 },
   { offset = 0x41, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4700 },
-  { offset = 0x62, type = "REL32", symbol = "?ReopenBGM@SoundPlayer@th095@@QAE?AW4ZunResult@@PAD@Z", target = 0x004387F0 },
+  { offset = 0x62, type = "REL32", symbol = "?ReopenBGM@SoundPlayer@th095@@QAE?AW4ZunResult@2@PAD@Z", target = 0x004387F0 },
   { offset = 0x88, type = "DIR32", symbol = "??_C@_0BK@ECHGFPND@Streming?5BGM?5Load?5no?5?$CFd?$AN?6?$AA@", target = 0x00496D0C },
   { offset = 0x8D, type = "REL32", symbol = "?DebugPrint@utils@th095@@YAXPADZZ", target = 0x00412180 },
   { offset = 0xE5, type = "DIR32", symbol = "__imp__CreateEventA@16", target = 0x004950B8 },
@@ -5844,12 +5844,12 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::InitSoundBuffers"]
-symbol = "?InitSoundBuffers@SoundPlayer@th095@@QAE?AW4ZunResult@@XZ"
+symbol = "?InitSoundBuffers@SoundPlayer@th095@@QAE?AW4ZunResult@2@XZ"
 target_address = 0x00438E10
 size = 0x106
 relocations = [
   { offset = 0x35, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
-  { offset = 0x3A, type = "REL32", symbol = "?JoinThread@SoundPlayer@th095@@QAE?AW4ZunResult@@XZ", target = 0x00437810 },
+  { offset = 0x3A, type = "REL32", symbol = "?JoinThread@SoundPlayer@th095@@QAE?AW4ZunResult@2@XZ", target = 0x00437810 },
   { offset = 0x91, type = "DIR32", symbol = "?g_SoundBufferIdxVol@th095@@3PAUSoundBufferIdxVolume@1@A", target = 0x004A4480 },
   { offset = 0xD6, type = "DIR32", symbol = "?g_SoundBufferIdxVol@th095@@3PAUSoundBufferIdxVolume@1@A", target = 0x004A4480 },
 ]
@@ -5951,7 +5951,7 @@ size = 0x45
 relocations = [
   { offset = 0x8, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
   { offset = 0xE, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
-  { offset = 0x13, type = "REL32", symbol = "?InitializeDSound@SoundPlayer@th095@@QAE?AW4ZunResult@@PAUHWND__@@@Z", target = 0x00437920 },
+  { offset = 0x13, type = "REL32", symbol = "?InitializeDSound@SoundPlayer@th095@@QAE?AW4ZunResult@2@PAUHWND__@@@Z", target = 0x00437920 },
   { offset = 0x19, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
   { offset = 0x24, type = "DIR32", symbol = "__imp__Sleep@4", target = 0x00495058 },
   { offset = 0x2B, type = "DIR32", symbol = "??_C@_0BJ@DLPJGHNB@SoundInit?5Thread?5Finish?6?$AA@", target = 0x00496B2C },
@@ -5964,11 +5964,11 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::InitializeDSound"]
-symbol = "?InitializeDSound@SoundPlayer@th095@@QAE?AW4ZunResult@@PAUHWND__@@@Z"
+symbol = "?InitializeDSound@SoundPlayer@th095@@QAE?AW4ZunResult@2@PAUHWND__@@@Z"
 target_address = 0x00437920
 size = 0x371
 relocations = [
-  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?InitializeDSound@SoundPlayer@th095@@QAE?AW4ZunResult@@PAUHWND__@@@Z", target = 0x004939DB },
+  { offset = 0x6, type = "DIR32", symbol = "__ehhandler$?InitializeDSound@SoundPlayer@th095@@QAE?AW4ZunResult@2@PAUHWND__@@@Z", target = 0x004939DB },
   { offset = 0xC, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
   { offset = 0x14, type = "DIR32", symbol = "__except_list", target = 0x00000000 },
   { offset = 0x7B, type = "REL32", symbol = "??2@YAPAXI@Z", target = 0x00485654 },
@@ -5983,7 +5983,7 @@ relocations = [
   { offset = 0x2FF, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
   { offset = 0x311, type = "DIR32", symbol = "?g_SFXList@th095@@3PAPADA", target = 0x004A45F8 },
   { offset = 0x31B, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
-  { offset = 0x320, type = "REL32", symbol = "?LoadSound@SoundPlayer@th095@@QAE?AW4ZunResult@@HPAD@Z", target = 0x00438210 },
+  { offset = 0x320, type = "REL32", symbol = "?LoadSound@SoundPlayer@th095@@QAE?AW4ZunResult@2@HPAD@Z", target = 0x00438210 },
   { offset = 0x32E, type = "DIR32", symbol = "?g_SFXList@th095@@3PAPADA", target = 0x004A45F8 },
   { offset = 0x334, type = "DIR32", symbol = "??_C@_0DH@FPNCNHFM@error?5?3?5Sound?5?$IDt?$ID?$EA?$IDC?$ID?$IL?$IC?$KK?$JD?G?$IC?$NN?$IN?$JO?$IC?$NP@", target = 0x00496B70 },
   { offset = 0x339, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3VGameErrorContext@1@A", target = 0x004C2420 },
@@ -6022,7 +6022,7 @@ relocations = [
   { offset = 0x23, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
   { offset = 0x32, type = "DIR32", symbol = "?g_SFXList@th095@@3PAPADA", target = 0x004A45F8 },
   { offset = 0x3C, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
-  { offset = 0x41, type = "REL32", symbol = "?LoadSoundData@SoundPlayer@th095@@QAE?AW4ZunResult@@HPAD@Z", target = 0x004385E0 },
+  { offset = 0x41, type = "REL32", symbol = "?LoadSoundData@SoundPlayer@th095@@QAE?AW4ZunResult@2@HPAD@Z", target = 0x004385E0 },
   { offset = 0x4F, type = "DIR32", symbol = "?g_SFXList@th095@@3PAPADA", target = 0x004A45F8 },
   { offset = 0x55, type = "DIR32", symbol = "??_C@_0DH@FPNCNHFM@error?5?3?5Sound?5?$IDt?$ID?$EA?$IDC?$ID?$IL?$IC?$KK?$JD?G?$IC?$NN?$IN?$JO?$IC?$NP@", target = 0x00496B70 },
   { offset = 0x5A, type = "DIR32", symbol = "?g_GameErrorContext@th095@@3VGameErrorContext@1@A", target = 0x004C2420 },
@@ -6036,7 +6036,7 @@ source = "src/SoundPlayer.cpp"
 object = "build/matching/SoundPlayer.obj"
 profile = ["/MT", "/EHsc", "/Gs", "/DNDEBUG", "/Zi", "/Gy", "/GF", "/Oi", "/Gr", "/Od", "/Ob1", "/I", "src"]
 functions = ["th095::SoundPlayer::LoadSound"]
-symbol = "?LoadSound@SoundPlayer@th095@@QAE?AW4ZunResult@@HPAD@Z"
+symbol = "?LoadSound@SoundPlayer@th095@@QAE?AW4ZunResult@2@HPAD@Z"
 target_address = 0x00438210
 size = 0x351
 relocations = [
@@ -14260,12 +14260,12 @@ relocations = [
   { offset = 0x167, type = "DIR32", symbol = "?g_FrontEndSceneGroups@th095@@3PAPAUFrontEndSceneDefinitionView@1@A", target = 0x004A5800 },
   { offset = 0x1D4, type = "DIR32", symbol = "?g_SoundInitializationComplete@th095@@3HA", target = 0x004CA114 },
   { offset = 0x1E0, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
-  { offset = 0x1E5, type = "REL32", symbol = "?InitSoundBuffers@SoundPlayer@th095@@QAE?AW4ZunResult@@XZ", target = 0x00438E10 },
+  { offset = 0x1E5, type = "REL32", symbol = "?InitSoundBuffers@SoundPlayer@th095@@QAE?AW4ZunResult@2@XZ", target = 0x00438E10 },
   { offset = 0x1EB, type = "DIR32", symbol = "?g_MusicArchiveBaseOffset@th095@@3HA", target = 0x004CA0FC },
   { offset = 0x1F4, type = "DIR32", symbol = "?g_FrontEndConfigurationFlags@th095@@3IA", target = 0x004C4850 },
   { offset = 0x201, type = "DIR32", symbol = "??_C@_09KECKLECK@thbgm?4dat?$AA@", target = 0x00497750 },
   { offset = 0x206, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
-  { offset = 0x20B, type = "REL32", symbol = "?StartBGM@SoundPlayer@th095@@QAE?AW4ZunResult@@PAD@Z", target = 0x00438660 },
+  { offset = 0x20B, type = "REL32", symbol = "?StartBGM@SoundPlayer@th095@@QAE?AW4ZunResult@2@PAD@Z", target = 0x00438660 },
   { offset = 0x212, type = "DIR32", symbol = "??_C@_09KECKLECK@thbgm?4dat?$AA@", target = 0x00497750 },
   { offset = 0x217, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
   { offset = 0x21D, type = "DIR32", symbol = "??_C@_09KECKLECK@thbgm?4dat?$AA@", target = 0x00497750 },
@@ -14275,7 +14275,7 @@ relocations = [
   { offset = 0x238, type = "DIR32", symbol = "?g_FrontEndConfigurationFlags@th095@@3IA", target = 0x004C4850 },
   { offset = 0x245, type = "DIR32", symbol = "??_C@_09CABOFIOB@th095?4dat?$AA@", target = 0x00495F84 },
   { offset = 0x24A, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
-  { offset = 0x24F, type = "REL32", symbol = "?StartBGM@SoundPlayer@th095@@QAE?AW4ZunResult@@PAD@Z", target = 0x00438660 },
+  { offset = 0x24F, type = "REL32", symbol = "?StartBGM@SoundPlayer@th095@@QAE?AW4ZunResult@2@PAD@Z", target = 0x00438660 },
   { offset = 0x257, type = "DIR32", symbol = "??_C@_09CABOFIOB@th095?4dat?$AA@", target = 0x00495F84 },
   { offset = 0x25D, type = "DIR32", symbol = "?g_SoundPlayer@th095@@3VSoundPlayer@1@A", target = 0x004C4EE8 },
   { offset = 0x263, type = "DIR32", symbol = "??_C@_09CABOFIOB@th095?4dat?$AA@", target = 0x00495F84 },

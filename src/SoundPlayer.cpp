@@ -16,11 +16,6 @@
 #include "dxutil.hpp"
 #include "utils.hpp"
 
-#ifdef TH095_MATCH_EXACT
-#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
-#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
-#endif
-
 namespace th095
 {
 

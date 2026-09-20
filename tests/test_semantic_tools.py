@@ -184,12 +184,21 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         header = (ROOT / "src" / "SoundPlayer.hpp").read_text(encoding="utf-8")
         self.assertIn("class SoundPlayer\n", header)
         self.assertNotIn("struct SoundPlayer\n", header)
+        self.assertIn("typedef ZunResult SoundPlayerResult;", header)
+        self.assertNotIn("typedef ::ZunResult SoundPlayerResult;", header)
         for path in (ROOT / "src").rglob("*"):
             if path.suffix in (".cpp", ".hpp", ".inl"):
                 self.assertNotIn(
                     "TH095_MATCH_SOUNDPLAYER_AS_STRUCT",
                     path.read_text(encoding="utf-8"),
                 )
+        implementation = (ROOT / "src" / "SoundPlayer.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_LEGACY_ZUN_SUCCESS", implementation)
+        self.assertNotIn("TH095_LEGACY_ZUN_ERROR", implementation)
+        self.assertNotIn("SoundPlayer@th095@@QAE?AW4ZunResult@@", manifest)
+        self.assertIn("SoundPlayer@th095@@QAE?AW4ZunResult@2@", manifest)
 
     def test_photo_game_task_ecl_guard_accepts_state_bridge(self) -> None:
         GUARD.check_photo_game_task_ecl_owner()
