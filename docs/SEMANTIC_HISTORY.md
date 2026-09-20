@@ -15609,3 +15609,56 @@ remains the latest full receipt. Next, audit Supervisor `+0x1E4..+0x403`:
 normal Main exposes the two-entry viewport configuration bank and current
 selector while MainExact retains one opaque `unknown1e4[0x220]` span. Prove
 layout and consumers before converging it.
+
+### SEM-313 — canonicalize the Supervisor viewport configuration owner
+
+**Scope and ownership.** `SupervisorViewportConfiguration.hpp` is now the one
+profile-independent owner of the two `0xF0` elements embedded in Supervisor at
+`+0x1E4/+0x2D4`. Main, MainExact, and SupervisorRuntime expose the same typed
+two-element bank, active pointer at `+0x3C4`, and selected index at `+0x3C8`.
+Background and ANM consumers route camera, matrix, D3D viewport, and
+screen-shake access through that owner. The former complete Background view,
+ANM prefix view, exact opaque `unknown1e4[0x220]`, normal byte bank, and
+background-specific pointer names are retired. The remaining derived
+Background, gameplay, and ANM declarations are fieldless compiler-emission or
+relocation adapters and own no storage.
+
+**Target evidence.** Fresh hash-attested TH095 decompiles of
+`ConfigureBackgroundViewport @ 0x00401B70`, `ConfigureGameplayViewport @
+0x00404B10`, `ApplyGameplayViewport @ 0x00425910`,
+`ApplyBackgroundViewport @ 0x00425AA0`, and `InitializeViewports @ 0x00425CC0`
+establish the `0xF0` stride, two-element bank, active pointer/index, and both
+apply protocols. The initializer writes slot 0 as `(128,16,384,448)` and slot
+1 as `(0,0,640,480)`. The apply paths consume the camera/matrix/viewport
+fields and copy element `+0xE8/+0xEC` to AnmManager `+0x20/+0x24`.
+
+**Conservative boundary.** The dword at element `+0xE4` has initializer writes
+of 0 and 1 but no independently recovered reader. The earlier `viewportMode`
+spelling therefore overclaimed semantics and is downgraded to `unknown0e4`.
+The slot names describe proved geometry and caller use; they do not assign a
+meaning to `+0xE4` or merge the distinct gameplay/background transform
+protocols. `SupervisorViewportSlot.hpp` is now profile-independent, and this
+batch adds no `TH095_MATCH_EXACT` or `DIFFBUILD` selector.
+
+**Compiler evidence and debt.** The shared declaration renumbered only 68 VC7
+compiler-private `$L`/`$failure$` relocation labels across four units. A
+controlled refresh proved all structural bytes, relocation offsets/types,
+destinations, and non-private symbols unchanged; immediate replay then passed
+**282/282 exact units across 23 direct-consumer sources** with zero further
+refresh. Pinned-VC7.1 normal probes emitted Intel 80386 COFF objects of
+**45,956** bytes (AnmDrawCore), **31,075** (AnmVmLifecycle), **38,907**
+(AsciiManager), **54,666** (Background), **116,364** (Main), and **19,053**
+(SupervisorViewport). Retiring local slot selectors and selected Supervisor
+fields shrinks selector debt from 733 to **722 directives across 103 files**;
+selected-declaration debt remains **201 keys / 206 occurrences**.
+
+**Validation and next route.** The new protocol guard pins the owner size,
+offsets, unique declaration, shared Supervisor fields, fieldless adapters, and
+producer/consumer paths while rejecting the retired overclaim. Target identity,
+tracking, the 696-unit match graph, the 88-source/two-profile whole-build graph,
+whitespace, and all **73 workflow tests** pass. Per batching policy, no cold
+aggregate replay or whole-product link is claimed; SEM-298 remains the latest
+full receipt. Next audit the adjacent opaque Supervisor `+0x3CC..+0x403`
+interval. Promote a field only if a target-local producer and independent
+consumer establish width and lifecycle; otherwise keep the interval Unknown
+and rotate to another owner rather than inventing names.

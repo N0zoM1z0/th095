@@ -614,6 +614,21 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             self.assertNotIn("usesRelativePath", header)
             self.assertNotIn("screenSaveActive", header)
 
+    def test_supervisor_viewport_guard_accepts_canonical_owner(self) -> None:
+        GUARD.check_supervisor_viewport_configuration_owner()
+        owner = (ROOT / "src" / "SupervisorViewportConfiguration.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", owner)
+        self.assertNotIn("DIFFBUILD", owner)
+        self.assertIn("struct SupervisorViewportConfiguration", owner)
+        self.assertIn("i32 unknown0e4;", owner)
+        self.assertIn("Float2 screenShakeOffset;", owner)
+        self.assertNotIn("viewportMode", owner)
+        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
+        self.assertIn("viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]", exact)
+        self.assertNotIn("unknown1e4[0x220]", exact)
+
     def test_screenshot_worker_token_guard_accepts_shared_storage(self) -> None:
         GUARD.check_screenshot_worker_token_owner()
         exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")

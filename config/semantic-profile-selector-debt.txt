@@ -26,20 +26,20 @@
 3	src/AnmVmId.cpp	#if defined(TH095_MATCH_EXACT)
 6	src/AnmVmLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 5	src/AnmVmLifecycle.cpp	#if defined(TH095_MATCH_EXACT)
-2	src/AnmVmLifecycle.cpp	#ifdef TH095_MATCH_EXACT
+1	src/AnmVmLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/AnmVmLifecycle.cpp	#ifndef DIFFBUILD
 1	src/AnmVmLifecycle.cpp	#ifndef TH095_MATCH_EXACT
 1	src/AnmVmLifecycle.hpp	#if defined(TH095_MATCH_EXACT)
 2	src/AnmVmLifecycle.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 4	src/AsciiManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-2	src/AsciiManager.cpp	#ifdef TH095_MATCH_EXACT
+1	src/AsciiManager.cpp	#ifdef TH095_MATCH_EXACT
 1	src/AsciiManager.cpp	#ifndef DIFFBUILD
 1	src/Background.cpp	#elif defined(DIFFBUILD)
 1	src/Background.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 7	src/Background.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-11	src/Background.cpp	#if defined(TH095_MATCH_EXACT)
+10	src/Background.cpp	#if defined(TH095_MATCH_EXACT)
 2	src/Background.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-15	src/Background.cpp	#ifdef TH095_MATCH_EXACT
+14	src/Background.cpp	#ifdef TH095_MATCH_EXACT
 2	src/Background.cpp	#ifndef DIFFBUILD
 1	src/BackgroundLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/BulletManager.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
@@ -150,8 +150,6 @@
 9	src/Main.cpp	#ifdef DIFFBUILD
 1	src/Main.cpp	#ifdef TH095_MATCH_EXACT
 5	src/Main.cpp	#ifndef DIFFBUILD
-1	src/Main.hpp	#ifdef TH095_MATCH_EXACT
-1	src/Main.hpp	#ifndef TH095_MATCH_EXACT
 1	src/MusicRoom.cpp	#ifdef DIFFBUILD
 1	src/MusicRoom.cpp	#ifdef TH095_MATCH_EXACT
 2	src/MusicRoom.hpp	#ifdef DIFFBUILD
@@ -273,11 +271,7 @@
 2	src/SoundPlayer.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/Supervisor.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Supervisor.hpp	#ifndef TH095_MATCH_EXACT
-1	src/SupervisorRuntime.hpp	#ifdef TH095_MATCH_EXACT
-1	src/SupervisorRuntime.hpp	#ifndef TH095_MATCH_EXACT
-2	src/SupervisorViewport.cpp	#if defined(TH095_MATCH_EXACT)
-1	src/SupervisorViewport.cpp	#ifdef TH095_MATCH_EXACT
-1	src/SupervisorViewportSlot.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+1	src/SupervisorViewport.cpp	#if defined(TH095_MATCH_EXACT)
 2	src/TextRenderer.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 5	src/TextRenderer.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/zwave.cpp	#ifndef TH095_MATCH_EXACT

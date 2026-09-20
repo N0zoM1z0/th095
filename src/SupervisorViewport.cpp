@@ -1,36 +1,16 @@
 #include "Main.hpp"
 #include "AnmManager.hpp"
-#ifdef TH095_MATCH_EXACT
-#define TH095_SUPERVISOR_VIEWPORT_PLAYFIELD 0
-#define TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW 1
-#define TH095_SUPERVISOR_VIEWPORT_SLOT_COUNT 2
-#else
-#include "SupervisorViewportSlot.hpp"
-#endif
+#include "SupervisorViewportConfiguration.hpp"
 #include <math.h>
 
 namespace th095
 {
 
-struct GameplayViewportConfiguration
+// Fieldless compiler-emission adapter: the historical method decoration names
+// GameplayViewportConfiguration, while storage and semantics are owned by the
+// canonical base declaration.
+struct GameplayViewportConfiguration : SupervisorViewportConfiguration
 {
-    Float3 cameraPosition;         // +0x000
-    Float3 cameraLookAtOffset;     // +0x00c
-    Float3 cameraUp;               // +0x018
-    Float3 cameraForward;          // +0x024
-    Float3 cameraRight;            // +0x030
-    Float3 cameraPositionOffset;   // +0x03c
-    f32 fieldOfView;               // +0x048
-    D3DXMATRIX viewMatrix;        // +0x04c
-    D3DXMATRIX projectionMatrix;  // +0x08c
-    D3DVIEWPORT8 viewport;        // +0x0cc
-    i32 viewportMode;              // +0x0e4
-#if defined(TH095_MATCH_EXACT)
-    i32 anmViewportValue0;        // +0x0e8
-    i32 anmViewportValue1;        // +0x0ec
-#else
-    Float2 screenShakeOffset;     // +0x0e8
-#endif
 };
 
 struct SupervisorViewportView
@@ -45,8 +25,8 @@ struct SupervisorViewportView
     void ApplyGameplayViewport(GameplayViewportConfiguration *configuration);
 };
 
-typedef char GameplayViewportConfigurationSizeIsF0[
-    (sizeof(GameplayViewportConfiguration) == 0xf0) ? 1 : -1];
+typedef char SupervisorViewportConfigurationSizeIsF0[
+    (sizeof(SupervisorViewportConfiguration) == 0xf0) ? 1 : -1];
 typedef char SupervisorViewportCurrentAt3C4[
     (offsetof(SupervisorViewportView, current) == 0x3c4) ? 1 : -1];
 
@@ -68,7 +48,7 @@ void Supervisor::InitializeViewports()
     supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].viewport.Height = 480;
     supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].viewport.MinZ = 0.0f;
     supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].viewport.MaxZ = 1.0f;
-    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].viewportMode = 1;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].unknown0e4 = 1;
     supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].cameraPositionOffset =
         Float3(0.0f, 0.0f, 0.0f);
 
@@ -85,7 +65,7 @@ void Supervisor::InitializeViewports()
     supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].viewport.Height = 448;
     supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].viewport.MinZ = 0.0f;
     supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].viewport.MaxZ = 1.0f;
-    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].viewportMode = 0;
+    supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].unknown0e4 = 0;
     supervisor->configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].cameraPositionOffset =
         Float3(0.0f, 0.0f, 0.0f);
 #undef supervisor
@@ -132,8 +112,10 @@ void SupervisorViewportView::ApplyGameplayViewport(
     if (g_AnmManager != NULL)
     {
 #if defined(TH095_MATCH_EXACT)
-        g_AnmManager->unknown020 = configuration->anmViewportValue0;
-        g_AnmManager->unknown024 = configuration->anmViewportValue1;
+        g_AnmManager->unknown020 =
+            *reinterpret_cast<i32 *>(&configuration->screenShakeOffset.x);
+        g_AnmManager->unknown024 =
+            *reinterpret_cast<i32 *>(&configuration->screenShakeOffset.y);
 #else
         g_AnmManager->screenShakeOffset = configuration->screenShakeOffset;
 #endif

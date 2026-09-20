@@ -3,13 +3,7 @@
 #include "AnmVmId.hpp"
 #include "AnmVmLifecycle.hpp"
 #include "GameplayGlobals.hpp"
-#ifdef TH095_MATCH_EXACT
-#define TH095_SUPERVISOR_VIEWPORT_PLAYFIELD 0
-#define TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW 1
-#define TH095_SUPERVISOR_VIEWPORT_SLOT_COUNT 2
-#else
 #include "SupervisorViewportSlot.hpp"
-#endif
 namespace th095
 {
 

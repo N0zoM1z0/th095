@@ -21,6 +21,7 @@
 #include "SupervisorFogState.hpp"
 #include "SupervisorState.hpp"
 #include "SupervisorStartupState.hpp"
+#include "SupervisorViewportConfiguration.hpp"
 
 namespace th095
 {
@@ -97,7 +98,11 @@ struct Supervisor
     D3DPRESENT_PARAMETERS presentParameters;    // +0x0e4
     DummyMidiTimer *dummyMidiTimer;              // +0x118
     GameConfiguration config;                   // +0x11c
-    u8 unknown1e4[0x220];
+    SupervisorViewportConfiguration
+        viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]; // +0x1e4
+    SupervisorViewportConfiguration *currentViewportConfiguration; // +0x3c4
+    i32 currentViewportIndex;                   // +0x3c8
+    u8 unknown3cc[0x38];
     i32 calcCount;                              // +0x404
     i32 activeSceneState;                       // +0x408
     i32 requestedSceneState;                    // +0x40c

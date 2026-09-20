@@ -716,14 +716,32 @@ files**; declaration debt remains **201 keys / 206 occurrences**. The semantic
 guard and all **72 workflow tests** pass. No aggregate/product closure is
 claimed; SEM-298 remains the latest full receipt.
 
+For SEM-313, `SupervisorViewportConfiguration.hpp` is the sole
+profile-independent `0xF0` viewport-element owner. Main, MainExact, and
+SupervisorRuntime embed the same two elements at `+0x1E4/+0x2D4` and expose
+the same typed active pointer/index at `+0x3C4/+0x3C8`. Background and ANM now
+consume the canonical camera, matrix, D3D viewport, and screen-shake fields;
+their remaining derived declarations are fieldless emission/relocation
+adapters only. The shared slot enum no longer has exact/DIFF macros.
+
+Fresh target evidence re-established both selectors, both apply protocols,
+and the initializer. Element `+0xE4` has only initializer writes of 0/1 and no
+independent reader, so the old `viewportMode` claim is retired in favor of
+`unknown0e4`. A controlled manifest refresh changed only 68 compiler-private
+labels across four units; final replay passed **282/282 exact across 23 direct
+consumers** with zero refresh. Six pinned normal probes emitted valid i386
+COFF. Selector debt shrinks to **722 directives across 103 files**;
+declaration debt remains **201 keys / 206 occurrences**. The semantic guard
+and all **73 workflow tests** pass. No aggregate/product closure is claimed;
+SEM-298 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit Supervisor `+0x1E4..+0x403`. Normal Main exposes a two-entry
-`backgroundViewportConfigurations` bank at `+0x1E4`,
-`currentBackgroundViewport @ +0x3C4`, and its index at `+0x3C8`, while
-MainExact retains the complete range as `unknown1e4[0x220]`. Establish the
-actual configuration element type, producer/consumer graph, and VC7 emission
-before replacing the opaque exact span.
+Audit the adjacent Supervisor `+0x3CC..+0x403` interval, currently
+`unknown3cc[0x38]` in Main, MainExact, and SupervisorRuntime. Start from target
+xrefs and establish a producer plus independent consumer before naming any
+field. If the interval has no bounded access graph, leave it Unknown and rotate
+to a different owner; do not extend viewport meanings beyond `+0x3C8`.
 
 ## Protected working-tree exclusions
 
@@ -743,5 +761,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --path src/Main.cpp --details
-rg -n "backgroundViewportConfigurations|currentBackgroundViewport|currentBackgroundViewportIndex|unknown1e4" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Main.cpp src/MainExact.inl src/SupervisorViewport.cpp config/match-units.toml docs/KNOWLEDGE_BASE.md
+rg -n "unknown3cc|0x3cc|0x3d[0-9a-f]|0x3e[0-9a-f]|0x3f[0-9a-f]|0x40[0-3]" src config docs
 ```

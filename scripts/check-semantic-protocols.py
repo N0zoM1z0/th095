@@ -1563,6 +1563,131 @@ def check_game_window_startup_policy_owner() -> None:
             fail(f"Main.cpp restored GameWindow DIFFBUILD alias: {alias}")
 
 
+def check_supervisor_viewport_configuration_owner() -> None:
+    owner_path = SRC / "SupervisorViewportConfiguration.hpp"
+    owner = owner_path.read_text(encoding="utf-8")
+    slots_path = SRC / "SupervisorViewportSlot.hpp"
+    slots = slots_path.read_text(encoding="utf-8")
+    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+    viewport_source = (SRC / "SupervisorViewport.cpp").read_text(encoding="utf-8")
+    background_source = (SRC / "Background.cpp").read_text(encoding="utf-8")
+    anm_draw_source = (SRC / "AnmDrawCore.cpp").read_text(encoding="utf-8")
+
+    if any(name in owner for name in PROFILE_NAMES):
+        fail("canonical Supervisor viewport-configuration owner must be profile-independent")
+    if any(name in slots for name in PROFILE_NAMES):
+        fail("Supervisor viewport-slot domain must be profile-independent")
+    explicit_enum(
+        slots_path,
+        "SupervisorViewportSlot",
+        "SUPERVISOR_VIEWPORT_",
+        [0, 1, 2],
+    )
+
+    owner_fields = (
+        "Float3 cameraPosition;",
+        "Float3 cameraLookAtOffset;",
+        "Float3 cameraUp;",
+        "Float3 cameraForward;",
+        "Float3 cameraRight;",
+        "Float3 cameraPositionOffset;",
+        "f32 fieldOfView;",
+        "D3DXMATRIX viewMatrix;",
+        "D3DXMATRIX projectionMatrix;",
+        "D3DVIEWPORT8 viewport;",
+        "i32 unknown0e4;",
+        "Float2 screenShakeOffset;",
+    )
+    for field in owner_fields:
+        if field not in owner:
+            fail(f"Supervisor viewport-configuration owner lost field: {field}")
+    for overclaim in ("viewportMode", "anmViewportValue0", "anmViewportValue1"):
+        if overclaim in owner:
+            fail(f"Supervisor viewport owner restored unsupported field {overclaim}")
+
+    declarations: list[str] = []
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in {".cpp", ".hpp", ".inl"}:
+            continue
+        text = source_without_comments(path.read_text(encoding="utf-8"))
+        if re.search(r"\bstruct\s+SupervisorViewportConfiguration\s*\{", text):
+            declarations.append(path.relative_to(ROOT).as_posix())
+    if declarations != ["src/SupervisorViewportConfiguration.hpp"]:
+        fail(f"Supervisor viewport-configuration declarations are not canonical: {declarations}")
+
+    canonical_storage = (
+        "viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]",
+        "SupervisorViewportConfiguration *currentViewportConfiguration;",
+        "i32 currentViewportIndex;",
+        "u8 unknown3cc[0x38];",
+    )
+    for path, text in (
+        ("Main.hpp", main_header),
+        ("MainExact.hpp", main_exact_header),
+        ("SupervisorRuntime.hpp", runtime_header),
+    ):
+        if '#include "SupervisorViewportConfiguration.hpp"' not in text:
+            fail(f"{path} no longer routes through the viewport-configuration owner")
+        for fact in canonical_storage:
+            if fact not in text:
+                fail(f"{path} lost canonical Supervisor viewport storage: {fact}")
+        for stale in (
+            "unknown1e4[0x220]",
+            "backgroundViewportConfigurations",
+            "currentBackgroundViewport",
+            "currentBackgroundViewportIndex",
+        ):
+            if stale in text:
+                fail(f"{path} restored stale Supervisor viewport storage: {stale}")
+
+    for path, text, adapter in (
+        ("SupervisorViewport.cpp", viewport_source, "GameplayViewportConfiguration"),
+        ("Background.cpp", background_source, "BackgroundViewportConfigurationView"),
+        ("AnmDrawCore.cpp", anm_draw_source, "AnmBackgroundViewportView"),
+    ):
+        declaration = f"struct {adapter} : SupervisorViewportConfiguration"
+        if declaration not in text:
+            fail(f"{path} lost fieldless viewport emission adapter {adapter}")
+        body = braced_body_after(text, text.index(declaration), adapter)
+        if source_without_comments(body).strip():
+            fail(f"{path} viewport emission adapter {adapter} gained storage")
+
+    viewport_facts = (
+        "sizeof(SupervisorViewportConfiguration) == 0xf0",
+        "offsetof(SupervisorViewportView, current) == 0x3c4",
+        "configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].unknown0e4 = 1;",
+        "configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].unknown0e4 = 0;",
+        "configuration->screenShakeOffset.x",
+        "configuration->screenShakeOffset.y",
+        "this)->currentIndex = index;",
+    )
+    for fact in viewport_facts:
+        if fact not in viewport_source:
+            fail(f"SupervisorViewport lost canonical layout/protocol fact: {fact}")
+    for overclaim in ("viewportMode", "anmViewportValue0", "anmViewportValue1"):
+        if overclaim in viewport_source or overclaim in background_source:
+            fail(f"viewport implementation restored unsupported field {overclaim}")
+
+    for fact in (
+        "g_Supervisor.viewportConfigurations[SUPERVISOR_VIEWPORT_PLAYFIELD]",
+        "g_Supervisor.currentViewportConfiguration",
+        "configuration->screenShakeOffset.x",
+        "configuration->screenShakeOffset.y",
+        "this->currentViewportIndex = index;",
+    ):
+        if fact not in background_source:
+            fail(f"Background lost canonical Supervisor viewport use: {fact}")
+    for fact in (
+        "g_Supervisor.currentViewportConfiguration->viewport.X",
+        "g_Supervisor.currentViewportConfiguration->viewport.Y",
+        "g_Supervisor.viewportConfigurations[SUPERVISOR_VIEWPORT_PLAYFIELD]",
+    ):
+        if fact not in anm_draw_source:
+            fail(f"AnmDrawCore lost canonical Supervisor viewport use: {fact}")
+
+
 def check_screenshot_worker_token_owner() -> None:
     main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
     main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
@@ -3034,6 +3159,7 @@ def main() -> int:
     check_supervisor_flags_owner()
     check_screenshot_bitmap_header_owner()
     check_game_window_startup_policy_owner()
+    check_supervisor_viewport_configuration_owner()
     check_screenshot_worker_token_owner()
     check_supervisor_state_owner()
     check_supervisor_startup_phase_owner()
@@ -3067,6 +3193,7 @@ def main() -> int:
     print("  Supervisor flags: one profile-independent TH095 0x7BC-owner layout")
     print("  Screenshot BMP file header: one packed 0x0E serialized owner")
     print("  GameWindow startup state: one path-mismatch latch and three saved power-policy slots")
+    print("  Supervisor viewport: one shared two-slot 0xF0 configuration owner")
     print("  Screenshot worker: one shared 32-bit CRT token at Supervisor +0x528")
     print("  Supervisor scene states: canonical TH095 1/2/3/4/6/7/8 domain")
     print("  Supervisor startup phase: one shared TH095 0/1/2 domain at +0x660")
