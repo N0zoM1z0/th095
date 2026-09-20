@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_FILESYSTEM_AS_CLASS
-#endif
 #include "AnmManager.hpp"
 
 #include <stdlib.h>

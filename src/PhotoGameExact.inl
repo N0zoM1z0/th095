@@ -1,4 +1,3 @@
-#define TH095_MATCH_FILESYSTEM_AS_CLASS
 #include "PhotoCamera.hpp"
 #include "PhotoBulletManager.hpp"
 #include "AnmVmId.hpp"

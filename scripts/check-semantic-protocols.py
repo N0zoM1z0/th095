@@ -878,6 +878,73 @@ def check_game_error_context_owner() -> None:
         fail("match manifest lost canonical GameErrorContext struct identities")
 
 
+def check_file_system_api_owner() -> None:
+    header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    file_write = (SRC / "FileWrite.cpp").read_text(encoding="utf-8")
+    manifest = (ROOT / "config" / "match-units.toml").read_text(
+        encoding="utf-8"
+    )
+
+    if "namespace FileSystem\n{" not in header:
+        fail("Main.hpp lost the canonical FileSystem namespace API")
+    if re.search(r"\bstruct\s+FileSystem\b", header):
+        fail("Main.hpp restored the selected static-member FileSystem projection")
+    if (
+        "i32 FileSystem::WriteDataToFile(const char *path, void *data, size_t size)"
+        not in file_write
+    ):
+        fail("FileWrite lost the canonical namespace WriteDataToFile signature")
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in (".cpp", ".hpp", ".inl"):
+            continue
+        if "TH095_MATCH_FILESYSTEM_AS_CLASS" in path.read_text(encoding="utf-8"):
+            fail(f"{path.relative_to(SRC)} restored the FileSystem API selector")
+
+    migrated_sources = (
+        'source = "src/AnmPreload.cpp"',
+        'source = "src/AnmSurface.cpp"',
+        'source = "src/Background.cpp"',
+        'source = "src/EnemyManagerUpdate.cpp"',
+        'source = "src/FileWrite.cpp"',
+        'source = "src/PhotoGame.cpp"',
+    )
+    migrated_sections = [
+        section
+        for section in re.split(r"(?=\n\[units\.)", manifest)
+        if any(source in section for source in migrated_sources)
+    ]
+    migrated = "".join(migrated_sections)
+    if "@FileSystem@th095@@SI" in migrated:
+        fail("shared FileSystem sources restored static-member ABI identities")
+    expected_namespace_identities = {
+        "?OpenFile@FileSystem@th095@@YIPAEPBDPAHH@Z": 6,
+        "?WriteDataToFile@FileSystem@th095@@YIHPBDPAXI@Z": 1,
+        "?OpenWriteFile@FileSystem@th095@@YIHPAD@Z": 1,
+        "?WriteToOpenFile@FileSystem@th095@@YIHPAXI@Z": 1,
+        "?CloseWriteFile@FileSystem@th095@@YIHXZ": 1,
+    }
+    for identity, count in expected_namespace_identities.items():
+        if migrated.count(identity) != count:
+            fail(f"shared FileSystem sources lost canonical identity: {identity}")
+
+    main_sections = "".join(
+        section
+        for section in re.split(r"(?=\n\[units\.)", manifest)
+        if 'source = "src/Main.cpp"' in section
+    )
+    frozen_main_identities = {
+        "?OpenFile@FileSystem@th095@@SIPAEPADPAHH@Z": 2,
+        "?WriteDataToFile@FileSystem@th095@@SIHPADPAXH@Z": 2,
+        "?FileExists@FileSystem@th095@@SIHPAD@Z": 2,
+        "?OpenWriteFile@FileSystem@th095@@SIHPAD@Z": 1,
+        "?WriteToOpenFile@FileSystem@th095@@SIHPAXI@Z": 3,
+        "?CloseWriteFile@FileSystem@th095@@SIHXZ": 1,
+    }
+    for identity, count in frozen_main_identities.items():
+        if main_sections.count(identity) != count:
+            fail(f"MainExact FileSystem boundary changed unexpectedly: {identity}")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -2053,6 +2120,7 @@ def main() -> int:
     check_photo_bullet_owner()
     check_sound_player_consumer_owners()
     check_game_error_context_owner()
+    check_file_system_api_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -2074,6 +2142,7 @@ def main() -> int:
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
     print("  SoundPlayer owner: one canonical class declaration and direct shared-body consumers")
     print("  GameErrorContext owner: one canonical struct declaration and global storage")
+    print("  FileSystem API: canonical namespace owner with frozen MainExact boundary")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

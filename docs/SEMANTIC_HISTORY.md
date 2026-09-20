@@ -14941,3 +14941,58 @@ the latest full receipt.
 sites. First establish the canonical storage form and complete affected data
 identity set. Keep FileSystem method-token inversions and frozen bodies
 separate from declaration-form cleanup.
+
+### SEM-300 — unify the shared FileSystem API
+
+**Scope.** Retire the selected static-member `FileSystem` projection from
+`Main.hpp` and its six shared-source definition sites. Use the canonical
+namespace declarations already implemented by `FileSystem.cpp` and the normal
+`FileWrite.cpp` body in every profile. Preserve all function addresses,
+behavior, synchronization, shared-handle ownership, and the separately frozen
+Main exact body.
+
+**Ownership and evidence.** `th095::FileSystem` is a stateless API namespace,
+not a storage owner. `FileSystem.cpp` already defines canonical namespace
+`OpenFile` and `CheckIfFileAlreadyExists`; normal `FileWrite.cpp` defines the
+four namespace write functions. The selector injected a second static-member
+ABI into AnmPreload, AnmSurface, Background, EnemyManagerUpdate, FileWrite, and
+PhotoGame despite identical targets. `MainExact.hpp` independently declares a
+private static-member surface for `MainExact.inl`; that different selected body
+retains eleven configured static references and remains compiler-emission debt.
+
+**Compiler evidence.** The first strict replay stopped when canonical
+`?OpenFile@FileSystem@th095@@YIPAEPBDPAHH@Z` replaced the selected static-member
+identity at the same relocation offset, type, and destination; that failed run
+receives no exact credit. Review then migrated exactly ten public identities in
+the six shared sources: six `OpenFile` references plus the four FileWrite
+function symbols. A controlled refresh changed 28 Background, 17
+EnemyManagerUpdate, and 23 PhotoGame compiler-private `$L...` identities across
+four units only after unchanged structural bytes, relocation topology, public
+identities, and target destinations were established. The immediate replay
+passed without further refresh.
+
+**Production representation and guards.** `Main.hpp` now always exposes the
+const-correct namespace API, and `FileWrite.cpp` uses the shared
+`WriteDataToFile(const char *, void *, size_t)` signature. The custom selector
+is absent repository-wide under `src`. The guard rejects a restored shared
+static-member identity, pins the ten namespace identities, and separately pins
+the eleven frozen MainExact references so that neither boundary can silently
+absorb the other.
+
+**Debt and validation.** Removing six counted directives shrinks the selector
+baseline from 786 to **780 directives across 107 files**. Removing the selected
+`struct FileSystem` declaration shrinks declaration debt from 208 keys / 213
+occurrences to **207 keys / 212 occurrences**. Final focused replay passed
+**89/89 exact units across six sources** with zero private-label refresh.
+Pinned-VC7.1 normal probes emitted **33,165-byte** AnmPreload,
+**23,385-byte** AnmSurface, **54,627-byte** Background, **52,749-byte**
+EnemyManagerUpdate, **21,350-byte** FileWrite, and **53,642-byte** PhotoGame
+Intel 80386 COFF objects. Tracking remains **1,880 provisional / 697
+source-present / 696 exact**. Per the batching policy, no new aggregate replay
+or product link is claimed; SEM-298 remains the latest full receipt.
+
+**Unknown / next route.** Audit `TH095_MATCH_RNG_AS_STRUCT` in `Rng.hpp` and
+all definition sites. Enumerate the complete `U`/`V` identity set and establish
+whether MainExact or any exact-selected body needs a separate frozen
+declaration before changing source. Do not generalize the FileSystem result to
+RNG storage, behavior, or ABI without independent evidence.

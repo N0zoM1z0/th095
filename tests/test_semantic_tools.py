@@ -188,6 +188,42 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             89,
         )
 
+    def test_file_system_guard_accepts_canonical_namespace(self) -> None:
+        GUARD.check_file_system_api_owner()
+        header = (ROOT / "src" / "Main.hpp").read_text(encoding="utf-8")
+        file_write = (ROOT / "src" / "FileWrite.cpp").read_text(
+            encoding="utf-8"
+        )
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("namespace FileSystem\n{", header)
+        self.assertNotIn("struct FileSystem", header)
+        self.assertIn(
+            "i32 FileSystem::WriteDataToFile(const char *path, void *data, size_t size)",
+            file_write,
+        )
+        for path in (ROOT / "src").rglob("*"):
+            if path.suffix in (".cpp", ".hpp", ".inl"):
+                self.assertNotIn(
+                    "TH095_MATCH_FILESYSTEM_AS_CLASS",
+                    path.read_text(encoding="utf-8"),
+                )
+        self.assertEqual(
+            manifest.count("?OpenFile@FileSystem@th095@@SIPAEPADPAHH@Z"), 2
+        )
+        self.assertEqual(
+            manifest.count("?OpenFile@FileSystem@th095@@YIPAEPBDPAHH@Z"), 22
+        )
+        self.assertEqual(
+            manifest.count("?WriteDataToFile@FileSystem@th095@@SIHPADPAXH@Z"),
+            2,
+        )
+        self.assertEqual(
+            manifest.count("?WriteDataToFile@FileSystem@th095@@YIHPBDPAXI@Z"),
+            2,
+        )
+
     def test_sound_player_consumer_guard_accepts_canonical_owner(self) -> None:
         GUARD.check_sound_player_consumer_owners()
         bullet = (ROOT / "src" / "BulletManager.cpp").read_text(encoding="utf-8")

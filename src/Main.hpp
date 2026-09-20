@@ -487,17 +487,6 @@ u16 GetJoystickCaps();
 void ResetKeyboard();
 } // namespace Controller
 
-#if defined(TH095_MATCH_EXACT) && defined(TH095_MATCH_FILESYSTEM_AS_CLASS)
-struct FileSystem
-{
-    static u8 *OpenFile(char *path, i32 *fileSize, i32 isExternalResource);
-    static i32 WriteDataToFile(char *path, void *data, i32 size);
-    static i32 FileExists(char *path);
-    static i32 OpenWriteFile(char *path);
-    static i32 WriteToOpenFile(void *data, u32 size);
-    static i32 CloseWriteFile();
-};
-#else
 namespace FileSystem
 {
 u8 *OpenFile(const char *path, i32 *fileSize, BOOL loadFromDisk);
@@ -507,7 +496,6 @@ i32 OpenWriteFile(char *path);
 i32 WriteToOpenFile(void *data, u32 size);
 i32 CloseWriteFile();
 } // namespace FileSystem
-#endif
 
 namespace utils
 {

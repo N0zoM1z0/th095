@@ -1,7 +1,4 @@
 #ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_FILESYSTEM_AS_CLASS
-#endif
-#ifdef TH095_MATCH_EXACT
 #define g_SelectedScene th095_BackgroundSharedSelectedSceneDeclaration
 #define g_PhotoScreenFadeColor th095_BackgroundSharedPhotoScreenFadeColorDeclaration
 #endif

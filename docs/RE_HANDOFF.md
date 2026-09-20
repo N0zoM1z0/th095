@@ -449,13 +449,29 @@ private-label refresh. Normal pinned-VC7.1 probes emitted **28,916-byte**,
 COFF objects. No aggregate/product closure is claimed; SEM-298 remains the
 latest full receipt.
 
+For SEM-300, the shared `TH095_MATCH_FILESYSTEM_AS_CLASS` selector and all six
+definition sites were retired. `Main.hpp`, `FileSystem.cpp`, and
+`FileWrite.cpp` now expose one profile-independent `th095::FileSystem`
+namespace API. `MainExact.hpp` deliberately retains its private static-member
+declaration for the different frozen Main body; its eleven configured static
+references are an explicit emission boundary, not a normal semantic owner.
+The first strict replay stopped on the expected static-member/namespace
+`OpenFile` identity mismatch and receives no exact credit. After reviewing ten
+namespace-ABI migrations in the six shared sources, restricted refresh updated
+68 compiler-private labels across four units; immediate final replay passed
+**89/89 exact across six sources** with zero refresh. Normal pinned-VC7.1
+probes emitted **33,165-byte** AnmPreload, **23,385-byte** AnmSurface,
+**54,627-byte** Background, **52,749-byte** EnemyManagerUpdate,
+**21,350-byte** FileWrite, and **53,642-byte** PhotoGame i386 COFF objects. No
+aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit `TH095_MATCH_FILESYSTEM_AS_CLASS` in `Main.hpp` and its six definition
-sites. Establish the canonical storage/declaration form and enumerate every
-affected `g_FileSystem` data identity before editing. Preserve any independently
-proved exact/normal method-token inversion; declaration form alone does not
-authorize changing method targets or frozen bodies.
+Audit `TH095_MATCH_RNG_AS_STRUCT` in `Rng.hpp` and every definition site.
+Establish the complete `U`/`V` identity set and whether `MainExact.hpp` or an
+exact-selected body needs an independent frozen declaration before editing.
+Do not infer that the FileSystem result generalizes: preserve any separately
+proved RNG body, storage, or ABI boundary, and migrate only reviewed identities.
 
 ## Protected working-tree exclusions
 
@@ -474,6 +490,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/FileSystem.cpp --details
-rg -n "TH095_MATCH_FILESYSTEM_AS_CLASS|FileSystem|g_FileSystem" src/Main.hpp src/FileSystem.cpp src/Background.cpp src/AnmPreload.cpp src/AnmSurface.cpp src/EnemyManagerUpdate.cpp src/FileWrite.cpp src/PhotoGameExact.inl config/match-units.toml
+python3 scripts/analysis/report-semantic-debt.py --path src/Rng.hpp --details
+rg -n "TH095_MATCH_RNG_AS_STRUCT|struct Rng|class Rng|[?]g_Rng" src config/match-units.toml
 ```

@@ -21,9 +21,8 @@
 7	src/AnmPreload.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/AnmPreload.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 4	src/AnmPreload.cpp	#if defined(TH095_MATCH_EXACT)
-3	src/AnmPreload.cpp	#ifdef TH095_MATCH_EXACT
+2	src/AnmPreload.cpp	#ifdef TH095_MATCH_EXACT
 1	src/AnmSurface.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-1	src/AnmSurface.cpp	#ifdef TH095_MATCH_EXACT
 1	src/AnmText.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/AnmVmId.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 3	src/AnmVmId.cpp	#if defined(TH095_MATCH_EXACT)
@@ -42,7 +41,7 @@
 7	src/Background.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 11	src/Background.cpp	#if defined(TH095_MATCH_EXACT)
 2	src/Background.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-16	src/Background.cpp	#ifdef TH095_MATCH_EXACT
+15	src/Background.cpp	#ifdef TH095_MATCH_EXACT
 2	src/Background.cpp	#ifndef DIFFBUILD
 1	src/BackgroundLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/BulletManager.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
@@ -118,7 +117,7 @@
 3	src/FileSystem.cpp	#ifdef TH095_MATCH_EXACT
 1	src/FileSystem.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FileWrite.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-5	src/FileWrite.cpp	#ifdef TH095_MATCH_EXACT
+3	src/FileWrite.cpp	#ifdef TH095_MATCH_EXACT
 3	src/FrontEndController.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/FrontEndController.cpp	#if !defined(TH095_MATCH_EXACT)
 7	src/FrontEndController.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -156,7 +155,6 @@
 5	src/Main.cpp	#ifndef DIFFBUILD
 3	src/Main.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/Main.hpp	#if defined(TH095_MATCH_EXACT)
-1	src/Main.hpp	#if defined(TH095_MATCH_EXACT) && defined(TH095_MATCH_FILESYSTEM_AS_CLASS)
 10	src/Main.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 4	src/Main.hpp	#ifdef TH095_MATCH_EXACT
 3	src/Main.hpp	#ifndef TH095_MATCH_EXACT
