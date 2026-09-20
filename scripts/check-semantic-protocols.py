@@ -1546,6 +1546,32 @@ def check_supervisor_state_owner() -> None:
         ):
             if field_type in text:
                 fail("bootstrap-capable scene-state storage must remain signed i32")
+        for field in (
+            "i32 activeSceneState;",
+            "i32 requestedSceneState;",
+            "i32 previousActiveSceneState;",
+        ):
+            if field not in text:
+                fail(f"{path} lost canonical signed scene-handshake storage: {field}")
+        for retired in ("wantedState", "currentState", "previousState"):
+            if retired in text:
+                fail(f"{path} restored retired scene-handshake name: {retired}")
+
+    for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
+        for retired in ("wantedState", "currentState", "previousState"):
+            if retired in text:
+                fail(f"{path} restored retired scene-handshake access: {retired}")
+    if "#define activeSceneState" in main_body:
+        fail("Main.cpp restored DIFFBUILD scene-handshake aliases")
+
+    for producer in (
+        SRC / "FrontEndController.cpp",
+        SRC / "PhotoGameTask.cpp",
+        SRC / "ResultScreen.cpp",
+    ):
+        text = producer.read_text(encoding="utf-8")
+        if "g_Supervisor.requestedSceneState" not in text:
+            fail(f"{producer.name} lost canonical requested-scene publication")
 
     constants = (
         "SUPERVISOR_STATE_EXIT",

@@ -15485,3 +15485,43 @@ scene handshake slots at Supervisor `+0x408/+0x40C/+0x410`. Preserve `i32`
 because bootstrap uses `0/-1`; independently prove producer/consumer direction
 before replacing the wanted/current/previous spellings and DIFFBUILD aliases
 with canonical active/requested/previous-active names.
+
+### SEM-310 — unify Supervisor scene-handshake slot names
+
+**Scope and ownership.** Main, MainExact, and SupervisorRuntime now use one
+profile-independent spelling for the three signed scene-handshake slots:
+`activeSceneState +0x408`, `requestedSceneState +0x40C`, and
+`previousActiveSceneState +0x410`. The exact-only wanted/current/previous field
+names and Main.cpp's DIFFBUILD aliases are retired. This is naming and protocol
+convergence over existing storage, not a new owner or layout.
+
+**Protocol.** RegisterChain initializes active to `0` and requested to `-1`.
+When they differ, UpdateSceneState enters the scene critical section, snapshots
+active into previous-active, dispatches on the active scene while consuming and
+occasionally normalizing requested, then commits `active = requested` before
+unlocking. FrontEndController, PhotoGameTask, and ResultScreen independently
+publish transitions through the requested slot. The three fields remain signed
+`i32`, because the bootstrap values are outside the live 1/2/3/4/6/7/8
+`SupervisorState` domain. No enum-storage claim is added.
+
+**Compiler evidence and debt.** Focused Main replay passed all 48 units exact
+with zero private-label refresh; changing field spellings did not alter code,
+relocations, or compiler-private identities. Final direct-consumer replay
+passed all 199 units across 18 sources with zero refresh. Removing Main.cpp's
+alias branch and the selected field branches in Main and SupervisorRuntime
+shrinks the closed selector ledger from 744 to **741 directives across 107
+files**. Selected-declaration debt remains **201 keys / 206 occurrences**.
+
+**Validation.** Pinned-VC7.1 normal probes emitted **116,276-byte** Main,
+**34,679-byte** Global, **39,153-byte** FrontEndController, **37,668-byte**
+PhotoGameTask, and **76,047-byte** ResultScreen Intel 80386 COFF objects. The
+semantic guard and all **70 workflow tests** pass. Tracking remains **1,880
+provisional / 697 source-present / 696 exact**. Per batching policy, no
+aggregate replay or product link is claimed; SEM-298 remains the latest full
+receipt.
+
+**Unknown / next route.** Audit the exact/normal spelling split for the
+screenshot worker token at Supervisor `+0x528`. Preserve the target-proved
+32-bit token behavior instead of claiming HANDLE ownership; replay
+TakeScreenshot, ScreenshotThread, and shared Supervisor consumers before
+retiring `screenshotThread` and its DIFFBUILD alias.

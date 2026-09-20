@@ -99,9 +99,9 @@ struct Supervisor
     GameConfiguration config;                   // +0x11c
     u8 unknown1e4[0x220];
     i32 calcCount;                              // +0x404
-    i32 wantedState;                            // +0x408
-    i32 currentState;                           // +0x40c
-    i32 previousState;                          // +0x410
+    i32 activeSceneState;                       // +0x408
+    i32 requestedSceneState;                    // +0x40c
+    i32 previousActiveSceneState;               // +0x410
     u8 unknown414[0x10];
     i32 screenTransitionCountdown;              // +0x424
     i32 suppressFpsDisplay;                      // +0x428

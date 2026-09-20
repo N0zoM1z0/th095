@@ -615,6 +615,11 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
         self.assertIn("SupervisorState_ExitGame = -1", legacy)
         self.assertIn("SupervisorState_GameManagerNextStageWeird = 12", legacy)
+        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
+        self.assertIn("i32 activeSceneState;", exact)
+        self.assertIn("i32 requestedSceneState;", exact)
+        self.assertNotIn("i32 wantedState;", exact)
+        self.assertNotIn("i32 currentState;", exact)
 
     def test_supervisor_startup_phase_guard_accepts_shared_domain(self) -> None:
         GUARD.check_supervisor_startup_phase_owner()

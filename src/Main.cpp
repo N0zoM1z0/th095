@@ -29,12 +29,6 @@ namespace th095
 {
 
 #ifdef DIFFBUILD
-#define activeSceneState wantedState
-#define requestedSceneState currentState
-#define previousActiveSceneState previousState
-#endif
-
-#ifdef DIFFBUILD
 #define screenshotWorkerToken screenshotThread
 #endif
 

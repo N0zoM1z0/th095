@@ -664,13 +664,33 @@ directives across 107 files**; declaration debt remains **201 keys / 206
 occurrences**. The semantic guard and all **70 workflow tests** pass. No
 aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
 
+For SEM-310, the signed scene-handshake slots now have one profile-independent
+vocabulary across Main, MainExact, and SupervisorRuntime:
+`activeSceneState +0x408`, `requestedSceneState +0x40C`, and
+`previousActiveSceneState +0x410`. RegisterChain bootstraps active/requested to
+`0/-1`; UpdateSceneState snapshots active into previous, dispatches from active
+toward requested, may normalize requested, and finally commits active from
+requested. FrontEndController, PhotoGameTask, and ResultScreen independently
+publish requested transitions. The fields deliberately remain `i32`; this
+batch does not force bootstrap values into `SupervisorState`.
+
+Focused Main replay passed **48/48 exact** with zero refresh. Final replay
+passed **199/199 exact across 18 sources**, also with zero refresh. Normal
+pinned-VC7.1 probes emitted **116,276-byte** Main, **34,679-byte** Global,
+**39,153-byte** FrontEndController, **37,668-byte** PhotoGameTask, and
+**76,047-byte** ResultScreen i386 COFF objects. Retiring the Main.cpp alias and
+the Main/SupervisorRuntime selected field declarations shrinks selector debt to
+**741 directives across 107 files**; declaration debt remains **201 keys / 206
+occurrences**. The semantic guard and all **70 workflow tests** pass. No
+aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit the remaining exact/normal naming split for the three signed scene
-handshake slots at Supervisor `+0x408/+0x40C/+0x410`. Preserve their `i32`
-storage because bootstrap uses `0/-1`, but prove producer/consumer direction
-before replacing MainExact's wanted/current/previous spellings and Main.cpp's
-DIFFBUILD aliases with the canonical active/requested/previous-active names.
+Audit the remaining exact/normal spelling split for the screenshot worker
+token at Supervisor `+0x528`. Preserve its target-proved 32-bit token semantics
+rather than claiming HANDLE ownership; converge MainExact's `screenshotThread`
+and Main.cpp's DIFFBUILD alias on `screenshotWorkerToken` only after replaying
+TakeScreenshot, ScreenshotThread, and the shared Supervisor consumers.
 
 ## Protected working-tree exclusions
 
@@ -690,5 +710,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --path src/Main.cpp --details
-rg -n "activeSceneState|requestedSceneState|previousActiveSceneState|wantedState|currentState|previousState" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Main.cpp src/MainExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
+rg -n "screenshotWorkerToken|screenshotThread" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/SupervisorLifecycle.cpp src/Main.cpp src/MainExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
 ```
