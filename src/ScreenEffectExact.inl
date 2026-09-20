@@ -1,5 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include "Chain.hpp"
+#include "Rng.hpp"
 #include "ScreenEffect.hpp"
 
 #include <windows.h>
@@ -14,17 +15,6 @@ struct ScreenEffectAnmManagerView
     void FlushVertexBuffer();
 };
 extern ScreenEffectAnmManagerView *g_AnmManager;
-
-class Rng
-{
-  public:
-    unsigned int GetRandomU32();
-    __forceinline unsigned int GetRandomU32InRange(unsigned int range)
-    {
-        return range != 0 ? GetRandomU32() % range : 0;
-    }
-};
-extern Rng g_Rng;
 
 extern int g_ScreenEffectCounter;
 extern float g_ScreenEffectShakeX;

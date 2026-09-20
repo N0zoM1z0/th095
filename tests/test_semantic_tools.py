@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import re
 import sys
 import unittest
 
@@ -223,6 +224,20 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             manifest.count("?WriteDataToFile@FileSystem@th095@@YIHPBDPAXI@Z"),
             2,
         )
+
+    def test_rng_guard_accepts_canonical_class_owner(self) -> None:
+        GUARD.check_rng_owner()
+        header = (ROOT / "src" / "Rng.hpp").read_text(encoding="utf-8")
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(len(re.findall(r"^class\s+Rng\b", header, re.MULTILINE)), 1)
+        self.assertNotIn("struct Rng", header)
+        self.assertNotIn("TH095_MATCH_RNG_AS_STRUCT", header)
+        self.assertNotIn("?g_Rng@th095@@3URng@1@A", manifest)
+        self.assertNotIn("ExtendedRng", manifest)
+        self.assertEqual(manifest.count("?g_Rng@th095@@3VRng@1@A"), 43)
+        self.assertEqual(manifest.count("?g_Rng2@th095@@3VRng@1@A"), 6)
 
     def test_sound_player_consumer_guard_accepts_canonical_owner(self) -> None:
         GUARD.check_sound_player_consumer_owners()

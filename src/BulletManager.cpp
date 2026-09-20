@@ -1,10 +1,4 @@
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_RNG_AS_STRUCT
-#endif
 #include "AnmManager.hpp"
-#ifdef TH095_MATCH_EXACT
-#undef TH095_MATCH_RNG_AS_STRUCT
-#endif
 #include "AnmVmId.hpp"
 #include "PhotoBulletManager.hpp"
 #include "PhotoItemManager.hpp"

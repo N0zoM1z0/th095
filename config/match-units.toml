@@ -4015,7 +4015,7 @@ target = 0x0043A33E
 [[units.anm-get-float-var.relocations]]
 offset = 0xD1
 type = "DIR32"
-symbol = "?g_Rng2@th095@@3URng@1@A"
+symbol = "?g_Rng2@th095@@3VRng@1@A"
 target = 0x004BE210
 
 [[units.anm-get-float-var.relocations]]
@@ -4027,7 +4027,7 @@ target = 0x0041B4A0
 [[units.anm-get-float-var.relocations]]
 offset = 0xE0
 type = "DIR32"
-symbol = "?g_Rng@th095@@3URng@1@A"
+symbol = "?g_Rng@th095@@3VRng@1@A"
 target = 0x004BE208
 
 [[units.anm-get-float-var.relocations]]
@@ -4039,7 +4039,7 @@ target = 0x0041B4A0
 [[units.anm-get-float-var.relocations]]
 offset = 0x106
 type = "DIR32"
-symbol = "?g_Rng2@th095@@3URng@1@A"
+symbol = "?g_Rng2@th095@@3VRng@1@A"
 target = 0x004BE210
 
 [[units.anm-get-float-var.relocations]]
@@ -4051,7 +4051,7 @@ target = 0x0041B4D0
 [[units.anm-get-float-var.relocations]]
 offset = 0x115
 type = "DIR32"
-symbol = "?g_Rng@th095@@3URng@1@A"
+symbol = "?g_Rng@th095@@3VRng@1@A"
 target = 0x004BE208
 
 [[units.anm-get-float-var.relocations]]
@@ -4063,7 +4063,7 @@ target = 0x0041B4D0
 [[units.anm-get-float-var.relocations]]
 offset = 0x138
 type = "DIR32"
-symbol = "?g_Rng2@th095@@3URng@1@A"
+symbol = "?g_Rng2@th095@@3VRng@1@A"
 target = 0x004BE210
 
 [[units.anm-get-float-var.relocations]]
@@ -4081,7 +4081,7 @@ target = 0x00495398
 [[units.anm-get-float-var.relocations]]
 offset = 0x14D
 type = "DIR32"
-symbol = "?g_Rng@th095@@3URng@1@A"
+symbol = "?g_Rng@th095@@3VRng@1@A"
 target = 0x004BE208
 
 [[units.anm-get-float-var.relocations]]
@@ -4644,17 +4644,17 @@ relocations = [
   { offset = 0x2822, type = "REL32", symbol = "__CIfmod", target = 0x004859EA },
   { offset = 0x284A, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
   { offset = 0x2889, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
-  { offset = 0x28AB, type = "DIR32", symbol = "?g_Rng2@th095@@3URng@1@A", target = 0x004BE210 },
+  { offset = 0x28AB, type = "DIR32", symbol = "?g_Rng2@th095@@3VRng@1@A", target = 0x004BE210 },
   { offset = 0x28B0, type = "REL32", symbol = "?GetRandomU32@Rng@th095@@QAEIXZ", target = 0x0041B470 },
   { offset = 0x28F6, type = "REL32", symbol = "?GetIntVar@AnmVm@th095@@QAEHH@Z", target = 0x0043A380 },
-  { offset = 0x2918, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x2918, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x291D, type = "REL32", symbol = "?GetRandomU32@Rng@th095@@QAEIXZ", target = 0x0041B470 },
   { offset = 0x295F, type = "REL32", symbol = "?GetIntVarPtr@AnmVm@th095@@QAEPAHPAHGI@Z", target = 0x0043A540 },
   { offset = 0x299E, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
-  { offset = 0x29B7, type = "DIR32", symbol = "?g_Rng2@th095@@3URng@1@A", target = 0x004BE210 },
+  { offset = 0x29B7, type = "DIR32", symbol = "?g_Rng2@th095@@3VRng@1@A", target = 0x004BE210 },
   { offset = 0x29BC, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
   { offset = 0x29E8, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
-  { offset = 0x2A01, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x2A01, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x2A06, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
   { offset = 0x2A2E, type = "REL32", symbol = "?GetFloatVarPtr@AnmVm@th095@@QAEPAMPAMGI@Z", target = 0x0043A470 },
   { offset = 0x2A59, type = "REL32", symbol = "?GetFloatVar@AnmVm@th095@@QAEMM@Z", target = 0x0043A1B0 },
@@ -6456,9 +6456,9 @@ relocations = [
   { offset = 0x1F, type = "DIR32", symbol = "__imp__timeGetTime@0", target = 0x00495254 },
   { offset = 0x24, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x448 },
   { offset = 0x2A, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x448 },
-  { offset = 0x30, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x30, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x37, type = "DIR32", symbol = "?g_Supervisor@th095@@3USupervisor@1@A", target = 0x004C4670, addend = 0x448 },
-  { offset = 0x3E, type = "DIR32", symbol = "?g_Rng2@th095@@3URng@1@A", target = 0x004BE210 },
+  { offset = 0x3E, type = "DIR32", symbol = "?g_Rng2@th095@@3VRng@1@A", target = 0x004BE210 },
   { offset = 0x43, type = "REL32", symbol = "?LoadDat@Supervisor@th095@@SIHXZ", target = 0x00423FB0 },
   { offset = 0x55, type = "DIR32", symbol = "?g_PhotoScreenFadeColor@th095@@3IA", target = 0x004C4E28 },
   { offset = 0x5E, type = "REL32", symbol = "?InitializeScoreData@th095@@YIXXZ", target = 0x004355F0 },
@@ -7052,13 +7052,13 @@ relocations = [
   { offset = 0x33, type = "REL32", symbol = "_malloc", target = 0x00485780 },
   { offset = 0x49, type = "DIR32", symbol = "?UpdatePulsingRadialTrail@th095@@YI?AW4ZunResult@1@PAUAnmVm@1@@Z", target = 0x00441A10 },
   { offset = 0x56, type = "DIR32", symbol = "?DrawPulsingRadialTrail@th095@@YI?AW4ZunResult@1@PAUAnmVm@1@@Z", target = 0x00441D70 },
-  { offset = 0x64, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x64, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x69, type = "REL32", symbol = "?GetRandomF32Signed@Rng@th095@@QAEMXZ", target = 0x0041B4D0 },
   { offset = 0x6F, type = "DIR32", symbol = "__real@3c088889", target = 0x00496F0C },
-  { offset = 0x7D, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x7D, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x82, type = "REL32", symbol = "?GetRandomF32Signed@Rng@th095@@QAEMXZ", target = 0x0041B4D0 },
   { offset = 0x88, type = "DIR32", symbol = "__real@3c088889", target = 0x00496F0C },
-  { offset = 0x133, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x133, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x138, type = "REL32", symbol = "?GetRandomF32Signed@Rng@th095@@QAEMXZ", target = 0x0041B4D0 },
   { offset = 0x13E, type = "DIR32", symbol = "__real@3d888889", target = 0x00496F08 },
   { offset = 0x166, type = "DIR32", symbol = "__real@40490fdb", target = 0x00495398 },
@@ -7066,11 +7066,11 @@ relocations = [
   { offset = 0x194, type = "REL32", symbol = "?FromAngleMagnitude@Float3@th095@@QAEXMM@Z", target = 0x00441DA0 },
   { offset = 0x19D, type = "DIR32", symbol = "__real@3f000000", target = 0x00495420 },
   { offset = 0x1AC, type = "DIR32", symbol = "__real@3f000000", target = 0x00495420 },
-  { offset = 0x1C1, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x1C1, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x1C6, type = "REL32", symbol = "?GetRandomF32Signed@Rng@th095@@QAEMXZ", target = 0x0041B4D0 },
   { offset = 0x1CC, type = "DIR32", symbol = "__real@41000000", target = 0x00495458 },
   { offset = 0x1D2, type = "DIR32", symbol = "__real@42a00000", target = 0x00495374 },
-  { offset = 0x1F4, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x1F4, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x1F9, type = "REL32", symbol = "?GetRandomF32Signed@Rng@th095@@QAEMXZ", target = 0x0041B4D0 },
   { offset = 0x1FF, type = "DIR32", symbol = "__real@3d088889", target = 0x00496F04 },
   { offset = 0x20E, type = "DIR32", symbol = "__real@bd888889", target = 0x00496F00 },
@@ -11046,11 +11046,11 @@ relocations = [
   { offset = 0x10E, type = "REL32", symbol = "?Spawn@PhotoEnemyManagerView@th095@@QAEPAUPhotoEnemyView@2@HPBUFloat3@2@HHHI@Z", target = 0x004156C0 },
   { offset = 0x163, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0x168, type = "REL32", symbol = "?Spawn@PhotoEnemyManagerView@th095@@QAEPAUPhotoEnemyView@2@HPBUFloat3@2@HHHI@Z", target = 0x004156C0 },
-  { offset = 0x1B5, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x1B5, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x1BA, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
   { offset = 0x1FF, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0x204, type = "REL32", symbol = "?Spawn@PhotoEnemyManagerView@th095@@QAEPAUPhotoEnemyView@2@HPBUFloat3@2@HHHI@Z", target = 0x004156C0 },
-  { offset = 0x221, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x221, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x226, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
   { offset = 0x22C, type = "DIR32", symbol = "__real@43c00000", target = 0x00495434 },
   { offset = 0x268, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
@@ -16121,11 +16121,11 @@ relocations = [
   { offset = 0x21F, type = "DIR32", symbol = "__real@3f19999a", target = 0x00495550 },
   { offset = 0x224, type = "DIR32", symbol = "?g_Player@EclExtended@th095@@3PAUExtendedPlayerView@12@A", target = 0x004C4E70 },
   { offset = 0x233, type = "DIR32", symbol = "?g_Player@EclExtended@th095@@3PAUExtendedPlayerView@12@A", target = 0x004C4E70 },
-  { offset = 0x24E, type = "DIR32", symbol = "?g_Rng@EclExtended@th095@@3UExtendedRng@12@A", target = 0x004BE208 },
-  { offset = 0x253, type = "REL32", symbol = "?GetRandomF32@ExtendedRng@EclExtended@th095@@QAEMXZ", target = 0x0041B4A0 },
+  { offset = 0x24E, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
+  { offset = 0x253, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
   { offset = 0x259, type = "DIR32", symbol = "__real@42800000", target = 0x00495454 },
-  { offset = 0x26C, type = "DIR32", symbol = "?g_Rng@EclExtended@th095@@3UExtendedRng@12@A", target = 0x004BE208 },
-  { offset = 0x271, type = "REL32", symbol = "?GetRandomF32@ExtendedRng@EclExtended@th095@@QAEMXZ", target = 0x0041B4A0 },
+  { offset = 0x26C, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
+  { offset = 0x271, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
   { offset = 0x277, type = "DIR32", symbol = "__real@42800000", target = 0x00495454 },
 ]
 
@@ -17694,7 +17694,7 @@ relocations = [
   { offset = 0x2C, type = "DIR32", symbol = "??_C@_08GGFKNFHG@?5?5?5?5?5?5?5?5?$AA@", target = 0x00496460 },
   { offset = 0x34, type = "DIR32", symbol = "??_C@_08GGFKNFHG@?5?5?5?5?5?5?5?5?$AA@", target = 0x00496460 },
   { offset = 0x3D, type = "DIR32", symbol = "??_C@_08GGFKNFHG@?5?5?5?5?5?5?5?5?$AA@", target = 0x00496460 },
-  { offset = 0x60, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x60, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x65, type = "REL32", symbol = "?GetRandomU16@Rng@th095@@QAEGXZ", target = 0x0041B410 },
 ]
 
@@ -20250,14 +20250,14 @@ relocations = [
   { offset = 0x1CA, type = "DIR32", symbol = "__real@40c90fdb", target = 0x00495418 },
   { offset = 0x225, type = "DIR32", symbol = "__real@40490fdb", target = 0x00495398 },
   { offset = 0x234, type = "DIR32", symbol = "__real@40c90fdb", target = 0x00495418 },
-  { offset = 0x275, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x275, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x27A, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
-  { offset = 0x29F, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x29F, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x2A4, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
   { offset = 0x2B9, type = "DIR32", symbol = "__real@40c90fdb", target = 0x00495418 },
-  { offset = 0x300, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x300, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x305, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
-  { offset = 0x325, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x325, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x32A, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
   { offset = 0x3B7, type = "REL32", symbol = "?AddNormalizeAngle@th095@@YIMMM@Z", target = 0x0041B500 },
   { offset = 0x402, type = "REL32", symbol = "?FromAngleMagnitude@PhotoBulletVector@th095@@QAEXMM@Z", target = 0x00441DA0 },
@@ -20359,10 +20359,10 @@ symbol = "?Spawn@PhotoItemManagerView@th095@@QAEHHPAUFloat3@2@I@Z"
 target_address = 0x0041D460
 size = 0x116
 relocations = [
-  { offset = 0x74, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x74, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x79, type = "REL32", symbol = "?GetRandomF32Signed@Rng@th095@@QAEMXZ", target = 0x0041B4D0 },
   { offset = 0x7F, type = "DIR32", symbol = "__real@3f800000", target = 0x004952BC },
-  { offset = 0x8D, type = "DIR32", symbol = "?g_Rng@th095@@3URng@1@A", target = 0x004BE208 },
+  { offset = 0x8D, type = "DIR32", symbol = "?g_Rng@th095@@3VRng@1@A", target = 0x004BE208 },
   { offset = 0x92, type = "REL32", symbol = "?GetRandomF32@Rng@th095@@QAEMXZ", target = 0x0041B4A0 },
   { offset = 0x9A, type = "DIR32", symbol = "__real@40000000", target = 0x00495338 },
   { offset = 0xF3, type = "DIR32", symbol = "?g_PhotoBulletManager@th095@@3PAUItemBulletManagerView@1@A", target = 0x004BDD98 },

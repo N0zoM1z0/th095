@@ -945,6 +945,55 @@ def check_file_system_api_owner() -> None:
             fail(f"MainExact FileSystem boundary changed unexpectedly: {identity}")
 
 
+def check_rng_owner() -> None:
+    header = (SRC / "Rng.hpp").read_text(encoding="utf-8")
+    global_cpp = (SRC / "Global.cpp").read_text(encoding="utf-8")
+    manifest = (ROOT / "config" / "match-units.toml").read_text(
+        encoding="utf-8"
+    )
+
+    if len(re.findall(r"^class\s+Rng\b", header, flags=re.MULTILINE)) != 1:
+        fail("Rng.hpp must contain exactly one canonical class declaration")
+    if re.search(r"\bstruct\s+Rng\b", header):
+        fail("Rng.hpp restored the selected struct declaration")
+    for definition in (
+        "DIFFABLE_STATIC(Rng, g_Rng);",
+        "DIFFABLE_STATIC(Rng, g_Rng2);",
+        "DIFFABLE_STATIC(Rng, g_AnmAlternateRng);",
+    ):
+        if definition not in global_cpp:
+            fail(f"Global.cpp lost canonical RNG storage: {definition}")
+
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in (".cpp", ".hpp", ".inl"):
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "TH095_MATCH_RNG_AS_STRUCT" in text:
+            fail(f"{path.relative_to(SRC)} restored the RNG declaration selector")
+        if path != SRC / "Rng.hpp" and re.search(
+            r"\b(?:class|struct)\s+(?:Extended)?Rng\b", text
+        ):
+            fail(f"{path.relative_to(SRC)} restored a duplicate RNG projection")
+
+    forbidden_identities = (
+        "?g_Rng@th095@@3URng@1@A",
+        "?g_Rng2@th095@@3URng@1@A",
+        "?g_Rng@EclExtended@th095@@3UExtendedRng@12@A",
+        "?GetRandomF32@ExtendedRng@EclExtended@th095@@QAEMXZ",
+    )
+    for identity in forbidden_identities:
+        if identity in manifest:
+            fail(f"match manifest restored a retired RNG identity: {identity}")
+
+    canonical_identities = {
+        "?g_Rng@th095@@3VRng@1@A": 43,
+        "?g_Rng2@th095@@3VRng@1@A": 6,
+    }
+    for identity, count in canonical_identities.items():
+        if manifest.count(identity) != count:
+            fail(f"match manifest lost canonical RNG identities: {identity}")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -2121,6 +2170,7 @@ def main() -> int:
     check_sound_player_consumer_owners()
     check_game_error_context_owner()
     check_file_system_api_owner()
+    check_rng_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -2143,6 +2193,7 @@ def main() -> int:
     print("  SoundPlayer owner: one canonical class declaration and direct shared-body consumers")
     print("  GameErrorContext owner: one canonical struct declaration and global storage")
     print("  FileSystem API: canonical namespace owner with frozen MainExact boundary")
+    print("  RNG owner: one canonical class declaration and two Global.cpp states")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

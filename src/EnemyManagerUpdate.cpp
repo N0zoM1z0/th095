@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_RNG_AS_STRUCT
-#endif
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
@@ -13,10 +10,6 @@
 #include "PhotoPlayerRuntime.hpp"
 #endif
 #include "SceneData.hpp"
-#ifdef TH095_MATCH_EXACT
-#undef TH095_MATCH_RNG_AS_STRUCT
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 

@@ -8,7 +8,6 @@
 2	src/AnmManager.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 3	src/AnmManager.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 2	src/AnmManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-1	src/AnmManager.cpp	#ifdef TH095_MATCH_EXACT
 1	src/AnmManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/AnmManager.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 8	src/AnmManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -17,7 +16,6 @@
 1	src/AnmManager.hpp	#ifdef TH095_MATCH_EXACT
 2	src/AnmManager.hpp	#ifndef TH095_MATCH_EXACT
 1	src/AnmManagerTrail.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-1	src/AnmManagerTrail.cpp	#ifdef TH095_MATCH_EXACT
 7	src/AnmPreload.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/AnmPreload.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 4	src/AnmPreload.cpp	#if defined(TH095_MATCH_EXACT)
@@ -49,7 +47,6 @@
 10	src/BulletManager.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/BulletManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/BulletManager.cpp	#ifdef DIFFBUILD
-2	src/BulletManager.cpp	#ifdef TH095_MATCH_EXACT
 3	src/BulletManager.cpp	#ifndef DIFFBUILD
 1	src/BulletManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/BulletManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -105,7 +102,7 @@
 7	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT)
 4	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/EnemyManagerUpdate.cpp	#ifdef DIFFBUILD
-6	src/EnemyManagerUpdate.cpp	#ifdef TH095_MATCH_EXACT
+4	src/EnemyManagerUpdate.cpp	#ifdef TH095_MATCH_EXACT
 4	src/EnemyManagerUpdate.cpp	#ifndef DIFFBUILD
 1	src/EnemyShotAnm.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/EnemyShotAnm.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -236,7 +233,6 @@
 2	src/ResultScreen.hpp	#ifdef DIFFBUILD
 3	src/ResultScreen.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ResultScreenExact.inl	#ifdef TH095_MATCH_EXACT
-1	src/Rng.hpp	#if defined(TH095_MATCH_EXACT) && defined(TH095_MATCH_RNG_AS_STRUCT)
 1	src/Rng.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/SceneBestShot.cpp	#ifdef DIFFBUILD
 1	src/SceneBestShot.cpp	#ifdef TH095_MATCH_EXACT
@@ -267,7 +263,7 @@
 3	src/ScoreData.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 11	src/ScoreData.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ScoreDataExact.inl	#ifdef TH095_MATCH_EXACT
-2	src/ScoreLifecycle.cpp	#ifdef TH095_MATCH_EXACT
+1	src/ScoreLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ScoreLoad.cpp	#if !defined(TH095_MATCH_EXACT)
 11	src/ScoreLoad.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/ScreenEffect.cpp	#if defined(DIFFBUILD)

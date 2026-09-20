@@ -325,19 +325,13 @@ extern ExtendedRuntimeView *g_ExtendedRuntime;
     TH095_RUNTIME_GLOBAL_PTR(ExtendedRuntimeView, ::th095::g_RuntimeEnemyManagerOwner)
 #endif
 
+#define TH095_ECL_EXT_RNG ::th095::g_Rng
 #ifdef TH095_MATCH_EXACT
-struct ExtendedRng
-{
-    f32 GetRandomF32();
-};
-extern ExtendedRng g_Rng;
 extern f32 g_AnmGameSpeed;
 extern u32 g_PhotoScreenFadeColor;
-#define TH095_ECL_EXT_RNG g_Rng
 #define TH095_ECL_EXT_GAME_SPEED g_AnmGameSpeed
 #define TH095_ECL_EXT_FADE_COLOR TH095_BACKBUFFER_CLEAR_COLOR
 #else
-#define TH095_ECL_EXT_RNG ::th095::g_Rng
 #define TH095_ECL_EXT_GAME_SPEED ::th095::g_AnmGameSpeed
 #define TH095_ECL_EXT_FADE_COLOR TH095_BACKBUFFER_CLEAR_COLOR
 #endif

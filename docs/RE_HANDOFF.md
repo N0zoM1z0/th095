@@ -465,13 +465,31 @@ probes emitted **33,165-byte** AnmPreload, **23,385-byte** AnmSurface,
 **21,350-byte** FileWrite, and **53,642-byte** PhotoGame i386 COFF objects. No
 aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
 
+For SEM-301, `Rng.hpp`'s class/struct selector and all seven definition sites
+were retired in favor of the canonical eight-byte class already used by
+`Global.cpp` storage and normal production. The audit also removed the
+ScoreLifecycle and ScreenEffect exact projections and EclExtended's nested
+`ExtendedRng`; none proved an emission dependency. The first strict replay
+stopped on the expected shared `URng`/`VRng` mismatch and receives no exact
+credit. After 25 shared data-identity migrations, seven sources passed
+**139/139 exact**. A second strict run stopped on the expected EclExtended
+projection identities and likewise receives no credit. After the remaining
+three data and two method identities were reviewed and migrated, final replay
+passed **175/175 exact across nine sources** with zero private-label refresh.
+Normal pinned-VC7.1 probes emitted **72,967-byte** AnmManager,
+**20,983-byte** AnmManagerTrail, **67,056-byte** BulletManager,
+**45,996-byte** EclExtended, **52,749-byte** EnemyManagerUpdate,
+**116,276-byte** Main, **32,178-byte** PhotoItemManager, **14,143-byte**
+ScoreLifecycle, and **27,882-byte** ScreenEffect i386 COFF objects. No
+aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit `TH095_MATCH_RNG_AS_STRUCT` in `Rng.hpp` and every definition site.
-Establish the complete `U`/`V` identity set and whether `MainExact.hpp` or an
-exact-selected body needs an independent frozen declaration before editing.
-Do not infer that the FileSystem result generalizes: preserve any separately
-proved RNG body, storage, or ABI boundary, and migrate only reviewed identities.
+Audit the four `MidiOutput` declarations in `Midi.hpp`, `MidiRuntime.hpp`,
+`Main.hpp`, and `MainExact.hpp`. Establish which declaration owns the full
+runtime layout, which are method-only compiler projections, and the complete
+Main/Midi decorated-identity fanout before editing. Do not merge the frozen
+Main body or the runtime adapter merely because method names overlap.
 
 ## Protected working-tree exclusions
 
@@ -490,6 +508,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/Rng.hpp --details
-rg -n "TH095_MATCH_RNG_AS_STRUCT|struct Rng|class Rng|[?]g_Rng" src config/match-units.toml
+python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/Midi.hpp --path src/MidiRuntime.hpp --details
+rg -n "MidiOutput|midiOutput|@MidiOutput" src/Main.hpp src/MainExact.hpp src/Midi.hpp src/MidiRuntime.hpp src/Main.cpp src/MainExact.inl src/Midi.cpp config/match-units.toml
 ```

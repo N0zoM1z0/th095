@@ -14996,3 +14996,61 @@ all definition sites. Enumerate the complete `U`/`V` identity set and establish
 whether MainExact or any exact-selected body needs a separate frozen
 declaration before changing source. Do not generalize the FileSystem result to
 RNG storage, behavior, or ABI without independent evidence.
+
+### SEM-301 — unify the RNG type owner
+
+**Scope.** Replace the profile-selected class/struct declaration and every
+shared definition site with one canonical eight-byte `class Rng`. Audit and,
+where exact replay permits, retire the remaining ScoreLifecycle, ScreenEffect,
+and EclExtended partial projections. Preserve the two process-lifetime storage
+addresses, recurrence, public fields, method bodies, alternate-stream role,
+and the exact/normal name boundary for the second state.
+
+**Ownership and representation.** `Global.cpp` defines `g_Rng @ 0x004BE208`
+and the second state at `0x004BE210` through the default class declaration;
+`RandomMath.cpp` owns the four out-of-line methods. Normal consumers already
+used that class. Seven exact-facing definition sites selected a struct only to
+obtain `URng` data-symbol identities. ScoreLifecycleExact repeated a one-method
+struct, ScreenEffectExact repeated the same class and inline range helper, and
+EclExtended renamed the receiver `ExtendedRng`. None owned storage or behavior.
+The canonical header now supplies every consumer. Exact/DIFF retains
+`g_Rng2`, while normal production's already-proved `g_AnmAlternateRng`
+remains a semantic alias for the same second slot.
+
+**Compiler evidence.** The first strict focused replay stopped at the expected
+`?g_Rng2@th095@@3URng@1@A` versus `...3VRng...` identity at unchanged
+relocation offset, type, destination, and code bytes; it receives no exact
+credit. Review migrated 25 shared global-data references, after which seven
+sources passed 139/139 exact. Removing the three partial projections then
+produced a second expected strict failure at EclExtended's two nested global
+and two method-receiver identities; it also receives no credit. Review migrated
+those four plus ScoreLifecycle's one remaining data identity. ScreenEffect
+needed no manifest change. Final replay preserved every structural byte and
+required no private-label refresh.
+
+**Guards and debt.** The owner guard requires exactly one `class Rng`, pins
+the `Global.cpp` storage definitions, rejects the retired selector and every
+duplicate `Rng`/`ExtendedRng` declaration under `src`, rejects all retired
+manifest identities, and pins 43 primary plus six alternate canonical data
+references. Removing eight counted directives shrinks selector debt from 780
+to **772 directives across 107 files**. Removing the selected class/struct pair
+and EclExtended projection shrinks declaration debt from 207 keys / 212
+occurrences to **204 keys / 209 occurrences**.
+
+**Validation.** Final focused replay passed **175/175 exact units across nine
+sources** with zero private-label refresh. Pinned-VC7.1 normal probes emitted
+**72,967-byte** AnmManager, **20,983-byte** AnmManagerTrail,
+**67,056-byte** BulletManager, **45,996-byte** EclExtended,
+**52,749-byte** EnemyManagerUpdate, **116,276-byte** Main,
+**32,178-byte** PhotoItemManager, **14,143-byte** ScoreLifecycle, and
+**27,882-byte** ScreenEffect Intel 80386 COFF objects. Tracking remains **1,880
+provisional / 697 source-present / 696 exact**. Per the batching policy, no new
+aggregate replay or product link is claimed; SEM-298 remains the latest full
+receipt.
+
+**Unknown / next route.** Audit the four `MidiOutput` declarations in
+`Midi.hpp`, `MidiRuntime.hpp`, `Main.hpp`, and `MainExact.hpp`. Determine
+the full layout owner, method-only projections, and complete Main/Midi ABI
+fanout before changing source. Frozen Main and runtime-adapter boundaries need
+independent compiler evidence; shared method names alone do not prove they can
+be merged.

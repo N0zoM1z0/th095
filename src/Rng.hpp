@@ -6,15 +6,11 @@
 namespace th095
 {
 
-// Both gameplay RNG instances use the same eight-byte state.  The fields are
-// public because target-authored initialization writes the seeds directly;
-// keeping one shared declaration prevents class/struct name-decoration splits
-// from creating multiple link-time identities for the same target storage.
-#if defined(TH095_MATCH_EXACT) && defined(TH095_MATCH_RNG_AS_STRUCT)
-struct Rng
-#else
+// Both gameplay RNG instances use the same eight-byte state. The fields are
+// public because target-authored initialization writes the seeds directly.
+// All shared consumers use this one declaration and therefore one data-symbol
+// identity for the process-lifetime storage owned by Global.cpp.
 class Rng
-#endif
 {
   public:
     u16 GetRandomU16();

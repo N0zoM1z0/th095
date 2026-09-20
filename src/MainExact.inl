@@ -1,4 +1,3 @@
-#define TH095_MATCH_RNG_AS_STRUCT
 #include "MainExact.hpp"
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
