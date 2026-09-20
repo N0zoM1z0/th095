@@ -1,10 +1,11 @@
-#define TH095_MATCH_SOUNDPLAYER_AS_STRUCT
-#define TH095_MATCH_FILESYSTEM_AS_CLASS
 #include "PhotoCamera.hpp"
+#include "PhotoBulletManager.hpp"
 #include "AnmVmId.hpp"
 
 namespace th095
 {
+
+extern PhotoBulletManagerView *g_PhotoBulletManager;
 
 void Rotate(Float3 *outVector, Float3 *point, f32 angle);
 
@@ -18,14 +19,9 @@ struct PhotoAnmVmIdValue
     }
 };
 
-__forceinline i32 PhotoAnmVmId::operator==(PhotoAnmVmIdValue other) const
-{
-    return this->value == other.value;
-}
-
 static __forceinline i32 PhotoGameFocusVmIsZero(const PhotoAnmVmId *vm)
 {
-    return *vm == PhotoAnmVmIdValue(0);
+    return vm->value == PhotoAnmVmIdValue(0).value;
 }
 
 static __forceinline void PhotoGameClearFocusVm(PhotoAnmVmId *vm)
@@ -121,19 +117,6 @@ typedef char PhotoPlayerNormalAxisSpeedAt14[
     (offsetof(PhotoPlayerMovementConfigView, normalAxisSpeed) == 0x14) ? 1 : -1];
 typedef char PhotoPlayerFocusedDiagonalSpeedAt20[
     (offsetof(PhotoPlayerMovementConfigView, focusedDiagonalSpeed) == 0x20) ? 1 : -1];
-
-enum PhotoPlayerMovementDirection
-{
-    PHOTO_PLAYER_DIRECTION_NONE = 0,
-    PHOTO_PLAYER_DIRECTION_UP = 1,
-    PHOTO_PLAYER_DIRECTION_DOWN = 2,
-    PHOTO_PLAYER_DIRECTION_LEFT = 3,
-    PHOTO_PLAYER_DIRECTION_RIGHT = 4,
-    PHOTO_PLAYER_DIRECTION_UP_LEFT = 5,
-    PHOTO_PLAYER_DIRECTION_UP_RIGHT = 6,
-    PHOTO_PLAYER_DIRECTION_DOWN_LEFT = 7,
-    PHOTO_PLAYER_DIRECTION_DOWN_RIGHT = 8,
-};
 
 static inline u16 PhotoGameInputMask(u16 input, u16 mask)
 {
@@ -243,8 +226,10 @@ static __forceinline void PhotoCameraInitializeViewfinderPhase(AnmVm *vm)
 void PhotoCameraState::Initialize()
 {
     memset(this, 0, sizeof(*this));
-    this->vmIds[0] = g_PhotoStageStateForPlayer->anm->CreateVm(0x16, 0);
-    this->vmIds[1] = g_PhotoStageStateForPlayer->anm->CreateVm(0x17, 0);
+    this->vmIds[0] = TH095_PHOTO_ANM_CREATE_VM(
+        g_PhotoStageStateForPlayer->anm, 0x16, 0);
+    this->vmIds[1] = TH095_PHOTO_ANM_CREATE_VM(
+        g_PhotoStageStateForPlayer->anm, 0x17, 0);
     this->viewfinderPosition = g_PhotoGame->playerPosition;
     this->viewfinderPosition.x = 0.0f;
     this->viewfinderPosition.y = 400.0f;
@@ -557,13 +542,13 @@ void PhotoGameUpdateView::Die()
     PhotoToScreen(&screenPosition, &this->playerPosition);
     g_AnmManager->SetPosition(
         reinterpret_cast<PhotoGameAnmSpawnerView *>(
-            g_PhotoBulletManager->anmSpawner)->CreateVm(0x121, 0),
+            g_PhotoBulletManager->bulletAnm)->CreateVm(0x121, 0),
         &screenPosition);
     for (i32 i = 0; i < 32; ++i)
     {
         g_AnmManager->SetPosition(
             reinterpret_cast<PhotoGameAnmSpawnerView *>(
-                g_PhotoBulletManager->anmSpawner)->CreateVm(0x122, 0),
+                g_PhotoBulletManager->bulletAnm)->CreateVm(0x122, 0),
             &screenPosition);
     }
     this->completionTimer = 0;
@@ -702,9 +687,10 @@ i32 PhotoGameUpdateView::UpdateMainState()
     {
         if (PhotoGameFocusVmIsZero(&this->focusVm))
         {
-            this->focusVm =
+            this->focusVm = TH095_PHOTO_ANM_CREATE_VM(
                 reinterpret_cast<PhotoAnmLoadedView *>(
-                    g_PhotoBulletManager->anmSpawner)->CreateVm(0x11f, 6);
+                    g_PhotoBulletManager->bulletAnm),
+                0x11f, 6);
         }
 
         switch (this->movementState)

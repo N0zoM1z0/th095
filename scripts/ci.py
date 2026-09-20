@@ -5,11 +5,16 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
+PROFILE_SELECTOR_ADDITION = re.compile(
+    r"^\+\s*#\s*(?:if|ifdef|ifndef|elif)\b[^\n]*\b"
+    r"(?:TH095_MATCH_EXACT|DIFFBUILD)\b"
+)
 
 
 def tracked(pattern: str) -> list[str]:
@@ -35,6 +40,44 @@ def run(label: str, command: list[str]) -> None:
     subprocess.run(command, cwd=ROOT, env=environment, check=True)
 
 
+def profile_selector_additions(revision: str) -> list[str]:
+    output = subprocess.run(
+        ["git", "diff", "--unified=0", revision, "--", "src"],
+        cwd=ROOT,
+        check=True,
+        stdout=subprocess.PIPE,
+        text=True,
+    ).stdout
+    return [
+        line[1:].strip()
+        for line in output.splitlines()
+        if not line.startswith("+++") and PROFILE_SELECTOR_ADDITION.match(line)
+    ]
+
+
+def validate_no_new_profile_selectors() -> None:
+    comparisons = [("working tree relative to HEAD", "HEAD")]
+    base_sha = os.environ.get("TH095_CI_BASE_SHA", "").strip()
+    if base_sha and set(base_sha) != {"0"}:
+        subprocess.run(
+            ["git", "cat-file", "-e", f"{base_sha}^{{commit}}"],
+            cwd=ROOT,
+            check=True,
+        )
+        comparisons.append((f"CI change set from {base_sha}", f"{base_sha}..HEAD"))
+
+    violations: list[str] = []
+    for label, revision in comparisons:
+        additions = profile_selector_additions(revision)
+        violations.extend(f"{label}: {line}" for line in additions)
+    if violations:
+        details = "; ".join(violations)
+        raise ValueError(
+            "new TH095_MATCH_EXACT/DIFFBUILD selector directives are forbidden: "
+            f"{details}"
+        )
+
+
 def validate_public_tree() -> None:
     forbidden_suffixes = {
         ".exe", ".dll", ".dat", ".rar", ".7z", ".zip", ".gpr", ".i64",
@@ -54,6 +97,7 @@ def validate_public_tree() -> None:
 def main() -> int:
     try:
         validate_public_tree()
+        validate_no_new_profile_selectors()
         python_files = sorted(set(tracked("scripts/*.py") + tracked("tests/*.py")))
         run("Compile tracked Python", [sys.executable, "-m", "py_compile", *python_files])
         shell_files = tracked("scripts/*.sh")

@@ -1,9 +1,16 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTaskState.hpp"
+#include "PhotoPlayerRuntime.hpp"
+#include "PhotoEnemyControl.hpp"
+#include "PhotoEnemyEclAccess.hpp"
+#include "PhotoRotatingLaserArgs.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "Background.hpp"
 #include "PhotoBulletManager.hpp"
+#include "PhotoCamera.hpp"
 #include "PhotoEnemyManager.hpp"
+#include "PhotoGameTask.hpp"
 #endif
 #ifndef DIFFBUILD
 #include "PhotoEffectRuntime.hpp"
@@ -11,9 +18,6 @@
 #endif
 #include "Rng.hpp"
 #include "SoundPlayer.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-#include "ecl/EnemyEclRuntimeView.hpp"
-#endif
 #include <string.h>
 
 namespace th095
@@ -23,10 +27,6 @@ extern f32 g_AnmGameSpeed;
 i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 extern AnmManager *g_AnmManager;
-struct PhotoCameraState
-{
-    i32 CountPhotoTargets(f32 *closestDistance, f32 *bossRate);
-};
 struct PhotoEnemyView;
 #if defined(TH095_MATCH_EXACT)
 struct PhotoEnemyManagerView
@@ -59,6 +59,8 @@ typedef AnmLoaded ExtendedAnmSpawner;
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+#include "ecl/EclExtendedGlobalStateEmission.inl"
+#include "ecl/EclExtendedPlayerEmission.inl"
 struct ExtendedPhotoEnemyView;
 struct ExtendedPhotoEnemyManagerView
 {
@@ -68,6 +70,10 @@ struct ExtendedPhotoEnemyManagerView
 };
 #else
 typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;
+#define TH095_EXT_PLAYER_TYPE ::th095::PhotoPlayerRuntimeView
+#define TH095_EXT_PLAYER_STORAGE(player) (player)
+#define TH095_EXT_CAMERA_METHOD(camera) \
+    reinterpret_cast<::th095::PhotoCameraState *>(&(camera))
 #endif
 
 #ifdef DIFFBUILD
@@ -78,25 +84,6 @@ typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;
     reinterpret_cast<::th095::PhotoEnemyManagerView *>(manager)->Spawn( \
         (subroutineId), (position), (life), (itemDrop), (score), (mirror))
 #endif
-
-struct PhotoGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-#if !defined(TH095_MATCH_EXACT)
-        struct
-        {
-            u32 unknownFlags000 : 9;
-            u32 photoSoundSuppressed : 1;
-            u32 photoTransitionActive : 1;
-            u32 unknownFlags011 : 21;
-        };
-#endif
-    };
-};
-typedef char PhotoGlobalFlagsAtFC[(offsetof(PhotoGlobalStateView, flags) == 0xfc) ? 1 : -1];
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 // Exact-emission adapter only.  Normal reconstruction code accesses the
@@ -151,100 +138,13 @@ static __forceinline AnmVmId ExtendedCanonicalAnmId(i32 value)
 #define TH095_EXT_HANDLE_SET_SPRITE(handle, sprite) (handle).SetSprite(sprite)
 #endif
 
-struct ExtendedPhotoEffectArgs
-{
-    Float3 position;
-#if defined(TH095_MATCH_EXACT)
-    f32 field0C;
-    f32 field10;
-    f32 field14;
-    f32 angle;
-    f32 angle2;
-    f32 speed;
-    f32 field24;
-    f32 field28;
-    f32 mode;
-    i32 field30;
-    i32 field34;
-    i32 field38;
-    i32 field3C;
-#else
-    Float3 velocity;
-    f32 angle;
-    f32 angularVelocity;
-    f32 maximumLength;
-    f32 initialLength;
-    f32 maximumWidth;
-    f32 speed;
-    i32 startupDuration;
-    i32 growthDuration;
-    i32 sustainDuration;
-    i32 fadeDuration;
-#endif
-    i16 type;
-    i16 color;
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u32 flag0 : 1;
-            u32 flags01_31 : 31;
-#else
-            u32 followPhotoTarget : 1;
-            u32 unknownFlags001_031 : 31;
-#endif
-        };
-    };
-};
-typedef char ExtendedPhotoEffectArgsSize48[(sizeof(ExtendedPhotoEffectArgs) == 0x48) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT)
-typedef char ExtendedPhotoEffectVelocityAt0C[(offsetof(ExtendedPhotoEffectArgs, velocity) == 0x0c) ? 1 : -1];
-typedef char ExtendedPhotoEffectAngularVelocityAt1C[(offsetof(ExtendedPhotoEffectArgs, angularVelocity) == 0x1c) ? 1 : -1];
-typedef char ExtendedPhotoEffectMaximumLengthAt20[(offsetof(ExtendedPhotoEffectArgs, maximumLength) == 0x20) ? 1 : -1];
-typedef char ExtendedPhotoEffectInitialLengthAt24[(offsetof(ExtendedPhotoEffectArgs, initialLength) == 0x24) ? 1 : -1];
-typedef char ExtendedPhotoEffectMaximumWidthAt28[(offsetof(ExtendedPhotoEffectArgs, maximumWidth) == 0x28) ? 1 : -1];
-typedef char ExtendedPhotoEffectSpeedAt2C[(offsetof(ExtendedPhotoEffectArgs, speed) == 0x2c) ? 1 : -1];
-typedef char ExtendedPhotoEffectStartupAt30[(offsetof(ExtendedPhotoEffectArgs, startupDuration) == 0x30) ? 1 : -1];
-typedef char ExtendedPhotoEffectGrowthAt34[(offsetof(ExtendedPhotoEffectArgs, growthDuration) == 0x34) ? 1 : -1];
-typedef char ExtendedPhotoEffectSustainAt38[(offsetof(ExtendedPhotoEffectArgs, sustainDuration) == 0x38) ? 1 : -1];
-typedef char ExtendedPhotoEffectFadeAt3C[(offsetof(ExtendedPhotoEffectArgs, fadeDuration) == 0x3c) ? 1 : -1];
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_EXT_EFFECT_ANGULAR_VELOCITY(args) args.angle2
-#define TH095_EXT_EFFECT_MAXIMUM_LENGTH(args) args.speed
-#define TH095_EXT_EFFECT_INITIAL_LENGTH(args) args.field24
-#define TH095_EXT_EFFECT_MAXIMUM_WIDTH(args) args.field28
-#define TH095_EXT_EFFECT_SPEED(args) args.mode
-#define TH095_EXT_EFFECT_STARTUP_DURATION(args) args.field30
-#define TH095_EXT_EFFECT_GROWTH_DURATION(args) args.field34
-#define TH095_EXT_EFFECT_SUSTAIN_DURATION(args) args.field38
-#define TH095_EXT_EFFECT_FADE_DURATION(args) args.field3C
-#else
-#define TH095_EXT_EFFECT_ANGULAR_VELOCITY(args) args.angularVelocity
-#define TH095_EXT_EFFECT_MAXIMUM_LENGTH(args) args.maximumLength
-#define TH095_EXT_EFFECT_INITIAL_LENGTH(args) args.initialLength
-#define TH095_EXT_EFFECT_MAXIMUM_WIDTH(args) args.maximumWidth
-#define TH095_EXT_EFFECT_SPEED(args) args.speed
-#define TH095_EXT_EFFECT_STARTUP_DURATION(args) args.startupDuration
-#define TH095_EXT_EFFECT_GROWTH_DURATION(args) args.growthDuration
-#define TH095_EXT_EFFECT_SUSTAIN_DURATION(args) args.sustainDuration
-#define TH095_EXT_EFFECT_FADE_DURATION(args) args.fadeDuration
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(args) args.flag0
-#else
-#define TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(args) args.followPhotoTarget
-#endif
-
 struct ExtendedPhotoEffectNode
 {
     u8 unknown000[8];
     ExtendedPhotoEffectNode *next;
     u8 unknown00c[0x40];
     i32 id;
-    ExtendedPhotoEffectArgs spawn;
+    PhotoRotatingLaserSpawnArgs spawn;
     AnmVm vm;
     u8 unknown364[0x228];
     u32 flags;
@@ -270,54 +170,18 @@ typedef ::th095::PhotoEffectManagerView ExtendedPhotoEffectManager;
 #define TH095_EXT_EFFECT_SPAWN_ROTATING_LASER PHOTO_EFFECT_SPAWN_ROTATING_LASER
 #endif
 
-struct ExtendedPhotoCameraView
-{
-    i32 mode;
-    u8 unknown004[0xbc0];
-    Float3 viewfinderPosition;
-    Float3 viewfinderSize;
-
-    i32 CountPhotoTargets(f32 *closestDistance, f32 *bossRate);
-};
-typedef char ExtendedCameraPositionAtBC4[
-    (offsetof(ExtendedPhotoCameraView, viewfinderPosition) == 0xbc4) ? 1 : -1];
-typedef char ExtendedCameraSizeBDC[
-    (sizeof(ExtendedPhotoCameraView) == 0xbdc) ? 1 : -1];
-
 #ifdef DIFFBUILD
 #define TH095_EXT_COUNT_PHOTO_TARGETS(camera, distance, rate) \
-    (camera).CountPhotoTargets((distance), (rate))
+    TH095_EXT_CAMERA_METHOD(camera)->CountPhotoTargets( \
+        (distance), (rate))
 #define TH095_EXT_PHOTO_TO_SCREEN(output, position) \
     PhotoToScreen((output), (position))
 #else
 #define TH095_EXT_COUNT_PHOTO_TARGETS(camera, distance, rate) \
-    reinterpret_cast<::th095::PhotoCameraState *>(&(camera))->CountPhotoTargets( \
+    TH095_EXT_CAMERA_METHOD(camera)->CountPhotoTargets( \
         (distance), (rate))
 #define TH095_EXT_PHOTO_TO_SCREEN(output, position) \
     ::th095::PhotoToScreen((output), (position))
-#endif
-
-struct ExtendedPlayerView
-{
-    u8 unknown0000[0x1e30];
-    Float3 position;
-    ExtendedPhotoCameraView camera;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    f32 proximityScale;
-#else
-    f32 movementScale;
-#endif
-};
-typedef char ExtendedPlayerPositionAt1E30[
-    (offsetof(ExtendedPlayerView, position) == 0x1e30) ? 1 : -1];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-typedef char ExtendedPlayerScaleAt2A18[
-    (offsetof(ExtendedPlayerView, proximityScale) == 0x2a18) ? 1 : -1];
-#define TH095_EXT_PLAYER_MOVEMENT_SCALE(player) ((player)->proximityScale)
-#else
-typedef char ExtendedPlayerMovementScaleAt2A18[
-    (offsetof(ExtendedPlayerView, movementScale) == 0x2a18) ? 1 : -1];
-#define TH095_EXT_PLAYER_MOVEMENT_SCALE(player) ((player)->movementScale)
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -343,7 +207,6 @@ typedef ::th095::PhotoEnemyManagerView ExtendedRuntimeView;
 #ifdef DIFFBUILD
 extern AnmManagerLookupView *g_AnmManager;
 #endif
-extern PhotoGlobalStateView *g_PhotoGlobalState;
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 extern u8 *g_Background;
 #endif
@@ -365,7 +228,7 @@ static __forceinline u8 *ExtendedBackgroundOwner()
 #define g_PhotoEffectManager \
     TH095_RUNTIME_GLOBAL_PTR(ExtendedPhotoEffectManager, ::th095::g_RuntimeEffectManagerOwner)
 #define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, ::th095::g_RuntimeGlobalStateOwner)
+    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoGameTaskView, ::th095::g_RuntimeGlobalStateOwner)
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -454,7 +317,6 @@ static __forceinline void FinalizeExtendedBulletAfterExecute(
     vm->color1Final.a = 0x40;
 }
 
-extern ExtendedPlayerView *g_Player;
 extern ExtendedRuntimeView *g_ExtendedRuntime;
 #ifndef DIFFBUILD
 #define g_ExtendedPhotoEnemyManager \
@@ -463,33 +325,21 @@ extern ExtendedRuntimeView *g_ExtendedRuntime;
     TH095_RUNTIME_GLOBAL_PTR(ExtendedRuntimeView, ::th095::g_RuntimeEnemyManagerOwner)
 #endif
 
+#define TH095_ECL_EXT_RNG ::th095::g_Rng
 #ifdef TH095_MATCH_EXACT
-struct SoundPlayerView
-{
-    void PlaySoundByIdx(i32 soundIndex, i32 pan);
-};
-struct ExtendedRng
-{
-    f32 GetRandomF32();
-};
-extern SoundPlayerView g_SoundPlayer;
-extern ExtendedRng g_Rng;
 extern f32 g_AnmGameSpeed;
 extern u32 g_PhotoScreenFadeColor;
-#define TH095_ECL_EXT_SOUND_PLAYER g_SoundPlayer
-#define TH095_ECL_EXT_RNG g_Rng
 #define TH095_ECL_EXT_GAME_SPEED g_AnmGameSpeed
 #define TH095_ECL_EXT_FADE_COLOR TH095_BACKBUFFER_CLEAR_COLOR
 #else
-#define TH095_ECL_EXT_SOUND_PLAYER ::th095::g_SoundPlayer
-#define TH095_ECL_EXT_RNG ::th095::g_Rng
 #define TH095_ECL_EXT_GAME_SPEED ::th095::g_AnmGameSpeed
 #define TH095_ECL_EXT_FADE_COLOR TH095_BACKBUFFER_CLEAR_COLOR
 #endif
+#define TH095_ECL_EXT_SOUND_PLAYER ::th095::g_SoundPlayer
 
 #ifndef DIFFBUILD
 #define g_Player \
-    TH095_RUNTIME_GLOBAL_PTR(ExtendedPlayerView, ::th095::g_RuntimePlayerOwner)
+    TH095_RUNTIME_GLOBAL_PTR(TH095_EXT_PLAYER_TYPE, ::th095::g_RuntimePlayerOwner)
 #endif
 #ifdef DIFFBUILD
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -521,16 +371,17 @@ void __fastcall UpdatePlayerProximityAndMarker(
     } locals;
 
     locals.enemyPosition = &enemy->position;
-    locals.playerPosition = &g_Player->position;
+    locals.playerPosition =
+        &TH095_EXT_PLAYER_STORAGE(g_Player)->playerPosition;
     locals.distanceSquared =
         (locals.playerPosition->y - locals.enemyPosition->y) *
             (locals.playerPosition->y - locals.enemyPosition->y) +
         (locals.playerPosition->x - locals.enemyPosition->x) *
             (locals.playerPosition->x - locals.enemyPosition->x);
     if (locals.distanceSquared < 1024.0f)
-        TH095_EXT_PLAYER_MOVEMENT_SCALE(g_Player) = 0.25f;
+        TH095_EXT_PLAYER_STORAGE(g_Player)->movementScale = 0.25f;
     else if (locals.distanceSquared < 4096.0f)
-        TH095_EXT_PLAYER_MOVEMENT_SCALE(g_Player) =
+        TH095_EXT_PLAYER_STORAGE(g_Player)->movementScale =
             (locals.distanceSquared - 1024.0f) / 3072.0f * 0.75f + 0.25f;
 
     locals.vm = TH095_EXT_ANM_GET_VM(
@@ -602,22 +453,16 @@ void __fastcall SetBackgroundVmsState3(
 void __fastcall SetPhotoFlag200(
     Enemy *enemy, EclRawInstruction *instruction)
 {
-#if defined(TH095_MATCH_EXACT)
-    g_PhotoGlobalState->flags |= 0x200;
-#else
-    g_PhotoGlobalState->photoSoundSuppressed = 1;
-#endif
+    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) |=
+        PHOTO_GAME_TASK_FLAG_PHOTO_SOUND_SUPPRESSED;
 }
 
 // ECL extended callback table entry 16 @ 0x00414260.
 void __fastcall ClearPhotoFlag200(
     Enemy *enemy, EclRawInstruction *instruction)
 {
-#if defined(TH095_MATCH_EXACT)
-    g_PhotoGlobalState->flags &= ~0x200U;
-#else
-    g_PhotoGlobalState->photoSoundSuppressed = 0;
-#endif
+    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) &=
+        ~PHOTO_GAME_TASK_FLAG_PHOTO_SOUND_SUPPRESSED;
 }
 
 // ECL extended callback table entry 18 @ 0x00414430.
@@ -626,11 +471,8 @@ void __fastcall EnablePhotoTransition(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
-#if defined(TH095_MATCH_EXACT)
-    g_PhotoGlobalState->flags |= 0x400;
-#else
-    g_PhotoGlobalState->photoTransitionActive = 1;
-#endif
+    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) |=
+        PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
     firstVm = TH095_EXT_ANM_GET_VM(
         TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 2;
@@ -649,11 +491,8 @@ void __fastcall DisablePhotoTransition(
 {
     AnmVm *secondVm;
     AnmVm *firstVm;
-#if defined(TH095_MATCH_EXACT)
-    g_PhotoGlobalState->flags &= ~0x400U;
-#else
-    g_PhotoGlobalState->photoTransitionActive = 0;
-#endif
+    TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) &=
+        ~PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
     firstVm = TH095_EXT_ANM_GET_VM(
         TH095_EXT_BACKGROUND_VM_ID(0));
     firstVm->pendingInterrupt = 3;
@@ -795,35 +634,10 @@ void __fastcall SpawnEnemyMarkerVm(
 }
 
 static __forceinline i32 ExtendedCameraIsCharging(
-    ExtendedPhotoCameraView *camera)
+    PhotoPlayerCameraRuntimeView *camera)
 {
-    return camera->mode == 1;
+    return camera->mode == PHOTO_CAMERA_CHARGING;
 }
-
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-struct ExtendedEnemyMovementFlagBits
-{
-    u32 unknown00 : 10;
-    u32 movementMode : 2;
-    u32 movementEasing : 3;
-    u32 unknown15 : 17;
-};
-typedef char ExtendedEnemyMovementFlagBitsSize4[
-    (sizeof(ExtendedEnemyMovementFlagBits) == 4) ? 1 : -1];
-
-struct ExtendedEnemyMovementView
-{
-    u8 unknown0000[0x2bf4];
-    ExtendedEnemyMovementFlagBits movementFlags;
-};
-typedef char ExtendedEnemyMovementFlagsAt2BF4[
-    (offsetof(ExtendedEnemyMovementView, movementFlags) == 0x2bf4) ? 1 : -1];
-
-#define EXT_MOVEMENT_FLAGS(enemy) \
-    (reinterpret_cast<ExtendedEnemyMovementView *>(enemy)->movementFlags)
-#else
-#define EXT_MOVEMENT_FLAGS(enemy) TH095_ENEMY_ECL_CONTROL_BITS(enemy)
-#endif
 
 // ECL extended callback table entry 20 @ 0x00414580.
 void __fastcall RunPhotoTransition(
@@ -852,11 +666,8 @@ void __fastcall RunPhotoTransition(
         --enemy->activeEclContext->extraIntVariables[2];
         if (enemy->activeEclContext->extraIntVariables[2] == 60)
         {
-#if defined(TH095_MATCH_EXACT)
-            g_PhotoGlobalState->flags &= ~0x400U;
-#else
-            g_PhotoGlobalState->photoTransitionActive = 0;
-#endif
+            TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) &=
+                ~PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
             locals.firstEndVm = TH095_EXT_ANM_GET_VM(
                 TH095_EXT_BACKGROUND_VM_ID(0));
             locals.firstEndVm->pendingInterrupt = 3;
@@ -869,20 +680,16 @@ void __fastcall RunPhotoTransition(
         }
     }
 
-#if defined(TH095_MATCH_EXACT)
-    if (((g_PhotoGlobalState->flags >> 10) & 1U) == 0 &&
-#else
-    if (g_PhotoGlobalState->photoTransitionActive == 0 &&
-#endif
+    if (((TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) >>
+          PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_BIT) & 1U) == 0 &&
         enemy->activeEclContext->extraIntVariables[2] == 0 &&
-        ExtendedCameraIsCharging(&g_Player->camera) &&
-        TH095_EXT_COUNT_PHOTO_TARGETS(g_Player->camera, NULL, NULL) != 0)
+        ExtendedCameraIsCharging(
+            &TH095_EXT_PLAYER_STORAGE(g_Player)->camera) &&
+        TH095_EXT_COUNT_PHOTO_TARGETS(
+            TH095_EXT_PLAYER_STORAGE(g_Player)->camera, NULL, NULL) != 0)
     {
-#if defined(TH095_MATCH_EXACT)
-        g_PhotoGlobalState->flags |= 0x400U;
-#else
-        g_PhotoGlobalState->photoTransitionActive = 1;
-#endif
+        TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState) |=
+            PHOTO_GAME_TASK_FLAG_PHOTO_TRANSITION_ACTIVE;
         locals.firstStartVm = TH095_EXT_ANM_GET_VM(
             TH095_EXT_BACKGROUND_VM_ID(0));
         locals.firstStartVm->pendingInterrupt = 2;
@@ -895,16 +702,19 @@ void __fastcall RunPhotoTransition(
         TH095_ECL_EXT_GAME_SPEED = 1.0f;
         enemy->activeEclContext->extraIntVariables[2] = 120;
 
-        if (g_Player->camera.viewfinderPosition.x < 0.0f)
+        if (TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderPosition.x < 0.0f)
             locals.targetX =
-                g_Player->camera.viewfinderSize.x * 0.60000002f +
-                g_Player->camera.viewfinderPosition.x;
+                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderSize.x *
+                    0.60000002f +
+                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderPosition.x;
         else
             locals.targetX =
-                g_Player->camera.viewfinderPosition.x -
-                g_Player->camera.viewfinderSize.x * 0.60000002f;
+                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderPosition.x -
+                TH095_EXT_PLAYER_STORAGE(g_Player)->camera.viewfinderSize.x *
+                    0.60000002f;
 
-        if (g_Player->position.y < enemy->position.y)
+        if (TH095_EXT_PLAYER_STORAGE(g_Player)->playerPosition.y <
+            enemy->position.y)
             locals.targetY =
                 TH095_ECL_EXT_RNG.GetRandomF32() * 64.0f + enemy->position.y;
         else
@@ -928,8 +738,10 @@ void __fastcall RunPhotoTransition(
         locals.movementTimer->subFrame = 60.0f;
         locals.movementTimer->previous = -999999;
 
-        EXT_MOVEMENT_FLAGS(enemy).movementEasing = 4;
-        EXT_MOVEMENT_FLAGS(enemy).movementMode = 2;
+        TH095_ECL_CONTROL_BITS(enemy).movementEasing =
+            PHOTO_ENEMY_EASING_OUT_QUADRATIC;
+        TH095_ECL_CONTROL_BITS(enemy).movementMode =
+            PHOTO_ENEMY_MOVEMENT_INTERPOLATED;
 
         locals.zeroVelocity.x = 0.0f;
         locals.zeroVelocity.y = 0.0f;
@@ -940,7 +752,7 @@ void __fastcall RunPhotoTransition(
 
 struct ExtendedEffectCallbackLocals
 {
-    ExtendedPhotoEffectArgs args;
+    PhotoRotatingLaserSpawnArgs args;
     ExtendedPhotoEffectNode *effect;
     i32 spawnId;
     __forceinline void PublishFlags()
@@ -976,20 +788,20 @@ void __fastcall Callback10(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedEffectCallbackLocals locals;
 
     memset(&locals.args, 0, sizeof(locals.args));
-    TH095_EXT_EFFECT_SPEED(locals.args) = 8.0f;
+    locals.args.speed = 8.0f;
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
     locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
-    TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args) = enemy->activeEclContext->extraFloatVariables[3];
-    TH095_EXT_EFFECT_INITIAL_LENGTH(locals.args) = TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args);
-    TH095_EXT_EFFECT_MAXIMUM_WIDTH(locals.args) = 16.0f;
-    TH095_EXT_EFFECT_STARTUP_DURATION(locals.args) = 1;
-    TH095_EXT_EFFECT_GROWTH_DURATION(locals.args) = 15;
-    TH095_EXT_EFFECT_SUSTAIN_DURATION(locals.args) = 40;
-    TH095_EXT_EFFECT_FADE_DURATION(locals.args) = 6;
-    TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
-    TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
+    locals.args.maximumLength = enemy->activeEclContext->extraFloatVariables[3];
+    locals.args.initialLength = locals.args.maximumLength;
+    locals.args.maximumWidth = 16.0f;
+    locals.args.startupDuration = 1;
+    locals.args.growthDuration = 15;
+    locals.args.sustainDuration = 40;
+    locals.args.fadeDuration = 6;
+    locals.args.angularVelocity = 0.0f;
+    locals.args.followPhotoTarget = 0;
 
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(
         g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,
@@ -1009,20 +821,20 @@ void __fastcall Callback14(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedEffectCallbackLocals locals;
 
     memset(&locals.args, 0, sizeof(locals.args));
-    TH095_EXT_EFFECT_SPEED(locals.args) = 8.0f;
+    locals.args.speed = 8.0f;
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
     locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
-    TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args) = enemy->activeEclContext->extraFloatVariables[3];
-    TH095_EXT_EFFECT_INITIAL_LENGTH(locals.args) = TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args);
-    TH095_EXT_EFFECT_MAXIMUM_WIDTH(locals.args) = 16.0f;
-    TH095_EXT_EFFECT_STARTUP_DURATION(locals.args) = 1;
-    TH095_EXT_EFFECT_GROWTH_DURATION(locals.args) = 15;
-    TH095_EXT_EFFECT_SUSTAIN_DURATION(locals.args) = 300;
-    TH095_EXT_EFFECT_FADE_DURATION(locals.args) = 6;
-    TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
-    TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
+    locals.args.maximumLength = enemy->activeEclContext->extraFloatVariables[3];
+    locals.args.initialLength = locals.args.maximumLength;
+    locals.args.maximumWidth = 16.0f;
+    locals.args.startupDuration = 1;
+    locals.args.growthDuration = 15;
+    locals.args.sustainDuration = 300;
+    locals.args.fadeDuration = 6;
+    locals.args.angularVelocity = 0.0f;
+    locals.args.followPhotoTarget = 0;
 
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(
         g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,
@@ -1042,20 +854,20 @@ void __fastcall Callback17(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedEffectCallbackLocals locals;
 
     memset(&locals.args, 0, sizeof(locals.args));
-    TH095_EXT_EFFECT_SPEED(locals.args) = 8.0f;
+    locals.args.speed = 8.0f;
     locals.args.position = enemy->worldPosition + enemy->shootOffset;
     locals.args.type = 0;
     locals.args.color = 0;
     locals.args.angle = enemy->activeEclContext->extraFloatVariables[2];
-    TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args) = enemy->activeEclContext->extraFloatVariables[3];
-    TH095_EXT_EFFECT_INITIAL_LENGTH(locals.args) = TH095_EXT_EFFECT_MAXIMUM_LENGTH(locals.args);
-    TH095_EXT_EFFECT_MAXIMUM_WIDTH(locals.args) = 16.0f;
-    TH095_EXT_EFFECT_STARTUP_DURATION(locals.args) = 1;
-    TH095_EXT_EFFECT_GROWTH_DURATION(locals.args) = 15;
-    TH095_EXT_EFFECT_SUSTAIN_DURATION(locals.args) = 120;
-    TH095_EXT_EFFECT_FADE_DURATION(locals.args) = 6;
-    TH095_EXT_EFFECT_ANGULAR_VELOCITY(locals.args) = 0.0f;
-    TH095_EXT_EFFECT_FOLLOW_PHOTO_TARGET(locals.args) = 0;
+    locals.args.maximumLength = enemy->activeEclContext->extraFloatVariables[3];
+    locals.args.initialLength = locals.args.maximumLength;
+    locals.args.maximumWidth = 16.0f;
+    locals.args.startupDuration = 1;
+    locals.args.growthDuration = 15;
+    locals.args.sustainDuration = 120;
+    locals.args.fadeDuration = 6;
+    locals.args.angularVelocity = 0.0f;
+    locals.args.followPhotoTarget = 0;
 
     locals.spawnId = TH095_EXT_EFFECT_SPAWN(
         g_PhotoEffectManager, TH095_EXT_EFFECT_SPAWN_ROTATING_LASER,
@@ -1252,8 +1064,6 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
     SetExtendedBackgroundVm1State2();
     TH095_ECL_EXT_FADE_COLOR = 0;
 }
-
-#undef EXT_MOVEMENT_FLAGS
 
 } // namespace EclExtended
 

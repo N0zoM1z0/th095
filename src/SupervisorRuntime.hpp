@@ -13,11 +13,16 @@
 #include <stddef.h>
 
 #include "inttypes.hpp"
-#include "GameColorMode.hpp"
-#include "GameMusicMode.hpp"
-#include "MidiRuntime.hpp"
+#include "GameConfiguration.hpp"
+#include "MidiOutputApi.hpp"
+#include "ReplayScanWorker.hpp"
+#include "ScreenshotBitmapFileHeader.hpp"
+#include "SupervisorFlags.hpp"
+#include "SupervisorState.hpp"
 #include "SupervisorStartupState.hpp"
 #include "SupervisorFogState.hpp"
+#include "SupervisorViewportConfiguration.hpp"
+#include "ZunTimer.hpp"
 
 namespace th095
 {
@@ -27,134 +32,6 @@ struct DummyMidiTimer;
 struct Float3;
 struct FrontEndControllerView;
 struct PhotoGameTaskView;
-
-struct ReplayScanWorker
-{
-    uintptr_t threadHandle;
-    u32 threadId;
-    i32 exitSignal;
-    i32 active;
-    u8 unknown010[4];
-    void (__fastcall *threadProc)(void *);
-
-    ReplayScanWorker();
-    ~ReplayScanWorker();
-    void Stop();
-    void Start(void (__fastcall *callback)(void *), void *argument);
-};
-
-typedef char ReplayScanWorkerSizeIs18[
-    (sizeof(ReplayScanWorker) == 0x18) ? 1 : -1];
-
-struct GameConfigOptions
-{
-    u32 force16BitTextures : 1;
-    u32 useReferenceRasterizer : 1;
-    u32 disableFog : 1;
-    u32 disableDirectInput : 1;
-    u32 preloadMusic : 1;
-    u32 disableVsync : 1;
-    u32 disableTextBackgroundDetection : 1;
-    u32 unknown7 : 25;
-};
-
-#pragma pack(push, 2)
-struct ControllerBinding
-{
-    u32 inputs[4];
-    u16 button;
-};
-
-struct SerializedControllerMapping
-{
-    ControllerBinding bindings[6];
-};
-
-struct ControllerMapping
-{
-    ControllerBinding primaryBindings[3];
-    u8 unknown036[0x58];
-    ControllerBinding secondaryBindings[3];
-};
-#pragma pack(pop)
-
-struct GameConfiguration
-{
-    SerializedControllerMapping controllerMapping;  // +0x00
-    u8 unknown06c[0x38];
-    u32 version;         // +0xa4
-    u16 padXAxis;        // +0xa8
-    u16 padYAxis;        // +0xaa
-    GameColorMode colorMode16bit; // +0xac
-    GameMusicMode musicMode; // +0xad
-    u8 playSounds;       // +0xae
-    u8 windowed;         // +0xaf
-    u8 frameskipConfig;  // +0xb0
-    u8 effectQuality;    // +0xb1
-    u8 controllerAssignments[3]; // +0xb2
-    i8 musicVolume;      // +0xb5
-    i8 sfxVolume;        // +0xb6
-    u8 unknown0b7[0x0d];
-    GameConfigOptions options; // +0xc4
-
-    void Initialize();
-};
-
-typedef char ControllerBindingSizeIs12[(sizeof(ControllerBinding) == 0x12) ? 1 : -1];
-typedef char SerializedControllerMappingSizeIs6C[(sizeof(SerializedControllerMapping) == 0x6c) ? 1 : -1];
-typedef char ControllerMappingSizeIsC4[(sizeof(ControllerMapping) == 0xc4) ? 1 : -1];
-typedef char GameConfigurationSizeIsC8[(sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
-typedef char GameConfigurationMusicModeAtAD[
-    (offsetof(GameConfiguration, musicMode) == 0xad) ? 1 : -1];
-typedef char GameConfigurationControllerAssignmentsAtB2[
-    (offsetof(GameConfiguration, controllerAssignments) == 0xb2) ? 1 : -1];
-
-struct SupervisorFlags
-{
-    u32 usingHardwareTL : 1;
-    u32 lockableBackbuffer : 1;
-    u32 using32BitGraphics : 1;
-    u32 speedhackDetected : 1;
-    u32 d3dDeviceNeedsReset : 1;
-    u32 forceExtraTimerStep : 1;
-    u32 dummyMidiTimerEnabled : 1;
-    u32 receivedCloseMsg : 1;
-    u32 scoreBackupPending : 1;
-#if defined(TH095_MATCH_EXACT)
-    u32 unknown9 : 1;
-#else
-    u32 resultRestartActive : 1;
-#endif
-    u32 keyboardAvailable : 1;
-    u32 controllerAvailable : 1;
-    u32 restartPhotoGame : 1;
-    u32 unknown13 : 19;
-};
-
-enum SupervisorState
-{
-    SUPERVISOR_STATE_EXIT = 1,
-    SUPERVISOR_STATE_FRONT_END = 2,
-    SUPERVISOR_STATE_PHOTO_GAME = 3,
-    SUPERVISOR_STATE_RESTART_PHOTO_GAME = 4,
-    SUPERVISOR_STATE_ERROR = 6,
-    SUPERVISOR_STATE_START_REPLAY = 7,
-    SUPERVISOR_STATE_RETRY_PHOTO_GAME = 8
-};
-
-#pragma pack(push, 1)
-struct ScreenshotBitmapFileHeader
-{
-    u16 type;
-    u32 size;
-    u16 reserved1;
-    u16 reserved2;
-    u32 offBits;
-};
-#pragma pack(pop)
-
-typedef char ScreenshotBitmapFileHeaderSizeIs0E[
-    (sizeof(ScreenshotBitmapFileHeader) == 0x0e) ? 1 : -1];
 
 #pragma pack(push, 4)
 struct Supervisor
@@ -174,24 +51,17 @@ struct Supervisor
     D3DPRESENT_PARAMETERS presentParameters;         // +0x0e4
     DummyMidiTimer *dummyMidiTimer;                  // +0x118
     GameConfiguration config;                        // +0x11c
-#ifdef TH095_MATCH_EXACT
-    u8 unknown1e4[0x220];
-#else
-    u8 backgroundViewportConfigurations[0x1e0]; // +0x1e4 (2 * 0xf0)
-    void *currentBackgroundViewport;             // +0x3c4
-    i32 currentBackgroundViewportIndex;          // +0x3c8
-    u8 unknown3cc[0x38];
-#endif
+    SupervisorViewportConfiguration
+        viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]; // +0x1e4
+    SupervisorViewportConfiguration *currentViewportConfiguration; // +0x3c4
+    i32 currentViewportIndex;                        // +0x3c8
+    u8 unknown3cc[0x28];
+    ZunTimer timer;                                  // +0x3f4
+    u8 unknown400[4];
     i32 calcCount;                                   // +0x404
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 wantedState;                                 // +0x408
-    i32 currentState;                                // +0x40c
-    i32 previousState;                               // +0x410
-#else
     i32 activeSceneState;                            // +0x408
     i32 requestedSceneState;                         // +0x40c
     i32 previousActiveSceneState;                    // +0x410
-#endif
     u8 unknown414[0x10];
     i32 screenTransitionCountdown;                   // +0x424
     i32 suppressFpsDisplay;                          // +0x428
@@ -300,12 +170,12 @@ struct Supervisor
 typedef char SupervisorSizeIs7BC[(sizeof(Supervisor) == 0x7bc) ? 1 : -1];
 typedef char SupervisorPresentAtE4[(offsetof(Supervisor, presentParameters) == 0xe4) ? 1 : -1];
 typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 : -1];
-#ifndef TH095_MATCH_EXACT
-typedef char SupervisorCurrentBackgroundViewportAt3C4[
-    (offsetof(Supervisor, currentBackgroundViewport) == 0x3c4) ? 1 : -1];
-typedef char SupervisorCurrentBackgroundViewportIndexAt3C8[
-    (offsetof(Supervisor, currentBackgroundViewportIndex) == 0x3c8) ? 1 : -1];
-#endif
+typedef char SupervisorCurrentViewportAt3C4[
+    (offsetof(Supervisor, currentViewportConfiguration) == 0x3c4) ? 1 : -1];
+typedef char SupervisorCurrentViewportIndexAt3C8[
+    (offsetof(Supervisor, currentViewportIndex) == 0x3c8) ? 1 : -1];
+typedef char SupervisorTimerAt3F4[
+    (offsetof(Supervisor, timer) == 0x3f4) ? 1 : -1];
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
 typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanWorker) == 0x648) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];

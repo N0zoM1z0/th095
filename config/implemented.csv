@@ -658,7 +658,7 @@ th095::PhotoOverlayManagerView::Draw
 th095::CPbgFile::ReadWholeFile
 th095::PbgArchiveEntry::PbgArchiveEntry
 th095::Lzss::AddString
-th095::PhotoRuntimeView::CountPhotoTargets
+th095::PhotoEnemyManagerView::CountPhotoTargets
 th095::CStreamingSound::InitSoundBuffers
 th095::CSound::SetVolume
 th095::CSound::Stop

@@ -2,10 +2,9 @@
 #define TH095_PHOTO_GAME_TASK_HPP
 
 #include "Main.hpp"
+#include "PhotoGameTaskState.hpp"
+#include "ReplayManagerMode.hpp"
 #include "ZunTimer.hpp"
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-#include "ReplayManager.hpp"
-#endif
 
 namespace th095
 {
@@ -17,7 +16,7 @@ struct PhotoEnemyManagerTaskView;
 struct PhotoFrontManagerView;
 struct PhotoGameUpdateView;
 struct PhotoItemManagerView;
-struct PhotoOverlayManagerView;
+struct PhotoStageStateView;
 struct ReplayManager;
 struct ResultScreen;
 
@@ -27,8 +26,8 @@ struct PhotoCompletionStateTaskView
     ZunTimer timer;
 };
 
-// Production-visible layout of the live photography task.  The exact build
-// keeps its separately frozen target-facing view in PhotoGameTaskExact.inl.
+// Canonical layout of the live photography task. Exact-only source emission
+// stays isolated in PhotoGameTaskExact.inl; consumers share this owner.
 struct PhotoGameTaskView
 {
     Background *background;                 // +0x000
@@ -37,7 +36,7 @@ struct PhotoGameTaskView
     PhotoGameUpdateView *player;             // +0x00c
     ReplayManager *replay;                   // +0x010
     PhotoEnemyManagerTaskView *enemies;      // +0x014
-    PhotoOverlayManagerView *photoOverlay;   // +0x018
+    PhotoStageStateView *photoOverlay;        // +0x018
     PhotoItemManagerView *items;             // +0x01c
     ResultScreen *pause;                     // +0x020
     PhotoEffectManagerView *lasers;          // +0x024
@@ -51,24 +50,12 @@ struct PhotoGameTaskView
             u32 captureActive : 1;
             u32 capturedPhotoActive : 1;
             u32 gameplayLoadActive : 1;
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlag3 : 1;
-#else
             u32 gameplayLoadFailed : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlag4 : 1;
-#else
             u32 resultScreenActive : 1;
-#endif
             u32 playerDeathTransitionComplete : 1;
             u32 photoLimitTransitionComplete : 1;
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlags7_8 : 2;
-#else
             u32 resetFpsSample : 1;
             u32 unknownFlag8 : 1;
-#endif
             u32 photoSoundSuppressed : 1;
             u32 photoTransitionActive : 1;
             u32 unknownFlags11_31 : 21;
@@ -79,11 +66,7 @@ struct PhotoGameTaskView
     i32 score;                               // +0x114
     ChainElem *calcChain;                    // +0x118
     ChainElem *drawChain;                    // +0x11c
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 replayMode;                          // +0x120
-#else
     ReplayManagerMode replayMode;            // +0x120
-#endif
 
     PhotoGameTaskView();
     ~PhotoGameTaskView();
@@ -103,7 +86,7 @@ typedef char PhotoGameTaskSizeIs124[
 typedef char PhotoGameTaskConfigAt34[
     (offsetof(PhotoGameTaskView, runtimeConfig) == 0x34) ? 1 : -1];
 typedef char PhotoGameTaskFlagsAtFC[
-    (offsetof(PhotoGameTaskView, flags) == 0xfc) ? 1 : -1];
+    (offsetof(PhotoGameTaskView, flags) == PHOTO_GAME_TASK_FLAGS_OFFSET) ? 1 : -1];
 typedef char PhotoGameTaskCompletionAt104[
     (offsetof(PhotoGameTaskView, completion) == 0x104) ? 1 : -1];
 typedef char PhotoGameTaskCompletionActiveAt104[

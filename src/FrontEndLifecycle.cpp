@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS
-#endif
 #include "Global.hpp"
 #include "FrontEndGlobals.hpp"
 #include "Main.hpp"

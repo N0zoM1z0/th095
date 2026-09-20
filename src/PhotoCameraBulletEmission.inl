@@ -1,25 +1,19 @@
-// PhotoCamera's target object decorates the Background owner at 0x004BDD90
-// and the BulletInf owner at 0x004BDD98 with one historical manager spelling.
-// Keep that exact-only receiver surface out of the normal ownership model.
+// Compiler-emission adapter for PhotoCamera's script-0x124 spawn only.  The
+// canonical storage and semantic receiver is AnmLoaded; spelling the call as
+// CreateVmAtWorld makes VC7 construct a non-target AnmVmId return temporary.
+// Both decorations resolve to the canonical target at 0x00445060.
+namespace th095
+{
+
 struct PhotoAnmSpawnerView
 {
     void SpawnInto(PhotoAnmVmId *output, i32 script, Float3 *position);
 };
 
-struct PhotoBulletManagerView
-{
-    u8 unknown0000[0x1760];
-    ZunColor photoColor;
-    u8 unknown1764[0x27c5b0 - 0x1764];
-    PhotoAnmSpawnerView *anmSpawner;
+} // namespace th095
 
-    void BeginPhotoCapture(const Float3 *position, const Float3 *size);
-    void DespawnAllBullets();
-    i32 CountNearbyTargets(const Float3 *position, f32 radius);
-    void *CapturePhotoTargets(const Float3 *position, const Float3 *size);
-};
+#pragma comment(linker, "/alternatename:?SpawnInto@PhotoAnmSpawnerView@th095@@QAEXPAUPhotoAnmVmId@2@HPAUFloat3@2@@Z=?CreateVmAtWorld@AnmLoaded@th095@@QAE?AUAnmVmId@2@HPAUFloat3@2@@Z")
 
-typedef char PhotoCameraEmissionAnmAt27C5B0[
-    (offsetof(PhotoBulletManagerView, anmSpawner) == 0x27c5b0) ? 1 : -1];
-
-extern PhotoBulletManagerView *g_PhotoBulletManager;
+#define TH095_PHOTO_BULLET_SPAWN_WORLD(anm, output, script, position) \
+    reinterpret_cast<::th095::PhotoAnmSpawnerView *>(anm)->SpawnInto( \
+        output, script, position)

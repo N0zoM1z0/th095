@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import re
 import sys
 import unittest
 
@@ -90,8 +91,27 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         emission = (ROOT / "src" / "PhotoCameraBulletEmission.inl").read_text(
             encoding="utf-8"
         )
-        self.assertIn("0x004BDD90", emission)
-        self.assertIn("0x004BDD98", emission)
+        self.assertIn("struct PhotoAnmSpawnerView", emission)
+        self.assertIn("#define TH095_PHOTO_BULLET_SPAWN_WORLD", emission)
+        self.assertIn("/alternatename:", emission)
+        self.assertIn("0x00445060", emission)
+        self.assertNotIn("TH095_MATCH_EXACT", emission)
+        self.assertNotIn("DIFFBUILD", emission)
+        camera_header = (ROOT / "src" / "PhotoCamera.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("PhotoCameraBulletEmission.inl", camera_header)
+        self.assertNotIn("PhotoBulletManager.hpp", camera_header)
+        self.assertNotIn("TH095_MATCH_EXACT", camera_header)
+        self.assertNotIn("DIFFBUILD", camera_header)
+        self.assertIn("struct PhotoBulletView;", camera_header)
+        self.assertNotIn("PhotoCapturedBulletView", camera_header)
+        camera_source = (ROOT / "src" / "PhotoCamera.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("struct PhotoCapturedBulletView", camera_source)
+        self.assertIn("bulletTargets->vm.loadedSprite->widthPx", camera_source)
+        self.assertIn("bulletTargets->nextCaptured", camera_source)
 
     def test_photo_enemy_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_photo_enemy_owner()
@@ -103,6 +123,592 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("sizeof(PhotoEnemyManagerView) == 0x26ae30", header)
         self.assertIn("u8 unknown4dfc[4]", header)
         self.assertNotIn("alternateEnemyAnm", header)
+        extended = (ROOT / "src" / "EclExtended.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('#include "PhotoEnemyEclAccess.hpp"', extended)
+        self.assertNotIn("EXT_MOVEMENT_FLAGS", extended)
+        self.assertIn("TH095_ECL_CONTROL_BITS(enemy).movementMode", extended)
+        camera = (ROOT / "src" / "PhotoCamera.cpp").read_text(encoding="utf-8")
+        runtime = (ROOT / "src" / "PhotoRuntime.cpp").read_text(encoding="utf-8")
+        ledgers = {
+            path: (ROOT / path).read_text(encoding="utf-8")
+            for path in (
+                "config/match-units.toml",
+                "config/functions.csv",
+                "config/implemented.csv",
+                "config/known-symbols.csv",
+                "config/matches.csv",
+                "config/reccmp-functions.csv",
+            )
+        }
+        manifest = ledgers["config/match-units.toml"]
+        self.assertNotIn("PhotoRuntimeView", camera)
+        self.assertNotIn("PhotoRuntimeView", runtime)
+        for text in ledgers.values():
+            self.assertNotIn("PhotoRuntimeView", text)
+        self.assertIn("extern PhotoEnemyManagerView *g_PhotoRuntime;", camera)
+        self.assertIn("g_PhotoRuntime->photoTargets", camera)
+        self.assertIn("int PhotoEnemyManagerView::CountPhotoTargets(", runtime)
+        self.assertIn("&this->enemyPool[0]", runtime)
+        self.assertIn(
+            "?g_PhotoRuntime@th095@@3PAUPhotoEnemyManagerView@1@A", manifest
+        )
+        self.assertIn(
+            "?CountPhotoTargets@PhotoEnemyManagerView@th095@@QAEHPBUFloat3@2@0@Z",
+            manifest,
+        )
+
+    def test_game_error_context_guard_accepts_canonical_owner(self) -> None:
+        GUARD.check_game_error_context_owner()
+        header = (ROOT / "src" / "GameErrorContext.hpp").read_text(
+            encoding="utf-8"
+        )
+        global_source = (ROOT / "src" / "Global.cpp").read_text(
+            encoding="utf-8"
+        )
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(header.count("struct GameErrorContext\n"), 1)
+        self.assertNotIn("class GameErrorContext", header)
+        self.assertIn(
+            "DIFFABLE_STATIC(GameErrorContext, g_GameErrorContext);", global_source
+        )
+        for path in (ROOT / "src").rglob("*"):
+            if path.suffix in (".cpp", ".hpp", ".inl"):
+                self.assertNotIn(
+                    "TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS",
+                    path.read_text(encoding="utf-8"),
+                )
+        self.assertNotIn(
+            "?g_GameErrorContext@th095@@3VGameErrorContext@1@A", manifest
+        )
+        self.assertEqual(
+            manifest.count("?g_GameErrorContext@th095@@3UGameErrorContext@1@A"),
+            89,
+        )
+
+    def test_file_system_guard_accepts_canonical_namespace(self) -> None:
+        GUARD.check_file_system_api_owner()
+        header = (ROOT / "src" / "Main.hpp").read_text(encoding="utf-8")
+        file_write = (ROOT / "src" / "FileWrite.cpp").read_text(
+            encoding="utf-8"
+        )
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("namespace FileSystem\n{", header)
+        self.assertNotIn("struct FileSystem", header)
+        self.assertIn(
+            "i32 FileSystem::WriteDataToFile(const char *path, void *data, size_t size)",
+            file_write,
+        )
+        for path in (ROOT / "src").rglob("*"):
+            if path.suffix in (".cpp", ".hpp", ".inl"):
+                self.assertNotIn(
+                    "TH095_MATCH_FILESYSTEM_AS_CLASS",
+                    path.read_text(encoding="utf-8"),
+                )
+        self.assertEqual(
+            manifest.count("?OpenFile@FileSystem@th095@@SIPAEPADPAHH@Z"), 2
+        )
+        self.assertEqual(
+            manifest.count("?OpenFile@FileSystem@th095@@YIPAEPBDPAHH@Z"), 22
+        )
+        self.assertEqual(
+            manifest.count("?WriteDataToFile@FileSystem@th095@@SIHPADPAXH@Z"),
+            2,
+        )
+        self.assertEqual(
+            manifest.count("?WriteDataToFile@FileSystem@th095@@YIHPBDPAXI@Z"),
+            2,
+        )
+
+    def test_rng_guard_accepts_canonical_class_owner(self) -> None:
+        GUARD.check_rng_owner()
+        header = (ROOT / "src" / "Rng.hpp").read_text(encoding="utf-8")
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(len(re.findall(r"^class\s+Rng\b", header, re.MULTILINE)), 1)
+        self.assertNotIn("struct Rng", header)
+        self.assertNotIn("TH095_MATCH_RNG_AS_STRUCT", header)
+        self.assertNotIn("?g_Rng@th095@@3URng@1@A", manifest)
+        self.assertNotIn("ExtendedRng", manifest)
+        self.assertEqual(manifest.count("?g_Rng@th095@@3VRng@1@A"), 43)
+        self.assertEqual(manifest.count("?g_Rng2@th095@@3VRng@1@A"), 6)
+
+    def test_midi_output_guard_accepts_owner_and_api_adapter(self) -> None:
+        GUARD.check_midi_output_owner()
+        owner = (ROOT / "src" / "Midi.hpp").read_text(encoding="utf-8")
+        api = (ROOT / "src" / "MidiOutputApi.hpp").read_text(encoding="utf-8")
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("class MidiOutput : MidiTimer", owner)
+        self.assertIn("C_ASSERT(sizeof(MidiOutput) == 0x300);", owner)
+        self.assertIn(
+            "::ZunResult ReadFileData(i32 slot, const char *path);", api
+        )
+        self.assertFalse((ROOT / "src" / "MidiRuntime.hpp").exists())
+        self.assertNotIn("?StopPlayback@MidiOutput@th095@@QAEXXZ", manifest)
+        self.assertEqual(
+            manifest.count(
+                "?StopPlayback@MidiOutput@th095@@QAE?AW4ZunResult@@XZ"
+            ),
+            6,
+        )
+
+    def test_replay_scan_worker_guard_accepts_canonical_owner(self) -> None:
+        GUARD.check_replay_scan_worker_owner()
+        owner = (ROOT / "src" / "ReplayScanWorker.hpp").read_text(
+            encoding="utf-8"
+        )
+        main = (ROOT / "src" / "Main.cpp").read_text(encoding="utf-8")
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("i32 exitSignal;", owner)
+        self.assertIn("u8 unknown010[4];", owner)
+        self.assertIn(
+            "DIFFABLE_STATIC(ReplayScanWorker, g_SupervisorInputWorker);", main
+        )
+        self.assertNotIn("SupervisorInputWorkerView", manifest)
+        self.assertEqual(
+            manifest.count("?Stop@ReplayScanWorker@th095@@QAEXXZ"), 5
+        )
+
+    def test_sound_player_consumer_guard_accepts_canonical_owner(self) -> None:
+        GUARD.check_sound_player_consumer_owners()
+        bullet = (ROOT / "src" / "BulletManager.cpp").read_text(encoding="utf-8")
+        extended = (ROOT / "src" / "EclExtended.cpp").read_text(
+            encoding="utf-8"
+        )
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("PhotoBulletSoundPlayerView", bullet)
+        self.assertNotIn("g_PhotoBulletSoundPlayer", bullet)
+        self.assertEqual(bullet.count("g_SoundPlayer."), 9)
+        self.assertNotIn("struct SoundPlayerView", extended)
+        self.assertIn(
+            "#define TH095_ECL_EXT_SOUND_PLAYER ::th095::g_SoundPlayer",
+            extended,
+        )
+        self.assertEqual(
+            extended.count("TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx("), 5
+        )
+        self.assertNotIn("@PhotoBulletSoundPlayerView@th095@@", manifest)
+        self.assertNotIn("@SoundPlayerView@EclExtended@th095@@", manifest)
+        self.assertIn("?g_SoundPlayer@th095@@3VSoundPlayer@1@A", manifest)
+        header = (ROOT / "src" / "SoundPlayer.hpp").read_text(encoding="utf-8")
+        self.assertIn("class SoundPlayer\n", header)
+        self.assertNotIn("struct SoundPlayer\n", header)
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("typedef ZunResult SoundPlayerResult;", header)
+        self.assertNotIn("typedef ::ZunResult SoundPlayerResult;", header)
+        semantic_sound_tail = (
+            "SOUND_FOCUS_CHARGE",
+            "SOUND_CHARGE_FULL",
+            "SOUND_CAMERA_FOCUS",
+            "SOUND_PHOTO_PULSE",
+            "SOUND_TARGET_ACQUIRED",
+        )
+        for name in semantic_sound_tail:
+            self.assertEqual(header.count(f"    {name},"), 1)
+        for name in ("SOUND_2A", "SOUND_2B", "SOUND_2C", "SOUND_2D", "SOUND_2E"):
+            self.assertNotIn(name, header)
+        for path in (ROOT / "src").rglob("*"):
+            if path.suffix in (".cpp", ".hpp", ".inl"):
+                source = path.read_text(encoding="utf-8")
+                self.assertNotIn("TH095_MATCH_SOUNDPLAYER_AS_STRUCT", source)
+                for name in semantic_sound_tail:
+                    self.assertNotIn(f"TH095_{name}", source)
+        photo_camera = (ROOT / "src" / "PhotoCamera.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(photo_camera.count("SOUND_FOCUS_CHARGE"), 4)
+        self.assertEqual(photo_camera.count("SOUND_CHARGE_FULL"), 1)
+        self.assertEqual(photo_camera.count("SOUND_CAMERA_FOCUS"), 4)
+        self.assertEqual(photo_camera.count("SOUND_TARGET_ACQUIRED"), 1)
+        ecl_target_high = (
+            ROOT / "src" / "ecl" / "EclRunTargetHigh.inl"
+        ).read_text(encoding="utf-8")
+        self.assertEqual(ecl_target_high.count("SOUND_PHOTO_PULSE"), 1)
+        implementation = (ROOT / "src" / "SoundPlayer.cpp").read_text(
+            encoding="utf-8"
+        )
+        lifecycle_fields = {
+            "initializationThreadHandle": ("HANDLE", "0x5218"),
+            "soundDataLoaderThreadHandle": ("HANDLE", "0x521c"),
+            "initializationThreadId": ("DWORD", "0x5220"),
+            "initializationWindow": ("HWND", "0x5228"),
+        }
+        for name, (field_type, offset) in lifecycle_fields.items():
+            self.assertIn(f"    {field_type} {name};", header)
+            self.assertIn(f"offsetof(SoundPlayer, {name}) == {offset}", header)
+        for retired in (
+            "workerThreadHandle",
+            "secondaryWorkerThreadHandle",
+            "workerThreadId",
+            "workerWindow",
+        ):
+            self.assertNotIn(retired, header)
+            self.assertNotIn(retired, implementation)
+        self.assertNotIn("TH095_LEGACY_ZUN_SUCCESS", implementation)
+        self.assertNotIn("TH095_LEGACY_ZUN_ERROR", implementation)
+        self.assertNotIn("SoundPlayer@th095@@QAE?AW4ZunResult@@", manifest)
+        self.assertIn("SoundPlayer@th095@@QAE?AW4ZunResult@2@", manifest)
+
+    def test_photo_game_task_ecl_guard_accepts_state_bridge(self) -> None:
+        GUARD.check_photo_game_task_ecl_owner()
+        state = (ROOT / "src" / "PhotoGameTaskState.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", state)
+        self.assertNotIn("DIFFBUILD", state)
+        self.assertIn("PHOTO_GAME_TASK_FLAGS_OFFSET = 0xfc", state)
+        extended = (ROOT / "src" / "EclExtended.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("g_PhotoGlobalState->flags", extended)
+        self.assertEqual(
+            extended.count("TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState)"), 7
+        )
+        camera = (ROOT / "src" / "PhotoCamera.cpp").read_text(encoding="utf-8")
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('#include "PhotoGameTask.hpp"', camera)
+        self.assertNotIn("struct PhotoGlobalStateView", camera)
+        self.assertNotIn("unknownFlag0", camera)
+        self.assertNotIn("unknownFlag2", camera)
+        self.assertIn("extern PhotoGameTaskView *g_PhotoGlobalState;", camera)
+        self.assertIn("g_PhotoGlobalState->captureActive", camera)
+        self.assertIn("g_PhotoGlobalState->gameplayLoadActive", camera)
+        self.assertIn("g_PhotoGlobalState->photoSoundSuppressed", camera)
+        self.assertNotIn(
+            "?g_PhotoGlobalState@th095@@3PAUPhotoGlobalStateView@1@A", manifest
+        )
+        self.assertIn(
+            "?g_PhotoGlobalState@th095@@3PAUPhotoGameTaskView@1@A", manifest
+        )
+
+    def test_photo_card_info_owner_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_photo_card_info_owner()
+        header = (ROOT / "src" / "PhotoCardInfo.hpp").read_text(encoding="utf-8")
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(PhotoCardInfoView) == 0x68", header)
+        self.assertIn("PHOTO_CARD_INFO_STATE_FINISHING = 1", header)
+        stage = (ROOT / "src" / "PhotoStage.cpp").read_text(encoding="utf-8")
+        self.assertNotIn("PhotoStageRuntimeView", stage)
+        self.assertIn("TH095_PHOTO_STAGE_CARD_INFO->text", stage)
+
+    def test_photo_camera_state_guard_accepts_shared_layout(self) -> None:
+        GUARD.check_photo_camera_state_owner()
+        header = (ROOT / "src" / "PhotoCamera.hpp").read_text(encoding="utf-8")
+        state_start = header.index("struct PhotoCameraState")
+        state_body = GUARD.braced_body_after(header, state_start, "PhotoCameraState")
+        self.assertNotIn("TH095_MATCH_EXACT", state_body)
+        self.assertNotIn("DIFFBUILD", state_body)
+        self.assertIn("PhotoCameraMode mode;", state_body)
+        self.assertIn("i32 focusChargeFrames;", state_body)
+        handle_start = header.index("struct PhotoAnmVmId\n")
+        handle_body = GUARD.braced_body_after(header, handle_start, "PhotoAnmVmId")
+        self.assertNotIn("PhotoAnmVmId()", handle_body)
+        self.assertIn("operator AnmVmId() const", handle_body)
+        self.assertIn('reinterpret_cast<AnmVmId *>(this)->GetVm()', handle_body)
+        self.assertIn("typedef AnmLoaded PhotoAnmLoadedView;", header)
+        self.assertNotIn("struct PhotoAnmLoadedView", header)
+        self.assertIn('#include "PhotoAnmCreateVmEmission.hpp"', header)
+        emission = (
+            ROOT / "src" / "PhotoAnmCreateVmEmission.hpp"
+        ).read_text(encoding="utf-8")
+        self.assertIn("struct PhotoAnmCreateVmEmissionAdapter", emission)
+        self.assertIn("#define TH095_PHOTO_ANM_CREATE_VM", emission)
+        self.assertIn("/alternatename:", emission)
+        self.assertNotIn("TH095_MATCH_EXACT", emission)
+        self.assertNotIn("DIFFBUILD", emission)
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        source = (ROOT / "src" / "PhotoCamera.cpp").read_text(encoding="utf-8")
+        self.assertNotIn("@PhotoAnmLoadedView@th095@@", manifest)
+        self.assertIn("?CreateVm@PhotoAnmCreateVmEmissionAdapter@th095@@", manifest)
+        self.assertNotIn("PhotoAnmManagerView", source)
+        self.assertNotIn("@PhotoAnmManagerView@th095@@", manifest)
+        self.assertIn(
+            "static __forceinline const AnmVmId &PhotoAnmId(const i32 &value)",
+            source,
+        )
+        self.assertIn("g_AnmManager->GetVm(PhotoAnmId(id))", source)
+        self.assertIn("g_AnmManager->SetInterrupt(PhotoAnmId(id)", source)
+        self.assertIn("g_AnmManager->MarkVmForDeletion(PhotoAnmId(id))", source)
+        self.assertIn("struct PhotoAnmCreatedPositionEmissionAdapter", source)
+        self.assertEqual(source.count("TH095_PHOTO_ANM_SET_CREATED_POSITION("), 3)
+        self.assertEqual(
+            manifest.count(
+                "?SetPosition@PhotoAnmCreatedPositionEmissionAdapter@th095@@"
+                "QAEXHPBUFloat3@2@@Z"
+            ),
+            2,
+        )
+        self.assertNotIn("PhotoSoundPlayerView", source)
+        self.assertNotIn("@PhotoSoundPlayerView@th095@@", manifest)
+        self.assertIn("static inline SoundPlayer *PhotoSoundPlayer()", source)
+        self.assertIn("return &g_SoundPlayer;", source)
+        self.assertEqual(source.count("PhotoSoundPlayer()->"), 13)
+        self.assertIn(
+            "?PlaySoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@H@Z",
+            manifest,
+        )
+        self.assertIn(
+            "?PlaySoundPositionedByIdx@SoundPlayer@th095@@"
+            "QAEXW4SoundIdx@2@M@Z",
+            manifest,
+        )
+        self.assertIn(
+            "?StopSoundByIdx@SoundPlayer@th095@@QAEXW4SoundIdx@2@@Z",
+            manifest,
+        )
+        self.assertNotIn("PhotoStageControllerView", source)
+        self.assertNotIn("g_PhotoStageController", source)
+        self.assertIn('#include "PhotoEffectRuntime.hpp"', source)
+        self.assertIn("extern PhotoEffectManagerView *g_PhotoEffectManager;", source)
+        self.assertIn("g_PhotoEffectManager->CountNearbyTargets(", source)
+        self.assertIn("g_PhotoEffectManager->CountPhotoTargets(", source)
+        self.assertNotIn("?g_PhotoStageController@th095@@", manifest)
+        self.assertNotIn("@PhotoStageControllerView@th095@@", manifest)
+        self.assertIn(
+            "?g_PhotoEffectManager@th095@@3PAUPhotoEffectManagerView@1@A",
+            manifest,
+        )
+
+    def test_ecl_photo_player_owner_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_ecl_photo_player_owner()
+        player = (ROOT / "src" / "PhotoPlayerRuntime.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "offsetof(PhotoPlayerRuntimeView, camera.photoLimit) == 0x29ec", player
+        )
+        high = (ROOT / "src" / "ecl" / "EclRunHigh.inl").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("PhotoCameraOpcodeState", high)
+        self.assertNotIn("opcode141Value", high)
+        emission = (ROOT / "src" / "ecl" / "PhotoCameraEclEmission.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", emission)
+        self.assertNotIn("DIFFBUILD", emission)
+        self.assertIn("f32 GetAngle(Float3 *position);", emission)
+
+    def test_ecl_float_resolver_guard_accepts_method_only_adapter(self) -> None:
+        GUARD.check_ecl_float_resolver_boundary()
+        high = (ROOT / "src" / "ecl" / "EclRunHigh.inl").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("struct EnemyFloatOperandView", high)
+        emission = (
+            ROOT / "src" / "ecl" / "EnemyFloatOperandEclEmission.hpp"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("TH095_MATCH_EXACT", emission)
+        self.assertNotIn("DIFFBUILD", emission)
+        self.assertIn("f32 ResolveFloat(EclRawOperand operand);", emission)
+
+    def test_straight_laser_packet_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_photo_straight_laser_packet()
+        header = (ROOT / "src" / "PhotoStraightLaserArgs.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(PhotoStraightLaserSpawnArgs) == 0x28", header)
+        high = (ROOT / "src" / "ecl" / "EclRunHigh.inl").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("PhotoEffectArgsSmall", high)
+        self.assertNotIn("TH095_SMALL_EFFECT_", high)
+
+    def test_rotating_laser_packet_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_photo_rotating_laser_packet()
+        header = (ROOT / "src" / "PhotoRotatingLaserArgs.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(PhotoRotatingLaserSpawnArgs) == 0x48", header)
+        high = (ROOT / "src" / "ecl" / "EclRunHigh.inl").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("struct PhotoEffectArgs", high)
+        self.assertNotIn("TH095_EFFECT_MAXIMUM_LENGTH", high)
+
+    def test_game_configuration_owner_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_game_configuration_owner()
+        header = (ROOT / "src" / "GameConfiguration.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(GameConfiguration) == 0xc8", header)
+        self.assertIn(
+            "offsetof(GameConfiguration, controllerAssignments) == 0xb2", header
+        )
+        lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "struct GameConfigurationConstructionAdapter : GameConfiguration",
+            lifecycle,
+        )
+        legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
+        self.assertIn("C_ASSERT(sizeof(GameConfiguration) == 0x3C);", legacy)
+
+    def test_supervisor_flags_owner_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_supervisor_flags_owner()
+        header = (ROOT / "src" / "SupervisorFlags.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("u32 resultRestartActive : 1;", header)
+        self.assertIn("sizeof(SupervisorFlags) == 4", header)
+        lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("SupervisorFlags flags;", lifecycle)
+        self.assertNotIn("struct SupervisorLifecycleFlags", lifecycle)
+        legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
+        self.assertIn("u32 d3dDevDisconnectFlag : 1;", legacy)
+        self.assertIn("C_ASSERT(sizeof(SupervisorFlags) == 0x4);", legacy)
+
+    def test_screenshot_bitmap_header_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_screenshot_bitmap_header_owner()
+        header = (ROOT / "src" / "ScreenshotBitmapFileHeader.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(ScreenshotBitmapFileHeader) == 0x0e", header)
+        self.assertIn(
+            "offsetof(ScreenshotBitmapFileHeader, offBits) == 0x0a", header
+        )
+        self.assertNotRegex(header, r"\bBITMAPFILEHEADER\b")
+        main = (ROOT / "src" / "Main.hpp").read_text(encoding="utf-8")
+        self.assertIn('#include "ScreenshotBitmapFileHeader.hpp"', main)
+        self.assertNotIn("struct ScreenshotBitmapFileHeader\n{", main)
+
+    def test_game_window_startup_policy_guard_accepts_shared_storage(self) -> None:
+        GUARD.check_game_window_startup_policy_owner()
+        for name in ("Main.hpp", "MainExact.hpp"):
+            header = (ROOT / "src" / name).read_text(encoding="utf-8")
+            self.assertIn("u8 startupPathDiffersFromExecutable;", header)
+            self.assertIn("i32 savedScreenSaverActive;", header)
+            self.assertIn("i32 savedLowPowerActive;", header)
+            self.assertIn("i32 savedPowerOffActive;", header)
+            self.assertNotIn("usesRelativePath", header)
+            self.assertNotIn("screenSaveActive", header)
+
+    def test_supervisor_viewport_guard_accepts_canonical_owner(self) -> None:
+        GUARD.check_supervisor_viewport_configuration_owner()
+        owner = (ROOT / "src" / "SupervisorViewportConfiguration.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", owner)
+        self.assertNotIn("DIFFBUILD", owner)
+        self.assertIn("struct SupervisorViewportConfiguration", owner)
+        self.assertIn("i32 unknown0e4;", owner)
+        self.assertIn("Float2 screenShakeOffset;", owner)
+        self.assertNotIn("viewportMode", owner)
+        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
+        self.assertIn("viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]", exact)
+        self.assertIn("ZunTimer timer;", exact)
+        self.assertNotIn("unknown1e4[0x220]", exact)
+        lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "struct SupervisorViewportLifecycle : SupervisorViewportConfiguration",
+            lifecycle,
+        )
+        self.assertNotIn("struct SupervisorTimerLifecycle", lifecycle)
+
+    def test_screenshot_worker_token_guard_accepts_shared_storage(self) -> None:
+        GUARD.check_screenshot_worker_token_owner()
+        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
+        self.assertIn("u32 screenshotWorkerToken;", exact)
+        self.assertNotIn("u32 screenshotThread;", exact)
+        lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("offsetof(Supervisor, screenshotWorkerToken) == 0x528", lifecycle)
+        self.assertNotIn("unknown448[0x200]", lifecycle)
+
+    def test_supervisor_state_owner_guard_accepts_canonical_domain(self) -> None:
+        GUARD.check_supervisor_state_owner()
+        header = (ROOT / "src" / "SupervisorState.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("SUPERVISOR_STATE_ERROR = 6", header)
+        self.assertIn("SUPERVISOR_STATE_RETRY_PHOTO_GAME = 8", header)
+        legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
+        self.assertIn("SupervisorState_ExitGame = -1", legacy)
+        self.assertIn("SupervisorState_GameManagerNextStageWeird = 12", legacy)
+        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
+        self.assertIn("i32 activeSceneState;", exact)
+        self.assertIn("i32 requestedSceneState;", exact)
+        self.assertNotIn("i32 wantedState;", exact)
+        self.assertNotIn("i32 currentState;", exact)
+
+    def test_supervisor_startup_phase_guard_accepts_shared_domain(self) -> None:
+        GUARD.check_supervisor_startup_phase_owner()
+        header = (ROOT / "src" / "SupervisorStartupState.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("SUPERVISOR_STARTUP_PHASE_IDLE = 0", header)
+        self.assertIn("SUPERVISOR_STARTUP_PHASE_FAILED = 2", header)
+        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
+        self.assertIn("SupervisorStartupPhase startupThreadState;", exact)
+        self.assertNotIn("i32 startupThreadState;", exact)
+
+    def test_supervisor_fog_cache_guard_accepts_shared_domain(self) -> None:
+        GUARD.check_supervisor_fog_cache_owner()
+        header = (ROOT / "src" / "SupervisorFogState.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("SUPERVISOR_FOG_CACHE_DISABLED = 0", header)
+        self.assertIn("SUPERVISOR_FOG_CACHE_INVALID = 0xff", header)
+        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
+        self.assertIn("SupervisorFogCacheState fogState;", exact)
+        self.assertNotIn("i32 fogState;", exact)
+
+    def test_front_end_timer_guard_accepts_shared_owner(self) -> None:
+        GUARD.check_front_end_timer_owner()
+        source = (ROOT / "src" / "FrontEndController.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("typedef ZunTimer FrontEndControllerTimer;", source)
+        self.assertNotIn("ResultScreenTimer", source)
+        self.assertEqual(source.count("FrontEndResetTimer(&view->stateTimer);"), 11)
+        self.assertLess(
+            source.index("timer->current = 0;"),
+            source.index("timer->subFrame = 0.0f;"),
+        )
+        self.assertLess(
+            source.index("timer->subFrame = 0.0f;"),
+            source.index("timer->previous = -999999;"),
+        )
 
 
 if __name__ == "__main__":

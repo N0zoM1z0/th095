@@ -1,4 +1,3 @@
-#define TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS
 #include "ResultScreen.hpp"
 
 #ifdef TH095_MATCH_EXACT

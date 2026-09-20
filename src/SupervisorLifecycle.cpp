@@ -1,4 +1,9 @@
 #include "inttypes.hpp"
+#include "GameConfiguration.hpp"
+#include "ReplayScanWorker.hpp"
+#include "SupervisorFlags.hpp"
+#include "SupervisorViewportConfiguration.hpp"
+#include "ZunTimer.hpp"
 #include "diffbuild.hpp"
 
 #include <stddef.h>
@@ -10,92 +15,39 @@ namespace th095
 // Constructor-only views for the target-owned 0x7BC prefix. Main.hpp keeps the
 // wider runtime layout used by other exact units; this TU isolates member/EH
 // allocation phase just as the target constructor does.
-struct GameConfiguration
+// The target Supervisor constructor invokes GameConfiguration::Initialize as
+// a member-construction phase before entering its body. Keep that compiler
+// boundary without duplicating the canonical configuration layout.
+struct GameConfigurationConstructionAdapter : GameConfiguration
 {
-    u8 bytes[0xc8];
-    void Initialize();
-
-    GameConfiguration()
+    GameConfigurationConstructionAdapter()
     {
         Initialize();
     }
 };
 
-struct SupervisorViewportLifecycle
+typedef char GameConfigurationConstructionAdapterSizeIsC8[
+    (sizeof(GameConfigurationConstructionAdapter) == 0xc8) ? 1 : -1];
+
+// Fieldless adapter preserving the target's two empty member-constructor
+// iterations without introducing a second viewport layout.
+struct SupervisorViewportLifecycle : SupervisorViewportConfiguration
 {
-    u8 bytes[0xf0];
     SupervisorViewportLifecycle() {}
 };
-
-struct SupervisorTimerLifecycle
-{
-    i32 previous;
-    f32 subFrame;
-    i32 current;
-
-    SupervisorTimerLifecycle()
-    {
-        current = 0;
-        previous = -999999;
-        subFrame = 0.0f;
-    }
-};
-
-struct ReplayScanWorker
-{
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    u32 handle;
-#else
-    u32 threadHandle;
-#endif
-    u32 threadId;
-    i32 stopRequested;
-    i32 active;
-    u8 unknown010[4];
-    void (__fastcall *threadProc)(void *);
-
-    ReplayScanWorker();
-    ~ReplayScanWorker();
-};
-
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-struct SupervisorLifecycleFlags
-{
-    union
-    {
-        u32 raw;
-        struct
-        {
-            u32 unknown00_05 : 6;
-            u32 dummyMidiTimerEnabled : 1;
-            u32 unknown07_31 : 25;
-        };
-    };
-};
-typedef char SupervisorLifecycleFlagsSizeIs4[
-    (sizeof(SupervisorLifecycleFlags) == 4) ? 1 : -1];
-#endif
 
 struct Supervisor
 {
     u8 unknown000[0x11c];
-    GameConfiguration config;
+    GameConfigurationConstructionAdapter config;
     SupervisorViewportLifecycle backgroundViewports[2];
     u8 unknown3c4[0x30];
-    SupervisorTimerLifecycle timer;
+    ZunTimer timer;
     u8 unknown400[0x44];
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    u32 flags;
-#else
-    SupervisorLifecycleFlags flags;
-#endif
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    u8 unknown448[0x200];
-#else
+    SupervisorFlags flags;
     u8 unknown448[0x528 - 0x448];
     u32 screenshotWorkerToken;
     u8 unknown52c[0x648 - 0x52c];
-#endif
     ReplayScanWorker replayWorker;
     u8 unknown660[0x140];
     ReplayScanWorker secondaryWorker;
@@ -113,10 +65,8 @@ typedef char SupervisorLifecycleTimerAt3F4[
     (offsetof(Supervisor, timer) == 0x3f4) ? 1 : -1];
 typedef char SupervisorLifecycleFlagsAt444[
     (offsetof(Supervisor, flags) == 0x444) ? 1 : -1];
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 typedef char SupervisorLifecycleScreenshotWorkerTokenAt528[
     (offsetof(Supervisor, screenshotWorkerToken) == 0x528) ? 1 : -1];
-#endif
 typedef char SupervisorLifecycleWorkerAt648[
     (offsetof(Supervisor, replayWorker) == 0x648) ? 1 : -1];
 typedef char SupervisorLifecycleWorker2At7A0[
@@ -135,17 +85,9 @@ DIFFABLE_STATIC(Supervisor, g_Supervisor);
 Supervisor::Supervisor()
 {
     memset(this, 0, sizeof(*this));
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    flags |= 0x40;
-#else
     flags.dummyMidiTimerEnabled = 1;
-#endif
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    flags |= 0x100;
-#else
     // No independent TH095-local consumer has established bit 8's role.
     flags.raw |= 0x100;
-#endif
 }
 
 Supervisor::~Supervisor()

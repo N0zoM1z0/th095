@@ -12,19 +12,18 @@
 #include <stddef.h>
 #include "Chain.hpp"
 #include "GameErrorContext.hpp"
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-#include "GameColorMode.hpp"
-#include "GameMusicMode.hpp"
-#endif
-#ifndef TH095_MATCH_EXACT
-#include "MidiRuntime.hpp"
-#endif
+#include "GameConfiguration.hpp"
+#include "MidiOutputApi.hpp"
+#include "ReplayScanWorker.hpp"
 #include "ScreenEffect.hpp"
+#include "ScreenshotBitmapFileHeader.hpp"
 #include "SoundPlayer.hpp"
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+#include "SupervisorFlags.hpp"
 #include "SupervisorFogState.hpp"
+#include "SupervisorState.hpp"
 #include "SupervisorStartupState.hpp"
-#endif
+#include "SupervisorViewportConfiguration.hpp"
+#include "ZunTimer.hpp"
 #include "inttypes.hpp"
 
 namespace th095
@@ -56,21 +55,11 @@ struct GameWindow
     u8 padding11[3];                     // +0x11
     LARGE_INTEGER performanceFrequency;  // +0x14
     LARGE_INTEGER performanceStart;      // +0x1c
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u8 usesRelativePath;                 // +0x24
-#else
     u8 startupPathDiffersFromExecutable; // +0x24
-#endif
     u8 padding25[3];                     // +0x25
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 screenSaveActive;                // +0x28
-    i32 lowPowerActive;                  // +0x2c
-    i32 powerOffActive;                  // +0x30
-#else
-    i32 savedScreenSaverActive;           // +0x28
-    i32 savedLowPowerActive;              // +0x2c
-    i32 savedPowerOffActive;              // +0x30
-#endif
+    i32 savedScreenSaverActive;          // +0x28
+    i32 savedLowPowerActive;             // +0x2c
+    i32 savedPowerOffActive;             // +0x30
     f64 currentTimestamp;                // +0x34
     f64 lastTimestamp;                   // +0x3c
     f64 lastFrameTime;                   // +0x44
@@ -94,187 +83,6 @@ typedef char GameWindowSizeIs54[(sizeof(GameWindow) == 0x54) ? 1 : -1];
 typedef char GameWindowFrequencyAt14[(offsetof(GameWindow, performanceFrequency) == 0x14) ? 1 : -1];
 typedef char GameWindowCurrentTimeAt34[(offsetof(GameWindow, currentTimestamp) == 0x34) ? 1 : -1];
 
-struct GameConfigOptions
-{
-    u32 force16BitTextures : 1;
-    u32 useReferenceRasterizer : 1;
-    u32 disableFog : 1;
-    u32 disableDirectInput : 1;
-    u32 preloadMusic : 1;
-    u32 disableVsync : 1;
-    u32 disableTextBackgroundDetection : 1;
-    u32 unknown7 : 25;
-};
-
-#pragma pack(push, 2)
-struct ControllerBinding
-{
-    u32 inputs[4];
-    u16 button;
-};
-
-struct SerializedControllerMapping
-{
-    ControllerBinding bindings[6];
-};
-
-struct ControllerMapping
-{
-    ControllerBinding primaryBindings[3];
-    u8 unknown036[0x58];
-    ControllerBinding secondaryBindings[3];
-};
-#pragma pack(pop)
-
-struct GameConfiguration
-{
-    SerializedControllerMapping controllerMapping;  // +0x00
-    u8 unknown06c[0x38];
-    u32 version;         // +0xa4
-    u16 padXAxis;        // +0xa8
-    u16 padYAxis;        // +0xaa
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u8 colorMode16bit;    // +0xac
-#else
-    GameColorMode colorMode16bit; // +0xac
-#endif
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u8 musicMode;         // +0xad
-#else
-    GameMusicMode musicMode; // +0xad
-#endif
-    u8 playSounds;        // +0xae
-    u8 windowed;          // +0xaf
-    u8 frameskipConfig;   // +0xb0
-    u8 effectQuality;     // +0xb1
-#ifdef TH095_MATCH_EXACT
-    // Preserve the historical identifiers seen by exact-match translation
-    // units.  VC7.1 lets otherwise unused type/member names perturb its
-    // compiler-private $L labels, even though layout and generated code are
-    // unchanged.  Production gives these proven bytes their semantic owner
-    // below; both forms occupy the same +0xb2..+0xb4 range.
-    u8 unknown0b2;
-    u8 unknown0b3;
-    u8 unknown0b4;
-#else
-    u8 controllerAssignments[3]; // +0xb2; GetInput consumes entries 0 and 1
-#endif
-    i8 musicVolume;       // +0xb5
-    i8 sfxVolume;         // +0xb6
-    u8 unknown0b7[0x0d];
-    GameConfigOptions options;  // +0xc4
-
-    void Initialize();
-};
-
-typedef char ControllerBindingSizeIs12[(sizeof(ControllerBinding) == 0x12) ? 1 : -1];
-typedef char SerializedControllerMappingSizeIs6C[(sizeof(SerializedControllerMapping) == 0x6c) ? 1 : -1];
-typedef char ControllerMappingSizeIsC4[(sizeof(ControllerMapping) == 0xc4) ? 1 : -1];
-typedef char GameConfigurationSizeIsC8[(sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-typedef char GameConfigurationMusicModeAtAD[
-    (offsetof(GameConfiguration, musicMode) == 0xad) ? 1 : -1];
-#endif
-#ifndef TH095_MATCH_EXACT
-typedef char GameConfigurationControllerAssignmentsAtB2[
-    (offsetof(GameConfiguration, controllerAssignments) == 0xb2) ? 1 : -1];
-#endif
-
-#ifdef TH095_MATCH_EXACT
-struct MidiOutput
-{
-    i32 ReadFileData(i32 slot, char *path);
-    void StopPlayback();
-    i32 ParseFile(i32 index);
-    i32 Play();
-    i32 SetFadeOut(u32 milliseconds);
-    void UnprepareHeader(LPMIDIHDR header);
-    ~MidiOutput();
-};
-#endif
-
-#ifndef TH095_REPLAY_SCAN_WORKER_DEFINED
-#define TH095_REPLAY_SCAN_WORKER_DEFINED
-struct ReplayScanWorker
-{
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    uintptr_t handle;
-#else
-    uintptr_t threadHandle;
-#endif
-    u32 threadId;
-#ifdef TH095_MATCH_EXACT
-    i32 stopRequested;
-#else
-    i32 exitSignal;
-#endif
-    i32 active;
-    u8 unknown010[4];
-    void (__fastcall *threadProc)(void *);
-
-    ReplayScanWorker();
-    ~ReplayScanWorker();
-    void Stop();
-    void Start(void (__fastcall *callback)(void *), void *argument);
-};
-#endif // TH095_REPLAY_SCAN_WORKER_DEFINED
-
-typedef char ReplayScanWorkerSizeIs18[
-    (sizeof(ReplayScanWorker) == 0x18) ? 1 : -1];
-
-struct SupervisorFlags
-{
-    union
-    {
-        u32 raw;
-        struct
-        {
-            u32 usingHardwareTL : 1;
-            u32 lockableBackbuffer : 1;
-            u32 using32BitGraphics : 1;
-            u32 speedhackDetected : 1;
-            u32 d3dDeviceNeedsReset : 1;
-            u32 forceExtraTimerStep : 1;
-            u32 dummyMidiTimerEnabled : 1;
-            u32 receivedCloseMsg : 1;
-            u32 scoreBackupPending : 1;
-#if defined(TH095_MATCH_EXACT)
-            u32 unknown9 : 1;
-#else
-            u32 resultRestartActive : 1;
-#endif
-            u32 keyboardAvailable : 1;
-            u32 controllerAvailable : 1;
-            u32 restartPhotoGame : 1;
-            u32 unknown13 : 19;
-        };
-    };
-};
-
-enum SupervisorState
-{
-    SUPERVISOR_STATE_EXIT = 1,
-    SUPERVISOR_STATE_FRONT_END = 2,
-    SUPERVISOR_STATE_PHOTO_GAME = 3,
-    SUPERVISOR_STATE_RESTART_PHOTO_GAME = 4,
-    SUPERVISOR_STATE_ERROR = 6,
-    SUPERVISOR_STATE_START_REPLAY = 7,
-    SUPERVISOR_STATE_RETRY_PHOTO_GAME = 8
-};
-
-#pragma pack(push, 1)
-struct ScreenshotBitmapFileHeader
-{
-    u16 type;
-    u32 size;
-    u16 reserved1;
-    u16 reserved2;
-    u32 offBits;
-};
-#pragma pack(pop)
-
-typedef char ScreenshotBitmapFileHeaderSizeIs0E[(sizeof(ScreenshotBitmapFileHeader) == 0x0e) ? 1 : -1];
-
 #pragma pack(push, 4)
 struct Supervisor
 {
@@ -293,24 +101,17 @@ struct Supervisor
     D3DPRESENT_PARAMETERS presentParameters;    // +0x0e4
     DummyMidiTimer *dummyMidiTimer;              // +0x118
     GameConfiguration config;                   // +0x11c
-#ifdef TH095_MATCH_EXACT
-    u8 unknown1e4[0x220];
-#else
-    u8 backgroundViewportConfigurations[0x1e0]; // +0x1e4 (2 * 0xf0)
-    void *currentBackgroundViewport;            // +0x3c4
-    i32 currentBackgroundViewportIndex;         // +0x3c8
-    u8 unknown3cc[0x38];
-#endif
+    SupervisorViewportConfiguration
+        viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]; // +0x1e4
+    SupervisorViewportConfiguration *currentViewportConfiguration; // +0x3c4
+    i32 currentViewportIndex;                   // +0x3c8
+    u8 unknown3cc[0x28];
+    ZunTimer timer;                             // +0x3f4
+    u8 unknown400[4];
     i32 calcCount;                              // +0x404
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 wantedState;                            // +0x408
-    i32 currentState;                           // +0x40c
-    i32 previousState;                          // +0x410
-#else
     i32 activeSceneState;                       // +0x408
     i32 requestedSceneState;                    // +0x40c
     i32 previousActiveSceneState;               // +0x410
-#endif
     u8 unknown414[0x10];
     i32 screenTransitionCountdown;              // +0x424
     i32 suppressFpsDisplay;                      // +0x428
@@ -325,33 +126,21 @@ struct Supervisor
     DWORD systemTime;                            // +0x44c
     D3DCAPS8 d3dCaps;                           // +0x450
     u8 unknownAfterCaps[0x528 - 0x450 - sizeof(D3DCAPS8)];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u32 screenshotThread;                       // +0x528
-#else
     u32 screenshotWorkerToken;                  // +0x528
-#endif
     ScreenshotBitmapFileHeader screenshotFileHeader; // +0x52c
     u8 screenshotHeaderPadding[2];              // +0x53a
     BITMAPINFOHEADER *screenshotInfoHeader;      // +0x53c
     u8 *screenshotPixels;                       // +0x540
     char screenshotPath[MAX_PATH];              // +0x544
     ReplayScanWorker replayScanWorker;           // +0x648
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 startupThreadState;                      // +0x660
-#else
     SupervisorStartupPhase startupThreadState;   // +0x660
-#endif
     CRITICAL_SECTION criticalSections[7];       // +0x664
     u8 criticalSectionLockCounts[7];            // +0x70c
     u8 unknown713;
     // 0: inactive, 1: loading VMs active, >=2: completion/prompt frame counter.
     i32 loadingScreenState;                     // +0x714
     u8 unknown718[0x50];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 fogState;                               // +0x768
-#else
     SupervisorFogCacheState fogState;           // +0x768
-#endif
     u8 unknown76c[8];
     i32 versionDataSize;                        // +0x774
     u8 *versionData;                            // +0x778
@@ -426,12 +215,12 @@ struct Supervisor
 typedef char SupervisorPresentAtE4[(offsetof(Supervisor, presentParameters) == 0xe4) ? 1 : -1];
 typedef char SupervisorDummyMidiTimerAt118[(offsetof(Supervisor, dummyMidiTimer) == 0x118) ? 1 : -1];
 typedef char SupervisorControllerCapsAt18[(offsetof(Supervisor, controllerCaps) == 0x18) ? 1 : -1];
-#ifndef TH095_MATCH_EXACT
-typedef char SupervisorCurrentBackgroundViewportAt3C4[
-    (offsetof(Supervisor, currentBackgroundViewport) == 0x3c4) ? 1 : -1];
-typedef char SupervisorCurrentBackgroundViewportIndexAt3C8[
-    (offsetof(Supervisor, currentBackgroundViewportIndex) == 0x3c8) ? 1 : -1];
-#endif
+typedef char SupervisorCurrentViewportAt3C4[
+    (offsetof(Supervisor, currentViewportConfiguration) == 0x3c4) ? 1 : -1];
+typedef char SupervisorCurrentViewportIndexAt3C8[
+    (offsetof(Supervisor, currentViewportIndex) == 0x3c8) ? 1 : -1];
+typedef char SupervisorTimerAt3F4[
+    (offsetof(Supervisor, timer) == 0x3f4) ? 1 : -1];
 typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 : -1];
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
 typedef char SupervisorLoadingAnmAt440[(offsetof(Supervisor, loadingAnm) == 0x440) ? 1 : -1];
@@ -439,11 +228,7 @@ typedef char SupervisorTextAnmAt43C[(offsetof(Supervisor, textAnm) == 0x43c) ? 1
 typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanWorker) == 0x648) ? 1 : -1];
 typedef char SupervisorStartupThreadStateAt660[(offsetof(Supervisor, startupThreadState) == 0x660) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-typedef char SupervisorScreenshotThreadAt528[(offsetof(Supervisor, screenshotThread) == 0x528) ? 1 : -1];
-#else
 typedef char SupervisorScreenshotWorkerTokenAt528[(offsetof(Supervisor, screenshotWorkerToken) == 0x528) ? 1 : -1];
-#endif
 typedef char SupervisorScreenshotFileHeaderAt52C[(offsetof(Supervisor, screenshotFileHeader) == 0x52c) ? 1 : -1];
 typedef char SupervisorScreenshotInfoAt53C[(offsetof(Supervisor, screenshotInfoHeader) == 0x53c) ? 1 : -1];
 typedef char SupervisorScreenshotPixelsAt540[(offsetof(Supervisor, screenshotPixels) == 0x540) ? 1 : -1];
@@ -487,17 +272,6 @@ u16 GetJoystickCaps();
 void ResetKeyboard();
 } // namespace Controller
 
-#if defined(TH095_MATCH_EXACT) && defined(TH095_MATCH_FILESYSTEM_AS_CLASS)
-struct FileSystem
-{
-    static u8 *OpenFile(char *path, i32 *fileSize, i32 isExternalResource);
-    static i32 WriteDataToFile(char *path, void *data, i32 size);
-    static i32 FileExists(char *path);
-    static i32 OpenWriteFile(char *path);
-    static i32 WriteToOpenFile(void *data, u32 size);
-    static i32 CloseWriteFile();
-};
-#else
 namespace FileSystem
 {
 u8 *OpenFile(const char *path, i32 *fileSize, BOOL loadFromDisk);
@@ -507,7 +281,6 @@ i32 OpenWriteFile(char *path);
 i32 WriteToOpenFile(void *data, u32 size);
 i32 CloseWriteFile();
 } // namespace FileSystem
-#endif
 
 namespace utils
 {

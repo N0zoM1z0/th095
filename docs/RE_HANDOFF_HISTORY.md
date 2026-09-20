@@ -1781,3 +1781,212 @@ overlapping views beginning with `position @ +0x28A0`,
 `worldPosition @ +0x28F4`, and control words `+0x2BF4/+0x2BF8`. Manager
 `+0x4DFC` remains Unknown pending an independent producer and
 resource-lifetime proof.
+
+## Compact EnemyInf checkpoint — SEM-271 and SEM-272
+
+The 2026-09-19 local semantic campaign first established `PhotoEnemy.hpp` as
+the one profile-independent 0x4CC0 compact-element owner, then migrated
+`Enemy::UpdateMovement @ 0x00412970` and the read/int-lvalue resolver fields to
+that owner through method-only or offset-asserted ABI bridges. The EnemyInf
+manager remained the one 0x26AE30 allocation owner with proved
+`enemyAnm @ +0x4DF8`; manager `+0x4DFC` stayed Unknown.
+
+At that checkpoint the cold aggregate passed 696/696 exact and the normal
+88-object pinned-VC7.1 product linked successfully. The next route recorded in
+the live handoff was to remove the four operand TUs' duplicate runtime-manager
+projections at `+0x4DF4/+0x26AE00`, then migrate `ResolveFloatLValue` and
+RunEcl's remaining compact-element projections. SEM-273 supersedes that route;
+the detailed accepted evidence remains in `SEMANTIC_HISTORY.md`.
+
+## Compact ECL and PhotoInf owner checkpoint — SEM-273 and SEM-274
+
+SEM-273 completed that compact-enemy route. The four operand resolvers and
+RunEcl now share the profile-independent, offset-asserted
+`PhotoEnemyEclAccess.hpp` bridge for manager operands/targets and compact
+element fields; the former runtime-manager and RunEcl-local compact
+projections were removed. The 481-slot `EnemyManager.hpp` surface remained a
+method ABI boundary rather than a TH095 storage owner.
+
+SEM-274 then closed two non-compact RunEcl owners. `PhotoGameTask.hpp` became
+the profile-independent 0x124 task owner for completion and transition state,
+and `PhotoStage.hpp` became the profile-independent 0x25730 PhotoInf owner for
+lifecycle, stage behavior, score multiplier, ANM, and Chain roots. The old
+normal task/stage projections and `PhotoOverlayManagerView` were retired;
+frozen exact bodies and the narrow profile-free PhotoCamera receiver remain
+compiler-emission boundaries only.
+
+At the SEM-274 checkpoint the cold aggregate passed 696/696 exact. The normal
+build compiled all 88 pinned-VC7.1 i386 COFF objects and linked a 780,800-byte
+PE32 image with build-local SHA-256
+`fd5835c71be680ec3bb92b5af58d762fa795e2598975de94159760c3a1cf9afc`;
+target-independent CI passed 51/51. The live handoff moved next to the
+RunEcl photo-session method projection and `eclPhotoCardSession` lifecycle,
+with CardInf kept distinct from EnemyInf and player/camera deferred to a
+separate owner audit.
+
+## CardInf owner checkpoint — SEM-275
+
+SEM-275 made `PhotoCardInfo.hpp` the profile-independent 0x68 CardInf owner for
+the allocation published at `0x004BDD9C`. Normal PhotoCardInfo, PhotoGameTask,
+PhotoStage, and RunEcl now consume that declaration; the method-only and
+text-only projections are retired. EnemyInf `eclPhotoCardSession @ +0x26AE28`
+remains a non-exclusive ECL-held pointer: the finish path clears the slot after
+`Show` without destroying the globally published CardInf object.
+
+At this checkpoint the cold aggregate passed 696/696 exact with zero private
+label refresh, and the normal build linked a 780,800-byte PE32 product with
+build-local SHA-256
+`447e01a496b8ded47f487e89f636aa42676f4695d81d728db23e4c3ab33ab866`.
+CI passed 52/52. The live handoff moved next to the bounded RunEcl camera-state
+write at Player `+0x29EC`, with its field meaning and angle receiver requiring
+independent TH095-local evidence.
+
+## RunEcl Player/camera checkpoint — SEM-276
+
+SEM-276 removed RunEcl's padded `PhotoCameraOpcodeState` / `PhotoCamera`
+projection. Fresh target instructions prove opcode 141 writes canonical
+`PhotoPlayerRuntimeView::camera.photoLimit @ Player+0x29EC`, backed by the
+independent camera initialization/capture and PhotoGameTask loop/HUD consumers.
+All six RunEcl angle calls likewise pass the Player root to
+`AngleFromPoint @ 0x004303E0`. Normal source now uses the canonical Player
+owner for both claims.
+
+The last four exact call sites still require historical
+`PhotoCamera::GetAngle` / `g_Th095PhotoCamera` COFF identities, so their
+method-only declarations live in profile-independent
+`ecl/PhotoCameraEclEmission.hpp`; it owns no runtime storage. The strict
+EclRun replay refreshed 166 compiler-private labels only after structural and
+solved-relocation proof, then passed with zero further refresh. The cold
+aggregate passed 696/696 exact, and the 88-object normal build linked a
+780,800-byte PE32 product with build-local SHA-256
+`7f78466e1083ee2ba8615bb96d3e37924e64fc27bfed340ceb222ceb832294c5`.
+CI passed 53/53. The live handoff moves next to the remaining
+`EnemyFloatOperandView` method decoration over canonical
+`Enemy::ResolveFloat @ 0x004105A0`.
+
+## RunEcl float-resolver boundary checkpoint — SEM-277
+
+SEM-277 removed `EnemyFloatOperandView` from `EclRunHigh.inl`. Fresh Ghidra
+evidence bounds canonical `Enemy::ResolveFloat @ 0x004105A0` and identifies 11
+target callers; RunEcl's exact ledger maps 53 historical view-decorated REL32
+sites to that same function. A pinned compiler experiment proved that spelling
+the exact calls canonically changes a non-private relocation identity, so the
+historical method-only declaration now lives in profile-independent,
+storage-free `ecl/EnemyFloatOperandEclEmission.hpp`. Normal RunEcl continues to
+call canonical `Enemy::ResolveFloat(float)`.
+
+The strict focused proof refreshed 166 compiler-private labels, then replayed
+1/1 with zero further refresh. The cold aggregate passed 696/696 exact, and the
+88-object normal build linked a 780,800-byte PE32 product with build-local
+SHA-256
+`8add94ab2bdfc218dfa87e5378aba85f955fe7466db0b70500e44ef538255fe7`.
+CI passed 54/54. The live handoff moves next to the 0x28-byte
+`PhotoEffectArgsSmall` producer/consumer and profile-selected field family,
+kept separate from the 0x48-byte effect packet.
+
+## Straight photo-effect packet checkpoint — SEM-278
+
+SEM-278 establishes `PhotoStraightLaserArgs.hpp` as the one
+profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and
+PhotoEffect. Fresh target evidence closes every slot through manager dispatch,
+straight-laser initialization/update, collision gap-fragment production, and
+the two ECL producers. The old ECL anonymous-field projection/access macros
+and normal PhotoEffect duplicate are retired; frozen `PhotoEffectExact.inl`
+remains a different-body compiler-emission boundary.
+
+RunEcl compiled directly against the canonical `f32 initialLength` layout and
+remained exact. A strict refresh accepted 166 compiler-private label changes
+only after structural bytes, relocation offsets/types, non-private identities,
+and solved target destinations were unchanged; focused and aggregate
+zero-refresh replays then passed. The selector baseline shrank by eight to 875
+directives, and selected declarations shrank to 224 keys / 229 occurrences.
+
+The cold aggregate passed 696/696 exact across 88 sources. The normal build
+linked a 780,800-byte PE32 product with build-local SHA-256
+`a5465f1d6108f92f875b9970770dc670a9aeb430bf09dbcaf0b7d562fc49e062`;
+CI passed 55/55. The live handoff moves next to the separate 0x48-byte
+rotating-laser packet and requires its own producer/consumer audit.
+
+## Rotating photo-effect packet checkpoint — SEM-279
+
+SEM-279 establishes `PhotoRotatingLaserArgs.hpp` as the one
+profile-independent 0x48-byte kind-1 packet shared by normal RunEcl,
+EclExtended, and PhotoEffect. Fresh target evidence closes every slot through
+manager dispatch, eighteen-dword initialization, update/collision consumers,
+seven RunEcl producers, and EclExtended callbacks 10/14/17. The three local
+packet projections and their profile-selected access macros are retired;
+frozen `PhotoEffectExact.inl` remains a different-body compiler-emission
+boundary.
+
+RunEcl and EclExtended compiled directly against the canonical layout and
+remained exact. A strict EclRun refresh accepted 166 compiler-private label
+changes only after structural bytes, relocation offsets/types, non-private
+identities, and solved target destinations were unchanged; focused and
+aggregate zero-refresh replays then passed. The selector baseline shrank by
+twelve to 863 directives, and selected declarations shrank to 223 keys / 228
+occurrences.
+
+The cold aggregate passed 696/696 exact across 88 sources. The normal build
+linked a 780,800-byte PE32 product with build-local SHA-256
+`b56ac27b428a9998fb83f60a79e65baf5981eed6c730c828b347072852118929`;
+CI passed 56/56. The live handoff rotates away from packets to EclExtended's
+last raw compact-enemy control access at `+0x2BF4`, with manager `+0x4DFC`
+still explicitly Unknown.
+
+## EclExtended compact movement-control checkpoint — SEM-280
+
+SEM-280 removes EclExtended's final raw compact-enemy member access. Fresh
+target evidence maps `RunPhotoTransition @ 0x00414580` writes at enemy
+`+0x2BF4` to easing value 4 and interpolated movement mode 2; two independent
+movement producers and `Enemy::UpdateMovement @ 0x00412970` confirm the same
+bit protocol. The inherited `Enemy *` callback now routes through the existing
+profile-independent, canonical-offset `PhotoEnemyEclAccess.hpp` bridge and
+uses `PHOTO_ENEMY_EASING_OUT_QUADRATIC` /
+`PHOTO_ENEMY_MOVEMENT_INTERPOLATED`. The local raw-cast macro is retired.
+
+All 22 EclExtended accepted units replayed exact with zero label refresh, its
+normal pinned-VC7.1 probe compiled, and the semantic guard locks the route. No
+selector or declaration baseline changed. The latest full aggregate/product
+receipts remain SEM-279; this source-local checkpoint makes no new whole-build
+claim. The live handoff moves to EclExtended's duplicate
+`PhotoGlobalStateView @ +0xFC` photo-state bits while manager `+0x4DFC` remains
+Unknown.
+
+## EclExtended PhotoGameTask flag checkpoint — SEM-281
+
+SEM-281 retires EclExtended's complete `PhotoGlobalStateView` and seven
+exact/normal-selected flag operations. Fresh target evidence maps callbacks
+15/16 to `PhotoGameTaskView::flags @ +0xFC` bit 9, callbacks 18/19 to bit 10,
+and callback 20 to the bit-10 transition clear/test/set sequence. Independent
+PhotoItemManager consumers establish bit 9 as the collection-SFX suppression
+latch and bit 10 as the photo-transition update gate.
+
+Normal EclExtended now includes the canonical 0x124 task owner. Both compiler
+paths share the dependency-light, profile-independent
+`PhotoGameTaskState.hpp` offset/mask vocabulary. A pinned-VC7.1 include oracle
+proved the canonical task header conflicts with the exact legacy
+Enemy/Supervisor declaration graph, so the historical decorated extern type
+survives only as an incomplete, storage-free declaration in
+`ecl/EclExtendedGlobalStateEmission.inl`. No alternate layout or selector was
+added. A second compiler oracle retained the target's named bit-index read
+shape after the equivalent mask form changed six bytes.
+
+The selector baseline shrank by eight to 855 directives; declaration debt
+remains 223 keys / 228 occurrences. Focused shared-header fanout replay passed
+48/48 exact with zero refresh and all five normal probes compiled. The cold
+aggregate passed 696/696 exact across 88 sources, and the 88-object normal
+build linked a 780,800-byte PE32 product with build-local SHA-256
+`cdc9f5cf511a60d6e94bede2086f3429389ea441f4381a7e86b059b5f70f2fd7`.
+CI passed 57/57. The live handoff moves to EclExtended's coupled Player/camera
+projection while manager `+0x4DFC` and unsupported task flags remain Unknown.
+
+## Handoff compaction through SEM-315 — 2026-09-20
+
+The live handoff had accumulated batch-by-batch summaries for SEM-282 through
+SEM-315 and reached 802 lines despite being defined as short and replaceable.
+Every accepted batch remains recorded with its evidence, validation boundary,
+and bounded negatives in `SEMANTIC_HISTORY.md`; current ownership navigation
+remains in `SEMANTIC_INDEX.md` and `SOURCE_MAP.md`. The live handoff was
+therefore replaced with a current SEM-315 checkpoint, the last full milestone,
+one bounded next lane, protected exclusions, and resume commands. No semantic,
+mapping, source-presence, exactness, or runtime claim changed in this cleanup.

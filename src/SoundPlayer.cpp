@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS
-#endif
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,20 +13,8 @@
 #include "dxutil.hpp"
 #include "utils.hpp"
 
-#ifdef TH095_MATCH_EXACT
-#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
-#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
-#endif
-
 namespace th095
 {
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define initializationThreadHandle workerThreadHandle
-#define soundDataLoaderThreadHandle secondaryWorkerThreadHandle
-#define initializationThreadId workerThreadId
-#define initializationWindow workerWindow
-#endif
 
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 #define TH095_SOUND_GAME_WINDOW g_Supervisor.hwndGameWindow

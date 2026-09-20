@@ -6,11 +6,7 @@
 namespace th095
 {
 
-#ifdef TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS
-class GameErrorContext
-#else
 struct GameErrorContext
-#endif
 {
   public:
     GameErrorContext();

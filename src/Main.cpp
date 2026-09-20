@@ -1,10 +1,6 @@
 #ifdef TH095_MATCH_EXACT
 #include "MainExact.inl"
 #else
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_RNG_AS_STRUCT
-#define TH095_MATCH_SOUNDPLAYER_AS_STRUCT
-#endif
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
@@ -33,23 +29,6 @@ namespace th095
 {
 
 #ifdef DIFFBUILD
-#define activeSceneState wantedState
-#define requestedSceneState currentState
-#define previousActiveSceneState previousState
-#endif
-
-#ifdef DIFFBUILD
-#define screenshotWorkerToken screenshotThread
-#endif
-
-#ifdef DIFFBUILD
-#define startupPathDiffersFromExecutable usesRelativePath
-#define savedScreenSaverActive screenSaveActive
-#define savedLowPowerActive lowPowerActive
-#define savedPowerOffActive powerOffActive
-#endif
-
-#ifdef DIFFBUILD
 #define TH095_GAME_COLOR_MODE_32_BIT 0
 #define TH095_GAME_COLOR_MODE_16_BIT 1
 #define TH095_GAME_COLOR_MODE_COUNT 2
@@ -69,26 +48,6 @@ namespace th095
 #define TH095_GAME_MUSIC_MODE_WAV GAME_MUSIC_MODE_WAV
 #define TH095_GAME_MUSIC_MODE_MIDI GAME_MUSIC_MODE_MIDI
 #define TH095_GAME_MUSIC_MODE_COUNT GAME_MUSIC_MODE_COUNT
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_SUPERVISOR_FOG_DISABLED 0
-#define TH095_SUPERVISOR_FOG_ENABLED 1
-#define TH095_SUPERVISOR_FOG_INVALID 0xff
-#else
-#define TH095_SUPERVISOR_FOG_DISABLED SUPERVISOR_FOG_CACHE_DISABLED
-#define TH095_SUPERVISOR_FOG_ENABLED SUPERVISOR_FOG_CACHE_ENABLED
-#define TH095_SUPERVISOR_FOG_INVALID SUPERVISOR_FOG_CACHE_INVALID
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_SUPERVISOR_STARTUP_IDLE 0
-#define TH095_SUPERVISOR_STARTUP_RUNNING 1
-#define TH095_SUPERVISOR_STARTUP_FAILED 2
-#else
-#define TH095_SUPERVISOR_STARTUP_IDLE SUPERVISOR_STARTUP_PHASE_IDLE
-#define TH095_SUPERVISOR_STARTUP_RUNNING SUPERVISOR_STARTUP_PHASE_RUNNING
-#define TH095_SUPERVISOR_STARTUP_FAILED SUPERVISOR_STARTUP_PHASE_FAILED
 #endif
 
 enum SupervisorLoadingScreenValue
@@ -170,19 +129,12 @@ extern SupervisorGameTaskView *g_SupervisorGameTask;
     TH095_RUNTIME_GLOBAL_PTR(SupervisorGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
-#ifdef DIFFBUILD
-struct SupervisorInputWorkerView
-{
-    void Start(void (__fastcall *callback)(void *), void *argument);
-    void Stop();
-};
-extern SupervisorInputWorkerView g_SupervisorInputWorker;
-#else
 // Target 0x004C4658 is a standalone 0x18-byte ReplayScanWorker. Its static
 // initializer at 0x00494060 uses the ICF-folded four-dword constructor at
 // 0x00454E50; atexit 0x00494280 calls ReplayScanWorker::~ReplayScanWorker.
-ReplayScanWorker g_SupervisorInputWorker;
-#endif
+// It shares the worker type and behavior with Supervisor's two embedded
+// instances, but remains a distinct process-lifetime storage owner.
+DIFFABLE_STATIC(ReplayScanWorker, g_SupervisorInputWorker);
 
 struct FrontEndControllerView
 {
@@ -554,7 +506,7 @@ RenderResult GameWindow::Render()
         {
             g_Supervisor.d3dDevice->BeginScene();
             g_AnmManager->ClearVertexBuffer();
-            g_Supervisor.fogState = TH095_SUPERVISOR_FOG_INVALID;
+            g_Supervisor.fogState = SUPERVISOR_FOG_CACHE_INVALID;
             g_Supervisor.DisableFog();
             g_Chain.RunDrawChain();
             g_AnmManager->FlushVertexBuffer();
@@ -1313,9 +1265,9 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
         return 4;
 
     g_AnmManager->ClearVertexShader();
-    if (supervisor->startupThreadState != TH095_SUPERVISOR_STARTUP_IDLE)
+    if (supervisor->startupThreadState != SUPERVISOR_STARTUP_PHASE_IDLE)
     {
-        if (supervisor->startupThreadState == TH095_SUPERVISOR_STARTUP_FAILED)
+        if (supervisor->startupThreadState == SUPERVISOR_STARTUP_PHASE_FAILED)
             return 4;
         return 1;
     }
@@ -1867,7 +1819,7 @@ i32 __fastcall Supervisor::AddedCallback(Supervisor *s)
 
     Float3 position(500.0f, 440.0f, 0.0f);
     g_Supervisor.SetupLoadingVms(&position);
-    g_Supervisor.startupThreadState = TH095_SUPERVISOR_STARTUP_RUNNING;
+    g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_RUNNING;
     g_Supervisor.StartReplayScan(
         (void (__fastcall *)(void *))Supervisor::StartupThread, s);
     return 0;
@@ -2068,7 +2020,7 @@ void __fastcall Supervisor::StartupThread(Supervisor *s)
     }
 
     g_Supervisor.ThreadClose();
-    g_Supervisor.startupThreadState = TH095_SUPERVISOR_STARTUP_IDLE;
+    g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_IDLE;
     g_Supervisor.flags.scoreBackupPending = 0;
     g_Supervisor.replayScanWorker.active = 0;
     g_Supervisor.replayScanWorker.exitSignal = 1;
@@ -2076,7 +2028,7 @@ void __fastcall Supervisor::StartupThread(Supervisor *s)
 
 error:
     g_Supervisor.ThreadClose();
-    g_Supervisor.startupThreadState = TH095_SUPERVISOR_STARTUP_FAILED;
+    g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_FAILED;
     g_Supervisor.flags.receivedCloseMsg = 1;
     g_Supervisor.replayScanWorker.active = 0;
     g_Supervisor.replayScanWorker.exitSignal = 1;
@@ -2311,9 +2263,6 @@ cleanup:
     return 0;
 }
 
-#ifdef DIFFBUILD
-#define threadHandle handle
-#endif
 // FUNCTION: TH095 0x00425150.
 void Supervisor::ThreadClose()
 {
@@ -2331,10 +2280,6 @@ void Supervisor::ThreadClose()
     this->LeaveCriticalSectionWrapper(6);
     this->criticalSectionLockCounts[6]--;
 }
-#ifdef DIFFBUILD
-#undef threadHandle
-#endif
-
 void Supervisor::InitializeCriticalSections()
 {
     for (u32 i = 0; i < 7; i++)
@@ -2609,10 +2554,10 @@ i32 Supervisor::FadeOutMusic(f32 durationSeconds)
 // FUNCTION: TH095 0x004254D0.
 i32 Supervisor::EnableFog()
 {
-    if (this->fogState != TH095_SUPERVISOR_FOG_ENABLED)
+    if (this->fogState != SUPERVISOR_FOG_CACHE_ENABLED)
     {
         g_AnmManager->FlushVertexBuffer();
-        this->fogState = TH095_SUPERVISOR_FOG_ENABLED;
+        this->fogState = SUPERVISOR_FOG_CACHE_ENABLED;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
     }
     return 0;
@@ -2621,10 +2566,10 @@ i32 Supervisor::EnableFog()
 // FUNCTION: TH095 0x00425520.
 i32 Supervisor::DisableFog()
 {
-    if (this->fogState != TH095_SUPERVISOR_FOG_DISABLED)
+    if (this->fogState != SUPERVISOR_FOG_CACHE_DISABLED)
     {
         g_AnmManager->FlushVertexBuffer();
-        this->fogState = TH095_SUPERVISOR_FOG_DISABLED;
+        this->fogState = SUPERVISOR_FOG_CACHE_DISABLED;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
     }
     return 0;

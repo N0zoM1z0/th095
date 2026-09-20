@@ -1,7 +1,4 @@
 #ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_FILESYSTEM_AS_CLASS
-#endif
-#ifdef TH095_MATCH_EXACT
 #define g_SelectedScene th095_BackgroundSharedSelectedSceneDeclaration
 #define g_PhotoScreenFadeColor th095_BackgroundSharedPhotoScreenFadeColorDeclaration
 #endif
@@ -14,13 +11,7 @@
 #include "PhotoEnemyManager.hpp"
 #endif
 #include "SceneData.hpp"
-#ifdef TH095_MATCH_EXACT
-#define TH095_SUPERVISOR_VIEWPORT_PLAYFIELD 0
-#define TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW 1
-#define TH095_SUPERVISOR_VIEWPORT_SLOT_COUNT 2
-#else
-#include "SupervisorViewportSlot.hpp"
-#endif
+#include "SupervisorViewportConfiguration.hpp"
 #ifdef TH095_MATCH_EXACT
 #undef g_SelectedScene
 #undef g_PhotoScreenFadeColor
@@ -297,25 +288,10 @@ typedef PhotoEnemyManagerView BackgroundRuntimeView;
     (spawner)->CreateVmAtWorld((script), (position))
 #endif
 
-struct BackgroundViewportConfigurationView
+// Fieldless compiler-emission adapter for the historical Background method
+// decorations.  It does not own a second viewport layout.
+struct BackgroundViewportConfigurationView : SupervisorViewportConfiguration
 {
-    Float3 cameraPosition;               // +0x000
-    Float3 cameraLookAtOffset;           // +0x00c
-    Float3 cameraUp;                     // +0x018
-    Float3 cameraForward;                // +0x024
-    Float3 cameraRight;                  // +0x030
-    Float3 cameraPositionOffset;         // +0x03c
-    f32 fieldOfView;                     // +0x048
-    D3DXMATRIX viewMatrix;               // +0x04c
-    D3DXMATRIX projectionMatrix;         // +0x08c
-    D3DVIEWPORT8 viewport;               // +0x0cc
-    u8 unknown0e4[4];
-#if defined(TH095_MATCH_EXACT)
-    i32 anmViewportValue0;               // +0x0e8
-    i32 anmViewportValue1;               // +0x0ec
-#else
-    Float2 screenShakeOffset;            // +0x0e8
-#endif
 };
 
 struct BackgroundSupervisorView
@@ -477,9 +453,8 @@ DIFFABLE_STATIC(i32, g_BackgroundModeValue);
 // particular its coincident eye/look-at produced the observed black stage.
 // Exact-match and DIFFBUILD objects retain their canonical symbol definitions;
 // only the runnable whole-program link aliases source names to the real owner.
-#define TH095_BACKGROUND_VIEWPORT0                                      \
-    (reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor)        \
-         ->configurations[0])
+#define TH095_BACKGROUND_VIEWPORT0 \
+    (g_Supervisor.viewportConfigurations[SUPERVISOR_VIEWPORT_PLAYFIELD])
 #define g_BackgroundCameraPosition (TH095_BACKGROUND_VIEWPORT0.cameraPosition)
 #define g_BackgroundCameraLookAt (TH095_BACKGROUND_VIEWPORT0.cameraLookAtOffset)
 #define g_BackgroundCameraForward (TH095_BACKGROUND_VIEWPORT0.cameraForward)
@@ -502,8 +477,7 @@ DIFFABLE_STATIC(BackgroundViewportConfigurationView *,
 // two 0xf0-byte configurations, so production consumers must share the same
 // owner instead of creating a zero-initialized duplicate pointer.
 #define g_CurrentBackgroundViewport                                      \
-    reinterpret_cast<BackgroundViewportConfigurationView *>(            \
-        g_Supervisor.currentBackgroundViewport)
+    g_Supervisor.currentViewportConfiguration
 #endif
 
 f32 __stdcall CubicHermiteInterpolate(
@@ -571,8 +545,10 @@ void BackgroundSupervisorView::ApplyBackgroundViewport(
     if (g_AnmManager != NULL)
     {
 #if defined(TH095_MATCH_EXACT)
-        g_AnmManager->unknown020 = configuration->anmViewportValue0;
-        g_AnmManager->unknown024 = configuration->anmViewportValue1;
+        g_AnmManager->unknown020 =
+            *reinterpret_cast<i32 *>(&configuration->screenShakeOffset.x);
+        g_AnmManager->unknown024 =
+            *reinterpret_cast<i32 *>(&configuration->screenShakeOffset.y);
 #else
         g_AnmManager->screenShakeOffset = configuration->screenShakeOffset;
 #endif

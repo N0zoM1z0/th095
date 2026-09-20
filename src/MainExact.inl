@@ -1,4 +1,3 @@
-#define TH095_MATCH_RNG_AS_STRUCT
 #include "MainExact.hpp"
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
@@ -33,21 +32,6 @@ struct SupervisorGameTaskView
 };
 
 extern SupervisorGameTaskView *g_SupervisorGameTask;
-
-struct SupervisorInputWorkerView
-{
-    void Start(void (__fastcall *callback)(void *), void *argument);
-    void Stop();
-};
-
-struct SupervisorReplayScanWorkerView
-{
-    HANDLE handle;
-    u32 threadId;
-    i32 stopRequested;
-    i32 active;
-    void (__fastcall *threadProc)(void *);
-};
 
 struct FrontEndControllerView
 {
@@ -161,7 +145,7 @@ struct PbgArchiveView
     void Release();
 };
 
-extern SupervisorInputWorkerView g_SupervisorInputWorker;
+extern ReplayScanWorker g_SupervisorInputWorker;
 extern PbgArchiveView g_PbgArchive;
 extern u32 g_PhotoScreenFadeColor;
 
@@ -206,9 +190,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR pCmdLine
     renderResult = RENDER_RESULT_KEEP_RUNNING;
     g_Supervisor.instance = hInstance;
 
-    SystemParametersInfoA(SPI_GETSCREENSAVEACTIVE, 0, &g_GameWindow.screenSaveActive, 0);
-    SystemParametersInfoA(SPI_GETLOWPOWERACTIVE, 0, &g_GameWindow.lowPowerActive, 0);
-    SystemParametersInfoA(SPI_GETPOWEROFFACTIVE, 0, &g_GameWindow.powerOffActive, 0);
+    SystemParametersInfoA(SPI_GETSCREENSAVEACTIVE, 0, &g_GameWindow.savedScreenSaverActive, 0);
+    SystemParametersInfoA(SPI_GETLOWPOWERACTIVE, 0, &g_GameWindow.savedLowPowerActive, 0);
+    SystemParametersInfoA(SPI_GETPOWEROFFACTIVE, 0, &g_GameWindow.savedPowerOffActive, 0);
     SystemParametersInfoA(SPI_SETSCREENSAVEACTIVE, 0, NULL, SPIF_SENDCHANGE);
     SystemParametersInfoA(SPI_SETLOWPOWERACTIVE, 0, NULL, SPIF_SENDCHANGE);
     SystemParametersInfoA(SPI_SETPOWEROFFACTIVE, 0, NULL, SPIF_SENDCHANGE);
@@ -371,9 +355,9 @@ stop:
     g_GameErrorContext.Flush();
     g_Supervisor.DeleteCriticalSections();
 
-    SystemParametersInfoA(SPI_SETSCREENSAVEACTIVE, g_GameWindow.screenSaveActive, NULL, SPIF_SENDCHANGE);
-    SystemParametersInfoA(SPI_SETLOWPOWERACTIVE, g_GameWindow.lowPowerActive, NULL, SPIF_SENDCHANGE);
-    SystemParametersInfoA(SPI_SETPOWEROFFACTIVE, g_GameWindow.powerOffActive, NULL, SPIF_SENDCHANGE);
+    SystemParametersInfoA(SPI_SETSCREENSAVEACTIVE, g_GameWindow.savedScreenSaverActive, NULL, SPIF_SENDCHANGE);
+    SystemParametersInfoA(SPI_SETLOWPOWERACTIVE, g_GameWindow.savedLowPowerActive, NULL, SPIF_SENDCHANGE);
+    SystemParametersInfoA(SPI_SETPOWEROFFACTIVE, g_GameWindow.savedPowerOffActive, NULL, SPIF_SENDCHANGE);
     WINNLSEnableIME(NULL, TRUE);
     return 0;
 }
@@ -417,7 +401,7 @@ RenderResult GameWindow::Render()
         {
             g_Supervisor.d3dDevice->BeginScene();
             g_AnmManager->ClearVertexBuffer();
-            g_Supervisor.fogState = 0xff;
+            g_Supervisor.fogState = SUPERVISOR_FOG_CACHE_INVALID;
             g_Supervisor.DisableFog();
             g_Chain.RunDrawChain();
             g_AnmManager->FlushVertexBuffer();
@@ -679,7 +663,7 @@ i32 GameWindow::InitD3DRendering()
                 presentParameters.BackBufferFormat = D3DFMT_R5G6B5;
             }
         }
-        if (g_GameWindow.usesRelativePath)
+        if (g_GameWindow.startupPathDiffersFromExecutable)
             g_Supervisor.disableVsync = TRUE;
 
         if (!g_Supervisor.disableVsync)
@@ -986,7 +970,7 @@ i32 GameWindow::CheckForRunningGameInstance(HINSTANCE hInstance)
             }
 
             if (strcmp(moduleFilenameBuffer, consoleTitleBuffer) != 0)
-                g_GameWindow.usesRelativePath = true;
+                g_GameWindow.startupPathDiffersFromExecutable = true;
         }
         g_Supervisor.flags.dummyMidiTimerEnabled = false;
     }
@@ -1104,8 +1088,8 @@ i32 Supervisor::RegisterChain()
 {
     Supervisor *supervisor = &g_Supervisor;
 
-    supervisor->wantedState = 0;
-    supervisor->currentState = -1;
+    supervisor->activeSceneState = 0;
+    supervisor->requestedSceneState = -1;
     supervisor->calcCount = 0;
 
     ChainElem *elem = g_Chain.CreateElem((ChainCallback)Supervisor::OnUpdate);
@@ -1146,7 +1130,7 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
 #define supervisor reinterpret_cast<Supervisor *>(arg)
     if (supervisor->flags.receivedCloseMsg)
     {
-        locals.replayScanActive = supervisor->replayScanActive;
+        locals.replayScanActive = supervisor->replayScanWorker.active;
         if (locals.replayScanActive == 0)
             return 4;
     }
@@ -1169,9 +1153,9 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
         return 4;
 
     g_SupervisorAnmManager->ClearVertexShader();
-    if (supervisor->startupThreadState != 0)
+    if (supervisor->startupThreadState != SUPERVISOR_STARTUP_PHASE_IDLE)
     {
-        if (supervisor->startupThreadState == 2)
+        if (supervisor->startupThreadState == SUPERVISOR_STARTUP_PHASE_FAILED)
             return 4;
         return 1;
     }
@@ -1549,19 +1533,19 @@ i32 Supervisor::UpdateSceneState()
         i32 replayMode;
     } locals;
 
-    if (this->wantedState != this->currentState)
+    if (this->activeSceneState != this->requestedSceneState)
     {
         this->EnterCriticalSectionWrapper(5);
         this->criticalSectionLockCounts[5]++;
-        this->previousState = this->wantedState;
+        this->previousActiveSceneState = this->activeSceneState;
         utils::DebugPrint(
-            "scene %d -> %d\r\n", this->wantedState, this->currentState);
+            "scene %d -> %d\r\n", this->activeSceneState, this->requestedSceneState);
         this->backbufferClearColor = 0xff000000;
 
-        switch (this->wantedState)
+        switch (this->activeSceneState)
         {
         case 0:
-            this->currentState = SUPERVISOR_STATE_FRONT_END;
+            this->requestedSceneState = SUPERVISOR_STATE_FRONT_END;
             this->frontEndController = FrontEndControllerView::Create(0);
             if (this->frontEndController == NULL)
             {
@@ -1570,7 +1554,7 @@ i32 Supervisor::UpdateSceneState()
             break;
 
         case SUPERVISOR_STATE_FRONT_END:
-            switch (this->currentState)
+            switch (this->requestedSceneState)
             {
             case SUPERVISOR_STATE_ERROR:
                 goto failure;
@@ -1588,7 +1572,7 @@ i32 Supervisor::UpdateSceneState()
                 break;
 
             case SUPERVISOR_STATE_START_REPLAY:
-                this->currentState = SUPERVISOR_STATE_PHOTO_GAME;
+                this->requestedSceneState = SUPERVISOR_STATE_PHOTO_GAME;
                 this->frontEndController->Destroy();
                 this->frontEndController = NULL;
                 break;
@@ -1596,7 +1580,7 @@ i32 Supervisor::UpdateSceneState()
             break;
 
         case SUPERVISOR_STATE_PHOTO_GAME:
-            switch (this->currentState)
+            switch (this->requestedSceneState)
             {
             case SUPERVISOR_STATE_EXIT:
                 this->photoGameTask->Destroy();
@@ -1628,7 +1612,7 @@ i32 Supervisor::UpdateSceneState()
                 {
                     goto failure;
                 }
-                this->currentState = SUPERVISOR_STATE_PHOTO_GAME;
+                this->requestedSceneState = SUPERVISOR_STATE_PHOTO_GAME;
                 break;
 
             case SUPERVISOR_STATE_RESTART_PHOTO_GAME:
@@ -1642,7 +1626,7 @@ i32 Supervisor::UpdateSceneState()
                 {
                     goto failure;
                 }
-                this->currentState = SUPERVISOR_STATE_PHOTO_GAME;
+                this->requestedSceneState = SUPERVISOR_STATE_PHOTO_GAME;
                 break;
             }
             break;
@@ -1655,7 +1639,7 @@ i32 Supervisor::UpdateSceneState()
             return 4;
         }
 
-        this->wantedState = this->currentState;
+        this->activeSceneState = this->requestedSceneState;
         this->LeaveCriticalSectionWrapper(5);
         this->criticalSectionLockCounts[5]--;
     }
@@ -1701,7 +1685,7 @@ i32 __fastcall Supervisor::AddedCallback(Supervisor *s)
 
     Float3 position(500.0f, 440.0f, 0.0f);
     g_Supervisor.SetupLoadingVms(&position);
-    g_Supervisor.startupThreadState = 1;
+    g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_RUNNING;
     g_Supervisor.StartReplayScan(
         (void (__fastcall *)(void *))Supervisor::StartupThread, s);
     return 0;
@@ -1902,18 +1886,18 @@ void __fastcall Supervisor::StartupThread(Supervisor *s)
     }
 
     g_Supervisor.ThreadClose();
-    g_Supervisor.startupThreadState = 0;
+    g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_IDLE;
     g_Supervisor.flags.scoreBackupPending = 0;
-    g_Supervisor.replayScanActive = 0;
-    g_Supervisor.replayScanStopRequested = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
     return;
 
 error:
     g_Supervisor.ThreadClose();
-    g_Supervisor.startupThreadState = 2;
+    g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_FAILED;
     g_Supervisor.flags.receivedCloseMsg = 1;
-    g_Supervisor.replayScanActive = 0;
-    g_Supervisor.replayScanStopRequested = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
 }
 
 // Keep the real version-data ownership local inside its teardown phase so
@@ -2021,7 +2005,7 @@ void __fastcall Supervisor::ScreenshotThread(void *unused)
     free(infoHeader);
     pixels = g_Supervisor.screenshotPixels;
     free(pixels);
-    g_Supervisor.screenshotThread = 0;
+    g_Supervisor.screenshotWorkerToken = 0;
 }
 
 // FUNCTION: TH095 0x00424A00.
@@ -2050,7 +2034,7 @@ i32 Supervisor::TakeScreenshot(char *path)
 #define widthBytes locals.widthBytes
 #define backbuffer locals.backbuffer
 
-    while (this->screenshotThread != 0)
+    while (this->screenshotWorkerToken != 0)
         Sleep(10);
 
     backbuffer = NULL;
@@ -2117,7 +2101,7 @@ i32 Supervisor::TakeScreenshot(char *path)
             }
         }
         backbuffer->UnlockRect();
-        g_Supervisor.screenshotThread =
+        g_Supervisor.screenshotWorkerToken =
             _beginthread((void (__cdecl *)(void *))Supervisor::ScreenshotThread,
                          0, NULL);
         goto cleanup;
@@ -2148,15 +2132,15 @@ cleanup:
 // FUNCTION: TH095 0x00425150.
 void Supervisor::ThreadClose()
 {
-    SupervisorReplayScanWorkerView *worker;
+    ReplayScanWorker *worker;
 
     this->EnterCriticalSectionWrapper(6);
     this->criticalSectionLockCounts[6]++;
-    worker = (SupervisorReplayScanWorkerView *)&this->replayScanThreadHandle;
-    if (worker->handle != NULL)
+    worker = &this->replayScanWorker;
+    if (worker->threadHandle != NULL)
     {
-        CloseHandle(worker->handle);
-        worker->handle = NULL;
+        CloseHandle((HANDLE)worker->threadHandle);
+        worker->threadHandle = 0;
         worker->active = 0;
     }
     this->LeaveCriticalSectionWrapper(6);
@@ -2195,9 +2179,9 @@ void GameConfiguration::Initialize()
     this->effectQuality = 2;
     this->musicVolume = 100;
     this->sfxVolume = 80;
-    this->unknown0b2 = 0;
-    this->unknown0b3 = 1;
-    this->unknown0b4 = 2;
+    this->controllerAssignments[0] = 0;
+    this->controllerAssignments[1] = 1;
+    this->controllerAssignments[2] = 2;
 }
 
 #define fileSize restartCommandProcessingLocal05
@@ -2437,10 +2421,10 @@ i32 Supervisor::FadeOutMusic(f32 durationSeconds)
 // FUNCTION: TH095 0x004254D0.
 i32 Supervisor::EnableFog()
 {
-    if (this->fogState != 1)
+    if (this->fogState != SUPERVISOR_FOG_CACHE_ENABLED)
     {
         g_AnmManager->FlushVertexBuffer();
-        this->fogState = 1;
+        this->fogState = SUPERVISOR_FOG_CACHE_ENABLED;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
     }
     return 0;
@@ -2449,10 +2433,10 @@ i32 Supervisor::EnableFog()
 // FUNCTION: TH095 0x00425520.
 i32 Supervisor::DisableFog()
 {
-    if (this->fogState != 0)
+    if (this->fogState != SUPERVISOR_FOG_CACHE_DISABLED)
     {
         g_AnmManager->FlushVertexBuffer();
-        this->fogState = 0;
+        this->fogState = SUPERVISOR_FOG_CACHE_DISABLED;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
     }
     return 0;

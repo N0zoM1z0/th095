@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_FILESYSTEM_AS_CLASS
-#endif
 #include "Main.hpp"
 
 #include <stdlib.h>
@@ -46,11 +43,7 @@ static __forceinline void LeaveFileCriticalSection(i32 id)
 }
 
 // FUNCTION: TH095 0x0041AC50.
-#ifdef TH095_MATCH_EXACT
-i32 FileSystem::WriteDataToFile(char *path, void *data, i32 size)
-#else
 i32 FileSystem::WriteDataToFile(const char *path, void *data, size_t size)
-#endif
 {
     struct WriteLocals
     {

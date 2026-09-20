@@ -4,8 +4,9 @@
 original Japanese TH095 v1.02a target. Current subsystem navigation lives in
 [SEMANTIC_INDEX.md](SEMANTIC_INDEX.md), accepted batch narratives live in
 [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md), build ownership lives in
-[SOURCE_MAP.md](SOURCE_MAP.md), and the reusable method is distilled in
-[SEMANTIC_PLAYBOOK.md](SEMANTIC_PLAYBOOK.md).
+[SOURCE_MAP.md](SOURCE_MAP.md), the current checkpoint and next bounded lane
+live in [RE_HANDOFF.md](RE_HANDOFF.md), and the reusable method is distilled
+in [SEMANTIC_PLAYBOOK.md](SEMANTIC_PLAYBOOK.md).
 
 Semantic reconstruction replaces layout-shaped source—raw offsets, anonymous
 storage, duplicated views, magic protocol values, and provisional names—with
@@ -56,6 +57,26 @@ declaration or lexical context, isolate it in a named adapter/probe, prove the
 need with a failed clean form and a pinned-compiler comparison, and keep it out
 of the runtime-owner header. Existing profile divergences are debt, not a
 template for new work.
+
+CI enforces this direction at two levels. No new preprocessor directive whose
+condition references `TH095_MATCH_EXACT` or `DIFFBUILD` may be added anywhere
+under `src/`. The path/directive fingerprints in
+`config/semantic-profile-selector-debt.txt` are a closed historical baseline:
+their counts may only decrease, and every removal must shrink the baseline in
+the same batch. A different directive in the same file is still a forbidden
+addition. Local CI also inspects additions relative to `HEAD`; GitHub CI fetches
+full history and compares the change set with the PR base or push-before SHA.
+Changing the baseline in the same commit therefore cannot authorize a new
+selector. If shared source cannot preserve required emission, stop for explicit
+authorization rather than adding a selector or raising a baseline count.
+
+The narrower `config/semantic-profile-declaration-debt.txt` also fingerprints
+every existing `struct`, `class`, or `union` beneath such a branch. Deleting a
+site requires shrinking that baseline immediately, while a new, renamed, or
+restored site fails the guard. A named `*Emission*` adapter may contain the
+minimum already-proved legacy declaration, but the adapter itself must be
+profile-independent. Both baselines record debt; neither semantically accepts
+the listed source.
 
 ## Bounded batch workflow
 

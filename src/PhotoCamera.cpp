@@ -1,44 +1,25 @@
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_SOUNDPLAYER_AS_STRUCT
-#endif
 #include "Background.hpp"
 #include "PhotoCamera.hpp"
-#include "GameplayGlobals.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoCameraBulletEmission.inl"
+#include "PhotoBulletManager.hpp"
+#include "PhotoEnemy.hpp"
 #include "PhotoEnemyManager.hpp"
-#include "ecl/EnemyEclRuntimeView.hpp"
-#endif
+#include "PhotoGameTask.hpp"
+#include "GameplayGlobals.hpp"
 #ifndef DIFFBUILD
 #include "InputRuntime.hpp"
 #endif
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoEffectRuntime.hpp"
-#endif
 #include "SoundPlayer.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "ScoreData.hpp"
+#include "PhotoStage.hpp"
 #endif
-#ifdef TH095_MATCH_EXACT
-#undef TH095_MATCH_SOUNDPLAYER_AS_STRUCT
-#endif
-
 namespace th095
 {
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION 3
-#else
-#define TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION \
-    PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION
-#endif
+#include "PhotoCameraPlayerEmission.inl"
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE 0
-#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET 1
-#define TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW 2
-#endif
-
-#ifdef TH095_MATCH_EXACT
 struct PhotoAnmVmIdValue
 {
     i32 value;
@@ -48,176 +29,31 @@ struct PhotoAnmVmIdValue
         this->value = value;
     }
 };
-#endif
-
-struct PhotoEnemyView
-{
-    u8 unknown0000[0x28a0];
-    Float3 position;                   // +0x28a0
-    u8 unknown28ac[0x2bf4 - 0x28ac];
-    u32 flags;                         // +0x2bf4
-    u32 flags2;                        // +0x2bf8
-    u8 unknown2bfc[0x2c28 - 0x2bfc];
-    f32 photoRateNumerator;            // +0x2c28
-    i32 photoRateCount;                // +0x2c2c
-    u8 unknown2c30[0x2c34 - 0x2c30];
-    f32 photoRateDenominator;          // +0x2c34
-
-    i32 HasPhotoRate() const
-    {
-        return this->photoRateCount > 0;
-    }
-};
-
-typedef char PhotoEnemyPositionAt28A0[
-    (offsetof(PhotoEnemyView, position) == 0x28a0) ? 1 : -1];
-typedef char PhotoEnemyFlagsAt2BF4[
-    (offsetof(PhotoEnemyView, flags) == 0x2bf4) ? 1 : -1];
-typedef char PhotoEnemyPhotoRateAt2C28[
-    (offsetof(PhotoEnemyView, photoRateNumerator) == 0x2c28) ? 1 : -1];
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct PhotoRuntimeView
-{
-    u8 unknown000000[0x26ae00];
-    PhotoEnemyView *enemies[8];
-
-    i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
-};
-#define TH095_PHOTO_RUNTIME_TARGETS enemies
-#else
-typedef PhotoEnemyManagerView PhotoRuntimeView;
-#define TH095_PHOTO_RUNTIME_TARGETS photoTargets
+#include "PhotoCameraStageEmission.inl"
 #endif
 
-struct PhotoCapturedBulletView
+static __forceinline const AnmVmId &PhotoAnmId(const i32 &value)
 {
-    u8 unknown000[0x248];
-    AnmVm *vm;                         // +0x248
-    u8 unknown24c[0x2f4 - 0x24c];
-    f32 photoScale;                    // +0x2f4
-    u8 unknown2f8[0x35c - 0x2f8];
-    PhotoCapturedBulletView *next;     // +0x35c
-    u8 unknown360[0x656 - 0x360];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i16 group;                         // +0x656
-    i16 kind;                          // +0x658
-#else
-    i16 bulletType;                    // +0x656
-    i16 color;                         // +0x658
-#endif
-};
-
-typedef char PhotoCapturedBulletVmAt248[
-    (offsetof(PhotoCapturedBulletView, vm) == 0x248) ? 1 : -1];
-typedef char PhotoCapturedBulletScaleAt2F4[
-    (offsetof(PhotoCapturedBulletView, photoScale) == 0x2f4) ? 1 : -1];
-typedef char PhotoCapturedBulletNextAt35C[
-    (offsetof(PhotoCapturedBulletView, next) == 0x35c) ? 1 : -1];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-typedef char PhotoCapturedBulletKindAt658[
-    (offsetof(PhotoCapturedBulletView, kind) == 0x658) ? 1 : -1];
-#define TH095_CAPTURED_BULLET_TYPE(bullet) ((bullet)->group)
-#define TH095_CAPTURED_BULLET_COLOR(bullet) ((bullet)->kind)
-#else
-typedef char PhotoCapturedBulletTypeAt656[
-    (offsetof(PhotoCapturedBulletView, bulletType) == 0x656) ? 1 : -1];
-typedef char PhotoCapturedBulletColorAt658[
-    (offsetof(PhotoCapturedBulletView, color) == 0x658) ? 1 : -1];
-#define TH095_CAPTURED_BULLET_TYPE(bullet) ((bullet)->bulletType)
-#define TH095_CAPTURED_BULLET_COLOR(bullet) ((bullet)->color)
-#endif
-
-struct PhotoGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlag0 : 1;
-#else
-            u32 captureActive : 1;
-#endif
-            u32 unknownFlag1 : 1;
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlag2 : 1;
-            u32 unknownFlags3 : 29;
-#else
-            u32 gameplayLoadActive : 1;
-            u32 unknownFlags3 : 6;
-            u32 photoSoundSuppressed : 1;
-            u32 unknownFlags10 : 22;
-#endif
-        };
-    };
-};
-
-struct PhotoStageStateView
-{
-    u8 unknown00000[0x25718];
-    f32 scoreMultiplier;
-    PhotoAnmLoadedView *anm;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u32 flags;
-#else
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknownFlag0 : 1;
-            u32 unknownFlag1 : 1;
-            u32 firstCaptureFrame : 1;
-            u32 unknownFlags3 : 29;
-        };
-    };
-#endif
-
-    i32 SavePhoto(i32 slot, const Float3 *position, i32 width, i32 height,
-                  i32 score, const i32 *scoreData);
-};
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct PhotoStageControllerView
-{
-    i32 CountNearbyTargets(const Float3 *position, f32 radius);
-    i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
-};
-#endif
-
-#ifdef DIFFBUILD
-struct PhotoAnmManagerView
-{
-    AnmVm *FindVm(i32 id);
-    void SetVmInterrupt(i32 id, i16 interrupt);
-    void RemoveVm(i32 id);
-    void SetVmPosition(i32 id, const Float3 *position);
-};
-
-static inline PhotoAnmManagerView *PhotoAnmManager()
-{
-    return reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager);
+    return *reinterpret_cast<const AnmVmId *>(&value);
 }
 
-#define TH095_PHOTO_ANM_GET_VM(id) PhotoAnmManager()->FindVm(id)
-#define TH095_PHOTO_ANM_SET_INTERRUPT(id, interrupt) \
-    PhotoAnmManager()->SetVmInterrupt((id), (interrupt))
-#define TH095_PHOTO_ANM_MARK_DELETE(id) PhotoAnmManager()->RemoveVm(id)
-#define TH095_PHOTO_ANM_SET_POSITION(id, position) \
-    PhotoAnmManager()->SetVmPosition((id), (position))
-#define TH095_PHOTO_ANM_SET_POSITION_DIRECT(id, position) \
-    reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition( \
-        (id), (position))
-#else
-static __forceinline AnmVmId PhotoAnmId(i32 value)
+// These two calls consume a PhotoAnmCreateVmEmissionAdapter return directly.
+// With canonical AnmVmId-by-value input, VC7 materializes that return before
+// PhotoToScreen and changes the target caller by 25 bytes.  This fieldless
+// adapter retains only the target's scalar input spelling; its link owner is
+// canonical AnmManager::SetPosition at 0x004451F0.
+struct PhotoAnmCreatedPositionEmissionAdapter
 {
-    AnmVmId id;
-    id.value = value;
-    return id;
-}
+    void SetPosition(i32 id, const Float3 *position);
+};
+
+#pragma comment(linker, "/alternatename:?SetPosition@PhotoAnmCreatedPositionEmissionAdapter@th095@@QAEXHPBUFloat3@2@@Z=?SetPosition@AnmManager@th095@@QAEXUAnmVmId@2@PAUFloat3@2@@Z")
+
+#define TH095_PHOTO_ANM_SET_CREATED_POSITION(id, position) \
+    reinterpret_cast<PhotoAnmCreatedPositionEmissionAdapter *>( \
+        g_AnmManager)->SetPosition((id), (position))
 
 #define TH095_PHOTO_ANM_GET_VM(id) g_AnmManager->GetVm(PhotoAnmId(id))
 #define TH095_PHOTO_ANM_SET_INTERRUPT(id, interrupt)     g_AnmManager->SetInterrupt(PhotoAnmId(id), (interrupt))
@@ -227,41 +63,26 @@ static __forceinline AnmVmId PhotoAnmId(i32 value)
         PhotoAnmId(id), const_cast<Float3 *>(position))
 #define TH095_PHOTO_ANM_SET_POSITION_DIRECT(id, position) \
     TH095_PHOTO_ANM_SET_POSITION((id), (position))
-#endif
 
-#ifdef TH095_MATCH_EXACT
-struct PhotoSoundPlayerView
-{
-    void PlaySoundByIdx(i32 idx, i32 pan);
-    void PlaySoundPositionedByIdx(i32 idx, f32 pan);
-    void StopSoundByIdx(i32 idx);
-};
-
-static inline PhotoSoundPlayerView *PhotoSoundPlayer()
-{
-    return reinterpret_cast<PhotoSoundPlayerView *>(&g_SoundPlayer);
-}
-#else
 static inline SoundPlayer *PhotoSoundPlayer()
 {
     return &g_SoundPlayer;
 }
-#endif
 
-extern PhotoGameStateView *g_PhotoGame;
-extern PhotoRuntimeView *g_PhotoRuntime;
-extern PhotoGlobalStateView *g_PhotoGlobalState;
+extern PhotoEnemyManagerView *g_PhotoRuntime;
+extern PhotoGameTaskView *g_PhotoGlobalState;
+extern PhotoBulletManagerView *g_PhotoBulletManager;
+extern PhotoEffectManagerView *g_PhotoEffectManager;
 #ifndef DIFFBUILD
 #define g_PhotoRuntime \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoRuntimeView, g_RuntimeEnemyManagerOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
+#define g_PhotoEffectManager \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEffectManagerView, g_RuntimeEffectManagerOwner)
 #endif
 extern PhotoStageStateView *g_PhotoStageState;
 #ifndef DIFFBUILD
 #define g_PhotoStageState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
-#endif
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-extern PhotoStageControllerView *g_PhotoStageController;
 #endif
 extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;
@@ -276,14 +97,16 @@ extern u16 g_PhotoInputPressed;
 #define g_PhotoGame \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, g_RuntimeGlobalStateOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
-#if defined(TH095_MATCH_EXACT)
-#define PHOTO_SOUND_SUPPRESSED (((g_PhotoGlobalState->flags >> 9) & 1))
-#else
+#define TH095_PHOTO_CAMERA_PLAYER_STORAGE() \
+    reinterpret_cast<PhotoPlayerRuntimeView *>(g_PhotoGame)
+#define TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM() \
+    reinterpret_cast<PhotoAnmLoadedView *>( \
+        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectAnm)
+
 #define PHOTO_SOUND_SUPPRESSED (g_PhotoGlobalState->photoSoundSuppressed)
-#endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 f32 NormalizeAngle(f32 angle);
@@ -298,17 +121,12 @@ enum PhotoCameraFlags
     PHOTO_FLAG_TARGET_SOUND_PLAYED = 1 << 6,
 };
 
-#if defined(TH095_MATCH_EXACT)
+// Keep one shared target-facing read shape. A pinned VC7.1 experiment using
+// the equivalent named-mask form for the focused read grew UpdateCharge from
+// 982 to 986 bytes; this named-shift family avoids a profile split.
 #define PHOTO_CAMERA_FOCUSED(flags) (((flags) >> 1) & 1)
 #define PHOTO_CAMERA_TARGET_FRAME_ACTIVE(flags) (((flags) >> 2) & 1)
 #define PHOTO_CAMERA_TARGET_SOUND_PLAYED(flags) (((flags) >> 6) & 1)
-#else
-#define PHOTO_CAMERA_FOCUSED(flags) (((flags) & PHOTO_FLAG_FOCUSED) != 0)
-#define PHOTO_CAMERA_TARGET_FRAME_ACTIVE(flags) \
-    (((flags) & PHOTO_FLAG_TARGET_FRAME_ACTIVE) != 0)
-#define PHOTO_CAMERA_TARGET_SOUND_PLAYED(flags) \
-    (((flags) & PHOTO_FLAG_TARGET_SOUND_PLAYED) != 0)
-#endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 enum PhotoScoreFlags
@@ -407,8 +225,12 @@ static inline u32 PhotoEitherFlag(u32 left, u32 right)
 
 f32 PhotoGameStateView::AngleToPoint(const Float3 *point)
 {
-    f32 deltaX = point->x - this->playerPosition.x;
-    f32 deltaY = point->y - this->playerPosition.y;
+    f32 deltaX = point->x -
+                 reinterpret_cast<PhotoPlayerRuntimeView *>(this)
+                     ->playerPosition.x;
+    f32 deltaY = point->y -
+                 reinterpret_cast<PhotoPlayerRuntimeView *>(this)
+                     ->playerPosition.y;
 
     if (deltaY == 0.0f && deltaX == 0.0f)
     {
@@ -426,11 +248,16 @@ void PhotoCameraState::BeginCapture()
     this->mode = PHOTO_CAMERA_CHARGING;
     this->modeTimer = 0;
     this->flags &= ~PHOTO_FLAG_TARGET_SOUND_PLAYED;
-    this->vmIds[2] = g_PhotoStageState->anm->CreateVm(0x18, 0);
-    this->vmIds[3] = g_PhotoStageState->anm->CreateVm(0x19, 0);
-    this->vmIds[4] = g_PhotoStageState->anm->CreateVm(0x1a, 0);
-    this->vmIds[5] = g_PhotoStageState->anm->CreateVm(0x1b, 0);
-    this->vmIds[6] = g_PhotoStageState->anm->CreateVm(0x1c, 0);
+    this->vmIds[2] =
+        TH095_PHOTO_ANM_CREATE_VM(g_PhotoStageState->anm, 0x18, 0);
+    this->vmIds[3] =
+        TH095_PHOTO_ANM_CREATE_VM(g_PhotoStageState->anm, 0x19, 0);
+    this->vmIds[4] =
+        TH095_PHOTO_ANM_CREATE_VM(g_PhotoStageState->anm, 0x1a, 0);
+    this->vmIds[5] =
+        TH095_PHOTO_ANM_CREATE_VM(g_PhotoStageState->anm, 0x1b, 0);
+    this->vmIds[6] =
+        TH095_PHOTO_ANM_CREATE_VM(g_PhotoStageState->anm, 0x1c, 0);
     if (this->vmIds[9] != 0)
     {
         TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[9].value);
@@ -443,7 +270,7 @@ void PhotoCameraState::BeginCapture()
     }
     if (PHOTO_SOUND_SUPPRESSED == 0)
     {
-        PhotoSoundPlayer()->PlaySoundByIdx(TH095_SOUND_CAMERA_FOCUS, 0);
+        PhotoSoundPlayer()->PlaySoundByIdx(SOUND_CAMERA_FOCUS, 0);
     }
 }
 
@@ -632,43 +459,24 @@ u32 PhotoCameraState::TakePhoto()
     TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[5].value);
     TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[6].value);
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     scoreData[3] = g_PhotoBulletManager->CountNearbyTargets(
-        &g_PhotoGame->playerPosition, 22.0f);
-    scoreData[3] += g_PhotoStageController->CountNearbyTargets(
-        &g_PhotoGame->playerPosition, 22.0f);
-
-    this->CalculatePhotoScore(
-        reinterpret_cast<PhotoCapturedBulletView *>(
-            g_PhotoBulletManager->CapturePhotoTargets(
-                &this->viewfinderPosition, &this->viewfinderSize)),
-        scoreData,
-        g_PhotoRuntime->CountPhotoTargets(
-            &this->viewfinderPosition, &this->viewfinderSize),
-        g_PhotoStageController->CountPhotoTargets(
-            &this->viewfinderPosition, &this->viewfinderSize));
-#else
-    PhotoEffectManagerView *effectManager = TH095_RUNTIME_GLOBAL_PTR(
-        PhotoEffectManagerView, g_RuntimeEffectManagerOwner);
-    scoreData[3] = g_PhotoBulletManager->CountNearbyTargets(
-        reinterpret_cast<PhotoBulletVector *>(&g_PhotoGame->playerPosition),
+        reinterpret_cast<PhotoBulletVector *>(
+            &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition),
         22.0f);
-    scoreData[3] += effectManager->CountNearbyTargets(
-        &g_PhotoGame->playerPosition, 22.0f);
+    scoreData[3] += g_PhotoEffectManager->CountNearbyTargets(
+        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition, 22.0f);
 
     this->CalculatePhotoScore(
-        reinterpret_cast<PhotoCapturedBulletView *>(
-            g_PhotoBulletManager->CapturePhotoTargets(
-                reinterpret_cast<PhotoBulletVector *>(
-                    &this->viewfinderPosition),
-                reinterpret_cast<PhotoBulletVector *>(
-                    &this->viewfinderSize))),
+        g_PhotoBulletManager->CapturePhotoTargets(
+            reinterpret_cast<PhotoBulletVector *>(
+                &this->viewfinderPosition),
+            reinterpret_cast<PhotoBulletVector *>(
+                &this->viewfinderSize)),
         scoreData,
         g_PhotoRuntime->CountPhotoTargets(
             &this->viewfinderPosition, &this->viewfinderSize),
-        effectManager->CountPhotoTargets(
+        g_PhotoEffectManager->CountPhotoTargets(
             &this->viewfinderPosition, &this->viewfinderSize));
-#endif
 
     if ((this->flags & PHOTO_FLAG_ALTERNATE_CAPTURE) != 0)
     {
@@ -696,8 +504,9 @@ u32 PhotoCameraState::TakePhoto()
     {
         this->charge = 0.0f;
         this->mode = PHOTO_CAMERA_DISABLED;
-        g_PhotoGame->mode = TH095_PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION;
-        g_PhotoGame->completionTimer = 0;
+        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->mode =
+            PHOTO_PLAYER_MODE_PHOTO_LIMIT_TRANSITION;
+        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->completionTimer = 0;
     }
     else
     {
@@ -705,7 +514,7 @@ u32 PhotoCameraState::TakePhoto()
     }
     g_AnmGameSpeed = 1.0f;
     this->modeTimer = 0;
-    PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_CAMERA_FOCUS);
+    PhotoSoundPlayer()->StopSoundByIdx(SOUND_CAMERA_FOCUS);
     if (PHOTO_SOUND_SUPPRESSED == 0)
     {
         PhotoSoundPlayer()->PlaySoundByIdx(static_cast<SoundIdx>(0x29), 0);
@@ -732,7 +541,7 @@ void PhotoCameraState::CancelCapture()
     this->mode = PHOTO_CAMERA_CAPTURED;
     g_AnmGameSpeed = 1.0f;
     this->modeTimer = 0;
-    PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_CAMERA_FOCUS);
+    PhotoSoundPlayer()->StopSoundByIdx(SOUND_CAMERA_FOCUS);
 }
 
 struct PhotoScoreCameraFlagBits
@@ -749,7 +558,7 @@ struct PhotoScoreDataFlagBits
 };
 
 i32 PhotoCameraState::CalculatePhotoScore(
-    PhotoCapturedBulletView *bulletTargets, i32 *scoreData,
+    PhotoBulletView *bulletTargets, i32 *scoreData,
     i32 runtimeTargets, i32 stageTargets)
 {
     struct PhotoScoreLocals
@@ -761,7 +570,7 @@ i32 PhotoCameraState::CalculatePhotoScore(
         f32 bossRate;
         f32 closestDistance;
         i32 preservedNearbyTargets;
-        PhotoCapturedBulletView *firstBullet;
+        PhotoBulletView *firstBullet;
         i32 bulletScore;
         i32 colorCounts[7];
         i32 colorPresenceCount;
@@ -777,36 +586,37 @@ i32 PhotoCameraState::CalculatePhotoScore(
     while (bulletTargets != NULL)
     {
         scoreData[2]++;
-        if (bulletTargets->vm == NULL || bulletTargets->vm->scale.y <= 8.0f)
+        if (bulletTargets->vm.loadedSprite == NULL ||
+            bulletTargets->vm.loadedSprite->widthPx <= 8.0f)
         {
             locals.bulletScore = 10;
         }
-        else if (bulletTargets->vm->scale.y <= 16.0f)
+        else if (bulletTargets->vm.loadedSprite->widthPx <= 16.0f)
         {
             locals.bulletScore = 20;
         }
-        else if (bulletTargets->vm->scale.y <= 32.0f)
+        else if (bulletTargets->vm.loadedSprite->widthPx <= 32.0f)
         {
             locals.bulletScore = 40;
         }
-        else if (bulletTargets->vm->scale.y <= 64.0f)
+        else if (bulletTargets->vm.loadedSprite->widthPx <= 64.0f)
         {
             locals.bulletScore = 150;
         }
 
-        if (bulletTargets->photoScale >= 6.0f)
+        if (bulletTargets->speed >= 6.0f)
         {
             locals.bulletScore *= 4;
         }
-        else if (bulletTargets->photoScale >= 2.0f)
+        else if (bulletTargets->speed >= 2.0f)
         {
             locals.bulletScore += (i32)(
-                (f32)locals.bulletScore * (bulletTargets->photoScale - 2.0f) *
+                (f32)locals.bulletScore * (bulletTargets->speed - 2.0f) *
                 4.0f / 4.0f);
         }
         locals.bulletScore -= locals.bulletScore % 10;
         locals.totalScore += locals.bulletScore;
-        bulletTargets = bulletTargets->next;
+        bulletTargets = bulletTargets->nextCaptured;
     }
 
     locals.totalScore += runtimeTargets * 170;
@@ -847,7 +657,8 @@ i32 PhotoCameraState::CalculatePhotoScore(
     bounds.viewfinderPosition = &this->viewfinderPosition;
     bounds.playerHalfHeight = 16.0f;
     bounds.playerHalfWidth = 16.0f;
-    bounds.playerPosition = &g_PhotoGame->playerPosition;
+    bounds.playerPosition =
+        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
     bounds.playerHalfWidth *= 0.5f;
     bounds.playerHalfHeight *= 0.5f;
     locals.viewfinderHalfWidth *= 0.5f;
@@ -908,26 +719,26 @@ score_flag_done:
     locals.colorCounts[6] = 0;
     while (bulletTargets != NULL)
     {
-        if (TH095_CAPTURED_BULLET_TYPE(bulletTargets) <= 11)
+        if (bulletTargets->bulletType <= 11)
         {
-            if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 1 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 2)
+            if (bulletTargets->color == 1 || bulletTargets->color == 2)
                 locals.colorCounts[0]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 3 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 4)
+            else if (bulletTargets->color == 3 || bulletTargets->color == 4)
                 locals.colorCounts[1]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 5 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 6)
+            else if (bulletTargets->color == 5 || bulletTargets->color == 6)
                 locals.colorCounts[2]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 7 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 8)
+            else if (bulletTargets->color == 7 || bulletTargets->color == 8)
                 locals.colorCounts[3]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 9 ||
-                     TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 10 ||
-                     TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 11)
+            else if (bulletTargets->color == 9 ||
+                     bulletTargets->color == 10 ||
+                     bulletTargets->color == 11)
                 locals.colorCounts[4]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 12 || TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 13)
+            else if (bulletTargets->color == 12 || bulletTargets->color == 13)
                 locals.colorCounts[5]++;
-            else if (TH095_CAPTURED_BULLET_COLOR(bulletTargets) == 14)
+            else if (bulletTargets->color == 14)
                 locals.colorCounts[6]++;
         }
-        bulletTargets = bulletTargets->next;
+        bulletTargets = bulletTargets->nextCaptured;
     }
 
     if (locals.colorCounts[0] >= 100)
@@ -1037,47 +848,42 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
     for (locals.enemyIndex = 0; locals.enemyIndex < 8;
          locals.enemyIndex++)
     {
-        if (g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex] == NULL)
+        if (g_PhotoRuntime->photoTargets[locals.enemyIndex] == NULL)
         {
             continue;
         }
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags >> 4) & 1) != 0 ||
-            ((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
-            ((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags2 >> 6) & 1) != 0)
-#else
-        if (TH095_ENEMY_ECL_CONTROL_BITS(
-                g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]).hiddenFromDrawGroups != 0 ||
-            ((g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->flags >> 5) & 1) != 0 ||
-            TH095_ENEMY_ECL_SECONDARY_BITS(
-                g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]).showPhotoMarker != 0)
-#endif
+        if (g_PhotoRuntime->photoTargets[locals.enemyIndex]
+                    ->hiddenFromDrawGroups != 0 ||
+            ((g_PhotoRuntime->photoTargets[locals.enemyIndex]
+                    ->flags1 >> 5) & 1) != 0 ||
+            g_PhotoRuntime->photoTargets[locals.enemyIndex]
+                    ->showPhotoMarker != 0)
         {
             continue;
         }
 
         if (!PhotoEnemyIsOffscreen(
-                &g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->position))
+                &g_PhotoRuntime->photoTargets[locals.enemyIndex]->position))
         {
             if (PhotoRectangleContains(
-                    &g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->position,
+                    &g_PhotoRuntime->photoTargets[locals.enemyIndex]->position,
                     8.0f, 8.0f, &this->viewfinderPosition,
                     this->viewfinderSize.x, this->viewfinderSize.y))
             {
                 locals.currentValue = PhotoDistance2D(
-                    &g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]->position,
+                    &g_PhotoRuntime->photoTargets[locals.enemyIndex]->position,
                     &this->viewfinderPosition);
                 if (locals.currentValue < locals.nearestTarget)
                 {
                     locals.nearestTarget = locals.currentValue;
                 }
-                if (g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
-                            ->HasPhotoRate() &&
+                if (g_PhotoRuntime->photoTargets[locals.enemyIndex]
+                            ->HasActivePhotoPulse() &&
                     (locals.currentValue = PhotoRatio(
-                         g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
-                             ->photoRateDenominator,
-                         g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[locals.enemyIndex]
-                             ->photoRateNumerator),
+                         g_PhotoRuntime->photoTargets[locals.enemyIndex]
+                             ->photoPulseDurationTimer.subFrame,
+                         g_PhotoRuntime->photoTargets[locals.enemyIndex]
+                             ->photoPulseTimer.subFrame),
                      locals.currentValue > locals.highestBossRate))
                 {
                     locals.highestBossRate = locals.currentValue;
@@ -1098,12 +904,6 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
     return locals.targetCount;
 }
 
-#if defined(TH095_MATCH_EXACT)
-#define TH095_PHOTO_FOCUS_CHARGE_FRAMES unknownbb8
-#else
-#define TH095_PHOTO_FOCUS_CHARGE_FRAMES focusChargeFrames
-#endif
-
 void PhotoCameraState::UpdateCharge()
 {
     struct ChargeLocals
@@ -1121,14 +921,14 @@ void PhotoCameraState::UpdateCharge()
             if (PhotoInputMask(g_PhotoInput, 2) != 0 &&
                 PhotoInputMask(g_PhotoInput, 1) != 0)
             {
-                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES++;
-                if (this->TH095_PHOTO_FOCUS_CHARGE_FRAMES >= 5)
+                this->focusChargeFrames++;
+                if (this->focusChargeFrames >= 5)
                 {
                     this->flags |= PHOTO_FLAG_FOCUSED;
                     if (PHOTO_SOUND_SUPPRESSED == 0)
                     {
                         PhotoSoundPlayer()->PlaySoundByIdx(
-                            TH095_SOUND_FOCUS_CHARGE, 0);
+                            SOUND_FOCUS_CHARGE, 0);
                     }
                     locals.timer = &this->chargeTimer;
                     locals.timer->current = 0;
@@ -1139,7 +939,7 @@ void PhotoCameraState::UpdateCharge()
             }
             else
             {
-                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES = 0;
+                this->focusChargeFrames = 0;
             }
         }
 
@@ -1173,45 +973,40 @@ normalCharge:
     {
         if (PHOTO_SOUND_SUPPRESSED != 0)
         {
-            PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_FOCUS_CHARGE);
+            PhotoSoundPlayer()->StopSoundByIdx(SOUND_FOCUS_CHARGE);
         }
-        if (this->TH095_PHOTO_FOCUS_CHARGE_FRAMES > 60 ||
+        if (this->focusChargeFrames > 60 ||
             PhotoTimerAdvancedOnEvenFrame(&this->auxiliaryTimer))
         {
-#ifdef TH095_MATCH_EXACT
-            g_PhotoBulletManager->anmSpawner->SpawnInto(
-                &locals.effect, 0x124, &g_PhotoGame->playerPosition);
-#else
-            locals.effect =
-                g_PhotoBulletManager->bulletAnm->CreateVmAtWorld(
-                    0x124, &g_PhotoGame->playerPosition);
-#endif
+            TH095_PHOTO_BULLET_SPAWN_WORLD(
+                g_PhotoBulletManager->bulletAnm, &locals.effect, 0x124,
+                &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
         }
-        this->TH095_PHOTO_FOCUS_CHARGE_FRAMES++;
+        this->focusChargeFrames++;
         this->flags |= PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
         this->focusHeldFrames = 0;
         if (PhotoInputMask(g_PhotoInput, 2) == 0 ||
             PhotoInputMask(g_PhotoInput, 1) == 0)
         {
             this->flags &= ~PHOTO_FLAG_FOCUSED;
-            this->TH095_PHOTO_FOCUS_CHARGE_FRAMES = 0;
-            PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_FOCUS_CHARGE);
+            this->focusChargeFrames = 0;
+            PhotoSoundPlayer()->StopSoundByIdx(SOUND_FOCUS_CHARGE);
             goto normalCharge;
         }
 
 focusedCharge:
         {
             this->charge +=
-                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES < 70
-                    ? (((f32)this->TH095_PHOTO_FOCUS_CHARGE_FRAMES * 40.0f / 800.0f) / 30.0f +
+                this->focusChargeFrames < 70
+                    ? (((f32)this->focusChargeFrames * 40.0f / 800.0f) / 30.0f +
                        0.00125f) * g_AnmGameSpeed
                     : 0.005f * g_AnmGameSpeed;
             if (this->charge > 1.0f)
             {
                 this->charge = 1.0f;
                 this->flags &= ~PHOTO_FLAG_FOCUSED;
-                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES = 0;
-                PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_FOCUS_CHARGE);
+                this->focusChargeFrames = 0;
+                PhotoSoundPlayer()->StopSoundByIdx(SOUND_FOCUS_CHARGE);
                 goto normalCharge;
             }
             return;
@@ -1219,17 +1014,10 @@ focusedCharge:
     }
 }
 
-#undef TH095_PHOTO_FOCUS_CHARGE_FRAMES
-
 void PhotoCameraState::Draw()
 {
-#if defined(TH095_MATCH_EXACT)
-    if (PhotoEitherFlag(g_PhotoGlobalState->unknownFlag0,
-                        g_PhotoGlobalState->unknownFlag2) == 0)
-#else
     if (PhotoEitherFlag(g_PhotoGlobalState->captureActive,
                         g_PhotoGlobalState->gameplayLoadActive) == 0)
-#endif
     {
         this->viewfinderVms[0].Draw();
         this->viewfinderVms[1].Draw();
@@ -1237,13 +1025,8 @@ void PhotoCameraState::Draw()
         this->viewfinderVms[3].Draw();
     }
 
-#if defined(TH095_MATCH_EXACT)
-    if (PhotoEitherFlag(g_PhotoGlobalState->unknownFlag0,
-                        g_PhotoGlobalState->unknownFlag2) != 0)
-#else
     if (PhotoEitherFlag(g_PhotoGlobalState->captureActive,
                         g_PhotoGlobalState->gameplayLoadActive) != 0)
-#endif
     {
         AnmVm *vm;
         for (i32 index = 0; index < 9; index++)
@@ -1276,13 +1059,6 @@ f32 __fastcall PhotoDistance2D(const Float3 *left, const Float3 *right)
         (left->y - right->y) * (left->y - right->y));
 }
 
-#ifdef TH095_MATCH_EXACT
-__forceinline i32 PhotoAnmVmId::operator==(PhotoAnmVmIdValue other) const
-{
-    return this->value == other.value;
-}
-#endif
-
 static inline i32 PhotoTimerAdvancedTo(ZunTimer *timer, i32 frame)
 {
     return timer->current != timer->previous && timer->current == frame;
@@ -1305,13 +1081,9 @@ static __forceinline void NormalizeAndScalePhotoOffset(
 
 static __forceinline void PhotoCameraSetPhotoBlendColor(u32 color)
 {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    PhotoBulletManagerView *bulletManager = g_PhotoBulletManager;
-    bulletManager->photoColor.color = color;
-#else
     // Target relocation 0x004BDD90 is Background, not BulletInf at .98.
-    g_Background->photoColor.color = color;
-#endif
+    Background *background = g_Background;
+    background->photoColor.color = color;
 }
 
 static __forceinline void PhotoCameraModeTimerResetPhase(ZunTimer *timer)
@@ -1324,11 +1096,7 @@ static __forceinline void PhotoCameraModeTimerResetPhase(ZunTimer *timer)
 
 static __forceinline i32 PhotoCameraVmIdIsZero(const PhotoAnmVmId *vm)
 {
-#ifdef TH095_MATCH_EXACT
-    return *vm == PhotoAnmVmIdValue(0);
-#else
-    return *vm == 0;
-#endif
+    return vm->value == PhotoAnmVmIdValue(0).value;
 }
 
 static __forceinline void PhotoCameraClearVmId(PhotoAnmVmId *vm)
@@ -1345,26 +1113,28 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
     case PHOTO_CAMERA_TRACKING:
         if (PHOTO_CAMERA_FOCUSED(camera->flags) == 0)
         {
-            if (g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[0] == NULL)
+            if (g_PhotoRuntime->photoTargets[0] == NULL)
             {
-                camera->cameraOffset = g_PhotoGame->playerPosition;
+                camera->cameraOffset =
+                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
                 camera->cameraOffset.y -= 64.0f;
             }
             else
             {
-                if (g_PhotoGame->cameraTrackingMode ==
+                if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode ==
                     TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET_SLOW)
                 {
                     camera->trackingRadius = 56.0f;
                 }
-                else if (g_PhotoGame->cameraTrackingMode ==
+                else if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode ==
                          TH095_PHOTO_PLAYER_CAMERA_TRACKING_TARGET)
                 {
                     f32 playerDistance = PhotoDistance2D(
-                        &g_PhotoGame->playerPosition, &camera->viewfinderPosition);
+                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition,
+                        &camera->viewfinderPosition);
                     f32 bossDistance = PhotoDistance2D(
-                        &g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[0]->position,
-                        &g_PhotoGame->playerPosition);
+                        &g_PhotoRuntime->photoTargets[0]->position,
+                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
                     if (playerDistance < 56.0f)
                     {
                         camera->trackingRadius = 56.0f;
@@ -1391,12 +1161,12 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     camera->trackingRadius += 1.0f;
                 }
 
-                if (g_PhotoGame->cameraTrackingMode !=
+                if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode !=
                     TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
                 {
                     camera->cameraOffset = PhotoCameraTrackingDifference(
-                        g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[0]->position,
-                        g_PhotoGame->playerPosition);
+                        g_PhotoRuntime->photoTargets[0]->position,
+                        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
                     NormalizeAndScalePhotoOffset(
                         camera->cameraOffset,
                         &camera->cameraOffset,
@@ -1405,13 +1175,13 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                 else
                 {
                     Float3 playerDelta =
-                        g_PhotoGame->playerPosition -
+                        TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition -
                         camera->previousTrackingOrigin;
                     f32 targetAngle;
                     if (playerDelta.y * playerDelta.y + playerDelta.x * playerDelta.x < 0.1f)
                     {
                         targetAngle = g_PhotoGame->AngleToPoint(
-                            &g_PhotoRuntime->TH095_PHOTO_RUNTIME_TARGETS[0]->position);
+                            &g_PhotoRuntime->photoTargets[0]->position);
                     }
                     else
                     {
@@ -1424,11 +1194,13 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                         camera->trackingAngle, camera->trackingRadius);
                 }
                 camera->cameraOffset =
-                    g_PhotoGame->playerPosition + camera->cameraOffset;
-                camera->previousTrackingOrigin = g_PhotoGame->playerPosition;
+                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition +
+                    camera->cameraOffset;
+                camera->previousTrackingOrigin =
+                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
             }
 
-            if (g_PhotoGame->cameraTrackingMode !=
+            if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->cameraTrackingMode !=
                 TH095_PHOTO_PLAYER_CAMERA_TRACKING_FREE)
             {
                 camera->viewfinderPosition =
@@ -1437,10 +1209,11 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
                     camera->viewfinderPosition;
                 Float3 angleDelta =
                     camera->viewfinderPosition -
-                    g_PhotoGame->playerPosition;
+                    TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
                 camera->trackingAngle = atan2f(angleDelta.y, angleDelta.x);
             }
-            else if (g_PhotoGame->movementState != 0)
+            else if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState !=
+                     PHOTO_PLAYER_DIRECTION_NONE)
             {
                 camera->viewfinderPosition =
                     (camera->cameraOffset - camera->viewfinderPosition) *
@@ -1457,7 +1230,8 @@ void __fastcall UpdatePhotoCamera(PhotoCameraState *camera)
         }
         else
         {
-            camera->cameraOffset = g_PhotoGame->playerPosition;
+            camera->cameraOffset =
+                TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition;
             camera->viewfinderPosition =
                 (camera->cameraOffset - camera->viewfinderPosition) * 0.4f +
                 camera->viewfinderPosition;
@@ -1478,16 +1252,13 @@ updateCharge:
         {
             if (camera->charge >= 1.0f)
             {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-                if (((camera->flags >> 3) & 3) != 1)
-#else
-                if (camera->chargeUiState != PHOTO_CAMERA_CHARGE_UI_FULL)
-#endif
+                if (((camera->flags >> 3) & 3) !=
+                    PHOTO_CAMERA_CHARGE_UI_FULL)
                 {
                     if (PHOTO_SOUND_SUPPRESSED == 0)
                     {
                         PhotoSoundPlayer()->PlaySoundByIdx(
-                            TH095_SOUND_CHARGE_FULL, 0);
+                            SOUND_CHARGE_FULL, 0);
                     }
                     if (camera->vmIds[10])
                     {
@@ -1496,18 +1267,14 @@ updateCharge:
                     }
                     if (PhotoCameraVmIdIsZero(&camera->vmIds[9]))
                     {
-                        camera->vmIds[9] =
-                            g_PhotoStageState->anm->CreateVm(0x1f, 0);
+                        camera->vmIds[9] = TH095_PHOTO_ANM_CREATE_VM(
+                            g_PhotoStageState->anm, 0x1f, 0);
                     }
                     camera->vmIds[0].SetInterrupt(2);
                     camera->vmIds[1].SetInterrupt(2);
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
                     camera->flags =
                         (camera->flags & ~PHOTO_FLAG_CHARGE_UI_MASK) |
-                        (1 << 3);
-#else
-                    camera->chargeUiState = PHOTO_CAMERA_CHARGE_UI_FULL;
-#endif
+                        (PHOTO_CAMERA_CHARGE_UI_FULL << 3);
                     camera->viewfinderVms[0].pendingInterrupt = 2;
                     camera->viewfinderVms[1].pendingInterrupt = 2;
                     camera->viewfinderVms[2].pendingInterrupt = 2;
@@ -1529,11 +1296,8 @@ updateCharge:
             }
             else
             {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-                if (((camera->flags >> 3) & 3) != 0)
-#else
-                if (camera->chargeUiState != PHOTO_CAMERA_CHARGE_UI_BELOW_FULL)
-#endif
+                if (((camera->flags >> 3) & 3) !=
+                    PHOTO_CAMERA_CHARGE_UI_BELOW_FULL)
                 {
                     if (camera->vmIds[9])
                     {
@@ -1542,18 +1306,14 @@ updateCharge:
                     }
                     if (PhotoCameraVmIdIsZero(&camera->vmIds[10]))
                     {
-                        camera->vmIds[10] =
-                            g_PhotoStageState->anm->CreateVm(0x20, 0);
+                        camera->vmIds[10] = TH095_PHOTO_ANM_CREATE_VM(
+                            g_PhotoStageState->anm, 0x20, 0);
                     }
                     TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[0].value, 3);
                     TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[1].value, 3);
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
                     camera->flags &= ~PHOTO_FLAG_CHARGE_UI_MASK;
-#else
-                    camera->chargeUiState = PHOTO_CAMERA_CHARGE_UI_BELOW_FULL;
-#endif
                     camera->viewfinderVms[0].pendingInterrupt = 3;
                     camera->viewfinderVms[1].pendingInterrupt = 3;
                     camera->viewfinderVms[2].pendingInterrupt = 3;
@@ -1604,7 +1364,7 @@ updateCharge:
         }
         if (PHOTO_SOUND_SUPPRESSED != 0)
         {
-            PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_CAMERA_FOCUS);
+            PhotoSoundPlayer()->StopSoundByIdx(SOUND_CAMERA_FOCUS);
         }
 
 cameraActive:
@@ -1615,10 +1375,14 @@ cameraActive:
             if (targetAngle < 0.0f)
                 targetAngle += 6.2831855f;
             i32 angleSector = (i32)(targetAngle / 0.7853982f);
-            g_PhotoGame->effectAnm->SetAndExecuteScriptIdx(
-                &g_PhotoGame->effectVm, 5);
-            g_PhotoGame->effectAnm->SetSprite(
-                &g_PhotoGame->effectVm, angleSector + 0x18);
+            TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM()->SetAndExecuteScriptIdx(
+                reinterpret_cast<AnmVm *>(
+                    &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectVm),
+                5);
+            TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM()->SetSprite(
+                reinterpret_cast<AnmVm *>(
+                    &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectVm),
+                angleSector + 0x18);
 
             if (camera->CountPhotoTargets(NULL, NULL) != 0)
             {
@@ -1626,7 +1390,7 @@ cameraActive:
                 {
                     if (PHOTO_SOUND_SUPPRESSED == 0)
                         PhotoSoundPlayer()->PlaySoundByIdx(
-                            TH095_SOUND_TARGET_ACQUIRED, 0);
+                            SOUND_TARGET_ACQUIRED, 0);
                     camera->flags |= PHOTO_FLAG_TARGET_SOUND_PLAYED;
                 }
                 if (PHOTO_CAMERA_TARGET_FRAME_ACTIVE(camera->flags) == 0)
@@ -1667,13 +1431,8 @@ cameraActive:
                 }
             }
 
-#ifdef TH095_MATCH_EXACT
-            g_PhotoBulletManager->BeginPhotoCapture(
-                &camera->viewfinderPosition, &camera->viewfinderSize);
-#else
             g_Background->SetPhotoArea(
                 &camera->viewfinderPosition, &camera->viewfinderSize);
-#endif
             if (camera->charge >= 0.35f)
             {
                 g_AnmGameSpeed = 0.25f;
@@ -1697,11 +1456,17 @@ cameraActive:
     {
         if (PhotoTimerAdvancedTo(&camera->modeTimer, 20) != 0)
         {
-            if (g_PhotoGame->movementState == 0 ||
-                g_PhotoGame->movementState == 1 ||
-                g_PhotoGame->movementState == 2)
+            if (TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState ==
+                    PHOTO_PLAYER_DIRECTION_NONE ||
+                TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState ==
+                    PHOTO_PLAYER_DIRECTION_UP ||
+                TH095_PHOTO_CAMERA_PLAYER_STORAGE()->movementState ==
+                    PHOTO_PLAYER_DIRECTION_DOWN)
             {
-                g_PhotoGame->effectAnm->InitializeVm(&g_PhotoGame->effectVm, 0);
+                TH095_PHOTO_CAMERA_PLAYER_EFFECT_ANM()->InitializeVm(
+                    reinterpret_cast<AnmVm *>(
+                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectVm),
+                    0);
             }
             if ((camera->flags & PHOTO_FLAG_ALTERNATE_CAPTURE) != 0)
             {
@@ -1712,10 +1477,12 @@ cameraActive:
                         camera->viewfinderPosition.x);
                 }
                 Float3 effectPosition;
-                TH095_PHOTO_ANM_SET_POSITION_DIRECT(
-                    g_PhotoStageState->anm->CreateVm(0x21, 0).value,
+                TH095_PHOTO_ANM_SET_CREATED_POSITION(
+                    TH095_PHOTO_ANM_CREATE_VM(
+                        g_PhotoStageState->anm, 0x21, 0).value,
                     PhotoToScreen(
-                        &effectPosition, &g_PhotoGame->playerPosition));
+                        &effectPosition,
+                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition));
             }
             else
             {
@@ -1726,10 +1493,12 @@ cameraActive:
                         camera->viewfinderPosition.x);
                 }
                 Float3 effectPosition;
-                TH095_PHOTO_ANM_SET_POSITION_DIRECT(
-                    g_PhotoStageState->anm->CreateVm(0x22, 0).value,
+                TH095_PHOTO_ANM_SET_CREATED_POSITION(
+                    TH095_PHOTO_ANM_CREATE_VM(
+                        g_PhotoStageState->anm, 0x22, 0).value,
                     PhotoToScreen(
-                        &effectPosition, &g_PhotoGame->playerPosition));
+                        &effectPosition,
+                        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition));
             }
         }
         if (camera->modeTimer >= 60)

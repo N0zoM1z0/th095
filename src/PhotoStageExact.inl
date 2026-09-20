@@ -7,6 +7,11 @@
 namespace th095
 {
 
+#include "PhotoCameraPlayerEmission.inl"
+
+#define TH095_PHOTO_STAGE_PLAYER_STORAGE() \
+    reinterpret_cast<PhotoPlayerRuntimeView *>(g_PhotoGame)
+
 struct PhotoAnmVmIdValue
 {
     i32 value;
@@ -29,11 +34,6 @@ struct PhotoStageCameraView : PhotoCameraState
         return this->photoLimit;
     }
 };
-
-__forceinline i32 PhotoAnmVmId::operator==(PhotoAnmVmIdValue other) const
-{
-    return this->value == other.value;
-}
 
 enum PhotoStageFlags
 {
@@ -327,7 +327,6 @@ typedef char PhotoStageAnmAt2571C[
 typedef char PhotoStageCaptureFrameAt25724[
     (offsetof(PhotoStageStateView, captureFrame) == 0x25724) ? 1 : -1];
 
-extern PhotoGameStateView *g_PhotoGame;
 extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
 extern PhotoStageSaveDataView *g_PhotoStageSaveData;
 extern PhotoStageRuntimeView *g_PhotoStageRuntime;
@@ -364,7 +363,8 @@ static inline PhotoStageAnmLoadedView *GetPhotoStageAnm(
 
 static inline PhotoStageCameraView *GetPhotoStageCamera()
 {
-    return reinterpret_cast<PhotoStageCameraView *>(&g_PhotoGame->camera);
+    return reinterpret_cast<PhotoStageCameraView *>(
+        &TH095_PHOTO_STAGE_PLAYER_STORAGE()->camera);
 }
 
 static __forceinline void PhotoStageInterruptCurrentEntryPhase(
@@ -834,7 +834,7 @@ static __forceinline f32 PhotoStageEntryXValue(i32 index)
 
 static __forceinline i32 PhotoStageEntryVmIsZero(const PhotoAnmVmId &id)
 {
-    return id == PhotoAnmVmIdValue(0);
+    return id.value == PhotoAnmVmIdValue(0).value;
 }
 
 static __forceinline void PhotoStageInitFrame35Position(Float3 *position, f32 y)
@@ -1255,11 +1255,12 @@ i32 PhotoStageStateView::Update()
 
     if (this->playerPassed == 0)
     {
-        if (this->boundaryY + 32.0f > g_PhotoGame->playerPosition.y &&
+        if (this->boundaryY + 32.0f >
+                TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.y &&
             ((this->boundaryX < 320.0f &&
-              g_PhotoGame->playerPosition.x < 0.0f) ||
+              TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x < 0.0f) ||
              (this->boundaryX >= 320.0f &&
-              g_PhotoGame->playerPosition.x >= 0.0f)))
+              TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x >= 0.0f)))
         {
             this->flags |= PHOTO_STAGE_PLAYER_PASSED;
             fadeVm1 = this->displayVms;
@@ -1273,11 +1274,11 @@ i32 PhotoStageStateView::Update()
         }
     }
     else if (!(this->boundaryY + 32.0f >
-                   g_PhotoGame->playerPosition.y &&
+                   TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.y &&
                ((this->boundaryX < 320.0f &&
-                 g_PhotoGame->playerPosition.x < 0.0f) ||
+                 TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x < 0.0f) ||
                 (this->boundaryX >= 320.0f &&
-                 g_PhotoGame->playerPosition.x >= 0.0f))))
+                 TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x >= 0.0f))))
     {
         this->flags &= ~PHOTO_STAGE_PLAYER_PASSED;
         fadeVm2 = this->displayVms;
@@ -1350,8 +1351,8 @@ i32 PhotoStageStateView::SavePhoto(
     this->GetCaptureHeight() = height;
     this->GetCaptureSlot() = slotIndex;
 
-    if (g_PhotoGame->playerPosition.y < 224.0f &&
-        g_PhotoGame->playerPosition.x < 0.0f)
+    if (TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.y < 224.0f &&
+        TH095_PHOTO_STAGE_PLAYER_STORAGE()->playerPosition.x < 0.0f)
     {
         locals.photoX = 352.0f;
     }

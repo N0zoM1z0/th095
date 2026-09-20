@@ -4,7 +4,8 @@
 #include "ecl/EclOperands.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "PhotoEnemyManager.hpp"
-#include "ecl/EnemyEclRuntimeView.hpp"
+#else
+#include "EclDependenciesPhotoEnemyEmission.hpp"
 #endif
 #include "utils.hpp"
 #include "Player.hpp"
@@ -79,32 +80,11 @@ extern EnemyEclInterpolatorCallback g_EclInterpolatorCallbacks[];
 
 // TH095 keeps movement control and bounds in the compact enemy runtime block
 // used by RunEcl. These fields predate the later shared Enemy view fields.
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-struct EclDependencyMovementFlagBits
-{
-    u32 unknown00 : 10;
-    u32 movementMode : 2;
-    u32 movementEasing : 3;
-    u32 unknown15 : 17;
-};
-typedef char EclDependencyMovementFlagBitsSizeCheck[(sizeof(EclDependencyMovementFlagBits) == 4) ? 1 : -1];
-#define DEP_MOVEMENT_FLAGS(enemy) (*reinterpret_cast<EclDependencyMovementFlagBits *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4))
-#else
-#define DEP_MOVEMENT_FLAGS(enemy) TH095_ENEMY_ECL_CONTROL_BITS(enemy)
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define DEP_MOVEMENT_BOUNDS(enemy) (*reinterpret_cast<EnemyMovementBounds *>(reinterpret_cast<u8 *>(enemy) + 0x2c3c))
-#else
-struct EclDependencyMovementBoundsView
-{
-    u8 unknown0000[0x2c3c];
-    EnemyMovementBounds movementBounds;
-};
-typedef char EclDependencyMovementBoundsAt2C3C[
-    (offsetof(EclDependencyMovementBoundsView, movementBounds) == 0x2c3c) ? 1 : -1];
-#define DEP_MOVEMENT_BOUNDS(enemy) \
-    (reinterpret_cast<EclDependencyMovementBoundsView *>(enemy)->movementBounds)
-#endif
+#define DEP_MOVEMENT_FLAGS(enemy) (*reinterpret_cast<PhotoEnemyView *>(enemy))
+#define DEP_MOVEMENT_LOWER(enemy) \
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->movementBoundsMin)
+#define DEP_MOVEMENT_UPPER(enemy) \
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->movementBoundsMax)
 
 // FUNCTION: TH095 0x00412490; TH08 0x004222B0 is the source-shape oracle.
 void __fastcall StartTimedPolarDisplacement(
@@ -140,7 +120,7 @@ void __fastcall BeginBoundaryAwareMove(
         angle = g_Rng.GetRandomF32InRange(1.5707964f) - 0.78539819f;
     }
 
-    if (enemy->position.x < DEP_MOVEMENT_BOUNDS(enemy).lower.x + 96.0f)
+    if (enemy->position.x < DEP_MOVEMENT_LOWER(enemy).x + 96.0f)
     {
         if (angle > 1.5707964f)
             angle = 3.1415927f - angle;
@@ -148,7 +128,7 @@ void __fastcall BeginBoundaryAwareMove(
             angle = -3.1415927f - angle;
     }
 
-    if (enemy->position.x > DEP_MOVEMENT_BOUNDS(enemy).upper.x - 96.0f)
+    if (enemy->position.x > DEP_MOVEMENT_UPPER(enemy).x - 96.0f)
     {
         if (angle < 1.5707964f && angle >= 0.0f)
             angle = 3.1415927f - enemy->movementAngle;
@@ -156,12 +136,12 @@ void __fastcall BeginBoundaryAwareMove(
             angle = -3.1415927f - angle;
     }
 
-    if (enemy->position.y < DEP_MOVEMENT_BOUNDS(enemy).lower.y + 48.0f &&
+    if (enemy->position.y < DEP_MOVEMENT_LOWER(enemy).y + 48.0f &&
         angle < 0.0f)
     {
         angle = -angle;
     }
-    if (enemy->position.y > DEP_MOVEMENT_BOUNDS(enemy).upper.y - 48.0f &&
+    if (enemy->position.y > DEP_MOVEMENT_UPPER(enemy).y - 48.0f &&
         angle > 0.0f)
     {
         angle = -angle;
@@ -307,55 +287,13 @@ compare_failure:
     }
 }
 
-// TH095 call-stack suppression is bit 24 of the target-local flags word at
-// enemy +0x2BF4; the generic TH08 flag enum uses a different bit position.
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TargetEclControlWord TargetFlags1
-static __forceinline u32 &TargetEclControlWord(Enemy *enemy)
-{
-    return *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(enemy) + 0x2bf4);
-}
-#else
-static __forceinline u32 &TargetEclControlWord(Enemy *enemy)
-{
-    return reinterpret_cast<EnemyEclRuntimeView *>(enemy)->controlWord;
-}
-#endif
-#if defined(TH095_MATCH_EXACT)
 #define DEP_ANM_DIRECTION(enemy) \
-    (*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x2c0a))
-#else
-struct EclDependencyAnmDirectionView
-{
-    u8 unknown0000[0x2c0a];
-    u8 anmDirection;
-};
-typedef char EclDependencyAnmDirectionAt2C0A[
-    (offsetof(EclDependencyAnmDirectionView, anmDirection) == 0x2c0a) ? 1 : -1];
-#define DEP_ANM_DIRECTION(enemy) \
-    (reinterpret_cast<EclDependencyAnmDirectionView *>(enemy)->anmDirection)
-#endif
-#define DEP_PRIMARY_ANM_SCRIPTS(enemy) \
-    (*reinterpret_cast<EnemyAnmScripts *>(reinterpret_cast<u8 *>(enemy) + 0x2c0e))
-#if defined(TH095_MATCH_EXACT)
-#define TargetChildEclBlocks TargetAllocatedEclArgs
+    (reinterpret_cast<PhotoEnemyView *>(enemy)->anmDirection)
 static __forceinline void **TargetChildEclBlocks(Enemy *enemy)
 {
-    return reinterpret_cast<void **>(reinterpret_cast<u8 *>(enemy) + 0x2cac);
+    return reinterpret_cast<void **>(
+        &reinterpret_cast<PhotoEnemyView *>(enemy)->childEclBlocks[0]);
 }
-#else
-struct EclDependencyChildBlockView
-{
-    u8 unknown0000[0x2cac];
-    EnemyChildEclBlock *childEclBlocks[16];
-};
-typedef char EclDependencyChildBlocksAt2CAC[
-    (offsetof(EclDependencyChildBlockView, childEclBlocks) == 0x2cac) ? 1 : -1];
-static __forceinline EnemyChildEclBlock **TargetChildEclBlocks(Enemy *enemy)
-{
-    return reinterpret_cast<EclDependencyChildBlockView *>(enemy)->childEclBlocks;
-}
-#endif
 
 // FUNCTION: TH095 0x00411F70; TH08 0x00421BD0 is the source-shape oracle.
 void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32 rawSubId)
@@ -363,11 +301,7 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
     enemy->activeEclContext->currentInstr =
         reinterpret_cast<EclRawInstruction *>(reinterpret_cast<u8 *>(instruction) + instruction->nextOffset);
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    if (((TargetEclControlWord(enemy) >> 24) & 1) == 0)
-#else
-    if (TH095_ENEMY_ECL_CONTROL_BITS(enemy).suppressEclCallStack == 0)
-#endif
+    if (reinterpret_cast<PhotoEnemyView *>(enemy)->suppressEclCallStack == 0)
     {
         enemy->activeEclCallStack[enemy->activeEclCallStackDepth] =
             *enemy->activeEclContext;
@@ -382,13 +316,8 @@ void __fastcall CallSubOnEnemy(Enemy *enemy, EclRawInstruction *instruction, i32
         &enemy->activeEclContext->callParameterInts[0]) =
         g_PhotoEnemyManager->eclManager->callParameters;
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    if (((TargetEclControlWord(enemy) >> 24) & 1) == 0 &&
+    if (reinterpret_cast<PhotoEnemyView *>(enemy)->suppressEclCallStack == 0 &&
         enemy->activeEclCallStackDepth < 15)
-#else
-    if (TH095_ENEMY_ECL_CONTROL_BITS(enemy).suppressEclCallStack == 0 &&
-        enemy->activeEclCallStackDepth < 15)
-#endif
     {
         ++enemy->activeEclCallStackDepth;
     }
@@ -399,11 +328,7 @@ int __fastcall PopEclContext(Enemy *enemy, EclRawInstruction *instruction)
 {
     i32 contextIndex;
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    if (((TargetEclControlWord(enemy) >> 24) & 1) != 0)
-#else
-    if (TH095_ENEMY_ECL_CONTROL_BITS(enemy).suppressEclCallStack != 0)
-#endif
+    if (reinterpret_cast<PhotoEnemyView *>(enemy)->suppressEclCallStack != 0)
         utils::DebugPrint("error : no Stack Ret\r\n");
 
     --enemy->activeEclCallStackDepth;
@@ -432,26 +357,28 @@ void __fastcall SetPrimaryAnmScripts(
     Enemy *enemy, EclRawInstruction *instruction,
     i32 script0, i32 script1, i32 script2, i32 script3, i32 script4, i32 script5)
 {
-    DEP_PRIMARY_ANM_SCRIPTS(enemy).idleInitial = static_cast<i16>(script0);
-    DEP_PRIMARY_ANM_SCRIPTS(enemy).moveLeft = static_cast<i16>(script1);
-    DEP_PRIMARY_ANM_SCRIPTS(enemy).moveRight = static_cast<i16>(script2);
-    DEP_PRIMARY_ANM_SCRIPTS(enemy).idleFromLeft = static_cast<i16>(script3);
-    DEP_PRIMARY_ANM_SCRIPTS(enemy).idleFromRight = static_cast<i16>(script4);
-    DEP_PRIMARY_ANM_SCRIPTS(enemy).special = static_cast<i16>(script5);
+    reinterpret_cast<PhotoEnemyView *>(enemy)->idleAnmScript =
+        static_cast<i16>(script0);
+    reinterpret_cast<PhotoEnemyView *>(enemy)->moveLeftAnmScript =
+        static_cast<i16>(script1);
+    reinterpret_cast<PhotoEnemyView *>(enemy)->moveRightAnmScript =
+        static_cast<i16>(script2);
+    reinterpret_cast<PhotoEnemyView *>(enemy)->idleFromLeftAnmScript =
+        static_cast<i16>(script3);
+    reinterpret_cast<PhotoEnemyView *>(enemy)->idleFromRightAnmScript =
+        static_cast<i16>(script4);
+    reinterpret_cast<PhotoEnemyView *>(enemy)->specialAnmScript =
+        static_cast<i16>(script5);
     DEP_ANM_DIRECTION(enemy) = 0xff;
 }
 
-#undef DEP_PRIMARY_ANM_SCRIPTS
 #undef DEP_ANM_DIRECTION
 #undef DEP_PLAYER_POSITION
-#undef DEP_MOVEMENT_BOUNDS
+#undef DEP_MOVEMENT_UPPER
+#undef DEP_MOVEMENT_LOWER
 #undef DEP_MOVEMENT_FLAGS
 #undef DEP_READ_FLOAT
 #undef DEP_READ_INT
 }
 
 }
-
-#if defined(TH095_MATCH_EXACT)
-#undef TargetChildEclBlocks
-#endif

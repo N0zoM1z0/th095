@@ -1,16 +1,11 @@
 #include "inttypes.hpp"
+#include "Rng.hpp"
 #include <windows.h>
 #include <stddef.h>
 #include <string.h>
 
 namespace th095
 {
-
-struct Rng
-{
-    u16 GetRandomU16();
-};
-extern Rng g_Rng;
 
 namespace FileSystem
 {

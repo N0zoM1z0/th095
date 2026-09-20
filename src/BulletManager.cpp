@@ -1,10 +1,4 @@
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_RNG_AS_STRUCT
-#endif
 #include "AnmManager.hpp"
-#ifdef TH095_MATCH_EXACT
-#undef TH095_MATCH_RNG_AS_STRUCT
-#endif
 #include "AnmVmId.hpp"
 #include "PhotoBulletManager.hpp"
 #include "PhotoItemManager.hpp"
@@ -75,16 +69,6 @@ struct PhotoBulletPlayerView
     i32 CheckBulletCollision(
         PhotoBulletVector *position, PhotoBulletVector *size);
 };
-
-#ifdef DIFFBUILD
-struct PhotoBulletSoundPlayerView
-{
-    void PlaySoundByIdx(i32 soundIndex, i32 pan);
-    void PlaySoundPositionedByIdx(i32 soundIndex, f32 positionX);
-};
-extern PhotoBulletSoundPlayerView g_PhotoBulletSoundPlayer;
-#define g_SoundPlayer g_PhotoBulletSoundPlayer
-#endif
 
 #ifdef DIFFBUILD
 #define TH095_PHOTO_BULLET_PLAYER_ANGLE(position) \

@@ -1,3 +1,5 @@
+#include "ReplayScanWorker.hpp"
+
 #ifdef TH095_MATCH_EXACT
 #include "ReplayScanWorkerExact.inl"
 #else
@@ -8,16 +10,7 @@
 namespace th095
 {
 
-#ifdef DIFFBUILD
-#define threadHandle handle
-#endif
-
 #ifndef DIFFBUILD
-typedef char ReplayScanWorkerExitSignalAt08[
-    (offsetof(ReplayScanWorker, exitSignal) == 0x08) ? 1 : -1];
-typedef char ReplayScanWorkerActiveAt0C[
-    (offsetof(ReplayScanWorker, active) == 0x0c) ? 1 : -1];
-
 // Hash-attested target xrefs place every help/front-end/replay completion write
 // at 0x004C4CC0/0x004C4CC4, which are +0x08/+0x0c in the Supervisor worker
 // rooted at 0x004C4CB8. ReplayBrowserExitSignal::Request likewise writes +8.
@@ -93,10 +86,6 @@ void Supervisor::StopReplayScan()
 {
     this->replayScanWorker.Stop();
 }
-
-#ifdef DIFFBUILD
-#undef threadHandle
-#endif
 
 } // namespace th095
 

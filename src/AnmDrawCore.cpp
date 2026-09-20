@@ -22,18 +22,6 @@ enum AnmDrawInnerFlags
     ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE
 #endif
 
-struct AnmViewportConfigurationView
-{
-    u8 unknown000[0xcc];
-    D3DVIEWPORT8 viewport;
-};
-
-struct AnmSupervisorDrawView
-{
-    u8 unknown000[0x3c4];
-    AnmViewportConfigurationView *currentViewport;
-};
-
 struct AnmSpriteDimensions
 {
     f32 width;
@@ -84,18 +72,10 @@ typedef char AnmCameraFacingDeepLocalsSizeIs58[
 typedef char AnmCameraFacingShallowLocalsSizeIs14[
     (sizeof(AnmCameraFacingShallowLocals) == 0x14) ? 1 : -1];
 
-struct AnmBackgroundViewportView
+// Fieldless exact-relocation adapter for the historical
+// g_CurrentBackgroundViewport decoration.
+struct AnmBackgroundViewportView : SupervisorViewportConfiguration
 {
-    Float3 cameraPosition;
-    Float3 cameraLookAtOffset;
-    Float3 cameraUp;
-    Float3 cameraForward;
-    Float3 cameraRight;
-    Float3 cameraPositionOffset;
-    f32 fieldOfView;
-    D3DXMATRIX viewMatrix;
-    D3DXMATRIX projectionMatrix;
-    D3DVIEWPORT8 viewport;
 };
 
 struct AnmPhotoBlendDrawLocals
@@ -125,7 +105,7 @@ extern AnmBackgroundViewportView *g_CurrentBackgroundViewport;
 static __forceinline AnmBackgroundViewportView *AnmCurrentBackgroundViewport()
 {
     return reinterpret_cast<AnmBackgroundViewportView *>(
-        g_Supervisor.currentBackgroundViewport);
+        g_Supervisor.currentViewportConfiguration);
 }
 #define g_CurrentBackgroundViewport AnmCurrentBackgroundViewport()
 #endif
@@ -138,8 +118,8 @@ extern Float3 g_BackgroundCameraPosition;
 // than require the obsolete standalone reconstruction symbol.  Exact objects
 // keep the original external relocation above.
 #define g_BackgroundCameraPosition                                      \
-    (*reinterpret_cast<Float3 *>(                                      \
-        g_Supervisor.backgroundViewportConfigurations))
+    (g_Supervisor.viewportConfigurations[SUPERVISOR_VIEWPORT_PLAYFIELD] \
+         .cameraPosition)
 #endif
 
 static __forceinline u8 MixAnmColor(u8 first, u8 second)
@@ -368,18 +348,12 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
                      ? g_AnmTexturedVertices[3].y
                      : triangleY2;
 
-    if (triangleX1 < reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
-                           ->currentViewport->viewport.X ||
-        triangleY1 < reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
-                           ->currentViewport->viewport.Y ||
-        triangleX2 > reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
-                             ->currentViewport->viewport.X +
-                         reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
-                             ->currentViewport->viewport.Width ||
-        triangleY2 > reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
-                             ->currentViewport->viewport.Y +
-                         reinterpret_cast<AnmSupervisorDrawView *>(&g_Supervisor)
-                             ->currentViewport->viewport.Height)
+    if (triangleX1 < g_Supervisor.currentViewportConfiguration->viewport.X ||
+        triangleY1 < g_Supervisor.currentViewportConfiguration->viewport.Y ||
+        triangleX2 > g_Supervisor.currentViewportConfiguration->viewport.X +
+                         g_Supervisor.currentViewportConfiguration->viewport.Width ||
+        triangleY2 > g_Supervisor.currentViewportConfiguration->viewport.Y +
+                         g_Supervisor.currentViewportConfiguration->viewport.Height)
         return ZUN_SUCCESS;
 
     if (this->currentTexture != vm->loadedSprite->texture)

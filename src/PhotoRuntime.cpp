@@ -1,9 +1,7 @@
 #include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+#include "PhotoEnemy.hpp"
 #include "PhotoEnemyManager.hpp"
-#include "ecl/EnemyEclRuntimeView.hpp"
-#endif
 
 namespace th095
 {
@@ -36,46 +34,6 @@ extern PhotoItemManagerView *g_PhotoItemManager;
     TH095_RUNTIME_GLOBAL_PTR(PhotoItemManagerView, g_RuntimeItemManagerOwner)
 #endif
 
-struct PhotoTargetEnemyView
-{
-    u8 unknown0000[0x2dc];
-    u8 mainEclContext[0x285a - 0x2dc];
-    i16 photoCaptureEclSubroutineId;
-    u8 unknown285c[0x28a0 - 0x285c];
-    Float3 position;
-    u8 unknown28ac[0x28dc - 0x28ac];
-    Float3 collisionSize;
-    u8 unknown28e8[0x2bf4 - 0x28e8];
-    u32 flags1;
-    u32 flags2;
-    u8 trailing[0x4cc0 - 0x2bfc];
-};
-typedef char PhotoTargetEnemySize[(sizeof(PhotoTargetEnemyView) == 0x4cc0) ? 1 : -1];
-typedef char PhotoTargetEnemyCaptureEclAt285A[
-    (offsetof(PhotoTargetEnemyView, photoCaptureEclSubroutineId) == 0x285a) ? 1 : -1];
-typedef char PhotoTargetEnemyPosition[(offsetof(PhotoTargetEnemyView, position) == 0x28a0) ? 1 : -1];
-typedef char PhotoTargetEnemyCollision[(offsetof(PhotoTargetEnemyView, collisionSize) == 0x28dc) ? 1 : -1];
-typedef char PhotoTargetEnemyFlags1[(offsetof(PhotoTargetEnemyView, flags1) == 0x2bf4) ? 1 : -1];
-typedef char PhotoTargetEnemyFlags2[(offsetof(PhotoTargetEnemyView, flags2) == 0x2bf8) ? 1 : -1];
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct PhotoRuntimeView
-{
-    u8 unknown0000[0x4df4];
-    PhotoEnemyEclManagerView *eclManager;
-    u8 unknown4df8[8];
-    PhotoTargetEnemyView enemies[128];
-
-    i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
-};
-#define TH095_PHOTO_RUNTIME_OWNER PhotoRuntimeView
-#define TH095_PHOTO_RUNTIME_FIRST_ENEMY(owner) (&(owner)->enemies[0])
-#else
-#define TH095_PHOTO_RUNTIME_OWNER PhotoEnemyManagerView
-#define TH095_PHOTO_RUNTIME_FIRST_ENEMY(owner) \
-    reinterpret_cast<PhotoTargetEnemyView *>((owner)->EnemyAt(0))
-#endif
-
 // Keep the TH08 Float3 divide body in this call-site allocation phase.
 static __forceinline Float3 DividePhotoVector(
     const Float3 &value, f32 scalar)
@@ -89,13 +47,13 @@ static __forceinline Float3 DividePhotoVector(
 }
 
 // FUNCTION: TH095 0x004168D0.
-int TH095_PHOTO_RUNTIME_OWNER::CountPhotoTargets(
+int PhotoEnemyManagerView::CountPhotoTargets(
     const Float3 *position, const Float3 *size)
 {
     struct CountPhotoTargetLocals
     {
         i32 i;
-        PhotoTargetEnemyView *enemy;
+        PhotoEnemyView *enemy;
         Float3 captureMaximum;
         Float3 enemyMaximum;
         Float3 enemyMinimum;
@@ -103,7 +61,7 @@ int TH095_PHOTO_RUNTIME_OWNER::CountPhotoTargets(
         i32 count;
     } locals;
 
-    locals.enemy = TH095_PHOTO_RUNTIME_FIRST_ENEMY(this);
+    locals.enemy = &this->enemyPool[0];
     locals.count = 0;
 
     locals.captureMaximum = DividePhotoVector(*size, 2.0f);
@@ -113,21 +71,15 @@ int TH095_PHOTO_RUNTIME_OWNER::CountPhotoTargets(
 
     for (locals.i = 0; locals.i < 128; ++locals.i, ++locals.enemy)
     {
-        if ((locals.enemy->flags1 & 1U) == 0)
+        if (locals.enemy->active == 0)
             continue;
-        if (((locals.enemy->flags1 >> 1) & 1U) != 0)
+        if (locals.enemy->photoTarget != 0)
             continue;
-        if (((locals.enemy->flags1 >> 8) & 3U) != 0)
+        if (locals.enemy->lifecycleState != 0)
             continue;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (((locals.enemy->flags1 >> 4) & 1U) != 0 ||
+        if (locals.enemy->hiddenFromDrawGroups != 0 ||
             ((locals.enemy->flags1 >> 5) & 1U) != 0 ||
-            ((locals.enemy->flags2 >> 6) & 1U) != 0)
-#else
-        if (TH095_ENEMY_ECL_CONTROL_BITS(locals.enemy).hiddenFromDrawGroups != 0 ||
-            ((locals.enemy->flags1 >> 5) & 1U) != 0 ||
-            TH095_ENEMY_ECL_SECONDARY_BITS(locals.enemy).showPhotoMarker != 0)
-#endif
+            locals.enemy->showPhotoMarker != 0)
             continue;
 
         locals.enemyMinimum =
@@ -145,15 +97,13 @@ int TH095_PHOTO_RUNTIME_OWNER::CountPhotoTargets(
 
         if (locals.enemy->photoCaptureEclSubroutineId < 0)
         {
-            locals.enemy->flags1 =
-                (locals.enemy->flags1 & ~0x300U) | 0x100U;
+            locals.enemy->lifecycleState = 1;
         }
         else
         {
             TH095_PHOTO_RUNTIME_ECL_INIT(
                 this->eclManager,
-                reinterpret_cast<PhotoEnemyEclContextView *>(
-                    locals.enemy->mainEclContext),
+                &locals.enemy->mainEclContext,
                 locals.enemy->photoCaptureEclSubroutineId);
         }
 

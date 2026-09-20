@@ -1,3 +1,6 @@
+#include "../PhotoStraightLaserArgs.hpp"
+#include "../PhotoRotatingLaserArgs.hpp"
+
 // TH08 1.00d RunEcl high-opcode reconstruction.
 //
 // Scope owned by this file:
@@ -98,291 +101,19 @@ struct SpawnPacketSmall
 };
 C_ASSERT(sizeof(SpawnPacketSmall) == 0x10);
 
-#if !defined(TH095_MATCH_EXACT)
-struct Th095EnemyMovementBoundsView
-{
-    u8 unknown0000[0x2c3c];
-    EnemyMovementBounds movementBounds;
-};
-C_ASSERT(offsetof(Th095EnemyMovementBoundsView, movementBounds) == 0x2c3c);
-
-struct Th095BulletSpawnSoundView
-{
-    u8 unknown000[0x1fc];
-    u32 transformFlags;
-    i32 spawnSound;
-    i32 transformSound;
-};
-C_ASSERT(offsetof(Th095BulletSpawnSoundView, transformFlags) == 0x1fc);
-C_ASSERT(offsetof(Th095BulletSpawnSoundView, spawnSound) == 0x200);
-C_ASSERT(offsetof(Th095BulletSpawnSoundView, transformSound) == 0x204);
-struct Th095EnemyBulletSpawnSoundView
-{
-    u8 unknown0000[0x298c];
-    Th095BulletSpawnSoundView bulletSpawnDescriptor;
-};
-C_ASSERT(offsetof(Th095EnemyBulletSpawnSoundView, bulletSpawnDescriptor) == 0x298c);
-#define TH095_ENEMY_BULLET_SPAWN_SOUND_VIEW(enemy)                          \
-    (&reinterpret_cast<Th095EnemyBulletSpawnSoundView *>(enemy)             \
-          ->bulletSpawnDescriptor)
-
-#if !defined(DIFFBUILD)
-struct Th095EnemyBulletSpawnDescriptorView
-{
-    u8 unknown0000[0x298c];
-    BulletSpawnDescriptor bulletSpawnDescriptor;
-};
-C_ASSERT(offsetof(Th095EnemyBulletSpawnDescriptorView, bulletSpawnDescriptor) == 0x298c);
-#define TH095_ENEMY_BULLET_SPAWN_DESCRIPTOR(enemy)                          \
-    (&reinterpret_cast<Th095EnemyBulletSpawnDescriptorView *>(enemy)        \
-          ->bulletSpawnDescriptor)
-
-struct Th095BulletSpawnTransformView
-{
-    u8 unknown000[0x20];
-    BulletTransformRecord transforms[18];
-};
-C_ASSERT(offsetof(Th095BulletSpawnTransformView, transforms) == 0x20);
-struct Th095EnemyBulletSpawnTransformView
-{
-    u8 unknown0000[0x298c];
-    Th095BulletSpawnTransformView bulletSpawnDescriptor;
-};
-C_ASSERT(offsetof(Th095EnemyBulletSpawnTransformView, bulletSpawnDescriptor) == 0x298c);
-#define TH095_ENEMY_BULLET_TRANSFORM_RECORD(enemy, index)                   \
-    (&reinterpret_cast<Th095EnemyBulletSpawnTransformView *>(enemy)         \
-          ->bulletSpawnDescriptor.transforms[(index)])
-#endif
-
-struct Th095EnemyPhotoMarkerPulseView
-{
-    u8 unknown0000[0x2bfc];
-    ZunTimer photoMarkerPulseTimer;
-};
-C_ASSERT(offsetof(Th095EnemyPhotoMarkerPulseView, photoMarkerPulseTimer) == 0x2bfc);
-
-struct Th095EnemyShotCadenceView
-{
-    u8 unknown0000[0x2bc8];
-    i32 shootIntervalFrames;
-    ZunTimer shootIntervalTimer;
-};
-C_ASSERT(offsetof(Th095EnemyShotCadenceView, shootIntervalFrames) == 0x2bc8);
-C_ASSERT(offsetof(Th095EnemyShotCadenceView, shootIntervalTimer) == 0x2bcc);
-
-struct Th095PhotoTargetRuntimeView
-{
-    u8 unknown000000[0x26ae00];
-    Enemy *photoTargets[8];
-};
-C_ASSERT(offsetof(Th095PhotoTargetRuntimeView, photoTargets) == 0x26ae00);
-
-struct Th095PhotoTargetSlotView
-{
-    u8 unknown0000[0x2be5];
-    u8 photoTargetSlot;
-};
-C_ASSERT(offsetof(Th095PhotoTargetSlotView, photoTargetSlot) == 0x2be5);
-
-struct Th095ScheduledCallFrameView
-{
-    u8 unknown0000[0x2c54];
-    i32 scheduledCallFrames[10];
-};
-C_ASSERT(offsetof(Th095ScheduledCallFrameView, scheduledCallFrames) == 0x2c54);
-
-struct Th095ScheduledCallRecord
-{
-    union
-    {
-        i32 rawValue;
-        struct
-        {
-            i16 subroutineId;
-            i16 unknown02;
-        };
-    };
-};
-C_ASSERT(sizeof(Th095ScheduledCallRecord) == 4);
-struct Th095ScheduledCallRecordView
-{
-    u8 unknown0000[0x2c7c];
-    Th095ScheduledCallRecord scheduledCalls[10];
-};
-C_ASSERT(offsetof(Th095ScheduledCallRecordView, scheduledCalls) == 0x2c7c);
-#endif
-
-// TH095's high ECL range is the photography/effect lane.  The two packet
-// layouts below are pinned by RunEcl's target stores and the dispatcher at
-// 0x0041DBD0.  Keep the fields explicit: their declaration order also owns
-// the five contiguous 0x48-byte locals in RunEcl's target frame.
-struct PhotoEffectArgsSmall
-{
-    Float3 position;
-    f32 angle;
-#if defined(TH095_MATCH_EXACT)
-    f32 speed;
-    i32 field14;
-    i32 field18;
-    f32 field1C;
-    f32 field20;
-#else
-    f32 maximumLength;
-#if defined(DIFFBUILD)
-    i32 initialLength;
-#else
-    f32 initialLength;
-#endif
-    f32 terminalDistance;
-    f32 width;
-    f32 speed;
-#endif
-    i16 type;
-    i16 color;
-};
-C_ASSERT(sizeof(PhotoEffectArgsSmall) == 0x28);
-#if !defined(TH095_MATCH_EXACT)
-C_ASSERT(offsetof(PhotoEffectArgsSmall, maximumLength) == 0x10);
-C_ASSERT(offsetof(PhotoEffectArgsSmall, initialLength) == 0x14);
-C_ASSERT(offsetof(PhotoEffectArgsSmall, terminalDistance) == 0x18);
-C_ASSERT(offsetof(PhotoEffectArgsSmall, width) == 0x1c);
-C_ASSERT(offsetof(PhotoEffectArgsSmall, speed) == 0x20);
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_SMALL_EFFECT_MAXIMUM_LENGTH(args) args.speed
-#define TH095_SMALL_EFFECT_INITIAL_LENGTH(args) args.field14
-#define TH095_SMALL_EFFECT_WIDTH(args) args.field1C
-#define TH095_SMALL_EFFECT_SPEED(args) args.field20
-#else
-#define TH095_SMALL_EFFECT_MAXIMUM_LENGTH(args) args.maximumLength
-#define TH095_SMALL_EFFECT_INITIAL_LENGTH(args) args.initialLength
-#define TH095_SMALL_EFFECT_WIDTH(args) args.width
-#define TH095_SMALL_EFFECT_SPEED(args) args.speed
-#endif
-
-struct PhotoEffectArgs
-{
-    Float3 position;
-#if defined(TH095_MATCH_EXACT)
-    f32 field0C;
-    f32 field10;
-    f32 field14;
-    f32 angle;
-    f32 angle2;
-    f32 speed;
-    f32 field24;
-    f32 field28;
-    f32 mode;
-    i32 field30;
-    i32 field34;
-    i32 field38;
-    i32 field3C;
-#else
-    Float3 velocity;
-    f32 angle;
-    f32 angularVelocity;
-    f32 maximumLength;
-    f32 initialLength;
-    f32 maximumWidth;
-    f32 speed;
-    i32 startupDuration;
-    i32 growthDuration;
-    i32 sustainDuration;
-    i32 fadeDuration;
-#endif
-    i16 type;
-    i16 color;
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u32 flag0 : 1;
-            u32 flags01_31 : 31;
-#else
-            u32 followPhotoTarget : 1;
-            u32 unknownFlags001_031 : 31;
-#endif
-        };
-    };
-};
-C_ASSERT(sizeof(PhotoEffectArgs) == 0x48);
-C_ASSERT(offsetof(PhotoEffectArgs, angle) == 0x18);
-#if defined(TH095_MATCH_EXACT)
-C_ASSERT(offsetof(PhotoEffectArgs, mode) == 0x2c);
-#else
-C_ASSERT(offsetof(PhotoEffectArgs, velocity) == 0x0c);
-C_ASSERT(offsetof(PhotoEffectArgs, angularVelocity) == 0x1c);
-C_ASSERT(offsetof(PhotoEffectArgs, maximumLength) == 0x20);
-C_ASSERT(offsetof(PhotoEffectArgs, initialLength) == 0x24);
-C_ASSERT(offsetof(PhotoEffectArgs, maximumWidth) == 0x28);
-C_ASSERT(offsetof(PhotoEffectArgs, speed) == 0x2c);
-C_ASSERT(offsetof(PhotoEffectArgs, startupDuration) == 0x30);
-C_ASSERT(offsetof(PhotoEffectArgs, growthDuration) == 0x34);
-C_ASSERT(offsetof(PhotoEffectArgs, sustainDuration) == 0x38);
-C_ASSERT(offsetof(PhotoEffectArgs, fadeDuration) == 0x3c);
-#endif
-C_ASSERT(offsetof(PhotoEffectArgs, type) == 0x40);
-C_ASSERT(offsetof(PhotoEffectArgs, flags) == 0x44);
-
-#if defined(TH095_MATCH_EXACT)
-#define TH095_EFFECT_VELOCITY_X(args) args.field0C
-#define TH095_EFFECT_VELOCITY_Y(args) args.field10
-#define TH095_EFFECT_ANGULAR_VELOCITY(args) args.angle2
-#define TH095_EFFECT_MAXIMUM_LENGTH(args) args.speed
-#define TH095_EFFECT_INITIAL_LENGTH(args) args.field24
-#define TH095_EFFECT_MAXIMUM_WIDTH(args) args.field28
-#define TH095_EFFECT_SPEED(args) args.mode
-#define TH095_EFFECT_STARTUP_DURATION(args) args.field30
-#define TH095_EFFECT_GROWTH_DURATION(args) args.field34
-#define TH095_EFFECT_SUSTAIN_DURATION(args) args.field38
-#define TH095_EFFECT_FADE_DURATION(args) args.field3C
-#else
-#define TH095_EFFECT_VELOCITY_X(args) args.velocity.x
-#define TH095_EFFECT_VELOCITY_Y(args) args.velocity.y
-#define TH095_EFFECT_ANGULAR_VELOCITY(args) args.angularVelocity
-#define TH095_EFFECT_MAXIMUM_LENGTH(args) args.maximumLength
-#define TH095_EFFECT_INITIAL_LENGTH(args) args.initialLength
-#define TH095_EFFECT_MAXIMUM_WIDTH(args) args.maximumWidth
-#define TH095_EFFECT_SPEED(args) args.speed
-#define TH095_EFFECT_STARTUP_DURATION(args) args.startupDuration
-#define TH095_EFFECT_GROWTH_DURATION(args) args.growthDuration
-#define TH095_EFFECT_SUSTAIN_DURATION(args) args.sustainDuration
-#define TH095_EFFECT_FADE_DURATION(args) args.fadeDuration
-#endif
-#if defined(TH095_MATCH_EXACT)
-#define TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) args.flag0
-#else
-#define TH095_EFFECT_FOLLOW_PHOTO_TARGET(args) args.followPhotoTarget
-#endif
+// The two effect packets have distinct profile-independent owners.  Do not
+// merge their overlapping prefixes: PhotoStraightLaserSpawnArgs is 0x28 and
+// PhotoRotatingLaserSpawnArgs is 0x48.
 
 struct PhotoEffectManager
 {
     u32 Spawn(i32 effectType, void *args);
 };
 
-struct PhotoCameraOpcodeState
+inline void AssignPhotoCameraLimit(
+    PhotoPlayerCameraRuntimeView *camera, i32 value)
 {
-    u8 targetPadding00[0xbb0];
-    i32 opcode141Value;
-};
-
-struct PhotoCamera
-{
-    f32 GetAngle(Float3 *position);
-    PhotoCameraOpcodeState *GetOpcodeState()
-    {
-        return &opcodeState;
-    }
-    u8 targetPadding00[0x1e3c];
-    PhotoCameraOpcodeState opcodeState;
-};
-
-inline void AssignPhotoCameraOpcode141(
-    PhotoCameraOpcodeState *state, i32 value)
-{
-    state->opcode141Value = value;
+    camera->photoLimit = value;
 }
 
 struct PhotoAnmHandle
@@ -437,92 +168,6 @@ struct Th095RuntimeManager
     void ResetEnemies();
 };
 
-struct Th095EnemyChildBlockView
-{
-    u8 targetPadding00[0x2cac];
-    EnemyChildEclBlock *childEclBlocks[16];
-};
-
-struct Th095EnemyLifeView
-{
-    u8 targetPadding00[0x2958];
-    i32 life;
-};
-
-struct Th095EnemyPhotoView
-{
-    u8 targetPadding00[0x2c1c];
-    PhotoAnmHandle photoAnmHandle;
-};
-
-#if !defined(TH095_MATCH_EXACT)
-struct Th095EnemyPhotoPulseView
-{
-    u8 targetPadding00[0x2c1c];
-    PhotoAnmHandle photoPulseVmId;
-    u8 unknown2c20[4];
-    ZunTimer photoPulseTimer;
-    ZunTimer photoPulseDurationTimer;
-};
-C_ASSERT(offsetof(Th095EnemyPhotoPulseView, photoPulseVmId) == 0x2c1c);
-C_ASSERT(offsetof(Th095EnemyPhotoPulseView, photoPulseTimer) == 0x2c24);
-C_ASSERT(offsetof(Th095EnemyPhotoPulseView, photoPulseDurationTimer) == 0x2c30);
-#define TH095_ENEMY_PHOTO_PULSE(enemy) \
-    (reinterpret_cast<Th095EnemyPhotoPulseView *>(enemy))
-#endif
-
-struct Th095EnemyAnmHandleView
-{
-    u8 targetPadding00[0x2d4];
-    PhotoAnmHandle handles[2];
-};
-
-struct Th095EnemyPhotoSessionView
-{
-    u8 targetPadding00[0x4cbc];
-    PhotoAnmHandle anmHandle;
-};
-
-struct Th095EnemyFlagsView
-{
-    u8 targetPadding00[0x2bf4];
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknown00_06 : 7;
-            u32 flag7 : 1;
-            u32 unknown08_22 : 15;
-            u32 flag23 : 1;
-            u32 flag24 : 1;
-            u32 unknown25_27 : 3;
-            u32 flag28 : 1;
-            u32 unknown29_31 : 3;
-        };
-    };
-    union
-    {
-        u32 secondaryFlags;
-        struct
-        {
-            u32 secondaryUnknown00_04 : 5;
-            u32 secondaryFlag5 : 1;
-#if defined(TH095_MATCH_EXACT)
-            u32 secondaryFlag6 : 1;
-#else
-            u32 showPhotoMarker : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 secondaryFlag7 : 1;
-#else
-            u32 freezeAttachedVm : 1;
-#endif
-            u32 secondaryUnknown08_31 : 24;
-        };
-    };
-};
-
 // The target's inlined allocation wrapper keeps its size parameter addressable,
 // so VC7.1 materializes it in RunEcl's shared temporary region before malloc.
 inline void *Th095Alloc(size_t size)
@@ -535,43 +180,24 @@ inline i32 Th095PreserveI32(i32 value)
     return *reinterpret_cast<volatile i32 *>(&value);
 }
 
-#define TH095_ENEMY_CHILD_BLOCK_VIEW(enemy) \
-    (reinterpret_cast<Th095EnemyChildBlockView *>(enemy))
 #define TH095_ENEMY_LIFE(enemy) \
-    (reinterpret_cast<Th095EnemyLifeView *>(enemy)->life)
-#define TH095_ENEMY_PHOTO(enemy) \
-    (reinterpret_cast<Th095EnemyPhotoView *>(enemy))
-#define TH095_ENEMY_ANM_HANDLES(enemy) \
-    (reinterpret_cast<Th095EnemyAnmHandleView *>(enemy))
-#if defined(TH095_MATCH_EXACT)
+    TH095_ECL_ENEMY_LIFE(enemy)
 #define TH095_ENEMY_ANM_HANDLE_SLOT(enemy, slot) \
-    (*reinterpret_cast<i32 *>( \
-        reinterpret_cast<u8 *>(enemy) + 0x2d4 + (slot) * 4))
-#else
-#define TH095_ENEMY_ANM_HANDLE_SLOT(enemy, slot) ((enemy)->anmHandles[(slot)])
-#endif
-#define TH095_ENEMY_PHOTO_SESSION(enemy) \
-    (reinterpret_cast<Th095EnemyPhotoSessionView *>(enemy))
-#define TH095_ENEMY_FLAGS(enemy) \
-    (reinterpret_cast<Th095EnemyFlagsView *>(enemy))
-#if defined(TH095_MATCH_EXACT)
+    TH095_PHOTO_ENEMY_I32( \
+        (enemy), th095::PHOTO_ENEMY_ECL_ANM_HANDLES_OFFSET + \
+            sizeof(i32) * (slot))
 #define TH095_ENEMY_SHOW_PHOTO_MARKER(enemy) \
-    (TH095_ENEMY_FLAGS(enemy)->secondaryFlag6)
+    (TH095_ENEMY_ECL_SECONDARY_BITS(enemy).showPhotoMarker)
 #define TH095_ENEMY_PHOTO_MARKER_PULSE_TIMER(enemy) \
-    (*reinterpret_cast<ZunTimer *>(reinterpret_cast<u8 *>(enemy) + 0x2bfc))
+    TH095_ECL_PHOTO_MARKER_TIMER(enemy)
 #define TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) \
-    (TH095_ENEMY_FLAGS(enemy)->secondaryFlag7)
-#else
-#define TH095_ENEMY_SHOW_PHOTO_MARKER(enemy) \
-    (TH095_ENEMY_FLAGS(enemy)->showPhotoMarker)
-#define TH095_ENEMY_PHOTO_MARKER_PULSE_TIMER(enemy) \
-    (reinterpret_cast<Th095EnemyPhotoMarkerPulseView *>(enemy)->photoMarkerPulseTimer)
-#define TH095_ENEMY_FREEZE_ATTACHED_VM(enemy) \
-    (TH095_ENEMY_FLAGS(enemy)->freezeAttachedVm)
-#endif
+    (TH095_ENEMY_ECL_SECONDARY_BITS(enemy).freezeAttachedVm)
+#define TH095_ENEMY_PHOTO_SESSION_HANDLE(enemy) \
+    TH095_ECL_ATTACHED_VM((enemy), PhotoAnmHandle)
+#define TH095_ENEMY_PHOTO_PULSE_HANDLE(enemy) \
+    TH095_ECL_PHOTO_PULSE_VM((enemy), PhotoAnmHandle)
 
 extern PhotoEffectManager *g_Th095PhotoEffectManager;
-extern PhotoCamera *g_Th095PhotoCamera;
 extern u8 *g_Th095StageState;
 extern u8 *g_Th095Runtime;
 extern Th095BulletManager *g_Th095BulletManager;
@@ -596,11 +222,6 @@ inline void DecrementTimer(ZunTimer *timer, i32 value)
 {
     timer->Add(static_cast<f32>(-value));
 }
-
-struct EnemyFloatOperandView
-{
-    f32 ResolveFloat(EclRawOperand operand);
-};
 
 #define TH095_ECL_ASSIGN_FLOAT(field, index) \
     ((field) = TH08_ECL_READ_F_RAWARG(ctx, index))
@@ -1027,204 +648,204 @@ enter_subroutine:
         break;
     case 145:
     {
-        PhotoEffectArgsSmall args;
+        PhotoStraightLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
-        args.field20 = TH08_ECL_READ_F(ctx, 2);
+        args.speed = TH08_ECL_READ_F(ctx, 2);
         args.angle = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 3), 0.0f);
-        args.speed = TH08_ECL_READ_F(ctx, 4);
-        args.field1C = TH08_ECL_READ_F(ctx, 5);
-        args.field14 = 0;
+        args.maximumLength = TH08_ECL_READ_F(ctx, 4);
+        args.width = TH08_ECL_READ_F(ctx, 5);
+        args.initialLength = 0;
         TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }
     case 146:
     {
-        PhotoEffectArgsSmall args;
+        PhotoStraightLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
-        args.field20 = TH08_ECL_READ_F(ctx, 2);
+        args.speed = TH08_ECL_READ_F(ctx, 2);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 3),
-            g_Th095PhotoCamera->GetAngle(&args.position));
-        args.speed = TH08_ECL_READ_F(ctx, 4);
-        args.field1C = TH08_ECL_READ_F(ctx, 5);
-        args.field14 = 0;
+            TH095_ECL_PHOTO_ANGLE(&args.position));
+        args.maximumLength = TH08_ECL_READ_F(ctx, 4);
+        args.width = TH08_ECL_READ_F(ctx, 5);
+        args.initialLength = 0;
         TH095_ECL_EFFECT_MANAGER->Spawn(0, &args);
         break;
     }
     case 147:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 2), 0.0f);
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field24 = args.speed;
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.initialLength = args.maximumLength;
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 148:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 2),
-            g_Th095PhotoCamera->GetAngle(&args.position));
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field24 = args.speed;
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+            TH095_ECL_PHOTO_ANGLE(&args.position));
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.initialLength = args.maximumLength;
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 153:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 2), 0.0f);
-        args.field24 = 0.0f;
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+        args.initialLength = 0.0f;
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 154:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 2),
-            g_Th095PhotoCamera->GetAngle(&args.position));
-        args.field24 = 0.0f;
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+            TH095_ECL_PHOTO_ANGLE(&args.position));
+        args.initialLength = 0.0f;
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 155:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 2), 0.0f);
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field24 = args.speed;
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.initialLength = args.maximumLength;
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        args.field0C = TH08_ECL_READ_F(ctx, 11);
-        args.field10 = TH08_ECL_READ_F(ctx, 12);
-        args.mode = 2.0f;
+        args.velocity.x = TH08_ECL_READ_F(ctx, 11);
+        args.velocity.y = TH08_ECL_READ_F(ctx, 12);
+        args.speed = 2.0f;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 157:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 2), 0.0f);
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field24 = args.speed;
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.initialLength = args.maximumLength;
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        args.field0C = TH08_ECL_READ_F(ctx, 11);
-        args.field10 = TH08_ECL_READ_F(ctx, 12);
-        args.mode = 5.0f;
+        args.velocity.x = TH08_ECL_READ_F(ctx, 11);
+        args.velocity.y = TH08_ECL_READ_F(ctx, 12);
+        args.speed = 5.0f;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }
     case 156:
     {
-        PhotoEffectArgs args;
+        PhotoRotatingLaserSpawnArgs args;
         memset(&args, 0, sizeof(args));
-        args.mode = 8.0f;
+        args.speed = 8.0f;
         args.position = TH08_ECL_CONTEXT_ENEMY(ctx)->worldPosition +
                         TH08_ECL_CONTEXT_ENEMY(ctx)->shootOffset;
         args.type = (i16)TH08_ECL_READ_I(ctx, 0);
         args.color = (i16)TH08_ECL_READ_I(ctx, 1);
         args.angle = AddNormalizeAngle(
             TH08_ECL_READ_F(ctx, 2),
-            g_Th095PhotoCamera->GetAngle(&args.position));
-        args.speed = TH08_ECL_READ_F(ctx, 3);
-        args.field24 = args.speed;
-        args.field28 = TH08_ECL_READ_F(ctx, 4);
-        args.field30 = TH08_ECL_READ_I(ctx, 5);
-        args.field34 = TH08_ECL_READ_I(ctx, 6);
-        args.field38 = TH08_ECL_READ_I(ctx, 7);
-        args.field3C = TH08_ECL_READ_I(ctx, 8);
-        args.angle2 = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
+            TH095_ECL_PHOTO_ANGLE(&args.position));
+        args.maximumLength = TH08_ECL_READ_F(ctx, 3);
+        args.initialLength = args.maximumLength;
+        args.maximumWidth = TH08_ECL_READ_F(ctx, 4);
+        args.startupDuration = TH08_ECL_READ_I(ctx, 5);
+        args.growthDuration = TH08_ECL_READ_I(ctx, 6);
+        args.sustainDuration = TH08_ECL_READ_I(ctx, 7);
+        args.fadeDuration = TH08_ECL_READ_I(ctx, 8);
+        args.angularVelocity = AddNormalizeAngle(TH08_ECL_READ_F(ctx, 9), 0.0f);
         args.flags = args.flags & ~1U | TH08_ECL_RAW_I(ctx, 10) & 1U;
-        args.field0C = TH08_ECL_READ_F(ctx, 11);
-        args.field10 = TH08_ECL_READ_F(ctx, 12);
-        args.mode = 2.0f;
+        args.velocity.x = TH08_ECL_READ_F(ctx, 11);
+        args.velocity.y = TH08_ECL_READ_F(ctx, 12);
+        args.speed = 2.0f;
         TH095_ECL_EFFECT_MANAGER->Spawn(1, &args);
         break;
     }

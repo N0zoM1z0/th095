@@ -1,98 +1,102 @@
 # Current reconstruction handoff
 
-This file is deliberately short and replaceable. Prior operational notes are
-archived in [RE_HANDOFF_HISTORY.md](RE_HANDOFF_HISTORY.md); semantic batch
-records are in [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md). Live counts come
-from the ledgers, not prose.
+This file is deliberately short and replaceable. Accepted semantic batches
+live in [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md), current subsystem routing
+in [SEMANTIC_INDEX.md](SEMANTIC_INDEX.md), build ownership in
+[SOURCE_MAP.md](SOURCE_MAP.md), and older operational notes in
+[RE_HANDOFF_HISTORY.md](RE_HANDOFF_HISTORY.md).
 
 ## Authority and current state
 
 - Target: original Japanese TH095 v1.02a, SHA-256
   `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
 - Semantic backend: hash-attested Ghidra 12.1.3 through `scripts/ghidra.py`.
-- Current phase: **semantic reconstruction, active-incomplete**.
-- Current ledger baseline: 1,880 provisional candidates, 697 source-present,
-  696 exact units covering 336,486 bytes. Recompute; do not copy these counts
-  into a new claim.
-- Semantic progress has no defensible percentage: exact/source counts measure
-  different facts, and substantial owner/protocol review remains.
-- The normal pinned-VC7.1 product compiles and links. This is not whole-image
-  exactness and is not yet an independent modern-compiler/runtime oracle.
+- Phase: **semantic reconstruction, active-incomplete**. There is no defensible
+  completion percentage; source presence, semantic acceptance, exact matching,
+  normal compilation, linkage, and runtime validation are separate facts.
+- Current ledger report (2026-09-20): 1,880 provisional candidates, 713 mapped,
+  697 source-present, and 696 exact units covering 336,486 bytes. Recompute
+  these values before making a new claim.
+- `config/claims.csv` remains header-only.
+- No active blocker is known. The only working-tree residue at handoff is the
+  protected user-owned untracked set listed below.
 
 Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SOURCE_MAP.md`, `ARCHITECTURE.md`, and `RE_WORKFLOW.md` before changing state.
 
-## Workflow correction accepted on 2026-09-19
+## Non-negotiable workflow boundary
 
-The prior Web campaign produced many useful target-backed facts, but its
-workflow mixed policy, chronological history, navigation, and handoff state;
-it also repeatedly cited exact totals even when normal and exact selected
-different bodies. Existing results are reusable only after bounded evidence
-review.
+- Do not add any conditional directive below `src/` that references
+  `TH095_MATCH_EXACT` or `DIFFBUILD`. CI freezes the remaining historical debt
+  as a shrink-only baseline: **722 directives across 103 files** and **201
+  selected-declaration keys / 206 occurrences**.
+- Exact replay validates only the source selected by the exact profile. When
+  exact and normal select different declarations, expressions, or bodies,
+  validate the normal source independently with target evidence and a normal
+  compiler oracle.
+- Prefer one profile-independent semantic owner. A necessary emission adapter
+  must be named, fieldless or otherwise narrowly scoped, independently proved,
+  and tracked as debt rather than copied as a pattern.
+- Keep unproved storage and roles Unknown. Do not promote a name from a single
+  write, adjacent-game similarity, exactness alone, or decompiler wording.
 
-The corrected topology is now:
+## Current semantic checkpoint — SEM-315
 
-- current policy in `SEMANTIC_RECONSTRUCTION.md`;
-- reusable TH08-derived method in `SEMANTIC_PLAYBOOK.md`;
-- chronological records in `SEMANTIC_HISTORY.md`;
-- current navigation in `SEMANTIC_INDEX.md`;
-- build/source ownership in `SOURCE_MAP.md`;
-- heuristic work routing in `scripts/analysis/report-semantic-debt.py`; and
-- closed-protocol regression checks in `scripts/check-semantic-protocols.py`.
+`FrontEndControllerUpdateView` now uses canonical `ZunTimer` for both
+`stateTimer @ +0x08` and `animationTimer @ +0x14` in every profile. The former
+exact-only `ResultScreenTimer` alias is gone. Its layout and Tick destination
+were compatible, but its inline Reset store order was compiler-visible, so all
+eleven FrontEnd state resets use one unconditional helper with the target
+order `current`, `subFrame`, `previous`. This does not merge or validate the
+broader ResultScreen timer family.
 
-Hard rule: if `TH095_MATCH_EXACT` and normal select different declarations,
-expressions, or function bodies, exact replay does not validate the normal
-semantic body.
+Checkpoint evidence:
 
-The first protocol-guard audit also found that the old ECL ANM declaration is
-not semantic TH095 source: its opcode domain is `-1..89` and its manager size
-is 0x2A2570, versus canonical `AnmManager.hpp` `-1..87` and 0x38314C. Normal
-ECL includes now route to the canonical declaration. The old block is retained
-only for exact/DIFF compiler emission; do not import its names or layout.
+- the two public Tick relocations use canonical `ZunTimer::Tick` and still
+  resolve to target `0x0041B8A0`;
+- controlled refresh changed eighteen compiler-private labels in two units
+  only after structural and relocation proof;
+- immediate zero-refresh replay passed **4/4 FrontEnd exact units**;
+- the independent normal pinned-VC7.1 probe emitted a **39,271-byte Intel 80386
+  COFF** object; and
+- target identity, tracking, semantic guards, build graphs, whitespace, and
+  all **74 workflow tests** passed.
 
-## Last verified semantic result
+The latest complete milestone remains **SEM-298**: 696/696 exact units across
+88 sources with zero refresh, plus an 88-object normal build linking a
+778,752-byte PE32 image (build-local SHA-256
+`4e1b18d1fd1b913a34bd3cfb572da2ae0a7ecc34f375960f0330f9cbf9d50140`).
+That receipt proves exact-unit preservation and normal compile/link closure,
+not target whole-image identity or runtime-scenario validation. SEM-299 through
+SEM-315 used bounded focused validation; do not imply a newer aggregate or
+whole-product receipt.
 
-The semantic source checkpoint is commit `690cb98` (SEM-270). Current owner
-state is deliberately narrower than subsystem completion:
-
-| Surface | Handoff state |
-| --- | --- |
-| Background `0x201C` | Canonical normal owner closed in `Background.hpp`; one narrow EclRun emission adapter remains. |
-| BulletInf `0x27C5B8` | Canonical normal owner closed in `PhotoBulletManager.hpp`; exact receiver spellings are emission adapters. |
-| EnemyInf manager `0x26AE30` | Canonical normal owner closed in `PhotoEnemyManager.hpp`; `enemyAnm @ +0x4DF8` is proved. |
-| Compact enemy element `0x4CC0` | Open: normal code still has overlapping observation views. |
-| EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
-
-`EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
-compatibility ABI, not the TH095 EnemyInf allocation created at `0x004149F0`.
-Do not migrate its layout or names into the compact TH095 owner.
-
-Affected replay passed 163/163 exact with zero private-label refresh. The cold
-aggregate passed 696/696 exact across all 88 sources, also with zero refresh.
-The separate normal build path compiled all 88 pinned-VC7.1 i386 COFF objects
-and linked a verified 780,800-byte PE32 executable with build-local SHA-256
-`40740e513f1381a4e73c34cf0475ef56e179c86b8076bd53a032ff31c456737a`.
-Target-independent CI passed 51/51 tests. This is compile/link closure, not
-whole-image exactness or runtime credit.
+For the current owner inventory, use `SEMANTIC_INDEX.md` and `SOURCE_MAP.md`
+rather than reconstructing it from old handoff prose. Durable target facts are
+in `KNOWLEDGE_BASE.md`; complete batch evidence and bounded negatives are in
+`SEMANTIC_HISTORY.md`.
 
 ## Next bounded lane
 
-Continue with the compact `0x4CC0` enemy element, not adjacent manager offsets.
-Audit the overlapping `PhotoEnemyView`, `PhotoTargetEnemyView`, PhotoCamera,
-PhotoEffect, and ECL operand projections against the complete element currently
-implemented in `EnemyManagerUpdate.cpp`. Begin with the already independent
-position pair (`position @ +0x28A0`, `worldPosition @ +0x28F4`) and the shared
-control words at `+0x2BF4/+0x2BF8`; do not substitute the larger TH08-shaped
-`Enemy` layout. Keep manager `+0x4DFC`, unproved compact-element bits, and
-neighboring storage Unknown until producer/lifetime evidence is found.
+Continue only the `FrontEndControllerUpdateView` declaration audit. Test these
+already-evidenced selected regions independently:
+
+1. `replayColumnCursor @ +0xF8` versus exact `unknown00f8` storage;
+2. `FrontEndRequestedState @ +0x6110` versus exact integer storage; and
+3. `FrontEndControllerFlagBits @ +0x6120` versus the exact local bitfield.
+
+For each candidate, first confirm the target producer/consumer and physical
+layout, then test all four FrontEnd exact units and the normal VC7.1 TU. Keep
+the surrounding gaps Unknown. Do not broaden the audit into ResultScreen,
+queue ownership, or unrelated FrontEnd selectors. If a shared declaration
+changes structural bytes, stop and isolate the compiler cause before changing
+any manifest identity or private label.
 
 ## Protected working-tree exclusions
 
-The following untracked paths predate this branch and are user-owned. Do not
-stage, modify, delete, or infer project state from them:
+These untracked paths predate the branch and are user-owned. Do not modify,
+stage, delete, or infer reconstruction state from them:
 
-- `EnemyManagerUpdate.i`
 - `config/runtime-scenarios.json`
 - `droid.resume.txt`
 - `scripts/runtime-diff.py`
@@ -105,6 +109,14 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/EnemyManagerUpdate.cpp --details
-rg -n "PhotoEnemyView|PhotoTargetEnemyView|0x28a0|0x28f4|0x2bf4|0x2bf8" src config docs
+python3 scripts/analysis/report-semantic-debt.py --path src/FrontEndController.cpp --details
+rg -n "replayColumnCursor|requestedState|FrontEndControllerFlagBits|unknown00f8" src/FrontEndController.cpp src/SceneSelect.hpp config docs
+python3 scripts/replay-exact-units.py --source src/FrontEndController.cpp
+scripts/compile-probe.sh src/FrontEndController.cpp build/probes/sem316-normal/FrontEndController.obj /MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src
 ```
+
+Before committing the next accepted batch, run the affected exact and normal
+oracles, `scripts/check-semantic-protocols.py`, `scripts/ci.py`,
+`scripts/build.py --check`, `git diff --check`, and confirm
+`config/claims.csv` is still header-only. Defer the expensive aggregate replay
+and full normal product until the next shared-owner milestone.

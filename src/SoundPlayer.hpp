@@ -17,11 +17,7 @@
 namespace th095
 {
 
-#ifdef TH095_MATCH_EXACT
-typedef ::ZunResult SoundPlayerResult;
-#else
 typedef ZunResult SoundPlayerResult;
-#endif
 enum SoundIdx
 {
     NO_SOUND = -1,
@@ -67,34 +63,12 @@ enum SoundIdx
     SOUND_FAMILIAR_UNHIDE,
     SOUND_FAMILIAR_HIDE,
     SOUND_TAKE_PHOTO,
-#if defined(TH095_MATCH_EXACT)
-    SOUND_2A,
-    SOUND_2B,
-    SOUND_2C,
-    SOUND_2D,
-    SOUND_2E,
-#else
     SOUND_FOCUS_CHARGE,
     SOUND_CHARGE_FULL,
     SOUND_CAMERA_FOCUS,
     SOUND_PHOTO_PULSE,
     SOUND_TARGET_ACQUIRED,
-#endif
 };
-
-#if defined(TH095_MATCH_EXACT)
-#define TH095_SOUND_FOCUS_CHARGE static_cast<SoundIdx>(0x2a)
-#define TH095_SOUND_CHARGE_FULL static_cast<SoundIdx>(0x2b)
-#define TH095_SOUND_CAMERA_FOCUS static_cast<SoundIdx>(0x2c)
-#define TH095_SOUND_PHOTO_PULSE static_cast<SoundIdx>(0x2d)
-#define TH095_SOUND_TARGET_ACQUIRED static_cast<SoundIdx>(0x2e)
-#else
-#define TH095_SOUND_FOCUS_CHARGE SOUND_FOCUS_CHARGE
-#define TH095_SOUND_CHARGE_FULL SOUND_CHARGE_FULL
-#define TH095_SOUND_CAMERA_FOCUS SOUND_CAMERA_FOCUS
-#define TH095_SOUND_PHOTO_PULSE SOUND_PHOTO_PULSE
-#define TH095_SOUND_TARGET_ACQUIRED SOUND_TARGET_ACQUIRED
-#endif
 
 struct SoundBufferIdxVolume
 {
@@ -135,11 +109,7 @@ enum SoundPlayerCommandOpcode
 #define SFX_QUEUE_LENGTH 12
 #define BGM_QUEUE_LENGTH 31
 
-#if defined(TH095_MATCH_EXACT) && defined(TH095_MATCH_SOUNDPLAYER_AS_STRUCT)
-struct SoundPlayer
-#else
 class SoundPlayer
-#endif
 {
   public:
     SoundPlayer();
@@ -243,21 +213,11 @@ class SoundPlayer
     HANDLE bgmUpdateEvent;
     i32 unconsumedDword5210;
     u32 bgmFileBaseOffset;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    HANDLE workerThreadHandle;
-    HANDLE secondaryWorkerThreadHandle;
-    DWORD workerThreadId;
-#else
     HANDLE initializationThreadHandle;
     HANDLE soundDataLoaderThreadHandle;
     DWORD initializationThreadId;
-#endif
     i32 workerStopRequest;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    HWND workerWindow;
-#else
     HWND initializationWindow;
-#endif
     i32 initializationComplete;
     void *ownedMusicMetadata[37];
     i32 bgmVolume;
@@ -278,17 +238,10 @@ C_ASSERT(offsetof(SoundPlayer, bgmPreloadAllocSizes) == 0x1f40);
 C_ASSERT(offsetof(SoundPlayer, loadedBgmSlot) == 0x1f80);
 C_ASSERT(offsetof(SoundPlayer, unconsumedDword5210) == 0x5210);
 C_ASSERT(offsetof(SoundPlayer, bgmFileBaseOffset) == 0x5214);
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-C_ASSERT(offsetof(SoundPlayer, workerThreadHandle) == 0x5218);
-C_ASSERT(offsetof(SoundPlayer, secondaryWorkerThreadHandle) == 0x521c);
-C_ASSERT(offsetof(SoundPlayer, workerThreadId) == 0x5220);
-C_ASSERT(offsetof(SoundPlayer, workerWindow) == 0x5228);
-#else
 C_ASSERT(offsetof(SoundPlayer, initializationThreadHandle) == 0x5218);
 C_ASSERT(offsetof(SoundPlayer, soundDataLoaderThreadHandle) == 0x521c);
 C_ASSERT(offsetof(SoundPlayer, initializationThreadId) == 0x5220);
 C_ASSERT(offsetof(SoundPlayer, initializationWindow) == 0x5228);
-#endif
 C_ASSERT(offsetof(SoundPlayer, workerStopRequest) == 0x5224);
 C_ASSERT(offsetof(SoundPlayer, ownedMusicMetadata) == 0x5230);
 C_ASSERT(offsetof(SoundPlayer, bgmVolume) == 0x52c4);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AnmManager.hpp"
+#include "PhotoEnemy.hpp"
 #include "ZunTimer.hpp"
 #include "inttypes.hpp"
 
@@ -12,30 +13,6 @@ namespace th095
 class ChainElem;
 struct PhotoCardInfoView;
 struct PhotoEnemyEclManagerView;
-struct PhotoEnemyView;
-
-// The compact TH095 enemy element is still being recovered in
-// EnemyManagerUpdate.cpp.  This wrapper gives the canonical manager one
-// honest inline owner for each target-proven 0x4CC0 slot without publishing a
-// second partial element layout.  Its out-of-line normal-build constructor
-// and destructor preserve the embedded PhotoEnemyView lifetime.
-struct PhotoEnemySlotStorage
-{
-    u32 words[0x4cc0 / sizeof(u32)];
-
-    PhotoEnemySlotStorage();
-    ~PhotoEnemySlotStorage();
-
-    PhotoEnemyView *Get()
-    {
-        return reinterpret_cast<PhotoEnemyView *>(this);
-    }
-
-    const PhotoEnemyView *Get() const
-    {
-        return reinterpret_cast<const PhotoEnemyView *>(this);
-    }
-};
 
 struct PhotoEnemyTimelineView
 {
@@ -53,7 +30,7 @@ struct PhotoEnemyTimelineView
 // opaque rather than being named as a second ANM owner.
 struct PhotoEnemyManagerView
 {
-    PhotoEnemySlotStorage spawnTemplate;       // +0x000000
+    PhotoEnemyView spawnTemplate;              // +0x000000
     PhotoEnemyTimelineView timelines[16];      // +0x004cc0
     PhotoEnemyView *drawGroupHeads[4];         // +0x004dc0
     u8 unknown4dd0[4];
@@ -62,7 +39,7 @@ struct PhotoEnemyManagerView
     PhotoEnemyEclManagerView *eclManager;      // +0x004df4
     AnmLoaded *enemyAnm;                       // +0x004df8
     u8 unknown4dfc[4];                         // +0x004dfc
-    PhotoEnemySlotStorage enemyPool[128];      // +0x004e00
+    PhotoEnemyView enemyPool[128];             // +0x004e00
     PhotoEnemyView *photoTargets[8];           // +0x26ae00
     ChainElem *calcChain;                      // +0x26ae20
     ChainElem *drawChain;                      // +0x26ae24
@@ -98,17 +75,15 @@ struct PhotoEnemyManagerView
 
     PhotoEnemyView *SpawnTemplate()
     {
-        return this->spawnTemplate.Get();
+        return &this->spawnTemplate;
     }
 
     PhotoEnemyView *EnemyAt(i32 index)
     {
-        return this->enemyPool[index].Get();
+        return &this->enemyPool[index];
     }
 };
 
-typedef char PhotoEnemySlotStorageSizeIs4CC0[
-    (sizeof(PhotoEnemySlotStorage) == 0x4cc0) ? 1 : -1];
 typedef char PhotoEnemyTimelineSizeIs10[
     (sizeof(PhotoEnemyTimelineView) == 0x10) ? 1 : -1];
 typedef char PhotoEnemyManagerTimelinesAt4CC0[
@@ -118,7 +93,8 @@ typedef char PhotoEnemyManagerDrawGroupsAt4DC0[
 typedef char PhotoEnemyManagerTimelineEventsAt4DD4[
     (offsetof(PhotoEnemyManagerView, timelineEventSlots) == 0x4dd4) ? 1 : -1];
 typedef char PhotoEnemyManagerEclManagerAt4DF4[
-    (offsetof(PhotoEnemyManagerView, eclManager) == 0x4df4) ? 1 : -1];
+    (offsetof(PhotoEnemyManagerView, eclManager) ==
+     PHOTO_ENEMY_ECL_MANAGER_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyManagerEnemyAnmAt4DF8[
     (offsetof(PhotoEnemyManagerView, enemyAnm) == 0x4df8) ? 1 : -1];
 typedef char PhotoEnemyManagerUnknown4DFCAt4DFC[
@@ -126,7 +102,8 @@ typedef char PhotoEnemyManagerUnknown4DFCAt4DFC[
 typedef char PhotoEnemyManagerEnemiesAt4E00[
     (offsetof(PhotoEnemyManagerView, enemyPool) == 0x4e00) ? 1 : -1];
 typedef char PhotoEnemyManagerPhotoTargetsAt26AE00[
-    (offsetof(PhotoEnemyManagerView, photoTargets) == 0x26ae00) ? 1 : -1];
+    (offsetof(PhotoEnemyManagerView, photoTargets) ==
+     PHOTO_ENEMY_ECL_PHOTO_TARGETS_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyManagerChainsAt26AE20[
     (offsetof(PhotoEnemyManagerView, calcChain) == 0x26ae20 &&
      offsetof(PhotoEnemyManagerView, drawChain) == 0x26ae24) ? 1 : -1];

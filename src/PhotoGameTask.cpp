@@ -13,10 +13,12 @@
 #include "InputRuntime.hpp"
 #include "Main.hpp"
 #include "PhotoBulletManager.hpp"
+#include "PhotoCardInfo.hpp"
 #ifndef DIFFBUILD
 #include "PhotoEnemyManager.hpp"
 #endif
 #include "PhotoGameTask.hpp"
+#include "PhotoStage.hpp"
 #include "PhotoEffectRuntime.hpp"
 #ifndef DIFFBUILD
 #include "PhotoPlayerRuntime.hpp"
@@ -36,12 +38,6 @@ namespace th095
 struct PhotoFrontManagerView
 {
     static PhotoFrontManagerView *Create();
-    void Destroy();
-};
-
-struct PhotoOverlayManagerView
-{
-    static PhotoOverlayManagerView *Create();
     void Destroy();
 };
 
@@ -68,12 +64,6 @@ struct PhotoEnemyManagerView
 struct PhotoItemManagerView
 {
     static PhotoItemManagerView *__fastcall Create();
-    void Destroy();
-};
-
-
-struct PhotoCardInfoView
-{
     void Destroy();
 };
 
@@ -188,7 +178,6 @@ extern char g_ReplayPath[];
 extern char g_SelectedReplayPath[0x100];
 #define g_ReplayPath g_SelectedReplayPath
 #endif
-extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoStageStateTaskView *g_PhotoStageState;
 #define g_PhotoStageState \
@@ -611,7 +600,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->photoOverlay = PhotoOverlayManagerView::Create();
+    this->photoOverlay = PhotoStageStateView::Create();
     if (this->photoOverlay == NULL)
     {
         return ZUN_ERROR;

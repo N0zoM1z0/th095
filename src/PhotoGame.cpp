@@ -2,6 +2,7 @@
 #include "PhotoGameExact.inl"
 #else
 #include "PhotoCamera.hpp"
+#include "PhotoBulletManager.hpp"
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
@@ -296,8 +297,10 @@ static __forceinline void PhotoCameraInitializeViewfinderPhase(AnmVm *vm)
 void PhotoCameraState::Initialize()
 {
     memset(this, 0, sizeof(*this));
-    this->vmIds[0] = g_PhotoStageStateForPlayer->anm->CreateVm(0x16, 0);
-    this->vmIds[1] = g_PhotoStageStateForPlayer->anm->CreateVm(0x17, 0);
+    this->vmIds[0] = TH095_PHOTO_ANM_CREATE_VM(
+        g_PhotoStageStateForPlayer->anm, 0x16, 0);
+    this->vmIds[1] = TH095_PHOTO_ANM_CREATE_VM(
+        g_PhotoStageStateForPlayer->anm, 0x17, 0);
     this->viewfinderPosition = g_PhotoGame->playerPosition;
     this->viewfinderPosition.x = 0.0f;
     this->viewfinderPosition.y = 400.0f;
@@ -781,9 +784,10 @@ i32 PhotoGameUpdateView::UpdateMainState()
     {
         if (PhotoGameFocusVmIsZero(&this->focusVm))
         {
-            this->focusVm =
+            this->focusVm = TH095_PHOTO_ANM_CREATE_VM(
                 reinterpret_cast<PhotoAnmLoadedView *>(
-                    g_PhotoBulletManager->bulletAnm)->CreateVm(0x11f, 6);
+                    g_PhotoBulletManager->bulletAnm),
+                0x11f, 6);
         }
 
         switch (this->movementState)

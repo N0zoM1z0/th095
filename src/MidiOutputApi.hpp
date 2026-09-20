@@ -1,5 +1,4 @@
-#ifndef TH095_MIDI_RUNTIME_HPP
-#define TH095_MIDI_RUNTIME_HPP
+#pragma once
 
 #include "ZunResult.hpp"
 #include "inttypes.hpp"
@@ -8,10 +7,10 @@
 namespace th095
 {
 
-// Production-only canonical method view for the exact MidiOutput implementation
-// in Midi.cpp. Main stores only a MidiOutput pointer, so no object layout is
-// duplicated here; the signatures are target/exact-proven at 0x004221B0,
-// 0x00422300, and 0x00422600..0x004227B0.
+// Fieldless ABI adapter for Supervisor-family translation units. Midi.hpp is
+// the sole layout/behavior owner, but MainExact.inl defines target-emission
+// MidiTimer types that cannot coexist with that complete graph. Keep this
+// shared declaration canonical in signatures and deliberately empty in state.
 struct MidiOutput
 {
     ::ZunResult ReadFileData(i32 slot, const char *path);
@@ -24,5 +23,3 @@ struct MidiOutput
 };
 
 } // namespace th095
-
-#endif

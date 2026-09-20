@@ -4,10 +4,10 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
-#ifndef DIFFBUILD
 #include "PhotoEnemyManager.hpp"
-#endif
 #include "PhotoEffectRuntime.hpp"
+#include "PhotoRotatingLaserArgs.hpp"
+#include "PhotoStraightLaserArgs.hpp"
 #ifndef DIFFBUILD
 #include "PhotoItemManager.hpp"
 #endif
@@ -43,34 +43,9 @@ namespace th095
 #define TH095_EFFECT_SPAWN_ROTATING_LASER PHOTO_EFFECT_SPAWN_ROTATING_LASER
 #endif
 
-struct PhotoEffectArgsSmallView
-{
-    PhotoEffectVector position;
-    f32 angle;
-    f32 maximumLength;
-#ifdef DIFFBUILD
-    i32 initialLength;
-#else
-    f32 initialLength;
-#endif
-    f32 terminalDistance;
-    f32 width;
-    f32 speed;
-    i16 type;
-    i16 color;
-
-    PhotoEffectArgsSmallView()
-    {
-        memset(this, 0, sizeof(*this));
-    }
-};
-
-typedef char PhotoEffectArgsSmallSizeIs28[
-    (sizeof(PhotoEffectArgsSmallView) == 0x28) ? 1 : -1];
-
 struct PhotoStraightLaserView : PhotoEffectBaseView
 {
-    PhotoEffectArgsSmallView spawn;          // +0x050
+    PhotoStraightLaserSpawnArgs spawn;       // +0x050
     AnmVm bodyVm;                            // +0x078
     AnmVm tailVm;                            // +0x344
 
@@ -90,49 +65,9 @@ typedef char PhotoStraightLaserBodyVmAt78[
 typedef char PhotoStraightLaserTailVmAt344[
     (offsetof(PhotoStraightLaserView, tailVm) == 0x344) ? 1 : -1];
 
-struct PhotoEffectArgsView
-{
-    PhotoEffectVector position;
-    PhotoEffectVector velocity;
-    f32 angle;
-    f32 angularVelocity;
-    f32 maximumLength;
-    f32 initialLength;
-    f32 maximumWidth;
-    f32 speed;
-    i32 startupDuration;
-    i32 growthDuration;
-    i32 sustainDuration;
-    i32 fadeDuration;
-    i16 type;
-    i16 color;
-#if defined(TH095_MATCH_EXACT)
-    u32 flags;
-#else
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 followPhotoTarget : 1;
-            u32 unknownFlags001_031 : 31;
-        };
-    };
-#endif
-
-    PhotoEffectArgsView()
-    {
-        memset(this, 0, sizeof(*this));
-        this->speed = 8.0f;
-    }
-};
-
-typedef char PhotoEffectArgsSizeIs48[
-    (sizeof(PhotoEffectArgsView) == 0x48) ? 1 : -1];
-
 struct PhotoRotatingLaserView : PhotoEffectBaseView
 {
-    PhotoEffectArgsView spawn;              // +0x050
+    PhotoRotatingLaserSpawnArgs spawn;      // +0x050
     AnmVm bodyVm;                            // +0x098
     AnmVm tailVm;                            // +0x364
 
@@ -166,20 +101,6 @@ extern f32 g_AnmGameSpeed;
 #ifndef DIFFBUILD
 #define g_PhotoGame \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameUpdateView, g_RuntimePlayerOwner)
-#endif
-
-struct PhotoEnemyView
-{
-    u8 unknown0000[0x28a0];
-    PhotoEffectVector position;
-};
-
-#ifdef DIFFBUILD
-struct PhotoEnemyManagerView
-{
-    u8 unknown000000[0x26ae00];
-    PhotoEnemyView *photoTargets[8];
-};
 #endif
 
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
@@ -368,7 +289,7 @@ static __forceinline void PhotoEffectSetAdditivePhase(AnmVm *vm)
 
 i32 PhotoStraightLaserView::Initialize(void *args)
 {
-    this->spawn = *static_cast<PhotoEffectArgsSmallView *>(args);
+    this->spawn = *static_cast<PhotoStraightLaserSpawnArgs *>(args);
     this->state = TH095_EFFECT_STATE_ACTIVE;
 
     g_PhotoEffectManager->anm->InitializeVm(
@@ -388,12 +309,8 @@ i32 PhotoStraightLaserView::Initialize(void *args)
     PhotoEffectSetAdditivePhase(&this->tailVm);
     this->tailVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
 
-    this->position = this->spawn.position;
-#ifdef DIFFBUILD
-    *reinterpret_cast<i32 *>(&this->length) = this->spawn.initialLength;
-#else
+    *reinterpret_cast<Float3 *>(&this->position) = this->spawn.position;
     this->length = this->spawn.initialLength;
-#endif
     this->width = this->spawn.width;
     this->speed = this->spawn.speed;
     this->angle = this->spawn.angle;
@@ -442,18 +359,19 @@ i32 PhotoRotatingLaserView::Update()
     this->angle = AddNormalizeAngle(
         this->angle, g_AnmGameSpeed * this->spawn.angularVelocity);
 
-#if defined(TH095_MATCH_EXACT)
-    if ((this->spawn.flags & 1) != 0 &&
-#else
     if (this->spawn.followPhotoTarget != 0 &&
-#endif
         g_PhotoEnemyManager->photoTargets[0] != NULL)
     {
-        this->position =
-            g_PhotoEnemyManager->photoTargets[0]->position;
+        this->position.x =
+            g_PhotoEnemyManager->photoTargets[0]->position.x;
+        this->position.y =
+            g_PhotoEnemyManager->photoTargets[0]->position.y;
+        this->position.z =
+            g_PhotoEnemyManager->photoTargets[0]->position.z;
     }
 
-    this->position += this->spawn.velocity * g_AnmGameSpeed;
+    *reinterpret_cast<Float3 *>(&this->position) +=
+        this->spawn.velocity * g_AnmGameSpeed;
 
     switch (this->state)
     {
@@ -543,7 +461,7 @@ i32 PhotoRotatingLaserView::Update()
 
 i32 PhotoRotatingLaserView::Initialize(void *args)
 {
-    this->spawn = *static_cast<PhotoEffectArgsView *>(args);
+    this->spawn = *static_cast<PhotoRotatingLaserSpawnArgs *>(args);
     this->state = TH095_EFFECT_STATE_STARTUP;
 
     g_PhotoEffectManager->anm->InitializeVm(
@@ -563,7 +481,7 @@ i32 PhotoRotatingLaserView::Initialize(void *args)
     PhotoEffectSetAdditivePhase(&this->tailVm);
     this->tailVm.renderModeBits = TH095_EFFECT_DRAW_MODE_2D;
 
-    this->position = this->spawn.position;
+    *reinterpret_cast<Float3 *>(&this->position) = this->spawn.position;
     this->length = this->spawn.initialLength;
     this->width = 2.0f;
     this->speed = this->spawn.speed;
@@ -785,16 +703,9 @@ i32 PhotoStraightLaserView::CheckCollision(
                     gapLength++;
                 }
 
-                PhotoEffectArgsSmallView args = this->spawn;
-#ifdef DIFFBUILD
-                *reinterpret_cast<f32 *>(&args.initialLength) =
-                    static_cast<f32>(gapLength) * 12.0f;
-                args.maximumLength =
-                    *reinterpret_cast<f32 *>(&args.initialLength);
-#else
+                PhotoStraightLaserSpawnArgs args = this->spawn;
                 args.initialLength = static_cast<f32>(gapLength) * 12.0f;
                 args.maximumLength = args.initialLength;
-#endif
                 *reinterpret_cast<Float3 *>(&args.position) =
                     preloadBufferLocal03 +
                     CollisionScaleStep(step, static_cast<f32>(gapStart));
@@ -927,16 +838,10 @@ scan_more:
                         gapLength++;
                     }
 
-                    PhotoEffectArgsSmallView args;
-#ifdef DIFFBUILD
-                    *reinterpret_cast<f32 *>(&args.initialLength) =
-                        static_cast<f32>(gapLength) * 12.0f;
-                    args.maximumLength =
-                        *reinterpret_cast<f32 *>(&args.initialLength);
-#else
+                    PhotoStraightLaserSpawnArgs args;
+                    memset(&args, 0, sizeof(args));
                     args.initialLength = static_cast<f32>(gapLength) * 12.0f;
                     args.maximumLength = args.initialLength;
-#endif
                     *reinterpret_cast<Float3 *>(&args.position) =
                         preloadBufferLocal03 + CollisionScaleStep(
                             step, static_cast<f32>(gapStart));
@@ -1375,6 +1280,8 @@ PhotoStraightLaserView::PhotoStraightLaserView()
 
 PhotoRotatingLaserView::PhotoRotatingLaserView()
 {
+    memset(&this->spawn, 0, sizeof(this->spawn));
+    this->spawn.speed = 8.0f;
 }
 
 // FUNCTION: TH095 0x0041E750.
