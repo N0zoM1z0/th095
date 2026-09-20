@@ -1074,6 +1074,27 @@ def check_photo_card_info_owner() -> None:
 def check_photo_camera_state_owner() -> None:
     header_path = SRC / "PhotoCamera.hpp"
     header = header_path.read_text(encoding="utf-8")
+    handle_start = header.index("struct PhotoAnmVmId\n")
+    handle_body = braced_body_after(header, handle_start, "PhotoAnmVmId")
+    if "TH095_MATCH_EXACT" in handle_body or "DIFFBUILD" in handle_body:
+        fail("PhotoAnmVmId storage must be profile-independent")
+    required_handle = (
+        "i32 value;",
+        "operator AnmVmId() const",
+        "PhotoAnmVmId &operator=(AnmVmId id)",
+        'reinterpret_cast<AnmVmId *>(this)->GetVm()',
+        'reinterpret_cast<AnmVmId *>(this)->SetInterrupt(interrupt)',
+        "sizeof(PhotoAnmVmId) == 4",
+        "offsetof(PhotoAnmVmId, value) == 0x0",
+    )
+    for fact in required_handle:
+        if fact not in header:
+            fail(f"shared Photo ANM handle lost fact: {fact}")
+    if re.search(r"\bPhotoAnmVmId\s*\(\s*\)", handle_body):
+        fail("PhotoAnmVmId must remain trivial default-construction storage")
+    if "typedef AnmVmId PhotoAnmVmId;" in header:
+        fail("PhotoCamera restored constructor-bearing AnmVmId storage")
+
     state_start = header.index("struct PhotoCameraState")
     state_body = braced_body_after(header, state_start, "PhotoCameraState")
     if "TH095_MATCH_EXACT" in state_body or "DIFFBUILD" in state_body:
@@ -1087,6 +1108,7 @@ def check_photo_camera_state_owner() -> None:
     )
     required_layout = (
         "PhotoCameraMode mode;",
+        "PhotoAnmVmId vmIds[11];",
         "u32 flags;",
         "u32 alternateCapture : 1;",
         "u32 focused : 1;",
@@ -1125,6 +1147,24 @@ def check_photo_camera_state_owner() -> None:
     for fact in required_source:
         if fact not in source:
             fail(f"PhotoCamera shared state protocol lost fact: {fact}")
+
+    exact_sources = (
+        source,
+        (SRC / "PhotoGameExact.inl").read_text(encoding="utf-8"),
+        (SRC / "PhotoStageExact.inl").read_text(encoding="utf-8"),
+    )
+    if any("PhotoAnmVmId::operator==" in text for text in exact_sources):
+        fail("Photo ANM handle restored the historical proxy comparison method")
+    if not all("PhotoAnmVmIdValue(0).value" in text for text in exact_sources):
+        fail("Photo ANM handle lost the compiler-proved zero temporary shape")
+
+    manifest = (ROOT / "config" / "match-units.toml").read_text(encoding="utf-8")
+    for retired in (
+        "?GetVm@PhotoAnmVmId@th095@@",
+        "?SetInterrupt@PhotoAnmVmId@th095@@",
+    ):
+        if retired in manifest:
+            fail(f"Photo ANM handle restored proxy method ABI: {retired}")
 
     game = (SRC / "PhotoGame.cpp").read_text(encoding="utf-8")
     if "this->chargeUiState = PHOTO_CAMERA_CHARGE_UI_INITIAL;" not in game:
@@ -1545,7 +1585,7 @@ def main() -> int:
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")
     print("  Photo stage: canonical profile-independent 0x25730 owner")
     print("  CardInf: canonical profile-independent 0x68 owner")
-    print("  PhotoCamera state: profile-independent mode/flags/focus representation")
+    print("  PhotoCamera state: profile-independent mode/handle/flags/focus representation")
     print("  PlayerInf runtime: profile-independent owner shared by PhotoCamera, PhotoStage, and ECL")
     print("  RunEcl camera limit/angles: canonical PlayerInf owner with method-only emission adapter")
     print("  RunEcl float resolver: canonical normal method with method-only emission adapter")

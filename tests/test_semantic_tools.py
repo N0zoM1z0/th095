@@ -146,6 +146,11 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("DIFFBUILD", state_body)
         self.assertIn("PhotoCameraMode mode;", state_body)
         self.assertIn("i32 focusChargeFrames;", state_body)
+        handle_start = header.index("struct PhotoAnmVmId\n")
+        handle_body = GUARD.braced_body_after(header, handle_start, "PhotoAnmVmId")
+        self.assertNotIn("PhotoAnmVmId()", handle_body)
+        self.assertIn("operator AnmVmId() const", handle_body)
+        self.assertIn('reinterpret_cast<AnmVmId *>(this)->GetVm()', handle_body)
 
     def test_ecl_photo_player_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_ecl_photo_player_owner()

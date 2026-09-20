@@ -35,11 +35,6 @@ struct PhotoStageCameraView : PhotoCameraState
     }
 };
 
-__forceinline i32 PhotoAnmVmId::operator==(PhotoAnmVmIdValue other) const
-{
-    return this->value == other.value;
-}
-
 enum PhotoStageFlags
 {
     PHOTO_STAGE_CAPTURING = 1 << 0,
@@ -839,7 +834,7 @@ static __forceinline f32 PhotoStageEntryXValue(i32 index)
 
 static __forceinline i32 PhotoStageEntryVmIsZero(const PhotoAnmVmId &id)
 {
-    return id == PhotoAnmVmIdValue(0);
+    return id.value == PhotoAnmVmIdValue(0).value;
 }
 
 static __forceinline void PhotoStageInitFrame35Position(Float3 *position, f32 y)

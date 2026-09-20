@@ -18,14 +18,9 @@ struct PhotoAnmVmIdValue
     }
 };
 
-__forceinline i32 PhotoAnmVmId::operator==(PhotoAnmVmIdValue other) const
-{
-    return this->value == other.value;
-}
-
 static __forceinline i32 PhotoGameFocusVmIsZero(const PhotoAnmVmId *vm)
 {
-    return *vm == PhotoAnmVmIdValue(0);
+    return vm->value == PhotoAnmVmIdValue(0).value;
 }
 
 static __forceinline void PhotoGameClearFocusVm(PhotoAnmVmId *vm)

@@ -28,7 +28,6 @@ namespace th095
 
 #include "PhotoCameraPlayerEmission.inl"
 
-#ifdef TH095_MATCH_EXACT
 struct PhotoAnmVmIdValue
 {
     i32 value;
@@ -38,7 +37,6 @@ struct PhotoAnmVmIdValue
         this->value = value;
     }
 };
-#endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 struct PhotoRuntimeView
@@ -1215,13 +1213,6 @@ f32 __fastcall PhotoDistance2D(const Float3 *left, const Float3 *right)
         (left->y - right->y) * (left->y - right->y));
 }
 
-#ifdef TH095_MATCH_EXACT
-__forceinline i32 PhotoAnmVmId::operator==(PhotoAnmVmIdValue other) const
-{
-    return this->value == other.value;
-}
-#endif
-
 static inline i32 PhotoTimerAdvancedTo(ZunTimer *timer, i32 frame)
 {
     return timer->current != timer->previous && timer->current == frame;
@@ -1263,11 +1254,7 @@ static __forceinline void PhotoCameraModeTimerResetPhase(ZunTimer *timer)
 
 static __forceinline i32 PhotoCameraVmIdIsZero(const PhotoAnmVmId *vm)
 {
-#ifdef TH095_MATCH_EXACT
-    return *vm == PhotoAnmVmIdValue(0);
-#else
-    return *vm == 0;
-#endif
+    return vm->value == PhotoAnmVmIdValue(0).value;
 }
 
 static __forceinline void PhotoCameraClearVmId(PhotoAnmVmId *vm)

@@ -14130,3 +14130,65 @@ storage-free emission adapters against exact relocation identities before
 moving either selected declaration. Do not change the Player VM storage,
 infer unsupported camera fields, add a profile selector, or expand a closed
 debt baseline.
+
+### SEM-285 — canonicalize PhotoCamera ANM handle storage and method ABI
+
+**Scope.** Retire only the profile-selected `PhotoAnmVmId` declaration and its
+comparison proxy. Keep `PhotoAnmLoadedView` as the next independent receiver
+lane. This batch does not change camera offsets, infer original identifiers,
+or make the whole `PhotoCamera.hpp` declaration graph profile-independent.
+
+**Target and lifecycle evidence.** Fresh hash-attested decompilation of
+`PhotoCameraState::PhotoCameraState @ 0x0042EBC0` shows one vector constructor
+over four 0x2CC-byte `AnmVm` objects beginning at camera `+0x3C`, followed by
+the three timer initializations. There is no constructor loop or individual
+initialization over the eleven four-byte handles at `+0x10`. This agrees with
+the exact 0xA7-byte constructor and the repository's independently proved
+`BackgroundVmId` POD-storage rule.
+
+**Compiler oracle and accepted representation.** A direct shared
+`typedef AnmVmId PhotoAnmVmId` experiment was rejected: pinned VC7.1 invoked
+the canonical handle's user-defined default constructor for all embedded
+slots and enlarged `PhotoCameraState::PhotoCameraState` from target 0xA7 to
+0xDD. The accepted shared `PhotoAnmVmId` is therefore a trivial four-byte POD
+handle with no default constructor. It converts and assigns canonical
+`AnmVmId` values, while inline `GetVm` and `SetInterrupt` bridge to the
+canonical methods. The four-byte `PhotoAnmVmIdValue(0)` temporary remains in
+the exact source families because PHOTO-004 already proves its VC7 allocation
+effect; it is no longer a profile-selected owner or comparison method.
+
+**ABI evidence.** The five `GetVm` and two `SetInterrupt` call relocations in
+`UpdatePhotoCamera` retain their exact offsets, REL32 types, bytes, and target
+destinations `0x004452F0/0x00445330`; only the object-level receiver identities
+move from historical `PhotoAnmVmId` proxy names to canonical `AnmVmId` names.
+`CreateVm` and loaded-ANM decorations remain unchanged for the next lane.
+
+**Guards and debt movement.** The PhotoCamera protocol guard now pins the
+profile-independent handle body, value offset/size, lack of a user-defined
+default constructor, canonical conversions/forwarding, shared compiler
+temporary expression, and retirement of proxy method relocations. Five
+selector directives were removed, shrinking the baseline from 832 to **827
+across 110 files**. Three
+selected declarations were retired, shrinking debt from 221 keys / 226
+occurrences to **218 keys / 223 occurrences**.
+
+**Validation.** PhotoCamera, PhotoGame, and PhotoStage passed **39/39 focused
+exact**, and the complete header fanout passed **84/84 across eight sources**.
+The controlled matcher refreshed 38 compiler-private `$L...` identities in
+four PhotoCamera/PhotoGame units only after unchanged bytes, relocation
+offsets/types, and target destinations were proved. A final uninterrupted
+cold aggregate passed **696/696 exact across all 88 sources** with zero further
+refresh. The final shared zero-comparison lift then replayed PhotoCamera
+**11/11 exact** with zero refresh. Normal pinned-VC7.1 probes emitted 60,677-byte PhotoCamera,
+53,391-byte PhotoGame, and 49,318-byte PhotoStage i386 COFF objects. The normal
+product compiled all 88 objects and linked a verified 780,800-byte PE32/i386
+GUI, build-local SHA-256
+`7a7a5d544a9cc6cc9170728f1d5584ef67a4a8d5bdb364db34b9eae4112d3566`.
+Target-independent CI passed 58/58 tests. No whole-image identity or runtime
+behavior credit is claimed.
+
+**Unknown / next route.** Audit only `PhotoAnmLoadedView`: map `SetSprite`,
+`SetAndExecuteScript`, `InitializeVm`, and `CreateVm` to canonical `AnmLoaded`
+targets and test a shared receiver or storage-free emission boundary. Preserve
+the proved trivial handle lifecycle, add no selector, do not change Player VM
+storage, and keep EnemyInf manager `+0x4DFC` Unknown.
