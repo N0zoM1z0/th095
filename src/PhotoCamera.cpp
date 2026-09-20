@@ -7,6 +7,7 @@
 #include "PhotoBulletManager.hpp"
 #include "PhotoEnemy.hpp"
 #include "PhotoEnemyManager.hpp"
+#include "PhotoGameTask.hpp"
 #include "GameplayGlobals.hpp"
 #ifndef DIFFBUILD
 #include "InputRuntime.hpp"
@@ -36,33 +37,6 @@ struct PhotoAnmVmIdValue
     {
         this->value = value;
     }
-};
-
-struct PhotoGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlag0 : 1;
-#else
-            u32 captureActive : 1;
-#endif
-            u32 unknownFlag1 : 1;
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlag2 : 1;
-            u32 unknownFlags3 : 29;
-#else
-            u32 gameplayLoadActive : 1;
-            u32 unknownFlags3 : 6;
-            u32 photoSoundSuppressed : 1;
-            u32 unknownFlags10 : 22;
-#endif
-        };
-    };
 };
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -138,7 +112,7 @@ static inline SoundPlayer *PhotoSoundPlayer()
 #endif
 
 extern PhotoEnemyManagerView *g_PhotoRuntime;
-extern PhotoGlobalStateView *g_PhotoGlobalState;
+extern PhotoGameTaskView *g_PhotoGlobalState;
 extern PhotoBulletManagerView *g_PhotoBulletManager;
 #ifndef DIFFBUILD
 #define g_PhotoRuntime \
@@ -165,7 +139,7 @@ extern u16 g_PhotoInputPressed;
 #define g_PhotoGame \
     TH095_RUNTIME_GLOBAL_PTR(PhotoGameStateView, g_RuntimePlayerOwner)
 #define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGlobalStateView, g_RuntimeGlobalStateOwner)
+    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
 #define TH095_PHOTO_CAMERA_PLAYER_STORAGE() \
@@ -174,11 +148,7 @@ extern u16 g_PhotoInputPressed;
     reinterpret_cast<PhotoAnmLoadedView *>( \
         TH095_PHOTO_CAMERA_PLAYER_STORAGE()->effectAnm)
 
-#if defined(TH095_MATCH_EXACT)
-#define PHOTO_SOUND_SUPPRESSED (((g_PhotoGlobalState->flags >> 9) & 1))
-#else
 #define PHOTO_SOUND_SUPPRESSED (g_PhotoGlobalState->photoSoundSuppressed)
-#endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 f32 NormalizeAngle(f32 angle);
@@ -1111,13 +1081,8 @@ focusedCharge:
 
 void PhotoCameraState::Draw()
 {
-#if defined(TH095_MATCH_EXACT)
-    if (PhotoEitherFlag(g_PhotoGlobalState->unknownFlag0,
-                        g_PhotoGlobalState->unknownFlag2) == 0)
-#else
     if (PhotoEitherFlag(g_PhotoGlobalState->captureActive,
                         g_PhotoGlobalState->gameplayLoadActive) == 0)
-#endif
     {
         this->viewfinderVms[0].Draw();
         this->viewfinderVms[1].Draw();
@@ -1125,13 +1090,8 @@ void PhotoCameraState::Draw()
         this->viewfinderVms[3].Draw();
     }
 
-#if defined(TH095_MATCH_EXACT)
-    if (PhotoEitherFlag(g_PhotoGlobalState->unknownFlag0,
-                        g_PhotoGlobalState->unknownFlag2) != 0)
-#else
     if (PhotoEitherFlag(g_PhotoGlobalState->captureActive,
                         g_PhotoGlobalState->gameplayLoadActive) != 0)
-#endif
     {
         AnmVm *vm;
         for (i32 index = 0; index < 9; index++)

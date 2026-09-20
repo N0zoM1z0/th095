@@ -177,7 +177,6 @@
 1	src/pbg/PbgArchive.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/pbg/PbgFile.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/PhotoCamera.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-5	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT)
 6	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/PhotoCamera.cpp	#ifdef DIFFBUILD
 4	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT

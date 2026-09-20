@@ -173,6 +173,24 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertEqual(
             extended.count("TH095_PHOTO_GAME_TASK_FLAGS(g_PhotoGlobalState)"), 7
         )
+        camera = (ROOT / "src" / "PhotoCamera.cpp").read_text(encoding="utf-8")
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('#include "PhotoGameTask.hpp"', camera)
+        self.assertNotIn("struct PhotoGlobalStateView", camera)
+        self.assertNotIn("unknownFlag0", camera)
+        self.assertNotIn("unknownFlag2", camera)
+        self.assertIn("extern PhotoGameTaskView *g_PhotoGlobalState;", camera)
+        self.assertIn("g_PhotoGlobalState->captureActive", camera)
+        self.assertIn("g_PhotoGlobalState->gameplayLoadActive", camera)
+        self.assertIn("g_PhotoGlobalState->photoSoundSuppressed", camera)
+        self.assertNotIn(
+            "?g_PhotoGlobalState@th095@@3PAUPhotoGlobalStateView@1@A", manifest
+        )
+        self.assertIn(
+            "?g_PhotoGlobalState@th095@@3PAUPhotoGameTaskView@1@A", manifest
+        )
 
     def test_photo_card_info_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_photo_card_info_owner()

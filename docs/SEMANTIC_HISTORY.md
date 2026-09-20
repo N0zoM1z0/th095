@@ -14437,3 +14437,56 @@ from existing producers/consumers, then determine whether the local storage
 projection and two field-name selectors can disappear while preserving exact
 caller emission. Keep unproved task flags and EnemyInf `+0x4DFC` Unknown; do
 not add a selector or enlarge either debt baseline.
+
+### SEM-290 — route PhotoCamera through the canonical photo task
+
+**Scope.** Determine whether PhotoCamera's 0x100-byte
+`PhotoGlobalStateView` prefix is a real owner or another projection of the
+canonical 0x124-byte `PhotoGameTaskView @ 0x004BDEC8`. Close only the three
+flag reads already present in the camera; do not extend the task flag domain.
+
+**Evidence and ownership.** Existing TH095-local producer/consumer evidence
+already closes every camera-read bit on the same physical task word. PhotoStage
+sets/clears bit 0 across capture, PhotoGameTask publishes/clears bit 2 across
+asynchronous gameplay loading, and EclExtended publishes/clears bit 9 while
+PhotoItem independently consumes it as an SFX gate. PhotoCamera's Draw tests
+bits 0/2, and its sound paths test bit 9 at `0x004BDEC8 + 0xFC`. The canonical
+task layout independently asserts `flags @ +0xFC` and size 0x124. The local
+padding-plus-bitfield declaration therefore described a prefix of the same
+object rather than separate storage.
+
+**Production / exact representation.** PhotoCamera now includes
+`PhotoGameTask.hpp` unconditionally, declares `g_PhotoGlobalState` as
+`PhotoGameTaskView *`, and uses canonical `captureActive`,
+`gameplayLoadActive`, and `photoSoundSuppressed` expressions in every profile.
+The complete local prefix, its `unknownFlag0/unknownFlag2` aliases, both Draw
+expression branches, and the sound-field branch are gone. Thirteen exact
+relocations retain their offsets and target `0x004BDEC8` while naming the
+canonical task pointer. Direct pinned-VC7.1 compilation proves that no storage-
+free ABI adapter is required.
+
+**Guards and debt.** The PhotoGameTask guard now requires PhotoCamera's
+canonical include, global type, runtime-owner cast, and all three field reads;
+it rejects the local struct, exact-only aliases, and historical camera-global
+decoration. Five directives were removed, shrinking the selector baseline
+from 815 to **810 directives across 109 files**. Selected-declaration debt is
+unchanged at **215 keys / 220 occurrences**. No selector, selected declaration,
+or baseline allowance was added.
+
+**Validation.** Four of the five global-using camera units compared exact
+immediately after the reviewed ABI identity migration. The fifth and one
+neighbor differed only in 15 compiler-private labels; restricted refresh
+followed proof of unchanged structural bytes, relocation offsets/types,
+non-private identities, and target destinations. Final PhotoCamera replay
+passed **11/11 exact** with zero refresh. A normal pinned-VC7.1 probe emitted a
+**61,088-byte i386 COFF** object. The semantic guard and all 58 tests pass. Per
+the batching policy, no new aggregate/product closure is claimed; SEM-287
+remains the latest full receipt.
+
+**Unknown / next route.** Audit PhotoCamera's exact/DIFF
+`PhotoStageControllerView` against the canonical `PhotoEffectManagerView` at
+`0x004C45E0`. Existing target facts already place `CountPhotoTargets @
+0x0041DF10` and `CountNearbyTargets @ 0x0041E060` on the effect manager; test
+whether exact caller emission accepts the canonical receiver or needs one
+storage-free method adapter. Do not keep a false stage owner as semantic
+source, broaden `PhotoEffectRuntime.hpp` selectors, or add a new selector.

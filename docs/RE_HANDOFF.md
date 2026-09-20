@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-289. Owner closure remains
+The current semantic source checkpoint is SEM-290. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -63,7 +63,7 @@ deliberately narrower than subsystem completion:
 | BulletInf `0x27C5B8` | `PhotoBulletManager.hpp` is the profile-independent owner. PhotoCamera, PhotoGame, and PhotoStage include it directly; PhotoCamera's mixed `.90/.98` receiver and captured-bullet projection are retired. CalculatePhotoScore consumes canonical `PhotoBulletView::vm.loadedSprite/speed/nextCaptured/bulletType/color`. Only script-0x124 `CreateVmAtWorld` uses a fieldless emission adapter. |
 | EnemyInf manager `0x26AE30` | Canonical owner closed in `PhotoEnemyManager.hpp`; it directly embeds the compact template and 128-element pool. PhotoCamera and PhotoRuntime now consume its `photoTargets @ +0x26AE00`, `enemyPool @ +0x4E00`, and `CountPhotoTargets @ 0x004168D0` without `PhotoRuntimeView` or an ABI adapter; `enemyAnm @ +0x4DF8` is proved. |
 | Compact enemy element `0x4CC0` | Canonical profile-independent owner established in `PhotoEnemy.hpp`; `EnemyMovement` is a method-only ABI shell, and all four operand resolver TUs, RunEcl, plus EclExtended's inherited callback share `PhotoEnemyEclAccess.hpp`. Normal RunEcl calls canonical `Enemy::ResolveFloat`; its historical 53-site decoration is isolated in storage-free `ecl/EnemyFloatOperandEclEmission.hpp`. |
-| PhotoGameTask `0x124` | `PhotoGameTask.hpp` is profile-independent; normal RunEcl consumes canonical `completion @ +0x104` and `playerDeathTransitionComplete @ +0xFC bit 5`. EclExtended now binds the same normal owner and shares the dependency-light `PhotoGameTaskState.hpp` vocabulary for `photoSoundSuppressed` bit 9 and `photoTransitionActive` bit 10; its target-facing incomplete extern spelling is isolated in a storage-free emission adapter. Exact task emission stays in `PhotoGameTaskExact.inl`. |
+| PhotoGameTask `0x124` | `PhotoGameTask.hpp` is profile-independent; PhotoCamera now binds the same owner at `0x004BDEC8` for `captureActive`, `gameplayLoadActive`, and `photoSoundSuppressed`, with no local prefix or adapter. Normal RunEcl consumes canonical completion state. EclExtended shares the dependency-light bit-9/10 vocabulary; its target-facing incomplete extern spelling remains a storage-free emission adapter. Exact task implementation stays in `PhotoGameTaskExact.inl`. |
 | PhotoInf/stage `0x25730` | `PhotoStage.hpp` is the canonical normal owner for lifecycle, draw/capture behavior, `scoreMultiplier @ +0x25718`, ANM, and Chain roots. PhotoCamera's old receiver is isolated in one narrow emission adapter. |
 | CardInf `0x68` | `PhotoCardInfo.hpp` is the profile-independent allocation/lifecycle owner published at `0x004BDD9C`; RunEcl, PhotoGameTask, and PhotoStage consume it directly. EnemyInf `+0x26AE28` remains only a non-exclusive ECL-held session pointer. |
 | RunEcl Player/camera lane | Normal case 141 writes canonical `PhotoPlayerRuntimeView::camera.photoLimit @ Player+0x29EC`; all six angle calls use the Player root and `AngleFromPoint @ 0x004303E0`. The padded local owner is retired; the last four exact call decorations are isolated in method-only `ecl/PhotoCameraEclEmission.hpp`. This does not close every Player projection. |
@@ -73,7 +73,7 @@ deliberately narrower than subsystem completion:
 | Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 815 remaining selector directives across 109 files and 215 declaration keys / 220 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 810 remaining selector directives across 109 files and 215 declaration keys / 220 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -327,14 +327,26 @@ passed **12/12 exact** with zero refresh. Normal pinned-VC7.1 probes emitted
 No new aggregate/product closure is claimed; SEM-287 remains the latest full
 receipt.
 
+For SEM-290, PhotoCamera's padded `PhotoGlobalStateView` prefix was retired in
+favor of canonical `PhotoGameTaskView @ 0x004BDEC8`. Camera Draw and sound
+paths now share the established bit-0 `captureActive`, bit-2
+`gameplayLoadActive`, and bit-9 `photoSoundSuppressed` fields in every profile.
+All 13 camera global relocations retain their offsets and target while naming
+the canonical task pointer. Restricted refresh updated 15 private labels in
+two units only after structural/relocation/destination proof; final PhotoCamera
+replay passed **11/11 exact** with zero refresh. The normal pinned-VC7.1 probe
+emitted a **61,088-byte i386 COFF** object. No new aggregate/product closure is
+claimed; SEM-287 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit PhotoCamera's local `PhotoGlobalStateView` against canonical
-`PhotoGameTaskView @ 0x004BDEC8`. Its `flags @ +0xFC` storage and bits 0, 2,
-and 9 already have independent task/game/item evidence; verify the exact
-caller ABI before replacing the projection and its two field-name selectors.
-Do not name unproved task flags, infer EnemyInf `+0x4DFC`, add a selector, or
-enlarge either debt baseline.
+Audit PhotoCamera's exact/DIFF `PhotoStageControllerView` against canonical
+`PhotoEffectManagerView @ 0x004C45E0`. The two methods already resolve to
+canonical effect-manager targets `0x0041DF10/0x0041E060`; determine whether
+direct canonical receiver use is byte-exact or whether only the historical
+decorations need a storage-free adapter. Do not preserve a false stage owner
+as normal semantics, broaden existing PhotoEffect selectors, or enlarge either
+debt baseline.
 
 ## Protected working-tree exclusions
 
@@ -353,6 +365,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/PhotoCamera.cpp --path src/PhotoGameTask.hpp --details
-rg -n "PhotoGlobalStateView|PhotoGameTaskView|captureActive|gameplayLoadActive|photoSoundSuppressed" src/PhotoCamera.cpp src/PhotoGameTask.hpp config/match-units.toml
+python3 scripts/analysis/report-semantic-debt.py --path src/PhotoCamera.cpp --path src/PhotoEffectRuntime.hpp --details
+rg -n "PhotoStageControllerView|PhotoEffectManagerView|CountPhotoTargets|CountNearbyTargets|004C45E0" src/PhotoCamera.cpp src/PhotoEffectRuntime.hpp src/PhotoEffect.cpp config/match-units.toml config/known-globals.csv
 ```

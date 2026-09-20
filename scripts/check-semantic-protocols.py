@@ -1082,6 +1082,32 @@ def check_photo_game_task_ecl_owner() -> None:
     if "{" in source_without_comments(extended_emission):
         fail("EclExtended emission adapter must not define a state layout")
 
+    camera = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
+    manifest = (ROOT / "config" / "match-units.toml").read_text(
+        encoding="utf-8"
+    )
+    if '#include "PhotoGameTask.hpp"' not in camera:
+        fail("PhotoCamera must consume canonical PhotoGameTask.hpp")
+    for retired in (
+        "struct PhotoGlobalStateView",
+        "unknownFlag0",
+        "unknownFlag2",
+        "?g_PhotoGlobalState@th095@@3PAUPhotoGlobalStateView@1@A",
+    ):
+        if retired in camera or retired in manifest:
+            fail(f"PhotoCamera restored duplicate global-state projection: {retired}")
+    for fact in (
+        "extern PhotoGameTaskView *g_PhotoGlobalState;",
+        "TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)",
+        "g_PhotoGlobalState->captureActive",
+        "g_PhotoGlobalState->gameplayLoadActive",
+        "g_PhotoGlobalState->photoSoundSuppressed",
+    ):
+        if fact not in camera:
+            fail(f"PhotoCamera lost canonical PhotoGameTask access: {fact}")
+    if "?g_PhotoGlobalState@th095@@3PAUPhotoGameTaskView@1@A" not in manifest:
+        fail("PhotoCamera exact units lost canonical PhotoGameTask global ABI")
+
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if '#include "../PhotoGameTask.hpp"' not in ecl_run:
         fail("normal EclRun must consume canonical PhotoGameTask.hpp")
