@@ -14384,3 +14384,56 @@ local manager projection. Normal source already aliases canonical
 emission permits the storage projection to disappear or requires one
 fieldless method adapter. Do not infer `EnemyInf+0x4DFC`, restore a complete
 alternate manager, or add a profile selector.
+
+### SEM-289 — retire the duplicate photo runtime manager projections
+
+**Scope.** Close the two remaining `PhotoRuntimeView` declarations in
+PhotoCamera and PhotoRuntime as one EnemyInf manager ownership lane. This
+batch changes manager storage and ABI identities only; it does not infer the
+opaque manager slot at `+0x4DFC` or alter enemy-element behavior.
+
+**Evidence and ownership.** Existing hash-attested target evidence establishes
+`g_PhotoRuntime @ 0x004BDDC0` as the 0x26AE30 EnemyInf manager. The canonical
+layout asserts `enemyPool[128] @ +0x4E00` and `photoTargets[8] @ +0x26AE00`.
+The former PhotoCamera projection padded directly to `+0x26AE00` and exposed
+the same eight pointers; the former PhotoRuntime projection padded to
+`+0x4DF4`, skipped the still-unknown `+0x4DFC`, and exposed the same 128-element
+pool. `CountPhotoTargets @ 0x004168D0` iterates that pool, while PhotoCamera's
+independent target-selection paths consume the eight photo-target pointers.
+These are two views of one canonical owner, not distinct runtime objects.
+
+**Production / exact representation.** Both TUs now include
+`PhotoEnemyManager.hpp` unconditionally. PhotoCamera types `g_PhotoRuntime` as
+`PhotoEnemyManagerView *` and reads `photoTargets` directly; PhotoRuntime
+defines `PhotoEnemyManagerView::CountPhotoTargets` and begins at
+`enemyPool[0]`. The complete local structs, typedef, owner/field selection
+macros, and four associated selectors are gone. The exact-unit manifest names
+the canonical global and method decorations at the same relocation offsets
+and target destinations. Direct pinned-VC7.1 compilation proved that no
+fieldless ABI adapter is required.
+
+**Guards and debt.** The EnemyInf guard now rejects `PhotoRuntimeView` and its
+retired access macros in either TU or the exact-unit manifest. It requires the
+canonical include, global type, `photoTargets` consumer, pool scan, and both
+canonical decorated identities. Four selector directives were removed,
+shrinking the closed baseline from 819 to **815 directives across 109 files**.
+Two selected declarations were removed, shrinking that baseline from 217 keys
+/ 222 occurrences to **215 keys / 220 occurrences**. No selector, declaration,
+or baseline allowance was added.
+
+**Validation.** The first PhotoCamera replay changed only 15 compiler-private
+labels in two units; restricted refresh followed unchanged structural bytes,
+relocation offsets/types, non-private identities, and target destinations.
+The final focused replay passed **12/12 exact** across PhotoCamera 11/11 and
+PhotoRuntime 1/1 with zero refresh. Normal pinned-VC7.1 probes emitted
+**60,971-byte** PhotoCamera and **18,682-byte** PhotoRuntime i386 COFF objects.
+The semantic guard and its 15 tests pass. Per the batching policy, this
+checkpoint does not claim a new 696-unit aggregate replay or 88-TU product;
+SEM-287 remains the latest full exact/product closure.
+
+**Unknown / next route.** Audit PhotoCamera's `PhotoGlobalStateView` against
+the canonical `PhotoGameTaskView @ 0x004BDEC8`. Prove its `+0xFC` flag reads
+from existing producers/consumers, then determine whether the local storage
+projection and two field-name selectors can disappear while preserving exact
+caller emission. Keep unproved task flags and EnemyInf `+0x4DFC` Unknown; do
+not add a selector or enlarge either debt baseline.

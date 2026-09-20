@@ -128,6 +128,35 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn('#include "PhotoEnemyEclAccess.hpp"', extended)
         self.assertNotIn("EXT_MOVEMENT_FLAGS", extended)
         self.assertIn("TH095_ECL_CONTROL_BITS(enemy).movementMode", extended)
+        camera = (ROOT / "src" / "PhotoCamera.cpp").read_text(encoding="utf-8")
+        runtime = (ROOT / "src" / "PhotoRuntime.cpp").read_text(encoding="utf-8")
+        ledgers = {
+            path: (ROOT / path).read_text(encoding="utf-8")
+            for path in (
+                "config/match-units.toml",
+                "config/functions.csv",
+                "config/implemented.csv",
+                "config/known-symbols.csv",
+                "config/matches.csv",
+                "config/reccmp-functions.csv",
+            )
+        }
+        manifest = ledgers["config/match-units.toml"]
+        self.assertNotIn("PhotoRuntimeView", camera)
+        self.assertNotIn("PhotoRuntimeView", runtime)
+        for text in ledgers.values():
+            self.assertNotIn("PhotoRuntimeView", text)
+        self.assertIn("extern PhotoEnemyManagerView *g_PhotoRuntime;", camera)
+        self.assertIn("g_PhotoRuntime->photoTargets", camera)
+        self.assertIn("int PhotoEnemyManagerView::CountPhotoTargets(", runtime)
+        self.assertIn("&this->enemyPool[0]", runtime)
+        self.assertIn(
+            "?g_PhotoRuntime@th095@@3PAUPhotoEnemyManagerView@1@A", manifest
+        )
+        self.assertIn(
+            "?CountPhotoTargets@PhotoEnemyManagerView@th095@@QAEHPBUFloat3@2@0@Z",
+            manifest,
+        )
 
     def test_photo_game_task_ecl_guard_accepts_state_bridge(self) -> None:
         GUARD.check_photo_game_task_ecl_owner()

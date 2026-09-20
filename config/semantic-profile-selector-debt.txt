@@ -176,10 +176,9 @@
 1	src/pbg/Lzss.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/pbg/PbgArchive.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/pbg/PbgFile.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/PhotoCamera.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/PhotoCamera.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 5	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT)
-7	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+6	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/PhotoCamera.cpp	#ifdef DIFFBUILD
 4	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT
 5	src/PhotoCamera.cpp	#ifndef DIFFBUILD
@@ -210,8 +209,6 @@
 2	src/PhotoOverlay.cpp	#ifdef DIFFBUILD
 1	src/PhotoOverlay.cpp	#ifdef TH095_MATCH_EXACT
 1	src/PhotoOverlay.cpp	#ifndef DIFFBUILD
-1	src/PhotoRuntime.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-1	src/PhotoRuntime.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/PhotoRuntime.cpp	#ifndef DIFFBUILD
 2	src/PhotoStage.cpp	#if defined(TH095_MATCH_EXACT)
 12	src/PhotoStage.cpp	#ifdef DIFFBUILD

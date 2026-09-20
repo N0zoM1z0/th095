@@ -1,9 +1,7 @@
 #include "AnmManager.hpp"
 #include "GameplayGlobals.hpp"
 #include "PhotoEnemy.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "PhotoEnemyManager.hpp"
-#endif
 
 namespace th095
 {
@@ -36,23 +34,6 @@ extern PhotoItemManagerView *g_PhotoItemManager;
     TH095_RUNTIME_GLOBAL_PTR(PhotoItemManagerView, g_RuntimeItemManagerOwner)
 #endif
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct PhotoRuntimeView
-{
-    u8 unknown0000[0x4df4];
-    PhotoEnemyEclManagerView *eclManager;
-    u8 unknown4df8[8];
-    PhotoEnemyView enemies[128];
-
-    i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
-};
-#define TH095_PHOTO_RUNTIME_OWNER PhotoRuntimeView
-#define TH095_PHOTO_RUNTIME_FIRST_ENEMY(owner) (&(owner)->enemies[0])
-#else
-#define TH095_PHOTO_RUNTIME_OWNER PhotoEnemyManagerView
-#define TH095_PHOTO_RUNTIME_FIRST_ENEMY(owner) ((owner)->EnemyAt(0))
-#endif
-
 // Keep the TH08 Float3 divide body in this call-site allocation phase.
 static __forceinline Float3 DividePhotoVector(
     const Float3 &value, f32 scalar)
@@ -66,7 +47,7 @@ static __forceinline Float3 DividePhotoVector(
 }
 
 // FUNCTION: TH095 0x004168D0.
-int TH095_PHOTO_RUNTIME_OWNER::CountPhotoTargets(
+int PhotoEnemyManagerView::CountPhotoTargets(
     const Float3 *position, const Float3 *size)
 {
     struct CountPhotoTargetLocals
@@ -80,7 +61,7 @@ int TH095_PHOTO_RUNTIME_OWNER::CountPhotoTargets(
         i32 count;
     } locals;
 
-    locals.enemy = TH095_PHOTO_RUNTIME_FIRST_ENEMY(this);
+    locals.enemy = &this->enemyPool[0];
     locals.count = 0;
 
     locals.captureMaximum = DividePhotoVector(*size, 2.0f);

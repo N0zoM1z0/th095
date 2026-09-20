@@ -54,14 +54,14 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-288. Owner closure remains
+The current semantic source checkpoint is SEM-289. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
 | --- | --- |
 | Background `0x201C` | Canonical normal owner closed in `Background.hpp`; one narrow EclRun emission adapter remains. |
 | BulletInf `0x27C5B8` | `PhotoBulletManager.hpp` is the profile-independent owner. PhotoCamera, PhotoGame, and PhotoStage include it directly; PhotoCamera's mixed `.90/.98` receiver and captured-bullet projection are retired. CalculatePhotoScore consumes canonical `PhotoBulletView::vm.loadedSprite/speed/nextCaptured/bulletType/color`. Only script-0x124 `CreateVmAtWorld` uses a fieldless emission adapter. |
-| EnemyInf manager `0x26AE30` | Canonical normal owner closed in `PhotoEnemyManager.hpp`; it directly embeds the compact template and 128-element pool; `enemyAnm @ +0x4DF8` is proved. |
+| EnemyInf manager `0x26AE30` | Canonical owner closed in `PhotoEnemyManager.hpp`; it directly embeds the compact template and 128-element pool. PhotoCamera and PhotoRuntime now consume its `photoTargets @ +0x26AE00`, `enemyPool @ +0x4E00`, and `CountPhotoTargets @ 0x004168D0` without `PhotoRuntimeView` or an ABI adapter; `enemyAnm @ +0x4DF8` is proved. |
 | Compact enemy element `0x4CC0` | Canonical profile-independent owner established in `PhotoEnemy.hpp`; `EnemyMovement` is a method-only ABI shell, and all four operand resolver TUs, RunEcl, plus EclExtended's inherited callback share `PhotoEnemyEclAccess.hpp`. Normal RunEcl calls canonical `Enemy::ResolveFloat`; its historical 53-site decoration is isolated in storage-free `ecl/EnemyFloatOperandEclEmission.hpp`. |
 | PhotoGameTask `0x124` | `PhotoGameTask.hpp` is profile-independent; normal RunEcl consumes canonical `completion @ +0x104` and `playerDeathTransitionComplete @ +0xFC bit 5`. EclExtended now binds the same normal owner and shares the dependency-light `PhotoGameTaskState.hpp` vocabulary for `photoSoundSuppressed` bit 9 and `photoTransitionActive` bit 10; its target-facing incomplete extern spelling is isolated in a storage-free emission adapter. Exact task emission stays in `PhotoGameTaskExact.inl`. |
 | PhotoInf/stage `0x25730` | `PhotoStage.hpp` is the canonical normal owner for lifecycle, draw/capture behavior, `scoreMultiplier @ +0x25718`, ANM, and Chain roots. PhotoCamera's old receiver is isolated in one narrow emission adapter. |
@@ -73,7 +73,7 @@ deliberately narrower than subsystem completion:
 | Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 819 remaining selector directives across 109 files and 217 declaration keys / 222 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 815 remaining selector directives across 109 files and 215 declaration keys / 220 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -315,16 +315,26 @@ was **11/11** with zero refresh. A normal pinned-VC7.1 probe emitted a
 **60,971-byte i386 COFF** object. No new aggregate/product closure is claimed;
 SEM-287 remains the latest 696-unit and 88-TU receipt.
 
+For SEM-289, PhotoCamera and PhotoRuntime's duplicate `PhotoRuntimeView`
+projections were retired in favor of canonical `PhotoEnemyManagerView`.
+Camera accesses now name `photoTargets @ +0x26AE00`; the capture scan is
+defined on the canonical owner and begins at `enemyPool @ +0x4E00`. Canonical
+global/method decorated identities retain their relocation targets without an
+adapter. The controlled matcher refreshed 15 private labels in two camera
+units only after structural/relocation/destination proof; final focused replay
+passed **12/12 exact** with zero refresh. Normal pinned-VC7.1 probes emitted
+**60,971-byte** PhotoCamera and **18,682-byte** PhotoRuntime i386 COFF objects.
+No new aggregate/product closure is claimed; SEM-287 remains the latest full
+receipt.
+
 ## Next bounded lane
 
-Audit `PhotoRuntimeView` in PhotoCamera as the next bounded EnemyInf manager
-lane. Normal source already aliases canonical `PhotoEnemyManagerView`; verify
-that the exact projection's `enemies @ +0x26AE00` is the canonical
-`photoTargets` array and that `CountPhotoTargets @ 0x004168D0` has the same
-semantic receiver. Use a fieldless adapter only if a pinned-VC7.1 caller
-experiment proves the historical decoration is required. Do not infer
-EnemyInf manager `+0x4DFC`, restore a complete alternate manager, add a
-selector, or enlarge either debt baseline.
+Audit PhotoCamera's local `PhotoGlobalStateView` against canonical
+`PhotoGameTaskView @ 0x004BDEC8`. Its `flags @ +0xFC` storage and bits 0, 2,
+and 9 already have independent task/game/item evidence; verify the exact
+caller ABI before replacing the projection and its two field-name selectors.
+Do not name unproved task flags, infer EnemyInf `+0x4DFC`, add a selector, or
+enlarge either debt baseline.
 
 ## Protected working-tree exclusions
 
@@ -343,6 +353,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/PhotoCamera.cpp --path src/PhotoEnemyManager.hpp --details
-rg -n "PhotoRuntimeView|PhotoEnemyManagerView|photoTargets|CountPhotoTargets" src/PhotoCamera.cpp src/PhotoEnemyManager.hpp src/PhotoRuntime.cpp config/match-units.toml
+python3 scripts/analysis/report-semantic-debt.py --path src/PhotoCamera.cpp --path src/PhotoGameTask.hpp --details
+rg -n "PhotoGlobalStateView|PhotoGameTaskView|captureActive|gameplayLoadActive|photoSoundSuppressed" src/PhotoCamera.cpp src/PhotoGameTask.hpp config/match-units.toml
 ```

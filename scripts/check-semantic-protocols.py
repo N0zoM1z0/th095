@@ -819,6 +819,57 @@ def check_photo_enemy_owner() -> None:
         if re.search(r"\bstruct\s+PhotoEnemyView\s*\{", text):
             fail(f"{path.relative_to(SRC)} must not redefine PhotoEnemyView")
 
+    camera = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
+    runtime = (SRC / "PhotoRuntime.cpp").read_text(encoding="utf-8")
+    manifest = (ROOT / "config" / "match-units.toml").read_text(
+        encoding="utf-8"
+    )
+    for path, text in (
+        (SRC / "PhotoCamera.cpp", camera),
+        (SRC / "PhotoRuntime.cpp", runtime),
+    ):
+        if '#include "PhotoEnemyManager.hpp"' not in text:
+            fail(f"{path.relative_to(SRC)} lost the canonical EnemyInf owner")
+        for retired in (
+            "PhotoRuntimeView",
+            "TH095_PHOTO_RUNTIME_TARGETS",
+            "TH095_PHOTO_RUNTIME_OWNER",
+            "TH095_PHOTO_RUNTIME_FIRST_ENEMY",
+        ):
+            if retired in text:
+                fail(
+                    f"{path.relative_to(SRC)} restored duplicate EnemyInf projection: "
+                    f"{retired}"
+                )
+    if "extern PhotoEnemyManagerView *g_PhotoRuntime;" not in camera:
+        fail("PhotoCamera must type g_PhotoRuntime as the canonical EnemyInf owner")
+    if "g_PhotoRuntime->photoTargets" not in camera:
+        fail("PhotoCamera must consume canonical EnemyInf photoTargets")
+    if "int PhotoEnemyManagerView::CountPhotoTargets(" not in runtime:
+        fail("PhotoRuntime must define CountPhotoTargets on canonical EnemyInf")
+    if "&this->enemyPool[0]" not in runtime:
+        fail("PhotoRuntime CountPhotoTargets must scan canonical EnemyInf enemyPool")
+    current_ledger_paths = (
+        ROOT / "config" / "match-units.toml",
+        ROOT / "config" / "functions.csv",
+        ROOT / "config" / "implemented.csv",
+        ROOT / "config" / "known-symbols.csv",
+        ROOT / "config" / "matches.csv",
+        ROOT / "config" / "reccmp-functions.csv",
+    )
+    for path in current_ledger_paths:
+        text = path.read_text(encoding="utf-8")
+        if "PhotoRuntimeView" in text:
+            fail(
+                f"{path.relative_to(ROOT)} restored the retired PhotoRuntimeView ABI"
+            )
+    for symbol in (
+        "?g_PhotoRuntime@th095@@3PAUPhotoEnemyManagerView@1@A",
+        "?CountPhotoTargets@PhotoEnemyManagerView@th095@@QAEHPBUFloat3@2@0@Z",
+    ):
+        if symbol not in manifest:
+            fail(f"exact-unit manifest lost canonical EnemyInf ABI: {symbol}")
+
     extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
     if '#include "PhotoEnemyEclAccess.hpp"' not in extended:
         fail("EclExtended must route inherited Enemy* control access through the shared bridge")
