@@ -521,7 +521,7 @@ enter_subroutine:
             TH095_ECL_ANM_SPAWN_WORLD(
                 TH095_ECL_BULLET_ANM_SPAWNER, 0x125,
                 TH095_TARGET_ENEMY_POSITION_PTR(enemy));
-        g_SoundPlayer.PlaySoundByIdx(TH095_SOUND_PHOTO_PULSE, 0);
+        g_SoundPlayer.PlaySoundByIdx(SOUND_PHOTO_PULSE, 0);
         break;
     }
 

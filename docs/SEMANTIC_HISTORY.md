@@ -14796,3 +14796,50 @@ five photography meanings from target-local producer/consumer evidence, but
 pinned-VC7 focused replay must still prove whether exact callers can share the
 semantic enum spellings. Do not infer neighboring sound names from adjacency
 and do not edit a frozen exact body solely because values are equal.
+
+### SEM-297 — unify the photography SoundIdx tail
+
+**Scope.** Apply the already accepted SND-011 target semantics uniformly to
+the five photography sound values at `0x2A..0x2E`. Retire only the selected
+enum placeholders and their compatibility macros; preserve every sound value,
+call site, method ABI, timing, pan argument, and suppression condition.
+
+**Evidence and representation.** SND-011 established the five roles from the
+target sound table plus independent PhotoCamera/EclRun producers. The exact
+branch nevertheless still declared `SOUND_2A..SOUND_2E`, then routed canonical
+callers through five numeric `static_cast<SoundIdx>` macros. `SoundIdx` now
+declares `SOUND_FOCUS_CHARGE`, `SOUND_CHARGE_FULL`, `SOUND_CAMERA_FOCUS`,
+`SOUND_PHOTO_PULSE`, and `SOUND_TARGET_ACQUIRED` in every profile. Ten
+PhotoCamera consumers and the EclRun photo-pulse consumer use those enum
+constants directly. No new name is inferred outside this proved tail.
+
+**Compiler evidence and recovery.** Equal integral enum values preserve every
+caller byte and public relocation. The first focused replay failed solely on
+compiler-private `$L` symbol spellings: offsets, relocation types, and target
+destinations were unchanged, so the failed run receives no exact credit. A
+restricted refresh reviewed and updated 15 private labels in two PhotoCamera
+units plus 22 in EclRun, then an immediate replay passed with zero refresh.
+
+**Guards and debt.** The SoundPlayer protocol guard now requires all five
+canonical tail entries, rejects `SOUND_2A..SOUND_2E` and every retired
+`TH095_SOUND_*` token repository-wide, and pins the ten PhotoCamera plus one
+EclRun direct consumers. Removing the enum and macro selectors shrinks the
+baseline from 797 to **795 directives across 109 files**. Declaration debt
+remains **208 keys / 213 occurrences**; no baseline allowance was added.
+
+**Validation.** Final focused replay passed PhotoCamera **11/11** and EclRun
+**1/1**, totaling **12/12 exact units** with zero private-label refresh after
+the reviewed 37-label migration above. Pinned-VC7.1 normal probes emitted
+**59,658-byte** PhotoCamera and **79,911-byte** EclRun Intel 80386 COFF
+objects. The semantic guard and all **59 tests** pass; tracking remains
+**1,880 provisional / 697 source-present / 696 exact**. Per the batching
+policy, no new aggregate replay or product link is claimed; SEM-296 remains
+the latest full receipt.
+
+**Unknown / next route.** Audit the remaining selected lifecycle-field
+spellings in `SoundPlayer.hpp`. SND-013 already proves the distinct worker
+roles and offsets; focused compiler evidence must determine whether the exact
+SoundPlayer body can use `initializationThreadHandle`,
+`soundDataLoaderThreadHandle`, `initializationThreadId`, and
+`initializationWindow` directly. Do not extend those semantics to
+`workerStopRequest` or adjacent unknown storage without independent evidence.

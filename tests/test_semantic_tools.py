@@ -186,12 +186,34 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("struct SoundPlayer\n", header)
         self.assertIn("typedef ZunResult SoundPlayerResult;", header)
         self.assertNotIn("typedef ::ZunResult SoundPlayerResult;", header)
+        semantic_sound_tail = (
+            "SOUND_FOCUS_CHARGE",
+            "SOUND_CHARGE_FULL",
+            "SOUND_CAMERA_FOCUS",
+            "SOUND_PHOTO_PULSE",
+            "SOUND_TARGET_ACQUIRED",
+        )
+        for name in semantic_sound_tail:
+            self.assertEqual(header.count(f"    {name},"), 1)
+        for name in ("SOUND_2A", "SOUND_2B", "SOUND_2C", "SOUND_2D", "SOUND_2E"):
+            self.assertNotIn(name, header)
         for path in (ROOT / "src").rglob("*"):
             if path.suffix in (".cpp", ".hpp", ".inl"):
-                self.assertNotIn(
-                    "TH095_MATCH_SOUNDPLAYER_AS_STRUCT",
-                    path.read_text(encoding="utf-8"),
-                )
+                source = path.read_text(encoding="utf-8")
+                self.assertNotIn("TH095_MATCH_SOUNDPLAYER_AS_STRUCT", source)
+                for name in semantic_sound_tail:
+                    self.assertNotIn(f"TH095_{name}", source)
+        photo_camera = (ROOT / "src" / "PhotoCamera.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(photo_camera.count("SOUND_FOCUS_CHARGE"), 4)
+        self.assertEqual(photo_camera.count("SOUND_CHARGE_FULL"), 1)
+        self.assertEqual(photo_camera.count("SOUND_CAMERA_FOCUS"), 4)
+        self.assertEqual(photo_camera.count("SOUND_TARGET_ACQUIRED"), 1)
+        ecl_target_high = (
+            ROOT / "src" / "ecl" / "EclRunTargetHigh.inl"
+        ).read_text(encoding="utf-8")
+        self.assertEqual(ecl_target_high.count("SOUND_PHOTO_PULSE"), 1)
         implementation = (ROOT / "src" / "SoundPlayer.cpp").read_text(
             encoding="utf-8"
         )

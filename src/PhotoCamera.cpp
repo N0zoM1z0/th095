@@ -270,7 +270,7 @@ void PhotoCameraState::BeginCapture()
     }
     if (PHOTO_SOUND_SUPPRESSED == 0)
     {
-        PhotoSoundPlayer()->PlaySoundByIdx(TH095_SOUND_CAMERA_FOCUS, 0);
+        PhotoSoundPlayer()->PlaySoundByIdx(SOUND_CAMERA_FOCUS, 0);
     }
 }
 
@@ -514,7 +514,7 @@ u32 PhotoCameraState::TakePhoto()
     }
     g_AnmGameSpeed = 1.0f;
     this->modeTimer = 0;
-    PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_CAMERA_FOCUS);
+    PhotoSoundPlayer()->StopSoundByIdx(SOUND_CAMERA_FOCUS);
     if (PHOTO_SOUND_SUPPRESSED == 0)
     {
         PhotoSoundPlayer()->PlaySoundByIdx(static_cast<SoundIdx>(0x29), 0);
@@ -541,7 +541,7 @@ void PhotoCameraState::CancelCapture()
     this->mode = PHOTO_CAMERA_CAPTURED;
     g_AnmGameSpeed = 1.0f;
     this->modeTimer = 0;
-    PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_CAMERA_FOCUS);
+    PhotoSoundPlayer()->StopSoundByIdx(SOUND_CAMERA_FOCUS);
 }
 
 struct PhotoScoreCameraFlagBits
@@ -928,7 +928,7 @@ void PhotoCameraState::UpdateCharge()
                     if (PHOTO_SOUND_SUPPRESSED == 0)
                     {
                         PhotoSoundPlayer()->PlaySoundByIdx(
-                            TH095_SOUND_FOCUS_CHARGE, 0);
+                            SOUND_FOCUS_CHARGE, 0);
                     }
                     locals.timer = &this->chargeTimer;
                     locals.timer->current = 0;
@@ -973,7 +973,7 @@ normalCharge:
     {
         if (PHOTO_SOUND_SUPPRESSED != 0)
         {
-            PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_FOCUS_CHARGE);
+            PhotoSoundPlayer()->StopSoundByIdx(SOUND_FOCUS_CHARGE);
         }
         if (this->focusChargeFrames > 60 ||
             PhotoTimerAdvancedOnEvenFrame(&this->auxiliaryTimer))
@@ -990,7 +990,7 @@ normalCharge:
         {
             this->flags &= ~PHOTO_FLAG_FOCUSED;
             this->focusChargeFrames = 0;
-            PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_FOCUS_CHARGE);
+            PhotoSoundPlayer()->StopSoundByIdx(SOUND_FOCUS_CHARGE);
             goto normalCharge;
         }
 
@@ -1006,7 +1006,7 @@ focusedCharge:
                 this->charge = 1.0f;
                 this->flags &= ~PHOTO_FLAG_FOCUSED;
                 this->focusChargeFrames = 0;
-                PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_FOCUS_CHARGE);
+                PhotoSoundPlayer()->StopSoundByIdx(SOUND_FOCUS_CHARGE);
                 goto normalCharge;
             }
             return;
@@ -1258,7 +1258,7 @@ updateCharge:
                     if (PHOTO_SOUND_SUPPRESSED == 0)
                     {
                         PhotoSoundPlayer()->PlaySoundByIdx(
-                            TH095_SOUND_CHARGE_FULL, 0);
+                            SOUND_CHARGE_FULL, 0);
                     }
                     if (camera->vmIds[10])
                     {
@@ -1364,7 +1364,7 @@ updateCharge:
         }
         if (PHOTO_SOUND_SUPPRESSED != 0)
         {
-            PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_CAMERA_FOCUS);
+            PhotoSoundPlayer()->StopSoundByIdx(SOUND_CAMERA_FOCUS);
         }
 
 cameraActive:
@@ -1390,7 +1390,7 @@ cameraActive:
                 {
                     if (PHOTO_SOUND_SUPPRESSED == 0)
                         PhotoSoundPlayer()->PlaySoundByIdx(
-                            TH095_SOUND_TARGET_ACQUIRED, 0);
+                            SOUND_TARGET_ACQUIRED, 0);
                     camera->flags |= PHOTO_FLAG_TARGET_SOUND_PLAYED;
                 }
                 if (PHOTO_CAMERA_TARGET_FRAME_ACTIVE(camera->flags) == 0)

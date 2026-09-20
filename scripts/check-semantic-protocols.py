@@ -709,6 +709,10 @@ def check_photo_bullet_owner() -> None:
 def check_sound_player_consumer_owners() -> None:
     bullet = (SRC / "BulletManager.cpp").read_text(encoding="utf-8")
     extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
+    photo_camera = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
+    ecl_target_high = (SRC / "ecl" / "EclRunTargetHigh.inl").read_text(
+        encoding="utf-8"
+    )
     header = (SRC / "SoundPlayer.hpp").read_text(encoding="utf-8")
     manifest = (ROOT / "config" / "match-units.toml").read_text(
         encoding="utf-8"
@@ -720,13 +724,44 @@ def check_sound_player_consumer_owners() -> None:
         fail("SoundPlayer.hpp lost its canonical result type")
     if "typedef ::ZunResult SoundPlayerResult;" in header:
         fail("SoundPlayer.hpp restored its selected legacy result type")
+    semantic_sound_tail = (
+        "SOUND_FOCUS_CHARGE",
+        "SOUND_CHARGE_FULL",
+        "SOUND_CAMERA_FOCUS",
+        "SOUND_PHOTO_PULSE",
+        "SOUND_TARGET_ACQUIRED",
+    )
+    for name in semantic_sound_tail:
+        if header.count(f"    {name},") != 1:
+            fail(f"SoundPlayer.hpp lost canonical SoundIdx tail entry: {name}")
+    if re.search(r"\bSOUND_2[A-E]\b", header):
+        fail("SoundPlayer.hpp restored numeric SoundIdx tail placeholders")
+    retired_sound_tokens = tuple(f"TH095_{name}" for name in semantic_sound_tail)
     for path in sorted(SRC.rglob("*")):
         if path.suffix not in (".cpp", ".hpp", ".inl"):
             continue
-        if "TH095_MATCH_SOUNDPLAYER_AS_STRUCT" in path.read_text(encoding="utf-8"):
+        source = path.read_text(encoding="utf-8")
+        if "TH095_MATCH_SOUNDPLAYER_AS_STRUCT" in source:
             fail(
                 f"{path.relative_to(SRC)} restored the SoundPlayer class/struct selector"
             )
+        for retired in retired_sound_tokens:
+            if retired in source:
+                fail(
+                    f"{path.relative_to(SRC)} restored selected SoundIdx token: {retired}"
+                )
+
+    expected_camera_sound_uses = {
+        "SOUND_FOCUS_CHARGE": 4,
+        "SOUND_CHARGE_FULL": 1,
+        "SOUND_CAMERA_FOCUS": 4,
+        "SOUND_TARGET_ACQUIRED": 1,
+    }
+    for name, count in expected_camera_sound_uses.items():
+        if photo_camera.count(name) != count:
+            fail(f"PhotoCamera lost canonical {name} consumers")
+    if ecl_target_high.count("SOUND_PHOTO_PULSE") != 1:
+        fail("EclRun lost its canonical photo-pulse sound consumer")
 
     for retired in (
         "PhotoBulletSoundPlayerView",
