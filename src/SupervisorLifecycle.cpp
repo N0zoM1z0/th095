@@ -2,6 +2,8 @@
 #include "GameConfiguration.hpp"
 #include "ReplayScanWorker.hpp"
 #include "SupervisorFlags.hpp"
+#include "SupervisorViewportConfiguration.hpp"
+#include "ZunTimer.hpp"
 #include "diffbuild.hpp"
 
 #include <stddef.h>
@@ -27,24 +29,11 @@ struct GameConfigurationConstructionAdapter : GameConfiguration
 typedef char GameConfigurationConstructionAdapterSizeIsC8[
     (sizeof(GameConfigurationConstructionAdapter) == 0xc8) ? 1 : -1];
 
-struct SupervisorViewportLifecycle
+// Fieldless adapter preserving the target's two empty member-constructor
+// iterations without introducing a second viewport layout.
+struct SupervisorViewportLifecycle : SupervisorViewportConfiguration
 {
-    u8 bytes[0xf0];
     SupervisorViewportLifecycle() {}
-};
-
-struct SupervisorTimerLifecycle
-{
-    i32 previous;
-    f32 subFrame;
-    i32 current;
-
-    SupervisorTimerLifecycle()
-    {
-        current = 0;
-        previous = -999999;
-        subFrame = 0.0f;
-    }
 };
 
 struct Supervisor
@@ -53,7 +42,7 @@ struct Supervisor
     GameConfigurationConstructionAdapter config;
     SupervisorViewportLifecycle backgroundViewports[2];
     u8 unknown3c4[0x30];
-    SupervisorTimerLifecycle timer;
+    ZunTimer timer;
     u8 unknown400[0x44];
     SupervisorFlags flags;
     u8 unknown448[0x528 - 0x448];

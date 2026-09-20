@@ -627,7 +627,16 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("viewportMode", owner)
         exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
         self.assertIn("viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]", exact)
+        self.assertIn("ZunTimer timer;", exact)
         self.assertNotIn("unknown1e4[0x220]", exact)
+        lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "struct SupervisorViewportLifecycle : SupervisorViewportConfiguration",
+            lifecycle,
+        )
+        self.assertNotIn("struct SupervisorTimerLifecycle", lifecycle)
 
     def test_screenshot_worker_token_guard_accepts_shared_storage(self) -> None:
         GUARD.check_screenshot_worker_token_owner()

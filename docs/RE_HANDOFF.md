@@ -735,13 +735,32 @@ declaration debt remains **201 keys / 206 occurrences**. The semantic guard
 and all **73 workflow tests** pass. No aggregate/product closure is claimed;
 SEM-298 remains the latest full receipt.
 
+For SEM-314, the bounded adjacent-gap audit recovered only the canonical
+`ZunTimer @ Supervisor+0x3F4`; `+0x3CC..+0x3F3` and `+0x400..+0x403` remain
+opaque, with no direct target xrefs or proved post-construction consumer.
+Main, MainExact, SupervisorRuntime, and SupervisorLifecycle now share the
+ZunTimer type. SupervisorLifecycle's viewport construction type is a fieldless
+adapter over `SupervisorViewportConfiguration`, and its duplicate three-field
+timer declaration is retired.
+
+The lifecycle TU remained **2/2 exact** immediately. A controlled refresh
+changed only 40 compiler-private labels across three units; final direct-
+consumer replay passed **199/199 exact across 18 sources** with zero refresh.
+Pinned normal Main, SupervisorLifecycle, and SoundPlayer probes emitted valid
+i386 COFF. Selector debt remains **722 directives across 103 files** and
+declaration debt remains **201 keys / 206 occurrences**. No profile selector
+was added; the semantic guard and all **73 workflow tests** pass.
+Aggregate/product closure remains deferred to the campaign milestone, with
+SEM-298 still the latest full receipt.
+
 ## Next bounded lane
 
-Audit the adjacent Supervisor `+0x3CC..+0x403` interval, currently
-`unknown3cc[0x38]` in Main, MainExact, and SupervisorRuntime. Start from target
-xrefs and establish a producer plus independent consumer before naming any
-field. If the interval has no bounded access graph, leave it Unknown and rotate
-to a different owner; do not extend viewport meanings beyond `+0x3C8`.
+Audit `FrontEndControllerTimer` in `FrontEndController.cpp`. Its exact branch
+aliases `ResultScreenTimer`, normal aliases layout-identical `ZunTimer`, and
+both Tick relocations resolve to `0x0041B8A0`. Test a shared canonical timer
+type against all four FrontEnd exact units and the normal VC7.1 TU before
+retiring the selected typedef. Treat a public COFF symbol change separately
+from byte identity; do not broaden this into the whole ResultScreen family.
 
 ## Protected working-tree exclusions
 
@@ -760,6 +779,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --path src/Main.cpp --details
-rg -n "unknown3cc|0x3cc|0x3d[0-9a-f]|0x3e[0-9a-f]|0x3f[0-9a-f]|0x40[0-3]" src config docs
+python3 scripts/analysis/report-semantic-debt.py --path src/FrontEndController.cpp --details
+rg -n "FrontEndControllerTimer|ResultScreenTimer|ZunTimer|0x0041B8A0" src/FrontEndController.cpp src/ResultScreen.cpp src/ResultScreen*.hpp config docs
 ```

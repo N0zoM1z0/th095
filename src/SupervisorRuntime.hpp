@@ -22,6 +22,7 @@
 #include "SupervisorStartupState.hpp"
 #include "SupervisorFogState.hpp"
 #include "SupervisorViewportConfiguration.hpp"
+#include "ZunTimer.hpp"
 
 namespace th095
 {
@@ -54,7 +55,9 @@ struct Supervisor
         viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]; // +0x1e4
     SupervisorViewportConfiguration *currentViewportConfiguration; // +0x3c4
     i32 currentViewportIndex;                        // +0x3c8
-    u8 unknown3cc[0x38];
+    u8 unknown3cc[0x28];
+    ZunTimer timer;                                  // +0x3f4
+    u8 unknown400[4];
     i32 calcCount;                                   // +0x404
     i32 activeSceneState;                            // +0x408
     i32 requestedSceneState;                         // +0x40c
@@ -171,6 +174,8 @@ typedef char SupervisorCurrentViewportAt3C4[
     (offsetof(Supervisor, currentViewportConfiguration) == 0x3c4) ? 1 : -1];
 typedef char SupervisorCurrentViewportIndexAt3C8[
     (offsetof(Supervisor, currentViewportIndex) == 0x3c8) ? 1 : -1];
+typedef char SupervisorTimerAt3F4[
+    (offsetof(Supervisor, timer) == 0x3f4) ? 1 : -1];
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
 typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanWorker) == 0x648) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];

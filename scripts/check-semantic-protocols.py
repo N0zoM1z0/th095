@@ -1574,6 +1574,7 @@ def check_supervisor_viewport_configuration_owner() -> None:
     viewport_source = (SRC / "SupervisorViewport.cpp").read_text(encoding="utf-8")
     background_source = (SRC / "Background.cpp").read_text(encoding="utf-8")
     anm_draw_source = (SRC / "AnmDrawCore.cpp").read_text(encoding="utf-8")
+    lifecycle_source = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
 
     if any(name in owner for name in PROFILE_NAMES):
         fail("canonical Supervisor viewport-configuration owner must be profile-independent")
@@ -1621,7 +1622,9 @@ def check_supervisor_viewport_configuration_owner() -> None:
         "viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]",
         "SupervisorViewportConfiguration *currentViewportConfiguration;",
         "i32 currentViewportIndex;",
-        "u8 unknown3cc[0x38];",
+        "u8 unknown3cc[0x28];",
+        "ZunTimer timer;",
+        "u8 unknown400[4];",
     )
     for path, text in (
         ("Main.hpp", main_header),
@@ -1630,6 +1633,8 @@ def check_supervisor_viewport_configuration_owner() -> None:
     ):
         if '#include "SupervisorViewportConfiguration.hpp"' not in text:
             fail(f"{path} no longer routes through the viewport-configuration owner")
+        if '#include "ZunTimer.hpp"' not in text:
+            fail(f"{path} no longer routes Supervisor +0x3F4 through ZunTimer")
         for fact in canonical_storage:
             if fact not in text:
                 fail(f"{path} lost canonical Supervisor viewport storage: {fact}")
@@ -1641,6 +1646,27 @@ def check_supervisor_viewport_configuration_owner() -> None:
         ):
             if stale in text:
                 fail(f"{path} restored stale Supervisor viewport storage: {stale}")
+
+    lifecycle_adapter = "struct SupervisorViewportLifecycle : SupervisorViewportConfiguration"
+    if lifecycle_adapter not in lifecycle_source:
+        fail("SupervisorLifecycle lost its fieldless viewport construction adapter")
+    lifecycle_body = braced_body_after(
+        lifecycle_source,
+        lifecycle_source.index(lifecycle_adapter),
+        "SupervisorViewportLifecycle",
+    )
+    clean_lifecycle_body = source_without_comments(lifecycle_body)
+    if re.search(r"\b(?:u8|i8|u16|i16|u32|i32|f32|f64)\b[^;]*;", clean_lifecycle_body):
+        fail("SupervisorLifecycle viewport construction adapter gained storage")
+    for fact in (
+        '#include "ZunTimer.hpp"',
+        "ZunTimer timer;",
+        "offsetof(Supervisor, timer) == 0x3f4",
+    ):
+        if fact not in lifecycle_source:
+            fail(f"SupervisorLifecycle lost canonical timer fact: {fact}")
+    if "struct SupervisorTimerLifecycle" in lifecycle_source:
+        fail("SupervisorLifecycle restored a duplicate timer declaration")
 
     for path, text, adapter in (
         ("SupervisorViewport.cpp", viewport_source, "GameplayViewportConfiguration"),
@@ -3193,7 +3219,7 @@ def main() -> int:
     print("  Supervisor flags: one profile-independent TH095 0x7BC-owner layout")
     print("  Screenshot BMP file header: one packed 0x0E serialized owner")
     print("  GameWindow startup state: one path-mismatch latch and three saved power-policy slots")
-    print("  Supervisor viewport: one shared two-slot 0xF0 configuration owner")
+    print("  Supervisor viewport/timer: shared 0xF0 elements and +0x3F4 ZunTimer")
     print("  Screenshot worker: one shared 32-bit CRT token at Supervisor +0x528")
     print("  Supervisor scene states: canonical TH095 1/2/3/4/6/7/8 domain")
     print("  Supervisor startup phase: one shared TH095 0/1/2 domain at +0x660")

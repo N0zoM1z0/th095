@@ -15662,3 +15662,47 @@ full receipt. Next audit the adjacent opaque Supervisor `+0x3CC..+0x403`
 interval. Promote a field only if a target-local producer and independent
 consumer establish width and lifecycle; otherwise keep the interval Unknown
 and rotate to another owner rather than inventing names.
+
+### SEM-314 — converge Supervisor construction-only viewport and timer types
+
+**Scope and result.** The bounded `+0x3CC..+0x403` audit did not justify
+naming the whole interval. It did recover one already compiler-proved typed
+subobject: Supervisor `+0x3F4..+0x3FF` is the canonical 12-byte `ZunTimer`.
+Main, MainExact, and SupervisorRuntime now split their former
+`unknown3cc[0x38]` into opaque `+0x3CC..+0x3F3`, typed `ZunTimer timer @
++0x3F4`, and opaque `+0x400..+0x403`. SupervisorLifecycle uses that same timer
+type instead of a duplicate three-field declaration. Its two-iteration
+viewport construction type is now a fieldless derived adapter over
+`SupervisorViewportConfiguration`, retaining the empty constructor required
+for VC7 emission without owning another `0xF0` byte layout.
+
+**Evidence and boundary.** Fresh hash-attested `Supervisor::Supervisor @
+0x00426350` decompilation writes `-999999`, `0.0f`, and `0` to dwords
+`+0x3F4/+0x3F8/+0x3FC`, exactly matching canonical ZunTimer field order and
+construction. The already exact lifecycle TU fixes the member at `+0x3F4`.
+Fresh target xref probes found no direct references anywhere else in sampled
+`+0x3CC..+0x403`, and the historical audit already classified `+0x414` and
+other Supervisor gaps as bounded negatives. No post-construction timer reader
+was recovered. Therefore the storage type/lifetime is accepted, but its
+business role and both surrounding opaque ranges remain Unknown.
+
+**Compiler and validation evidence.** SupervisorLifecycle stayed **2/2 exact**
+immediately after replacing both duplicate declarations. The shared Main
+header change renumbered only 40 compiler-private labels across three units;
+controlled refresh proved bytes, relocation offsets/types/destinations, and
+non-private symbols unchanged. Immediate zero-refresh replay then passed
+**199/199 exact units across 18 direct consumers**. Normal pinned-VC7.1 probes
+emitted **116,364-byte** Main, **13,120-byte** SupervisorLifecycle, and
+**65,073-byte** SoundPlayer Intel 80386 COFF objects. Selector debt remains
+**722 directives across 103 files** and selected-declaration debt remains
+**201 keys / 206 occurrences**; this transaction adds no profile selector.
+Target identity, tracking, both build graphs, whitespace, the semantic guard,
+and all **73 workflow tests** pass. Aggregate/product closure remains deferred
+to the campaign milestone; SEM-298 is still the latest full receipt.
+
+**Next route.** Audit the selected `FrontEndControllerTimer` alias. Exact uses
+the layout-identical `ResultScreenTimer`, normal uses `ZunTimer`, and both
+resolve Tick to target `0x0041B8A0`. Prove whether one shared timer type can
+preserve the four exact FrontEnd units and public relocation destinations.
+Do not rewrite the broader ResultScreen timer family or accept a public-symbol
+migration merely because the machine-code target address is shared.

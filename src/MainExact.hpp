@@ -22,6 +22,7 @@
 #include "SupervisorState.hpp"
 #include "SupervisorStartupState.hpp"
 #include "SupervisorViewportConfiguration.hpp"
+#include "ZunTimer.hpp"
 
 namespace th095
 {
@@ -102,7 +103,9 @@ struct Supervisor
         viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]; // +0x1e4
     SupervisorViewportConfiguration *currentViewportConfiguration; // +0x3c4
     i32 currentViewportIndex;                   // +0x3c8
-    u8 unknown3cc[0x38];
+    u8 unknown3cc[0x28];
+    ZunTimer timer;                             // +0x3f4
+    u8 unknown400[4];
     i32 calcCount;                              // +0x404
     i32 activeSceneState;                       // +0x408
     i32 requestedSceneState;                    // +0x40c
