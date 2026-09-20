@@ -234,6 +234,24 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         source = (ROOT / "src" / "PhotoCamera.cpp").read_text(encoding="utf-8")
         self.assertNotIn("@PhotoAnmLoadedView@th095@@", manifest)
         self.assertIn("?CreateVm@PhotoAnmCreateVmEmissionAdapter@th095@@", manifest)
+        self.assertNotIn("PhotoAnmManagerView", source)
+        self.assertNotIn("@PhotoAnmManagerView@th095@@", manifest)
+        self.assertIn(
+            "static __forceinline const AnmVmId &PhotoAnmId(const i32 &value)",
+            source,
+        )
+        self.assertIn("g_AnmManager->GetVm(PhotoAnmId(id))", source)
+        self.assertIn("g_AnmManager->SetInterrupt(PhotoAnmId(id)", source)
+        self.assertIn("g_AnmManager->MarkVmForDeletion(PhotoAnmId(id))", source)
+        self.assertIn("struct PhotoAnmCreatedPositionEmissionAdapter", source)
+        self.assertEqual(source.count("TH095_PHOTO_ANM_SET_CREATED_POSITION("), 3)
+        self.assertEqual(
+            manifest.count(
+                "?SetPosition@PhotoAnmCreatedPositionEmissionAdapter@th095@@"
+                "QAEXHPBUFloat3@2@@Z"
+            ),
+            2,
+        )
         self.assertNotIn("PhotoStageControllerView", source)
         self.assertNotIn("g_PhotoStageController", source)
         self.assertIn('#include "PhotoEffectRuntime.hpp"', source)

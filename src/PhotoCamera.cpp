@@ -41,36 +41,26 @@ struct PhotoAnmVmIdValue
 #include "PhotoCameraStageEmission.inl"
 #endif
 
-#ifdef DIFFBUILD
-struct PhotoAnmManagerView
+static __forceinline const AnmVmId &PhotoAnmId(const i32 &value)
 {
-    AnmVm *FindVm(i32 id);
-    void SetVmInterrupt(i32 id, i16 interrupt);
-    void RemoveVm(i32 id);
-    void SetVmPosition(i32 id, const Float3 *position);
+    return *reinterpret_cast<const AnmVmId *>(&value);
+}
+
+// These two calls consume a PhotoAnmCreateVmEmissionAdapter return directly.
+// With canonical AnmVmId-by-value input, VC7 materializes that return before
+// PhotoToScreen and changes the target caller by 25 bytes.  This fieldless
+// adapter retains only the target's scalar input spelling; its link owner is
+// canonical AnmManager::SetPosition at 0x004451F0.
+struct PhotoAnmCreatedPositionEmissionAdapter
+{
+    void SetPosition(i32 id, const Float3 *position);
 };
 
-static inline PhotoAnmManagerView *PhotoAnmManager()
-{
-    return reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager);
-}
+#pragma comment(linker, "/alternatename:?SetPosition@PhotoAnmCreatedPositionEmissionAdapter@th095@@QAEXHPBUFloat3@2@@Z=?SetPosition@AnmManager@th095@@QAEXUAnmVmId@2@PAUFloat3@2@@Z")
 
-#define TH095_PHOTO_ANM_GET_VM(id) PhotoAnmManager()->FindVm(id)
-#define TH095_PHOTO_ANM_SET_INTERRUPT(id, interrupt) \
-    PhotoAnmManager()->SetVmInterrupt((id), (interrupt))
-#define TH095_PHOTO_ANM_MARK_DELETE(id) PhotoAnmManager()->RemoveVm(id)
-#define TH095_PHOTO_ANM_SET_POSITION(id, position) \
-    PhotoAnmManager()->SetVmPosition((id), (position))
-#define TH095_PHOTO_ANM_SET_POSITION_DIRECT(id, position) \
-    reinterpret_cast<PhotoAnmManagerView *>(g_AnmManager)->SetVmPosition( \
-        (id), (position))
-#else
-static __forceinline AnmVmId PhotoAnmId(i32 value)
-{
-    AnmVmId id;
-    id.value = value;
-    return id;
-}
+#define TH095_PHOTO_ANM_SET_CREATED_POSITION(id, position) \
+    reinterpret_cast<PhotoAnmCreatedPositionEmissionAdapter *>( \
+        g_AnmManager)->SetPosition((id), (position))
 
 #define TH095_PHOTO_ANM_GET_VM(id) g_AnmManager->GetVm(PhotoAnmId(id))
 #define TH095_PHOTO_ANM_SET_INTERRUPT(id, interrupt)     g_AnmManager->SetInterrupt(PhotoAnmId(id), (interrupt))
@@ -80,7 +70,6 @@ static __forceinline AnmVmId PhotoAnmId(i32 value)
         PhotoAnmId(id), const_cast<Float3 *>(position))
 #define TH095_PHOTO_ANM_SET_POSITION_DIRECT(id, position) \
     TH095_PHOTO_ANM_SET_POSITION((id), (position))
-#endif
 
 #ifdef TH095_MATCH_EXACT
 struct PhotoSoundPlayerView
@@ -1509,7 +1498,7 @@ cameraActive:
                         camera->viewfinderPosition.x);
                 }
                 Float3 effectPosition;
-                TH095_PHOTO_ANM_SET_POSITION_DIRECT(
+                TH095_PHOTO_ANM_SET_CREATED_POSITION(
                     TH095_PHOTO_ANM_CREATE_VM(
                         g_PhotoStageState->anm, 0x21, 0).value,
                     PhotoToScreen(
@@ -1525,7 +1514,7 @@ cameraActive:
                         camera->viewfinderPosition.x);
                 }
                 Float3 effectPosition;
-                TH095_PHOTO_ANM_SET_POSITION_DIRECT(
+                TH095_PHOTO_ANM_SET_CREATED_POSITION(
                     TH095_PHOTO_ANM_CREATE_VM(
                         g_PhotoStageState->anm, 0x22, 0).value,
                     PhotoToScreen(

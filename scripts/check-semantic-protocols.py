@@ -1373,6 +1373,31 @@ def check_photo_camera_state_owner() -> None:
         fail("PhotoCamera CreateVm calls escaped the narrow emission boundary")
 
     for retired in (
+        "struct PhotoAnmManagerView",
+        "PhotoAnmManager()",
+        "->FindVm(",
+        "->SetVmInterrupt(",
+        "->RemoveVm(",
+        "->SetVmPosition(",
+    ):
+        if retired in source:
+            fail(f"PhotoCamera restored duplicate ANM manager ABI: {retired}")
+    for fact in (
+        "static __forceinline const AnmVmId &PhotoAnmId(const i32 &value)",
+        "g_AnmManager->GetVm(PhotoAnmId(id))",
+        "g_AnmManager->SetInterrupt(PhotoAnmId(id), (interrupt))",
+        "g_AnmManager->MarkVmForDeletion(PhotoAnmId(id))",
+        "g_AnmManager->SetPosition(",
+        "struct PhotoAnmCreatedPositionEmissionAdapter",
+        "?SetPosition@PhotoAnmCreatedPositionEmissionAdapter@th095@@",
+        "=?SetPosition@AnmManager@th095@@",
+    ):
+        if fact not in source:
+            fail(f"PhotoCamera lost canonical/narrow ANM manager route: {fact}")
+    if source.count("TH095_PHOTO_ANM_SET_CREATED_POSITION(") != 3:
+        fail("PhotoCamera widened the two-call created-position emission boundary")
+
+    for retired in (
         "struct PhotoStageControllerView",
         "g_PhotoStageController",
     ):
@@ -1405,6 +1430,10 @@ def check_photo_camera_state_owner() -> None:
         "@PhotoAnmLoadedView@th095@@",
         "?g_PhotoStageController@th095@@",
         "@PhotoStageControllerView@th095@@",
+        "?FindVm@PhotoAnmManagerView@th095@@",
+        "?SetVmInterrupt@PhotoAnmManagerView@th095@@",
+        "?RemoveVm@PhotoAnmManagerView@th095@@",
+        "?SetVmPosition@PhotoAnmManagerView@th095@@",
     ):
         if retired in manifest:
             fail(f"PhotoCamera manifest restored proxy ABI: {retired}")
@@ -1416,10 +1445,20 @@ def check_photo_camera_state_owner() -> None:
         "?g_PhotoEffectManager@th095@@3PAUPhotoEffectManagerView@1@A",
         "?CountNearbyTargets@PhotoEffectManagerView@th095@@QAEHPAUFloat3@2@M@Z",
         "?CountPhotoTargets@PhotoEffectManagerView@th095@@QAEHPAUFloat3@2@0@Z",
+        "?GetVm@AnmManager@th095@@QAEPAUAnmVm@2@UAnmVmId@2@@Z",
+        "?SetInterrupt@AnmManager@th095@@QAEXUAnmVmId@2@H@Z",
+        "?MarkVmForDeletion@AnmManager@th095@@QAEXUAnmVmId@2@@Z",
+        "?SetPosition@AnmManager@th095@@QAEXUAnmVmId@2@PAUFloat3@2@@Z",
     )
     for symbol in required_manifest:
         if symbol not in manifest:
             fail(f"PhotoCamera manifest lost canonical/emission ABI: {symbol}")
+    created_position_symbol = (
+        "?SetPosition@PhotoAnmCreatedPositionEmissionAdapter@th095@@"
+        "QAEXHPBUFloat3@2@@Z"
+    )
+    if manifest.count(created_position_symbol) != 2:
+        fail("PhotoCamera created-position adapter escaped its two-call boundary")
 
     game = (SRC / "PhotoGame.cpp").read_text(encoding="utf-8")
     if "this->chargeUiState = PHOTO_CAMERA_CHARGE_UI_INITIAL;" not in game:

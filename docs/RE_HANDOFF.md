@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-291. Owner closure remains
+The current semantic source checkpoint is SEM-292. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -69,11 +69,11 @@ deliberately narrower than subsystem completion:
 | RunEcl Player/camera lane | Normal case 141 writes canonical `PhotoPlayerRuntimeView::camera.photoLimit @ Player+0x29EC`; all six angle calls use the Player root and `AngleFromPoint @ 0x004303E0`. The padded local owner is retired; the last four exact call decorations are isolated in method-only `ecl/PhotoCameraEclEmission.hpp`. This does not close every Player projection. |
 | EclExtended Player/camera lane | Both callbacks use canonical `PhotoPlayerRuntimeView` storage for `playerPosition @ +0x1E30`, camera `@ +0x1E3C`, `movementScale @ +0x2A18`, camera mode, and viewfinder geometry. `PhotoCameraState` remains the method owner. The exact adapter retains only an incomplete historical Player global and method-only camera receiver; it has no storage layout. |
 | PhotoCamera/PhotoStage Player lane | `PhotoPlayerRuntime.hpp` is profile-independent and now owns the proved mode, effect ANM/VM slot, movement/tracking state, completion timer, position, partial camera, and movement-scale storage. PhotoCamera and both PhotoStage bodies route Player fields through it. The old full `PhotoGameStateView` and normal `PhotoStageCameraView` layouts are retired; `PhotoCameraPlayerEmission.inl` is method-only and storage-free. Full `PhotoCameraState` embedding remains separate debt because the exact legacy ANM graph conflicts with the canonical header graph. |
-| PhotoCamera state `0xBDC` | `PhotoCamera.hpp` is profile-selector-free. Mode `+0x000`, trivial ANM handles `+0x010`, flags/charge UI `+0xBB4`, `focusChargeFrames +0xBB8`, and the loaded-ANM receiver use shared declarations. PhotoCamera now binds canonical EnemyInf, PhotoGameTask, BulletInf, Background, and PhotoEffect owners directly. Only `CreateVm` and script-0x124 `CreateVmAtWorld` retain fieldless, profile-independent VC7 return-decoration adapters. Unsupported camera fields remain debt. |
+| PhotoCamera state `0xBDC` | `PhotoCamera.hpp` is profile-selector-free. Mode `+0x000`, trivial ANM handles `+0x010`, flags/charge UI `+0xBB4`, `focusChargeFrames +0xBB8`, and the loaded-ANM receiver use shared declarations. PhotoCamera binds canonical EnemyInf, PhotoGameTask, BulletInf, Background, PhotoEffect, and AnmManager owners directly. `CreateVm`, script-0x124 `CreateVmAtWorld`, and exactly two CreateVm-result SetPosition calls retain fieldless, profile-independent VC7 emission adapters; the last links to canonical `AnmManager::SetPosition`. Unsupported camera fields remain debt. |
 | Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 806 remaining selector directives across 109 files and 214 declaration keys / 219 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 805 remaining selector directives across 109 files and 213 declaration keys / 218 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -348,13 +348,26 @@ replay passed **11/11 exact** with zero refresh. The normal pinned-VC7.1 probe
 emitted a **61,063-byte i386 COFF** object. No new aggregate/product closure is
 claimed; SEM-287 remains the latest full receipt.
 
+For SEM-292, PhotoCamera's DIFF-only `PhotoAnmManagerView` was retired. Of 46
+lookup/interrupt/deletion/position relocations, 44 now use canonical
+`AnmManager` identities directly at the same offsets and targets. A clean VC7
+oracle proved that only the two CreateVm-result SetPosition compositions need
+a scalar, fieldless emission spelling: direct `AnmVmId`-by-value source changes
+target evaluation order and enlarges `UpdatePhotoCamera` by 25 bytes. The
+two-call adapter aliases canonical `SetPosition @ 0x004451F0`. Restricted
+refresh changed 15 private labels in two units; final PhotoCamera replay
+passed **11/11 exact** with zero refresh. The normal probe emitted a
+**59,658-byte i386 COFF** object. No aggregate/product closure is claimed;
+SEM-287 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit PhotoCamera's DIFF-only `PhotoAnmManagerView` against canonical
-`AnmManager` and `AnmVmId`. Test the four lookup/interrupt/deletion/position
-calls with the existing value bridge before deciding whether any historical
-decoration needs a storage-free adapter. Do not retain a duplicate manager
-owner, add a selector, or generalize a compiler workaround.
+Audit PhotoCamera's last selected local owner, exact-only
+`PhotoSoundPlayerView`, against canonical `SoundPlayer`. Test
+`PlaySoundByIdx`, `PlaySoundPositionedByIdx`, and `StopSoundByIdx` with the
+proved `SoundIdx` declarations before deciding whether any historical integer
+decoration needs a storage-free adapter. Do not add a selector or infer sound
+names from adjacency.
 
 ## Protected working-tree exclusions
 
@@ -373,6 +386,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/PhotoCamera.cpp --path src/AnmManager.hpp --details
-rg -n "PhotoAnmManagerView|PhotoAnmId|TH095_PHOTO_ANM_|GetVm|SetInterrupt|MarkVmForDeletion|SetPosition" src/PhotoCamera.cpp src/AnmManager.hpp config/match-units.toml
+python3 scripts/analysis/report-semantic-debt.py --path src/PhotoCamera.cpp --path src/SoundPlayer.hpp --details
+rg -n "PhotoSoundPlayerView|PhotoSoundPlayer|PlaySoundByIdx|PlaySoundPositionedByIdx|StopSoundByIdx|SoundIdx" src/PhotoCamera.cpp src/SoundPlayer.hpp config/match-units.toml
 ```

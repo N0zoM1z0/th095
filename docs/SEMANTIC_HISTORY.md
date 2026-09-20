@@ -14541,3 +14541,59 @@ position targets; determine whether the `PhotoAnmId` value bridge can be shared
 without changing exact caller bytes. Preserve only a storage-free adapter if a
 clean pinned-VC7.1 experiment proves a decorated-name dependency. Do not add a
 selector or generalize any compiler workaround.
+
+### SEM-292 — retire PhotoCamera's duplicate ANM manager projection
+
+**Scope.** Replace PhotoCamera's DIFF-only `PhotoAnmManagerView` with the
+canonical AnmManager API while preserving the target's four-byte camera handle
+storage. This batch changes no AnmManager layout, VM lifetime rule, interrupt
+value, position value, or CreateVm ownership.
+
+**Evidence and ownership.** The historical proxy always reinterpreted
+`g_AnmManager @ 0x004CA1B8`; it owned no fields or lifetime. Its four targets
+are already canonical exact authored units: `AnmManager::GetVm @ 0x00445110`,
+`SetInterrupt @ 0x00445170`, `MarkVmForDeletion @ 0x004451B0`, and
+`SetPosition @ 0x004451F0`. The PhotoCamera ledger contained 46 calls to those
+four addresses under proxy decorations. Target disassembly of
+`UpdatePhotoCamera @ 0x00430AB0` independently shows the two composed paths
+evaluating `PhotoToScreen`, then `CreateVm`, then passing the returned scalar
+id to `SetPosition`.
+
+**Production / exact representation.** A shared inline `PhotoAnmId` bridge now
+views the proved four-byte scalar storage as a const canonical `AnmVmId` at the
+call boundary. GetVm, every interrupt/deletion call, and nine ordinary
+position calls use canonical `AnmManager` declarations directly: 44 of the 46
+reviewed relocations therefore carry canonical identities. The remaining two
+calls consume `PhotoAnmCreateVmEmissionAdapter` results. A clean direct
+canonical experiment caused VC7 to materialize each UDT return before
+`PhotoToScreen`, enlarging `UpdatePhotoCamera` from the target 7,291 bytes to
+7,316 and changing its call order. The fieldless, profile-independent
+`PhotoAnmCreatedPositionEmissionAdapter` retains only the scalar parameter
+spelling at those two sites; `/alternatename` assigns its normal link product
+to canonical `AnmManager::SetPosition`. It owns no storage or semantics.
+
+**Guards and debt.** The camera guard rejects the old type, cast helper,
+method spellings, and all four proxy decorations. It requires canonical source
+routes and manifest identities and fixes the created-position boundary at
+exactly two calls. Removing the DIFF selector shrinks the selector baseline
+from 806 to **805 directives across 109 files**. Removing the selected proxy
+shrinks declaration debt from 214 keys / 219 occurrences to **213 keys / 218
+occurrences**. No selector, selected declaration, or baseline allowance was
+added.
+
+**Validation.** All 46 ABI migrations preserve relocation offsets, types, and
+target destinations. Restricted refresh changed 15 compiler-private labels
+in two units only after complete structural and non-private relocation proof;
+final PhotoCamera replay passed **11/11 exact** with zero
+refresh. The normal pinned-VC7.1 probe emitted a **59,658-byte i386 COFF**
+object whose linker directives bind the two-call adapter to canonical
+`SetPosition`. The semantic guard and all 58 tests pass. Per batching policy,
+no aggregate/product closure is claimed; SEM-287 remains the latest full
+receipt.
+
+**Unknown / next route.** Audit PhotoCamera's last selected local owner,
+exact-only `PhotoSoundPlayerView`, against canonical `SoundPlayer` and the
+proved `SoundIdx` method family at `0x00438F20/0x00439030/0x00439160`.
+Determine whether direct canonical enum parameters reproduce target callers or
+whether a strictly method-only decoration boundary remains necessary. Do not
+add a selector or infer sound meanings from numeric adjacency.
