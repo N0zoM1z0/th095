@@ -15434,3 +15434,54 @@ remains the latest full receipt.
 VC7 emission before replacing exact/DIFF integer storage and aliases. Keep the
 legacy TH08-shaped `FogState` owner separate absent target-local ownership
 evidence.
+
+### SEM-309 — unify the TH095 Supervisor fog-state cache
+
+**Scope and ownership.** `SupervisorFogState.hpp` now owns the one profile-
+independent TH095 fog cache at canonical Supervisor `+0x768`: disabled `0`,
+enabled `1`, and invalid `0xFF`. Main, MainExact, and SupervisorRuntime use the
+same four-byte enum. The exact/DIFF integer fields, Main.cpp's numeric aliases,
+and MainExact.inl's raw `0/1/0xFF` expressions are retired.
+
+**Protocol and boundary.** Existing TH095 target evidence remains the
+authority. The render loop publishes invalid immediately before calling
+DisableFog, intentionally defeating the disabled fast path so
+`D3DRS_FOGENABLE = FALSE` is sent for the new scene. `EnableFog @ 0x004254D0`
+and `DisableFog @ 0x00425520` skip a matching cached value; otherwise they
+flush the ANM vertex buffer, publish enabled/disabled, and call SetRenderState.
+Constructor zeroing does not prove the device's independent initial state.
+Fog-color ownership, reset invalidation outside this observed path, fourth
+values, and synchronization remain Unknown. Legacy `Supervisor.hpp` retains
+its same-valued `FogState @ +0x350` in a different TH08-shaped `0x364` owner;
+it is corroboration, not TH095 storage authority.
+
+**Compiler evidence.** The first strict Main replay stopped on 25 compiler-
+private labels and receives zero exact credit. The first strict Global replay
+stopped on 15 private labels and also receives zero credit. Both mismatches
+preserved complete structural bytes, public identities, relocation
+offsets/types/targets, and every non-private symbol. Controlled refresh
+accepted the 40 private labels across three units. Immediate zero-refresh
+replay then passed all 199 units across 18 sources.
+
+**Guards and debt.** The guard pins the explicit 0/1/0xFF domain, four-byte
+enum ABI, sole canonical declaration, shared field type in all three TH095
+headers, canonical constants in both Main bodies, absence of numeric aliases,
+and the separate legacy enum/sentinel producer. Removing Main.cpp's alias
+branch plus Main.hpp's selected include and field branches shrinks the closed
+selector ledger from 747 to **744 directives across 107 files**. Selected-
+declaration debt remains **201 keys / 206 occurrences**.
+
+**Validation.** Focused Main replay passed **48/48 exact** after the controlled
+private-label refresh. Final direct-consumer replay passed **199/199 exact
+across 18 sources** with zero refresh. Pinned-VC7.1 normal probes emitted
+**116,276-byte** Main, **34,679-byte** Global, and **64,883-byte** SoundPlayer
+Intel 80386 COFF objects. The semantic guard and all **70 workflow tests**
+pass. Tracking remains **1,880 provisional / 697 source-present / 696 exact**.
+Per batching policy, no aggregate replay or product link is claimed; SEM-298
+remains the latest full receipt.
+
+**Unknown / next route.** Audit the exact/normal naming split for the signed
+scene handshake slots at Supervisor `+0x408/+0x40C/+0x410`. Preserve `i32`
+because bootstrap uses `0/-1`; independently prove producer/consumer direction
+before replacing the wanted/current/previous spellings and DIFFBUILD aliases
+with canonical active/requested/previous-active names.

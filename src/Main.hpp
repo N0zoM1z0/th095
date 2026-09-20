@@ -19,11 +19,9 @@
 #include "ScreenshotBitmapFileHeader.hpp"
 #include "SoundPlayer.hpp"
 #include "SupervisorFlags.hpp"
+#include "SupervisorFogState.hpp"
 #include "SupervisorState.hpp"
 #include "SupervisorStartupState.hpp"
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-#include "SupervisorFogState.hpp"
-#endif
 #include "inttypes.hpp"
 
 namespace th095
@@ -161,11 +159,7 @@ struct Supervisor
     // 0: inactive, 1: loading VMs active, >=2: completion/prompt frame counter.
     i32 loadingScreenState;                     // +0x714
     u8 unknown718[0x50];
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 fogState;                               // +0x768
-#else
     SupervisorFogCacheState fogState;           // +0x768
-#endif
     u8 unknown76c[8];
     i32 versionDataSize;                        // +0x774
     u8 *versionData;                            // +0x778

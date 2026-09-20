@@ -1630,6 +1630,74 @@ def check_supervisor_startup_phase_owner() -> None:
         fail("Main.cpp restored profile-selected startup numeric aliases")
 
 
+def check_supervisor_fog_cache_owner() -> None:
+    owner_path = SRC / "SupervisorFogState.hpp"
+    owner = owner_path.read_text(encoding="utf-8")
+    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+    legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
+    main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
+    main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
+
+    if any(name in owner for name in PROFILE_NAMES):
+        fail("canonical Supervisor fog-cache owner must be profile-independent")
+    explicit_enum(
+        owner_path,
+        "SupervisorFogCacheState",
+        "SUPERVISOR_FOG_CACHE_",
+        [0, 1, 0xFF],
+    )
+    if "sizeof(SupervisorFogCacheState) == 4" not in owner:
+        fail("canonical Supervisor fog cache lost its four-byte ABI assertion")
+
+    declarations: list[str] = []
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in {".cpp", ".hpp", ".inl"}:
+            continue
+        text = source_without_comments(path.read_text(encoding="utf-8"))
+        if re.search(r"\benum\s+SupervisorFogCacheState\s*\{", text):
+            declarations.append(path.relative_to(ROOT).as_posix())
+    if declarations != ["src/SupervisorFogState.hpp"]:
+        fail(f"Supervisor fog-cache declarations are not canonical: {declarations}")
+
+    for path, text in (
+        ("Main.hpp", main_header),
+        ("MainExact.hpp", main_exact_header),
+        ("SupervisorRuntime.hpp", runtime_header),
+    ):
+        if '#include "SupervisorFogState.hpp"' not in text:
+            fail(f"{path} no longer routes through the fog-cache owner")
+        if "SupervisorFogCacheState fogState;" not in text:
+            fail(f"{path} lost the canonical fogState type")
+        if "i32 fogState;" in text:
+            fail(f"{path} restored integer-only fog-cache storage")
+
+    for marker in (
+        "FOG_DISABLED = 0",
+        "FOG_ENABLED = 1",
+        "FOG_UNSET = 0xff",
+        "FogState fogState;",
+        "this->fogState = FOG_UNSET;",
+    ):
+        if marker not in legacy:
+            fail(f"legacy Supervisor fog domain lost compatibility fact: {marker}")
+    if "SupervisorFogCacheState" in legacy:
+        fail("legacy TH08-shaped Supervisor was silently merged with TH095 fog cache")
+
+    constants = (
+        "SUPERVISOR_FOG_CACHE_DISABLED",
+        "SUPERVISOR_FOG_CACHE_ENABLED",
+        "SUPERVISOR_FOG_CACHE_INVALID",
+    )
+    for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
+        for constant in constants:
+            if constant not in text:
+                fail(f"{path} lost canonical Supervisor fog-cache state: {constant}")
+    if "TH095_SUPERVISOR_FOG_" in main_body:
+        fail("Main.cpp restored profile-selected fog numeric aliases")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -2814,6 +2882,7 @@ def main() -> int:
     check_screenshot_bitmap_header_owner()
     check_supervisor_state_owner()
     check_supervisor_startup_phase_owner()
+    check_supervisor_fog_cache_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -2844,6 +2913,7 @@ def main() -> int:
     print("  Screenshot BMP file header: one packed 0x0E serialized owner")
     print("  Supervisor scene states: canonical TH095 1/2/3/4/6/7/8 domain")
     print("  Supervisor startup phase: one shared TH095 0/1/2 domain at +0x660")
+    print("  Supervisor fog cache: one shared TH095 0/1/255 domain at +0x768")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

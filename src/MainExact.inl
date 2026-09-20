@@ -401,7 +401,7 @@ RenderResult GameWindow::Render()
         {
             g_Supervisor.d3dDevice->BeginScene();
             g_AnmManager->ClearVertexBuffer();
-            g_Supervisor.fogState = 0xff;
+            g_Supervisor.fogState = SUPERVISOR_FOG_CACHE_INVALID;
             g_Supervisor.DisableFog();
             g_Chain.RunDrawChain();
             g_AnmManager->FlushVertexBuffer();
@@ -2421,10 +2421,10 @@ i32 Supervisor::FadeOutMusic(f32 durationSeconds)
 // FUNCTION: TH095 0x004254D0.
 i32 Supervisor::EnableFog()
 {
-    if (this->fogState != 1)
+    if (this->fogState != SUPERVISOR_FOG_CACHE_ENABLED)
     {
         g_AnmManager->FlushVertexBuffer();
-        this->fogState = 1;
+        this->fogState = SUPERVISOR_FOG_CACHE_ENABLED;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
     }
     return 0;
@@ -2433,10 +2433,10 @@ i32 Supervisor::EnableFog()
 // FUNCTION: TH095 0x00425520.
 i32 Supervisor::DisableFog()
 {
-    if (this->fogState != 0)
+    if (this->fogState != SUPERVISOR_FOG_CACHE_DISABLED)
     {
         g_AnmManager->FlushVertexBuffer();
-        this->fogState = 0;
+        this->fogState = SUPERVISOR_FOG_CACHE_DISABLED;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
     }
     return 0;

@@ -67,16 +67,6 @@ namespace th095
 #define TH095_GAME_MUSIC_MODE_COUNT GAME_MUSIC_MODE_COUNT
 #endif
 
-#ifdef DIFFBUILD
-#define TH095_SUPERVISOR_FOG_DISABLED 0
-#define TH095_SUPERVISOR_FOG_ENABLED 1
-#define TH095_SUPERVISOR_FOG_INVALID 0xff
-#else
-#define TH095_SUPERVISOR_FOG_DISABLED SUPERVISOR_FOG_CACHE_DISABLED
-#define TH095_SUPERVISOR_FOG_ENABLED SUPERVISOR_FOG_CACHE_ENABLED
-#define TH095_SUPERVISOR_FOG_INVALID SUPERVISOR_FOG_CACHE_INVALID
-#endif
-
 enum SupervisorLoadingScreenValue
 {
     SUPERVISOR_LOADING_SCREEN_INACTIVE = 0,
@@ -533,7 +523,7 @@ RenderResult GameWindow::Render()
         {
             g_Supervisor.d3dDevice->BeginScene();
             g_AnmManager->ClearVertexBuffer();
-            g_Supervisor.fogState = TH095_SUPERVISOR_FOG_INVALID;
+            g_Supervisor.fogState = SUPERVISOR_FOG_CACHE_INVALID;
             g_Supervisor.DisableFog();
             g_Chain.RunDrawChain();
             g_AnmManager->FlushVertexBuffer();
@@ -2581,10 +2571,10 @@ i32 Supervisor::FadeOutMusic(f32 durationSeconds)
 // FUNCTION: TH095 0x004254D0.
 i32 Supervisor::EnableFog()
 {
-    if (this->fogState != TH095_SUPERVISOR_FOG_ENABLED)
+    if (this->fogState != SUPERVISOR_FOG_CACHE_ENABLED)
     {
         g_AnmManager->FlushVertexBuffer();
-        this->fogState = TH095_SUPERVISOR_FOG_ENABLED;
+        this->fogState = SUPERVISOR_FOG_CACHE_ENABLED;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
     }
     return 0;
@@ -2593,10 +2583,10 @@ i32 Supervisor::EnableFog()
 // FUNCTION: TH095 0x00425520.
 i32 Supervisor::DisableFog()
 {
-    if (this->fogState != TH095_SUPERVISOR_FOG_DISABLED)
+    if (this->fogState != SUPERVISOR_FOG_CACHE_DISABLED)
     {
         g_AnmManager->FlushVertexBuffer();
-        this->fogState = TH095_SUPERVISOR_FOG_DISABLED;
+        this->fogState = SUPERVISOR_FOG_CACHE_DISABLED;
         return this->d3dDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
     }
     return 0;

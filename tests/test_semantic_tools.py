@@ -629,6 +629,19 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("SupervisorStartupPhase startupThreadState;", exact)
         self.assertNotIn("i32 startupThreadState;", exact)
 
+    def test_supervisor_fog_cache_guard_accepts_shared_domain(self) -> None:
+        GUARD.check_supervisor_fog_cache_owner()
+        header = (ROOT / "src" / "SupervisorFogState.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("SUPERVISOR_FOG_CACHE_DISABLED = 0", header)
+        self.assertIn("SUPERVISOR_FOG_CACHE_INVALID = 0xff", header)
+        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
+        self.assertIn("SupervisorFogCacheState fogState;", exact)
+        self.assertNotIn("i32 fogState;", exact)
+
 
 if __name__ == "__main__":
     unittest.main()

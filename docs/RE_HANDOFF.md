@@ -642,13 +642,35 @@ declaration debt remains **201 keys / 206 occurrences**. The semantic guard
 and all **69 workflow tests** pass. No aggregate/product closure is claimed;
 SEM-298 remains the latest full receipt.
 
+For SEM-309, `SupervisorFogState.hpp` became the single profile-independent
+owner of the render-state cache at canonical Supervisor `+0x768`: disabled
+`0`, enabled `1`, and invalid `0xFF`. Main, MainExact, and SupervisorRuntime
+now use that four-byte enum in every profile. Main.cpp's DIFFBUILD aliases and
+MainExact.inl's raw numeric expressions are retired. The render loop publishes
+invalid immediately before DisableFog to force a disabled D3D state; EnableFog
+and DisableFog then publish and cache enabled/disabled after flushing the ANM
+vertex buffer. Legacy `Supervisor.hpp` retains its same-valued `FogState @
++0x350` inside the distinct TH08-shaped `0x364` compatibility owner.
+
+The first strict Main and Global replays stopped on 25 and 15 compiler-private
+labels respectively and receive zero exact credit. Controlled refresh accepted
+those 40 labels across three units only after bytes, relocation
+offsets/types/targets, public identities, and all non-private symbols remained
+unchanged. Immediate final replay passed **199/199 exact across 18 sources**
+with zero refresh. Normal pinned-VC7.1 probes emitted **116,276-byte** Main,
+**34,679-byte** Global, and **64,883-byte** SoundPlayer i386 COFF objects.
+Removing three selected source directives shrinks selector debt to **744
+directives across 107 files**; declaration debt remains **201 keys / 206
+occurrences**. The semantic guard and all **70 workflow tests** pass. No
+aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit the adjacent exact/normal split around `SupervisorFogCacheState @
-+0x768`: normal Main and SupervisorRuntime already use the canonical cache
-domain while MainExact and DIFFBUILD retain integer storage and numeric aliases.
-Prove the disabled/enabled/invalid transitions and VC7 emission before
-convergence; keep legacy `FogState` in the TH08-shaped owner separate.
+Audit the remaining exact/normal naming split for the three signed scene
+handshake slots at Supervisor `+0x408/+0x40C/+0x410`. Preserve their `i32`
+storage because bootstrap uses `0/-1`, but prove producer/consumer direction
+before replacing MainExact's wanted/current/previous spellings and Main.cpp's
+DIFFBUILD aliases with the canonical active/requested/previous-active names.
 
 ## Protected working-tree exclusions
 
@@ -668,5 +690,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --path src/Main.cpp --details
-rg -n "SupervisorFogCacheState|FogState|TH095_SUPERVISOR_FOG_|fogState" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Supervisor.hpp src/Main.cpp src/MainExact.inl src/SupervisorFogState.hpp config/match-units.toml docs/KNOWLEDGE_BASE.md
+rg -n "activeSceneState|requestedSceneState|previousActiveSceneState|wantedState|currentState|previousState" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Main.cpp src/MainExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
 ```
