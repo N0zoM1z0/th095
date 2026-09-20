@@ -150,11 +150,11 @@
 14	src/Main.cpp	#ifdef DIFFBUILD
 1	src/Main.cpp	#ifdef TH095_MATCH_EXACT
 5	src/Main.cpp	#ifndef DIFFBUILD
-3	src/Main.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+1	src/Main.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/Main.hpp	#if defined(TH095_MATCH_EXACT)
-9	src/Main.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-2	src/Main.hpp	#ifdef TH095_MATCH_EXACT
-2	src/Main.hpp	#ifndef TH095_MATCH_EXACT
+7	src/Main.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+1	src/Main.hpp	#ifdef TH095_MATCH_EXACT
+1	src/Main.hpp	#ifndef TH095_MATCH_EXACT
 1	src/MusicRoom.cpp	#ifdef DIFFBUILD
 1	src/MusicRoom.cpp	#ifdef TH095_MATCH_EXACT
 2	src/MusicRoom.hpp	#ifdef DIFFBUILD

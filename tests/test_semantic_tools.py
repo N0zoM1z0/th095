@@ -548,6 +548,27 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("struct PhotoEffectArgs", high)
         self.assertNotIn("TH095_EFFECT_MAXIMUM_LENGTH", high)
 
+    def test_game_configuration_owner_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_game_configuration_owner()
+        header = (ROOT / "src" / "GameConfiguration.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("sizeof(GameConfiguration) == 0xc8", header)
+        self.assertIn(
+            "offsetof(GameConfiguration, controllerAssignments) == 0xb2", header
+        )
+        lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "struct GameConfigurationConstructionAdapter : GameConfiguration",
+            lifecycle,
+        )
+        legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
+        self.assertIn("C_ASSERT(sizeof(GameConfiguration) == 0x3C);", legacy)
+
 
 if __name__ == "__main__":
     unittest.main()

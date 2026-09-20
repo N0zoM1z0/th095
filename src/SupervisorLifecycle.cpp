@@ -1,4 +1,5 @@
 #include "inttypes.hpp"
+#include "GameConfiguration.hpp"
 #include "ReplayScanWorker.hpp"
 #include "diffbuild.hpp"
 
@@ -11,16 +12,19 @@ namespace th095
 // Constructor-only views for the target-owned 0x7BC prefix. Main.hpp keeps the
 // wider runtime layout used by other exact units; this TU isolates member/EH
 // allocation phase just as the target constructor does.
-struct GameConfiguration
+// The target Supervisor constructor invokes GameConfiguration::Initialize as
+// a member-construction phase before entering its body. Keep that compiler
+// boundary without duplicating the canonical configuration layout.
+struct GameConfigurationConstructionAdapter : GameConfiguration
 {
-    u8 bytes[0xc8];
-    void Initialize();
-
-    GameConfiguration()
+    GameConfigurationConstructionAdapter()
     {
         Initialize();
     }
 };
+
+typedef char GameConfigurationConstructionAdapterSizeIsC8[
+    (sizeof(GameConfigurationConstructionAdapter) == 0xc8) ? 1 : -1];
 
 struct SupervisorViewportLifecycle
 {
@@ -63,7 +67,7 @@ typedef char SupervisorLifecycleFlagsSizeIs4[
 struct Supervisor
 {
     u8 unknown000[0x11c];
-    GameConfiguration config;
+    GameConfigurationConstructionAdapter config;
     SupervisorViewportLifecycle backgroundViewports[2];
     u8 unknown3c4[0x30];
     SupervisorTimerLifecycle timer;

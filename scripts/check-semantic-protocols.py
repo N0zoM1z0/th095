@@ -1183,6 +1183,130 @@ def check_replay_scan_worker_owner() -> None:
             fail(f"match manifest lost canonical ReplayScanWorker ABI: {identity}")
 
 
+def check_game_configuration_owner() -> None:
+    owner = (SRC / "GameConfiguration.hpp").read_text(encoding="utf-8")
+    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
+    runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+    lifecycle = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
+    legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
+    manifest = (ROOT / "config" / "match-units.toml").read_text(
+        encoding="utf-8"
+    )
+
+    if any(name in owner for name in PROFILE_NAMES):
+        fail("canonical GameConfiguration owner must be profile-independent")
+    required_layout = (
+        "struct GameConfigOptions",
+        "struct ControllerBinding",
+        "struct SerializedControllerMapping",
+        "struct ControllerMapping",
+        "struct GameConfiguration",
+        "u8 unknown06c[0x38];",
+        "GameColorMode colorMode16bit;",
+        "GameMusicMode musicMode;",
+        "u8 controllerAssignments[3];",
+        "u8 unknown0b7[0x0d];",
+        "GameConfigOptions options;",
+        "(sizeof(GameConfigOptions) == 4)",
+        "(sizeof(ControllerBinding) == 0x12)",
+        "(sizeof(SerializedControllerMapping) == 0x6c)",
+        "(sizeof(ControllerMapping) == 0xc4)",
+        "(sizeof(GameConfiguration) == 0xc8)",
+        "(offsetof(GameConfiguration, colorMode16bit) == 0xac)",
+        "(offsetof(GameConfiguration, musicMode) == 0xad)",
+        "(offsetof(GameConfiguration, controllerAssignments) == 0xb2)",
+        "(offsetof(GameConfiguration, options) == 0xc4)",
+    )
+    for fact in required_layout:
+        if fact not in owner:
+            fail(f"GameConfiguration owner lost canonical layout: {fact}")
+
+    canonical_types = (
+        "GameConfigOptions",
+        "ControllerBinding",
+        "SerializedControllerMapping",
+        "ControllerMapping",
+    )
+    declarations: dict[str, list[str]] = {name: [] for name in canonical_types}
+    configuration_declarations: list[str] = []
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in {".cpp", ".hpp", ".inl"}:
+            continue
+        text = source_without_comments(path.read_text(encoding="utf-8"))
+        relative = path.relative_to(ROOT).as_posix()
+        for name in canonical_types:
+            if re.search(rf"\b(?:struct|class)\s+{name}\s*\{{", text):
+                declarations[name].append(relative)
+        if re.search(r"\b(?:struct|class)\s+GameConfiguration\s*\{", text):
+            configuration_declarations.append(relative)
+    for name, locations in declarations.items():
+        if locations != ["src/GameConfiguration.hpp"]:
+            fail(f"{name} declarations are not canonical: {locations}")
+    if configuration_declarations != [
+        "src/GameConfiguration.hpp",
+        "src/Supervisor.hpp",
+    ]:
+        fail(
+            "GameConfiguration declarations must be the TH095 owner plus the "
+            f"legacy compatibility layout: {configuration_declarations}"
+        )
+    if "C_ASSERT(sizeof(GameConfiguration) == 0x3C);" not in legacy:
+        fail("legacy Supervisor.hpp lost its distinct 0x3C compatibility layout")
+
+    for path, text in (
+        ("Main.hpp", main_header),
+        ("MainExact.hpp", main_exact_header),
+        ("SupervisorRuntime.hpp", runtime_header),
+        ("SupervisorLifecycle.cpp", lifecycle),
+    ):
+        if '#include "GameConfiguration.hpp"' not in text:
+            fail(f"{path} no longer routes through the GameConfiguration owner")
+    for path, text in (
+        ("Main.hpp", main_header),
+        ("MainExact.hpp", main_exact_header),
+        ("SupervisorRuntime.hpp", runtime_header),
+    ):
+        for name in ("GameConfiguration",) + canonical_types:
+            if re.search(rf"\b(?:struct|class)\s+{name}\s*\{{", text):
+                fail(f"{path} restored a private {name} declaration")
+
+    adapter_start = lifecycle.find(
+        "struct GameConfigurationConstructionAdapter : GameConfiguration"
+    )
+    if adapter_start < 0:
+        fail("Supervisor lifecycle lost the named configuration construction adapter")
+    adapter_body = braced_body_after(
+        lifecycle, adapter_start, "GameConfigurationConstructionAdapter"
+    )
+    if "Initialize();" not in adapter_body:
+        fail("configuration construction adapter no longer invokes Initialize")
+    forbidden_adapter_storage = re.compile(
+        r"^\s*(?:u?int(?:8|16|32|64)_t|[ui](?:8|16|32|64)|char|short|int|long|"
+        r"float|double|Game\w+|Controller\w+)\s+\w+(?:\s*\[.*?\])?\s*;",
+        flags=re.MULTILINE,
+    )
+    if forbidden_adapter_storage.search(adapter_body):
+        fail("configuration construction adapter acquired duplicate storage")
+    if "(sizeof(GameConfigurationConstructionAdapter) == 0xc8)" not in lifecycle:
+        fail("configuration construction adapter lost its canonical size assertion")
+    if "GameConfigurationConstructionAdapter config;" not in lifecycle:
+        fail("Supervisor lifecycle lost the construction-phase adapter member")
+
+    retired_fields = ("unknown0b2", "unknown0b3", "unknown0b4")
+    source_corpus = "\n".join((owner, main_header, main_exact_header, main_exact_body))
+    for field in retired_fields:
+        if field in source_corpus:
+            fail(f"exact configuration logic restored a raw assignment field: {field}")
+    for index in range(3):
+        if f"this->controllerAssignments[{index}] = {index};" not in main_exact_body:
+            fail("GameConfiguration::Initialize lost canonical controller assignments")
+
+    if manifest.count("?Initialize@GameConfiguration@th095@@QAEXXZ") != 4:
+        fail("match manifest lost the canonical GameConfiguration Initialize ABI")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -2362,6 +2486,7 @@ def main() -> int:
     check_rng_owner()
     check_midi_output_owner()
     check_replay_scan_worker_owner()
+    check_game_configuration_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -2387,6 +2512,7 @@ def main() -> int:
     print("  RNG owner: one canonical class declaration and two Global.cpp states")
     print("  MidiOutput owner: one 0x300 layout plus one shared fieldless API adapter")
     print("  ReplayScanWorker owner: one shared layout over three distinct storages")
+    print("  GameConfiguration owner: one profile-independent TH095 0xC8 layout")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

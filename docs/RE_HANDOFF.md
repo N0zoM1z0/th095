@@ -525,15 +525,40 @@ Selector debt is **761 directives across 107 files** and declaration debt is
 tests** pass. No aggregate/product closure is claimed; SEM-298 remains the
 latest full receipt.
 
+For SEM-304, `GameConfiguration.hpp` became the sole profile-independent
+owner of the TH095 `0xC8` persistent configuration and its packed controller-
+mapping family. Main, MainExact, SupervisorRuntime, and SupervisorLifecycle
+now include that declaration; Main still owns `Initialize @ 0x00418720`, and
+the real Supervisor storage remains `+0x11C` / `0x004C478C`. The lifecycle TU
+uses a fieldless derived construction adapter whose constructor calls
+`Initialize`, preserving the target member-construction phase without a
+second layout. Legacy `Supervisor.hpp` deliberately retains its distinct
+TH08-shaped `0x3C` compatibility layout and is not treated as the TH095 owner.
+The formerly exact-only `unknown0b2/3/4` tokens now use the proved canonical
+`controllerAssignments[0..2]`; `unknown06c` and `unknown0b7` remain Unknown.
+
+The first combined replay stopped on 25 Main compiler-private labels, and the
+first expanded replay stopped on 15 Global labels; both failed runs receive
+zero exact credit. Controlled refresh accepted those 40 labels across three
+units only after code bytes and every non-private relocation field remained
+unchanged. The immediate final replay passed **199/199 exact across 18 direct
+consumers** with zero refresh. Normal pinned-VC7.1 probes emitted **116,276-
+byte** Main, **34,679-byte** Global, **5,899-byte** SupervisorLifecycle,
+**64,883-byte** SoundPlayer, **37,668-byte** PhotoGameTask, and **28,916-byte**
+Controller i386 COFF objects. Six removed directives shrink selector debt to
+**755 directives across 107 files**; declaration debt remains **202 keys / 207
+occurrences**. The semantic guard and all **65 workflow tests** pass. No
+aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit the `0xC8` `GameConfiguration` family in `Main.hpp`, `MainExact.hpp`,
-`SupervisorRuntime.hpp`, `SupervisorLifecycle.cpp`, and legacy
-`Supervisor.hpp`. Establish the true TH095 runtime owner and complete field /
-method identity fanout before editing. Do not merge the legacy `0x364`
-Supervisor view or the constructor-only lifecycle projection merely because
-they contain a same-sized configuration prefix; prove every selected field,
-packing rule, and `Initialize` emission dependency independently.
+Audit the duplicated `SupervisorFlags` declarations in `Main.hpp`,
+`MainExact.hpp`, `SupervisorRuntime.hpp`, `SupervisorLifecycle.cpp`, and the
+legacy `Supervisor.hpp` compatibility source family. Establish which bit
+domains and widths belong to the real TH095 `0x7BC` Supervisor before editing.
+Preserve the legacy `0x364` view as a separate source family where target-
+local evidence does not prove convergence, and do not turn the lifecycle
+constructor's selected representation into a second semantic owner.
 
 ## Protected working-tree exclusions
 
@@ -553,5 +578,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --path src/SupervisorLifecycle.cpp --path src/Supervisor.hpp --details
-rg -n "GameConfiguration|GameConfigOptions|GameConfigOpts|Initialize@GameConfiguration" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/SupervisorLifecycle.cpp src/Supervisor.hpp src/Main.cpp config/match-units.toml docs/KNOWLEDGE_BASE.md
+rg -n "SupervisorFlags|SupervisorLifecycleFlags|flags;|flags\." src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/SupervisorLifecycle.cpp src/Supervisor.hpp src/Main.cpp config/match-units.toml docs/KNOWLEDGE_BASE.md
 ```

@@ -15173,3 +15173,63 @@ across Main, MainExact, SupervisorRuntime, SupervisorLifecycle, and legacy
 Supervisor. Establish the TH095 runtime owner, packing, complete field fanout,
 and Initialize emission boundary before attempting convergence; do not infer
 that the legacy `0x364` Supervisor view is the canonical runtime owner.
+
+### SEM-304 — unify the TH095 GameConfiguration owner
+
+**Scope and ownership.** `GameConfiguration.hpp` now owns the one profile-
+independent TH095 `0xC8` persistent layout, including the packed `0x12`
+controller binding, `0x6C` serialized mapping, `0xC4` runtime mapping,
+`colorMode16bit @ +0xAC`, `musicMode @ +0xAD`, controller assignments at
+`+0xB2`, and options at `+0xC4`. Main owns `GameConfiguration::Initialize @
+0x00418720`; Supervisor owns the embedded storage at `+0x11C`, target
+`0x004C478C`. Main, MainExact, SupervisorRuntime, and SupervisorLifecycle now
+consume that declaration instead of maintaining four complete or partial
+copies. The persisted unknown spans at `+0x6C` and `+0xB7` remain
+`unknown06c` and `unknown0b7`.
+
+**Boundaries.** The target Supervisor constructor invokes `Initialize` during
+member construction before its body. `SupervisorLifecycle.cpp` therefore
+keeps a named, fieldless derived construction adapter whose constructor makes
+that call; its `0xC8` size assertion proves that it adds no storage. This is a
+compiler-emission boundary, not a second configuration owner. The
+`GameConfiguration` inside legacy `Supervisor.hpp` remains a separately
+asserted TH08-shaped `0x3C` compatibility layout in the older `0x364`
+Supervisor source family. It is deliberately not merged with the TH095 owner.
+The exact Main initializer now spells the already-proved `+0xB2..+0xB4`
+bytes as `controllerAssignments[0..2]` rather than `unknown0b2/3/4`.
+
+**Compiler evidence.** The first combined exact replay stopped on 25 Main
+compiler-private labels and receives zero exact credit. Independent
+SupervisorLifecycle replay passed 2/2, proving that the construction adapter
+preserves its target body. Controlled Main refresh then accepted the 25 labels
+only after bytes and all non-private relocation fields were unchanged. The
+first expanded direct-consumer replay stopped on another 15 private labels in
+two Global units and likewise receives zero credit. Controlled refresh
+accepted the resulting 40-label migration across three units; the immediate
+zero-refresh replay passed all 199 units across 18 sources. No public ABI
+identity, relocation offset/type/target, or code byte changed.
+
+**Guards and debt.** The new owner guard pins the canonical nested sizes and
+proved offsets, rejects duplicate TH095 declarations and the retired raw
+assignment fields, requires every former owner site to include the canonical
+header, constrains the lifecycle adapter to be fieldless, and explicitly
+permits only the asserted legacy `0x3C` compatibility layout. Removing six
+counted Main directives shrinks selector debt from 761 to **755 directives
+across 107 files**. No selected declaration was removed from the declaration-
+debt ledger, which remains **202 keys / 207 occurrences**.
+
+**Validation.** Final focused replay passed **199/199 exact units across 18
+direct consumers** with zero private-label refresh. Pinned-VC7.1 normal probes
+emitted **116,276-byte** Main, **34,679-byte** Global, **5,899-byte**
+SupervisorLifecycle, **64,883-byte** SoundPlayer, **37,668-byte**
+PhotoGameTask, and **28,916-byte** Controller Intel 80386 COFF objects. The
+semantic guard and all **65 workflow tests** pass. Tracking remains **1,880
+provisional / 697 source-present / 696 exact**. Per the batching policy, no
+aggregate replay or product link is claimed; SEM-298 remains the latest full
+receipt.
+
+**Unknown / next route.** Audit the duplicated `SupervisorFlags` family across
+Main, MainExact, SupervisorRuntime, SupervisorLifecycle, and legacy
+Supervisor. Prove the real TH095 `0x7BC` bit layout and all active producers /
+consumers before convergence; keep the older `0x364` compatibility source
+family separate wherever the evidence does not establish equivalence.
