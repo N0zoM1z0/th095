@@ -2002,6 +2002,45 @@ def check_supervisor_fog_cache_owner() -> None:
         fail("Main.cpp restored profile-selected fog numeric aliases")
 
 
+def check_front_end_timer_owner() -> None:
+    path = SRC / "FrontEndController.cpp"
+    text = source_without_comments(path.read_text(encoding="utf-8"))
+
+    if text.count("typedef ZunTimer FrontEndControllerTimer;") != 1:
+        fail("FrontEnd controller lost its single canonical ZunTimer alias")
+    if "ResultScreenTimer" in text:
+        fail("FrontEnd controller restored its ResultScreenTimer projection")
+    for declaration in (
+        "FrontEndControllerTimer stateTimer;",
+        "FrontEndControllerTimer animationTimer;",
+    ):
+        if text.count(declaration) != 1:
+            fail(f"FrontEnd controller timer declaration drifted: {declaration}")
+
+    reset_body = function_body(
+        path,
+        "static __forceinline void FrontEndResetTimer(FrontEndControllerTimer *timer)",
+    )
+    reset_statements = (
+        "timer->current = 0;",
+        "timer->subFrame = 0.0f;",
+        "timer->previous = -999999;",
+    )
+    reset_positions = [reset_body.find(statement) for statement in reset_statements]
+    if any(position < 0 for position in reset_positions):
+        fail("FrontEnd timer reset helper lost a target-observed store")
+    if reset_positions != sorted(reset_positions):
+        fail("FrontEnd timer reset helper lost target-observed store order")
+    if text.count("FrontEndResetTimer(&view->stateTimer);") != 11:
+        fail("FrontEnd state-timer reset consumers drifted from the shared helper")
+    if ".stateTimer.Reset()" in text:
+        fail("FrontEnd controller restored profile-sensitive ZunTimer::Reset calls")
+    if text.count("view->stateTimer.Tick();") != 1:
+        fail("FrontEnd state timer lost its canonical Tick consumer")
+    if text.count("view->animationTimer.Tick();") != 1:
+        fail("FrontEnd animation timer lost its canonical Tick consumer")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -3190,6 +3229,7 @@ def main() -> int:
     check_supervisor_state_owner()
     check_supervisor_startup_phase_owner()
     check_supervisor_fog_cache_owner()
+    check_front_end_timer_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -3224,6 +3264,7 @@ def main() -> int:
     print("  Supervisor scene states: canonical TH095 1/2/3/4/6/7/8 domain")
     print("  Supervisor startup phase: one shared TH095 0/1/2 domain at +0x660")
     print("  Supervisor fog cache: one shared TH095 0/1/255 domain at +0x768")
+    print("  FrontEnd timers: one shared ZunTimer type with target-order reset helper")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

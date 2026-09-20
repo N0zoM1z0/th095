@@ -54,7 +54,7 @@ only for exact/DIFF compiler emission; do not import its names or layout.
 
 ## Last verified semantic result
 
-The current semantic source checkpoint is SEM-299. Owner closure remains
+The current semantic source checkpoint is SEM-315. Owner closure remains
 deliberately narrower than subsystem completion:
 
 | Surface | Handoff state |
@@ -74,8 +74,9 @@ deliberately narrower than subsystem completion:
 | GameErrorContext `0x2008` | `GameErrorContext.hpp` exposes one profile-independent struct and `Global.cpp` owns `g_GameErrorContext @ 0x004C2420`. The hidden class/struct selector and all six definition sites are retired; 89 manifest references use the canonical `U` identity. `GameErrorContextExact.inl` remains a different-body boundary, and Background's proved Log/Fatal token inversion remains emission debt. |
 | Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
 | Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
+| FrontEnd controller timers | Both `stateTimer @ +0x08` and `animationTimer @ +0x14` use canonical `ZunTimer`. Eleven state resets use one shared target-order helper; the former selected `ResultScreenTimer` alias is retired without merging the ResultScreen family. |
 | EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 786 remaining selector directives across 107 files and 208 declaration keys / 213 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
+| Profile selectors/declarations | CI locks all 722 remaining selector directives across 103 files and 201 declaration keys / 206 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
 | Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
 
 `EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
@@ -753,14 +754,31 @@ was added; the semantic guard and all **73 workflow tests** pass.
 Aggregate/product closure remains deferred to the campaign milestone, with
 SEM-298 still the latest full receipt.
 
+For SEM-315, FrontEnd's two controller timers now share canonical `ZunTimer`
+storage in every profile. A direct type substitution exposed a real compiler
+boundary: canonical Reset's store order differs from the target FrontEnd
+sequence. One unconditional helper now preserves the target `current`,
+`subFrame`, `previous` order at all eleven call sites without selecting a
+different type or body. The two public Tick identities were migrated to
+canonical `ZunTimer::Tick` while preserving target `0x0041B8A0`.
+
+Controlled refresh changed only eighteen compiler-private labels in two
+units; immediate zero-refresh replay passed **4/4 exact FrontEnd units**. The
+separate normal probe emitted a **39,271-byte Intel 80386 COFF** object.
+Selector and declaration debt remain **722 directives across 103 files** and
+**201 keys / 206 occurrences**; the semantic guard and all **74 workflow
+tests** pass. Aggregate/product closure remains deferred; SEM-298 is still the
+latest full receipt.
+
 ## Next bounded lane
 
-Audit `FrontEndControllerTimer` in `FrontEndController.cpp`. Its exact branch
-aliases `ResultScreenTimer`, normal aliases layout-identical `ZunTimer`, and
-both Tick relocations resolve to `0x0041B8A0`. Test a shared canonical timer
-type against all four FrontEnd exact units and the normal VC7.1 TU before
-retiring the selected typedef. Treat a public COFF symbol change separately
-from byte identity; do not broaden this into the whole ResultScreen family.
+Continue the `FrontEndControllerUpdateView` declaration audit. Test the three
+already evidenced selected regions independently: `replayColumnCursor @
++0xF8`, `FrontEndRequestedState @ +0x6110`, and
+`FrontEndControllerFlagBits @ +0x6120`. Prefer one shared declaration only if
+all four FrontEnd exact units remain exact and the normal VC7.1 TU compiles.
+Keep the surrounding gaps Unknown and do not infer broader ResultScreen or
+queue ownership.
 
 ## Protected working-tree exclusions
 
@@ -780,5 +798,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/FrontEndController.cpp --details
-rg -n "FrontEndControllerTimer|ResultScreenTimer|ZunTimer|0x0041B8A0" src/FrontEndController.cpp src/ResultScreen.cpp src/ResultScreen*.hpp config docs
+rg -n "replayColumnCursor|requestedState|FrontEndControllerFlagBits|unknown00f8" src/FrontEndController.cpp src/SceneSelect.hpp config docs
 ```

@@ -15706,3 +15706,42 @@ resolve Tick to target `0x0041B8A0`. Prove whether one shared timer type can
 preserve the four exact FrontEnd units and public relocation destinations.
 Do not rewrite the broader ResultScreen timer family or accept a public-symbol
 migration merely because the machine-code target address is shared.
+
+### SEM-315 — converge FrontEnd controller timer ownership
+
+**Scope and result.** `FrontEndControllerUpdateView` now uses canonical
+`ZunTimer` for both `stateTimer @ +0x08` and `animationTimer @ +0x14` in every
+profile. The selected `ResultScreenTimer`/`ZunTimer` typedef is retired. The
+two update-body Tick relocations now use the canonical `ZunTimer::Tick` symbol
+while retaining their target destination at `0x0041B8A0`. This batch does not
+change or claim ownership of the broader ResultScreen timer family.
+
+**Compiler boundary.** The two timer declarations have identical 12-byte
+layout, but their inline Reset source is not compiler-interchangeable:
+`ResultScreenTimer::Reset` writes `current`, `subFrame`, then `previous`, while
+canonical `ZunTimer::Reset` writes `current`, `previous`, then `subFrame` via
+`Initialize`. A direct canonical substitution therefore produced real exact
+byte differences at all FrontEnd reset sites. The accepted source uses one
+unconditional `FrontEndResetTimer` helper with the target-observed FrontEnd
+store order and routes all eleven state-timer resets through it. Exact and
+normal compile the same type, declarations, helper, and calls; no selected
+body or layout was introduced.
+
+**Validation.** After the structural repair, the only remaining exact drift
+was eighteen compiler-private `$L...` labels in two units. Controlled refresh
+accepted those labels only after bytes, relocation offsets/types,
+non-private identities, and target destinations agreed; immediate zero-refresh
+replay passed **4/4 exact FrontEnd units**. A separate normal pinned-VC7.1
+probe emitted a **39,271-byte Intel 80386 COFF** object. Selector debt remains
+**722 directives across 103 files** and selected-declaration debt remains
+**201 keys / 206 occurrences**. The semantic guard now locks the canonical
+type, both timer fields, target reset order, eleven consumers, and both Tick
+calls, and all **74 workflow tests** pass. Aggregate/product closure remains
+deferred; SEM-298 is still the latest full receipt.
+
+**Next route.** Continue within `FrontEndControllerUpdateView`: test whether
+the already-proved `replayColumnCursor @ +0xF8`, `FrontEndRequestedState @
++0x6110`, and `FrontEndControllerFlagBits @ +0x6120` declarations can be
+shared without changing any of the four exact FrontEnd units. Treat each
+compiler-visible type or field access as a separate oracle and retain Unknown
+padding; do not broaden this into unproved ResultScreen or queue ownership.

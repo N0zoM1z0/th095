@@ -693,6 +693,23 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("SupervisorFogCacheState fogState;", exact)
         self.assertNotIn("i32 fogState;", exact)
 
+    def test_front_end_timer_guard_accepts_shared_owner(self) -> None:
+        GUARD.check_front_end_timer_owner()
+        source = (ROOT / "src" / "FrontEndController.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("typedef ZunTimer FrontEndControllerTimer;", source)
+        self.assertNotIn("ResultScreenTimer", source)
+        self.assertEqual(source.count("FrontEndResetTimer(&view->stateTimer);"), 11)
+        self.assertLess(
+            source.index("timer->current = 0;"),
+            source.index("timer->subFrame = 0.0f;"),
+        )
+        self.assertLess(
+            source.index("timer->subFrame = 0.0f;"),
+            source.index("timer->previous = -999999;"),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
