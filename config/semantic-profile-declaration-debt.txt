@@ -72,7 +72,6 @@
 1	src/OptionsMenu.hpp	struct	OptionsMenuView
 1	src/PhotoCamera.cpp	struct	PhotoAnmManagerView
 1	src/PhotoCamera.cpp	struct	PhotoSoundPlayerView
-1	src/PhotoCamera.cpp	struct	PhotoStageControllerView
 1	src/PhotoCardInfo.cpp	struct	PhotoCardGameRuntimeView
 1	src/PhotoCardInfo.cpp	struct	PhotoCardGameTaskView
 1	src/PhotoCardInfo.cpp	struct	PhotoCardStageStateView

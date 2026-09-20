@@ -1372,6 +1372,22 @@ def check_photo_camera_state_owner() -> None:
     if source.count("TH095_PHOTO_ANM_CREATE_VM(") != 9:
         fail("PhotoCamera CreateVm calls escaped the narrow emission boundary")
 
+    for retired in (
+        "struct PhotoStageControllerView",
+        "g_PhotoStageController",
+    ):
+        if retired in source:
+            fail(f"PhotoCamera restored false PhotoEffect owner: {retired}")
+    for fact in (
+        '#include "PhotoEffectRuntime.hpp"',
+        "extern PhotoEffectManagerView *g_PhotoEffectManager;",
+        "TH095_RUNTIME_GLOBAL_PTR(PhotoEffectManagerView, g_RuntimeEffectManagerOwner)",
+        "g_PhotoEffectManager->CountNearbyTargets(",
+        "g_PhotoEffectManager->CountPhotoTargets(",
+    ):
+        if fact not in source:
+            fail(f"PhotoCamera lost canonical PhotoEffect owner access: {fact}")
+
     exact_sources = (
         source,
         (SRC / "PhotoGameExact.inl").read_text(encoding="utf-8"),
@@ -1387,18 +1403,23 @@ def check_photo_camera_state_owner() -> None:
         "?GetVm@PhotoAnmVmId@th095@@",
         "?SetInterrupt@PhotoAnmVmId@th095@@",
         "@PhotoAnmLoadedView@th095@@",
+        "?g_PhotoStageController@th095@@",
+        "@PhotoStageControllerView@th095@@",
     ):
         if retired in manifest:
-            fail(f"Photo ANM handle restored proxy method ABI: {retired}")
+            fail(f"PhotoCamera manifest restored proxy ABI: {retired}")
     required_manifest = (
         "?CreateVm@PhotoAnmCreateVmEmissionAdapter@th095@@",
         "?SetSprite@AnmLoaded@th095@@",
         "?SetAndExecuteScript@AnmLoaded@th095@@",
         "?InitializeVm@AnmLoaded@th095@@",
+        "?g_PhotoEffectManager@th095@@3PAUPhotoEffectManagerView@1@A",
+        "?CountNearbyTargets@PhotoEffectManagerView@th095@@QAEHPAUFloat3@2@M@Z",
+        "?CountPhotoTargets@PhotoEffectManagerView@th095@@QAEHPAUFloat3@2@0@Z",
     )
     for symbol in required_manifest:
         if symbol not in manifest:
-            fail(f"Photo ANM receiver lost canonical/emission ABI: {symbol}")
+            fail(f"PhotoCamera manifest lost canonical/emission ABI: {symbol}")
 
     game = (SRC / "PhotoGame.cpp").read_text(encoding="utf-8")
     if "this->chargeUiState = PHOTO_CAMERA_CHARGE_UI_INITIAL;" not in game:

@@ -14485,8 +14485,59 @@ remains the latest full receipt.
 
 **Unknown / next route.** Audit PhotoCamera's exact/DIFF
 `PhotoStageControllerView` against the canonical `PhotoEffectManagerView` at
-`0x004C45E0`. Existing target facts already place `CountPhotoTargets @
-0x0041DF10` and `CountNearbyTargets @ 0x0041E060` on the effect manager; test
+`0x004C45E0`. Existing target facts already place
+`CountPhotoTargets @ 0x0041DF10` and `CountNearbyTargets @ 0x0041E060` on the effect manager; test
 whether exact caller emission accepts the canonical receiver or needs one
 storage-free method adapter. Do not keep a false stage owner as semantic
 source, broaden `PhotoEffectRuntime.hpp` selectors, or add a new selector.
+
+### SEM-291 — replace the false photo stage controller with PhotoEffect
+
+**Scope.** Close PhotoCamera's `PhotoStageControllerView` as an ownership and
+ABI contradiction. This batch changes only the two capture-count calls and
+their global receiver; it does not alter PhotoEffect element state, packet
+layouts, collision behavior, or unproved manager fields.
+
+**Evidence and ownership.** Hash-attested constructor/destructor evidence
+publishes and clears the PhotoEffect manager at `0x004C45E0`. Exact PhotoEffect
+units independently define `PhotoEffectManagerView::CountPhotoTargets @
+0x0041DF10` and `CountNearbyTargets @ 0x0041E060`. PhotoCamera's historical
+`g_PhotoStageController` relocations target that same global and those same two
+methods; its method-only class contains no stage state. The receiver therefore
+belongs to PhotoEffect, not PhotoStage.
+
+**Production / exact representation.** PhotoCamera now includes
+`PhotoEffectRuntime.hpp` in every profile, declares canonical
+`g_PhotoEffectManager`, and uses one TakePhoto body with the canonical manager
+methods. The local `PhotoStageControllerView`, its global, the normal-only
+effect include, the exact/DIFF extern, and the body split are gone. The two
+global and two method relocations retain their offsets and target destinations
+while adopting canonical PhotoEffect decorations. Direct pinned-VC7.1
+comparison proves that neither a receiver adapter nor const-parameter proxy is
+needed.
+
+**Guards and debt.** The camera guard rejects the false type/global and their
+manifest decorations. It requires the canonical include, runtime-owner route,
+two calls, and three canonical decorated identities. Four directives were
+removed, shrinking the selector baseline from 810 to **806 directives across
+109 files**. One selected declaration was removed, shrinking that baseline
+from 215 keys / 220 occurrences to **214 keys / 219 occurrences**. No selector,
+selected declaration, or baseline allowance was added.
+
+**Validation.** `TakePhoto` remained **738/738 bytes exact** after the four
+reviewed ABI identity changes. Header/declaration ordering changed 15
+compiler-private labels in two units; restricted refresh followed proof of
+unchanged structural bytes, relocation offsets/types, non-private identities,
+and target destinations. Final PhotoCamera replay passed **11/11 exact** with
+zero refresh. A normal pinned-VC7.1 probe emitted a **61,063-byte i386 COFF**
+object. The semantic guard and all 58 tests pass. Per the batching policy, no
+new aggregate/product closure is claimed; SEM-287 remains the latest full
+receipt.
+
+**Unknown / next route.** Audit PhotoCamera's DIFF-only
+`PhotoAnmManagerView` against canonical `AnmManager`/`AnmVmId`. Its four
+methods already land on the established VM lookup, interrupt, deletion, and
+position targets; determine whether the `PhotoAnmId` value bridge can be shared
+without changing exact caller bytes. Preserve only a storage-free adapter if a
+clean pinned-VC7.1 experiment proves a decorated-name dependency. Do not add a
+selector or generalize any compiler workaround.

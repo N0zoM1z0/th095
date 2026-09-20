@@ -12,9 +12,7 @@
 #ifndef DIFFBUILD
 #include "InputRuntime.hpp"
 #endif
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoEffectRuntime.hpp"
-#endif
 #include "SoundPlayer.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "ScoreData.hpp"
@@ -41,14 +39,6 @@ struct PhotoAnmVmIdValue
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 #include "PhotoCameraStageEmission.inl"
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct PhotoStageControllerView
-{
-    i32 CountNearbyTargets(const Float3 *position, f32 radius);
-    i32 CountPhotoTargets(const Float3 *position, const Float3 *size);
-};
 #endif
 
 #ifdef DIFFBUILD
@@ -114,17 +104,17 @@ static inline SoundPlayer *PhotoSoundPlayer()
 extern PhotoEnemyManagerView *g_PhotoRuntime;
 extern PhotoGameTaskView *g_PhotoGlobalState;
 extern PhotoBulletManagerView *g_PhotoBulletManager;
+extern PhotoEffectManagerView *g_PhotoEffectManager;
 #ifndef DIFFBUILD
 #define g_PhotoRuntime \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
+#define g_PhotoEffectManager \
+    TH095_RUNTIME_GLOBAL_PTR(PhotoEffectManagerView, g_RuntimeEffectManagerOwner)
 #endif
 extern PhotoStageStateView *g_PhotoStageState;
 #ifndef DIFFBUILD
 #define g_PhotoStageState \
     TH095_RUNTIME_GLOBAL_PTR(PhotoStageStateView, g_RuntimeStageStateOwner)
-#endif
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-extern PhotoStageControllerView *g_PhotoStageController;
 #endif
 extern u16 g_PhotoInput;
 extern u16 g_PhotoInputPressed;
@@ -501,12 +491,11 @@ u32 PhotoCameraState::TakePhoto()
     TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[5].value);
     TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[6].value);
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     scoreData[3] = g_PhotoBulletManager->CountNearbyTargets(
         reinterpret_cast<PhotoBulletVector *>(
             &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition),
         22.0f);
-    scoreData[3] += g_PhotoStageController->CountNearbyTargets(
+    scoreData[3] += g_PhotoEffectManager->CountNearbyTargets(
         &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition, 22.0f);
 
     this->CalculatePhotoScore(
@@ -518,30 +507,8 @@ u32 PhotoCameraState::TakePhoto()
         scoreData,
         g_PhotoRuntime->CountPhotoTargets(
             &this->viewfinderPosition, &this->viewfinderSize),
-        g_PhotoStageController->CountPhotoTargets(
+        g_PhotoEffectManager->CountPhotoTargets(
             &this->viewfinderPosition, &this->viewfinderSize));
-#else
-    PhotoEffectManagerView *effectManager = TH095_RUNTIME_GLOBAL_PTR(
-        PhotoEffectManagerView, g_RuntimeEffectManagerOwner);
-    scoreData[3] = g_PhotoBulletManager->CountNearbyTargets(
-        reinterpret_cast<PhotoBulletVector *>(
-            &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition),
-        22.0f);
-    scoreData[3] += effectManager->CountNearbyTargets(
-        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition, 22.0f);
-
-    this->CalculatePhotoScore(
-        g_PhotoBulletManager->CapturePhotoTargets(
-            reinterpret_cast<PhotoBulletVector *>(
-                &this->viewfinderPosition),
-            reinterpret_cast<PhotoBulletVector *>(
-                &this->viewfinderSize)),
-        scoreData,
-        g_PhotoRuntime->CountPhotoTargets(
-            &this->viewfinderPosition, &this->viewfinderSize),
-        effectManager->CountPhotoTargets(
-            &this->viewfinderPosition, &this->viewfinderSize));
-#endif
 
     if ((this->flags & PHOTO_FLAG_ALTERNATE_CAPTURE) != 0)
     {

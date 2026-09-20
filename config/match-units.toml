@@ -7187,7 +7187,7 @@ relocations = [
   { offset = 0xC8, type = "DIR32", symbol = "?g_PhotoInput@th095@@3GA", target = 0x004BE244 },
   { offset = 0xE6, type = "DIR32", symbol = "?g_PhotoInput@th095@@3GA", target = 0x004BE244 },
   { offset = 0x104, type = "DIR32", symbol = "?g_PhotoInput@th095@@3GA", target = 0x004BE244 },
-  { offset = 0x13C, type = "DIR32", symbol = "$L73819", target = 0x00432CE3 },
+  { offset = 0x13C, type = "DIR32", symbol = "$L73943", target = 0x00432CE3 },
   { offset = 0x1D7, type = "DIR32", symbol = "__real@c067000000000000", target = 0x004966E8 },
   { offset = 0x1FC, type = "DIR32", symbol = "__real@4067000000000000", target = 0x004966E0 },
   { offset = 0x21F, type = "DIR32", symbol = "__real@42000000", target = 0x00495440 },
@@ -7219,14 +7219,14 @@ relocations = [
   { offset = 0x408, type = "REL32", symbol = "?PhotoToScreen@th095@@YIPAUFloat3@1@PAU21@PBU21@@Z", target = 0x004186D0 },
   { offset = 0x416, type = "DIR32", symbol = "?g_AnmManager@th095@@3PAUAnmManager@1@A", target = 0x004CA1B8 },
   { offset = 0x41B, type = "REL32", symbol = "?SetVmPosition@PhotoAnmManagerView@th095@@QAEXHPBUFloat3@2@@Z", target = 0x004451F0 },
-  { offset = 0x423, type = "DIR32", symbol = "$L73008", target = 0x00432A12 },
-  { offset = 0x427, type = "DIR32", symbol = "$L73009", target = 0x00432A1B },
-  { offset = 0x42B, type = "DIR32", symbol = "$L73007", target = 0x00432A09 },
-  { offset = 0x42F, type = "DIR32", symbol = "$L73006", target = 0x00432A00 },
-  { offset = 0x433, type = "DIR32", symbol = "$L73010", target = 0x00432A24 },
-  { offset = 0x437, type = "DIR32", symbol = "$L73012", target = 0x00432A44 },
-  { offset = 0x43B, type = "DIR32", symbol = "$L73011", target = 0x00432A33 },
-  { offset = 0x43F, type = "DIR32", symbol = "$L73013", target = 0x00432A55 },
+  { offset = 0x423, type = "DIR32", symbol = "$L73129", target = 0x00432A12 },
+  { offset = 0x427, type = "DIR32", symbol = "$L73130", target = 0x00432A1B },
+  { offset = 0x42B, type = "DIR32", symbol = "$L73128", target = 0x00432A09 },
+  { offset = 0x42F, type = "DIR32", symbol = "$L73127", target = 0x00432A00 },
+  { offset = 0x433, type = "DIR32", symbol = "$L73131", target = 0x00432A24 },
+  { offset = 0x437, type = "DIR32", symbol = "$L73133", target = 0x00432A44 },
+  { offset = 0x43B, type = "DIR32", symbol = "$L73132", target = 0x00432A33 },
+  { offset = 0x43F, type = "DIR32", symbol = "$L73134", target = 0x00432A55 },
 ]
 
 [units.photo-take-photo]
@@ -7252,10 +7252,10 @@ relocations = [
   { offset = 0x77, type = "DIR32", symbol = "?g_PhotoBulletManager@th095@@3PAUPhotoBulletManagerView@1@A", target = 0x004BDD98 },
   { offset = 0x7C, type = "REL32", symbol = "?CountNearbyTargets@PhotoBulletManagerView@th095@@QAEHPAUPhotoBulletVector@2@M@Z", target = 0x00408220 },
   { offset = 0x8A, type = "DIR32", symbol = "?g_PhotoGame@th095@@3PAUPhotoGameStateView@1@A", target = 0x004C4E70 },
-  { offset = 0x97, type = "DIR32", symbol = "?g_PhotoStageController@th095@@3PAUPhotoStageControllerView@1@A", target = 0x004C45E0 },
-  { offset = 0x9C, type = "REL32", symbol = "?CountNearbyTargets@PhotoStageControllerView@th095@@QAEHPBUFloat3@2@M@Z", target = 0x0041E060 },
-  { offset = 0xBB, type = "DIR32", symbol = "?g_PhotoStageController@th095@@3PAUPhotoStageControllerView@1@A", target = 0x004C45E0 },
-  { offset = 0xC0, type = "REL32", symbol = "?CountPhotoTargets@PhotoStageControllerView@th095@@QAEHPBUFloat3@2@0@Z", target = 0x0041DF10 },
+  { offset = 0x97, type = "DIR32", symbol = "?g_PhotoEffectManager@th095@@3PAUPhotoEffectManagerView@1@A", target = 0x004C45E0 },
+  { offset = 0x9C, type = "REL32", symbol = "?CountNearbyTargets@PhotoEffectManagerView@th095@@QAEHPAUFloat3@2@M@Z", target = 0x0041E060 },
+  { offset = 0xBB, type = "DIR32", symbol = "?g_PhotoEffectManager@th095@@3PAUPhotoEffectManagerView@1@A", target = 0x004C45E0 },
+  { offset = 0xC0, type = "REL32", symbol = "?CountPhotoTargets@PhotoEffectManagerView@th095@@QAEHPAUFloat3@2@0@Z", target = 0x0041DF10 },
   { offset = 0xDA, type = "DIR32", symbol = "?g_PhotoRuntime@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0xDF, type = "REL32", symbol = "?CountPhotoTargets@PhotoEnemyManagerView@th095@@QAEHPBUFloat3@2@0@Z", target = 0x004168D0 },
   { offset = 0xFD, type = "DIR32", symbol = "?g_PhotoBulletManager@th095@@3PAUPhotoBulletManagerView@1@A", target = 0x004BDD98 },
@@ -21088,7 +21088,7 @@ target_address = 0x00430AB0
 size = 0x1C67
 compare_size = 0x1C7B
 relocations = [
-  { offset = 0x33, type = "DIR32", symbol = "$L74580", target = 0x00432717 },
+  { offset = 0x33, type = "DIR32", symbol = "$L74704", target = 0x00432717 },
   { offset = 0x50, type = "DIR32", symbol = "?g_PhotoRuntime@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0x5E, type = "DIR32", symbol = "?g_PhotoGame@th095@@3PAUPhotoGameStateView@1@A", target = 0x004C4E70 },
   { offset = 0x8B, type = "DIR32", symbol = "__real@42800000", target = 0x00495454 },
@@ -21302,11 +21302,11 @@ relocations = [
   { offset = 0x1C3D, type = "REL32", symbol = "?ExecuteScript@AnmManager@th095@@SIHPAUAnmVm@2@@Z", target = 0x0043A600 },
   { offset = 0x1C4E, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
   { offset = 0x1C5F, type = "REL32", symbol = "?Tick@ZunTimer@th095@@QAEHXZ", target = 0x0041B8A0 },
-  { offset = 0x1C67, type = "DIR32", symbol = "$L73348", target = 0x00430AE7 },
-  { offset = 0x1C6B, type = "DIR32", symbol = "$L73447", target = 0x00431CA0 },
-  { offset = 0x1C6F, type = "DIR32", symbol = "$L73483", target = 0x00432162 },
-  { offset = 0x1C73, type = "DIR32", symbol = "$L74506", target = 0x00432343 },
-  { offset = 0x1C77, type = "DIR32", symbol = "$L73513", target = 0x0043236A },
+  { offset = 0x1C67, type = "DIR32", symbol = "$L73469", target = 0x00430AE7 },
+  { offset = 0x1C6B, type = "DIR32", symbol = "$L73568", target = 0x00431CA0 },
+  { offset = 0x1C6F, type = "DIR32", symbol = "$L73604", target = 0x00432162 },
+  { offset = 0x1C73, type = "DIR32", symbol = "$L74630", target = 0x00432343 },
+  { offset = 0x1C77, type = "DIR32", symbol = "$L73634", target = 0x0043236A },
 ]
 
 [units.scene-best-shot-load]

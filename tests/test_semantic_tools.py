@@ -231,8 +231,21 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         manifest = (ROOT / "config" / "match-units.toml").read_text(
             encoding="utf-8"
         )
+        source = (ROOT / "src" / "PhotoCamera.cpp").read_text(encoding="utf-8")
         self.assertNotIn("@PhotoAnmLoadedView@th095@@", manifest)
         self.assertIn("?CreateVm@PhotoAnmCreateVmEmissionAdapter@th095@@", manifest)
+        self.assertNotIn("PhotoStageControllerView", source)
+        self.assertNotIn("g_PhotoStageController", source)
+        self.assertIn('#include "PhotoEffectRuntime.hpp"', source)
+        self.assertIn("extern PhotoEffectManagerView *g_PhotoEffectManager;", source)
+        self.assertIn("g_PhotoEffectManager->CountNearbyTargets(", source)
+        self.assertIn("g_PhotoEffectManager->CountPhotoTargets(", source)
+        self.assertNotIn("?g_PhotoStageController@th095@@", manifest)
+        self.assertNotIn("@PhotoStageControllerView@th095@@", manifest)
+        self.assertIn(
+            "?g_PhotoEffectManager@th095@@3PAUPhotoEffectManagerView@1@A",
+            manifest,
+        )
 
     def test_ecl_photo_player_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_ecl_photo_player_owner()
