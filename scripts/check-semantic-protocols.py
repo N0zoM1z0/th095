@@ -1071,6 +1071,66 @@ def check_photo_card_info_owner() -> None:
         fail("EnemyInf lost its typed ECL-held CardInf session handle")
 
 
+def check_photo_camera_state_owner() -> None:
+    header_path = SRC / "PhotoCamera.hpp"
+    header = header_path.read_text(encoding="utf-8")
+    state_start = header.index("struct PhotoCameraState")
+    state_body = braced_body_after(header, state_start, "PhotoCameraState")
+    if "TH095_MATCH_EXACT" in state_body or "DIFFBUILD" in state_body:
+        fail("canonical PhotoCameraState layout must be profile-independent")
+
+    explicit_enum(
+        header_path,
+        "PhotoCameraChargeUiState",
+        "PHOTO_CAMERA_CHARGE_UI_",
+        [0, 1, 2],
+    )
+    required_layout = (
+        "PhotoCameraMode mode;",
+        "u32 flags;",
+        "u32 alternateCapture : 1;",
+        "u32 focused : 1;",
+        "u32 targetFrameActive : 1;",
+        "u32 chargeUiState : 2;",
+        "u32 chargeEffectActive : 1;",
+        "u32 targetSoundPlayed : 1;",
+        "i32 focusChargeFrames;",
+        "offsetof(PhotoCameraState, mode) == 0x000",
+        "offsetof(PhotoCameraState, flags) == 0xbb4",
+        "offsetof(PhotoCameraState, focusChargeFrames) == 0xbb8",
+        "sizeof(PhotoCameraState) == 0xbdc",
+    )
+    for fact in required_layout:
+        if fact not in header:
+            fail(f"canonical PhotoCameraState lost fact: {fact}")
+    for retired in ("i32 mode;", "i32 unknownbb8;"):
+        if retired in state_body:
+            fail(f"PhotoCameraState restored profile-specific storage: {retired}")
+
+    source = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
+    for retired in (
+        "TH095_PHOTO_FOCUS_CHARGE_FRAMES",
+        "camera->chargeUiState",
+    ):
+        if retired in source:
+            fail(f"PhotoCamera restored profile-selected field access: {retired}")
+    required_source = (
+        "#define PHOTO_CAMERA_FOCUSED(flags) (((flags) >> 1) & 1)",
+        "#define PHOTO_CAMERA_TARGET_FRAME_ACTIVE(flags) (((flags) >> 2) & 1)",
+        "#define PHOTO_CAMERA_TARGET_SOUND_PLAYED(flags) (((flags) >> 6) & 1)",
+        "this->focusChargeFrames",
+        "PHOTO_CAMERA_CHARGE_UI_FULL << 3",
+        "camera->flags &= ~PHOTO_FLAG_CHARGE_UI_MASK",
+    )
+    for fact in required_source:
+        if fact not in source:
+            fail(f"PhotoCamera shared state protocol lost fact: {fact}")
+
+    game = (SRC / "PhotoGame.cpp").read_text(encoding="utf-8")
+    if "this->chargeUiState = PHOTO_CAMERA_CHARGE_UI_INITIAL;" not in game:
+        fail("PhotoCamera initialization lost the named charge UI initial state")
+
+
 def check_ecl_photo_player_owner() -> None:
     player = (SRC / "PhotoPlayerRuntime.hpp").read_text(encoding="utf-8")
     if "TH095_MATCH_EXACT" in player or "DIFFBUILD" in player:
@@ -1465,6 +1525,7 @@ def main() -> int:
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
     check_photo_card_info_owner()
+    check_photo_camera_state_owner()
     check_ecl_photo_player_owner()
     check_ecl_float_resolver_boundary()
     check_photo_straight_laser_packet()
@@ -1484,6 +1545,7 @@ def main() -> int:
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")
     print("  Photo stage: canonical profile-independent 0x25730 owner")
     print("  CardInf: canonical profile-independent 0x68 owner")
+    print("  PhotoCamera state: profile-independent mode/flags/focus representation")
     print("  PlayerInf runtime: profile-independent owner shared by PhotoCamera, PhotoStage, and ECL")
     print("  RunEcl camera limit/angles: canonical PlayerInf owner with method-only emission adapter")
     print("  RunEcl float resolver: canonical normal method with method-only emission adapter")

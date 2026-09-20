@@ -137,6 +137,16 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("PhotoStageRuntimeView", stage)
         self.assertIn("TH095_PHOTO_STAGE_CARD_INFO->text", stage)
 
+    def test_photo_camera_state_guard_accepts_shared_layout(self) -> None:
+        GUARD.check_photo_camera_state_owner()
+        header = (ROOT / "src" / "PhotoCamera.hpp").read_text(encoding="utf-8")
+        state_start = header.index("struct PhotoCameraState")
+        state_body = GUARD.braced_body_after(header, state_start, "PhotoCameraState")
+        self.assertNotIn("TH095_MATCH_EXACT", state_body)
+        self.assertNotIn("DIFFBUILD", state_body)
+        self.assertIn("PhotoCameraMode mode;", state_body)
+        self.assertIn("i32 focusChargeFrames;", state_body)
+
     def test_ecl_photo_player_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_ecl_photo_player_owner()
         player = (ROOT / "src" / "PhotoPlayerRuntime.hpp").read_text(

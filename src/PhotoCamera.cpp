@@ -246,17 +246,12 @@ enum PhotoCameraFlags
     PHOTO_FLAG_TARGET_SOUND_PLAYED = 1 << 6,
 };
 
-#if defined(TH095_MATCH_EXACT)
+// Keep one shared target-facing read shape. A pinned VC7.1 experiment using
+// the equivalent named-mask form for the focused read grew UpdateCharge from
+// 982 to 986 bytes; this named-shift family avoids a profile split.
 #define PHOTO_CAMERA_FOCUSED(flags) (((flags) >> 1) & 1)
 #define PHOTO_CAMERA_TARGET_FRAME_ACTIVE(flags) (((flags) >> 2) & 1)
 #define PHOTO_CAMERA_TARGET_SOUND_PLAYED(flags) (((flags) >> 6) & 1)
-#else
-#define PHOTO_CAMERA_FOCUSED(flags) (((flags) & PHOTO_FLAG_FOCUSED) != 0)
-#define PHOTO_CAMERA_TARGET_FRAME_ACTIVE(flags) \
-    (((flags) & PHOTO_FLAG_TARGET_FRAME_ACTIVE) != 0)
-#define PHOTO_CAMERA_TARGET_SOUND_PLAYED(flags) \
-    (((flags) & PHOTO_FLAG_TARGET_SOUND_PLAYED) != 0)
-#endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 enum PhotoScoreFlags
@@ -1048,12 +1043,6 @@ i32 PhotoCameraState::CountPhotoTargets(f32 *closestDistance, f32 *bossRate)
     return locals.targetCount;
 }
 
-#if defined(TH095_MATCH_EXACT)
-#define TH095_PHOTO_FOCUS_CHARGE_FRAMES unknownbb8
-#else
-#define TH095_PHOTO_FOCUS_CHARGE_FRAMES focusChargeFrames
-#endif
-
 void PhotoCameraState::UpdateCharge()
 {
     struct ChargeLocals
@@ -1071,8 +1060,8 @@ void PhotoCameraState::UpdateCharge()
             if (PhotoInputMask(g_PhotoInput, 2) != 0 &&
                 PhotoInputMask(g_PhotoInput, 1) != 0)
             {
-                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES++;
-                if (this->TH095_PHOTO_FOCUS_CHARGE_FRAMES >= 5)
+                this->focusChargeFrames++;
+                if (this->focusChargeFrames >= 5)
                 {
                     this->flags |= PHOTO_FLAG_FOCUSED;
                     if (PHOTO_SOUND_SUPPRESSED == 0)
@@ -1089,7 +1078,7 @@ void PhotoCameraState::UpdateCharge()
             }
             else
             {
-                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES = 0;
+                this->focusChargeFrames = 0;
             }
         }
 
@@ -1125,7 +1114,7 @@ normalCharge:
         {
             PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_FOCUS_CHARGE);
         }
-        if (this->TH095_PHOTO_FOCUS_CHARGE_FRAMES > 60 ||
+        if (this->focusChargeFrames > 60 ||
             PhotoTimerAdvancedOnEvenFrame(&this->auxiliaryTimer))
         {
 #ifdef TH095_MATCH_EXACT
@@ -1139,14 +1128,14 @@ normalCharge:
                     &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
 #endif
         }
-        this->TH095_PHOTO_FOCUS_CHARGE_FRAMES++;
+        this->focusChargeFrames++;
         this->flags |= PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
         this->focusHeldFrames = 0;
         if (PhotoInputMask(g_PhotoInput, 2) == 0 ||
             PhotoInputMask(g_PhotoInput, 1) == 0)
         {
             this->flags &= ~PHOTO_FLAG_FOCUSED;
-            this->TH095_PHOTO_FOCUS_CHARGE_FRAMES = 0;
+            this->focusChargeFrames = 0;
             PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_FOCUS_CHARGE);
             goto normalCharge;
         }
@@ -1154,15 +1143,15 @@ normalCharge:
 focusedCharge:
         {
             this->charge +=
-                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES < 70
-                    ? (((f32)this->TH095_PHOTO_FOCUS_CHARGE_FRAMES * 40.0f / 800.0f) / 30.0f +
+                this->focusChargeFrames < 70
+                    ? (((f32)this->focusChargeFrames * 40.0f / 800.0f) / 30.0f +
                        0.00125f) * g_AnmGameSpeed
                     : 0.005f * g_AnmGameSpeed;
             if (this->charge > 1.0f)
             {
                 this->charge = 1.0f;
                 this->flags &= ~PHOTO_FLAG_FOCUSED;
-                this->TH095_PHOTO_FOCUS_CHARGE_FRAMES = 0;
+                this->focusChargeFrames = 0;
                 PhotoSoundPlayer()->StopSoundByIdx(TH095_SOUND_FOCUS_CHARGE);
                 goto normalCharge;
             }
@@ -1170,8 +1159,6 @@ focusedCharge:
         }
     }
 }
-
-#undef TH095_PHOTO_FOCUS_CHARGE_FRAMES
 
 void PhotoCameraState::Draw()
 {
@@ -1436,11 +1423,8 @@ updateCharge:
         {
             if (camera->charge >= 1.0f)
             {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-                if (((camera->flags >> 3) & 3) != 1)
-#else
-                if (camera->chargeUiState != PHOTO_CAMERA_CHARGE_UI_FULL)
-#endif
+                if (((camera->flags >> 3) & 3) !=
+                    PHOTO_CAMERA_CHARGE_UI_FULL)
                 {
                     if (PHOTO_SOUND_SUPPRESSED == 0)
                     {
@@ -1459,13 +1443,9 @@ updateCharge:
                     }
                     camera->vmIds[0].SetInterrupt(2);
                     camera->vmIds[1].SetInterrupt(2);
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
                     camera->flags =
                         (camera->flags & ~PHOTO_FLAG_CHARGE_UI_MASK) |
-                        (1 << 3);
-#else
-                    camera->chargeUiState = PHOTO_CAMERA_CHARGE_UI_FULL;
-#endif
+                        (PHOTO_CAMERA_CHARGE_UI_FULL << 3);
                     camera->viewfinderVms[0].pendingInterrupt = 2;
                     camera->viewfinderVms[1].pendingInterrupt = 2;
                     camera->viewfinderVms[2].pendingInterrupt = 2;
@@ -1487,11 +1467,8 @@ updateCharge:
             }
             else
             {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-                if (((camera->flags >> 3) & 3) != 0)
-#else
-                if (camera->chargeUiState != PHOTO_CAMERA_CHARGE_UI_BELOW_FULL)
-#endif
+                if (((camera->flags >> 3) & 3) !=
+                    PHOTO_CAMERA_CHARGE_UI_BELOW_FULL)
                 {
                     if (camera->vmIds[9])
                     {
@@ -1507,11 +1484,7 @@ updateCharge:
                         camera->vmIds[0].value, 3);
                     TH095_PHOTO_ANM_SET_INTERRUPT(
                         camera->vmIds[1].value, 3);
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
                     camera->flags &= ~PHOTO_FLAG_CHARGE_UI_MASK;
-#else
-                    camera->chargeUiState = PHOTO_CAMERA_CHARGE_UI_BELOW_FULL;
-#endif
                     camera->viewfinderVms[0].pendingInterrupt = 3;
                     camera->viewfinderVms[1].pendingInterrupt = 3;
                     camera->viewfinderVms[2].pendingInterrupt = 3;

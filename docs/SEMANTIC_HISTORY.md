@@ -14063,3 +14063,70 @@ coupling that work to the historical ANM handle spelling. Do not embed full
 slot, infer unsupported fields, add a profile selector, or expand either
 closed debt baseline until the exact ANM declaration boundary is separately
 resolved.
+
+### SEM-284 — canonicalize PhotoCamera mode, flags, and focus state
+
+**Scope.** Remove the remaining build-profile splits around already accepted
+`PhotoCameraState` storage without touching the historical ANM handle/receiver
+declarations. The bounded representation is mode `+0x000`, flags and the
+two-bit charge-UI cache at `+0xBB4`, and the focus-charge frame counter at
+`+0xBB8`. This batch introduces no new camera behavior or original-name claim.
+
+**Target evidence.** Fresh hash-attested decompilation of `Initialize @
+0x004307D0`, `UpdatePhotoCamera @ 0x00430AB0`, `BeginCapture @ 0x00432730`,
+`TakePhoto @ 0x00432D10`, `CancelCapture @ 0x00433000`, and `UpdateCharge @
+0x00433D10` reconfirmed the established five-state mode transitions, flags
+word producers/consumers, charge-UI values 0/1/2, and the signed dword
+focus-charge counter. PHOTO-010/096/099 and SEM-074/148/157/182 remain the
+durable semantic evidence; this batch corrects their inherited profile-split
+representation.
+
+**Ownership and representation.** `PhotoCameraState` is still the 0xBDC
+behavior owner embedded at Player `+0x1E3C`. Its declaration now uses
+`PhotoCameraMode`, the flags union and `PhotoCameraChargeUiState` domain, and
+`focusChargeFrames` in every profile. Exact and normal PhotoCamera source share
+the same named charge-UI comparisons/publications and bit-1/2/6 read helpers.
+New `offsetof` assertions pin mode `+0x000` and `focusChargeFrames +0xBB8` in
+addition to the existing flags and size checks.
+
+This does not make all of `PhotoCamera.hpp` profile-independent. The
+historical `PhotoAnmVmId` wrapper and `PhotoAnmLoadedView` receiver still
+select different declarations for compiler emission, and full camera
+embedding in `PhotoPlayerRuntime.hpp` remains blocked by that declaration
+graph. Their storage/decorations are the next independent lane.
+
+**Compiler oracle.** The first shared form used the same target-facing shift
+tests already emitted by exact source, with semantic names carried by the
+helpers and enum. A minimal pinned-VC7.1 alternative changed the focused read
+to its equivalent named-mask form; `PhotoCameraState::UpdateCharge` grew from
+the target 982 bytes to 986. The experiment was rejected, and one consistent
+shared shift family is documented inline. No profile selector was restored.
+
+**Guards and debt movement.** A new protocol guard pins the profile-free
+`PhotoCameraState` declaration body, mode/flags/focus offsets, closed
+charge-UI domain, shared target-facing expressions, and named initialization.
+Its unit test checks the canonical layout. Ten selector directives were
+removed, shrinking the closed baseline from 842 to **832 across 110 files**.
+Selected declaration debt remains **221 keys / 226 occurrences**; no selector
+or selected declaration was added.
+
+**Validation.** The full affected `PhotoCamera.hpp` fanout passed **84/84
+exact across eight sources**. The controlled matcher refreshed 38
+compiler-private `$L...` names in four PhotoCamera/PhotoGame units only after
+proving unchanged structural bytes, relocation offsets/types, non-private
+identities, and target destinations. A final uninterrupted cold aggregate
+passed **696/696 exact across all 88 sources** with zero further refresh.
+Normal pinned-VC7.1 probes emitted 60,550-byte PhotoCamera, 53,403-byte
+PhotoGame, and 49,248-byte PhotoStage i386 COFF objects. The normal product
+compiled all **88** objects and linked a verified **780,288-byte PE32/i386
+GUI**, build-local SHA-256
+`9ef493e07a004571d12435be8cbce77a1af982e413a88fa7d514930b0e10d122`.
+Target-independent CI passed **58/58** tests. No whole-image identity or
+runtime behavior credit is claimed.
+
+**Unknown / next route.** Audit `PhotoAnmVmId` and `PhotoAnmLoadedView` one
+decorated method family at a time. Test canonical storage and narrow,
+storage-free emission adapters against exact relocation identities before
+moving either selected declaration. Do not change the Player VM storage,
+infer unsupported camera fields, add a profile selector, or expand a closed
+debt baseline.

@@ -77,22 +77,16 @@ typedef char PhotoAnmLoadedViewSizeIs1C[
 #include "PhotoCameraBulletEmission.inl"
 #endif
 
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 enum PhotoCameraChargeUiState
 {
     PHOTO_CAMERA_CHARGE_UI_BELOW_FULL = 0,
     PHOTO_CAMERA_CHARGE_UI_FULL = 1,
     PHOTO_CAMERA_CHARGE_UI_INITIAL = 2
 };
-#endif
 
 struct PhotoCameraState
 {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    i32 mode;                         // +0x000
-#else
     PhotoCameraMode mode;             // +0x000
-#endif
     Float3 cameraOffset;              // +0x004
     PhotoAnmVmId vmIds[11];           // +0x010
     AnmVm viewfinderVms[4];           // +0x03c
@@ -106,9 +100,6 @@ struct PhotoCameraState
     i32 photoIndex;                   // +0xba8
     i32 photosTaken;                  // +0xbac
     i32 photoLimit;                   // +0xbb0
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    u32 flags;                        // +0xbb4
-#else
     union
     {
         u32 flags;                    // +0xbb4
@@ -123,12 +114,7 @@ struct PhotoCameraState
             u32 unknownFlags7_31 : 25;
         };
     };
-#endif
-#if defined(TH095_MATCH_EXACT)
-    i32 unknownbb8;                   // +0xbb8
-#else
     i32 focusChargeFrames;            // +0xbb8
-#endif
     i32 focusHeldFrames;              // +0xbbc
     i32 captureRequested;             // +0xbc0
     Float3 viewfinderPosition;        // +0xbc4
@@ -151,10 +137,14 @@ struct PhotoCameraState
 
 typedef char PhotoCameraVmsAt03C[
     (offsetof(PhotoCameraState, viewfinderVms) == 0x03c) ? 1 : -1];
+typedef char PhotoCameraModeAt000[
+    (offsetof(PhotoCameraState, mode) == 0x000) ? 1 : -1];
 typedef char PhotoCameraChargeAtB80[
     (offsetof(PhotoCameraState, charge) == 0xb80) ? 1 : -1];
 typedef char PhotoCameraFlagsAtBB4[
     (offsetof(PhotoCameraState, flags) == 0xbb4) ? 1 : -1];
+typedef char PhotoCameraFocusChargeFramesAtBB8[
+    (offsetof(PhotoCameraState, focusChargeFrames) == 0xbb8) ? 1 : -1];
 typedef char PhotoCameraPositionAtBC4[
     (offsetof(PhotoCameraState, viewfinderPosition) == 0xbc4) ? 1 : -1];
 typedef char PhotoCameraStateSizeIsBDC[
