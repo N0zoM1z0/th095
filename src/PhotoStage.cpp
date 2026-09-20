@@ -2,6 +2,7 @@
 #include "PhotoStageExact.inl"
 #else
 #include "PhotoCamera.hpp"
+#include "PhotoBulletManager.hpp"
 #include "PhotoCardInfo.hpp"
 #include "PhotoStage.hpp"
 #include "GameplayGlobals.hpp"

@@ -179,12 +179,10 @@
 1	src/PhotoCamera.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/PhotoCamera.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 5	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT)
-10	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+9	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/PhotoCamera.cpp	#ifdef DIFFBUILD
-6	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT
+4	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT
 5	src/PhotoCamera.cpp	#ifndef DIFFBUILD
-1	src/PhotoCamera.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-1	src/PhotoCamera.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 6	src/PhotoCardInfo.cpp	#ifdef DIFFBUILD
 1	src/PhotoCardInfo.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoCardInfo.cpp	#ifndef DIFFBUILD

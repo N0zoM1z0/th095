@@ -2,6 +2,7 @@
 #include "PhotoGameExact.inl"
 #else
 #include "PhotoCamera.hpp"
+#include "PhotoBulletManager.hpp"
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"

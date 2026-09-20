@@ -14254,3 +14254,74 @@ historical `PhotoBulletManagerView` and `PhotoAnmSpawnerView`. Preserve the
 closed 0x27C5B8 BulletInf owner and use a profile-free, storage-free adapter
 only if a bounded compiler experiment proves it. Do not restore the loaded-ANM
 layout, add a selector, change Player VM storage, or name EnemyInf `+0x4DFC`.
+
+### SEM-287 — retire PhotoCamera's mixed Background/BulletInf owner
+
+**Scope.** Remove the final two profile selectors from `PhotoCamera.hpp`,
+retire `PhotoCameraBulletEmission.inl`'s complete historical manager layout,
+and route every camera-side `.90`/`.98` operation to its already-proved
+canonical owner. Preserve only a storage-free VC7 emission boundary where a
+bounded caller experiment proves the canonical return type changes codegen.
+
+**Owner and ABI evidence.** The historical `g_PhotoBulletManager` spelling was
+not one storage owner. `UpdatePhotoCamera` relocations at target slot
+`0x004BDD90` call `Background::SetPhotoArea @ 0x00404950`, and the blend-color
+write reaches `Background::photoColor @ +0x1760`. The `.98` slot is the
+0x27C5B8 BulletInf owner: `TakePhoto` calls canonical
+`CountNearbyTargets @ 0x00408220` and `CapturePhotoTargets @ 0x00407820`, while
+`UpdateCharge` reaches its `bulletAnm @ +0x27C5B0`. The canonical
+`PhotoBulletVector`/`PhotoBulletView` signatures changed only relocation type
+identity at the existing call offsets and destinations; the compiled function
+bodies stayed exact. A real local `Background *background = g_Background` is
+compiler-source-shape material for the target allocation chronology, not an
+alternate owner.
+
+**Four-axis ownership.** `Background` owns the `.90` storage, photo color, and
+capture-area method. `PhotoBulletManagerView` in `PhotoBulletManager.hpp` owns
+the `.98` BulletInf storage, layout, capture methods, and loaded-ANM pointer.
+PhotoCamera, PhotoGame, and PhotoStage now include the canonical manager at
+their actual TU use sites; the first normal cold build caught and corrected
+PhotoStage's former transitive dependency. `PhotoCameraBulletEmission.inl`
+now contains only fieldless `PhotoAnmSpawnerView::SpawnInto`. Directly spelling
+the call as constructor-bearing `AnmLoaded::CreateVmAtWorld` changes the VC7
+caller return sequence, so exact comparison keeps the historical out-parameter
+decoration. A linker `/alternatename` assigns its normal build-product owner to
+canonical `AnmLoaded::CreateVmAtWorld @ 0x00445060`; no wrapper body or second
+storage layout exists.
+
+**Manifest and guards.** The TakePhoto ledger now names the canonical
+`PhotoBulletVector` and `PhotoBulletView` method signatures. Three `.90` global
+relocations and the `0x00404950` method relocation now name `g_Background` and
+`Background::SetPhotoArea`; their offsets, types, target addresses, and
+structural bytes are unchanged. The BulletInf guard rejects the retired mixed
+layout/API, requires the fieldless adapter and canonical linker alias, pins
+the direct TU dependencies, canonical Background/BulletInf accesses, and
+manifest identities, and forbids the old ABI names. Removing five directives
+shrinks the selector baseline from 826 across 110 files to **821 across 109
+files**; selected declarations remain **217 keys / 222 occurrences**.
+
+**Validation.** The first focused replay exposed only compiler-private label
+renumbering after the include graph changed. The restricted matcher refreshed
+**15 labels in two PhotoCamera units** and **23 labels in two PhotoGame units**
+only after proving unchanged structural bytes, relocation offsets/types,
+non-private identities, and solved target destinations. A subsequent focused
+PhotoCamera/PhotoGame/PhotoStage replay passed **39/39 exact with zero
+refresh**. The final uninterrupted cold aggregate passed **696/696 exact
+across all 88 sources**, again with zero refresh. The first normal cold build
+failed at PhotoStage because it had relied on `PhotoCamera.hpp` to import the
+BulletInf declaration; that attempt receives no normal-build credit. After
+adding the direct canonical include, a fresh cold build compiled all **88
+pinned-VC7.1 i386 COFF** objects and linked a verified **780,288-byte PE32/i386
+GUI**, build-local SHA-256
+`567ec1cd5375493c222a57438fa81010e509698d7084d367a8dd9a49bed001b3`.
+PhotoCamera, PhotoGame, and PhotoStage objects are 60,985, 53,613, and 49,464
+bytes. Successful linkage is compile/link closure, not target whole-image
+identity or runtime-scenario evidence.
+
+**Unknown / next route.** Audit `PhotoCapturedBulletView` against canonical
+`PhotoBulletView` and the capture-copy/score consumers. Its proved VM,
+photo-scale, next-link, bullet-type, and color offsets suggest one compact
+projection can be retired, but do not replace it or remove its remaining two
+profile selectors until canonical pointer/link semantics and pinned-VC7.1
+caller emission are independently proved. Do not restore the mixed manager,
+add a selector, name unsupported camera fields, or infer EnemyInf `+0x4DFC`.

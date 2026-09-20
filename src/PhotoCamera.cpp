@@ -3,6 +3,8 @@
 #endif
 #include "Background.hpp"
 #include "PhotoCamera.hpp"
+#include "PhotoCameraBulletEmission.inl"
+#include "PhotoBulletManager.hpp"
 #include "PhotoEnemy.hpp"
 #include "GameplayGlobals.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
@@ -191,6 +193,7 @@ static inline SoundPlayer *PhotoSoundPlayer()
 
 extern PhotoRuntimeView *g_PhotoRuntime;
 extern PhotoGlobalStateView *g_PhotoGlobalState;
+extern PhotoBulletManagerView *g_PhotoBulletManager;
 #ifndef DIFFBUILD
 #define g_PhotoRuntime \
     TH095_RUNTIME_GLOBAL_PTR(PhotoRuntimeView, g_RuntimeEnemyManagerOwner)
@@ -584,14 +587,19 @@ u32 PhotoCameraState::TakePhoto()
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
     scoreData[3] = g_PhotoBulletManager->CountNearbyTargets(
-        &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition, 22.0f);
+        reinterpret_cast<PhotoBulletVector *>(
+            &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition),
+        22.0f);
     scoreData[3] += g_PhotoStageController->CountNearbyTargets(
         &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition, 22.0f);
 
     this->CalculatePhotoScore(
         reinterpret_cast<PhotoCapturedBulletView *>(
             g_PhotoBulletManager->CapturePhotoTargets(
-                &this->viewfinderPosition, &this->viewfinderSize)),
+                reinterpret_cast<PhotoBulletVector *>(
+                    &this->viewfinderPosition),
+                reinterpret_cast<PhotoBulletVector *>(
+                    &this->viewfinderSize))),
         scoreData,
         g_PhotoRuntime->CountPhotoTargets(
             &this->viewfinderPosition, &this->viewfinderSize),
@@ -1120,16 +1128,9 @@ normalCharge:
         if (this->focusChargeFrames > 60 ||
             PhotoTimerAdvancedOnEvenFrame(&this->auxiliaryTimer))
         {
-#ifdef TH095_MATCH_EXACT
-            g_PhotoBulletManager->anmSpawner->SpawnInto(
-                &locals.effect, 0x124,
+            TH095_PHOTO_BULLET_SPAWN_WORLD(
+                g_PhotoBulletManager->bulletAnm, &locals.effect, 0x124,
                 &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
-#else
-            locals.effect =
-                g_PhotoBulletManager->bulletAnm->CreateVmAtWorld(
-                    0x124,
-                    &TH095_PHOTO_CAMERA_PLAYER_STORAGE()->playerPosition);
-#endif
         }
         this->focusChargeFrames++;
         this->flags |= PHOTO_FLAG_CHARGE_EFFECT_ACTIVE;
@@ -1240,13 +1241,9 @@ static __forceinline void NormalizeAndScalePhotoOffset(
 
 static __forceinline void PhotoCameraSetPhotoBlendColor(u32 color)
 {
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    PhotoBulletManagerView *bulletManager = g_PhotoBulletManager;
-    bulletManager->photoColor.color = color;
-#else
     // Target relocation 0x004BDD90 is Background, not BulletInf at .98.
-    g_Background->photoColor.color = color;
-#endif
+    Background *background = g_Background;
+    background->photoColor.color = color;
 }
 
 static __forceinline void PhotoCameraModeTimerResetPhase(ZunTimer *timer)
@@ -1594,13 +1591,8 @@ cameraActive:
                 }
             }
 
-#ifdef TH095_MATCH_EXACT
-            g_PhotoBulletManager->BeginPhotoCapture(
-                &camera->viewfinderPosition, &camera->viewfinderSize);
-#else
             g_Background->SetPhotoArea(
                 &camera->viewfinderPosition, &camera->viewfinderSize);
-#endif
             if (camera->charge >= 0.35f)
             {
                 g_AnmGameSpeed = 0.25f;

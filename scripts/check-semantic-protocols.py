@@ -548,7 +548,9 @@ def check_photo_bullet_owner() -> None:
 
     direct_consumers = (
         SRC / "BulletManager.cpp",
-        SRC / "PhotoCamera.hpp",
+        SRC / "PhotoCamera.cpp",
+        SRC / "PhotoGame.cpp",
+        SRC / "PhotoStage.cpp",
         SRC / "EclExtended.cpp",
         SRC / "ecl" / "EclRun.cpp",
         SRC / "EnemyShotDispatch.cpp",
@@ -562,17 +564,56 @@ def check_photo_bullet_owner() -> None:
             fail(f"{path.relative_to(SRC)} must consume canonical PhotoBulletManager.hpp")
 
     camera_header = (SRC / "PhotoCamera.hpp").read_text(encoding="utf-8")
+    if any(name in camera_header for name in PROFILE_NAMES):
+        fail("PhotoCamera.hpp must remain profile-selector-free")
     if re.search(r"\bstruct\s+PhotoBulletManagerView\s*\{", camera_header):
         fail("PhotoCamera.hpp must not restore its mixed Background/BulletInf proxy")
-    if '#include "PhotoCameraBulletEmission.inl"' not in camera_header:
-        fail("PhotoCamera exact receiver spellings must stay in the named emission adapter")
+    for include in (
+        '#include "PhotoBulletManager.hpp"',
+        '#include "PhotoCameraBulletEmission.inl"',
+    ):
+        if include in camera_header:
+            fail(f"PhotoCamera.hpp must not export TU-local dependency: {include}")
+
     camera_emission = (SRC / "PhotoCameraBulletEmission.inl").read_text(
         encoding="utf-8"
     )
-    if "0x004BDD90" not in camera_emission or "0x004BDD98" not in camera_emission:
-        fail("PhotoCamera bullet emission adapter must document the two target owners")
     if "TH095_MATCH_EXACT" in camera_emission or "DIFFBUILD" in camera_emission:
         fail("PhotoCamera bullet emission adapter must not contain a second profile split")
+    if len(re.findall(r"\bstruct\s+PhotoAnmSpawnerView\s*\{", camera_emission)) != 1:
+        fail("PhotoCamera bullet emission adapter must define one fieldless receiver")
+    adapter_start = camera_emission.index("struct PhotoAnmSpawnerView")
+    adapter_body = braced_body_after(
+        camera_emission, adapter_start, "PhotoAnmSpawnerView"
+    )
+    if "void SpawnInto(PhotoAnmVmId *output, i32 script, Float3 *position);" not in adapter_body:
+        fail("PhotoCamera bullet emission adapter lost its compiler-proved call ABI")
+    for owner_token in (
+        "unknown0000",
+        "photoColor",
+        "unknown1764",
+        "anmSpawner",
+        "BeginPhotoCapture",
+        "DespawnAllBullets",
+        "CountNearbyTargets",
+        "CapturePhotoTargets",
+    ):
+        if owner_token in adapter_body:
+            fail(
+                "PhotoCamera bullet emission adapter gained owner storage/API: "
+                f"{owner_token}"
+            )
+    required_camera_alias = (
+        "/alternatename:"
+        "?SpawnInto@PhotoAnmSpawnerView@th095@@"
+        "QAEXPAUPhotoAnmVmId@2@HPAUFloat3@2@@Z="
+        "?CreateVmAtWorld@AnmLoaded@th095@@"
+        "QAE?AUAnmVmId@2@HPAUFloat3@2@@Z"
+    )
+    if required_camera_alias not in camera_emission or "0x00445060" not in camera_emission:
+        fail("PhotoCamera bullet emission adapter lost canonical link ownership")
+    if "#define TH095_PHOTO_BULLET_SPAWN_WORLD" not in camera_emission:
+        fail("PhotoCamera bullet spawn escaped its named emission boundary")
 
     bullet_emission = (SRC / "PhotoBulletManagerEmission.inl").read_text(
         encoding="utf-8"
@@ -583,10 +624,53 @@ def check_photo_bullet_owner() -> None:
         fail("BulletInf emission adapter must not contain a second profile split")
 
     camera_source = (SRC / "PhotoCamera.cpp").read_text(encoding="utf-8")
-    if "g_Background->photoColor.color = color;" not in camera_source:
-        fail("normal PhotoCamera must publish photo blend color through Background")
+    for include in (
+        '#include "PhotoCameraBulletEmission.inl"',
+        '#include "PhotoBulletManager.hpp"',
+    ):
+        if include not in camera_source:
+            fail(f"PhotoCamera.cpp lost TU-local dependency: {include}")
+    if (
+        "Background *background = g_Background;" not in camera_source
+        or "background->photoColor.color = color;" not in camera_source
+    ):
+        fail("PhotoCamera must publish photo blend color through Background")
     if "g_Background->SetPhotoArea(" not in camera_source:
-        fail("normal PhotoCamera must publish the capture area through Background")
+        fail("PhotoCamera must publish the capture area through Background")
+    for retired in (
+        "g_PhotoBulletManager->photoColor",
+        "g_PhotoBulletManager->anmSpawner",
+        "BeginPhotoCapture",
+    ):
+        if retired in camera_source:
+            fail(f"PhotoCamera restored mixed Background/BulletInf access: {retired}")
+    required_camera_source = (
+        "TH095_PHOTO_BULLET_SPAWN_WORLD(",
+        "g_PhotoBulletManager->bulletAnm",
+        "g_PhotoBulletManager->CountNearbyTargets(",
+        "g_PhotoBulletManager->CapturePhotoTargets(",
+    )
+    for fact in required_camera_source:
+        if fact not in camera_source:
+            fail(f"PhotoCamera lost canonical BulletInf access: {fact}")
+
+    manifest = (ROOT / "config" / "match-units.toml").read_text(encoding="utf-8")
+    for retired in (
+        "?BeginPhotoCapture@PhotoBulletManagerView@th095@@",
+        "?CountNearbyTargets@PhotoBulletManagerView@th095@@QAEHPBUFloat3@2@M@Z",
+        "?CapturePhotoTargets@PhotoBulletManagerView@th095@@QAEPAXPBUFloat3@2@0@Z",
+    ):
+        if retired in manifest:
+            fail(f"PhotoCamera manifest restored mixed owner/type ABI: {retired}")
+    required_manifest = (
+        "?SetPhotoArea@Background@th095@@QAEXPBUFloat3@2@0@Z",
+        "?CountNearbyTargets@PhotoBulletManagerView@th095@@QAEHPAUPhotoBulletVector@2@M@Z",
+        "?CapturePhotoTargets@PhotoBulletManagerView@th095@@QAEPAUPhotoBulletView@2@PAUPhotoBulletVector@2@0@Z",
+        "?SpawnInto@PhotoAnmSpawnerView@th095@@QAEXPAUPhotoAnmVmId@2@HPAUFloat3@2@@Z",
+    )
+    for symbol in required_manifest:
+        if symbol not in manifest:
+            fail(f"PhotoCamera manifest lost canonical/emission ABI: {symbol}")
 
     forbidden_local_owners = {
         SRC / "BulletManager.cpp": "struct PhotoBulletManagerView",

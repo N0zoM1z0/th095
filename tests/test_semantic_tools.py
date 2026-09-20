@@ -90,8 +90,19 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         emission = (ROOT / "src" / "PhotoCameraBulletEmission.inl").read_text(
             encoding="utf-8"
         )
-        self.assertIn("0x004BDD90", emission)
-        self.assertIn("0x004BDD98", emission)
+        self.assertIn("struct PhotoAnmSpawnerView", emission)
+        self.assertIn("#define TH095_PHOTO_BULLET_SPAWN_WORLD", emission)
+        self.assertIn("/alternatename:", emission)
+        self.assertIn("0x00445060", emission)
+        self.assertNotIn("TH095_MATCH_EXACT", emission)
+        self.assertNotIn("DIFFBUILD", emission)
+        camera_header = (ROOT / "src" / "PhotoCamera.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("PhotoCameraBulletEmission.inl", camera_header)
+        self.assertNotIn("PhotoBulletManager.hpp", camera_header)
+        self.assertNotIn("TH095_MATCH_EXACT", camera_header)
+        self.assertNotIn("DIFFBUILD", camera_header)
 
     def test_photo_enemy_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_photo_enemy_owner()

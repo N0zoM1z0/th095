@@ -4,9 +4,6 @@
 #include "AnmManager.hpp"
 #include "PhotoAnmCreateVmEmission.hpp"
 #include "PhotoCameraMode.hpp"
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-#include "PhotoBulletManager.hpp"
-#endif
 #include "PhotoPlayerRuntime.hpp"
 
 namespace th095
@@ -66,10 +63,6 @@ typedef AnmLoaded PhotoAnmLoadedView;
 
 typedef char PhotoAnmLoadedViewSizeIs1C[
     (sizeof(PhotoAnmLoadedView) == 0x1c) ? 1 : -1];
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#include "PhotoCameraBulletEmission.inl"
-#endif
 
 enum PhotoCameraChargeUiState
 {

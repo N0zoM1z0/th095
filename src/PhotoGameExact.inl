@@ -1,10 +1,13 @@
 #define TH095_MATCH_SOUNDPLAYER_AS_STRUCT
 #define TH095_MATCH_FILESYSTEM_AS_CLASS
 #include "PhotoCamera.hpp"
+#include "PhotoBulletManager.hpp"
 #include "AnmVmId.hpp"
 
 namespace th095
 {
+
+extern PhotoBulletManagerView *g_PhotoBulletManager;
 
 void Rotate(Float3 *outVector, Float3 *point, f32 angle);
 
@@ -541,13 +544,13 @@ void PhotoGameUpdateView::Die()
     PhotoToScreen(&screenPosition, &this->playerPosition);
     g_AnmManager->SetPosition(
         reinterpret_cast<PhotoGameAnmSpawnerView *>(
-            g_PhotoBulletManager->anmSpawner)->CreateVm(0x121, 0),
+            g_PhotoBulletManager->bulletAnm)->CreateVm(0x121, 0),
         &screenPosition);
     for (i32 i = 0; i < 32; ++i)
     {
         g_AnmManager->SetPosition(
             reinterpret_cast<PhotoGameAnmSpawnerView *>(
-                g_PhotoBulletManager->anmSpawner)->CreateVm(0x122, 0),
+                g_PhotoBulletManager->bulletAnm)->CreateVm(0x122, 0),
             &screenPosition);
     }
     this->completionTimer = 0;
@@ -688,7 +691,7 @@ i32 PhotoGameUpdateView::UpdateMainState()
         {
             this->focusVm = TH095_PHOTO_ANM_CREATE_VM(
                 reinterpret_cast<PhotoAnmLoadedView *>(
-                    g_PhotoBulletManager->anmSpawner),
+                    g_PhotoBulletManager->bulletAnm),
                 0x11f, 6);
         }
 
