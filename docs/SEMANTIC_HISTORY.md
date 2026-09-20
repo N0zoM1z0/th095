@@ -15336,3 +15336,50 @@ latest full receipt.
 `SupervisorState` declarations for one dependency-light owner. Preserve the
 numerically incompatible legacy enum as a separate TH08-shaped compatibility
 surface and verify switch-table/compiler effects before convergence.
+
+### SEM-307 — unify the TH095 Supervisor scene-state owner
+
+**Scope and ownership.** `SupervisorState.hpp` now owns the canonical TH095
+scene-routing domain: exit `1`, front end `2`, photo game `3`, result restart
+`4`, error `6`, replay start `7`, and photo-game retry `8`. Main, MainExact,
+and SupervisorRuntime include that one profile-independent declaration rather
+than maintaining three identical enums. Main's `UpdateSceneState @
+0x00425EF0` and its exact body consume every value; independent FrontEnd,
+PhotoGameTask, and ResultScreen producers remain the established transition
+evidence.
+
+**Boundary.** Supervisor's active/requested/previous handshake slots at
+`+0x408/+0x40C/+0x410` remain signed `i32`, because `RegisterChain` bootstraps
+the protocol with `0/-1` outside the live enum. The guard rejects replacing
+those slots with `SupervisorState`. Legacy `Supervisor.hpp` keeps its separate
+TH08-shaped state machine whose same-named enum ranges from `-1` through `12`
+with incompatible meanings; it is not merged or used as TH095 semantic
+authority.
+
+**Compiler evidence.** The first strict Main replay stopped on 25 compiler-
+private labels and receives zero exact credit. All switch destinations, code
+bytes, public identities, relocation offsets/types/targets, and non-private
+symbols were unchanged. Controlled direct-consumer refresh accepted those 25
+Main labels plus 15 Global labels across two units. Immediate zero-refresh
+replay then passed all 199 units across 18 sources.
+
+**Guards and debt.** The owner guard requires one explicit 1/2/3/4/6/7/8
+domain, all three canonical headers to include it, every Main router constant
+in both bodies, signed bootstrap storage, and an explicitly separate legacy
+`-1..12` domain. This batch removes no profile selector or selected
+declaration, so the closed ledgers remain **749 directives across 107 files**
+and **201 keys / 206 occurrences**.
+
+**Validation.** Final focused replay passed **199/199 exact units across 18
+direct consumers** with zero private-label refresh. Pinned-VC7.1 normal probes
+emitted **116,276-byte** Main, **34,679-byte** Global, **64,883-byte**
+SoundPlayer, **30,317-byte** FrontEndLifecycle, **37,668-byte** PhotoGameTask,
+and **76,047-byte** ResultScreen Intel 80386 COFF objects. The semantic guard
+and all **68 workflow tests** pass. Tracking remains **1,880 provisional / 697
+source-present / 696 exact**. Per the batching policy, no aggregate replay or
+product link is claimed; SEM-298 remains the latest full receipt.
+
+**Unknown / next route.** Audit the exact/normal split around
+`SupervisorStartupPhase @ +0x660`, including Main's numeric macro aliases and
+the exact integer field. Prove 0/1/2 transitions and emission before
+convergence; keep the legacy startup enum distinct absent independent evidence.

@@ -598,13 +598,35 @@ exact across 18 sources** with zero refresh. Normal pinned-VC7.1 probes emitted
 206 occurrences**. The semantic guard and all **67 workflow tests** pass. No
 aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
 
+For SEM-307, `SupervisorState.hpp` became the sole profile-independent owner
+of the canonical TH095 scene-routing domain: exit `1`, front end `2`, photo
+game `3`, result restart `4`, error `6`, replay start `7`, and retry `8`.
+Main, MainExact, and SupervisorRuntime now include that declaration. The
+physical scene handshake slots remain signed `i32`, preserving bootstrap
+`0/-1` outside the live enum. Legacy `Supervisor.hpp` deliberately retains its
+incompatible TH08-shaped `-1..12` enum and is not treated as TH095 authority.
+
+The first strict Main replay stopped on 25 compiler-private labels and
+receives zero exact credit. Controlled direct-consumer refresh accepted 40
+private labels across three units only after switch destinations, code bytes,
+and all non-private relocation fields remained unchanged. Immediate final
+replay passed **199/199 exact across 18 sources** with zero refresh. Normal
+pinned-VC7.1 probes emitted **116,276-byte** Main, **34,679-byte** Global,
+**64,883-byte** SoundPlayer, **30,317-byte** FrontEndLifecycle, **37,668-byte**
+PhotoGameTask, and **76,047-byte** ResultScreen i386 COFF objects. Selector
+debt remains **749 directives across 107 files** and declaration debt remains
+**201 keys / 206 occurrences**. The semantic guard and all **68 workflow
+tests** pass. No aggregate/product closure is claimed; SEM-298 remains the
+latest full receipt.
+
 ## Next bounded lane
 
-Audit the three identical TH095 `SupervisorState` declarations in `Main.hpp`,
-`MainExact.hpp`, and `SupervisorRuntime.hpp` for one dependency-light owner.
-Keep the numerically incompatible TH08-shaped state enum in legacy
-`Supervisor.hpp` separate, and verify state producers/consumers plus switch-
-table emission before moving the canonical enum.
+Audit the remaining exact/normal split around `SupervisorStartupPhase @
++0x660`: Main and SupervisorRuntime use the canonical enum only in normal
+builds, while MainExact and exact Main retain integer fields plus numeric macro
+aliases. Prove the 0/1/2 transitions and VC7 emission before removing those
+selectors; keep legacy `SupervisorStartupThreadState` separate unless target-
+local evidence proves the compatibility domain equivalent.
 
 ## Protected working-tree exclusions
 
@@ -623,6 +645,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --details
-rg -n "enum SupervisorState|SUPERVISOR_STATE_|SupervisorState_" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Supervisor.hpp src/Main.cpp src/MainExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
+python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --path src/Main.cpp --details
+rg -n "SupervisorStartupPhase|SupervisorStartupThreadState|TH095_SUPERVISOR_STARTUP_|startupThreadState" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Supervisor.hpp src/Main.cpp src/MainExact.inl src/SupervisorStartupState.hpp config/match-units.toml docs/KNOWLEDGE_BASE.md
 ```

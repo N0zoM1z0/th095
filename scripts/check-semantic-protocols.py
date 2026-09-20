@@ -1483,6 +1483,85 @@ def check_screenshot_bitmap_header_owner() -> None:
                 fail(f"{path} lost screenshot header producer/consumer: {fact}")
 
 
+def check_supervisor_state_owner() -> None:
+    owner_path = SRC / "SupervisorState.hpp"
+    owner = owner_path.read_text(encoding="utf-8")
+    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+    legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
+    main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
+    main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
+
+    if any(name in owner for name in PROFILE_NAMES):
+        fail("canonical SupervisorState owner must be profile-independent")
+    explicit_enum(
+        owner_path,
+        "SupervisorState",
+        "SUPERVISOR_STATE_",
+        [1, 2, 3, 4, 6, 7, 8],
+    )
+
+    declarations: list[str] = []
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in {".cpp", ".hpp", ".inl"}:
+            continue
+        text = source_without_comments(path.read_text(encoding="utf-8"))
+        if re.search(r"\benum\s+SupervisorState\s*\{", text):
+            declarations.append(path.relative_to(ROOT).as_posix())
+    if declarations != ["src/Supervisor.hpp", "src/SupervisorState.hpp"]:
+        fail(
+            "SupervisorState declarations must be the TH095 owner plus the "
+            f"legacy compatibility enum: {declarations}"
+        )
+
+    legacy_start = legacy.index("enum SupervisorState")
+    legacy_body = braced_body_after(legacy, legacy_start, "SupervisorState")
+    for fact in (
+        "SupervisorState_ExitGame = -1",
+        "SupervisorState_Init = 0",
+        "SupervisorState_GameManagerNextStageWeird = 12",
+    ):
+        if fact not in legacy_body:
+            fail(f"legacy Supervisor state domain lost compatibility value: {fact}")
+    if "SUPERVISOR_STATE_FRONT_END" in legacy_body:
+        fail("legacy Supervisor state domain was silently merged with TH095")
+
+    for path, text in (
+        ("Main.hpp", main_header),
+        ("MainExact.hpp", main_exact_header),
+        ("SupervisorRuntime.hpp", runtime_header),
+    ):
+        if '#include "SupervisorState.hpp"' not in text:
+            fail(f"{path} no longer routes through the SupervisorState owner")
+        if re.search(r"\benum\s+SupervisorState\s*\{", text):
+            fail(f"{path} restored a private SupervisorState declaration")
+        for field_type in (
+            "SupervisorState activeSceneState",
+            "SupervisorState requestedSceneState",
+            "SupervisorState previousActiveSceneState",
+            "SupervisorState wantedState",
+            "SupervisorState currentState",
+            "SupervisorState previousState",
+        ):
+            if field_type in text:
+                fail("bootstrap-capable scene-state storage must remain signed i32")
+
+    constants = (
+        "SUPERVISOR_STATE_EXIT",
+        "SUPERVISOR_STATE_FRONT_END",
+        "SUPERVISOR_STATE_PHOTO_GAME",
+        "SUPERVISOR_STATE_RESTART_PHOTO_GAME",
+        "SUPERVISOR_STATE_ERROR",
+        "SUPERVISOR_STATE_START_REPLAY",
+        "SUPERVISOR_STATE_RETRY_PHOTO_GAME",
+    )
+    for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
+        for constant in constants:
+            if constant not in text:
+                fail(f"{path} lost canonical Supervisor state route: {constant}")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -2665,6 +2744,7 @@ def main() -> int:
     check_game_configuration_owner()
     check_supervisor_flags_owner()
     check_screenshot_bitmap_header_owner()
+    check_supervisor_state_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -2693,6 +2773,7 @@ def main() -> int:
     print("  GameConfiguration owner: one profile-independent TH095 0xC8 layout")
     print("  Supervisor flags: one profile-independent TH095 0x7BC-owner layout")
     print("  Screenshot BMP file header: one packed 0x0E serialized owner")
+    print("  Supervisor scene states: canonical TH095 1/2/3/4/6/7/8 domain")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

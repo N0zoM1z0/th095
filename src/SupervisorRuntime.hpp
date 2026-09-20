@@ -18,6 +18,7 @@
 #include "ReplayScanWorker.hpp"
 #include "ScreenshotBitmapFileHeader.hpp"
 #include "SupervisorFlags.hpp"
+#include "SupervisorState.hpp"
 #include "SupervisorStartupState.hpp"
 #include "SupervisorFogState.hpp"
 
@@ -29,17 +30,6 @@ struct DummyMidiTimer;
 struct Float3;
 struct FrontEndControllerView;
 struct PhotoGameTaskView;
-
-enum SupervisorState
-{
-    SUPERVISOR_STATE_EXIT = 1,
-    SUPERVISOR_STATE_FRONT_END = 2,
-    SUPERVISOR_STATE_PHOTO_GAME = 3,
-    SUPERVISOR_STATE_RESTART_PHOTO_GAME = 4,
-    SUPERVISOR_STATE_ERROR = 6,
-    SUPERVISOR_STATE_START_REPLAY = 7,
-    SUPERVISOR_STATE_RETRY_PHOTO_GAME = 8
-};
 
 #pragma pack(push, 4)
 struct Supervisor

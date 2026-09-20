@@ -19,6 +19,7 @@
 #include "ScreenshotBitmapFileHeader.hpp"
 #include "SoundPlayer.hpp"
 #include "SupervisorFlags.hpp"
+#include "SupervisorState.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "SupervisorFogState.hpp"
 #include "SupervisorStartupState.hpp"
@@ -91,17 +92,6 @@ struct GameWindow
 typedef char GameWindowSizeIs54[(sizeof(GameWindow) == 0x54) ? 1 : -1];
 typedef char GameWindowFrequencyAt14[(offsetof(GameWindow, performanceFrequency) == 0x14) ? 1 : -1];
 typedef char GameWindowCurrentTimeAt34[(offsetof(GameWindow, currentTimestamp) == 0x34) ? 1 : -1];
-
-enum SupervisorState
-{
-    SUPERVISOR_STATE_EXIT = 1,
-    SUPERVISOR_STATE_FRONT_END = 2,
-    SUPERVISOR_STATE_PHOTO_GAME = 3,
-    SUPERVISOR_STATE_RESTART_PHOTO_GAME = 4,
-    SUPERVISOR_STATE_ERROR = 6,
-    SUPERVISOR_STATE_START_REPLAY = 7,
-    SUPERVISOR_STATE_RETRY_PHOTO_GAME = 8
-};
 
 #pragma pack(push, 4)
 struct Supervisor

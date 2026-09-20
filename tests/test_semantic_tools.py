@@ -603,6 +603,19 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn('#include "ScreenshotBitmapFileHeader.hpp"', main)
         self.assertNotIn("struct ScreenshotBitmapFileHeader\n{", main)
 
+    def test_supervisor_state_owner_guard_accepts_canonical_domain(self) -> None:
+        GUARD.check_supervisor_state_owner()
+        header = (ROOT / "src" / "SupervisorState.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("SUPERVISOR_STATE_ERROR = 6", header)
+        self.assertIn("SUPERVISOR_STATE_RETRY_PHOTO_GAME = 8", header)
+        legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
+        self.assertIn("SupervisorState_ExitGame = -1", legacy)
+        self.assertIn("SupervisorState_GameManagerNextStageWeird = 12", legacy)
+
 
 if __name__ == "__main__":
     unittest.main()
