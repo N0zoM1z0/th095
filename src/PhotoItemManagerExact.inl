@@ -1,5 +1,4 @@
 #define TH095_MATCH_RNG_AS_STRUCT
-#define TH095_MATCH_SOUNDPLAYER_AS_STRUCT
 #include "PhotoItemManager.hpp"
 
 namespace th095

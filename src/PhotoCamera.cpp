@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_SOUNDPLAYER_AS_STRUCT
-#endif
 #include "Background.hpp"
 #include "PhotoCamera.hpp"
 #include "PhotoCameraBulletEmission.inl"
@@ -18,10 +15,6 @@
 #include "ScoreData.hpp"
 #include "PhotoStage.hpp"
 #endif
-#ifdef TH095_MATCH_EXACT
-#undef TH095_MATCH_SOUNDPLAYER_AS_STRUCT
-#endif
-
 namespace th095
 {
 

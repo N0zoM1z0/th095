@@ -135,11 +135,7 @@ enum SoundPlayerCommandOpcode
 #define SFX_QUEUE_LENGTH 12
 #define BGM_QUEUE_LENGTH 31
 
-#if defined(TH095_MATCH_EXACT) && defined(TH095_MATCH_SOUNDPLAYER_AS_STRUCT)
-struct SoundPlayer
-#else
 class SoundPlayer
-#endif
 {
   public:
     SoundPlayer();

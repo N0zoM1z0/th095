@@ -152,7 +152,7 @@
 2	src/InputRuntime.hpp	#if defined(TH095_MATCH_EXACT)
 2	src/Main.cpp	#if defined(TH095_MATCH_EXACT)
 17	src/Main.cpp	#ifdef DIFFBUILD
-2	src/Main.cpp	#ifdef TH095_MATCH_EXACT
+1	src/Main.cpp	#ifdef TH095_MATCH_EXACT
 5	src/Main.cpp	#ifndef DIFFBUILD
 3	src/Main.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/Main.hpp	#if defined(TH095_MATCH_EXACT)
@@ -178,7 +178,7 @@
 1	src/pbg/PbgFile.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/PhotoCamera.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 3	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-3	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT
+1	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT
 5	src/PhotoCamera.cpp	#ifndef DIFFBUILD
 6	src/PhotoCardInfo.cpp	#ifdef DIFFBUILD
 1	src/PhotoCardInfo.cpp	#ifdef TH095_MATCH_EXACT
@@ -285,7 +285,6 @@
 1	src/SoundPlayer.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/SoundPlayer.cpp	#ifdef TH095_MATCH_EXACT
 2	src/SoundPlayer.hpp	#if defined(TH095_MATCH_EXACT)
-1	src/SoundPlayer.hpp	#if defined(TH095_MATCH_EXACT) && defined(TH095_MATCH_SOUNDPLAYER_AS_STRUCT)
 3	src/SoundPlayer.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/SoundPlayer.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Supervisor.hpp	#ifdef TH095_MATCH_EXACT

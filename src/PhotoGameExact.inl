@@ -1,4 +1,3 @@
-#define TH095_MATCH_SOUNDPLAYER_AS_STRUCT
 #define TH095_MATCH_FILESYSTEM_AS_CLASS
 #include "PhotoCamera.hpp"
 #include "PhotoBulletManager.hpp"

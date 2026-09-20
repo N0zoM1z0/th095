@@ -709,9 +709,20 @@ def check_photo_bullet_owner() -> None:
 def check_sound_player_consumer_owners() -> None:
     bullet = (SRC / "BulletManager.cpp").read_text(encoding="utf-8")
     extended = (SRC / "EclExtended.cpp").read_text(encoding="utf-8")
+    header = (SRC / "SoundPlayer.hpp").read_text(encoding="utf-8")
     manifest = (ROOT / "config" / "match-units.toml").read_text(
         encoding="utf-8"
     )
+
+    if "class SoundPlayer\n" not in header or "struct SoundPlayer\n" in header:
+        fail("SoundPlayer.hpp must expose one canonical class declaration")
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in (".cpp", ".hpp", ".inl"):
+            continue
+        if "TH095_MATCH_SOUNDPLAYER_AS_STRUCT" in path.read_text(encoding="utf-8"):
+            fail(
+                f"{path.relative_to(SRC)} restored the SoundPlayer class/struct selector"
+            )
 
     for retired in (
         "PhotoBulletSoundPlayerView",
@@ -749,6 +760,20 @@ def check_sound_player_consumer_owners() -> None:
     ):
         if canonical not in manifest:
             fail(f"match manifest lost canonical SoundPlayer ABI: {canonical}")
+    migrated_sources = (
+        'source = "src/PhotoCamera.cpp"',
+        'source = "src/PhotoGame.cpp"',
+        'source = "src/PhotoItemManager.cpp"',
+    )
+    migrated_sections = [
+        section
+        for section in re.split(r"(?=\n\[units\.)", manifest)
+        if any(source in section for source in migrated_sources)
+    ]
+    if any("?g_SoundPlayer@th095@@3USoundPlayer@1@A" in section for section in migrated_sections):
+        fail("migrated photo callers restored the selected struct data identity")
+    if sum(section.count("?g_SoundPlayer@th095@@3VSoundPlayer@1@A") for section in migrated_sections) != 15:
+        fail("migrated photo callers lost the fifteen canonical class data identities")
 
 
 def check_photo_enemy_owner() -> None:
@@ -1944,7 +1969,7 @@ def main() -> int:
     print("  normal ECL types: canonical ANM, Supervisor, and Background owners")
     print("  EclExtended normal types: canonical ANM, Float3, Effect, BulletInf, EnemyInf, PlayerInf, Camera, and PhotoGameTask owners")
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")
-    print("  SoundPlayer consumers: BulletManager and EclExtended use the canonical owner")
+    print("  SoundPlayer owner: one canonical class declaration and direct shared-body consumers")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

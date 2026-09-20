@@ -181,6 +181,15 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("@PhotoBulletSoundPlayerView@th095@@", manifest)
         self.assertNotIn("@SoundPlayerView@EclExtended@th095@@", manifest)
         self.assertIn("?g_SoundPlayer@th095@@3VSoundPlayer@1@A", manifest)
+        header = (ROOT / "src" / "SoundPlayer.hpp").read_text(encoding="utf-8")
+        self.assertIn("class SoundPlayer\n", header)
+        self.assertNotIn("struct SoundPlayer\n", header)
+        for path in (ROOT / "src").rglob("*"):
+            if path.suffix in (".cpp", ".hpp", ".inl"):
+                self.assertNotIn(
+                    "TH095_MATCH_SOUNDPLAYER_AS_STRUCT",
+                    path.read_text(encoding="utf-8"),
+                )
 
     def test_photo_game_task_ecl_guard_accepts_state_bridge(self) -> None:
         GUARD.check_photo_game_task_ecl_owner()

@@ -1,10 +1,6 @@
 #ifdef TH095_MATCH_EXACT
 #include "MainExact.inl"
 #else
-#ifdef TH095_MATCH_EXACT
-#define TH095_MATCH_RNG_AS_STRUCT
-#define TH095_MATCH_SOUNDPLAYER_AS_STRUCT
-#endif
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"

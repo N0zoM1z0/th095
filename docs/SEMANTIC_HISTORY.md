@@ -14696,3 +14696,54 @@ that define it. Determine which class/struct data-relocation spellings are
 real pinned-VC7 emission dependencies before changing the shared header.
 Keep frozen exact bodies separate from normal semantic acceptance; do not add
 a selector or infer sound meanings from numeric adjacency.
+
+### SEM-295 — remove the SoundPlayer class/struct selector
+
+**Scope.** Determine whether the canonical `SoundPlayer.hpp` owner needs to
+switch between `class SoundPlayer` and `struct SoundPlayer` for exact callers.
+Close only that declaration-form split and its definition sites; preserve
+frozen exact-body method projections and all SoundPlayer layout, behavior,
+indices, and resource lifetime.
+
+**Compiler evidence.** The selector changes only MSVC's data-symbol type code:
+selected callers spell `g_SoundPlayer` with `USoundPlayer`, while the canonical
+class spells it with `VSoundPlayer`. Member-call decorations do not encode the
+class/struct distinction. PhotoCamera, PhotoGameExact, and
+PhotoItemManagerExact were the only live definition sites. Recompiling all
+three with the canonical class preserved every code byte and every relocation
+offset/type/destination; exactly 15 data identities changed from `U` to `V`.
+The fourth definition in `Main.cpp` was unreachable inside the non-exact arm
+of an outer `#ifdef TH095_MATCH_EXACT`; removing that dead block left Main's
+independent frozen exact body unchanged.
+
+**Production / exact representation.** `SoundPlayer.hpp` now has one
+unconditional `class SoundPlayer`. The selector token no longer exists below
+`src/`. PhotoCamera includes the same class in every profile. The two frozen
+photo bodies continue to use their local method-only proxies but obtain the
+canonical class declaration for `g_SoundPlayer`; MainExact retains its private
+full struct as a different-body boundary. No adapter, alias, profile branch,
+layout change, or normal-source alternative was introduced.
+
+**Guards and debt.** The SoundPlayer guard requires the one class declaration,
+rejects `struct SoundPlayer` in the canonical header, rejects every restoration
+of `TH095_MATCH_SOUNDPLAYER_AS_STRUCT`, and pins all 15 migrated photo data
+identities to `VSoundPlayer`. Removing the header selector plus two PhotoCamera
+wrappers and Main's dead inner selector shrinks the baseline from 803 to
+**799 directives across 109 files**. The selected class/struct pair is gone,
+shrinking declaration debt from 210 keys / 215 occurrences to **208 keys /
+213 occurrences**. No baseline allowance was added.
+
+**Validation.** Focused canonical replay passed PhotoCamera **11/11**,
+PhotoGame **22/22**, PhotoItemManager **12/12**, and Main **48/48**, totaling
+**93/93 exact units** with zero private-label refresh. Pinned-VC7.1 normal
+probes emitted **59,658-byte**, **53,642-byte**, **32,178-byte**, and
+**116,276-byte** Intel 80386 COFF objects respectively. The semantic guard and
+all **59 tests** pass; tracking remains **1,880 provisional / 697
+source-present / 696 exact**. Per the batching policy, no aggregate/product
+closure is claimed; SEM-287 remains the latest full receipt.
+
+**Unknown / next route.** Audit `SoundPlayerResult` and the exact-only
+`ZUN_SUCCESS`/`ZUN_ERROR` aliases. Establish whether the global legacy versus
+namespaced canonical enum type changes pinned VC7 emission before selecting a
+single header declaration. Do not infer source intent from equal numeric
+values, and do not add a selector.
