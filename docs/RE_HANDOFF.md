@@ -1,789 +1,101 @@
 # Current reconstruction handoff
 
-This file is deliberately short and replaceable. Prior operational notes are
-archived in [RE_HANDOFF_HISTORY.md](RE_HANDOFF_HISTORY.md); semantic batch
-records are in [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md). Live counts come
-from the ledgers, not prose.
+This file is deliberately short and replaceable. Accepted semantic batches
+live in [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md), current subsystem routing
+in [SEMANTIC_INDEX.md](SEMANTIC_INDEX.md), build ownership in
+[SOURCE_MAP.md](SOURCE_MAP.md), and older operational notes in
+[RE_HANDOFF_HISTORY.md](RE_HANDOFF_HISTORY.md).
 
 ## Authority and current state
 
 - Target: original Japanese TH095 v1.02a, SHA-256
   `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
 - Semantic backend: hash-attested Ghidra 12.1.3 through `scripts/ghidra.py`.
-- Current phase: **semantic reconstruction, active-incomplete**.
-- Current ledger baseline: 1,880 provisional candidates, 697 source-present,
-  696 exact units covering 336,486 bytes. Recompute; do not copy these counts
-  into a new claim.
-- Semantic progress has no defensible percentage: exact/source counts measure
-  different facts, and substantial owner/protocol review remains.
-- The normal pinned-VC7.1 product compiles and links. This is not whole-image
-  exactness and is not yet an independent modern-compiler/runtime oracle.
+- Phase: **semantic reconstruction, active-incomplete**. There is no defensible
+  completion percentage; source presence, semantic acceptance, exact matching,
+  normal compilation, linkage, and runtime validation are separate facts.
+- Current ledger report (2026-09-20): 1,880 provisional candidates, 713 mapped,
+  697 source-present, and 696 exact units covering 336,486 bytes. Recompute
+  these values before making a new claim.
+- `config/claims.csv` remains header-only.
+- No active blocker is known. The only working-tree residue at handoff is the
+  protected user-owned untracked set listed below.
 
 Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SOURCE_MAP.md`, `ARCHITECTURE.md`, and `RE_WORKFLOW.md` before changing state.
 
-## Workflow correction accepted on 2026-09-19
-
-The prior Web campaign produced many useful target-backed facts, but its
-workflow mixed policy, chronological history, navigation, and handoff state;
-it also repeatedly cited exact totals even when normal and exact selected
-different bodies. Existing results are reusable only after bounded evidence
-review.
-
-The corrected topology is now:
-
-- current policy in `SEMANTIC_RECONSTRUCTION.md`;
-- reusable TH08-derived method in `SEMANTIC_PLAYBOOK.md`;
-- chronological records in `SEMANTIC_HISTORY.md`;
-- current navigation in `SEMANTIC_INDEX.md`;
-- build/source ownership in `SOURCE_MAP.md`;
-- heuristic work routing in `scripts/analysis/report-semantic-debt.py`; and
-- closed-protocol regression checks in `scripts/check-semantic-protocols.py`.
-
-Hard rule: if `TH095_MATCH_EXACT` and normal select different declarations,
-expressions, or function bodies, exact replay does not validate the normal
-semantic body. No new conditional directive referencing `TH095_MATCH_EXACT`
-or `DIFFBUILD` may be added below `src/`; the closed CI baseline may only
-shrink.
-
-The first protocol-guard audit also found that the old ECL ANM declaration is
-not semantic TH095 source: its opcode domain is `-1..89` and its manager size
-is 0x2A2570, versus canonical `AnmManager.hpp` `-1..87` and 0x38314C. Normal
-ECL includes now route to the canonical declaration. The old block is retained
-only for exact/DIFF compiler emission; do not import its names or layout.
-
-## Last verified semantic result
-
-The current semantic source checkpoint is SEM-315. Owner closure remains
-deliberately narrower than subsystem completion:
-
-| Surface | Handoff state |
-| --- | --- |
-| Background `0x201C` | Canonical normal owner closed in `Background.hpp`; one narrow EclRun emission adapter remains. |
-| BulletInf `0x27C5B8` | `PhotoBulletManager.hpp` is the profile-independent owner. PhotoCamera, PhotoGame, and PhotoStage include it directly; PhotoCamera's mixed `.90/.98` receiver and captured-bullet projection are retired. CalculatePhotoScore consumes canonical `PhotoBulletView::vm.loadedSprite/speed/nextCaptured/bulletType/color`. Only script-0x124 `CreateVmAtWorld` uses a fieldless emission adapter. |
-| EnemyInf manager `0x26AE30` | Canonical owner closed in `PhotoEnemyManager.hpp`; it directly embeds the compact template and 128-element pool. PhotoCamera and PhotoRuntime now consume its `photoTargets @ +0x26AE00`, `enemyPool @ +0x4E00`, and `CountPhotoTargets @ 0x004168D0` without `PhotoRuntimeView` or an ABI adapter; `enemyAnm @ +0x4DF8` is proved. |
-| Compact enemy element `0x4CC0` | Canonical profile-independent owner established in `PhotoEnemy.hpp`; `EnemyMovement` is a method-only ABI shell, and all four operand resolver TUs, RunEcl, plus EclExtended's inherited callback share `PhotoEnemyEclAccess.hpp`. Normal RunEcl calls canonical `Enemy::ResolveFloat`; its historical 53-site decoration is isolated in storage-free `ecl/EnemyFloatOperandEclEmission.hpp`. |
-| PhotoGameTask `0x124` | `PhotoGameTask.hpp` is profile-independent; PhotoCamera now binds the same owner at `0x004BDEC8` for `captureActive`, `gameplayLoadActive`, and `photoSoundSuppressed`, with no local prefix or adapter. Normal RunEcl consumes canonical completion state. EclExtended shares the dependency-light bit-9/10 vocabulary; its target-facing incomplete extern spelling remains a storage-free emission adapter. Exact task implementation stays in `PhotoGameTaskExact.inl`. |
-| PhotoInf/stage `0x25730` | `PhotoStage.hpp` is the canonical normal owner for lifecycle, draw/capture behavior, `scoreMultiplier @ +0x25718`, ANM, and Chain roots. PhotoCamera's old receiver is isolated in one narrow emission adapter. |
-| CardInf `0x68` | `PhotoCardInfo.hpp` is the profile-independent allocation/lifecycle owner published at `0x004BDD9C`; RunEcl, PhotoGameTask, and PhotoStage consume it directly. EnemyInf `+0x26AE28` remains only a non-exclusive ECL-held session pointer. |
-| RunEcl Player/camera lane | Normal case 141 writes canonical `PhotoPlayerRuntimeView::camera.photoLimit @ Player+0x29EC`; all six angle calls use the Player root and `AngleFromPoint @ 0x004303E0`. The padded local owner is retired; the last four exact call decorations are isolated in method-only `ecl/PhotoCameraEclEmission.hpp`. This does not close every Player projection. |
-| EclExtended Player/camera lane | Both callbacks use canonical `PhotoPlayerRuntimeView` storage for `playerPosition @ +0x1E30`, camera `@ +0x1E3C`, `movementScale @ +0x2A18`, camera mode, and viewfinder geometry. `PhotoCameraState` remains the method owner. The exact adapter retains only an incomplete historical Player global and method-only camera receiver; it has no storage layout. |
-| PhotoCamera/PhotoStage Player lane | `PhotoPlayerRuntime.hpp` is profile-independent and now owns the proved mode, effect ANM/VM slot, movement/tracking state, completion timer, position, partial camera, and movement-scale storage. PhotoCamera and both PhotoStage bodies route Player fields through it. The old full `PhotoGameStateView` and normal `PhotoStageCameraView` layouts are retired; `PhotoCameraPlayerEmission.inl` is method-only and storage-free. Full `PhotoCameraState` embedding remains separate debt because the exact legacy ANM graph conflicts with the canonical header graph. |
-| PhotoCamera state `0xBDC` | `PhotoCamera.hpp` is profile-selector-free. Mode `+0x000`, trivial ANM handles `+0x010`, flags/charge UI `+0xBB4`, `focusChargeFrames +0xBB8`, and the loaded-ANM receiver use shared declarations. PhotoCamera binds canonical EnemyInf, PhotoGameTask, BulletInf, Background, PhotoEffect, AnmManager, and SoundPlayer owners directly; it has no selected local declaration left. `CreateVm`, script-0x124 `CreateVmAtWorld`, and exactly two CreateVm-result SetPosition calls retain fieldless, profile-independent VC7 emission adapters; the last links to canonical `AnmManager::SetPosition`. Unsupported camera fields remain debt. |
-| SoundPlayer owner/consumers | `SoundPlayer.hpp` is fully profile-independent: one canonical class/result type, one target-proved photography `SoundIdx` tail, and the SND-013 lifecycle fields at `+0x5218/+0x521C/+0x5220/+0x5228`. PhotoCamera, BulletManager, EclExtended, and EclRun use canonical sound APIs directly. Frozen exact-body projections and SoundPlayer.cpp's evidenced Supervisor runtime/build boundary remain separate debt. |
-| GameErrorContext `0x2008` | `GameErrorContext.hpp` exposes one profile-independent struct and `Global.cpp` owns `g_GameErrorContext @ 0x004C2420`. The hidden class/struct selector and all six definition sites are retired; 89 manifest references use the canonical `U` identity. `GameErrorContextExact.inl` remains a different-body boundary, and Background's proved Log/Fatal token inversion remains emission debt. |
-| Straight photo-effect packet | `PhotoStraightLaserArgs.hpp` is the profile-independent 0x28-byte kind-0 packet shared by normal RunEcl and PhotoEffect. RunEcl exact uses the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
-| Rotating photo-effect packet | `PhotoRotatingLaserArgs.hpp` is the distinct profile-independent 0x48-byte kind-1 packet shared by normal RunEcl, EclExtended, and PhotoEffect. RunEcl and EclExtended exact use the same declaration byte-exactly; frozen `PhotoEffectExact.inl` remains a different-body boundary. |
-| FrontEnd controller timers | Both `stateTimer @ +0x08` and `animationTimer @ +0x14` use canonical `ZunTimer`. Eleven state resets use one shared target-order helper; the former selected `ResultScreenTimer` alias is retired without merging the ResultScreen family. |
-| EnemyInf `+0x4DFC` | Unknown: consumers exist, but no independent producer/resource lifetime is proved. |
-| Profile selectors/declarations | CI locks all 722 remaining selector directives across 103 files and 201 declaration keys / 206 occurrences as shrink-only historical debt. New selectors, new declarations, stale baselines, and selectors inside `*Emission*` adapters fail. |
-| Normal semantic oracle | Pinned-VC7.1 compile/link closes the current build graph; no maintained modern-compiler/runtime oracle exists yet. |
-
-`EnemyManager.hpp` remains a TH08-shaped, 481-slot/`0x9DCF10` Enemy/ECL
-compatibility ABI, not the TH095 EnemyInf allocation created at `0x004149F0`.
-Do not migrate its layout or names into the compact TH095 owner.
-
-RunEcl's compact fields still route through `PhotoEnemyEclAccess.hpp`. Its
-three task-state views and `EclStageScoreStateView` are also removed: normal
-source now reaches the real PhotoGameTask and PhotoInf/stage owners directly.
-The old normal `PhotoOverlayManagerView` and shifted slot-lifetime projection
-are gone; frozen exact overlay/stage bodies remain compiler-emission material,
-not alternate normal owners.
-
-CardInf now has one normal declaration. RunEcl's method-only view,
-PhotoGameTask's destroy-only view, PhotoStage's `text @ +0x20` projection, and
-an unused EnemyManagerUpdate forward declaration are removed. The exact
-`PhotoCardInfoExact.inl` body remains a compiler-emission boundary and does not
-validate the separately compiled normal body.
-
-RunEcl's old `PhotoCameraOpcodeState::opcode141Value` projection is also gone.
-Target case 141 reaches the proved nested camera limit through Player
-`+0x1E3C` / camera `+0xBB0`; independent TakePhoto, PhotoGameTask loop, and HUD
-consumers establish `photoLimit`. All six angle calls pass the Player root to
-the canonical method. The exact adapter preserves only the two historical
-decorated names required by four call sites; it contains no storage or profile
-selector and is not a second owner.
-
-RunEcl's last local heuristic ownership view, `EnemyFloatOperandView`, is now
-also gone. Fresh target and exact-ledger evidence map all 53 historical calls
-to canonical `Enemy::ResolveFloat @ 0x004105A0`; normal source already used
-that method. A clean exact-source compiler experiment changed a non-private
-relocation identity, so the historical method declaration is retained only in
-a named, profile-independent, storage-free adapter.
-
-The 0x28 kind-0 effect packet is now one canonical declaration. Fresh target
-evidence closes its full layout across manager dispatch, straight-laser
-initialization/update, collision fragment production, and ECL producers.
-Pinned VC7.1 compiled RunEcl directly against the semantic field names and
-`f32 initialLength` byte-exactly, so no packet emission adapter was needed.
-The old ECL projection/access macros and normal PhotoEffect duplicate are gone;
-the exact-only PhotoEffect body remains explicitly separate.
-
-The 0x48 kind-1 rotating packet is likewise one canonical declaration. Fresh
-target evidence closes its full layout across manager dispatch, eighteen-dword
-initialization, update/collision consumers, seven RunEcl producers, and three
-EclExtended producers. RunEcl and EclExtended exact compile the same semantic
-layout byte-exactly; normal PhotoEffect consumes it independently. The three
-old projections and their profile-selected access macros are gone. Higher
-packet flag meanings and the frozen exact PhotoEffect body's provenance remain
-Unknown.
-
-EclExtended's last raw compact-enemy expression is also gone. Fresh target
-evidence proves `RunPhotoTransition @ 0x00414580` writes canonical movement
-easing 4 and interpolated mode 2 at control word `+0x2BF4`; independent motion
-producers and `Enemy::UpdateMovement` consume the same bit ranges. The
-inherited `Enemy *` callback now uses the existing profile-independent,
-canonical-offset `PhotoEnemyEclAccess.hpp` bridge and named control values.
-This bridge is not a second storage owner.
-
-EclExtended's duplicate `PhotoGlobalStateView` layout and its seven selected
-flag operations are now gone too. Fresh target evidence proves callbacks
-15/16 set and clear `PhotoGameTaskView::flags @ +0xFC` bit 9, callbacks 18/19
-set and clear bit 10, and callback 20 clears, tests, and sets bit 10 across the
-photo transition. Independent PhotoItemManager consumers gate collection SFX
-on bit 9 and item update on bit 10. Normal EclExtended includes the canonical
-task owner; both compiler paths share the profile-independent
-`PhotoGameTaskState.hpp` offset/mask vocabulary. The exact object keeps only
-its historical incomplete extern type spelling in
-`ecl/EclExtendedGlobalStateEmission.inl`, which declares no storage.
-
-EclExtended's duplicate Player/camera layout is now gone as well. Fresh target
-evidence ties callback 6's Player-position read and movement-scale write to the
-independent PhotoGame consumer/reset, while callback 20's camera-mode test,
-`CountPhotoTargets` call, viewfinder geometry, and Player-Y read agree with the
-canonical PhotoCamera producers/consumers. All field access uses
-`PhotoPlayerRuntimeView`; the exact object keeps only the historical
-`ExtendedPlayerView *g_Player` and
-`ExtendedPhotoCameraView::CountPhotoTargets` decorations in a storage-free,
-profile-independent emission adapter.
-
-PhotoCamera's duplicate full Player layout is now gone too. Fresh target
-evidence ties `AngleToPoint`, `UpdatePhotoCamera`, and `TakePhoto` to the same
-Player root and proves mode `+0x0000`, effect ANM/VM storage `+0x0004/+0x0008`,
-movement/tracking state `+0x02D4/+0x02D8`, completion timer `+0x0420`, and
-position `+0x1E30`. Independent PhotoStage reads the same position and embedded
-camera counters at Player `+0x29E4/+0x29EC`. PhotoCamera and both PhotoStage
-bodies now route those fields through profile-independent
-`PhotoPlayerRuntimeView`; the normal PhotoStage camera projection is retired.
-The historical `PhotoGameStateView::AngleToPoint` and `g_PhotoGame` decorations
-remain in `PhotoCameraPlayerEmission.inl`, which has no fields. A pinned-VC7.1
-include experiment showed that importing full `PhotoCameraState`/`AnmVm` into
-the lightweight Player header collides with the exact legacy ANM declaration
-graph, so the canonical header keeps a dependency-light 0x2CC VM storage slot
-and the full camera-owner merge remains explicit debt.
-
-PhotoCamera's already-proved mode/flags/focus representation is no longer
-profile-selected. `PhotoCameraState` now carries `PhotoCameraMode`, the flags
-union and three-value charge-UI domain, and `focusChargeFrames` in one shared
-declaration; PhotoCamera uses one source expression in exact and normal builds.
-Fresh target review reconfirmed the six relevant state producers/consumers.
-A pinned-VC7.1 alternative using the semantically equivalent named-mask form
-for the focused read grew `UpdateCharge` from 982 to 986 bytes, so the shared
-source keeps one named-shift family and records that compiler requirement
-inline. SEM-286 later closed the loaded-ANM receiver boundary; SEM-287 closed
-the remaining BulletInf selector pair in the header.
-
-PhotoCamera's ANM handle storage is now profile-independent too. Fresh target
-`PhotoCameraState::PhotoCameraState @ 0x0042EBC0` constructs only the four
-`AnmVm` objects at `+0x3C` and initializes three timers; it does not construct
-the eleven handles at `+0x10`. A direct canonical-`AnmVmId` VC7.1 oracle was
-therefore rejected when it enlarged the exact constructor from 0xA7 to 0xDD.
-The accepted shared `PhotoAnmVmId` is a trivial 4-byte storage handle with
-canonical conversion/assignment and inline `AnmVmId::GetVm` / `SetInterrupt`
-forwarding. Its old profile-selected declaration and comparison method are
-gone; only the compiler-proved 4-byte zero-comparison temporary remains.
-
-SEM-279's focused EclRun proof refreshed **166 compiler-private labels** only
-after the strict tool verified unchanged structural bytes, relocation offsets/types,
-non-private identities, and solved target destinations. That batch's cold
-aggregate passed **696/696 exact across all 88 sources** with zero further
-refresh. The normal build compiled all
-**88 pinned-VC7.1 i386 COFF** objects and linked a verified **780,800-byte
-PE32/i386 GUI**, build-local SHA-256
-`b56ac27b428a9998fb83f60a79e65baf5981eed6c730c828b347072852118929`.
-Target-independent CI passed **56/56** tests. That receipt established exact-unit preservation
-and normal compile/link closure, not whole-image exactness or runtime credit.
-
-For SEM-281, focused replay of EclExtended plus every direct
-`PhotoGameTask.hpp` fanout source passed **48/48 exact units** with zero
-refresh; all five pinned-VC7.1 normal probes compiled. The final cold aggregate
-passed **696/696 exact across all 88 sources** with zero refresh. The normal
-build compiled all **88 pinned-VC7.1 i386 COFF** objects and linked a verified
-**780,800-byte PE32/i386 GUI**, build-local SHA-256
-`cdc9f5cf511a60d6e94bede2086f3429389ea441f4381a7e86b059b5f70f2fd7`.
-Target-independent CI passed **57/57** tests. This is exact-unit preservation
-and normal compile/link closure, not whole-image exactness or runtime credit.
-
-For SEM-282, EclExtended passed **22/22 exact** with zero refresh and the full
-affected shared-header fanout passed **176/176 exact across 15 sources**. The
-controlled matcher refreshed 38 compiler-private `$L...` names in four
-PhotoCamera/PhotoGame units only after proving unchanged bytes, relocation
-structure, non-private identities, and target destinations. EclExtended,
-PhotoCamera, and PhotoGame also compiled as normal pinned-VC7.1 i386 COFF
-objects. Per the current batching policy, no new 696-unit aggregate replay or
-88-TU normal link is claimed for this checkpoint; run both after accumulating
-the next shared-owner batch. Target-independent CI passed **57/57** tests.
-
-For SEM-283, PhotoCamera passed **11/11 exact**, PhotoStage passed **6/6
-exact**, and the complete affected shared-header fanout passed **177/177 exact
-across 16 sources**. The controlled matcher refreshed 204 compiler-private
-`$L...` names in five units across PhotoCamera, PhotoGame, and EclRun only
-after proving unchanged structural bytes, relocation offsets/types,
-non-private identities, and target destinations. The cold aggregate passed its
-first 82/88 sources before Wine reset its connection at the start of EclRun;
-a bounded retry of EclRun and the remaining five sources passed **55/55**, so
-all current **696/696 exact units** were replayed, but not in one uninterrupted
-invocation. The normal build compiled all **88 pinned-VC7.1 i386 COFF** objects
-and linked a verified **780,288-byte PE32/i386 GUI**, build-local SHA-256
-`ff6459fdf8d1b7df58e79081a5d30c5589f5c8ebd07f1cfad8d980f227982290`.
-Target-independent CI passed **57/57** tests. This is exact-unit preservation
-and normal compile/link closure, not whole-image identity or runtime credit.
-
-For SEM-284, the complete `PhotoCamera.hpp` fanout passed **84/84 exact across
-eight sources**. The controlled matcher refreshed 38 compiler-private `$L...`
-names in four PhotoCamera/PhotoGame units only after proving unchanged
-structural bytes, relocation offsets/types, non-private identities, and target
-destinations. A final uninterrupted cold aggregate passed **696/696 exact
-across all 88 sources** with zero further refresh. Normal pinned-VC7.1 probes
-emitted 60,550-byte PhotoCamera, 53,403-byte PhotoGame, and 49,248-byte
-PhotoStage i386 COFF objects. The normal build compiled all **88** objects and
-linked a verified **780,288-byte PE32/i386 GUI**, build-local SHA-256
-`9ef493e07a004571d12435be8cbce77a1af982e413a88fa7d514930b0e10d122`.
-Target-independent CI passed **58/58** tests. This is exact-unit preservation
-and normal compile/link closure, not
-whole-image identity or runtime credit.
-
-For SEM-285, the complete `PhotoCamera.hpp` fanout passed **84/84 exact across
-eight sources**. Seven PhotoCamera relocations changed only from historical
-`PhotoAnmVmId` method spellings to the canonical `AnmVmId` identities while
-keeping their offsets, types, and target destinations at `0x004452F0` and
-`0x00445330`. The controlled matcher refreshed 38 compiler-private `$L...`
-names in four PhotoCamera/PhotoGame units after the same structural proof. A
-uninterrupted cold aggregate passed **696/696 exact across all 88 sources**
-with zero further refresh. The final shared zero-comparison lift then replayed
-PhotoCamera **11/11 exact** with zero refresh. Normal pinned-VC7.1 probes emitted
-60,677-byte PhotoCamera, 53,391-byte PhotoGame, and 49,318-byte PhotoStage i386
-COFF objects. The normal build compiled all **88** objects and linked a
-verified **780,800-byte PE32/i386 GUI**, build-local SHA-256
-`7a7a5d544a9cc6cc9170728f1d5584ef67a4a8d5bdb364db34b9eae4112d3566`.
-Target-independent CI passed **58/58** tests. This is exact-unit preservation
-and normal compile/link closure, not whole-image identity or runtime credit.
-
-For SEM-286, `PhotoAnmLoadedView` became a shared alias to canonical
-`AnmLoaded`. Forty-three loaded-ANM relocations changed only receiver identity
-at unchanged offsets, types, bytes, and target destinations; twelve `CreateVm`
-calls use the fieldless return-decoration adapter, while the other three
-method families use canonical `AnmLoaded`. The complete header fanout passed
-**84/84 exact across eight sources**. The controlled matcher refreshed 38
-compiler-private `$L...` names in four PhotoCamera/PhotoGame units only after
-structural and destination proof. A final uninterrupted cold aggregate passed
-**696/696 exact across all 88 sources** with zero further refresh. Normal
-pinned-VC7.1 probes emitted 60,763-byte PhotoCamera, 53,605-byte PhotoGame, and
-49,456-byte PhotoStage i386 COFF objects. The normal build compiled all **88**
-objects and linked a verified **780,288-byte PE32/i386 GUI**, build-local
-SHA-256
-`8a9036f5736c2332b64e91713b47cf824eb516918b37a4b6d80c533527a56444`.
-Target-independent CI passed **58/58** tests. This is exact-unit preservation
-and normal compile/link closure, not whole-image identity or runtime credit.
-
-For SEM-287, PhotoCamera's historical complete bullet-manager receiver was
-split along its real target owners: `.90` color/area accesses now name
-canonical Background, while `.98` capture and ANM accesses name canonical
-BulletInf. `PhotoCamera.hpp` lost its last two selectors and exports neither
-owner include. `PhotoCameraBulletEmission.inl` is now only a fieldless
-script-0x124 adapter whose normal link symbol aliases canonical
-`AnmLoaded::CreateVmAtWorld @ 0x00445060`. The controlled matcher refreshed 15
-PhotoCamera plus 23 PhotoGame private labels in four units only after complete
-structural/relocation/destination proof; focused replay then passed **39/39**
-with zero refresh. A final uninterrupted aggregate passed **696/696 exact
-across all 88 sources** with zero refresh. After a first cold normal build
-exposed and corrected PhotoStage's transitive BulletInf include, the fresh
-build compiled all **88** objects and linked a verified **780,288-byte PE32**,
-build-local SHA-256
-`567ec1cd5375493c222a57438fa81010e509698d7084d367a8dd9a49bed001b3`.
-This is exact-unit preservation and normal compile/link closure, not whole-image
-identity or runtime credit.
-
-For SEM-288, fresh target review proved that `CapturePhotoTargets` returns and
-links canonical 0x65C `PhotoBulletView` pool elements; CalculatePhotoScore's
-old duplicate projection had misnamed `vm.loadedSprite` as an `AnmVm *` and
-bullet `speed` as `photoScale`. The score API now consumes canonical
-`PhotoBulletView *`, compares `loadedSprite->widthPx`, and uses `speed`,
-`nextCaptured`, `bulletType`, and `color` directly. CalculatePhotoScore is
-**2,219/2,219 bytes exact**, TakePhoto is **738/738**, and the complete
-camera-header fanout passed **84/84 exact across eight sources**. The controlled
-matcher refreshed 38 private labels across four PhotoCamera/PhotoGame units
-only after structural/relocation/destination proof; final PhotoCamera replay
-was **11/11** with zero refresh. A normal pinned-VC7.1 probe emitted a
-**60,971-byte i386 COFF** object. No new aggregate/product closure is claimed;
-SEM-287 remains the latest 696-unit and 88-TU receipt.
-
-For SEM-289, PhotoCamera and PhotoRuntime's duplicate `PhotoRuntimeView`
-projections were retired in favor of canonical `PhotoEnemyManagerView`.
-Camera accesses now name `photoTargets @ +0x26AE00`; the capture scan is
-defined on the canonical owner and begins at `enemyPool @ +0x4E00`. Canonical
-global/method decorated identities retain their relocation targets without an
-adapter. The controlled matcher refreshed 15 private labels in two camera
-units only after structural/relocation/destination proof; final focused replay
-passed **12/12 exact** with zero refresh. Normal pinned-VC7.1 probes emitted
-**60,971-byte** PhotoCamera and **18,682-byte** PhotoRuntime i386 COFF objects.
-No new aggregate/product closure is claimed; SEM-287 remains the latest full
-receipt.
-
-For SEM-290, PhotoCamera's padded `PhotoGlobalStateView` prefix was retired in
-favor of canonical `PhotoGameTaskView @ 0x004BDEC8`. Camera Draw and sound
-paths now share the established bit-0 `captureActive`, bit-2
-`gameplayLoadActive`, and bit-9 `photoSoundSuppressed` fields in every profile.
-All 13 camera global relocations retain their offsets and target while naming
-the canonical task pointer. Restricted refresh updated 15 private labels in
-two units only after structural/relocation/destination proof; final PhotoCamera
-replay passed **11/11 exact** with zero refresh. The normal pinned-VC7.1 probe
-emitted a **61,088-byte i386 COFF** object. No new aggregate/product closure is
-claimed; SEM-287 remains the latest full receipt.
-
-For SEM-291, PhotoCamera's false `PhotoStageControllerView` was replaced by
-canonical `PhotoEffectManagerView @ 0x004C45E0`. `TakePhoto` now uses one body
-for both effect-count methods at `0x0041DF10/0x0041E060`; all four relocations
-retain offsets and targets under canonical decorations, and the function is
-**738/738 bytes exact**. Restricted refresh changed 15 private labels in two
-units only after structural/relocation/destination proof; final PhotoCamera
-replay passed **11/11 exact** with zero refresh. The normal pinned-VC7.1 probe
-emitted a **61,063-byte i386 COFF** object. No new aggregate/product closure is
-claimed; SEM-287 remains the latest full receipt.
-
-For SEM-292, PhotoCamera's DIFF-only `PhotoAnmManagerView` was retired. Of 46
-lookup/interrupt/deletion/position relocations, 44 now use canonical
-`AnmManager` identities directly at the same offsets and targets. A clean VC7
-oracle proved that only the two CreateVm-result SetPosition compositions need
-a scalar, fieldless emission spelling: direct `AnmVmId`-by-value source changes
-target evaluation order and enlarges `UpdatePhotoCamera` by 25 bytes. The
-two-call adapter aliases canonical `SetPosition @ 0x004451F0`. Restricted
-refresh changed 15 private labels in two units; final PhotoCamera replay
-passed **11/11 exact** with zero refresh. The normal probe emitted a
-**59,658-byte i386 COFF** object. No aggregate/product closure is claimed;
-SEM-287 remains the latest full receipt.
-
-For SEM-293, PhotoCamera's exact-only `PhotoSoundPlayerView` was retired. All
-13 play/positioned-play/stop relocations retain bytes, offsets, and targets
-while using canonical `SoundPlayer`/`SoundIdx` identities; direct canonical
-source needs no adapter. Restricted refresh changed 15 private labels in two
-units, and final PhotoCamera replay passed **11/11 exact** with zero refresh.
-The normal probe remained a **59,658-byte i386 COFF** object. PhotoCamera now
-has no selected local declaration in the debt ledger. No aggregate/product
-closure is claimed; SEM-287 remains the latest full receipt.
-
-For SEM-294, BulletManager's DIFF-only `PhotoBulletSoundPlayerView` and
-EclExtended's exact-only nested `SoundPlayerView` were retired. Fourteen call
-sites and 28 global/method relocation identities now use canonical
-`SoundPlayer`/`SoundIdx` directly, with unchanged bytes, offsets, types, and
-destinations. BulletManager passed **35/35 exact** after a restricted refresh
-of 17 private labels in two units; its final replay had zero refresh.
-EclExtended passed **22/22 exact** with zero refresh. Normal pinned-VC7.1
-probes emitted **67,056-byte** BulletManager and **45,996-byte** EclExtended
-i386 COFF objects. No adapter, selector, or sound-name inference was added.
-No aggregate/product closure is claimed; SEM-287 remains the latest full
-receipt.
-
-For SEM-295, `SoundPlayer.hpp`'s class/struct selector and all four
-`TH095_MATCH_SOUNDPLAYER_AS_STRUCT` definition sites were retired. The three
-live users now emit 15 canonical `VSoundPlayer` data identities at unchanged
-offsets and targets; Main's definition was unreachable dead configuration.
-Focused replay passed PhotoCamera **11/11**, PhotoGame **22/22**,
-PhotoItemManager **12/12**, and Main **48/48**, for **93/93 exact** with zero
-private-label refresh. Normal probes emitted **59,658-byte** PhotoCamera,
-**53,642-byte** PhotoGame, **32,178-byte** PhotoItemManager, and
-**116,276-byte** Main i386 COFF objects. No aggregate/product closure is
-claimed; SEM-287 remains the latest full receipt.
-
-For SEM-296, `SoundPlayerResult` was unified on canonical
-`th095::ZunResult`, and SoundPlayer's exact-only legacy success/error aliases
-were retired. A first strict replay correctly found that the old global-enum
-decorated identity no longer existed; after reviewing and migrating all 25
-function, caller, and EH identities to the namespaced enum spelling,
-SoundPlayer passed **27/27** and FrontEndLifecycle **8/8 exact**, both with zero
-private-label refresh. Normal pinned-VC7.1 probes emitted **64,883-byte** and
-**30,317-byte** i386 COFF objects. The current source then passed the complete
-**696/696 exact across 88 sources** replay with zero refresh and a fresh
-**88-TU** normal product link. That PE32 image is **778,752 bytes** with
-build-local SHA-256
-`152e0a0577b01fa41fa382eee1438f9fd0cb0faad1e2a00582954a1665355ccc`.
-This is exact-unit preservation and normal compile/link closure, not target
-whole-image identity or runtime credit. SEM-296 is the latest full receipt.
-
-For SEM-297, the exact-only `SOUND_2A..SOUND_2E` placeholders and five numeric
-`TH095_SOUND_*` macros were retired. The canonical SND-011 photography names
-now occupy values `0x2A..0x2E` in every profile, and all ten PhotoCamera uses
-plus EclRun's photo-pulse use name the enum directly. The first focused replay
-showed only compiler-private label-name drift at unchanged relocation
-offsets/types/destinations and receives no exact credit. Restricted refresh
-updated 37 private labels across three units; immediate final replay passed
-PhotoCamera **11/11** and EclRun **1/1 exact** with zero refresh. Normal
-pinned-VC7.1 probes emitted **59,658-byte** and **79,911-byte** i386 COFF
-objects. No aggregate/product closure is claimed; SEM-296 remains the latest
-full receipt.
-
-For SEM-298, the remaining three lifecycle-field selectors in
-`SoundPlayer.hpp` and the exact-only four-token alias block in
-`SoundPlayer.cpp` were retired. SND-013's canonical
-`initializationThreadHandle`, `soundDataLoaderThreadHandle`,
-`initializationThreadId`, and `initializationWindow` names now cover creation,
-publication, wait, close, clear, layout, and offset assertions in every
-profile. Focused SoundPlayer replay passed **27/27 exact** with zero refresh,
-and its normal probe emitted a **64,883-byte i386 COFF** object. Because the
-header is high-fanout, the complete current source passed **696/696 exact
-across 88 sources** with zero refresh. A fresh **88-TU** normal product link
-emitted a **778,752-byte PE32** image with build-local SHA-256
-`4e1b18d1fd1b913a34bd3cfb572da2ae0a7ecc34f375960f0330f9cbf9d50140`.
-This is exact-unit preservation and normal compile/link closure, not target
-whole-image identity or runtime credit. SEM-298 is the latest full receipt.
-
-For SEM-299, `GameErrorContext.hpp`'s hidden class/struct selector and all six
-`TH095_MATCH_GAME_ERROR_CONTEXT_AS_CLASS` definition sites were retired in
-favor of the canonical struct already used by Global.cpp storage and 73
-manifest references. The first strict replay stopped on the expected first
-`V` versus `U` global-data identity and receives no exact credit. After all 16
-selected identities were reviewed and migrated, focused replay passed
-Controller **7/7**, FrontEndLifecycle **8/8**, Midi **28/28**, ResultScreen
-**24/24**, and SoundPlayer **27/27**, totaling **94/94 exact** with zero
-private-label refresh. Normal pinned-VC7.1 probes emitted **28,916-byte**,
-**30,317-byte**, **43,640-byte**, **76,047-byte**, and **64,883-byte** i386
-COFF objects. No aggregate/product closure is claimed; SEM-298 remains the
-latest full receipt.
-
-For SEM-300, the shared `TH095_MATCH_FILESYSTEM_AS_CLASS` selector and all six
-definition sites were retired. `Main.hpp`, `FileSystem.cpp`, and
-`FileWrite.cpp` now expose one profile-independent `th095::FileSystem`
-namespace API. `MainExact.hpp` deliberately retains its private static-member
-declaration for the different frozen Main body; its eleven configured static
-references are an explicit emission boundary, not a normal semantic owner.
-The first strict replay stopped on the expected static-member/namespace
-`OpenFile` identity mismatch and receives no exact credit. After reviewing ten
-namespace-ABI migrations in the six shared sources, restricted refresh updated
-68 compiler-private labels across four units; immediate final replay passed
-**89/89 exact across six sources** with zero refresh. Normal pinned-VC7.1
-probes emitted **33,165-byte** AnmPreload, **23,385-byte** AnmSurface,
-**54,627-byte** Background, **52,749-byte** EnemyManagerUpdate,
-**21,350-byte** FileWrite, and **53,642-byte** PhotoGame i386 COFF objects. No
-aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
-
-For SEM-301, `Rng.hpp`'s class/struct selector and all seven definition sites
-were retired in favor of the canonical eight-byte class already used by
-`Global.cpp` storage and normal production. The audit also removed the
-ScoreLifecycle and ScreenEffect exact projections and EclExtended's nested
-`ExtendedRng`; none proved an emission dependency. The first strict replay
-stopped on the expected shared `URng`/`VRng` mismatch and receives no exact
-credit. After 25 shared data-identity migrations, seven sources passed
-**139/139 exact**. A second strict run stopped on the expected EclExtended
-projection identities and likewise receives no credit. After the remaining
-three data and two method identities were reviewed and migrated, final replay
-passed **175/175 exact across nine sources** with zero private-label refresh.
-Normal pinned-VC7.1 probes emitted **72,967-byte** AnmManager,
-**20,983-byte** AnmManagerTrail, **67,056-byte** BulletManager,
-**45,996-byte** EclExtended, **52,749-byte** EnemyManagerUpdate,
-**116,276-byte** Main, **32,178-byte** PhotoItemManager, **14,143-byte**
-ScoreLifecycle, and **27,882-byte** ScreenEffect i386 COFF objects. No
-aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
-
-For SEM-302, `Midi.hpp` remains the sole complete `0x300` MidiOutput layout and
-behavior owner, while `MidiOutputApi.hpp` is now the one shared fieldless API
-adapter for Main, MainExact, and SupervisorRuntime. `MidiRuntime.hpp` and the
-two private Main-family MidiOutput declarations were retired. A first attempt
-to include the complete owner in MainExact failed a pinned-VC7.1 compile on its
-different local `MidiTimer`/`DummyMidiTimer` declarations and receives no exact
-credit. The first adapter replay then stopped on the expected legacy-versus-
-canonical `StopPlayback` identity and also receives no credit. After reviewing
-eight canonical public-identity migrations, controlled refresh updated 25
-Main and 15 Global compiler-private labels across three units. Final replay
-passed **197/197 exact across Main and sixteen direct consumers** with zero
-further refresh. Normal pinned-VC7.1 probes emitted **116,276-byte** Main,
-**34,679-byte** Global, and **19,014-byte** SupervisorViewport i386 COFF
-objects. Selector debt is **770 directives across 107 files** and declaration
-debt is **203 keys / 208 occurrences**. No aggregate/product closure is
-claimed; SEM-298 remains the latest full receipt.
-
-For SEM-303, `ReplayScanWorker.hpp` became the single profile-independent
-`0x18` layout/API owner and `ReplayScanWorker.cpp` retained behavior ownership.
-The standalone input worker at `0x004C4658` and Supervisor's embedded workers
-at `+0x648/+0x7A0` remain three distinct storages. Duplicate declarations in
-Main, SupervisorRuntime, SupervisorLifecycle, and SceneSelectExact were
-retired, as were `SupervisorInputWorkerView`,
-`SupervisorReplayScanWorkerView`, the field-token selectors, and the AnmPreload
-exit-signal macro. MainExact now embeds the canonical type while preserving its
-separate overall Supervisor body/layout boundary. `ReplayScanWorkerExact.inl`
-still supplies a different exact-selected implementation but uses the same
-field meanings. The first canonical input-worker replay stopped on four
-expected proxy-versus-canonical identities and receives no exact credit. After
-reviewing those four migrations, a second run exposed only 25 Main private
-labels; the expanded consumer run later exposed 15 Global private labels in
-two units. Controlled refresh accepted those 40 labels across three units only
-after structural equivalence. Final replay passed **222/222 exact across 21
-affected sources** with zero further refresh. Normal pinned-VC7.1 probes
-emitted **22,304-byte** ReplayScanWorker, **5,704-byte** SupervisorLifecycle,
-**33,165-byte** AnmPreload, **46,818-byte** SceneSelect, **116,276-byte** Main,
-**34,679-byte** Global, and **64,883-byte** SoundPlayer i386 COFF objects.
-Selector debt is **761 directives across 107 files** and declaration debt is
-**202 keys / 207 occurrences**. The semantic guard and all **64 workflow
-tests** pass. No aggregate/product closure is claimed; SEM-298 remains the
-latest full receipt.
-
-For SEM-304, `GameConfiguration.hpp` became the sole profile-independent
-owner of the TH095 `0xC8` persistent configuration and its packed controller-
-mapping family. Main, MainExact, SupervisorRuntime, and SupervisorLifecycle
-now include that declaration; Main still owns `Initialize @ 0x00418720`, and
-the real Supervisor storage remains `+0x11C` / `0x004C478C`. The lifecycle TU
-uses a fieldless derived construction adapter whose constructor calls
-`Initialize`, preserving the target member-construction phase without a
-second layout. Legacy `Supervisor.hpp` deliberately retains its distinct
-TH08-shaped `0x3C` compatibility layout and is not treated as the TH095 owner.
-The formerly exact-only `unknown0b2/3/4` tokens now use the proved canonical
-`controllerAssignments[0..2]`; `unknown06c` and `unknown0b7` remain Unknown.
-
-The first combined replay stopped on 25 Main compiler-private labels, and the
-first expanded replay stopped on 15 Global labels; both failed runs receive
-zero exact credit. Controlled refresh accepted those 40 labels across three
-units only after code bytes and every non-private relocation field remained
-unchanged. The immediate final replay passed **199/199 exact across 18 direct
-consumers** with zero refresh. Normal pinned-VC7.1 probes emitted **116,276-
-byte** Main, **34,679-byte** Global, **5,899-byte** SupervisorLifecycle,
-**64,883-byte** SoundPlayer, **37,668-byte** PhotoGameTask, and **28,916-byte**
-Controller i386 COFF objects. Six removed directives shrink selector debt to
-**755 directives across 107 files**; declaration debt remains **202 keys / 207
-occurrences**. The semantic guard and all **65 workflow tests** pass. No
-aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
-
-For SEM-305, `SupervisorFlags.hpp` became the sole profile-independent four-
-byte flags owner for the real TH095 `0x7BC` Supervisor at `+0x444`. Main,
-MainExact, SupervisorRuntime, and SupervisorLifecycle now share that layout.
-The exact declaration's `unknown9` spelling was retired in favor of the
-already-proved `resultRestartActive` protocol. The lifecycle constructor uses
-the canonical bit-6 field but keeps its bit-8 publication raw, because owner
-convergence does not independently prove the existing `scoreBackupPending`
-name at that producer. Legacy `Supervisor.hpp` deliberately retains its
-distinct nine-bit flags declaration inside the TH08-shaped `0x364`
-compatibility source family.
-
-The first combined replay stopped on 25 Main compiler-private labels and the
-expanded replay stopped on 15 Global labels; both failed runs receive zero
-exact credit. Controlled refresh accepted the same 40-label migration across
-three units only after bytes and all non-private relocation fields remained
-unchanged. Independent lifecycle replay passed 2/2 before refresh, and the
-immediate final direct-consumer replay passed **199/199 exact across 18
-sources** with zero refresh. Normal pinned-VC7.1 probes emitted **116,276-
-byte** Main, **5,890-byte** SupervisorLifecycle, **64,883-byte** SoundPlayer,
-**37,668-byte** PhotoGameTask, **28,916-byte** Controller, **30,317-byte**
-FrontEndLifecycle, and **32,929-byte** PhotoFront i386 COFF objects. Six
-removed directives shrink selector debt to **749 directives across 107
-files**; removing the lifecycle-only selected type shrinks declaration debt to
-**201 keys / 206 occurrences**. The semantic guard and all **66 workflow
-tests** pass. No aggregate/product closure is claimed; SEM-298 remains the
-latest full receipt.
-
-For SEM-306, `ScreenshotBitmapFileHeader.hpp` became the sole profile-
-independent owner of the packed `0x0E` BMP file header embedded at Supervisor
-`+0x52C`. Main, MainExact, and SupervisorRuntime now consume that declaration.
-The owner asserts `size +0x02`, the two reserved words at `+0x06/+0x08`, and
-`offBits +0x0A`. Main's TakeScreenshot produces `BM`, `offBits = 0x36`, and
-the final file size; ScreenshotThread writes exactly the packed record before
-the separately allocated `BITMAPINFOHEADER @ +0x53C` and pixel payload. The
-owner does not alias host `BITMAPFILEHEADER`, and no meaning beyond serialized
-position is claimed for the reserved fields.
-
-The first strict Main replay stopped on 25 compiler-private labels and
-receives zero exact credit. Controlled direct-consumer refresh accepted 40
-private labels across three units only after bytes and all non-private
-relocation fields remained unchanged. Immediate final replay passed **199/199
-exact across 18 sources** with zero refresh. Normal pinned-VC7.1 probes emitted
-**116,276-byte** Main, **34,679-byte** Global, **64,883-byte** SoundPlayer, and
-**19,014-byte** SupervisorViewport i386 COFF objects. Selector debt remains
-**749 directives across 107 files** and declaration debt remains **201 keys /
-206 occurrences**. The semantic guard and all **67 workflow tests** pass. No
-aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
-
-For SEM-307, `SupervisorState.hpp` became the sole profile-independent owner
-of the canonical TH095 scene-routing domain: exit `1`, front end `2`, photo
-game `3`, result restart `4`, error `6`, replay start `7`, and retry `8`.
-Main, MainExact, and SupervisorRuntime now include that declaration. The
-physical scene handshake slots remain signed `i32`, preserving bootstrap
-`0/-1` outside the live enum. Legacy `Supervisor.hpp` deliberately retains its
-incompatible TH08-shaped `-1..12` enum and is not treated as TH095 authority.
-
-The first strict Main replay stopped on 25 compiler-private labels and
-receives zero exact credit. Controlled direct-consumer refresh accepted 40
-private labels across three units only after switch destinations, code bytes,
-and all non-private relocation fields remained unchanged. Immediate final
-replay passed **199/199 exact across 18 sources** with zero refresh. Normal
-pinned-VC7.1 probes emitted **116,276-byte** Main, **34,679-byte** Global,
-**64,883-byte** SoundPlayer, **30,317-byte** FrontEndLifecycle, **37,668-byte**
-PhotoGameTask, and **76,047-byte** ResultScreen i386 COFF objects. Selector
-debt remains **749 directives across 107 files** and declaration debt remains
-**201 keys / 206 occurrences**. The semantic guard and all **68 workflow
-tests** pass. No aggregate/product closure is claimed; SEM-298 remains the
-latest full receipt.
-
-For SEM-308, `SupervisorStartupState.hpp` became the single profile-
-independent owner of the startup-worker phase at canonical Supervisor
-`+0x660`: idle `0`, running `1`, and failed `2`. Main, MainExact, and
-SupervisorRuntime now use that four-byte enum in every profile. Main.cpp's
-DIFFBUILD numeric aliases and MainExact.inl's raw `0/1/2` expressions are
-retired. `AddedCallback` publishes running, `StartupThread` publishes idle or
-failed, and `OnUpdate` consumes the same domain. Legacy `Supervisor.hpp`
-deliberately retains its same-valued startup enum at `+0x294` inside the
-distinct TH08-shaped `0x364` compatibility owner.
-
-The first strict Main replay stopped on 25 compiler-private labels and the
-first 18-source replay later stopped on 15 Global labels; both failed runs
-receive zero exact credit. Controlled refresh accepted those 40 labels across
-three units only after bytes, relocation offsets/types/targets, public
-identities, and all non-private symbols remained unchanged. Immediate final
-replay passed **199/199 exact across 18 sources** with zero refresh. Normal
-pinned-VC7.1 probes emitted **116,276-byte** Main, **34,679-byte** Global, and
-**64,883-byte** SoundPlayer i386 COFF objects. Removing two selected source
-directives shrinks selector debt to **747 directives across 107 files**;
-declaration debt remains **201 keys / 206 occurrences**. The semantic guard
-and all **69 workflow tests** pass. No aggregate/product closure is claimed;
-SEM-298 remains the latest full receipt.
-
-For SEM-309, `SupervisorFogState.hpp` became the single profile-independent
-owner of the render-state cache at canonical Supervisor `+0x768`: disabled
-`0`, enabled `1`, and invalid `0xFF`. Main, MainExact, and SupervisorRuntime
-now use that four-byte enum in every profile. Main.cpp's DIFFBUILD aliases and
-MainExact.inl's raw numeric expressions are retired. The render loop publishes
-invalid immediately before DisableFog to force a disabled D3D state; EnableFog
-and DisableFog then publish and cache enabled/disabled after flushing the ANM
-vertex buffer. Legacy `Supervisor.hpp` retains its same-valued `FogState @
-+0x350` inside the distinct TH08-shaped `0x364` compatibility owner.
-
-The first strict Main and Global replays stopped on 25 and 15 compiler-private
-labels respectively and receive zero exact credit. Controlled refresh accepted
-those 40 labels across three units only after bytes, relocation
-offsets/types/targets, public identities, and all non-private symbols remained
-unchanged. Immediate final replay passed **199/199 exact across 18 sources**
-with zero refresh. Normal pinned-VC7.1 probes emitted **116,276-byte** Main,
-**34,679-byte** Global, and **64,883-byte** SoundPlayer i386 COFF objects.
-Removing three selected source directives shrinks selector debt to **744
-directives across 107 files**; declaration debt remains **201 keys / 206
-occurrences**. The semantic guard and all **70 workflow tests** pass. No
-aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
-
-For SEM-310, the signed scene-handshake slots now have one profile-independent
-vocabulary across Main, MainExact, and SupervisorRuntime:
-`activeSceneState +0x408`, `requestedSceneState +0x40C`, and
-`previousActiveSceneState +0x410`. RegisterChain bootstraps active/requested to
-`0/-1`; UpdateSceneState snapshots active into previous, dispatches from active
-toward requested, may normalize requested, and finally commits active from
-requested. FrontEndController, PhotoGameTask, and ResultScreen independently
-publish requested transitions. The fields deliberately remain `i32`; this
-batch does not force bootstrap values into `SupervisorState`.
-
-Focused Main replay passed **48/48 exact** with zero refresh. Final replay
-passed **199/199 exact across 18 sources**, also with zero refresh. Normal
-pinned-VC7.1 probes emitted **116,276-byte** Main, **34,679-byte** Global,
-**39,153-byte** FrontEndController, **37,668-byte** PhotoGameTask, and
-**76,047-byte** ResultScreen i386 COFF objects. Retiring the Main.cpp alias and
-the Main/SupervisorRuntime selected field declarations shrinks selector debt to
-**741 directives across 107 files**; declaration debt remains **201 keys / 206
-occurrences**. The semantic guard and all **70 workflow tests** pass. No
-aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
-
-For SEM-311, Supervisor `+0x528` is uniformly exposed as the 32-bit
-`screenshotWorkerToken` across Main, MainExact, SupervisorRuntime, and the
-lifecycle projection. TakeScreenshot waits while it is nonzero and publishes
-the CRT `_beginthread` return after preparing the capture buffers;
-ScreenshotThread frees the buffers and clears it. No target path waits on or
-closes the value as a Win32 HANDLE. The lowercase `screenshotThread` field and
-DIFFBUILD alias are retired; the capitalized callback method remains.
-
-Focused Main plus SupervisorLifecycle replay passed **50/50 exact** with zero
-refresh. Final replay passed **199/199 exact across 18 sources**, also with
-zero refresh. Normal pinned-VC7.1 probes emitted **116,276-byte** Main,
-**5,890-byte** SupervisorLifecycle, and **64,883-byte** SoundPlayer i386 COFF
-objects. Retiring five selected directives shrinks selector debt to **736
-directives across 106 files**; declaration debt remains **201 keys / 206
-occurrences**. The semantic guard and all **71 workflow tests** pass. No
-aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
-
-For SEM-312, GameWindow now uses one profile-independent vocabulary for the
-startup-path mismatch latch at `+0x24` and the saved screen-saver, low-power,
-and power-off settings at `+0x28/+0x2C/+0x30`. Fresh target xrefs confirm one
-path-latch writer and one consumer, plus one GET write and final SET read for
-each saved policy dword. The historical exact field names and Main.cpp's
-DIFFBUILD aliases are retired.
-
-Focused Main replay passed **48/48 exact** with zero private-label refresh;
-final direct-consumer replay passed **199/199 exact across 18 sources**, also
-with zero refresh. A pinned-VC7.1 normal probe emitted a **116,268-byte** Intel
-80386 COFF object. Selector debt shrinks to **733 directives across 106
-files**; declaration debt remains **201 keys / 206 occurrences**. The semantic
-guard and all **72 workflow tests** pass. No aggregate/product closure is
-claimed; SEM-298 remains the latest full receipt.
-
-For SEM-313, `SupervisorViewportConfiguration.hpp` is the sole
-profile-independent `0xF0` viewport-element owner. Main, MainExact, and
-SupervisorRuntime embed the same two elements at `+0x1E4/+0x2D4` and expose
-the same typed active pointer/index at `+0x3C4/+0x3C8`. Background and ANM now
-consume the canonical camera, matrix, D3D viewport, and screen-shake fields;
-their remaining derived declarations are fieldless emission/relocation
-adapters only. The shared slot enum no longer has exact/DIFF macros.
-
-Fresh target evidence re-established both selectors, both apply protocols,
-and the initializer. Element `+0xE4` has only initializer writes of 0/1 and no
-independent reader, so the old `viewportMode` claim is retired in favor of
-`unknown0e4`. A controlled manifest refresh changed only 68 compiler-private
-labels across four units; final replay passed **282/282 exact across 23 direct
-consumers** with zero refresh. Six pinned normal probes emitted valid i386
-COFF. Selector debt shrinks to **722 directives across 103 files**;
-declaration debt remains **201 keys / 206 occurrences**. The semantic guard
-and all **73 workflow tests** pass. No aggregate/product closure is claimed;
-SEM-298 remains the latest full receipt.
-
-For SEM-314, the bounded adjacent-gap audit recovered only the canonical
-`ZunTimer @ Supervisor+0x3F4`; `+0x3CC..+0x3F3` and `+0x400..+0x403` remain
-opaque, with no direct target xrefs or proved post-construction consumer.
-Main, MainExact, SupervisorRuntime, and SupervisorLifecycle now share the
-ZunTimer type. SupervisorLifecycle's viewport construction type is a fieldless
-adapter over `SupervisorViewportConfiguration`, and its duplicate three-field
-timer declaration is retired.
-
-The lifecycle TU remained **2/2 exact** immediately. A controlled refresh
-changed only 40 compiler-private labels across three units; final direct-
-consumer replay passed **199/199 exact across 18 sources** with zero refresh.
-Pinned normal Main, SupervisorLifecycle, and SoundPlayer probes emitted valid
-i386 COFF. Selector debt remains **722 directives across 103 files** and
-declaration debt remains **201 keys / 206 occurrences**. No profile selector
-was added; the semantic guard and all **73 workflow tests** pass.
-Aggregate/product closure remains deferred to the campaign milestone, with
-SEM-298 still the latest full receipt.
-
-For SEM-315, FrontEnd's two controller timers now share canonical `ZunTimer`
-storage in every profile. A direct type substitution exposed a real compiler
-boundary: canonical Reset's store order differs from the target FrontEnd
-sequence. One unconditional helper now preserves the target `current`,
-`subFrame`, `previous` order at all eleven call sites without selecting a
-different type or body. The two public Tick identities were migrated to
-canonical `ZunTimer::Tick` while preserving target `0x0041B8A0`.
-
-Controlled refresh changed only eighteen compiler-private labels in two
-units; immediate zero-refresh replay passed **4/4 exact FrontEnd units**. The
-separate normal probe emitted a **39,271-byte Intel 80386 COFF** object.
-Selector and declaration debt remain **722 directives across 103 files** and
-**201 keys / 206 occurrences**; the semantic guard and all **74 workflow
-tests** pass. Aggregate/product closure remains deferred; SEM-298 is still the
-latest full receipt.
+## Non-negotiable workflow boundary
+
+- Do not add any conditional directive below `src/` that references
+  `TH095_MATCH_EXACT` or `DIFFBUILD`. CI freezes the remaining historical debt
+  as a shrink-only baseline: **722 directives across 103 files** and **201
+  selected-declaration keys / 206 occurrences**.
+- Exact replay validates only the source selected by the exact profile. When
+  exact and normal select different declarations, expressions, or bodies,
+  validate the normal source independently with target evidence and a normal
+  compiler oracle.
+- Prefer one profile-independent semantic owner. A necessary emission adapter
+  must be named, fieldless or otherwise narrowly scoped, independently proved,
+  and tracked as debt rather than copied as a pattern.
+- Keep unproved storage and roles Unknown. Do not promote a name from a single
+  write, adjacent-game similarity, exactness alone, or decompiler wording.
+
+## Current semantic checkpoint — SEM-315
+
+`FrontEndControllerUpdateView` now uses canonical `ZunTimer` for both
+`stateTimer @ +0x08` and `animationTimer @ +0x14` in every profile. The former
+exact-only `ResultScreenTimer` alias is gone. Its layout and Tick destination
+were compatible, but its inline Reset store order was compiler-visible, so all
+eleven FrontEnd state resets use one unconditional helper with the target
+order `current`, `subFrame`, `previous`. This does not merge or validate the
+broader ResultScreen timer family.
+
+Checkpoint evidence:
+
+- the two public Tick relocations use canonical `ZunTimer::Tick` and still
+  resolve to target `0x0041B8A0`;
+- controlled refresh changed eighteen compiler-private labels in two units
+  only after structural and relocation proof;
+- immediate zero-refresh replay passed **4/4 FrontEnd exact units**;
+- the independent normal pinned-VC7.1 probe emitted a **39,271-byte Intel 80386
+  COFF** object; and
+- target identity, tracking, semantic guards, build graphs, whitespace, and
+  all **74 workflow tests** passed.
+
+The latest complete milestone remains **SEM-298**: 696/696 exact units across
+88 sources with zero refresh, plus an 88-object normal build linking a
+778,752-byte PE32 image (build-local SHA-256
+`4e1b18d1fd1b913a34bd3cfb572da2ae0a7ecc34f375960f0330f9cbf9d50140`).
+That receipt proves exact-unit preservation and normal compile/link closure,
+not target whole-image identity or runtime-scenario validation. SEM-299 through
+SEM-315 used bounded focused validation; do not imply a newer aggregate or
+whole-product receipt.
+
+For the current owner inventory, use `SEMANTIC_INDEX.md` and `SOURCE_MAP.md`
+rather than reconstructing it from old handoff prose. Durable target facts are
+in `KNOWLEDGE_BASE.md`; complete batch evidence and bounded negatives are in
+`SEMANTIC_HISTORY.md`.
 
 ## Next bounded lane
 
-Continue the `FrontEndControllerUpdateView` declaration audit. Test the three
-already evidenced selected regions independently: `replayColumnCursor @
-+0xF8`, `FrontEndRequestedState @ +0x6110`, and
-`FrontEndControllerFlagBits @ +0x6120`. Prefer one shared declaration only if
-all four FrontEnd exact units remain exact and the normal VC7.1 TU compiles.
-Keep the surrounding gaps Unknown and do not infer broader ResultScreen or
-queue ownership.
+Continue only the `FrontEndControllerUpdateView` declaration audit. Test these
+already-evidenced selected regions independently:
+
+1. `replayColumnCursor @ +0xF8` versus exact `unknown00f8` storage;
+2. `FrontEndRequestedState @ +0x6110` versus exact integer storage; and
+3. `FrontEndControllerFlagBits @ +0x6120` versus the exact local bitfield.
+
+For each candidate, first confirm the target producer/consumer and physical
+layout, then test all four FrontEnd exact units and the normal VC7.1 TU. Keep
+the surrounding gaps Unknown. Do not broaden the audit into ResultScreen,
+queue ownership, or unrelated FrontEnd selectors. If a shared declaration
+changes structural bytes, stop and isolate the compiler cause before changing
+any manifest identity or private label.
 
 ## Protected working-tree exclusions
 
-The following untracked paths predate this branch and are user-owned. Do not
-stage, modify, delete, or infer project state from them:
+These untracked paths predate the branch and are user-owned. Do not modify,
+stage, delete, or infer reconstruction state from them:
 
 - `config/runtime-scenarios.json`
 - `droid.resume.txt`
@@ -799,4 +111,12 @@ python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/FrontEndController.cpp --details
 rg -n "replayColumnCursor|requestedState|FrontEndControllerFlagBits|unknown00f8" src/FrontEndController.cpp src/SceneSelect.hpp config docs
+python3 scripts/replay-exact-units.py --source src/FrontEndController.cpp
+scripts/compile-probe.sh src/FrontEndController.cpp build/probes/sem316-normal/FrontEndController.obj /MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src
 ```
+
+Before committing the next accepted batch, run the affected exact and normal
+oracles, `scripts/check-semantic-protocols.py`, `scripts/ci.py`,
+`scripts/build.py --check`, `git diff --check`, and confirm
+`config/claims.csv` is still header-only. Defer the expensive aggregate replay
+and full normal product until the next shared-owner milestone.

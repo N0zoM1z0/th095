@@ -1979,3 +1979,14 @@ build linked a 780,800-byte PE32 product with build-local SHA-256
 `cdc9f5cf511a60d6e94bede2086f3429389ea441f4381a7e86b059b5f70f2fd7`.
 CI passed 57/57. The live handoff moves to EclExtended's coupled Player/camera
 projection while manager `+0x4DFC` and unsupported task flags remain Unknown.
+
+## Handoff compaction through SEM-315 — 2026-09-20
+
+The live handoff had accumulated batch-by-batch summaries for SEM-282 through
+SEM-315 and reached 802 lines despite being defined as short and replaceable.
+Every accepted batch remains recorded with its evidence, validation boundary,
+and bounded negatives in `SEMANTIC_HISTORY.md`; current ownership navigation
+remains in `SEMANTIC_INDEX.md` and `SOURCE_MAP.md`. The live handoff was
+therefore replaced with a current SEM-315 checkpoint, the last full milestone,
+one bounded next lane, protected exclusions, and resume commands. No semantic,
+mapping, source-presence, exactness, or runtime claim changed in this cleanup.

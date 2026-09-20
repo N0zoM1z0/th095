@@ -4,8 +4,9 @@
 original Japanese TH095 v1.02a target. Current subsystem navigation lives in
 [SEMANTIC_INDEX.md](SEMANTIC_INDEX.md), accepted batch narratives live in
 [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md), build ownership lives in
-[SOURCE_MAP.md](SOURCE_MAP.md), and the reusable method is distilled in
-[SEMANTIC_PLAYBOOK.md](SEMANTIC_PLAYBOOK.md).
+[SOURCE_MAP.md](SOURCE_MAP.md), the current checkpoint and next bounded lane
+live in [RE_HANDOFF.md](RE_HANDOFF.md), and the reusable method is distilled
+in [SEMANTIC_PLAYBOOK.md](SEMANTIC_PLAYBOOK.md).
 
 Semantic reconstruction replaces layout-shaped source—raw offsets, anonymous
 storage, duplicated views, magic protocol values, and provisional names—with
