@@ -6,6 +6,7 @@
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "PixelFormats.hpp"
+#include "ReplayScanWorker.hpp"
 #include "ScoreData.hpp"
 #include <time.h>
 
@@ -92,25 +93,6 @@ struct SceneStateHistoryView
     i32 values[3];
     i32 count;
 };
-
-// Target-facing replay worker ABI used by the scene/replay exact lane.
-// Kept local to this exact header so production Main types do not leak here.
-#ifndef TH095_REPLAY_SCAN_WORKER_DEFINED
-#define TH095_REPLAY_SCAN_WORKER_DEFINED
-struct ReplayScanWorker
-{
-    uintptr_t handle;
-    unsigned int threadId;
-    i32 stopRequested;
-    i32 active;
-    u8 unknown0010[4];
-    void (__fastcall *threadProc)(void *);
-
-    ~ReplayScanWorker();
-    void Stop();
-    void Start(void (__fastcall *callback)(void *), void *argument);
-};
-#endif // TH095_REPLAY_SCAN_WORKER_DEFINED
 
 struct SceneSupervisorView
 {
@@ -381,8 +363,6 @@ typedef char SceneValueQueueSizeIs48[
     (sizeof(SceneValueQueue) == 0x48) ? 1 : -1];
 typedef char SceneGroupCursorSizeIsD8[
     (sizeof(SceneGroupCursorView) == 0xd8) ? 1 : -1];
-typedef char ReplayScanWorkerSizeIs18[
-    (sizeof(ReplayScanWorker) == 0x18) ? 1 : -1];
 typedef char SceneSupervisorReplayScanWorkerAt648[
     (offsetof(SceneSupervisorView, replayScanWorker) == 0x648) ? 1 : -1];
 typedef char SceneSupervisorCriticalSectionsAt664[

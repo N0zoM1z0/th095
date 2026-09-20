@@ -13,6 +13,7 @@
 #include "inttypes.hpp"
 #include "Chain.hpp"
 #include "MidiOutputApi.hpp"
+#include "ReplayScanWorker.hpp"
 #include "ScreenEffect.hpp"
 
 namespace th095
@@ -218,12 +219,7 @@ struct Supervisor
     BITMAPINFOHEADER *screenshotInfoHeader;      // +0x53c
     u8 *screenshotPixels;                       // +0x540
     char screenshotPath[MAX_PATH];              // +0x544
-    HANDLE replayScanThreadHandle;               // +0x648
-    u32 replayScanThreadId;                      // +0x64c
-    i32 replayScanStopRequested;                 // +0x650
-    i32 replayScanActive;                        // +0x654
-    void (__fastcall *replayScanThreadProc)(void *); // +0x658
-    u8 unknown65c[4];
+    ReplayScanWorker replayScanWorker;           // +0x648
     i32 startupThreadState;                      // +0x660
     CRITICAL_SECTION criticalSections[7];       // +0x664
     u8 criticalSectionLockCounts[7];            // +0x70c
@@ -241,7 +237,7 @@ struct Supervisor
     f64 lagNumerator;                           // +0x78c
     f64 lagDenominator;                         // +0x794
     f32 currentFps;                             // +0x79c
-    u8 unknown7a0[0x18];
+    ReplayScanWorker secondaryReplayScanWorker;  // +0x7a0
     D3DCOLOR backbufferClearColor;              // +0x7b8
     i32 fpsClockAnomalyCount;                   // +0x7bc
     f64 lastFpsTimestamp;                       // +0x7c0
@@ -310,8 +306,9 @@ typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 :
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
 typedef char SupervisorLoadingAnmAt440[(offsetof(Supervisor, loadingAnm) == 0x440) ? 1 : -1];
 typedef char SupervisorTextAnmAt43C[(offsetof(Supervisor, textAnm) == 0x43c) ? 1 : -1];
-typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanThreadHandle) == 0x648) ? 1 : -1];
-typedef char SupervisorReplayScanStopAt650[(offsetof(Supervisor, replayScanStopRequested) == 0x650) ? 1 : -1];
+typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanWorker) == 0x648) ? 1 : -1];
+typedef char SupervisorReplayScanExitAt650[
+    (offsetof(Supervisor, replayScanWorker.exitSignal) == 0x650) ? 1 : -1];
 typedef char SupervisorStartupThreadStateAt660[(offsetof(Supervisor, startupThreadState) == 0x660) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
 typedef char SupervisorScreenshotThreadAt528[(offsetof(Supervisor, screenshotThread) == 0x528) ? 1 : -1];
@@ -326,6 +323,8 @@ typedef char SupervisorVersionDataAt778[(offsetof(Supervisor, versionData) == 0x
 typedef char SupervisorFrontEndAt780[(offsetof(Supervisor, frontEndController) == 0x780) ? 1 : -1];
 typedef char SupervisorGameTaskAt784[(offsetof(Supervisor, photoGameTask) == 0x784) ? 1 : -1];
 typedef char SupervisorCurrentFpsAt79C[(offsetof(Supervisor, currentFps) == 0x79c) ? 1 : -1];
+typedef char SupervisorSecondaryReplayScanAt7A0[
+    (offsetof(Supervisor, secondaryReplayScanWorker) == 0x7a0) ? 1 : -1];
 typedef char SupervisorClearColorAt7B8[(offsetof(Supervisor, backbufferClearColor) == 0x7b8) ? 1 : -1];
 typedef char SupervisorLastFpsTimestampAt7C0[(offsetof(Supervisor, lastFpsTimestamp) == 0x7c0) ? 1 : -1];
 

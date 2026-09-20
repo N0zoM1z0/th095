@@ -500,15 +500,40 @@ objects. Selector debt is **770 directives across 107 files** and declaration
 debt is **203 keys / 208 occurrences**. No aggregate/product closure is
 claimed; SEM-298 remains the latest full receipt.
 
+For SEM-303, `ReplayScanWorker.hpp` became the single profile-independent
+`0x18` layout/API owner and `ReplayScanWorker.cpp` retained behavior ownership.
+The standalone input worker at `0x004C4658` and Supervisor's embedded workers
+at `+0x648/+0x7A0` remain three distinct storages. Duplicate declarations in
+Main, SupervisorRuntime, SupervisorLifecycle, and SceneSelectExact were
+retired, as were `SupervisorInputWorkerView`,
+`SupervisorReplayScanWorkerView`, the field-token selectors, and the AnmPreload
+exit-signal macro. MainExact now embeds the canonical type while preserving its
+separate overall Supervisor body/layout boundary. `ReplayScanWorkerExact.inl`
+still supplies a different exact-selected implementation but uses the same
+field meanings. The first canonical input-worker replay stopped on four
+expected proxy-versus-canonical identities and receives no exact credit. After
+reviewing those four migrations, a second run exposed only 25 Main private
+labels; the expanded consumer run later exposed 15 Global private labels in
+two units. Controlled refresh accepted those 40 labels across three units only
+after structural equivalence. Final replay passed **222/222 exact across 21
+affected sources** with zero further refresh. Normal pinned-VC7.1 probes
+emitted **22,304-byte** ReplayScanWorker, **5,704-byte** SupervisorLifecycle,
+**33,165-byte** AnmPreload, **46,818-byte** SceneSelect, **116,276-byte** Main,
+**34,679-byte** Global, and **64,883-byte** SoundPlayer i386 COFF objects.
+Selector debt is **761 directives across 107 files** and declaration debt is
+**202 keys / 207 occurrences**. The semantic guard and all **64 workflow
+tests** pass. No aggregate/product closure is claimed; SEM-298 remains the
+latest full receipt.
+
 ## Next bounded lane
 
-Audit and converge the `ReplayScanWorker` declarations in `Main.hpp`,
-`SupervisorRuntime.hpp`, `Supervisor.hpp`, and `ReplayScanWorker.cpp`. Start
-from ABI-054/ABI-085 and REPLAY-020: preserve the distinct standalone input
-worker and the Supervisor's embedded replay workers, and do not merge their
-storage merely because their layouts overlap. Prove the exact/normal
-`exitSignal` spelling and timer/helper dependencies before changing any
-declaration or manifest identity.
+Audit the `0xC8` `GameConfiguration` family in `Main.hpp`, `MainExact.hpp`,
+`SupervisorRuntime.hpp`, `SupervisorLifecycle.cpp`, and legacy
+`Supervisor.hpp`. Establish the true TH095 runtime owner and complete field /
+method identity fanout before editing. Do not merge the legacy `0x364`
+Supervisor view or the constructor-only lifecycle projection merely because
+they contain a same-sized configuration prefix; prove every selected field,
+packing rule, and `Initialize` emission dependency independently.
 
 ## Protected working-tree exclusions
 
@@ -527,6 +552,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/SupervisorRuntime.hpp --path src/Supervisor.hpp --path src/ReplayScanWorker.cpp --details
-rg -n "ReplayScanWorker|exitSignal|stopRequested|secondaryReplayScanWorker" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Supervisor.hpp src/ReplayScanWorker.cpp src/ReplayScanWorkerExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
+python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --path src/SupervisorLifecycle.cpp --path src/Supervisor.hpp --details
+rg -n "GameConfiguration|GameConfigOptions|GameConfigOpts|Initialize@GameConfiguration" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/SupervisorLifecycle.cpp src/Supervisor.hpp src/Main.cpp config/match-units.toml docs/KNOWLEDGE_BASE.md
 ```

@@ -17,6 +17,7 @@
 #include "GameMusicMode.hpp"
 #endif
 #include "MidiOutputApi.hpp"
+#include "ReplayScanWorker.hpp"
 #include "ScreenEffect.hpp"
 #include "SoundPlayer.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
@@ -177,35 +178,6 @@ typedef char GameConfigurationMusicModeAtAD[
 typedef char GameConfigurationControllerAssignmentsAtB2[
     (offsetof(GameConfiguration, controllerAssignments) == 0xb2) ? 1 : -1];
 #endif
-
-#ifndef TH095_REPLAY_SCAN_WORKER_DEFINED
-#define TH095_REPLAY_SCAN_WORKER_DEFINED
-struct ReplayScanWorker
-{
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    uintptr_t handle;
-#else
-    uintptr_t threadHandle;
-#endif
-    u32 threadId;
-#ifdef TH095_MATCH_EXACT
-    i32 stopRequested;
-#else
-    i32 exitSignal;
-#endif
-    i32 active;
-    u8 unknown010[4];
-    void (__fastcall *threadProc)(void *);
-
-    ReplayScanWorker();
-    ~ReplayScanWorker();
-    void Stop();
-    void Start(void (__fastcall *callback)(void *), void *argument);
-};
-#endif // TH095_REPLAY_SCAN_WORKER_DEFINED
-
-typedef char ReplayScanWorkerSizeIs18[
-    (sizeof(ReplayScanWorker) == 0x18) ? 1 : -1];
 
 struct SupervisorFlags
 {

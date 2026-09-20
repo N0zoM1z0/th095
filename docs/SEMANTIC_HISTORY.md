@@ -15109,3 +15109,67 @@ declarations in Main, SupervisorRuntime, Supervisor, and its implementation.
 Use ABI-054/ABI-085 and REPLAY-020 as starting evidence, but preserve the
 standalone input worker versus embedded replay-worker storage distinction and
 prove the exact/normal `exitSignal` representation before changing source.
+
+### SEM-303 — unify the ReplayScanWorker owner
+
+**Scope.** Replace the duplicated ReplayScanWorker declarations and disguised
+Main projections with one profile-independent type while preserving three
+separate runtime storages, the exact-selected implementation body, target
+addresses, and the already-proved bidirectional exit protocol.
+
+**Ownership and layout.** `ReplayScanWorker.hpp` now owns the shared `0x18`
+layout: `threadHandle +0x00`, `threadId +0x04`, `exitSignal +0x08`, `active
++0x0C`, opaque `unknown010 +0x10`, and callback `+0x14`.
+`ReplayScanWorker.cpp` owns behavior. Main's process-lifetime input worker at
+`0x004C4658` is canonically typed but remains distinct from Supervisor's
+primary `+0x648` and secondary `+0x7A0` members. This preserves ABI-054 and
+MAIN-025/026 storage/lifetime evidence without assigning a business role to
+the secondary worker. Legacy `Supervisor.hpp` is a separate `0x364` source-
+family projection and contains no ReplayScanWorker storage.
+
+**Representation convergence.** Main, MainExact, SupervisorRuntime,
+SupervisorLifecycle, and SceneSelectExact now consume the one declaration.
+MainExact embeds both workers instead of flattening the first and leaving the
+second opaque. `ReplayScanWorkerExact.inl` remains a different exact-selected
+body, but it and AnmPreload use canonical `threadHandle` / `exitSignal`
+meanings. The old include guard, three complete/local declarations,
+`SupervisorInputWorkerView`, `SupervisorReplayScanWorkerView`, DIFF field
+aliases, and AnmPreload selector macro are gone. The exact-body boundary no
+longer doubles as a type owner.
+
+**Compiler evidence.** The first focused 73-unit replay of the declaration and
+field convergence passed with zero refresh. Canonicalizing the Main input
+worker then stopped strict replay on exactly four expected public identities:
+two data references and its Start/Stop receiver spellings. That run receives
+no exact credit. After reviewing the four migrations at unchanged offsets,
+types, targets, and bytes, the next run exposed only 25 Main compiler-private
+labels. The wider direct-consumer audit later exposed 15 Global private labels
+in two units. Controlled refresh accepted the total 40 labels across three
+units only after structural equivalence; immediate final replay needed no
+further refresh.
+
+**Guards and debt.** The owner guard requires one declaration and the four
+proved offsets, requires all former declaration sites to include it, pins the
+standalone and two embedded storage forms, rejects every retired projection /
+selector / ABI identity, preserves canonical input-worker relocation counts,
+and does not name `unknown010` or the secondary worker's role. Removing nine
+counted directives shrinks selector debt from 770 to **761 directives across
+107 files**. Removing the selected `SupervisorInputWorkerView` shrinks
+declaration debt from 203 keys / 208 occurrences to **202 keys / 207
+occurrences**.
+
+**Validation.** Final focused replay passed **222/222 exact units across 21
+affected sources** with zero private-label refresh. Pinned-VC7.1 normal probes
+emitted **22,304-byte** ReplayScanWorker, **5,704-byte** SupervisorLifecycle,
+**33,165-byte** AnmPreload, **46,818-byte** SceneSelect, **116,276-byte** Main,
+**34,679-byte** Global, and **64,883-byte** SoundPlayer Intel 80386 COFF
+objects. The semantic guard and all **64 workflow tests** pass. Tracking
+remains **1,880 provisional / 697 source-present / 696 exact**. Per the
+batching policy, no aggregate replay or product link is claimed; SEM-298
+remains the latest full receipt.
+
+**Unknown / next route.** Audit the duplicated `0xC8` GameConfiguration family
+across Main, MainExact, SupervisorRuntime, SupervisorLifecycle, and legacy
+Supervisor. Establish the TH095 runtime owner, packing, complete field fanout,
+and Initialize emission boundary before attempting convergence; do not infer
+that the legacy `0x364` Supervisor view is the canonical runtime owner.

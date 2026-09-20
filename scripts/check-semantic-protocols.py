@@ -1070,6 +1070,119 @@ def check_midi_output_owner() -> None:
             fail(f"match manifest lost canonical MidiOutput ABI: {identity}")
 
 
+def check_replay_scan_worker_owner() -> None:
+    owner = (SRC / "ReplayScanWorker.hpp").read_text(encoding="utf-8")
+    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
+    main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
+    runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+    lifecycle = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
+    scene_exact = (SRC / "SceneSelectExact.hpp").read_text(encoding="utf-8")
+    worker_body = (SRC / "ReplayScanWorker.cpp").read_text(encoding="utf-8")
+    worker_exact = (SRC / "ReplayScanWorkerExact.inl").read_text(encoding="utf-8")
+    anm_preload = (SRC / "AnmPreload.cpp").read_text(encoding="utf-8")
+    manifest = (ROOT / "config" / "match-units.toml").read_text(
+        encoding="utf-8"
+    )
+
+    canonical_layout = (
+        "uintptr_t threadHandle;",
+        "u32 threadId;",
+        "i32 exitSignal;",
+        "i32 active;",
+        "u8 unknown010[4];",
+        "void (__fastcall *threadProc)(void *);",
+        "(sizeof(ReplayScanWorker) == 0x18)",
+        "(offsetof(ReplayScanWorker, threadHandle) == 0x00)",
+        "(offsetof(ReplayScanWorker, exitSignal) == 0x08)",
+        "(offsetof(ReplayScanWorker, active) == 0x0c)",
+    )
+    for declaration in canonical_layout:
+        if declaration not in owner:
+            fail(f"ReplayScanWorker owner lost canonical layout: {declaration}")
+
+    declarations: list[str] = []
+    for path in SRC.rglob("*"):
+        if path.suffix not in {".cpp", ".hpp", ".inl"}:
+            continue
+        text = path.read_text(encoding="utf-8")
+        if re.search(r"\bstruct\s+ReplayScanWorker\b", text):
+            declarations.append(path.relative_to(ROOT).as_posix())
+    if declarations != ["src/ReplayScanWorker.hpp"]:
+        fail(f"ReplayScanWorker declarations are not canonical: {declarations}")
+
+    for path, text in (
+        ("Main.hpp", main_header),
+        ("MainExact.hpp", main_exact_header),
+        ("SupervisorRuntime.hpp", runtime_header),
+        ("SupervisorLifecycle.cpp", lifecycle),
+        ("SceneSelectExact.hpp", scene_exact),
+        ("ReplayScanWorker.cpp", worker_body),
+    ):
+        if '#include "ReplayScanWorker.hpp"' not in text:
+            fail(f"{path} no longer routes through the ReplayScanWorker owner")
+
+    if "DIFFABLE_STATIC(ReplayScanWorker, g_SupervisorInputWorker);" not in main_body:
+        fail("standalone Supervisor input worker lost canonical typed storage")
+    if "ReplayScanWorker replayScanWorker;" not in main_header:
+        fail("Main Supervisor lost the primary embedded ReplayScanWorker")
+    if "ReplayScanWorker secondaryReplayScanWorker;" not in main_header:
+        fail("Main Supervisor lost the distinct secondary ReplayScanWorker")
+    if "ReplayScanWorker replayScanWorker;" not in main_exact_header:
+        fail("MainExact no longer embeds the canonical primary worker")
+    if "ReplayScanWorker secondaryReplayScanWorker;" not in main_exact_header:
+        fail("MainExact no longer embeds the canonical secondary worker")
+    if "ReplayScanWorker replayWorker;" not in lifecycle:
+        fail("Supervisor lifecycle lost its canonical primary worker")
+    if "ReplayScanWorker secondaryWorker;" not in lifecycle:
+        fail("Supervisor lifecycle lost its canonical secondary worker")
+
+    retired_source_tokens = (
+        "TH095_REPLAY_SCAN_WORKER_DEFINED",
+        "TH095_REPLAY_WORKER_EXIT_SIGNAL",
+        "SupervisorInputWorkerView",
+        "SupervisorReplayScanWorkerView",
+        "#define threadHandle handle",
+    )
+    source_corpus = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in SRC.rglob("*")
+        if path.suffix in {".cpp", ".hpp", ".inl"}
+    )
+    for token in retired_source_tokens:
+        if token in source_corpus:
+            fail(f"retired ReplayScanWorker projection was restored: {token}")
+    retired_field_uses = (
+        "this->handle",
+        "this->stopRequested",
+        "worker->handle",
+        "replayScanWorker.stopRequested",
+        "replayScanStopRequested",
+    )
+    exact_worker_corpus = "\n".join((worker_exact, main_exact_body, anm_preload))
+    for field_use in retired_field_uses:
+        if field_use in exact_worker_corpus:
+            fail(f"exact-facing worker logic restored a legacy field: {field_use}")
+
+    retired_identities = (
+        "?g_SupervisorInputWorker@th095@@3USupervisorInputWorkerView@1@A",
+        "?Start@SupervisorInputWorkerView@th095@@QAEXP6IXPAX@Z0@Z",
+        "?Stop@SupervisorInputWorkerView@th095@@QAEXXZ",
+    )
+    for identity in retired_identities:
+        if identity in manifest:
+            fail(f"match manifest restored a worker projection ABI: {identity}")
+    canonical_identities = {
+        "?g_SupervisorInputWorker@th095@@3UReplayScanWorker@1@A": 2,
+        "?Start@ReplayScanWorker@th095@@QAEXP6IXPAX@Z0@Z": 3,
+        "?Stop@ReplayScanWorker@th095@@QAEXXZ": 5,
+    }
+    for identity, count in canonical_identities.items():
+        if manifest.count(identity) != count:
+            fail(f"match manifest lost canonical ReplayScanWorker ABI: {identity}")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -2248,6 +2361,7 @@ def main() -> int:
     check_file_system_api_owner()
     check_rng_owner()
     check_midi_output_owner()
+    check_replay_scan_worker_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -2272,6 +2386,7 @@ def main() -> int:
     print("  FileSystem API: canonical namespace owner with frozen MainExact boundary")
     print("  RNG owner: one canonical class declaration and two Global.cpp states")
     print("  MidiOutput owner: one 0x300 layout plus one shared fieldless API adapter")
+    print("  ReplayScanWorker owner: one shared layout over three distinct storages")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

@@ -19,7 +19,7 @@
 7	src/AnmPreload.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/AnmPreload.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 4	src/AnmPreload.cpp	#if defined(TH095_MATCH_EXACT)
-2	src/AnmPreload.cpp	#ifdef TH095_MATCH_EXACT
+1	src/AnmPreload.cpp	#ifdef TH095_MATCH_EXACT
 1	src/AnmSurface.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/AnmText.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/AnmVmId.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -147,13 +147,13 @@
 1	src/InputRuntime.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/InputRuntime.hpp	#if defined(TH095_MATCH_EXACT)
 2	src/Main.cpp	#if defined(TH095_MATCH_EXACT)
-17	src/Main.cpp	#ifdef DIFFBUILD
+14	src/Main.cpp	#ifdef DIFFBUILD
 1	src/Main.cpp	#ifdef TH095_MATCH_EXACT
 5	src/Main.cpp	#ifndef DIFFBUILD
 3	src/Main.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 1	src/Main.hpp	#if defined(TH095_MATCH_EXACT)
-10	src/Main.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-3	src/Main.hpp	#ifdef TH095_MATCH_EXACT
+9	src/Main.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
+2	src/Main.hpp	#ifdef TH095_MATCH_EXACT
 2	src/Main.hpp	#ifndef TH095_MATCH_EXACT
 1	src/MusicRoom.cpp	#ifdef DIFFBUILD
 1	src/MusicRoom.cpp	#ifdef TH095_MATCH_EXACT
@@ -222,7 +222,6 @@
 2	src/ReplayManager.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/ReplayManager.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ReplayManagerExact.inl	#ifdef TH095_MATCH_EXACT
-2	src/ReplayScanWorker.cpp	#ifdef DIFFBUILD
 1	src/ReplayScanWorker.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ReplayScanWorker.cpp	#ifndef DIFFBUILD
 1	src/ResultScreen.cpp	#if !defined(DIFFBUILD)
@@ -278,7 +277,7 @@
 1	src/Supervisor.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Supervisor.hpp	#ifndef TH095_MATCH_EXACT
 2	src/SupervisorLifecycle.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-5	src/SupervisorLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+4	src/SupervisorLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/SupervisorRuntime.hpp	#if defined(TH095_MATCH_EXACT)
 1	src/SupervisorRuntime.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/SupervisorRuntime.hpp	#ifdef TH095_MATCH_EXACT

@@ -53,7 +53,6 @@
 1	src/Main.cpp	struct	ScreenshotCaptureLocals
 1	src/Main.cpp	struct	SupervisorControllerView
 1	src/Main.cpp	struct	SupervisorGameTaskView
-1	src/Main.cpp	struct	SupervisorInputWorkerView
 1	src/Main.cpp	struct	TextHelperView
 1	src/MusicRoom.cpp	struct	MusicCommentLocals
 1	src/MusicRoom.cpp	struct	MusicRoomAnmStorageView

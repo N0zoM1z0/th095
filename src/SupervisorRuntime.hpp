@@ -16,6 +16,7 @@
 #include "GameColorMode.hpp"
 #include "GameMusicMode.hpp"
 #include "MidiOutputApi.hpp"
+#include "ReplayScanWorker.hpp"
 #include "SupervisorStartupState.hpp"
 #include "SupervisorFogState.hpp"
 
@@ -27,24 +28,6 @@ struct DummyMidiTimer;
 struct Float3;
 struct FrontEndControllerView;
 struct PhotoGameTaskView;
-
-struct ReplayScanWorker
-{
-    uintptr_t threadHandle;
-    u32 threadId;
-    i32 exitSignal;
-    i32 active;
-    u8 unknown010[4];
-    void (__fastcall *threadProc)(void *);
-
-    ReplayScanWorker();
-    ~ReplayScanWorker();
-    void Stop();
-    void Start(void (__fastcall *callback)(void *), void *argument);
-};
-
-typedef char ReplayScanWorkerSizeIs18[
-    (sizeof(ReplayScanWorker) == 0x18) ? 1 : -1];
 
 struct GameConfigOptions
 {

@@ -166,19 +166,12 @@ extern SupervisorGameTaskView *g_SupervisorGameTask;
     TH095_RUNTIME_GLOBAL_PTR(SupervisorGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
-#ifdef DIFFBUILD
-struct SupervisorInputWorkerView
-{
-    void Start(void (__fastcall *callback)(void *), void *argument);
-    void Stop();
-};
-extern SupervisorInputWorkerView g_SupervisorInputWorker;
-#else
 // Target 0x004C4658 is a standalone 0x18-byte ReplayScanWorker. Its static
 // initializer at 0x00494060 uses the ICF-folded four-dword constructor at
 // 0x00454E50; atexit 0x00494280 calls ReplayScanWorker::~ReplayScanWorker.
-ReplayScanWorker g_SupervisorInputWorker;
-#endif
+// It shares the worker type and behavior with Supervisor's two embedded
+// instances, but remains a distinct process-lifetime storage owner.
+DIFFABLE_STATIC(ReplayScanWorker, g_SupervisorInputWorker);
 
 struct FrontEndControllerView
 {
@@ -2307,9 +2300,6 @@ cleanup:
     return 0;
 }
 
-#ifdef DIFFBUILD
-#define threadHandle handle
-#endif
 // FUNCTION: TH095 0x00425150.
 void Supervisor::ThreadClose()
 {
@@ -2327,10 +2317,6 @@ void Supervisor::ThreadClose()
     this->LeaveCriticalSectionWrapper(6);
     this->criticalSectionLockCounts[6]--;
 }
-#ifdef DIFFBUILD
-#undef threadHandle
-#endif
-
 void Supervisor::InitializeCriticalSections()
 {
     for (u32 i = 0; i < 7; i++)

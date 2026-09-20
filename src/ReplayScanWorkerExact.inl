@@ -15,18 +15,18 @@ ReplayScanWorker::~ReplayScanWorker()
 
 void ReplayScanWorker::Stop()
 {
-    if (this->handle != 0)
+    if (this->threadHandle != 0)
     {
-        this->stopRequested = 1;
+        this->exitSignal = 1;
         this->active = 0;
-        while (WaitForSingleObject((HANDLE)this->handle, 200) == WAIT_TIMEOUT)
+        while (WaitForSingleObject((HANDLE)this->threadHandle, 200) == WAIT_TIMEOUT)
         {
-            this->stopRequested = 1;
+            this->exitSignal = 1;
             this->active = 0;
             Sleep(1);
         }
-        CloseHandle((HANDLE)this->handle);
-        this->handle = 0;
+        CloseHandle((HANDLE)this->threadHandle);
+        this->threadHandle = 0;
         this->threadProc = NULL;
     }
 }
@@ -37,8 +37,8 @@ void ReplayScanWorker::Start(void (__fastcall *callback)(void *),
     this->Stop();
     this->threadProc = callback;
     this->active = 1;
-    this->stopRequested = 0;
-    this->handle = _beginthreadex(
+    this->exitSignal = 0;
+    this->threadHandle = _beginthreadex(
         NULL, 0, (unsigned (__stdcall *)(void *))this->threadProc,
         argument, 0, &this->threadId);
 }

@@ -1,4 +1,5 @@
 #include "inttypes.hpp"
+#include "ReplayScanWorker.hpp"
 #include "diffbuild.hpp"
 
 #include <stddef.h>
@@ -39,23 +40,6 @@ struct SupervisorTimerLifecycle
         previous = -999999;
         subFrame = 0.0f;
     }
-};
-
-struct ReplayScanWorker
-{
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    u32 handle;
-#else
-    u32 threadHandle;
-#endif
-    u32 threadId;
-    i32 stopRequested;
-    i32 active;
-    u8 unknown010[4];
-    void (__fastcall *threadProc)(void *);
-
-    ReplayScanWorker();
-    ~ReplayScanWorker();
 };
 
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)

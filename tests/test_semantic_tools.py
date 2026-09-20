@@ -260,6 +260,25 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             6,
         )
 
+    def test_replay_scan_worker_guard_accepts_canonical_owner(self) -> None:
+        GUARD.check_replay_scan_worker_owner()
+        owner = (ROOT / "src" / "ReplayScanWorker.hpp").read_text(
+            encoding="utf-8"
+        )
+        main = (ROOT / "src" / "Main.cpp").read_text(encoding="utf-8")
+        manifest = (ROOT / "config" / "match-units.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("i32 exitSignal;", owner)
+        self.assertIn("u8 unknown010[4];", owner)
+        self.assertIn(
+            "DIFFABLE_STATIC(ReplayScanWorker, g_SupervisorInputWorker);", main
+        )
+        self.assertNotIn("SupervisorInputWorkerView", manifest)
+        self.assertEqual(
+            manifest.count("?Stop@ReplayScanWorker@th095@@QAEXXZ"), 5
+        )
+
     def test_sound_player_consumer_guard_accepts_canonical_owner(self) -> None:
         GUARD.check_sound_player_consumer_owners()
         bullet = (ROOT / "src" / "BulletManager.cpp").read_text(encoding="utf-8")

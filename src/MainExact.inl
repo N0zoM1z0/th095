@@ -33,21 +33,6 @@ struct SupervisorGameTaskView
 
 extern SupervisorGameTaskView *g_SupervisorGameTask;
 
-struct SupervisorInputWorkerView
-{
-    void Start(void (__fastcall *callback)(void *), void *argument);
-    void Stop();
-};
-
-struct SupervisorReplayScanWorkerView
-{
-    HANDLE handle;
-    u32 threadId;
-    i32 stopRequested;
-    i32 active;
-    void (__fastcall *threadProc)(void *);
-};
-
 struct FrontEndControllerView
 {
     static FrontEndControllerView *__fastcall Create(i32 mode);
@@ -160,7 +145,7 @@ struct PbgArchiveView
     void Release();
 };
 
-extern SupervisorInputWorkerView g_SupervisorInputWorker;
+extern ReplayScanWorker g_SupervisorInputWorker;
 extern PbgArchiveView g_PbgArchive;
 extern u32 g_PhotoScreenFadeColor;
 
@@ -1145,7 +1130,7 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
 #define supervisor reinterpret_cast<Supervisor *>(arg)
     if (supervisor->flags.receivedCloseMsg)
     {
-        locals.replayScanActive = supervisor->replayScanActive;
+        locals.replayScanActive = supervisor->replayScanWorker.active;
         if (locals.replayScanActive == 0)
             return 4;
     }
@@ -1903,16 +1888,16 @@ void __fastcall Supervisor::StartupThread(Supervisor *s)
     g_Supervisor.ThreadClose();
     g_Supervisor.startupThreadState = 0;
     g_Supervisor.flags.scoreBackupPending = 0;
-    g_Supervisor.replayScanActive = 0;
-    g_Supervisor.replayScanStopRequested = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
     return;
 
 error:
     g_Supervisor.ThreadClose();
     g_Supervisor.startupThreadState = 2;
     g_Supervisor.flags.receivedCloseMsg = 1;
-    g_Supervisor.replayScanActive = 0;
-    g_Supervisor.replayScanStopRequested = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
 }
 
 // Keep the real version-data ownership local inside its teardown phase so
@@ -2147,15 +2132,15 @@ cleanup:
 // FUNCTION: TH095 0x00425150.
 void Supervisor::ThreadClose()
 {
-    SupervisorReplayScanWorkerView *worker;
+    ReplayScanWorker *worker;
 
     this->EnterCriticalSectionWrapper(6);
     this->criticalSectionLockCounts[6]++;
-    worker = (SupervisorReplayScanWorkerView *)&this->replayScanThreadHandle;
-    if (worker->handle != NULL)
+    worker = &this->replayScanWorker;
+    if (worker->threadHandle != NULL)
     {
-        CloseHandle(worker->handle);
-        worker->handle = NULL;
+        CloseHandle((HANDLE)worker->threadHandle);
+        worker->threadHandle = 0;
         worker->active = 0;
     }
     this->LeaveCriticalSectionWrapper(6);
