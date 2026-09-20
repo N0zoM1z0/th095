@@ -1562,6 +1562,74 @@ def check_supervisor_state_owner() -> None:
                 fail(f"{path} lost canonical Supervisor state route: {constant}")
 
 
+def check_supervisor_startup_phase_owner() -> None:
+    owner_path = SRC / "SupervisorStartupState.hpp"
+    owner = owner_path.read_text(encoding="utf-8")
+    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+    legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
+    main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
+    main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
+
+    if any(name in owner for name in PROFILE_NAMES):
+        fail("canonical Supervisor startup-phase owner must be profile-independent")
+    explicit_enum(
+        owner_path,
+        "SupervisorStartupPhase",
+        "SUPERVISOR_STARTUP_PHASE_",
+        [0, 1, 2],
+    )
+    if "sizeof(SupervisorStartupPhase) == 4" not in owner:
+        fail("canonical Supervisor startup phase lost its four-byte ABI assertion")
+
+    declarations: list[str] = []
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in {".cpp", ".hpp", ".inl"}:
+            continue
+        text = source_without_comments(path.read_text(encoding="utf-8"))
+        if re.search(r"\benum\s+SupervisorStartupPhase\s*\{", text):
+            declarations.append(path.relative_to(ROOT).as_posix())
+    if declarations != ["src/SupervisorStartupState.hpp"]:
+        fail(f"Supervisor startup-phase declarations are not canonical: {declarations}")
+
+    for path, text in (
+        ("Main.hpp", main_header),
+        ("MainExact.hpp", main_exact_header),
+        ("SupervisorRuntime.hpp", runtime_header),
+    ):
+        if '#include "SupervisorStartupState.hpp"' not in text:
+            fail(f"{path} no longer routes through the startup-phase owner")
+        if "SupervisorStartupPhase startupThreadState;" not in text:
+            fail(f"{path} lost the canonical startupThreadState type")
+        if "i32 startupThreadState;" in text:
+            fail(f"{path} restored integer-only startup phase storage")
+
+    for marker in (
+        "SupervisorStartupThreadState_Idle = 0",
+        "SupervisorStartupThreadState_Running = 1",
+        "SupervisorStartupThreadState_Failed = 2",
+        "SupervisorStartupThreadState startupThreadState;",
+        "offsetof(Supervisor, startupThreadState) == 0x294",
+    ):
+        if marker not in legacy:
+            fail(f"legacy Supervisor startup domain lost compatibility fact: {marker}")
+    if "SupervisorStartupPhase" in legacy:
+        fail("legacy TH08-shaped Supervisor was silently merged with TH095")
+
+    constants = (
+        "SUPERVISOR_STARTUP_PHASE_IDLE",
+        "SUPERVISOR_STARTUP_PHASE_RUNNING",
+        "SUPERVISOR_STARTUP_PHASE_FAILED",
+    )
+    for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
+        for constant in constants:
+            if constant not in text:
+                fail(f"{path} lost canonical Supervisor startup phase: {constant}")
+    if "TH095_SUPERVISOR_STARTUP_" in main_body:
+        fail("Main.cpp restored profile-selected startup numeric aliases")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -2745,6 +2813,7 @@ def main() -> int:
     check_supervisor_flags_owner()
     check_screenshot_bitmap_header_owner()
     check_supervisor_state_owner()
+    check_supervisor_startup_phase_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -2774,6 +2843,7 @@ def main() -> int:
     print("  Supervisor flags: one profile-independent TH095 0x7BC-owner layout")
     print("  Screenshot BMP file header: one packed 0x0E serialized owner")
     print("  Supervisor scene states: canonical TH095 1/2/3/4/6/7/8 domain")
+    print("  Supervisor startup phase: one shared TH095 0/1/2 domain at +0x660")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

@@ -15383,3 +15383,54 @@ product link is claimed; SEM-298 remains the latest full receipt.
 `SupervisorStartupPhase @ +0x660`, including Main's numeric macro aliases and
 the exact integer field. Prove 0/1/2 transitions and emission before
 convergence; keep the legacy startup enum distinct absent independent evidence.
+
+### SEM-308 — unify the TH095 Supervisor startup phase
+
+**Scope and ownership.** `SupervisorStartupState.hpp` now owns the one
+profile-independent TH095 startup-worker domain at canonical Supervisor
+`+0x660`: idle `0`, running `1`, and failed `2`. Main, MainExact, and
+SupervisorRuntime use the same four-byte enum. The exact/DIFF integer fields,
+Main.cpp's numeric compatibility aliases, and MainExact.inl's raw `0/1/2`
+expressions are retired.
+
+**Protocol and boundary.** Existing target evidence remains the authority:
+`AddedCallback @ 0x00423E70` publishes running before it starts
+`StartupThread`; `StartupThread @ 0x004242B0` closes the worker and publishes
+idle after success or failed on its error path; `OnUpdate @ 0x00423440` keeps
+the startup gate closed for nonzero values and routes failed to the error
+scene. Values outside `0..2`, synchronization guarantees, and any stronger
+relationship to ReplayScanWorker remain Unknown. Legacy `Supervisor.hpp`
+retains its same-valued `SupervisorStartupThreadState @ +0x294` inside a
+different TH08-shaped `0x364` layout. It corroborates the value family but
+does not own TH095 storage.
+
+**Compiler evidence.** The first strict Main replay stopped on 25 compiler-
+private labels and receives zero exact credit. A later first 18-source replay
+stopped on 15 Global labels and likewise receives zero batch credit. Both
+mismatches preserved complete structural bytes, public identities, relocation
+offsets/types/targets, and every non-private symbol. Controlled refresh
+accepted the 40 private labels across three units. Immediate zero-refresh
+replay then passed all 199 units across 18 sources.
+
+**Guards and debt.** The guard pins the explicit 0/1/2 domain, four-byte enum
+ABI, sole canonical declaration, shared field type in all three TH095 headers,
+canonical constants in both Main bodies, absence of numeric compatibility
+aliases, and the separate legacy enum/offset. Removing the Main.cpp alias
+branch and Main.hpp field branch shrinks the closed selector ledger from 749
+to **747 directives across 107 files**. Selected-declaration debt remains
+**201 keys / 206 occurrences**.
+
+**Validation.** Focused Main replay passed **48/48 exact** after the controlled
+private-label refresh. Final direct-consumer replay passed **199/199 exact
+across 18 sources** with zero refresh. Pinned-VC7.1 normal probes emitted
+**116,276-byte** Main, **34,679-byte** Global, and **64,883-byte** SoundPlayer
+Intel 80386 COFF objects. The semantic guard and all **69 workflow tests**
+pass. Tracking remains **1,880 provisional / 697 source-present / 696 exact**.
+Per batching policy, no aggregate replay or product link is claimed; SEM-298
+remains the latest full receipt.
+
+**Unknown / next route.** Audit the adjacent `SupervisorFogCacheState @
++0x768` split. Prove the disabled/enabled/invalid producers and consumers plus
+VC7 emission before replacing exact/DIFF integer storage and aliases. Keep the
+legacy TH08-shaped `FogState` owner separate absent target-local ownership
+evidence.

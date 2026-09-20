@@ -77,16 +77,6 @@ namespace th095
 #define TH095_SUPERVISOR_FOG_INVALID SUPERVISOR_FOG_CACHE_INVALID
 #endif
 
-#ifdef DIFFBUILD
-#define TH095_SUPERVISOR_STARTUP_IDLE 0
-#define TH095_SUPERVISOR_STARTUP_RUNNING 1
-#define TH095_SUPERVISOR_STARTUP_FAILED 2
-#else
-#define TH095_SUPERVISOR_STARTUP_IDLE SUPERVISOR_STARTUP_PHASE_IDLE
-#define TH095_SUPERVISOR_STARTUP_RUNNING SUPERVISOR_STARTUP_PHASE_RUNNING
-#define TH095_SUPERVISOR_STARTUP_FAILED SUPERVISOR_STARTUP_PHASE_FAILED
-#endif
-
 enum SupervisorLoadingScreenValue
 {
     SUPERVISOR_LOADING_SCREEN_INACTIVE = 0,
@@ -1302,9 +1292,9 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
         return 4;
 
     g_AnmManager->ClearVertexShader();
-    if (supervisor->startupThreadState != TH095_SUPERVISOR_STARTUP_IDLE)
+    if (supervisor->startupThreadState != SUPERVISOR_STARTUP_PHASE_IDLE)
     {
-        if (supervisor->startupThreadState == TH095_SUPERVISOR_STARTUP_FAILED)
+        if (supervisor->startupThreadState == SUPERVISOR_STARTUP_PHASE_FAILED)
             return 4;
         return 1;
     }
@@ -1856,7 +1846,7 @@ i32 __fastcall Supervisor::AddedCallback(Supervisor *s)
 
     Float3 position(500.0f, 440.0f, 0.0f);
     g_Supervisor.SetupLoadingVms(&position);
-    g_Supervisor.startupThreadState = TH095_SUPERVISOR_STARTUP_RUNNING;
+    g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_RUNNING;
     g_Supervisor.StartReplayScan(
         (void (__fastcall *)(void *))Supervisor::StartupThread, s);
     return 0;
@@ -2057,7 +2047,7 @@ void __fastcall Supervisor::StartupThread(Supervisor *s)
     }
 
     g_Supervisor.ThreadClose();
-    g_Supervisor.startupThreadState = TH095_SUPERVISOR_STARTUP_IDLE;
+    g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_IDLE;
     g_Supervisor.flags.scoreBackupPending = 0;
     g_Supervisor.replayScanWorker.active = 0;
     g_Supervisor.replayScanWorker.exitSignal = 1;
@@ -2065,7 +2055,7 @@ void __fastcall Supervisor::StartupThread(Supervisor *s)
 
 error:
     g_Supervisor.ThreadClose();
-    g_Supervisor.startupThreadState = TH095_SUPERVISOR_STARTUP_FAILED;
+    g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_FAILED;
     g_Supervisor.flags.receivedCloseMsg = 1;
     g_Supervisor.replayScanWorker.active = 0;
     g_Supervisor.replayScanWorker.exitSignal = 1;

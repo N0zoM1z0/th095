@@ -619,14 +619,36 @@ debt remains **749 directives across 107 files** and declaration debt remains
 tests** pass. No aggregate/product closure is claimed; SEM-298 remains the
 latest full receipt.
 
+For SEM-308, `SupervisorStartupState.hpp` became the single profile-
+independent owner of the startup-worker phase at canonical Supervisor
+`+0x660`: idle `0`, running `1`, and failed `2`. Main, MainExact, and
+SupervisorRuntime now use that four-byte enum in every profile. Main.cpp's
+DIFFBUILD numeric aliases and MainExact.inl's raw `0/1/2` expressions are
+retired. `AddedCallback` publishes running, `StartupThread` publishes idle or
+failed, and `OnUpdate` consumes the same domain. Legacy `Supervisor.hpp`
+deliberately retains its same-valued startup enum at `+0x294` inside the
+distinct TH08-shaped `0x364` compatibility owner.
+
+The first strict Main replay stopped on 25 compiler-private labels and the
+first 18-source replay later stopped on 15 Global labels; both failed runs
+receive zero exact credit. Controlled refresh accepted those 40 labels across
+three units only after bytes, relocation offsets/types/targets, public
+identities, and all non-private symbols remained unchanged. Immediate final
+replay passed **199/199 exact across 18 sources** with zero refresh. Normal
+pinned-VC7.1 probes emitted **116,276-byte** Main, **34,679-byte** Global, and
+**64,883-byte** SoundPlayer i386 COFF objects. Removing two selected source
+directives shrinks selector debt to **747 directives across 107 files**;
+declaration debt remains **201 keys / 206 occurrences**. The semantic guard
+and all **69 workflow tests** pass. No aggregate/product closure is claimed;
+SEM-298 remains the latest full receipt.
+
 ## Next bounded lane
 
-Audit the remaining exact/normal split around `SupervisorStartupPhase @
-+0x660`: Main and SupervisorRuntime use the canonical enum only in normal
-builds, while MainExact and exact Main retain integer fields plus numeric macro
-aliases. Prove the 0/1/2 transitions and VC7 emission before removing those
-selectors; keep legacy `SupervisorStartupThreadState` separate unless target-
-local evidence proves the compatibility domain equivalent.
+Audit the adjacent exact/normal split around `SupervisorFogCacheState @
++0x768`: normal Main and SupervisorRuntime already use the canonical cache
+domain while MainExact and DIFFBUILD retain integer storage and numeric aliases.
+Prove the disabled/enabled/invalid transitions and VC7 emission before
+convergence; keep legacy `FogState` in the TH08-shaped owner separate.
 
 ## Protected working-tree exclusions
 
@@ -646,5 +668,5 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --path src/Main.cpp --details
-rg -n "SupervisorStartupPhase|SupervisorStartupThreadState|TH095_SUPERVISOR_STARTUP_|startupThreadState" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Supervisor.hpp src/Main.cpp src/MainExact.inl src/SupervisorStartupState.hpp config/match-units.toml docs/KNOWLEDGE_BASE.md
+rg -n "SupervisorFogCacheState|FogState|TH095_SUPERVISOR_FOG_|fogState" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Supervisor.hpp src/Main.cpp src/MainExact.inl src/SupervisorFogState.hpp config/match-units.toml docs/KNOWLEDGE_BASE.md
 ```

@@ -616,6 +616,19 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("SupervisorState_ExitGame = -1", legacy)
         self.assertIn("SupervisorState_GameManagerNextStageWeird = 12", legacy)
 
+    def test_supervisor_startup_phase_guard_accepts_shared_domain(self) -> None:
+        GUARD.check_supervisor_startup_phase_owner()
+        header = (ROOT / "src" / "SupervisorStartupState.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("SUPERVISOR_STARTUP_PHASE_IDLE = 0", header)
+        self.assertIn("SUPERVISOR_STARTUP_PHASE_FAILED = 2", header)
+        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
+        self.assertIn("SupervisorStartupPhase startupThreadState;", exact)
+        self.assertNotIn("i32 startupThreadState;", exact)
+
 
 if __name__ == "__main__":
     unittest.main()
