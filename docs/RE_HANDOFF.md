@@ -550,15 +550,41 @@ Controller i386 COFF objects. Six removed directives shrink selector debt to
 occurrences**. The semantic guard and all **65 workflow tests** pass. No
 aggregate/product closure is claimed; SEM-298 remains the latest full receipt.
 
+For SEM-305, `SupervisorFlags.hpp` became the sole profile-independent four-
+byte flags owner for the real TH095 `0x7BC` Supervisor at `+0x444`. Main,
+MainExact, SupervisorRuntime, and SupervisorLifecycle now share that layout.
+The exact declaration's `unknown9` spelling was retired in favor of the
+already-proved `resultRestartActive` protocol. The lifecycle constructor uses
+the canonical bit-6 field but keeps its bit-8 publication raw, because owner
+convergence does not independently prove the existing `scoreBackupPending`
+name at that producer. Legacy `Supervisor.hpp` deliberately retains its
+distinct nine-bit flags declaration inside the TH08-shaped `0x364`
+compatibility source family.
+
+The first combined replay stopped on 25 Main compiler-private labels and the
+expanded replay stopped on 15 Global labels; both failed runs receive zero
+exact credit. Controlled refresh accepted the same 40-label migration across
+three units only after bytes and all non-private relocation fields remained
+unchanged. Independent lifecycle replay passed 2/2 before refresh, and the
+immediate final direct-consumer replay passed **199/199 exact across 18
+sources** with zero refresh. Normal pinned-VC7.1 probes emitted **116,276-
+byte** Main, **5,890-byte** SupervisorLifecycle, **64,883-byte** SoundPlayer,
+**37,668-byte** PhotoGameTask, **28,916-byte** Controller, **30,317-byte**
+FrontEndLifecycle, and **32,929-byte** PhotoFront i386 COFF objects. Six
+removed directives shrink selector debt to **749 directives across 107
+files**; removing the lifecycle-only selected type shrinks declaration debt to
+**201 keys / 206 occurrences**. The semantic guard and all **66 workflow
+tests** pass. No aggregate/product closure is claimed; SEM-298 remains the
+latest full receipt.
+
 ## Next bounded lane
 
-Audit the duplicated `SupervisorFlags` declarations in `Main.hpp`,
-`MainExact.hpp`, `SupervisorRuntime.hpp`, `SupervisorLifecycle.cpp`, and the
-legacy `Supervisor.hpp` compatibility source family. Establish which bit
-domains and widths belong to the real TH095 `0x7BC` Supervisor before editing.
-Preserve the legacy `0x364` view as a separate source family where target-
-local evidence does not prove convergence, and do not turn the lifecycle
-constructor's selected representation into a second semantic owner.
+Converge the three identical `ScreenshotBitmapFileHeader` declarations in
+`Main.hpp`, `MainExact.hpp`, and `SupervisorRuntime.hpp` into one dependency-
+light, profile-independent serialized-header owner. Verify the `0x0E` packed
+layout and every screenshot producer/consumer before editing; do not fold the
+Win32 `BITMAPFILEHEADER` ABI into this owner or infer semantics for reserved
+fields beyond their serialized positions.
 
 ## Protected working-tree exclusions
 
@@ -577,6 +603,6 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --path src/SupervisorLifecycle.cpp --path src/Supervisor.hpp --details
-rg -n "SupervisorFlags|SupervisorLifecycleFlags|flags;|flags\." src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/SupervisorLifecycle.cpp src/Supervisor.hpp src/Main.cpp config/match-units.toml docs/KNOWLEDGE_BASE.md
+python3 scripts/analysis/report-semantic-debt.py --path src/Main.hpp --path src/MainExact.hpp --path src/SupervisorRuntime.hpp --details
+rg -n "ScreenshotBitmapFileHeader|BITMAPFILEHEADER|bitmapFileHeader|offBits" src/Main.hpp src/MainExact.hpp src/SupervisorRuntime.hpp src/Main.cpp src/MainExact.inl config/match-units.toml docs/KNOWLEDGE_BASE.md
 ```

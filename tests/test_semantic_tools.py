@@ -569,6 +569,24 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
         self.assertIn("C_ASSERT(sizeof(GameConfiguration) == 0x3C);", legacy)
 
+    def test_supervisor_flags_owner_guard_accepts_canonical_layout(self) -> None:
+        GUARD.check_supervisor_flags_owner()
+        header = (ROOT / "src" / "SupervisorFlags.hpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
+        self.assertIn("u32 resultRestartActive : 1;", header)
+        self.assertIn("sizeof(SupervisorFlags) == 4", header)
+        lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("SupervisorFlags flags;", lifecycle)
+        self.assertNotIn("struct SupervisorLifecycleFlags", lifecycle)
+        legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
+        self.assertIn("u32 d3dDevDisconnectFlag : 1;", legacy)
+        self.assertIn("C_ASSERT(sizeof(SupervisorFlags) == 0x4);", legacy)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -17,6 +17,7 @@
 #include "ReplayScanWorker.hpp"
 #include "ScreenEffect.hpp"
 #include "SoundPlayer.hpp"
+#include "SupervisorFlags.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "SupervisorFogState.hpp"
 #include "SupervisorStartupState.hpp"
@@ -89,35 +90,6 @@ struct GameWindow
 typedef char GameWindowSizeIs54[(sizeof(GameWindow) == 0x54) ? 1 : -1];
 typedef char GameWindowFrequencyAt14[(offsetof(GameWindow, performanceFrequency) == 0x14) ? 1 : -1];
 typedef char GameWindowCurrentTimeAt34[(offsetof(GameWindow, currentTimestamp) == 0x34) ? 1 : -1];
-
-struct SupervisorFlags
-{
-    union
-    {
-        u32 raw;
-        struct
-        {
-            u32 usingHardwareTL : 1;
-            u32 lockableBackbuffer : 1;
-            u32 using32BitGraphics : 1;
-            u32 speedhackDetected : 1;
-            u32 d3dDeviceNeedsReset : 1;
-            u32 forceExtraTimerStep : 1;
-            u32 dummyMidiTimerEnabled : 1;
-            u32 receivedCloseMsg : 1;
-            u32 scoreBackupPending : 1;
-#if defined(TH095_MATCH_EXACT)
-            u32 unknown9 : 1;
-#else
-            u32 resultRestartActive : 1;
-#endif
-            u32 keyboardAvailable : 1;
-            u32 controllerAvailable : 1;
-            u32 restartPhotoGame : 1;
-            u32 unknown13 : 19;
-        };
-    };
-};
 
 enum SupervisorState
 {

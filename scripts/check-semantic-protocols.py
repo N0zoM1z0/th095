@@ -1307,6 +1307,108 @@ def check_game_configuration_owner() -> None:
         fail("match manifest lost the canonical GameConfiguration Initialize ABI")
 
 
+def check_supervisor_flags_owner() -> None:
+    owner = (SRC / "SupervisorFlags.hpp").read_text(encoding="utf-8")
+    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
+    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+    lifecycle = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
+    legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
+    main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
+    controller = (SRC / "Controller.cpp").read_text(encoding="utf-8")
+    front_end = (SRC / "FrontEndLifecycle.cpp").read_text(encoding="utf-8")
+    photo_front = (SRC / "PhotoFront.cpp").read_text(encoding="utf-8")
+    photo_task = (SRC / "PhotoGameTask.cpp").read_text(encoding="utf-8")
+
+    if any(name in owner for name in PROFILE_NAMES):
+        fail("canonical SupervisorFlags owner must be profile-independent")
+    required_layout = (
+        "u32 raw;",
+        "u32 usingHardwareTL : 1;",
+        "u32 lockableBackbuffer : 1;",
+        "u32 using32BitGraphics : 1;",
+        "u32 speedhackDetected : 1;",
+        "u32 d3dDeviceNeedsReset : 1;",
+        "u32 forceExtraTimerStep : 1;",
+        "u32 dummyMidiTimerEnabled : 1;",
+        "u32 receivedCloseMsg : 1;",
+        "u32 scoreBackupPending : 1;",
+        "u32 resultRestartActive : 1;",
+        "u32 keyboardAvailable : 1;",
+        "u32 controllerAvailable : 1;",
+        "u32 restartPhotoGame : 1;",
+        "u32 unknown13 : 19;",
+        "(sizeof(SupervisorFlags) == 4)",
+    )
+    for fact in required_layout:
+        if fact not in owner:
+            fail(f"SupervisorFlags owner lost canonical layout: {fact}")
+
+    declarations: list[str] = []
+    for path in sorted(SRC.rglob("*")):
+        if path.suffix not in {".cpp", ".hpp", ".inl"}:
+            continue
+        text = source_without_comments(path.read_text(encoding="utf-8"))
+        if re.search(r"\b(?:struct|class)\s+SupervisorFlags\s*\{", text):
+            declarations.append(path.relative_to(ROOT).as_posix())
+    if declarations != ["src/Supervisor.hpp", "src/SupervisorFlags.hpp"]:
+        fail(
+            "SupervisorFlags declarations must be the TH095 owner plus the "
+            f"legacy compatibility layout: {declarations}"
+        )
+    if "C_ASSERT(sizeof(SupervisorFlags) == 0x4);" not in legacy:
+        fail("legacy Supervisor.hpp lost its distinct four-byte flag layout")
+    legacy_start = legacy.index("struct SupervisorFlags")
+    legacy_body = braced_body_after(legacy, legacy_start, "SupervisorFlags")
+    if "d3dDevDisconnectFlag" not in legacy_body:
+        fail("legacy Supervisor flags lost their compatibility field spelling")
+    if "resultRestartActive" in legacy_body or "unknown13" in legacy_body:
+        fail("legacy Supervisor flags were silently widened to the TH095 owner")
+
+    for path, text in (
+        ("Main.hpp", main_header),
+        ("MainExact.hpp", main_exact_header),
+        ("SupervisorRuntime.hpp", runtime_header),
+        ("SupervisorLifecycle.cpp", lifecycle),
+    ):
+        if '#include "SupervisorFlags.hpp"' not in text:
+            fail(f"{path} no longer routes through the SupervisorFlags owner")
+        if re.search(r"\bstruct\s+SupervisorFlags\s*\{", text):
+            fail(f"{path} restored a private SupervisorFlags declaration")
+
+    retired_tokens = (
+        "struct SupervisorLifecycleFlags",
+        "SupervisorLifecycleFlagsSizeIs4",
+        "u32 unknown9 : 1;",
+    )
+    canonical_corpus = "\n".join(
+        (main_header, main_exact_header, runtime_header, lifecycle)
+    )
+    for token in retired_tokens:
+        if token in canonical_corpus:
+            fail(f"canonical Supervisor flags restored retired debt: {token}")
+    for fact in (
+        "SupervisorFlags flags;",
+        "flags.dummyMidiTimerEnabled = 1;",
+        "flags.raw |= 0x100;",
+    ):
+        if fact not in lifecycle:
+            fail(f"Supervisor lifecycle lost canonical flag use: {fact}")
+
+    consumer_facts = (
+        (main_body, "g_Supervisor.flags.resultRestartActive = 1;"),
+        (controller, "g_Supervisor.flags.keyboardAvailable != 0"),
+        (controller, "g_Supervisor.flags.controllerAvailable != 0"),
+        (front_end, "g_Supervisor.flags.receivedCloseMsg != 0"),
+        (photo_front, "g_Supervisor.flags.resultRestartActive != 0"),
+        (photo_task, "g_Supervisor.flags.restartPhotoGame == 0"),
+        (photo_task, "g_Supervisor.flags.resultRestartActive = 0;"),
+    )
+    for text, fact in consumer_facts:
+        if fact not in text:
+            fail(f"canonical Supervisor flag producer/consumer was lost: {fact}")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -2487,6 +2589,7 @@ def main() -> int:
     check_midi_output_owner()
     check_replay_scan_worker_owner()
     check_game_configuration_owner()
+    check_supervisor_flags_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -2513,6 +2616,7 @@ def main() -> int:
     print("  MidiOutput owner: one 0x300 layout plus one shared fieldless API adapter")
     print("  ReplayScanWorker owner: one shared layout over three distinct storages")
     print("  GameConfiguration owner: one profile-independent TH095 0xC8 layout")
+    print("  Supervisor flags: one profile-independent TH095 0x7BC-owner layout")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

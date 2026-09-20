@@ -16,6 +16,7 @@
 #include "GameConfiguration.hpp"
 #include "MidiOutputApi.hpp"
 #include "ReplayScanWorker.hpp"
+#include "SupervisorFlags.hpp"
 #include "SupervisorStartupState.hpp"
 #include "SupervisorFogState.hpp"
 
@@ -27,28 +28,6 @@ struct DummyMidiTimer;
 struct Float3;
 struct FrontEndControllerView;
 struct PhotoGameTaskView;
-
-struct SupervisorFlags
-{
-    u32 usingHardwareTL : 1;
-    u32 lockableBackbuffer : 1;
-    u32 using32BitGraphics : 1;
-    u32 speedhackDetected : 1;
-    u32 d3dDeviceNeedsReset : 1;
-    u32 forceExtraTimerStep : 1;
-    u32 dummyMidiTimerEnabled : 1;
-    u32 receivedCloseMsg : 1;
-    u32 scoreBackupPending : 1;
-#if defined(TH095_MATCH_EXACT)
-    u32 unknown9 : 1;
-#else
-    u32 resultRestartActive : 1;
-#endif
-    u32 keyboardAvailable : 1;
-    u32 controllerAvailable : 1;
-    u32 restartPhotoGame : 1;
-    u32 unknown13 : 19;
-};
 
 enum SupervisorState
 {

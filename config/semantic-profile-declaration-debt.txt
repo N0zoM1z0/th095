@@ -187,7 +187,6 @@
 1	src/ScreenEffect.cpp	struct	ScreenEffectSupervisorShakeView
 1	src/ScreenEffectDraw.cpp	struct	ScreenEffectFloat3
 1	src/ScreenEffectDraw.cpp	struct	ScreenEffectVertexDiffuseXyzrhw
-1	src/SupervisorLifecycle.cpp	struct	SupervisorLifecycleFlags
 1	src/ecl/AnmManagerEclView.hpp	struct	AnmEntry
 1	src/ecl/AnmManagerEclView.hpp	struct	AnmLoaded
 1	src/ecl/AnmManagerEclView.hpp	struct	AnmLoadedSprite

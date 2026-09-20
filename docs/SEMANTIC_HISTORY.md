@@ -15233,3 +15233,60 @@ Main, MainExact, SupervisorRuntime, SupervisorLifecycle, and legacy
 Supervisor. Prove the real TH095 `0x7BC` bit layout and all active producers /
 consumers before convergence; keep the older `0x364` compatibility source
 family separate wherever the evidence does not establish equivalence.
+
+### SEM-305 — unify the TH095 Supervisor flags owner
+
+**Scope and ownership.** `SupervisorFlags.hpp` now owns the one profile-
+independent four-byte flags layout for the real TH095 `0x7BC` Supervisor at
+`+0x444`. Main, MainExact, SupervisorRuntime, and SupervisorLifecycle include
+that declaration directly. Existing target evidence already establishes bit 6
+as `dummyMidiTimerEnabled`, bit 7 as `receivedCloseMsg`, bit 9 as
+`resultRestartActive`, bits 10/11 as input-device availability, and bit 12 as
+`restartPhotoGame`; convergence changes no bit position or storage. The exact
+declaration's `unknown9` token is retired in favor of the proved bit-9 name.
+
+**Boundaries.** The lifecycle TU uses the canonical `SupervisorFlags` member
+and publishes bit 6 by name. Its adjacent constructor publication remains
+`flags.raw |= 0x100`: no independent reader establishes the existing
+`scoreBackupPending` spelling at that producer, and type convergence is not
+semantic evidence for bit 8. Likewise this batch does not newly validate the
+weaker existing names at other bit positions. `Supervisor.hpp` retains its
+distinct nine-bit declaration, including `d3dDevDisconnectFlag`, inside the
+TH08-shaped `0x364` compatibility owner; it is not widened to the TH095
+runtime layout.
+
+**Compiler evidence.** The first combined replay stopped on 25 Main compiler-
+private labels and receives zero exact credit. Independent lifecycle replay
+passed 2/2 before any refresh, proving the canonical bitfield/raw writes keep
+the constructor and destructor target emission. Controlled Main refresh then
+accepted those 25 labels only after bytes and all non-private relocation
+fields remained unchanged. The first expanded replay stopped on 15 Global
+private labels in two units and likewise receives zero credit. Controlled
+refresh accepted the total 40-label migration across three units; immediate
+zero-refresh replay passed 199 units across 18 sources. No public ABI identity,
+relocation offset/type/target, or code byte changed.
+
+**Guards and debt.** The owner guard pins the four-byte layout and existing bit
+positions, requires all canonical Supervisor declarations to include the
+owner, rejects the three duplicate canonical declarations, the lifecycle-only
+partial view, and exact `unknown9`, checks established producers/consumers, and
+permits only the asserted legacy compatibility declaration. Removing six
+counted directives shrinks selector debt from 755 to **749 directives across
+107 files**. Removing `SupervisorLifecycleFlags` shrinks declaration debt from
+202 keys / 207 occurrences to **201 keys / 206 occurrences**.
+
+**Validation.** Final focused replay passed **199/199 exact units across 18
+direct consumers** with zero private-label refresh. Pinned-VC7.1 normal probes
+emitted **116,276-byte** Main, **5,890-byte** SupervisorLifecycle, **64,883-
+byte** SoundPlayer, **37,668-byte** PhotoGameTask, **28,916-byte** Controller,
+**30,317-byte** FrontEndLifecycle, and **32,929-byte** PhotoFront Intel 80386
+COFF objects. The semantic guard and all **66 workflow tests** pass. Tracking
+remains **1,880 provisional / 697 source-present / 696 exact**. Per the
+batching policy, no aggregate replay or product link is claimed; SEM-298
+remains the latest full receipt.
+
+**Unknown / next route.** Converge the three identical packed
+`ScreenshotBitmapFileHeader` declarations in Main, MainExact, and
+SupervisorRuntime. Preserve the serialized `0x0E` layout and reserved fields,
+and do not conflate this source-owned record with a host SDK ABI without an
+independent compiler/target reason.
