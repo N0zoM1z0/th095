@@ -184,6 +184,8 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         header = (ROOT / "src" / "SoundPlayer.hpp").read_text(encoding="utf-8")
         self.assertIn("class SoundPlayer\n", header)
         self.assertNotIn("struct SoundPlayer\n", header)
+        self.assertNotIn("TH095_MATCH_EXACT", header)
+        self.assertNotIn("DIFFBUILD", header)
         self.assertIn("typedef ZunResult SoundPlayerResult;", header)
         self.assertNotIn("typedef ::ZunResult SoundPlayerResult;", header)
         semantic_sound_tail = (
@@ -217,6 +219,23 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         implementation = (ROOT / "src" / "SoundPlayer.cpp").read_text(
             encoding="utf-8"
         )
+        lifecycle_fields = {
+            "initializationThreadHandle": ("HANDLE", "0x5218"),
+            "soundDataLoaderThreadHandle": ("HANDLE", "0x521c"),
+            "initializationThreadId": ("DWORD", "0x5220"),
+            "initializationWindow": ("HWND", "0x5228"),
+        }
+        for name, (field_type, offset) in lifecycle_fields.items():
+            self.assertIn(f"    {field_type} {name};", header)
+            self.assertIn(f"offsetof(SoundPlayer, {name}) == {offset}", header)
+        for retired in (
+            "workerThreadHandle",
+            "secondaryWorkerThreadHandle",
+            "workerThreadId",
+            "workerWindow",
+        ):
+            self.assertNotIn(retired, header)
+            self.assertNotIn(retired, implementation)
         self.assertNotIn("TH095_LEGACY_ZUN_SUCCESS", implementation)
         self.assertNotIn("TH095_LEGACY_ZUN_ERROR", implementation)
         self.assertNotIn("SoundPlayer@th095@@QAE?AW4ZunResult@@", manifest)

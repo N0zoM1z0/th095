@@ -720,6 +720,8 @@ def check_sound_player_consumer_owners() -> None:
 
     if "class SoundPlayer\n" not in header or "struct SoundPlayer\n" in header:
         fail("SoundPlayer.hpp must expose one canonical class declaration")
+    if any(name in header for name in PROFILE_NAMES):
+        fail("canonical SoundPlayer.hpp must be profile-independent")
     if "typedef ZunResult SoundPlayerResult;" not in header:
         fail("SoundPlayer.hpp lost its canonical result type")
     if "typedef ::ZunResult SoundPlayerResult;" in header:
@@ -762,6 +764,27 @@ def check_sound_player_consumer_owners() -> None:
             fail(f"PhotoCamera lost canonical {name} consumers")
     if ecl_target_high.count("SOUND_PHOTO_PULSE") != 1:
         fail("EclRun lost its canonical photo-pulse sound consumer")
+
+    lifecycle_fields = {
+        "initializationThreadHandle": ("HANDLE", "0x5218"),
+        "soundDataLoaderThreadHandle": ("HANDLE", "0x521c"),
+        "initializationThreadId": ("DWORD", "0x5220"),
+        "initializationWindow": ("HWND", "0x5228"),
+    }
+    for name, (field_type, offset) in lifecycle_fields.items():
+        if f"    {field_type} {name};" not in header:
+            fail(f"SoundPlayer lost canonical lifecycle field: {name}")
+        if f"offsetof(SoundPlayer, {name}) == {offset}" not in header:
+            fail(f"SoundPlayer lost lifecycle offset assertion: {name}")
+    implementation = (SRC / "SoundPlayer.cpp").read_text(encoding="utf-8")
+    for retired in (
+        "workerThreadHandle",
+        "secondaryWorkerThreadHandle",
+        "workerThreadId",
+        "workerWindow",
+    ):
+        if retired in header or retired in implementation:
+            fail(f"SoundPlayer restored selected lifecycle spelling: {retired}")
 
     for retired in (
         "PhotoBulletSoundPlayerView",
@@ -813,7 +836,6 @@ def check_sound_player_consumer_owners() -> None:
         fail("migrated photo callers restored the selected struct data identity")
     if sum(section.count("?g_SoundPlayer@th095@@3VSoundPlayer@1@A") for section in migrated_sections) != 15:
         fail("migrated photo callers lost the fifteen canonical class data identities")
-    implementation = (SRC / "SoundPlayer.cpp").read_text(encoding="utf-8")
     for retired in (
         "#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS",
         "#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR",

@@ -19,13 +19,6 @@
 namespace th095
 {
 
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-#define initializationThreadHandle workerThreadHandle
-#define soundDataLoaderThreadHandle secondaryWorkerThreadHandle
-#define initializationThreadId workerThreadId
-#define initializationWindow workerWindow
-#endif
-
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 #define TH095_SOUND_GAME_WINDOW g_Supervisor.hwndGameWindow
 #define TH095_SOUND_MUSIC_MODE g_Supervisor.cfg.musicMode

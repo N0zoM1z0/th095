@@ -14843,3 +14843,51 @@ SoundPlayer body can use `initializationThreadHandle`,
 `soundDataLoaderThreadHandle`, `initializationThreadId`, and
 `initializationWindow` directly. Do not extend those semantics to
 `workerStopRequest` or adjacent unknown storage without independent evidence.
+
+### SEM-298 — make the SoundPlayer owner header profile-independent
+
+**Scope.** Close the final three selectors in `SoundPlayer.hpp` by applying
+the already accepted SND-013 lifecycle roles uniformly. Remove only the
+exact/DIFF member spellings and their source-local aliases; preserve the
+complete `0x52D0` layout, Win32 types, creation/wait/cleanup order, stop
+protocol, method bodies, and all adjacent unknown storage.
+
+**Evidence and representation.** Target-observed SND-013 already separates
+the initialization worker at `+0x5218`, its thread id at `+0x5220`, its HWND
+at `+0x5228`, and the sound-data-loader worker at `+0x521C`; `JoinThread`
+independently waits, closes, and clears both HANDLEs. The canonical names now
+appear directly in the one shared layout and offset assertions. The historical
+`workerThreadHandle`, `secondaryWorkerThreadHandle`, `workerThreadId`, and
+`workerWindow` declarations plus four exact-only macro aliases are gone.
+`workerStopRequest @ +0x5224` remains shared and unchanged.
+
+**Compiler evidence.** Field identifiers do not enter the public member ABI.
+The pinned VC7.1 SoundPlayer object preserved all 27 configured bodies and
+relocations without even a compiler-private label change. The high-fanout
+aggregate independently confirmed the same result across every configured
+source; no adapter or alternate declaration is required.
+
+**Guards and debt.** The SoundPlayer guard now requires the owner header to
+contain no profile selector, pins all four declarations and offsets, and
+rejects every historical lifecycle spelling in both header and implementation.
+Removing three header directives plus the cpp alias directive shrinks the
+baseline from 795 to **791 directives across 108 files**. Declaration debt
+remains **208 keys / 213 occurrences**; no baseline allowance was added.
+
+**Validation.** Focused replay passed SoundPlayer **27/27 exact** with zero
+private-label refresh, and the pinned-VC7.1 normal probe emitted a
+**64,883-byte Intel 80386 COFF** object. The current source then passed the
+complete **696/696 exact-unit replay across 88 sources** with zero refresh.
+The fresh normal product gate compiled all **88 i386 COFF translation units**
+and linked/verified a **778,752-byte PE32** image with build-local SHA-256
+`4e1b18d1fd1b913a34bd3cfb572da2ae0a7ecc34f375960f0330f9cbf9d50140`.
+This is source-unit exact preservation plus normal compile/link closure, not
+target whole-image identity or runtime-scenario validation. The semantic guard
+and all **59 tests** pass; tracking remains **1,880 provisional / 697
+source-present / 696 exact**.
+
+**Unknown / next route.** Audit the selected `GameErrorContext` class/struct
+declaration and its five exact caller definition sites. Establish whether it
+only changes VC7 `U`/`V` data-symbol identities, as with SoundPlayer, before
+migrating any manifest entry. Preserve ResultScreen's independent frozen-body
+boundary and do not infer behavior from declaration form.
