@@ -1,13 +1,16 @@
 # Semantic reconstruction history
 
-This file preserves the chronological Web-era policy and accepted batch
-records through the current accepted batch. It is historical evidence, not current operating
-policy. Use `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
+This file preserves chronological policy and accepted batch records. Earlier
+source-state claims can be superseded by later batches; read the latest relevant
+entry before reusing one. This is historical evidence, not current operating
+policy. Use `RE_HANDOFF.md` for the current checkpoint and
+`SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SEMANTIC_INDEX.md`, and `SOURCE_MAP.md` for current decisions.
 
-**Status: active — semantic batches are accepted only with target-local evidence
-and independent exact/product regression results. No whole-program semantic-completion
-claim is made.**
+**Status: active-incomplete — semantic batches require target-local evidence
+and independent exact/normal oracles appropriate to their scope. Aggregate
+exact and product gates apply after shared-source changes. No whole-program
+semantic-completion claim is made.**
 
 The current function-level reconstruction established the authored behavior of
 the original Japanese TH095 v1.02a target and produced a playable Windows i386

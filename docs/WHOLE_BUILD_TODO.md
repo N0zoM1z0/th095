@@ -2,13 +2,15 @@
 
 > Historical checkpoint: the artifact hash, size, and runtime scenarios in
 > this document describe the 2026-09-10 production source. Later semantic-owner
-> work changed the normal executable. Use `RE_HANDOFF.md` for the current build
-> checkpoint; do not transfer this page's runtime credit to newer artifacts.
+> work changed the normal executable. Use `RE_HANDOFF.md` for the latest
+> source-revision receipt; do not transfer this page's runtime credit to newer
+> artifacts. The generated executable and reports at `build/whole-validation/`
+> were cleared on 2026-09-26 and must be regenerated for a new check.
 
 This document records the completed production-build lane and the checks that
 must remain green. Whole-image byte equality is not a goal. The 696 accepted
 function-level exact results remain independently governed by canonical
-match-unit comparisons. The next phase is semantic reconstruction; future
+match-unit comparisons. Semantic reconstruction is now active; future
 Windows x86-64, native Linux, and Web/WASM game ports follow it and are tracked
 separately in `docs/ROADMAP.md`.
 

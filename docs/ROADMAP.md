@@ -16,7 +16,7 @@ and the only uncredited authored residual is `Controller::GetInput`.
 | --- | --- | --- |
 | VC7.1 Windows i386 reconstruction | **Playable** | Preserve the tagged cold-build, link, exact-unit, and exercised runtime baseline. |
 | Remaining exact work | **Optional / deferred** | Resolve `Controller::GetInput` only with a natural, reproducible 100% comparison; never block ports on it. |
-| Semantic reconstruction | **Next phase** | Replace layout-shaped source with evidence-backed types, names, protocols, and canonical owners while preserving exactness and playability. |
+| Semantic reconstruction | **Active, incomplete** | Replace layout-shaped source with evidence-backed types, names, protocols, and canonical owners while preserving exactness and the tagged playable baseline. |
 | Portable runtime foundation | **Planned after semantics** | The reconstructed game sources build under a modern compiler behind explicit platform interfaces. |
 | Windows x86-64 game port | **Planned after the portable boundary** | A native 64-bit Windows build meets the playable acceptance criteria below. |
 | Native Linux i386 preview | **Optional stepping stone** | Use the original pointer width only if it materially shortens platform-backend validation. |

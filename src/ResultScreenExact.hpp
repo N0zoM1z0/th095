@@ -1,5 +1,5 @@
-// Exact-facing ResultScreen ABI snapshot from the last strict pre-production-canonicalization replay.
-// Selected only by TH095_MATCH_EXACT; production uses src/ResultScreen.hpp canonical owners.
+// Exact-profile ResultScreen ABI declaration, maintained with accepted exact units.
+// Selected through ResultScreen.hpp; the separate normal declaration remains semantic debt.
 #ifndef TH095_RESULT_SCREEN_HPP
 #define TH095_RESULT_SCREEN_HPP
 

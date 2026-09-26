@@ -1,5 +1,5 @@
-// Exact-facing SceneSelect ABI snapshot from the last strict pre-production-canonicalization replay.
-// Selected only by TH095_MATCH_EXACT; production uses src/SceneSelect.hpp canonical owners.
+// Exact-profile SceneSelect ABI declaration, maintained with accepted exact units.
+// Selected through SceneSelect.hpp; the separate normal declaration remains semantic debt.
 #ifndef TH095_SCENE_SELECT_HPP
 #define TH095_SCENE_SELECT_HPP
 

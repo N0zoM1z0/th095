@@ -77,15 +77,16 @@ included.
 | Windows x86-64, Linux, and Web/WASM game ports | **Planned after semantics** | Modern platform products remain separate from the exact VC7.1 build. |
 | Whole-executable byte identity | **Not claimed** | Exactness remains governed by the reproducible function/object match ledger. |
 
-The playable status describes the reconstructed native Windows executable; it
-is not a separate port, an asset distribution, or a claim that every possible
-runtime path has been exhausted. The mutable-relocation, global-owner, and
+The playable status describes the tagged Windows i386 baseline; later semantic
+source revisions require their own runtime validation. It is not a separate
+port, an asset distribution, or a claim that every possible runtime path has
+been exhausted. The mutable-relocation, global-owner, and
 Chain-lifetime audit is recorded in `docs/OWNER_AUDIT.md`; runtime issues found
 during Windows/Wine validation are closed and tracked in
 `docs/RUNTIME_ISSUES.md`.
 
 The frozen playable baseline is tagged `v0.1.0-windows-i386`. The
-[next phase](docs/SEMANTIC_RECONSTRUCTION.md) is semantic reconstruction:
+[current phase](docs/SEMANTIC_RECONSTRUCTION.md) is semantic reconstruction:
 turning raw offsets, anonymous fields, magic protocol values, and target-facing
 views into evidence-backed C++ while preserving exact bytes and playable
 behavior. It is the key prerequisite for the Windows x86-64, native Linux, and
@@ -100,7 +101,8 @@ The pinned compiler is Microsoft Visual C++ .NET 2003 `13.10.3077`, matching
 the target's PE/Rich-header evidence. Exact compiler profiles remain recorded
 per source in `config/match-units.toml`; a successful aggregate compile does not
 promote one assumed profile to executable-wide truth. See the current handoff
-for the verified build/runtime checkpoint and remaining optional coverage.
+for the latest source-revision build receipt and next bounded lane; the tagged
+runtime checkpoint is recorded in `docs/WHOLE_BUILD_TODO.md`.
 
 Start a reconstruction session with:
 
