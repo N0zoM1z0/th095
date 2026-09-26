@@ -744,6 +744,22 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 GUARD.check_front_end_flags_owner(changed)
 
+    def test_front_end_scene_queue_guard_rejects_raw_reset(self) -> None:
+        GUARD.check_front_end_scene_queue_owner()
+        source = (ROOT / "src" / "FrontEndController.cpp").read_text(
+            encoding="utf-8"
+        )
+        named = "this->scenePreviewSizeQueue.count = 0;"
+        self.assertIn(named, source)
+        changed = source.replace(
+            named,
+            "*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x62d0) = 0;",
+            1,
+        )
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                GUARD.check_front_end_scene_queue_owner(changed)
+
 
 if __name__ == "__main__":
     unittest.main()

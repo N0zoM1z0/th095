@@ -107,17 +107,6 @@ struct FrontEndControllerUpdateView
     i32 entryMode;
 };
 
-#if !defined(TH095_MATCH_EXACT)
-struct FrontEndPostQueueStateView
-{
-    SceneStateHistoryView stateHistory;
-    u8 unknown10[0x0c];
-    i32 pendingTextureCount;
-};
-typedef char FrontEndPostQueuePendingTextureCountAt1C[
-    (offsetof(FrontEndPostQueueStateView, pendingTextureCount) == 0x1c) ? 1 : -1];
-#endif
-
 struct FrontEndUpdateLocals
 {
     FrontEndVmUpdateView *second69;
@@ -790,84 +779,24 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             {
                 Sleep(1);
             }
-// Preserve the target compiler's private-label buckets in exact builds while
-// exposing the proven contiguous queue ownership in the maintainable build.
-#if defined(TH095_MATCH_EXACT)
-#define FRONT_END_GROUP_PREVIEW_DATA_QUEUE                                  \
-    reinterpret_cast<SceneValueQueue *>(                                    \
-        reinterpret_cast<u8 *>(this) + 0x61b8)
-#define FRONT_END_SCENE_PREVIEW_DATA_QUEUE                                  \
-    reinterpret_cast<SceneValueQueue *>(                                    \
-        reinterpret_cast<u8 *>(this) + 0x6248)
-#define FRONT_END_GROUP_PREVIEW_SIZE_COUNT                                  \
-    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6240))
-#define FRONT_END_SCENE_PREVIEW_SIZE_COUNT                                  \
-    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x62d0))
-#define FRONT_END_GROUP_PREVIEW_COUNT                                       \
-    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6318))
-#define FRONT_END_SCENE_PREVIEW_COUNT                                       \
-    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6360))
-#define FRONT_END_LOADED_GROUP_COUNT                                        \
-    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63a8))
-#define FRONT_END_SELECTION_COUNT                                           \
-    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x6168))
-#define FRONT_END_LOADED_SCENE_COUNT                                        \
-    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x61b0))
-#else
-#define FRONT_END_GROUP_PREVIEW_DATA_QUEUE (&this->groupPreviewDataQueue)
-#define FRONT_END_SCENE_PREVIEW_DATA_QUEUE (&this->scenePreviewDataQueue)
-#define FRONT_END_GROUP_PREVIEW_SIZE_COUNT (this->groupPreviewSizeQueue.count)
-#define FRONT_END_SCENE_PREVIEW_SIZE_COUNT (this->scenePreviewSizeQueue.count)
-#define FRONT_END_GROUP_PREVIEW_COUNT (this->groupPreviewQueue.count)
-#define FRONT_END_SCENE_PREVIEW_COUNT (this->scenePreviewQueue.count)
-#define FRONT_END_LOADED_GROUP_COUNT (this->loadedGroupQueue.count)
-#define FRONT_END_SELECTION_COUNT (this->selectionQueue.count)
-#define FRONT_END_LOADED_SCENE_COUNT (this->loadedSceneQueue.count)
-#endif
-            while (FRONT_END_GROUP_PREVIEW_DATA_QUEUE->Size() != 0)
+            while (this->groupPreviewDataQueue.Size() != 0)
             {
-                FrontEndDrainQueueValue(FRONT_END_GROUP_PREVIEW_DATA_QUEUE);
+                FrontEndDrainQueueValue(&this->groupPreviewDataQueue);
             }
-            while (FRONT_END_SCENE_PREVIEW_DATA_QUEUE->Size() != 0)
+            while (this->scenePreviewDataQueue.Size() != 0)
             {
-                FrontEndDrainQueueValue(FRONT_END_SCENE_PREVIEW_DATA_QUEUE);
+                FrontEndDrainQueueValue(&this->scenePreviewDataQueue);
             }
-            FRONT_END_GROUP_PREVIEW_SIZE_COUNT = 0;
-            FRONT_END_SCENE_PREVIEW_SIZE_COUNT = 0;
-            FRONT_END_GROUP_PREVIEW_COUNT = 0;
-            FRONT_END_SCENE_PREVIEW_COUNT = 0;
-            FRONT_END_LOADED_GROUP_COUNT = 0;
-            FRONT_END_SELECTION_COUNT = 0;
-            FRONT_END_LOADED_SCENE_COUNT = 0;
-#undef FRONT_END_GROUP_PREVIEW_DATA_QUEUE
-#undef FRONT_END_SCENE_PREVIEW_DATA_QUEUE
-#undef FRONT_END_GROUP_PREVIEW_SIZE_COUNT
-#undef FRONT_END_SCENE_PREVIEW_SIZE_COUNT
-#undef FRONT_END_GROUP_PREVIEW_COUNT
-#undef FRONT_END_SCENE_PREVIEW_COUNT
-#undef FRONT_END_LOADED_GROUP_COUNT
-#undef FRONT_END_SELECTION_COUNT
-#undef FRONT_END_LOADED_SCENE_COUNT
-#if defined(TH095_MATCH_EXACT)
-#define FRONT_END_PENDING_TEXTURE_COUNT                                     \
-    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63cc))
-#define FRONT_END_STATE_HISTORY_COUNT                                       \
-    (*reinterpret_cast<i32 *>(reinterpret_cast<u8 *>(this) + 0x63bc))
-#define FRONT_END_CURRENT_DISPLAY_STATE                                     \
-    (*reinterpret_cast<i8 *>(reinterpret_cast<u8 *>(this) + 0xe92))
-#else
-#define FRONT_END_PENDING_TEXTURE_COUNT                                     \
-    (reinterpret_cast<FrontEndPostQueueStateView *>(&this->stateHistory)    \
-         ->pendingTextureCount)
-#define FRONT_END_STATE_HISTORY_COUNT (this->stateHistory.count)
-#define FRONT_END_CURRENT_DISPLAY_STATE (this->currentDisplayState)
-#endif
-            FRONT_END_PENDING_TEXTURE_COUNT = 0;
-            FRONT_END_STATE_HISTORY_COUNT = 0;
-            FRONT_END_CURRENT_DISPLAY_STATE = -1;
-#undef FRONT_END_PENDING_TEXTURE_COUNT
-#undef FRONT_END_STATE_HISTORY_COUNT
-#undef FRONT_END_CURRENT_DISPLAY_STATE
+            this->groupPreviewSizeQueue.count = 0;
+            this->scenePreviewSizeQueue.count = 0;
+            this->groupPreviewQueue.count = 0;
+            this->scenePreviewQueue.count = 0;
+            this->loadedGroupQueue.count = 0;
+            this->selectionQueue.count = 0;
+            this->loadedSceneQueue.count = 0;
+            this->pendingTextureCount = 0;
+            this->stateHistory.count = 0;
+            this->currentDisplayState = -1;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
         case 1:

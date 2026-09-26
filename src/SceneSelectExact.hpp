@@ -257,11 +257,17 @@ struct SceneSelectControllerView
     i32 previewTimer;
     u8 unknown0ea4[0x5284];
     SceneValueQueue selectionQueue;
-    u8 unknown6170[0x168];
+    SceneValueQueue loadedSceneQueue;
+    SceneValueQueue groupPreviewDataQueue;
+    SceneValueQueue groupPreviewSizeQueue;
+    SceneValueQueue scenePreviewDataQueue;
+    SceneValueQueue scenePreviewSizeQueue;
     SceneValueQueue groupPreviewQueue;
     SceneValueQueue scenePreviewQueue;
-    u8 unknown6368[0x48];
+    SceneValueQueue loadedGroupQueue;
     SceneStateHistoryView stateHistory;
+    u8 unknown63c0[0x0c];
+    i32 pendingTextureCount;
 
     i32 GetSelectedGroup()
     {
@@ -396,12 +402,26 @@ typedef char SceneSelectPreviewTimerAtEA0[
     (offsetof(SceneSelectControllerView, previewTimer) == 0xea0) ? 1 : -1];
 typedef char SceneSelectSelectionQueueAt6128[
     (offsetof(SceneSelectControllerView, selectionQueue) == 0x6128) ? 1 : -1];
+typedef char SceneSelectLoadedSceneQueueAt6170[
+    (offsetof(SceneSelectControllerView, loadedSceneQueue) == 0x6170) ? 1 : -1];
+typedef char SceneSelectGroupPreviewDataQueueAt61B8[
+    (offsetof(SceneSelectControllerView, groupPreviewDataQueue) == 0x61b8) ? 1 : -1];
+typedef char SceneSelectGroupPreviewSizeQueueAt6200[
+    (offsetof(SceneSelectControllerView, groupPreviewSizeQueue) == 0x6200) ? 1 : -1];
+typedef char SceneSelectScenePreviewDataQueueAt6248[
+    (offsetof(SceneSelectControllerView, scenePreviewDataQueue) == 0x6248) ? 1 : -1];
+typedef char SceneSelectScenePreviewSizeQueueAt6290[
+    (offsetof(SceneSelectControllerView, scenePreviewSizeQueue) == 0x6290) ? 1 : -1];
 typedef char SceneSelectGroupPreviewQueueAt62D8[
     (offsetof(SceneSelectControllerView, groupPreviewQueue) == 0x62d8) ? 1 : -1];
 typedef char SceneSelectScenePreviewQueueAt6320[
     (offsetof(SceneSelectControllerView, scenePreviewQueue) == 0x6320) ? 1 : -1];
+typedef char SceneSelectLoadedGroupQueueAt6368[
+    (offsetof(SceneSelectControllerView, loadedGroupQueue) == 0x6368) ? 1 : -1];
 typedef char SceneSelectStateHistoryAt63B0[
     (offsetof(SceneSelectControllerView, stateHistory) == 0x63b0) ? 1 : -1];
+typedef char SceneSelectPendingTextureCountAt63CC[
+    (offsetof(SceneSelectControllerView, pendingTextureCount) == 0x63cc) ? 1 : -1];
 
 extern SceneDefinitionView *g_SceneGroups[12];
 extern i32 g_SceneGroupCounts[12];

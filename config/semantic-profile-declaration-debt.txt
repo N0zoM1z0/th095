@@ -32,7 +32,6 @@
 1	src/EnemyManagerUpdate.cpp	struct	PhotoEnemyManagerView
 1	src/EnemyManagerUpdate.cpp	struct	PhotoEnemySceneDefinitionView
 1	src/EnemyManagerUpdate.cpp	struct	PhotoEnemyTimelineView
-1	src/FrontEndController.cpp	struct	FrontEndPostQueueStateView
 1	src/FrontEndController.cpp	struct	FrontEndSupervisorAudioView
 1	src/FrontEndLifecycle.cpp	struct	FrontEndAnmManagerView
 1	src/FrontEndLifecycle.cpp	struct	FrontEndSceneDefinitionView

@@ -28,8 +28,8 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 
 - Do not add any conditional directive below `src/` that references
   `TH095_MATCH_EXACT` or `DIFFBUILD`. CI freezes the remaining historical debt
-  as a shrink-only baseline: **715 directives across 103 files** and **200
-  selected-declaration keys / 205 occurrences**.
+  as a shrink-only baseline: **712 directives across 103 files** and **199
+  selected-declaration keys / 204 occurrences**.
 - Exact replay validates only the source selected by the exact profile. When
   exact and normal select different declarations, expressions, or bodies,
   validate the normal source independently with target evidence and a normal
@@ -40,7 +40,32 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 - Keep unproved storage and roles Unknown. Do not promote a name from a single
   write, adjacent-game similarity, exactness alone, or decompiler wording.
 
-## Current semantic checkpoint — SEM-318
+## Current semantic checkpoint — SEM-319
+
+`FrontEndController.cpp`'s Game Start transition now uses named fields for
+both preview-data queue drains, seven sibling count resets, the pending
+texture count, state history, and display state. The exact source no longer
+contains its twelve raw controller offsets or the selected queue macros.
+`SceneSelectExact.hpp` now exposes all nine 0x48-byte queue slots and the
+pending count at `+0x63CC`; normal `SceneSelect.hpp` exposes the same
+post-history count. The original exact/normal Scene Select class split still
+exists, but this transition compiles one shared body.
+
+Fresh hash-attested `UpdateMainMenu @ 0x00446A50` evidence confirms every
+drain/reset displacement; independent `LoadSceneSelectionAssets @ 0x0044D0A0`
+confirms the nine channel slots. The first coordinator comparison refreshed
+18 compiler-private labels in two units after structural equality was
+proved. The wider header audit refreshed 12 more labels in HelpMenu and
+SceneTexture. Final affected-source replay passed **67/67 exact units across
+18 sources with zero refresh**. All **17** normal sources transitively
+including either Scene Select header compiled to pinned-VC7.1 i386 COFF,
+and the DIFF FrontEndController probe passed. The manifest changed 30 private
+label symbols in four units and no other field. Three selector directives
+and one selected declaration were retired. The most recent full 696/696
+replay and 88-TU normal product remain the SEM-316 baseline, before these
+focused batches.
+
+## Prior checkpoint — SEM-318
 
 `FrontEndControllerFlagBits` now lives in profile-independent
 `FrontEndGlobals.hpp`. The coordinator uses it at `+0x6120` in exact, DIFF,
@@ -60,7 +85,7 @@ representative producers/consumers. Two selector directives and one selected
 declaration were retired. The last aggregate **696/696 exact** and 88-TU
 normal product receipts still belong to SEM-316, before SEM-317/318.
 
-## Prior checkpoint — SEM-317
+## Earlier checkpoint — SEM-317
 
 `FrontEndGlobals.hpp` now declares one `FrontEndRequestedState` enum for all
 profiles. `FrontEndController.cpp` uses it at `requestedState @ +0x6110` for
@@ -121,13 +146,13 @@ unknowns are in `SEMANTIC_HISTORY.md`.
 
 ## Next bounded lane
 
-Audit the raw cursor addresses in `FrontEndController.cpp`'s
-`UpdateMainMenu` against existing Scene Select and Replay Browser members
-before replacing them. Preserve exact emission, bit 4, bits 6..31, and
-surrounding gaps. For small changes, use focused exact units and normal
-probes; repeat cold aggregate validation at a later shared-owner milestone,
-as directed by the user. Keep VC7.1 builds serial and limited to one CPU at
-lower priority.
+Continue the exact Scene Select snapshot convergence one bounded field family
+at a time. Compare any remaining anonymous bytes against independent TH095
+producers and consumers before naming them. Preserve exact emission, bit 4,
+bits 6..31, and surrounding gaps. For small changes, use focused exact units
+and normal probes; repeat cold aggregate validation at a later shared-owner
+milestone, as directed by the user. Keep VC7.1 builds serial and limited to
+one CPU at lower priority.
 
 ## Protected working-tree exclusions
 
@@ -147,7 +172,7 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/FrontEndController.cpp --details
-rg -n "reinterpret_cast<u8 \*>\(this\)|secondaryCursor" src/FrontEndController.cpp src/SceneSelect.hpp src/FrontEndGlobals.hpp
+rg -n "unknown|SceneValueQueue|pendingTextureCount" src/SceneSelectExact.hpp src/SceneSelect.hpp
 python3 scripts/replay-exact-units.py --source src/FrontEndController.cpp
 ```
 

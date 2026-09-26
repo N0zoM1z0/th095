@@ -2170,6 +2170,68 @@ def check_front_end_flags_owner(controller_text: str | None = None) -> None:
                 fail(f"{name} lost a named FrontEnd flag producer/consumer: {marker}")
 
 
+def check_front_end_scene_queue_owner(controller_text: str | None = None) -> None:
+    queue_fields = (
+        ("selectionQueue", "6128"),
+        ("loadedSceneQueue", "6170"),
+        ("groupPreviewDataQueue", "61b8"),
+        ("groupPreviewSizeQueue", "6200"),
+        ("scenePreviewDataQueue", "6248"),
+        ("scenePreviewSizeQueue", "6290"),
+        ("groupPreviewQueue", "62d8"),
+        ("scenePreviewQueue", "6320"),
+        ("loadedGroupQueue", "6368"),
+    )
+    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
+        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        owner_start = source.index("struct SceneSelectControllerView")
+        owner = source[owner_start:source.index("i32 GetSelectedGroup()", owner_start)]
+        actual = re.findall(r"\bSceneValueQueue\s+(\w+)\s*;", owner)
+        if actual != [field for field, _ in queue_fields]:
+            fail(f"{name} lost the complete ordered nine-queue owner")
+        for field, offset in queue_fields:
+            if f"offsetof(SceneSelectControllerView, {field}) == 0x{offset}" not in source:
+                fail(f"{name} lost the {field} offset assertion")
+        for field, offset in (("stateHistory", "63b0"), ("pendingTextureCount", "63cc")):
+            if f"offsetof(SceneSelectControllerView, {field}) == 0x{offset}" not in source:
+                fail(f"{name} lost the {field} offset assertion")
+        if "SceneStateHistoryView stateHistory;" not in owner:
+            fail(f"{name} lost its post-queue history owner")
+        if "i32 pendingTextureCount;" not in owner:
+            fail(f"{name} lost its post-queue pending-texture counter")
+
+    controller = source_without_comments(
+        controller_text
+        if controller_text is not None
+        else (SRC / "FrontEndController.cpp").read_text(encoding="utf-8")
+    )
+    if "FrontEndPostQueueStateView" in controller:
+        fail("FrontEnd restored its selected post-queue projection")
+    if "FRONT_END_GROUP_PREVIEW_DATA_QUEUE" in controller:
+        fail("FrontEnd restored its selected queue access macros")
+    if re.search(r"reinterpret_cast<u8\s*\*>\(this\)\s*\+\s*0x", controller):
+        fail("FrontEnd restored raw controller offsets")
+    sequence = (
+        "this->groupPreviewDataQueue.Size()",
+        "FrontEndDrainQueueValue(&this->groupPreviewDataQueue);",
+        "this->scenePreviewDataQueue.Size()",
+        "FrontEndDrainQueueValue(&this->scenePreviewDataQueue);",
+        "this->groupPreviewSizeQueue.count = 0;",
+        "this->scenePreviewSizeQueue.count = 0;",
+        "this->groupPreviewQueue.count = 0;",
+        "this->scenePreviewQueue.count = 0;",
+        "this->loadedGroupQueue.count = 0;",
+        "this->selectionQueue.count = 0;",
+        "this->loadedSceneQueue.count = 0;",
+        "this->pendingTextureCount = 0;",
+        "this->stateHistory.count = 0;",
+        "this->currentDisplayState = -1;",
+    )
+    positions = [controller.find(marker) for marker in sequence]
+    if any(position < 0 for position in positions) or positions != sorted(positions):
+        fail("FrontEnd Game Start cleanup lost named queue or post-queue order")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -3361,6 +3423,7 @@ def main() -> int:
     check_front_end_timer_owner()
     check_front_end_requested_state_owner()
     check_front_end_flags_owner()
+    check_front_end_scene_queue_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -3398,6 +3461,7 @@ def main() -> int:
     print("  FrontEnd timers: one shared ZunTimer type with target-order reset helper")
     print("  FrontEnd requested states: one shared explicit 0..9 domain")
     print("  FrontEnd flags: one shared bit-0/1/2/3/5 owner with unknown ranges")
+    print("  FrontEnd scene queues: nine typed owners and post-queue cleanup in both profiles")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

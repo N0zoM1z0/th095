@@ -15917,3 +15917,60 @@ Do not assign a role to bit 4 from its writers alone. Review the raw cursor
 addresses in `UpdateMainMenu` against existing Scene Select/Replay Browser
 members before replacing them; exact emission must remain independently
 checked.
+
+### SEM-319 — use named Scene Select queues in the exact main-menu transition
+
+**Scope.** The Game Start path in `FrontEndController.cpp` now drains the two
+preview-data queues and clears seven sibling queue counts, the pending-texture
+count, state-history count, and display state through the same named fields in
+exact, DIFF, and normal builds. The twelve former raw exact offsets and their
+profile-selected access macros are gone. `SceneSelectExact.hpp` exposes the
+five previously anonymous queues within its existing nine-slot block and the
+loaded-group queue; both Scene Select headers expose
+`pendingTextureCount @ +0x63CC` after the preserved 12-byte gap. The
+normal-only `FrontEndPostQueueStateView` projection is retired.
+
+**Target observed.** Fresh hash-attested TH095 `UpdateMainMenu @ 0x00446A50`
+reads counts at `+0x61F8/+0x6288`, calls exact `SceneValueQueue::Pop @
+0x00450F60` on bases `+0x61B8/+0x6248`, and frees each popped payload. It
+then clears counts at `+0x6240/+0x62D0/+0x6318/+0x6360/+0x63A8/+0x6168/
++0x61B0`, followed by scalars `+0x63CC/+0x63BC` and the byte at `+0xE92`.
+The independent target `LoadSceneSelectionAssets @ 0x0044D0A0` publishes
+and consumes the same nine 0x48-byte queue slots in the order already
+established by SEM-022/169. Each promoted member has a compile-time offset
+assertion in both Scene Select declarations. Queue payload types, ownership
+outside these two explicit frees, and the twelve-byte gap remain unknown.
+
+**Ownership and compiler boundary.** The one front-end allocation at
+`0x004CA2F4` stores this block. The asset worker produces or consumes the
+individual channels; the Game Start transition owns these drains and resets.
+The Scene Select headers still have distinct historical class declarations,
+but both now name the same queue and post-queue fields; exact and normal
+`FrontEndController.cpp` compile one cleanup body. The exact/normal class
+split remains tracked debt rather than evidence for two runtime owners.
+This removes three conditional directives from FrontEndController and one
+profile-selected local declaration; the closed baselines shrink to **712
+selector directives across 103 files** and **199 declaration keys / 204
+occurrences**.
+
+**Validation.** The first FrontEndController exact comparison stopped on
+compiler-private label names. Controlled refresh verified identical bytes,
+relocation offsets/types, public identities, and target destinations before
+updating 18 labels in two units; an immediate 4/4 zero-refresh replay passed.
+The wider exact-header audit refreshed six private labels in HelpMenu and six
+in SceneTexture under the same constraints. A recursive include-closure audit
+then passed **67/67 exact units across 18 affected sources** with zero label
+refresh. The manifest diff from SEM-318 is exactly 30 private label symbols
+in four units, with no other field changed. Serial pinned-VC7.1 normal
+compile probes emitted i386 COFF for all 17 source files transitively
+including either Scene Select header; a separate DIFF FrontEndController
+probe compiled. The semantic guard locks both nine-queue layouts and the
+shared Game Start cleanup. The last cold 696/696 replay and 88-TU normal
+product receipt remain SEM-316, before this focused batch. Target-independent
+CI passed all **77 workflow tests**. The semantic-debt router's
+`FrontEndController.cpp` raw-member-access hint fell from 12 to zero;
+its remaining unknown storage and ownership views require separate evidence.
+
+**Next route.** Inspect the remaining exact Scene Select snapshot against
+the canonical normal owner one bounded field family at a time. Do not infer
+roles for the gaps or rewrite unrelated screen-local state from adjacency.

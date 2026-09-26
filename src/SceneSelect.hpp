@@ -174,6 +174,8 @@ struct SceneSelectControllerView
     SceneValueQueue scenePreviewQueue;
     SceneValueQueue loadedGroupQueue;
     SceneStateHistoryView stateHistory;
+    u8 unknown63c0[0x0c];
+    i32 pendingTextureCount;
 
     i32 GetSelectedGroup()
     {
@@ -326,6 +328,8 @@ typedef char SceneSelectLoadedGroupQueueAt6368[
     (offsetof(SceneSelectControllerView, loadedGroupQueue) == 0x6368) ? 1 : -1];
 typedef char SceneSelectStateHistoryAt63B0[
     (offsetof(SceneSelectControllerView, stateHistory) == 0x63b0) ? 1 : -1];
+typedef char SceneSelectPendingTextureCountAt63CC[
+    (offsetof(SceneSelectControllerView, pendingTextureCount) == 0x63cc) ? 1 : -1];
 
 extern u8 g_SceneTextBuffer[0x40];
 extern u32 g_SceneGroupColors[11];
