@@ -2113,6 +2113,84 @@ def check_scene_select_front_end_prefix_owner(
         fail("exact Scene Select restored profile-sensitive Reset calls")
 
 
+def check_front_end_transition_vm_owner(exact_header_text: str | None = None) -> None:
+    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
+        header = source_without_comments(
+            exact_header_text
+            if name == "SceneSelectExact.hpp" and exact_header_text is not None
+            else (SRC / name).read_text(encoding="utf-8")
+        )
+        for marker in (
+            "u8 unknown0ea4[0x525c];",
+            "AnmVmId transitionVm;",
+            "u8 unknown6104[0x0c];",
+            "offsetof(SceneSelectControllerView, transitionVm) == 0x6100",
+            "offsetof(SceneSelectControllerView, requestedState) == 0x6110",
+        ):
+            if marker not in header:
+                fail(f"{name} lost its bounded transition-VM storage: {marker}")
+        if "unknown0ea4[0x526c]" in header:
+            fail(f"{name} restored anonymous transition-VM storage")
+
+    for name, markers in (
+        (
+            "FrontEndController.cpp",
+            (
+                "offsetof(FrontEndControllerUpdateView, transitionVm) == 0x6100",
+                "view->transitionVm.SetInterrupt(1);",
+                "&view->transitionVm",
+            ),
+        ),
+        (
+            "SceneSelectUpdateExact.inl",
+            (
+                "offsetof(SceneSelectUpdateView, transitionVm) == 0x6100",
+                "view->transitionVm.SetInterrupt(3);",
+                "view->transitionVm.SetInterrupt(2);",
+            ),
+        ),
+        (
+            "SceneSelectUpdate.cpp",
+            (
+                "offsetof(SceneSelectUpdateView, transitionVm) == 0x6100",
+                "view->transitionVm.SetInterrupt(3);",
+                "view->transitionVm.SetInterrupt(2);",
+            ),
+        ),
+        (
+            "ReplayBrowserExact.inl",
+            (
+                "this->transitionVm.SetInterrupt(3);",
+                "this->transitionVm.SetInterrupt(2);",
+            ),
+        ),
+        (
+            "ReplayBrowser.cpp",
+            (
+                "this->transitionVm.SetInterrupt(3);",
+                "this->transitionVm.SetInterrupt(2);",
+            ),
+        ),
+    ):
+        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        for marker in markers:
+            if marker not in body:
+                fail(f"{name} lost a transition-VM producer/consumer: {marker}")
+        if name == "FrontEndController.cpp" and body.count(
+            "*reinterpret_cast<SceneAnmVmId *>(&view->transitionVm) ="
+        ) != 3:
+            fail("FrontEnd coordinator lost one of three transition-VM creations")
+    for name in (
+        "OptionsMenu.cpp", "OptionsMenuExact.inl",
+        "MusicRoom.cpp", "MusicRoomExact.inl",
+        "HelpMenu.cpp", "HelpMenuExact.inl",
+    ):
+        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        for interrupt in (3, 2):
+            if f"this->transitionVm.SetInterrupt({interrupt});" not in body:
+                fail(f"{name} lost transition-VM interrupt {interrupt}")
+
+
 def check_front_end_requested_state_owner(
     controller_text: str | None = None,
     exact_update_text: str | None = None,
@@ -3537,6 +3615,7 @@ def main() -> int:
     check_supervisor_fog_cache_owner()
     check_front_end_timer_owner()
     check_scene_select_front_end_prefix_owner()
+    check_front_end_transition_vm_owner()
     check_front_end_requested_state_owner()
     check_front_end_flags_owner()
     check_front_end_scene_queue_owner()
@@ -3575,6 +3654,7 @@ def main() -> int:
     print("  Supervisor startup phase: one shared TH095 0/1/2 domain at +0x660")
     print("  Supervisor fog cache: one shared TH095 0/1/255 domain at +0x768")
     print("  FrontEnd timers: one shared ZunTimer type with target-order reset helper")
+    print("  FrontEnd transition VM: one shared +0x6100 handle across title pages")
     print("  FrontEnd requested states: one shared explicit 0..9 domain")
     print("  FrontEnd flags: one shared bit-0/1/2/3/5 owner with unknown ranges")
     print("  FrontEnd scene queues: nine typed owners and post-queue cleanup in both profiles")

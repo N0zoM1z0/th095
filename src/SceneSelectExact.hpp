@@ -261,7 +261,9 @@ struct SceneSelectControllerView
     u8 unknown0e93;
     SceneAnmVmId previewTextVmIds[3];
     i32 previewTimer;
-    u8 unknown0ea4[0x526c];
+    u8 unknown0ea4[0x525c];
+    AnmVmId transitionVm;
+    u8 unknown6104[0x0c];
     FrontEndRequestedState requestedState;
     u8 unknown6114[0x0c];
     union
@@ -419,6 +421,8 @@ typedef char SceneSelectPreviewTextVmIdsAtE94[
     (offsetof(SceneSelectControllerView, previewTextVmIds) == 0xe94) ? 1 : -1];
 typedef char SceneSelectPreviewTimerAtEA0[
     (offsetof(SceneSelectControllerView, previewTimer) == 0xea0) ? 1 : -1];
+typedef char SceneSelectTransitionVmAt6100[
+    (offsetof(SceneSelectControllerView, transitionVm) == 0x6100) ? 1 : -1];
 typedef char SceneSelectRequestedStateAt6110[
     (offsetof(SceneSelectControllerView, requestedState) == 0x6110) ? 1 : -1];
 typedef char SceneSelectFlagsAt6120[

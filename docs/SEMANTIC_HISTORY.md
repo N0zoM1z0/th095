@@ -16142,3 +16142,63 @@ SEM-316 baseline.
 update-view differences with target-local producers and consumers. Keep
 `+0x24..+0xF7`, state-dependent `+0xBF0`, and unrelated cursor behavior
 Unknown until those contracts are bounded.
+
+### SEM-323 — expose the shared front-end transition VM handle
+
+**Scope and target evidence.** The front-end allocation's four bytes at
+`+0x6100` hold the transition VM handle shared across title pages. Fresh
+hash-attested TH095 `Update @ 0x00445E80` takes the four-byte result of
+`AnmLoaded::CreateVm @ 0x00444EF0` through the loaded transition ANM pointer
+at `+0x04` and stores it at controller `+0x6100` for entry modes 0, 1,
+and 2. The same coordinator later passes `+0x6100` to
+`AnmVmId::SetInterrupt @ 0x00445330` on game/replay transitions. Fresh
+`UpdateSceneSelect @ 0x00447D00` independently passes that address with
+interrupts 3 and 2 on selector entry/return; fresh Replay Browser
+`Update @ 0x0044DCA0` does likewise on its entry/exit. Both callees are
+separately exact-matched TH095 functions. The bounded Ghidra decompile is
+private evidence, not pasted source; matching C++ views and relocation
+destinations independently corroborate the address and call identities.
+Existing exact-matched Help, Music Room, and Options page bodies also call
+`SetInterrupt(3/2)` through the same member; these are corroboration from
+earlier reconstruction, not fresh Ghidra queries in this batch.
+The bounded private decompile of the three fresh functions has SHA-256
+`78fe781e2a670ee4e247c71f1e354ff7c20e625591d544f95e3c0fb9b14667a0`;
+`scripts/ghidra.py` re-attested the pinned target before the query.
+
+**Representation and ownership.** Both Scene Select owner headers now split
+their former anonymous `+0xEA4..+0x610F` span at the proved four-byte
+boundary: `unknown0ea4` ends at `+0x6100`, canonical `AnmVmId transitionVm`
+occupies `+0x6100..+0x6103`, and `unknown6104[0x0C]` preserves the remaining
+bytes through `requestedState @ +0x6110`. The exact and normal Scene Select
+update views, FrontEnd coordinator, and several other page views already
+declared the same handle. The front-end allocation owns storage; the
+coordinator creates the handle, and individual pages own their interrupt
+transitions. The two Scene Select owner headers remain separately selected
+build declarations, now with the same handle representation. The coordinator
+and each selected update body remain their respective compiler-emission
+owners. No profile selector or alternate type was added.
+
+**Boundary.** Controller `+0x610C` remains anonymous in these generic
+owner headers: Scene Select, Replay Browser, Options, Music Room, Help, and
+Main Menu reuse it for different local state domains. This transaction does
+not define a shared state enum, name `+0x6104/+0x6108`, infer persistent
+storage, or extend the `AnmVmId` constructor contract in the separate
+FrontEnd lifecycle projection.
+
+**Oracles and retained split.** Before editing, the coordinator and Scene
+Select update exact units passed 5/5 with zero refresh; the unchanged normal
+Scene Select projection compiled with pinned VC7.1. After the declaration
+change, the Scene Select update unit passed 1/1 immediately. The wider
+17-source exact-header closure passed 57/57 after a controlled refresh of 30
+compiler-private label spellings in four units; a fresh 57/57 replay needed
+zero refresh. All 17 affected normal sources independently compiled as
+pinned-VC7.1 i386 COFF objects. A subsequent cold aggregate replay passed
+696/696 units across 88 sources with zero refresh. The 30 manifest changes
+alter only private label names; relocation offsets, types, targets, and
+structural bytes are unchanged. These checks preserve exact emission and
+normal compilation. A separate normal product build compiled all 88 i386
+COFF objects and linked a 778,752-byte PE32 image (build-local SHA-256
+`bebabf19ce482f4f15e2c2aa529a9a64ff670dc6deab0f389df466608113b69d`).
+This does not prove target whole-image identity or runtime transition
+behavior. The historical exact/normal Scene Select class split remains debt;
+this batch gives the four-byte handle the same representation on both sides.

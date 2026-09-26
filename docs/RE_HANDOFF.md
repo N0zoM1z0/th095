@@ -40,7 +40,25 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 - Keep unproved storage and roles Unknown. Do not promote a name from a single
   write, adjacent-game similarity, exactness alone, or decompiler wording.
 
-## Current semantic checkpoint — SEM-322
+## Current semantic checkpoint — SEM-323
+
+Both Scene Select owner headers now expose the front-end allocation's shared
+`AnmVmId transitionVm @ +0x6100`. Hash-attested coordinator, Scene Select,
+and Replay Browser decompiles establish creation and independent interrupt
+consumers; exact-matched Help, Music Room, and Options bodies corroborate
+cross-page use. The nearby `+0x6104/+0x6108` slots and reused screen-local
+`+0x610C` state remain anonymous in the generic owner. Both update views
+already named the handle; no new profile selector or body split was added.
+The affected exact closure passed **57/57 with zero refresh** after a
+controlled 30-label refresh, and all 17 affected normal sources compiled.
+The cold aggregate exact replay passed **696/696 across 88 sources with zero
+refresh**. A separate normal product build compiled 88 i386 COFF objects and
+linked a 778,752-byte PE32 image (build-local SHA-256
+`bebabf19ce482f4f15e2c2aa529a9a64ff670dc6deab0f389df466608113b69d`).
+These receipts do not establish whole-image byte identity or runtime behavior.
+See SEM-323 for target evidence and ownership details.
+
+## Prior checkpoint — SEM-322
 
 Both exact Scene Select owner/update views now type the 0xD8-byte
 `secondaryCursor @ +0xF8`, joining normal Scene Select, FrontEnd coordinator,
@@ -51,8 +69,8 @@ twenty-entry navigation, and highlighted-row consumption. Exact
 across 17 sources with zero refresh** after a controlled 30-private-label
 refresh. The unchanged normal update compiled to a 54,235-byte pinned-VC7.1
 i386 COFF object. `+0x24..+0xF7` and non-Replay-Browser cursor roles remain
-Unknown. The last cold 696/696 and 88-TU normal product remain the SEM-316
-baseline; SEM-317 through SEM-322 use focused checks as directed.
+Unknown. At that checkpoint the latest cold 696/696 and 88-TU normal product
+were still the SEM-316 baseline; SEM-323 repeated aggregate validation.
 
 ## Prior checkpoint — SEM-321
 
@@ -92,10 +110,9 @@ SceneTexture. Final affected-source replay passed **67/67 exact units across
 18 sources with zero refresh**. All **17** normal sources transitively
 including either Scene Select header compiled to pinned-VC7.1 i386 COFF,
 and the DIFF FrontEndController probe passed. The manifest changed 30 private
-label symbols in four units and no other field. Three selector directives
-and one selected declaration were retired. The most recent full 696/696
-replay and 88-TU normal product remain the SEM-316 baseline, before these
-focused batches.
+  label symbols in four units and no other field. Three selector directives
+and one selected declaration were retired. At SEM-319 the latest full
+696/696 replay and 88-TU normal product were the SEM-316 baseline.
 
 ## Earlier checkpoint — SEM-318
 
@@ -114,8 +131,8 @@ affected set passed **38/38 exact units with zero refresh**. Six normal
 pinned-VC7.1 compile probes and one DIFF FrontEndController probe passed.
 The shared flag guard checks field positions, unknown ranges, offset, and
 representative producers/consumers. Two selector directives and one selected
-declaration were retired. The last aggregate **696/696 exact** and 88-TU
-normal product receipts still belong to SEM-316, before SEM-317/318.
+declaration were retired. At SEM-318 the last aggregate **696/696 exact** and
+88-TU normal product receipts still belonged to SEM-316.
 
 ## Earlier checkpoint — SEM-317
 
@@ -179,12 +196,13 @@ unknowns are in `SEMANTIC_HISTORY.md`.
 ## Next bounded lane
 
 Compare the remaining exact and normal Scene Select update-view declarations
-one bounded field family at a time. Distinguish cross-screen requested state
-from the screen-local `+0x610C` state. Preserve exact emission, bit 4, bits
-6..31, and surrounding gaps. Use focused exact units and normal probes;
-repeat cold aggregate validation at a later shared-owner milestone, as
-directed by the user. Keep VC7.1 builds serial and limited to one CPU at
-lower priority.
+one bounded field family at a time. Keep the `+0x6104/+0x6108` slots and
+screen-local `+0x610C` state separate from `transitionVm`; resolve each only
+with target-local producers, independent consumers, and a normal compiler
+oracle. Preserve exact emission, bit 4, bits 6..31, and surrounding gaps.
+Use focused exact units and normal probes until another shared-owner batch
+warrants aggregate validation. Keep VC7.1 builds serial, on one CPU, at lower
+priority.
 
 ## Protected working-tree exclusions
 
