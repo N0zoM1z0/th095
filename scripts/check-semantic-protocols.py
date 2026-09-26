@@ -2041,6 +2041,68 @@ def check_front_end_timer_owner() -> None:
         fail("FrontEnd animation timer lost its canonical Tick consumer")
 
 
+def check_front_end_requested_state_owner(
+    controller_text: str | None = None,
+) -> None:
+    header_path = SRC / "FrontEndGlobals.hpp"
+    expected = [
+        ("FRONT_END_REQUESTED_STATE_INITIALIZE", 0),
+        ("FRONT_END_REQUESTED_STATE_MAIN_MENU", 1),
+        ("FRONT_END_REQUESTED_STATE_SCENE_SELECT", 2),
+        ("FRONT_END_REQUESTED_STATE_REPLAY_BROWSER", 3),
+        ("FRONT_END_REQUESTED_STATE_EXIT", 4),
+        ("FRONT_END_REQUESTED_STATE_START_GAME", 5),
+        ("FRONT_END_REQUESTED_STATE_START_REPLAY", 6),
+        ("FRONT_END_REQUESTED_STATE_OPTIONS", 7),
+        ("FRONT_END_REQUESTED_STATE_MUSIC_ROOM", 8),
+        ("FRONT_END_REQUESTED_STATE_HELP", 9),
+    ]
+    if enum_entries(
+        header_path, "FrontEndRequestedState", "FRONT_END_REQUESTED_STATE_"
+    ) != expected:
+        fail("FrontEnd requested-state domain lost its explicit 0..9 mapping")
+    header = source_without_comments(header_path.read_text(encoding="utf-8"))
+    if header.index("enum FrontEndRequestedState") > header.index("#if"):
+        fail("FrontEnd requested-state enum became profile-selected")
+    if re.search(r"^\s*#\s*define\s+FRONT_END_REQUESTED_STATE_", header, re.MULTILINE):
+        fail("FrontEnd requested-state numeric macros returned")
+
+    controller_path = SRC / "FrontEndController.cpp"
+    controller = source_without_comments(
+        controller_text
+        if controller_text is not None
+        else controller_path.read_text(encoding="utf-8")
+    )
+    if controller.count("FrontEndRequestedState requestedState;") != 1:
+        fail("FrontEnd coordinator lost its shared requested-state type")
+    if "i32 requestedState;" in controller:
+        fail("FrontEnd coordinator restored integer requested-state storage")
+    if "TH095_FRONT_END_REQUESTED_STATE_" in controller:
+        fail("FrontEnd coordinator restored selected requested-state aliases")
+    if "switch (view->requestedState)" not in controller:
+        fail("FrontEnd coordinator lost its requested-state dispatcher")
+    for name, _ in expected:
+        if f"case {name}:" not in controller:
+            fail(f"FrontEnd coordinator lost named dispatch for {name}")
+    for name in (
+        "MAIN_MENU", "SCENE_SELECT", "REPLAY_BROWSER", "EXIT",
+        "START_REPLAY", "OPTIONS", "MUSIC_ROOM", "HELP",
+    ):
+        if f"view->requestedState = FRONT_END_REQUESTED_STATE_{name};" not in controller:
+            fail(f"FrontEnd coordinator lost named publication for {name}")
+
+    scene = source_without_comments((SRC / "SceneSelect.hpp").read_text(encoding="utf-8"))
+    if "FrontEndRequestedState requestedState;" not in scene:
+        fail("Scene Select owner lost shared requested-state storage")
+    if "offsetof(SceneSelectControllerView, requestedState) == 0x6110" not in scene:
+        fail("Scene Select owner lost requested-state offset assertion")
+    scene_update = source_without_comments(
+        (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
+    )
+    if "view->requestedState = FRONT_END_REQUESTED_STATE_START_GAME;" not in scene_update:
+        fail("Scene Select lost named start-game publication")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -3230,6 +3292,7 @@ def main() -> int:
     check_supervisor_startup_phase_owner()
     check_supervisor_fog_cache_owner()
     check_front_end_timer_owner()
+    check_front_end_requested_state_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -3265,6 +3328,7 @@ def main() -> int:
     print("  Supervisor startup phase: one shared TH095 0/1/2 domain at +0x660")
     print("  Supervisor fog cache: one shared TH095 0/1/255 domain at +0x768")
     print("  FrontEnd timers: one shared ZunTimer type with target-order reset helper")
+    print("  FrontEnd requested states: one shared explicit 0..9 domain")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

@@ -28,7 +28,7 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 
 - Do not add any conditional directive below `src/` that references
   `TH095_MATCH_EXACT` or `DIFFBUILD`. CI freezes the remaining historical debt
-  as a shrink-only baseline: **720 directives across 103 files** and **201
+  as a shrink-only baseline: **717 directives across 103 files** and **201
   selected-declaration keys / 206 occurrences**.
 - Exact replay validates only the source selected by the exact profile. When
   exact and normal select different declarations, expressions, or bodies,
@@ -40,7 +40,31 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 - Keep unproved storage and roles Unknown. Do not promote a name from a single
   write, adjacent-game similarity, exactness alone, or decompiler wording.
 
-## Current semantic checkpoint — SEM-316
+## Current semantic checkpoint — SEM-317
+
+`FrontEndGlobals.hpp` now declares one `FrontEndRequestedState` enum for all
+profiles. `FrontEndController.cpp` uses it at `requestedState @ +0x6110` for
+its ten dispatch cases and eight local publications, and the normal
+`SceneSelectControllerView` exposes the same field at that offset. The target
+`Update @ 0x00445E80` and `UpdateMainMenu @ 0x00446A50` establish the shared
+0..9 domain and its entry/main-menu publications; SEM-184 and FRONT-019
+provide independent screen/draw evidence. Screen-local `state @ +0x610C` is
+separate. Frozen exact Scene Select snapshots and DIFF update/draw integer
+projections remain source debt.
+
+The affected exact replay passed **38/38 units**. Two coordinator units
+needed a controlled refresh of 18 compiler-private labels, then immediately
+passed zero-refresh replay; every other affected unit passed without refresh.
+Normal pinned-VC7.1 probes passed for FrontEndController, SceneSelect,
+SceneSelectUpdate, and ReplayBrowser. DIFF FrontEndController and SceneSelect
+probes passed. Standalone DIFF SceneSelectUpdate cannot compile because its
+preexisting `InputRuntime.hpp` `!DIFFBUILD` guard hides three input accessors;
+that probe receives no credit. Selector debt shrank by three directives, and
+the semantic guard covers this domain. The latest complete exact/product
+receipts remain the SEM-316 696/696 and 88-TU normal build; this batch used
+focused validation as directed.
+
+## Prior checkpoint — SEM-316
 
 The controller's `+0xF8..+0x1CF` storage is now a typed 0xD8
 `ResultScreenReplayCursor` in the shared FrontEnd coordinator, lifecycle
@@ -77,15 +101,13 @@ unknowns are in `SEMANTIC_HISTORY.md`.
 
 ## Next bounded lane
 
-Audit `FrontEndRequestedState @ +0x6110` and
-`FrontEndControllerFlagBits @ +0x6120` separately. First verify each target
-producer, independent consumer,
-physical representation, invalid/default path, and compiler effect. Existing
-normal names are hypotheses, and a four-byte layout alone does not justify a
-shared enum or bitfield. Preserve unknown flag bits and surrounding gaps. For
-future small changes, use focused exact units and normal probes; repeat cold
-aggregate validation at a later shared-owner milestone, as directed by the
-user. Keep VC7.1 builds serial and limited to one CPU at lower priority.
+Audit `FrontEndControllerFlagBits @ +0x6120` separately. Verify target
+producers, independent consumers, physical representation, unknown bits, and
+compiler effect before sharing its declaration. Preserve bit 4, bits 6..31,
+and surrounding gaps. For future small changes, use focused exact units and
+normal probes; repeat cold aggregate validation at a later shared-owner
+milestone, as directed by the user. Keep VC7.1 builds serial and limited to
+one CPU at lower priority.
 
 ## Protected working-tree exclusions
 
@@ -105,7 +127,7 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/FrontEndController.cpp --details
-rg -n "requestedState|FrontEndControllerFlagBits|secondaryCursor" src/FrontEndController.cpp src/SceneSelect.hpp src/FrontEndGlobals.hpp
+rg -n "FrontEndControllerFlagBits|secondaryCursor" src/FrontEndController.cpp src/SceneSelect.hpp src/FrontEndGlobals.hpp
 python3 scripts/replay-exact-units.py --source src/FrontEndController.cpp
 ```
 

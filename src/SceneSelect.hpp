@@ -5,6 +5,7 @@
 #define TH095_SCENE_SELECT_HPP
 
 #include "AnmManager.hpp"
+#include "FrontEndGlobals.hpp"
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "PixelFormats.hpp"
@@ -168,7 +169,9 @@ struct SceneSelectControllerView
     u8 unknown0e93;
     SceneAnmVmId previewTextVmIds[3];
     i32 previewTimer;
-    u8 unknown0ea4[0x527c];
+    u8 unknown0ea4[0x526c];
+    FrontEndRequestedState requestedState;
+    u8 unknown6114[0x0c];
     union
     {
         u32 flags;
@@ -313,6 +316,8 @@ typedef char SceneSelectPreviewTextVmIdsAtE94[
     (offsetof(SceneSelectControllerView, previewTextVmIds) == 0xe94) ? 1 : -1];
 typedef char SceneSelectPreviewTimerAtEA0[
     (offsetof(SceneSelectControllerView, previewTimer) == 0xea0) ? 1 : -1];
+typedef char SceneSelectRequestedStateAt6110[
+    (offsetof(SceneSelectControllerView, requestedState) == 0x6110) ? 1 : -1];
 typedef char SceneSelectFlagsAt6120[
     (offsetof(SceneSelectControllerView, flags) == 0x6120) ? 1 : -1];
 typedef char SceneSelectSelectionQueueAt6128[

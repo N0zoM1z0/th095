@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import contextlib
 import importlib.util
+import io
 from pathlib import Path
 import re
 import sys
@@ -709,6 +711,26 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             source.index("timer->subFrame = 0.0f;"),
             source.index("timer->previous = -999999;"),
         )
+
+    def test_front_end_requested_state_guard_rejects_raw_dispatch_and_write(self) -> None:
+        GUARD.check_front_end_requested_state_owner()
+        source = (ROOT / "src" / "FrontEndController.cpp").read_text(
+            encoding="utf-8"
+        )
+        substitutions = (
+            ("case FRONT_END_REQUESTED_STATE_MUSIC_ROOM:", "case 8:"),
+            (
+                "view->requestedState = FRONT_END_REQUESTED_STATE_MUSIC_ROOM;",
+                "view->requestedState = 8;",
+            ),
+        )
+        for named, raw in substitutions:
+            with self.subTest(raw=raw):
+                self.assertIn(named, source)
+                changed = source.replace(named, raw, 1)
+                with contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit):
+                        GUARD.check_front_end_requested_state_owner(changed)
 
 
 if __name__ == "__main__":

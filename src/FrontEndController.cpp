@@ -2,6 +2,7 @@
 #include "AnmManager.hpp"
 #endif
 #include "SceneSelect.hpp"
+#include "FrontEndGlobals.hpp"
 #include "ReplayBrowser.hpp"
 #include "OptionsMenu.hpp"
 #include "MusicRoom.hpp"
@@ -96,11 +97,7 @@ struct FrontEndControllerUpdateView
     u8 unknown6104[4];
     i32 transitionReady;
     i32 state;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    i32 requestedState;
-#else
     FrontEndRequestedState requestedState;
-#endif
     u8 unknown6114[0x0c];
     union
     {
@@ -312,30 +309,10 @@ static __forceinline void FrontEndCreateSceneVm(
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 FrontEndGameManagerView *__fastcall CreateFrontEndGameManager(i32 mode);
 
-#define TH095_FRONT_END_REQUESTED_STATE_INITIALIZE 0
-#define TH095_FRONT_END_REQUESTED_STATE_MAIN_MENU 1
-#define TH095_FRONT_END_REQUESTED_STATE_SCENE_SELECT 2
-#define TH095_FRONT_END_REQUESTED_STATE_REPLAY_BROWSER 3
-#define TH095_FRONT_END_REQUESTED_STATE_EXIT 4
-#define TH095_FRONT_END_REQUESTED_STATE_START_GAME 5
-#define TH095_FRONT_END_REQUESTED_STATE_START_REPLAY 6
-#define TH095_FRONT_END_REQUESTED_STATE_OPTIONS 7
-#define TH095_FRONT_END_REQUESTED_STATE_MUSIC_ROOM 8
-#define TH095_FRONT_END_REQUESTED_STATE_HELP 9
 #define TH095_MUSIC_ROOM_STATE_INITIALIZE 0
 #define TH095_REPLAY_BROWSER_STATE_INITIALIZE 0
 #define TH095_OPTIONS_MENU_STATE_INITIALIZE 0
 #else
-#define TH095_FRONT_END_REQUESTED_STATE_INITIALIZE FRONT_END_REQUESTED_STATE_INITIALIZE
-#define TH095_FRONT_END_REQUESTED_STATE_MAIN_MENU FRONT_END_REQUESTED_STATE_MAIN_MENU
-#define TH095_FRONT_END_REQUESTED_STATE_SCENE_SELECT FRONT_END_REQUESTED_STATE_SCENE_SELECT
-#define TH095_FRONT_END_REQUESTED_STATE_REPLAY_BROWSER FRONT_END_REQUESTED_STATE_REPLAY_BROWSER
-#define TH095_FRONT_END_REQUESTED_STATE_EXIT FRONT_END_REQUESTED_STATE_EXIT
-#define TH095_FRONT_END_REQUESTED_STATE_START_GAME FRONT_END_REQUESTED_STATE_START_GAME
-#define TH095_FRONT_END_REQUESTED_STATE_START_REPLAY FRONT_END_REQUESTED_STATE_START_REPLAY
-#define TH095_FRONT_END_REQUESTED_STATE_OPTIONS FRONT_END_REQUESTED_STATE_OPTIONS
-#define TH095_FRONT_END_REQUESTED_STATE_MUSIC_ROOM FRONT_END_REQUESTED_STATE_MUSIC_ROOM
-#define TH095_FRONT_END_REQUESTED_STATE_HELP FRONT_END_REQUESTED_STATE_HELP
 #define TH095_MUSIC_ROOM_STATE_INITIALIZE MUSIC_ROOM_STATE_INITIALIZE
 #define TH095_REPLAY_BROWSER_STATE_INITIALIZE REPLAY_BROWSER_STATE_INITIALIZE
 #define TH095_OPTIONS_MENU_STATE_INITIALIZE OPTIONS_MENU_STATE_INITIALIZE
@@ -348,7 +325,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
 
     switch (view->requestedState)
     {
-    case TH095_FRONT_END_REQUESTED_STATE_INITIALIZE:
+    case FRONT_END_REQUESTED_STATE_INITIALIZE:
     {
 #if defined(TH095_MATCH_EXACT)
         if (view->titleLoadFailed)
@@ -428,7 +405,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         {
         case 0:
         {
-            view->requestedState = TH095_FRONT_END_REQUESTED_STATE_MAIN_MENU;
+            view->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             FrontEndResetTimer(&view->stateTimer);
             view->state = TH095_MAIN_MENU_STATE_INITIALIZE;
             FrontEndCreateSceneVm(view, 0x66);
@@ -446,7 +423,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         }
         case 1:
         {
-            view->requestedState = TH095_FRONT_END_REQUESTED_STATE_SCENE_SELECT;
+            view->requestedState = FRONT_END_REQUESTED_STATE_SCENE_SELECT;
             view->state = TH095_SCENE_SELECT_STATE_INITIALIZE;
             FrontEndResetTimer(&view->stateTimer);
             FrontEndCreateSceneVm(view, 0x19);
@@ -461,7 +438,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         }
         case 2:
         {
-            view->requestedState = TH095_FRONT_END_REQUESTED_STATE_REPLAY_BROWSER;
+            view->requestedState = FRONT_END_REQUESTED_STATE_REPLAY_BROWSER;
             view->state = TH095_REPLAY_BROWSER_STATE_INITIALIZE;
             FrontEndResetTimer(&view->stateTimer);
             view->cursor.Set(1);
@@ -479,19 +456,19 @@ ChainCallbackResult SceneSelectControllerView::Update()
             break;
         }
     }
-    case TH095_FRONT_END_REQUESTED_STATE_MAIN_MENU:
+    case FRONT_END_REQUESTED_STATE_MAIN_MENU:
         this->UpdateMainMenu();
         break;
 
-    case TH095_FRONT_END_REQUESTED_STATE_SCENE_SELECT:
+    case FRONT_END_REQUESTED_STATE_SCENE_SELECT:
         this->UpdateSceneSelect();
         break;
 
-    case TH095_FRONT_END_REQUESTED_STATE_REPLAY_BROWSER:
+    case FRONT_END_REQUESTED_STATE_REPLAY_BROWSER:
         reinterpret_cast<ReplayBrowserView *>(this)->Update();
         break;
 
-    case TH095_FRONT_END_REQUESTED_STATE_OPTIONS:
+    case FRONT_END_REQUESTED_STATE_OPTIONS:
         if (reinterpret_cast<OptionsMenuView *>(this)->Update() ==
             CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR)
         {
@@ -499,15 +476,15 @@ ChainCallbackResult SceneSelectControllerView::Update()
         }
         break;
 
-    case TH095_FRONT_END_REQUESTED_STATE_MUSIC_ROOM:
+    case FRONT_END_REQUESTED_STATE_MUSIC_ROOM:
         reinterpret_cast<MusicRoomView *>(this)->UpdateMusicRoom();
         break;
 
-    case TH095_FRONT_END_REQUESTED_STATE_HELP:
+    case FRONT_END_REQUESTED_STATE_HELP:
         reinterpret_cast<HelpMenuView *>(this)->UpdateHelpMenu();
         break;
 
-    case TH095_FRONT_END_REQUESTED_STATE_START_GAME:
+    case FRONT_END_REQUESTED_STATE_START_GAME:
         if ((view->stateTimer.current == 1) != 0)
         {
             TH095_FRONT_AUDIO.FadeOutMusic(2.0f);
@@ -555,7 +532,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         }
         break;
 
-    case TH095_FRONT_END_REQUESTED_STATE_START_REPLAY:
+    case FRONT_END_REQUESTED_STATE_START_REPLAY:
         if ((view->stateTimer.current == 1) != 0)
         {
             if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
@@ -606,7 +583,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         }
         break;
 
-    case TH095_FRONT_END_REQUESTED_STATE_EXIT:
+    case FRONT_END_REQUESTED_STATE_EXIT:
         if (FrontEndHelpLoadSnapshot() != 0)
         {
             return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -804,7 +781,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             sprintf(g_SelectedReplayPath, "demo/demo%d.rpy", g_DemoReplayIndex);
             g_DemoReplayIndex++;
             g_DemoReplayIndex %= 3;
-            view->requestedState = TH095_FRONT_END_REQUESTED_STATE_START_REPLAY;
+            view->requestedState = FRONT_END_REQUESTED_STATE_START_REPLAY;
             FrontEndResetTimer(&view->stateTimer);
             view->state = 0;
             break;
@@ -819,7 +796,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
         case 0:
         {
             this->CloseMainMenu();
-            view->requestedState = TH095_FRONT_END_REQUESTED_STATE_SCENE_SELECT;
+            view->requestedState = FRONT_END_REQUESTED_STATE_SCENE_SELECT;
             view->state = TH095_SCENE_SELECT_STATE_INITIALIZE;
             FrontEndResetTimer(&view->stateTimer);
             while (FrontEndHelpLoadSnapshot() != 0)
@@ -908,13 +885,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
         }
         case 1:
             this->CloseMainMenu();
-            view->requestedState = TH095_FRONT_END_REQUESTED_STATE_REPLAY_BROWSER;
+            view->requestedState = FRONT_END_REQUESTED_STATE_REPLAY_BROWSER;
             view->state = TH095_REPLAY_BROWSER_STATE_INITIALIZE;
             FrontEndResetTimer(&view->stateTimer);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 3:
             this->CloseMainMenu();
-            view->requestedState = TH095_FRONT_END_REQUESTED_STATE_OPTIONS;
+            view->requestedState = FRONT_END_REQUESTED_STATE_OPTIONS;
             view->state = TH095_OPTIONS_MENU_STATE_INITIALIZE;
             FrontEndResetTimer(&view->stateTimer);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
@@ -927,19 +904,19 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             // COFF comparison look exact while swapping Music Room/Options in
             // the fully linked executable.
             this->CloseMainMenu();
-            view->requestedState = TH095_FRONT_END_REQUESTED_STATE_MUSIC_ROOM;
+            view->requestedState = FRONT_END_REQUESTED_STATE_MUSIC_ROOM;
             view->state = TH095_MUSIC_ROOM_STATE_INITIALIZE;
             FrontEndResetTimer(&view->stateTimer);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 4:
             this->CloseMainMenu();
-            view->requestedState = TH095_FRONT_END_REQUESTED_STATE_HELP;
+            view->requestedState = FRONT_END_REQUESTED_STATE_HELP;
             view->state = TH095_HELP_STATE_INITIALIZE;
             FrontEndResetTimer(&view->stateTimer);
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         case 5:
         exitMainMenu:
-            view->requestedState = TH095_FRONT_END_REQUESTED_STATE_EXIT;
+            view->requestedState = FRONT_END_REQUESTED_STATE_EXIT;
             view->state = 0;
             FrontEndResetTimer(&view->stateTimer);
             return CHAIN_CALLBACK_RESULT_CONTINUE;

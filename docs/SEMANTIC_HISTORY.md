@@ -15804,3 +15804,62 @@ no new profile selector or selected declaration was introduced.
 `@ +0x6120` independently against the target and both compiler profiles.
 Do not assume that an enum or bitfield name already present in normal source
 proves the exact profile's source shape or the remaining unknown flag bits.
+
+### SEM-317 — share the front-end requested-state declaration
+
+**Scope.** The front-end coordinator now stores `requestedState @ +0x6110`
+as `FrontEndRequestedState` in exact, DIFF, and normal builds. Its ten switch
+cases and eight distinct local publication values use the same named 0..9 enumerators in
+every profile. `FrontEndGlobals.hpp` defines that four-byte enum once, without
+a profile branch or numeric compatibility macros. The normal
+`SceneSelectControllerView` now exposes the same typed field at `+0x6110`,
+between preserved unknown spans and the existing flags at `+0x6120`.
+
+**Target and source evidence.** Fresh hash-attested TH095 decompilation of
+`SceneSelectControllerView::Update @ 0x00445E80` reads the controller dword
+at `+0x6110`, dispatches 0 through 9, and publishes 1/2/3 from its entry
+choice. `UpdateMainMenu @ 0x00446A50` independently publishes requested
+states 2/3/4/6/7/8/9 for the corresponding menu transitions. Earlier
+SEM-184 and FRONT-019 establish screen-specific publications, the draw-side
+2/3 consumer, and the distinction from screen-local `state @ +0x610C`.
+The ten meanings therefore come from TH095 producers and consumers, not from
+the former normal-only enum or TH08 spellings. The original source names
+remain unknown.
+
+**Compiler and ownership boundary.** A minimal pinned VC7.1 probe confirmed
+that assigning an integer to this enum is rejected (C2440); replacing only
+the field type while retaining exact numeric macros was not viable. Exact
+source now uses the enumerators directly. The one live front-end allocation
+at `0x004CA2F4` owns the bytes; the coordinator and screen handlers own
+different transitions; the enum itself is profile-independent compiler input;
+the coordinator and Scene Select translation units emit their respective
+functions in the build. Frozen `SceneSelectExact.hpp` and
+`SceneSelectUpdateExact.inl` retain their old snapshots, and the DIFF-only
+projections in Scene Select update/draw still retain integers. These are
+remaining source boundaries, not independent runtime state owners. Entry
+mode `+0x6124`, screen-local `+0x610C`, flags `+0x6120`, invalid values, and
+unknown bytes were not reinterpreted.
+
+**Validation.** The coordinator's first focused comparison found only 18
+changed compiler-private `$L...` names in two units; controlled manifest
+refresh checked unchanged bytes, relocation positions/types, public symbols,
+and target destinations. Immediate zero-refresh replay passed 4/4. Direct
+header consumers passed 28/28 exact, and Scene Select's two exact-selected
+source files passed 6/6, for **38/38 affected exact units**. Four independent
+normal pinned-VC7.1 compile probes passed for FrontEndController,
+SceneSelect, SceneSelectUpdate, and ReplayBrowser; DIFF probes passed for
+FrontEndController and SceneSelect. A standalone DIFF SceneSelectUpdate probe
+fails on `RuntimePressedButtons`, `RuntimeInputCurrent`, and
+`RuntimeResultMenuInput`, whose declarations are already excluded by the
+existing `InputRuntime.hpp` `!DIFFBUILD` guard; it earns no validation credit
+and does not indicate enum drift. The semantic guard checks the explicit
+domain, owner offset, named dispatcher/publications, and Scene Select start
+publication. Three historical selector directives were retired; no new
+selector was added. Target-independent CI passed all **75 workflow tests**.
+The last cold **696/696 exact** and 88-TU normal product
+receipts belong to SEM-316, before this batch; this batch follows the user's
+focused-iteration rule.
+
+**Next route.** Audit `FrontEndControllerFlagBits @ +0x6120` against target
+producers, consumers, and pinned-VC7.1 emission before attempting a shared
+declaration. Preserve bit 4 and bits 6..31 as unknown.
