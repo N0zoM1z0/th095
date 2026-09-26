@@ -82,11 +82,7 @@ struct SceneSelectUpdateView
 #else
     SceneSelectState state;
 #endif
-#ifdef DIFFBUILD
-    i32 requestedState;
-#else
     FrontEndRequestedState requestedState;
-#endif
     u8 unknown6114[0x0c];
     union
     {
@@ -122,6 +118,10 @@ typedef char SceneSelectUpdateSceneCursorsAt1D0[
     (offsetof(SceneSelectUpdateView, sceneCursors) == 0x1d0) ? 1 : -1];
 typedef char SceneSelectUpdateTransitionVmAt6100[
     (offsetof(SceneSelectUpdateView, transitionVm) == 0x6100) ? 1 : -1];
+typedef char SceneSelectUpdateRequestedStateAt6110[
+    (offsetof(SceneSelectUpdateView, requestedState) == 0x6110) ? 1 : -1];
+typedef char SceneSelectUpdateFlagsAt6120[
+    (offsetof(SceneSelectUpdateView, flags) == 0x6120) ? 1 : -1];
 typedef char SceneSelectUpdateSelectionQueueAt6128[
     (offsetof(SceneSelectUpdateView, selectionQueue) == 0x6128) ? 1 : -1];
 typedef char SceneSelectUpdateLoadedSceneQueueAt6170[

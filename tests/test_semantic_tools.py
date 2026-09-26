@@ -744,6 +744,29 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 GUARD.check_front_end_flags_owner(changed)
 
+    def test_front_end_exact_scene_state_and_flags_reject_raw_values(self) -> None:
+        GUARD.check_front_end_requested_state_owner()
+        GUARD.check_front_end_flags_owner()
+        source = (ROOT / "src" / "SceneSelectUpdateExact.inl").read_text(
+            encoding="utf-8"
+        )
+        state = source.replace(
+            "view->requestedState = FRONT_END_REQUESTED_STATE_START_GAME;",
+            "view->requestedState = 5;",
+            1,
+        )
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                GUARD.check_front_end_requested_state_owner(exact_update_text=state)
+        flags = source.replace(
+            "view->flagBits.assetLoadStopRequested = 1;",
+            "view->flags |= 0x20;",
+            1,
+        )
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                GUARD.check_front_end_flags_owner(exact_update_text=flags)
+
     def test_front_end_scene_queue_guard_rejects_raw_reset(self) -> None:
         GUARD.check_front_end_scene_queue_owner()
         source = (ROOT / "src" / "FrontEndController.cpp").read_text(

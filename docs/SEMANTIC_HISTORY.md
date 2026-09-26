@@ -15974,3 +15974,63 @@ its remaining unknown storage and ownership views require separate evidence.
 **Next route.** Inspect the remaining exact Scene Select snapshot against
 the canonical normal owner one bounded field family at a time. Do not infer
 roles for the gaps or rewrite unrelated screen-local state from adjacency.
+
+### SEM-320 — align exact Scene Select request and flag fields
+
+**Scope.** `SceneSelectExact.hpp` now exposes the already established
+`FrontEndRequestedState @ +0x6110` and `FrontEndControllerFlagBits @ +0x6120`
+types, with the intervening `+0x6114..+0x611F` and following
+`+0x6124..+0x6127` bytes still unknown. The exact
+`SceneSelectUpdateView` uses those same types. Its two cross-screen
+publications use `START_GAME` and `MAIN_MENU` names, while the proved
+`previewPending` and `assetLoadStopRequested` transitions use named bitfield
+members. The normal/DIFF `SceneSelectUpdateView` now also declares one
+requested-state enum instead of selecting an integer for DIFF. Unknown flag
+bit 4 still uses raw masks and remains unnamed.
+
+**Target observed and corroborated.** Fresh hash-attested TH095
+`UpdateSceneSelect @ 0x00447D00` writes value 5 to `+0x6110` on playable
+scene confirmation and 1 on the return-to-main-menu path. The same body
+sets/clears `+0x6120` bit 2 around preview preparation, toggles bit 3 on
+the rate-display input, and clears/sets bit 5 at asset-worker start/exit.
+`Update @ 0x00445E80` independently dispatches 5/1 from the same
+`+0x6110` dword, while `LoadSceneSelectionAssets @ 0x0044D0A0` consumes bit
+5 in its wait loops. Earlier FRONT-021/022 evidence fixes the shared
+0..9 domain and bit positions; this batch independently confirms the Scene
+Select producer body before migrating its exact source. The target does not
+reveal the original C++ enum or member spellings.
+
+**Ownership and profile boundary.** One front-end allocation at
+`0x004CA2F4` owns both dwords. Scene Select publishes request transitions
+and preview/worker flags; the coordinator and asset worker consume them.
+`FrontEndGlobals.hpp` owns the profile-independent enum and bit layout.
+`SceneSelectExact.hpp` and `SceneSelect.hpp` remain separate historical
+class declarations, and exact `SceneSelectUpdateExact.inl` remains a separate
+function body from normal `SceneSelectUpdate.cpp`; both now use the same
+field types and named 1/5, bit-2/5 operations. Thus exact replay validates
+the exact body, while the normal compiler probe independently validates the
+normal body. Screen-local `state @ +0x610C`, `entryMode @ +0x6124`, bit 4,
+bits 6..31, and unknown byte spans retain their prior boundaries.
+
+**Validation.** The unchanged exact Scene Select update baseline was 1/1
+with zero label refresh. After the declaration/state migration and again
+after the bit-2/5 source cleanup, its complete 16,066-byte configured unit
+remained **1/1 exact with zero refresh**. A pinned VC7.1 normal probe emitted
+a **54,239-byte i386 COFF** `SceneSelectUpdate.obj`. The exact-header include
+closure required a controlled refresh of 30 compiler-private labels in four
+unrelated/coordinator units; the refresh verified byte identity,
+relocation positions/types, public symbols, and target destinations. The
+final affected audit passed **57/57 exact units across 17 sources with zero
+refresh**. The match-unit diff contains only those 30 private label names.
+The semantic guard now checks both Scene Select headers and both update
+bodies, including negative tests for restored raw request values and bit-5
+masks. One DIFF selector directive was retired, reducing the closed selector
+baseline to **711 directives across 103 files**; selected declaration debt
+remains **199 keys / 204 occurrences**. The last cold 696/696 replay and
+88-TU normal product still belong to SEM-316, before this focused batch.
+Target-independent CI passed all **78 workflow tests**.
+
+**Next route.** Review the remaining exact/normal Scene Select update-view
+differences against independently observed layout and VC7.1 emission, one
+field family at a time. Do not infer a single shared screen-local state
+domain from the cross-screen requested-state enum.

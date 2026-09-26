@@ -28,7 +28,7 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 
 - Do not add any conditional directive below `src/` that references
   `TH095_MATCH_EXACT` or `DIFFBUILD`. CI freezes the remaining historical debt
-  as a shrink-only baseline: **712 directives across 103 files** and **199
+  as a shrink-only baseline: **711 directives across 103 files** and **199
   selected-declaration keys / 204 occurrences**.
 - Exact replay validates only the source selected by the exact profile. When
   exact and normal select different declarations, expressions, or bodies,
@@ -40,7 +40,28 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 - Keep unproved storage and roles Unknown. Do not promote a name from a single
   write, adjacent-game similarity, exactness alone, or decompiler wording.
 
-## Current semantic checkpoint — SEM-319
+## Current semantic checkpoint — SEM-320
+
+`SceneSelectExact.hpp` now exposes the shared `FrontEndRequestedState @
++0x6110` and `FrontEndControllerFlagBits @ +0x6120` types already used by
+normal Scene Select. Exact `SceneSelectUpdateExact.inl` now uses those types,
+names the start-game/main-menu publications, and names the proved bit-2
+preview and bit-5 asset-stop transitions. The normal/DIFF update view also
+uses one requested-state declaration. Bit 4, higher unknown bits, the
+screen-local state at `+0x610C`, and adjacent byte gaps remain unpromoted.
+
+Fresh hash-attested `UpdateSceneSelect @ 0x00447D00` evidence confirms the
+two requested-state publications and bit-2/3/5 operations; the coordinator
+and asset worker provide independent consumers. The exact update body passed
+1/1 without refresh both after its type migration and after its named flag
+expressions. The wider exact-header audit passed **57/57 units across 17
+sources with zero refresh**, following controlled private-label-only refresh
+of 30 names in four units. A pinned-VC7.1 normal SceneSelectUpdate probe
+emitted a 54,239-byte i386 COFF object. One historical DIFF selector was
+retired. The last cold 696/696 replay and 88-TU normal product remain the
+SEM-316 baseline; SEM-317 through SEM-320 use focused checks as directed.
+
+## Prior checkpoint — SEM-319
 
 `FrontEndController.cpp`'s Game Start transition now uses named fields for
 both preview-data queue drains, seven sibling count resets, the pending
@@ -65,7 +86,7 @@ and one selected declaration were retired. The most recent full 696/696
 replay and 88-TU normal product remain the SEM-316 baseline, before these
 focused batches.
 
-## Prior checkpoint — SEM-318
+## Earlier checkpoint — SEM-318
 
 `FrontEndControllerFlagBits` now lives in profile-independent
 `FrontEndGlobals.hpp`. The coordinator uses it at `+0x6120` in exact, DIFF,
@@ -146,13 +167,13 @@ unknowns are in `SEMANTIC_HISTORY.md`.
 
 ## Next bounded lane
 
-Continue the exact Scene Select snapshot convergence one bounded field family
-at a time. Compare any remaining anonymous bytes against independent TH095
-producers and consumers before naming them. Preserve exact emission, bit 4,
-bits 6..31, and surrounding gaps. For small changes, use focused exact units
-and normal probes; repeat cold aggregate validation at a later shared-owner
-milestone, as directed by the user. Keep VC7.1 builds serial and limited to
-one CPU at lower priority.
+Compare the remaining exact and normal Scene Select update-view declarations
+one bounded field family at a time. Distinguish cross-screen requested state
+from the screen-local `+0x610C` state. Preserve exact emission, bit 4, bits
+6..31, and surrounding gaps. Use focused exact units and normal probes;
+repeat cold aggregate validation at a later shared-owner milestone, as
+directed by the user. Keep VC7.1 builds serial and limited to one CPU at
+lower priority.
 
 ## Protected working-tree exclusions
 
@@ -171,9 +192,9 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/FrontEndController.cpp --details
-rg -n "unknown|SceneValueQueue|pendingTextureCount" src/SceneSelectExact.hpp src/SceneSelect.hpp
-python3 scripts/replay-exact-units.py --source src/FrontEndController.cpp
+python3 scripts/analysis/report-semantic-debt.py --path src/SceneSelectUpdate.cpp --details
+rg -n "SceneSelectUpdateView|requestedState|flagBits|unknown" src/SceneSelectUpdate.cpp src/SceneSelectUpdateExact.inl
+python3 scripts/replay-exact-units.py --source src/SceneSelectUpdate.cpp
 ```
 
 Before a later commit, run the affected exact and normal oracles,

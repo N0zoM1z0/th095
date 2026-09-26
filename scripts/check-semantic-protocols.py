@@ -2043,6 +2043,7 @@ def check_front_end_timer_owner() -> None:
 
 def check_front_end_requested_state_owner(
     controller_text: str | None = None,
+    exact_update_text: str | None = None,
 ) -> None:
     header_path = SRC / "FrontEndGlobals.hpp"
     expected = [
@@ -2091,19 +2092,38 @@ def check_front_end_requested_state_owner(
         if f"view->requestedState = FRONT_END_REQUESTED_STATE_{name};" not in controller:
             fail(f"FrontEnd coordinator lost named publication for {name}")
 
-    scene = source_without_comments((SRC / "SceneSelect.hpp").read_text(encoding="utf-8"))
-    if "FrontEndRequestedState requestedState;" not in scene:
-        fail("Scene Select owner lost shared requested-state storage")
-    if "offsetof(SceneSelectControllerView, requestedState) == 0x6110" not in scene:
-        fail("Scene Select owner lost requested-state offset assertion")
+    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
+        scene = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if '#include "FrontEndGlobals.hpp"' not in scene:
+            fail(f"{name} lost the shared requested-state owner include")
+        if "FrontEndRequestedState requestedState;" not in scene:
+            fail(f"{name} lost shared requested-state storage")
+        if "offsetof(SceneSelectControllerView, requestedState) == 0x6110" not in scene:
+            fail(f"{name} lost requested-state offset assertion")
     scene_update = source_without_comments(
         (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
     )
-    if "view->requestedState = FRONT_END_REQUESTED_STATE_START_GAME;" not in scene_update:
-        fail("Scene Select lost named start-game publication")
+    exact_update = source_without_comments(
+        exact_update_text
+        if exact_update_text is not None
+        else (SRC / "SceneSelectUpdateExact.inl").read_text(encoding="utf-8")
+    )
+    for name, body in (("normal", scene_update), ("exact", exact_update)):
+        if "FrontEndRequestedState requestedState;" not in body:
+            fail(f"Scene Select {name} update lost its shared requested-state type")
+        if "i32 requestedState;" in body:
+            fail(f"Scene Select {name} update restored integer requested-state storage")
+        if "offsetof(SceneSelectUpdateView, requestedState) == 0x6110" not in body:
+            fail(f"Scene Select {name} update lost requested-state offset assertion")
+        for state in ("START_GAME", "MAIN_MENU"):
+            if f"view->requestedState = FRONT_END_REQUESTED_STATE_{state};" not in body:
+                fail(f"Scene Select {name} update lost named {state} publication")
 
 
-def check_front_end_flags_owner(controller_text: str | None = None) -> None:
+def check_front_end_flags_owner(
+    controller_text: str | None = None,
+    exact_update_text: str | None = None,
+) -> None:
     header_path = SRC / "FrontEndGlobals.hpp"
     header = source_without_comments(header_path.read_text(encoding="utf-8"))
     match = re.search(r"\bstruct\s+FrontEndControllerFlagBits\s*\{([^}]*)\}", header)
@@ -2125,13 +2145,16 @@ def check_front_end_flags_owner(controller_text: str | None = None) -> None:
     if "sizeof(FrontEndControllerFlagBits) == 4" not in header:
         fail("FrontEnd controller flag owner lost its four-byte assertion")
 
-    scene = source_without_comments((SRC / "SceneSelect.hpp").read_text(encoding="utf-8"))
-    if '#include "FrontEndGlobals.hpp"' not in scene:
-        fail("Scene Select lost its shared FrontEnd owner include")
-    if re.search(r"\bstruct\s+FrontEndControllerFlagBits\s*\{", scene):
-        fail("Scene Select restored a duplicate FrontEnd flag declaration")
-    if "FrontEndControllerFlagBits flagBits;" not in scene:
-        fail("Scene Select lost its shared flag-bit field")
+    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
+        scene = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if '#include "FrontEndGlobals.hpp"' not in scene:
+            fail(f"{name} lost its shared FrontEnd owner include")
+        if re.search(r"\bstruct\s+FrontEndControllerFlagBits\s*\{", scene):
+            fail(f"{name} restored a duplicate FrontEnd flag declaration")
+        if "FrontEndControllerFlagBits flagBits;" not in scene:
+            fail(f"{name} lost its shared flag-bit field")
+        if "offsetof(SceneSelectControllerView, flags) == 0x6120" not in scene:
+            fail(f"{name} lost its flag-word offset assertion")
 
     controller = source_without_comments(
         controller_text
@@ -2168,6 +2191,26 @@ def check_front_end_flags_owner(controller_text: str | None = None) -> None:
         for marker in markers:
             if marker not in body:
                 fail(f"{name} lost a named FrontEnd flag producer/consumer: {marker}")
+
+    exact_update = source_without_comments(
+        exact_update_text
+        if exact_update_text is not None
+        else (SRC / "SceneSelectUpdateExact.inl").read_text(encoding="utf-8")
+    )
+    if "FrontEndControllerFlagBits flagBits;" not in exact_update:
+        fail("exact Scene Select update restored a local flag-bit declaration")
+    if "offsetof(SceneSelectUpdateView, flags) == 0x6120" not in exact_update:
+        fail("exact Scene Select update lost its flag-word offset assertion")
+    for field, value in (
+        ("previewPending", "0"),
+        ("previewPending", "1"),
+        ("assetLoadStopRequested", "0"),
+        ("assetLoadStopRequested", "1"),
+    ):
+        if f"view->flagBits.{field} = {value};" not in exact_update:
+            fail(f"exact Scene Select update lost named {field} = {value} transition")
+    if re.search(r"view->flags\s*(?:\|=|&=)\s*(?:~\s*)?(?:4|0x20)\b", exact_update):
+        fail("exact Scene Select update restored raw preview or asset-stop masks")
 
 
 def check_front_end_scene_queue_owner(controller_text: str | None = None) -> None:

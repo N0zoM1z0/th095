@@ -62,18 +62,12 @@ struct SceneSelectUpdateView
     AnmVmId transitionVm;
     u8 unknown6104[8];
     i32 state;
-    i32 requestedState;
+    FrontEndRequestedState requestedState;
     u8 unknown6114[0x0c];
     union
     {
         u32 flags;
-        struct
-        {
-            u32 unknownFlagBits0 : 2;
-            u32 previewPending : 1;
-            u32 showRates : 1;
-            u32 unknownFlagBits4 : 28;
-        } flagBits;
+        FrontEndControllerFlagBits flagBits;
     };
     u8 unknown6124[4];
     SceneValueQueue selectionQueue;
@@ -100,6 +94,10 @@ typedef char SceneSelectUpdateSceneCursorsAt1D0[
     (offsetof(SceneSelectUpdateView, sceneCursors) == 0x1d0) ? 1 : -1];
 typedef char SceneSelectUpdateTransitionVmAt6100[
     (offsetof(SceneSelectUpdateView, transitionVm) == 0x6100) ? 1 : -1];
+typedef char SceneSelectUpdateRequestedStateAt6110[
+    (offsetof(SceneSelectUpdateView, requestedState) == 0x6110) ? 1 : -1];
+typedef char SceneSelectUpdateFlagsAt6120[
+    (offsetof(SceneSelectUpdateView, flags) == 0x6120) ? 1 : -1];
 typedef char SceneSelectUpdateSelectionQueueAt6128[
     (offsetof(SceneSelectUpdateView, selectionQueue) == 0x6128) ? 1 : -1];
 typedef char SceneSelectUpdateLoadedSceneQueueAt6170[
@@ -815,12 +813,12 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->loadedGroupQueue.capacity = 16;
         view->selectionQueue.capacity = 5;
         view->loadedSceneQueue.capacity = 16;
-        view->flags &= ~0x20u;
+        view->flagBits.assetLoadStopRequested = 0;
 
         g_SceneSupervisor.StartReplayScan(LoadSceneSelectionAssets, NULL);
         SceneSelectCreateVmAt(view, 0x13);
         SceneSelectCreateVmAt(view, 0x12);
-        view->flags |= 4;
+        view->flagBits.previewPending = 1;
         SceneSelectCreateVmAt(view, 0x14);
         SceneSelectCreateVmAt(view, 0x49);
         SceneSelectCreateVmAt(view, 0x4a);
@@ -1141,10 +1139,10 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 g_SelectedScene =
                     &g_SceneGroups[view->groupCursor.GetCurrent()]
                                   [activeSceneCursor.GetCurrent()];
-                view->requestedState = 5;
+                view->requestedState = FRONT_END_REQUESTED_STATE_START_GAME;
                 view->state = 0;
                 view->stateTimer.Reset();
-                view->flags |= 0x20;
+                view->flagBits.assetLoadStopRequested = 1;
                 g_ReplayBrowserExitSignal.Request();
                 g_SceneAnmManager->MarkVmForDeletion(
                     view->previewTextVmIds[0]);
@@ -1194,13 +1192,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
         if (SceneInputAnd(g_PressedButtons, 9) != 0)
         {
-            view->flags |= 0x20;
+            view->flagBits.assetLoadStopRequested = 1;
             g_SelectedScene =
                 &g_SceneGroups[view->groupCursor.GetCurrent()]
                               [view->sceneCursors[view->groupCursor.GetCurrent()]
                                    .GetCurrent()];
             view->groupCursor.Pop();
-            view->requestedState = 1;
+            view->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             view->state = 0;
             view->stateTimer.Reset();
             view->vmIds.SetInterrupt(0x68, 1);
@@ -1264,7 +1262,7 @@ update_preview_text:
         if (view->flagBits.previewPending == 0)
         {
             view->vmIds.SetInterrupt(0x12, 3);
-            view->flags |= 4;
+            view->flagBits.previewPending = 1;
         }
     }
     else
@@ -1301,7 +1299,7 @@ update_preview_text:
                 previewVm->flagsWord &= ~2u;
             }
             g_SceneAnmManager->SetInterrupt(view->vmIds.values[0x12], 2);
-            view->flags &= ~4u;
+            view->flagBits.previewPending = 0;
         }
     }
 
