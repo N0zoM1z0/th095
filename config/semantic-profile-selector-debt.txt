@@ -118,7 +118,7 @@
 3	src/FrontEndController.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/FrontEndController.cpp	#if !defined(TH095_MATCH_EXACT)
 6	src/FrontEndController.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-4	src/FrontEndController.cpp	#if defined(TH095_MATCH_EXACT)
+2	src/FrontEndController.cpp	#if defined(TH095_MATCH_EXACT)
 3	src/FrontEndController.cpp	#ifdef TH095_MATCH_EXACT
 3	src/FrontEndController.cpp	#ifndef DIFFBUILD
 1	src/FrontEndGlobals.hpp	#elif !defined(TH095_MATCH_EXACT)

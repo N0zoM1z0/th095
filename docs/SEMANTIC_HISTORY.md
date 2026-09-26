@@ -15863,3 +15863,57 @@ focused-iteration rule.
 **Next route.** Audit `FrontEndControllerFlagBits @ +0x6120` against target
 producers, consumers, and pinned-VC7.1 emission before attempting a shared
 declaration. Preserve bit 4 and bits 6..31 as unknown.
+
+### SEM-318 — share the front-end controller flag word
+
+**Scope.** `FrontEndControllerFlagBits` moved from the normal-only
+`SceneSelect.hpp` branch into profile-independent `FrontEndGlobals.hpp`. The
+exact, DIFF, and normal front-end coordinator now embed the same four-byte
+type at `flags/flagBits @ +0x6120` and test `flagBits.titleLoadFailed` through
+one expression. The exact-only anonymous bitfield and selected read branch
+are retired; normal Scene Select, lifecycle, draw, update, and asset-worker
+views retain their already typed accesses. No new profile selector exists.
+
+**Target observed.** A fresh hash-attested TH095 read of `Create @
+0x00445CC0` shows `+0x6120 |= 1` before loader registration. `LoadThread @
+0x00445980` clears that bit after successful initialization or sets bit 1
+on its failure path. `Update @ 0x00445E80` independently tests bit 1 in
+requested state zero and enters the Supervisor error transition. Fresh
+`UpdateSceneSelect @ 0x00447D00` shows bit-2 set/clear around preview work,
+the bit-3 rate-display toggle, and bit-5 asset-worker stop publications;
+`LoadSceneSelectionAssets @ 0x0044D0A0` independently tests bit 5 in its
+wait loops, and `Draw @ 0x00452630` tests bit 3 for rate display. These
+observations confirm the earlier SEM-099 family against the pinned target.
+Bit 4 has writes in Scene Select but still lacks an independently proved
+consumer or meaning, so it and bits 6..31 retain unknown names.
+
+**Ownership and compiler boundary.** The front-end allocation at
+`0x004CA2F4` owns the one persistent dword. The loader, coordinator, scene
+selection, draw, and asset worker own separate transitions and consumers.
+`FrontEndGlobals.hpp` now owns the one compiler-visible bit layout in all
+profiles; FrontEndController, lifecycle, Scene Select, and asset/draw objects
+remain separate emission and build-product owners. The frozen exact Scene
+Select snapshots and unrelated menu-local views remain historical source
+boundaries; this change does not infer that they own another flag word.
+
+**Validation.** The first coordinator exact replay stopped on 18 changed
+compiler-private labels in two units. Controlled refresh accepted them only
+after identical bytes and public relocation topology/targets, and immediate
+zero-refresh replay passed 4/4. Nine directly affected source files then
+passed **38/38 exact units** with zero refresh. Six independent normal
+pinned-VC7.1 probes compiled FrontEndController, FrontEndLifecycle,
+SceneSelect, SceneSelectUpdate, SceneControllerDraw, and SceneSelectAssets to
+i386 COFF; a separate DIFF FrontEndController probe compiled too. The
+semantic guard now checks bit positions, reserved ranges, one shared
+declaration, coordinator read, and representative producer/consumer paths.
+Two selector directives and the former selected declaration were removed,
+shrinking baselines to **715 selector directives across 103 files** and
+**200 declaration keys / 205 occurrences**. As in SEM-317, the latest cold
+aggregate and whole-product receipts remain SEM-316, before this focused
+batch. Target-independent CI passed all **76 workflow tests**.
+
+**Next route.** Continue with a different bounded FrontEnd owner or protocol.
+Do not assign a role to bit 4 from its writers alone. Review the raw cursor
+addresses in `UpdateMainMenu` against existing Scene Select/Replay Browser
+members before replacing them; exact emission must remain independently
+checked.

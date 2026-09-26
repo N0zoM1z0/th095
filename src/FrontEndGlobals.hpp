@@ -1,6 +1,7 @@
 #pragma once
 
 #include "diffbuild.hpp"
+#include "inttypes.hpp"
 
 namespace th095
 {
@@ -21,6 +22,20 @@ enum FrontEndRequestedState
 
 typedef char FrontEndRequestedStateSizeIs4[
     (sizeof(FrontEndRequestedState) == 4) ? 1 : -1];
+
+struct FrontEndControllerFlagBits
+{
+    u32 titleLoadIncomplete : 1;
+    u32 titleLoadFailed : 1;
+    u32 previewPending : 1;
+    u32 showRates : 1;
+    u32 unknownFlagBit4 : 1;
+    u32 assetLoadStopRequested : 1;
+    u32 unknownFlagBits6 : 26;
+};
+
+typedef char FrontEndControllerFlagBitsSizeIs4[
+    (sizeof(FrontEndControllerFlagBits) == 4) ? 1 : -1];
 
 // The target has one active front-end/pause controller pointer at 0x004CA2F4.
 // Its concrete view changes with the current menu, so keep the storage type

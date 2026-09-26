@@ -732,6 +732,18 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                     with self.assertRaises(SystemExit):
                         GUARD.check_front_end_requested_state_owner(changed)
 
+    def test_front_end_flags_guard_rejects_raw_load_failure_check(self) -> None:
+        GUARD.check_front_end_flags_owner()
+        source = (ROOT / "src" / "FrontEndController.cpp").read_text(
+            encoding="utf-8"
+        )
+        named = "view->flagBits.titleLoadFailed"
+        self.assertIn(named, source)
+        changed = source.replace(named, "view->flags & 2", 1)
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                GUARD.check_front_end_flags_owner(changed)
+
 
 if __name__ == "__main__":
     unittest.main()

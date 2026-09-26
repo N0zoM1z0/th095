@@ -150,7 +150,6 @@
 1	src/SceneControllerDraw.cpp	struct	FrontEndControllerDrawView
 1	src/ScenePreview.cpp	struct	ScenePreviewLocals
 1	src/SceneSelect.cpp	struct	SceneDefinitionStorage
-1	src/SceneSelect.hpp	struct	FrontEndControllerFlagBits
 1	src/SceneSelect.hpp	struct	SceneAnmVmId
 1	src/SceneSelect.hpp	struct	SceneAnmVmIdArray
 1	src/SceneSelect.hpp	struct	SceneGroupCursorView

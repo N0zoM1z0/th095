@@ -26,20 +26,6 @@ enum SceneSelectState
 };
 #endif
 
-struct FrontEndControllerFlagBits
-{
-    u32 titleLoadIncomplete : 1;
-    u32 titleLoadFailed : 1;
-    u32 previewPending : 1;
-    u32 showRates : 1;
-    u32 unknownFlagBit4 : 1;
-    u32 assetLoadStopRequested : 1;
-    u32 unknownFlagBits6 : 26;
-};
-
-typedef char FrontEndControllerFlagBitsSizeIs4[
-    (sizeof(FrontEndControllerFlagBits) == 4) ? 1 : -1];
-
 struct SceneValueQueue
 {
     i32 values[16];

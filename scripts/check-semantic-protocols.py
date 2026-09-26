@@ -2103,6 +2103,73 @@ def check_front_end_requested_state_owner(
         fail("Scene Select lost named start-game publication")
 
 
+def check_front_end_flags_owner(controller_text: str | None = None) -> None:
+    header_path = SRC / "FrontEndGlobals.hpp"
+    header = source_without_comments(header_path.read_text(encoding="utf-8"))
+    match = re.search(r"\bstruct\s+FrontEndControllerFlagBits\s*\{([^}]*)\}", header)
+    if match is None:
+        fail("FrontEnd controller lost its shared flag-bit owner")
+    fields = re.findall(r"\bu32\s+(\w+)\s*:\s*(\d+)\s*;", match.group(1))
+    if fields != [
+        ("titleLoadIncomplete", "1"),
+        ("titleLoadFailed", "1"),
+        ("previewPending", "1"),
+        ("showRates", "1"),
+        ("unknownFlagBit4", "1"),
+        ("assetLoadStopRequested", "1"),
+        ("unknownFlagBits6", "26"),
+    ]:
+        fail("FrontEnd controller flag positions or unknown ranges drifted")
+    if match.start() > header.index("#if"):
+        fail("FrontEnd controller flag owner became profile-selected")
+    if "sizeof(FrontEndControllerFlagBits) == 4" not in header:
+        fail("FrontEnd controller flag owner lost its four-byte assertion")
+
+    scene = source_without_comments((SRC / "SceneSelect.hpp").read_text(encoding="utf-8"))
+    if '#include "FrontEndGlobals.hpp"' not in scene:
+        fail("Scene Select lost its shared FrontEnd owner include")
+    if re.search(r"\bstruct\s+FrontEndControllerFlagBits\s*\{", scene):
+        fail("Scene Select restored a duplicate FrontEnd flag declaration")
+    if "FrontEndControllerFlagBits flagBits;" not in scene:
+        fail("Scene Select lost its shared flag-bit field")
+
+    controller = source_without_comments(
+        controller_text
+        if controller_text is not None
+        else (SRC / "FrontEndController.cpp").read_text(encoding="utf-8")
+    )
+    if controller.count("FrontEndControllerFlagBits flagBits;") != 1:
+        fail("FrontEnd coordinator lost its shared flag-bit field")
+    if controller.count("view->flagBits.titleLoadFailed") != 1:
+        fail("FrontEnd coordinator lost its named load-failure consumer")
+    if "view->titleLoadFailed" in controller or "unknownFlags2" in controller:
+        fail("FrontEnd coordinator restored its selected local bitfield")
+    if "offsetof(FrontEndControllerUpdateView, flags) == 0x6120" not in controller:
+        fail("FrontEnd coordinator lost its flag-word offset assertion")
+
+    consumers = {
+        "FrontEndLifecycle.cpp": (
+            "flagBits.titleLoadIncomplete = 1",
+            "flagBits.titleLoadIncomplete = 0",
+            "flagBits.titleLoadFailed = 1",
+        ),
+        "SceneSelectUpdate.cpp": (
+            "flagBits.previewPending = 1",
+            "flagBits.showRates = 1 - view->flagBits.showRates",
+            "flagBits.assetLoadStopRequested = 1",
+        ),
+        "SceneControllerDraw.cpp": ("flagBits.showRates",),
+        "SceneSelectAssets.cpp": ("flagBits.assetLoadStopRequested",),
+    }
+    for name, markers in consumers.items():
+        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if "FrontEndControllerFlagBits flagBits;" not in body:
+            fail(f"{name} lost shared FrontEnd flag-bit storage")
+        for marker in markers:
+            if marker not in body:
+                fail(f"{name} lost a named FrontEnd flag producer/consumer: {marker}")
+
+
 def check_photo_enemy_owner() -> None:
     element = (SRC / "PhotoEnemy.hpp").read_text(encoding="utf-8")
     control = (SRC / "PhotoEnemyControl.hpp").read_text(encoding="utf-8")
@@ -3293,6 +3360,7 @@ def main() -> int:
     check_supervisor_fog_cache_owner()
     check_front_end_timer_owner()
     check_front_end_requested_state_owner()
+    check_front_end_flags_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -3329,6 +3397,7 @@ def main() -> int:
     print("  Supervisor fog cache: one shared TH095 0/1/255 domain at +0x768")
     print("  FrontEnd timers: one shared ZunTimer type with target-order reset helper")
     print("  FrontEnd requested states: one shared explicit 0..9 domain")
+    print("  FrontEnd flags: one shared bit-0/1/2/3/5 owner with unknown ranges")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")
