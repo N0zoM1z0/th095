@@ -100,6 +100,7 @@ struct ResultScreenReplayCursor
     i32 GetCurrent() { return this->current; }
     i32 GetPrevious() { return this->previous; }
     i32 GetCount() { return this->count; }
+    void SetCount(i32 value) { this->count = value; }
     void SaveCurrent() { this->previous = this->current; }
     u32 HasChanged() { return this->previous != this->current; }
 

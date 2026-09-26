@@ -350,12 +350,6 @@ static __forceinline void SceneSelectCreateVmAt(SceneSelectUpdateView *view, i32
     view->vmIds[vmIndex] = view->sceneAnm->CreateVm(vmIndex, 7);
 }
 
-struct SceneSelectCursorCountSetterView
-{
-    i32 current; i32 previous; i32 count;
-    __forceinline void SetCount(i32 value) { count = value; }
-};
-
 static __forceinline SceneSelectScoreFlagsView *SceneSelectScoreFlagsAt(
     SceneSaveDataView *saveData, i32 scoreIndex)
 {
@@ -767,10 +761,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         }
         else
         {
-            reinterpret_cast<SceneSelectCursorCountSetterView *>(&view->groupCursor)
-                ->SetCount(
-                    12 <= g_ResultSaveData->FindHighestUnlockedSceneGroup() + 2
-                        ? 12 : g_ResultSaveData->FindHighestUnlockedSceneGroup() + 2);
+            view->groupCursor.SetCount(
+                12 <= g_ResultSaveData->FindHighestUnlockedSceneGroup() + 2
+                    ? 12 : g_ResultSaveData->FindHighestUnlockedSceneGroup() + 2);
         }
         view->groupCursor.wraps = 1;
         view->state = TH095_SCENE_SELECT_STATE_ACTIVE;
@@ -780,9 +773,8 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         for (initialCursorIndex = 0; initialCursorIndex < 12;
              initialCursorIndex++)
         {
-            reinterpret_cast<SceneSelectCursorCountSetterView *>(
-                &view->sceneCursors[initialCursorIndex])
-                ->SetCount(g_SceneGroupCounts[initialCursorIndex]);
+            view->sceneCursors[initialCursorIndex].SetCount(
+                g_SceneGroupCounts[initialCursorIndex]);
             view->sceneCursors[initialCursorIndex].wraps = 1;
             view->sceneCursors[initialCursorIndex].Set(0);
         }

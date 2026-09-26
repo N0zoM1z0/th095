@@ -16273,3 +16273,53 @@ bounded ABI view over `AnmVm`, so this batch does not claim that the full VM
 class declaration has converged or that the normal runtime transition has
 been exercised. The last aggregate exact and normal product receipts remain
 SEM-323.
+
+### SEM-326 — put Scene Select cursor-count writes on the cursor type
+
+**Target and semantics.** `UpdateSceneSelect @ 0x00447D00` sets the group
+cursor's `count @ +0x08` according to unlocked group bounds, then sets each
+of twelve scene-cursor counts from `g_SceneGroupCounts`. The cursor subobjects
+are already typed 0xD8-byte `ResultScreenReplayCursor` values at controller
+`+0x20` and `+0x1D0`; exact `Push/Pop/Move` units and the previously
+hash-attested scene update establish the same `count` position and cursor
+behavior. The `g_SceneGroupCounts` table supplies the page-specific bounds;
+this batch does not name additional cursor fields or infer the table's
+producer.
+
+**Representation and emission.** Both historical exact and normal cursor
+headers now expose the same inline `SetCount(i32)` method, a four-byte
+`count` store with no new storage. Both Scene Select update bodies call it
+for the group cursor and the twelve scene cursors; their duplicate local
+three-dword `SceneSelectCursorCountSetterView` declarations and casts are
+gone. The front-end allocation owns cursor storage, Scene Select owns these
+count transitions, and the selected cursor header supplies the inline
+compiler-emission contract. The exact/normal `ResultScreenReplayCursor`
+declaration split itself remains open; no profile selector was added. The
+closed selected-declaration baseline shrank by one entry to 198 keys and
+203 occurrences.
+
+**Compiler oracle.** A direct-field control shortened the exact scene update
+object from the target comparison extent `0x3EC2` to `0x3EB8`; a method
+declared only in the normal header failed exact compilation because the
+exact profile selects `ResultScreenExact.hpp`. Adding the identical method
+to that historical declaration restored the focused update to 1/1 exact.
+The complete header-dependent set covered 139 accepted units across 20
+sources. Controlled refresh changed 59 compiler-private label names in six
+units only after structural bytes, relocation positions/types, and target
+destinations agreed; an immediate replay passed 139/139 with zero refresh.
+The 59 manifest line changes alter no other field. A separate normal
+Scene Select update probe compiled to a 54,167-byte pinned-VC7.1 i386 COFF
+object. Exact and normal source paths were checked independently; no claim
+about runtime behavior follows from compilation.
+
+A subsequent cold aggregate replay passed **696/696 exact units across 88
+sources with zero refresh**. This confirms that the selected cursor-header
+method and the controlled relocation-label refresh preserve every configured
+exact unit; it is not a whole-image identity claim.
+
+A separate normal product build compiled all 88 pinned-VC7.1 i386 COFF
+objects and linked a 778,752-byte PE32 image (build-local SHA-256
+`96ba48f7a789afb2fda4ea34b7506dbae298146367a72b6c536dbe1a3b99a189`).
+This verifies normal compilation and linkage after the shared-header edit;
+neither the normal PE32 nor the exact-unit replay proves whole-image byte
+identity or runtime cursor behavior.

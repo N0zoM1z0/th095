@@ -764,6 +764,18 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                 )
             )
 
+    def test_scene_cursor_count_guard_rejects_missing_exact_operation(self) -> None:
+        GUARD.check_scene_select_cursor_count_owner()
+        exact = (ROOT / "src" / "ResultScreenExact.hpp").read_text(
+            encoding="utf-8"
+        )
+        with self.assertRaises(SystemExit):
+            GUARD.check_scene_select_cursor_count_owner(
+                exact.replace(
+                    "void SetCount(i32 value) { this->count = value; }", "", 1
+                )
+            )
+
     def test_front_end_requested_state_guard_rejects_raw_dispatch_and_write(self) -> None:
         GUARD.check_front_end_requested_state_owner()
         source = (ROOT / "src" / "FrontEndController.cpp").read_text(

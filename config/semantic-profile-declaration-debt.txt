@@ -162,7 +162,6 @@
 1	src/SceneSelectUpdate.cpp	struct	AnmTextManagerView
 1	src/SceneSelectUpdate.cpp	struct	AnmTextVmView
 1	src/SceneSelectUpdate.cpp	struct	SceneQueueFrontMemberView
-1	src/SceneSelectUpdate.cpp	struct	SceneSelectCursorCountSetterView
 1	src/SceneSelectUpdate.cpp	struct	SceneSelectScoreFlagsView
 1	src/SceneSelectUpdate.cpp	struct	SceneSelectShallowLocals
 1	src/SceneSelectUpdate.cpp	struct	SceneSelectUpdateView

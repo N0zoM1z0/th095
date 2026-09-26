@@ -28,8 +28,8 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 
 - Do not add any conditional directive below `src/` that references
   `TH095_MATCH_EXACT` or `DIFFBUILD`. CI freezes the remaining historical debt
-  as a shrink-only baseline: **710 directives across 103 files** and **199
-  selected-declaration keys / 204 occurrences**.
+  as a shrink-only baseline: **710 directives across 103 files** and **198
+  selected-declaration keys / 203 occurrences**.
 - Exact replay validates only the source selected by the exact profile. When
   exact and normal select different declarations, expressions, or bodies,
   validate the normal source independently with target evidence and a normal
@@ -40,7 +40,25 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 - Keep unproved storage and roles Unknown. Do not promote a name from a single
   write, adjacent-game similarity, exactness alone, or decompiler wording.
 
-## Current semantic checkpoint — SEM-325
+## Current semantic checkpoint — SEM-326
+
+Both historical exact and normal `ResultScreenReplayCursor` declarations now
+offer the same inline `SetCount(i32)` method. The Scene Select update bodies
+use it for the group cursor and twelve scene cursors, retiring their duplicate
+local three-dword setter views. A direct-field negative probe shortened the
+exact scene update from comparison extent `0x3EC2` to `0x3EB8`; the cursor
+method preserved 1/1 exact. The header-dependent set passed **139/139 across
+20 sources with zero refresh** after a controlled 59-private-label refresh.
+The normal Scene Select update compiled to a 54,167-byte pinned-VC7.1 i386
+COFF object. A cold full replay then passed **696/696 across 88 sources with
+zero refresh**. A separate normal product build compiled 88 i386 COFF
+objects and linked a 778,752-byte PE32 image (build-local SHA-256
+`96ba48f7a789afb2fda4ea34b7506dbae298146367a72b6c536dbe1a3b99a189`).
+The selected-declaration debt shrank to **198 keys / 203 occurrences**. The
+exact/normal cursor declaration split remains open; these results do not
+establish whole-image byte identity or runtime behavior.
+
+## Prior checkpoint — SEM-325
 
 The exact Scene Select update no longer declares its private color
 interpolation VM proxy. Its four calls now use the same bounded
@@ -50,10 +68,10 @@ relocation symbol spellings out of 520; their offsets, types, and target
 addresses stayed fixed. After the four manifest bindings were updated, the
 update unit passed **1/1 exact with zero label refresh**. The unchanged
 normal body compiled to a 54,215-byte pinned-VC7.1 i386 COFF object. Full
-`AnmVm` declaration convergence remains open. The last cold **696/696 exact**
-and 88-TU normal product receipts remain SEM-323.
+`AnmVm` declaration convergence remains open. At SEM-325, the latest cold
+**696/696 exact** and 88-TU normal product receipts still belonged to SEM-323.
 
-## Prior checkpoint — SEM-324
+## Earlier checkpoint — SEM-324
 
 Scene Select's exact update now reads staged Best Shot `comment`,
 `componentsLoaded`, `width`, and `height` through typed records instead of
@@ -64,8 +82,9 @@ establish record production and two independent consumers. Focused exact
 replay passed **1/1 with zero refresh**; the normal pinned-VC7.1 source
 compiled to a 54,215-byte i386 COFF object. Baseline DIFF compilation has an
 unrelated `InputRuntime.hpp` accessor gap; a private declaration shim confirmed
-the edited DIFF body's type closure only. The last cold **696/696 exact** and
-88-TU normal product receipts remain SEM-323. See SEM-324 for the boundary.
+the edited DIFF body's type closure only. At SEM-324, the latest cold
+**696/696 exact** and 88-TU normal product receipts still belonged to
+SEM-323. See SEM-324 for the boundary.
 
 ## Earlier checkpoint — SEM-323
 
