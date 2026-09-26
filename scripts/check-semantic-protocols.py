@@ -2113,6 +2113,33 @@ def check_scene_select_front_end_prefix_owner(
         fail("exact Scene Select restored profile-sensitive Reset calls")
 
 
+def check_scene_select_best_shot_record_access(
+    exact_body_text: str | None = None,
+) -> None:
+    for name in ("SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl"):
+        body = source_without_comments(
+            exact_body_text
+            if name == "SceneSelectUpdateExact.inl" and exact_body_text is not None
+            else (SRC / name).read_text(encoding="utf-8")
+        )
+        for field in ("comment", "componentsLoaded", "width", "height"):
+            if f"].{field}" not in body:
+                fail(f"{name} lost typed best-shot {field} access")
+        if any(raw in body for raw in (
+            "0x316c", "0x316e", "0x3178", "0x31c9",
+            "TH095_SCENE_BEST_SHOT_",
+        )):
+            fail(f"{name} restored raw best-shot record access")
+    for name, field in (
+        ("SceneBestShot.cpp", "componentsLoaded"),
+        ("ScenePreviewExact.inl", "width"),
+        ("ScenePreview.cpp", "height"),
+    ):
+        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if f"bestShotRecords[" not in body or f"].{field}" not in body:
+            fail(f"{name} lost independent best-shot record evidence")
+
+
 def check_front_end_transition_vm_owner(exact_header_text: str | None = None) -> None:
     for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
         header = source_without_comments(
@@ -3615,6 +3642,7 @@ def main() -> int:
     check_supervisor_fog_cache_owner()
     check_front_end_timer_owner()
     check_scene_select_front_end_prefix_owner()
+    check_scene_select_best_shot_record_access()
     check_front_end_transition_vm_owner()
     check_front_end_requested_state_owner()
     check_front_end_flags_owner()
@@ -3654,6 +3682,7 @@ def main() -> int:
     print("  Supervisor startup phase: one shared TH095 0/1/2 domain at +0x660")
     print("  Supervisor fog cache: one shared TH095 0/1/255 domain at +0x768")
     print("  FrontEnd timers: one shared ZunTimer type with target-order reset helper")
+    print("  Scene Select best-shot preview: typed record fields in both update bodies")
     print("  FrontEnd transition VM: one shared +0x6100 handle across title pages")
     print("  FrontEnd requested states: one shared explicit 0..9 domain")
     print("  FrontEnd flags: one shared bit-0/1/2/3/5 owner with unknown ranges")

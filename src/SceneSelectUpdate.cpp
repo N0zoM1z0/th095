@@ -144,28 +144,6 @@ typedef char SceneSelectBestShotPreviewRecordLayoutCheck[
      offsetof(ResultBestShotRecordView, componentsLoaded) == 0x69 &&
      sizeof(ResultBestShotRecordView) == 0x78) ? 1 : -1];
 
-#ifdef DIFFBUILD
-#define TH095_SCENE_BEST_SHOT_COMMENT(index) \
-    (reinterpret_cast<char *>(g_ResultSaveData) + (index) * 0x78 + 0x3178)
-#define TH095_SCENE_BEST_SHOT_COMPONENTS_LOADED(index) \
-    ((reinterpret_cast<u8 *>(g_ResultSaveData) + (index) * 0x78)[0x31c9])
-#define TH095_SCENE_BEST_SHOT_WIDTH(index) \
-    (*reinterpret_cast<u16 *>(reinterpret_cast<u8 *>(g_ResultSaveData) + \
-                              (index) * 0x78 + 0x316c))
-#define TH095_SCENE_BEST_SHOT_HEIGHT(index) \
-    (*reinterpret_cast<u16 *>(reinterpret_cast<u8 *>(g_ResultSaveData) + \
-                              (index) * 0x78 + 0x316e))
-#else
-#define TH095_SCENE_BEST_SHOT_COMMENT(index) \
-    (g_ResultSaveData->bestShotRecords[(index)].comment)
-#define TH095_SCENE_BEST_SHOT_COMPONENTS_LOADED(index) \
-    (g_ResultSaveData->bestShotRecords[(index)].componentsLoaded)
-#define TH095_SCENE_BEST_SHOT_WIDTH(index) \
-    (g_ResultSaveData->bestShotRecords[(index)].width)
-#define TH095_SCENE_BEST_SHOT_HEIGHT(index) \
-    (g_ResultSaveData->bestShotRecords[(index)].height)
-#endif
-
 /*
  * The target keeps these eighteen simultaneously live values in one
  * contiguous shallow stack band (EBP-48h through EBP-4).  Reverse field
@@ -433,9 +411,9 @@ static __forceinline void SceneSelectProcessLoadedSceneQueue(
                         reinterpret_cast<AnmTextVmView *>(
                             g_AnmManager->GetVm(view->vmIds.values[0x82])),
                         0x00efcfcf, 0,
-                        TH095_SCENE_BEST_SHOT_COMMENT(
+                        g_ResultSaveData->bestShotRecords[
                             reinterpret_cast<SceneQueueFrontMemberView *>(
-                                &view->loadedSceneQueue)->Front()));
+                                &view->loadedSceneQueue)->Front()].comment);
             }
         }
         g_Supervisor.EnterCriticalSectionWrapper(4);
@@ -1330,21 +1308,21 @@ update_preview_text:
         {
             previewVm =
                 g_AnmManager->GetVm(view->vmIds.values[0x12]);
-            if (TH095_SCENE_BEST_SHOT_COMPONENTS_LOADED(
-                    view->selectedScoreEntryIndex) != 0)
+            if (g_ResultSaveData->bestShotRecords[
+                    view->selectedScoreEntryIndex].componentsLoaded != 0)
             {
                 previewVm->loadedSprite->uvEndX =
-                    (f32)TH095_SCENE_BEST_SHOT_WIDTH(
-                        view->selectedScoreEntryIndex) / 256.0f;
+                    (f32)g_ResultSaveData->bestShotRecords[
+                        view->selectedScoreEntryIndex].width / 256.0f;
                 previewVm->loadedSprite->uvEndY =
-                    (f32)TH095_SCENE_BEST_SHOT_HEIGHT(
-                        view->selectedScoreEntryIndex) / 256.0f;
+                    (f32)g_ResultSaveData->bestShotRecords[
+                        view->selectedScoreEntryIndex].height / 256.0f;
                 previewVm->spriteWidth =
-                    (f32)TH095_SCENE_BEST_SHOT_WIDTH(
-                        view->selectedScoreEntryIndex);
+                    (f32)g_ResultSaveData->bestShotRecords[
+                        view->selectedScoreEntryIndex].width;
                 previewVm->spriteHeight =
-                    (f32)TH095_SCENE_BEST_SHOT_HEIGHT(
-                        view->selectedScoreEntryIndex);
+                    (f32)g_ResultSaveData->bestShotRecords[
+                        view->selectedScoreEntryIndex].height;
                 previewVm->drawEnabled = 1;
             }
             else
@@ -1404,11 +1382,6 @@ update_preview_text:
 }
 
 #undef SET_SCENE_VM_VISIBILITY
-
-#undef TH095_SCENE_BEST_SHOT_COMMENT
-#undef TH095_SCENE_BEST_SHOT_COMPONENTS_LOADED
-#undef TH095_SCENE_BEST_SHOT_WIDTH
-#undef TH095_SCENE_BEST_SHOT_HEIGHT
 
 } // namespace th095
 

@@ -740,6 +740,16 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                 exact.replace("AnmVmId transitionVm;", "u8 unknown6100[4];", 1)
             )
 
+    def test_scene_best_shot_guard_rejects_raw_exact_access(self) -> None:
+        GUARD.check_scene_select_best_shot_record_access()
+        exact = (ROOT / "src" / "SceneSelectUpdateExact.inl").read_text(
+            encoding="utf-8"
+        )
+        with self.assertRaises(SystemExit):
+            GUARD.check_scene_select_best_shot_record_access(
+                exact.replace("].componentsLoaded", "][0x31c9]", 1)
+            )
+
     def test_front_end_requested_state_guard_rejects_raw_dispatch_and_write(self) -> None:
         GUARD.check_front_end_requested_state_owner()
         source = (ROOT / "src" / "FrontEndController.cpp").read_text(

@@ -394,9 +394,9 @@ static __forceinline void SceneSelectProcessLoadedSceneQueue(
                         reinterpret_cast<AnmTextVmView *>(
                             g_SceneAnmManager->GetVm(view->vmIds.values[0x82])),
                         0x00efcfcf, 0,
-                        reinterpret_cast<char *>(g_SceneSaveData) +
+                        g_SceneSaveData->bestShotRecords[
                             reinterpret_cast<SceneQueueFrontMemberView *>(
-                                &view->loadedSceneQueue)->Front() * 0x78 + 0x3178);
+                                &view->loadedSceneQueue)->Front()].comment);
             }
         }
         g_SceneSupervisor.EnterCriticalSectionWrapper(4);
@@ -1287,27 +1287,23 @@ update_preview_text:
         {
             previewVm =
                 g_SceneAnmManager->GetVm(view->vmIds.values[0x12]);
-            if ((reinterpret_cast<u8 *>(g_SceneSaveData) +
-                 view->selectedScoreEntryIndex * 0x78)[0x31c9] != 0)
+            if (g_SceneSaveData->bestShotRecords[
+                    view->selectedScoreEntryIndex].componentsLoaded != 0)
             {
                 previewVm->loadedSprite->uvEndX =
-                    (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_SceneSaveData) +
-                        view->selectedScoreEntryIndex * 0x78 + 0x316c) /
+                    (f32)g_SceneSaveData->bestShotRecords[
+                        view->selectedScoreEntryIndex].width /
                     256.0f;
                 previewVm->loadedSprite->uvEndY =
-                    (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_SceneSaveData) +
-                        view->selectedScoreEntryIndex * 0x78 + 0x316e) /
+                    (f32)g_SceneSaveData->bestShotRecords[
+                        view->selectedScoreEntryIndex].height /
                     256.0f;
                 previewVm->spriteWidth =
-                    (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_SceneSaveData) +
-                        view->selectedScoreEntryIndex * 0x78 + 0x316c);
+                    (f32)g_SceneSaveData->bestShotRecords[
+                        view->selectedScoreEntryIndex].width;
                 previewVm->spriteHeight =
-                    (f32)*reinterpret_cast<u16 *>(
-                        reinterpret_cast<u8 *>(g_SceneSaveData) +
-                        view->selectedScoreEntryIndex * 0x78 + 0x316e);
+                    (f32)g_SceneSaveData->bestShotRecords[
+                        view->selectedScoreEntryIndex].height;
                 previewVm->flagsWord |= 2;
             }
             else

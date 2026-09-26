@@ -28,7 +28,7 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 
 - Do not add any conditional directive below `src/` that references
   `TH095_MATCH_EXACT` or `DIFFBUILD`. CI freezes the remaining historical debt
-  as a shrink-only baseline: **711 directives across 103 files** and **199
+  as a shrink-only baseline: **710 directives across 103 files** and **199
   selected-declaration keys / 204 occurrences**.
 - Exact replay validates only the source selected by the exact profile. When
   exact and normal select different declarations, expressions, or bodies,
@@ -40,7 +40,21 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 - Keep unproved storage and roles Unknown. Do not promote a name from a single
   write, adjacent-game similarity, exactness alone, or decompiler wording.
 
-## Current semantic checkpoint — SEM-323
+## Current semantic checkpoint — SEM-324
+
+Scene Select's exact update now reads staged Best Shot `comment`,
+`componentsLoaded`, `width`, and `height` through typed records instead of
+six raw address calculations. The normal/DIFF update now uses those same
+fields directly; its DIFF-only raw-offset macro block and one selector were
+retired. Fresh attested target reads of `0x00435E90/0x004362A0/0x00447D00`
+establish record production and two independent consumers. Focused exact
+replay passed **1/1 with zero refresh**; the normal pinned-VC7.1 source
+compiled to a 54,215-byte i386 COFF object. Baseline DIFF compilation has an
+unrelated `InputRuntime.hpp` accessor gap; a private declaration shim confirmed
+the edited DIFF body's type closure only. The last cold **696/696 exact** and
+88-TU normal product receipts remain SEM-323. See SEM-324 for the boundary.
+
+## Prior checkpoint — SEM-323
 
 Both Scene Select owner headers now expose the front-end allocation's shared
 `AnmVmId transitionVm @ +0x6100`. Hash-attested coordinator, Scene Select,
@@ -58,7 +72,7 @@ linked a 778,752-byte PE32 image (build-local SHA-256
 These receipts do not establish whole-image byte identity or runtime behavior.
 See SEM-323 for target evidence and ownership details.
 
-## Prior checkpoint — SEM-322
+## Earlier checkpoint — SEM-322
 
 Both exact Scene Select owner/update views now type the 0xD8-byte
 `secondaryCursor @ +0xF8`, joining normal Scene Select, FrontEnd coordinator,

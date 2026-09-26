@@ -16202,3 +16202,43 @@ COFF objects and linked a 778,752-byte PE32 image (build-local SHA-256
 This does not prove target whole-image identity or runtime transition
 behavior. The historical exact/normal Scene Select class split remains debt;
 this batch gives the four-byte handle the same representation on both sides.
+
+### SEM-324 — use staged Best Shot record fields in Scene Select updates
+
+**Target and owner.** The verified TH095 `LoadBestShotForScene @ 0x00435E90`
+populates a 0x78-byte staged Best Shot record at `ResultSaveDataView +0x3160`,
+copies its 0x18-byte file header, fills the 0x50-byte comment at record
+`+0x18`, and publishes `componentsLoaded @ +0x69` after decoding pixels.
+`LoadScenePreviewTexture @ 0x004362A0` independently reads that flag and the
+`u16 width/height @ +0x0C/+0x0E`. `UpdateSceneSelect @ 0x00447D00` reads
+the same fields for the preview VM and supplies the comment to the text VM.
+Fresh hash-attested bounded decompiles of these three target functions were
+saved privately with SHA-256
+`97aa36e784cc16f0bad6bd530776ab5c670f84edf250ffc3d06602ee32b3dced`.
+The provisional ledger bounds and exact-matched producer/preview consumers
+corroborate those offsets; the decompile is evidence, not source.
+
+**Source and build ownership.** Both selected Scene Select update bodies now
+read `bestShotRecords[index].comment`, `.componentsLoaded`, `.width`, and
+`.height` through their respective typed save-data owners. This replaces
+six raw address calculations in the historical exact body and retires the
+normal/DIFF macro block that selected raw offsets in DIFFBUILD. The score
+allocation owns the 120 staged records; `LoadBestShotForScene` produces their
+decoded state, and the scene preview and Scene Select updates consume it.
+`SceneSelectUpdateExact.inl` remains the exact emission body, while
+`SceneSelectUpdate.cpp` remains the normal and DIFF body. The existing
+save-data owner declarations still differ by profile; this batch does not
+resolve that broader split. One DIFF selector directive was retired, taking
+the closed baseline from 711 to 710.
+
+**Oracles and limit.** The untouched exact update baseline passed 1/1. The
+typed exact body passed 1/1 with zero private-label refresh, including after
+the normal-body edit. A separate normal pinned-VC7.1 compile produced a
+54,215-byte i386 COFF object. Standalone DIFFBUILD compilation already failed
+before this edit because `InputRuntime.hpp` hides three unrelated input
+accessors in that profile; a private forced-include declaration shim let the
+edited DIFF body compile as a type probe, without claiming DIFF link or
+runtime validation. The semantic guard checks typed reads and rejects the
+former offsets/macros. The most recent cold 696/696 exact replay and 88-TU
+normal product remain SEM-323; this focused batch makes no new aggregate,
+whole-image, or runtime claim.
