@@ -7,16 +7,15 @@ policy. Use `RE_HANDOFF.md` for the current checkpoint and
 `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SEMANTIC_INDEX.md`, and `SOURCE_MAP.md` for current decisions.
 
-**Status: active-incomplete — semantic batches require target-local evidence
-and independent exact/normal oracles appropriate to their scope. Aggregate
-exact and product gates apply after shared-source changes. No whole-program
-semantic-completion claim is made.**
+**Current phase: active-incomplete.** Current acceptance rules live in
+`SEMANTIC_RECONSTRUCTION.md`; the receipts below belong to their recorded
+source revisions. No whole-program semantic-completion claim is made.
 
-The current function-level reconstruction established the authored behavior of
-the original Japanese TH095 v1.02a target and produced a playable Windows i386
-build. Semantic reconstruction now turns target-layout-shaped source into
-evidence-backed, maintainable C++ without losing either result. It is the
-required preparation for Windows x86-64, native Linux, and Web/WASM game ports.
+The tagged `v0.1.0-windows-i386` milestone established maintained authored
+source and a playable Windows i386 artifact. Semantic reconstruction turns
+target-layout-shaped source into evidence-backed C++; exact replay and normal
+compilation of later revisions do not transfer the tag's runtime validation.
+This phase prepares the Windows x86-64, native Linux, and Web/WASM game ports.
 
 ## What this phase means
 
@@ -59,7 +58,10 @@ Every accepted semantic batch must distinguish:
 The canonical TH095 target remains authoritative. TH08 is a workflow and
 adjacent-engine reference, not binary evidence for TH095.
 
-## Planned workflow
+## Original workflow proposal (historical)
+
+The unchecked items below preserve the initial proposal, not live task status.
+Use `SEMANTIC_PLAYBOOK.md` and `RE_HANDOFF.md` for the current workflow.
 
 - [ ] Add a read-only semantic-debt router for raw member accesses, anonymous
   identifiers, absolute field views, opaque storage, and numeric protocol
@@ -92,7 +94,7 @@ adjacent-engine reference, not binary evidence for TH095.
   layout assertions, exact replay results, runtime result, and retained
   unknowns. Keep rejected experiments below `.analysis/`.
 
-## Initial work order
+## Original work order (historical)
 
 1. Canonical global and aggregate owners: replace target-facing field views
    with one semantic owner while preserving exact-build spellings where VC7
@@ -110,7 +112,10 @@ adjacent-engine reference, not binary evidence for TH095.
 This order is a router, not permission to perform a repository-wide rename.
 Each implementation session must still choose one bounded, coherent family.
 
-## Two-oracle acceptance
+## Original two-oracle acceptance matrix (historical)
+
+The current acceptance rule is in `SEMANTIC_RECONSTRUCTION.md`; this matrix
+records the starting plan and is not a batch-specific test requirement.
 
 The existing i386 reconstruction supplies two independent regression lanes:
 
@@ -124,7 +129,7 @@ Exact bytes prove code identity, not an English field name. Runtime success
 proves a behavior survives, not that the chosen abstraction is historically
 named. Acceptance requires both applicable oracles plus the evidence record.
 
-## Port-readiness exit criteria
+## Original port-readiness exit criteria (historical)
 
 Semantic reconstruction is ready to hand off to the game-port program when:
 
