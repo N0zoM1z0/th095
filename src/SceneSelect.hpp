@@ -8,6 +8,7 @@
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "PixelFormats.hpp"
+#include "ResultScreen.hpp"
 #include "ScoreData.hpp"
 #include "SceneData.hpp"
 
@@ -148,7 +149,9 @@ struct SceneSelectControllerView
     ZunTimer stateTimer;
     ZunTimer animationTimer;
     i32 selectedGroup;
-    u8 unknown0024[0x1ac];
+    u8 unknown0024[0xd4];
+    // Replay Browser uses this second cursor for its per-page selection.
+    ResultScreenReplayCursor secondaryCursor;
     SceneGroupCursorView groupCursors[12];
     i32 selectedScoreEntryIndex;
     union
@@ -286,6 +289,8 @@ typedef char SceneSaveBestShotRecordsAt3160[
     (offsetof(SceneSaveDataView, bestShotRecords) == 0x3160) ? 1 : -1];
 typedef char SceneScoreEntryCaptureTimeAt3C[
     (offsetof(SceneScoreEntryView, captureTime) == 0x3c) ? 1 : -1];
+typedef char SceneSelectSecondaryCursorAtF8[
+    (offsetof(SceneSelectControllerView, secondaryCursor) == 0xf8) ? 1 : -1];
 typedef char SceneSelectGroupCursorsAt1D0[
     (offsetof(SceneSelectControllerView, groupCursors) == 0x1d0) ? 1 : -1];
 typedef char SceneSelectVmIdsAtBF4[

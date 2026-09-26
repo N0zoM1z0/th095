@@ -177,7 +177,7 @@ struct FrontEndLifecycleView
     FrontEndTimerView stateTimer;
     FrontEndTimerView transitionTimer;
     ResultScreenReplayCursor groupCursor;
-    ResultScreenReplayCursor sceneCursor;
+    ResultScreenReplayCursor secondaryCursor;
     ResultScreenReplayCursor sceneCursors[12];
     u8 unknown0bf0[0x26c];
     void *ownedMissionMessageData;

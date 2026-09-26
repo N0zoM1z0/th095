@@ -116,10 +116,10 @@
 1	src/FileWrite.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/FileWrite.cpp	#ifdef TH095_MATCH_EXACT
 3	src/FrontEndController.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-2	src/FrontEndController.cpp	#if !defined(TH095_MATCH_EXACT)
+1	src/FrontEndController.cpp	#if !defined(TH095_MATCH_EXACT)
 7	src/FrontEndController.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 4	src/FrontEndController.cpp	#if defined(TH095_MATCH_EXACT)
-4	src/FrontEndController.cpp	#ifdef TH095_MATCH_EXACT
+3	src/FrontEndController.cpp	#ifdef TH095_MATCH_EXACT
 3	src/FrontEndController.cpp	#ifndef DIFFBUILD
 2	src/FrontEndGlobals.hpp	#elif !defined(TH095_MATCH_EXACT)
 1	src/FrontEndGlobals.hpp	#if defined(DIFFBUILD)

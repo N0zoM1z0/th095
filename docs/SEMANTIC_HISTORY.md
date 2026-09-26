@@ -15745,3 +15745,62 @@ the already-proved `replayColumnCursor @ +0xF8`, `FrontEndRequestedState @
 shared without changing any of the four exact FrontEnd units. Treat each
 compiler-visible type or field access as a separate oracle and retain Unknown
 padding; do not broaden this into unproved ResultScreen or queue ownership.
+
+### SEM-316 — expose the shared front-end secondary cursor
+
+**Scope.** The controller's `+0xF8..+0x1CF` bytes are now a typed
+`ResultScreenReplayCursor` in the shared `FrontEndControllerUpdateView`, the
+normal `SceneSelectControllerView`, the normal `SceneSelectUpdateView`, and the
+FrontEnd lifecycle projection. The remaining unknown span in the coordinator
+still ends at `vmIds @ +0xBF4`. No cursor behavior or serialized format changed.
+
+**Target observed.** The hash-attested constructor `0x00445440` initializes
+cursor-shaped 0xD8-byte records at `+0x20` and `+0xF8` before twelve more at
+`+0x1D0`. Replay Browser update `0x0044DCA0` sets the second cursor's count to
+20 and calls `ResultScreenReplayCursor::Move @ 0x0041B760` on it independently
+of the first cursor. Draw `0x00452630` reads `+0x20` as the replay page and
+`+0xF8` as the highlighted entry within that page. Three source layout
+assertions pin `+0xF8`, and the following cursor arrays remain at `+0x1D0`.
+The exact ReplayBrowser body and its existing cursor declaration independently
+corroborate the producer/consumer relationship. TH08 supplied the method for
+separating shared storage from state-specific roles, not this TH095 layout.
+
+**Name and ownership.** `columnCursor` is true inside Replay Browser, but the
+same front-end allocation serves other states. The shared projections use the
+neutral `secondaryCursor`; no Scene Select business role is inferred from its
+construction alone. Storage belongs to the one active front-end allocation at
+`0x004CA2F4`; Replay Browser owns the proved column-selection behavior.
+Compiler emission remains split across the coordinator, lifecycle, and
+scene/replay translation units. Normal build ownership is the typed shared
+controller projection; exact `SceneSelectExact.hpp` and
+`SceneSelectUpdateExact.inl` remain historical snapshots with anonymous
+`+0xF8` storage, while the exact coordinator now uses the typed declaration.
+The latter snapshots are remaining source debt, not separate runtime owners.
+The unknown `+0xBF0` role and adjacent gaps remain unpromoted.
+
+**Oracle boundary.** Baseline `FrontEndController.cpp` replay was 4/4 exact
+and its normal VC7.1 object compiled before the first declaration change.
+The typed coordinator declaration changed only eighteen compiler-private
+labels in two units; the constrained refresh verified all structural bytes,
+relocation offsets/types, public identities, and target destinations before
+updating them, and an immediate 4/4 zero-refresh replay passed. A cold
+aggregate then audited 696/696 exact units across 88 sources, refreshing 292
+private labels in 18 units, including unchanged unrelated sources; an
+independent cold aggregate passed 696/696 with **zero** refresh. This complete
+two-stage audit changed 310 private-label names in 20 manifest units and no
+other match-unit field. The complete receipt precedes the final neutral
+identifier spelling and Scene Select's
+normal-only projection change. The final affected-source replay passed
+**13/13 exact units** across FrontEndController, FrontEndLifecycle, and
+SceneSelectUpdate with zero refresh. The final normal product independently
+compiled 88 pinned-VC7.1 i386 COFF objects and linked a 778,752-byte PE32
+image (build-local SHA-256
+`3e3328de8280ae1b873aee7c90021931b7761a58031750e5cfe82121682f42e6`).
+That receipt is compile/link closure, not target whole-image identity or a
+runtime scenario. The selector baseline shrank by two FrontEnd directives;
+no new profile selector or selected declaration was introduced.
+
+**Next route.** Audit `requestedState @ +0x6110` and controller flags
+`@ +0x6120` independently against the target and both compiler profiles.
+Do not assume that an enum or bitfield name already present in normal source
+proves the exact profile's source shape or the remaining unknown flag bits.

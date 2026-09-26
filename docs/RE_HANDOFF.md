@@ -14,7 +14,7 @@ in [SEMANTIC_INDEX.md](SEMANTIC_INDEX.md), build ownership in
 - Phase: **semantic reconstruction, active-incomplete**. There is no defensible
   completion percentage; source presence, semantic acceptance, exact matching,
   normal compilation, linkage, and runtime validation are separate facts.
-- Current ledger report (2026-09-20): 1,880 provisional candidates, 713 mapped,
+- Current ledger report (2026-09-26): 1,880 provisional candidates, 713 mapped,
   697 source-present, and 696 exact units covering 336,486 bytes. Recompute
   these values before making a new claim.
 - `config/claims.csv` remains header-only.
@@ -28,7 +28,7 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 
 - Do not add any conditional directive below `src/` that references
   `TH095_MATCH_EXACT` or `DIFFBUILD`. CI freezes the remaining historical debt
-  as a shrink-only baseline: **722 directives across 103 files** and **201
+  as a shrink-only baseline: **720 directives across 103 files** and **201
   selected-declaration keys / 206 occurrences**.
 - Exact replay validates only the source selected by the exact profile. When
   exact and normal select different declarations, expressions, or bodies,
@@ -40,57 +40,52 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 - Keep unproved storage and roles Unknown. Do not promote a name from a single
   write, adjacent-game similarity, exactness alone, or decompiler wording.
 
-## Current semantic checkpoint — SEM-315
+## Current semantic checkpoint — SEM-316
 
-`FrontEndControllerUpdateView` now uses canonical `ZunTimer` for both
-`stateTimer @ +0x08` and `animationTimer @ +0x14` in every profile. The former
-exact-only `ResultScreenTimer` alias is gone. Its layout and Tick destination
-were compatible, but its inline Reset store order was compiler-visible, so all
-eleven FrontEnd state resets use one unconditional helper with the target
-order `current`, `subFrame`, `previous`. This does not merge or validate the
-broader ResultScreen timer family.
+The controller's `+0xF8..+0x1CF` storage is now a typed 0xD8
+`ResultScreenReplayCursor` in the shared FrontEnd coordinator, lifecycle
+projection, normal Scene Select owner, and normal Scene Select update view.
+Shared declarations use `secondaryCursor`; Replay Browser alone calls its
+proved 20-entry role `columnCursor`. `+0xBF0` and other unproved roles remain
+Unknown. The historical exact Scene Select snapshots still have anonymous
+`+0xF8` storage and remain tracked source debt.
 
-Checkpoint evidence:
+Target evidence comes from the hash-attested constructor `0x00445440`, Replay
+Browser update `0x0044DCA0`, and Draw `0x00452630`, plus independent cursor
+layout and exact Replay Browser consumers. TH08 was used for its conservative
+owner/naming method, not for TH095 layout or names.
 
-- the two public Tick relocations use canonical `ZunTimer::Tick` and still
-  resolve to target `0x0041B8A0`;
-- controlled refresh changed eighteen compiler-private labels in two units
-  only after structural and relocation proof;
-- immediate zero-refresh replay passed **4/4 FrontEnd exact units**;
-- the independent normal pinned-VC7.1 probe emitted a **39,271-byte Intel 80386
-  COFF** object; and
-- target identity, tracking, semantic guards, build graphs, whitespace, and
-  all **74 workflow tests** passed.
+Exact validation: the focused coordinator audit refreshed 18 private labels
+in two units. The subsequent controlled aggregate passed **696/696 units
+across 88 sources**, refreshing 292 more labels in 18 units only after
+structural bytes, relocation topology, public identities, and target
+addresses agreed. The manifest diff is therefore 310 private-label names in
+20 units, with no offset, type, target, or other unit change. An immediate
+cold full replay passed **696/696 with zero
+refresh**. This complete receipt preceded the final neutral identifier rename
+and normal Scene Select projection edit; the final directly affected exact
+sources then passed **13/13 with zero refresh**. The final normal VC7.1 build
+compiled 88 i386 COFF objects and linked a 778,752-byte PE32 image (build-local
+SHA-256 `3e3328de8280ae1b873aee7c90021931b7761a58031750e5cfe82121682f42e6`).
+These receipts establish exact-unit preservation and normal compile/link
+closure, not target whole-image identity or runtime behavior. No new profile
+selector was added; FrontEnd selector debt shrank by two directives.
 
-The latest complete milestone remains **SEM-298**: 696/696 exact units across
-88 sources with zero refresh, plus an 88-object normal build linking a
-778,752-byte PE32 image (build-local SHA-256
-`4e1b18d1fd1b913a34bd3cfb572da2ae0a7ecc34f375960f0330f9cbf9d50140`).
-That receipt proves exact-unit preservation and normal compile/link closure,
-not target whole-image identity or runtime-scenario validation. SEM-299 through
-SEM-315 used bounded focused validation; do not imply a newer aggregate or
-whole-product receipt.
-
-For the current owner inventory, use `SEMANTIC_INDEX.md` and `SOURCE_MAP.md`
-rather than reconstructing it from old handoff prose. Durable target facts are
-in `KNOWLEDGE_BASE.md`; complete batch evidence and bounded negatives are in
-`SEMANTIC_HISTORY.md`.
+For subsystem ownership, use `SEMANTIC_INDEX.md` and `SOURCE_MAP.md`. Durable
+target facts are in `KNOWLEDGE_BASE.md`; detailed batch evidence and bounded
+unknowns are in `SEMANTIC_HISTORY.md`.
 
 ## Next bounded lane
 
-Continue only the `FrontEndControllerUpdateView` declaration audit. Test these
-already-evidenced selected regions independently:
-
-1. `replayColumnCursor @ +0xF8` versus exact `unknown00f8` storage;
-2. `FrontEndRequestedState @ +0x6110` versus exact integer storage; and
-3. `FrontEndControllerFlagBits @ +0x6120` versus the exact local bitfield.
-
-For each candidate, first confirm the target producer/consumer and physical
-layout, then test all four FrontEnd exact units and the normal VC7.1 TU. Keep
-the surrounding gaps Unknown. Do not broaden the audit into ResultScreen,
-queue ownership, or unrelated FrontEnd selectors. If a shared declaration
-changes structural bytes, stop and isolate the compiler cause before changing
-any manifest identity or private label.
+Audit `FrontEndRequestedState @ +0x6110` and
+`FrontEndControllerFlagBits @ +0x6120` separately. First verify each target
+producer, independent consumer,
+physical representation, invalid/default path, and compiler effect. Existing
+normal names are hypotheses, and a four-byte layout alone does not justify a
+shared enum or bitfield. Preserve unknown flag bits and surrounding gaps. For
+future small changes, use focused exact units and normal probes; repeat cold
+aggregate validation at a later shared-owner milestone, as directed by the
+user. Keep VC7.1 builds serial and limited to one CPU at lower priority.
 
 ## Protected working-tree exclusions
 
@@ -110,13 +105,11 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/analysis/report-semantic-debt.py --path src/FrontEndController.cpp --details
-rg -n "replayColumnCursor|requestedState|FrontEndControllerFlagBits|unknown00f8" src/FrontEndController.cpp src/SceneSelect.hpp config docs
+rg -n "requestedState|FrontEndControllerFlagBits|secondaryCursor" src/FrontEndController.cpp src/SceneSelect.hpp src/FrontEndGlobals.hpp
 python3 scripts/replay-exact-units.py --source src/FrontEndController.cpp
-scripts/compile-probe.sh src/FrontEndController.cpp build/probes/sem316-normal/FrontEndController.obj /MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src
 ```
 
-Before committing the next accepted batch, run the affected exact and normal
-oracles, `scripts/check-semantic-protocols.py`, `scripts/ci.py`,
+Before a later commit, run the affected exact and normal oracles,
+`scripts/check-semantic-protocols.py`, `scripts/ci.py`,
 `scripts/build.py --check`, `git diff --check`, and confirm
-`config/claims.csv` is still header-only. Defer the expensive aggregate replay
-and full normal product until the next shared-owner milestone.
+`config/claims.csv` remains header-only.
