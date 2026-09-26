@@ -16242,3 +16242,34 @@ runtime validation. The semantic guard checks typed reads and rejects the
 former offsets/macros. The most recent cold 696/696 exact replay and 88-TU
 normal product remain SEM-323; this focused batch makes no new aggregate,
 whole-image, or runtime claim.
+
+### SEM-325 — retire Scene Select's local color-interpolation proxy
+
+**Evidence and boundary.** The previously hash-attested target analysis in
+ABI-059 identifies four Scene Select calls at `0x0044966B/0x0044968A` and
+`0x0044A76C/0x0044A78A`, all targeting
+`AnmVmColorInterpolationView::SetColor1Interpolation @ 0x00452D70` with the
+same five-parameter `__thiscall` ABI. The callee is independently exact
+222/222 bytes. Each receiver comes from the shared ANM VM manager and the
+normal Scene Select body already used the shared bounded
+`AnmVmColorInterpolationView` declaration. Its four-byte packed color field
+is read from the real VM before these calls. The exact body's local
+`SceneSelectColorInterpolationView` supplied only an alternate decorated
+call name and an anonymous partial layout; it did not own an independent
+interpolation method or storage.
+
+**Source and compiler oracle.** The exact update body now includes
+`AnmVmInterpolation.hpp`, uses the same shared view at all four calls, and
+deletes the local proxy. In a minimal direct pinned-VC7.1 probe, all 520
+COFF relocation positions and types stayed fixed; exactly four receiver
+symbol spellings changed, each at the same call site and still bound to
+`0x00452D70`. Updating those four reproducible manifest bindings yielded
+**1/1 exact with zero private-label refresh**; structural bytes and all
+relocation targets matched the verified executable. A separate normal
+compile produced a 54,215-byte i386 COFF object. The ANM VM owns storage;
+`AnmVmInterpolation.cpp` owns the method body; each Scene Select update body
+owns its four call emissions. The shared interpolation declaration remains a
+bounded ABI view over `AnmVm`, so this batch does not claim that the full VM
+class declaration has converged or that the normal runtime transition has
+been exercised. The last aggregate exact and normal product receipts remain
+SEM-323.

@@ -2140,6 +2140,28 @@ def check_scene_select_best_shot_record_access(
             fail(f"{name} lost independent best-shot record evidence")
 
 
+def check_scene_select_color_interpolation_owner(
+    exact_body_text: str | None = None,
+) -> None:
+    for name in ("SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl"):
+        body = source_without_comments(
+            exact_body_text
+            if name == "SceneSelectUpdateExact.inl" and exact_body_text is not None
+            else (SRC / name).read_text(encoding="utf-8")
+        )
+        if body.count("reinterpret_cast<AnmVmColorInterpolationView *>(") != 4:
+            fail(f"{name} lost one of four shared VM color-interpolation calls")
+        if "SceneSelectColorInterpolationView" in body:
+            fail(f"{name} restored the local color-interpolation proxy")
+    exact = source_without_comments(
+        exact_body_text
+        if exact_body_text is not None
+        else (SRC / "SceneSelectUpdateExact.inl").read_text(encoding="utf-8")
+    )
+    if '#include "AnmVmInterpolation.hpp"' not in exact:
+        fail("exact Scene Select lost the shared color-interpolation declaration")
+
+
 def check_front_end_transition_vm_owner(exact_header_text: str | None = None) -> None:
     for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
         header = source_without_comments(
@@ -3643,6 +3665,7 @@ def main() -> int:
     check_front_end_timer_owner()
     check_scene_select_front_end_prefix_owner()
     check_scene_select_best_shot_record_access()
+    check_scene_select_color_interpolation_owner()
     check_front_end_transition_vm_owner()
     check_front_end_requested_state_owner()
     check_front_end_flags_owner()
@@ -3683,6 +3706,7 @@ def main() -> int:
     print("  Supervisor fog cache: one shared TH095 0/1/255 domain at +0x768")
     print("  FrontEnd timers: one shared ZunTimer type with target-order reset helper")
     print("  Scene Select best-shot preview: typed record fields in both update bodies")
+    print("  Scene Select VM colors: one shared interpolation ABI view")
     print("  FrontEnd transition VM: one shared +0x6100 handle across title pages")
     print("  FrontEnd requested states: one shared explicit 0..9 domain")
     print("  FrontEnd flags: one shared bit-0/1/2/3/5 owner with unknown ranges")

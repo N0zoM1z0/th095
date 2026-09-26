@@ -750,6 +750,20 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                 exact.replace("].componentsLoaded", "][0x31c9]", 1)
             )
 
+    def test_scene_color_interpolation_guard_rejects_local_proxy(self) -> None:
+        GUARD.check_scene_select_color_interpolation_owner()
+        exact = (ROOT / "src" / "SceneSelectUpdateExact.inl").read_text(
+            encoding="utf-8"
+        )
+        with self.assertRaises(SystemExit):
+            GUARD.check_scene_select_color_interpolation_owner(
+                exact.replace(
+                    "reinterpret_cast<AnmVmColorInterpolationView *>(",
+                    "reinterpret_cast<SceneSelectColorInterpolationView *>(",
+                    1,
+                )
+            )
+
     def test_front_end_requested_state_guard_rejects_raw_dispatch_and_write(self) -> None:
         GUARD.check_front_end_requested_state_owner()
         source = (ROOT / "src" / "FrontEndController.cpp").read_text(

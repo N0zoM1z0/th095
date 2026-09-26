@@ -40,7 +40,20 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 - Keep unproved storage and roles Unknown. Do not promote a name from a single
   write, adjacent-game similarity, exactness alone, or decompiler wording.
 
-## Current semantic checkpoint — SEM-324
+## Current semantic checkpoint — SEM-325
+
+The exact Scene Select update no longer declares its private color
+interpolation VM proxy. Its four calls now use the same bounded
+`AnmVmColorInterpolationView` declaration as the normal body and the exact
+222-byte callee at `0x00452D70`. The direct compiler probe changed only four
+relocation symbol spellings out of 520; their offsets, types, and target
+addresses stayed fixed. After the four manifest bindings were updated, the
+update unit passed **1/1 exact with zero label refresh**. The unchanged
+normal body compiled to a 54,215-byte pinned-VC7.1 i386 COFF object. Full
+`AnmVm` declaration convergence remains open. The last cold **696/696 exact**
+and 88-TU normal product receipts remain SEM-323.
+
+## Prior checkpoint — SEM-324
 
 Scene Select's exact update now reads staged Best Shot `comment`,
 `componentsLoaded`, `width`, and `height` through typed records instead of
@@ -54,7 +67,7 @@ unrelated `InputRuntime.hpp` accessor gap; a private declaration shim confirmed
 the edited DIFF body's type closure only. The last cold **696/696 exact** and
 88-TU normal product receipts remain SEM-323. See SEM-324 for the boundary.
 
-## Prior checkpoint — SEM-323
+## Earlier checkpoint — SEM-323
 
 Both Scene Select owner headers now expose the front-end allocation's shared
 `AnmVmId transitionVm @ +0x6100`. Hash-attested coordinator, Scene Select,
