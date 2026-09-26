@@ -2041,6 +2041,64 @@ def check_front_end_timer_owner() -> None:
         fail("FrontEnd animation timer lost its canonical Tick consumer")
 
 
+def check_scene_select_front_end_prefix_owner(
+    exact_update_text: str | None = None,
+) -> None:
+    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp"):
+        scene = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        for declaration in (
+            "ZunTimer stateTimer;", "ZunTimer animationTimer;",
+        ):
+            if declaration not in scene:
+                fail(f"{name} lost shared front-end timer storage: {declaration}")
+        if "ResultScreenTimer stateTimer;" in scene:
+            fail(f"{name} restored the profile-sensitive timer projection")
+        if "SceneAnmLoadedView *transitionAnm;" not in scene:
+            fail(f"{name} lost the transition ANM pointer")
+        if "offsetof(SceneSelectControllerView, animationTimer) == 0x14" not in scene:
+            fail(f"{name} lost animation-timer layout assertion")
+
+    normal_update = source_without_comments(
+        (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
+    )
+    if "SceneAnmLoadedView *transitionAnm;" not in normal_update:
+        fail("normal Scene Select update restored anonymous +0x04 storage")
+    if "offsetof(SceneSelectUpdateView, transitionAnm) == 0x04" not in normal_update:
+        fail("normal Scene Select update lost transition-ANM offset assertion")
+
+    exact = source_without_comments(
+        exact_update_text
+        if exact_update_text is not None
+        else (SRC / "SceneSelectUpdateExact.inl").read_text(encoding="utf-8")
+    )
+    for declaration in ("ZunTimer stateTimer;", "ZunTimer animationTimer;"):
+        if declaration not in exact:
+            fail(f"exact Scene Select update lost {declaration}")
+    if "SceneAnmLoadedView *transitionAnm;" not in exact:
+        fail("exact Scene Select update restored anonymous +0x04 storage")
+    if "offsetof(SceneSelectUpdateView, transitionAnm) == 0x04" not in exact:
+        fail("exact Scene Select update lost transition-ANM offset assertion")
+    if "ResultScreenTimer stateTimer;" in exact or "unknown0014[0x0c]" in exact:
+        fail("exact Scene Select update restored its legacy timer view")
+    signature = "static __forceinline void SceneSelectResetTimer(ZunTimer *timer)"
+    start = exact.find(signature)
+    if start < 0:
+        fail("exact Scene Select update lost its target-order timer reset")
+    body = braced_body_after(exact, start, signature)
+    statements = (
+        "timer->current = 0;",
+        "timer->subFrame = 0.0f;",
+        "timer->previous = -999999;",
+    )
+    positions = [body.find(statement) for statement in statements]
+    if any(position < 0 for position in positions) or positions != sorted(positions):
+        fail("exact Scene Select timer reset lost target-observed store order")
+    if exact.count("SceneSelectResetTimer(&view->stateTimer);") != 3:
+        fail("exact Scene Select state-timer reset sites drifted")
+    if "view->stateTimer.Reset();" in exact:
+        fail("exact Scene Select restored profile-sensitive Reset calls")
+
+
 def check_front_end_requested_state_owner(
     controller_text: str | None = None,
     exact_update_text: str | None = None,
@@ -3464,6 +3522,7 @@ def main() -> int:
     check_supervisor_startup_phase_owner()
     check_supervisor_fog_cache_owner()
     check_front_end_timer_owner()
+    check_scene_select_front_end_prefix_owner()
     check_front_end_requested_state_owner()
     check_front_end_flags_owner()
     check_front_end_scene_queue_owner()

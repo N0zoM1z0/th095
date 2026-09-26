@@ -41,9 +41,9 @@ struct SceneSelectScoreFlagsView
 struct SceneSelectUpdateView
 {
     SceneAnmLoadedView *sceneAnm;
-    u8 unknown0004[4];
-    ResultScreenTimer stateTimer;
-    u8 unknown0014[0x0c];
+    SceneAnmLoadedView *transitionAnm;
+    ZunTimer stateTimer;
+    ZunTimer animationTimer;
     ResultScreenReplayCursor groupCursor;
     u8 unknown00f8[0xd8];
     ResultScreenReplayCursor sceneCursors[12];
@@ -88,6 +88,11 @@ struct SceneSelectUpdateView
     i32 pendingSecondarySize[3];
 };
 
+typedef char SceneSelectUpdateTimersAt8And14[
+    (offsetof(SceneSelectUpdateView, stateTimer) == 0x08 &&
+     offsetof(SceneSelectUpdateView, animationTimer) == 0x14) ? 1 : -1];
+typedef char SceneSelectUpdateTransitionAnmAt4[
+    (offsetof(SceneSelectUpdateView, transitionAnm) == 0x04) ? 1 : -1];
 typedef char SceneSelectUpdateGroupCursorAt20[
     (offsetof(SceneSelectUpdateView, groupCursor) == 0x20) ? 1 : -1];
 typedef char SceneSelectUpdateSceneCursorsAt1D0[
@@ -208,10 +213,19 @@ struct SceneQueueFrontMemberView
         g_SceneAnmManager->GetVm((view)->vmIds[vmIndex])->flagsWord |= 2;     \
     }
 
+// The target resets the shared front-end timer in this store order.  The
+// canonical ZunTimer::Reset initializes the same state in a different order.
+static __forceinline void SceneSelectResetTimer(ZunTimer *timer)
+{
+    timer->current = 0;
+    timer->subFrame = 0.0f;
+    timer->previous = -999999;
+}
+
 static __forceinline void SceneSelectInitialTimerViewPhase(SceneSelectUpdateView *view)
 {
     u8 compilerStorage[4];
-    view->stateTimer.Reset();
+    SceneSelectResetTimer(&view->stateTimer);
 }
 
 static __forceinline i32 SceneSelectInitialSelectionGroupPhase(
@@ -1141,7 +1155,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                                   [activeSceneCursor.GetCurrent()];
                 view->requestedState = FRONT_END_REQUESTED_STATE_START_GAME;
                 view->state = 0;
-                view->stateTimer.Reset();
+                SceneSelectResetTimer(&view->stateTimer);
                 view->flagBits.assetLoadStopRequested = 1;
                 g_ReplayBrowserExitSignal.Request();
                 g_SceneAnmManager->MarkVmForDeletion(
@@ -1200,7 +1214,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             view->groupCursor.Pop();
             view->requestedState = FRONT_END_REQUESTED_STATE_MAIN_MENU;
             view->state = 0;
-            view->stateTimer.Reset();
+            SceneSelectResetTimer(&view->stateTimer);
             view->vmIds.SetInterrupt(0x68, 1);
             view->vmIds.SetInterrupt(0x69, 1);
             SceneSelectCreateVmAt(view, 0x66);

@@ -57,7 +57,7 @@ struct SceneSelectScoreFlagsView
 struct SceneSelectUpdateView
 {
     SceneAnmLoadedView *sceneAnm;
-    u8 unknown0004[4];
+    SceneAnmLoadedView *transitionAnm;
     ZunTimer stateTimer;
     ZunTimer animationTimer; // +0x14; advanced by the shared front-end update
     ResultScreenReplayCursor groupCursor;
@@ -108,6 +108,8 @@ struct SceneSelectUpdateView
     i32 pendingSecondarySize[3];
 };
 
+typedef char SceneSelectUpdateTransitionAnmAt4[
+    (offsetof(SceneSelectUpdateView, transitionAnm) == 0x04) ? 1 : -1];
 typedef char SceneSelectUpdateAnimationTimerAt14[
     (offsetof(SceneSelectUpdateView, animationTimer) == 0x14) ? 1 : -1];
 typedef char SceneSelectUpdateGroupCursorAt20[

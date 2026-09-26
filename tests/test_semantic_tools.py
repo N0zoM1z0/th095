@@ -712,6 +712,23 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             source.index("timer->previous = -999999;"),
         )
 
+    def test_scene_select_prefix_guard_rejects_legacy_view_and_reset(self) -> None:
+        GUARD.check_scene_select_front_end_prefix_owner()
+        exact = (ROOT / "src" / "SceneSelectUpdateExact.inl").read_text(
+            encoding="utf-8"
+        )
+        for old, new in (
+            ("SceneAnmLoadedView *transitionAnm;", "u8 unknown0004[4];"),
+            ("ZunTimer stateTimer;", "ResultScreenTimer stateTimer;"),
+            ("ZunTimer animationTimer;", "u8 unknown0014[0x0c];"),
+            ("SceneSelectResetTimer(&view->stateTimer);", "view->stateTimer.Reset();"),
+        ):
+            with self.subTest(old=old):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_scene_select_front_end_prefix_owner(
+                        exact.replace(old, new, 1)
+                    )
+
     def test_front_end_requested_state_guard_rejects_raw_dispatch_and_write(self) -> None:
         GUARD.check_front_end_requested_state_owner()
         source = (ROOT / "src" / "FrontEndController.cpp").read_text(

@@ -40,28 +40,31 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 - Keep unproved storage and roles Unknown. Do not promote a name from a single
   write, adjacent-game similarity, exactness alone, or decompiler wording.
 
-## Current semantic checkpoint — SEM-320
+## Current semantic checkpoint — SEM-321
 
-`SceneSelectExact.hpp` now exposes the shared `FrontEndRequestedState @
-+0x6110` and `FrontEndControllerFlagBits @ +0x6120` types already used by
-normal Scene Select. Exact `SceneSelectUpdateExact.inl` now uses those types,
-names the start-game/main-menu publications, and names the proved bit-2
-preview and bit-5 asset-stop transitions. The normal/DIFF update view also
-uses one requested-state declaration. Bit 4, higher unknown bits, the
-screen-local state at `+0x610C`, and adjacent byte gaps remain unpromoted.
+Both Scene Select headers and update views now declare the transition ANM
+pointer at `+0x04` and canonical `ZunTimer` storage at `+0x08/+0x14`.
+Exact `UpdateSceneSelect @ 0x00447D00`
+uses a local target-order reset helper at its three state-timer reset sites.
+A direct `ZunTimer::Reset` negative probe compiled but matched only
+16,016/16,066 bytes; restoring the helper passed 1/1 exact without refresh.
+The exact-header include closure passed **57/57 across 17 sources with zero
+refresh** after a controlled 30-private-label refresh; the later local-view
+pointer rename passed its affected update unit **1/1 exact**. The unchanged normal
+update compiled to a 54,235-byte pinned-VC7.1 i386 COFF object. ResultScreen's
+separate timer type and remaining exact Scene Select body/class split stay
+open. The last cold 696/696 replay and 88-TU normal product remain the
+SEM-316 baseline; SEM-317 through SEM-321 use focused checks as directed.
 
-Fresh hash-attested `UpdateSceneSelect @ 0x00447D00` evidence confirms the
-two requested-state publications and bit-2/3/5 operations; the coordinator
-and asset worker provide independent consumers. The exact update body passed
-1/1 without refresh both after its type migration and after its named flag
-expressions. The wider exact-header audit passed **57/57 units across 17
-sources with zero refresh**, following controlled private-label-only refresh
-of 30 names in four units. A pinned-VC7.1 normal SceneSelectUpdate probe
-emitted a 54,239-byte i386 COFF object. One historical DIFF selector was
-retired. The last cold 696/696 replay and 88-TU normal product remain the
-SEM-316 baseline; SEM-317 through SEM-320 use focused checks as directed.
+## Prior checkpoint — SEM-320
 
-## Prior checkpoint — SEM-319
+Both Scene Select profiles use shared request-state and flag-bit types at
+`+0x6110/+0x6120`; the exact update names start-game/main-menu requests and
+proved preview/asset-stop bits. The exact header closure passed 57/57 units,
+and one historical DIFF selector was retired. Bit 4 and high bits remain
+Unknown.
+
+## Earlier checkpoint — SEM-319
 
 `FrontEndController.cpp`'s Game Start transition now uses named fields for
 both preview-data queue drains, seven sibling count resets, the pending

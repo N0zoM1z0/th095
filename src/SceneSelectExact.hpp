@@ -9,6 +9,7 @@
 #include "PixelFormats.hpp"
 #include "ReplayScanWorker.hpp"
 #include "ScoreData.hpp"
+#include "ZunTimer.hpp"
 #include <time.h>
 
 namespace th095
@@ -237,7 +238,9 @@ struct ScenePreviewTextSourcesView
 struct SceneSelectControllerView
 {
     SceneAnmLoadedView *sceneAnm;
-    u8 unknown0004[0x1c];
+    SceneAnmLoadedView *transitionAnm;
+    ZunTimer stateTimer;
+    ZunTimer animationTimer;
     i32 selectedGroup;
     u8 unknown0024[0x1ac];
     SceneGroupCursorView groupCursors[12];
@@ -393,6 +396,9 @@ typedef char SceneSaveBestShotRecordsAt3160[
     (offsetof(SceneSaveDataView, bestShotRecords) == 0x3160) ? 1 : -1];
 typedef char SceneScoreEntryAttemptCountAt3C[
     (offsetof(SceneScoreEntryView, attemptCount) == 0x3c) ? 1 : -1];
+typedef char SceneSelectExactTimersAt8And14[
+    (offsetof(SceneSelectControllerView, stateTimer) == 0x08 &&
+     offsetof(SceneSelectControllerView, animationTimer) == 0x14) ? 1 : -1];
 typedef char SceneSelectGroupCursorsAt1D0[
     (offsetof(SceneSelectControllerView, groupCursors) == 0x1d0) ? 1 : -1];
 typedef char SceneSelectVmIdsAtBF4[

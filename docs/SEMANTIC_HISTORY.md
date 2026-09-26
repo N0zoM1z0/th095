@@ -16034,3 +16034,67 @@ Target-independent CI passed all **78 workflow tests**.
 differences against independently observed layout and VC7.1 emission, one
 field family at a time. Do not infer a single shared screen-local state
 domain from the cross-screen requested-state enum.
+
+### SEM-321 — converge Scene Select timer declarations
+
+**Scope and evidence.** The front-end allocation owns two 12-byte timers at
+`+0x08/+0x14`. TH095 constructor `0x00445440` constructs them, coordinator
+`Update @ 0x00445E80` advances both after screen dispatch, and
+`UpdateSceneSelect @ 0x00447D00` reads and resets the state timer. Independent
+Options Menu use of `animationTimer.current` at `+0x1C` was established in
+FRONT-012. Both Scene Select owner headers and both update views now declare
+the same `ZunTimer stateTimer` and `ZunTimer animationTimer` fields. They also
+name the `transitionAnm` pointer at `+0x04`: lifecycle `Initialize` writes
+the `title_v.anm` loaded pointer there, and the coordinator independently
+calls `CreateVm` through it. The old exact-header `+0x04..+0x1F` span and
+both update-view `+0x04..+0x07` arrays are gone. This aligns
+their physical timer contract without inferring an original source spelling.
+
+**Compiler oracle and representation.** `ResultScreenTimer` and `ZunTimer`
+share field offsets and final reset values, but the exact Scene Select
+function requires `current`, `subFrame`, `previous` store order. Canonical
+`ZunTimer::Reset` calls `Initialize` and emits `current`, `previous`,
+`subFrame`. A bounded three-site direct-`ZunTimer::Reset` negative probe
+compiled but matched only 16,016/16,066 compared bytes, with the first
+difference at relative `+0x94D`. The accepted exact update
+uses a local `SceneSelectResetTimer` helper with the target order at its three
+reset sites. Its `Set(20)` continues to use canonical `ZunTimer::Set`. The
+normal update body already used canonical `ZunTimer` storage and methods;
+its final timer state is identical. No new profile selector or alternate
+layout was introduced. The wider `ResultScreenTimer` family remains separate.
+
+**Ownership and boundary.** The one `0x6514`-byte front-end object stores both
+timers; Scene Select owns three request/transition resets and the coordinator
+owns both per-frame ticks. Both profiles compile one timer declaration in
+each Scene Select view. The exact update translation unit retains its
+historical separately selected body and target-order helper, while normal
+`SceneSelectUpdate.cpp` keeps its own normal body. Exact replay establishes
+only the exact body; target dataflow, shared layout, and a separate normal
+compiler probe support the normal view. No Result Screen or persistent format
+ownership is inferred.
+
+**Validation.** The complete `scene-select-update` unit remained **1/1 exact**
+without label refresh after migration. Changing only the three reset calls
+to canonical `Reset()` produced the 16,016/16,066 negative result above;
+restoring the helper returned the function to **1/1 exact with zero refresh**.
+Because `SceneSelectExact.hpp` is shared, all 17 affected manifest sources
+were serially compiled on one CPU core and replayed: **57/57 exact** after a
+controlled private-label-only refresh of 30 names in four units, followed by
+**57/57 exact with zero refresh**. The refresh proved unchanged target bytes,
+relocation positions/types, public symbol identities, and destinations. The
+subsequent `+0x04` local-view naming change was checked on its sole affected
+exact unit, **1/1 with zero refresh**; the other 56 units did not include
+those local declarations. The unchanged normal update body separately
+compiled after the local-view change with pinned VC7.1 to a
+**54,235-byte Intel 80386 COFF** object. The semantic guard now locks the
+shared transition pointer, both timer declarations, their offsets, three
+exact reset consumers, and helper
+store order; a negative unit test rejects the old timer view and direct Reset.
+The last full 696/696 cold aggregate replay and 88-TU normal product remain
+the SEM-316 baseline; this batch uses the focused replay policy adopted after
+that baseline. No runtime scenario is claimed.
+
+**Next route.** Continue comparing exact/normal Scene Select front-end fields
+against their independent producers and consumers. The secondary cursor at
+`+0xF8` is already typed in normal source; verify the exact views and VC7.1
+emission before promoting its remaining anonymous spans.
