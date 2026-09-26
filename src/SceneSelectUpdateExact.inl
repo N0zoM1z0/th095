@@ -45,7 +45,7 @@ struct SceneSelectUpdateView
     ZunTimer stateTimer;
     ZunTimer animationTimer;
     ResultScreenReplayCursor groupCursor;
-    u8 unknown00f8[0xd8];
+    ResultScreenReplayCursor secondaryCursor;
     ResultScreenReplayCursor sceneCursors[12];
     i32 selectedScoreEntryIndex;
     SceneAnmVmIdArray vmIds;
@@ -95,6 +95,8 @@ typedef char SceneSelectUpdateTransitionAnmAt4[
     (offsetof(SceneSelectUpdateView, transitionAnm) == 0x04) ? 1 : -1];
 typedef char SceneSelectUpdateGroupCursorAt20[
     (offsetof(SceneSelectUpdateView, groupCursor) == 0x20) ? 1 : -1];
+typedef char SceneSelectUpdateSecondaryCursorAtF8[
+    (offsetof(SceneSelectUpdateView, secondaryCursor) == 0xf8) ? 1 : -1];
 typedef char SceneSelectUpdateSceneCursorsAt1D0[
     (offsetof(SceneSelectUpdateView, sceneCursors) == 0x1d0) ? 1 : -1];
 typedef char SceneSelectUpdateTransitionVmAt6100[

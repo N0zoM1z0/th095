@@ -8,6 +8,7 @@
 #include "AnmVmId.hpp"
 #include "PixelFormats.hpp"
 #include "ReplayScanWorker.hpp"
+#include "ResultScreen.hpp"
 #include "ScoreData.hpp"
 #include "ZunTimer.hpp"
 #include <time.h>
@@ -242,7 +243,8 @@ struct SceneSelectControllerView
     ZunTimer stateTimer;
     ZunTimer animationTimer;
     i32 selectedGroup;
-    u8 unknown0024[0x1ac];
+    u8 unknown0024[0xd4];
+    ResultScreenReplayCursor secondaryCursor;
     SceneGroupCursorView groupCursors[12];
     i32 selectedScoreEntryIndex;
     union
@@ -399,6 +401,8 @@ typedef char SceneScoreEntryAttemptCountAt3C[
 typedef char SceneSelectExactTimersAt8And14[
     (offsetof(SceneSelectControllerView, stateTimer) == 0x08 &&
      offsetof(SceneSelectControllerView, animationTimer) == 0x14) ? 1 : -1];
+typedef char SceneSelectExactSecondaryCursorAtF8[
+    (offsetof(SceneSelectControllerView, secondaryCursor) == 0xf8) ? 1 : -1];
 typedef char SceneSelectGroupCursorsAt1D0[
     (offsetof(SceneSelectControllerView, groupCursors) == 0x1d0) ? 1 : -1];
 typedef char SceneSelectVmIdsAtBF4[

@@ -721,6 +721,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             ("SceneAnmLoadedView *transitionAnm;", "u8 unknown0004[4];"),
             ("ZunTimer stateTimer;", "ResultScreenTimer stateTimer;"),
             ("ZunTimer animationTimer;", "u8 unknown0014[0x0c];"),
+            ("ResultScreenReplayCursor secondaryCursor;", "u8 unknown00f8[0xd8];"),
             ("SceneSelectResetTimer(&view->stateTimer);", "view->stateTimer.Reset();"),
         ):
             with self.subTest(old=old):

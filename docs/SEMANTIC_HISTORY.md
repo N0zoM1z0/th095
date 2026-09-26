@@ -16098,3 +16098,47 @@ that baseline. No runtime scenario is claimed.
 against their independent producers and consumers. The secondary cursor at
 `+0xF8` is already typed in normal source; verify the exact views and VC7.1
 emission before promoting its remaining anonymous spans.
+
+### SEM-322 — type the exact Scene Select secondary cursor
+
+**Scope and target evidence.** The shared front-end owner contains a second
+0xD8-byte `ResultScreenReplayCursor` at `+0xF8..+0x1CF`. The verified TH095
+constructor `0x00445440` initializes this subobject after the cursor at
+`+0x20`; Replay Browser `0x0044DCA0` writes its twenty-entry count and moves
+it independently, and Draw `0x00452630` reads its current value to highlight
+the replay row. The first twelve scene-selection cursors begin at `+0x1D0`.
+These producer, consumer, and boundary observations were established in
+FRONT-017 and SEM-316, before this exact-source change.
+
+**Source and ownership.** `SceneSelectExact.hpp` now splits its former
+`unknown0024[0x1AC]` into the still-unknown `+0x24..+0xF7` span and the
+canonical `secondaryCursor @ +0xF8`. Exact `SceneSelectUpdateExact.inl`
+likewise replaces its standalone 0xD8-byte anonymous span with the same
+member type. Normal Scene Select, FrontEnd coordinator, and lifecycle
+projections already used this type. The front-end allocation owns storage;
+Replay Browser owns the proved row-selection behavior, while constructor and
+Draw independently establish lifetime and consumption. The exact owner
+header includes `ResultScreen.hpp` to obtain the existing cursor declaration;
+it does not define another cursor type or add a profile selector. The
+secondary cursor's roles in non-Replay-Browser states and the preceding
+`+0x24..+0xF7` span remain Unknown.
+
+**Compiler and build boundary.** The exact and normal Scene Select update
+bodies remain separate historical source selections. This batch changes only
+the exact view/header; normal source already had the cursor declaration.
+The complete exact `UpdateSceneSelect` function passed **1/1 with zero label
+refresh** immediately after its local-view change. The shared exact-header
+closure then passed **57/57 affected units across 17 sources** after the
+controlled refresh of 30 compiler-private labels in four units. The refresh
+tool accepted only unchanged structural bytes, relocation positions/types,
+public symbol identities, and resolved target destinations. A second serial
+replay of the same 57 units passed **57/57 with zero refresh**. The normal
+update separately compiled with pinned VC7.1 to a **54,235-byte Intel 80386
+COFF** object. No runtime-scenario or full-image exact claim follows from
+these checks; the latest cold 696/696 and 88-TU normal product remain the
+SEM-316 baseline.
+
+**Next route.** Review the remaining exact/normal Scene Select class and
+update-view differences with target-local producers and consumers. Keep
+`+0x24..+0xF7`, state-dependent `+0xBF0`, and unrelated cursor behavior
+Unknown until those contracts are bounded.

@@ -40,23 +40,31 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 - Keep unproved storage and roles Unknown. Do not promote a name from a single
   write, adjacent-game similarity, exactness alone, or decompiler wording.
 
-## Current semantic checkpoint — SEM-321
+## Current semantic checkpoint — SEM-322
 
-Both Scene Select headers and update views now declare the transition ANM
-pointer at `+0x04` and canonical `ZunTimer` storage at `+0x08/+0x14`.
-Exact `UpdateSceneSelect @ 0x00447D00`
-uses a local target-order reset helper at its three state-timer reset sites.
-A direct `ZunTimer::Reset` negative probe compiled but matched only
-16,016/16,066 bytes; restoring the helper passed 1/1 exact without refresh.
-The exact-header include closure passed **57/57 across 17 sources with zero
-refresh** after a controlled 30-private-label refresh; the later local-view
-pointer rename passed its affected update unit **1/1 exact**. The unchanged normal
-update compiled to a 54,235-byte pinned-VC7.1 i386 COFF object. ResultScreen's
-separate timer type and remaining exact Scene Select body/class split stay
-open. The last cold 696/696 replay and 88-TU normal product remain the
-SEM-316 baseline; SEM-317 through SEM-321 use focused checks as directed.
+Both exact Scene Select owner/update views now type the 0xD8-byte
+`secondaryCursor @ +0xF8`, joining normal Scene Select, FrontEnd coordinator,
+and lifecycle. Verified constructor `0x00445440`, Replay Browser
+`0x0044DCA0`, and Draw `0x00452630` establish construction, independent
+twenty-entry navigation, and highlighted-row consumption. Exact
+`UpdateSceneSelect` passed 1/1; the exact-header closure passed **57/57
+across 17 sources with zero refresh** after a controlled 30-private-label
+refresh. The unchanged normal update compiled to a 54,235-byte pinned-VC7.1
+i386 COFF object. `+0x24..+0xF7` and non-Replay-Browser cursor roles remain
+Unknown. The last cold 696/696 and 88-TU normal product remain the SEM-316
+baseline; SEM-317 through SEM-322 use focused checks as directed.
 
-## Prior checkpoint — SEM-320
+## Prior checkpoint — SEM-321
+
+Both Scene Select headers/update views type the `transitionAnm @ +0x04`
+pointer and canonical timers at `+0x08/+0x14`. Exact Scene Select uses a
+target-order reset helper. Direct `ZunTimer::Reset` matched only
+16,016/16,066 bytes; the helper restores 1/1 exact. The header closure
+passed 57/57 units and the final local-view pointer rename passed 1/1.
+ResultScreen's separate timer type and the exact Scene Select body/class
+split remain open.
+
+## Earlier checkpoint — SEM-320
 
 Both Scene Select profiles use shared request-state and flag-bit types at
 `+0x6110/+0x6120`; the exact update names start-game/main-menu requests and
@@ -140,8 +148,8 @@ The controller's `+0xF8..+0x1CF` storage is now a typed 0xD8
 projection, normal Scene Select owner, and normal Scene Select update view.
 Shared declarations use `secondaryCursor`; Replay Browser alone calls its
 proved 20-entry role `columnCursor`. `+0xBF0` and other unproved roles remain
-Unknown. The historical exact Scene Select snapshots still have anonymous
-`+0xF8` storage and remain tracked source debt.
+Unknown. At SEM-316 the historical exact Scene Select snapshots still had
+anonymous `+0xF8` storage; SEM-322 closes that source debt.
 
 Target evidence comes from the hash-attested constructor `0x00445440`, Replay
 Browser update `0x0044DCA0`, and Draw `0x00452630`, plus independent cursor

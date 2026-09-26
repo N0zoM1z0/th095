@@ -2055,8 +2055,12 @@ def check_scene_select_front_end_prefix_owner(
             fail(f"{name} restored the profile-sensitive timer projection")
         if "SceneAnmLoadedView *transitionAnm;" not in scene:
             fail(f"{name} lost the transition ANM pointer")
+        if "ResultScreenReplayCursor secondaryCursor;" not in scene:
+            fail(f"{name} lost the shared secondary cursor")
         if "offsetof(SceneSelectControllerView, animationTimer) == 0x14" not in scene:
             fail(f"{name} lost animation-timer layout assertion")
+        if "offsetof(SceneSelectControllerView, secondaryCursor) == 0xf8" not in scene:
+            fail(f"{name} lost secondary-cursor layout assertion")
 
     normal_update = source_without_comments(
         (SRC / "SceneSelectUpdate.cpp").read_text(encoding="utf-8")
@@ -2065,6 +2069,10 @@ def check_scene_select_front_end_prefix_owner(
         fail("normal Scene Select update restored anonymous +0x04 storage")
     if "offsetof(SceneSelectUpdateView, transitionAnm) == 0x04" not in normal_update:
         fail("normal Scene Select update lost transition-ANM offset assertion")
+    if "ResultScreenReplayCursor secondaryCursor;" not in normal_update:
+        fail("normal Scene Select update lost the shared secondary cursor")
+    if "offsetof(SceneSelectUpdateView, secondaryCursor) == 0xf8" not in normal_update:
+        fail("normal Scene Select update lost secondary-cursor layout assertion")
 
     exact = source_without_comments(
         exact_update_text
@@ -2078,8 +2086,14 @@ def check_scene_select_front_end_prefix_owner(
         fail("exact Scene Select update restored anonymous +0x04 storage")
     if "offsetof(SceneSelectUpdateView, transitionAnm) == 0x04" not in exact:
         fail("exact Scene Select update lost transition-ANM offset assertion")
+    if "ResultScreenReplayCursor secondaryCursor;" not in exact:
+        fail("exact Scene Select update lost the shared secondary cursor")
+    if "offsetof(SceneSelectUpdateView, secondaryCursor) == 0xf8" not in exact:
+        fail("exact Scene Select update lost secondary-cursor layout assertion")
     if "ResultScreenTimer stateTimer;" in exact or "unknown0014[0x0c]" in exact:
         fail("exact Scene Select update restored its legacy timer view")
+    if "unknown00f8[0xd8]" in exact:
+        fail("exact Scene Select update restored anonymous secondary-cursor storage")
     signature = "static __forceinline void SceneSelectResetTimer(ZunTimer *timer)"
     start = exact.find(signature)
     if start < 0:
