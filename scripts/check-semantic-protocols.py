@@ -1351,8 +1351,8 @@ def check_game_configuration_owner() -> None:
         fail("match manifest lost the canonical GameConfiguration Initialize ABI")
 
 
-def check_supervisor_flags_owner() -> None:
-    owner = (SRC / "SupervisorFlags.hpp").read_text(encoding="utf-8")
+def check_supervisor_flags_owner(owner_text: str | None = None) -> None:
+    owner = owner_text if owner_text is not None else (SRC / "SupervisorFlags.hpp").read_text(encoding="utf-8")
     main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
     main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
@@ -1367,7 +1367,6 @@ def check_supervisor_flags_owner() -> None:
     if any(name in owner for name in PROFILE_NAMES):
         fail("canonical SupervisorFlags owner must be profile-independent")
     required_layout = (
-        "u32 raw;",
         "u32 usingHardwareTL : 1;",
         "u32 lockableBackbuffer : 1;",
         "u32 using32BitGraphics : 1;",
@@ -1376,7 +1375,7 @@ def check_supervisor_flags_owner() -> None:
         "u32 forceExtraTimerStep : 1;",
         "u32 dummyMidiTimerEnabled : 1;",
         "u32 receivedCloseMsg : 1;",
-        "u32 scoreBackupPending : 1;",
+        "u32 unknownBit8 : 1;",
         "u32 resultRestartActive : 1;",
         "u32 keyboardAvailable : 1;",
         "u32 controllerAvailable : 1;",
@@ -1387,6 +1386,10 @@ def check_supervisor_flags_owner() -> None:
     for fact in required_layout:
         if fact not in owner:
             fail(f"SupervisorFlags owner lost canonical layout: {fact}")
+
+    clean_owner = source_without_comments(owner)
+    if re.search(r"\bunion\b|\bstruct\s*\{|\bu32\s+raw\b|reinterpret_cast|scoreBackupPending", clean_owner):
+        fail("Supervisor flags restored an overlay, raw alias, or unproved bit-8 role")
 
     declarations: list[str] = []
     for path in sorted(SRC.rglob("*")):
@@ -1433,16 +1436,27 @@ def check_supervisor_flags_owner() -> None:
     for fact in (
         "SupervisorFlags flags;",
         "flags.dummyMidiTimerEnabled = 1;",
-        "flags.raw |= 0x100;",
+        "flags.unknownBit8 = 1;",
     ):
         if fact not in lifecycle:
             fail(f"Supervisor lifecycle lost canonical flag use: {fact}")
+
+    for path in ("Main.cpp", "MainExact.inl"):
+        text = source_without_comments((SRC / path).read_text(encoding="utf-8"))
+        if "g_Supervisor.flags.unknownBit8 = 0;" not in text or "scoreBackupPending" in text:
+            fail(f"{path} restored an unproved bit-8 business name")
+    for path in ("Background.cpp", "BackgroundLifecycle.cpp", "EnemyManagerUpdate.cpp"):
+        text = source_without_comments((SRC / path).read_text(encoding="utf-8"))
+        if any(name in text for name in ("BackgroundSupervisorFlagsView", "PhotoEnemySupervisorFlagsView")):
+            fail(f"{path} restored a flags cast projection")
+        if path != "Background.cpp" and "g_Supervisor.flags.resultRestartActive" not in text:
+            fail(f"{path} lost its canonical bit-9 consumer")
 
     consumer_facts = (
         (main_body, "g_Supervisor.flags.resultRestartActive = 1;"),
         (controller, "g_Supervisor.flags.keyboardAvailable != 0"),
         (controller, "g_Supervisor.flags.controllerAvailable != 0"),
-        (front_end, "g_Supervisor.flags.receivedCloseMsg != 0"),
+        (front_end, "TH095_FRONT_SUPERVISOR_FLAGS.receivedCloseMsg != 0"),
         (photo_front, "g_Supervisor.flags.resultRestartActive != 0"),
         (photo_task, "g_Supervisor.flags.restartPhotoGame == 0"),
         (photo_task, "g_Supervisor.flags.resultRestartActive = 0;"),
@@ -1450,6 +1464,12 @@ def check_supervisor_flags_owner() -> None:
     for text, fact in consumer_facts:
         if fact not in text:
             fail(f"canonical Supervisor flag producer/consumer was lost: {fact}")
+    for fact in (
+        "extern SupervisorFlags g_FrontEndSupervisorFlags;",
+        "#define TH095_FRONT_SUPERVISOR_FLAGS g_Supervisor.flags",
+    ):
+        if fact not in front_end:
+            fail(f"front-end flag access lost its common typed contract: {fact}")
 
 
 def check_screenshot_bitmap_header_owner() -> None:

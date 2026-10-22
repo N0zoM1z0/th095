@@ -12,9 +12,9 @@
 namespace th095
 {
 
-// Constructor-only views for the target-owned 0x7BC prefix. Main.hpp keeps the
-// wider runtime layout used by other exact units; this TU isolates member/EH
-// allocation phase just as the target constructor does.
+// Constructor-only view of the target-owned 0x7BC object. Main.hpp keeps the
+// full runtime declaration; this TU isolates the member/EH allocation phase
+// just as the target constructor does.
 // The target Supervisor constructor invokes GameConfiguration::Initialize as
 // a member-construction phase before entering its body. Keep that compiler
 // boundary without duplicating the canonical configuration layout.
@@ -86,8 +86,7 @@ Supervisor::Supervisor()
 {
     memset(this, 0, sizeof(*this));
     flags.dummyMidiTimerEnabled = 1;
-    // No independent TH095-local consumer has established bit 8's role.
-    flags.raw |= 0x100;
+    flags.unknownBit8 = 1;
 }
 
 Supervisor::~Supervisor()

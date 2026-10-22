@@ -1,4 +1,5 @@
 #include "FrontEndGlobals.hpp"
+#include "SupervisorFlags.hpp"
 #include "ScenePreviewDataQueue.hpp"
 #include <array>
 #include <memory>
@@ -29,13 +30,17 @@ struct WaitFixture {
     unsigned signalMask;
     unsigned triggerSleep;
     i32 exitValue;
-    u32 closeRequested;
+    SupervisorFlags supervisorFlags;
     i32 exitSignal;
     unsigned sleeps;
     std::vector<char> events;
     WaitFixture(WaitController &owner, unsigned mask, unsigned trigger, i32 value)
         : controller(&owner), signalMask(mask), triggerSleep(trigger), exitValue(value),
-          closeRequested(0), exitSignal(0), sleeps(0) {}
+          supervisorFlags(), exitSignal(0), sleeps(0) {
+        supervisorFlags.dummyMidiTimerEnabled=1;
+        supervisorFlags.unknownBit8=1;
+        supervisorFlags.unknown13=0x7ffff;
+    }
 };
 static WaitFixture *fixture;
 static i32 AssetQueueSize(ScenePreviewDataQueue *queue) {
@@ -47,7 +52,7 @@ static void Sleep(u32 milliseconds) {
     fixture->events.push_back('S');
     CHECK(++fixture->sleeps <= 2);
     if (fixture->sleeps != fixture->triggerSleep) return;
-    fixture->closeRequested = (fixture->signalMask & 1) != 0;
+    fixture->supervisorFlags.receivedCloseMsg = (fixture->signalMask & 1) != 0;
     fixture->controller->flagBits.assetLoadStopRequested = (fixture->signalMask & 2) != 0;
     fixture->exitSignal = (fixture->signalMask & 4) ? fixture->exitValue : 0;
     if (fixture->signalMask == 0) {
@@ -58,7 +63,7 @@ static void Sleep(u32 milliseconds) {
 }
 static u32 SceneSelectionAssetsSupervisorStopRequested() {
     fixture->events.push_back('C');
-    return fixture->closeRequested;
+    return fixture->supervisorFlags.receivedCloseMsg;
 }
 static i32 SceneSelectionAssetsLoadComplete() {
     fixture->events.push_back('E');
@@ -129,6 +134,9 @@ int main() {
                     u32 rawFlags=0;
                     memcpy(&rawFlags, &controller.flagBits, sizeof(rawFlags));
                     CHECK(rawFlags == (0xffffffd4u | ((count && (mask & 2)) ? 0x20u : 0)));
+                    u32 supervisorWord=0;
+                    memcpy(&supervisorWord, &state.supervisorFlags, sizeof(supervisorWord));
+                    CHECK(supervisorWord == (0xffffe140u | ((count && (mask & 1)) ? 0x80u : 0)));
                     ++cases;
                 }
             }
@@ -140,7 +148,7 @@ int main() {
     WaitController empty;
     empty.flagBits.assetLoadStopRequested=1;
     WaitFixture stopped(empty, 7, 1, -1); fixture=&stopped;
-    stopped.closeRequested=1; stopped.exitSignal=-1;
+    stopped.supervisorFlags.receivedCloseMsg=1; stopped.exitSignal=-1;
     WaitThenPublish(empty, buffers[16].get());
     CHECK((stopped.events == std::vector<char>{'Q','P'}));
     CHECK(empty.groupPreviewDataQueue.Size() == 1);

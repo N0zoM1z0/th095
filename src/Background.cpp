@@ -34,7 +34,6 @@ struct BackgroundSelectedSceneView
 extern BackgroundSelectedSceneView *g_SelectedScene;
 #endif
 
-
 struct BackgroundGlobalStateView
 {
     u8 unknown000[0xfc];
@@ -67,13 +66,6 @@ struct BackgroundGlobalStateView
             u32 unknownFlags11 : 21;
         };
     };
-};
-
-struct BackgroundSupervisorFlagsView
-{
-    u32 unknown00 : 9;
-    u32 disableResourceReload : 1;
-    u32 unknown10 : 22;
 };
 
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -834,7 +826,6 @@ static __forceinline void BackgroundSetCameraModePhase(
     anmManager->cameraMode = (u8)mode;
 }
 
-
 // TH08's exact RenderObjects source keeps the full stage-quad workspace in
 // front of hidden this and uses switch(curQuad->type), whose VC7 control value
 // is allocated immediately after this.  TH095 preserves that chronology but
@@ -944,7 +935,6 @@ i32 Background::RenderObjects(i32 mode)
     }
     return 0;
 }
-
 
 // FUNCTION: TH095 0x004031A0.
 // Target-proven identifier buckets restore the seven live culling locals.

@@ -35,6 +35,7 @@ def main() -> int:
     run_probe("FrontEndPendingTextureDataTest.cpp", "pending-texture-test")
     run_probe("SceneValueQueueTest.cpp", "raw-queue-test")
     run_probe("ScenePreviewDataQueueTest.cpp", "preview-data-test")
+    run_probe("SupervisorFlagsTest.cpp", "supervisor-flags-test")
     run_probe("SceneAssetWaitTest.cpp", "asset-wait-test")
     run_probe("ReplayScanWorkerTest.cpp", "worker-lifecycle-test")
     return 0

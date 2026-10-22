@@ -607,6 +607,20 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("C_ASSERT(sizeof(LegacySupervisorFlags) == 0x4);", legacy)
         self.assertIn("LegacySupervisorFlags flags;", legacy)
 
+    def test_supervisor_flags_guard_rejects_overlay_or_unproved_role(self) -> None:
+        header = (ROOT / "src" / "SupervisorFlags.hpp").read_text(encoding="utf-8")
+        overlay = header.replace("struct SupervisorFlags\n{", "struct SupervisorFlags\n{\n    union { u32 raw; struct {", 1)
+        overlay = overlay.replace("\n};", "\n    }; };\n};", 1)
+        alias = header.replace("\n};", "\n    u32 &Raw() { return *reinterpret_cast<u32 *>(this); }\n};", 1)
+        for changed in (
+            overlay, alias,
+            header.replace("unknownBit8", "scoreBackupPending"),
+            header.replace("u32 unknownBit8", "u16 unknownBit8"),
+        ):
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_supervisor_flags_owner(changed)
+
     def test_screenshot_bitmap_header_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_screenshot_bitmap_header_owner()
         header = (ROOT / "src" / "ScreenshotBitmapFileHeader.hpp").read_text(

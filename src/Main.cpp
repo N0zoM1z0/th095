@@ -2021,7 +2021,7 @@ void __fastcall Supervisor::StartupThread(Supervisor *s)
 
     g_Supervisor.ThreadClose();
     g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_IDLE;
-    g_Supervisor.flags.scoreBackupPending = 0;
+    g_Supervisor.flags.unknownBit8 = 0;
     g_Supervisor.replayScanWorker.active = 0;
     g_Supervisor.replayScanWorker.exitSignal = 1;
     return;

@@ -303,17 +303,6 @@ struct PhotoEnemyGameView
     i32 frameCounter;
 };
 
-struct PhotoEnemySupervisorFlagsView
-{
-    u32 unknown00 : 9;
-#if defined(TH095_MATCH_EXACT)
-    u32 disableResourceReload : 1;
-#else
-    u32 resultRestartActive : 1;
-#endif
-    u32 unknown10 : 22;
-};
-
 #ifdef TH095_MATCH_EXACT
 struct PhotoEnemySceneDefinitionView
 {
@@ -563,14 +552,7 @@ PhotoEnemyManagerView::~PhotoEnemyManagerView()
         this->eclManager = NULL;
     }
 
-    if (reinterpret_cast<PhotoEnemySupervisorFlagsView *>(
-            &g_Supervisor.flags)->
-#if defined(TH095_MATCH_EXACT)
-            disableResourceReload
-#else
-            resultRestartActive
-#endif
-            != 0)
+    if (g_Supervisor.flags.resultRestartActive != 0)
     {
         g_AnmManager->MarkVmsForDeletion(this->enemyAnm);
     }

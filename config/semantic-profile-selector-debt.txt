@@ -99,7 +99,7 @@
 1	src/EnemyManagerUpdate.cpp	#elif defined(DIFFBUILD)
 1	src/EnemyManagerUpdate.cpp	#if !defined(TH095_MATCH_EXACT)
 2	src/EnemyManagerUpdate.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-7	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT)
+5	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT)
 4	src/EnemyManagerUpdate.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/EnemyManagerUpdate.cpp	#ifdef DIFFBUILD
 4	src/EnemyManagerUpdate.cpp	#ifdef TH095_MATCH_EXACT
@@ -122,7 +122,7 @@
 1	src/FrontEndGlobals.hpp	#elif !defined(TH095_MATCH_EXACT)
 1	src/FrontEndGlobals.hpp	#if defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 3	src/FrontEndLifecycle.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-12	src/FrontEndLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+11	src/FrontEndLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FrontEndLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameErrorContext.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameplayGlobals.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)

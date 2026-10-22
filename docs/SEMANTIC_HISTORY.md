@@ -17104,3 +17104,125 @@ protocol guards, and whitespace checks pass. CPU 1, nice 10, and serial VC7.1
 builds were used; generated objects/binaries/maps/PDBs and Python caches are
 cleared after compact receipts are saved. Protected user-owned files remain
 untouched. Semantic reconstruction stays active-incomplete.
+
+### SEM-334 — standard runtime flags and direct canonical bit access
+
+**Problem / representation.** The canonical SupervisorFlags header failed strict
+native C++ on its anonymous struct and exposed alternate raw/bitfield union
+members. Three Background/Enemy projections reinterpreted that same live word.
+The owner is now a plain standard C++ struct of fourteen unsigned bitfields,
+with one four-byte representation and no raw member, inactive union member,
+whole-word accessor, or flags cast. It is shared by every existing canonical
+parent declaration; no layout/profile branch or additional runtime owner is
+introduced. Original source declaration and unproved inherited names remain
+Unknown; this accepts a selected physical representation, not every English role.
+
+**Target facts / conservative naming (2026-10-22).** Fresh hash-attested queries
+cover constructor 0x00426350, StartupThread 0x004242B0, front-end load thread
+0x00445980, WindowProc, InitializeInput, the bit-9 producer 0x00425EF0, and
+Background/Enemy destructors 0x00402330/0x004154E0. Constructor writes bit 6 and
+ORs bit 8 at 0x00426428 after zeroing the 0x7BC object. Successful startup clears
+bit 8 at 0x0042445A. No independent accepted consumer establishes the inherited
+scoreBackupPending business role. The canonical field is therefore unknownBit8,
+including both Main bodies' clearer; the separate LegacySupervisorFlags keeps
+its old spelling. Other inherited names are not newly validated. Source inventory
+and 62 global-word reference rows are private evidence, not an exhaustive claim
+about all possible indirect runtime accesses or unused bits.
+
+The bit-9 OR at 0x004261BF and independent reads at
+0x004023BA/0x00402414/0x00415626 establish one word/bit across result restart
+and resource retention. Background.cpp's unused view, BackgroundLifecycle's
+view and two casts, and EnemyManagerUpdate's view/cast are retired. The latter
+no longer selects a different bit-9 spelling by profile. Every consumer reads
+canonical resultRestartActive without inventing another resource flag.
+
+**Four ownership axes.** Physical storage remains the embedded flags word at
+Supervisor +0x444 / target 0x004C4AB4; the 0x364 legacy family retains its distinct
+nine-bit LegacySupervisorFlags. The canonical type owns the word/field contract;
+Main/lifecycle own the observed producers and the existing subsystem callers
+retain their transitions and resource responsibilities. Emission remains in
+the same six directly changed objects and the existing front-end typed word
+facade. That facade is an exact/DIFF declaration, not additional normal storage.
+Both runtime profiles use the same header and member operations; surrounding
+parent declarations and differing function bodies remain documented debt.
+
+**Compiler / interface evidence.** A clean private flat-header constructor probe
+reproduces all 255 target bytes and every relocation, including typed bit-8=1.
+No memcpy helper, parameter, assembly, inert local, padding, or profile adapter
+is needed. Initial direct baselines pass 102/102 canonical comparisons across
+six sources and all six normal objects compile. The first changed direct replay
+passes 102/102 with 70 proved private-label updates in three units.
+
+Front-end load wait now uses one receivedCloseMsg expression in every profile.
+Its existing exact facade declares canonical SupervisorFlags instead of u32;
+the verified 201-byte body retains all relocations and only the +0x2A DIR32
+symbol changes from scalar decoration to the shared class decoration, at the
+same target 0x004C4AB4 and zero addend. This single reviewed public type retag
+is recorded in the canonical recipe. The final 102/102 direct replay needs no
+further private refresh. Raw-member removal briefly exposed the old DIFF
+numeric-macro dependency during this batch; the completed typed macro contract
+compiles with DIFFBUILD. That intermediate failure is not labeled pre-existing,
+and no broader DIFF caller acceptance is claimed. All probe commands, headers,
+input hashes, target queries, diagnostics, and comparisons are private in
+.analysis/sem334/.
+
+**Independent native oracle.** The seventh public executable includes the actual
+production header under x86-64 GCC 8.4.0, -std=c++11 -O2 -Wall -Wextra -Werror
+-pedantic and UBSan. It requires size four, word alignment, standard layout and
+trivial copyability. An independent mask model checks all 8,192 low-thirteen-bit
+combinations under three upper-span patterns: 24,576 words and 638,976 isolated
+0/1 field writes, preserving every neighboring bit, plus upper-span updates.
+Snapshots use memcpy of object representations; no inactive union or integer
+reference to a bitfield object is used. The test verifies this target/native ABI
+pair; bitfield allocation is not claimed portable to every compiler or endian.
+
+The existing asset-wait fixture now owns a real SupervisorFlags instance and
+reads receivedCloseMsg from it, retaining bit 6, structural bit 8 and all upper
+noise through all 129 wait/publication traces. It still supplies the outer
+Supervisor read API; full parent layout, OS threads, memory ordering, and queue
+reachability/release remain unaccepted. Existing flags, state-machine, and ABI
+claims are not promoted to whole-game portability by these component tests.
+
+**Guards / debt.** Owner guards reject raw/union overlays, reinterpret accessors,
+the unproved bit-8 role and retired flags views. Negative tests cover those
+restorations and narrowed bit widths. Two EnemyManagerUpdate selector sites
+and the front-end close-body selector are removed; the closed selector baseline
+shrinks from 269 keys / 706 occurrences to 269 / 703. The selected-declaration
+baseline stays 192 / 197. No new selector/declaration site or target credit is
+introduced. Final aggregate and separate normal-product receipts follow.
+
+**Frozen aggregate / complete audit.** Cold replay passes **698/698 comparisons
+across 88 sources**, refreshing 280 remaining private labels in 20 units after
+the direct probes. The full baseline-commit audit totals **350 private labels
+in 23 units across 13 sources**, plus exactly the reviewed front-end word-type
+retag at +0x2A / 0x004C4AB4. Every other recipe field, offset/type, target,
+extent and profile is unchanged. All 261 frozen source/script/test inputs are
+unchanged. Mapping/function/origin/source/exact ledgers and header-only claims
+are byte-identical to baseline b5e06e8; authored credit stays **696 functions /
+336,486 bytes**, with **698 configured comparisons**.
+
+**Independent normal product / resolved-reference audit.** A separate cold build
+compiles **88/88 pinned VC7.1 i386 COFF objects** across two profiles and
+links/verifies a **778,752-byte PE32 GUI**, build-local SHA-256
+`96a6e28f36b6d617496bd4c7ad7c88845290fcb49a43b609ceb944933d8ce379`, with zero unresolved symbols. All **132 named normal function roots** and **14 private function entries**
+in the six directly changed objects preserve every pre-edit byte and entry
+offset. A recursive comparison of **274 referenced code/data/EH section
+graphs** preserves every relocation offset/type/addend and resolved reference;
+104 compiler-private spellings change only after destination bytes, offsets
+and reference graphs are proved equal. Uninitialized COFF storage is compared
+as zero-filled virtual data, not as file-offset-zero header bytes.
+
+The exact-only BackgroundSupervisorView viewport and PhotoEnemyEclManagerView
+context symbols are absent from both normal objects and recorded separately;
+they are not treated as missing normal implementations or normal target credit.
+This compares real normal definitions rather than assuming every exact adapter
+name exists in that profile. Normal pre/post equality is not whole-body target
+identity. Native type/field evidence and target dataflow supply the independent
+semantic support for the changed normal operations.
+
+Final CI passes **89 workflow tests and seven native x86-64/UBSan executables**.
+Tracking, generated progress, match graph, owner/debt/protocol guards, and
+whitespace checks pass. CPU 1, nice 10 and serial VC7.1 builds were used. Compact
+receipts are private under .analysis/sem334/; generated objects, executables,
+PDBs, maps and Python caches are cleared before checkpoint. Protected user-owned
+files are untouched. Semantic reconstruction remains active-incomplete.

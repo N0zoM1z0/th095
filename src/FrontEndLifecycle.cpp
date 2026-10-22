@@ -10,6 +10,7 @@
 #include "SoundPlayer.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "SceneSelect.hpp"
+#include "SupervisorFlags.hpp"
 #endif
 #include "utils.hpp"
 
@@ -56,7 +57,7 @@ struct FrontEndSupervisorView
     void BeginLoadingCompletion();
 };
 extern FrontEndSupervisorView g_FrontEndSupervisor;
-extern u32 g_FrontEndSupervisorFlags;
+extern SupervisorFlags g_FrontEndSupervisorFlags;
 extern i32 g_FrontEndLoadFinished;
 extern i32 g_FrontEndLoadInProgress;
 
@@ -95,7 +96,7 @@ extern FrontEndSceneDefinitionView *g_FrontEndSceneGroups[12];
 #define TH095_FRONT_ANM_RELEASE(index) g_AnmManager->ReleaseAnm(index)
 #define TH095_FRONT_SURFACE_CAPTURE_INDEX g_AnmManager->captureSurfaceIdx
 #define TH095_FRONT_TEXTURE_CAPTURE_INDEX g_AnmManager->captureAnmIdx
-#define TH095_FRONT_SUPERVISOR_FLAGS g_Supervisor.flags.raw
+#define TH095_FRONT_SUPERVISOR_FLAGS g_Supervisor.flags
 #define TH095_FRONT_HIDE_LOADING() g_Supervisor.HideLoadingVms()
 #define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_Supervisor.BeginLoadingCompletion()
 #define TH095_FRONT_START_REPLAY_SCAN(callback, argument) g_Supervisor.StartReplayScan((callback), (argument))
@@ -416,11 +417,7 @@ void __fastcall FrontEndLifecycleView::LoadThread(void *)
     while (TH095_FRONT_SURFACE_CAPTURE_INDEX >= 0 ||
            TH095_FRONT_TEXTURE_CAPTURE_INDEX >= 0)
     {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (((TH095_FRONT_SUPERVISOR_FLAGS >> 7) & 1) != 0)
-#else
-        if (g_Supervisor.flags.receivedCloseMsg != 0)
-#endif
+        if (TH095_FRONT_SUPERVISOR_FLAGS.receivedCloseMsg != 0)
             goto loadFailed;
         Sleep(1);
     }

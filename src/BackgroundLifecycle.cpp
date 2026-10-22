@@ -7,12 +7,6 @@
 namespace th095
 {
 
-struct BackgroundSupervisorFlagsView
-{
-    u32 unknown00 : 9;
-    u32 resourceReloadDisabled : 1;
-    u32 unknown10 : 22;
-};
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 extern u8 *g_BackgroundStageDataCache;
 #define TH095_BACKGROUND_STAGE_DATA_CACHE g_BackgroundStageDataCache
@@ -53,8 +47,7 @@ Background::~Background()
     if (stageData != NULL)
         FreeBackgroundOwned(stageData);
 
-    if (reinterpret_cast<BackgroundSupervisorFlagsView *>(
-            &g_Supervisor.flags)->resourceReloadDisabled == 0)
+    if (g_Supervisor.flags.resultRestartActive == 0)
     {
         if (TH095_BACKGROUND_STAGE_DATA_CACHE != NULL)
             FreeBackgroundOwned(TH095_BACKGROUND_STAGE_DATA_CACHE);
@@ -64,8 +57,7 @@ Background::~Background()
     if (stageObjectVms != NULL)
         FreeBackgroundOwned(stageObjectVms);
 
-    if (reinterpret_cast<BackgroundSupervisorFlagsView *>(
-            &g_Supervisor.flags)->resourceReloadDisabled != 0)
+    if (g_Supervisor.flags.resultRestartActive != 0)
         g_AnmManager->MarkVmsForDeletion(anm);
     else
         g_AnmManager->ReleaseAnm(4);

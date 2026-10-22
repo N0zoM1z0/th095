@@ -132,7 +132,7 @@ the listed source.
 
 The whole-game normal oracle is still weaker than TH08's modern portable
 build: TH095 has pinned-VC7.1 normal compile/link closure but no maintained
-modern game product yet. SEM-327..333 add bounded native x86-64 cursor,
+modern game product yet. SEM-327..334 add bounded native x86-64 cursor,
 pending-texture-data, raw queue, preview-address, and worker-lifecycle oracles
 (`scripts/check-portable-front-end.py`) that compile and execute the actual
 shared declarations and behavior with UBSan. Pending-data tests use real
@@ -148,6 +148,10 @@ handles/arguments. Request tests execute the canonical exit-only store at its
 native offset, retaining thread ID and other neighbors. It does not invoke the
 historical CRT callback cast or prove
 thread scheduling, joins, or data-race freedom.
+A seventh oracle compiles the actual standard C++ SupervisorFlags owner and
+checks its complete physical-word representation and isolated field updates.
+The wait fixture also reads the real flags type; this does not establish the
+parent Supervisor ABI or cross-thread memory ordering.
 The sixth component oracle runs the shared asset-wait/cancellation statements
 and final address publication against target-derived branch traces. This proves
 neither the enclosing controller ABI nor whole-game reachable counts/releases.

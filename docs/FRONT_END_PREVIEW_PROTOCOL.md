@@ -1,6 +1,6 @@
 # Front-end mission-preview handoff
 
-This is the SEM-330..333 evidence map for the original Japanese TH095 v1.02a target.
+This is the SEM-330..334 evidence map for the original Japanese TH095 v1.02a target.
 It describes runtime handoff storage, not an on-disk format. Semantic names are
 inferred from producers and independent consumers; original source names and
 the original queue declaration remain Unknown.
@@ -155,3 +155,10 @@ without adding parameters, padding, assembly, or profile-selected bodies.
 Existing compilerStorage phase locals and surrounding Controller/Supervisor
 views remain historical emission/ownership debt. SEM-333 probe and normal
 baseline receipts are private under `.analysis/sem333/`.
+
+SEM-334 makes the actual SupervisorFlags word available to the native wait
+fixture: close is read from its canonical bit-7 member with timer/bit-8/upper
+noise retained. The header no longer uses an anonymous struct/raw union; its
+separate physical-word oracle brings the public driver to seven executables.
+This accepts the word type and existing shared statements, not the enclosing
+Supervisor/controller ABI, concurrency, reachable queue bound, or release policy.
