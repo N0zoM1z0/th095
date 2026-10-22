@@ -34,6 +34,7 @@ def main() -> int:
     run_probe("ResultScreenReplayCursorTest.cpp", "cursor-test")
     run_probe("FrontEndPendingTextureDataTest.cpp", "pending-texture-test")
     run_probe("SceneValueQueueTest.cpp", "raw-queue-test")
+    run_probe("ScenePreviewDataQueueTest.cpp", "preview-data-test")
     return 0
 
 

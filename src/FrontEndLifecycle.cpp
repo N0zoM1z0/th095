@@ -2,6 +2,7 @@
 #include "FrontEndGlobals.hpp"
 #include "FrontEndPendingTextureData.hpp"
 #include "SceneValueQueue.hpp"
+#include "ScenePreviewDataQueue.hpp"
 #include "Main.hpp"
 #include "ResultScreen.hpp"
 #include "ScoreData.hpp"
@@ -187,9 +188,9 @@ struct FrontEndLifecycleView
     i32 entryMode;
     SceneValueQueue selectionQueue;
     SceneValueQueue loadedSceneQueue;
-    SceneValueQueue groupPreviewDataQueue;
+    ScenePreviewDataQueue groupPreviewDataQueue;
     SceneValueQueue groupPreviewSizeQueue;
-    SceneValueQueue scenePreviewDataQueue;
+    ScenePreviewDataQueue scenePreviewDataQueue;
     SceneValueQueue scenePreviewSizeQueue;
     SceneValueQueue groupPreviewQueue;
     SceneValueQueue scenePreviewQueue;

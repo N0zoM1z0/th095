@@ -67,13 +67,16 @@ VC7 comparison, and the playable Windows i386 behavior.
 
 ## Phase 2: portable build boundary
 
-SEM-327..329 add bounded native x86-64 component oracles: the shared
-front-end cursor, pending texture-data owner, and raw queue compile without
-Windows/D3D headers and execute their actual movement/history, pointer-shift,
+SEM-327..330 add bounded native x86-64 component oracles: the shared
+front-end cursor, pending texture-data owner, raw queue, and preview-address
+channels compile without Windows/D3D headers and execute their actual
+movement/history, pointer-shift,
 and word-copy code under UBSan in public CI (`python3 scripts/check-portable-front-end.py`). Pending
 file buffers retain actual allocated addresses above 4 GB while sizes/count
 stay four-byte values. The raw queue oracle preserves 32-bit words and checks
-the complete metadata transfer; mission-preview pointer channels remain open.
+the complete metadata transfer. The separate preview-address test preserves
+high pointers through production publication/Pop. Its worker cancellation,
+caller-count domain, and release ordering remain open lifetime work.
 This supports semantic work; the modern whole-game
 build and the platform boundary below remain open.
 

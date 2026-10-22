@@ -272,7 +272,7 @@ static __forceinline void FrontEndResetTimer(FrontEndControllerTimer *timer)
     timer->previous = -999999;
 }
 
-static __forceinline void FrontEndDrainQueueValue(SceneValueQueue *queue)
+static __forceinline void FrontEndDrainQueueValue(ScenePreviewDataQueue *queue)
 {
     u32 compilerStorage;
     FrontEndFreePoppedValue(reinterpret_cast<void *>(queue->Pop()));

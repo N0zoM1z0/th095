@@ -2472,8 +2472,13 @@ def check_front_end_scene_queue_owner(controller_text: str | None = None) -> Non
         source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         owner_start = source.index("struct SceneSelectControllerView")
         owner = source[owner_start:source.index("i32 GetSelectedGroup()", owner_start)]
-        actual = re.findall(r"\bSceneValueQueue\s+(\w+)\s*;", owner)
-        if actual != [field for field, _ in queue_fields]:
+        actual = re.findall(r"\b(SceneValueQueue|ScenePreviewDataQueue)\s+(\w+)\s*;", owner)
+        expected = [
+            ("ScenePreviewDataQueue" if field in ("groupPreviewDataQueue", "scenePreviewDataQueue")
+             else "SceneValueQueue", field)
+            for field, _ in queue_fields
+        ]
+        if actual != expected:
             fail(f"{name} lost the complete ordered nine-queue owner")
         for field, offset in queue_fields:
             if f"offsetof(SceneSelectControllerView, {field}) == 0x{offset}" not in source:
@@ -2576,6 +2581,47 @@ def check_scene_value_queue_owner(
         fail("raw queue lost its real-word copy through metadata word 16")
     if "i < SCENE_QUEUE_DATA_WORD_COUNT" not in body or "reinterpret_cast" in body:
         fail("raw queue restored a projected or partial shift")
+
+
+def check_scene_preview_data_queue_owner(header_text: str | None = None) -> None:
+    header = source_without_comments(
+        header_text if header_text is not None
+        else (SRC / "ScenePreviewDataQueue.hpp").read_text(encoding="utf-8")
+    )
+    for token in (
+        "uintptr_t bits;", "ScenePreviewAddressWord words[SCENE_QUEUE_STORAGE_WORD_COUNT];",
+        "i32 Size() const", "u8 *Front() const", "uintptr_t Pop();",
+        "sizeof(ScenePreviewAddressWord) == sizeof(u8 *)",
+    ):
+        if token not in header:
+            fail(f"preview data queue lost native address/metadata storage: {token}")
+    if any(token in header for token in (*PROFILE_NAMES, "Global.hpp", "i32 bits;")):
+        fail("preview data queue restored selected/truncated storage")
+    for name in (
+        "SceneSelect.hpp", "SceneSelectExact.hpp", "SceneSelectAssets.cpp",
+        "SceneSelectAssetsExact.inl", "SceneSelectUpdate.cpp",
+        "SceneSelectUpdateExact.inl", "FrontEndLifecycle.cpp",
+    ):
+        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        for field in ("groupPreviewDataQueue", "scenePreviewDataQueue"):
+            if f"ScenePreviewDataQueue {field};" not in source:
+                fail(f"{name} lost the native address channel {field}")
+    for name in ("SceneSelectController.cpp", "SceneSelectControllerExact.inl"):
+        if '#include "ScenePreviewDataQueue.inl"' not in (SRC / name).read_text(encoding="utf-8"):
+            fail(f"{name} lost the shared address-word Pop")
+    for name in ("SceneSelectAssets.cpp", "SceneSelectAssetsExact.inl"):
+        source = (SRC / name).read_text(encoding="utf-8")
+        for fragment in ("ScenePreviewDataPublish.inl", "ScenePreviewDataPublishNull.inl"):
+            if f'#include "{fragment}"' not in source:
+                fail(f"{name} lost shared native address publication")
+    publish = (SRC / "ScenePreviewDataPublish.inl").read_text(encoding="utf-8")
+    if "reinterpret_cast<uintptr_t>(*value)" not in publish:
+        fail("preview address publication truncates its file buffer")
+    body = (SRC / "ScenePreviewDataQueue.inl").read_text(encoding="utf-8")
+    if ("static_cast<i32>(this->words[SCENE_QUEUE_COUNT_WORD].bits) > 0" not in body
+        or "this->words[i] = this->words[i + 1];" not in body
+        or "i < SCENE_QUEUE_DATA_WORD_COUNT" not in body):
+        fail("preview address Pop lost the signed full-word transition")
 
 
 def check_front_end_pending_texture_owner(header_text: str | None = None) -> None:
@@ -3818,6 +3864,7 @@ def main() -> int:
     check_front_end_flags_owner()
     check_front_end_scene_queue_owner()
     check_scene_value_queue_owner()
+    check_scene_preview_data_queue_owner()
     check_front_end_pending_texture_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
@@ -3861,6 +3908,7 @@ def main() -> int:
     print("  FrontEnd requested states: one shared explicit 0..9 domain")
     print("  FrontEnd flags: one shared bit-0/1/2/3/5 owner with unknown ranges")
     print("  FrontEnd scene queues: nine typed owners and post-queue cleanup in both profiles")
+    print("  Preview data queue: native address words, signed counts, and shared publication")
     print("  Raw front-end queue: one 18-word owner with explicit count/capacity metadata")
     print("  FrontEnd pending texture data: shared native-pointer columns and shift transition")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")

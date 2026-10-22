@@ -48,6 +48,7 @@ static __forceinline void RefreshSelectionQueuePush(
 }
 
 #include "SceneValueQueue.inl"
+#include "ScenePreviewDataQueue.inl"
 
 // Target-proven VC7.1 backing buckets keep the byte display state at EBP-1
 // and the seven dword/pointer locals at EBP-8..EBP-20. The bounded inline

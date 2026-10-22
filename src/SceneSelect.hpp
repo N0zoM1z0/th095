@@ -8,6 +8,7 @@
 #include "FrontEndGlobals.hpp"
 #include "FrontEndPendingTextureData.hpp"
 #include "SceneValueQueue.hpp"
+#include "ScenePreviewDataQueue.hpp"
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "PixelFormats.hpp"
@@ -157,9 +158,9 @@ struct SceneSelectControllerView
     u8 unknown6124[4];
     SceneValueQueue selectionQueue;
     SceneValueQueue loadedSceneQueue;
-    SceneValueQueue groupPreviewDataQueue;
+    ScenePreviewDataQueue groupPreviewDataQueue;
     SceneValueQueue groupPreviewSizeQueue;
-    SceneValueQueue scenePreviewDataQueue;
+    ScenePreviewDataQueue scenePreviewDataQueue;
     SceneValueQueue scenePreviewSizeQueue;
     SceneValueQueue groupPreviewQueue;
     SceneValueQueue scenePreviewQueue;

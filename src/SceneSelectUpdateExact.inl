@@ -63,9 +63,9 @@ struct SceneSelectUpdateView
     u8 unknown6124[4];
     SceneValueQueue selectionQueue;
     SceneValueQueue loadedSceneQueue;
-    SceneValueQueue groupPreviewDataQueue;
+    ScenePreviewDataQueue groupPreviewDataQueue;
     SceneValueQueue groupPreviewSizeQueue;
-    SceneValueQueue scenePreviewDataQueue;
+    ScenePreviewDataQueue scenePreviewDataQueue;
     SceneValueQueue scenePreviewSizeQueue;
     SceneValueQueue groupPreviewQueue;
     SceneValueQueue scenePreviewQueue;
@@ -182,7 +182,8 @@ static __forceinline i32 SceneQueueFront(const SceneValueQueue *queue)
     return 0;
 }
 
-static __forceinline void SceneSelectQueuePopPhase(SceneValueQueue *queue)
+template <typename Queue>
+static __forceinline void SceneSelectQueuePopPhase(Queue *queue)
 {
     u32 compilerStorage;
     queue->Pop();
@@ -478,23 +479,23 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     }
     else
     {
-        i32 groupPreviewDataNegativeFreeValue;
-            SceneValueQueue *groupPreviewDataNegativeFreeQueue;
-            i32 groupPreviewDataNegativeValue;
-            SceneValueQueue *groupPreviewDataNegativeQueue;
+        u8 *groupPreviewDataNegativeFreeValue;
+            ScenePreviewDataQueue *groupPreviewDataNegativeFreeQueue;
+            u8 *groupPreviewDataNegativeValue;
+            ScenePreviewDataQueue *groupPreviewDataNegativeQueue;
             i32 groupPreviewSizeNegativeValue;
             SceneValueQueue *groupPreviewSizeNegativeQueue;
             i32 loadedGroupNegativeSize;
-            i32 scenePreviewDataPositiveFreeValue;
-            SceneValueQueue *scenePreviewDataPositiveFreeQueue;
-            i32 groupPreviewDataPositiveFreeValue;
-            SceneValueQueue *groupPreviewDataPositiveFreeQueue;
-            i32 scenePreviewDataPositiveValue;
-            SceneValueQueue *scenePreviewDataPositiveQueue;
+            u8 *scenePreviewDataPositiveFreeValue;
+            ScenePreviewDataQueue *scenePreviewDataPositiveFreeQueue;
+            u8 *groupPreviewDataPositiveFreeValue;
+            ScenePreviewDataQueue *groupPreviewDataPositiveFreeQueue;
+            u8 *scenePreviewDataPositiveValue;
+            ScenePreviewDataQueue *scenePreviewDataPositiveQueue;
             i32 scenePreviewSizePositiveValue;
             SceneValueQueue *scenePreviewSizePositiveQueue;
-            i32 groupPreviewDataPositiveValue;
-            SceneValueQueue *groupPreviewDataPositiveQueue;
+            u8 *groupPreviewDataPositiveValue;
+            ScenePreviewDataQueue *groupPreviewDataPositiveQueue;
             i32 groupPreviewSizePositiveValue;
             SceneValueQueue *groupPreviewSizePositiveQueue;
             i32 loadedGroupSize1;
@@ -534,11 +535,10 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     }
                     groupPreviewDataPositiveQueue =
                         &view->groupPreviewDataQueue;
-                    if (groupPreviewDataPositiveQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+                    if (static_cast<i32>(groupPreviewDataPositiveQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
                     {
                         groupPreviewDataPositiveValue =
-                            groupPreviewDataPositiveQueue
-                                ->words[0].value;
+                            reinterpret_cast<u8 *>(groupPreviewDataPositiveQueue->words[0].bits);
                     }
                     else
                     {
@@ -546,8 +546,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     }
                     g_SceneAnmManager->LoadTexture(
                         &view->sceneAnm->textures[2],
-                        reinterpret_cast<u8 *>(
-                            groupPreviewDataPositiveValue),
+                        groupPreviewDataPositiveValue,
                         groupPreviewSizePositiveValue,
                         5, 0, 1);
 
@@ -565,11 +564,10 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     }
                     scenePreviewDataPositiveQueue =
                         &view->scenePreviewDataQueue;
-                    if (scenePreviewDataPositiveQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+                    if (static_cast<i32>(scenePreviewDataPositiveQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
                     {
                         scenePreviewDataPositiveValue =
-                            scenePreviewDataPositiveQueue
-                                ->words[0].value;
+                            reinterpret_cast<u8 *>(scenePreviewDataPositiveQueue->words[0].bits);
                     }
                     else
                     {
@@ -577,8 +575,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     }
                     g_SceneAnmManager->LoadTextureRegion(
                         &view->sceneAnm->textures[2],
-                        reinterpret_cast<u8 *>(
-                            scenePreviewDataPositiveValue),
+                        scenePreviewDataPositiveValue,
                         scenePreviewSizePositiveValue,
                         5, 0, 1, 0x20);
                     view->sceneAnm->textures[2].texture->PreLoad();
@@ -586,33 +583,29 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
                 groupPreviewDataPositiveFreeQueue =
                     &view->groupPreviewDataQueue;
-                if (groupPreviewDataPositiveFreeQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+                if (static_cast<i32>(groupPreviewDataPositiveFreeQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
                 {
                     groupPreviewDataPositiveFreeValue =
-                        groupPreviewDataPositiveFreeQueue
-                            ->words[0].value;
+                        reinterpret_cast<u8 *>(groupPreviewDataPositiveFreeQueue->words[0].bits);
                 }
                 else
                 {
                     groupPreviewDataPositiveFreeValue = 0;
                 }
-                FreeSceneOwned(reinterpret_cast<void *>(
-                    groupPreviewDataPositiveFreeValue));
+                FreeSceneOwned(groupPreviewDataPositiveFreeValue);
 
                 scenePreviewDataPositiveFreeQueue =
                     &view->scenePreviewDataQueue;
-                if (scenePreviewDataPositiveFreeQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+                if (static_cast<i32>(scenePreviewDataPositiveFreeQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
                 {
                     scenePreviewDataPositiveFreeValue =
-                        scenePreviewDataPositiveFreeQueue
-                            ->words[0].value;
+                        reinterpret_cast<u8 *>(scenePreviewDataPositiveFreeQueue->words[0].bits);
                 }
                 else
                 {
                     scenePreviewDataPositiveFreeValue = 0;
                 }
-                FreeSceneOwned(reinterpret_cast<void *>(
-                    scenePreviewDataPositiveFreeValue));
+                FreeSceneOwned(scenePreviewDataPositiveFreeValue);
             }
             else
             {
@@ -634,11 +627,10 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     }
                     groupPreviewDataNegativeQueue =
                         &view->groupPreviewDataQueue;
-                    if (groupPreviewDataNegativeQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+                    if (static_cast<i32>(groupPreviewDataNegativeQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
                     {
                         groupPreviewDataNegativeValue =
-                            groupPreviewDataNegativeQueue
-                                ->words[0].value;
+                            reinterpret_cast<u8 *>(groupPreviewDataNegativeQueue->words[0].bits);
                     }
                     else
                     {
@@ -646,8 +638,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     }
                     g_SceneAnmManager->LoadTexture(
                         &view->sceneAnm->textures[2],
-                        reinterpret_cast<u8 *>(
-                            groupPreviewDataNegativeValue),
+                        groupPreviewDataNegativeValue,
                         groupPreviewSizeNegativeValue,
                         5, 0, 1);
                     view->sceneAnm->textures[2].texture->PreLoad();
@@ -655,18 +646,16 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
                 groupPreviewDataNegativeFreeQueue =
                     &view->groupPreviewDataQueue;
-                if (groupPreviewDataNegativeFreeQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+                if (static_cast<i32>(groupPreviewDataNegativeFreeQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
                 {
                     groupPreviewDataNegativeFreeValue =
-                        groupPreviewDataNegativeFreeQueue
-                            ->words[0].value;
+                        reinterpret_cast<u8 *>(groupPreviewDataNegativeFreeQueue->words[0].bits);
                 }
                 else
                 {
                     groupPreviewDataNegativeFreeValue = 0;
                 }
-                FreeSceneOwned(reinterpret_cast<void *>(
-                    groupPreviewDataNegativeFreeValue));
+                FreeSceneOwned(groupPreviewDataNegativeFreeValue);
             }
 
             g_SceneSupervisor.EnterCriticalSectionWrapper(4);
@@ -782,9 +771,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->groupPreviewQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 5;
         view->scenePreviewQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 5;
         view->loadedGroupQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 16;
-        view->groupPreviewDataQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 16;
+        view->groupPreviewDataQueue.words[SCENE_QUEUE_CAPACITY_WORD].bits = 16;
         view->groupPreviewSizeQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 16;
-        view->scenePreviewDataQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 16;
+        view->scenePreviewDataQueue.words[SCENE_QUEUE_CAPACITY_WORD].bits = 16;
         view->scenePreviewSizeQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 16;
         view->loadedGroupQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 16;
         view->selectionQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 5;

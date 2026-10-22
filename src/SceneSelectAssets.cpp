@@ -22,9 +22,9 @@ struct SceneSelectionAssetView
     u8 unknown6124[4];
     SceneValueQueue selectionQueue;
     SceneValueQueue loadedSceneQueue;
-    SceneValueQueue groupPreviewDataQueue;
+    ScenePreviewDataQueue groupPreviewDataQueue;
     SceneValueQueue groupPreviewSizeQueue;
-    SceneValueQueue scenePreviewDataQueue;
+    ScenePreviewDataQueue scenePreviewDataQueue;
     SceneValueQueue scenePreviewSizeQueue;
     SceneValueQueue groupPreviewQueue;
     SceneValueQueue scenePreviewQueue;
@@ -88,6 +88,11 @@ static __forceinline i32 AssetQueueSize(SceneValueQueue *queue)
     return queue->words[SCENE_QUEUE_COUNT_WORD].value;
 }
 
+static __forceinline i32 AssetQueueSize(ScenePreviewDataQueue *queue)
+{
+    return static_cast<i32>(queue->words[SCENE_QUEUE_COUNT_WORD].bits);
+}
+
 static __forceinline void AssetQueueRead(SceneValueQueue *queue, i32 *value)
 {
     if (queue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
@@ -109,14 +114,15 @@ static __forceinline void AssetQueuePush(SceneValueQueue *queue, i32 value)
     }
 }
 
-static __forceinline void AssetQueuePushPointer(SceneValueQueue *queue,
+static __forceinline void AssetQueuePushPointer(ScenePreviewDataQueue *queue,
                                                 u8 **value)
 {
-    if (queue->words[SCENE_QUEUE_COUNT_WORD].value < queue->words[SCENE_QUEUE_CAPACITY_WORD].value)
-    {
-        queue->words[queue->words[SCENE_QUEUE_COUNT_WORD].value].value = reinterpret_cast<i32>(*value);
-        queue->words[SCENE_QUEUE_COUNT_WORD].value++;
-    }
+#include "ScenePreviewDataPublish.inl"
+}
+
+static __forceinline void AssetQueuePushNull(ScenePreviewDataQueue *queue)
+{
+#include "ScenePreviewDataPublishNull.inl"
 }
 
 static __forceinline void AssetQueuePushValue(SceneValueQueue *queue,
@@ -393,7 +399,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                             &locals.primaryData);
                         AssetQueuePush(&locals.view->groupPreviewSizeQueue,
                                        locals.primarySize);
-                        AssetQueuePush(&locals.view->scenePreviewDataQueue, 0);
+                        AssetQueuePushNull(&locals.view->scenePreviewDataQueue);
                         AssetQueuePush(&locals.view->scenePreviewSizeQueue, 0);
                         AssetQueuePushValue(&locals.view->loadedGroupQueue,
                                             &locals.queueValue);

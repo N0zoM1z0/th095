@@ -17,31 +17,37 @@ their recorded source revision; regenerate them before claiming a newer result.
   validation are separate facts; no semantic completion percentage is claimed.
 - Ledger totals are generated in `docs/PROGRESS.md`; rerun the summary
   command below before quoting them. `config/claims.csv` remains header-only.
-- Latest accepted batch: **SEM-329**. `SceneValueQueue.hpp` owns one shared
-  0x48-byte array of eighteen real four-byte words. Count/capacity are words
-  16/17; Pop copies the decremented count into slot 15 and returns the new
-  front. Both Scene Select profiles and all nine lifecycle members use it,
-  and both controller emission sites include the same Push/Pop bodies.
-  Copy/front/lifecycle projections and two drain selectors are retired.
-  The selected-declaration baseline is now 194 keys / 199 occurrences.
-  Pointer channels still carry raw x86 bits and remain open port work.
-- The 2026-10-22 cold aggregate passed **696/696 exact units across 88
-  sources**. Thirty compiler-private identities changed across four units
-  in three sources; complete structural/relocation/target checks and immediate
-  strict comparison accepted each refresh. Two lifecycle Pop receiver retags
-  are separately verified at unchanged offsets/types/targets. No extent or
-  credit changed.
+- Latest accepted batch: **SEM-330**. `ScenePreviewDataQueue.hpp` owns the
+  two mission-buffer address channels in all seven outer views. Eighteen
+  native address words preserve pointers and Pop's copied count metadata.
+  Target size remains 0x48; native x86-64 size is 0x90, including widened
+  metadata storage slots. Count values/Size remain i32 and seven selector/
+  length queues retain four-byte SceneValueQueue words. Both worker profiles
+  share pointer/null publication; both controller profiles share address Pop;
+  UI buffer locals are real u8 pointers. No new profile selector or selected
+  declaration is added; closed baselines remain 194 keys / 199 declarations
+  and 270 keys / 708 selector occurrences.
+- Exact target credit remains **696 functions / 336,486 bytes**. The match
+  graph now has 697 comparisons: a second source instance covers address Pop
+  at the already-credited 0x00450F60. It adds no authored target credit.
+  The 2026-10-22 cold aggregate passed 697/697 across 88 sources. Six receiver
+  retags and thirty compiler-private identities preserve positions/types/targets;
+  all other manifest fields are unchanged. Receipts are in SEM-330 history.
 - The separate normal cold build compiled 88 i386 COFF objects and linked a
-  778,752-byte verified PE32 with zero unresolved symbols.
-- Public CI passes 85 workflow tests and three native x86-64/UBSan oracles via
+  778,752-byte verified PE32 with zero unresolved symbols. Normal-selected raw
+  and address Pop each reproduce the 91-byte target and fold to one normal
+  link address through existing ICF. This is not whole-image identity.
+- Public CI passes 86 workflow tests and four native x86-64/UBSan oracles via
   `scripts/check-portable-front-end.py`. Pending tests execute the production
   shift using real buffers above 4 GB; raw queue tests compare all eighteen
-  words and returns against an independent target model. These are sequential
+  words and returns against an independent target model. Address-channel tests
+  execute production publication/Pop with real buffers above 4 GB, retain
+  null items, and capture the distinct release-order traces. These are sequential
   component checks, not a modern game build, worker/graphics validation, or a
   playable 64-bit port.
 - Generated objects, PDBs, native/PE binaries, maps, and Python caches are
-  disposable and cleared after the checkpoint's checks. Compact SEM-329
-  target/compiler/native receipts remain private under `.analysis/sem329/`.
+  disposable and cleared after the checkpoint's checks. Compact SEM-330
+  target/compiler/native receipts remain private under `.analysis/sem330/`.
   The verified target, pinned tools, Ghidra project, and protected files stay.
 - No active blocker is known. The only untracked working-tree paths at
   handoff are the protected user-owned files listed below.
@@ -59,23 +65,21 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
   evidence and a normal compiler or runtime oracle.
 - Prefer one profile-independent owner. Keep compiler emission adapters
   narrow and proved; leave unproved fields, roles, and protocols Unknown.
-- The next bounded lane is native pointer transport in the mission-preview
-  queue family. SEM-329 closes only raw storage and Push/Pop representation.
-  Fresh target `SceneValueQueue::Pop @ 0x00450F60` decrements count, shifts
-  sixteen following dwords, and returns the **new** first item. The last copy
-  reads the decremented count at +0x40 into slot 15; it is metadata transfer,
-  not a seventeenth payload. Main-menu calls 0x00447361/0x004473A4 pass the
-  returned value to free at 0x00447373/0x004473B6. FRONT-030/031 correct earlier
-  ordinary FIFO/pop-and-free wording; payload ownership and caller domains
-  must still be closed before declaring this a portable pointer queue.
-- Specialize pointer channels separately from selectors/sizes after proving
-  every publication, independent use, reset, drain, and caller count domain.
-  Inspect both Scene Select headers, `SceneSelectController*`, `SceneSelectAssets*`, `SceneSelectUpdate*`,
-  FrontEndController, and FrontEndLifecycle. The existing
-  integer Push/Pop units and all pointer producers/free consumers must agree.
-  Preserve its nonstandard target semantics and the now-defined raw movement.
-  Keep integer selectors/sizes four-byte values; do not infer payload
-  ownership from the Pop name. The closed selector/layout baselines still apply.
+- The next bounded lane is worker stop/completion and preview lifetime/count
+  domains, starting with `StartReplayScan` / `StopReplayScan`, g_HelpLoadActive,
+  g_HelpLoadComplete, and the Scene Select stop transitions. Transport is now
+  native-width; do not assume every raw Pop return is a pointer.
+- Read [FRONT_END_PREVIEW_PROTOCOL.md](FRONT_END_PREVIEW_PROTOCOL.md). Both
+  worker waits branch into publication on cancellation, so an always-one-item
+  invariant is unproved. Normal UI frees the old front before Pop; main-menu
+  and teardown free the post-shift result. The native tests capture a
+  synthetic full-state result of metadata 15 without freeing it. Reachability,
+  synchronization, actual count domains, and any runtime leak remain Unknown.
+  Do not repair or normalize those target transitions during reconstruction.
+- Close acquire/start, publication, independent consumers, stop/wait, final
+  publication, and teardown ordering before accepting lifetime claims. Keep
+  selector/length queues four-byte values and the two address channels distinct.
+  The existing exact body splits and closed selector/layout baselines apply.
 - Enclosing front-end views, `SceneGroupCursorView`, and the exact cursor
   constructor's inert local remain debt. Keep `+0x6104/+0x6108`, screen-local
   `+0x610C`, flag bit 4 and bits 6..31 Unknown until independent users prove
@@ -99,8 +103,8 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/check-portable-front-end.py
-python3 scripts/analysis/report-semantic-debt.py --path src/SceneSelectController.cpp --details
-rg -n "SceneValueQueue|SCENE_QUEUE_COUNT_WORD|AssetQueuePushPointer|FrontEndFreeGroupQueuePop" src/SceneValueQueue.hpp src/SceneValueQueue.inl src/SceneSelectAssets.cpp src/SceneSelectUpdate.cpp src/FrontEndLifecycle.cpp
+python3 scripts/analysis/report-semantic-debt.py --path src/SceneSelectAssets.cpp --details
+rg -n "StartReplayScan|StopReplayScan|g_HelpLoadActive|g_HelpLoadComplete|assetLoadStopRequested" src/SceneSelectAssets.cpp src/SceneSelectUpdate.cpp src/FrontEndController.cpp src/ReplayScanWorker.cpp src/Supervisor*
 ```
 
 Before a later commit, run the affected exact and normal oracles,

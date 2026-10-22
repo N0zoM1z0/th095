@@ -879,6 +879,19 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 GUARD.check_front_end_scene_queue_owner(changed)
 
+    def test_preview_queue_guard_rejects_address_truncation(self) -> None:
+        GUARD.check_scene_preview_data_queue_owner()
+        header = (ROOT / "src" / "ScenePreviewDataQueue.hpp").read_text(encoding="utf-8")
+        for old, new in (
+            ("uintptr_t bits;", "i32 bits;"),
+            ("i32 Size() const", "uintptr_t Size() const"),
+            ("SCENE_QUEUE_STORAGE_WORD_COUNT];", "SCENE_QUEUE_DATA_WORD_COUNT];"),
+        ):
+            with self.subTest(old=old):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit):
+                        GUARD.check_scene_preview_data_queue_owner(header.replace(old, new, 1))
+
     def test_raw_queue_guard_rejects_metadata_or_storage_drift(self) -> None:
         GUARD.check_scene_value_queue_owner()
         header = (ROOT / "src" / "SceneValueQueue.hpp").read_text(encoding="utf-8")

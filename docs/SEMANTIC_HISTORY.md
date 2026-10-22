@@ -16619,3 +16619,124 @@ native/PE binaries, maps, and Python caches are cleared after verification;
 compact evidence stays private. Semantic reconstruction remains active and
 incomplete; full-game portability and pointer-channel lifetime closure are
 not established by these component tests.
+
+
+### SEM-330 — native address transport for mission-preview queue words
+
+**Scope / target evidence (2026-10-22).** Fresh attested disassembly of
+`LoadSceneSelectionAssets @ 0x0044D0A0`, the preview consumer in
+`UpdateSceneSelect @ 0x00447D00`, `UpdateMainMenu @ 0x00446A50`, and teardown
+`0x00445AA0` closes the representation of the two address channels, while
+leaving reachable lifetime domains open. The complete nine-channel map and
+instruction anchors are in `FRONT_END_PREVIEW_PROTOCOL.md`. The worker loads
+primary/secondary mission files, publishes five independently bounded result
+columns under critical section 4, and then advances requests. A missing
+secondary is a real null item, paired with zero length on the negative path.
+The wait normally gates on primary-data count being zero, but each stop test
+branches into publication. A permanent one-item count invariant is therefore
+unproved. This matters when choosing a representation for Pop's metadata
+transfer; no ordinary pointer-FIFO assumption is accepted.
+
+**Representation / ownership.** `ScenePreviewDataQueue.hpp` owns eighteen
+real uintptr_t words for groupPreviewDataQueue / scenePreviewDataQueue in all
+seven outer views. A word may contain an address or copied count metadata;
+Pop explicitly returns raw uintptr_t rather than promising a valid pointer.
+Target i386 storage stays 0x48, metadata +0x40/+0x44. Native x86-64 storage is
+0x90, metadata +0x80/+0x88: metadata slots follow address-word width, while
+their values stay in the logical i32 domain 0..16 and Size returns i32. This
+is an explicit word protocol, not a selected sixteen-pointer/count layout.
+Seven selector/length queues retain four-byte SceneValueQueue words. Buffer
+locals in both UI bodies become u8 pointers; lengths/selectors remain i32.
+The worker's former pointer-to-i32 publication is retired. Original declaration
+and ZUN naming remain Unknown.
+
+The front-end allocation owns physical storage. Worker, UI, coordinator, and
+lifecycle retain their respective publication/use/reset/release responsibilities.
+Both controller profiles include the same address Pop implementation; both
+worker profiles include shared native-address and null publication fragments.
+The existing Pop phase wrapper becomes a template for its same five call sites;
+its historical compiler-storage local is unchanged and remains debt. No new
+inert local, fake return, aliasing projection, assembly, selected declaration,
+or TH095_MATCH_EXACT/DIFFBUILD directive is introduced. Both closed selector/
+declaration baselines remain unchanged. Enclosing views and surrounding body
+splits remain separate debt; shared component acceptance does not accept all
+of their normal/exact implementations.
+
+**Compiler oracles.** A minimal ordinary sixteen-pointer queue with separate
+count/capacity and a final metadata store emits 103 bytes versus target 91.
+An eighteen-address-word representation matches all 91 bytes with no
+relocations under pinned VC7.1 build 3077 and `/MT /EHsc /Gs /DNDEBUG /Zi
+/Gy /GF /Oi /Gr /Od /Ob1 /I src /DTH095_MATCH_EXACT`. An unsigned count test
+instead changes target JLE to JBE; the maintained source explicitly interprets
+count as i32. An initial typed-null argument materializes an extra pointer
+temporary, enlarging the worker from 3,070 to 3,081 bytes and its frame by four.
+An explicit null publication restores the target immediate-zero store without
+that temporary. The negative natural forms are not retained. Probe inputs,
+full commands/digests, target queries, and comparisons remain private under
+`.analysis/sem330/`.
+
+**Release boundary.** Normal Scene Select reads/frees the old primary front
+(and secondary on the nonnegative path) before advancing queues and discarding
+Pop returns. Main-menu and teardown instead free Pop's post-shift return.
+These remain distinct target contracts. The native oracle captures a one-item
+zero-tail trace and a synthetic sixteen-item trace returning count metadata 15;
+it never frees synthetic metadata. This is conditional state evidence, not
+proof of runtime reachability, a leak diagnosis, or authority to repair the
+original cleanup. Worker-stop interleavings and actual count/lifetime domains
+are the next bounded lane.
+
+**Native oracle.** The fourth executable in `scripts/check-portable-front-end.py`
+compiles the actual owner, Pop, and both publication fragments as x86-64 with
+`-m64 -std=c++11 -O2 -Wall -Wextra -Werror -pedantic -fsanitize=undefined
+-fno-sanitize-recover=all`. Actual buffers above UINT32_MAX retain identity and
+contents through publication/front reads, and a read/free-before-Pop transition
+releases real owned buffers. An independent model compares all eighteen words
+and returns over counts 0..16, capacity 1..16, full drops, null secondary,
+complete drains, and captured teardown arguments. Pointer width and the narrow
+integer queue / Size API are asserted. All four native tests pass with no
+UBSan findings; worker threads, D3D, modern outer layout, and a 64-bit game are
+not validated.
+
+**Focused validation.** Before edits, the five sources passed 19/19 canonical
+units with zero refresh and separately compiled their five normal objects.
+All nineteen modified original units then matched complete structural bytes
+and target relocation destinations. Six call decorations at unchanged REL32
+positions now name ScenePreviewDataQueue::Pop, whose emitted 91-byte body also
+matches the same target. The additional canonical unit
+`scene-preview-address-queue-pop` makes that second source instance replayable;
+it adds a comparison, not a target function, extent, or authored byte credit.
+Focused strict replay passed **20/20 comparisons across five sources**, after
+18 compiler-private label refreshes in two units. Public CI passes **86 workflow
+tests and four native x86-64/UBSan executables**. Aggregate and independent
+normal-product receipts follow.
+
+The frozen-source aggregate `scripts/replay-exact-units.py
+--refresh-private-labels` passed **697/697 comparisons across all 88 sources**.
+Twelve additional compiler-private labels refreshed in two units; combined
+with the focused gate, 30 private identities changed in
+four units across FrontEndController, HelpMenu, and SceneTexture. A separate
+HEAD-versus-worktree manifest audit confirms that the six verified receiver
+retags, those private identities, and the one additional same-address comparison
+are the only changes. Every other unit field, extent, relocation offset/type,
+and target destination is unchanged. Authored exact credit remains **696
+functions / 336,486 bytes**; no comparison count is a semantic percentage.
+
+The separate normal cold build compiled **88/88 pinned VC7.1 i386 COFF
+objects** across two profiles and linked/verified a **778,752-byte PE32
+GUI**, build-local SHA-256 `35bbda19482799b73782e088fe793409bf51252b57f0dd6b2e34cfe8a723c5e5`.
+Both normal-selected Pop bodies independently compare 91/91 bytes with zero
+relocations; the existing ICF link folds their two source symbols to normal
+image address 0x00443F00. This is normal-product ownership evidence, not a
+whole-image comparison or recovery of the original class spelling. Both
+bounded negative probes were replayed serially after aggregate completion:
+typed-null worker remains 3,081 bytes and the unsigned count test remains
+90/91 bytes. No negative result receives exact credit.
+
+Target identity, tracking, match graph, generated progress, semantic guards,
+and whitespace checks pass. Native compiler identity/flags and frozen input
+digests are recorded privately. All VC7.1 builds ran serially on one idle CPU
+(1), nice 10; generated objects, PDBs, native/PE binaries, maps, and Python
+caches are cleared after receipts are saved. Protected user-owned files remain
+untouched. Semantic reconstruction remains active-incomplete. Native address
+transport is accepted for this component; thread/count/lifetime closure and
+modern whole-game portability remain open.
