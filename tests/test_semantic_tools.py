@@ -289,7 +289,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         for old, new in (
             ("uintptr_t threadHandle;", "u32 threadHandle;"),
             ("u32 threadId;", "uintptr_t threadId;"),
-            ("i32 active;", "uintptr_t active;"),
+            ("volatile i32 active;", "uintptr_t active;"),
             ("sizeof(ReplayScanWorker) == 2 * sizeof(uintptr_t) + 16",
              "sizeof(ReplayScanWorker) == 0x18"),
         ):
@@ -949,14 +949,29 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         for changed in (
             source.replace("replayScanWorker.exitSignal", "replayScanWorker.threadId", 1),
             source.replace("g_Supervisor.replayScanWorker.exitSignal", "g_HelpLoadComplete", 1),
-            source.replace("replayScanWorker.active = 0", "replayScanWorker.active = 1", 1),
-            source.replace("replayScanWorker.exitSignal = 1", "replayScanWorker.exitSignal = 0", 1),
-            source.replace("g_Supervisor.replayScanWorker.active = 0;\n    g_Supervisor.replayScanWorker.exitSignal = 1;",
-                           "g_Supervisor.replayScanWorker.exitSignal = 1;\n    g_Supervisor.replayScanWorker.active = 0;", 1),
+            source.replace("replayScanWorker.active, 0", "replayScanWorker.active, 1", 1),
+            source.replace("replayScanWorker.exitSignal, 1", "replayScanWorker.exitSignal, 0", 1),
+            source.replace("WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);\n    WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);",
+                           "WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);\n    WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);", 1),
         ):
             with contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):
                     GUARD.check_primary_worker_signal_bindings({name: changed})
+
+    def test_worker_signal_guard_rejects_raw_reads_and_weakened_order(self) -> None:
+        for name, before, after in (
+            ("Main.cpp", "ReadWorkerSignal(locals.replayScanActive, supervisor->replayScanWorker.active);",
+             "locals.replayScanActive = supervisor->replayScanWorker.active;"),
+            ("AnmPreload.cpp", "ReadWorkerSignal(state.finalStopRequested, g_Supervisor.replayScanWorker.exitSignal);",
+             "state.finalStopRequested = g_Supervisor.replayScanWorker.exitSignal;"),
+            ("WorkerSignalAccess.hpp", "__ATOMIC_ACQUIRE", "__ATOMIC_RELAXED"),
+            ("WorkerSignalAccess.hpp", "__ATOMIC_RELEASE", "__ATOMIC_RELAXED"),
+        ):
+            source = (ROOT / "src" / name).read_text(encoding="utf-8")
+            self.assertIn(before, source)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_primary_worker_signal_bindings({name: source.replace(before, after, 1)})
 
     def test_asset_wait_guard_rejects_return_or_reordered_checks(self) -> None:
         GUARD.check_scene_asset_wait_protocol()

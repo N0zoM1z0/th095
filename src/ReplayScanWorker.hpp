@@ -3,6 +3,7 @@
 #include "RuntimeAbi.hpp"
 
 #include "inttypes.hpp"
+#include "WorkerSignalAccess.hpp"
 
 namespace th095
 {
@@ -18,8 +19,10 @@ struct ReplayScanWorker
     u32 threadId;
     // Bidirectional handshake: Stop/RequestExit publish a request, callbacks
     // publish completion before returning. Neither field proves an OS join.
-    i32 exitSignal;
-    i32 active;
+    // Access concurrently only through ReadWorkerSignal/WriteWorkerSignal.
+    // volatile is required by the legacy backend; it is not synchronization.
+    volatile i32 exitSignal;
+    volatile i32 active;
     u8 unknown010[4];
     WorkerCallback threadProc;
 

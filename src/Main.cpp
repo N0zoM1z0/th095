@@ -1237,7 +1237,7 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
 #define supervisor reinterpret_cast<Supervisor *>(arg)
     if (supervisor->flags.receivedCloseMsg)
     {
-        locals.replayScanActive = supervisor->replayScanWorker.active;
+        ReadWorkerSignal(locals.replayScanActive, supervisor->replayScanWorker.active);
         if (locals.replayScanActive == 0)
             return 4;
     }
@@ -2022,16 +2022,16 @@ void __fastcall Supervisor::StartupThread(void *s)
     g_Supervisor.ThreadClose();
     g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_IDLE;
     g_Supervisor.flags.unknownBit8 = 0;
-    g_Supervisor.replayScanWorker.active = 0;
-    g_Supervisor.replayScanWorker.exitSignal = 1;
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
     return;
 
 error:
     g_Supervisor.ThreadClose();
     g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_FAILED;
     g_Supervisor.flags.receivedCloseMsg = 1;
-    g_Supervisor.replayScanWorker.active = 0;
-    g_Supervisor.replayScanWorker.exitSignal = 1;
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
 }
 
 // Keep the real version-data ownership local inside its teardown phase so
@@ -2275,7 +2275,7 @@ void Supervisor::ThreadClose()
     {
         CloseHandle((HANDLE)worker->threadHandle);
         worker->threadHandle = 0;
-        worker->active = 0;
+        WriteWorkerSignal(worker->active, 0);
     }
     this->LeaveCriticalSectionWrapper(6);
     this->criticalSectionLockCounts[6]--;

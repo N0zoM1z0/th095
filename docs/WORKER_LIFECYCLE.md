@@ -1,6 +1,6 @@
 # Shared worker lifecycle and port boundary
 
-SEM-331..336 cover the common ReplayScanWorker type and its five lifecycle
+SEM-331..337 cover the common ReplayScanWorker type and its five lifecycle
 methods for the original Japanese TH095 v1.02a target. The canonical declaration
 was already unified by SEM-303; these batches share behavior, remove the
 fixed-width header barrier, and make the state transition code executable in a native
@@ -19,8 +19,8 @@ field contract and lifecycle. ReplayScanWorker.cpp retains method emission.
 | --- | --- | --- | --- |
 | threadHandle | +0x00 | +0x00 | uintptr_t |
 | threadId | +0x04 | +0x08 | u32 |
-| exitSignal | +0x08 | +0x0C | i32 |
-| active | +0x0C | +0x10 | i32 |
+| exitSignal | +0x08 | +0x0C | volatile i32 |
+| active | +0x0C | +0x10 | volatile i32 |
 | unknown010 | +0x10 | +0x14 | four opaque bytes |
 | threadProc | +0x14 | +0x18 | callback pointer |
 
@@ -68,7 +68,7 @@ The bidirectional exit signal is both a stop request and a callback completion
 publication. SEM-335 retires all eight historical Help/Replay/Photo/front-end scalar
 spellings and the two normal Help reference definitions. Every selected callback
 and snapshot now accesses canonical g_Supervisor.replayScanWorker.exitSignal or
-active directly in both profiles. They are not independent storage or a help-only
+active through the same signal-access API in both profiles (SEM-337). They are not independent storage or a help-only
 protocol. The Scene Select getter is named SceneSelectionAssetsExitRequested;
 the front-end getter is PrimaryWorkerActiveSnapshot, retaining the full i32
 value. Callbacks publish active=0/exitSignal=1 before their actual return. Likewise Stop itself clears active before waiting. Observing
@@ -144,8 +144,8 @@ RequestExit calls across zero/high handles, both active values, four prior
 signal values, and repeated requests. Each preserves all neighboring fields
 and emits no API event. This is a sequential state/API
 oracle, not Win32 dispatch, scheduling, synchronization, or memory-model proof.
-The ordinary i32 cross-thread fields and real OS begin/wait/close backend still
-need appropriate portable threading validation. The legacy conversion remains
+SEM-337 separately validates the explicit signal accesses below; the real OS
+begin/wait/close backend and whole-game threading still need validation. The legacy conversion remains
 only in the exact emission binding. Unknown
 storage and the secondary worker's business role are not inferred from tests.
 
@@ -155,8 +155,8 @@ the added canonical 53-byte comparison cover the ICF constructor. SEM-332's
 minimal 21-byte RequestExit probe and complete caller comparisons prove the
 method-owner migration. Caller data relocations now address Supervisor's base
 0x004C4670 with COFF addend +0x648, preserving effective target 0x004C4CB8.
-Aggregate, normal-product, and native receipts are recorded in SEM-331..336
-history. The public driver scripts/check-portable-front-end.py now runs eight component executables;
+Aggregate, normal-product, and native receipts are recorded in SEM-331..337
+history. The public driver scripts/check-portable-front-end.py now runs nine component executables;
 this is not a maintained modern game product or a playable 64-bit port.
 
 SEM-335 freshly attests 33 direct global-word reference rows and complete
@@ -209,3 +209,69 @@ a real wait and report CRT exit status zero; two null-entry cases preserve
 EINVAL, ID and armed flags. It tests six bounded cases, with no child accesses
 to worker flags. It does not establish native Windows whole-game behavior or
 join guarantees for failed waits/closed handles.
+
+## Individual signal access contract (SEM-337)
+
+WorkerSignalAccess.hpp supplies one profile-independent read/write API, used by
+all explicit authored exitSignal/active accesses in the common core, Main and
+MainExact, ANM preload, asset loading, replay browsing, Help, PhotoGameTask and
+front-end controller/lifecycle bodies. That includes OnUpdate's indirect worker
+read and ThreadClose's separate inactive store. It does not recover hidden
+aliases in unreviewed target code or make bulk owner initialization concurrent.
+The two fields retain signed 32-bit values and natural alignment in the same
+canonical declaration; handle, ID, opaque bytes and callback layout are unchanged.
+
+ReadWorkerSignal fills the caller's existing i32 snapshot and yields its value.
+WriteWorkerSignal publishes one word. The Microsoft x86/x64 backend combines
+volatile aligned loads/stores with _ReadWriteBarrier compiler fences before and
+after access; its acquire/release hardware ordering relies on x86/x64 ordinary
+memory. This is a compiler/platform contract, not ISO volatile synchronization.
+The pinned VC7.1 build 3077 recognizes _ReadWriteBarrier without calls or CPU
+instructions. The similarly named _ReadBarrier is not recognized by that compiler
+and is not used. The snapshot form preserves existing local homes under /Od /Ob1.
+GCC/Clang use __atomic_load_n acquire and __atomic_store_n release; unsupported
+compiler/architecture combinations fail compilation. See Microsoft's
+[ordering and compiler-barrier discussion](https://learn.microsoft.com/en-us/windows/win32/dxtecharts/lockless-programming)
+and GCC's [atomic builtin contract](https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html).
+MSVC x64 and other-CPU builtin paths have not been executed by these oracles.
+
+These are separate atomic operations. They provide neither a combined flag
+snapshot nor total sequentially consistent ordering. An acquire only publishes
+ordinary payload when it observes the appropriate producer's release. A request
+writer's exitSignal=1 does not imply callback completion or payload readiness;
+Stop's active=0 likewise does not imply callback return. Repeated runs, multiple
+writers and a flag already holding the same value require separate lifecycle
+reasoning. Existing store orders remain: Start active=1 then exitSignal=0;
+Stop exitSignal=1 then active=0; callback active=0 then exitSignal=1. RequestExit
+still changes only exitSignal, and ThreadClose still changes only active after
+closing a handle. No wait/close failure behavior is repaired.
+
+The ninth native GCC x86-64/UBSan program executes production transport, signal
+access and shared lifecycle using real host threads. Six full signed-word values
+retain neighboring state. Sixty-four cancellation runs hold the callback open
+and verify exit=1/active=1 without completed payload. Sixty-four publication runs
+observe callback active=0, read its ordinary payload through that acquire, and
+hold the thread open through a later exit=1 publication before permitting return.
+Only the callback writes active=0 until that read; Stop runs afterward and joins
+through the typed fixture. Fixture gates are separate atomics, not extra fields
+in the worker. Existing tests cover timeout/failure transitions separately.
+These tests validate bounded accesses and publication, not race freedom of all
+queues, other parent fields, repeated game runs or unknown storage.
+
+An optional ThreadSanitizer build could not link because this environment lacks
+libtsan_preinit.o; no TSan execution or race-detector result is claimed. Native
+UBSan and explicit ordering contracts remain distinct evidence.
+
+The final private VC7.1/Wine console uses the actual production Win32 binding,
+shared core and signal API with real CRT threads and successful OS waits. It
+passes 64 cancellation/publication cases under /Od /Ob1 and another 64 under
+/O2 /Ob1, with the callback held open until after both observations. Payload,
+request-only active retention, callback return, CRT zero status and handle close
+are checked. This executes the legacy backend under Wine; it does not transfer
+acceptance to native Windows scheduling, MSVC x64 or other CPUs.
+
+Final frozen cold replay passes 698/698 with zero private refresh. Independent
+normal closure compiles/links all 88 objects; the nine affected actual normal
+product objects retain all 116 named roots and 259 reference graphs relative
+to aaf510c. These results supplement the distinct native builtin oracle and do
+not turn component portability into a maintained native game product.

@@ -132,7 +132,7 @@ the listed source.
 
 The whole-game normal oracle is still weaker than TH08's modern portable
 build: TH095 has pinned-VC7.1 normal compile/link closure but no maintained
-modern game product yet. SEM-327..336 add bounded native x86-64 cursor,
+modern game product yet. SEM-327..337 add bounded native x86-64 cursor,
 pending-texture-data, raw queue, preview-address, and worker-lifecycle oracles
 (`scripts/check-portable-front-end.py`) that compile and execute the actual
 shared declarations and behavior with UBSan. Pending-data tests use real
@@ -164,6 +164,15 @@ callback and argument retain native width; context release precedes user code.
 The exact legacy conversion is isolated in a named emission adapter. These
 transport tests do not exercise cross-thread worker flags or establish the
 Win32/portable OS wait/close backend or whole-game joins.
+
+A ninth executes shared worker signal access with real threads: explicit
+acquire/release operations retain one signed-word layout and source route,
+including on pinned VC7.1. It tests cancellation before completion and payload
+publication before callback return. Volatile alone is never synchronization;
+the legacy backend relies on an explicit x86/x64 compiler/hardware contract,
+while GCC/Clang use atomic builtins. Neither individual flag, the two flag stores,
+nor one component test establishes a whole-game join, race-free payload ownership
+or a portable OS backend. See [the bounded contract](WORKER_LIFECYCLE.md).
 
 ## Completion and batch records
 

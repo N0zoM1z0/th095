@@ -426,8 +426,8 @@ void __fastcall FrontEndLifecycleView::LoadThread(void *)
     controller->flagBits.titleLoadIncomplete = 0;
 #endif
     utils::DebugPrint("Title Load Thread Finish\n");
-    g_Supervisor.replayScanWorker.active = 0;
-    g_Supervisor.replayScanWorker.exitSignal = 1;
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
     goto loadDone;
 
 loadFailed:
@@ -437,8 +437,8 @@ loadFailed:
     controller->flagBits.titleLoadFailed = 1;
 #endif
     TH095_FRONT_BEGIN_LOADING_COMPLETION();
-    g_Supervisor.replayScanWorker.active = 0;
-    g_Supervisor.replayScanWorker.exitSignal = 1;
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
 
 loadDone:
     return;

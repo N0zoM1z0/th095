@@ -115,7 +115,8 @@ static __forceinline u32 SceneSelectionAssetsSupervisorStopRequested()
 static __forceinline i32 SceneSelectionAssetsExitRequested()
 {
     // Nonzero is also a stop request, not proof that asset loading completed.
-    i32 value = g_Supervisor.replayScanWorker.exitSignal;
+    i32 value;
+    ReadWorkerSignal(value, g_Supervisor.replayScanWorker.exitSignal);
     return value;
 }
 
@@ -129,8 +130,8 @@ static __forceinline i32 SceneSelectionGroupPreviewSizePhase(
 static __forceinline void SceneSelectionFinishPhase()
 {
     u8 compilerStorage[8];
-    g_Supervisor.replayScanWorker.active = 0;
-    g_Supervisor.replayScanWorker.exitSignal = 1;
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
 }
 
 void __fastcall LoadSceneSelectionAssets(void *threadParameter)

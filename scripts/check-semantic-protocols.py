@@ -1091,8 +1091,9 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
     canonical_layout = (
         "uintptr_t threadHandle;",
         "u32 threadId;",
-        "i32 exitSignal;",
-        "i32 active;",
+        "volatile i32 exitSignal;",
+        "volatile i32 active;",
+        '#include "WorkerSignalAccess.hpp"',
         "u8 unknown010[4];",
         "WorkerCallback threadProc;",
         "typedef void (TH095_FASTCALL *WorkerCallback)(void *);",
@@ -1123,7 +1124,8 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
     shared = (SRC / "ReplayScanWorkerBehavior.inl").read_text(encoding="utf-8")
     for token in ("BeginWorkerThread(this, argument)",
                   "WaitForSingleObject((HANDLE)this->threadHandle, 200) == WAIT_TIMEOUT",
-                  "this->exitSignal = 1;", "this->active = 0;", "Sleep(1);",
+                  "WriteWorkerSignal(this->exitSignal, 1);",
+                  "WriteWorkerSignal(this->active, 0);", "Sleep(1);",
                   "this->threadProc = NULL;"):
         if token not in shared:
             fail(f"shared worker lifecycle lost target transition: {token}")
@@ -1136,7 +1138,7 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
     if marker not in request_source:
         fail("worker request lost its canonical implementation")
     request_body = braced_body_after(request_source, request_source.index(marker), marker)
-    if re.sub(r"\s+", "", request_body) != "this->exitSignal=1;":
+    if re.sub(r"\s+", "", request_body) != "WriteWorkerSignal(this->exitSignal,1);":
         fail("worker request changed more than the exit handshake")
     for name, receiver in (("ReplayBrowser.cpp", "g_Supervisor"),
                            ("ReplayBrowserExact.inl", "g_SceneSupervisor"),
@@ -2754,7 +2756,7 @@ def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None
         return source_without_comments(
             overrides.get(name, (SRC / name).read_text(encoding="utf-8")))
 
-    completion = "g_Supervisor.replayScanWorker.active=0;g_Supervisor.replayScanWorker.exitSignal=1;"
+    completion = "WriteWorkerSignal(g_Supervisor.replayScanWorker.active,0);WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal,1);"
     for name, count in (
         ("HelpMenu.cpp", 1), ("HelpMenuExact.inl", 1),
         ("ReplayBrowser.cpp", 1), ("ReplayBrowserExact.inl", 1),
@@ -2770,15 +2772,39 @@ def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None
         if marker not in text:
             fail(f"{name} lost the exit-request snapshot")
         body = braced_body_after(text, text.index(marker), marker)
-        if re.sub(r"\s+", "", body) != "i32value=g_Supervisor.replayScanWorker.exitSignal;returnvalue;":
+        if re.sub(r"\s+", "", body) != "i32value;ReadWorkerSignal(value,g_Supervisor.replayScanWorker.exitSignal);returnvalue;":
             fail(f"{name} restored an alias or wrong exit-request field")
     text = source("FrontEndController.cpp")
     marker = "static __forceinline i32 PrimaryWorkerActiveSnapshot()"
     if marker not in text:
         fail("front-end lost the primary-worker active snapshot")
     body = braced_body_after(text, text.index(marker), marker)
-    if re.sub(r"\s+", "", body) != "i32active=g_Supervisor.replayScanWorker.active;returnactive;":
+    if re.sub(r"\s+", "", body) != "i32active;ReadWorkerSignal(active,g_Supervisor.replayScanWorker.active);returnactive;":
         fail("front-end reads a different primary-worker signal")
+    # Only this closed field family is covered. This is a regression guard,
+    # not C++ alias analysis or proof that the entire game is race-free.
+    word = r"(?:\b(?:this|worker)->(?:exitSignal|active)\b|(?:g_Supervisor|supervisor->)\.?replayScanWorker\.(?:exitSignal|active)\b)"
+    read = re.compile(r"ReadWorkerSignal\(\s*[\w.]+\s*,\s*" + word + r"\s*\)")
+    write = re.compile(r"WriteWorkerSignal\(\s*" + word + r"\s*,\s*[01]\s*\)")
+    for name in ("ReplayScanWorkerBehavior.inl", "Main.cpp", "MainExact.inl",
+                 "AnmPreload.cpp", "SceneSelectAssets.cpp", "SceneSelectAssetsExact.inl",
+                 "ReplayBrowser.cpp", "ReplayBrowserExact.inl", "HelpMenu.cpp", "HelpMenuExact.inl",
+                 "PhotoGameTask.cpp", "PhotoGameTaskExact.inl", "FrontEndController.cpp", "FrontEndLifecycle.cpp"):
+        rest = write.sub("", read.sub("", source(name)))
+        if re.search(word, rest):
+            fail(f"{name} bypasses atomic worker signal access")
+    access = source("WorkerSignalAccess.hpp")
+    for token in ("#pragma intrinsic(_ReadWriteBarrier)",
+                  "defined(_M_IX86) || defined(_M_X64)",
+                  "(snapshot) = (word), _ReadWriteBarrier(), (snapshot)",
+                  "(word) = (value), _ReadWriteBarrier()",
+                  "__atomic_load_n(&(word), __ATOMIC_ACQUIRE)",
+                  "__atomic_store_n(&(word), (value), __ATOMIC_RELEASE)",
+                  "#error Unsupported compiler/architecture"):
+        if token not in access:
+            fail(f"worker signal backend lost its atomic/order contract: {token}")
+    if any(token in access for token in PROFILE_NAMES):
+        fail("worker signal access restored a profile-selected backend")
     retired = re.compile(r"\b(?:g_HelpLoadComplete|g_HelpLoadActive|g_ReplayScanFinished|g_ReplayScanActive|g_PhotoLoadReady|g_PhotoLoadBusy|g_FrontEndLoadFinished|g_FrontEndLoadInProgress)\b")
     for path in SRC.rglob("*"):
         if path.suffix in {".cpp", ".hpp", ".inl"} and retired.search(source(path.relative_to(SRC).as_posix())):

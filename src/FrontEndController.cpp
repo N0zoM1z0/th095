@@ -256,7 +256,8 @@ static __forceinline u16 FrontEndDownInputMask()
 
 static __forceinline i32 PrimaryWorkerActiveSnapshot()
 {
-    i32 active = g_Supervisor.replayScanWorker.active;
+    i32 active;
+    ReadWorkerSignal(active, g_Supervisor.replayScanWorker.active);
     return active;
 }
 

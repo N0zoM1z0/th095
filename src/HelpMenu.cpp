@@ -73,8 +73,8 @@ void __fastcall LoadHelpAnm(void *unused)
     helpMenu->helpAnmData = FileSystem::OpenFile(
         helpMenu->helpAnmPath, &helpMenu->helpAnmSize, FALSE);
     helpMenu->state = TH095_HELP_STATE_PAGE_DATA_READY;
-    g_Supervisor.replayScanWorker.active = 0;
-    g_Supervisor.replayScanWorker.exitSignal = 1;
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
 }
 
 i32 HelpMenuView::UpdateHelpMenu()

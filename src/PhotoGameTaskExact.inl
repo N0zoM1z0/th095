@@ -561,15 +561,15 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
     g_PhotoGameSupervisor.CompleteLoading();
     task->flags = task->flags & ~4;
     g_ControllerRuntimeFlags &= ~0x200;
-    g_Supervisor.replayScanWorker.active = 0;
-    g_Supervisor.replayScanWorker.exitSignal = 1;
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
     return;
 
 failure:
     task->flags = task->flags | 8;
     g_PhotoGameSupervisor.FailLoading();
-    g_Supervisor.replayScanWorker.active = 0;
-    g_Supervisor.replayScanWorker.exitSignal = 1;
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
+    WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
 }
 
 i32 __fastcall PhotoGameTaskView::OnUpdate(PhotoGameTaskView *task)

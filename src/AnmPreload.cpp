@@ -301,7 +301,7 @@ AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::ReadAnmEntries(
         utils::DebugPrint(":: old delete\n");
         this->slots[anmIdx].releasePending = 1;
         while (this->slots[anmIdx].releasePending != 0 &&
-               (state.stopRequested =
+               ReadWorkerSignal(state.stopRequested,
                     g_Supervisor.replayScanWorker.exitSignal) == 0)
         {
             Sleep(1);
@@ -395,13 +395,13 @@ AnmLoaded *TH095_ANM_PRELOAD_RECEIVER::PreloadAnm(
 
     state.anm->postloadEntryNumber = 1;
     while (state.anm->postloadEntryNumber != 0 &&
-           (state.loopStopRequested =
-                g_Supervisor.replayScanWorker.exitSignal) == 0)
+           ReadWorkerSignal(state.loopStopRequested,
+                    g_Supervisor.replayScanWorker.exitSignal) == 0)
     {
         Sleep(1);
     }
     utils::DebugPrint("::preloadAnimEnd : %s\n", filename);
-    state.finalStopRequested = g_Supervisor.replayScanWorker.exitSignal;
+    ReadWorkerSignal(state.finalStopRequested, g_Supervisor.replayScanWorker.exitSignal);
     return state.finalStopRequested ? NULL : state.anm;
 }
 

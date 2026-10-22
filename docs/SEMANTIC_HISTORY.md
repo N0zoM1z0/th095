@@ -17569,3 +17569,92 @@ receipts retain the immutable baseline revision/archive digest for reproduction.
 All 304 source inputs remain frozen; protected files/target/tools/Ghidra are
 untouched. CPU 1 and nice 10 remain in force. The checkpoint stays
 **active-incomplete**.
+
+### SEM-337 — shared atomic access for worker handshake words
+
+**Scope and target evidence.** Close the explicit authored exitSignal/active
+access family on the one canonical ReplayScanWorker declaration. Fresh
+hash-attested target disassembly covers common RequestExit/Stop/Start, Main
+OnUpdate/StartupThread/ThreadClose, ANM preload, front-end gates, scene assets,
+replay, Help and PhotoGameTask. Preserve request versus completion, separate
+storages, full signed words and the distinct store orders; active=0 is not a
+join, and exit=1 can be a caller's request. No layout, extent, origin, source
+presence or target-exact credit is added. Secondary role and opaque bytes stay
+Unknown. Queue payload ownership and the actual portable OS backend stay open.
+
+**Minimal compiler experiment and shared source.** The pinned VC7.1 3077
+compiler recognizes _ReadWriteBarrier as a zero-instruction intrinsic; it does
+not recognize _ReadBarrier. The private full-core candidate preserves all five
+worker bodies, including 21-byte RequestExit, 124-byte Stop and 87-byte exact
+Start. A first private include setup failed because the production emission
+header also brought in a second worker declaration; correcting the private
+include route resolved it. This was not an emission mismatch or source exception.
+
+WorkerSignalAccess.hpp now supplies individual acquire reads into existing i32
+snapshots and release stores. Its Microsoft x86/x64 backend combines volatile
+aligned words, compiler fences and the documented hardware memory ordering;
+GCC/Clang use __atomic builtins. This is an explicit implementation contract,
+not a claim that volatile alone is synchronization. No assembly, copied bytes,
+new profile selector, selected layout, emission adapter or artificial temporary
+is introduced. Original source volatility is Unknown. Existing snapshot locals
+retain their real meanings and target homes. All explicit common/primary-worker
+reads and writes use this API, including Main's indirect read and direct close.
+The class remains target 24/native 32 bytes with native-width addresses and
+unchanged narrow ID/opaque storage. The previous typed-CRT binding split remains
+separate debt.
+
+**Independent normal/native evidence.** Pre-change direct replay passes 96/96
+units and captures nine normal object baselines. The candidate direct replay
+also passes 96/96 after structurally proved private-label refresh. Independent
+normal comparison covers all 116 actual named function roots, three private
+function entries and 259 reachable code/data/EH section graphs in those nine
+objects: bytes, entry offsets and reference bindings are unchanged, allowing
+only private names. Normal-only receivers/helpers are checked as emitted rather
+than assumed equal to exact-only identities.
+
+The ninth public GCC 8.4 x86-64/UBSan component program uses actual transport,
+shared core and atomic API with real host threads. Six signed-word values retain
+neighboring fields. Sixty-four cancellation cases hold the callback before
+completion; sixty-four publication cases read the ordinary payload only after
+observing the callback's release to active and hold the thread open across both
+flag publications. Stop is called after those observations and the fixture joins
+before teardown. Separate fixture gates avoid changing the production worker
+layout. Existing component tests retain timeout/failure/early-entry coverage.
+These tests do not accept other shared game fields, competing payload writers,
+repeated-run ownership, all OS waits or whole-game race freedom. An optional
+TSan build failed to link because libtsan_preinit.o is absent; no TSan runtime
+result is claimed. Public CI passes 92 workflow tests and nine native programs.
+
+The first full cold replay passes **698/698 comparisons across 88 sources**.
+Together with the direct pass, the baseline manifest audit records **350 private
+labels in 23 units**; public symbols, extents, profiles, all other recipe fields,
+and relocation offsets/types/destinations are unchanged. The first aggregate
+itself refreshes 301 labels in 19 units after the direct pass's 49 in four.
+
+**Final frozen gates and product.** Cold replay from the fixed recipes passes
+**698/698 across 88 sources**, with zero further refresh. All 298 frozen source,
+script and test inputs remain unchanged. The separate normal build compiles
+**88/88 i386 COFF objects** across two profiles and links a verified **778,752-byte
+PE32 GUI**, zero unresolved symbols, SHA-256
+`7ad4a683b707fe2f6fee94d0044754570d048f6c698ec3326cbca81340baa14b`.
+The independent comparison is repeated against those actual product objects:
+all 116 named roots, three private function entries and 259 reference graphs
+retain code, offsets and bindings, with 58 private spellings changed. Exact-only
+receiver identities remain recorded separately. Compiler-owned EH audit passes
+57 canonical parents, 72 actions and 81/81 provenance-exact references, adding
+no authored credit. No mapping, origin, source-present, exact or claim state changes.
+
+The final private console compiles/links with attested VC7.1 build 3077, includes
+the production Win32 binding/core/signal API and executes real CRT threads under
+Wine. Target /Od /Ob1 and optimized /O2 /Ob1 each pass 64 cancellation/publication
+cases: payload becomes visible through the callback's flag release, the callback
+remains open through observations, then returns unsigned zero and completes an
+actual successful wait before Stop closes. All 128 cases pass. This does not
+establish native Windows game scheduling, MSVC x64, other CPUs or all OS failures.
+
+CPU 1, nice 10 and serial VC7.1 jobs were used. All build/test handles returned
+terminal success before compact source/command/tool/COFF/map/native receipts were
+saved under .analysis/sem337/ and generated objects, binaries, PDBs, maps and
+Python caches were cleared. Target, toolchains, Ghidra and protected files remain.
+The next bounded lane is preview caller/count/lifetime evidence across
+cancellation, publication and release. The phase remains **active-incomplete**.
