@@ -121,7 +121,7 @@
 3	src/FrontEndController.cpp	#ifndef DIFFBUILD
 1	src/FrontEndGlobals.hpp	#elif !defined(TH095_MATCH_EXACT)
 1	src/FrontEndGlobals.hpp	#if defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-5	src/FrontEndLifecycle.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
+3	src/FrontEndLifecycle.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 12	src/FrontEndLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FrontEndLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameErrorContext.cpp	#ifdef TH095_MATCH_EXACT

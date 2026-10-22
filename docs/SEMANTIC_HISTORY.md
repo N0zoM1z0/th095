@@ -16520,3 +16520,102 @@ independently of the exact-selected worker/update bodies. Tracking, match graph,
 semantic guards, generated progress, whitespace checks, and public CI pass.
 No whole-image byte identity, worker/graphics behavior, semantic-completion
 percentage, or playable 64-bit game is claimed.
+
+
+### SEM-329 — bounded raw queue storage and one shared Push/Pop body
+
+**Scope / target observations (2026-10-22).** The separate mission-preview
+queue family remains a port blocker after SEM-328's pending-texture channel.
+Fresh hash-attested Push/Pop queries at `0x00450DD0/0x00450F60` confirm their
+78/91-byte extents and the unusual state transition in FRONT-030. Push appends
+while count is below capacity; at capacity it overwrites the final payload
+and returns the resulting count. Separate worker/refresh publication helpers
+instead drop an insertion when full; they are not replaced by Push. Pop first
+decrements count, copies source words 1..16 to destination words 0..15, and
+returns the new front. Source word 16 is the updated count, not another data
+entry. The count/capacity locations stay +0x40/+0x44. Main-menu and teardown
+still pass the post-shift result to free as observed; no lifetime repair or
+ordinary FIFO interpretation is introduced.
+
+**Representation / four ownership axes.** `SceneValueQueue.hpp` replaces both
+Scene Select declarations with one profile-independent array of eighteen real
+four-byte `SceneQueueWord` objects. Metadata occupies words 16/17; sixteen
+payload words precede it. The source-first assignment now copies actual
+objects inside one array, instead of projecting `SceneValueQueueCopyValue`
+onto `i32` storage and indexing beyond the sixteen-element payload array.
+`SceneQueueFrontMemberView` and `FrontEndPointerQueueView` also retire. Both
+Scene Select headers and all nine lifecycle members embed the same 0x48-byte
+owner; existing producers, consumers, resets, and capacity publications use
+its named metadata indices. The shared constructor preserves lifecycle's
+clear-and-capacity-16 initialization before the outer front-end clear. Size
+and offset assertions run in both i386 and native x86-64 compilations. This
+is an evidence-backed representation of word operations; the original source
+declaration remains Unknown.
+
+The front-end allocation owns storage. Worker, scene-update, coordinator, and
+lifecycle retain their existing transition responsibilities. The original
+SceneSelectController TU retains method emission through one
+`SceneValueQueue.inl` included at both historical body sites. Exact, normal,
+and native-test products compile the same queue declaration and methods;
+surrounding body/view splits remain separate debt. No new profile directive,
+selected type, assembly, fake storage, copied instruction bytes, or accepted
+extent is introduced. The selected-declaration baseline shrinks from 197 keys /
+202 occurrences to **194 / 199**, and the broader selector baseline loses two
+lifecycle drain branches. Historical inert compiler-storage locals in the
+surrounding phase wrappers remain debt.
+
+**Minimal compiler oracle.** A whole-object byte-copy/memcpy alternative emits
+93 bytes for Pop: its destination-first intrinsic chronology saves/restores
+ESI. It is rejected. A minimal actual eighteen-word-array source produces
+**78/78 Push and 91/91 Pop** exact structural bytes, with no relocations, under
+pinned VC7.1 build 3077. Its flags are `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi
+/Gr /Od /Ob1 /I src /DTH095_MATCH_EXACT`. The same ordinary assignment is used
+in production. Probe source/command/digest and diagnostic comparisons are
+private under `.analysis/sem329/`; no generated decompilation becomes source.
+
+**Native / normal oracle.** `scripts/check-portable-front-end.py` now executes
+three production components. `SceneValueQueueTest.cpp` compiles the actual
+header and shared methods as x86-64 with `-m64 -std=c++11 -O2 -Wall -Wextra
+-Werror -pedantic -fsanitize=undefined -fno-sanitize-recover=all`. An independent
+eighteen-dword model explicitly inserts decremented count into slot 15 and
+compares all words, return values, Size, and Front. Cases cover count 0..16,
+capacity 1..16, signed boundary payloads, stale words, constructor/outer-clear
+states, repeated saturation, and a full drain. At empty, the stale first raw
+word can be 15 while Front/Pop return zero; the oracle preserves that target
+state. All three native executables pass without UBSan findings. Raw queues
+remain 32-bit storage even in this test. Existing pointer-to-i32 publication
+and pointer-valued callers require a separate typed transport/domain/lifetime
+audit; this batch does not make those channels portable or prove their frees
+safe for every possible count. Integer selectors and lengths must stay
+four-byte values.
+
+**Validation.** Before edits, the five affected source objects passed all
+19/19 canonical units without refresh and compiled separately under the normal
+pinned profile. After convergence, the same **19/19 exact units** passed;
+complete structural/relocation checks justified canonical Pop receiver symbols
+at the lifecycle destructor's offsets 0x13B/0x16C (both REL32 to 0x00450F60).
+This retires the historical alternate decoration without changing either
+call's destination. Eighteen compiler-private labels in two units refreshed
+separately. The frozen-source cold aggregate then passed **696/696 exact units
+across 88 sources**, refreshing twelve additional private identities in two
+units. A HEAD-versus-worktree manifest audit proves that all other fields,
+relocation positions/types/targets, and accepted extents are unchanged. The
+combined thirty private changes affect four units in FrontEndController,
+HelpMenu, and SceneTexture; the two public receiver retags are recorded
+separately. Public CI passes **85 workflow tests** and all three native
+oracles. Semantic guards protect this raw word representation and the retired
+projections, without naming unproved pointer ownership domains.
+
+The separate normal `python3 scripts/build-whole.py` cold-compiled **88/88
+pinned VC7.1 i386 COFF objects** across two profiles and linked/verified a
+**778,752-byte PE32/i386 GUI** with build-local SHA-256
+`ddb41f95cc66cdcf5389bc3dfc6ac44db75f00ef184582cf6ce662ee0f1e5849`. This validates normal
+compilation/linkage independently of the exact-selected surrounding bodies.
+Target identity, tracking, match graph, generated progress, semantic guards,
+and whitespace checks pass. Counts remain 1,880 provisional / 697
+source-present / 696 exact; `claims.csv` remains header-only. Builds use one
+idle CPU (3), nice 10, and serial VC7.1 invocations. Generated objects, PDBs,
+native/PE binaries, maps, and Python caches are cleared after verification;
+compact evidence stays private. Semantic reconstruction remains active and
+incomplete; full-game portability and pointer-channel lifetime closure are
+not established by these component tests.

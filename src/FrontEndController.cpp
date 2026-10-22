@@ -787,13 +787,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             {
                 FrontEndDrainQueueValue(&this->scenePreviewDataQueue);
             }
-            this->groupPreviewSizeQueue.count = 0;
-            this->scenePreviewSizeQueue.count = 0;
-            this->groupPreviewQueue.count = 0;
-            this->scenePreviewQueue.count = 0;
-            this->loadedGroupQueue.count = 0;
-            this->selectionQueue.count = 0;
-            this->loadedSceneQueue.count = 0;
+            this->groupPreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
+            this->scenePreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
+            this->groupPreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
+            this->scenePreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
+            this->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
+            this->selectionQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
+            this->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
             this->pendingTextures.count = 0;
             this->stateHistory.count = 0;
             this->currentDisplayState = -1;

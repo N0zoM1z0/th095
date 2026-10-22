@@ -868,7 +868,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         source = (ROOT / "src" / "FrontEndController.cpp").read_text(
             encoding="utf-8"
         )
-        named = "this->scenePreviewSizeQueue.count = 0;"
+        named = "this->scenePreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;"
         self.assertIn(named, source)
         changed = source.replace(
             named,
@@ -878,6 +878,25 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
                 GUARD.check_front_end_scene_queue_owner(changed)
+
+    def test_raw_queue_guard_rejects_metadata_or_storage_drift(self) -> None:
+        GUARD.check_scene_value_queue_owner()
+        header = (ROOT / "src" / "SceneValueQueue.hpp").read_text(encoding="utf-8")
+        for old, new in (
+            ("SCENE_QUEUE_COUNT_WORD = 16", "SCENE_QUEUE_COUNT_WORD = 15"),
+            ("SCENE_QUEUE_STORAGE_WORD_COUNT = 18", "SCENE_QUEUE_STORAGE_WORD_COUNT = 16"),
+            ("i32 value;", "uintptr_t value;"),
+        ):
+            with self.subTest(old=old):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit):
+                        GUARD.check_scene_value_queue_owner(header.replace(old, new, 1))
+        body = (ROOT / "src" / "SceneValueQueue.inl").read_text(encoding="utf-8")
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                GUARD.check_scene_value_queue_owner(
+                    body_text=body.replace("i < SCENE_QUEUE_DATA_WORD_COUNT", "i < 15", 1)
+                )
 
 
 if __name__ == "__main__":

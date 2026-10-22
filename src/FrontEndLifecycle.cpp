@@ -1,6 +1,7 @@
 #include "Global.hpp"
 #include "FrontEndGlobals.hpp"
 #include "FrontEndPendingTextureData.hpp"
+#include "SceneValueQueue.hpp"
 #include "Main.hpp"
 #include "ResultScreen.hpp"
 #include "ScoreData.hpp"
@@ -138,24 +139,6 @@ struct FrontEndInitializeLocals
     i32 missionSize;
 };
 
-struct FrontEndPointerQueueView
-{
-    i32 values[16];
-    i32 count;
-    i32 capacity;
-
-    FrontEndPointerQueueView()
-    {
-        memset(this, 0, sizeof(*this));
-        this->capacity = 16;
-    }
-
-    i32 Pop();
-    i32 Size()
-    {
-        return this->count;
-    }
-};
 
 struct FrontEndTimerView
 {
@@ -202,15 +185,15 @@ struct FrontEndLifecycleView
 #endif
     };
     i32 entryMode;
-    FrontEndPointerQueueView selectionQueue;
-    FrontEndPointerQueueView loadedSceneQueue;
-    FrontEndPointerQueueView groupPreviewDataQueue;
-    FrontEndPointerQueueView groupPreviewSizeQueue;
-    FrontEndPointerQueueView scenePreviewDataQueue;
-    FrontEndPointerQueueView scenePreviewSizeQueue;
-    FrontEndPointerQueueView groupPreviewQueue;
-    FrontEndPointerQueueView scenePreviewQueue;
-    FrontEndPointerQueueView loadedGroupQueue;
+    SceneValueQueue selectionQueue;
+    SceneValueQueue loadedSceneQueue;
+    SceneValueQueue groupPreviewDataQueue;
+    SceneValueQueue groupPreviewSizeQueue;
+    SceneValueQueue scenePreviewDataQueue;
+    SceneValueQueue scenePreviewSizeQueue;
+    SceneValueQueue groupPreviewQueue;
+    SceneValueQueue scenePreviewQueue;
+    SceneValueQueue loadedGroupQueue;
     u8 unknown63b0[0x1c];
     FrontEndPendingTextureData pendingTextures;
     ChainElem *calcChain;
@@ -521,25 +504,13 @@ static __forceinline void FrontEndFreeGroupQueuePop(FrontEndLifecycleView *view)
 {
     u32 compilerStorage;
     FrontEndFreePoppedValue(
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-        reinterpret_cast<void *>(reinterpret_cast<SceneValueQueue *>(
-                                      &view->groupPreviewDataQueue)
-                                      ->Pop()));
-#else
         reinterpret_cast<void *>(view->groupPreviewDataQueue.Pop()));
-#endif
 }
 static __forceinline void FrontEndFreeSceneQueuePop(FrontEndLifecycleView *view)
 {
     u32 compilerStorage;
     FrontEndFreePoppedValue(
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-        reinterpret_cast<void *>(reinterpret_cast<SceneValueQueue *>(
-                                      &view->scenePreviewDataQueue)
-                                      ->Pop()));
-#else
         reinterpret_cast<void *>(view->scenePreviewDataQueue.Pop()));
-#endif
 }
 static __forceinline void FrontEndFreePendingPrimary(FrontEndLifecycleView *view, i32 index)
 {

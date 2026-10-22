@@ -80,23 +80,23 @@ typedef char SceneSelectionAssetLoadMissionPathAt8[
 
 static __forceinline i32 AssetQueueFront(SceneValueQueue *queue)
 {
-    if (queue->count > 0)
+    if (queue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
     {
-        return queue->values[0];
+        return queue->words[0].value;
     }
     return 0;
 }
 
 static __forceinline i32 AssetQueueSize(SceneValueQueue *queue)
 {
-    return queue->count;
+    return queue->words[SCENE_QUEUE_COUNT_WORD].value;
 }
 
 static __forceinline void AssetQueueRead(SceneValueQueue *queue, i32 *value)
 {
-    if (queue->count > 0)
+    if (queue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
     {
-        *value = queue->values[0];
+        *value = queue->words[0].value;
     }
     else
     {
@@ -106,30 +106,30 @@ static __forceinline void AssetQueueRead(SceneValueQueue *queue, i32 *value)
 
 static __forceinline void AssetQueuePush(SceneValueQueue *queue, i32 value)
 {
-    if (queue->count < queue->capacity)
+    if (queue->words[SCENE_QUEUE_COUNT_WORD].value < queue->words[SCENE_QUEUE_CAPACITY_WORD].value)
     {
-        queue->values[queue->count] = value;
-        queue->count++;
+        queue->words[queue->words[SCENE_QUEUE_COUNT_WORD].value].value = value;
+        queue->words[SCENE_QUEUE_COUNT_WORD].value++;
     }
 }
 
 static __forceinline void AssetQueuePushPointer(SceneValueQueue *queue,
                                                 u8 **value)
 {
-    if (queue->count < queue->capacity)
+    if (queue->words[SCENE_QUEUE_COUNT_WORD].value < queue->words[SCENE_QUEUE_CAPACITY_WORD].value)
     {
-        queue->values[queue->count] = reinterpret_cast<i32>(*value);
-        queue->count++;
+        queue->words[queue->words[SCENE_QUEUE_COUNT_WORD].value].value = reinterpret_cast<i32>(*value);
+        queue->words[SCENE_QUEUE_COUNT_WORD].value++;
     }
 }
 
 static __forceinline void AssetQueuePushValue(SceneValueQueue *queue,
                                               i32 *value)
 {
-    if (queue->count < queue->capacity)
+    if (queue->words[SCENE_QUEUE_COUNT_WORD].value < queue->words[SCENE_QUEUE_CAPACITY_WORD].value)
     {
-        queue->values[queue->count] = *value;
-        queue->count++;
+        queue->words[queue->words[SCENE_QUEUE_COUNT_WORD].value].value = *value;
+        queue->words[SCENE_QUEUE_COUNT_WORD].value++;
     }
 }
 

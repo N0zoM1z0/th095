@@ -40,47 +40,14 @@ void __cdecl SceneWriteText(SceneAnmManagerView *manager,
 static __forceinline void RefreshSelectionQueuePush(
     SceneValueQueue *queue, i32 value)
 {
-    if (queue->count < queue->capacity)
+    if (queue->words[SCENE_QUEUE_COUNT_WORD].value < queue->words[SCENE_QUEUE_CAPACITY_WORD].value)
     {
-        queue->values[queue->count] = value;
-        queue->count++;
+        queue->words[queue->words[SCENE_QUEUE_COUNT_WORD].value].value = value;
+        queue->words[SCENE_QUEUE_COUNT_WORD].value++;
     }
 }
 
-i32 SceneValueQueue::Push(i32 value)
-{
-    if (this->count >= this->capacity)
-    {
-        this->count = this->capacity - 1;
-    }
-    this->values[this->count] = value;
-    this->count++;
-    return this->count;
-}
-
-struct SceneValueQueueCopyValue
-{
-    i32 value;
-};
-
-typedef char SceneValueQueueCopyValueSizeIs4[
-    (sizeof(SceneValueQueueCopyValue) == sizeof(i32)) ? 1 : -1];
-
-i32 SceneValueQueue::Pop()
-{
-    if (this->count > 0)
-    {
-        this->count--;
-        for (i32 i = 0; i < 16; i++)
-        {
-            *reinterpret_cast<SceneValueQueueCopyValue *>(&this->values[i]) =
-                *reinterpret_cast<const SceneValueQueueCopyValue *>(
-                    &this->values[i + 1]);
-        }
-        return this->values[0];
-    }
-    return 0;
-}
+#include "SceneValueQueue.inl"
 
 // Target-proven VC7.1 backing buckets keep the byte display state at EBP-1
 // and the seven dword/pointer locals at EBP-8..EBP-20. The bounded inline

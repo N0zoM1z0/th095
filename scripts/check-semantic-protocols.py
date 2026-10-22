@@ -2502,13 +2502,13 @@ def check_front_end_scene_queue_owner(controller_text: str | None = None) -> Non
         "FrontEndDrainQueueValue(&this->groupPreviewDataQueue);",
         "this->scenePreviewDataQueue.Size()",
         "FrontEndDrainQueueValue(&this->scenePreviewDataQueue);",
-        "this->groupPreviewSizeQueue.count = 0;",
-        "this->scenePreviewSizeQueue.count = 0;",
-        "this->groupPreviewQueue.count = 0;",
-        "this->scenePreviewQueue.count = 0;",
-        "this->loadedGroupQueue.count = 0;",
-        "this->selectionQueue.count = 0;",
-        "this->loadedSceneQueue.count = 0;",
+        "this->groupPreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
+        "this->scenePreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
+        "this->groupPreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
+        "this->scenePreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
+        "this->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
+        "this->selectionQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
+        "this->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
         "this->pendingTextures.count = 0;",
         "this->stateHistory.count = 0;",
         "this->currentDisplayState = -1;",
@@ -2516,6 +2516,66 @@ def check_front_end_scene_queue_owner(controller_text: str | None = None) -> Non
     positions = [controller.find(marker) for marker in sequence]
     if any(position < 0 for position in positions) or positions != sorted(positions):
         fail("FrontEnd Game Start cleanup lost named queue or post-queue order")
+
+
+def check_scene_value_queue_owner(
+    header_text: str | None = None, body_text: str | None = None,
+) -> None:
+    header = source_without_comments(
+        header_text if header_text is not None
+        else (SRC / "SceneValueQueue.hpp").read_text(encoding="utf-8")
+    )
+    enum_start = header.find("enum SceneQueueMetadataWord")
+    if enum_start < 0:
+        fail("raw queue lost its explicit metadata-word domain")
+    enum_body = braced_body_after(header, enum_start, "SceneQueueMetadataWord")
+    entries = [
+        (name, int(value, 0))
+        for name, value in re.findall(
+            r"\b(SCENE_QUEUE_\w+)\s*=\s*(0x[0-9a-fA-F]+|[0-9]+)", enum_body
+        )
+    ]
+    if entries != [("SCENE_QUEUE_COUNT_WORD", 16), ("SCENE_QUEUE_CAPACITY_WORD", 17)]:
+        fail("raw queue metadata words drifted from target +0x40/+0x44")
+    for marker in (
+        "i32 value;", "SCENE_QUEUE_DATA_WORD_COUNT = 16",
+        "SCENE_QUEUE_STORAGE_WORD_COUNT = 18",
+        "SceneQueueWord words[SCENE_QUEUE_STORAGE_WORD_COUNT];",
+        "sizeof(SceneQueueWord) == 4", "sizeof(SceneValueQueue) == 0x48",
+    ):
+        if marker not in header:
+            fail(f"raw queue lost its complete real-word storage: {marker}")
+    if any(token in header for token in (*PROFILE_NAMES, "Global.hpp")):
+        fail("raw queue owner restored profile/platform dependencies")
+    for path in SRC.rglob("*"):
+        if path.suffix not in (".hpp", ".cpp", ".inl"):
+            continue
+        source = source_without_comments(path.read_text(encoding="utf-8"))
+        if path.name != "SceneValueQueue.hpp" and re.search(
+            r"\bstruct\s+(?:SceneValueQueue|SceneQueueWord)\s*[{:]", source
+        ):
+            fail(f"{path.name} restored a duplicate raw-queue owner")
+        if re.search(
+            r"\bstruct\s+(?:SceneValueQueueCopyValue|SceneQueueFrontMemberView|"
+            r"FrontEndPointerQueueView)\b", source
+        ):
+            fail(f"{path.name} restored a retired queue projection")
+    for name in ("SceneSelect.hpp", "SceneSelectExact.hpp", "FrontEndLifecycle.cpp"):
+        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if '#include "SceneValueQueue.hpp"' not in source:
+            fail(f"{name} lost the canonical raw queue include")
+    for name in ("SceneSelectController.cpp", "SceneSelectControllerExact.inl"):
+        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if source.count('#include "SceneValueQueue.inl"') != 1:
+            fail(f"{name} lost the shared Push/Pop implementation")
+    body = source_without_comments(
+        body_text if body_text is not None
+        else (SRC / "SceneValueQueue.inl").read_text(encoding="utf-8")
+    )
+    if "this->words[i] = this->words[i + 1];" not in body:
+        fail("raw queue lost its real-word copy through metadata word 16")
+    if "i < SCENE_QUEUE_DATA_WORD_COUNT" not in body or "reinterpret_cast" in body:
+        fail("raw queue restored a projected or partial shift")
 
 
 def check_front_end_pending_texture_owner(header_text: str | None = None) -> None:
@@ -3757,6 +3817,7 @@ def main() -> int:
     check_front_end_requested_state_owner()
     check_front_end_flags_owner()
     check_front_end_scene_queue_owner()
+    check_scene_value_queue_owner()
     check_front_end_pending_texture_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
@@ -3800,6 +3861,7 @@ def main() -> int:
     print("  FrontEnd requested states: one shared explicit 0..9 domain")
     print("  FrontEnd flags: one shared bit-0/1/2/3/5 owner with unknown ranges")
     print("  FrontEnd scene queues: nine typed owners and post-queue cleanup in both profiles")
+    print("  Raw front-end queue: one 18-word owner with explicit count/capacity metadata")
     print("  FrontEnd pending texture data: shared native-pointer columns and shift transition")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")

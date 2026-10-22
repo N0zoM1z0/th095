@@ -6,6 +6,7 @@
 #include "Global.hpp"
 #include "FrontEndGlobals.hpp"
 #include "FrontEndPendingTextureData.hpp"
+#include "SceneValueQueue.hpp"
 #include "AnmVmId.hpp"
 #include "PixelFormats.hpp"
 #include "ReplayScanWorker.hpp"
@@ -72,19 +73,6 @@ struct SceneDefinitionView
     u8 unknown02d[3];
 };
 
-struct SceneValueQueue
-{
-    i32 values[16];
-    i32 count;
-    i32 capacity;
-
-    i32 Push(i32 value);
-    i32 Pop();
-    i32 Size()
-    {
-        return this->count;
-    }
-};
 
 struct SceneGroupCursorView
 {
