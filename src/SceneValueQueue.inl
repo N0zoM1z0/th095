@@ -4,27 +4,28 @@
 // full sixteen-word shift and post-shift result, including count in slot 15.
 i32 SceneValueQueue::Push(i32 value)
 {
-    if (this->words[SCENE_QUEUE_COUNT_WORD].value >=
-        this->words[SCENE_QUEUE_CAPACITY_WORD].value)
+    if (ReadSceneQueueWord32(this->words[SCENE_QUEUE_COUNT_WORD].value) >=
+        ReadSceneQueueWord32(this->words[SCENE_QUEUE_CAPACITY_WORD].value))
     {
-        this->words[SCENE_QUEUE_COUNT_WORD].value =
-            this->words[SCENE_QUEUE_CAPACITY_WORD].value - 1;
+        WriteSceneQueueWord32(this->words[SCENE_QUEUE_COUNT_WORD].value,
+            ReadSceneQueueWord32(this->words[SCENE_QUEUE_CAPACITY_WORD].value) - 1);
     }
-    this->words[this->words[SCENE_QUEUE_COUNT_WORD].value].value = value;
-    this->words[SCENE_QUEUE_COUNT_WORD].value++;
-    return this->words[SCENE_QUEUE_COUNT_WORD].value;
+    WriteSceneQueueWord32(this->words[ReadSceneQueueWord32(this->words[SCENE_QUEUE_COUNT_WORD].value)].value, value);
+    IncrementSceneQueueCount32(this->words[SCENE_QUEUE_COUNT_WORD].value);
+    return ReadSceneQueueWord32(this->words[SCENE_QUEUE_COUNT_WORD].value);
 }
 
 i32 SceneValueQueue::Pop()
 {
-    if (this->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+    if (ReadSceneQueueWord32(this->words[SCENE_QUEUE_COUNT_WORD].value) > 0)
     {
-        this->words[SCENE_QUEUE_COUNT_WORD].value--;
+        AcquireSceneQueuePayload();
+        DecrementSceneQueueCount32(this->words[SCENE_QUEUE_COUNT_WORD].value);
         for (i32 i = 0; i < SCENE_QUEUE_DATA_WORD_COUNT; i++)
         {
-            this->words[i] = this->words[i + 1];
+            CopySceneQueueWord32(this->words[i], this->words[i + 1]);
         }
-        return this->words[0].value;
+        return ReadSceneQueueWord32(this->words[0].value);
     }
     return 0;
 }

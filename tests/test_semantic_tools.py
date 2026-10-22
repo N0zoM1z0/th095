@@ -900,7 +900,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         source = (ROOT / "src" / "FrontEndController.cpp").read_text(
             encoding="utf-8"
         )
-        named = "this->scenePreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;"
+        named = "WriteSceneQueueWord32(this->scenePreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);"
         self.assertIn(named, source)
         changed = source.replace(
             named,
@@ -923,6 +923,34 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                 with contextlib.redirect_stderr(io.StringIO()):
                     with self.assertRaises(SystemExit):
                         GUARD.check_scene_preview_data_queue_owner(header.replace(old, new, 1))
+
+    def test_queue_word_guard_rejects_raw_reads_and_copy(self) -> None:
+        GUARD.check_scene_queue_word_access()
+        for name, before, after in (
+            ("SceneSelectAssets.cpp", "return ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value);",
+             "return queue->words[SCENE_QUEUE_COUNT_WORD].value;"),
+            ("SceneValueQueue.inl", "CopySceneQueueWord32(this->words[i], this->words[i + 1]);",
+             "this->words[i] = this->words[i + 1];"),
+        ):
+            source = (ROOT / "src" / name).read_text(encoding="utf-8")
+            self.assertIn(before, source)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_scene_queue_word_access({name: source.replace(before, after, 1)})
+
+    def test_queue_word_guard_rejects_missing_publication_order(self) -> None:
+        for name, before, after in (
+            ("SceneSelectUpdate.cpp", "AcquireSceneQueuePayload();", ""),
+            ("SceneQueueWordAccess.hpp", "__atomic_thread_fence(__ATOMIC_ACQUIRE)",
+             "__atomic_thread_fence(__ATOMIC_RELAXED)"),
+            ("SceneQueueWordAccess.hpp", "__atomic_store_n(static_cast<volatile i32 *>(&(word)), (value), __ATOMIC_RELEASE)",
+             "__atomic_store_n(static_cast<volatile i32 *>(&(word)), (value), __ATOMIC_RELAXED)"),
+        ):
+            source = (ROOT / "src" / name).read_text(encoding="utf-8")
+            self.assertIn(before, source)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_scene_queue_word_access({name: source.replace(before, after, 1)})
 
     def test_worker_entry_guard_rejects_truncation_and_lifetime_changes(self) -> None:
         GUARD.check_worker_thread_start_boundary()

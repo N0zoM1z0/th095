@@ -31,17 +31,21 @@ struct ScenePreviewDataQueue
     ScenePreviewDataQueue()
     {
         memset(this, 0, sizeof(*this));
-        this->words[SCENE_QUEUE_CAPACITY_WORD].bits = SCENE_QUEUE_DATA_WORD_COUNT;
+        WriteSceneQueueAddressWord(this->words[SCENE_QUEUE_CAPACITY_WORD].bits, SCENE_QUEUE_DATA_WORD_COUNT);
     }
 
+    // Status snapshot only; it does not establish ownership or completion.
     i32 Size() const
     {
-        return static_cast<i32>(this->words[SCENE_QUEUE_COUNT_WORD].bits);
+        return static_cast<i32>(ReadSceneQueueAddressWord(this->words[SCENE_QUEUE_COUNT_WORD].bits));
     }
     u8 *Front() const
     {
-        if (static_cast<i32>(this->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
-            return reinterpret_cast<u8 *>(this->words[0].bits);
+        if (static_cast<i32>(ReadSceneQueueAddressWord(this->words[SCENE_QUEUE_COUNT_WORD].bits)) > 0)
+        {
+            AcquireSceneQueuePayload();
+            return reinterpret_cast<u8 *>(ReadSceneQueueAddressWord(this->words[0].bits));
+        }
         return 0;
     }
     uintptr_t Pop(); // Raw post-shift word; may contain count metadata.

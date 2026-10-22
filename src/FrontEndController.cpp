@@ -788,13 +788,13 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             {
                 FrontEndDrainQueueValue(&this->scenePreviewDataQueue);
             }
-            this->groupPreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
-            this->scenePreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
-            this->groupPreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
-            this->scenePreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
-            this->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
-            this->selectionQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
-            this->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;
+            WriteSceneQueueWord32(this->groupPreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);
+            WriteSceneQueueWord32(this->scenePreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);
+            WriteSceneQueueWord32(this->groupPreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);
+            WriteSceneQueueWord32(this->scenePreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);
+            WriteSceneQueueWord32(this->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);
+            WriteSceneQueueWord32(this->selectionQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);
+            WriteSceneQueueWord32(this->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);
             this->pendingTextures.count = 0;
             this->stateHistory.count = 0;
             this->currentDisplayState = -1;

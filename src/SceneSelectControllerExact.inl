@@ -6,10 +6,10 @@ namespace th095
 static __forceinline void RefreshSelectionQueuePush(
     SceneValueQueue *queue, i32 value)
 {
-    if (queue->words[SCENE_QUEUE_COUNT_WORD].value < queue->words[SCENE_QUEUE_CAPACITY_WORD].value)
+    if (ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value) < ReadSceneQueueWord32(queue->words[SCENE_QUEUE_CAPACITY_WORD].value))
     {
-        queue->words[queue->words[SCENE_QUEUE_COUNT_WORD].value].value = value;
-        queue->words[SCENE_QUEUE_COUNT_WORD].value++;
+        WriteSceneQueueWord32(queue->words[ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value)].value, value);
+        IncrementSceneQueueCount32(queue->words[SCENE_QUEUE_COUNT_WORD].value);
     }
 }
 

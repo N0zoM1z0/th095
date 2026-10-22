@@ -132,7 +132,7 @@ the listed source.
 
 The whole-game normal oracle is still weaker than TH08's modern portable
 build: TH095 has pinned-VC7.1 normal compile/link closure but no maintained
-modern game product yet. SEM-327..337 add bounded native x86-64 cursor,
+modern game product yet. SEM-327..338 add bounded native x86-64 cursor,
 pending-texture-data, raw queue, preview-address, and worker-lifecycle oracles
 (`scripts/check-portable-front-end.py`) that compile and execute the actual
 shared declarations and behavior with UBSan. Pending-data tests use real
@@ -173,6 +173,15 @@ the legacy backend relies on an explicit x86/x64 compiler/hardware contract,
 while GCC/Clang use atomic builtins. Neither individual flag, the two flag stores,
 nor one component test establishes a whole-game join, race-free payload ownership
 or a portable OS backend. See [the bounded contract](WORKER_LIFECYCLE.md).
+
+A tenth uses actual queue methods, address/null publication and the shared word
+access layer in 512 real-thread handoffs. Size is an atomic status observation;
+payload reads acquire after a positive count test. Stores and the metadata word
+read by Pop use the same width-aware contract, without changing the owner layout.
+The controlled fixture serializes mutators with a host mutex and releases old
+fronts. It does not establish all game queue counts/interleavings, safe post-shift
+release, parent ABI or whole-game race freedom. Platform/compiler binding and
+pinned-versus-native evidence are documented in FRONT_END_PREVIEW_PROTOCOL.md.
 
 ## Completion and batch records
 

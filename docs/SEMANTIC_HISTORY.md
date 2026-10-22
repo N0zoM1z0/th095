@@ -17658,3 +17658,107 @@ saved under .analysis/sem337/ and generated objects, binaries, PDBs, maps and
 Python caches were cleared. Target, toolchains, Ghidra and protected files remain.
 The next bounded lane is preview caller/count/lifetime evidence across
 cancellation, publication and release. The phase remains **active-incomplete**.
+
+### SEM-338 — atomic scene queue words and explicit payload acquisition
+
+**Question and scope.** The canonical worker flag API does not synchronize the
+queue counts polled outside critical section 4. Close the explicit runtime word
+access family across all nine channels, retaining real 18-word storage, signed
+scalar versus native address widths, count/capacity and the target's unusual
+Pop/release behavior. Fresh hash-attested target queries cover Push 0x00450DD0,
+Pop 0x00450F60, worker 0x0044D0A0, update 0x00447D00, main menu 0x00446A50,
+destructor 0x00445AA0 and refresh 0x0044BBD0. No original source volatility or
+original identifier is inferred. No target extent, origin, source or exact
+credit is added; all caller count/lifetime and cancellation conclusions retain
+their previous limits.
+
+**Shared implementation.** SceneQueueWordAccess.hpp supplies typed atomic
+status loads, release stores and payload acquisition after each positive count
+test. Both canonical queue layouts/backing fields remain unchanged. All explicit
+word reads/writes/resets and Pop copies use this access contract, including the
+metadata read that enters payload slot 15. Increments/decrements are not given
+an atomic RMW contract. Mutators still need the existing lock or an exclusive
+phase; word atomicity does not make a multiword publication transactional or
+make a returned word an owned pointer. Construction's bulk zeroing stays
+exclusive. Storage remains owned by the front-end allocation, semantic word
+contracts by the two queue owners, and methods by both existing controller TU
+emission sites. Exact/normal remain 88-source products; the standalone native
+component is a separate build product.
+
+The Microsoft x86/x64 backend uses actual-type volatile scalar references,
+compiler barriers and aligned ordinary-memory accesses; GCC/Clang use typed
+atomic builtins. This is an explicit compiler/platform contract, not ISO
+volatile synchronization. The pinned VC7.1 copy binding uses real four-byte
+word-object assignment between barriers. The same exact/normal compiler uses
+that binding; other backends copy the scalar atomically. No selected class,
+new reconstruction-profile selector, assembly, aliasing view, artificial local
+or padding is added. Existing selector/declaration debt baselines are unchanged.
+
+**Falsified alternatives and direct evidence.** Minimal probes preserve 78-byte
+Push and both 91-byte Pop instances. Scalar-field copies emit 93-byte Pop;
+real-word copies preserve 91. A pre-load compiler fence in Size introduces
+pointer argument homes and grows the complete worker from 3,070 to 3,181 bytes
+(frame 0x2B4 to 0x2D4). Status snapshots do not require acquisition; the final
+API uses atomic status reads and places acquisition at the payload edge,
+preserving the complete worker without forcing homes. The failed experiments
+remain private evidence, not accepted source alternatives. Replaying all three
+minimal variants against immutable aad1764 owner-header snapshots reproduces
+all nine expected outcomes, including both rejected 93-byte scalar copies.
+Input digests and full commands are preserved independently of the live headers.
+
+Before editing, all 20 direct units pass and five independent normal objects
+are captured. Final direct replay passes 20/20; independent normal comparison
+covers all 31 named roots, one private entry and 56 reachable code/data/EH
+section graphs, retaining bytes/entry offsets/bindings under 21 private names.
+Exact-only receiver identities are recorded separately rather than assumed
+emitted in normal. Public CI passes 94 workflow tests and ten native programs.
+
+The tenth x86-64/UBSan program executes actual queue methods, pointer/null
+publication and word access in 512 real-thread handoffs. Real high-address
+packets contain ordinary initialized data, read only after Front acquisition;
+signed identifiers, lengths and counted null secondary entries are checked.
+Mutation uses a real host mutex, status polling occurs outside it, and old
+fronts are deleted before Pop. Producer ownership ends at publication and the
+fixture joins before teardown. This is a controlled one-outstanding-result
+scenario, not a game-wide count bound, race-free queue lifetime, safe post-shift
+release policy, full parent ABI or portable OS-backend claim. Prior exhaustive
+word-state/backlog/cancellation programs remain independent evidence.
+
+One early private probe briefly overlapped baseline compilation; it was noticed
+after the probe returned, with separate output/PDB paths and both on CPU 1.
+No production edit occurred until the complete baseline handle returned zero.
+Subsequent candidate and final validation use one serial VC7.1 chain at low
+priority.
+
+**Final frozen gates and independent product.** Cold replay passes **698/698
+comparisons across 88 sources**, with zero further refresh. Full baseline audit
+records **30 private labels in four units** (18 in two direct units and another
+12 in two aggregate units). Public identities, all other recipe fields,
+extents/profiles and relocation offsets/types/destinations are unchanged.
+All 300 frozen code inputs retain their hashes; ledgers/claims add no credit.
+
+The separate normal build compiles **88/88 i386 COFF objects** and links a
+verified **778,752-byte PE32 GUI** with zero unresolved symbols, SHA-256
+`d8fb818c0296a722ac3556291384c9a43d5ac0e28959b1844278a13c99e1dc7e`.
+The comparison is repeated against those actual product objects: all 31 named
+roots, one private entry and 56 code/data/EH reference graphs retain bytes,
+offsets and bindings under the 21 private spellings. Compiler-owned EH audit
+passes **57 parents, 72 actions and 81/81 provenance-exact references**, adding
+no authored exact credit. Public CI's final frozen inputs pass 94 tests and ten
+native programs.
+
+A separate console probe includes actual production queue methods, pointer/null
+publication and word access; attested VC7.1 3077 compiles/links it in /Od /Ob1
+and /O2 /Ob1. Each executes **512 real CRT/Win32 handoffs** under Wine, using a
+real critical section and an actual successful thread wait before teardown.
+Ordinary packet contents, signed identifiers, lengths, counted null secondary
+and old-front deletion are checked. All 1,024 handoffs pass. This does not
+establish native Windows game scheduling, MSVC x64, all cancellation counts,
+all OS failures or a safe post-shift release policy.
+
+Final jobs use CPU 1/nice 10 and serial VC7.1. All build/test handles are terminal
+before source/command/tool/COFF/map/runtime receipts are retained in
+.analysis/sem338/ and generated outputs/caches are cleared. Target, tools,
+Ghidra and protected files are untouched. Queue caller/count/lifetime closure
+across cancellation and release remains the next bounded lane. The phase stays
+**active-incomplete**.

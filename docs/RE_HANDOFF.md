@@ -17,47 +17,51 @@ their recorded source revision; regenerate them before claiming a newer result.
   validation are separate facts; no semantic completion percentage is claimed.
 - Ledger totals are generated in `docs/PROGRESS.md`; rerun the summary
   command below before quoting them. `config/claims.csv` remains header-only.
-- Latest accepted batch: **SEM-337**. All explicit common/primary-worker
-  exitSignal/active accesses now use the same acquire/release API, including
-  indirect Main update and direct ThreadClose. One canonical volatile-i32 layout
-  retains target/native sizes 24/32, signed words and existing snapshot locals.
-  Volatile alone is not synchronization: Microsoft x86/x64 uses aligned words,
-  compiler fences and hardware ordering; GCC/Clang use atomic builtins. Original
-  source volatility remains Unknown. No profile selector, selected declaration,
-  adapter or assembly was added; closed debt stays **192 / 197 declarations**
-  and **266 / 699 selectors**.
-- Stop, RequestExit, callback completion and ThreadClose preserve their separate
-  transitions/store orders. Individual flags are not an atomic pair or a join;
-  exit=1 can be a request and active=0 can precede callback return. Payload
-  ownership, repeated-run/competing-writer reasoning and OS failure guarantees
-  remain open. The previous normal typed CRT transport versus exact historical
-  conversion remains explicit, narrowly proved emission debt.
-- Exact credit remains **696 functions / 336,486 bytes**, with **698 comparisons**.
-  Direct replay passes 96/96 across nine sources. Final cold fixed-recipe replay
-  passes **698/698 across 88 sources**, with zero refresh. Relative to aaf510c,
-  the manifest changes only 350 compiler-private labels in 23 units; all public
-  symbols, extents, other recipe fields, relocation offsets/types/destinations
-  and mapping/origin/source/exact ledgers remain unchanged. Claims stay header-only.
-- The independent normal cold build compiles 88/88 i386 COFF objects and links
-  a verified 778,752-byte PE32 GUI with zero unresolved symbols, SHA-256
-  `7ad4a683b707fe2f6fee94d0044754570d048f6c698ec3326cbca81340baa14b`.
-  All 116 named function roots, three private entries and 259 reachable
-  code/data/EH graphs in the nine actual product objects preserve baseline bytes,
-  offsets and bindings under private renames. This is separate normal evidence.
-- Public CI passes **92 workflow tests and nine native x86-64/UBSan programs**.
-  The ninth runs 128 real-thread cancellation/publication cases through production
-  transport, signal access and core, plus six full signed-word values. It holds
-  callbacks open across the flag observations and joins before fixture teardown.
-  A separately attested VC7.1/Wine console passes 64 actual CRT/Win32 cases under
-  the target /Od profile and 64 under /O2. These are bounded access/publication
-  oracles, not native Windows whole-game, all payload, repeated-run or portable
-  OS-backend acceptance. TSan could not link (libtsan_preinit.o absent).
-- Compiler-owned EH audit passes 57 canonical parents, 72 actions and 81/81
-  provenance-exact references, independently of authored credit.
-- Generated objects/binaries/PDBs/maps and Python caches were cleared after
-  terminal checks and compact evidence capture. Compact receipts remain private
-  under .analysis/sem337/. Target, pinned tools, Ghidra and protected files remain.
-  No active blocker is known.
+- Latest accepted batch: **SEM-338**. The nine scene queue channels now share
+  typed atomic word loads/stores/copies through SceneQueueWordAccess.hpp. This
+  covers every explicit authored word access and Pop's metadata copy. Size is a
+  status snapshot; positive count gates acquire before payload access. Canonical
+  18-word layouts and narrow value/native address widths stay unchanged. Stores
+  release; increments/decrements do not claim atomic RMW or replace lane-4
+  mutator locking. Volatile alone is not synchronization.
+- Pinned VC7.1 needs a real four-byte word-object copy (91-byte Pop versus
+  93-byte scalar copy). Both exact and normal use the same compiler/platform
+  binding; modern backends copy typed scalars atomically. A pre-load Size fence
+  created extra pointer homes and grew the worker to 3,181 bytes; the final
+  status/payload split preserves all 3,070 target bytes. No selected type, new
+  reconstruction-profile selector, assembly or artificial local was added.
+  Closed debt remains **192 / 197 declarations** and **266 / 699 selectors**.
+- Exact credit remains **696 functions / 336,486 bytes**, **698 comparisons**.
+  Direct replay passes 20/20 across five sources. Frozen cold replay passes
+  **698/698 across 88 sources**, zero refresh. Relative to aad1764, only 30
+  compiler-private labels in four units change; public symbols, all other recipe
+  fields, extents and relocation offsets/types/destinations remain unchanged.
+  Mapping/origin/source/exact ledgers and header-only claims are unchanged.
+- Independent normal cold build compiles 88/88 i386 COFF objects and links a
+  verified 778,752-byte PE32 GUI with zero unresolved symbols, SHA-256
+  `d8fb818c0296a722ac3556291384c9a43d5ac0e28959b1844278a13c99e1dc7e`.
+  The five actual product objects preserve all 31 named roots, one private entry
+  and 56 reachable code/data/EH graphs, under 21 private spelling changes. The
+  normal-selected bodies are validated independently of exact replay.
+- Public CI passes **94 workflow tests and ten native x86-64/UBSan programs**.
+  The tenth executes 512 real-thread publications with high-address ordinary
+  packet data, signed identifiers, lengths and counted null secondary entries.
+  Mutators use a host mutex; status polls remain outside it; old fronts are
+  released before Pop and the fixture joins. Attested VC7.1/Wine console runs
+  pass another 512 handoffs under /Od and 512 under /O2, using real CRT threads,
+  critical sections and successful waits. These are controlled component cases,
+  not game-wide count/lifetime, native Windows or MSVC-x64 acceptance.
+- Compiler-owned EH audit independently passes 57 canonical parents, 72 actions
+  and 81/81 provenance-exact references. All 300 frozen code inputs remain
+  unchanged through final gates. Generated objects, binaries, PDBs, maps and
+  caches were cleared after terminal receipts; compact evidence is private in
+  .analysis/sem338/. Target, tools, Ghidra and protected files remain untouched.
+- The worker flag API from SEM-337 and typed CRT transport from SEM-336 retain
+  their separate contracts. Individual words do not make a multiword transaction,
+  prove a join or confer buffer ownership. Pop still returns a post-shift word
+  which can contain metadata; cancellation can still enter publication. The
+  old-front and post-shift release policies remain distinct, without a repair
+  or a global one-item/count bound. No active blocker is known.
 
 Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SOURCE_MAP.md`, `ARCHITECTURE.md`, and `RE_WORKFLOW.md` before changing state.
@@ -70,8 +74,8 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 - Exact replay validates only exact-selected source. A different normal body
   requires independent target/compiler/runtime evidence. The worker's direct
   normal-object audit does not accept all enclosing Supervisor/front-end layouts.
-- The bounded signal API is closed for explicit authored word accesses. Preserve
-  full i32 snapshots and request/completion/Stop order. Do not treat a flag's
+- The bounded worker/queue word APIs are closed for explicit authored accesses. Preserve
+  narrow integer/native address widths and request/completion/Stop order. Do not treat a flag's
   value as a unique producer, completed payload or successful join. Bulk owner
   initialization and unknown aliases are not made concurrent by this API.
 - Next inspect one preview producer/consumer/release family and its cancellation

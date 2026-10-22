@@ -205,14 +205,15 @@ static __forceinline u16 SceneNextInputMask()
 
 static __forceinline i32 SceneQueueSize(const SceneValueQueue *queue)
 {
-    return queue->words[SCENE_QUEUE_COUNT_WORD].value;
+    return ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value);
 }
 
 static __forceinline i32 SceneQueueFront(const SceneValueQueue *queue)
 {
-    if (queue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+    if (ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value) > 0)
     {
-        return queue->words[0].value;
+        AcquireSceneQueuePayload();
+        return ReadSceneQueueWord32(queue->words[0].value);
     }
     return 0;
 }
@@ -372,22 +373,28 @@ static __forceinline void SceneSelectProcessLoadedSceneQueue(
     SceneValueQueue *loadedSceneConditionQueue;
     i32 loadedSceneSize1;
     i32 loadedSceneSize0;
-    loadedSceneSize0 = view->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value;
+    loadedSceneSize0 = ReadSceneQueueWord32(view->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value);
     if (loadedSceneSize0 != 0)
     {
-        loadedSceneSize1 = view->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value;
+        loadedSceneSize1 = ReadSceneQueueWord32(view->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value);
         if (loadedSceneSize1 == 1)
         {
             loadedSceneConditionQueue = &view->loadedSceneQueue;
-            if (loadedSceneConditionQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
-                loadedSceneConditionValue = loadedSceneConditionQueue->words[0].value;
+            if (ReadSceneQueueWord32(loadedSceneConditionQueue->words[SCENE_QUEUE_COUNT_WORD].value) > 0)
+            {
+                AcquireSceneQueuePayload();
+                loadedSceneConditionValue = ReadSceneQueueWord32(loadedSceneConditionQueue->words[0].value);
+            }
             else
                 loadedSceneConditionValue = 0;
             if (loadedSceneConditionValue >= 0)
             {
                 loadedSceneLoadQueue = &view->loadedSceneQueue;
-                if (loadedSceneLoadQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
-                    loadedSceneLoadValue = loadedSceneLoadQueue->words[0].value;
+                if (ReadSceneQueueWord32(loadedSceneLoadQueue->words[SCENE_QUEUE_COUNT_WORD].value) > 0)
+                {
+                    AcquireSceneQueuePayload();
+                    loadedSceneLoadValue = ReadSceneQueueWord32(loadedSceneLoadQueue->words[0].value);
+                }
                 else
                     loadedSceneLoadValue = 0;
                 g_ResultSaveData->LoadScenePreviewTexture(
@@ -528,14 +535,15 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             i32 loadedGroupFrontValue;
             SceneValueQueue *loadedGroupFrontQueue;
             i32 loadedGroupSize0;
-        loadedGroupSize0 = view->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value;
+        loadedGroupSize0 = ReadSceneQueueWord32(view->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value);
         if (loadedGroupSize0 != 0)
         {
             loadedGroupFrontQueue = &view->loadedGroupQueue;
-            if (loadedGroupFrontQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+            if (ReadSceneQueueWord32(loadedGroupFrontQueue->words[SCENE_QUEUE_COUNT_WORD].value) > 0)
             {
+                AcquireSceneQueuePayload();
                 loadedGroupFrontValue =
-                    loadedGroupFrontQueue->words[0].value;
+                    ReadSceneQueueWord32(loadedGroupFrontQueue->words[0].value);
             }
             else
             {
@@ -544,16 +552,17 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             if (loadedGroupFrontValue >= 0)
             {
                 loadedGroupSize1 =
-                    view->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value;
+                    ReadSceneQueueWord32(view->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value);
                 if (loadedGroupSize1 == 1)
                 {
                     groupPreviewSizePositiveQueue =
                         &view->groupPreviewSizeQueue;
-                    if (groupPreviewSizePositiveQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+                    if (ReadSceneQueueWord32(groupPreviewSizePositiveQueue->words[SCENE_QUEUE_COUNT_WORD].value) > 0)
                     {
+                        AcquireSceneQueuePayload();
                         groupPreviewSizePositiveValue =
-                            groupPreviewSizePositiveQueue
-                                ->words[0].value;
+                            ReadSceneQueueWord32(groupPreviewSizePositiveQueue
+                                ->words[0].value);
                     }
                     else
                     {
@@ -561,10 +570,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     }
                     groupPreviewDataPositiveQueue =
                         &view->groupPreviewDataQueue;
-                    if (static_cast<i32>(groupPreviewDataPositiveQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
+                    if (static_cast<i32>(ReadSceneQueueAddressWord(groupPreviewDataPositiveQueue->words[SCENE_QUEUE_COUNT_WORD].bits)) > 0)
                     {
+                        AcquireSceneQueuePayload();
                         groupPreviewDataPositiveValue =
-                            reinterpret_cast<u8 *>(groupPreviewDataPositiveQueue->words[0].bits);
+                            reinterpret_cast<u8 *>(ReadSceneQueueAddressWord(groupPreviewDataPositiveQueue->words[0].bits));
                     }
                     else
                     {
@@ -578,11 +588,12 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
                     scenePreviewSizePositiveQueue =
                         &view->scenePreviewSizeQueue;
-                    if (scenePreviewSizePositiveQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+                    if (ReadSceneQueueWord32(scenePreviewSizePositiveQueue->words[SCENE_QUEUE_COUNT_WORD].value) > 0)
                     {
+                        AcquireSceneQueuePayload();
                         scenePreviewSizePositiveValue =
-                            scenePreviewSizePositiveQueue
-                                ->words[0].value;
+                            ReadSceneQueueWord32(scenePreviewSizePositiveQueue
+                                ->words[0].value);
                     }
                     else
                     {
@@ -590,10 +601,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     }
                     scenePreviewDataPositiveQueue =
                         &view->scenePreviewDataQueue;
-                    if (static_cast<i32>(scenePreviewDataPositiveQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
+                    if (static_cast<i32>(ReadSceneQueueAddressWord(scenePreviewDataPositiveQueue->words[SCENE_QUEUE_COUNT_WORD].bits)) > 0)
                     {
+                        AcquireSceneQueuePayload();
                         scenePreviewDataPositiveValue =
-                            reinterpret_cast<u8 *>(scenePreviewDataPositiveQueue->words[0].bits);
+                            reinterpret_cast<u8 *>(ReadSceneQueueAddressWord(scenePreviewDataPositiveQueue->words[0].bits));
                     }
                     else
                     {
@@ -609,10 +621,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
                 groupPreviewDataPositiveFreeQueue =
                     &view->groupPreviewDataQueue;
-                if (static_cast<i32>(groupPreviewDataPositiveFreeQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
+                if (static_cast<i32>(ReadSceneQueueAddressWord(groupPreviewDataPositiveFreeQueue->words[SCENE_QUEUE_COUNT_WORD].bits)) > 0)
                 {
+                    AcquireSceneQueuePayload();
                     groupPreviewDataPositiveFreeValue =
-                        reinterpret_cast<u8 *>(groupPreviewDataPositiveFreeQueue->words[0].bits);
+                        reinterpret_cast<u8 *>(ReadSceneQueueAddressWord(groupPreviewDataPositiveFreeQueue->words[0].bits));
                 }
                 else
                 {
@@ -622,10 +635,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
                 scenePreviewDataPositiveFreeQueue =
                     &view->scenePreviewDataQueue;
-                if (static_cast<i32>(scenePreviewDataPositiveFreeQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
+                if (static_cast<i32>(ReadSceneQueueAddressWord(scenePreviewDataPositiveFreeQueue->words[SCENE_QUEUE_COUNT_WORD].bits)) > 0)
                 {
+                    AcquireSceneQueuePayload();
                     scenePreviewDataPositiveFreeValue =
-                        reinterpret_cast<u8 *>(scenePreviewDataPositiveFreeQueue->words[0].bits);
+                        reinterpret_cast<u8 *>(ReadSceneQueueAddressWord(scenePreviewDataPositiveFreeQueue->words[0].bits));
                 }
                 else
                 {
@@ -636,16 +650,17 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             else
             {
                 loadedGroupNegativeSize =
-                    view->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value;
+                    ReadSceneQueueWord32(view->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value);
                 if (loadedGroupNegativeSize == 1)
                 {
                     groupPreviewSizeNegativeQueue =
                         &view->groupPreviewSizeQueue;
-                    if (groupPreviewSizeNegativeQueue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+                    if (ReadSceneQueueWord32(groupPreviewSizeNegativeQueue->words[SCENE_QUEUE_COUNT_WORD].value) > 0)
                     {
+                        AcquireSceneQueuePayload();
                         groupPreviewSizeNegativeValue =
-                            groupPreviewSizeNegativeQueue
-                                ->words[0].value;
+                            ReadSceneQueueWord32(groupPreviewSizeNegativeQueue
+                                ->words[0].value);
                     }
                     else
                     {
@@ -653,10 +668,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                     }
                     groupPreviewDataNegativeQueue =
                         &view->groupPreviewDataQueue;
-                    if (static_cast<i32>(groupPreviewDataNegativeQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
+                    if (static_cast<i32>(ReadSceneQueueAddressWord(groupPreviewDataNegativeQueue->words[SCENE_QUEUE_COUNT_WORD].bits)) > 0)
                     {
+                        AcquireSceneQueuePayload();
                         groupPreviewDataNegativeValue =
-                            reinterpret_cast<u8 *>(groupPreviewDataNegativeQueue->words[0].bits);
+                            reinterpret_cast<u8 *>(ReadSceneQueueAddressWord(groupPreviewDataNegativeQueue->words[0].bits));
                     }
                     else
                     {
@@ -672,10 +688,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 
                 groupPreviewDataNegativeFreeQueue =
                     &view->groupPreviewDataQueue;
-                if (static_cast<i32>(groupPreviewDataNegativeFreeQueue->words[SCENE_QUEUE_COUNT_WORD].bits) > 0)
+                if (static_cast<i32>(ReadSceneQueueAddressWord(groupPreviewDataNegativeFreeQueue->words[SCENE_QUEUE_COUNT_WORD].bits)) > 0)
                 {
+                    AcquireSceneQueuePayload();
                     groupPreviewDataNegativeFreeValue =
-                        reinterpret_cast<u8 *>(groupPreviewDataNegativeFreeQueue->words[0].bits);
+                        reinterpret_cast<u8 *>(ReadSceneQueueAddressWord(groupPreviewDataNegativeFreeQueue->words[0].bits));
                 }
                 else
                 {
@@ -798,16 +815,16 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             SceneSelectInitialSceneVmPhase(view, initialSceneIndex);
         }
 
-        view->groupPreviewQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 5;
-        view->scenePreviewQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 5;
-        view->loadedGroupQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 16;
-        view->groupPreviewDataQueue.words[SCENE_QUEUE_CAPACITY_WORD].bits = 16;
-        view->groupPreviewSizeQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 16;
-        view->scenePreviewDataQueue.words[SCENE_QUEUE_CAPACITY_WORD].bits = 16;
-        view->scenePreviewSizeQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 16;
-        view->loadedGroupQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 16;
-        view->selectionQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 5;
-        view->loadedSceneQueue.words[SCENE_QUEUE_CAPACITY_WORD].value = 16;
+        WriteSceneQueueWord32(view->groupPreviewQueue.words[SCENE_QUEUE_CAPACITY_WORD].value, 5);
+        WriteSceneQueueWord32(view->scenePreviewQueue.words[SCENE_QUEUE_CAPACITY_WORD].value, 5);
+        WriteSceneQueueWord32(view->loadedGroupQueue.words[SCENE_QUEUE_CAPACITY_WORD].value, 16);
+        WriteSceneQueueAddressWord(view->groupPreviewDataQueue.words[SCENE_QUEUE_CAPACITY_WORD].bits, 16);
+        WriteSceneQueueWord32(view->groupPreviewSizeQueue.words[SCENE_QUEUE_CAPACITY_WORD].value, 16);
+        WriteSceneQueueAddressWord(view->scenePreviewDataQueue.words[SCENE_QUEUE_CAPACITY_WORD].bits, 16);
+        WriteSceneQueueWord32(view->scenePreviewSizeQueue.words[SCENE_QUEUE_CAPACITY_WORD].value, 16);
+        WriteSceneQueueWord32(view->loadedGroupQueue.words[SCENE_QUEUE_CAPACITY_WORD].value, 16);
+        WriteSceneQueueWord32(view->selectionQueue.words[SCENE_QUEUE_CAPACITY_WORD].value, 5);
+        WriteSceneQueueWord32(view->loadedSceneQueue.words[SCENE_QUEUE_CAPACITY_WORD].value, 16);
         view->flagBits.assetLoadStopRequested = 0;
 
         g_Supervisor.StartReplayScan(LoadSceneSelectionAssets, NULL);

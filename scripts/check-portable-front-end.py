@@ -41,6 +41,7 @@ def main() -> int:
     run_probe("ReplayScanWorkerTest.cpp", "worker-lifecycle-test")
     run_probe("WorkerThreadStartTest.cpp", "worker-entry-test", ("-pthread", "-Wcast-function-type"))
     run_probe("WorkerSignalAccessTest.cpp", "worker-signal-test", ("-pthread",))
+    run_probe("SceneQueuePublicationTest.cpp", "queue-publication-test", ("-pthread",))
     return 0
 
 

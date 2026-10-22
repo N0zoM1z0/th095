@@ -48,28 +48,30 @@ typedef char SceneSelectionAssetLoadMissionPathAt8[
 
 static __forceinline i32 AssetQueueFront(SceneValueQueue *queue)
 {
-    if (queue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+    if (ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value) > 0)
     {
-        return queue->words[0].value;
+        AcquireSceneQueuePayload();
+        return ReadSceneQueueWord32(queue->words[0].value);
     }
     return 0;
 }
 
 static __forceinline i32 AssetQueueSize(SceneValueQueue *queue)
 {
-    return queue->words[SCENE_QUEUE_COUNT_WORD].value;
+    return ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value);
 }
 
 static __forceinline i32 AssetQueueSize(ScenePreviewDataQueue *queue)
 {
-    return static_cast<i32>(queue->words[SCENE_QUEUE_COUNT_WORD].bits);
+    return static_cast<i32>(ReadSceneQueueAddressWord(queue->words[SCENE_QUEUE_COUNT_WORD].bits));
 }
 
 static __forceinline void AssetQueueRead(SceneValueQueue *queue, i32 *value)
 {
-    if (queue->words[SCENE_QUEUE_COUNT_WORD].value > 0)
+    if (ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value) > 0)
     {
-        *value = queue->words[0].value;
+        AcquireSceneQueuePayload();
+        *value = ReadSceneQueueWord32(queue->words[0].value);
     }
     else
     {
@@ -79,10 +81,10 @@ static __forceinline void AssetQueueRead(SceneValueQueue *queue, i32 *value)
 
 static __forceinline void AssetQueuePush(SceneValueQueue *queue, i32 value)
 {
-    if (queue->words[SCENE_QUEUE_COUNT_WORD].value < queue->words[SCENE_QUEUE_CAPACITY_WORD].value)
+    if (ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value) < ReadSceneQueueWord32(queue->words[SCENE_QUEUE_CAPACITY_WORD].value))
     {
-        queue->words[queue->words[SCENE_QUEUE_COUNT_WORD].value].value = value;
-        queue->words[SCENE_QUEUE_COUNT_WORD].value++;
+        WriteSceneQueueWord32(queue->words[ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value)].value, value);
+        IncrementSceneQueueCount32(queue->words[SCENE_QUEUE_COUNT_WORD].value);
     }
 }
 
@@ -100,10 +102,10 @@ static __forceinline void AssetQueuePushNull(ScenePreviewDataQueue *queue)
 static __forceinline void AssetQueuePushValue(SceneValueQueue *queue,
                                               i32 *value)
 {
-    if (queue->words[SCENE_QUEUE_COUNT_WORD].value < queue->words[SCENE_QUEUE_CAPACITY_WORD].value)
+    if (ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value) < ReadSceneQueueWord32(queue->words[SCENE_QUEUE_CAPACITY_WORD].value))
     {
-        queue->words[queue->words[SCENE_QUEUE_COUNT_WORD].value].value = *value;
-        queue->words[SCENE_QUEUE_COUNT_WORD].value++;
+        WriteSceneQueueWord32(queue->words[ReadSceneQueueWord32(queue->words[SCENE_QUEUE_COUNT_WORD].value)].value, *value);
+        IncrementSceneQueueCount32(queue->words[SCENE_QUEUE_COUNT_WORD].value);
     }
 }
 

@@ -1,6 +1,6 @@
 # Front-end mission-preview handoff
 
-This is the SEM-330..335 evidence map for the original Japanese TH095 v1.02a target.
+This is the SEM-330..338 evidence map for the original Japanese TH095 v1.02a target.
 It describes runtime handoff storage, not an on-disk format. Semantic names are
 inferred from producers and independent consumers; original source names and
 the original queue declaration remain Unknown.
@@ -170,3 +170,72 @@ wait order, break-to-publication branches, queue behavior and release policy
 are unchanged. The native fixture now reads an actual ReplayScanWorker member
 at native +12 with threadId noise at +8; a nonzero signal remains a request or
 completion handshake, never an independent successful-load or OS-join proof.
+
+## Shared word access and publication (SEM-338)
+
+The unlocked Size/count polls in the worker and UI are separate accesses from
+critical-section-4 mutation. SEM-337's worker flag API did not synchronize these
+queue words. SceneQueueWordAccess.hpp now covers all explicit authored words in
+both queue owners, publication fragments, worker, controller, UI and reset sites.
+That includes Pop's implicit read of metadata word 16: each shift iteration uses
+the word-copy API. Count/capacity, selector/length and address widths, the eighteen
+real words, five result publications, locks and existing release orders are unchanged.
+Whole-object initialization is exclusive; unknown aliases or bulk owner writes
+are not made concurrent by this API.
+
+ReadSceneQueueWord32/ReadSceneQueueAddressWord are atomic **status** loads.
+Size alone supplies no payload acquire, ownership or completion guarantee. Each
+positive count test before Front/payload access is followed by
+AcquireSceneQueuePayload. A matching producer count release followed by that
+load/fence publishes preceding payload writes; unrelated writers or repeated
+values still need separate protocol reasoning. Stores are releases. Counter
+increments/decrements retain load-plus-store semantics rather than an atomic
+RMW contract: mutators still need the original lock or an exclusive lifecycle
+phase. Individually atomic words are not a multiword queue transaction.
+See the [GCC builtin contract](https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html)
+and [release-operation/acquire-fence rule](https://eel.is/c++draft/atomics.fences#4).
+
+The Microsoft x86/x64 backend uses aligned scalar accesses through references
+of the actual word type with volatile qualification, plus compiler barriers and
+that architecture's ordinary-memory ordering. Volatile alone is not atomic
+synchronization in ISO C++. GCC/Clang use typed atomic builtins and an acquire
+fence. Canonical classes and backing-field types stay profile-independent;
+there is no atomic wrapper layout or new reconstruction-profile selector.
+
+Pinned VC7.1 3077 needs its real four-byte word-object copy: a scalar-field
+version makes both Pop bodies 93 bytes versus target 91. The compiler-specific
+copy binding keeps each observed four-byte load/store between compiler fences;
+modern backends copy the scalar atomically. Both exact and normal VC7.1 use
+that same binding. This is a compiler/platform boundary, not a second type or
+an exact-selected semantic body. Minimal probes preserve Push's 78 bytes and
+both 91-byte Pop instances. Other MSVC versions/architectures are not accepted
+by the pinned x86 execution evidence.
+
+A pre-load compiler barrier in a Size helper enlarged the complete asset worker
+to 3,181 bytes versus target 3,070, introducing pointer parameter homes. A status
+load does not require that ordering, so the final API puts acquisition at the
+positive-count payload edge and preserves the complete worker. No inert local,
+padding, new profile route or assembly was added. The changed twenty direct
+units replay exactly; independent normal evidence covers all 31 named roots,
+one private entry and 56 reference graphs in five normal objects, preserving
+bytes/entry offsets/bindings under private renames.
+
+The tenth native x86-64/UBSan program executes actual queue methods and shared
+pointer/null publication through 512 real-thread handoffs. It reads ordinary
+packet contents after Front acquisition, retains real addresses above 4 GB,
+checks signed identifiers, length channels and counted null secondary entries,
+and releases old fronts before Pop. Mutators use a real host mutex; status
+polls remain outside it. The producer never accesses a transferred packet again,
+and fixture teardown joins. This is a controlled one-outstanding-result scenario,
+not a proof that the game always has one item, all channels remain aligned under
+cancellation, post-shift release is safe, or a portable game OS backend exists.
+Existing eighteen-word/backlog/cancellation traces retain their separate scope.
+
+Final frozen cold replay passes 698/698 with zero refresh. The five actual normal
+product objects retain all 31 named roots and 56 reference graphs; the separate
+normal 88-object build links a verified 778,752-byte PE32 GUI. The actual
+VC7.1/Wine console uses production queue methods/publication and the same word
+backend with real CRT threads and critical sections: /Od /Ob1 and /O2 /Ob1 each
+pass 512 handoffs, including null secondary and old-front release. It waits for
+actual callback return before teardown. This supplements native GCC publication
+and target emission evidence without accepting all game callers or MSVC x64.

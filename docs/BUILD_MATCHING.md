@@ -2160,3 +2160,22 @@ units sharing `AnmDrawCore.cpp` also cold-replay exact. This exception is not a
 general assembly policy: copied target bytes, inert compiler-shaping artifacts,
 and assembly in any other function remain prohibited absent explicit user
 authorization and independent target/source-family evidence.
+
+## Scene queue words and inline argument homes (SEM-338)
+
+A compiler fence placed before a count load inside a force-inline Size helper
+can require preserving the already-evaluated queue-pointer argument. In the
+complete asset worker this changed the frame from 0x2B4 to 0x2D4 and the body
+from 3,070 to 3,181 bytes. The final semantic contract uses an atomic status
+snapshot and a separate acquire after the positive count test, before payload
+access. That removes the unnecessary pre-load fence and preserves the complete
+worker; it is not permission to omit acquisition from actual payload readers.
+
+Pop's real word-object assignment also matters: explicit scalar-field copies
+emit 93 bytes rather than target 91 under pinned VC7.1 3077. The platform word
+backend keeps each four-byte object copy between compiler barriers for that
+compiler and uses scalar atomic copies on modern backends. Exact and normal
+VC7.1 use the same binding and one owner layout. The source must still account
+for the count word copied into slot 15, with no pointer-array overrun or selected
+type. Minimal/full target, independent normal and native publication receipts
+are recorded in SEM-338; private probes remain in .analysis/sem338/.

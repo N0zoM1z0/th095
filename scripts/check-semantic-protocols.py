@@ -2579,13 +2579,13 @@ def check_front_end_scene_queue_owner(controller_text: str | None = None) -> Non
         "FrontEndDrainQueueValue(&this->groupPreviewDataQueue);",
         "this->scenePreviewDataQueue.Size()",
         "FrontEndDrainQueueValue(&this->scenePreviewDataQueue);",
-        "this->groupPreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
-        "this->scenePreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
-        "this->groupPreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
-        "this->scenePreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
-        "this->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
-        "this->selectionQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
-        "this->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value = 0;",
+        "WriteSceneQueueWord32(this->groupPreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);",
+        "WriteSceneQueueWord32(this->scenePreviewSizeQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);",
+        "WriteSceneQueueWord32(this->groupPreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);",
+        "WriteSceneQueueWord32(this->scenePreviewQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);",
+        "WriteSceneQueueWord32(this->loadedGroupQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);",
+        "WriteSceneQueueWord32(this->selectionQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);",
+        "WriteSceneQueueWord32(this->loadedSceneQueue.words[SCENE_QUEUE_COUNT_WORD].value, 0);",
         "this->pendingTextures.count = 0;",
         "this->stateHistory.count = 0;",
         "this->currentDisplayState = -1;",
@@ -2649,7 +2649,7 @@ def check_scene_value_queue_owner(
         body_text if body_text is not None
         else (SRC / "SceneValueQueue.inl").read_text(encoding="utf-8")
     )
-    if "this->words[i] = this->words[i + 1];" not in body:
+    if "CopySceneQueueWord32(this->words[i], this->words[i + 1]);" not in body:
         fail("raw queue lost its real-word copy through metadata word 16")
     if "i < SCENE_QUEUE_DATA_WORD_COUNT" not in body or "reinterpret_cast" in body:
         fail("raw queue restored a projected or partial shift")
@@ -2689,10 +2689,70 @@ def check_scene_preview_data_queue_owner(header_text: str | None = None) -> None
     if "reinterpret_cast<uintptr_t>(*value)" not in publish:
         fail("preview address publication truncates its file buffer")
     body = (SRC / "ScenePreviewDataQueue.inl").read_text(encoding="utf-8")
-    if ("static_cast<i32>(this->words[SCENE_QUEUE_COUNT_WORD].bits) > 0" not in body
-        or "this->words[i] = this->words[i + 1];" not in body
+    if ("static_cast<i32>(ReadSceneQueueAddressWord(this->words[SCENE_QUEUE_COUNT_WORD].bits)) > 0" not in body
+        or "CopySceneQueueAddressWord(this->words[i], this->words[i + 1]);" not in body
         or "i < SCENE_QUEUE_DATA_WORD_COUNT" not in body):
         fail("preview address Pop lost the signed full-word transition")
+
+
+def check_scene_queue_word_access(overrides: dict[str, str] | None = None) -> None:
+    """Guard explicit word accesses; not alias analysis or a queue lifetime proof."""
+    overrides = overrides or {}
+    def source(name: str) -> str:
+        return source_without_comments(overrides.get(name, (SRC / name).read_text(encoding="utf-8")))
+    access = source("SceneQueueWordAccess.hpp")
+    for token in ("static_cast<const volatile i32 &>(word)",
+                  "static_cast<const volatile uintptr_t &>(word)",
+                  "__atomic_load_n(static_cast<const volatile i32 *>(&(word)), __ATOMIC_RELAXED)",
+                  "__atomic_load_n(static_cast<const volatile uintptr_t *>(&(word)), __ATOMIC_RELAXED)",
+                  "__atomic_thread_fence(__ATOMIC_ACQUIRE)",
+                  "_MSC_VER == 1310 && defined(_M_IX86)",
+                  "(destination) = (source)",
+                  "ReadSceneQueueWord32((source).value)",
+                  "ReadSceneQueueAddressWord((source).bits)"):
+        if token not in access:
+            fail(f"scene queue word backend lost its access contract: {token}")
+    if re.search(r"__atomic_store_n\([^\n]*__ATOMIC_RELAXED", access):
+        fail("scene queue word publication lost release ordering")
+    if any(name in access for name in PROFILE_NAMES):
+        fail("scene queue word backend restored a reconstruction profile selector")
+    api = re.compile(r"\b(?:ReadSceneQueueWord32|ReadSceneQueueAddressWord|"
+                     r"WriteSceneQueueWord32|WriteSceneQueueAddressWord|"
+                     r"IncrementSceneQueueCount32|DecrementSceneQueueCount32|"
+                     r"IncrementSceneQueueAddressCount|DecrementSceneQueueAddressCount|"
+                     r"CopySceneQueueWord32|CopySceneQueueAddressWord)\s*\(")
+    for name in ("SceneValueQueue.hpp", "SceneValueQueue.inl", "ScenePreviewDataQueue.hpp",
+                 "ScenePreviewDataQueue.inl", "ScenePreviewDataPublish.inl", "ScenePreviewDataPublishNull.inl",
+                 "SceneSelectAssets.cpp", "SceneSelectAssetsExact.inl", "SceneSelectController.cpp",
+                 "SceneSelectControllerExact.inl", "SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl",
+                 "FrontEndController.cpp"):
+        text = source(name)
+        spans = []
+        for match in api.finditer(text):
+            depth = 1; end = match.end()
+            while depth and end < len(text):
+                if text[end] == "(": depth += 1
+                elif text[end] == ")": depth -= 1
+                end += 1
+            if depth: fail(f"{name} has an unclosed queue word access")
+            spans.append((match.start(), end))
+        for match in re.finditer(r"(?:->|\.)\s*words\[", text):
+            if not any(a <= match.start() < b for a, b in spans):
+                fail(f"{name} bypasses explicit scene queue word access")
+        for match in re.finditer(r"\bif\s*\(", text):
+            start = match.end(); depth = 1; end = start
+            while depth:
+                if text[end] == "(": depth += 1
+                elif text[end] == ")": depth -= 1
+                end += 1
+            condition = text[start:end - 1]
+            if "SCENE_QUEUE_COUNT_WORD" not in condition or not re.search(r">\s*0\s*$", condition):
+                continue
+            if not text[end:].lstrip().startswith("{"):
+                fail(f"{name} lost the queue payload acquire block")
+            body = braced_body_after(text, end, "positive scene queue count")
+            if not body.lstrip().startswith("AcquireSceneQueuePayload();"):
+                fail(f"{name} reads queue payload without its acquire fence")
 
 
 def check_worker_thread_start_boundary(header_text: str | None = None, body_text: str | None = None) -> None:
@@ -4093,6 +4153,7 @@ def main() -> int:
     check_front_end_scene_queue_owner()
     check_scene_value_queue_owner()
     check_scene_preview_data_queue_owner()
+    check_scene_queue_word_access()
     check_worker_thread_start_boundary()
     check_primary_worker_signal_bindings()
     check_scene_asset_wait_protocol()

@@ -2,6 +2,7 @@
 #define TH095_SCENE_VALUE_QUEUE_HPP
 
 #include "inttypes.hpp"
+#include "SceneQueueWordAccess.hpp"
 #include <stddef.h>
 #include <string.h>
 
@@ -9,8 +10,8 @@ namespace th095
 {
 
 // Raw 32-bit queue words in the target front-end allocation. Payload channels
-// carry selectors, lengths, or x86 pointer bits; this is not native pointer
-// transport. Keep those domains separate when porting their consumers.
+// carry selectors and lengths; address channels use ScenePreviewDataQueue.
+// Keep these narrow integer domains separate from native address transport.
 struct SceneQueueWord
 {
     i32 value;
@@ -39,16 +40,20 @@ struct SceneValueQueue
     SceneValueQueue()
     {
         memset(this, 0, sizeof(*this));
-        this->words[SCENE_QUEUE_CAPACITY_WORD].value = SCENE_QUEUE_DATA_WORD_COUNT;
+        WriteSceneQueueWord32(this->words[SCENE_QUEUE_CAPACITY_WORD].value, SCENE_QUEUE_DATA_WORD_COUNT);
     }
 
     i32 Push(i32 value);
     i32 Pop(); // Shift, then return the new first word; not the removed word.
-    i32 Size() { return this->words[SCENE_QUEUE_COUNT_WORD].value; }
+    // Status snapshot only. Front establishes acquisition before payload use.
+    i32 Size() { return ReadSceneQueueWord32(this->words[SCENE_QUEUE_COUNT_WORD].value); }
     i32 Front() const
     {
-        if (this->words[SCENE_QUEUE_COUNT_WORD].value > 0)
-            return this->words[0].value;
+        if (ReadSceneQueueWord32(this->words[SCENE_QUEUE_COUNT_WORD].value) > 0)
+        {
+            AcquireSceneQueuePayload();
+            return ReadSceneQueueWord32(this->words[0].value);
+        }
         return 0;
     }
 };
