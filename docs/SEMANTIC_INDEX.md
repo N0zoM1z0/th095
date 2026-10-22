@@ -3,6 +3,7 @@
 This is the short route from a TH095 concept to its current declarations,
 implementation, and evidence. Chronological batch records are in
 `SEMANTIC_HISTORY.md`; build-profile ownership is in `SOURCE_MAP.md`.
+Parked, unaccepted work is listed in [the current handoff](RE_HANDOFF.md#parked-sem-341-unaccepted).
 
 | Subsystem | Current source / declaration | Current semantic boundary |
 | --- | --- | --- |

@@ -9,6 +9,9 @@ their recorded source revision; regenerate them before claiming a newer result.
 
 ## Authority and current state
 
+Session stopped for handoff on 2026-10-22. Production code is restored to the
+accepted SEM-340 baseline; the unaccepted FPS work is parked separately below.
+
 - Target: original Japanese TH095 v1.02a, SHA-256
   `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
   Ghidra access goes through the hash-attested scripts/ghidra.py wrapper.
@@ -57,6 +60,56 @@ their recorded source revision; regenerate them before claiming a newer result.
 Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SOURCE_MAP.md`, `ARCHITECTURE.md`, and `RE_WORKFLOW.md` before changing state.
 
+## Parked SEM-341 (unaccepted)
+
+The interrupted FPS work is **not applied to this production tree and is not an
+accepted semantic batch**. Its 12 files are preserved locally in both:
+
+- Git stash commit `03ec1ae7d1e3880eacee081578cfd0e0e129a8b6`;
+- `.analysis/sem341/pending.patch`, SHA-256
+  `281855326302153250297a7705b6c8fce05c223008fd3ab736dd394933d919f9`.
+
+The base is `4f696bc13e3bcec926beecbedc2d1cefea172ec2`. Recovery was checked in a
+separate Git index against the SHA-256 of every original file. The three
+protected user paths are excluded. The patch and stash are **local only**;
+transfer `.analysis/sem341/` separately for a handoff to another machine. A fresh
+clone contains the accepted code and this note, not the pending source.
+
+**Scope.** The proposal removes the two FPS pseudo-members beyond the exact
+Supervisor's constructor-proven 0x7BC boundary, binds the already-existing Main
+clock globals at 0x004C4E2C/0x004C4E30, and shares CalculateFps (0x00424720) and
+FinalizeFrame (0x00423840) between the Main source routes. It also aligns the
+local photography gate's field spellings and shrinks the affected closed debt
+baselines. Lifecycle/Supervisor declaration consolidation remains separate work.
+
+**Evidence available, not aggregate acceptance.** Baseline and candidate Main
+both pass 48/48 focused exact comparisons; candidate refreshes 25 private labels
+in one unit and rebases twelve public DIR32 references to the same effective
+data addresses. Independent normal Main comparison preserves 55 named roots,
+one private entry and 143 code/data/EH graphs under 28 private spellings. The
+native shared FPS test passes 1,356 fixture scenarios. These fixtures do not
+validate native Supervisor/GameWindow layouts or whole-game timing. Commands,
+terminal logs, source/object digests and comparison receipts are retained in
+`.analysis/sem341/handoff-snapshot.json` and neighboring files.
+
+**Before accepting or committing that source:** finish the bounded target and
+relocation audit plus semantic guard coverage; run the cold 698-unit aggregate,
+independent 88-source normal compile/link, compiler-owned EH audit and public CI;
+then update knowledge/source routing/history. No full regression, whole normal
+link, EH closure or accepted SEM-341 history entry currently exists.
+
+To resume only when requested, first check that the worktree is suitable and
+verify the patch digest above, then use:
+
+```bash
+git apply --check .analysis/sem341/pending.patch
+git apply .analysis/sem341/pending.patch
+```
+
+Do not also apply the stash. Keep the backup until the resumed batch is accepted;
+newer changes may require rebasing the patch. Restoring it also restores its
+candidate match recipe and both smaller debt baselines.
+
 ## Boundaries for the next batch
 
 - Do not add TH095_MATCH_EXACT/DIFFBUILD conditional directives below src/.
@@ -86,6 +139,17 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
   offsets +0x6104/+0x6108/+0x610C remain debt. Keep VC7.1 builds serial, single-CPU
   and low priority, and clear generated artifacts only after terminal receipts.
 
+## Handoff cleanup
+
+Production/tool/test inputs match all 306 accepted SEM-340 digests. Fresh public
+CI passes 97 workflow tests and eleven native x86-64/UBSan programs after the
+pending source is parked. That CI result does not accept the parked patch.
+Generated build files and Python caches are removed after terminal receipts.
+Conservative single-thread Git GC disables pruning and reflog expiry; object
+storage drops from about 65 MiB to 6 MiB while retaining the stash. Private
+analysis/evidence (about 10 MiB), the Ghidra project and pinned toolchains remain
+available. Cleanup and recovery receipts are in .analysis/sem341/.
+
 ## Protected working-tree exclusions
 
 These untracked paths predate this branch and are user-owned. Do not modify,
@@ -111,4 +175,5 @@ rg -n "exitSignal|replayScanWorker.active|secondaryReplayScanWorker" src/ReplayS
 Before a later commit, run the affected exact and normal oracles,
 `scripts/check-semantic-protocols.py`, `scripts/ci.py`,
 `scripts/build.py --check`, and `git diff --check`. Build and `.analysis/`
-scratch are disposable and may need regeneration.
+scratch are disposable and may need regeneration, except the parked
+SEM-341 patch/snapshot and its evidence, which must be preserved for handoff.
