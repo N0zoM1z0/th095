@@ -277,6 +277,9 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             "DIFFABLE_STATIC(ReplayScanWorker, g_SupervisorInputWorker);", main
         )
         self.assertNotIn("SupervisorInputWorkerView", manifest)
+        self.assertNotIn("ReplayBrowserExitSignal", manifest)
+        self.assertIn("void RequestExit();", owner)
+        self.assertEqual(manifest.count("?RequestExit@ReplayScanWorker@th095@@QAEXXZ"), 3)
         self.assertEqual(
             manifest.count("?Stop@ReplayScanWorker@th095@@QAEXXZ"), 5
         )

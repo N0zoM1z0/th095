@@ -132,7 +132,7 @@ the listed source.
 
 The whole-game normal oracle is still weaker than TH08's modern portable
 build: TH095 has pinned-VC7.1 normal compile/link closure but no maintained
-modern game product yet. SEM-327..331 add bounded native x86-64 cursor,
+modern game product yet. SEM-327..332 add bounded native x86-64 cursor,
 pending-texture-data, raw queue, preview-address, and worker-lifecycle oracles
 (`scripts/check-portable-front-end.py`) that compile and execute the actual
 shared declarations and behavior with UBSan. Pending-data tests use real
@@ -144,7 +144,9 @@ word-shift code; metadata words follow address width and Size remains i32.
 These validate only their component contracts and sequential transitions; they
 do not exercise real workers or graphics. The worker fixture executes the shared lifecycle with
 typed API bindings, covering failure/timeout/close ordering and native-width
-handles/arguments. It does not invoke the historical CRT callback cast or prove
+handles/arguments. Request tests execute the canonical exit-only store at its
+native offset, retaining thread ID and other neighbors. It does not invoke the
+historical CRT callback cast or prove
 thread scheduling, joins, or data-race freedom.
 Record this limitation; do not substitute exact success or one portable
 component for a whole-game portable/runtime oracle.

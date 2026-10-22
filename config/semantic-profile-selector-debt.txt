@@ -198,10 +198,9 @@
 12	src/PhotoStage.cpp	#ifdef DIFFBUILD
 1	src/PhotoStage.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoStage.cpp	#ifndef DIFFBUILD
-2	src/ReplayBrowser.cpp	#ifdef DIFFBUILD
+1	src/ReplayBrowser.cpp	#ifdef DIFFBUILD
 1	src/ReplayBrowser.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ReplayBrowser.cpp	#ifndef DIFFBUILD
-1	src/ReplayBrowser.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 2	src/ReplayBrowser.hpp	#ifdef DIFFBUILD
 1	src/ReplayBrowser.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ReplayBrowser.hpp	#ifndef DIFFBUILD

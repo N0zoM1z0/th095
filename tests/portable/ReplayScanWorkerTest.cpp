@@ -125,6 +125,30 @@ int main()
         CHECK(worker.exitSignal == 0 && worker.active == 1);
         CheckRetained(worker);
     }
+    // The retired +8 projection addressed native threadId. Execute the actual
+    // worker operation at +12 and verify every neighboring field is retained.
+    const i32 previousSignals[] = {-17, 0, 1, 0x12345678};
+    for (int hasHandle=0; hasHandle<2; ++hasHandle)
+    {
+        for (int active=0; active<2; ++active)
+        {
+            for (unsigned signal=0; signal<sizeof(previousSignals)/sizeof(previousSignals[0]); ++signal)
+            {
+                Fixture f; fixture=&f;
+                ReplayScanWorker worker; f.worker=&worker;
+                uintptr_t handle=hasHandle ? oldHandle : 0;
+                Seed(worker,handle); worker.active=active; worker.exitSignal=previousSignals[signal];
+                for (int request=0; request<2; ++request)
+                {
+                    worker.RequestExit();
+                    CHECK(worker.exitSignal==1 && worker.active==active);
+                    CHECK(worker.threadHandle==handle && worker.threadProc==CallbackA);
+                    CheckRetained(worker); CHECK(f.events.empty());
+                }
+                worker.threadHandle=0; // Opaque fixture token; no real resource was acquired.
+            }
+        }
+    }
     const u32 terminalResults[] = {0, 0x80, 0xffffffffu, 7};
     for (int timeouts=0; timeouts<=3; ++timeouts)
     {

@@ -1,9 +1,9 @@
 # Shared worker lifecycle and port boundary
 
-SEM-331 covers the common ReplayScanWorker type and its four lifecycle methods
-for the original Japanese TH095 v1.02a target. The canonical declaration was
-already unified by SEM-303; this batch shares behavior, removes the fixed-width
-header barrier, and makes the state transition code executable in a native
+SEM-331..332 cover the common ReplayScanWorker type and its five lifecycle
+methods for the original Japanese TH095 v1.02a target. The canonical declaration
+was already unified by SEM-303; these batches share behavior, remove the
+fixed-width header barrier, and make the state transition code executable in a native
 x86-64 API fixture. It does not supply a portable OS thread implementation.
 
 ## Storage and ownership
@@ -56,6 +56,14 @@ Thread ID and opaque storage are retained. A return from this routine is not
 unconditional evidence of a successful join. The destructor delegates to Stop.
 No failure handling, timeout policy, or target transitions are repaired here.
 
+RequestExit at 0x0041BB00 only publishes exitSignal=1. It preserves active,
+handle, callback, thread ID, and opaque bytes and invokes no thread API. The
+ReplayBrowser and Scene Select callers both pass target 0x004C4CB8, the actual
+primary worker at Supervisor +0x648. Their old partial ReplayBrowserExitSignal
+type and global alias are retired in SEM-332. Native layout places exitSignal
+at +12, whereas that projection's fixed +8 would address threadId. Both source
+profiles now invoke the canonical embedded worker directly.
+
 The bidirectional exit signal is both a stop request and a callback completion
 publication. Historical g_HelpLoadComplete/g_HelpLoadActive names alias the
 primary worker's fields in normal production; they are not independent storage
@@ -84,8 +92,8 @@ remain open; these tests do not prove a one-item bound.
 
 ## Shared code and independent oracles
 
-ReplayScanWorkerBehavior.inl supplies constructor/destructor/Start/Stop at both
-normal and exact worker emission sites. Supervisor wrappers and historical
+ReplayScanWorkerBehavior.inl supplies constructor/destructor/RequestExit/Start/Stop
+at both normal and exact worker emission sites. Supervisor wrappers and historical
 global/reference aliases remain different surrounding source. Both production
 profiles include ReplayScanWorkerWin32.hpp, whose narrow begin binding retains
 the target's direct callback cast in a typed begin function. A minimal pinned
@@ -101,23 +109,22 @@ opaque handle tokens above 4 GB, real allocated user arguments above 4 GB,
 callback identity, four-byte scalar fields, restart ordering, zero-handle
 no-op, 0..3 timeouts, several non-timeout statuses, ignored close failure,
 creation failure, completion before begin returns, repeated Stop, destructor
-dispatch, and retained thread ID/opaque bytes. This is a sequential state/API
+dispatch, and retained thread ID/opaque bytes. It also executes 32 actual
+RequestExit calls across zero/high handles, both active values, four prior
+signal values, and repeated requests. Each preserves all neighboring fields
+and emits no API event. This is a sequential state/API
 oracle, not Win32 dispatch, scheduling, synchronization, or memory-model proof.
 The ordinary i32 cross-thread fields and historical callback ABI boundary still
 need a real portable backend and appropriate threading validation. Unknown
 storage and the secondary worker's business role are not inferred from tests.
 
-A concrete remaining caller barrier is ReplayBrowserExitSignal: both retained
-headers put requested at +8, and normal production casts the canonical worker
-base to that partial projection. A native offsetof-only probe shows worker
-threadId at +8 and exitSignal at +12. Retaining that projection in a 64-bit
-caller would address the wrong field; no aliasing write was executed to prove
-this layout mismatch. Retire the projection and migrate Request at 0x0041BB00
-to the canonical worker before accepting native request callers.
-
 Target disassembly is freshly hash-attested; the original five worker/wrapper
 comparisons remain exact. A minimal pinned-VC7.1 layout/constructor probe and
-the added canonical 53-byte comparison cover the ICF constructor. Aggregate,
-normal-product, and native receipts are recorded in SEM-331 history. The public
+the added canonical 53-byte comparison cover the ICF constructor. SEM-332's
+minimal 21-byte RequestExit probe and complete caller comparisons prove the
+method-owner migration. Caller data relocations now address Supervisor's base
+0x004C4670 with COFF addend +0x648, preserving effective target 0x004C4CB8.
+Aggregate, normal-product, and native receipts are recorded in SEM-331..332
+history. The public
 driver scripts/check-portable-front-end.py now runs five component executables;
 this is not a maintained modern game product or a playable 64-bit port.

@@ -120,7 +120,6 @@
 1	src/PhotoStage.cpp	struct	PhotoStageTextureClearLocalsOracle
 1	src/PhotoStage.cpp	struct	PhotoStageTextureEntry
 1	src/ReplayBrowser.cpp	struct	ReplayBrowserLoadLocals
-1	src/ReplayBrowser.hpp	struct	ReplayBrowserExitSignal
 1	src/ReplayBrowser.hpp	struct	ReplayBrowserView
 1	src/ReplayManager.cpp	struct	FreeSlots
 1	src/ReplayManager.cpp	struct	ReplayAsciiManagerView

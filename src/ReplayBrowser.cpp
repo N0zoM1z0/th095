@@ -25,12 +25,8 @@ namespace th095
 char g_SelectedReplayPath[0x100];
 #endif
 
-// Target 0x004BDECC remembers the browser cursor.  Target 0x004C4CB8 is the
-// base of Supervisor::replayScanWorker; its +8 field is the exit request.
+// Target 0x004BDECC remembers the browser cursor.
 DIFFABLE_STATIC(i32, g_ReplayBrowserSelection);
-#ifdef DIFFBUILD
-DIFFABLE_STATIC(ReplayBrowserExitSignal, g_ReplayBrowserExitSignal);
-#endif
 
 static __forceinline void ReplayBrowserCreateVmAt(ReplayBrowserView *view, i32 index)
 {
@@ -69,11 +65,6 @@ inline u16 IsReplayBrowserMenuInputPressed(u16 buttons)
 {
     return (u16)((GetReplayBrowserPressedButtons(buttons) != 0) ||
                  ((g_ResultMenuInput & buttons) != 0));
-}
-
-void ReplayBrowserExitSignal::Request()
-{
-    this->requested = 1;
 }
 
 ChainCallbackResult ReplayBrowserView::Update()
@@ -187,7 +178,7 @@ ChainCallbackResult ReplayBrowserView::Update()
             this->rowCursor.Pop();
             this->stateTimer.Reset();
             this->state = TH095_REPLAY_BROWSER_STATE_INITIALIZE;
-            g_ReplayBrowserExitSignal.Request();
+            g_Supervisor.replayScanWorker.RequestExit();
             this->vmIds.SetInterrupt(0x1f, 1);
             this->vmIds.SetInterrupt(0x47, 1);
             this->vmIds.SetInterrupt(0x68, 1);

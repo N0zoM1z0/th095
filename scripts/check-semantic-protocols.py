@@ -1127,6 +1127,22 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
             fail(f"shared worker lifecycle lost target transition: {token}")
     if any(token in shared for token in PROFILE_NAMES):
         fail("shared worker lifecycle restored a profile branch")
+    if "void RequestExit();" not in source_without_comments(owner):
+        fail("canonical worker lost the shared exit request API")
+    request_source = source_without_comments(shared)
+    marker = "void ReplayScanWorker::RequestExit()"
+    if marker not in request_source:
+        fail("worker request lost its canonical implementation")
+    request_body = braced_body_after(request_source, request_source.index(marker), marker)
+    if re.sub(r"\s+", "", request_body) != "this->exitSignal=1;":
+        fail("worker request changed more than the exit handshake")
+    for name, receiver in (("ReplayBrowser.cpp", "g_Supervisor"),
+                           ("ReplayBrowserExact.inl", "g_SceneSupervisor"),
+                           ("SceneSelectUpdate.cpp", "g_Supervisor"),
+                           ("SceneSelectUpdateExact.inl", "g_SceneSupervisor")):
+        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if f"{receiver}.replayScanWorker.RequestExit();" not in source:
+            fail(f"{name} lost its real primary-worker request receiver")
 
     declarations: list[str] = []
     for path in SRC.rglob("*"):
@@ -1165,6 +1181,8 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
         fail("Supervisor lifecycle lost its canonical secondary worker")
 
     retired_source_tokens = (
+        "ReplayBrowserExitSignal",
+        "g_ReplayBrowserExitSignal",
         "TH095_REPLAY_SCAN_WORKER_DEFINED",
         "TH095_REPLAY_WORKER_EXIT_SIGNAL",
         "SupervisorInputWorkerView",

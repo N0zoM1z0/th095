@@ -1138,7 +1138,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->state = TH095_SCENE_SELECT_STATE_INITIALIZE;
                 view->stateTimer.Reset();
                 view->flagBits.assetLoadStopRequested = 1;
-                g_ReplayBrowserExitSignal.Request();
+                g_Supervisor.replayScanWorker.RequestExit();
                 g_AnmManager->MarkVmForDeletion(
                     view->previewTextVmIds[0]);
                 g_AnmManager->MarkVmForDeletion(

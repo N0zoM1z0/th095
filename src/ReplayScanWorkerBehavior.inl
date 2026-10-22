@@ -14,6 +14,13 @@ ReplayScanWorker::~ReplayScanWorker()
     this->Stop();
 }
 
+// Target 0x0041BB00: both scene and replay callers address the primary worker.
+// Request only publishes exitSignal; it neither clears active nor waits/closes.
+void ReplayScanWorker::RequestExit()
+{
+    this->exitSignal = 1;
+}
+
 void ReplayScanWorker::Stop()
 {
     // A missing handle is a complete no-op, including after a failed launch.

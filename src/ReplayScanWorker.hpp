@@ -21,6 +21,7 @@ struct ReplayScanWorker
 
     ReplayScanWorker();
     ~ReplayScanWorker();
+    void RequestExit(); // Publish the exit handshake; active/handle are unchanged.
     void Stop();
     void Start(void (TH095_FASTCALL *callback)(void *), void *argument);
 };

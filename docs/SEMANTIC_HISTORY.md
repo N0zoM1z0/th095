@@ -16860,3 +16860,107 @@ Final staged whitespace validation caught and removed one trailing blank line
 in the shared behavior file. All preceding bytes/program tokens are identical;
 6/6 affected exact comparisons, the normal worker object/four target bodies,
 and all five native oracles were rechecked after that cleanup.
+
+### SEM-332 — canonical exit requests without a fixed-offset worker projection
+
+**Scope / target observations (2026-10-22).** The retained replay-exit view
+used an eight-byte prefix plus requested and normal production cast the real
+worker to it. After SEM-331 made the worker native-width, that prefix would
+address threadId at native +8 instead of exitSignal at +12. Fresh hash-attested
+disassembly reconciles the complete setter at `0x0041BB00..0x0041BB14`: it
+stores only 1 at this+8 and returns, with no relocation. ReplayBrowser's call
+at `0x0044E35C` and Scene Select's at `0x0044ADE2` independently load receiver
+`0x004C4CB8`, the actual primary worker at Supervisor +0x648. Exactly these two
+callers are reported. Independent exit-field xrefs retain the established
+bidirectional request/completion interpretation; no new active/liveness or
+business role is inferred.
+
+**Representation / four ownership axes.** `ReplayScanWorker::RequestExit`
+now supplies that single store in the profile-independent shared behavior.
+Both replay headers' partial ReplayBrowserExitSignal declarations, the global
+alias, the normal reinterpret_cast overlay, and DIFF's duplicate storage are
+retired. Both normal and exact Scene Select/ReplayBrowser callers request exit
+on their actual embedded worker; no local replacement view or selected body
+is added. Main/Supervisor retain physical storage and distinct lifetimes.
+ReplayScanWorker owns semantic request behavior and emits the 21-byte method
+from its existing object through both shared include sites. The old comparison
+moves from ReplayBrowser.cpp to ReplayScanWorker.cpp at the same target address;
+original target translation-unit ownership remains Unknown. Normal worker
+emission now directly includes Main.hpp/Global.hpp for its actual Supervisor
+dependency. Enclosing UI views, Supervisor wrappers, and Help aliases retain
+their documented surrounding source boundaries. Exact replay is not acceptance
+of those differing normal bodies.
+
+**Compiler / relocation evidence.** A minimal clean pinned-VC7.1 build-3077
+probe matches all 21 bytes without relocation. The three affected sources
+passed 11/11 strict comparisons before editing and again after migration.
+Worker now owns seven comparisons, browser three, Scene Select update one.
+Two call REL32 identities move from the partial Request method to canonical
+RequestExit at unchanged positions and destination `0x0041BB00`. Two DIR32
+receiver identities move from the proxy base `0x004C4CB8` with object addend 0
+to canonical Supervisor base `0x004C4670` with actual COFF addend `0x648`.
+Their complete effective target address stays `0x004C4CB8`; byte comparison
+and relocation resolution cover the entire enclosing functions, not just the
+setter. Full commands, source hashes, disassembly, caller/xref observations,
+structural reports, and strict recipes are retained under `.analysis/sem332/`.
+The target candidate/function credit and imported boundary are unchanged.
+
+**Native oracle / guard.** The existing worker fixture executes 32 actual
+shared RequestExit calls: zero or high native handle, active 0/1, four prior
+signal values, and repeated requests. Each sets exitSignal=1 and preserves
+thread ID, active, handle, callback, and opaque bytes, with no API event. The
+fixture never executes the retired type-punning overlay. It uses the actual
+canonical header/shared body under native x86-64/UBSan, so this checks the
+native field action rather than only an offset formula. Existing core failure,
+timeout, restart, and completion traces remain covered. The closed worker guard
+requires the one-store shared method and four real receiver calls and rejects
+the retired type/global throughout production source. This does not execute
+real OS threads, legacy callback dispatch, scheduling, or synchronization.
+
+**Debt and profile limits.** No profile selector/declaration, adapter, assembly,
+padding, or fake storage is introduced. Removing the proxy declaration and
+two selector directives shrinks the closed selected-declaration baseline from
+194 keys / 199 occurrences to **193 / 198**, and selectors from 270 / 708 to
+**269 / 706**. The worker also compiles in DIFF. The two surrounding caller
+DIFF builds already failed before this batch on missing RuntimePressedButtons,
+RuntimeResultMenuInput, and RuntimeInputCurrent helpers; after editing they
+produce exactly the same diagnostic messages (2 browser, 11 Scene Select).
+No DIFF caller acceptance or unrelated input repair is claimed. Exact and
+normal are independently validated below. Portable thread backend, ordinary
+cross-thread i32 accesses, historical callback conversion, unknown storage,
+secondary worker business role, and reachable preview count/release domains
+remain open.
+
+**Frozen-source aggregate.** Cold canonical replay passes **698/698 comparisons
+across all 88 sources**, refreshing 350 compiler-private identities in 23 units
+across 13 sources only after complete structural/relocation proof and strict
+replay. A separate baseline-commit audit confirms exactly the single same-address
+unit move, two reviewed method retags, two reviewed data base/addend migrations,
+and those private labels. All remaining fields, extents, profiles, relocation
+positions/types, and destinations are unchanged. All 254 tracked production
+inputs and modified scripts/tests retain their frozen hashes. The five mapping/
+source/exact ledgers change only the request identity at 0x0041BB00; imported
+boundaries, origin ledger, header-only claims, authored credit **696 functions /
+336,486 bytes**, and the **698-comparison** count remain stable.
+
+**Independent normal / final gates.** A separate cold build compiles **88/88
+pinned VC7.1 i386 COFF objects** across two profiles and links/verifies a
+**778,752-byte PE32 GUI**, build-local SHA-256
+`15fb70925a9f832f971977c1009311aa32df4272d9d18bd80af171bf56f7182a`. The five normal-selected shared core bodies independently
+reproduce all **304 target bytes and every relocation** (constructor 53,
+destructor 19, request 21, Stop 124, Start 87). Normal caller COFF inspection
+finds one direct RequestExit call per UI body, immediately receiving canonical
+`g_Supervisor +0x648`; this does not claim target identity of the other normal
+UI code. The normal link emits the request from ReplayScanWorker.obj, contains
+no retired proxy symbol, and folds worker/PbgArchive constructors at normal
+image 0x0043CE40. Build-local addresses and hashes are not original-image identity.
+
+Final public CI passes **87 workflow tests and five native x86-64/UBSan
+executables**. Tracking, generated progress, canonical match graph, semantic
+guards, and whitespace checks pass. CPU 1, nice 10, and serial VC7.1 builds
+were used. Compact target/probe/aggregate/normal/native/input-hash and
+manifest/ledger receipts are saved privately; generated build objects, binaries,
+PDBs, maps, and Python caches are cleared before checkpoint. Protected user-owned
+paths are untouched. Semantic reconstruction remains active-incomplete; the
+next bounded work is preview cancellation/publication and independent caller
+count/release evidence, with Help aliases tracked separately.

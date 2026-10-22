@@ -48,11 +48,6 @@ inline u16 IsReplayBrowserMenuInputPressed(u16 buttons)
                  ((g_ResultMenuInput & buttons) != 0));
 }
 
-void ReplayBrowserExitSignal::Request()
-{
-    this->requested = 1;
-}
-
 ChainCallbackResult ReplayBrowserView::Update()
 {
     i32 i;
@@ -164,7 +159,7 @@ ChainCallbackResult ReplayBrowserView::Update()
             this->rowCursor.Pop();
             this->stateTimer.Reset();
             this->state = 0;
-            g_ReplayBrowserExitSignal.Request();
+            g_SceneSupervisor.replayScanWorker.RequestExit();
             this->vmIds.SetInterrupt(0x1f, 1);
             this->vmIds.SetInterrupt(0x47, 1);
             this->vmIds.SetInterrupt(0x68, 1);
