@@ -18,20 +18,26 @@ their recorded source revision; regenerate them before claiming a newer result.
 - Ledger report on 2026-09-26: 1,880 provisional candidates, 713 mapped,
   697 source-present, and 696 exact units covering 336,486 bytes. Recompute
   before making a new claim. `config/claims.csv` remains header-only.
-- Latest accepted batch: **SEM-326**. Exact and normal Scene Select update
-  bodies call their cursor type's inline `SetCount(i32)` for the group and
-  twelve scene counts. The two cursor declarations still differ; the shared
-  method is not declaration convergence.
-- The 2026-09-26 cleanup reran a cold **696/696 exact units across 88 sources
-  with zero private-label refresh** after comment-only exact-header edits.
-  SEM-326 separately compiled 88 normal i386 COFF objects and linked a
-  778,752-byte PE32 image; that normal receipt still applies because the
-  normal-selected source was unchanged. Neither result proves whole-image
-  identity or current runtime behavior. Generated build products were cleared
-  at this handoff.
-- Cleanup removed `build/`, `.analysis/`, Python caches, and the root
-  `vc70.pdb`; the verified target, pinned tools, private Ghidra project, and
-  runtime configuration remain in place. Recreate scratch only when needed.
+- Latest accepted batch: **SEM-327**. `ResultScreenReplayCursor.hpp` now owns
+  one profile-independent 0xD8 cursor declaration; its shared `.inl` supplies
+  Move/Push/Pop at both ResultScreen emission sites. Normal ResultScreen uses
+  the common default constructor. The old unused 0x18-byte local remains
+  only in the frozen exact tag-constructor body; its original source meaning
+  is Unknown, and the former semantic construction-phase claim is corrected.
+- The 2026-10-22 cold aggregate passed **696/696 exact units across 88
+  sources**. Controlled refresh changed only 59 compiler-private identities
+  across six units in four sources, with complete structural/relocation/target
+  checks and immediate strict comparison. No accepted extent or credit changed.
+- The separate normal cold build compiled 88 i386 COFF objects and linked a
+  778,752-byte verified PE32. The actual shared cursor also compiles and
+  executes as native x86-64 C++ with UBSan through
+  `scripts/check-portable-cursor.py`, now mandatory in public CI. CI and all
+  83 workflow tests pass. This is one portable component, not a modern or
+  64-bit game product, and no whole-game runtime claim is made.
+- Generated objects, PDBs, executable/map, and Python caches are disposable.
+  The checkpoint clears them after validation; compact SEM-327 oracle logs
+  and the normal build report remain privately under `.analysis/sem327/`.
+  The verified target, pinned tools, Ghidra project, and protected files stay.
 - No active blocker is known. The only untracked working-tree paths at
   handoff are the protected user-owned files listed below.
 
@@ -48,13 +54,20 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
   evidence and a normal compiler or runtime oracle.
 - Prefer one profile-independent owner. Keep compiler emission adapters
   narrow and proved; leave unproved fields, roles, and protocols Unknown.
-- The next bounded lane is the remaining exact/normal Scene Select
-  declaration split. Compare one field family at a time. Keep controller
-  `+0x6104/+0x6108`, screen-local `+0x610C`, flag bit 4, and bits 6..31
-  separate until target-local producers and independent consumers justify
-  their roles. Use focused exact units and normal probes; run aggregate gates
-  after shared-header changes. Keep VC7.1 builds serial, on one CPU, at
-  lower priority.
+- The next bounded lane follows a direct 64-bit blocker: the front-end
+  preview-data queues and pending pointer arrays. `SceneSelectAssets.cpp` and
+  both Scene Select update bodies still carry some file-data pointers as
+  `i32`, while FrontEndLifecycle declares the pending arrays as `void *`.
+  Trace `LoadSceneSelectionAssets @ 0x0044D0A0`, scene update `0x00447D00`,
+  main-menu cleanup `0x00446A50`, and teardown `0x00445AA0`, together with
+  queue Push/Pop at `0x00450DD0/0x00450F60`. Separate pointer payloads from
+  integer selectors/sizes using producers and free consumers before changing
+  representation; do not globally widen every queue element or file field.
+- Cursor-specific remaining debt is the exact constructor's inert local,
+  plus `SceneGroupCursorView` and the enclosing front-end projections. Keep
+  `+0x6104/+0x6108`, screen-local `+0x610C`, flag bit 4 and bits 6..31 Unknown
+  until independent producers/consumers justify their roles. No new profile
+  selector is authorized. Keep VC7.1 builds serial, single-CPU and low priority.
 
 ## Protected working-tree exclusions
 
@@ -73,8 +86,9 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/analysis/report-semantic-debt.py --path src/SceneSelectUpdate.cpp --details
-rg -n "SceneSelectUpdateView|requestedState|flagBits|unknown" src/SceneSelectUpdate.cpp src/SceneSelectUpdateExact.inl
+python3 scripts/check-portable-cursor.py
+python3 scripts/analysis/report-semantic-debt.py --path src/SceneSelectAssets.cpp --details
+rg -n "pendingPrimaryData|pendingSecondaryData|AssetQueuePushPointer" src/SceneSelectAssets.cpp src/SceneSelectUpdate.cpp src/FrontEndLifecycle.cpp
 ```
 
 Before a later commit, run the affected exact and normal oracles,

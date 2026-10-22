@@ -16331,3 +16331,90 @@ objects and linked a 778,752-byte PE32 image (build-local SHA-256
 This verifies normal compilation and linkage after the shared-header edit;
 neither the normal PE32 nor the exact-unit replay proves whole-image byte
 identity or runtime cursor behavior.
+
+### SEM-327 — share the front-end cursor and execute it natively as x86-64
+
+**Scope and target observations (2026-10-22).** Hash-attested disassembly of
+`Push @ 0x0041B660`, `Pop @ 0x0041B6E0`, `Move @ 0x0041B760`, and
+`ResultScreen::ResultScreen @ 0x004264B0` establishes the 0xD8 cursor's signed
+four-byte selection/count fields, saved arrays at +0x0C/+0x4C, depth at +0x8C,
+disabled entries at +0x90, wrap flag at +0xD0, and disabled count at +0xD4.
+The independent ResultScreen, Scene Select, Replay Browser, and front-end
+lifecycle consumers use the same cursor contract. Push writes a save slot,
+then saturates depth at 15; Pop decrements before restoring, with a floor at
+zero. Both clear disabled entries. Move wraps or clamps and retries disabled
+entries. SetCount does not clamp the current selection, and Set stores its
+argument unchanged when count is zero. Constructor initialization covers only
+current, count, depth, wraps, and disabled count; previous/history arrays must
+not be read before a caller initializes them.
+
+**Ownership and source.** `ResultScreenReplayCursor.hpp` is the one
+profile-independent declaration, depending only on scalar types and stddef;
+its layout assertions run under both VC7.1 i386 and native x86-64. The former
+normal/exact class duplicates are retired. `ResultScreenReplayCursor.inl`
+supplies the same Move/Push/Pop bodies at both original ResultScreen lexical
+emission sites. The existing ResultScreen and front-end allocations still own
+the embedded bytes; menu state handlers own selection/count/history lifetime,
+ResultScreen.cpp owns method emission, and exact/normal/native-test products
+consume the same owner and movement/history code. No new TU, selected layout,
+profile selector, global, or storage alias is introduced. The closed selected
+declaration baseline shrinks to 197 keys / 202 occurrences. The enclosing
+Scene Select/ResultScreen projections and their other profile splits remain.
+
+**Corrected construction claim and retained debt.** A controlled pinned-3077
+`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src`
+plus build.py's `/DTH095_MATCH_EXACT` experiment
+removed the old tag constructor's unused `compilerStorage[0x18]`. The
+373-byte target constructor then matched only 289/313 comparable bytes:
+its frame shrank from 0x28 to 0x10 and 23 EBP-relative operands shifted.
+This proves a dependency of the inherited reconstruction on an inert local;
+it does not prove an original local or a semantic construction phase.
+REPLAY-018 is corrected accordingly. The canonical declaration contains no
+such local. The unchanged legacy overload body remains confined to the
+already selected `ResultScreenExact.hpp`; normal ResultScreen now uses the
+shared default constructor with the same initialized cursor values. That
+exact-only constructor body and the normal enclosing constructor are a
+retained boundary, not claimed body convergence. No new compiler-shaping
+storage was added. A natural exact-constructor replacement remains open.
+
+**Portable oracle.** `python3 scripts/check-portable-cursor.py` compiles the
+actual shared header and implementation with GCC 8.4.0, `-m64 -std=c++11 -O2
+-Wall -Wextra -Werror -pedantic -fsanitize=undefined
+-fno-sanitize-recover=all`, then executes the ELF x86-64 binary with a 15-second
+timeout. A pointer-width assertion requires a real 64-bit process. The test
+uses an independent modular/clamped model across counts 1..12, both wrap
+modes and offsets -25..25, plus the sixteen-disabled-entry boundary,
+count-zero Set, previous-selection tracking, nested save/restore, and depth
+saturation. It passes without UBSan findings and is mandatory in public CI.
+The semantic guard now requires the shared header/implementation and rejects
+restored class/body duplicates or platform/profile dependencies. This is a
+bounded modern compiler and behavioral oracle, not a modern game build or
+whole-game runtime validation. Invalid/zero-count Move, all-disabled or
+unreachable selections, signed arithmetic overflow, and Disable beyond the
+sixteen-entry caller contract are not hardened or newly accepted.
+
+**Validation.** Focused baseline exact ResultScreen replay passed 24/24 with
+zero refresh; the baseline normal ResultScreen object compiled independently.
+The converged exact object passed 24/24 after 29 compiler-private label
+refreshes in two units, each gated on unchanged full structural bytes,
+relocation positions/types, and target destinations.
+
+The cold aggregate command `python3 scripts/replay-exact-units.py
+--refresh-private-labels` passed **696/696 units across 88 sources**. It
+refreshed a further 30 compiler-private labels in four units; combined with
+the focused step, 59 identities in six units changed across ResultScreen,
+FrontEndController, HelpMenu, and SceneTexture. The canonical comparator
+rechecked each refreshed unit immediately. An independent HEAD/worktree
+manifest audit confirms that all other fields, including every relocation
+offset/type/target, remain unchanged. No extent, accepted count, or credited
+byte total changed.
+
+The separate `python3 scripts/build-whole.py` normal cold build compiled all
+88 i386 COFF objects and linked a verified 778,752-byte PE32 image (build-local
+SHA-256 `75da8c3e4d8ca77251513d92a56e66a1550cc3263512e1c94cd14c7af7abf481`).
+Normal compilation/linkage therefore includes the ordinary cursor constructor,
+independently of the exact-only phase body. `python3 scripts/ci.py` passed,
+including 83 workflow tests and the mandatory native x86-64 cursor execution;
+tracking, match-unit graph, semantic guards, generated progress, and whitespace
+checks passed. These results do not prove whole-image identity, whole-game
+runtime behavior, semantic completion, or a playable 64-bit game port.

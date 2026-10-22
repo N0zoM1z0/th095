@@ -67,6 +67,12 @@ VC7 comparison, and the playable Windows i386 behavior.
 
 ## Phase 2: portable build boundary
 
+SEM-327 adds the first bounded native x86-64 component oracle: the shared
+front-end cursor compiles without Windows/D3D headers and executes its actual
+selection, movement, disabled-entry, and history code under UBSan in public
+CI (`python3 scripts/check-portable-cursor.py`). This supports semantic work;
+the modern whole-game build and the platform boundary below remain open.
+
 - [ ] Add a separate modern build product and CI compile lane without changing the
   pinned VC7.1 comparison path.
 - [ ] First prove a modern 32-bit Windows build when useful. This isolates compiler

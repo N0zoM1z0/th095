@@ -2164,6 +2164,7 @@ def check_scene_select_color_interpolation_owner(
 
 def check_scene_select_cursor_count_owner(
     exact_header_text: str | None = None,
+    cursor_header_text: str | None = None,
 ) -> None:
     for name in ("ResultScreen.hpp", "ResultScreenExact.hpp"):
         header = source_without_comments(
@@ -2171,8 +2172,28 @@ def check_scene_select_cursor_count_owner(
             if name == "ResultScreenExact.hpp" and exact_header_text is not None
             else (SRC / name).read_text(encoding="utf-8")
         )
-        if "void SetCount(i32 value) { this->count = value; }" not in header:
-            fail(f"{name} lost the shared cursor-count operation")
+        if '#include "ResultScreenReplayCursor.hpp"' not in header:
+            fail(f"{name} lost the canonical cursor include")
+        if re.search(r"\b(?:struct|class)\s+ResultScreenReplayCursor\s*[{:]", header):
+            fail(f"{name} restored a duplicate cursor declaration")
+    cursor = source_without_comments(
+        cursor_header_text
+        if cursor_header_text is not None
+        else (SRC / "ResultScreenReplayCursor.hpp").read_text(encoding="utf-8")
+    )
+    if "void SetCount(i32 value) { this->count = value; }" not in cursor:
+        fail("canonical cursor lost the shared cursor-count operation")
+    if any(token in cursor for token in (
+        "TH095_MATCH_EXACT", "DIFFBUILD", "compilerStorage", "Global.hpp",
+    )):
+        fail("canonical cursor restored profile or platform dependencies")
+    for name in ("ResultScreen.cpp", "ResultScreenExact.inl"):
+        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if body.count('#include "ResultScreenReplayCursor.inl"') != 1:
+            fail(f"{name} lost the shared cursor implementation")
+        for method in ("Move", "Push", "Pop"):
+            if f"ResultScreenReplayCursor::{method}(" in body:
+                fail(f"{name} restored a duplicate cursor {method} body")
     for name in ("SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl"):
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         for marker in (
@@ -3731,7 +3752,7 @@ def main() -> int:
     print("  FrontEnd timers: one shared ZunTimer type with target-order reset helper")
     print("  Scene Select best-shot preview: typed record fields in both update bodies")
     print("  Scene Select VM colors: one shared interpolation ABI view")
-    print("  Scene Select cursor counts: one shared operation in both cursor layouts")
+    print("  Front-end cursor: one shared layout and movement/history body")
     print("  FrontEnd transition VM: one shared +0x6100 handle across title pages")
     print("  FrontEnd requested states: one shared explicit 0..9 domain")
     print("  FrontEnd flags: one shared bit-0/1/2/3/5 owner with unknown ranges")

@@ -764,7 +764,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                 )
             )
 
-    def test_scene_cursor_count_guard_rejects_missing_exact_operation(self) -> None:
+    def test_scene_cursor_count_guard_rejects_missing_owner(self) -> None:
         GUARD.check_scene_select_cursor_count_owner()
         exact = (ROOT / "src" / "ResultScreenExact.hpp").read_text(
             encoding="utf-8"
@@ -772,9 +772,25 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             GUARD.check_scene_select_cursor_count_owner(
                 exact.replace(
-                    "void SetCount(i32 value) { this->count = value; }", "", 1
+                    '#include "ResultScreenReplayCursor.hpp"', "", 1
                 )
             )
+        with self.assertRaises(SystemExit):
+            GUARD.check_scene_select_cursor_count_owner(
+                exact + "\nstruct ResultScreenReplayCursor {};\n"
+            )
+        cursor = (ROOT / "src" / "ResultScreenReplayCursor.hpp").read_text(
+            encoding="utf-8"
+        )
+        for old, new in (
+            ("void SetCount(i32 value) { this->count = value; }", ""),
+            ('#include "inttypes.hpp"', '#include "Global.hpp"'),
+        ):
+            with self.subTest(old=old):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_scene_select_cursor_count_owner(
+                        cursor_header_text=cursor.replace(old, new, 1)
+                    )
 
     def test_front_end_requested_state_guard_rejects_raw_dispatch_and_write(self) -> None:
         GUARD.check_front_end_requested_state_owner()

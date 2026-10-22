@@ -130,10 +130,13 @@ the listed source.
 | Behavior, lifetime, persistence, callback, or rendering interpretation | Compare every touched target function. | Smallest relevant runtime/state-transition check when available. |
 | Compiler-shape exception | Minimal pinned-VC7.1 oracle and exact comparison. | Keep the semantic body readable and independently compiled. |
 
-The current normal oracle is still weaker than TH08's modern portable build:
-TH095 has pinned-VC7.1 normal compile/link closure but no maintained modern
-compiler product yet. Record this limitation; do not quietly substitute exact
-success for the missing oracle.
+The whole-game normal oracle is still weaker than TH08's modern portable
+build: TH095 has pinned-VC7.1 normal compile/link closure but no maintained
+modern game product yet. SEM-327 adds a bounded native x86-64 cursor oracle
+(`scripts/check-portable-cursor.py`) that compiles and executes the actual
+shared declaration and behavior with UBSan; it validates only that family.
+Record this limitation; do not substitute exact success or one portable
+component for a whole-game portable/runtime oracle.
 
 ## Completion and batch records
 

@@ -8,6 +8,7 @@
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "ReplayManager.hpp"
+#include "ResultScreenReplayCursor.hpp"
 #include "ScoreData.hpp"
 #include "ZunTimer.hpp"
 #include <stdlib.h>
@@ -57,73 +58,6 @@ typedef ResultScreenTimer ResultScreenStateTimer;
 #else
 typedef ZunTimer ResultScreenStateTimer;
 #endif
-
-struct ResultScreenReplayCursor
-{
-    i32 current;
-    i32 previous;
-    i32 count;
-    i32 savedCurrent[16];
-    i32 savedCount[16];
-    i32 saveDepth;
-    i32 disabledEntries[16];
-    i32 wraps;
-    i32 disabledEntryCount;
-
-    ResultScreenReplayCursor()
-    {
-        this->saveDepth = 0;
-        this->current = 0;
-        this->disabledEntryCount = 0;
-        this->wraps = 1;
-        this->count = 999;
-    }
-
-    // The target constructs ResultScreen::replayCursor in a distinct frontend
-    // allocation phase before the otherwise-identical photoCursor.  The tag
-    // overload selects that source phase without changing object layout or
-    // runtime cursor initialization.
-    ResultScreenReplayCursor(i32)
-    {
-        u8 compilerStorage[0x18];
-        this->saveDepth = 0;
-        this->current = 0;
-        this->disabledEntryCount = 0;
-        this->wraps = 1;
-        this->count = 999;
-    }
-
-    i32 Move(i32 amount);
-    void Push();
-    void Pop();
-
-    i32 GetCurrent() { return this->current; }
-    i32 GetPrevious() { return this->previous; }
-    i32 GetCount() { return this->count; }
-    void SetCount(i32 value) { this->count = value; }
-    void SaveCurrent() { this->previous = this->current; }
-    u32 HasChanged() { return this->previous != this->current; }
-
-    void Disable(i32 value)
-    {
-        this->disabledEntries[this->disabledEntryCount] = value;
-        this->disabledEntryCount++;
-    }
-
-    void Set(i32 value)
-    {
-        if (this->count != 0)
-        {
-            this->current = value >= this->count
-                                ? this->count - 1
-                                : (value < 0 ? 0 : value);
-        }
-        else
-        {
-            this->current = value;
-        }
-    }
-};
 
 typedef AnmVm ResultScreenAnmVm;
 

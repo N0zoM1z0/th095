@@ -140,7 +140,6 @@
 1	src/ResultScreen.hpp	struct	ResultPhotoDataView
 1	src/ResultScreen.hpp	struct	ResultPhotoSlotView
 1	src/ResultScreen.hpp	struct	ResultScreen
-1	src/ResultScreen.hpp	struct	ResultScreenReplayCursor
 1	src/ResultScreen.hpp	struct	ResultScreenSceneLabel
 1	src/ResultScreen.hpp	struct	ResultScreenTimer
 1	src/SceneBestShot.cpp	struct	SceneBestShotCommentBlock
