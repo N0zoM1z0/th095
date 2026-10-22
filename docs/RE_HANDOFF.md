@@ -15,28 +15,27 @@ their recorded source revision; regenerate them before claiming a newer result.
 - Phase: **semantic reconstruction, active-incomplete**. Source presence,
   semantic acceptance, exact matching, normal compilation/linkage, and runtime
   validation are separate facts; no semantic completion percentage is claimed.
-- Ledger report on 2026-09-26: 1,880 provisional candidates, 713 mapped,
-  697 source-present, and 696 exact units covering 336,486 bytes. Recompute
-  before making a new claim. `config/claims.csv` remains header-only.
-- Latest accepted batch: **SEM-327**. `ResultScreenReplayCursor.hpp` now owns
-  one profile-independent 0xD8 cursor declaration; its shared `.inl` supplies
-  Move/Push/Pop at both ResultScreen emission sites. Normal ResultScreen uses
-  the common default constructor. The old unused 0x18-byte local remains
-  only in the frozen exact tag-constructor body; its original source meaning
-  is Unknown, and the former semantic construction-phase claim is corrected.
+- Ledger totals are generated in `docs/PROGRESS.md`; rerun the summary
+  command below before quoting them. `config/claims.csv` remains header-only.
+- Latest accepted batch: **SEM-328**. `FrontEndPendingTextureData.hpp` owns
+  one native-pointer pending-buffer type shared by all seven front-end views.
+  Worker file loads, update texture/free calls, Game Start count reset, and
+  teardown use it directly. The shared advance fragment retains the original
+  lock and live index. Its target i386 size is 0x34; native x86-64 size is 0x58,
+  while count and file lengths remain four-byte values.
 - The 2026-10-22 cold aggregate passed **696/696 exact units across 88
-  sources**. Controlled refresh changed only 59 compiler-private identities
-  across six units in four sources, with complete structural/relocation/target
-  checks and immediate strict comparison. No accepted extent or credit changed.
+  sources**. Thirty compiler-private identities changed across four units
+  in three sources; complete structural/relocation/target checks and immediate
+  strict comparison accepted each refresh. No extent or credit changed.
 - The separate normal cold build compiled 88 i386 COFF objects and linked a
-  778,752-byte verified PE32. The actual shared cursor also compiles and
-  executes as native x86-64 C++ with UBSan through
-  `scripts/check-portable-cursor.py`, now mandatory in public CI. CI and all
-  83 workflow tests pass. This is one portable component, not a modern or
-  64-bit game product, and no whole-game runtime claim is made.
-- Generated objects, PDBs, executable/map, and Python caches are disposable.
-  The checkpoint clears them after validation; compact SEM-327 oracle logs
-  and the normal build report remain privately under `.analysis/sem327/`.
+  778,752-byte verified PE32 with zero unresolved symbols.
+- Public CI passes 84 workflow tests and two native x86-64/UBSan oracles via
+  `scripts/check-portable-front-end.py`. Pending tests execute the production
+  shift using real buffers above 4 GB. These are sequential component checks,
+  not a modern game build, worker/graphics validation, or a playable 64-bit port.
+- Generated objects, PDBs, native/PE binaries, maps, and Python caches are
+  disposable and cleared after the checkpoint's checks. Compact SEM-328
+  target/compiler/native receipts remain private under `.analysis/sem328/`.
   The verified target, pinned tools, Ghidra project, and protected files stay.
 - No active blocker is known. The only untracked working-tree paths at
   handoff are the protected user-owned files listed below.
@@ -54,20 +53,27 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
   evidence and a normal compiler or runtime oracle.
 - Prefer one profile-independent owner. Keep compiler emission adapters
   narrow and proved; leave unproved fields, roles, and protocols Unknown.
-- The next bounded lane follows a direct 64-bit blocker: the front-end
-  preview-data queues and pending pointer arrays. `SceneSelectAssets.cpp` and
-  both Scene Select update bodies still carry some file-data pointers as
-  `i32`, while FrontEndLifecycle declares the pending arrays as `void *`.
-  Trace `LoadSceneSelectionAssets @ 0x0044D0A0`, scene update `0x00447D00`,
-  main-menu cleanup `0x00446A50`, and teardown `0x00445AA0`, together with
-  queue Push/Pop at `0x00450DD0/0x00450F60`. Separate pointer payloads from
-  integer selectors/sizes using producers and free consumers before changing
-  representation; do not globally widen every queue element or file field.
-- Cursor-specific remaining debt is the exact constructor's inert local,
-  plus `SceneGroupCursorView` and the enclosing front-end projections. Keep
-  `+0x6104/+0x6108`, screen-local `+0x610C`, flag bit 4 and bits 6..31 Unknown
-  until independent producers/consumers justify their roles. No new profile
-  selector is authorized. Keep VC7.1 builds serial, single-CPU and low priority.
+- The next bounded lane is the separate mission-preview queue family.
+  Fresh target `SceneValueQueue::Pop @ 0x00450F60` decrements count, shifts
+  sixteen following dwords, and returns the **new** first item. The last copy
+  reads the decremented count at +0x40 into slot 15; it is metadata transfer,
+  not a seventeenth payload. Main-menu calls 0x00447361/0x004473A4 pass the
+  returned value to free at 0x00447373/0x004473B6. FRONT-030 corrects earlier
+  ordinary FIFO/pop-and-free wording; payload ownership and caller domains
+  must still be closed before declaring this a portable pointer queue.
+- Close the raw representation and its array-boundary access first, using
+  minimal pinned-VC7.1 and modern-compiler probes, then specialize pointer
+  channels separately from selectors/sizes. Inspect both Scene Select
+  headers, `SceneSelectController*`, `SceneSelectAssets*`, `SceneSelectUpdate*`,
+  FrontEndController, and the lifecycle pointer-queue projection. The existing
+  integer Push/Pop units and all pointer producers/free consumers must agree.
+  Preserve its nonstandard target semantics while making the raw data movement
+  defined. Keep integer selectors/sizes four-byte values; do not infer payload
+  ownership from the Pop name. The closed selector/layout baselines still apply.
+- Enclosing front-end views, `SceneGroupCursorView`, and the exact cursor
+  constructor's inert local remain debt. Keep `+0x6104/+0x6108`, screen-local
+  `+0x610C`, flag bit 4 and bits 6..31 Unknown until independent users prove
+  their roles. Keep VC7.1 builds serial, single-CPU and low priority.
 
 ## Protected working-tree exclusions
 
@@ -86,9 +92,9 @@ python3 scripts/verify-target.py
 python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
-python3 scripts/check-portable-cursor.py
-python3 scripts/analysis/report-semantic-debt.py --path src/SceneSelectAssets.cpp --details
-rg -n "pendingPrimaryData|pendingSecondaryData|AssetQueuePushPointer" src/SceneSelectAssets.cpp src/SceneSelectUpdate.cpp src/FrontEndLifecycle.cpp
+python3 scripts/check-portable-front-end.py
+python3 scripts/analysis/report-semantic-debt.py --path src/SceneSelectController.cpp --details
+rg -n "SceneValueQueue|SceneValueQueueCopyValue|AssetQueuePushPointer|FrontEndPointerQueueView" src/SceneSelectController.cpp src/SceneSelectAssets.cpp src/FrontEndLifecycle.cpp
 ```
 
 Before a later commit, run the affected exact and normal oracles,

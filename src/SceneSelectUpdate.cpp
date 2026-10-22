@@ -101,13 +101,17 @@ struct SceneSelectUpdateView
     SceneValueQueue loadedGroupQueue;
     SceneStateHistoryView stateHistory;
     u8 unknown63c0[0x0c];
-    i32 pendingTextureCount;
-    i32 pendingPrimaryData[3];
-    i32 pendingPrimarySize[3];
-    i32 pendingSecondaryData[3];
-    i32 pendingSecondarySize[3];
+    FrontEndPendingTextureData pendingTextures;
 };
 
+
+typedef char SceneSelectUpdatePendingTextureDataLayout[
+    (sizeof(FrontEndPendingTextureData) == 0x34 &&
+     offsetof(SceneSelectUpdateView, pendingTextures) == 0x63cc &&
+     offsetof(FrontEndPendingTextureData, primaryData) == 0x04 &&
+     offsetof(FrontEndPendingTextureData, primarySize) == 0x10 &&
+     offsetof(FrontEndPendingTextureData, secondaryData) == 0x1c &&
+     offsetof(FrontEndPendingTextureData, secondarySize) == 0x28) ? 1 : -1];
 typedef char SceneSelectUpdateTransitionAnmAt4[
     (offsetof(SceneSelectUpdateView, transitionAnm) == 0x04) ? 1 : -1];
 typedef char SceneSelectUpdateAnimationTimerAt14[
@@ -133,7 +137,7 @@ typedef char SceneSelectUpdateGroupPreviewQueueAt62D8[
 typedef char SceneSelectUpdateLoadedGroupQueueAt6368[
     (offsetof(SceneSelectUpdateView, loadedGroupQueue) == 0x6368) ? 1 : -1];
 typedef char SceneSelectUpdatePendingTextureCountAt63CC[
-    (offsetof(SceneSelectUpdateView, pendingTextureCount) == 0x63cc) ? 1 : -1];
+    (offsetof(SceneSelectUpdateView, pendingTextures) == 0x63cc) ? 1 : -1];
 typedef char SceneSelectUpdateSizeIs6400[
     (sizeof(SceneSelectUpdateView) == 0x6400) ? 1 : -1];
 typedef char SceneSelectBestShotPreviewRecordLayoutCheck[
@@ -474,52 +478,37 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
 #define pendingSecondaryFree shallow.pendingSecondaryFree
 
     /* Consume pending texture uploads before the asynchronous queues. */
-    if (view->pendingTextureCount != 0)
+    if (view->pendingTextures.count != 0)
     {
-        if (view->pendingTextureCount == 1)
+        if (view->pendingTextures.count == 1)
         {
             g_AnmManager->LoadTexture(
                 &view->sceneAnm->textures[3],
-                reinterpret_cast<u8 *>(view->pendingPrimaryData[0]),
-                view->pendingPrimarySize[0],
+                view->pendingTextures.primaryData[0],
+                view->pendingTextures.primarySize[0],
                 1, 0, 1);
             view->sceneAnm->textures[3].texture->PreLoad();
             g_AnmManager->LoadTexture(
                 &view->sceneAnm->textures[4],
-                reinterpret_cast<u8 *>(view->pendingSecondaryData[0]),
-                view->pendingSecondarySize[0],
+                view->pendingTextures.secondaryData[0],
+                view->pendingTextures.secondarySize[0],
                 1, 0, 1);
             view->sceneAnm->textures[4].texture->PreLoad();
         }
-        pendingPrimaryFree =
-            reinterpret_cast<void *>(view->pendingPrimaryData[0]);
+        pendingPrimaryFree = view->pendingTextures.primaryData[0];
         free(pendingPrimaryFree);
-        view->pendingPrimaryData[0] = 0;
-        pendingSecondaryFree =
-            reinterpret_cast<void *>(view->pendingSecondaryData[0]);
+        view->pendingTextures.primaryData[0] = 0;
+        pendingSecondaryFree = view->pendingTextures.secondaryData[0];
         free(pendingSecondaryFree);
-        view->pendingSecondaryData[0] = 0;
+        view->pendingTextures.secondaryData[0] = 0;
 
         g_Supervisor.EnterCriticalSectionWrapper(4);
         g_Supervisor.criticalSectionLockCounts[4]++;
-        for (i = 0; i < 2; i++)
-        {
-            view->pendingPrimaryData[i] = view->pendingPrimaryData[i + 1];
-            view->pendingPrimarySize[i] = view->pendingPrimarySize[i + 1];
-            view->pendingSecondaryData[i] =
-                view->pendingSecondaryData[i + 1];
-            view->pendingSecondarySize[i] =
-                view->pendingSecondarySize[i + 1];
-        }
-        view->pendingPrimaryData[2] = 0;
-        view->pendingSecondaryData[2] = 0;
-        view->pendingPrimarySize[2] = 0;
-        view->pendingSecondarySize[2] = 0;
-        view->pendingTextureCount--;
+#include "FrontEndPendingTextureAdvance.inl"
         g_Supervisor.LeaveCriticalSectionWrapper(4);
         g_Supervisor.criticalSectionLockCounts[4]--;
 
-        if (view->pendingTextureCount == 0)
+        if (view->pendingTextures.count == 0)
         {
             view->vmIds.SetInterrupt(0x15, 4);
             view->vmIds.SetInterrupt(0x16, 4);

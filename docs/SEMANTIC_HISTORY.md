@@ -16418,3 +16418,105 @@ including 83 workflow tests and the mandatory native x86-64 cursor execution;
 tracking, match-unit graph, semantic guards, generated progress, and whitespace
 checks passed. These results do not prove whole-image identity, whole-game
 runtime behavior, semantic completion, or a playable 64-bit game port.
+
+### SEM-328 — native-width pending texture buffers and shared advancement
+
+**Scope / observed target (2026-10-22).** Fresh hash-attested Japanese v1.02a
+queries cover `LoadSceneSelectionAssets @ 0x0044D0A0`, the pending-data region
+of `UpdateSceneSelect @ 0x00447D00`, complete front-end teardown `0x00445AA0`,
+and the distinct queue Pop/main-menu cleanup. The `fcNN.anm/fcNNb.anm` path is
+a three-slot pending channel separate from the nine mission-preview queues.
+The worker passes addresses at +0x63DC/+0x63F4 to FileSystem for lengths,
+stores its returned data pointers at +0x63D0/+0x63E8, and increments the count
+at +0x63CC only after the primary buffer succeeded. Secondary load failure
+can leave a null secondary pointer. The updater uploads the pair into texture
+slots 3/4 only when count equals 1; with a larger backlog it frees the oldest
+pair without uploading it. It frees/clears both slot-zero pointers, shifts the
+four columns inside critical section 4, clears slot 2, and decrements count.
+Game Start resets count without clearing the pointers; teardown independently
+checks all three slots rather than bounding release by count. Preserve these
+observed transitions; no ownership hardening or scheduler changes are implied.
+
+**Representation / four ownership axes.** `FrontEndPendingTextureData.hpp`
+now owns count plus three primary-pointer/size and secondary-pointer/size
+columns. Sizes/count remain `i32`; raw file buffers are `u8 *`. The two Scene
+Select headers, normal/exact asset and update views, and lifecycle view embed
+the same member at target +0x63CC. Integer-based pending layouts in the four worker/update views
+and casts around both worker file loads and both update texture/free calls are
+retired; lifecycle's count was previously hidden in its opaque prefix. Every
+outer i386 view pins size 0x34 and member offsets 0/4/0x10/0x1C/0x28. The
+shared owner contains no platform include, packing trick, selected layout,
+constructor, destructor, or new profile selector. Its native x86-64 layout is
+0x58 through ordinary pointer alignment, independently checked by the oracle.
+The 0x6514 front-end allocation owns physical storage; the asset worker
+publishes buffers, Scene Select consumes/frees/advances them, and lifecycle
+releases leftovers. Existing TUs retain behavior emission. Exact, normal, and
+native-test products consume one declaration; the enclosing selected views
+and unrelated source bodies remain separate debt. No authored/exact credit
+or accepted target extent changes. Both closed profile-debt baselines remain
+unchanged.
+
+**Compiler / shared source.** A natural `RemoveFront()` member-loop probe
+shrinks the exact updater from 16,066 to 15,835 bytes. A minimal pinned-3077
+source with only the real pending member and two equivalent field/member
+advance functions confirms that `/Od /Ob1` emits a call to RemoveFront instead
+of inlining its loop. Full flags are `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi
+/Gr /Od /Ob1 /I src`; canonical exact builds additionally define
+`TH095_MATCH_EXACT`. Probe source, input digests, complete commands, object
+comparison, and disassembly are private under `.analysis/sem328/`. The rejected
+member abstraction is not retained. `FrontEndPendingTextureAdvance.inl`
+shares the original loop at both update call sites, using the caller's actual
+live `view` and `i` within its existing lock. It introduces no fake storage,
+extra view, alternate owner, or profile body. The exact/normal shift is the
+same source, although the enclosing texture/worker bodies still differ.
+
+**Native / normal oracle.** `scripts/check-portable-front-end.py` expands and
+renames the former cursor-only entry point; live navigation and CI use this
+name while historical SEM-327 commands remain tied to that earlier revision.
+It compiles the actual cursor code and pending owner/advance fragment as
+separate native x86-64 executables with `-m64 -std=c++11 -O2 -Wall -Wextra
+-Werror -pedantic -fsanitize=undefined -fno-sanitize-recover=all`. Pending tests
+require actual allocated buffers above UINT32_MAX, then execute the production
+shift for one, two, and three pairs, including null secondary data. They verify
+pointer identity/content, size association, cleared tails, decremented count,
+and the live loop-index result. Both executables pass without UBSan findings.
+These are sequential component oracles, not graphics, worker, or whole-game
+runtime validation. Canonical-header guards reject pointer truncation or
+size/count widening and require the same owner/shift in all consumers.
+
+**Corrected adjacent finding / retained unknowns.** FRONT-030 records that
+`SceneValueQueue::Pop @ 0x00450F60` copies sixteen following dwords, reading the
+already-decremented count on its last iteration, and returns the post-shift
+front. Main-menu target calls at 0x00447361/0x004473A4 forward that value to free
+at 0x00447373/0x004473B6. Earlier broad pop-and-free wording did not prove
+release of the old first payload and is corrected in the live KB/source map.
+No queue algorithm, pointer-channel type, leak conclusion, or ownership repair
+is accepted here. The array-boundary/metadata transfer and its integer versus
+pointer channels are the next bounded port blocker. Payload file formats,
+worker synchronization, outer controller convergence, and the retained exact
+cursor construction debt remain open.
+
+**Focused validation.** Baselines passed 10/10 exact producer/update/lifecycle
+units plus 4/4 coordinator units without refresh; the three normal baseline
+objects compiled separately. The typed owner passed all 14 affected units
+after 18 private-label-only refreshes in two units. Shared advancement then
+cold-replayed the same 14/14 with zero refresh. Public CI passed both native
+executables and 84 workflow tests. Aggregate and normal product results follow.
+
+The frozen-source aggregate `python3 scripts/replay-exact-units.py
+--refresh-private-labels` passed **696/696 exact units across 88 sources**.
+It refreshed twelve additional private labels in two units; together with the
+focused step, thirty compiler-private identities changed in four units across
+FrontEndController, HelpMenu, and SceneTexture. Every refresh required complete
+structural bytes, relocation positions/types, and target destinations to agree,
+followed immediately by the canonical strict comparison. A separate HEAD versus
+worktree manifest audit confirms every other field is unchanged. No comparison
+extent, accepted count, or authored byte credit changed.
+
+The separate normal `python3 scripts/build-whole.py` cold-compiled all 88 i386
+COFF objects and linked a verified 778,752-byte PE32 image (build-local
+SHA-256 `8948fef621438ea9b4ee7ce1227462d87bf1d2df3d2d6d3bb627e3d18d604fa0`). This validates current normal compilation/linkage,
+independently of the exact-selected worker/update bodies. Tracking, match graph,
+semantic guards, generated progress, whitespace checks, and public CI pass.
+No whole-image byte identity, worker/graphics behavior, semantic-completion
+percentage, or playable 64-bit game is claimed.

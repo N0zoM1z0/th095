@@ -2478,13 +2478,13 @@ def check_front_end_scene_queue_owner(controller_text: str | None = None) -> Non
         for field, offset in queue_fields:
             if f"offsetof(SceneSelectControllerView, {field}) == 0x{offset}" not in source:
                 fail(f"{name} lost the {field} offset assertion")
-        for field, offset in (("stateHistory", "63b0"), ("pendingTextureCount", "63cc")):
+        for field, offset in (("stateHistory", "63b0"), ("pendingTextures", "63cc")):
             if f"offsetof(SceneSelectControllerView, {field}) == 0x{offset}" not in source:
                 fail(f"{name} lost the {field} offset assertion")
         if "SceneStateHistoryView stateHistory;" not in owner:
             fail(f"{name} lost its post-queue history owner")
-        if "i32 pendingTextureCount;" not in owner:
-            fail(f"{name} lost its post-queue pending-texture counter")
+        if "FrontEndPendingTextureData pendingTextures;" not in owner:
+            fail(f"{name} lost its shared pending-texture owner")
 
     controller = source_without_comments(
         controller_text
@@ -2509,13 +2509,55 @@ def check_front_end_scene_queue_owner(controller_text: str | None = None) -> Non
         "this->loadedGroupQueue.count = 0;",
         "this->selectionQueue.count = 0;",
         "this->loadedSceneQueue.count = 0;",
-        "this->pendingTextureCount = 0;",
+        "this->pendingTextures.count = 0;",
         "this->stateHistory.count = 0;",
         "this->currentDisplayState = -1;",
     )
     positions = [controller.find(marker) for marker in sequence]
     if any(position < 0 for position in positions) or positions != sorted(positions):
         fail("FrontEnd Game Start cleanup lost named queue or post-queue order")
+
+
+def check_front_end_pending_texture_owner(header_text: str | None = None) -> None:
+    header = source_without_comments(
+        header_text
+        if header_text is not None
+        else (SRC / "FrontEndPendingTextureData.hpp").read_text(encoding="utf-8")
+    )
+    for declaration in (
+        "i32 count;", "u8 *primaryData[3];", "i32 primarySize[3];",
+        "u8 *secondaryData[3];", "i32 secondarySize[3];",
+    ):
+        if declaration not in header:
+            fail(f"pending-texture owner lost its pointer/size contract: {declaration}")
+    if any(token in header for token in (*PROFILE_NAMES, "Global.hpp")):
+        fail("pending-texture owner restored profile or platform dependencies")
+    for name in (
+        "SceneSelect.hpp", "SceneSelectExact.hpp", "SceneSelectAssets.cpp",
+        "SceneSelectAssetsExact.inl", "SceneSelectUpdate.cpp",
+        "SceneSelectUpdateExact.inl", "FrontEndLifecycle.cpp",
+    ):
+        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if body.count("FrontEndPendingTextureData pendingTextures;") != 1:
+            fail(f"{name} lost its unique canonical pending-texture member")
+        if re.search(r"\b(?:pendingTextureCount|pendingPrimaryData|pendingSecondaryData)\b", body):
+            fail(f"{name} restored a partial pending-texture declaration or access")
+        if "offsetof(FrontEndPendingTextureData, primaryData) == 0x04" not in body:
+            fail(f"{name} lost its target pointer-layout evidence")
+    for name in ("SceneSelectAssets.cpp", "SceneSelectAssetsExact.inl"):
+        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if re.search(r"reinterpret_cast<i32>\s*\(\s*FileSystem::OpenFile", body):
+            fail(f"{name} restored pointer truncation at pending publication")
+        if "->pendingTextures.count++;" not in body:
+            fail(f"{name} lost pending-data publication")
+    for name in ("SceneSelectUpdate.cpp", "SceneSelectUpdateExact.inl"):
+        body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if body.count('#include "FrontEndPendingTextureAdvance.inl"') != 1:
+            fail(f"{name} lost the shared pending-data shift transition")
+        if "view->pendingTextures.count == 1" not in body:
+            fail(f"{name} lost its newest-pair upload gate")
+        if re.search(r"reinterpret_cast<[^>]+>\(view->pendingTextures\.", body):
+            fail(f"{name} restored integer/pointer conversion at pending consumption")
 
 
 def check_photo_enemy_owner() -> None:
@@ -3715,6 +3757,7 @@ def main() -> int:
     check_front_end_requested_state_owner()
     check_front_end_flags_owner()
     check_front_end_scene_queue_owner()
+    check_front_end_pending_texture_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()
     check_photo_stage_owner()
@@ -3757,6 +3800,7 @@ def main() -> int:
     print("  FrontEnd requested states: one shared explicit 0..9 domain")
     print("  FrontEnd flags: one shared bit-0/1/2/3/5 owner with unknown ranges")
     print("  FrontEnd scene queues: nine typed owners and post-queue cleanup in both profiles")
+    print("  FrontEnd pending texture data: shared native-pointer columns and shift transition")
     print("  EnemyInf owner: one profile-independent 0x26AE30 declaration")
     print("  compact enemy ECL access: four resolvers, RunEcl, and EclExtended share one path")
     print("  ECL task state: canonical profile-independent 0x124 owner and shared bit-9/10 bridge")

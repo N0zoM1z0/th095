@@ -5,6 +5,7 @@
 
 #include "Global.hpp"
 #include "FrontEndGlobals.hpp"
+#include "FrontEndPendingTextureData.hpp"
 #include "AnmVmId.hpp"
 #include "PixelFormats.hpp"
 #include "ReplayScanWorker.hpp"
@@ -283,7 +284,7 @@ struct SceneSelectControllerView
     SceneValueQueue loadedGroupQueue;
     SceneStateHistoryView stateHistory;
     u8 unknown63c0[0x0c];
-    i32 pendingTextureCount;
+    FrontEndPendingTextureData pendingTextures;
 
     i32 GetSelectedGroup()
     {
@@ -326,6 +327,14 @@ struct SceneSelectControllerView
                            i32 argument2);
 };
 
+
+typedef char SceneSelectPendingTextureDataLayout[
+    (sizeof(FrontEndPendingTextureData) == 0x34 &&
+     offsetof(SceneSelectControllerView, pendingTextures) == 0x63cc &&
+     offsetof(FrontEndPendingTextureData, primaryData) == 0x04 &&
+     offsetof(FrontEndPendingTextureData, primarySize) == 0x10 &&
+     offsetof(FrontEndPendingTextureData, secondaryData) == 0x1c &&
+     offsetof(FrontEndPendingTextureData, secondarySize) == 0x28) ? 1 : -1];
 struct SceneSaveDataView
 {
     u8 unknown0000[0x1e];
@@ -448,7 +457,7 @@ typedef char SceneSelectLoadedGroupQueueAt6368[
 typedef char SceneSelectStateHistoryAt63B0[
     (offsetof(SceneSelectControllerView, stateHistory) == 0x63b0) ? 1 : -1];
 typedef char SceneSelectPendingTextureCountAt63CC[
-    (offsetof(SceneSelectControllerView, pendingTextureCount) == 0x63cc) ? 1 : -1];
+    (offsetof(SceneSelectControllerView, pendingTextures) == 0x63cc) ? 1 : -1];
 
 extern SceneDefinitionView *g_SceneGroups[12];
 extern i32 g_SceneGroupCounts[12];

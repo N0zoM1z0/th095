@@ -794,7 +794,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             this->loadedGroupQueue.count = 0;
             this->selectionQueue.count = 0;
             this->loadedSceneQueue.count = 0;
-            this->pendingTextureCount = 0;
+            this->pendingTextures.count = 0;
             this->stateHistory.count = 0;
             this->currentDisplayState = -1;
             return CHAIN_CALLBACK_RESULT_CONTINUE;

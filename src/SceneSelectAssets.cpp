@@ -31,19 +31,23 @@ struct SceneSelectionAssetView
     SceneValueQueue loadedGroupQueue;
     SceneStateHistoryView stateHistory;
     u8 unknown63c0[0x0c];
-    i32 pendingTextureCount;
-    i32 pendingPrimaryData[3];
-    i32 pendingPrimarySize[3];
-    i32 pendingSecondaryData[3];
-    i32 pendingSecondarySize[3];
+    FrontEndPendingTextureData pendingTextures;
 };
 
+
+typedef char SceneSelectionAssetPendingTextureDataLayout[
+    (sizeof(FrontEndPendingTextureData) == 0x34 &&
+     offsetof(SceneSelectionAssetView, pendingTextures) == 0x63cc &&
+     offsetof(FrontEndPendingTextureData, primaryData) == 0x04 &&
+     offsetof(FrontEndPendingTextureData, primarySize) == 0x10 &&
+     offsetof(FrontEndPendingTextureData, secondaryData) == 0x1c &&
+     offsetof(FrontEndPendingTextureData, secondarySize) == 0x28) ? 1 : -1];
 typedef char SceneSelectionAssetFlagsAt6120[
     (offsetof(SceneSelectionAssetView, flags) == 0x6120) ? 1 : -1];
 typedef char SceneSelectionAssetStateHistoryAt63B0[
     (offsetof(SceneSelectionAssetView, stateHistory) == 0x63b0) ? 1 : -1];
 typedef char SceneSelectionAssetPendingCountAt63CC[
-    (offsetof(SceneSelectionAssetView, pendingTextureCount) == 0x63cc) ? 1
+    (offsetof(SceneSelectionAssetView, pendingTextures) == 0x63cc) ? 1
                                                                       : -1];
 
 struct SceneSelectionAssetLoadLocals
@@ -193,26 +197,28 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
         {
             locals.queueValue = locals.view->stateHistory.values[0];
             sprintf(locals.facePath, "fc%.2d.anm", locals.queueValue);
-            locals.view->pendingPrimaryData[locals.view->pendingTextureCount] =
-                reinterpret_cast<i32>(FileSystem::OpenFile(
+            locals.view->pendingTextures.primaryData
+                [locals.view->pendingTextures.count] = FileSystem::OpenFile(
                     locals.facePath,
                     &locals.view
-                         ->pendingPrimarySize[locals.view->pendingTextureCount],
-                    FALSE));
+                         ->pendingTextures.primarySize
+                              [locals.view->pendingTextures.count],
+                    FALSE);
             if (locals.view
-                    ->pendingPrimaryData[locals.view->pendingTextureCount] != 0)
+                    ->pendingTextures.primaryData
+                         [locals.view->pendingTextures.count] != 0)
             {
                 sprintf(locals.facePath, "fc%.2db.anm", locals.queueValue);
                 locals.view
-                    ->pendingSecondaryData[locals.view->pendingTextureCount] =
-                    reinterpret_cast<i32>(FileSystem::OpenFile(
+                    ->pendingTextures.secondaryData
+                         [locals.view->pendingTextures.count] = FileSystem::OpenFile(
                         locals.facePath,
-                        &locals.view->pendingSecondarySize
-                             [locals.view->pendingTextureCount],
-                        FALSE));
+                        &locals.view->pendingTextures.secondarySize
+                             [locals.view->pendingTextures.count],
+                        FALSE);
                 g_Supervisor.EnterCriticalSectionWrapper(4);
                 g_Supervisor.criticalSectionLockCounts[4]++;
-                locals.view->pendingTextureCount++;
+                locals.view->pendingTextures.count++;
                 g_Supervisor.LeaveCriticalSectionWrapper(4);
                 g_Supervisor.criticalSectionLockCounts[4]--;
             }

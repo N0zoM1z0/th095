@@ -1,5 +1,6 @@
 #include "Global.hpp"
 #include "FrontEndGlobals.hpp"
+#include "FrontEndPendingTextureData.hpp"
 #include "Main.hpp"
 #include "ResultScreen.hpp"
 #include "ScoreData.hpp"
@@ -210,11 +211,8 @@ struct FrontEndLifecycleView
     FrontEndPointerQueueView groupPreviewQueue;
     FrontEndPointerQueueView scenePreviewQueue;
     FrontEndPointerQueueView loadedGroupQueue;
-    u8 unknown63b0[0x20];
-    void *pendingPrimaryData[3];
-    i32 pendingPrimarySize[3];
-    void *pendingSecondaryData[3];
-    i32 pendingSecondarySize[3];
+    u8 unknown63b0[0x1c];
+    FrontEndPendingTextureData pendingTextures;
     ChainElem *calcChain;
     ChainElem *drawChain;
     u8 unknown6408[0x10c];
@@ -231,6 +229,14 @@ struct FrontEndLifecycleView
     void Destroy();
 };
 
+
+typedef char FrontEndLifecyclePendingTextureDataLayout[
+    (sizeof(FrontEndPendingTextureData) == 0x34 &&
+     offsetof(FrontEndLifecycleView, pendingTextures) == 0x63cc &&
+     offsetof(FrontEndPendingTextureData, primaryData) == 0x04 &&
+     offsetof(FrontEndPendingTextureData, primarySize) == 0x10 &&
+     offsetof(FrontEndPendingTextureData, secondaryData) == 0x1c &&
+     offsetof(FrontEndPendingTextureData, secondarySize) == 0x28) ? 1 : -1];
 typedef char FrontEndLifecycleOwnedMissionDataAtE5C[
     (offsetof(FrontEndLifecycleView, ownedMissionMessageData) == 0xe5c)
         ? 1
@@ -262,11 +268,13 @@ typedef char FrontEndLifecycleSceneDataQueueAt6248[
         ? 1
         : -1];
 typedef char FrontEndLifecyclePendingPrimaryAt63D0[
-    (offsetof(FrontEndLifecycleView, pendingPrimaryData) == 0x63d0)
+    (offsetof(FrontEndLifecycleView, pendingTextures) +
+         offsetof(FrontEndPendingTextureData, primaryData) == 0x63d0)
         ? 1
         : -1];
 typedef char FrontEndLifecyclePendingSecondaryAt63E8[
-    (offsetof(FrontEndLifecycleView, pendingSecondaryData) == 0x63e8)
+    (offsetof(FrontEndLifecycleView, pendingTextures) +
+         offsetof(FrontEndPendingTextureData, secondaryData) == 0x63e8)
         ? 1
         : -1];
 typedef char FrontEndLifecycleChainsAt6400[
@@ -535,17 +543,17 @@ static __forceinline void FrontEndFreeSceneQueuePop(FrontEndLifecycleView *view)
 }
 static __forceinline void FrontEndFreePendingPrimary(FrontEndLifecycleView *view, i32 index)
 {
-    if (view->pendingPrimaryData[index] != NULL)
+    if (view->pendingTextures.primaryData[index] != NULL)
     {
-        void *data = view->pendingPrimaryData[index];
+        void *data = view->pendingTextures.primaryData[index];
         free(data);
     }
 }
 static __forceinline void FrontEndFreePendingSecondary(FrontEndLifecycleView *view, i32 index)
 {
-    if (view->pendingSecondaryData[index] != NULL)
+    if (view->pendingTextures.secondaryData[index] != NULL)
     {
-        void *data = view->pendingSecondaryData[index];
+        void *data = view->pendingTextures.secondaryData[index];
         free(data);
     }
 }

@@ -847,6 +847,22 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 GUARD.check_front_end_flags_owner(exact_update_text=flags)
 
+    def test_pending_texture_owner_guard_rejects_pointer_truncation(self) -> None:
+        GUARD.check_front_end_pending_texture_owner()
+        header = (ROOT / "src" / "FrontEndPendingTextureData.hpp").read_text(
+            encoding="utf-8"
+        )
+        for typed, raw in (
+            ("u8 *primaryData[3];", "i32 primaryData[3];"),
+            ("u8 *secondaryData[3];", "i32 secondaryData[3];"),
+            ("i32 primarySize[3];", "size_t primarySize[3];"),
+        ):
+            with self.subTest(raw=raw):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_front_end_pending_texture_owner(
+                        header.replace(typed, raw, 1)
+                    )
+
     def test_front_end_scene_queue_guard_rejects_raw_reset(self) -> None:
         GUARD.check_front_end_scene_queue_owner()
         source = (ROOT / "src" / "FrontEndController.cpp").read_text(

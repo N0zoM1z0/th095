@@ -132,9 +132,11 @@ the listed source.
 
 The whole-game normal oracle is still weaker than TH08's modern portable
 build: TH095 has pinned-VC7.1 normal compile/link closure but no maintained
-modern game product yet. SEM-327 adds a bounded native x86-64 cursor oracle
-(`scripts/check-portable-cursor.py`) that compiles and executes the actual
-shared declaration and behavior with UBSan; it validates only that family.
+modern game product yet. SEM-327/328 add bounded native x86-64 cursor and pending-texture-data
+oracles (`scripts/check-portable-front-end.py`) that compile and execute the
+actual shared declarations and behavior with UBSan. Pending-data tests use
+real allocated pointers above 4 GB. These validate only their component
+contracts and sequential transitions; they do not exercise workers or graphics.
 Record this limitation; do not substitute exact success or one portable
 component for a whole-game portable/runtime oracle.
 

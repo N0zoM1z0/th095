@@ -117,8 +117,8 @@ def main() -> int:
             [sys.executable, "scripts/check-semantic-protocols.py"],
         )
         run(
-            "Execute shared cursor with a native 64-bit compiler",
-            [sys.executable, "scripts/check-portable-cursor.py"],
+            "Execute shared front-end data with a native 64-bit compiler",
+            [sys.executable, "scripts/check-portable-front-end.py"],
         )
         run(
             "Run workflow unit tests",
