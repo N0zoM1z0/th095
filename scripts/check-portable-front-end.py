@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Execute shared front-end cursor, buffer, and raw-word code as x86-64 C++."""
+"""Execute shared front-end storage and worker lifecycle as x86-64 C++."""
 
 from pathlib import Path
 import os
@@ -35,6 +35,7 @@ def main() -> int:
     run_probe("FrontEndPendingTextureDataTest.cpp", "pending-texture-test")
     run_probe("SceneValueQueueTest.cpp", "raw-queue-test")
     run_probe("ScenePreviewDataQueueTest.cpp", "preview-data-test")
+    run_probe("ReplayScanWorkerTest.cpp", "worker-lifecycle-test")
     return 0
 
 

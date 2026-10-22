@@ -17,37 +17,39 @@ their recorded source revision; regenerate them before claiming a newer result.
   validation are separate facts; no semantic completion percentage is claimed.
 - Ledger totals are generated in `docs/PROGRESS.md`; rerun the summary
   command below before quoting them. `config/claims.csv` remains header-only.
-- Latest accepted batch: **SEM-330**. `ScenePreviewDataQueue.hpp` owns the
-  two mission-buffer address channels in all seven outer views. Eighteen
-  native address words preserve pointers and Pop's copied count metadata.
-  Target size remains 0x48; native x86-64 size is 0x90, including widened
-  metadata storage slots. Count values/Size remain i32 and seven selector/
-  length queues retain four-byte SceneValueQueue words. Both worker profiles
-  share pointer/null publication; both controller profiles share address Pop;
-  UI buffer locals are real u8 pointers. No new profile selector or selected
-  declaration is added; closed baselines remain 194 keys / 199 declarations
-  and 270 keys / 708 selector occurrences.
+- Latest accepted batch: **SEM-331**. `ReplayScanWorker.hpp` has one native
+  layout (target 0x18, x86-64 0x20). Handle/callback storage follows pointers;
+  thread ID, exit/active fields, and four opaque bytes stay narrow. Constructor,
+  destructor, Start, and Stop share `ReplayScanWorkerBehavior.inl` in both
+  profiles. A typed inline Win32 begin binding preserves the 87-byte target;
+  native fixtures exercise shared state without invoking its legacy cast.
+  Unknown bytes, secondary worker business role, real dispatch/threading,
+  and surrounding Supervisor/global alias boundaries remain open.
+  Closed baselines remain 194 keys / 199 declarations and 270 / 708 selectors.
 - Exact target credit remains **696 functions / 336,486 bytes**. The match
-  graph now has 697 comparisons: a second source instance covers address Pop
-  at the already-credited 0x00450F60. It adds no authored target credit.
-  The 2026-10-22 cold aggregate passed 697/697 across 88 sources. Six receiver
-  retags and thirty compiler-private identities preserve positions/types/targets;
-  all other manifest fields are unchanged. Receipts are in SEM-330 history.
+  graph has 698 comparisons: the additional worker constructor shares the
+  existing 0x00454E50 PbgArchive ICF body; address Pop's extra comparison remains.
+  Neither adds authored credit. Final cold replay passes 698/698 across 88
+  sources with zero refresh; the prior controlled refresh totals 350 private
+  identities in 23 units/13 sources. No ABI retags or other field changes.
+  Receipts are in SEM-331 history.
 - The separate normal cold build compiled 88 i386 COFF objects and linked a
-  778,752-byte verified PE32 with zero unresolved symbols. Normal-selected raw
-  and address Pop each reproduce the 91-byte target and fold to one normal
-  link address through existing ICF. This is not whole-image identity.
-- Public CI passes 86 workflow tests and four native x86-64/UBSan oracles via
+  778,752-byte verified PE32 with zero unresolved symbols. The four normal
+  worker core bodies reproduce target bytes/relocations, and its constructor
+  folds with PbgArchive in the normal link. This is not whole-image identity.
+- Public CI passes 87 workflow tests and five native x86-64/UBSan oracles via
   `scripts/check-portable-front-end.py`. Pending tests execute the production
   shift using real buffers above 4 GB; raw queue tests compare all eighteen
   words and returns against an independent target model. Address-channel tests
   execute production publication/Pop with real buffers above 4 GB, retain
-  null items, and capture the distinct release-order traces. These are sequential
+  null items, and capture the distinct release-order traces. Worker fixtures
+  cover native handles/arguments and zero-handle/failure/timeout/restart/
+  completion-before-return ordering. These are sequential
   component checks, not a modern game build, worker/graphics validation, or a
   playable 64-bit port.
 - Generated objects, PDBs, native/PE binaries, maps, and Python caches are
-  disposable and cleared after the checkpoint's checks. Compact SEM-330
-  target/compiler/native receipts remain private under `.analysis/sem330/`.
+  disposable and cleared after the checkpoint's checks. Compact SEM-331
+  target/compiler/native receipts remain private under `.analysis/sem331/`.
   The verified target, pinned tools, Ghidra project, and protected files stay.
 - No active blocker is known. The only untracked working-tree paths at
   handoff are the protected user-owned files listed below.
@@ -65,21 +67,23 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
   evidence and a normal compiler or runtime oracle.
 - Prefer one profile-independent owner. Keep compiler emission adapters
   narrow and proved; leave unproved fields, roles, and protocols Unknown.
-- The next bounded lane is worker stop/completion and preview lifetime/count
-  domains, starting with `StartReplayScan` / `StopReplayScan`, g_HelpLoadActive,
-  g_HelpLoadComplete, and the Scene Select stop transitions. Transport is now
-  native-width; do not assume every raw Pop return is a pointer.
-- Read [FRONT_END_PREVIEW_PROTOCOL.md](FRONT_END_PREVIEW_PROTOCOL.md). Both
-  worker waits branch into publication on cancellation, so an always-one-item
-  invariant is unproved. Normal UI frees the old front before Pop; main-menu
-  and teardown free the post-shift result. The native tests capture a
-  synthetic full-state result of metadata 15 without freeing it. Reachability,
-  synchronization, actual count domains, and any runtime leak remain Unknown.
-  Do not repair or normalize those target transitions during reconstruction.
-- Close acquire/start, publication, independent consumers, stop/wait, final
-  publication, and teardown ordering before accepting lifetime claims. Keep
-  selector/length queues four-byte values and the two address channels distinct.
-  The existing exact body splits and closed selector/layout baselines apply.
+- The next bounded lane is the retained ReplayBrowserExitSignal projection
+  and Request @ 0x0041BB00. Both replay headers fix requested at +8; normal
+  ReplayScanWorker.cpp overlays it on the canonical worker. Native layout
+  puts threadId at +8 and exitSignal at +12. A private offsetof-only oracle
+  proves the mismatch without an aliasing write. Retire this partial type,
+  migrate the request operation/callers to the actual worker, reconcile
+  relocation/base-addend ownership, and shrink closed baselines as applicable.
+- Read [WORKER_LIFECYCLE.md](WORKER_LIFECYCLE.md) and
+  [FRONT_END_PREVIEW_PROTOCOL.md](FRONT_END_PREVIEW_PROTOCOL.md). active=0 is
+  not independently a join: Stop publishes it before waiting, creation failure
+  leaves active=1 with no handle, and every non-timeout wait result closes.
+  ThreadClose is a separate non-waiting operation. Ordinary i32 memory access
+  and the historical callback cast still need a real portable threading backend.
+- Complete preview caller/count/lifetime evidence after canonical request
+  ownership. Cancellation waits can publish once more before exiting; normal
+  UI frees old fronts, while main-menu/teardown free post-shift returns. Do not
+  infer a permanent one-item bound or normalize those target transitions.
 - Enclosing front-end views, `SceneGroupCursorView`, and the exact cursor
   constructor's inert local remain debt. Keep `+0x6104/+0x6108`, screen-local
   `+0x610C`, flag bit 4 and bits 6..31 Unknown until independent users prove
@@ -103,8 +107,8 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/check-portable-front-end.py
-python3 scripts/analysis/report-semantic-debt.py --path src/SceneSelectAssets.cpp --details
-rg -n "StartReplayScan|StopReplayScan|g_HelpLoadActive|g_HelpLoadComplete|assetLoadStopRequested" src/SceneSelectAssets.cpp src/SceneSelectUpdate.cpp src/FrontEndController.cpp src/ReplayScanWorker.cpp src/Supervisor*
+python3 scripts/analysis/report-semantic-debt.py --path src/ReplayBrowser.cpp --details
+rg -n "ReplayBrowserExitSignal|g_ReplayBrowserExitSignal|Request\(" src/ReplayBrowser* src/ReplayScanWorker.cpp src/SceneSelectUpdate*
 ```
 
 Before a later commit, run the affected exact and normal oracles,

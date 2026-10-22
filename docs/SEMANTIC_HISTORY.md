@@ -16740,3 +16740,123 @@ caches are cleared after receipts are saved. Protected user-owned files remain
 untouched. Semantic reconstruction remains active-incomplete. Native address
 transport is accepted for this component; thread/count/lifetime closure and
 modern whole-game portability remain open.
+
+
+### SEM-331 — shared native-width worker lifecycle and typed Win32 boundary
+
+**Scope / target observations (2026-10-22).** Fresh hash-attested queries cover
+Stop `0x0041BB20`, Start `0x0041BBA0`, folded constructor `0x00454E50`,
+Supervisor launch/stop `0x004255B0/0x00425640`, distinct ThreadClose
+`0x00425150`, and the full front-end coordinator `0x00445E80`. The field owner
+was already unified by SEM-303; its fixed 24-byte assertions and repeated
+lifecycle implementations still blocked a modern compiler oracle. The full
+state/caller/storage map is in `WORKER_LIFECYCLE.md` and linked from the preview
+protocol. This batch closes the common layout/state source, not reachable
+preview queue counts or real threaded lifetime safety.
+
+**Accepted behavior / unknowns.** Start first stops the previous run, installs
+the callback, publishes active=1/exitSignal=0, invokes the begin API, and stores
+its returned handle. A zero creation result has no cleanup/failure branch.
+Stop on zero handle changes nothing; otherwise it publishes exitSignal=1/
+active=0 before waiting 200 ms. Only WAIT_TIMEOUT repeats, with the same pair
+and Sleep(1). Every non-timeout status closes/clears handle and callback,
+ignoring close failure; thread ID and opaque bytes remain. Thus active is not
+a liveness/join proof, the timeout is not a total deadline, and return from Stop
+does not universally establish successful termination. ThreadClose instead
+closes/clears under critical-section lane 6 without waiting or clearing the
+callback/exit signal. No error handling or target transition is repaired.
+Bidirectional exit meaning, secondary worker business role, callback ABI,
+ordinary cross-thread i32 accesses, and reachable preview lifetime/count domains
+retain their existing boundaries/unknowns.
+
+**Representation / ownership.** `ReplayScanWorker.hpp` has one declaration:
+native handle and callback pointers, four-byte thread ID/exit/active, and four
+opaque bytes. Pointer-relative assertions preserve target i386 size 0x18 and
+establish native x86-64 size 0x20 without selected layouts. `RuntimeAbi.hpp`
+provides integer-pointer availability and Microsoft x86 callback spelling on
+appropriate compilers. Three distinct storages remain distinct: standalone
+input worker 0x004C4658 and Supervisor's primary/secondary +0x648/+0x7A0.
+Main/Supervisor own physical storage; the common worker type owns its method
+contract, while caller callbacks still own job publication and cleanup.
+`ReplayScanWorkerBehavior.inl` supplies constructor/destructor/Start/Stop at
+both original emission sites in ReplayScanWorker.cpp. Exact Supervisor wrappers
+and historical global/reference aliases remain surrounding source debt. No
+new profile selector, selected declaration, fake storage, assembly, or authored
+extent is introduced; both closed debt baselines remain unchanged.
+
+**Compiler / API boundary.** The constructor's four initialization stores match
+all 53 target bytes in a minimal pinned-VC7.1 build-3077 probe. It shares the
+already-inventoried PbgArchive constructor address; the additional canonical
+`replay-scan-worker-constructor` recipe adds a comparison, not another target
+function or byte credit. A separate minimal typed BeginWorkerThread probe
+matches Start's complete 87-byte body and both REL32 positions/destinations
+(+0x0B to 0x0041BB20, +0x45 to 0x00485BA3). Therefore production uses an ordinary
+typed inline function in `ReplayScanWorkerWin32.hpp`, not a begin-call macro.
+Both production profiles use this same Win32 binding. It retains the target's
+direct void/fastcall callback conversion into the CRT unsigned/stdcall slot;
+it does not pretend to implement a portable dispatch ABI. A separate minimal
+native compiler probe rejects that direct cast under -Werror=cast-function-type.
+The native state fixture supplies a typed begin API and never invokes the cast;
+no warning suppression or incompatible indirect call is used in the oracle.
+Full commands, sources, input digests, and comparisons are private under
+`.analysis/sem331/`. Pinned flags are `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi
+/Gr /Od /Ob1 /I src /DTH095_MATCH_EXACT` for exact probes.
+
+**Native oracle.** The public front-end driver now runs five x86-64 executables.
+The worker test executes the actual common lifecycle with API fixtures under
+`-m64 -std=c++11 -O2 -Wall -Wextra -Werror -pedantic -fsanitize=undefined
+-fno-sanitize-recover=all`. It checks native opaque handle tokens above 4 GB,
+real allocated user arguments above 4 GB, callback identity, narrow scalars,
+restart ordering, zero-handle no-op, 0..3 repeated timeouts and several distinct
+non-timeout results, ignored close failure, creation failure, completion before
+begin returns, idempotent zero-handle Stop, destructor dispatch, and retained
+thread ID/opaque bytes. These are sequential API/state traces, not real OS
+handles, callback dispatch, scheduling, joins, synchronization, or data-race
+freedom. Full modern-thread/backend acceptance and a modern game product remain
+open. The native header and shared state code are accepted only within this
+bounded scope.
+
+**Focused validation.** The original worker object passed 5/5 exact before
+edits and compiled separately in the normal pinned profile. Shared lifecycle
+and the typed binding pass **6/6 canonical comparisons with zero private-label
+refresh**. Public CI passes **87 workflow tests and five native x86-64/UBSan
+executables**. The owner guard rejects handle truncation, scalar widening,
+fixed native size, profile-selected layout, and duplicate core bodies. An
+initial aggregate passed 698/698 while refreshing 350 compiler-private
+identities in 23 units across 13 sources. Final frozen-source aggregate and
+normal-product receipts follow.
+
+The final typed-binding source was frozen and cold-replayed independently:
+**698/698 comparisons across all 88 sources, with zero private-label refresh**.
+A HEAD-versus-worktree audit confirms exactly one added constructor comparison
+plus 350 compiler-private symbol changes in 23 units across 13 sources. Every
+old unit field, extent, relocation position/type, and target destination is
+unchanged; there are no public ABI retags. Authored exact credit remains
+**696 functions / 336,486 bytes**.
+
+A further source/layout audit identifies the next concrete port barrier:
+ReplayBrowserExitSignal still uses an eight-byte prefix and writes requested
+at +8 through an overlay of the real worker. The native worker now has threadId
+at +8 and exitSignal at +12. A private offsetof-only probe confirms the mismatch
+without invoking a cast or writing the wrong object. Retiring that projection
+and migrating Request @ 0x0041BB00 to the canonical worker is the next bounded
+batch; current work does not accept those native callers.
+
+The independent normal cold build compiled **88/88 pinned VC7.1 i386 COFF
+objects** across two profiles and linked/verified a **778,752-byte PE32
+GUI**, build-local SHA-256 `00b3a43394423b1dbd49cac6e59dc6d20831cc8106df845ddb1be206763f915a`.
+All four normal-selected core bodies independently reproduce their target
+bytes and every relocation (53 + 19 + 124 + 87 bytes). The normal link folds
+ReplayScanWorker and PbgArchive constructors to reconstructed-image address
+0x0043ce60; the target comparison remains 0x00454E50. This is
+normal ownership/compiler closure, not whole-image identity or threaded runtime
+validation. Tracking, generated progress, match graph, semantic guards, public
+CI, and whitespace checks pass. One CPU (1), nice 10, and serial VC7.1 builds
+were used; generated objects/binaries/maps/PDBs and Python caches are cleared
+after compact receipts are saved. Protected user-owned paths remain untouched.
+Semantic reconstruction remains active-incomplete.
+
+Final staged whitespace validation caught and removed one trailing blank line
+in the shared behavior file. All preceding bytes/program tokens are identical;
+6/6 affected exact comparisons, the normal worker object/four target bodies,
+and all five native oracles were rechecked after that cleanup.

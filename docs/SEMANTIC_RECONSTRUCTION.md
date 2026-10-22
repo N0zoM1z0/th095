@@ -132,8 +132,8 @@ the listed source.
 
 The whole-game normal oracle is still weaker than TH08's modern portable
 build: TH095 has pinned-VC7.1 normal compile/link closure but no maintained
-modern game product yet. SEM-327..330 add bounded native x86-64 cursor,
-pending-texture-data, raw queue, and preview-address oracles
+modern game product yet. SEM-327..331 add bounded native x86-64 cursor,
+pending-texture-data, raw queue, preview-address, and worker-lifecycle oracles
 (`scripts/check-portable-front-end.py`) that compile and execute the actual
 shared declarations and behavior with UBSan. Pending-data tests use real
 allocated pointers above 4 GB; the raw queue test checks all eighteen target
@@ -141,8 +141,11 @@ words, including Pop's count-to-payload transfer and post-shift return. Raw
 selector/length queue words remain 32-bit storage. The two preview-address
 channels retain actual high pointers through the production publication and
 word-shift code; metadata words follow address width and Size remains i32.
-These validate only their component contracts and sequential transitions; they do not exercise
-workers or graphics.
+These validate only their component contracts and sequential transitions; they
+do not exercise real workers or graphics. The worker fixture executes the shared lifecycle with
+typed API bindings, covering failure/timeout/close ordering and native-width
+handles/arguments. It does not invoke the historical CRT callback cast or prove
+thread scheduling, joins, or data-race freedom.
 Record this limitation; do not substitute exact success or one portable
 component for a whole-game portable/runtime oracle.
 

@@ -281,6 +281,20 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             manifest.count("?Stop@ReplayScanWorker@th095@@QAEXXZ"), 5
         )
 
+    def test_worker_guard_rejects_native_pointer_or_scalar_drift(self) -> None:
+        owner = (ROOT / "src" / "ReplayScanWorker.hpp").read_text(encoding="utf-8")
+        for old, new in (
+            ("uintptr_t threadHandle;", "u32 threadHandle;"),
+            ("u32 threadId;", "uintptr_t threadId;"),
+            ("i32 active;", "uintptr_t active;"),
+            ("sizeof(ReplayScanWorker) == 2 * sizeof(uintptr_t) + 16",
+             "sizeof(ReplayScanWorker) == 0x18"),
+        ):
+            with self.subTest(old=old):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit):
+                        GUARD.check_replay_scan_worker_owner(owner.replace(old, new, 1))
+
     def test_sound_player_consumer_guard_accepts_canonical_owner(self) -> None:
         GUARD.check_sound_player_consumer_owners()
         bullet = (ROOT / "src" / "BulletManager.cpp").read_text(encoding="utf-8")

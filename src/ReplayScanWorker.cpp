@@ -5,7 +5,7 @@
 #else
 #include "ReplayBrowser.hpp"
 
-#include <process.h>
+#include "ReplayScanWorkerWin32.hpp"
 
 namespace th095
 {
@@ -24,50 +24,7 @@ ReplayBrowserExitSignal &g_ReplayBrowserExitSignal =
         &g_Supervisor.replayScanWorker);
 #endif
 
-ReplayScanWorker::ReplayScanWorker()
-{
-    // The target constructor initializes the four live synchronization fields.
-    // Start() installs threadProc before use; unknown010 remains opaque.
-    this->threadHandle = NULL;
-    this->threadId = 0;
-    this->exitSignal = 0;
-    this->active = 0;
-}
-
-ReplayScanWorker::~ReplayScanWorker()
-{
-    this->Stop();
-}
-
-void ReplayScanWorker::Stop()
-{
-    if (this->threadHandle != 0)
-    {
-        this->exitSignal = 1;
-        this->active = 0;
-        while (WaitForSingleObject((HANDLE)this->threadHandle, 200) == WAIT_TIMEOUT)
-        {
-            this->exitSignal = 1;
-            this->active = 0;
-            Sleep(1);
-        }
-        CloseHandle((HANDLE)this->threadHandle);
-        this->threadHandle = 0;
-        this->threadProc = NULL;
-    }
-}
-
-void ReplayScanWorker::Start(void (__fastcall *callback)(void *),
-                             void *argument)
-{
-    this->Stop();
-    this->threadProc = callback;
-    this->active = 1;
-    this->exitSignal = 0;
-    this->threadHandle = _beginthreadex(
-        NULL, 0, (unsigned (__stdcall *)(void *))this->threadProc,
-        argument, 0, &this->threadId);
-}
+#include "ReplayScanWorkerBehavior.inl"
 
 i32 Supervisor::StartReplayScan(
     void (__fastcall *callback)(void *), void *argument)

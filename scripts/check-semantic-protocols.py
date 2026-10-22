@@ -1070,8 +1070,10 @@ def check_midi_output_owner() -> None:
             fail(f"match manifest lost canonical MidiOutput ABI: {identity}")
 
 
-def check_replay_scan_worker_owner() -> None:
-    owner = (SRC / "ReplayScanWorker.hpp").read_text(encoding="utf-8")
+def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
+    owner = owner_text if owner_text is not None else (
+        SRC / "ReplayScanWorker.hpp"
+    ).read_text(encoding="utf-8")
     main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
     main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
@@ -1092,15 +1094,39 @@ def check_replay_scan_worker_owner() -> None:
         "i32 exitSignal;",
         "i32 active;",
         "u8 unknown010[4];",
-        "void (__fastcall *threadProc)(void *);",
-        "(sizeof(ReplayScanWorker) == 0x18)",
-        "(offsetof(ReplayScanWorker, threadHandle) == 0x00)",
-        "(offsetof(ReplayScanWorker, exitSignal) == 0x08)",
-        "(offsetof(ReplayScanWorker, active) == 0x0c)",
+        "void (TH095_FASTCALL *threadProc)(void *);",
+        '#include "RuntimeAbi.hpp"',
+        "sizeof(ReplayScanWorker) == 2 * sizeof(uintptr_t) + 16",
+        "offsetof(ReplayScanWorker, threadHandle) == 0",
+        "offsetof(ReplayScanWorker, threadId) == sizeof(uintptr_t)",
+        "offsetof(ReplayScanWorker, exitSignal) == sizeof(uintptr_t) + 4",
+        "offsetof(ReplayScanWorker, active) == sizeof(uintptr_t) + 8",
+        "offsetof(ReplayScanWorker, unknown010) == sizeof(uintptr_t) + 12",
+        "offsetof(ReplayScanWorker, threadProc) == sizeof(uintptr_t) + 16",
     )
     for declaration in canonical_layout:
         if declaration not in owner:
             fail(f"ReplayScanWorker owner lost canonical layout: {declaration}")
+
+    if any(token in owner for token in PROFILE_NAMES):
+        fail("worker owner restored a selected declaration/layout")
+    for name, text in (("ReplayScanWorker.cpp", worker_body),
+                       ("ReplayScanWorkerExact.inl", worker_exact)):
+        if '#include "ReplayScanWorkerBehavior.inl"' not in text:
+            fail(f"{name} lost the shared lifecycle implementation")
+        if '#include "ReplayScanWorkerWin32.hpp"' not in text:
+            fail(f"{name} lost the explicit Win32 callback boundary")
+        if re.search(r"ReplayScanWorker::(?:ReplayScanWorker|Stop|Start)\s*\(", text):
+            fail(f"{name} restored a duplicate lifecycle body")
+    shared = (SRC / "ReplayScanWorkerBehavior.inl").read_text(encoding="utf-8")
+    for token in ("BeginWorkerThread(this, argument)",
+                  "WaitForSingleObject((HANDLE)this->threadHandle, 200) == WAIT_TIMEOUT",
+                  "this->exitSignal = 1;", "this->active = 0;", "Sleep(1);",
+                  "this->threadProc = NULL;"):
+        if token not in shared:
+            fail(f"shared worker lifecycle lost target transition: {token}")
+    if any(token in shared for token in PROFILE_NAMES):
+        fail("shared worker lifecycle restored a profile branch")
 
     declarations: list[str] = []
     for path in SRC.rglob("*"):

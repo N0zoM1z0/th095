@@ -55,6 +55,11 @@ inside critical section 4, calls at `0x0044832E/33F/350/361/372` advance the
 identifier, both address channels, and both length channels. Pop return values
 are discarded here. No upload, scheduler, or release policy changes are made.
 
+The shared worker lifecycle has a separate [state/API evidence map](WORKER_LIFECYCLE.md).
+Its active flag can be cleared before a wait, or remain set after creation
+failure; the native lifecycle fixture does not establish a real join or the
+reachable count bound for this preview protocol.
+
 ## Pop and the two release orders
 
 `Pop @ 0x00450F60` decrements count, copies words 1..16 into 0..15, and returns
