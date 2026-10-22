@@ -162,7 +162,7 @@ struct Supervisor
     void ConfigureBackgroundViewport(i32 index);
     void CalculateFps();
     i32 SetupDInput();
-    static void __fastcall InitializeInput(Supervisor *s);
+    static void __fastcall InitializeInput(void *s);
     static void StartInputWorker();
     void ReleaseGameManagers();
     i32 UpdateSceneState();
@@ -174,7 +174,7 @@ struct Supervisor
     void BeginLoadingCompletion();
     i32 StartReplayScan(void (__fastcall *callback)(void *), void *argument);
     void StopReplayScan();
-    static void __fastcall StartupThread(Supervisor *s);
+    static void __fastcall StartupThread(void *s);
     i32 LoadMusic(i32 preloadSlot, char *path);
     i32 PlayMusic(i32 musicIndex, i32 unused);
     i32 StopAudio();

@@ -1360,7 +1360,7 @@ i32 __fastcall Supervisor::FinalizeFrame(Supervisor *s)
 }
 
 // FUNCTION: TH095 0x004238E0.
-void __fastcall Supervisor::InitializeInput(Supervisor *s)
+void __fastcall Supervisor::InitializeInput(void *s)
 {
     g_Supervisor.flags.keyboardAvailable = 0;
     g_Supervisor.flags.controllerAvailable = 0;
@@ -1504,7 +1504,7 @@ BOOL CALLBACK Supervisor::ControllerCallback(
 void Supervisor::StartInputWorker()
 {
     g_SupervisorInputWorker.Start(
-        (void (__fastcall *)(void *))Supervisor::InitializeInput,
+        Supervisor::InitializeInput,
         &g_Supervisor);
 }
 
@@ -1687,7 +1687,7 @@ i32 __fastcall Supervisor::AddedCallback(Supervisor *s)
     g_Supervisor.SetupLoadingVms(&position);
     g_Supervisor.startupThreadState = SUPERVISOR_STARTUP_PHASE_RUNNING;
     g_Supervisor.StartReplayScan(
-        (void (__fastcall *)(void *))Supervisor::StartupThread, s);
+        Supervisor::StartupThread, s);
     return 0;
 }
 
@@ -1833,7 +1833,7 @@ i32 Supervisor::CheckFps()
 #undef average
 
 // FUNCTION: TH095 0x004242B0.
-void __fastcall Supervisor::StartupThread(Supervisor *s)
+void __fastcall Supervisor::StartupThread(void *s)
 {
     f32 volume;
 

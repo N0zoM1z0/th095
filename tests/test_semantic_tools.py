@@ -924,6 +924,24 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                     with self.assertRaises(SystemExit):
                         GUARD.check_scene_preview_data_queue_owner(header.replace(old, new, 1))
 
+    def test_worker_entry_guard_rejects_truncation_and_lifetime_changes(self) -> None:
+        GUARD.check_worker_thread_start_boundary()
+        header = (ROOT / "src/WorkerThreadStart.hpp").read_text(encoding="utf-8")
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                GUARD.check_worker_thread_start_boundary(header.replace("void *argument;", "u32 argument;"))
+        body = (ROOT / "src/WorkerThreadStart.inl").read_text(encoding="utf-8")
+        for changed in (
+            body.replace("ReleaseWorkerThreadStart(start);", "", 1),
+            body.replace("callback(userArgument);", "callback(start->argument);", 1),
+            body.replace("if (handle == 0)", "if (handle != 0)", 1),
+            body.replace("BeginBoundWorkerThread(NULL, argument,", "BeginBoundWorkerThread(NULL, NULL,", 1),
+            body.replace("start->callback = worker->threadProc;", "start->callback = NULL;", 1),
+        ):
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_worker_thread_start_boundary(body_text=changed)
+
     def test_primary_worker_signal_guard_rejects_alias_or_wrong_field(self) -> None:
         GUARD.check_primary_worker_signal_bindings()
         name = "SceneSelectAssets.cpp"

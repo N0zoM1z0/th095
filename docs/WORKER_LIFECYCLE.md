@@ -1,6 +1,6 @@
 # Shared worker lifecycle and port boundary
 
-SEM-331..335 cover the common ReplayScanWorker type and its five lifecycle
+SEM-331..336 cover the common ReplayScanWorker type and its five lifecycle
 methods for the original Japanese TH095 v1.02a target. The canonical declaration
 was already unified by SEM-303; these batches share behavior, remove the
 fixed-width header barrier, and make the state transition code executable in a native
@@ -96,17 +96,43 @@ remain open; these tests do not prove a one-item bound.
 ## Shared code and independent oracles
 
 ReplayScanWorkerBehavior.inl supplies constructor/destructor/RequestExit/Start/Stop
-at both normal and exact worker emission sites. Supervisor wrappers remain
-different surrounding source; the historical global/reference signal aliases
-are retired. Both production
-profiles include ReplayScanWorkerWin32.hpp, whose narrow begin binding retains
-the target's direct callback cast in a typed begin function. A minimal pinned
-compiler probe proves that function preserves Start's complete 87-byte body
-and both relocation positions/destinations. It owns no worker
-layout or storage. The native fixture supplies a typed begin binding and wait,
-sleep, and close APIs. It never invokes the historical cast or launches a real
-thread. The direct cast is independently rejected by native GCC's strict
-cast-function-type check; no warning suppression is used to hide it.
+at both normal and exact worker emission sites. WorkerCallback is the one
+void/fastcall callback contract; the class layout remains profile-independent.
+Supervisor's input/startup callbacks now take void* in all three TH095 parent
+declarations and both bodies, with their unused parameter homes and target
+instructions preserved. The two registration-side function-pointer casts are
+removed. The separate 0x364 legacy Supervisor declaration is not promoted.
+
+The existing exact include route selects ReplayScanWorkerWin32Emission.hpp.
+It retains the target's raw conversion in one selector-free emission adapter.
+Normal ReplayScanWorkerWin32.hpp instead supplies allocation, release and typed
+CRT begin bindings for WorkerThreadStart.inl. A per-launch WorkerThreadStart
+owns two native-width values: WorkerCallback and user argument. Allocation uses
+nothrow new; failure returns a zero handle without beginning a thread. A failed
+begin releases the context on the creator side. On success the typed
+unsigned/stdcall entry snapshots both values, deletes the context, and invokes
+the void/fastcall callback with its actual argument type. For a null callback, launch delegates directly to the CRT invalid-entry path
+without allocation; its EINVAL and untouched thread-ID behavior are preserved.
+The entry returns zero
+as its defined CRT status; that is a new adapter policy, not a recovered target
+callback return, successful-load flag or worker exit handshake. No worker
+storage or existing Start/Stop state transition is moved into the transport.
+
+The entry can finish before begin returns. A successful creator never accesses
+or deletes that context after the API call; the entry owns it. This preserves
+both early and later callback dispatch without consulting a mutable worker
+callback field from the new thread. Allocation failure adds a normal launch
+failure condition and keeps the target's armed active=1/exitSignal=0/no-handle
+state, just as a failed begin does; no failure repair is inferred.
+
+A pinned minimal experiment keeps the historical Start at all 87 target bytes
+and both relocation positions. The natural typed transport instead emits a
+68-byte Start, 168-byte launch function and 61-byte CRT entry. The last reads
+its argument from the stack, loads the user argument into ECX for the fastcall
+callback, returns unsigned zero and emits RET 4. This proves the narrow
+emission dependency; it does not accept the normal body through exact replay.
+The normal/native API binding split remains explicit debt, and no new profile
+selector or selected worker/parent layout is introduced.
 
 The native x86-64/UBSan test executes the actual shared lifecycle. It checks
 opaque handle tokens above 4 GB, real allocated user arguments above 4 GB,
@@ -118,8 +144,9 @@ RequestExit calls across zero/high handles, both active values, four prior
 signal values, and repeated requests. Each preserves all neighboring fields
 and emits no API event. This is a sequential state/API
 oracle, not Win32 dispatch, scheduling, synchronization, or memory-model proof.
-The ordinary i32 cross-thread fields and historical callback ABI boundary still
-need a real portable backend and appropriate threading validation. Unknown
+The ordinary i32 cross-thread fields and real OS begin/wait/close backend still
+need appropriate portable threading validation. The legacy conversion remains
+only in the exact emission binding. Unknown
 storage and the secondary worker's business role are not inferred from tests.
 
 Target disassembly is freshly hash-attested; the original five worker/wrapper
@@ -128,8 +155,8 @@ the added canonical 53-byte comparison cover the ICF constructor. SEM-332's
 minimal 21-byte RequestExit probe and complete caller comparisons prove the
 method-owner migration. Caller data relocations now address Supervisor's base
 0x004C4670 with COFF addend +0x648, preserving effective target 0x004C4CB8.
-Aggregate, normal-product, and native receipts are recorded in SEM-331..335
-history. The public driver scripts/check-portable-front-end.py now runs seven component executables;
+Aggregate, normal-product, and native receipts are recorded in SEM-331..336
+history. The public driver scripts/check-portable-front-end.py now runs eight component executables;
 this is not a maintained modern game product or a playable 64-bit port.
 
 SEM-335 freshly attests 33 direct global-word reference rows and complete
@@ -156,3 +183,29 @@ and lifecycle intact. Supplementary normal callback comparison covers all
 4,097 bytes and 182 independently bound relocations in the five selected
 callbacks; it awards no additional canonical recipe/target credit. Different
 coordinator bodies and the real threading backend remain outside that result.
+
+SEM-336 adds an eighth native program which executes the actual shared context
+transport and worker core against typed API bindings. Eighteen combinations cover
+allocation failure, begin failure, early completion before begin returns and
+deferred completion, each with two callbacks and null/real high user pointers.
+The successful fixtures dispatch through real std::thread and join before the
+parent examines fixture/user state; callbacks never access worker flags. The
+fixture poisons and deletes released contexts, requires release before user
+code, verifies exactly one release, retains opaque worker bytes and tests a
+launch-time callback snapshot independently of later worker-slot changes.
+This is a real host-thread transport test, not actual Win32 execution, a game
+thread scheduler or cross-thread worker-flag/race/OS-join acceptance.
+
+A null callback follows the CRT invalid-entry path before context allocation.
+The actual target begin checks it at 0x00485BAD, writes EINVAL (0x16) and
+returns zero before touching the thread ID. Normal transport delegates that
+null entry, original argument and ID pointer to the real begin binding; it
+does not wrap null in a valid entry. The final fixture adds both null/high
+argument cases, with 18 cases total. Callback exceptions remain unaccepted.
+
+The final supporting VC7.1/Wine console oracle uses the production Win32 binding
+and core with real CRT/Win32 calls. Four valid callback/argument cases complete
+a real wait and report CRT exit status zero; two null-entry cases preserve
+EINVAL, ID and armed flags. It tests six bounded cases, with no child accesses
+to worker flags. It does not establish native Windows whole-game behavior or
+join guarantees for failed waits/closed handles.

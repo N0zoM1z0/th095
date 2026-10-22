@@ -17374,3 +17374,198 @@ user-owned files, verified target, toolchains and Ghidra project are untouched.
 Semantic reconstruction remains **active-incomplete**. The next bounded
 portability lane is the CRT callback signature/argument boundary, keeping
 cross-thread memory ordering and actual joins separate from callback evidence.
+
+### SEM-336 — typed worker launch transport and callback declarations
+
+**Problem / target boundary.** Canonical worker callbacks are void/fastcall,
+while the CRT entry slot is unsigned/stdcall. Target Start 0x0041BBA0 passes
+the stored pointer directly at 0x0041BBDF/0x0041BBE4. Fresh attested CRT
+dispatch 0x00485B0E pushes the stored argument at 0x00485B77, calls the entry
+at 0x00485B7A and passes EAX to endthreadex at 0x00485B7D/7E. The reconstructed
+callbacks instead home ECX and return without popping a stack parameter. The
+raw conversion is an emission fact, not a type-safe portable call contract.
+All seven callback targets, Start/wrappers and begin/dispatch/exit CRT bodies
+were queried read-only after module attestation. No original callback return
+meaning or whole-game OS exit-code usage is inferred.
+
+**Shared callback declarations.** Input 0x004238E0 and StartupThread
+0x004242B0 never consume their parameter homes and access the global Supervisor.
+Their previous Supervisor* parameter required two additional incompatible
+registration casts. Both definitions and all three TH095 parent declarations
+now take void* with the same fastcall convention and parameter identifier; the
+registrations pass the functions directly. Main's input launcher still passes
+the Supervisor address, startup still passes its coordinator argument, the
+front-end passes its controller, and the remaining task loaders pass null.
+No argument routing or callback body is changed. The 0x364 legacy declaration
+is a distinct family and receives no new acceptance. WorkerCallback names the
+one canonical callback type, without changing worker size/layout or Start ABI.
+The two ledger signatures are refined without changing mapping/origin/exact
+state, address or extent.
+
+**Normal transport / four ownership axes.** WorkerThreadStart is a new normal
+platform launch allocation, not a target overlay or second worker layout. It
+holds the callback and argument in real native-width fields. Normal allocation
+uses nothrow new; allocation failure returns zero with no thread. Creation
+failure starts no callback and leaves release responsibility with the creator.
+Success transfers ownership to the typed unsigned/stdcall entry, which copies
+both values, deletes the context, then calls the void/fastcall callback with
+its true argument type. The entry's unsigned zero is a deliberately defined
+normal CRT completion status, not a recovered original return, worker flag or
+successful-loading result. Allocation failure is an additional normal launch
+failure condition; Start retains the target's active=1/exitSignal=0/no-handle
+state rather than inventing a repair. The successful creator never accesses
+the context after the begin call, because the entry may already have released
+it. unknown010 and the three worker lifetimes remain untouched.
+
+The canonical worker owns layout and common lifecycle statements. Main owns
+the standalone input worker; Supervisor retains its separate primary/secondary
+storages. The per-launch transport owns only its temporary callback snapshot.
+WorkerThreadStart.inl supplies one shared transport implementation for the
+normal Win32 binding and native fixture; ReplayScanWorker.cpp retains method
+emission. The existing exact file-top include route selects the selector-free
+ReplayScanWorkerWin32Emission.hpp. This confines the historical conversion to
+a named exact adapter; no profile directive, selected declaration or layout is
+added. This platform-binding split is explicit debt, while the five-method
+worker core and all callback declarations remain shared.
+
+**Compiler evidence.** Before edits, the direct baseline passes 55/55 canonical
+comparisons and both normal objects compile. A private full Main experiment
+preserves target input/startup bodies and both registration functions. The
+first diagnostic used the old Supervisor* decorated names after compilation;
+correct void* names pass. Complete production-object diagnostics then cover
+all 55 units and prove two definition plus three relocation retags, including
+the startup EH handler name, at unchanged target positions/destinations.
+The final direct canonical replay passes 55/55, refreshing 25 private labels
+in one unit.
+
+A minimal pinned-3077 object keeps legacy Start at all 87 target bytes and
+both relocation positions. The natural typed transport emits Start 68 bytes,
+a separate 168-byte launch routine and a 61-byte CRT entry. Disassembly proves
+the latter consumes its stack parameter, loads ECX for the callback, returns
+unsigned zero and emits RET 4. An earlier malloc transport was only a private
+probe; the accepted normal transport constructs/deletes an actual C++ context
+with nothrow new. Strict native GCC rejects the legacy incompatible
+function-pointer conversion under -Werror=cast-function-type; no diagnostic
+suppression is introduced. These independent failures/successes establish the
+narrow binding/emission boundary. Exact replay never accepts the new normal
+Start through the legacy adapter. Commands, candidate sources, hash-attested
+queries, signature/relocation audits and compiler diagnostics are private under
+.analysis/sem336/.
+
+**Native runtime oracle.** An eighth x86-64/UBSan executable compiles the actual
+shared context transport and worker core with strict C++11 and pthread support.
+Eighteen combinations cover allocation failure, begin failure, early completion
+before begin returns and deferred completion, crossed with two callbacks and
+null/actual allocated user pointers, plus both null-callback cases above 4 GB. The contexts themselves must
+also reside above 4 GB. Successful cases use real host std::thread dispatch and
+join before checking fixture/user results; callbacks never access worker flags.
+The fixture poisons/deletes released contexts, requires exactly one release
+before user code, verifies callback identity after the worker slot is edited
+and retains opaque bytes. This proves the bounded dispatch/ownership contract,
+not real Win32 execution, a portable game backend, flag memory ordering,
+callback exceptions, game scheduling or OS join correctness. Existing
+RequestExit/Stop failure and preview-publication semantics remain unchanged.
+
+Guards preserve the native typed packet, snapshot/release/call order,
+allocation/creation/success ownership and cast-free canonical registrations.
+Mutation tests reject truncated arguments, callback-slot loss, post-release
+packet reads, missing release and reversed success/failure release conditions.
+Selector debt remains 266 keys / 699 occurrences and selected declarations
+remain 192 / 197. Aggregate and independent normal-product receipts follow.
+
+**Frozen aggregate / public gates.** Cold replay passes **698/698 comparisons
+across 88 sources**, with zero additional private-label refresh after the direct
+pass. Full baseline audit records two callback-definition and three related
+relocation retags (including startup EH), all at the same addresses/offsets,
+plus **25 private labels in one Main unit**. Every other recipe field, extent,
+profile, relocation type and destination remains unchanged. All 304 frozen
+source/script/test inputs remain unchanged. Only two ledger signature strings
+are refined; mapping/origin/source/exact state and header-only claims remain
+unchanged from d1f23eb, with no added target credit.
+
+Public CI passes **91 workflow tests and eight native x86-64/UBSan programs**.
+The independent compiler-owned EH audit passes **57 canonical parents,
+72 unique actions and 81/81 provenance-exact references**. Target/tracking,
+match/whole-build graph, closed protocol/debt/owner, progress and whitespace
+gates pass. Independent normal-product and cleanup receipts follow.
+
+**Independent normal product / complete direct-object audit.** The cold normal
+build compiles **88/88 i386 COFF objects** across two profiles and links a
+verified **778,752-byte PE32 GUI** with zero unresolved symbols, SHA-256
+`f92d473e410e6a91fdd50e363a6dc1ceb75d21594d79ddaeec03c4b2aaf98acb`.
+The actual Main/worker objects contain 62 pre-existing named function roots.
+Under the documented callback signature normalization, only Start intentionally
+changes code. The other 61 roots and 150 recursively referenced code/data/EH
+section graphs preserve bytes, entry offsets and reference bindings up to that
+changed Start boundary. The two added normal launch/entry helpers are recorded
+separately, rather than assumed to exist in the original target or baseline.
+The final map contains neither retired Supervisor* callback signature.
+
+Normal Main acceptance rests on this independent normal comparison plus target
+parameter/caller evidence, not on the exact-selected Main body. Normal Start
+acceptance rests on its actual normal compile/link, pinned typed-entry ABI
+evidence and shared transport/core host-thread oracle. The separate exact
+legacy adapter is not used as semantic acceptance of typed launch behavior.
+Compiler flags, object ownership and worker/parent layout remain unchanged;
+this adds no whole-image identity, Windows runtime execution or playable port
+claim. Compact source/command/compiler/target/COFF/native/map receipts remain
+private in .analysis/sem336/.
+
+CPU 1, nice 10 and serial VC7.1 builds were used. After all build/test/audit
+handles returned terminal success, generated objects, PE/native binaries, PDBs,
+maps and Python caches were cleared. Verified target, toolchains, Ghidra project
+and protected user-owned files are untouched. The next bounded lane is ordinary
+i32 exit/active access and its ordering/atomic-port contract. Semantic
+reconstruction remains **active-incomplete**.
+
+The bounded KB maintenance also retires stale MAIN-042 projection/field-selector
+claims and REPLAY-020's unconditional “joins” wording. ABI-093 now records the
+normal typed transport versus exact conversion boundary. Those corrections use
+the existing Stop timeout/failure evidence and current canonical owner; they
+introduce no new target semantics or join claim.
+
+**Final invalid-entry review.** CRT begin at 0x00485BA8..0x00485BBE
+explicitly rejects a null entry before allocation, writes errno=0x16 (EINVAL)
+and returns zero without modifying the thread ID. The initial 16-case fixture
+covered only valid callback pointers and missed this distinction. The final
+normal transport forwards a null callback to the real begin binding with the
+original argument and ID output pointer, bypassing context allocation. This
+preserves CRT validation/error state rather than launching a wrapper that
+would later call null. Two additional native cases verify EINVAL, no allocation
+or callback, unchanged ID/opaque data and target armed flags: 18 cases total.
+All relevant gates are rerun from the final freeze; earlier receipts are kept
+under first-pass names and are not treated as acceptance of this final edge.
+The previously cleaned baseline objects are reconstructed from immutable HEAD
+tracked source archives for the independent final normal comparison.
+
+**Final NULL-callback gates / actual CRT execution.** After that correction,
+the complete final 304-input freeze again passes 698/698 cold exact comparisons
+with zero private refresh, 88/88 normal compile/link, 91 workflow tests, all
+eight native programs (including 18 transport cases), the 57-parent/81-reference
+EH audit and tracking/graph/protocol/progress checks. The independent normal
+comparison is repeated against baseline Main/worker objects rebuilt from
+immutable d1f23eb tracked sources. It again proves 61 unchanged roots/150
+reference graphs and only the intended Start change, plus the two new helpers.
+The final helpers are 168-byte launch / 61-byte CRT entry, with Start still
+68 bytes. Earlier first-pass receipts are retained with their own names.
+
+A separate private console probe includes the actual production Win32 binding
+and shared core, compiles/links with the attested VC7.1 build 3077, and executes
+under Wine against the actual CRT and Win32 APIs. Four cases cross two fastcall
+callbacks and null/non-null arguments; real WaitForSingleObject succeeds, the
+arguments/results match, GetExitCodeThread reports the adapter's unsigned zero,
+and worker Stop closes the handle. Two null-callback cases independently return
+zero with EINVAL and unchanged ID, keeping active=1/exitSignal=0. Callback code
+never touches worker flags; even after the successful OS wait they remain armed
+until Stop. All six cases pass. This supplements the native ownership/failure
+fixture with concrete CRT/Win32-under-Wine execution; it does not accept native
+Windows game scheduling, shared-flag races, every wait/close failure, or a
+whole-game portable product. Probe code/commands/tool hashes/output remain
+private under .analysis/sem336/.
+
+Final generated build artifacts, rebuilt baseline source copies/archive and
+Python caches are cleared only after every final handle is terminal. Compact
+receipts retain the immutable baseline revision/archive digest for reproduction.
+All 304 source inputs remain frozen; protected files/target/tools/Ghidra are
+untouched. CPU 1 and nice 10 remain in force. The checkpoint stays
+**active-incomplete**.

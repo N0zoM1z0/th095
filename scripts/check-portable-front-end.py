@@ -10,7 +10,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def run_probe(source_name: str, executable_name: str) -> None:
+def run_probe(source_name: str, executable_name: str, extra_flags: tuple[str, ...] = ()) -> None:
     output = ROOT / "build" / "portable-front-end"
     output.mkdir(parents=True, exist_ok=True)
     executable = output / executable_name
@@ -20,6 +20,7 @@ def run_probe(source_name: str, executable_name: str) -> None:
             *compiler,
             "-m64", "-std=c++11", "-O2", "-Wall", "-Wextra", "-Werror",
             "-pedantic", "-fsanitize=undefined", "-fno-sanitize-recover=all",
+            *extra_flags,
             "-I", str(ROOT / "src"),
             str(ROOT / "tests" / "portable" / source_name),
             "-o", str(executable),
@@ -38,6 +39,7 @@ def main() -> int:
     run_probe("SupervisorFlagsTest.cpp", "supervisor-flags-test")
     run_probe("SceneAssetWaitTest.cpp", "asset-wait-test")
     run_probe("ReplayScanWorkerTest.cpp", "worker-lifecycle-test")
+    run_probe("WorkerThreadStartTest.cpp", "worker-entry-test", ("-pthread", "-Wcast-function-type"))
     return 0
 
 

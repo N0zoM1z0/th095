@@ -67,7 +67,7 @@ VC7 comparison, and the playable Windows i386 behavior.
 
 ## Phase 2: portable build boundary
 
-SEM-327..335 add bounded native x86-64 component oracles: the shared
+SEM-327..336 add bounded native x86-64 component oracles: the shared
 front-end cursor, pending texture-data owner, raw queue, preview-address
 channels, and worker lifecycle compile without Windows/D3D headers and execute
 their actual movement/history, pointer-shift,
@@ -90,6 +90,13 @@ including ordered cancellation and a nonempty backlog; whole-game count and
 release domains remain open.
 This supports semantic work; the modern whole-game
 build and the platform boundary below remain open.
+An eighth executes typed CRT launch transport on real native host threads, with
+fault-injected allocation/creation failures, CRT null-callback rejection and
+early/deferred callbacks. Both
+callback and argument retain native width; context release precedes user code.
+The exact legacy conversion is isolated in a named emission adapter. These
+transport tests do not exercise cross-thread worker flags or establish the
+Win32/portable OS wait/close backend or whole-game joins.
 
 - [ ] Add a separate modern build product and CI compile lane without changing the
   pinned VC7.1 comparison path.

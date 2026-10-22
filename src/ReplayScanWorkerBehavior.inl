@@ -42,7 +42,7 @@ void ReplayScanWorker::Stop()
     }
 }
 
-void ReplayScanWorker::Start(void (TH095_FASTCALL *callback)(void *),
+void ReplayScanWorker::Start(WorkerCallback callback,
                              void *argument)
 {
     this->Stop();

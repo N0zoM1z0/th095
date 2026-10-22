@@ -1,22 +1,30 @@
 #pragma once
 
-#include "ReplayScanWorker.hpp"
+#include "WorkerThreadStart.hpp"
 #include <process.h>
+#include <new>
 
 namespace th095
 {
 
-// Target 0x0041BBDF..0x0041BBE4 passes the stored callback directly to the
-// CRT's unsigned/stdcall entry slot. Keep that historical conversion inside
-// the Win32 API binding; it is not a portable callback-dispatch contract.
-// A minimal pinned-3077 probe proves this typed function inlines without
-// changing Start's 87 bytes or its two relocation positions/destinations.
-static __forceinline uintptr_t BeginWorkerThread(ReplayScanWorker *worker,
-                                                void *argument)
+static inline WorkerThreadStart *AllocateWorkerThreadStart()
 {
-    return _beginthreadex(
-        NULL, 0, (unsigned (TH095_STDCALL *)(void *))worker->threadProc,
-        argument, 0, &worker->threadId);
+    return new (std::nothrow) WorkerThreadStart;
 }
+
+static inline void ReleaseWorkerThreadStart(WorkerThreadStart *start)
+{
+    delete start;
+}
+
+static inline uintptr_t BeginBoundWorkerThread(
+    CrtWorkerEntry entry, void *argument, u32 *threadId)
+{
+    return _beginthreadex(NULL, 0, entry, argument, 0, threadId);
+}
+
+// The shared lifecycle is unchanged. Only the normal platform binding owns
+// this allocated, typed CRT entry; the exact route retains target emission.
+#include "WorkerThreadStart.inl"
 
 } // namespace th095

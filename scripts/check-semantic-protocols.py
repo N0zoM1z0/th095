@@ -1094,7 +1094,8 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
         "i32 exitSignal;",
         "i32 active;",
         "u8 unknown010[4];",
-        "void (TH095_FASTCALL *threadProc)(void *);",
+        "WorkerCallback threadProc;",
+        "typedef void (TH095_FASTCALL *WorkerCallback)(void *);",
         '#include "RuntimeAbi.hpp"',
         "sizeof(ReplayScanWorker) == 2 * sizeof(uintptr_t) + 16",
         "offsetof(ReplayScanWorker, threadHandle) == 0",
@@ -1114,7 +1115,8 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
                        ("ReplayScanWorkerExact.inl", worker_exact)):
         if '#include "ReplayScanWorkerBehavior.inl"' not in text:
             fail(f"{name} lost the shared lifecycle implementation")
-        if '#include "ReplayScanWorkerWin32.hpp"' not in text:
+        binding = 'ReplayScanWorkerWin32Emission.hpp' if name.endswith('Exact.inl') else 'ReplayScanWorkerWin32.hpp'
+        if f'#include "{binding}"' not in text:
             fail(f"{name} lost the explicit Win32 callback boundary")
         if re.search(r"ReplayScanWorker::(?:ReplayScanWorker|Stop|Start)\s*\(", text):
             fail(f"{name} restored a duplicate lifecycle body")
@@ -2691,6 +2693,60 @@ def check_scene_preview_data_queue_owner(header_text: str | None = None) -> None
         fail("preview address Pop lost the signed full-word transition")
 
 
+def check_worker_thread_start_boundary(header_text: str | None = None, body_text: str | None = None) -> None:
+    header = source_without_comments(header_text if header_text is not None
+        else (SRC / "WorkerThreadStart.hpp").read_text(encoding="utf-8"))
+    body = source_without_comments(body_text if body_text is not None
+        else (SRC / "WorkerThreadStart.inl").read_text(encoding="utf-8"))
+    for token in ("WorkerCallback callback;", "void *argument;",
+                  "typedef unsigned (TH095_STDCALL *CrtWorkerEntry)(void *);"):
+        if token not in header:
+            fail(f"worker launch transport lost native typed payload: {token}")
+    if any(token in header + body for token in PROFILE_NAMES):
+        fail("worker launch transport restored a profile-selected contract")
+    entry_marker = "static unsigned TH095_STDCALL RunWorkerThread(void *argument)"
+    begin_marker = "static inline uintptr_t BeginWorkerThread(ReplayScanWorker *worker, void *argument)"
+    if entry_marker not in body or begin_marker not in body:
+        fail("worker launch transport lost its typed entry/begin")
+    entry = braced_body_after(body, body.index(entry_marker), entry_marker)
+    expected_entry = """
+        WorkerThreadStart *start = static_cast<WorkerThreadStart *>(argument);
+        WorkerCallback callback = start->callback;
+        void *userArgument = start->argument;
+        ReleaseWorkerThreadStart(start);
+        callback(userArgument);
+        return 0;
+    """
+    begin = braced_body_after(body, body.index(begin_marker), begin_marker)
+    expected_begin = """
+        if (worker->threadProc == NULL)
+            return BeginBoundWorkerThread(NULL, argument, &worker->threadId);
+        WorkerThreadStart *start = AllocateWorkerThreadStart();
+        if (start == NULL) return 0;
+        start->callback = worker->threadProc;
+        start->argument = argument;
+        uintptr_t handle = BeginBoundWorkerThread(RunWorkerThread, start, &worker->threadId);
+        if (handle == 0) ReleaseWorkerThreadStart(start);
+        return handle;
+    """
+    if re.sub(r"\s+", "", entry) != re.sub(r"\s+", "", expected_entry):
+        fail("worker entry lost snapshot/release/typed-call ordering")
+    if re.sub(r"\s+", "", begin) != re.sub(r"\s+", "", expected_begin):
+        fail("worker begin lost failure/success launch ownership")
+    normal = (SRC / "ReplayScanWorkerWin32.hpp").read_text(encoding="utf-8")
+    if '#include "WorkerThreadStart.inl"' not in normal or 'CrtWorkerEntry entry' not in normal:
+        fail("normal worker bypasses the typed CRT transport")
+    if '(unsigned (' in normal or 'reinterpret_cast' in normal:
+        fail("normal worker restored an incompatible callback cast")
+    for name in ("Main.hpp", "MainExact.hpp", "SupervisorRuntime.hpp", "Main.cpp", "MainExact.inl"):
+        source = (SRC / name).read_text(encoding="utf-8")
+        for callback in ("InitializeInput", "StartupThread"):
+            if not re.search(rf"{callback}\(void \*s\)", source):
+                fail(f"{name} lost the shared void-pointer callback declaration")
+            if f'(void (__fastcall *)(void *))Supervisor::{callback}' in source:
+                fail(f"{name} restored a callback registration cast")
+
+
 def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None) -> None:
     """Preserve the closed primary-worker bindings, not the enclosing ABI."""
     overrides = overrides or {}
@@ -4011,6 +4067,7 @@ def main() -> int:
     check_front_end_scene_queue_owner()
     check_scene_value_queue_owner()
     check_scene_preview_data_queue_owner()
+    check_worker_thread_start_boundary()
     check_primary_worker_signal_bindings()
     check_scene_asset_wait_protocol()
     check_front_end_pending_texture_owner()

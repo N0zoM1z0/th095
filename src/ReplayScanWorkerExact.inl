@@ -1,6 +1,6 @@
 #include "ReplayBrowser.hpp"
 
-#include "ReplayScanWorkerWin32.hpp"
+#include "ReplayScanWorkerWin32Emission.hpp"
 
 #define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
 #define ZUN_ERROR TH095_LEGACY_ZUN_ERROR

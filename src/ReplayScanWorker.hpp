@@ -7,6 +7,8 @@
 namespace th095
 {
 
+typedef void (TH095_FASTCALL *WorkerCallback)(void *);
+
 // Shared worker protocol used by the standalone Supervisor input worker and
 // the two distinct ReplayScanWorker instances embedded in Supervisor. This
 // type owns their common layout and behavior, but not any of those storages.
@@ -19,13 +21,13 @@ struct ReplayScanWorker
     i32 exitSignal;
     i32 active;
     u8 unknown010[4];
-    void (TH095_FASTCALL *threadProc)(void *);
+    WorkerCallback threadProc;
 
     ReplayScanWorker();
     ~ReplayScanWorker();
     void RequestExit(); // Publish the exit handshake; active/handle are unchanged.
     void Stop();
-    void Start(void (TH095_FASTCALL *callback)(void *), void *argument);
+    void Start(WorkerCallback callback, void *argument);
 };
 
 // Handle/callback storage follows native pointer width; the three scalar

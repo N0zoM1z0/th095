@@ -132,7 +132,7 @@ the listed source.
 
 The whole-game normal oracle is still weaker than TH08's modern portable
 build: TH095 has pinned-VC7.1 normal compile/link closure but no maintained
-modern game product yet. SEM-327..335 add bounded native x86-64 cursor,
+modern game product yet. SEM-327..336 add bounded native x86-64 cursor,
 pending-texture-data, raw queue, preview-address, and worker-lifecycle oracles
 (`scripts/check-portable-front-end.py`) that compile and execute the actual
 shared declarations and behavior with UBSan. Pending-data tests use real
@@ -142,7 +142,7 @@ selector/length queue words remain 32-bit storage. The two preview-address
 channels retain actual high pointers through the production publication and
 word-shift code; metadata words follow address width and Size remains i32.
 These validate only their component contracts and sequential transitions; they
-do not exercise real workers or graphics. The worker fixture executes the shared lifecycle with
+do not exercise game workers or graphics. The worker fixture executes the shared lifecycle with
 typed API bindings, covering failure/timeout/close ordering and native-width
 handles/arguments. Request tests execute the canonical exit-only store at its
 native offset, retaining thread ID and other neighbors. It does not invoke the
@@ -157,6 +157,13 @@ and final address publication against target-derived branch traces. This proves
 neither the enclosing controller ABI nor whole-game reachable counts/releases.
 Record this limitation; do not substitute exact success or one portable
 component for a whole-game portable/runtime oracle.
+An eighth executes typed CRT launch transport on real native host threads, with
+fault-injected allocation/creation failures, CRT null-callback rejection and
+early/deferred callbacks. Both
+callback and argument retain native width; context release precedes user code.
+The exact legacy conversion is isolated in a named emission adapter. These
+transport tests do not exercise cross-thread worker flags or establish the
+Win32/portable OS wait/close backend or whole-game joins.
 
 ## Completion and batch records
 

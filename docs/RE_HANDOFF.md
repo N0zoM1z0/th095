@@ -17,44 +17,50 @@ their recorded source revision; regenerate them before claiming a newer result.
   validation are separate facts; no semantic completion percentage is claimed.
 - Ledger totals are generated in `docs/PROGRESS.md`; rerun the summary
   command below before quoting them. `config/claims.csv` remains header-only.
-- Latest accepted batch: **SEM-335**. All eight detached Help/Replay/Photo/front-end
-  exit/active scalar spellings and the two normal reference definitions are
-  retired. Every selected callback/snapshot now addresses canonical primary
-  ReplayScanWorker fields directly. Scene Select snapshots mean exit requested;
-  front-end snapshots mean primary-worker active. Ordered active=0/exitSignal=1
-  stores remain before callback return; no OS-join or successful-load claim is
-  introduced. Four selector occurrences retire: closed debt is **192 keys /
-  197 declarations** and **266 / 699 selectors**.
+- Latest accepted batch: **SEM-336**. WorkerCallback is the shared void/fastcall
+  type. Canonical input/startup callbacks now accept void* in both bodies/all
+  three TH095 parent declarations, with no registration casts or changed target
+  instructions. Normal CRT launch uses a native-width allocated callback/argument
+  snapshot and genuine unsigned/stdcall entry; the context is released before
+  user code. Allocation/begin failure, CRT null-callback rejection and early
+  completion ownership are explicit. CRT zero is a defined normal adapter status, not a recovered callback result.
+- The existing exact include route now selects selector-free
+  ReplayScanWorkerWin32Emission.hpp. A minimal pinned typed transport cannot
+  preserve target Start's 87 bytes: it emits 68 plus separate launch/entry code.
+  The historical conversion remains only in that emission adapter. Shared
+  lifecycle and worker layout remain canonical; this API-binding split stays
+  explicit debt. No selector/declaration site was added; closed debt remains
+  **192 keys / 197 declarations** and **266 / 699 selectors**.
 - Exact credit stays **696 functions / 336,486 bytes**, with **698 comparisons**.
-  The direct baseline and final replay pass 35/35 across seven sources. All
-  26 reviewed public DIR32 rebases use actual +0x650/+0x654 COFF addends against
-  canonical Supervisor base 0x004C4670, preserving effective target
-  0x004C4CC0/0x004C4CC4. Frozen cold replay passes 698/698 across
-  all 88 sources with zero further private-label refresh. Full baseline audit
-  totals 24 private-label updates in three units/two sources and those 26
-  reviewed rebases; all other recipe fields/positions/types/destinations stay.
+  Direct replay passes 55/55 across Main/worker. Frozen cold aggregate passes
+  698/698 across 88 sources, with zero further refresh. Full baseline audit
+  counts two definition and three relocation signature retags plus 25 private
+  labels in one Main unit. All remaining recipe fields/extents/profiles and
+  relocation positions/types/destinations are unchanged. Two ledger signature
+  strings are refined; mapping/origin/source/exact state and claims are unchanged.
   Compiler EH audit independently passes 57 parents and 81/81 cleanup references.
-  All function/mapping/source/exact/origin/claims ledgers are unchanged.
 - The separate normal cold build compiles 88/88 i386 COFF objects and links a
-  verified 778,752-byte PE32 with zero unresolved symbols. Seven intended normal
-  roots change; the other 38 roots/66 reachable code/data/EH graphs retain their
-  bindings up to those callback boundaries. Two proved 15-byte reference-binding
-  initializers and their CRT entries/slots are retired. Supplementary comparison
-  covers 4,097 complete normal callback bytes and 182 independent bindings in
-  five callbacks; it adds no canonical recipe or exact credit. This does not
-  accept different coordinator bodies, a native parent ABI or whole-image identity.
-- Public CI passes **90 workflow tests and seven native x86-64/UBSan programs**.
-  The asset-wait oracle now constructs the real ReplayScanWorker
-  through shared lifecycle code and reads exitSignal at native +12 with threadId
-  noise at +8. All 129 traces preserve active/callback/opaque neighbors. A
-  wrong-member mutation compiles but is rejected by the independent event model.
-  Full Supervisor/controller ABI, actual threads, memory ordering, queue
-  reachability/release and joins remain open.
-- Generated build artifacts and Python caches were cleared after all terminal
-  validation results and compact receipts were saved. Compact target/compiler/
-  native receipts stay private under
-  .analysis/sem335/. Verified target, pinned tools, Ghidra project and protected
-  user files remain untouched. No active blocker is known.
+  verified 778,752-byte PE32 GUI with zero unresolved symbols. Among 62 existing
+  Main/worker roots, only Start intentionally changes code; the other 61 and
+  150 reachable code/data/EH graphs preserve bytes/bindings under documented
+  callback signature retags. Two new normal platform helpers are separate from
+  target credit. Normal validation does not rely on the exact legacy binding.
+- Public CI passes **91 workflow tests and eight native x86-64/UBSan programs**.
+  The new transport/core program uses real host-thread dispatch in 18 combinations
+  of allocation/begin failure and early/deferred completion, two callbacks,
+  null-callback validation and null/high arguments. It verifies exactly-once context release before callback
+  and launch-time callback identity. Host threads join before fixture/user state
+  is examined; callbacks never access worker flags. A separate pinned VC7.1/Wine
+  console
+  passes four real CRT callback/argument/zero-status runs and two null-entry
+  EINVAL cases. This does not accept a complete native game ABI, ordinary i32
+  synchronization, native Windows game scheduling, callback exceptions or all
+  OS wait/close/join outcomes.
+- Generated objects/binaries/PDBs/maps and Python caches were cleared after
+  terminal checks and compact evidence capture. Compact evidence remains private
+  under .analysis/sem336/;
+  verified target, pinned tools, Ghidra project and protected user files remain.
+  No active blocker is known.
 
 Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SOURCE_MAP.md`, `ARCHITECTURE.md`, and `RE_WORKFLOW.md` before changing state.
@@ -69,14 +75,15 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
   evidence and a normal compiler or runtime oracle.
 - Prefer one profile-independent owner. Keep compiler emission adapters
   narrow and proved; leave unproved fields, roles, and protocols Unknown.
-- The flags-header and primary worker signal-alias lanes are closed. The next
-  bounded port boundary is the CRT callback ABI in ReplayScanWorkerWin32.hpp:
-  the target casts void/fastcall callbacks to unsigned/stdcall. Begin with an
-  isolated pinned-VC7.1/native signature and argument/return experiment; inspect
-  every callback caller before choosing a normal/native adapter. Preserve the
-  exact binding and shared core, prove any emission dependency, and add no
-  profile selector or layout split. Callback dispatch evidence alone cannot
-  accept ordinary i32 cross-thread synchronization or prove a real join.
+- The callback/CRT launch transport boundary is closed only for typed argument
+  dispatch and context ownership. The next bounded portability lane is the
+  primary worker's ordinary i32 exitSignal/active access: inventory every reader,
+  writer and ordering edge, then use minimal pinned/native atomic-access oracles
+  before changing representation or expressions. Preserve the distinct request,
+  completion and Stop store orders and the actual worker owner. Do not equate
+  active=0 with a join or assume the transport fixture tests those shared flags.
+  Keep one declaration and shared source, add no profile selector, and leave
+  secondary-worker role, opaque bytes and whole-game scheduling unknown.
 - Complete preview caller/count/release evidence remains open. Cancellation has
   no empty-queue postcondition, and normal empty-queue waiting proves no permanent
   one-item bound. Enclosing Supervisor declarations and weak inherited flag
@@ -86,7 +93,8 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
   not independently a join: Stop publishes it before waiting, creation failure
   leaves active=1 with no handle, and every non-timeout wait result closes.
   ThreadClose is a separate non-waiting operation. Ordinary i32 memory access
-  and the historical callback cast still need a real portable threading backend.
+  still need a real portable threading backend; the historical callback cast
+  remains exact emission debt.
 - Complete preview caller/count/lifetime evidence. Cancellation waits can
   publish once more before exiting; normal
   UI frees old fronts, while main-menu/teardown free post-shift returns. Do not
@@ -115,7 +123,7 @@ python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/check-portable-front-end.py
 python3 scripts/analysis/report-semantic-debt.py --path src/SceneSelectAssets.cpp --details
-rg -n "BeginWorkerThread|threadProc|beginthreadex|TH095_FASTCALL" src/ReplayScanWorker* src/RuntimeAbi.hpp src/Main.cpp src/MainExact.inl
+rg -n "exitSignal|replayScanWorker.active|secondaryReplayScanWorker" src/ReplayScanWorker* src/Main* src/AnmPreload.cpp src/SceneSelectAssets* src/FrontEnd* src/ReplayBrowser* src/PhotoGameTask*
 ```
 
 Before a later commit, run the affected exact and normal oracles,
