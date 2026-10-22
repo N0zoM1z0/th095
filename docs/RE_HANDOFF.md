@@ -11,57 +11,48 @@ their recorded source revision; regenerate them before claiming a newer result.
 
 - Target: original Japanese TH095 v1.02a, SHA-256
   `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
-  Ghidra access goes through the hash-attested `scripts/ghidra.py` wrapper.
+  Ghidra access goes through the hash-attested scripts/ghidra.py wrapper.
 - Phase: **semantic reconstruction, active-incomplete**. Source presence,
-  semantic acceptance, exact matching, normal compilation/linkage, and runtime
+  semantic acceptance, exact matching, normal compilation/linkage and runtime
   validation are separate facts; no semantic completion percentage is claimed.
-- Ledger totals are generated in `docs/PROGRESS.md`; rerun the summary
-  command below before quoting them. `config/claims.csv` remains header-only.
-- Latest accepted batch: **SEM-339**. Both Main paths now emit one
-  GameWindowRender.inl and consume one GameWindowRenderResult.hpp enum (four
-  values, four-byte ABI). Render's two terminal calls are correctly named
-  StopReplayScan at 0x00425640, not direct ThreadClose 0x00425150. Genuine
-  StartupThread direct-close calls remain unchanged. Main retains emission;
-  parent GameWindow/Supervisor layouts and graphics/OS bindings remain debt.
-- Exactly two public REL32 call identities change, offsets +0xBA/+0xD4 in
-  main-render, retaining type/positions/destinations. One obsolete DIFF selector
-  occurrence is removed: the closed broader baseline is **266 keys / 698
-  directives**; selected declarations remain **192 / 197**. No new selector,
-  layout, adapter, assembly, artificial local or target credit is added.
-- Exact credit stays **696 functions / 336,486 bytes**, **698 comparisons**.
-  Direct Main/worker replay passes 55/55; final frozen cold replay passes
-  **698/698 across 88 sources**, zero refresh. Relative to bb34666, the only
-  further recipe changes are **344 private labels in 22 units**. All other
-  fields/extents/profiles/relocation positions/types/destinations are unchanged.
-  Mapping, origins, source/exact ledgers and header-only claims are unchanged.
-- Independent cold normal build compiles 88/88 i386 COFF objects and links a
-  verified 778,752-byte PE32 GUI with zero unresolved symbols, SHA-256
-  `9b739e1fc0311bb51d9d722b9e3167ddd0f839932b467ee4f828dcfcbabca888`.
-  Actual Main/worker product objects preserve all 64 named roots, one private
-  entry and 153 code/data/EH reference graphs under 28 private spellings. This
-  independently validates normal bodies, rather than transferring exact success.
-- Public CI passes **96 workflow tests and eleven native x86-64/UBSan programs**.
-  The eleventh executes shared Render/result, actual typed launch/core and preview
-  wait/publication with real threads, high handles/buffers and 18 scenarios.
-  Explicit owner/I/O fixtures distinguish Render actions from cleanup; they are
-  not native GameWindow/Supervisor/D3D ABI declarations. Staged publication can
-  precede a successful wait's return; the constructed two-item backlog is not
-  a proof of whole-game reachability or safe post-shift frees.
-- Actual VC7.1/Wine /Od and /O2 console runs each pass six CRT exit/restart
-  scenarios with queued, inactive-but-live and null-entry states. A live thread
-  is observed while active=0, and its return gate opens at the actual wait.
-  Successful waits see CRT zero before close; null entry keeps EINVAL/no handle/
-  armed flags. Neither individual flags nor a Stop return imply unconditional
-  successful join: target timeout/failure/no-handle behavior remains unchanged.
-- Standalone DIFF compilation fails both before and after on the same inherited
-  RuntimePressedButtons C3861 error. No DIFF compile/product acceptance or
-  unrelated input repair is claimed. TH08 corroborates method only: its
-  ThreadClose waits; TH095's same-spelled entry is direct close.
-- EH audit independently passes 57 canonical parents, 72 actions and 81/81
-  provenance-exact references. All 304 frozen code inputs remain unchanged.
-  Generated outputs and caches are cleared after terminal receipts; compact
-  evidence remains private under .analysis/sem339/. Target, tools, Ghidra and
-  protected files are untouched. No active blocker is known.
+  Current ledger totals are generated in PROGRESS.md. Claims stays header-only.
+- Latest accepted batch: **SEM-340**. GameWindow.hpp is the single Win32 owner
+  included by both Main headers, independently of D3D/Supervisor. Main retains
+  storage at 0x004C45E8 and method emission. Native-width HWND and fixed scalar/
+  QPC fields replace duplicate declarations and fixed-x86 assertions; ordinary
+  pack(4) alignment replaces the two explicit three-byte padding members.
+- Actual Windows-header compiles pass under pinned VC7.1 x86 and MinGW x86/x64.
+  Every field, restored packing, WNDPROC/QPC bindings and message widths are
+  checked. Target size/frequency/current offsets 0x54/+0x14/+0x34 become
+  0x58/+0x18/+0x38 on Windows x64. This accepts the declaration's compiler ABI,
+  not executed windows, a graphics backend or a complete 64-bit game.
+- Exact credit remains **696 functions / 336,486 bytes**, **698 comparisons**.
+  Main passes 48/48; final frozen cold replay passes **698/698 across 88 sources**,
+  zero refresh. Relative to 2e66166 only **344 private labels in 22 units** change;
+  no public retag, other recipe field, extent, profile or relocation destination
+  changes. Mapping/origin/source/exact ledgers remain unchanged.
+- No profile selector/layout adapter is added. Closed debt baselines remain
+  **266 keys / 698 directives** and **192 keys / 197 selected declarations**.
+- Independent normal closure compiles **88/88 i386 COFF objects** and links a
+  verified **778,752-byte PE32 GUI**, zero unresolved symbols, SHA-256
+  `547d3803254e382d543df5b7ce3576558168d4406ab313a22235bb2b9eb05d30`.
+  Actual Main product objects preserve all 55 named roots, one private entry and
+  143 code/data/EH graphs under 28 private spellings. Exact success is not
+  transferred to different normal bodies.
+- Public CI passes **97 workflow tests and eleven native x86-64/UBSan programs**.
+  The three Windows-header compiles are separate ABI oracles, not another native
+  runtime program. EH audit passes **57 parents, 72 actions and 81/81 references**.
+  All 306 final source/tool/test inputs remain frozen. Compact receipts remain
+  private below .analysis/sem340/; generated outputs/caches are cleared after
+  all handles are terminal. No active blocker is known.
+- SEM-339's shared Render/result and truthful StopReplayScan destinations remain
+  accepted. A Stop return or active=0 does not prove a successful join; preview
+  cancellation can still enter publication. Controlled fixtures do not establish
+  whole-game counts, reachability or safe post-shift release. Read the lifecycle
+  and preview protocol documents below before extending those claims.
+- Standalone DIFF's inherited RuntimePressedButtons C3861 from SEM-339 remains
+  open; it is not retested or accepted by this declaration batch. Full Supervisor,
+  graphics/OS behavior and native game closure remain separate work.
 
 Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SOURCE_MAP.md`, `ARCHITECTURE.md`, and `RE_WORKFLOW.md` before changing state.
@@ -78,6 +69,10 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
   narrow integer/native address widths and request/completion/Stop order. Do not treat a flag's
   value as a unique producer, completed payload or successful join. Bulk owner
   initialization and unknown aliases are not made concurrent by this API.
+- GameWindow now has one real Windows declaration and tested x86/x64 compiler
+  ABI. Keep native handles/messages in this platform owner; do not reintroduce
+  fixed-address views or accept surrounding Supervisor/D3D layouts from that
+  probe. Prefer further owner convergence before introducing a port backend.
 - Continue preview producer/consumer/release evidence across cancellation
   interleavings. Render stop attempts now have one source, but callback queue-wait
   cancellation can still enter publication, while some

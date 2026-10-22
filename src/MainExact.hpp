@@ -12,7 +12,7 @@
 #include <stddef.h>
 #include "inttypes.hpp"
 #include "Chain.hpp"
-#include "GameWindowRenderResult.hpp"
+#include "GameWindow.hpp"
 #include "GameConfiguration.hpp"
 #include "MidiOutputApi.hpp"
 #include "ReplayScanWorker.hpp"
@@ -34,45 +34,6 @@ struct Float3;
 struct FrontEndControllerView;
 struct PhotoGameTaskView;
 struct DummyMidiTimer;
-
-#pragma pack(push, 4)
-struct GameWindow
-{
-    HWND window;                         // +0x00
-    i32 windowIsClosing;                 // +0x04
-    i32 windowIsActive;                  // +0x08
-    i32 windowIsInactive;                // +0x0c
-    i8 framesSinceRedraw;                // +0x10
-    u8 padding11[3];                     // +0x11
-    LARGE_INTEGER performanceFrequency;  // +0x14
-    LARGE_INTEGER performanceStart;      // +0x1c
-    u8 startupPathDiffersFromExecutable; // +0x24
-    u8 padding25[3];                     // +0x25
-    i32 savedScreenSaverActive;          // +0x28
-    i32 savedLowPowerActive;             // +0x2c
-    i32 savedPowerOffActive;             // +0x30
-    f64 currentTimestamp;                // +0x34
-    f64 lastTimestamp;                   // +0x3c
-    f64 lastFrameTime;                   // +0x44
-    f64 timeOrigin;                      // +0x4c
-
-    RenderResult Render();
-    static void Present();
-    f64 GetTimestamp();
-    static i32 InitD3DInterface();
-    static i32 CreateGameWindow(HINSTANCE instance);
-    static LRESULT __stdcall WindowProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam);
-    static i32 InitD3DRendering();
-    static void ResetRenderState();
-    static i32 CheckForRunningGameInstance(HINSTANCE instance);
-    static void ActivateWindow(HWND hWnd);
-    static i32 ResolveShortcut(char *shortcutPath, char *destination, i32 destinationSize);
-};
-#pragma pack(pop)
-
-typedef char GameWindowSizeIs54[(sizeof(GameWindow) == 0x54) ? 1 : -1];
-typedef char GameWindowFrequencyAt14[(offsetof(GameWindow, performanceFrequency) == 0x14) ? 1 : -1];
-typedef char GameWindowCurrentTimeAt34[(offsetof(GameWindow, currentTimestamp) == 0x34) ? 1 : -1];
 
 #pragma pack(push, 4)
 struct Supervisor

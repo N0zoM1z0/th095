@@ -639,14 +639,30 @@ class SemanticProtocolGuardTests(unittest.TestCase):
 
     def test_game_window_startup_policy_guard_accepts_shared_storage(self) -> None:
         GUARD.check_game_window_startup_policy_owner()
+        owner = (ROOT / "src/GameWindow.hpp").read_text(encoding="utf-8")
+        self.assertIn("u8 startupPathDiffersFromExecutable;", owner)
+        self.assertIn("i32 savedScreenSaverActive;", owner)
+        self.assertIn("i32 savedLowPowerActive;", owner)
+        self.assertIn("i32 savedPowerOffActive;", owner)
+        self.assertNotIn("usesRelativePath", owner)
+        self.assertNotIn("screenSaveActive", owner)
         for name in ("Main.hpp", "MainExact.hpp"):
             header = (ROOT / "src" / name).read_text(encoding="utf-8")
-            self.assertIn("u8 startupPathDiffersFromExecutable;", header)
-            self.assertIn("i32 savedScreenSaverActive;", header)
-            self.assertIn("i32 savedLowPowerActive;", header)
-            self.assertIn("i32 savedPowerOffActive;", header)
-            self.assertNotIn("usesRelativePath", header)
-            self.assertNotIn("screenSaveActive", header)
+            self.assertIn('#include "GameWindow.hpp"', header)
+            self.assertNotIn("struct GameWindow", header)
+
+    def test_game_window_guard_rejects_handle_truncation_or_layout_drift(self) -> None:
+        owner = (ROOT / "src/GameWindow.hpp").read_text(encoding="utf-8")
+        for before, after in (
+            ("HWND window;", "u32 window;"),
+            ("#pragma pack(push, 4)", "#pragma pack(push, 8)"),
+            ("sizeof(HWND) + 0x50", "0x54"),
+            ("i32 savedLowPowerActive;", "i32 lowPowerActive;"),
+        ):
+            self.assertIn(before, owner)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_game_window_startup_policy_owner(owner.replace(before, after, 1))
 
     def test_supervisor_viewport_guard_accepts_canonical_owner(self) -> None:
         GUARD.check_supervisor_viewport_configuration_owner()

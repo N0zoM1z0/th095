@@ -74,3 +74,23 @@ This distinction matters above the engine layer. TH095 replaces the
 traditional stage/player/bomb flow with scene selection, photography,
 photo-scoring, and game-specific UI/state machines. Similar names from TH08
 must not be projected onto those target-specific hubs without local proof.
+
+## GameWindow Windows ABI oracle
+
+`tests/win32/GameWindowLayoutTest.cpp` includes the real GameWindow.hpp and
+Windows SDK headers without Main/Supervisor/D3D fixtures. Compile it with the
+pinned VC7.1 normal Main flags via compile-probe.sh and `/I src`. The additional
+Windows x86/x64 checks use respectively i686-w64-mingw32-g++ and
+x86_64-w64-mingw32-g++ with:
+
+```text
+-std=c++98 -O2 -Wall -Wextra -Werror -pedantic -Isrc -c tests/win32/GameWindowLayoutTest.cpp -o build/probes/window-layout.obj
+```
+
+Create the output directory first and use separate object paths for each
+compiler. These are compile-only layout/API checks: every field offset, owner
+size, restored includer packing, native message widths, uncast WNDPROC binding
+and QPC field addresses. The object exports gameWindowAbiReceipt for independent
+COFF inspection. They validate a Win32 owner extended to native Windows pointer
+width, not a Linux owner, executed window lifecycle or complete 64-bit game.
+The cross compilers are supporting oracles and are not public-CI prerequisites.

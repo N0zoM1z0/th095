@@ -191,6 +191,13 @@ I/O/owner fixtures do not establish a native GameWindow/Supervisor/D3D ABI.
 Successful fixture waits and actual CRT/Wine cases are independent of full-game
 scheduling, all wait failures and global queue lifetime acceptance.
 
+A separate compile-only Windows ABI oracle includes the real GameWindow.hpp
+with actual SDK headers under VC7.1 x86 and MinGW x86/x64. It validates that
+owner's native handle/message widths, field offsets, QPC bindings and callback
+type independently of the Render fixtures. It does not execute a window or
+accept Supervisor/D3D layouts, a Linux owner or a complete 64-bit game. See
+[the reproducible scope and commands](ORACLES.md#gamewindow-windows-abi-oracle).
+
 ## Completion and batch records
 
 A bounded family is closed only when its representation, consumers,

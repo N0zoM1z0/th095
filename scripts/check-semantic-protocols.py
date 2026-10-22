@@ -1551,7 +1551,7 @@ def check_screenshot_bitmap_header_owner() -> None:
                 fail(f"{path} lost screenshot header producer/consumer: {fact}")
 
 
-def check_game_window_startup_policy_owner() -> None:
+def check_game_window_startup_policy_owner(owner_text: str | None = None) -> None:
     main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
     main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
@@ -1569,24 +1569,39 @@ def check_game_window_startup_policy_owner() -> None:
         "lowPowerActive",
         "powerOffActive",
     )
+    owner_path = SRC / "GameWindow.hpp"
+    owner = owner_path.read_text(encoding="utf-8") if owner_text is None else owner_text
     for path, text in (("Main.hpp", main_header), ("MainExact.hpp", main_exact_header)):
-        start = text.index("struct GameWindow")
-        game_window = braced_body_after(text, start, "GameWindow")
-        if any(name in game_window for name in PROFILE_NAMES):
-            fail(f"{path} restored a profile-selected GameWindow layout")
-        for field in canonical_fields:
-            if field not in game_window:
-                fail(f"{path} lost canonical GameWindow startup state: {field}")
-        for field in historical_fields:
-            if re.search(rf"\b{field}\b", game_window):
-                fail(f"{path} restored historical GameWindow field {field}")
-        for anchor in (
-            "sizeof(GameWindow) == 0x54",
-            "offsetof(GameWindow, performanceFrequency) == 0x14",
-            "offsetof(GameWindow, currentTimestamp) == 0x34",
-        ):
-            if anchor not in text:
-                fail(f"{path} lost GameWindow layout anchor: {anchor}")
+        if '#include "GameWindow.hpp"' not in text:
+            fail(f"{path} no longer routes through the GameWindow owner")
+        if re.search(r"\b(?:struct|class)\s+GameWindow\s*\{", text):
+            fail(f"{path} restored a private GameWindow declaration")
+    start = owner.find("struct GameWindow")
+    if start < 0:
+        fail("GameWindow.hpp lost the canonical GameWindow declaration")
+    game_window = braced_body_after(owner, start, "GameWindow")
+    if any(name in owner for name in PROFILE_NAMES):
+        fail("GameWindow.hpp restored a profile-selected owner")
+    for field in canonical_fields:
+        if field not in game_window:
+            fail(f"GameWindow.hpp lost canonical GameWindow startup state: {field}")
+    for field in historical_fields:
+        if re.search(rf"\b{field}\b", game_window):
+            fail(f"GameWindow.hpp restored historical GameWindow field {field}")
+    for anchor in (
+        "#pragma pack(push, 4)",
+        "#pragma pack(pop)",
+        "HWND window;",
+        "LARGE_INTEGER performanceFrequency;",
+        "LARGE_INTEGER performanceStart;",
+        "sizeof(HWND) == sizeof(void *)",
+        "sizeof(LARGE_INTEGER) == 8",
+        "sizeof(GameWindow) == sizeof(HWND) + 0x50",
+        "offsetof(GameWindow, performanceFrequency) == sizeof(HWND) + 0x10",
+        "offsetof(GameWindow, currentTimestamp) == sizeof(HWND) + 0x30",
+    ):
+        if anchor not in owner:
+            fail(f"GameWindow.hpp lost native-width Windows layout anchor: {anchor}")
 
     path_facts = (
         "if (g_GameWindow.startupPathDiffersFromExecutable)",
@@ -2777,10 +2792,14 @@ def check_game_window_render_boundary(header_text: str | None = None, render_tex
                   ("RENDER_RESULT_RESTART", "2"), ("RENDER_RESULT_EXIT_ERROR", "-1")]:
         fail("render/main-loop result domain drifted")
     if "sizeof(RenderResult) == 4" not in header: fail("render result lost its four-byte ABI")
-    for name in ("Main.hpp", "MainExact.hpp"):
+    for name, included_owner in (
+        ("GameWindow.hpp", "GameWindowRenderResult.hpp"),
+        ("Main.hpp", "GameWindow.hpp"),
+        ("MainExact.hpp", "GameWindow.hpp"),
+    ):
         source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if '#include "GameWindowRenderResult.hpp"' not in source or marker in source:
-            fail(f"{name} restored a duplicate render result owner")
+        if f'#include "{included_owner}"' not in source or marker in source:
+            fail(f"{name} lost the canonical render result include route")
     for name in ("Main.cpp", "MainExact.inl"):
         source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
         if source.count('#include "GameWindowRender.inl"') != 1 or "RenderResult GameWindow::Render()" in source:

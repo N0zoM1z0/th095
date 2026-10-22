@@ -17852,3 +17852,91 @@ cleared. Target, tools, Ghidra and protected files are untouched. Queue global
 count/lifetime and full native owner/graphics/OS closure remain open; this batch
 closes the truthful shared Render stop/result edge only. The phase remains
 **active-incomplete**.
+
+### SEM-340 — one GameWindow owner with native-width Windows ABI
+
+**Question and target evidence.** Can both Main build routes share the actual
+GameWindow declaration without freezing a Windows handle into an x86-sized
+packet? The two previous declarations and their three absolute assertions were
+identical. Fresh hash-attested original-v1.02a instructions cover WinMain
+0x00420240, Render 0x00420770, GetTimestamp 0x00420A10, CreateGameWindow
+0x00420B90, WindowProc 0x00420CF0, InitD3DRendering 0x00420E20 and the path
+check 0x004217A0. Main owns zero-filled storage at 0x004C45E8. WinMain initializes
+QPC frequency/start at +0x14/+0x1C, passes the HWND to sound/graphics and window
+APIs, runs the frame loop and destroys/clears the handle. The independent window
+procedure updates activation dwords; Render reads/writes byte +0x10 and the
+frame doubles. Saved power-state dwords remain +0x28/+0x2C/+0x30. This batch
+changes no field meaning, state transition or API-failure behavior.
+
+**One owner and four ownership axes.** GameWindow.hpp is profile-independent,
+contains the real Windows HWND/LARGE_INTEGER/method declarations and is included
+by both Main.hpp and MainExact.hpp. It requires no D3D or Supervisor declaration.
+Storage remains Main's g_GameWindow; semantic lifetime remains WinMain/window/
+frame methods; TU/compiler emission remains at the original Main routes; exact
+and normal remain separate production products consuming this same type. No
+native game product is introduced. The two redundant declarations and their
+explicit three-byte alignment arrays are retired. Ordinary pack(4) alignment
+supplies those gaps; no authored source accesses either retired member.
+All actual fields and method signatures remain unchanged.
+
+The three layout contracts now follow sizeof(HWND): total +0x50, frequency
++0x10 and current time +0x30. The four-byte target handle gives the original
+0x54/+0x14/+0x34; an eight-byte Windows handle grows the owner to 0x58 and moves
+the tail by four bytes. Native handle and eight-byte LARGE_INTEGER assertions
+remain explicit. No TH095_MATCH_EXACT/DIFFBUILD directive, selected declaration,
+adapter, target-byte array, assembly or artificial padding is added. Both closed
+profile-debt baselines remain unchanged.
+
+TH08 source corroborates the method only: its one Main-local GameWindow retains
+HWND and pack(4), with alignment gaps supplied naturally. Its 0x44 layout and
+result vocabulary differ and are not imported. The exact TH08 source revision
+and digest are retained privately.
+
+**Independent focused oracles.** Before editing, Main passes all 48 exact units
+and its actual normal object is captured. The final focused replay passes 48/48;
+25 proved private labels in one unit change, with no public identity, destination,
+relocation position/type, extent or profile change. All 55 actual normal named
+function roots, one private entry and 143 recursively referenced code/data/EH
+graphs preserve bytes and bindings under 28 private spellings. This covers the
+normal object independently rather than transferring exact-source success.
+
+The new public compile-only GameWindowLayoutTest.cpp uses the real Windows
+headers and owner, with no I/O fixture or Main/D3D projection. Pinned VC7.1 3077
+x86 and MinGW-w64 GCC 13 x86/x64 all compile it. Every field offset, total size,
+restored includer packing and native message parameter/result width is checked;
+WNDPROC accepts WindowProc without a cast, and the actual QPC/DestroyWindow API
+calls accept owner members directly. Independent COFF receipts give x86 pointer/
+message widths 4, size 84, frequency/start/current/origin offsets 20/28/52/76;
+x64 gives widths 8, size 88 and offsets 24/32/56/80. Full flags and commands are
+retained in .analysis/sem340/; reusable commands live in ORACLES.md. These are
+compiler ABI results, not runtime window or full native product acceptance.
+
+**Final aggregate gates.** Frozen cold replay passes **698/698 comparisons
+across 88 sources**, with zero further refresh. Relative to 2e66166 the only
+recipe changes are **344 private labels in 22 units**: 25 in the focused unit,
+then 319 in another 21 aggregate units. No public retag or other recipe field,
+extent, compiler profile, relocation position/type/destination or target credit
+changes. All 306 final source/tool/test inputs retain their hashes. The only
+earlier post-launch edits were the two guard/test Python files; no compiled
+production/probe source changed, and public CI ran after those edits stabilized.
+
+The independent cold normal build compiles **88/88 i386 COFF objects** and links
+a verified **778,752-byte PE32 GUI** with zero unresolved symbols, SHA-256
+`547d3803254e382d543df5b7ce3576558168d4406ab313a22235bb2b9eb05d30`.
+Its actual Main object again preserves all 55 named roots, one private entry and
+143 code/data/EH graphs under 28 private spellings. Compiler-owned EH audit
+passes **57 parents, 72 actions and 81/81 provenance-exact references**. Public
+CI passes **97 workflow tests and eleven native x86-64/UBSan programs**. Three
+separate real-Windows-header compiles provide the new owner ABI evidence; they
+are not counted as an additional native runtime program. Mapping/origin/source/
+exact ledgers and header-only claims remain unchanged. The inherited standalone
+DIFF diagnostic from SEM-339 remains open and is not retested or accepted here.
+
+All VC7.1 builds are serial on CPU 1/nice 10. Terminal command reports, final
+input hashes, target queries, compiler identities, ABI/COFF graphs, PE report,
+map/object hashes and TH08 provenance remain private in .analysis/sem340/.
+Generated objects, executables, maps, PDBs and caches are cleared after those
+receipts are saved. Target/tools/Ghidra/protected files are untouched. Supervisor,
+graphics/OS runtime closure and preview count/release interleavings remain open;
+this batch accepts one Windows GameWindow declaration and its tested x86/x64
+ABI, not a complete native game. The phase remains **active-incomplete**.
