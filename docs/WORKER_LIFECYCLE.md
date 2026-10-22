@@ -275,3 +275,52 @@ normal closure compiles/links all 88 objects; the nine affected actual normal
 product objects retain all 116 named roots and 259 reference graphs relative
 to aaf510c. These results supplement the distinct native builtin oracle and do
 not turn component portability into a maintained native game product.
+
+## Render exit/restart caller (SEM-339)
+
+The calls at 0x00420829 and 0x00420843, inside Render 0x00420770, both reach
+0x00425640. That 25-byte wrapper adds primary worker offset +0x648 and calls
+Stop 0x0041BB20; it adds no lane-6 locking. Direct ThreadClose 0x00425150 instead
+closes/clears under lane 6 and does not wait or publish exit. StartupThread's
+success/error calls to that direct-close entry remain unchanged. DeletedCallback
+0x004244D0 separately stops the input worker, sound worker and primary worker
+before releasing managers; these remain distinct storages/responsibilities.
+
+Previously the exact Render source and two relocation names said ThreadClose
+while mapping to the Stop wrapper. Normal source used Stop, with a DIFF selector
+retaining the wrong name. Both Main paths now emit GameWindowRender.inl, using
+StopReplayScan on calc-chain results 0/-1 before returning exit/restart 1/2.
+GameWindowRenderResult.hpp owns all four existing output constants, including
+outer-loop error -1; the input and output namespaces are not merged. One selector
+occurrence is retired. Existing full DIFF compilation fails both before and
+after on RuntimePressedButtons; no DIFF product or input-boundary repair is claimed.
+
+TH08 corroborates the method, not the TH095 name: its Supervisor::ThreadClose
+sets a request and waits at 1,000 ms, whereas the TH095 entry with that spelling
+is a direct close. TH08 main.cpp's terminal Render calls therefore cannot be
+copied as TH095 semantic identities. Target-local destinations govern this batch.
+
+The eleventh native x86-64/UBSan program compiles the actual shared Render/result
+source against explicitly named I/O/owner fixtures. Actual typed launch, worker
+core, preview wait/cancellation and publication fragments run on real host
+threads. Eighteen scenarios cover exit/restart, other calc results, skipped and
+drawn frames, no-due/backwards clocks, failed creation, and active=0 while the
+callback is held alive. Valid handles retain high bits. Exit/restart Stop waits
+for callback return; failed creation has no handle and preserves armed flags.
+Fixture cleanup is distinguished from Render's own actions.
+
+A staged callback starts with one old result, leaves the actual wait on the
+exit handshake, and publishes before returning. A successful render-stop wait
+can thus precede a constructed two-item backlog. The harness captures the
+post-shift Pop argument, then releases its independently owned test buffers;
+it does not repair or accept the game's post-shift frees, prove global
+reachability/count bounds or infer a runtime leak. The window/Supervisor layouts
+and D3D API are fixtures, not native ABI declarations.
+
+A separate pinned VC7.1/Wine console uses those same Render bindings with the
+actual production CRT/backend/core and queue fragments. Six cases per /Od and
+/O2 cross exit/restart with queued, already-inactive/live, and null-entry states.
+A real thread is confirmed STILL_ACTIVE while active is zero; its return gate
+is released only at the actual wait boundary. Successful waits observe CRT zero
+status before handle close. All twelve cases pass. This does not accept all OS
+failure outcomes or native Windows graphics/game scheduling.

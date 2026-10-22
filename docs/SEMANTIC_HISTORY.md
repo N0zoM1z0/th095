@@ -17762,3 +17762,93 @@ before source/command/tool/COFF/map/runtime receipts are retained in
 Ghidra and protected files are untouched. Queue caller/count/lifetime closure
 across cancellation and release remains the next bounded lane. The phase stays
 **active-incomplete**.
+
+### SEM-339 — one Render source and truthful worker-stop call identities
+
+**Question and target evidence.** Render's historical exact source called a
+method spelled ThreadClose while both REL32 destinations were 0x00425640, the
+primary worker Stop wrapper. Normal source used the correct stop with a DIFF
+selector retaining the wrong spelling. Fresh hash-attested target disassembly
+covers full Render 0x00420770 (420 bytes), wrapper 0x00425640 (25), common Stop
+0x0041BB20 (124), direct ThreadClose 0x00425150 (155), StartupThread 0x004242B0
+and DeletedCallback 0x004244D0. Calls at 0x00420829/0x00420843 enter Stop,
+not direct close. Wrapper Stop adds +0x648 and no lock; direct close uses lane 6,
+clears handle/active and does not wait/publish exit. The common Stop's non-timeout
+failure behavior is retained, so no unconditional join is inferred.
+
+**Source convergence.** GameWindowRender.inl is emitted at both original Main
+sites and uses canonical full-window slot 1 and the real StopReplayScan API.
+GameWindowRenderResult.hpp owns one four-byte enum with existing values 0/1/2/-1.
+Render translates calc results 0/-1 into exit/restart 1/2; outer-loop error -1
+remains distinct from those input codes. Both duplicate enums and both Render
+bodies are retired. GameWindow/Supervisor storage/layout and graphics APIs remain
+separate owners/debt. Main retains compiler emission; exact/normal remain
+separate 88-source products; native fixtures explicitly bind another owner/API
+surface instead of pretending to be a native GameWindow/D3D ABI.
+
+Exactly two reviewed main-render REL32 identities, offsets +0xBA/+0xD4, change
+from Supervisor::ThreadClose to Supervisor::StopReplayScan. Their field positions,
+types and destinations remain fixed. Genuine StartupThread direct-close calls
+stay at 0x00425150. The broader selector baseline shrinks one Main.cpp occurrence
+(9 to 8 occurrences of its DIFFBUILD directive), retaining 266 keys and lowering
+699 to 698 total directives. Selected-declaration debt stays 192/197. No new
+selector, selected layout, adapter, source credit, assembly, padding or inert
+local is introduced.
+
+TH08 source is corroboration only: its Supervisor::ThreadClose sets a request
+and waits at 1,000 ms, and its Render calls that method. The TH095 target with
+the same spelling is a different operation. Neither that name nor TH08 storage
+is substituted for target-local evidence. Corroboration source revision/path hashes are retained in .analysis/sem339/.
+
+**Independent direct oracles.** Pre-change Main/worker passes 55/55 exact and
+captures both normal objects. Final direct replay passes 55/55 after 25 proved
+private labels in one unit, plus the separately reviewed two public call retags.
+All 64 actual normal named roots, one private entry and 153 code/data/EH reference
+graphs preserve code/entry offsets/bindings under 28 private spellings. Exact-only
+Supervisor wrapper decorations remain recorded separately. The standalone DIFF
+probe fails before and after on the identical existing RuntimePressedButtons
+C3861 diagnostic; that profile receives no compile/product acceptance and no
+unrelated input-boundary fix.
+
+Public CI passes 96 workflow tests and eleven native programs. The new x86-64/
+UBSan program executes the actual shared Render body, canonical result enum,
+typed launch/core, preview wait/cancellation and publication with real host
+threads. Eighteen cases exercise exit/restart, continuation, drawn/skipped frames,
+no-due/backwards clocks, failed creation, and active=0 while the callback is held
+alive. High handle/argument/buffer bits survive. Render stop attempts and fixture
+cleanup are counted separately. Successful waits precede return; no-handle failure
+keeps the target's armed flags without a wait. A staged callback appends after
+the exit handshake, giving a controlled two-item backlog before post-shift Pop
+arguments are captured. This is not global reachability, a leak diagnosis,
+post-shift ownership acceptance or a maintained game scheduler/graphics product.
+
+A private console reuses the explicit Render bindings with the actual production
+Win32 launch/core and queue fragments. Attested VC7.1 3077 /Od and /O2 each pass
+six real CRT scenarios: exit/restart cross queued, inactive-but-live and null-entry
+states. Real STILL_ACTIVE is observed while active=0; the return gate opens only
+at the actual wait boundary. Successful waits see unsigned CRT zero before close;
+null entry preserves EINVAL/no handle/armed flags. All twelve cases pass.
+
+**Final frozen gates.** Cold replay passes **698/698 comparisons across 88 sources**
+with zero further refresh. The baseline audit records exactly the two reviewed
+public Render call retags plus **344 private labels in 22 units** (25 in one
+direct unit, another 319 in 21 aggregate units). All other recipe fields,
+extents/profiles and relocation positions/types/destinations are unchanged;
+all 304 frozen code inputs retain their hashes. Mapping/origin/source/exact
+ledgers and header-only claims receive no new credit.
+
+Independent normal closure compiles **88/88 i386 COFF objects** and links a
+verified **778,752-byte PE32 GUI**, zero unresolved symbols, SHA-256
+`9b739e1fc0311bb51d9d722b9e3167ddd0f839932b467ee4f828dcfcbabca888`.
+The actual product objects again preserve all 64 named roots, one private entry
+and 153 code/data/EH reference graphs under 28 private spellings. Compiler-owned
+EH audit passes **57 parents, 72 actions and 81/81 provenance-exact references**.
+Public CI passes 96 tests and eleven native programs from the final freeze.
+
+Final validation uses CPU 1/nice 10 and serial VC7.1. After every build/test handle
+is terminal, compact source/command/tool/COFF/map/runtime receipts remain in
+.analysis/sem339/ and generated objects, binaries, PDBs, maps and caches are
+cleared. Target, tools, Ghidra and protected files are untouched. Queue global
+count/lifetime and full native owner/graphics/OS closure remain open; this batch
+closes the truthful shared Render stop/result edge only. The phase remains
+**active-incomplete**.

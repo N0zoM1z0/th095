@@ -1,6 +1,6 @@
 # Front-end mission-preview handoff
 
-This is the SEM-330..338 evidence map for the original Japanese TH095 v1.02a target.
+This is the SEM-330..339 evidence map for the original Japanese TH095 v1.02a target.
 It describes runtime handoff storage, not an on-disk format. Semantic names are
 inferred from producers and independent consumers; original source names and
 the original queue declaration remain Unknown.
@@ -239,3 +239,12 @@ backend with real CRT threads and critical sections: /Od /Ob1 and /O2 /Ob1 each
 pass 512 handoffs, including null secondary and old-front release. It waits for
 actual callback return before teardown. This supplements native GCC publication
 and target emission evidence without accepting all game callers or MSVC x64.
+
+SEM-339 closes one caller edge: exit/restart Render now shares the correct primary
+worker Stop call in every maintained Main body. Its new native/Wine integration
+executes the actual worker core and preview wait/publication with a controlled
+staged load. The callback may append after a stop request, before a successful
+wait returns; this gives a conditional two-item backlog witness, not a global
+count/lifetime claim. Post-shift release remains unchanged. See WORKER_LIFECYCLE.md
+for exact destinations, result translation, direct-close distinction and fixture
+ABI limits. Full parent/graphics/OS products remain separate work.

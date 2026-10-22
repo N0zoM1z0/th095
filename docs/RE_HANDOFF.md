@@ -17,51 +17,51 @@ their recorded source revision; regenerate them before claiming a newer result.
   validation are separate facts; no semantic completion percentage is claimed.
 - Ledger totals are generated in `docs/PROGRESS.md`; rerun the summary
   command below before quoting them. `config/claims.csv` remains header-only.
-- Latest accepted batch: **SEM-338**. The nine scene queue channels now share
-  typed atomic word loads/stores/copies through SceneQueueWordAccess.hpp. This
-  covers every explicit authored word access and Pop's metadata copy. Size is a
-  status snapshot; positive count gates acquire before payload access. Canonical
-  18-word layouts and narrow value/native address widths stay unchanged. Stores
-  release; increments/decrements do not claim atomic RMW or replace lane-4
-  mutator locking. Volatile alone is not synchronization.
-- Pinned VC7.1 needs a real four-byte word-object copy (91-byte Pop versus
-  93-byte scalar copy). Both exact and normal use the same compiler/platform
-  binding; modern backends copy typed scalars atomically. A pre-load Size fence
-  created extra pointer homes and grew the worker to 3,181 bytes; the final
-  status/payload split preserves all 3,070 target bytes. No selected type, new
-  reconstruction-profile selector, assembly or artificial local was added.
-  Closed debt remains **192 / 197 declarations** and **266 / 699 selectors**.
-- Exact credit remains **696 functions / 336,486 bytes**, **698 comparisons**.
-  Direct replay passes 20/20 across five sources. Frozen cold replay passes
-  **698/698 across 88 sources**, zero refresh. Relative to aad1764, only 30
-  compiler-private labels in four units change; public symbols, all other recipe
-  fields, extents and relocation offsets/types/destinations remain unchanged.
-  Mapping/origin/source/exact ledgers and header-only claims are unchanged.
-- Independent normal cold build compiles 88/88 i386 COFF objects and links a
+- Latest accepted batch: **SEM-339**. Both Main paths now emit one
+  GameWindowRender.inl and consume one GameWindowRenderResult.hpp enum (four
+  values, four-byte ABI). Render's two terminal calls are correctly named
+  StopReplayScan at 0x00425640, not direct ThreadClose 0x00425150. Genuine
+  StartupThread direct-close calls remain unchanged. Main retains emission;
+  parent GameWindow/Supervisor layouts and graphics/OS bindings remain debt.
+- Exactly two public REL32 call identities change, offsets +0xBA/+0xD4 in
+  main-render, retaining type/positions/destinations. One obsolete DIFF selector
+  occurrence is removed: the closed broader baseline is **266 keys / 698
+  directives**; selected declarations remain **192 / 197**. No new selector,
+  layout, adapter, assembly, artificial local or target credit is added.
+- Exact credit stays **696 functions / 336,486 bytes**, **698 comparisons**.
+  Direct Main/worker replay passes 55/55; final frozen cold replay passes
+  **698/698 across 88 sources**, zero refresh. Relative to bb34666, the only
+  further recipe changes are **344 private labels in 22 units**. All other
+  fields/extents/profiles/relocation positions/types/destinations are unchanged.
+  Mapping, origins, source/exact ledgers and header-only claims are unchanged.
+- Independent cold normal build compiles 88/88 i386 COFF objects and links a
   verified 778,752-byte PE32 GUI with zero unresolved symbols, SHA-256
-  `d8fb818c0296a722ac3556291384c9a43d5ac0e28959b1844278a13c99e1dc7e`.
-  The five actual product objects preserve all 31 named roots, one private entry
-  and 56 reachable code/data/EH graphs, under 21 private spelling changes. The
-  normal-selected bodies are validated independently of exact replay.
-- Public CI passes **94 workflow tests and ten native x86-64/UBSan programs**.
-  The tenth executes 512 real-thread publications with high-address ordinary
-  packet data, signed identifiers, lengths and counted null secondary entries.
-  Mutators use a host mutex; status polls remain outside it; old fronts are
-  released before Pop and the fixture joins. Attested VC7.1/Wine console runs
-  pass another 512 handoffs under /Od and 512 under /O2, using real CRT threads,
-  critical sections and successful waits. These are controlled component cases,
-  not game-wide count/lifetime, native Windows or MSVC-x64 acceptance.
-- Compiler-owned EH audit independently passes 57 canonical parents, 72 actions
-  and 81/81 provenance-exact references. All 300 frozen code inputs remain
-  unchanged through final gates. Generated objects, binaries, PDBs, maps and
-  caches were cleared after terminal receipts; compact evidence is private in
-  .analysis/sem338/. Target, tools, Ghidra and protected files remain untouched.
-- The worker flag API from SEM-337 and typed CRT transport from SEM-336 retain
-  their separate contracts. Individual words do not make a multiword transaction,
-  prove a join or confer buffer ownership. Pop still returns a post-shift word
-  which can contain metadata; cancellation can still enter publication. The
-  old-front and post-shift release policies remain distinct, without a repair
-  or a global one-item/count bound. No active blocker is known.
+  `9b739e1fc0311bb51d9d722b9e3167ddd0f839932b467ee4f828dcfcbabca888`.
+  Actual Main/worker product objects preserve all 64 named roots, one private
+  entry and 153 code/data/EH reference graphs under 28 private spellings. This
+  independently validates normal bodies, rather than transferring exact success.
+- Public CI passes **96 workflow tests and eleven native x86-64/UBSan programs**.
+  The eleventh executes shared Render/result, actual typed launch/core and preview
+  wait/publication with real threads, high handles/buffers and 18 scenarios.
+  Explicit owner/I/O fixtures distinguish Render actions from cleanup; they are
+  not native GameWindow/Supervisor/D3D ABI declarations. Staged publication can
+  precede a successful wait's return; the constructed two-item backlog is not
+  a proof of whole-game reachability or safe post-shift frees.
+- Actual VC7.1/Wine /Od and /O2 console runs each pass six CRT exit/restart
+  scenarios with queued, inactive-but-live and null-entry states. A live thread
+  is observed while active=0, and its return gate opens at the actual wait.
+  Successful waits see CRT zero before close; null entry keeps EINVAL/no handle/
+  armed flags. Neither individual flags nor a Stop return imply unconditional
+  successful join: target timeout/failure/no-handle behavior remains unchanged.
+- Standalone DIFF compilation fails both before and after on the same inherited
+  RuntimePressedButtons C3861 error. No DIFF compile/product acceptance or
+  unrelated input repair is claimed. TH08 corroborates method only: its
+  ThreadClose waits; TH095's same-spelled entry is direct close.
+- EH audit independently passes 57 canonical parents, 72 actions and 81/81
+  provenance-exact references. All 304 frozen code inputs remain unchanged.
+  Generated outputs and caches are cleared after terminal receipts; compact
+  evidence remains private under .analysis/sem339/. Target, tools, Ghidra and
+  protected files are untouched. No active blocker is known.
 
 Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SOURCE_MAP.md`, `ARCHITECTURE.md`, and `RE_WORKFLOW.md` before changing state.
@@ -78,8 +78,9 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
   narrow integer/native address widths and request/completion/Stop order. Do not treat a flag's
   value as a unique producer, completed payload or successful join. Bulk owner
   initialization and unknown aliases are not made concurrent by this API.
-- Next inspect one preview producer/consumer/release family and its cancellation
-  interleavings. Stop can fall through into another publication, while some
+- Continue preview producer/consumer/release evidence across cancellation
+  interleavings. Render stop attempts now have one source, but callback queue-wait
+  cancellation can still enter publication, while some
   teardown/menu callers free post-shift returns. Complete target caller/count/
   lifetime evidence before naming ownership or asserting a permanent one-item
   bound. Actual OS wait/close failure handling and whole-game scheduling remain

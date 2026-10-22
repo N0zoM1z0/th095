@@ -366,59 +366,7 @@ stop:
 #undef renderResult
 #undef i
 
-RenderResult GameWindow::Render()
-{
-    i32 calcChainResult;
-
-    this->currentTimestamp = this->GetTimestamp();
-    if (this->lastTimestamp > this->currentTimestamp)
-        this->lastFrameTime = this->currentTimestamp;
-    this->lastTimestamp = this->currentTimestamp;
-
-    if (this->lastFrameTime < this->currentTimestamp)
-    {
-        while (this->lastFrameTime < this->currentTimestamp)
-            this->lastFrameTime += 1.0 / 60.0;
-
-        g_AnmManager->FlushVertexBuffer();
-        g_Supervisor.ConfigureGameplayViewport(1);
-        calcChainResult = g_Chain.RunCalcChain();
-        g_SoundPlayer.ProcessQueues();
-
-        if (calcChainResult == 0)
-        {
-            g_Supervisor.ThreadClose();
-            return RENDER_RESULT_EXIT_SUCCESS;
-        }
-        if (calcChainResult == -1)
-        {
-            g_Supervisor.ThreadClose();
-            return RENDER_RESULT_RESTART;
-        }
-
-        this->framesSinceRedraw++;
-        if (g_Supervisor.config.frameskipConfig + 1 <= this->framesSinceRedraw)
-        {
-            g_Supervisor.d3dDevice->BeginScene();
-            g_AnmManager->ClearVertexBuffer();
-            g_Supervisor.fogState = SUPERVISOR_FOG_CACHE_INVALID;
-            g_Supervisor.DisableFog();
-            g_Chain.RunDrawChain();
-            g_AnmManager->FlushVertexBuffer();
-            g_Supervisor.d3dDevice->SetTexture(0, NULL);
-            g_Supervisor.d3dDevice->EndScene();
-            this->framesSinceRedraw = 0;
-        }
-
-        this->currentTimestamp = this->GetTimestamp();
-        Present();
-    }
-    else
-    {
-        Sleep(0);
-    }
-    return RENDER_RESULT_KEEP_RUNNING;
-}
+#include "GameWindowRender.inl"
 
 inline u16 WasPressed(u16 buttons)
 {

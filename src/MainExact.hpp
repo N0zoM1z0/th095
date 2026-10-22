@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include "inttypes.hpp"
 #include "Chain.hpp"
+#include "GameWindowRenderResult.hpp"
 #include "GameConfiguration.hpp"
 #include "MidiOutputApi.hpp"
 #include "ReplayScanWorker.hpp"
@@ -33,14 +34,6 @@ struct Float3;
 struct FrontEndControllerView;
 struct PhotoGameTaskView;
 struct DummyMidiTimer;
-
-enum RenderResult
-{
-    RENDER_RESULT_KEEP_RUNNING = 0,
-    RENDER_RESULT_EXIT_SUCCESS = 1,
-    RENDER_RESULT_RESTART = 2,
-    RENDER_RESULT_EXIT_ERROR = -1
-};
 
 #pragma pack(push, 4)
 struct GameWindow

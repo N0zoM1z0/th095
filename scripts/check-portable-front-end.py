@@ -42,6 +42,7 @@ def main() -> int:
     run_probe("WorkerThreadStartTest.cpp", "worker-entry-test", ("-pthread", "-Wcast-function-type"))
     run_probe("WorkerSignalAccessTest.cpp", "worker-signal-test", ("-pthread",))
     run_probe("SceneQueuePublicationTest.cpp", "queue-publication-test", ("-pthread",))
+    run_probe("GameWindowRenderStopTest.cpp", "render-stop-test", ("-pthread",))
     return 0
 
 

@@ -132,7 +132,7 @@ the listed source.
 
 The whole-game normal oracle is still weaker than TH08's modern portable
 build: TH095 has pinned-VC7.1 normal compile/link closure but no maintained
-modern game product yet. SEM-327..338 add bounded native x86-64 cursor,
+modern game product yet. SEM-327..339 add bounded native x86-64 cursor,
 pending-texture-data, raw queue, preview-address, and worker-lifecycle oracles
 (`scripts/check-portable-front-end.py`) that compile and execute the actual
 shared declarations and behavior with UBSan. Pending-data tests use real
@@ -182,6 +182,14 @@ The controlled fixture serializes mutators with a host mutex and releases old
 fronts. It does not establish all game queue counts/interleavings, safe post-shift
 release, parent ABI or whole-game race freedom. Platform/compiler binding and
 pinned-versus-native evidence are documented in FRONT_END_PREVIEW_PROTOCOL.md.
+
+An eleventh executes one shared Render body with canonical output constants,
+real host-thread worker/core and actual queue wait/publication fragments.
+Eighteen cases distinguish Render stop attempts from fixture cleanup, active
+flags from callback return, and old-front data from post-shift words. Explicit
+I/O/owner fixtures do not establish a native GameWindow/Supervisor/D3D ABI.
+Successful fixture waits and actual CRT/Wine cases are independent of full-game
+scheduling, all wait failures and global queue lifetime acceptance.
 
 ## Completion and batch records
 

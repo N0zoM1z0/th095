@@ -7,6 +7,7 @@ from collections import Counter
 from pathlib import Path
 import re
 import sys
+import tomllib
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1927,7 +1928,10 @@ def check_supervisor_state_owner() -> None:
         "SUPERVISOR_STATE_START_REPLAY",
         "SUPERVISOR_STATE_RETRY_PHOTO_GAME",
     )
+    render_body = (SRC / "GameWindowRender.inl").read_text(encoding="utf-8")
     for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
+        if '#include "GameWindowRender.inl"' in text:
+            text += render_body
         for constant in constants:
             if constant not in text:
                 fail(f"{path} lost canonical Supervisor state route: {constant}")
@@ -1993,7 +1997,10 @@ def check_supervisor_startup_phase_owner() -> None:
         "SUPERVISOR_STARTUP_PHASE_RUNNING",
         "SUPERVISOR_STARTUP_PHASE_FAILED",
     )
+    render_body = (SRC / "GameWindowRender.inl").read_text(encoding="utf-8")
     for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
+        if '#include "GameWindowRender.inl"' in text:
+            text += render_body
         for constant in constants:
             if constant not in text:
                 fail(f"{path} lost canonical Supervisor startup phase: {constant}")
@@ -2061,7 +2068,10 @@ def check_supervisor_fog_cache_owner() -> None:
         "SUPERVISOR_FOG_CACHE_ENABLED",
         "SUPERVISOR_FOG_CACHE_INVALID",
     )
+    render_body = (SRC / "GameWindowRender.inl").read_text(encoding="utf-8")
     for path, text in (("Main.cpp", main_body), ("MainExact.inl", main_exact_body)):
+        if '#include "GameWindowRender.inl"' in text:
+            text += render_body
         for constant in constants:
             if constant not in text:
                 fail(f"{path} lost canonical Supervisor fog-cache state: {constant}")
@@ -2753,6 +2763,52 @@ def check_scene_queue_word_access(overrides: dict[str, str] | None = None) -> No
             body = braced_body_after(text, end, "positive scene queue count")
             if not body.lstrip().startswith("AcquireSceneQueuePayload();"):
                 fail(f"{name} reads queue payload without its acquire fence")
+
+
+def check_game_window_render_boundary(header_text: str | None = None, render_text: str | None = None,
+                                      manifest_text: str | None = None) -> None:
+    header = source_without_comments(header_text if header_text is not None else
+        (SRC / "GameWindowRenderResult.hpp").read_text(encoding="utf-8"))
+    marker = "enum RenderResult"
+    if marker not in header: fail("render loop lost its canonical result owner")
+    body = braced_body_after(header, header.index(marker), marker)
+    values = re.findall(r"\b(RENDER_RESULT_\w+)\s*=\s*(-?\d+)", body)
+    if values != [("RENDER_RESULT_KEEP_RUNNING", "0"), ("RENDER_RESULT_EXIT_SUCCESS", "1"),
+                  ("RENDER_RESULT_RESTART", "2"), ("RENDER_RESULT_EXIT_ERROR", "-1")]:
+        fail("render/main-loop result domain drifted")
+    if "sizeof(RenderResult) == 4" not in header: fail("render result lost its four-byte ABI")
+    for name in ("Main.hpp", "MainExact.hpp"):
+        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if '#include "GameWindowRenderResult.hpp"' not in source or marker in source:
+            fail(f"{name} restored a duplicate render result owner")
+    for name in ("Main.cpp", "MainExact.inl"):
+        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if source.count('#include "GameWindowRender.inl"') != 1 or "RenderResult GameWindow::Render()" in source:
+            fail(f"{name} lost the shared Render body")
+        if "TH095_RENDER_STOP_REPLAY_SCAN" in source:
+            fail(f"{name} restored the wrong render stop selector")
+    render = source_without_comments(render_text if render_text is not None else
+        (SRC / "GameWindowRender.inl").read_text(encoding="utf-8"))
+    if any(name in render for name in PROFILE_NAMES) or "ThreadClose(" in render:
+        fail("Render restored profile-selected or non-waiting close semantics")
+    for condition, result in (("if (calcChainResult == 0)", "RENDER_RESULT_EXIT_SUCCESS"),
+                              ("if (calcChainResult == -1)", "RENDER_RESULT_RESTART")):
+        if condition not in render: fail("Render lost a terminal calc-chain edge")
+        edge = braced_body_after(render, render.index(condition), condition)
+        expected = "g_Supervisor.StopReplayScan();return" + result + ";"
+        if re.sub(r"\s+", "", edge) != expected:
+            fail("Render terminal edge lost stop-before-return ordering")
+    units = tomllib.loads(manifest_text if manifest_text is not None else
+        (ROOT / "config/match-units.toml").read_text(encoding="utf-8"))["units"]
+    render_unit = units["main-render"]
+    stops = [r for r in render_unit["relocations"] if r["offset"] in (0xBA, 0xD4)]
+    if len(stops) != 2 or any(r["type"] != "REL32" or r["target"] != 0x425640 or
+        r["symbol"] != "?StopReplayScan@Supervisor@th095@@QAEXXZ" for r in stops):
+        fail("Render lost independently bound worker-stop call identities")
+    for unit in units.values():
+        for r in unit.get("relocations", []):
+            if r["symbol"] == "?ThreadClose@Supervisor@th095@@QAEXXZ" and r["target"] != 0x425150:
+                fail("direct ThreadClose identity was rebound to a different operation")
 
 
 def check_worker_thread_start_boundary(header_text: str | None = None, body_text: str | None = None) -> None:
@@ -4154,6 +4210,7 @@ def main() -> int:
     check_scene_value_queue_owner()
     check_scene_preview_data_queue_owner()
     check_scene_queue_word_access()
+    check_game_window_render_boundary()
     check_worker_thread_start_boundary()
     check_primary_worker_signal_bindings()
     check_scene_asset_wait_protocol()

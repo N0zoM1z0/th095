@@ -461,71 +461,7 @@ stop:
 #undef renderResult
 #undef i
 
-// The exact-facing Render relocations historically spell both exit-path calls
-// as ThreadClose even though the TH095 target routes them to StopReplayScan.
-// DIFFBUILD preserves those relocation tokens; normal production uses the
-// cooperative replay-worker stop protocol before leaving the render loop.
-#ifdef DIFFBUILD
-#define TH095_RENDER_STOP_REPLAY_SCAN() g_Supervisor.ThreadClose()
-#else
-#define TH095_RENDER_STOP_REPLAY_SCAN() g_Supervisor.StopReplayScan()
-#endif
-
-RenderResult GameWindow::Render()
-{
-    i32 calcChainResult;
-
-    this->currentTimestamp = this->GetTimestamp();
-    if (this->lastTimestamp > this->currentTimestamp)
-        this->lastFrameTime = this->currentTimestamp;
-    this->lastTimestamp = this->currentTimestamp;
-
-    if (this->lastFrameTime < this->currentTimestamp)
-    {
-        while (this->lastFrameTime < this->currentTimestamp)
-            this->lastFrameTime += 1.0 / 60.0;
-
-        g_AnmManager->FlushVertexBuffer();
-        g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
-        calcChainResult = g_Chain.RunCalcChain();
-        g_SoundPlayer.ProcessQueues();
-
-        if (calcChainResult == 0)
-        {
-            TH095_RENDER_STOP_REPLAY_SCAN();
-            return RENDER_RESULT_EXIT_SUCCESS;
-        }
-        if (calcChainResult == -1)
-        {
-            TH095_RENDER_STOP_REPLAY_SCAN();
-            return RENDER_RESULT_RESTART;
-        }
-
-        this->framesSinceRedraw++;
-        if (g_Supervisor.config.frameskipConfig + 1 <= this->framesSinceRedraw)
-        {
-            g_Supervisor.d3dDevice->BeginScene();
-            g_AnmManager->ClearVertexBuffer();
-            g_Supervisor.fogState = SUPERVISOR_FOG_CACHE_INVALID;
-            g_Supervisor.DisableFog();
-            g_Chain.RunDrawChain();
-            g_AnmManager->FlushVertexBuffer();
-            g_Supervisor.d3dDevice->SetTexture(0, NULL);
-            g_Supervisor.d3dDevice->EndScene();
-            this->framesSinceRedraw = 0;
-        }
-
-        this->currentTimestamp = this->GetTimestamp();
-        Present();
-    }
-    else
-    {
-        Sleep(0);
-    }
-    return RENDER_RESULT_KEEP_RUNNING;
-}
-
-#undef TH095_RENDER_STOP_REPLAY_SCAN
+#include "GameWindowRender.inl"
 
 inline u16 WasPressed(u16 buttons)
 {

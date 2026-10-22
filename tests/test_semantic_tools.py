@@ -952,6 +952,30 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                 with self.assertRaises(SystemExit):
                     GUARD.check_scene_queue_word_access({name: source.replace(before, after, 1)})
 
+    def test_render_guard_rejects_result_drift(self) -> None:
+        GUARD.check_game_window_render_boundary()
+        header = (ROOT / "src/GameWindowRenderResult.hpp").read_text(encoding="utf-8")
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                GUARD.check_game_window_render_boundary(header_text=header.replace("RENDER_RESULT_RESTART = 2", "RENDER_RESULT_RESTART = 1", 1))
+
+    def test_render_guard_rejects_direct_close_or_wrong_destination(self) -> None:
+        render = (ROOT / "src/GameWindowRender.inl").read_text(encoding="utf-8")
+        for changed in (render.replace("g_Supervisor.StopReplayScan();", "g_Supervisor.ThreadClose();", 1),
+                        render.replace("return RENDER_RESULT_EXIT_SUCCESS;", "return RENDER_RESULT_RESTART;", 1)):
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_game_window_render_boundary(render_text=changed)
+        manifest = (ROOT / "config/match-units.toml").read_text(encoding="utf-8")
+        start = manifest.index("[units.main-render]")
+        end = manifest.index("\n[units.", start + 1)
+        fragment = manifest[start:end]
+        self.assertIn("target = 0x00425640", fragment)
+        changed = manifest[:start] + fragment.replace("target = 0x00425640", "target = 0x00425150", 1) + manifest[end:]
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                GUARD.check_game_window_render_boundary(manifest_text=changed)
+
     def test_worker_entry_guard_rejects_truncation_and_lifetime_changes(self) -> None:
         GUARD.check_worker_thread_start_boundary()
         header = (ROOT / "src/WorkerThreadStart.hpp").read_text(encoding="utf-8")
