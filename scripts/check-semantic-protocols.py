@@ -1395,15 +1395,14 @@ def check_supervisor_flags_owner() -> None:
         text = source_without_comments(path.read_text(encoding="utf-8"))
         if re.search(r"\b(?:struct|class)\s+SupervisorFlags\s*\{", text):
             declarations.append(path.relative_to(ROOT).as_posix())
-    if declarations != ["src/Supervisor.hpp", "src/SupervisorFlags.hpp"]:
-        fail(
-            "SupervisorFlags declarations must be the TH095 owner plus the "
-            f"legacy compatibility layout: {declarations}"
-        )
-    if "C_ASSERT(sizeof(SupervisorFlags) == 0x4);" not in legacy:
+    if declarations != ["src/SupervisorFlags.hpp"]:
+        fail(f"SupervisorFlags must have one canonical declaration: {declarations}")
+    if "C_ASSERT(sizeof(LegacySupervisorFlags) == 0x4);" not in legacy:
         fail("legacy Supervisor.hpp lost its distinct four-byte flag layout")
-    legacy_start = legacy.index("struct SupervisorFlags")
-    legacy_body = braced_body_after(legacy, legacy_start, "SupervisorFlags")
+    if "LegacySupervisorFlags flags;" not in legacy:
+        fail("legacy Supervisor restored the canonical flag type at its wrong owner")
+    legacy_start = legacy.index("struct LegacySupervisorFlags")
+    legacy_body = braced_body_after(legacy, legacy_start, "LegacySupervisorFlags")
     if "d3dDevDisconnectFlag" not in legacy_body:
         fail("legacy Supervisor flags lost their compatibility field spelling")
     if "resultRestartActive" in legacy_body or "unknown13" in legacy_body:
@@ -2473,7 +2472,10 @@ def check_front_end_flags_owner(
     }
     for name, markers in consumers.items():
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
-        if "FrontEndControllerFlagBits flagBits;" not in body:
+        if name == "SceneSelectAssets.cpp":
+            if "SceneSelectControllerView *view;" not in body:
+                fail("asset worker lost its actual controller receiver")
+        elif "FrontEndControllerFlagBits flagBits;" not in body:
             fail(f"{name} lost shared FrontEnd flag-bit storage")
         for marker in markers:
             if marker not in body:
@@ -2642,8 +2644,7 @@ def check_scene_preview_data_queue_owner(header_text: str | None = None) -> None
     if any(token in header for token in (*PROFILE_NAMES, "Global.hpp", "i32 bits;")):
         fail("preview data queue restored selected/truncated storage")
     for name in (
-        "SceneSelect.hpp", "SceneSelectExact.hpp", "SceneSelectAssets.cpp",
-        "SceneSelectAssetsExact.inl", "SceneSelectUpdate.cpp",
+        "SceneSelect.hpp", "SceneSelectExact.hpp", "SceneSelectUpdate.cpp",
         "SceneSelectUpdateExact.inl", "FrontEndLifecycle.cpp",
     ):
         source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
@@ -2668,6 +2669,42 @@ def check_scene_preview_data_queue_owner(header_text: str | None = None) -> None
         fail("preview address Pop lost the signed full-word transition")
 
 
+def check_scene_asset_wait_protocol(cancel_text: str | None = None) -> None:
+    cancel = source_without_comments(
+        cancel_text if cancel_text is not None
+        else (SRC / "SceneSelectionAssetWaitCancellation.inl").read_text(encoding="utf-8")
+    )
+    expected = """
+        if (SceneSelectionAssetsSupervisorStopRequested() != 0) { break; }
+        if (locals.view->flagBits.assetLoadStopRequested != 0) { break; }
+        if (SceneSelectionAssetsLoadComplete() != 0) { break; }
+    """
+    if re.sub(r"\s+", "", cancel) != re.sub(r"\s+", "", expected):
+        fail("asset wait lost ordered exit-only breaks into publication")
+    wait = source_without_comments((SRC / "ScenePreviewDataWait.inl").read_text(encoding="utf-8"))
+    expected_wait = '''
+        while (AssetQueueSize(&locals.view->groupPreviewDataQueue) != 0) {
+            Sleep(10);
+            #include "SceneSelectionAssetWaitCancellation.inl"
+        }
+    '''
+    if re.sub(r"\s+", "", wait) != re.sub(r"\s+", "", expected_wait):
+        fail("preview wait changed queue/sleep/cancellation order")
+    for name, receiver in (("SceneSelectAssets.cpp", "g_Supervisor"),
+                           ("SceneSelectAssetsExact.inl", "g_SceneSupervisor")):
+        source = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if "SceneSelectionAssetView" in source or "SceneSelectControllerView *view;" not in source:
+            fail(f"{name} restored an asset-worker controller projection")
+        if f"return {receiver}.flags.receivedCloseMsg;" not in source:
+            fail(f"{name} lost its typed Supervisor close flag")
+        if source.count('#include "ScenePreviewDataWait.inl"') != 2:
+            fail(f"{name} lost the shared positive/negative preview wait")
+        if source.count('#include "SceneSelectionAssetWaitCancellation.inl"') != 2:
+            fail(f"{name} lost shared Best Shot cancellation checks")
+        if "reinterpret_cast<u32 *>" in source:
+            fail(f"{name} restored a raw close-flag projection")
+
+
 def check_front_end_pending_texture_owner(header_text: str | None = None) -> None:
     header = source_without_comments(
         header_text
@@ -2683,8 +2720,7 @@ def check_front_end_pending_texture_owner(header_text: str | None = None) -> Non
     if any(token in header for token in (*PROFILE_NAMES, "Global.hpp")):
         fail("pending-texture owner restored profile or platform dependencies")
     for name in (
-        "SceneSelect.hpp", "SceneSelectExact.hpp", "SceneSelectAssets.cpp",
-        "SceneSelectAssetsExact.inl", "SceneSelectUpdate.cpp",
+        "SceneSelect.hpp", "SceneSelectExact.hpp", "SceneSelectUpdate.cpp",
         "SceneSelectUpdateExact.inl", "FrontEndLifecycle.cpp",
     ):
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
@@ -2696,6 +2732,10 @@ def check_front_end_pending_texture_owner(header_text: str | None = None) -> Non
             fail(f"{name} lost its target pointer-layout evidence")
     for name in ("SceneSelectAssets.cpp", "SceneSelectAssetsExact.inl"):
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))
+        if "SceneSelectControllerView *view;" not in body:
+            fail(f"{name} lost its actual pending-data receiver")
+        if "offsetof(SceneSelectControllerView, pendingTextures) == 0x63cc" not in body:
+            fail(f"{name} lost its controller/pending-data layout evidence")
         if re.search(r"reinterpret_cast<i32>\s*\(\s*FileSystem::OpenFile", body):
             fail(f"{name} restored pointer truncation at pending publication")
         if "->pendingTextures.count++;" not in body:
@@ -3909,6 +3949,7 @@ def main() -> int:
     check_front_end_scene_queue_owner()
     check_scene_value_queue_owner()
     check_scene_preview_data_queue_owner()
+    check_scene_asset_wait_protocol()
     check_front_end_pending_texture_owner()
     check_photo_enemy_owner()
     check_photo_game_task_ecl_owner()

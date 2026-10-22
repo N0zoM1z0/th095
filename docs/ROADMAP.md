@@ -67,7 +67,7 @@ VC7 comparison, and the playable Windows i386 behavior.
 
 ## Phase 2: portable build boundary
 
-SEM-327..332 add bounded native x86-64 component oracles: the shared
+SEM-327..333 add bounded native x86-64 component oracles: the shared
 front-end cursor, pending texture-data owner, raw queue, preview-address
 channels, and worker lifecycle compile without Windows/D3D headers and execute
 their actual movement/history, pointer-shift,
@@ -81,6 +81,9 @@ The worker test runs the shared lifecycle against API fixtures with native
 handle/argument widths, including failure/timeout event ordering and requests
 that preserve native neighboring fields. It does not
 provide a portable thread backend or invoke the legacy CRT callback cast.
+The sixth component oracle executes shared asset waits and final publication,
+including ordered cancellation and a nonempty backlog; whole-game count and
+release domains remain open.
 This supports semantic work; the modern whole-game
 build and the platform boundary below remain open.
 

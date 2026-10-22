@@ -11,44 +11,19 @@
 namespace th095
 {
 
-struct SceneSelectionAssetView
-{
-    u8 unknown0000[0x6120];
-    union
-    {
-        u32 flags;
-        FrontEndControllerFlagBits flagBits;
-    };
-    u8 unknown6124[4];
-    SceneValueQueue selectionQueue;
-    SceneValueQueue loadedSceneQueue;
-    ScenePreviewDataQueue groupPreviewDataQueue;
-    SceneValueQueue groupPreviewSizeQueue;
-    ScenePreviewDataQueue scenePreviewDataQueue;
-    SceneValueQueue scenePreviewSizeQueue;
-    SceneValueQueue groupPreviewQueue;
-    SceneValueQueue scenePreviewQueue;
-    SceneValueQueue loadedGroupQueue;
-    SceneStateHistoryView stateHistory;
-    u8 unknown63c0[0x0c];
-    FrontEndPendingTextureData pendingTextures;
-};
-
-
 typedef char SceneSelectionAssetPendingTextureDataLayout[
     (sizeof(FrontEndPendingTextureData) == 0x34 &&
-     offsetof(SceneSelectionAssetView, pendingTextures) == 0x63cc &&
+     offsetof(SceneSelectControllerView, pendingTextures) == 0x63cc &&
      offsetof(FrontEndPendingTextureData, primaryData) == 0x04 &&
      offsetof(FrontEndPendingTextureData, primarySize) == 0x10 &&
      offsetof(FrontEndPendingTextureData, secondaryData) == 0x1c &&
      offsetof(FrontEndPendingTextureData, secondarySize) == 0x28) ? 1 : -1];
 typedef char SceneSelectionAssetFlagsAt6120[
-    (offsetof(SceneSelectionAssetView, flags) == 0x6120) ? 1 : -1];
+    (offsetof(SceneSelectControllerView, flags) == 0x6120) ? 1 : -1];
 typedef char SceneSelectionAssetStateHistoryAt63B0[
-    (offsetof(SceneSelectionAssetView, stateHistory) == 0x63b0) ? 1 : -1];
+    (offsetof(SceneSelectControllerView, stateHistory) == 0x63b0) ? 1 : -1];
 typedef char SceneSelectionAssetPendingCountAt63CC[
-    (offsetof(SceneSelectionAssetView, pendingTextures) == 0x63cc) ? 1
-                                                                      : -1];
+    (offsetof(SceneSelectControllerView, pendingTextures) == 0x63cc) ? 1 : -1];
 
 struct SceneSelectionAssetLoadLocals
 {
@@ -59,7 +34,7 @@ struct SceneSelectionAssetLoadLocals
     u8 *primaryData;
     i32 i;
     char facePath[256];
-    SceneSelectionAssetView *view;
+    SceneSelectControllerView *view;
     i32 queueValue;
 };
 
@@ -137,10 +112,7 @@ static __forceinline void AssetQueuePushValue(SceneValueQueue *queue,
 
 static __forceinline u32 SceneSelectionAssetsSupervisorStopRequested()
 {
-    return (
-        *reinterpret_cast<u32 *>(reinterpret_cast<u8 *>(&g_Supervisor) +
-                                 0x444) >>
-        7) & 1;
+    return g_Supervisor.flags.receivedCloseMsg;
 }
 
 static __forceinline i32 SceneSelectionAssetsLoadComplete()
@@ -167,7 +139,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
 {
     SceneSelectionAssetLoadLocals locals;
     locals.view =
-        reinterpret_cast<SceneSelectionAssetView *>(g_ActiveMenuController);
+        static_cast<SceneSelectControllerView *>(g_ActiveMenuController);
 
     while (true)
     {
@@ -255,18 +227,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                     while (AssetQueueSize(&locals.view->loadedSceneQueue) != 0)
                     {
                         Sleep(10);
-                        if (SceneSelectionAssetsSupervisorStopRequested() != 0)
-                        {
-                            break;
-                        }
-                        if (locals.view->flagBits.assetLoadStopRequested != 0)
-                        {
-                            break;
-                        }
-                        if (SceneSelectionAssetsLoadComplete() != 0)
-                        {
-                            break;
-                        }
+#include "SceneSelectionAssetWaitCancellation.inl"
                     }
 
                     g_Supervisor.EnterCriticalSectionWrapper(4);
@@ -284,18 +245,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                     while (AssetQueueSize(&locals.view->loadedSceneQueue) != 0)
                     {
                         Sleep(10);
-                        if (SceneSelectionAssetsSupervisorStopRequested() != 0)
-                        {
-                            break;
-                        }
-                        if (locals.view->flagBits.assetLoadStopRequested != 0)
-                        {
-                            break;
-                        }
-                        if (SceneSelectionAssetsLoadComplete() != 0)
-                        {
-                            break;
-                        }
+#include "SceneSelectionAssetWaitCancellation.inl"
                     }
 
                     g_Supervisor.EnterCriticalSectionWrapper(4);
@@ -328,24 +278,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                                     100);
                         locals.secondaryData = FileSystem::OpenFile(
                             locals.missionPath, &locals.secondarySize, FALSE);
-                        while (AssetQueueSize(
-                                   &locals.view->groupPreviewDataQueue) != 0)
-                        {
-                            Sleep(10);
-                            if (SceneSelectionAssetsSupervisorStopRequested() !=
-                                0)
-                            {
-                                break;
-                            }
-                            if (locals.view->flagBits.assetLoadStopRequested != 0)
-                            {
-                                break;
-                            }
-                            if (SceneSelectionAssetsLoadComplete() != 0)
-                            {
-                                break;
-                            }
-                        }
+#include "ScenePreviewDataWait.inl"
 
                         g_Supervisor.EnterCriticalSectionWrapper(4);
                         g_Supervisor.criticalSectionLockCounts[4]++;
@@ -373,24 +306,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
                         locals.missionPath, &locals.primarySize, FALSE);
                     if (locals.primaryData != NULL)
                     {
-                        while (AssetQueueSize(
-                                   &locals.view->groupPreviewDataQueue) != 0)
-                        {
-                            Sleep(10);
-                            if (SceneSelectionAssetsSupervisorStopRequested() !=
-                                0)
-                            {
-                                break;
-                            }
-                            if (locals.view->flagBits.assetLoadStopRequested != 0)
-                            {
-                                break;
-                            }
-                            if (SceneSelectionAssetsLoadComplete() != 0)
-                            {
-                                break;
-                            }
-                        }
+#include "ScenePreviewDataWait.inl"
 
                         g_Supervisor.EnterCriticalSectionWrapper(4);
                         g_Supervisor.criticalSectionLockCounts[4]++;

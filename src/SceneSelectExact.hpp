@@ -11,6 +11,7 @@
 #include "AnmVmId.hpp"
 #include "PixelFormats.hpp"
 #include "ReplayScanWorker.hpp"
+#include "SupervisorFlags.hpp"
 #include "ResultScreen.hpp"
 #include "ScoreData.hpp"
 #include "ZunTimer.hpp"
@@ -89,7 +90,9 @@ struct SceneStateHistoryView
 
 struct SceneSupervisorView
 {
-    u8 unknown000[0x648];
+    u8 unknown000[0x444];
+    SupervisorFlags flags;
+    u8 unknown448[0x200];
     ReplayScanWorker replayScanWorker;
     u8 unknown660[4];
     CRITICAL_SECTION criticalSections[7];
@@ -383,6 +386,8 @@ typedef char SceneValueQueueSizeIs48[
     (sizeof(SceneValueQueue) == 0x48) ? 1 : -1];
 typedef char SceneGroupCursorSizeIsD8[
     (sizeof(SceneGroupCursorView) == 0xd8) ? 1 : -1];
+typedef char SceneSupervisorFlagsAt444[
+    (offsetof(SceneSupervisorView, flags) == 0x444) ? 1 : -1];
 typedef char SceneSupervisorReplayScanWorkerAt648[
     (offsetof(SceneSupervisorView, replayScanWorker) == 0x648) ? 1 : -1];
 typedef char SceneSupervisorCriticalSectionsAt664[

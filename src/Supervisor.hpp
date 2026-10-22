@@ -101,7 +101,9 @@ C_ASSERT(offsetof(GameConfiguration, slowMode) == 0x25);
 C_ASSERT(offsetof(GameConfiguration, serializedReserved29) == 0x29);
 C_ASSERT(offsetof(GameConfiguration, opts) == 0x38);
 
-struct SupervisorFlags
+// Nine-bit flags for the TH08-shaped 0x364 compatibility owner. Keep this
+// distinct from the canonical TH095 SupervisorFlags, including its type name.
+struct LegacySupervisorFlags
 {
     u32 usingHardwareTL : 1;
     u32 lockableBackbuffer : 1;
@@ -113,7 +115,7 @@ struct SupervisorFlags
     u32 receivedCloseMsg : 1;
     u32 scoreBackupPending : 1;
 };
-C_ASSERT(sizeof(SupervisorFlags) == 0x4);
+C_ASSERT(sizeof(LegacySupervisorFlags) == 0x4);
 
 enum SupervisorState
 {
@@ -333,7 +335,7 @@ struct Supervisor
     i16 recordedFps;
     AnmLoaded *textAnm;
     AnmLoaded *loadingAnm;
-    SupervisorFlags flags;
+    LegacySupervisorFlags flags;
     DWORD totalPlayTime;
     DWORD systemTime;
     D3DCAPS8 d3dCaps;

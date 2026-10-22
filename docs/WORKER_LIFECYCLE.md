@@ -126,5 +126,5 @@ method-owner migration. Caller data relocations now address Supervisor's base
 0x004C4670 with COFF addend +0x648, preserving effective target 0x004C4CB8.
 Aggregate, normal-product, and native receipts are recorded in SEM-331..332
 history. The public
-driver scripts/check-portable-front-end.py now runs five component executables;
+driver scripts/check-portable-front-end.py now runs six component executables;
 this is not a maintained modern game product or a playable 64-bit port.

@@ -154,7 +154,6 @@
 1	src/SceneSelect.hpp	struct	SceneSelectControllerView
 1	src/SceneSelect.hpp	struct	SceneStateHistoryView
 1	src/SceneSelectAssets.cpp	struct	SceneSelectionAssetLoadLocals
-1	src/SceneSelectAssets.cpp	struct	SceneSelectionAssetView
 1	src/SceneSelectUpdate.cpp	struct	AnmTextManagerView
 1	src/SceneSelectUpdate.cpp	struct	AnmTextVmView
 1	src/SceneSelectUpdate.cpp	struct	SceneSelectScoreFlagsView

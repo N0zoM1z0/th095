@@ -1,6 +1,6 @@
 # Front-end mission-preview handoff
 
-This is the SEM-330 evidence map for the original Japanese TH095 v1.02a target.
+This is the SEM-330..333 evidence map for the original Japanese TH095 v1.02a target.
 It describes runtime handoff storage, not an on-disk format. Semantic names are
 inferred from producers and independent consumers; original source names and
 the original queue declaration remain Unknown.
@@ -45,6 +45,24 @@ it. Cancellation therefore does not prove that publication saw an empty queue.
 The complete reachable count domain and worker-stop interleavings remain open;
 capacity 16 is not evidence that count is always one.
 
+Independent producers distinguish the inputs: WindowProc message 0x10 ORs
+Supervisor bit 7 at 0x00420DF0, and startup failure also sets it at 0x00424496
+before publishing inactive/exit. Scene Select sets its local bit 5 before
+requesting the primary worker exit handshake. These signals are not merged
+into one job state or treated as proof of thread termination.
+
+SEM-333 shares the complete preview wait in `ScenePreviewDataWait.inl` and all
+four result-wait cancellation checks in `SceneSelectionAssetWaitCancellation.inl`.
+A nonempty queue causes Sleep(10) before reading Supervisor close, controller
+asset stop, and worker exit, in that order. Close/local stop short-circuit the
+exit read. An empty queue executes none of those wait predicates. Each break
+enters publication; it does not return from the callback or suppress its
+already-loaded result. Both workers now consume their declared Scene Select
+controller instead of a third local asset projection. Supervisor close reads
+use the shared flags field, without a normal-runtime fixed +0x444 cast. The older nine-bit compatibility
+flags keep their layout under the distinct LegacySupervisorFlags name, avoiding
+a collision when both families enter an include graph.
+
 `UpdateSceneSelect @ 0x00447D00` uses loadedGroupQueue as its result gate. A
 nonnegative result uploads primary and secondary data when its count is one;
 a negative result uploads only primary data when its count is one. With a
@@ -81,7 +99,8 @@ arguments without freeing synthetic metadata.
 ## Shared representation and portability boundary
 
 Seven selector/length channels retain `SceneValueQueue` and four-byte words.
-The two address channels use `ScenePreviewDataQueue` in all seven outer views.
+The two address channels use `ScenePreviewDataQueue` in five outer declarations;
+the asset worker consumes the selected controller header directly.
 Its eighteen real `uintptr_t` words preserve actual buffer addresses and the
 observed metadata transfer without aliasing live pointer objects. A word can
 contain an address or copied count metadata, so Pop returns raw uintptr_t;
@@ -113,3 +132,26 @@ pinned VC7.1 build 3077. An unsigned test instead changes JLE to JBE. A separate
 null publication avoids VC7.1's extra pointer-argument temporary and preserves
 the target's immediate-zero store. Reproducible probe/target receipts are
 private under `.analysis/sem330/`; accepted validation is in SEM-330 history.
+
+SEM-333 adds a sixth native x86-64/UBSan executable. It executes the actual
+shared preview wait, cancellation checks, and address publication with real
+buffers above 4 GB. An independent target-branch trace covers 128 combinations
+of initial counts 0/1/2/16, all three cancellation inputs and their combinations,
+first/second sleep injection, and positive/negative nonzero exit signals.
+The actual native local-stop bit encodes mask 0x20 with its neighboring bits
+retained. Another empty-queue case retains preexisting stop signals yet still
+publishes.
+A constructed local one-item state plus a staged load becomes two items when
+cancelled without consumption. This falsifies an empty-queue postcondition for
+the wait; it does not establish that whole-game scheduling reaches every
+constructed state, a global count bound, a leak, or data-race freedom. The
+fixture captures protocol components, not a native controller ABI or OS thread.
+UI old-front release and teardown post-shift release remain unchanged.
+
+Ordinary and force-inline pointer-argument wait helpers each enlarged the
+bounded worker from target 3,070 bytes to 3,170 under pinned build 3077.
+Statement sharing preserves its complete target body and all 115 relocations
+without adding parameters, padding, assembly, or profile-selected bodies.
+Existing compilerStorage phase locals and surrounding Controller/Supervisor
+views remain historical emission/ownership debt. SEM-333 probe and normal
+baseline receipts are private under `.analysis/sem333/`.

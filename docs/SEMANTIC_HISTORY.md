@@ -16964,3 +16964,143 @@ PDBs, maps, and Python caches are cleared before checkpoint. Protected user-owne
 paths are untouched. Semantic reconstruction remains active-incomplete; the
 next bounded work is preview cancellation/publication and independent caller
 count/release evidence, with Help aliases tracked separately.
+
+### SEM-333 — declared asset receiver and shared cancellation-to-publication waits
+
+**Scope / target observations (2026-10-22).** Fresh hash-attested disassembly
+covers asset worker `0x0044D0A0..0x0044DC9D`, the coordinator, main-menu cleanup,
+and lifecycle destructor. The nonnegative/negative preview waits start at
+`0x0044D762/0x0044D9EB`; both read the primary data count, sleep 10 ms if nonzero,
+and check Supervisor bit 7, controller bit 5, then the worker exit word. Each
+break enters the publication block at `0x0044D7BE/0x0044DA47`, never a callback
+return or cancellation cleanup. Empty waits skip those predicates. Best Shot's
+two result waits use the same ordered checks. Callback completion remains
+active=0 then exitSignal=1 at `0x0044DC85/0x0044DC8F`. Main-menu and teardown
+still free Pop's post-shift return; UI retains its distinct old-front release.
+No scheduler, free policy, queue transition, or error handling is repaired.
+
+Independent fresh producer queries cover WindowProc `0x00420CF0`,
+StartupThread `0x004242B0`, RefreshSceneSelection `0x0044BBD0`, the complete
+Scene Select update, and front-end constructor/initialization. Message 0x10
+branches to the bit-7 OR at `0x00420DF0`; startup failure sets the same bit at
+`0x00424496` before active=0/exit=1. Scene Select independently sets local bit 5
+before requesting the primary worker handshake. The three inputs remain
+distinct; the legacy receivedCloseMsg spelling does not imply an exclusively
+window-message producer. Original identifiers and whole-game interleavings
+remain Unknown.
+
+**Representation / four ownership axes.** Both local SceneSelectionAssetView
+definitions, including the exact worker's duplicate anonymous flag layout,
+are retired. Worker locals consume SceneSelectControllerView from the selected
+SceneSelect header, already used by its UI. Normal binds the active void pointer
+at that owning call site; exact uses its declared controller pointer directly.
+This removes a third controller projection, not the remaining exact/normal
+controller split or the enclosing allocation's unresolved C++ lifetime/view
+boundaries. Existing pending/queue/flag/history offsets are checked against
+that declaration. Front-end allocation retains storage responsibility; worker
+owns result waiting/publication and UI/lifecycle retain their distinct release
+transitions. Supervisor close reads use canonical SupervisorFlags::receivedCloseMsg
+in each profile. The retained exact Supervisor view exposes the already-proved
++0x444 flags subobject by splitting its existing opaque prefix; normal uses the
+actual Main.hpp owner and no longer casts a fixed +0x444 address. No additional aggregate,
+selected declaration, selector, or invented padding is added.
+
+The first aggregate exposed a real compatibility collision at MusicRoom.cpp:
+including canonical SupervisorFlags through Scene Select met the legacy
+Supervisor.hpp declaration with the same name. That nine-bit type is now
+LegacySupervisorFlags, including only its assertion and member type; its field
+set, width, 0x364 compatibility owner, and semantics stay distinct. It is not a
+profile-selected declaration baseline entry. The canonical name now has exactly
+one declaration; no layout or protocol is merged to silence the compiler. The
+failed aggregate is retained as a negative receipt, and a fresh aggregate is
+required after this header repair.
+
+**Shared source / compiler evidence.** SceneSelectionAssetWaitCancellation.inl
+shares the three ordered break statements across all four waits in both
+profiles. ScenePreviewDataWait.inl shares the complete positive/negative
+preview wait. A clean pointer-argument template with ordinary inline and the
+same template with force-inline each emit 3,170 bytes for the target 3,070-byte
+worker; neither is accepted. Statement sharing retains original expressions
+and lifetime frontiers without extra function parameters, assembly, inert
+locals, or a new profile body. The existing compilerStorage[4]/[8] phase locals
+are historical debt and are not legitimized by this batch. Private probe
+sources, complete pinned-3077 flags, commands, input hashes, and both rejected
+size comparisons are retained under `.analysis/sem333/`.
+
+The actual controller-owner probe reproduces all 3,070 bytes and all 115
+relocation positions/types/destinations. The final worker source passes **1/1
+canonical strict comparison with zero refresh**. A separately compiled normal
+worker is byte-for-byte and relocation-for-relocation identical to its pre-edit
+normal baseline, including five canonical g_Supervisor +0x444 close-field reads.
+This is not target identity of the differing normal alias bindings/body. Exact
+validates its own source; target control flow, normal dataflow, and the shared
+native oracle independently support the normal transition meaning.
+
+**Native oracle / profile limits.** The sixth public native executable runs
+the actual shared preview wait, cancellation statements, and pointer publisher
+under x86-64/UBSan with real allocated buffers above 4 GB. An independent
+branch-trace model checks 128 combinations of initial counts 0/1/2/16, all
+three stop inputs and combinations, first/second-sleep injection, and positive/
+negative nonzero exit signals. It covers empty/no-predicate behavior,
+Sleep-before-stop order, native local-stop mask 0x20 with retained neighbors,
+close/local short-circuit of the exit read, final
+publication after cancellation, and full-queue drop. A further empty-queue case
+starts with all stop inputs asserted yet still publishes. A constructed local
+one-item state with a staged load becomes two items when cancelled without
+consumption; this is a conditional protocol trace, not proof of whole-game
+reachability or a global bound. The fixture owns real flag/queue components,
+not a fake native controller ABI, and neither launches threads nor frees raw
+post-shift metadata. Actual scheduling, joins, atomics, callback ABI, reachable
+counts, and release responsibility remain open.
+
+Strict native compilation also exposed redundant semicolons after
+DIFFABLE_EXTERN invocations in FrontEndGlobals.hpp: the macro already supplies
+them. Removing those three caller semicolons makes the real flag owner usable
+under -pedantic -Werror without warning suppression or another declaration.
+The bounded guard preserves the selected controller receiver, typed close
+reads, ordered wait exits, and shared routes; negative tests reject early return,
+a different flag, and an inverted exit predicate. Pending/address guards now
+check five actual declarations plus the worker's controller consumption rather
+than requiring the retired projections. The closed declaration baseline
+shrinks **193 keys / 198 occurrences to 192 / 197**. Selector debt stays
+**269 / 706**; target counts, boundaries, function names, origins, source/exact
+credit, and all existing recipes retain their meaning.
+
+**Frozen-source aggregate and audits.** After the legacy-name repair, a fresh
+cold replay passes **698/698 comparisons across all 88 sources**. That run
+refreshes six remaining private labels; the full baseline-commit audit counts
+**30 private identities in four units across three sources** including the
+proved updates from the earlier partial run. No public ABI retag occurs.
+Every remaining recipe field, compared extent, compiler profile, relocation position/type,
+and destination stays unchanged. All function/mapping/source/exact/origin
+ledgers and header-only claims are byte-identical to the previous checkpoint;
+credit stays **696 functions / 336,486 bytes**, with **698 comparisons**.
+Production inputs remained frozen throughout this final replay; the separately
+recorded validation-only update adds a real native bit-5/neighbor encoding check.
+
+A minimal strict native include probe independently identifies the next owner
+barrier: SupervisorFlags.hpp's anonymous struct is rejected by -pedantic -Werror.
+Current wait tests inject the Supervisor close read and execute the actual
+FrontEndControllerFlagBits/queue statements; they do not accept the Supervisor
+flags header or whole Main/controller ABI natively. The next bounded portability
+lane is a standard C++ representation of that canonical four-byte flags owner,
+proved against pinned VC7.1 and native physical-bit encoding while preserving
+LegacySupervisorFlags as a separate nine-bit compatibility family. Historical
+Help aliases and preview global count/release domains remain separate work.
+
+**Independent normal product / final gates.** The separate cold normal build
+compiles **88/88 pinned VC7.1 i386 COFF objects** across two profiles and
+links/verifies a **778,752-byte PE32 GUI** with zero unresolved symbols,
+build-local SHA-256 `0b302f1de62d6498093a570230e00cf2a265e9bd690a5113dbdbc29ecb7ffd0f`. Its freshly built asset worker remains
+**3,082 bytes**, with every byte and relocation identical to the pre-edit
+normal baseline and five canonical close-field reads; the target/exact worker
+is 3,070 bytes. The five shared ReplayScanWorker core bodies independently
+reproduce their 304 target bytes and all relocations. No whole-image identity,
+native Main/controller ABI, real worker scheduling, or cleanup safety is claimed.
+
+Final public CI passes **88 workflow tests and six native x86-64/UBSan
+executables**. Tracking, generated progress, canonical graph, closed debt/owner/
+protocol guards, and whitespace checks pass. CPU 1, nice 10, and serial VC7.1
+builds were used; generated objects/binaries/maps/PDBs and Python caches are
+cleared after compact receipts are saved. Protected user-owned files remain
+untouched. Semantic reconstruction stays active-incomplete.

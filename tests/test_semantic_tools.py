@@ -604,7 +604,8 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("struct SupervisorLifecycleFlags", lifecycle)
         legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
         self.assertIn("u32 d3dDevDisconnectFlag : 1;", legacy)
-        self.assertIn("C_ASSERT(sizeof(SupervisorFlags) == 0x4);", legacy)
+        self.assertIn("C_ASSERT(sizeof(LegacySupervisorFlags) == 0x4);", legacy)
+        self.assertIn("LegacySupervisorFlags flags;", legacy)
 
     def test_screenshot_bitmap_header_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_screenshot_bitmap_header_owner()
@@ -908,6 +909,21 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                 with contextlib.redirect_stderr(io.StringIO()):
                     with self.assertRaises(SystemExit):
                         GUARD.check_scene_preview_data_queue_owner(header.replace(old, new, 1))
+
+    def test_asset_wait_guard_rejects_return_or_reordered_checks(self) -> None:
+        GUARD.check_scene_asset_wait_protocol()
+        source = (ROOT / "src" / "SceneSelectionAssetWaitCancellation.inl").read_text(encoding="utf-8")
+        for changed in (
+            source.replace("break;", "return;", 1),
+            source.replace("SceneSelectionAssetsSupervisorStopRequested", "FIRST_CHECK")
+                .replace("SceneSelectionAssetsLoadComplete", "SceneSelectionAssetsSupervisorStopRequested")
+                .replace("FIRST_CHECK", "SceneSelectionAssetsLoadComplete"),
+            source.replace("assetLoadStopRequested", "previewPending", 1),
+            source.replace("SceneSelectionAssetsLoadComplete() != 0", "SceneSelectionAssetsLoadComplete() == 0", 1),
+        ):
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_scene_asset_wait_protocol(changed)
 
     def test_raw_queue_guard_rejects_metadata_or_storage_drift(self) -> None:
         GUARD.check_scene_value_queue_owner()
