@@ -2369,7 +2369,8 @@ def check_front_end_requested_state_owner(
     ) != expected:
         fail("FrontEnd requested-state domain lost its explicit 0..9 mapping")
     header = source_without_comments(header_path.read_text(encoding="utf-8"))
-    if header.index("enum FrontEndRequestedState") > header.index("#if"):
+    first_conditional = header.find("#if")
+    if first_conditional >= 0 and header.index("enum FrontEndRequestedState") > first_conditional:
         fail("FrontEnd requested-state enum became profile-selected")
     if re.search(r"^\s*#\s*define\s+FRONT_END_REQUESTED_STATE_", header, re.MULTILINE):
         fail("FrontEnd requested-state numeric macros returned")
@@ -2446,7 +2447,8 @@ def check_front_end_flags_owner(
         ("unknownFlagBits6", "26"),
     ]:
         fail("FrontEnd controller flag positions or unknown ranges drifted")
-    if match.start() > header.index("#if"):
+    first_conditional = header.find("#if")
+    if first_conditional >= 0 and match.start() > first_conditional:
         fail("FrontEnd controller flag owner became profile-selected")
     if "sizeof(FrontEndControllerFlagBits) == 4" not in header:
         fail("FrontEnd controller flag owner lost its four-byte assertion")
@@ -2689,6 +2691,46 @@ def check_scene_preview_data_queue_owner(header_text: str | None = None) -> None
         fail("preview address Pop lost the signed full-word transition")
 
 
+def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None) -> None:
+    """Preserve the closed primary-worker bindings, not the enclosing ABI."""
+    overrides = overrides or {}
+    def source(name: str) -> str:
+        return source_without_comments(
+            overrides.get(name, (SRC / name).read_text(encoding="utf-8")))
+
+    completion = "g_Supervisor.replayScanWorker.active=0;g_Supervisor.replayScanWorker.exitSignal=1;"
+    for name, count in (
+        ("HelpMenu.cpp", 1), ("HelpMenuExact.inl", 1),
+        ("ReplayBrowser.cpp", 1), ("ReplayBrowserExact.inl", 1),
+        ("PhotoGameTask.cpp", 2), ("PhotoGameTaskExact.inl", 2),
+        ("FrontEndLifecycle.cpp", 2),
+        ("SceneSelectAssets.cpp", 1), ("SceneSelectAssetsExact.inl", 1),
+    ):
+        if re.sub(r"\s+", "", source(name)).count(completion) != count:
+            fail(f"{name} lost ordered canonical primary-worker completion stores")
+    for name in ("SceneSelectAssets.cpp", "SceneSelectAssetsExact.inl"):
+        text = source(name)
+        marker = "static __forceinline i32 SceneSelectionAssetsExitRequested()"
+        if marker not in text:
+            fail(f"{name} lost the exit-request snapshot")
+        body = braced_body_after(text, text.index(marker), marker)
+        if re.sub(r"\s+", "", body) != "i32value=g_Supervisor.replayScanWorker.exitSignal;returnvalue;":
+            fail(f"{name} restored an alias or wrong exit-request field")
+    text = source("FrontEndController.cpp")
+    marker = "static __forceinline i32 PrimaryWorkerActiveSnapshot()"
+    if marker not in text:
+        fail("front-end lost the primary-worker active snapshot")
+    body = braced_body_after(text, text.index(marker), marker)
+    if re.sub(r"\s+", "", body) != "i32active=g_Supervisor.replayScanWorker.active;returnactive;":
+        fail("front-end reads a different primary-worker signal")
+    retired = re.compile(r"\b(?:g_HelpLoadComplete|g_HelpLoadActive|g_ReplayScanFinished|g_ReplayScanActive|g_PhotoLoadReady|g_PhotoLoadBusy|g_FrontEndLoadFinished|g_FrontEndLoadInProgress)\b")
+    for path in SRC.rglob("*"):
+        if path.suffix in {".cpp", ".hpp", ".inl"} and retired.search(source(path.relative_to(SRC).as_posix())):
+            fail(f"{path.relative_to(ROOT)} restored a retired worker-signal alias")
+    if retired.search((ROOT / "config/match-units.toml").read_text(encoding="utf-8")):
+        fail("match manifest restored a detached worker-signal relocation")
+
+
 def check_scene_asset_wait_protocol(cancel_text: str | None = None) -> None:
     cancel = source_without_comments(
         cancel_text if cancel_text is not None
@@ -2697,7 +2739,7 @@ def check_scene_asset_wait_protocol(cancel_text: str | None = None) -> None:
     expected = """
         if (SceneSelectionAssetsSupervisorStopRequested() != 0) { break; }
         if (locals.view->flagBits.assetLoadStopRequested != 0) { break; }
-        if (SceneSelectionAssetsLoadComplete() != 0) { break; }
+        if (SceneSelectionAssetsExitRequested() != 0) { break; }
     """
     if re.sub(r"\s+", "", cancel) != re.sub(r"\s+", "", expected):
         fail("asset wait lost ordered exit-only breaks into publication")
@@ -3969,6 +4011,7 @@ def main() -> int:
     check_front_end_scene_queue_owner()
     check_scene_value_queue_owner()
     check_scene_preview_data_queue_owner()
+    check_primary_worker_signal_bindings()
     check_scene_asset_wait_protocol()
     check_front_end_pending_texture_owner()
     check_photo_enemy_owner()

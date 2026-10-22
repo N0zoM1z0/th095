@@ -132,7 +132,7 @@ the listed source.
 
 The whole-game normal oracle is still weaker than TH08's modern portable
 build: TH095 has pinned-VC7.1 normal compile/link closure but no maintained
-modern game product yet. SEM-327..334 add bounded native x86-64 cursor,
+modern game product yet. SEM-327..335 add bounded native x86-64 cursor,
 pending-texture-data, raw queue, preview-address, and worker-lifecycle oracles
 (`scripts/check-portable-front-end.py`) that compile and execute the actual
 shared declarations and behavior with UBSan. Pending-data tests use real

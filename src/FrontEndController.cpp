@@ -254,9 +254,9 @@ static __forceinline u16 FrontEndDownInputMask()
 #define TH095_FRONT_DEMO_INTERRUPT_MASK TH_BUTTON_DEMO_INTERRUPT
 #endif
 
-static __forceinline i32 FrontEndHelpLoadSnapshot()
+static __forceinline i32 PrimaryWorkerActiveSnapshot()
 {
-    i32 active = g_HelpLoadActive;
+    i32 active = g_Supervisor.replayScanWorker.active;
     return active;
 }
 
@@ -313,7 +313,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             TH095_FRONT_SUPERVISOR_STATE = 6;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
-        if (FrontEndHelpLoadSnapshot() != 0)
+        if (PrimaryWorkerActiveSnapshot() != 0)
         {
             return CHAIN_CALLBACK_RESULT_BREAK;
         }
@@ -464,7 +464,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         if ((view->stateTimer.current == 1) != 0)
         {
             TH095_FRONT_AUDIO.FadeOutMusic(2.0f);
-            if (FrontEndHelpLoadSnapshot() != 0)
+            if (PrimaryWorkerActiveSnapshot() != 0)
             {
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
@@ -515,7 +515,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             {
                 TH095_FRONT_AUDIO.FadeOutMusic(2.0f);
             }
-            if (FrontEndHelpLoadSnapshot() != 0)
+            if (PrimaryWorkerActiveSnapshot() != 0)
             {
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
@@ -560,7 +560,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         break;
 
     case FRONT_END_REQUESTED_STATE_EXIT:
-        if (FrontEndHelpLoadSnapshot() != 0)
+        if (PrimaryWorkerActiveSnapshot() != 0)
         {
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
@@ -775,7 +775,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
             view->requestedState = FRONT_END_REQUESTED_STATE_SCENE_SELECT;
             view->state = TH095_SCENE_SELECT_STATE_INITIALIZE;
             FrontEndResetTimer(&view->stateTimer);
-            while (FrontEndHelpLoadSnapshot() != 0)
+            while (PrimaryWorkerActiveSnapshot() != 0)
             {
                 Sleep(1);
             }

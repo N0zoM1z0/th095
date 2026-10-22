@@ -1,5 +1,6 @@
 #include "FrontEndGlobals.hpp"
 #include "SupervisorFlags.hpp"
+#include "ReplayScanWorker.hpp"
 #include "ScenePreviewDataQueue.hpp"
 #include <array>
 #include <memory>
@@ -19,6 +20,19 @@ static void Check(bool condition, int line) {
 }
 #define CHECK(x) Check((x), __LINE__)
 
+// Execute the real worker construction/destruction with a zero handle. Any
+// thread API would leave this sequential wait oracle's scope and must fail.
+typedef void *HANDLE;
+const u32 WAIT_TIMEOUT = 0x102;
+static void Sleep(u32 milliseconds);
+static u32 WaitForSingleObject(HANDLE, u32) { CHECK(false); return 0; }
+static i32 CloseHandle(HANDLE) { CHECK(false); return 0; }
+namespace th095 {
+static uintptr_t BeginWorkerThread(ReplayScanWorker *, void *) { CHECK(false); return 0; }
+#include "ReplayScanWorkerBehavior.inl"
+}
+static void TH095_FASTCALL UnusedCallback(void *) { CHECK(false); }
+
 // A fixture for the bounded protocol components, not a controller ABI layout.
 struct WaitController {
     FrontEndControllerFlagBits flagBits;
@@ -31,12 +45,16 @@ struct WaitFixture {
     unsigned triggerSleep;
     i32 exitValue;
     SupervisorFlags supervisorFlags;
-    i32 exitSignal;
+    ReplayScanWorker worker;
     unsigned sleeps;
     std::vector<char> events;
     WaitFixture(WaitController &owner, unsigned mask, unsigned trigger, i32 value)
         : controller(&owner), signalMask(mask), triggerSleep(trigger), exitValue(value),
-          supervisorFlags(), exitSignal(0), sleeps(0) {
+          supervisorFlags(), worker(), sleeps(0) {
+        worker.threadId=0xa5b6c7d8;
+        worker.active=-7;
+        memset(worker.unknown010, 0x6d, sizeof(worker.unknown010));
+        worker.threadProc=UnusedCallback;
         supervisorFlags.dummyMidiTimerEnabled=1;
         supervisorFlags.unknownBit8=1;
         supervisorFlags.unknown13=0x7ffff;
@@ -54,7 +72,7 @@ static void Sleep(u32 milliseconds) {
     if (fixture->sleeps != fixture->triggerSleep) return;
     fixture->supervisorFlags.receivedCloseMsg = (fixture->signalMask & 1) != 0;
     fixture->controller->flagBits.assetLoadStopRequested = (fixture->signalMask & 2) != 0;
-    fixture->exitSignal = (fixture->signalMask & 4) ? fixture->exitValue : 0;
+    fixture->worker.exitSignal = (fixture->signalMask & 4) ? fixture->exitValue : 0;
     if (fixture->signalMask == 0) {
         // Model an independent consumer; never free Pop's raw return value.
         while (fixture->controller->groupPreviewDataQueue.Size() != 0)
@@ -65,9 +83,9 @@ static u32 SceneSelectionAssetsSupervisorStopRequested() {
     fixture->events.push_back('C');
     return fixture->supervisorFlags.receivedCloseMsg;
 }
-static i32 SceneSelectionAssetsLoadComplete() {
+static i32 SceneSelectionAssetsExitRequested() {
     fixture->events.push_back('E');
-    return fixture->exitSignal;
+    return fixture->worker.exitSignal;
 }
 static void Publish(ScenePreviewDataQueue *queue, u8 **value) {
 #include "ScenePreviewDataPublish.inl"
@@ -137,6 +155,13 @@ int main() {
                     u32 supervisorWord=0;
                     memcpy(&supervisorWord, &state.supervisorFlags, sizeof(supervisorWord));
                     CHECK(supervisorWord == (0xffffe140u | ((count && (mask & 1)) ? 0x80u : 0)));
+                    CHECK(state.worker.threadHandle == 0);
+                    CHECK(state.worker.threadId == 0xa5b6c7d8);
+                    CHECK(state.worker.active == -7);
+                    CHECK(state.worker.threadProc == UnusedCallback);
+                    for (unsigned i=0; i<sizeof(state.worker.unknown010); ++i)
+                        CHECK(state.worker.unknown010[i] == 0x6d);
+                    CHECK(state.worker.exitSignal == ((count && (mask & 4)) ? exitValues[vi] : 0));
                     ++cases;
                 }
             }
@@ -148,7 +173,7 @@ int main() {
     WaitController empty;
     empty.flagBits.assetLoadStopRequested=1;
     WaitFixture stopped(empty, 7, 1, -1); fixture=&stopped;
-    stopped.supervisorFlags.receivedCloseMsg=1; stopped.exitSignal=-1;
+    stopped.supervisorFlags.receivedCloseMsg=1; stopped.worker.exitSignal=-1;
     WaitThenPublish(empty, buffers[16].get());
     CHECK((stopped.events == std::vector<char>{'Q','P'}));
     CHECK(empty.groupPreviewDataQueue.Size() == 1);

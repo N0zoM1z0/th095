@@ -30,11 +30,6 @@ enum HelpMenuPageStateValue
 #define TH095_HELP_STATE_PAGE_VIEW HELP_MENU_PAGE_VIEW
 #endif
 
-#ifdef DIFFBUILD
-DIFFABLE_STATIC(i32, g_HelpLoadComplete);
-DIFFABLE_STATIC(i32, g_HelpLoadActive);
-#endif
-
 static __forceinline void HelpMenuCreateVmAt(HelpMenuView *view, i32 scriptIndex)
 {
     view->vmIds[scriptIndex] =
@@ -78,8 +73,8 @@ void __fastcall LoadHelpAnm(void *unused)
     helpMenu->helpAnmData = FileSystem::OpenFile(
         helpMenu->helpAnmPath, &helpMenu->helpAnmSize, FALSE);
     helpMenu->state = TH095_HELP_STATE_PAGE_DATA_READY;
-    g_HelpLoadActive = 0;
-    g_HelpLoadComplete = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
 }
 
 i32 HelpMenuView::UpdateHelpMenu()

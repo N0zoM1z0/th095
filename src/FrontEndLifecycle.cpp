@@ -58,8 +58,6 @@ struct FrontEndSupervisorView
 };
 extern FrontEndSupervisorView g_FrontEndSupervisor;
 extern SupervisorFlags g_FrontEndSupervisorFlags;
-extern i32 g_FrontEndLoadFinished;
-extern i32 g_FrontEndLoadInProgress;
 
 struct FrontEndSceneDefinitionView
 {
@@ -85,8 +83,6 @@ extern FrontEndSceneDefinitionView *g_FrontEndSceneGroups[12];
 #define TH095_FRONT_HIDE_LOADING() g_FrontEndSupervisor.HideLoadingVms()
 #define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_FrontEndSupervisor.BeginLoadingCompletion()
 #define TH095_FRONT_START_REPLAY_SCAN(callback, argument) g_FrontEndSupervisor.StartReplayScan((callback), (argument))
-#define TH095_FRONT_LOAD_FINISHED g_FrontEndLoadFinished
-#define TH095_FRONT_LOAD_IN_PROGRESS g_FrontEndLoadInProgress
 #define TH095_FRONT_RESULT_SAVE_DATA g_FrontEndResultSaveData
 #define TH095_FRONT_SCENE_GROUPS g_FrontEndSceneGroups
 #else
@@ -100,8 +96,6 @@ extern FrontEndSceneDefinitionView *g_FrontEndSceneGroups[12];
 #define TH095_FRONT_HIDE_LOADING() g_Supervisor.HideLoadingVms()
 #define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_Supervisor.BeginLoadingCompletion()
 #define TH095_FRONT_START_REPLAY_SCAN(callback, argument) g_Supervisor.StartReplayScan((callback), (argument))
-#define TH095_FRONT_LOAD_FINISHED g_HelpLoadComplete
-#define TH095_FRONT_LOAD_IN_PROGRESS g_HelpLoadActive
 #define TH095_FRONT_RESULT_SAVE_DATA g_ResultSaveData
 #define TH095_FRONT_SCENE_GROUPS g_SceneGroups
 #endif
@@ -432,8 +426,8 @@ void __fastcall FrontEndLifecycleView::LoadThread(void *)
     controller->flagBits.titleLoadIncomplete = 0;
 #endif
     utils::DebugPrint("Title Load Thread Finish\n");
-    TH095_FRONT_LOAD_IN_PROGRESS = 0;
-    TH095_FRONT_LOAD_FINISHED = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
     goto loadDone;
 
 loadFailed:
@@ -443,8 +437,8 @@ loadFailed:
     controller->flagBits.titleLoadFailed = 1;
 #endif
     TH095_FRONT_BEGIN_LOADING_COMPLETION();
-    TH095_FRONT_LOAD_IN_PROGRESS = 0;
-    TH095_FRONT_LOAD_FINISHED = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
 
 loadDone:
     return;

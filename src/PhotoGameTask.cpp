@@ -520,8 +520,8 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
     g_Supervisor.HideLoadingVms();
     task->gameplayLoadActive = 0;
     g_Supervisor.flags.resultRestartActive = 0;
-    g_HelpLoadActive = 0;
-    g_HelpLoadComplete = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
     return;
 
 failure:
@@ -531,8 +531,8 @@ failure:
     task->gameplayLoadFailed = 1;
 #endif
     g_Supervisor.BeginLoadingCompletion();
-    g_HelpLoadActive = 0;
-    g_HelpLoadComplete = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
 }
 
 i32 __fastcall PhotoGameTaskView::OnUpdate(PhotoGameTaskView *task)

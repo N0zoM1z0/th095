@@ -14,6 +14,8 @@ struct ReplayScanWorker
 {
     uintptr_t threadHandle;
     u32 threadId;
+    // Bidirectional handshake: Stop/RequestExit publish a request, callbacks
+    // publish completion before returning. Neither field proves an OS join.
     i32 exitSignal;
     i32 active;
     u8 unknown010[4];

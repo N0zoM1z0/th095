@@ -1,6 +1,6 @@
 # Front-end mission-preview handoff
 
-This is the SEM-330..334 evidence map for the original Japanese TH095 v1.02a target.
+This is the SEM-330..335 evidence map for the original Japanese TH095 v1.02a target.
 It describes runtime handoff storage, not an on-disk format. Semantic names are
 inferred from producers and independent consumers; original source names and
 the original queue declaration remain Unknown.
@@ -162,3 +162,11 @@ noise retained. The header no longer uses an anonymous struct/raw union; its
 separate physical-word oracle brings the public driver to seven executables.
 This accepts the word type and existing shared statements, not the enclosing
 Supervisor/controller ABI, concurrency, reachable queue bound, or release policy.
+
+SEM-335 removes the Help completion/active aliases. The asset worker now reads
+canonical primary-worker exitSignal directly through SceneSelectionAssetsExitRequested
+in both profiles and publishes active=0 then exitSignal=1 on exit. The existing
+wait order, break-to-publication branches, queue behavior and release policy
+are unchanged. The native fixture now reads an actual ReplayScanWorker member
+at native +12 with threadId noise at +8; a nonzero signal remains a request or
+completion handshake, never an independent successful-load or OS-join proof.

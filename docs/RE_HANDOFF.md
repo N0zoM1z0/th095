@@ -17,47 +17,44 @@ their recorded source revision; regenerate them before claiming a newer result.
   validation are separate facts; no semantic completion percentage is claimed.
 - Ledger totals are generated in `docs/PROGRESS.md`; rerun the summary
   command below before quoting them. `config/claims.csv` remains header-only.
-- Latest accepted batch: **SEM-334**. SupervisorFlags is one standard C++
-  four-byte bitfield object with no anonymous struct/raw union or whole-word
-  alias API. Canonical bit 8 is structural unknownBit8: target constructor sets
-  it and successful startup clears it; no accepted reader proves a score-backup
-  role. The three Background/Enemy flag projections and their casts are retired;
-  bit 9 reads the canonical member. Front-end close uses one typed predicate in
-  every profile. LegacySupervisorFlags remains a separate nine-bit 0x364 family.
-  No inherited weak role, parent ABI, original declaration, or synchronization
-  claim is newly accepted. Closed debt is **192 keys / 197 declarations** and
-  **269 / 703 selectors**, with three selector sites retired.
+- Latest accepted batch: **SEM-335**. All eight detached Help/Replay/Photo/front-end
+  exit/active scalar spellings and the two normal reference definitions are
+  retired. Every selected callback/snapshot now addresses canonical primary
+  ReplayScanWorker fields directly. Scene Select snapshots mean exit requested;
+  front-end snapshots mean primary-worker active. Ordered active=0/exitSignal=1
+  stores remain before callback return; no OS-join or successful-load claim is
+  introduced. Four selector occurrences retire: closed debt is **192 keys /
+  197 declarations** and **266 / 699 selectors**.
 - Exact credit stays **696 functions / 336,486 bytes**, with **698 comparisons**.
-  Frozen cold replay passes 698/698 across all 88 sources. Full baseline audit
-  counts 350 proved private-label changes in 23 units/13 sources and one reviewed
-  data-symbol type retag: front-end load-thread +0x2A uses canonical flags class
-  decoration at unchanged target 0x004C4AB4, with zero addend. All other fields,
-  extents, profiles and relocation positions/types/destinations stay unchanged;
-  all function/mapping/source/exact/origin/claims ledgers remain byte-identical.
-- The separate normal cold build compiles 88 i386 COFF objects and links a
-  778,752-byte verified PE32 with zero unresolved symbols. The 132 named normal
-  function roots plus 14 private entries in six directly changed objects retain
-  their baseline bytes/offsets; 274 referenced code/data/EH graphs retain every
-  binding, with 104 audited private spelling changes. Two exact-only adapter
-  symbols are separately recorded rather than assumed to exist in normal.
-  This is normal pre/post closure, not normal whole-body target identity or a
-  modern game build. The completed front-end typed contract also compiles in
-  DIFF; other caller DIFF failures from SEM-332 receive no new acceptance.
-- Public CI passes **89 workflow tests and seven native x86-64/UBSan programs**.
-  The actual SupervisorFlags header now compiles under strict native C++ and
-  verifies size/alignment/standard layout/trivial copyability, 24,576 complete
-  word states and 638,976 isolated writes with neighboring bits retained. The
-  asset-wait fixture reads a real flags instance while preserving timer/bit-8/
-  upper noise through its 129 traces. Prior cursor/queue/worker fixtures remain.
-  These tests accept the word type and sequential operations; full Supervisor/
-  controller ABI, actual threads, memory ordering, global queue reachability,
-  join and release safety remain open.
-- Generated objects, PDBs, native/PE binaries, maps, and Python caches are
-  disposable and cleared after the checkpoint's checks. Compact SEM-334
-  target/compiler/native receipts remain private under `.analysis/sem334/`.
-  The verified target, pinned tools, Ghidra project, and protected files stay.
-- No active blocker is known. The only untracked working-tree paths at
-  handoff are the protected user-owned files listed below.
+  The direct baseline and final replay pass 35/35 across seven sources. All
+  26 reviewed public DIR32 rebases use actual +0x650/+0x654 COFF addends against
+  canonical Supervisor base 0x004C4670, preserving effective target
+  0x004C4CC0/0x004C4CC4. Frozen cold replay passes 698/698 across
+  all 88 sources with zero further private-label refresh. Full baseline audit
+  totals 24 private-label updates in three units/two sources and those 26
+  reviewed rebases; all other recipe fields/positions/types/destinations stay.
+  Compiler EH audit independently passes 57 parents and 81/81 cleanup references.
+  All function/mapping/source/exact/origin/claims ledgers are unchanged.
+- The separate normal cold build compiles 88/88 i386 COFF objects and links a
+  verified 778,752-byte PE32 with zero unresolved symbols. Seven intended normal
+  roots change; the other 38 roots/66 reachable code/data/EH graphs retain their
+  bindings up to those callback boundaries. Two proved 15-byte reference-binding
+  initializers and their CRT entries/slots are retired. Supplementary comparison
+  covers 4,097 complete normal callback bytes and 182 independent bindings in
+  five callbacks; it adds no canonical recipe or exact credit. This does not
+  accept different coordinator bodies, a native parent ABI or whole-image identity.
+- Public CI passes **90 workflow tests and seven native x86-64/UBSan programs**.
+  The asset-wait oracle now constructs the real ReplayScanWorker
+  through shared lifecycle code and reads exitSignal at native +12 with threadId
+  noise at +8. All 129 traces preserve active/callback/opaque neighbors. A
+  wrong-member mutation compiles but is rejected by the independent event model.
+  Full Supervisor/controller ABI, actual threads, memory ordering, queue
+  reachability/release and joins remain open.
+- Generated build artifacts and Python caches were cleared after all terminal
+  validation results and compact receipts were saved. Compact target/compiler/
+  native receipts stay private under
+  .analysis/sem335/. Verified target, pinned tools, Ghidra project and protected
+  user files remain untouched. No active blocker is known.
 
 Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
 `SOURCE_MAP.md`, `ARCHITECTURE.md`, and `RE_WORKFLOW.md` before changing state.
@@ -72,13 +69,14 @@ Read `AGENTS.md`, `SEMANTIC_RECONSTRUCTION.md`, `SEMANTIC_PLAYBOOK.md`,
   evidence and a normal compiler or runtime oracle.
 - Prefer one profile-independent owner. Keep compiler emission adapters
   narrow and proved; leave unproved fields, roles, and protocols Unknown.
-- The flags-header native barrier is closed. The next bounded lane is the
-  primary worker's historical Help completion/active aliases: begin with
-  LoadSceneSelectionAssets at 0x0044D0A0 and independent front-end/help consumers,
-  follow both producers and readers to the actual ReplayScanWorker fields,
-  reconcile relocation base/addends and normal reference removal, and preserve
-  bidirectional exit/completion meaning. Do not invent another worker view or
-  treat the Help spelling as storage/lifetime ownership.
+- The flags-header and primary worker signal-alias lanes are closed. The next
+  bounded port boundary is the CRT callback ABI in ReplayScanWorkerWin32.hpp:
+  the target casts void/fastcall callbacks to unsigned/stdcall. Begin with an
+  isolated pinned-VC7.1/native signature and argument/return experiment; inspect
+  every callback caller before choosing a normal/native adapter. Preserve the
+  exact binding and shared core, prove any emission dependency, and add no
+  profile selector or layout split. Callback dispatch evidence alone cannot
+  accept ordinary i32 cross-thread synchronization or prove a real join.
 - Complete preview caller/count/release evidence remains open. Cancellation has
   no empty-queue postcondition, and normal empty-queue waiting proves no permanent
   one-item bound. Enclosing Supervisor declarations and weak inherited flag
@@ -117,7 +115,7 @@ python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/check-portable-front-end.py
 python3 scripts/analysis/report-semantic-debt.py --path src/SceneSelectAssets.cpp --details
-rg -n "g_HelpLoad|SceneSelectionAssetsLoadComplete|SceneSelectionFinishPhase|replayScanWorker" src/ReplayScanWorker* src/SceneSelectAssets* src/FrontEndGlobals.hpp src/HelpMenu* src/FrontEndLifecycle.cpp
+rg -n "BeginWorkerThread|threadProc|beginthreadex|TH095_FASTCALL" src/ReplayScanWorker* src/RuntimeAbi.hpp src/Main.cpp src/MainExact.inl
 ```
 
 Before a later commit, run the affected exact and normal oracles,

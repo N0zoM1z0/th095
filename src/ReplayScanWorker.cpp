@@ -11,13 +11,6 @@
 namespace th095
 {
 
-#ifndef DIFFBUILD
-// Historical completion/active aliases refer to the primary Supervisor worker,
-// target 0x004C4CB8. Field-based binding follows its native layout as well.
-i32 &g_HelpLoadComplete = g_Supervisor.replayScanWorker.exitSignal;
-i32 &g_HelpLoadActive = g_Supervisor.replayScanWorker.active;
-#endif
-
 #include "ReplayScanWorkerBehavior.inl"
 
 i32 Supervisor::StartReplayScan(

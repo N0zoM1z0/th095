@@ -1,3 +1,4 @@
+#include "Main.hpp"
 #include "SceneSelect.hpp"
 
 #include "FileSystem.hpp"
@@ -6,9 +7,6 @@
 
 namespace th095
 {
-
-extern i32 g_HelpLoadActive;
-extern i32 g_HelpLoadComplete;
 
 typedef char SceneSelectionAssetPendingTextureDataLayout[
     (sizeof(FrontEndPendingTextureData) == 0x34 &&
@@ -114,9 +112,10 @@ static __forceinline u32 SceneSelectionAssetsSupervisorStopRequested()
     return g_SceneSupervisor.flags.receivedCloseMsg;
 }
 
-static __forceinline i32 SceneSelectionAssetsLoadComplete()
+static __forceinline i32 SceneSelectionAssetsExitRequested()
 {
-    i32 value = g_HelpLoadComplete;
+    // Nonzero is also a stop request, not proof that asset loading completed.
+    i32 value = g_Supervisor.replayScanWorker.exitSignal;
     return value;
 }
 
@@ -130,8 +129,8 @@ static __forceinline i32 SceneSelectionGroupPreviewSizePhase(
 static __forceinline void SceneSelectionFinishPhase()
 {
     u8 compilerStorage[8];
-    g_HelpLoadActive = 0;
-    g_HelpLoadComplete = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
 }
 
 void __fastcall LoadSceneSelectionAssets(void *threadParameter)
@@ -149,7 +148,7 @@ void __fastcall LoadSceneSelectionAssets(void *threadParameter)
         {
             break;
         }
-        if (SceneSelectionAssetsLoadComplete() != 0)
+        if (SceneSelectionAssetsExitRequested() != 0)
         {
             break;
         }

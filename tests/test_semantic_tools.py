@@ -924,16 +924,32 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                     with self.assertRaises(SystemExit):
                         GUARD.check_scene_preview_data_queue_owner(header.replace(old, new, 1))
 
+    def test_primary_worker_signal_guard_rejects_alias_or_wrong_field(self) -> None:
+        GUARD.check_primary_worker_signal_bindings()
+        name = "SceneSelectAssets.cpp"
+        source = (ROOT / "src" / name).read_text(encoding="utf-8")
+        for changed in (
+            source.replace("replayScanWorker.exitSignal", "replayScanWorker.threadId", 1),
+            source.replace("g_Supervisor.replayScanWorker.exitSignal", "g_HelpLoadComplete", 1),
+            source.replace("replayScanWorker.active = 0", "replayScanWorker.active = 1", 1),
+            source.replace("replayScanWorker.exitSignal = 1", "replayScanWorker.exitSignal = 0", 1),
+            source.replace("g_Supervisor.replayScanWorker.active = 0;\n    g_Supervisor.replayScanWorker.exitSignal = 1;",
+                           "g_Supervisor.replayScanWorker.exitSignal = 1;\n    g_Supervisor.replayScanWorker.active = 0;", 1),
+        ):
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_primary_worker_signal_bindings({name: changed})
+
     def test_asset_wait_guard_rejects_return_or_reordered_checks(self) -> None:
         GUARD.check_scene_asset_wait_protocol()
         source = (ROOT / "src" / "SceneSelectionAssetWaitCancellation.inl").read_text(encoding="utf-8")
         for changed in (
             source.replace("break;", "return;", 1),
             source.replace("SceneSelectionAssetsSupervisorStopRequested", "FIRST_CHECK")
-                .replace("SceneSelectionAssetsLoadComplete", "SceneSelectionAssetsSupervisorStopRequested")
-                .replace("FIRST_CHECK", "SceneSelectionAssetsLoadComplete"),
+                .replace("SceneSelectionAssetsExitRequested", "SceneSelectionAssetsSupervisorStopRequested")
+                .replace("FIRST_CHECK", "SceneSelectionAssetsExitRequested"),
             source.replace("assetLoadStopRequested", "previewPending", 1),
-            source.replace("SceneSelectionAssetsLoadComplete() != 0", "SceneSelectionAssetsLoadComplete() == 0", 1),
+            source.replace("SceneSelectionAssetsExitRequested() != 0", "SceneSelectionAssetsExitRequested() == 0", 1),
         ):
             with contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):

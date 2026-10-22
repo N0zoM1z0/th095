@@ -17226,3 +17226,151 @@ whitespace checks pass. CPU 1, nice 10 and serial VC7.1 builds were used. Compac
 receipts are private under .analysis/sem334/; generated objects, executables,
 PDBs, maps and Python caches are cleared before checkpoint. Protected user-owned
 files are untouched. Semantic reconstruction remains active-incomplete.
+
+### SEM-335 — retire detached primary-worker signal aliases
+
+**Problem / scope.** Help names obscured a shared, bidirectional worker handshake;
+normal production reached it through two global i32 references, while exact
+Help/Replay/Photo/front-end callbacks used eight detached scalar spellings. The
+35 accepted comparisons in seven source objects are the bounded scope. Every
+selected callback and snapshot now accesses canonical Supervisor::replayScanWorker
+fields directly. SceneSelectionAssetsLoadComplete is renamed to
+SceneSelectionAssetsExitRequested, and FrontEndHelpLoadSnapshot becomes
+PrimaryWorkerActiveSnapshot. Both return the original full i32 snapshot. No
+worker lifetime, scheduling, cancellation branch, callback ABI or release policy
+is changed. The existing operation-owned compilerStorage phases are untouched
+historical debt; this batch adds no padding, assembly, selector or adapter.
+
+**Target evidence (2026-10-22).** Fresh hash-attested Ghidra checks and read-only
+queries cover LoadSceneSelectionAssets 0x0044D0A0 (3,070 bytes), Help load
+0x004525D0 (88), front-end coordinator 0x00445E80 (2,969), main menu
+0x00446A50 (3,299), Photo load 0x00417D20 (335), front-end load thread
+0x00445980 (201), replay scan 0x00450C30 (403), and StartupThread
+0x004242B0 (532). Independent ANM consumers 0x00443070/0x004432E0 and
+worker RequestExit/Stop/Start 0x0041BB00/0x0041BB20/0x0041BBA0 supply the
+other side of the protocol. Direct global xrefs return 19 exit-word and 14
+active-word rows; this is not an exhaustive indirect/runtime-access claim.
+
+The worker is at Supervisor +0x648 / target 0x004C4CB8. Its exit word is
+Supervisor +0x650 / 0x004C4CC0, active is +0x654 / 0x004C4CC4. Five selected
+callback families have seven completion paths that store active=0 then
+exitSignal=1 before returning; StartupThread already has two canonical paths.
+Scene Select reads exit at 0x0044D0EE/0x0044D446/0x0044D55E/0x0044D7A5/
+0x0044DA2E, then publishes at 0x0044DC85/0x0044DC8F. Help publishes at
+0x00452610/0x0045261A. The coordinator's independent active gates remain
+separate from StopReplayScan. Start clears exit and arms active; Stop/request
+also write exit. A nonzero exit value therefore does not prove successful
+loading, and active=0 does not prove an OS join. TH08's owner-field approach
+corroborates the method; its different legacy offsets, handle-based running
+predicate and CreateThread behavior are not transferred to TH095.
+
+**Four ownership axes / profiles.** Supervisor retains the one primary-worker
+allocation and its lifetime. ReplayScanWorker owns the common native-width
+layout and handshake; callbacks/coordinator retain their observed transitions.
+Method and callback emission remains in the original seven objects; only the
+two obsolete normal reference definitions and DIFF scalar definitions disappear.
+Exact/normal outer bodies and Supervisor wrappers remain separate debt. Both
+profiles now use the same canonical worker fields; no new view or storage is
+introduced, and the standalone input and secondary workers remain distinct.
+Unknown opaque bytes, secondary business role, inherited weak flag roles and
+full parent/controller ABI remain open.
+
+**Compiler and relocation evidence.** The pre-edit baseline passes 35/35
+canonical comparisons and all seven normal objects. A private natural asset
+worker probe adds canonical Main.hpp and replaces only the scalar aliases with
+real member operations; all 3,070 bytes and 115 relocations remain structural
+exact. The first probe's helper rename lacked the matching included-fragment
+rename and failed to compile; the complete candidate passes. No acceptance is
+attributed to that intermediate diagnostic. The final direct canonical replay
+passes 35/35 with 24 proved private-label changes in three units.
+
+Before manifest mutation, complete structural comparisons cover all 35 units.
+For each of 26 reviewed public DIR32 rebases, the actual COFF addend is +0x650
+or +0x654 against canonical Supervisor base 0x004C4670. Base plus addend equals
+the prior target 0x004C4CC0/0x004C4CC4, at the same relocation offset/type.
+The previous strict scalar baseline proves its old zero addend. No destination
+is solved by reading a new target address into the recipe. Command, source,
+target, structural and public-rebase receipts are private under .analysis/sem335/.
+
+**Native field oracle / guard.** The existing wait executable now contains a
+real ReplayScanWorker, constructed/destructed by the shared lifecycle with zero
+handle. Its getter reads exitSignal at native +12, while nonzero threadId at
++8, active=-7, callback and four opaque bytes remain intact through all 129
+traces. An incorrect fixed +8 read is distinguishable by the independent event
+model. A separately compiled mutation reading native +8 threadId instead of
++12 exitSignal is rejected at runtime (return 1), while the unmodified fixture
+passes. Any thread API call fails this bounded fixture. The seven native
+x86-64/UBSan programs pass; this remains sequential field/layout evidence, not
+a portable OS backend, actual scheduling, join or race validation.
+
+Guards preserve the canonical getters and ordered completion stores, reject
+retired aliases/manifest spellings, and test wrong-member, alias, wrong-value
+and reversed-order mutations. The two existing header guards now accept a
+header with no conditional at all, retaining their rejection of declarations
+placed after a conditional. Four selector occurrences retire: both
+FrontEndGlobals conditions, Help's DIFF scalar definition and worker's normal
+reference-definition condition. Closed selector debt shrinks 269/703 to
+266/699; selected-declaration debt remains 192/197. Final aggregate and normal
+product receipts follow.
+
+**Frozen aggregate / final public gates.** Cold canonical replay passes
+**698/698 comparisons across 88 sources**, with zero further private-label
+updates. The full baseline-commit audit counts **24 private labels in three
+units/two sources** plus the **26 reviewed public data rebases**. Every other
+recipe field, compare extent, profile, relocation offset/type and destination
+stays unchanged. All 300 frozen source/script/test inputs remain unchanged.
+Mapping/source/origin/exact and header-only claims ledgers are byte-identical
+to baseline 87b5d6f; authored credit stays 696 functions / 336,486 bytes.
+
+Final public CI passes **90 workflow tests and seven native x86-64/UBSan
+programs**. Target/tracking, match graph, whole-build graph, closed declaration/
+selector/owner/protocol guards, generated progress and whitespace checks pass.
+Normal-product and cleanup receipts follow.
+
+The independent compiler-owned EH audit also passes: **57/57 canonical
+parents, 72 unique cleanup actions and 81/81 provenance-exact references**
+from the cold exact objects. This verifies associated cleanup bodies and
+pre-existing relocation provenance separately from the parent-function matches;
+it adds no authored target credit.
+
+**Independent normal product / binding closure.** The separate cold normal
+build compiles **88/88 i386 COFF objects** across two profiles and links a
+verified **778,752-byte PE32 GUI**, SHA-256
+`9fd4e6b26132e1944c4c808923b5cffe71c11298de0a9a394b87d0ea36bd25dd`,
+with zero unresolved symbols. Of 45 remaining named normal function roots in
+the seven direct objects, code changes occur only in the intended seven
+callbacks/coordinator readers. The other 38 roots and 66 recursively referenced
+code/data/EH section graphs retain bytes, entry offsets and reference bindings
+up to those changed callback boundaries, with 12 proved private spelling
+changes. All 26 direct signal references bind canonical Supervisor fields.
+
+The first normal audit correctly exposes two additional deleted compiler-owned
+initializers, _$E1 and _$E3, rather than silently treating function sets as
+identical. Each 15-byte body only stores Supervisor base plus +0x650/+0x654
+into its obsolete reference slot; neither writes the worker field itself. The
+eight-byte reference storage and both four-byte .CRT$XCU registrations disappear
+with those definitions. The completed audit verifies those bytes and
+relocations separately, excludes only these proved obsolete initializers, and
+then compares all remaining roots/graphs. The final linked map contains neither
+Help reference symbol. No Supervisor/worker initializer or lifetime is removed.
+
+The five actual normal callback extents now also match their target diagnostic
+extents: asset 3,070, Help 88, front-end 201, replay 403 and Photo 335 bytes. A
+separate supplementary normal compiler/semantic oracle compares all **4,097
+bytes with 182 independently bound relocations**. It uses existing per-function
+canonical anchors, unique repository anchors, and already-documented
+ABI-027/077/MAIN-030 data owners; the remaining callable names must be exported
+by their existing ledger-designated normal TUs. It does not accept a
+target-field-solved address as an independent binding. This adds no canonical
+recipe or exact ledger credit. The different normal coordinator/main-menu
+bodies remain separate; neither full-product identity nor native parent/game
+ABI is inferred. Compact commands, old/new COFF audit details and reports remain
+private in .analysis/sem335/.
+
+CPU 1, nice 10 and serial VC7.1 builds were used. All build/test handles were
+observed terminal before clearing generated objects, PE/native binaries, PDBs,
+maps and Python caches. Compact receipts are retained privately; protected
+user-owned files, verified target, toolchains and Ghidra project are untouched.
+Semantic reconstruction remains **active-incomplete**. The next bounded
+portability lane is the CRT callback signature/argument boundary, keeping
+cross-thread memory ordering and actual joins separate from callback evidence.

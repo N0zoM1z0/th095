@@ -44,8 +44,6 @@ typedef char HelpMenuDataAt6510[
     (offsetof(HelpMenuView, helpAnmData) == 0x6510) ? 1 : -1];
 
 extern HelpMenuView *g_HelpMenu;
-extern i32 g_HelpLoadComplete;
-extern i32 g_HelpLoadActive;
 
 void __fastcall LoadHelpAnm(void *unused);
 

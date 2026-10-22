@@ -47,8 +47,6 @@ typedef char ReplayBrowserTransitionVmAt6100[
     (offsetof(ReplayBrowserView, transitionVm) == 0x6100) ? 1 : -1];
 
 extern ReplayBrowserView *g_ReplayBrowser;
-extern i32 g_ReplayScanFinished;
-extern i32 g_ReplayScanActive;
 extern i32 g_ReplayBrowserSelection;
 extern char g_SelectedReplayPath[0x100];
 

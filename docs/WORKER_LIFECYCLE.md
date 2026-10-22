@@ -1,6 +1,6 @@
 # Shared worker lifecycle and port boundary
 
-SEM-331..332 cover the common ReplayScanWorker type and its five lifecycle
+SEM-331..335 cover the common ReplayScanWorker type and its five lifecycle
 methods for the original Japanese TH095 v1.02a target. The canonical declaration
 was already unified by SEM-303; these batches share behavior, remove the
 fixed-width header barrier, and make the state transition code executable in a native
@@ -65,10 +65,13 @@ at +12, whereas that projection's fixed +8 would address threadId. Both source
 profiles now invoke the canonical embedded worker directly.
 
 The bidirectional exit signal is both a stop request and a callback completion
-publication. Historical g_HelpLoadComplete/g_HelpLoadActive names alias the
-primary worker's fields in normal production; they are not independent storage
-or a help-only protocol. Callbacks publish active=0/exitSignal=1 before their
-actual return. Likewise Stop itself clears active before waiting. Observing
+publication. SEM-335 retires all eight historical Help/Replay/Photo/front-end scalar
+spellings and the two normal Help reference definitions. Every selected callback
+and snapshot now accesses canonical g_Supervisor.replayScanWorker.exitSignal or
+active directly in both profiles. They are not independent storage or a help-only
+protocol. The Scene Select getter is named SceneSelectionAssetsExitRequested;
+the front-end getter is PrimaryWorkerActiveSnapshot, retaining the full i32
+value. Callbacks publish active=0/exitSignal=1 before their actual return. Likewise Stop itself clears active before waiting. Observing
 active=0 does not independently establish that the OS thread has terminated.
 The state oracle also injects completion before the begin API returns and
 verifies that saving the new handle does not overwrite that publication.
@@ -93,8 +96,9 @@ remain open; these tests do not prove a one-item bound.
 ## Shared code and independent oracles
 
 ReplayScanWorkerBehavior.inl supplies constructor/destructor/RequestExit/Start/Stop
-at both normal and exact worker emission sites. Supervisor wrappers and historical
-global/reference aliases remain different surrounding source. Both production
+at both normal and exact worker emission sites. Supervisor wrappers remain
+different surrounding source; the historical global/reference signal aliases
+are retired. Both production
 profiles include ReplayScanWorkerWin32.hpp, whose narrow begin binding retains
 the target's direct callback cast in a typed begin function. A minimal pinned
 compiler probe proves that function preserves Start's complete 87-byte body
@@ -124,7 +128,31 @@ the added canonical 53-byte comparison cover the ICF constructor. SEM-332's
 minimal 21-byte RequestExit probe and complete caller comparisons prove the
 method-owner migration. Caller data relocations now address Supervisor's base
 0x004C4670 with COFF addend +0x648, preserving effective target 0x004C4CB8.
-Aggregate, normal-product, and native receipts are recorded in SEM-331..332
-history. The public
-driver scripts/check-portable-front-end.py now runs seven component executables;
+Aggregate, normal-product, and native receipts are recorded in SEM-331..335
+history. The public driver scripts/check-portable-front-end.py now runs seven component executables;
 this is not a maintained modern game product or a playable 64-bit port.
+
+SEM-335 freshly attests 33 direct global-word reference rows and complete
+callback/coordinator code. Five selected callback families contain seven
+completion paths, each publishing active=0 then exitSignal=1 before return;
+StartupThread already uses canonical fields on its two paths. The 26 changed
+exact data relocations use Supervisor base 0x004C4670 with actual COFF addends
++0x650/+0x654, preserving effective target 0x004C4CC0/0x004C4CC4. Other
+relocation positions/types/destinations and complete bodies remain unchanged.
+ANM preload's three direct exit readers already use canonical fields. This
+inventory does not claim exhaustive indirect accesses or synchronization proof.
+
+The native wait fixture now constructs the actual ReplayScanWorker using the
+shared lifecycle and reads its native +12 exit field. A nonzero threadId at +8,
+active, callback and opaque neighbors survive all 129 traces. The handle is
+zero; unexpected thread API calls fail the test. This validates the sequential
+field selection and keeps real OS dispatch/joins outside the fixture's scope.
+
+The removed normal reference definitions had two 15-byte compiler binding
+initializers and two CRT registration entries. Their only side effect was to
+store the canonical field address into each obsolete reference slot; they never
+initialized or changed the worker fields. Removing them leaves worker storage
+and lifecycle intact. Supplementary normal callback comparison covers all
+4,097 bytes and 182 independently bound relocations in the five selected
+callbacks; it awards no additional canonical recipe/target credit. Different
+coordinator bodies and the real threading backend remain outside that result.

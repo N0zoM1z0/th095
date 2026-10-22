@@ -67,7 +67,7 @@ VC7 comparison, and the playable Windows i386 behavior.
 
 ## Phase 2: portable build boundary
 
-SEM-327..334 add bounded native x86-64 component oracles: the shared
+SEM-327..335 add bounded native x86-64 component oracles: the shared
 front-end cursor, pending texture-data owner, raw queue, preview-address
 channels, and worker lifecycle compile without Windows/D3D headers and execute
 their actual movement/history, pointer-shift,

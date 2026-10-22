@@ -9,7 +9,7 @@ if (locals.view->flagBits.assetLoadStopRequested != 0)
 {
     break;
 }
-if (SceneSelectionAssetsLoadComplete() != 0)
+if (SceneSelectionAssetsExitRequested() != 0)
 {
     break;
 }

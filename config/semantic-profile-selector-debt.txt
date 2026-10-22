@@ -119,8 +119,6 @@
 6	src/FrontEndController.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 3	src/FrontEndController.cpp	#ifdef TH095_MATCH_EXACT
 3	src/FrontEndController.cpp	#ifndef DIFFBUILD
-1	src/FrontEndGlobals.hpp	#elif !defined(TH095_MATCH_EXACT)
-1	src/FrontEndGlobals.hpp	#if defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 3	src/FrontEndLifecycle.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 11	src/FrontEndLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FrontEndLifecycle.cpp	#ifdef TH095_MATCH_EXACT
@@ -135,7 +133,7 @@
 1	src/Global.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/Global.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Global.hpp	#ifndef TH095_MATCH_EXACT
-2	src/HelpMenu.cpp	#ifdef DIFFBUILD
+1	src/HelpMenu.cpp	#ifdef DIFFBUILD
 1	src/HelpMenu.cpp	#ifdef TH095_MATCH_EXACT
 1	src/HelpMenu.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/HelpMenu.hpp	#ifdef DIFFBUILD
@@ -214,7 +212,6 @@
 1	src/ReplayManager.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ReplayManagerExact.inl	#ifdef TH095_MATCH_EXACT
 1	src/ReplayScanWorker.cpp	#ifdef TH095_MATCH_EXACT
-1	src/ReplayScanWorker.cpp	#ifndef DIFFBUILD
 1	src/ResultScreen.cpp	#if !defined(DIFFBUILD)
 1	src/ResultScreen.cpp	#if defined(DIFFBUILD)
 26	src/ResultScreen.cpp	#ifdef DIFFBUILD

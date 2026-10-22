@@ -1,3 +1,4 @@
+#include "Main.hpp"
 #include "ReplayBrowser.hpp"
 #include "SoundPlayer.hpp"
 
@@ -214,7 +215,7 @@ void __fastcall LoadReplayBrowserEntries(void *)
         {
             goto finish;
         }
-        locals.scanFinished1 = g_ReplayScanFinished;
+        locals.scanFinished1 = g_Supervisor.replayScanWorker.exitSignal;
         if (locals.scanFinished1 != 0)
         {
             goto finish;
@@ -236,7 +237,7 @@ void __fastcall LoadReplayBrowserEntries(void *)
             {
                 break;
             }
-            scanFinished2 = g_ReplayScanFinished;
+            scanFinished2 = g_Supervisor.replayScanWorker.exitSignal;
             if (scanFinished2 != 0)
             {
                 break;
@@ -257,8 +258,8 @@ void __fastcall LoadReplayBrowserEntries(void *)
     _chdir("../");
 
 finish:
-    g_ReplayScanActive = 0;
-    g_ReplayScanFinished = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
 }
 
 } // namespace th095

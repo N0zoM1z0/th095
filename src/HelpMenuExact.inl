@@ -1,3 +1,4 @@
+#include "Main.hpp"
 #include "HelpMenu.hpp"
 #include "FileSystem.hpp"
 #include "SoundPlayer.hpp"
@@ -56,8 +57,8 @@ void __fastcall LoadHelpAnm(void *unused)
     helpMenu->helpAnmData = FileSystem::OpenFile(
         helpMenu->helpAnmPath, &helpMenu->helpAnmSize, FALSE);
     helpMenu->state = 3;
-    g_HelpLoadActive = 0;
-    g_HelpLoadComplete = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
 }
 
 i32 HelpMenuView::UpdateHelpMenu()

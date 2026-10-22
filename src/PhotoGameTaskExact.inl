@@ -286,8 +286,6 @@ extern double g_PhotoGameClock;
 extern double g_PhotoGameClock2;
 extern u32 g_PhotoScreenFadeColor;
 extern i32 g_PhotoLoadWaitFlag;
-extern i32 g_PhotoLoadReady;
-extern i32 g_PhotoLoadBusy;
 
 PhotoGameTaskView::PhotoGameTaskView()
 {
@@ -563,15 +561,15 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
     g_PhotoGameSupervisor.CompleteLoading();
     task->flags = task->flags & ~4;
     g_ControllerRuntimeFlags &= ~0x200;
-    g_PhotoLoadBusy = 0;
-    g_PhotoLoadReady = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
     return;
 
 failure:
     task->flags = task->flags | 8;
     g_PhotoGameSupervisor.FailLoading();
-    g_PhotoLoadBusy = 0;
-    g_PhotoLoadReady = 1;
+    g_Supervisor.replayScanWorker.active = 0;
+    g_Supervisor.replayScanWorker.exitSignal = 1;
 }
 
 i32 __fastcall PhotoGameTaskView::OnUpdate(PhotoGameTaskView *task)
