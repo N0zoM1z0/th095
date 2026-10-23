@@ -1,186 +1,137 @@
 # Current reconstruction handoff
 
-Accepted source: **94eb5902de1fd53c149a41a545cdc2cc984d55eb (SEM-353)**, 2026-10-23,
-branch semantic/owner-cleanup-20260926. The source batch is committed; no
-reconstruction edits remain pending. The SEM-354 directory contains only a
-retained comparison baseline and preflight tooling/results; no SEM-354 source
-change or acceptance is claimed. Semantic reconstruction and game ports
-remain active-incomplete. Start with the [documentation guide](README.md).
-Current navigation:
-[SEMANTIC_INDEX.md](SEMANTIC_INDEX.md); accepted narratives:
-[SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md); ownership:
-[SOURCE_MAP.md](SOURCE_MAP.md). Receipts apply only to recorded inputs.
+Accepted source: **33166bfbfef41349a9ce1e24917fff672a4ebed0 (SEM-354)**, 2026-10-23,
+branch semantic/owner-cleanup-20260926. Source validation is complete and the
+batch is committed. Semantic reconstruction and native 64-bit/Linux/Web game
+products remain **active-incomplete**. Start with the [documentation guide](README.md),
+then [semantic navigation](SEMANTIC_INDEX.md) and [source ownership](SOURCE_MAP.md).
+Accepted narratives belong in [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md).
 
-## Authority and accepted change
+## Authority and current change
 
 The sole target is original Japanese TH095 v1.02a, SHA-256
 bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07.
 Use scripts/ghidra.py for hash-attested access. Mapping, source presence,
-semantic acceptance, exactness, normal linkage and runtime remain separate.
-Generated [PROGRESS.md](PROGRESS.md) and the status script hold live totals;
+semantic acceptance, exactness, normal linkage and runtime are separate facts.
+[PROGRESS.md](PROGRESS.md) and the status script hold live totals;
 config/claims.csv remains header-only.
 
-AnmVertex.hpp owns the one 28-byte position/RHW/BGRA/UV declaration shared by
-the working quad, inline batch, generated geometry, enemy trails and legacy
-ECL. Three flat declarations and nine color reinterpret casts are retired.
-DrawInner's default/round/preserve flags share one enum in both products.
-The global working-quad identity and two method parameter identities follow
-AnmVertex without moving their target addresses. Existing x87 sequences keep
-their instructions; only member paths change. See
-[ANM_VERTEX_BATCH.md](ANM_VERTEX_BATCH.md), ANM-058 and SEM-353.
+AnmDrawPath.hpp owns the five-value submission-path vocabulary. Canonical
+AnmManager::cachedDrawPath remains one byte at +0x1766: INITIAL 0,
+BUFFERED_QUADS 1, STREAMED_QUAD 2, IMMEDIATE_VERTICES 3 and INVALIDATED 0xFF.
+InvalidateDrawPath only stores its sentinel. Twelve raw target accesses in eight
+functions agree with attested Ghidra; pinned normal layout data proves the byte
+offset and unchanged manager extent. See [ANM_DRAW_PATH.md](ANM_DRAW_PATH.md),
+ANM-059 and SEM-354.
 
-Add expands 0/1/2/1/2/3 with no capacity check. Flush consumes the pending span
-and advances start=end without rewinding; Clear alone rewinds both pointers.
-Texture-cache publication precedes its old-batch flush; blend-cache publication
-follows its flush. DrawInner mutates position/UV before outside rejection, so
-culling preserves the pending batch/cache/colors but not those working fields.
-No general capacity guarantee or failed-device recovery follows.
+Values 1 and 3 share FVF 0x144 while selecting deferred versus immediate
+submission. Nonempty Flush binds that format without updating the cached hint;
+Clear also leaves it alone. Bind failures still publish the selected path.
+This is not a globally coherent device-state cache or a shader handle.
 
-The prebuilt 20-byte XYZ/UV and 24-byte copy remain separate representations.
-Setup creates/uploads its receiver's buffer but binds the global manager's;
-Draw3D binds its receiver, and DrawMode7 reads U as its fourth transform input.
-The copy's +0x0C word and rendering/lifetime purpose remain unknown. See
-[ANM_QUAD_VERTICES.md](ANM_QUAD_VERTICES.md).
+Normal OnUpdate retains its extra pre-service invalidation; the exact target
+has only the successful post-service store. Existing MainExact and legacy ECL
+projections share vocabulary without accepting a second canonical layout.
+The ECL parent remains incompatible emission debt. No new selector, layout
+split, padding, inert local or assembly instruction was introduced.
 
-ScreenEffect retains sixteen shared functions and its distinct 20-byte
-RHW/diffuse wire. Configured PLAYFIELD shake and applied ANM shake remain
-separate; layer six resets both before drawing through its argument. See
-[SCREEN_EFFECT_QUAD.md](SCREEN_EFFECT_QUAD.md) and
-[SCREEN_EFFECT_SHAKE.md](SCREEN_EFFECT_SHAKE.md).
-
-Gameplay/background projection, active-element projection and fixed PLAYFIELD
-distance origin remain distinct. WaveY is positionOffset.z, element +0xE4 is
-unknown0e4 and configuration's primary construction policy remains required.
-See [ANM_VIEWPORT.md](ANM_VIEWPORT.md),
-[BACKGROUND_VIEWPORT.md](BACKGROUND_VIEWPORT.md),
-[GAMEPLAY_VIEWPORT.md](GAMEPLAY_VIEWPORT.md) and
-[SUPERVISOR_DECLARATION.md](SUPERVISOR_DECLARATION.md).
+Prior geometry/queue ownership remains as recorded in
+[ANM_VERTEX_BATCH.md](ANM_VERTEX_BATCH.md), [ANM_QUAD_VERTICES.md](ANM_QUAD_VERTICES.md)
+and [ANM_VIEWPORT.md](ANM_VIEWPORT.md). ScreenEffect's distinct 20-byte wire,
+configured versus applied shake and viewport ownership remain separate; see
+[SCREEN_EFFECT_QUAD.md](SCREEN_EFFECT_QUAD.md), [SCREEN_EFFECT_SHAKE.md](SCREEN_EFFECT_SHAKE.md),
+[BACKGROUND_VIEWPORT.md](BACKGROUND_VIEWPORT.md) and [GAMEPLAY_VIEWPORT.md](GAMEPLAY_VIEWPORT.md).
 
 ## Validation at the source checkpoint
 
-- All 81 focused methods across geometry, manager, Main and ECL pass strict
-  comparison. The cold aggregate passes all 698 configured units across 88
-  sources, followed by all 698 fixed-object, zero-refresh comparisons. A full
-  base-0a99c5c audit reviews 237 public-reference identities, two function
-  identities and 765 same-family private labels. Every instruction byte,
-  relocation position/kind/addend and physical target stays fixed; profiles,
-  extents, partitions and authored credit remain unchanged. Two function
-  signatures adopt the canonical parameter name in functions.csv.
-
+- Before-edit exact baseline: 82 units across five sources. After-edit focused
+  comparison: 33 manager/draw/overlay units. The cold aggregate and then
+  fixed-object zero-refresh comparison each pass all 698 units across 88 sources.
+  The full manifest audit reviews 744 same-family private-label updates,
+  zero public-reference/function identity changes and no other recipe, profile,
+  extent, partition or credit change. Closed selector/declaration baselines stay
+  unchanged. Manifest SHA-256:
+  64c08c3af60512c68c671afdbceda8ff400c49200c48ac9f521112521070fbf7.
 - Independent normal cold compilation/linkage covers all 88 real objects with
   zero unresolved symbols. Build-local PE32 GUI: 778,752 bytes, SHA-256
-  59f4827c59ea6774e40c70b84fefd0d1abd79747cf5a177523b69fc0fc161134.
-  All 32 actual producer/draw/manager methods independently pass strict target
-  comparison with separately reviewed normal compiler/RNG/lifecycle spellings.
-  Main/ECL's separately selected normal bodies are preserved graphs, not newly
-  accepted wholesale as target-identical by the exact profile.
-- All 929 prior normal named roots, 81 private entries and 1,798 recursive
-  code/data/EH graphs remain identical under three declared identity mappings.
-  Two root parameter names, 962 private-reference spellings and 238 public
-  reference identities change. No added root or changed-body exception exists.
-- Six /OPT:NOREF Win32 clients link all 88 objects and pass. The new client
-  passes 122 cases: eight queue/flush epochs, four last-fitting spans, 96
-  color/round/UV combinations, ten cache/API transitions and four outside quads.
-  Byte-copy diagnostics include IEEE payloads without real GPU execution;
-  round tests explicitly select nearest/even. Old lifetime, 96 viewport/five
-  stage handoffs, 64 projection, 171 shake, 128 overlay and 24 prebuilt-quad
-  cases remain passing.
-- Public CI passes 121 workflow tests and thirteen native programs. All
-  336 source/tool/test inputs and sixteen non-recipe configs remain frozen.
-  Manifest SHA-256:
-  f43523ee24f34bdf5c2beb6229d49a72d0a7d1a92242e2700d590f96da718a79.
-  Tracking, progress and local links pass. Closed selector debt is now
-  255 keys / 674 directives; declaration debt is 185 keys / 190 definitions.
+  5543ab91c8b0f77dc60fabae5fe43c50a431347888893489c3bd979db19bc6de.
+  All 33 actual manager/draw/overlay methods independently match the target,
+  reviewing inherited normal RNG/lifecycle names separately. All 929 prior
+  named roots, 81 private entries and 1,798 recursive code/data/EH graphs remain
+  equal; 933 private-reference spellings change with zero public identity,
+  added-root or changed-body exception. Main/ECL normal bodies remain preserved
+  graphs, not newly accepted wholesale as target-identical by exact replay.
+- Six /OPT:NOREF Win32 clients link all 88 objects and pass. Batch coverage is
+  now 202 cases, including 80 new invalidation/flush/submission cases over every
+  incoming byte state, pending/empty queues and device success/failure. Prebuilt
+  quad coverage is 30 cases, including all five incoming Draw3D states. Prior
+  lifetime, 96 viewport/five stage handoffs, 64 projection, 171 shake and 128
+  overlay cases remain passing. Device calls use typed SDK fixtures, not a GPU.
+- Public CI passes 123 workflow tests and the existing native component
+  programs. All 337 source/tool/test inputs and 16 non-recipe configs stay frozen
+  through acceptance. Target/tracking, generated progress and local links pass.
 
-Commands, controls, source hashes, attested target observations, comparisons,
-graph/recipe audits and terminal receipts: .analysis/sem353/. No driver,
-general overflow handling, all FPU modes, full game, synchronization or native
-parent/game ABI is accepted. Source checkpoint validation is complete.
-The initial private auditor treated a missing optional addend as zero;
-corrected checking preserves each raw baseline addend and physical target
-(including the legitimate 0x60 field bias).
-Completed cold/fixed gates were retained by hash; finish-validation.py completed
-the audit/CI. acceptance-terminal.json is the terminal receipt; the earlier
-final-driver.log records the corrected private-audit assertion.
+Terminal authority: .analysis/sem354/acceptance-terminal.json,
+normal-terminal.json and runtime-resumption.json. Commands, hashes, target
+inventory, normal layout data and audit reports remain in that directory.
+First-attempt logs are diagnostic: the expanded direct-draw test's old total
+assertion was corrected, while the completed cold normal build/four clients
+were retained by hash; only the remaining clients reran. The layout receipt is
+decoded from COFF data, separately from the function-only comparator.
+
+No real driver, failed-device recovery, general overflow guarantee, all FPU
+modes, full game, joins or native game ABI is accepted by this batch.
 
 ## Next bounded lane and retained limits
 
-Close **ANM cached vertex-input/draw-path selection and invalidation** around
-the manager's currentVertexShader byte at +0x1766. Inventory every canonical
-or projected writer/consumer, including constructor 0, buffered 1, direct XYZ/UV
-2, immediate RHW/diffuse/UV 3 and invalidation 0xFF, before accepting the complete
-domain or choosing a clearer role name. Values 1 and 3 bind the same FVF while
-coordinating different submission paths; this byte is not itself the device's
-FVF value. Preserve texture/blend/stream ordering and keep this namespace
-separate from DrawInner flags. No new selector, selected layout, padding,
-inert local or assembly instruction is authorized.
+Inventory and close the **ANM blend-mode domain and cache invalidation** around
+the manager's currentBlendMode byte at +0x1764. Include VM/script producers,
+2D and 3D consumers, value 2, invalidation value 3 and every inherited spelling
+before accepting names or the complete domain. Keep VM selectors, cached
+states and device D3DBLEND constants distinct. Preserve publication/flush
+ordering and capture focused exact baselines before shared edits. The retained
+full normal corpus supports independent code/data/EH comparisons.
 
-Capture focused exact baselines before shared edits; the retained full normal
-corpus supports before/after code/data/EH comparison. Shared declarations still
-require the cold aggregate and independent normal/runtime gates.
-
-The 24-byte copy's purpose, opaque 0x004C4EAC gate, raw ScreenEffect parameters,
-inherited Chain priorities, other ANM lifecycle views, ASCII facade and 0x364
-Supervisor compatibility family remain debt. Legacy ECL retains its old parent
-and global ::ZunColor ABI even though the wire is shared. RunStageScript normal
-extent remains 5,230 versus 5,229, not one differing byte. Standalone DIFF's
-inherited RuntimePressedButtons C3861 remains unretested. See
-[WORKER_LIFECYCLE.md](WORKER_LIFECYCLE.md) and
-[FRONT_END_PREVIEW_PROTOCOL.md](FRONT_END_PREVIEW_PROTOCOL.md) for unresolved
-joins/queue ownership. Native 64-bit/Linux/Web game products remain unfinished.
+The distinct 24-byte quad copy's purpose, opaque 0x004C4EAC gate, raw
+ScreenEffect parameters, inherited Chain priorities, other ANM lifecycle views,
+ASCII facade and 0x364 Supervisor compatibility family remain debt. Legacy ECL
+retains its old parent and global ::ZunColor ABI. RunStageScript normal extent
+remains 5,230 versus 5,229, not one differing byte. Standalone DIFF's inherited
+RuntimePressedButtons C3861 remains unretested. Worker joins/queue ownership
+remain open; see [WORKER_LIFECYCLE.md](WORKER_LIFECYCLE.md) and
+[FRONT_END_PREVIEW_PROTOCOL.md](FRONT_END_PREVIEW_PROTOCOL.md).
 
 ## Local artifacts and resources
 
-All build/headless/test jobs ended before cleanup. The SEM-353 cleanup removed
-**1,121 reproducible files**, **46,641,928 logical /
-48,668,672 allocated bytes**: binaries, PDBs, maps, old
-baselines, probe trees/products and three private unit manifests. Compact
-reports, commands, hashes and two base-0a99c5c control patches remain below
-.analysis/sem353/. Receipt: .analysis/sem353/cleanup-receipt.json. Control
-patches reproduce old experiments; do not apply them to the accepted tree.
+All build/headless/test jobs ended before cleanup. This batch removes
+**552 reproducible files**, **35,930,447 logical /
+36,667,392 allocated bytes**: products, PDBs, caches, old
+baselines and the derived private normal-unit manifest. Reports, commands,
+hashes and the small layout probe remain below .analysis/sem354/. Receipt:
+.analysis/sem354/cleanup-receipt.json.
 
-build/ retains only **88 verified normal baseline objects**, **2,611,992
-bytes**, below build/semantic/sem354/baseline/whole-obj/. Provenance:
-.analysis/sem353/next-baseline.json; report:
-.analysis/sem354/baseline-whole-report.json. Rebuild before --link-only; the
-lifecycle checker always builds afresh.
+build/ retains only **88 verified normal baseline objects**, **2,613,639
+bytes**, below build/semantic/sem355/baseline/whole-obj/. Provenance:
+.analysis/sem354/next-baseline.json; report:
+.analysis/sem355/baseline-whole-report.json. These are comparison inputs.
+Rebuild before --link-only; the lifecycle checker always builds afresh.
 
 Keep the verified target, installed tools (approximately 1.8 GiB), private
-Ghidra project and compact evidence. Historical SEM-327..348 material remains
-in the verified 788-member archive below .analysis/archives/. Restore before
-using an archived historical path. Its member/hash index is
-.analysis/archives/handoff-20261023-index.json:
+Ghidra project and current evidence. Historical SEM-327..348 material is in the
+verified 788-member archive; SEM-349..352 material is in the verified 530-member
+archive. .analysis/archives/README.md and the indexed receipts identify original
+paths, sizes and SHA-256 values. Restore before following archived local paths:
 
 ```bash
 tar --keep-old-files -xzf .analysis/archives/handoff-20261023-historical-evidence.tar.gz
-```
-
-The final documentation/artifact handoff also archives **530 historical
-SEM-349..352 files**, 14,302,315 logical bytes, into a 1,718,359-byte archive.
-Every member was checked against its original SHA-256 before removing the
-loose copy. The archive payload saves 14,155,776 allocated bytes; the indexed
-receipt is .analysis/handoff-20261023-final/archive-receipt.json. Latest
-SEM-353 acceptance evidence and all 88 baseline objects remain directly
-accessible. Restore older evidence from the repository root with:
-
-```bash
 tar --keep-old-files -xzf .analysis/archives/handoff-20261023-sem349-352.tar.gz
 ```
 
-Heavy jobs remain serial under the workspace lock in
-.analysis/sem353/run-limited.sh and the [resource limits](RE_WORKFLOW.md#host-resource-limits):
-half a CPU, memory.high 768 MiB / memory.max 1 GiB, CPU 1/nice 19; Ghidra heap
-512 MiB. Per-scope peak: **250.12 MiB**, zero OOM events. Do not overlap
+Heavy jobs stay serial under .analysis/sem354/run-limited.sh and the
+[host resource limits](RE_WORKFLOW.md#host-resource-limits): half a CPU,
+memory.high 768 MiB / memory.max 1 GiB, CPU 1/nice 19; Ghidra heap 512 MiB.
+Per-scope peak: **250.74 MiB**, zero OOM events. Do not overlap
 index reconciliation with builds/headless jobs or change other workspaces' jobs.
-
-The final documentation-only handoff passes public CI, target/tracking,
-generated progress and 153 local links across 42 Markdown files. Its checks run
-under .analysis/handoff-20261023-final/run-limited.sh with the same limits;
-peak memory is **102.66 MiB**, zero OOM events. No new exact, normal-product or
-gameplay validation is claimed. All 129 generated CI binaries/cache files
-(3,442,238 logical bytes) are removed afterward; hashes of the 88 retained
-baseline objects still match. Commands, check logs and cleanup/resource
-receipts remain in .analysis/handoff-20261023-final/.
 
 Protected user-owned untracked paths must not be read, modified, staged,
 deleted or used to infer reconstruction state:
@@ -189,11 +140,11 @@ deleted or used to infer reconstruction state:
 - droid.resume.txt
 - scripts/runtime-diff.py
 
-Default CI discovers untracked Python. While these remain, use
-.analysis/sem353/run-ci.py through run-limited.sh; only their protected contents
-are excluded. Stash 03ec1ae7d1e3880eacee081578cfd0e0e129a8b6,
-.analysis/sem341/pending.patch and pending-sem348 patches below
-.analysis/handoff-20261023/ are superseded provenance. Do not apply them.
+Default CI discovers untracked Python. Use .analysis/sem354/run-ci.py through
+run-limited.sh while these remain; only their protected contents are excluded.
+Stash 03ec1ae7d1e3880eacee081578cfd0e0e129a8b6, sem341/pending.patch,
+pending-sem348 patches and old control-source patches are superseded provenance.
+Do not apply them to the accepted tree.
 
 ## Resume preflight
 
