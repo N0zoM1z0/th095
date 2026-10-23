@@ -19087,3 +19087,78 @@ restoring variable resolution to the literal opcode. Receipts and commands:
 .analysis/sem355/. See [ANM_BLEND_MODE.md](ANM_BLEND_MODE.md). No GPU output,
 failed-device recovery, global cache coherence, retail mode-2/3 intent, thread
 safety or native game ABI is accepted. Semantic/platform work remains active.
+
+
+### SEM-356 — canonical Background-to-ANM state publication and unproven camera byte
+
+2026-10-24. BackgroundAnmManagerView and five reinterpret casts are retired.
+Background now publishes color configuration and its legacy byte through the
+real AnmManager. Shared SetMixColor / SetMixColorDefault methods preserve the
+old receiver contract and ordered useMixColor-before-color stores. The default
+publishes 0 / 0x80808080; custom configuration publishes 1 / argument. The
+canonical prefix remains ZunColor +0 (four bytes), i32 +4 (four bytes), and the
+manager extent stays 0x38314C. Pinned normal COFF initialized data independently
+proves these facts and the +0x1768 byte/width. No alternate owner, source-layout
+selector, padding, inert local or new assembly is added.
+
+The planned camera-cache audit establishes storage/publication rather than a
+camera protocol. Seven exact-displacement literals comprise four ANM byte
+writes, two unrelated Background photo-position float operations and one
+Background address calculation. Wider direct operands overlapping the byte
+likewise reveal only those ANM writes and the two Background reads. The ledger
+scan is a routing aid over provisional extents, not proof excluding all indirect
+aliases. All 1,849 listed Ghidra instructions agree with the original PE.
+RenderObjects @ 0x00402F60 stores 1 @ 0x00402F9D after configuring the Background
+viewport. ResetRenderState, OnUpdate and the constructor store 0xFF at
+0x0042178A / 0x00423527 / 0x00441FC1. No independent consumer or original camera
+meaning is established. The legacy cameraMode spelling remains explicit debt,
+with no invented enum or dispatch guard. Its width/offset assertion now binds
+the canonical owner rather than the deleted projection.
+
+Storage/semantic ownership of the color pair belongs to ANM; Background owns
+the draw-time publications. Header inlines and the existing Background source
+phase retain emission ownership. Both products use the same canonical receiver.
+DrawHighPrio @ 0x00402750 and DrawLowPrio @ 0x00402990 keep their publication,
+viewport, fog and depth ordering; DrawInner / SetRenderStateForVm3D / DrawMode6
+remain independent color consumers. No implicit flush or device action is added.
+Other Background facades, ECL declarations and existing opcode-emission
+scaffolding remain separate debt. Known real camera projection still belongs
+to Supervisor viewport elements, independently of the unconsumed ANM byte.
+
+Before/after focused exact replay each passes all twenty Background.cpp units.
+The cold aggregate and then fixed-object zero-refresh comparison each pass
+all 698 units across 88 sources. The recipe audit permits
+323 same-family private-label changes, zero public-reference/function identity
+changes and no other profile, partition, extent, credit or recipe change.
+Closed selector/declaration baselines stay fixed. Manifest SHA-256:
+ccf754aa958b061d0b293c8b0876c0775401cae5ff10df133ec752982598aa17.
+
+Independent normal cold compilation/linkage covers every real object with zero
+unresolved symbols. Build-local PE32 GUI: 778,752 bytes, SHA-256
+b131774af85fa62c0d3be8cbdd27b0cd56193f7bfcf5ba8610d28178d84dfde7.
+All 36 actual manager/draw/overlay and changed Background methods independently
+pass strict target comparison, with inherited normal aliases reviewed separately.
+Normal comparison is direct to the verified target and preserved normal corpus;
+the already-cleaned unrelated exact objects were optional side evidence and
+were not rebuilt merely for that harness check. All 929 prior named roots,
+81 private entries and 1,798 recursive code/data/EH graphs remain identical;
+933 private-reference spellings change with zero public identity, added root or
+changed-body exception. Separately selected normal bodies are preserved graphs,
+not wholesale target-byte acceptance inferred from a different exact body.
+
+Eight /OPT:NOREF Win32 clients link all 88 objects and pass. The new client
+passes 52 cases: twelve receiver/queue publication round trips with a distinct
+global manager, 24 actual DrawInner consumers over custom/default/secondary
+colors, and sixteen empty-stage RenderObjects traces. The last checks old-byte
+visibility during real viewport/flush APIs, unconditional final publication of 1,
+neighbor/color preservation and ignored device failure. Its aligned 16-byte
+terminated instance record is an opaque loaded-data fixture, not a fake parent.
+The prior seven clients retain their coverage. The new owner guard rejects
+reintroduced projections/casts and changed publication/layout rules; it does not
+declare a camera namespace closed. Public CI passes 127 workflow tests and the
+existing native component programs. All 340 source/tool/test inputs and
+16 non-recipe configs stay frozen through acceptance. Commands, target inventory,
+layout words and terminal receipts: .analysis/sem356/. See
+[BACKGROUND_ANM_STATE.md](BACKGROUND_ANM_STATE.md). No camera meaning, full stage
+content, GPU output, synchronization or native game ABI is accepted. Semantic
+reconstruction and platform work remain active-incomplete.

@@ -4566,6 +4566,36 @@ def check_small_closed_domains() -> None:
     )
 
 
+def check_background_anm_owner(source_text: dict[str, str] | None = None) -> None:
+    overrides = source_text or {}
+    texts = {name: source_without_comments(overrides.get(
+        name, (SRC / name).read_text(encoding="utf-8")))
+        for name in ("AnmManager.hpp", "Background.cpp")}
+    owner = texts["AnmManager.hpp"]
+    expected = {
+        "SetMixColorDefault()": "this->useMixColor = 0; this->color.color = 0x80808080;",
+        "SetMixColor(u32 color)": "this->useMixColor = 1; this->color.color = color;",
+    }
+    for signature, statements in expected.items():
+        start = owner.find("void " + signature)
+        if start < 0:
+            fail(f"canonical ANM owner lost {signature}")
+        body = braced_body_after(owner, start, signature)
+        if re.sub(r"\s+", " ", body).strip() != statements:
+            fail(f"canonical ANM {signature} must preserve its ordered flag/color publication")
+    background = texts["Background.cpp"]
+    if "BackgroundAnmManagerView" in background:
+        fail("Background restored a duplicate ANM storage projection")
+    for method in ("SetMixColor", "SetMixColorDefault"):
+        if len(re.findall(r"\bg_AnmManager\s*->\s*" + method + r"\(", background)) != 2:
+            fail(f"Background must publish {method} through the canonical ANM receiver")
+    if re.search(r"BackgroundSetCameraModePhase\(\s*AnmManager\s*\*anmManager\s*,\s*i32 mode\)", background) is None:
+        fail("Background's legacy-byte publication must use the canonical ANM owner")
+    if ("offsetof(AnmManager, cameraMode) == 0x1768" not in owner or
+            "sizeof(((AnmManager *)0)->cameraMode) == 1" not in owner):
+        fail("legacy +0x1768 storage must retain its canonical byte layout")
+
+
 def check_anm_blend_mode(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
     names = ("AnmBlendMode.hpp", "AnmManager.hpp", "AnmManager.cpp",
@@ -4834,6 +4864,7 @@ def main() -> int:
     check_anm_batch_vertices()
     check_anm_draw_path()
     check_anm_blend_mode()
+    check_background_anm_owner()
     check_ecl_type_boundaries()
     check_ecl_extended_type_boundaries()
     check_photo_bullet_owner()

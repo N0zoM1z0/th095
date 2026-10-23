@@ -281,31 +281,6 @@ typedef PhotoEnemyManagerView BackgroundRuntimeView;
     (spawner)->CreateVmAtWorld((script), (position))
 #endif
 
-struct BackgroundAnmManagerView
-{
-    ZunColor color;
-    i32 useMixColor;
-    u8 unknown008[0x1760];
-    u8 cameraMode;
-
-    void SetMixColorDefault()
-    {
-        this->useMixColor = 0;
-        this->color.color = 0x80808080;
-    }
-
-    void SetMixColor(u32 color)
-    {
-        this->useMixColor = 1;
-        this->color.color = color;
-    }
-
-    void SetCameraMode(u8 mode)
-    {
-        this->cameraMode = mode;
-    }
-};
-
 typedef char BackgroundSpellFrameCounterAt175C[
     (offsetof(Background, spellBackgroundFrameCounter) == 0x175c) ? 1 : -1];
 typedef char BackgroundStageScriptAtC[
@@ -340,8 +315,6 @@ typedef char BackgroundStageObjectInstructionPositionAt8[
     (offsetof(BackgroundStageObjectInstruction, position) == 8) ? 1 : -1];
 typedef char BackgroundStageObjectInstanceSizeIs10[
     (sizeof(BackgroundStageObjectInstance) == 0x10) ? 1 : -1];
-typedef char BackgroundAnmCameraModeAt1768[
-    (offsetof(BackgroundAnmManagerView, cameraMode) == 0x1768) ? 1 : -1];
 
 extern BackgroundStageStateView *g_BackgroundStageState;
 extern BackgroundRuntimeView *g_BackgroundRuntime;
@@ -609,7 +582,7 @@ i32 Background::DrawHighPrio()
 
     if (this->photoColor.a != 0)
     {
-        reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetMixColor(
+        g_AnmManager->SetMixColor(
             this->photoColor.color);
     }
 
@@ -647,12 +620,12 @@ i32 Background::DrawHighPrio()
     }
 
     g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
-    reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)
+    g_AnmManager
         ->SetMixColorDefault();
     g_Supervisor.DisableFog();
     if (this->photoAreaActive != 0)
     {
-        reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetMixColor(
+        g_AnmManager->SetMixColor(
             0xff404040);
     }
     g_Supervisor.SetRenderState(
@@ -679,7 +652,7 @@ i32 Background::DrawLowPrio()
 
     if (this->photoAreaActive != 0)
     {
-        reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)
+        g_AnmManager
             ->SetMixColorDefault();
 
         locals.left = (i32)(this
@@ -739,7 +712,7 @@ i32 Background::DrawLowPrio()
 
 // FUNCTION: TH095 0x00402F60.
 static __forceinline void BackgroundSetCameraModePhase(
-    BackgroundAnmManagerView *anmManager, i32 mode)
+    AnmManager *anmManager, i32 mode)
 {
     anmManager->cameraMode = (u8)mode;
 }
@@ -782,7 +755,7 @@ i32 Background::RenderObjects(i32 mode)
         this->stageObjectInstances;
     g_Supervisor.ConfigureBackgroundViewport(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
     BackgroundSetCameraModePhase(
-        reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager), 1);
+        g_AnmManager, 1);
     {
         Float3 ancestralProjectSrc;
         while (instance->objectId >= 0)

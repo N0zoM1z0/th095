@@ -723,6 +723,26 @@ class SemanticProtocolGuardTests(unittest.TestCase):
     def test_anm_blend_guard_accepts_separate_selector_and_cache_domains(self) -> None:
         GUARD.check_anm_blend_mode()
 
+    def test_background_anm_guard_accepts_canonical_state_writers(self) -> None:
+        GUARD.check_background_anm_owner()
+
+    def test_background_anm_guard_rejects_projection_and_publication_regressions(self) -> None:
+        mutations = [
+            ("AnmManager.hpp", "this->useMixColor = 0;", "this->useMixColor = 1;"),
+            ("AnmManager.hpp", "this->color.color = 0x80808080;", "this->color.color = 0;"),
+            ("AnmManager.hpp", "this->useMixColor = 1;", "this->useMixColor = 0;"),
+            ("AnmManager.hpp", "offsetof(AnmManager, cameraMode) == 0x1768", "offsetof(AnmManager, cameraMode) == 0x1767"),
+            ("Background.cpp", "AnmManager *anmManager, i32 mode", "BackgroundAnmManagerView *anmManager, i32 mode"),
+            ("Background.cpp", "g_AnmManager->SetMixColor(", "reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetMixColor("),
+        ]
+        for name, before, after in mutations:
+            source = (ROOT / "src" / name).read_text(encoding="utf-8")
+            changed = source.replace(before, after, 1)
+            self.assertNotEqual(source, changed)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_background_anm_owner({name: changed})
+
     def test_anm_blend_guard_rejects_domain_width_and_dispatch_regressions(self) -> None:
         mutations = [
             ("AnmBlendMode.hpp", "ANM_BLEND_UNHANDLED = 3", "ANM_BLEND_UNHANDLED = 4"),

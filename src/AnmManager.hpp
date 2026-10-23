@@ -587,7 +587,7 @@ struct AnmManager
     u8 currentColorOp;                       // +0x001765
     u8 cachedDrawPath;                       // +0x001766: AnmDrawPath hint.
     u8 disableZWrite;                        // +0x001767
-    u8 cameraMode;                           // +0x001768
+    u8 cameraMode;                           // +0x001768: legacy name; no consumer established.
     u8 unknown1769[3];
     void *currentSprite;                     // +0x00176c
     IDirect3DVertexBuffer8 *quadVertexBuffer;// +0x001770
@@ -717,6 +717,17 @@ struct AnmManager
     static void __fastcall DrawLayer7(void *arg);
     static void __fastcall DrawLayer8(void *arg);
 
+    void SetMixColorDefault()
+    {
+        this->useMixColor = 0;
+        this->color.color = 0x80808080;
+    }
+    void SetMixColor(u32 color)
+    {
+        this->useMixColor = 1;
+        this->color.color = color;
+    }
+
     void InvalidateBlendMode() { this->cachedBlendMode = ANM_BLEND_CACHE_INVALIDATED; }
     void ClearColorOp() { this->currentColorOp = 0xff; }
     void InvalidateDrawPath() { this->cachedDrawPath = ANM_DRAW_PATH_INVALIDATED; }
@@ -747,6 +758,9 @@ typedef char AnmManagerSurfacesAt11DC[(offsetof(AnmManager, surfaces) == 0x11dc)
 typedef char AnmManagerBlendCacheAt1764[
     (offsetof(AnmManager, cachedBlendMode) == 0x1764 &&
      sizeof(((AnmManager *)0)->cachedBlendMode) == 1) ? 1 : -1];
+typedef char AnmManagerLegacyByteAt1768[
+    (offsetof(AnmManager, cameraMode) == 0x1768 &&
+     sizeof(((AnmManager *)0)->cameraMode) == 1) ? 1 : -1];
 typedef char AnmManagerDrawPathAt1766[
     (offsetof(AnmManager, cachedDrawPath) == 0x1766 &&
      sizeof(((AnmManager *)0)->cachedDrawPath) == 1) ? 1 : -1];
