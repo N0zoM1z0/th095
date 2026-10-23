@@ -17,6 +17,39 @@ query and GPT-web `ghidra_call` operation repeats the same attestation. If
 either file or Ghidra attestation fails, stop. Do not substitute a localized,
 earlier, Steam, or patched executable.
 
+## Host resource limits
+
+Run heavy work serially. Pin it to CPU 1 at nice 19 and use a cgroup quota of
+50% of one CPU, memory.high 768 MiB and memory.max 1 GiB. These limits apply to
+the build/headless process tree; they are not a limit on the editor or other
+workspaces. Do not overlap VC7.1, Ghidra, or index reconciliation jobs.
+
+On this Linux/systemd-user host the bounded build invocation is:
+
+```bash
+systemd-run --user --scope --quiet \
+  -p CPUQuota=50% -p MemoryHigh=768M -p MemoryMax=1G -- \
+  taskset -c 1 nice -n 19 python3 -B scripts/replay-exact-units.py
+```
+
+Ghidra's shipped analyzeHeadless supports dedicated heap/JVM environment
+settings. Keep its heap at 512 MiB and its JVM processor count at one:
+
+```bash
+systemd-run --user --scope --quiet \
+  -p CPUQuota=50% -p MemoryHigh=768M -p MemoryMax=1G -- \
+  env GHIDRA_HEADLESS_MAXMEM=512M \
+  GHIDRA_HEADLESS_JAVA_OPTIONS='-Xms64m -Xmx512m -XX:ActiveProcessorCount=1 -XX:ParallelGCThreads=1 -XX:CICompilerCount=2' \
+  taskset -c 1 nice -n 19 python3 -B scripts/ghidra.py check
+```
+
+Inspect live jobs before starting another. Verify the applied cpu.max and
+memory.high/memory.max controls, and preserve peak-memory, CPU-usage and OOM
+counters with private receipts where available. Nice/affinity alone do not cap
+CPU or resident memory. If the resource controller is unavailable, investigate
+before resuming heavy work; do not silently fall back to an unlimited run.
+Do not stop or change jobs belonging to another workspace.
+
 ## Bounded reconstruction loop
 
 For semantic work, apply the acceptance rules in

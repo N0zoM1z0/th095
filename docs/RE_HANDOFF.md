@@ -141,7 +141,10 @@ python3 scripts/check-semantic-protocols.py
 python3 scripts/analysis/report-semantic-debt.py --path src/Background.cpp --details
 ```
 
-Use one writable reconstruction session and serial VC7.1 builds on CPU 1/nice 10.
+Use one writable reconstruction session and serial heavy jobs. The current
+resource policy in RE_WORKFLOW.md caps each process tree at half a CPU,
+768 MiB memory.high / 1 GiB memory.max, CPU 1/nice 19; Ghidra heap is 512 MiB.
+Do not overlap VC7.1, Ghidra or index reconciliation.
 Shared changes require affected exact replay, cold aggregate, independent normal
 build and relevant EH/native/SDK/runtime oracles plus public CI. Preserve compact
 receipts before cleaning generated outputs.
