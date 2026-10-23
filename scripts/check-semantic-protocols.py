@@ -2780,6 +2780,37 @@ def check_scene_queue_word_access(overrides: dict[str, str] | None = None) -> No
                 fail(f"{name} reads queue payload without its acquire fence")
 
 
+def check_supervisor_input_setup_boundary(overrides: dict[str, str] | None = None) -> None:
+    changed = {} if overrides is None else overrides
+    for name in ("Main.cpp", "MainExact.inl"):
+        source = source_without_comments(changed.get(name, (SRC / name).read_text(encoding="utf-8")))
+        if source.count('#include "SupervisorSetupDInput.inl"') != 1 or "i32 Supervisor::SetupDInput()" in source:
+            fail(f"{name} lost the shared DirectInput setup body")
+    body = source_without_comments(changed.get("SupervisorSetupDInput.inl",
+        (SRC / "SupervisorSetupDInput.inl").read_text(encoding="utf-8")))
+    if any(name in body for name in PROFILE_NAMES):
+        fail("DirectInput setup restored profile-selected behavior")
+    compact = re.sub(r"\s+", "", body)
+    getter = "HINSTANCEinstance=reinterpret_cast<HINSTANCE>(GetWindowLongPtrA(this->gameWindow,GWLP_HINSTANCE));"
+    if getter not in compact or re.search(r"\bGetWindowLong(?:A|W)?\s*\(", body):
+        fail("DirectInput setup lost its native-width window-associated module handle")
+    disabled = "if(this->config.options.disableDirectInput!=0)"
+    factory = "DirectInput8Create(instance,DIRECTINPUT_VERSION,IID_IDirectInput8A,"
+    if disabled not in compact or factory not in compact or not compact.index(getter) < compact.index(disabled) < compact.index(factory):
+        fail("DirectInput setup changed retrieval/disable/factory ordering or module source")
+    if "this->directInput=NULL;" not in compact or "this->keyboard=NULL;" not in compact:
+        fail("DirectInput setup lost target failure-state clearing")
+    if "GetWindowLongPtrA" in compact[compact.index(factory):]:
+        fail("DirectInput setup re-reads the module after creation")
+    manifest = changed.get("match-units.toml")
+    if manifest is None:
+        manifest = (ROOT / "config/match-units.toml").read_text(encoding="utf-8")
+    unit = tomllib.loads(manifest)["units"]["main-setup-dinput"]
+    getters = [r for r in unit["relocations"] if r["offset"] == 0x14]
+    if len(getters) != 1 or getters[0]["symbol"] != "__imp__GetWindowLongA@8" or getters[0]["type"] != "DIR32" or getters[0]["target"] != 0x4951DC:
+        fail("DirectInput setup changed the proved x86 API import binding")
+
+
 def check_supervisor_fps_boundary(overrides: dict[str, str] | None = None) -> None:
     """Preserve the closed FPS storage boundary and shared producer/sampler."""
     changed = {} if overrides is None else overrides
@@ -4299,6 +4330,7 @@ def main() -> int:
     check_scene_queue_word_access()
     check_game_window_render_boundary()
     check_supervisor_fps_boundary()
+    check_supervisor_input_setup_boundary()
     check_worker_thread_start_boundary()
     check_primary_worker_signal_bindings()
     check_scene_asset_wait_protocol()

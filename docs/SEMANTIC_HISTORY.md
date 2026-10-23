@@ -18036,3 +18036,90 @@ protected files remain untouched. Standalone DIFF's inherited missing
 RuntimePressedButtons diagnostic is not retested or repaired here. Parent
 Supervisor consolidation, real clock/locking and whole-game/native closure remain
 open; semantic reconstruction remains **active-incomplete**.
+
+### SEM-342 — native-width window module and shared DirectInput setup
+
+**Question and target evidence.** Both Main bodies cast the four-byte
+GetWindowLongA result to HINSTANCE. That preserves x86 but cannot recover a
+64-bit module value. Fresh attested v1.02a instructions cover SetupDInput
+0x00423960 (689 bytes, RET 0x00423C10), window creation 0x00420B90, input caller
+0x004238E0 and enumeration callback 0x00423C20. The initializer calls the IAT at
+0x004951DC with receiver HWND and index -6 before reading the disable flag,
+then passes the result to DirectInput8Create. The window creation path supplies
+its HINSTANCE to registration/creation; this is window-associated input, not a
+substitute read of global Supervisor::instance.
+
+**Shared client source and ownership.** SupervisorSetupDInput.inl replaces the
+two identical bodies. Its explicit reinterpret_cast<HINSTANCE> consumes the
+real SDK GetWindowLongPtrA/GWLP_HINSTANCE result. The SDK maps this to the old
+GetWindowLongA/-6 call on x86 and LONG_PTR/GetWindowLongPtrA on x64. Main retains
+both original emission routes; receiver fields own input/device slots, while
+controller capabilities remain a global-Supervisor write. The module is a local
+factory input with no introduced release. The client cleanup and return policy
+are unchanged: disabled state preserves pointers; factory failure clears input;
+keyboard failures release in the observed order. Acquire/enumeration/controller
+setup HRESULTs remain ignored. All nonnegative checked HRESULTs continue.
+
+No production helper ABI, parent layout, profile selector, emission adapter,
+assembly or artificial padding is introduced. Both closed debt baselines stay
+**265/696 selectors and 191/196 selected declarations**. Callback implementation,
+actual OS/COM execution, failure out-parameter contracts and repeated-initializer
+lifetime remain separate. The bounded contract is in WINDOW_INPUT_INITIALIZATION.md.
+
+**Independent direct oracles.** Fresh Main baseline and candidate pass 48/48
+exact. Actual old/candidate objects preserve all 689 target bytes and all 28
+relocation identities/positions/types/addends. There are no public retags.
+A minimal pinned-VC7.1 getter probe emits identical 23-byte code and imports for
+the old/new spellings. Actual normal Main preserves all 55 named roots, one
+private entry and 143 code/data/EH graphs under 28 private spellings.
+
+The public compile-only SDK test includes the actual shared body, real Windows/
+DirectInput interfaces and explicit receiver/logger bindings. VC7.1 x86 and
+MinGW x86/x64 all compile it; MinGW also passes the target's _WIN32_WINNT=0x0500
+feature setting. COFF receipts verify pointer/HWND/HINSTANCE/LONG_PTR/interface
+widths 4 or 8, DIDEVCAPS 44, index -6 and LONG still 4. The native x64 import is
+GetWindowLongPtrA, and its result moves RAX to RCX intact before the factory.
+Redirecting the getter to the legacy API compiles on x86 but is rejected on
+x64 because a LONG-returning function cannot satisfy the LONG_PTR function
+pointer. This is a real-SDK type control, not a fabricated platform declaration.
+
+Public CI passes **101 workflow tests and thirteen native x86-64/UBSan programs**.
+The new initializer test executes the shared body in **429 scenarios**, using
+allocated module addresses above 32 bits and a narrowing counterexample. It
+covers null/high modules, disabled/failure paths, release/log order, positive
+HRESULTs, ignored-failure masks, staged controller presence and receiver/global
+capability ownership. Backend fixtures check callback identity but do not run
+callbacks. Neither fixtures nor compile-only SDK bindings claim native parent
+ABI, actual OS/COM behavior or real reachability of every injected combination.
+Semantic guard tests reject narrow getter, wrong index/window/module source,
+duplicate source and loss of target pointer clearing/import binding.
+
+TH08 corroborates the window-associated module/client shape; it still uses the
+old 32-bit getter. Its source revision/digest is retained privately and does not
+prove this native-width fix or TH095 layout.
+
+**Final frozen gates.** Cold fixed-recipe replay passes **698/698 comparisons
+across 88 sources**, zero refresh. Relative to daeeeb4, the only recipe changes
+are **25 private labels in one Main unit**; all public identities, positions,
+types, targets, addends, extents and profiles remain unchanged. The aggregate
+refresh pass introduces no further changes. All 313 final source/tool/test
+inputs retain their hashes. Mapping/origin/source/exact ledgers and header-only
+claims receive no new credit.
+
+Independent normal closure compiles **88/88 i386 COFF objects** and links a
+verified **778,752-byte PE32 GUI**, zero unresolved symbols, SHA-256
+`b8337e7a6c92fed167847c7e10244944d26a51869cbd221522ae329cb45c6196`.
+Actual product Main again preserves all 55 named roots, one private entry and
+143 code/data/EH graphs under 28 private spellings. EH audit passes **57 parents,
+72 actions and 81/81 provenance-exact references**. Public CI passes 101 workflow
+tests and thirteen native programs. SDK compiles/control diagnostics are
+separate from public-CI prerequisites and actual Windows execution.
+
+Serial VC7.1 builds use CPU 1/nice 10. Compact target/source/command/compiler/
+SDK/COFF/normal-product/map/object receipts remain private in .analysis/sem342/.
+Generated outputs and caches are cleared after every handle is terminal and
+receipts are saved. Target, tools, Ghidra and protected files are unchanged.
+Standalone DIFF's pre-existing RuntimePressedButtons failure is not retested or
+repaired. Native module transport is corrected for this shared client path;
+parent declarations, actual callbacks/backend and the complete 64-bit game
+remain open. Semantic reconstruction remains **active-incomplete**.

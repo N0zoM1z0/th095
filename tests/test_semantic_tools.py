@@ -968,6 +968,27 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                 with self.assertRaises(SystemExit):
                     GUARD.check_scene_queue_word_access({name: source.replace(before, after, 1)})
 
+    def test_input_setup_guard_accepts_native_width_shared_source(self) -> None:
+        GUARD.check_supervisor_input_setup_boundary()
+
+    def test_input_setup_guard_rejects_truncation_or_wrong_window_source(self) -> None:
+        body = (ROOT / "src/SupervisorSetupDInput.inl").read_text(encoding="utf-8")
+        for before, after in (
+            ("GetWindowLongPtrA(", "GetWindowLongA("),
+            ("GWLP_HINSTANCE", "GWL_STYLE"),
+            ("DirectInput8Create(instance,", "DirectInput8Create(g_Supervisor.instance,"),
+            ("GetWindowLongPtrA(this->gameWindow,", "GetWindowLongPtrA(g_Supervisor.gameWindow,"),
+            ("this->keyboard = NULL;", "this->keyboard = this->keyboard;"),
+        ):
+            self.assertIn(before, body)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_supervisor_input_setup_boundary({"SupervisorSetupDInput.inl": body.replace(before, after)})
+        main = (ROOT / "src/Main.cpp").read_text(encoding="utf-8")
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                GUARD.check_supervisor_input_setup_boundary({"Main.cpp": main.replace('#include "SupervisorSetupDInput.inl"', "i32 Supervisor::SetupDInput() {}", 1)})
+
     def test_fps_guard_accepts_independent_storage_and_shared_bodies(self) -> None:
         GUARD.check_supervisor_fps_boundary()
 

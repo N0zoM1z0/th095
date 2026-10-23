@@ -44,6 +44,7 @@ def main() -> int:
     run_probe("SceneQueuePublicationTest.cpp", "queue-publication-test", ("-pthread",))
     run_probe("GameWindowRenderStopTest.cpp", "render-stop-test", ("-pthread",))
     run_probe("SupervisorFpsTest.cpp", "fps-test")
+    run_probe("SupervisorSetupDInputTest.cpp", "input-setup-test")
     return 0
 
 

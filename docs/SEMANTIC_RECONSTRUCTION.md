@@ -207,6 +207,14 @@ unlocked sampler by itself; native fixture success supplies no real timer/OS
 lock, parent ABI or game scheduling guarantee. See [the evidence boundary and
 transitions](FPS_SAMPLING.md).
 
+A thirteenth executes the shared DirectInput initializer with named API and
+object fixtures. It verifies native module-pointer transport and target client
+failure/release/log order. Real Windows/DirectInput SDK x86/x64 compiles validate
+the API and callback types independently; the old getter is rejected by the
+x64 function-pointer width control. Neither component binds a complete native
+Supervisor or executes real window/COM enumeration. See
+[the client/platform boundary](WINDOW_INPUT_INITIALIZATION.md).
+
 ## Completion and batch records
 
 A bounded family is closed only when its representation, consumers,
