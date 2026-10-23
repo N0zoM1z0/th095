@@ -47,6 +47,28 @@ function body.
 10. Update the knowledge base and handoff, regenerate progress, validate, and
     commit the bounded result.
 
+## Handoff and artifact retention
+
+Before handoff, commit the stable bounded batch and replace RE_HANDOFF.md with
+its source commit, validation results, unresolved boundaries, next bounded lane
+and protected working-tree paths. Keep accepted findings in KNOWLEDGE_BASE.md
+and SEMANTIC_HISTORY.md rather than accumulating another session diary in the
+live handoff. Regenerate progress from the ledgers.
+
+Wait for build, test and headless jobs to finish before cleaning their outputs.
+Preserve compact commands, input/tool hashes and terminal reports below
+.analysis/ first, including any normal-product hash and exact comparison
+receipts referenced by the handoff. Objects, executables, PDBs, maps, native
+test binaries and Python caches under build/ are reproducible outputs. Also
+remove session-created scripts/__pycache__/ and tests/__pycache__/ caches.
+Record removed paths and bytes in a private cleanup receipt.
+
+Keep the verified target, installed tools, private Ghidra databases, source,
+ledgers, compact evidence and user-owned untracked files. Do not use a blanket
+`git clean -fdx`: ignored paths include the target and working tools. After
+cleanup, a fresh normal build must compile before using --link-only. Check the
+final status and document any retained patch or stash that must not be applied.
+
 ## Evidence ranking
 
 Use this order when evidence conflicts:

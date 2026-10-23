@@ -7,8 +7,10 @@ in [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md), navigation in
 
 ## Authority and current state
 
-Work continues on 2026-10-23. SEM-342 corrects the window module width in the
-shared DirectInput client; the broader semantic/64-bit-port work remains active.
+Prepared for handoff on 2026-10-23. The accepted source checkpoint is
+`109357d654e56d819b3fea37601140f589313bfb` (SEM-342), on branch
+`semantic/owner-cleanup-20260926`. The session has stopped new reconstruction
+work; semantic reconstruction and the future 64-bit game port remain incomplete.
 
 - Target: original Japanese TH095 v1.02a, SHA-256
   `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
@@ -24,11 +26,9 @@ shared DirectInput client; the broader semantic/64-bit-port work remains active.
   body and all 28 relocations equal baseline/target. Client cleanup and ignored
   HRESULT policy remain unchanged; see WINDOW_INPUT_INITIALIZATION.md.
 - Real SDK full-body compiles pass under VC7.1 x86 and MinGW x86/x64, including
-  the target's _WIN32_WINNT=0x0500 setting. HINSTANCE/LONG_PTR follow native
-  pointer width, LONG remains four bytes, DIDEVCAPS stays 44 and the index is -6.
-  The x64 getter result moves RAX to RCX intact. A legacy-getter width control
-  compiles on x86 and is rejected by the real x64 SDK. These are compile/type
-  oracles, not executed Windows/COM or full Supervisor layout acceptance.
+  _WIN32_WINNT=0x0500. These are compile/type oracles, not executed Windows/COM
+  or full Supervisor layout acceptance. Width controls and API details are in
+  [WINDOW_INPUT_INITIALIZATION.md](WINDOW_INPUT_INITIALIZATION.md).
 - Exact credit stays **696 functions / 336,486 bytes**, **698 comparisons**.
   Fresh Main baseline/candidate passes 48/48. Final frozen cold replay passes
   **698/698 across 88 sources**, zero refresh. Relative to daeeeb4 only **25
@@ -49,10 +49,9 @@ shared DirectInput client; the broader semantic/64-bit-port work remains active.
   Callback identity is checked but callbacks are not executed. Parent ABI and
   real backend behavior remain open. EH passes **57 parents, 72 actions and
   81/81 provenance-exact references**.
-- All 313 source/tool/test inputs remain frozen. Receipts are private under
-  .analysis/sem342/. Serial VC7.1 builds use CPU 1/nice 10. Generated objects,
-  binaries, PDBs, maps and caches are cleared after terminal reports/receipts.
-  Target/tools/Ghidra/protected files remain unchanged. No active blocker is known.
+- All 313 source/tool/test inputs match the validation freeze. Receipts are
+  private under .analysis/sem342/. Serial VC7.1 builds use CPU 1/nice 10.
+  No active blocker is known.
 - SEM-341's independent FPS globals/shared sampler, SEM-340's Windows GameWindow
   declaration/x86-x64 compiler ABI and SEM-339's shared Render/correct worker
   Stop calls remain accepted. Their documented OS, locking, parent-layout and
@@ -87,7 +86,14 @@ ARCHITECTURE.md and RE_WORKFLOW.md before changing reconstruction state.
   ownership or game-reachable schedules. Secondary worker role, parent layouts,
   weak flag names and front-end +0x6104/+0x6108/+0x610C remain open.
 
-## Archived interrupted work
+## Local artifacts and archived work
+
+After all jobs completed, object hashes and final reports were saved before
+removing 418 generated objects, executables, PDBs, maps, native test programs
+and Python cache files. This reclaimed 26,207,390 logical bytes (about 26 MB).
+`build/` is empty; a new normal build must compile before linking. The cleanup
+receipt is .analysis/sem342/cleanup-receipt.json. Target, installed tools,
+Ghidra databases, source and protected files were preserved.
 
 The old stash `03ec1ae7d1e3880eacee081578cfd0e0e129a8b6` and
 .analysis/sem341/pending.patch are retained only as interruption provenance.

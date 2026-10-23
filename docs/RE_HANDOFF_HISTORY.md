@@ -1990,3 +1990,26 @@ remains in `SEMANTIC_INDEX.md` and `SOURCE_MAP.md`. The live handoff was
 therefore replaced with a current SEM-315 checkpoint, the last full milestone,
 one bounded next lane, protected exclusions, and resume commands. No semantic,
 mapping, source-presence, exactness, or runtime claim changed in this cleanup.
+
+## SEM-342 handoff and artifact cleanup — 2026-10-23
+
+The accepted source is committed at
+`109357d654e56d819b3fea37601140f589313bfb`. The live handoff identifies that
+checkpoint, its exact/normal/native validation boundaries, open work and the
+three protected user-owned paths. SEM-342's detailed evidence remains in
+SEMANTIC_HISTORY.md and WINDOW_INPUT_INITIALIZATION.md. RE_WORKFLOW.md now
+records the handoff and artifact-retention procedure. Local Markdown link
+targets were checked; none were missing.
+
+After successful terminal CI and compiler reports, the 313 frozen inputs and
+186 saved object hashes were verified. Compact commands, reports and product
+hashes remain in .analysis/sem342/. Removed build/matching/,
+build/whole-validation/, build/semantic/sem342/, build/portable-front-end/,
+build/pycache/ and the session-created scripts/tests __pycache__ directories:
+418 generated files, 26,207,390 logical bytes, 26,693,632 allocated bytes.
+build/ is empty. The verified target, installed tools, private Ghidra databases,
+analysis evidence, source, ledgers and protected files remain in place.
+
+No reconstruction state or runtime claim changes in this maintenance batch.
+Future work starts from the accepted source and recompiles the normal product
+before linking; superseded SEM-341 interruption patches must not be reapplied.
