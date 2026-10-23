@@ -971,6 +971,23 @@ class SemanticProtocolGuardTests(unittest.TestCase):
     def test_input_setup_guard_accepts_native_width_shared_source(self) -> None:
         GUARD.check_supervisor_input_setup_boundary()
 
+    def test_input_selection_guard_accepts_shared_global_callbacks(self) -> None:
+        GUARD.check_supervisor_input_selection()
+
+    def test_input_selection_guard_rejects_owner_or_transition_changes(self) -> None:
+        for name, before, after in (
+            ("SupervisorInitializeInput.inl", "g_Supervisor.SetupDInput();", "if (g_Supervisor.SetupDInput() < 0) return;"),
+            ("SupervisorInitializeInput.inl", "g_Supervisor.keyboard != NULL", "g_Supervisor.keyboard == NULL"),
+            ("SupervisorEnumGameControllers.inl", "g_Supervisor.controller,", "static_cast<Supervisor *>(context)->controller,"),
+            ("SupervisorEnumGameControllers.inl", "result < 0", "result <= 0"),
+            ("SupervisorEnumGameControllers.inl", "return DIENUM_CONTINUE;", "return DIENUM_STOP;"),
+        ):
+            source = (ROOT / "src" / name).read_text(encoding="utf-8")
+            self.assertIn(before, source)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_supervisor_input_selection({name: source.replace(before, after, 1)})
+
     def test_input_setup_guard_rejects_truncation_or_wrong_window_source(self) -> None:
         body = (ROOT / "src/SupervisorSetupDInput.inl").read_text(encoding="utf-8")
         for before, after in (

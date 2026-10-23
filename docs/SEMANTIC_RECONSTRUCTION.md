@@ -207,12 +207,15 @@ unlocked sampler by itself; native fixture success supplies no real timer/OS
 lock, parent ABI or game scheduling guarantee. See [the evidence boundary and
 transitions](FPS_SAMPLING.md).
 
-A thirteenth executes the shared DirectInput initializer with named API and
-object fixtures. It verifies native module-pointer transport and target client
-failure/release/log order. Real Windows/DirectInput SDK x86/x64 compiles validate
-the API and callback types independently; the old getter is rejected by the
-x64 function-pointer width control. Neither component binds a complete native
-Supervisor or executes real window/COM enumeration. See
+A thirteenth executes shared DirectInput setup, global device selection and
+availability publication with named API/object fixtures. It verifies native
+module-pointer transport, client failure/release/log order, callback continuation
+and pointer-derived flag publication. Device-selection callbacks execute through
+the fixture enumeration backend; the axis-property callback remains identity-only.
+Real Windows/DirectInput SDK x86/x64 compiles validate the API and callback types
+independently; SEM-342's old-getter control rejects the x64 return-width mismatch.
+Neither component binds a complete native Supervisor, establishes flag
+synchronization or executes real window/COM enumeration. See
 [the client/platform boundary](WINDOW_INPUT_INITIALIZATION.md).
 
 ## Completion and batch records

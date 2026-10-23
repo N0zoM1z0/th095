@@ -2780,6 +2780,34 @@ def check_scene_queue_word_access(overrides: dict[str, str] | None = None) -> No
                 fail(f"{name} reads queue payload without its acquire fence")
 
 
+def check_supervisor_input_selection(overrides: dict[str, str] | None = None) -> None:
+    changed = {} if overrides is None else overrides
+    bodies = {}
+    for function, name in (("InitializeInput", "SupervisorInitializeInput.inl"),
+                           ("EnumGameControllersCb", "SupervisorEnumGameControllers.inl")):
+        for route in ("Main.cpp", "MainExact.inl"):
+            source = source_without_comments(changed.get(route, (SRC / route).read_text(encoding="utf-8")))
+            if source.count(f'#include "{name}"') != 1 or f"Supervisor::{function}(" in source:
+                fail(f"{route} lost shared input {function}")
+        body = source_without_comments(changed.get(name, (SRC / name).read_text(encoding="utf-8")))
+        if any(profile in body for profile in PROFILE_NAMES):
+            fail("input selection restored profile-selected behavior")
+        bodies[function] = re.sub(r"\s+", "", body)
+    initializer = bodies["InitializeInput"]
+    ordered = ["(void)s;", "g_Supervisor.flags.keyboardAvailable=0;",
+               "g_Supervisor.flags.controllerAvailable=0;", "g_Supervisor.SetupDInput();",
+               "g_Supervisor.flags.keyboardAvailable=g_Supervisor.keyboard!=NULL;",
+               "g_Supervisor.flags.controllerAvailable=g_Supervisor.controller!=NULL;"]
+    if any(token not in initializer for token in ordered) or [initializer.index(token) for token in ordered] != sorted(initializer.index(token) for token in ordered):
+        fail("input initializer changed global ownership or availability publication order")
+    callback = bodies["EnumGameControllersCb"]
+    required = ["(void)context;", "if(g_Supervisor.controller==NULL)",
+                "result=g_Supervisor.directInput->CreateDevice(instance->guidInstance,&g_Supervisor.controller,NULL);",
+                "if(result<0){returnDIENUM_CONTINUE;}"]
+    if any(token not in callback for token in required) or not callback.endswith("returnDIENUM_STOP;}"):
+        fail("device selection changed global storage, HRESULT sign or enumeration continuation")
+
+
 def check_supervisor_input_setup_boundary(overrides: dict[str, str] | None = None) -> None:
     changed = {} if overrides is None else overrides
     for name in ("Main.cpp", "MainExact.inl"):
@@ -2977,7 +3005,12 @@ def check_worker_thread_start_boundary(header_text: str | None = None, body_text
     for name in ("Main.hpp", "MainExact.hpp", "SupervisorRuntime.hpp", "Main.cpp", "MainExact.inl"):
         source = (SRC / name).read_text(encoding="utf-8")
         for callback in ("InitializeInput", "StartupThread"):
-            if not re.search(rf"{callback}\(void \*s\)", source):
+            declaration = source
+            if callback == "InitializeInput" and name in ("Main.cpp", "MainExact.inl"):
+                if source.count('#include "SupervisorInitializeInput.inl"') != 1:
+                    fail(f"{name} lost the shared input-worker body")
+                declaration = (SRC / "SupervisorInitializeInput.inl").read_text(encoding="utf-8")
+            if not re.search(rf"{callback}\(void \*s\)", declaration):
                 fail(f"{name} lost the shared void-pointer callback declaration")
             if f'(void (__fastcall *)(void *))Supervisor::{callback}' in source:
                 fail(f"{name} restored a callback registration cast")
@@ -4331,6 +4364,7 @@ def main() -> int:
     check_game_window_render_boundary()
     check_supervisor_fps_boundary()
     check_supervisor_input_setup_boundary()
+    check_supervisor_input_selection()
     check_worker_thread_start_boundary()
     check_primary_worker_signal_bindings()
     check_scene_asset_wait_protocol()

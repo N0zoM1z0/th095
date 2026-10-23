@@ -1334,36 +1334,13 @@ i32 __fastcall Supervisor::DrawFpsCounter(Supervisor *s)
 #include "SupervisorFinalizeFrame.inl"
 
 // FUNCTION: TH095 0x004238E0.
-void __fastcall Supervisor::InitializeInput(void *s)
-{
-    g_Supervisor.flags.keyboardAvailable = 0;
-    g_Supervisor.flags.controllerAvailable = 0;
-    g_Supervisor.SetupDInput();
-    g_Supervisor.flags.keyboardAvailable = g_Supervisor.keyboard != NULL;
-    g_Supervisor.flags.controllerAvailable = g_Supervisor.controller != NULL;
-}
+#include "SupervisorInitializeInput.inl"
 
 // FUNCTION: TH095 0x00423960.
 #include "SupervisorSetupDInput.inl"
 
 // FUNCTION: TH095 0x00423C20.
-BOOL CALLBACK Supervisor::EnumGameControllersCb(
-    LPCDIDEVICEINSTANCEA instance, LPVOID context)
-{
-    HRESULT result;
-
-    if (g_Supervisor.controller == NULL)
-    {
-        result = g_Supervisor.directInput->CreateDevice(
-            instance->guidInstance, &g_Supervisor.controller, NULL);
-        if (result < 0)
-        {
-            return TRUE;
-        }
-    }
-
-    return FALSE;
-}
+#include "SupervisorEnumGameControllers.inl"
 
 // FUNCTION: TH095 0x00423C70.
 BOOL CALLBACK Supervisor::ControllerCallback(

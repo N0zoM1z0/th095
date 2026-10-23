@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <dinput.h>
 #include "inttypes.hpp"
+#include "SupervisorFlags.hpp"
 
 namespace th095
 {
@@ -20,7 +21,9 @@ struct InputSdkReceiverFixture
     IDirectInputDevice8A *keyboard;
     IDirectInputDevice8A *controller;
     DIDEVCAPS controllerCaps;
+    SupervisorFlags flags;
     i32 SetupDInput();
+    static void __fastcall InitializeInput(void *);
     static BOOL CALLBACK EnumGameControllersCb(LPCDIDEVICEINSTANCEA, LPVOID);
     static BOOL CALLBACK ControllerCallback(LPCDIDEVICEOBJECTINSTANCEA, LPVOID);
 };
@@ -30,11 +33,15 @@ extern InputSdkLogFixture g_GameErrorContext;
 
 #define Supervisor InputSdkReceiverFixture
 #include "SupervisorSetupDInput.inl"
+#include "SupervisorInitializeInput.inl"
+#include "SupervisorEnumGameControllers.inl"
 #undef Supervisor
 
 // No casts on the function pointer: SDK return width and calling convention
 // must agree with a native signed pointer-sized result in both architectures.
 LONG_PTR (WINAPI *inputWindowModuleApi)(HWND, int) = &GetWindowLongPtrA;
+LPDIENUMDEVICESCALLBACKA inputDeviceEnumerationApi = &InputSdkReceiverFixture::EnumGameControllersCb;
+void (__fastcall *inputWorkerCallbackApi)(void *) = &InputSdkReceiverFixture::InitializeInput;
 typedef char InputSdkLongIsFourBytes[(sizeof(LONG) == 4) ? 1 : -1];
 typedef char InputSdkModuleIsPointerWidth[(sizeof(HINSTANCE) == sizeof(void *)) ? 1 : -1];
 typedef char InputSdkResultIsPointerWidth[(sizeof(LONG_PTR) == sizeof(void *)) ? 1 : -1];
@@ -45,5 +52,7 @@ extern "C" unsigned int inputSdkAbiReceipt[];
 unsigned int inputSdkAbiReceipt[] = {
     sizeof(void *), sizeof(HWND), sizeof(HINSTANCE), sizeof(LONG_PTR),
     sizeof(IDirectInput8A *), sizeof(DIDEVCAPS),
-    static_cast<unsigned int>(GWLP_HINSTANCE), sizeof(LONG)
+    static_cast<unsigned int>(GWLP_HINSTANCE), sizeof(LONG), sizeof(BOOL),
+    sizeof(LPDIENUMDEVICESCALLBACKA), DIENUM_STOP, DIENUM_CONTINUE,
+    sizeof(th095::SupervisorFlags)
 };

@@ -18123,3 +18123,75 @@ Standalone DIFF's pre-existing RuntimePressedButtons failure is not retested or
 repaired. Native module transport is corrected for this shared client path;
 parent declarations, actual callbacks/backend and the complete 64-bit game
 remain open. Semantic reconstruction remains **active-incomplete**.
+
+### SEM-343 — shared input device selection and availability publication
+
+Scope: InitializeInput at 0x004238E0 (127 bytes), EnumGameControllersCb at
+0x00423C20 (68 bytes), their SetupDInput caller/client at 0x00423960 and
+StartInputWorker at 0x00423CE0. Main remains the emission and normal build owner.
+The two Main routes now include one SupervisorInitializeInput.inl and one
+SupervisorEnumGameControllers.inl. SDK DIENUM_STOP/CONTINUE replace boolean
+spellings in the shared device callback. No owner layout or ABI changes.
+
+Observed: the device callback ignores context, reads the global input/controller
+slots, and supplies the instance GUID by reference and the global controller
+output slot to CreateDevice. A pre-existing device stops before accessing the
+instance/interface. Negative HRESULT continues without callback-side clearing;
+any nonnegative result stops without checking the output again. The initializer
+ignores its fastcall argument, clears global availability bits before setup,
+ignores setup's return, then publishes pointer-derived availability while
+preserving all other flags. StartInputWorker supplies the global Supervisor
+argument to the distinct standalone worker. Fresh attested target disassembly
+and exact ledgers establish these facts independently of fixtures.
+
+Corroborated: TH08's device callback uses the same global storage and continuation
+shape. It supplies no authority for TH095 layouts, native ABI or OS behavior.
+
+Ownership: the global Supervisor stores device slots and availability flags;
+setup still has its distinct receiver-bound client surface. Enumeration borrows
+the instance/GUID, context is unused, and this callback introduces no release.
+Main owns TU emission in exact and normal products. Native and real-SDK tests
+bind the shared bodies explicitly; their outer fixtures are not Supervisor ABI.
+The actual Windows/COM backend and future native game remain separate products.
+
+Independent oracles: baseline/candidate/target objects preserve all 884 bytes
+and 44 relocations across setup, worker initialization and device selection.
+Normal Main preserves 55 named roots, one private entry and 143 code/data/EH
+reference graphs under 28 private spellings. Actual Windows/DirectInput SDK
+compiles pass under pinned VC7.1 x86 and MinGW x86/x64 with _WIN32_WINNT=0x0500.
+Uncast SDK device-callback and fastcall-worker function pointers compile; COFF
+receipts verify native pointer widths, four-byte BOOL/flags and DIENUM 0/1.
+
+The existing thirteenth native x86-64/UBSan program now executes the actual device
+callback and initializer in addition to setup. All 523 cases pass: the previous
+429 setup cases plus sixteen direct callback cases, six enumeration traces and
+72 flag-publication cases. They distinguish unrelated context/arguments from
+global storage, pre-existing devices, negative/nonnegative HRESULTs, synthetic
+null/published out-parameters, stopped traversal, global/receiver separation,
+all initial availability bits and preservation of unrelated flag bits. The
+axis-property callback remains an aborting identity-only fixture.
+
+Unknown: real COM failure out-parameters, repeated-initialization lifetime,
+axis-property callback convergence, enclosing Supervisor ABI, OS enumeration,
+cross-thread flag synchronization and whole-game reachability. No synthetic
+fault schedule is promoted to real OS behavior. The inherited axis callback's
+context copy is unchanged and receives no new semantic meaning.
+
+Final gates: fresh Main baseline/candidate replay passes 48/48; only 25 private
+labels in one Main unit change relative to 15b91a7. No public retag or other
+recipe field changes. Frozen aggregate replay passes 698/698 across 88 sources
+with zero further refresh. The independent normal product compiles 88/88 i386
+COFF objects and links a verified 778,752-byte PE32 GUI, zero unresolved symbols,
+SHA-256 5ff77f4071bd677dc78b63f13ba929cafab7e03c8bf8a8ceb21ed4deb218de84.
+The actual product Main preserves the same 55/1/143 normal reference graph.
+EH passes 57 parents, 72 actions and 81/81 provenance-exact references. Public
+CI passes 103 workflow tests and thirteen native x86-64/UBSan programs.
+All 320 source/tool/test inputs, including the five Ghidra Java scripts, remain
+frozen. Closed selector/declaration baselines stay 265 keys / 696 directives
+and 191 keys / 196 declarations. Source/mapping/exact totals remain unchanged.
+
+Result: the initialization/publication and device-selection clients share
+source across profiles and have independent normal/native/SDK evidence. No new
+mapping, source-presence, exact credit, profile selector, alternate owner or
+emission adapter is added. Durable facts are MAIN-053 and the current boundary
+map is WINDOW_INPUT_INITIALIZATION.md. Private receipts are .analysis/sem343/.
