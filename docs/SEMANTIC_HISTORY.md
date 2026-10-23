@@ -17940,3 +17940,99 @@ receipts are saved. Target/tools/Ghidra/protected files are untouched. Superviso
 graphics/OS runtime closure and preview count/release interleavings remain open;
 this batch accepts one Windows GameWindow declaration and its tested x86/x64
 ABI, not a complete native game. The phase remains **active-incomplete**.
+
+### SEM-341 — independent FPS clock state and shared sample/producer source
+
+**Question and target evidence.** The historical exact Supervisor appended the
+clock anomaly count and sample origin at +0x7BC/+0x7C0, while normal Main already
+owned them independently. Fresh hash-attested v1.02a instructions cover the
+constructor 0x00426350, CalculateFps 0x00424720 (603 bytes), FinalizeFrame
+0x00423840 (147), DrawFpsCounter 0x00423790 (170) and GetTimestamp 0x00420A10.
+The constructor zeroes 0x1EF dwords; the maintained lifecycle/normal declaration
+has a 0x7BC extent ending with color +0x7B8. All twelve direct xrefs to
+0x004C4E2C/0x004C4E30 belong to CalculateFps. These slots are loader-zeroed.
+The sampler's absolute global accesses are separate from its receiver-relative
+unsigned count, float FPS and double lag fields. This supports the canonical
+independent-storage model, not recovery of original variable names or historical
+global-versus-class-static C++ spelling from bytes alone.
+
+**One source and ownership.** SupervisorFpsState.hpp declares the Main-owned
+four-byte signed anomaly count and eight-byte sample origin. Main retains
+production definitions and both original emission routes, now including one
+SupervisorCalculateFps.inl and one SupervisorFinalizeFrame.inl. MainExact's
+false tail fields are retired and its size assertion is 0x7BC. Clock state has
+process lifetime; count/FPS/lag remain receiver-owned. Both exact and normal
+products use this source. The native oracle binds explicitly named fixture
+owners and supplies no native parent declaration or new game product.
+
+The sampler preserves the backward-clock origin update and >=0.5 sample window,
+strict >65 anomaly threshold, resync at count 2, QPC disable before resync at 4,
+and reset otherwise. The sample origin remains the first timestamp. Existing
+photography bit spellings converge without changing bits: mask 0xF5 blocks lag
+sampling, only bit 7 is cleared afterward. Lag denominator adds 60; numerator
+adds 60 above 57 FPS, otherwise the measured value. Samples always clear the
+receiver count. FinalizeFrame flushes, locks receiver lane 5, increments its
+lock byte, adds global configuration +1 to its unsigned count, leaves then
+decrements the byte. The sampler itself is unlocked; no complete FPS
+synchronization or actual OS timing guarantee is inferred.
+
+Exactly twelve main-calculate-fps DIR32 entries are rebased from Supervisor plus
+0x7BC/0x7C0 to the independent symbols with zero addends. Offsets/types and
+**effective** destinations remain unchanged; the manifest base targets and
+addends intentionally change. No accepted extent, profile or instruction changes.
+Two obsolete selector occurrences and one selected local-struct declaration are
+retired. Closed broader debt falls to **265 keys / 696 directives**; declaration
+debt falls to **191 keys / 196 declarations**. No new selector, selected layout,
+emission adapter, assembly or artificial padding is introduced.
+
+**Independent direct oracles.** Fresh pre-restore Main baseline passes 48/48 and
+captures actual exact/normal objects. Candidate focused replay again passes
+48/48 with 25 private labels in one unit and the twelve reviewed public rebases.
+Actual complete old/new sampler and producer objects normalize identically to
+target bytes at every instruction and relocation field. A minimal pinned-VC7.1
+probe separately reproduces old 0x7BC/0x7C0 addends versus zero independent-global
+addends with identical normalized code. All 55 normal named roots, one private
+entry and 143 recursively referenced code/data/EH graphs preserve bytes and
+bindings under 28 private spellings; exact success is not transferred to a
+different normal body.
+
+Public CI passes **99 workflow tests and twelve native x86-64/UBSan programs**.
+The new sampler/producer program passes **1,357 sequential fixture scenarios**:
+backwards/half-second boundaries, all 256 task low-bit patterns with upper bits
+preserved, lag thresholds, anomaly count transitions, receiver/global separation,
+all config-byte encodings, unsigned wrap and producer-to-sampler flow. This does
+not make every byte a valid persisted config or prove game-reachable schedules,
+parent ABI, OS locking/timers or x87 identity for every numerical input. New
+semantic guard tests reject false parent fields, width drift, duplicate bodies,
+wrong transitions/global bindings and wrong receiver/config ownership.
+
+TH08 corroborates the method of separate FPS globals and bounded samples only;
+its widths, layouts and lag curve are not imported. The source revision/digest
+is retained privately. Full state/ownership boundaries are in FPS_SAMPLING.md.
+
+**Final frozen gates.** Cold fixed-recipe replay passes **698/698 comparisons
+across 88 sources**, with zero further refresh. Relative to 669dc17, exactly
+**344 private labels in 22 units** change (25 in the direct unit and another 319
+in 21 aggregate units), plus the twelve reviewed public data rebases. Every other
+recipe field remains unchanged. All 310 final source/tool/test inputs retain
+their hashes; no implementation, mapping, origin or exact-credit ledger changes.
+
+Independent normal closure compiles **88/88 i386 COFF objects** and links a
+verified **778,752-byte PE32 GUI**, zero unresolved symbols, SHA-256
+`4079e75a34a8af0d8bfa06074ea6657e9727ffbba40c7e0f1eb7d24f71736081`.
+The actual product Main object again preserves all 55 named roots, one private
+entry and 143 code/data/EH graphs under 28 private spellings. Compiler-owned EH
+audit passes **57 parents, 72 actions and 81/81 provenance-exact references**.
+Public CI passes 99 workflow tests and twelve native programs from the frozen
+inputs. Whole linkage is not a byte-exact image or playable native-game claim.
+
+All builds are serial VC7.1 on CPU 1/nice 10. Source/command/tool receipts,
+fresh target queries/xrefs/callers, actual object graphs, minimal compiler probe,
+normal PE report and object/map hashes remain private in
+.analysis/sem341-resume/. Generated outputs and caches are cleared only after
+terminal reports and receipts. The old parked patch/stash are superseded by
+this accepted source and must not be applied again. Target, tools, Ghidra and
+protected files remain untouched. Standalone DIFF's inherited missing
+RuntimePressedButtons diagnostic is not retested or repaired here. Parent
+Supervisor consolidation, real clock/locking and whole-game/native closure remain
+open; semantic reconstruction remains **active-incomplete**.

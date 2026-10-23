@@ -43,6 +43,7 @@ def main() -> int:
     run_probe("WorkerSignalAccessTest.cpp", "worker-signal-test", ("-pthread",))
     run_probe("SceneQueuePublicationTest.cpp", "queue-publication-test", ("-pthread",))
     run_probe("GameWindowRenderStopTest.cpp", "render-stop-test", ("-pthread",))
+    run_probe("SupervisorFpsTest.cpp", "fps-test")
     return 0
 
 

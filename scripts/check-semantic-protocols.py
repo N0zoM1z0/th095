@@ -2780,6 +2780,74 @@ def check_scene_queue_word_access(overrides: dict[str, str] | None = None) -> No
                 fail(f"{name} reads queue payload without its acquire fence")
 
 
+def check_supervisor_fps_boundary(overrides: dict[str, str] | None = None) -> None:
+    """Preserve the closed FPS storage boundary and shared producer/sampler."""
+    changed = {} if overrides is None else overrides
+
+    def read(name: str) -> str:
+        return source_without_comments(changed.get(name, (SRC / name).read_text(encoding="utf-8")))
+
+    state = read("SupervisorFpsState.hpp")
+    if any(name in state for name in PROFILE_NAMES):
+        fail("FPS state restored a profile-selected declaration")
+    for fact in ("extern i32 g_FpsClockAnomalyCount;", "extern f64 g_LastFpsTimestamp;",
+                 "sizeof(g_FpsClockAnomalyCount) == 4", "sizeof(g_LastFpsTimestamp) == 8"):
+        if fact not in state:
+            fail(f"FPS state lost its independent fixed-width storage: {fact}")
+    for name in ("Main.hpp", "MainExact.hpp"):
+        header = read(name)
+        if '#include "SupervisorFpsState.hpp"' not in header or "sizeof(Supervisor) == 0x7bc" not in header:
+            fail(f"{name} lost the independent FPS state / Supervisor boundary")
+        owner = braced_body_after(header, header.index("struct Supervisor"), "Supervisor")
+        if re.search(r"\b(?:fpsClockAnomalyCount|lastFpsTimestamp)\b", owner):
+            fail(f"{name} appended independent FPS globals to Supervisor")
+    for name in ("Main.cpp", "MainExact.inl"):
+        source = read(name)
+        for included in ("SupervisorCalculateFps.inl", "SupervisorFinalizeFrame.inl"):
+            if source.count(f'#include "{included}"') != 1:
+                fail(f"{name} lost one shared FPS emission route")
+        if "void Supervisor::CalculateFps()" in source or "Supervisor::FinalizeFrame(Supervisor *s)" in source:
+            fail(f"{name} restored a duplicate FPS body")
+    main = read("Main.cpp")
+    if "i32 g_FpsClockAnomalyCount;" not in main or "f64 g_LastFpsTimestamp;" not in main:
+        fail("Main lost ownership of the two FPS globals")
+    sampler = read("SupervisorCalculateFps.inl")
+    if any(name in sampler for name in PROFILE_NAMES) or re.search(
+            r"(?:\.|->)(?:fpsClockAnomalyCount|lastFpsTimestamp)\b", sampler):
+        fail("FPS sampler restored a selected body or false parent member")
+    for fact in ("if (g_LastFpsTimestamp > locals.currentTime)",
+                 "if (locals.currentTime - g_LastFpsTimestamp >= 0.5)",
+                 "if (this->currentFps > 65.0f)",
+                 "if (g_FpsClockAnomalyCount == 2)",
+                 "else if (g_FpsClockAnomalyCount == 4)",
+                 "g_GameWindow.performanceFrequency.QuadPart = 0;",
+                 "if (this->currentFps > 57.0f)",
+                 "g_SupervisorGameTask->resetFpsSample = 0;",
+                 "this->fpsFrameCount = 0;"):
+        if fact not in sampler:
+            fail(f"FPS sampler lost its target transition: {fact}")
+    producer = read("SupervisorFinalizeFrame.inl")
+    for fact in ("s->EnterCriticalSectionWrapper(5);", "s->LeaveCriticalSectionWrapper(5);",
+                 "s->fpsFrameCount += g_Supervisor.config.frameskipConfig + 1;"):
+        if fact not in producer:
+            fail(f"FPS producer lost receiver/global-config ownership: {fact}")
+    manifest = changed.get("match-units.toml")
+    if manifest is None:
+        manifest = (ROOT / "config/match-units.toml").read_text(encoding="utf-8")
+    unit = tomllib.loads(manifest)["units"]["main-calculate-fps"]
+    expected = {offset: ("?g_LastFpsTimestamp@th095@@3NA", 0x4C4E30)
+                for offset in (0x18, 0x2B, 0x34, 0x4E, 0x57, 0x60)}
+    expected.update({offset: ("?g_FpsClockAnomalyCount@th095@@3HA", 0x4C4E2C)
+                     for offset in (0xA2, 0xAB, 0xB1, 0xDE, 0x11D, 0x129)})
+    found = {r["offset"]: r for r in unit["relocations"] if r["offset"] in expected}
+    if set(found) != set(expected):
+        fail("FPS sampler lost a proved independent-global reference")
+    for offset, (symbol, target) in expected.items():
+        row = found[offset]
+        if row["type"] != "DIR32" or row["symbol"] != symbol or row["target"] != target or row.get("addend", 0) != 0:
+            fail("FPS sampler restored a false owner or changed a data destination")
+
+
 def check_game_window_render_boundary(header_text: str | None = None, render_text: str | None = None,
                                       manifest_text: str | None = None) -> None:
     header = source_without_comments(header_text if header_text is not None else
@@ -4230,6 +4298,7 @@ def main() -> int:
     check_scene_preview_data_queue_owner()
     check_scene_queue_word_access()
     check_game_window_render_boundary()
+    check_supervisor_fps_boundary()
     check_worker_thread_start_boundary()
     check_primary_worker_signal_bindings()
     check_scene_asset_wait_protocol()

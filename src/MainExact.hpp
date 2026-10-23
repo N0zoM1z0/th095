@@ -20,6 +20,7 @@
 #include "ScreenshotBitmapFileHeader.hpp"
 #include "SupervisorFlags.hpp"
 #include "SupervisorFogState.hpp"
+#include "SupervisorFpsState.hpp"
 #include "SupervisorState.hpp"
 #include "SupervisorStartupState.hpp"
 #include "SupervisorViewportConfiguration.hpp"
@@ -104,8 +105,6 @@ struct Supervisor
     f32 currentFps;                             // +0x79c
     ReplayScanWorker secondaryReplayScanWorker;  // +0x7a0
     D3DCOLOR backbufferClearColor;              // +0x7b8
-    i32 fpsClockAnomalyCount;                   // +0x7bc
-    f64 lastFpsTimestamp;                       // +0x7c0
 
     void InitializeCriticalSections();
     void DeleteCriticalSections();
@@ -191,7 +190,7 @@ typedef char SupervisorCurrentFpsAt79C[(offsetof(Supervisor, currentFps) == 0x79
 typedef char SupervisorSecondaryReplayScanAt7A0[
     (offsetof(Supervisor, secondaryReplayScanWorker) == 0x7a0) ? 1 : -1];
 typedef char SupervisorClearColorAt7B8[(offsetof(Supervisor, backbufferClearColor) == 0x7b8) ? 1 : -1];
-typedef char SupervisorLastFpsTimestampAt7C0[(offsetof(Supervisor, lastFpsTimestamp) == 0x7c0) ? 1 : -1];
+typedef char SupervisorSizeIs7BC[(sizeof(Supervisor) == 0x7bc) ? 1 : -1];
 
 struct VertexTex1DiffuseXyzrhw
 {

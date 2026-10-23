@@ -107,11 +107,7 @@ void *g_RuntimePlayerOwner = 0;
 struct SupervisorGameTaskView
 {
     u8 unknown000[0xfc];
-#if defined(TH095_MATCH_EXACT)
-    u32 active : 1;
-#else
     u32 captureActive : 1;
-#endif
     u32 unknownFlag1 : 1;
     u32 gameplayLoadActive : 1;
     u32 unknownFlag3 : 1;
@@ -1332,96 +1328,10 @@ i32 __fastcall Supervisor::DrawFpsCounter(Supervisor *s)
 }
 
 // FUNCTION: TH095 0x00424720.
-void Supervisor::CalculateFps()
-{
-    struct CalculateFpsLocals
-    {
-        f64 elapsed;
-        f64 currentTime;
-    } locals;
-
-    locals.currentTime = g_GameWindow.GetTimestamp();
-    if (g_LastFpsTimestamp > locals.currentTime)
-    {
-        g_LastFpsTimestamp = locals.currentTime;
-    }
-
-    if (locals.currentTime - g_LastFpsTimestamp >= 0.5)
-    {
-        locals.elapsed = locals.currentTime - g_LastFpsTimestamp;
-        g_LastFpsTimestamp += locals.elapsed;
-        this->currentFps =
-            static_cast<f64>(this->fpsFrameCount) / locals.elapsed;
-
-        if (this->currentFps > 65.0f)
-        {
-            g_FpsClockAnomalyCount++;
-            if (g_FpsClockAnomalyCount == 2)
-            {
-                g_GameWindow.lastTimestamp =
-                    g_GameWindow.currentTimestamp =
-                        g_GameWindow.lastFrameTime =
-                            g_GameWindow.timeOrigin =
-                                g_GameWindow.GetTimestamp();
-            }
-            else if (g_FpsClockAnomalyCount == 4)
-            {
-                g_GameWindow.performanceFrequency.QuadPart = 0;
-                g_GameWindow.lastTimestamp =
-                    g_GameWindow.currentTimestamp =
-                        g_GameWindow.lastFrameTime =
-                            g_GameWindow.timeOrigin =
-                                g_GameWindow.GetTimestamp();
-                g_FpsClockAnomalyCount = 0;
-            }
-        }
-        else
-        {
-            g_FpsClockAnomalyCount = 0;
-        }
-
-        if (g_SupervisorGameTask != NULL &&
-            g_SupervisorGameTask->resultScreenActive == 0 &&
-#if defined(TH095_MATCH_EXACT)
-            g_SupervisorGameTask->active == 0 &&
-#else
-            g_SupervisorGameTask->captureActive == 0 &&
-#endif
-            g_SupervisorGameTask->gameplayLoadActive == 0 &&
-            g_SupervisorGameTask->playerDeathTransitionComplete == 0 &&
-            g_SupervisorGameTask->photoLimitTransitionComplete == 0 &&
-            g_SupervisorGameTask->resetFpsSample == 0)
-        {
-            this->lagDenominator += 60.0;
-            if (this->currentFps > 57.0f)
-            {
-                this->lagNumerator += 60.0;
-            }
-            else
-            {
-                this->lagNumerator += this->currentFps;
-            }
-        }
-
-        if (g_SupervisorGameTask != NULL)
-        {
-            g_SupervisorGameTask->resetFpsSample = 0;
-        }
-        this->fpsFrameCount = 0;
-    }
-}
+#include "SupervisorCalculateFps.inl"
 
 // FUNCTION: TH095 0x00423840.
-i32 __fastcall Supervisor::FinalizeFrame(Supervisor *s)
-{
-    g_AnmManager->FlushVertexBuffer();
-    s->EnterCriticalSectionWrapper(5);
-    s->criticalSectionLockCounts[5]++;
-    s->fpsFrameCount += g_Supervisor.config.frameskipConfig + 1;
-    s->LeaveCriticalSectionWrapper(5);
-    s->criticalSectionLockCounts[5]--;
-    return 1;
-}
+#include "SupervisorFinalizeFrame.inl"
 
 // FUNCTION: TH095 0x004238E0.
 void __fastcall Supervisor::InitializeInput(void *s)

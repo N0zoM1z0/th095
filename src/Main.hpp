@@ -21,6 +21,7 @@
 #include "SoundPlayer.hpp"
 #include "SupervisorFlags.hpp"
 #include "SupervisorFogState.hpp"
+#include "SupervisorFpsState.hpp"
 #include "SupervisorState.hpp"
 #include "SupervisorStartupState.hpp"
 #include "SupervisorViewportConfiguration.hpp"
@@ -200,8 +201,7 @@ typedef char SupervisorSizeIs7BC[(sizeof(Supervisor) == 0x7bc) ? 1 : -1];
 // These values immediately follow g_Supervisor in the target image but are
 // independent globals. Keeping them outside Supervisor preserves its
 // constructor-proven 0x7bc boundary and the real worker at +0x7a0.
-extern i32 g_FpsClockAnomalyCount;
-extern f64 g_LastFpsTimestamp;
+// Declarations live in SupervisorFpsState.hpp.
 
 struct VertexTex1DiffuseXyzrhw
 {

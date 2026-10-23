@@ -968,6 +968,30 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                 with self.assertRaises(SystemExit):
                     GUARD.check_scene_queue_word_access({name: source.replace(before, after, 1)})
 
+    def test_fps_guard_accepts_independent_storage_and_shared_bodies(self) -> None:
+        GUARD.check_supervisor_fps_boundary()
+
+    def test_fps_guard_rejects_false_owner_transition_or_binding(self) -> None:
+        for name, before, after in (
+            ("SupervisorFpsState.hpp", "extern f64 g_LastFpsTimestamp;", "extern u32 g_LastFpsTimestamp;"),
+            ("MainExact.hpp", "void InitializeCriticalSections();", "i32 fpsClockAnomalyCount;\n    void InitializeCriticalSections();"),
+            ("Main.cpp", '#include "SupervisorCalculateFps.inl"', "void Supervisor::CalculateFps() {}"),
+            ("SupervisorCalculateFps.inl", "g_LastFpsTimestamp >", "g_Supervisor.lastFpsTimestamp >"),
+            ("SupervisorCalculateFps.inl", "g_FpsClockAnomalyCount == 4", "g_FpsClockAnomalyCount == 3"),
+            ("SupervisorFinalizeFrame.inl", "g_Supervisor.config.frameskipConfig + 1", "s->config.frameskipConfig + 1"),
+        ):
+            source = (ROOT / "src" / name).read_text(encoding="utf-8")
+            self.assertIn(before, source)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_supervisor_fps_boundary({name: source.replace(before, after, 1)})
+        manifest = (ROOT / "config/match-units.toml").read_text(encoding="utf-8")
+        changed = manifest.replace("target = 0x004C4E30, addend = 0x0", "target = 0x004C4670, addend = 0x0", 1)
+        self.assertNotEqual(changed, manifest)
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                GUARD.check_supervisor_fps_boundary({"match-units.toml": changed})
+
     def test_render_guard_rejects_result_drift(self) -> None:
         GUARD.check_game_window_render_boundary()
         header = (ROOT / "src/GameWindowRenderResult.hpp").read_text(encoding="utf-8")

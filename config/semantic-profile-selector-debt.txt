@@ -141,7 +141,6 @@
 1	src/InputRuntime.hpp	#if !defined(TH095_MATCH_EXACT)
 1	src/InputRuntime.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/InputRuntime.hpp	#if defined(TH095_MATCH_EXACT)
-2	src/Main.cpp	#if defined(TH095_MATCH_EXACT)
 8	src/Main.cpp	#ifdef DIFFBUILD
 1	src/Main.cpp	#ifdef TH095_MATCH_EXACT
 5	src/Main.cpp	#ifndef DIFFBUILD

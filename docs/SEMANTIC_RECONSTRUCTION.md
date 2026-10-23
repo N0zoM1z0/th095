@@ -198,6 +198,15 @@ type independently of the Render fixtures. It does not execute a window or
 accept Supervisor/D3D layouts, a Linux owner or a complete 64-bit game. See
 [the reproducible scope and commands](ORACLES.md#gamewindow-windows-abi-oracle).
 
+A twelfth executes the actual shared FPS sampler and frame-count producer with
+explicit clock/task/lock bindings. It covers global versus receiver storage,
+sample/anomaly/lag thresholds, photography gates, frame-count wrap and producer
+flow. The two Main-owned clock globals retain i32/double widths independent of
+pointer size and Supervisor growth. The producer lock does not synchronize the
+unlocked sampler by itself; native fixture success supplies no real timer/OS
+lock, parent ABI or game scheduling guarantee. See [the evidence boundary and
+transitions](FPS_SAMPLING.md).
+
 ## Completion and batch records
 
 A bounded family is closed only when its representation, consumers,

@@ -39,7 +39,6 @@
 1	src/HelpMenu.cpp	struct	HelpAnmStorageView
 1	src/HelpMenu.hpp	struct	HelpMenuView
 1	src/InputRuntime.hpp	struct	ControllerInputSlotView
-1	src/Main.cpp	struct	CalculateFpsLocals
 1	src/Main.cpp	struct	DrawFpsCounterLocals
 1	src/Main.cpp	struct	DummyMidiTimer
 1	src/Main.cpp	struct	FrontEndControllerView
