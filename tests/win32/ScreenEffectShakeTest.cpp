@@ -83,10 +83,10 @@ static void CheckDrawConsumer(const Float2 &offset, bool culled)
     sprite.uvEnd = Pair(0.75f, 0.875f);
     vm.loadedSprite = &sprite;
     vm.color1.color = 0xff123456;
-    vm.blendMode = 0;
+    vm.blendMode = ANM_BLEND_ALPHA;
     globalManager->useMixColor = 0;
     globalManager->currentTexture = NULL;
-    globalManager->currentBlendMode = 0;
+    globalManager->cachedBlendMode = ANM_BLEND_ALPHA;
     globalManager->cachedDrawPath = ANM_DRAW_PATH_BUFFERED_QUADS;
     globalManager->spritesToDraw = 0;
     globalManager->vertexBufferStartPtr = globalManager->vertexBuffer;

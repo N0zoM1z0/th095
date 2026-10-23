@@ -103,7 +103,7 @@ static void SeedVm(AnmVm &vm, AnmLoadedSprite &sprite)
     vm.visible = vm.drawEnabled = true;
     vm.color1.color = 0xffc89664;
     vm.useSecondaryColor = false;
-    vm.blendMode = 0;
+    vm.blendMode = ANM_BLEND_ALPHA;
     vm.updateScale = vm.updateRotation = false;
     vm.unknownFlag14 = true;
     vm.loadedSprite = &sprite;
@@ -125,7 +125,7 @@ static unsigned int CheckDirectDraw(AnmManager *manager)
     for (unsigned int failure = 0; failure < 2; ++failure)
     {
         AnmVm vm; SeedVm(vm, sprite);
-        manager->currentBlendMode = vm.blendMode;
+        manager->cachedBlendMode = vm.blendMode;
         manager->currentTextureFactor = vm.color1.color;
         manager->currentTexture = sprite.texture;
         manager->currentSprite = &sprite;
@@ -188,7 +188,7 @@ static unsigned int CheckPhotoBlend(AnmManager *manager)
         const ZunColor background = g_Background->photoBlendCurrent.color;
         const float nearDistance = threshold ? 0.9f : 0.0f;
         g_Background->photoBlendCurrent.nearDistance = nearDistance;
-        manager->currentBlendMode = vm.blendMode;
+        manager->cachedBlendMode = vm.blendMode;
         manager->currentColorOp = 0;
         manager->currentTexture = sprite.texture;
         manager->currentSprite = &sprite;

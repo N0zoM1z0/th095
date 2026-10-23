@@ -121,22 +121,22 @@ void AnmManager::SetRenderStateForVm3D(AnmVm *vm)
 {
     ZunColor color;
 
-    if (this->currentBlendMode != vm->blendMode)
+    if (this->cachedBlendMode != vm->blendMode)
     {
         this->FlushVertexBuffer();
-        this->currentBlendMode = vm->blendMode;
+        this->cachedBlendMode = vm->blendMode;
 
-        switch (this->currentBlendMode)
+        switch (this->cachedBlendMode)
         {
-        case 0:
+        case ANM_BLEND_ALPHA:
             g_Supervisor.d3dDevice->SetRenderState(
                 D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
             break;
-        case 1:
+        case ANM_BLEND_ADDITIVE:
             g_Supervisor.d3dDevice->SetRenderState(
                 D3DRS_DESTBLEND, D3DBLEND_ONE);
             break;
-        case 2:
+        case ANM_BLEND_ADDITIVE_3D_ONLY:
             g_Supervisor.d3dDevice->SetRenderState(
                 D3DRS_DESTBLEND, D3DBLEND_ONE);
             break;
@@ -166,18 +166,18 @@ void AnmManager::SetRenderStateForVm3D(AnmVm *vm)
 // FUNCTION: TH095 0x0043EC20.
 void AnmManager::SetRenderStateForVm(AnmVm *vm)
 {
-    if (this->currentBlendMode != vm->blendMode)
+    if (this->cachedBlendMode != vm->blendMode)
     {
         this->FlushVertexBuffer();
-        this->currentBlendMode = vm->blendMode;
+        this->cachedBlendMode = vm->blendMode;
 
-        switch (this->currentBlendMode)
+        switch (this->cachedBlendMode)
         {
-        case 0:
+        case ANM_BLEND_ALPHA:
             g_Supervisor.d3dDevice->SetRenderState(
                 D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
             break;
-        case 1:
+        case ANM_BLEND_ADDITIVE:
             g_Supervisor.d3dDevice->SetRenderState(
                 D3DRS_DESTBLEND, D3DBLEND_ONE);
             break;

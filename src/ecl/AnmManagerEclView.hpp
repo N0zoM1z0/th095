@@ -1,6 +1,7 @@
 #pragma once
 #include "../AnmVertex.hpp"
 #include "../AnmDrawPath.hpp"
+#include "../AnmBlendMode.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 
 // Normal reconstruction code must use the canonical TH095 ANM declarations.
@@ -64,13 +65,6 @@ struct ZunImageInfo
     D3DFORMAT Format;
 };
 C_ASSERT(sizeof(ZunImageInfo) == 0x14);
-
-enum AnmBlendMode
-{
-    AnmBlendMode_Unset = -1,
-    AnmBlendMode_Normal,
-    AnmBlendMode_Additive
-};
 
 enum AnmColorOp
 {
@@ -730,9 +724,9 @@ struct AnmManager
         SAFE_RELEASE(this->quadVertexBuffer);
     }
 
-    void ClearBlendMode()
+    void InvalidateBlendMode()
     {
-        this->currentBlendMode = 3;
+        this->cachedBlendMode = th095::ANM_BLEND_CACHE_INVALIDATED;
     }
 
     void ClearColorOp()
@@ -896,7 +890,7 @@ struct AnmManager
     D3DCOLOR currentTextureFactor;
 
     IDirect3DTexture8 *currentTexture;
-    u8 currentBlendMode;
+    u8 cachedBlendMode;
     u8 currentColorOp;
     u8 cachedDrawPath;
     u8 disableZWrite;

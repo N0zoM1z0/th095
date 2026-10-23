@@ -4566,6 +4566,80 @@ def check_small_closed_domains() -> None:
     )
 
 
+def check_anm_blend_mode(source_text: dict[str, str] | None = None) -> None:
+    overrides = source_text or {}
+    names = ("AnmBlendMode.hpp", "AnmManager.hpp", "AnmManager.cpp",
+             "AnmDrawCore.cpp", "Main.cpp", "MainExact.inl",
+             "ScreenEffectDraw.cpp", "ecl/AnmManagerEclView.hpp")
+    texts = {name: source_without_comments(overrides.get(
+        name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
+    owner = texts["AnmBlendMode.hpp"]
+    domains = {
+        "AnmBlendMode": {"ANM_BLEND_ALPHA": 0, "ANM_BLEND_ADDITIVE": 1,
+                         "ANM_BLEND_ADDITIVE_3D_ONLY": 2, "ANM_BLEND_UNHANDLED": 3},
+        "AnmBlendCacheState": {"ANM_BLEND_CACHE_INVALIDATED": 3},
+    }
+    for domain, expected in domains.items():
+        match = re.search(r"enum\s+" + domain + r"\s*\{([^}]+)\}", owner)
+        parts = [part.strip() for part in match[1].split(",") if part.strip()] if match else []
+        entries = [re.fullmatch(r"(ANM_BLEND_\w+)\s*=\s*(0x[0-9a-fA-F]+|\d+)", part) for part in parts]
+        if (len(parts) != len(expected) or not all(entries) or
+                {entry[1]: int(entry[2], 0) for entry in entries} != expected):
+            fail(f"{domain}: preserve the complete explicit destination-blend/cache domain")
+    if re.search(r"\b(?:TH095_MATCH_EXACT|DIFFBUILD)\b", owner):
+        fail("ANM blend vocabulary must be profile-independent")
+    for name in ("AnmManager.hpp", "MainExact.inl", "ecl/AnmManagerEclView.hpp"):
+        if re.search(r"\bu8\s+cachedBlendMode\s*;", texts[name]) is None:
+            fail(f"{name}: blend cache storage must remain one byte")
+        match = re.search(r"void\s+InvalidateBlendMode\(\)\s*\{([^}]+)\}", texts[name])
+        if match is None or re.fullmatch(
+            r"\s*this->cachedBlendMode\s*=\s*(?:th095::)?ANM_BLEND_CACHE_INVALIDATED\s*;\s*", match[1]
+        ) is None:
+            fail(f"{name}: blend invalidation must only store its cache sentinel")
+    for name, count in (("AnmManager.hpp", 1), ("ecl/AnmManagerEclView.hpp", 2)):
+        if len(re.findall(r"\bu32\s+blendMode\s*:\s*2\s*;", texts[name])) != count:
+            fail(f"{name}: preserve the VM selector's unsigned two-bit representation")
+    if "offsetof(AnmManager, cachedBlendMode) == 0x1764" not in texts["AnmManager.hpp"]:
+        fail("ANM blend cache lost its canonical offset assertion")
+    if "this->blendMode = ANM_BLEND_ADDITIVE;" not in texts["AnmManager.hpp"]:
+        fail("ANM additive producer must use its named selector")
+    if re.search(r"case\s+ANM_OP_BLEND_MODE\s*:\s*vm->blendMode\s*=\s*currentInstr->intArgs\[0\]\s*;\s*break\s*;", texts["AnmManager.cpp"]) is None:
+        fail("ANM blend opcode must retain its literal, varMask-independent producer")
+    expected_writes = {
+        "AnmManager.hpp": ["ANM_BLEND_CACHE_INVALIDATED"],
+        "AnmManager.cpp": ["ANM_BLEND_ALPHA"],
+        "AnmDrawCore.cpp": ["vm->blendMode", "vm->blendMode"],
+        "Main.cpp": [], "MainExact.inl": ["ANM_BLEND_CACHE_INVALIDATED"],
+        "ScreenEffectDraw.cpp": [], "ecl/AnmManagerEclView.hpp": ["ANM_BLEND_CACHE_INVALIDATED"],
+    }
+    for name, expected in expected_writes.items():
+        writes = re.findall(r"\bcachedBlendMode\s*=(?!=)\s*([^;]+);", texts[name])
+        if [value.strip().removeprefix("th095::") for value in writes] != expected:
+            fail(f"{name}: blend-cache writers left the closed protocol")
+    for suffix, expected in (
+        ("3D", [("ANM_BLEND_ALPHA", "D3DBLEND_INVSRCALPHA"), ("ANM_BLEND_ADDITIVE", "D3DBLEND_ONE"), ("ANM_BLEND_ADDITIVE_3D_ONLY", "D3DBLEND_ONE")]),
+        ("", [("ANM_BLEND_ALPHA", "D3DBLEND_INVSRCALPHA"), ("ANM_BLEND_ADDITIVE", "D3DBLEND_ONE")]),
+    ):
+        signature = "void AnmManager::SetRenderStateForVm" + suffix + "(AnmVm *vm)"
+        text = texts["AnmDrawCore.cpp"]
+        body = braced_body_after(text, text.index(signature), signature)
+        cases = re.findall(r"\bcase\s+([^:]+):", body)
+        handlers = re.findall(r"case\s+(ANM_BLEND_\w+)\s*:\s*g_Supervisor.d3dDevice->SetRenderState\(\s*D3DRS_DESTBLEND\s*,\s*(D3DBLEND_\w+)\s*\)\s*;\s*break\s*;", body)
+        if [case.strip() for case in cases] != [case for case, _ in expected] or handlers != expected:
+            fail(f"{signature}: preserve the distinct 2D/3D destination-state dispatch")
+    for path in SRC.rglob("*"):
+        if path.suffix not in (".hpp", ".cpp", ".inl"):
+            continue
+        name = path.relative_to(SRC).as_posix()
+        text = texts.get(name)
+        if text is None:
+            text = source_without_comments(path.read_text(encoding="utf-8"))
+            if re.search(r"\b(?:cachedBlendMode|blendMode)\b", text):
+                fail(f"{name}: review new ANM blend access before extending this closed protocol")
+        if re.search(r"\b(?:currentBlendMode|ClearBlendMode|AnmBlendMode_Unset|AnmBlendMode_Normal|AnmBlendMode_Additive)\b", text):
+            fail(f"{name}: retired blend-cache/legacy-domain vocabulary returned")
+
+
 def check_anm_draw_path(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
     names = ("AnmDrawPath.hpp", "AnmManager.hpp", "AnmManager.cpp",
@@ -4759,6 +4833,7 @@ def main() -> int:
     check_anm_quad_vertices()
     check_anm_batch_vertices()
     check_anm_draw_path()
+    check_anm_blend_mode()
     check_ecl_type_boundaries()
     check_ecl_extended_type_boundaries()
     check_photo_bullet_owner()

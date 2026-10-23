@@ -956,7 +956,7 @@ void GameWindow::ResetRenderState()
 
     if (g_AnmManager != NULL)
     {
-        g_AnmManager->ClearBlendMode();
+        g_AnmManager->InvalidateBlendMode();
         g_AnmManager->ClearColorOp();
         g_AnmManager->InvalidateDrawPath();
         g_AnmManager->ClearTexture();
@@ -1180,7 +1180,7 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
     g_AnmManager->ClearSprite();
     g_AnmManager->ClearTexture();
     g_AnmManager->ClearColorOp();
-    g_AnmManager->ClearBlendMode();
+    g_AnmManager->InvalidateBlendMode();
     g_AnmManager->ClearZWrite();
     g_AnmManager->scriptsExecutedThisFrame = 0;
     g_AnmManager->renderStateChangesThisFrame = 0;

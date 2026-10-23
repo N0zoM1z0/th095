@@ -140,7 +140,7 @@ static void SeedGeometry(float left,float top,float right,float bottom)
 }
 static void SeedVm(AnmVm &vm, AnmLoadedSprite &sprite)
 {
-    vm.loadedSprite = &sprite; vm.blendMode = 0; vm.useSecondaryColor = false;
+    vm.loadedSprite = &sprite; vm.blendMode = ANM_BLEND_ALPHA; vm.useSecondaryColor = false;
     vm.color1.color = 0xff102030; vm.color2.color = 0xffa0b0c0;
     vm.uvScrollPos.x = 0.0625f; vm.uvScrollPos.y = -0.125f;
 }
@@ -159,7 +159,7 @@ static unsigned int CheckDrawColors(AnmManager *manager,AnmLoadedSprite &sprite)
         vm.color2.color = values[(color+5)%6] | values[(color+4)%6]<<8 | values[(color+3)%6]<<16 | values[(color+2)%6]<<24;
         manager->color.color = 0xff80817f; manager->useMixColor = mix;
         manager->ClearVertexBuffer(); manager->currentTexture = sprite.texture;
-        manager->cachedDrawPath = ANM_DRAW_PATH_BUFFERED_QUADS; manager->currentBlendMode = 0;
+        manager->cachedDrawPath = ANM_DRAW_PATH_BUFFERED_QUADS; manager->cachedBlendMode = ANM_BLEND_ALPHA;
         manager->screenShakeOffset.x = 0.25f; manager->screenShakeOffset.y = -0.25f;
         SeedGeometry(10.25f,20.75f,40.25f,50.75f); ResetViewportDeviceCalls(S_OK);
         CHECK(manager->DrawInner(&vm,(preserve?2:0)|(rounded?1:0)) == ZUN_SUCCESS);
@@ -188,7 +188,7 @@ static void __cdecl ObserveTransition(const ViewportDeviceCall *call,void *conte
     {
         CHECK(o.pending == 1 && o.manager->spritesToDraw == 1);
         if (o.mode==0) CHECK(o.manager->currentTexture == o.texture);
-        if (o.mode==1) CHECK(o.manager->currentBlendMode == 0);
+        if (o.mode==1) CHECK(o.manager->cachedBlendMode == ANM_BLEND_ALPHA);
         ++o.draws;
     }
     if (call->kind == VIEWPORT_CALL_TEXTURE || call->kind == VIEWPORT_CALL_RENDER_STATE)
@@ -201,10 +201,10 @@ static unsigned int CheckTransitions(AnmManager *manager,AnmLoadedSprite &sprite
     for (unsigned int pending=0;pending<(mode==2?1u:2u);++pending)
     for (unsigned int failure=0;failure<2;++failure)
     {
-        AnmVm vm; SeedVm(vm,sprite); if (mode==1) vm.blendMode=1;
+        AnmVm vm; SeedVm(vm,sprite); if (mode==1) vm.blendMode=ANM_BLEND_ADDITIVE;
         manager->ClearVertexBuffer();manager->flushesThisFrame=300;
         manager->currentTexture = mode==0?ViewportTestTexture(1):sprite.texture;
-        manager->currentBlendMode=0;manager->cachedDrawPath=mode==2?ANM_DRAW_PATH_STREAMED_QUAD:ANM_DRAW_PATH_BUFFERED_QUADS;manager->useMixColor=0;
+        manager->cachedBlendMode=ANM_BLEND_ALPHA;manager->cachedDrawPath=mode==2?ANM_DRAW_PATH_STREAMED_QUAD:ANM_DRAW_PATH_BUFFERED_QUADS;manager->useMixColor=0;
         manager->screenShakeOffset.x=manager->screenShakeOffset.y=0;
         AnmVertex old[4];FillWire(old,5);unsigned char oldPacket[168];Expand(oldPacket,old);
         if (pending) CHECK(manager->AddSpriteToDrawBuffer(old)==ZUN_SUCCESS);
@@ -230,14 +230,14 @@ static unsigned int CheckCull(AnmManager *manager,AnmLoadedSprite &sprite)
     for (unsigned int i=0;i<4;++i)
     {
         manager->ClearVertexBuffer();manager->flushesThisFrame=400;
-        manager->currentTexture=ViewportTestTexture(1);manager->cachedDrawPath=ANM_DRAW_PATH_STREAMED_QUAD;manager->currentBlendMode=0;
+        manager->currentTexture=ViewportTestTexture(1);manager->cachedDrawPath=ANM_DRAW_PATH_STREAMED_QUAD;manager->cachedBlendMode=ANM_BLEND_ALPHA;
         manager->screenShakeOffset.x=manager->screenShakeOffset.y=0;
         AnmVertex q[4];FillWire(q,i);unsigned char bytes[168];Expand(bytes,q);CHECK(manager->AddSpriteToDrawBuffer(q)==ZUN_SUCCESS);
-        AnmVm vm;SeedVm(vm,sprite);vm.blendMode=1;
+        AnmVm vm;SeedVm(vm,sprite);vm.blendMode=ANM_BLEND_ADDITIVE;
         SeedGeometry(rectangles[i][0],rectangles[i][1],rectangles[i][2],rectangles[i][3]);ResetViewportDeviceCalls(S_OK);
         CHECK(manager->DrawInner(&vm,0)==ZUN_SUCCESS && ViewportDeviceCallCount()==0);
         CHECK(manager->spritesToDraw==1 && manager->vertexBufferEndPtr==manager->vertexBuffer+6 && manager->vertexBufferStartPtr==manager->vertexBuffer);
-        CHECK(manager->flushesThisFrame==400 && manager->currentTexture==ViewportTestTexture(1) && manager->cachedDrawPath==ANM_DRAW_PATH_STREAMED_QUAD && manager->currentBlendMode==0);
+        CHECK(manager->flushesThisFrame==400 && manager->currentTexture==ViewportTestTexture(1) && manager->cachedDrawPath==ANM_DRAW_PATH_STREAMED_QUAD && manager->cachedBlendMode==ANM_BLEND_ALPHA);
         CHECK(memcmp(manager->vertexBuffer,bytes,sizeof(bytes))==0);
         for (unsigned int j=0;j<4;++j)
         {
@@ -299,7 +299,7 @@ static unsigned int CheckDrawPaths(AnmManager *manager, AnmLoadedSprite &sprite)
             AnmVm vm; SeedVm(vm, sprite); vm.visible = vm.drawEnabled = true;
             manager->ClearVertexBuffer(); manager->flushesThisFrame = 0;
             manager->cachedDrawPath = incoming[state]; manager->currentTexture = sprite.texture;
-            manager->currentBlendMode = 0; manager->useMixColor = 0;
+            manager->cachedBlendMode = ANM_BLEND_ALPHA; manager->useMixColor = 0;
             manager->screenShakeOffset.x = manager->screenShakeOffset.y = 0;
             if (pending) manager->AddSpriteToDrawBuffer(quad);
             SeedGeometry(10,20,40,50); ResetViewportDeviceCalls(failure ? E_FAIL : S_OK);

@@ -720,6 +720,30 @@ class SemanticProtocolGuardTests(unittest.TestCase):
     def test_anm_draw_path_guard_accepts_closed_byte_domain(self) -> None:
         GUARD.check_anm_draw_path()
 
+    def test_anm_blend_guard_accepts_separate_selector_and_cache_domains(self) -> None:
+        GUARD.check_anm_blend_mode()
+
+    def test_anm_blend_guard_rejects_domain_width_and_dispatch_regressions(self) -> None:
+        mutations = [
+            ("AnmBlendMode.hpp", "ANM_BLEND_UNHANDLED = 3", "ANM_BLEND_UNHANDLED = 4"),
+            ("AnmBlendMode.hpp", "ANM_BLEND_CACHE_INVALIDATED = 3", "ANM_BLEND_CACHE_INVALIDATED = 255"),
+            ("AnmBlendMode.hpp", "#pragma once", "#pragma once\n#ifdef DIFFBUILD\n#endif"),
+            ("AnmManager.hpp", "u8 cachedBlendMode;", "AnmBlendMode cachedBlendMode;"),
+            ("AnmManager.hpp", "u32 blendMode : 2;", "u32 blendMode : 3;"),
+            ("AnmManager.hpp", "this->cachedBlendMode = ANM_BLEND_CACHE_INVALIDATED;", "this->cachedBlendMode = 3;"),
+            ("AnmManager.cpp", "vm->blendMode = currentInstr->intArgs[0];", "vm->blendMode = GET_INT_VAR(0);"),
+            ("AnmDrawCore.cpp", "case ANM_BLEND_ADDITIVE_3D_ONLY:", "case ANM_BLEND_UNHANDLED:"),
+            ("AnmDrawCore.cpp", "case ANM_BLEND_ALPHA:", "case 0:"),
+            ("MainExact.inl", "cachedBlendMode", "currentBlendMode"),
+        ]
+        for name, before, after in mutations:
+            source = (ROOT / "src" / name).read_text(encoding="utf-8")
+            changed = source.replace(before, after, 1)
+            self.assertNotEqual(source, changed)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_anm_blend_mode({name: changed})
+
     def test_anm_draw_path_guard_rejects_domain_and_cache_regressions(self) -> None:
         mutations = [
             ("AnmDrawPath.hpp", "ANM_DRAW_PATH_INVALIDATED = 0xff", "ANM_DRAW_PATH_INVALIDATED = 0"),

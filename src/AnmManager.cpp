@@ -982,7 +982,7 @@ AnmManager::AnmManager()
 
     this->quadVertexBuffer = NULL;
     this->currentTexture = NULL;
-    this->currentBlendMode = 0;
+    this->cachedBlendMode = ANM_BLEND_ALPHA;
     this->currentColorOp = 0;
     this->currentTextureFactor = 1;
     this->cachedDrawPath = ANM_DRAW_PATH_INITIAL;

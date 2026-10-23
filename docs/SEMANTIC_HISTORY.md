@@ -19013,3 +19013,77 @@ Receipts, commands, target scan, layout data and runtime resumption are below
 .analysis/sem354/. See [ANM_DRAW_PATH.md](ANM_DRAW_PATH.md). No real GPU/driver,
 failed-device recovery, globally coherent device cache, full game or native
 64-bit/Linux/Web game acceptance follows. Semantic/platform work remains active.
+
+
+### SEM-355 — destination-blend selectors, literal production and cache collision
+
+2026-10-23. AnmBlendMode.hpp owns the two-bit VM vocabulary: ALPHA 0,
+ADDITIVE 1, ADDITIVE_3D_ONLY 2 and UNHANDLED 3. The independently named
+ANM_BLEND_CACHE_INVALIDATED is also 3. Canonical cachedBlendMode remains one
+byte at manager +0x1764; VM blendMode stays an unsigned two-bit field at
+flagsWord +0x228 bits 4..5. InvalidateBlendMode only publishes its sentinel.
+The old legacy unset/normal/additive-only enum is retired. Neither enum is
+used to widen storage. Normal COFF layout data proves both enum widths,
+the cache byte/offset, VM flag offset and unchanged owner extents.
+
+Raw target inventory finds ten ANM byte accesses and five unrelated Background
+dword accesses at the same displacement, which remain separate. All
+5,827 listed instructions in the bounded Ghidra queries match the verified
+original PE. Initialize @ 0x00401C10 establishes selector 0. Opcode 66 in
+ExecuteScript @ 0x0043A600 loads the literal +8 argument and ignores varMask:
+unaligned table @ 0x0043E87A, biased index 67, handler @ 0x0043AFFC clears
+0x30 and publishes (argument & 3)<<4. Four independent body/tail stores in
+straight/rotating laser initialization @ 0x0041E0C0 / 0x0041F380 publish 1.
+
+Independent consumers @ 0x0043EC20 / 0x0043EA20 close the handling domain.
+Both flush before publishing a cache miss. 0 selects destination INVSRCALPHA,
+1 selects ONE, 2 selects ONE only on a 3D miss, and 3 has no destination-state
+handler. Hits neither flush nor update destination state; the separate 3D
+texture-factor path is unchanged. Every invocation increments the state counter.
+Failed calls still retain the published selector. A 2D miss for 2 can therefore
+suppress a later 3D ONE write through the shared cache. Invalidation 3 also
+collides with raw selector 3, yielding a hit rather than forcing a flush/call.
+These are preserved target behaviors; names describe branch roles, not retail
+content validity, original author intent or an entire blend equation.
+
+Storage/semantic ownership remains canonical VM/ANM. Existing manager, draw,
+Main, ScreenEffect and PhotoEffect TUs keep emission/build ownership. MainExact
+and inherited ECL declarations share vocabulary without becoming alternate
+canonical layouts. Existing PhotoEffect emission scaffolding remains unchanged;
+no padding, selector, selected type, assembly or source-shape exception is added.
+
+Before-edit and focused after-edit exact replay each pass 67 units across the
+four directly affected sources, including all 34 PhotoEffect exact units.
+The cold aggregate and then fixed-object zero-refresh comparison each pass
+all 698 units across 88 sources. A full recipe audit reviews
+744 same-family private-label updates and zero public-reference/function
+identity changes; all other recipe fields, profiles, partitions, extents,
+authored credit and closed debt baselines stay fixed. Manifest SHA-256:
+094ef9ed1bcae3ca83ebf98a9a625d124edb1a0fdb882aa1d8fbad1e8a0497fb.
+
+Independent normal cold compilation/linkage covers every real object with zero
+unresolved symbols. Build-local PE32 GUI: 778,752 bytes, SHA-256
+2434b9eed2584ecc69ae64f8c52f73b85060c2f8bb9da1a7003e2e437f3665b4.
+All 33 actual manager/draw/overlay methods independently pass strict target
+comparison with inherited normal RNG/lifecycle aliases separately reviewed.
+All 929 named roots, 81 private entries and 1,798 recursive code/data/EH graphs
+stay equal; 933 private-reference spellings change with zero public identity,
+added root or changed-body exception. Main/ECL and separately selected
+PhotoEffect normal bodies remain preserved graphs, not wholesale target-byte
+acceptance inferred from their different exact bodies.
+
+Seven /OPT:NOREF Win32 clients link all 88 normal objects and pass. The new
+client covers 348 cases: 192 actual opcode-66 executions over signed/range
+inputs, variable masks and old words; sixteen additive flag updates; 128
+2D/3D/cache/selector/pending/HRESULT transitions; eight byte-only invalidations
+and four crossed-path sequences. It checks the full physical flag word,
+ignored indirection, in-call publication order, preserved queues/neighbors,
+missing-handler behavior and failed calls. The prior six clients retain their
+lifetime/viewport/projection/shake/overlay/prebuilt-quad/batch coverage.
+Public CI passes 125 workflow tests and the existing native component programs.
+All 339 source/tool/test inputs and 16 non-recipe configs stay frozen through
+acceptance. The protocol guard rejects domain/width/dispatch regressions and
+restoring variable resolution to the literal opcode. Receipts and commands:
+.analysis/sem355/. See [ANM_BLEND_MODE.md](ANM_BLEND_MODE.md). No GPU output,
+failed-device recovery, global cache coherence, retail mode-2/3 intent, thread
+safety or native game ABI is accepted. Semantic/platform work remains active.

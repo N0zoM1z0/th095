@@ -4,6 +4,7 @@
 #include "Main.hpp"
 #include "AnmQuadVertex.hpp"
 #include "AnmDrawPath.hpp"
+#include "AnmBlendMode.hpp"
 #include "AnmVmId.hpp"
 #include "Rng.hpp"
 #include "ZunResult.hpp"
@@ -254,7 +255,7 @@ struct AnmVmBase
 {
     void SetBlendModeAdditive()
     {
-        this->blendMode = 1;
+        this->blendMode = ANM_BLEND_ADDITIVE;
     }
 
 #if defined(TH095_MATCH_EXACT)
@@ -323,7 +324,7 @@ struct AnmVmBase
             u32 drawEnabled : 1;
             u32 updateRotation : 1;
             u32 updateScale : 1;
-            u32 blendMode : 2;
+            u32 blendMode : 2; // AnmBlendMode, physical bits 4..5.
             u32 unknownFlags6 : 2;
             u32 useAlternatePosition : 1;
             u32 flip : 2;
@@ -582,7 +583,7 @@ struct AnmManager
 #endif
     u32 currentTextureFactor;                // +0x00175c
     IDirect3DTexture8 *currentTexture;       // +0x001760
-    u8 currentBlendMode;                     // +0x001764
+    u8 cachedBlendMode;                     // +0x001764
     u8 currentColorOp;                       // +0x001765
     u8 cachedDrawPath;                       // +0x001766: AnmDrawPath hint.
     u8 disableZWrite;                        // +0x001767
@@ -716,7 +717,7 @@ struct AnmManager
     static void __fastcall DrawLayer7(void *arg);
     static void __fastcall DrawLayer8(void *arg);
 
-    void ClearBlendMode() { this->currentBlendMode = 3; }
+    void InvalidateBlendMode() { this->cachedBlendMode = ANM_BLEND_CACHE_INVALIDATED; }
     void ClearColorOp() { this->currentColorOp = 0xff; }
     void InvalidateDrawPath() { this->cachedDrawPath = ANM_DRAW_PATH_INVALIDATED; }
     void ClearTexture() { this->currentTexture = NULL; }
@@ -743,6 +744,9 @@ typedef char AnmManagerPrimaryVmAtF0C[(offsetof(AnmManager, primaryVm) == 0xf0c)
 typedef char AnmManagerPreloadSlotsAt2C[(offsetof(AnmManager, slots) == 0x2c) ? 1 : -1];
 typedef char AnmManagerCachedWorldMatrixAtECC[(offsetof(AnmManager, cachedWorldMatrix) == 0xecc) ? 1 : -1];
 typedef char AnmManagerSurfacesAt11DC[(offsetof(AnmManager, surfaces) == 0x11dc) ? 1 : -1];
+typedef char AnmManagerBlendCacheAt1764[
+    (offsetof(AnmManager, cachedBlendMode) == 0x1764 &&
+     sizeof(((AnmManager *)0)->cachedBlendMode) == 1) ? 1 : -1];
 typedef char AnmManagerDrawPathAt1766[
     (offsetof(AnmManager, cachedDrawPath) == 0x1766 &&
      sizeof(((AnmManager *)0)->cachedDrawPath) == 1) ? 1 : -1];

@@ -74,7 +74,7 @@ struct SupervisorAnmManagerView
     Float2 screenShakeOffset;                  // +0x0020
     u8 unknown028[0x1760 - 0x28];
     IDirect3DTexture8 *currentTexture;          // +0x1760
-    u8 currentBlendMode;                       // +0x1764
+    u8 cachedBlendMode;                       // +0x1764
     u8 currentColorOp;                         // +0x1765
     u8 cachedDrawPath;                         // +0x1766
     u8 disableZWrite;                          // +0x1767
@@ -87,7 +87,7 @@ struct SupervisorAnmManagerView
     void ClearSprite() { this->currentSprite = NULL; }
     void ClearTexture() { this->currentTexture = NULL; }
     void ClearColorOp() { this->currentColorOp = 0xff; }
-    void ClearBlendMode() { this->currentBlendMode = 3; }
+    void InvalidateBlendMode() { this->cachedBlendMode = ANM_BLEND_CACHE_INVALIDATED; }
     void ClearZWrite() { this->disableZWrite = 0xff; }
     void ResetFrameDebugInfo()
     {
@@ -865,7 +865,7 @@ void GameWindow::ResetRenderState()
 
     if (g_AnmManager != NULL)
     {
-        g_AnmManager->ClearBlendMode();
+        g_AnmManager->InvalidateBlendMode();
         g_AnmManager->ClearColorOp();
         g_AnmManager->InvalidateDrawPath();
         g_AnmManager->ClearTexture();
@@ -1089,7 +1089,7 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
     g_SupervisorAnmManager->ClearSprite();
     g_SupervisorAnmManager->ClearTexture();
     g_SupervisorAnmManager->ClearColorOp();
-    g_SupervisorAnmManager->ClearBlendMode();
+    g_SupervisorAnmManager->InvalidateBlendMode();
     g_SupervisorAnmManager->ClearZWrite();
     g_SupervisorAnmManager->ResetFrameDebugInfo();
     g_SupervisorAnmManager->ClearCameraSettings();

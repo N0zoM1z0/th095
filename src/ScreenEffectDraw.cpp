@@ -70,7 +70,7 @@ void ScreenEffect::DrawSquare(ScreenEffectRect *rect, unsigned int color)
     g_AnmManager->ClearSprite();
     g_AnmManager->ClearTexture();
     g_AnmManager->ClearColorOp();
-    g_AnmManager->ClearBlendMode();
+    g_AnmManager->InvalidateBlendMode();
     g_AnmManager->ClearZWrite();
 
     g_Supervisor.d3dDevice->SetTextureStageState(
