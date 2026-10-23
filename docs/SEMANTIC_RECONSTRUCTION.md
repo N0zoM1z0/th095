@@ -256,9 +256,11 @@ ScreenEffect now has one header/body and uses canonical ZunTimer, full
 Supervisor/task owners and typed configured/applied shake fields. Minimal
 pinned controls retire the custom timer and complete exact-body route without
 an emission adapter. Normal target comparison and actual gate/time/RNG/draw/
-reset/Chain execution remain independent evidence. The isolated DrawSquare
-cache boundary, opaque cancel gate and remaining naming/lifecycle work are
-explicitly retained in [the shake contract](SCREEN_EFFECT_SHAKE.md).
+reset/Chain execution remain independent evidence. DrawSquare also shares its isolated body, full parents and canonical Float3
+wire while preserving all six cache-clear phases; [its wire/cache contract](SCREEN_EFFECT_QUAD.md)
+keeps RHW/diffuse separate from the same-stride ANM XYZ/UV carrier. The opaque
+cancel gate and remaining naming/lifecycle work stay explicit in
+[the shake contract](SCREEN_EFFECT_SHAKE.md).
 
 A bounded family is closed only when its representation, consumers,
 transitions, ownership axes, unknowns, and applicable oracles are explicit.

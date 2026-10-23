@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#include "ScreenEffectDrawExact.inl"
-#else
 #define WIN32_LEAN_AND_MEAN
 #include "AnmManager.hpp"
 #include "ScreenEffect.hpp"
@@ -12,32 +9,16 @@
 namespace th095
 {
 
-struct ScreenEffectFloat3
+struct ScreenEffectQuadVertex
 {
-    ScreenEffectFloat3()
-    {
-    }
-
-    ScreenEffectFloat3(float x, float y, float z)
-    {
-        this->x = x;
-        this->y = y;
-        this->z = z;
-    }
-
-    float x;
-    float y;
-    float z;
-};
-
-struct ScreenEffectVertexDiffuseXyzrhw
-{
-    ScreenEffectFloat3 position;
-    float w;
+    Float3 position;
+    float rhw;
     unsigned int diffuse;
 };
-typedef char ScreenEffectVertexDiffuseXyzrhwSizeIs14[
-    (sizeof(ScreenEffectVertexDiffuseXyzrhw) == 0x14) ? 1 : -1];
+typedef char ScreenEffectQuadVertexSizeIs14[
+    (sizeof(ScreenEffectQuadVertex) == 0x14 &&
+     offsetof(ScreenEffectQuadVertex, rhw) == 0x0c &&
+     offsetof(ScreenEffectQuadVertex, diffuse) == 0x10) ? 1 : -1];
 
 // FUNCTION: TH095 0x00436920; TH08 0x0045B1E0 is the source-shape oracle.
 // TH095 omits TH08's conditional ZWRITE-disable device call. The six inline
@@ -47,21 +28,21 @@ void ScreenEffect::DrawSquare(ScreenEffectRect *rect, unsigned int color)
 {
     g_AnmManager->FlushVertexBuffer();
 
-    ScreenEffectVertexDiffuseXyzrhw vertices[4];
+    ScreenEffectQuadVertex vertices[4];
 
     vertices[0].position =
-        ScreenEffectFloat3(rect->left, rect->top, 0.0f);
+        Float3(rect->left, rect->top, 0.0f);
     vertices[1].position =
-        ScreenEffectFloat3(rect->right, rect->top, 0.0f);
+        Float3(rect->right, rect->top, 0.0f);
     vertices[2].position =
-        ScreenEffectFloat3(rect->left, rect->bottom, 0.0f);
+        Float3(rect->left, rect->bottom, 0.0f);
     vertices[3].position =
-        ScreenEffectFloat3(rect->right, rect->bottom, 0.0f);
+        Float3(rect->right, rect->bottom, 0.0f);
 
-    vertices[3].w = 1.0f;
-    vertices[2].w = vertices[3].w;
-    vertices[1].w = vertices[2].w;
-    vertices[0].w = vertices[1].w;
+    vertices[3].rhw = 1.0f;
+    vertices[2].rhw = vertices[3].rhw;
+    vertices[1].rhw = vertices[2].rhw;
+    vertices[0].rhw = vertices[1].rhw;
 
     vertices[3].diffuse = color;
     vertices[2].diffuse = vertices[3].diffuse;
@@ -83,7 +64,7 @@ void ScreenEffect::DrawSquare(ScreenEffectRect *rect, unsigned int color)
         D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
     g_Supervisor.d3dDevice->DrawPrimitiveUP(
         D3DPT_TRIANGLESTRIP, 2, vertices,
-        sizeof(ScreenEffectVertexDiffuseXyzrhw));
+        sizeof(ScreenEffectQuadVertex));
 
     g_AnmManager->ClearVertexShader();
     g_AnmManager->ClearSprite();
@@ -103,5 +84,3 @@ void ScreenEffect::DrawSquare(ScreenEffectRect *rect, unsigned int color)
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

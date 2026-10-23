@@ -182,8 +182,8 @@ not a native parent, full fade/submission or graphics-driver oracle. See
 ## ScreenEffect shake normal Win32 oracle
 
 `python3 scripts/check-supervisor-lifecycle.py --viewport`, under the workflow
-resource limits, now runs a third client: `tests/win32/ScreenEffectShakeTest.cpp`.
-All three programs link all 88 cold normal objects with /OPT:NOREF. The shake
+resource limits, includes the shake client: `tests/win32/ScreenEffectShakeTest.cpp`.
+All component programs link all 88 cold normal objects with /OPT:NOREF. The shake
 client executes the actual factory, timer/RNG, viewport application, DrawInner,
 layer-six callback and Chain traversal, with typed SDK C bindings only at the
 external device boundary. Its 171 cases cover gates and unrelated bits, all nine
@@ -197,3 +197,19 @@ constructs a real photo-task owner and retains it until process exit because its
 game teardown assumes loaded subsystems. It does not validate that teardown,
 full Render, a graphics driver, synchronization or native 64-bit game ABI. See
 [the storage and scheduling contract](SCREEN_EFFECT_SHAKE.md).
+
+## ScreenEffect quad normal Win32 oracle
+
+The same `--viewport` command also executes `tests/win32/ScreenEffectQuadTest.cpp`.
+Its 128 cases vary eight finite rectangles, four diffuse words, pending batch
+state and success/failure HRESULTs. Actual DrawSquare/Flush code emits the
+packet and invalidates canonical fields. Typed SDK C capture copies vertex
+bytes during DrawPrimitiveUP, checks six cache values remain live until drawing
+and become invalid before fixed state restoration, then verifies real DrawInner
+and a textured flush rebind the same texture/blend. Rectangle, shake/capture
+state and texture factor remain intact. The wire is 20-byte XYZRHW/diffuse;
+ANM's same-stride XYZ/UV stream is explicitly separate.
+
+This is one independently target-exact normal method and unchanged whole-normal
+code/data/EH graph evidence, not a graphics driver, full-game run or native
+parent ABI. See [the quad contract](SCREEN_EFFECT_QUAD.md).

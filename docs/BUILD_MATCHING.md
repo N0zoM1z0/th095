@@ -742,6 +742,14 @@ target exactly. Prefer truthful TU isolation when source ownership/compiler
 allocation phase is independently evidenced; do not replace the missing homes
 with six dummy locals.
 
+SEM-351 confirms that this isolation does not require the old partial ANM or
+Supervisor declarations. The normal full-owner source, shared Float3 and a
+proper XYZRHW/diffuse packet reproduce all 887 bytes and thirty references in
+both products. The separate exact file is retired. A scalar-flat assignment
+control emits 624 bytes; keep the genuine vector-construction/copy phases
+rather than manufacturing their stack cost. The equally sized ANM XYZ/TEX1
+carrier is a different wire contract, not a substitute selected by stride.
+
 For switch-owning functions, compare compiler tables but never credit them as
 authored code. `ScreenEffect::RegisterChain` is 598 authored bytes and owns the
 32-byte table immediately following it, so its canonical unit uses

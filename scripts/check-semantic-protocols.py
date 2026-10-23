@@ -4566,12 +4566,34 @@ def check_small_closed_domains() -> None:
     )
 
 
+def check_screen_effect_quad_wire(source_text: str | None = None) -> None:
+    source = source_text if source_text is not None else (SRC / "ScreenEffectDraw.cpp").read_text(encoding="utf-8")
+    clean = source_without_comments(source)
+    if any(name in clean for name in ("ScreenEffectDrawExact.inl", "ScreenEffectSupervisorView", "ScreenEffectAnmManagerView", "ScreenEffectFloat3", "TH095_MATCH_EXACT", "DIFFBUILD")):
+        fail("ScreenEffect quad restored a selected body or partial runtime owner")
+    if '#include "AnmManager.hpp"' not in clean:
+        fail("ScreenEffect quad lost the canonical ANM/Supervisor declarations")
+    packet = re.search(r"struct\s+ScreenEffectQuadVertex\s*\{([^}]+)\}", clean, re.DOTALL)
+    if packet is None or not all(re.search(pattern, packet.group(1)) for pattern in (
+        r"\bFloat3\s+position\s*;", r"\b(?:float|f32)\s+rhw\s*;", r"\b(?:unsigned\s+int|u32)\s+diffuse\s*;",
+    )):
+        fail("ScreenEffect quad lost its Float3/RHW/diffuse wire representation")
+    for assertion in (r"sizeof\(ScreenEffectQuadVertex\)\s*==\s*0x14", r"offsetof\(ScreenEffectQuadVertex,\s*rhw\)\s*==\s*0x0c", r"offsetof\(ScreenEffectQuadVertex,\s*diffuse\)\s*==\s*0x10"):
+        if re.search(assertion, clean) is None:
+            fail("ScreenEffect quad lost a target wire-layout assertion")
+    if re.search(r"SetVertexShader\(\s*D3DFVF_XYZRHW\s*\|\s*D3DFVF_DIFFUSE\s*\)", clean) is None:
+        fail("ScreenEffect quad mixed its XYZRHW/diffuse namespace with another FVF")
+    if re.search(r"D3DPT_TRIANGLESTRIP,\s*2,\s*vertices,\s*sizeof\(ScreenEffectQuadVertex\)", clean) is None:
+        fail("ScreenEffect quad lost its four-vertex/20-byte external packet binding")
+
+
 def main() -> int:
     check_profile_selector_debt()
     check_profile_selected_declaration_debt()
     check_anm_opcode_protocol()
     check_background_protocol()
     check_background_owner()
+    check_screen_effect_quad_wire()
     check_ecl_type_boundaries()
     check_ecl_extended_type_boundaries()
     check_photo_bullet_owner()
@@ -4628,6 +4650,7 @@ def main() -> int:
     print("  canonical ANM opcode domain: -1..87 explicit")
     print("  Background stage opcode dispatch: 15/15 named")
     print("  Background owner: one profile-independent 0x201C declaration")
+    print("  ScreenEffect quad: shared Float3, 20-byte XYZRHW/diffuse wire and canonical parents")
     print("  normal ECL types: canonical ANM, Supervisor, and Background owners")
     print("  EclExtended normal types: canonical ANM, Float3, Effect, BulletInf, EnemyInf, PlayerInf, Camera, and PhotoGameTask owners")
     print("  BulletInf owner: one profile-independent 0x27C5B8 declaration")

@@ -18727,3 +18727,68 @@ CPU 1/nice 19; recorded runs peak at 254.16 MiB with zero OOM events.
 Result: canonical ScreenEffect source and shake storage/publication without a
 normal code change or added exact credit. Durable fact: MAIN-060. Commands,
 controls, reports and frozen-input receipts: .analysis/sem350/.
+
+### SEM-351 — shared DrawSquare owners and explicit quad wire
+
+Scope: DrawSquare @ 0x00436920, 887 bytes / thirty relocations. The isolated
+ScreenEffectDraw.cpp now emits one body through canonical ANM/Supervisor owners
+and Float3. ScreenEffectDrawExact.inl, its padded device/cache projections and
+duplicate ScreenEffectFloat3 are retired. A source-local ScreenEffectQuadVertex
+owns the real 20-byte XYZRHW/diffuse packet, with RHW/diffuse offsets 0x0C/0x10.
+No production header, profile, object partition or authorized x87 block changes.
+
+Observed: fresh attested DrawSquare/Flush disassembly establishes queued-batch
+flush, four position/zero-Z/one-RHW/color vertices, four SELECTARG1/DIFFUSE stage
+calls, INVSRCALPHA destination blend, shader 0x44, two-strip draw, six canonical
+slot invalidations and four MODULATE/TEXTURE restores. Cache values survive
+through the draw and are invalidated before restoration. Device failure results
+are ignored by the target sequence; no conditional ZWRITE call is introduced.
+The same-stride ANM prebuilt quad binds XYZ/TEX1 and is a separate carrier,
+despite inherited RHW/diffuse names and casts. It is not merged by byte size.
+
+Ownership: the packet is local CPU storage borrowed synchronously by the SDK
+boundary; its input rectangle remains caller-owned. ANM owns persistent queued
+vertices and invalidation slots; SupervisorLifecycle owns the full parent/device
+slot. ScreenEffect owns overlay behavior and the isolated CPP retains emission.
+Exact and normal share this source and legitimate wire declaration; no
+compiler-emission adapter, selected layout, padding or new assembly is needed.
+
+Compiler oracle: direct full-owner source reproduces the target structure.
+Scalar-flat construction emits 624 bytes and is rejected; canonical Float3
+construction and the final named wire preserve 887. A header-wide position
+control also preserves this method, but does not establish that the distinct
+XYZ/UV carrier should be collapsed into the RHW/diffuse namespace. Every one
+of thirty production bindings retags only one of three owner identities:
+seven ANM-pointer, one Flush method and twenty-two Supervisor references.
+All actual addends/physical targets, other recipe fields and all other 697
+units remain unchanged. Production exact and frozen-object zero-refresh repeat
+pass 1/1. Fresh exact scope is source-only; no new 698-unit aggregate is claimed.
+SEM-350's prior aggregate receipt remains separate.
+
+Normal/runtime: independent actual normal DrawSquare passes strict 887-byte /
+thirty-reference comparison. The cold 88-source normal product links with zero
+unresolved symbols; build-local PE32 GUI is 778,752 bytes, SHA-256
+a14ef36b462193cffd22ea909b1f6ad4b5847957638b1c0e92d41b8638cd4d99.
+All 928 named roots, 81 private entries and 1,797 recursive code/data/EH graphs
+are unchanged, with zero private renames or changed-body exceptions. Four
+/OPT:NOREF Win32 clients link every normal object: existing lifetime, 96 viewport
+cases/five stage-camera handoffs, 64 ANM projection cases and 171 shake cases
+remain; the new quad client passes 128 rectangle/color/batch/HRESULT cases.
+It captures vertex bytes while the stack packet is live, observes cache timing
+at real SDK calls and follows with actual DrawInner/Flush texture/blend rebinding.
+Only the external device/resource boundary is supplied by the C SDK fixture.
+No GPU/driver, full game, synchronization or native parent/game ABI is accepted.
+
+Final gates: 329 source/tool/test inputs, sixteen non-recipe configs and the
+manifest stay frozen. Public CI passes 117 workflow tests and thirteen native
+programs. Two new guard tests reject selected/partial parents, duplicate vectors,
+wrong 20-byte FVF namespaces, layout and stride bindings. Closed selector debt
+shrinks to 256 keys / 675 directives; declaration debt to 186 keys / 191 entries.
+Tracking, generated progress and local links pass. Recorded serial half-CPU /
+768-MiB-high / 1-GiB-max runs peak at 260.06 MiB, zero OOM events.
+
+Result: all sixteen ScreenEffect methods now share maintained bodies, without
+normal code changes or extra exact credit. MAIN-061 and SCREEN_EFFECT_QUAD.md
+record the contract. Distinct ANM wire carriers, remaining lifecycle/parent
+views, raw effect parameters, the opaque cancel gate and platform work remain
+open. Commands, controls, frozen recipes and reports: .analysis/sem351/.

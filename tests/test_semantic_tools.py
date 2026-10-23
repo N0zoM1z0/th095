@@ -714,6 +714,25 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("struct SupervisorViewportLifecycle", lifecycle)
         self.assertNotIn("struct SupervisorTimerLifecycle", lifecycle)
 
+    def test_screen_effect_quad_guard_accepts_closed_wire(self) -> None:
+        GUARD.check_screen_effect_quad_wire()
+
+    def test_screen_effect_quad_guard_rejects_mixed_format_and_owners(self) -> None:
+        source = (ROOT / "src/ScreenEffectDraw.cpp").read_text(encoding="utf-8")
+        mutations = [
+            source + "\nstruct ScreenEffectAnmManagerView {};\n",
+            source + "\n#ifdef TH095_MATCH_EXACT\n#endif\n",
+            source.replace("Float3 position;", "ScreenEffectFloat3 position;", 1),
+            source.replace("D3DFVF_XYZRHW | D3DFVF_DIFFUSE", "D3DFVF_XYZ | D3DFVF_TEX1", 1),
+            source.replace("sizeof(ScreenEffectQuadVertex) == 0x14", "sizeof(ScreenEffectQuadVertex) == 0x18", 1),
+            source.replace("sizeof(ScreenEffectQuadVertex));", "sizeof(VertexDiffuseXyzrhw));", 1),
+        ]
+        for changed in mutations:
+            self.assertNotEqual(source, changed)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_screen_effect_quad_wire(changed)
+
     def test_anm_viewport_guard_rejects_owner_or_profile_regression(self) -> None:
         GUARD.check_anm_viewport_owner()
         source = (ROOT / "src/AnmDrawCore.cpp").read_text(encoding="utf-8")

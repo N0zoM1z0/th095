@@ -251,7 +251,6 @@
 1	src/ScoreLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ScoreLoad.cpp	#if !defined(TH095_MATCH_EXACT)
 11	src/ScoreLoad.cpp	#if defined(TH095_MATCH_EXACT)
-1	src/ScreenEffectDraw.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SoundPlayer.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/SoundPlayer.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/Supervisor.hpp	#ifdef TH095_MATCH_EXACT

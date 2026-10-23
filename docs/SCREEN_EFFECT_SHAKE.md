@@ -13,7 +13,7 @@ comparison, component runtime and a future game port remain distinct evidence.
 | Applied shake storage | Canonical `AnmManager::screenShakeOffset` is one trivial `Float2` at `+0x20/+0x24`. It has no constructor or integer alias. Viewport application copies x/y separately; `DrawInner` consumes this pair. |
 | Behavior and lifetime | Factory-created `ScreenEffect` instances own their parameters and timer. The two calc callbacks publish PLAYFIELD values. ANM layer six clears the configured pair and the global manager's applied pair before drawing through the argument receiver. |
 | Compiler emission | `ScreenEffect.cpp` supplies the same fourteen bodies in exact and normal products. `ScreenEffectRegister.cpp` retains the factory. `AnmVmLifecycle.cpp`, `SupervisorViewport.cpp`, Background and `AnmDrawCore.cpp` retain their respective reset, apply and draw responsibilities. |
-| Build products | Exact units replay these sources against the target; normal compiles and links all 88 actual objects independently. `ScreenEffectDraw.cpp` still selects `ScreenEffectDrawExact.inl` for its separate cache-emission boundary. Win32 target assertions and platform dependencies remain outside a native 64-bit game claim. |
+| Build products | Exact units replay these sources against the target; normal compiles and links all 88 actual objects independently. `ScreenEffectDraw.cpp` now shares its full-parent/Float3 wire and cache sequence, documented in [the quad contract](SCREEN_EFFECT_QUAD.md). Win32 target assertions and platform dependencies remain outside a native 64-bit game claim. |
 
 The old standalone shake identities, two padded Supervisor projections and
 ScreenEffect's partial parent, method-only ANM declaration and photo-task
@@ -85,8 +85,8 @@ execution, not just field offsets:
 
 No synchronization, actual device/driver behavior or full Render execution is
 established by the component program. The opaque cancel gate, inherited Chain
-priority namespace, remaining ANM lifecycle views and DrawSquare cache adapter
-remain separate work.
+priority namespace, remaining ANM lifecycle views and separate ANM XYZ/UV carriers
+remain work.
 
 ## Validation and reproducibility
 
@@ -115,7 +115,7 @@ is retained until process exit.
 
 Run `python3 scripts/check-supervisor-lifecycle.py --viewport` under the
 [resource limits](RE_WORKFLOW.md#host-resource-limits). It cold-builds normal
-objects and runs lifetime, viewport and shake clients. The cold matching aggregate passes all 698 units across 88 sources; its
+objects and runs lifetime, viewport, shake and quad clients. The cold matching aggregate passes all 698 units across 88 sources; its
 fixed-object repeat, EH audit, public CI and frozen-input checks pass. Tracking
 and documentation checks accompany the source checkpoint. Invalid duration arithmetic,
 full game scheduling, other matrix-refresh branches and native platform products remain
