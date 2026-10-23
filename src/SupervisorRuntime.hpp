@@ -33,6 +33,10 @@ struct Float3;
 struct FrontEndControllerView;
 struct PhotoGameTaskView;
 
+// Canonical declaration for the target Win32 0x7BC Supervisor used by Main,
+// MainExact and runtime clients. Lifecycle still has a separate, evidenced
+// member-construction/EH emission view. Fixed target assertions below do not
+// claim a native 64-bit Supervisor layout.
 #pragma pack(push, 4)
 struct Supervisor
 {
@@ -167,22 +171,40 @@ struct Supervisor
 };
 #pragma pack(pop)
 
-typedef char SupervisorSizeIs7BC[(sizeof(Supervisor) == 0x7bc) ? 1 : -1];
 typedef char SupervisorPresentAtE4[(offsetof(Supervisor, presentParameters) == 0xe4) ? 1 : -1];
-typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 : -1];
+typedef char SupervisorDummyMidiTimerAt118[(offsetof(Supervisor, dummyMidiTimer) == 0x118) ? 1 : -1];
+typedef char SupervisorControllerCapsAt18[(offsetof(Supervisor, controllerCaps) == 0x18) ? 1 : -1];
 typedef char SupervisorCurrentViewportAt3C4[
     (offsetof(Supervisor, currentViewportConfiguration) == 0x3c4) ? 1 : -1];
 typedef char SupervisorCurrentViewportIndexAt3C8[
     (offsetof(Supervisor, currentViewportIndex) == 0x3c8) ? 1 : -1];
 typedef char SupervisorTimerAt3F4[
     (offsetof(Supervisor, timer) == 0x3f4) ? 1 : -1];
+typedef char SupervisorConfigAt11C[(offsetof(Supervisor, config) == 0x11c) ? 1 : -1];
 typedef char SupervisorCapsAt450[(offsetof(Supervisor, d3dCaps) == 0x450) ? 1 : -1];
+typedef char SupervisorLoadingAnmAt440[(offsetof(Supervisor, loadingAnm) == 0x440) ? 1 : -1];
+typedef char SupervisorTextAnmAt43C[(offsetof(Supervisor, textAnm) == 0x43c) ? 1 : -1];
 typedef char SupervisorReplayScanAt648[(offsetof(Supervisor, replayScanWorker) == 0x648) ? 1 : -1];
+typedef char SupervisorStartupThreadStateAt660[(offsetof(Supervisor, startupThreadState) == 0x660) ? 1 : -1];
 typedef char SupervisorCriticalSectionsAt664[(offsetof(Supervisor, criticalSections) == 0x664) ? 1 : -1];
+typedef char SupervisorScreenshotWorkerTokenAt528[(offsetof(Supervisor, screenshotWorkerToken) == 0x528) ? 1 : -1];
+typedef char SupervisorScreenshotFileHeaderAt52C[(offsetof(Supervisor, screenshotFileHeader) == 0x52c) ? 1 : -1];
+typedef char SupervisorScreenshotInfoAt53C[(offsetof(Supervisor, screenshotInfoHeader) == 0x53c) ? 1 : -1];
+typedef char SupervisorScreenshotPixelsAt540[(offsetof(Supervisor, screenshotPixels) == 0x540) ? 1 : -1];
+typedef char SupervisorScreenshotPathAt544[(offsetof(Supervisor, screenshotPath) == 0x544) ? 1 : -1];
 typedef char SupervisorCriticalLockCountsAt70C[(offsetof(Supervisor, criticalSectionLockCounts) == 0x70c) ? 1 : -1];
 typedef char SupervisorLoadingScreenStateAt714[(offsetof(Supervisor, loadingScreenState) == 0x714) ? 1 : -1];
-typedef char SupervisorSecondaryReplayScanAt7A0[(offsetof(Supervisor, secondaryReplayScanWorker) == 0x7a0) ? 1 : -1];
+typedef char SupervisorLagNumeratorAt78C[(offsetof(Supervisor, lagNumerator) == 0x78c) ? 1 : -1];
+typedef char SupervisorVersionDataAt778[(offsetof(Supervisor, versionData) == 0x778) ? 1 : -1];
+typedef char SupervisorFrontEndAt780[(offsetof(Supervisor, frontEndController) == 0x780) ? 1 : -1];
+typedef char SupervisorGameTaskAt784[(offsetof(Supervisor, photoGameTask) == 0x784) ? 1 : -1];
+typedef char SupervisorCurrentFpsAt79C[(offsetof(Supervisor, currentFps) == 0x79c) ? 1 : -1];
 typedef char SupervisorClearColorAt7B8[(offsetof(Supervisor, backbufferClearColor) == 0x7b8) ? 1 : -1];
+typedef char SupervisorSizeIs7BC[(sizeof(Supervisor) == 0x7bc) ? 1 : -1];
+typedef char SupervisorReplayScanExitAt650[
+    (offsetof(Supervisor, replayScanWorker.exitSignal) == 0x650) ? 1 : -1];
+typedef char SupervisorSecondaryReplayScanAt7A0[
+    (offsetof(Supervisor, secondaryReplayScanWorker) == 0x7a0) ? 1 : -1];
 
 extern Supervisor g_Supervisor;
 extern ControllerMapping g_ControllerMapping;

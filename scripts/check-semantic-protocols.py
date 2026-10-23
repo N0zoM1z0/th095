@@ -1071,12 +1071,46 @@ def check_midi_output_owner() -> None:
             fail(f"match manifest lost canonical MidiOutput ABI: {identity}")
 
 
+def supervisor_header_source(name: str, overrides: dict[str, str] | None = None) -> str:
+    """Resolve the one explicit primary-Supervisor declaration include."""
+    changed = {} if overrides is None else overrides
+    text = changed.get(name, (SRC / name).read_text(encoding="utf-8"))
+    if name in ("Main.hpp", "MainExact.hpp"):
+        if text.count('#include "SupervisorRuntime.hpp"') != 1:
+            fail(f"{name} lost the canonical Supervisor declaration route")
+        text += "\n" + changed.get("SupervisorRuntime.hpp", (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8"))
+    return text
+
+
+def check_supervisor_declaration_owner(overrides: dict[str, str] | None = None) -> None:
+    changed = {} if overrides is None else overrides
+    for name in ("Main.hpp", "MainExact.hpp"):
+        source = source_without_comments(changed.get(name, (SRC / name).read_text(encoding="utf-8")))
+        if source.count('#include "SupervisorRuntime.hpp"') != 1:
+            fail(f"{name} lost the canonical Supervisor declaration include")
+        if re.search(r"\b(?:struct|class|union)\s+Supervisor\s*\{", source):
+            fail(f"{name} restored a duplicate primary Supervisor declaration")
+    owner = source_without_comments(changed.get("SupervisorRuntime.hpp", (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")))
+    if owner.count("struct Supervisor\n{") != 1 or any(profile in owner for profile in PROFILE_NAMES):
+        fail("primary Supervisor lost its single profile-independent declaration")
+    for fact in ("Supervisor();", "~Supervisor();", "i32 loadingScreenState;",
+                 "sizeof(Supervisor) == 0x7bc", "extern Supervisor g_Supervisor;"):
+        if fact not in owner:
+            fail(f"primary Supervisor lost its declaration contract: {fact}")
+    exact = changed.get("MainExact.inl", (SRC / "MainExact.inl").read_text(encoding="utf-8"))
+    if "loadingVmsHaveBeenSetup" in owner + exact:
+        fail("primary Supervisor restored the old loading-state spelling")
+    lifecycle = changed.get("SupervisorLifecycle.cpp", (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8"))
+    if lifecycle.count("DIFFABLE_STATIC(Supervisor, g_Supervisor);") != 1:
+        fail("Supervisor lost its lifecycle-owned global definition")
+
+
 def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
     owner = owner_text if owner_text is not None else (
         SRC / "ReplayScanWorker.hpp"
     ).read_text(encoding="utf-8")
-    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
-    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_header = supervisor_header_source("Main.hpp")
+    main_exact_header = supervisor_header_source("MainExact.hpp")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
     main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
@@ -1232,10 +1266,11 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
             fail(f"match manifest lost canonical ReplayScanWorker ABI: {identity}")
 
 
+
 def check_game_configuration_owner() -> None:
     owner = (SRC / "GameConfiguration.hpp").read_text(encoding="utf-8")
-    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
-    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_header = supervisor_header_source("Main.hpp")
+    main_exact_header = supervisor_header_source("MainExact.hpp")
     main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
     lifecycle = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
@@ -1356,10 +1391,11 @@ def check_game_configuration_owner() -> None:
         fail("match manifest lost the canonical GameConfiguration Initialize ABI")
 
 
+
 def check_supervisor_flags_owner(owner_text: str | None = None) -> None:
     owner = owner_text if owner_text is not None else (SRC / "SupervisorFlags.hpp").read_text(encoding="utf-8")
-    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
-    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_header = supervisor_header_source("Main.hpp")
+    main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
     lifecycle = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
     legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
@@ -1477,10 +1513,11 @@ def check_supervisor_flags_owner(owner_text: str | None = None) -> None:
             fail(f"front-end flag access lost its common typed contract: {fact}")
 
 
+
 def check_screenshot_bitmap_header_owner() -> None:
     owner = (SRC / "ScreenshotBitmapFileHeader.hpp").read_text(encoding="utf-8")
-    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
-    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_header = supervisor_header_source("Main.hpp")
+    main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
     main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
@@ -1549,6 +1586,7 @@ def check_screenshot_bitmap_header_owner() -> None:
         for fact in producer_facts + consumer_facts:
             if fact not in text:
                 fail(f"{path} lost screenshot header producer/consumer: {fact}")
+
 
 
 def check_game_window_startup_policy_owner(owner_text: str | None = None) -> None:
@@ -1651,8 +1689,8 @@ def check_supervisor_viewport_configuration_owner() -> None:
     owner = owner_path.read_text(encoding="utf-8")
     slots_path = SRC / "SupervisorViewportSlot.hpp"
     slots = slots_path.read_text(encoding="utf-8")
-    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
-    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_header = supervisor_header_source("Main.hpp")
+    main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
     viewport_source = (SRC / "SupervisorViewport.cpp").read_text(encoding="utf-8")
     background_source = (SRC / "Background.cpp").read_text(encoding="utf-8")
@@ -1797,9 +1835,10 @@ def check_supervisor_viewport_configuration_owner() -> None:
             fail(f"AnmDrawCore lost canonical Supervisor viewport use: {fact}")
 
 
+
 def check_screenshot_worker_token_owner() -> None:
-    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
-    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_header = supervisor_header_source("Main.hpp")
+    main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
     lifecycle = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
@@ -1844,11 +1883,12 @@ def check_screenshot_worker_token_owner() -> None:
         fail("Main.cpp restored the DIFFBUILD screenshot-token alias")
 
 
+
 def check_supervisor_state_owner() -> None:
     owner_path = SRC / "SupervisorState.hpp"
     owner = owner_path.read_text(encoding="utf-8")
-    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
-    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_header = supervisor_header_source("Main.hpp")
+    main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
     legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
@@ -1952,11 +1992,12 @@ def check_supervisor_state_owner() -> None:
                 fail(f"{path} lost canonical Supervisor state route: {constant}")
 
 
+
 def check_supervisor_startup_phase_owner() -> None:
     owner_path = SRC / "SupervisorStartupState.hpp"
     owner = owner_path.read_text(encoding="utf-8")
-    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
-    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_header = supervisor_header_source("Main.hpp")
+    main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
     legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
@@ -2023,11 +2064,12 @@ def check_supervisor_startup_phase_owner() -> None:
         fail("Main.cpp restored profile-selected startup numeric aliases")
 
 
+
 def check_supervisor_fog_cache_owner() -> None:
     owner_path = SRC / "SupervisorFogState.hpp"
     owner = owner_path.read_text(encoding="utf-8")
-    main_header = (SRC / "Main.hpp").read_text(encoding="utf-8")
-    main_exact_header = (SRC / "MainExact.hpp").read_text(encoding="utf-8")
+    main_header = supervisor_header_source("Main.hpp")
+    main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
     legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
@@ -2092,6 +2134,7 @@ def check_supervisor_fog_cache_owner() -> None:
                 fail(f"{path} lost canonical Supervisor fog-cache state: {constant}")
     if "TH095_SUPERVISOR_FOG_" in main_body:
         fail("Main.cpp restored profile-selected fog numeric aliases")
+
 
 
 def check_front_end_timer_owner() -> None:
@@ -2882,7 +2925,7 @@ def check_supervisor_fps_boundary(overrides: dict[str, str] | None = None) -> No
     changed = {} if overrides is None else overrides
 
     def read(name: str) -> str:
-        return source_without_comments(changed.get(name, (SRC / name).read_text(encoding="utf-8")))
+        return source_without_comments(supervisor_header_source(name, changed))
 
     state = read("SupervisorFpsState.hpp")
     if any(name in state for name in PROFILE_NAMES):
@@ -3041,7 +3084,7 @@ def check_worker_thread_start_boundary(header_text: str | None = None, body_text
     if '(unsigned (' in normal or 'reinterpret_cast' in normal:
         fail("normal worker restored an incompatible callback cast")
     for name in ("Main.hpp", "MainExact.hpp", "SupervisorRuntime.hpp", "Main.cpp", "MainExact.inl"):
-        source = (SRC / name).read_text(encoding="utf-8")
+        source = supervisor_header_source(name)
         for callback in ("InitializeInput", "StartupThread"):
             declaration = source
             if callback == "InitializeInput" and name in ("Main.cpp", "MainExact.inl"):
@@ -3052,6 +3095,7 @@ def check_worker_thread_start_boundary(header_text: str | None = None, body_text
                 fail(f"{name} lost the shared void-pointer callback declaration")
             if f'(void (__fastcall *)(void *))Supervisor::{callback}' in source:
                 fail(f"{name} restored a callback registration cast")
+
 
 
 def check_primary_worker_signal_bindings(overrides: dict[str, str] | None = None) -> None:
@@ -4377,6 +4421,7 @@ def main() -> int:
     check_file_system_api_owner()
     check_rng_owner()
     check_midi_output_owner()
+    check_supervisor_declaration_owner()
     check_replay_scan_worker_owner()
     check_game_configuration_owner()
     check_supervisor_flags_owner()

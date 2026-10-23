@@ -18269,3 +18269,71 @@ copy with independent target/compiler/native evidence. The exact wrapper's
 remaining context-copy debt is explicit. Mapping/source/exact totals are
 unchanged. Durable fact: MAIN-054; current boundaries:
 WINDOW_INPUT_INITIALIZATION.md and SOURCE_MAP.md. Receipts: .analysis/sem344/.
+
+### SEM-345 — one full primary Supervisor declaration
+
+Scope: Main.hpp, MainExact.hpp and SupervisorRuntime.hpp's full Win32 Supervisor
+declarations, their primary clients and the exact loading-screen accesses.
+The three field-token inventories agree after the existing loading-state name
+is canonicalized. Both Main headers now include SupervisorRuntime.hpp, whose
+constructor/destructor API and fields are shared. All 29 distinct prior target
+assertions are retained beside the owner. The two duplicate full declarations
+are removed; no new layout, padding, profile selector or adapter is added.
+
+Observed: target constructor 0x00426350 and destructor 0x00426450 operate on
+the 0x7BC global at 0x004C4670. The attested static initializer 0x00494040
+constructs it and registers the 0x00494270 destruction wrapper. SupervisorLifecycle.cpp
+owns its definition; the primary headers expose extern storage. Setup/hide/
+completion/draw consumers at 0x00425660/0x00425730/0x004257E0/0x004235D0 establish
+the +0x714 i32 loading counter/state and 0/1/2/5/35/65 transitions. Exact clients
+now use the existing canonical loadingScreenState spelling. No new field role
+or original C++ declaration is inferred from zero extent or layout equality.
+
+Compiler oracle: a minimal pinned probe shows unchanged external field-read/
+write bytes and relocations with constructor/destructor declarations added.
+Main's actual normal object independently preserves all 55 named roots, one
+private entry and 143 code/data/EH graphs under 28 private spellings. This does
+not make a lifetime claim; the existing lifecycle implementation is unchanged.
+
+Actual-header oracle: SupervisorLayoutTest.cpp checks 65 field offsets, eight
+subobject sizes, 0x7BC total size, caller pack restoration and uncast real-SDK
+callback bindings. VC7.1 and Clang i386 COFF receipts agree on all 77 words.
+Changing only expected HWND offset 0x48 to 0x4C is rejected by both compilers.
+Clang uses an unchanged-SDK case-only VFS and the existing TH08 math branch
+solely for layout; it validates no math behavior, original normal header path,
+Win64 parent, Linux backend or portable game. Plain MinGW's mixed D3D8/D3DX8
+headers and the normal MS-assembly helper remain explicit compatibility limits.
+The normal product is independently compiled without that math selector.
+
+Ownership: canonical primary declaration is SupervisorRuntime.hpp; global
+storage/lifetime emission remains SupervisorLifecycle.cpp, while methods retain
+their existing TUs and exact/normal bodies. Primary Main/runtime clients share
+one declaration in both products. The lifecycle member-construction/EH view,
+fieldless adapters, 0x364 legacy family, other projections and global ODR/native
+closure remain debt. MainExact's surrounding fake/legacy APIs are not merged.
+Semantic child-owner guards follow the explicit primary include instead of
+requiring duplicate fields in each Main header; route/declaration regression
+tests reject restored copies, wrong includes and narrowed loading state.
+
+Final gates: fresh Main baseline/candidate passes 48/48. Relative to 9b67330,
+344 compiler-private labels in 22 exact units change (25 focused and 319 in
+aggregate); public identities, targets, addends, extents and all other recipe
+fields stay unchanged. Aggregate refresh and frozen fixed-recipe repeat both
+pass 698/698 across 88 sources; the fixed replay refreshes zero labels.
+Independent normal baseline and candidate each compile 88/88 i386 COFF objects
+and link a verified PE32 GUI. Candidate size is 778,752 bytes, zero unresolved
+symbols, build-local SHA-256
+1e692bb4cf76b12076c1882dce31a8a2a0d95e5b719e68eab417446ec53e8703.
+All 88 actual normal objects preserve 928 named roots, 81 private entries and
+1,797 code/data/EH section graphs under 974 private spellings. Existing exact-only
+normal symbol boundaries are inventoried separately, not promoted. EH passes
+57 parents, 72 actions and 81/81 provenance-exact references. Public CI passes
+107 workflow tests and thirteen native programs. All 323 source/tool/test inputs
+stay frozen. Closed selector/declaration baselines remain 265 keys / 696
+directives and 191 keys / 196 selected declarations.
+
+Result: two full declaration copies and fifteen old exact loading-state accesses
+are retired without new mapping/source/exact credit. Durable fact: MAIN-055;
+current declaration/oracle boundaries: SUPERVISOR_DECLARATION.md, ORACLES.md and
+SOURCE_MAP.md. Private commands, baseline objects/graphs, field-token inventory,
+SDK controls and receipts are .analysis/sem345/.

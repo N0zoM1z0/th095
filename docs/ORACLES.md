@@ -94,3 +94,21 @@ and QPC field addresses. The object exports gameWindowAbiReceipt for independent
 COFF inspection. They validate a Win32 owner extended to native Windows pointer
 width, not a Linux owner, executed window lifecycle or complete 64-bit game.
 The cross compilers are supporting oracles and are not public-CI prerequisites.
+
+## Primary Supervisor Win32 declaration oracle
+
+`tests/win32/SupervisorLayoutTest.cpp` includes the actual primary owner and
+SDK types. Compile it with pinned VC7.1 normal Main flags and `/I src`; read
+the exported supervisorLayoutAbiReceipt from the resulting i386 COFF object.
+The table checks 65 field offsets, eight subobject sizes, the 0x7BC extent,
+caller packing and real callback signatures. It is not a fixture parent ABI.
+
+The supporting Clang recipe and its case-only SDK VFS are in the private
+.analysis/sem345/ command receipts. It targets i686-pc-windows-msvc with VC7.1
+compatibility and uses the unchanged installed legacy CRT/SDK headers.
+TH08_MODERN_PORT selects an existing math body solely to permit this type/layout
+compile. It accepts neither that math behavior nor a normal/portable game
+product. Narrow diagnostic options admit the legacy offsetof expression;
+the compiler-rejected bad-offset control and independently decoded COFF data
+preserve the checks. The original normal product is built separately without
+that selector. See [the exact boundary](SUPERVISOR_DECLARATION.md).

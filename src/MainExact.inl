@@ -1139,24 +1139,24 @@ i32 __fastcall Supervisor::OnDraw2(Supervisor *s)
             0, NULL, D3DCLEAR_TARGET, g_Supervisor.backbufferClearColor, 1.0f, 0);
     }
 
-    if (s->loadingVmsHaveBeenSetup >= 2)
+    if (s->loadingScreenState >= 2)
     {
-        s->loadingVmsHaveBeenSetup++;
-        if (s->loadingVmsHaveBeenSetup >= 5)
+        s->loadingScreenState++;
+        if (s->loadingScreenState >= 5)
         {
             locals.position.x = 288.0f;
             locals.position.y = 454.0f;
             locals.position.z = 0.0f;
             g_AsciiManager.scaleX = 0.5f;
             g_AsciiManager.scaleY = 0.5f;
-            if (s->loadingVmsHaveBeenSetup < 35)
+            if (s->loadingScreenState < 35)
             {
-                locals.color1 = 255 - (((s->loadingVmsHaveBeenSetup - 5) << 7) / 30);
+                locals.color1 = 255 - (((s->loadingScreenState - 5) << 7) / 30);
                 g_AsciiManager.color.a = locals.color1;
             }
             else
             {
-                locals.color2 = 255 - (((65 - s->loadingVmsHaveBeenSetup) << 7) / 30);
+                locals.color2 = 255 - (((65 - s->loadingScreenState) << 7) / 30);
                 g_AsciiManager.color.a = locals.color2;
             }
             g_AsciiManager.AddFormatText(&locals.position, "Press Shot Button");
@@ -1166,14 +1166,14 @@ i32 __fastcall Supervisor::OnDraw2(Supervisor *s)
             g_AsciiManager.numStrings = 0;
             g_AsciiManager.numGuiStrings = 0;
 
-            if (s->loadingVmsHaveBeenSetup >= 65)
+            if (s->loadingScreenState >= 65)
             {
-                s->loadingVmsHaveBeenSetup = 5;
+                s->loadingScreenState = 5;
             }
         }
     }
 
-    if (s->loadingVmsHaveBeenSetup != 0)
+    if (s->loadingScreenState != 0)
     {
         g_AnmManager->CopySurfaceToBackbuffer(8, 0, 0, 0, 0);
     }
@@ -2203,12 +2203,12 @@ void Supervisor::SetRenderState(D3DRENDERSTATETYPE state, i32 value)
 // FUNCTION: TH095 0x00425660.
 void Supervisor::SetupLoadingVms(Float3 *position)
 {
-    if (this->loadingVmsHaveBeenSetup == 0)
+    if (this->loadingScreenState == 0)
     {
         g_SupervisorLoadingVms[0] = this->loadingAnm->CreateVm(0, 7);
         g_SupervisorLoadingVms[1] = this->loadingAnm->CreateVm(1, 7);
         g_SupervisorLoadingVms[2] = this->loadingAnm->CreateVm(2, 7);
-        this->loadingVmsHaveBeenSetup = 1;
+        this->loadingScreenState = 1;
         g_AnmManager->SetPosition(g_SupervisorLoadingVms[0], position);
         g_AnmManager->SetPosition(g_SupervisorLoadingVms[1], position);
         g_AnmManager->SetPosition(g_SupervisorLoadingVms[2], position);
@@ -2218,7 +2218,7 @@ void Supervisor::SetupLoadingVms(Float3 *position)
 // FUNCTION: TH095 0x00425730.
 void Supervisor::HideLoadingVms()
 {
-    if (this->loadingVmsHaveBeenSetup == 1)
+    if (this->loadingScreenState == 1)
     {
         g_AnmManager->SetInterrupt(g_SupervisorLoadingVms[0], 1);
         g_AnmManager->SetInterrupt(g_SupervisorLoadingVms[1], 1);
@@ -2226,7 +2226,7 @@ void Supervisor::HideLoadingVms()
         g_SupervisorLoadingVms[0] = AnmVmId();
         g_SupervisorLoadingVms[1] = AnmVmId();
         g_SupervisorLoadingVms[2] = AnmVmId();
-        this->loadingVmsHaveBeenSetup = 0;
+        this->loadingScreenState = 0;
     }
     if (g_SupervisorScreenEffect != NULL)
     {
@@ -2237,7 +2237,7 @@ void Supervisor::HideLoadingVms()
 // FUNCTION: TH095 0x004257E0.
 void Supervisor::BeginLoadingCompletion()
 {
-    if (this->loadingVmsHaveBeenSetup == 1)
+    if (this->loadingScreenState == 1)
     {
         g_AnmManager->SetInterrupt(g_SupervisorLoadingVms[0], 2);
         g_AnmManager->SetInterrupt(g_SupervisorLoadingVms[1], 2);
@@ -2245,7 +2245,7 @@ void Supervisor::BeginLoadingCompletion()
         g_SupervisorLoadingVms[0] = AnmVmId();
         g_SupervisorLoadingVms[1] = AnmVmId();
         g_SupervisorLoadingVms[2] = AnmVmId();
-        this->loadingVmsHaveBeenSetup = 2;
+        this->loadingScreenState = 2;
     }
     if (g_SupervisorScreenEffect != NULL)
     {

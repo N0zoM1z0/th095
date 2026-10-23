@@ -675,10 +675,10 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertIn("i32 unknown0e4;", owner)
         self.assertIn("Float2 screenShakeOffset;", owner)
         self.assertNotIn("viewportMode", owner)
-        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
-        self.assertIn("viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]", exact)
-        self.assertIn("ZunTimer timer;", exact)
-        self.assertNotIn("unknown1e4[0x220]", exact)
+        supervisor = (ROOT / "src" / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+        self.assertIn("viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]", supervisor)
+        self.assertIn("ZunTimer timer;", supervisor)
+        self.assertNotIn("unknown1e4[0x220]", supervisor)
         lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
             encoding="utf-8"
         )
@@ -688,16 +688,18 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         )
         self.assertNotIn("struct SupervisorTimerLifecycle", lifecycle)
 
+
     def test_screenshot_worker_token_guard_accepts_shared_storage(self) -> None:
         GUARD.check_screenshot_worker_token_owner()
-        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
-        self.assertIn("u32 screenshotWorkerToken;", exact)
-        self.assertNotIn("u32 screenshotThread;", exact)
+        supervisor = (ROOT / "src" / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+        self.assertIn("u32 screenshotWorkerToken;", supervisor)
+        self.assertNotIn("u32 screenshotThread;", supervisor)
         lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
             encoding="utf-8"
         )
         self.assertIn("offsetof(Supervisor, screenshotWorkerToken) == 0x528", lifecycle)
         self.assertNotIn("unknown448[0x200]", lifecycle)
+
 
     def test_supervisor_state_owner_guard_accepts_canonical_domain(self) -> None:
         GUARD.check_supervisor_state_owner()
@@ -711,11 +713,12 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
         self.assertIn("SupervisorState_ExitGame = -1", legacy)
         self.assertIn("SupervisorState_GameManagerNextStageWeird = 12", legacy)
-        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
-        self.assertIn("i32 activeSceneState;", exact)
-        self.assertIn("i32 requestedSceneState;", exact)
-        self.assertNotIn("i32 wantedState;", exact)
-        self.assertNotIn("i32 currentState;", exact)
+        supervisor = (ROOT / "src" / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+        self.assertIn("i32 activeSceneState;", supervisor)
+        self.assertIn("i32 requestedSceneState;", supervisor)
+        self.assertNotIn("i32 wantedState;", supervisor)
+        self.assertNotIn("i32 currentState;", supervisor)
+
 
     def test_supervisor_startup_phase_guard_accepts_shared_domain(self) -> None:
         GUARD.check_supervisor_startup_phase_owner()
@@ -726,9 +729,10 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("DIFFBUILD", header)
         self.assertIn("SUPERVISOR_STARTUP_PHASE_IDLE = 0", header)
         self.assertIn("SUPERVISOR_STARTUP_PHASE_FAILED = 2", header)
-        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
-        self.assertIn("SupervisorStartupPhase startupThreadState;", exact)
-        self.assertNotIn("i32 startupThreadState;", exact)
+        supervisor = (ROOT / "src" / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+        self.assertIn("SupervisorStartupPhase startupThreadState;", supervisor)
+        self.assertNotIn("i32 startupThreadState;", supervisor)
+
 
     def test_supervisor_fog_cache_guard_accepts_shared_domain(self) -> None:
         GUARD.check_supervisor_fog_cache_owner()
@@ -739,9 +743,10 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("DIFFBUILD", header)
         self.assertIn("SUPERVISOR_FOG_CACHE_DISABLED = 0", header)
         self.assertIn("SUPERVISOR_FOG_CACHE_INVALID = 0xff", header)
-        exact = (ROOT / "src" / "MainExact.hpp").read_text(encoding="utf-8")
-        self.assertIn("SupervisorFogCacheState fogState;", exact)
-        self.assertNotIn("i32 fogState;", exact)
+        supervisor = (ROOT / "src" / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
+        self.assertIn("SupervisorFogCacheState fogState;", supervisor)
+        self.assertNotIn("i32 fogState;", supervisor)
+
 
     def test_front_end_timer_guard_accepts_shared_owner(self) -> None:
         GUARD.check_front_end_timer_owner()
@@ -1034,10 +1039,27 @@ class SemanticProtocolGuardTests(unittest.TestCase):
     def test_fps_guard_accepts_independent_storage_and_shared_bodies(self) -> None:
         GUARD.check_supervisor_fps_boundary()
 
+    def test_supervisor_declaration_guard_accepts_one_primary_owner(self) -> None:
+        GUARD.check_supervisor_declaration_owner()
+
+    def test_supervisor_declaration_guard_rejects_duplicate_or_wrong_route(self) -> None:
+        for name, before, after in (
+            ("Main.hpp", '#include "SupervisorRuntime.hpp"', 'struct Supervisor { int placeholder; };'),
+            ("Main.hpp", '#include "SupervisorRuntime.hpp"', '#include "SupervisorRuntime.hpp"\nstruct Supervisor { int placeholder; };'),
+            ("MainExact.hpp", '#include "SupervisorRuntime.hpp"', '#include "Supervisor.hpp"'),
+            ("SupervisorRuntime.hpp", "i32 loadingScreenState;", "bool loadingScreenState;"),
+            ("SupervisorRuntime.hpp", "    ~Supervisor();", ""),
+        ):
+            source = (ROOT / "src" / name).read_text(encoding="utf-8")
+            self.assertIn(before, source)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_supervisor_declaration_owner({name: source.replace(before, after, 1)})
+
     def test_fps_guard_rejects_false_owner_transition_or_binding(self) -> None:
         for name, before, after in (
             ("SupervisorFpsState.hpp", "extern f64 g_LastFpsTimestamp;", "extern u32 g_LastFpsTimestamp;"),
-            ("MainExact.hpp", "void InitializeCriticalSections();", "i32 fpsClockAnomalyCount;\n    void InitializeCriticalSections();"),
+            ("SupervisorRuntime.hpp", "void InitializeCriticalSections();", "i32 fpsClockAnomalyCount;\n    void InitializeCriticalSections();"),
             ("Main.cpp", '#include "SupervisorCalculateFps.inl"', "void Supervisor::CalculateFps() {}"),
             ("SupervisorCalculateFps.inl", "g_LastFpsTimestamp >", "g_Supervisor.lastFpsTimestamp >"),
             ("SupervisorCalculateFps.inl", "g_FpsClockAnomalyCount == 4", "g_FpsClockAnomalyCount == 3"),

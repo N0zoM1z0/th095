@@ -224,6 +224,14 @@ synchronization or executes real window/COM enumeration. See
 
 ## Completion and batch records
 
+The primary Supervisor declaration is shared by both Main headers and runtime
+clients through SupervisorRuntime.hpp. Its actual-header Win32 layout oracle
+uses pinned VC7.1 and a bounded Clang type-only path; the existing math branch
+selected for Clang accepts no helper behavior or portable product. Lifecycle's
+member-construction/EH view, other projections, the 0x364 compatibility family
+and native/ODR closure remain open. See
+[the declaration and oracle boundary](SUPERVISOR_DECLARATION.md).
+
 A bounded family is closed only when its representation, consumers,
 transitions, ownership axes, unknowns, and applicable oracles are explicit.
 Repository-wide semantic completion requires all of those closures plus a
