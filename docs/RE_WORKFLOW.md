@@ -88,6 +88,12 @@ and protected working-tree paths. Keep accepted findings in KNOWLEDGE_BASE.md
 and SEMANTIC_HISTORY.md rather than accumulating another session diary in the
 live handoff. Regenerate progress from the ledgers.
 
+If a semantic batch is unfinished, distinguish its working tree from the last
+accepted source. Save its patch, base revision and input hashes privately;
+record which acceptance checks remain. A documentation checkpoint does not
+accept or commit the unfinished source. Do not apply a recovery patch over the
+same edits already present in the working tree.
+
 Wait for build, test and headless jobs to finish before cleaning their outputs.
 Preserve compact commands, input/tool hashes and terminal reports below
 .analysis/ first, including any normal-product hash and exact comparison
@@ -95,6 +101,12 @@ receipts referenced by the handoff. Objects, executables, PDBs, maps, native
 test binaries and Python caches under build/ are reproducible outputs. Also
 remove session-created scripts/__pycache__/ and tests/__pycache__/ caches.
 Record removed paths and bytes in a private cleanup receipt.
+
+Review a cleanup inventory before deletion. Preserve old baseline objects still
+needed for an unfinished before/after comparison, then remove duplicate objects,
+probe source copies and candidate products that can be rebuilt. Record both
+logical and allocated bytes, the retained objects' hashes and why they remain.
+Save compact build/runtime reports before removing the products they describe.
 
 Keep the verified target, installed tools, private Ghidra databases, source,
 ledgers, compact evidence and user-owned untracked files. Do not use a blanket

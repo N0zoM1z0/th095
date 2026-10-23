@@ -104,6 +104,12 @@ promote one assumed profile to executable-wide truth. See the current handoff
 for the latest source-revision build receipt and next bounded lane; the tagged
 runtime checkpoint is recorded in `docs/WHOLE_BUILD_TODO.md`.
 
+For handoff, read the [current checkpoint and pending work](docs/RE_HANDOFF.md)
+first, then follow the [workflow](docs/RE_WORKFLOW.md). The handoff distinguishes
+accepted source from uncommitted experiments and records retained artifacts.
+Apply the workflow's [host resource limits](docs/RE_WORKFLOW.md#host-resource-limits)
+to builds, headless analysis and other heavy jobs; run them serially.
+
 Start a reconstruction session with:
 
 ```bash
