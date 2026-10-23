@@ -87,7 +87,7 @@ static void CheckDrawConsumer(const Float2 &offset, bool culled)
     globalManager->useMixColor = 0;
     globalManager->currentTexture = NULL;
     globalManager->currentBlendMode = 0;
-    globalManager->currentVertexShader = 1;
+    globalManager->cachedDrawPath = ANM_DRAW_PATH_BUFFERED_QUADS;
     globalManager->spritesToDraw = 0;
     globalManager->vertexBufferStartPtr = globalManager->vertexBuffer;
     globalManager->vertexBufferEndPtr = globalManager->vertexBuffer;

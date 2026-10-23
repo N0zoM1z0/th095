@@ -25,14 +25,14 @@ struct Observation
 static bool SameFloat(float a, float b) { return memcmp(&a, &b, sizeof(a)) == 0; }
 static void CheckInvalidated(AnmManager *manager)
 {
-    CHECK(manager->currentVertexShader == 0xff && manager->currentSprite == NULL);
+    CHECK(manager->cachedDrawPath == ANM_DRAW_PATH_INVALIDATED && manager->currentSprite == NULL);
     CHECK(manager->currentTexture == NULL && manager->currentColorOp == 0xff);
     CHECK(manager->currentBlendMode == 3 && manager->disableZWrite == 0xff);
     CHECK(manager->currentTextureFactor == 0x11223344u);
 }
 static void CheckInitialCache(const Observation &o)
 {
-    CHECK(o.manager->currentVertexShader == 1 && o.manager->currentSprite == o.sprite);
+    CHECK(o.manager->cachedDrawPath == ANM_DRAW_PATH_BUFFERED_QUADS && o.manager->currentSprite == o.sprite);
     CHECK(o.manager->currentTexture == o.texture && o.manager->currentColorOp == 1);
     CHECK(o.manager->currentBlendMode == 1 && o.manager->disableZWrite == 0);
     CHECK(o.manager->currentTextureFactor == 0x11223344u);
@@ -84,7 +84,7 @@ static void CheckAnmAfterQuad(AnmManager *manager, AnmLoadedSprite &sprite)
     CHECK(texture->texture == static_cast<IDirect3DBaseTexture8 *>(sprite.texture));
     const ViewportDeviceCall *blend = ViewportDeviceCallAt(1);
     CHECK(blend->kind == VIEWPORT_CALL_RENDER_STATE && blend->state == D3DRS_DESTBLEND && blend->value == D3DBLEND_ONE);
-    CHECK(manager->currentTexture == sprite.texture && manager->currentBlendMode == 1 && manager->currentVertexShader == 1);
+    CHECK(manager->currentTexture == sprite.texture && manager->currentBlendMode == 1 && manager->cachedDrawPath == ANM_DRAW_PATH_BUFFERED_QUADS);
     CHECK(manager->spritesToDraw == 1);
     manager->FlushVertexBuffer();
     CHECK(ViewportDeviceCallCount() == 6 && manager->spritesToDraw == 0);
@@ -127,7 +127,7 @@ int __cdecl main()
         manager->currentTexture = sprite.texture;
         manager->currentBlendMode = 1;
         manager->currentColorOp = 1;
-        manager->currentVertexShader = 1;
+        manager->cachedDrawPath = ANM_DRAW_PATH_BUFFERED_QUADS;
         manager->disableZWrite = 0;
         manager->currentTextureFactor = 0x11223344u;
         manager->screenShakeOffset.x = 7.25f;

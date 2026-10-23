@@ -3,6 +3,7 @@
 
 #include "Main.hpp"
 #include "AnmQuadVertex.hpp"
+#include "AnmDrawPath.hpp"
 #include "AnmVmId.hpp"
 #include "Rng.hpp"
 #include "ZunResult.hpp"
@@ -583,7 +584,7 @@ struct AnmManager
     IDirect3DTexture8 *currentTexture;       // +0x001760
     u8 currentBlendMode;                     // +0x001764
     u8 currentColorOp;                       // +0x001765
-    u8 currentVertexShader;                  // +0x001766
+    u8 cachedDrawPath;                       // +0x001766: AnmDrawPath hint.
     u8 disableZWrite;                        // +0x001767
     u8 cameraMode;                           // +0x001768
     u8 unknown1769[3];
@@ -717,7 +718,7 @@ struct AnmManager
 
     void ClearBlendMode() { this->currentBlendMode = 3; }
     void ClearColorOp() { this->currentColorOp = 0xff; }
-    void ClearVertexShader() { this->currentVertexShader = 0xff; }
+    void InvalidateDrawPath() { this->cachedDrawPath = ANM_DRAW_PATH_INVALIDATED; }
     void ClearTexture() { this->currentTexture = NULL; }
     void ClearSprite() { this->currentSprite = NULL; }
     void ClearZWrite() { this->disableZWrite = 0xff; }
@@ -742,6 +743,9 @@ typedef char AnmManagerPrimaryVmAtF0C[(offsetof(AnmManager, primaryVm) == 0xf0c)
 typedef char AnmManagerPreloadSlotsAt2C[(offsetof(AnmManager, slots) == 0x2c) ? 1 : -1];
 typedef char AnmManagerCachedWorldMatrixAtECC[(offsetof(AnmManager, cachedWorldMatrix) == 0xecc) ? 1 : -1];
 typedef char AnmManagerSurfacesAt11DC[(offsetof(AnmManager, surfaces) == 0x11dc) ? 1 : -1];
+typedef char AnmManagerDrawPathAt1766[
+    (offsetof(AnmManager, cachedDrawPath) == 0x1766 &&
+     sizeof(((AnmManager *)0)->cachedDrawPath) == 1) ? 1 : -1];
 typedef char AnmManagerVerticesAt1774[(offsetof(AnmManager, quadVertices) == 0x1774) ? 1 : -1];
 typedef char AnmManagerShakeAt20[
     (offsetof(AnmManager, screenShakeOffset) == 0x20 && sizeof(Float2) == 8) ? 1 : -1];

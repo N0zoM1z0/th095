@@ -18941,3 +18941,75 @@ runtime declarations and casts while preserving target behavior. No real
 GPU/driver, general overflow safety, all FPU modes, full renderer, joins,
 native parent or native 64-bit/Linux/Web game is accepted. Semantic/platform
 work remains active-incomplete. See [ANM_VERTEX_BATCH.md](ANM_VERTEX_BATCH.md).
+
+
+### SEM-354 — named ANM submission paths and byte-cache invalidation
+
+2026-10-23. The canonical byte at manager +0x1766 now names a submission-path
+hint, not a shader handle: AnmDrawPath.hpp supplies INITIAL 0, BUFFERED_QUADS 1,
+STREAMED_QUAD 2, IMMEDIATE_VERTICES 3 and INVALIDATED 0xFF. The field is
+cachedDrawPath; InvalidateDrawPath only publishes its sentinel. Canonical,
+MainExact and inherited ECL declarations share vocabulary without introducing
+a selected declaration or widening the byte. The retired legacy unset-only
+enum is removed. Pinned normal COFF data independently proves a four-byte enum,
+one-byte cache, offset +0x1766 and unchanged 0x38314C manager extent.
+
+Target oracle: a raw .text displacement scan finds twelve direct accesses in
+eight functions; every instruction agrees with the independently attested
+Ghidra listing. Constructor @ 0x00441DC0 writes 0. DrawInner @ 0x0043ECD0,
+Draw3D @ 0x00440C10, DrawVertices @ 0x00441330 and DrawTriangleFan @ 0x00441480
+consume 1/2/3/3 respectively. ResetRenderState @ 0x00421380, OnUpdate
+@ 0x00423440 and DrawSquare @ 0x00436920 invalidate. Values 1 and 3 share
+FVF 0x144 while selecting deferred versus immediate submission; streamed 2
+binds 0x102, the receiver's stream and TFACTOR arguments before publication.
+Flush binds 0x144 without changing the hint. Clear also leaves it alone;
+failed device calls still publish the chosen path. Texture/blend ordering,
+visibility checks, x87 blocks and queue behavior are preserved.
+
+Storage/semantic ownership remains canonical ANM. The existing manager/draw,
+Main and ScreenEffect TUs retain emission ownership. Main's exact projection
+and incompatible ECL declaration remain emission debt, not accepted alternate
+runtime layouts. Normal OnUpdate's additional pre-service invalidation stays
+separate from the target's post-service store. Exact replay does not accept
+that different normal body; the independent normal graph audit preserves it.
+
+The before-edit exact baseline passes 82 units across five sources; 33 focused
+producer/draw/overlay units pass after the change. The cold aggregate and then
+fixed-object zero-refresh comparison each pass all 698 units across 88 sources.
+The manifest audit permits 744 same-family private-label
+updates, zero public-reference/function identity changes and no other recipe,
+profile, extent, partition, origin or credit change. Selector/declaration debt
+baselines remain unchanged. Manifest SHA-256:
+64c08c3af60512c68c671afdbceda8ff400c49200c48ac9f521112521070fbf7.
+
+Independent normal cold compilation/linkage covers every real object with zero
+unresolved symbols. Build-local PE32 GUI: 778,752 bytes, SHA-256
+5543ab91c8b0f77dc60fabae5fe43c50a431347888893489c3bd979db19bc6de.
+All 33 actual manager/draw/overlay methods pass strict target comparison with
+the existing normal RNG/lifecycle aliases separately reviewed. All 929 named
+roots, 81 private entries and 1,798 recursive code/data/EH graphs remain equal;
+933 private-reference spellings change, with no public identity,
+added root or changed-body exception. Main/ECL normal bodies remain separately
+selected preserved graphs rather than wholesale target-identical acceptance.
+
+Six /OPT:NOREF Win32 clients link all 88 normal objects and pass. The batch
+client retains 122 cases and adds 80: ten byte-only invalidations with pending
+or empty queues, ten nonempty flushes retaining every incoming hint, and sixty
+buffered/strip/fan crossings of all five states, pending/empty and success/failure.
+In-call observations check old-cache visibility during binding/flush and new
+cache visibility at immediate submission. Prebuilt-quad cases increase from
+24 to 30 by covering every incoming state and both HRESULT outcomes in Draw3D.
+Its obsolete total-count assertion was corrected from four to ten after all
+new direct-draw scenarios passed; the completed cold build/four clients were
+retained by hash and only the two remaining clients rerun. Other lifetime,
+viewport, projection, shake and overlay cases remain passing.
+
+The closed protocol guard covers the exact value set, byte storage, named
+writers/consumers and non-publication by Flush/Clear; regression tests reject
+new aliases, raw literals, widened storage, selected vocabulary and stale names.
+Public CI passes 123 workflow tests and the existing native component programs.
+All 337 source/tool/test inputs and 16 non-recipe configs remain frozen.
+Receipts, commands, target scan, layout data and runtime resumption are below
+.analysis/sem354/. See [ANM_DRAW_PATH.md](ANM_DRAW_PATH.md). No real GPU/driver,
+failed-device recovery, globally coherent device cache, full game or native
+64-bit/Linux/Web game acceptance follows. Semantic/platform work remains active.

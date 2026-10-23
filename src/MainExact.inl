@@ -76,7 +76,7 @@ struct SupervisorAnmManagerView
     IDirect3DTexture8 *currentTexture;          // +0x1760
     u8 currentBlendMode;                       // +0x1764
     u8 currentColorOp;                         // +0x1765
-    u8 currentVertexShader;                    // +0x1766
+    u8 cachedDrawPath;                         // +0x1766
     u8 disableZWrite;                          // +0x1767
     u8 cameraMode;                             // +0x1768
     u8 unknown1769[3];
@@ -102,7 +102,7 @@ struct SupervisorAnmManagerView
         this->useMixColor = 0;
         this->mixColor = 0x80808080;
     }
-    void ClearVertexShader() { this->currentVertexShader = 0xff; }
+    void InvalidateDrawPath() { this->cachedDrawPath = ANM_DRAW_PATH_INVALIDATED; }
 };
 
 extern SupervisorSoundPlayerView g_SupervisorSoundPlayer;
@@ -867,7 +867,7 @@ void GameWindow::ResetRenderState()
     {
         g_AnmManager->ClearBlendMode();
         g_AnmManager->ClearColorOp();
-        g_AnmManager->ClearVertexShader();
+        g_AnmManager->InvalidateDrawPath();
         g_AnmManager->ClearTexture();
         g_AnmManager->ClearCameraSettings();
     }
@@ -1100,7 +1100,7 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
     if (g_SupervisorAnmManager->ServicePreloadedAnims() != ZUN_SUCCESS)
         return 4;
 
-    g_SupervisorAnmManager->ClearVertexShader();
+    g_SupervisorAnmManager->InvalidateDrawPath();
     if (supervisor->startupThreadState != SUPERVISOR_STARTUP_PHASE_IDLE)
     {
         if (supervisor->startupThreadState == SUPERVISOR_STARTUP_PHASE_FAILED)

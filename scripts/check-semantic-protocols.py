@@ -4566,6 +4566,68 @@ def check_small_closed_domains() -> None:
     )
 
 
+def check_anm_draw_path(source_text: dict[str, str] | None = None) -> None:
+    overrides = source_text or {}
+    names = ("AnmDrawPath.hpp", "AnmManager.hpp", "AnmManager.cpp",
+             "AnmDrawCore.cpp", "Main.cpp", "MainExact.inl",
+             "ScreenEffectDraw.cpp", "ecl/AnmManagerEclView.hpp")
+    texts = {name: source_without_comments(overrides.get(
+        name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
+    owner = texts["AnmDrawPath.hpp"]
+    expected = {
+        "ANM_DRAW_PATH_INITIAL": 0,
+        "ANM_DRAW_PATH_BUFFERED_QUADS": 1,
+        "ANM_DRAW_PATH_STREAMED_QUAD": 2,
+        "ANM_DRAW_PATH_IMMEDIATE_VERTICES": 3,
+        "ANM_DRAW_PATH_INVALIDATED": 255,
+    }
+    declaration = re.search(r"enum\s+AnmDrawPath\s*\{([^}]+)\}", owner)
+    parts = [part.strip() for part in declaration[1].split(",") if part.strip()] if declaration else []
+    entries = re.findall(r"\b(ANM_DRAW_PATH_\w+)\s*=\s*(0x[0-9a-fA-F]+|\d+)\b", owner)
+    if len(parts) != len(expected) or len(entries) != len(expected) or {name: int(value, 0) for name, value in entries} != expected:
+        fail("ANM draw-path domain must retain its five explicit values")
+    if re.search(r"\b(?:TH095_MATCH_EXACT|DIFFBUILD)\b", owner):
+        fail("ANM draw-path vocabulary must be profile-independent")
+    for name in ("AnmManager.hpp", "MainExact.inl", "ecl/AnmManagerEclView.hpp"):
+        if re.search(r"\bu8\s+cachedDrawPath\s*;", texts[name]) is None:
+            fail(f"{name}: ANM draw-path storage must remain one byte")
+        match = re.search(r"void\s+InvalidateDrawPath\(\)\s*\{([^}]+)\}", texts[name])
+        if match is None or re.fullmatch(
+            r"\s*this->cachedDrawPath\s*=\s*(?:th095::)?ANM_DRAW_PATH_INVALIDATED\s*;\s*", match[1]
+        ) is None:
+            fail(f"{name}: draw-path invalidation must only publish its byte sentinel")
+    if "offsetof(AnmManager, cachedDrawPath) == 0x1766" not in texts["AnmManager.hpp"]:
+        fail("ANM draw-path cache lost its canonical offset assertion")
+    expected_writes = {
+        "AnmManager.hpp": ["ANM_DRAW_PATH_INVALIDATED"],
+        "AnmManager.cpp": ["ANM_DRAW_PATH_INITIAL"],
+        "AnmDrawCore.cpp": ["ANM_DRAW_PATH_BUFFERED_QUADS", "ANM_DRAW_PATH_STREAMED_QUAD",
+                            "ANM_DRAW_PATH_IMMEDIATE_VERTICES", "ANM_DRAW_PATH_IMMEDIATE_VERTICES"],
+        "Main.cpp": [], "MainExact.inl": ["ANM_DRAW_PATH_INVALIDATED"],
+        "ScreenEffectDraw.cpp": [], "ecl/AnmManagerEclView.hpp": ["ANM_DRAW_PATH_INVALIDATED"],
+    }
+    for name, text in texts.items():
+        if re.search(r"\b(?:currentVertexShader|ClearVertexShader|AnmVertexShader)\b", text):
+            fail(f"{name}: retired shader-handle vocabulary returned")
+        if name in expected_writes:
+            writes = re.findall(r"\bcachedDrawPath\s*=(?!=)\s*([^;]+);", text)
+            writes = [value.removeprefix("th095::").strip() for value in writes]
+            if writes != expected_writes[name]:
+                fail(f"{name}: draw-path writers must use the closed named domain")
+    comparisons = re.findall(r"cachedDrawPath\s*!=\s*([^\s)]+)", texts["AnmDrawCore.cpp"])
+    if comparisons != expected_writes["AnmDrawCore.cpp"]:
+        fail("ANM draw-path consumers must use their named submission paths")
+    for signature in ("void AnmManager::FlushVertexBuffer()", "void AnmManager::ClearVertexBuffer()"):
+        text = texts["AnmManager.cpp"]
+        if "cachedDrawPath" in braced_body_after(text, text.index(signature), signature):
+            fail("ANM batch flush/clear must not publish a draw-path cache value")
+    for path in SRC.rglob("*"):
+        if path.suffix in (".hpp", ".cpp", ".inl") and path.relative_to(SRC).as_posix() not in texts:
+            text = source_without_comments(path.read_text(encoding="utf-8"))
+            if re.search(r"\b(?:cachedDrawPath|currentVertexShader|ClearVertexShader|AnmVertexShader)\b", text):
+                fail(f"{path.relative_to(SRC)}: review new ANM draw-path access before extending the closed protocol")
+
+
 def check_anm_batch_vertices(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
     names = ("AnmVertex.hpp", "Main.hpp", "MainExact.hpp", "AnmManager.hpp", "AnmManager.cpp", "AnmDrawCore.cpp", "ecl/AnmManagerEclView.hpp")
@@ -4696,6 +4758,7 @@ def main() -> int:
     check_screen_effect_quad_wire()
     check_anm_quad_vertices()
     check_anm_batch_vertices()
+    check_anm_draw_path()
     check_ecl_type_boundaries()
     check_ecl_extended_type_boundaries()
     check_photo_bullet_owner()

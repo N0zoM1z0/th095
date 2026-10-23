@@ -717,6 +717,28 @@ class SemanticProtocolGuardTests(unittest.TestCase):
     def test_anm_batch_guard_accepts_one_shared_wire_and_flags(self) -> None:
         GUARD.check_anm_batch_vertices()
 
+    def test_anm_draw_path_guard_accepts_closed_byte_domain(self) -> None:
+        GUARD.check_anm_draw_path()
+
+    def test_anm_draw_path_guard_rejects_domain_and_cache_regressions(self) -> None:
+        mutations = [
+            ("AnmDrawPath.hpp", "ANM_DRAW_PATH_INVALIDATED = 0xff", "ANM_DRAW_PATH_INVALIDATED = 0"),
+            ("AnmDrawPath.hpp", "ANM_DRAW_PATH_INVALIDATED = 0xff", "ANM_DRAW_PATH_INVALIDATED = 0xff, ANM_DRAW_PATH_ALIAS = ANM_DRAW_PATH_INITIAL"),
+            ("AnmDrawPath.hpp", "#pragma once", "#pragma once\n#ifdef DIFFBUILD\n#endif"),
+            ("AnmManager.hpp", "u8 cachedDrawPath;", "AnmDrawPath cachedDrawPath;"),
+            ("AnmManager.hpp", "this->cachedDrawPath = ANM_DRAW_PATH_INVALIDATED;", "this->cachedDrawPath = 0xff;"),
+            ("AnmDrawCore.cpp", "cachedDrawPath != ANM_DRAW_PATH_BUFFERED_QUADS", "cachedDrawPath != 1"),
+            ("AnmManager.cpp", "void AnmManager::FlushVertexBuffer()\n{", "void AnmManager::FlushVertexBuffer()\n{\nthis->cachedDrawPath = ANM_DRAW_PATH_BUFFERED_QUADS;"),
+            ("MainExact.inl", "cachedDrawPath", "currentVertexShader"),
+        ]
+        for name, before, after in mutations:
+            source = (ROOT / "src" / name).read_text(encoding="utf-8")
+            changed = source.replace(before, after, 1)
+            self.assertNotEqual(source, changed)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_anm_draw_path({name: changed})
+
     def test_anm_batch_guard_rejects_layout_copy_and_profile_regressions(self) -> None:
         sources = {name: (ROOT / "src" / name).read_text(encoding="utf-8") for name in (
             "AnmVertex.hpp", "Main.hpp", "AnmManager.hpp", "AnmManager.cpp", "AnmDrawCore.cpp")}

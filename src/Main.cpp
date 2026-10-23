@@ -958,7 +958,7 @@ void GameWindow::ResetRenderState()
     {
         g_AnmManager->ClearBlendMode();
         g_AnmManager->ClearColorOp();
-        g_AnmManager->ClearVertexShader();
+        g_AnmManager->InvalidateDrawPath();
         g_AnmManager->ClearTexture();
         g_AnmManager->ClearCameraSettings();
     }
@@ -1189,14 +1189,14 @@ i32 __fastcall Supervisor::OnUpdate(void *arg)
     g_AnmManager->ClearCameraSettings();
     g_AnmManager->useMixColor = 0;
     g_AnmManager->color.color = 0x80808080;
-    g_AnmManager->ClearVertexShader();
+    g_AnmManager->InvalidateDrawPath();
     g_AnmManager->screenShakeOffset.x =
         g_AnmManager->screenShakeOffset.y = 0.0f;
 
     if (g_AnmManager->ServicePreloadedAnims() != ZUN_SUCCESS)
         return 4;
 
-    g_AnmManager->ClearVertexShader();
+    g_AnmManager->InvalidateDrawPath();
     if (supervisor->startupThreadState != SUPERVISOR_STARTUP_PHASE_IDLE)
     {
         if (supervisor->startupThreadState == SUPERVISOR_STARTUP_PHASE_FAILED)

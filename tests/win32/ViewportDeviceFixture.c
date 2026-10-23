@@ -95,7 +95,7 @@ static HRESULT WINAPI CaptureDraw(
     call->stride = stride;
     // DrawPrimitiveUP consumes caller memory synchronously. Preserve its bytes
     // while stack-based quad vertices are alive; the raw pointer is identity only.
-    if (primitive == D3DPT_TRIANGLESTRIP)
+    if (primitive == D3DPT_TRIANGLESTRIP || primitive == D3DPT_TRIANGLEFAN)
         call->capturedVertexBytes = (count + 2) * stride;
     else if (primitive == D3DPT_TRIANGLELIST)
         call->capturedVertexBytes = count * 3 * stride;

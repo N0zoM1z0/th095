@@ -1,5 +1,6 @@
 #pragma once
 #include "../AnmVertex.hpp"
+#include "../AnmDrawPath.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 
 // Normal reconstruction code must use the canonical TH095 ANM declarations.
@@ -74,11 +75,6 @@ enum AnmBlendMode
 enum AnmColorOp
 {
     AnmColorOp_Unset = -1
-};
-
-enum AnmVertexShader
-{
-    AnmVertexShader_Unset = -1
 };
 
 enum AnmCameraMode
@@ -749,9 +745,9 @@ struct AnmManager
         this->currentSprite = NULL;
     }
 
-    void ClearVertexShader()
+    void InvalidateDrawPath()
     {
-        this->currentVertexShader = AnmVertexShader_Unset;
+        this->cachedDrawPath = th095::ANM_DRAW_PATH_INVALIDATED;
     }
 
     void ClearTexture()
@@ -902,7 +898,7 @@ struct AnmManager
     IDirect3DTexture8 *currentTexture;
     u8 currentBlendMode;
     u8 currentColorOp;
-    u8 currentVertexShader;
+    u8 cachedDrawPath;
     u8 disableZWrite;
     u8 cameraMode;
     u8 needsTextureFactorSetup;

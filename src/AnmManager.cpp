@@ -985,7 +985,7 @@ AnmManager::AnmManager()
     this->currentBlendMode = 0;
     this->currentColorOp = 0;
     this->currentTextureFactor = 1;
-    this->currentVertexShader = 0;
+    this->cachedDrawPath = ANM_DRAW_PATH_INITIAL;
     this->cameraMode = 0xff;
     this->disableZWrite = 0;
     this->captureAnmIdx = -1;

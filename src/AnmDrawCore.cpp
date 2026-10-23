@@ -335,10 +335,10 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
         g_Supervisor.d3dDevice->SetTexture(0, this->currentTexture);
     }
 
-    if (this->currentVertexShader != 1)
+    if (this->cachedDrawPath != ANM_DRAW_PATH_BUFFERED_QUADS)
     {
         this->FlushVertexBuffer();
-        this->currentVertexShader = 1;
+        this->cachedDrawPath = ANM_DRAW_PATH_BUFFERED_QUADS;
     }
 
     if ((flags & ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE) == 0)
@@ -1120,7 +1120,7 @@ ZunResult AnmManager::Draw3D(AnmVm *vm)
         g_Supervisor.d3dDevice->SetTexture(0, this->currentTexture);
     }
 
-    if (this->currentVertexShader != 2)
+    if (this->cachedDrawPath != ANM_DRAW_PATH_STREAMED_QUAD)
     {
         g_Supervisor.d3dDevice->SetVertexShader(D3DFVF_XYZ | D3DFVF_TEX1);
         g_Supervisor.d3dDevice->SetStreamSource(
@@ -1129,7 +1129,7 @@ ZunResult AnmManager::Draw3D(AnmVm *vm)
             0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
         g_Supervisor.d3dDevice->SetTextureStageState(
             0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
-        this->currentVertexShader = 2;
+        this->cachedDrawPath = ANM_DRAW_PATH_STREAMED_QUAD;
     }
 
     g_Supervisor.d3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
@@ -1220,11 +1220,11 @@ ZunResult AnmManager::DrawVertices(
         g_Supervisor.d3dDevice->SetTexture(0, this->currentTexture);
     }
 
-    if (this->currentVertexShader != 3)
+    if (this->cachedDrawPath != ANM_DRAW_PATH_IMMEDIATE_VERTICES)
     {
         g_Supervisor.d3dDevice->SetVertexShader(
             D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1);
-        this->currentVertexShader = 3;
+        this->cachedDrawPath = ANM_DRAW_PATH_IMMEDIATE_VERTICES;
     }
 
     this->SetRenderStateForVm(vm);
@@ -1244,11 +1244,11 @@ ZunResult AnmManager::DrawTriangleFan(
     if (this->spritesToDraw != 0)
         this->FlushVertexBuffer();
 
-    if (this->currentVertexShader != 3)
+    if (this->cachedDrawPath != ANM_DRAW_PATH_IMMEDIATE_VERTICES)
     {
         g_Supervisor.d3dDevice->SetVertexShader(
             D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1);
-        this->currentVertexShader = 3;
+        this->cachedDrawPath = ANM_DRAW_PATH_IMMEDIATE_VERTICES;
     }
 
     this->SetRenderStateForVm(vm);

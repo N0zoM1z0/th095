@@ -66,7 +66,7 @@ void ScreenEffect::DrawSquare(ScreenEffectRect *rect, unsigned int color)
         D3DPT_TRIANGLESTRIP, 2, vertices,
         sizeof(ScreenEffectQuadVertex));
 
-    g_AnmManager->ClearVertexShader();
+    g_AnmManager->InvalidateDrawPath();
     g_AnmManager->ClearSprite();
     g_AnmManager->ClearTexture();
     g_AnmManager->ClearColorOp();

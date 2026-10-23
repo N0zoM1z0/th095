@@ -118,9 +118,10 @@ static void SeedVm(AnmVm &vm, AnmLoadedSprite &sprite)
 static unsigned int CheckDirectDraw(AnmManager *manager)
 {
     unsigned int cases = 0;
+    const u8 incoming[] = {0, 1, 2, 3, 0xff};
     AnmLoadedSprite sprite; memset(&sprite, 0, sizeof(sprite));
     sprite.texture = ViewportTestTexture(0);
-    for (unsigned int hit = 0; hit < 2; ++hit)
+    for (unsigned int state = 0; state < 5; ++state)
     for (unsigned int failure = 0; failure < 2; ++failure)
     {
         AnmVm vm; SeedVm(vm, sprite);
@@ -128,7 +129,8 @@ static unsigned int CheckDirectDraw(AnmManager *manager)
         manager->currentTextureFactor = vm.color1.color;
         manager->currentTexture = sprite.texture;
         manager->currentSprite = &sprite;
-        manager->currentVertexShader = hit ? 2 : 0xff;
+        manager->cachedDrawPath = incoming[state];
+        bool hit = incoming[state] == 2;
         manager->spritesToDraw = 0;
         manager->useMixColor = 0;
         ResetViewportDeviceCalls(failure ? E_FAIL : S_OK);
@@ -148,7 +150,7 @@ static unsigned int CheckDirectDraw(AnmManager *manager)
         }
         const ViewportDeviceCall *draw = ViewportDeviceCallAt(hit ? 1 : 5);
         CHECK(draw->kind == VIEWPORT_CALL_BUFFER_DRAW && draw->state == D3DPT_TRIANGLESTRIP);
-        CHECK(draw->value == 0 && draw->count == 2 && manager->currentVertexShader == 2);
+        CHECK(draw->value == 0 && draw->count == 2 && manager->cachedDrawPath == ANM_DRAW_PATH_STREAMED_QUAD);
         ++cases;
     }
     return cases;
@@ -190,7 +192,7 @@ static unsigned int CheckPhotoBlend(AnmManager *manager)
         manager->currentColorOp = 0;
         manager->currentTexture = sprite.texture;
         manager->currentSprite = &sprite;
-        manager->currentVertexShader = 1;
+        manager->cachedDrawPath = ANM_DRAW_PATH_BUFFERED_QUADS;
         manager->spritesToDraw = 0;
         manager->vertexBufferStartPtr = manager->vertexBuffer;
         manager->vertexBufferEndPtr = manager->vertexBuffer;
@@ -235,7 +237,7 @@ int __cdecl main()
     // Draw3D must use its receiver's buffer even when the global manager differs.
     g_AnmManager = other;
     const unsigned int draws = CheckDirectDraw(receiver);
-    CHECK(draws == 4);
+    CHECK(draws == 10);
     const unsigned int photo = CheckPhotoBlend(receiver);
     CHECK(photo == 4);
     printf("ANM quad: %u setup, %u direct-draw and %u U-as-W photo-blend cases passed\n", setup, draws, photo);

@@ -159,7 +159,7 @@ static unsigned int CheckDrawColors(AnmManager *manager,AnmLoadedSprite &sprite)
         vm.color2.color = values[(color+5)%6] | values[(color+4)%6]<<8 | values[(color+3)%6]<<16 | values[(color+2)%6]<<24;
         manager->color.color = 0xff80817f; manager->useMixColor = mix;
         manager->ClearVertexBuffer(); manager->currentTexture = sprite.texture;
-        manager->currentVertexShader = 1; manager->currentBlendMode = 0;
+        manager->cachedDrawPath = ANM_DRAW_PATH_BUFFERED_QUADS; manager->currentBlendMode = 0;
         manager->screenShakeOffset.x = 0.25f; manager->screenShakeOffset.y = -0.25f;
         SeedGeometry(10.25f,20.75f,40.25f,50.75f); ResetViewportDeviceCalls(S_OK);
         CHECK(manager->DrawInner(&vm,(preserve?2:0)|(rounded?1:0)) == ZUN_SUCCESS);
@@ -204,7 +204,7 @@ static unsigned int CheckTransitions(AnmManager *manager,AnmLoadedSprite &sprite
         AnmVm vm; SeedVm(vm,sprite); if (mode==1) vm.blendMode=1;
         manager->ClearVertexBuffer();manager->flushesThisFrame=300;
         manager->currentTexture = mode==0?ViewportTestTexture(1):sprite.texture;
-        manager->currentBlendMode=0;manager->currentVertexShader=mode==2?2:1;manager->useMixColor=0;
+        manager->currentBlendMode=0;manager->cachedDrawPath=mode==2?ANM_DRAW_PATH_STREAMED_QUAD:ANM_DRAW_PATH_BUFFERED_QUADS;manager->useMixColor=0;
         manager->screenShakeOffset.x=manager->screenShakeOffset.y=0;
         AnmVertex old[4];FillWire(old,5);unsigned char oldPacket[168];Expand(oldPacket,old);
         if (pending) CHECK(manager->AddSpriteToDrawBuffer(old)==ZUN_SUCCESS);
@@ -216,7 +216,7 @@ static unsigned int CheckTransitions(AnmManager *manager,AnmLoadedSprite &sprite
         if (pending) CHECK(memcmp(ViewportDeviceCallAt(3)->capturedVertices,oldPacket,168)==0);
         if (mode==0) CHECK(ViewportDeviceCallAt(pending*4)->kind==VIEWPORT_CALL_TEXTURE && ViewportDeviceCallAt(pending*4)->texture==static_cast<IDirect3DBaseTexture8 *>(sprite.texture));
         if (mode==1) CHECK(ViewportDeviceCallAt(pending*4)->kind==VIEWPORT_CALL_RENDER_STATE && ViewportDeviceCallAt(pending*4)->state==D3DRS_DESTBLEND && ViewportDeviceCallAt(pending*4)->value==D3DBLEND_ONE);
-        CHECK(manager->spritesToDraw==1 && manager->currentVertexShader==1 && manager->flushesThisFrame==300+pending);
+        CHECK(manager->spritesToDraw==1 && manager->cachedDrawPath==ANM_DRAW_PATH_BUFFERED_QUADS && manager->flushesThisFrame==300+pending);
         CHECK(manager->vertexBufferStartPtr==manager->vertexBuffer+pending*6 && manager->vertexBufferEndPtr==manager->vertexBuffer+(pending+1)*6);
         unsigned char expected[168];Expand(expected,g_AnmTexturedVertices);
         ResetViewportDeviceCalls(failure?E_FAIL:S_OK);manager->FlushVertexBuffer();CheckFlushCalls(manager,manager->vertexBuffer+pending*6,1,expected);
@@ -230,14 +230,14 @@ static unsigned int CheckCull(AnmManager *manager,AnmLoadedSprite &sprite)
     for (unsigned int i=0;i<4;++i)
     {
         manager->ClearVertexBuffer();manager->flushesThisFrame=400;
-        manager->currentTexture=ViewportTestTexture(1);manager->currentVertexShader=2;manager->currentBlendMode=0;
+        manager->currentTexture=ViewportTestTexture(1);manager->cachedDrawPath=ANM_DRAW_PATH_STREAMED_QUAD;manager->currentBlendMode=0;
         manager->screenShakeOffset.x=manager->screenShakeOffset.y=0;
         AnmVertex q[4];FillWire(q,i);unsigned char bytes[168];Expand(bytes,q);CHECK(manager->AddSpriteToDrawBuffer(q)==ZUN_SUCCESS);
         AnmVm vm;SeedVm(vm,sprite);vm.blendMode=1;
         SeedGeometry(rectangles[i][0],rectangles[i][1],rectangles[i][2],rectangles[i][3]);ResetViewportDeviceCalls(S_OK);
         CHECK(manager->DrawInner(&vm,0)==ZUN_SUCCESS && ViewportDeviceCallCount()==0);
         CHECK(manager->spritesToDraw==1 && manager->vertexBufferEndPtr==manager->vertexBuffer+6 && manager->vertexBufferStartPtr==manager->vertexBuffer);
-        CHECK(manager->flushesThisFrame==400 && manager->currentTexture==ViewportTestTexture(1) && manager->currentVertexShader==2 && manager->currentBlendMode==0);
+        CHECK(manager->flushesThisFrame==400 && manager->currentTexture==ViewportTestTexture(1) && manager->cachedDrawPath==ANM_DRAW_PATH_STREAMED_QUAD && manager->currentBlendMode==0);
         CHECK(memcmp(manager->vertexBuffer,bytes,sizeof(bytes))==0);
         for (unsigned int j=0;j<4;++j)
         {
@@ -248,10 +248,102 @@ static unsigned int CheckCull(AnmManager *manager,AnmLoadedSprite &sprite)
     }
     return 4;
 }
+struct DrawPathObservation { AnmManager *manager; u8 incoming; };
+static void __cdecl ObserveDrawPath(const ViewportDeviceCall *call, void *context)
+{
+    DrawPathObservation &o = *static_cast<DrawPathObservation *>(context);
+    if (call->kind == VIEWPORT_CALL_VERTEX_SHADER ||
+        (call->kind == VIEWPORT_CALL_DRAW && call->state == D3DPT_TRIANGLELIST))
+        CHECK(o.manager->cachedDrawPath == o.incoming);
+    if (call->kind == VIEWPORT_CALL_DRAW && call->state != D3DPT_TRIANGLELIST)
+        CHECK(o.manager->cachedDrawPath == ANM_DRAW_PATH_IMMEDIATE_VERTICES);
+}
+static unsigned int CheckDrawPaths(AnmManager *manager, AnmLoadedSprite &sprite)
+{
+    // Independent target byte domain; every incoming state, including both
+    // miss sentinels, crosses buffered/strip/fan paths and failed device calls.
+    const u8 incoming[] = {0, 1, 2, 3, 0xff};
+    AnmVertex quad[4]; FillWire(quad, 0);
+    unsigned int cases = 0;
+    for (unsigned int state = 0; state < 5; ++state)
+    {
+        for (unsigned int pending = 0; pending < 2; ++pending)
+        {
+            manager->ClearVertexBuffer();
+            if (pending) manager->AddSpriteToDrawBuffer(quad);
+            manager->cachedDrawPath = incoming[state];
+            unsigned char neighbors[8];
+            memcpy(neighbors, reinterpret_cast<unsigned char *>(manager)+0x1764, 8);
+            neighbors[2] = 0xff;
+            AnmVertex *end = manager->vertexBufferEndPtr;
+            ResetViewportDeviceCalls(S_OK); manager->InvalidateDrawPath();
+            CHECK(ViewportDeviceCallCount() == 0 && manager->spritesToDraw == pending);
+            CHECK(manager->vertexBufferEndPtr == end && manager->vertexBufferStartPtr == manager->vertexBuffer);
+            CHECK(memcmp(neighbors, reinterpret_cast<unsigned char *>(manager)+0x1764, 8) == 0);
+            manager->ClearVertexBuffer(); CHECK(manager->cachedDrawPath == 0xff);
+            ++cases;
+        }
+        for (unsigned int failure = 0; failure < 2; ++failure)
+        {
+            manager->ClearVertexBuffer(); manager->cachedDrawPath = incoming[state];
+            manager->AddSpriteToDrawBuffer(quad); ResetViewportDeviceCalls(failure ? E_FAIL : S_OK);
+            manager->FlushVertexBuffer();
+            CHECK(manager->cachedDrawPath == incoming[state] && manager->spritesToDraw == 0);
+            CHECK(ViewportDeviceCallCount() == 4 && ViewportDeviceCallAt(2)->value == 0x144);
+            ++cases;
+        }
+        for (unsigned int path = 0; path < 3; ++path)
+        for (unsigned int pending = 0; pending < 2; ++pending)
+        for (unsigned int failure = 0; failure < 2; ++failure)
+        {
+            AnmVm vm; SeedVm(vm, sprite); vm.visible = vm.drawEnabled = true;
+            manager->ClearVertexBuffer(); manager->flushesThisFrame = 0;
+            manager->cachedDrawPath = incoming[state]; manager->currentTexture = sprite.texture;
+            manager->currentBlendMode = 0; manager->useMixColor = 0;
+            manager->screenShakeOffset.x = manager->screenShakeOffset.y = 0;
+            if (pending) manager->AddSpriteToDrawBuffer(quad);
+            SeedGeometry(10,20,40,50); ResetViewportDeviceCalls(failure ? E_FAIL : S_OK);
+            DrawPathObservation observation = {manager, incoming[state]};
+            SetViewportDeviceObserver(ObserveDrawPath, &observation);
+            if (path == 0) CHECK(manager->DrawInner(&vm, 0) == ZUN_SUCCESS);
+            else if (path == 1) CHECK(manager->DrawVertices(&vm, quad, 4) == ZUN_SUCCESS);
+            else CHECK(manager->DrawTriangleFan(&vm, quad, 4) == ZUN_SUCCESS);
+            SetViewportDeviceObserver(NULL, NULL);
+            unsigned int flushed = pending && (path != 0 || incoming[state] != 1);
+            unsigned int binds = 0, draws = 0;
+            for (unsigned int i = 0; i < ViewportDeviceCallCount(); ++i)
+            {
+                const ViewportDeviceCall *call = ViewportDeviceCallAt(i);
+                if (call->kind == VIEWPORT_CALL_VERTEX_SHADER)
+                { CHECK(call->value == 0x144); ++binds; }
+                if (call->kind == VIEWPORT_CALL_DRAW)
+                {
+                    if (draws < flushed) CHECK(call->state == D3DPT_TRIANGLELIST && call->vertices == manager->vertexBuffer);
+                    else CHECK(call->state == (path == 1 ? D3DPT_TRIANGLESTRIP : D3DPT_TRIANGLEFAN) && call->vertices == quad && call->count == 2 && call->stride == 28);
+                    ++draws;
+                }
+            }
+            CHECK(binds == flushed + (path != 0 && incoming[state] != 3));
+            CHECK(draws == flushed + (path != 0) && manager->flushesThisFrame == (int)flushed);
+            CHECK(manager->cachedDrawPath == (path == 0 ? 1 : 3));
+            CHECK(manager->spritesToDraw == (path == 0 ? pending+1-flushed : 0));
+            if (flushed)
+            {
+                CHECK(ViewportDeviceCallAt(0)->kind == VIEWPORT_CALL_TEXTURE_STATE);
+                CHECK(ViewportDeviceCallAt(1)->kind == VIEWPORT_CALL_TEXTURE_STATE);
+                CHECK(ViewportDeviceCallAt(2)->kind == VIEWPORT_CALL_VERTEX_SHADER);
+                CHECK(ViewportDeviceCallAt(3)->kind == VIEWPORT_CALL_DRAW);
+            }
+            ++cases;
+        }
+    }
+    return cases;
+}
 int __cdecl main()
 {
     g_Supervisor.InitializeCriticalSections();g_Supervisor.InitializeViewports();g_Supervisor.d3dDevice=ViewportTestDevice(0);
     AnmManager *manager=new AnmManager;g_AnmManager=manager;
+    CHECK(manager->cachedDrawPath == 0);
     SupervisorViewportConfiguration &configuration=g_Supervisor.viewportConfigurations[SUPERVISOR_VIEWPORT_PLAYFIELD];
     g_Supervisor.currentViewportConfiguration=&configuration;
     configuration.viewport.X=configuration.viewport.Y=0;configuration.viewport.Width=640;configuration.viewport.Height=480;
@@ -259,6 +351,8 @@ int __cdecl main()
     sprite.uvStart.x=0.125f;sprite.uvStart.y=0.25f;sprite.uvEnd.x=0.75f;sprite.uvEnd.y=0.875f;
     unsigned int queue=CheckQueue(manager),boundary=CheckLastFittingBatch(manager),colors=CheckDrawColors(manager,sprite),transitions=CheckTransitions(manager,sprite),cull=CheckCull(manager,sprite);
     CHECK(queue==8 && boundary==4 && colors==96 && transitions==10 && cull==4);
+    unsigned int paths=CheckDrawPaths(manager,sprite); CHECK(paths==80);
     printf("ANM batch: %u queue, %u last-fit, %u color/round/UV, %u transition and %u cull cases passed\n",queue,boundary,colors,transitions,cull);
+    printf("ANM draw paths: %u invalidation, flush and submission cases passed\n", paths);
     return 0;
 }
