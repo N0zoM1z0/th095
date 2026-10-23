@@ -234,6 +234,13 @@ executes both real embedded workers independently of the native component fixtur
 Other projections, the 0x364 compatibility family and native/ODR closure remain open. See
 [the declaration and oracle boundary](SUPERVISOR_DECLARATION.md).
 
+The gameplay viewport initializer, selector and Apply now share the canonical
+parent/elements and typed scalar shake publication. Its old normal aggregate
+copy is replaced by the target-shaped scalar form and accepted independently
+through normal-object comparisons and actual Win32 owner/D3DX execution with
+typed SDK API bindings. This does not accept a graphics driver or native parent;
+see [the ownership and oracle boundary](GAMEPLAY_VIEWPORT.md).
+
 A bounded family is closed only when its representation, consumers,
 transitions, ownership axes, unknowns, and applicable oracles are explicit.
 Repository-wide semantic completion requires all of those closures plus a

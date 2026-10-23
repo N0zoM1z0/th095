@@ -263,7 +263,6 @@
 2	src/SoundPlayer.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/Supervisor.hpp	#ifdef TH095_MATCH_EXACT
 1	src/Supervisor.hpp	#ifndef TH095_MATCH_EXACT
-1	src/SupervisorViewport.cpp	#if defined(TH095_MATCH_EXACT)
 2	src/TextRenderer.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 5	src/TextRenderer.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/zwave.cpp	#ifndef TH095_MATCH_EXACT

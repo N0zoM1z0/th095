@@ -454,7 +454,7 @@ th095::Supervisor::SetRenderState,0x00425570,function
 th095::Supervisor::SetupLoadingVms,0x00425660,function
 th095::Supervisor::HideLoadingVms,0x00425730,function
 th095::Supervisor::BeginLoadingCompletion,0x004257E0,function
-th095::SupervisorViewportView::ApplyGameplayViewport,0x00425910,function
+th095::Supervisor::ApplyGameplayViewport,0x00425910,function
 th095::BackgroundSupervisorView::ApplyBackgroundViewport,0x00425AA0,function
 th095::Supervisor::InitializeViewports,0x00425CC0,function
 th095::Supervisor::OnUpdate,0x00423440,function

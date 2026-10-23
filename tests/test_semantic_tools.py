@@ -694,6 +694,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
 
     def test_supervisor_viewport_guard_accepts_canonical_owner(self) -> None:
         GUARD.check_supervisor_viewport_configuration_owner()
+        GUARD.check_gameplay_viewport_owner()
         owner = (ROOT / "src" / "SupervisorViewportConfiguration.hpp").read_text(
             encoding="utf-8"
         )
@@ -712,6 +713,31 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         )
         self.assertNotIn("struct SupervisorViewportLifecycle", lifecycle)
         self.assertNotIn("struct SupervisorTimerLifecycle", lifecycle)
+
+    def test_gameplay_viewport_guard_rejects_owner_and_profile_regression(self) -> None:
+        source = (ROOT / "src/SupervisorViewport.cpp").read_text(encoding="utf-8")
+        for changed in (
+            source.replace("void Supervisor::ApplyGameplayViewport(", "void SupervisorViewportView::ApplyGameplayViewport(", 1),
+            source + "\nstruct GameplayViewportConfiguration {};\n",
+            source + "\n#ifdef TH095_MATCH_EXACT\n#endif\n",
+            source.replace("g_AnmManager->screenShakeOffset.x = configuration->screenShakeOffset.x;", "g_AnmManager->screenShakeOffset = configuration->screenShakeOffset;", 1),
+        ):
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_gameplay_viewport_owner({"SupervisorViewport.cpp": changed})
+
+    def test_gameplay_viewport_guard_rejects_binding_and_transition_drift(self) -> None:
+        source = (ROOT / "src/SupervisorViewport.cpp").read_text(encoding="utf-8")
+        for before, after in (
+            ("g_Supervisor.d3dDevice->SetTransform(", "this->d3dDevice->SetTransform("),
+            ("g_Supervisor.viewportConfigurations", "this->viewportConfigurations"),
+            ("this->currentViewportIndex = index;", "this->currentViewportIndex = 0;"),
+            ("this->currentViewportConfiguration = &this->viewportConfigurations[index];", "this->ApplyGameplayViewport(this->currentViewportConfiguration);"),
+        ):
+            self.assertIn(before, source)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_gameplay_viewport_owner({"SupervisorViewport.cpp": source.replace(before, after, 1)})
 
 
     def test_screenshot_worker_token_guard_accepts_shared_storage(self) -> None:

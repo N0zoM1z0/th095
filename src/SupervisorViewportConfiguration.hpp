@@ -2,6 +2,7 @@
 
 #include <d3d8.h>
 #include <d3dx8.h>
+#include <stddef.h>
 
 #include "SupervisorViewportSlot.hpp"
 #include "ZunMath.hpp"
@@ -27,5 +28,16 @@ struct SupervisorViewportConfiguration
     i32 unknown0e4;                 // +0x0e4
     Float2 screenShakeOffset;       // +0x0e8
 };
+
+typedef char SupervisorViewportConfigurationSizeIsF0[
+    (sizeof(SupervisorViewportConfiguration) == 0xf0) ? 1 : -1];
+typedef char SupervisorViewportViewMatrixAt4C[
+    (offsetof(SupervisorViewportConfiguration, viewMatrix) == 0x4c) ? 1 : -1];
+typedef char SupervisorViewportProjectionAt8C[
+    (offsetof(SupervisorViewportConfiguration, projectionMatrix) == 0x8c) ? 1 : -1];
+typedef char SupervisorViewportRectangleAtCC[
+    (offsetof(SupervisorViewportConfiguration, viewport) == 0xcc) ? 1 : -1];
+typedef char SupervisorViewportShakeAtE8[
+    (offsetof(SupervisorViewportConfiguration, screenShakeOffset) == 0xe8) ? 1 : -1];
 
 } // namespace th095

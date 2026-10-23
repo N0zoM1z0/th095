@@ -1793,7 +1793,6 @@ def check_supervisor_viewport_configuration_owner() -> None:
         fail("SupervisorLifecycle restored a duplicate timer declaration")
 
     for path, text, adapter in (
-        ("SupervisorViewport.cpp", viewport_source, "GameplayViewportConfiguration"),
         ("Background.cpp", background_source, "BackgroundViewportConfigurationView"),
         ("AnmDrawCore.cpp", anm_draw_source, "AnmBackgroundViewportView"),
     ):
@@ -1805,17 +1804,25 @@ def check_supervisor_viewport_configuration_owner() -> None:
             fail(f"{path} viewport emission adapter {adapter} gained storage")
 
     viewport_facts = (
-        "sizeof(SupervisorViewportConfiguration) == 0xf0",
-        "offsetof(SupervisorViewportView, current) == 0x3c4",
-        "configurations[TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW].unknown0e4 = 1;",
-        "configurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].unknown0e4 = 0;",
+        "viewportConfigurations[SUPERVISOR_VIEWPORT_FULL_WINDOW].unknown0e4 = 1;",
+        "viewportConfigurations[SUPERVISOR_VIEWPORT_PLAYFIELD].unknown0e4 = 0;",
         "configuration->screenShakeOffset.x",
         "configuration->screenShakeOffset.y",
-        "this)->currentIndex = index;",
+        "this->currentViewportIndex = index;",
     )
     for fact in viewport_facts:
         if fact not in viewport_source:
             fail(f"SupervisorViewport lost canonical layout/protocol fact: {fact}")
+    for fact in (
+        "sizeof(SupervisorViewportConfiguration) == 0xf0",
+        "offsetof(SupervisorViewportConfiguration, viewMatrix) == 0x4c",
+        "offsetof(SupervisorViewportConfiguration, projectionMatrix) == 0x8c",
+        "offsetof(SupervisorViewportConfiguration, viewport) == 0xcc",
+        "offsetof(SupervisorViewportConfiguration, screenShakeOffset) == 0xe8",
+    ):
+        if fact not in owner:
+            fail(f"viewport owner lost target layout assertion: {fact}")
+    check_gameplay_viewport_owner()
     for overclaim in ("viewportMode", "anmViewportValue0", "anmViewportValue1"):
         if overclaim in viewport_source or overclaim in background_source:
             fail(f"viewport implementation restored unsupported field {overclaim}")
@@ -1837,6 +1844,40 @@ def check_supervisor_viewport_configuration_owner() -> None:
         if fact not in anm_draw_source:
             fail(f"AnmDrawCore lost canonical Supervisor viewport use: {fact}")
 
+
+
+def check_gameplay_viewport_owner(overrides: dict[str, str] | None = None) -> None:
+    changed = {} if overrides is None else overrides
+    source = source_without_comments(changed.get("SupervisorViewport.cpp", (SRC / "SupervisorViewport.cpp").read_text(encoding="utf-8")))
+    owner = source_without_comments(changed.get("SupervisorRuntime.hpp", (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")))
+    if '#include "SupervisorRuntime.hpp"' not in source:
+        fail("gameplay viewport lost its canonical parent include")
+    if any(name in source for name in (*PROFILE_NAMES, "SupervisorViewportView", "GameplayViewportConfiguration")):
+        fail("gameplay viewport restored a selected body or alternate owner")
+    if "void ApplyGameplayViewport(SupervisorViewportConfiguration *configuration);" not in owner:
+        fail("Supervisor lost its canonical gameplay viewport API")
+    for name in ("InitializeViewports", "ApplyGameplayViewport", "ConfigureGameplayViewport"):
+        if source.count(f"void Supervisor::{name}(") != 1:
+            fail(f"gameplay viewport lost its canonical method owner: {name}")
+    apply = braced_body_after(source, source.index("void Supervisor::ApplyGameplayViewport("), "ApplyGameplayViewport")
+    x_store = "g_AnmManager->screenShakeOffset.x = configuration->screenShakeOffset.x;"
+    y_store = "g_AnmManager->screenShakeOffset.y = configuration->screenShakeOffset.y;"
+    if x_store not in apply or y_store not in apply or apply.index(x_store) > apply.index(y_store):
+        fail("gameplay viewport lost ordered typed screen-shake publication")
+    if apply.count("g_Supervisor.d3dDevice->SetTransform(") != 2 or "this->d3dDevice" in apply:
+        fail("gameplay matrix application lost its global device binding")
+    selection = braced_body_after(source, source.index("void Supervisor::ConfigureGameplayViewport("), "ConfigureGameplayViewport")
+    ordered = (
+        "this->currentViewportConfiguration = &this->viewportConfigurations[index];",
+        "this->ApplyGameplayViewport(this->currentViewportConfiguration);",
+        "this->d3dDevice->SetViewport(&this->currentViewportConfiguration->viewport);",
+        "this->currentViewportIndex = index;",
+    )
+    if any(fact not in selection for fact in ordered) or [selection.index(fact) for fact in ordered] != sorted(selection.index(fact) for fact in ordered):
+        fail("gameplay viewport lost receiver selection/application/publication order")
+    initializer = braced_body_after(source, source.index("void Supervisor::InitializeViewports("), "InitializeViewports")
+    if "this->" in initializer or "g_Supervisor.viewportConfigurations" not in initializer:
+        fail("viewport initialization lost its global storage binding")
 
 
 def check_screenshot_worker_token_owner() -> None:

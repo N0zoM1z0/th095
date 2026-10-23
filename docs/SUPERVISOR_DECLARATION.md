@@ -86,6 +86,17 @@ This executes the normal Win32 declaration and bodies. It does not execute
 WinMain, graphics or game assets, prove arbitrary wait-failure handling, or
 establish whole-game scheduling, queue ownership or race freedom.
 
+## Gameplay viewport clients
+
+SupervisorViewport.cpp now uses this full parent for global initialization,
+receiver selection and canonical ApplyGameplayViewport. Its partial parent and
+configuration adapter are retired. One shared typed x/y shake body replaces the
+profile split, with independent normal-target and runtime evidence for the
+former 387-byte normal copy becoming target-shaped 396 bytes.
+[GAMEPLAY_VIEWPORT.md](GAMEPLAY_VIEWPORT.md) records the distinct global/receiver
+roles and the bounded real-owner/D3DX/SDK-binding oracle. Background and ANM
+projections remain separate; this does not close every Supervisor declaration.
+
 ## Remaining declaration debt
 
 The lifecycle partial parent and SupervisorViewportLifecycle are retired. The

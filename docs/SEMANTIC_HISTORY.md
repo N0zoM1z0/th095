@@ -18409,3 +18409,87 @@ SUPERVISOR_DECLARATION.md record the construction and oracle boundaries.
 Commands, baseline comparisons, compiler controls and compact receipts are
 private under .analysis/sem346/. Generated outputs are removable after receipts
 are saved; semantic reconstruction and game ports remain active-incomplete.
+
+
+### SEM-347 — canonical gameplay viewport owner and shared shake publication
+
+Scope: SupervisorViewport.cpp's 0x00404B10 selector, 0x00425910 Apply and
+0x00425CC0 initializer, their canonical parent/element declarations and normal
+Win32 oracle. SupervisorViewportView, GameplayViewportConfiguration and all
+parent casts are retired. The exact/normal shake selector is removed and its
+closed baseline shrinks by one entry. Apply is canonically mapped as
+Supervisor::ApplyGameplayViewport(SupervisorViewportConfiguration *); its
+address, extent, calling convention and TU stay unchanged.
+
+Observed: fresh attested target disassembly distinguishes global configuration
+initialization from receiver selection. Apply uses the global device for VIEW
+and PROJECTION transforms; Configure uses its receiver for the selected
+pointer, SetViewport and final index. The initializer leaves matrices, shake
+and current selection untouched. Target +0xE4 receives only initializer writes
+and remains unknown0e4. ANM DrawInner independently consumes float shake at
++0x20/+0x24 across all four vertices. Caller inventory retains the five
+Configure callers and one initializer/Apply caller each.
+
+Compiler oracle: canonical parent/parameter types preserve the 108-byte selector
+and 549-byte initializer. Controls distinguish the former exact integer-alias
+stores, 396 bytes/sixteen relocations, from aggregate Float2 copying, 387/fifteen.
+Typed x/y assignments preserve the complete target 396/sixteen in both build
+profiles. The production source uses those two natural assignments and retains
+the target's separate ANM-owner loads without integer alias casts. Element size
+and matrix/viewport/shake offsets are asserted in the one owner header.
+
+Ownership: Supervisor owns both 0xF0 elements and +0x3C4/+0x3C8 selection;
+SupervisorLifecycle.cpp still defines global storage. SupervisorViewport.cpp
+emits all three canonical methods. Exact and normal products now consume the
+same full parent, parameter and scalar publication body. Background/ANM
+emission projections, the 0x364 family, global ODR/native parent and original
+source identifiers remain separate debt. Gameplay's fixed PI/10 and 1..10000
+projection is distinct from initialized PI/6 and background projection.
+
+Normal oracle: the previous normal Apply body genuinely changes from 387 to
+396 bytes and gains one global-ANM reference. Independent relocation-aware
+normal-target comparisons validate all three methods, rather than borrowing
+exact credit. The whole normal graph audit explicitly records this changed
+body and the canonical method retag; it proves every other function and
+recursively referenced code/data/EH graph unchanged under private spellings.
+The changed body's common outgoing references are also compared; only its
+proved extra ANM-owner load is admitted.
+
+Runtime: scripts/check-supervisor-lifecycle.py --viewport cold-builds once and
+runs both lifetime and viewport console programs linked with all 88 real
+normal objects and /OPT:NOREF. Actual Supervisor, ANM, Chain, allocator and
+D3DX code run under Wine; D3D calls use explicit real-SDK C COM bindings,
+without a replacement parent or renderer. Forty-eight sequential scenarios
+cover both slots, unsigned/odd/large dimensions, API success/failure, absent/
+idle/queued ANM, actual flush and draw submission, global/receiver devices,
+matrices, selection state and shake bit preservation. Initializer checks prove
+global writes with an unchanged local receiver and retained shake/selection.
+This is neither a native parent nor graphics-driver/game-loop/scheduling oracle.
+The thirteen native x86-64 component programs remain separate.
+
+Final gates: actual candidate 3/3 and cold aggregate 698/698 across 88 sources
+pass. A separate canonical compare_unit repeat on all frozen cold-built objects
+also passes 698/698 without recipe refresh or a second compilation; object and
+manifest hashes remain fixed. Relative to 8adf2a8, 3 reviewed owner-recipe retags
+retain 0x00425910 and all ABI/target/extents; 344 other changes in
+22 units are compiler-private names only. Addends, profiles and all other
+recipe fields are unchanged. Independent normal baseline/candidate each compile
+88/88 objects and link with zero unresolved symbols. Candidate: 778,752 bytes,
+build-local SHA-256 5ecec8d1c7381fe2d19f13c660d754ad6bce22deafb89ac164cd657d393a9154.
+The graph audit covers 927 unchanged named roots, 81 private entries and
+1,797 code/data/EH graphs under 980 private spellings, plus the explicitly
+reviewed normal Apply boundary now independently target-exact. Exact-only normal
+symbols stay separately inventoried. Both actual Win32 programs pass; viewport
+covers 48 scenarios. SDK/Clang layout receipts retain all 77 words and rejected
+bad-offset controls. EH retains 57 parents, 72 actions and 81/81 references.
+Public CI passes 111 workflow tests and thirteen native programs; all
+329 source/tool/test inputs (including C bindings) remain frozen. Closed
+profile debt shrinks to 264 keys / 695 directives; declaration debt remains
+191 keys / 196 selected declarations.
+
+Result: one parent view, one configuration adapter, integer alias stores and
+one exact-selected body boundary are retired without new source/exact credit.
+Durable fact: MAIN-057. GAMEPLAY_VIEWPORT.md records the current contract and
+normal/compiler/runtime boundary. Commands, target observations, controls,
+input/object hashes and compact receipts are private under .analysis/sem347/.
+Semantic reconstruction and the full 64-bit game remain active-incomplete.

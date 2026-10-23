@@ -137,3 +137,23 @@ This is normal Win32 lifetime evidence, separate from exact replay and the
 thirteen native x86-64 component programs. It does not accept a Win64 parent,
 real game entry flow, graphics, arbitrary OS wait failures, cross-thread payload
 ownership or whole-game schedules.
+
+
+## Gameplay viewport normal Win32 oracle
+
+Add `--viewport` to scripts/check-supervisor-lifecycle.py to cold-build once
+and run both the lifetime program and SupervisorViewportTest.cpp. The latter
+links all 88 actual normal objects with /OPT:NOREF and executes real
+Supervisor/ANM/Chain owners and D3DX math. Its D3D API boundary is the real SDK's
+typed C COM binding in ViewportDeviceFixture.c, with explicit success/failure
+returns; unused methods remain null. This is not a graphics driver fixture or
+another parent declaration.
+
+The 48 sequential scenarios distinguish global initialization and transform
+device from receiver selection/viewport device, cover both slots and unsigned
+size conversion, real pending-vertex flush, matrix values and copied shake bits.
+The separate normal object's three relocation-aware target comparisons also
+validate the deliberate 387-to-396-byte Apply source change. Exact replay alone
+cannot establish that normal-body result. See
+[GAMEPLAY_VIEWPORT.md](GAMEPLAY_VIEWPORT.md) for commands, transitions and retained
+native/graphics/scheduling limits. This does not add a fourteenth native program.
