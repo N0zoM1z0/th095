@@ -18792,3 +18792,78 @@ normal code changes or extra exact credit. MAIN-061 and SCREEN_EFFECT_QUAD.md
 record the contract. Distinct ANM wire carriers, remaining lifecycle/parent
 views, raw effect parameters, the opaque cancel gate and platform work remain
 open. Commands, controls, frozen recipes and reports: .analysis/sem351/.
+
+### SEM-352 — canonical ANM XYZ/UV stream and distinct quad copy
+
+Scope: SetupVertexBuffer @ 0x00442260 (682 bytes), Draw3D @ 0x00440C10
+(1,458), DrawMode7 @ 0x00440950 (691), AnmManager +0x1774 and the separate
+global copy at 0x004CA290. AnmQuadVertex.hpp is the canonical declaration;
+AnmVertexBuffer.cpp/AnmDrawCore.cpp share the producer and consumers. This
+shared-header batch requires the cold aggregate in addition to the focused
+33-unit producer/draw/manager replay.
+
+Observed: the uploaded stream is four XYZ/TEX1 vertices at stride 20, with
+corner U/V values 0/1. The distinct stride-24 copy receives positions and UV
+while +0x0C remains untouched. Whole-array target xrefs establish the writes
+and a four-element CRT walk; no rendering reader is established. The old
+software-fallback description was stronger than the evidence and is corrected
+in ANM-037 and the global ledger. Setup creates/uploads its receiver's buffer
+but binds the global manager's buffer. Draw3D binds its receiver on a shader
+cache miss. DrawMode7 deliberately feeds XYZ plus U to Vec4Transform: left
+corners have W = 0 and right corners W = 1. The separately initialized
+XYZRHW/UV array at 0x004CA230 and ScreenEffect's 20-byte RHW/diffuse wire are
+not merged with either representation.
+
+Compiler-observed: natural Float3/Float2 owners and eight scalar UV copies
+preserve all 682 Setup bytes. Aggregate Float2 copy emits 671 and is rejected.
+AnmVertexBufferSourceView, AnmBackgroundQuadVertexView, canonical
+VertexDiffuseXyzrhw, untexturedVertices and integer float-pattern casts are
+retired without a selector, emission adapter, padding or new assembly. All
+four authorized x87 blocks remain unchanged. Natural Float3 construction also
+reproduces the excluded 53-byte target initializer at 0x00494150 with its one
+global reference; its generic 35-byte helper is unchanged from the baseline.
+No compiler root receives authored credit.
+
+Ownership: the manager allocation owns the 80-byte GPU-source storage;
+AnmVertexBuffer.cpp owns the separate 96-byte global copy and its natural
+construction emission. Setup owns publication/upload, Draw3D owns its stream
+binding and DrawMode7 its four-component distance input. Both products use
+one profile-independent wire owner. Legacy ECL/lifecycle projections and
+other surrounding profile boundaries remain debt. The +0x0C word, copy's
+rendering/lifetime purpose and original names remain unknown.
+
+Exact oracle: focused 33/33; the fresh cold aggregate passes 698/698 across all 88 sources, followed by a fixed-object, zero-refresh repeat of all 698 comparisons. Only twenty public copy identities
+retag, with unchanged raw Setup bytes, reference offsets/kinds/addends and
+physical destinations. A complete base-769a0bd audit reviews 323 same-family private-label retags; together with the twenty public retags these affect twenty recipes. All profiles, partitions, extents,
+function identities and authored credit remain fixed. Private command,
+target/compiler, audit and terminal receipts are below .analysis/sem352/.
+
+Normal oracle: all 88 sources cold-compile/link with zero unresolved symbols;
+the build-local PE32 GUI is 778,752 bytes, SHA-256
+aecfdda359b8e6c1cdbf171108137a04e3a73e9786932a7e74c4057ad0b93b58.
+All 33 actual normal producer/draw/manager comparisons independently pass
+strict target comparison. Their private recipe separately reviews 168 normal
+compiler labels and six inherited alternate-RNG/VM-lifecycle identities; all
+bytes/addends/physical targets remain fixed, and the inherited lifecycle
+callee has an independent 226-byte target/physical-reference diagnostic.
+No production recipe is changed for normal spelling. All 928 existing named
+roots, 81 private entries and 1,797 recursive code/data/EH graphs are preserved;
+933 private reference spellings and twenty copy-global identities change.
+The sole additional normal root is the target-proven 53-byte construction
+walk, for 929 emitted named roots in the new corpus.
+
+Five actual Win32 clients link every normal object with /OPT:NOREF. Lifetime,
+96 viewport cases/five stage handoffs, 64 ANM projection, 171 shake and 128
+ScreenEffect quad cases remain passing. The new SDK-boundary client passes
+sixteen Setup cases, four Draw3D cache/HRESULT cases and four DrawMode7 U-as-W
+photo-blend cases, including both color sources. It checks startup zero
+storage, publication before device creation, untouched copy words, guarded
+80-byte uploads, exact call order and distinct global/receiver buffers.
+Injected HRESULT failure retains valid output storage; no real failed-COM
+output recovery is accepted. Public CI passes 119 workflow tests and thirteen native component programs. All 334 source/tool/test inputs and sixteen non-recipe configurations remain frozen during final acceptance. The manifest SHA-256 is e3fc878a84f48717a557e62a01b3e70b7d001e5fe06110c9b35751074ade9bfb.
+
+Result: the prebuilt vertex/copy representation and existing bindings are
+explicit and shared. No graphics driver, complete game path, synchronization,
+use for the copy, native parent or native 64-bit/Linux/Web game is accepted.
+The semantic phase remains active-incomplete. See
+[ANM_QUAD_VERTICES.md](ANM_QUAD_VERTICES.md).

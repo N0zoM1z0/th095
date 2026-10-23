@@ -48,7 +48,7 @@ def run_case(whole, linker, toolchain, environment, normal, objects, name, sourc
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--viewport", action="store_true", help="also execute viewport/shake/quad clients with real owners/D3DX and typed SDK API bindings")
+    parser.add_argument("--viewport", action="store_true", help="also execute viewport/shake/quad/ANM-buffer clients with real owners/D3DX and typed SDK API bindings")
     args = parser.parse_args()
     # A fresh build is required: retained objects may predate a shared header.
     subprocess.run([sys.executable, "-B", "scripts/build-whole.py"], cwd=ROOT, check=True)
@@ -67,6 +67,7 @@ def main() -> int:
         cases.append(("viewport", ["tests/win32/SupervisorViewportTest.cpp", "tests/win32/ViewportDeviceFixture.c"]))
         cases.append(("shake", ["tests/win32/ScreenEffectShakeTest.cpp", "tests/win32/ViewportDeviceFixture.c"]))
         cases.append(("quad", ["tests/win32/ScreenEffectQuadTest.cpp", "tests/win32/ViewportDeviceFixture.c"]))
+        cases.append(("anm-quad", ["tests/win32/AnmQuadVertexTest.cpp", "tests/win32/ViewportDeviceFixture.c"]))
     for name, sources in cases:
         result = run_case(whole, linker, toolchain, environment, normal, objects, name, sources)
         if result:

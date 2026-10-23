@@ -97,5 +97,6 @@ Commands and compiler/target/runtime/graph reports are private under
 for matching, normal compilation and `scripts/check-supervisor-lifecycle.py --viewport`.
 This program validates the reconstructed caller and typed SDK boundary, not a
 GPU/driver, a full game session, synchronization or a native 64-bit game ABI.
-The separate ANM XYZ/UV carriers, raw ScreenEffect parameter names, opaque
-cancel gate and broader renderer/lifecycle work remain open.
+The separate [ANM XYZ/UV contract](ANM_QUAD_VERTICES.md) records its GPU
+stream and distinct 24-byte copy. That copy's role, raw ScreenEffect parameter
+names, the opaque cancel gate and broader renderer/lifecycle work remain open.

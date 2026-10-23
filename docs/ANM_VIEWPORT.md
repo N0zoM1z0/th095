@@ -103,3 +103,9 @@ SEM-349 and MAIN-059 record this bounded closure. ANM lifecycle/ScreenEffect
 shake projections, the ASCII selection-call facade, other Supervisor views,
 legacy declaration families and complete game ports remain debt. Private
 commands, target observations and receipts are under .analysis/sem349/.
+
+SEM-352 separately exercises four actual DrawMode7 photograph-color cases,
+including both color sources and the manager stream's U-as-W input. Its
+24-byte copy remains a different representation with no established renderer.
+See [ANM_QUAD_VERTICES.md](ANM_QUAD_VERTICES.md) for that bounded contract;
+this does not extend the 64 projection cases to every draw/refresh branch.

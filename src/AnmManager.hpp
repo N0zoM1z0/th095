@@ -2,6 +2,7 @@
 #define TH095_ANM_MANAGER_HPP
 
 #include "Main.hpp"
+#include "AnmQuadVertex.hpp"
 #include "AnmVmId.hpp"
 #include "Rng.hpp"
 #include "ZunResult.hpp"
@@ -498,19 +499,6 @@ inline void AnmLoaded::SetAndExecuteScriptIdx(
 ZunResult __fastcall UpdatePulsingRadialTrail(AnmVm *vm);
 ZunResult __fastcall DrawPulsingRadialTrail(AnmVm *vm);
 
-struct VertexDiffuseXyzrhw
-{
-    VertexDiffuseXyzrhw()
-    {
-    }
-
-    f32 x;
-    f32 y;
-    f32 z;
-    f32 w;
-    u32 diffuse;
-};
-
 struct VertexTex1Xyzrhw
 {
     f32 x;
@@ -623,7 +611,7 @@ struct AnmManager
     u8 unknown1769[3];
     void *currentSprite;                     // +0x00176c
     IDirect3DVertexBuffer8 *quadVertexBuffer;// +0x001770
-    VertexDiffuseXyzrhw untexturedVertices[4];// +0x001774
+    AnmQuadVertex quadVertices[4];// +0x001774
     i32 spritesToDraw;                       // +0x0017c4
     VertexTex1DiffuseXyzrhw vertexBuffer[0x20000]; // +0x0017c8
     VertexTex1DiffuseXyzrhw *vertexBufferEndPtr;   // +0x3817c8
@@ -771,13 +759,12 @@ struct AnmManager
     (manager)->PreloadAnm((index), (path))
 #endif
 
-typedef char VertexDiffuseXyzrhwSizeIs14[(sizeof(VertexDiffuseXyzrhw) == 0x14) ? 1 : -1];
 typedef char VertexTex1XyzrhwSizeIs18[(sizeof(VertexTex1Xyzrhw) == 0x18) ? 1 : -1];
 typedef char AnmManagerPrimaryVmAtF0C[(offsetof(AnmManager, primaryVm) == 0xf0c) ? 1 : -1];
 typedef char AnmManagerPreloadSlotsAt2C[(offsetof(AnmManager, slots) == 0x2c) ? 1 : -1];
 typedef char AnmManagerCachedWorldMatrixAtECC[(offsetof(AnmManager, cachedWorldMatrix) == 0xecc) ? 1 : -1];
 typedef char AnmManagerSurfacesAt11DC[(offsetof(AnmManager, surfaces) == 0x11dc) ? 1 : -1];
-typedef char AnmManagerVerticesAt1774[(offsetof(AnmManager, untexturedVertices) == 0x1774) ? 1 : -1];
+typedef char AnmManagerVerticesAt1774[(offsetof(AnmManager, quadVertices) == 0x1774) ? 1 : -1];
 typedef char AnmManagerShakeAt20[
     (offsetof(AnmManager, screenShakeOffset) == 0x20 && sizeof(Float2) == 8) ? 1 : -1];
 typedef char AnmManagerVertexBufferAt17C8[(offsetof(AnmManager, vertexBuffer) == 0x17c8) ? 1 : -1];

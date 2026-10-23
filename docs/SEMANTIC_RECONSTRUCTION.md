@@ -252,6 +252,12 @@ in both products. Its eighteen exact/normal comparisons and unchanged normal
 graphs accompany 64 actual projection/boundary cases; no new x87 exception or
 native parent is accepted. See [the consumption boundary](ANM_VIEWPORT.md).
 
+The prebuilt ANM quad also has canonical, distinct XYZ/UV and 24-byte-copy
+owners. Scalar Float3/Float2 publication retires integer bit-pattern casts,
+while global-versus-receiver buffer binding and DrawMode7's U-as-W read remain
+explicit target behavior. The copy's unused word and rendering role stay
+unknown; see [the vertex contract](ANM_QUAD_VERTICES.md).
+
 ScreenEffect now has one header/body and uses canonical ZunTimer, full
 Supervisor/task owners and typed configured/applied shake fields. Minimal
 pinned controls retire the custom timer and complete exact-body route without

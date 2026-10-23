@@ -2193,3 +2193,20 @@ VC7.1 use the same binding and one owner layout. The source must still account
 for the count word copied into slot 15, with no pointer-array overrun or selected
 type. Minimal/full target, independent normal and native publication receipts
 are recorded in SEM-338; private probes remain in .analysis/sem338/.
+
+## ANM quad scalar-copy and construction oracle (SEM-352)
+
+SetupVertexBuffer's canonical Float3/Float2 owners and eight scalar UV copies
+preserve the full 682-byte target body. Replacing the UV scalars with four
+Float2 aggregate assignments emits 671 bytes. This is an ordinary source-shape
+distinction; no integer/float alias, selector, padding or adapter is required.
+Twenty copy-global identities change type while all raw function bytes,
+relocation positions/kinds/addends and physical targets stay fixed.
+
+A Float3 member also naturally emits the target's 53-byte, four-element,
+24-byte-stride CRT construction walk at 0x00494150. Its generic 35-byte
+construction helper is unchanged from the same baseline object. Neither
+receives authored credit. Whole-normal preservation must account for the one
+additional construction root rather than pretend every emitted root set is fixed.
+The copy's +0x0C word and rendering role remain unknown. See
+[the target and ownership contract](ANM_QUAD_VERTICES.md).

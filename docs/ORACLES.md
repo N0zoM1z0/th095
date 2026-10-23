@@ -213,3 +213,22 @@ ANM's same-stride XYZ/UV stream is explicitly separate.
 This is one independently target-exact normal method and unchanged whole-normal
 code/data/EH graph evidence, not a graphics driver, full-game run or native
 parent ABI. See [the quad contract](SCREEN_EFFECT_QUAD.md).
+
+## ANM prebuilt quad normal Win32 oracle
+
+Under the workflow resource limits, scripts/check-supervisor-lifecycle.py
+--viewport includes tests/win32/AnmQuadVertexTest.cpp alongside the existing
+lifetime, viewport, shake and ScreenEffect quad clients. All link the 88 actual
+normal objects with /OPT:NOREF. The new client checks sixteen Setup cases,
+four direct-draw cache/HRESULT cases and four U-as-W photo-blend cases. SDK C
+COM bindings capture create/lock/unlock/stream/draw calls. Guarded 80-byte
+upload storage and a copy captured during Unlock independently decode the
+external XYZ/TEX1 packet.
+
+The target's different global/receiver bindings and untouched copy words are
+explicit test dimensions. The photo cases execute actual D3DX/projection and
+DrawMode7 with independently calculable four-component positions and colors.
+HRESULT injection supplies valid output storage, so it establishes unchecked
+continuation rather than real failed-COM output behavior. This is sequential
+component evidence, not a graphics driver, whole-game path, native parent or
+use for the 24-byte copy. See [ANM_QUAD_VERTICES.md](ANM_QUAD_VERTICES.md).

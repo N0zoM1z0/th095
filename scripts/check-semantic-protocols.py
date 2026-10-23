@@ -4566,6 +4566,53 @@ def check_small_closed_domains() -> None:
     )
 
 
+def check_anm_quad_vertices(source_text: dict[str, str] | None = None) -> None:
+    overrides = source_text or {}
+    names = ("AnmQuadVertex.hpp", "AnmManager.hpp", "AnmVertexBuffer.cpp", "AnmDrawCore.cpp")
+    texts = {name: source_without_comments(overrides.get(name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
+    owner, manager, setup, draw = (texts[name] for name in names)
+    for source in (owner, setup):
+        if re.search(r"\b(?:TH095_MATCH_EXACT|DIFFBUILD)\b", source):
+            fail("ANM quad restored a profile-selected owner or producer")
+    for source in (owner, manager, setup, draw):
+        if re.search(r"\b(?:VertexDiffuseXyzrhw|untexturedVertices|AnmVertexBufferSourceView|AnmBackgroundQuadVertexView)\b", source):
+            fail("ANM quad restored an untextured/diffuse carrier or cast projection")
+    for name, fields in (
+        ("AnmQuadVertex", (r"Float3\s+position\s*;", r"Float2\s+textureUV\s*;")),
+        ("AnmQuadVertexCopy", (r"Float3\s+position\s*;", r"u32\s+unknown00c\s*;", r"Float2\s+textureUV\s*;")),
+    ):
+        packet = re.search(r"struct\s+" + name + r"\s*\{([^}]+)\}", owner, re.DOTALL)
+        if packet is None or not all(re.search(field, packet.group(1)) for field in fields):
+            fail("ANM quad lost a distinct XYZ/UV wire owner")
+    for assertion in (
+        r"sizeof\(AnmQuadVertex\)\s*==\s*0x14",
+        r"offsetof\(AnmQuadVertex,\s*textureUV\)\s*==\s*0x0c",
+        r"sizeof\(AnmQuadVertexCopy\)\s*==\s*0x18",
+        r"offsetof\(AnmQuadVertexCopy,\s*unknown00c\)\s*==\s*0x0c",
+        r"offsetof\(AnmQuadVertexCopy,\s*textureUV\)\s*==\s*0x10",
+    ):
+        if re.search(assertion, owner) is None:
+            fail("ANM quad lost a target wire-layout assertion")
+    if '#include "AnmQuadVertex.hpp"' not in manager or re.search(r"AnmQuadVertex\s+quadVertices\[4\]", manager) is None:
+        fail("ANM manager lost its canonical XYZ/UV storage")
+    if "0x3f800000" in setup or re.search(r"\.unknown00c\s*=", setup):
+        fail("ANM quad restored a float bit-pattern literal or wrote the unknown copy word")
+    for i in range(4):
+        for component in ("x", "y"):
+            assignment = f"g_BackgroundQuadVertices[{i}].textureUV.{component} = this->quadVertices[{i}].textureUV.{component};"
+            if assignment not in setup:
+                fail("ANM quad lost direct typed UV publication")
+    if re.search(r"CreateVertexBuffer\(\s*sizeof\(this->quadVertices\),\s*0,\s*D3DFVF_XYZ\s*\|\s*D3DFVF_TEX1", setup) is None:
+        fail("ANM quad mixed its XYZ/TEX1 vertex-buffer format")
+    if re.search(r"SetStreamSource\(\s*0,\s*g_AnmManager->quadVertexBuffer,\s*sizeof\(AnmQuadVertex\)\)", setup) is None:
+        fail("ANM SetupVertexBuffer lost the target global-manager binding")
+    direct = draw.split("ZunResult AnmManager::Draw3D", 1)[-1].split("#undef textureMatrix", 1)[0]
+    if re.search(r"SetStreamSource\(\s*0,\s*this->quadVertexBuffer,\s*sizeof\(AnmQuadVertex\)\)", direct) is None:
+        fail("ANM Draw3D lost its receiver's XYZ/UV stream")
+    if re.search(r"D3DXVec4Transform\(\s*&transformedVertices\[draw.i\],\s*reinterpret_cast<D3DXVECTOR4\s*\*>\(\s*&this->quadVertices\[draw.i\]\)", draw) is None:
+        fail("ANM DrawMode7 lost its target U-as-W source read")
+
+
 def check_screen_effect_quad_wire(source_text: str | None = None) -> None:
     source = source_text if source_text is not None else (SRC / "ScreenEffectDraw.cpp").read_text(encoding="utf-8")
     clean = source_without_comments(source)
@@ -4594,6 +4641,7 @@ def main() -> int:
     check_background_protocol()
     check_background_owner()
     check_screen_effect_quad_wire()
+    check_anm_quad_vertices()
     check_ecl_type_boundaries()
     check_ecl_extended_type_boundaries()
     check_photo_bullet_owner()

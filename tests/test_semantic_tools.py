@@ -714,6 +714,31 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("struct SupervisorViewportLifecycle", lifecycle)
         self.assertNotIn("struct SupervisorTimerLifecycle", lifecycle)
 
+    def test_anm_quad_guard_accepts_distinct_typed_streams(self) -> None:
+        GUARD.check_anm_quad_vertices()
+
+    def test_anm_quad_guard_rejects_format_owner_and_binding_regressions(self) -> None:
+        sources = {name: (ROOT / "src" / name).read_text(encoding="utf-8") for name in (
+            "AnmQuadVertex.hpp", "AnmManager.hpp", "AnmVertexBuffer.cpp", "AnmDrawCore.cpp")}
+        mutations = [
+            ("AnmQuadVertex.hpp", "Float2 textureUV;", "u32 diffuse;"),
+            ("AnmQuadVertex.hpp", "u32 unknown00c;", "f32 rhw;"),
+            ("AnmQuadVertex.hpp", "sizeof(AnmQuadVertex) == 0x14", "sizeof(AnmQuadVertex) == 0x18"),
+            ("AnmQuadVertex.hpp", "#pragma once", "#pragma once\n#ifdef TH095_MATCH_EXACT\n#endif"),
+            ("AnmManager.hpp", "AnmQuadVertex quadVertices[4]", "VertexDiffuseXyzrhw untexturedVertices[4]"),
+            ("AnmVertexBuffer.cpp", "D3DFVF_XYZ | D3DFVF_TEX1", "D3DFVF_XYZRHW | D3DFVF_DIFFUSE"),
+            ("AnmVertexBuffer.cpp", "g_AnmManager->quadVertexBuffer, sizeof(AnmQuadVertex)", "this->quadVertexBuffer, sizeof(AnmQuadVertex)"),
+            ("AnmVertexBuffer.cpp", "g_BackgroundQuadVertices[0].textureUV.x", "g_BackgroundQuadVertices[0].unknown00c"),
+            ("AnmDrawCore.cpp", "this->quadVertexBuffer, sizeof(AnmQuadVertex)", "g_AnmManager->quadVertexBuffer, sizeof(AnmQuadVertex)"),
+            ("AnmDrawCore.cpp", "D3DXVec4Transform(", "D3DXVec3Transform("),
+        ]
+        for name, before, after in mutations:
+            changed = sources[name].replace(before, after, 1)
+            self.assertNotEqual(sources[name], changed)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_anm_quad_vertices({name: changed})
+
     def test_screen_effect_quad_guard_accepts_closed_wire(self) -> None:
         GUARD.check_screen_effect_quad_wire()
 

@@ -970,10 +970,13 @@ ZunResult AnmManager::DrawMode7(AnmVm *vm)
 
     for (draw.i = 0; draw.i < 4; draw.i++)
     {
+        // Target 0x00440A05..0x00440A21 reads the first four source floats.
+        // Its fourth component is textureUV.x (U), including U == 0; do not
+        // replace this with a Vec3 transform or synthesize homogeneous W == 1.
         D3DXVec4Transform(
             &transformedVertices[draw.i],
             reinterpret_cast<D3DXVECTOR4 *>(
-                &this->untexturedVertices[draw.i]),
+                &this->quadVertices[draw.i]),
             &this->cachedWorldMatrix);
         draw.cameraDelta.x =
             transformedVertices[draw.i].x - g_BackgroundCameraPosition.x;
@@ -1141,7 +1144,7 @@ ZunResult AnmManager::Draw3D(AnmVm *vm)
     {
         g_Supervisor.d3dDevice->SetVertexShader(D3DFVF_XYZ | D3DFVF_TEX1);
         g_Supervisor.d3dDevice->SetStreamSource(
-            0, this->quadVertexBuffer, sizeof(VertexDiffuseXyzrhw));
+            0, this->quadVertexBuffer, sizeof(AnmQuadVertex));
         g_Supervisor.d3dDevice->SetTextureStageState(
             0, D3DTSS_ALPHAARG2, D3DTA_TFACTOR);
         g_Supervisor.d3dDevice->SetTextureStageState(
