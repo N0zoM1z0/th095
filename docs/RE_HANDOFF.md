@@ -1,90 +1,117 @@
 # Current reconstruction handoff
 
-Accepted source: **886bb2d01a739cf0bbbc63fda4428c388212471c (SEM-356)**, 2026-10-24,
-branch semantic/owner-cleanup-20260926. Source validation is complete and the
-batch is committed. Semantic reconstruction and native 64-bit/Linux/Web game
-products remain **active-incomplete**. Start with the [documentation guide](README.md),
-[semantic navigation](SEMANTIC_INDEX.md) and [source ownership](SOURCE_MAP.md).
-Accepted narratives belong in [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md).
+Accepted source: **886bb2d01a739cf0bbbc63fda4428c388212471c (SEM-356)**,
+2026-10-24, branch semantic/owner-cleanup-20260926. The tracked code is restored
+to this accepted state (documentation base fcb788d). **SEM-357 is a saved draft,
+not applied or accepted.** This session stopped for handoff; semantic
+reconstruction and native 64-bit/Linux/Web game products remain incomplete.
+Start with [the documentation guide](README.md), [semantic navigation](SEMANTIC_INDEX.md)
+and [source ownership](SOURCE_MAP.md).
 
-## Authority and current change
+## Accepted state and authority
 
 The sole target is original Japanese TH095 v1.02a, SHA-256
 bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07.
-Use scripts/ghidra.py for hash-attested access. Mapping, source presence,
-semantic acceptance, exactness, normal linkage and runtime remain separate.
+Use scripts/ghidra.py for attested access. Mapping, source presence, semantic
+acceptance, exactness, normal linkage and runtime are separate facts.
 [PROGRESS.md](PROGRESS.md) and the status script hold live totals;
 config/claims.csv remains header-only.
 
-BackgroundAnmManagerView and five reinterpret casts are retired. Background
-uses the canonical AnmManager for ordered color configuration and the legacy
-byte publication. SetMixColor / SetMixColorDefault preserve the receiver,
-publish useMixColor before color at +4 / +0, and leave queued geometry/device
-state untouched. Exact and normal use the same canonical receiver. See
-[BACKGROUND_ANM_STATE.md](BACKGROUND_ANM_STATE.md), ANM-061 and SEM-356.
+SEM-356 retired Background's partial ANM owner and five casts. Canonical color
+publication preserves receiver/queue behavior. The +0x1768 byte's camera
+meaning remains unknown; no independent consumer or camera enum is accepted.
+See [BACKGROUND_ANM_STATE.md](BACKGROUND_ANM_STATE.md), ANM-061 and
+[SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md).
 
-The +0x1768 inventory establishes four direct byte writes: RenderObjects
-publishes 1 after viewport configuration; the constructor, ResetRenderState and
-OnUpdate publish 0xFF. The same displacement in Background photo-position
-operations belongs to separate storage. No independent ANM consumer or camera
-meaning is established. cameraMode and related inherited names remain explicit
-debt; no camera enum or value-domain semantics are accepted. The wider operand
-scan over provisional ledger extents cannot exclude every indirect alias.
+Previous SEM-356 acceptance passed all 698 cold exact units across 88 sources,
+then all 698 fixed-object comparisons, independent normal build/eight clients
+and 36 strict normal-target methods. Authority: .analysis/sem356/acceptance-terminal.json.
+This cleanup independently passes the restored accepted tree's **127 workflow
+tests**, existing native component programs, target/tracking/progress and local
+link checks. It does not rerun the accepted full exact aggregate.
 
-Canonical packing, emission routes and existing selector baselines stay fixed.
-No new selector, selected layout, padding, inert local or assembly is added.
-Previous geometry/submission/cache contracts remain in
-[ANM_VERTEX_BATCH.md](ANM_VERTEX_BATCH.md), [ANM_DRAW_PATH.md](ANM_DRAW_PATH.md)
-and [ANM_BLEND_MODE.md](ANM_BLEND_MODE.md).
+## Saved SEM-357 draft
 
-## Validation at the source checkpoint
+The current source still uses renderStateA/renderStateB. The saved draft adds
+canonical alignmentX/alignmentY vocabulary, opcode-65 names, source/guard/test
+changes and a draft ANM_ALIGNMENT document/navigation. It covers **18 paths**;
+no unfinished reconstruction source or tracking state is committed.
 
-- Before/after focused exact replay each passes all twenty Background.cpp
-  units. Cold aggregate and then fixed-object zero-refresh comparison each
-  pass all 698 units across 88 sources. The full audit reviews
-  323 same-family private-label updates with zero public
-  reference/function identity changes. Other recipes, profiles, extents,
-  partitions, credit and closed debt baselines stay unchanged. Manifest SHA-256:
-  ccf754aa958b061d0b293c8b0876c0775401cae5ff10df133ec752982598aa17.
-- Independent normal cold compilation/linkage covers all 88 real objects with
-  zero unresolved symbols. Build-local PE32 GUI: 778,752 bytes,
-  SHA-256 b131774af85fa62c0d3be8cbdd27b0cd56193f7bfcf5ba8610d28178d84dfde7.
-  All 36 actual manager/draw/overlay and affected Background methods independently
-  match the target. All 929 prior roots, 81 private entries and 1,798 recursive
-  code/data/EH graphs remain equal, with 933 private-reference spelling changes
-  and no public identity, added-root or changed-body exception. Separately
-  selected normal bodies remain preserved graphs, not wholesale target-byte
-  acceptance inferred from a different exact body.
-- Eight /OPT:NOREF Win32 clients link every normal object and pass. The new
-  Background/ANM client passes 52 cases: twelve receiver/queue writer pairs,
-  24 actual DrawInner color consumers and sixteen empty-stage RenderObjects
-  traces under success/failure device results. The prior seven clients retain
-  their lifecycle, viewport/projection, shake, overlay, quad, batch/draw-path
-  and blend coverage. Typed SDK fixtures do not establish GPU behavior.
-- Public CI passes 127 workflow tests and the existing native component
-  programs. All 340 source/tool/test inputs and 16 non-recipe
-  configs stay frozen through acceptance. Target/tracking, generated progress
-  and local links pass.
+- Patch: .analysis/sem357/pending.patch, **89,750 bytes**.
+- SHA-256: **70e5c04f39444d7db95b56fe9b46d4b6cf2448e4d6af8ed72780c17a2e8ff17f**.
+- Base: **fcb788d5253d108efdbbef4f4f890d5bc603d53b**. The later handoff-only commit changes none
+  of its paths, so checkout of the old base is unnecessary.
+- Recovery authority: .analysis/sem357/pending-handoff.json and
+  restored-accepted.json. Clean-base reconstruction reproduces all 18 saved
+  file hashes; reverse and current clean-apply checks pass.
 
-Terminal authority: .analysis/sem356/acceptance-terminal.json and
-normal-terminal.json. Commands, hashes, 1,849 reconciled target/Ghidra
-instructions, layout data, recipe/graph audits and eight client reports remain
-in that directory. The private comparison harness initially required unrelated
-exact artifacts removed by previous cleanup; this was resolved without a new
-normal build. Direct actual-normal target/old-normal comparisons remain
-mandatory; optional sibling exact objects are not required evidence.
-No full stage content, assets, GPU output, worker synchronization, recovered
-camera meaning or native game ABI is accepted by this batch.
+Passed evidence for that exact saved draft:
 
-## Next bounded lane and retained limits
+- Before/after focused replay: **83 exact units across four sources**.
+  6,239 attested Ghidra instruction strings independently agree with raw PE
+  bytes. Opcode 65 reads unsigned literal words at +8/+10; both low-two-bit
+  fields and all six geometry consumers are inventoried.
+- Actual normal cold build/link: **88 objects, zero unresolved symbols**.
+  **Nine** /OPT:NOREF Win32 clients pass. The new client passes **3,746 cases**
+  for physical fields/defaults, literal scripts, actual empty-string ASCII,
+  signed dimensions, rounding/cull boundaries and direct-world/gate behavior.
+- **45** actual normal methods pass strict target/reference comparisons,
+  including the four new producer proofs and canonical function endpoints.
+  Six pre-existing exact/normal spellings are reviewed separately. All 929
+  prior roots, 81 private entries and 1,798 code/data/EH graphs remain equal;
+  933 private spellings change, with zero public/added-root/body exceptions.
+- Actual-header layout data, source inventory and **86 semantic-tool tests**
+  pass. Recipe audit permits only **173 private labels**; other recipes,
+  profiles, credit and closed selector/declaration baselines remain fixed.
 
-Inventory the **VM alignment selectors renderStateA / renderStateB**, their
-script producers and independent 2D/3D geometry consumers. Reconcile defaults,
-raw selector 3, position/culling order and pixel rounding before naming an
-anchor domain. TH08 or one consumer branch alone cannot prove direction or
-original names. Do not invent a camera protocol from the +0x1768 stores.
-Capture focused exact baselines before shared edits; the retained full normal
-corpus supports independent code/data/EH comparison.
+These are partial gates, not SEM-357 acceptance. **Not run:** cold all 698 exact
+units, fixed-object zero-refresh all 698 comparisons, and full pending-tree CI
+(expected 129 workflow tests). No SEM-357/ANM-062 accepted record is published.
+Commands/reports and resolved diagnostic failures remain in .analysis/sem357/README.md,
+normal-terminal.json, normal-target-comparisons.json and resource-summary.json.
+
+Keep path differences explicit: START/END describe ordered local quad edges,
+not universal visual directions. Direct Draw3D retains its -/+absolute-half-size
+translation table. Value 3 has no handler; rotated/projected local-coordinate
+paths have no deterministic accepted contract. Rotated Draw2D uses position.z;
+its zero-rotation fallback adds positionOffset.z. The final fixture preserves
+these target observations. Separately selected PhotoEffect/ECL bodies and
+parents remain separate boundaries.
+
+## Resume the draft when requested
+
+Read AGENTS.md, ARCHITECTURE.md, RE_WORKFLOW.md, SEMANTIC_RECONSTRUCTION.md,
+SEMANTIC_PLAYBOOK.md and SOURCE_MAP.md. Inspect status and the saved metadata;
+verify the patch SHA above. Apply once from a clean accepted tree:
+
+```bash
+git status --short --branch
+.analysis/sem357/run-limited.sh python3 -B scripts/verify-target.py
+.analysis/sem357/run-limited.sh python3 -B scripts/report-reconstruction-status.py --summary
+.analysis/sem357/run-limited.sh python3 -B scripts/validate-tracking.py --require-target
+git apply --check .analysis/sem357/pending.patch
+git apply .analysis/sem357/pending.patch
+```
+
+Run the standard target/status/tracking preflight and re-attest before further
+Ghidra access. Generated products were removed, so compile afresh before
+link-only use. Then complete the draft's remaining gates under the limiter:
+
+```bash
+.analysis/sem357/run-limited.sh python3 -B scripts/check-supervisor-lifecycle.py --viewport
+.analysis/sem357/run-limited.sh python3 -B .analysis/sem357/accept-normal.py
+.analysis/sem357/run-limited.sh python3 -B .analysis/sem357/final-validation.py
+```
+
+The first command rebuilds all 88 normal objects and nine clients; the second
+rechecks layout/guards and the 45-method/whole-graph proof. The final driver
+freezes inputs and runs cold exact, fixed exact, manifest audit and protected
+CI in order. Record the semantic batch/KB facts and commit only after every
+required gate passes. Do not apply the patch twice or start another semantic
+lane over this unfinished batch. Local draft/evidence files are not shipped by
+Git; preserve them with the retained baseline when transferring the workspace.
+
+## Retained limits
 
 The distinct 24-byte quad copy's purpose, opaque 0x004C4EAC gate, raw
 ScreenEffect parameters, inherited Chain priorities, other ANM lifecycle views,
@@ -97,63 +124,45 @@ remain open; see [WORKER_LIFECYCLE.md](WORKER_LIFECYCLE.md) and
 
 ## Local artifacts and resources
 
-All build/headless/test jobs ended before cleanup. This batch removes
-**568 reproducible files**, **37,922,153 logical /
-38,645,760 allocated bytes**: products, PDBs, caches,
-old baselines and the derived private normal-unit manifest. Compact evidence
-and the small layout probe remain below .analysis/sem356/. Receipt:
-.analysis/sem356/cleanup-receipt.json.
+After all build/headless/test jobs ended, this cleanup removed
+**343 generated files**, **23,784,833 logical /
+24,403,968 allocated bytes**. Products, PDBs, caches,
+the derived normal manifest and temporary recovery-check copies are gone.
+Receipt: .analysis/sem357/cleanup-receipt.json. The verified patch, compact
+commands/hashes/reports, layout probe and current target evidence remain.
 
-build/ retains only **88 verified normal baseline objects**, **2,621,557
-bytes**, below build/semantic/sem357/baseline/whole-obj/. Provenance:
-.analysis/sem356/next-baseline.json; report:
-.analysis/sem357/baseline-whole-report.json. Rebuild before --link-only;
-the lifecycle checker always builds afresh.
+build/ retains only **88 accepted SEM-356 normal baseline objects**,
+**2,621,557 bytes**, under build/semantic/sem357/baseline/whole-obj/.
+They remain necessary for the unfinished before/after comparison. Provenance:
+.analysis/sem356/next-baseline.json, .analysis/sem357/baseline-whole-report.json
+and .analysis/sem357/baseline-normal-hashes.json. Draft normal objects must be rebuilt.
 
-Keep the verified target, installed tools (approximately 1.8 GiB), private
-Ghidra project and current evidence. Historical SEM-327..348 material is in the
-verified 788-member archive; SEM-349..352 material is in the verified 530-member
-archive. .analysis/archives/README.md and the indexed receipts identify original
-paths, sizes and SHA-256 values. Restore before following archived local paths:
+Keep the verified executable, installed tools, private Ghidra project and both
+historical archives. .analysis/archives/README.md and indexed receipts describe
+the verified 788-member SEM-327..348 and 530-member SEM-349..352 archives.
+Restore historical paths only when needed:
 
 ```bash
 tar --keep-old-files -xzf .analysis/archives/handoff-20261023-historical-evidence.tar.gz
 tar --keep-old-files -xzf .analysis/archives/handoff-20261023-sem349-352.tar.gz
 ```
 
-Heavy jobs stay serial under .analysis/sem356/run-limited.sh and the
+Heavy jobs stay serial under .analysis/sem357/run-limited.sh and the
 [host resource limits](RE_WORKFLOW.md#host-resource-limits): half a CPU,
 memory.high 768 MiB / memory.max 1 GiB, CPU 1/nice 19; Ghidra heap 512 MiB.
-Per-scope peak: **265.02 MiB**, zero OOM events.
-The resource summary records two resolved private harness failures separately
-from the passing acceptance gates. Do not overlap index reconciliation with
-builds/headless jobs or change other workspaces' jobs.
+Actual per-scope peak: **256.39 MiB**, zero OOM events.
+Resolved earlier diagnostic/test failures remain recorded; no reconstruction
+job is left running. Do not overlap index reconciliation with heavy jobs.
 
 Protected user-owned untracked paths must not be read, modified, staged,
-deleted or used to infer reconstruction state:
+deleted or included in the recovery patch:
 
 - config/runtime-scenarios.json
 - droid.resume.txt
 - scripts/runtime-diff.py
 
-Default CI discovers untracked Python. Use .analysis/sem356/run-ci.py through
-run-limited.sh while these remain; only their protected contents are excluded.
+Default CI discovers untracked Python. Use .analysis/sem357/run-ci.py through
+run-limited.sh while these remain; only protected contents are excluded.
 Stash 03ec1ae7d1e3880eacee081578cfd0e0e129a8b6, sem341/pending.patch,
 pending-sem348 patches and old control-source patches are superseded provenance.
-Do not apply them to the accepted tree.
-
-## Resume preflight
-
-Read AGENTS.md, ARCHITECTURE.md, RE_WORKFLOW.md, SEMANTIC_RECONSTRUCTION.md,
-SEMANTIC_PLAYBOOK.md and SOURCE_MAP.md before changing reconstruction state.
-
-```bash
-git status --short --branch
-python3 scripts/verify-target.py
-python3 scripts/report-reconstruction-status.py --summary
-python3 scripts/validate-tracking.py --require-target
-```
-
-Run scripts/ghidra.py check through the limited wrapper before using Ghidra.
-Preserve compact receipts before cleaning products. Semantic/platform work
-remains unfinished.
+Do not apply them. The verified sem357/pending.patch above is the current draft.
