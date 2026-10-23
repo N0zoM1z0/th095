@@ -1,10 +1,10 @@
 # Current reconstruction handoff
 
-Accepted source: **90358a11a9e580ba01ffacb2cd7ac7595e55de63 (SEM-350)**,
+Accepted source: **5aae2ef59ea74c1955c9b12872826f5f13c79e19 (SEM-351)**,
 2026-10-23, branch semantic/owner-cleanup-20260926. The source batch is committed;
-there are no pending reconstruction edits. Semantic reconstruction and full game
+there are no pending reconstruction edits. Semantic reconstruction and game
 ports remain active-incomplete. Current navigation: [SEMANTIC_INDEX.md](SEMANTIC_INDEX.md);
-accepted narratives: [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md); build ownership:
+accepted narratives: [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md); ownership:
 [SOURCE_MAP.md](SOURCE_MAP.md). Receipts apply only to recorded inputs.
 
 ## Authority and accepted change
@@ -14,20 +14,26 @@ bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07.
 Use scripts/ghidra.py for hash-attested access. Mapping, source presence,
 semantic acceptance, exactness, normal linkage and runtime remain separate.
 Generated [PROGRESS.md](PROGRESS.md) and the status script hold live totals;
-config/claims.csv stays header-only.
+config/claims.csv remains header-only.
 
-ScreenEffect now has one 0x34 header/body, canonical ZunTimer and full
-Supervisor/task dependencies. ScreenEffectExact.inl, custom timer/cast-based
-Tick, integer ANM aliases and partial shake/parent/task declarations are retired.
-Configured PLAYFIELD +0x2CC/+0x2D0 and applied ANM +0x20/+0x24 remain separate.
-Layer six clears both before drawing through its argument; later FULL_WINDOW
-application can publish the other element. See [the shake contract](SCREEN_EFFECT_SHAKE.md),
-MAIN-060 and SEM-350. All four existing authorized x87 blocks remain untouched.
+All sixteen ScreenEffect functions now share maintained source. DrawSquare
+uses the real ANM/Supervisor owners, canonical Float3 and one explicit 20-byte
+XYZRHW/diffuse packet. ScreenEffectDrawExact.inl, its cache/device projections
+and duplicate vector type are retired. Genuine vector construction and six
+cache-clear phases preserve the target without an emission adapter, padding
+or new assembly. See [the quad contract](SCREEN_EFFECT_QUAD.md), MAIN-061 and
+SEM-351. The four authorized x87 blocks are untouched.
 
-SEM-347..349 viewport/camera work remains accepted. Gameplay uses fixed PI/10
-and 1..10000; Background uses fieldOfView and 30..1800. Active selection supplies
-projection fields; DrawMode6/7 distance uses fixed PLAYFIELD cameraPosition.
-WaveY is positionOffset.z; element +0xE4 stays unknown0e4. Primary configuration
+SEM-350's shared ZunTimer, 0x34 effect owner and two-level shake publication
+remain accepted. Configured PLAYFIELD +0x2CC/+0x2D0 and applied ANM +0x20/+0x24
+stay separate; layer six clears both before drawing through its argument.
+Later FULL_WINDOW application may publish different values. See
+[SCREEN_EFFECT_SHAKE.md](SCREEN_EFFECT_SHAKE.md).
+
+SEM-347..349 camera/viewport facts remain: gameplay uses fixed PI/10 and
+1..10000; Background uses fieldOfView and 30..1800; projection uses the active
+element, while DrawMode6/7 distance uses fixed PLAYFIELD cameraPosition.
+WaveY is positionOffset.z; element +0xE4 stays unknown0e4. Configuration's primary
 construction policy remains required; raw GameConfiguration images stay
 constructor-free. See [ANM_VIEWPORT.md](ANM_VIEWPORT.md),
 [BACKGROUND_VIEWPORT.md](BACKGROUND_VIEWPORT.md),
@@ -36,90 +42,92 @@ constructor-free. See [ANM_VIEWPORT.md](ANM_VIEWPORT.md),
 
 ## Validation at the source checkpoint
 
-- Five separate pinned controls each pass 47 affected units, including natural
-  shared ZunTimer construction and one ScreenEffect body. Production cold
-  aggregate: **698/698 across all 88 sources**. A zero-refresh repeat compares
-  the same frozen objects/recipes without recompiling.
-- Fourteen PLAYFIELD base/addend rebases, 54 public owner/method identities and
-  353 same-family private labels conserve physical destinations. All other
-  recipe fields, profiles, extents, names and credit are unchanged. Sixteen
-  factory callback bindings agree with independent unit targets; type 3 is
-  arcade pulse and type 4 full fade-out, correcting old reversed prose.
+- Production exact and fixed-object, zero-refresh repeat pass **1/1 affected
+  unit**, all 887 bytes and thirty references. Only seven ANM-pointer, one Flush
+  method and twenty-two Supervisor identities retag. Every offset/type/addend
+  and physical target is unchanged; all other 697 units and credit are fixed.
+- This is a source-only batch with no production header, profile or object
+  partition change. SEM-350's prior cold 698-unit/88-source aggregate is separate;
+  no fresh aggregate is claimed. Direct full-owner/Float3 controls preserve 887;
+  scalar-flat assignment emits 624 and is rejected as target source shape.
 - Independent normal cold compilation/linkage covers all 88 real objects with
   zero unresolved symbols. Build-local PE32 GUI: 778,752 bytes, SHA-256
-  c15f083f3b0913d304ab35d44be5c42f03f43333e6d19389d0f086d682bf6790.
-  Seventeen actual normal units independently pass strict target comparison.
+  a14ef36b462193cffd22ea909b1f6ad4b5847957638b1c0e92d41b8638cd4d99.
+  Actual normal DrawSquare independently passes strict 887-byte/30-reference
+  target comparison.
 - All **928 normal roots, 81 private entries and 1,797 code/data/EH graphs**
-  remain identical, with 971 private spellings and no changed-body exceptions.
-  Actual /OPT:NOREF Win32 lifetime, viewport and shake clients link all normal
-  objects and pass. Existing 96 viewport cases/five stage-camera handoffs and
-  64 ANM cases remain; shake adds **171 gate/time/RNG/publication/draw/reset/Chain
-  cases**, including visible/cull geometry, signed zero and distinct receivers.
-- EH audit and public CI's **115 workflow tests / thirteen native programs**
-  pass. All 329 source/tool/test inputs, 16 non-recipe configs and post-refresh
-  manifest stay frozen. Tracking, progress and all 96 local Markdown links pass.
-  Closed selector debt: 257 keys / 676 directives; declaration debt:
-  188 keys / 193 declarations. No baseline grows.
+  remain identical, with zero private renames or changed-body exceptions.
+  Four /OPT:NOREF Win32 clients link every object and pass: lifetime; 96 viewport
+  cases/five stage-camera handoffs; 64 ANM and 171 shake cases; **128 quad cases**
+  covering packet bytes, queued flush, cache timing, failure/restoration and
+  subsequent real ANM texture/blend rebinding.
+- Public CI passes **117 workflow tests and thirteen native programs**. New
+  guard cases reject partial/selected owners, duplicate vectors, wrong FVF,
+  layout and stride. All 329 source/tool/test inputs, sixteen non-recipe configs
+  and the manifest stay frozen. Tracking, progress and local links pass. Closed
+  selector debt: 256 keys / 675 directives; declaration debt: 186 keys / 191.
 
-Commands, target observations, controls, graph/normal/runtime/EH/CI reports and
-frozen-input receipts: .analysis/sem350/. The shake fixture constructs the real
-task but retains it until exit because teardown assumes loaded game subsystems.
-No full Render/GPU/driver, synchronization, native parent or full-game pass is
-claimed for these component programs. Source checkpoint validation is complete.
+Commands, attested target observations, controls, comparisons and runtime/CI
+receipts: .analysis/sem351/. SDK capture copies stack vertex bytes during the
+call. No graphics driver, full-game run, synchronization or native parent/game
+ABI is accepted. Source checkpoint validation is complete.
 
 ## Next bounded lane and retained limits
 
-Retire the **ScreenEffectDraw exact body and cache/parent projections** around
-DrawSquare @ 0x00436920. Inventory ScreenEffectDraw.cpp,
-ScreenEffectDrawExact.inl and the actual canonical ANM cache-clear methods.
-The retained actual normal DrawSquare is already **887 bytes**; size alone is
-not exactness. Test the clean normal source under the exact recipe before
-assuming the old partial declarations are required. Capture its exact baseline
-before source edits and reuse the retained normal corpus for before/after graphs.
-Preserve live cache-clear phases and prove every public binding; do not add
-selectors, selected layouts, padding, inert locals or assembly.
+Close **ANM prebuilt XYZ/UV and software fallback vertex ownership** around
+SetupVertexBuffer @ 0x00442260 (682 bytes), AnmVertexBuffer.cpp, the manager's
+untexturedVertices @ +0x1774 and Draw3D @ 0x00440C10. The source binds a 20-byte
+XYZ/TEX1 GPU stream but uses legacy RHW/diffuse field names. Its separate
+24-byte software copy at g_BackgroundQuadVertices @ 0x004CA290 receives the
+same position/UV data through two projections and integer/float casts.
 
-Other limits: the 0x004C4EAC gate's business name/producer/storage lifetime,
-raw ScreenEffect parameter names, inherited Chain priority labels, other ANM
-lifecycle projections, ASCII selection facade and 0x364 Supervisor compatibility
-family remain debt. RunStageScript normal extent stays 5,230 versus target
-5,229; this proves neither one differing byte nor whole-body normal exactness.
+Establish the actual binding, storage, copy, lifetime and consumers before
+choosing owners. Do not merge this stream with ScreenEffect's equally sized
+RHW/diffuse packet. Preserve receiver/global distinctions in buffer creation
+and binding. Capture exact baselines before header/type changes and use the
+retained normal corpus for graphs. If a shared header changes, replay every
+affected unit and cold aggregate; keep exact/normal evidence independent.
+No selectors, selected layouts, padding, inert locals or assembly may be added.
+
+The opaque 0x004C4EAC gate, raw effect parameter names, inherited Chain priority
+labels, other ANM lifecycle views, ASCII selection facade and 0x364 Supervisor
+compatibility family remain debt. RunStageScript normal extent stays 5,230 vs
+5,229: neither one differing byte nor whole-body normal exactness follows.
 Standalone DIFF's inherited RuntimePressedButtons C3861 remains unretested.
 [WORKER_LIFECYCLE.md](WORKER_LIFECYCLE.md) and
 [FRONT_END_PREVIEW_PROTOCOL.md](FRONT_END_PREVIEW_PROTOCOL.md) retain unresolved
-join/queue ownership boundaries.
+joins/queue ownership.
 
 ## Local artifacts and resources
 
-All relevant jobs terminated before cleanup. This batch removes **1,950
-reproducible files**, **64,495,185 logical / 68,513,792 allocated bytes**:
-production/test binaries, PDBs, old baselines, probe trees/products, Python
-caches and eleven generated private manifests. Commands, compact reports,
-hashes and five base-a581415 source-control patches remain under
-.analysis/sem350/. Cleanup: .analysis/sem350/cleanup-receipt.json. Control patches
-reproduce experiments on that base; do not apply them to the accepted tree.
+All relevant jobs terminated before cleanup. This batch removes **1,728
+reproducible files**, **33,939,258 logical / 37,937,152 allocated bytes**:
+production/test binaries, PDBs, old baselines, probe trees/products, caches and
+three private manifests. Compact reports, commands, hashes and five base-22a430b
+control patches remain under .analysis/sem351/. Cleanup receipt:
+.analysis/sem351/cleanup-receipt.json. Control patches reproduce old experiments;
+do not apply them to the accepted tree.
 
-build/ contains only **88 verified normal baseline COFF objects**, **2,614,442
-bytes**, under build/semantic/sem351/baseline/whole-obj/. Provenance:
-.analysis/sem350/next-baseline.json; normal report:
-.analysis/sem351/baseline-whole-report.json. Rebuild before --link-only; the
+build/ retains only **88 verified normal baseline objects**, **2,614,399 bytes**,
+under build/semantic/sem352/baseline/whole-obj/. Provenance:
+.analysis/sem351/next-baseline.json; report:
+.analysis/sem352/baseline-whole-report.json. Rebuild before --link-only; the
 lifecycle checker always builds afresh. The verified target, installed tools
 (approximately 1.8 GiB), private Ghidra project and compact evidence remain.
 
-The earlier handoff archived 788 historical SEM-327..348 files into the
-1,592,929-byte .analysis/archives/handoff-20261023-historical-evidence.tar.gz;
-all member hashes were verified. The index records original paths. Restore
-historical paths from the repository root before following their old commands:
+Historical SEM-327..348 logs/reports/probes remain in the verified 788-member
+archive below .analysis/archives/. Restore from the repository root before
+using an archived historical path:
 
 ```bash
 tar --keep-old-files -xzf .analysis/archives/handoff-20261023-historical-evidence.tar.gz
 ```
 
-Heavy work stays serial under the [resource policy](RE_WORKFLOW.md#host-resource-limits):
-half one CPU, memory.high 768 MiB / memory.max 1 GiB, CPU 1/nice 19; Ghidra heap
-512 MiB. .analysis/sem350/run-limited.sh enforces and records these controls.
-Recorded runs peak at **254.16 MiB**, with zero OOM events. Do not overlap builds,
-Ghidra or index reconciliation, or alter other workspaces' jobs.
+Heavy jobs stay serial under [resource limits](RE_WORKFLOW.md#host-resource-limits):
+half a CPU, memory.high 768 MiB / memory.max 1 GiB, CPU 1/nice 19; Ghidra heap
+512 MiB. .analysis/sem351/run-limited.sh enforces and records them. Runs peak
+at **260.06 MiB**, with zero OOM events. Do not overlap builds, Ghidra or index
+reconciliation, or change other workspaces' jobs.
 
 Protected user-owned untracked paths must not be read, modified, staged,
 deleted or used to infer reconstruction state:
@@ -128,11 +136,9 @@ deleted or used to infer reconstruction state:
 - droid.resume.txt
 - scripts/runtime-diff.py
 
-Default CI discovers untracked Python. While these paths remain, run
-.analysis/sem350/run-ci.py through run-limited.sh; it excludes only protected
-contents from standard CI inputs.
-
-Stash 03ec1ae7d1e3880eacee081578cfd0e0e129a8b6,
+Default CI discovers untracked Python. While these remain, use
+.analysis/sem351/run-ci.py through run-limited.sh; only their protected contents
+are excluded. Stash 03ec1ae7d1e3880eacee081578cfd0e0e129a8b6,
 .analysis/sem341/pending.patch and pending-sem348 patches under
 .analysis/handoff-20261023/ are superseded provenance. Do not apply them.
 
@@ -148,7 +154,6 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 ```
 
-Run scripts/ghidra.py check through the limited wrapper before relying on
-Ghidra. Shared headers/layouts, flags or object changes require affected replay
-and aggregate gates; keep exact and normal evidence independent. Preserve
-compact receipts before cleanup. Semantic and platform work remains unfinished.
+Run scripts/ghidra.py check through the limited wrapper before using Ghidra.
+Preserve compact receipts before output cleanup. Semantic/platform work remains
+unfinished.
