@@ -1343,31 +1343,7 @@ i32 __fastcall Supervisor::DrawFpsCounter(Supervisor *s)
 #include "SupervisorEnumGameControllers.inl"
 
 // FUNCTION: TH095 0x00423C70.
-BOOL CALLBACK Supervisor::ControllerCallback(
-    LPCDIDEVICEOBJECTINSTANCEA object, LPVOID context)
-{
-    DIPROPRANGE range;
-    LPVOID callbackContext;
-
-    callbackContext = context;
-
-    if ((object->dwType & 3) != 0)
-    {
-        range.diph.dwSize = sizeof(DIPROPRANGE);
-        range.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-        range.diph.dwHow = DIPH_BYID;
-        range.diph.dwObj = object->dwType;
-        range.lMin = -1000;
-        range.lMax = 1000;
-
-        if (g_Supervisor.controller->SetProperty(DIPROP_RANGE, &range.diph) < 0)
-        {
-            return FALSE;
-        }
-    }
-
-    return TRUE;
-}
+#include "SupervisorControllerCallback.inl"
 
 // FUNCTION: TH095 0x00423CE0.
 void Supervisor::StartInputWorker()

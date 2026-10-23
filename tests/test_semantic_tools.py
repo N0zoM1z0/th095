@@ -974,6 +974,31 @@ class SemanticProtocolGuardTests(unittest.TestCase):
     def test_input_selection_guard_accepts_shared_global_callbacks(self) -> None:
         GUARD.check_supervisor_input_selection()
 
+    def test_axis_range_guard_accepts_shared_core_and_clean_normal_wrapper(self) -> None:
+        GUARD.check_supervisor_axis_range()
+
+    def test_axis_range_guard_rejects_protocol_or_normal_storage_changes(self) -> None:
+        name = "SupervisorControllerAxisRange.inl"
+        source = (ROOT / "src" / name).read_text(encoding="utf-8")
+        for before, after in (
+            ("& DIDFT_AXIS", "& 3"),
+            ("range.diph.dwObj = object->dwType;", "range.diph.dwObj = object->dwType & DIDFT_AXIS;"),
+            ("range.lMin = -1000;", "range.lMin = 0;"),
+            ("DIPH_BYID", "DIPH_BYOFFSET"),
+            ("g_Supervisor.controller->", "static_cast<Supervisor *>(context)->controller->"),
+            ("< 0", "<= 0"),
+            ("return DIENUM_STOP;", "return DIENUM_CONTINUE;"),
+        ):
+            self.assertIn(before, source)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_supervisor_axis_range({name: source.replace(before, after, 1)})
+        name = "SupervisorControllerCallback.inl"
+        source = (ROOT / "src" / name).read_text(encoding="utf-8")
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                GUARD.check_supervisor_axis_range({name: source.replace("(void)context;", "LPVOID callbackContext = context;")})
+
     def test_input_selection_guard_rejects_owner_or_transition_changes(self) -> None:
         for name, before, after in (
             ("SupervisorInitializeInput.inl", "g_Supervisor.SetupDInput();", "if (g_Supervisor.SetupDInput() < 0) return;"),

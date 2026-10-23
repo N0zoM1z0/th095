@@ -18195,3 +18195,77 @@ source across profiles and have independent normal/native/SDK evidence. No new
 mapping, source-presence, exact credit, profile selector, alternate owner or
 emission adapter is added. Durable facts are MAIN-053 and the current boundary
 map is WINDOW_INPUT_INITIALIZATION.md. Private receipts are .analysis/sem343/.
+
+### SEM-344 — shared axis-range protocol and clean normal callback
+
+Scope: ControllerCallback at 0x00423C70, SetupDInput at 0x00423960 and the
+independent signed-axis consumer GetControllerInput at 0x00419410. Main still
+owns exact/normal TU emission. SupervisorControllerAxisRange.inl now supplies
+the single type/property/range/continuation core. The normal callback wrapper
+is SupervisorControllerCallback.inl; MainExact retains its existing wrapper.
+
+Observed: SDK DIDFT_AXIS (3) selects objects; DIPH_BYID (2) receives the full
+original dwType. The 24-byte DIPROPRANGE has a 16-byte header and signed
+-1000/+1000 bounds. SetProperty uses the global controller and SDK DIPROP_RANGE
+reference value 4. Negative HRESULT stops object enumeration; nonnegative
+results continue, as does the non-axis path without a device access. Setup
+ignores EnumObjects' HRESULT and still logs discovery/returns 0 after a property
+failure. The independent target consumer compares signed X/Y state against
+signed thresholds and their negations. These are target observations, not new
+hardware calibration or backend guarantees.
+
+Compiler boundary: the target copies context at 0x00423C76 into EBP-0x1C,
+without a later read or inclusion in the range packet. Minimal pinned-VC7.1
+legacy/named probes both emit identical 109 bytes; removing that copy emits
+104 bytes, reduces the frame by four bytes and rotates volatile-register use.
+The actual normal Main callback exhibits the same change. A complete x86
+instruction/CFG oracle accepts only the dead-copy/frame removal and pre-call
+volatile-register permutation; branch successors, COM arguments, return ABI,
+relocation identities and addends agree. Exact replay of the 109-byte wrapper
+alone does not accept the different normal function.
+
+The normal unused copy is removed. MainExact's pre-existing copy stays in place
+as explicit wrapper/emission debt; neither a new inert local nor another
+profile selector, layout or adapter is introduced. Both wrappers emit one core.
+TH08 corroborates the historical callback/copy shape but supplies no TH095 ABI
+or normal-body acceptance. The split is debt, not a reusable source pattern.
+
+Ownership: Supervisor owns the device slots, the callback selects the global
+device, and the object descriptor/context are borrowed. The range is transient
+stack input to SetProperty; no ownership transfer/release is introduced.
+Main remains the emission/build owner. Real Windows/DirectInput SDK compiles
+under VC7.1 x86 and MinGW x86/x64 validate the actual normal wrapper/core, uncast
+object callback type, fixed packet widths/offsets, native pointer widths and
+non-relocated SDK property reference value 4. They are compile/type oracles,
+not parent Supervisor or real OS/COM execution.
+
+The thirteenth native x86-64/UBSan program passes 694 sequential fixture cases.
+The 171 added cases comprise 160 direct axis/HRESULT/context combinations,
+four non-axis cases without a global controller and seven object-enumeration
+traces through shared setup. They cover full high-bit identifiers, packet
+fields, signed HRESULT boundaries, stopping, setup's ignored failures and
+global/receiver device separation. Injected descriptors and fault combinations
+do not establish real OS reachability, COM failure out-parameters, repeated
+initialization lifetime, synchronization, parent ABI or a complete native game.
+
+Final gates: fresh Main baseline/candidate replay passes 48/48. Only 25 private
+labels in one Main unit change relative to c629d09; no public retag or other
+recipe field changes. The exact setup/worker/device/axis surface preserves
+993 target bytes and all 46 relocations. Frozen aggregate replay passes
+698/698 across 88 sources with zero further refresh. Independent normal closure
+compiles 88/88 i386 COFF objects and links a verified 778,752-byte PE32 GUI,
+zero unresolved symbols, build-local SHA-256
+1caa433a9c858c4e667803eaffe567fddc3c506ae14a62900271a7a49b8c53ca.
+The actual product Main independently preserves 54 named roots byte-for-byte
+and proves the one axis callback delta, with one private entry and 143 code/data/
+EH section graphs audited under 28 private spellings. EH passes 57 parents,
+72 actions and 81/81 provenance-exact references. Public CI passes 105 workflow
+tests and thirteen native programs. All 322 source/tool/test inputs stay frozen;
+closed selector/declaration baselines remain 265 keys / 696 directives and
+191 keys / 196 selected declarations.
+
+Result: the axis protocol is shared and the normal callback loses its unused
+copy with independent target/compiler/native evidence. The exact wrapper's
+remaining context-copy debt is explicit. Mapping/source/exact totals are
+unchanged. Durable fact: MAIN-054; current boundaries:
+WINDOW_INPUT_INITIALIZATION.md and SOURCE_MAP.md. Receipts: .analysis/sem344/.

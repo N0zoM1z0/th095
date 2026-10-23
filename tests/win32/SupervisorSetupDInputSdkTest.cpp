@@ -4,6 +4,7 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include <windows.h>
 #include <dinput.h>
+#include <stddef.h>
 #include "inttypes.hpp"
 #include "SupervisorFlags.hpp"
 
@@ -35,12 +36,14 @@ extern InputSdkLogFixture g_GameErrorContext;
 #include "SupervisorSetupDInput.inl"
 #include "SupervisorInitializeInput.inl"
 #include "SupervisorEnumGameControllers.inl"
+#include "SupervisorControllerCallback.inl"
 #undef Supervisor
 
 // No casts on the function pointer: SDK return width and calling convention
 // must agree with a native signed pointer-sized result in both architectures.
 LONG_PTR (WINAPI *inputWindowModuleApi)(HWND, int) = &GetWindowLongPtrA;
 LPDIENUMDEVICESCALLBACKA inputDeviceEnumerationApi = &InputSdkReceiverFixture::EnumGameControllersCb;
+LPDIENUMDEVICEOBJECTSCALLBACKA inputObjectEnumerationApi = &InputSdkReceiverFixture::ControllerCallback;
 void (__fastcall *inputWorkerCallbackApi)(void *) = &InputSdkReceiverFixture::InitializeInput;
 typedef char InputSdkLongIsFourBytes[(sizeof(LONG) == 4) ? 1 : -1];
 typedef char InputSdkModuleIsPointerWidth[(sizeof(HINSTANCE) == sizeof(void *)) ? 1 : -1];
@@ -54,5 +57,11 @@ unsigned int inputSdkAbiReceipt[] = {
     sizeof(IDirectInput8A *), sizeof(DIDEVCAPS),
     static_cast<unsigned int>(GWLP_HINSTANCE), sizeof(LONG), sizeof(BOOL),
     sizeof(LPDIENUMDEVICESCALLBACKA), DIENUM_STOP, DIENUM_CONTINUE,
-    sizeof(th095::SupervisorFlags)
+    sizeof(th095::SupervisorFlags), sizeof(DIPROPHEADER), sizeof(DIPROPRANGE),
+    offsetof(DIDEVICEOBJECTINSTANCEA, dwType), offsetof(DIPROPRANGE, lMin),
+    offsetof(DIPROPRANGE, lMax), DIDFT_AXIS, DIPH_BYID
 };
+
+// SDK DIPROP identifiers are pseudo-GUID references, not objects to dereference.
+extern "C" const GUID *inputAxisRangeProperty;
+const GUID *inputAxisRangeProperty = &DIPROP_RANGE;

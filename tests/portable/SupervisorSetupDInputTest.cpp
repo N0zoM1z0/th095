@@ -1,6 +1,6 @@
-// Actual shared setup, device-selection and availability-publication bodies.
-// Native pointers, COM operations and logging below use explicit fixtures;
-// the axis callback remains an identity-only binding, not an executed body.
+// Actual setup, device selection, availability and normal axis callback bodies.
+// Native pointers, COM operations, object records and logging use explicit
+// fixtures, not SDK/parent ABI. The exact wrapper's unused copy is separate debt.
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>
@@ -17,17 +17,21 @@ struct InputModuleFixture { int tag; } modules[2];
 typedef InputModuleFixture *InputModuleHandleFixture;
 struct InputGuidFixture { int tag; };
 struct InputDeviceInstanceFixture { InputGuidFixture guidInstance; };
+struct InputObjectInstanceFixture { u32 dwType; };
+struct InputPropertyHeaderFixture { u32 dwSize, dwHeaderSize, dwObj, dwHow; };
+struct InputPropertyRangeFixture { InputPropertyHeaderFixture diph; i32 lMin, lMax; };
 struct InputFormatFixture { int tag; };
 struct InputCapsFixture { u32 dwSize; u32 marker; };
 const InputGuidFixture IID_IDirectInput8A = {1}, GUID_SysKeyboard = {2};
+const InputGuidFixture DIPROP_RANGE = {3};
 const InputFormatFixture c_dfDIKeyboard = {1}, c_dfDIJoystick2 = {2};
 enum { DIRECTINPUT_VERSION=0x800, GWLP_HINSTANCE=-6,
        DISCL_NONEXCLUSIVE=2, DISCL_FOREGROUND=4, DISCL_BACKGROUND=8, DISCL_NOWINKEY=16,
        DI8DEVCLASS_GAMECTRL=4, DIEDFL_ATTACHEDONLY=1,
-       DIENUM_STOP=0, DIENUM_CONTINUE=1 };
+       DIENUM_STOP=0, DIENUM_CONTINUE=1, DIDFT_AXIS=3, DIPH_BYID=2 };
 enum { WINDOW_READ=1, CREATE_INPUT, CREATE_KEYBOARD, KEY_FORMAT, KEY_COOP, KEY_ACQUIRE,
        LOG_MESSAGE, ENUM_DEVICES, CTRL_FORMAT, CTRL_COOP, CTRL_CAPS, CTRL_OBJECTS,
-       KEY_RELEASE, INPUT_RELEASE, CREATE_CONTROLLER };
+       KEY_RELEASE, INPUT_RELEASE, CREATE_CONTROLLER, SET_AXIS_RANGE };
 enum { FAIL_NONE=0, DISABLED, FAIL_FACTORY, FAIL_KEYBOARD, FAIL_FORMAT, FAIL_COOP };
 struct InputDeviceFixture;
 struct InputInterfaceFixture;
@@ -42,7 +46,7 @@ struct InputSupervisorFixture
     i32 SetupDInput();
     static void InitializeInput(void *);
     static i32 EnumGameControllersCb(const InputDeviceInstanceFixture *, void *);
-    static i32 ControllerCallback(const void *, void *) { std::abort(); }
+    static i32 ControllerCallback(const InputObjectInstanceFixture *, void *);
 };
 struct InputControllerResultFixture { i32 result; InputDeviceFixture *output; };
 struct InputScenario
@@ -60,6 +64,11 @@ struct InputScenario
     std::vector<InputControllerResultFixture> controllerResults;
     std::vector<const InputGuidFixture *> createdGuids;
     std::vector<int> visitedDevices;
+    bool executeObjectCallback;
+    i32 propertyResult;
+    std::vector<InputObjectInstanceFixture> objects;
+    std::vector<u32> visitedObjects;
+    std::vector<InputPropertyRangeFixture> ranges;
 } scenario;
 InputSupervisorFixture g_Supervisor;
 
@@ -97,10 +106,30 @@ struct InputDeviceFixture
         scenario.events.push_back(CTRL_CAPS); caps->marker = 42;
         return scenario.ignoredFailures & 16u ? -1 : 0;
     }
-    i32 EnumObjects(i32 (*callback)(const void *, void *), void *context, u32 flags)
+    i32 SetProperty(const InputGuidFixture &property, const InputPropertyHeaderFixture *header)
+    {
+        CHECK(this == g_Supervisor.controller && !isKeyboard && &property == &DIPROP_RANGE);
+        CHECK(header->dwSize == sizeof(InputPropertyRangeFixture));
+        CHECK(header->dwHeaderSize == sizeof(InputPropertyHeaderFixture) && header->dwHow == DIPH_BYID);
+        const InputPropertyRangeFixture *range=reinterpret_cast<const InputPropertyRangeFixture *>(header);
+        CHECK(range->lMin == -1000 && range->lMax == 1000);
+        scenario.ranges.push_back(*range); scenario.events.push_back(SET_AXIS_RANGE);
+        return scenario.propertyResult;
+    }
+    i32 EnumObjects(i32 (*callback)(const InputObjectInstanceFixture *, void *), void *context, u32 flags)
     {
         CHECK(!isKeyboard && callback == &InputSupervisorFixture::ControllerCallback);
         CHECK(context == NULL && flags == 0); scenario.events.push_back(CTRL_OBJECTS);
+        if (scenario.executeObjectCallback)
+        {
+            for (const InputObjectInstanceFixture &object : scenario.objects)
+            {
+                scenario.visitedObjects.push_back(object.dwType);
+                const i32 result=callback(&object,context);
+                CHECK(result == DIENUM_STOP || result == DIENUM_CONTINUE);
+                if (result == DIENUM_STOP) break;
+            }
+        }
         return scenario.ignoredFailures & 32u ? -1 : 0;
     }
 } keyboardDevice={true}, controllerDevice={false}, oldKeyboard={true}, oldController={false};
@@ -187,8 +216,15 @@ struct InputLogFixture
 #define LPVOID void *
 #define HRESULT i32
 #define __fastcall
+#define LPCDIDEVICEOBJECTINSTANCEA const InputObjectInstanceFixture *
+#define DIPROPRANGE InputPropertyRangeFixture
+#define DIPROPHEADER InputPropertyHeaderFixture
 #include "SupervisorInitializeInput.inl"
 #include "SupervisorEnumGameControllers.inl"
+#include "SupervisorControllerCallback.inl"
+#undef DIPROPHEADER
+#undef DIPROPRANGE
+#undef LPCDIDEVICEOBJECTINSTANCEA
 #undef __fastcall
 #undef HRESULT
 #undef LPVOID
@@ -344,9 +380,84 @@ static void CheckDeviceCallbacks()
         CHECK(scenario.inputReleases == 0 && scenario.keyReleases == 0); ++cases;
     }
 }
+static void CheckAxisCallbacks()
+{
+    const struct ObjectCase { u32 type; bool axis; } objects[] = {
+        {0,false},{1,true},{2,true},{3,true},{4,false},
+        {0x100,false},{0x101,true},{0x102,true},{0x103,true},
+        {0x7FFFFFFC,false},{0x7FFFFFFD,true},{0x80000002,true},
+        {0xFFFFFFFC,false},{0xFFFFFFFD,true},{0xFFFFFFFE,true},{0xFFFFFFFF,true}
+    };
+    const i32 results[]={INT32_MIN,-1,0,1,INT32_MAX};
+    for (const ObjectCase &item : objects)
+        for (i32 result : results)
+            for (int withContext=0;withContext<2;++withContext)
+            {
+                Reset(&g_Supervisor,&modules[0],FAIL_NONE,false);
+                g_Supervisor.controller=&controllerDevice;
+                InputSupervisorFixture unrelated={}; unrelated.controller=&oldController;
+                InputObjectInstanceFixture object={item.type};
+                scenario.propertyResult=result;
+                CHECK(InputSupervisorFixture::ControllerCallback(&object,withContext ? &unrelated : NULL)
+                      == (item.axis && result < 0 ? DIENUM_STOP : DIENUM_CONTINUE));
+                CHECK(unrelated.controller == &oldController && g_Supervisor.controller == &controllerDevice);
+                CHECK(scenario.ranges.size() == (item.axis ? 1u : 0u));
+                if (item.axis)
+                {
+                    CHECK(scenario.ranges[0].diph.dwObj == item.type);
+                    CHECK(scenario.events == std::vector<int>({SET_AXIS_RANGE}));
+                }
+                else CHECK(scenario.events.empty());
+                ++cases;
+            }
+    for (u32 type : {0u,4u,0x100u,0xFFFFFFFCu})
+    {
+        Reset(&g_Supervisor,&modules[0],FAIL_NONE,false);
+        InputObjectInstanceFixture object={type};
+        CHECK(InputSupervisorFixture::ControllerCallback(&object,NULL) == DIENUM_CONTINUE);
+        CHECK(g_Supervisor.controller == NULL && scenario.events.empty()); ++cases;
+    }
+    const struct Trace {
+        std::vector<u32> objects, visited, configured;
+        i32 propertyResult;
+        u32 backendFailures;
+        bool foreignReceiver;
+    } traces[] = {
+        {{},{},{},0,0,false},
+        {{4,0x101,0x102},{4,0x101,0x102},{0x101,0x102},0,0,false},
+        {{1,2,4},{1},{1},-1,32,false},
+        {{4,1,2},{4,1},{1},INT32_MIN,32,false},
+        {{0,4,0xFFFFFFFC},{0,4,0xFFFFFFFC},{},0,0,false},
+        {{0x7FFFFFFD,0x80000002,0xFFFFFFFF},{0x7FFFFFFD,0x80000002,0xFFFFFFFF},
+         {0x7FFFFFFD,0x80000002,0xFFFFFFFF},INT32_MAX,0,false},
+        {{0x103},{0x103},{0x103},1,0,true}
+    };
+    for (const Trace &trace : traces)
+    {
+        InputSupervisorFixture receiver;
+        Reset(trace.foreignReceiver ? &receiver : &g_Supervisor,&modules[1],FAIL_NONE,true,trace.backendFailures);
+        if (trace.foreignReceiver) g_Supervisor.controller=&oldController;
+        scenario.executeObjectCallback=true; scenario.propertyResult=trace.propertyResult;
+        for (u32 type : trace.objects) scenario.objects.push_back({type});
+        CHECK(scenario.receiver->SetupDInput() == 0);
+        CHECK(scenario.visitedObjects == trace.visited);
+        std::vector<u32> configured;
+        for (const InputPropertyRangeFixture &range : scenario.ranges) configured.push_back(range.diph.dwObj);
+        CHECK(configured == trace.configured);
+        std::vector<int> expected={WINDOW_READ,CREATE_INPUT,CREATE_KEYBOARD,KEY_FORMAT,KEY_COOP,
+            KEY_ACQUIRE,LOG_MESSAGE,ENUM_DEVICES,CTRL_FORMAT,CTRL_COOP,CTRL_CAPS,CTRL_OBJECTS};
+        expected.insert(expected.end(),trace.configured.size(),SET_AXIS_RANGE); expected.push_back(LOG_MESSAGE);
+        CHECK(scenario.events == expected);
+        CHECK(scenario.inputReleases == 0 && scenario.keyReleases == 0);
+        CHECK(scenario.receiver->controller == &controllerDevice);
+        if (trace.foreignReceiver) CHECK(g_Supervisor.controller == &oldController);
+        ++cases;
+    }
+}
 int main()
 {
     static_assert(sizeof(void *) == 8 && sizeof(std::intptr_t) == 8,"native pointer transport");
+    static_assert(sizeof(InputPropertyHeaderFixture) == 16 && sizeof(InputPropertyRangeFixture) == 24,"fixture range representation");
     InputModuleHandleFixture values[]={NULL,&modules[0],&modules[1]};
     for (InputModuleHandleFixture module : values)
     {
@@ -369,6 +480,7 @@ int main()
         Reset(&receiver,module,FAIL_NONE,true);Verify(&receiver);
     }
     CheckDeviceCallbacks();
+    CheckAxisCallbacks();
     InputSupervisorFixture ignoredOwner;
     std::memset(&ignoredOwner,0x5A,sizeof(ignoredOwner));
     unsigned char ignoredBefore[sizeof(ignoredOwner)];
@@ -385,5 +497,5 @@ int main()
                 Verify(&g_Supervisor,true,argument);
                 CHECK(std::memcmp(ignoredBefore,&ignoredOwner,sizeof(ignoredOwner)) == 0);
             }
-    std::printf("shared input setup/selection/publication: %d scenarios passed; high module bits retained\n",cases);
+    std::printf("input setup/selection/publication/axis range: %d scenarios passed; high module bits retained\n",cases);
 }

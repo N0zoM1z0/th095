@@ -2780,6 +2780,44 @@ def check_scene_queue_word_access(overrides: dict[str, str] | None = None) -> No
                 fail(f"{name} reads queue payload without its acquire fence")
 
 
+def check_supervisor_axis_range(overrides: dict[str, str] | None = None) -> None:
+    changed = {} if overrides is None else overrides
+    def source(name: str) -> str:
+        return source_without_comments(changed.get(name, (SRC / name).read_text(encoding="utf-8")))
+    normal_route = source("Main.cpp")
+    normal = source("SupervisorControllerCallback.inl")
+    exact = source("MainExact.inl")
+    core = source("SupervisorControllerAxisRange.inl")
+    include = '#include "SupervisorControllerAxisRange.inl"'
+    if normal_route.count('#include "SupervisorControllerCallback.inl"') != 1 or "Supervisor::ControllerCallback(" in normal_route:
+        fail("normal Main lost its canonical axis callback")
+    if normal.count(include) != 1 or exact.count(include) != 1:
+        fail("axis callback wrappers lost the shared semantic core")
+    if "callbackContext" in normal or "(void)context;" not in normal:
+        fail("normal axis callback restored unused context storage")
+    if any(profile in normal + core for profile in PROFILE_NAMES):
+        fail("axis callback restored profile-selected semantics")
+    expected = """
+        if ((object->dwType & DIDFT_AXIS) != 0)
+        {
+            range.diph.dwSize = sizeof(DIPROPRANGE);
+            range.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+            range.diph.dwHow = DIPH_BYID;
+            range.diph.dwObj = object->dwType;
+            range.lMin = -1000;
+            range.lMax = 1000;
+            if (g_Supervisor.controller->SetProperty(DIPROP_RANGE, &range.diph) < 0)
+            {
+                return DIENUM_STOP;
+            }
+        }
+        return DIENUM_CONTINUE;
+    """
+    normalize = lambda body: re.sub(r"\s+", "", body)
+    if normalize(core) != normalize(expected):
+        fail("axis type/range/global receiver or HRESULT continuation changed")
+
+
 def check_supervisor_input_selection(overrides: dict[str, str] | None = None) -> None:
     changed = {} if overrides is None else overrides
     bodies = {}
@@ -4365,6 +4403,7 @@ def main() -> int:
     check_supervisor_fps_boundary()
     check_supervisor_input_setup_boundary()
     check_supervisor_input_selection()
+    check_supervisor_axis_range()
     check_worker_thread_start_boundary()
     check_primary_worker_signal_bindings()
     check_scene_asset_wait_protocol()

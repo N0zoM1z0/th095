@@ -209,11 +209,15 @@ transitions](FPS_SAMPLING.md).
 
 A thirteenth executes shared DirectInput setup, global device selection and
 availability publication with named API/object fixtures. It verifies native
-module-pointer transport, client failure/release/log order, callback continuation
-and pointer-derived flag publication. Device-selection callbacks execute through
-the fixture enumeration backend; the axis-property callback remains identity-only.
+module-pointer transport, client failure/release/log order, callback continuation,
+pointer-derived flag publication and signed axis-range configuration. Device and
+normal axis callbacks execute through fixture enumeration backends. The axis
+semantic statements are shared with the exact wrapper; its existing unused
+context copy remains emission debt and is absent from the normal callback.
 Real Windows/DirectInput SDK x86/x64 compiles validate the API and callback types
 independently; SEM-342's old-getter control rejects the x64 return-width mismatch.
+Normal-axis acceptance also uses the target and a pinned instruction/CFG oracle;
+exact replay alone validates only its distinct legacy wrapper.
 Neither component binds a complete native Supervisor, establishes flag
 synchronization or executes real window/COM enumeration. See
 [the client/platform boundary](WINDOW_INPUT_INITIALIZATION.md).

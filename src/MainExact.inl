@@ -1243,22 +1243,12 @@ BOOL CALLBACK Supervisor::ControllerCallback(
 
     callbackContext = context;
 
-    if ((object->dwType & 3) != 0)
-    {
-        range.diph.dwSize = sizeof(DIPROPRANGE);
-        range.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-        range.diph.dwHow = DIPH_BYID;
-        range.diph.dwObj = object->dwType;
-        range.lMin = -1000;
-        range.lMax = 1000;
-
-        if (g_Supervisor.controller->SetProperty(DIPROP_RANGE, &range.diph) < 0)
-        {
-            return FALSE;
-        }
-    }
-
-    return TRUE;
+    // Existing target-observed emission debt: 0x00423C76 copies context to
+    // EBP-0x1C, with no later read. The minimal VC7.1 clean-body oracle emits
+    // 104 rather than 109 bytes and changes register allocation. Keep this
+    // pre-existing copy only in this legacy wrapper; normal has no such local.
+    // This is not a second axis protocol: both wrappers emit the same core.
+#include "SupervisorControllerAxisRange.inl"
 }
 
 // FUNCTION: TH095 0x00423CE0.
