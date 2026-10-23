@@ -1075,7 +1075,7 @@ def supervisor_header_source(name: str, overrides: dict[str, str] | None = None)
     """Resolve the one explicit primary-Supervisor declaration include."""
     changed = {} if overrides is None else overrides
     text = changed.get(name, (SRC / name).read_text(encoding="utf-8"))
-    if name in ("Main.hpp", "MainExact.hpp"):
+    if name in ("Main.hpp", "MainExact.hpp", "SupervisorLifecycle.cpp"):
         if text.count('#include "SupervisorRuntime.hpp"') != 1:
             fail(f"{name} lost the canonical Supervisor declaration route")
         text += "\n" + changed.get("SupervisorRuntime.hpp", (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8"))
@@ -1084,7 +1084,7 @@ def supervisor_header_source(name: str, overrides: dict[str, str] | None = None)
 
 def check_supervisor_declaration_owner(overrides: dict[str, str] | None = None) -> None:
     changed = {} if overrides is None else overrides
-    for name in ("Main.hpp", "MainExact.hpp"):
+    for name in ("Main.hpp", "MainExact.hpp", "SupervisorLifecycle.cpp"):
         source = source_without_comments(changed.get(name, (SRC / name).read_text(encoding="utf-8")))
         if source.count('#include "SupervisorRuntime.hpp"') != 1:
             fail(f"{name} lost the canonical Supervisor declaration include")
@@ -1114,7 +1114,7 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
     main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
-    lifecycle = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
+    lifecycle = supervisor_header_source("SupervisorLifecycle.cpp")
     scene_exact = (SRC / "SceneSelectExact.hpp").read_text(encoding="utf-8")
     worker_body = (SRC / "ReplayScanWorker.cpp").read_text(encoding="utf-8")
     worker_exact = (SRC / "ReplayScanWorkerExact.inl").read_text(encoding="utf-8")
@@ -1214,9 +1214,9 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
         fail("MainExact no longer embeds the canonical primary worker")
     if "ReplayScanWorker secondaryReplayScanWorker;" not in main_exact_header:
         fail("MainExact no longer embeds the canonical secondary worker")
-    if "ReplayScanWorker replayWorker;" not in lifecycle:
+    if "ReplayScanWorker replayScanWorker;" not in lifecycle:
         fail("Supervisor lifecycle lost its canonical primary worker")
-    if "ReplayScanWorker secondaryWorker;" not in lifecycle:
+    if "ReplayScanWorker secondaryReplayScanWorker;" not in lifecycle:
         fail("Supervisor lifecycle lost its canonical secondary worker")
 
     retired_source_tokens = (
@@ -1267,13 +1267,14 @@ def check_replay_scan_worker_owner(owner_text: str | None = None) -> None:
 
 
 
-def check_game_configuration_owner() -> None:
-    owner = (SRC / "GameConfiguration.hpp").read_text(encoding="utf-8")
+def check_game_configuration_owner(overrides: dict[str, str] | None = None) -> None:
+    changed = {} if overrides is None else overrides
+    owner = changed.get("GameConfiguration.hpp", (SRC / "GameConfiguration.hpp").read_text(encoding="utf-8"))
     main_header = supervisor_header_source("Main.hpp")
     main_exact_header = supervisor_header_source("MainExact.hpp")
     main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
-    runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
-    lifecycle = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
+    runtime_header = changed.get("SupervisorRuntime.hpp", (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8"))
+    lifecycle = supervisor_header_source("SupervisorLifecycle.cpp")
     legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
     manifest = (ROOT / "config" / "match-units.toml").read_text(
         encoding="utf-8"
@@ -1281,6 +1282,8 @@ def check_game_configuration_owner() -> None:
 
     if any(name in owner for name in PROFILE_NAMES):
         fail("canonical GameConfiguration owner must be profile-independent")
+    if re.search(r"\bGameConfiguration\s*\(", source_without_comments(owner)):
+        fail("raw configuration images must not acquire Supervisor construction policy")
     required_layout = (
         "struct GameConfigOptions",
         "struct ControllerBinding",
@@ -1356,13 +1359,16 @@ def check_game_configuration_owner() -> None:
             if re.search(rf"\b(?:struct|class)\s+{name}\s*\{{", text):
                 fail(f"{path} restored a private {name} declaration")
 
-    adapter_start = lifecycle.find(
+    construction = changed.get("SupervisorMemberConstruction.hpp", (SRC / "SupervisorMemberConstruction.hpp").read_text(encoding="utf-8"))
+    if runtime_header.count('#include "SupervisorMemberConstruction.hpp"') != 1:
+        fail("Supervisor lost its shared member-construction policy include")
+    adapter_start = construction.find(
         "struct GameConfigurationConstructionAdapter : GameConfiguration"
     )
     if adapter_start < 0:
         fail("Supervisor lifecycle lost the named configuration construction adapter")
     adapter_body = braced_body_after(
-        lifecycle, adapter_start, "GameConfigurationConstructionAdapter"
+        construction, adapter_start, "GameConfigurationConstructionAdapter"
     )
     if "Initialize();" not in adapter_body:
         fail("configuration construction adapter no longer invokes Initialize")
@@ -1373,10 +1379,14 @@ def check_game_configuration_owner() -> None:
     )
     if forbidden_adapter_storage.search(adapter_body):
         fail("configuration construction adapter acquired duplicate storage")
-    if "(sizeof(GameConfigurationConstructionAdapter) == 0xc8)" not in lifecycle:
+    if "(sizeof(GameConfigurationConstructionAdapter) == 0xc8)" not in construction:
         fail("configuration construction adapter lost its canonical size assertion")
-    if "GameConfigurationConstructionAdapter config;" not in lifecycle:
-        fail("Supervisor lifecycle lost the construction-phase adapter member")
+    if "GameConfigurationConstructionAdapter config;" not in runtime_header:
+        fail("Supervisor lost the shared construction-phase configuration member")
+    if "using GameConfiguration::operator=;" not in construction:
+        fail("Supervisor configuration lost loaded-image assignment")
+    if any(profile in construction for profile in PROFILE_NAMES):
+        fail("Supervisor configuration construction policy became profile-selected")
 
     retired_fields = ("unknown0b2", "unknown0b3", "unknown0b4")
     source_corpus = "\n".join((owner, main_header, main_exact_header, main_exact_body))
@@ -1397,7 +1407,7 @@ def check_supervisor_flags_owner(owner_text: str | None = None) -> None:
     main_header = supervisor_header_source("Main.hpp")
     main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
-    lifecycle = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
+    lifecycle = supervisor_header_source("SupervisorLifecycle.cpp")
     legacy = (SRC / "Supervisor.hpp").read_text(encoding="utf-8")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
     controller = (SRC / "Controller.cpp").read_text(encoding="utf-8")
@@ -1695,7 +1705,7 @@ def check_supervisor_viewport_configuration_owner() -> None:
     viewport_source = (SRC / "SupervisorViewport.cpp").read_text(encoding="utf-8")
     background_source = (SRC / "Background.cpp").read_text(encoding="utf-8")
     anm_draw_source = (SRC / "AnmDrawCore.cpp").read_text(encoding="utf-8")
-    lifecycle_source = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
+    lifecycle_source = supervisor_header_source("SupervisorLifecycle.cpp")
 
     if any(name in owner for name in PROFILE_NAMES):
         fail("canonical Supervisor viewport-configuration owner must be profile-independent")
@@ -1768,17 +1778,10 @@ def check_supervisor_viewport_configuration_owner() -> None:
             if stale in text:
                 fail(f"{path} restored stale Supervisor viewport storage: {stale}")
 
-    lifecycle_adapter = "struct SupervisorViewportLifecycle : SupervisorViewportConfiguration"
-    if lifecycle_adapter not in lifecycle_source:
-        fail("SupervisorLifecycle lost its fieldless viewport construction adapter")
-    lifecycle_body = braced_body_after(
-        lifecycle_source,
-        lifecycle_source.index(lifecycle_adapter),
-        "SupervisorViewportLifecycle",
-    )
-    clean_lifecycle_body = source_without_comments(lifecycle_body)
-    if re.search(r"\b(?:u8|i8|u16|i16|u32|i32|f32|f64)\b[^;]*;", clean_lifecycle_body):
-        fail("SupervisorLifecycle viewport construction adapter gained storage")
+    for path in SRC.rglob("*"):
+        if path.suffix in {".cpp", ".hpp", ".inl"} and re.search(
+                r"\bstruct\s+SupervisorViewportLifecycle\b", source_without_comments(path.read_text(encoding="utf-8"))):
+            fail("retired Supervisor viewport construction adapter was restored")
     for fact in (
         '#include "ZunTimer.hpp"',
         "ZunTimer timer;",
@@ -1840,7 +1843,7 @@ def check_screenshot_worker_token_owner() -> None:
     main_header = supervisor_header_source("Main.hpp")
     main_exact_header = supervisor_header_source("MainExact.hpp")
     runtime_header = (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")
-    lifecycle = (SRC / "SupervisorLifecycle.cpp").read_text(encoding="utf-8")
+    lifecycle = supervisor_header_source("SupervisorLifecycle.cpp")
     main_body = (SRC / "Main.cpp").read_text(encoding="utf-8")
     main_exact_body = (SRC / "MainExact.inl").read_text(encoding="utf-8")
 
@@ -1859,8 +1862,8 @@ def check_screenshot_worker_token_owner() -> None:
     for fact in (
         "u32 screenshotWorkerToken;",
         "offsetof(Supervisor, screenshotWorkerToken) == 0x528",
-        "u8 unknown448[0x528 - 0x448];",
-        "u8 unknown52c[0x648 - 0x52c];",
+        "ScreenshotBitmapFileHeader screenshotFileHeader;",
+        "BITMAPINFOHEADER *screenshotInfoHeader;",
     ):
         if fact not in lifecycle:
             fail(f"SupervisorLifecycle lost screenshot-token layout fact: {fact}")

@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include "inttypes.hpp"
 #include "GameConfiguration.hpp"
+#include "SupervisorMemberConstruction.hpp"
 #include "MidiOutputApi.hpp"
 #include "ReplayScanWorker.hpp"
 #include "ScreenshotBitmapFileHeader.hpp"

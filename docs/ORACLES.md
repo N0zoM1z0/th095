@@ -112,3 +112,28 @@ product. Narrow diagnostic options admit the legacy offsetof expression;
 the compiler-rejected bad-offset control and independently decoded COFF data
 preserve the checks. The original normal product is built separately without
 that selector. See [the exact boundary](SUPERVISOR_DECLARATION.md).
+
+
+## Primary Supervisor Win32 lifetime oracle
+
+```bash
+taskset -c 1 nice -n 10 python3 -B scripts/check-supervisor-lifecycle.py
+```
+
+The checker always cold-builds the normal product before linking the actual
+SupervisorLifecycleTest.cpp with all 88 normal objects and /OPT:NOREF. It uses
+the pinned VC7.1 toolchain and real Win32/CRT worker backend under Wine, without
+invoking WinMain. Reports, commands and compile/link/run logs are written to
+build/supervisor-lifecycle/. Preserve compact receipts before cleanup.
+
+The test verifies the complete 0x7BC reset and 0x140 flags, assignment from a
+base configuration image, two actual worker callbacks, closed handles and
+post-destruction cleanup storage. Compiler controls independently distinguish
+the required Supervisor-only configuration construction policy from the retired
+viewport wrapper. Raw GameConfiguration images and snapshots remain free of
+default initialization. See [the construction and evidence boundary](SUPERVISOR_DECLARATION.md).
+
+This is normal Win32 lifetime evidence, separate from exact replay and the
+thirteen native x86-64 component programs. It does not accept a Win64 parent,
+real game entry flow, graphics, arbitrary OS wait failures, cross-thread payload
+ownership or whole-game schedules.

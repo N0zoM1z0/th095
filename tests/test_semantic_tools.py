@@ -583,10 +583,38 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         )
         self.assertIn(
             "struct GameConfigurationConstructionAdapter : GameConfiguration",
-            lifecycle,
+            (ROOT / "src" / "SupervisorMemberConstruction.hpp").read_text(encoding="utf-8"),
         )
+        self.assertIn('#include "SupervisorRuntime.hpp"', lifecycle)
         legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
         self.assertIn("C_ASSERT(sizeof(GameConfiguration) == 0x3C);", legacy)
+
+    def test_supervisor_configuration_policy_remains_parent_specific(self) -> None:
+        construction = (ROOT / "src/SupervisorMemberConstruction.hpp").read_text(encoding="utf-8")
+        owner = (ROOT / "src/GameConfiguration.hpp").read_text(encoding="utf-8")
+        mutations = [
+            ("SupervisorMemberConstruction.hpp", construction.replace("Initialize();", "", 1)),
+            ("SupervisorMemberConstruction.hpp", construction.replace("using GameConfiguration::operator=;", "", 1)),
+            ("SupervisorMemberConstruction.hpp", construction.replace("Initialize();", "Initialize();\n    u32 duplicate;", 1)),
+            ("GameConfiguration.hpp", owner.replace("struct GameConfiguration\n{", "struct GameConfiguration\n{\n    GameConfiguration() { Initialize(); }", 1)),
+        ]
+        for name, changed in mutations:
+            self.assertNotEqual(changed, construction if name.startswith("Supervisor") else owner)
+            with self.subTest(name=name, changed=changed):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit):
+                        GUARD.check_game_configuration_owner({name: changed})
+
+    def test_supervisor_lifecycle_guard_rejects_duplicate_or_wrong_route(self) -> None:
+        lifecycle = (ROOT / "src/SupervisorLifecycle.cpp").read_text(encoding="utf-8")
+        for changed in (
+            lifecycle.replace('#include "SupervisorRuntime.hpp"', '#include "Supervisor.hpp"', 1),
+            lifecycle + "\nnamespace th095 { struct Supervisor { unsigned char opaque[0x7bc]; }; }\n",
+            lifecycle.replace("DIFFABLE_STATIC(Supervisor, g_Supervisor);", "extern Supervisor g_Supervisor;", 1),
+        ):
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_supervisor_declaration_owner({"SupervisorLifecycle.cpp": changed})
 
     def test_supervisor_flags_owner_guard_accepts_canonical_layout(self) -> None:
         GUARD.check_supervisor_flags_owner()
@@ -600,7 +628,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
             encoding="utf-8"
         )
-        self.assertIn("SupervisorFlags flags;", lifecycle)
+        self.assertIn("SupervisorFlags flags;", GUARD.supervisor_header_source("SupervisorLifecycle.cpp"))
         self.assertNotIn("struct SupervisorLifecycleFlags", lifecycle)
         legacy = (ROOT / "src" / "Supervisor.hpp").read_text(encoding="utf-8")
         self.assertIn("u32 d3dDevDisconnectFlag : 1;", legacy)
@@ -682,10 +710,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
             encoding="utf-8"
         )
-        self.assertIn(
-            "struct SupervisorViewportLifecycle : SupervisorViewportConfiguration",
-            lifecycle,
-        )
+        self.assertNotIn("struct SupervisorViewportLifecycle", lifecycle)
         self.assertNotIn("struct SupervisorTimerLifecycle", lifecycle)
 
 
@@ -697,7 +722,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         lifecycle = (ROOT / "src" / "SupervisorLifecycle.cpp").read_text(
             encoding="utf-8"
         )
-        self.assertIn("offsetof(Supervisor, screenshotWorkerToken) == 0x528", lifecycle)
+        self.assertIn("offsetof(Supervisor, screenshotWorkerToken) == 0x528", supervisor)
         self.assertNotIn("unknown448[0x200]", lifecycle)
 
 

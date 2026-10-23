@@ -18337,3 +18337,75 @@ are retired without new mapping/source/exact credit. Durable fact: MAIN-055;
 current declaration/oracle boundaries: SUPERVISOR_DECLARATION.md, ORACLES.md and
 SOURCE_MAP.md. Private commands, baseline objects/graphs, field-token inventory,
 SDK controls and receipts are .analysis/sem345/.
+
+
+### SEM-346 — canonical Supervisor lifetime declaration
+
+Scope: SupervisorLifecycle.cpp's constructor 0x00426350, destructor 0x00426450,
+global 0x004C4670 and their Main/runtime declaration clients. Lifecycle now
+includes SupervisorRuntime.hpp instead of declaring a partial parent. The
+fieldless configuration construction adapter moves to
+SupervisorMemberConstruction.hpp and becomes the canonical parent's member.
+The redundant SupervisorViewportLifecycle adapter is removed. Global storage,
+lifetime bodies and method TUs retain their ownership; no selector or layout
+fork is introduced.
+
+Observed: fresh attested target evidence confirms configuration initialization,
+two viewport constructions, timer and worker member phases before the 0x7BC
+body reset, flags 0x40/0x100 and reverse worker destruction. The initializer at
+0x00494040 and atexit wrapper at 0x00494270 retain the same global binding.
+GameConfiguration also represents loaded images and PhotoGameTask snapshots;
+a default constructor on that raw owner would wrongly spread Supervisor's
+initialization policy.
+
+Compiler controls: a full parent with plain configuration emits 235 constructor
+bytes, missing the target initialization call. Keeping only the existing
+configuration adapter restores all 255 constructor and 84 destructor bytes and
+relocations. Keeping the viewport adapter as well changes neither result, so
+it is retired. Canonical viewport members already supply the required implicit
+construction. The shared configuration adapter exposes inherited base-image
+assignment without a duplicate copy body or initialized temporary.
+
+Ownership: GameConfiguration.hpp owns the 0xC8 data; the shared fieldless adapter
+owns only Supervisor's pre-body construction policy. SupervisorRuntime.hpp owns
+the full 0x7BC primary declaration in exact and normal products, including
+lifecycle. SupervisorLifecycle.cpp still owns global storage and lifetime
+emission. Exact and normal Main bodies retain their previous distinctions;
+normal acceptance uses independent object graphs and actual Win32 execution.
+The 0x364 compatibility family, other projections, global ODR closure, original
+field names and native parent layout remain open.
+
+Oracles: the actual SDK layout test again checks all 77 COFF words in VC7.1 and
+Clang, with both bad-offset controls rejected. Clang remains layout-only under
+the existing math compatibility branch. The maintained
+scripts/check-supervisor-lifecycle.py cold-builds the real normal product and
+links all 88 objects with /OPT:NOREF. Its Wine console test executes the actual
+parent reset/flags, loaded-base-image assignment, two real worker callbacks,
+destructor handle closure and cleanup stores. A four-object private link was
+insufficient because Main retains 91 missing subsystem dependencies; no stubs
+were introduced. This is bounded normal Win32 lifetime evidence, separate from
+the thirteen native component fixtures and full-game runtime claims.
+
+Final gates: fresh lifecycle and Main candidates pass 2/2 and 48/48. The
+cold aggregate refresh and frozen fixed-recipe repeat each pass 698/698 across
+88 sources; the latter refreshes zero labels. Relative to 96aa84c, only
+344 compiler-private labels in 22 units change, with public identities,
+targets, addends, extents, profiles and other recipe fields unchanged.
+Independent old/new normal builds compile 88/88 objects and link PE32 GUI
+products with zero unresolved symbols. Candidate: 778,752 bytes, build-local
+SHA-256 e8376abb8919813fa9b1af7a27cce80b052e9915bfa20bb4a86fff6517e76883.
+All actual normal objects preserve 928 named roots, 81 private entries and
+1,797 code/data/EH graphs under 980 private spellings; exact-only normal
+symbol boundaries remain separately inventoried. The real Win32/Wine lifetime
+test passes. EH retains 57 parents, 72 actions and 81/81 provenance-exact
+references. Public CI passes 109 workflow tests and thirteen native programs.
+All 326 source/tool/test inputs remain frozen. Closed profile baselines stay
+265 keys / 696 directives and 191 keys / 196 selected declarations.
+
+Result: the partial lifecycle parent and unnecessary viewport construction
+adapter are retired; one required fieldless configuration policy is shared.
+No mapping, source-presence or exact credit is added. MAIN-056 and
+SUPERVISOR_DECLARATION.md record the construction and oracle boundaries.
+Commands, baseline comparisons, compiler controls and compact receipts are
+private under .analysis/sem346/. Generated outputs are removable after receipts
+are saved; semantic reconstruction and game ports remain active-incomplete.

@@ -14,6 +14,7 @@
 
 #include "inttypes.hpp"
 #include "GameConfiguration.hpp"
+#include "SupervisorMemberConstruction.hpp"
 #include "MidiOutputApi.hpp"
 #include "ReplayScanWorker.hpp"
 #include "ScreenshotBitmapFileHeader.hpp"
@@ -34,9 +35,9 @@ struct FrontEndControllerView;
 struct PhotoGameTaskView;
 
 // Canonical declaration for the target Win32 0x7BC Supervisor used by Main,
-// MainExact and runtime clients. Lifecycle still has a separate, evidenced
-// member-construction/EH emission view. Fixed target assertions below do not
-// claim a native 64-bit Supervisor layout.
+// MainExact, runtime clients and the lifecycle definition. The fieldless config
+// construction policy preserves its target member phase without a second
+// Supervisor layout. Fixed target assertions do not claim a native 64-bit ABI.
 #pragma pack(push, 4)
 struct Supervisor
 {
@@ -54,7 +55,7 @@ struct Supervisor
     D3DVIEWPORT8 viewport;                           // +0x0cc
     D3DPRESENT_PARAMETERS presentParameters;         // +0x0e4
     DummyMidiTimer *dummyMidiTimer;                  // +0x118
-    GameConfiguration config;                        // +0x11c
+    GameConfigurationConstructionAdapter config;     // +0x11c
     SupervisorViewportConfiguration
         viewportConfigurations[SUPERVISOR_VIEWPORT_SLOT_COUNT]; // +0x1e4
     SupervisorViewportConfiguration *currentViewportConfiguration; // +0x3c4
