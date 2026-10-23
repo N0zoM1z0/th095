@@ -109,6 +109,8 @@ first, then follow the [workflow](docs/RE_WORKFLOW.md). The handoff distinguishe
 accepted source from uncommitted experiments and records retained artifacts.
 Apply the workflow's [host resource limits](docs/RE_WORKFLOW.md#host-resource-limits)
 to builds, headless analysis and other heavy jobs; run them serially.
+The [artifact retention rules](docs/RE_WORKFLOW.md#handoff-and-artifact-retention)
+explain what can be regenerated and how to restore archived local evidence.
 
 Start a reconstruction session with:
 
@@ -136,6 +138,7 @@ python3 scripts/build-whole.py --compile-only
 python3 scripts/build-whole.py --link-only
 ```
 
+Run compilation and linkage under the resource-limited scope described above.
 Running `scripts/build-whole.py` without a mode cold-compiles and links the
 verified production graph. `--link-only` reuses an existing cold object set;
 all modes remain fail-closed and never create a stubbed or force-linked image.

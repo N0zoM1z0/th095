@@ -108,6 +108,15 @@ probe source copies and candidate products that can be rebuilt. Record both
 logical and allocated bytes, the retained objects' hashes and why they remain.
 Save compact build/runtime reports before removing the products they describe.
 
+Historical logs, disassembly dumps, probe sources and large reports may be
+compressed into a private archive below `.analysis/archives/`. Keep an index
+of original paths, sizes and SHA-256 hashes. Verify every archived member
+before removing its loose copy; retain current acceptance receipts and any
+needed comparison baselines directly. Document the archive and restore command
+in RE_HANDOFF.md so historical evidence paths remain recoverable. An applied
+cleanup receipt can replace its dry-run plan only when it contains every plan
+field unchanged. Never archive user-owned untracked files as part of this sweep.
+
 Keep the verified target, installed tools, private Ghidra databases, source,
 ledgers, compact evidence and user-owned untracked files. Do not use a blanket
 `git clean -fdx`: ignored paths include the target and working tools. After
