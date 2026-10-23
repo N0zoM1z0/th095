@@ -252,6 +252,14 @@ in both products. Its eighteen exact/normal comparisons and unchanged normal
 graphs accompany 64 actual projection/boundary cases; no new x87 exception or
 native parent is accepted. See [the consumption boundary](ANM_VIEWPORT.md).
 
+ScreenEffect now has one header/body and uses canonical ZunTimer, full
+Supervisor/task owners and typed configured/applied shake fields. Minimal
+pinned controls retire the custom timer and complete exact-body route without
+an emission adapter. Normal target comparison and actual gate/time/RNG/draw/
+reset/Chain execution remain independent evidence. The isolated DrawSquare
+cache boundary, opaque cancel gate and remaining naming/lifecycle work are
+explicitly retained in [the shake contract](SCREEN_EFFECT_SHAKE.md).
+
 A bounded family is closed only when its representation, consumers,
 transitions, ownership axes, unknowns, and applicable oracles are explicit.
 Repository-wide semantic completion requires all of those closures plus a

@@ -599,15 +599,7 @@ struct AnmManager
     i32 scriptsExecutedThisFrame;           // +0x000014
     i32 renderStateChangesThisFrame;        // +0x000018
     i32 flushesThisFrame;                   // +0x00001c
-    union
-    {
-        struct
-        {
-            i32 unknown020;
-            i32 unknown024;
-        };
-        Float2 screenShakeOffset;
-    };
+    Float2 screenShakeOffset; // +0x20: applied viewport shake, consumed by DrawInner.
     u8 unknown028[4];
     AnmPreloadSlot slots[13];                // +0x00002c
     D3DXMATRIX cachedWorldMatrix;             // +0x000ecc
@@ -786,6 +778,8 @@ typedef char AnmManagerPreloadSlotsAt2C[(offsetof(AnmManager, slots) == 0x2c) ? 
 typedef char AnmManagerCachedWorldMatrixAtECC[(offsetof(AnmManager, cachedWorldMatrix) == 0xecc) ? 1 : -1];
 typedef char AnmManagerSurfacesAt11DC[(offsetof(AnmManager, surfaces) == 0x11dc) ? 1 : -1];
 typedef char AnmManagerVerticesAt1774[(offsetof(AnmManager, untexturedVertices) == 0x1774) ? 1 : -1];
+typedef char AnmManagerShakeAt20[
+    (offsetof(AnmManager, screenShakeOffset) == 0x20 && sizeof(Float2) == 8) ? 1 : -1];
 typedef char AnmManagerVertexBufferAt17C8[(offsetof(AnmManager, vertexBuffer) == 0x17c8) ? 1 : -1];
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 typedef char AnmManagerSurfaceRestoreCopiesAt125C[

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stddef.h>
+#include "ZunTimer.hpp"
 
 namespace th095
 {
@@ -21,26 +22,6 @@ enum ScreenEffectType
     SCREEN_EFFECT_SHAKE_ENVELOPE = 7,
 };
 
-struct ScreenEffectTimer
-{
-    ScreenEffectTimer();
-
-    int previous;
-    float subFrame;
-    int current;
-
-    __forceinline operator int();
-    __forceinline operator float();
-    int Tick();
-    __forceinline void operator++(int);
-    __forceinline void operator=(int value);
-    __forceinline unsigned int operator<(int value);
-    __forceinline unsigned int operator<=(int value);
-    __forceinline unsigned int operator>=(int value);
-};
-
-typedef char ScreenEffectTimerSizeIs0C[(sizeof(ScreenEffectTimer) == 0x0c) ? 1 : -1];
-
 struct ScreenEffectRect
 {
     float left;
@@ -56,12 +37,6 @@ struct ScreenEffect
     ChainElem *drawChainElement;
     int unconsumedDword0C;
     int overlayAlpha;
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-    int duration;
-    int rawParameter0;
-    int rawParameter1;
-    int rawParameter2;
-#else
     union
     {
         int duration;
@@ -85,9 +60,8 @@ struct ScreenEffect
         int rawParameter2;
         int shakeEnvelopeRampDownFrames;
     };
-#endif
     int fadeReleaseRequested;
-    ScreenEffectTimer timer;
+    ZunTimer timer;
 
     static void Clear(unsigned int color);
     static void SetViewport(unsigned int clearColor);
@@ -112,7 +86,6 @@ struct ScreenEffect
 typedef char ScreenEffectSizeIs34[(sizeof(ScreenEffect) == 0x34) ? 1 : -1];
 typedef char ScreenEffectAlphaAt10[(offsetof(ScreenEffect, overlayAlpha) == 0x10) ? 1 : -1];
 typedef char ScreenEffectDurationAt14[(offsetof(ScreenEffect, duration) == 0x14) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 typedef char ScreenEffectShakeEnvelopeAt14[
     (offsetof(ScreenEffect, shakeEnvelopeAmplitude) == 0x14 &&
      offsetof(ScreenEffect, shakeEnvelopeRampUpFrames) == 0x18 &&
@@ -122,7 +95,6 @@ typedef char ScreenEffectArcadePulseAt14[
     (offsetof(ScreenEffect, arcadePulseFadeFrames) == 0x14 &&
      offsetof(ScreenEffect, arcadePulseRepeatCount) == 0x18 &&
      offsetof(ScreenEffect, arcadePulseColor) == 0x1c) ? 1 : -1];
-#endif
 typedef char ScreenEffectRawAt18[(offsetof(ScreenEffect, rawParameter0) == 0x18) ? 1 : -1];
 typedef char ScreenEffectReleaseAt24[(offsetof(ScreenEffect, fadeReleaseRequested) == 0x24) ? 1 : -1];
 typedef char ScreenEffectTimerAt28[(offsetof(ScreenEffect, timer) == 0x28) ? 1 : -1];

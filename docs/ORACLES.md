@@ -178,3 +178,22 @@ comparisons independently validate the actual normal object; whole-normal
 code/data/EH graphs remain unchanged. This is sequential Win32 client evidence,
 not a native parent, full fade/submission or graphics-driver oracle. See
 [ANM_VIEWPORT.md](ANM_VIEWPORT.md). The native program count remains thirteen.
+
+## ScreenEffect shake normal Win32 oracle
+
+`python3 scripts/check-supervisor-lifecycle.py --viewport`, under the workflow
+resource limits, now runs a third client: `tests/win32/ScreenEffectShakeTest.cpp`.
+All three programs link all 88 cold normal objects with /OPT:NOREF. The shake
+client executes the actual factory, timer/RNG, viewport application, DrawInner,
+layer-six callback and Chain traversal, with typed SDK C bindings only at the
+external device boundary. Its 171 cases cover gates and unrelated bits, all nine
+direction pairs, linear/envelope transitions, fractional/stopped time, signed
+zero, visible buffered and culled geometry, separate viewport slots, global
+versus argument reset, preserved neighbors and later FULL_WINDOW application.
+
+Seventeen actual normal methods are independently target-exact; unchanged
+whole-normal code/data/EH graphs are separate preservation evidence. The test
+constructs a real photo-task owner and retains it until process exit because its
+game teardown assumes loaded subsystems. It does not validate that teardown,
+full Render, a graphics driver, synchronization or native 64-bit game ABI. See
+[the storage and scheduling contract](SCREEN_EFFECT_SHAKE.md).

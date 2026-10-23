@@ -6,16 +6,8 @@
 namespace th095
 {
 
-// The implicit ScreenEffect default constructor calls this member constructor
-// before RegisterChain immediately clears the whole 0x34-byte allocation.
-// Keeping it force-inlined reproduces the original new-expression machinery.
-__forceinline ScreenEffectTimer::ScreenEffectTimer()
-{
-    current = 0;
-    previous = -999999;
-    subFrame = 0.0f;
-}
-
+// The shared ZunTimer member constructs before the factory's whole-object
+// clear. Pinned VC7.1 preserves that target phase without a second timer type.
 // FUNCTION: TH095 0x00436DD0; TH08 0x0045B8B0 is the source-shape oracle.
 // Authored body: 598 bytes. VC7.1 owns a trailing 32-byte eight-entry switch
 // table, so canonical comparison covers 630 bytes without crediting the table.

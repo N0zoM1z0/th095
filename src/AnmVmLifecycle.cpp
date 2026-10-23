@@ -96,25 +96,6 @@ struct PhotoGameTaskDrawGateView
 };
 
 extern PhotoGameTaskDrawGateView *g_PhotoGameTask;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-extern f32 g_ScreenEffectShakeX;
-extern f32 g_ScreenEffectShakeY;
-#else
-struct AnmSupervisorShakeView
-{
-    u8 unknown000[0x2cc];
-    Float2 gameplayScreenShakeOffset;
-};
-typedef char AnmGameplayShakeAt2CC[
-    (offsetof(AnmSupervisorShakeView, gameplayScreenShakeOffset) == 0x2cc) ? 1 : -1];
-static __forceinline Float2 &AnmGameplayShake()
-{
-    return reinterpret_cast<AnmSupervisorShakeView *>(&g_Supervisor)
-        ->gameplayScreenShakeOffset;
-}
-#define g_ScreenEffectShakeX (AnmGameplayShake().x)
-#define g_ScreenEffectShakeY (AnmGameplayShake().y)
-#endif
 
 #ifndef DIFFBUILD
 #define g_PhotoGameTask \
@@ -240,15 +221,10 @@ void __fastcall AnmManager::DrawLayer5(void *arg)
 // FUNCTION: TH095 0x00444A60.
 void __fastcall AnmManager::DrawLayer6(void *arg)
 {
-    g_ScreenEffectShakeX = 0.0f;
-    g_ScreenEffectShakeY = 0.0f;
-#if defined(TH095_MATCH_EXACT)
-    g_AnmManager->unknown020 = 0;
-    g_AnmManager->unknown024 = 0;
-#else
+    g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.x = 0.0f;
+    g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.y = 0.0f;
     g_AnmManager->screenShakeOffset.x = 0.0f;
     g_AnmManager->screenShakeOffset.y = 0.0f;
-#endif
     reinterpret_cast<AnmManagerDrawLayerView *>(arg)->DrawLayer(6);
 }
 

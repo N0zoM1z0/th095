@@ -18651,3 +18651,79 @@ normal code change or added matching credit. Durable fact: MAIN-059.
 ANM_VIEWPORT.md records the bounded protocol and oracle limits; private commands,
 input/object hashes, target observations and receipts are in .analysis/sem349/.
 Semantic reconstruction and full game ports remain active-incomplete.
+
+### SEM-350 — shared ScreenEffect owner, timer and shake publication
+
+Scope: ScreenEffect's fourteen methods and factory, the configured/applied shake
+pair, and ANM layer-six reset. One 0x34 header/body replaces the complete
+ScreenEffectExact.inl route. Canonical ZunTimer replaces ScreenEffectTimer and
+its cast-based normal Tick call. Shared parameter aliases replace selected
+raw/named declarations. AnmManager now owns one trivial Float2 at +0x20; the
+integer aliases, two shake-parent projections and ScreenEffect's partial
+Supervisor, ANM and photo-task declarations are retired.
+
+Observed: CalcShake/Envelope at 0x004372D0/0x004374B0 write PLAYFIELD x/y at
+0x004C493C/40, Supervisor +0x2CC/+0x2D0. Applications copy the selected element
+to global ANM +0x20/+0x24; DrawInner consumes it before rounding/culling.
+DrawLayer6 at 0x00444A60 clears both pairs before drawing through its argument.
+The task gate uses the distinct standalone publication at 0x004BDEC8 and full
+PhotoGameTaskView flags; mask 0x77 holds without time/RNG/output changes.
+Expiration ticks first and leaves outputs/RNG unchanged. Active callbacks make
+two bounded primary-RNG choices in x/y order, retaining signed zero. The opaque
+0x004C4EAC gate, its inherited Counter name and storage/producer meaning remain
+unresolved. This batch does not infer a counter or new cancellation policy.
+
+Ownership: SupervisorLifecycle owns the full global/configured storage; ANM
+owns the applied pair and vertex buffers; Main owns the standalone task-pointer
+slot while PhotoGameTask owns object lifetime/publication. ScreenEffect owns
+instance parameters/timer, its shared CPP methods and isolated factory retain
+emission, and viewport, Background, ANM draw/lifecycle retain their respective
+roles. Exact and normal use the same bodies/owners in this scope. DrawSquare's
+separate cache-emission source, raw parameter names, inherited Chain priorities,
+other lifecycle views and modern platform products remain debt. The four
+existing authorized x87 blocks are untouched. Contract: SCREEN_EFFECT_SHAKE.md.
+
+Compiler oracle: five bounded controls separately test shared layouts, real
+Supervisor fields, canonical task flags, direct ZunTimer and one body. Each
+passes all 47 affected exact units after reviewed symbol identities. Natural
+ZunTimer construction preserves the complete 598-authored/630-compared factory;
+no emission adapter, selected declaration, padding or new assembly is needed.
+The historical BUILD_MATCHING force-inline prescription is superseded. Its
+reversed type-3/4 prose is corrected: actual callback bindings/table select
+arcade pulse for 3 and full fade-out for 4. Sixteen factory callback bindings
+also agree with independently compared function-unit targets.
+
+Recipe review against a581415: fourteen bindings rebase to Supervisor with
+proved PLAYFIELD addends; fifty-four data/method identities change at unchanged
+physical targets; 353 compiler-private labels retain their family/destination.
+All other recipe fields, profiles, extents, function names and credit stay
+fixed. A cold aggregate passes 698/698 units across all 88 sources. A repeat
+checks the same frozen objects and recipes without refreshing or compiling.
+
+Normal/runtime: the independent cold all-88 product links with zero unresolved
+symbols, PE32 GUI 778,752 bytes; build-local SHA-256
+c15f083f3b0913d304ab35d44be5c42f03f43333e6d19389d0f086d682bf6790.
+Seventeen actual normal units pass strict target comparison: fourteen
+ScreenEffect methods, factory, ANM constructor and layer-six reset. All 928
+normal named roots, 81 private entries and 1,797 recursive code/data/EH graphs
+remain identical, with 971 private spelling changes and zero changed-body
+exceptions. Actual lifetime and viewport clients retain their existing checks.
+The new /OPT:NOREF Win32 client links every normal object and passes 171 actual
+factory/gate/timer/RNG/publication/draw/reset/Chain cases. It covers all nine
+direction pairs, phase and fractional/stopped-time boundaries, visible buffered
+and culled quads, signed zero, separate slots and global/argument ownership,
+neighbor preservation and priority traversal. SDK C bindings replace only the
+external device boundary. It constructs the full task fixture but does not run
+its asset-dependent teardown, full Render, GPU/driver or synchronization.
+
+Final gates: all 329 source/tool/test inputs, 16 non-recipe configs and the
+post-refresh manifest stay frozen. EH audit, public CI's 115 workflow tests and
+thirteen native programs, tracking, progress and local links pass. Protected
+user files are excluded from inputs. Closed selector debt shrinks to
+257 keys / 676 directives; declaration debt to 188 keys / 193 declarations.
+Heavy commands remain serial under half-CPU/768-MiB-high/1-GiB-max controls,
+CPU 1/nice 19; recorded runs peak at 254.16 MiB with zero OOM events.
+
+Result: canonical ScreenEffect source and shake storage/publication without a
+normal code change or added exact credit. Durable fact: MAIN-060. Commands,
+controls, reports and frozen-input receipts: .analysis/sem350/.

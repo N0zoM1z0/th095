@@ -688,11 +688,14 @@ storage merely to claim those lifecycle bodies.
 The exact ScreenEffect lane exposes two distinct levels of source sensitivity.
 Within the ScreenEffect translation unit, `CalcFadeIn` must spell the multiply
 as `timer * 255.0f`; the commuted `255.0f * timer` expression is semantically
-identical but reverses the target x87 load chronology. Keep the timer conversion,
-comparison, and post-increment helpers `__forceinline`, but put their definitions
-in `ScreenEffect.cpp`, not in the shared header. Header-side inline definitions
-consume VC7 translation-unit compiler state and can perturb unrelated compiler-
-private labels.
+identical but reverses the target x87 load chronology. The initial match used
+force-inlined ScreenEffectTimer helpers. SEM-350's pinned controls prove that
+canonical `ZunTimer`, including its ordinary header-defined constructor and
+operators, preserves all fourteen bodies and the factory's member-construction
+phase. ScreenEffect now shares that owner and one source body; the earlier
+custom timer and blanket prohibition on shared header definitions are retired.
+Changes to compiler-private label numbers alone do not prove an emission
+boundary.
 
 A unified declaration-only `ScreenEffect` type still changed only the numeric
 names of twenty-five `$Lxxxxx`/`$failure$xxxxx` relocations owned by the existing
@@ -721,11 +724,13 @@ independently canonical in `AsciiManager::OnUpdate @ 0x00401000`,
 operands whenever the target load order is already proven. Do not generalize it
 unless the load order and target accumulator are independently proven.
 
-`g_ScreenEffectShakeX/Y @ 0x004C493C/0x004C4940` are floats, not generic ANM
-layer-6 counters. The exact layer-6 callback clears them every frame; the exact
-shake callbacks write signed amplitudes to the same addresses. Keep the shared
-global type/name aligned across translation units so relocation manifests do not
-preserve a stale semantic alias.
+The former `g_ScreenEffectShakeX/Y @ 0x004C493C/0x004C4940` identities are
+PLAYFIELD `screenShakeOffset` components at Supervisor `+0x2CC/+0x2D0`.
+ScreenEffect and the layer-six reset now use those real fields in both
+products; no independent shake globals or padded parent views remain in these
+clients. Applied ANM `+0x20/+0x24` is a separate `Float2`, copied by the viewport
+application and independently cleared before layer six. The related storage and
+ordering contract is recorded in `SCREEN_EFFECT_SHAKE.md`.
 
 ScreenEffect also provides a strong translation-unit partition oracle. The
 portable `DrawSquare` source is semantically and instruction-topology complete in
@@ -742,8 +747,9 @@ authored code. `ScreenEffect::RegisterChain` is 598 authored bytes and owns the
 32-byte table immediately following it, so its canonical unit uses
 `compare_size=630`. Relocation review is mandatory even when every comparable
 non-relocation byte matches: the initial TH08 enum port reproduced all such bytes
-but sent switch cases 3/4 to the wrong callback targets. TH095 defines value 3 as
-full fade-out and value 4 as arcade pulse, the inverse of TH08.
+but sent switch cases 3/4 to the wrong callback targets. The canonical TH095
+factory sends value 3 to arcade pulse and value 4 to full fade-out. Its actual
+switch-table destinations, not adjacent-game enum names, establish this domain.
 
 ### Pre-body member construction as authored source ownership
 

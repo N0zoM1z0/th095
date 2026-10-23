@@ -1,11 +1,9 @@
-#ifdef TH095_MATCH_EXACT
-#include "ScreenEffectExact.inl"
-#else
 #define WIN32_LEAN_AND_MEAN
 #include "AnmManager.hpp"
 #include "Chain.hpp"
-#include "GameplayGlobals.hpp"
+#include "diffbuild.hpp"
 #include "Rng.hpp"
+#include "PhotoGameTask.hpp"
 #include "ScreenEffect.hpp"
 #include "ZunTimer.hpp"
 
@@ -17,102 +15,18 @@ namespace th095
 {
 
 DIFFABLE_STATIC(int, g_ScreenEffectCounter);
-#if defined(DIFFBUILD)
-DIFFABLE_STATIC(float, g_ScreenEffectShakeX);
-DIFFABLE_STATIC(float, g_ScreenEffectShakeY);
-#else
-struct ScreenEffectSupervisorShakeView
+
+// Target 0x004BDEC8 is the task's standalone publication slot, distinct
+// from Supervisor::photoGameTask. The full task owner supplies its flag word.
+extern void *g_RuntimeGlobalStateOwner;
+static __forceinline PhotoGameTaskView *ScreenEffectPhotoTask()
 {
-    u8 unknown000[0x2cc];
-    Float2 gameplayScreenShakeOffset;
-};
-typedef char ScreenEffectGameplayShakeAt2CC[
-    (offsetof(ScreenEffectSupervisorShakeView, gameplayScreenShakeOffset) == 0x2cc) ? 1 : -1];
-static __forceinline Float2 &ScreenEffectGameplayShake()
-{
-    return reinterpret_cast<ScreenEffectSupervisorShakeView *>(&g_Supervisor)
-        ->gameplayScreenShakeOffset;
+    return static_cast<PhotoGameTaskView *>(g_RuntimeGlobalStateOwner);
 }
-#define g_ScreenEffectShakeX (ScreenEffectGameplayShake().x)
-#define g_ScreenEffectShakeY (ScreenEffectGameplayShake().y)
-#endif
-
-struct ScreenEffectPhotoGlobalStateView
-{
-    unsigned char unknown000[0xfc];
-    union
-    {
-        unsigned int flags;
-        struct
-        {
-            unsigned int captureActive : 1;
-            unsigned int capturedPhotoActive : 1;
-            unsigned int gameplayLoadActive : 1;
-            unsigned int flag3 : 1;
-#ifdef DIFFBUILD
-            unsigned int flag4 : 1;
-#else
-            unsigned int resultScreenActive : 1;
-#endif
-            unsigned int playerDeathTransitionComplete : 1;
-            unsigned int photoLimitTransitionComplete : 1;
-            unsigned int remaining : 25;
-        };
-    };
-};
-typedef char ScreenEffectPhotoFlagsAtFC[
-    (offsetof(ScreenEffectPhotoGlobalStateView, flags) == 0xfc) ? 1 : -1];
-extern ScreenEffectPhotoGlobalStateView *g_PhotoGlobalState;
-
-#ifndef DIFFBUILD
-#define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(ScreenEffectPhotoGlobalStateView, g_RuntimeGlobalStateOwner)
-#endif
 
 static __forceinline int ScreenEffectEitherFlag(int first, int second)
 {
     return first | second;
-}
-
-__forceinline ScreenEffectTimer::operator int()
-{
-    return this->current;
-}
-
-__forceinline ScreenEffectTimer::operator float()
-{
-    return this->subFrame;
-}
-
-__forceinline void ScreenEffectTimer::operator++(int)
-{
-#ifdef DIFFBUILD
-    this->Tick();
-#else
-    reinterpret_cast<ZunTimer *>(this)->Tick();
-#endif
-}
-
-__forceinline void ScreenEffectTimer::operator=(int value)
-{
-    this->current = value;
-    this->subFrame = (float)value;
-    this->previous = -999999;
-}
-
-__forceinline unsigned int ScreenEffectTimer::operator<(int value)
-{
-    return this->current < value;
-}
-
-__forceinline unsigned int ScreenEffectTimer::operator<=(int value)
-{
-    return this->current <= value;
-}
-
-__forceinline unsigned int ScreenEffectTimer::operator>=(int value)
-{
-    return this->current >= value;
 }
 
 // FUNCTION: TH095 0x00436760; TH08 0x0045B020 is the source-shape oracle.
@@ -280,18 +194,14 @@ int ScreenEffect::CalcShake(ScreenEffect *screenEffect)
     if (g_ScreenEffectCounter != 0)
         return 0;
 
-    if (g_PhotoGlobalState != NULL)
+    if (ScreenEffectPhotoTask() != NULL)
     {
-        if (ScreenEffectEitherFlag(g_PhotoGlobalState->captureActive,
-                                   g_PhotoGlobalState->gameplayLoadActive) != 0 ||
-            g_PhotoGlobalState->capturedPhotoActive != 0 ||
-#ifdef DIFFBUILD
-            g_PhotoGlobalState->flag4 != 0 ||
-#else
-            g_PhotoGlobalState->resultScreenActive != 0 ||
-#endif
-            g_PhotoGlobalState->playerDeathTransitionComplete != 0 ||
-            g_PhotoGlobalState->photoLimitTransitionComplete != 0)
+        if (ScreenEffectEitherFlag(ScreenEffectPhotoTask()->captureActive,
+                                   ScreenEffectPhotoTask()->gameplayLoadActive) != 0 ||
+            ScreenEffectPhotoTask()->capturedPhotoActive != 0 ||
+            ScreenEffectPhotoTask()->resultScreenActive != 0 ||
+            ScreenEffectPhotoTask()->playerDeathTransitionComplete != 0 ||
+            ScreenEffectPhotoTask()->photoLimitTransitionComplete != 0)
             return 1;
     }
     else
@@ -312,26 +222,26 @@ int ScreenEffect::CalcShake(ScreenEffect *screenEffect)
     switch (g_Rng.GetRandomU32InRange(3))
     {
     case 0:
-        g_ScreenEffectShakeX = 0.0f;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.x = 0.0f;
         break;
     case 1:
-        g_ScreenEffectShakeX = shakeAmount;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.x = shakeAmount;
         break;
     case 2:
-        g_ScreenEffectShakeX = -shakeAmount;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.x = -shakeAmount;
         break;
     }
 
     switch (g_Rng.GetRandomU32InRange(3))
     {
     case 0:
-        g_ScreenEffectShakeY = 0.0f;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.y = 0.0f;
         break;
     case 1:
-        g_ScreenEffectShakeY = shakeAmount;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.y = shakeAmount;
         break;
     case 2:
-        g_ScreenEffectShakeY = -shakeAmount;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.y = -shakeAmount;
         break;
     }
     return 1;
@@ -345,18 +255,14 @@ int ScreenEffect::CalcShakeEnvelope(ScreenEffect *screenEffect)
     if (g_ScreenEffectCounter != 0)
         return 0;
 
-    if (g_PhotoGlobalState != NULL)
+    if (ScreenEffectPhotoTask() != NULL)
     {
-        if (ScreenEffectEitherFlag(g_PhotoGlobalState->captureActive,
-                                   g_PhotoGlobalState->gameplayLoadActive) != 0 ||
-            g_PhotoGlobalState->capturedPhotoActive != 0 ||
-#ifdef DIFFBUILD
-            g_PhotoGlobalState->flag4 != 0 ||
-#else
-            g_PhotoGlobalState->resultScreenActive != 0 ||
-#endif
-            g_PhotoGlobalState->playerDeathTransitionComplete != 0 ||
-            g_PhotoGlobalState->photoLimitTransitionComplete != 0)
+        if (ScreenEffectEitherFlag(ScreenEffectPhotoTask()->captureActive,
+                                   ScreenEffectPhotoTask()->gameplayLoadActive) != 0 ||
+            ScreenEffectPhotoTask()->capturedPhotoActive != 0 ||
+            ScreenEffectPhotoTask()->resultScreenActive != 0 ||
+            ScreenEffectPhotoTask()->playerDeathTransitionComplete != 0 ||
+            ScreenEffectPhotoTask()->photoLimitTransitionComplete != 0)
             return 1;
     }
     else
@@ -399,26 +305,26 @@ int ScreenEffect::CalcShakeEnvelope(ScreenEffect *screenEffect)
     switch (g_Rng.GetRandomU32InRange(3))
     {
     case 0:
-        g_ScreenEffectShakeX = 0.0f;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.x = 0.0f;
         break;
     case 1:
-        g_ScreenEffectShakeX = shakeAmount;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.x = shakeAmount;
         break;
     case 2:
-        g_ScreenEffectShakeX = -shakeAmount;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.x = -shakeAmount;
         break;
     }
 
     switch (g_Rng.GetRandomU32InRange(3))
     {
     case 0:
-        g_ScreenEffectShakeY = 0.0f;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.y = 0.0f;
         break;
     case 1:
-        g_ScreenEffectShakeY = shakeAmount;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.y = shakeAmount;
         break;
     case 2:
-        g_ScreenEffectShakeY = -shakeAmount;
+        g_Supervisor.viewportConfigurations[TH095_SUPERVISOR_VIEWPORT_PLAYFIELD].screenShakeOffset.y = -shakeAmount;
         break;
     }
     return 1;
@@ -427,7 +333,7 @@ int ScreenEffect::CalcShakeEnvelope(ScreenEffect *screenEffect)
 // FUNCTION: TH095 0x00437700.
 int ScreenEffect::InitializeTimer(ScreenEffect *screenEffect)
 {
-    ScreenEffectTimer *timer = &screenEffect->timer;
+    ZunTimer *timer = &screenEffect->timer;
     timer->current = 0;
     timer->subFrame = 0.0f;
     timer->previous = -999999;
@@ -446,5 +352,3 @@ int ScreenEffect::DeleteScreenEffect(ScreenEffect *screenEffect)
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

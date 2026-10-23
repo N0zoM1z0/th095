@@ -23,8 +23,8 @@
 1	src/AnmText.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 2	src/AnmVmId.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 3	src/AnmVmId.cpp	#if defined(TH095_MATCH_EXACT)
-6	src/AnmVmLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-5	src/AnmVmLifecycle.cpp	#if defined(TH095_MATCH_EXACT)
+5	src/AnmVmLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+4	src/AnmVmLifecycle.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/AnmVmLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/AnmVmLifecycle.cpp	#ifndef DIFFBUILD
 1	src/AnmVmLifecycle.cpp	#ifndef TH095_MATCH_EXACT
@@ -251,12 +251,6 @@
 1	src/ScoreLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ScoreLoad.cpp	#if !defined(TH095_MATCH_EXACT)
 11	src/ScoreLoad.cpp	#if defined(TH095_MATCH_EXACT)
-1	src/ScreenEffect.cpp	#if defined(DIFFBUILD)
-4	src/ScreenEffect.cpp	#ifdef DIFFBUILD
-1	src/ScreenEffect.cpp	#ifdef TH095_MATCH_EXACT
-1	src/ScreenEffect.cpp	#ifndef DIFFBUILD
-1	src/ScreenEffect.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-1	src/ScreenEffect.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/ScreenEffectDraw.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SoundPlayer.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/SoundPlayer.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
