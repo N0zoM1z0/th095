@@ -10,6 +10,7 @@
 #include <windows.h>
 
 #include <stddef.h>
+#include "AnmVertex.hpp"
 #include "Chain.hpp"
 #include "GameWindow.hpp"
 #include "GameErrorContext.hpp"
@@ -41,20 +42,6 @@ struct DummyMidiTimer;
 
 // Supervisor storage/API is declared once in SupervisorRuntime.hpp.
 
-struct VertexTex1DiffuseXyzrhw
-{
-    VertexTex1DiffuseXyzrhw()
-    {
-    }
-
-    f32 x;
-    f32 y;
-    f32 z;
-    f32 w;
-    u32 diffuse;
-    f32 u;
-    f32 v;
-};
 
 typedef char MainSoundPlayerBgmVolumeAt52C4[(offsetof(SoundPlayer, bgmVolume) == 0x52c4) ? 1 : -1];
 

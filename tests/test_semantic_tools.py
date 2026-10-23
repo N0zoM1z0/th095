@@ -714,6 +714,32 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("struct SupervisorViewportLifecycle", lifecycle)
         self.assertNotIn("struct SupervisorTimerLifecycle", lifecycle)
 
+    def test_anm_batch_guard_accepts_one_shared_wire_and_flags(self) -> None:
+        GUARD.check_anm_batch_vertices()
+
+    def test_anm_batch_guard_rejects_layout_copy_and_profile_regressions(self) -> None:
+        sources = {name: (ROOT / "src" / name).read_text(encoding="utf-8") for name in (
+            "AnmVertex.hpp", "Main.hpp", "AnmManager.hpp", "AnmManager.cpp", "AnmDrawCore.cpp")}
+        mutations = [
+            ("AnmVertex.hpp", "ZunColor diffuse;", "u32 diffuse;"),
+            ("AnmVertex.hpp", "sizeof(AnmVertex) == 0x1c", "sizeof(AnmVertex) == 0x14"),
+            ("AnmVertex.hpp", "u8 b;", "u8 blue;"),
+            ("AnmVertex.hpp", "#pragma once", "#pragma once\n#ifdef TH095_MATCH_EXACT\n#endif"),
+            ("Main.hpp", '#include "AnmVertex.hpp"', "struct AnmVertex { float x; };"),
+            ("AnmManager.hpp", "AnmVertex vertexBuffer[0x20000]", "AnmQuadVertex vertexBuffer[0x20000]"),
+            ("AnmManager.cpp", "D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1", "D3DFVF_XYZ | D3DFVF_TEX1"),
+            ("AnmManager.cpp", "sizeof(AnmVertex));", "sizeof(AnmQuadVertex));"),
+            ("AnmDrawCore.cpp", "this->vertexBufferEndPtr[3] = vertices[1];", "this->vertexBufferEndPtr[3] = vertices[0];"),
+            ("AnmDrawCore.cpp", "this->vertexBufferEndPtr += 6;", "this->vertexBufferEndPtr += 4;"),
+            ("AnmDrawCore.cpp", "ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE = 2", "ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE = 4"),
+        ]
+        for name, before, after in mutations:
+            changed = sources[name].replace(before, after, 1)
+            self.assertNotEqual(changed, sources[name])
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_anm_batch_vertices({name: changed})
+
     def test_anm_quad_guard_accepts_distinct_typed_streams(self) -> None:
         GUARD.check_anm_quad_vertices()
 

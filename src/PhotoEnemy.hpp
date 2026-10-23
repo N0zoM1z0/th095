@@ -204,7 +204,7 @@ struct PhotoEnemyView
     u8 unknown2ca8[4];
     EnemyChildEclBlock *childEclBlocks[16]; // +0x2cac
     PhotoEnemyTrailSampleView trailSamples[96]; // +0x2cec
-    VertexTex1DiffuseXyzrhw trailVertices[194]; // +0x376c
+    AnmVertex trailVertices[194]; // +0x376c
     u8 unknown4ca4[8];
     ZunTimer timer4cac;                     // +0x4cac
     u8 unknown4cb8[4];

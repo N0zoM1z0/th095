@@ -258,6 +258,14 @@ while global-versus-receiver buffer binding and DrawMode7's U-as-W read remain
 explicit target behavior. The copy's unused word and rendering role stay
 unknown; see [the vertex contract](ANM_QUAD_VERTICES.md).
 
+The 28-byte ANM batch/generated/trail wire likewise has one Float3/RHW/BGRA/UV
+owner in both products. The legacy ECL declaration imports this complete wire
+while retaining its separately tracked parent/global-color ABI. The DrawInner
+flags have one shared enum; [the batch contract](ANM_VERTEX_BATCH.md) separates
+packet ownership from unbounded enqueue, advancing flush cursors, explicit
+rewind and cache/API timing. This does not accept general capacity safety or
+a native renderer.
+
 ScreenEffect now has one header/body and uses canonical ZunTimer, full
 Supervisor/task owners and typed configured/applied shake fields. Minimal
 pinned controls retire the custom timer and complete exact-body route without

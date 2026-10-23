@@ -5,23 +5,12 @@
 namespace th095
 {
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_ANM_DRAW_INNER_DEFAULT 0
-#define TH095_ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL 1
-#define TH095_ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE 2
-#else
 enum AnmDrawInnerFlags
 {
     ANM_DRAW_INNER_DEFAULT = 0,
     ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL = 1,
     ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE = 2,
 };
-#define TH095_ANM_DRAW_INNER_DEFAULT ANM_DRAW_INNER_DEFAULT
-#define TH095_ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL \
-    ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL
-#define TH095_ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE \
-    ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE
-#endif
 
 struct AnmSpriteDimensions
 {
@@ -216,16 +205,16 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
     f32 triangleY1;
     f32 triangleY2;
 
-    g_AnmTexturedVertices[0].x += this->screenShakeOffset.x;
-    g_AnmTexturedVertices[0].y += this->screenShakeOffset.y;
-    g_AnmTexturedVertices[1].x += this->screenShakeOffset.x;
-    g_AnmTexturedVertices[1].y += this->screenShakeOffset.y;
-    g_AnmTexturedVertices[2].x += this->screenShakeOffset.x;
-    g_AnmTexturedVertices[2].y += this->screenShakeOffset.y;
-    g_AnmTexturedVertices[3].x += this->screenShakeOffset.x;
-    g_AnmTexturedVertices[3].y += this->screenShakeOffset.y;
+    g_AnmTexturedVertices[0].position.x += this->screenShakeOffset.x;
+    g_AnmTexturedVertices[0].position.y += this->screenShakeOffset.y;
+    g_AnmTexturedVertices[1].position.x += this->screenShakeOffset.x;
+    g_AnmTexturedVertices[1].position.y += this->screenShakeOffset.y;
+    g_AnmTexturedVertices[2].position.x += this->screenShakeOffset.x;
+    g_AnmTexturedVertices[2].position.y += this->screenShakeOffset.y;
+    g_AnmTexturedVertices[3].position.x += this->screenShakeOffset.x;
+    g_AnmTexturedVertices[3].position.y += this->screenShakeOffset.y;
 
-    if ((flags & TH095_ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL) != 0)
+    if ((flags & ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL) != 0)
     {
 #if defined(_MSC_VER) && defined(_M_IX86)
         // Reconstruction decision: this is a deliberately narrow inline-x87
@@ -241,94 +230,94 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
         // Non-MSVC/non-x86 builds use the equivalent C++ path below.
         __asm
         {
-            fld g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].x
+            fld g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].position.x
             frndint
             fsub g_AnmHalfPixel
-            fld g_AnmTexturedVertices[1 * TYPE g_AnmTexturedVertices].x
+            fld g_AnmTexturedVertices[1 * TYPE g_AnmTexturedVertices].position.x
             frndint
             fsub g_AnmHalfPixel
-            fld g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].y
+            fld g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].position.y
             frndint
             fsub g_AnmHalfPixel
-            fld g_AnmTexturedVertices[2 * TYPE g_AnmTexturedVertices].y
+            fld g_AnmTexturedVertices[2 * TYPE g_AnmTexturedVertices].position.y
             frndint
             fsub g_AnmHalfPixel
-            fst g_AnmTexturedVertices[2 * TYPE g_AnmTexturedVertices].y
-            fstp g_AnmTexturedVertices[3 * TYPE g_AnmTexturedVertices].y
-            fst g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].y
-            fstp g_AnmTexturedVertices[1 * TYPE g_AnmTexturedVertices].y
-            fst g_AnmTexturedVertices[1 * TYPE g_AnmTexturedVertices].x
-            fstp g_AnmTexturedVertices[3 * TYPE g_AnmTexturedVertices].x
-            fst g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].x
-            fstp g_AnmTexturedVertices[2 * TYPE g_AnmTexturedVertices].x
+            fst g_AnmTexturedVertices[2 * TYPE g_AnmTexturedVertices].position.y
+            fstp g_AnmTexturedVertices[3 * TYPE g_AnmTexturedVertices].position.y
+            fst g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].position.y
+            fstp g_AnmTexturedVertices[1 * TYPE g_AnmTexturedVertices].position.y
+            fst g_AnmTexturedVertices[1 * TYPE g_AnmTexturedVertices].position.x
+            fstp g_AnmTexturedVertices[3 * TYPE g_AnmTexturedVertices].position.x
+            fst g_AnmTexturedVertices[0 * TYPE g_AnmTexturedVertices].position.x
+            fstp g_AnmTexturedVertices[2 * TYPE g_AnmTexturedVertices].position.x
         }
 #else
         triangleX1 = RoundAnmCoordinateToNearestEven(
-                         g_AnmTexturedVertices[0].x) - g_AnmHalfPixel;
+                         g_AnmTexturedVertices[0].position.x) - g_AnmHalfPixel;
         triangleX2 = RoundAnmCoordinateToNearestEven(
-                         g_AnmTexturedVertices[1].x) - g_AnmHalfPixel;
+                         g_AnmTexturedVertices[1].position.x) - g_AnmHalfPixel;
         triangleY1 = RoundAnmCoordinateToNearestEven(
-                         g_AnmTexturedVertices[0].y) - g_AnmHalfPixel;
+                         g_AnmTexturedVertices[0].position.y) - g_AnmHalfPixel;
         triangleY2 = RoundAnmCoordinateToNearestEven(
-                         g_AnmTexturedVertices[2].y) - g_AnmHalfPixel;
-        g_AnmTexturedVertices[2].y =
-            g_AnmTexturedVertices[3].y = triangleY2;
-        g_AnmTexturedVertices[0].y =
-            g_AnmTexturedVertices[1].y = triangleY1;
-        g_AnmTexturedVertices[1].x =
-            g_AnmTexturedVertices[3].x = triangleX2;
-        g_AnmTexturedVertices[0].x =
-            g_AnmTexturedVertices[2].x = triangleX1;
+                         g_AnmTexturedVertices[2].position.y) - g_AnmHalfPixel;
+        g_AnmTexturedVertices[2].position.y =
+            g_AnmTexturedVertices[3].position.y = triangleY2;
+        g_AnmTexturedVertices[0].position.y =
+            g_AnmTexturedVertices[1].position.y = triangleY1;
+        g_AnmTexturedVertices[1].position.x =
+            g_AnmTexturedVertices[3].position.x = triangleX2;
+        g_AnmTexturedVertices[0].position.x =
+            g_AnmTexturedVertices[2].position.x = triangleX1;
 #endif
     }
 
-    g_AnmTexturedVertices[0].u = g_AnmTexturedVertices[2].u =
+    g_AnmTexturedVertices[0].uv.x = g_AnmTexturedVertices[2].uv.x =
         vm->loadedSprite->uvStart.x + vm->uvScrollPos.x;
-    g_AnmTexturedVertices[1].u = g_AnmTexturedVertices[3].u =
+    g_AnmTexturedVertices[1].uv.x = g_AnmTexturedVertices[3].uv.x =
         vm->loadedSprite->uvEnd.x + vm->uvScrollPos.x;
-    g_AnmTexturedVertices[0].v = g_AnmTexturedVertices[1].v =
+    g_AnmTexturedVertices[0].uv.y = g_AnmTexturedVertices[1].uv.y =
         vm->loadedSprite->uvStart.y + vm->uvScrollPos.y;
-    g_AnmTexturedVertices[2].v = g_AnmTexturedVertices[3].v =
+    g_AnmTexturedVertices[2].uv.y = g_AnmTexturedVertices[3].uv.y =
         vm->loadedSprite->uvEnd.y + vm->uvScrollPos.y;
 
-    triangleX1 = g_AnmTexturedVertices[0].x > g_AnmTexturedVertices[1].x
-                     ? g_AnmTexturedVertices[0].x
-                     : g_AnmTexturedVertices[1].x;
-    triangleX1 = g_AnmTexturedVertices[2].x > triangleX1
-                     ? g_AnmTexturedVertices[2].x
+    triangleX1 = g_AnmTexturedVertices[0].position.x > g_AnmTexturedVertices[1].position.x
+                     ? g_AnmTexturedVertices[0].position.x
+                     : g_AnmTexturedVertices[1].position.x;
+    triangleX1 = g_AnmTexturedVertices[2].position.x > triangleX1
+                     ? g_AnmTexturedVertices[2].position.x
                      : triangleX1;
-    triangleX1 = g_AnmTexturedVertices[3].x > triangleX1
-                     ? g_AnmTexturedVertices[3].x
+    triangleX1 = g_AnmTexturedVertices[3].position.x > triangleX1
+                     ? g_AnmTexturedVertices[3].position.x
                      : triangleX1;
 
-    triangleY1 = g_AnmTexturedVertices[0].y > g_AnmTexturedVertices[1].y
-                     ? g_AnmTexturedVertices[0].y
-                     : g_AnmTexturedVertices[1].y;
-    triangleY1 = g_AnmTexturedVertices[2].y > triangleY1
-                     ? g_AnmTexturedVertices[2].y
+    triangleY1 = g_AnmTexturedVertices[0].position.y > g_AnmTexturedVertices[1].position.y
+                     ? g_AnmTexturedVertices[0].position.y
+                     : g_AnmTexturedVertices[1].position.y;
+    triangleY1 = g_AnmTexturedVertices[2].position.y > triangleY1
+                     ? g_AnmTexturedVertices[2].position.y
                      : triangleY1;
-    triangleY1 = g_AnmTexturedVertices[3].y > triangleY1
-                     ? g_AnmTexturedVertices[3].y
+    triangleY1 = g_AnmTexturedVertices[3].position.y > triangleY1
+                     ? g_AnmTexturedVertices[3].position.y
                      : triangleY1;
 
-    triangleX2 = g_AnmTexturedVertices[0].x < g_AnmTexturedVertices[1].x
-                     ? g_AnmTexturedVertices[0].x
-                     : g_AnmTexturedVertices[1].x;
-    triangleX2 = g_AnmTexturedVertices[2].x < triangleX2
-                     ? g_AnmTexturedVertices[2].x
+    triangleX2 = g_AnmTexturedVertices[0].position.x < g_AnmTexturedVertices[1].position.x
+                     ? g_AnmTexturedVertices[0].position.x
+                     : g_AnmTexturedVertices[1].position.x;
+    triangleX2 = g_AnmTexturedVertices[2].position.x < triangleX2
+                     ? g_AnmTexturedVertices[2].position.x
                      : triangleX2;
-    triangleX2 = g_AnmTexturedVertices[3].x < triangleX2
-                     ? g_AnmTexturedVertices[3].x
+    triangleX2 = g_AnmTexturedVertices[3].position.x < triangleX2
+                     ? g_AnmTexturedVertices[3].position.x
                      : triangleX2;
 
-    triangleY2 = g_AnmTexturedVertices[0].y < g_AnmTexturedVertices[1].y
-                     ? g_AnmTexturedVertices[0].y
-                     : g_AnmTexturedVertices[1].y;
-    triangleY2 = g_AnmTexturedVertices[2].y < triangleY2
-                     ? g_AnmTexturedVertices[2].y
+    triangleY2 = g_AnmTexturedVertices[0].position.y < g_AnmTexturedVertices[1].position.y
+                     ? g_AnmTexturedVertices[0].position.y
+                     : g_AnmTexturedVertices[1].position.y;
+    triangleY2 = g_AnmTexturedVertices[2].position.y < triangleY2
+                     ? g_AnmTexturedVertices[2].position.y
                      : triangleY2;
-    triangleY2 = g_AnmTexturedVertices[3].y < triangleY2
-                     ? g_AnmTexturedVertices[3].y
+    triangleY2 = g_AnmTexturedVertices[3].position.y < triangleY2
+                     ? g_AnmTexturedVertices[3].position.y
                      : triangleY2;
 
     if (triangleX1 < g_Supervisor.currentViewportConfiguration->viewport.X ||
@@ -352,7 +341,7 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
         this->currentVertexShader = 1;
     }
 
-    if ((flags & TH095_ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE) == 0)
+    if ((flags & ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE) == 0)
     {
         soundIndexLocal01.color =
             vm->useSecondaryColor ? vm->color2.color : vm->color1.color;
@@ -368,10 +357,10 @@ ZunResult AnmManager::DrawInner(AnmVm *vm, i32 flags)
                 MixAnmColor(soundIndexLocal01.a, this->color.a);
         }
 
-        g_AnmTexturedVertices[0].diffuse = soundIndexLocal01.color;
-        g_AnmTexturedVertices[1].diffuse = soundIndexLocal01.color;
-        g_AnmTexturedVertices[2].diffuse = soundIndexLocal01.color;
-        g_AnmTexturedVertices[3].diffuse = soundIndexLocal01.color;
+        g_AnmTexturedVertices[0].diffuse.color = soundIndexLocal01.color;
+        g_AnmTexturedVertices[1].diffuse.color = soundIndexLocal01.color;
+        g_AnmTexturedVertices[2].diffuse.color = soundIndexLocal01.color;
+        g_AnmTexturedVertices[3].diffuse.color = soundIndexLocal01.color;
     }
 
     this->SetRenderStateForVm(vm);
@@ -395,22 +384,22 @@ ZunResult AnmManager::DrawNoRotation(AnmVm *vm)
     switch (vm->renderStateA)
     {
     case 1:
-        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+        g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             vm->position.x + vm->positionOffset.x;
-        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
+        g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
             vm->position.x + vm->positionOffset.x + sprite.width;
         break;
     case 0:
-        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+        g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             (f32)floor(vm->position.x + vm->positionOffset.x -
                        sprite.halfWidth);
-        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
-            g_AnmTexturedVertices[0].x + sprite.width;
+        g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
+            g_AnmTexturedVertices[0].position.x + sprite.width;
         break;
     case 2:
-        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+        g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             vm->position.x + vm->positionOffset.x - sprite.width;
-        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
+        g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
             vm->position.x + vm->positionOffset.x;
         break;
     }
@@ -418,30 +407,30 @@ ZunResult AnmManager::DrawNoRotation(AnmVm *vm)
     switch (vm->renderStateB)
     {
     case 1:
-        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+        g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             vm->position.y + vm->positionOffset.y;
-        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
+        g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
             vm->position.y + vm->positionOffset.y + sprite.height;
         break;
     case 0:
-        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+        g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             (f32)floor(vm->position.y + vm->positionOffset.y -
                        sprite.halfHeight);
-        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
-            g_AnmTexturedVertices[0].y + sprite.height;
+        g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
+            g_AnmTexturedVertices[0].position.y + sprite.height;
         break;
     case 2:
-        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+        g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             vm->position.y + vm->positionOffset.y - sprite.height;
-        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
+        g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
             vm->position.y + vm->positionOffset.y;
         break;
     }
 
-    g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
-        g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
+    g_AnmTexturedVertices[0].position.z = g_AnmTexturedVertices[1].position.z =
+        g_AnmTexturedVertices[2].position.z = g_AnmTexturedVertices[3].position.z =
             vm->position.z + vm->positionOffset.z;
-    return this->DrawInner(vm, TH095_ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL);
+    return this->DrawInner(vm, ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL);
 }
 
 // FUNCTION: TH095 0x0043F760.
@@ -456,21 +445,21 @@ ZunResult AnmManager::DrawNoRotationNoRound(AnmVm *vm)
     switch (vm->renderStateA)
     {
     case 1:
-        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+        g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             vm->position.x + vm->positionOffset.x;
-        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
+        g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
             vm->position.x + vm->positionOffset.x + sprite.width;
         break;
     case 0:
-        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+        g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             vm->position.x + vm->positionOffset.x - sprite.halfWidth;
-        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
-            g_AnmTexturedVertices[0].x + sprite.width;
+        g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
+            g_AnmTexturedVertices[0].position.x + sprite.width;
         break;
     case 2:
-        g_AnmTexturedVertices[0].x = g_AnmTexturedVertices[2].x =
+        g_AnmTexturedVertices[0].position.x = g_AnmTexturedVertices[2].position.x =
             vm->position.x + vm->positionOffset.x - sprite.width;
-        g_AnmTexturedVertices[1].x = g_AnmTexturedVertices[3].x =
+        g_AnmTexturedVertices[1].position.x = g_AnmTexturedVertices[3].position.x =
             vm->position.x + vm->positionOffset.x;
         break;
     }
@@ -478,38 +467,38 @@ ZunResult AnmManager::DrawNoRotationNoRound(AnmVm *vm)
     switch (vm->renderStateB)
     {
     case 1:
-        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+        g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             vm->position.y + vm->positionOffset.y;
-        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
+        g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
             vm->position.y + vm->positionOffset.y + sprite.height;
         break;
     case 0:
-        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+        g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             vm->position.y + vm->positionOffset.y - sprite.halfHeight;
-        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
-            g_AnmTexturedVertices[0].y + sprite.height;
+        g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
+            g_AnmTexturedVertices[0].position.y + sprite.height;
         break;
     case 2:
-        g_AnmTexturedVertices[0].y = g_AnmTexturedVertices[1].y =
+        g_AnmTexturedVertices[0].position.y = g_AnmTexturedVertices[1].position.y =
             vm->position.y + vm->positionOffset.y - sprite.height;
-        g_AnmTexturedVertices[2].y = g_AnmTexturedVertices[3].y =
+        g_AnmTexturedVertices[2].position.y = g_AnmTexturedVertices[3].position.y =
             vm->position.y + vm->positionOffset.y;
         break;
     }
 
-    g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
-        g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
+    g_AnmTexturedVertices[0].position.z = g_AnmTexturedVertices[1].position.z =
+        g_AnmTexturedVertices[2].position.z = g_AnmTexturedVertices[3].position.z =
             vm->position.z + vm->positionOffset.z;
-    return this->DrawInner(vm, TH095_ANM_DRAW_INNER_DEFAULT);
+    return this->DrawInner(vm, ANM_DRAW_INNER_DEFAULT);
 }
 
 // FUNCTION: TH095 0x0043FA00.
-void AnmManager::TranslateRotation(VertexTex1DiffuseXyzrhw *vertex, f32 x,
+void AnmManager::TranslateRotation(AnmVertex *vertex, f32 x,
                                    f32 y, f32 sine, f32 cosine, f32 xOffset,
                                    f32 yOffset)
 {
-    vertex->x = x * cosine - y * sine + xOffset;
-    vertex->y = x * sine + y * cosine + yOffset;
+    vertex->position.x = x * cosine - y * sine + xOffset;
+    vertex->position.y = x * sine + y * cosine + yOffset;
 }
 
 // FUNCTION: TH095 0x0043FA40.
@@ -585,10 +574,10 @@ ZunResult AnmManager::Draw2D(AnmVm *vm)
                                 sprite.xOffset, sprite.yOffset);
     }
 
-    g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
-        g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
+    g_AnmTexturedVertices[0].position.z = g_AnmTexturedVertices[1].position.z =
+        g_AnmTexturedVertices[2].position.z = g_AnmTexturedVertices[3].position.z =
             vm->position.z;
-    return this->DrawInner(vm, TH095_ANM_DRAW_INNER_DEFAULT);
+    return this->DrawInner(vm, ANM_DRAW_INNER_DEFAULT);
 }
 
 // TH08's source orders the camera-facing locals shallow-to-deep as half width,
@@ -741,8 +730,8 @@ ZunResult AnmManager::ProjectCameraFacingQuad(AnmVm *vm)
             cameraShallow.xOffset, cameraShallow.yOffset);
     }
 
-    g_AnmTexturedVertices[0].z = g_AnmTexturedVertices[1].z =
-        g_AnmTexturedVertices[2].z = g_AnmTexturedVertices[3].z =
+    g_AnmTexturedVertices[0].position.z = g_AnmTexturedVertices[1].position.z =
+        g_AnmTexturedVertices[2].position.z = g_AnmTexturedVertices[3].position.z =
             vm->position.z;
     return ZUN_SUCCESS;
 }
@@ -756,7 +745,7 @@ ZunResult AnmManager::DrawCameraFacingQuad(AnmVm *vm)
 {
     if (this->ProjectCameraFacingQuad(vm) != ZUN_SUCCESS)
         return ZUN_ERROR;
-    return this->DrawInner(vm, TH095_ANM_DRAW_INNER_DEFAULT);
+    return this->DrawInner(vm, ANM_DRAW_INNER_DEFAULT);
 }
 
 // FUNCTION: TH095 0x00440120.
@@ -792,37 +781,33 @@ ZunResult AnmManager::DrawMode6(AnmVm *vm)
         if (draw.distance >= 1.0f)
             return ZUN_ERROR;
 
-        reinterpret_cast<ZunColor *>(
-            &g_AnmTexturedVertices[0].diffuse)->b =
+        g_AnmTexturedVertices[0].diffuse.b =
             draw.color.b -
             (u8)((draw.color.b -
                   g_Background->photoBlendCurrent.color.b) * draw.distance);
-        reinterpret_cast<ZunColor *>(
-            &g_AnmTexturedVertices[0].diffuse)->g =
+        g_AnmTexturedVertices[0].diffuse.g =
             draw.color.g -
             (u8)((draw.color.g -
                   g_Background->photoBlendCurrent.color.g) * draw.distance);
-        reinterpret_cast<ZunColor *>(
-            &g_AnmTexturedVertices[0].diffuse)->r =
+        g_AnmTexturedVertices[0].diffuse.r =
             draw.color.r -
             (u8)((draw.color.r -
                   g_Background->photoBlendCurrent.color.r) * draw.distance);
-        reinterpret_cast<ZunColor *>(
-            &g_AnmTexturedVertices[0].diffuse)->a =
+        g_AnmTexturedVertices[0].diffuse.a =
             (u8)(draw.color.a * (1.0f - draw.distance));
     }
     else
     {
-        g_AnmTexturedVertices[0].diffuse = draw.color.color;
+        g_AnmTexturedVertices[0].diffuse.color = draw.color.color;
     }
 
-    g_AnmTexturedVertices[1].diffuse =
-        g_AnmTexturedVertices[0].diffuse;
-    g_AnmTexturedVertices[2].diffuse =
-        g_AnmTexturedVertices[0].diffuse;
-    g_AnmTexturedVertices[3].diffuse =
-        g_AnmTexturedVertices[0].diffuse;
-    return this->DrawInner(vm, TH095_ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE);
+    g_AnmTexturedVertices[1].diffuse.color =
+        g_AnmTexturedVertices[0].diffuse.color;
+    g_AnmTexturedVertices[2].diffuse.color =
+        g_AnmTexturedVertices[0].diffuse.color;
+    g_AnmTexturedVertices[3].diffuse.color =
+        g_AnmTexturedVertices[0].diffuse.color;
+    return this->DrawInner(vm, ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE);
 }
 
 // FUNCTION: TH095 0x00440440.
@@ -949,9 +934,9 @@ ZunResult AnmManager::DrawProjected3DQuad(AnmVm *vm)
     ZunResult result;
 
     this->Project3DQuad(vm);
-    result = this->DrawInner(vm, TH095_ANM_DRAW_INNER_DEFAULT);
-    g_AnmTexturedVertices[0].w = g_AnmTexturedVertices[1].w =
-        g_AnmTexturedVertices[2].w = g_AnmTexturedVertices[3].w = 1.0f;
+    result = this->DrawInner(vm, ANM_DRAW_INNER_DEFAULT);
+    g_AnmTexturedVertices[0].rhw = g_AnmTexturedVertices[1].rhw =
+        g_AnmTexturedVertices[2].rhw = g_AnmTexturedVertices[3].rhw = 1.0f;
     return result;
 }
 
@@ -994,44 +979,39 @@ ZunResult AnmManager::DrawMode7(AnmVm *vm)
                  draw.distance) / draw.distanceRange;
             if (draw.distance >= 1.0f)
             {
-                g_AnmTexturedVertices[draw.i].diffuse =
+                g_AnmTexturedVertices[draw.i].diffuse.color =
                     g_Background->photoBlendCurrent.color.color;
-                reinterpret_cast<ZunColor *>(
-                    &g_AnmTexturedVertices[draw.i].diffuse)->a = draw.color.a;
+                g_AnmTexturedVertices[draw.i].diffuse.a = draw.color.a;
             }
             else
             {
-                reinterpret_cast<ZunColor *>(
-                    &g_AnmTexturedVertices[draw.i].diffuse)->b =
+                g_AnmTexturedVertices[draw.i].diffuse.b =
                     draw.color.b -
                     (u8)((draw.color.b -
                           g_Background->photoBlendCurrent.color.b) *
                          draw.distance);
-                reinterpret_cast<ZunColor *>(
-                    &g_AnmTexturedVertices[draw.i].diffuse)->g =
+                g_AnmTexturedVertices[draw.i].diffuse.g =
                     draw.color.g -
                     (u8)((draw.color.g -
                           g_Background->photoBlendCurrent.color.g) *
                          draw.distance);
-                reinterpret_cast<ZunColor *>(
-                    &g_AnmTexturedVertices[draw.i].diffuse)->r =
+                g_AnmTexturedVertices[draw.i].diffuse.r =
                     draw.color.r -
                     (u8)((draw.color.r -
                           g_Background->photoBlendCurrent.color.r) *
                          draw.distance);
-                reinterpret_cast<ZunColor *>(
-                    &g_AnmTexturedVertices[draw.i].diffuse)->a = draw.color.a;
+                g_AnmTexturedVertices[draw.i].diffuse.a = draw.color.a;
             }
         }
         else
         {
-            g_AnmTexturedVertices[draw.i].diffuse = draw.color.color;
+            g_AnmTexturedVertices[draw.i].diffuse.color = draw.color.color;
         }
     }
 
-    draw.result = this->DrawInner(vm, TH095_ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE);
-    g_AnmTexturedVertices[0].w = g_AnmTexturedVertices[1].w =
-        g_AnmTexturedVertices[2].w = g_AnmTexturedVertices[3].w = 1.0f;
+    draw.result = this->DrawInner(vm, ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE);
+    g_AnmTexturedVertices[0].rhw = g_AnmTexturedVertices[1].rhw =
+        g_AnmTexturedVertices[2].rhw = g_AnmTexturedVertices[3].rhw = 1.0f;
     return draw.result;
 }
 
@@ -1291,7 +1271,7 @@ ZunResult AnmManager::DrawTriangleFan(
 
 // FUNCTION: TH095 0x0043F3C0.
 ZunResult AnmManager::AddSpriteToDrawBuffer(
-    VertexTex1DiffuseXyzrhw *vertices)
+    AnmVertex *vertices)
 {
     this->vertexBufferEndPtr[0] = vertices[0];
     this->vertexBufferEndPtr[1] = vertices[1];

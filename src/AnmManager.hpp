@@ -150,28 +150,6 @@ enum AnmOpcode
     ANM_OP_ALTERNATE_RNG = 87
 };
 
-union ZunColor
-{
-    u32 color;
-    struct
-    {
-        u8 b;
-        u8 g;
-        u8 r;
-        u8 a;
-    };
-};
-
-struct AnmVertex
-{
-    Float3 position;
-    f32 rhw;
-    ZunColor diffuse;
-    Float2 uv;
-};
-
-typedef char AnmVertexSizeIs1C[(sizeof(AnmVertex) == 0x1c) ? 1 : -1];
-
 struct PulsingRadialTrailData
 {
     AnmVertex vertices[33];
@@ -613,9 +591,9 @@ struct AnmManager
     IDirect3DVertexBuffer8 *quadVertexBuffer;// +0x001770
     AnmQuadVertex quadVertices[4];// +0x001774
     i32 spritesToDraw;                       // +0x0017c4
-    VertexTex1DiffuseXyzrhw vertexBuffer[0x20000]; // +0x0017c8
-    VertexTex1DiffuseXyzrhw *vertexBufferEndPtr;   // +0x3817c8
-    VertexTex1DiffuseXyzrhw *vertexBufferStartPtr; // +0x3817cc
+    AnmVertex vertexBuffer[0x20000]; // +0x0017c8
+    AnmVertex *vertexBufferEndPtr;   // +0x3817c8
+    AnmVertex *vertexBufferStartPtr; // +0x3817cc
     union
     {
         u8 unknown3817d0[0x44];
@@ -695,7 +673,7 @@ struct AnmManager
     void SetRenderStateForVm3D(AnmVm *vm);
     void SetRenderStateForVm(AnmVm *vm);
     ZunResult DrawInner(AnmVm *vm, i32 flags);
-    ZunResult AddSpriteToDrawBuffer(VertexTex1DiffuseXyzrhw *vertices);
+    ZunResult AddSpriteToDrawBuffer(AnmVertex *vertices);
     void ReleaseSurfaces();
     void ReleaseSurface(i32 surfaceIndex);
     void CopySurfaceToBackbuffer(i32 surfaceIndex, i32 left, i32 top, i32 x, i32 y);
@@ -711,7 +689,7 @@ struct AnmManager
     ZunResult Draw(AnmVm *vm);
     ZunResult DrawNoRotation(AnmVm *vm);
     ZunResult DrawNoRotationNoRound(AnmVm *vm);
-    void TranslateRotation(VertexTex1DiffuseXyzrhw *vertex, f32 x, f32 y,
+    void TranslateRotation(AnmVertex *vertex, f32 x, f32 y,
                            f32 sine, f32 cosine, f32 xOffset, f32 yOffset);
     ZunResult Draw2D(AnmVm *vm);
     ZunResult ProjectCameraFacingQuad(AnmVm *vm);
@@ -768,6 +746,9 @@ typedef char AnmManagerVerticesAt1774[(offsetof(AnmManager, quadVertices) == 0x1
 typedef char AnmManagerShakeAt20[
     (offsetof(AnmManager, screenShakeOffset) == 0x20 && sizeof(Float2) == 8) ? 1 : -1];
 typedef char AnmManagerVertexBufferAt17C8[(offsetof(AnmManager, vertexBuffer) == 0x17c8) ? 1 : -1];
+typedef char AnmManagerBatchCountAt17C4[(offsetof(AnmManager, spritesToDraw) == 0x17c4) ? 1 : -1];
+typedef char AnmManagerBatchEndAt3817C8[(offsetof(AnmManager, vertexBufferEndPtr) == 0x3817c8) ? 1 : -1];
+typedef char AnmManagerBatchStartAt3817CC[(offsetof(AnmManager, vertexBufferStartPtr) == 0x3817cc) ? 1 : -1];
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 typedef char AnmManagerSurfaceRestoreCopiesAt125C[
     (offsetof(AnmManager, surfaceRestoreCopies) == 0x125c) ? 1 : -1];
@@ -794,7 +775,7 @@ typedef char AnmManagerNextVmIdAt383148[
 #endif
 typedef char AnmManagerSizeIs38314C[(sizeof(AnmManager) == 0x38314c) ? 1 : -1];
 
-extern VertexTex1DiffuseXyzrhw g_AnmTexturedVertices[4];
+extern AnmVertex g_AnmTexturedVertices[4];
 extern VertexTex1Xyzrhw g_AnmTexturedVerticesNoDiffuse[4];
 
 extern f32 g_AnmGameSpeed;

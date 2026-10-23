@@ -176,23 +176,23 @@ static void SeedAnmProjectionVertices()
     using namespace th095;
     for (unsigned int i = 0; i < 4; ++i)
     {
-        g_AnmTexturedVertices[i].x = -17.0f - i;
-        g_AnmTexturedVertices[i].y = -23.0f - i;
-        g_AnmTexturedVertices[i].z = -31.0f - i;
-        g_AnmTexturedVertices[i].w = 3.25f + i;
-        g_AnmTexturedVertices[i].diffuse = 0x12345678u + i;
-        g_AnmTexturedVertices[i].u = 0.125f + i;
-        g_AnmTexturedVertices[i].v = 0.25f + i;
+        g_AnmTexturedVertices[i].position.x = -17.0f - i;
+        g_AnmTexturedVertices[i].position.y = -23.0f - i;
+        g_AnmTexturedVertices[i].position.z = -31.0f - i;
+        g_AnmTexturedVertices[i].rhw = 3.25f + i;
+        g_AnmTexturedVertices[i].diffuse.color = 0x12345678u + i;
+        g_AnmTexturedVertices[i].uv.x = 0.125f + i;
+        g_AnmTexturedVertices[i].uv.y = 0.25f + i;
     }
 }
 
 static void CheckAnmProjectionVertex(unsigned int i, float x, float y, float z)
 {
     using namespace th095;
-    const VertexTex1DiffuseXyzrhw &vertex = g_AnmTexturedVertices[i];
-    CHECK(Near(vertex.x, x) && Near(vertex.y, y) && Near(vertex.z, z));
-    CHECK(vertex.w == 3.25f + i && vertex.diffuse == 0x12345678u + i);
-    CHECK(vertex.u == 0.125f + i && vertex.v == 0.25f + i);
+    const AnmVertex &vertex = g_AnmTexturedVertices[i];
+    CHECK(Near(vertex.position.x, x) && Near(vertex.position.y, y) && Near(vertex.position.z, z));
+    CHECK(vertex.rhw == 3.25f + i && vertex.diffuse.color == 0x12345678u + i);
+    CHECK(vertex.uv.x == 0.125f + i && vertex.uv.y == 0.25f + i);
 }
 
 static unsigned int CheckAnmViewportConsumers(th095::AnmManager *manager)
@@ -303,7 +303,7 @@ static unsigned int CheckAnmViewportConsumers(th095::AnmManager *manager)
             vm.scale.x = vm.scale.y = 1;
             vm.renderStateA = vm.renderStateB = 0;
             SeedAnmProjectionVertices();
-            VertexTex1DiffuseXyzrhw before[4]; memcpy(before, g_AnmTexturedVertices, sizeof(before));
+            AnmVertex before[4]; memcpy(before, g_AnmTexturedVertices, sizeof(before));
             const bool outside = depth == 0 || depth == 4;
             CHECK(manager->ProjectCameraFacingQuad(&vm) == (outside ? ZUN_ERROR : ZUN_SUCCESS));
             if (outside) CHECK(memcmp(before, g_AnmTexturedVertices, sizeof(before)) == 0);
@@ -395,7 +395,7 @@ int __cdecl main()
             const ViewportDeviceCall *draw = ViewportDeviceCallAt(3);
             CHECK(draw->kind == VIEWPORT_CALL_DRAW && draw->device == 0);
             CHECK(draw->state == D3DPT_TRIANGLELIST && draw->count == 2);
-            CHECK(draw->vertices == manager->vertexBuffer && draw->stride == sizeof(VertexTex1DiffuseXyzrhw));
+            CHECK(draw->vertices == manager->vertexBuffer && draw->stride == sizeof(AnmVertex));
             CHECK(manager->spritesToDraw == 0 && manager->flushesThisFrame == previousFlushes + 1);
             CHECK(manager->vertexBufferStartPtr == manager->vertexBufferEndPtr);
             offset = 4;

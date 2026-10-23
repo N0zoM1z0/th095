@@ -4566,6 +4566,59 @@ def check_small_closed_domains() -> None:
     )
 
 
+def check_anm_batch_vertices(source_text: dict[str, str] | None = None) -> None:
+    overrides = source_text or {}
+    names = ("AnmVertex.hpp", "Main.hpp", "MainExact.hpp", "AnmManager.hpp", "AnmManager.cpp", "AnmDrawCore.cpp", "ecl/AnmManagerEclView.hpp")
+    texts = {name: source_without_comments(overrides.get(name, (SRC / name).read_text(encoding="utf-8"))) for name in names}
+    owner = texts["AnmVertex.hpp"]
+    if re.search(r"\b(?:TH095_MATCH_EXACT|DIFFBUILD)\b", owner):
+        fail("ANM batch wire restored a profile-selected declaration")
+    packet = re.search(r"struct\s+AnmVertex\s*\{([^}]+)\}", owner, re.DOTALL)
+    if packet is None or re.sub(r"\s+", " ", packet[1]).strip() != "Float3 position; f32 rhw; ZunColor diffuse; Float2 uv;":
+        fail("ANM batch wire lost canonical position/RHW/BGRA/UV fields")
+    if re.search(r"u8\s+b;\s*u8\s+g;\s*u8\s+r;\s*u8\s+a;", owner) is None:
+        fail("ANM batch wire lost its little-endian BGRA byte order")
+    for assertion in (
+        r"sizeof\(AnmVertex\)\s*==\s*0x1c", r"offsetof\(AnmVertex,\s*position\)\s*==\s*0",
+        r"offsetof\(AnmVertex,\s*rhw\)\s*==\s*0x0c", r"offsetof\(AnmVertex,\s*diffuse\)\s*==\s*0x10",
+        r"offsetof\(AnmVertex,\s*uv\)\s*==\s*0x14",
+    ):
+        if re.search(assertion, owner) is None:
+            fail("ANM batch wire lost a target layout assertion")
+    for name, source in texts.items():
+        if "VertexTex1DiffuseXyzrhw" in source:
+            fail("ANM batch restored the duplicate flat vertex declaration")
+        if name != "AnmVertex.hpp" and re.search(r"(?:struct\s+AnmVertex|union\s+ZunColor)\s*\{", source):
+            fail("ANM batch restored a second canonical wire/color owner")
+    for name in ("Main.hpp", "MainExact.hpp"):
+        if '#include "AnmVertex.hpp"' not in texts[name]:
+            fail("Main lost the shared ANM batch wire declaration")
+    if '#include "../AnmVertex.hpp"' not in texts["ecl/AnmManagerEclView.hpp"]:
+        fail("Legacy ECL lost its complete shared ANM wire declaration")
+    manager = texts["AnmManager.hpp"]
+    if re.search(r"AnmVertex\s+vertexBuffer\[0x20000\]", manager) is None:
+        fail("ANM batch lost its target vertex-buffer representation")
+    draw = texts["AnmDrawCore.cpp"]
+    if any(name in draw for name in ("TH095_MATCH_EXACT", "DIFFBUILD", "TH095_ANM_DRAW_INNER_")):
+        fail("ANM draw flags restored a profile-selected spelling")
+    flag_enum = re.search(r"enum\s+AnmDrawInnerFlags\s*\{([^}]+)\}", draw, re.DOTALL)
+    expected_flags = [("ANM_DRAW_INNER_DEFAULT", "0"), ("ANM_DRAW_INNER_ROUND_TO_HALF_PIXEL", "1"), ("ANM_DRAW_INNER_PRESERVE_VERTEX_DIFFUSE", "2")]
+    if flag_enum is None or re.findall(r"(ANM_DRAW_INNER_\w+)\s*=\s*(\d+)", flag_enum[1]) != expected_flags:
+        fail("ANM draw flags lost the shared 0/round/preserve domain")
+    if re.search(r"reinterpret_cast<ZunColor\s*\*>", draw):
+        fail("ANM batch restored cast-based color access")
+    for i, source in enumerate((0, 1, 2, 1, 2, 3)):
+        if f"this->vertexBufferEndPtr[{i}] = vertices[{source}];" not in draw:
+            fail("ANM batch lost its target quad-to-triangle expansion")
+    if "this->vertexBufferEndPtr += 6;" not in draw or "this->spritesToDraw++;" not in draw:
+        fail("ANM batch lost its six-vertex/one-sprite advance")
+    flush = texts["AnmManager.cpp"]
+    if re.search(r"SetVertexShader\(D3DFVF_XYZRHW\s*\|\s*D3DFVF_DIFFUSE\s*\|\s*D3DFVF_TEX1\)", flush) is None:
+        fail("ANM batch flush mixed its XYZRHW/diffuse/TEX1 namespace")
+    if re.search(r"D3DPT_TRIANGLELIST,\s*this->spritesToDraw\s*\*\s*2,\s*this->vertexBufferStartPtr,\s*sizeof\(AnmVertex\)", flush) is None:
+        fail("ANM batch flush lost its pending-span/28-byte submission")
+
+
 def check_anm_quad_vertices(source_text: dict[str, str] | None = None) -> None:
     overrides = source_text or {}
     names = ("AnmQuadVertex.hpp", "AnmManager.hpp", "AnmVertexBuffer.cpp", "AnmDrawCore.cpp")
@@ -4642,6 +4695,7 @@ def main() -> int:
     check_background_owner()
     check_screen_effect_quad_wire()
     check_anm_quad_vertices()
+    check_anm_batch_vertices()
     check_ecl_type_boundaries()
     check_ecl_extended_type_boundaries()
     check_photo_bullet_owner()

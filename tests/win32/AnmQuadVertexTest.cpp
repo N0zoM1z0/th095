@@ -215,8 +215,8 @@ static unsigned int CheckPhotoBlend(AnmManager *manager)
                 expected.g = BlendByte(input.g, background.g, amount);
                 expected.b = BlendByte(input.b, background.b, amount);
             }
-            CHECK(g_AnmTexturedVertices[i].diffuse == expected.color);
-            CHECK(g_AnmTexturedVertices[i].w == 1.0f);
+            CHECK(g_AnmTexturedVertices[i].diffuse.color == expected.color);
+            CHECK(g_AnmTexturedVertices[i].rhw == 1.0f);
         }
         ++cases;
     }

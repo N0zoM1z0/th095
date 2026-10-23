@@ -68,6 +68,7 @@ def main() -> int:
         cases.append(("shake", ["tests/win32/ScreenEffectShakeTest.cpp", "tests/win32/ViewportDeviceFixture.c"]))
         cases.append(("quad", ["tests/win32/ScreenEffectQuadTest.cpp", "tests/win32/ViewportDeviceFixture.c"]))
         cases.append(("anm-quad", ["tests/win32/AnmQuadVertexTest.cpp", "tests/win32/ViewportDeviceFixture.c"]))
+        cases.append(("anm-batch", ["tests/win32/AnmVertexBatchTest.cpp", "tests/win32/ViewportDeviceFixture.c"]))
     for name, sources in cases:
         result = run_case(whole, linker, toolchain, environment, normal, objects, name, sources)
         if result:

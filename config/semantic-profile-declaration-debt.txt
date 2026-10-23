@@ -186,6 +186,5 @@
 1	src/ecl/AnmManagerEclView.hpp	struct	AnmVmBase
 1	src/ecl/AnmManagerEclView.hpp	struct	VertexDiffuseXyzrhw
 1	src/ecl/AnmManagerEclView.hpp	struct	VertexTex0Xyzrhw
-1	src/ecl/AnmManagerEclView.hpp	struct	VertexTex1DiffuseXyzrhw
 1	src/ecl/AnmManagerEclView.hpp	struct	ZunImageInfo
 1	src/ecl/EclRun.cpp	struct	AnmVertex

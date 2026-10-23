@@ -55,7 +55,7 @@ struct Effect
     i8 alternateDrawGroup;
     i8 verticesDirty;
     i8 updateDuringFreeze;
-    VertexTex1DiffuseXyzrhw *vertices;
+    AnmVertex *vertices;
     Effect *nextInDrawGroup;
 
     Effect();

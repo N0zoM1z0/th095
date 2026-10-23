@@ -41,7 +41,7 @@ namespace th095
 // the equivalent storage in AnmManager.cpp, and TH095 WinMain assigns and
 // clears this same pointer around the manager lifetime.
 DIFFABLE_STATIC(AnmManager *, g_AnmManager);
-DIFFABLE_STATIC_ARRAY(VertexTex1DiffuseXyzrhw, 4, g_AnmTexturedVertices);
+DIFFABLE_STATIC_ARRAY(AnmVertex, 4, g_AnmTexturedVertices);
 DIFFABLE_STATIC_ARRAY(VertexTex1Xyzrhw, 4, g_AnmTexturedVerticesNoDiffuse);
 
 // The target's single animation/game-time scale lives at 0x004BDED8 and is
@@ -946,7 +946,7 @@ void AnmManager::FlushVertexBuffer()
     g_Supervisor.d3dDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
     g_Supervisor.d3dDevice->SetVertexShader(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1);
     g_Supervisor.d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, this->spritesToDraw * 2,
-                                            this->vertexBufferStartPtr, sizeof(VertexTex1DiffuseXyzrhw));
+                                            this->vertexBufferStartPtr, sizeof(AnmVertex));
     this->vertexBufferStartPtr = this->vertexBufferEndPtr;
     this->spritesToDraw = 0;
     this->flushesThisFrame++;
@@ -969,16 +969,16 @@ AnmManager::AnmManager()
     g_AnmTexturedVerticesNoDiffuse[3].u = 1.0f;
     g_AnmTexturedVerticesNoDiffuse[3].v = 1.0f;
 
-    g_AnmTexturedVertices[0].w = g_AnmTexturedVertices[1].w =
-        g_AnmTexturedVertices[2].w = g_AnmTexturedVertices[3].w = 1.0f;
-    g_AnmTexturedVertices[0].u = 0.0f;
-    g_AnmTexturedVertices[0].v = 0.0f;
-    g_AnmTexturedVertices[1].u = 1.0f;
-    g_AnmTexturedVertices[1].v = 0.0f;
-    g_AnmTexturedVertices[2].u = 0.0f;
-    g_AnmTexturedVertices[2].v = 1.0f;
-    g_AnmTexturedVertices[3].u = 1.0f;
-    g_AnmTexturedVertices[3].v = 1.0f;
+    g_AnmTexturedVertices[0].rhw = g_AnmTexturedVertices[1].rhw =
+        g_AnmTexturedVertices[2].rhw = g_AnmTexturedVertices[3].rhw = 1.0f;
+    g_AnmTexturedVertices[0].uv.x = 0.0f;
+    g_AnmTexturedVertices[0].uv.y = 0.0f;
+    g_AnmTexturedVertices[1].uv.x = 1.0f;
+    g_AnmTexturedVertices[1].uv.y = 0.0f;
+    g_AnmTexturedVertices[2].uv.x = 0.0f;
+    g_AnmTexturedVertices[2].uv.y = 1.0f;
+    g_AnmTexturedVertices[3].uv.x = 1.0f;
+    g_AnmTexturedVertices[3].uv.y = 1.0f;
 
     this->quadVertexBuffer = NULL;
     this->currentTexture = NULL;

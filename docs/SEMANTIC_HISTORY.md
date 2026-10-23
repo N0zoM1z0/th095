@@ -18867,3 +18867,77 @@ explicit and shared. No graphics driver, complete game path, synchronization,
 use for the copy, native parent or native 64-bit/Linux/Web game is accepted.
 The semantic phase remains active-incomplete. See
 [ANM_QUAD_VERTICES.md](ANM_QUAD_VERTICES.md).
+
+### SEM-353 — one ANM batch/generated/trail wire and shared draw flags
+
+Scope: DrawInner @ 0x0043ECD0 (1,497 bytes), AddSpriteToDrawBuffer @
+0x0043F3C0 (211), TranslateRotation @ 0x0043FA00 (58), ClearVertexBuffer @
+0x0043F2B0 (60), FlushVertexBuffer @ 0x0043F2F0 (198), the working quad at
+0x004CA1C0 and the manager's +0x17C8 batch/cursors. Main, MainExact, generated
+geometry, enemy trails and legacy ECL import one AnmVertex.hpp declaration.
+
+Observed: FVF 0x144 consumes XYZ +0, RHW +0x0C, BGRA word +0x10 and UV +0x14,
+stride 28. Add expands 0/1/2/1/2/3 and advances six vertices without checking
+capacity. Flush consumes the pending span and advances start=end; only Clear
+rewinds both pointers. Target Render @ 0x00420770 (420) establishes separate
+frame orchestration. DrawInner mutates positions/UV before outside rejection,
+selects/mixes or preserves diffuse, then coordinates old-batch flushes before
+enqueue. Texture-cache publication precedes its flush; blend-cache publication
+follows its flush. Byte mixing divides the channel product by 128 and clamps
+at 255. Rounding retains the target x87 control-word behavior.
+
+Compiler-observed: isolated declaration-only and natural-field controls
+preserve target code. The existing Float3/RHW/ZunColor/Float2 owner replaces
+three flat declarations, and nine cast-based color accesses become direct
+members. Legacy ECL must include the complete wire at its first use; merely
+including it from Main gives incomplete buffer/trail elements. Its original
+global ::ZunColor fields remain explicitly qualified. One unconditional
+DrawInner flag enum replaces the exact/normal numeric aliases and selector.
+The four authorized x87 instruction sequences remain identical; only member
+paths change where needed. No new assembly, padding, fake lifetime, selected
+type or emission adapter is added.
+
+Ownership: the manager owns its inline 0x20000-element storage, count and
+cursors; AnmManager.cpp owns the global quad and Clear/Flush emission, while
+AnmDrawCore.cpp emits producers, expansion and cache transitions. Separately
+allocated generated buffers and embedded enemy trails share the wire without
+sharing allocation lifetimes. Both products use one declaration and one flags
+enum. Legacy enclosing owners/global-color ABI and whole-game capacity remain
+open. Retiring the ECL declaration and draw selector lowers closed declaration
+debt to 185 keys / 190 definitions and selector debt to 255 keys / 674 directives.
+
+Exact oracle: all 81 focused methods across geometry, manager, Main and ECL
+pass strict comparison. The fresh cold aggregate passes all 698 configured units across 88 sources, followed by all 698 fixed-object, zero-refresh comparisons. The full audit reviews 237 public-reference retags, two function identities and 765 same-family private labels. The global storage and two method identities
+retag with every byte, relocation position/type/addend and physical target
+fixed. Only two function signatures change terminology in functions.csv; all
+addresses, extents, profiles, object partitions and authored credit stay fixed.
+Private controls, source hashes, target observations and audits:
+.analysis/sem353/.
+
+Normal oracle: all 88 sources cold-compile/link with zero unresolved symbols.
+Build-local PE32 GUI: 778,752 bytes, SHA-256
+59f4827c59ea6774e40c70b84fefd0d1abd79747cf5a177523b69fc0fc161134.
+All 32 actual producer/draw/manager methods independently pass strict target
+comparison, reviewing the existing RNG/lifecycle spellings separately. All
+929 prior named roots, 81 private entries and 1,798 recursive code/data/EH
+graphs remain identical under three declared identity mappings, with 962
+private-reference spelling changes and 238 public-reference retags. Two root
+names change parameter type; no new root or changed-body exception is accepted.
+Main/ECL's separately selected normal bodies remain preserved graphs, not
+promoted wholesale to target byte identity by the exact profile.
+
+Six Win32 /OPT:NOREF clients link every normal object and pass. The new batch
+client passes 122 cases: eight queue/flush epochs, four last-fitting spans,
+96 color/round/UV combinations, ten texture/blend/shader transitions and four
+fully outside quads. It independently decodes the seven-word packet and
+checks in-call state, exact triangle order, preserved prior spans, non-rewind,
+explicit Clear, ignored HRESULTs and pre-cull position/UV side effects. NaN/
+infinity diagnostics test byte copying only; rounding explicitly selects
+nearest/even. Existing lifetime, 96 viewport/five stage handoffs, 64 projection,
+171 shake, 128 overlay and 24 prebuilt-quad cases remain passing. Public CI passes 121 workflow tests and thirteen native programs. All 336 source/tool/test inputs and sixteen non-recipe configs stay frozen through final acceptance. Manifest SHA-256: f43523ee24f34bdf5c2beb6229d49a72d0a7d1a92242e2700d590f96da718a79.
+
+Result: a canonical vertex/color carrier and shared flags replace duplicate
+runtime declarations and casts while preserving target behavior. No real
+GPU/driver, general overflow safety, all FPU modes, full renderer, joins,
+native parent or native 64-bit/Linux/Web game is accepted. Semantic/platform
+work remains active-incomplete. See [ANM_VERTEX_BATCH.md](ANM_VERTEX_BATCH.md).

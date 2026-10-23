@@ -2210,3 +2210,22 @@ receives authored credit. Whole-normal preservation must account for the one
 additional construction root rather than pretend every emitted root set is fixed.
 The copy's +0x0C word and rendering role remain unknown. See
 [the target and ownership contract](ANM_QUAD_VERTICES.md).
+
+## Shared ANM 28-byte wire and flags oracle (SEM-353)
+
+Both declaration-only and natural AnmVertex controls preserve the target.
+The existing Float3/RHW/ZunColor/Float2 declaration can replace the three flat
+copies and their scalar field paths without an emission adapter. Direct color
+members remove nine reinterpret casts. The legacy ECL first-use site must
+import the complete shared wire itself: merely adding it to Main leaves its
+inline buffer/trail element incomplete. Explicit ::ZunColor preserves the
+ancestral global-color ABI in that legacy parent.
+
+The existing normal DrawInner flags enum also works in exact output, so its
+profile selector and numeric alias layer are retired. Four existing x87
+blocks retain their instruction sequences; only working-quad member paths
+change where required. Complete bytes, addends and physical references stay
+fixed in 81 focused methods across the geometry, manager, Main and ECL objects.
+Two method decorations and the global quad decoration follow the canonical
+vertex type. This is identity maintenance, not new authored credit. See
+[the representation and boundary](ANM_VERTEX_BATCH.md).

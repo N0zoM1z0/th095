@@ -232,3 +232,23 @@ HRESULT injection supplies valid output storage, so it establishes unchecked
 continuation rather than real failed-COM output behavior. This is sequential
 component evidence, not a graphics driver, whole-game path, native parent or
 use for the 24-byte copy. See [ANM_QUAD_VERTICES.md](ANM_QUAD_VERTICES.md).
+
+## ANM batch normal Win32 oracle
+
+The same scripts/check-supervisor-lifecycle.py --viewport invocation also
+includes tests/win32/AnmVertexBatchTest.cpp, linking all 88 actual normal
+objects with /OPT:NOREF. Its 122 cases cover eight raw queue/flush epochs,
+four last-fitting batches, 96 color/round/UV combinations, ten cache/API
+transitions and four fully outside quads. Source-independent seven-word
+packets check 0/1/2/1/2/3 expansion and exact copied bytes, including diagnostic
+IEEE payloads used only in copy/submission capture. SDK capture now holds
+1,024 bytes to observe multi-quad spans during DrawPrimitiveUP.
+
+The actual producer, color mixer, culler, cursor methods and device-call order
+execute without source substitutes. An observer checks old-pending state
+during submission, texture-cache publication before flush and blend-cache
+publication after flush. Failure HRESULTs still advance the consumed span.
+Nearest/even rounding is explicitly selected; no other FPU mode or real GPU
+response is accepted. Last-fitting cases remain within the allocation and
+prove neither overflow recovery nor whole-game capacity. See
+[the packet and cursor contract](ANM_VERTEX_BATCH.md).

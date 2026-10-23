@@ -32,7 +32,7 @@ struct ViewportDeviceCall
     UINT count;
     UINT stride;
     UINT capturedVertexBytes;
-    BYTE capturedVertices[256];
+    BYTE capturedVertices[1024];
     const void *texture;
     const void *buffer;
 };

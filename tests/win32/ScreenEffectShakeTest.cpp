@@ -97,21 +97,21 @@ static void CheckDrawConsumer(const Float2 &offset, bool culled)
     const float originY = culled ? -1024.0f : (float)viewport.Y + 64.0f;
     for (unsigned int i = 0; i < 4; ++i)
     {
-        g_AnmTexturedVertices[i].x = originX + (i & 1 ? 20.0f : 0.0f);
-        g_AnmTexturedVertices[i].y = originY + (i & 2 ? 20.0f : 0.0f);
-        g_AnmTexturedVertices[i].z = 0.25f;
-        g_AnmTexturedVertices[i].w = 1.0f;
+        g_AnmTexturedVertices[i].position.x = originX + (i & 1 ? 20.0f : 0.0f);
+        g_AnmTexturedVertices[i].position.y = originY + (i & 2 ? 20.0f : 0.0f);
+        g_AnmTexturedVertices[i].position.z = 0.25f;
+        g_AnmTexturedVertices[i].rhw = 1.0f;
     }
     ResetViewportDeviceCalls(S_OK);
     CHECK(globalManager->DrawInner(&vm, 0) == ZUN_SUCCESS);
     for (unsigned int i = 0; i < 4; ++i)
     {
-        CHECK(g_AnmTexturedVertices[i].x == originX + (i & 1 ? 20.0f : 0.0f) + offset.x);
-        CHECK(g_AnmTexturedVertices[i].y == originY + (i & 2 ? 20.0f : 0.0f) + offset.y);
-        CHECK(g_AnmTexturedVertices[i].z == 0.25f && g_AnmTexturedVertices[i].w == 1.0f);
-        CHECK(g_AnmTexturedVertices[i].u == (i & 1 ? 0.75f : 0.125f));
-        CHECK(g_AnmTexturedVertices[i].v == (i & 2 ? 0.875f : 0.25f));
-        if (!culled) CHECK(g_AnmTexturedVertices[i].diffuse == 0xff123456);
+        CHECK(g_AnmTexturedVertices[i].position.x == originX + (i & 1 ? 20.0f : 0.0f) + offset.x);
+        CHECK(g_AnmTexturedVertices[i].position.y == originY + (i & 2 ? 20.0f : 0.0f) + offset.y);
+        CHECK(g_AnmTexturedVertices[i].position.z == 0.25f && g_AnmTexturedVertices[i].rhw == 1.0f);
+        CHECK(g_AnmTexturedVertices[i].uv.x == (i & 1 ? 0.75f : 0.125f));
+        CHECK(g_AnmTexturedVertices[i].uv.y == (i & 2 ? 0.875f : 0.25f));
+        if (!culled) CHECK(g_AnmTexturedVertices[i].diffuse.color == 0xff123456);
     }
     CHECK(globalManager->spritesToDraw == (culled ? 0 : 1));
     CHECK(ViewportDeviceCallCount() == 0); // Ordinary cached/buffered draw path.
@@ -122,7 +122,7 @@ static void CheckDrawConsumer(const Float2 &offset, bool culled)
         {
             bool found = false;
             for (unsigned int j = 0; j < 4; ++j)
-                if (memcmp(&globalManager->vertexBuffer[i], &g_AnmTexturedVertices[j], sizeof(VertexTex1DiffuseXyzrhw)) == 0) found = true;
+                if (memcmp(&globalManager->vertexBuffer[i], &g_AnmTexturedVertices[j], sizeof(AnmVertex)) == 0) found = true;
             CHECK(found);
         }
     }

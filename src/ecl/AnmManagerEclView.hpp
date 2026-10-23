@@ -1,4 +1,5 @@
 #pragma once
+#include "../AnmVertex.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 
 // Normal reconstruction code must use the canonical TH095 ANM declarations.
@@ -39,13 +40,6 @@ struct VertexDiffuseXyzrhw
     D3DCOLOR diffuse;
 };
 
-struct VertexTex1DiffuseXyzrhw
-{
-    Float3 pos;
-    float w;
-    D3DCOLOR diffuse;
-    Float2 textureUV;
-};
 
 // Target-observed 4-vertex textured quad without a diffuse color field.
 struct VertexTex0Xyzrhw
@@ -360,8 +354,8 @@ struct AnmVmBase
     D3DXMATRIX matrix1;
     D3DXMATRIX matrix2;
     D3DXMATRIX matrix3;
-    ZunColor color1;
-    ZunColor color2;
+    ::ZunColor color1;
+    ::ZunColor color2;
     union {
         u16 flags;
         u32 flagsWord;
@@ -423,10 +417,10 @@ struct AnmVm : AnmVmBase
     Float3 rotateFinal;
     Float2 scaleInitial;
     Float2 scaleFinal;
-    ZunColor color1Initial;
-    ZunColor color1Final;
-    ZunColor color2Initial;
-    ZunColor color2Final;
+    ::ZunColor color1Initial;
+    ::ZunColor color1Final;
+    ::ZunColor color2Initial;
+    ::ZunColor color2Final;
 
     Float3 pos2;
     i32 timeOfLastSpriteSet;
@@ -498,8 +492,8 @@ struct AnmVm
     D3DXMATRIX matrix1;
     D3DXMATRIX matrix2;
     D3DXMATRIX matrix3;
-    ZunColor color1;
-    ZunColor color2;
+    ::ZunColor color1;
+    ::ZunColor color2;
     union
     {
         u16 flags;
@@ -555,10 +549,10 @@ struct AnmVm
     Float3 rotationFinal;
     Float2 scaleInitial;
     Float2 scaleFinal;
-    ZunColor color1Initial;
-    ZunColor color1Final;
-    ZunColor color2Initial;
-    ZunColor color2Final;
+    ::ZunColor color1Initial;
+    ::ZunColor color1Final;
+    ::ZunColor color2Initial;
+    ::ZunColor color2Final;
     void (__fastcall *positionCallback)(AnmVm *);
     u32 unknown2ac;
     Float3 alternatePosition;
@@ -678,11 +672,11 @@ struct AnmManager
     ZunResult ProjectCameraFacingQuadWithCallback(
         AnmVm *vm, AnmProjectedPositionCallback callback);
     ZunResult DrawInner(AnmVm *vm, i32 flags);
-    ZunResult AddSpriteToDrawBuffer(VertexTex1DiffuseXyzrhw *vertices);
+    ZunResult AddSpriteToDrawBuffer(AnmVertex *vertices);
     ZunResult DrawNoRotation(AnmVm *vm);
     ZunResult Draw(AnmVm *vm);
     ZunResult Draw2DRotatedOrAxisAligned(AnmVm *vm);
-    void TranslateRotation(VertexTex1DiffuseXyzrhw *vertex, float x, float y, float sine, float cosine, float xOffset,
+    void TranslateRotation(AnmVertex *vertex, float x, float y, float sine, float cosine, float xOffset,
                            float yOffset);
     ZunResult Draw2D(AnmVm *vm);
     void DrawPlayerBullet(AnmVm *vm);
@@ -700,10 +694,10 @@ struct AnmManager
     }
     ZunResult DrawNoRotationNoRound(AnmVm *vm);
     ZunResult Draw3D(AnmVm *vm);
-    ZunResult DrawVertices(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices, i32 vertexCount);
+    ZunResult DrawVertices(AnmVm *vm, AnmVertex *vertices, i32 vertexCount);
     ZunResult InitializeHorizontalTextureStrip(AnmVm *vm, AnmVertex *vertices, i32 vertexCount);
-    ZunResult InitializeVerticalTextureStrip(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices, i32 vertexCount);
-    ZunResult QueueSpriteQuad(AnmVm *vm, VertexTex1DiffuseXyzrhw *vertices);
+    ZunResult InitializeVerticalTextureStrip(AnmVm *vm, AnmVertex *vertices, i32 vertexCount);
+    ZunResult QueueSpriteQuad(AnmVm *vm, AnmVertex *vertices);
     ZunResult DrawTriangleFan(AnmVm *vm, VertexDiffuseXyzrhw *vertices, i32 vertexCount);
     ZunResult CreateTextureFromFile(AnmEntry *entry, i32 format, i32 colorKey);
     ZunResult CreateTextureFromAnm(IDirect3DTexture8 **outTexture, AnmTextureHeader *textureData, i32 format);
@@ -880,7 +874,7 @@ struct AnmManager
     void ClearVertexBuffer();
     void FlushVertexBuffer();
 
-    ZunColor color;
+    ::ZunColor color;
     ZunBool useMixColor;
     i32 captureSurfaceIdx;
     u32 scriptsStartedThisFrame;
@@ -916,9 +910,9 @@ struct AnmManager
     IDirect3DVertexBuffer8 *quadVertexBuffer;
     VertexDiffuseXyzrhw untexturedVector[4];
     u32 spritesToDraw;
-    VertexTex1DiffuseXyzrhw vertexBuffer[0x18000];
-    VertexTex1DiffuseXyzrhw *vertexBufferEndPtr;
-    VertexTex1DiffuseXyzrhw *vertexBufferStartPtr;
+    AnmVertex vertexBuffer[0x18000];
+    AnmVertex *vertexBufferEndPtr;
+    AnmVertex *vertexBufferStartPtr;
     i32 captureAnmIdx;
     i32 textureCaptureSrcX;
     i32 textureCaptureSrcY;

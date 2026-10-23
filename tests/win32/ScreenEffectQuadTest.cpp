@@ -69,10 +69,10 @@ static void CheckAnmAfterQuad(AnmManager *manager, AnmLoadedSprite &sprite)
     const D3DVIEWPORT8 &viewport = g_Supervisor.currentViewportConfiguration->viewport;
     for (unsigned int i = 0; i < 4; ++i)
     {
-        g_AnmTexturedVertices[i].x = (float)viewport.X + 64.0f + (i & 1 ? 20.0f : 0.0f);
-        g_AnmTexturedVertices[i].y = (float)viewport.Y + 64.0f + (i & 2 ? 20.0f : 0.0f);
-        g_AnmTexturedVertices[i].z = 0.25f;
-        g_AnmTexturedVertices[i].w = 1.0f;
+        g_AnmTexturedVertices[i].position.x = (float)viewport.X + 64.0f + (i & 1 ? 20.0f : 0.0f);
+        g_AnmTexturedVertices[i].position.y = (float)viewport.Y + 64.0f + (i & 2 ? 20.0f : 0.0f);
+        g_AnmTexturedVertices[i].position.z = 0.25f;
+        g_AnmTexturedVertices[i].rhw = 1.0f;
     }
     // Invalidation must force a bind even though this is the same texture and
     // blend mode cached before the overlay. The real ANM batch then flushes.
@@ -92,7 +92,7 @@ static void CheckAnmAfterQuad(AnmManager *manager, AnmLoadedSprite &sprite)
     CHECK(ViewportDeviceCallAt(4)->value == (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1));
     const ViewportDeviceCall *draw = ViewportDeviceCallAt(5);
     CHECK(draw->kind == VIEWPORT_CALL_DRAW && draw->state == D3DPT_TRIANGLELIST && draw->count == 2);
-    CHECK(draw->stride == sizeof(VertexTex1DiffuseXyzrhw) && draw->capturedVertexBytes == 6 * sizeof(VertexTex1DiffuseXyzrhw));
+    CHECK(draw->stride == sizeof(AnmVertex) && draw->capturedVertexBytes == 6 * sizeof(AnmVertex));
 }
 
 int __cdecl main()
@@ -139,13 +139,13 @@ int __cdecl main()
         manager->vertexBufferEndPtr = manager->vertexBuffer + pending * 6;
         for (unsigned int i = 0; i < 6; ++i)
         {
-            manager->vertexBuffer[i].x = (float)i;
-            manager->vertexBuffer[i].y = 30.0f;
-            manager->vertexBuffer[i].z = 0.5f;
-            manager->vertexBuffer[i].w = 1.0f;
-            manager->vertexBuffer[i].diffuse = 0xff998877;
-            manager->vertexBuffer[i].u = 0.125f;
-            manager->vertexBuffer[i].v = 0.25f;
+            manager->vertexBuffer[i].position.x = (float)i;
+            manager->vertexBuffer[i].position.y = 30.0f;
+            manager->vertexBuffer[i].position.z = 0.5f;
+            manager->vertexBuffer[i].rhw = 1.0f;
+            manager->vertexBuffer[i].diffuse.color = 0xff998877;
+            manager->vertexBuffer[i].uv.x = 0.125f;
+            manager->vertexBuffer[i].uv.y = 0.25f;
         }
         Observation o = {manager, &sprite, sprite.texture, false, false, pending};
         ResetViewportDeviceCalls(failure ? E_FAIL : S_OK);

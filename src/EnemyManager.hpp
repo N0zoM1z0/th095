@@ -296,7 +296,7 @@ struct Enemy
     i32 linkedChildCount;
     EnemyChildEclBlock *childEclBlocks[4];
     EnemyTrailSample trailSamples[96];
-    VertexTex1DiffuseXyzrhw trailVertices[194];
+    AnmVertex trailVertices[194];
     u8 trailFlags;
     u8 trailLengthAlignment534D;
     i16 trailHistoryLength;
