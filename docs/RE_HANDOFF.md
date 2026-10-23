@@ -3,100 +3,98 @@
 This replaceable note records the accepted source. Accepted batches are in
 [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md), navigation in
 [SEMANTIC_INDEX.md](SEMANTIC_INDEX.md), and build ownership in
-[SOURCE_MAP.md](SOURCE_MAP.md). Receipts apply to their recorded inputs.
+[SOURCE_MAP.md](SOURCE_MAP.md). Receipts apply only to their recorded inputs.
 
 ## Authority and current state
 
 Accepted source on 2026-10-23:
-`b136974fd67b44fa8e4565dd2a3ec4f06f77f88f` (SEM-345), branch
-`semantic/owner-cleanup-20260926`. Semantic reconstruction remains
-active-incomplete; the full 64-bit game port is separate, unfinished work.
+`abbfcb71e764a07f288ae0ebb4c474f560e96a18` (SEM-346), branch
+`semantic/owner-cleanup-20260926`. This session finishes at a validated, cleaned
+handoff. Semantic reconstruction remains active-incomplete; the full 64-bit
+game port is separate, unfinished work.
 
 - Target: original Japanese TH095 v1.02a, SHA-256
   `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`.
-  Access Ghidra through the hash-attested scripts/ghidra.py wrapper.
+  Use the hash-attested scripts/ghidra.py wrapper for Ghidra access.
 - Mapping, source presence, semantic acceptance, exactness, normal linkage and
-  native/runtime validation are separate. PROGRESS.md holds generated ledger
-  totals; no semantic completion percentage or complete native game is claimed.
-  Claims stays header-only. No active blocker is known.
-- Latest batch: **SEM-345**. Main.hpp and MainExact.hpp now include the single
-  full SupervisorRuntime.hpp declaration. Their old storage field tokens agree
-  after canonicalizing loadingScreenState. The same Win32 pack(4), 0x7BC extent,
-  fields and all 29 distinct prior target assertions are retained. Exact loading
-  methods use the canonical i32 counter/state name. Primary clients now share
-  runtime's constructor/destructor declaration API.
-- SupervisorLifecycle.cpp still defines g_Supervisor and emits the lifetime
-  entries through its existing member-construction/EH view. That view, its
-  adapters, other projections and the 0x364 compatibility family remain debt.
-  This closes the three full primary declarations, not global ODR/native layout
-  or original declaration recovery. MainExact's surrounding legacy APIs remain.
-  See [SUPERVISOR_DECLARATION.md](SUPERVISOR_DECLARATION.md).
+  runtime validation remain separate. PROGRESS.md and the status script hold
+  generated totals; no semantic completion percentage is claimed. Claims stays
+  header-only. No active blocker is known.
+- Main.hpp, MainExact.hpp, runtime clients and SupervisorLifecycle.cpp now use
+  one full SupervisorRuntime.hpp declaration. The lifecycle partial parent and
+  redundant SupervisorViewportLifecycle adapter are retired. Global storage at
+  0x004C4670 and constructor/destructor emission remain in the lifecycle TU.
+- SupervisorMemberConstruction.hpp shares the existing fieldless configuration
+  construction policy and base-image assignment. GameConfiguration remains the
+  0xC8 raw file/snapshot owner without a default constructor. The canonical
+  viewport members already provide the required implicit construction phase.
+  Other projections, the 0x364 compatibility family and global ODR/native parent
+  closure remain open. See [SUPERVISOR_DECLARATION.md](SUPERVISOR_DECLARATION.md).
 
 ## Validation at the source checkpoint
 
-- Fresh Main baseline/candidate: **48/48**. Relative to 9b67330, only **344
-  private labels in 22 exact units** change: 25 focused and 319 aggregate.
-  Public identities, targets, addends, extents, flags and other recipe fields
-  stay unchanged. No new mapping/source/exact credit is claimed.
-- Aggregate refresh and frozen fixed-recipe repeat both pass **698/698 across
-  88 sources**; the fixed replay refreshes zero labels. Exact credit remains
-  696 functions / 336,486 bytes.
-- Independent old/new normal builds each compile **88/88 i386 COFF objects**
-  and link a verified PE32 GUI. New product: **778,752 bytes**, zero unresolved
-  symbols, build-local SHA-256
-  `1e692bb4cf76b12076c1882dce31a8a2a0d95e5b719e68eab417446ec53e8703`.
-  All 88 actual normal objects preserve **928 named roots, 81 private entries
-  and 1,797 code/data/EH graphs** under 974 private spellings. Existing exact-only
-  normal symbol boundaries are recorded separately and receive no promotion.
-- Actual-header SupervisorLayoutTest.cpp: pinned VC7.1 and Clang i386 COFF data
-  agree on **65 field offsets, eight subobject sizes, total extent and caller
-  packing**. Uncast SDK device/object/worker bindings compile; both deliberately
-  wrong HWND-offset controls are rejected. Clang uses a case-only legacy-SDK
-  VFS and an existing TH08 math branch solely for layout. It accepts no math
-  behavior, original normal header path, Win64 parent or portable game. The
-  normal product is independently compiled without that math selector.
-- Public CI: **107 workflow tests and thirteen native x86-64/UBSan programs**.
-  EH: **57 parents, 72 actions and 81/81 provenance-exact references**.
-  All 323 source/tool/test inputs, including five Ghidra Java scripts, match
-  the validation freeze. Closed profile debt stays **265 keys / 696 directives**
-  and **191 keys / 196 selected declarations**. Receipts: .analysis/sem345/.
+- Focused lifecycle/Main candidates: **2/2 and 48/48**. Cold aggregate refresh
+  and frozen fixed-recipe repeat: **698/698 across 88 sources**; the repeat
+  refreshes zero labels. Relative to 96aa84c, only **344 private labels in
+  22 units** change; all public identities, destinations, addends, extents,
+  profiles and other recipe fields remain unchanged. No new exact credit.
+- Independent old/new normal builds compile **88/88 i386 COFF objects** and
+  link verified PE32 GUI products with zero unresolved symbols. Candidate:
+  **778,752 bytes**, build-local SHA-256
+  `e8376abb8919813fa9b1af7a27cce80b052e9915bfa20bb4a86fff6517e76883`.
+  All normal objects preserve **928 named roots, 81 private entries and
+  1,797 code/data/EH graphs** under 980 private spellings. Exact-only normal
+  symbols remain separately inventoried, without semantic promotion.
+- Actual SDK layout receipts agree on **65 field offsets, eight subobject sizes,
+  total extent and caller packing** in VC7.1/Clang; both bad-offset controls
+  fail. Clang's case-only SDK VFS and existing math branch are layout-only.
+- The maintained **scripts/check-supervisor-lifecycle.py** cold-builds the normal
+  product, links all 88 actual objects with /OPT:NOREF and runs under Wine.
+  Actual parent reset/flags, base-image assignment, both real worker callbacks,
+  destructor handle closure and cleanup stores pass. No game entry point or
+  assets are exercised; this is bounded normal Win32 lifetime evidence.
+- EH: **57 parents, 72 actions, 81/81 provenance-exact references**. Public CI:
+  **109 workflow tests and thirteen native x86-64/UBSan programs**.
+  All **326 source/tool/test inputs** remain frozen. Closed profile debt stays
+  **265 keys / 696 directives** and **191 keys / 196 selected declarations**.
+  Commands, reports, object graphs and controls: .analysis/sem346/.
 
 ## Next bounded lane and retained limits
 
-- Continue Supervisor lifecycle convergence. Compare its config/viewport/timer/
-  worker construction and EH phases against the canonical full owner with
-  minimal pinned probes before changing the existing view. Constructor zero
-  extent alone does not identify original field types or spelling. Do not add
-  profile-selected layouts/selectors, padding, inert locals or another owner
-  to preserve emission. Keep global storage definition in its proved TU.
-- The Clang layout branch is not a normal/portable body oracle. Plain MinGW's
-  mixed D3D8/D3DX8 headers and the normal ZunMath MS-assembly dependency remain
-  compatibility limits. Do not replace SDK types or infer Win64 parent layout
-  from the Win32 receipt or native client fixtures.
-- SEM-342..344 input clients remain accepted. Both axis wrappers share the core;
-  only exact retains the old unread context copy (109 versus normal 104 bytes).
-  Device selection uses global storage; availability derives from pointers.
-  Input tests pass 694 fixture cases. Real COM failure out-parameters, repeated
-  initialization, OS enumeration, synchronization and reachability remain open.
-- SEM-341 FPS, SEM-340 GameWindow and SEM-339 Render/worker-stop boundaries remain
-  accepted. The FPS sampler does not acquire producer lane 5. Read
-  WORKER_LIFECYCLE.md and FRONT_END_PREVIEW_PROTOCOL.md: Stop or active=0 does
-  not establish a join; cancellation can publish; post-shift Pop releases do
-  not prove global queue ownership. Parent layouts and front-end
-  +0x6104/+0x6108/+0x610C remain open. Standalone DIFF's inherited
-  RuntimePressedButtons C3861 remains open and was not retested.
+- Inventory the remaining Supervisor viewport projections, starting with
+  SupervisorViewportView::ApplyGameplayViewport at 0x00425910 and its
+  InitializeViewports producer at 0x00425CC0. Prove method decoration, parent
+  storage, caller/API types and emission before replacing a view. This lane has
+  not been changed by SEM-346. Do not add selectors, layouts or padding.
+- Keep the required configuration construction policy scoped to Supervisor.
+  A full-parent/plain-config control misses Initialize (235 versus target 255
+  constructor bytes); configuration-only restores the target constructor and
+  84-byte destructor. Adding the old viewport adapter changes neither result.
+- Win32/Wine lifetime success does not establish arbitrary OS wait failures,
+  whole-game joins, race-free queue ownership, graphics or native parent ABI.
+  Read WORKER_LIFECYCLE.md and FRONT_END_PREVIEW_PROTOCOL.md: Stop or active=0
+  does not itself establish a join; cancellation can publish; post-shift Pop
+  releases do not prove global ownership. Front-end +0x6104/+0x6108/+0x610C
+  remain open. Full-game runtime was not repeated for this semantic checkpoint.
+- SEM-342..344 input and SEM-341 FPS/SEM-340 window/SEM-339 render boundaries
+  remain accepted. Exact axis retains the unused context copy (109 versus
+  normal 104 bytes); real COM, repeated initialization and synchronization
+  remain open. The Clang layout path accepts no math or portable game; mixed
+  MinGW D3D8/D3DX8 headers and normal MS assembly remain tool compatibility
+  limits. Standalone DIFF's inherited RuntimePressedButtons C3861 is unretested.
 
 ## Local artifacts and protected paths
 
-All jobs completed before cleanup. Commands, reports, graph receipts and
-272 object hashes were saved. Removed 501 generated files, 28,581,924 logical
-bytes (about 29 MB); build/ is empty. Recompile the normal product before
-linking. Cleanup receipt: .analysis/sem345/cleanup-receipt.json. Target, installed
-tools, Ghidra databases and compact evidence remain intact. Keep
-.analysis/sem341-resume/ and .analysis/sem342/, .analysis/sem343/,
-.analysis/sem344/, .analysis/sem345/ receipts.
+All validation jobs terminated before cleanup. Saved commands, input/tool and
+**282 artifact hashes**, normal/runtime reports, layout/graph/EH receipts and
+cleanup inventory. Removed **795 generated files, 33,576,998 logical bytes**
+(about 33.6 MB); **build/ is empty**. Recompile before using --link-only. The
+lifecycle checker always performs its own fresh normal build. Cleanup receipt:
+.analysis/sem346/cleanup-receipt.json. Target, installed tools, private Ghidra
+project and compact .analysis/ receipts remain intact, including SEM-341 resume
+and SEM-342..346 evidence.
 
-The old stash 03ec1ae7d1e3880eacee081578cfd0e0e129a8b6 and
+Stash 03ec1ae7d1e3880eacee081578cfd0e0e129a8b6 and
 .analysis/sem341/pending.patch are superseded interruption provenance only.
 Do not apply them to this tree.
 
@@ -119,10 +117,10 @@ python3 scripts/report-reconstruction-status.py --summary
 python3 scripts/validate-tracking.py --require-target
 python3 scripts/ghidra.py check
 python3 scripts/check-semantic-protocols.py
-python3 scripts/check-portable-front-end.py
-python3 scripts/analysis/report-semantic-debt.py --path src/SupervisorRuntime.hpp --details
+python3 scripts/analysis/report-semantic-debt.py --path src/SupervisorViewport.cpp --details
 ```
 
 Use one writable reconstruction session and serial VC7.1 builds on CPU 1/nice 10.
-Shared-input changes require affected exact replay, normal product and relevant
-EH/native/SDK oracles plus public CI. Preserve compact receipts before cleanup.
+Shared changes require affected exact replay, cold aggregate, independent normal
+build and relevant EH/native/SDK/runtime oracles plus public CI. Preserve compact
+receipts before deleting generated outputs.
