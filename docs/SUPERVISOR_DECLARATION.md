@@ -70,7 +70,9 @@ backend.
 Run the maintained [lifecycle checker](../scripts/check-supervisor-lifecycle.py):
 
 ```bash
-taskset -c 1 nice -n 10 python3 -B scripts/check-supervisor-lifecycle.py
+systemd-run --user --scope --quiet \
+  -p CPUQuota=50% -p MemoryHigh=768M -p MemoryMax=1G -- \
+  taskset -c 1 nice -n 19 python3 -B scripts/check-supervisor-lifecycle.py
 ```
 
 It cold-builds the normal product, compiles
@@ -94,8 +96,11 @@ configuration adapter are retired. One shared typed x/y shake body replaces the
 profile split, with independent normal-target and runtime evidence for the
 former 387-byte normal copy becoming target-shaped 396 bytes.
 [GAMEPLAY_VIEWPORT.md](GAMEPLAY_VIEWPORT.md) records the distinct global/receiver
-roles and the bounded real-owner/D3DX/SDK-binding oracle. Background and ANM
-projections remain separate; this does not close every Supervisor declaration.
+roles and the bounded real-owner/D3DX/SDK-binding oracle. Background.cpp also
+uses this full parent for both viewport methods and all camera/current-pointer
+aliases; [BACKGROUND_VIEWPORT.md](BACKGROUND_VIEWPORT.md) records their separate
+projection and normal-body acceptance. ANM projections remain separate; this
+does not close every Supervisor declaration.
 
 ## Remaining declaration debt
 

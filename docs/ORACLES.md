@@ -117,7 +117,9 @@ that selector. See [the exact boundary](SUPERVISOR_DECLARATION.md).
 ## Primary Supervisor Win32 lifetime oracle
 
 ```bash
-taskset -c 1 nice -n 10 python3 -B scripts/check-supervisor-lifecycle.py
+systemd-run --user --scope --quiet \
+  -p CPUQuota=50% -p MemoryHigh=768M -p MemoryMax=1G -- \
+  taskset -c 1 nice -n 19 python3 -B scripts/check-supervisor-lifecycle.py
 ```
 
 The checker always cold-builds the normal product before linking the actual
@@ -149,11 +151,17 @@ typed C COM binding in ViewportDeviceFixture.c, with explicit success/failure
 returns; unused methods remain null. This is not a graphics driver fixture or
 another parent declaration.
 
-The 48 sequential scenarios distinguish global initialization and transform
+The 48 gameplay scenarios distinguish global initialization and transform
 device from receiver selection/viewport device, cover both slots and unsigned
 size conversion, real pending-vertex flush, matrix values and copied shake bits.
 The separate normal object's three relocation-aware target comparisons also
 validate the deliberate 387-to-396-byte Apply source change. Exact replay alone
 cannot establish that normal-body result. See
 [GAMEPLAY_VIEWPORT.md](GAMEPLAY_VIEWPORT.md) for commands, transitions and retained
-native/graphics/scheduling limits. This does not add a fourteenth native program.
+native/graphics/scheduling limits. Another 48 scenarios execute actual background
+projection, and five serialized stage streams execute the actual camera setters
+and motion modes before D3DX consumption. Both changed normal Background
+methods independently pass canonical target comparisons; the whole interpreter
+keeps its unresolved normal extent. See [BACKGROUND_VIEWPORT.md](BACKGROUND_VIEWPORT.md).
+The program totals 96 viewport cases and five stage-camera handoffs. This does
+not add a fourteenth native program.

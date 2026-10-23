@@ -740,6 +740,34 @@ class SemanticProtocolGuardTests(unittest.TestCase):
                     GUARD.check_gameplay_viewport_owner({"SupervisorViewport.cpp": source.replace(before, after, 1)})
 
 
+    def test_background_viewport_guard_rejects_owner_or_alias_regression(self) -> None:
+        GUARD.check_background_viewport_owner()
+        source = (ROOT / "src/Background.cpp").read_text(encoding="utf-8")
+        mutations = [
+            source + "\nstruct BackgroundSupervisorView {};\n",
+            source.replace("#define TH095_BACKGROUND_VIEWPORT0", "#ifdef TH095_MATCH_EXACT\n#define TH095_BACKGROUND_VIEWPORT0", 1).replace("f32 __stdcall CubicHermiteInterpolate(", "#endif\nf32 __stdcall CubicHermiteInterpolate(", 1),
+            source.replace("(TH095_BACKGROUND_VIEWPORT0.cameraPositionOffset.z)", "(TH095_BACKGROUND_VIEWPORT0.cameraPositionOffset.y)", 1),
+            source.replace("g_BackgroundFieldOfView = *reinterpret_cast<f32 *>(&instruction->args[0]);", "g_BackgroundModeValue = instruction->args[0];", 1),
+        ]
+        for changed in mutations:
+            self.assertNotEqual(source, changed)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_background_viewport_owner({"Background.cpp": changed})
+
+    def test_background_viewport_guard_rejects_projection_or_transition_drift(self) -> None:
+        source = (ROOT / "src/Background.cpp").read_text(encoding="utf-8")
+        for before, after in (
+            ("30.0f,", "1.0f,"),
+            ("1800.0f);", "10000.0f);"),
+            ("g_Supervisor.d3dDevice->SetTransform(", "this->d3dDevice->SetTransform("),
+            ("this->currentViewportIndex = index;", "this->currentViewportIndex = 0;"),
+        ):
+            self.assertIn(before, source)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_background_viewport_owner({"Background.cpp": source.replace(before, after, 1)})
+
     def test_screenshot_worker_token_guard_accepts_shared_storage(self) -> None:
         GUARD.check_screenshot_worker_token_owner()
         supervisor = (ROOT / "src" / "SupervisorRuntime.hpp").read_text(encoding="utf-8")

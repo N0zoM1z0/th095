@@ -31,6 +31,8 @@ struct SupervisorViewportConfiguration
 
 typedef char SupervisorViewportConfigurationSizeIsF0[
     (sizeof(SupervisorViewportConfiguration) == 0xf0) ? 1 : -1];
+typedef char SupervisorViewportCameraOffsetAt3C[
+    (offsetof(SupervisorViewportConfiguration, cameraPositionOffset) == 0x3c) ? 1 : -1];
 typedef char SupervisorViewportViewMatrixAt4C[
     (offsetof(SupervisorViewportConfiguration, viewMatrix) == 0x4c) ? 1 : -1];
 typedef char SupervisorViewportProjectionAt8C[

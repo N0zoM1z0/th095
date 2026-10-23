@@ -118,6 +118,7 @@ struct Supervisor
     static i32 RegisterChain();
     void ApplyGameplayViewport(SupervisorViewportConfiguration *configuration);
     void ConfigureGameplayViewport(i32 index);
+    void ApplyBackgroundViewport(SupervisorViewportConfiguration *configuration);
     void ConfigureBackgroundViewport(i32 index);
     void CalculateFps();
     i32 SetupDInput();

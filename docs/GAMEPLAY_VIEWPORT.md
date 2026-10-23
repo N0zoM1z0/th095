@@ -60,7 +60,9 @@ profiles do not change; this adds no mapping, source or exact credit.
 ## Actual normal Win32 oracle
 
 ```bash
-taskset -c 1 nice -n 10 python3 -B scripts/check-supervisor-lifecycle.py --viewport
+systemd-run --user --scope --quiet \
+  -p CPUQuota=50% -p MemoryHigh=768M -p MemoryMax=1G -- \
+  taskset -c 1 nice -n 19 python3 -B scripts/check-supervisor-lifecycle.py --viewport
 ```
 
 The checker cold-builds the normal product once and runs the existing lifetime
@@ -87,9 +89,10 @@ oracle. The existing Clang SDK compile remains layout-only.
 
 ## Remaining boundaries
 
-BackgroundSupervisorView, BackgroundViewportConfigurationView and the ANM
-background viewport emission facade remain debt. Their method/global ownership
-and background projection must be proved separately before removal. The 0x364
+BackgroundSupervisorView and BackgroundViewportConfigurationView are retired
+separately in SEM-348; [BACKGROUND_VIEWPORT.md](BACKGROUND_VIEWPORT.md) records
+their distinct camera/projection protocol. The ANM viewport emission facade
+and its global/method declarations remain debt. The 0x364
 Supervisor compatibility family and broader ODR/native-parent closure remain
 open. SEM-347 and MAIN-057 record this bounded convergence; private target,
 compiler, graph and runtime receipts are under .analysis/sem347/.

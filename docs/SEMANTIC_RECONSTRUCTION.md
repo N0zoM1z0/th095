@@ -241,6 +241,12 @@ through normal-object comparisons and actual Win32 owner/D3DX execution with
 typed SDK API bindings. This does not accept a graphics driver or native parent;
 see [the ownership and oracle boundary](GAMEPLAY_VIEWPORT.md).
 
+Background camera publication and viewport methods also share that parent and
+element in both profiles. Independent normal-target comparisons cover both
+changed methods, and actual stage streams feed the canonical fields into D3DX.
+The stage interpreter's normal extent and other selected bodies remain open;
+see [the camera and profile boundary](BACKGROUND_VIEWPORT.md).
+
 A bounded family is closed only when its representation, consumers,
 transitions, ownership axes, unknowns, and applicable oracles are explicit.
 Repository-wide semantic completion requires all of those closures plus a

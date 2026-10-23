@@ -403,7 +403,7 @@ th095::Background::DrawHighPrio,0x00402750,function
 th095::Background::DrawLowPrio,0x00402990,function
 th095::Background::RenderObjects,0x00402F60,function
 th095::BackgroundStageObject::IsVisible,0x004031A0,function
-th095::BackgroundSupervisorView::ConfigureBackgroundViewport,0x00401B70,function
+th095::Supervisor::ConfigureBackgroundViewport,0x00401B70,function
 th095::Background::Background,0x004020C0,function
 th095::Background::~Background,0x00402330,function
 th095::AnmVm::AnmVm,0x00401EB0,function
@@ -455,7 +455,7 @@ th095::Supervisor::SetupLoadingVms,0x00425660,function
 th095::Supervisor::HideLoadingVms,0x00425730,function
 th095::Supervisor::BeginLoadingCompletion,0x004257E0,function
 th095::Supervisor::ApplyGameplayViewport,0x00425910,function
-th095::BackgroundSupervisorView::ApplyBackgroundViewport,0x00425AA0,function
+th095::Supervisor::ApplyBackgroundViewport,0x00425AA0,function
 th095::Supervisor::InitializeViewports,0x00425CC0,function
 th095::Supervisor::OnUpdate,0x00423440,function
 th095::Supervisor::UpdateSceneState,0x00425EF0,function

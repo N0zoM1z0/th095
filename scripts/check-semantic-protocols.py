@@ -1793,7 +1793,6 @@ def check_supervisor_viewport_configuration_owner() -> None:
         fail("SupervisorLifecycle restored a duplicate timer declaration")
 
     for path, text, adapter in (
-        ("Background.cpp", background_source, "BackgroundViewportConfigurationView"),
         ("AnmDrawCore.cpp", anm_draw_source, "AnmBackgroundViewportView"),
     ):
         declaration = f"struct {adapter} : SupervisorViewportConfiguration"
@@ -1823,6 +1822,7 @@ def check_supervisor_viewport_configuration_owner() -> None:
         if fact not in owner:
             fail(f"viewport owner lost target layout assertion: {fact}")
     check_gameplay_viewport_owner()
+    check_background_viewport_owner()
     for overclaim in ("viewportMode", "anmViewportValue0", "anmViewportValue1"):
         if overclaim in viewport_source or overclaim in background_source:
             fail(f"viewport implementation restored unsupported field {overclaim}")
@@ -1878,6 +1878,78 @@ def check_gameplay_viewport_owner(overrides: dict[str, str] | None = None) -> No
     initializer = braced_body_after(source, source.index("void Supervisor::InitializeViewports("), "InitializeViewports")
     if "this->" in initializer or "g_Supervisor.viewportConfigurations" not in initializer:
         fail("viewport initialization lost its global storage binding")
+
+
+def check_background_viewport_owner(overrides: dict[str, str] | None = None) -> None:
+    changed = {} if overrides is None else overrides
+    source = source_without_comments(changed.get("Background.cpp", (SRC / "Background.cpp").read_text(encoding="utf-8")))
+    owner = source_without_comments(changed.get("SupervisorRuntime.hpp", (SRC / "SupervisorRuntime.hpp").read_text(encoding="utf-8")))
+    for retired in ("BackgroundSupervisorView", "BackgroundViewportConfigurationView", "TH095_BACKGROUND_SUPERVISOR", "TH095_BACKGROUND_CONFIGURE_RECEIVER", "g_BackgroundModeValue"):
+        if retired in source:
+            fail(f"Background viewport restored retired owner/alias {retired}")
+    if '#include "SupervisorRuntime.hpp"' not in source or "void ApplyBackgroundViewport(SupervisorViewportConfiguration *configuration);" not in owner:
+        fail("Background viewport lost its canonical Supervisor declaration/API")
+    start = source.find("#define TH095_BACKGROUND_VIEWPORT0")
+    end = source.find("f32 __stdcall CubicHermiteInterpolate", start)
+    if start < 0 or end < 0 or any(profile in source[start:end] for profile in PROFILE_NAMES):
+        fail("Background camera/current-pointer aliases became profile-selected")
+    # A selector may open before the first alias and enclose the entire block.
+    # Retain the dependency through #else/#elif until its matching #endif.
+    groups: list[bool] = []
+    for operation, expression in re.findall(
+        r"^\s*#\s*(if|ifdef|ifndef|elif|else|endif)\b([^\n]*)",
+        source[:start],
+        re.MULTILINE,
+    ):
+        selected = any(profile in expression for profile in PROFILE_NAMES)
+        if operation in ("if", "ifdef", "ifndef"):
+            groups.append(selected)
+        elif operation == "elif" and groups:
+            groups[-1] = groups[-1] or selected
+        elif operation == "endif" and groups:
+            groups.pop()
+    if any(groups):
+        fail("Background camera/current-pointer aliases became profile-selected")
+    aliases = {
+        "g_BackgroundCameraPosition": "cameraPosition",
+        "g_BackgroundCameraLookAt": "cameraLookAtOffset",
+        "g_BackgroundCameraForward": "cameraForward",
+        "g_BackgroundCameraUp": "cameraUp",
+        "g_BackgroundCameraValue0": "cameraUp.x",
+        "g_BackgroundCameraValue1": "cameraUp.y",
+        "g_BackgroundCameraValue2": "cameraUp.z",
+        "g_BackgroundWaveX": "cameraPositionOffset.x",
+        "g_BackgroundWaveY": "cameraPositionOffset.z",
+        "g_BackgroundFieldOfView": "fieldOfView",
+    }
+    for alias, field in aliases.items():
+        if f"#define {alias} (TH095_BACKGROUND_VIEWPORT0.{field})" not in source[start:end]:
+            fail(f"Background lost canonical camera field binding: {alias}")
+    if "g_Supervisor.viewportConfigurations[SUPERVISOR_VIEWPORT_PLAYFIELD]" not in source[start:end] or "g_Supervisor.currentViewportConfiguration" not in source[start:end]:
+        fail("Background lost its fixed camera slot or shared current pointer")
+    if re.search(r"(?:DIFFABLE_STATIC|extern)[^;]*(?:g_BackgroundCamera|g_BackgroundWave|g_BackgroundFieldOfView|g_CurrentBackgroundViewport)", source):
+        fail("Background restored independent camera/current-pointer storage")
+    if "g_BackgroundFieldOfView = *reinterpret_cast<f32 *>(&instruction->args[0]);" not in source:
+        fail("Background FOV producer lost typed serialized-float publication")
+    bodies = {}
+    for name in ("ApplyBackgroundViewport", "ConfigureBackgroundViewport"):
+        spelling = f"void Supervisor::{name}("
+        if source.count(spelling) != 1:
+            fail(f"Background viewport lost canonical method owner: {name}")
+        body = braced_body_after(source, source.index(spelling), name)
+        if any(profile in body for profile in PROFILE_NAMES):
+            fail(f"Background viewport restored a selected method body: {name}")
+        bodies[name] = body
+    apply = bodies["ApplyBackgroundViewport"]
+    for fact in ("configuration->fieldOfView", "30.0f", "1800.0f", "D3DXVec3Cross(", "&configuration->cameraLookAtOffset", "&configuration->cameraUp", "D3DXVec3Normalize(", "g_AnmManager->screenShakeOffset.x = configuration->screenShakeOffset.x;", "g_AnmManager->screenShakeOffset.y = configuration->screenShakeOffset.y;"):
+        if fact not in apply:
+            fail(f"Background projection lost proved source contract: {fact}")
+    if apply.count("g_Supervisor.d3dDevice->SetTransform(") != 2 or "this->d3dDevice" in apply:
+        fail("Background projection lost its global transform-device binding")
+    selection = bodies["ConfigureBackgroundViewport"]
+    ordered = ("this->currentViewportConfiguration = &this->viewportConfigurations[index];", "this->ApplyBackgroundViewport(this->currentViewportConfiguration);", "this->d3dDevice->SetViewport(&this->currentViewportConfiguration->viewport);", "this->currentViewportIndex = index;")
+    if any(fact not in selection for fact in ordered) or [selection.index(fact) for fact in ordered] != sorted(selection.index(fact) for fact in ordered):
+        fail("Background selection lost receiver publication/application/index order")
 
 
 def check_screenshot_worker_token_owner() -> None:

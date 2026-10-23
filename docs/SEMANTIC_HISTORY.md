@@ -18493,3 +18493,89 @@ Durable fact: MAIN-057. GAMEPLAY_VIEWPORT.md records the current contract and
 normal/compiler/runtime boundary. Commands, target observations, controls,
 input/object hashes and compact receipts are private under .analysis/sem347/.
 Semantic reconstruction and the full 64-bit game remain active-incomplete.
+
+
+### SEM-348 — canonical background viewport and camera ownership
+
+Scope: Background.cpp's ConfigureBackgroundViewport at 0x00401B70 and
+ApplyBackgroundViewport at 0x00425AA0, the shared Supervisor parent/element,
+camera/current-pointer aliases and the normal Win32 camera publication oracle.
+Both Background viewport views, receiver casts and six profile directives are
+retired. Existing addresses, ABI, TU, extents and authored credit remain fixed.
+
+Observed: attested target instructions distinguish receiver selection and
+SetViewport from global SetTransform. Apply uses position plus positionOffset
+for eye and position plus lookAtOffset for look-at, fieldOfView, unsigned
+aspect and depth 30..1800. Its cameraRight is normalized cross(lookAtOffset,up),
+not the position-offset-adjusted view basis. ANM shake publication uses separate
+float component stores. RunStageScript produces the global PLAYFIELD camera
+regardless of current selection; Update normalizes lookAtOffset into the global
+forward vector, and IsVisible consumes that forward alongside active-camera
+position/offset. WaveY's target slot is positionOffset.z; opcode 7 transfers
+serialized float bits into fieldOfView. Original identifiers remain unknown.
+
+Compiler oracle: bounded owner/scalar/common-alias controls preserve all twenty
+existing exact Background units. Aggregate shake copying emits 530 bytes and
+twelve relocations; typed scalar assignments preserve target 539/thirteen.
+Normal Configure shrinks 116 to target 108 after retiring its view local;
+normal Apply grows 530 to target 539. Both new normal methods independently pass
+canonical relocation-aware target comparisons. No selector, alternate layout,
+inert local, padding, target bytes or assembly is added.
+
+Ownership: SupervisorLifecycle.cpp retains global storage/lifetime; the two
+0xF0 elements and current pointer/index remain in canonical Supervisor.
+Background script owns camera transitions while Supervisor methods select and
+publish projection. Background.cpp retains both method emission sites. Exact
+and normal use one full parent, parameter, body and camera aliases; aliases own
+no storage or static initialization. Gameplay's fixed PI/10 and 1..10000
+projection remains distinct. Other Background views, selected interpreter/body
+paths, historical compiler locals, ANM facade and native/ODR closure remain debt.
+
+Normal oracle: fresh compilation/linkage covers all 88 real objects with zero
+unresolved symbols. The product is 778,752 bytes;
+build-local SHA-256 d81432807259175180c2cdeabb3773f95b42f352e0468325833c070b279756ec.
+The whole-normal audit compares 926 unchanged named roots,
+81 private entries and 1,797 code/data/EH graphs under
+980 private spellings. Only the two reviewed bodies change; common
+outgoing references remain and Apply gains one target-required ANM-owner load.
+Exact-only symbols are inventoried separately. RunStageScript's unchanged normal
+extent remains 5,230 against a configured 5,229-byte target span. This unresolved
+extent does not prove one differing byte or whole-body normal exactness.
+
+Runtime: the maintained --viewport checker cold-builds once, then links actual
+lifetime and viewport programs against all 88 normal objects with /OPT:NOREF.
+Both pass under Wine. Forty-eight gameplay and 48 background cases cover both
+slots, unsigned dimensions, API success/failure, absent/idle/queued ANM, actual
+flush, separate global/receiver devices, matrices, camera basis and shake bits.
+Five serialized streams execute actual RunStageScript setters and all five
+motion modes, preserve FULL_WINDOW/current selection, then feed the real
+PLAYFIELD fields into D3DX. SDK C COM bindings supply explicit API results;
+no replacement parent/interpreter or graphics driver is used. Sequential client
+coverage accepts no native parent, game scheduling, arbitrary invalid input or
+synchronized shake publication. The thirteen native component programs remain
+separate and pass public CI.
+
+Final gates: focused Background 20/20, cold aggregate 698/698 across
+88 sources and fixed-recipe canonical comparison on the same frozen objects all
+pass. No second compilation or recipe refresh occurs in that repeat. Relative
+to 8f87d45, four root-recipe fields retag two owners; 54 global references rebase
+to canonical Supervisor plus proved field addends and twenty method references
+retain their callee targets. Actual old/new object addends preserve every
+physical target. Another 344 private labels in 22 units change only spelling;
+other recipe fields, profiles and extents are unchanged. Real-header VC7.1/Clang
+layout receipts agree on 77 words and both bad-offset controls fail. EH retains
+57 exact parents, 72 actions and 81/81 provenance-exact references. Public CI
+passes 113 workflow tests and thirteen native programs, excluding protected
+untracked contents. All 329 source/tool/test inputs and sixteen non-recipe
+configs remain frozen throughout those gates. Afterwards four known-globals
+provenance notes are clarified; a separate audit proves all other columns and
+all source/recipe inputs unchanged. Closed selector debt shrinks to
+264 keys / 689 directives; declaration debt stays
+191 keys / 196 declarations.
+
+Result: background viewport/camera ownership is canonical in both build paths
+without new exact credit. The guard covers owner/alias/projection/order
+regressions, including a profile branch opening before the alias block.
+Durable fact: MAIN-058. BACKGROUND_VIEWPORT.md records the bounded contract;
+commands, controls, target observations and receipts remain in .analysis/sem348/.
+Semantic reconstruction and full game ports remain active-incomplete.

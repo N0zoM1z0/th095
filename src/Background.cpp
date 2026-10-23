@@ -3,6 +3,7 @@
 #define g_PhotoScreenFadeColor th095_BackgroundSharedPhotoScreenFadeColorDeclaration
 #endif
 #define TH095_DECLARE_ANM_LOADED_INITIALIZE_VM
+#include "SupervisorRuntime.hpp"
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
 #include "Background.hpp"
@@ -280,38 +281,6 @@ typedef PhotoEnemyManagerView BackgroundRuntimeView;
     (spawner)->CreateVmAtWorld((script), (position))
 #endif
 
-// Fieldless compiler-emission adapter for the historical Background method
-// decorations.  It does not own a second viewport layout.
-struct BackgroundViewportConfigurationView : SupervisorViewportConfiguration
-{
-};
-
-struct BackgroundSupervisorView
-{
-    u8 unknown000[8];
-    IDirect3DDevice8 *d3dDevice;                         // +0x008
-    u8 unknown00c[0x1e4 - 0x00c];
-    BackgroundViewportConfigurationView configurations[TH095_SUPERVISOR_VIEWPORT_SLOT_COUNT]; // +0x1e4
-    BackgroundViewportConfigurationView *currentViewport;   // +0x3c4
-    i32 currentViewportIndex;                               // +0x3c8
-
-    void ApplyBackgroundViewport(
-        BackgroundViewportConfigurationView *configuration);
-    void ConfigureBackgroundViewport(i32 index);
-    void SetRenderState(D3DRENDERSTATETYPE renderStateType, i32 value);
-    void DisableFog();
-    void EnableFog();
-};
-
-#ifdef TH095_MATCH_EXACT
-#define TH095_BACKGROUND_SUPERVISOR \
-    (reinterpret_cast<BackgroundSupervisorView *>(&g_Supervisor))
-#define TH095_BACKGROUND_CONFIGURE_RECEIVER BackgroundSupervisorView
-#else
-#define TH095_BACKGROUND_SUPERVISOR (&g_Supervisor)
-#define TH095_BACKGROUND_CONFIGURE_RECEIVER Supervisor
-#endif
-
 struct BackgroundAnmManagerView
 {
     ZunColor color;
@@ -371,14 +340,6 @@ typedef char BackgroundStageObjectInstructionPositionAt8[
     (offsetof(BackgroundStageObjectInstruction, position) == 8) ? 1 : -1];
 typedef char BackgroundStageObjectInstanceSizeIs10[
     (sizeof(BackgroundStageObjectInstance) == 0x10) ? 1 : -1];
-typedef char BackgroundViewportOffsetAt3C[
-    (offsetof(BackgroundViewportConfigurationView, cameraPositionOffset) == 0x3c) ? 1 : -1];
-typedef char BackgroundViewportD3DAtCC[
-    (offsetof(BackgroundViewportConfigurationView, viewport) == 0xcc) ? 1 : -1];
-typedef char BackgroundViewportSizeIsF0[
-    (sizeof(BackgroundViewportConfigurationView) == 0xf0) ? 1 : -1];
-typedef char BackgroundSupervisorViewportAt3C4[
-    (offsetof(BackgroundSupervisorView, currentViewport) == 0x3c4) ? 1 : -1];
 typedef char BackgroundAnmCameraModeAt1768[
     (offsetof(BackgroundAnmManagerView, cameraMode) == 0x1768) ? 1 : -1];
 
@@ -414,37 +375,12 @@ DIFFABLE_STATIC(i32, g_BackgroundStageDataCacheSize);
 #define TH095_BACKGROUND_STAGE_DATA_CACHE g_OwnedBackgroundStageDataCache
 #define TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE g_BackgroundStageDataCacheSize
 #endif
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-DIFFABLE_STATIC(Float3, g_BackgroundCameraPosition);
-DIFFABLE_STATIC(Float3, g_BackgroundCameraLookAt);
-DIFFABLE_STATIC(Float3, g_BackgroundCameraForward);
-DIFFABLE_STATIC(Float3, g_BackgroundCameraUp);
-#ifdef TH095_MATCH_EXACT
-extern f32 g_BackgroundCameraValue0;
-extern f32 g_BackgroundCameraValue1;
-extern f32 g_BackgroundCameraValue2;
-#else
-#define g_BackgroundCameraValue0 g_BackgroundCameraUp.x
-#define g_BackgroundCameraValue1 g_BackgroundCameraUp.y
-#define g_BackgroundCameraValue2 g_BackgroundCameraUp.z
-#endif
-DIFFABLE_STATIC(f32, g_BackgroundWaveX);
-DIFFABLE_STATIC(f32, g_BackgroundWaveY);
-DIFFABLE_STATIC(i32, g_BackgroundModeValue);
-#else
-// These target symbols are fields of Supervisor background configuration 0,
-// not independent globals.  Target Initialize writes cameraPosition at
-// 0x004c4854, cameraLookAtOffset at 0x004c4860, and cameraUp at 0x004c486c;
-// Update normalizes the look vector into cameraForward at 0x004c4878.  Stage
-// script commands likewise write cameraPositionOffset.x/z at 0x004c4890/
-// 0x004c4898 and fieldOfView at 0x004c489c.  All of those addresses are
-// g_Supervisor + 0x1e4 plus the offsets described above.
-//
-// Keeping separate production statics made RunStageScript animate one copy
-// while ConfigureBackgroundViewport rendered another, still-default copy.  In
-// particular its coincident eye/look-at produced the observed black stage.
-// Exact-match and DIFFBUILD objects retain their canonical symbol definitions;
-// only the runnable whole-program link aliases source names to the real owner.
+// These lvalue aliases refer to the one real Supervisor configuration in every
+// profile. Target camera writes at 0x004C4854/60/6C/78 and 0x004C4890/98/9C
+// are fields of viewportConfigurations[PLAYFIELD], not independent globals.
+// Keeping separate runtime statics previously split script animation from the
+// viewport actually rendered. The pinned common-alias control preserves all
+// twenty exact units with reviewed Supervisor-base/addend relocations.
 #define TH095_BACKGROUND_VIEWPORT0 \
     (g_Supervisor.viewportConfigurations[SUPERVISOR_VIEWPORT_PLAYFIELD])
 #define g_BackgroundCameraPosition (TH095_BACKGROUND_VIEWPORT0.cameraPosition)
@@ -456,13 +392,7 @@ DIFFABLE_STATIC(i32, g_BackgroundModeValue);
 #define g_BackgroundCameraValue2 (TH095_BACKGROUND_VIEWPORT0.cameraUp.z)
 #define g_BackgroundWaveX (TH095_BACKGROUND_VIEWPORT0.cameraPositionOffset.x)
 #define g_BackgroundWaveY (TH095_BACKGROUND_VIEWPORT0.cameraPositionOffset.z)
-#define g_BackgroundModeValue                                           \
-    (*reinterpret_cast<i32 *>(&TH095_BACKGROUND_VIEWPORT0.fieldOfView))
-#endif
-#ifdef TH095_MATCH_EXACT
-DIFFABLE_STATIC(BackgroundViewportConfigurationView *,
-                g_CurrentBackgroundViewport);
-#else
+#define g_BackgroundFieldOfView (TH095_BACKGROUND_VIEWPORT0.fieldOfView)
 // The target address named g_CurrentBackgroundViewport is not an independent
 // global.  It is the active-view pointer embedded at g_Supervisor + 0x3c4.
 // ConfigureBackgroundViewport publishes that field after selecting one of the
@@ -470,7 +400,6 @@ DIFFABLE_STATIC(BackgroundViewportConfigurationView *,
 // owner instead of creating a zero-initialized duplicate pointer.
 #define g_CurrentBackgroundViewport                                      \
     g_Supervisor.currentViewportConfiguration
-#endif
 
 f32 __stdcall CubicHermiteInterpolate(
     f32 startValue, f32 endValue, f32 startTangent, f32 endTangent, f32 time);
@@ -499,8 +428,8 @@ static inline i32 BackgroundEitherFlag(i32 first, i32 second)
 
 // FUNCTION: TH095 0x00425AA0.
 #pragma var_order(eye, lookAt, this)
-void BackgroundSupervisorView::ApplyBackgroundViewport(
-    BackgroundViewportConfigurationView *configuration)
+void Supervisor::ApplyBackgroundViewport(
+    SupervisorViewportConfiguration *configuration)
 {
     if (g_AnmManager != NULL)
         g_AnmManager->FlushVertexBuffer();
@@ -534,35 +463,24 @@ void BackgroundSupervisorView::ApplyBackgroundViewport(
         reinterpret_cast<D3DXVECTOR3 *>(&configuration->cameraRight),
         reinterpret_cast<D3DXVECTOR3 *>(&configuration->cameraRight));
 
+    // Target 0x00425C91..0x00425CB2 publishes each float component with its
+    // own ANM-owner load. Typed scalar assignments preserve those thirteen
+    // relocations and all 539 bytes; aggregate Float2 copying emits 530 bytes.
+    // Both profiles use this one body, without the old integer-alias stores.
     if (g_AnmManager != NULL)
     {
-#if defined(TH095_MATCH_EXACT)
-        g_AnmManager->unknown020 =
-            *reinterpret_cast<i32 *>(&configuration->screenShakeOffset.x);
-        g_AnmManager->unknown024 =
-            *reinterpret_cast<i32 *>(&configuration->screenShakeOffset.y);
-#else
-        g_AnmManager->screenShakeOffset = configuration->screenShakeOffset;
-#endif
+        g_AnmManager->screenShakeOffset.x = configuration->screenShakeOffset.x;
+        g_AnmManager->screenShakeOffset.y = configuration->screenShakeOffset.y;
     }
 }
 
 // FUNCTION: TH095 0x00401B70.
-void TH095_BACKGROUND_CONFIGURE_RECEIVER::ConfigureBackgroundViewport(i32 index)
+void Supervisor::ConfigureBackgroundViewport(i32 index)
 {
-#ifdef TH095_MATCH_EXACT
-    this->currentViewport = &this->configurations[index];
-    this->ApplyBackgroundViewport(this->currentViewport);
-    this->d3dDevice->SetViewport(&this->currentViewport->viewport);
+    this->currentViewportConfiguration = &this->viewportConfigurations[index];
+    this->ApplyBackgroundViewport(this->currentViewportConfiguration);
+    this->d3dDevice->SetViewport(&this->currentViewportConfiguration->viewport);
     this->currentViewportIndex = index;
-#else
-    BackgroundSupervisorView *view =
-        reinterpret_cast<BackgroundSupervisorView *>(this);
-    view->currentViewport = &view->configurations[index];
-    view->ApplyBackgroundViewport(view->currentViewport);
-    view->d3dDevice->SetViewport(&view->currentViewport->viewport);
-    view->currentViewportIndex = index;
-#endif
 }
 
 // FUNCTION: TH095 0x004020C0 is implemented in BackgroundLifecycle.cpp.
@@ -671,18 +589,18 @@ i32 Background::DrawHighPrio()
 {
     u32 vmIndex;
 
-    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZWRITEENABLE, TRUE);
-    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_FOGCOLOR,
         this->photoBlendCurrent.color.color);
-    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_FOGSTART,
         *reinterpret_cast<i32 *>(
             &this->photoBlendCurrent.nearDistance));
-    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_FOGEND,
         *reinterpret_cast<i32 *>(
             &this->photoBlendCurrent.farDistance));
@@ -702,9 +620,9 @@ i32 Background::DrawHighPrio()
                 .loadedSprite != NULL)
         {
             g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
-            TH095_BACKGROUND_SUPERVISOR->DisableFog();
+            g_Supervisor.DisableFog();
             g_AnmManager->FlushVertexBuffer();
-            TH095_BACKGROUND_SUPERVISOR->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+            g_Supervisor.SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
             for (vmIndex = 0; vmIndex < 8; vmIndex++)
             {
                 if (this
@@ -716,10 +634,10 @@ i32 Background::DrawHighPrio()
                         .Draw();
                 }
             }
-            TH095_BACKGROUND_SUPERVISOR->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+            g_Supervisor.SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
         }
 
-        TH095_BACKGROUND_SUPERVISOR->EnableFog();
+        g_Supervisor.EnableFog();
         this->RenderObjects(0);
         this->RenderObjects(1);
         this->RenderObjects(2);
@@ -731,15 +649,15 @@ i32 Background::DrawHighPrio()
     g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
     reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)
         ->SetMixColorDefault();
-    TH095_BACKGROUND_SUPERVISOR->DisableFog();
+    g_Supervisor.DisableFog();
     if (this->photoAreaActive != 0)
     {
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager)->SetMixColor(
             0xff404040);
     }
-    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZWRITEENABLE, FALSE);
-    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZFUNC, D3DCMP_ALWAYS);
     return 1;
 }
@@ -802,9 +720,9 @@ i32 Background::DrawLowPrio()
         locals.clearRect.y2 = locals.bottom;
         g_Supervisor.d3dDevice->Clear(
             1, &locals.clearRect, D3DCLEAR_ZBUFFER, 0, 0.0f, 0);
-        TH095_BACKGROUND_SUPERVISOR->SetRenderState(
+        g_Supervisor.SetRenderState(
             D3DRS_ZWRITEENABLE, TRUE);
-        TH095_BACKGROUND_SUPERVISOR->SetRenderState(
+        g_Supervisor.SetRenderState(
             D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
         this->photoAreaVms[0].Draw();
         this->photoAreaVms[1].Draw();
@@ -812,9 +730,9 @@ i32 Background::DrawLowPrio()
         g_AnmManager->FlushVertexBuffer();
     }
 
-    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZWRITEENABLE, FALSE);
-    TH095_BACKGROUND_SUPERVISOR->SetRenderState(
+    g_Supervisor.SetRenderState(
         D3DRS_ZFUNC, D3DCMP_ALWAYS);
     return 1;
 }
@@ -862,7 +780,7 @@ i32 Background::RenderObjects(i32 mode)
     AnmVm *curQuadVm;
     BackgroundStageObjectInstance *instance =
         this->stageObjectInstances;
-    TH095_BACKGROUND_SUPERVISOR->ConfigureBackgroundViewport(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
+    g_Supervisor.ConfigureBackgroundViewport(TH095_SUPERVISOR_VIEWPORT_PLAYFIELD);
     BackgroundSetCameraModePhase(
         reinterpret_cast<BackgroundAnmManagerView *>(g_AnmManager), 1);
     {
@@ -918,9 +836,9 @@ i32 Background::RenderObjects(i32 mode)
                 }
 
                 if (curQuadVm->renderModeBits == TH095_BACKGROUND_DIRECT_3D_DRAW_MODE)
-                    TH095_BACKGROUND_SUPERVISOR->EnableFog();
+                    g_Supervisor.EnableFog();
                 else
-                    TH095_BACKGROUND_SUPERVISOR->DisableFog();
+                    g_Supervisor.DisableFog();
                 g_AnmManager->Draw(curQuadVm);
 
             }
@@ -1288,7 +1206,7 @@ read_instruction:
             break;
 
         case TH095_BACKGROUND_STAGE_OPCODE_SET_FIELD_OF_VIEW:
-            g_BackgroundModeValue = instruction->args[0];
+            g_BackgroundFieldOfView = *reinterpret_cast<f32 *>(&instruction->args[0]);
             break;
 
         case TH095_BACKGROUND_STAGE_OPCODE_SET_PHOTO_BLEND:

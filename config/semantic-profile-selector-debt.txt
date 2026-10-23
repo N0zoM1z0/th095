@@ -36,10 +36,10 @@
 1	src/AsciiManager.cpp	#ifndef DIFFBUILD
 1	src/Background.cpp	#elif defined(DIFFBUILD)
 1	src/Background.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-7	src/Background.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-10	src/Background.cpp	#if defined(TH095_MATCH_EXACT)
+6	src/Background.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+9	src/Background.cpp	#if defined(TH095_MATCH_EXACT)
 2	src/Background.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-14	src/Background.cpp	#ifdef TH095_MATCH_EXACT
+10	src/Background.cpp	#ifdef TH095_MATCH_EXACT
 2	src/Background.cpp	#ifndef DIFFBUILD
 1	src/BackgroundLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/BulletManager.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
