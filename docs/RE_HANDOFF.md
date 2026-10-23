@@ -8,7 +8,7 @@ This replaceable note records the accepted source. Accepted batches are in
 ## Authority and current state
 
 Work resumed on 2026-10-23 after the handoff cleanup. The accepted source
-checkpoint is `123eb777569e835d78fa78d4a0c40620a6b1be66` (SEM-343), on branch
+checkpoint is `1dbef05a13e318459d9e5db6f1fdb95ab2d5a3c9` (SEM-344), on branch
 `semantic/owner-cleanup-20260926`. Semantic reconstruction is active-incomplete;
 the full 64-bit game port remains separate, unfinished work.
 
@@ -19,52 +19,59 @@ the full 64-bit game port remains separate, unfinished work.
   runtime validation remain separate. PROGRESS.md holds generated ledger
   totals; no semantic completion percentage or complete native game is claimed.
   Claims stays header-only. No active blocker is known.
-- Latest batch: **SEM-343**. Both Main routes share InitializeInput and
-  EnumGameControllersCb, alongside SEM-342's SetupDInput. The initializer ignores
-  its argument, clears global availability, calls global setup, then derives
-  availability from final pointers regardless of the setup result. Device
-  selection ignores context, uses global input/controller slots, continues on
-  negative HRESULT and stops on nonnegative results or an existing controller.
-  The SDK DIENUM names express that return contract. See
+- Latest batch: **SEM-344**. SupervisorControllerAxisRange.inl is the shared
+  axis type/range/continuation core. Normal uses SupervisorControllerCallback.inl
+  without an unused context local; MainExact retains its existing copy. Minimal
+  and actual pinned-normal oracles prove the 109-to-104-byte consequence:
+  dead-copy/frame removal and pre-call volatile-register permutation, with the
+  same control flow, COM arguments and return ABI. This is shared semantics,
+  with explicit remaining wrapper debt. Exact replay alone does not accept the
+  different normal function. See
   [WINDOW_INPUT_INITIALIZATION.md](WINDOW_INPUT_INITIALIZATION.md).
-- Storage and TU ownership are preserved. The shared bodies introduce no layout,
-  profile selector, alternate owner or adapter. The axis-property callback and
-  its target-observed unused context copy are unchanged. No new mapping,
-  source-presence or exact credit is claimed.
+- The axis callback uses SDK DIDFT_AXIS, full dwType/BYID and signed -1000/+1000
+  bounds on the global controller. Negative property HRESULT stops object
+  enumeration; setup still ignores enumeration failure. SEM-343's shared
+  initialization/device-selection and SEM-342's module-width fix remain accepted.
+  Storage/TU ownership stay unchanged. No new selector, owner layout, adapter,
+  inert local or mapping/source/exact credit is introduced.
 
 ## Validation at the source checkpoint
 
-- Fresh Main baseline/candidate replay: **48/48**. Setup, initialization and
-  device selection preserve **884 target bytes and all 44 relocations**.
-  Only 25 private labels in one Main unit change relative to 15b91a7; no public
+- Fresh Main baseline/candidate replay: **48/48**. The exact setup, initializer,
+  device/axis surface preserves **993 target bytes and all 46 relocations**.
+  Only 25 private labels in one Main unit change relative to c629d09; no public
   retag, other recipe field, profile or extent changes.
 - Frozen aggregate: **698/698 across 88 sources**, zero further refresh.
   Exact credit remains 696 functions / 336,486 bytes.
 - Independent normal build: **88/88 i386 COFF objects**, verified
   **778,752-byte PE32 GUI**, zero unresolved symbols. SHA-256:
-  `5ff77f4071bd677dc78b63f13ba929cafab7e03c8bf8a8ceb21ed4deb218de84`.
-  Actual product Main preserves all 55 named roots, one private entry and
-  143 code/data/EH graphs under 28 private spellings.
+  `1caa433a9c858c4e667803eaffe567fddc3c506ae14a62900271a7a49b8c53ca`.
+  Actual product Main preserves 54 named roots byte-for-byte and proves the
+  single axis callback delta independently; one private entry and 143 code/data/
+  EH section graphs are audited under 28 private spellings.
 - Actual Windows/DirectInput SDK compiles: VC7.1 x86 and MinGW x86/x64, including
-  _WIN32_WINNT=0x0500. Uncast device/worker callback bindings compile; COFF
-  receipts verify native pointer widths, four-byte BOOL/flags and DIENUM 0/1.
-  These compile/type checks do not execute Windows/COM or accept parent ABI.
-- Public CI: **103 workflow tests and thirteen native x86-64/UBSan programs**.
-  The input program passes **523 cases**, executing shared setup, device
-  selection and availability publication through explicit fixture bindings.
-  The axis-property callback remains identity-only. EH passes **57 parents,
-  72 actions and 81/81 provenance-exact references**.
-- All 320 source/tool/test inputs, including five Ghidra Java scripts, match
+  _WIN32_WINNT=0x0500. Uncast device/object/worker callback bindings compile.
+  COFF receipts verify native pointer widths, four-byte BOOL/flags, SDK DIENUM
+  0/1, fixed 16/24-byte property header/range, object/range offsets and the
+  non-relocated property reference value 4. These compile/type checks do not
+  execute Windows/COM or accept parent ABI.
+- Public CI: **105 workflow tests and thirteen native x86-64/UBSan programs**.
+  The input program passes **694 cases**, executing setup, both callbacks and
+  availability publication through explicit fixture backends. Axis cases cover
+  full IDs, range fields, HRESULT/context variants, stopping and ignored outer
+  failures. EH passes **57 parents, 72 actions and 81/81 provenance-exact refs**.
+- All 322 source/tool/test inputs, including five Ghidra Java scripts, match
   the validation freeze. Closed profile debt stays **265 keys / 696 directives**
-  and **191 keys / 196 selected declarations**. Receipts are .analysis/sem343/.
+  and **191 keys / 196 selected declarations**. Receipts are .analysis/sem344/.
 
 ## Next bounded lane and retained limits
 
-- Continue the input family at ControllerCallback, 0x00423C70: reconcile the
-  axis-type/property protocol and its existing context copy with target and
-  minimal compiler evidence before convergence. Do not add inert locals,
-  profile selectors or another layout to preserve emission. Preserve device
-  selection's global storage and the initializer's pointer-derived publication.
+- Continue canonical Supervisor ownership convergence: compare the Main,
+  runtime and lifecycle declarations and their include/emission dependencies.
+  Preserve the one 0x7BC semantic owner; do not infer original spelling from
+  constructor zero extent or add profile-selected layouts/selectors. The axis
+  context-copy wrapper remains explicit debt and must not spread back into
+  normal code. Preserve global callback storage and pointer-derived availability.
 - Native fixtures do not establish real COM failure out-parameters, repeated
   initialization lifetime, actual device enumeration, cross-thread flag
   synchronization or whole-game reachable schedules.
@@ -83,11 +90,11 @@ the full 64-bit game port remains separate, unfinished work.
 ## Local artifacts and protected paths
 
 All jobs completed before cleanup. Reports, commands, product/map hashes and
-182 object hashes were saved. Removed 409 generated build/cache files,
-25,074,689 logical bytes (about 25 MB); build/ is empty. Recompile the normal
-product before linking. Cleanup receipt: .analysis/sem343/cleanup-receipt.json.
+185 object hashes were saved. Removed 415 generated build/cache files,
+25,444,173 logical bytes (about 25 MB); build/ is empty. Recompile the normal
+product before linking. Cleanup receipt: .analysis/sem344/cleanup-receipt.json.
 Target, installed tools, Ghidra databases and compact evidence remain intact.
-Keep .analysis/sem341-resume/, .analysis/sem342/ and .analysis/sem343/.
+Keep .analysis/sem341-resume/ and the .analysis/sem342/, .analysis/sem343/ and .analysis/sem344/ receipts.
 
 The old stash 03ec1ae7d1e3880eacee081578cfd0e0e129a8b6 and
 .analysis/sem341/pending.patch are superseded interruption provenance only.
