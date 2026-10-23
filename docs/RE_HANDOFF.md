@@ -2,8 +2,11 @@
 
 Accepted source: **94eb5902de1fd53c149a41a545cdc2cc984d55eb (SEM-353)**, 2026-10-23,
 branch semantic/owner-cleanup-20260926. The source batch is committed; no
-reconstruction edits remain pending. Semantic reconstruction and game ports
-remain active-incomplete. Current navigation:
+reconstruction edits remain pending. The SEM-354 directory contains only a
+retained comparison baseline and preflight tooling/results; no SEM-354 source
+change or acceptance is claimed. Semantic reconstruction and game ports
+remain active-incomplete. Start with the [documentation guide](README.md).
+Current navigation:
 [SEMANTIC_INDEX.md](SEMANTIC_INDEX.md); accepted narratives:
 [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md); ownership:
 [SOURCE_MAP.md](SOURCE_MAP.md). Receipts apply only to recorded inputs.
@@ -92,9 +95,10 @@ See [ANM_VIEWPORT.md](ANM_VIEWPORT.md),
 Commands, controls, source hashes, attested target observations, comparisons,
 graph/recipe audits and terminal receipts: .analysis/sem353/. No driver,
 general overflow handling, all FPU modes, full game, synchronization or native
-parent/game ABI is accepted. Source checkpoint validation is complete. The initial private auditor treated
-a missing optional addend as zero; corrected checking preserves each raw
-baseline addend and physical target (including the legitimate 0x60 field bias).
+parent/game ABI is accepted. Source checkpoint validation is complete.
+The initial private auditor treated a missing optional addend as zero;
+corrected checking preserves each raw baseline addend and physical target
+(including the legitimate 0x60 field bias).
 Completed cold/fixed gates were retained by hash; finish-validation.py completed
 the audit/CI. acceptance-terminal.json is the terminal receipt; the earlier
 final-driver.log records the corrected private-audit assertion.
@@ -127,7 +131,7 @@ joins/queue ownership. Native 64-bit/Linux/Web game products remain unfinished.
 
 ## Local artifacts and resources
 
-All build/headless/test jobs ended before cleanup. This batch removes
+All build/headless/test jobs ended before cleanup. The SEM-353 cleanup removed
 **1,121 reproducible files**, **46,641,928 logical /
 48,668,672 allocated bytes**: binaries, PDBs, maps, old
 baselines, probe trees/products and three private unit manifests. Compact
@@ -144,10 +148,23 @@ lifecycle checker always builds afresh.
 Keep the verified target, installed tools (approximately 1.8 GiB), private
 Ghidra project and compact evidence. Historical SEM-327..348 material remains
 in the verified 788-member archive below .analysis/archives/. Restore before
-using an archived historical path:
+using an archived historical path. Its member/hash index is
+.analysis/archives/handoff-20261023-index.json:
 
 ```bash
 tar --keep-old-files -xzf .analysis/archives/handoff-20261023-historical-evidence.tar.gz
+```
+
+The final documentation/artifact handoff also archives **530 historical
+SEM-349..352 files**, 14,302,315 logical bytes, into a 1,718,359-byte archive.
+Every member was checked against its original SHA-256 before removing the
+loose copy. The archive payload saves 14,155,776 allocated bytes; the indexed
+receipt is .analysis/handoff-20261023-final/archive-receipt.json. Latest
+SEM-353 acceptance evidence and all 88 baseline objects remain directly
+accessible. Restore older evidence from the repository root with:
+
+```bash
+tar --keep-old-files -xzf .analysis/archives/handoff-20261023-sem349-352.tar.gz
 ```
 
 Heavy jobs remain serial under the workspace lock in
@@ -155,6 +172,15 @@ Heavy jobs remain serial under the workspace lock in
 half a CPU, memory.high 768 MiB / memory.max 1 GiB, CPU 1/nice 19; Ghidra heap
 512 MiB. Per-scope peak: **250.12 MiB**, zero OOM events. Do not overlap
 index reconciliation with builds/headless jobs or change other workspaces' jobs.
+
+The final documentation-only handoff passes public CI, target/tracking,
+generated progress and 153 local links across 42 Markdown files. Its checks run
+under .analysis/handoff-20261023-final/run-limited.sh with the same limits;
+peak memory is **102.66 MiB**, zero OOM events. No new exact, normal-product or
+gameplay validation is claimed. All 129 generated CI binaries/cache files
+(3,442,238 logical bytes) are removed afterward; hashes of the 88 retained
+baseline objects still match. Commands, check logs and cleanup/resource
+receipts remain in .analysis/handoff-20261023-final/.
 
 Protected user-owned untracked paths must not be read, modified, staged,
 deleted or used to infer reconstruction state:

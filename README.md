@@ -156,6 +156,7 @@ claim.
 
 ## Documentation
 
+- [Documentation guide: current references and historical evidence](docs/README.md)
 - [Current handoff](docs/RE_HANDOFF.md)
 - [Reconstruction and game-port roadmap](docs/ROADMAP.md)
 - [Semantic reconstruction policy](docs/SEMANTIC_RECONSTRUCTION.md)
