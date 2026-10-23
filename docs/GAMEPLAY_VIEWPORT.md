@@ -91,8 +91,9 @@ oracle. The existing Clang SDK compile remains layout-only.
 
 BackgroundSupervisorView and BackgroundViewportConfigurationView are retired
 separately in SEM-348; [BACKGROUND_VIEWPORT.md](BACKGROUND_VIEWPORT.md) records
-their distinct camera/projection protocol. The ANM viewport emission facade
-and its global/method declarations remain debt. The 0x364
+their distinct camera/projection protocol. [ANM_VIEWPORT.md](ANM_VIEWPORT.md)
+records retirement of the ANM viewport view/getter. The separate shake
+projections and ASCII selection facade remain debt. The 0x364
 Supervisor compatibility family and broader ODR/native-parent closure remain
 open. SEM-347 and MAIN-057 record this bounded convergence; private target,
 compiler, graph and runtime receipts are under .analysis/sem347/.

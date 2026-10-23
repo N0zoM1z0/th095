@@ -156,6 +156,165 @@ static void CheckStageCameraPublication(th095::AnmManager *manager)
     g_Supervisor.currentViewportIndex = 91;
 }
 
+// An affine fixture makes the independently calculated screen coordinates
+// simple while exercising the actual D3DX projection and canonical fields.
+static th095::Float3 ProjectAnmFixturePoint(
+    const th095::SupervisorViewportConfiguration &configuration,
+    const th095::Float3 &point)
+{
+    const D3DVIEWPORT8 &v = configuration.viewport;
+    const D3DXMATRIX &view = configuration.viewMatrix;
+    const D3DXMATRIX &projection = configuration.projectionMatrix;
+    return th095::Float3(
+        v.X + (1.0f + (point.x + view._41) * projection._11) * v.Width * 0.5f,
+        v.Y + (1.0f - (point.y + view._42) * projection._22) * v.Height * 0.5f,
+        v.MinZ + ((point.z + view._43) * projection._33 + projection._43) * (v.MaxZ - v.MinZ));
+}
+
+static void SeedAnmProjectionVertices()
+{
+    using namespace th095;
+    for (unsigned int i = 0; i < 4; ++i)
+    {
+        g_AnmTexturedVertices[i].x = -17.0f - i;
+        g_AnmTexturedVertices[i].y = -23.0f - i;
+        g_AnmTexturedVertices[i].z = -31.0f - i;
+        g_AnmTexturedVertices[i].w = 3.25f + i;
+        g_AnmTexturedVertices[i].diffuse = 0x12345678u + i;
+        g_AnmTexturedVertices[i].u = 0.125f + i;
+        g_AnmTexturedVertices[i].v = 0.25f + i;
+    }
+}
+
+static void CheckAnmProjectionVertex(unsigned int i, float x, float y, float z)
+{
+    using namespace th095;
+    const VertexTex1DiffuseXyzrhw &vertex = g_AnmTexturedVertices[i];
+    CHECK(Near(vertex.x, x) && Near(vertex.y, y) && Near(vertex.z, z));
+    CHECK(vertex.w == 3.25f + i && vertex.diffuse == 0x12345678u + i);
+    CHECK(vertex.u == 0.125f + i && vertex.v == 0.25f + i);
+}
+
+static unsigned int CheckAnmViewportConsumers(th095::AnmManager *manager)
+{
+    using namespace th095;
+    unsigned int cases = 0;
+    for (i32 slot = 0; slot < SUPERVISOR_VIEWPORT_SLOT_COUNT; ++slot)
+    {
+        SupervisorViewportConfiguration &configuration = g_Supervisor.viewportConfigurations[slot];
+        PrepareBackground(configuration, 0);
+        configuration.viewport.X = 10 + slot * 60;
+        configuration.viewport.Y = 20 + slot * 70;
+        configuration.viewport.Width = 160 + slot * 140;
+        configuration.viewport.Height = 120 + slot * 80;
+        configuration.viewport.MinZ = 0.1f;
+        configuration.viewport.MaxZ = 0.9f;
+        g_AnmManager = NULL;
+        ResetViewportDeviceCalls(S_OK);
+        g_Supervisor.ConfigureBackgroundViewport(slot);
+        CHECK(g_Supervisor.currentViewportConfiguration == &configuration);
+        CHECK(ViewportDeviceCallCount() == 3);
+        D3DXMatrixIdentity(&configuration.viewMatrix);
+        configuration.viewMatrix._41 = 0.1f * (slot + 1);
+        configuration.viewMatrix._42 = -0.05f * (slot + 1);
+        configuration.viewMatrix._43 = 0.05f * (slot + 1);
+        D3DXMatrixIdentity(&configuration.projectionMatrix);
+        configuration.projectionMatrix._11 = 0.5f + slot * 0.25f;
+        configuration.projectionMatrix._22 = 0.75f - slot * 0.25f;
+        configuration.projectionMatrix._33 = 0.5f;
+        configuration.projectionMatrix._43 = 0.25f;
+        configuration.cameraRight = slot ? Float3(0,1,0) : Float3(1,0,0);
+        ResetViewportDeviceCalls(S_OK);
+
+        for (i32 horizontal = 0; horizontal < 3; ++horizontal)
+        for (i32 vertical = 0; vertical < 3; ++vertical)
+        for (i32 turn = 0; turn < 2; ++turn)
+        {
+            AnmVm vm;
+            vm.position = Float3(0.05f, -0.1f, 0.4f);
+            vm.positionOffset = Float3(0.1f, 0.2f, 0.05f);
+            vm.rotation.z = turn ? D3DX_PI * 0.5f : 0.0f;
+            vm.spriteSize.x = 0.2f; vm.spriteSize.y = 0.3f;
+            vm.scale.x = 1.5f; vm.scale.y = 0.75f;
+            vm.renderStateA = horizontal; vm.renderStateB = vertical;
+            const Float3 point = vm.position + vm.positionOffset;
+            const Float3 center = ProjectAnmFixturePoint(configuration, point);
+            const Float3 reference = ProjectAnmFixturePoint(configuration, point + configuration.cameraRight);
+            const float dx = reference.x - center.x, dy = reference.y - center.y;
+            const float pixelScale = (float)sqrt(dx*dx + dy*dy) * 0.5f;
+            const float width = pixelScale * vm.spriteSize.x * vm.scale.x;
+            const float height = pixelScale * vm.spriteSize.y * vm.scale.y;
+            const float left = horizontal == 0 ? -width*0.5f : horizontal == 1 ? 0 : -width;
+            const float top = vertical == 0 ? -height*0.5f : vertical == 1 ? 0 : -height;
+            const float xs[4] = {left, left+width, left, left+width};
+            const float ys[4] = {top, top, top+height, top+height};
+            SeedAnmProjectionVertices();
+            CHECK(manager->ProjectCameraFacingQuad(&vm) == ZUN_SUCCESS);
+            for (unsigned int vertex = 0; vertex < 4; ++vertex)
+                CheckAnmProjectionVertex(vertex,
+                    center.x + (turn ? -ys[vertex] : xs[vertex]),
+                    center.y + (turn ? xs[vertex] : ys[vertex]), vm.position.z);
+            ++cases;
+        }
+
+        for (i32 projectedHorizontal = 0; projectedHorizontal < 3; ++projectedHorizontal)
+        for (i32 projectedVertical = 0; projectedVertical < 3; ++projectedVertical)
+        {
+            AnmVm vm;
+            vm.position = Float3(0.05f, -0.1f, 0.4f);
+            vm.positionOffset = Float3(0.1f, 0.2f, 0.05f);
+            vm.updateScale = false; vm.updateRotation = false;
+            vm.renderStateA = projectedHorizontal; vm.renderStateB = projectedVertical;
+            D3DXMatrixIdentity(&vm.matrix2);
+            vm.matrix2._11 = 0.002f; vm.matrix2._22 = 0.003f;
+            vm.matrix2._41 = 0.01f; vm.matrix2._42 = -0.02f; vm.matrix2._43 = 0.17f;
+            D3DXMATRIX expectedWorld = vm.matrix2;
+            expectedWorld._41 += vm.position.x + vm.positionOffset.x;
+            expectedWorld._42 += vm.position.y + vm.positionOffset.y;
+            expectedWorld._43 = vm.position.z;
+            const float left = projectedHorizontal == 0 ? -128 : projectedHorizontal == 1 ? 0 : -256;
+            const float top = projectedVertical == 0 ? -128 : projectedVertical == 1 ? 0 : -256;
+            SeedAnmProjectionVertices();
+            CHECK(manager->Project3DQuad(&vm) == ZUN_SUCCESS);
+            CHECK(memcmp(&manager->cachedWorldMatrix, &expectedWorld, sizeof(expectedWorld)) == 0);
+            for (unsigned int projectedVertex = 0; projectedVertex < 4; ++projectedVertex)
+            {
+                const Float3 point(
+                    (left + (projectedVertex & 1 ? 256 : 0)) * expectedWorld._11 + expectedWorld._41,
+                    (top + (projectedVertex & 2 ? 256 : 0)) * expectedWorld._22 + expectedWorld._42,
+                    expectedWorld._43);
+                const Float3 expected = ProjectAnmFixturePoint(configuration, point);
+                CheckAnmProjectionVertex(projectedVertex, expected.x, expected.y, expected.z);
+            }
+            ++cases;
+        }
+
+        D3DXMatrixIdentity(&configuration.viewMatrix);
+        D3DXMatrixIdentity(&configuration.projectionMatrix);
+        configuration.viewport.MinZ = 0; configuration.viewport.MaxZ = 1;
+        const float depths[] = {-0.25f, 0.0f, 0.5f, 1.0f, 1.25f};
+        for (unsigned int depth = 0; depth < 5; ++depth)
+        {
+            AnmVm vm;
+            vm.position = Float3(0,0,depths[depth]);
+            vm.positionOffset = Float3(0,0,0);
+            vm.rotation.z = 0;
+            vm.spriteSize.x = vm.spriteSize.y = 0.2f;
+            vm.scale.x = vm.scale.y = 1;
+            vm.renderStateA = vm.renderStateB = 0;
+            SeedAnmProjectionVertices();
+            VertexTex1DiffuseXyzrhw before[4]; memcpy(before, g_AnmTexturedVertices, sizeof(before));
+            const bool outside = depth == 0 || depth == 4;
+            CHECK(manager->ProjectCameraFacingQuad(&vm) == (outside ? ZUN_ERROR : ZUN_SUCCESS));
+            if (outside) CHECK(memcmp(before, g_AnmTexturedVertices, sizeof(before)) == 0);
+            ++cases;
+        }
+        CHECK(ViewportDeviceCallCount() == 0);
+    }
+    CHECK(cases == 64);
+    return cases;
+}
+
 static void CheckGlobalInitializer()
 {
     using namespace th095;
@@ -259,10 +418,12 @@ int __cdecl main()
         ++cases;
     }
     CheckStageCameraPublication(manager);
+    const unsigned int anmCases = CheckAnmViewportConsumers(manager);
     g_AnmManager = NULL;
     g_Supervisor.d3dDevice = NULL;
     delete manager;
     // The real global Chain owns its registrations and releases them at exit.
     printf("canonical Supervisor viewport: %u real-owner/D3DX/SDK-binding cases and five stage-camera handoffs passed\n", cases);
+    printf("canonical ANM viewport: %u actual projection/boundary cases passed\n", anmCases);
     return 0;
 }

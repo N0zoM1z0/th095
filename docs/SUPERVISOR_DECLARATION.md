@@ -99,8 +99,11 @@ former 387-byte normal copy becoming target-shaped 396 bytes.
 roles and the bounded real-owner/D3DX/SDK-binding oracle. Background.cpp also
 uses this full parent for both viewport methods and all camera/current-pointer
 aliases; [BACKGROUND_VIEWPORT.md](BACKGROUND_VIEWPORT.md) records their separate
-projection and normal-body acceptance. ANM projections remain separate; this
-does not close every Supervisor declaration.
+projection and normal-body acceptance. AnmDrawCore also consumes the canonical
+active element and fixed camera without a derived view or cast getter;
+[ANM_VIEWPORT.md](ANM_VIEWPORT.md) records its independent normal/runtime
+evidence. Other projections remain separate; this does not close every
+Supervisor declaration.
 
 ## Remaining declaration debt
 

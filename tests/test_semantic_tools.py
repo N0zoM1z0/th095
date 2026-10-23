@@ -714,6 +714,33 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         self.assertNotIn("struct SupervisorViewportLifecycle", lifecycle)
         self.assertNotIn("struct SupervisorTimerLifecycle", lifecycle)
 
+    def test_anm_viewport_guard_rejects_owner_or_profile_regression(self) -> None:
+        GUARD.check_anm_viewport_owner()
+        source = (ROOT / "src/AnmDrawCore.cpp").read_text(encoding="utf-8")
+        mutations = [
+            source + "\nstruct AnmBackgroundViewportView {};\n",
+            source.replace("g_Supervisor.currentViewportConfiguration", "g_IndependentViewport", 1),
+            source.replace("SUPERVISOR_VIEWPORT_PLAYFIELD", "SUPERVISOR_VIEWPORT_FULL_WINDOW", 1),
+            source.replace("#define g_CurrentBackgroundViewport", "#ifdef TH095_MATCH_EXACT\n#define g_CurrentBackgroundViewport", 1).replace("static __forceinline u8 MixAnmColor", "#endif\nstatic __forceinline u8 MixAnmColor", 1),
+        ]
+        for changed in mutations:
+            self.assertNotEqual(source, changed)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_anm_viewport_owner({"AnmDrawCore.cpp": changed})
+
+    def test_anm_viewport_guard_rejects_consumer_selection_regression(self) -> None:
+        source = (ROOT / "src/AnmDrawCore.cpp").read_text(encoding="utf-8")
+        for before, after in (
+            ("g_CurrentBackgroundViewport->cameraRight", "g_CurrentBackgroundViewport->cameraUp"),
+            ("g_CurrentBackgroundViewport->projectionMatrix", "g_Supervisor.viewportConfigurations[0].projectionMatrix"),
+            ("- g_BackgroundCameraPosition;", "- g_Supervisor.currentViewportConfiguration->cameraPosition;"),
+        ):
+            self.assertIn(before, source)
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    GUARD.check_anm_viewport_owner({"AnmDrawCore.cpp": source.replace(before, after, 1)})
+
     def test_gameplay_viewport_guard_rejects_owner_and_profile_regression(self) -> None:
         source = (ROOT / "src/SupervisorViewport.cpp").read_text(encoding="utf-8")
         for changed in (

@@ -18579,3 +18579,75 @@ regressions, including a profile branch opening before the alias block.
 Durable fact: MAIN-058. BACKGROUND_VIEWPORT.md records the bounded contract;
 commands, controls, target observations and receipts remain in .analysis/sem348/.
 Semantic reconstruction and full game ports remain active-incomplete.
+
+
+### SEM-349 — canonical ANM viewport and fixed camera consumers
+
+Scope: AnmDrawCore.cpp's active-configuration projection and fixed-PLAYFIELD
+camera bindings. AnmBackgroundViewportView, its reinterpret-cast getter and
+two exact/normal selector sites are retired. The real full Supervisor and
+viewport elements are directly included; no header, profile or object partition
+changes. Existing method names, target extents and source/exact credit remain.
+
+Observed: attested ProjectCameraFacingQuad at 0x0043FC60 has seven active-pointer
+reference sites; Project3DQuad at 0x00440440 has twelve. Their view/projection/
+viewport data and cameraRight belong to the selected element, independently of
+DrawMode6/7's six float reads from fixed PLAYFIELD cameraPosition at 0x004C4854.
+The active pointer is 0x004C4A34 / Supervisor +0x3C4. Camera-facing depth rejects
+outside 0..1 before vertex writes and later stores bare VM position.z.
+Project3DQuad preserves its separate X/Y addition and bare-Z world replacement.
+These are target contracts; original identifiers remain unknown.
+
+Ownership: SupervisorLifecycle retains allocation/global lifetime; Supervisor
+selects configurations, Background produces camera state and ANM consumes it.
+AnmDrawCore retains method emission and AnmManager retains vertex storage. Both
+products share storage-free field aliases, without another owner, initializer,
+cast projection or selected declaration. The separate shake prefixes and ASCII
+selection-call facade remain debt, alongside other Supervisor/legacy families.
+
+Compiler oracle: one small shared-owner control compiles both profiles and
+preserves all eighteen target extents and nineteen normal emitted function
+bodies. The actual production object passes all eighteen canonical comparisons.
+A fixed-recipe repeat on that frozen object also passes without rebuilding or
+refreshing. All eighteen actual fresh normal units independently pass strict
+canonical target comparison, using only an object-path redirect; no private
+label substitutions are needed. The four existing authorized x87 blocks are
+unchanged as source and remain within their three original functions.
+
+Recipe review: only 25 field bindings in four units change: nineteen pointer
+and six camera-component references use the canonical Supervisor base plus
+proved addends. Actual old/new object addends retain every physical target.
+All other recipe fields, flags, profiles, extents and names stay fixed; no
+private labels change. Explicit/implicit addend representation is retained for
+unchanged references. Fresh exact scope is all eighteen affected units because
+no shared C++ header, compiler flag or object partition changes; prior aggregate
+receipts remain separate.
+
+Normal/runtime oracle: the fresh product compiles/links all 88 real objects with
+zero unresolved symbols. Build-local PE32 GUI: 778,752 bytes,
+SHA-256 1de01d01ddb7c341d472a6f6d4efcb97b71071babf15c19432b08d106c6e220b.
+All 928 named roots, 81 private entries and 1,797 recursive code/data/EH
+graphs are unchanged, with zero private renames or changed-body exceptions.
+Both actual lifetime and viewport programs link all 88 normal objects with
+/OPT:NOREF and pass under Wine. The existing 96 viewport and five serialized
+stage-camera handoffs remain; 64 new actual ANM projection/boundary cases cover
+both selected elements, valid alignments, quarter rotation, affine matrix
+binding, world-Z differences, depth endpoints/culling and retained RHW/color/UV.
+They use real manager/VM/vertex owners and D3DX, with no projection API fixture.
+Full DrawMode6/7 fading/submission, all matrix refresh branches, invalid
+alignments, native parent and synchronization remain outside the new runtime
+coverage; fixed-camera bindings have independent target/exact/normal evidence.
+
+Final gates: all 329 source/tool/test inputs, 16 non-recipe configs and the
+manifest remain frozen. Public CI passes 115 workflow tests and thirteen native
+programs, excluding protected untracked contents. Closed selector debt shrinks
+to 263 keys / 687 directives; declaration debt remains
+191 keys / 196 declarations. Guard controls reject restored view/getter,
+profile-selected aliases, wrong active fields and a current-camera substitution
+for the fixed PLAYFIELD distance origin.
+
+Result: canonical ANM viewport/camera consumption in both products, without a
+normal code change or added matching credit. Durable fact: MAIN-059.
+ANM_VIEWPORT.md records the bounded protocol and oracle limits; private commands,
+input/object hashes, target observations and receipts are in .analysis/sem349/.
+Semantic reconstruction and full game ports remain active-incomplete.

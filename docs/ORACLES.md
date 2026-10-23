@@ -165,3 +165,16 @@ methods independently pass canonical target comparisons; the whole interpreter
 keeps its unresolved normal extent. See [BACKGROUND_VIEWPORT.md](BACKGROUND_VIEWPORT.md).
 The program totals 96 viewport cases and five stage-camera handoffs. This does
 not add a fourteenth native program.
+
+
+## ANM viewport consumption oracle
+
+The same --viewport program additionally executes 64 actual ANM projection and
+boundary cases, using real owners, shared vertex storage, existing x87 and D3DX.
+Controlled affine inputs independently check both selected elements, alignment,
+rotation, depth endpoints/rejection, unchanged non-position fields and cached
+world translation. Projection itself performs no D3D calls. Eighteen strict
+comparisons independently validate the actual normal object; whole-normal
+code/data/EH graphs remain unchanged. This is sequential Win32 client evidence,
+not a native parent, full fade/submission or graphics-driver oracle. See
+[ANM_VIEWPORT.md](ANM_VIEWPORT.md). The native program count remains thirteen.

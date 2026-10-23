@@ -247,6 +247,11 @@ changed methods, and actual stage streams feed the canonical fields into D3DX.
 The stage interpreter's normal extent and other selected bodies remain open;
 see [the camera and profile boundary](BACKGROUND_VIEWPORT.md).
 
+AnmDrawCore also consumes the canonical active configuration and fixed camera
+in both products. Its eighteen exact/normal comparisons and unchanged normal
+graphs accompany 64 actual projection/boundary cases; no new x87 exception or
+native parent is accepted. See [the consumption boundary](ANM_VIEWPORT.md).
+
 A bounded family is closed only when its representation, consumers,
 transitions, ownership axes, unknowns, and applicable oracles are explicit.
 Repository-wide semantic completion requires all of those closures plus a

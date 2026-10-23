@@ -1,3 +1,4 @@
+#include "SupervisorRuntime.hpp"
 #include "AnmManager.hpp"
 #include "Background.hpp"
 
@@ -72,12 +73,6 @@ typedef char AnmCameraFacingDeepLocalsSizeIs58[
 typedef char AnmCameraFacingShallowLocalsSizeIs14[
     (sizeof(AnmCameraFacingShallowLocals) == 0x14) ? 1 : -1];
 
-// Fieldless exact-relocation adapter for the historical
-// g_CurrentBackgroundViewport decoration.
-struct AnmBackgroundViewportView : SupervisorViewportConfiguration
-{
-};
-
 struct AnmPhotoBlendDrawLocals
 {
     Float3 cameraDelta;
@@ -96,31 +91,19 @@ struct AnmProjectedPhotoBlendDrawLocals
     f32 distance;
 };
 
-#ifdef TH095_MATCH_EXACT
-extern AnmBackgroundViewportView *g_CurrentBackgroundViewport;
-#else
-// The target address 0x004C4A34 is g_Supervisor + 0x3c4.  ANM needs only the
-// common leading camera/matrix/viewport layout, so production reads the
-// supervisor-owned active pointer through this narrow draw view.
-static __forceinline AnmBackgroundViewportView *AnmCurrentBackgroundViewport()
-{
-    return reinterpret_cast<AnmBackgroundViewportView *>(
-        g_Supervisor.currentViewportConfiguration);
-}
-#define g_CurrentBackgroundViewport AnmCurrentBackgroundViewport()
-#endif
-#ifdef TH095_MATCH_EXACT
-extern Float3 g_BackgroundCameraPosition;
-#else
-// Target ANM mode 6/7 reads 0x004c4854, the cameraPosition at the start of
-// Supervisor background configuration 0 (+0x1e4).  Background.cpp now writes
-// that owner directly, so production ANM must consume the same storage rather
-// than require the obsolete standalone reconstruction symbol.  Exact objects
-// keep the original external relocation above.
+// The active pointer is Supervisor +0x3c4 in every profile. Both projection
+// consumers use the selected canonical element; it is not separate storage.
+// Target 0x0043FC60/0x00440440 reads that pointer seven/twelve times. The
+// pinned shared-alias control preserves all eighteen exact units and every
+// normal function's bytes. Only proved Supervisor-base/addend relocation
+// mappings change; neither the fieldless derived type nor the cast getter is
+// required for emission.
+#define g_CurrentBackgroundViewport g_Supervisor.currentViewportConfiguration
+// Photo-blend distance uses the fixed PLAYFIELD camera, independent of which
+// element is active. Target 0x004C4854 is Supervisor +0x1e4.
 #define g_BackgroundCameraPosition                                      \
     (g_Supervisor.viewportConfigurations[SUPERVISOR_VIEWPORT_PLAYFIELD] \
          .cameraPosition)
-#endif
 
 static __forceinline u8 MixAnmColor(u8 first, u8 second)
 {

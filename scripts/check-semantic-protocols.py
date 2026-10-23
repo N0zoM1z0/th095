@@ -1792,15 +1792,7 @@ def check_supervisor_viewport_configuration_owner() -> None:
     if "struct SupervisorTimerLifecycle" in lifecycle_source:
         fail("SupervisorLifecycle restored a duplicate timer declaration")
 
-    for path, text, adapter in (
-        ("AnmDrawCore.cpp", anm_draw_source, "AnmBackgroundViewportView"),
-    ):
-        declaration = f"struct {adapter} : SupervisorViewportConfiguration"
-        if declaration not in text:
-            fail(f"{path} lost fieldless viewport emission adapter {adapter}")
-        body = braced_body_after(text, text.index(declaration), adapter)
-        if source_without_comments(body).strip():
-            fail(f"{path} viewport emission adapter {adapter} gained storage")
+    check_anm_viewport_owner()
 
     viewport_facts = (
         "viewportConfigurations[SUPERVISOR_VIEWPORT_FULL_WINDOW].unknown0e4 = 1;",
@@ -1844,6 +1836,57 @@ def check_supervisor_viewport_configuration_owner() -> None:
         if fact not in anm_draw_source:
             fail(f"AnmDrawCore lost canonical Supervisor viewport use: {fact}")
 
+
+
+def check_anm_viewport_owner(overrides: dict[str, str] | None = None) -> None:
+    changed = {} if overrides is None else overrides
+    source = source_without_comments(changed.get("AnmDrawCore.cpp", (SRC / "AnmDrawCore.cpp").read_text(encoding="utf-8")))
+    if '#include "SupervisorRuntime.hpp"' not in source:
+        fail("ANM viewport consumers lost the canonical Supervisor declaration")
+    for retired in ("AnmBackgroundViewportView", "AnmCurrentBackgroundViewport"):
+        if retired in source:
+            fail(f"ANM viewport restored retired owner/getter {retired}")
+    start = source.find("#define g_CurrentBackgroundViewport")
+    end = source.find("static __forceinline u8 MixAnmColor", start)
+    if start < 0 or end < 0 or any(profile in source[start:end] for profile in PROFILE_NAMES):
+        fail("ANM viewport/camera aliases became profile-selected")
+    groups: list[bool] = []
+    for operation, expression in re.findall(
+        r"^\s*#\s*(if|ifdef|ifndef|elif|else|endif)\b([^\n]*)", source[:start], re.MULTILINE
+    ):
+        selected = any(profile in expression for profile in PROFILE_NAMES)
+        if operation in ("if", "ifdef", "ifndef"):
+            groups.append(selected)
+        elif operation == "elif" and groups:
+            groups[-1] = groups[-1] or selected
+        elif operation == "endif" and groups:
+            groups.pop()
+    if any(groups):
+        fail("ANM viewport/camera aliases became profile-selected")
+    block = re.sub(r"[\s\\]+", "", source[start:end])
+    for binding in (
+        "#defineg_CurrentBackgroundViewportg_Supervisor.currentViewportConfiguration",
+        "#defineg_BackgroundCameraPosition(g_Supervisor.viewportConfigurations[SUPERVISOR_VIEWPORT_PLAYFIELD].cameraPosition)",
+    ):
+        if binding not in block:
+            fail("ANM lost its active pointer or fixed PLAYFIELD camera binding")
+    if re.search(r"(?:extern|DIFFABLE_STATIC)[^;]*(?:g_CurrentBackgroundViewport|g_BackgroundCameraPosition)", source):
+        fail("ANM restored independent viewport/camera storage")
+    for name, counts in (
+        ("ProjectCameraFacingQuad", {"viewport": 2, "projectionMatrix": 2, "viewMatrix": 2, "cameraRight": 1}),
+        ("Project3DQuad", {"viewport": 4, "projectionMatrix": 4, "viewMatrix": 4}),
+    ):
+        spelling = f"ZunResult AnmManager::{name}("
+        if source.count(spelling) != 1:
+            fail(f"ANM lost canonical projection consumer {name}")
+        body = braced_body_after(source, source.index(spelling), name)
+        if any(body.count("g_CurrentBackgroundViewport->" + field) != count for field, count in counts.items()):
+            fail(f"ANM {name} lost active canonical viewport fields")
+    for name, count in (("DrawMode6", 1), ("DrawMode7", 3)):
+        spelling = f"ZunResult AnmManager::{name}("
+        body = braced_body_after(source, source.index(spelling), name)
+        if body.count("g_BackgroundCameraPosition") != count or "currentViewportConfiguration->cameraPosition" in body:
+            fail(f"ANM {name} lost its fixed PLAYFIELD distance origin")
 
 
 def check_gameplay_viewport_owner(overrides: dict[str, str] | None = None) -> None:
