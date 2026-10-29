@@ -32,6 +32,9 @@ PhotoEnemyView *subject = NULL;
 bool ownsFreeze = false;
 float accumulatedTime = 0.0f;
 int nextGhost = 0;
+int currentPose = -1;
+float currentLean = 0.0f;
+float targetLean = 0.0f;
 
 struct Ghost
 {
@@ -63,8 +66,7 @@ void UpdateGhosts(float elapsed)
             ClearGhost(ghost);
             continue;
         }
-        // ANM scripts may publish colors themselves, so apply the fade after
-        // the native ANM update. Ghosts are never EnemyInf/photo-target slots.
+        // Ghosts hold an actual sprite snapshot, never an EnemyInf/photo slot.
         unsigned alpha = static_cast<unsigned>(96.0f * ghost.remaining / 18.0f);
         vm->color1.color = (alpha << 24) | 0x0080c0ff;
         vm->drawEnabled = 1;
@@ -86,7 +88,38 @@ void LeaveAfterimage(PhotoEnemyView *actor, gogai::Point oldPosition)
     nextGhost = (nextGhost + 1) % 16;
     AnmVm *vm = g_AnmManager->GetVm(ghost.id);
     if (vm != NULL)
+    {
+        // Initialize through the ordinary creator, then freeze only this
+        // visual VM. Copy no list links, handles or owning allocations.
+        vm->anmFile->SetSprite(vm, actor->vm.activeSpriteIndex);
+        vm->currentInstruction = vm->beginningOfScript;
+        vm->scriptDisabled = 1;
+        vm->flip = actor->vm.flip;
+        vm->position = actor->vm.position;
+        vm->scale = actor->vm.scale;
+        vm->rotation = actor->vm.rotation;
+        vm->renderModeBits = ANM_VM_DRAW_MODE_2D;
+        vm->updateRotation = vm->updateScale = 1;
         vm->color1.color = 0x6080c0ff;
+    }
+}
+
+void SetPose(PhotoEnemyView *actor, int pose)
+{
+    if (pose == currentPose) return;
+    PhotoEnemyManagerView *manager = TH095_RUNTIME_GLOBAL_PTR(
+        PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner);
+    if (manager == NULL || manager->enemyAnm == NULL) return;
+    // Verified enm14 scripts: idle 2, left/right 3/4, return 5/6, cast 7.
+    // ECL 55 leaves the automatic direction scripts disabled. Keep movement
+    // velocity at zero and select poses here, so native integration cannot
+    // apply a second displacement after the authored path publication.
+    const int scripts[6] = {2, 3, 4, 7, 5, 6};
+    manager->enemyAnm->SetAndExecuteScriptIdx(&actor->vm, scripts[pose]);
+    currentPose = pose;
+    ++g_GogaiSakuyaTelemetry.poseChanges;
+    g_GogaiSakuyaTelemetry.pose = pose;
+    g_GogaiSakuyaTelemetry.poseMask |= 1 << pose;
 }
 
 void SpawnKnives(const gogai::KnifeBatch &batch)
@@ -97,33 +130,35 @@ void SpawnKnives(const gogai::KnifeBatch &batch)
     PhotoBulletSpawnDescriptor shot;
     shot.bulletType = static_cast<i16>(batch.type);
     shot.color = static_cast<i16>(batch.color);
-    shot.position.x = batch.origin.x;
-    shot.position.y = batch.origin.y;
     shot.position.z = 0.0f;
-    shot.angle = batch.angle;
-    shot.angleStep = batch.spread;
-    shot.speed1 = shot.speed2 = batch.speed;
-    shot.count1 = static_cast<i16>(batch.count);
+    shot.speed1 = shot.speed2 = batch.launchSpeed;
+    shot.count1 = 1;
     shot.count2 = 1;
-    shot.aimMode = batch.circle ? PHOTO_BULLET_AIM_CIRCLE : PHOTO_BULLET_AIM_FAN;
-    // The native bullet update also freezes birth animations. Enter directly
-    // in the active knife pose during stopped time, rather than leaving many
-    // overlapping spawn flashes suspended in front of the subject.
-    shot.transformFlags = ownsFreeze ? 0 : PHOTO_BULLET_TRANSFORM_SPAWN_FAST;
-    if (batch.bend != 0.0f)
+    shot.aimMode = PHOTO_BULLET_AIM_FAN;
+    // Native polar acceleration updates heading/speed each frame. The old
+    // interval-turn transform made rigid corners. Three short sections ease
+    // the angular rate down while preserving the actual native bullet owner.
+    shot.transformFlags = PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR;
+    for (int stage = 0; stage < 3; ++stage)
     {
-        shot.transformFlags |= PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_RELATIVE;
-        PhotoBulletTransformRecord &turn = shot.transforms[0];
-        turn.kind = PHOTO_BULLET_TRANSFORM_CHANGE_DIRECTION_RELATIVE;
-        turn.payload.directionChangeIntervalFrames = 18;
-        turn.payload.directionChangeRepeatCount = 3;
-        turn.payload.directionChangeAngle = batch.bend;
-        turn.payload.directionChangeSpeed = batch.speed;
+        PhotoBulletTransformRecord &turn = shot.transforms[stage];
+        turn.kind = PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR;
+        turn.payload.durationFrames = stage == 0 ? batch.rampFrames : (stage == 1 ? 16 : 12);
+        turn.payload.speedDelta = stage == 0 ? batch.SpeedDelta() : 0.0f;
+        turn.payload.angleDelta = batch.turnRate * (stage == 0 ? 1.0f : (stage == 1 ? 0.5f : 0.2f));
     }
-    manager->SpawnBulletPattern(&shot);
-    g_GogaiSakuyaTelemetry.knivesCreated += batch.count;
-    if (ownsFreeze)
-        g_GogaiSakuyaTelemetry.frozenKnivesCreated += batch.count;
+    // Lay the individual blades along a short hand/trail arc rather than
+    // stacking an entire fan at one point. No magnified birth flash is used.
+    for (int blade = 0; blade < batch.count; ++blade)
+    {
+        gogai::Point position = batch.BladePosition(blade);
+        shot.position.x = position.x; shot.position.y = position.y;
+        shot.angle = batch.BladeAngle(blade);
+        manager->SpawnBulletPattern(&shot);
+        ++g_GogaiSakuyaTelemetry.knivesCreated;
+        if (batch.turnRate != 0.0f) ++g_GogaiSakuyaTelemetry.curvedKnives;
+        if (ownsFreeze) ++g_GogaiSakuyaTelemetry.frozenKnivesCreated;
+    }
 }
 
 void ApplyFrame(Enemy *opaque, PhotoEnemyView *actor, const gogai::Frame &frame)
@@ -135,6 +170,8 @@ void ApplyFrame(Enemy *opaque, PhotoEnemyView *actor, const gogai::Frame &frame)
     }
     if (frame.afterimage)
         LeaveAfterimage(actor, gogai::Point(actor->position.x, actor->position.y));
+    SetPose(actor, frame.pose);
+    targetLean = frame.lean;
     actor->movementMode = 0;
     actor->velocity = Float3(0.0f, 0.0f, 0.0f);
     actor->position.x = actor->worldPosition.x = frame.subject.x;
@@ -180,6 +217,8 @@ void __fastcall GogaiSakuyaReset(Enemy *, EclRawInstruction *)
     subject = NULL;
     accumulatedTime = 0.0f;
     nextGhost = 0;
+    currentPose = -1;
+    currentLean = targetLean = 0.0f;
     memset(&g_GogaiSakuyaTelemetry, 0, sizeof(g_GogaiSakuyaTelemetry));
     g_GogaiSakuyaTelemetry.freezeFrame = -1;
 }
@@ -225,6 +264,17 @@ void __fastcall GogaiSakuyaTick(Enemy *opaque, EclRawInstruction *)
         ApplyFrame(opaque, actor, choreography.Step(input));
         ++g_GogaiSakuyaTelemetry.ticks;
     }
+    // Publish at the native fractional clock, including aiming slowdown.
+    // Draw mode 1 preserves subpixel positions and the gentle banking angle.
+    gogai::Point sample = choreography.SamplePosition(accumulatedTime);
+    actor->position.x = actor->worldPosition.x = sample.x;
+    actor->position.y = actor->worldPosition.y = sample.y;
+    currentLean += (targetLean - currentLean) * elapsed * 0.28f;
+    actor->vm.rotation.z = currentLean;
+    actor->vm.updateRotation = 1;
+    actor->vm.renderModeBits = ANM_VM_DRAW_MODE_2D;
+    g_GogaiSakuyaTelemetry.sampleX = sample.x;
+    g_GogaiSakuyaTelemetry.sampleY = sample.y;
     UpdateGhosts(elapsed);
     g_GogaiSakuyaTelemetry.normalFrame = choreography.normalFrame;
     g_GogaiSakuyaTelemetry.freezeFrame = choreography.freezeFrame;

@@ -15,6 +15,8 @@ struct GogaiSakuyaTelemetry
     int ticks, normalFrame, freezeFrame, nativeFrozen;
     int stops, evasionCooldown, activeGhosts, knivesCreated, frozenKnivesCreated;
     float subjectX, subjectY, destinationX, destinationY;
+    int pose, poseChanges, poseMask, curvedKnives;
+    float sampleX, sampleY;
 };
 extern GogaiSakuyaTelemetry g_GogaiSakuyaTelemetry;
 }

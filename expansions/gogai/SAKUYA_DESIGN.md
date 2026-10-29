@@ -9,16 +9,16 @@ finished Youmu, Yukari, or Kaguya design.
 
 Six photographs. A difficult offensive spell with a learnable rhythm.
 
-1. Crossed silver/blue knife fans establish moving lanes, followed by a red
-   clock-dial volley. Small knives and long knives have different silhouettes.
-2. Time stops for 48 frames. Existing bullets, Aya, and the camera actually stop.
-   Sakuya makes three 12-frame dashes, leaving fading blue silhouettes.
+1. Small silver/blue knife ribbons establish moving lanes, followed by a red
+   clock dial written over successive emissions. Small knives and long knives have different silhouettes.
+2. Time stops for 60 frames. Existing bullets, Aya, and the camera actually stop.
+   Sakuya makes three curved 14-frame dashes, leaving fading pose snapshots.
 3. Each dash lays split knife fans aimed at Aya's frozen position. Their center
    slit and minimum emission distance leave a deliberate survival route.
-4. A twelve-frame final pose previews the frozen knife field. Time resumes with
+4. An eighteen-frame final pose previews the frozen knife field. Time resumes with
    the native sound/background cue. Sakuya stays visible for a photography window.
-5. Hooking knife fans and a shorter quiet window finish the phrase. The next
-   phrase changes handedness, rather than simply adding more bullets.
+5. Keep the new landing and make a slower normal-time glide. Sweeping, gently
+   curving knife ribbons finish the phrase. Six routes vary subsequent landings.
 
 The important decision is where to be when the clock stops. After resumption,
 read the knife gaps, clear space with the camera, and photograph the real maid.
@@ -29,9 +29,9 @@ Eight photographs. A reactive spell inspired by TH095's Perfect Maid.
 
 - During normal time, aimed knife fans and alternating clock spokes demand
   movement. When Aya starts aiming with Sakuya inside the frame, the first
-  eligible attempt triggers a 44-frame time stop.
-- Sakuya crosses the scene in two ten-frame dashes. The destination lies outside
-  the current frame and favors separation from Aya. Fading silhouettes make the
+  eligible attempt triggers a 52-frame time stop.
+- Sakuya crosses the scene in two curved fourteen-frame dashes. The destination lies outside
+  the current frame and favors separation from Aya. Pose-matched fading silhouettes make the
   path visible, without becoming false photographic targets.
 - She throws fresh split knife fans during the actual dash, from her changing
   position toward Aya's stopped position. These knives are visible while time
@@ -45,6 +45,9 @@ Eight photographs. A reactive spell inspired by TH095's Perfect Maid.
 The evasive version changes the camera duel, not the native scoring rules.
 Fast shutter timing and predicting her destination should matter more than
 waiting for random permission to shoot.
+
+See [the motion revision](MOTION_DESIGN.md) for fractional path sampling, six
+native pose states, staged emissions and continuous knife acceleration.
 
 ## Rendering and fairness rules
 
