@@ -9,7 +9,7 @@ finished extra issue or a final set of balanced spells.
 ## Branch and saved scope
 
 Use feat/gogai-workbench as the continuing branch for the fan expansion. It
-starts from dc46abf, the retained Youmu v1 checkpoint, and includes the earlier
+starts from 49397b1, the retained Youmu v1 checkpoint, and includes the earlier
 Sakuya and Kaguya work in its ancestry. Save progress with focused commits and
 pushes on this branch. New tags are not part of the workflow.
 

@@ -5,6 +5,18 @@ commits and push this branch as work progresses. New tags are not required.
 Start with [STATUS.md](STATUS.md) and the stable IDs in
 [SPELL_LIBRARY.md](SPELL_LIBRARY.md).
 
+## Synchronizing after the history cleanup
+
+The fan history was rewritten to remove an accidentally committed play guide
+written in Chinese. Existing fan branches and historical snapshot references
+now use the cleaned history. No new tag names were created. Source commit
+citations in the current documents have been refreshed; artifact hashes and
+recorded gameplay results are unchanged.
+
+When continuing from an older checkout, fetch the updated references and replay
+local work onto the current workbench. Avoid merging an old fan lineage back
+into this branch, which would reintroduce the removed history.
+
 ## Code ownership
 
 | Layer | Owner | Change here for |

@@ -18,7 +18,7 @@ The tested PE32 artifact is 798,208 bytes. SHA-256:
 `7ad021e48dc49e268c0737fd0bb43a6d428897330eaad2c99c1d9c615de0772b`.
 
 Sakuya v5 and all three Kaguya source owners, metadata and practice helpers remain
-byte-identical to c6668bf. Kaguya's eight v3 cards and gogai/kaguya-v3 tag remain
+byte-identical to 3f488fa. Kaguya's eight v3 cards and gogai/kaguya-v3 tag remain
 preserved. Youmu has separate source, build, launcher pin, play directory and
 fresh saves. All five build choices remain available, defaulting to Sakuya v5.
 

@@ -45,15 +45,15 @@ report do not imply final design or balance.
 
 | Snapshot | Commit | Preserved work |
 | --- | --- | --- |
-| issue1-prototype | 50df589 | Initial mixed-cast prototypes and practice launcher |
-| sakuya-v2 | ecdb9a9 | First native stop/evasion pair |
-| sakuya-v3 | d97bd9c | Curved movement, original poses and knife ribbons |
-| sakuya-v4 | 1971d57 | Eight geometry studies, three-tableau blinks and in-flight rewrites |
-| sakuya-v5 | 13f3103 | Eight multi-phrase knife designs, rotary layers and reflections |
-| kaguya-v1 | 32737a7 | Eight treasure compositions and native warned lasers |
-| kaguya-v2 | 065d960 | Gradual source deployment and living-treasure formations |
-| kaguya-v3 | c6668bf | Eight distinct mechanisms, including gravity, return flight and native fission |
-| youmu-v1 | dc46abf | Eight sword designs with poses, afterimages, half-spirit attacks and delayed blades |
+| issue1-prototype | aa0804e | Initial mixed-cast prototypes and practice launcher |
+| sakuya-v2 | b947d71 | First native stop/evasion pair |
+| sakuya-v3 | 9ec3e63 | Curved movement, original poses and knife ribbons |
+| sakuya-v4 | 0580fbc | Eight geometry studies, three-tableau blinks and in-flight rewrites |
+| sakuya-v5 | a745b38 | Eight multi-phrase knife designs, rotary layers and reflections |
+| kaguya-v1 | cc75eaf | Eight treasure compositions and native warned lasers |
+| kaguya-v2 | 18c0240 | Gradual source deployment and living-treasure formations |
+| kaguya-v3 | 3f488fa | Eight distinct mechanisms, including gravity, return flight and native fission |
+| youmu-v1 | 49397b1 | Eight sword designs with poses, afterimages, half-spirit attacks and delayed blades |
 
 The workbench branch contains all these checkpoints in its ancestry. Earlier
 Sakuya bodies remain available through history; the three Kaguya source

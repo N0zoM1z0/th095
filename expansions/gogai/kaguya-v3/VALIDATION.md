@@ -18,7 +18,7 @@ The tested PE32 executable is 798,208 bytes. SHA-256:
 `5b88bc3ae2046f180bfa8296a96052c06974b6e01b028849295f570d575717e7`.
 
 Earlier Sakuya, Kaguya v1 and Kaguya v2 source owners remain byte-identical to
-release 065d960. Earlier Windows folders and source tags are preserved. V3 has
+release 18c0240. Earlier Windows folders and source tags are preserved. V3 has
 separate source, build, launcher pin and fresh save directories. All four build
 choices remain available; the default is still Sakuya v5.
 
