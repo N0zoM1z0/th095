@@ -1,7 +1,10 @@
 # Kaze no Gogai: Sakuya Grand Geometry / Hard v5
 
 An original fan expansion built from the reconstructed TH095 Windows i386
-engine. All eight group-12 slots temporarily feature Sakuya for comparing spell
+engine. See [the preserved spell library](SPELL_LIBRARY.md) for independent
+Sakuya/Kaguya builds and all historical source tags.
+
+All eight group-12 slots in this Sakuya product feature Sakuya for comparing spell
 designs. This is original fan content, not unreleased ZUN content.
 
 The hard revision combines charged mass salvos, full-size handled knives,
@@ -40,7 +43,7 @@ Keep heavy development jobs serial and resource-limited:
 ```bash
 systemd-run --user --scope --quiet \
   -p CPUQuota=50% -p MemoryHigh=768M -p MemoryMax=1G -- \
-  taskset -c 1 nice -n 19 python3 -B scripts/build-gogai.py \
+  taskset -c 1 nice -n 19 python3 -B scripts/build-gogai.py --issue sakuya-v5 \
   --data-dir /path/to/original-japanese-game
 ```
 

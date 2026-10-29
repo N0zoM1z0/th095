@@ -85,8 +85,8 @@ def pattern(index: int, scene: Scene) -> bytes:
     return bytes(s.data)
 
 
-def assemble_scene(index: int) -> bytes:
-    scene = SCENES[index]
+def assemble_scene(index: int, scenes=SCENES) -> bytes:
+    scene = scenes[index]
     init, finish, failure = Script(), Script(), Script()
     init.emit(0, 118, 'i', 23)
     for ending in (finish, failure):
@@ -136,9 +136,9 @@ def assemble_scene(index: int) -> bytes:
             + struct.pack('<4I', *offsets) + body)
 
 
-def write_content(source_dir: Path, run_dir: Path):
+def write_content(source_dir: Path, run_dir: Path, scenes=SCENES):
     lines = ['// Generated from expansions/gogai/content.py; fan content only.', '{']
-    for i, scene in enumerate(SCENES):
+    for i, scene in enumerate(scenes):
         data = b''.join(encode_comment(line, i, column)
                         for column, line in enumerate((scene.title, *scene.comment)))
         values = ','.join(str(b) for b in data)
@@ -146,8 +146,8 @@ def write_content(source_dir: Path, run_dir: Path):
                   f'    g_SceneGroups[11][{i}].encodedTitleText = text{i};',
                   f'    g_SceneGroups[11][{i}].scoreRequirement = 0;',
                   f'    g_SceneGroups[11][{i}].displayState = 0;']
-        (run_dir / f'gogai{i + 1:02}.ecl').write_bytes(assemble_scene(i))
-    write_hint_textures(run_dir)
+        (run_dir / f'gogai{i + 1:02}.ecl').write_bytes(assemble_scene(i, scenes))
+    write_hint_textures(run_dir, scenes)
     lines += ['}', '']
     (source_dir / 'GogaiText.inl').write_text('\n'.join(lines), encoding='ascii')
 
@@ -161,7 +161,7 @@ def texture_packet(bgra: bytes, width=256, height=32) -> bytes:
     return bytes(header) + struct.pack('<4sHhhhI', b'THTX', 0, 1, width, height, len(bgra)) + bgra
 
 
-def write_hint_textures(run_dir: Path):
+def write_hint_textures(run_dir: Path, scenes=SCENES):
     # This is text-only UI generated from our own strings. No original texture
     # is sampled. A system Japanese font and Pillow are build-time inputs only.
     from PIL import Image, ImageDraw, ImageFont
@@ -173,7 +173,7 @@ def write_hint_textures(run_dir: Path):
     if font_path is None:
         raise ValueError('set TH095_GOGAI_FONT to a Japanese TrueType font')
     font = ImageFont.truetype(font_path, 16)
-    for i, scene in enumerate(SCENES):
+    for i, scene in enumerate(scenes):
         for name, text, color in (
             ('hint', scene.subject + 'を取材せよ', (255, 224, 128, 255)),
             ('count', f'{scene.photos} 枚撮影せよ', (255, 160, 160, 255)),

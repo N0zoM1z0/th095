@@ -23,20 +23,32 @@ def module(name, path):
     return result
 
 
-def prepare():
+def select_issue(key):
+    global BUILD, RUN
+    registry = module('gogai_issues', ROOT / 'expansions/gogai/issues.py')
+    issue = registry.ISSUES[key]
+    BUILD = ROOT / issue.build
+    RUN = BUILD / 'play'
+    return registry, issue
+
+
+def prepare(issue_key='sakuya-v5'):
+    registry, issue = select_issue(issue_key)
     tree = BUILD / 'src'
     # Only generated source is refreshed. Preserve player saves and photos.
     shutil.copytree(ROOT / 'src', tree, dirs_exist_ok=True)
     patch = ROOT / 'expansions/gogai/engine.patch'
-    subprocess.run(['git', 'apply', '--check', '--directory=build/gogai', str(patch)],
+    subprocess.run(['git', 'apply', '--check', '--directory=' + str(BUILD.relative_to(ROOT)), str(patch)],
                    cwd=ROOT, check=True)
-    subprocess.run(['git', 'apply', '--directory=build/gogai', str(patch)],
+    subprocess.run(['git', 'apply', '--directory=' + str(BUILD.relative_to(ROOT)), str(patch)],
                    cwd=ROOT, check=True)
+    registry.apply_variant(tree, issue)
     RUN.mkdir(parents=True, exist_ok=True)
-    content = module('gogai_content', ROOT / 'expansions/gogai/content.py')
+    content = module('gogai_content', ROOT / issue.directory / 'content.py')
     content.write_content(tree, RUN)
     for name in ('launch-gogai.bat', 'run-no-death-test.bat', 'run-no-death-test.ps1'):
-        shutil.copy2(ROOT / 'expansions/gogai' / name, RUN)
+        directory = issue.launchers if name.endswith('.ps1') else 'expansions/gogai'
+        shutil.copy2(ROOT / directory / name, RUN)
     for folder in ('bestshot', 'replay'):
         (RUN / folder).mkdir(exist_ok=True)
     return tree
@@ -59,10 +71,14 @@ def install_data(directory):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    registry = module('gogai_issues', ROOT / 'expansions/gogai/issues.py')
+    parser.add_argument('--issue', choices=tuple(registry.ISSUES), default='sakuya-v5',
+                        help='independent fan spell set (default: preserved Sakuya v5)')
     parser.add_argument('--data-dir', type=Path, help='original Japanese game data directory')
     parser.add_argument('--prepare-only', action='store_true', help='materialize source/content without compiling')
     args = parser.parse_args()
-    prepare()
+    _, issue = select_issue(args.issue)
+    prepare(args.issue)
     if args.data_dir:
         install_data(args.data_dir)
     if args.prepare_only:
@@ -75,26 +91,29 @@ def main():
     core.REPORT = BUILD / 'report.json'
     baseline = core.load_plan()
     def remap(source):
-        return 'build/gogai/' + source
+        return str(BUILD.relative_to(ROOT)) + '/' + source
     profiles = {}
     for profile, sources in baseline.profiles.items():
         flags = tuple(remap(flag) if flag in ('src', 'src/ecl') else flag for flag in profile)
-        profiles[flags + ('/I', 'expansions/gogai')] = tuple(remap(source) for source in sources)
-    fan_source = 'expansions/gogai/SakuyaDirector.cpp'
-    fan_profile = next(flags for flags in profiles if 'build/gogai/src/ecl' not in flags)
+        profiles[flags + ('/I', issue.directory)] = tuple(remap(source) for source in sources)
+    fan_source = issue.directory + '/' + issue.director + '.cpp'
+    fan_profile = next(flags for flags in profiles if str(BUILD.relative_to(ROOT)) + '/src/ecl' not in flags)
     profiles[fan_profile] += (fan_source,)
     objects = {remap(source): path for source, path in baseline.objects.items()}
-    objects[fan_source] = core.OBJECT_DIR / 'SakuyaDirector.obj'
+    objects[fan_source] = core.OBJECT_DIR / (issue.director + '.obj')
     plan = core.BuildPlan(baseline.target_sha256,
                          tuple(remap(source) for source in baseline.sources) + (fan_source,),
                          profiles, objects, baseline.symbol_targets)
     report = core.base_report(plan)
-    report['product'] = 'Kaze no Gogai / Sakuya grand geometry / hard v5'
+    report['product'] = 'Kaze no Gogai / ' + issue.title
+    report['issue'] = issue.key
     report['exact_reconstruction_claim'] = False
     report['overlay_sha256'] = core.sha256(ROOT / 'expansions/gogai/engine.patch')
-    report['content_sha256'] = core.sha256(ROOT / 'expansions/gogai/content.py')
+    report['content_sha256'] = core.sha256(ROOT / issue.directory / 'content.py')
+    report['wire_sha256'] = core.sha256(ROOT / 'expansions/gogai/content.py')
     report['director_sha256'] = core.sha256(ROOT / fan_source)
-    report['choreography_sha256'] = core.sha256(ROOT / 'expansions/gogai/SakuyaChoreography.hpp')
+    report['choreography_sha256'] = core.sha256(ROOT / issue.directory / issue.model)
+    report['director_header_sha256'] = core.sha256(ROOT / issue.directory / (issue.director + '.hpp'))
     try:
         compiler, linker, toolchain = core.attest_toolchain()
         report['toolchain'] = toolchain

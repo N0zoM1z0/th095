@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "policy": "Stable spell identifiers retain revision history. Source tags preserve complete earlier issues; authored sources and build/save folders remain separate.",
+  "historical_tags": [
+    "gogai/issue1-prototype",
+    "gogai/sakuya-v2",
+    "gogai/sakuya-v3",
+    "gogai/sakuya-v4",
+    "gogai/sakuya-v5"
+  ],
+  "issues": [
+    {
+      "id": "sakuya-v5",
+      "actor": "Sakuya",
+      "source_tag": "gogai/sakuya-v5",
+      "source": "expansions/gogai/SakuyaChoreography.hpp",
+      "build_command": "python3 scripts/build-gogai.py --issue sakuya-v5",
+      "spells": [
+        {
+          "id": "SK.01",
+          "scene": 1,
+          "mode": 0,
+          "name": "Silver Triptych"
+        },
+        {
+          "id": "SK.02",
+          "scene": 2,
+          "mode": 1,
+          "name": "Rewritten Meridian"
+        },
+        {
+          "id": "SK.03",
+          "scene": 3,
+          "mode": 2,
+          "name": "The Last Shutter"
+        },
+        {
+          "id": "SK.04",
+          "scene": 4,
+          "mode": 3,
+          "name": "Silver Wing Corridor"
+        },
+        {
+          "id": "SK.05",
+          "scene": 5,
+          "mode": 4,
+          "name": "Clockwork Rose"
+        },
+        {
+          "id": "SK.06",
+          "scene": 6,
+          "mode": 5,
+          "name": "Twin Crescent"
+        },
+        {
+          "id": "SK.07",
+          "scene": 7,
+          "mode": 6,
+          "name": "Iris Aperture"
+        },
+        {
+          "id": "SK.08",
+          "scene": 8,
+          "mode": 7,
+          "name": "Chronographic Kaleidoscope"
+        }
+      ]
+    },
+    {
+      "id": "kaguya-v1",
+      "actor": "Kaguya",
+      "source_tag": null,
+      "source": "expansions/gogai/kaguya/KaguyaChoreography.hpp",
+      "build_command": "python3 scripts/build-gogai.py --issue kaguya-v1",
+      "spells": [
+        {
+          "id": "KG.01",
+          "scene": 1,
+          "mode": 0,
+          "name": "Jeweled Orrery"
+        },
+        {
+          "id": "KG.02",
+          "scene": 2,
+          "mode": 1,
+          "name": "Stone Chalice"
+        },
+        {
+          "id": "KG.03",
+          "scene": 3,
+          "mode": 2,
+          "name": "Fire-Rat Brocade"
+        },
+        {
+          "id": "KG.04",
+          "scene": 4,
+          "mode": 3,
+          "name": "Dragon's Luminous Coil"
+        },
+        {
+          "id": "KG.05",
+          "scene": 5,
+          "mode": 4,
+          "name": "Swallow's Star Nest"
+        },
+        {
+          "id": "KG.06",
+          "scene": 6,
+          "mode": 5,
+          "name": "Bamboo Moon Labyrinth"
+        },
+        {
+          "id": "KG.07",
+          "scene": 7,
+          "mode": 6,
+          "name": "Eternity's Broken Rosette"
+        },
+        {
+          "id": "KG.08",
+          "scene": 8,
+          "mode": 7,
+          "name": "Five Impossible Nights"
+        }
+      ]
+    }
+  ]
+}
