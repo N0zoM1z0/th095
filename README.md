@@ -1,4 +1,4 @@
-# TH095 — Shoot the Bullet
+# 東方文花帖 ～ Shoot the Bullet
 
 This branch also contains **[Kaze no Gogai](expansions/gogai/README.md)**,
 an original fan expansion for the reserved extra-issue scene group. Its isolated build
