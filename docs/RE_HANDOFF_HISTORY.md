@@ -128,13 +128,15 @@ The latest focused front-end commits are:
 
 ## Runtime validation
 
-The external Windows asset directory is:
+The runtime checks below used a local external asset directory. Its
+host-specific installation path is represented here by English placeholders:
 
-`D:\Entertainment\Game\Touhou\[th095] 东方文花帖 (汉化版+日文版)`
+- Windows: `D:\path\to\th095-data`
+- WSL: `/mnt/d/path/to/th095-data`
 
-Its WSL path is:
-
-`/mnt/d/Entertainment/Game/Touhou/[th095] 东方文花帖 (汉化版+日文版)`
+Replace these placeholders with the actual local asset directory when repeating
+the checks. They are documentation examples, not literal paths used by the
+historical run.
 
 Use only `th095.exe`, `th095.dat`, `thbgm.dat`, `th095.cfg`, and
 `scoreth095.dat`. The Japanese `th095.exe` in that directory matches the

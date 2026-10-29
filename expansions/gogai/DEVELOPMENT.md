@@ -124,8 +124,11 @@ sound. No host foreground game is needed for this documentation workflow.
 | Cast/version PLAY.md | Controls and behavior a player needs to understand |
 | Cast/version VALIDATION.md | Tested artifact identity, checks actually run and known limits |
 
-Keep documents and authored code/comments in English. Existing Japanese game
-text and the root README's original Japanese title remain as established.
+Keep documents and authored code/comments in English. Preserve existing
+Japanese game text, spell/character names and the root README's original
+Japanese title. Kanji-only Japanese strings are also valid: do not classify
+all CJK characters as Chinese or impose an ASCII-only rule. Use explicitly
+marked English placeholders for host-specific installation paths in documents.
 Store generated products under build/ and private experiments under .analysis/.
 Do not commit original executables, game archives, extracted textures,
 databases, captured game images or credentials. Private runtime controllers

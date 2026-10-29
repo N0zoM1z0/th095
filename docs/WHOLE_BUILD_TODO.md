@@ -54,12 +54,12 @@ This establishes practical startup, short-gameplay, retry, and result-return
 validation, not exhaustive coverage of every menu, scene, replay, or audio
 path.
 
-Use only the Japanese assets from:
+For another local run, use the directory containing the verified Japanese
+assets. `/path/to/original-japanese-th095-data` is an English placeholder for
+that host-specific directory, not the historical installation path.
 
-`/mnt/d/Entertainment/Game/Touhou/[th095] 东方文花帖 (汉化版+日文版)`
-
-The directory's `th095.exe` matches the canonical target hash. Never use the
-localized `th095c.*` files. Copy `th095.cfg` and `scoreth095.dat` and symlink
+The validated Japanese `th095.exe` matches the canonical target hash. Never use
+the localized `th095c.*` files. Copy `th095.cfg` and `scoreth095.dat` and symlink
 the read-only `th095.dat`/`thbgm.dat` archives into a temporary run directory
 so validation cannot modify the source installation.
 
