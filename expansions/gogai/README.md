@@ -13,8 +13,8 @@ than changing photography mechanics.
 The expansion has a separate build and working directory under `build/gogai/`.
 An explicit source overlay is applied to generated source copies there; the
 canonical `src/` and reconstruction ledgers remain the original target lane.
-No executable bytes are patched. The normal build still uses the pinned VC7.1
-compiler and the complete reconstructed production graph.
+The ordinary fan build changes source and authored resources. The build uses the pinned VC7.1
+compiler, the complete reconstructed production graph, and one fan director object.
 
 Only project-authored content and tools belong here. Supply your own original
 Japanese `th095.dat` and `thbgm.dat`; neither archive nor extracted original
@@ -23,15 +23,17 @@ working directory owns its own config, score, Best Shots and replays.
 
 ## First issue
 
-Eight scenes are implemented around a newsroom theme: opening interview, crossed
-headlines, rotating deadlines, a shutter window, a moving subject, parallax,
-an encircling interview and the final edition. Scene-specific Japanese titles
-and Aya's comments accompany the patterns. Difficulty and clearability require
-runtime testing; build success alone does not establish either.
+The cast is Sakuya, Youmu, Yukari, and Kaguya, two scenes each. This revision
+redesigns Sakuya's two spells around native knives, actual stopped time, fast
+silhouette dashes, and camera-triggered evasion with knife counterattacks.
+The other six scenes retain prototype attacks pending their own design passes.
+Scene-specific Japanese titles and Aya's comments accompany the patterns.
+See [the Sakuya design](SAKUYA_DESIGN.md) for choreography and counterplay.
 
 See [the play guide](PLAY.md) for the scene list and controls.
 See [the validation record](VALIDATION.md) for actual clears, persistence,
-replay results and remaining playtesting.
+replay results and remaining playtesting. [The earlier issue-1 record](VALIDATION_ISSUE1.md)
+refers to the superseded prototype executable and patterns.
 The reconstruction handoff in
 `docs/RE_HANDOFF.md`, including its saved semantic draft, remains separate.
 
@@ -81,8 +83,10 @@ python3 -B -m unittest discover -s tests -p test_gogai.py -v
 
 These check native ECL extents, subroutine termination, timeline spawning,
 loop destinations, completion/timeout slot separation, camera capacity,
-bullet budgets, and round-trip CP932 comment/card decoding. They do not prove
-that a human can clear every scene. External `thecl -j -d 95` can independently
+bullet budgets, and round-trip CP932 comment/card decoding. They also compile
+and execute the game's actual C++98 choreography under UBSan, checking stop
+durations, cooldowns, knife varieties, dash bounds and close-range safety.
+They do not prove that a human can clear every scene. External `thecl -j -d 95` can independently
 read the generated scripts; thtk is not a build or runtime dependency.
 
 Hint textures are generated from the fan scene table, including each subject

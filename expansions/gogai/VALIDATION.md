@@ -1,103 +1,118 @@
-# Fan issue 1 validation — 2026-10-29
+# Sakuya revision validation - 2026-10-29
 
-This is runtime evidence for original fan content, separate from reconstruction
-acceptance. Canonical `src/`, match manifests, ledgers and the saved SEM-357
-draft are unchanged.
+This record supersedes the Sakuya prototypes in the [earlier issue-1
+record](VALIDATION_ISSUE1.md). It describes fan gameplay, not reconstruction
+acceptance. Canonical src/, the exact-match manifests, ledgers and the saved
+semantic draft are unchanged.
 
-## Product and build
+## Product and content checks
 
-The isolated product cold-compiles all 88 production objects with hash-attested
-VC7.1 `13.10.3077` and links with `7.10.3077`, without unresolved symbols or
-force-linking. It is a 780,800-byte PE32 i386 Windows GUI executable.
+The isolated product cold-compiles 89 objects with attested VC7.1 13.10.3077
+and links with 7.10.3077 without unresolved symbols or force-linking: the 88
+production objects plus a separate fan director. The result is a 788,992-byte
+PE32 i386 Windows GUI executable. Tested executable SHA-256:
 
-Tested executable SHA-256:
-`f8c479cea99d8b338d5909f166f0cd90e4762493501b8e9655fff02755d8053b`.
-The build receipt is local `build/gogai/report.json`. The later movement fix
-changes three loose ECL resources; the executable and generated C++ scene-text
-header remain hash-identical. A cold build with the current content generator
-incorporates that fix directly.
+`8854126f583cafd44a33b3099e30eb037c5de42627c94c86296a64505e637861`.
 
-Eight target-independent tests check script framing, subroutine/timeline
-bounds, loop destinations, native completion/timeout slots, camera capacities,
-bullet budgets, CP932/XOR text encoding, texture packets and visible movement
-targets. Independent thtk `thecl -j -d 95` reads all eight scripts without
-diagnostics. Sixteen original hint/count textures use the native upload path.
+Ten content tests pass. They check ECL framing/branches, native success and
+timeout slots, cleanup callbacks, photo capacities, CP932/XOR spell/comment
+text, hint textures, and prototype movement/bullet budgets. The portable test
+compiles and executes the actual C++98 choreography under UBSan: 5,000 periodic
+frames, 4,000 reactive frames, and 375 camera/player geometry scenarios.
+It checks 48/44-frame stops, release, the 210-frame evasion cooldown, recovery
+windows, knife types and bends, dash bounds, minimum emission distance and reset.
 
-The full target-independent repository checks pass: 135 Python tests, all
-thirteen existing native component programs, semantic guards, build-graph and
-tracking checks, generated progress and whitespace. Locally, the handoff's
-required exclusion protects its three user-owned untracked files; clean
-checkouts use `python3 scripts/ci.py`. Target verification and tracking with
-`--require-target` also pass. No reconstruction status is promoted by this work.
+All eight authored scripts also decode through independent thtk thecl without
+diagnostics. The full repository check passes: 137 Python tests, all thirteen
+existing native component programs, semantic guards, build graphs, tracking,
+generated progress and whitespace. Target attestation and tracking with
+--require-target pass. Source/exact status stays 697/696 with 698 accepted units.
+The local CI wrapper excludes the handoff's three protected user-owned untracked
+files; clean checkouts use python3 scripts/ci.py.
 
-## Runtime results
+## Silent background gameplay
 
-The actual product runs under Wine/Xvfb with keyboard input, the original user
-DAT archives and a separate save directory. No no-death launcher, process-memory
-writes, injected calls or patched executable bytes are used. A private keyboard
-pilot observes player/camera/bullet state read-only. Its failure is not proof
-that a scene cannot be cleared.
+All tests for this revision use Wine on a private Xvfb display, with limited
+CPU/memory and a separate test working directory. Its music, sound effects and
+both volumes are disabled. No native Windows game window or host audio is
+started. The delivered config instead retains windowed graphics, WAV music
+and sound effects (music volume 100, sound volume 80).
 
-| Scene | Highest native successful-photo counter observed | Outcome |
+The ordinary executable still enters native failure on collision. A separate
+no-death diagnostic run verifies complete photography and scene progression:
+
+| Spell | Native successful photos | Result |
 | --- | --- | --- |
-| 1 | 5 / 5 | Native Success; score 3290, Best Shot 1240 |
-| 2 | 3 / 5 | Native failure and Retry exercised |
-| 3 | 6 / 6 | Native Success; score 7900 |
-| 4 | 1 / 6 | Native failure and Retry exercised |
-| 5 | 6 / 6 | Native Success after movement correction |
-| 6 | 6 / 6 | Native Success |
-| 7 | 4 / 7 | Native failure after movement correction |
-| 8 | 1 / 8 | Native failure after movement correction |
+| Silver Stage in Frozen Time | 6 / 6 | Native Success |
+| The Last Shutter | 8 / 8 | Native Success |
 
-The movement bug was an authoring error: opcode 64 accepts an absolute world
-target, not a displacement. Scenes 5/7/8 now return to `(0, 128)` and keep all
-targets within the native photo area. The new regression check rejects the
-previous off-screen endpoints. Runtime observations confirm constant target
-height 128 in the corrected moving scenes.
+These are no-death diagnostic clears, not evidence of ordinary-mode survival
+or human difficulty balance. The keyboard pilot supplies ordinary movement,
+charging, aiming and shutter inputs. Its only memory modification is the
+explicitly authorized one-byte RET at the verified death entry of its own newly
+started game process. It does not write counters, camera state, enemy state,
+positions, timers or choreography inputs.
 
-Clean exit and restart restore all four clear marks, the first scene's score
-3290 and its actual Best Shot image/1240 score. Native replay save/name entry
-creates `replay/th95_01.rpy`; loading it after restart reproduces the scene-8
-failure. Twelve observed terminal fields agree exactly, including player/boss
-positions, camera mode/charge, photo counters, frame geometry and failure mode.
-Both game sessions exit with status 0.
+Read-only live observations establish the actual time-stop mechanics:
 
-Local evidence is retained under `.analysis/gogai/`: native build terminals,
-independent ECL dumps, per-scene state reports/screenshots,
-`replay-roundtrip.json`, `full-session-exit.json` and the restored Best Shot
-screenshot. Original data and screenshots containing original artwork are not
-committed. The private input pilot is an observation aid, not shipped gameplay.
+| Spell | Complete stops sampled | Existing active bullets sampled per stop | New knives created during stop | Peak live ghosts |
+| --- | --- | --- | --- | --- |
+| Periodic | 2 | 55-69 | 70 | 9 |
+| Camera reactive | 8 | 44-76 | 42 or 84 | 9 |
 
-## Remaining playtesting
+In every sampled stop, maximum observed displacement of both Aya and each
+surviving pre-existing bullet is exactly zero. Sakuya changes position during
+those same samples and the new-knife counter increases. All eight reactive
+destinations lie outside the native frame that triggered them. Native photos
+succeed after release during the cooldown; she does not evade every re-aim.
+Shorter volleys arise from the intentional 88-unit close-range emission guard.
 
-Scenes 2/4/7/8 have not been cleared in this test. Difficulty tuning and human
-playtesting remain open. The resource-limited software-rendering run is slower
-than a normal Windows play session; native Windows rendering/input/audio and
-audible music have not been tested here. Full timeout endurance and a broad
-replay corpus are also outside this first issue's test pass.
+Screenshots show native long/small knife sprites, the red clock dial and fading
+blue character silhouettes. Frozen-time knives enter their active pose directly;
+their birth flashes must not remain frozen as overlapping bright orbs. Ghosts
+are ordinary temporary ANM VMs, never extra photographic subjects.
+Both successful endings clear the director, native freeze flag and ghost handles.
 
-## Optional no-death launcher
+## Save, replay and interrupted-stop cleanup
 
-The issue-1 `run-no-death-test.bat` and PowerShell helper accept only the
-executable hash above. The linker map places the void, argument-free death
-method at RVA `0x33D60`; the PE entry's complete first 18 bytes independently
-agree with the configured signature. Only its first byte is replaced with RET
-in a newly started process. The original executable and canonical source are
-unchanged. This test mode retains the native countdown and uses the same saves.
+Native replay save/name entry writes replay/th95_01.rpy. After a clean exit and
+restart, the replay browser recognizes it. Playback with the same no-death
+profile reaches native 8/8 Success; twelve terminal comparisons agree exactly,
+including player position, photo counters, camera mode/charge and frame geometry.
+The cleared director state also agrees. A replay with collisions requires the
+no-death profile. This is one full round trip, not a broad replay corpus.
 
-Native Windows PowerShell 5.1 tests exercise the deployed BAT and verify:
+Restart also restores both scene-clear marks, the second spell's high score
+63,040 and its actual Best Shot image/10,890 score. Pausing during an active
+reactive stop and choosing Retry creates a fresh scene with zero stops/ghosts,
+no native freeze flag and the ordinary opening preparation marker. Returning
+to scene selection remains usable. The diagnostic and replay sessions both close with status 0.
+Youmu and Kaguya's reassigned actor/background resources also load in gameplay;
+these smoke tests do not establish new attack designs for them.
 
-- Unknown executable hashes are rejected before process startup.
-- Read-back shows `C3` at the correct entry and all 17 following bytes intact.
-- The code page is restored to executable/read-only protection.
-- Both patched and normal games remain running after eight seconds of startup.
-- The disk executable retains its SHA-256; a normal launch has the original
-  `55` entry byte and the complete original signature.
+## No-death launcher identity
 
-The native Windows close-window test exposes a separate retained limitation:
-both normal and no-death launches terminate with `0xC0000005` during closing.
-Windows reports the same `ntdll.dll` fault offset `0x65C15` in both modes.
-The launcher tests establish patch installation and ordinary-launch restoration,
-not a clean native Windows shutdown or native Windows no-death gameplay pass.
-The earlier Wine gameplay and clean-exit results describe the ordinary product.
-Logs and event receipts are retained below `.analysis/gogai/`.
+The shipped BAT retains its separate PowerShell helper. It now accepts only
+the executable hash above. The current linker map places the void death method
+at RVA 0x33D10; its complete first 18 PE bytes match
+`558bec83ec20894de08b45e0c70002000000`. This differs from the old issue-1 RVA.
+The silent Wine diagnostic independently verifies that same hash/signature,
+installs C3 at the entry of its own child process, and reads the byte back.
+The disk executable is unchanged. The PowerShell protection-restoration and
+read-back implementation is unchanged from the earlier launcher test.
+
+Native Windows launcher/graphics/audio tests are deliberately not repeated in
+this pass, as requested. The earlier record documents a native Windows closing
+fault affecting both ordinary and no-death launches of the old product. This
+revision does not claim to resolve or re-test that issue.
+
+## Remaining playtesting and evidence
+
+Ordinary-mode clears, human difficulty tuning, full timeout endurance and a
+broad replay corpus remain open. Youmu, Yukari and Kaguya have the requested
+actors and two slots each, but their attacks remain earlier prototypes.
+
+Local build/PE identity receipts, state observations and screenshots are below
+.analysis/gogai-sakuya/ and build/gogai/. Original archives, extracted assets,
+screenshots containing original art, private probes, generated executables and
+test saves are not committed.
