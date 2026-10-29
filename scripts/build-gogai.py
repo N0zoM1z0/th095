@@ -35,7 +35,8 @@ def prepare():
     RUN.mkdir(parents=True, exist_ok=True)
     content = module('gogai_content', ROOT / 'expansions/gogai/content.py')
     content.write_content(tree, RUN)
-    shutil.copy2(ROOT / 'expansions/gogai/launch-gogai.bat', RUN)
+    for name in ('launch-gogai.bat', 'run-no-death-test.bat', 'run-no-death-test.ps1'):
+        shutil.copy2(ROOT / 'expansions/gogai' / name, RUN)
     for folder in ('bestshot', 'replay'):
         (RUN / folder).mkdir(exist_ok=True)
     return tree

@@ -75,3 +75,29 @@ playtesting remain open. The resource-limited software-rendering run is slower
 than a normal Windows play session; native Windows rendering/input/audio and
 audible music have not been tested here. Full timeout endurance and a broad
 replay corpus are also outside this first issue's test pass.
+
+## Optional no-death launcher
+
+The issue-1 `run-no-death-test.bat` and PowerShell helper accept only the
+executable hash above. The linker map places the void, argument-free death
+method at RVA `0x33D60`; the PE entry's complete first 18 bytes independently
+agree with the configured signature. Only its first byte is replaced with RET
+in a newly started process. The original executable and canonical source are
+unchanged. This test mode retains the native countdown and uses the same saves.
+
+Native Windows PowerShell 5.1 tests exercise the deployed BAT and verify:
+
+- Unknown executable hashes are rejected before process startup.
+- Read-back shows `C3` at the correct entry and all 17 following bytes intact.
+- The code page is restored to executable/read-only protection.
+- Both patched and normal games remain running after eight seconds of startup.
+- The disk executable retains its SHA-256; a normal launch has the original
+  `55` entry byte and the complete original signature.
+
+The native Windows close-window test exposes a separate retained limitation:
+both normal and no-death launches terminate with `0xC0000005` during closing.
+Windows reports the same `ntdll.dll` fault offset `0x65C15` in both modes.
+The launcher tests establish patch installation and ordinary-launch restoration,
+not a clean native Windows shutdown or native Windows no-death gameplay pass.
+The earlier Wine gameplay and clean-exit results describe the ordinary product.
+Logs and event receipts are retained below `.analysis/gogai/`.

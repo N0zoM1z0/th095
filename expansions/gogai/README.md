@@ -1,4 +1,4 @@
-# 風の号外 — Kaze no Gogai
+# Kaze no Gogai
 
 A fan-made TH095 expansion built from the reconstructed Windows i386 engine.
 This is original fan content, not recovered or unreleased ZUN content.
@@ -29,7 +29,7 @@ an encircling interview and the final edition. Scene-specific Japanese titles
 and Aya's comments accompany the patterns. Difficulty and clearability require
 runtime testing; build success alone does not establish either.
 
-See the controls in [Build and play](#build-and-play).
+See [the play guide](PLAY.md) for the scene list and controls.
 See [the validation record](VALIDATION.md) for actual clears, persistence,
 replay results and remaining playtesting.
 The reconstruction handoff in
@@ -58,11 +58,20 @@ On Windows, copy the contents of `build/gogai/play/` to a new folder and run
 Do not copy an original score file into it. For a source-only distribution,
 omit the DAT archives, generated saves, photos and replays.
 
-Choose Mission Select, then **号外1** (one Left press from LEVEL 1), then any
+Choose Mission Select, then **Extra Issue 1**, group 12 (one Left press from LEVEL 1), then any
 of the eight scenes. All eight are immediately available. Arrow keys move;
 Shift focuses; Z takes/aims a photo when charged; Shift+Z charges quickly.
 Escape pauses; native Retry, scene selection and replay menus remain available.
 The window caption identifies the fan build.
+
+For no-death testing, run `run-no-death-test.bat` beside its PowerShell helper.
+It accepts only the tested executable hash in the validation record, checks
+the relocated death entry against its 18-byte signature, and replaces its first
+byte with RET in the newly launched process. It restores page protection and
+verifies the write. No disk EXE is changed; normal launching restores ordinary
+play. Timer expiration still applies, and saves use the same play directory.
+A replay containing collisions requires the no-death launcher for playback.
+Rebuilt executables are rejected until separately verified and repinned.
 
 ## Content checks
 

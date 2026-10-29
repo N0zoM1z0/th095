@@ -1,7 +1,7 @@
-# 東方文花帖 ～ Shoot the Bullet
+# TH095 — Shoot the Bullet
 
-This branch also contains **[風の号外 — Kaze no Gogai](expansions/gogai/README.md)**,
-an original fan expansion for the reserved 号外1 scene group. Its isolated build
+This branch also contains **[Kaze no Gogai](expansions/gogai/README.md)**,
+an original fan expansion for the reserved extra-issue scene group. Its isolated build
 uses the reconstructed engine and user-supplied original data. Fan content and
 runtime validation remain separate from the reconstruction status below.
 
