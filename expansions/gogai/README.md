@@ -2,7 +2,7 @@
 
 An original fan expansion built from the reconstructed TH095 Windows i386
 engine. See [the preserved spell library](SPELL_LIBRARY.md) for independent
-Sakuya/Kaguya builds and all historical source tags.
+Sakuya/Kaguya/Youmu builds and all historical source tags.
 
 All eight group-12 slots in this Sakuya product feature Sakuya for comparing spell
 designs. This is original fan content, not unreleased ZUN content.

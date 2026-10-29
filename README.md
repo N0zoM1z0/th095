@@ -6,6 +6,7 @@ uses the reconstructed engine and user-supplied original data. Fan content and
 runtime validation remain separate from the reconstruction status below.
 The [spell library](expansions/gogai/SPELL_LIBRARY.md) preserves the Sakuya issues
 and the independent [Kaguya eight-card sampler](expansions/gogai/kaguya-v3/README.md).
+The [Youmu sword sampler](expansions/gogai/youmu-v1/README.md) adds eight separate sword scenes.
 
 <p align="center">
   <img

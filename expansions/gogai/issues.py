@@ -27,6 +27,9 @@ ISSUES = {
     'kaguya-v3': Issue('kaguya-v3', 'Kaguya Eight Different Wonders / Hard v3',
                       'build/gogai-kaguya-v3', 'expansions/gogai/kaguya-v3',
                       'KaguyaDirector', 'KaguyaChoreography.hpp', 'expansions/gogai/kaguya-v3'),
+    'youmu-v1': Issue('youmu-v1', 'Youmu Eight Sword Scenes / Hard v1',
+                     'build/gogai-youmu-v1', 'expansions/gogai/youmu-v1',
+                     'YoumuDirector', 'YoumuChoreography.hpp', 'expansions/gogai/youmu-v1'),
 }
 
 
@@ -34,18 +37,20 @@ def apply_variant(tree: Path, issue: Issue):
     """Specialize generated copies only; preserve the Sakuya source overlay."""
     if issue.key == 'sakuya-v5':
         return
-    if issue.key not in ('kaguya-v1', 'kaguya-v2', 'kaguya-v3'):
+    if issue.key not in ('kaguya-v1', 'kaguya-v2', 'kaguya-v3', 'youmu-v1'):
         raise ValueError('unknown fan issue')
+    character = 'Youmu' if issue.key == 'youmu-v1' else 'Kaguya'
+    world, actor = ('world06.std', 'enm13.anm') if issue.key == 'youmu-v1' else ('world09.std', 'enm19.anm')
     replacements = {
-        'EclExtended.cpp': [('SakuyaDirector.hpp', 'KaguyaDirector.hpp', 1),
-                            ('GogaiSakuyaTick', 'GogaiKaguyaTick', 1),
-                            ('GogaiSakuyaReset', 'GogaiKaguyaReset', 1)],
-        'PhotoGameTask.cpp': [('SakuyaDirector.hpp', 'KaguyaDirector.hpp', 1),
-                              ('GogaiSakuyaReset', 'GogaiKaguyaReset', 1)],
+        'EclExtended.cpp': [('SakuyaDirector.hpp', character + 'Director.hpp', 1),
+                            ('GogaiSakuyaTick', 'Gogai' + character + 'Tick', 1),
+                            ('GogaiSakuyaReset', 'Gogai' + character + 'Reset', 1)],
+        'PhotoGameTask.cpp': [('SakuyaDirector.hpp', character + 'Director.hpp', 1),
+                              ('GogaiSakuyaReset', 'Gogai' + character + 'Reset', 1)],
         'Main.cpp': [('Sakuya Grand Geometry / Hard v5', issue.title, 1),
                      ('Sakuya Grand Geometry Hard v5', issue.title.replace(' / ', ' '), 1)],
         'SceneSelect.cpp': [('"world07.std", "enm14.anm", "gogai',
-                             '"world09.std", "enm19.anm", "gogai', 8)],
+                             f'"{world}", "{actor}", "gogai', 8)],
     }
     for name, changes in replacements.items():
         path = tree / name
@@ -56,6 +61,6 @@ def apply_variant(tree: Path, issue: Issue):
             text = text.replace(old, new)
         if name == 'SceneSelect.cpp':
             lines = text.splitlines(keepends=True)
-            text = ''.join(line.replace('bgm/th095_03.wav', 'bgm/th095_04.wav')
+            text = ''.join(line.replace('bgm/th095_03.wav', 'bgm/th095_03.wav' if issue.key == 'youmu-v1' else 'bgm/th095_04.wav')
                            if '"gogai' in line else line for line in lines)
         path.write_text(text)

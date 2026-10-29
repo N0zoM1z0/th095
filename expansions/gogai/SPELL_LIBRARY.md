@@ -15,6 +15,8 @@ SPELL_LIBRARY.json is the machine-readable index.
 | gogai/sakuya-v4 | Eight geometry studies, three-tableau blinks and in-flight rewrites |
 | gogai/sakuya-v5 | Eight harder multi-phrase spells, rotary streams, reflections and validation |
 | gogai/kaguya-v1 | Eight treasure compositions, delayed jewels, orbiting emitters and native warned lasers |
+| gogai/kaguya-v2 | Gradual source deployment and eight living-treasure formations |
+| gogai/kaguya-v3 | Eight distinct mechanisms, including gravity, return flight and native fission |
 
 Each release receives an annotated tag pushed after validation. A historical tag preserves its
 entire build recipe and source, not just the final executable or screenshots.
@@ -51,6 +53,27 @@ build/gogai-kaguya-v1/, build/gogai-kaguya-v2/ or build/gogai-kaguya-v3/. Each s
 and replays. The native group-12 menu provides the eight scenes of the selected
 product. Choosing Kaguya does not overwrite Sakuya's authored patterns or saves.
 
+## Youmu's independent sword set
+
+Youmu has separate choreography, native integration, metadata and practice pin
+below youmu-v1/. Kaguya's eight v3 source cards and all previous releases remain
+unchanged. The generated build/save directory is build/gogai-youmu-v1/.
+
+| ID | Youmu v1 |
+| --- | --- |
+| YM.01 | White Tower, One Flash |
+| YM.02 | Crescent Wheel Dance |
+| YM.03 | Twin Souls' Pincer |
+| YM.04 | Six Paths Crossing |
+| YM.05 | Cherryfall Guillotine |
+| YM.06 | Echo Beyond Silence |
+| YM.07 | Petal-Parrying Rosette |
+| YM.08 | Thousandfold White Tower |
+
+```bash
+python3 scripts/build-gogai.py --issue youmu-v1 --data-dir /path/to/original-game
+```
+
 ## Continuing a design
 
 Keep the stable spell ID, record the new version and its source revision, and
@@ -60,6 +83,7 @@ belongs in that set's director. Validate the pure model, native photo goals,
 replay and interrupted-state cleanup independently. Preserve the earlier tag
 and standalone folder for direct comparison.
 
-Historical prototypes are studies, not finished designs for Youmu or Yukari.
+Historical mixed-cast prototypes remain studies. Youmu v1 is an independent
+sword sampler; Yukari remains a future design.
 Kaguya remains a new fan composition informed by read-only TH095 and TH08
 references; it makes no reconstruction or exact-match claim.

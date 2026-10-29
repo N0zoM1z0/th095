@@ -14,8 +14,8 @@ class KaguyaConstellationTests(unittest.TestCase):
             return result
         registry=load('gogai_constellation_registry','expansions/gogai/issues.py')
         content=load('gogai_constellation_content','expansions/gogai/kaguya-v3/content.py')
-        self.assertEqual(len(registry.ISSUES),4)
-        self.assertEqual(len({i.build for i in registry.ISSUES.values()}),4)
+        self.assertGreaterEqual(len(registry.ISSUES),4)
+        self.assertEqual(len({i.build for i in registry.ISSUES.values()}),len(registry.ISSUES))
         self.assertEqual([s.photos for s in content.SCENES],[6]*5+[7,7,8])
         self.assertEqual({s.anm for s in content.SCENES},{19})
         self.assertEqual(len({content.assemble_scene(i) for i in range(8)}),8)

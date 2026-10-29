@@ -8,7 +8,8 @@
     "gogai/sakuya-v4",
     "gogai/sakuya-v5",
     "gogai/kaguya-v1",
-    "gogai/kaguya-v2"
+    "gogai/kaguya-v2",
+    "gogai/kaguya-v3"
   ],
   "issues": [
     {
@@ -125,6 +126,63 @@
         }
       ],
       "previous_issue": "gogai/kaguya-v2"
+    },
+    {
+      "id": "youmu-v1",
+      "actor": "Youmu",
+      "source_tag": "gogai/youmu-v1",
+      "source": "expansions/gogai/youmu-v1/YoumuChoreography.hpp",
+      "build_command": "python3 scripts/build-gogai.py --issue youmu-v1",
+      "spells": [
+        {
+          "id": "YM.01",
+          "scene": 1,
+          "mode": 0,
+          "name": "White Tower, One Flash"
+        },
+        {
+          "id": "YM.02",
+          "scene": 2,
+          "mode": 1,
+          "name": "Crescent Wheel Dance"
+        },
+        {
+          "id": "YM.03",
+          "scene": 3,
+          "mode": 2,
+          "name": "Twin Souls' Pincer"
+        },
+        {
+          "id": "YM.04",
+          "scene": 4,
+          "mode": 3,
+          "name": "Six Paths Crossing"
+        },
+        {
+          "id": "YM.05",
+          "scene": 5,
+          "mode": 4,
+          "name": "Cherryfall Guillotine"
+        },
+        {
+          "id": "YM.06",
+          "scene": 6,
+          "mode": 5,
+          "name": "Echo Beyond Silence"
+        },
+        {
+          "id": "YM.07",
+          "scene": 7,
+          "mode": 6,
+          "name": "Petal-Parrying Rosette"
+        },
+        {
+          "id": "YM.08",
+          "scene": 8,
+          "mode": 7,
+          "name": "Thousandfold White Tower"
+        }
+      ]
     }
   ]
 }
