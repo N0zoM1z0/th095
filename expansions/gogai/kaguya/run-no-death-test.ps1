@@ -4,15 +4,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# Kaguya v1 test product: pending verified executable identity,
-# the launcher refuses all executables until the verified pin is installed.
+# Kaguya Hard v1: verified 797696-byte fan executable.
 # The 18-byte entry signature includes the native mode = 2 publication.
 # This launcher is intentionally pinned to one reconstructed artifact. The
 # original Japanese executable must never be patched, and a rebuilt image may
 # move the function even when its source is unchanged.  Refuse every unknown
 # hash instead of guessing an address.
-$ExpectedSha256 = "0000000000000000000000000000000000000000000000000000000000000000"
-$DieRva = 0x00000000
+$ExpectedSha256 = "8fe59d0697ad932f0202150cb8358caa85f1a01932e4591a99a4272174aff85c"
+$DieRva = 0x00033D50
 $ExpectedPrologue = [byte[]]@(
     0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x20, 0x89, 0x4D, 0xE0,
     0x8B, 0x45, 0xE0, 0xC7, 0x00, 0x02, 0x00, 0x00, 0x00
@@ -21,7 +20,7 @@ $ReturnInstruction = [byte[]]@(0xC3)
 
 if ([string]::IsNullOrWhiteSpace($Executable)) {
     $DeployedExecutable = Join-Path $PSScriptRoot "th095-gogai.exe"
-    $RepositoryExecutable = Join-Path $PSScriptRoot "..\..\build\gogai\play\th095-gogai.exe"
+    $RepositoryExecutable = Join-Path $PSScriptRoot "..\..\..\build\gogai-kaguya-v1\play\th095-gogai.exe"
     if (Test-Path -LiteralPath $DeployedExecutable -PathType Leaf) {
         $Executable = $DeployedExecutable
     }

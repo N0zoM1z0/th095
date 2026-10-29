@@ -69,7 +69,7 @@
     {
       "id": "kaguya-v1",
       "actor": "Kaguya",
-      "source_tag": null,
+      "source_tag": "gogai/kaguya-v1",
       "source": "expansions/gogai/kaguya/KaguyaChoreography.hpp",
       "build_command": "python3 scripts/build-gogai.py --issue kaguya-v1",
       "spells": [

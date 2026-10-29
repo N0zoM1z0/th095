@@ -14,6 +14,7 @@ SPELL_LIBRARY.json is the machine-readable index.
 | gogai/sakuya-v3 | Curved movement, complete poses and knife ribbons |
 | gogai/sakuya-v4 | Eight geometry studies, three-tableau blinks and in-flight rewrites |
 | gogai/sakuya-v5 | Eight harder multi-phrase spells, rotary streams, reflections and validation |
+| gogai/kaguya-v1 | Eight treasure compositions, delayed jewels, orbiting emitters and native warned lasers |
 
 These annotated tags are pushed to the remote. A historical tag preserves its
 entire build recipe and source, not just the final executable or screenshots.
