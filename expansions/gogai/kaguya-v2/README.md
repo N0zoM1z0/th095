@@ -53,7 +53,7 @@ Original scripts, decoded dumps, textures and captures are not committed.
 The spell-practice script supplies more specific design references than the
 previous general orbit helper study:
 
-- Sub40-43, Brilliant Dragon Bullet: moving familiar paths and repeating,
+- Sub40-43, dragon-jewel family: moving familiar paths and repeating,
   differently colored streams. The new dragon uses continuous hand emission
   and native side/ceiling reflections, with its own timings and geometry.
 - Sub51-53, Salamander Shield: opposed angular increments and recurring small
