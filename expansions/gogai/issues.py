@@ -24,6 +24,9 @@ ISSUES = {
     'kaguya-v2': Issue('kaguya-v2', 'Kaguya Living Treasures / Hard v2',
                       'build/gogai-kaguya-v2', 'expansions/gogai/kaguya-v2',
                       'KaguyaDirector', 'KaguyaChoreography.hpp', 'expansions/gogai/kaguya-v2'),
+    'kaguya-v3': Issue('kaguya-v3', 'Kaguya Eight Different Wonders / Hard v3',
+                      'build/gogai-kaguya-v3', 'expansions/gogai/kaguya-v3',
+                      'KaguyaDirector', 'KaguyaChoreography.hpp', 'expansions/gogai/kaguya-v3'),
 }
 
 
@@ -31,7 +34,7 @@ def apply_variant(tree: Path, issue: Issue):
     """Specialize generated copies only; preserve the Sakuya source overlay."""
     if issue.key == 'sakuya-v5':
         return
-    if issue.key not in ('kaguya-v1', 'kaguya-v2'):
+    if issue.key not in ('kaguya-v1', 'kaguya-v2', 'kaguya-v3'):
         raise ValueError('unknown fan issue')
     replacements = {
         'EclExtended.cpp': [('SakuyaDirector.hpp', 'KaguyaDirector.hpp', 1),

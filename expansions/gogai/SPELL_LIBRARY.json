@@ -7,7 +7,8 @@
     "gogai/sakuya-v3",
     "gogai/sakuya-v4",
     "gogai/sakuya-v5",
-    "gogai/kaguya-v1"
+    "gogai/kaguya-v1",
+    "gogai/kaguya-v2"
   ],
   "issues": [
     {
@@ -68,62 +69,62 @@
       ]
     },
     {
-      "id": "kaguya-v2",
+      "id": "kaguya-v3",
       "actor": "Kaguya",
-      "source_tag": "gogai/kaguya-v2",
-      "source": "expansions/gogai/kaguya-v2/KaguyaChoreography.hpp",
-      "build_command": "python3 scripts/build-gogai.py --issue kaguya-v2",
+      "source_tag": "gogai/kaguya-v3",
+      "source": "expansions/gogai/kaguya-v3/KaguyaChoreography.hpp",
+      "build_command": "python3 scripts/build-gogai.py --issue kaguya-v3",
       "spells": [
         {
           "id": "KG.01",
           "scene": 1,
           "mode": 0,
-          "name": "Jeweled Orrery"
+          "name": "Rainbow Conservatory"
         },
         {
           "id": "KG.02",
           "scene": 2,
           "mode": 1,
-          "name": "Stone Chalice"
+          "name": "Buddhist Moon Prism"
         },
         {
           "id": "KG.03",
           "scene": 3,
           "mode": 2,
-          "name": "Fire-Rat Brocade"
+          "name": "Salamander Orrery"
         },
         {
           "id": "KG.04",
           "scene": 4,
           "mode": 3,
-          "name": "Dragon's Luminous Coil"
+          "name": "Dragon's Threefold Gaze"
         },
         {
           "id": "KG.05",
           "scene": 5,
           "mode": 4,
-          "name": "Swallow's Star Nest"
+          "name": "Twin Life Springs"
         },
         {
           "id": "KG.06",
           "scene": 6,
           "mode": 5,
-          "name": "Bamboo Moon Labyrinth"
+          "name": "Bamboo Crossing Gates"
         },
         {
           "id": "KG.07",
           "scene": 7,
           "mode": 6,
-          "name": "Eternity's Broken Rosette"
+          "name": "Night-Returning Blossom"
         },
         {
           "id": "KG.08",
           "scene": 8,
           "mode": 7,
-          "name": "Five Impossible Nights"
+          "name": "Sea of Hourai Constellations"
         }
       ],
-      "previous_issue": "gogai/kaguya-v1"
+      "previous_issue": "gogai/kaguya-v2"
     }
   ]
 }

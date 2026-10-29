@@ -13,7 +13,7 @@ class KaguyaBloomTests(unittest.TestCase):
         registry = importlib.util.module_from_spec(spec)
         sys.modules[spec.name] = registry
         spec.loader.exec_module(registry)
-        self.assertEqual(len({i.build for i in registry.ISSUES.values()}), 3)
+        self.assertEqual(len({i.build for i in registry.ISSUES.values()}), len(registry.ISSUES))
         v1, v2 = (registry.ISSUES[name] for name in ('kaguya-v1','kaguya-v2'))
         self.assertNotEqual(v1.directory, v2.directory)
         self.assertNotEqual(v1.launchers, v2.launchers)
