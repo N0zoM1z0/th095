@@ -86,8 +86,9 @@ def pattern(index: int, scene: Scene) -> bytes:
     events = []
     def shot(t, *args, **kwargs):
         events.append((t, lambda: s.shot(t, *args, **kwargs)))
-    def move(t, dx, dy=0.0, duration=60):
-        events.append((t, lambda: s.emit(t, 64, 'iiff', duration, 4, dx, dy)))
+    def move(t, x, y=128.0, duration=60):
+        # Opcode 64 interpolates to an absolute world target, not a delta.
+        events.append((t, lambda: s.emit(t, 64, 'iiff', duration, 4, x, y)))
     if index == 0:
         for k, t in enumerate(range(75, 421, 55)):
             shot(t, 16, 1.5, k * 0.16, color=6 if k % 2 else 13)
@@ -109,8 +110,8 @@ def pattern(index: int, scene: Scene) -> bytes:
         for t in (190, 390):
             shot(t, 3, 2.0, aimed=True, fan=0.35, color=6, kind=4)
     elif index == 4:
-        for t, dx in ((65, 100.0), (185, -200.0), (365, 100.0)):
-            move(t, dx, duration=90)
+        for t, x in ((65, 100.0), (185, -100.0), (365, 0.0)):
+            move(t, x, duration=90)
         for k, t in enumerate(range(90, 441, 50)):
             shot(t, 14, 1.65, k * 0.12, color=6)
             shot(t, 3, 2.0, aimed=True, fan=0.32, color=13, kind=4)
@@ -125,15 +126,15 @@ def pattern(index: int, scene: Scene) -> bytes:
             if k % 2:
                 shot(t, 5, 2.1, aimed=True, fan=0.2, kind=4, color=13)
         move(180, 80.0)
-        move(330, -80.0)
+        move(330, 0.0)
     else:
         for k, t in enumerate(range(70, 431, 36)):
             shot(t, 18, 1.65, k * 0.17, color=6 if k % 2 else 13)
             if k % 3 == 0:
                 shot(t, 5, 2.1, aimed=True, fan=0.22, kind=4, color=3)
         move(140, -90.0)
-        move(290, 180.0)
-        move(410, -90.0)
+        move(290, 90.0)
+        move(410, 0.0)
     for _, emit in sorted(events, key=lambda event: event[0]):
         emit()
     s.jump(scene.period + 60, start, 60)

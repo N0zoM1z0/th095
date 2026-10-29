@@ -88,6 +88,20 @@ class GogaiContentTests(unittest.TestCase):
                 count += n * layers
             self.assertLess(count, 240)
 
+    def test_moving_subjects_stay_in_the_native_photo_area(self):
+        moving = []
+        for i in range(8):
+            subs, _ = read_subs(content.assemble_scene(i))
+            targets = [struct.unpack('<iiff', r[3]) for r in subs[3] if r[2] == 64]
+            for duration, easing, x, y in targets:
+                self.assertTrue(1 <= duration <= 120)
+                self.assertTrue(-160 <= x <= 160)
+                self.assertTrue(80 <= y <= 224)
+            if targets:
+                moving.append(i + 1)
+                self.assertEqual(targets[-1][2:], (0.0, 128.0))
+        self.assertEqual(moving, [5, 7, 8])
+
     def test_comments_decode_with_actual_native_key_schedule(self):
         for i, scene in enumerate(content.SCENES):
             for column, text in enumerate((scene.title, *scene.comment)):
