@@ -1,4 +1,4 @@
-# Kaze no Gogai: Sakuya revision play guide
+# Kaze no Gogai: Sakuya motion revision play guide
 
 This is a fan expansion made with the reconstructed TH095 engine. It is not
 unreleased ZUN content.
@@ -22,7 +22,7 @@ only the verified Sakuya-revision executable; other rebuilds are rejected.
 
 | Scene | Subject | Theme | Required photos |
 | --- | --- | --- | --- |
-| 1 | Sakuya | Silver Stage in Frozen Time: crossed knives, three frozen-time dashes | 6 |
+| 1 | Sakuya | Silver Stage in Frozen Time: sweeping knives, curved frozen-time dashes | 6 |
 | 2 | Sakuya | The Last Shutter: evade the camera, throw knives during the dash | 8 |
 | 3 | Youmu | Rotating deadline (prototype) | 6 |
 | 4 | Youmu | Shutter margin (prototype) | 6 |
@@ -39,7 +39,8 @@ for source builds and validation.
 
 Sakuya's first spell stops time on a regular rhythm. Position before the stop,
 read the split knife fans, then photograph her during the recovery window.
-Her second spell reacts when an aimed frame contains her. Bait the dash,
+She keeps varied landing points and glides into the next phrase. Her second
+spell reacts when an aimed frame contains her. Bait the dash,
 follow the blue silhouettes, and re-aim at her destination during the evasion
 cooldown. Ghosts do not count as photographic subjects. The other six scenes
 have the requested cast but retain their earlier prototype attacks.

@@ -26,6 +26,9 @@ working directory owns its own config, score, Best Shots and replays.
 The cast is Sakuya, Youmu, Yukari, and Kaguya, two scenes each. This revision
 redesigns Sakuya's two spells around native knives, actual stopped time, fast
 silhouette dashes, and camera-triggered evasion with knife counterattacks.
+Curved routes keep varied landings, native poses change with the action, and
+small knife ribbons accelerate and turn continuously. See the
+[motion revision](MOTION_DESIGN.md) for implementation and TH06 references.
 The other six scenes retain prototype attacks pending their own design passes.
 Scene-specific Japanese titles and Aya's comments accompany the patterns.
 See [the Sakuya design](SAKUYA_DESIGN.md) for choreography and counterplay.
@@ -33,7 +36,8 @@ See [the Sakuya design](SAKUYA_DESIGN.md) for choreography and counterplay.
 See [the play guide](PLAY.md) for the scene list and controls.
 See [the validation record](VALIDATION.md) for actual clears, persistence,
 replay results and remaining playtesting. [The earlier issue-1 record](VALIDATION_ISSUE1.md)
-refers to the superseded prototype executable and patterns.
+refers to the superseded prototype executable and patterns. The
+[earlier Sakuya validation](VALIDATION_SAKUYA_V2.md) records the first time-stop revision.
 The reconstruction handoff in
 `docs/RE_HANDOFF.md`, including its saved semantic draft, remains separate.
 

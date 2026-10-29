@@ -1,118 +1,121 @@
-# Sakuya revision validation - 2026-10-29
+# Sakuya motion revision validation - 2026-10-29
 
-This record supersedes the Sakuya prototypes in the [earlier issue-1
-record](VALIDATION_ISSUE1.md). It describes fan gameplay, not reconstruction
-acceptance. Canonical src/, the exact-match manifests, ledgers and the saved
-semantic draft are unchanged.
+This record supersedes the [first Sakuya revision](VALIDATION_SAKUYA_V2.md).
+It describes fan gameplay, not reconstruction acceptance. Canonical source,
+ABI layouts, exact manifests, ledgers and the saved semantic draft are unchanged.
+See [the motion design](MOTION_DESIGN.md) for TH06 reference provenance.
 
-## Product and content checks
+## Build and behavioral checks
 
-The isolated product cold-compiles 89 objects with attested VC7.1 13.10.3077
-and links with 7.10.3077 without unresolved symbols or force-linking: the 88
-production objects plus a separate fan director. The result is a 788,992-byte
-PE32 i386 Windows GUI executable. Tested executable SHA-256:
+Pinned VC7.1 13.10.3077 recompiles the changed fan director. The other 88
+production objects come from the previous cold build, with unchanged source/
+overlay/content inputs and recorded object hashes. All 89 i386 objects verify
+and link with 7.10.3077 without unresolved symbols or force-linking.
+The ordinary source-build command still cold-builds all 89 objects.
 
-`8854126f583cafd44a33b3099e30eb037c5de42627c94c86296a64505e637861`.
+The tested PE32 i386 executable is 793,600 bytes. SHA-256:
 
-Ten content tests pass. They check ECL framing/branches, native success and
-timeout slots, cleanup callbacks, photo capacities, CP932/XOR spell/comment
-text, hint textures, and prototype movement/bullet budgets. The portable test
-compiles and executes the actual C++98 choreography under UBSan: 5,000 periodic
-frames, 4,000 reactive frames, and 375 camera/player geometry scenarios.
-It checks 48/44-frame stops, release, the 210-frame evasion cooldown, recovery
-windows, knife types and bends, dash bounds, minimum emission distance and reset.
+`a4a330b7ce6ac63acba07ff61041934d961d36af55a0b961f464638118dd9f77`.
 
-All eight authored scripts also decode through independent thtk thecl without
-diagnostics. The full repository check passes: 137 Python tests, all thirteen
-existing native component programs, semantic guards, build graphs, tracking,
-generated progress and whitespace. Target attestation and tracking with
---require-target pass. Source/exact status stays 697/696 with 698 accepted units.
-The local CI wrapper excludes the handoff's three protected user-owned untracked
-files; clean checkouts use python3 scripts/ci.py.
+Ten content tests pass. The actual C++98 choreography runs under UBSan through
+5,000 periodic frames, 4,000 reactive frames, another 5,000 motion/pose frames
+and 375 camera/player geometry scenarios. Checks cover 60/52-frame stops,
+210-frame evasion cooldown, recovery, bounded fractional curve samples,
+zero-speed curve endpoints, six pose states, varied persistent landings,
+per-blade separation, launch ramps, knife varieties and reset behavior.
+A rejected close-range clock emission cannot corrupt an existing ribbon.
+
+All eight authored ECL scripts independently decode through thtk without
+diagnostics. Full repository CI passes 137 Python tests, thirteen existing
+native component programs, semantic guards, build graphs, progress and whitespace.
+Target verification and tracking with --require-target pass; source/exact totals
+remain 697/696 with 698 accepted units. The local wrapper excludes the handoff's
+three protected user-owned untracked files; clean checkouts use scripts/ci.py.
 
 ## Silent background gameplay
 
-All tests for this revision use Wine on a private Xvfb display, with limited
-CPU/memory and a separate test working directory. Its music, sound effects and
-both volumes are disabled. No native Windows game window or host audio is
-started. The delivered config instead retains windowed graphics, WAV music
-and sound effects (music volume 100, sound volume 80).
+This revision is tested only with Wine on a private Xvfb display. Music, sound
+effects and both volumes are disabled in the private test configuration.
+The game and probe run under the repository's half-CPU, one-GiB resource cap.
+No native Windows game window or host audio is started. Manual BAT delivery
+retains ordinary windowed graphics, WAV music and sound effects.
 
-The ordinary executable still enters native failure on collision. A separate
-no-death diagnostic run verifies complete photography and scene progression:
-
-| Spell | Native successful photos | Result |
+| Spell | Native successful photographs | Result |
 | --- | --- | --- |
 | Silver Stage in Frozen Time | 6 / 6 | Native Success |
 | The Last Shutter | 8 / 8 | Native Success |
 
-These are no-death diagnostic clears, not evidence of ordinary-mode survival
-or human difficulty balance. The keyboard pilot supplies ordinary movement,
-charging, aiming and shutter inputs. Its only memory modification is the
-explicitly authorized one-byte RET at the verified death entry of its own newly
-started game process. It does not write counters, camera state, enemy state,
-positions, timers or choreography inputs.
+These are no-death diagnostic clears, not ordinary-mode survival or human
+balance claims. A keyboard pilot supplies movement, charge, aim and shutter
+inputs. Its only memory modification is the authorized one-byte RET at the
+verified death entry of its own newly started fan process. Counters, timers,
+positions, camera state and choreography inputs are not written by the probe.
 
-Read-only live observations establish the actual time-stop mechanics:
+Four complete periodic stops and eight reactive stops are sampled. Existing
+active bullets and Aya have zero observed displacement throughout each sampled
+stop. Sakuya follows changing curves while creating additional knives; observed
+new-knife counter increases range from 24 to 60 per sampled interval. Partial
+sampling and the 88-unit emission guard can reduce the observed count.
+All eight reactive destinations are outside their triggering native frame,
+with six distinct locations spanning both sides and heights 96 through 224.
+Successful photography remains possible after the dodge during its cooldown.
 
-| Spell | Complete stops sampled | Existing active bullets sampled per stop | New knives created during stop | Peak live ghosts |
-| --- | --- | --- | --- | --- |
-| Periodic | 2 | 55-69 | 70 | 9 |
-| Camera reactive | 8 | 44-76 | 42 or 84 | 9 |
+The ordinary first spell uses varied final landings and later normal-time
+glides. Successive observed landings change rather than resetting to the center.
+Native telemetry reaches all six pose states. Screenshots show the actual
+full-body sprite frames 2 through 9, mirrored movement, turn/raise casting holds,
+return animations and pose-matched blue ghost snapshots. Unused script 7's
+overlapping leg slice is excluded; it is not a complete casting pose.
 
-In every sampled stop, maximum observed displacement of both Aya and each
-surviving pre-existing bullet is exactly zero. Sakuya changes position during
-those same samples and the new-knife counter increases. All eight reactive
-destinations lie outside the native frame that triggered them. Native photos
-succeed after release during the cooldown; she does not evade every re-aim.
-Shorter volleys arise from the intentional 88-unit close-range emission guard.
+Read-only native bullet observations provide two independent eight-sample
+launch tracks. Speed rises from about 1.166 to 3.034 while heading changes on
+successive ticks. The largest residual against the actual native acceleration
+parameters is below 0.000001 for speed and angle. These measurements exercise
+the real native polar integration, not a substitute trajectory simulator.
+The knife pose appears directly without a magnified birth flash; volleys are
+spatially separated and written over successive emissions.
 
-Screenshots show native long/small knife sprites, the red clock dial and fading
-blue character silhouettes. Frozen-time knives enter their active pose directly;
-their birth flashes must not remain frozen as overlapping bright orbs. Ghosts
-are ordinary temporary ANM VMs, never extra photographic subjects.
-Both successful endings clear the director, native freeze flag and ghost handles.
+Successful endings clear the director, native time-stop flag and ghost handles.
 
-## Save, replay and interrupted-stop cleanup
+## Replay and interrupted-stop cleanup
 
-Native replay save/name entry writes replay/th95_01.rpy. After a clean exit and
-restart, the replay browser recognizes it. Playback with the same no-death
-profile reaches native 8/8 Success; twelve terminal comparisons agree exactly,
-including player position, photo counters, camera mode/charge and frame geometry.
-The cleared director state also agrees. A replay with collisions requires the
-no-death profile. This is one full round trip, not a broad replay corpus.
+Native replay save/name entry writes replay/th95_01.rpy. After clean exit and
+restart, native playback reaches 8/8 Success. All eight stop trigger ticks and
+destinations, all eight photograph frames, the complete final live director
+state, and twelve settled result fields agree exactly. Result snapshots are
+aligned after the native photo animation; its temporary post-shutter recharge
+value is not a stable terminal field during the animation.
 
-Restart also restores both scene-clear marks, the second spell's high score
-63,040 and its actual Best Shot image/10,890 score. Pausing during an active
-reactive stop and choosing Retry creates a fresh scene with zero stops/ghosts,
-no native freeze flag and the ordinary opening preparation marker. Returning
-to scene selection remains usable. The diagnostic and replay sessions both close with status 0.
-Youmu and Kaguya's reassigned actor/background resources also load in gameplay;
-these smoke tests do not establish new attack designs for them.
+Actual normal-time Retry reinitializes the scene and resets the director to
+zero after more than fifty running ticks. A separate quit requested while the
+native freeze flag is active (with a live ghost) exits with status 0. Native
+player/camera input is suspended during a stop; this does not claim that pause
+menu input is processed in that interval. Restart restores both clear marks
+and the actual Best Shot. All completed diagnostic/replay sessions exit with 0.
 
 ## No-death launcher identity
 
-The shipped BAT retains its separate PowerShell helper. It now accepts only
-the executable hash above. The current linker map places the void death method
-at RVA 0x33D10; its complete first 18 PE bytes match
-`558bec83ec20894de08b45e0c70002000000`. This differs from the old issue-1 RVA.
-The silent Wine diagnostic independently verifies that same hash/signature,
-installs C3 at the entry of its own child process, and reads the byte back.
-The disk executable is unchanged. The PowerShell protection-restoration and
-read-back implementation is unchanged from the earlier launcher test.
+The BAT keeps its PowerShell helper and process-only patch behavior. It accepts
+only the SHA-256 above. The current linker map places the void death method at
+RVA 0x33D50. Its complete first 18 PE bytes match
+`558bec83ec20894de08b45e0c70002000000`.
+This address differs from both earlier fan executables. The silent Wine probe
+independently checks that same hash/signature and reads back C3 in its own child.
+The disk executable remains unchanged. The PowerShell page-protection and
+read-back implementation is unchanged from the earlier launcher tests.
 
-Native Windows launcher/graphics/audio tests are deliberately not repeated in
-this pass, as requested. The earlier record documents a native Windows closing
-fault affecting both ordinary and no-death launches of the old product. This
-revision does not claim to resolve or re-test that issue.
+Native Windows launcher/graphics/audio tests are deliberately not repeated.
+The earlier validation records document an old native Windows closing fault in
+both ordinary and no-death modes; this revision does not claim to fix or retest
+that issue. No-death replays containing collisions require no-death playback.
 
 ## Remaining playtesting and evidence
 
-Ordinary-mode clears, human difficulty tuning, full timeout endurance and a
-broad replay corpus remain open. Youmu, Yukari and Kaguya have the requested
-actors and two slots each, but their attacks remain earlier prototypes.
+Human movement/animation feel, ordinary-mode clears, full timeout endurance and
+a broad replay corpus remain open. Youmu, Yukari and Kaguya retain prototype
+attacks pending their separate design passes.
 
-Local build/PE identity receipts, state observations and screenshots are below
-.analysis/gogai-sakuya/ and build/gogai/. Original archives, extracted assets,
-screenshots containing original art, private probes, generated executables and
-test saves are not committed.
+Local object/build receipts, state observations, native knife measurements,
+screenshots and private test files are below .analysis/gogai-sakuya-v3/ and
+build/gogai/. Original assets, decoded reference textures, generated executables,
+private probes, test saves and screenshots containing original art stay out of Git.
