@@ -16,7 +16,7 @@ SPELL_LIBRARY.json is the machine-readable index.
 | gogai/sakuya-v5 | Eight harder multi-phrase spells, rotary streams, reflections and validation |
 | gogai/kaguya-v1 | Eight treasure compositions, delayed jewels, orbiting emitters and native warned lasers |
 
-These annotated tags are pushed to the remote. A historical tag preserves its
+Each release receives an annotated tag pushed after validation. A historical tag preserves its
 entire build recipe and source, not just the final executable or screenshots.
 Use a separate checkout/worktree when reproducing an older issue. Do not change
 an existing tag or mix old score/replay files into a new issue.
@@ -60,5 +60,5 @@ replay and interrupted-state cleanup independently. Preserve the earlier tag
 and standalone folder for direct comparison.
 
 Historical prototypes are studies, not finished designs for Youmu or Yukari.
-Kaguya v1 remains a new fan composition informed by read-only TH095 and TH08
+Kaguya remains a new fan composition informed by read-only TH095 and TH08
 references; it makes no reconstruction or exact-match claim.

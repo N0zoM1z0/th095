@@ -5,7 +5,7 @@ an original fan expansion for the reserved extra-issue scene group. Its isolated
 uses the reconstructed engine and user-supplied original data. Fan content and
 runtime validation remain separate from the reconstruction status below.
 The [spell library](expansions/gogai/SPELL_LIBRARY.md) preserves the Sakuya issues
-and the independent [Kaguya eight-card sampler](expansions/gogai/kaguya/README.md).
+and the independent [Kaguya eight-card sampler](expansions/gogai/kaguya-v2/README.md).
 
 <p align="center">
   <img
