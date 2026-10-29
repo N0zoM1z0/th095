@@ -15,8 +15,8 @@ class YoumuTests(unittest.TestCase):
     def test_metadata_and_independent_wiring(self):
         registry=load('gogai_youmu_registry','expansions/gogai/issues.py')
         content=load('gogai_youmu_content','expansions/gogai/youmu-v1/content.py')
-        self.assertEqual(len(registry.ISSUES),5)
-        self.assertEqual(len({i.build for i in registry.ISSUES.values()}),5)
+        self.assertTrue({'sakuya-v5','kaguya-v1','kaguya-v2','kaguya-v3','youmu-v1'}.issubset(registry.ISSUES))
+        self.assertEqual(len({i.build for i in registry.ISSUES.values()}),len(registry.ISSUES))
         self.assertEqual([s.photos for s in content.SCENES],[6]*5+[7,7,8])
         self.assertEqual({s.anm for s in content.SCENES},{13})
         self.assertEqual(len({content.assemble_scene(i) for i in range(8)}),8)
