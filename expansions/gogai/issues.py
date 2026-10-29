@@ -21,6 +21,9 @@ ISSUES = {
     'kaguya-v1': Issue('kaguya-v1', 'Kaguya Eight Impossible Nights / Hard v1',
                       'build/gogai-kaguya-v1', 'expansions/gogai/kaguya',
                       'KaguyaDirector', 'KaguyaChoreography.hpp', 'expansions/gogai/kaguya'),
+    'kaguya-v2': Issue('kaguya-v2', 'Kaguya Living Treasures / Hard v2',
+                      'build/gogai-kaguya-v2', 'expansions/gogai/kaguya-v2',
+                      'KaguyaDirector', 'KaguyaChoreography.hpp', 'expansions/gogai/kaguya-v2'),
 }
 
 
@@ -28,7 +31,7 @@ def apply_variant(tree: Path, issue: Issue):
     """Specialize generated copies only; preserve the Sakuya source overlay."""
     if issue.key == 'sakuya-v5':
         return
-    if issue.key != 'kaguya-v1':
+    if issue.key not in ('kaguya-v1', 'kaguya-v2'):
         raise ValueError('unknown fan issue')
     replacements = {
         'EclExtended.cpp': [('SakuyaDirector.hpp', 'KaguyaDirector.hpp', 1),
@@ -37,7 +40,7 @@ def apply_variant(tree: Path, issue: Issue):
         'PhotoGameTask.cpp': [('SakuyaDirector.hpp', 'KaguyaDirector.hpp', 1),
                               ('GogaiSakuyaReset', 'GogaiKaguyaReset', 1)],
         'Main.cpp': [('Sakuya Grand Geometry / Hard v5', issue.title, 1),
-                     ('Sakuya Grand Geometry Hard v5', 'Kaguya Eight Impossible Nights Hard v1', 1)],
+                     ('Sakuya Grand Geometry Hard v5', issue.title.replace(' / ', ' '), 1)],
         'SceneSelect.cpp': [('"world07.std", "enm14.anm", "gogai',
                              '"world09.std", "enm19.anm", "gogai', 8)],
     }

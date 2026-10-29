@@ -6,7 +6,8 @@
     "gogai/sakuya-v2",
     "gogai/sakuya-v3",
     "gogai/sakuya-v4",
-    "gogai/sakuya-v5"
+    "gogai/sakuya-v5",
+    "gogai/kaguya-v1"
   ],
   "issues": [
     {
@@ -67,11 +68,11 @@
       ]
     },
     {
-      "id": "kaguya-v1",
+      "id": "kaguya-v2",
       "actor": "Kaguya",
-      "source_tag": "gogai/kaguya-v1",
-      "source": "expansions/gogai/kaguya/KaguyaChoreography.hpp",
-      "build_command": "python3 scripts/build-gogai.py --issue kaguya-v1",
+      "source_tag": "gogai/kaguya-v2",
+      "source": "expansions/gogai/kaguya-v2/KaguyaChoreography.hpp",
+      "build_command": "python3 scripts/build-gogai.py --issue kaguya-v2",
       "spells": [
         {
           "id": "KG.01",
@@ -121,7 +122,8 @@
           "mode": 7,
           "name": "Five Impossible Nights"
         }
-      ]
+      ],
+      "previous_issue": "gogai/kaguya-v1"
     }
   ]
 }

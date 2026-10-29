@@ -23,7 +23,7 @@ an existing tag or mix old score/replay files into a new issue.
 
 ## Current editable spell sets
 
-| ID | Sakuya v5 | ID | Kaguya v1 |
+| ID | Sakuya v5 | ID | Kaguya v2 |
 | --- | --- | --- | --- |
 | SK.01 | Silver Triptych | KG.01 | Jeweled Orrery |
 | SK.02 | Rewritten Meridian | KG.02 | Stone Chalice |
@@ -37,15 +37,16 @@ an existing tag or mix old score/replay files into a new issue.
 Sakuya's three C++ files remain unchanged from the v5 tag. Her scene resources
 also remain byte-identical after adding the shared build selector. Kaguya has
 separate choreography, native adapter, metadata, practice-launcher pin and
-play documentation below kaguya/.
+play documentation below kaguya/ and kaguya-v2/.
 
 ```bash
 python3 scripts/build-gogai.py --issue sakuya-v5 --data-dir /path/to/original-game
 python3 scripts/build-gogai.py --issue kaguya-v1 --data-dir /path/to/original-game
+python3 scripts/build-gogai.py --issue kaguya-v2 --data-dir /path/to/original-game
 ```
 
 The default remains sakuya-v5. It writes build/gogai/. Kaguya writes
-build/gogai-kaguya-v1/. Each standalone product owns its own scores, Best Shots
+build/gogai-kaguya-v1/ or build/gogai-kaguya-v2/. Each standalone product owns its own scores, Best Shots
 and replays. The native group-12 menu provides the eight scenes of the selected
 product. Choosing Kaguya does not overwrite Sakuya's authored patterns or saves.
 
