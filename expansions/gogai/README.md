@@ -23,14 +23,16 @@ working directory owns its own config, score, Best Shots and replays.
 
 ## First issue
 
-Eight scenes are planned around a newsroom theme: opening interview, crossed
+Eight scenes are implemented around a newsroom theme: opening interview, crossed
 headlines, rotating deadlines, a shutter window, a moving subject, parallax,
 an encircling interview and the final edition. Scene-specific Japanese titles
 and Aya's comments accompany the patterns. Difficulty and clearability require
 runtime testing; build success alone does not establish either.
 
-Build commands, controls and tested limits will be recorded here as each
-checkpoint becomes runnable. The reconstruction handoff in
+See the controls in [Build and play](#build-and-play).
+See [the validation record](VALIDATION.md) for actual clears, persistence,
+replay results and remaining playtesting.
+The reconstruction handoff in
 `docs/RE_HANDOFF.md`, including its saved semantic draft, remains separate.
 
 ## Build and play
