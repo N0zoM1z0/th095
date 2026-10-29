@@ -174,6 +174,16 @@ void SpawnKnives(const gogai::KnifeBatch &batch)
             (batch.side < 0 ? 0x80 : 0) | blade;
         WriteFlight(shot.transforms, batch, tag);
         manager->SpawnBulletPattern(&shot);
+        // The native single-shot producer leaves the cursor after its new
+        // slot, wrapping at the sentinel. Check the tag before touching it:
+        // an exhausted pool must not resize an unrelated existing bullet.
+        PhotoBulletView *created = manager->bulletCursor == &manager->bullets[0]
+            ? &manager->bullets[0x63f] : manager->bulletCursor-1;
+        if (created->state != PHOTO_BULLET_STATE_ACTIVE || created->ownerTag != tag) continue;
+        // Keep the recognizable handled knife with room between each blade.
+        // Its native radius of eight remains inside the scaled 23-pixel art.
+        created->vm.scale.x = created->vm.scale.y = 0.78f;
+        created->vm.updateScale = 1;
         ++g_GogaiSakuyaTelemetry.knivesCreated;
         if (batch.turnRate != 0.0f) ++g_GogaiSakuyaTelemetry.curvedKnives;
         if (ownsFreeze) ++g_GogaiSakuyaTelemetry.frozenKnivesCreated;

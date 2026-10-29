@@ -216,7 +216,8 @@ public:
         if(out.batches>=4) return;
         KnifeBatch &b=out.knives[out.batches];
         b.origin=origin; b.count=count; b.angle=angle; b.spread=spread; b.radius=radius;
-        b.headingOffset=heading; b.shape=shape; b.side=side; b.role=role; b.color=color; b.type=4;
+        b.headingOffset=heading; b.shape=shape; b.side=side; b.role=role;
+        b.type=14; b.color=color==15 ? 7 : (color==6 ? 3 : 2);
         b.speed=speed; b.launchSpeed=1.25f; b.rampFrames=40; b.turnRate=turn; b.flight=flight;
         b.circle=shape==APERTURE; b.gap=atan2f(input.player.y-origin.y,input.player.x-origin.x)+(cycle&1?0.14f:-0.14f);
         Admit(out,b,input);

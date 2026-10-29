@@ -13,7 +13,7 @@ static void CheckFrame(const gogai::Frame &f,const gogai::CameraInput &input)
     {
         const gogai::KnifeBatch &k=f.knives[b];
         CHECK(k.count>0 && k.count<=28 && k.BladeCount()>0);
-        CHECK(k.type==4 && k.color>=0 && k.color<=15);
+        CHECK(k.type==14 && k.color>=0 && k.color<=7);
         CHECK(k.launchSpeed>0 && k.launchSpeed<k.speed && k.speed<=3.2f);
         for(int stage=0;stage<3;++stage)
         {

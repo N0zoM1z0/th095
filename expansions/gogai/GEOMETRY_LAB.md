@@ -18,12 +18,12 @@ Earlier standalone issues remain separate.
 
 ## Composition rules
 
-Use actual thin knife sprites as the main texture. The previous large blade
-sprite spans about 30 pixels; several nearby instances looked like opaque
-blocks. Fan spacing now follows the sprite footprint. Wedges, opposing wings,
+Use the native handled-knife sprite at 0.78 draw scale (about 23 pixels).
+Its native collision radius remains eight, inside that visual footprint.
+Fan spacing follows the sprite footprint. Wedges, opposing wings,
 spaced rings and short S curves organize density instead of accumulating
-nearly coincident launch points. Oversized birth flashes and the large photo
-pulse ring are omitted from these studies.
+nearly coincident launch points. The director adds no magnified birth flashes
+or decorative photo pulse; native camera and stage effects remain available.
 
 Every individual blade has a spatial admission mask: arena bounds and an
 88-unit minimum distance from Aya. Close-range omissions are intentional.
