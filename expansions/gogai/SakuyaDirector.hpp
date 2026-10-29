@@ -19,7 +19,10 @@ struct GogaiSakuyaTelemetry
     float sampleX, sampleY;
     int sceneId, stopKind, volleys, blinks, rewriteStops, redirectedKnives, activeRedirects;
     float redirectBlend;
+    int chargeActive, chargeVms, bursts, ricochetKnives, spinTicks, castPhase, handSprite;
+    float chargeProgress, armAngle;
 };
+typedef char GogaiSakuyaTelemetrySizeIs144[(sizeof(GogaiSakuyaTelemetry)==144)?1:-1];
 extern GogaiSakuyaTelemetry g_GogaiSakuyaTelemetry;
 }
 #endif

@@ -144,7 +144,7 @@
  char g_WindowTitle[] =
      "\x93\x8c\x95\xfb\x95\xb6\x89\xd4\x92\x9f\x81\x40\x81\x60 "
 -    "Shoot the Bullet. ver 1.02a";
-+    "Kaze no Gogai - Sakuya Geometry Lab (TH095 reconstruction)";
++    "Kaze no Gogai - Sakuya Grand Geometry / Hard v5 (TH095 reconstruction)";
  
  // Target 0x004BE270 is a standalone process-lifetime ControllerMapping POD.
  // GameConfiguration::Initialize reads it, while Supervisor::LoadConfig and the
@@ -153,7 +153,7 @@
      STARTUPINFOA startupInfo;
  
 -    g_ExclusiveMutex = CreateMutexA(NULL, TRUE, "Touhou 08 App");
-+    g_ExclusiveMutex = CreateMutexA(NULL, TRUE, "TH095 Kaze no Gogai Sakuya Geometry Lab");
++    g_ExclusiveMutex = CreateMutexA(NULL, TRUE, "TH095 Kaze no Gogai Sakuya Grand Geometry Hard v5");
      if (GetLastError() == ERROR_ALREADY_EXISTS)
      {
          g_GameErrorContext.Fatal(
