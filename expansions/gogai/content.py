@@ -24,22 +24,22 @@ class Scene:
 
 
 SCENES = (
-    Scene('取材「朝刊の第一声」', '十六夜 咲夜',
-          ('取材は朝の挨拶から。', 'ナイフより先にシャッターを。'), 14, 7, 5),
-    Scene('交差「見出しの行間」', '十六夜 咲夜',
-          ('大きな見出しの間には、', '小さな安全地帯があるのです。'), 14, 7, 5),
-    Scene('輪転「回り続ける締切」', '八雲 藍',
-          ('輪転機よりよく回りますね。', '目が回る前に一枚どうぞ。'), 16, 8, 6),
-    Scene('余白「一瞬のシャッター窓」', '八雲 藍',
-          ('記事にも写真にも余白は必要。', '空いた瞬間を逃さないこと。'), 16, 8, 6),
+    Scene('時符「凍刻のシルバーステージ」', '十六夜 咲夜',
+          ('止まった時に並べられた銀の刃。', '動き出す瞬間こそ、写真の好機。'), 14, 7, 6),
+    Scene('幻時「ザ・ラストシャッター」', '十六夜 咲夜',
+          ('取材拒否にも程がありますよ。', '逃げた先まで、次の一枚で。'), 14, 7, 8),
+    Scene('輪転「回り続ける締切」', '魂魄 妖夢',
+          ('輪転機よりよく回りますね。', '目が回る前に一枚どうぞ。'), 13, 6, 6),
+    Scene('余白「一瞬のシャッター窓」', '魂魄 妖夢',
+          ('記事にも写真にも余白は必要。', '空いた瞬間を逃さないこと。'), 13, 6, 6),
     Scene('境界「逃げる被写体」', '八雲 紫',
           ('取材拒否は困りますよ。', '移動先まで先回りです。'), 23, 6, 6),
     Scene('視差「二重刷りの幻想」', '八雲 紫',
           ('同じ景色でも角度を変えると、', '別の見出しが見えてきます。'), 23, 6, 6),
-    Scene('囲取「四方八方の記者会見」', '伊吹 萃香',
-          ('質問は一人ずつお願いします。', '弾幕まで一斉に来ないで！'), 25, 10, 7),
-    Scene('号外「風の最終入稿」', '伊吹 萃香',
-          ('締切直前こそ記者の本領。', 'この一枚で、号外完成です！'), 25, 10, 8),
+    Scene('囲取「四方八方の記者会見」', '蓬莱山 輝夜',
+          ('質問は一人ずつお願いします。', '弾幕まで一斉に来ないで！'), 19, 9, 7),
+    Scene('号外「風の最終入稿」', '蓬莱山 輝夜',
+          ('締切直前こそ記者の本領。', 'この一枚で、号外完成です！'), 19, 9, 8),
 )
 
 
@@ -78,6 +78,13 @@ class Script:
 def pattern(index: int, scene: Scene) -> bytes:
     """480-frame phrases leave recovery space between bursts; no RNG required."""
     s = Script()
+    if index < 2:
+        # Native per-frame fan director; the original interpreter owns its life.
+        s.emit(0, 119, 'i', 22)
+        target = len(s.data)
+        s.emit(1, 0)
+        s.jump(3600, target, 1)
+        return bytes(s.data)
     # Begin with a short telegraphed interval before the first wave.
     s.emit(0, 143, 'ii', 1, 60)
     s.emit(0, 65, 'ff', 0.0, 0.0)
@@ -89,17 +96,7 @@ def pattern(index: int, scene: Scene) -> bytes:
     def move(t, x, y=128.0, duration=60):
         # Opcode 64 interpolates to an absolute world target, not a delta.
         events.append((t, lambda: s.emit(t, 64, 'iiff', duration, 4, x, y)))
-    if index == 0:
-        for k, t in enumerate(range(75, 421, 55)):
-            shot(t, 16, 1.5, k * 0.16, color=6 if k % 2 else 13)
-        shot(250, 5, 2.1, aimed=True, fan=0.24, kind=4, color=3)
-    elif index == 1:
-        for k, t in enumerate(range(70, 391, 40)):
-            for sign in (-1, 1):
-                shot(t, 7, 1.7, math.pi / 2 + sign * (0.45 + k * 0.03),
-                     fan=0.12, color=6 if sign > 0 else 13,
-                     offset=(sign * 72.0, 0.0), kind=4)
-    elif index == 2:
+    if index == 2:
         for k, t in enumerate(range(65, 431, 24)):
             shot(t, 12, 1.5, k * 0.115, color=5 + k % 2)
     elif index == 3:
@@ -144,6 +141,11 @@ def pattern(index: int, scene: Scene) -> bytes:
 def assemble_scene(index: int) -> bytes:
     scene = SCENES[index]
     init, finish, failure = Script(), Script(), Script()
+    if index < 2:
+        init.emit(0, 118, 'i', 23)
+        for ending in (finish, failure):
+            ending.emit(0, 119, 'i', -1)
+            ending.emit(0, 118, 'i', 23)
     # Establish a native photographic subject, collision size, camera capacity,
     # and the engine's completion/failure subroutine slots. Timeout is slot 30;
     # successful completion is slot 31.

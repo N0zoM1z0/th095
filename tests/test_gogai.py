@@ -2,6 +2,7 @@
 import importlib.util
 from pathlib import Path
 import struct
+import subprocess
 import sys
 import unittest
 
@@ -52,8 +53,9 @@ class GogaiContentTests(unittest.TestCase):
                      for r in subs[0] if r[2] == 108}
             self.assertEqual(slots, {31: 1, 30: 2})
             self.assertIn((scene.photos,), [struct.unpack('<i', r[3]) for r in subs[0] if r[2] == 141])
-            self.assertEqual([r[2] for r in subs[1]], [80, 109, 105, 118, 1])
-            self.assertEqual([r[2] for r in subs[2]], [80, 85, 105, 142, 109, 1])
+            cleanup = [119, 118] if i < 2 else []
+            self.assertEqual([r[2] for r in subs[1]], cleanup + [80, 109, 105, 118, 1])
+            self.assertEqual([r[2] for r in subs[2]], cleanup + [80, 85, 105, 142, 109, 1])
 
     def test_loop_branches_target_real_instructions(self):
         for i, scene in enumerate(content.SCENES):
@@ -63,15 +65,16 @@ class GogaiContentTests(unittest.TestCase):
             jump = records[-1]
             self.assertEqual(jump[2], 4)
             time, displacement = struct.unpack('<ii', jump[3])
-            self.assertEqual((jump[1], time), (scene.period + 60, 60))
+            expected = (3600, 1) if i < 2 else (scene.period + 60, 60)
+            self.assertEqual((jump[1], time), expected)
             self.assertIn(jump[0] + displacement, addresses)
             target = addresses[jump[0] + displacement]
             self.assertGreaterEqual(target[1], time)
-            self.assertLess(target[1], scene.period + 60)
+            self.assertLess(target[1], jump[1])
             self.assertEqual([r[1] for r in records], sorted(r[1] for r in records))
 
     def test_patterns_leave_recovery_and_bounded_bullet_counts(self):
-        for i in range(8):
+        for i in range(2, 8):
             subs, _ = read_subs(content.assemble_scene(i))
             shots = [r for r in subs[3] if 86 <= r[2] <= 94]
             self.assertGreater(len(shots), 5)
@@ -101,6 +104,25 @@ class GogaiContentTests(unittest.TestCase):
                 moving.append(i + 1)
                 self.assertEqual(targets[-1][2:], (0.0, 128.0))
         self.assertEqual(moving, [5, 7, 8])
+
+    def test_sakuya_callbacks_and_cleanup_routes(self):
+        for i in (0, 1):
+            subs, _ = read_subs(content.assemble_scene(i))
+            self.assertEqual((subs[0][0][2], struct.unpack('<i', subs[0][0][3])[0]), (118, 23))
+            self.assertEqual((subs[3][0][2], struct.unpack('<i', subs[3][0][3])[0]), (119, 22))
+            for ending in subs[1:3]:
+                self.assertEqual(struct.unpack('<i', ending[0][3]), (-1,))
+                self.assertEqual(struct.unpack('<i', ending[1][3]), (23,))
+
+    def test_shared_sakuya_choreography_under_ubsan(self):
+        output = ROOT / 'build/gogai-tests/SakuyaChoreographyTest'
+        output.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(['g++', '-std=c++98', '-O2', '-Wall', '-Wextra', '-Werror',
+                        '-fsanitize=undefined', '-fno-sanitize-recover=all',
+                        '-I', str(ROOT / 'expansions/gogai'),
+                        str(ROOT / 'tests/gogai/SakuyaChoreographyTest.cpp'),
+                        '-o', str(output)], check=True, capture_output=True)
+        subprocess.run([str(output)], check=True, capture_output=True)
 
     def test_comments_decode_with_actual_native_key_schedule(self):
         for i, scene in enumerate(content.SCENES):

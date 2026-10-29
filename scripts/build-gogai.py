@@ -79,16 +79,22 @@ def main():
     profiles = {}
     for profile, sources in baseline.profiles.items():
         flags = tuple(remap(flag) if flag in ('src', 'src/ecl') else flag for flag in profile)
-        profiles[flags] = tuple(remap(source) for source in sources)
+        profiles[flags + ('/I', 'expansions/gogai')] = tuple(remap(source) for source in sources)
+    fan_source = 'expansions/gogai/SakuyaDirector.cpp'
+    fan_profile = next(flags for flags in profiles if 'build/gogai/src/ecl' not in flags)
+    profiles[fan_profile] += (fan_source,)
+    objects = {remap(source): path for source, path in baseline.objects.items()}
+    objects[fan_source] = core.OBJECT_DIR / 'SakuyaDirector.obj'
     plan = core.BuildPlan(baseline.target_sha256,
-                         tuple(remap(source) for source in baseline.sources), profiles,
-                         {remap(source): path for source, path in baseline.objects.items()},
-                         baseline.symbol_targets)
+                         tuple(remap(source) for source in baseline.sources) + (fan_source,),
+                         profiles, objects, baseline.symbol_targets)
     report = core.base_report(plan)
-    report['product'] = 'Kaze no Gogai / fan issue 1'
+    report['product'] = 'Kaze no Gogai / Sakuya revision'
     report['exact_reconstruction_claim'] = False
     report['overlay_sha256'] = core.sha256(ROOT / 'expansions/gogai/engine.patch')
     report['content_sha256'] = core.sha256(ROOT / 'expansions/gogai/content.py')
+    report['director_sha256'] = core.sha256(ROOT / fan_source)
+    report['choreography_sha256'] = core.sha256(ROOT / 'expansions/gogai/SakuyaChoreography.hpp')
     try:
         compiler, linker, toolchain = core.attest_toolchain()
         report['toolchain'] = toolchain
