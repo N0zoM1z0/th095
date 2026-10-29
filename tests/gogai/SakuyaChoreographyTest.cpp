@@ -157,7 +157,9 @@ static void MotionAndPoses()
         if (frame.freezeEnd)
         {
             CHECK(fabsf(frame.subject.x) > 40.0f);
-            CHECK(gogai::SakuyaChoreography::DistanceSquared(frame.subject, state.dashStart) >= 48.0f*48.0f);
+            CHECK(gogai::SakuyaChoreography::DistanceSquared(frame.subject, state.dashStart) >= 24.0f*24.0f);
+            if (landed > 0)
+                CHECK(gogai::SakuyaChoreography::DistanceSquared(frame.subject,landings[landed-1]) >= 48.0f*48.0f);
             if (landed < 16) landings[landed++] = frame.subject;
         }
         gogai::Point priorSample = frame.subject;

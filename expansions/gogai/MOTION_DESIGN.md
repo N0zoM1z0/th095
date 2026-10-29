@@ -8,7 +8,7 @@ landing points rather than returning to the center after every stop.
 
 Each dash follows a bounded curved path. Quintic time easing gives zero
 velocity and acceleration at the endpoints; alternating bends change the
-approach. The first spell cycles six three-leg routes, keeps its final landing,
+approach. The first spell cycles six three-leg routes, rejects repeated final landings,
 and later makes a slower normal-time glide before the next attack phrase.
 The second spell varies eligible destinations outside the triggering frame,
 with minimum player/travel separation and a farthest-point fallback.
@@ -23,7 +23,8 @@ preserves subpixel positions and a small banking angle, without changing the
 collision or camera owners.
 
 Use the original enm14 animation family: idle script 2, mirrored left movement
-3, right movement 4, return transitions 5/6, and the arms-out casting pose 7.
+3, right movement 4, return transitions 5/6, and a casting hold built from the complete turn/raise clip facing Aya.
+Script 7 is an overlapping leg slice and is deliberately unused.
 Change script only when the pose changes, so four-frame animation sequences
 can play instead of restarting every tick. Ghosts snapshot the actual current
 sprite, flip and bank; they do not replay an idle animation or copy VM ownership.

@@ -55,10 +55,10 @@ struct Frame
     Point subject;
     bool freezeBegin, freezeEnd, frozen, afterimage, pulse;
     KnifeBatch knives[4];
-    int batches, pose;
+    int batches, pose, facing;
     float lean;
     Frame() : freezeBegin(false), freezeEnd(false), frozen(false),
-        afterimage(false), pulse(false), batches(0), pose(POSE_IDLE), lean(0.0f) {}
+        afterimage(false), pulse(false), batches(0), pose(POSE_IDLE), facing(0), lean(0.0f) {}
 };
 
 // Pure C++98 authoring state, shared by the game adapter and portable tests.
@@ -186,7 +186,8 @@ public:
             {
                 int candidate = (stops - 1 + i) % 6;
                 if (DistanceSquared(routes[candidate][2], input.player) >= 104.0f*104.0f &&
-                    DistanceSquared(routes[candidate][2], position) >= 48.0f*48.0f)
+                    DistanceSquared(routes[candidate][2], position) >= 24.0f*24.0f &&
+                    (stops == 1 || DistanceSquared(routes[candidate][2], destination) >= 48.0f*48.0f))
                 { route = candidate; break; }
             }
             for (int p = 0; p < 3; ++p) path[p+1] = routes[route][p];
@@ -233,7 +234,7 @@ public:
             { --out.batches; return; }
     }
 
-    void FinishFrame(Frame &out, Point previous)
+    void FinishFrame(Frame &out, Point previous, Point target)
     {
         float dx = position.x - previous.x;
         if (settling > 0) --settling;
@@ -250,6 +251,7 @@ public:
         else if (settling > 0)
             out.pose = lastDirection == POSE_LEFT ? POSE_SETTLE_LEFT : POSE_SETTLE_RIGHT;
         out.lean = Clamp(dx * 0.006f, -0.09f, 0.09f);
+        out.facing = target.x < position.x ? 1 : 0;
         out.subject = position;
     }
 
@@ -283,7 +285,7 @@ public:
         if (!IsFrozen() && mode == CAMERA_DUEL && cooldown == 0 &&
             input.aiming && input.containsSubject) BeginStop(input, out);
         if (!IsFrozen() && mode == PERIODIC && normalFrame == 104) BeginStop(input, out);
-        if (IsFrozen()) { FrozenStep(out); FinishFrame(out, previous); return out; }
+        if (IsFrozen()) { FrozenStep(out); FinishFrame(out, previous, stoppedPlayer); return out; }
         if (cooldown > 0) --cooldown;
         if (recovery > 0) --recovery;
         int f = normalFrame;
@@ -336,7 +338,7 @@ public:
             }
         }
         if (++normalFrame >= PERIOD) { normalFrame = 0; ++cycle; }
-        FinishFrame(out, previous);
+        FinishFrame(out, previous, input.player);
         return out;
     }
 };

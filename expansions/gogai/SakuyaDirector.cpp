@@ -33,6 +33,7 @@ bool ownsFreeze = false;
 float accumulatedTime = 0.0f;
 int nextGhost = 0;
 int currentPose = -1;
+int currentFacing = -1;
 float currentLean = 0.0f;
 float targetLean = 0.0f;
 
@@ -104,19 +105,23 @@ void LeaveAfterimage(PhotoEnemyView *actor, gogai::Point oldPosition)
     }
 }
 
-void SetPose(PhotoEnemyView *actor, int pose)
+void SetPose(PhotoEnemyView *actor, int pose, int facing)
 {
-    if (pose == currentPose) return;
+    if (pose == currentPose && (pose != gogai::POSE_CAST || facing == currentFacing)) return;
     PhotoEnemyManagerView *manager = TH095_RUNTIME_GLOBAL_PTR(
         PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner);
     if (manager == NULL || manager->enemyAnm == NULL) return;
-    // Verified enm14 scripts: idle 2, left/right 3/4, return 5/6, cast 7.
+    // Verified full-body enm14 clips: idle 2, left/right 3/4, return 5/6.
+    // Use the complete turn/raise clip facing Aya for the casting hold.
+    // Script 7 selects an unused overlapping leg slice, not a complete pose.
     // ECL 55 leaves the automatic direction scripts disabled. Keep movement
     // velocity at zero and select poses here, so native integration cannot
     // apply a second displacement after the authored path publication.
-    const int scripts[6] = {2, 3, 4, 7, 5, 6};
-    manager->enemyAnm->SetAndExecuteScriptIdx(&actor->vm, scripts[pose]);
+    const int scripts[6] = {2, 3, 4, 4, 5, 6};
+    int script = pose == gogai::POSE_CAST && facing ? 3 : scripts[pose];
+    manager->enemyAnm->SetAndExecuteScriptIdx(&actor->vm, script);
     currentPose = pose;
+    currentFacing = facing;
     ++g_GogaiSakuyaTelemetry.poseChanges;
     g_GogaiSakuyaTelemetry.pose = pose;
     g_GogaiSakuyaTelemetry.poseMask |= 1 << pose;
@@ -170,7 +175,7 @@ void ApplyFrame(Enemy *opaque, PhotoEnemyView *actor, const gogai::Frame &frame)
     }
     if (frame.afterimage)
         LeaveAfterimage(actor, gogai::Point(actor->position.x, actor->position.y));
-    SetPose(actor, frame.pose);
+    SetPose(actor, frame.pose, frame.facing);
     targetLean = frame.lean;
     actor->movementMode = 0;
     actor->velocity = Float3(0.0f, 0.0f, 0.0f);
@@ -218,6 +223,7 @@ void __fastcall GogaiSakuyaReset(Enemy *, EclRawInstruction *)
     accumulatedTime = 0.0f;
     nextGhost = 0;
     currentPose = -1;
+    currentFacing = -1;
     currentLean = targetLean = 0.0f;
     memset(&g_GogaiSakuyaTelemetry, 0, sizeof(g_GogaiSakuyaTelemetry));
     g_GogaiSakuyaTelemetry.freezeFrame = -1;
