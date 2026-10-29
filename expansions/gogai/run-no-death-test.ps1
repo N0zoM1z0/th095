@@ -4,15 +4,15 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# Kaze no Gogai test product only: verified PE32 image 454240f4...,
-# linker-map PhotoPlayerRuntimeView::Die at 0x00433D40 (RVA 0x33D40).
+# Kaze no Gogai test product only: verified PE32 image 9155e67e...,
+# linker-map PhotoPlayerRuntimeView::Die at 0x00433D00 (RVA 0x33D00).
 # The 18-byte entry signature includes the native mode = 2 publication.
 # This launcher is intentionally pinned to one reconstructed artifact. The
 # original Japanese executable must never be patched, and a rebuilt image may
 # move the function even when its source is unchanged.  Refuse every unknown
 # hash instead of guessing an address.
-$ExpectedSha256 = "454240f4216aba6604fbaa2a36c8cea5d9a190a602828c276a96f22490b3b238"
-$DieRva = 0x00033D40
+$ExpectedSha256 = "9155e67ea68819b69acf809d3d9719c519f219af1f0b6e20545ed4935a9dd793"
+$DieRva = 0x00033D00
 $ExpectedPrologue = [byte[]]@(
     0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x20, 0x89, 0x4D, 0xE0,
     0x8B, 0x45, 0xE0, 0xC7, 0x00, 0x02, 0x00, 0x00, 0x00

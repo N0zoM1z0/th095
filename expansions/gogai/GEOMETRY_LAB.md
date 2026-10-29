@@ -1,5 +1,8 @@
 # Sakuya geometry laboratory
 
+Historical v4 design. See [the hard revision](GRAND_GEOMETRY.md) for current
+charged salvos, rotary counterpoint, denser geometry and native reflections.
+
 All eight reserved scenes temporarily feature Sakuya. This sampler replaces
 the previous mixed-cast prototypes so the player can compare silhouettes,
 trajectories and camera counterplay before choosing a final roster/design.
