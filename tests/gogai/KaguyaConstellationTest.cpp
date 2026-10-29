@@ -95,4 +95,36 @@ static void Admission()
     }
     printf("%d player-adjacent layouts preserve admission and source/marker correspondence.\n",cases);
 }
-int main(){EightDifferentMechanisms();Admission();puts("Eight structurally different mechanisms, gradual deployment and finite flight contracts passed.");return 0;}
+static void MovingGatesCloseTheOldPocket()
+{
+    kg::Choreography c;c.Reset(kg::GATES,kg::Point());kg::Input in;
+    float minRow=400,maxRow=0,minCross=400,maxCross=-400,closest=400;
+    for(int t=0;t<c.Period();++t)
+    {
+        kg::Frame f=c.Step(in);
+        if(t<128)continue;
+        if(f.satellites[2].y<minRow)minRow=f.satellites[2].y;
+        if(f.satellites[2].y>maxRow)maxRow=f.satellites[2].y;
+        for(int i=0;i<f.batchCount;++i)
+        {
+            const kg::Batch &b=f.batches[i];if(b.source<0 || b.source>=6)continue;
+            for(int k=0;k<b.count;++k)
+            {
+                float a=b.Heading(k),y=b.center.y-b.center.x*tanf(a);
+                if(fabsf(y-235.8f)<closest)closest=fabsf(y-235.8f);
+            }
+        }
+        for(int i=0;i<f.beamCount;++i)
+        {
+            const kg::Beam &b=f.beams[i];
+            float a=b.angle+b.turn*(b.startup+b.growth);
+            float x=b.origin.x+(235.8f-b.origin.y)*cosf(a)/sinf(a);
+            if(x<minCross)minCross=x;
+            if(x>maxCross)maxCross=x;
+        }
+    }
+    CHECK(maxRow-minRow>55 && closest<2 && minCross<-10 && maxCross>10);
+    puts("Moving gate rows and warned closing beams cross the former stationary pocket.");
+}
+
+int main(){EightDifferentMechanisms();Admission();MovingGatesCloseTheOldPocket();puts("Eight structurally different mechanisms, gradual deployment and finite flight contracts passed.");return 0;}

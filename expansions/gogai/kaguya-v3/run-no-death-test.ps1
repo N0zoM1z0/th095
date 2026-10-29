@@ -10,7 +10,7 @@ $ErrorActionPreference = "Stop"
 # original Japanese executable must never be patched, and a rebuilt image may
 # move the function even when its source is unchanged.  Refuse every unknown
 # hash instead of guessing an address.
-$ExpectedSha256 = "7503d1ce292c06528a9a7c8a143fda0581ecc7bbabd55637760b7db5f558cc77"
+$ExpectedSha256 = "5b88bc3ae2046f180bfa8296a96052c06974b6e01b028849295f570d575717e7"
 $DieRva = 0x00033D10
 $ExpectedPrologue = [byte[]]@(
     0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x20, 0x89, 0x4D, 0xE0,

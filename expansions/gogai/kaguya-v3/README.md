@@ -12,7 +12,7 @@ independent. See [the spell library](../SPELL_LIBRARY.md).
 | KG.03 | Salamander Orrery | Orbiting fire barrier | Two opposed sources circle a large ellipse, shedding tangential flame fans, slow fire orbs and sweeping light |
 | KG.04 | Dragon's Threefold Gaze | Aimed lances and crossfire | Three moving eyes sample Aya's position when casting; their warning rays remain locked while projectile fans and reflected shots cross them |
 | KG.05 | Twin Life Springs | Native vector acceleration | Two projectors descend before firing upward; gravity bends the pearl/star fountains back down into intersecting arches |
-| KG.06 | Bamboo Crossing Gates | Orthogonal weaving | Six side projectors send horizontal talisman rows through vertical grain rain and alternating warned gates |
+| KG.06 | Bamboo Crossing Gates | Orthogonal weaving | Six side projectors move in a travelling wave, sending horizontal talisman rows through vertical rain and slowly closing warned gates |
 | KG.07 | Night-Returning Blossom | Outward flight, braking and reversal | Shells unfold from the hands, slow to a crawl, turn through half a circle and accelerate back through older shells |
 | KG.08 | Sea of Hourai Constellations | Native projectile fission | Visible seeds fly and brake, then split successively into child star rings; ceiling rain increases through three intensity chapters |
 

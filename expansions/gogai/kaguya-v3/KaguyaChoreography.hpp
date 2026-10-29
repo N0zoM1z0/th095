@@ -107,7 +107,7 @@ public:
             }
             else if(mode==GATES)
             {
-                destination=i<6?Point(i<3?-166:166,96+(i%3)*84):Point((i==6?-1:1)*80,42);
+                destination=i<6?Point(i<3?-166:166,96+(i%3)*84+30*sinf(absolute*0.012f+(i%3)*TAU/3)):Point((i==6?-1:1)*80,42);
                 out.nodeColor[i]=i<3?4:(i<6?2:6);
             }
             else if(mode==NIGHT_RETURN)
@@ -211,8 +211,9 @@ public:
         }
         if(t%16==0)for(int i=6;i<8;++i)
             Emit(out,in,i,5,PI/2,0.12f,2.6f,GRAIN,13,STRAIGHT,0.12f);
-        if(t%120==24)Ray(out,6,PI/2+0.08f,420,5);
-        if(t%120==72)Ray(out,7,PI/2-0.08f,420,2);
+        float pulse=(cycle*Period()+f)*0.009f;
+        if(t%120==24)Ray(out,6,PI/2-0.31f-0.14f*sinf(pulse),420,5,false,-0.0012f);
+        if(t%120==72)Ray(out,7,PI/2+0.31f+0.14f*cosf(pulse),420,2,false,0.0012f);
     }
     void ReturningBloom(Frame &out,const Input &in,int f)
     {
