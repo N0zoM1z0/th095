@@ -4,14 +4,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# Kaguya Hard v3: pending verified artifact pin.
+# Kaguya Hard v3: verified 798208-byte fan executable.
 # The 18-byte entry signature includes the native mode = 2 publication.
 # This launcher is intentionally pinned to one reconstructed artifact. The
 # original Japanese executable must never be patched, and a rebuilt image may
 # move the function even when its source is unchanged.  Refuse every unknown
 # hash instead of guessing an address.
-$ExpectedSha256 = "0000000000000000000000000000000000000000000000000000000000000000"
-$DieRva = 0x00000000
+$ExpectedSha256 = "7503d1ce292c06528a9a7c8a143fda0581ecc7bbabd55637760b7db5f558cc77"
+$DieRva = 0x00033D10
 $ExpectedPrologue = [byte[]]@(
     0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x20, 0x89, 0x4D, 0xE0,
     0x8B, 0x45, 0xE0, 0xC7, 0x00, 0x02, 0x00, 0x00, 0x00
