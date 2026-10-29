@@ -4,3 +4,5 @@
 *.sln text eol=crlf
 *.vcproj text eol=crlf
 *.svg text eol=lf
+# Unified patches represent empty context lines with a required single space.
+expansions/gogai/engine.patch whitespace=-blank-at-eol

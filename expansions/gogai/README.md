@@ -32,3 +32,44 @@ runtime testing; build success alone does not establish either.
 Build commands, controls and tested limits will be recorded here as each
 checkpoint becomes runnable. The reconstruction handoff in
 `docs/RE_HANDOFF.md`, including its saved semantic draft, remains separate.
+
+## Build and play
+
+On the existing Linux/Wine development host, use the repository's resource
+limits for the cold compile/link:
+
+```bash
+systemd-run --user --scope --quiet \
+  -p CPUQuota=50% -p MemoryHigh=768M -p MemoryMax=1G -- \
+  taskset -c 1 nice -n 19 python3 -B scripts/build-gogai.py \
+  --data-dir /path/to/original-japanese-game
+scripts/run-gogai.sh
+```
+
+`--prepare-only` generates the overlay tree and ECL without compiling. The
+source overlay must apply cleanly; the build refuses stale patch context.
+The compiler and linker are hash-attested by the existing whole-build module.
+Build receipts and the map live under `build/gogai/`.
+
+On Windows, copy the contents of `build/gogai/play/` to a new folder and run
+`launch-gogai.bat`. Keep this folder separate from the original installation.
+Do not copy an original score file into it. For a source-only distribution,
+omit the DAT archives, generated saves, photos and replays.
+
+Choose Mission Select, then **号外1** (one Left press from LEVEL 1), then any
+of the eight scenes. All eight are immediately available. Arrow keys move;
+Shift focuses; Z takes/aims a photo when charged; Shift+Z charges quickly.
+Escape pauses; native Retry, scene selection and replay menus remain available.
+The window caption identifies the fan build.
+
+## Content checks
+
+```bash
+python3 -B -m unittest discover -s tests -p test_gogai.py -v
+```
+
+These check native ECL extents, subroutine termination, timeline spawning,
+loop destinations, completion/timeout slot separation, camera capacity,
+bullet budgets, and round-trip CP932 comment/card decoding. They do not prove
+that a human can clear every scene. External `thecl -j -d 95` can independently
+read the generated scripts; thtk is not a build or runtime dependency.
