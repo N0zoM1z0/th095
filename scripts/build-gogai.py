@@ -89,7 +89,7 @@ def main():
                          tuple(remap(source) for source in baseline.sources) + (fan_source,),
                          profiles, objects, baseline.symbol_targets)
     report = core.base_report(plan)
-    report['product'] = 'Kaze no Gogai / Sakuya revision'
+    report['product'] = 'Kaze no Gogai / Sakuya geometry laboratory'
     report['exact_reconstruction_claim'] = False
     report['overlay_sha256'] = core.sha256(ROOT / 'expansions/gogai/engine.patch')
     report['content_sha256'] = core.sha256(ROOT / 'expansions/gogai/content.py')

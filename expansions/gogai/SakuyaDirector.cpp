@@ -11,7 +11,6 @@
 #include "PhotoGameTask.hpp"
 #include "PhotoPlayerRuntime.hpp"
 #include "SceneData.hpp"
-#include "SoundPlayer.hpp"
 
 #include <string.h>
 
@@ -36,6 +35,16 @@ int currentPose = -1;
 int currentFacing = -1;
 float currentLean = 0.0f;
 float targetLean = 0.0f;
+unsigned spawnSerial = 0;
+struct FrozenKnife
+{
+    PhotoBulletView *bullet;
+    int tag, side;
+    float originalAngle, targetAngle, speed;
+    PhotoBulletVector position;
+};
+FrozenKnife frozenKnives[96];
+int frozenKnifeCount = 0;
 
 struct Ghost
 {
@@ -127,6 +136,20 @@ void SetPose(PhotoEnemyView *actor, int pose, int facing)
     g_GogaiSakuyaTelemetry.poseMask |= 1 << pose;
 }
 
+void WriteFlight(PhotoBulletTransformRecord *records, const gogai::KnifeBatch &batch, int tag)
+{
+    records[0].kind = PHOTO_BULLET_TRANSFORM_SET_OWNER_TAG;
+    records[0].payload.ownerTag = tag;
+    for (int i = 0; i < 3; ++i)
+    {
+        gogai::FlightSegment segment = batch.Segment(i);
+        records[i+1].kind = PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR;
+        records[i+1].payload.durationFrames = segment.frames;
+        records[i+1].payload.speedDelta = segment.speedDelta;
+        records[i+1].payload.angleDelta = segment.angleDelta;
+    }
+}
+
 void SpawnKnives(const gogai::KnifeBatch &batch)
 {
     PhotoBulletManagerView *manager = TH095_RUNTIME_GLOBAL_PTR(
@@ -135,35 +158,98 @@ void SpawnKnives(const gogai::KnifeBatch &batch)
     PhotoBulletSpawnDescriptor shot;
     shot.bulletType = static_cast<i16>(batch.type);
     shot.color = static_cast<i16>(batch.color);
-    shot.position.z = 0.0f;
     shot.speed1 = shot.speed2 = batch.launchSpeed;
-    shot.count1 = 1;
-    shot.count2 = 1;
+    shot.count1 = shot.count2 = 1;
     shot.aimMode = PHOTO_BULLET_AIM_FAN;
-    // Native polar acceleration updates heading/speed each frame. The old
-    // interval-turn transform made rigid corners. Three short sections ease
-    // the angular rate down while preserving the actual native bullet owner.
-    shot.transformFlags = PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR;
-    for (int stage = 0; stage < 3; ++stage)
-    {
-        PhotoBulletTransformRecord &turn = shot.transforms[stage];
-        turn.kind = PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR;
-        turn.payload.durationFrames = stage == 0 ? batch.rampFrames : (stage == 1 ? 16 : 12);
-        turn.payload.speedDelta = stage == 0 ? batch.SpeedDelta() : 0.0f;
-        turn.payload.angleDelta = batch.turnRate * (stage == 0 ? 1.0f : (stage == 1 ? 0.5f : 0.2f));
-    }
-    // Lay the individual blades along a short hand/trail arc rather than
-    // stacking an entire fan at one point. No magnified birth flash is used.
+    shot.transformFlags = PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR |
+        PHOTO_BULLET_TRANSFORM_SET_OWNER_TAG;
+    unsigned serial = (++spawnSerial) & 0xfff;
     for (int blade = 0; blade < batch.count; ++blade)
     {
-        gogai::Point position = batch.BladePosition(blade);
-        shot.position.x = position.x; shot.position.y = position.y;
+        if (!batch.HasBlade(blade)) continue;
+        gogai::Point point = batch.BladePosition(blade);
+        shot.position = PhotoBulletVector(point.x, point.y, 0.0f);
         shot.angle = batch.BladeAngle(blade);
+        int tag = 0x53000000 | (batch.role << 20) | (serial << 8) |
+            (batch.side < 0 ? 0x80 : 0) | blade;
+        WriteFlight(shot.transforms, batch, tag);
         manager->SpawnBulletPattern(&shot);
         ++g_GogaiSakuyaTelemetry.knivesCreated;
         if (batch.turnRate != 0.0f) ++g_GogaiSakuyaTelemetry.curvedKnives;
         if (ownsFreeze) ++g_GogaiSakuyaTelemetry.frozenKnivesCreated;
     }
+}
+
+void BeginRewrite(int role)
+{
+    frozenKnifeCount = 0;
+    PhotoBulletManagerView *manager = TH095_RUNTIME_GLOBAL_PTR(
+        PhotoBulletManagerView, g_RuntimeBulletManagerOwner);
+    if (manager == NULL) return;
+    for (int i = 0; i < 0x640 && frozenKnifeCount < 96; ++i)
+    {
+        PhotoBulletView *bullet = &manager->bullets[i];
+        unsigned tag = static_cast<unsigned>(bullet->ownerTag);
+        if (bullet->state != PHOTO_BULLET_STATE_ACTIVE ||
+            (tag & 0xff000000) != 0x53000000 || ((tag >> 20) & 15) != static_cast<unsigned>(role)) continue;
+        gogai::Point point(bullet->position.x, bullet->position.y);
+        if (gogai::SakuyaChoreography::DistanceSquared(point, choreography.stoppedPlayer) < 104*104) continue;
+        FrozenKnife &knife = frozenKnives[frozenKnifeCount++];
+        knife.bullet = bullet; knife.tag = bullet->ownerTag;
+        knife.side = (tag & 0x80) ? -1 : 1;
+        knife.originalAngle = bullet->angle; knife.speed = bullet->speed;
+        knife.position = bullet->position;
+        float radial = atan2f(point.y-choreography.position.y, point.x-choreography.position.x);
+        float aim = atan2f(choreography.stoppedPlayer.y-point.y, choreography.stoppedPlayer.x-point.x);
+        if (role == gogai::ROLE_ROSE) knife.targetAngle = radial + knife.side*0.85f;
+        else if (role == gogai::ROLE_IRIS) knife.targetAngle = radial + knife.side*0.12f;
+        else if (role == gogai::ROLE_CRESCENT) knife.targetAngle = bullet->angle + knife.side*1.1f;
+        else if (role == gogai::ROLE_GATE) knife.targetAngle = 1.5707963f-knife.side*0.70f;
+        else knife.targetAngle = aim-knife.side*(0.45f+(tag & 0x7f)%5*0.065f);
+    }
+    ++g_GogaiSakuyaTelemetry.rewriteStops;
+    g_GogaiSakuyaTelemetry.redirectedKnives += frozenKnifeCount;
+}
+
+void RewriteKnives(float progress)
+{
+    for (int i = 0; i < frozenKnifeCount; ++i)
+    {
+        FrozenKnife &knife = frozenKnives[i];
+        PhotoBulletView *bullet = knife.bullet;
+        if (bullet->state != PHOTO_BULLET_STATE_ACTIVE || bullet->ownerTag != knife.tag) continue;
+        float angle = knife.originalAngle + gogai::SakuyaChoreography::Normalize(
+            knife.targetAngle-knife.originalAngle)*progress;
+        bullet->angle = angle;
+        bullet->velocity = PhotoBulletVector(cosf(angle)*knife.speed,sinf(angle)*knife.speed,0);
+        // Positions stay entirely under the native freeze. Only orientation
+        // and its consistent velocity vector are rewritten in this phase.
+    }
+    g_GogaiSakuyaTelemetry.activeRedirects = frozenKnifeCount;
+    g_GogaiSakuyaTelemetry.redirectBlend = progress;
+}
+
+void ReleaseKnives(int role)
+{
+    for (int i = 0; i < frozenKnifeCount; ++i)
+    {
+        FrozenKnife &knife = frozenKnives[i];
+        PhotoBulletView *bullet = knife.bullet;
+        if (bullet->state != PHOTO_BULLET_STATE_ACTIVE || bullet->ownerTag != knife.tag) continue;
+        gogai::KnifeBatch flight;
+        flight.launchSpeed = 0.95f; flight.speed = 3.0f; flight.rampFrames = 42;
+        flight.flight = role == gogai::ROLE_GATE ? gogai::OPENING : gogai::SCURVE;
+        flight.turnRate = (role == gogai::ROLE_GATE ? -0.003f : 0.005f)*knife.side;
+        memset(bullet->transforms,0,sizeof(bullet->transforms));
+        WriteFlight(bullet->transforms,flight,knife.tag);
+        bullet->transformFlags = PHOTO_BULLET_TRANSFORM_SET_OWNER_TAG | PHOTO_BULLET_TRANSFORM_ACCELERATE_POLAR;
+        bullet->activeTransformFlags = 0; bullet->transformIndex = 0;
+        bullet->speed = flight.launchSpeed;
+        bullet->velocity = PhotoBulletVector(cosf(bullet->angle)*flight.launchSpeed,sinf(bullet->angle)*flight.launchSpeed,0);
+        bullet->AdvanceTransformProgram();
+    }
+    frozenKnifeCount = 0;
+    g_GogaiSakuyaTelemetry.activeRedirects = 0;
 }
 
 void ApplyFrame(Enemy *opaque, PhotoEnemyView *actor, const gogai::Frame &frame)
@@ -173,8 +259,23 @@ void ApplyFrame(Enemy *opaque, PhotoEnemyView *actor, const gogai::Frame &frame)
         EclExtended::EnablePhotoTransition(opaque, NULL);
         ownsFreeze = true;
     }
-    if (frame.afterimage)
+    if (frame.redirectBegin) BeginRewrite(frame.redirectRole);
+    if (frame.frozen && frame.stopKind >= gogai::STOP_REWRITE)
+        RewriteKnives(frame.redirectProgress);
+    if (frame.teleport)
+    {
+        gogai::Point from(actor->position.x,actor->position.y);
+        for (int i = 0; i < 4; ++i)
+        {
+            float t = i/4.0f;
+            LeaveAfterimage(actor,gogai::Point(from.x+(frame.subject.x-from.x)*t,
+                from.y+(frame.subject.y-from.y)*t));
+        }
+        ++g_GogaiSakuyaTelemetry.blinks;
+    }
+    else if (frame.afterimage)
         LeaveAfterimage(actor, gogai::Point(actor->position.x, actor->position.y));
+    if (frame.volley) ++g_GogaiSakuyaTelemetry.volleys;
     SetPose(actor, frame.pose, frame.facing);
     targetLean = frame.lean;
     actor->movementMode = 0;
@@ -185,25 +286,7 @@ void ApplyFrame(Enemy *opaque, PhotoEnemyView *actor, const gogai::Frame &frame)
     actor->collidable = frame.frozen ? 0 : 1;
     for (int i = 0; i < frame.batches; ++i)
         SpawnKnives(frame.knives[i]);
-    if (frame.pulse)
-    {
-        PhotoBulletManagerView *bullets = TH095_RUNTIME_GLOBAL_PTR(
-            PhotoBulletManagerView, g_RuntimeBulletManagerOwner);
-        if (bullets != NULL && bullets->bulletAnm != NULL)
-        {
-            if (actor->photoPulseVmId.value != 0)
-            {
-                AnmVmId previousPulse;
-                previousPulse = actor->photoPulseVmId.value;
-                g_AnmManager->MarkVmForDeletion(previousPulse);
-            }
-            actor->photoPulseVmId.value =
-                bullets->bulletAnm->CreateVmAtWorld(0x125, &actor->position).value;
-            actor->photoPulseTimer = 12;
-            actor->photoPulseDurationTimer = 12;
-            g_SoundPlayer.PlaySoundByIdx(SOUND_PHOTO_PULSE, 0);
-        }
-    }
+    if (frame.redirectRelease) ReleaseKnives(frame.redirectRole);
     if (frame.freezeEnd && ownsFreeze)
     {
         EclExtended::DisablePhotoTransition(opaque, NULL);
@@ -222,6 +305,7 @@ void __fastcall GogaiSakuyaReset(Enemy *, EclRawInstruction *)
     subject = NULL;
     accumulatedTime = 0.0f;
     nextGhost = 0;
+    spawnSerial = 0; frozenKnifeCount = 0;
     currentPose = -1;
     currentFacing = -1;
     currentLean = targetLean = 0.0f;
@@ -232,7 +316,7 @@ void __fastcall GogaiSakuyaReset(Enemy *, EclRawInstruction *)
 void __fastcall GogaiSakuyaTick(Enemy *opaque, EclRawInstruction *)
 {
     if (g_SelectedScene == NULL || g_SelectedScene->group != 11 ||
-        g_SelectedScene->scene < 0 || g_SelectedScene->scene > 1)
+        g_SelectedScene->scene < 0 || g_SelectedScene->scene > 7)
         return;
     PhotoEnemyView *actor = reinterpret_cast<PhotoEnemyView *>(opaque);
     PhotoPlayerRuntimeView *player = TH095_RUNTIME_GLOBAL_PTR(
@@ -282,6 +366,8 @@ void __fastcall GogaiSakuyaTick(Enemy *opaque, EclRawInstruction *)
     g_GogaiSakuyaTelemetry.sampleX = sample.x;
     g_GogaiSakuyaTelemetry.sampleY = sample.y;
     UpdateGhosts(elapsed);
+    g_GogaiSakuyaTelemetry.sceneId = choreography.mode;
+    g_GogaiSakuyaTelemetry.stopKind = choreography.stopKind;
     g_GogaiSakuyaTelemetry.normalFrame = choreography.normalFrame;
     g_GogaiSakuyaTelemetry.freezeFrame = choreography.freezeFrame;
     g_GogaiSakuyaTelemetry.nativeFrozen = ownsFreeze ? 1 : 0;

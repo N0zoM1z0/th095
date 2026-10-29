@@ -53,7 +53,7 @@ class GogaiContentTests(unittest.TestCase):
                      for r in subs[0] if r[2] == 108}
             self.assertEqual(slots, {31: 1, 30: 2})
             self.assertIn((scene.photos,), [struct.unpack('<i', r[3]) for r in subs[0] if r[2] == 141])
-            cleanup = [119, 118] if i < 2 else []
+            cleanup = [119, 118]
             self.assertEqual([r[2] for r in subs[1]], cleanup + [80, 109, 105, 118, 1])
             self.assertEqual([r[2] for r in subs[2]], cleanup + [80, 85, 105, 142, 109, 1])
 
@@ -65,7 +65,7 @@ class GogaiContentTests(unittest.TestCase):
             jump = records[-1]
             self.assertEqual(jump[2], 4)
             time, displacement = struct.unpack('<ii', jump[3])
-            expected = (3600, 1) if i < 2 else (scene.period + 60, 60)
+            expected = (3600, 1)
             self.assertEqual((jump[1], time), expected)
             self.assertIn(jump[0] + displacement, addresses)
             target = addresses[jump[0] + displacement]
@@ -73,40 +73,21 @@ class GogaiContentTests(unittest.TestCase):
             self.assertLess(target[1], jump[1])
             self.assertEqual([r[1] for r in records], sorted(r[1] for r in records))
 
-    def test_patterns_leave_recovery_and_bounded_bullet_counts(self):
-        for i in range(2, 8):
-            subs, _ = read_subs(content.assemble_scene(i))
-            shots = [r for r in subs[3] if 86 <= r[2] <= 94]
-            self.assertGreater(len(shots), 5)
-            self.assertGreaterEqual(min(r[1] for r in shots), 60)
-            self.assertLessEqual(max(r[1] for r in shots), 440)
-            count = 0
-            for record in shots:
-                kind, color, n, layers, speed, speed2, angle, spread, flags = struct.unpack('<hhiiffffi', record[3])
-                self.assertIn(kind, (1, 4))
-                self.assertTrue(0 <= color <= 15)
-                self.assertTrue(1 <= n <= 18)
-                self.assertEqual(layers, 1)
-                self.assertTrue(0 < speed <= 2.1)
-                count += n * layers
-            self.assertLess(count, 240)
+    def test_eight_sakuya_studies_share_native_asset_family(self):
+        self.assertEqual(len(content.SCENES), 8)
+        self.assertEqual({s.anm for s in content.SCENES}, {14})
+        self.assertEqual({s.world for s in content.SCENES}, {7})
+        self.assertEqual({s.subject for s in content.SCENES}, {'十六夜 咲夜'})
+        self.assertEqual([s.photos for s in content.SCENES], [6]*7+[8])
 
-    def test_moving_subjects_stay_in_the_native_photo_area(self):
-        moving = []
+    def test_scripts_delegate_geometry_without_duplicate_ecl_shots(self):
         for i in range(8):
             subs, _ = read_subs(content.assemble_scene(i))
-            targets = [struct.unpack('<iiff', r[3]) for r in subs[3] if r[2] == 64]
-            for duration, easing, x, y in targets:
-                self.assertTrue(1 <= duration <= 120)
-                self.assertTrue(-160 <= x <= 160)
-                self.assertTrue(80 <= y <= 224)
-            if targets:
-                moving.append(i + 1)
-                self.assertEqual(targets[-1][2:], (0.0, 128.0))
-        self.assertEqual(moving, [5, 7, 8])
+            self.assertEqual([r[2] for r in subs[3]], [119, 0, 4])
+            self.assertFalse(any(86 <= r[2] <= 94 for sub in subs for r in sub))
 
     def test_sakuya_callbacks_and_cleanup_routes(self):
-        for i in (0, 1):
+        for i in range(8):
             subs, _ = read_subs(content.assemble_scene(i))
             self.assertEqual((subs[0][0][2], struct.unpack('<i', subs[0][0][3])[0]), (118, 23))
             self.assertEqual((subs[3][0][2], struct.unpack('<i', subs[3][0][3])[0]), (119, 22))
@@ -117,12 +98,16 @@ class GogaiContentTests(unittest.TestCase):
     def test_shared_sakuya_choreography_under_ubsan(self):
         output = ROOT / 'build/gogai-tests/SakuyaChoreographyTest'
         output.parent.mkdir(parents=True, exist_ok=True)
-        subprocess.run(['g++', '-std=c++98', '-O2', '-Wall', '-Wextra', '-Werror',
-                        '-fsanitize=undefined', '-fno-sanitize-recover=all',
-                        '-I', str(ROOT / 'expansions/gogai'),
-                        str(ROOT / 'tests/gogai/SakuyaChoreographyTest.cpp'),
-                        '-o', str(output)], check=True, capture_output=True)
-        subprocess.run([str(output)], check=True, capture_output=True)
+        compile_result = subprocess.run(
+            ['g++', '-std=c++98', '-O2', '-Wall', '-Wextra', '-Werror',
+             '-fsanitize=undefined', '-fno-sanitize-recover=all',
+             '-I', str(ROOT / 'expansions/gogai'),
+             str(ROOT / 'tests/gogai/SakuyaChoreographyTest.cpp'), '-o', str(output)],
+            capture_output=True, text=True)
+        self.assertEqual(compile_result.returncode, 0, compile_result.stderr)
+        run_result = subprocess.run([str(output)], capture_output=True, text=True)
+        output.with_suffix('.log').write_text(run_result.stdout + run_result.stderr)
+        self.assertEqual(run_result.returncode, 0, run_result.stdout + run_result.stderr)
 
     def test_comments_decode_with_actual_native_key_schedule(self):
         for i, scene in enumerate(content.SCENES):

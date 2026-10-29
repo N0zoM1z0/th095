@@ -64,12 +64,12 @@
 +    // Fan issue: original patterns; native score entries 110..117.
 +    TH095_SCENE(110, 11, 0, "world07.std", "enm14.anm", "gogai01.ecl", "bgm/th095_03.wav", 2, 30, 30),
 +    TH095_SCENE(111, 11, 1, "world07.std", "enm14.anm", "gogai02.ecl", "bgm/th095_03.wav", 2, 31, 31),
-+    TH095_SCENE(112, 11, 2, "world06.std", "enm13.anm", "gogai03.ecl", "bgm/th095_03.wav", 2, 32, 32),
-+    TH095_SCENE(113, 11, 3, "world06.std", "enm13.anm", "gogai04.ecl", "bgm/th095_03.wav", 2, 33, 33),
-+    TH095_SCENE(114, 11, 4, "world06.std", "enm23.anm", "gogai05.ecl", "bgm/th095_03.wav", 2, 34, 34),
-+    TH095_SCENE(115, 11, 5, "world06.std", "enm23.anm", "gogai06.ecl", "bgm/th095_03.wav", 2, 35, 35),
-+    TH095_SCENE(116, 11, 6, "world09.std", "enm19.anm", "gogai07.ecl", "bgm/th095_03.wav", 2, 36, 36),
-+    TH095_SCENE(117, 11, 7, "world09.std", "enm19.anm", "gogai08.ecl", "bgm/th095_03.wav", 2, 37, 37),
++    TH095_SCENE(112, 11, 2, "world07.std", "enm14.anm", "gogai03.ecl", "bgm/th095_03.wav", 2, 32, 32),
++    TH095_SCENE(113, 11, 3, "world07.std", "enm14.anm", "gogai04.ecl", "bgm/th095_03.wav", 2, 33, 33),
++    TH095_SCENE(114, 11, 4, "world07.std", "enm14.anm", "gogai05.ecl", "bgm/th095_03.wav", 2, 34, 34),
++    TH095_SCENE(115, 11, 5, "world07.std", "enm14.anm", "gogai06.ecl", "bgm/th095_03.wav", 2, 35, 35),
++    TH095_SCENE(116, 11, 6, "world07.std", "enm14.anm", "gogai07.ecl", "bgm/th095_03.wav", 2, 36, 36),
++    TH095_SCENE(117, 11, 7, "world07.std", "enm14.anm", "gogai08.ecl", "bgm/th095_03.wav", 2, 37, 37),
  };
  
  #undef TH095_SCENE
@@ -144,7 +144,7 @@
  char g_WindowTitle[] =
      "\x93\x8c\x95\xfb\x95\xb6\x89\xd4\x92\x9f\x81\x40\x81\x60 "
 -    "Shoot the Bullet. ver 1.02a";
-+    "Kaze no Gogai - Fan Issue 1 (TH095 reconstruction)";
++    "Kaze no Gogai - Sakuya Geometry Lab (TH095 reconstruction)";
  
  // Target 0x004BE270 is a standalone process-lifetime ControllerMapping POD.
  // GameConfiguration::Initialize reads it, while Supervisor::LoadConfig and the
@@ -153,7 +153,7 @@
      STARTUPINFOA startupInfo;
  
 -    g_ExclusiveMutex = CreateMutexA(NULL, TRUE, "Touhou 08 App");
-+    g_ExclusiveMutex = CreateMutexA(NULL, TRUE, "TH095 Kaze no Gogai Fan Issue");
++    g_ExclusiveMutex = CreateMutexA(NULL, TRUE, "TH095 Kaze no Gogai Sakuya Geometry Lab");
      if (GetLastError() == ERROR_ALREADY_EXISTS)
      {
          g_GameErrorContext.Fatal(

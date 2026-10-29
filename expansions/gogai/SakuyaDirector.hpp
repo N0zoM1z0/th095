@@ -17,6 +17,8 @@ struct GogaiSakuyaTelemetry
     float subjectX, subjectY, destinationX, destinationY;
     int pose, poseChanges, poseMask, curvedKnives;
     float sampleX, sampleY;
+    int sceneId, stopKind, volleys, blinks, rewriteStops, redirectedKnives, activeRedirects;
+    float redirectBlend;
 };
 extern GogaiSakuyaTelemetry g_GogaiSakuyaTelemetry;
 }

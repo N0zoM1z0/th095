@@ -24,22 +24,22 @@ class Scene:
 
 
 SCENES = (
-    Scene('時符「凍刻のシルバーステージ」', '十六夜 咲夜',
-          ('止まった時に並べられた銀の刃。', '動き出す瞬間こそ、写真の好機。'), 14, 7, 6),
-    Scene('幻時「ザ・ラストシャッター」', '十六夜 咲夜',
-          ('取材拒否にも程がありますよ。', '逃げた先まで、次の一枚で。'), 14, 7, 8),
-    Scene('輪転「回り続ける締切」', '魂魄 妖夢',
-          ('輪転機よりよく回りますね。', '目が回る前に一枚どうぞ。'), 13, 6, 6),
-    Scene('余白「一瞬のシャッター窓」', '魂魄 妖夢',
-          ('記事にも写真にも余白は必要。', '空いた瞬間を逃さないこと。'), 13, 6, 6),
-    Scene('境界「逃げる被写体」', '八雲 紫',
-          ('取材拒否は困りますよ。', '移動先まで先回りです。'), 23, 6, 6),
-    Scene('視差「二重刷りの幻想」', '八雲 紫',
-          ('同じ景色でも角度を変えると、', '別の見出しが見えてきます。'), 23, 6, 6),
-    Scene('囲取「四方八方の記者会見」', '蓬莱山 輝夜',
-          ('質問は一人ずつお願いします。', '弾幕まで一斉に来ないで！'), 19, 9, 7),
-    Scene('号外「風の最終入稿」', '蓬莱山 輝夜',
-          ('締切直前こそ記者の本領。', 'この一枚で、号外完成です！'), 19, 9, 8),
+    Scene('時符「銀の三連幕」', '十六夜 咲夜',
+          ('一幕ごとに場所まで変わる。', '三枚の銀幕、その隙間を取材。'), 14, 7, 6),
+    Scene('転時「逆さの針路」', '十六夜 咲夜',
+          ('飛んだ刃が、止まって振り向く。', '針路の書き換えを写真に。'), 14, 7, 6),
+    Scene('幻時「最後のシャッター」', '十六夜 咲夜',
+          ('取材拒否にも程がありますよ。', '逃げた先まで、次の一枚で。'), 14, 7, 6),
+    Scene('開扇「銀翼の回廊」', '十六夜 咲夜',
+          ('銀の扇が左右に開いていく。', '最後に残る道から一枚。'), 14, 7, 6),
+    Scene('輪舞「薔薇時計」', '十六夜 咲夜',
+          ('時計の針まで花になりました。', '咲く瞬間を逃さないこと。'), 14, 7, 6),
+    Scene('月弧「二重の三日月」', '十六夜 咲夜',
+          ('二つの月が、すれ違う軌道。', '弧と弧の間に見出しがある。'), 14, 7, 6),
+    Scene('機構「アイリスの隙間」', '十六夜 咲夜',
+          ('絞りを動かすのは私の役目。', 'あちらの絞りにも隙間がある。'), 14, 7, 6),
+    Scene('時景「万華の回廊」', '十六夜 咲夜',
+          ('三幕、折り返し、そして光輪。', '号外候補をまとめて取材です。'), 14, 7, 8),
 )
 
 
@@ -76,76 +76,22 @@ class Script:
 
 
 def pattern(index: int, scene: Scene) -> bytes:
-    """480-frame phrases leave recovery space between bursts; no RNG required."""
+    """The native per-frame director owns every geometry study."""
     s = Script()
-    if index < 2:
-        # Native per-frame fan director; the original interpreter owns its life.
-        s.emit(0, 119, 'i', 22)
-        target = len(s.data)
-        s.emit(1, 0)
-        s.jump(3600, target, 1)
-        return bytes(s.data)
-    # Begin with a short telegraphed interval before the first wave.
-    s.emit(0, 143, 'ii', 1, 60)
-    s.emit(0, 65, 'ff', 0.0, 0.0)
-    s.emit(0, 63, 'ff', 0.0, 128.0)
-    start = len(s.data)
-    events = []
-    def shot(t, *args, **kwargs):
-        events.append((t, lambda: s.shot(t, *args, **kwargs)))
-    def move(t, x, y=128.0, duration=60):
-        # Opcode 64 interpolates to an absolute world target, not a delta.
-        events.append((t, lambda: s.emit(t, 64, 'iiff', duration, 4, x, y)))
-    if index == 2:
-        for k, t in enumerate(range(65, 431, 24)):
-            shot(t, 12, 1.5, k * 0.115, color=5 + k % 2)
-    elif index == 3:
-        # A broad fan leaves a visible window above/beside the subject.
-        # Alternating sparse aimed fans discourage camping in one corner.
-        for k, t in enumerate((70, 100, 130, 270, 300, 330)):
-            shot(t, 17, 1.5, math.pi / 2, fan=0.12, color=13)
-        for t in (190, 390):
-            shot(t, 3, 2.0, aimed=True, fan=0.35, color=6, kind=4)
-    elif index == 4:
-        for t, x in ((65, 100.0), (185, -100.0), (365, 0.0)):
-            move(t, x, duration=90)
-        for k, t in enumerate(range(90, 441, 50)):
-            shot(t, 14, 1.65, k * 0.12, color=6)
-            shot(t, 3, 2.0, aimed=True, fan=0.32, color=13, kind=4)
-    elif index == 5:
-        for k, t in enumerate(range(75, 406, 55)):
-            shot(t, 14, 1.5, k * 0.13, color=6, offset=(-72.0, 0.0))
-            shot(t, 14, 1.5, -k * 0.13, color=13, offset=(72.0, 0.0))
-    elif index == 6:
-        for k, t in enumerate(range(70, 431, 45)):
-            sign = 1 if k % 2 else -1
-            shot(t, 18, 1.7, sign * k * 0.1, color=3 + k % 4)
-            if k % 2:
-                shot(t, 5, 2.1, aimed=True, fan=0.2, kind=4, color=13)
-        move(180, 80.0)
-        move(330, 0.0)
-    else:
-        for k, t in enumerate(range(70, 431, 36)):
-            shot(t, 18, 1.65, k * 0.17, color=6 if k % 2 else 13)
-            if k % 3 == 0:
-                shot(t, 5, 2.1, aimed=True, fan=0.22, kind=4, color=3)
-        move(140, -90.0)
-        move(290, 90.0)
-        move(410, 0.0)
-    for _, emit in sorted(events, key=lambda event: event[0]):
-        emit()
-    s.jump(scene.period + 60, start, 60)
+    s.emit(0, 119, 'i', 22)
+    target = len(s.data)
+    s.emit(1, 0)
+    s.jump(3600, target, 1)
     return bytes(s.data)
 
 
 def assemble_scene(index: int) -> bytes:
     scene = SCENES[index]
     init, finish, failure = Script(), Script(), Script()
-    if index < 2:
-        init.emit(0, 118, 'i', 23)
-        for ending in (finish, failure):
-            ending.emit(0, 119, 'i', -1)
-            ending.emit(0, 118, 'i', 23)
+    init.emit(0, 118, 'i', 23)
+    for ending in (finish, failure):
+        ending.emit(0, 119, 'i', -1)
+        ending.emit(0, 118, 'i', 23)
     # Establish a native photographic subject, collision size, camera capacity,
     # and the engine's completion/failure subroutine slots. Timeout is slot 30;
     # successful completion is slot 31.
