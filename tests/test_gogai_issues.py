@@ -28,8 +28,8 @@ class GogaiIssueTests(unittest.TestCase):
             self.assertTrue((ROOT/issue['source']).is_file())
             self.assertEqual([s['mode'] for s in issue['spells']], list(range(8)))
             identifiers.extend(s['id'] for s in issue['spells'])
-        self.assertEqual(set(identifiers), {f'{prefix}.{i:02}' for prefix in ('SK','KG') for i in range(1,9)})
-        self.assertEqual(len(identifiers), 16)
+        self.assertEqual(set(identifiers), {f'{prefix}.{i:02}' for prefix in ('SK','KG','YM') for i in range(1,9)})
+        self.assertEqual(len(identifiers), 24)
 
     def test_independent_products_and_metadata(self):
         self.assertNotEqual(issues.ISSUES['sakuya-v5'].build, issues.ISSUES['kaguya-v1'].build)
