@@ -1,5 +1,8 @@
 # Youmu: Eight Sword Scenes / Hard v1
 
+**Work in progress.** Current editable design sampler; further refinement and balance are pending.
+See [project status](../STATUS.md) and [the development guide](../DEVELOPMENT.md).
+
 An independent eight-card fan issue built around a swordswoman's timing:
 sheath and warning, a short dash, a visible cut, and the projectile wake.
 The preserved Kaguya v3 set and all earlier issues remain independent.

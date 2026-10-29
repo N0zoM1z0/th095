@@ -1,6 +1,9 @@
 {
   "schema": 1,
-  "policy": "Stable spell identifiers retain revision history. Source tags preserve complete earlier issues; authored sources and build/save folders remain separate.",
+  "development_status": "work_in_progress",
+  "maintenance_branch": "feat/gogai-workbench",
+  "status_note": "Playable design samplers; incomplete and awaiting further design, playtesting, refinement and optimization. Save future progress with branch commits and pushes.",
+  "policy": "Stable spell IDs retain revision history. Ongoing work is preserved by commits on maintenance_branch. Existing source_tag entries refer to historical snapshots; future versions can record source_commit without creating tags. Authored sources and build/save folders remain separate.",
   "historical_tags": [
     "gogai/issue1-prototype",
     "gogai/sakuya-v2",
@@ -9,7 +12,8 @@
     "gogai/sakuya-v5",
     "gogai/kaguya-v1",
     "gogai/kaguya-v2",
-    "gogai/kaguya-v3"
+    "gogai/kaguya-v3",
+    "gogai/youmu-v1"
   ],
   "issues": [
     {

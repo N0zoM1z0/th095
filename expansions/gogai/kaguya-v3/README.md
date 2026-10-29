@@ -1,5 +1,8 @@
 # Kaguya: Eight Different Wonders / Hard v3
 
+**Work in progress.** Current editable design sampler; further refinement and balance are pending.
+See [project status](../STATUS.md) and [the development guide](../DEVELOPMENT.md).
+
 The eight scenes now have different spatial and mechanical structures. They
 share native photography and gradual visible preparation; they no longer share
 a central rotary-stream composition. Earlier Kaguya and Sakuya releases remain

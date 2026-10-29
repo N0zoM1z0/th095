@@ -1,5 +1,8 @@
 # Kaguya: Eight Impossible Nights / Hard v1
 
+**Work in progress.** Historical design checkpoint; the current Kaguya sampler is v3.
+See [project status](../STATUS.md) and [the development guide](../DEVELOPMENT.md).
+
 Eight original fan compositions for TH095 photography, with several attack
 phrases per scene. The preserved Sakuya sets remain independent; see
 [the spell library](../SPELL_LIBRARY.md).

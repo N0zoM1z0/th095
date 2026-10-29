@@ -1,12 +1,16 @@
 # 東方文花帖 ～ Shoot the Bullet
 
-This branch also contains **[Kaze no Gogai](expansions/gogai/README.md)**,
-an original fan expansion for the reserved extra-issue scene group. Its isolated build
-uses the reconstructed engine and user-supplied original data. Fan content and
-runtime validation remain separate from the reconstruction status below.
-The [spell library](expansions/gogai/SPELL_LIBRARY.md) preserves the Sakuya issues
-and the independent [Kaguya eight-card sampler](expansions/gogai/kaguya-v3/README.md).
-The [Youmu sword sampler](expansions/gogai/youmu-v1/README.md) adds eight separate sword scenes.
+This is the **feat/gogai-workbench** development branch for
+**[Kaze no Gogai](expansions/gogai/README.md)**, an unfinished fan expansion.
+It preserves three separate eight-scene design samplers: Sakuya v5, Kaguya v3
+and Youmu v1. These 24 designs are playable experiments awaiting further
+selection, balance, visual refinement and optimization, not a finished extra
+issue. See [current status](expansions/gogai/STATUS.md),
+[the spell library](expansions/gogai/SPELL_LIBRARY.md) and
+[the development guide](expansions/gogai/DEVELOPMENT.md).
+
+The isolated fan builds use the reconstructed engine and user-supplied original
+data. The reconstruction status below is separate from fan-content completion.
 
 <p align="center">
   <img

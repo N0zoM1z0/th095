@@ -1,89 +1,73 @@
 # Original fan spell library
 
-Stable spell identifiers keep future variations connected to their designs.
-The authored C++ owners, native scene compiler, play notes and validation remain
-in Git. Original game data and generated executables are kept out of Git.
-SPELL_LIBRARY.json is the machine-readable index.
+**Work in progress.** The 24 current designs are retained for continued
+playtesting, refinement and optimization. They are three separate eight-scene
+samplers, not a finished extra issue. See [STATUS.md](STATUS.md).
 
-## Preserved issues
+Continue development on feat/gogai-workbench using commits and pushes. New tags
+are not required. SPELL_LIBRARY.json is the machine-readable index; stable IDs
+connect later changes to each design.
 
-| Source tag | Preserved work |
-| --- | --- |
-| gogai/issue1-prototype | Initial mixed-cast prototypes and practice launcher |
-| gogai/sakuya-v2 | First native stop/evasion pair |
-| gogai/sakuya-v3 | Curved movement, complete poses and knife ribbons |
-| gogai/sakuya-v4 | Eight geometry studies, three-tableau blinks and in-flight rewrites |
-| gogai/sakuya-v5 | Eight harder multi-phrase spells, rotary streams, reflections and validation |
-| gogai/kaguya-v1 | Eight treasure compositions, delayed jewels, orbiting emitters and native warned lasers |
-| gogai/kaguya-v2 | Gradual source deployment and eight living-treasure formations |
-| gogai/kaguya-v3 | Eight distinct mechanisms, including gravity, return flight and native fission |
+## Current editable designs
 
-Each release receives an annotated tag pushed after validation. A historical tag preserves its
-entire build recipe and source, not just the final executable or screenshots.
-Use a separate checkout/worktree when reproducing an older issue. Do not change
-an existing tag or mix old score/replay files into a new issue.
+| ID | Sakuya v5 | ID | Kaguya v3 | ID | Youmu v1 |
+| --- | --- | --- | --- | --- | --- |
+| SK.01 | Silver Triptych | KG.01 | Rainbow Conservatory | YM.01 | White Tower, One Flash |
+| SK.02 | Rewritten Meridian | KG.02 | Buddhist Moon Prism | YM.02 | Crescent Wheel Dance |
+| SK.03 | The Last Shutter | KG.03 | Salamander Orrery | YM.03 | Twin Souls' Pincer |
+| SK.04 | Silver Wing Corridor | KG.04 | Dragon's Threefold Gaze | YM.04 | Six Paths Crossing |
+| SK.05 | Clockwork Rose | KG.05 | Twin Life Springs | YM.05 | Cherryfall Guillotine |
+| SK.06 | Twin Crescent | KG.06 | Bamboo Crossing Gates | YM.06 | Echo Beyond Silence |
+| SK.07 | Iris Aperture | KG.07 | Night-Returning Blossom | YM.07 | Petal-Parrying Rosette |
+| SK.08 | Chronographic Kaleidoscope | KG.08 | Sea of Hourai Constellations | YM.08 | Thousandfold White Tower |
 
-## Current editable spell sets
+## Source and build locations
 
-| ID | Sakuya v5 | ID | Kaguya v3 |
+| Selection | Authored owner directory | Generated build | Role |
 | --- | --- | --- | --- |
-| SK.01 | Silver Triptych | KG.01 | Rainbow Conservatory |
-| SK.02 | Rewritten Meridian | KG.02 | Buddhist Moon Prism |
-| SK.03 | The Last Shutter | KG.03 | Salamander Orrery |
-| SK.04 | Silver Wing Corridor | KG.04 | Dragon's Threefold Gaze |
-| SK.05 | Clockwork Rose | KG.05 | Twin Life Springs |
-| SK.06 | Twin Crescent | KG.06 | Bamboo Crossing Gates |
-| SK.07 | Iris Aperture | KG.07 | Night-Returning Blossom |
-| SK.08 | Chronographic Kaleidoscope | KG.08 | Sea of Hourai Constellations |
+| sakuya-v5 | [Root Sakuya owners](SAKUYA_V5.md) | build/gogai/ | Current knife/time-stop sampler |
+| kaguya-v1 | [kaguya/](kaguya/README.md) | build/gogai-kaguya-v1/ | Historical treasure study |
+| kaguya-v2 | [kaguya-v2/](kaguya-v2/README.md) | build/gogai-kaguya-v2/ | Historical formation study |
+| kaguya-v3 | [kaguya-v3/](kaguya-v3/README.md) | build/gogai-kaguya-v3/ | Current eight-mechanism sampler |
+| youmu-v1 | [youmu-v1/](youmu-v1/README.md) | build/gogai-youmu-v1/ | Current sword/half-spirit sampler |
 
-Sakuya's three C++ files remain unchanged from the v5 tag. Her scene resources
-also remain byte-identical after adding the shared build selector. Kaguya has
-separate choreography, native adapter, metadata, practice-launcher pin and
-play documentation below kaguya/, kaguya-v2/ and kaguya-v3/.
+All five choices share the native wire/build layer and keep separate source
+owners, artifact pins and save directories. The default remains sakuya-v5.
+See [the build overview](README.md#build-choices) and
+[the development guide](DEVELOPMENT.md) for extension instructions.
 
-```bash
-python3 scripts/build-gogai.py --issue sakuya-v5 --data-dir /path/to/original-game
-python3 scripts/build-gogai.py --issue kaguya-v1 --data-dir /path/to/original-game
-python3 scripts/build-gogai.py --issue kaguya-v2 --data-dir /path/to/original-game
-python3 scripts/build-gogai.py --issue kaguya-v3 --data-dir /path/to/original-game
-```
+## Historical source references
 
-The default remains sakuya-v5. It writes build/gogai/. Kaguya writes
-build/gogai-kaguya-v1/, build/gogai-kaguya-v2/ or build/gogai-kaguya-v3/. Each standalone product owns its own scores, Best Shots
-and replays. The native group-12 menu provides the eight scenes of the selected
-product. Choosing Kaguya does not overwrite Sakuya's authored patterns or saves.
+Earlier designs are available by commit in this branch's history. Existing tag
+references remain historical metadata; ongoing work uses branch commits and
+pushes without creating additional tags. A saved snapshot and its validation
+report do not imply final design or balance.
 
-## Youmu's independent sword set
+| Snapshot | Commit | Preserved work |
+| --- | --- | --- |
+| issue1-prototype | 50df589 | Initial mixed-cast prototypes and practice launcher |
+| sakuya-v2 | ecdb9a9 | First native stop/evasion pair |
+| sakuya-v3 | d97bd9c | Curved movement, original poses and knife ribbons |
+| sakuya-v4 | 1971d57 | Eight geometry studies, three-tableau blinks and in-flight rewrites |
+| sakuya-v5 | 13f3103 | Eight multi-phrase knife designs, rotary layers and reflections |
+| kaguya-v1 | 32737a7 | Eight treasure compositions and native warned lasers |
+| kaguya-v2 | 065d960 | Gradual source deployment and living-treasure formations |
+| kaguya-v3 | c6668bf | Eight distinct mechanisms, including gravity, return flight and native fission |
+| youmu-v1 | dc46abf | Eight sword designs with poses, afterimages, half-spirit attacks and delayed blades |
 
-Youmu has separate choreography, native integration, metadata and practice pin
-below youmu-v1/. Kaguya's eight v3 source cards and all previous releases remain
-unchanged. The generated build/save directory is build/gogai-youmu-v1/.
+The workbench branch contains all these checkpoints in its ancestry. Earlier
+Sakuya bodies remain available through history; the three Kaguya source
+versions are also retained side by side. Original game data and generated
+executables remain local rather than in Git.
 
-| ID | Youmu v1 |
-| --- | --- |
-| YM.01 | White Tower, One Flash |
-| YM.02 | Crescent Wheel Dance |
-| YM.03 | Twin Souls' Pincer |
-| YM.04 | Six Paths Crossing |
-| YM.05 | Cherryfall Guillotine |
-| YM.06 | Echo Beyond Silence |
-| YM.07 | Petal-Parrying Rosette |
-| YM.08 | Thousandfold White Tower |
+## Continue a design
 
-```bash
-python3 scripts/build-gogai.py --issue youmu-v1 --data-dir /path/to/original-game
-```
+Keep its stable ID, record the version/source context and save a tested commit
+before replacing a play folder. Put geometry and scheduling in its choreography
+owner, native integration in its director, and names/goals/assets in its
+content metadata and registered build descriptor.
 
-## Continuing a design
-
-Keep the stable spell ID, record the new version and its source revision, and
-save a tested checkpoint before replacing a play folder. Adjust geometry and
-schedules in the corresponding choreography owner; native API integration
-belongs in that set's director. Validate the pure model, native photo goals,
-replay and interrupted-state cleanup independently. Preserve the earlier tag
-and standalone folder for direct comparison.
-
-Historical mixed-cast prototypes remain studies. Youmu v1 is an independent
-sword sampler; Yukari remains a future design.
-Kaguya remains a new fan composition informed by read-only TH095 and TH08
-references; it makes no reconstruction or exact-match claim.
+Validate model behavior, native photography, replay and interrupted cleanup
+according to the change. Ordinary survival and human balance require separate
+playtesting. Preserve earlier work for comparison while the selected designs
+continue to evolve. Yukari has no dedicated current eight-scene set.

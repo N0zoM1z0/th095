@@ -1,5 +1,8 @@
 # Kaze no Gogai: Sakuya Grand Geometry / Hard v5
 
+This guide covers the unfinished Sakuya v5 sampler. See the
+[project overview](README.md) and [current status](STATUS.md).
+
 All eight extra-issue slots feature Sakuya for comparing harder, multi-phrase
 spell designs. This revision adds charged mass salvos, full-size knives, speed
 layers, multi-stage turning, native ricochets and several rotating geometry

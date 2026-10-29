@@ -1,79 +1,87 @@
-# Kaze no Gogai: Sakuya Grand Geometry / Hard v5
+# Kaze no Gogai
 
-An original fan expansion built from the reconstructed TH095 Windows i386
-engine. See [the preserved spell library](SPELL_LIBRARY.md) for independent
-Sakuya/Kaguya/Youmu builds and all historical source tags.
+**Work in progress: playable design samplers, incomplete and awaiting further
+refinement and optimization.** Continue work on the dedicated
+feat/gogai-workbench branch. Progress is saved through ordinary commits and
+pushes on this branch; new tags are not required.
 
-All eight group-12 slots in this Sakuya product feature Sakuya for comparing spell
-designs. This is original fan content, not unreleased ZUN content.
+This original fan expansion uses the reconstructed TH095 Windows i386 engine.
+The current collection contains three separate eight-scene samplers, with 24
+stable design IDs. Each build places one sampler in the eight group-12 slots.
+The designs have not been selected or balanced into a finished extra issue.
 
-The hard revision combines charged mass salvos, full-size handled knives,
-strongly separated speed tiers, multi-stage turning, finite native wall
-reflections and sustained multi-turn rotary streams. Petals, crescents, narrow
-iris rings, nested hexagons and a seven-lobed knot appear as several phrases
-within each scene. Casting synchronizes the original draw/extended-hand/return
-frames with the actual emission; it does not invent a new skeletal arm.
+## Start here
 
-See [the play guide](PLAY.md), [current design](GRAND_GEOMETRY.md), and
-[current validation](VALIDATION.md). Previous records cover the
-[initial issue](VALIDATION_ISSUE1.md), [first stop revision](VALIDATION_SAKUYA_V2.md),
-[motion revision](VALIDATION_SAKUYA_V3.md), and [v4 geometry lab](VALIDATION_SAKUYA_V4.md).
-The standalone PREVIEW.html contains actual local captures and a rotary sequence.
+| Document | Purpose |
+| --- | --- |
+| [STATUS.md](STATUS.md) | Current scope, retained checkpoints, actual coverage and unfinished work |
+| [SPELL_LIBRARY.md](SPELL_LIBRARY.md) | All 24 current spell IDs and earlier source versions |
+| [SPELL_LIBRARY.json](SPELL_LIBRARY.json) | Machine-readable design index and development status |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Code ownership, build selection and how to modify or extend a sampler |
 
-## Implementation boundary
+## Current design samplers
 
-The isolated build copies canonical source below build/gogai/src and applies
-expansions/gogai/engine.patch. Authored ECL routes each scene through the fan
-director. Photography, collision, scoring, charging, Best Shot, Retry and replay
-retain their native engine owners. Typed native polar/bounce programs provide
-flight; the bounded fan coordinator controls stopped-time orientation changes
-and decorative ANM handles. Canonical src/, exact manifests, ledgers and
-reconstruction claims do not change. The product cold-builds 89 objects with
-the pinned VC7.1 compiler and linker.
+| Cast | Current version | Design and source guide | Play guide | Recorded artifact checks |
+| --- | --- | --- | --- | --- |
+| Sakuya | v5, eight scenes | [SAKUYA_V5.md](SAKUYA_V5.md) | [PLAY.md](PLAY.md) | [VALIDATION.md](VALIDATION.md) |
+| Kaguya | v3, eight scenes | [kaguya-v3/README.md](kaguya-v3/README.md) | [kaguya-v3/PLAY.md](kaguya-v3/PLAY.md) | [kaguya-v3/VALIDATION.md](kaguya-v3/VALIDATION.md) |
+| Youmu | v1, eight scenes | [youmu-v1/README.md](youmu-v1/README.md) | [youmu-v1/PLAY.md](youmu-v1/PLAY.md) | [youmu-v1/VALIDATION.md](youmu-v1/VALIDATION.md) |
 
-Original game archives, extracted textures, original scripts, captures and
-executables are not committed or distributed through Git. Supply your own
-original Japanese th095.dat and thbgm.dat. Keep separate play/save directories
-because scene meanings and required photo counts differ between issues.
+Sakuya explores knives, stopped-time movement, rotary layers and reflections.
+Kaguya explores visibly deployed sources and different spatial mechanisms.
+Youmu explores short sword dashes, original sword poses, afterimages and
+half-spirit crossfire. These remain editable studies. Yukari has no dedicated
+current eight-scene sampler.
 
-## Build and play
+Earlier Kaguya v1/v2 sources and Sakuya iterations are retained for comparison.
+Existing historical tags remain reference snapshots; future work uses the
+workbench branch and its commit history.
 
-Keep heavy development jobs serial and resource-limited:
+## Build choices
+
+| --issue | Generated build directory | Role |
+| --- | --- | --- |
+| sakuya-v5 | build/gogai/ | Current Sakuya sampler; existing default |
+| kaguya-v1 | build/gogai-kaguya-v1/ | Historical Kaguya study |
+| kaguya-v2 | build/gogai-kaguya-v2/ | Historical Kaguya study |
+| kaguya-v3 | build/gogai-kaguya-v3/ | Current Kaguya sampler |
+| youmu-v1 | build/gogai-youmu-v1/ | Current Youmu sampler |
+
+Use the repository's configured pinned toolchain and Wine environment. On the
+current Linux development host, keep heavy jobs serial and limited:
 
 ```bash
 systemd-run --user --scope --quiet \
   -p CPUQuota=50% -p MemoryHigh=768M -p MemoryMax=1G -- \
-  taskset -c 1 nice -n 19 python3 -B scripts/build-gogai.py --issue sakuya-v5 \
-  --data-dir /path/to/original-japanese-game
+  taskset -c 1 nice -n 19 python3 -B scripts/build-gogai.py \
+  --issue youmu-v1 --data-dir /path/to/original-japanese-game
 ```
 
-The source overlay must apply cleanly. --prepare-only generates fan source
-and authored resources without compiling. Build receipts, map and executable
-are below build/gogai/. For manual Windows play, copy the generated play files
-to a fresh folder, add the supplied launchers and run launch-gogai.bat.
-Do not copy score files from older issues.
+--prepare-only generates the isolated source and authored scene resources
+without compiling. The default issue remains sakuya-v5. Supply original
+Japanese th095.dat and thbgm.dat locally. Generated code, objects, maps,
+executables and assets belong below build/.
 
-The no-death helper is pinned to the tested executable hash and the relocated
-death entry's 18-byte signature. It patches only its newly started process,
-restores page protection and reads the byte back. Unknown rebuilds are rejected;
-a fresh rebuild requires independent checking and repinning. Manual play uses
-ordinary sound and graphics. Development tests use a private silent config and
-virtual display, never a host game window.
+For manual play, use the sampler's separate folder and its launch-gogai.bat or
+run-no-death-test.bat. Each folder owns its scores, Best Shots and replays.
+Practice helpers accept only their verified executable hash and death prologue;
+a rebuilt artifact requires checking and repinning. Manual BAT launches retain
+normal graphics and sound. Development game tests must remain silent and run
+on an isolated background display.
 
-## Content and behavior checks
+## Boundaries
 
-```bash
-python3 -B -m unittest discover -s tests -p test_gogai.py -v
-```
+The authored implementation lives under expansions/gogai/, with its build entry
+at scripts/build-gogai.py and tests under tests/. The builder applies engine.patch
+to generated copies of canonical src/. Fan builds and their runtime checks do
+not grant reconstruction, semantic-acceptance or exact-match credit.
 
-Native ECL framing, branches, cleanup, asset assignments, photo capacities,
-CP932/XOR packets and generated hint textures are checked. The shared C++98
-choreography executes under UBSan across all eight studies and 375 adversarial
-camera/player geometries. Tests cover charged mass salvos, speed tiers, rotary
-layers, ricochet programs, bounded paths, blade masks, hand-frame sequencing,
-blink timing, corridor opening, camera cooldowns and reset. Native observations
-and replay validation are separate gates; see VALIDATION.md.
+Validation documents record checks of specific retained artifacts. They do not
+establish final balance, complete human survival coverage or final artistic
+quality, and they must be renewed after relevant gameplay changes. Historical
+reports retain their original scope and limitations.
 
-Font rendering requires Pillow and a Japanese TrueType font. The default is
-system VL Gothic; TH095_GOGAI_FONT can select another installed font. Fonts and
-original image assets are not included in Git.
+Original executables, game archives, extracted assets, native captures and
+private experiments are excluded from Git. Local PREVIEW.html galleries are
+native-capture artifacts, not files generated by the public build command.
+This is original fan work, not unreleased ZUN content.

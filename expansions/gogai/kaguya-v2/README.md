@@ -1,5 +1,8 @@
 # Kaguya: Living Treasures / Hard v2
 
+**Work in progress.** Historical design checkpoint; the current Kaguya sampler is v3.
+See [project status](../STATUS.md) and [the development guide](../DEVELOPMENT.md).
+
 Eight revised compositions develop through visible emission and travel. Kaguya
 v1 and every Sakuya issue remain available independently. This revision changes
 how the field forms, rather than placing finished flowers and stars around the
