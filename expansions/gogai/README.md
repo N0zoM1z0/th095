@@ -1,100 +1,72 @@
-# Kaze no Gogai
+# Kaze no Gogai: Sakuya geometry laboratory
 
-A fan-made TH095 expansion built from the reconstructed Windows i386 engine.
-This is original fan content, not recovered or unreleased ZUN content.
+A fan expansion built from the reconstructed TH095 Windows i386 engine.
+This is original fan content, not unreleased ZUN content.
 
-The first issue uses the eight reserved scene slots in group 12 (score entries
-110–117). It keeps the engine's camera, collision, scoring, charge, Best Shot,
-retry and replay rules. New patterns explore timing and composition rather
-than changing photography mechanics.
+All eight reserved scenes in group 12 temporarily feature Sakuya, as a
+comparison sampler. The studies explore three-tableau blink sequences, rewriting knives
+already in flight, camera evasion, an opening fan corridor, rose geometry,
+mirrored crescents and iris rings. Thin blades, spatial spacing and quiet
+intervals organize density. The mixed-cast prototypes remain in earlier issues.
+
+See [the play guide](PLAY.md), [geometry design](GEOMETRY_LAB.md), and
+[current validation](VALIDATION.md). Historical records describe the
+[original issue](VALIDATION_ISSUE1.md), [first time-stop revision](VALIDATION_SAKUYA_V2.md)
+and [motion revision](VALIDATION_SAKUYA_V3.md).
 
 ## Implementation boundary
 
-The expansion has a separate build and working directory under `build/gogai/`.
-An explicit source overlay is applied to generated source copies there; the
-canonical `src/` and reconstruction ledgers remain the original target lane.
-The ordinary fan build changes source and authored resources. The build uses the pinned VC7.1
-compiler, the complete reconstructed production graph, and one fan director object.
+The isolated build copies canonical source below build/gogai/src and applies
+expansions/gogai/engine.patch. Authored ECL routes each scene through a separate
+fan director. Native photography, collision, scoring, charging, Best Shot,
+Retry and replay remain the engine owners. Typed native bullet programs provide
+flight and owner tags; a bounded fan-only coordinator controls stopped-time
+orientation changes. Canonical src/, exact manifests, ledgers and reconstruction
+claims do not change. The product compiles 89 objects with the pinned VC7.1
+compiler and linker.
 
-Only project-authored content and tools belong here. Supply your own original
-Japanese `th095.dat` and `thbgm.dat`; neither archive nor extracted original
-assets are committed or included in distributable packages. The expansion's
-working directory owns its own config, score, Best Shots and replays.
-
-## First issue
-
-The cast is Sakuya, Youmu, Yukari, and Kaguya, two scenes each. This revision
-redesigns Sakuya's two spells around native knives, actual stopped time, fast
-silhouette dashes, and camera-triggered evasion with knife counterattacks.
-Curved routes keep varied landings, native poses change with the action, and
-small knife ribbons accelerate and turn continuously. See the
-[motion revision](MOTION_DESIGN.md) for implementation and TH06 references.
-The other six scenes retain prototype attacks pending their own design passes.
-Scene-specific Japanese titles and Aya's comments accompany the patterns.
-See [the Sakuya design](SAKUYA_DESIGN.md) for choreography and counterplay.
-
-See [the play guide](PLAY.md) for the scene list and controls.
-See [the validation record](VALIDATION.md) for actual clears, persistence,
-replay results and remaining playtesting. [The earlier issue-1 record](VALIDATION_ISSUE1.md)
-refers to the superseded prototype executable and patterns. The
-[earlier Sakuya validation](VALIDATION_SAKUYA_V2.md) records the first time-stop revision.
-The reconstruction handoff in
-`docs/RE_HANDOFF.md`, including its saved semantic draft, remains separate.
+Original game archives, extracted textures, generated images and executables
+are not committed or distributed through Git. Supply your own original
+Japanese th095.dat and thbgm.dat. Use separate play/save directories for each
+issue because scene meanings and required photo counts differ.
 
 ## Build and play
 
-On the existing Linux/Wine development host, use the repository's resource
-limits for the cold compile/link:
+On the Linux/Wine development host, keep heavy jobs serial and resource-limited:
 
 ```bash
 systemd-run --user --scope --quiet \
   -p CPUQuota=50% -p MemoryHigh=768M -p MemoryMax=1G -- \
   taskset -c 1 nice -n 19 python3 -B scripts/build-gogai.py \
   --data-dir /path/to/original-japanese-game
-scripts/run-gogai.sh
 ```
 
-`--prepare-only` generates the overlay tree and ECL without compiling. The
-source overlay must apply cleanly; the build refuses stale patch context.
-The compiler and linker are hash-attested by the existing whole-build module.
-Build receipts and the map live under `build/gogai/`.
+The source overlay must apply cleanly. --prepare-only generates the overlay
+and authored resources without compiling. Build receipts, map and executable
+are below build/gogai/. For manual Windows play, copy the generated play files
+to a fresh folder, add the supplied launchers, and run launch-gogai.bat.
+Do not copy score files from older issues.
 
-On Windows, copy the contents of `build/gogai/play/` to a new folder and run
-`launch-gogai.bat`. Keep this folder separate from the original installation.
-Do not copy an original score file into it. For a source-only distribution,
-omit the DAT archives, generated saves, photos and replays.
+The optional run-no-death-test.bat helper is pinned to the tested executable's
+hash and the relocated death entry's 18-byte signature. It patches only its own
+newly started process, restores page protection and reads the byte back. It
+rejects unknown rebuilds. A fresh build must be separately checked and repinned.
+Manual play uses ordinary sound and graphics; development tests use a private
+silent configuration and virtual display.
 
-Choose Mission Select, then **Extra Issue 1**, group 12 (one Left press from LEVEL 1), then any
-of the eight scenes. All eight are immediately available. Arrow keys move;
-Shift focuses; Z takes/aims a photo when charged; Shift+Z charges quickly.
-Escape pauses; native Retry, scene selection and replay menus remain available.
-The window caption identifies the fan build.
-
-For no-death testing, run `run-no-death-test.bat` beside its PowerShell helper.
-It accepts only the tested executable hash in the validation record, checks
-the relocated death entry against its 18-byte signature, and replaces its first
-byte with RET in the newly launched process. It restores page protection and
-verifies the write. No disk EXE is changed; normal launching restores ordinary
-play. Timer expiration still applies, and saves use the same play directory.
-A replay containing collisions requires the no-death launcher for playback.
-Rebuilt executables are rejected until separately verified and repinned.
-
-## Content checks
+## Content and behavior checks
 
 ```bash
 python3 -B -m unittest discover -s tests -p test_gogai.py -v
 ```
 
-These check native ECL extents, subroutine termination, timeline spawning,
-loop destinations, completion/timeout slot separation, camera capacity,
-bullet budgets, and round-trip CP932 comment/card decoding. They also compile
-and execute the game's actual C++98 choreography under UBSan, checking stop
-durations, cooldowns, knife varieties, dash bounds and close-range safety.
-They do not prove that a human can clear every scene. External `thecl -j -d 95` can independently
-read the generated scripts; thtk is not a build or runtime dependency.
+These check native ECL framing, branches and cleanup routes, all eight asset
+assignments, photo capacities, CP932/XOR packets and generated hint textures.
+The actual C++98 choreography also executes under UBSan: all eight geometry
+families, blink/cast timing, physical blade admission, camera evasion, flight
+segments, corridor preservation, fractional paths and resets. Native gameplay
+and replay observations remain separate acceptance gates.
 
-Hint textures are generated from the fan scene table, including each subject
-and the actual required photograph count; the original mission hints are not
-reused. Building requires Pillow and a Japanese TrueType font. The default is
-system VL Gothic; set `TH095_GOGAI_FONT=/path/to/font.ttf` to override it.
-Neither the font file nor original image assets are included in the content.
+Font rendering requires Pillow and a Japanese TrueType font. The default is
+system VL Gothic; TH095_GOGAI_FONT can select another installed font. The font
+and original image assets are not included in Git.

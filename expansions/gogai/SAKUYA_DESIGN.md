@@ -1,5 +1,8 @@
 # Sakuya revision: knives, stopped time, and the stolen photograph
 
+Historical design record. The current eight-scene sampler is described in
+[GEOMETRY_LAB.md](GEOMETRY_LAB.md).
+
 The requested cast is Sakuya, Youmu, Yukari, and Kaguya, two scenes each.
 This batch redesigns Sakuya's two scenes. The other six patterns remain prototypes until their own design passes;
 their actors/assets are reassigned to the requested cast without claiming a

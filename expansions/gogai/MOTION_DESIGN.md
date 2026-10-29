@@ -1,5 +1,8 @@
 # Sakuya motion revision
 
+Historical design record. The current eight-scene sampler is described in
+[GEOMETRY_LAB.md](GEOMETRY_LAB.md).
+
 This pass addresses three playtest observations: abrupt motion, an idle-only
 subject, and rigid knife volleys. The first spell must also stay at varied
 landing points rather than returning to the center after every stop.

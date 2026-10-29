@@ -19,7 +19,7 @@ Earlier standalone issues remain separate.
 ## Composition rules
 
 Use the native handled-knife sprite at 0.78 draw scale (about 23 pixels).
-Its native collision radius remains eight, inside that visual footprint.
+Its native collision size remains eight, inside that visual footprint.
 Fan spacing follows the sprite footprint. Wedges, opposing wings,
 spaced rings and short S curves organize density instead of accumulating
 nearly coincident launch points. The director adds no magnified birth flashes

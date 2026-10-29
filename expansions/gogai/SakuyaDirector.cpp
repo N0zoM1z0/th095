@@ -181,7 +181,7 @@ void SpawnKnives(const gogai::KnifeBatch &batch)
             ? &manager->bullets[0x63f] : manager->bulletCursor-1;
         if (created->state != PHOTO_BULLET_STATE_ACTIVE || created->ownerTag != tag) continue;
         // Keep the recognizable handled knife with room between each blade.
-        // Its native radius of eight remains inside the scaled 23-pixel art.
+        // Its native eight-unit hitbox remains inside the scaled 23-pixel art.
         created->vm.scale.x = created->vm.scale.y = 0.78f;
         created->vm.updateScale = 1;
         ++g_GogaiSakuyaTelemetry.knivesCreated;

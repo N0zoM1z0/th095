@@ -1,46 +1,45 @@
-# Kaze no Gogai: Sakuya motion revision play guide
+# Kaze no Gogai: Sakuya geometry laboratory
 
-This is a fan expansion made with the reconstructed TH095 engine. It is not
-unreleased ZUN content.
+This fan sampler temporarily gives all eight extra-issue slots to Sakuya.
+Compare the compositions before selecting final spell designs. The earlier
+standalone v3 remains separate.
 
-Double-click `launch-gogai.bat` in the standalone play directory. Choose Game
-Start, then press Left once from LEVEL 1 to select the reserved extra issue
-(group 12). All eight scenes are immediately available.
+Open PREVIEW.html in the standalone play folder for actual screenshots of all
+eight studies. Its buttons switch between attack phases without launching the game.
 
-Arrow keys move. Shift focuses. Shift+Z charges quickly; when fully charged,
-release Shift, hold Z to aim, then release Z to take the photograph. Escape
-pauses. Retry or return to scene selection after failure. During the opening
-preparation marker, the subject cannot yet count as a successful photograph.
+Run launch-gogai.bat, choose Game Start, then press Left once from LEVEL 1 to
+select Extra Issue 1 (group 12). All eight studies are immediately available.
 
-For no-death testing, double-click `run-no-death-test.bat` and keep its
-`run-no-death-test.ps1` helper beside it. The launcher disables collision
-death only in the new game process. It never modifies the executable on disk.
-Close the game and use `launch-gogai.bat` to restore ordinary play. The timer
-still runs and saves use the same play directory. A replay containing
-collisions requires the no-death launcher for playback. The launcher accepts
-only the verified Sakuya-revision executable; other rebuilds are rejected.
-
-| Scene | Subject | Theme | Required photos |
+| Scene | Study | What to watch | Photos |
 | --- | --- | --- | --- |
-| 1 | Sakuya | Silver Stage in Frozen Time: sweeping knives, curved frozen-time dashes | 6 |
-| 2 | Sakuya | The Last Shutter: evade the camera, throw knives during the dash | 8 |
-| 3 | Youmu | Rotating deadline (prototype) | 6 |
-| 4 | Youmu | Shutter margin (prototype) | 6 |
-| 5 | Yukari | Moving interview (prototype) | 6 |
-| 6 | Yukari | Double printing (prototype) | 6 |
-| 7 | Kaguya | Press conference (prototype) | 7 |
-| 8 | Kaguya | Final edition (prototype) | 8 |
+| 1 | Silver Triptych | Three frozen tableaux separated by two true blinks | 6 |
+| 2 | Rewritten Meridian | Already-flying knives stop, turn, then depart on new paths | 6 |
+| 3 | The Last Shutter | Camera-triggered evasion with staged knife throws | 6 |
+| 4 | Silver Wing Corridor | Fan wings spread outward and leave a central passage | 6 |
+| 5 | Clockwork Rose | Interleaved rose-like emitters and unfolding petals | 6 |
+| 6 | Twin Crescent | Mirrored moon arcs with opposing curves | 6 |
+| 7 | Iris Aperture | Spaced rings with a wedge opening and turning blades | 6 |
+| 8 | Chronographic Kaleidoscope | A separated medley of tableaux, rewrites and iris rings | 8 |
 
-Photography, collisions, scoring, charging, Best Shot and replays use the native
-engine. Scores, photographs and replays are stored in this standalone play
-directory. Original-installation saves are separate. See [README](README.md)
-for source builds and validation.
+Arrow keys move. Shift focuses. Shift+Z charges quickly. When fully charged,
+release Shift, hold Z to aim, then release Z to take the photograph. Escape
+pauses during ordinary time. The native player/camera input also stops during
+actual stopped time. Preparation markers do not yet count as photo targets.
 
+Scene 1 rewards positioning before the stop and reading all three formations
+before release. Scene 2 asks for a second reading of the knife headings after
+the clock stops. In scene 3, bait the dodge and re-aim at the destination during
+the cooldown. Scene 4 demonstrates a deliberately opening lane; the other
+studies explore different silhouettes rather than progressively increasing
+bullet counts. Ghosts never count as photographic subjects.
 
-Sakuya's first spell stops time on a regular rhythm. Position before the stop,
-read the split knife fans, then photograph her during the recovery window.
-She keeps varied landing points and glides into the next phrase. Her second
-spell reacts when an aimed frame contains her. Bait the dash,
-follow the blue silhouettes, and re-aim at her destination during the evasion
-cooldown. Ghosts do not count as photographic subjects. The other six scenes
-have the requested cast but retain their earlier prototype attacks.
+For no-death practice, run run-no-death-test.bat with its PowerShell helper
+beside it. It disables collision death only in the newly started game process;
+it never changes the executable on disk. The timer still runs. Close that
+process and use launch-gogai.bat for ordinary play. Replays containing collisions
+require no-death playback. The helper accepts only this verified lab executable.
+
+The standalone folder owns fresh scores, photographs and replays. Do not mix
+old prototype saves/replays into the lab. Manual BAT launches retain ordinary
+graphics, music and sound. See [validation](VALIDATION.md) for actual test
+results and [design notes](GEOMETRY_LAB.md) for the studies' construction.
