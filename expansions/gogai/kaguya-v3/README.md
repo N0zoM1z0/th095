@@ -31,7 +31,7 @@ position. Moving-source geometry continues across cycle boundaries. Gathering
 never contracts a remote source away from its actual firing point.
 
 Lasers begin at zero length and extend at a native rate. A 56-tick warning
-precedes width growth and collision. The diamond uses actual finite segments;
+precedes width growth and collision. The cage uses actual finite segments;
 the dragon freezes its aim at the cast rather than silently tracking afterward.
 Photographs retain native beam cutting and cancellation.
 
