@@ -62,14 +62,14 @@
 -    TH095_SCENE(116, 11, 6, "world10.std", "enm25.anm", "ecl25_a.ecl", "bgm/th095_03.wav", 2, 25, 3),
 -    TH095_SCENE(117, 11, 7, "world10.std", "enm25.anm", "ecl25_b.ecl", "bgm/th095_03.wav", 2, 25, 10),
 +    // Fan issue: original patterns; native score entries 110..117.
-+    TH095_SCENE(110, 11, 0, "world07.std", "enm14.anm", "gogai01.ecl", "bgm/th095_03.wav", 2, 14, 9),
-+    TH095_SCENE(111, 11, 1, "world07.std", "enm14.anm", "gogai02.ecl", "bgm/th095_03.wav", 2, 14, 9),
-+    TH095_SCENE(112, 11, 2, "world08.std", "enm16.anm", "gogai03.ecl", "bgm/th095_03.wav", 2, 16, 6),
-+    TH095_SCENE(113, 11, 3, "world08.std", "enm16.anm", "gogai04.ecl", "bgm/th095_03.wav", 2, 16, 6),
-+    TH095_SCENE(114, 11, 4, "world06.std", "enm23.anm", "gogai05.ecl", "bgm/th095_03.wav", 2, 23, 5),
-+    TH095_SCENE(115, 11, 5, "world06.std", "enm23.anm", "gogai06.ecl", "bgm/th095_03.wav", 2, 23, 5),
-+    TH095_SCENE(116, 11, 6, "world10.std", "enm25.anm", "gogai07.ecl", "bgm/th095_03.wav", 2, 25, 3),
-+    TH095_SCENE(117, 11, 7, "world10.std", "enm25.anm", "gogai08.ecl", "bgm/th095_03.wav", 2, 25, 3),
++    TH095_SCENE(110, 11, 0, "world07.std", "enm14.anm", "gogai01.ecl", "bgm/th095_03.wav", 2, 30, 30),
++    TH095_SCENE(111, 11, 1, "world07.std", "enm14.anm", "gogai02.ecl", "bgm/th095_03.wav", 2, 31, 31),
++    TH095_SCENE(112, 11, 2, "world08.std", "enm16.anm", "gogai03.ecl", "bgm/th095_03.wav", 2, 32, 32),
++    TH095_SCENE(113, 11, 3, "world08.std", "enm16.anm", "gogai04.ecl", "bgm/th095_03.wav", 2, 33, 33),
++    TH095_SCENE(114, 11, 4, "world06.std", "enm23.anm", "gogai05.ecl", "bgm/th095_03.wav", 2, 34, 34),
++    TH095_SCENE(115, 11, 5, "world06.std", "enm23.anm", "gogai06.ecl", "bgm/th095_03.wav", 2, 35, 35),
++    TH095_SCENE(116, 11, 6, "world10.std", "enm25.anm", "gogai07.ecl", "bgm/th095_03.wav", 2, 36, 36),
++    TH095_SCENE(117, 11, 7, "world10.std", "enm25.anm", "gogai08.ecl", "bgm/th095_03.wav", 2, 37, 37),
  };
  
  #undef TH095_SCENE
@@ -104,6 +104,39 @@
          {                                                                     \
              if (g_ResultSaveData                                               \
                      ->sceneScores[g_SelectedScene->scoreEntryIndex]           \
+--- a/src/SceneSelectAssets.cpp
++++ b/src/SceneSelectAssets.cpp
+@@ -270,16 +270,24 @@
+                                &locals.queueValue);
+                 if (locals.queueValue >= 0)
+                 {
+-                    sprintf(locals.missionPath, "mission%.3d.anm",
+-                            locals.queueValue);
++                    if (locals.queueValue >= 30 && locals.queueValue < 38)
++                        sprintf(locals.missionPath, "gogai-hint%02d.anm",
++                                locals.queueValue - 30);
++                    else
++                        sprintf(locals.missionPath, "mission%.3d.anm",
++                                locals.queueValue);
+                     locals.primaryData = FileSystem::OpenFile(
+                         locals.missionPath, &locals.primarySize, FALSE);
+                     if (locals.primaryData != NULL)
+                     {
+-                        sprintf(locals.missionPath, "mission%.3d.anm",
+-                                AssetQueueFront(
+-                                    &locals.view->scenePreviewQueue) +
+-                                    100);
++                        if (locals.queueValue >= 30 && locals.queueValue < 38)
++                            sprintf(locals.missionPath, "gogai-count%02d.anm",
++                                    locals.queueValue - 30);
++                        else
++                            sprintf(locals.missionPath, "mission%.3d.anm",
++                                    AssetQueueFront(
++                                        &locals.view->scenePreviewQueue) +
++                                        100);
+                         locals.secondaryData = FileSystem::OpenFile(
+                             locals.missionPath, &locals.secondarySize, FALSE);
+ #include "ScenePreviewDataWait.inl"
 --- a/src/Main.cpp
 +++ b/src/Main.cpp
 @@ -78,7 +78,7 @@

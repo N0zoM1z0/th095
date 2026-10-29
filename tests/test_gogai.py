@@ -100,6 +100,17 @@ class GogaiContentTests(unittest.TestCase):
                 self.assertEqual(bytes(decoded).split(b'\0')[0].decode('cp932'), text)
                 self.assertEqual(len(encoded), 64)
 
+    def test_hint_texture_matches_native_upload_packet(self):
+        pixels = bytes((32, 64, 128, 255)) * (256 * 32)
+        packet = content.texture_packet(pixels)
+        offset = struct.unpack_from('<I', packet, 0x30)[0]
+        self.assertEqual(offset, 64)
+        self.assertEqual(struct.unpack_from('<4sHhhhI', packet, offset),
+                         (b'THTX', 0, 1, 256, 32, len(pixels)))
+        self.assertEqual(packet[offset + 16:], pixels)
+        with self.assertRaises(ValueError):
+            content.texture_packet(b'')
+
     def test_card_titles_fit_the_native_xor_packet(self):
         for i, scene in enumerate(content.SCENES):
             subs, _ = read_subs(content.assemble_scene(i))

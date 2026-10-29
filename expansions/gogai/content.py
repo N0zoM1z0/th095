@@ -78,8 +78,7 @@ class Script:
 def pattern(index: int, scene: Scene) -> bytes:
     """480-frame phrases leave recovery space between bursts; no RNG required."""
     s = Script()
-    # Capture restart enters here too. A short telegraphed recovery prevents
-    # fresh bullets appearing on top of the previous shot's charge items.
+    # Begin with a short telegraphed interval before the first wave.
     s.emit(0, 143, 'ii', 1, 60)
     s.emit(0, 65, 'ff', 0.0, 0.0)
     s.emit(0, 63, 'ff', 0.0, 128.0)
@@ -199,5 +198,43 @@ def write_content(source_dir: Path, run_dir: Path):
                   f'    g_SceneGroups[11][{i}].scoreRequirement = 0;',
                   f'    g_SceneGroups[11][{i}].displayState = 0;']
         (run_dir / f'gogai{i + 1:02}.ecl').write_bytes(assemble_scene(i))
+    write_hint_textures(run_dir)
     lines += ['}', '']
     (source_dir / 'GogaiText.inl').write_text('\n'.join(lines), encoding='ascii')
+
+
+def texture_packet(bgra: bytes, width=256, height=32) -> bytes:
+    """Minimal native texture upload packet (not an animation or an asset copy)."""
+    if len(bgra) != width * height * 4:
+        raise ValueError('bad hint texture byte count')
+    header = bytearray(64)
+    struct.pack_into('<I', header, 0x30, 64)
+    return bytes(header) + struct.pack('<4sHhhhI', b'THTX', 0, 1, width, height, len(bgra)) + bgra
+
+
+def write_hint_textures(run_dir: Path):
+    # This is text-only UI generated from our own strings. No original texture
+    # is sampled. A system Japanese font and Pillow are build-time inputs only.
+    from PIL import Image, ImageDraw, ImageFont
+    import os
+    candidates = [os.environ.get('TH095_GOGAI_FONT', ''),
+                  '/usr/share/fonts/truetype/vlgothic/VL-Gothic-Regular.ttf',
+                  '/usr/share/fonts/truetype/fonts-japanese-gothic.ttf']
+    font_path = next((p for p in candidates if p and Path(p).is_file()), None)
+    if font_path is None:
+        raise ValueError('set TH095_GOGAI_FONT to a Japanese TrueType font')
+    font = ImageFont.truetype(font_path, 16)
+    for i, scene in enumerate(SCENES):
+        for name, text, color in (
+            ('hint', scene.subject + 'を取材せよ', (255, 224, 128, 255)),
+            ('count', f'{scene.photos} 枚撮影せよ', (255, 160, 160, 255)),
+        ):
+            image = Image.new('RGBA', (256, 32))
+            draw = ImageDraw.Draw(image)
+            box = draw.textbbox((0, 0), text, font=font)
+            x = (256 - (box[2] - box[0])) // 2
+            y = (32 - (box[3] - box[1])) // 2 - box[1]
+            draw.text((x + 1, y + 1), text, font=font, fill=(0, 0, 0, 255))
+            draw.text((x, y), text, font=font, fill=color)
+            (run_dir / f'gogai-{name}{i:02}.anm').write_bytes(
+                texture_packet(image.tobytes('raw', 'BGRA')))

@@ -73,3 +73,9 @@ loop destinations, completion/timeout slot separation, camera capacity,
 bullet budgets, and round-trip CP932 comment/card decoding. They do not prove
 that a human can clear every scene. External `thecl -j -d 95` can independently
 read the generated scripts; thtk is not a build or runtime dependency.
+
+Hint textures are generated from the fan scene table, including each subject
+and the actual required photograph count; the original mission hints are not
+reused. Building requires Pillow and a Japanese TrueType font. The default is
+system VL Gothic; set `TH095_GOGAI_FONT=/path/to/font.ttf` to override it.
+Neither the font file nor original image assets are included in the content.
