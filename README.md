@@ -1,5 +1,7 @@
 # 東方文花帖 ～ Shoot the Bullet
 
+Agent workflow: follow the highest-priority requirements in [AGENTS.md](AGENTS.md). Use affected exact checks and searchable Markdown knowledge; ordinary notes do not require full CI or replay.
+
 This is the **feat/gogai-workbench** development branch for
 **[Kaze no Gogai](expansions/gogai/README.md)**, an unfinished fan expansion.
 It preserves three separate eight-scene design samplers: Sakuya v5, Kaguya v3

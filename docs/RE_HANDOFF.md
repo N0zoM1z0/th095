@@ -1,5 +1,11 @@
 # Current reconstruction handoff
 
+> Current workflow: follow the **Highest priority** section in `AGENTS.md`.
+> Prefer affected exact comparisons and useful Markdown knowledge. Ordinary
+> notes do not require full CI, native replay or document-hash/pin refreshes.
+> Older broad validation instructions apply only when their impact is relevant.
+
+
 Accepted source: **886bb2d01a739cf0bbbc63fda4428c388212471c (SEM-356)**,
 2026-10-24, branch semantic/owner-cleanup-20260926. The tracked code is restored
 to this accepted state (documentation base fcb788d). **SEM-357 is a saved draft,

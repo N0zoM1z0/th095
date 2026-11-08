@@ -1,5 +1,11 @@
 # Semantic reconstruction policy
 
+> Current workflow: follow the **Highest priority** section in `AGENTS.md`.
+> Prefer affected exact comparisons and useful Markdown knowledge. Ordinary
+> notes do not require full CI, native replay or document-hash/pin refreshes.
+> Older broad validation instructions apply only when their impact is relevant.
+
+
 **Status: active-incomplete.** This policy governs semantic acceptance for the
 original Japanese TH095 v1.02a target. Current subsystem navigation lives in
 [SEMANTIC_INDEX.md](SEMANTIC_INDEX.md), accepted batch narratives live in
