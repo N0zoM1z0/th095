@@ -64,7 +64,4 @@ selected bodies retain their prior ordering. Exact replay alone does not
 accept the additional normal store. The normal code/data/EH comparison covers
 preservation of that body independently.
 
-Private target inventory, Ghidra byte reconciliation, exact baseline and later
-validation receipts are below `.analysis/sem354/`. Current acceptance and the
-next task belong in [RE_HANDOFF.md](RE_HANDOFF.md); this document records the
-bounded protocol and its retained limits.
+Current acceptance and the next task belong in [RE_HANDOFF.md](RE_HANDOFF.md); this document records the bounded protocol and its retained limits.

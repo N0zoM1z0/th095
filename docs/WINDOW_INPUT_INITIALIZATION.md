@@ -181,11 +181,9 @@ separate emission/layout debt.
   execute through explicit backend bindings. Injected type/fault combinations
   do not establish real OS reachability or backend behavior.
 
-The private source/command/COFF/SDK/control receipts are below .analysis/sem342/,
-.analysis/sem343/ and .analysis/sem344/.
-For the SDK compile-only test use compile-probe.sh with Main's normal flags
-and /I src, or each MinGW compiler with -std=c++98 -O2 -Wall -Wextra -Werror
--pedantic -D_WIN32_WINNT=0x0500 -Isrc -c and an output path below build/.
+For the SDK compile-only test use compile-probe.sh with Main's normal flags and /I src,
+or each MinGW compiler with -std=c++98 -O2 -Wall -Wextra -Werror -pedantic
+-D_WIN32_WINNT=0x0500 -Isrc -c and an output path below build/.
 
 TH08 corroborates the retrieval/client, device-selection and axis-callback
 shape, including the historical context copy. Its 32-bit source also uses

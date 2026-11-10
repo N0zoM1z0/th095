@@ -1,5 +1,11 @@
 # Reverse-engineering workflow
 
+> Current workflow: follow the **Highest priority** section in `AGENTS.md`.
+> Prefer affected exact comparisons and useful Markdown knowledge. Ordinary
+> notes do not require full CI, native replay or document-hash/pin refreshes.
+> Older broad validation instructions apply only when their impact is relevant.
+
+
 ## Session preflight
 
 Run the fail-closed checks before inspecting or changing reconstruction state:
@@ -94,34 +100,41 @@ record which acceptance checks remain. A documentation checkpoint does not
 accept or commit the unfinished source. Do not apply a recovery patch over the
 same edits already present in the working tree.
 
-Wait for build, test and headless jobs to finish before cleaning their outputs.
-Preserve compact commands, input/tool hashes and terminal reports below
-.analysis/ first, including any normal-product hash and exact comparison
-receipts referenced by the handoff. Objects, executables, PDBs, maps, native
-test binaries and Python caches under build/ are reproducible outputs. Also
-remove session-created scripts/__pycache__/ and tests/__pycache__/ caches.
-Record removed paths and bytes in a private cleanup receipt.
+Wait for active jobs to finish before removing their outputs. Keep necessary
+inputs, maintained source and ledgers, reproducible build/comparison scripts,
+and useful knowledge. Preserve user-owned work and any unfinished patch or
+comparison baseline whose context would be costly to reconstruct. An old
+reference or successful receipt alone does not justify retaining an artifact.
 
-Review a cleanup inventory before deletion. Preserve old baseline objects still
-needed for an unfinished before/after comparison, then remove duplicate objects,
-probe source copies and candidate products that can be rebuilt. Record both
-logical and allocated bytes, the retained objects' hashes and why they remain.
-Save compact build/runtime reports before removing the products they describe.
+Delete redundant archives, duplicate data, old logs, trial outputs and cleanup
+reports. Remove their documentation references too. Do not create replacement
+archives, inventories or cleanup receipts. Record only useful findings and
+current blockers in ordinary Markdown. Never use blanket `git clean -fdx`:
+ignored paths include the target, tools and private analyzer state.
 
-Historical logs, disassembly dumps, probe sources and large reports may be
-compressed into a private archive below `.analysis/archives/`. Keep an index
-of original paths, sizes and SHA-256 hashes. Verify every archived member
-before removing its loose copy; retain current acceptance receipts and any
-needed comparison baselines directly. Document the archive and restore command
-in RE_HANDOFF.md so historical evidence paths remain recoverable. An applied
-cleanup receipt can replace its dry-run plan only when it contains every plan
-field unchanged. Never archive user-owned untracked files as part of this sweep.
+Share matching tool versions through Factory while isolating each game's Wine
+prefix and writable analysis state. Preserve the current verified prefix;
+unused temporary prefixes are disposable. For uncertain tool components, move
+them aside, exercise the affected compile/link/runtime/resource paths, then
+delete them after success or restore them after failure. Use temporary outputs
+and leave canonical objects, manifests and receipts untouched.
 
-Keep the verified target, installed tools, private Ghidra databases, source,
-ledgers, compact evidence and user-owned untracked files. Do not use a blanket
-`git clean -fdx`: ignored paths include the target and working tools. After
-cleanup, a fresh normal build must compile before using --link-only. Check the
-final status and document any retained patch or stash that must not be applied.
+## Public checks
+
+`python3 scripts/ci.py` checks public-tree Python/JSON/TOML/shell syntax,
+private artifact exclusion, ledger consistency, build configuration and closed
+profile debt. It works from a clean checkout without the retail program or
+private tools, inspects the entire current tracked tree, and uses
+`TH095_CI_BASE_SHA` for PR/push range checks. Shell syntax is checked one script
+at a time.
+
+Run comparator, semantic, portable or runtime tests when their implementation
+or consumers change. `python3 scripts/ci.py --full` explicitly selects the
+extended public suite. Exact source changes still require complete affected
+unit/extent/relocation comparisons; public CI does not grant exact credit.
+Documentation-only edits need a diff review, plus syntax checks for any changed
+machine-readable inputs. No compiler, aggregate replay or receipt refresh is
+required for prose.
 
 ## Evidence ranking
 

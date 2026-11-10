@@ -205,10 +205,7 @@ emits the required bare FRNDINT sequence. These results keep DrawInner, Draw2D,
 and ProjectCameraFacingQuad open. They are not a proof that all possible
 natural-C++ formulations have been exhausted.
 
-Private detailed evidence is under `.analysis/gpt-web-directinput-format-session-20260907`,
-`.analysis/gpt-web-controller-macro-lineage-20260907-session`, and
-`.analysis/gpt-web-x87-natural-session-20260907`. Raw executables, objects,
-compiler files, and private reports must remain untracked.
+Raw executables, objects, compiler files, and private reports must remain untracked.
 
 ## Residual discovery leads are not erased
 
@@ -227,7 +224,6 @@ The only ownerless unaligned destination below the SDK arrays is `0x0041676E`,
 an INT3 alignment byte, not a newly established function. The current
 function-only gap count over `[0x00401000, 0x0045698F)` is 9,178 bytes; older
 8,989-byte prose counts are superseded, not accepted as a completeness proof.
-
 
 ## 2026-09-08 raw authored-era second pass
 

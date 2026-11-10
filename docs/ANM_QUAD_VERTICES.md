@@ -64,12 +64,11 @@ not new authored functions or reconstruction credit.
 | Compiler emission | AnmVertexBuffer.cpp emits Setup and its natural global construction code; AnmDrawCore.cpp retains the draw consumers; no adapter or new assembly is required |
 | Build product | AnmQuadVertex.hpp is profile-independent; exact and normal compile the same producer and consumers with canonical fields |
 
-Private commands and target/compiler receipts are below .analysis/sem352/.
-The scalar typed-UV form preserves all 682 target bytes; assigning a Float2
-aggregate instead emits 671 bytes and is a rejected source-shape control.
-Twenty global identities retag to the genuine copy type with identical
-offsets, kinds, addends and physical destinations. All other recipe fields and
-authored credit remain separate from any compiler-private label maintenance.
+The scalar typed-UV form preserves all 682 target bytes; assigning a Float2 aggregate
+instead emits 671 bytes and is a rejected source-shape control. Twenty global identities
+retag to the genuine copy type with identical offsets, kinds, addends and physical
+destinations. All other recipe fields and authored credit remain separate from any
+compiler-private label maintenance.
 
 The normal Win32 oracle is tests/win32/AnmQuadVertexTest.cpp, invoked by
 scripts/check-supervisor-lifecycle.py --viewport. It links all actual normal

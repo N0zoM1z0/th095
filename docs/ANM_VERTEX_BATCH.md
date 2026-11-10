@@ -80,13 +80,11 @@ Both products compile one wire/color declaration and one flags enum. The
 legacy ECL parent and its global ::ZunColor ABI remain explicit inherited
 debt; importing a complete wire does not accept that parent layout.
 
-Private target/compiler/control receipts are under .analysis/sem353/.
-Declaration-only and canonical-field controls separately test the shared
-header. Canonical comparison reviews the global storage and two method
-identities without changing physical addresses, addends, instructions or
-authored credit. The applicable cold aggregate and normal acceptance results
-belong to [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md) and
-[RE_HANDOFF.md](RE_HANDOFF.md).
+Declaration-only and canonical-field controls separately test the shared header.
+Canonical comparison reviews the global storage and two method identities without
+changing physical addresses, addends, instructions or authored credit. The applicable
+cold aggregate and normal acceptance results belong to
+[SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md) and [RE_HANDOFF.md](RE_HANDOFF.md).
 
 The normal Win32 oracle tests/win32/AnmVertexBatchTest.cpp executes the actual
 methods with typed SDK bindings. It covers triangle expansion, raw packet
