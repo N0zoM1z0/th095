@@ -2,9 +2,7 @@
 
 This file is deliberately short and replaceable. Accepted semantic batches
 live in [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md), current subsystem routing
-in [SEMANTIC_INDEX.md](SEMANTIC_INDEX.md), build ownership in
-[SOURCE_MAP.md](SOURCE_MAP.md), and older operational notes in
-[RE_HANDOFF_HISTORY.md](RE_HANDOFF_HISTORY.md).
+in [SEMANTIC_INDEX.md](SEMANTIC_INDEX.md), and build ownership in [SOURCE_MAP.md](SOURCE_MAP.md).
 
 ## Authority and current state
 
@@ -115,8 +113,7 @@ python3 scripts/replay-exact-units.py --source src/FrontEndController.cpp
 scripts/compile-probe.sh src/FrontEndController.cpp build/probes/sem316-normal/FrontEndController.obj /MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src
 ```
 
-Before committing the next accepted batch, run the affected exact and normal
-oracles, `scripts/check-semantic-protocols.py`, `scripts/ci.py`,
-`scripts/build.py --check`, `git diff --check`, and confirm
-`config/claims.csv` is still header-only. Defer the expensive aggregate replay
+Before committing, compare the affected exact and normal scope. Use
+`scripts/ci.py` for basic public checks; select protocol/comparator tests
+when their inputs change. Keep `config/claims.csv` header-only. Defer the expensive aggregate replay
 and full normal product until the next shared-owner milestone.

@@ -152,7 +152,6 @@ claim.
 - [Current semantic index](docs/SEMANTIC_INDEX.md)
 - [Semantic batch history](docs/SEMANTIC_HISTORY.md)
 - [Source and build ownership map](docs/SOURCE_MAP.md)
-- [Archived handoffs](docs/RE_HANDOFF_HISTORY.md)
 - [Architecture and exact target](docs/ARCHITECTURE.md)
 - [Reverse-engineering workflow](docs/RE_WORKFLOW.md)
 - [Independent oracle policy](docs/ORACLES.md)
