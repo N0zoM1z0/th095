@@ -115,7 +115,5 @@ Human movement/animation feel, ordinary-mode clears, full timeout endurance and
 a broad replay corpus remain open. Youmu, Yukari and Kaguya retain prototype
 attacks pending their separate design passes.
 
-Local object/build receipts, state observations, native knife measurements,
-screenshots and private test files are below .analysis/gogai-sakuya-v3/ and
-build/gogai/. Original assets, decoded reference textures, generated executables,
+Original assets, decoded reference textures, generated executables,
 private probes, test saves and screenshots containing original art stay out of Git.

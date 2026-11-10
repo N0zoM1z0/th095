@@ -115,5 +115,3 @@ Global ODR closure, original declaration recovery and native parent layout are
 not claimed. No mapping, source-presence or exact credit is added.
 
 SEM-345 records primary-header convergence; SEM-346 records lifetime convergence.
-Private commands, compiler controls, graphs and layout receipts remain under
-.analysis/sem345/ and .analysis/sem346/; generated objects can be rebuilt.

@@ -103,16 +103,15 @@ the exported supervisorLayoutAbiReceipt from the resulting i386 COFF object.
 The table checks 65 field offsets, eight subobject sizes, the 0x7BC extent,
 caller packing and real callback signatures. It is not a fixture parent ABI.
 
-The supporting Clang recipe and its case-only SDK VFS are in the private
-.analysis/sem345/ command receipts. It targets i686-pc-windows-msvc with VC7.1
-compatibility and uses the unchanged installed legacy CRT/SDK headers.
+The supplementary Clang layout probe used i686-pc-windows-msvc with VC7.1
+compatibility and the installed legacy CRT/SDK headers. Recreate its case-only
+SDK VFS on a case-sensitive host when repeating that probe.
 TH08_MODERN_PORT selects an existing math body solely to permit this type/layout
 compile. It accepts neither that math behavior nor a normal/portable game
 product. Narrow diagnostic options admit the legacy offsetof expression;
 the compiler-rejected bad-offset control and independently decoded COFF data
 preserve the checks. The original normal product is built separately without
 that selector. See [the exact boundary](SUPERVISOR_DECLARATION.md).
-
 
 ## Primary Supervisor Win32 lifetime oracle
 
@@ -140,7 +139,6 @@ thirteen native x86-64 component programs. It does not accept a Win64 parent,
 real game entry flow, graphics, arbitrary OS wait failures, cross-thread payload
 ownership or whole-game schedules.
 
-
 ## Gameplay viewport normal Win32 oracle
 
 Add `--viewport` to scripts/check-supervisor-lifecycle.py to cold-build once
@@ -165,7 +163,6 @@ methods independently pass canonical target comparisons; the whole interpreter
 keeps its unresolved normal extent. See [BACKGROUND_VIEWPORT.md](BACKGROUND_VIEWPORT.md).
 The program totals 96 viewport cases and five stage-camera handoffs. This does
 not add a fourteenth native program.
-
 
 ## ANM viewport consumption oracle
 

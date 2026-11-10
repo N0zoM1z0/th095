@@ -115,7 +115,7 @@ accepted source from uncommitted experiments and records retained artifacts.
 Apply the workflow's [host resource limits](docs/RE_WORKFLOW.md#host-resource-limits)
 to builds, headless analysis and other heavy jobs; run them serially.
 The [artifact retention rules](docs/RE_WORKFLOW.md#handoff-and-artifact-retention)
-explain what can be regenerated and how to restore archived local evidence.
+explain what to retain and what can be regenerated.
 
 Start a reconstruction session with:
 
@@ -169,7 +169,6 @@ claim.
 - [Current semantic index](docs/SEMANTIC_INDEX.md)
 - [Semantic batch history](docs/SEMANTIC_HISTORY.md)
 - [Source and build ownership map](docs/SOURCE_MAP.md)
-- [Archived handoffs](docs/RE_HANDOFF_HISTORY.md)
 - [Architecture and exact target](docs/ARCHITECTURE.md)
 - [Reverse-engineering workflow](docs/RE_WORKFLOW.md)
 - [Independent oracle policy](docs/ORACLES.md)
