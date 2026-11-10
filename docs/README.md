@@ -22,20 +22,13 @@ The ledgers in `config/` govern addresses, origin, mapping, source presence and
 exactness. Generated progress reports their totals. Prose explains those facts;
 compilation, semantic acceptance and runtime validation do not grant exact credit.
 
-## Historical records and local evidence
+## Knowledge and local inputs
 
-[SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md) records accepted batches in order.
-[RE_HANDOFF_HISTORY.md](RE_HANDOFF_HISTORY.md) preserves superseded operational
-handoffs. Use the current references above for policy and work selection;
-historical instructions describe their recorded checkpoint.
+[SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md) retains accepted findings and useful
+failed approaches. Current decisions belong in the references above; Git keeps
+superseded operating instructions.
 
-Private `.analysis/` reports and archives are local evidence, not files shipped
-with the public repository. The current handoff identifies retained reports,
-archive indexes and restore commands. Restore an archive before following a
-historical local evidence path. Keep the latest acceptance receipts and any
-baseline still needed for an unfinished comparison directly accessible.
-
-Follow the workflow's [artifact retention rules](RE_WORKFLOW.md#handoff-and-artifact-retention)
-when clearing generated products. Preserve source, ledgers, the verified target,
-installed tools, private analysis databases and user-owned files. Run heavy jobs
-serially under the [host resource limits](RE_WORKFLOW.md#host-resource-limits).
+Keep the verified target, required tools, private Ghidra project, and any
+unfinished patch or irreplaceable comparison context identified by the handoff.
+Generated products and old evidence can be removed when their useful findings
+are recorded. See the workflow's [retention rules](RE_WORKFLOW.md#handoff-and-artifact-retention).

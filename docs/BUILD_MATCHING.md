@@ -488,7 +488,7 @@ be replaced by inert storage.
   `bulletMinimum -0x18`, `bulletMaximum -0x24`, `maximum -0x30`, `bullet -0x34`,
   `index -0x38`, and `captureVm -0x3C`.
 
-  The remaining two dwords are a narrow repeated-target compiler phase, not
+The remaining two dwords are a narrow repeated-target compiler phase, not
   generic padding. `AnmLoaded::InitializeVm @ 0x00404B80` independently has
   shallow homes through `-0x24`, no references at `-0x28/-0x2C`, and hidden
   `this @ -0x30`; Clear has shallow/compiler homes through `-0x110`, no
@@ -537,7 +537,6 @@ The final bounded check also tried direct raw and volatile `f32` lvalues for the
 
 The adjacent EnemyManager task shell adds another reusable rule. Its factory uses the same truthful two-pointer aggregate and shared failure label as the other exact manager factories. `OnUpdate @ 0x00416290` must express the bit-0/bit-2 test and bit-1 test as one short-circuit condition with one return-1 tail. VC7 evaluates helper arguments right-to-left, so spelling them `(bit0, bit2)` reproduces the target load order `bit2 -> bit0`; two separate early-return statements are seven bytes longer.
 
-
 ### Extended-ECL VC7.1 source-shape oracles
 
 The exact extended-ECL callback lane at `0x00413380..0x004149E6` adds two reusable stock-VC7.1 allocation rules. Two real pointer locals can require the opposite declaration order from runtime initialization: entries 12/13/18/19 declare the second Background VM pointer first, then assign the first VM before the second, reproducing target `EBP-0x04/-0x08` without dummy storage. Entry 6 instead uses a gapless 16-byte live aggregate ordered as player pointer, enemy pointer, VM pointer, and squared distance to reproduce `EBP-0x10..-0x04`.
@@ -547,7 +546,6 @@ Keep three negative oracles explicit. `Enemy::UpdateMovement @ 0x00412970` repro
 The second exact extended-ECL batch adds three positive source-shape oracles. Entry 5 proves that a serialized one-byte interpolation mode may originate as a live `i32` local and truncate only at the final byte store; preserving the source width is necessary for the 0x20 frame and branch encodings. Entry 8 proves that a target-observed small-structure return can be represented by a bounded out-parameter view when the compiler writes the sret directly into a real aggregate field; assigning a returned wrapper afterward adds a non-target copy. Entry 20 proves the semantic-aggregate rule at large scale: its 0x48 local aggregate contains fourteen fully live fields and, together with the fastcall homes, fills the complete 0x50 target frame. The camera-mode test must remain a force-inlined boolean helper to reproduce `sete/test`, while the X/Y floating comparisons must preserve their positive `<` source shapes to reproduce VC7.1 unordered branches.
 
 Entries 2, 3, and 4 at `0x004134A0/0x00413620/0x00413750` are additional negative oracles. Each target frame reserves the same completely instruction-unreferenced 0x2C middle region (`EBP-0x10..-0x38` in entries 2/3), despite otherwise recoverable bullet-phase behavior. The three 404-byte effect-spawn callbacks at `0x00413DF0/0x00414090/0x00414290` likewise reserve an instruction-unreferenced 0x2C region in their 0xA8 frames, in addition to storing a Spawn result that is never consumed. Do not add inert storage to promote any of these six callbacks.
-
 
 Entry 7 proves that one real 12-byte marker vector may be deliberately reused across two semantic phases: first as a movement-angle offset and then as a projected VM position. Stock VC7.1 places the accompanying `firstVm` pointer at `EBP-0x04` from its identifier hash bucket; changing only that real local identifier can move it to `EBP-0x10` without changing declaration order. Prefer a semantic identifier that naturally lands in the target bucket over compiler-jargon aliases when both are exact.
 ### TH08-to-TH095 subsystem transfer: MIDI positive oracle
@@ -786,7 +784,6 @@ order reproduces the target `0x78` frame and every EBP-relative home. Do not
 generalize the aggregate merely from frame size; every member here is read by
 the target scoring/control-flow pipeline.
 
-
 `Supervisor::Supervisor/~Supervisor @ 0x00426350/0x00426450` is the same pattern at a larger ownership boundary. Construction calls `GameConfiguration::Initialize @ +0x11C`, walks two empty `0xF0` viewport members, constructs a timer at `+0x3F4`, and constructs worker members at `+0x648/+0x7A0` before the TH08-ancestral `memset(0x7BC)` plus separate flag sets `0x40` and `0x100`. Both worker ctor relocations resolve to `0x00454E50`, which is byte-identical to the canonical `PbgArchive::PbgArchive` four-dword-zeroing body. Treat that as an ICF/linker-folded alias, not a second function to credit.
 
 The exact straight-laser target counter adds a sibling-reuse rule. `CountPhotoTargets @ 0x0041E750` closes immediately when it reuses the exact `CheckCollision` shallow local rank and vector lifetime: keep `step/sampleCount/hitCount/minimum/sample` shallow, reuse the inner half-size vector as maximum after minimum materialization, initialize `step.z` before `FromAngleMagnitude`, and keep the distance scalar in the inner scope. A broad aggregate or the cleaner semantic ordering shortens the body by 139 bytes.
@@ -840,7 +837,6 @@ canonical unit replays all 39 relocations; all twenty pre-existing
 `EnemyManagerUpdate.obj` units remain exact after refreshing only two
 compiler-private timeline `$L` names whose solved destinations are unchanged.
 
-
 Keep the enemy's three embedded VM-id fields as four-byte POD storage. Making
 them non-trivial `AnmVmId` members adds constructor calls and expands the
 already-exact `PhotoEnemyView` constructor from 641 to 703 bytes. Likewise, do
@@ -849,7 +845,6 @@ renumbers internal `$Lxxxxx` COFF symbols in unrelated translation units even
 when their machine bytes are unchanged, invalidating reproducible relocation
 manifests. Source-local force-inline typed views preserve both the target
 object lifetime and stable symbol provenance.
-
 
 ### PhotoItem vector-lifetime and shared-tail oracle
 
@@ -1380,7 +1375,6 @@ through ordinary field/aggregate copies; none repeats the eight-byte getter
 phase.  Treat frame-10 `GetPhotoIndex()` as the current unique zero-diff owner
 hypothesis, not accepted provenance.
 
-
 The isolated VC7.1 `var_order` port is useful only as a diagnostic local-order
 oracle.  Build-3077 micro tests prove it can reorder ordinary named locals, but
 member hidden `this` is absent from the hooked `Scope::Add` list: member tests
@@ -1397,7 +1391,6 @@ placement, not an explicit hidden-receiver control.  In
 7,245/7,288 private replay unchanged and cannot solve the sole receiver
 residual.  Keep the stock VC7.1 compiler as exact-match proof; use patched
 frontends only to test ordinary-local ordering hypotheses.
-
 
 ### Residual phase attribution: SceneSelect, ANM lifecycle, and best-shot loading
 
@@ -1655,7 +1648,6 @@ definition order, and the already-recorded effect/zero/timer phase grids are
 negative.  Future probes should seek a source surface that reclassifies the
 existing conversion temporary without introducing another lexical/helper temp.
 
-
 ### AddVm: promote only the real increment receiver (2026-09-06)
 
 `AnmManagerVmLifecycleView::AddVm @ 0x00444D10` is exact for all 236 bytes.
@@ -1680,7 +1672,6 @@ Two exact `UpdatePhotoResultScreen` frontends provide independent provenance. `R
 
 Cold stock-VC7.1 build 3077 now replays 4,789/4,789 comparable bytes, all 413 paired EBP operands, and all 130 relocation destinations. `UpdatePhotoStage`, `SavePhoto`, `InitializePhotoStageDisplayVm`, and `CapturePhotoPixels` remain exact from the same rebuilt translation unit.
 
-
 ### Hard-lane compiler-class boundaries: Camera, WinMain, Enemy ctor, CreateVm (2026-09-06)
 
 > **Superseded for CreateVm:** the diagnostic residual described below is closed by the exact class-specific allocation-owner frontend recorded later in this document.
@@ -1696,7 +1687,6 @@ For the CreateVm trio, a tagged derived constructor is a particularly useful dia
 The ABI shape is part of the proof.  A force-inlined frontend with only the live `AnmVm *` parameter, while reading `g_PhotoStageStateForPlayer->anm` and fixed script `0x24` inside the helper, retains exactly `0x2C` per call.  Four uses produce target `0x3C + 4*0x2C = 0xEC` and a 733-byte structural zero-diff body.  By contrast, two/three-argument free helpers retain an extra dword per inline phase (`0x30` each), producing frames `0x6C/0x9C/0xCC/0xFC` across one through four calls; no-argument member helpers let VC7 discard the unused phase and fall back to the natural `0x3C` frame.  This bounded matrix rules out treating `0xB0` as generic padding and pins both the repeated operation and the required one-parameter source surface.
 
 The canonical unit replays 649/649 non-relocation bytes and all 21 relocations: two `CreateVm`, four `InitializeVm`, four `SetSprite`, and the expected photo globals.  Rebuilding `PhotoGame.cpp` preserves all 22 configured exact units.  `UpdateMainState` and `Update` change only compiler-private `$L` names at unchanged relocation offsets/targets and switch-table bytes, so their manifests are refreshed without any target-address change.
-
 
 ### PhotoStage display Build: postfix pointer values close the hidden-receiver lane (2026-09-06)
 
@@ -1798,7 +1788,6 @@ refresh.
 The closing source attaches the compiler phase to the allocation frontend itself. `AnmVm` owns a class-specific `__forceinline operator new(size_t)` with target-attested `compilerStorage[0x14]` and a direct forward to global `::operator new(size)`. Stock VC7.1 inlines that frontend into each ordinary `new AnmVm`, so the operator-new relocation and EH topology stay native while only the deep hidden-`this` / constructor-result class moves to the target homes. The repo has exactly three scalar `new AnmVm` call sites, and all three independently require the same phase.
 
 The width and owner are bounded, not guessed. A no-storage class allocator leaves the deep family 0x14 shallow; `0x10` leaves every residual displacement one dword shallow, while `0x18` moves the same family one dword deep. Caller-scope `0x14` moves the allocation `$T` homes instead. A tagged derived constructor reaches the right class/frame but inserts a non-target three-byte allocation-pointer reload. A helper that itself contains `new AnmVm` is not inlined under `/Od /Ob1`. This is an allocation-owner frontend oracle, not permission for generic function-scope storage.
-
 
 ### Background stage-VM allocation frontend closes LoadStageDataInner (2026-09-06)
 
@@ -2052,7 +2041,6 @@ units, and the independent EH audit remains 81/81 exact. The remaining
 `ChainSupervisorView` names target the Supervisor family and are not Chain
 aliases.
 
-
 ### GetInput compiler-class exhaustion checkpoint (2026-09-08)
 
 `Controller::GetInput @ 0x00419AE0` remains deliberately non-exact.  The
@@ -2093,25 +2081,23 @@ fall back to the same wrong phase.  This demonstrates that the residual belongs
 to compiler temporary/value ownership, but it does **not** license an empty
 class, inert local, compiler patch, or assembly in canonical source.
 
-A complete canonical rescore of the historical `p2-*` corpus tightens that
-boundary. Nine optimized-away front-end phase expressions produce a
-2,662-byte/579-instruction object with target register coloring, all 22 solved
-relocations, and 2,573/2,574 comparable bytes; only `sub esp,0x11C` versus
-target `0x124` differs. Adding an eight-byte user-defined return temporary makes
-the frame exact but moves all seven `inputIndex` references from target
-`EBP-0x11C` to `EBP-0x124`, leaving 2,567/2,574 comparable bytes. No historical
-`p2-*` object is exact. Both source forms are deliberately inadmissible dead
-phase/storage diagnostics; retain the natural canonical source. Full hashes and
-commands are in `.analysis/getinput-pareto-rescore-20260908.md`.
+A complete canonical rescore of the historical `p2-*` corpus tightens that boundary.
+Nine optimized-away front-end phase expressions produce a 2,662-byte/579-instruction
+object with target register coloring, all 22 solved relocations, and 2,573/2,574
+comparable bytes; only `sub esp,0x11C` versus target `0x124` differs. Adding an
+eight-byte user-defined return temporary makes the frame exact but moves all seven
+`inputIndex` references from target `EBP-0x11C` to `EBP-0x124`, leaving 2,567/2,574
+comparable bytes. No historical `p2-*` object is exact. Both source forms are
+deliberately inadmissible dead phase/storage diagnostics; retain the natural canonical
+source.
 
-A follow-up cross-oracle closes the remaining parameter-declaration escape
-hatch. Sixteen ordinary parameter names plus plain, top-level `const`,
-`register`, `const register`, and `__w64` spellings were compiled on the same
-eight-byte UDT diagnostic. Every object remains 2,662 bytes / 579 instructions,
-reserves `0x124`, and stores ECX at `EBP-0x124`; none restores the target
-seven-use `EBP-0x11C` parameter home. Parameter renaming or ABI-equivalent
-qualification therefore cannot compose the target-frame and phase effects.
-The complete oracle is in `.analysis/final-four-oracles-20260908.md`.
+A follow-up cross-oracle closes the remaining parameter-declaration escape hatch.
+Sixteen ordinary parameter names plus plain, top-level `const`, `register`, `const
+register`, and `__w64` spellings were compiled on the same eight-byte UDT diagnostic.
+Every object remains 2,662 bytes / 579 instructions, reserves `0x124`, and stores ECX at
+`EBP-0x124`; none restores the target seven-use `EBP-0x11C` parameter home. Parameter
+renaming or ABI-equivalent qualification therefore cannot compose the target-frame and
+phase effects.
 
 A live-use cross does not provide a clean escape. Giving the eight-byte return
 object real initialized state and returning one member grows the body to 2,693
@@ -2120,7 +2106,6 @@ default-argument `const&` lifetime keeps the 2,662-byte extent, but both remain
 at 2,567/2,574 comparable bytes with the same seven `EBP-0x124` parameter
 homes. Syntactic use therefore does not move this temporary into the target's
 post-parameter allocation class, and the empty forms remain provenance-free.
-
 
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
@@ -2149,15 +2134,13 @@ Platform SDK headers expose no `sincos`, `fsincos`, or `frndint` declaration.
 available clean-frontend surface and explains why the exact source requires
 the compiler's inline assembler for these opcodes.
 
-An expanded per-name `#pragma intrinsic` whitelist oracle tested 34 names.
-Only the `sin`, `cos`, and `sqrt` positive controls are accepted. All 31
-`sincos`/`fsincos` and `frnd`/`rndint`/`rint`/`nearbyint`/`round` spellings,
-including one- and two-underscore variants, receive C4163; no generated object
-contains `FSINCOS` or `FRNDINT`. The TH08 source family supplies the missing
-source provenance: its `DrawInner` spells the same four-value `FRNDINT` stack
-sequence in `__asm`, and its `sincos` macro expands to `FLD`, `FSINCOS`, and two
-`FSTP` instructions. Reproduction details and hashes are in
-`.analysis/final-four-oracles-20260908.md`.
+An expanded per-name `#pragma intrinsic` whitelist oracle tested 34 names. Only the
+`sin`, `cos`, and `sqrt` positive controls are accepted. All 31 `sincos`/`fsincos` and
+`frnd`/`rndint`/`rint`/`nearbyint`/`round` spellings, including one- and two-underscore
+variants, receive C4163; no generated object contains `FSINCOS` or `FRNDINT`. The TH08
+source family supplies the missing source provenance: its `DrawInner` spells the same
+four-value `FRNDINT` stack sequence in `__asm`, and its `sincos` macro expands to `FLD`,
+`FSINCOS`, and two `FSTP` instructions.
 
 The reconstruction therefore uses assembly only at those four source sites:
 one four-value `FRNDINT` block in `DrawInner`, one `FSINCOS` block in `Draw2D`,
@@ -2192,7 +2175,7 @@ compiler and uses scalar atomic copies on modern backends. Exact and normal
 VC7.1 use the same binding and one owner layout. The source must still account
 for the count word copied into slot 15, with no pointer-array overrun or selected
 type. Minimal/full target, independent normal and native publication receipts
-are recorded in SEM-338; private probes remain in .analysis/sem338/.
+are recorded in SEM-338.
 
 ## ANM quad scalar-copy and construction oracle (SEM-352)
 

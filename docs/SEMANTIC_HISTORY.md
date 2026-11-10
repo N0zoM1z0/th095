@@ -63,36 +63,7 @@ adjacent-engine reference, not binary evidence for TH095.
 The unchecked items below preserve the initial proposal, not live task status.
 Use `SEMANTIC_PLAYBOOK.md` and `RE_HANDOFF.md` for the current workflow.
 
-- [ ] Add a read-only semantic-debt router for raw member accesses, anonymous
-  identifiers, absolute field views, opaque storage, and numeric protocol
-  surfaces. Exclude generated code and report counts only as work-selection
-  signals.
-- [ ] Establish a baseline report and rank coherent owner/field families by
-  evidence strength, fan-out, pointer-width sensitivity, and port value.
-- [ ] Select one structure and one related field/protocol family per batch.
-  Audit every read, write, width, caller, state transition, and object owner
-  before choosing a name or type.
-- [ ] Capture the accepted exact-unit baseline for every affected object before
-  changing a declaration, shared header, inline body, or translation-unit
-  owner.
-- [ ] Replace raw expressions with the narrowest natural typed form. Add
-  focused `sizeof` and `offsetof` assertions for each relied-on layout fact;
-  remember that an assertion proves layout, not meaning.
-- [ ] Audit router-invisible protocol debt separately: ECL/ANM/background
-  opcodes and operands, state selectors, flag namespaces, resource and sound
-  slots, replay flags, and other numeric dispatch tables.
-- [ ] Keep persistent wire formats separate from runtime objects. Pin their
-  widths, offsets, padding, signedness, and version-dependent behavior before
-  any 64-bit build is attempted.
-- [ ] Replay every affected canonical VC7 unit and cold-replay all affected
-  objects after shared-layout changes. A semantic improvement cannot spend
-  accepted exact bytes.
-- [ ] Cold-build the normal Windows i386 product and run the smallest relevant
-  runtime transition when a batch changes ownership, lifetime, initialization,
-  callbacks, persistence, rendering, input, or audio behavior.
-- [ ] Record accepted batches in this document with addresses, evidence class,
-  layout assertions, exact replay results, runtime result, and retained
-  unknowns. Keep rejected experiments below `.analysis/`.
+- [ ] Add a read-only semantic-debt router for raw member accesses, anonymous identifiers, absolute field views, opaque storage, and numeric protocol surfaces. Exclude generated code and report counts only as work-selection signals. - [ ] Establish a baseline report and rank coherent owner/field families by evidence strength, fan-out, pointer-width sensitivity, and port value. - [ ] Select one structure and one related field/protocol family per batch. Audit every read, write, width, caller, state transition, and object owner before choosing a name or type. - [ ] Capture the accepted exact-unit baseline for every affected object before changing a declaration, shared header, inline body, or translation-unit owner. - [ ] Replace raw expressions with the narrowest natural typed form. Add focused `sizeof` and `offsetof` assertions for each relied-on layout fact; remember that an assertion proves layout, not meaning. - [ ] Audit router-invisible protocol debt separately: ECL/ANM/background opcodes and operands, state selectors, flag namespaces, resource and sound slots, replay flags, and other numeric dispatch tables. - [ ] Keep persistent wire formats separate from runtime objects. Pin their widths, offsets, padding, signedness, and version-dependent behavior before any 64-bit build is attempted. - [ ] Replay every affected canonical VC7 unit and cold-replay all affected objects after shared-layout changes. A semantic improvement cannot spend accepted exact bytes. - [ ] Cold-build the normal Windows i386 product and run the smallest relevant runtime transition when a batch changes ownership, lifetime, initialization, callbacks, persistence, rendering, input, or audio behavior. - [ ] Record accepted batches in this document with addresses, evidence class, layout assertions, exact replay results, runtime result, and retained unknowns.
 
 ## Original work order (historical)
 
@@ -234,10 +205,6 @@ misreported as input-runtime validation.  Runtime-scenario state therefore
 remains unknown/blocked while exact and product states remain independently
 passing.  A Git checkpoint by itself is not exact, product, or runtime proof.
 
-**Next batch:** classify and canonicalize the TH095-local
-`PhotoReplayInputButtonsTaskView` overlay at `0x004BE218` without extending the
-claim to the larger ECL interpreter or to persistent replay formats.
-
 ### SEM-002 — photo replay-exit input overlay
 
 **Scope.** This batch closes only the photography task's one-field
@@ -292,12 +259,6 @@ Successful linkage remains product closure, not whole-image exactness.  The
 Factory host's missing game-data archives remain the same runtime-scenario
 infrastructure boundary recorded by SEM-001, so this batch does not claim a new
 live replay-exit scenario result.
-
-**Next batch:** classify the ANM preload-slot path storage at
-`AnmManager + 0x2C + slot*0x120 + 0x20`, replacing the production raw
-`AnmLoaded* + 0x20` filename write only if the target-proven slot layout and
-preload/service consumers agree.
-
 
 ### SEM-003 — shared player-position field consumers
 
@@ -360,13 +321,6 @@ Successful linkage is production closure, not whole-image exactness.  The
 Factory host still lacks the game-data archives required for a live gameplay
 scenario, so no new runtime-scenario claim is made.
 
-**Next batch:** canonicalize the Player position reads in the paired exact
-`EclOperands::ResolveInt @ 0x0040FAE0` and `Enemy::ResolveFloat @ 0x004105A0`
-selectors onto the same production `PhotoPlayerRuntimeView::playerPosition`,
-while leaving their adjacent camera fields and numeric selector meanings
-unchanged until independently classified.
-
-
 ### SEM-004 — ECL operand Player-position representation
 
 **Scope.** This batch canonicalizes only the Player position reads inside the
@@ -410,14 +364,6 @@ PE32 image with build-local SHA-256
 `7c021780da7fec6f2eaa6245f081be453e1b3cadfb1e3e1a494143dab2fabf86`.
 This is production closure, not whole-image exactness.  No new runtime scenario
 is claimed because the campaign's game-data-archive host boundary is unchanged.
-
-**Next batch:** recover the shared Player-camera counter representation for
-`photoIndex @ Player+0x29E4` and `photosTaken @ Player+0x29E8`.  Require the
-exact `PhotoCameraState` layout and its camera-behavior writers to agree with
-both ECL resolver readers before extending `PhotoPlayerRuntime.hpp`; because
-that is a shared-header/layout change, close the cold aggregate exact and whole
-production gates immediately after the edit.
-
 
 ### SEM-005 — shared Player-camera photo counters
 
@@ -476,26 +422,7 @@ SHA-256 `c7d4c91160d6f6e38e8a6e2f2a000af94af64fe32b9030c3fd6b7b88d80ed3ad`.
 These are local exact and production-closure states; they are not a new Factory
 acceptance receipt, whole-image exactness, or runtime-scenario validation.
 
-**Next batch:** canonicalize the already-proven Player `playerPosition` and
-camera `photoIndex` reads inside exact `PhotoItemManagerView::Update @
-0x0041CE60` onto `PhotoPlayerRuntimeView`, while leaving that source's camera
-charge, camera flags, and photo-target bounds in its local partial view until
-those adjacent fields have independent TH095 evidence.
-
-
 ### SEM-006 — PhotoItem shared Player field reads
-
-**Recovery gate.** The campaign resumed at committed HEAD `543d78b` on `main`
-with no staged or tracked modifications and four pre-existing untracked paths.
-`docs/RE_HANDOFF.md` explicitly identifies `EnemyManagerUpdate.i` and
-`droid.resume.txt` as user-owned files that must remain untouched, and identifies
-`config/runtime-scenarios.json` plus `scripts/runtime-diff.py` as uncommitted
-runtime experiments outside the verified workflow.  All four are therefore
-classified as unrelated pre-existing work for this campaign and remain
-unstaged and unmodified.  The preflight `.analysis/` footprint was
-1,408,444,500 bytes; it is legacy/non-authoritative workspace dominated by an
-older Wine/GDB prefix.  This campaign created no `.analysis/gpt-web` scratch
-root and uses command-local temporary storage instead.
 
 **Scope.** This batch canonicalizes only two already-proven reads in
 `PhotoItemManagerView::Update @ 0x0041CE60`: the Player position used to home an
@@ -549,20 +476,6 @@ change a shared header, layout, callback, serialized format, or behavior, so the
 already-current campaign whole-product baseline is retained rather than
 redundantly cold-linked again before the next private source checkpoint.  No new
 runtime-scenario claim is made.
-
-**Analysis artifacts.** `.analysis/` remains 1,408,444,500 bytes at this
-checkpoint.  No current-session `.analysis` artifact was created or removed;
-no legacy/provider content was touched and there is no retained current-session
-large artifact.
-
-**Next batch:** extend the existing minimal shared Player-camera runtime view
-only for `charge @ camera+0x0B80` (`Player+0x29BC`) and `flags @ camera+0x0BB4`
-(`Player+0x29F0`) after rechecking the exact `PhotoCameraState` writers/readers.
-Then canonicalize the corresponding `PhotoItemManagerView::Update` accesses.
-Because this changes `PhotoPlayerRuntime.hpp`, close the cold aggregate exact
-and cold whole-product gates immediately.  Leave `photoTargetBoundsMin/Max`
-outside that batch until their Player ownership is independently verified.
-
 
 ### SEM-007 — shared Player-camera charge and flags
 
@@ -623,31 +536,7 @@ SHA-256 `4f02d72af9de1a8b7e63699ee0341a68e9a800a6e49ef3dba7af1d4ec40fa815`.
 Exact replay, product closure, Git state, and semantic interpretation remain
 separate claims.  No runtime behavior or storage scenario is newly claimed.
 
-**Analysis artifacts.** `.analysis/` remains 1,408,444,500 bytes.  No
-current-session `.analysis` root or large artifact was created; all legacy and
-shared provider state remains untouched.
-
-**Next batch:** canonicalize `photoTargetBoundsMin @ Player+0x2A28` and
-`photoTargetBoundsMax @ Player+0x2A34` onto `PhotoPlayerRuntimeView`.  Require
-the exact `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` writer, which
-publishes `playerPosition ± photoTargetHalfSize` to `+0x2A28..+0x2A3C`, to agree
-with the `PhotoItemManagerView::Update` AABB consumer before editing.  Because
-that also extends the shared runtime header, close the full cold aggregate exact
-and whole-product gates again.  Do not broaden into the half-size/configuration
-fields unless separately evidenced.
-
-
 ### SEM-008 — shared Player photo-target bounds
-
-**Recovery.** This campaign resumed at `0e6f0ef` with two unstaged source edits
-and four pre-existing untracked paths.  The source edits in
-`PhotoPlayerRuntime.hpp` and `PhotoItemManager.cpp` exactly implement the
-SEM-007 next batch and are classified as recoverable current work.  The handoff
-explicitly identifies `EnemyManagerUpdate.i` and `droid.resume.txt` as
-user-owned files that must remain untouched.  It identifies
-`config/runtime-scenarios.json` and `scripts/runtime-diff.py` as pre-existing
-uncommitted experiments outside the verified workflow; they are preserved and
-excluded from this batch.  No staged work was present.
 
 **Scope.** Extend the shared production-only Player runtime view with
 `photoTargetBoundsMin @ Player+0x2A28` and `photoTargetBoundsMax @
@@ -713,17 +602,6 @@ build-local SHA-256
 and `git diff --check` passed.  Exact replay, product closure, semantic meaning,
 and runtime validation remain separate states.
 
-**Analysis artifacts.** `.analysis/` was 1,408,444,500 bytes at campaign start
-and remains exactly 1,408,444,500 bytes after this batch.  No current-session
-analysis root or artifact was created or removed; the large legacy GDB/Wine
-prefix and all other legacy/shared provider content remain untouched.
-
-**Next batch:** refresh the committed live state and route a new bounded
-TH095-local owner/field/protocol family from the lexical report plus repository
-history and target evidence.  Do not extend the adjacent Player half-size or
-camera-tail fields merely because their offsets are now bounded.
-
-
 ### SEM-009 — Enemy local and derived positions
 
 **Scope.** Correct the exact `PhotoEnemyView` coordinate names without changing
@@ -787,18 +665,6 @@ local lexical transaction.  Exact replay, production compilation, target
 semantic evidence, and runtime behavior remain separate states; no runtime
 scenario or storage claim is added here.
 
-**Analysis artifacts.** `.analysis/` remains exactly 1,408,444,500 bytes.  The
-one-shot `build/semantic-validation/` production object created for this batch
-was removed after validation.  No `.analysis` artifact was created or removed,
-and all legacy/shared provider state remains untouched.
-
-**Next batch:** refresh live state and test whether the shot-dispatch coordinate
-accessors can use the established `Enemy::worldPosition` and `Enemy::shootOffset`
-fields directly while preserving its canonical exact body.  Keep the compact
-shot descriptor at `+0x298C` and the conflicting `+0x2C4C` field out of that
-batch unless independent TH095-local evidence resolves their ownership.
-
-
 ### SEM-010 — Enemy shot coordinate ownership
 
 **Scope.** Remove only the two raw enemy coordinate accessors from the exact
@@ -850,16 +716,6 @@ exact and 88-TU product gates remain the broad milestone rather than being
 replayed for this source-local accessor transaction.  Exactness, production
 compilation, semantic evidence, and runtime behavior remain separate states;
 no runtime scenario or storage claim is added.
-
-**Analysis artifacts.** `.analysis/` remains exactly 1,408,444,500 bytes.  The
-one-shot focused production object was removed after validation.  No
-`.analysis` artifact was created or removed, and legacy/shared provider state
-remains untouched.
-
-**Next batch:** refresh live state and route the compact enemy movement/control
-family.  Prefer TH095-local fields with more than one exact consumer, and do
-not collapse later generic `Enemy` layout onto compact photo-enemy offsets.
-
 
 ### SEM-011 — compact enemy alternate ANM bank flag
 
@@ -922,19 +778,6 @@ validation remains 697 source-present / 696 exact, and `git diff --check`
 passes.  Semantic interpretation, exact replay, production closure, and runtime
 behavior remain separate states; no runtime scenario or storage claim is added.
 
-**Analysis artifacts.** `.analysis/` started this campaign at 1,408,444,500
-bytes and remains exactly 1,408,444,500 bytes.  No current-session `.analysis`
-root or artifact was created or removed; the legacy GDB/Wine-prefix content and
-all shared provider state remain untouched.  Build outputs remain under the
-repository's ignored `build/` validation area.
-
-**Next batch:** recover the compact enemy movement-mirroring role of `flags1`
-bit 16 from TH095-local movement, ECL-helper, shot-ANM, and photo-enemy
-consumers.  Keep it distinct from the later generic Enemy flag numbering, and
-prefer a source-local naming correction if that closes the meaning without
-another shared-header ABI surface change.
-
-
 ### SEM-012 — compact enemy X-movement mirroring
 
 **Scope.** Correct one local semantic name in the exact `PhotoEnemyView`:
@@ -984,18 +827,6 @@ header, layout, ABI, expression, or runtime behavior changed, the campaign-wide
 696-unit exact and 88-TU PE32 product gates from SEM-011 remain the current
 broad milestone rather than being repeated here.  Exactness, production
 compilation, target semantics, and runtime behavior remain separate states.
-
-**Analysis artifacts.** `.analysis/` remains exactly 1,408,444,500 bytes.  The
-one-shot focused production object was removed after validation.  No current
-session `.analysis` artifact was created or removed, and legacy/shared provider
-state remains untouched.
-
-**Next batch:** canonicalize the compact enemy primary ANM-script table rooted
-at `+0x2C0E`.  Verify the six script roles and their unusual opcode argument
-ordering against TH095 `SetPrimaryAnmScripts`, `UpdateShotAndAnm`, and target
-evidence; do not infer ownership for adjacent `+0x2C0A` or later fields beyond
-what those consumers prove.
-
 
 ### SEM-013 — compact enemy primary ANM-script table
 
@@ -1054,17 +885,6 @@ behavior changed, so the SEM-011 696-unit / 88-TU PE32 milestone remains the
 current broad gate.  Semantic interpretation, exact replay, production
 compilation, and runtime behavior remain separate states.
 
-**Analysis artifacts.** `.analysis/` remains exactly 1,408,444,500 bytes.  The
-one-shot production objects were removed after validation; no current-session
-`.analysis` artifact was created or removed, and legacy/shared provider state
-remains untouched.
-
-**Next batch:** recover the compact movement-bound record rooted at `+0x2C3C`
-and the bit-17 clamp-enable protocol only if TH095-local producer and consumer
-lanes jointly support it.  Keep the conflicting `+0x2C4C` field outside that
-record and outside the batch.
-
-
 ### SEM-014 — compact enemy movement bounds and clamp enable
 
 **Scope.** Canonicalize only the compact enemy movement-bound producer at
@@ -1116,29 +936,7 @@ ABI, target-local base, or runtime behavior changed, so the SEM-011 696-unit /
 exact replay, production compilation, and runtime behavior remain separate
 states.
 
-**Analysis artifacts.** `.analysis/` remains exactly 1,408,444,500 bytes.  The
-one-shot production object was removed after validation; no current-session
-`.analysis` artifact was created or removed, and legacy/shared provider state
-remains untouched.
-
-**Next batch:** refresh the compact enemy semantic-debt surface and select the
-highest-evidence remaining protocol family with multiple TH095-local exact
-consumers.  Do not revisit `+0x2C4C` until independent lifecycle evidence can
-resolve its conflicting meanings.
-
-
 ### SEM-015 — extended ECL context variable views
-
-**Recovery gate.** This campaign resumed at committed HEAD `f22ce87` with one
-unstaged source edit and four pre-existing untracked paths.  The source edit in
-`src/EclExtended.cpp` replaces raw active-context offsets with the already
-layout-asserted `EnemyEclContext` variable arrays and is classified as
-recoverable current work, so it is completed as the first batch before any new
-family is selected.  `EnemyManagerUpdate.i` and `droid.resume.txt` remain
-explicitly user-owned unrelated pre-existing work.  The older
-`config/runtime-scenarios.json` and `scripts/runtime-diff.py` runtime experiment
-also remains unrelated pre-existing work outside this campaign; all four paths
-stay unmodified and unstaged.
 
 **Scope.** Canonicalize only active ECL-context reads at context offsets
 `+0x60`, `+0x70`, and `+0x74` inside extended callback entries 2, 4, 10, 14,
@@ -1190,17 +988,6 @@ the reconstructed PE32 executable.  `git diff --check` passes.  These are
 independent exact and product feedback states; they do not prove the English
 representation or a runtime scenario.
 
-**Analysis artifacts.** `.analysis/` started this campaign at
-1,408,444,500 bytes.  No current-session `.analysis/gpt-web` root or artifact
-was created, and the legacy GDB/Wine-prefix content plus shared provider state
-remain untouched.
-
-**Next batch:** refresh the post-recovery `EclExtended.cpp` raw-member surface
-and prefer a small field family whose target offset is repeated by multiple
-TH095-local exact consumers.  Do not promote callback-local script variables to
-one global semantic name merely because their storage slot is shared.
-
-
 ### SEM-016 — compact enemy ANM handle slots
 
 **Scope.** Canonicalize only the compact enemy dwords at `+0x2D4` and
@@ -1244,17 +1031,6 @@ layout changed, so the campaign-wide cold 88-TU product gate run for SEM-015 is
 now an earlier-source milestone and is intentionally not described as current
 for this checkpoint; current whole-product closure is deferred to the next
 campaign milestone.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes.  No
-current-session analysis scratch was created or removed; legacy and shared
-provider state remain untouched.
-
-**Next batch:** canonicalize the repeated extended BulletManager pool base at
-runtime owner `+0x4C` if the TH095 BulletManager layout and multiple exact
-extended callbacks agree on one canonical bullet-array representation.  Keep
-bullet-internal `+0x24` and ANM-VM `+0x228` fields separate unless their own
-independent field evidence is sufficient.
-
 
 ### SEM-017 — extended bullet pool owner
 
@@ -1312,19 +1088,6 @@ COFF and `git diff --check` passes. The manager representation is TU-local and
 changes no exported/shared layout; campaign-wide current-source product closure
 remains intentionally deferred to the next milestone.
 
-**Analysis artifacts.** `.analysis/` remains 1,408,444,500 bytes. No
-current-session analysis artifact was created or retained. The zero-byte
-current-session `bullets` artifact from the malformed documentation command was
-removed after provenance verification; legacy and shared provider state remain
-untouched.
-
-**Next batch:** determine whether bullet absolute `+0x24` and embedded-VM
-`+0x228` in extended entries 2/4 are already represented by independently
-proven `AnmVm` fields. Canonicalize only fields whose TH095 producer/consumer
-and offset evidence agree; otherwise leave the raw access and record unknown.
-
-
-
 ### SEM-018 — extended bullet VM rotation/flags views
 
 **Scope.** Canonicalize the five remaining raw VM-member accesses in extended
@@ -1377,18 +1140,6 @@ production branch independently compiles with the pinned VC7.1 profile to an
 i386 COFF object, and `git diff --check` passes. The failed natural/renamed
 experiments were not staged and introduced no additional repository files.
 
-**Analysis artifacts.** `.analysis/` remains 1,408,444,500 bytes. No
-current-session analysis artifact was created or retained; shared provider and
-legacy runtime-analysis state remain untouched.
-
-**Next batch:** inspect the sole remaining EclExtended raw-member candidate at
-enemy `+0x2BF4` as a movement/transition flags family. Accept a typed field only
-if the canonical TH095 Enemy layout and independent game-local consumers agree
-on the offset and bit protocol; otherwise record it as unknown and route to the
-next bounded owner family outside EclExtended.
-
-
-
 ### SEM-019 — compact enemy movement interpolation flags
 
 **Scope.** Replace `RunPhotoTransition`'s last raw compact-enemy member access
@@ -1431,18 +1182,6 @@ bits at compact `+0x2BF4` remain owned by their existing semantic batches.
 normal production translation unit independently compiles under pinned VC7.1
 to i386 COFF, and `git diff --check` passes. The change is TU-local and alters
 no shared header/layout.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed in this
-batch; legacy and shared provider state remain untouched.
-
-**Next batch:** canonicalize the repeated Background dynamic VM-handle family at
-`Background+0x1FE4/+0x1FE8` in `EclExtended.cpp`. Require the exact TH095
-`BackgroundStateView` owner and multiple extended callback consumers to agree on
-the two-slot representation; preserve the exact-facing `g_Background` global
-type if changing it would perturb relocation identity.
-
-
 
 ### SEM-020 — extended Background dynamic VM handles
 
@@ -1499,18 +1238,6 @@ compiles under pinned VC7.1 to i386 COFF, and `git diff --check` passes. The
 failed `AnmVmId` source experiment was never staged and created no repository
 artifact.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed in this
-batch; legacy and shared provider state remain untouched.
-
-**Next batch:** after a current-source aggregate exact and whole-product
-milestone, refresh repository-wide semantic debt plus the latest semantic
-history and select the highest-evidence bounded TH095-local family outside
-`EclExtended.cpp`. Treat the now-clean EclExtended raw-offset surface only as a
-routing result, not a semantic exit condition.
-
-
-
 ### SEM-021 — front-end scrolling VM-id array slots
 
 **Scope.** Canonicalize the four raw front-end controller offsets
@@ -1564,19 +1291,6 @@ an i386 COFF object, and `git diff --check` passes. No shared header changed, so
 the previous 88-source/696-unit cold aggregate and 88-TU PE32 product milestone
 is an earlier-source receipt state rather than current-source closure for this
 checkpoint.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect the front-end queue/reset family reached from
-`UpdateMainMenu` when selecting the game path. Prefer the two repeatedly drained
-queues at `+0x61B8/+0x6248` and the nine queue-count reset offsets only where the
-independent exact `FrontEndLifecycleView`, `SceneSelectAssets`, and
-`SceneSelectUpdate` layouts agree. Keep pending-data counters at `+0x63BC/+0x63CC`
-separate unless their producer/lifetime evidence is independently sufficient.
-
-
 
 ### SEM-022 — front-end preview queue reset protocol
 
@@ -1642,18 +1356,6 @@ under pinned VC7.1 to i386 COFF, and `git diff --check` passes. No shared header
 or ABI changed, so campaign-wide aggregate/product closure is not reissued at
 this private checkpoint.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** recover the separate case-0 scalar resets at controller
-`+0x63BC`, `+0x63CC`, and `+0xE92` only where TH095-local layout plus independent
-producer/consumer evidence proves `stateHistory.count`, `pendingTextureCount`,
-and `currentDisplayState`. Keep each interpretation distinct from queue
-ownership even though all three are reset in the same transition.
-
-
-
 ### SEM-023 — front-end transition scalar resets
 
 **Scope.** Recover the three non-queue scalar resets that finish the title-menu
@@ -1712,18 +1414,6 @@ The normal production translation unit independently compiles under pinned
 VC7.1 to i386 COFF, and `git diff --check` passes. No shared header or ABI
 changed; aggregate/product closure remains deferred to the next milestone.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** refresh the remaining `FrontEndController.cpp` raw-offset
-surface after excluding exact-compatibility macros already documented by
-SEM-022/023. Prefer a bounded repeated TH095-local owner family with independent
-layout/protocol consumers; otherwise route to the next repository-wide file
-rather than forcing one-off offsets into speculative names.
-
-
-
 ### SEM-024 — compact enemy deferred-shot cadence state
 
 **Scope.** Replace the three raw compact-enemy accessors for deferred shot
@@ -1769,19 +1459,6 @@ configured relocations, and the source replay refreshes zero private labels.
 The normal production `src/EnemyShotAnm.cpp` independently compiles under the
 pinned VC7.1 profile to i386 COFF, and `git diff --check` passes. No shared
 header or ABI changed.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect the remaining compact-enemy fields in
-`EnemyShotAnm.cpp` after excluding movement flags and ANM-script storage already
-covered by SEM-012/013. Prefer `anmDirection @ +0x2C0A` if its TH095-local reset,
-consumer, and write-back protocol remains independently exact; otherwise route
-to the life field or another repository-wide owner rather than reopening the
-completed shot-cadence family.
-
-
 
 ### SEM-025 — compact enemy ANM direction state
 
@@ -1839,18 +1516,6 @@ the single `src/EnemyShotAnm.cpp` unit replay exact together, 11/11 total, with
 zero private-label refresh. Both normal production translation units
 independently compile under the pinned VC7.1 profile to i386 COFF, and
 `git diff --check` passes. No shared header or ABI changed.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect compact enemy `life @ +0x2958` as the next bounded
-owner. Require the target updater gate, exact ECL integer/float operand
-selectors, lvalue writer, and `PhotoEnemyView` layout to agree before replacing
-raw accessors. Keep `maximumLife` and phase-life fields separate unless their
-producer/consumer evidence is independently sufficient.
-
-
 
 ### SEM-026 — compact enemy life owner
 
@@ -1910,18 +1575,6 @@ private-label refresh. The five corresponding normal production translation
 units independently compile under pinned VC7.1 to i386 COFF, and
 `git diff --check` passes. No shared header or ABI changed.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect compact `maximumLife @ +0x295C` and
-`phaseStartingLife @ +0x2960` as a bounded life-baseline pair. Accept the pair
-only if TH095-local spawn initialization, opcode-113 reset, and independent
-consumers distinguish their roles. Otherwise leave them separate/unknown and
-route to the next repeated compact-enemy owner.
-
-
-
 ### SEM-027 — script-visible enemy ECL timer current
 
 **Routing note.** The SEM-026 handoff first rechecked compact
@@ -1972,18 +1625,6 @@ adjacent life-baseline fields rejected by the routing check above.
 translation units independently compile under pinned VC7.1 to i386 COFF, and
 `git diff --check` passes. No shared header, layout, or ABI changed.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect the remaining script-visible compact enemy scalar pair
-`itemDrop @ +0x2BD8` (selector `0x275B`) and `score @ +0x2964` (selector
-`0x275C`). Treat them as separate owners even if they share the same three
-operand resolver surfaces; require TH095-local spawn/default/write evidence for
-each before canonicalizing their selector accesses.
-
-
-
 ### SEM-028 — script-visible enemy score
 
 **Scope.** Recover compact enemy `score @ +0x2964` as ECL selector `0x275C`
@@ -2029,17 +1670,6 @@ All three corresponding normal production translation units independently
 compile under pinned VC7.1 to i386 COFF, and `git diff --check` passes. No
 shared header, object layout, or ABI changed.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** recover compact `itemDropType @ +0x2BD8` / selector `0x275B` as
-a separate owner. Verify the target's signed-byte spawn input conversion against
-the four-byte stored field and the three 32-bit ECL resolver paths before
-acceptance; do not collapse it with score or adjacent timeline parameters.
-
-
-
 ### SEM-029 — script-visible enemy item-drop type
 
 **Scope.** Recover compact enemy `itemDropType @ +0x2BD8` as ECL selector
@@ -2084,18 +1714,6 @@ two neighboring timeline parameters.
 All three normal production translation units independently compile under
 pinned VC7.1 to i386 COFF, and `git diff --check` passes. No shared header,
 object layout, or ABI changed.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** refresh the three ECL operand resolver surfaces and prefer a
-remaining selector backed by an independently exact compact `PhotoEnemyView`
-field plus a non-resolver TH095 producer/consumer. Do not infer semantics from
-selector adjacency alone; if the `+0x2BDC/+0x2BE0` timeline parameters lack an
-independent protocol, leave them unknown and route onward.
-
-
 
 ### SEM-030 — scheduled ECL call frame slots
 
@@ -2152,17 +1770,6 @@ refresh. The independent `enemy-update-scheduled-ecl-calls` consumer is
 normal production translation units independently compile under pinned VC7.1
 to i386 COFF, and `git diff --check` passes. No shared header or ABI changed.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect the paired scheduled-call record array at `+0x2C7C`.
-Require opcode 115's full-dword producer and `UpdateScheduledEclCalls`' low-i16
-subroutine consumer to agree on a maintainable representation; leave the upper
-16 bits unknown unless an independent TH095-local consumer establishes them.
-
-
-
 ### SEM-031 — scheduled ECL call record slots
 
 **Scope.** Recover the ten four-byte scheduled-call records at enemy `+0x2C7C`
@@ -2212,18 +1819,6 @@ normal production `src/ecl/EclRun.cpp` independently compiles under pinned
 VC7.1 to i386 COFF, and `git diff --check` passes. No shared header or ABI
 changed.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect the opcode-116 delayed-callback pair at enemy
-`+0x2CA4/+0x2CA8`. Require the TH095 target-high producer, enemy-update
-consumer, constructor sentinel, and timer-reset protocol to distinguish the
-frame field from its paired payload before assigning maintainable names. If the
-second dword lacks an independent consumer, keep it unknown and route onward.
-
-
-
 ### SEM-032 — unresolved delayed-callback storage pair
 
 **Scope.** Audit the two dwords written by target-high opcode 116 at compact
@@ -2264,18 +1859,6 @@ source edit is made merely to remove raw offsets.
 no source edit, the previously accepted SEM-031 source state remains unchanged.
 No exact or production receipt is reissued for unchanged code; `git diff
 --check` covers only this documentation addition.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** refresh remaining ECL operand raw-field selectors against the
-canonical compact `PhotoEnemyView` and choose a field with an independent
-TH095-local producer or runtime consumer. Do not route selector `0x2734` to
-`stateTimer`: its current component is at `+0x2980`, while that selector is
-already the active ECL call-parameter slot.
-
-
 
 ### SEM-033 — photo-target table slot binding
 
@@ -2336,17 +1919,6 @@ units across `EclOperandsInt.cpp`, `EclOperandsFloat.cpp`,
 private-label refresh. The four corresponding normal production translation
 units independently compile under pinned VC7.1 to i386 COFF, and
 `git diff --check` passes. No shared header or ABI changed.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** investigate unresolved selector `0x2752 @ +0x2C50` only if an
-independent TH095-local writer/consumer establishes its role. Otherwise route
-to another compact owner with a proven non-resolver protocol; do not infer
-meaning from its proximity to `selectedLaserSlot @ +0x2C4C`.
-
-
 
 ### SEM-034 — child ECL block ownership table
 
@@ -2410,19 +1982,6 @@ units across `src/EclDependencies.cpp` and `src/EnemyManagerUpdate.cpp`; all 32
 are exact with zero private-label refresh. Both normal production translation
 units independently compile under pinned VC7.1 to i386 COFF, and
 `git diff --check` passes. No shared header or ABI changed.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect the compact enemy shot-descriptor owner rooted at
-`+0x298C`. Prefer a bounded representation shared by target-exact shot dispatch,
-`RunEcl` shot opcodes, spawn/template initialization, and the scheduled-call
-reset copy. Keep the descriptor's internal fields separate unless their own
-TH095 producer/consumer evidence supports names; first prove the owner extent
-and reset/copy protocol.
-
-
 
 ### SEM-035 — compact enemy bullet spawn descriptor owner
 
@@ -2490,19 +2049,6 @@ replay covers all 23 configured units across `EnemyManagerUpdate.cpp` and
 normal production translation units independently compile under pinned VC7.1
 to i386 COFF, and `git diff --check` passes. No shared header or ABI changed.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** refresh repository-wide semantic debt after excluding exact-
-compatibility macros already documented by prior batches. Prefer another
-compact TH095 owner with multiple exact producers/consumers; in particular,
-inspect the shot-dispatch scratch family at `+0x2B80..+0x2B88` only if its
-fields' write/use/reset protocol is independently visible. Do not infer field
-semantics from proximity to the recovered 0x210-byte descriptor alone.
-
-
-
 ### SEM-036 — bullet spawn/transform sound descriptor fields
 
 **Scope.** Recover target-high opcode 103's three writes as fields within the
@@ -2558,19 +2104,6 @@ zero private-label refresh. Independent `photo-bullet-spawn-pattern` and
 with all configured relocations. The normal production `src/ecl/EclRun.cpp`
 independently compiles under pinned VC7.1 to i386 COFF, and `git diff --check`
 passes. No shared header or ABI changed.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** refresh TH095 semantic debt outside already documented exact-
-compatibility macros. Prefer another repeated compact owner with an independent
-producer and runtime consumer; if the remaining ECL resolver offsets are read-
-only or cross-view-conflicted, route to a different subsystem rather than
-forcing speculative names. After the next coherent source checkpoint, issue a
-current-source cold aggregate exact and whole-product milestone before further
-campaign expansion.
-
 
 ### SEM-037 — compact enemy main ECL context owner
 
@@ -2633,18 +2166,6 @@ refresh. The normal production translation unit independently compiles with the
 pinned VC7.1 profile to i386 COFF, and `git diff --check` passes. No shared
 header or public ABI changed.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** after the current-source cold aggregate exact and whole-product
-milestone, route outside already documented exact-compatibility expressions.
-Prefer a compact TH095 owner with multiple independent consumers. Treat the
-remaining `EnemyManagerUpdate.cpp` raw offsets as candidates only after
-excluding exact-only compatibility macros and already recorded context,
-descriptor, cadence, and child-block owners.
-
-
 ### SEM-038 — photo-stage score multiplier
 
 **Scope.** Recover the TH095 photo-stage field at stage-state `+0x25718` as
@@ -2702,17 +2223,6 @@ semantic batch would immediately stale it again. The current batch's exact and
 production checks are local current-source validation, not accepted Factory
 facts.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect the production `PhotoStageStateView` first-slot capture
-accessors at `+0x2C/+0x38/+0x3C/+0x40`. Accept a representation change only if
-TH095 capture/update/save consumers prove that these are exactly
-`slots[0].capturePosition`, `captureWidth`, `captureHeight`, and `captureSlot`;
-keep the exact snapshot source untouched if its raw AST is compiler-sensitive.
-
-
 ### SEM-039 — first-slot photo capture staging fields
 
 **Scope.** Recover the four `PhotoStageStateView` capture accessors at object
@@ -2769,17 +2279,6 @@ and whole-product results are current-source local validation. No new Factory
 receipt is issued at this checkpoint because the campaign proceeds directly to
 another source batch.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect the remaining compact enemy ANM-bank owner in
-`EnemyShotAnm.cpp`, especially runtime `+0x4DF8/+0x4DFC`. Accept canonical names
-only if TH095 resource loading, shot/ANM update selection, and another consumer
-establish whether these are primary/alternate ANM banks. Do not infer the
-second pointer solely from adjacency to the proven `enemyAnm @ +0x4DF8`.
-
-
 ### SEM-040 — unresolved alternate enemy ANM bank storage
 
 **Scope.** Audit enemy-manager runtime pointer `+0x4DFC`, the bank selected by
@@ -2825,17 +2324,6 @@ or production result is reissued for unchanged source.
 **Receipt state.** Factory `whole_build_closed` remains accepted only for older
 commit `3b540668`; it is stale for the current campaign HEAD. No receipt is
 replayed for this documentation-only checkpoint.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect compact enemy flags2 bit 7 at `+0x2BF8`. Verify whether
-ECL opcode 158's writer and the enemy update/draw path independently establish
-it as an attached-VM freeze/suppression control. Keep other flags2 bits separate
-and do not reuse later-layout generic Enemy flag meanings without TH095-local
-evidence.
-
 
 ### SEM-041 — attached-VM follow freeze flag
 
@@ -2894,17 +2382,6 @@ still bound to older commit `3b540668` and is stale for this source. No new
 receipt is issued because the campaign immediately proceeds to another bounded
 semantic batch.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** route the compact flags2/photo-marker neighborhood without
-assuming that every remaining bit deserves a name. First test whether flags2
-bit 6 already has complete writer/consumer semantics in committed history; if
-so, do not redo it. Otherwise prefer another unresolved compact owner with an
-independent TH095 producer and consumer.
-
-
 ### SEM-042 — photo-marker pulse control
 
 **Scope.** Recover compact enemy `flags2 @ +0x2BF8` bit 6 as
@@ -2962,16 +2439,6 @@ and the normal EclRun production TU compiles under pinned VC7.1 to i386 COFF.
 commit `3b540668` and is stale for this source. No receipt is replayed at this
 private semantic checkpoint.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** investigate compact flags2 bit 5, currently exposed only as
-`secondaryFlag5` by target-high opcode 140. Require an independent TH095-local
-consumer before assigning meaning; otherwise record it as unknown and route to
-another bounded owner.
-
-
 ### SEM-043 — unresolved compact flags2 bit 5
 
 **Scope.** Audit compact enemy `flags2 @ +0x2BF8` bit 5, currently exposed by
@@ -3008,17 +2475,6 @@ reissued for unchanged source.
 **Receipt state.** The last accepted Factory `whole_build_closed` receipt is
 bound to older commit `3b540668` and remains stale for the current source. No
 receipt is replayed for this documentation-only checkpoint.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. The machine-code
-search used command-local `/tmp` output and removed it before command exit. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** route away from flags2. Inspect compact enemy movement bounds at
-`+0x2C3C..+0x2C4B`, where `ClampPosition` and low-ECL movement setup already
-provide independent TH095-local consumers/writers. Do not fold the separate and
-historically conflicting `+0x2C4C` field into the bounds owner.
-
 
 ### SEM-044 — compact enemy movement-bounds owner
 
@@ -3081,18 +2537,6 @@ Factory-accepted aggregate/whole-build receipts are not refreshed at this
 private checkpoint because the campaign will run a current-source cold
 aggregate and whole-product milestone immediately after commit before routing
 further semantic work.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. The focused
-compile objects were command-local `/tmp` files and were removed before command
-exit. No current-session `.analysis` artifact was created, retained, or
-removed; legacy and shared provider state remain untouched.
-
-**Next batch:** after the current-source aggregate exact and whole-product
-milestone, refresh TH095-local debt outside documented exact-compatibility
-branches. Prefer a bounded compact enemy family with an independent writer and
-consumer. Keep `+0x2C4C` excluded unless new TH095-local evidence resolves its
-existing cross-view conflict.
-
 
 ### SEM-045 — bullet owner-tag transform field
 
@@ -3167,18 +2611,6 @@ milestone results become stale when this semantic source commit is created;
 SEM-045 itself closes only its focused exact and production surfaces. No new
 Factory-accepted aggregate or whole-build receipt is claimed here.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. The focused
-production object was created under `/tmp` and removed before command exit. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect the remaining compact BulletManager anonymous fields for
-another TH095-local producer/consumer protocol, beginning with bullet `+0x360`
-only if independent consumers distinguish it from transform sound/index and the
-captured-list/cooldown union. Do not promote adjacency or a single transform
-writer into meaning.
-
-
 ### SEM-046 — unresolved bullet dword at +0x360
 
 **Scope.** Audit compact photo-bullet dword `+0x360`, immediately after the
@@ -3218,17 +2650,6 @@ production gate is reissued merely for this documentation addition;
 **Receipt state.** The campaign-wide 88-source / 696-unit exact and whole-product
 milestone was current at `58ab994` and became source-stale after SEM-045. No
 receipt plane is refreshed for this no-source checkpoint.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No
-current-session analysis artifact was created, retained, or removed; legacy and
-shared provider state remain untouched.
-
-**Next batch:** recover the TH095 viewport-to-ANM screen-shake-offset protocol if
-target evidence confirms that viewport configuration `+0xE8/+0xEC` is copied
-to `AnmManager::screenShakeOffset @ +0x20/+0x24` and the draw path consumes that
-same pair. Keep the independent global `g_ScreenEffectShakeX/Y` publication
-separate unless target dataflow proves an ownership relation.
-
 
 ### SEM-047 — viewport-owned screen-shake storage
 
@@ -3314,19 +2735,6 @@ next semantic source batch would stale a freshly issued aggregate receipt
 immediately, so the accepted receipt plane is deliberately deferred to a later
 committed campaign milestone or final handoff.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. Focused compile
-objects used command-local `/tmp` paths and were removed; no current-session
-`.analysis` artifact was created, retained, or removed. Legacy and shared
-provider state remain untouched.
-
-**Next batch:** inspect the score-file header at `ResultSaveDataView` raw-file
-`+0x08/+0x0C`. Existing TH095 parse/write code already distinguishes version 2
-and format `0x102`; accept field names only if exact target width/access evidence
-separates the low 16-bit version from any unknown high half and independently
-confirms the format dword. Do not widen the batch into payload records or
-checksum semantics already closed by SCORE-001..004.
-
-
 ### SEM-048 — score-file header version field
 
 **Scope.** Recover the score-file header field at `+0x08` as a 16-bit
@@ -3390,18 +2798,6 @@ This is whole-product closure, not a byte-exact whole-image claim.
 validation only. No Factory-accepted aggregate receipt is claimed here; the
 next semantic source transaction would immediately stale a source-bound receipt.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. The focused
-production object was command-local under `/tmp` and removed. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** route away from score-header `+0x0C` unless a new TH095-local
-reader appears. Prefer another anonymous field with at least one independent
-producer and consumer; inspect the compact photo-enemy `unknown2984` dword only
-if update/ECL/photo systems expose a distinguishing protocol, otherwise leave it
-opaque and continue routing.
-
-
 ### SEM-049 — unresolved compact enemy dword at +0x2984
 
 **Scope.** Audit the four bytes at compact `PhotoEnemyView +0x2984`, between
@@ -3437,16 +2833,6 @@ for this no-source checkpoint.
 **Receipt state.** SEM-048's 696-unit exact and whole-product gates are local
 validation bound to the immediately preceding source state. No Factory-accepted
 receipt is issued for this documentation-only checkpoint.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. No current-session
-analysis artifact was created, retained, or removed; legacy and shared provider
-state remain untouched.
-
-**Next batch:** route by repeated TH095-local read/write behavior rather than
-anonymous-field count. Prefer a field whose value is produced in one exact
-function and consumed in another; do not select padding or constructor-only
-initialization merely because it has an `unknown...` identifier.
-
 
 ### SEM-050 — rotating photo-effect argument packet
 
@@ -3518,19 +2904,6 @@ closure becomes source-stale when this checkpoint is committed. SEM-050 closes
 its focused source surfaces only; no new Factory-accepted aggregate or
 whole-build receipt is claimed here.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. Focused production
-objects were command-local `/tmp` files and were removed before command exit. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** recover the distinct 0x28-byte type-0 `PhotoEffectArgsSmall`
-packet. Require the straight-laser initializer/update to distinguish
-`maximumLength @ +0x10`, `initialLength @ +0x14`, `terminalDistance @ +0x18`,
-`width @ +0x1C`, and `speed @ +0x20` before renaming ECL producer placeholders.
-Keep any field left only zero-initialized as Unknown rather than inferring from
-the rotating packet.
-
-
 ### SEM-051 — straight photo-effect argument packet
 
 **Scope.** Recover the distinct 0x28-byte type-0 `PhotoEffectArgsSmall` packet
@@ -3596,17 +2969,6 @@ source-stale after SEM-050/051. This batch closes only its focused exact and
 production surfaces; no Factory-accepted aggregate or whole-build receipt is
 claimed.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. The focused
-production object was command-local under `/tmp` and removed. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** inspect rotating-effect packet `flags` bit 0 as an independent
-protocol. Accept a semantic bit name only if the TH095 rotating-laser updater
-proves its effect on `photoTargets[0]` and ECL producers expose the same bit.
-Do not rename other flag bits without consumers.
-
-
 ### SEM-052 — rotating effect follow-photo-target flag
 
 **Scope.** Recover bit 0 of the rotating type-1 `PhotoEffect` packet flags dword
@@ -3664,17 +3026,6 @@ No shared header or public ABI changed.
 source-stale after SEM-050..052. This private checkpoint closes its focused exact
 and production surfaces only; no Factory-accepted aggregate or whole-build
 receipt is claimed.
-
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. Focused
-production objects were command-local `/tmp` files and removed before command
-exit. No current-session `.analysis` artifact was created, retained, or
-removed; legacy and shared provider state remain untouched.
-
-**Next batch:** refresh the game-local semantic router and look for another
-field with an independent TH095 producer and consumer. Treat the remaining
-rotating-effect flag bits as Unknown unless a consumer appears; do not continue
-renaming the packet by adjacency.
-
 
 ### SEM-053 — photo capture-active global protocol
 
@@ -3759,18 +3110,6 @@ local validation, not Factory-accepted receipts. A source-bound aggregate
 receipt is deferred until a committed campaign milestone/final handoff where it
 will not be immediately invalidated by the next semantic source transaction.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes. Focused
-production objects were command-local `/tmp` files and removed. No
-current-session `.analysis` artifact was created, retained, or removed; legacy
-and shared provider state remain untouched.
-
-**Next batch:** audit shared photo-global bit 1 only if TH095-local producer and
-consumer evidence can distinguish its lifecycle across player, enemy,
-background, bullet, and effect views. Do not assume the existing subsystem-local
-`freeze...`/`block...` names describe one universal action merely because the
-bit position is shared.
-
-
 ### SEM-054 — captured-photo active global protocol
 
 **Scope.** Recover bit 1 of the shared photo-runtime flags dword at global-state
@@ -3853,17 +3192,6 @@ surfaces before checkpoint; the current committed source is immediately promoted
 to a campaign milestone after this commit, where cold aggregate exact and
 whole-product gates and eligible Factory receipts are handled separately.
 
-**Analysis artifacts.** `.analysis/` started and remains 1408444500 bytes. No
-current-session `.analysis/gpt-web` root or large artifact was created. The
-pre-existing legacy Wine/provider content remains untouched.
-
-**Next batch:** after the committed milestone gates, audit shared photo-global
-bit 2 only if TH095-local producers and multiple consumers establish a common
-lifecycle meaning. Keep subsystem-specific names if the bit represents only a
-coincident storage position or distinct protocols; do not generalize by
-adjacency to `captureActive`/`capturedPhotoActive`.
-
-
 ### SEM-055 — gameplay-loading global protocol
 
 **Scope.** Recover bit 2 of `PhotoGameTaskView::flags @ +0xFC` as
@@ -3939,24 +3267,6 @@ aggregate claim, so that receipt plane was deliberately not bulk-replayed. Once
 this source batch is committed, the `c3437fc3` product receipt remains valid for
 that milestone but is source-stale for the new HEAD; SEM-055 records focused
 local exact/production closure only.
-
-**Recovery / analysis artifacts.** `.analysis/` remains 1408444500 bytes; no
-current-session analysis root or retained large artifact was created. Before
-this batch, the four pre-existing untracked paths were observed with hashes that
-had changed since the earlier campaign snapshot. They were therefore
-reclassified as unknown/external-current-state and left completely untouched:
-`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
-`scripts/runtime-diff.py`. No unknown path is staged. A transient Factory bridge
-failure during the first edit attempt returned no command id; the repository was
-then found locked by the intentional `c3437fc3` whole-build replay. No edit was
-made until that replay completed and released the lock.
-
-**Next batch:** audit task/global-state bit 10 as a separate protocol. Start from
-its TH095-local producers in extended ECL/photo-transition code and compare the
-Background, PhotoEffect, PhotoGame, BulletManager, and any target-only consumers.
-Accept one shared name only if producer timing explains the distinct subsystem
-responses; otherwise retain the current per-TU names and record the boundary.
-
 
 ### SEM-056 — photo-transition active global protocol
 
@@ -4037,22 +3347,6 @@ source. Exactness for SEM-056 is established by the local current-source
 canonical replay above; the Factory's 696 per-function exact claims remain
 intentionally deferred until a meaningful final/milestone receipt boundary.
 
-**Recovery / analysis artifacts.** The active batch began from a tracked-clean
-`5aae5f30` checkpoint. A transient Factory bridge connection failure occurred
-before the first validation command and returned no command id; the mandatory
-recovery gate confirmed the intended five-file diff, no staged or extra tracked
-changes, no lingering compiler/replay process, and unchanged `.analysis` size.
-`.analysis/` remains 1408444500 bytes, with no current-session retained artifact.
-The four externally changing untracked paths remain unknown and untouched.
-
-**Next batch:** audit shared global bit 9 as a separate sound/capture protocol.
-Start from PhotoCamera's charging/capture sound gates and BulletManager's
-`suppressesPhotoSound` consumer, then locate all TH095-local writers. Accept a
-shared semantic name only if writer timing and at least two independent exact
-consumers agree; do not infer it merely because bit 9 neighbors the recovered
-photo-transition bit.
-
-
 ### SEM-057 — photo-sound suppression global protocol
 
 **Scope.** Recover bit 9 of the shared photo-runtime flags dword at task/global
@@ -4121,22 +3415,6 @@ for this commit. The current source has focused exact and production closure;
 aggregate receipts remain deferred to the next meaningful campaign milestone or
 final exit audit.
 
-**Recovery / analysis artifacts.** `.analysis/` remains 1408444500 bytes and no
-current-session artifact was created. Two consecutive Factory connection
-failures occurred before the first production-validation command returned a
-command id; the recovery status and subsequent bounded shell gate confirmed the
-same four-file active diff, no staged changes, and no lingering build process
-before validation resumed. The four unknown/external-current-state untracked
-paths remain untouched and excluded from staging.
-
-**Next batch:** refresh live semantic debt and committed history rather than
-continuing by bit-number adjacency. Prefer a bounded owner with multiple TH095-
-local exact consumers and an independent producer/lifecycle. Revisit the compact
-main ECL context owner at enemy `+0x02DC` only if it remains unrecovered in the
-newer semantic history; otherwise select the strongest remaining non-exact-
-compatibility family.
-
-
 ### SEM-058 — serialized scene-score record index routing
 
 **Scope.** Recover the valid `SC` score-file record at the parser cursor as a
@@ -4194,20 +3472,6 @@ scenario changed.
 **Receipt state.** No Factory receipt is issued for this private checkpoint.
 The accepted whole-build receipt for `c3437fc3` is source-stale for the current
 campaign head; SEM-058 has focused current-source exact and production closure.
-
-**Recovery / analysis artifacts.** The batch started from tracked-clean
-`e50612ab`. `.analysis/` remains 1408444500 bytes and no current-session artifact
-was created or retained. The four unknown/external-current-state untracked paths
-remain untouched and excluded from staging.
-
-**Next batch:** perform an independent game-local semantic exit audit rather than
-selecting another raw offset mechanically. Classify the remaining high-count raw
-findings against committed semantic records and exact-compatibility branches,
-identify any still-actionable high-evidence owner/protocol family, and only
-continue source editing if that audit finds a materially stronger bounded batch.
-If no such batch remains, run current-source cold aggregate exact and whole-
-product gates and record the semantic-readiness handoff without conflating it
-with runtime or portable-platform closure.
 
 ### SEM-059 — ECL photo-card session handle
 
@@ -4293,18 +3557,6 @@ likewise not reopened. No materially stronger bounded owner/protocol family is
 visible under current TH095-local evidence, so the semantic campaign reaches
 its game-local readiness exit without converting Unknowns into guesses.
 
-**Analysis artifacts.** `.analysis/` started and ends this campaign at
-1408444500 bytes. No current-session `.analysis` artifact was created, retained,
-or removed; legacy and shared provider state remain untouched. Whole-build and
-exact replay products live only in the repository's existing ignored build
-areas, not in `.analysis/`.
-
-**Next state:** treat TH095 semantic reconstruction as ready at this evidence
-boundary. Do not resume mechanical raw-offset cleanup without new TH095-local
-evidence that strengthens one of the recorded Unknowns. Factory receipt refresh,
-runtime-storage/scenario validation, and any portable Windows/Linux/Web work
-remain separate states and must not be reported as semantic interpretation.
-
 ### SEM-060 — compact enemy ECL subroutine slot table
 
 **Scope.** Recover compact enemy `+0x285C..+0x289D` as the same 32-entry
@@ -4379,20 +3631,6 @@ not a whole-image byte-exact claim. The campaign-wide 696-unit aggregate exact
 gate is intentionally left for the committed campaign milestone rather than
 being conflated with this focused batch result.
 
-**Analysis artifacts.** `.analysis/` remains 1408444500 bytes at this
-checkpoint preparation. No current-session `.analysis` artifact was created,
-retained, or removed; target analysis used the Factory-owned attested Ghidra
-provider and source-only disposable workspace state. Exact/build products remain
-in the repository's existing ignored build areas.
-
-**Next state:** refresh the committed live state and perform an independent
-TH095-local exit audit. Recheck the remaining strongest retained families,
-especially the `+0x4CA4` tail packet and compact `damageReductionTimer @
-+0x4CAC`, without inferring their meaning from adjacency or the generic Enemy
-layout. If no new independent producer/consumer protocol appears, retain those
-Unknowns and close the current-source aggregate exact and whole-product Factory
-milestone rather than resuming mechanical raw-offset cleanup.
-
 ### SEM-061 — compact enemy tail timer naming boundary
 
 **Scope.** Correct the compact `PhotoEnemyView` representation at `+0x4CAC`
@@ -4458,19 +3696,6 @@ a command-local `/tmp` probe was verified as i386 COFF and then removed. Broad
 88-TU compile/link closure is deferred to the campaign milestone so a private
 member-name correction does not redundantly replay the whole product. No
 runtime-storage or runtime-scenario claim is made by this batch.
-
-**Analysis artifacts.** No `.analysis/` artifact was created, retained, or
-removed. Target queries used the Factory-owned attested Ghidra provider, and the
-one-shot displacement and production-compile probes used command-local `/tmp`
-storage that was removed before command exit.
-
-**Next state:** refresh committed live state and finish the independent semantic
-exit audit across the remaining recorded Unknowns. Do not promote selector
-`0x2752 / +0x2C50`, `+0x2CA4/+0x2CA8`, compact `+0x2984`, alternate ANM bank
-`+0x4DFC`, or the `+0x2C4C` cross-view conflict without new TH095-local
-producer/consumer evidence. If none has materially strengthened, close the
-current-source cold aggregate exact and Windows i386 whole-product milestone and
-record semantic readiness at that evidence boundary.
 
 ### SEM-062 — independent semantic readiness exit audit
 
@@ -4572,15 +3797,6 @@ unknown/external-current-state untracked paths (`EnemyManagerUpdate.i`,
 `scripts/runtime-diff.py`) remain untouched and excluded from staging. Portable
 Windows/Linux/Web work has not begun and cannot substitute for the historical
 VC7.1 prerequisite completed above.
-
-**Analysis artifacts.** `.analysis/` started and ends at exactly 1408444500
-bytes. No current-session `.analysis` artifact was created, retained, or
-removed. The legacy `.analysis/gdb-demo-old-20260910a` tree remains untouched at
-1309978892 bytes; its retained files above 20 MiB remain the pre-existing Wine
-`system32/mshtml.dll` (26745522 bytes), `system32/wined3d.dll` (23398925 bytes),
-and `syswow64/mshtml.dll` (23348604 bytes). Factory-owned Ghidra provider state
-was queried read-only, and one-shot probes used command-local `/tmp` storage that
-was removed.
 
 **Semantic exit.** TH095 semantic reconstruction is ready at this independent
 game-local evidence boundary. Resume semantic source editing only when new
@@ -5048,7 +4264,6 @@ live input-data owner through replay save/load, browser metadata, and all
 `_time`/`_localtime` consumers.  Keep replay ABI conclusions separate from the
 score-file `SC` protocol recovered here.
 
-
 ### SEM-068: separate replay wire timestamps from CRT time storage
 
 The replay timestamp route named by SEM-067 is an independent persistent
@@ -5130,7 +4345,6 @@ Next evidence route: audit the replay file-header validation boundary, including
 which of the `0x24` header fields are actually checked before allocation,
 decryption, and decompression, and keep unknown header bytes unknown unless a
 TH095-local producer or consumer resolves them.
-
 
 ### SEM-069: recover the replay container header trust boundary
 
@@ -5248,7 +4462,6 @@ adversarially sample another persistent/ABI or owner surface with multiple
 TH095-local consumers; use the semantic-debt router only as a heuristic and
 prefer a bounded family not already covered by SEM-063 through SEM-069.
 
-
 ### SEM-070: name the embedded ANM texture payload offset in SceneTexture
 
 The post-SEM-069 coverage rotation sampled the ANM resource protocol rather than
@@ -5327,7 +4540,6 @@ Next evidence route: after checkpoint, rotate again to an owner/lifetime,
 flags/state, sound/resource, or another persistent/ABI family with multiple
 TH095-local producers/consumers; do not use the declining lexical-debt count as
 semantic completion evidence.
-
 
 ### SEM-071: name the SoundPlayer initialization completion latch
 
@@ -5427,7 +4639,6 @@ a flags/state, canonical owner/lifetime, or persistent/ABI family with multiple
 TH095-local producers/consumers; do not promote the still-unconsumed SoundPlayer
 metadata merely because it is lexically adjacent.
 
-
 ### SEM-072: name the ANM VM pending-deletion lifecycle bit
 
 This conversation resumed on a non-clean worktree at `58c892a2`: three tracked
@@ -5518,7 +4729,6 @@ Prefer a different flags/state, owner/lifetime, sound/resource, or persistent
 protocol family with multiple independent TH095-local consumers; do not rename
 adjacent ANM bits merely because they share the same flags word.
 
-
 ### SEM-073: bind the screen-shake gate to shared photo lifecycle states
 
 The post-SEM-072 coverage rotation deliberately left ANM, replay, score, and
@@ -5596,7 +4806,6 @@ The still-generic ScreenEffect bits 4 through 6 are not a default continuation;
 select them only if independent TH095-local producers and multiple consumers
 bound a common protocol. Prefer another owner/lifetime, resource/state, or
 persistent boundary rather than semantic naming by adjacency.
-
 
 ### SEM-074: name the photo-camera focus-charge frame counter
 
@@ -5679,7 +4888,6 @@ family. Prefer a bounded resource, owner/lifetime, front-end state, persistent
 format, or another subsystem protocol with independent TH095-local producers
 and consumers. A failed bounded route remains a routing event, not a semantic
 phase boundary.
-
 
 ### SEM-075: recover the Supervisor result-restart latch
 
@@ -5849,7 +5057,6 @@ family. Prefer a bounded persistent-format, resource-owner/lifetime, or other
 independent protocol with multiple TH095-local producers and consumers. A
 negative bounded route remains routing evidence only and does not alter the
 `active-incomplete` phase state.
-
 
 ### SEM-077: consolidate the compact enemy ECL control word
 
@@ -6528,18 +5735,6 @@ build artifact is 780,288 bytes with SHA-256
 Successful linkage is production closure only, not target whole-image
 byte-exactness or runtime validation.
 
-**Analysis artifacts.** This batch created no `.analysis/` workspace or retained
-analysis export. Target evidence came from the Factory-owned read-only Ghidra
-provider; compiler outputs remain in the repository's existing ignored build
-areas. The pre-existing legacy analysis trees and four pre-existing untracked
-paths remain untouched and excluded from staging.
-
-**Next evidence route.** After checkpoint, rotate away from this compact capture
-callback family. Prefer a different bounded state/resource/sound/persistent or
-interpreter protocol with a TH095-local producer and independent consumer. Do
-not reopen `+0x2CA8`, the SEM-060 subroutine table, or generic
-`deathCallbackSubId` merely because they are adjacent or share an offset.
-
 ### SEM-090: resolve the compact shot-distance threshold conflict
 
 **Scope.** Reopen compact enemy `+0x2C4C` only because the resume audit found a
@@ -6623,18 +5818,6 @@ inventory was substantially correct, but the competing laser-slot role came
 from a reconstruction field name rather than an independent target producer or
 consumer. This counterexample reopens that historical readiness hypothesis; as
 required for this campaign, semantic phase state remains active-incomplete.
-
-**Analysis artifacts.** No `.analysis/` workspace or export was created for
-this batch. The displacement/history probes used command-local output only;
-Factory-owned Ghidra remained read-only. Pre-existing legacy analysis state and
-the four pre-existing untracked paths remain untouched and excluded from
-staging.
-
-**Next evidence route.** Rotate away from compact `+0x2C4C` after checkpoint.
-Use the same anti-circularity test on another bounded state/resource/sound or
-persistent family: reconstructed names are corroboration only, never target
-evidence. Prefer a protocol with an independently observed producer and
-consumer; leave write-only/read-only plateaus Unknown.
 
 ### SEM-091: name the ReplayScanWorker bidirectional exit signal
 
@@ -6830,12 +6013,7 @@ Validation on the final source state:
 
 Recovery/artifact state:
 
-- the four pre-existing untracked paths (`EnemyManagerUpdate.i`,
-  `config/runtime-scenarios.json`, `droid.resume.txt`, and
-  `scripts/runtime-diff.py`) remain excluded from staging and are not evidence
-  for this batch;
-- no `.analysis/gpt-web/` scratch root or new analysis export was created.  The
-  pre-existing legacy analysis footprint remains untouched.
+The pre-existing legacy analysis footprint remains untouched.
 
 Next evidence route: rotate away from the photo-completion flag family after
 checkpoint.  Prefer a bounded resource-lifetime, sound/state, persistent/ABI,
@@ -6945,12 +6123,6 @@ Validation on the final source state:
 
 Artifact state:
 
-- no `.analysis/gpt-web/` scratch root, target export, Wine prefix, analysis
-  database copy, or probe worktree was created for this transaction; target
-  evidence came from bounded Factory-attested Ghidra decompiles;
-- the four pre-existing untracked paths remain outside this transaction and are
-  not staged as evidence.
-
 Next evidence route: rotate away from ANM VM lifecycle/draw scheduling after
 checkpoint.  A later session should prefer a bounded persistent/ABI,
 sound/state, interpreter, or resource-lifetime family with an independent
@@ -7046,13 +6218,6 @@ Validation on the active source state:
 
 Recovery / artifact state:
 
-- the four pre-existing untracked paths remain excluded from this transaction;
-  no tracked work from another producer was overwritten or staged;
-- `.analysis/` started this campaign at 1,408,573,066 bytes.  This batch created
-  no `.analysis/gpt-web/` root, target export, copied Wine prefix, analysis
-  database, or retained compile artifact; the legacy analysis footprint remains
-  untouched.
-
 Next evidence route: after checkpoint, rotate away from the score persistence
 family.  Prefer a bounded resource-lifetime, interpreter/state, or sound owner
 with a TH095-local producer and an independent consumer.  Keep write-only sound
@@ -7137,10 +6302,7 @@ Validation on the active source state:
 
 Analysis / recovery state:
 
-- the four pre-existing untracked paths remain outside the transaction;
-- no `.analysis/gpt-web/` root, target export, Wine-prefix copy, or retained
-  compile artifact was created.  Target evidence came from the registered
-  read-only Ghidra provider.
+Target evidence came from the registered read-only Ghidra provider.
 
 Next evidence route: rotate away from Bullet/ECL after checkpoint.  The target
 falsification performed during routing leaves the SoundPlayer metadata dwords
@@ -7211,12 +6373,6 @@ GUI artifact (`37b6d78acce0a7bbc198bcf0f8fcab0a9520258f9813ae628f47fe284c3e45ce`
 780288 bytes, four sections). Successful reconstructed linkage is not a
 whole-image exactness claim.
 
-**Next evidence route.** Rotate away from this front-end timer family. Prefer a
-different TH095-local owner/lifetime, interpreter/state protocol, resource
-boundary, persistent ABI, or historical-runtime gap with an independent
-producer and consumer. A negative bounded route remains routing evidence only;
-the semantic phase stays active-incomplete.
-
 ### SEM-097 — name the photo-game load-failure latch
 
 **Scope.** Recover shared photo-task/global-state `flags @ +0xFC` bit 3 as the
@@ -7279,22 +6435,6 @@ SHA-256
 `4518ea7192816d6407b3fcef7fa2ada4c802a264aae8d157feaec304ee15d22b`
 (780288 bytes, four sections). Product closure is separate from exactness,
 semantic interpretation, runtime-scenario validation, and whole-image identity.
-
-**Recovery / analysis state.** The session began at live HEAD
-`e32c7596004caa648fc405720e345daf42cecef3` with exactly this two-file unstaged
-transaction plus four pre-existing untracked experiment/recovery paths. Their
-hashes were reviewed and preserved outside staging. No active replay, compiler,
-linker, Wine, or wineserver producer owned the worktree at recovery. `.analysis/`
-started at 1,408,572,597 bytes; no new `.analysis/gpt-web/` root is required for
-this batch and legacy/shared analysis state remains untouched.
-
-**Next evidence route.** After checkpoint, rotate away from the photo flags and
-front-end timer families. Prefer a different TH095-local resource lifetime,
-interpreter/state protocol, persistent/ABI boundary, or historical-platform
-runtime gap with an independent producer and consumer. Previously falsified
-write-only sound metadata and single-writer ANM pathname storage remain Unknown
-unless new target-local readers appear. Semantic phase state remains
-active-incomplete.
 
 ### SEM-098 — distinguish the photo-pulse VM lifetime timers
 
@@ -7373,17 +6513,6 @@ as a PE32 Windows GUI executable. The local milestone artifact has SHA-256
 `1f2d373c5ad864ac518be71aad3a5265731c94399198392c09b01237265ca050`
 (780288 bytes, four sections). This reconstructed product closure remains
 separate from whole-image identity and runtime-scenario validation.
-
-**Analysis artifacts.** No `.analysis/gpt-web/` workspace was required; the
-batch reused the registered Ghidra provider and command-local `/tmp` compile
-outputs. Pre-existing `.analysis` state and the four untracked experiment /
-recovery paths remain outside the transaction.
-
-**Next evidence route.** After checkpoint and the committed milestone, rotate
-away from photo-game flags and compact photo-pulse state. Prefer another
-resource lifetime, persistent/ABI boundary, interpreter protocol, or historical-
-platform runtime gap with independent TH095-local producer and consumer
-evidence. Semantic phase state remains active-incomplete.
 
 ### SEM-099 — canonicalize the shared front-end controller flags
 
@@ -7465,18 +6594,6 @@ nonzero after the successful product had already been written as
 failure. Product closure remains separate from whole-image identity and runtime
 scenario validation.
 
-**Analysis artifacts.** The campaign began with `.analysis/` at 1,408,573,066
-bytes. This batch used the registered target-attested Ghidra provider and
-repository-native build outputs only; it created no `.analysis/gpt-web/`
-workspace and did not touch the pre-existing legacy/shared analysis roots.
-
-**Next evidence route.** Rotate away from the front-end controller flag family
-after checkpoint. Prefer a different TH095-local owner/lifetime, resource
-protocol, interpreter/state family, persistent ABI boundary, or historical-
-platform runtime gap with an independent producer and consumer. Previously
-falsified write-only or reader-only fields remain Unknown unless new TH095-local
-evidence appears. Semantic phase state remains active-incomplete.
-
 ### SEM-100 — bind the photo-game retry restart latch
 
 **Scope.** Finish the interrupted live-worktree transaction by aligning the
@@ -7538,19 +6655,6 @@ the probe directory. Because this transaction changes only a private `.cpp`
 consumer and no shared header/layout/PCH owner, aggregate exact and whole-
 product closure are deferred to the campaign milestone rather than replayed
 before this private checkpoint.
-
-**Recovery / analysis state.** The campaign adopted this one-file unstaged
-transaction at live HEAD `a088717aa403ccfe32ec000c10a529d00e4f555e` only
-after target-local evidence proved it recoverable. The four pre-existing
-untracked experiment/recovery paths remain outside staging. `.analysis/`
-started at 1,408,573,066 bytes, with the legacy
-`.analysis/gdb-demo-old-20260910a` root retained untouched.
-
-**Next evidence route.** Rotate away from Supervisor/photo-game restart flags
-after checkpoint. Prefer a different TH095-local owner/lifetime, interpreter
-or resource protocol, persistent/ABI boundary, or historical-runtime gap with
-an independent producer and consumer. Negative bounded searches remain routing
-results only; semantic phase state stays active-incomplete.
 
 ### SEM-101 — bind result-restart resource preservation
 
@@ -7617,19 +6721,6 @@ toolchain attestation and source profiles; both translation units compiled
 successfully to Intel i386 COFF, and the temporary obj/PDB files were removed
 with the probe directory. These are private `.cpp` view changes, so aggregate
 exact and whole-product closure are deferred to the campaign milestone.
-
-**Analysis / phase state.** This transaction created no `.analysis/gpt-web/`
-workspace and did not touch legacy/shared analysis state or the four pre-
-existing untracked experiment/recovery paths. Semantic interpretation, exact
-feedback, product compilation, runtime scenarios, and Factory receipts remain
-separate states. The semantic phase remains active-incomplete.
-
-**Next evidence route.** After checkpoint, rotate away from result-restart,
-PhotoGame, Background teardown, and enemy teardown. Prefer a bounded
-interpreter/state, independent resource owner, persistent/ABI boundary, input
-or historical-runtime gap with a TH095-local producer and independent consumer.
-Previously falsified write-only or reader-only fields stay Unknown unless new
-TH095-local evidence appears.
 
 ### SEM-102 — align PhotoItem with the shared photo-global protocol
 
@@ -7710,19 +6801,6 @@ worktree change before the corrected probe. Because this is a private `.cpp`
 view change with no shared header/layout/PCH change, aggregate exact and
 whole-product closure are deferred to the campaign milestone.
 
-**Recovery / analysis state.** This campaign began at live HEAD
-`531a7b5b8633dc268c963d340052ddb0dbf24795` with zero staged or unstaged tracked
-changes and four pre-existing untracked experiment/recovery paths. They were
-reviewed and preserved outside staging. `.analysis/` began at 1,408,573,066
-bytes; no `.analysis/gpt-web/` root or retained session artifact is required for
-this batch.
-
-**Next evidence route.** Rotate away from the shared photo-global state after
-checkpoint. Prefer a different interpreter/state family, persistent/ABI
-boundary, independent resource lifetime, input protocol, or historical-runtime
-gap with a TH095-local producer and independent consumer. The semantic phase
-remains active-incomplete.
-
 ### SEM-103 — bind scene texture format fallback to the canonical config option
 
 **Scope.** Repair the production owner expression for the existing forced-16-bit
@@ -7787,18 +6865,6 @@ repository's pinned VC7.1 profile and compiled the normal branch to Intel i386
 COFF; its object/PDB were removed before command exit. This is a private `.cpp`
 owner-expression change, so aggregate exact and whole-product closure are
 reserved for the campaign milestone.
-
-**Analysis / phase state.** No `.analysis/gpt-web/` workspace was created and no
-legacy/shared analysis state or pre-existing untracked file was modified. Exact
-feedback, production compilation, semantic interpretation, runtime scenarios,
-and Factory acceptance remain separate states. The semantic phase remains
-active-incomplete.
-
-**Next evidence route.** Rotate away from SceneTexture/config ownership after
-checkpoint. Prefer a different bounded interpreter/state, persistent/ABI,
-resource-lifetime, input, or historical-runtime family. Previously observed
-write-only THTX reserved words remain Unknown unless a TH095-local consumer
-appears.
 
 ### SEM-104 — close the remaining compact ECL control-word production bindings
 
@@ -7874,22 +6940,6 @@ final source edit. A command-local `/tmp` probe reused the canonical
 profile and compiled the normal branch with pinned VC7.1 to Intel i386 COFF.
 `git diff --check` also passed. No runtime scenario is claimed by this source
 representation transaction.
-
-**Recovery / analysis state.** The pre-edit recovery gate found no staged or
-tracked unstaged work and no active build/replay/Wine producer. The four
-pre-existing untracked files (`EnemyManagerUpdate.i`,
-`config/runtime-scenarios.json`, `droid.resume.txt`, and
-`scripts/runtime-diff.py`) remain excluded and untouched. `.analysis/` measured
-3,394,984 bytes at the campaign gate; no session-owned `.analysis/gpt-web/`
-workspace or other analysis artifact was created for this batch. Semantic
-interpretation, exact replay, production compilation, runtime validation, and
-Factory receipt acceptance remain separate states. The semantic phase remains
-active-incomplete.
-
-**Next evidence route.** Rotate away from the compact ECL control word after
-checkpoint. Prefer a different bounded persistent/ABI, resource-lifetime,
-input, or historical-runtime family. Do not return to the remaining unknown
-compact bits without a new TH095-local producer/consumer or lifetime relation.
 
 ### SEM-105 — restore the replay-name C-string wire boundary
 
@@ -7985,23 +7035,6 @@ does not imply whole-image byte exactness or runtime-scenario validation.
 source-present / 696 exact / 336,486 exact bytes, all 43 target-independent CI
 tests passed, and `git diff --check` passed.
 
-**Recovery / analysis state.** The transaction began from checkpoint
-`2caa657468aee038000e3db5234fd8199f5dca55` with no staged or tracked unstaged
-work. The pre-existing untracked `EnemyManagerUpdate.i`,
-`config/runtime-scenarios.json`, `droid.resume.txt`, and
-`scripts/runtime-diff.py` remain excluded and untouched. `.analysis/` remained
-at 3,394,984 bytes through the evidence and build gates, and no session-owned
-`.analysis/gpt-web/` workspace or analysis artifact was created. Semantic
-interpretation, exact replay, production closure, persistent-format meaning,
-and runtime scenarios remain separate states. The semantic phase remains
-active-incomplete.
-
-**Next evidence route.** Rotate away from the replay family after checkpoint.
-Prefer a bounded resource-lifetime or historical-runtime/input family with a
-TH095-local producer/consumer or owner/lifetime relation. Do not return to
-`ReplayInputData+0x06`, `+0xe4..+0xef`, or the remaining replay-container opaque
-bytes without new target-local evidence.
-
 ### SEM-106 — bind controller input availability reads to Supervisor ownership
 
 **Scope.** Re-audit the historical controller input path instead of accepting the
@@ -8071,26 +7104,6 @@ diff --check` passed. Because the change is private to one `.cpp` representation
 and does not modify a shared header/layout/PCH/owner object, aggregate exact and
 whole-product replay are deferred to the campaign milestone.
 
-**Recovery / analysis state.** The campaign resumed from live HEAD
-`9c7a839f4868a2dae0fadaf8cd76a06a4bab8c4f` with no staged or tracked
-unstaged changes and four documented pre-existing untracked paths:
-`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
-`scripts/runtime-diff.py`. They were reviewed and preserved outside staging.
-`.analysis/` started at 3,394,984 bytes. Bounded target evidence was generated
-under `.analysis/gpt-web/20260912-controller-availability/` with a manifest;
-after the compact conclusions were recorded here, the manifested decompile and
-manifest were removed with no active producer or remaining file in that scratch
-root. `.analysis/` returned to 3,394,984 bytes. Semantic interpretation, exact
-replay, production compilation, runtime storage, and runtime scenarios remain
-separate states.
-
-**Next evidence route.** Rotate away from controller availability after
-checkpoint. Prefer an independent resource-lifetime, historical-runtime, sound,
-or persistent/ABI family with a TH095-local producer plus independent consumer.
-Do not use the remaining `Controller::GetInput` compiler residual as semantic
-evidence unless new target-local meaning is found. The semantic phase remains
-active-incomplete.
-
 ### SEM-107 — bind the layer-six ANM shake reset to the canonical copy
 
 **Scope.** Re-audit the already recovered viewport-to-ANM screen-shake protocol
@@ -8145,21 +7158,6 @@ command-local production probe compiled the normal translation unit with its
 pinned VC7.1 profile to Intel i386 COFF, and `git diff --check` passed. No shared
 header/layout/PCH or storage-identity change was made, so campaign-wide exact and
 whole-product gates are deferred to the final committed milestone.
-
-**Recovery / analysis state.** This batch began from committed checkpoint
-`55b33a870f3dcde7296fba7524a07517b81c6fa6` with no staged or tracked unstaged
-changes and the same four pre-existing untracked paths kept outside staging.
-One-shot Ghidra query/decompile output was removed immediately after use;
-`.analysis/` remained exactly 3,394,984 bytes and no current-session artifact is
-retained. Semantic interpretation, exact replay, production compilation,
-runtime storage, and runtime scenarios remain separate states.
-
-**Next evidence route.** Rotate away from ANM screen-shake storage after this
-checkpoint. Prefer an independent persistent/ABI, resource lifetime,
-historical-runtime, or interpreter/state family with a TH095-local producer and
-independent consumer. The rejected SoundPlayer opaque dwords, ANM preload path,
-Supervisor anonymous storage, and GameConfiguration reserved bytes remain
-unknown absent new readers. The semantic phase remains active-incomplete.
 
 ### SEM-108 — bind shot-ANM control reads to canonical ECL bits
 
@@ -8223,25 +7221,6 @@ record was appended. Because the source change is private to one translation
 unit and preserves storage, ABI, and behavior, aggregate exact and whole-product
 replay are deferred to the next committed campaign milestone.
 
-**Recovery / analysis state.** The campaign resumed from committed HEAD
-`8f8c443ee2dea5716f318e86b1426767b17ac097` with no staged or tracked unstaged
-work and the four documented pre-existing untracked paths
-`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
-`scripts/runtime-diff.py`; content/provenance references were re-reviewed and
-all four remain excluded from staging. `.analysis/` started at 3,394,984 bytes.
-Fresh bounded Ghidra output was created only under manifested
-`.analysis/gpt-web/20260912-ecl-shot-control/`; after this compact tracked
-record was written, the manifested decompile and manifest were removed with no
-active producer or retained current-session artifact. `.analysis/` returned to
-3,394,984 bytes. Semantic interpretation, exact replay, production compilation,
-runtime storage, and runtime scenarios remain separate states.
-
-**Next evidence route.** Rotate away from compact ECL control bits after this
-checkpoint. Prefer an independent persistent/ABI, resource-lifetime, or
-historical-runtime/state family with a TH095-local producer plus an independent
-consumer. Do not revisit the unresolved compact control bits without new
-TH095-local readers. The semantic phase remains active-incomplete.
-
 ### SEM-109 — mark the ANM texture-loader compatibility argument unused
 
 **Scope.** Re-audit the shared `AnmManager::LoadTexture` /
@@ -8301,26 +7280,6 @@ objects with the pinned VC7.1 i386 toolchain and linked a verified PE32 Intel
 `aa00588936505e6ed88436d4458ae1bad0adadc9e83c9a64cf17b09b38fe81fa`;
 successful linkage is not a whole-image exact claim.
 
-**Recovery / analysis state.** This transaction started from committed HEAD
-`2b07cecee1d414a2b3a3d1d10ed2787996d4e43a` with no staged or tracked
-unstaged work and the same four documented pre-existing untracked paths:
-`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
-`scripts/runtime-diff.py`. All four remain excluded from staging. Fresh Ghidra
-output for the two loader functions used command-local one-shot storage below
-`.analysis/` and was removed by the producing shell command; failed transport
-attempts were recovery-audited and left no session root or producer. `.analysis/`
-remained at the campaign baseline of 3,394,984 bytes. Semantic interpretation,
-exact replay, reconstructed-product closure, runtime storage, and runtime
-scenarios remain separate states.
-
-**Next evidence route.** Rotate away from ANM texture-loader signatures after
-this checkpoint. Prefer an independent historical-runtime, persistent/state,
-resource-lifetime, or weak-API family with at least one TH095-local producer and
-an independent consumer. The unresolved ResultScreen/global-state bits 4 and 7,
-TextRenderBuffer's RNG-written prefix, and ANM VM `unknownFlag14` remain Unknown
-until new TH095-local readers or producers appear. The semantic phase remains
-active-incomplete.
-
 ### SEM-110 — bind the photo-game capture wait to the Supervisor close latch
 
 **Scope.** Re-audit Supervisor control protocols outside the earlier input and
@@ -8379,23 +7338,6 @@ profile and compiled the normal translation unit with pinned VC7.1 compiler
 `git diff --check` passed. Because the edit is private to one production `.cpp`
 and does not alter a shared layout/PCH/owner, aggregate exact and whole-product
 replay are deferred to the campaign milestone.
-
-**Recovery / analysis state.** The campaign resumed from committed HEAD
-`64ecd9d68acfd7d8efa470767d5717bbaf4defd7` with no staged or tracked
-unstaged work. The four documented pre-existing untracked paths
-`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
-`scripts/runtime-diff.py` were re-hashed/reviewed and remain excluded from
-staging. `.analysis/` started at 3,394,984 bytes. Fresh target evidence used one
-command-local decompile below `.analysis/`; its trap removed the output after
-use and `.analysis/` returned to 3,394,984 bytes. Semantic interpretation,
-exact replay, production compilation, runtime storage, and runtime scenarios
-remain separate states.
-
-**Next evidence route.** Rotate away from Supervisor bit 7 after checkpoint.
-Prefer an independent persistent/state, resource-lifetime, sound, or sibling
-protocol family with a TH095-local producer plus an independent consumer. Do
-not reinterpret other Supervisor bits merely because they share `flags.raw`.
-The semantic phase remains active-incomplete.
 
 ### SEM-111 — canonicalize the photo-game loading-state bit
 
@@ -8467,23 +7409,6 @@ Because the edit is private to one production `.cpp` and does not alter a
 shared layout/PCH/owner, aggregate exact and whole-product replay are deferred
 to the campaign milestone.
 
-**Recovery / analysis state.** This transaction started from committed HEAD
-`d763d77916cd3e18e860ced8cd4760ccafda77be` with no staged or tracked unstaged
-work and the same four pre-existing untracked paths kept outside staging. One
-failed edit harness assertion occurred before `PhotoGameTask.cpp` was written;
-Factory status confirmed zero persistent tracked change before the corrected
-edit. Fresh Ghidra evidence used command-local scratch below `.analysis/`,
-removed by the producing command. `.analysis/` remained at 3,394,984 bytes.
-Semantic interpretation, exact replay, production compilation, runtime storage,
-and runtime scenarios remain separate states.
-
-**Next evidence route.** Rotate away from task-local loading bit 2 after this
-checkpoint. Prefer an independent persistent/state, resource-lifetime, sound,
-or sibling-interpreter protocol with a TH095-local producer plus independent
-consumer. Do not promote task-local bit 4, bits 7/8, or `0x100` without new
-target-local evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-112 — bind the scheduled-ECL shot interval reset
 
 **Scope.** Re-audit the non-ECL raw-member surface after the PhotoGameTask batches. `PhotoEnemyView::UpdateScheduledEclCalls` still cleared enemy `+0x2BC8` through pointer arithmetic even though the production view and SEM-024 already identify that field as `shootIntervalFrames`. This transaction changes only that missed reset representation. It does not reinterpret the adjacent shot descriptor, timer internals, scheduled-call table, or opcode domain.
@@ -8499,11 +7424,6 @@ target-local evidence. The semantic phase remains active-incomplete.
 **Production / exact representation.** Normal `EnemyManagerUpdate.cpp` now assigns `this->shootIntervalFrames = 0` after the descriptor restore. `TH095_MATCH_EXACT` retains the historical raw `this + 0x2BC8` store so the accepted compiler-facing source shape is unchanged. No shared header, class layout, calling convention, storage width, or persistent format changes.
 
 **Validation.** Focused cold replay of `src/EnemyManagerUpdate.cpp` passed all 22/22 configured accepted units with zero compiler-private label refreshes. A command-local production probe reused the manifest profile `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` and compiled the normal translation unit with pinned VC7.1 to Intel i386 COFF (`machine 0x014C`). `python3 scripts/build.py --check` kept the graph at 696 configured units and `git diff --check` passed. Because this edit is private to one `.cpp` representation and changes no shared owner/layout, aggregate exact and whole-product replay are deferred to the campaign milestone.
-
-**Recovery / analysis state.** This transaction started from committed HEAD `0efff237aa63dd5e678be0b8733790769ee906ad` with no staged or tracked unstaged work. The four documented pre-existing untracked paths `EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and `scripts/runtime-diff.py` remained untouched and excluded from staging. `.analysis/` started at 3,394,984 bytes. Fresh target decompilation used one command-local file below `.analysis/`; the producing command removed it on exit, and `.analysis/` returned to 3,394,984 bytes. Semantic interpretation, exact replay, production compilation, runtime storage, and runtime scenarios remain separate states.
-
-**Next evidence route.** Rotate away from `shootIntervalFrames` after checkpoint. Prefer an independent resource-lifetime, persistent/state, sound, or sibling-interpreter family with a TH095-local producer plus an independent consumer. Do not reopen the unresolved shot-descriptor bytes or other rejected writer-only fields without new target-local evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-113 — align ResultScreen with the shared completion signals
 
@@ -8521,10 +7441,6 @@ target-local evidence. The semantic phase remains active-incomplete.
 
 **Validation.** Focused cold replay of `src/ResultScreen.cpp` passed all 24/24 configured accepted units with zero compiler-private label refreshes. A command-local production probe reused the manifest profile `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` and compiled the normal translation unit with pinned VC7.1 to Intel i386 COFF (`machine 0x014C`). `python3 scripts/build.py --check` kept the graph at 696 configured units and `git diff --check` passed. Because this is a private production `.cpp` representation change with no shared layout/owner mutation, aggregate exact and whole-product replay are deferred to the campaign milestone.
 
-**Recovery / analysis state.** This transaction started from committed HEAD `572eff83193185bc3ecf85163a5f486c523b5abc` with no staged or tracked unstaged work and the same four pre-existing untracked paths excluded from staging. Fresh target evidence used one command-local decompile below `.analysis/`; the producing command removed it on exit. `.analysis/` returned to the campaign baseline of 3,394,984 bytes. Semantic interpretation, exact replay, production compilation, runtime storage, and runtime scenarios remain separate states.
-
-**Next evidence route.** Rotate away from shared completion bits after checkpoint. Prefer an independent resource-lifetime, persistent/state, sound, or sibling-interpreter family with a TH095-local producer plus an independent consumer. ResultScreen bits 4 and 7, front-end controller bit 4, SoundPlayer writer-only fields, replay reserved bytes, and the rejected Supervisor tail gaps remain Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-114 — align Supervisor FPS sampling with capture-active state
 
 **Scope.** Resume-audit the already established shared photo-runtime flag protocol outside the subsystem set enumerated by SEM-053. `Supervisor::CalculateFps` maps its local `SupervisorGameTaskView` through the same production `g_RuntimeGlobalStateOwner`, but the real bit-0 consumer at `flags @ +0xFC` still used the generic member name `active`. This transaction aligns only that Main-side production consumer with the established `captureActive` protocol. It does not reinterpret the neighboring FPS/timing gate bits, the lag accumulator, or the PhotoGameTask-local loading flags.
@@ -8540,10 +7456,6 @@ target-local evidence. The semantic phase remains active-incomplete.
 **Production / exact representation.** `SupervisorGameTaskView` now exposes bit 0 as `captureActive` only in normal production, and `CalculateFps` reads that member directly. `TH095_MATCH_EXACT` retains the historical `active` member token and expression, preserving the accepted compiler-facing source shape. No storage width, offset, shared header, calling convention, persistent format, or control flow changes.
 
 **Validation.** Focused replay of `src/Main.cpp` rebuilt all 48 configured units and passed 48/48 exact with zero compiler-private label refreshes. A production probe reused the manifest `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile and compiled normal `Main.cpp` with the pinned VC7.1 toolchain to Intel 80386 COFF / `pe-i386`. `python3 scripts/build.py --check` retained 696 configured units, `python3 scripts/validate-tracking.py --require-target` retained 697 source-present / 696 exact, and `git diff --check` passed. Because this edit is private to one `.cpp` view and changes no shared layout/PCH/owner representation, aggregate exact and whole-product replay are deferred to the campaign milestone.
-
-**Recovery / analysis state.** The transaction started from committed HEAD `fae37ba9c88e6d171f463838925dabc56cb3ab88` with no staged or tracked unstaged work. The four documented pre-existing untracked paths `EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and `scripts/runtime-diff.py` remained excluded. `.analysis/` started at 3,394,984 bytes. Fresh Ghidra evidence and the production probe used the manifested current-session root `.analysis/gpt-web/20260912-main-capture-active/`. After the conclusions were recorded and producer state was checked, its manifest, decompile, production object, and PDB were removed explicitly; `.analysis/` returned to 3,394,984 bytes. Semantic interpretation, exact replay, production compilation, runtime storage, and runtime scenarios remain separate states.
-
-**Next evidence route.** Rotate away from shared photo bit 0 after checkpoint. Prefer an independent persistent/ABI, resource-lifetime, sound, historical-runtime, or sibling-interpreter family with TH095-local producer plus independent consumer evidence. Keep the TextRenderer RNG prefix, ANM bit 14, Bullet anonymous tails, and declaration-only shared flags Unknown unless a new reader/producer appears. The semantic phase remains active-incomplete.
 
 ### SEM-115 — bind first-capture-frame stage consumers
 
@@ -8561,10 +7473,6 @@ target-local evidence. The semantic phase remains active-incomplete.
 
 **Validation.** Focused exact replay passed all affected units with zero compiler-private label refreshes: AsciiManager 17/17, PhotoCamera 11/11, PhotoCardInfo 10/10, PhotoFront 11/11, and PhotoGameTask 10/10, for 59/59 total. Normal production probes for all five TUs reused the pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile and emitted Intel 80386 COFF / `pe-i386` objects. `python3 scripts/build.py --check` retained 696 configured units, `python3 scripts/validate-tracking.py --require-target` retained 697 source-present / 696 exact, and `git diff --check` passed. Aggregate exact and whole-product closure are deferred only until the final committed campaign milestone, because the edits are local projections rather than a shared layout or owner change.
 
-**Recovery / analysis state.** The batch began after committed SEM-114 at `768b5668855f84e8925a729b193efe5d533eb7c0` with no staged or tracked unstaged changes and the same four excluded pre-existing untracked paths. `.analysis/` was 3,394,984 bytes before the target queries. Fresh Ghidra evidence and production probes used the manifested session root `.analysis/gpt-web/20260912-stage-first-frame/`. After tracked conclusions were recorded and producer state was checked, its manifest, decompile, five probe objects, and five probe PDBs were removed explicitly; `.analysis/` returned to 3,394,984 bytes. Semantic interpretation, exact replay, production compilation, runtime storage, and runtime scenarios remain separate states.
-
-**Next evidence route.** Rotate away from stage first-capture-frame presentation after checkpoint. Prefer a different persistent/ABI, resource-lifetime, sound, historical-runtime, or interpreter/state family with a TH095-local producer plus independent consumer. Keep the TextRenderer RNG prefix, ANM bit 14, Bullet anonymous tails, replay/input gaps, PBG copied-but-unconsumed metadata, and score-header `+0x0C` Unknown unless new TH095-local readers or producers appear. The semantic phase remains active-incomplete.
-
 ### SEM-116 — bind captured-scene score flag consumers
 
 **Scope.** Rotate from the stage presentation protocol into the persistent scene-score ABI. `ResultScoreEntryView` already exposes bit 0 of the score-entry `flags @ +0x50` dword as `captured`, but `ResultSaveDataView::CountCapturedScenes` and `CountCapturedScenesInGroup` still tested the same persisted bit through raw `flags & 1` expressions. This transaction aligns only those two production consumers. It does not alter the 0x60-byte score-entry layout, serialization, checksum rules, scene-index mapping, unlock thresholds, or neighboring score flags.
@@ -8581,10 +7489,6 @@ target-local evidence. The semantic phase remains active-incomplete.
 
 **Validation.** Focused cold replay of `src/SceneSelect.cpp` passed all 5/5 configured exact units with zero compiler-private label refreshes. `python3 scripts/build.py --check` retained 696 configured units and `python3 scripts/validate-tracking.py --require-target` retained 697 source-present / 696 exact. A normal-production probe reused the pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile and emitted an Intel 80386 COFF / `pe-i386` object. `git diff --check` passed before documentation integration. Because the source edit is private to one production `.cpp` representation and changes no serialized layout or writer, aggregate exact and whole-product replay are deferred to the next committed campaign milestone.
 
-**Recovery / analysis state.** This batch began from committed HEAD `ca16d9dd06101ae317b873069e30b6f61b801f20` with no staged or tracked unstaged work and the four documented pre-existing untracked paths preserved outside staging. `.analysis/` started at 3,394,984 bytes. Fresh Ghidra evidence and the normal production probe used the manifested current-session root `.analysis/gpt-web/20260912-score-entry-captured/`. After the conclusions were recorded and producer/reference state was checked, its decompile, production object, PDB, and manifest were removed explicitly; `.analysis/` returned to 3,394,984 bytes. Semantic interpretation, Git checkpoint state, exact replay, production closure, runtime storage, and runtime scenarios remain separate planes.
-
-**Next evidence route.** Rotate away from score-entry bit 0 after checkpoint. Prefer an independent resource-lifetime, sound, historical-runtime, or interpreter/state family with a TH095-local producer plus an independent consumer. Keep score-entry bits 2..31, score-header `+0x0C`, PBG copied-but-unconsumed metadata, SoundPlayer writer-only metadata, TextRenderer RNG prefix, ANM bit 14, Bullet anonymous tails, and replay/input gaps Unknown unless new TH095-local evidence appears. The semantic phase remains active-incomplete.
-
 ### SEM-117 — name the incremental ANM postload entry number
 
 **Scope.** Rotate from the persistent score-entry protocol into ANM resource readiness. The shared `AnmLoaded` dword at `+0x18` was still named `numberEntriesToBeLoaded`, which suggests a remaining-entry count. Current TH095 producer/consumer dataflow instead shows a one-based incremental entry selector whose zero value is the ready/completed state. This transaction renames that representation to `postloadEntryNumber` across the canonical owner and production-facing layout projections. It does not change slot ownership, loading order, the release-pending protocol, raw ANM layout, texture formats, or the synchronization added by the historical runtime fix.
@@ -8600,10 +7504,6 @@ target-local evidence. The semantic phase remains active-incomplete.
 **Production / exact representation.** The canonical `AnmLoaded` owner and production-facing projections in `AnmManager.hpp`, `AnmVmLifecycle.cpp`, `PhotoCamera.hpp`, and `ecl/AnmManagerEclView.hpp` now name `+0x18` `postloadEntryNumber`. `AnmManager.cpp` readiness consumers and `AnmPreload.cpp` producers/service logic use the same name. No field width, offset, object extent, pointer ownership, calling convention, branch condition, or load/postload algorithm changes.
 
 **Validation.** Focused replay across `AnmManager.cpp`, `AnmPreload.cpp`, `AnmVmLifecycle.cpp`, `PhotoCamera.cpp`, and `ecl/EclRun.cpp` passed 56/56 configured exact units with zero compiler-private label refreshes. Because `AnmManager.hpp` is a high-fanout shared header, recovery re-ran the cold aggregate in four mutually exclusive 22-source partitions: 205, 158, 191, and 142 units, totaling 88/88 sources and 696/696 exact units with zero refreshes. A separate durable `python3 scripts/build-whole.py` run then compiled all 88 production translation units with pinned VC7.1 to Intel i386 COFF and linked a verified 780,288-byte PE32 GUI executable with build-local SHA-256 `f1c2b558d04a4985104afc5803f028a8da81b089c339901058ea9fee6eea4c19`. Target verification, target-attested Ghidra checks, tracking, the 696-unit graph, `git diff --check`, and all 43 target-independent CI tests also passed. This is production compile/link closure, not whole-image byte identity.
-
-**Recovery / analysis state.** The batch began from committed HEAD `d8949073a3cb10586e3a5e0f9436594cede2e58b` with no staged or tracked unstaged work and the same four pre-existing untracked paths excluded. Its original `.analysis/` baseline was 3,394,984 bytes. On conversation recovery the eight tracked SEM-117 edits were still unstaged and the manifested `.analysis/gpt-web/20260912-anm-postload-cursor/` root contained only `decompile.txt` plus `manifest.json`, bringing `.analysis/` to 3,402,499 bytes; no active producer remained. One earlier combined aggregate/product call had no durable command id and therefore received no gate credit. Recovery independently re-ran 696/696 exact, the 88-TU whole product, target/Ghidra attestation, tracking, graph validation, and CI with durable command records. After these tracked conclusions were updated and producer/reference state was checked, the two manifested session-scratch files were removed explicitly and `.analysis/` returned to 3,394,984 bytes. Semantic interpretation, Git checkpoint state, exact replay, production closure, runtime storage, and runtime scenarios remain separate planes.
-
-**Next evidence route.** Rotate away from the ANM postload cursor after checkpoint. Prefer an independent sound, historical-runtime, interpreter/state, or non-ANM resource-lifetime family with a TH095-local producer plus independent consumer. Keep the ANM bit-14 gate, preload-slot path bytes, SoundPlayer writer-only metadata, PBG copied-but-unconsumed metadata, TextRenderer RNG prefix, Bullet anonymous tails, score-header `+0x0C`, and replay/input gaps Unknown unless new target-local evidence appears. The semantic phase remains active-incomplete.
 
 ### SEM-118 — bind the one-shot FPS sample reset latch
 
@@ -8623,10 +7523,6 @@ Fresh target decompilation also closes the producer side. `InitializeGameResultS
 
 **Validation.** Focused exact replay over the two `PhotoGameTask.hpp` fanout sources plus the ResultScreen and PhotoStage producers passed 44/44 configured units with zero compiler-private label refreshes. Normal production probes for `FrontEndController.cpp`, `PhotoGameTask.cpp`, `PhotoStage.cpp`, and `ResultScreen.cpp` reused the manifest `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile and emitted Intel 80386 COFF / `pe-i386`. Because a shared header changed, the cold aggregate exact gate ran immediately in four mutually exclusive 22-source partitions of 205, 158, 191, and 142 units: 88/88 sources and 696/696 units passed exact with zero refreshes. A separate cold `python3 scripts/build-whole.py` compiled all 88 production TUs with pinned VC7.1 and linked a verified 780,288-byte PE32 GUI executable with build-local SHA-256 `eedb520690a3e9bd10ab70b084025a6fcb4551490e21d40cf524e5470269ec35`. This is production compile/link closure, not whole-image byte identity.
 
-**Recovery / analysis state.** The batch started from committed HEAD `f8043aa131929d142df058f34c95f799e0e2ec5a` with no staged or tracked unstaged work and the four documented pre-existing untracked paths kept outside staging. `.analysis/` started at 3,394,984 bytes. Fresh target evidence used the manifested session root `.analysis/gpt-web/20260912-fps-reset-signal/`, containing only its 457-byte manifest and 47,241-byte bounded decompile. After the tracked conclusion was recorded and producer/reference state was checked, those two current-session files and the empty root were removed explicitly; `.analysis/` returned to 3,394,984 bytes. Semantic interpretation, Git checkpoint state, exact replay, production closure, runtime storage, and runtime scenarios remain separate planes.
-
-**Next evidence route.** Rotate away from shared photo/global timing flags after checkpoint. Prefer an independent sound, historical-runtime, interpreter/state, persistent/ABI, or non-ANM resource-lifetime family with a TH095-local producer plus independent consumer. Keep ResultScreen bit 4, shared bit 8, replay-worker `unknown010`, ReplayManager declaration-only bits, SoundPlayer writer-only metadata, PBG copied-but-unconsumed metadata, TextRenderer RNG prefix, ANM bit 14, Bullet anonymous tails, and score-header `+0x0C` Unknown unless new local evidence appears. The semantic phase remains active-incomplete.
-
 ### SEM-119 — name the scene text shadow-color parameter
 
 **Scope.** Rotate away from the shared photo/global timing protocol into a weak front-end API boundary. The production definition of `SceneWriteText` already called its fourth argument `shadowColor`, but the shared production declaration in `SceneSelect.hpp` still exposed that same argument as `unknown`. This transaction propagates only that established parameter role through the maintained declaration. It does not change text rendering behavior, VM ownership, text formatting, font/glyph selection, alignment, or any exact-facing declaration.
@@ -8642,10 +7538,6 @@ Fresh target decompilation also closes the producer side. `InitializeGameResultS
 **Production / exact representation.** Only the normal production declaration in `src/SceneSelect.hpp` changes, from `u32 unknown` to `u32 shadowColor`. `SceneSelectController.cpp` already used that name in the definition. `SceneSelectExact.hpp` retains the historical `unknown` spelling. Parameter type, order, cdecl ABI, symbol decoration, storage, call expressions, and control flow are unchanged.
 
 **Validation.** Focused replay of `src/SceneSelectController.cpp` and `src/MusicRoom.cpp` passed all 8/8 configured exact units with zero compiler-private label refreshes. An initial production probe received zero compile credit because the probe harness used the nonexistent `.tools/msvc71/bin/cl.exe` path and Wine exited before compilation; recovery confirmed no tracked drift, no leftover temporary directory, and no active compiler process. Corrected probes reused the repository's pinned `.tools/msvc710/Vc7/bin/cl.exe` plus the VC7 and PlatformSDK include/library environment and emitted Intel 80386 COFF / `pe-i386` objects for both TUs. Because `SceneSelect.hpp` is shared, the cold aggregate exact gate then ran in four mutually exclusive 22-source partitions of 205, 158, 191, and 142 units: 88/88 sources and 696/696 units passed exact with zero refreshes. A separate cold `python3 scripts/build-whole.py` compiled all 88 production TUs and linked a verified 780,288-byte PE32 GUI image with build-local SHA-256 `3f2b536feb368221d9a25170891ae121569c19aa1e14c6946878acb35ab41276`. This is production compile/link closure, not whole-image byte identity.
-
-**Recovery / analysis state.** The batch started from committed HEAD `61d3c8e59a9ee7c7d0c37f8647ecefddaa6fb162` with no staged or tracked unstaged changes and the four documented pre-existing untracked paths preserved outside staging. `.analysis/` started at 3,394,984 bytes. Fresh target evidence used manifested root `.analysis/gpt-web/20260912-scene-text-shadow/`, containing only its manifest and an 893-byte bounded `DrawTextLeft` decompile. After the tracked conclusion was recorded and producer/reference state was rechecked, those two current-session files and the empty root were removed explicitly; `.analysis/` returned to 3,394,984 bytes. Semantic interpretation, Git checkpoint state, exact replay, production closure, runtime storage, and runtime scenarios remain separate planes.
-
-**Next evidence route.** Rotate away from SceneWriteText after checkpoint. Prefer an independent interpreter/state, historical-runtime, persistent/ABI, sound, or non-ANM resource-lifetime family with a TH095-local producer plus independent consumer. A weak-API follow-up may target `SupervisorSoundView::PlayMusic` only after fresh target evidence confirms whether its second parameter is truly unused; do not invent a semantic role for it. Keep ResultScreen bit 4, shared bit 8, replay-worker `unknown010`, SoundPlayer writer-only metadata, PBG copied-but-unconsumed metadata, TextRenderer RNG prefix, ANM bit 14, Bullet anonymous tails, score-header `+0x0C`, and input/replay gaps Unknown absent new local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-120 — recover the screen-shake envelope parameters
 
@@ -8665,10 +7557,6 @@ Fresh target `CalcShakeEnvelope` then gives those offsets independent use-side m
 
 **Validation.** The first focused replay deliberately received no final exact credit: exposing the alias unions to exact builds left authored bytes and meaningful relocation destinations unchanged but rotated VC7.1 compiler-private `$L...` labels in `screen-effect-register-chain`. No manifest was refreshed. Recovery confirmed no config drift or active producer, then isolated the aliases to normal production while restoring the exact/DIFF header shape. The repeated focused replay across `EclExtended.cpp`, `PhotoStage.cpp`, `ScreenEffect.cpp`, `ScreenEffectDraw.cpp`, and `ScreenEffectRegister.cpp` passed 44/44 configured units with zero private-label refreshes. Normal production probes for all five TUs reused the pinned VC7.1/PlatformSDK environment and emitted Intel 80386 COFF / `pe-i386` objects. Because `ScreenEffect.hpp` is shared, the cold aggregate exact gate ran in four mutually exclusive 22-source partitions of 205, 158, 191, and 142 units: 88/88 sources and 696/696 units passed exact with zero refreshes. A separate cold `python3 scripts/build-whole.py` compiled all 88 production TUs and linked a verified 780,288-byte PE32 GUI image with build-local SHA-256 `23c30999b50b429eb1e51b9433a6b8911c59032abeb0b945ec96e8eaa7b2df02`. This is production compile/link closure, not whole-image byte identity.
 
-**Recovery / analysis state.** The batch started from committed HEAD `f282620ec1a22be1c4257181ed672dfcd2b43a7e` with no staged or tracked unstaged changes and the four documented pre-existing untracked paths preserved outside staging. `.analysis/` started at 3,394,984 bytes. Fresh target evidence used manifested root `.analysis/gpt-web/20260912-screen-shake-envelope/`, containing an 818-byte manifest and a 5,041-byte bounded decompile, bringing `.analysis/` to 3,400,843 bytes. After the tracked conclusion was recorded and producer/reference state was rechecked, those two current-session files and the empty root were removed explicitly; `.analysis/` returned to 3,394,984 bytes. Semantic interpretation, Git checkpoint state, exact replay, production closure, runtime storage, and runtime scenarios remain separate planes.
-
-**Next evidence route.** Rotate away from ScreenEffect after checkpoint. Prefer a different historical-runtime, persistent/ABI, sound, primary/sibling interpreter, or non-ANM resource-lifetime family with a TH095-local producer plus independent consumer. Keep shared photo bit 4/bit 8, ReplayScanWorker `unknown010`, SoundPlayer writer-only metadata, PBG copied-but-unconsumed metadata, TextRenderer RNG prefix, ANM bit 14, Bullet anonymous tails, score-header `+0x0C`, ASCII unused gaps, MIDI reset-only state, and replay/input reserved bytes Unknown unless new local evidence appears. The semantic phase remains active-incomplete.
-
 ### SEM-121 — mark the Supervisor PlayMusic compatibility argument unused
 
 **Scope.** Rotate away from ScreenEffect after SEM-120 into a weak sound API boundary. The canonical Main definition, Main declarations, and runtime Supervisor view already call the second `Supervisor::PlayMusic` parameter `unused`, but the widely included `Supervisor.hpp` still called it `bgmUnlockIndex` and the FrontEnd audio projection called it `unknown`. This transaction aligns only that retained ABI parameter. It does not alter music selection, preload behavior, SoundPlayer commands, MIDI routing, return types, or `Supervisor::PlayAudio`.
@@ -8684,10 +7572,6 @@ Fresh target `CalcShakeEnvelope` then gives those offsets independent use-side m
 **Production / exact representation.** `src/Supervisor.hpp` now names the second `PlayMusic` parameter `unused`, matching the maintained Main/runtime declarations, and `FrontEndSupervisorAudioView` does the same. Parameter type, order, stack width, cdecl/thiscall-facing symbol decoration, call expressions, and code generation are unchanged. Exact Main source already used `unused`; no target-facing function body is edited.
 
 **Validation.** Focused exact replay across `FrontEndController.cpp`, `Midi.cpp`, `MusicRoom.cpp`, `SoundPlayer.cpp`, `ZunTimer.cpp`, and `ecl/EclRun.cpp` passed 64/64 configured units with zero compiler-private label refreshes. Because `Supervisor.hpp` is a shared header, the cold aggregate was then replayed through eighteen bounded source chunks whose unit totals sum to 696: all 88/88 sources and 696/696 units passed exact with zero refreshes. A separate cold `python3 scripts/build-whole.py` compiled all 88 production TUs with pinned VC7.1 and linked a verified 780,288-byte PE32 GUI executable with build-local SHA-256 `5a383e11320693ec03ac3d3318f81d6e06bd1d3c6db6eafb8dc272f630f73115`. This is production compile/link closure, not whole-image byte identity.
-
-**Recovery / analysis state.** The batch started from committed HEAD `2c1acc0402ddd793f77dd405718202bbe38e2477` with no staged or tracked unstaged changes and the same four documented pre-existing untracked paths excluded. `.analysis/` started at 3,394,984 bytes. Fresh target evidence used manifested root `.analysis/gpt-web/20260912-playmusic-unused/`. During aggregate validation, an initial partition helper incorrectly queried TOML key `unit` instead of the actual `units`; because the failing Python ran inside process substitution, the outer shell produced an empty source list and unintentionally invoked the no-argument full aggregate. Two such long invocations lost their caller-side result and returned no repository command id. Recovery found no active compiler/replay producer and no source drift, so those invocations received zero exact credit. The corrected helper first verified the manifest shape, then replayed eighteen bounded chunks with durable command records totaling 696/696. After the tracked conclusion was recorded and producer/reference state was checked, the 737-byte manifest, 488-byte bounded PlayMusic decompile, and empty current-session root were removed explicitly; `.analysis/` returned to 3,394,984 bytes. Semantic interpretation, exact replay, product closure, runtime storage, runtime scenarios, and Git checkpoint state remain separate planes.
-
-**Next evidence route.** Rotate away from PlayMusic after checkpoint. Prefer an independent historical-runtime, persistent/ABI, primary or sibling interpreter/state, or non-ANM resource-lifetime family with a TH095-local producer plus independent consumer. Keep shared photo bit 4/bit 8, ReplayScanWorker `unknown010`, SoundPlayer writer-only metadata, PBG copied-but-unconsumed metadata, TextRenderer RNG prefix, ANM bit 14, Bullet anonymous tails, score-header `+0x0C`, ASCII unused gaps, MIDI reset-only state, and replay/input reserved bytes Unknown unless new target-local evidence appears. The semantic phase remains active-incomplete.
 
 ### SEM-122 — bind UI writers of the ANM draw-enable gate
 
@@ -8706,10 +7590,6 @@ Fresh target `SceneSelectControllerView::UpdateSceneSelect @ 0x00447D00` indepen
 **Production / exact representation.** Normal `OptionsMenu.hpp` now assigns `drawEnabled = 0/1` for the four optional volume-digit VMs. Normal `SceneSelectUpdate.cpp` uses the same member for its visibility helper, locked-group scene VMs, Skip-controlled scene/preview text VMs, and selected-scene preview image. Exact OptionsMenu uses `OptionsMenuExact.hpp`, and exact SceneSelect uses `SceneSelectUpdateExact.inl`; both frozen target-facing sources retain the historical raw bit masks. No field width, VM layout, calling convention, handle ownership, or control flow changes.
 
 **Validation.** Focused cold replay of `src/OptionsMenu.cpp` and `src/SceneSelectUpdate.cpp` passed 2/2 configured exact units with zero compiler-private label refreshes. Normal production probes for both TUs reused their manifest compiler profiles and the pinned VC7.1 compiler version 13.10.3077, producing Intel 80386 COFF / `pe-i386` objects. `python3 scripts/build.py --check`, `python3 scripts/validate-tracking.py --require-target`, and `git diff --check` passed. The changed `OptionsMenu.hpp` is private to the OptionsMenu TU and exact builds select its frozen header at the file boundary; no shared layout/PCH owner changed, so aggregate exact and whole-product closure are deferred to the final committed campaign milestone.
-
-**Recovery / analysis state.** This batch began from committed SEM-121 HEAD `3af2553c56970c0d67a05dc4ccdbdc6d68191698` with no staged or tracked unstaged changes and the same four pre-existing untracked paths excluded. `.analysis/` was 3,394,984 bytes. Fresh target evidence uses manifested root `.analysis/gpt-web/20260912-anm-draw-enabled-writers/`, containing only its manifest and bounded two-function decompile. One focused production-probe harness failed before compiler launch because a dynamically loaded Python dataclass module was not registered in `sys.modules`; recovery confirmed no active producer, no source drift, and no generated probe files, so that attempt received no compile credit. The corrected harness registered the module before execution and produced both successful VC7.1 objects in command-local temporary directories. After the tracked conclusions were recorded and producer/reference state was checked, the 727-byte manifest, 60,473-byte bounded decompile, and empty current-session root were removed explicitly; `.analysis/` returned to 3,394,984 bytes.
-
-**Next evidence route.** Rotate away from ANM draw flags after checkpoint. Prefer an independent persistent/ABI, historical-runtime, interpreter/state, replay/input, or non-ANM resource-lifetime family with a TH095-local producer plus independent consumer. Keep compact enemy life baselines, delayed-callback storage, alternate ANM-bank producer identity, compact flags2 bit 5, compact `+0x2984`, shared photo bit 4/bit 8, ReplayScanWorker `unknown010`, SoundPlayer writer-only metadata, PBG copied metadata, TextRenderer RNG prefix, and score-header `+0x0C` Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-123 — bind the shared result-screen active latch
 
@@ -8730,10 +7610,6 @@ Target `PhotoGameTaskView::Update @ 0x00418100` reads task `+0xFC` bit 4 indepen
 **Production / exact representation.** Normal `PhotoGameTaskView` exposes bit 4 as `resultScreenActive`, and `PhotoGameTaskView::Update` uses that member for its archive-return and result-owned early-return gates. Normal ResultScreen names bit 4 in its shared-owner projection and uses `resultScreenActive = 1/0` for the three entry publications and two cursor-0 clears; DIFFBUILD retains the historical raw masks and exact builds continue to use `ResultScreenExact.inl`. Normal ScreenEffect uses the same name in both shake gates, while DIFFBUILD and `ScreenEffectExact.inl` retain `flag4`. Storage width, bit position, owner identity, task layout, calling conventions, return values, and control flow are unchanged.
 
 **Validation.** Focused replay of `PhotoGameTask.cpp`, `ResultScreen.cpp`, and `ScreenEffect.cpp` passed all 48/48 configured exact units with zero compiler-private label refreshes. Normal production probes for all three TUs reused their manifest compiler profiles and pinned VC7.1 13.10.3077, producing Intel 80386 COFF objects. Because `PhotoGameTask.hpp` is a shared owner/header, the cold aggregate exact gate ran immediately in nine mutually exclusive source chunks totaling 88/88 sources and 696/696 units; all passed exact with zero refreshes. A separate cold `python3 scripts/build-whole.py` compiled all 88 production TUs with pinned VC7.1 and linked a verified 780,288-byte PE32 GUI executable with build-local SHA-256 `87eec22046769072d64a9c5b021066eefa928d6c9fb9d0a90d16471a447d0b0e`. This is production compile/link closure, not whole-image byte identity.
-
-**Recovery / analysis state.** The source transaction started from committed SEM-122 HEAD `a1b4bc7174e5fd445b339a8d3bd6147591524ebc` with no staged or tracked unstaged changes and the same four pre-existing untracked paths excluded. `.analysis/` baseline was 3,394,984 bytes. Fresh target evidence is bounded to `.analysis/gpt-web/20260912-result-active/`, whose manifested session scratch contains the 34,882-byte seven-function decompile plus its manifest. An earlier FrontEnd-bit-4 routing probe produced only zero-byte query outputs because the wrong Ghidra query operation was requested; it received no target evidence credit and its manifested scratch root was removed after producer review. After the tracked conclusion was recorded and producer/reference state was checked, the 34,882-byte bounded decompile and 890-byte manifest were removed explicitly with no active producer; the empty current-session root was removed and `.analysis/` returned to 3,394,984 bytes.
-
-**Next evidence route.** Rotate away from shared result-screen state after checkpoint. Prefer an independent persistent/ABI, historical-runtime, replay/input, primary/sibling interpreter, sound, or non-ANM resource-lifetime family with a TH095-local producer plus independent consumer. Keep FrontEnd `+0x6120` bit 4, shared photo bit 8, PhotoGameTask ordinary-load `0x100`, compact enemy life baselines, delayed-callback storage, alternate ANM-bank producer identity, compact flags2 bit 5, ReplayScanWorker `unknown010`, SoundPlayer writer-only metadata, PBG copied metadata, TextRenderer RNG prefix, ANM bit 14, and score-header `+0x0C` Unknown absent new local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-124 — align ReplayManager with the gameplay-load latch
 
@@ -8803,25 +7679,6 @@ private production `.cpp` projection change with no shared header, physical
 layout, owner publication, or persistent-format change, aggregate exact and
 whole-product gates are deferred to the final campaign milestone.
 
-**Recovery / analysis state.** This transaction began at committed HEAD
-`9674fb70fe18d6fddd51a979f1d741a40a57fe0b` with no staged or tracked unstaged
-changes and the same four pre-existing untracked paths excluded. `.analysis/`
-started at 3,394,984 bytes. Fresh target evidence used the manifested
-current-session root `.analysis/gpt-web/20260912-replay-load-gate/`, containing a
-2,512-byte four-function decompile and 319-byte manifest. After the conclusion
-was recorded and producer/reference state was checked, those two files and the
-empty root were removed explicitly; `.analysis/` returned to 3,394,984 bytes.
-Semantic interpretation, Git state, exact replay, production compilation,
-runtime storage, and runtime scenarios remain separate states.
-
-**Next evidence route.** After checkpoint, rotate away from photo/global loading
-flags. Prefer an independent persistent ABI, resource-lifetime, sound, or
-interpreter protocol with a TH095-local producer and independent consumer. Keep
-ReplayScanWorker `unknown010`, replay reserved bytes, score header `+0x0A/+0x0C`,
-compact-enemy write-only control bits, and SoundPlayer writer-only metadata
-Unknown absent new target-local evidence. The semantic phase remains
-active-incomplete.
-
 ### SEM-125 — bind high-ECL opcode 137 to the canonical Player position
 
 **Scope.** Continue the post-SEM-124 rotation through the primary TH095 ECL
@@ -8887,34 +7744,6 @@ command exit. `git diff --check` passes. Since this is a private include used by
 one translation unit and does not change shared layout/ownership, aggregate
 exact and whole-product gates are deferred to the final campaign milestone.
 
-**Recovery / analysis state.** The transaction began from committed HEAD
-`086f069490f76b4f2d1ba50045350e5b7f33bcf3` with no staged or tracked unstaged
-changes and the four pre-existing untracked paths preserved outside staging.
-`.analysis/` began at 3,394,984 bytes. A first artifact-producing Ghidra command
-lost transport before returning a durable command id; recovery proved the
-session root absent, no Ghidra producer active, tracked source unchanged, and
-`.analysis/` still at baseline before retry. The successful retry produced a
-117,619-byte `RunEcl` decompile plus a 302-byte manifest under
-`.analysis/gpt-web/20260912-ecl-op137-player-position/` (decompile SHA-256
-`6ac6dc40a20a5485fc449fc40da7c58e2aff78249cc4d4490b987cc2bd9c9046`).
-A first normal-production compile attempt likewise lost transport before a
-durable command id; recovery proved its command-local object/PDB absent and no
-Wine/CL producer active before the compile was retried successfully. During the
-dirty transaction, external automation advanced `origin/main` from the earlier
-campaign baseline to this transaction's parent `086f069`; local HEAD did not
-move and this campaign did not push. After the target conclusion was recorded
-and producer/reference state was checked, the 117,619-byte decompile and
-302-byte manifest were removed explicitly with their empty session root;
-`.analysis/` returned to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from Player-position/ECL
-case 137. Prefer an independent resource-lifetime, sound, persistent ABI, or
-historical-runtime family with a TH095-local producer plus independent consumer.
-Keep ANM preload path bytes, ReplayScanWorker `unknown010`, score-header
-`+0x0A/+0x0C`, SoundPlayer writer-only metadata, TextRenderer RNG prefix, Bullet
-anonymous tails, and compact-enemy write-only bits Unknown absent new target-local
-evidence. The semantic phase remains active-incomplete.
-
 ### SEM-126 — align ASCII string reset gating with gameplay loading
 
 **Scope.** Audit the ASCII/text callback family after SEM-125 and reconcile its
@@ -8976,30 +7805,6 @@ COFF object (`machine 0x014C`); the object/PDB were removed before command exit.
 shared header, physical layout, owner publication, or persistent-format change,
 aggregate exact and whole-product gates are deferred to the final campaign
 milestone immediately after checkpoint.
-
-**Recovery / analysis state.** This transaction began at committed HEAD
-`8f3792e59455e94774bd5e7528198211c7731587` with no staged or tracked unstaged
-changes and the same four pre-existing untracked paths preserved outside
-staging. `.analysis/` began at 3,394,984 bytes. Fresh target evidence used the
-manifested current-session root `.analysis/gpt-web/20260912-ascii-load-gate/`,
-containing a 445-byte decompile and 297-byte manifest. A combined validation
-call and then a separate EOF-fix call each lost transport before returning a
-durable command id; recovery showed no producer, no command-local compile
-artifact, no refreshed exact object, and preserved tracked edits before those
-steps were retried separately. After validation was recorded, producer/reference state was checked and the
-445-byte decompile plus 297-byte manifest were removed explicitly with their
-empty session root; `.analysis/` returned to 3,394,984 bytes. Semantic
-interpretation, Git state, exact replay, production compilation, runtime
-storage, and runtime scenarios remain separate states.
-
-**Next evidence route.** After checkpoint, stop extending the shared loading
-flag family in this campaign slice and close the final aggregate/product gates.
-A later campaign should rotate to an independent persistent ABI,
-resource-lifetime, sound, or historical-runtime protocol. Keep Ascii bit 0/1,
-ANM preload path bytes, ReplayScanWorker `unknown010`, score-header
-`+0x0A/+0x0C`, SoundPlayer writer-only metadata, TextRenderer RNG prefix, and
-compact-enemy write-only bits Unknown absent new TH095-local evidence. The
-semantic phase remains active-incomplete.
 
 ### SEM-127 — recover the photo score breakdown payload
 
@@ -9093,40 +7898,6 @@ including tracking, match-unit and whole-build graph validation, and `git diff
 with no shared header/layout/PCH/owner change, aggregate exact and whole-product
 gates are deferred to the campaign milestone/final handoff.
 
-**Recovery / analysis state.** The transaction began from committed HEAD
-`50d930ebe3ec98f9bcd3f4ca16a5b83fc73a43c6` with zero staged/tracked unstaged
-changes and the same four pre-existing untracked paths preserved outside
-staging. `.analysis/` began at 3,394,984 bytes. Fresh target evidence was
-bounded under `.analysis/gpt-web/20260912-photo-score-payload/`: a 30,026-byte
-decompile of `0x00433140/0x0042C450/0x0042C5C0` (SHA-256
-`e8a053c056658c04c6148c7426344a5c6335c887d740ac914407935d82d24006`), a
-17,452-byte decompile of `0x0042AD60` (SHA-256
-`a398874bcf3095144ee0f55ce342b74d7662d32ca4b13405511f96d149f120f7`), and a
-377-byte manifest (SHA-256
-`0813380c3f0e08868a3b666bb7304844b44a39ac47b1a0059e71af552a09e551`). One
-read of the update artifact lost transport before returning a durable command
-id; recovery confirmed unchanged HEAD/tree, no active producer, and the three
-intact session files before the existing artifact was reread. The first
-source-edit command also lost transport before a durable id; recovery proved it
-had not written `PhotoStage.cpp`, after which the edit was applied once. The
-first cleanup command likewise lost transport before a durable id; recovery
-proved all three scratch files still present, source state unchanged, and no
-producer active before cleanup was retried. After the semantic conclusion was
-recorded and a final producer/reference audit found no active process or tracked
-consumer of the scratch root, all three manifested files were explicitly
-removed and the empty current-session root was removed. `.analysis/` returned
-exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from photo scoring and
-the recently exhausted sound/THTX/score-header plateau. Prefer an independent
-resource lifetime, historical-runtime, non-photo interpreter protocol, or ABI
-boundary with a TH095-local producer plus independent consumer. Keep score
-scoring-flags bits 5/17/18/19, score-header `+0x0A/+0x0C`, SoundPlayer/MIDI
-writer-only fields, ReplayScanWorker `unknown010`, ANM preload reserved words,
-and other single-ended storage Unknown absent new target-local evidence. The
-semantic phase remains active-incomplete.
-
-
 ### SEM-128 — bind the completion countdown publication
 
 **Scope.** Rotate from the photo-score payload into the primary ECL/state boundary and audit the anonymous first dword of `PhotoCompletionStateTaskView @ g_RuntimeGlobalStateOwner +0x104`. The normal PhotoFront consumer already called that physical dword `completionActive`, while the canonical task owner still exposed it as `unknown000` and high ECL opcode 114 still wrote the owner through raw `+0x104/+0x108` pointer arithmetic. This transaction binds the interpreter producer, canonical task owner, HUD consumer, and countdown consumer without changing the opcode number, storage width, task size, timer layout, or exact-facing control flow.
@@ -9145,8 +7916,6 @@ Fresh `PhotoFrontManagerView::Update @ 0x004175B0` independently tests `DAT_004B
 
 **Validation.** Focused canonical replay passed PhotoFront 11/11, PhotoGameTask 10/10, and EclRun 1/1 with zero private-label refresh. Normal pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1` probes emitted Intel 80386 COFF objects for all three production TUs after the ECL-local projection replaced the incompatible full-header include. Because `PhotoGameTask.hpp` is shared, the transaction immediately ran a cold aggregate replay in four mutually exclusive source partitions: 205 + 158 + 191 + 142 = 696/696 configured units across all 88 sources, with zero private-label refresh. A fresh whole-product build then compiled all 88 pinned-VC7.1 i386 objects and linked a 780,288-byte PE32 GUI image, SHA-256 `abe52cf05b5c2f1dab57dbac23eeb5942f24fa85788258b26b27bdd98867f853`; this is production compile/link closure, not a whole-image exact claim.
 
-**Recovery / analysis state.** The transaction began from committed HEAD `4c9cfb5085f34feabbb30a3cbff624eb11444450`, with no staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes. Three older `.analysis/gpt-web/` roots from earlier HEADs were classified as pre-existing legacy/currently-unowned scratch and left untouched. Fresh evidence is bounded to `.analysis/gpt-web/20260912-completion-countdown-gate/`: `decompile.txt` is 123,105 bytes with SHA-256 `c5da693f0e830dcbcde14df7a77bf14d8da0c1794a749dd4931b5adeec3a2cec`, plus its manifested producer/binding record. The first source-edit request lost transport before returning a durable command id; recovery proved it had made no source change before the corrected edit was applied once. The first normal PhotoFront probe exposed a missing normal binding for two remaining `flags` consumers and left no command-local temporary files; the binding was corrected to the canonical task owner. The first EclRun normal probe then demonstrated that importing the complete task header collides with the ECL TU's existing partial Main/Supervisor/MIDI types; recovery confirmed source state and cleaned command-local probe storage before the include was replaced by the bounded local owner projection. The initial monolithic 696 replay timed out before returning a durable command id; a producer/object audit found no running compiler and showed the cold build had reached the final sources, but that unreceipted attempt received no aggregate verdict credit. The four explicit source partitions above are the durable aggregate evidence. A final producer/reference audit found no active replay, compiler, Ghidra process, or non-document consumer of the current-session evidence. The 123,105-byte decompile and 798-byte manifest (SHA-256 `14fb03f3095ddcf2ef3ae55f933a9647339f8fc2c8129d896129a80f4ae72586`) were then removed explicitly with their empty session root. The three pre-existing gpt-web roots were left untouched, and `.analysis/` returned exactly to 3,394,984 bytes.
-
 ### SEM-129 — align the Supervisor FPS shared-state gates
 
 **Scope.** After SEM-128, adversarially audit the independent Supervisor timing consumer of `g_RuntimeGlobalStateOwner +0xFC`. `Supervisor::CalculateFps` still called bits 2, 4, 5, and 6 `timingBlocked2/4/5/6`, even though later TH095-local batches established those same physical bits as `gameplayLoadActive`, `resultScreenActive`, `playerDeathTransitionComplete`, and `photoLimitTransitionComplete`. This transaction aligns only the normal Main-side view and four reads. It does not change the FPS algorithm, any producer, the owner, the dword layout, or the exact-facing implementation.
@@ -9162,10 +7931,6 @@ Fresh `PhotoFrontManagerView::Update @ 0x004175B0` independently tests `DAT_004B
 **Production / exact representation.** Normal `src/Main.cpp` now spells the four `SupervisorGameTaskView` members and their `CalculateFps` reads as `gameplayLoadActive`, `resultScreenActive`, `playerDeathTransitionComplete`, and `photoLimitTransitionComplete`. `TH095_MATCH_EXACT` selects `MainExact.inl` at the translation-unit boundary, so its historical `timingBlocked2/4/5/6` spelling and target-facing source shape remain unchanged. There is no shared-header, physical-layout, calling-convention, persistent-format, or control-flow change.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/Main.cpp` rebuilt the exact object and replayed all 48 configured Main units exactly with zero compiler-private label refresh. The repository match graph remains 696 configured units and tracking remains 1,880 provisional / 697 source-present / 696 exact. A command-local normal production probe used the pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile and emitted a 114,915-byte Intel 80386 COFF object; its temporary object/PDB were removed at command exit. This is a translation-unit-local semantic alignment, so aggregate exact and whole-product gates are deferred only until the final committed campaign milestone below.
-
-**Recovery / analysis state.** The transaction began from committed HEAD `ed42cbe601e0352e0fda4129db91ca6fb710239d`, with zero staged/tracked unstaged changes and the same four pre-existing untracked paths excluded. `.analysis/` began at 3,394,984 bytes; three older gpt-web roots from earlier HEADs remained pre-existing legacy/currently-unowned scratch and were left untouched. Fresh target evidence is bounded to `.analysis/gpt-web/20260912-main-fps-shared-gates/`, containing the 2,173-byte decompile of `0x00424720` (SHA-256 `b528fabe104f82ffe6626b990a1590e0cf9422c654e23525c67b0dc13d711a9e`) plus its manifest. Repository CI passed all 43 target-independent tests and `git diff --check` passed. A final producer/reference audit found no active Ghidra, replay, whole-build, or VC7 compiler process and no tracked consumer requiring the raw files. The 2,173-byte decompile and 737-byte manifest (SHA-256 `fb05cfe2cdbdb44fce99d62544610fec24ba794bae39bc6450352534cd4fdad6`) were removed explicitly with their empty current-session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from shared photo/global timing flags. Prefer a persistent/ABI, resource-lifetime, historical-runtime, sound, replay/input, or independent interpreter/state family with a TH095-local producer plus independent consumer. Keep Main bit 1/3, shared bit 8, ReplayScanWorker `unknown010`, SoundPlayer writer-only metadata, PBG copied metadata, ANM bit 14, TextRenderer RNG prefix, score-header `+0x0C`, and compact-enemy write-only bits Unknown absent new local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-130 — bind HUD fade consumers to Player Y
 
@@ -9185,10 +7950,6 @@ Fresh `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` supplies the independe
 
 **Validation.** Focused canonical replay rebuilt both affected exact objects: PhotoFront remains 11/11 exact and PhotoGameTask remains 10/10 exact, for 21/21 units total with zero compiler-private label refresh. The repository graph remains 696 configured units and tracking remains 1,880 provisional / 697 source-present / 696 exact. Normal pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` probes emitted 32,438-byte PhotoFront and 35,476-byte PhotoGameTask Intel 80386 COFF objects. Because both changes are private translation-unit projections with no shared layout/owner publication change, aggregate exact and whole-product gates are deferred to the final committed campaign milestone.
 
-**Recovery / analysis state.** This transaction began from committed HEAD `478cea6eaac2ce7f0382559f59b6d611333562c5`, with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; the three older gpt-web roots from earlier HEADs remained pre-existing legacy/currently-unowned scratch and were not modified. Fresh target evidence is bounded to `.analysis/gpt-web/20260913-player-y-hud-fade/`, containing a 13,365-byte three-function decompile (SHA-256 `65ef5e2ddbaa21d9b71250668237d3a47c7bed214cddf39a90b28d0da746ebb3`) plus a 766-byte manifest (SHA-256 `79c439b20983bf52d0f4500d90e6b5aabe3c6e391cfeeeb5919e36c13a114317`). The first focused exact request lost transport before returning a durable command id; recovery found no active compiler/replay producer, unchanged tracked edits, and only older matching-object timestamps before the two sources were replayed separately with durable success. The first production-probe request likewise lost transport before a durable id; recovery found no Wine/CL producer and no surviving command-local probe directory before both normal TUs were compiled successfully. A final producer/reference audit found no active Ghidra, replay, whole-build, Wine, or VC7 compiler process and no tracked consumer outside this semantic record. The 13,365-byte decompile and 766-byte manifest were then removed explicitly with their empty current-session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from Player-position/HUD presentation. Prefer an independent persistent-format, historical-runtime, sound, replay/input, non-ANM resource-lifetime, or interpreter/state family with a TH095-local producer and independent consumer. Keep Main bit 1/3, shared bit 8, ReplayScanWorker `unknown010`, score-header `+0x0C`, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, and compact-enemy single-ended fields Unknown absent new local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-131 — propagate the photo score breakdown through Best Shot persistence
 
 **Scope.** Follow the persistent/ABI route after SEM-130 and test whether ResultScreen's anonymous eight-dword `metadata` copies represent an independent blob or the already-proven photo-score breakdown from SEM-127. The audited path crosses the live PhotoStage slot, the result-photo browser, and the persistent `ResultSaveData` score-record union. This transaction promotes one shared production `PhotoScoreBreakdownView`; it does not invent new scoring fields, change the 0x60-byte record format, or reinterpret unrelated best-shot image/record fields.
@@ -9207,10 +7968,6 @@ Fresh `PhotoStageDisplayView::Build @ 0x0042C5C0` independently receives the sco
 
 **Validation.** Focused exact replay rebuilt PhotoStage 6/6, ResultScreen 24/24, and ScoreData 1/1 for 31/31 exact units with zero compiler-private label refresh. Normal pinned VC7.1 production probes emitted Intel 80386 COFF objects for PhotoStage (48,360 bytes), ResultScreen (74,978 bytes), and ScoreData (19,544 bytes). Two earlier multi-TU probe attempts lost transport before returning durable command ids; recovery found no active compiler and no surviving command-local probe directories, so they receive no compile credit. Because `ScoreData.hpp` is a shared persistent header, the transaction immediately cold-replayed all 88 configured sources in four mutually exclusive manifest partitions: 226 + 201 + 217 + 52 = 696/696 exact units, with zero private-label refresh. A fresh whole-product build then compiled all 88 pinned-VC7.1 i386 objects and linked a 780,288-byte PE32 GUI image, SHA-256 `552dfa6345307f3797eec6dc4111148a276f8a7470f8170535b25805e2bba6b2`; this is production compile/link closure, not whole-image exact.
 
-**Recovery / analysis state.** This transaction began from committed HEAD `ea5938b32c93180019e25462632e5903fd3552a5`, with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; the three older gpt-web roots remained pre-existing legacy/currently-unowned scratch and were not modified. Fresh target evidence is bounded to `.analysis/gpt-web/20260913-best-shot-score-breakdown/`, containing a 42,683-byte three-function decompile (SHA-256 `4027140d8be257187fda2625cdeac09144be5a6d19cc120f32debc000ca7a9fa`) and 774-byte manifest (SHA-256 `76f9e56571292aed4c8a20f9e9559177780f829cfce32a7a0f6a3158114d437d`). One third-partition exact request lost transport before returning a durable command id; recovery found no active replay/compiler and showed matching-object timestamps still stopped at the second partition, so that attempt received zero aggregate credit before the third partition was safely replayed. A final producer/reference audit found no active Ghidra, replay, whole-build, Wine, or VC7 compiler process and no tracked consumer outside this semantic record. The 42,683-byte decompile and 774-byte manifest were then removed explicitly with their empty current-session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from photo-score/best-shot payload identity. Prefer an independent historical-runtime, replay/input, sound, non-ANM resource-lifetime, or sibling-interpreter protocol with TH095-local producer plus independent consumer evidence. Keep scoring flag bits 5/17/18/19, score-header `+0x0C`, ReplayScanWorker `unknown010`, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, Main bit 1/3, and shared bit 8 Unknown absent new local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-132 — align scene-preview pending producers
 
 **Scope.** Rotate away from SEM-131 photo-score persistence and adversarially audit the independent SceneSelect/front-end state protocol at controller `flags @ +0x6120`. `FrontEndControllerFlagBits` already named bit 2 `previewPending`, and `UpdateSceneSelect` already consumed that member by name, but three normal-production mutations still used raw `flags |= 4` / `flags &= ~4`. This transaction aligns only those bit-2 producer/clearer sites with the established controller representation. It does not rename controller bit 4, change the asset worker, queue layout, VM protocol, or exact-facing implementation.
@@ -9226,10 +7983,6 @@ Fresh `PhotoStageDisplayView::Build @ 0x0042C5C0` independently receives the sco
 **Production / exact representation.** Normal `src/SceneSelectUpdate.cpp` now assigns `view->flagBits.previewPending = 1` at the two target-equivalent set sites and `= 0` at the clear site. `TH095_MATCH_EXACT` selects the frozen `SceneSelectUpdateExact.inl` at the translation-unit boundary, where the historical raw masks remain unchanged. `SceneSelect.hpp`, the controller layout, storage width, offsets, queue representation, calling convention, and persistent data are unchanged.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/SceneSelectUpdate.cpp` rebuilt the exact object and replayed the sole configured `scene-select-update` unit exactly with zero compiler-private label refresh. The repository graph remains 696 configured units and tracking remains 1,880 provisional / 697 source-present / 696 exact. The normal manifest profile `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src`, executed through the pinned VC7.1 `compile-probe.sh` lane, emitted a 53,451-byte Intel 80386 COFF object (`pe-i386`); command-local object/PDB storage was removed at exit. Because this is a translation-unit-local representation edit with no shared header/layout/owner change, aggregate exact and whole-product gates are deferred to the next committed campaign milestone.
-
-**Recovery / analysis state.** The transaction began from committed HEAD `823134eba906abf1a9744400fd42e29b1edc465d`, with zero staged/tracked unstaged changes and the same four pre-existing untracked experiment paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; the three older gpt-web roots from earlier HEADs remained pre-existing legacy/currently-unowned scratch and were not modified. Current evidence is bounded to `.analysis/gpt-web/20260913-scene-preview-pending/`: the 38,363-byte `0x00447D00` decompile has SHA-256 `edbb54ff67b11b2ecaa3a1ec3c5860fa6b2c8f7d1ccc3d0ae9a42582dc657825`, and the current 814-byte manifest has SHA-256 `f2db029314659f9bec76183649561e0e3a89f25fa108ab9f8511bd157044392a`. Several initial manifest-creation requests lost transport before a durable command id; recovery repeatedly proved the session root absent before the successful creation. The first Ghidra request likewise lost transport before a durable id; recovery found only the intact manifest, no decompile output, and no active `analyzeHeadless` producer before the successful target-attested retry. A final producer/reference audit found no active Ghidra, replay, whole-build, Wine, or VC7 compiler process and no tracked consumer outside this semantic record. The 38,363-byte decompile and 814-byte manifest were then removed explicitly with their empty current-session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from SceneSelect/controller flags. Prefer an independent historical-runtime, sound, non-ANM resource-lifetime, replay/input, persistent-format, or sibling-interpreter protocol with TH095-local producer plus independent consumer evidence. Keep controller bit 4, Main bit 1/3, shared bit 8, ReplayScanWorker `unknown010`, scoring flag bits 5/17/18/19, score-header `+0x0C`, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, and compact-enemy single-ended fields Unknown absent new local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-133 — bind gameplay-load FPS sample reset publication
 
@@ -9247,10 +8000,6 @@ Fresh `PhotoStageDisplayView::Build @ 0x0042C5C0` independently receives the sco
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/PhotoGameTask.cpp` rebuilt the exact object and replayed all 10 configured PhotoGameTask units exactly with zero compiler-private label refresh. The graph remains 696 configured units and tracking remains 1,880 provisional / 697 source-present / 696 exact. A command-local normal production probe reused the manifest profile `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` and emitted a 35,499-byte Intel 80386 COFF / `pe-i386` object; the temporary object/PDB were removed at exit. Because this is a translation-unit-local expression change with no shared header/layout/owner modification, aggregate exact and whole-product gates are deferred to the final committed campaign milestone.
 
-**Recovery / analysis state.** The transaction began from committed SEM-132 HEAD `3bb5c223f17ca150a8e16c87652761c30ee4ef7f`, with zero staged/tracked unstaged changes and the same four pre-existing untracked paths excluded. `.analysis/` began at 3,394,984 bytes; the three older gpt-web roots remained pre-existing legacy/currently-unowned scratch and were not modified. Fresh target evidence was bounded to `.analysis/gpt-web/20260913-load-fps-reset/`, containing a 4,983-byte two-function decompile (SHA-256 `681a4ba70352e3dd1af252285e0f0a13c5564a609f22cefa6662bc0bb1b5dccb`) and an 817-byte manifest (SHA-256 `91a63d1078d7ee693ecdfa8800fade83a319e466b638512702ccf1a797e254b3`). A final producer/reference audit found no active Ghidra, replay, whole-build, Wine, or VC7 compiler process and no tracked consumer outside this semantic record. The decompile and manifest were removed explicitly with their empty current-session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from shared photo/FPS flags. Prefer an independent historical-runtime, sound, non-ANM resource-lifetime, persistent-format, replay/input, or sibling-interpreter protocol with a TH095-local producer plus independent consumer. Keep shared bit 8, Main bits 1/3, controller bit 4, ReplayScanWorker `unknown010`, scoring flag bits 5/17/18/19, score-header `+0x0C`, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, and compact-enemy single-ended fields Unknown absent new local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-134 — align ResultScreen with the gameplay-load gate
 
 **Scope.** Rotate away from SEM-133 shared FPS publication and adversarially audit ResultScreen's private projection of `g_RuntimeGlobalStateOwner +0xFC`. Normal `ResultScreen.cpp` still called bit 2 `suppressResultCallbacks`, even though SEM-124 and the current canonical owner model establish the same physical bit as `gameplayLoadActive`. This transaction aligns only ResultScreen's two callback consumers. It does not change the loading producer, result state machine, other shared flags, callback ABI, or exact-facing implementation.
@@ -9266,10 +8015,6 @@ Fresh `PhotoStageDisplayView::Build @ 0x0042C5C0` independently receives the sco
 **Production / exact representation.** Normal `src/ResultScreen.cpp` exposes bit 2 as `gameplayLoadActive` and uses that member in `OnUpdate` and `OnDraw`. DIFFBUILD retains the historical `suppressResultCallbacks` spelling through compile-time branches. `TH095_MATCH_EXACT` continues to select the complete frozen `ResultScreenExact.inl` translation-unit implementation. Field width, offset, owner, callback signatures and control flow are unchanged.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/ResultScreen.cpp` rebuilt the exact object and replayed all 24 configured ResultScreen units exactly with zero compiler-private label refresh. The match graph remains 696 configured units and tracking remains 1,880 provisional / 697 source-present / 696 exact. A command-local normal production probe used the pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile and emitted a 74,966-byte Intel 80386 COFF object; command-local object/PDB storage was removed at exit. Since this is a translation-unit-local semantic alignment with no shared header/layout/owner publication change, aggregate exact and whole-product gates are deferred to the final committed campaign milestone.
-
-**Recovery / analysis state.** The transaction began from committed HEAD `a7e340d3ff00e81b56584bc03288953f754b1faf` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; the three older gpt-web roots remained pre-existing legacy/currently-unowned scratch and were not modified. Fresh target evidence is bounded to `.analysis/gpt-web/20260913-result-load-gate/`, containing a 1,638-byte decompile (SHA-256 `e05e6ad431f70de2f682499e343c49b88dadb8b3718c59200a185e374221787b`) and its manifest. A final producer/reference audit found no active Ghidra, replay, whole-build, Wine, or VC7 compiler process and no tracked consumer outside this semantic record. The 1,638-byte decompile and its manifest were then removed explicitly with their empty current-session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from shared gameplay-load/photo flags. Prefer an independent historical-runtime, sound, non-ANM resource-lifetime, persistent-format, replay/input, or sibling-interpreter family with TH095-local producer plus independent consumer evidence. Keep shared bit 8, Main bits 1/3, controller bit 4, ReplayScanWorker `unknown010`, scoring flag bits 5/17/18/19, score-header `+0x0C`, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, and compact-enemy single-ended fields Unknown absent new local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-135 — bind PhotoGameTask to the canonical camera counters
 
@@ -9289,10 +8034,6 @@ Fresh `PhotoGameTaskView::Update @ 0x00418100` independently reads `DAT_004C4E70
 
 **Validation.** Focused PhotoGameTask replay rebuilt all 10 configured units exactly with zero compiler-private label refresh. A command-local normal production probe using the pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile emitted a 35,461-byte Intel 80386 COFF object. Because `PhotoPlayerRuntime.hpp` is a shared production owner/header, the transaction immediately cold-replayed the complete manifest. Durable partitions closed 205 + 158 + 191 + 43 + 99 = 696/696 configured exact units across all 88 sources with zero private-label refresh. Two attempted 22-source tail replay requests lost transport before receiving command ids; recovery found no replay/compiler process and matching-object timestamps still stopped at the preceding partition, so those attempts received zero credit before the same source set was replayed as two durable 11-source partitions. A fresh whole-product build then compiled all 88 pinned-VC7.1 i386 objects and linked a 780,288-byte PE32 GUI image, SHA-256 `efd70558a12db01445679049b31737ea046d317be9389cbcd149d9c5799ba417`; this is production compile/link closure, not whole-image exact. An earlier whole-build request lost transport before a command id, and recovery showed no producer and the generated PE still carried its older timestamp, so that attempt likewise received zero product credit.
 
-**Recovery / analysis state.** This transaction began from committed SEM-134 HEAD `bea3df56ae3d0514298da42599d70e4d8997e76f` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; the three older gpt-web roots remained pre-existing legacy/currently-unowned scratch and were not modified. Fresh target evidence is bounded to `.analysis/gpt-web/20260913-player-photo-counters/`, containing a 6,978-byte decompile (SHA-256 `253860172c5c887e3ec0a78e3eb53934c65c8d61657bb663f556ea0d68db5c04`) and its manifest. The variadic HUD argument ordering was additionally confirmed directly from the hash-attested target instruction stream over `0x00418570..0x00418600`; that one-shot output was not retained. A final producer/reference audit found no active Ghidra, replay, whole-build, Wine, VC7 compiler, or linker process and no tracked consumer outside this semantic record. The 6,978-byte decompile and its manifest were then removed explicitly with their empty current-session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from Player camera/photo counters and the recently aligned shared gameplay flags. Prefer an independent historical-runtime, sound, non-ANM resource-lifetime, persistent-format, replay/input, or sibling-interpreter protocol with a TH095-local producer plus independent consumer. Keep shared bit 8, Main bits 1/3, controller bit 4, ReplayScanWorker `unknown010`, scoring flag bits 5/17/18/19, score-header `+0x0C`, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, and compact-enemy single-ended fields Unknown absent new local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-136 — recover the replay frame input packet
 
 **Scope.** Rotate away from the recently completed photo/global/player-runtime families into the persistent replay/input boundary. `ReplayManager::ProcessFrame` still encoded each replay input frame through raw `inputCursor + 0/+2/+4` halfword accesses and a literal six-byte cursor advance, even though the shared input owner already has TH095-local current/pressed/released semantics. This transaction recovers only that serialized per-frame record in normal `ReplayManager.cpp`; `ReplayInputData`, the replay file header, FPS sample stream, shared input object, and exact snapshot remain unchanged.
@@ -9310,10 +8051,6 @@ Fresh `ReplayInputSource::Update @ 0x004353B0` independently establishes the edg
 **Production / exact representation.** `ReplayInputFrameView` is translation-unit-local to normal `src/ReplayManager.cpp`. The record/playback branches replace raw `u16 *` cursor arithmetic with named fields while `ReplayManager::inputCursor` remains a byte pointer; serialized width, order, and stride are unchanged. `TH095_MATCH_EXACT` still selects `ReplayManagerExact.inl`, so no exact-facing source or shared layout changes.
 
 **Validation.** `python3 scripts/replay-exact-units.py --source src/ReplayManager.cpp` replayed all 12 configured ReplayManager units exactly with zero compiler-private label refresh. The match graph remains 696 units and tracking remains 1,880 provisional / 697 source-present / 696 exact. A command-local pinned VC7.1 normal probe emitted a 36,261-byte Intel 80386 COFF object. Because this is a persistent-protocol representation change, a cold whole-product build also compiled all 88 pinned-VC7.1 i386 objects and linked a 780,288-byte PE32 GUI image, SHA-256 `b26d2f805db7b876eaf9b8e8123c539db71166ae8a52db257f167c9954c9e845`. This is native compile/link closure, not whole-image exact.
-
-**Recovery / analysis state.** The transaction began from committed HEAD `6f73f8926bbf244717091ad3b31ad821f9681462` with no staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; the three older `.analysis/gpt-web/` roots from prior HEADs remain pre-existing legacy/currently-unowned scratch and were not touched. Fresh target evidence is bounded to `.analysis/gpt-web/20260912-replay-frame-packet/`: `decompile.txt` is 2,345 bytes with SHA-256 `75ca7d90c9d5ee9c8bf2ca83ae13b77270e34329d0dcfa8979b587a59ccd46b4`, and `manifest.json` is 645 bytes with SHA-256 `4e2c5272f2d3571e997245af5f15748ae6b5819c03870704c36a434c78e35bf3`. One attempted documentation write lost transport before returning a durable command id; recovery proved it had not modified either tracked document before this single retry. A final producer/reference audit found no active Ghidra, replay, whole-build, Wine/VC7 compiler, or tracked consumer outside this semantic record. The 2,345-byte decompile and 645-byte manifest were removed explicitly with their empty current-session root; the three pre-existing gpt-web roots were left untouched, and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from replay frame packets and the shared input owner. Prefer an independent historical-runtime, sound, non-ANM resource-lifetime, persistent/ABI, or interpreter/state family with a TH095-local producer plus independent consumer. Keep `ReplayInputSource::unknown02a/unknown036`, ReplayScanWorker `unknown010`, SoundPlayer writer-only metadata, score-header reserved words, ANM bit 14, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-137 — bind Main BGM producers to the sound command protocol
 
@@ -9333,10 +8070,6 @@ Fresh target producer decompiles close the other side of the protocol. `Supervis
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/Main.cpp` rebuilt the exact Main object and replayed all 48 configured units exactly with zero compiler-private label refresh. Tracking remains 1,880 provisional / 697 source-present / 696 exact, and the whole-build graph remains 88 sources / 2 profiles. A command-local normal production probe used the pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile and emitted a 114,915-byte Intel 80386 COFF object. Because this is an audio command-protocol change, a fresh cold whole-product build compiled all 88 pinned-VC7.1 i386 objects and linked a 780,288-byte PE32 GUI image, SHA-256 `b639f1f13c45437edd812007f1111aeaf4e6a2867e524e603661d2b6789d90f4`; this is production compile/link closure, not whole-image exact. An earlier combined validation command failed only because it referenced a nonexistent `scripts/validate-match-units.py` after the successful 48/48 replay; recovery confirmed unchanged source and no producer, and only the not-yet-run graph/compile steps were resumed.
 
-**Recovery / analysis state.** The transaction began from committed HEAD `da410f205b7d9ed9603f753031a32996a96b2445` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; the three older gpt-web roots remained pre-existing legacy/currently-unowned scratch and were not modified. Fresh target evidence is bounded to `.analysis/gpt-web/20260913-sound-command-protocol/`: `decompile.txt` is 13,986 bytes with SHA-256 `33358f9d77da1e288013dd05dc492beeb27c89b57ba0bfc7575bf8ec7384be3f`, plus its manifested producer/binding record. A final producer/reference audit found no active Ghidra, replay, whole-build, Wine, VC7 compiler, or linker process and no tracked consumer outside this semantic record. The 13,986-byte decompile and 809-byte manifest (SHA-256 `9463e50eeccbb4ea5a333c5dec9098937ae69bd1823b9f520997771fd0306e80`) were then removed explicitly with their empty current-session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from SoundPlayer command opcodes. Prefer an independent historical-runtime, non-ANM resource-lifetime, persistent/ABI, or sibling-interpreter/state family with TH095-local producer plus independent consumer evidence. Keep SoundPlayer writer-only metadata, `ReplayInputSource::unknown02a/unknown036`, ReplayScanWorker `unknown010`, score-header reserved words, ANM bit 14, TextRenderer RNG prefix, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
-
 ### SEM-138 — bind ECL opcode 142 to the death-transition completion latch
 
 **Scope.** Rotate away from the SoundPlayer command protocol into a sibling high-ECL state publication. High opcode 142 still wrote raw mask `0x20` to `g_Th095GameManager + 0xFC`, even though later TH095-local reconstruction established that physical shared-owner bit 5 as `playerDeathTransitionComplete`. This transaction binds only that producer to the existing state identity. It does not assign a script-level name to opcode 142, alter the natural PhotoGame death-transition producer, or reinterpret neighboring shared flags.
@@ -9352,10 +8085,6 @@ Fresh target producer decompiles close the other side of the protocol. `Supervis
 **Production / exact representation.** Normal `src/ecl/EclRun.cpp` adds a minimal `EclGlobalStateFlagsView` rooted at the shared owner with only bit 5 named and compile-time `flags @ +0xFC` validation. Normal case 142 in `EclRunTargetHigh.inl` assigns `TH095_ECL_GLOBAL_STATE_FLAGS.playerDeathTransitionComplete = 1`. DIFFBUILD and `TH095_MATCH_EXACT` retain the original raw `*(g_Th095GameManager + 0xFC) |= 0x20` expression. No shared header, storage width, owner address, opcode number, calling convention, or control flow changes.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/ecl/EclRun.cpp` rebuilt the canonical object and replayed the single configured `RunEcl` unit exactly with zero compiler-private label refresh. Tracking remains 1,880 provisional / 697 source-present / 696 exact and the whole-build graph remains 88 sources / 2 profiles. A command-local normal production probe used the pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile and emitted a 77,902-byte Intel 80386 COFF object. Because this is a translation-unit-local state-protocol projection with no shared layout/header change, the cold aggregate exact and whole-product gates are deferred to the final committed campaign milestone immediately after checkpoint.
-
-**Recovery / analysis state.** The transaction began from committed SEM-137 HEAD `e3032dde975340486ac00e409c91e6a044c568ec`, with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; the three older gpt-web roots remained pre-existing legacy/currently-unowned scratch and were not modified. The first artifact-producing decompile request lost the MCP connection before returning a durable command id. Mandatory recovery found no session root, no Ghidra/replay/compiler producer, unchanged Git state, and `.analysis/` still exactly at baseline, proving there was nothing to reuse or clean before a single safe retry. Fresh target evidence is bounded to `.analysis/gpt-web/20260913-ecl-death-complete/`: `decompile.txt` is 122,011 bytes with SHA-256 `e3809c58a0867c9161be7e2ba6632598b987513beb364222f78df500c91e4a75`, plus its manifested producer/binding record. A final producer/reference audit found no active Ghidra, replay, whole-build, Wine, VC7 compiler, or linker process and no tracked consumer outside this semantic record. The 122,011-byte decompile and 773-byte manifest (SHA-256 `8dca461ff489c1c6d811674d31e7b0f3250a0cabb15d38966b985fd23a7c7f44`) were then removed explicitly with their empty current-session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from shared completion/photo-global flags and opcode 142. Prefer an independent historical-runtime, non-ANM resource-lifetime, persistent/ABI, or other interpreter/state family with TH095-local producer plus independent consumer evidence. Keep shared bit 8, SoundPlayer/PBG writer-only metadata, replay/input reserved bytes, ReplayScanWorker `unknown010`, score-header reserved words, ANM bit 14, TextRenderer RNG prefix, compact tail packet `+0x4CA4..+0x4CAB`, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-139 — bind compact enemy draw-group producers
 
@@ -9375,10 +8104,6 @@ Fresh `PhotoEnemyManagerView::OnUpdate @ 0x00415970` independently supplies the 
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/ecl/EclRun.cpp` rebuilt the canonical object and replayed the configured `RunEcl` unit exactly, 1/1 with zero compiler-private label refresh. Tracking remains 1,880 provisional / 697 source-present / 696 exact and the whole-build graph remains 88 sources / 2 profiles. A command-local pinned VC7.1 normal probe emitted a 77,902-byte Intel 80386 COFF object. Because this is an interpreter/state protocol representation change, a fresh whole-product build compiled all 88 pinned-VC7.1 i386 objects and linked a 780,288-byte PE32 GUI image, SHA-256 `27c2a65dc6f9a0a257404d0fcb9b880cb86fcd56ec91b85026c4a8e3fda6b014`; this is production compile/link closure, not whole-image exact.
 
-**Recovery / analysis state.** The transaction began from committed SEM-138 HEAD `94291dd7c8821c3868ce2d59e9d2ac36e73b80c4` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; the three older gpt-web roots remained pre-existing legacy/currently-unowned scratch and were not modified. Fresh target evidence is bounded to `.analysis/gpt-web/20260913-ecl-draw-group/`: `decompile.txt` is 124,686 bytes with SHA-256 `18f7f41b1c75ade7f907112ce5c8bf6948e1a875409bc7e8974e61ec4c6fe8f`, and `manifest.json` is 754 bytes with SHA-256 `ac93fd2d81ec07a468f348263621c05232ab2499684b00d3d135b5e307c1ee11`. A final producer/reference audit found no active Ghidra, replay, whole-build, Wine, VC7 compiler, or linker process and no tracked consumer outside this semantic record. The 124,686-byte decompile and 754-byte manifest were then removed explicitly with their empty current-session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from compact draw grouping and the recently exhausted shared photo/global state. Prefer an independent historical-runtime, non-ANM resource-lifetime, persistent/ABI, sound metadata only if a new reader appears, or a different sibling-interpreter protocol with TH095-local producer plus independent consumer evidence. Keep compact `+0x4CA4..+0x4CAB`, `timer4cac`, shared bit 8, ReplayScanWorker `unknown010`, score-header reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
-
 ### SEM-140 — bind high-ECL enemy VM Z rotation
 
 **Scope.** Rotate away from compact draw grouping into a distinct interpreter-to-renderer protocol. High ECL case 135 still wrote compact enemy `+0x28` through raw pointer arithmetic even though the same object embeds an `AnmVm` at `+0x08` and the canonical VM layout already names `rotation.z @ VM+0x20`. This transaction binds only that producer to the existing ANM field identity. It does not assign a script-level mnemonic to opcode 135 or reinterpret rotation X/Y, ANM draw flags, or neighboring compact enemy storage.
@@ -9394,10 +8119,6 @@ Fresh `PhotoEnemyManagerView::OnUpdate @ 0x00415970` independently supplies the 
 **Production / exact representation.** Normal `src/ecl/EclRun.cpp` adds a translation-unit-local `EclEnemyVmView` with compile-time checks for embedded VM `+0x08` and `rotation.z` at compact enemy `+0x28`. `EclRunTargetHigh.inl` routes case 135 through `TH095_TARGET_ENEMY_VM_ROTATION_Z`; DIFFBUILD and `TH095_MATCH_EXACT` retain the historical raw `enemy+0x28` lvalue. No shared header, object size, field width, owner publication, calling convention, opcode number, operand decoding, or control flow changes.
 
 **Validation.** The final source state passed focused `python3 scripts/replay-exact-units.py --source src/ecl/EclRun.cpp`: 1/1 configured unit exact with zero compiler-private label refresh. A command-local normal production probe using the pinned VC7.1 profile emitted a 77,902-byte Intel 80386 COFF object. The first combined validation command had already completed exact replay and a 77,894-byte normal probe before failing only because it referenced a nonexistent graph-validator filename; mandatory recovery found no producer or temporary probe directory, after which the final post-assertion exact and production probes above were run separately. Cold aggregate exact and whole-product gates are deferred to the committed campaign milestone because the source change is translation-unit-local and does not alter shared layout.
-
-**Recovery / analysis state.** The transaction began from committed SEM-139 HEAD `0f5bca944522650c189c36f44e54e570c7801d0f` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; the three older gpt-web roots remained pre-existing legacy/currently-unowned scratch and were not modified. The first artifact-producing decompile request lost transport before returning a durable command id; recovery found no session root, no active Ghidra producer, unchanged source state, and `.analysis/` still at baseline, so the query was safely retried once. Fresh target evidence is bounded to `.analysis/gpt-web/20260913-ecl-enemy-vm-rotation/`: `decompile.txt` is 120,619 bytes with SHA-256 `ae484abe692ee4d3f0ffdc14b25bb89f9403f1323646c2a06c7bd1d5d5d7bd78`, plus its manifested producer/binding record. One later assertion-edit request also lost transport before returning a durable id; recovery proved the assertion had not been written, after which it was applied once. A final producer/reference audit found no active Ghidra, replay, whole-build, Wine, VC7 compiler, or linker process and no non-document consumer of the current-session evidence. The 120,619-byte decompile and 766-byte manifest (SHA-256 `eb914fc841ead8f5f2e91a2761ab212bc225e6bb4dc73efb158de577b8930acd`) were then removed explicitly with their empty session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from enemy VM rotation and the recently audited compact-tail and SceneDefinition plateaus. Prefer an independent historical-runtime, non-ANM resource-lifetime, persistent/ABI, replay/input, or sound-metadata family only when a new TH095-local reader/producer closes a protocol. Keep compact `+0x4CA4..+0x4CAB`, `timer4cac`, ReplayScanWorker `unknown010`, shared bit 8, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, and TextRenderer RNG prefix Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-141 — align the shared Best Shot index owner
 
@@ -9417,10 +8138,6 @@ Fresh `PhotoOverlayManagerView::Draw @ 0x0042C220` independently reads `DAT_004B
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/PhotoOverlay.cpp` rebuilt the canonical object and replayed all 11 configured PhotoOverlay units exactly with zero compiler-private label refresh. A command-local normal-production probe using the pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile emitted a 23,577-byte Intel 80386 COFF object and removed the temporary object/PDB on exit. This is a translation-unit-local semantic alignment with no shared header/layout change; cold aggregate exact and whole-product gates are reserved for the final committed campaign milestone.
 
-**Recovery / analysis state.** The transaction began from committed HEAD `cc00bc20a9cdac2f05b43f7b43c6a4bc5ef478f6`, with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; the three older gpt-web roots from prior HEADs remained pre-existing legacy/currently-unowned scratch and were not modified. Fresh target evidence is bounded to `.analysis/gpt-web/20260913-best-shot-index-owner/`: `decompile.txt` is 9,004 bytes with SHA-256 `a3f439fc3364354686b94b904e8c4c1c58d6f69741ec4c5073bc6e62d4d0eadf`, and `manifest.json` is 597 bytes with SHA-256 `e60b5ec1ec47a65862ce3e2e0c7b1392981c9e62c88eb6b9f8a4f29fccc441bc`. A final producer/reference audit found no active Ghidra, replay, whole-build, Wine/VC7 compiler, or linker process and no non-document consumer of the current-session evidence. The 9,004-byte decompile and 597-byte manifest were then removed explicitly with their empty session root; the three pre-existing gpt-web roots were left untouched and `.analysis/` returned exactly to 3,394,984 bytes.
-
-**Next evidence route.** After checkpoint, rotate away from the Best Shot index and recent photo-score/shared-global families. Prefer an independent historical-runtime, non-ANM resource-lifetime, replay/input, sound-metadata only if a new reader appears, or a different persistent/interpreter protocol with TH095-local producer plus independent consumer evidence. Keep ReplayScanWorker `unknown010`, shared bit 8, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact tail packet `+0x4CA4..+0x4CAB`, `timer4cac`, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
-
 ### SEM-142 — correct the Supervisor configuration compatibility alias
 
 **Scope.** Rotate away from SEM-141 Best Shot/shared-photo ownership into an independent historical-runtime and persistent-configuration boundary. `src/Supervisor.hpp` still described target `g_Supervisor + 0x170` as `unconsumedDword170`, but that compatibility header carries an old 0x3C configuration view while the canonical TH095 `GameConfiguration` in `Main.hpp` and `SupervisorRuntime.hpp` occupies 0xC8 bytes at Supervisor `+0x11C`. This transaction tests the physical dword instead of trusting the legacy member boundary. It corrects only the normal-production compatibility alias; it does not re-layout the legacy header, change the serialized configuration, reinterpret controller input slots, or change exact-facing source.
@@ -9438,10 +8155,6 @@ A second fresh target xref audit of `0x004BE31C` finds the LoadConfig write at `
 **Production / exact representation.** Normal `src/Supervisor.hpp` conditionally exposes a `u32 serializedControllerBinding4Input3Compat` at Supervisor `+0x170` with a compile-time offset assertion. `TH095_MATCH_EXACT` retains the historical `i32 unconsumedDword170` spelling, so compiler-facing exact source is unchanged. The physical width and offset remain four bytes; no serialized byte, controller-mapping layout, canonical `Main.hpp`/`SupervisorRuntime.hpp` type, calling convention, or control flow changes.
 
 **Validation.** Focused exact replay covered the four direct/deep compatibility-header consumers `Midi.cpp`, `SoundPlayer.cpp`, `ZunTimer.cpp`, and `ecl/EclRun.cpp`: 57/57 configured units remain exact with zero compiler-private label refresh. A later command attempted an obsolete validator filename after that successful replay and exited nonzero only because the file does not exist; recovery found no active producer or source drift, so the completed 57-unit replay was not repeated. Command-local normal-production probes using the pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile emitted Intel 80386 COFF objects for all four TUs (43,528 / 64,538 / 13,990 / 77,902 bytes). Repository CI passes all 43 tests, tracking remains 1,880 provisional / 697 source-present / 696 exact, and the match graph remains 696 units. Because `Supervisor.hpp` is shared, a cold aggregate exact replay was executed immediately in four mutually exclusive 22-source partitions: 226 + 201 + 217 + 52 = 696/696 exact units across all 88 sources with zero private-label refresh. A fresh whole-product build compiled all 88 pinned-VC7.1 i386 objects and linked a verified 780,288-byte PE32 GUI image, SHA-256 `ed5b55335be46455ab032aebf7c9ab5f343c1ca27860edcd7f3a72ad607a7f3d`; this is production compile/link closure, not whole-image exact.
-
-**Recovery / analysis state.** The transaction began from committed HEAD `041dd277f9600212393b4be72326665f803b827c`, with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes. Three older `.analysis/gpt-web/` roots remained pre-existing legacy/currently-unowned scratch and were not modified. Fresh target evidence for this batch came through the Factory-registered read-only `th095-ghidra` provider, so no current-session filesystem analysis root was created. One provider decompile request for `0x00418720` lost transport and received no evidence credit; a later target-attested retry succeeded. One read-only shell request and one wrapper-inspection request were also interrupted or blocked before yielding evidence and caused no source change. No current-session `.analysis` cleanup is therefore required.
-
-**Next evidence route.** After checkpoint, rotate away from the controller-configuration compatibility alias. Prefer an independent non-ANM resource-lifetime, sound-metadata only if a new reader appears, replay/input field only if a new field-level consumer appears, persistent/ABI, or sibling interpreter/state family with TH095-local producer plus independent consumer evidence. Keep the business meaning of `ControllerBinding::inputs[3]`, `Supervisor +0x304`, ReplayScanWorker `unknown010`, shared bit 8, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact tail packet `+0x4CA4..+0x4CAB`, `timer4cac`, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-143 — align compact hidden-enemy capture filters
 
@@ -9461,10 +8174,6 @@ Fresh `PhotoEnemyManagerView::OnUpdate @ 0x00415970` closes the owner meaning in
 
 **Validation.** `python3 scripts/replay-exact-units.py --source src/PhotoRuntime.cpp --source src/PhotoCamera.cpp` rebuilt both exact objects and replayed all 12 configured units exactly (1 PhotoRuntime + 11 PhotoCamera) with zero compiler-private label refresh. The command then exited nonzero only because it referenced a nonexistent graph-check script after the successful replay; mandatory recovery confirmed unchanged source state and no active producer, so the completed exact verdict was not repeated. Individual command-local normal-production probes using pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted 17,172-byte and 57,805-byte Intel 80386 COFF objects for PhotoRuntime and PhotoCamera respectively. Two earlier combined probe requests lost transport before returning durable command ids; recovery found no active compiler and no retained probe directory before the successful individual probes. Because the final source change is translation-unit-local and changes no shared layout/header, cold aggregate exact and whole-product gates are deferred to the campaign milestone/final handoff.
 
-**Recovery / analysis state.** The transaction began from committed SEM-142 HEAD `d01cb1e7312b3b5b630e3527699304fb4584edd4`, with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes. Fresh target evidence came through the Factory-registered read-only `th095-ghidra` provider (`0x004168D0`, `0x004339F0`, `0x00415970`), so this batch created no current-session filesystem analysis root. The three older `.analysis/gpt-web/` roots remain pre-existing legacy/currently-unowned scratch and were not modified. Network interruptions affected only read-only/provider or command-response transport as described above; recovery repeatedly confirmed the same source diff and no active producer.
-
-**Next evidence route.** After checkpoint, rotate away from compact bit 4 and recent photo/global families. Prefer an independent non-ANM resource-lifetime, historical-runtime, persistent/ABI, replay/input field with a new field-level consumer, sound metadata only if a real reader appears, or a different sibling-interpreter protocol. Keep compact `controlWord` bit 5, compact `flags2` bit 6, `+0x4CA4..+0x4CAB`, `timer4cac`, ReplayScanWorker `unknown010`, shared bit 8, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, and other single-ended storage Unknown absent new TH095-local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-144 — align SceneDetail draw-enable writers
 
 **Scope.** Rotate away from SEM-143 compact capture filtering into a distinct UI/ANM writer-coverage audit. ANM-040 established `AnmVm.flagsWord @ +0x228` bit 1 as the `drawEnabled` gate and ANM-044/SEM-122 later recovered OptionsMenu and SceneSelect update writers, but `SceneDetail.cpp` and the normal inline helpers in `SceneSelect.hpp` still changed that same bit through raw `|= 2` / `&= ~2`. This transaction aligns only the scene-detail digit writers with the existing canonical ANM field. It does not reinterpret bit 0 `visible`, bit 14, VM lifetime, scene-score semantics, or the digit-selection policy.
@@ -9480,10 +8189,6 @@ Fresh `PhotoEnemyManagerView::OnUpdate @ 0x00415970` closes the owner meaning in
 **Production / exact representation.** Normal `src/SceneDetail.cpp` now assigns `drawEnabled = 1/0` in the out-of-line `ShowDetailDigit`/`HideDetailDigit` helpers. Normal `src/SceneSelect.hpp` does the same in `ShowDetailDigitInline`/`HideDetailDigitInline`. Under `TH095_MATCH_EXACT`, `SceneSelect.hpp` immediately redirects to the separately frozen `SceneSelectExact.hpp`, while `SceneDetail.cpp` selects `SceneDetailExact.inl`; their target-facing raw bit masks remain unchanged. No object size, offset, calling convention, VM id, control flow, persistent format, or exact-facing source shape changes.
 
 **Validation.** The immediate header fanout replay covered 13 affected sources and all 46 configured units exactly with zero compiler-private label refresh. A command-local normal-production probe using pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a 25,325-byte Intel 80386 COFF `SceneDetail.obj`. Because `SceneSelect.hpp` is a shared production header, the transaction immediately ran a cold aggregate exact replay over all 88 configured sources in four mutually exclusive partitions: 226 + 201 + 217 + 52 = 696/696 units, all exact with zero private-label refresh. A fresh whole-product build compiled all 88 pinned-VC7.1 i386 objects and linked a 780,288-byte PE32 GUI image, SHA-256 `18ff43aab3b3b5056f0227d9677db5b8383f245c992f35d852e107bc090aa86d`; this is production compile/link closure, not a whole-image exact claim.
-
-**Recovery / analysis state.** The transaction began from committed SEM-143 HEAD `60dfa5828bf7a17f5f83159a8a5d9de4a8370126`, with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes. Fresh target evidence used the Factory-registered read-only `th095-ghidra` provider for `0x0044CFA0/0x0044CFE0`, so no current-session filesystem analysis root was created; the three older `.analysis/gpt-web/` roots remain pre-existing legacy/currently-unowned scratch and were not touched. One initial source-edit request lost transport before a durable command id; recovery proved the edit had not run before it was applied once. The first cold-partition request also lost transport before a durable id; a producer audit found no running replay/compiler, so it received zero exact credit and partition 1 was rerun once with a durable verdict. Multiple whole-product submission attempts either lost transport before starting or were blocked before execution; producer and generated-file audits proved they had not run. The final standalone `python3 scripts/build-whole.py` invocation completed durably and supplies the product result above.
-
-**Next evidence route.** After checkpoint, rotate away from ANM draw flags and SceneSelect UI visibility. Prefer an independent non-ANM resource-lifetime, historical-runtime, persistent/ABI, replay/input field only when a new reader appears, sound metadata only when a real consumer appears, or a different interpreter/state protocol with TH095-local producer plus independent consumer evidence. Keep ANM bit 14, ReplayScanWorker `unknown010`, shared bit 8, score/replay reserved words, SoundPlayer/PBG writer-only metadata, compact control bit 5/flags2 bit 6, compact tail `+0x4CA4..+0x4CAB`, `timer4cac`, TextRenderer RNG prefix, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-145 — align SceneSelect Best Shot preview record reads
 
@@ -9501,10 +8206,6 @@ Fresh `PhotoEnemyManagerView::OnUpdate @ 0x00415970` closes the owner meaning in
 
 **Validation.** Campaign preflight re-attested the canonical Japanese v1.02a target SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07` / MD5 `8de95bc7651419201fc1a4ea49bc0697`, tracking at 697 source-present / 696 exact authored functions, and the registered Ghidra target through all six configured byte samples. `python3 scripts/replay-exact-units.py --source src/SceneSelectUpdate.cpp` rebuilt and replayed the canonical `scene-select-update` unit exactly 1/1 with zero compiler-private label refresh. A command-local pinned VC7.1 production compile using `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a 53,427-byte Intel 80386 COFF object. `git diff --check` passed. Because the source change is confined to the normal branch of one translation unit and changes no shared header/layout/owner or sensitive protocol bytes, cold aggregate exact and whole-product gates are deferred to the current committed campaign milestone/final handoff rather than repeated on the dirty private checkpoint.
 
-**Recovery / analysis state.** Start-of-conversation `.analysis/` measured 3,442,253 bytes. The recovered manifested root `.analysis/gpt-web/20260913-best-shot-preview-dimensions/` contained only a 46,529-byte bounded decompile plus a 740-byte manifest, bound to target SHA prefix `bb54f6fc...`, the three functions above, and starting HEAD `fea6133`; its manifest's stale `size_bytes: 0` was superseded by the live measured file size. No Ghidra, replay, compiler, linker, Wine, or wineserver producer was active. The four pre-existing untracked paths were re-reviewed and excluded from staging: `droid.resume.txt` is explicitly user-owned/unrelated pre-existing work; `config/runtime-scenarios.json` and `scripts/runtime-diff.py` are documented pre-existing runtime experiments; `EnemyManagerUpdate.i` remains documented pre-existing/unknown-origin generated-looking state whose current ownership is not proven, so it is preserved without deletion or staging. After the tracked conclusion and final producer/reference audit, the 46,529-byte decompile and 740-byte manifest were removed explicitly with their empty recovered session root; `.analysis/` returned to 3,394,984 bytes. No retained current-session large artifact exists, and all other legacy/shared `.analysis/` content remains untouched.
-
-**Next evidence route.** After checkpoint, rotate away from SceneSelect/Best Shot preview representation and the recently audited ANM/UI surfaces. Prefer an independent historical-runtime, non-ANM resource-lifetime, replay/input field only when a new field-level reader appears, sound metadata only when a real consumer appears, a different persistent/ABI family, or a sibling interpreter/state protocol with TH095-local producer plus independent consumer evidence. Keep ANM bit 14, ReplayScanWorker `unknown010`, shared bit 8, score/replay reserved words, SoundPlayer/PBG writer-only metadata, compact control bit 5/flags2 bit 6, compact tail `+0x4CA4..+0x4CAB`, `timer4cac`, TextRenderer RNG prefix, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
-
 ### SEM-146 — bind the Supervisor dummy-MIDI-timer startup latch
 
 **Scope.** After SEM-145, the adversarial resume audit rotated away from SceneSelect and rejected several tempting lexical plateaus rather than treating them as progress: ReplayScanWorker `unknown010` still has no new field-level reader; SoundPlayer/PBG metadata still lacks the required consuming side; residual enemy `+0x2BF4` references are predominantly exact/DIFF compatibility for the already-canonical ECL control word; FrontEndController `+0x61B8..+0x63CC` raw accesses are exact-facing aliases for already-typed queue/state members; ReplayManager's unknown global-state bits did not reveal a new reader; and Background's historical `unknownFlag*` spellings are exact-only while normal production already uses established shared-state names. The independent historical-runtime route instead found one missed normal-production constructor publication in `src/SupervisorLifecycle.cpp`: the exact constructor still used raw `flags |= 0x40` even though two independent TH095-local runtime functions establish the same physical bit as the dummy MIDI timer enable latch. This batch names only bit 6 in that constructor-facing normal view. It does not reinterpret the adjacent `0x100` publication, change the Supervisor ABI, or change exact-facing source.
@@ -9521,10 +8222,6 @@ Fresh `PhotoEnemyManagerView::OnUpdate @ 0x00415970` closes the owner meaning in
 
 **Validation.** The narrow exact lane rebuilt `src/SupervisorLifecycle.cpp` and replayed both configured constructor/destructor units exact 2/2 with zero compiler-private label refresh. A command-local pinned VC7.1 normal compile using `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a 5,550-byte Intel 80386 COFF object. `git diff --check` passed. For the final current-source campaign milestone, four durable exact partitions replayed 226 + 201 + 217 + 52 = 696/696 configured units across all 88 sources with zero private-label refresh. An earlier 44-source aggregate attempt lost its Factory bridge command id and received no credit; producer recovery showed it had exited before the durable partitions were started. `python3 scripts/build-whole.py` then compiled all 88 production translation units with pinned VC7.1 13.10.3077 and linked a 780,288-byte PE32 i386 GUI image with build SHA-256 `8253169ece9b30b121d4ac25e421867c2fef74bb5c60c8dd31ba5505ec485c70`; this is production compile/link closure, not whole-image byte identity. The report remains bound to canonical target SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07` and linker 7.10.3077.
 
-**Recovery / analysis state.** The tracked tree was clean before this batch except for the already-classified four pre-existing untracked paths: user-owned `droid.resume.txt`, runtime experiments `config/runtime-scenarios.json` and `scripts/runtime-diff.py`, and unknown-origin generated-looking `EnemyManagerUpdate.i`; all remain preserved and excluded from staging. No active producer existed at edit time. `.analysis/` stayed at 3,394,984 bytes throughout SEM-146 and no current-session analysis root or large artifact was created. Legacy/shared analysis artifacts remain untouched.
-
-**Next evidence route.** Rotate away from Supervisor startup flags after checkpoint. Prefer a distinct non-ANM resource lifetime, historical-runtime gap, persistent/ABI family, replay/input field only if a new reader appears, sound/PBG metadata only if a real consumer appears, or a sibling interpreter/state protocol with a TH095-local producer plus independent consumer. Keep Supervisor constructor bit 8, shared photo/global bit 8, ReplayScanWorker `unknown010`, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact control bit 5/flags2 bit 6, compact tail `+0x4CA4..+0x4CAB`, `timer4cac`, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete; this checkpoint pauses the browser campaign and does not assert readiness, closure, completion, or portability.
-
 ### SEM-147 — bind the ANM secondary-color selector
 
 **Scope.** The mandatory recovery gate at committed SEM-146 HEAD `fa815ea7c96f58561096a0368767876e2f4bb89c` found one coherent unfinished tracked transaction across `AnmManager.hpp`, `AnmManager.cpp`, `AnmDrawCore.cpp`, and the live TH095 projection in `ecl/AnmManagerEclView.hpp`. The transaction renamed ANM opcode 80 and VM `flagsWord @ +0x228` bit 15 from anonymous `FLAG15`/`flag15` spellings to a secondary-color selector. Recovery therefore adopted and verified that work before following the prior handoff into a new family. This batch changes only the maintained symbolic representation of that opcode/bit and its known normal-production consumers. It does not change ANM instruction encoding, VM layout, color storage, interpolation, rendering arithmetic, or exact-facing source.
@@ -9540,10 +8237,6 @@ Fresh `PhotoEnemyManagerView::OnUpdate @ 0x00415970` closes the owner meaning in
 **Production / exact representation.** `src/AnmManager.hpp` now names opcode 80 `ANM_OP_USE_SECONDARY_COLOR` and VM bit 15 `useSecondaryColor`; the live TH095 ECL-side `AnmVm` projection uses the same bit name. `src/AnmManager.cpp` publishes the selector through that member, and the four normal consumers in `src/AnmDrawCore.cpp` choose `color2` versus `color1` through the named bit. Numeric opcode value 80, bit position 15, `color1/color2/flagsWord` offsets, VM size, field widths, calling conventions, instruction layout, and control flow are unchanged.
 
 **Validation.** The narrow replay first rebuilt `AnmDrawCore.cpp`, `AnmManager.cpp`, and `ecl/EclRun.cpp` and passed 18 + 14 + 1 = 33/33 configured exact units with zero compiler-private label refresh. Command-local normal pinned-VC7.1 probes using `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted Intel 80386 COFF objects of 72,438 bytes (`AnmManager`), 45,338 bytes (`AnmDrawCore`), and 77,918 bytes (`EclRun`). Because `AnmManager.hpp` and the ECL projection are shared headers, the batch then cold-replayed all 88 manifest sources in four durable 22-source partitions: 205 + 158 + 191 + 142 = 696/696 exact units, with zero private-label refresh. A fresh whole-product build compiled all 88 production translation units with pinned VC7.1 13.10.3077 and linked a 780,288-byte PE32 i386 GUI image, SHA-256 `9feddf33115b6c5d75d07e5c914bb435fce381ccce56b110b509b89324c430c1`, with linker 7.10.3077. This is production compile/link closure, not a whole-image exactness claim. Target-independent CI passed all 43 tests, the tracking graph remains 1,880 provisional / 697 source-present / 696 exact, the match graph remains 696 units, and `git diff --check` passed. No runtime visual-equivalence scenario is claimed for this representation-only batch.
-
-**Recovery / analysis state.** Campaign start `.analysis/` measured 3,394,984 bytes and remains exactly 3,394,984 bytes; this batch created no current-session filesystem analysis root because fresh semantic evidence came through the Factory-registered read-only `th095-ghidra` provider. Three older `.analysis/gpt-web/` roots remain pre-existing legacy/currently-unowned state and were not modified. The same four pre-existing untracked paths remain excluded from staging: user-owned `droid.resume.txt`, runtime experiments `config/runtime-scenarios.json` and `scripts/runtime-diff.py`, and unknown-origin generated-looking `EnemyManagerUpdate.i`. The first combined aggregate-exact/whole-build/CI submission lost the Factory response before returning a durable command id. Mandatory recovery proved unchanged tracked/untracked state and no active replay/compiler/linker/Wine producer; although a whole-product artifact timestamp showed work had occurred, that unreceipted attempt received no validation credit. The complete exact surface was then replayed in the four durable partitions above, and whole-product plus CI were rerun separately with durable results. No current-session analysis artifact is retained, and no legacy/shared analysis state was removed.
-
-**Next evidence route.** After checkpoint, rotate away from ANM color selection and recent ANM/UI flag work. Prefer an independent non-ANM resource lifetime, historical-runtime gap, persistent/ABI family, replay/input field only if a new field-level reader appears, sound/PBG metadata only if a real consumer appears, or a distinct sibling interpreter/state protocol with TH095-local producer plus independent consumer evidence. Keep ANM bit 14, ReplayScanWorker `unknown010`, Supervisor/shared bit 8, score/replay reserved words, SoundPlayer/PBG writer-only metadata, TextRenderer RNG prefix, compact control bit 5/flags2 bit 6, compact tail `+0x4CA4..+0x4CAB`, `timer4cac`, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-148 — bind PhotoCamera focus and target feedback consumers
 
@@ -9563,10 +8256,6 @@ Fresh `UpdatePhotoCamera @ 0x00430AB0` independently reads camera bit 1 in both 
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/PhotoCamera.cpp` rebuilt the translation unit and passed all 11/11 configured exact units with zero compiler-private label refresh. A command-local normal production probe using pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a 57,834-byte Intel 80386 COFF object. Target-independent CI passed all 43 tests; tracking remains 1,880 provisional / 697 source-present / 696 exact, the match graph remains 696 configured units, the whole-build graph remains 88 sources / 2 profiles, target identity validation still resolves the canonical Japanese v1.02a image, and `git diff --check` passed. Because this transaction is translation-unit-local and changes no shared header/layout/PCH/owner representation, aggregate exact and whole-product feedback are deferred to the final campaign handoff milestone rather than replayed before this private checkpoint.
 
-**Recovery / analysis state.** The post-SEM-147 recovery gate found no staged or unstaged tracked work and preserved the same four classified untracked paths unchanged. Fresh semantic evidence came through the registered read-only `th095-ghidra` provider; no filesystem analysis root was created. `.analysis/` remains exactly 3,394,984 bytes. The FrontEnd bit-4 and shared bit-8 negative audits are routing evidence only and do not change their Unknown status or claim semantic progress on those fields.
-
-**Next evidence route.** After checkpoint, rotate away from PhotoCamera and recent shared/global flag work. Prefer an independent historical-runtime or non-ANM resource-lifetime family, a persistent/ABI field with a real reader/writer pair, or a sibling interpreter/state protocol with multiple TH095-local consumers. Keep FrontEnd controller bit 4, shared photo/global bit 8, camera charge-UI bit 4, camera bit 5 beyond its currently represented effect spelling, ReplayScanWorker `unknown010`, score-header reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact enemy tail/timer storage, and other single-ended fields Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-149 — bind the ECL call-stack suppression protocol
 
 **Scope.** Rotate away from SEM-148 PhotoCamera feedback flags into the sibling ECL call/return protocol. The initial bounded audit rejected the tempting compact movement/script fields at `+0x2C0E` and `+0x2C3C` because SEM-013/014/044 already close those owners. It instead found a missed representation binding in the already-canonical compact control word: `EnemyEclControlBits` names bit 24 `suppressEclCallStack`, but normal `EclDependencies.cpp` still tested the physical bit with raw shifts and target-high opcode 126 still published it through the local `flag24` spelling. This transaction aligns only that producer and the call/return consumers. It does not reinterpret adjacent control bits, the call-stack record layout, child ECL allocation ownership, or the script-level purpose of opcode 126 beyond its observed publication.
@@ -9583,10 +8272,6 @@ Fresh `UpdatePhotoCamera @ 0x00430AB0` independently reads camera bit 1 in both 
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/EclDependencies.cpp --source src/ecl/EclRun.cpp` rebuilt the affected exact objects and passed 10 + 1 = 11/11 configured units with zero compiler-private label refresh. Command-local normal-production probes using pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted 31,077-byte and 77,898-byte Intel 80386 COFF objects for `EclDependencies.cpp` and `EclRun.cpp`. Target-independent CI passed all 43 tests; tracking remains 1,880 provisional / 697 source-present / 696 exact, the match graph remains 696 configured units, the whole-build graph remains 88 sources / 2 profiles, and `git diff --check` passed. This transaction changes no shared header/layout/PCH/owner representation, so cold aggregate exact and whole-product gates are deferred to the next committed campaign milestone/final handoff.
 
-**Recovery / analysis state.** The campaign began at committed HEAD `b1f48ea41dc9832f8f22b723029b1bab6abe5e8c` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging: user-owned `droid.resume.txt`, runtime experiments `config/runtime-scenarios.json` and `scripts/runtime-diff.py`, and unknown-origin generated-looking `EnemyManagerUpdate.i`. `.analysis/` began and remains at 3,394,984 bytes; the three older gpt-web roots are legacy/currently-unowned and were not modified. Fresh target evidence came through the Factory-registered read-only `th095-ghidra` provider, so no current-session filesystem analysis root was created. The first source-edit command failed on a local text-match assertion before writing any file. Mandatory recovery immediately confirmed unchanged Git state, the same four untracked paths, no active Ghidra/replay/compiler/linker/Wine producer, and no scratch artifact; the edit was then reapplied with exact local matches and validated as above.
-
-**Next evidence route.** After checkpoint, rotate away from the ECL call-stack control word and recently audited compact movement/script families. Prefer an independent historical-runtime or persistent/ABI boundary with both a target-local producer and consumer, or a non-ANM resource lifetime with multiple TH095-local use sites. A promising bounded route is the raw `g_Supervisor + 0x188` consumer in `EnemyMovement.cpp`, which lies inside the canonical serialized `GameConfiguration` object and should be accepted only if target-local initialization/load behavior distinguishes that slot's role. Keep FrontEnd bit 4, shared photo/global bit 8, ReplayScanWorker `unknown010`, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact control/flags bits without independent readers, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
-
 ### SEM-150 — reconcile the high-ECL call-stack suppression consumer
 
 **Scope.** The adversarial audit immediately after SEM-149 found a counterexample to that record's broadest inference. Target-high opcode 107 enters a subroutine through an inline `enter_subroutine` path that reads the same compact control bit 24, but unlike `CallSubOnEnemy` it suppresses only the `0x230`-byte call-context copy and still increments `activeEclCallStackDepth` when the depth is below 15. This transaction binds that missed high-ECL reader to the canonical `suppressEclCallStack` field and narrows the semantic claim. It supersedes only SEM-149's statement that a set bit universally suppresses both context save and depth increment; it does not undo the physical owner, opcode-126 producer, low-helper consumers, or no-stack-return evidence established there.
@@ -9602,10 +8287,6 @@ Fresh `UpdatePhotoCamera @ 0x00430AB0` independently reads camera bit 1 in both 
 **Production / exact representation.** Normal `src/ecl/EclRunTargetHigh.inl` now reads `TH095_ENEMY_ECL_CONTROL_BITS(enemy).suppressEclCallStack` for the inline `enter_subroutine` context-copy gate. `DIFFBUILD` and `TH095_MATCH_EXACT` retain the historical `TH095_RUN_ECL_CONTROL_WORD(enemy) >> 24` expression. The following unconditional depth-limit check/increment is deliberately unchanged, preserving the target's asymmetric protocol. No shared header, layout, opcode number, storage width, calling convention, or control-flow change is introduced.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/ecl/EclRun.cpp` rebuilt the canonical `RunEcl` object and passed 1/1 configured exact unit with zero compiler-private label refresh. A command-local normal-production probe using pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a 77,910-byte Intel 80386 COFF object. Target-independent CI passed all 43 tests, tracking remains 1,880 provisional / 697 source-present / 696 exact, and `git diff --check` passed. The change is confined to the normal branch of the same ECL translation unit, so cold aggregate exact and whole-product gates remain deferred to the committed campaign milestone/final handoff.
-
-**Recovery / analysis state.** The transaction began from clean tracked HEAD `b542a5adceccc81e82b870cb2db5cb6d82cfd568` with only the same four pre-existing untracked paths preserved. The proposed `g_Supervisor + 0x188` persistent/ABI route was actively falsified before editing: ABI-079 already proves that `EnemyMovement.cpp`'s exact-facing relocation base is synthetic `0x004BDD50`, so `+0x188` lands on `g_AnmGameSpeed @ 0x004BDED8`; normal production already reads the correct game-speed owner directly. No source change was made for that rejected route. `.analysis/` remains 3,394,984 bytes and no current-session filesystem analysis artifact was created.
-
-**Next evidence route.** Rotate away from the ECL call-stack family after checkpoint. Prefer an independent historical-runtime, persistent/ABI, replay/input, sound/resource-lifetime, or weak-API family with a real TH095-local producer plus independent consumer. Do not infer `GameConfiguration +0x6C` from the EnemyMovement synthetic relocation. Keep FrontEnd bit 4, shared photo/global bit 8, ReplayScanWorker `unknown010`, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact single-ended flags/tail storage, and other unresolved fields Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-151 — bind Background stage-data borrowed views
 
@@ -9626,10 +8307,6 @@ Fresh lifecycle evidence closes the ownership direction. `Background::Background
 **Production / exact representation.** Normal `src/BackgroundLifecycle.cpp` now exposes the first four Background slots as `BackgroundStageHeader *stageData`, `BackgroundStageObject **stageObjects`, `BackgroundStageObjectInstance *stageObjectInstances`, and `u8 *stageScript`, with compile-time assertions for `+0x04/+0x08/+0x0C`. `TH095_MATCH_EXACT` deliberately retains the historical `void *stageData; u8 unknown004[0x0C];` spelling so the accepted target-facing constructor/destructor source shape remains unchanged. Object size, offsets, pointer widths, constructor/destructor operations, serialized data, and calling conventions are unchanged.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/BackgroundLifecycle.cpp` rebuilt both configured lifecycle units and passed 2/2 exact with zero compiler-private label refresh. A command-local normal-production compile using the repository-pinned VC7.1 13.10.3077 environment and `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a 6,665-byte Intel 80386 COFF object; its temporary object/PDB directory was removed at command exit. `git diff --check` passed. An earlier manual compiler invocation omitted the pinned VC/PlatformSDK `INCLUDE` environment, failed before source analysis with `stddef.h` missing, and is recorded only as a tooling-recovery event with no compile credit.
-
-**Recovery / analysis state.** This campaign began at committed HEAD `192a496b4df2478250f7305d0d4f6cded2339a8d` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths excluded from staging: `EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and `scripts/runtime-diff.py`. `.analysis/` began at 3,394,984 bytes; the three pre-existing `gpt-web` roots are legacy/currently-unowned and were not modified. Fresh semantic evidence came through the Factory-registered read-only `th095-ghidra` provider, so no current-session filesystem analysis root was created. Intermittent Factory transport failures returned no command id and yielded no evidence credit; live recovery checks confirmed the tracked transaction state before editing continued.
-
-**Next evidence route.** After checkpoint, rotate away from the Background stage-data prefix. Prefer an independent non-Background resource lifetime, persistent/ABI, replay/input, sound, historical-runtime, or weak-API family with a TH095-local producer and independent consumer. Keep FrontEnd bit 4, shared photo/global bit 8, ReplayScanWorker `unknown010`, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, Background lifecycle spans not independently audited here, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-152 — expose the persistent score-profile runtime overlay
 
@@ -9653,10 +8330,6 @@ Because the enclosing save owner is zeroed before profile initialization, `lastS
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/ScoreLifecycle.cpp` rebuilt all five configured lifecycle/profile units and passed 5/5 exact with zero compiler-private label refresh. A command-local normal-production compile using the repository-pinned VC7.1 13.10.3077 environment and `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a 13,990-byte Intel 80386 COFF object; its temporary object/PDB directory was removed at command exit. `git diff --check` passed. Aggregate exact and whole-product receipts are deferred because this is a translation-unit-local normal representation change with no shared header, object extent, PCH, owner publication, or target-facing source change.
 
-**Recovery / analysis state.** The batch began from committed checkpoint `5a4c82dcdbfe3a6826f3502f7b9065226b1a1247` with zero staged/tracked unstaged work and the same four pre-existing untracked paths preserved outside staging. `.analysis/` remains at the campaign-start 3,394,984 bytes; no current-session filesystem analysis root was created, and fresh target evidence came through the registered read-only `th095-ghidra` provider. Several read/validation calls lost Factory transport before returning a command id; they received no evidence or validation credit, and recovery checks confirmed no active replay/compiler producer and no extra tracked path before durable commands were retried.
-
-**Next evidence route.** After checkpoint, rotate away from the score-profile prefix. Prefer an independent replay/input, sound/resource-lifetime, historical-runtime, weak-API, or non-ANM state family with a TH095-local producer plus independent consumer. Keep profile `+0x15`, the non-overlapping RNG words and tail, score/replay reserved header words, ReplayScanWorker `unknown010`, SoundPlayer/PBG writer-only metadata, FrontEnd bit 4, shared photo/global bit 8, ANM bit 14, TextRenderer RNG prefix, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
-
 ### SEM-153 — correct the ScreenEffect type-3 arcade-pulse protocol
 
 **Scope.** The mandatory recovery gate at committed HEAD `df9b8019d3052ee0858d40de0ee04fc7e4c7de1e` found one coherent unstaged transaction across `ScreenEffect.hpp`, `ScreenEffect.cpp`, `PhotoStage.cpp`, and the `screen-effect-register-chain` switch-table relocation metadata. The live edits contradicted the maintained SCREEN-007/ABI-038 statement that type 3 was the full-screen fade-out and type 4 was the arcade pulse. Recovery therefore adopted this transaction before selecting any unrelated batch. This batch corrects only the type-3/type-4 identity and names the type-3 parameter roles proven by its callbacks. It does not redesign ScreenEffect storage, change Chain registration, alter timer behavior, reinterpret the other six effect types, or assign meaning to the type-3 fourth value dword at `+0x20`.
@@ -9677,11 +8350,6 @@ Fresh target `CalcArcadePulse @ 0x00437190` identifies the first three value slo
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/ScreenEffect.cpp --source src/ScreenEffectRegister.cpp --source src/PhotoStage.cpp` rebuilt the three affected translation units and passed 14 + 1 + 6 = 21/21 configured units exact with zero compiler-private label refresh. Because `ScreenEffect.hpp` is a shared header and the corrected enum participates in target-facing `RegisterChain`, the cold aggregate gate then replayed all 88 manifest sources in four mutually exclusive 22-source partitions: 226 + 201 + 217 + 52 = 696/696 configured units, all exact with zero compiler-private label refresh. A fresh whole-product build compiled all 88 production translation units with pinned VC7.1 13.10.3077 and linked a 780,288-byte PE32 i386 GUI image with build-local SHA-256 `9c39b9db97fbfd48825994cf122a6bd6ac22d3c46e0982f951b0844431a616a5`; this is production compile/link closure, not whole-image byte identity. An earlier successful build in the combined validation command produced a different build-local hash before that command later failed on an obsolete target-check script path; neither build hash is treated as a target-equivalence claim. Target-independent CI passed all 43 tests, tracking remains 1,880 provisional / 697 source-present / 696 exact, the match graph remains 696 configured units, the whole-build graph remains 88 sources / 2 profiles, target verification still resolves SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`, and `git diff --check` passed. One combined validation shell exited 2 only after the successful whole build and successful CI because it referenced the obsolete path `scripts/check-target.py`; recovery found no active producer or worktree drift, and the existing `scripts/verify-target.py` was then run separately with a durable success result.
 
-**Recovery / analysis state.** Recovery began from `df9b8019d3052ee0858d40de0ee04fc7e4c7de1e` with four unstaged tracked paths forming this transaction and the same four pre-existing untracked paths seen by prior campaigns. `droid.resume.txt` remains user-owned unrelated work; `config/runtime-scenarios.json` and `scripts/runtime-diff.py` remain pre-existing runtime experiments; `EnemyManagerUpdate.i` remains unknown-origin generated-looking state and is neither deleted nor staged. `.analysis/` starts this campaign at 3,394,984 bytes, with the three pre-existing `gpt-web` roots treated as legacy/currently-unowned and untouched. No replay/compiler/linker/Wine/Ghidra producer was active at recovery time. Fresh target evidence came through the Factory-registered read-only `th095-ghidra` provider, so no current-session filesystem analysis root was created.
-
-**Next evidence route.** After checkpoint, rotate away from ScreenEffect and the recent score/Background families. Prefer an independent replay/input, sound/resource-lifetime, historical-runtime, weak-API, persistent/ABI, or non-ANM state protocol with a TH095-local producer plus independent consumer. Keep score-profile `+0x15`, non-overlapping score RNG/tail storage, score/replay reserved header words, ReplayScanWorker `unknown010`, SoundPlayer/PBG writer-only metadata, FrontEnd bit 4, shared photo/global bit 8, ANM bit 14, TextRenderer RNG prefix, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-154 — bind the front-end BGM preload option consumer
 
 **Scope.** Rotate away from SEM-153 ScreenEffect into the independent historical configuration/sound boundary. The adversarial route rejected replay reserved bytes, SoundPlayer writer-only metadata, score-header storage, and already-closed shared photo flags before finding a real representation gap: `FrontEndLifecycleView::Initialize` reads target address `0x004C4850` bit 4 through the historical `g_FrontEndConfigurationFlags` dword even though the canonical production owner is `g_Supervisor.config.options` and the same physical bit is already `preloadMusic` in Main and SoundPlayer. This transaction aligns only those two front-end reads. It does not change serialized configuration layout, SoundPlayer command semantics, the BGM archive owner, or the exact-facing relocation identity.
@@ -9700,11 +8368,6 @@ Fresh `SoundPlayer::ProcessQueues @ 0x00439200` independently reads the same `0x
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/FrontEndLifecycle.cpp` rebuilt all eight configured units and passed 8/8 exact with zero compiler-private label refresh. A command-local normal-production compile using the pinned VC7.1 profile `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a 29,840-byte Intel 80386 COFF object; the temporary object/PDB directory was removed by the same command. Target-independent CI passed all 43 tests, tracking remains 1,880 provisional / 697 source-present / 696 exact, the match graph remains 696 units, the whole-build graph remains 88 sources / 2 profiles, and `git diff --check` passed. This private translation-unit representation change does not alter a shared header or physical layout, so cold aggregate exact and whole-product gates are deferred until the committed campaign milestone/final handoff rather than replayed inside the private transaction.
 
-**Recovery / analysis state.** This transaction starts from clean tracked checkpoint `412944806d8c7d13e8eed73bcf856a41460f4290` with only the same four classified untracked paths preserved outside staging. `.analysis/` remains at the campaign baseline of 3,394,984 bytes; no current-session analysis root was created because the fresh evidence came through the registered read-only Ghidra provider. The preceding SoundPlayer xref audit is negative routing evidence only and does not promote writer-only metadata to semantic fields.
-
-**Next evidence route.** After checkpoint, rotate away from Supervisor configuration and streamed-BGM preload behavior. Prefer a different replay/input, resource-lifetime, persistent/ABI, weak-API, interpreter/state, or historical-runtime family with a new TH095-local producer plus independent consumer. Keep FrontEnd controller bit 4, shared photo/global bit 8, ReplayScanWorker `unknown010`, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, and other single-ended storage Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-155 — bind front-end close-request load abort
 
 **Scope.** Continue from committed SEM-154 and rotate away from Supervisor music configuration into an independent historical-runtime/worker boundary. A normal-VC7.1 preprocessing audit was used to discard exact-only raw offsets and exposed one live production gap: `FrontEndLifecycleView::LoadThread` still decoded Supervisor flags bit 7 through `TH095_FRONT_SUPERVISOR_FLAGS`, even though the canonical Supervisor owner and two independent TH095-local paths already establish that physical bit as `receivedCloseMsg`. This transaction aligns only the front-end reader. It does not change the front-end controller failure latch, replay-worker exit protocol, ANM capture ownership, message processing, or the exact-facing source.
@@ -9722,11 +8385,6 @@ Fresh `PhotoGameTaskView::Load @ 0x00417D20` independently uses the same `0x004C
 **Production / exact representation.** Normal `src/FrontEndLifecycle.cpp` now reads `g_Supervisor.flags.receivedCloseMsg` in the `LoadThread` capture-wait loop. `DIFFBUILD` and `TH095_MATCH_EXACT` retain `((TH095_FRONT_SUPERVISOR_FLAGS >> 7) & 1) != 0`, preserving the historical exact-facing `g_FrontEndSupervisorFlags` relocation and source shape. No class size, field offset, calling convention, control flow, worker storage, or persistent format changes.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/FrontEndLifecycle.cpp` rebuilt all eight configured FrontEndLifecycle units and passed 8/8 exact with zero compiler-private label refresh. A command-local normal-production compile using pinned VC7.1 13.10.3077 and `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a 29,886-byte Intel 80386 COFF object; the temporary object/PDB directory was removed by the same command. `git diff --check` passed. Because this is a translation-unit-local normal representation change with no shared header/layout/PCH/owner storage change, cold aggregate exact and whole-product feedback are deferred to the next committed campaign milestone/final handoff rather than repeated before this private checkpoint.
-
-**Recovery / analysis state.** The transaction began from clean tracked HEAD `fbbe884369337909516841f527cc746696b5dade`, preserving the same four pre-existing untracked paths outside staging. `.analysis/` remained at the campaign-start 3,394,984 bytes and no current-session analysis root was created; fresh target evidence came through the registered read-only Ghidra provider. Before accepting this batch, bounded rotations found no actionable producer for the TextRenderer RNG prefix, ANM preload path slot, shared photo/global bit 8, ANM VM bit 14, ReplayScanWorker `+0x10`, Bullet `field360`/anonymous tail, or photo-score bits 5/17/18/19. Exact-only EnemyManager and PhotoGameTask raw expressions were explicitly rejected after normal-preprocessor review rather than counted as work.
-
-**Next evidence route.** After checkpoint, rotate away from Supervisor close handling and recent front-end/Sound configuration work. Prefer a distinct resource-lifetime, persistent/ABI, weak-API, primary/sibling interpreter, replay/input, or historical-runtime family with a new TH095-local producer plus independent consumer. Keep FrontEnd controller bit 4, shared photo/global bit 8, ReplayScanWorker `unknown010`, score/replay reserved words, photo-score bits 5/17/18/19, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, and other single-ended storage Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-156 — bind the extended-ECL bullet capture-disable protocol
 
@@ -9748,11 +8406,6 @@ Two independent BulletManager capture consumers establish the stronger field ide
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/BulletManager.cpp --source src/EclExtended.cpp` rebuilt all affected units and passed 35 + 22 = 57/57 exact with zero compiler-private label refresh. Command-local normal-production compiles using pinned VC7.1 13.10.3077 and `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted 66,509-byte (`BulletManager.cpp`) and 43,809-byte (`EclExtended.cpp`) Intel 80386 COFF objects; their temporary object/PDB directory was removed by the same command. `git diff --check` passed. Both source changes are translation-unit-local representation bindings with no shared header/layout/PCH change, so cold aggregate exact and whole-product gates are deferred to the committed campaign milestone/final handoff.
 
-**Recovery / analysis state.** The batch began from clean tracked checkpoint `2d3dfa24fc81b2b0888d26f91519aa5c9e925208`, with the same four pre-existing untracked paths preserved outside staging. `.analysis/` remained at 3,394,984 bytes and no current-session analysis root was created. Fresh target evidence came through the registered read-only `th095-ghidra` provider. The route was selected only after normal-product preprocessing filtered out exact-only raw member expressions and after multiple bounded Unknown surfaces produced no new producer/consumer closure.
-
-**Next evidence route.** Rotate away from Bullet/ECL capture state after checkpoint. Prefer a distinct persistent/ABI, replay/input, resource-lifetime, weak-API, non-bullet interpreter/state, or historical-runtime family with a new TH095-local producer plus independent consumer. Keep FrontEnd controller bit 4, shared photo/global bit 8, ReplayScanWorker `unknown010`, score/replay reserved words, photo-score bits 5/17/18/19, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, and other single-ended storage Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-157 — bind the PhotoCamera charge UI state cache
 
 **Scope.** Recover the interrupted live transaction present at campaign start before selecting new work. The dirty paths `src/PhotoCamera.cpp`, `src/PhotoCamera.hpp`, and `src/PhotoGame.cpp` form one coherent family around camera `flags @ +0xBB4` bits 3..4 and match the preceding committed handoff's named next route. The four pre-existing untracked paths remain excluded. This batch names only the two-bit charge-presentation state and its three observed values; it does not reinterpret the charge accumulator, focus latch, target feedback flags, capture mode, or viewfinder state machine.
@@ -9773,10 +8426,6 @@ Fresh `UpdateCharge @ 0x00433D10` independently owns the actual charging dynamic
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/PhotoCamera.cpp --source src/PhotoGame.cpp` rebuilt 11 + 22 = 33 configured units and passed 33/33 exact with zero compiler-private label refresh. Command-local normal-production probes with pinned VC7.1 13.10.3077 emitted 57,866-byte `PhotoCamera.obj` and 50,626-byte `PhotoGame.obj` Intel 80386 COFF objects; temporary probe storage was removed in-command. Because `PhotoCamera.hpp` is a shared header/layout representation, the cold aggregate exact gate replayed all 88 manifest sources in four 22-source partitions and passed 205 + 158 + 191 + 142 = 696/696 configured units with zero compiler-private label refresh. A fresh whole-product build compiled all 88 production translation units with pinned VC7.1 and linked a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `6424f48cf7acd43ad0a742e6f22c51a827b4675c6ab2c35d95cd4ce342c436f5`; this is compile/link closure, not whole-image byte identity. The combined whole-build command then exited 127 only because the stale path `scripts/ci.sh` no longer exists; recovery found no active producer or worktree drift, and current `python3 scripts/ci.py` subsequently passed all 43 tests. Tracking remains 1,880 provisional / 697 source-present / 696 exact, match graph 696 units, whole-build graph 88 sources / 2 profiles, target verification remains SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`, and `git diff --check` passed. No deterministic Wine visual/runtime scenario was added.
 
-**Recovery / analysis state.** Recovery began at committed HEAD `452b25ee3edaf2ad1767c2df2f511615b5114c90` with these three tracked unstaged paths and the same four pre-existing untracked paths. The three tracked paths are classified `recoverable-current-work` because their complete diff is one coherent charge-UI transaction, the latest handoff named this exact family, and fresh target evidence supports the intended representation. `EnemyManagerUpdate.i` remains unknown-origin generated-looking state; `droid.resume.txt` remains unrelated/user-owned state; `config/runtime-scenarios.json` and `scripts/runtime-diff.py` remain pre-existing runtime experiments. All four are preserved and excluded from staging. `.analysis/` started at 3,394,984 bytes; its three pre-existing `gpt-web` roots remain legacy/currently-unowned and untouched. No current-session analysis root was created because target evidence came from the registered read-only Ghidra provider.
-
-**Next evidence route.** After checkpoint, rotate away from PhotoCamera charge presentation. Prefer a distinct persistent/ABI, replay/input, sound/resource-lifetime, weak-API, non-camera interpreter/state, or historical-runtime family with a TH095-local producer plus independent consumer. Keep shared photo/global bit 8, FrontEnd controller bit 4, ReplayScanWorker `unknown010`, score/replay reserved words, photo-score bits 5/17/18/19, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, and other single-ended storage Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-158 — name the ignored scene-refresh selection argument
 
 **Scope.** Rotate away from SEM-157 PhotoCamera presentation state and test a weak-API surface after bounded resource, persistent, replay/input, and sibling-interpreter routes failed to produce a new two-ended field protocol. This batch changes only the normal-production name of the preserved `i32` argument to `SceneSelectControllerView::RefreshSceneSelection`. It does not remove the argument, change the member-function ABI, change either caller, reinterpret scene score storage, or touch the frozen exact declaration/body.
@@ -9794,10 +8443,6 @@ Fresh decompilation of `UpdateSceneSelect @ 0x00447D00`, together with its canon
 **Production / exact representation.** Normal `src/SceneSelect.hpp` and `src/SceneSelectController.cpp` name the parameter `ignoredSelectedScoreEntryIndex`. `src/SceneSelectExact.hpp` and `SceneSelectControllerExact.inl` retain the historical `unused`/unnamed spelling, and both `UpdateSceneSelect` call expressions continue to pass `view->selectedScoreEntryIndex`. Parameter type, thiscall ABI, stack cleanup, object layout, queue protocol, critical-section behavior, and all persistent fields are unchanged.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/SceneSelectController.cpp --source src/SceneSelectUpdate.cpp` rebuilt five controller units plus the one complete update unit and passed 6/6 exact with zero compiler-private label refresh. Command-local normal-production probes using pinned VC7.1 13.10.3077 emitted 26,789-byte `SceneSelectController.obj` and 53,439-byte `SceneSelectUpdate.obj` Intel 80386 COFF objects; their temporary object/PDB directory was removed in-command. Because `SceneSelect.hpp` is shared across the front-end/scene family, the cold aggregate gate replayed all 88 manifest sources in four 22-source partitions and passed 226 + 201 + 217 + 52 = 696/696 configured units with zero compiler-private label refresh. A fresh whole-product build compiled all 88 production translation units and linked a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `1d4060630be4a0550b3311d0530daaa85faa53d1e8eb30d14e4846092d928d0b`; this is compile/link closure, not whole-image byte identity. `python3 scripts/ci.py` passed all 43 tests, tracking remains 1,880 provisional / 697 source-present / 696 exact, the match graph remains 696 units, the whole-build graph remains 88 sources / 2 profiles, target verification remains SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`, and `git diff --check` passed. No runtime scenario is added because this transaction changes only an ignored parameter identifier while preserving ABI and caller behavior.
-
-**Recovery / analysis state.** The campaign began from committed HEAD `a5662f3655b3eaa8eaefbe68d2b1219f049567e4` with no staged or tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes. A bounded current-session input-xref scratch root was created with a manifest, used to verify that `ReplayInputSource +0x2A/+0x36` have no direct target xrefs, and deleted in the same successful command; `.analysis/` returned to baseline. Other bounded negative routes included THTX reserved words, ANM preload-slot pathname single-writer storage, compact enemy tail storage, bullet anonymous tail fields, SceneDefinition padding, exact-only raw owner aliases, and input/replay reserved fields. None of those negative results changes the active-incomplete phase.
-
-**Next evidence route.** After checkpoint, rotate away from SceneSelect weak API naming. Prefer an independent historical-runtime or resource-lifetime owner, persistent/ABI field with a new validator/consumer, sound/PBG metadata only if a real reader appears, or a different interpreter/state protocol with TH095-local producer plus independent consumer. Keep FrontEnd controller bit 4, shared photo/global bit 8, ReplayScanWorker `unknown010`, `ReplayInputSource::unknown02a/unknown036`, score/replay reserved words, photo-score bits 5/17/18/19, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact tail storage, and other single-ended fields Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-159 — name the photography feedback sound IDs
 
@@ -9817,10 +8462,6 @@ Fresh Factory-attested TH095 decompilation closes each behavioral producer. `Pho
 
 **Validation.** The first focused exact attempt used the new enum spellings directly in the exact-visible shared header. `photo-update-viewfinder` retained the same structural relocation surface but VC7.1 renumbered compiler-private `$L...` names; that attempt was rejected and no manifest/private-label refresh was accepted. Preserving the historical `SOUND_2A..SOUND_2E` lexical surface under `TH095_MATCH_EXACT` removed the churn. Fresh focused replay then rebuilt `PhotoCamera.cpp`, `SoundPlayer.cpp`, and `ecl/EclRun.cpp` and passed 11 + 27 + 1 = 39/39 configured units with zero compiler-private label refresh. Command-local normal-production probes with pinned VC7.1 13.10.3077 emitted 58,000-byte `PhotoCamera.obj`, 64,526-byte `SoundPlayer.obj`, and 77,946-byte `EclRun.obj` Intel 80386 COFF objects; their temporary object/PDB directory was removed by the command trap. Because `SoundPlayer.hpp` is shared broadly, a cold aggregate replay was recovered into four durable 22-source partitions after an unreceipted one-shot bridge timeout; the durable partitions passed 205 + 158 + 191 + 142 = 696/696 configured units across all 88 sources with zero private-label refresh. A fresh whole-product build compiled all 88 production translation units and linked a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `c87ff89ef1e9dfb8d4fdb462499b3395842a3ec56382edba9e60260961f12c68`; this is compile/link closure, not whole-image byte identity. `python3 scripts/ci.py` passed all 43 tests, tracking remains 1,880 provisional / 697 source-present / 696 exact, the match graph remains 696 units, the whole-build graph remains 88 sources / 2 profiles, target verification remains SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`, and `git diff --check` passed. No runtime scenario is claimed: this transaction changes identifiers/representations while preserving the same sound IDs and target control flow.
 
-**Recovery / analysis state.** The transaction began from committed HEAD `677917b240985477dfe21e7bd26729a78dc26d95` with no staged or tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; no current-session filesystem analysis root has been created because fresh target evidence came through the registered read-only Ghidra provider. Negative routes before this batch included SoundPlayer copied-but-unconsumed metadata, compact ECL bits already bounded by SEM-104, and the declaration-only `TryDecryptFromTable` weak API. None of those negative results changes the active-incomplete phase.
-
-**Next evidence route.** After checkpoint, rotate away from camera/audio feedback. Prefer an independent persistent/ABI or historical-runtime owner, a non-ANM resource lifetime, replay/input storage only when a new field-level consumer appears, or a distinct interpreter/state protocol with TH095-local producer plus independent consumer. Keep SoundPlayer/PBG copied metadata, FrontEnd controller bit 4, shared photo/global bit 8, ReplayScanWorker `unknown010`, replay/input reserved bytes, score/replay reserved words, photo-score bits 5/17/18/19, ANM bit 14, TextRenderer RNG prefix, compact tail storage, and other single-ended fields Unknown absent new evidence. The semantic phase remains active-incomplete.
-
 ### SEM-160 — canonicalize the persistent score-record header
 
 **Scope.** Rotate away from SEM-159 camera/audio feedback into the persistent score ABI. SEM-094 already proved that both recognized decompressed record families share a 0x0C `{magic, version, size, checksum}` prefix, and SEM-152 proved that the 0x458-byte ST profile is simultaneously the runtime owner for replay name and scene-selection cursors. The remaining representation gap is that `ScoreLoad.cpp` still owns a TU-private `ScoreRecordHeaderView` while `ResultSaveDataView` calls the same profile prefix `unknownRuntime008[0x0C]` and `ScoreLifecycle.cpp` spells the four fields independently. This transaction canonicalizes that already-proven prefix only. It does not reinterpret the outer score-file header, profile payload after +0x0C, SC record body, checksum algorithm, compression/encryption, or any runtime selection field.
@@ -9838,11 +8479,6 @@ Fresh `WriteBestShotData @ 0x00435910` closes the producer side. It clears profi
 **Production / exact representation.** Normal `src/ScoreData.hpp` now owns `ScoreRecordHeaderView {u16 magic; u16 version; u32 size; i32 checksum;}` and exposes `ResultSaveDataView::profileRecordHeader @ +0x08` in the runtime overlay. `src/ScoreLoad.cpp` removes its duplicate TU-private type and continues to use the canonical view. Normal `src/ScoreLifecycle.cpp` embeds the canonical header at profile `+0x00` and writes ST/version/size through it. `TH095_MATCH_EXACT` preserves `unknownRuntime008[0x0C]` in the shared owner and continues to compile the frozen ScoreLifecycle exact source; no exact-facing field spelling, serialized byte, function signature, or layout changes.
 
 **Validation.** Focused `replay-exact-units.py` rebuilt `ScoreData.cpp`, `ScoreLifecycle.cpp`, and `ScoreLoad.cpp` and passed 1 + 5 + 1 = 7/7 configured units with zero compiler-private label refresh. Command-local normal-production probes using pinned VC7.1 13.10.3077 emitted 19,561-byte `ScoreData.obj`, 14,015-byte `ScoreLifecycle.obj`, and 11,535-byte `ScoreLoad.obj` Intel 80386 COFF objects; the temporary object/PDB directory was removed by the command trap. Because `ScoreData.hpp` is shared across ResultScreen, SceneSelect, PhotoStage/PhotoGameTask, and the score TUs, the cold aggregate gate replayed all 88 manifest sources in four durable 22-source partitions and passed 205 + 158 + 191 + 142 = 696/696 configured units with zero compiler-private label refresh. A fresh whole-product build compiled all 88 production translation units and linked a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `b2ec4dacc24a11499228c4fac1559e7ebb321e90f51b0681d0205036b67f0fb0`; this is compile/link closure, not whole-image byte identity. `python3 scripts/ci.py` passed all 43 tests, tracking remains 1,880 provisional / 697 source-present / 696 exact, the match graph remains 696 units, the whole-build graph remains 88 sources / 2 profiles, target verification remains SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`, and `git diff --check` passed. No runtime scenario is added because this transaction changes only a typed persistent representation while preserving bytes and behavior.
-
-**Recovery / analysis state.** This transaction begins from committed HEAD `49168dfeb7d4288fa6160a1e32079605038710f9` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` remains at the campaign-start 3,394,984 bytes with only the three legacy/currently-unowned roots untouched; fresh evidence came through the registered read-only Ghidra provider, so no current-session filesystem analysis artifact was created. Bounded negative rotations before this batch retained ReplayScanWorker `unknown010`, the TextRenderer RNG prefix, score-header `+0x0C`, photo-score bits 17/18/19, and unrelated Bullet state domains as Unknown or already-committed semantics.
-
-**Next evidence route.** After checkpoint, rotate away from score-profile representation. Prefer an independent historical-runtime or non-ANM resource-lifetime owner, a replay/input field only when a new field-level reader appears, or a distinct interpreter/state protocol with a TH095-local producer plus independent consumer. Keep outer score-header `+0x0C`, SoundPlayer/PBG copied metadata, FrontEnd controller bit 4, shared photo/global bit 8, ReplayScanWorker `unknown010`, replay/input reserved bytes, photo-score bits 5/17/18/19, ANM bit 14, TextRenderer RNG prefix, compact tail storage, and other single-ended fields Unknown absent new evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-161 — bind the FileSystem source selector
 
@@ -9862,11 +8498,6 @@ Fresh TH095 callers establish the source-selector polarity independently. `Super
 
 **Validation.** Focused replay rebuilt all four configured `FileSystem.cpp` units and passed 4/4 exact, then rebuilt the representative Main, ReplayManager, and ScoreLifecycle caller surfaces and passed another 48 + 12 + 5 = 65/65 units; all 69 focused units passed with zero compiler-private label refresh. A command-local normal-production probe using pinned VC7.1 13.10.3077 emitted a 20,920-byte Intel 80386 COFF `FileSystem.obj`; its temporary object/PDB directory was removed by the command trap. Because `Global.hpp` and `Main.hpp` are shared headers, the cold aggregate replay covered all 88 manifest sources in four durable 22-source partitions and passed 205 + 158 + 191 + 142 = 696/696 configured units with zero private-label refresh. A fresh whole-product build compiled all 88 production translation units and linked a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `00ed98aaf370315d00328ac2d7bb3ef7d541babe13b8b81625d341620da61b6a`; this is compile/link closure, not whole-image byte identity. `python3 scripts/ci.py` passed all 43 tests, tracking remains 1,880 provisional / 697 source-present / 696 exact, the match graph remains 696 units, the whole-build graph remains 88 sources / 2 profiles, target verification remains SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`, and `git diff --check` passed. Wine emitted only GUI-driver/systray diagnostics during tool execution; no runtime scenario is claimed for this identifier-only representation.
 
-**Recovery / analysis state.** The transaction begins from committed HEAD `087fbb72a6232e620adaea161400779cb298aeb7` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes; no current-session filesystem analysis root has been created because fresh evidence came through the registered read-only Ghidra provider. Negative rotations before this batch retained Supervisor anonymous gaps, the already-committed FrontEnd queue reset offsets, compact-enemy shot cadence/spawn descriptor offsets, and previously bounded writer-only/single-ended fields without promotion. None changes the active-incomplete phase.
-
-**Next evidence route.** After checkpoint, rotate away from FileSystem source selection. Prefer a distinct non-file historical-runtime owner, a non-ANM resource lifetime with a real create/use/release relation, or an interpreter/state protocol with a new TH095-local producer plus independent consumer. Keep outer score-header `+0x0C`, SoundPlayer/PBG copied metadata, FrontEnd controller bit 4, shared photo/global bit 8, ReplayScanWorker `unknown010`, replay/input reserved bytes, photo-score bits 5/17/18/19, ANM bit 14, TextRenderer RNG prefix, Supervisor gap storage, compact tail storage, and other single-ended fields Unknown absent new evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-162 — align the slot-nine photo ANM release name
 
 **Scope.** Rotate away from SEM-161 file-source selection into a bounded non-file resource lifetime. Front-end resource loading already names `LoadPhotoAnm`, but the matching slot-nine teardown wrapper was still named `ReleaseResultAnm` in normal production. Fresh TH095-local caller and callee evidence proves that the two functions are the load/release endpoints of the same `photo.anm` slot-9 resource. This transaction changes only the normal-production releaser identifier and its normal Main call. It does not change ANM slot ownership, preload/release behavior, front-end load order, shutdown order, VM retirement, or any exact-facing symbol/ledger identity.
@@ -9883,12 +8514,18 @@ Fresh target `0x0042AAD0` contains only `AnmManager::ReleaseAnm(9)` followed by 
 
 **Production / exact representation.** Normal `src/PhotoOverlay.cpp` now exports `ReleasePhotoAnm`, and normal `src/Main.cpp` declares/calls that name during Supervisor teardown. `TH095_MATCH_EXACT` continues to include the frozen `PhotoOverlayExact.inl` and `MainExact.inl`, preserving exact-facing `ReleaseResultAnm`, its decorated symbol, the match-unit manifest, and all target relocations. No shared header or object layout changes.
 
-**Validation.** The first focused-validation request failed at the Factory transport boundary with `network_error` before returning a command id, so it receives no validation credit. Recovery confirmed the four tracked transaction edits were intact, the same four pre-existing untracked files were unchanged, `.analysis/` remained 3,394,984 bytes, and no replay/compiler/Wine producer survived. The replay was then issued durably: `Main.cpp` passed 48/48 and `PhotoOverlay.cpp` passed 11/11 configured units, for 59/59 exact with zero compiler-private label refresh. Command-local normal-production probes using pinned VC7.1 13.10.3077 emitted a 114,902-byte `Main.obj` and 23,596-byte `PhotoOverlay.obj`, both Intel 80386 COFF; symbol inspection showed `PhotoOverlay.obj` defining and `Main.obj` referencing `?ReleasePhotoAnm@th095@@YIHXZ`. Their temporary object/PDB directory was removed by the command trap. Because this is TU-local naming with no shared header/layout change, aggregate exact and whole-product closure are deferred only until the immediately following committed campaign milestone/final handoff, where they will be replayed against the post-SEM-162 source tree. `git diff --check` passed.
-
-**Recovery / analysis state.** This transaction begins from committed HEAD `4b1b2c8a91699eff50b4fb6f2679e377eeeb9fe5` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` remains at 3,394,984 bytes; no current-session filesystem analysis root has been created. Fresh evidence came from the registered read-only target-attested Ghidra provider. The semantic phase remains active-incomplete.
-
-**Next evidence route.** After checkpoint, rotate away from slot-nine ANM naming. Prefer a distinct historical-runtime state owner, a different resource lifetime with producer plus independent cleanup/consumer, or a primary/sibling interpreter protocol with a newly exposed TH095-local edge. Keep the previously bounded single-ended fields and metadata Unknown absent new evidence. The semantic phase remains active-incomplete.
-
+**Validation.** The first focused-validation request failed at the Factory transport
+boundary with `network_error` before returning a command id, so it receives no
+validation credit. The replay was then issued durably: `Main.cpp` passed 48/48 and
+`PhotoOverlay.cpp` passed 11/11 configured units, for 59/59 exact with zero
+compiler-private label refresh. Command-local normal-production probes using pinned
+VC7.1 13.10.3077 emitted a 114,902-byte `Main.obj` and 23,596-byte `PhotoOverlay.obj`,
+both Intel 80386 COFF; symbol inspection showed `PhotoOverlay.obj` defining and
+`Main.obj` referencing `?ReleasePhotoAnm@th095@@YIHXZ`. Their temporary object/PDB
+directory was removed by the command trap. Because this is TU-local naming with no
+shared header/layout change, aggregate exact and whole-product closure are deferred only
+until the immediately following committed campaign milestone/final handoff, where they
+will be replayed against the post-SEM-162 source tree. `git diff --check` passed.
 
 ### SEM-163 — canonicalize ANM preload call sites
 
@@ -9910,11 +8547,6 @@ Fresh target decompilation distinguishes the two callees. `LoadAnm @ 0x00443010`
 
 Because `AnmManager.hpp` is shared, cold aggregate replay covered all 88 manifest sources in four durable 22-source partitions and passed 205 + 158 + 191 + 142 = 696/696 configured units with zero private-label refresh. A fresh whole-product build compiled all 88 production translation units and linked a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `84635ba39322f4148e0345dd4afcf73ceef452aa813949d2abf08ceb661e888d`; this is compile/link closure, not whole-image byte identity. The production map contains distinct canonical `LoadAnm` and `PreloadAnm` definitions, so the compatibility macro does not collapse their implementations. `python3 scripts/ci.py` passed all 43 tests, tracking remains 1,880 provisional / 697 source-present / 696 exact, the match graph remains 696 units, the whole-build graph remains 88 sources / 2 profiles, target verification remains SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`, and `git diff --check` passed. Wine emitted only GUI-driver/systray diagnostics during tool execution; no runtime scenario is claimed. Runtime storage/scenario validation remains a separate plane.
 
-**Recovery / analysis state.** This transaction begins from committed HEAD `b249384e6298d307e23acecde3bb911c7d612450` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` is 3,394,984 bytes and no current-session filesystem analysis root exists; fresh semantic evidence came through the registered read-only Ghidra provider plus repository ledgers. Two earlier read-only Factory requests lost transport before returning command ids; each received no evidence credit, and live recovery confirmed the committed tree, excluded untracked paths, `.analysis`, and producer state were unchanged. The first edit command then failed before any write because its `AnmManager.hpp` insertion anchor did not match; Factory after-state and the recovery gate both confirmed zero tracked changes before this corrected edit was applied once. The semantic phase remains active-incomplete.
-
-**Next evidence route.** After checkpoint, rotate away from the ANM load/preload family. Prefer an independent historical-runtime state owner, a non-ANM resource lifetime, or an interpreter/persistent protocol with a new TH095-local producer plus independent consumer. Keep ANM bit 14, preload-slot path bytes, shared photo bit 8, FrontEnd controller bit 4, ReplayScanWorker `unknown010`, SoundPlayer/PBG copied metadata, TextRenderer RNG prefix, Bullet anonymous tails, score-header `+0x0C`, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-164 — restore the OnDraw2 background viewport selector
 
 **Scope.** Rotate away from SEM-163 ANM acquisition into an independent historical-runtime viewport protocol. A duplicate-relocation audit found one exact-facing `Supervisor::ConfigureGameplayViewport` relocation whose target is not canonical gameplay selector `0x00404B10`: `Supervisor::OnDraw2 @ 0x004235D0` targets `0x00401B70`. Normal `Main.cpp` nevertheless called real `ConfigureGameplayViewport(1)`, so the reconstructed product selected the correct Supervisor slot but applied the wrong transform protocol. This transaction changes only the normal OnDraw2 selector and corrects the durable MAIN-010 statement.
@@ -9934,11 +8566,6 @@ Exact relocation inventory independently partitions the caller set. `0x00401B70`
 **Validation.** Focused replay rebuilt all 48 configured `Main.cpp` units and passed 48/48 exact with zero compiler-private label refresh; the exact lane remains frozen in `MainExact.inl`. A command-local normal-production probe using pinned VC7.1 13.10.3077 emitted a 114,975-byte Intel 80386 COFF `Main.obj`. Relocation inspection found exactly one `ConfigureGameplayViewport` reference and one `ConfigureBackgroundViewport` reference, matching the target Main partition: `GameWindow::Render` remains the gameplay caller while `Supervisor::OnDraw2` is the background caller. The temporary probe directory was removed by its trap.
 
 Because the correction changes a cross-object callee, a fresh whole-product build immediately compiled all 88 production translation units and linked a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `53e3a6b505052754aaa2907cc8664ff544bc6e7043bd181724e18f6c41c9f3fb`. The linked map retains distinct `Supervisor::ConfigureBackgroundViewport` in `Background.obj` and `Supervisor::ConfigureGameplayViewport` in `SupervisorViewport.obj`; this is compile/link closure, not whole-image byte identity. `python3 scripts/ci.py` passed all 43 tests, target verification remained canonical, tracking remained 1,880 provisional / 697 source-present / 696 exact, and `git diff --check` passed. Wine emitted only GUI-driver/systray diagnostics; no runtime scenario is claimed. Since no shared header/layout changed, cold aggregate exact is deferred to the final committed campaign milestone.
-
-**Recovery / analysis state.** This transaction begins from committed HEAD `0550dcd6c4453b0f9114932e05aa3d6465507590` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths preserved outside staging. `.analysis/` remains 3,394,984 bytes with no current-session filesystem analysis root. During the recovery gate, `origin/main` was observed to advance externally to the same `0550dcd` commit (`refs/remotes/origin/main` reflog says `update by push`); this campaign did not run `git push` and did not alter the remote ref itself. The semantic phase remains active-incomplete.
-
-**Next evidence route.** After checkpoint, continue the duplicate-relocation/proxy audit outside ANM and viewport protocols. Prefer `Supervisor::ThreadClose` or `GameErrorContext` only if normal production still collapses distinct target callees; otherwise rotate to a persistent/interpreter/resource domain with a new TH095-local edge. Keep the established Unknown list unchanged absent new evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-165 — restore Background error escalation
 
@@ -9960,11 +8587,6 @@ Fresh target decompilation independently distinguishes the two error callees. `G
 
 A fresh whole-product build compiled all 88 production translation units with pinned VC7.1 and linked a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `2123413f214ead98de593782decaf8c065e4ec37b20047815a85c524c1864179`; this is production compile/link closure, not a whole-image byte-identity claim. The linked map places production `Background::Initialize` at `0x0040D450`, `Background::LoadStageDataInner` at `0x0040E0E0`, `GameErrorContext::Log` at `0x00420190`, and `Fatal` at `0x00420320`; linked-image disassembly shows the outer failure call resolving to `0x00420320` and the inner ANM failure call resolving to `0x00420190`. `python3 scripts/ci.py` passed all 43 tests, `validate-tracking.py --require-target` remains 1,880 provisional / 697 source-present / 696 exact, and `git diff --check` passed. Runtime storage/scenario validation remains a separate, unclaimed plane.
 
-**Recovery / analysis state.** This conversation began from committed HEAD `bd97b9e08be1e4d4d485857284757b483512915a` with zero staged/tracked unstaged changes and the same four documented pre-existing untracked paths preserved outside staging: user-owned `droid.resume.txt`, runtime experiments `config/runtime-scenarios.json` and `scripts/runtime-diff.py`, and unknown-origin generated-looking `EnemyManagerUpdate.i`. `.analysis/` began and remains 3,394,984 bytes; no current-session filesystem analysis root was created because fresh semantic evidence came through the registered read-only target-attested Ghidra provider. One initial combined broad exact/product/CI request lost the Factory bridge before returning a durable command id; recovery showed unchanged repository state, no surviving replay/compiler/linker/Wine/Ghidra producer, and only a rebuilt product timestamp, so that attempt received no validation credit. The durable focused, partitioned aggregate, whole-product, and CI runs above supersede it. An optional command-local assembly-listing probe was rejected before execution and likewise received no evidence credit.
-
-**Next evidence route.** After checkpoint, continue the exact-relocation proxy audit across a different subsystem by grouping identical relocation decorations that target multiple canonical addresses. `Supervisor::ThreadClose @ 0x00425150` is not currently a positive mismatch candidate: its inspected exact relocations still target the canonical `0x00425150`, so do not manufacture work there. Prefer the next TH095-local multi-target symbol family only when normal production resolves a proxy spelling to behavior different from the recorded target; otherwise rotate to a persistent/interpreter/resource family with a producer plus independent consumer. Keep existing single-ended Unknown storage Unknown absent new evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-166 — restore Render replay-worker shutdown
 
 **Scope.** Continue the post-SEM-165 relocation-proxy audit and falsify the earlier bounded assumption that `Supervisor::ThreadClose` had no live normal-production mismatch. Grouping every REL32 decoration by destination shows four `ThreadClose`-decorated Main relocations split across two target callees: the two `GameWindow::Render @ 0x00420770` exit paths target `StopReplayScan @ 0x00425640`, while the two `Supervisor::StartupThread @ 0x004242B0` teardown paths target canonical `ThreadClose @ 0x00425150`. Normal `Main.cpp` previously called `ThreadClose` at all four sites. This transaction changes only the two Render exits to the cooperative replay-worker stop protocol while preserving the exact/DIFF relocation spellings and genuine StartupThread close calls.
@@ -9984,11 +8606,6 @@ Target `Supervisor::StopReplayScan @ 0x00425640` is a thin wrapper around `Repla
 **Validation.** Focused replay rebuilt all 48 configured `Main.cpp` units and passed 48/48 exact with zero compiler-private label refresh. A fresh whole-product build then compiled all 88 production translation units with pinned VC7.1 and linked a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `45201ab5c6f5f8191c8f9fbddd3a4f9223b1cab52464414241997b4cf8f0dfdf`; this is production compile/link closure, not whole-image byte identity. The product map places `GameWindow::Render` at `0x00422430`, canonical production `ThreadClose` at `0x00425650`, and `StopReplayScan` at `0x0043D690`. Linked-image disassembly shows Render's two early exit calls at `0x004224E9` and `0x00422503` both resolving to `0x0043D690`. The same product's `StartupThread @ 0x00424E30` retains two calls to `ThreadClose @ 0x00425650`, proving the canonical direct-close path was not globally redirected.
 
 Because this correction changes a cross-object callee, the cold aggregate exact gate was rerun against the SEM-166 source state rather than reusing SEM-165 receipts. All 88 manifest sources passed in four durable 22-source partitions: 205 + 158 + 191 + 142 = 696/696 configured units exact with zero private-label refresh. `python3 scripts/ci.py` passed all 43 tests, `validate-tracking.py --require-target` remains 1,880 provisional / 697 source-present / 696 exact, and `git diff --check` passed. Runtime storage/scenario validation remains a separate, unclaimed plane.
-
-**Recovery / analysis state.** This transaction starts from committed SEM-165 checkpoint `fb9d07b0dd9ad069a67ac18f367497bbb536b665`. The four pre-existing untracked paths remain excluded from staging and unchanged in ownership/classification. `.analysis/` remains 3,394,984 bytes with no current-session filesystem analysis root; fresh semantic evidence came from repository ledgers plus the registered read-only target-attested Ghidra provider. The first source-edit command failed its final anchor assertion before writing the file; Factory after-state confirmed zero tracked changes, after which the corrected bounded edit was applied once. The semantic phase remains active-incomplete.
-
-**Next evidence route.** The relocation-collision sweep also rediscovered `PhotoResetTargetView::ResetForPhotoTransition`, but ABI-039 already split that three-destination proxy into the canonical enemy, bullet, and effect operations in normal production; do not redo it absent contradictory evidence. The ANM, viewport, GameError, and ThreadClose multi-target semantic proxies are now represented by their target callees in normal source while exact/DIFF decorations remain isolated. `__CIcos` is the remaining multi-destination repeated decoration from this mechanical sweep and should be treated first as compiler/runtime exactness provenance, not promoted into a semantic owner without TH095-local behavioral evidence. Rotate next to a persistent/interpreter/resource/state family with a producer plus independent consumer, or to another proxy only if a fresh target-local destination mismatch appears. The semantic phase remains active-incomplete.
-
 
 ### SEM-167 — restore the photography HUD GUI text queue
 
@@ -10010,10 +8627,6 @@ Fresh target decompilation independently distinguishes the two formatter protoco
 
 Because the correction changes a cross-object callee, a fresh whole-product build immediately compiled all 88 production translation units and linked a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `62995315d68bb8d896b9994a968ede3168c3035a1d220fababedebe8b907b8a3`; this is production compile/link closure, not whole-image identity. The product map places regular `AddFormatText` at `0x0040CAD0`, GUI `AddGuiFormatText` at `0x0040CB20`, and `PhotoGameTaskView::DrawHud` at `0x00435850`. Linked-image disassembly shows its five HUD calls at `0x0043597F/0x004359B4/0x00435A14/0x00435A64/0x00435A9E` all resolving to `0x0040CB20`. The current-source cold aggregate exact gate then replayed all 88 manifest sources in four durable 22-source partitions and passed 205 + 158 + 191 + 142 = 696/696 configured units exact with zero private-label refresh. `git diff --check` passed. Runtime storage/scenario validation remains separate and unclaimed.
 
-**Recovery / analysis state.** This transaction starts from committed handoff HEAD `f93406f4488acb29240c048a17d36f67d28abf5f` with zero staged/tracked unstaged changes and the same four pre-existing untracked paths excluded from staging. `.analysis/` began and remains 3,394,984 bytes; no current-session filesystem analysis root was created because fresh target evidence came through the registered read-only Ghidra provider. Two read-only Factory requests lost transport before returning command ids and received no evidence credit. The failed first normal compile used a command-local `/tmp` directory removed by its trap; mandatory recovery confirmed the intended tracked transaction as the only tracked change and no surviving compiler/Wine producer. The semantic phase remains active-incomplete.
-
-**Next evidence route.** Continue the single-target relocation-proxy audit after checkpoint, but filter out the ABI proxy families already documented in `docs/KNOWLEDGE_BASE.md`. Prefer a mismatch where normal production can resolve successfully to two distinct canonical implementations, as happened here, because unresolved proxy-only symbols were largely closed by the 2026-09-09 ABI audit. Candidate names must be verified against target behavior and caller partition before editing. Otherwise rotate to a non-ANM resource/state or persistent/interpreter family with a new TH095-local producer plus independent consumer. Keep the established single-ended Unknown fields Unknown absent new evidence. The semantic phase remains active-incomplete.
-
 ### SEM-168 — share compact enemy secondary flags
 
 **Scope.** Recovery at committed HEAD `c1610c4a10cf44b93e263b30fe0ecbf91f46b42b` found one coherent unfinished tracked transaction in `PhotoCamera.cpp`, `PhotoRuntime.cpp`, and `ecl/EnemyEclRuntimeView.hpp`. It promotes compact enemy `secondaryWord @ +0x2BF8` bits 6/7 into the shared view and replaces the two remaining photography-target raw bit-6 reads with the already-established `showPhotoMarker` meaning. The work was adopted only after fresh TH095 evidence confirmed the raw-test polarity. No meaning is assigned to bit 5.
@@ -10029,10 +8642,6 @@ Because the correction changes a cross-object callee, a fresh whole-product buil
 **Production / exact representation.** `src/ecl/EnemyEclRuntimeView.hpp` now exposes `EnemyEclSecondaryBits` with `showPhotoMarker` at bit 6 and `freezeAttachedVm` at bit 7 inside `secondaryWord @ +0x2BF8`; other bits stay anonymous. Normal `PhotoRuntime.cpp` and `PhotoCamera.cpp` read `TH095_ENEMY_ECL_SECONDARY_BITS(...).showPhotoMarker`. `TH095_MATCH_EXACT` and `DIFFBUILD` retain the historical raw `flags2 >> 6` expressions. Layout remains pinned at `+0x2BF4/+0x2BF8` with no added storage.
 
 **Validation.** The seven direct shared-view users (`PhotoCamera`, `PhotoRuntime`, `EclDependencies`, `EclExtended`, `EclHelpers`, `EnemyShotAnm`, `ecl/EclRun`) replayed 48/48 configured exact units with zero private-label refresh, and command-local pinned VC7.1 13.10.3077 probes compiled all seven normal sources to Intel 80386 COFF. Because the header is shared, the cold aggregate gate replayed all 88 manifest sources in four durable partitions and passed 205 + 158 + 191 + 142 = 696/696 exact with zero refresh. The first request for partition three lost Factory transport before returning a command id and received no credit; recovery proved unchanged source state and no surviving producer before the durable retry. A fresh 88-TU whole-product build linked a PE32 i386 image with SHA-256 `8f596ef343b64fed4d9d3490b9680b1e81622c972a1d1990241f1a05b8eb9e16`; this is compile/link closure, not whole-image identity. Runtime-scenario validation remains separate and unclaimed.
-
-**Recovery / analysis state.** The three tracked source paths were classified `recoverable-current-work`; user-owned `droid.resume.txt`, runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`, and unknown-origin generated-looking `EnemyManagerUpdate.i` remain preserved and excluded. `.analysis/` began at 3,394,984 bytes; no current-session filesystem analysis root or large artifact was created because target evidence came from the registered read-only provider. The semantic phase remains active-incomplete.
-
-**Next evidence route.** Rotate away from compact bit 6/7. Treat post-SEM-143 route lines that list flags2 bit 6 as globally Unknown as stale; bit 5 and other unnamed secondary bits remain valid Unknowns unless a new distinguishing consumer appears. Prefer a distinct interpreter/state or persistent/resource family with a TH095-local producer plus independent consumer. The semantic phase remains active-incomplete.
 
 ### SEM-169 — share front-end asset queues
 
@@ -10054,11 +8663,6 @@ Fresh `SceneSelectControllerView::UpdateMainMenu @ 0x00446A50` independently clo
 
 A fresh whole-product build compiled all 88 production translation units with pinned VC7.1 and linked a PE32 i386 Windows GUI image with build-local SHA-256 `c959a03a00c3fda1b553fd8c01b43260ca3a420a4963d651f90cc4fd3fc30b82`; this is compile/link closure, not whole-image byte identity. `python3 scripts/ci.py` passed all 43 tests, `validate-tracking.py --require-target` remains 1,880 provisional / 697 source-present / 696 exact, and `git diff --check` passed. Two combined CI/tracking requests lost Factory transport before returning command ids and received no validation credit; the final split commands above are the durable validation results. Runtime-scenario validation is unchanged and unclaimed because this transaction only canonicalizes an already-observed queue layout and access path.
 
-**Recovery / analysis state.** This transaction starts from committed SEM-168 checkpoint `74829906ed5bac320f34cd9a74ddf82a78cce5e1` with no staged or tracked unstaged work beyond the two source edits made here. The same four pre-existing untracked paths remain preserved and excluded from staging: user-owned `droid.resume.txt`, runtime experiments `config/runtime-scenarios.json` and `scripts/runtime-diff.py`, and unknown-origin generated-looking `EnemyManagerUpdate.i`. `.analysis/` remains 3,394,984 bytes; no current-session filesystem analysis root or large artifact was created. Fresh semantic evidence came from repository exact ledgers and the registered read-only target-attested Ghidra provider. The semantic phase remains active-incomplete.
-
-**Next evidence route.** Rotate away from front-end/scene queue representation after checkpoint. Bounded negative routes in this campaign retained compact control bit 5, ANM VM bit 14, the TextRenderer RNG prefix, compact enemy tail `+0x4CA4..+0x4CAB` / `timer4cac`, and photo-score bits 5/17/18/19 as Unknown because no new distinguishing producer/consumer closed those protocols. The recent relocation-proxy sweep likewise found the major same-name hazards already canonicalized in normal production. Prefer a distinct persistent/ABI or non-ANM resource-lifetime family with a TH095-local producer plus independent consumer; replay/input or sound/PBG metadata should be revisited only when a new field-level reader appears. The semantic phase remains active-incomplete.
-
-
 ### SEM-170 — recover Best Shot raw-file ownership
 
 **Scope.** Rotate from the front-end queue representation into a persistent/resource lifetime with independent TH095-local producer and cleanup paths. `ResultBestShotRecordView +0x70` was still named `componentData0`, even though the selected-scene loader treats it as the complete loose Best Shot file allocation. This transaction renames only that runtime owner to `rawFileData` in maintainable production and the matching PhotoStage partial layout. `pixelData @ +0x74`, the serialized 0x18-byte header, 0x50-byte comment, checksum protocol, file paths, and record validity flags are unchanged.
@@ -10076,11 +8680,6 @@ Fresh target `ResultSaveDataView::UpdateBestShotRecord @ 0x004299F0` independent
 **Production / exact representation.** Normal `ScoreData.hpp` exposes `ResultBestShotRecordView::rawFileData @ +0x70`; normal `SceneBestShot.cpp` uses it as the OpenFile/parser base, normal `ResultScreen.cpp` releases it, and the compatible PhotoStage partial record uses the same name. `TH095_MATCH_EXACT` preserves historical `componentData0` because the frozen `SceneBestShotExact.inl` and `ResultScreenExact.inl` still address that token. The `+0x70/+0x74` layout assertions remain in place; no field size, record stride, allocator, serialization byte, or ABI changes.
 
 **Validation.** The first focused exact attempt intentionally exposed the representation boundary: changing the shared member name unconditionally made frozen `SceneBestShotExact.inl` fail to compile on the historical `componentData0` token. No exactness credit was taken from that failed command. After adding the exact-only historical spelling, focused replay of `PhotoStage.cpp`, `ResultScreen.cpp`, `SceneBestShot.cpp`, and `ScoreData.cpp` passed 6 + 24 + 1 + 1 = 32/32 configured units exact with zero private-label refresh. Command-local pinned VC7.1 13.10.3077 normal probes compiled the same four sources to Intel 80386 COFF. Because `ScoreData.hpp` is shared persistent ABI, the cold aggregate gate replayed all 88 manifest sources in four durable partitions and passed 205 + 158 + 191 + 142 = 696/696 exact with zero private-label refresh. Two requests for the third partition were lost before returning Factory command ids and received no credit; recovery confirmed unchanged source state and no active producer before the durable explicit-source retry. A fresh whole-product build compiled all 88 production TUs and linked a PE32 i386 image with build-local SHA-256 `88e73d00e521aa1c8160f30d61828d98f38704d118bbc1605335fd7b97b2e315`; this is production compile/link closure, not whole-image identity. Runtime-scenario validation is separate and unclaimed.
-
-**Recovery / analysis state.** This transaction starts from committed continuation HEAD `d838eb1e1ffc36fa9a4d7e41cb8394434aa730df`. The four pre-existing untracked paths remain preserved and excluded from staging. `.analysis/` began at 3,394,984 bytes and no current-session filesystem analysis root or large retained artifact was created; fresh target evidence came through the registered read-only attested Ghidra provider. The semantic phase remains active-incomplete.
-
-**Next evidence route.** Rotate away from Best Shot buffer ownership after checkpoint. Prefer another independent non-ANM resource lifetime or persistent/ABI field with a fresh reader/writer relation. Do not revisit score-header `+0x0C`, replay reserved bytes, Sound/PBG writer-only metadata, compact-enemy plateaus, ANM bit 14, TextRenderer RNG prefix, or photo-score bits 5/17/18/19 without a new TH095-local distinguishing consumer. The semantic phase remains active-incomplete.
-
 
 ### SEM-171 — recover ReplayManager header allocation ownership
 
@@ -10102,11 +8701,6 @@ Fresh target `ReplayManager::~ReplayManager @ 0x004344F0` independently closes t
 
 A fresh whole-product build compiled all 88 production translation units with pinned VC7.1 and linked/verified a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `a56737e848b8d07723884f3431a82896a59d9c499d05f5c6591d209ad6f2ee92`; this is production compile/link closure, not whole-image byte identity. Target-independent CI passed all 43 tests, `validate-tracking.py --require-target` remains 1,880 provisional / 697 source-present / 696 exact, and `git diff --check` passed. Runtime storage identity, runtime scenarios, and portable-runtime validation remain separate and unclaimed.
 
-**Recovery / analysis state.** Recovery after the browser interruption found committed SEM-170 checkpoint `16b75eff7a0bd14affbbda8eebcab55f2482d22d` plus exactly two tracked `recoverable-current-work` paths, `src/ReplayManager.cpp` and `src/ReplayManager.hpp`, containing this coherent owner rename; there were no staged changes. The same four pre-existing untracked paths remain preserved and excluded: user-owned `droid.resume.txt`, runtime experiments `config/runtime-scenarios.json` and `scripts/runtime-diff.py`, and unknown-origin generated-looking `EnemyManagerUpdate.i`. `.analysis/` started and remains 3,394,984 bytes; no current-session filesystem analysis root or retained large artifact was created because fresh semantic evidence came from the registered read-only target-attested Ghidra provider and repository-local exact sources.
-
-**Next evidence route.** Rotate away from the replay-header owner after checkpoint. Prefer a different owner/lifetime, interpreter/state, or persistent/ABI family with a TH095-local producer plus independent consumer. A replay follow-up may examine the mode-dependent `fpsData` owned-allocation versus interior-view lifetime only if it yields a maintainability improvement beyond the already correct destructor guard; do not rename for novelty. Keep replay reserved bytes, ReplayScanWorker `unknown010`, score-header reserved fields, Sound/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact-enemy plateaus, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-172 — expose the front-end replay column cursor
 
 **Scope.** Rotate from the ReplayManager allocation owner into the independent shared front-end ABI. `FrontEndControllerUpdateView` already typed the first `ResultScreenReplayCursor @ +0x20` but then represented the complete `+0xF8..+0xBF3` region as `unknown00f8`, even though committed TH095 evidence identifies another cursor subobject at `+0xF8`. This transaction changes only the normal-production layout projection: it exposes the second cursor as `replayColumnCursor @ +0xF8` and moves the remaining anonymous span to `unknown01d0`. Runtime behavior, object size, later member offsets, replay-browser logic, and exact-facing source are unchanged.
@@ -10127,11 +8721,6 @@ Fresh `ReplayBrowserView::Update @ 0x0044DCA0` supplies the state-specific meani
 
 **Validation.** After the representation correction, canonical replay of all four configured `FrontEndController.cpp` units passed 4/4 exact with zero private-label refresh. A command-local pinned VC7.1 13.10.3077 normal-profile probe compiled the same source to an Intel 80386 COFF object, and `git diff --check` passed. Because this is a TU-local projection and not a shared header/PCH/owner-layout definition consumed across translation units, this private checkpoint does not replay the full 696-unit accepted set or whole-product gate; those remain milestone/final-handoff checks rather than per-transaction churn.
 
-**Recovery / analysis state.** The batch began from committed HEAD `923b0f50ac57195c28c21c1024703f5841a7031d` with no staged or tracked-unstaged work and the four documented pre-existing untracked paths preserved outside staging. `.analysis/` remains the campaign baseline 3,394,984 bytes; no current-session filesystem analysis root or retained large artifact was created because fresh semantic evidence came from the registered read-only target-attested Ghidra provider. Intermittent Factory transport connection failures occurred before several read-only shell/validation calls; calls without a durable command/result received no evidence or validation credit.
-
-**Next evidence route.** Rotate away from front-end replay cursors after checkpoint. Prefer an independent historical-runtime, non-ANM resource-lifetime, primary/sibling interpreter-state, or persistent/ABI family with a TH095-local producer plus independent consumer. Keep the state-dependent front-end `+0xBF0` alias, `ReplayInputSource::unknown02a/unknown036`, ReplayScanWorker `unknown010`, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact-enemy plateaus, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-173 — bind high-ECL ANM handle slot producer and consumer
 
 **Scope.** Rotate from the post-SEM-172 owner/cursor work into the primary ECL interpreter and close one missed binding to an already-proven compact-enemy owner. High ECL opcodes 151 and 152 still addressed `Enemy +0x2D4 + slot*4` through raw byte arithmetic even though SEM-016 established `Enemy::anmHandles[2] @ +0x2D4` from independent TH095-local consumers. This transaction changes only the normal-production representation of those two sibling opcode paths: opcode 151 publishes a newly spawned ANM VM handle into the selected slot, and opcode 152 reads the selected slot to resolve a VM and deliver an interrupt. Opcode values, operand decoding, slot arithmetic, array extent, VM-id representation, control flow, and exact-facing source remain unchanged.
@@ -10149,11 +8738,6 @@ Fresh target decompilation independently reconfirmed `UpdatePlayerProximityAndMa
 **Production / exact representation.** `src/ecl/EclRunHigh.inl` now routes the selected slot through `TH095_ENEMY_ANM_HANDLE_SLOT`. Normal production expands that accessor to `enemy->anmHandles[slot]`; `TH095_MATCH_EXACT` retains the historical `reinterpret_cast<u8 *>(enemy) + 0x2D4 + slot*4` lvalue shape. No shared header, object layout, PCH-visible declaration, ABI, serialized format, or runtime storage changes.
 
 **Validation.** Focused canonical replay `python3 scripts/replay-exact-units.py --source src/ecl/EclRun.cpp` rebuilt the one configured `RunEcl` unit and passed 1/1 exact with zero compiler-private label refresh. A command-local normal-production probe using pinned VC7.1 13.10.3077 and the canonical `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src/ecl /I src` profile emitted a 77,946-byte Intel 80386 COFF `EclRun.obj`; the temporary object/PDB directory was removed by the same command. `git diff --check` passed. This transaction is translation-unit-local and changes no shared owner/layout declaration, so cold aggregate exact and whole-product gates are deferred to the committed campaign milestone/final handoff rather than replayed before this private checkpoint.
-
-**Recovery / analysis state.** The campaign began from committed HEAD `81d839f432db638a702a3a212769abb1c723c7d5` with no staged or tracked-unstaged changes and the four documented pre-existing untracked paths preserved outside staging. `EnemyManagerUpdate.i` remains unknown-origin generated-looking state; `droid.resume.txt` remains explicit user/external state; `config/runtime-scenarios.json` and `scripts/runtime-diff.py` remain runtime experiments. Their hashes were rechecked unchanged before this batch. `.analysis/` started at 3,394,984 bytes; no current-session `.analysis/gpt-web/` root or retained large artifact was created because target evidence came from the registered read-only attested Ghidra provider. One pre-edit read-only Factory transport request failed before receiving a command id; repository status was rechecked unchanged and the failed request received no evidence credit.
-
-**Next evidence route.** After checkpoint, rotate away from this ANM-handle pair rather than mining SEM-016 again. Prefer a distinct historical-runtime or non-ANM resource-lifetime owner, a persistent/ABI field with a new reader/validator, or another primary/sibling interpreter-state protocol whose producer and independent consumer are still represented weakly. Keep replay/input reserved bytes, `ReplayScanWorker::unknown010`, score-header reserved fields, Sound/PBG writer-only metadata, ANM VM bit 14, the TextRenderer RNG prefix, compact-enemy single-ended tails/control gaps, and photo-score bits 5/17/18/19 Unknown absent new distinguishing TH095-local evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-174 — bind high-ECL deferred-shot cadence producers
 
@@ -10173,10 +8757,6 @@ Fresh target decompilation of `Enemy::UpdateShotAndAnm @ 0x00413030` independent
 
 **Validation.** Focused canonical replay `python3 scripts/replay-exact-units.py --source src/ecl/EclRun.cpp` passed the configured `ecl-manager-run-ecl` unit 1/1 exact with zero compiler-private label refresh. A command-local normal-production probe using pinned VC7.1 13.10.3077 and the repository profile `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src/ecl /I src` emitted a 77,946-byte Intel 80386 COFF object; its temporary object/PDB directory was removed by the same command. `git diff --check` passed. Because this transaction is private to the one RunEcl translation unit and changes no shared owner/layout declaration, cold aggregate exact and whole-product gates are deferred to the campaign milestone after checkpoint.
 
-**Recovery / analysis state.** This transaction began from committed SEM-173 HEAD `97feb59fb782c56aaf581e18da25d289713da9cb` with no staged or tracked-unstaged changes and the same four pre-existing untracked paths preserved outside staging. No current-session `.analysis` artifact was created; target evidence came from the registered read-only Ghidra provider. The campaign `.analysis/` baseline remains 3,394,984 bytes with no retained current-session large artifact.
-
-**Next evidence route.** After checkpoint, rotate away from deferred-shot cadence and the ANM-handle pair. The resume audit has already falsified several tempting raw-debt routes as exact/DIFF compatibility surfaces rather than live normal gaps: SceneSelect Best Shot records, FrontEnd shared asset queues, compact marker-pulse timer, Player position, compact movement bounds, and historical relocation proxies. A later batch should prefer a distinct persistent/ABI, historical-runtime, non-ANM resource lifetime, or interpreter/state family with a new TH095-local producer plus independent consumer. Keep `+0x2CA4/+0x2CA8`, score-header reserved fields, ReplayScanWorker `unknown010`, replay/input reserved bytes, Sound/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact tail/control single-ended storage, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
 ### SEM-175 — align PhotoCard with shared photo runtime gates
 
 **Scope.** Continue the post-SEM-174 resume audit outside the recently touched high-ECL families and test shared photo-runtime consumers that were not included in the original owner repairs. `PhotoCardInfoView::OnUpdate` still decoded `g_RuntimeGlobalStateOwner +0xFC` bits 2 and 10 through raw shifts in normal production, while `OnDraw` decoded bit 2 the same way. SEM-055/SEM-056 already establish those physical bits as `gameplayLoadActive` and `photoTransitionActive` from independent TH095-local producers and consumers, but the PhotoCard callbacks were not part of either maintained representation batch. This transaction binds only those missed PhotoCard consumers to a bounded local owner view. It does not reinterpret either shared bit, change PhotoCard state/VM behavior, or rename any unresolved neighboring flag.
@@ -10195,10 +8775,6 @@ Fresh producer observations keep the two gates distinct. `PhotoGameTaskView::Loa
 
 **Validation.** Focused canonical replay `python3 scripts/replay-exact-units.py --source src/PhotoCardInfo.cpp` rebuilt all ten configured PhotoCard units and passed 10/10 exact with zero compiler-private label refresh. A command-local normal-production probe reused the manifest `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile with pinned VC7.1 13.10.3077 and emitted a 26,089-byte Intel 80386 COFF object; its temporary object/PDB directory was removed by the same command. `git diff --check` passed. Because this is a private translation-unit representation change with no shared header/layout/PCH/owner mutation, cold aggregate exact and whole-product gates are deferred to the next committed campaign milestone/final handoff.
 
-**Recovery / analysis state.** The transaction began from committed handoff HEAD `11258f72ff80280721e9d6eb1362dad173d25f39` with no staged or tracked-unstaged changes and the four documented pre-existing untracked paths preserved outside staging. `.analysis/` began at 3,394,984 bytes and no current-session analysis artifact was created; fresh semantic evidence came through the registered read-only target-attested Ghidra provider. Several read-only Factory requests during earlier negative routing lost transport before returning durable command ids or results; each received zero evidence credit and live repository status was rechecked before continuing.
-
-**Next evidence route.** After checkpoint, rotate away from shared photo-runtime gates and PhotoCard. Prefer an independent persistent/ABI, historical-runtime, non-ANM resource-lifetime, replay/input, or sibling-interpreter family with a new TH095-local producer plus independent consumer/cleanup edge. Keep shared bit 8, FrontEnd controller bit 4, `ReplayScanWorker::unknown010`, replay/input reserved storage, score-header reserved fields including `+0x0C`, Sound/PBG writer-only metadata, ANM VM bit 14, the TextRenderer RNG prefix, compact enemy single-ended tail/control fields, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
 ### SEM-176 — bind target-high BulletInf ANM owner reads
 
 **Scope.** Rotate away from SEM-175 shared photo-state gates into the independent ECL-to-resource owner boundary. The TH095 BulletInf layout and SEM-017 already establish manager `+0x27C5B0` as the slot-six `bullet.anm` `AnmLoaded *`/ANM spawner owner, but three target-high `RunEcl` spawn paths still recovered that pointer through raw `TH095_ECL_BULLET_MANAGER + 0x27C5B0` arithmetic in normal production. This transaction binds only those missed interpreter-side owner reads to an EclRun-local `PhotoBulletManagerView::anmSpawner` projection. It does not change the BulletInf lifetime, ANM slot number, spawned scripts, VM handle storage, or any ECL opcode identity.
@@ -10214,11 +8790,6 @@ Fresh producer observations keep the two gates distinct. `PhotoGameTaskView::Loa
 **Production / exact representation.** Normal `src/ecl/EclRun.cpp` extends its existing private `PhotoBulletManagerView` with opaque storage through `+0x27C5B0`, names `anmSpawner` there, and pins the offset with a compile-time assertion. `TH095_ECL_BULLET_ANM_SPAWNER` resolves to that member in normal production. `DIFFBUILD` and `TH095_MATCH_EXACT` expand the accessor back to the historical raw `manager + 0x27C5B0` pointer expression. The three target-high call sites in `EclRunTargetHigh.inl` use only this accessor; no shared header, physical BulletInf layout, calling convention, switch topology, script id, or target-facing relocation is changed.
 
 **Validation.** Focused canonical replay of `src/ecl/EclRun.cpp` passed the configured `ecl-manager-run-ecl` unit 1/1 exact with zero compiler-private label refresh. The first normal-production probe deliberately received no compile credit: EclRun's existing private `PhotoBulletManagerView` exposed only methods, so the new owner accessor initially failed with `anmSpawner is not a member`. The fix stayed inside that private view by adding the offset-asserted owner field; no shared include or ABI was widened. The repeated focused exact replay again passed 1/1 with zero refresh, and a command-local normal probe using pinned VC7.1 13.10.3077 plus the repository `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src/ecl /I src` profile emitted a 77,946-byte Intel 80386 COFF object. Its temporary object/PDB directory was removed by the same command. `git diff --check` passed. Because the transaction is private to the RunEcl translation unit and does not change a shared owner/header/layout, cold aggregate exact and whole-product gates are deferred to the campaign milestone/final handoff.
-
-**Recovery / analysis state.** This transaction began from committed SEM-175 HEAD `5a044de2d2121111b8f0f45d095ecd14495de2f1` with no staged or tracked-unstaged changes and the same four pre-existing untracked exclusions preserved. `.analysis/` remained at the campaign baseline 3,394,984 bytes; no current-session analysis artifact was created. Fresh target evidence came from the registered read-only attested Ghidra provider.
-
-**Next evidence route.** After checkpoint, rotate away from BulletInf ANM ownership and the recent shared photo-state gates. Prefer a distinct persistent/ABI, replay/input, historical-runtime, sound/resource-lifetime, or non-ANM sibling-protocol family with new TH095-local producer plus independent consumer/cleanup evidence. Keep ANM preload-slot path bytes, ANM VM bit 14, `ReplayScanWorker::unknown010`, replay/input reserved storage, score-header reserved fields including `+0x0C`, Sound/PBG writer-only metadata, TextRenderer RNG prefix, compact-enemy single-ended tail/control storage, shared unresolved bits, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-177 — align PhotoFront and PhotoOverlay gameplay-load gates
 
@@ -10238,11 +8809,6 @@ Fresh `PhotoGameTaskView::Load @ 0x00417D20` provides the producer/lifetime edge
 
 **Validation.** Focused canonical replay `python3 scripts/replay-exact-units.py --source src/PhotoFront.cpp --source src/PhotoOverlay.cpp` rebuilt all 22 configured units and passed 22/22 exact with zero compiler-private label refresh. Command-local normal-production probes reused each source's canonical manifest profile under pinned VC7.1 13.10.3077 and emitted 32,421-byte `PhotoFront.obj` and 23,596-byte `PhotoOverlay.obj` Intel 80386 COFF objects; the temporary object/PDB directory was removed by the same command. `git diff --check` passed. No shared header, PCH, physical owner, serialized layout, or ABI changed, so cold aggregate exact and whole-product gates are deferred to the next committed campaign milestone/final handoff.
 
-**Recovery / analysis state.** This campaign began from committed handoff HEAD `340822f0d7059b3e0018ccf8325676292867d665` with no staged or tracked-unstaged changes and the same four pre-existing untracked exclusions preserved outside staging. `.analysis/` began at 3,394,984 bytes and no current-session analysis artifact has been created; fresh target evidence came through the registered read-only attested Ghidra provider. Several read-only Factory requests lost transport before returning durable command ids; each received zero evidence credit and live HEAD/worktree state was rechecked before continuing.
-
-**Next evidence route.** After checkpoint, rotate away from shared gameplay-load gates again. Prefer a distinct persistent/ABI boundary, historical-runtime owner, non-ANM resource lifetime, replay/input protocol with a newly discovered field-level consumer, or a sibling interpreter/state family with TH095-local producer plus independent consumer/cleanup evidence. Keep FrontEnd controller bit 4, Supervisor/shared bit 8, `ReplayScanWorker::unknown010`, replay/input reserved bytes, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM VM bit 14, ANM preload-slot path bytes, TextRenderer RNG prefix, compact-enemy single-ended tail/control storage, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-178 — bind ANM text visibility publications
 
 **Scope.** Rotate away from SEM-177 shared gameplay-load callbacks into an independent ANM text producer family after additional persistent, weak-API, bullet-owner, and normal-preprocessing audits. The current normal `AnmText.cpp` still ended each of `DrawTextLeft`, `DrawTextRight`, and `DrawTextCentered` with raw `flagsWord |= 1` even though the canonical `AnmVm +0x228` owner already names bit 0 `visible` and TH095-local draw behavior distinguishes that bit from the separate bit-1 `drawEnabled` gate. This transaction aligns only those three text-render publications with the existing visibility owner. It does not reinterpret ANM bit 1, bit 14, script execution, sprite lifetime, or text-buffer ownership.
@@ -10258,11 +8824,6 @@ Fresh `PhotoGameTaskView::Load @ 0x00417D20` provides the producer/lifetime edge
 **Production / exact representation.** `src/AnmText.cpp` now uses the source-local `TH095_ANM_TEXT_PUBLISH_VISIBLE` abstraction at the three text frontends. Normal production expands it to `reinterpret_cast<AnmVm *>(vm)->visible = 1`, reusing the canonical physical owner already included through `AnmText.hpp`. `TH095_MATCH_EXACT` and `DIFFBUILD` expand it to the historical `vm->flagsWord |= 1`, preserving the target-facing expression and local `AnmTextVmView` layout. No shared header, ABI, object size, calling convention, or relocation owner changes.
 
 **Validation.** Focused canonical replay `python3 scripts/replay-exact-units.py --source src/AnmText.cpp` rebuilt all four configured ANM text units and passed 4/4 exact with zero compiler-private label refresh. A command-local normal-production probe reused the canonical manifest profile under pinned VC7.1 13.10.3077 and emitted a 19,239-byte Intel 80386 COFF `AnmText.obj`; the temporary object/PDB directory was removed by the same command. The existing VC7.1 warnings for the repository's `#pragma var_order` source annotations were unchanged. `git diff --check` passed. No shared header/PCH/layout changed, so cold aggregate exact and whole-product gates are deferred to the campaign milestone/final handoff.
-
-**Recovery / analysis state.** This transaction began from committed SEM-177 HEAD `493769440f2880a1dc65ee3934a31ac0441b15bb` with no staged or tracked-unstaged changes and the same four pre-existing untracked exclusions preserved outside staging. `.analysis/` remains at the campaign-start 3,394,984 bytes; no current-session analysis artifact was created. Fresh target evidence came through the registered read-only attested Ghidra provider.
-
-**Next evidence route.** After checkpoint, rotate away from ANM text visibility and the recent shared gameplay-load family. Prefer a distinct historical-runtime/resource-lifetime owner, persistent or serialized ABI boundary with a new validator/consumer, replay/input protocol with field-level evidence, or non-ANM sibling interpreter/state family. Keep FrontEnd controller bit 4, Supervisor/shared bit 8, `ReplayScanWorker::unknown010`, replay/input reserved bytes, score/replay reserved words, SoundPlayer/PBG writer-only metadata, ANM VM bit 14, ANM preload-slot path bytes, TextRenderer RNG prefix, compact-enemy single-ended tail/control storage, and photo-score bits 5/17/18/19 Unknown absent new TH095-local evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-179 — type the photography player mode protocol
 
@@ -10281,11 +8842,6 @@ Fresh target `PhotoGameUpdateView::Die @ 0x004306D0` independently writes Player
 **Production / exact representation.** Normal `PhotoPlayerRuntime.hpp` defines `PhotoPlayerMode` and types the shared Player owner `mode @ +0x0000` with it. Normal `PhotoGameUpdateView` and `PhotoCamera.hpp::PhotoGameStateView` use the same enum without changing size or offset. `PhotoGame.cpp` uses state constants for the collision gates, death producer, DrawPlayer gate, and all four `Update` switch cases. `PhotoCamera.cpp` uses the state-3 constant for the photo-limit publication. `TH095_MATCH_EXACT` and `DIFFBUILD` keep four-byte integer fields and the historical numeric `0/1/2/3` expressions through narrowly scoped compatibility macros, so target-facing source shape and decorated ABI remain unchanged.
 
 **Validation.** Fresh target evidence came through the registered read-only Factory-attested Ghidra provider for `0x0042FF60`, `0x004306D0`, `0x00432D10`, and `0x00430450`. Focused canonical replay of `src/PhotoGame.cpp` and `src/PhotoCamera.cpp` passed 33/33 configured units exact with zero compiler-private label refresh. Command-local normal probes using pinned VC7.1 13.10.3077 and the repository `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile emitted 50,824-byte `PhotoGame.obj` and 58,082-byte `PhotoCamera.obj` Intel 80386 COFF objects; the temporary probe directory was removed in the same command. Because `PhotoPlayerRuntime.hpp` / `PhotoCamera.hpp` are shared headers, the current manifest was immediately cold-replayed in four disjoint 22-source groups containing 226, 201, 217, and 52 units; all 696/696 configured units passed exact with zero private-label refresh. A fresh `scripts/build-whole.py` run compiled all 88 production TUs with pinned VC7.1 and linked/verified a 780,288-byte PE32 i386 GUI image with build-local SHA-256 `871bf14e174188b89dd49b604ea265b1ee64075765db2bc43b92c340e306aed0`. Successful product linkage is not a whole-image-exact or runtime-scenario claim. `git diff --check` passed throughout.
-
-**Recovery / analysis state.** The conversation resumed from committed handoff `f18d7c5e25087d8134146220917e2e33bfb2ab28` with no staged or tracked-unstaged work and the same four pre-existing untracked exclusions preserved. `.analysis/` started at 3,394,984 bytes; no current-session `.analysis/gpt-web/` root or retained analysis artifact was created because semantic target evidence came through bounded provider queries. The first broad baseline command used one obsolete graph-script filename and exited after target/Ghidra/tracking had passed; recovery confirmed unchanged source state, and the repository-native CI path subsequently supplied the real graph validators. Several bounded routes were falsified before this edit—ANM bit 14, ReplayScanWorker `unknown010`, shared task/Supervisor bit 8, FrontEnd bit 4, PBG/Sound single-ended metadata, replay/input reserved fields, compact ECL bits 3/6, and exact-only raw-member aliases—without converting those negatives into completion evidence.
-
-**Next evidence route.** After checkpoint, rotate away from the Player mode protocol. Prefer an independent persistent/serialized field with a newly found validator, a non-ANM resource lifetime, a sound/replay/input protocol only when a real field-level consumer appears, or another sibling interpreter/state domain with a TH095-local producer plus independent consumer. Keep shared task bit 8, Supervisor constructor bit 8, FrontEnd bit 4, ReplayScanWorker `unknown010`, replay/input reserved bytes, score-header `+0x0C`, Sound/PBG writer-only metadata, ANM VM bit 14, ANM preload pathname, TextRenderer RNG prefix, compact single-ended fields, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-180 — bind PhotoGameTask to the replay mode protocol
 
@@ -10307,11 +8863,6 @@ Fresh `SceneSelectControllerView::Update @ 0x00445E80` independently establishes
 
 Because `PhotoGameTask.hpp` is a shared production header, the current dirty source was immediately cold-replayed in four disjoint 22-source groups containing 226, 201, 217, and 52 units. All 696/696 configured units passed exact with zero private-label refresh. During partition one, the local `origin/main` ref was externally fast-forwarded to the unchanged semantic HEAD `6b81088e4d79f92d592d3eee3793b5f93c3f2f57`; recovery verified HEAD identity, zero divergence, unchanged tracked transaction diff, unchanged exclusion hashes, and no active producer. No push was performed by this campaign. A fresh `scripts/build-whole.py` run then compiled all 88 production TUs with pinned VC7.1 and linked/verified a 780,288-byte PE32 i386 GUI image with build-local SHA-256 `1a9f209a36da38db35b96c61e4f5dc4a29c367cd2a82a12989f4cb0df17abb42`. Product linkage remains separate from whole-image identity and runtime-scenario validation.
 
-**Recovery / analysis state.** This transaction began from clean tracked SEM-179 checkpoint `6b81088e4d79f92d592d3eee3793b5f93c3f2f57`; the four documented pre-existing untracked paths remained excluded. `.analysis/` remained at the campaign baseline 3,394,984 bytes and no current-session analysis artifact was created. The external upstream-ref update changed only the local remote-tracking reference, not repository source or the user-excluded paths.
-
-**Next evidence route.** After checkpoint, rotate away from PhotoGameTask replay-entry typing and the preceding Player mode domain. Prefer a distinct persistent/serialized field with a real validator/reader, a non-ANM resource lifetime, historical runtime ownership, or another sibling protocol with a TH095-local producer plus independent consumer/cleanup edge. Keep shared task bit 8, Supervisor constructor bit 8, FrontEnd bit 4, ReplayScanWorker `unknown010`, replay/input reserved bytes, score-header `+0x0C`, Sound/PBG writer-only metadata, ANM VM bit 14, ANM preload pathname, TextRenderer RNG prefix, compact single-ended storage, and photo-score bits 5/17/18/19 Unknown absent new evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-181 — type ReplayManager mode storage
 
 **Scope.** Continue from SEM-180 at the downstream owner of the same replay protocol rather than reopening task-entry routing. `ReplayManager.hpp` already defines `ReplayManagerMode` with `REPLAY_MANAGER_RECORD = 0`, `REPLAY_MANAGER_PLAYBACK = 1`, and `REPLAY_MANAGER_LOAD_ONLY = 2`, but the manager's own four-byte `mode @ +0x00` remained an untyped `i32` in maintainable production. This transaction types only that stored owner field. It deliberately preserves the historical integer parameter types of `ReplayManager::Initialize(i32, char *)` and `ReplayManager::Create(i32, char *)`, so no decorated ABI is changed.
@@ -10329,11 +8880,6 @@ Fresh `ReplayManager::~ReplayManager @ 0x004344F0` independently consumes the sa
 **Production / exact representation.** Normal `ReplayManager::mode @ +0x00` is now `ReplayManagerMode`. `TH095_MATCH_EXACT` and `DIFFBUILD` retain `i32` storage. Normal `Initialize(i32 mode, char *path)` stores `static_cast<ReplayManagerMode>(mode)`; DIFFBUILD retains the historical direct integer assignment. `Initialize` and `Create` keep integer parameters, so their VC7.1 decorated names and public ABI are unchanged. The field remains four bytes at offset zero and all following owner offsets are unchanged.
 
 **Validation.** Focused canonical replay of `src/ReplayManager.cpp` rebuilt all twelve configured ReplayManager units and passed 12/12 exact with zero compiler-private label refresh. A command-local normal-production probe using pinned VC7.1 13.10.3077 and the canonical `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile emitted a 36,304-byte Intel 80386 COFF object; the temporary object/PDB was removed by the same command. Because `ReplayManager.hpp` is shared, the dirty current source was then cold-replayed across four disjoint manifest-derived partitions of 174 units each. All 696/696 configured units passed exact with zero private-label refresh. A fresh `scripts/build-whole.py` run compiled all 88 production TUs with pinned VC7.1 and linked/verified a 780,288-byte PE32 i386 GUI image with build-local SHA-256 `a43c2df9043a9a43f76e1f61136c168a70397ee57a5b59a7664765c371c8401b`; successful linkage is not a whole-image exact claim. The first monolithic aggregate replay request lost the Factory transport without a durable command id and receives no validation credit. Mandatory recovery confirmed the same HEAD/two-file transaction and no surviving replay/compiler producer before the four durable partitions were run.
-
-**Recovery / analysis state.** The campaign began from committed handoff HEAD `dee282c33dbb75ca0545d3115cd421a6e4f6a7bd` with no staged or tracked-unstaged changes and the same four documented pre-existing untracked exclusions. `.analysis/` began and remains at 3,394,984 bytes; no current-session `.analysis/gpt-web` root or retained analysis artifact was created. The initial handoff-directed `ResultScoreEntryView` audit found no new field-level reader or validator for the remaining anonymous score-entry holes: the parser and writer operate on those bytes through whole-record copy/checksum, while maintained independent field accesses are already covered by committed score semantics. That bounded negative result was treated as a routing plateau, not phase completion.
-
-**Next evidence route.** Rotate away from ReplayManager mode typing and the already-audited score-entry holes. Prefer a different state/resource/persistent owner where current TH095 evidence supplies a producer plus independent consumer or cleanup edge. Do not reopen known exact-facing aliases merely because lexical debt reports them: screen-shake `unknown020/024`, PhotoCamera `unknownbb8`, ScoreFileHeader `unknown008`, and several shared-photo `unknownFlag*` declarations already have maintainable normal representations. Keep score-header `+0x0C`, replay/input reserved bytes, ReplayScanWorker `unknown010`, ANM VM bit 14, compact-enemy single-ended control bits, Sound/PBG writer-only metadata, and other single-ended storage Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-182 — type PhotoCamera mode storage
 
@@ -10355,11 +8901,6 @@ Fresh `UpdatePhotoCamera @ 0x00430AB0` independently dispatches exactly five swi
 
 **Validation.** Focused canonical replay of the three direct camera-header consumers passed all 39 configured units exact with zero compiler-private label refresh: PhotoCamera 11/11, PhotoGame 22/22, and PhotoStage 6/6. Command-local normal probes under pinned VC7.1 emitted 58,200-byte PhotoCamera, 50,844-byte PhotoGame, and 48,323-byte PhotoStage Intel 80386 COFF objects; each temporary object/PDB was removed by the same command. Because `PhotoCamera.hpp` is shared, the dirty current source was cold-replayed across the same four disjoint 174-unit manifest partitions; all 696/696 configured units passed exact with zero private-label refresh. The first partition-three submission lost Factory transport before returning a durable command id and receives no validation credit; mandatory recovery confirmed HEAD `77addf1edf6d7933952c72f940c821523fa55f69`, the intended one-file diff, and no surviving replay/compiler producer before the partition was rerun successfully. A fresh `scripts/build-whole.py` run then compiled all 88 production TUs with pinned VC7.1 and linked/verified a 780,288-byte PE32 i386 GUI image with build-local SHA-256 `0086226f6be821ac60b5e024a63140e0bd56dbc2fc7adacf4a3bf3464d7fbc18`; successful linkage is not a whole-image exact claim.
 
-**Recovery / analysis state.** This transaction began from committed SEM-181 checkpoint `77addf1edf6d7933952c72f940c821523fa55f69` with no staged or tracked-unstaged changes and the same four documented pre-existing untracked exclusions. No current-session `.analysis` artifact was created; all fresh semantic observations came from the registered read-only target-attested Ghidra provider, while exactness came from the canonical replay lane. The earlier score-entry, FrontEnd raw-offset, Background padding, ReplayBrowser `+0x04`, shared-photo declaration-only aliases, and exact-facing PhotoCamera `unknownbb8` routes remain bounded negative routing results rather than newly named semantics.
-
-**Next evidence route.** Rotate away from camera and Player mode/state typing. Prefer a separate finite state/resource/persistent protocol whose owner is still weakly represented but has a TH095-local producer plus an independent consumer/cleanup edge. A useful adversarial starting point is a non-camera submode such as Player movement/camera-tracking control only if its numeric domain has multiple independent target producers and consumers; otherwise rotate to a resource or persistent ABI owner. Do not reopen known single-ended storage or exact-facing compatibility aliases. The semantic phase remains active-incomplete.
-
-
 ### SEM-183 — type Player movement direction storage
 
 **Scope.** Follow SEM-182's adversarial next route into the Player-side movement submode rather than reopening the camera mode state machine. The live Player owner at `g_RuntimePlayerOwner` stores a four-byte value at `+0x02D4`. `PhotoGameUpdateView::UpdateMainState` already used a source-local nine-value `PhotoPlayerMovementDirection` enum when assigning and switching on that field, while the canonical `PhotoPlayerRuntimeView` and the camera-side `PhotoGameStateView` still exposed the same storage as anonymous padding or bare `i32`. This transaction makes the movement-direction domain a shared normal-production owner representation. It does not reinterpret `cameraTrackingMode @ +0x02D8`, Player mode, PhotoCamera mode, input-history storage, movement speeds, or camera tracking policy.
@@ -10380,11 +8921,6 @@ Fresh target `UpdatePhotoCamera @ 0x00430AB0` supplies an independent consumer o
 
 The shared-header/product risk was also closed in the reconstructed Windows i386 lane. The final current-source `scripts/build-whole.py` run cold-compiled all 88 production translation units with pinned VC7.1 and linked/verified a 780,288-byte PE32 GUI image with build-local SHA-256 `3f1eda74e58839c9156da0dd39e68345314d5aae332c12e053e029e4e8331582`. Successful linkage is production compile/link closure, not target whole-image identity or runtime-scenario validation. Target-independent CI passed all 43 tests, tracking remained 697 source-present / 696 exact, the match-unit graph remained 696 units, and `git diff --check` passed. A standalone global `/DDIFFBUILD` compile experiment was also attempted but is not a repository-supported compile profile: it failed on pre-existing runtime-global/input-history compatibility dependencies unrelated to this field, received no validation credit, and its command-local temporary directory was removed. The repository's supported exact lane defines compatibility state through `TH095_MATCH_EXACT`/late `DIFFBUILD`, which is covered by the exact replays above.
 
-**Recovery / analysis state.** This campaign began from committed handoff HEAD `930bc048c9f55674a8797312fcab7da6f0a10400` with no staged or tracked-unstaged changes. The same four pre-existing untracked paths were classified and preserved outside staging throughout: user-owned unrelated `droid.resume.txt`, unrelated runtime experiments `config/runtime-scenarios.json` and `scripts/runtime-diff.py`, and unknown-origin generated-looking `EnemyManagerUpdate.i`. Their hashes stayed unchanged across recovery gates. `.analysis/` began at 3,394,984 bytes. Fresh target decompiles were bounded under manifested current-session root `.analysis/gpt-web/20260914-th095-movement-direction/`, temporarily raising `.analysis/` to 3,424,066 bytes with only 8,867-byte `update-main-state.c`, 19,229-byte `update-photo-camera.c`, and its small manifest. After the target conclusions were reduced into this tracked record and no active producer/reference remained, only those current-session files were removed explicitly; `.analysis/` returned to exactly 3,394,984 bytes. No retained current-session large artifact exists and legacy/shared analysis roots were untouched.
-
-**Next evidence route.** After checkpoint, keep the semantic phase active-incomplete and rotate one field to the adjacent but distinct Player `cameraTrackingMode @ +0x02D8` only if fresh TH095 evidence can distinguish the full 0/1/2 behavioral domain without borrowing names from movement or camera mode. The existing target lead is bounded: `UpdateMainState` publishes 0/1 from input and promotes the focused branch to 2 under the secondary input, while `UpdatePhotoCamera` independently distinguishes 0, 1, and 2 in tracking-radius/viewfinder behavior. If that evidence cannot support stable behavioral names, leave the field Unknown and rotate to a separate resource/persistent/ABI owner. Keep shared task bit 8, Supervisor constructor bit 8, FrontEnd bit 4, `ReplayScanWorker::unknown010`, replay/input reserved bytes, score-header `+0x0C`, Sound/PBG writer-only metadata, ANM VM bit 14, ANM preload pathname, TextRenderer RNG prefix, compact single-ended storage, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-184 — type Player camera tracking mode storage
 
 **Scope.** Continue the adversarial route named by SEM-183 into the adjacent but distinct Player dword at `+0x02D8`. The field already had the weak source name `cameraTrackingMode` in `PhotoGameUpdateView` and `PhotoGameStateView`, while the canonical `PhotoPlayerRuntimeView` still treated the same bytes as padding. This transaction accepts only the TH095-local three-value behavior shared by `PhotoGameUpdateView::UpdateMainState` and `UpdatePhotoCamera`: free camera steering, direct target tracking, and the slower direct-target variant. It does not reinterpret PhotoCamera's own `mode`, camera focus flag bit 1, camera charge state, movement direction `+0x02D4`, or the semantic purpose of every input bit.
@@ -10404,11 +8940,6 @@ Fresh Factory-attested `UpdatePhotoCamera @ 0x00430AB0` independently consumes t
 **Validation.** The first focused exact attempt failed at compile time because `PhotoCamera.hpp` intentionally does not include `PhotoPlayerRuntime.hpp` on the exact path, so the newly used compatibility tokens were unavailable in `PhotoCamera.cpp`. That attempt receives no exact credit. Mandatory recovery found only the four intended tracked edits, unchanged excluded files, and no active producer. The compatibility tokens were then defined locally for the exact/DIFF camera source without widening shared exact-header dependencies. A subsequent Factory connection loss occurred before a durable command id was returned; it likewise receives no credit, and the recovery gate again confirmed unchanged source and no active producer. The durable focused replay then passed PhotoCamera 11/11 plus PhotoGame 22/22, 33/33 total, with zero private-label refresh.
 
 Because the canonical Player owner header changed, the current source also received a cold aggregate exact gate. A combined four-part request was blocked before execution and receives no credit. Four independently durable, mutually exclusive source partitions passed 226 + 201 + 217 + 52 = 696/696 configured exact units with zero private-label refresh. The current-source reconstructed Windows i386 lane then cold-compiled all 88 production translation units with pinned VC7.1 and linked/verified a 780,288-byte PE32 GUI executable with build-local SHA-256 `e0af1033c913046d4f9f1de2e7627a4bde14ced894bb19d203c3c062d901b5f5`. That is compile/link closure only, not target whole-image identity. Target-independent CI passed all 43 tests; target/tracking validation remained 697 source-present / 696 exact with 336,486 exact bytes; the match-unit graph remained 696 and whole-build graph remained 88 sources across two profiles; `git diff --check` passed.
-
-**Recovery / analysis state.** SEM-184 began from checkpoint `0dc412d696af63a8f7fb3abcded108ae49589ccb` with no staged or tracked-unstaged change and the same four excluded pre-existing untracked paths. Their hashes remained unchanged through every recovery gate: `EnemyManagerUpdate.i` `1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`, `config/runtime-scenarios.json` `56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`, `droid.resume.txt` `9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`, and `scripts/runtime-diff.py` `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`. Fresh target evidence for this transaction came directly from the Factory-attested read-only Ghidra provider, so no new `.analysis/gpt-web/` scratch was required. `.analysis/` stayed at the campaign baseline of 3,394,984 bytes; no current-session large artifact is retained and legacy/shared analysis state was untouched.
-
-**Next evidence route.** After checkpoint, rotate away from the now-audited adjacent Player movement/tracking pair and from PhotoCamera local state. Prefer an independent persistent/ABI or owner/lifetime family with at least one TH095-local producer and consumer plus a focused exact unit. The persisted score-header `+0x0C` field is a candidate only if a fresh search can connect its parser/writer storage to a semantic consumer; otherwise leave it Unknown and rotate to another bounded resource or replay-owner surface. Do not treat an unsuccessful search as readiness evidence. Keep shared task bit 8, Supervisor constructor bit 8, FrontEnd bit 4, `ReplayScanWorker::unknown010`, replay/input reserved bytes, score-header `+0x0C`, Sound/PBG writer-only metadata, ANM VM bit 14, ANM preload pathname, TextRenderer RNG prefix, compact single-ended storage, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-185 — type the shared front-end requested-state protocol
 
@@ -10432,11 +8963,6 @@ The producer side is independently distributed across the same physical owner. T
 
 Because the transaction changes shared front-end headers and a common physical owner projection, the current dirty source received the cold aggregate exact gate immediately. The four mutually exclusive manifest-derived source partitions passed 205 + 158 + 191 + 142 = 696/696 configured exact units with zero private-label refresh. Two Factory transport losses returned no durable command id—one before the first partition attempt and one before an initial fourth-partition attempt—and therefore receive no validation credit; recovery confirmed unchanged HEAD/diff/exclusion hashes and no surviving compiler/replay producer before the durable retries. A fresh `scripts/build-whole.py` run then cold-compiled all 88 production translation units with pinned VC7.1 and linked/verified a 780,288-byte PE32 i386 GUI image with build-local SHA-256 `5ca25aa6a32f8a0beb1d555480a30e0023bc0e4c4acefe488987614e2047885d`. Successful linkage is production compile/link closure, not target whole-image identity. Target-independent CI passed all 43 tests; target/tracking validation remained 697 source-present / 696 exact with 336,486 exact bytes; the match-unit graph remained 696 units and the whole-build graph remained 88 sources across two profiles; `git diff --check` passed.
 
-**Recovery / analysis state.** This campaign began from committed SEM-184 checkpoint `af857735ec555f6d643bad91d13f9f4166911ee2` with no staged or tracked-unstaged changes and the same four pre-existing untracked exclusions. During the transaction the local `origin/main` remote-tracking ref was externally fast-forwarded to the unchanged starting HEAD, changing only the reported ahead count from 7 to 0; recovery verified unchanged HEAD, source diff, excluded-file hashes, and no active producer. The four excluded paths remained untouched and outside staging. `.analysis/` began at 3,394,984 bytes and no current-session analysis artifact was created: fresh target evidence came directly from the registered read-only target-attested Ghidra provider. No current-session large artifact is retained and legacy/shared analysis state was untouched.
-
-**Next evidence route.** After checkpoint, rotate away from front-end screen dispatch and the recent Player/camera state domains. Prefer an independent resource lifetime, sound owner, persistent/ABI boundary, or sibling interpreter protocol with a new TH095-local producer plus independent consumer/cleanup edge. `ReplayScanWorker::unknown010` was re-audited before this transaction: neither the primary `g_Supervisor.replayScanWorker +0x10` address nor the second worker's corresponding slot has a target xref, and repository search still finds no field-level producer or consumer, so it remains Unknown. The score-file header `+0x0C` likewise still has only its known `0x102` initialization without a distinguishing score consumer. Do not reopen already-closed compact enemy `+0x2C0E`, `+0x2C54/+0x2C7C`, `+0x2BC8/+0x2BCC`, or `+0x2C4C` families merely because lexical debt reports exact/DIFF raw expressions. Keep shared task bit 8, Supervisor constructor bit 8, FrontEnd flag bit 4, `ReplayScanWorker::unknown010`, replay/input reserved bytes, score-header `+0x0C`, Sound/PBG writer-only metadata, ANM VM bit 14, ANM preload pathname, TextRenderer RNG prefix, compact single-ended storage, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-186 — type the Supervisor startup-thread phase
 
 **Scope.** Rotate away from the front-end requested-state protocol and the repeated single-ended persistent/replay plateaus into the independent Supervisor startup lifecycle. The live TH095 Supervisor owner at `g_Supervisor +0x660` was still a bare `i32` in both `Main.hpp` and the normal `SupervisorRuntime.hpp` projection even though the startup coordinator publishes and consumes a closed three-value protocol. This transaction types only that dword and replaces the normal-production numeric tests/writes with neutral phase names. It does not reinterpret the replay-scan worker handshake, `receivedCloseMsg`, score-backup state, Supervisor scene state, loading-VM ownership, or the startup callback ABI.
@@ -10458,11 +8984,6 @@ Fresh target `Supervisor::OnUpdate @ 0x00423440` independently consumes the same
 **Validation.** Fresh target evidence came from the registered read-only Factory-attested Ghidra provider for `OnUpdate @ 0x00423440`, `AddedCallback @ 0x00423E70`, and `StartupThread @ 0x004242B0`. Focused canonical replay of `src/Main.cpp` passed all 48 configured units exact with zero compiler-private label refresh. Command-local normal probes under pinned VC7.1 compiled `Main.cpp` and `SoundPlayer.cpp` to Intel 80386 COFF objects of 115,203 and 64,526 bytes respectively; the temporary object/PDB tree was removed by the same command.
 
 Because `Main.hpp` is a shared owner header, the dirty current source was immediately cold-replayed across four mutually exclusive 22-source partitions. They passed 205 + 158 + 191 + 142 = 696/696 configured exact units with zero private-label refresh. A fresh `scripts/build-whole.py` run then compiled all 88 production translation units with pinned VC7.1 and linked/verified a 780,288-byte PE32 i386 GUI executable with build-local SHA-256 `b3722fcd60583a4d0695ca00885dc07c0d14c3b7ff4867d55e6e023cb1d03ac4`. Successful linkage is production compile/link closure, not target whole-image identity or runtime validation. Target-independent CI passed all 43 tests; target/tracking validation remained 697 source-present / 696 exact with 336,486 exact bytes; the match-unit graph remained 696 units and the whole-build graph remained 88 sources across two profiles; `git diff --check` passed.
-
-**Recovery / analysis state.** This batch began from committed milestone `850f23ac60966054bb0db8bf6253e10a00ea3242`, with zero staged/tracked-unstaged changes and the same four pre-existing untracked exclusions. The initial score/PBG/replay route reproduced only known score-header reserved storage, PBG copied-but-unconsumed metadata, and ReplayManager global-state bits with no field-level use; those were retained as Unknown and treated as routing plateaus. Supervisor anonymous gaps likewise reproduced the earlier SEM-166 negative xref boundary. The startup phase was selected only after its independent producer/consumer protocol was found. Several Factory transport requests failed before returning durable command ids and received no evidence or validation credit; recovery checks confirmed unchanged HEAD, intended transaction diff, and unchanged exclusion hashes before the durable retries. `.analysis/` stayed exactly at the campaign baseline of 3,394,984 bytes and no current-session analysis artifact or large retained file was created.
-
-**Next evidence route.** After checkpoint, rotate away from the startup-thread phase. A nearby but logically separate candidate is `Supervisor::fogState @ +0x768`: target-local `EnableFog`/`DisableFog` producers and the render-path `0xFF` invalidation may support a bounded disabled/enabled/unset render-state cache representation, but accept it only after fresh target evidence proves the complete value domain and confirms the `0xFF` publication is a cache-invalid sentinel rather than a third fog behavior. Otherwise rotate to an independent persistent/ABI, non-ANM resource lifetime, or sibling interpreter/state family. Keep score/replay reserved fields, ReplayScanWorker `unknown010`, Sound/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact single-ended storage, and photo-score bits 5/17/18/19 Unknown absent new distinguishing TH095-local evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-187 — type the Supervisor fog-enable cache
 
@@ -10486,12 +9007,12 @@ Fresh `Supervisor::Supervisor @ 0x00426350` clears the complete `0x7BC`-byte Sup
 
 A fresh standalone `scripts/build-whole.py` run compiled all 88 production translation units under pinned VC7.1 across the two profiles, linked and verified a 780,288-byte PE32 i386 GUI executable, and produced build-local SHA-256 `888dc064ae9c2560af84a1ca9c1409c43e2244ec18c916945a8403c6d867b49b`. Successful linkage is historical-platform compile/link closure, not target whole-image identity or runtime validation. Target-independent CI passed all 43 tests; target/tracking validation remained 697 source-present / 696 exact with 336,486 exact bytes; the match-unit graph remained 696 units and the whole-build graph 88 sources across two profiles; `git diff --check` passed.
 
-**Recovery / analysis state.** Recovery began at committed SEM-186 checkpoint `39466b03c4d5877e99e47b7f41216c74f0bf2cde` with three tracked unstaged paths (`src/Main.cpp`, `src/Main.hpp`, `src/SupervisorRuntime.hpp`) plus new `src/SupervisorFogState.hpp`; their coherent fog-cache diff was classified as recoverable-current-work and adopted as the first batch. The four documented pre-existing untracked exclusions remained untouched: user-owned/unrelated `droid.resume.txt`, runtime experiments `config/runtime-scenarios.json` and `scripts/runtime-diff.py`, and unknown-origin generated-looking `EnemyManagerUpdate.i`. Their hashes were rechecked and they remained outside staging. During recovery the external `origin/main` tracking ref fast-forwarded from the same HEAD being one commit ahead to zero ahead; repeated gates confirmed unchanged HEAD and source diff, so the ref movement received no semantic or validation credit.
-
-The campaign `.analysis/` baseline and post-validation size are both exactly 3,394,984 bytes. Fresh Ghidra evidence used one command-local `.analysis/fog-evidence.*` scratch directory measuring 3,334 bytes before cleanup; the same command removed it, and no current-session analysis artifact or large file remains. Legacy/shared analysis roots were not modified. One combined aggregate-exact/whole-build request and one later 22-source request returned without durable command ids and received no validation credit. A subsequent helper mistake launched an unintended full replay and was killed after reporting 38/88 sources; that timed-out command likewise did not close the gate. Recovery found no active producer, and the final aggregate exact and whole-product results above were rerun through completed durable commands.
-
-**Next evidence route.** Rotate away from fog and the startup-thread phase after checkpoint. The strongest bounded next candidate is `Supervisor::loadingVmsHaveBeenSetup @ +0x714`, whose current name understates a TH095-local multi-value protocol: normal/exact source already shows `SetupLoadingVms @ 0x00425660` publishing `1`, `HideLoadingVms @ 0x00425730` returning `1 -> 0`, `BeginLoadingCompletion @ 0x004257E0` transitioning `1 -> 2`, and `Supervisor::OnDraw2 @ 0x004235D0` incrementing values `>= 2`, using thresholds 5/35/65, wrapping `>= 65` back to 5, and treating every nonzero value as a loading-background gate. The next conversation should first obtain fresh target decompilation/xrefs for those four functions and determine whether the storage is best represented as a lifecycle-plus-frame counter, a tagged phase/counter protocol, or should remain a scalar with a better neutral name. Do not collapse the completion counter into a boolean or enum unless target behavior justifies it. If that route plateaus, rotate to an independent persistent/ABI or non-ANM resource-lifetime family. Keep score/replay reserved fields, ReplayScanWorker `unknown010`, Sound/PBG writer-only metadata, ANM bit 14, TextRenderer RNG prefix, compact single-ended storage, and photo-score bits 5/17/18/19 Unknown absent new distinguishing TH095-local evidence. The semantic phase remains active-incomplete.
-
+Legacy/shared analysis roots were not modified. One combined aggregate-exact/whole-build
+request and one later 22-source request returned without durable command ids and
+received no validation credit. A subsequent helper mistake launched an unintended full
+replay and was killed after reporting 38/88 sources; that timed-out command likewise did
+not close the gate. Recovery found no active producer, and the final aggregate exact and
+whole-product results above were rerun through completed durable commands.
 
 ### SEM-188 — recover the Supervisor loading-screen state counter
 
@@ -10515,11 +9036,10 @@ Bounded target caller queries add lifetime context without pretending to provide
 
 Because this batch renames a field in the shared `Main.hpp` owner and `SupervisorRuntime.hpp` projection, the final code diff was cold-replayed across every source in the current exact manifest. Completed durable replay commands collectively covered all 88 sources and all 696/696 configured units exact with zero private-label refresh; transport-failed requests without command IDs were explicitly excluded from that total and rerun. A fresh standalone `scripts/build-whole.py` then compiled all 88 production translation units under pinned VC7.1 across the two profiles and linked/verified a 780,288-byte PE32 i386 GUI executable with build-local SHA-256 `fd48fba84478e92a6bb566a223e31c369293749ccfb38c73c05b5fb3ce3d049e`. Successful linkage is historical-platform compile/link closure, not target whole-image identity or runtime validation. Target-independent CI passed all 43 tests; target/tracking validation remained 697 source-present / 696 exact with 336,486 exact bytes; the match-unit graph remained 696 units and the whole-build graph 88 sources across two profiles; `git diff --check` passed.
 
-**Recovery / analysis state.** The campaign resumed from committed SEM-187 checkpoint `85a787b4d95c9e48cfcaf92408695ddd22b962c9` with no staged or tracked-unstaged work and four pre-existing untracked exclusions. Fresh recovery classified user-owned `droid.resume.txt` as unrelated, `config/runtime-scenarios.json` and `scripts/runtime-diff.py` as pre-existing runtime experiments, and generated-looking `EnemyManagerUpdate.i` as unknown-origin/unknown-intent. All four were preserved outside staging; their hashes remained unchanged through validation. Multiple Factory transport failures returned no durable command IDs and received no evidence or validation credit; recovery repeatedly confirmed the same HEAD and three-path source transaction before retrying.
-
-`.analysis/` started and ends at exactly 3,394,984 bytes. Target evidence used command-local scratch roots measuring 4,009 and 6,381 bytes before same-command cleanup. One manifested current-session root, `.analysis/gpt-web/20260914-sem188-loading-screen/`, was created only to test a multi-command aggregate-exact producer; on the first follow-up poll the producer was already absent and had emitted neither status nor progress. The 977-byte root therefore received no validation credit and was removed after an explicit no-producer check. No current-session large analysis artifact remains, and legacy/shared provider state was not touched.
-
-**Next evidence route.** Rotate away from the now-audited Supervisor startup/fog/loading cluster after checkpoint. The live semantic-debt router exposes a stronger independent candidate at `Enemy +0x2BF4`: maintained TH095-local raw-member accesses occur in `EclDependencies.cpp`, `EclHelpers.cpp`, `EnemyShotAnm.cpp`, and the low-level ECL interpreter, giving the field multiple sibling consumers instead of a single-ended unknown. The next batch should first bind those accesses to the canonical Enemy owner/layout and obtain fresh target decompilation/xrefs for their containing functions before naming or typing the field; the heuristic match itself is routing only, not semantic evidence. If that route does not produce a coherent producer/consumer protocol, rotate to another persistent/ABI, non-ANM lifetime, replay/input, sound/resource, or sibling-interpreter family rather than treating the plateau as completion. The semantic phase remains active-incomplete.
+Target evidence used command-local scratch roots measuring 4,009 and 6,381 bytes before
+same-command cleanup. The 977-byte root therefore received no validation credit and was
+removed after an explicit no-producer check. No current-session large analysis artifact
+remains, and legacy/shared provider state was not touched.
 
 ### SEM-189 — bind the ANM preload pathname to its canonical slot owner
 
@@ -10541,10 +9061,6 @@ Fresh `ServicePreloadedAnims @ 0x004438E0` independently walks all thirteen slot
 
 The first focused replay request lost Factory transport before returning a durable command id and receives no exactness credit; mandatory recovery found the one intended `AnmPreload.cpp` diff and no surviving replay/compiler/Wine producer. The durable retry then replayed all 13 configured `AnmPreload.cpp` units exact with zero compiler-private label refresh. A first normal compile probe likewise lost transport before a command id and receives no validation credit; recovery again found unchanged source and no active producer. The durable normal-production probe reused the source's canonical pinned-VC7.1 profile (`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src`) and emitted a 32,816-byte Intel i386 COFF object in command-local temporary storage, which was removed automatically. The match-unit graph remains 696 configured units, target/tracking validation remains 697 source-present / 696 exact, and `git diff --check` passes. Because the source change is confined to one normal branch in one `.cpp` and changes no shared layout/PCH/owner declaration, cold aggregate exact and whole-product replay are deferred to the next campaign milestone rather than repeated for this private checkpoint.
 
-**Recovery / analysis state.** This transaction began from SEM-188 checkpoint `0e27589828319fbd97c21212b5f5c32dffa4e45f` with zero staged or tracked-unstaged changes and four documented pre-existing untracked exclusions. `droid.resume.txt` is user-owned/unrelated; `config/runtime-scenarios.json` and `scripts/runtime-diff.py` are pre-existing paired-runtime experiments; `EnemyManagerUpdate.i` remains protected as unknown-origin generated-looking storage. Their pre-transaction hashes are respectively `9c366e5a2094b84ba49362917549b8de1d780596a5a542f4a88e86141cb15f15`, `56199bf8912ffd215a806d509f27c1c5e107069aeb14c5c9393a71b0726d226b`, `69680f0d5cc9e0617c747eafd1feecbe9a9b59f9d2ef31ab4c84a5cfcf76a176`, and `1927d8c378ea0ea795ae2dc666661cefdddd63c7ff36b105a1ccba29ea7be3e8`. `.analysis/` began at 3,394,984 bytes. Fresh target evidence came through the registered provider and the compile probes used command-local temporary directories, so no current-session `.analysis/gpt-web/` root or large retained artifact was created.
-
-**Next evidence route.** After checkpoint, rotate away from ANM preload pathname storage and the negative routes enumerated above. Prefer a distinct normal-production raw owner or persistent/resource protocol where current TH095 evidence can bind a producer to an already established canonical owner or distinguish a real producer-plus-consumer behavior. The non-ECL raw-member surface still contains `SceneSelectUpdate.cpp`'s result-save `+0x3178` projection and `EnemyMovement.cpp`'s Supervisor `+0x188` read; audit their history and canonical owners before considering an edit, because either may be an exact/compatibility relic rather than new semantics. Keep Sound/PBG copied-but-behaviorally-unconsumed metadata, ANM VM bit 14, score-header `+0x0C`, replay/input reserved bytes, compact single-ended bits, and other writer-only storage Unknown absent new TH095-local distinguishing evidence. The semantic phase remains active-incomplete.
-
 ### SEM-190 — bind target-high shoot-offset producer
 
 **Scope.** The resume gate found one tracked partial transaction after SEM-189: target-high opcode 100 still wrote enemy `+0x2924/+0x2928/+0x292C` through raw arithmetic although the canonical TH095 `Enemy` owner and SEM-010 already establish those three floats as `shootOffset`. This batch binds only that missed producer to `enemy->shootOffset`; it does not name the opcode or reinterpret adjacent shot/cadence state.
@@ -10560,10 +9076,6 @@ The first focused replay request lost Factory transport before returning a durab
 **Production / exact representation.** Normal `EclRunTargetHigh.inl` case 100 uses the named three-float owner. `DIFFBUILD` and `TH095_MATCH_EXACT` retain the historical raw `+0x2924/+0x2928/+0x292C` expressions verbatim. No shared header, layout, ABI, storage width, signature, calling convention, persistent format, or control flow changes.
 
 **Validation.** The sole configured `src/ecl/EclRun.cpp` unit (`ecl-manager-run-ecl`) replayed **1/1 exact** with zero private-label refresh and `git diff --check` passed. Requests that lost Factory transport before returning command ids receive no credit; recovery repeatedly found the same source diff and no active replay/compiler/Wine/Ghidra producer before retries. A durable normal-production probe used the canonical EclRun profile (`/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src/ecl /I src`) with pinned VC7.1 and emitted a 77,954-byte Intel i386 COFF object in command-local temporary storage, then removed it. Cold aggregate exact and whole-product gates are deferred only until the immediately following committed campaign milestone.
-
-**Recovery / analysis state.** The batch began from SEM-189 checkpoint `485c951d10c5600f54698deeee8aacb40db90873` with exactly this one tracked unstaged path plus the four established exclusions. `droid.resume.txt` remains user-owned/unrelated; the two runtime files remain unrelated pre-existing experiments; `EnemyManagerUpdate.i` remains protected unknown-origin generated-looking storage. `.analysis/` began at 3,394,984 bytes. Fresh target evidence came from the registered read-only Ghidra provider and no current-session `.analysis` artifact was retained.
-
-**Next evidence route.** After checkpoint and milestone validation, rotate away from `shootOffset`. Audit SEM-189's proposed SceneSelect result-save `+0x3178` and EnemyMovement Supervisor `+0x188` routes against history and canonical owners before editing; if either is already compatibility/history-only, rotate to a distinct persistent/resource/state protocol. Known single-ended storage remains Unknown absent new TH095-local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-191 — bind target-high enemy position consumers
 
@@ -10641,33 +9153,6 @@ ids; recovery found no compiler/Wine producer, so they receive no credit.
 Because this is translation-unit-local and changes no shared owner/layout,
 aggregate exact and whole-product closure are deferred to the committed
 campaign milestone before handoff.
-
-**Recovery / analysis state.** The batch began at committed HEAD
-`7bf8575ecb1267869eec0845b03e97be87370c26` with no staged or tracked-unstaged
-changes and the same four protected untracked paths outside staging:
-unknown-origin generated-looking `EnemyManagerUpdate.i`, user-owned
-`droid.resume.txt`, and runtime experiments `config/runtime-scenarios.json` /
-`scripts/runtime-diff.py`. `.analysis/` began at 3,394,984 bytes. The successful
-normal probe used manifested current-session root
-`.analysis/gpt-web/sem191-position/`; its largest files were a 233,472-byte PDB
-and 78,082-byte object. After one unreceipted cleanup request, recovery proved
-the root still intact; manifest-checked cleanup then removed only that root.
-`.analysis/` returned exactly to 3,394,984 bytes with no retained file larger
-than 64 MiB. Fresh target evidence came from the registered read-only,
-target-attested Ghidra provider.
-
-**Next evidence route.** After checkpoint and committed milestone validation,
-rotate away from Enemy position. Re-audit remaining target-high normal raw
-accesses only where TH095-local evidence connects them to an already bounded
-canonical owner or distinguishes a real producer/consumer protocol. Do not
-infer the nearby `+0x296C/+0x2CA8` pair from proximity; its target use must be
-reconciled with the canonical Enemy layout first. If that surface plateaus,
-rotate to an independent persistent/ABI, non-ANM resource, replay/input, sound,
-or historical-runtime family. Shared task bit 8, ReplayScanWorker
-`unknown010`, Sound/PBG writer-only metadata, ANM bit 14, TextRenderer RNG
-prefix, compact single-ended storage, and other writer-only fields remain
-Unknown absent new TH095-local distinguishing evidence. The semantic phase
-remains active-incomplete.
 
 ### SEM-192 — bind target-high ECL timer reset producers
 
@@ -10747,33 +9232,6 @@ object; the temporary object/PDB directory was removed by the same command.
 and changes no shared owner/layout declaration, the campaign-wide exact and
 whole-product gates are deferred to the next committed milestone/final handoff
 rather than replayed before another source transaction.
-
-**Recovery / analysis state.** The transaction began from committed SEM-191
-HEAD `60abb6968f33fd42d62479831e910c8cb2aeca92`, with zero staged or tracked
-unstaged changes and the same four pre-existing untracked exclusions preserved:
-`EnemyManagerUpdate.i` remains protected unknown-origin generated-looking
-storage; `droid.resume.txt` remains user-owned/unrelated; and
-`config/runtime-scenarios.json` plus `scripts/runtime-diff.py` remain unrelated
-runtime experiments. Before this edit, the SEM-191 milestone was closed locally
-at 696/696 exact units and 88/88 reconstructed Windows i386 translation units,
-and Factory had current-source accepted exact and whole-build receipts. Those
-receipts remain facts about SEM-191 and become source-stale after this new
-checkpoint. `.analysis/` began at 3,394,984 bytes and no current-session
-filesystem analysis artifact was created: fresh target evidence came through
-the registered read-only Ghidra provider and the production probe used
-command-local temporary storage.
-
-**Next evidence route.** After checkpoint, rotate away from the still-negative
-`+0x2CA4/+0x2CA8` pair and from the now-bound `eclTimer` resets. Continue the
-target-high raw-member audit only for expressions that survive normal
-preprocessing and can be tied to a TH095-local owner plus independent consumer.
-A useful next check is the remaining normal `+0x2960` publication only after
-reconciling it with the compact `phaseStartingLife` storage and its actual
-readers; otherwise rotate to an independent persistent/ABI, replay/input, or
-non-ANM resource family. Keep shared bit 8, ReplayScanWorker `unknown010`,
-score/replay reserved words, Sound/PBG writer-only metadata, ANM bit 14,
-compact tail storage, and other single-ended fields Unknown absent new local
-evidence. The semantic phase remains active-incomplete.
 
 ### SEM-193 — narrow the ECL Background interface
 
@@ -10863,27 +9321,6 @@ Target-independent CI passed all 43 tests; tracking remains 1,880 provisional /
 697 source-present / 696 exact. `git diff --check` passed. No deterministic
 runtime scenario is claimed.
 
-**Recovery / analysis state.** The transaction began from committed SEM-192
-HEAD with zero staged/tracked-unstaged changes and preserved the same four
-pre-existing exclusions: unknown-origin generated-looking `EnemyManagerUpdate.i`,
-user-owned `droid.resume.txt`, and the paired runtime experiments
-`config/runtime-scenarios.json` / `scripts/runtime-diff.py`. Their hashes were
-rechecked unchanged. `.analysis/` started and currently remains exactly
-3,394,984 bytes; no current-session filesystem analysis root or retained large
-artifact was created because target evidence came through the registered
-read-only provider and the compile probe used command-local temporary storage.
-
-**Next evidence route.** After checkpoint, keep the phase active-incomplete and
-separate the newly corrected owner boundary from the target-local spell-photo
-counter itself. A useful bounded follow-up is `BackgroundStateView +0x175C`:
-Start publishes 1, DrawHighPrio increments nonzero values while `< 60`, and Stop
-publishes 0. Accept a counter-oriented name only after fresh target/maintained
-consumer review confirms that no additional writer or alternate value domain
-changes that interpretation. Otherwise rotate to ResultScreen or another
-independent state/resource protocol. Do not resurrect the legacy `+0x0B24`
-three-state enum as TH095 evidence merely because its identifier is attractive.
-The semantic phase remains active-incomplete.
-
 ### SEM-194 — name the spell-background frame counter
 
 **Scope.** Continue from SEM-193 at the real TH095 `BackgroundStateView` dword
@@ -10941,24 +9378,6 @@ storage was removed by the command trap. `git diff --check` passed. Because this
 is a TU-local field/name change with no shared owner/layout/PCH mutation, broad
 aggregate exact and whole-product closure are deferred to the immediately
 following committed final milestone for this conversation slice.
-
-**Recovery / analysis state.** The batch began from clean tracked SEM-193 commit
-`22bf5a13559a5a472abdd56b5624fdd3809c78e8`, with the same four pre-existing
-untracked exclusions preserved outside staging. `.analysis/` remained exactly
-3,394,984 bytes; no current-session filesystem analysis root or large artifact
-was created. Fresh target evidence came through the registered read-only Ghidra
-provider.
-
-**Next evidence route.** After checkpoint and final milestone validation, rotate
-away from Background. `ResultScreen::state @ +0x0004` is a stronger independent
-state-protocol candidate than the single-producer PhotoCard state: three result
-initializers publish distinct entry states, `ResultScreen::Update` contains the
-transition machine, and `Draw` independently consumes several display states.
-Before editing, reconstruct the complete value/transition domain and prefer
-neutral state names for only the values whose TH095-local behavior is stable;
-if the 0..15 machine is too broad for one bounded batch, select a smaller
-resource/lifetime or persistent owner instead. Semantic phase remains
-active-incomplete.
 
 ### SEM-195 — name the result replay-save states
 
@@ -11026,34 +9445,6 @@ object/PDB directory was removed by the same command. `git diff --check` for the
 ResultScreen transaction passed. This is a private translation-unit representation
 change; broad aggregate exact and whole-product gates remain deferred to a later
 clean committed milestone rather than being mixed with unrelated dirty state.
-
-**Recovery / analysis state.** The campaign milestone at committed SEM-194 HEAD
-`b4f68d66f1c9014eb983e8442008f5aba2d8a6d5` had already closed 696/696 exact units,
-88/88 pinned-VC7.1 production translation units, and all 43 CI tests before this
-batch. During the pre-edit recovery window unexpected unstaged
-`src/PhotoEffectRuntime.hpp` and `src/PhotoEffect.cpp` changes appeared, adding a
-candidate five-value `PhotoEffectState` representation and its consumers. They have
-no current commit, semantic record, active producer, or provable current-session
-provenance, so both are classified **unknown-origin-or-intent** and are preserved
-verbatim outside staging. A reconnect also exposed that the staged ResultScreen file
-had briefly absorbed a broader current-session 0..15 typing experiment; recovery
-removed only that known experiment and restored the staged source to this documented
-13/14/15 replay-save subset before checkpoint. SEM-195 does not edit, validate,
-adopt, or claim the PhotoEffect changes. The four pre-existing exclusions
-`EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and
-`scripts/runtime-diff.py` also remain preserved. `.analysis/` was 3,394,984 bytes at
-campaign preflight; SEM-195 created no filesystem analysis root because target
-evidence came through the registered read-only provider and the normal probe used
-command-local temporary storage.
-
-**Next evidence route.** After checkpoint, do not extend the ResultScreen naming
-mechanically into values 0..12. First re-run the recovery gate: if the unknown-origin
-`PhotoEffectRuntime.hpp` change has acquired durable provenance, follow that committed
-history rather than duplicating it; otherwise continue to preserve/exclude it. For a
-new semantic batch, either reconstruct one independently bounded ResultScreen
-menu/exit pair from fresh TH095 producer plus consumer evidence, or rotate to a
-distinct persistent/resource/lifetime protocol. The semantic phase remains
-active-incomplete.
 
 ### SEM-196 — bind ResultScreen mode projection to the replay protocol
 
@@ -11123,25 +9514,6 @@ passed. This is a TU-local projection change, so campaign-wide aggregate exact
 and whole-product receipts are deferred to a committed milestone rather than
 being run through the separate unstaged PhotoEffect worktree.
 
-**Recovery / analysis state.** The transaction began from SEM-195 checkpoint
-`b184410c59955ed91af8ee5619af093af76eb0ef`. The two unstaged paths
-`src/PhotoEffect.cpp` and `src/PhotoEffectRuntime.hpp` belong to a separate
-recoverable current-session PhotoEffect lifecycle transaction. Their target
-producer/consumer evidence and focused exact/native compile feedback were
-collected independently, but they remain deliberately unstaged and are not part
-of SEM-196. The four older untracked exclusions remain preserved as well.
-`.analysis/` remains at the campaign baseline of 3,394,984 bytes; target
-evidence came through the registered read-only provider and the compile probe
-used command-local temporary storage.
-
-**Next evidence route.** After checkpoint, recover the already-bounded
-PhotoEffect lifecycle transaction before selecting unrelated work. Keep its
-shared-header regression surface separate from this ResultScreen checkpoint;
-then rotate to another independently evidenced owner or protocol rather than
-mechanically naming the remaining ResultScreen values. The semantic phase
-remains active-incomplete.
-
-
 ### SEM-197 — type photo effect lifecycle state
 
 **Scope.** Recover the shared `PhotoEffectBaseView::state @ +0x0C` representation after the separately checkpointed ResultScreen recovery work. The field is used by both straight and rotating photo-laser effects plus the manager-wide update/draw/query loops. This batch types only that lifecycle dword and replaces its established numeric states in normal `PhotoEffect.cpp`; it does not reinterpret the already-reconstructed effect argument packets, ANM VMs, intrusive-list ownership, deferred-deletion counter, or other effect protocols.
@@ -11162,10 +9534,6 @@ Fresh `PhotoEffectManagerView::Update @ 0x0041D930` independently treats state 1
 
 A fresh pinned-VC7.1 whole-product build compiled all 88 production translation units across two profiles and linked/verified a 780,288-byte PE32 i386 Windows GUI image with build-local SHA-256 `50ec6f7606c597d728d7051de9225c608169e489f59646fc3757cd081c26f9ac`; this is compile/link closure, not whole-image byte identity. `python3 scripts/ci.py` passed all 43 tests, tracking remains 1,880 provisional / 697 source-present / 696 exact with 336,486 exact bytes, the match graph remains 696 units, and `git diff --check` passed. Runtime-scenario validation remains separate and unclaimed.
 
-**Recovery / analysis state.** This lifecycle work began as current-session recoverable state while SEM-195 and SEM-196 ResultScreen transactions appeared and checkpointed independently. Recovery repeatedly preserved the PhotoEffect diff outside those staged commits; SEM-196's durable record was corrected before commit to identify the two PhotoEffect paths as separate current-session work rather than unknown-origin storage. The final validation snapshot uses parent HEAD `e8675b7aa77bba807c4a51184235a90194e4635f` with only `src/PhotoEffect.cpp` and `src/PhotoEffectRuntime.hpp` tracked-dirty. The four long-lived exclusions remain preserved outside staging. `.analysis/` started and ended the batch at exactly 3,394,984 bytes; all compile probes used command-local temporary directories, no current-session `.analysis/gpt-web/` root remains, and no retained file exceeds 64 MiB.
-
-**Next evidence route.** Rotate away from PhotoEffect lifecycle and do not mechanically type the entire ResultScreen 0..12 state machine. Prefer a distinct bounded protocol with a producer plus independent consumer. One useful route is `BackgroundStateView::cameraMotionMode @ +0x00E8`: the maintained updater already distinguishes modes 1, 2, and 4 with different camera-wave behaviors, so first identify every TH095-local stage-script producer and determine whether zero plus those values form a closed domain. If that route lacks complete producers, rotate to a persistent/ABI or non-ANM resource-lifetime owner. Shared task bit 8, ReplayScanWorker `unknown010`, Sound/PBG writer-only metadata, score/replay reserved words, compact single-ended fields, and other unconsumed storage remain Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
 ### SEM-198 — type background camera motion modes
 
 **Scope.** Continue from SEM-197 by auditing the target-local `BackgroundStateView::cameraMotionMode @ +0x00E8` byte used by the variable-length stage-script interpreter. This batch gives the four observed nonzero consumer values neutral channel-oriented names in normal production while preserving the byte representation and the open input domain. It does not import the incompatible legacy `Background.hpp` 0x6600 layout, reinterpret the stage-script record format, or claim that values 0..4 form a closed enum.
@@ -11182,10 +9550,6 @@ A fresh pinned-VC7.1 whole-product build compiled all 88 production translation 
 
 **Validation.** Two exploratory exact builds received no acceptance credit: allowing the semantic enum into the exact-facing translation unit renumbered only compiler-private `$L` relocation names, first by seven labels and then by one after narrowing the compatibility surface. In both failures relocation offsets, types, and target destinations remained unchanged, and the manifest was not refreshed. Recovery confirmed the same tracked transaction and no surviving compiler/replay producer after each failure. The final exact/DIFF compatibility shape then replayed `src/Background.cpp` **20/20 exact** with **zero private-label refresh**. A command-local pinned VC7.1 normal-production probe emitted a **51,993-byte Intel 80386 COFF** object, and `git diff --check` passed. This is a TU-local semantic representation, so aggregate exact and whole-product gates are deferred to the current committed campaign milestone rather than repeated before another source checkpoint.
 
-**Recovery / analysis state.** The transaction began from SEM-197 HEAD `b39a3bcce1cfdb0dc2e5358c3b293ef2fe3f7852` with no staged or tracked-unstaged pre-existing work. The four long-lived untracked exclusions remain unchanged and outside staging: unknown-origin generated-looking `EnemyManagerUpdate.i`, user/external `droid.resume.txt`, and the paired runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`. Their previously recorded hashes were rechecked unchanged. `.analysis/` remains exactly 3,394,984 bytes; no current-session `.analysis/gpt-web/` root or retained large artifact was created because target evidence used the registered read-only provider and compile probes used command-local temporary storage.
-
-**Next evidence route.** After checkpoint, rotate away from Background rather than extending names into its unknown padding or the incompatible legacy layout. Prefer a bounded non-ANM resource/lifetime, persistent-format, or ABI owner with at least one TH095-local producer and an independent consumer/cleanup edge. Existing single-ended fields such as `ReplayScanWorker::unknown010`, Sound/PBG copied or writer-only metadata, score/replay reserved words, shared task bit 8, and compact-enemy residual storage remain Unknown absent a new discriminator. The semantic phase remains active-incomplete.
-
 ### SEM-199 — type replay playback source protocol
 
 **Scope.** Rotate from SEM-198 into the independent process-wide replay-source selector at target `0x004BDED0`. The maintained global was already named `g_ReplayUsesArchive`, but normal production still represented it as an untyped `i32` and compared it to raw zero/nonzero values across the front end, ReplayManager, PhotoGameTask, and PhotoFront. This transaction types only the target-authored two-value source protocol. It does not change `ReplayManagerMode`, task `replayMode`, the `FileSystem::OpenFile(..., loadFromDisk)` Boolean, PBG format semantics, replay ownership, result-restart state, or the idle-demo timer.
@@ -11201,11 +9565,6 @@ A fresh pinned-VC7.1 whole-product build compiled all 88 production translation 
 **Production / exact representation.** Normal `FileSystem.hpp` now declares the four-byte `ReplayPlaybackSource` enum and types `g_ReplayUsesArchive` with it. Normal FrontEndController, PhotoFront, PhotoGameTask, and ReplayManager consumers use the two named values. `DIFFBUILD` and `TH095_MATCH_EXACT` preserve the historical `i32` declaration/definition and numeric source shape through compatibility macros; frozen exact `.inl` files are unchanged. The global symbol/address, comparisons, stores, file paths, allocation ownership, function signatures, and control flow are unchanged.
 
 **Validation.** Focused canonical replay passed **41/41 exact** with **zero private-label refresh** across `FileSystem.cpp` (4), `FrontEndController.cpp` (4), `PhotoFront.cpp` (11), `PhotoGameTask.cpp` (10), and `ReplayManager.cpp` (12). Command-local pinned VC7.1 normal-production probes emitted Intel 80386 COFF objects of **20,932**, **38,032**, **32,630**, **35,562**, and **36,364 bytes** respectively, and `git diff --check` passed. Because `FileSystem.hpp` is shared, a cold aggregate exact replay and whole-product build were launched in one `set -e` command. The repository tool transport timed out before returning that command's stdout; recovery found no surviving compiler/replay producer, and the later whole-product artifacts prove by shell ordering that the aggregate replay process exited zero before `build-whole.py` began. Its standalone stdout receipt is therefore unavailable and is not fabricated. The current-source whole-product report explicitly records **88/88 production translation units compiled**, successful VC7.1 link closure, and a **780,288-byte PE32 i386** GUI image with SHA-256 `085f9b21de5099c55836cbabbaf18c2d018e06e2e890aae2b3cfd48d62c1d439`. This is production closure, not a whole-image-exact claim.
-
-**Recovery / analysis state.** The batch began immediately after committed SEM-198 at `1a2e4b46fdfd3c3ca9a1a692faaebbf47c0fe012`, with only the four long-lived untracked exclusions present. The six source edits in this transaction are current-session recoverable work; no unrelated tracked path was modified. `EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and `scripts/runtime-diff.py` remain excluded from staging with their campaign-start hashes unchanged. `.analysis/` remains exactly 3,394,984 bytes; this transaction created no `.analysis/gpt-web/` root and retained no large analysis artifact. Runtime scenario validation was not performed; the pre-existing runtime experiment pair remains separate state.
-
-**Next evidence route.** After checkpoint, rotate away from replay source selection and resume on an independent TH095-local owner/lifetime, persistent-format, ABI, state, resource, sound, or interpreter surface with both a producer and an independent consumer/cleanup edge. Do not infer meaning from `ReplayScanWorker::unknown010`, THTX reserved words, Sound/PBG copied or writer-only metadata, score/replay reserved words, shared task bit 8, or compact residual storage without a new discriminator. The semantic phase remains active-incomplete.
-
 
 ### SEM-200 — name the record-mode Photo Result state pair
 
@@ -11225,11 +9584,6 @@ Fresh `ResultScreen::Draw @ 0x00429C80` independently distinguishes state 5 as t
 
 **Validation.** Focused canonical replay of `src/ResultScreen.cpp` rebuilt all 24 configured units and passed **24/24 exact** with **zero private-label refresh**. A command-local normal-production probe using pinned VC7.1 13.10.3077 and the canonical `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile emitted a **75,266-byte Intel 80386 COFF** object. `git diff --check` passed. This is a private translation-unit semantic representation change with no shared header/layout/owner mutation, so campaign-wide aggregate exact and whole-product gates are deferred to a committed milestone/final handoff rather than repeated inside this private checkpoint.
 
-**Recovery / analysis state.** The transaction began from committed SEM-199 HEAD `835892d42f5972b80fa34cad728901d5350462d9` with zero staged or tracked-unstaged work. The four long-lived untracked paths were reclassified from current evidence and preserved outside staging: unknown-origin generated-looking `EnemyManagerUpdate.i`, unrelated user/external `droid.resume.txt`, and the paired unrelated runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`. Their hashes remain unchanged. `.analysis/` started this campaign at exactly 3,394,984 bytes and this batch created no filesystem analysis root or retained large artifact because fresh target evidence came through the registered read-only Ghidra provider and the compile probe used command-local temporary storage. Before selecting this batch, bounded routes through Bullet residual fields, the ANM preload exact-only path spelling, and PhotoCamera's exact-only global flag alias were rejected as already documented semantics or retained Unknown rather than reopened.
-
-**Next evidence route.** After checkpoint, rotate away from ResultScreen instead of mechanically naming another adjacent state pair. Prefer a distinct owner/lifetime, persistent/ABI, sound/resource, interpreter, or historical-runtime family with a TH095-local producer and independent consumer/cleanup edge. Keep `ReplayScanWorker::unknown010`, THTX reserved words, Sound/PBG copied or writer-only metadata, score/replay reserved words, shared task bit 8, ANM VM bit 14, Bullet `field360`, and other single-ended residual storage Unknown absent a new discriminator. The semantic phase remains active-incomplete.
-
-
 ### SEM-201 — type the streaming-sound fade selector
 
 **Scope.** Rotate from the ResultScreen state batch into the ZUN-modified DirectSound layer and recover only `CSound::m_iFadeType @ +0x1C`. The field already had a suggestive reconstruction name, but both its storage and every state comparison/publication remained raw integers. This transaction types the target-recognized fade selector and replaces only its established 0..4 values in normal production. It does not reinterpret fade duration/countdown fields, DirectSound play state, pause/lock state, BGM command opcodes, the two unconsumed CSound dwords, `ThBgmFormat`, or Microsoft DSUtil scaffold fields.
@@ -11247,10 +9601,6 @@ Fresh `CSound::Play @ 0x00453EE0` clears receiver `+0x1C` together with both fad
 **Production / exact representation.** Normal `src/zwave.hpp` defines the four-byte `SoundFadeType` and types `CSound::m_iFadeType` with it. Profile-aware `TH095_SOUND_FADE_*` tokens route the four inline ZUN fade publishers plus `CSound::Play`, `Stop`, and all four updater comparisons/completion resets through the accepted names. `DIFFBUILD` and `TH095_MATCH_EXACT` expand the tokens to historical integer literals and retain `INT m_iFadeType`; exact-facing source therefore keeps its established object layout and arithmetic/source shape. No class extent, offset, virtual layout, function signature, calling convention, DirectSound operation, or timing arithmetic changes.
 
 **Validation.** Focused canonical replay passed `src/zwave.cpp` **22/22 exact** and `src/SoundPlayer.cpp` **27/27 exact**, both with **zero private-label refresh**. Command-local pinned VC7.1 normal-production probes emitted **48,327-byte** `zwave.obj` and **64,661-byte** `SoundPlayer.obj`, both Intel 80386 COFF. Because `zwave.hpp` is shared through `SoundPlayer.hpp`, the current dirty source was immediately cold-replayed in eight disjoint eleven-source partitions: `71 + 134 + 40 + 118 + 133 + 58 + 43 + 99 = 696/696` configured units across all 88 manifest sources, with zero private-label refresh. A fresh pinned-VC7.1 whole-product build then compiled all 88 production translation units across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `3ce33cbbd97c11302e9b430192840ce1cdc7e8b4e4f178be2fe0a11e33d94317`. Successful linkage is production closure, not whole-image byte identity. Target-independent CI passed all 43 tests; tracking remains 1,880 provisional / 697 source-present / 696 exact with 336,486 exact bytes, and `git diff --check` passed. No deterministic audio/fade runtime scenario is claimed.
-
-**Recovery / analysis state.** The batch began from committed SEM-200 HEAD `0bae48501d7ceb5f5a6f366cc922366350d5039f`, with only the four long-lived untracked exclusions present. Before choosing the sound route, read-only audits rejected ScoreFileHeader `unknown008`, ANM/ECL `unknown117`, Supervisor `unknown713`, PhotoStage/PhotoOverlay `unknown25714`, FrontEnd queue raw offsets, and ScoreLoad `cursor+0x0C` as already-established normal representations, layout-only storage, exact-only compatibility surfaces, or durable Unknowns. The four exclusions remain untouched outside staging. `.analysis/` remains at the campaign start value of exactly 3,394,984 bytes; target evidence used the registered read-only Ghidra provider and compile probes used command-local temporary directories, so no current-session `.analysis/gpt-web/` root or retained large artifact exists.
-
-**Next evidence route.** After checkpoint, rotate away from sound fade typing. Prefer a distinct TH095-local owner/lifetime, persistent/ABI, interpreter, resource, or historical-runtime relation with a concrete producer and independent consumer/cleanup edge. Do not reinterpret the neighboring `CSound::unconsumedDword28/unconsumedDword2C`, Sound/PBG writer-only metadata, `ReplayScanWorker::unknown010`, THTX reserved words, shared task bit 8, ANM VM bit 14, Bullet residual halfwords/`field360`, or other single-ended storage without a new discriminator. The semantic phase remains active-incomplete.
 
 ### SEM-202 — type the photo-bullet lifecycle states
 
@@ -11276,11 +9626,6 @@ Command-local normal-production probes using pinned VC7.1 13.10.3077 and the can
 
 A fresh pinned-VC7.1 whole-product build compiled all 88 production translation units across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `cf81d522fd0d43f2ff08c19d643fa85575d907d944aafa23cc8a68f76a1860b9`. Successful linkage is production closure, not whole-image byte identity. Target-independent CI passed all 43 tests; tracking remains 1,880 provisional / 697 source-present / 696 exact with 336,486 exact bytes, and `git diff --check` passed. Runtime scenario validation remains separate and unclaimed.
 
-**Recovery / analysis state.** The transaction began from committed SEM-201 HEAD `ad4bfa6682ea0b0540f0f0ee12cc1e0f512cdb38` with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. `.analysis/` started at exactly 3,394,984 bytes. Before this batch, a bounded fresh target audit of compact enemy `flags1 @ +0x2BF4` bits 3 and 6 confirmed constructor/low-ECL writers but found no independent reader across current update, movement, draw, clamp, and photo-target surfaces; those bits therefore remain Unknown and that negative route caused a coverage rotation rather than a semantic claim. Intermittent Factory transport requests that returned no durable command id received no evidence credit. Fresh semantic analysis used the registered read-only Ghidra provider and compile probes used command-local temporary storage, so no current-session `.analysis/gpt-web/` root or retained large artifact was created.
-
-**Next evidence route.** After checkpoint, rotate away from the photo-bullet lifecycle rather than naming adjacent `unknown350`, `unknown356`, `field360`, state value 4, or transform/capture residuals by proximity. Prefer a distinct persistent/ABI owner, resource lifetime, interpreter protocol, replay/input boundary, or historical-platform runtime gap with a concrete TH095-local producer plus an independent consumer/cleanup edge. Existing `ReplayScanWorker::unknown010`, THTX reserved words, Sound/PBG writer-only metadata, score/replay reserved words, shared task bit 8, ANM VM bit 14, and other single-ended storage remain Unknown absent a new discriminator. The semantic phase remains active-incomplete.
-
-
 ### SEM-203 — name the Help page-loading states
 
 **Scope.** Rotate away from the photo-bullet lifecycle into the independent Help viewer and recover only the asynchronous page-loading subprotocol inside `HelpMenuView::state @ +0x610C`. The complete Help dispatcher has states 0..4, but this transaction names only 2, 3, and 4 because those values have a separate worker producer plus main-thread ownership/consumption edges. It does not type the state field, assign names to states 0/1, reinterpret the shared front-end `requestedState`, rename Help cursor entries, or change ANM scripts/interrupts.
@@ -11302,10 +9647,6 @@ Back on the main thread, state 3 consumes that publication: `UpdateHelpMenu` cal
 **Validation.** Focused canonical replay of `src/HelpMenu.cpp` rebuilt both configured Help units and passed **2/2 exact** with **zero private-label refresh**. A command-local normal-production probe using pinned VC7.1 13.10.3077 and the canonical `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile emitted a **24,421-byte Intel 80386 COFF** object. `git diff --check` passed.
 
 Because this transaction is the final source checkpoint of the current conversation slice, the broad gates were closed on this exact dirty source rather than relying on SEM-202's now-stale product snapshot. Four disjoint 22-source cold replay partitions passed `205 + 158 + 191 + 142 = 696/696` configured exact units with **zero private-label refresh**. A fresh pinned-VC7.1 whole-product build compiled all 88 production translation units across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `0b34919f81ae9c116f4485f49d3d5e17033bbb8fee56907b543957aa245a9e8e`. Successful linkage is production closure, not whole-image byte identity. Target-independent CI passed all 43 tests; tracking remains 1,880 provisional / 697 source-present / 696 exact with 336,486 exact bytes. Runtime scenario validation remains separate and unclaimed.
-
-**Recovery / analysis state.** This transaction began from committed SEM-202 HEAD `2745cb3bf5bfde96de838bcde9bcd616674cb7f8` with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. A bounded weak-API/persistent-field sweep before HelpMenu found only already-recorded ignored parameters or known single-ended storage and therefore caused another coverage rotation rather than a semantic claim. One earlier HelpMenu read-only request lost Factory transport before returning a durable command id and received no evidence credit; live status was rechecked unchanged before the durable retry. `.analysis/` remains at the campaign baseline of exactly 3,394,984 bytes; fresh target evidence used the registered read-only Ghidra provider and the normal compile used command-local temporary storage, so no current-session analysis root or retained large artifact exists.
-
-**Next evidence route.** After checkpoint, rotate away from HelpMenu rather than mechanically naming its outer states 0/1. A useful next state/protocol challenge is `MusicRoomView::state` (currently numeric 0/1/2), but accept names only if a fresh target audit finds an independent producer/consumer or ownership discriminator beyond its single Update switch; otherwise rotate immediately to ReplayBrowser or a resource/persistent/ABI lifetime surface. Continue to keep `ReplayScanWorker::unknown010`, THTX reserved words, Sound/PBG writer-only metadata, score/replay reserved words, shared task bit 8, ANM VM bit 14, compact-enemy bits 3/6, photo-bullet value 4 and adjacent residual storage Unknown absent new TH095-local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-204 — type the Music Room state selector
 
@@ -11331,10 +9672,6 @@ Because the transaction changes a shared owner header/representation, the dirty 
 
 A fresh pinned-VC7.1 whole-product build then compiled all 88 production translation units across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `620f80163ff1e4eb8dab54b629ac7170bc36fcb6cb0a5a0da28a50fc691bbf7f`. Successful linkage is production closure, not whole-image byte identity. Wine emitted only the usual no-GUI-driver/systray diagnostics during tool execution.
 
-**Recovery / analysis state.** This campaign resumed from committed SEM-203 HEAD `3428510e3863027cb36206d75a5a59911fa66199`. The five Factory-controlled reconstruction/semantic/recovery paths were mounted and reviewed before editing. Recovery found zero staged or tracked-unstaged work and preserved the four long-lived exclusions: unknown-origin/generated-looking `EnemyManagerUpdate.i`, unrelated `droid.resume.txt`, and the unrelated runtime experiment pair `config/runtime-scenarios.json` / `scripts/runtime-diff.py`; their hashes remained unchanged. `.analysis/` started at exactly **3,394,984 bytes**. The lexical debt baseline reported 948 routing-only findings across 201 scanned files and is not treated as progress or completion evidence. Fresh semantic evidence used the registered read-only target-attested Ghidra provider and all compile/replay probes used existing build outputs or command-local temporary storage, so no current-session `.analysis/gpt-web/` root or retained large artifact was created.
-
-**Next evidence route.** After checkpoint, rotate away from Music Room rather than naming neighboring front-end states by analogy. Prefer `ReplayBrowserView::state @ +0x610C` only if fresh TH095-local evidence finds an independent producer/consumer or ownership edge beyond its own Update switch; otherwise rotate to a resource/persistent/ABI lifetime or historical-runtime gap. Continue to keep `ReplayScanWorker::unknown010`, THTX reserved words, Sound/PBG writer-only metadata, score/replay reserved words, shared task bit 8, ANM VM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended residual storage Unknown absent a new discriminator. The semantic phase remains active-incomplete.
-
 ### SEM-205 — type the Replay Browser state selector
 
 **Scope.** Continue from SEM-204 by adversarially testing the neighboring Replay Browser rather than assuming its screen-local state shares Music Room semantics. This transaction recovers only `ReplayBrowserView::state @ +0x610C` and its target-recognized values 0 and 1. It does not reinterpret the cross-screen `requestedState @ +0x6110`, the replay-scan worker handshake, replay file contents, persistent replay paths, cursor history, replay-manager mode, or the owner pointer array itself.
@@ -11357,10 +9694,6 @@ State 1 owns the browser presentation and interaction interval. It initially gat
 
 The shared-header risk then received a cold aggregate exact gate on the current dirty source. Four manifest-derived 22-source partitions passed `205 + 158 + 191 + 142 = 696/696` configured units with **zero private-label refresh**. A first whole-product request lost Factory transport before returning a durable command id and receives no product-closure credit; recovery confirmed unchanged HEAD/diff/exclusion hashes and no surviving compiler/link producer. The durable retry compiled all 88 production translation units under pinned VC7.1 across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `ba2339685fec0a3906e68523e51e810a17780187c4970951eadee9e4372d60b5`. Successful linkage is production closure, not whole-image byte identity. Wine emitted only the usual no-GUI-driver/systray diagnostics.
 
-**Recovery / analysis state.** This transaction began from committed SEM-204 HEAD `e843fa196ee61ba7e279eb331a8dc3400467fddf` with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. The fresh Replay Browser route was accepted only after the target-attested browser decompile plus the independent front-end entry producer established the bounded owner protocol; the worker evidence was used specifically to keep `requestedState`, worker exit handshake, and private screen state distinct. `.analysis/` remains at the campaign baseline of exactly **3,394,984 bytes**; target evidence came through the registered read-only Ghidra provider and compile probes used command-local temporary storage, so no current-session analysis root or retained large artifact exists.
-
-**Next evidence route.** After checkpoint, rotate away from front-end screen-state typing. Prefer a resource/persistent/ABI or historical-platform lifetime relation with an independent producer plus consumer/cleanup edge. In particular, do not name OptionsMenu local states merely by analogy with Music Room/Replay Browser. Keep `ReplayScanWorker::unknown010`, THTX reserved words, Sound/PBG writer-only metadata, score/replay reserved words, shared task bit 8, ANM VM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent a fresh TH095-local discriminator. The semantic phase remains active-incomplete.
-
 ### SEM-206 — bind the retained Background stage-source cache
 
 **Scope.** Rotate away from front-end screen-state typing into the resource/ABI lifetime route requested by SEM-205. This transaction closes the global Background stage-data cache protocol that SEM-151 deliberately left Unknown. It changes only normal-production names for the cache allocation and its byte count. It does not alter the serialized stage format, per-object `stageData` ownership, interior borrowed views, ANM lifetime, result-restart latch, file-loading policy, or control flow.
@@ -11382,10 +9715,6 @@ A fresh bounded Ghidra xref query reinforces that this is one small global proto
 **Validation.** Focused canonical replay completed before a later probe failure and passed `src/Background.cpp` **20/20 exact** plus `src/BackgroundLifecycle.cpp` **2/2 exact**, totaling **22/22** with **zero private-label refresh**. The first hand-written normal VC7.1 probe used the wrong PlatformSDK include root, failed before source analysis on missing `d3d8.h`, and Wine then exited abnormally; it receives no compile credit. Mandatory recovery confirmed the same two-file transaction, unchanged exclusion hashes, no core file, and no surviving replay/compiler process. A corrected command-local probe copied the canonical environment layout from `scripts/build-whole.py` and emitted **52,102-byte** `Background.obj` and **6,601-byte** `BackgroundLifecycle.obj`, both Intel 80386 COFF; `git diff --check` passed.
 
 Because this is a cross-translation-unit owner/global representation change, the current dirty source then received the cold aggregate exact gate. One monolithic 696-unit invocation ran through the final `zwave` object but lost its final tool response, so it receives no aggregate credit. Recovery found no surviving producer and unchanged source. Four manifest-derived 22-source partitions were then run separately and passed **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. A fresh pinned-VC7.1 whole-product build compiled all 88 production TUs across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `b902bd5b1f445985eae69355aa1710aa6cddfda3fe0ca2eefc3ce2e0a002d0b7`. Successful linkage is production closure, not whole-image byte identity.
-
-**Recovery / analysis state.** This conversation resumed from committed SEM-205 HEAD `0e7978c62d875e7628badf36ca8c73553994f5c3`. All five Factory-controlled reconstruction/semantic/recovery paths were mounted and read before editing. Recovery found zero staged/tracked-unstaged work and preserved the four long-lived exclusions with unchanged hashes: unknown-origin/generated-looking `EnemyManagerUpdate.i`, unrelated `droid.resume.txt`, and the unrelated runtime experiment pair `config/runtime-scenarios.json` / `scripts/runtime-diff.py`. `.analysis/` started at exactly **3,394,984 bytes**. The live semantic-debt router reports 948 routing-only findings (121 raw-member access, 827 anonymous identifiers) across 201 scanned source files; those counts are heuristic routing data only. Fresh semantic evidence came from the registered read-only target-attested Ghidra provider, and compile probes used command-local temporary storage, so no current-session `.analysis/gpt-web/` root or retained large artifact was created.
-
-**Next evidence route.** Rotate away from Background stage-data ownership after checkpoint. Prefer another resource/persistent/ABI lifetime whose current normal source still hides an owner/borrow distinction or a producer/consumer protocol. A useful challenge is the ANM preload file-data lifecycle in `src/AnmPreload.cpp`: accept a change only if fresh TH095-local target evidence distinguishes the owner allocation, transfer/copy boundary, and cleanup across more than one function or state; do not rename its `unknown*` fields merely from parser adjacency. If that route is already semantically closed or only single-ended, rotate to FileSystem/PBG ownership or another historical-runtime boundary. Continue to keep `ReplayScanWorker::unknown010`, THTX reserved words, Sound/PBG writer-only metadata, score/replay reserved words, shared task bit 8, ANM VM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new TH095-local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-207 — type mission preview text pointers
 
@@ -11411,11 +9740,6 @@ Fresh target `FrontEndLifecycleView::~FrontEndLifecycleView @ 0x00445AA0` closes
 
 Because `SceneData.hpp` and `SceneSelect.hpp` are shared layout/API headers, the current dirty source received the cold aggregate exact gate. The first combined partition request lost Factory transport before returning a durable command id and received no validation credit; recovery confirmed the same five-file transaction, unchanged exclusion hashes, and no surviving replay/compiler producer. Individual manifest-derived partitions then passed **205 + 158 + 191 + 142 = 696/696 exact** across all 88 configured sources with **zero private-label refresh**. The first whole-product request likewise lost transport before a durable command id and received no product credit; recovery found no surviving build/compiler/link producer and the old report timestamp unchanged. A durable retry compiled all **88** production translation units across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `0456b3f707ff6d1ecd4589619934ca83f59ec2512ed6f47b49438662739dc89a`. Successful linkage is production closure, not whole-image byte identity.
 
-**Recovery / analysis state.** This transaction began from committed SEM-206 HEAD `f0d928de95a9a3de2b2744d6d3cb85585166de94`, with no staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved. Before selecting this batch, bounded ANM-preload and PBG/FileSystem ownership audits found their raw allocations, archive entries, scratch buffers, and cleanup paths already covered by ANM-022/023/025, PBG-001/003..007, and FILE-002/006/007; those plateaus caused coverage rotation rather than cosmetic ownership renames. Front-end preview queues were likewise already covered by SCENE-009/022 and FRONT-009. Several read-only/edit requests lost transport before returning durable command ids and received no evidence credit; after each ambiguous request the live worktree and producer state were recovered before continuing. `.analysis/` remains at the campaign baseline of **3,394,984 bytes**; target evidence used the registered read-only Ghidra provider and build probes used command-local temporary storage, so no current-session analysis root or retained large artifact was created.
-
-**Next evidence route.** Rotate away from mission/Scene Select text ownership after checkpoint. Prefer a historical-platform runtime gap or a non-front-end owner/protocol surface with a distinct producer plus independent consumer/cleanup. Do not continue renaming adjacent Scene Select fields merely because the mission payload clarified `+0x24/+0x28`. A useful next challenge is a bounded runtime-owner relation around initialized or retained gameplay resources that has not already been closed by the native product audit; alternatively rotate to an independent interpreter/replay/input protocol if fresh target-local evidence supplies a new discriminator. Continue to keep `ReplayScanWorker::unknown010`, THTX reserved words, Sound/PBG writer-only metadata, score/replay reserved words, shared task bit 8, ANM VM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new TH095-local evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-208 — name the photo-effect spawn kinds
 
 **Scope.** Rotate away from SEM-207's front-end ownership work and recover one bounded non-front-end tagged protocol: the first argument of `PhotoEffectManagerView::Spawn @ 0x0041DBD0`. This transaction names only the two construction values distinguished by current TH095 evidence. It does not change the decorated manager signature, virtual `Initialize(void *)` ABI, either argument-record layout, laser behavior, ECL opcode numbers, effect lifecycle states, or the behavior of other integer values.
@@ -11433,11 +9757,6 @@ Fresh callers close both publication edges. `PhotoStraightLaserView::CheckCollis
 **Production / exact representation.** Normal `src/PhotoEffectRuntime.hpp` defines the four-byte `PhotoEffectSpawnKind` enum without changing any owner layout or method signature. `src/PhotoEffect.cpp` routes the manager switch and two straight-fragment self-spawn sites through profile-aware `TH095_EFFECT_SPAWN_*` tokens; `DIFFBUILD` retains literals. `src/EclExtended.cpp` publishes the rotating kind through a compatibility token; `DIFFBUILD` and `TH095_MATCH_EXACT` retain literal 1. `PhotoEffectManagerView::Spawn(i32 type, void *args)` and every concrete `Initialize(void *args)` signature remain unchanged.
 
 **Validation.** Focused canonical replay passed `EclExtended.cpp` **22/22** plus `PhotoEffect.cpp` **34/34**, totaling **56/56 exact** with **zero private-label refresh**. Command-local normal VC7.1 13.10.3077 probes emitted a **68,367-byte** `PhotoEffect.obj` and **43,968-byte** `EclExtended.obj`, both Intel 80386 COFF. Because `PhotoEffectRuntime.hpp` is shared, the dirty source then received the cold aggregate gate. One pre-command transport loss returned no durable id and received no credit; recovery confirmed the same transaction and no surviving producer. Four durable partitions then passed **205 + 158 + 191 + 142 = 696/696 exact** with **zero private-label refresh**. A fresh pinned-VC7.1 whole build compiled all **88** production TUs across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `df5d04613c74fa2f7bbf991d28d604f899097690bdd22caa322815d5e429c16b`. Successful linkage is production closure, not whole-image byte identity.
-
-**Recovery / analysis state.** This transaction began from committed SEM-207 HEAD `4dcddc39aa9239f1bdf1dace884b0cdae272f920`, with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved. Before selecting this family, bounded Enemy/ECL ownership, Sound preload ownership, replay-input reserved fields, Sound writer-only metadata, AnmManager viewport state, Bullet fields, shared photo flags, Score header version, ReplayScanWorker `+0x10`, ANM texture metadata, and PhotoItem lifetime routes either proved already represented or remained single-ended; those plateaus caused coverage rotation rather than cosmetic changes. `.analysis/` began at **3,394,984 bytes** and no current-session analysis root was created; target evidence came through the registered read-only Ghidra provider and compile probes used command-local temporary storage.
-
-**Next evidence route.** Rotate away from PhotoEffect spawn-kind typing after checkpoint. Prefer a distinct non-front-end owner/protocol with a producer plus independent consumer/cleanup, or a historical-platform runtime gap whose normal owner model still disagrees with target evidence. Do not continue renaming `PhotoEffectArgs*` fields merely by adjacency to the new spawn kind. A small PhotoOverlay/PhotoFront or Supervisor lifecycle relation is a useful challenge only if current history does not already close it; otherwise rotate to an independent persistent/replay/interpreter protocol. Keep `ReplayScanWorker::unknown010`, replay-input `+0x2A/+0x36`, THTX reserved words, Sound/PBG writer-only metadata, score/replay reserved words, shared task bit 8, ANM VM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new TH095-local evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-209 — bind the bullet-angle VM rotation flag
 
@@ -11461,11 +9780,6 @@ Target callbacks 2 and 4 provide two independent clearer edges. `EclExtended::Ca
 
 Corrected command-local normal-production probes using the canonical pinned VC7.1 13.10.3077 environment emitted **72,553-byte** `AnmManager.obj`, **66,786-byte** `BulletManager.obj`, and **44,026-byte** `EclExtended.obj`, all Intel 80386 COFF. Because both ANM headers are shared representation boundaries, the dirty source immediately received the cold aggregate exact gate. Four manifest-derived 22-source partitions passed **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. A fresh `scripts/build-whole.py` run compiled all **88** production translation units across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `09e46902001e4d9eb8670ee3d8f92e6937bcd76b56bd38ab781dee1586cc8044`. Successful linkage is production closure, not whole-image byte identity or runtime-scenario validation.
 
-**Recovery / analysis state.** This transaction began from committed SEM-208 HEAD `679e9b245a6b69fd17483a9e4a424f340f48825c`, with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. The campaign re-read all five Factory-controlled contracts/docs and re-established target/tracking/Ghidra baselines before editing. Bounded PhotoFront/PhotoOverlay owner audits proved already covered by existing stage/global owners; Supervisor flag bit 8 gained a startup clear edge but still lacks a reader that proves its inherited `scoreBackupPending` business name; FrontEnd controller bit 4 still has writer-side visibility publications but no independent reader. Those routes remained plateaus and forced coverage rotation. `.analysis/` started and remains at **3,394,984 bytes**; target queries used the registered read-only provider or command-local verified-target disassembly, and compile probes used command-local temporary directories, so no current-session analysis root or retained large artifact was created.
-
-**Next evidence route.** Rotate away from bit 27 after checkpoint. A useful independent challenge is adjacent ANM VM bit 28 only if fresh TH095-local target evidence can connect its generic opcode writer to the `UpdateVms`/PhotoGameTask gating consumers and distinguish its role without naming by adjacency. Otherwise rotate away from ANM entirely to a persistent/replay/runtime-owner family. Keep Supervisor bit 8, FrontEnd controller bit 4, ReplayScanWorker `unknown010`, replay-input `+0x2A/+0x36`, Sound/PBG writer-only metadata, score/replay reserved words, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new TH095-local discriminators. The semantic phase remains active-incomplete.
-
-
 ### SEM-210 — bind the ANM PhotoGame suppression bypass
 
 **Scope.** Follow SEM-209's suggested challenge only after re-establishing the live recovery/baseline state, and recover the adjacent `AnmVm+0x228` bit 28 only because current TH095-local evidence supplies both generic and concrete producers plus two independent frame consumers. This transaction names the VM field as a PhotoGame update/draw suppression bypass. It does not rename ANM opcode 85, reinterpret enemy control-word bit 28, change VM layout, modify PhotoGame state lifetimes, or infer behavior outside the observed gates.
@@ -11483,11 +9797,6 @@ The producer side is independent. Canonical exact `AnmManager::ExecuteScript @ 0
 **Production / exact representation.** Normal `src/AnmManager.hpp` exposes bit 28 as `bypassPhotoGameSuppression`; `DIFFBUILD`/`TH095_MATCH_EXACT` retain `flag28`. Normal `src/AnmManager.cpp` publishes the named field for opcode 85 while exact-facing profiles retain the historical field spelling. Normal `src/AnmVmLifecycle.cpp` gives both partial VM views the same bit name, names the already-established PhotoGame gate bits, and reads those names in `UpdateVms`/`DrawLayer`; exact/DIFF branches retain the accepted `flag28`, `flag0`, `flag1`, `drawVms`, and `flag10` source shapes. Normal `src/ResultScreen.cpp` gives its bounded VM-handle overlay a bit-28 member and sets it in `PrepareBestShot`; `DIFFBUILD` keeps `flagsWord |= 0x10000000`, while `TH095_MATCH_EXACT` continues to select the frozen `ResultScreenExact.inl`. No field position, object extent, opcode value, owner address, calling convention, branch order, or control flow changes.
 
 **Validation.** Focused canonical replay passed `AnmManager.cpp` **14/14**, `AnmVmLifecycle.cpp` **17/17**, and `ResultScreen.cpp` **24/24**, totaling **55/55 exact** with **zero private-label refresh**. Command-local normal-production probes using the pinned VC7.1 13.10.3077 whole-build environment emitted a **72,573-byte** `AnmManager.obj`, **30,747-byte** `AnmVmLifecycle.obj`, and **75,437-byte** `ResultScreen.obj`, all Intel 80386 COFF. Because `AnmManager.hpp` is a shared VM-layout header, the dirty source immediately received the cold aggregate exact gate. The first request for partition 3 was rejected at the Factory entry point because a repository operation still held the lock; it did not start and received no credit. Recovery confirmed the same four-file transaction and no active compiler/replay producer. Four durable 22-source partitions then passed **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. A fresh `scripts/build-whole.py` run compiled all **88** production translation units across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `92ce785547a5153880292d948cf7bfbff70813d81c28ceed60695178a9f23079`. Successful linkage is production closure, not whole-image byte identity.
-
-**Recovery / analysis state.** This transaction began from committed SEM-209 HEAD `0efe897e94dbed5383ec96e3ced87fc2aaedf45e`, with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. All five Factory-controlled contracts/docs were re-read before editing. The canonical target, 1880/697/696 tracking state, and six-sample Ghidra attestation were refreshed once for the campaign. One edit-preparation read lost transport before returning a durable command id; recovery proved the HEAD/diff unchanged and no active producer before source editing began. `.analysis/` began at **3,394,984 bytes** and no current-session analysis root was created; bounded target queries used the registered read-only provider or command-local target disassembly, and normal compile probes used command-local temporary directories.
-
-**Next evidence route.** Rotate away from ANM after checkpoint rather than naming adjacent bits by proximity. Prefer an independent persistent/replay or runtime-owner family with a TH095-local producer plus an independent reader/cleanup edge. A useful first challenge is the remaining replay/persistent-format storage: search current source/history and target consumers for a reserved or weakly named field before editing, and immediately rotate to a non-ANM resource-lifetime route if it remains writer-only. Keep Supervisor bit 8, FrontEnd controller bit 4, ReplayScanWorker `unknown010`, replay-input `+0x2A/+0x36`, Sound/PBG writer-only metadata, score/replay reserved words, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new TH095-local discriminators. The semantic phase remains active-incomplete.
-
 
 ### SEM-211 — bind ReplayManager input/FPS ownership
 
@@ -11507,11 +9816,6 @@ Fresh `ReplayManager::~ReplayManager @ 0x004344F0` independently closes the life
 
 **Validation.** Focused canonical replay passed all **12/12** `ReplayManager.cpp` units with **zero private-label refresh**. A command-local normal-production probe loaded the canonical whole-build plan/toolchain and compiled `ReplayManager.cpp` with its production profile to a **36,539-byte Intel 80386 COFF** object. Because `ReplayManager.hpp` is a shared header, four cold 22-source partitions then passed **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. A fresh pinned-VC7.1 `scripts/build-whole.py` run compiled all **88** production translation units across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `e01d9ba3141e850f8e16527c459a54f99ec4b2ef874cd7285e936b327502fbe5`. Successful linkage is production closure, not whole-image byte identity.
 
-**Recovery / analysis state.** This transaction began from committed SEM-210 HEAD `60faf254b8601c631e48a86b1a9899bbdaa9b31f`, with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. All five Factory-controlled contracts/docs were re-read before editing. The canonical target, 1880/697/696 tracking state, and six-sample Ghidra attestation were refreshed once. The initial persistent-format route retained writer-only/reserved fields as Unknown; a fresh `ProcessFrame`/`ReplayInputSource::Update` check also found a possible weak-alias cleanup, but the stronger mode-dependent owner/view contradiction was selected instead. `.analysis/` began at **3,394,984 bytes** and no current-session analysis root was created; target queries used the registered read-only Ghidra provider and compile probes used command-local temporary storage.
-
-**Next evidence route.** Rotate away from ReplayManager storage after checkpoint. Prefer a genuinely independent runtime-owner/lifetime or sibling interpreter protocol rather than continuing replay-field cleanup by adjacency. A useful first challenge is a non-ANM resource owner with allocation plus independent cleanup, or a persistent field only if a fresh reader/validator appears. Keep replay/score reserved bytes, `ReplayInputSource::unknown02a/unknown036`, `ReplayScanWorker::unknown010`, Supervisor bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new TH095-local discriminators. The semantic phase remains active-incomplete.
-
-
 ### SEM-212 — bind TextRenderer DIB bitmap ownership
 
 **Scope.** Rotate away from ReplayManager storage after SEM-211 and challenge an independent historical-runtime resource owner. MIDI file bytes and SceneTexture reserved THTX words were already closed or remained single-ended, while `TextRenderBufferView` still represented a `CreateDIBSection` resource and its returned pixel pointer as generic `bitmap` / `buffer` members. This transaction recovers only that GDI owner/view relationship. The RNG prefix, format table, DC/original-selected-object lifetime, alpha algorithms, text fonts, and texture-upload behavior are unchanged.
@@ -11528,12 +9832,20 @@ Fresh `TextRenderBufferView::ReleaseBuffer @ 0x0041BE60` independently closes th
 
 **Production / exact representation.** Normal `src/TextRenderer.hpp` exposes `ownedBitmap @ +0x11C` and `bitmapBits @ +0x120`; `TH095_MATCH_EXACT` and `DIFFBUILD` retain historical `bitmap/buffer`. Normal `src/TextRenderer.cpp` uses the owner/view names in construction, release, DIB publication, alpha mutation, clearing, and texture upload; compatibility macros restore the historical field tokens for exact/DIFF compilation. `TextRenderBufferView` remains `0x124` bytes and all field offsets, Win32/D3D API calls, control flow, and pixel bytes are unchanged.
 
-**Validation.** The first focused exact attempt received **no exact credit**: a profile-dependent `offsetof` assertion placed `#if` inside the macro argument, which VC7.1 rejected during preprocessing before any unit comparison. Recovery confirmed the same two-file transaction, unchanged exclusions, no active compiler/replay producer, and `.analysis/` at baseline. The assertion was rewritten with the profile branch outside `offsetof`, after which focused replay passed `AnmText.cpp` **4/4** and `TextRenderer.cpp` **11/11**, totaling **15/15 exact** with **zero private-label refresh**. Command-local normal-production probes using the canonical pinned VC7.1 environment emitted a **26,513-byte** `TextRenderer.obj` and **19,506-byte** `AnmText.obj`, both Intel 80386 COFF. Because `TextRenderer.hpp` is shared with `AnmText.hpp`, four cold 22-source partitions passed **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. A fresh `scripts/build-whole.py` run compiled all **88** production TUs across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `c8c2ca0d51366eda369b81fb450588c2d4fad767e3e60cced38c121c6d8643e9`. Product linkage is closure of the reconstructed Windows i386 build, not whole-image byte identity.
-
-**Recovery / analysis state.** This transaction began from committed SEM-211 HEAD `68f11dfcc83086b9c28c67a24f2168deac0163a7`, with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. All five Factory-controlled contracts/docs were re-read; canonical target identity, 1880/697/696 tracking, and the six-sample Ghidra attestation were refreshed once for the campaign. `.analysis/` began at **3,394,984 bytes**. Target evidence used the registered read-only Ghidra provider and normal probes used command-local temporary directories; no current-session analysis root or retained large artifact was created.
-
-**Next evidence route.** Rotate away from TextRenderer after checkpoint. Prefer a separate runtime resource owner/lifetime such as a small COM/GDI/Win32 or gameplay resource with an allocation/acquire edge plus independent release/consumer, after first checking durable history. If those are already closed, rotate to a sibling interpreter or state protocol rather than naming adjacent TextRenderer fields. Keep the TextRenderer RNG prefix, SceneTexture THTX reserved words, ReplayInput residuals, ReplayScanWorker `unknown010`, Supervisor bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new TH095-local discriminators. The semantic phase remains active-incomplete.
-
+**Validation.** The first focused exact attempt received **no exact credit**: a
+profile-dependent `offsetof` assertion placed `#if` inside the macro argument, which
+VC7.1 rejected during preprocessing before any unit comparison. The assertion was
+rewritten with the profile branch outside `offsetof`, after which focused replay passed
+`AnmText.cpp` **4/4** and `TextRenderer.cpp` **11/11**, totaling **15/15 exact** with
+**zero private-label refresh**. Command-local normal-production probes using the
+canonical pinned VC7.1 environment emitted a **26,513-byte** `TextRenderer.obj` and
+**19,506-byte** `AnmText.obj`, both Intel 80386 COFF. Because `TextRenderer.hpp` is
+shared with `AnmText.hpp`, four cold 22-source partitions passed **205 + 158 + 191 + 142
+= 696/696 exact**, all with **zero private-label refresh**. A fresh
+`scripts/build-whole.py` run compiled all **88** production TUs across two profiles and
+linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256
+`c8c2ca0d51366eda369b81fb450588c2d4fad767e3e60cced38c121c6d8643e9`. Product linkage is
+closure of the reconstructed Windows i386 build, not whole-image byte identity.
 
 ### SEM-213 — bind ANM render-data ownership
 
@@ -11553,11 +9865,6 @@ Fresh `AnmVm::InitializePulsingRadialTrail @ 0x00441710` gives the same physical
 
 **Validation.** Focused canonical replay passed `AnmManager.cpp` **14/14**, `AnmManagerTrail.cpp` **3/3**, `AnmVmLifecycle.cpp` **17/17**, and `EclExtended.cpp` **22/22**, totaling **56/56 exact** with **zero private-label refresh**. Command-local normal-production probes using each source's canonical pinned VC7.1 profile emitted Intel 80386 COFF objects of **72,683**, **20,885**, **30,859**, and **44,158** bytes respectively. Because `AnmManager.hpp` is a high-fanout shared layout header, four cold 22-source partitions passed **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. Fresh `scripts/build-whole.py` compiled all **88** production TUs across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `f1c4e3e09093c5fb0d15cb18b767b722cfa628f01063262689d1ed1ea6170f66`. Successful linkage is native-product closure, not whole-image identity.
 
-**Recovery / analysis state.** This transaction began from committed SEM-212 HEAD `447a81890a54dfb4804e58cfa1ea49d575adefef`, with no staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. All five Factory-controlled contracts/docs were re-read; target identity, 1880/697/696 tracking, and six-sample Ghidra attestation were refreshed once. Two bounded read/analysis requests lost transport before durable results; recovery re-established the unchanged transaction and no surviving producer before continuing. `.analysis/` began at **3,394,984 bytes** and no current-session analysis root or retained large artifact was created.
-
-**Next evidence route.** Rotate away from ANM render-data after checkpoint. Prefer a genuinely separate subsystem: a small sound/input/Win32 runtime owner with acquire plus independent consumer/cleanup, or a sibling interpreter protocol with at least two TH095-local discriminators. Do not continue naming adjacent `AnmVm` fields merely because `+0x14` is now bounded. Keep the TextRenderer RNG prefix, THTX reserved words, ReplayInput residuals, ReplayScanWorker `unknown010`, Supervisor bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new TH095-local evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-214 — name the SoundPlayer worker thread roles
 
 **Scope.** Rotate away from ANM render-data ownership after SEM-213 and challenge a separate Sound/Input/Win32 runtime owner. Existing Sound lifecycle facts already cover the shared stop request and initialization-complete latch, but normal `SoundPlayer` still described its two owned worker HANDLEs only as `workerThreadHandle` and `secondaryWorkerThreadHandle`. This batch names the distinct thread roles plus the initialization thread id/window. It does not alter the shared stop-request protocol, BGM notification thread, DirectSound buffer ownership, or SFX/BGM data ownership.
@@ -11575,11 +9882,6 @@ Fresh `StartSoundLoadThread @ 0x00437CA0` independently calls `CreateThread` wit
 **Production / exact representation.** Normal `SoundPlayer.hpp` exposes the four role-specific fields at the existing `+0x5218/+0x521C/+0x5220/+0x5228` offsets; `TH095_MATCH_EXACT`/`DIFFBUILD` retain `workerThreadHandle`, `secondaryWorkerThreadHandle`, `workerThreadId`, and `workerWindow`. Source-local compatibility macros keep exact-facing `SoundPlayer.cpp` token shape on the historical names. Object size remains `0x52D0`; HANDLE widths, thread entry addresses, stop-request value protocol, wait timeouts, cleanup order, and Win32 API calls are unchanged.
 
 **Validation.** `SoundPlayer.cpp` replayed **27/27 exact** with **zero private-label refresh**. A command-local pinned-VC7.1 normal probe emitted a **64,793-byte Intel 80386 COFF** `SoundPlayer.obj`. Because `SoundPlayer.hpp` is included by seventeen production translation units, four cold 22-source partitions passed **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. Fresh `scripts/build-whole.py` compiled all **88** production TUs across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `cf38f0c5acfec1d54dc1a76d977728bfb0d01bdcedcd640af6be8efa736ed9ac`. Successful linkage is native-product closure, not whole-image identity.
-
-**Recovery / analysis state.** This transaction began from committed SEM-213 HEAD `ca41ed20798e1b5fd11a2d9b4c88607f9d841233`, with no staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. All five Factory-controlled contracts/docs were re-read; target identity, 1880/697/696 tracking, and six-sample Ghidra attestation were refreshed once. The first Factory debt request and analysis-provider discovery attempts lost transport with no evidence credit; the later bound debt snapshot remained routing-only at 948 findings. A manifested `.analysis/gpt-web/20260915-sound-thread-lifecycle/` scratch root reached only **2,503 bytes** for one bounded hash-attested decompile and was removed by the same command after its output was reviewed. `.analysis/` began at **3,394,984 bytes** and no retained current-session artifact remains.
-
-**Next evidence route.** Rotate away from SoundPlayer worker-thread naming after checkpoint. Prefer an independent Input/Win32 or persistent/runtime protocol with a producer plus an independent reader/cleanup. One useful challenge is the DirectInput device lifetime in Supervisor: first verify whether `directInput`, `keyboard`, and `controller` already have durable acquire/failure/unacquire/release coverage before considering any owner-name change. If that surface is already closed, rotate to a non-Sound sibling interpreter or persistent protocol rather than naming adjacent SoundPlayer fields. Keep Sound writer-only metadata, ReplayInput residuals, ReplayScanWorker `unknown010`, Supervisor bit 8, FrontEnd controller bit 4, THTX reserved words, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new TH095-local evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-215 — name the shared FileWrite/ReplayFile handle
 
@@ -11599,11 +9901,6 @@ Fresh `FileSystem::CloseWriteFile @ 0x0041B090` independently consumes the same 
 
 **Validation.** `FileWrite.cpp` replayed **6/6 exact** with **zero private-label refresh** and a command-local pinned-VC7.1 normal probe emitted a **21,316-byte Intel 80386 COFF** object. Because this checkpoint is the final source milestone of the conversation, a cold four-part aggregate replay passed **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. Fresh `scripts/build-whole.py` compiled all **88** production TUs across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `22437ce0dc537dfe7b22a07ea77e1ef3cd8623c4dd5ccc42f00259f88a58e272`. Successful linkage is native-product closure, not whole-image identity.
 
-**Recovery / analysis state.** This transaction began from committed SEM-214 HEAD `42e7c6866b11b83528553925da7eb9b8aa79e01e`, with no staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. A first five-function bounded decompile request lost transport before a durable command id; recovery proved the manifested scratch root absent, `.analysis/` unchanged, and no surviving producer. A retried three-function hash-attested decompile used `.analysis/gpt-web/20260915-shared-file-handle/`, reached only **2,715 bytes**, and was removed by the same command after review. `.analysis/` began this campaign at **3,394,984 bytes** and no retained current-session artifact remains.
-
-**Next evidence route.** Rotate away from FileWrite after checkpoint. Prefer an independent persistent or runtime protocol rather than renaming neighboring file APIs. A useful first challenge is a small Win32 or input state with distinct producer and reader transitions that is not already closed by INPUT-001..010 or ABI owner facts; if that plateaus, rotate to a sibling interpreter protocol with at least two TH095-local discriminators. Keep ReplayInput residual bytes, ReplayScanWorker `unknown010`, Supervisor bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved words, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-216 — unify the photo-score flag protocol
 
 **Scope.** Rotate away from FileWrite after SEM-215 and challenge persistent/runtime and sibling-interpreter surfaces without reopening already-closed families. ECL selector `0x2732` was rejected as a batch because the current evidence consists only of the paired int/float resolver implementations. The stronger bounded contradiction is in the established photo-score payload: `PhotoCamera.cpp` and `PhotoStage.cpp` independently maintained two local numeric flag domains for the same `PhotoScoreBreakdownView::scoringFlags @ +0x1C` dword. This batch unifies only that normal-production flag protocol. It does not change scoring arithmetic, display row values, serialized score layouts, or the four still-unclassified flag bits.
@@ -11622,10 +9919,6 @@ Fresh independent `PhotoStageDisplayView::Build @ 0x0042C5C0` consumes that same
 
 **Validation.** Focused replay passed `PhotoCamera.cpp` **11/11** and `PhotoStage.cpp` **6/6**, totaling **17/17 exact** with **zero private-label refresh**. Command-local normal-production probes using the pinned VC7.1 profiles emitted Intel 80386 COFF objects of **58,991** and **48,703** bytes respectively. Because `ScoreData.hpp` is a shared persistent-layout header, the current dirty source closed the cold aggregate in bounded partitions totaling **205 + 40 + 118 + 133 + 58 + 43 + 44 + 55 = 696/696 exact**, all with **zero private-label refresh**. Fresh `scripts/build-whole.py` compiled all **88** production TUs across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `7fb8c3771a13cf496e98914853e005ad4ed3281066105238ad8b1a923ec88190`. Successful linkage is native-product closure, not whole-image identity.
 
-**Recovery / analysis state.** This transaction began from committed SEM-215 HEAD `3e4a51db1c1bac7841be1a83afe1e2e1b7e46a73`, with no staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. All five Factory-controlled contracts/docs were re-read; target identity, 1880/697/696 tracking, six-sample Ghidra attestation, and the routing-only 948-finding semantic-debt snapshot were refreshed once. A manifested `.analysis/gpt-web/20260915-photo-score-flags/` scratch root reached **28,865 bytes** for one bounded hash-attested two-function decompile and was removed by the same command after review. Several aggregate replay submissions lost transport before a durable command id; each received zero credit, recovery verified no surviving producer, and the missing partitions were rerun until all 696 units had durable passing summaries. `.analysis/` began at **3,394,984 bytes** and no current-session artifact is retained.
-
-**Next evidence route.** Rotate away from photo-score flags after checkpoint. Prefer a separate runtime owner or sibling interpreter/state protocol with a producer plus an independent consumer/cleanup. Do not promote ECL selector `0x2732` solely because both numeric resolvers calculate player-to-enemy distance; seek an independent target-local discriminator first. Keep photo-score bits 5/17/18/19, ReplayInput residual bytes, ReplayScanWorker `unknown010`, Supervisor bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved words, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-217 — type the Background interpolation-mode protocol
 
 **Scope.** Rotate away from SEM-216 photo-score flags and challenge a separate stage-interpreter protocol. `BackgroundStateView::interpolationModes[4] @ +0x80` was still a raw `u16` array even though the target interpreter both publishes and independently consumes two packed selector domains in each word. This transaction types only that packed mode representation and names the target-observed time-curve values plus the explicit Hermite producer token. It does not reinterpret stage object records, camera-motion mode, timers, stage data ownership, or script asset contents.
@@ -11643,10 +9936,6 @@ The producer side is independent in the stage opcode dispatcher in the same exac
 **Production / exact representation.** Normal `Background.cpp` declares `BackgroundInterpolationMode` as a 16-bit storage type, retains the existing `interpolationModes[4]` layout at `+0x80`, and names the six curve constants plus masks/path token. Compatibility macros cause `DIFFBUILD` and `TH095_MATCH_EXACT` to preprocess back to the historical numeric values, `0x800` producer expressions, and the original `((mode >> 8) & 0xFF) == 0` path test. No object size, field offset, opcode number, timer behavior, interpolation arithmetic, tangent storage, or control flow changes.
 
 **Validation.** Focused `scripts/replay-exact-units.py --source src/Background.cpp` passed **20/20 exact** with **zero private-label refresh**. A command-local normal-production compile using the canonical Background VC7.1 profile emitted a **52,431-byte Intel 80386 COFF** object. Because this checkpoint is the conversation milestone, the current dirty source also closed the cold aggregate in eight bounded partitions totaling **71 + 134 + 40 + 118 + 133 + 58 + 43 + 99 = 696/696 exact**, all with **zero private-label refresh**. Fresh `scripts/build-whole.py` compiled all **88** production TUs across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `706b2bc9fea1deef1bb385d02b6fbfebc56a0540a359f374efbc9383194aaddd`. Successful linkage is native-product closure, not whole-image identity.
-
-**Recovery / analysis state.** This transaction began from committed SEM-216 HEAD `0d3de242fa0d4729e729c68ceaf4c6594c80c3d9`, with no staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. All five Factory-controlled contracts/docs were re-read; target identity, 1880/697/696 tracking, six-sample Ghidra attestation, and the routing-only 948-finding debt snapshot were refreshed once. Two repo-native Ghidra scratch attempts lost transport or returned only function metadata and received no semantic credit; recovery proved their manifested `.analysis/gpt-web/20260915-background-interpolation/` root absent and `.analysis/` unchanged. The accepted semantic observation comes from a fresh Factory `th095-ghidra` target-attested `decompile` operation. Several aggregate shell submissions also lost transport before a durable command id and received zero credit; recovery proved no surviving producer before rerunning the missing partitions. `.analysis/` began at **3,394,984 bytes** and no current-session scratch is retained.
-
-**Next evidence route.** Rotate away from Background after checkpoint. Prefer a separate runtime owner, persistent boundary, or sibling interpreter protocol with a producer plus an independent reader/cleanup. Do not promote ECL selector `0x2732` solely because both numeric resolvers calculate player-to-enemy distance; require a third TH095-local discriminator. Keep photo-score bits 5/17/18/19, ReplayInput residual bytes, ReplayScanWorker `unknown010`, Supervisor bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved words, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-218 — name the ECL call-parameter selector ABI
 
@@ -11668,10 +9957,6 @@ The independent producer is `EclRunLow::CallSubOnEnemy @ 0x00411F70`. After init
 
 **Validation.** An initial all-profile selector header changed only compiler-private `$L...` relocation names in `ResolveInt`; all real relocation offsets/types/targets were unchanged, but the experiment received no exact credit and no manifest refresh. The selector declaration was then isolated from exact-facing C++ declarations. Final focused replay passed **4/4 exact** across the four resolver TUs with **zero private-label refresh**. An initial normal compile exposed an unqualified-enum namespace error in `EclOperandsFloat.cpp`; after qualifying the normal macro expansion, final pinned-VC7.1 normal probes emitted Intel 80386 COFF objects of **25,331**, **25,545**, **18,561**, and **20,064** bytes for the int read, float read, int lvalue, and float lvalue TUs respectively. Because `EclOperands.hpp` is shared, the current dirty source closed all eight cold partitions at **71 + 134 + 40 + 118 + 133 + 58 + 43 + 99 = 696/696 exact**, all with **zero private-label refresh**. Fresh `scripts/build-whole.py` compiled all **88** production TUs across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `c67bc70201fcc4d881d2eb2d88a26426ecd4d999c30157fc28fbfd15ace7a6fb`. Successful linkage is native-product closure, not whole-image identity. No runtime scenario is claimed.
 
-**Recovery / analysis state.** This transaction began from committed SEM-217 HEAD `c25fd1d2c0b4947180e9e665e9d7fe804b4633fb`, with no staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. The campaign re-read all five Factory-controlled contracts/docs, refreshed target identity, 1880/697/696 tracking, Ghidra six-sample attestation, and the routing-only 948-finding semantic-debt snapshot. A manifested `.analysis/gpt-web/20260915-ecl-call-parameters/` scratch root reached **22,079 bytes** for one bounded five-function Ghidra decompile and was removed by the same command. Multiple live-shell calls lost transport before receiving a durable command id; each received zero credit and recovery confirmed the same worktree plus no surviving producer before retry. `.analysis/` returned to its **3,394,984-byte** starting size before documentation.
-
-**Next evidence route.** Rotate away from the ECL call-parameter family after checkpoint. Prefer an independent persistent/runtime owner or a different secondary protocol with a producer plus independent consumer/cleanup. Do not expand this transaction into a repository-wide `0x27xx` enum pass. Selector `0x2732` still needs a third TH095-local discriminator before promotion. Keep photo-score bits 5/17/18/19, ReplayInput residual bytes, ReplayScanWorker `unknown010`, Supervisor bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved words, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-219 — type the PhotoCardInfo lifecycle state
 
 **Scope.** The resume audit first falsified the proposed `GameConfiguration +0x6C..+0xA3` route: SEM-150 already proves the apparent `g_Supervisor +0x188` EnemyMovement consumer is a synthetic-relocation artifact that actually resolves to `g_AnmGameSpeed`, and current source exposes no field-level consumer for the serialized 0x38-byte block. After rotating to the independent PhotoCardInfo owner, this batch types only `PhotoCardInfoView::state @ +0x0C`. It does not rename `Show`, reinterpret VM interrupt 1, alter card text/fade storage, or change shared photo/global-state flags.
@@ -11690,10 +9975,6 @@ Fresh target xrefs show `Show` has one call at `0x0040D02B`. The canonical exact
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/PhotoCardInfo.cpp` passed all **10/10 exact** units with **zero private-label refresh**. A command-local normal-production probe using the canonical pinned VC7.1 profile emitted a **26,440-byte Intel 80386 COFF** object. `git diff --check` passed. Because this is a private translation-unit representation change, aggregate exact and whole-product closure are deferred to the current conversation's final committed milestone rather than redundantly replayed before another planned source checkpoint.
 
-**Recovery / analysis state.** The campaign started from committed SEM-218 HEAD `22fa85d06d3c6d4a663848581ae22644c1ff0051`, with no staged or tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. `.analysis/` started at **3,394,984 bytes** and no current-session filesystem analysis artifact was created; fresh evidence came through the Factory-registered read-only `th095-ghidra` provider. The `GameConfiguration +0x6C` route was rejected before editing rather than converted into a speculative persistent-field name.
-
-**Next evidence route.** Rotate away from PhotoCardInfo after checkpoint. Prefer a separate persistent/runtime owner or sibling state protocol with a target-local producer plus independent consumer/cleanup. Do not reopen `GameConfiguration +0x6C` from the synthetic EnemyMovement relocation. Keep ECL selector `0x2732`, photo-score bits 5/17/18/19, ReplayInput residual bytes, ReplayScanWorker `unknown010`, Supervisor bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved words, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-220 — type the Options Menu lifecycle state
 
 **Scope.** Recover the first coherent batch found during mandatory worktree recovery after SEM-219. The live repository unexpectedly contained two independent tracked transactions with no active producer: an Options Menu state-typing change in `FrontEndController.cpp`, `OptionsMenu.cpp`, and `OptionsMenu.hpp`, plus a separate captured-bullet representation change in `PhotoCamera.cpp`. This batch adopts and closes only the Options family; the PhotoCamera change remains unstaged recoverable work for the next transaction. The earlier SEM-205 handoff warned against naming Options local states merely by analogy with Music Room or Replay Browser, so this batch requires fresh TH095-local producer/consumer evidence rather than sibling-screen similarity.
@@ -11711,10 +9992,6 @@ Fresh `OptionsMenuView::Update @ 0x0044E4B0` independently distinguishes exactly
 **Production / exact representation.** Normal `OptionsMenu.hpp` introduces a four-byte `OptionsMenuState` representation with `INITIALIZE` and `ACTIVE` values and types `OptionsMenuView::state @ +0x610C`. Normal `OptionsMenu.cpp` uses compatibility tokens for the state switch and exit publication. `FrontEndController.cpp` uses the same semantic initialize token when entering Options from the main menu. `DIFFBUILD` and exact-facing code expand those tokens to historical integer literals; exact `OptionsMenu.cpp` continues to select its frozen exact header/source shape. No field offset, object extent, function signature, cursor layout, requested-state value, VM id, or control-flow topology changes.
 
 **Validation.** Focused canonical replay passed `OptionsMenu.cpp` **1/1 exact** and `FrontEndController.cpp` **4/4 exact**, for **5/5** affected units with **zero private-label refresh**. Command-local normal-production probes reused each source's canonical match-unit profile with pinned VC7.1 and emitted **35,951-byte** `OptionsMenu.obj` and **38,521-byte** `FrontEndController.obj`, both Intel 80386 COFF. Because this transaction changes only two translation units plus the Options-private header and a normal semantic token in FrontEndController, aggregate exact and whole-product closure are deferred until the current conversation's final committed milestone; they are not inferred from the focused checks.
-
-**Recovery / analysis state.** This conversation began from live committed HEAD `2bd8521182f4f52852f1a35e10f6d376a3e51e4b`, already containing SEM-219 and aligned with `origin/main`. Tracked staged/unstaged state was initially clean; the same four long-lived untracked exclusions were preserved outside staging, and `.analysis/` began at **3,394,984 bytes**. During a read-only ANM-bit audit, the live worktree unexpectedly acquired four tracked modifications with no active replay/compiler/Ghidra producer. Mandatory recovery classified `FrontEndController.cpp` plus `OptionsMenu.cpp/.hpp` as one recoverable semantic transaction and `PhotoCamera.cpp` as a second independent recoverable transaction. This batch completes and checkpoints only the former. No current-session `.analysis` scratch root was created; fresh target evidence came through the registered read-only `th095-ghidra` provider.
-
-**Next evidence route.** Finish the remaining recoverable `PhotoCamera.cpp` transaction before selecting unrelated work. Its diff proposes that `PhotoCapturedBulletView +0x656/+0x658`, historically named `group/kind`, are actually bullet type and color as consumed by photo-score color counting. Accept those names only if fresh TH095-local producer evidence ties the same two words to the captured-bullet source object or capture-copy path; otherwise narrow or leave them unchanged. After that recovery transaction is resolved, rotate away from Options/front-end state typing. The semantic phase remains active-incomplete.
 
 ### SEM-221 — bind captured-bullet type and color aliases
 
@@ -11736,11 +10013,6 @@ Fresh target disassembly of `PhotoCameraState::CalculatePhotoScore @ 0x00433140`
 
 **Validation.** Focused canonical replay `python3 scripts/replay-exact-units.py --source src/PhotoCamera.cpp` passed **11/11 exact** units with **zero private-label refresh**. A command-local normal-production probe using the canonical pinned VC7.1 profile emitted a **58,945-byte Intel 80386 COFF** `PhotoCamera.obj`. An earlier transport-lost compile request received no credit; recovery confirmed no surviving compiler before the successful retry. `git diff --check` is required again after this reconciled documentation edit. Broad aggregate exact and whole-product closure are deferred only until the final committed milestone for the SEM-220/SEM-221 conversation slice, rather than replayed between the two private checkpoints.
 
-**Recovery / analysis state.** Live recovery observed SEM-220 committed at `97479910f3bde2e66aff3e88e1f925d421c44b22` while `PhotoCamera.cpp` remained the sole tracked-unstaged source path. During validation, two concurrent draft `SEM-221` records appeared with conflicting normal-object sizes; mandatory recovery found no active producer, reviewed both drafts, and reconciled them into this single record using the successful live probe and directly verified target bytes. The four long-lived untracked exclusions remain preserved outside staging. `.analysis/` remains at the campaign's **3,394,984-byte** baseline; no current-session filesystem analysis root is retained.
-
-**Next evidence route.** After checkpoint, close the current committed milestone's deferred cold aggregate exact and whole-product gates once. Then rotate away from PhotoCamera and front-end local state typing. Prefer an independent runtime owner, persistent boundary, or sibling interpreter protocol with a target-local producer plus independent consumer/cleanup. Do not reopen `GameConfiguration +0x6C` from the synthetic relocation disproved by SEM-150, and do not promote ECL selector `0x2732` without a third TH095-local discriminator. Keep photo-score bits 5/17/18/19, ReplayInput residual bytes, ReplayScanWorker `unknown010`, Supervisor bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved words, ANM bit 14, compact-enemy bits 3/6, photo-bullet value 4, and other single-ended storage Unknown absent new evidence. The semantic phase remains active-incomplete.
-
-
 ### SEM-222 — type bullet aim-mode storage
 
 **Scope.** Rotate away from the already-completed SEM-183/184 Player movement/tracking route and SEM-198 Background camera-motion route, then recover the bullet spawn descriptor's `aimMode @ +0x1F8` representation. The maintained source already had useful names for nine behaviors but still stored the field as an untyped `u16` in the canonical descriptor and TH095-local producer/consumer views. This batch types that storage while preserving an open value domain. It does not reinterpret bullet type/color, transform kinds, count fields, the unconsumed word at `+0x1FA`, ECL opcode numbering, or child-pattern packing beyond the aim selector proven here.
@@ -11760,10 +10032,6 @@ The domain is not closed at 0..8. Fresh `PhotoBulletView::AdvanceTransformProgra
 **Production / exact representation.** Normal `BulletManager.hpp` changes the unused enum tag into a two-byte `BulletAimMode` typedef plus `BulletAimModeValue` constants and types `BulletSpawnDescriptor::aimMode`. Normal `BulletManager.cpp` uses the analogous two-byte `PhotoBulletAimMode` representation for its exact-layout private descriptor, and normal `EnemyShotDispatch.cpp` types the producer view with `BulletAimMode`. `DIFFBUILD` and `TH095_MATCH_EXACT` retain the historical enum declarations and raw `u16 aimMode` fields, because exposing new declarations to the exact BulletManager translation unit perturbs VC7.1 compiler-private jump-table label identities even when machine behavior is unchanged. No field offset, descriptor extent, calling convention, function signature, opcode, arithmetic, or branch topology changes.
 
 **Validation.** The first two focused replay experiments intentionally received no success credit: allowing the new typedef/assertion declarations into exact-facing `BulletManager.cpp` shifted VC7.1 `$L...` relocation labels in `SpawnSingleBullet`. Compressing the edit back to the original line count did not remove that compiler-internal declaration effect. The final profile-separated representation then passed `BulletManager.cpp` **35/35** plus `EnemyShotDispatch.cpp` **1/1**, totaling **36/36 exact with zero private-label refresh**. Command-local pinned-VC7.1 normal probes emitted Intel 80386 COFF objects for `BulletManager.cpp` (**66,810 bytes**), `EnemyShotDispatch.cpp` (**17,314 bytes**), and `ecl/EclRun.cpp` (**78,008 bytes**). Because `BulletManager.hpp` is shared, the final dirty source immediately closed the cold aggregate in eight durable partitions totaling **88 + 95 + 100 + 91 + 99 + 93 + 95 + 35 = 696/696 exact**, all with zero private-label refresh. `scripts/build-whole.py` compiled all **88** production TUs across two profiles and linked/verified a **780,288-byte PE32 i386** Windows GUI image with build-local SHA-256 `d3c0f8d3c196f34a2ae422d430e135b942c320ab9cbf475c2b048abac5af8ffe`. Successful linkage is historical-platform product closure, not whole-image identity or a runtime-scenario result.
-
-**Recovery / analysis state.** This conversation resumed from committed SEM-221 HEAD `2330a742e9917614db7d23bb75d462459f018da5`. Mandatory recovery found no staged or tracked-unstaged work, preserved the four established untracked exclusions unchanged, found no active replay/compiler/Ghidra/Wine producer, and measured `.analysis/` at **3,394,984 bytes** with no file above 64 MiB. Before this batch, the SEM-220/221 milestone was independently closed at the same commit with 696/696 repo-native exact, a successful 88-TU product build, three representative accepted function receipts, and one accepted `whole_build_closed` receipt. Fresh semantic evidence for SEM-222 came through the registered target-attested read-only Ghidra provider; no current-session `.analysis/gpt-web/` root was created.
-
-**Next evidence route.** Rotate away from bullet aim/spawn representation after checkpoint. Prefer a separate persistent/ABI, historical-runtime, resource-lifetime, or non-bullet state protocol with at least one TH095-local producer and an independent consumer/cleanup. Do not reopen Player movement/tracking, Background camera motion, PhotoEffect lifecycle, or ANM texture bytes-per-pixel: current history already closed those routes. Keep shared task bit 8, FrontEnd bit 4, `ReplayScanWorker::unknown010`, Sound/PBG writer-only metadata, score/replay reserved words, photo-score bits 5/17/18/19, ANM bit 14, TextRenderer RNG prefix, and other single-ended storage Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
 
 ### SEM-223 — bind the ANM texture-capture entry selector
 
@@ -11787,10 +10055,6 @@ Fresh result-screen producers provide an independent constant case. `InitializeG
 
 Because `AnmManager.hpp` is a high-fanout shared owner/layout header, the dirty source immediately closed the cold aggregate exact gate. Seventeen durable source buckets passed **49 + 39 + 39 + 46 + 43 + 48 + 19 + 48 + 43 + 44 + 43 + 40 + 48 + 48 + 45 + 32 + 22 = 696/696 exact**, all with **zero private-label refresh**. Several earlier aggregate submissions lost Factory transport before returning a durable command id and received zero credit; recovery found no surviving replay/compiler producer before the missing buckets were rerun durably. Fresh `scripts/build-whole.py` compiled all **88** production translation units across two profiles and linked/verified a **780,288-byte PE32 i386 Windows GUI** image with build-local SHA-256 `c1f8646a294b7e0f78f59565568fddef3fb54e833b3d3ef285f934a871fe26ab`. Successful linkage is historical-platform product closure, not whole-image identity. The build process emitted Wine no-display diagnostics for its environment but returned a passed compile/link report. No new runtime scenario is claimed because this transaction changes only semantic field representation and exact/production source spelling, not executable behavior or resource lifetime.
 
-**Recovery / analysis state.** This transaction resumed from committed SEM-222 HEAD `dfa5a95a00ed6b07c85fb4768fb772ea32f8de39`. Mandatory recovery identified exactly three tracked unstaged paths (`AnmManager.hpp`, `PhotoStage.cpp`, `ResultScreen.cpp`) as recoverable current work and preserved the four established untracked exclusions outside staging: historical generated `EnemyManagerUpdate.i`, the uncommitted runtime-scenario/diff experiment files, and the recovery note. `.analysis/` started and remains at **3,394,984 bytes**, with no file above 64 MiB and no current-session filesystem analysis artifact; fresh evidence came through the registered read-only `th095-ghidra` provider. Recovery after every transport loss found no active Ghidra, replay, VC7 compiler/linker, Wine, or whole-build producer before continuing. No legacy/shared `.analysis` state was deleted or modified.
-
-**Next evidence route.** Rotate away from ANM capture after checkpoint. Prefer an independent persistent/ABI boundary, historical-platform runtime owner, or sibling interpreter/state protocol with a concrete TH095-local producer plus an independent consumer or cleanup edge. Do not reopen the just-audited ANM `cameraMode`, compact-enemy tail packet, SoundPlayer metadata, shared task bit 8, or FrontEnd controller bit 4 without a new reader/producer discriminator. Keep `ReplayScanWorker::unknown010`, score/replay reserved words, photo-score bits 5/17/18/19, THTX reserved words, ANM VM bit 14, TextRenderer RNG prefix, compact-enemy single-ended bits, photo-bullet value 4, and other one-sided storage Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-224 — bind score lifecycle to canonical owned buffers
 
 **Scope.** Resume from SEM-223 and adversarially rotate through the preferred SceneData persistent projection, `ReplayScanWorker::unknown010`, ANM VM bit 14, target-high shot cadence/timer storage, pending-callback dwords, and FrontEnd queue offsets before editing. Those routes produced bounded Unknowns or were already closed by committed semantic history. The actionable representation gap is instead in `ScoreLifecycle.cpp`: normal production still addressed the already-canonical `ResultSaveDataView` lifecycle roots through raw `this + 0/+4/+8` arithmetic even though the shared owner names those slots `fileHeader`, `decompressedData`, and `profileData`. This batch aligns only those normal lifecycle accesses. It does not change the score format, parser behavior, allocation sizes, profile layout, checksum/compression/encryption, Best Shot ownership, or exact-facing source.
@@ -11808,10 +10072,6 @@ Fresh `ResultSaveDataView::~ResultSaveDataView @ 0x00435580` independently close
 **Production / exact representation.** Normal `src/ScoreLifecycle.cpp` now invokes the profile initializer through `this->profileData` and uses `this->fileHeader` / `this->decompressedData` for destructor ownership tests and snapshots. `TH095_MATCH_EXACT` continues to select the frozen `ScoreLifecycleExact.inl`, retaining the historical raw byte-offset form and compiler-local calibration. `ScoreData.hpp` is unchanged. No object size, field offset, pointer width, function signature, allocator/free call, loop bound, or control-flow topology changes.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/ScoreLifecycle.cpp` passed all **5/5 exact** units with **zero private-label refresh**. A command-local normal-production probe using the canonical pinned VC7.1 profile emitted a **14,003-byte Intel 80386 COFF** object. `scripts/build.py --check` retains **696 configured units**, `scripts/validate-tracking.py --require-target` retains **1,880 provisional / 697 source-present / 696 exact**, and `git diff --check` passes. The private translation-unit change initially deferred broad closure while the conversation continued; at final handoff the same committed source closed seven durable cold aggregate groups totaling **88 + 85 + 91 + 110 + 127 + 96 + 99 = 696/696 exact**, all with **zero private-label refresh**. Fresh `scripts/build-whole.py` then compiled all **88** production translation units across two profiles and linked/verified a **780,288-byte PE32 i386 Windows GUI** image with build-local SHA-256 `2674100443c86ce5549a14e1dadf228dd6d588f3c30d868a87e91a2ed88bf067`. Successful linkage is historical-platform product closure, not whole-image byte identity or a runtime-scenario result; Wine emitted only no-display environment diagnostics while the compile/link report remained passed.
-
-**Recovery / analysis state.** The transaction began from committed SEM-223 HEAD `124676712dcecf708e23f00c4a4af44f741a83ad`, with no staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. `.analysis/` began at **3,394,984 bytes** with no file above 64 MiB; no current-session filesystem analysis root was created, and fresh evidence came through the registered read-only `th095-ghidra` provider. Bounded negative routes kept SceneDefinition `+0x22..+0x23/+0x2D..+0x2F`, all three `ReplayScanWorker +0x10` instances, ANM VM bit 14, `PhotoEnemyView +0x2CA4/+0x2CA8`, and previously committed target-high cadence/timer/FrontEnd queue families from being speculatively renamed. One target-analysis request and one semantic-debt request lost transport before returning evidence; recovery confirmed unchanged source state and no surviving producer before continuing.
-
-**Next evidence route.** After checkpoint, rotate away from score lifecycle. Prefer a distinct sibling-interpreter or resource/state family with a TH095-local producer and an independent consumer/cleanup. A useful next challenge is the remaining normal raw access in `EnemyShotAnm.cpp` to the alternate ANM bank only if a fresh producer can be found; otherwise inspect another unclosed ECL target-high state with both publication and runtime consumption. Keep SceneDefinition padding bytes, `ReplayScanWorker::unknown010`, ANM VM bit 14, shared task bit 8, FrontEnd bit 4, score/replay reserved words, photo-score bits 5/17/18/19, Sound/PBG writer-only metadata, compact-enemy single-ended storage, and other one-sided fields Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
 
 ### SEM-225 — bind the persistent photo-score breakdown owner
 
@@ -11831,10 +10091,6 @@ Fresh `PhotoStageStateView::Update @ 0x0042AD60` closes the persistent boundary.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/PhotoStage.cpp` passed all **6/6 exact** units with **zero private-label refresh**. Command-local normal-production probes using pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted Intel 80386 COFF objects of **48,545 bytes** (`PhotoStage.cpp`), **19,741 bytes** (`ScoreData.cpp`), and **75,431 bytes** (`ResultScreen.cpp`). Because `ScoreData.hpp` is a shared persistent owner, the transaction immediately closed a cold aggregate replay in eight mutually exclusive source partitions: **71 + 134 + 40 + 118 + 133 + 58 + 43 + 99 = 696/696 exact**, with **zero private-label refresh**. The match graph remains **696 configured units** and tracking remains **1,880 provisional / 697 source-present / 696 exact**. Fresh `scripts/build-whole.py` compiled all **88** production translation units across two profiles and linked/verified a **780,288-byte PE32 i386 Windows GUI** image with build-local SHA-256 `cb6510a77573c207e1955db82a47ea9d1c57d639c21769ce0a91699ca95f4d2f`. Successful linkage is historical-platform production closure, not whole-image byte identity or a runtime-scenario result; Wine emitted only no-display environment diagnostics while the compile/link report passed. Target-independent `python3 scripts/ci.py` passes all **43/43 tests**, including tracking, match-unit, whole-build-graph, generated-progress, and whitespace validation. `git diff --check` passes.
 
-**Recovery / analysis state.** The transaction began from committed SEM-224 milestone HEAD `1c557a74680de8fbb70460603345be12047c7885`, with no staged/tracked-unstaged work and the same four pre-existing untracked exclusions preserved outside staging. `.analysis/` began at **3,394,984 bytes** with no file above 64 MiB, and no current-session filesystem analysis root was created; fresh semantic evidence came through the registered read-only `th095-ghidra` provider. The first whole aggregate replay request lost its durable command return after producing many matching objects; recovery found no active producer, unchanged tracked edits, and unchanged `.analysis`, so those unreturned results received no exactness credit and all 88 sources were replayed again in durable disjoint partitions. One mechanical edit review caught and reverted an accidental `PhotoStageBestShotRecord::slowRate` rename before validation. The first normal probe then exposed two stale compile-time references to the removed local tail view; its command-local temporary directory was cleaned by trap, recovery showed only the intended two tracked files, and the assertions were corrected to the canonical score-entry tail before the passing probes. Several read-only Factory calls also failed before command creation and were simply retried; none are counted as evidence.
-
-**Next evidence route.** After checkpoint, rotate away from score/photo persistence. Prefer an independent resource lifetime, historical-platform runtime gap, primary/sibling interpreter protocol, or ABI boundary with a TH095-local producer and an independent reader/cleanup. Keep `ReplayScanWorker::unknown010`, remaining input-manager residual bytes, GameConfiguration `unknown06c/unknown0b7`, Supervisor `+0x3F4` constructor-only timer storage and other anonymous gaps, Supervisor task bit 8, ANM VM bit 14, bullet descriptor `+0x1FA`, bullet `field360`, score-entry `+0x38`, photo-score bits 5/17/18/19, score/replay reserved words, and Sound/PBG writer-only metadata Unknown absent a new discriminator. The semantic phase remains active-incomplete.
-
 ### SEM-226 — bind the primary enemy ANM owner into ECL
 
 **Scope.** Resume from committed SEM-225 and run the mandatory live-worktree recovery gate before selecting new work. The gate found four tracked unstaged ECL files rather than the previously committed clean tracked tree: `src/ecl/EclRun.cpp`, `EclRunHigh.inl`, `EclRunLow.inl`, and `EclRunTargetPhoto.inl`. Complete diff review, relevant history, target-owner evidence, and the absence of an active replay/compiler/analysis producer showed one coherent partial representation transaction: normal ECL consumers of enemy-manager runtime `+0x4DF8` were being redirected to an offset-asserted primary enemy ANM owner. This work was therefore classified as `recoverable-current-work` and finished before unrelated edits. The batch does not name the neighboring alternate-bank pointer at `+0x4DFC`, change ECL opcode behavior, or change ANM resource loading.
@@ -11852,10 +10108,6 @@ Fresh `EclManager::RunEcl @ 0x00408E70` provides sibling-interpreter consumers. 
 **Production / exact representation.** Normal `src/ecl/EclRun.cpp` now provides `EclEnemyAnmRuntimeView` with `enemyAnm @ +0x4DF8` and two translation-unit accessors: `TH095_ECL_PRIMARY_ENEMY_ANM` for the `AnmLoaded` interface and `TH095_ECL_PRIMARY_ENEMY_ANM_SPAWNER` for the photo spawn ABI. Normal `EclRunLow.inl`, `EclRunHigh.inl`, and `EclRunTargetPhoto.inl` use those accessors. `DIFFBUILD` and `TH095_MATCH_EXACT` expand the same names back to the historical raw `TH095_ECL_RUNTIME + 0x4DF8` casts. No shared header, manager layout, pointer width, opcode number, calling convention, script id, branch topology, or target-facing exact expression changes.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/ecl/EclRun.cpp` rebuilt the canonical RunEcl unit and passed **1/1 exact** with **zero private-label refresh**. A command-local normal-production probe using the manifest's pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src/ecl /I src` profile emitted a **78,040-byte Intel 80386 COFF** object (`Machine = 0x14C`). `scripts/build.py --check` retains **696 configured units**, tracking remains **1,880 provisional / 697 source-present / 696 exact**, `git diff --check` passes, and target-independent `python3 scripts/ci.py` passes all **43/43 tests** including match/whole-build graph and generated-progress checks. The source change is confined to one production translation unit and its private included bodies, with no shared header/layout/PCH change; cold aggregate exact and whole-product closure are deferred to the final committed campaign milestone.
-
-**Recovery / analysis state.** The campaign resumed from SEM-225 HEAD `a7a6ed07b2b59ca23d2a856588384404ebec06a3`. The four pre-existing untracked exclusions remain hash-stable and outside staging: `EnemyManagerUpdate.i`, `config/runtime-scenarios.json`, `droid.resume.txt`, and `scripts/runtime-diff.py`. `.analysis/` began at **3,394,984 bytes**, contains no file above 64 MiB, and no current-session filesystem analysis root was created; fresh target evidence used the registered read-only `th095-ghidra` provider. One focused replay request lost Factory transport before command creation and received no credit. The first normal-probe harness failed before compiler invocation because of Python module registration; the second reached VC7.1 but lacked the script-generated INCLUDE/LIB environment and failed on `stddef.h`. Both used command-local temporary state only and receive no compile credit. The corrected probe used `build-whole.py`'s pinned toolchain/environment helpers and passed as recorded above.
-
-**Next evidence route.** Rotate away from the now-bound primary enemy ANM owner after checkpoint. Prefer a distinct non-ANM resource lifetime, persistent/ABI family, historical-runtime gap, or sibling interpreter protocol with a TH095-local producer and independent reader/cleanup. Keep alternate enemy ANM bank `+0x4DFC`, ReplayScanWorker `unknown010`, replay/input reserved bytes, GameConfiguration reserved storage, Supervisor anonymous gaps/task bit 8, ANM VM bit 14, score-entry `+0x38`, photo-score bits 5/17/18/19, bullet residual storage, and Sound/PBG writer-only metadata Unknown absent a new discriminator. The semantic phase remains active-incomplete.
 
 ### SEM-227 — bind target-high bullet transform record producer
 
@@ -11875,10 +10127,6 @@ Fresh independent `PhotoBulletView::AdvanceTransformProgram @ 0x004062B0` walks 
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/ecl/EclRun.cpp` passed the canonical RunEcl unit **1/1 exact** with **zero private-label refresh**. `scripts/build.py --check` remains at **696 configured units** and tracking remains **1,880 provisional / 697 source-present / 696 exact**. A command-local normal-production probe using the manifest's pinned VC7.1 profile emitted a **78,052-byte Intel 80386 COFF** object (`Machine = 0x14C`). Target-independent `python3 scripts/ci.py` passes all **43/43 tests**, including tracking, match-unit graph, whole-build graph, generated-progress, and whitespace checks. At the final source milestone, four manifest-derived cold partitions replayed **205 + 158 + 191 + 142 = 696/696 exact** with **zero private-label refresh**. Fresh `scripts/build-whole.py` then compiled all **88** production translation units across two profiles and linked/verified a **780,288-byte PE32 i386 Windows GUI** image with build-local SHA-256 `0079ebe34dd2c4e9b4318c9313da0d6c5925487ad2f0870f1e7ee938419a229c`. Successful linkage is historical-platform production closure, not whole-image byte identity or a runtime-scenario result; Wine emitted only no-display environment diagnostics. `git diff --check` passes.
 
-**Recovery / analysis state.** This transaction starts from committed SEM-226 HEAD `9fe03da5cecdacfbc4977605969211a6f7c263bc`, with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. `.analysis/` remains at the campaign baseline of **3,394,984 bytes** and no current-session filesystem analysis root was created. One initial combined source-view query and one first consumer-decompile request lost Factory transport before producing usable evidence; recovery confirmed the clean tracked tree and the target read was retried successfully. Fresh semantic evidence is target-bound through the registered read-only `th095-ghidra` provider.
-
-**Next evidence route.** Rotate away from bullet-spawn transform records after checkpoint. Prefer an independent historical-runtime gap, persistent/ABI family, non-ANM resource lifetime, or another sibling-interpreter/state protocol with a TH095-local producer and independent consumer/cleanup. Keep alternate enemy ANM `+0x4DFC`, compact tail storage, ReplayScanWorker `unknown010`, replay/input reserved bytes, GameConfiguration reserved storage, Supervisor anonymous/task-bit storage, ANM VM bit 14, score-entry `+0x38`, photo-score bits 5/17/18/19, bullet descriptor `+0x1FA` and other single-ended bullet fields, and Sound/PBG writer-only metadata Unknown absent a new discriminator. The semantic phase remains active-incomplete.
-
 ### SEM-228 — name the main-menu demo wait counter
 
 **Scope.** Resume from committed SEM-227 and rotate away from the recently completed ECL/ANM and bullet-transform families. Bounded audits of Result/ReplayBrowser heap ownership, MIDI residual state, weak APIs, Player/GameManager inherited tails, ScreenEffect/GUI residual dwords, Ascii popup/reset-only storage, and the current relocation-proxy table either remained one-sided/Unknown or were already closed by committed TH095 history. The actionable historical-runtime gap is the process-lifetime front-end dword at target `0x004CA2FC`: maintained source still called it `g_FrontEndUiState` even though its complete target access surface is a bounded demo-launch wait counter. This transaction changes only the normal-production identifier. It does not change the demo-interrupt mask, replay source protocol, demo rotation, front-end state machine, or exact-facing symbol.
@@ -11894,10 +10142,6 @@ Fresh independent `PhotoBulletView::AdvanceTransformProgram @ 0x004062B0` walks 
 **Production / exact representation.** Normal `src/FrontEndController.cpp` defines and uses `g_MainMenuDemoWaitFrames`. `DIFFBUILD` and `TH095_MATCH_EXACT` map that source spelling back to historical `g_FrontEndUiState` before `DIFFABLE_STATIC` expansion, preserving the exact C++ symbol and relocation surface. The compatibility block replaces the previous three-line explanatory comment, so exact-visible source line positions around the large front-end update body remain stable. Storage width, target address, reads/writes, threshold, replay path, and control flow are unchanged.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/FrontEndController.cpp` passed all **4/4 exact** units with **zero private-label refresh**. `scripts/build.py --check` remains at **696 configured units** and tracking remains **1,880 provisional / 697 source-present / 696 exact**. A command-local normal-production probe using the manifest's pinned VC7.1 profile `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a **38,469-byte Intel 80386 COFF** object. Target-independent `python3 scripts/ci.py` passes all **43/43 tests**, including tracking, match-unit graph, whole-build graph, generated-progress, and whitespace checks. Because the source change is private to one translation unit and changes only a normal identifier, cold aggregate exact and whole-product closure are deferred to the final committed campaign milestone.
-
-**Recovery / analysis state.** This transaction starts from committed SEM-227 HEAD `556ee54e88453d52ab4d08758d499a3c031c9513`, with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. All five Factory-controlled contracts/docs were readable before editing. `.analysis/` remains at the campaign baseline of **3,394,984 bytes** with no current-session filesystem analysis root or retained large artifact. One relocation-proxy routing request and one first source-edit request lost Factory transport before command creation; recovery confirmed the clean tracked tree and no surviving producer before retry. Fresh semantic evidence came through the registered read-only `th095-ghidra` provider.
-
-**Next evidence route.** After checkpoint, rotate away from front-end demo/replay naming. Prefer an independent non-front-end resource lifetime, historical-runtime owner, persistent/ABI boundary, or sibling state protocol with a TH095-local producer plus independent reader/cleanup. Keep `ReplayScanWorker::unknown010`, replay/input reserved bytes, GameConfiguration reserved storage, Supervisor anonymous/task-bit storage, ANM VM bit 14, alternate enemy ANM `+0x4DFC`, compact tail storage, score-entry `+0x38`, photo-score bits 5/17/18/19, bullet single-ended residuals, Ascii popup/reset-only slots, and Sound/PBG writer-only metadata Unknown absent a new discriminator. The semantic phase remains active-incomplete.
 
 ### SEM-229 — name the ANM alternate RNG owner
 
@@ -11958,16 +10202,6 @@ This product result is not a whole-image byte-identity claim. Target-independent
 CI passed all 43 workflow tests with tracking at 697 source-present / 696 exact
 and the 88-source / two-profile whole-build graph current.
 
-**Next evidence route.** Rotate away from ANM RNG and the recently exhausted
-photo/shared-global families after checkpoint. Prefer an independent non-ANM
-resource lifetime, historical-runtime owner, persistent/ABI boundary, replay
-field with a new field-level consumer, or sibling interpreter/state protocol
-with a TH095-local producer plus independent consumer/cleanup. Keep ANM bit 14,
-ReplayScanWorker `unknown010`, shared bit 8, score/replay reserved words,
-SoundPlayer/PBG writer-only metadata, TextRenderer RNG-written prefix, compact
-tail fields, and other single-ended storage Unknown absent a new target-local
-discriminator. The semantic phase remains active-incomplete.
-
 ### SEM-230 — name scene preview asset selectors
 
 **Scope.** Resume from committed SEM-229 and rotate away from ANM RNG ownership. The campaign first falsified several tempting but single-ended routes: `ReplayBrowserView::unknown0004`, SceneData reserved bytes, inherited Player/GameManager states, `GuiImpl::stageClearScreenState`, Supervisor unconsumed storage, the already-corrected Background owner boundary, and ScreenEffect type-1 shake endpoints all lacked a new TH095-local producer/consumer discriminator. The actionable counterexample is instead the scene-definition pair at `+0x20/+0x21`: maintained source called them `groupDisplayValue` / `sceneDisplayValue`, while the asynchronous Scene Select asset worker gives both bytes a concrete filename-selection protocol. This transaction recovers only those two record fields. It does not rename the mixed-sign preview queues, change the scene catalog, reinterpret display state, or touch reserved bytes at `+0x22/+0x2D`.
@@ -11990,10 +10224,6 @@ The reconstructed TH095 static catalog provides an independent value-domain chec
 
 Because `SceneData.hpp` is a shared owner/layout header, the dirty source immediately closed the cold aggregate exact regression surface. Durable bounded replay buckets passed **205 + 158 + 133 + 58 + 43 + 32 + 20 + 24 + 23 = 696/696 exact** across all **88** manifest sources, with **zero private-label refresh**. Several longer replay/probe requests lost Factory transport before returning command ids and therefore received zero validation credit; recovery confirmed no surviving replay/compiler producer before each durable retry. Fresh `scripts/build-whole.py` compiled all **88** production translation units across two pinned profiles and linked/verified a **780,288-byte PE32 i386 Windows GUI** image with build-local SHA-256 `df6c0781a01327d167fb4c56883c9e6c1907bd04fe2a8e0a9adc403f5cf1e0cd`. Successful linkage is historical-platform product closure, not whole-image byte identity. Target-independent CI passed **43/43 tests**; tracking remains **1,880 provisional / 697 source-present / 696 exact**, and `git diff --check` passed.
 
-**Recovery / analysis state.** The transaction began from committed SEM-229 HEAD `14828159d4b0035a6998c6b534fcb63d5fa0a8fc` with zero staged or tracked-unstaged changes. Mandatory recovery preserved the same four pre-existing exclusions outside staging: unknown/generated-looking `EnemyManagerUpdate.i`, user-owned `droid.resume.txt`, and the pre-existing runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`; their hashes were rechecked unchanged at campaign start. `.analysis/` began and currently remains exactly **3,394,984 bytes**, contains no retained file above 64 MiB, and no current-session filesystem analysis root was created. Fresh semantic evidence came through the registered read-only Ghidra provider and command-local build storage.
-
-**Next evidence route.** After checkpoint, rotate away from the now-bound Scene Select preview selectors and from the already-audited declaration-only SceneData bytes. Prefer an independent replay/input persistent boundary, a non-ANM resource lifetime with an acquire/use/cleanup edge, or another historical-runtime owner with a target-local producer plus independent consumer. Keep `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd controller bit 4, score/replay reserved words, Sound/PBG writer-only metadata, THTX reserved words, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect type-1 raw shake endpoints, compact-enemy single-ended storage, and other one-sided fields Unknown absent a new TH095-local discriminator. The semantic phase remains active-incomplete.
-
 ### SEM-231 — bind the backbuffer clear-color owner
 
 **Scope.** Continue from committed SEM-230 and rotate away from Scene Select into an independent historical-runtime ownership surface. Bounded audits of Replay Browser declaration-only storage, replay header/input reserved bytes, SceneData padding, SceneTexture surface lifetime, already-typed Supervisor state protocols, Background viewport aliases, exact-only replay FPS storage, and GameErrorContext found no new discriminator. The actionable counterexample is target dword `0x004C4E28`: normal `Main.cpp` already reads it as `g_Supervisor.backbufferClearColor @ +0x7B8`, while normal Background, PhotoCardInfo, PhotoGameTask, EclExtended, Main startup, and `Global.cpp` still reconstructed the historical exact relocation name `g_PhotoScreenFadeColor` as a second process-lifetime storage object. This batch merges only that duplicate production owner. It does not alter any color value, Background opcode, D3D clear flags, photo-card timing, ECL callback behavior, or exact-facing symbol.
@@ -12014,10 +10244,6 @@ Fresh `Supervisor::OnDraw2` decompilation supplies the independent consumer sema
 
 Command-local pinned-VC7.1 normal probes produced Intel 80386 COFF objects for Global (**34,517 bytes**), Main (**115,706 bytes**), Background (**52,347 bytes**), EclExtended (**44,049 bytes**), PhotoCardInfo (**26,306 bytes**), and PhotoGameTask (**35,710 bytes**). Their symbol tables contain only `g_BackbufferClearColor` for this normal-production lane and no `g_PhotoScreenFadeColor`; Global.obj defines the reference and carries a relocation to `g_Supervisor`. Because the transaction changes a shared runtime-owner bridge, four disjoint cold replay buckets immediately passed **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. `scripts/build-whole.py` then compiled all **88** pinned VC7.1 i386 production TUs across two profiles, linked, and verified a **780,288-byte PE32 Windows GUI** image with SHA-256 `30a41c8b81be35068e3c27078abfbb9afff354fd191f3df65e80b256d6ee2097`. Successful linkage is historical-platform production closure, not target whole-image identity or runtime-scenario validation. Target-independent `python3 scripts/ci.py` passed all **43/43 tests**, including tracking, match-unit graph, whole-build graph, generated-progress, and whitespace checks. Tracking remains **1,880 provisional / 697 source-present / 696 exact** and the match graph remains 696 units.
 
-**Recovery / analysis state.** This conversation began at committed SEM-229 HEAD `14828159d4b0035a6998c6b534fcb63d5fa0a8fc`. Mandatory recovery read all five Factory-controlled contracts/docs, found zero staged/tracked-unstaged work, preserved the four established untracked exclusions unchanged, and measured `.analysis/` at **3,394,984 bytes** with no file above 64 MiB and no active producer. During bounded routing, another producer advanced the clean tracked tree to `711a6eb3a645d9bd8aeb2a92c604039c3630601c` (SEM-230, Scene Select preview asset selectors). Its complete commit diff and semantic record were reviewed and accepted as coherent current history before this batch began; it is not attributed to this transaction. Repeated Factory transport failures that returned no durable command/job id received zero evidence credit and triggered recovery reads before editing continued. No current-session `.analysis/gpt-web/` root was created.
-
-**Next evidence route.** Rotate away from backbuffer clear-color storage after checkpoint. Prefer a separate process-lifetime resource with a target-local acquire/publication and independent cleanup, or a persistent/ABI/interpreter protocol outside the recently completed Scene Select, photo clear-color, ANM RNG, and ECL transform families. Keep ReplayScanWorker `unknown010`, replay/input reserved bytes, SceneData declaration-only padding, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only counter, compact-enemy single-ended storage, score-entry `+0x38`, and photo-score bits 5/17/18/19 Unknown absent a new TH095-local discriminator. The semantic phase remains active-incomplete.
-
 ### SEM-232 — name the Supervisor scene-state handshake
 
 **Scope.** Resume from committed SEM-231 and rotate away from backbuffer-clear ownership. Bounded audits of ReplayBrowser padding, SceneData reserved bytes, SceneTexture surface lifetime, replay/input reserved storage, process-global relocation aliases, legacy Background fields, GUI stage-clear layout, and already-canonical ScreenEffect/input owners either remained one-sided or were already closed by committed TH095 history. The actionable historical-runtime counterexample is the three-dword Supervisor scene router at `+0x408/+0x40C/+0x410`: maintained production still called the first two fields `wantedState/currentState`, but fresh target behavior proves the opposite ownership direction. This transaction corrects only the normal-production field roles and sibling publications. It does not change `SupervisorState` values, scene-transition control flow, FrontEnd requested-state values, PhotoGame/Result behavior, or the exact-facing field names.
@@ -12036,10 +10262,6 @@ The publication surface independently confirms the second slot's role. Fresh tar
 
 **Validation.** Focused canonical replay passed `Main.cpp` **48/48**, `FrontEndController.cpp` **4/4**, `PhotoGameTask.cpp` **10/10**, and `ResultScreen.cpp` **24/24**, totaling **86/86 exact** with **zero private-label refresh**. Command-local pinned VC7.1 normal probes emitted Intel 80386 COFF objects of **115,706 bytes** for Main, **38,453 bytes** for FrontEndController, **35,710 bytes** for PhotoGameTask, and **75,407 bytes** for ResultScreen. Because `Main.hpp` and `SupervisorRuntime.hpp` are shared runtime-owner headers, the dirty source immediately closed the cold exact surface in four fixed manifest-source partitions: **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. Fresh `scripts/build-whole.py` compiled all **88** production translation units across two pinned profiles and linked/verified a **780,288-byte PE32/i386 Windows GUI** image with build-local SHA-256 `a84e3bb3d1b2e50a9d48771c52ca490f184e28440d73205b8738b40f3efb2e37`. Successful linkage is historical-platform product closure, not whole-image byte identity or a runtime-scenario result. Target-independent `scripts/ci.py` passed all **43/43 tests**; tracking remains **1,880 provisional / 697 source-present / 696 exact**, and `git diff --check` passed before documentation was appended.
 
-**Recovery / analysis state.** This conversation resumed from committed SEM-229, then mandatory recovery observed two concurrent, already-committed checkpoints before the current transaction: SEM-230 (`711a6eb3`, Scene Select preview asset selectors) and SEM-231 (`93ae48b3`, backbuffer clear-color owner). Their complete diffs and evidence records were reviewed before continuing, and neither left tracked dirty work. The four established untracked exclusions remained hash-stable and outside staging. `.analysis/` began and remains **3,394,984 bytes** with no retained file above 64 MiB and no current-session filesystem scratch root. Fresh semantic evidence came through the registered read-only `th095-ghidra` provider; one-shot probes used command-local temporary storage.
-
-**Next evidence route.** Rotate away from Supervisor scene routing after checkpoint. Prefer an independent non-FrontEnd/non-photo resource lifetime, persistent/ABI boundary, audio/runtime owner, or sibling interpreter protocol with a TH095-local producer plus independent consumer/cleanup. Do not reopen SceneData `+0x22/+0x2D` padding, ReplayBrowser `unknown0004`, ReplayScanWorker `unknown010`, score/replay reserved words, shared task bit 8, FrontEnd bit 4, ANM bit 14, alternate enemy ANM `+0x4DFC`, TextRenderer RNG prefix, Sound/PBG writer-only metadata, compact-enemy single-ended fields, or photo-score bits 5/17/18/19 absent a new target-local discriminator. The semantic phase remains active-incomplete.
-
 ### SEM-233 — name text font width selector owners
 
 **Scope.** Continue from committed SEM-232 and rotate away from Supervisor scene-state routing. Bounded audits of DirectInput device lifetime, Background camera-wave globals, replay-input historical aliases, GameErrorContext ownership, GUI stage-clear layout, ScreenEffect `unconsumedDword0C`, and the already-canonical screen-shake owner either remained one-sided/layout-only or were already closed by committed TH095 history. The actionable resource-lifetime/identifier gap is the four persistent TextRenderer GDI font handles: maintained source still called them `g_TextFont17/18/19/20`, but their complete TH095 selector protocol distinguishes a <=17 bucket, exact-width 18 and 19 buckets, and a >=20 fallback. This batch changes only the normal-production identifiers. It does not change GDI font creation arguments, text rendering, glyph scaling, resource lifetime, target addresses, or exact-facing symbols.
@@ -12057,10 +10279,6 @@ The publication surface independently confirms the second slot's role. Fresh tar
 **Validation.** The first focused replay request lost Factory transport before returning a durable command id and therefore receives zero exactness credit; recovery confirmed the same two-file transaction and no surviving replay/compiler/Wine producer. The durable focused replay then passed `TextRenderer.cpp` **11/11 exact** with **zero private-label refresh**. A command-local pinned VC7.1 normal probe using the canonical `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile emitted a **26,441-byte Intel 80386 COFF** object.
 
 Because `TextRenderer.hpp` is a shared header, the dirty source immediately closed the cold aggregate exact surface. The first two 22-source partitions passed **205 + 158** units. Repeated transport losses before durable command ids on the next partition received zero credit; mandatory recovery found no surviving producer and unchanged source. The remaining manifest sources were then replayed in smaller durable buckets of **88 + 40 + 27 + 31 + 16 + 9 + 22 + 44 + 33 + 23** units. Together these account for **696/696 exact** with **zero private-label refresh**. Fresh `scripts/build-whole.py` compiled all **88** pinned VC7.1 i386 production translation units across two profiles, linked, and verified a **780,288-byte PE32 Windows GUI** image with SHA-256 `77208e35097a1eec5705dfc9095c3024c30790a073792ee1ad29b4a5c55a3bf9`. Successful linkage is historical-platform product closure, not target whole-image identity. Wine emitted only no-display environment diagnostics. Target-independent `python3 scripts/ci.py` passed all **43/43 tests**; tracking remains **1,880 provisional / 697 source-present / 696 exact**, the match graph remains **696** units, and the whole-build graph remains **88 sources / two profiles**. No new runtime scenario is claimed because this transaction changes source identifiers only and preserves handle selection/lifetime behavior.
-
-**Recovery / analysis state.** This conversation resumed through several externally advancing clean checkpoints and began this transaction from committed SEM-232 HEAD `d7f688907e17f0ccdf2d47ca3aaa94a036da0b2f`. All five Factory-controlled contracts/docs were re-read before editing. Mandatory recovery found zero staged changes and only `TextRenderer.cpp`/`TextRenderer.hpp` after the edit, preserved the same four established untracked exclusions, and measured `.analysis/` at **3,394,984 bytes** with no file above 64 MiB and no current-session filesystem analysis root. Factory transport failures without durable command/job ids were treated as zero-credit interruptions and followed by live-state/producer recovery checks.
-
-**Next evidence route.** Rotate away from TextRenderer font ownership after checkpoint. Prefer an independent non-ANM process-lifetime resource, persistent/ABI protocol, or sibling runtime state with a TH095-local producer plus independent reader/cleanup. Do not reopen DirectInput lifetime, Background viewport/wave storage, replay-input historical aliases, GameErrorContext, ScreenEffect `unconsumedDword0C`, GUI stage-clear layout, ANM VM bit 14, ReplayScanWorker `unknown010`, shared task bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, score/replay reserved words, compact-enemy single-ended storage, photo-score bits 5/17/18/19, or the TextRenderBuffer RNG prefix without a new target-local discriminator. The semantic phase remains active-incomplete.
 
 ### SEM-234 — name the startup path mismatch latch
 
@@ -12084,10 +10302,6 @@ Fresh `InitD3DRendering` independently consumes the byte. If it is nonzero, the 
 
 Because `Main.hpp` is a shared runtime header, the dirty source immediately closed the current manifest's full exact surface in four disjoint source buckets: **177 + 184 + 168 + 167 = 696/696 exact**, all with **zero private-label refresh**. `scripts/build.py --check` remains at **696 configured units**, and tracking remains **1,880 provisional / 697 source-present / 696 exact**. Fresh `scripts/build-whole.py` compiled all **88** pinned VC7.1 i386 production translation units across two profiles and linked/verified a **780,288-byte PE32 Windows GUI** image with SHA-256 `9ad73b07a7835a08f1afe61fbd3f6d933927b5cbb57fb5a9672291469dcd2ace`. Successful linkage is historical-platform product closure, not whole-image byte identity or runtime-scenario validation. Target-independent `scripts/ci.py` passed all **43/43 tests**.
 
-**Recovery / analysis state.** This conversation resumed with the four established untracked exclusions preserved outside staging and `.analysis/` at **3,394,984 bytes** with no retained file above 64 MiB. All five Factory-controlled contracts/docs were readable before editing. During the preceding routing slices, concurrent producers advanced the clean tracked tree through SEM-230, SEM-231, SEM-232, and SEM-233; each new commit was reviewed before further work and no concurrent tracked dirty state remained. Repeated Factory transport failures without durable command/job ids received zero evidence credit and triggered recovery reads. No current-session `.analysis/gpt-web/` root was created.
-
-**Next evidence route.** Rotate away from the GameWindow startup-path/vsync handshake after checkpoint. A useful independent challenge is the remaining GameWindow power/session state at `+0x28/+0x2C/+0x30`: accept a semantic refinement only if fresh `WindowProc`/render target evidence supplies a producer plus an independent consumer for `screenSaveActive`, `lowPowerActive`, or `powerOffActive`; otherwise rotate immediately to a non-Main persistent/ABI or resource-lifetime family. Keep `ReplayScanWorker::unknown010`, replay/input reserved bytes, the unbound legacy input counters, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, and photo-score bits 5/17/18/19 Unknown absent new TH095-local distinguishing evidence. The semantic phase remains active-incomplete.
-
 ### SEM-235 — name saved Windows power-setting snapshots
 
 **Scope.** Resume from committed SEM-234 and follow its independent GameWindow challenge at `+0x28/+0x2C/+0x30`. The three maintained fields were named `screenSaveActive`, `lowPowerActive`, and `powerOffActive`, which sounds like live window/runtime state. Current TH095 behavior instead proves a bounded process-lifetime save/disable/restore protocol. This transaction changes only the normal-production field names. It does not change any `SystemParametersInfoA` action, restart flow, D3D behavior, system setting value, or exact-facing layout.
@@ -12105,11 +10319,6 @@ The internal render-restart path is an independent lifecycle discriminator. When
 **Production / exact representation.** Normal `Main.hpp::GameWindow` exposes the three semantic names at the unchanged `+0x28/+0x2C/+0x30` offsets. `TH095_MATCH_EXACT` and `DIFFBUILD` retain the historical `screenSaveActive/lowPowerActive/powerOffActive` spellings; normal `Main.cpp` uses the semantic names while DIFFBUILD token aliases preprocess them back to the historical members. `MainExact.hpp` and `MainExact.inl` remain untouched. No object size, field width, target address, API action, API flag, branch, function signature, restart edge, or teardown ordering changes.
 
 **Validation.** Focused canonical replay of `src/Main.cpp` passed **48/48 exact** with **zero private-label refresh**. A command-local pinned-VC7.1 normal probe using the canonical Main profile emitted a **115,706-byte Intel 80386 COFF** object. Because `Main.hpp` is a shared runtime header, four fixed 22-source cold replay partitions immediately passed **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. Fresh `scripts/build-whole.py` compiled all **88** pinned VC7.1 i386 production translation units across two profiles and linked/verified a **780,288-byte PE32 Windows GUI** image with SHA-256 `bf1fd4d8f4ff0a60939486ee06f2505a609397162be8f07c8b7350c0c6c6b104`. Successful linkage is historical-platform product closure, not target whole-image identity. Target-independent `scripts/ci.py` passed all **43/43 tests**; tracking remains **1,880 provisional / 697 source-present / 696 exact**, the match graph remains **696 units**, and the whole-build graph remains **88 sources / two profiles**. No runtime scenario is claimed because exercising this lifecycle would intentionally change host screen-saver/power settings and the source transaction changes identifiers only.
-
-**Recovery / analysis state.** This slice resumed through externally advancing committed history and established current HEAD `d43ebbe190246fbf9d00a8af2a85b934b4d1b85d` before editing. All five Factory-controlled contracts/docs were re-read. Mandatory recovery found zero staged/tracked-unstaged work, preserved the same four hash-stable untracked exclusions outside staging, and measured `.analysis/` at **3,394,984 bytes** with no retained file above 64 MiB and no independent active replay/compiler/Ghidra/Wine producer. The immediately preceding SEM-233/234 commits were fully reviewed before this transaction. Fresh target evidence came through the registered read-only `th095-ghidra` provider; no current-session filesystem analysis root was created.
-
-**Next evidence route.** Rotate away from Main/GameWindow power/session state after checkpoint. Prefer an independent non-Main resource lifetime, persistent/ABI boundary, audio/runtime owner, or sibling interpreter/state protocol with a TH095-local producer plus independent consumer/cleanup. Keep `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, photo-score bits 5/17/18/19, and declaration-only GUI/SceneData padding Unknown absent a new target-local discriminator. The semantic phase remains active-incomplete.
-
 
 ### SEM-236 — bind the ANM surface-capture rectangle owner
 
@@ -12131,10 +10340,6 @@ A SHA-verified disassembly scan of the complete TH095 target `.text` searched al
 
 **Validation.** Focused canonical replay of `src/AnmSurface.cpp` passed **6/6 exact** with **zero private-label refresh**. A command-local pinned-VC7.1 normal probe using the canonical profile emitted a **23,147-byte Intel 80386 COFF** object. Because `AnmManager.hpp` is a high-fanout shared owner/layout header, four fixed 22-source cold replay partitions immediately passed **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. Fresh `scripts/build-whole.py` compiled all **88** pinned VC7.1 i386 production translation units across two profiles and linked/verified a **780,288-byte PE32 Windows GUI** image with SHA-256 `09fef8f1754cf478196145aedc2bf9c0cbddacbcbd530d980a1f498e5c4eba5d`. Successful linkage is historical-platform product closure, not target whole-image identity. Target-independent `scripts/ci.py` passed all **43/43 tests**; tracking remains **1,880 provisional / 697 source-present / 696 exact**, the match graph remains **696 units**, and the whole-build graph remains **88 sources / two profiles**. No runtime scenario is claimed because no target producer for this surface-capture request state is established.
 
-**Recovery / analysis state.** This continuation began from committed SEM-235 HEAD `89abd7eb25396faef0fb3aec6f1123b26994b8ab`. All five Factory-controlled contracts/docs were reread before editing. Mandatory recovery found no staged or tracked-unstaged work, preserved the same four hash-stable untracked exclusions outside staging, and measured `.analysis/` at **3,394,984 bytes** with no retained file above 64 MiB and no current-session filesystem analysis root. Several candidate routes were actively falsified before this edit: residual ANM/Enemy raw offsets were exact-facing or already canonical, controller input enable had no runtime producer, PBG decrypt profiles were already semantically closed, ReplayManager bit 0/1 fields were declaration-only, score-header `+0x0C` had no independent consumer, and the surface-capture target had no writer despite its exact consumer semantics. Fresh positive evidence came through the registered read-only `th095-ghidra` provider plus a bounded SHA-verified target `.text` displacement scan.
-
-**Next evidence route.** Rotate away from ANM capture after checkpoint. Prefer a distinct persistent/ABI boundary, historical-runtime owner, resource lifetime, replay/input protocol, or sibling interpreter/state family with a TH095-local producer plus an independent consumer/cleanup. Do not infer a surface-capture producer from the incompatible `AnmManagerEclView` layout. Keep ANM VM bit 14, `ReplayScanWorker::unknown010`, FrontEnd controller bit 4, shared task bit 8, Sound/PBG writer-only metadata, THTX reserved words, TextRenderer RNG prefix, score-header `+0x0C`, replay declaration-only bits, compact-enemy single-ended bits, photo-score bits 5/17/18/19, and other one-sided storage Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
 ### SEM-237 — name the text bitmap restore selector
 
 **Scope.** Continue from committed SEM-236 and rotate away from the ANM surface-capture rectangle into an independent historical-runtime resource-lifetime owner. Bounded checks of Replay Browser opaque storage, shared replay/input aliases, FileSystem critical-section aliases, Music Room state, Background spell state, ScoreData write locals, MIDI residuals, Options outer flags, process-global aliases, and inherited GameManager anti-tamper storage either reached already-committed semantics or lacked a new target-local discriminator. The actionable gap is `TextRenderBufferView +0x118`: SEM-212 deliberately left the field named `originalBitmap` outside its `ownedBitmap @ +0x11C` / `bitmapBits @ +0x120` ownership claim. This batch recovers only the GDI selection lifetime of `+0x118`. It does not alter DIB allocation, alpha processing, font selection, texture upload, object layout, or exact-facing storage.
@@ -12152,10 +10357,6 @@ Fresh `TextRenderBufferView::ReleaseBuffer @ 0x0041BE60` independently closes th
 **Production / exact representation.** Normal `TextRenderBufferView` exposes `previousSelectedBitmap @ +0x118`; `TH095_MATCH_EXACT` and `DIFFBUILD` retain historical `originalBitmap`, and `TextRenderer.cpp` maps the normal semantic token back to that spelling in those profiles. A compile-time assertion pins `+0x118` in both representations. `ownedBitmap @ +0x11C` / `bitmapBits @ +0x120`, object size, Win32 handle widths, API call ordering, function signatures, branches, and target relocations are unchanged.
 
 **Validation.** Focused `TextRenderer.cpp` replay passed **11/11 exact** with **zero private-label refresh**. A command-local pinned VC7.1 normal probe emitted a **26,441-byte Intel 80386 COFF** object. Because `TextRenderer.hpp` is the canonical resource-owner header, the dirty source immediately closed the cold aggregate regression surface in four fixed manifest partitions: **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. Fresh `scripts/build-whole.py` compiled all **88** production translation units across two pinned profiles and linked/verified a **780,288-byte PE32 i386 Windows GUI** image with build-local SHA-256 `25c8a8c5852e5b2bc5da4246603d1eac5098dd1d3bec3489ad8b4345d3bd116f`; successful linkage is historical-platform product closure, not whole-image byte identity. Target-independent CI passed **43/43 tests**; tracking remains **1,880 provisional / 697 source-present / 696 exact**, and `git diff --check` passed.
-
-**Recovery / analysis state.** The transaction began from committed SEM-236 HEAD `fe8a6a29ef0df6fa9527a25e5884588b5e3ae718` with zero staged or tracked-unstaged changes. Mandatory recovery preserved the four established untracked exclusions outside staging: unknown/generated-looking `EnemyManagerUpdate.i`, user-owned `droid.resume.txt`, and the pre-existing runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`; their hashes were rechecked unchanged. `.analysis/` began and remains exactly **3,394,984 bytes**, contains no retained file above 64 MiB, and no current-session filesystem analysis root was created. Fresh target evidence came through the registered read-only Ghidra provider; compile probes used command-local temporary storage. Semantic interpretation, exact replay, product closure, Factory receipts, runtime storage, and runtime scenarios remain separate planes.
-
-**Next evidence route.** Rotate away from TextRenderer/GDI and the recently closed ANM capture/font/RNG families. Prefer an independent persistent/ABI boundary, replay/input protocol with a newly observed field-level discriminator, or a non-ANM resource lifetime with an acquire/publication plus independent use or cleanup. Do not reopen `ReplayScanWorker::unknown010`, ReplayInput residual `+0x2A/+0x36`, shared task bit 8, FrontEnd controller bit 4, score/replay reserved words, Sound/PBG writer-only metadata, THTX reserved words, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect type-1 raw shake endpoints, compact-enemy single-ended storage, or other one-sided fields without new TH095-local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-238 — type Replay Result menu states
 
@@ -12177,10 +10378,6 @@ Fresh `ResultScreen::Draw @ 0x00429C80` supplies a separate presentation consume
 
 **Validation.** Fresh target evidence came from the registered read-only `th095-ghidra` provider attested to Japanese TH095 v1.02a SHA-256 `bb54f6fc54f0eeffaec416ca9f64aef32b5f59b7427fa5a6579f6538e0eddc07`. Focused `python3 scripts/replay-exact-units.py --source src/ResultScreen.cpp` passed **24/24 exact** with **zero private-label refresh**. A command-local pinned VC7.1 normal probe using `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a **75,543-byte Intel 80386 COFF** object. Target-independent `python3 scripts/ci.py` passed **43/43 tests**; tracking remains **1,880 provisional / 697 source-present / 696 exact**, the match graph remains **696** units, and the whole-build graph remains **88 sources / two profiles**. Because this transaction changes only private normal source in one translation unit and no shared header/layout/owner, cold aggregate exact and whole-product closure are intentionally deferred to the next campaign milestone/final handoff rather than redundantly run before another possible source checkpoint.
 
-**Recovery / analysis state.** This transaction began from committed SEM-237 HEAD `cad9dd799b1b26bc12410674aee4748d3a939f4c` with zero staged or tracked-unstaged changes. Mandatory recovery preserved the four established untracked exclusions outside staging: unknown/generated-looking `EnemyManagerUpdate.i`, user-owned unrelated `droid.resume.txt`, and pre-existing runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`; their hashes were rechecked unchanged. `.analysis/` began and remains exactly **3,394,984 bytes**, contains no retained file above 64 MiB, and no current-session filesystem analysis root was created. Fresh target evidence came through the registered read-only Ghidra provider and the normal compile probe used command-local temporary storage. A documentation-window request lost Factory transport before returning a durable command id; mandatory recovery confirmed the same single-file tracked transaction before documentation continued. Semantic interpretation, repo-native exact feedback, product closure, Factory receipts, runtime storage, and runtime scenarios remain separate planes.
-
-**Next evidence route.** After checkpoint, rotate away from ResultScreen replay-result states rather than expanding the entire state machine. Prefer an independent persistent/ABI boundary, replay/input field with a newly observed discriminator outside the already-audited reserved bytes, or a non-ANM/non-ResultScreen resource lifetime with an acquire/publication plus independent use or cleanup. Do not reopen ResultScreen states 7/8/9/10, `ReplayScanWorker::unknown010`, ReplayInput residual `+0x2A/+0x36`, score/replay reserved words, shared task bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved words, ANM VM bit 14, TextRenderer RNG prefix, GUI stage-clear storage, PlayerOptionState `+0x2D4`, compact-enemy single-ended storage, or photo-score bits 5/17/18/19 without a new TH095-local discriminator. The semantic phase remains active-incomplete.
-
 ### SEM-239 — type the Help outer selector states
 
 **Scope.** Recover the tracked Help/FrontEnd transaction found by the mandatory worktree-recovery gate after committed SEM-238. SEM-203 intentionally named only asynchronous Help page-loading states 2/3/4 and left values 0/1 outside its worker-ownership claim. This batch revisits only that remaining outer pair because fresh TH095 evidence now closes an external entry producer plus independent selector transitions. It does not reinterpret the page-loading subprotocol, cursor item meanings, requested-state protocol, ANM scripts/interrupts, or Help storage layout.
@@ -12199,10 +10396,6 @@ Fresh `HelpMenuView::UpdateHelpMenu @ 0x00451C80` consumes state 0 by pushing th
 
 **Validation.** Focused canonical replay passed `HelpMenu.cpp` **2/2 exact** and `FrontEndController.cpp` **4/4 exact**, all with **zero private-label refresh**. Command-local pinned VC7.1 normal probes emitted **24,613-byte** `HelpMenu.obj` and **38,516-byte** `FrontEndController.obj`, both Intel 80386 COFF. Because `HelpMenu.hpp` is a shared header consumed by both translation units, four fixed 22-source cold replay partitions closed the aggregate surface at **205 + 158 + 191 + 142 = 696/696 exact**, all with **zero private-label refresh**. The third partition's first submission failed at the Factory connection layer before returning a durable command id and received zero validation credit; mandatory recovery confirmed unchanged source state and no active replay/compiler producer before the same partition was rerun durably. Fresh `scripts/build-whole.py` compiled all **88** pinned VC7.1 production translation units across two profiles and linked/verified a **780,288-byte PE32 i386 Windows GUI** image with build-local SHA-256 `b23afdead9f29eb0037d9db7d500ed69e9c47d1d492aca77bf0fc6c5240b8fff`; successful linkage is production closure, not whole-image byte identity. Target-independent CI passed **43/43 tests**; tracking remains **1,880 provisional / 697 source-present / 696 exact**, with **696** configured exact units and **88 sources / two profiles** in the whole-build graph. No runtime scenario is claimed because the transaction changes state spelling only and the repository has no target-bound Help UI equivalence scenario.
 
-**Recovery / analysis state.** Recovery began from committed SEM-238 HEAD `8be9923fae28241f001e8140d9fe759727499e06` with three tracked unstaged paths: `src/FrontEndController.cpp`, `src/HelpMenu.cpp`, and `src/HelpMenu.hpp`. Their complete diff formed one coherent Help outer-state transaction, so they were classified `recoverable-current-work` and adopted before unrelated work. The four established untracked exclusions were rechecked hash-stable and preserved outside staging: unknown/generated-looking `EnemyManagerUpdate.i`, user-owned unrelated `droid.resume.txt`, and pre-existing runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`. `.analysis/` began and remains **3,394,984 bytes**, contains no retained file above 64 MiB, and no current-session filesystem analysis root was created. Fresh semantic evidence came through the registered read-only Ghidra provider; normal probes used command-local temporary storage.
-
-**Next evidence route.** Rotate away from HelpMenu and ResultScreen sibling-state typing after checkpoint. Prefer a distinct persistent/ABI boundary, replay/input field with a newly observed discriminator outside the audited residual bytes, audio/resource lifetime, or sibling interpreter protocol with a TH095-local producer plus independent consumer/cleanup. Keep `ReplayScanWorker::unknown010`, ReplayInput residual `+0x2A/+0x36`, score/replay reserved words, shared task bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved words, ANM VM bit 14, TextRenderer RNG prefix, GUI stage-clear storage, compact-enemy single-ended storage, photo-score bits 5/17/18/19, and other one-sided storage Unknown absent new target-local evidence. The semantic phase remains active-incomplete.
-
 ### SEM-240 — type ECL random operand selectors
 
 **Scope.** Resume from committed SEM-239 and rotate away from Help/Replay Result UI state into the sibling ECL operand protocol. Several independent resource-lifetime and persistence routes were first falsified as already-closed or still one-sided: Sound/PBG metadata remains writer/copy-only, the PBG decompression ring is already the ABI-084 shared owner, ReplayInput globals are already the INPUT-008/009 overlay, ReplayBrowser opaque ranges have no new field-level consumer, TextRenderer format records are already structurally named, Music Room outer state is already MUSIC-004, and SoundPlayer SFX file-data ownership is already ARCH-007/SND-001. The bounded actionable gap is the four adjacent read-only operand selectors `0x2720..0x2723`, which remained raw numeric cases in both TH095 operand readers. This transaction types only those four selector values. It does not change RNG algorithms, lvalue domains, instruction decoding, or any other ECL selector.
@@ -12219,10 +10412,6 @@ Fresh `HelpMenuView::UpdateHelpMenu @ 0x00451C80` consumes state 0 by pushing th
 
 **Validation.** The first focused exact attempt intentionally received no success credit: making `EclOperandsFloat.cpp` include the shared semantic header in exact mode left bytes and non-private relocations unchanged but shifted all VC7.1 compiler-private `$L...` names. The private-label ledger was not refreshed. Recovery confirmed the three-file transaction, unchanged exclusions, and no surviving compiler/replay producer. Restoring the historical exact include boundary and using the preprocessor-only selector bridge then passed the four affected operand translation units **4/4 exact** with **zero private-label refresh**. Command-local pinned-VC7.1 normal probes emitted Intel 80386 COFF objects of **25,331 bytes** (`EclOperandsInt.cpp`), **25,549 bytes** (`EclOperandsFloat.cpp`), **18,459 bytes** (`EclOperandsIntLValue.cpp`), and **19,962 bytes** (`EclOperandsFloatLValue.cpp`). Because `ecl/EclOperands.hpp` is shared protocol surface, four fixed 22-source cold replay partitions passed **205 + 158 + 191 + 142 = 696/696 exact**, all with zero private-label refresh. Fresh `scripts/build-whole.py` compiled all **88** pinned VC7.1 i386 production TUs across two profiles and linked/verified a **780,288-byte PE32 Windows GUI** image with SHA-256 `190a97f69b1aaf8fcdff87c4ee285063d28242dedae660072cafe6eeea49a74c`. Successful linkage is product closure, not target whole-image identity. Target-independent `scripts/ci.py` passed all **43/43 tests**; tracking remains **1,880 provisional / 697 source-present / 696 exact**, the match graph remains **696 units**, and the whole-build graph remains **88 sources / two profiles**. No runtime scenario is claimed because the transaction changes protocol identifiers only.
 
-**Recovery / analysis state.** This continuation began from committed SEM-239 HEAD `73c2b7238cf9b1ca1b0aea5e34a7791de81ffe08`. All five Factory-controlled contracts/docs were reread before editing. Mandatory recovery found zero staged/tracked-unstaged work, preserved the same four hash-stable untracked exclusions outside staging, and measured `.analysis/` at **3,394,984 bytes** with no retained file above 64 MiB and no independent active replay/compiler/linker/Wine/Ghidra producer. Fresh semantic evidence came through the registered read-only target-attested Ghidra provider and command-local compile probes; no current-session `.analysis/gpt-web/` root was created.
-
-**Next evidence route.** Rotate away from ECL RNG operands after checkpoint. Prefer a distinct persistent/ABI boundary, historical-runtime owner, non-ECL resource lifetime, or another sibling protocol with a newly observed TH095-local producer plus independent consumer/cleanup. Do not expand the selector enum merely because adjacent numeric cases remain raw. Keep `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
 ### SEM-241 — name Background stage-script opcode actions
 
 **Scope.** Rotate away from SEM-240 ECL random operands and resume-audit a separate sibling protocol: the 16-bit opcode at `BackgroundStageInstruction +0x04` consumed by the variable-record Background stage interpreter. Earlier Background batches established the instruction cursor, camera-motion byte, packed interpolation mode, viewport ownership, and photo-blend consumers, but the interpreter dispatch itself still used raw cases 0 through 14. This transaction gives those target-observed dispatch values neutral action names in normal production and types only the opcode storage. It does not reinterpret the stage-file container, stage-object instruction format, interpolation selector domains, camera-motion value domain, or any opcode outside the target's explicit 0..14 cases.
@@ -12238,10 +10427,6 @@ Fresh `HelpMenuView::UpdateHelpMenu @ 0x00451C80` consumes state 0 by pushing th
 **Production / exact representation.** Normal `src/Background.cpp` now declares `BackgroundStageOpcode` as 16-bit storage plus a `BackgroundStageOpcodeValue` vocabulary for the fifteen target-distinguished actions and types `BackgroundStageInstruction::opcode` with that storage type. `DIFFBUILD` and `TH095_MATCH_EXACT` retain the historical `i16 opcode` and preprocess every `TH095_BACKGROUND_STAGE_OPCODE_*` dispatch token back to the original numeric case value. `sizeof(BackgroundStageInstruction)` and the time/opcode/size/argument offsets are unchanged; no serialized bytes, owner, calling convention, timer arithmetic, control flow, or stage-VM behavior changes.
 
 **Validation.** Focused `python3 scripts/replay-exact-units.py --source src/Background.cpp` rebuilt the canonical exact object and passed **20/20 exact** with **zero private-label refresh**. A command-local normal-production VC7.1 probe using `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` emitted a **52,999-byte Intel 80386 COFF** object and was removed at command exit. `git diff --check` passed. Because the source change is translation-unit-local and preserves the exact-facing field/case tokens, aggregate exact and whole-product closure are deferred to the next campaign milestone rather than being replayed before this private checkpoint.
-
-**Recovery / analysis state.** This transaction began from committed SEM-240 HEAD `6c2c44a09b32e761db84948e97b5de1b14b5b9a9`, with zero staged/tracked-unstaged work and the same four long-lived untracked exclusions preserved outside staging. `droid.resume.txt` remains user-owned unrelated state; `config/runtime-scenarios.json` and `scripts/runtime-diff.py` remain pre-existing runtime experiments; generated-looking `EnemyManagerUpdate.i` remains unknown-origin and is preserved without deletion or staging. `.analysis/` began at **3,394,984 bytes**; fresh target evidence came directly from the registered read-only `th095-ghidra` provider, so no current-session analysis root or large retained artifact was created. One initial combined baseline request and one malformed provider invocation received no validation/evidence credit; recovery confirmed no tracked change or live producer before work continued.
-
-**Next evidence route.** Rotate away from Background after checkpoint. Prefer a distinct persistent/ABI boundary, historical-platform runtime owner/lifetime, non-ANM resource lifecycle, or another compact protocol with a TH095-local producer plus an independent reader/cleanup edge. Do not use the now-named stage opcode table to infer absent asset schemas. Keep `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd controller bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, photo-score bits 5/17/18/19, and other single-ended residual storage Unknown absent a new discriminator. The semantic phase remains active-incomplete.
 
 ### SEM-242 — name the Options menu selection domain
 
@@ -12260,8 +10445,6 @@ A separate joystick-button capture path distinguishes rows 0, 1, and 2. Row 0 in
 **Production representation.** Normal `OptionsMenu.hpp` now declares an `OptionsMenuItem` 32-bit vocabulary with the seven row constants and count. `UpdateSelectionSprites` uses those constants for every row comparison, while `OptionsMenu.cpp` uses them for cursor initialization/count, value-edit switches, row-5 cadence, controller-binding capture, and row-6 finish gates. `TH095_MATCH_EXACT` continues to select the historical `OptionsMenuExact.hpp`/`OptionsMenuExact.inl` source unchanged. No struct size, member offset, serialized configuration byte, VM index, control-flow branch, or cursor arithmetic changes.
 
 **Validation.** Focused canonical replay passed `src/OptionsMenu.cpp` **1/1 exact** and `src/FrontEndController.cpp` **4/4 exact**, each with zero private-label refresh. Normal pinned-VC7.1 probes emitted **36,141-byte** `OptionsMenu.obj` and **38,754-byte** `FrontEndController.obj` Intel 80386 COFF objects in command-local temporary storage, removed by the command. Because the transaction changes `OptionsMenu.hpp`, the current source state then received cold aggregate exact closure across all 88 manifest sources in eight durable partitions: **71 + 134 + 40 + 118 + 133 + 58 + 43 + 99 = 696/696 exact units**, with zero private-label refresh in every source. A fresh whole-product gate compiled **88/88** pinned-VC7.1 i386 COFF translation units and linked/verified a **780,288-byte PE32** reconstructed image with build-local SHA-256 `be7315b38a8f49b9e0c6bf9607b3288fdc9a5864bbfccde34c81a528f18e9391`. Successful linkage is not a whole-image byte-identity claim. Target-independent CI passed all **43** tests; tracking remains **1,880 provisional / 697 source-present / 696 exact**, target identity revalidation passed, and `git diff --check` passed. No runtime scenario was executed or claimed.
-
-**Recovery / analysis state.** The first monolithic aggregate replay request exceeded the synchronous Factory call and returned no durable command id, so it received no validation credit. Recovery found no remaining replay/compiler/Wine producer, unchanged source diff, unchanged exclusion hashes, and evidence that the abandoned invocation had merely refreshed build outputs; the eight bounded durable partitions above were then run explicitly and are the aggregate exact evidence of record. The four pre-existing untracked exclusions remain preserved outside staging: `EnemyManagerUpdate.i` (unknown-origin generated-looking artifact), `config/runtime-scenarios.json` and `scripts/runtime-diff.py` (pre-existing runtime experiments), and user-owned `droid.resume.txt`. `.analysis/` remains **3,394,984 bytes**; no current-session `.analysis/gpt-web/` root or retained large artifact was created.
 
 **Resume audit / next evidence route.** This transaction also falsified two tempting routes without converting absence into closure. Target xref probes found no direct references to sampled anonymous Supervisor gaps at `+0x414..+0x420`, `+0x713/+0x718`, or `+0x76C/+0x770/+0x77C`. A source-level hypothesis that `EnemyMovement` consumed `GameConfiguration +0x6C` was actively disproved by its exact-unit relocation contract: the synthetic exact relocation base plus `0x188` resolves to the already-established `g_AnmGameSpeed @ 0x004BDED8`, and the normal branch already names that owner. Rotate away from Options after checkpoint. Prefer a distinct persistent score/replay ABI field with both validator/producer and independent consumer, a historical-platform resource owner/lifetime edge, or another compact protocol not already covered by the current ECL/Background/front-end batches. Preserve single-ended/reserved storage as Unknown absent a new discriminator. The semantic phase remains active-incomplete.
 
@@ -12287,10 +10470,7 @@ Two non-script subsystem consumers/producers distinguish the same values. Fresh 
 
 The first monolithic whole-product request exceeded the Factory command timeout and was killed after only beginning profile 1/2; it receives zero production-closure credit. Mandatory recovery found no surviving compiler/linker/Wine producer and only 60 partial objects. Those partial outputs were discarded before a fresh split compile using the same manifest profiles and pinned VC7.1 toolchain. The 87-source main profile was regenerated in bounded groups and the one-source ECL profile with its additional `src/ecl` include path; every output was individually checked as i386 COFF. One intermediate helper invocation accidentally passed the two manifest arguments `/I`, `src` as one string, failed at `pbg/Lzss.cpp`, and receives no credit for that failed source or anything after it; the already individually verified objects before that failure remained valid, and all six missing objects were then rebuilt with the exact separated manifest arguments. The resulting fresh **88/88-object** set was passed to repo-native `scripts/build-whole.py --link-only`, which revalidated all objects and linked/verified a **780,288-byte PE32/i386 Windows GUI** image with build-local SHA-256 `1376166f31d2dd1ab19ddddf00474ff6991ce60d59e29704ca2a463b592ee378`. This is reconstructed historical-Windows product compile/link closure, not target whole-image byte identity and not a runtime-scenario result.
 
-**Recovery / analysis state.** The campaign began from committed SEM-242 HEAD `712b5238548cdb2a5865b5e8b35caf8f3c90bf2c`. All five Factory-controlled contracts/docs were readable before editing. Mandatory recovery found no tracked changes and preserved four established untracked exclusions outside staging: unknown-origin generated-looking `EnemyManagerUpdate.i`, pre-existing runtime experiments `config/runtime-scenarios.json` and `scripts/runtime-diff.py`, and user-owned `droid.resume.txt`. Their hashes remained unchanged through the transaction. `.analysis/` began at **3,394,984 bytes**, had no file above 64 MiB, and no current-session `.analysis/gpt-web/` root was created. The accepted-snapshot control-plane query was temporarily blocked by another Factory operator owner before editing; it received no evidence credit and did not affect repository state.
-
 **Resume audit / next evidence route.** This batch itself supplies a counterexample to treating the prior semantic record as exhaustive: the old ANM-011 render-mode-10 statement was contradicted by fresh TH095 dispatch evidence and corrected. Other tempting routes were deliberately rejected rather than renamed: `ScoreFileHeader+0x0C` is still single-ended, sampled anonymous resource pointers had no independent cleanup/consumer, established photo/global flags were already semantically closed, `Enemy+0x2C0A` direction/sentinel meaning was already SEM-025, and ScreenEffect's local three-value random branch is not a persistent protocol. After checkpoint, rotate away from ANM draw modes. Prefer a persistent replay/score field only when a parser/validator or producer is paired with an independent runtime consumer; otherwise choose a historical-platform resource owner/lifetime edge or a compact non-ANM sibling protocol with at least two TH095-local discriminators. Absence of a new counterexample never changes the phase from active-incomplete.
-
 
 ### SEM-244 — type the Scene Select lifecycle state
 
@@ -12310,10 +10490,7 @@ Fresh `SceneSelectControllerView::UpdateSceneSelect @ 0x00447D00` consumes local
 
 **Validation.** Focused canonical replay passed `src/FrontEndController.cpp` **4/4** and `src/SceneSelectUpdate.cpp` **1/1**, totaling **5/5 exact units** with **zero private-label refresh**. Command-local normal-production probes using the pinned VC7.1 profile emitted **38,786-byte** `FrontEndController.obj` and **53,871-byte** `SceneSelectUpdate.obj` Intel 80386 COFF objects. Because `SceneSelect.hpp` is shared, the dirty source immediately closed the complete exact surface in four fixed manifest partitions: **205 + 158 + 191 + 142 = 696/696 exact units across all 88 sources**, with zero private-label refresh. The repo-native whole-product gate then cold-compiled **88/88** pinned VC7.1 i386 production translation units across two profiles and linked/verified a **780,288-byte PE32/i386 Windows GUI** image with build-local SHA-256 `b135096bb6b6dad38e56a1848dcd7b602daa9226876c02a35dab19441d3d2552`. Successful linkage is reconstructed historical-Windows product closure, not target whole-image byte identity and not runtime-scenario validation.
 
-**Recovery / analysis state.** This transaction was recovered after the conversation was re-prompted while the three source files were dirty. Mandatory recovery reread all five Factory-controlled contracts/docs, found HEAD `7c4036ab7c2144c2fe11fc38cc29ea62152c3bd5`, no staged changes, the same three-file Scene Select diff, and no active replay/compiler/linker/Wine/Ghidra producer. The four established untracked exclusions remained hash-stable and outside staging: unknown-origin `EnemyManagerUpdate.i`, pre-existing runtime experiments `config/runtime-scenarios.json` and `scripts/runtime-diff.py`, and user-owned `droid.resume.txt`. `.analysis/` remained **3,394,984 bytes** with no retained file above 64 MiB and no current-session `.analysis/gpt-web/` root. The first two aggregate partitions had already completed against the same dirty-state digest before the re-prompt; recovery verified that digest unchanged, and the remaining two partitions completed afterward.
-
 **Resume audit / next evidence route.** The bounded replay/score and resource-lifetime routes above produced no new discriminator and were rotated rather than treated as closure. After checkpoint, rotate away from the front-end local-state family. Prefer a distinct non-front-end persistent/ABI boundary with a producer plus independent validator/consumer, a historical-platform runtime/storage gap not already covered by Sound/FileWrite/DirectInput, or a compact sibling protocol whose remaining raw values have at least two TH095-local discriminators. Keep replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd flag bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-245 — name the ECL comparison opcode family
 
@@ -12335,10 +10512,7 @@ Fresh `EclManager::RunEcl @ 0x00408E70` independently groups cases `0x28..0x33` 
 
 Command-local normal-production probes using each source's canonical pinned VC7.1 profile emitted **31,346-byte** `EclDependencies.obj` and **78,271-byte** `EclRun.obj` Intel 80386 COFF objects; the temporary probe directory was removed by the same command. Because `EclManager.hpp` is shared protocol surface, the dirty current source immediately closed the complete exact graph in four fixed 22-source partitions: **205 + 158 + 191 + 142 = 696/696 exact units across all 88 sources**, all with zero private-label refresh. The repo-native whole-product gate then cold-compiled **88/88** pinned VC7.1 i386 production translation units across two profiles and linked/verified a **780,288-byte PE32/i386 Windows GUI** image with build-local SHA-256 `1b3c686fbcc9e7e9d36829187e1ca5932976186d3db07e42666e84f9062fa8e3`. Successful linkage is reconstructed historical-Windows production closure, not target whole-image byte identity and not runtime-scenario validation.
 
-**Recovery / analysis state.** This campaign resumed from committed SEM-244 HEAD `6d6f7b725fd3e26c2b6c79dea2e15647fe1cf3b0`. All five Factory-controlled contracts/docs were readable before editing. Mandatory recovery found no staged or tracked-unstaged work, no active replay/compiler/linker/Wine/Ghidra producer, and preserved the four established untracked exclusions outside staging: unknown-origin `EnemyManagerUpdate.i`, pre-existing runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`, and user-owned `droid.resume.txt`. Their hashes matched the prior checkpoint. `.analysis/` began at **3,394,984 bytes**, contained no file above 64 MiB, and no current-session `.analysis/gpt-web/` root was created. Fresh semantic evidence came only through the registered read-only target-attested Ghidra provider; exactness credit comes from repo-native canonical replay rather than decompiler output.
-
 **Resume audit / next evidence route.** This ECL protocol is one counterexample to treating the prior residual enumeration as exhaustive, but its closure does not change phase state. After checkpoint, rotate away from low-ECL comparison opcodes. Prefer a distinct non-ECL persistent/ABI boundary with a producer plus independent validator/consumer, a historical-platform runtime/storage gap not already covered by Sound/FileWrite/DirectInput, or a compact runtime owner/lifetime relation with multiple TH095-local consumers. Keep replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
-
 
 ### SEM-246 — name the MIDI loop checkpoint protocol
 
@@ -12357,8 +10531,6 @@ The same target function handles control-change value 4 as the inverse operation
 **Production / exact representation.** `MidiController` keeps the same integral values and storage. Only the two enum names and their `ProcessMsg` case labels/comments change. No object layout, function signature, controller numeric value, switch topology, track offset, timer math, WinMM call, relocation, or ABI changes.
 
 **Validation.** Focused canonical replay of `src/Midi.cpp` passed all **28/28 exact units** with **zero private-label refresh**. A command-local normal-production probe under the pinned VC7.1 profile emitted a **43,532-byte Intel 80386 COFF** object and removed the temporary probe directory in the same command. Because `Midi.hpp` is shared, the current dirty source then closed the full exact graph using the fixed alphabetical 22-source partitions: **205 + 158 + 191 + 142 = 696/696 exact units across all 88 sources**, all with zero private-label refresh. One recovery-time helper accidentally partitioned sources by manifest first-occurrence order and produced an overlapping **217/217** 22-source exact result; that run is extra focused evidence only and is explicitly excluded from the 696-unit aggregate total. The fresh repo-native whole-product gate cold-compiled **88/88** pinned VC7.1 i386 production translation units across two profiles and linked/verified a **780,288-byte PE32/i386 Windows GUI** image with build-local SHA-256 `7de2f0172479cf345dc7420d7d5fc81e5bdb9cf5a6c9a2a7aed665f54cbd525a`. Successful linkage is reconstructed historical-Windows production closure, not target whole-image byte identity and not runtime-scenario validation.
-
-**Recovery / analysis state.** This transaction began from committed SEM-245 HEAD `091270402a9459a208866348da4dbd8120b2ef77`. After the browser conversation was re-prompted with `Midi.cpp/Midi.hpp` dirty, mandatory recovery reread all five Factory-controlled contracts/docs and classified those two tracked edits as recoverable current work. Their complete diff and dirty-state digest `56e5e187d03e2c794f484a269391034a4b4e5106f8748ef8e6b43019f82639d9` matched the interrupted transaction. The first two fixed aggregate partitions had already durably passed under that same digest and were retained; no active replay/compiler/linker/Wine/Ghidra producer survived the interruption. The four established untracked exclusions remained hash-stable and outside staging: unknown-origin `EnemyManagerUpdate.i`, pre-existing runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`, and user-owned `droid.resume.txt`. `.analysis/` remained **3,394,984 bytes** with no current-session `.analysis/gpt-web/` root and no retained large current-session artifact.
 
 **Resume audit / next evidence route.** This batch replaces TH08-only semantic commentary with TH095-local evidence, but it does not change the campaign state. After checkpoint, rotate away from MIDI/ECL protocol naming. Prefer a distinct persistent/ABI owner with a parser/validator plus independent runtime consumer, a historical-platform resource lifetime outside the already-closed Sound/FileWrite/DirectInput/TextRenderer/ANM owners, or a non-front-end state/flag family with at least two TH095-local discriminators. Keep replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, and photo-score bits 5/17/18/19 Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
 
@@ -12438,19 +10610,6 @@ or layout, no cross-object aggregate gate is credited at this private
 checkpoint; the campaign-level cold aggregate and whole-product gates remain
 for the committed milestone/final handoff.
 
-**Recovery / analysis state.** This campaign began from committed SEM-246 HEAD
-`e941c66ddea0757692fe2cf82e4737d3b3a681e1`. All five Factory-controlled
-contracts/docs were readable before editing. Mandatory recovery found no
-staged or tracked-unstaged work and preserved the same four established
-untracked exclusions outside staging: unknown-origin generated-looking
-`EnemyManagerUpdate.i`, pre-existing runtime experiments
-`config/runtime-scenarios.json` / `scripts/runtime-diff.py`, and user-owned
-`droid.resume.txt`; their hashes matched the preceding checkpoint. `.analysis/`
-began at **3,394,984 bytes**, contained no retained file above 64 MiB, and no
-current-session `.analysis/gpt-web/` root was created. Fresh semantic evidence
-came through the registered read-only target-attested Ghidra provider; the
-provider receives no exactness credit.
-
 **Resume audit / next evidence route.** The case-99 owner binding is a concrete
 counterexample outside the previous handoff's enumerated routes, but it does
 not change the phase state. After checkpoint, rotate away from the bullet-spawn
@@ -12485,8 +10644,6 @@ Fresh `AnmManager::ReleaseSurface @ 0x00444390` closes the per-slot lifetime by 
 
 **Validation.** Focused canonical replay of `src/AnmSurface.cpp` passed all **6/6 exact units** with **zero private-label refresh**. A command-local normal-production probe using the pinned VC7.1 profile emitted a **23,259-byte Intel 80386 COFF** object. Because `AnmManager.hpp` is a shared owner/layout header, the dirty source immediately closed the complete exact graph in four fixed alphabetical 22-source partitions: **205 + 158 + 191 + 142 = 696/696 exact units across all 88 sources**, every partition with zero private-label refresh. A fresh repo-native whole-product gate then cold-compiled **88/88** pinned VC7.1 i386 translation units across two profiles and linked/verified a **780,288-byte PE32/i386 Windows GUI** image with build-local SHA-256 `4504e210433518e6b21f13f1e1037f81993ab68016f74214317cfdb56386ca20`. Wine emitted only headless window/systray diagnostics; successful compile/link is reconstructed historical-Windows production closure, not target whole-image identity and not runtime-scenario validation.
 
-**Recovery / analysis state.** This campaign slice began from committed SEM-247 HEAD `d077e1e5ee23ae2065b738c525b41d84319666b4`. All five Factory-controlled contracts/docs were readable before editing. Mandatory recovery found no staged or tracked-unstaged work and preserved the same four established untracked exclusions outside staging: unknown-origin generated-looking `EnemyManagerUpdate.i`, pre-existing runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`, and user-owned `droid.resume.txt`; their hashes matched the preceding checkpoint. `.analysis/` began at **3,394,984 bytes**, contained no file above 64 MiB, and no current-session `.analysis/gpt-web/` root was created. Two read-only historical-resource shell requests lost Factory network transport before yielding results; they receive no evidence credit and made no repository changes. Fresh semantic evidence came through the registered read-only target-attested Ghidra provider, which carries no exactness credit.
-
 **Resume audit / next evidence route.** Recovering the restore-copy lifetime is a current TH095-local counterexample to treating the prior semantic surface as exhaustive, but it does not alter the campaign state. After checkpoint, rotate away from ANM surface storage rather than mining adjacent bytes. Prefer a non-ANM state/protocol or persistent/ABI family with a producer plus independent consumer/validator, or another historical-platform owner/lifetime edge with a real creation/use/cleanup distinction. Keep `+0x12DC..+0x13DB`, replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, and photo-score bits 5/17/18/19 Unknown absent new distinguishing TH095 evidence. The semantic phase remains active-incomplete.
 
 ### SEM-249 — type the Best Shot payload format
@@ -12506,8 +10663,6 @@ Fresh `ResultSaveDataView::WriteBestShotData @ 0x00435910` independently fixes t
 **Production / exact representation.** Normal `ScoreData.hpp` now exposes `payloadFormat @ +0x04` as an explicitly one-byte representation plus the two observed constants. Normal `SceneBestShot.cpp` compares against `RESULT_BEST_SHOT_PAYLOAD_COMPRESSED_PIXELS`; normal PhotoStage and ResultScreen producers publish `RESULT_BEST_SHOT_PAYLOAD_COMMENT_AND_COMPRESSED_PIXELS`. `TH095_MATCH_EXACT` / DIFF-facing source retains the historical `u8 type` spelling and numeric `1/2` expressions. No serialized byte, record size, record stride, allocation size, function signature, calling convention, branch topology, or ABI changes.
 
 **Validation.** Before the browser re-prompt, focused canonical replay of `src/PhotoStage.cpp`, `src/ResultScreen.cpp`, `src/SceneBestShot.cpp`, and `src/ScoreData.cpp` passed **6 + 24 + 1 + 1 = 32/32 exact units** with **zero private-label refresh**. Command-local normal-production probes under the pinned VC7.1 profile emitted **18,740-byte** `SceneBestShot.obj`, **48,778-byte** `PhotoStage.obj`, and **75,760-byte** `ResultScreen.obj`, all Intel 80386 COFF. Because `ScoreData.hpp` is a shared persistent-format owner, recovery immediately closed the full exact graph on the unchanged dirty source in four fixed alphabetical 22-source partitions: **205 + 158 + 191 + 142 = 696/696 exact units across all 88 sources**, every partition with zero private-label refresh. A fresh repo-native whole-product gate then cold-compiled **88/88** pinned VC7.1 i386 translation units across two profiles and linked/verified a **780,288-byte PE32/i386 Windows GUI** image with build-local SHA-256 `b076a0a0f70e4b6fbfffec05638ced84a0bb05fe700eb0065a0ef1a2de9b64a6`. Wine emitted only headless window/systray diagnostics; successful compile/link is reconstructed historical-Windows production closure, not target whole-image identity and not runtime-scenario validation.
-
-**Recovery / analysis state.** The transaction began from committed SEM-248 HEAD `f401d0e9c2ab8bb2bb3d25c9fa106ae0b65a45d3`. The browser was re-prompted after the four source edits and focused validation but before aggregate closure. Mandatory recovery reread all five Factory-controlled contracts/docs and found the same four tracked unstaged paths, zero staged paths, unchanged Factory dirty-state digest `de17a5d3d61349c34447f5f9a91877d886c952973b01a068b85290f8644d9479`, and no independent surviving replay/compiler/linker/Wine/Ghidra producer. The four established untracked exclusions remained hash-stable and outside staging: unknown-origin generated-looking `EnemyManagerUpdate.i`, pre-existing runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`, and user-owned `droid.resume.txt`. `.analysis/` remained **3,394,984 bytes**, with no current-session analysis root or retained file above 64 MiB. Fresh semantic evidence came through the registered read-only target-attested Ghidra provider and receives no exactness credit.
 
 **Resume audit / next evidence route.** The type-2 producer is new TH095-local evidence that tightens the Best Shot persistent-format boundary left deliberately open by SEM-170, but it does not change the phase state. After checkpoint, rotate away from Best Shot payload storage rather than mining neighboring reserved bytes. Prefer a non-score/non-ANM historical-runtime owner/lifetime edge, a replay/input field only if a new independent field-level consumer appears, or a compact state/protocol family with producer plus independent consumer/validator. Keep replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect read-only/unconsumed storage, compact-enemy single-ended fields, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` Unknown absent new distinguishing TH095 evidence. The semantic phase remains active-incomplete.
 
@@ -12529,8 +10684,6 @@ Fresh `Supervisor::PlayMusic @ 0x004252F0` independently interprets value `2` by
 
 **Validation.** Focused canonical replay of `src/Main.cpp` and `src/SoundPlayer.cpp` passed **48 + 27 = 75/75 exact units** with **zero private-label refresh**. Command-local normal-production probes under the pinned VC7.1 profile emitted **115,915-byte** `Main.obj` and **64,763-byte** `SoundPlayer.obj`, both Intel 80386 COFF. Because `Main.hpp` is a high-fanout shared owner header, the dirty source immediately closed the complete exact graph in four fixed alphabetical 22-source partitions: **205 + 158 + 191 + 142 = 696/696 exact units across all 88 sources**, every partition with zero private-label refresh. A fresh repo-native whole-product gate cold-compiled **88/88** pinned VC7.1 i386 translation units across two profiles and linked/verified a **780,288-byte PE32/i386 Windows GUI** image with build-local SHA-256 `a6da68dfd53097743e1754634960e04a45d2553c7bfabb1627ef201af49a288c`. Wine emitted only headless window/systray diagnostics; this is reconstructed historical-Windows compile/link closure, not target whole-image identity and not runtime-scenario validation.
 
-**Recovery / analysis state.** This transaction began from committed SEM-249 HEAD `701abd9715d96cea03d40cc6cc3fe72a20fe719e` with zero staged or tracked-unstaged changes and the same four protected untracked exclusions. `src/GameMusicMode.hpp` is current recoverable work created by this transaction and is the only additional untracked path. Fresh semantic evidence came from the registered read-only target-attested Ghidra provider; exactness came only from canonical replay. No current-session `.analysis` root was created, and the established analysis baseline remains unchanged pending the final checkpoint audit.
-
 **Resume audit / next evidence route.** The persistent music-mode typing is a counterexample to treating the configuration ABI as exhausted after the anonymous-span plateau: unlike `unknown06c`/`unknown0b7`, this field has target-local validation, multiple producers, and independent backend consumers. After checkpoint, rotate away from config/audio mode rather than naming adjacent config bytes. Prefer a non-audio historical-runtime lifetime edge, a replay/input field only if a new independent consumer appears, or a compact interpreter/state domain not already represented in normal production. Keep config reserved spans, replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect one-sided storage, compact-enemy single-ended fields, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` Unknown absent new distinguishing TH095 evidence. The semantic phase remains active-incomplete.
 
 ### SEM-251 — name the record-mode Game Result state pair
@@ -12550,8 +10703,6 @@ Fresh `ResultScreen::Update @ 0x00426BF0` consumes state `1` as the three-entry 
 **Production / exact representation.** Normal `src/ResultScreen.cpp` adds a TU-private `ResultScreenGameResultStateValue` for values 1/2 and routes the record-mode initializer publication plus the corresponding `Update` case labels/transitions through profile-aware `TH095_RESULT_STATE_GAME_RESULT_*` tokens. `DIFFBUILD` expands those tokens to historical literals 1/2. `TH095_MATCH_EXACT` continues to select the frozen `ResultScreenExact.inl` before the normal body and is untouched. `ResultScreen::state` remains four-byte `i32 @ +0x0004`; no shared header, object layout, function signature, cursor domain, scene-state value, branch topology, target address, or ABI changes.
 
 **Validation.** Fresh target evidence came through the registered read-only target-attested Ghidra provider and carries no exactness credit. Focused canonical replay of `src/ResultScreen.cpp` passed **24/24 exact units** with **zero private-label refresh**. A command-local normal-production probe using the canonical pinned VC7.1 profile emitted a **75,822-byte Intel 80386 COFF** object. `git diff --check` passed. Because this is a private single-TU representation change with no shared header/layout mutation, cold aggregate exact and whole-product validation are deferred only to the immediately following committed campaign milestone/final handoff rather than redundantly repeated before this private checkpoint.
-
-**Recovery / analysis state.** Mandatory recovery reread all five Factory-controlled contracts/docs and found live committed HEAD `7224dbea235f09166caad2bba6c45f553b3b8541` with zero staged/tracked-unstaged changes and the same four protected untracked exclusions. The live history had already committed SEM-250 plus its docs-only handoff, so the earlier in-flight GameMusicMode assumption was discarded rather than replayed. The four exclusion hashes remain unchanged; `.analysis/` remains **3,394,984 bytes**, no current-session `.analysis/gpt-web/` root exists, and no retained file exceeds 64 MiB. One first Ghidra decompile request used the wrong provider argument field and received zero evidence credit; the provider schema was then rediscovered and the bounded two-address query succeeded.
 
 **Resume audit / next evidence route.** This pair is another concrete counterexample to treating ResultScreen's remaining numeric outer states as semantically exhausted, but it does not authorize mechanically naming adjacent states. After checkpoint, rotate away from ResultScreen again. Prefer a non-ResultScreen historical-runtime owner/lifetime edge, a persistent/replay/input field only when a new independent reader/validator appears, or another compact interpreter/state family with producer plus independent consumer. Keep ResultScreen state 0 and 7..12, config reserved spans, replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect one-sided storage, compact-enemy single-ended fields, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` Unknown absent new distinguishing TH095 evidence. The semantic phase remains active-incomplete.
 
@@ -12573,8 +10724,6 @@ Fresh `UpdateMainMenu @ 0x00446A50` consumes exactly values 0 and 1. Value 0 per
 
 **Validation.** Fresh target evidence came through the registered read-only target-attested Ghidra provider and carries no exactness credit. Focused canonical replay of `src/FrontEndController.cpp` passed **4/4 exact units** with **zero private-label refresh**. The first normal-probe attempt used an incorrect hard-coded external `cl.exe` path and failed before compilation with Wine status `c0000135`; it receives zero compile credit and made no source change. The repo-native `scripts/compile-probe.sh` was then used with the pinned VC7.1 normal profile and emitted a **38,985-byte Intel 80386 COFF** object. `git diff --check` passed. This is a private single-TU representation change with no shared-header/layout risk, so aggregate exact and whole-product gates are deferred to the next committed milestone/final handoff rather than repeated before another bounded transaction.
 
-**Recovery / analysis state.** This campaign resumed from docs-only SEM-251 handoff HEAD `1ae3120c3950f3ea3335b53eacaa4b581bde5b03` with zero staged or tracked-unstaged changes. All five Factory-controlled contracts/docs were readable. The same four protected untracked exclusions remained hash-stable and outside staging. `.analysis/` remains **3,394,984 bytes** with no current-session analysis root or retained file above 64 MiB. The resource-lifetime audit rejected Supervisor `unknown044` as alignment after `DIDEVCAPS` and rejected `loadingAnm`/loading-screen state as already represented rather than manufacturing a new owner claim.
-
 **Resume audit / next evidence route.** This Main Menu pair closes one remaining screen-local representation gap but does not imply that the front-end state surface is complete. After checkpoint, rotate away from the front-end controller again. Prefer a persistent/replay/input field only if a new field-level reader/validator appears, a non-front-end historical-platform owner/lifetime with acquire/publication plus independent cleanup/use, or a compact non-ECL/non-ANM protocol with at least two TH095-local discriminators. Keep controller flag bit 4, replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect one-sided storage, compact-enemy single-ended fields, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
 
 ### SEM-253 — bind Photo Stage replay-mode projection
@@ -12592,8 +10741,6 @@ Fresh `UpdateMainMenu @ 0x00446A50` consumes exactly values 0 and 1. Value 0 per
 **Production / exact representation.** Normal `src/PhotoStage.cpp` includes the established `ReplayManagerMode` vocabulary, types its local runtime-global projection at `+0x120` as `replayMode`, pins that offset, and routes the single persistence gate through `TH095_PHOTO_STAGE_IS_RECORD_MODE()` / `REPLAY_MANAGER_RECORD`. `DIFFBUILD` retains the historical `i32 resultMode` spelling and numeric-zero comparison through the compatibility macro. `TH095_MATCH_EXACT` continues to select the frozen `PhotoStageExact.inl` before this normal source. No shared header, owner size, field width, target address, function signature, branch topology, persistent record layout, or ABI changes.
 
 **Validation.** Fresh target evidence came through the registered read-only target-attested Ghidra provider and carries no exactness credit. Focused canonical replay of `src/PhotoStage.cpp` passed **6/6 exact units** with **zero private-label refresh**. A command-local normal-production probe through repo-native `scripts/compile-probe.sh` and the pinned VC7.1 profile emitted a **48,865-byte Intel 80386 COFF** object. `git diff --check` passed. Because this is a private single-TU projection change with no shared header/layout mutation, aggregate exact and whole-product gates are deferred only to the immediately following committed campaign milestone/final handoff.
-
-**Recovery / analysis state.** The transaction began from clean tracked SEM-252 checkpoint `fe4a73355e89a9bd73f6ddfa5db9f0e2442b5797`. The same four protected untracked exclusions remain outside staging and hash-stable, and `.analysis/` remains **3,394,984 bytes** with no current-session analysis root or retained file above 64 MiB. The raw-member router also confirmed that Scene Select's Best Shot raw offsets are DIFF-facing compatibility while normal production already uses the canonical SEM-249 owner; PhotoOverlay residual anonymous fields lacked new independent use/cleanup edges and were left Unknown rather than named.
 
 **Resume audit / next evidence route.** Closing this deferred projection is another counterexample to treating the replay-mode data-flow surface as exhaustive, but it does not change the phase state. After checkpoint, rotate away from PhotoStage/replay mode and the just-completed front-end batch. Prefer a non-front-end historical-platform owner/lifetime with a concrete acquire/publication plus independent use/cleanup edge, a persistent field only when a new validator/reader closes it, or a compact non-ECL/non-ANM protocol with at least two TH095-local discriminators. Keep replay/score reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, ScreenEffect one-sided storage, compact-enemy single-ended fields, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` Unknown absent new distinguishing evidence. The semantic phase remains active-incomplete.
 
@@ -12617,8 +10764,6 @@ Fresh target callers distinguish the two roles. `DrawNoRotation @ 0x0043F4A0` pa
 
 **Validation.** Focused canonical replay rebuilt `src/AnmDrawCore.cpp` and passed all **18/18 exact units** with **zero private-label refresh**. A command-local normal-production probe reused the pinned VC7.1 `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src` profile and emitted a **45,580-byte Intel 80386 COFF / pe-i386** object; the temporary object was removed at command exit. `git diff --check` passed. Because this is a private single-TU representation change with no shared header/layout/owner mutation, aggregate exact and whole-product gates are deferred only to the campaign milestone/final handoff.
 
-**Recovery / analysis state.** This campaign began from committed SEM-253 handoff HEAD `4c5d92ed5835d5ffe10faa9fcfceaa5aea11d237`. All five Factory-controlled contracts/docs were readable before editing. Mandatory recovery found zero staged/tracked-unstaged paths and preserved the same four protected untracked exclusions with unchanged hashes. `.analysis/` began at **3,394,984 bytes**, no current-session `.analysis/gpt-web/` root exists, and no retained file exceeds 64 MiB. The broad baseline passed target verification, tracking (**1,880 provisional / 697 source-present / 696 exact**), Ghidra check, CI **43/43**, and whitespace validation. One read-only analysis-operation discovery request hit transient Factory transport failure and received no evidence credit; retry succeeded without repository changes. Fresh semantic target evidence is provisional analysis only; exactness credit comes solely from canonical replay.
-
 **Resume audit / next evidence route.** The private DrawInner option word is a current TH095-local counterexample to treating weak rendering APIs as exhausted, but it does not alter the phase state. After checkpoint, rotate away from ANM rendering rather than mining adjacent VM flags. Prefer an independent historical-runtime lifetime edge, a persistent/replay/input field only if a new field-level producer plus consumer/validator appears, or another non-ANM compact state/protocol with at least two TH095-local discriminators. Keep `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, compact-enemy single-ended fields/tail packets, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-255 — name the Supervisor viewport slots
@@ -12639,8 +10784,6 @@ Independent maintained exact callers discriminate the two slots by use. Backgrou
 
 **Validation.** Focused canonical replay passed `AnmVmLifecycle.cpp` **17/17**, `AsciiManager.cpp` **17/17**, `Background.cpp` **20/20**, `Main.cpp` **48/48**, `PhotoOverlay.cpp` **11/11**, and `SupervisorViewport.cpp` **3/3**: **116/116 exact units**, all with **zero private-label refresh**. Command-local normal probes through the pinned VC7.1 profile emitted Intel 80386 COFF objects of **30,855**, **38,683**, **53,282**, **115,937**, **23,626**, and **18,874** bytes respectively. Because the transaction introduces a shared protocol header, the fixed alphabetical cold aggregate was run immediately and passed **205 + 158 + 191 + 142 = 696/696 exact units across all 88 sources**, every replay reporting zero private-label refresh. A fresh repo-native whole-product gate cold-compiled **88/88** pinned VC7.1 i386 translation units and linked/verified a **780,288-byte PE32/i386 Windows GUI** image with build-local SHA-256 `2f728359182d46fa1e300bd726051c041f40614d8cb41e6672e397ff0863843b`. Wine emitted only headless window/systray diagnostics. Successful linkage is historical-Windows production closure, not target whole-image identity and not runtime-scenario validation.
 
-**Recovery / analysis state.** The recovery gate observed HEAD had advanced from the prior handoff to committed SEM-254 `9403a8bcb74ce272f533cd3ee2d1430f490477d1`, while this viewport transaction was left unstaged across six tracked files plus its new header. No independent replay/compiler/linker/Wine/Ghidra producer was active. The pre-existing untracked exclusions remained outside the transaction and hash-stable: unknown-origin `EnemyManagerUpdate.i`, pre-existing runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`, and user-owned `droid.resume.txt`. `.analysis/` remained **3,394,984 bytes** with no current-session analysis root and no retained file above 64 MiB. All five Factory-controlled contract/document paths were readable before recovery continued.
-
 **Resume audit / next evidence route.** Recovering this interrupted viewport protocol is a current target-local counterexample to treating the historical rendering API surface as exhausted, but it does not change the campaign state. After checkpoint, rotate away from Supervisor viewport/rendering and the just-completed ANM DrawInner batch. Prefer a persistent/replay/input field only if a genuinely new field-level producer plus consumer/validator appears, or a non-rendering historical-platform owner/lifetime with acquire/publication plus independent use/cleanup. If those plateau, inspect a compact non-ECL/non-ANM protocol with at least two TH095-local discriminators. Keep `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, compact-enemy single-ended fields/tail packets, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-256 — type the straight-effect initial-length payload
@@ -12658,8 +10801,6 @@ Independent maintained exact callers discriminate the two slots by use. Backgrou
 **Production / exact representation.** Normal `PhotoEffect.cpp` now declares type-0 `initialLength @ +0x14` as `f32` and uses direct float assignments in the initializer and both gap-fragment producers. `DIFFBUILD` retains the historical `i32` storage plus bit reinterpretation at those sites. In `ecl/EclRunHigh.inl`, `TH095_MATCH_EXACT` continues to expose `i32 field14`, `DIFFBUILD` retains integer `initialLength`, and only normal production exposes `f32 initialLength`; the target-photo opcode body already accesses it through `TH095_SMALL_EFFECT_INITIAL_LENGTH`, so exact source shape remains unchanged. Packet size remains 0x28 and every field offset is unchanged.
 
 **Validation.** Focused canonical replay passed `src/PhotoEffect.cpp` **34/34 exact** and `src/ecl/EclRun.cpp` **1/1 exact**, both with **zero private-label refresh**. Command-local pinned-VC7.1 normal probes emitted **68,546-byte** `PhotoEffect.obj` and **78,239-byte** `EclRun.obj`, both Intel 80386 COFF. A direct `/DDIFFBUILD` probe was attempted only as extra compatibility feedback; it failed before reaching this packet code because the standalone probe lacks the existing runtime-global macro context required by `PhotoEffect.cpp` around its photo-target path, so it receives zero validation credit and no conclusion about this change. Because the packet crosses the ECL producer / PhotoEffect consumer boundary, the fixed alphabetical cold aggregate was closed immediately: **205 + 158 + 191 + 142 = 696/696 exact units across all 88 sources**, all with zero private-label refresh. A fresh whole-product gate cold-compiled **88/88** pinned VC7.1 i386 translation units and linked/verified a **780,288-byte PE32/i386 Windows GUI** image with build-local SHA-256 `7c698a40c19d3fff201d765b16deb34f5e05c437f263c27fed68bdfb0420d045`. Wine emitted only the usual headless window/systray diagnostics; no runtime-scenario or whole-image identity credit is claimed.
-
-**Recovery / analysis state.** This transaction began from clean tracked SEM-255 checkpoint `0852988bbb8af41c78ad435a0b26711a079051c1`. The same four protected untracked exclusions remained outside staging and unchanged. `.analysis/` remained **3,394,984 bytes** with no current-session scratch root or retained large artifact. Several Factory endpoint calls briefly failed at transport level before the source investigation; they had no durable command id and receive zero evidence credit. The live repository status was re-read successfully before editing and confirmed the clean tracked SEM-255 state.
 
 **Resume audit / next evidence route.** This batch closes one representation Unknown deliberately left by SEM-051, but it does not imply that PhotoEffect or the semantic phase is complete. After checkpoint, rotate away from PhotoEffect/ECL packet typing. Prefer a non-rendering historical-platform owner/lifetime, a persistent/replay/input field only if a new field-level producer plus consumer/validator appears, or a compact non-ECL/non-ANM protocol with at least two TH095-local discriminators. Keep `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet `field360`, compact-enemy single-ended fields/tail packets, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` Unknown absent new evidence. The semantic phase remains active-incomplete.
 
@@ -12683,8 +10824,6 @@ Fresh `AnmManager::LoadSurface @ 0x004440F0`, `ReleaseSurface @ 0x00444390`, and
 
 **Validation.** Focused canonical replay of `src/Main.cpp` passed all **48/48 exact units** with **zero private-label refresh**. A command-local normal-production probe through the pinned VC7.1 profile emitted a **116,006-byte Intel 80386 COFF** object, and `git diff --check` passed. This is a private single-TU vocabulary change with no shared-header/layout mutation, so aggregate exact and whole-product gates are deferred to the committed campaign milestone/final handoff rather than repeated before the next bounded transaction.
 
-**Recovery / analysis state.** This campaign resumed from docs-only handoff HEAD `c04e0be0ff54b355a25155fc556fe359b2efb2fa`. All five Factory-controlled contracts/docs were readable before editing; the optional `$factory-semantic-reconstruction` skill body was not exposed as a readable resource. Mandatory recovery found no staged or tracked-unstaged work and preserved the same four hash-stable untracked exclusions: unknown-origin `EnemyManagerUpdate.i`, pre-existing runtime experiments `config/runtime-scenarios.json` / `scripts/runtime-diff.py`, and user-owned `droid.resume.txt`. `.analysis/` began at **3,394,984 bytes**, with no current-session scratch root and no retained file above 64 MiB. The broad baseline passed target verification, tracking (**1,880 provisional / 697 source-present / 696 exact**), Ghidra attestation, CI **43/43**, and whitespace checks. Fresh target evidence came from the registered read-only `th095-ghidra` provider and carries no exactness credit.
-
 **Resume audit / next evidence route.** Naming slot 8 is a concrete historical-resource counterexample outside the previous completed source batches, but it does not change the phase state. After checkpoint, rotate away from Supervisor startup surfaces rather than naming neighboring indices. Prefer a persistent/replay/input field only if a genuinely new field-level producer plus reader/validator appears; otherwise inspect a compact non-ECL/non-ANM protocol or another historical-runtime lifetime with at least two independent TH095-local discriminators. Keep `ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet `field360`, compact-enemy single-ended fields/tail packets, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB` Unknown absent new evidence. The semantic phase remains active-incomplete.
 
 ### SEM-258 — bind Photo movement masks to the shared TouhouButton domain
@@ -12703,9 +10842,18 @@ Fresh `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` reads current Photo in
 
 **Production / exact representation.** `src/PhotoCamera.cpp` replaces its eight raw directional masks with semantic `TH095_PHOTO_INPUT_*` names that map to canonical `TH_BUTTON_*` values outside exact builds and to the same numeric values in the exact-only compatibility lane. `src/PhotoGame.cpp` explicitly includes `Global.hpp` in its normal/DIFF branch and replaces the eight raw masks with `TH_BUTTON_*`. `PhotoGameExact.inl`, `Global.hpp`, controller storage/layout, function signatures, movement enums, branch order, input addresses, and all numeric values remain unchanged.
 
-**Validation.** An initial PhotoCamera exact replay failed at compile time because its reduced `TH095_MATCH_EXACT` include graph did not expose `TouhouButton`; it receives zero exactness credit. Recovery confirmed that only the two intended source files were dirty, the protected exclusions and `.analysis/` were unchanged, and no compiler/replay producer survived. After adding the exact-local compatibility mapping, focused replay passed **PhotoCamera 11/11** and **PhotoGame 22/22** exact with **zero private-label refresh**. The first normal-probe attempt then exposed the analogous direct-dependency gap in normal `PhotoGame.cpp`; that failed command receives zero normal-build credit, recovery again found no collateral changes, and `Global.hpp` was added explicitly in the normal/DIFF branch. Final focused replay passed **33/33 exact** with zero refresh. Final pinned-VC7.1 normal probes emitted a **59,049-byte** `PhotoCamera.obj` and **52,044-byte** `PhotoGame.obj`, both Intel 80386 COFF. A source check found no remaining raw `0x10/0x20/0x40/0x50/0x60/0x80/0x90/0xA0` direction masks in these two movement decision trees, and `git diff --check` passed.
-
-**Recovery / analysis state.** SEM-258 began from clean tracked SEM-257 checkpoint `2ece07cbfcddf354ef6ce588a7b52c808e7eb819`. Both failed compile commands were treated as interruptions before further editing; complete tracked diffs were reviewed, the same four protected untracked exclusions retained their hashes, `.analysis/` remained **3,394,984 bytes**, and producer checks found only the recovery shell itself. No scratch artifact was retained.
+**Validation.** An initial PhotoCamera exact replay failed at compile time because its
+reduced `TH095_MATCH_EXACT` include graph did not expose `TouhouButton`; it receives
+zero exactness credit. After adding the exact-local compatibility mapping, focused
+replay passed **PhotoCamera 11/11** and **PhotoGame 22/22** exact with **zero
+private-label refresh**. The first normal-probe attempt then exposed the analogous
+direct-dependency gap in normal `PhotoGame.cpp`; that failed command receives zero
+normal-build credit, recovery again found no collateral changes, and `Global.hpp` was
+added explicitly in the normal/DIFF branch. Final focused replay passed **33/33 exact**
+with zero refresh. Final pinned-VC7.1 normal probes emitted a **59,049-byte**
+`PhotoCamera.obj` and **52,044-byte** `PhotoGame.obj`, both Intel 80386 COFF. A source
+check found no remaining raw `0x10/0x20/0x40/0x50/0x60/0x80/0x90/0xA0` direction masks
+in these two movement decision trees, and `git diff --check` passed.
 
 **Resume audit / next evidence route.** This batch closes a source-level protocol-vocabulary gap but does not imply input or Photo semantic completion. Do not mechanically replace unrelated numeric button masks: require a target-local behavioral discriminator for each aggregate or special control. After checkpoint, prefer a different coverage surface—persistent/replay validation with a genuinely new producer+consumer, a compact non-ANM/non-ECL state protocol, or a historical-platform lifetime not already named. Keep the standing residuals (`ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet `field360`, compact-enemy single-ended fields/tail packets, score-entry `+0x38`, photo-score bits 5/17/18/19, and ANM surface `+0x12DC..+0x13DB`) Unknown absent new TH095-local evidence. The semantic phase remains active-incomplete.
 
@@ -12727,8 +10875,6 @@ Fresh `Background::SetPhotoArea @ 0x00404950` writes `photoAreaActive = 1` at `+
 
 **Validation.** Focused canonical replay of `src/BackgroundLifecycle.cpp` passed **2/2 exact units** with **zero private-label refresh**. A command-local pinned-VC7.1 normal-production probe emitted a **6,761-byte Intel 80386 COFF** object. `git diff --check` passed. This is a private lifecycle-TU representation change with no shared header/layout/PCH mutation, so campaign-wide cold aggregate exact and whole-product validation remain deferred to the next milestone/final handoff.
 
-**Recovery / analysis state.** Mandatory campaign recovery found no staged or tracked-unstaged work at `5c0bdf23e448df96001f94a00399c04c85143923`; the same four protected untracked exclusions retained their hashes and `.analysis/` began at **3,394,984 bytes** with no retained file above 64 MiB. All five Factory-controlled contracts/docs were readable; the optional `$factory-semantic-reconstruction` skill body was not exposed as a readable resource. The broad baseline passed target verification, tracking (**1,880 provisional / 697 source-present / 696 exact**), Ghidra attestation, CI **43/43**, and whitespace checks. One read-only source-comparison shell exited 141 because `head` closed a pipe after receiving its bounded output; repository state was unchanged and mandatory recovery reconfirmed the clean tracked tree before editing.
-
 **Resume audit / next evidence route.** This closes a concrete normal sibling-view representation gap, not the Background subsystem or semantic phase. After checkpoint, rotate away from Background camera/photo fields. The preferred next challenge is another normal-production weak identifier whose physical owner is not already represented elsewhere; require a producer/publication plus an independent reader/validator/cleanup. Do not reopen the already-audited `PhotoRuntime +0x4DFC` alternate ANM bank, replay/input reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet residuals, compact-enemy single-ended storage, score-entry `+0x38`, or photo-score bits 5/17/18/19 without new TH095-local evidence. The semantic phase remains active-incomplete.
 
 ### SEM-260 — recover the Player movement-scale owner
@@ -12749,8 +10895,6 @@ Fresh `PhotoGameUpdateView::UpdateMainState @ 0x0042F190` independently consumes
 
 **Validation.** Focused canonical replay passed `EclExtended.cpp` **22/22** and `PhotoGame.cpp` **22/22**, for **44/44 exact units** with **zero private-label refresh**. Command-local pinned-VC7.1 normal probes emitted a **44,057-byte** `EclExtended.obj` and **52,044-byte** `PhotoGame.obj`, both Intel 80386 COFF. Because `PhotoPlayerRuntime.hpp` is a shared runtime-owner header consumed directly by eleven source/header surfaces, the current dirty source immediately received the cold aggregate exact gate in four deterministic alphabetical partitions: **205 + 158 + 191 + 142 = 696/696 configured exact units across all 88 manifest sources**, every source reporting zero private-label refresh. Fresh repo-native whole-product validation then compiled **88/88 pinned VC7.1 i386 COFF** translation units across two profiles and linked/verified a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `e437750858c8efab6a9ca71f8bc8d1097d41e002a0f73ae4d2cce9418c2cdff6`. Successful linkage is reconstructed historical-Windows compile/link closure, not target whole-image identity. Wine emitted only headless window/explorer/systray diagnostics. Tracking remained **1,880 provisional / 697 source-present / 696 exact**, and `git diff --check` passed.
 
-**Recovery / analysis state.** SEM-260 began from clean tracked SEM-259 checkpoint `e2a55c9d6150feaa976f6dd1c24d8c44e24819bd`. A read-only ResultScreen audit command exited 141 because `head` closed a pipeline under `pipefail`; mandatory recovery immediately confirmed zero tracked diff, unchanged exclusion hashes, and `.analysis/` still at **3,394,984 bytes** before routing continued. No current-session analysis root or retained large artifact was created; semantic evidence came through the read-only target-attested provider and compile probes used command-local temporary storage.
-
 **Resume audit / next evidence route.** This closes a cross-system Player field that had a misleading normal identifier and an anonymous shared-owner projection; it does not complete Player, ECL, or photo semantics. After checkpoint, avoid immediately expanding the adjacent Player gaps merely because the shared header still contains anonymous storage. Prefer a different owner/protocol with genuinely new TH095-local producer plus independent reader/validator/cleanup evidence. Useful next surfaces include a non-photo historical-platform resource lifetime, a persistent/ABI field only if a new validator appears, or a compact non-ECL/non-ANM state protocol. Continue to keep the explicitly audited replay/input reserved bytes, ReplayScanWorker `unknown010`, shared task bit 8, FrontEnd bit 4, alternate enemy ANM `+0x4DFC`, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet residuals, compact-enemy single-ended storage, score-entry `+0x38`, photo-score bits 5/17/18/19, and ResultScreen `+0x6D38` Unknown absent fresh discriminators. The semantic phase remains active-incomplete.
 
 ### SEM-261 — recover the Supervisor screenshot worker token
@@ -12769,11 +10913,15 @@ Fresh `Supervisor::ScreenshotThread @ 0x00424980` independently closes the state
 
 **Production / exact representation.** Normal `src/Main.hpp` and `src/SupervisorRuntime.hpp` expose `u32 screenshotWorkerToken @ +0x528`; normal `src/Main.cpp` uses that name for the wait, `_beginthread` publication, and worker clear. `DIFFBUILD` maps the semantic token back to historical `screenshotThread`; `TH095_MATCH_EXACT` remains entirely in `MainExact.hpp/MainExact.inl` and retains the historical spelling. Normal `src/SupervisorLifecycle.cpp` splits its former `unknown448[0x200]` only enough to expose `screenshotWorkerToken @ +0x528`, while preserving the surrounding `+0x448..+0x527` and `+0x52C..+0x647` bytes as anonymous storage. Object size remains 0x7BC and every neighboring offset is unchanged.
 
-**Validation.** Focused canonical replay passed Main **48/48**, SupervisorLifecycle **2/2**, and SoundPlayer **27/27**, totaling **77/77 exact units** with **zero private-label refresh**. A first normal-probe orchestration failed before invoking VC7.1 because the helper module was dynamically imported without registration in `sys.modules`; that Python dataclass failure receives zero compile credit. Mandatory recovery confirmed the intended four source diffs unchanged, stable protected exclusions, unchanged `.analysis/`, and no surviving compiler/Wine producer. The corrected command-local pinned-VC7.1 probes emitted **116,002-byte** `Main.obj`, **5,562-byte** `SupervisorLifecycle.obj`, and **64,759-byte** `SoundPlayer.obj`, all Intel 80386 COFF.
+**Validation.** Focused canonical replay passed Main **48/48**, SupervisorLifecycle
+**2/2**, and SoundPlayer **27/27**, totaling **77/77 exact units** with **zero
+private-label refresh**. A first normal-probe orchestration failed before invoking VC7.1
+because the helper module was dynamically imported without registration in
+`sys.modules`; that Python dataclass failure receives zero compile credit. The corrected
+command-local pinned-VC7.1 probes emitted **116,002-byte** `Main.obj`, **5,562-byte**
+`SupervisorLifecycle.obj`, and **64,759-byte** `SoundPlayer.obj`, all Intel 80386 COFF.
 
 Because `Main.hpp` is a high-fanout shared owner header, the dirty SEM-261 source immediately received the cold aggregate exact gate in four deterministic alphabetical partitions: **205 + 158 + 191 + 142 = 696/696 exact units across all 88 manifest sources**, every source reporting zero private-label refresh. Fresh repo-native whole-product validation then compiled **88/88 pinned VC7.1 i386 COFF** translation units across two profiles and linked/verified `build/whole-validation/th095-reconstructed.exe`, a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `38e67fe64161b1d43d61d61dc10abe14aaec4d17a379b4e99732af558cfbe735`. Successful linkage is reconstructed historical-Windows compile/link closure, not target whole-image identity. Wine emitted only the usual headless window/explorer/systray diagnostics. Tracking remains **1,880 provisional / 697 source-present / 696 exact**, and `git diff --check` passed.
-
-**Recovery / analysis state.** Mandatory campaign recovery began from clean tracked handoff `cc11c16be41049c8659ed44274f6fc4be91bd21a` with the same four protected untracked exclusions and `.analysis/` at **3,394,984 bytes**. All five Factory-controlled contract/document paths were readable; the optional `$factory-semantic-reconstruction` skill body was not exposed as a readable resource. The broad baseline passed target verification, tracking, Ghidra attestation, CI **43/43**, the 696-unit graph, the 88-source/two-profile whole-build graph, and whitespace checks. One later read-only knowledge-ID command returned 1 only because no `SYS-*` rows exist under `pipefail`; recovery confirmed no source drift before this documentation write. No current-session `.analysis/gpt-web/` root or retained large artifact was created.
 
 **Resume audit / next evidence route.** This closes one non-photo historical runtime protocol and a missed lifecycle projection; it does not complete screenshot, Supervisor, or Win32 semantics. After checkpoint, rotate away from screenshot fields. Prefer a distinct persistent/ABI boundary with a genuinely new reader/validator, a compact non-ECL/non-ANM state protocol with two TH095-local discriminators, or another historical resource lifetime whose acquire/publication and cleanup are both target-visible. Do not broaden `SupervisorLifecycle` anonymous spans merely because canonical Main owns named fields elsewhere. Continue to keep the standing residuals—`ReplayScanWorker::unknown010`, replay/input reserved bytes, shared task bit 8, FrontEnd bit 4, alternate enemy ANM `+0x4DFC`, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet/compact-enemy residuals, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB`—Unknown absent fresh TH095-local discriminators. The semantic phase remains active-incomplete.
 
@@ -12795,8 +10943,6 @@ Fresh `SceneSelectControllerView::Update @ 0x00445E80` independently consumes th
 
 **Validation.** Fresh target evidence came through the registered read-only target-attested Ghidra provider and carries no exactness credit. Focused canonical replay of `src/SceneControllerDraw.cpp` passed **3/3 exact units** with **zero private-label refresh**. A command-local pinned-VC7.1 normal probe through `scripts/compile-probe.sh` emitted a **23,967-byte Intel 80386 COFF** object. `git diff --check` passed. This is a private one-TU representation change with no shared header/layout/PCH mutation, so cold aggregate exact and whole-product gates are deferred to the next committed campaign milestone/final handoff.
 
-**Recovery / analysis state.** The campaign resumed from clean tracked SEM-261 handoff `5fa4153ce1cc9e0dc24f77349251aff1ed6b91ea`; the same four protected untracked exclusions remained hash-stable and outside staging, `.analysis/` remained exactly **3,394,984 bytes**, and no independent producer survived the recovery check. All five Factory-controlled contracts/docs were readable. A first target decompile call used the older singular `address` argument and was rejected by the current provider schema before execution; it receives zero evidence credit. Operation discovery then showed the current `addresses[]` schema, and the retried target-attested decompile succeeded.
-
 **Resume audit / next evidence route.** This closes one missed sibling consumer of an already-proven compact protocol; it does not complete front-end semantics. After checkpoint, rotate away from front-end requested-state and screen-local-state work. Prefer a persistent/ABI boundary only if a genuinely new reader/validator appears, a non-photo historical-platform lifetime with acquire/publication plus independent cleanup/use not already closed by Sound/DirectInput/FileWrite/screenshot/version-data batches, or a compact non-ECL/non-ANM gameplay protocol whose stored selector has at least two independent TH095-local behavioral discriminators. Continue to keep `entryMode`, replay/input reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, alternate enemy ANM `+0x4DFC`, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet residuals including `field360`, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB` Unknown absent fresh target-local discriminators. The semantic phase remains active-incomplete.
 
 ### SEM-263 — name the non-record Game Result states
@@ -12816,8 +10962,6 @@ Fresh `ResultScreen::Update @ 0x00426BF0` independently consumes state 11 throug
 **Production / exact representation.** Normal `src/ResultScreen.cpp` adds a TU-private `ResultScreenGameResultNonRecordStateValue` for 11/12 and routes the non-record initializer publication, state-11 switch case, both 11 -> 12 transitions, and state-12 switch case through profile-aware tokens. `DIFFBUILD` expands those tokens to historical literals 11/12. `TH095_MATCH_EXACT` continues to use the frozen `ResultScreenExact.inl` before this normal source. No object layout, field width, function signature, branch topology, target address, persistent format, or replay-mode owner changes.
 
 **Validation.** Fresh target evidence came through the registered read-only target-attested Ghidra provider and carries no exactness credit. Focused canonical replay of `src/ResultScreen.cpp` passed **24/24 exact units** with **zero private-label refresh**. A command-local pinned-VC7.1 normal probe through `scripts/compile-probe.sh` emitted a **75,911-byte Intel 80386 COFF** object. `git diff --check` passed. This is a private one-TU vocabulary change with no shared header/layout/PCH mutation, so the cold aggregate exact and whole-product gates are deferred to the immediately following committed campaign milestone/final handoff.
-
-**Recovery / analysis state.** SEM-263 began from clean tracked SEM-262 checkpoint `81d928aa81aa934ccc2b0b84a83e792e5b907168`; the same four protected untracked exclusions remained hash-stable and outside staging, and `.analysis/` remained exactly **3,394,984 bytes**. A read-only knowledge-prefix query looked for a nonexistent `RESULT-*` fact namespace and exited 1 under `set -e`; it changed no repository state and receives zero evidence credit. Mandatory recovery immediately reconfirmed that only the intended `ResultScreen.cpp` diff existed before this documentation write.
 
 **Resume audit / next evidence route.** This closes one bounded non-record Game Result subprotocol, not the full ResultScreen state machine or semantic phase. After checkpoint, rotate away from ResultScreen. Prefer a distinct non-photo historical-platform lifetime with acquire/publication plus independent use/cleanup not already closed by Sound, DirectInput, FileWrite, screenshot, version-data, or dummy-MIDI batches; alternatively inspect a persistent/ABI field only if a genuinely new reader/validator appears, or a compact non-ECL/non-ANM gameplay selector with at least two TH095-local discriminators. Keep ResultScreen 7/8/9/10, `entryMode`, replay/input reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, alternate enemy ANM `+0x4DFC`, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet residuals including `field360`, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB` Unknown absent fresh target-local discriminators. The semantic phase remains active-incomplete.
 
@@ -12839,8 +10983,6 @@ Fresh `GameConfiguration::Initialize @ 0x00418720` zeroes the complete 0xC8-byte
 
 **Validation.** Focused canonical replay rebuilt `src/Main.cpp` and passed **48/48 exact** with **zero private-label refresh**. A command-local pinned-VC7.1 normal probe emitted a **116,140-byte Intel 80386 COFF** `Main.obj`. Because `Main.hpp` / the runtime config projection are shared owner surfaces, the same dirty source immediately received four deterministic alphabetical cold replay partitions: **205 + 158 + 191 + 142 = 696/696 configured exact units across all 88 manifest sources**, every source reporting zero private-label refresh. Fresh whole-product validation compiled **88/88 pinned VC7.1 i386 COFF** translation units across both production profiles and linked/verified `build/whole-validation/th095-reconstructed.exe`, a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `882696a4f7dd51bf2bdc7511d489b0396edea12ecbaca56c2d723bb01fbd6a03`. Successful linkage is reconstructed historical-Windows production closure only, not target whole-image identity. Wine emitted only the usual headless window/explorer/systray diagnostics; no runtime scenario receives credit.
 
-**Recovery / analysis state.** The transaction began from clean tracked HEAD `d7cda9ea2b41d540fa7f769bfbcda8d12feefa1f`, preserving the same four protected untracked exclusions outside staging. All five Factory-controlled contracts/docs were reread and the campaign broad baseline passed target verification, Ghidra attestation, tracking 1,880/697/696, CI 43/43, the 696-unit graph, the 88-source/two-profile product graph, and whitespace. The first Ghidra decompile call used an unsupported singular `address` field and received zero evidence credit; operation discovery then supplied the correct bounded `addresses[]` schema and the fresh target decompiles succeeded. `.analysis/` began at exactly 3,394,984 bytes; no current-session analysis root or retained large artifact was created.
-
 **Resume audit / next evidence route.** This closes one persistent config selector; it does not complete config, renderer, or platform semantics. Rotate away from GameConfiguration after checkpoint. Prefer a genuinely separate compact non-ECL/non-ANM selector with a stored producer and independent consumer, or a historical-platform owner only when a concrete maintained-source representation contradiction exists. Do not reopen the `0xFF` color-mode sentinel until a TH095-local producer appears. Continue to preserve `entryMode`, ResultScreen 7/8/9/10, replay/input reserved bytes, `ReplayScanWorker::unknown010`, shared task bit 8, FrontEnd bit 4, alternate enemy ANM `+0x4DFC`, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet/compact-enemy residuals, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB` as Unknown absent fresh TH095-local discriminators. The semantic phase remains active-incomplete.
 
 ### SEM-265 — name the ReplayScanWorker thread handle
@@ -12857,11 +10999,18 @@ Fresh `ReplayScanWorker::Stop @ 0x0041BB20` independently consumes `+0x00` as a 
 
 **Unknown / bounded.** The original ZUN identifier is Unknown. The evidence does not establish a semantic purpose for `ReplayScanWorker::unknown010`, does not identify an independent business callback/domain for `secondaryReplayScanWorker @ Supervisor+0x7A0`, and does not change the already-established interpretation of `exitSignal`, `active`, `threadId`, or `threadProc`. It also does not claim that `_beginthreadex` returns a native `HANDLE` C type in the original source; the maintained storage remains `uintptr_t`, matching the CRT API return and the exact four-byte target layout. This batch accepts a field meaning, not the current type ownership: `ReplayScanWorker` is still declared in multiple projections that must later converge on a canonical owner. Because exact/DIFF and normal compile different member tokens and, in `ReplayScanWorker.cpp`, different function bodies, exact replay proves only the compatibility branch; normal semantic acceptance rests separately on target evidence and the normal build.
 
-**Validation and recovery.** Initial focused canonical replay passed `ReplayScanWorker.cpp` 5/5, `SupervisorLifecycle.cpp` 2/2, `Main.cpp` 48/48, and `SoundPlayer.cpp` 27/27 = 82/82 exact with zero private-label refresh. The first normal VC7.1 probe command compiled ReplayScanWorker and SupervisorLifecycle but then failed in Main because `Supervisor::ThreadClose` was an additional normal `.handle` consumer not changed by the first edit; that failed command receives no Main/SoundPlayer compile credit. Mandatory recovery found only the intended transaction, stable protected exclusions, unchanged `.analysis/`, and no surviving producer. After binding `ThreadClose` to `threadHandle` with a DIFF-only historical-token mapping, Main replay again passed 48/48 exact with zero refresh and all four normal pinned-VC7.1 probes emitted Intel 80386 COFF objects: ReplayScanWorker 22,192 bytes, SupervisorLifecycle 5,574 bytes, Main 116,164 bytes, and SoundPlayer 64,771 bytes.
+**Validation and recovery.** Initial focused canonical replay passed
+`ReplayScanWorker.cpp` 5/5, `SupervisorLifecycle.cpp` 2/2, `Main.cpp` 48/48, and
+`SoundPlayer.cpp` 27/27 = 82/82 exact with zero private-label refresh. The first normal
+VC7.1 probe command compiled ReplayScanWorker and SupervisorLifecycle but then failed in
+Main because `Supervisor::ThreadClose` was an additional normal `.handle` consumer not
+changed by the first edit; that failed command receives no Main/SoundPlayer compile
+credit. After binding `ThreadClose` to `threadHandle` with a DIFF-only historical-token
+mapping, Main replay again passed 48/48 exact with zero refresh and all four normal
+pinned-VC7.1 probes emitted Intel 80386 COFF objects: ReplayScanWorker 22,192 bytes,
+SupervisorLifecycle 5,574 bytes, Main 116,164 bytes, and SoundPlayer 64,771 bytes.
 
 Because `Main.hpp` is a high-fanout shared owner and `SupervisorRuntime.hpp` is a shared runtime projection, the corrected dirty source immediately received the full cold exact surface in four deterministic alphabetical partitions: 205 + 158 + 191 + 142 = **696/696 exact units across all 88 manifest sources**, every source reporting zero private-label refresh. Fresh `scripts/build-whole.py` compiled **88/88 pinned VC7.1 i386 COFF** translation units across both production profiles and linked/verified `build/whole-validation/th095-reconstructed.exe`, a **780,288-byte PE32/i386 GUI** with build-local SHA-256 `eb6421df7ffe230cc7377201fa870479f107933a027fc64b8e25ccaf725981fa`. Successful linkage is reconstructed historical-Windows compile/link closure only; Wine's headless GUI/systray diagnostics receive no runtime-scenario credit.
-
-**Next evidence route.** Rotate away from ReplayScanWorker after checkpoint. Prefer a different non-photo historical-platform resource owner, a persistent/ABI field only if a genuinely new reader/validator appears, or a compact non-ECL/non-ANM protocol with at least two TH095-local behavioral discriminators. Keep `ReplayScanWorker::unknown010`, the business role of `secondaryReplayScanWorker`, replay/input reserved bytes, shared task bit 8, FrontEnd bit 4, alternate enemy ANM `+0x4DFC`, raw color-mode `0xFF` sentinel, Sound/PBG writer-only metadata, THTX reserved storage, ANM VM bit 14, TextRenderer RNG prefix, ScreenEffect one-sided storage, bullet/compact-enemy residuals, score-profile `+0x15`, score-entry `+0x38`, photo-score bits 5/17/18/19, ResultScreen `+0x6D38`, and ANM surface `+0x12DC..+0x13DB` Unknown absent fresh target-local evidence.
 
 ### SEM-266 — canonicalize the TH095 Background owner
 
@@ -15708,13 +13857,6 @@ Target identity, tracking, both build graphs, whitespace, the semantic guard,
 and all **73 workflow tests** pass. Aggregate/product closure remains deferred
 to the campaign milestone; SEM-298 is still the latest full receipt.
 
-**Next route.** Audit the selected `FrontEndControllerTimer` alias. Exact uses
-the layout-identical `ResultScreenTimer`, normal uses `ZunTimer`, and both
-resolve Tick to target `0x0041B8A0`. Prove whether one shared timer type can
-preserve the four exact FrontEnd units and public relocation destinations.
-Do not rewrite the broader ResultScreen timer family or accept a public-symbol
-migration merely because the machine-code target address is shared.
-
 ### SEM-315 — converge FrontEnd controller timer ownership
 
 **Scope and result.** `FrontEndControllerUpdateView` now uses canonical
@@ -15746,13 +13888,6 @@ probe emitted a **39,271-byte Intel 80386 COFF** object. Selector debt remains
 type, both timer fields, target reset order, eleven consumers, and both Tick
 calls, and all **74 workflow tests** pass. Aggregate/product closure remains
 deferred; SEM-298 is still the latest full receipt.
-
-**Next route.** Continue within `FrontEndControllerUpdateView`: test whether
-the already-proved `replayColumnCursor @ +0xF8`, `FrontEndRequestedState @
-+0x6110`, and `FrontEndControllerFlagBits @ +0x6120` declarations can be
-shared without changing any of the four exact FrontEnd units. Treat each
-compiler-visible type or field access as a separate oracle and retain Unknown
-padding; do not broaden this into unproved ResultScreen or queue ownership.
 
 ### SEM-316 — expose the shared front-end secondary cursor
 
@@ -15807,11 +13942,6 @@ image (build-local SHA-256
 That receipt is compile/link closure, not target whole-image identity or a
 runtime scenario. The selector baseline shrank by two FrontEnd directives;
 no new profile selector or selected declaration was introduced.
-
-**Next route.** Audit `requestedState @ +0x6110` and controller flags
-`@ +0x6120` independently against the target and both compiler profiles.
-Do not assume that an enum or bitfield name already present in normal source
-proves the exact profile's source shape or the remaining unknown flag bits.
 
 ### SEM-317 — share the front-end requested-state declaration
 
@@ -15868,10 +13998,6 @@ The last cold **696/696 exact** and 88-TU normal product
 receipts belong to SEM-316, before this batch; this batch follows the user's
 focused-iteration rule.
 
-**Next route.** Audit `FrontEndControllerFlagBits @ +0x6120` against target
-producers, consumers, and pinned-VC7.1 emission before attempting a shared
-declaration. Preserve bit 4 and bits 6..31 as unknown.
-
 ### SEM-318 — share the front-end controller flag word
 
 **Scope.** `FrontEndControllerFlagBits` moved from the normal-only
@@ -15919,12 +14045,6 @@ shrinking baselines to **715 selector directives across 103 files** and
 **200 declaration keys / 205 occurrences**. As in SEM-317, the latest cold
 aggregate and whole-product receipts remain SEM-316, before this focused
 batch. Target-independent CI passed all **76 workflow tests**.
-
-**Next route.** Continue with a different bounded FrontEnd owner or protocol.
-Do not assign a role to bit 4 from its writers alone. Review the raw cursor
-addresses in `UpdateMainMenu` against existing Scene Select/Replay Browser
-members before replacing them; exact emission must remain independently
-checked.
 
 ### SEM-319 — use named Scene Select queues in the exact main-menu transition
 
@@ -15978,10 +14098,6 @@ product receipt remain SEM-316, before this focused batch. Target-independent
 CI passed all **77 workflow tests**. The semantic-debt router's
 `FrontEndController.cpp` raw-member-access hint fell from 12 to zero;
 its remaining unknown storage and ownership views require separate evidence.
-
-**Next route.** Inspect the remaining exact Scene Select snapshot against
-the canonical normal owner one bounded field family at a time. Do not infer
-roles for the gaps or rewrite unrelated screen-local state from adjacency.
 
 ### SEM-320 — align exact Scene Select request and flag fields
 
@@ -16037,11 +14153,6 @@ baseline to **711 directives across 103 files**; selected declaration debt
 remains **199 keys / 204 occurrences**. The last cold 696/696 replay and
 88-TU normal product still belong to SEM-316, before this focused batch.
 Target-independent CI passed all **78 workflow tests**.
-
-**Next route.** Review the remaining exact/normal Scene Select update-view
-differences against independently observed layout and VC7.1 emission, one
-field family at a time. Do not infer a single shared screen-local state
-domain from the cross-screen requested-state enum.
 
 ### SEM-321 — converge Scene Select timer declarations
 
@@ -16102,11 +14213,6 @@ The last full 696/696 cold aggregate replay and 88-TU normal product remain
 the SEM-316 baseline; this batch uses the focused replay policy adopted after
 that baseline. No runtime scenario is claimed.
 
-**Next route.** Continue comparing exact/normal Scene Select front-end fields
-against their independent producers and consumers. The secondary cursor at
-`+0xF8` is already typed in normal source; verify the exact views and VC7.1
-emission before promoting its remaining anonymous spans.
-
 ### SEM-322 — type the exact Scene Select secondary cursor
 
 **Scope and target evidence.** The shared front-end owner contains a second
@@ -16145,11 +14251,6 @@ update separately compiled with pinned VC7.1 to a **54,235-byte Intel 80386
 COFF** object. No runtime-scenario or full-image exact claim follows from
 these checks; the latest cold 696/696 and 88-TU normal product remain the
 SEM-316 baseline.
-
-**Next route.** Review the remaining exact/normal Scene Select class and
-update-view differences with target-local producers and consumers. Keep
-`+0x24..+0xF7`, state-dependent `+0xBF0`, and unrelated cursor behavior
-Unknown until those contracts are bounded.
 
 ### SEM-323 — expose the shared front-end transition VM handle
 
@@ -16456,19 +14557,17 @@ and unrelated source bodies remain separate debt. No authored/exact credit
 or accepted target extent changes. Both closed profile-debt baselines remain
 unchanged.
 
-**Compiler / shared source.** A natural `RemoveFront()` member-loop probe
-shrinks the exact updater from 16,066 to 15,835 bytes. A minimal pinned-3077
-source with only the real pending member and two equivalent field/member
-advance functions confirms that `/Od /Ob1` emits a call to RemoveFront instead
-of inlining its loop. Full flags are `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi
-/Gr /Od /Ob1 /I src`; canonical exact builds additionally define
-`TH095_MATCH_EXACT`. Probe source, input digests, complete commands, object
-comparison, and disassembly are private under `.analysis/sem328/`. The rejected
-member abstraction is not retained. `FrontEndPendingTextureAdvance.inl`
-shares the original loop at both update call sites, using the caller's actual
-live `view` and `i` within its existing lock. It introduces no fake storage,
-extra view, alternate owner, or profile body. The exact/normal shift is the
-same source, although the enclosing texture/worker bodies still differ.
+**Compiler / shared source.** A natural `RemoveFront()` member-loop probe shrinks the
+exact updater from 16,066 to 15,835 bytes. A minimal pinned-3077 source with only the
+real pending member and two equivalent field/member advance functions confirms that `/Od
+/Ob1` emits a call to RemoveFront instead of inlining its loop. Full flags are `/MT
+/EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src`; canonical exact builds
+additionally define `TH095_MATCH_EXACT`. The rejected member abstraction is not
+retained. `FrontEndPendingTextureAdvance.inl` shares the original loop at both update
+call sites, using the caller's actual live `view` and `i` within its existing lock. It
+introduces no fake storage, extra view, alternate owner, or profile body. The
+exact/normal shift is the same source, although the enclosing texture/worker bodies
+still differ.
 
 **Native / normal oracle.** `scripts/check-portable-front-end.py` expands and
 renames the former cursor-only entry point; live navigation and CI use this
@@ -16521,7 +14620,6 @@ semantic guards, generated progress, whitespace checks, and public CI pass.
 No whole-image byte identity, worker/graphics behavior, semantic-completion
 percentage, or playable 64-bit game is claimed.
 
-
 ### SEM-329 — bounded raw queue storage and one shared Push/Pop body
 
 **Scope / target observations (2026-10-22).** The separate mission-preview
@@ -16564,14 +14662,12 @@ extent is introduced. The selected-declaration baseline shrinks from 197 keys /
 lifecycle drain branches. Historical inert compiler-storage locals in the
 surrounding phase wrappers remain debt.
 
-**Minimal compiler oracle.** A whole-object byte-copy/memcpy alternative emits
-93 bytes for Pop: its destination-first intrinsic chronology saves/restores
-ESI. It is rejected. A minimal actual eighteen-word-array source produces
-**78/78 Push and 91/91 Pop** exact structural bytes, with no relocations, under
-pinned VC7.1 build 3077. Its flags are `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi
-/Gr /Od /Ob1 /I src /DTH095_MATCH_EXACT`. The same ordinary assignment is used
-in production. Probe source/command/digest and diagnostic comparisons are
-private under `.analysis/sem329/`; no generated decompilation becomes source.
+**Minimal compiler oracle.** A whole-object byte-copy/memcpy alternative emits 93 bytes
+for Pop: its destination-first intrinsic chronology saves/restores ESI. It is rejected.
+A minimal actual eighteen-word-array source produces **78/78 Push and 91/91 Pop** exact
+structural bytes, with no relocations, under pinned VC7.1 build 3077. Its flags are `/MT
+/EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src /DTH095_MATCH_EXACT`. The same
+ordinary assignment is used in production.
 
 **Native / normal oracle.** `scripts/check-portable-front-end.py` now executes
 three production components. `SceneValueQueueTest.cpp` compiles the actual
@@ -16620,7 +14716,6 @@ compact evidence stays private. Semantic reconstruction remains active and
 incomplete; full-game portability and pointer-channel lifetime closure are
 not established by these component tests.
 
-
 ### SEM-330 — native address transport for mission-preview queue words
 
 **Scope / target evidence (2026-10-22).** Fresh attested disassembly of
@@ -16663,17 +14758,14 @@ splits remain separate debt; shared component acceptance does not accept all
 of their normal/exact implementations.
 
 **Compiler oracles.** A minimal ordinary sixteen-pointer queue with separate
-count/capacity and a final metadata store emits 103 bytes versus target 91.
-An eighteen-address-word representation matches all 91 bytes with no
-relocations under pinned VC7.1 build 3077 and `/MT /EHsc /Gs /DNDEBUG /Zi
-/Gy /GF /Oi /Gr /Od /Ob1 /I src /DTH095_MATCH_EXACT`. An unsigned count test
-instead changes target JLE to JBE; the maintained source explicitly interprets
-count as i32. An initial typed-null argument materializes an extra pointer
-temporary, enlarging the worker from 3,070 to 3,081 bytes and its frame by four.
-An explicit null publication restores the target immediate-zero store without
-that temporary. The negative natural forms are not retained. Probe inputs,
-full commands/digests, target queries, and comparisons remain private under
-`.analysis/sem330/`.
+count/capacity and a final metadata store emits 103 bytes versus target 91. An
+eighteen-address-word representation matches all 91 bytes with no relocations under
+pinned VC7.1 build 3077 and `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src
+/DTH095_MATCH_EXACT`. An unsigned count test instead changes target JLE to JBE; the
+maintained source explicitly interprets count as i32. An initial typed-null argument
+materializes an extra pointer temporary, enlarging the worker from 3,070 to 3,081 bytes
+and its frame by four. An explicit null publication restores the target immediate-zero
+store without that temporary. The negative natural forms are not retained.
 
 **Release boundary.** Normal Scene Select reads/frees the old primary front
 (and secondary on the nonnegative path) before advancing queues and discarding
@@ -16741,7 +14833,6 @@ untouched. Semantic reconstruction remains active-incomplete. Native address
 transport is accepted for this component; thread/count/lifetime closure and
 modern whole-game portability remain open.
 
-
 ### SEM-331 — shared native-width worker lifecycle and typed Win32 boundary
 
 **Scope / target observations (2026-10-22).** Fresh hash-attested queries cover
@@ -16784,23 +14875,21 @@ and historical global/reference aliases remain surrounding source debt. No
 new profile selector, selected declaration, fake storage, assembly, or authored
 extent is introduced; both closed debt baselines remain unchanged.
 
-**Compiler / API boundary.** The constructor's four initialization stores match
-all 53 target bytes in a minimal pinned-VC7.1 build-3077 probe. It shares the
+**Compiler / API boundary.** The constructor's four initialization stores match all 53
+target bytes in a minimal pinned-VC7.1 build-3077 probe. It shares the
 already-inventoried PbgArchive constructor address; the additional canonical
-`replay-scan-worker-constructor` recipe adds a comparison, not another target
-function or byte credit. A separate minimal typed BeginWorkerThread probe
-matches Start's complete 87-byte body and both REL32 positions/destinations
-(+0x0B to 0x0041BB20, +0x45 to 0x00485BA3). Therefore production uses an ordinary
-typed inline function in `ReplayScanWorkerWin32.hpp`, not a begin-call macro.
-Both production profiles use this same Win32 binding. It retains the target's
-direct void/fastcall callback conversion into the CRT unsigned/stdcall slot;
-it does not pretend to implement a portable dispatch ABI. A separate minimal
-native compiler probe rejects that direct cast under -Werror=cast-function-type.
-The native state fixture supplies a typed begin API and never invokes the cast;
-no warning suppression or incompatible indirect call is used in the oracle.
-Full commands, sources, input digests, and comparisons are private under
-`.analysis/sem331/`. Pinned flags are `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi
-/Gr /Od /Ob1 /I src /DTH095_MATCH_EXACT` for exact probes.
+`replay-scan-worker-constructor` recipe adds a comparison, not another target function
+or byte credit. A separate minimal typed BeginWorkerThread probe matches Start's
+complete 87-byte body and both REL32 positions/destinations (+0x0B to 0x0041BB20, +0x45
+to 0x00485BA3). Therefore production uses an ordinary typed inline function in
+`ReplayScanWorkerWin32.hpp`, not a begin-call macro. Both production profiles use this
+same Win32 binding. It retains the target's direct void/fastcall callback conversion
+into the CRT unsigned/stdcall slot; it does not pretend to implement a portable dispatch
+ABI. A separate minimal native compiler probe rejects that direct cast under
+-Werror=cast-function-type. The native state fixture supplies a typed begin API and
+never invokes the cast; no warning suppression or incompatible indirect call is used in
+the oracle. Pinned flags are `/MT /EHsc /Gs /DNDEBUG /Zi /Gy /GF /Oi /Gr /Od /Ob1 /I src
+/DTH095_MATCH_EXACT` for exact probes.
 
 **Native oracle.** The public front-end driver now runs five x86-64 executables.
 The worker test executes the actual common lifecycle with API fixtures under
@@ -16891,19 +14980,16 @@ dependency. Enclosing UI views, Supervisor wrappers, and Help aliases retain
 their documented surrounding source boundaries. Exact replay is not acceptance
 of those differing normal bodies.
 
-**Compiler / relocation evidence.** A minimal clean pinned-VC7.1 build-3077
-probe matches all 21 bytes without relocation. The three affected sources
-passed 11/11 strict comparisons before editing and again after migration.
-Worker now owns seven comparisons, browser three, Scene Select update one.
-Two call REL32 identities move from the partial Request method to canonical
-RequestExit at unchanged positions and destination `0x0041BB00`. Two DIR32
-receiver identities move from the proxy base `0x004C4CB8` with object addend 0
-to canonical Supervisor base `0x004C4670` with actual COFF addend `0x648`.
-Their complete effective target address stays `0x004C4CB8`; byte comparison
-and relocation resolution cover the entire enclosing functions, not just the
-setter. Full commands, source hashes, disassembly, caller/xref observations,
-structural reports, and strict recipes are retained under `.analysis/sem332/`.
-The target candidate/function credit and imported boundary are unchanged.
+**Compiler / relocation evidence.** A minimal clean pinned-VC7.1 build-3077 probe
+matches all 21 bytes without relocation. The three affected sources passed 11/11 strict
+comparisons before editing and again after migration. Worker now owns seven comparisons,
+browser three, Scene Select update one. Two call REL32 identities move from the partial
+Request method to canonical RequestExit at unchanged positions and destination
+`0x0041BB00`. Two DIR32 receiver identities move from the proxy base `0x004C4CB8` with
+object addend 0 to canonical Supervisor base `0x004C4670` with actual COFF addend
+`0x648`. Their complete effective target address stays `0x004C4CB8`; byte comparison and
+relocation resolution cover the entire enclosing functions, not just the setter. The
+target candidate/function credit and imported boundary are unchanged.
 
 **Native oracle / guard.** The existing worker fixture executes 32 actual
 shared RequestExit calls: zero or high native handle, active 0/1, four prior
@@ -17015,17 +15101,15 @@ one declaration; no layout or protocol is merged to silence the compiler. The
 failed aggregate is retained as a negative receipt, and a fresh aggregate is
 required after this header repair.
 
-**Shared source / compiler evidence.** SceneSelectionAssetWaitCancellation.inl
-shares the three ordered break statements across all four waits in both
-profiles. ScenePreviewDataWait.inl shares the complete positive/negative
-preview wait. A clean pointer-argument template with ordinary inline and the
-same template with force-inline each emit 3,170 bytes for the target 3,070-byte
-worker; neither is accepted. Statement sharing retains original expressions
-and lifetime frontiers without extra function parameters, assembly, inert
-locals, or a new profile body. The existing compilerStorage[4]/[8] phase locals
-are historical debt and are not legitimized by this batch. Private probe
-sources, complete pinned-3077 flags, commands, input hashes, and both rejected
-size comparisons are retained under `.analysis/sem333/`.
+**Shared source / compiler evidence.** SceneSelectionAssetWaitCancellation.inl shares
+the three ordered break statements across all four waits in both profiles.
+ScenePreviewDataWait.inl shares the complete positive/negative preview wait. A clean
+pointer-argument template with ordinary inline and the same template with force-inline
+each emit 3,170 bytes for the target 3,070-byte worker; neither is accepted. Statement
+sharing retains original expressions and lifetime frontiers without extra function
+parameters, assembly, inert locals, or a new profile body. The existing
+compilerStorage[4]/[8] phase locals are historical debt and are not legitimized by this
+batch.
 
 The actual controller-owner probe reproduces all 3,070 bytes and all 115
 relocation positions/types/destinations. The final worker source passes **1/1
@@ -17153,18 +15237,15 @@ is needed. Initial direct baselines pass 102/102 canonical comparisons across
 six sources and all six normal objects compile. The first changed direct replay
 passes 102/102 with 70 proved private-label updates in three units.
 
-Front-end load wait now uses one receivedCloseMsg expression in every profile.
-Its existing exact facade declares canonical SupervisorFlags instead of u32;
-the verified 201-byte body retains all relocations and only the +0x2A DIR32
-symbol changes from scalar decoration to the shared class decoration, at the
-same target 0x004C4AB4 and zero addend. This single reviewed public type retag
-is recorded in the canonical recipe. The final 102/102 direct replay needs no
-further private refresh. Raw-member removal briefly exposed the old DIFF
-numeric-macro dependency during this batch; the completed typed macro contract
-compiles with DIFFBUILD. That intermediate failure is not labeled pre-existing,
-and no broader DIFF caller acceptance is claimed. All probe commands, headers,
-input hashes, target queries, diagnostics, and comparisons are private in
-.analysis/sem334/.
+Front-end load wait now uses one receivedCloseMsg expression in every profile. Its
+existing exact facade declares canonical SupervisorFlags instead of u32; the verified
+201-byte body retains all relocations and only the +0x2A DIR32 symbol changes from
+scalar decoration to the shared class decoration, at the same target 0x004C4AB4 and zero
+addend. This single reviewed public type retag is recorded in the canonical recipe. The
+final 102/102 direct replay needs no further private refresh. Raw-member removal briefly
+exposed the old DIFF numeric-macro dependency during this batch; the completed typed
+macro contract compiles with DIFFBUILD. That intermediate failure is not labeled
+pre-existing, and no broader DIFF caller acceptance is claimed.
 
 **Independent native oracle.** The seventh public executable includes the actual
 production header under x86-64 GCC 8.4.0, -std=c++11 -O2 -Wall -Wextra -Werror
@@ -17221,10 +15302,8 @@ identity. Native type/field evidence and target dataflow supply the independent
 semantic support for the changed normal operations.
 
 Final CI passes **89 workflow tests and seven native x86-64/UBSan executables**.
-Tracking, generated progress, match graph, owner/debt/protocol guards, and
-whitespace checks pass. CPU 1, nice 10 and serial VC7.1 builds were used. Compact
-receipts are private under .analysis/sem334/; generated objects, executables,
-PDBs, maps and Python caches are cleared before checkpoint. Protected user-owned
+Tracking, generated progress, match graph, owner/debt/protocol guards, and whitespace
+checks pass. CPU 1, nice 10 and serial VC7.1 builds were used. Protected user-owned
 files are untouched. Semantic reconstruction remains active-incomplete.
 
 ### SEM-335 — retire detached primary-worker signal aliases
@@ -17284,13 +15363,12 @@ rename and failed to compile; the complete candidate passes. No acceptance is
 attributed to that intermediate diagnostic. The final direct canonical replay
 passes 35/35 with 24 proved private-label changes in three units.
 
-Before manifest mutation, complete structural comparisons cover all 35 units.
-For each of 26 reviewed public DIR32 rebases, the actual COFF addend is +0x650
-or +0x654 against canonical Supervisor base 0x004C4670. Base plus addend equals
-the prior target 0x004C4CC0/0x004C4CC4, at the same relocation offset/type.
-The previous strict scalar baseline proves its old zero addend. No destination
-is solved by reading a new target address into the recipe. Command, source,
-target, structural and public-rebase receipts are private under .analysis/sem335/.
+Before manifest mutation, complete structural comparisons cover all 35 units. For each
+of 26 reviewed public DIR32 rebases, the actual COFF addend is +0x650 or +0x654 against
+canonical Supervisor base 0x004C4670. Base plus addend equals the prior target
+0x004C4CC0/0x004C4CC4, at the same relocation offset/type. The previous strict scalar
+baseline proves its old zero addend. No destination is solved by reading a new target
+address into the recipe.
 
 **Native field oracle / guard.** The existing wait executable now contains a
 real ReplayScanWorker, constructed/destructed by the shared lifecycle with zero
@@ -17354,18 +15432,16 @@ relocations separately, excludes only these proved obsolete initializers, and
 then compares all remaining roots/graphs. The final linked map contains neither
 Help reference symbol. No Supervisor/worker initializer or lifetime is removed.
 
-The five actual normal callback extents now also match their target diagnostic
-extents: asset 3,070, Help 88, front-end 201, replay 403 and Photo 335 bytes. A
-separate supplementary normal compiler/semantic oracle compares all **4,097
-bytes with 182 independently bound relocations**. It uses existing per-function
-canonical anchors, unique repository anchors, and already-documented
-ABI-027/077/MAIN-030 data owners; the remaining callable names must be exported
-by their existing ledger-designated normal TUs. It does not accept a
-target-field-solved address as an independent binding. This adds no canonical
-recipe or exact ledger credit. The different normal coordinator/main-menu
-bodies remain separate; neither full-product identity nor native parent/game
-ABI is inferred. Compact commands, old/new COFF audit details and reports remain
-private in .analysis/sem335/.
+The five actual normal callback extents now also match their target diagnostic extents:
+asset 3,070, Help 88, front-end 201, replay 403 and Photo 335 bytes. A separate
+supplementary normal compiler/semantic oracle compares all **4,097 bytes with 182
+independently bound relocations**. It uses existing per-function canonical anchors,
+unique repository anchors, and already-documented ABI-027/077/MAIN-030 data owners; the
+remaining callable names must be exported by their existing ledger-designated normal
+TUs. It does not accept a target-field-solved address as an independent binding. This
+adds no canonical recipe or exact ledger credit. The different normal
+coordinator/main-menu bodies remain separate; neither full-product identity nor native
+parent/game ABI is inferred.
 
 CPU 1, nice 10 and serial VC7.1 builds were used. All build/test handles were
 observed terminal before clearing generated objects, PE/native binaries, PDBs,
@@ -17438,19 +15514,16 @@ the startup EH handler name, at unchanged target positions/destinations.
 The final direct canonical replay passes 55/55, refreshing 25 private labels
 in one unit.
 
-A minimal pinned-3077 object keeps legacy Start at all 87 target bytes and
-both relocation positions. The natural typed transport emits Start 68 bytes,
-a separate 168-byte launch routine and a 61-byte CRT entry. Disassembly proves
-the latter consumes its stack parameter, loads ECX for the callback, returns
-unsigned zero and emits RET 4. An earlier malloc transport was only a private
-probe; the accepted normal transport constructs/deletes an actual C++ context
-with nothrow new. Strict native GCC rejects the legacy incompatible
-function-pointer conversion under -Werror=cast-function-type; no diagnostic
-suppression is introduced. These independent failures/successes establish the
-narrow binding/emission boundary. Exact replay never accepts the new normal
-Start through the legacy adapter. Commands, candidate sources, hash-attested
-queries, signature/relocation audits and compiler diagnostics are private under
-.analysis/sem336/.
+A minimal pinned-3077 object keeps legacy Start at all 87 target bytes and both
+relocation positions. The natural typed transport emits Start 68 bytes, a separate
+168-byte launch routine and a 61-byte CRT entry. Disassembly proves the latter consumes
+its stack parameter, loads ECX for the callback, returns unsigned zero and emits RET 4.
+An earlier malloc transport was only a private probe; the accepted normal transport
+constructs/deletes an actual C++ context with nothrow new. Strict native GCC rejects the
+legacy incompatible function-pointer conversion under -Werror=cast-function-type; no
+diagnostic suppression is introduced. These independent failures/successes establish the
+narrow binding/emission boundary. Exact replay never accepts the new normal Start
+through the legacy adapter.
 
 **Native runtime oracle.** An eighth x86-64/UBSan executable compiles the actual
 shared context transport and worker core with strict C++11 and pthread support.
@@ -17502,14 +15575,12 @@ separately, rather than assumed to exist in the original target or baseline.
 The final map contains neither retired Supervisor* callback signature.
 
 Normal Main acceptance rests on this independent normal comparison plus target
-parameter/caller evidence, not on the exact-selected Main body. Normal Start
-acceptance rests on its actual normal compile/link, pinned typed-entry ABI
-evidence and shared transport/core host-thread oracle. The separate exact
-legacy adapter is not used as semantic acceptance of typed launch behavior.
-Compiler flags, object ownership and worker/parent layout remain unchanged;
-this adds no whole-image identity, Windows runtime execution or playable port
-claim. Compact source/command/compiler/target/COFF/native/map receipts remain
-private in .analysis/sem336/.
+parameter/caller evidence, not on the exact-selected Main body. Normal Start acceptance
+rests on its actual normal compile/link, pinned typed-entry ABI evidence and shared
+transport/core host-thread oracle. The separate exact legacy adapter is not used as
+semantic acceptance of typed launch behavior. Compiler flags, object ownership and
+worker/parent layout remain unchanged; this adds no whole-image identity, Windows
+runtime execution or playable port claim.
 
 CPU 1, nice 10 and serial VC7.1 builds were used. After all build/test/audit
 handles returned terminal success, generated objects, PE/native binaries, PDBs,
@@ -17549,19 +15620,17 @@ reference graphs and only the intended Start change, plus the two new helpers.
 The final helpers are 168-byte launch / 61-byte CRT entry, with Start still
 68 bytes. Earlier first-pass receipts are retained with their own names.
 
-A separate private console probe includes the actual production Win32 binding
-and shared core, compiles/links with the attested VC7.1 build 3077, and executes
-under Wine against the actual CRT and Win32 APIs. Four cases cross two fastcall
-callbacks and null/non-null arguments; real WaitForSingleObject succeeds, the
-arguments/results match, GetExitCodeThread reports the adapter's unsigned zero,
-and worker Stop closes the handle. Two null-callback cases independently return
-zero with EINVAL and unchanged ID, keeping active=1/exitSignal=0. Callback code
-never touches worker flags; even after the successful OS wait they remain armed
-until Stop. All six cases pass. This supplements the native ownership/failure
-fixture with concrete CRT/Win32-under-Wine execution; it does not accept native
-Windows game scheduling, shared-flag races, every wait/close failure, or a
-whole-game portable product. Probe code/commands/tool hashes/output remain
-private under .analysis/sem336/.
+A separate private console probe includes the actual production Win32 binding and shared
+core, compiles/links with the attested VC7.1 build 3077, and executes under Wine against
+the actual CRT and Win32 APIs. Four cases cross two fastcall callbacks and null/non-null
+arguments; real WaitForSingleObject succeeds, the arguments/results match,
+GetExitCodeThread reports the adapter's unsigned zero, and worker Stop closes the
+handle. Two null-callback cases independently return zero with EINVAL and unchanged ID,
+keeping active=1/exitSignal=0. Callback code never touches worker flags; even after the
+successful OS wait they remain armed until Stop. All six cases pass. This supplements
+the native ownership/failure fixture with concrete CRT/Win32-under-Wine execution; it
+does not accept native Windows game scheduling, shared-flag races, every wait/close
+failure, or a whole-game portable product.
 
 Final generated build artifacts, rebuilt baseline source copies/archive and
 Python caches are cleared only after every final handle is terminal. Compact
@@ -17652,11 +15721,8 @@ remains open through observations, then returns unsigned zero and completes an
 actual successful wait before Stop closes. All 128 cases pass. This does not
 establish native Windows game scheduling, MSVC x64, other CPUs or all OS failures.
 
-CPU 1, nice 10 and serial VC7.1 jobs were used. All build/test handles returned
-terminal success before compact source/command/tool/COFF/map/native receipts were
-saved under .analysis/sem337/ and generated objects, binaries, PDBs, maps and
-Python caches were cleared. Target, toolchains, Ghidra and protected files remain.
-The next bounded lane is preview caller/count/lifetime evidence across
+CPU 1, nice 10 and serial VC7.1 jobs were used. Target, toolchains, Ghidra and protected
+files remain. The next bounded lane is preview caller/count/lifetime evidence across
 cancellation, publication and release. The phase remains **active-incomplete**.
 
 ### SEM-338 — atomic scene queue words and explicit payload acquisition
@@ -17756,12 +15822,9 @@ and old-front deletion are checked. All 1,024 handoffs pass. This does not
 establish native Windows game scheduling, MSVC x64, all cancellation counts,
 all OS failures or a safe post-shift release policy.
 
-Final jobs use CPU 1/nice 10 and serial VC7.1. All build/test handles are terminal
-before source/command/tool/COFF/map/runtime receipts are retained in
-.analysis/sem338/ and generated outputs/caches are cleared. Target, tools,
-Ghidra and protected files are untouched. Queue caller/count/lifetime closure
-across cancellation and release remains the next bounded lane. The phase stays
-**active-incomplete**.
+Final jobs use CPU 1/nice 10 and serial VC7.1. Target, tools, Ghidra and protected files
+are untouched. Queue caller/count/lifetime closure across cancellation and release
+remains the next bounded lane. The phase stays **active-incomplete**.
 
 ### SEM-339 — one Render source and truthful worker-stop call identities
 
@@ -17795,10 +15858,10 @@ stay at 0x00425150. The broader selector baseline shrinks one Main.cpp occurrenc
 selector, selected layout, adapter, source credit, assembly, padding or inert
 local is introduced.
 
-TH08 source is corroboration only: its Supervisor::ThreadClose sets a request
-and waits at 1,000 ms, and its Render calls that method. The TH095 target with
-the same spelling is a different operation. Neither that name nor TH08 storage
-is substituted for target-local evidence. Corroboration source revision/path hashes are retained in .analysis/sem339/.
+TH08 source is corroboration only: its Supervisor::ThreadClose sets a request and waits
+at 1,000 ms, and its Render calls that method. The TH095 target with the same spelling
+is a different operation. Neither that name nor TH08 storage is substituted for
+target-local evidence.
 
 **Independent direct oracles.** Pre-change Main/worker passes 55/55 exact and
 captures both normal objects. Final direct replay passes 55/55 after 25 proved
@@ -17845,13 +15908,10 @@ and 153 code/data/EH reference graphs under 28 private spellings. Compiler-owned
 EH audit passes **57 parents, 72 actions and 81/81 provenance-exact references**.
 Public CI passes 96 tests and eleven native programs from the final freeze.
 
-Final validation uses CPU 1/nice 10 and serial VC7.1. After every build/test handle
-is terminal, compact source/command/tool/COFF/map/runtime receipts remain in
-.analysis/sem339/ and generated objects, binaries, PDBs, maps and caches are
-cleared. Target, tools, Ghidra and protected files are untouched. Queue global
-count/lifetime and full native owner/graphics/OS closure remain open; this batch
-closes the truthful shared Render stop/result edge only. The phase remains
-**active-incomplete**.
+Final validation uses CPU 1/nice 10 and serial VC7.1. Target, tools, Ghidra and
+protected files are untouched. Queue global count/lifetime and full native
+owner/graphics/OS closure remain open; this batch closes the truthful shared Render
+stop/result edge only. The phase remains **active-incomplete**.
 
 ### SEM-340 — one GameWindow owner with native-width Windows ABI
 
@@ -17900,16 +15960,15 @@ function roots, one private entry and 143 recursively referenced code/data/EH
 graphs preserve bytes and bindings under 28 private spellings. This covers the
 normal object independently rather than transferring exact-source success.
 
-The new public compile-only GameWindowLayoutTest.cpp uses the real Windows
-headers and owner, with no I/O fixture or Main/D3D projection. Pinned VC7.1 3077
-x86 and MinGW-w64 GCC 13 x86/x64 all compile it. Every field offset, total size,
-restored includer packing and native message parameter/result width is checked;
-WNDPROC accepts WindowProc without a cast, and the actual QPC/DestroyWindow API
-calls accept owner members directly. Independent COFF receipts give x86 pointer/
-message widths 4, size 84, frequency/start/current/origin offsets 20/28/52/76;
-x64 gives widths 8, size 88 and offsets 24/32/56/80. Full flags and commands are
-retained in .analysis/sem340/; reusable commands live in ORACLES.md. These are
-compiler ABI results, not runtime window or full native product acceptance.
+The new public compile-only GameWindowLayoutTest.cpp uses the real Windows headers and
+owner, with no I/O fixture or Main/D3D projection. Pinned VC7.1 3077 x86 and MinGW-w64
+GCC 13 x86/x64 all compile it. Every field offset, total size, restored includer packing
+and native message parameter/result width is checked; WNDPROC accepts WindowProc without
+a cast, and the actual QPC/DestroyWindow API calls accept owner members directly.
+Independent COFF receipts give x86 pointer/ message widths 4, size 84,
+frequency/start/current/origin offsets 20/28/52/76; x64 gives widths 8, size 88 and
+offsets 24/32/56/80. These are compiler ABI results, not runtime window or full native
+product acceptance.
 
 **Final aggregate gates.** Frozen cold replay passes **698/698 comparisons
 across 88 sources**, with zero further refresh. Relative to 2e66166 the only
@@ -17932,14 +15991,11 @@ are not counted as an additional native runtime program. Mapping/origin/source/
 exact ledgers and header-only claims remain unchanged. The inherited standalone
 DIFF diagnostic from SEM-339 remains open and is not retested or accepted here.
 
-All VC7.1 builds are serial on CPU 1/nice 10. Terminal command reports, final
-input hashes, target queries, compiler identities, ABI/COFF graphs, PE report,
-map/object hashes and TH08 provenance remain private in .analysis/sem340/.
-Generated objects, executables, maps, PDBs and caches are cleared after those
-receipts are saved. Target/tools/Ghidra/protected files are untouched. Supervisor,
-graphics/OS runtime closure and preview count/release interleavings remain open;
-this batch accepts one Windows GameWindow declaration and its tested x86/x64
-ABI, not a complete native game. The phase remains **active-incomplete**.
+All VC7.1 builds are serial on CPU 1/nice 10. Generated objects, executables, maps, PDBs
+and caches are cleared after those receipts are saved. Target/tools/Ghidra/protected
+files are untouched. Supervisor, graphics/OS runtime closure and preview count/release
+interleavings remain open; this batch accepts one Windows GameWindow declaration and its
+tested x86/x64 ABI, not a complete native game. The phase remains **active-incomplete**.
 
 ### SEM-341 — independent FPS clock state and shared sample/producer source
 
@@ -18026,16 +16082,13 @@ audit passes **57 parents, 72 actions and 81/81 provenance-exact references**.
 Public CI passes 99 workflow tests and twelve native programs from the frozen
 inputs. Whole linkage is not a byte-exact image or playable native-game claim.
 
-All builds are serial VC7.1 on CPU 1/nice 10. Source/command/tool receipts,
-fresh target queries/xrefs/callers, actual object graphs, minimal compiler probe,
-normal PE report and object/map hashes remain private in
-.analysis/sem341-resume/. Generated outputs and caches are cleared only after
-terminal reports and receipts. The old parked patch/stash are superseded by
-this accepted source and must not be applied again. Target, tools, Ghidra and
-protected files remain untouched. Standalone DIFF's inherited missing
-RuntimePressedButtons diagnostic is not retested or repaired here. Parent
-Supervisor consolidation, real clock/locking and whole-game/native closure remain
-open; semantic reconstruction remains **active-incomplete**.
+All builds are serial VC7.1 on CPU 1/nice 10. Generated outputs and caches are cleared
+only after terminal reports and receipts. The old parked patch/stash are superseded by
+this accepted source and must not be applied again. Target, tools, Ghidra and protected
+files remain untouched. Standalone DIFF's inherited missing RuntimePressedButtons
+diagnostic is not retested or repaired here. Parent Supervisor consolidation, real
+clock/locking and whole-game/native closure remain open; semantic reconstruction remains
+**active-incomplete**.
 
 ### SEM-342 — native-width window module and shared DirectInput setup
 
@@ -18115,14 +16168,12 @@ Actual product Main again preserves all 55 named roots, one private entry and
 tests and thirteen native programs. SDK compiles/control diagnostics are
 separate from public-CI prerequisites and actual Windows execution.
 
-Serial VC7.1 builds use CPU 1/nice 10. Compact target/source/command/compiler/
-SDK/COFF/normal-product/map/object receipts remain private in .analysis/sem342/.
-Generated outputs and caches are cleared after every handle is terminal and
-receipts are saved. Target, tools, Ghidra and protected files are unchanged.
-Standalone DIFF's pre-existing RuntimePressedButtons failure is not retested or
-repaired. Native module transport is corrected for this shared client path;
-parent declarations, actual callbacks/backend and the complete 64-bit game
-remain open. Semantic reconstruction remains **active-incomplete**.
+Serial VC7.1 builds use CPU 1/nice 10. Generated outputs and caches are cleared after
+every handle is terminal and receipts are saved. Target, tools, Ghidra and protected
+files are unchanged. Standalone DIFF's pre-existing RuntimePressedButtons failure is not
+retested or repaired. Native module transport is corrected for this shared client path;
+parent declarations, actual callbacks/backend and the complete 64-bit game remain open.
+Semantic reconstruction remains **active-incomplete**.
 
 ### SEM-343 — shared input device selection and availability publication
 
@@ -18190,11 +16241,11 @@ All 320 source/tool/test inputs, including the five Ghidra Java scripts, remain
 frozen. Closed selector/declaration baselines stay 265 keys / 696 directives
 and 191 keys / 196 declarations. Source/mapping/exact totals remain unchanged.
 
-Result: the initialization/publication and device-selection clients share
-source across profiles and have independent normal/native/SDK evidence. No new
-mapping, source-presence, exact credit, profile selector, alternate owner or
-emission adapter is added. Durable facts are MAIN-053 and the current boundary
-map is WINDOW_INPUT_INITIALIZATION.md. Private receipts are .analysis/sem343/.
+Result: the initialization/publication and device-selection clients share source across
+profiles and have independent normal/native/SDK evidence. No new mapping,
+source-presence, exact credit, profile selector, alternate owner or emission adapter is
+added. Durable facts are MAIN-053 and the current boundary map is
+WINDOW_INPUT_INITIALIZATION.md.
 
 ### SEM-344 — shared axis-range protocol and clean normal callback
 
@@ -18264,11 +16315,10 @@ tests and thirteen native programs. All 322 source/tool/test inputs stay frozen;
 closed selector/declaration baselines remain 265 keys / 696 directives and
 191 keys / 196 selected declarations.
 
-Result: the axis protocol is shared and the normal callback loses its unused
-copy with independent target/compiler/native evidence. The exact wrapper's
-remaining context-copy debt is explicit. Mapping/source/exact totals are
-unchanged. Durable fact: MAIN-054; current boundaries:
-WINDOW_INPUT_INITIALIZATION.md and SOURCE_MAP.md. Receipts: .analysis/sem344/.
+Result: the axis protocol is shared and the normal callback loses its unused copy with
+independent target/compiler/native evidence. The exact wrapper's remaining context-copy
+debt is explicit. Mapping/source/exact totals are unchanged. Durable fact: MAIN-054;
+current boundaries: WINDOW_INPUT_INITIALIZATION.md and SOURCE_MAP.md.
 
 ### SEM-345 — one full primary Supervisor declaration
 
@@ -18332,12 +16382,9 @@ normal symbol boundaries are inventoried separately, not promoted. EH passes
 stay frozen. Closed selector/declaration baselines remain 265 keys / 696
 directives and 191 keys / 196 selected declarations.
 
-Result: two full declaration copies and fifteen old exact loading-state accesses
-are retired without new mapping/source/exact credit. Durable fact: MAIN-055;
-current declaration/oracle boundaries: SUPERVISOR_DECLARATION.md, ORACLES.md and
-SOURCE_MAP.md. Private commands, baseline objects/graphs, field-token inventory,
-SDK controls and receipts are .analysis/sem345/.
-
+Result: two full declaration copies and fifteen old exact loading-state accesses are
+retired without new mapping/source/exact credit. Durable fact: MAIN-055; current
+declaration/oracle boundaries: SUPERVISOR_DECLARATION.md, ORACLES.md and SOURCE_MAP.md.
 
 ### SEM-346 — canonical Supervisor lifetime declaration
 
@@ -18402,14 +16449,11 @@ references. Public CI passes 109 workflow tests and thirteen native programs.
 All 326 source/tool/test inputs remain frozen. Closed profile baselines stay
 265 keys / 696 directives and 191 keys / 196 selected declarations.
 
-Result: the partial lifecycle parent and unnecessary viewport construction
-adapter are retired; one required fieldless configuration policy is shared.
-No mapping, source-presence or exact credit is added. MAIN-056 and
-SUPERVISOR_DECLARATION.md record the construction and oracle boundaries.
-Commands, baseline comparisons, compiler controls and compact receipts are
-private under .analysis/sem346/. Generated outputs are removable after receipts
+Result: the partial lifecycle parent and unnecessary viewport construction adapter are
+retired; one required fieldless configuration policy is shared. No mapping,
+source-presence or exact credit is added. MAIN-056 and SUPERVISOR_DECLARATION.md record
+the construction and oracle boundaries. Generated outputs are removable after receipts
 are saved; semantic reconstruction and game ports remain active-incomplete.
-
 
 ### SEM-347 — canonical gameplay viewport owner and shared shake publication
 
@@ -18487,13 +16531,10 @@ Public CI passes 111 workflow tests and thirteen native programs; all
 profile debt shrinks to 264 keys / 695 directives; declaration debt remains
 191 keys / 196 selected declarations.
 
-Result: one parent view, one configuration adapter, integer alias stores and
-one exact-selected body boundary are retired without new source/exact credit.
-Durable fact: MAIN-057. GAMEPLAY_VIEWPORT.md records the current contract and
-normal/compiler/runtime boundary. Commands, target observations, controls,
-input/object hashes and compact receipts are private under .analysis/sem347/.
-Semantic reconstruction and the full 64-bit game remain active-incomplete.
-
+Result: one parent view, one configuration adapter, integer alias stores and one
+exact-selected body boundary are retired without new source/exact credit. Durable fact:
+MAIN-057. GAMEPLAY_VIEWPORT.md records the current contract and normal/compiler/runtime
+boundary. Semantic reconstruction and the full 64-bit game remain active-incomplete.
 
 ### SEM-348 — canonical background viewport and camera ownership
 
@@ -18573,13 +16614,10 @@ all source/recipe inputs unchanged. Closed selector debt shrinks to
 264 keys / 689 directives; declaration debt stays
 191 keys / 196 declarations.
 
-Result: background viewport/camera ownership is canonical in both build paths
-without new exact credit. The guard covers owner/alias/projection/order
-regressions, including a profile branch opening before the alias block.
-Durable fact: MAIN-058. BACKGROUND_VIEWPORT.md records the bounded contract;
-commands, controls, target observations and receipts remain in .analysis/sem348/.
-Semantic reconstruction and full game ports remain active-incomplete.
-
+Result: background viewport/camera ownership is canonical in both build paths without
+new exact credit. The guard covers owner/alias/projection/order regressions, including a
+profile branch opening before the alias block. Durable fact: MAIN-058. Semantic
+reconstruction and full game ports remain active-incomplete.
 
 ### SEM-349 — canonical ANM viewport and fixed camera consumers
 
@@ -18646,11 +16684,9 @@ to 263 keys / 687 directives; declaration debt remains
 profile-selected aliases, wrong active fields and a current-camera substitution
 for the fixed PLAYFIELD distance origin.
 
-Result: canonical ANM viewport/camera consumption in both products, without a
-normal code change or added matching credit. Durable fact: MAIN-059.
-ANM_VIEWPORT.md records the bounded protocol and oracle limits; private commands,
-input/object hashes, target observations and receipts are in .analysis/sem349/.
-Semantic reconstruction and full game ports remain active-incomplete.
+Result: canonical ANM viewport/camera consumption in both products, without a normal
+code change or added matching credit. Durable fact: MAIN-059. Semantic reconstruction
+and full game ports remain active-incomplete.
 
 ### SEM-350 — shared ScreenEffect owner, timer and shake publication
 
@@ -18724,9 +16760,8 @@ user files are excluded from inputs. Closed selector debt shrinks to
 Heavy commands remain serial under half-CPU/768-MiB-high/1-GiB-max controls,
 CPU 1/nice 19; recorded runs peak at 254.16 MiB with zero OOM events.
 
-Result: canonical ScreenEffect source and shake storage/publication without a
-normal code change or added exact credit. Durable fact: MAIN-060. Commands,
-controls, reports and frozen-input receipts: .analysis/sem350/.
+Result: canonical ScreenEffect source and shake storage/publication without a normal
+code change or added exact credit. Durable fact: MAIN-060.
 
 ### SEM-351 — shared DrawSquare owners and explicit quad wire
 
@@ -18787,11 +16822,10 @@ shrinks to 256 keys / 675 directives; declaration debt to 186 keys / 191 entries
 Tracking, generated progress and local links pass. Recorded serial half-CPU /
 768-MiB-high / 1-GiB-max runs peak at 260.06 MiB, zero OOM events.
 
-Result: all sixteen ScreenEffect methods now share maintained bodies, without
-normal code changes or extra exact credit. MAIN-061 and SCREEN_EFFECT_QUAD.md
-record the contract. Distinct ANM wire carriers, remaining lifecycle/parent
-views, raw effect parameters, the opaque cancel gate and platform work remain
-open. Commands, controls, frozen recipes and reports: .analysis/sem351/.
+Result: all sixteen ScreenEffect methods now share maintained bodies, without normal
+code changes or extra exact credit. MAIN-061 and SCREEN_EFFECT_QUAD.md record the
+contract. Distinct ANM wire carriers, remaining lifecycle/parent views, raw effect
+parameters, the opaque cancel gate and platform work remain open.
 
 ### SEM-352 — canonical ANM XYZ/UV stream and distinct quad copy
 
@@ -18832,11 +16866,13 @@ one profile-independent wire owner. Legacy ECL/lifecycle projections and
 other surrounding profile boundaries remain debt. The +0x0C word, copy's
 rendering/lifetime purpose and original names remain unknown.
 
-Exact oracle: focused 33/33; the fresh cold aggregate passes 698/698 across all 88 sources, followed by a fixed-object, zero-refresh repeat of all 698 comparisons. Only twenty public copy identities
-retag, with unchanged raw Setup bytes, reference offsets/kinds/addends and
-physical destinations. A complete base-769a0bd audit reviews 323 same-family private-label retags; together with the twenty public retags these affect twenty recipes. All profiles, partitions, extents,
-function identities and authored credit remain fixed. Private command,
-target/compiler, audit and terminal receipts are below .analysis/sem352/.
+Exact oracle: focused 33/33; the fresh cold aggregate passes 698/698 across all 88
+sources, followed by a fixed-object, zero-refresh repeat of all 698 comparisons. Only
+twenty public copy identities retag, with unchanged raw Setup bytes, reference
+offsets/kinds/addends and physical destinations. A complete base-769a0bd audit reviews
+323 same-family private-label retags; together with the twenty public retags these
+affect twenty recipes. All profiles, partitions, extents, function identities and
+authored credit remain fixed.
 
 Normal oracle: all 88 sources cold-compile/link with zero unresolved symbols;
 the build-local PE32 GUI is 778,752 bytes, SHA-256
@@ -18906,13 +16942,14 @@ enum. Legacy enclosing owners/global-color ABI and whole-game capacity remain
 open. Retiring the ECL declaration and draw selector lowers closed declaration
 debt to 185 keys / 190 definitions and selector debt to 255 keys / 674 directives.
 
-Exact oracle: all 81 focused methods across geometry, manager, Main and ECL
-pass strict comparison. The fresh cold aggregate passes all 698 configured units across 88 sources, followed by all 698 fixed-object, zero-refresh comparisons. The full audit reviews 237 public-reference retags, two function identities and 765 same-family private labels. The global storage and two method identities
-retag with every byte, relocation position/type/addend and physical target
-fixed. Only two function signatures change terminology in functions.csv; all
-addresses, extents, profiles, object partitions and authored credit stay fixed.
-Private controls, source hashes, target observations and audits:
-.analysis/sem353/.
+Exact oracle: all 81 focused methods across geometry, manager, Main and ECL pass strict
+comparison. The fresh cold aggregate passes all 698 configured units across 88 sources,
+followed by all 698 fixed-object, zero-refresh comparisons. The full audit reviews 237
+public-reference retags, two function identities and 765 same-family private labels. The
+global storage and two method identities retag with every byte, relocation
+position/type/addend and physical target fixed. Only two function signatures change
+terminology in functions.csv; all addresses, extents, profiles, object partitions and
+authored credit stay fixed.
 
 Normal oracle: all 88 sources cold-compile/link with zero unresolved symbols.
 Build-local PE32 GUI: 778,752 bytes, SHA-256
@@ -18941,7 +16978,6 @@ runtime declarations and casts while preserving target behavior. No real
 GPU/driver, general overflow safety, all FPU modes, full renderer, joins,
 native parent or native 64-bit/Linux/Web game is accepted. Semantic/platform
 work remains active-incomplete. See [ANM_VERTEX_BATCH.md](ANM_VERTEX_BATCH.md).
-
 
 ### SEM-354 — named ANM submission paths and byte-cache invalidation
 
@@ -19005,15 +17041,13 @@ retained by hash and only the two remaining clients rerun. Other lifetime,
 viewport, projection, shake and overlay cases remain passing.
 
 The closed protocol guard covers the exact value set, byte storage, named
-writers/consumers and non-publication by Flush/Clear; regression tests reject
-new aliases, raw literals, widened storage, selected vocabulary and stale names.
-Public CI passes 123 workflow tests and the existing native component programs.
-All 337 source/tool/test inputs and 16 non-recipe configs remain frozen.
-Receipts, commands, target scan, layout data and runtime resumption are below
-.analysis/sem354/. See [ANM_DRAW_PATH.md](ANM_DRAW_PATH.md). No real GPU/driver,
-failed-device recovery, globally coherent device cache, full game or native
-64-bit/Linux/Web game acceptance follows. Semantic/platform work remains active.
-
+writers/consumers and non-publication by Flush/Clear; regression tests reject new
+aliases, raw literals, widened storage, selected vocabulary and stale names. Public CI
+passes 123 workflow tests and the existing native component programs. All 337
+source/tool/test inputs and 16 non-recipe configs remain frozen. See
+[ANM_DRAW_PATH.md](ANM_DRAW_PATH.md). No real GPU/driver, failed-device recovery,
+globally coherent device cache, full game or native 64-bit/Linux/Web game acceptance
+follows. Semantic/platform work remains active.
 
 ### SEM-355 — destination-blend selectors, literal production and cache collision
 
@@ -19072,22 +17106,20 @@ added root or changed-body exception. Main/ECL and separately selected
 PhotoEffect normal bodies remain preserved graphs, not wholesale target-byte
 acceptance inferred from their different exact bodies.
 
-Seven /OPT:NOREF Win32 clients link all 88 normal objects and pass. The new
-client covers 348 cases: 192 actual opcode-66 executions over signed/range
-inputs, variable masks and old words; sixteen additive flag updates; 128
-2D/3D/cache/selector/pending/HRESULT transitions; eight byte-only invalidations
-and four crossed-path sequences. It checks the full physical flag word,
-ignored indirection, in-call publication order, preserved queues/neighbors,
-missing-handler behavior and failed calls. The prior six clients retain their
-lifetime/viewport/projection/shake/overlay/prebuilt-quad/batch coverage.
-Public CI passes 125 workflow tests and the existing native component programs.
-All 339 source/tool/test inputs and 16 non-recipe configs stay frozen through
-acceptance. The protocol guard rejects domain/width/dispatch regressions and
-restoring variable resolution to the literal opcode. Receipts and commands:
-.analysis/sem355/. See [ANM_BLEND_MODE.md](ANM_BLEND_MODE.md). No GPU output,
-failed-device recovery, global cache coherence, retail mode-2/3 intent, thread
+Seven /OPT:NOREF Win32 clients link all 88 normal objects and pass. The new client
+covers 348 cases: 192 actual opcode-66 executions over signed/range inputs, variable
+masks and old words; sixteen additive flag updates; 128
+2D/3D/cache/selector/pending/HRESULT transitions; eight byte-only invalidations and four
+crossed-path sequences. It checks the full physical flag word, ignored indirection,
+in-call publication order, preserved queues/neighbors, missing-handler behavior and
+failed calls. The prior six clients retain their
+lifetime/viewport/projection/shake/overlay/prebuilt-quad/batch coverage. Public CI
+passes 125 workflow tests and the existing native component programs. All 339
+source/tool/test inputs and 16 non-recipe configs stay frozen through acceptance. The
+protocol guard rejects domain/width/dispatch regressions and restoring variable
+resolution to the literal opcode. See [ANM_BLEND_MODE.md](ANM_BLEND_MODE.md). No GPU
+output, failed-device recovery, global cache coherence, retail mode-2/3 intent, thread
 safety or native game ABI is accepted. Semantic/platform work remains active.
-
 
 ### SEM-356 — canonical Background-to-ANM state publication and unproven camera byte
 
@@ -19146,19 +17178,4 @@ were not rebuilt merely for that harness check. All 929 prior named roots,
 changed-body exception. Separately selected normal bodies are preserved graphs,
 not wholesale target-byte acceptance inferred from a different exact body.
 
-Eight /OPT:NOREF Win32 clients link all 88 objects and pass. The new client
-passes 52 cases: twelve receiver/queue publication round trips with a distinct
-global manager, 24 actual DrawInner consumers over custom/default/secondary
-colors, and sixteen empty-stage RenderObjects traces. The last checks old-byte
-visibility during real viewport/flush APIs, unconditional final publication of 1,
-neighbor/color preservation and ignored device failure. Its aligned 16-byte
-terminated instance record is an opaque loaded-data fixture, not a fake parent.
-The prior seven clients retain their coverage. The new owner guard rejects
-reintroduced projections/casts and changed publication/layout rules; it does not
-declare a camera namespace closed. Public CI passes 127 workflow tests and the
-existing native component programs. All 340 source/tool/test inputs and
-16 non-recipe configs stay frozen through acceptance. Commands, target inventory,
-layout words and terminal receipts: .analysis/sem356/. See
-[BACKGROUND_ANM_STATE.md](BACKGROUND_ANM_STATE.md). No camera meaning, full stage
-content, GPU output, synchronization or native game ABI is accepted. Semantic
-reconstruction and platform work remain active-incomplete.
+Eight /OPT:NOREF Win32 clients link all 88 objects and pass. The new client passes 52 cases: twelve receiver/queue publication round trips with a distinct global manager, 24 actual DrawInner consumers over custom/default/secondary colors, and sixteen empty-stage RenderObjects traces. The last checks old-byte visibility during real viewport/flush APIs, unconditional final publication of 1, neighbor/color preservation and ignored device failure. Its aligned 16-byte terminated instance record is an opaque loaded-data fixture, not a fake parent. The prior seven clients retain their coverage. The new owner guard rejects reintroduced projections/casts and changed publication/layout rules; it does not declare a camera namespace closed. Public CI passes 127 workflow tests and the existing native component programs. All 340 source/tool/test inputs and 16 non-recipe configs stay frozen through acceptance. See [BACKGROUND_ANM_STATE.md](BACKGROUND_ANM_STATE.md). No camera meaning, full stage content, GPU output, synchronization or native game ABI is accepted. Semantic reconstruction and platform work remain active-incomplete.
