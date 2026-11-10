@@ -112,8 +112,7 @@ Ordinary-mode clears, human difficulty tuning, full timeout endurance and a
 broad replay corpus remain open. Youmu, Yukari and Kaguya have the requested
 actors and two slots each, but their attacks remain earlier prototypes.
 
-Local build/PE identity receipts, state observations and screenshots are below
-.analysis/gogai-sakuya/ and build/gogai/. Original archives, extracted assets,
+Original archives, extracted assets,
 screenshots containing original art, private probes, generated executables and
 test saves are not committed.
 

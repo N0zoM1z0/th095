@@ -2093,25 +2093,23 @@ fall back to the same wrong phase.  This demonstrates that the residual belongs
 to compiler temporary/value ownership, but it does **not** license an empty
 class, inert local, compiler patch, or assembly in canonical source.
 
-A complete canonical rescore of the historical `p2-*` corpus tightens that
-boundary. Nine optimized-away front-end phase expressions produce a
-2,662-byte/579-instruction object with target register coloring, all 22 solved
-relocations, and 2,573/2,574 comparable bytes; only `sub esp,0x11C` versus
-target `0x124` differs. Adding an eight-byte user-defined return temporary makes
-the frame exact but moves all seven `inputIndex` references from target
-`EBP-0x11C` to `EBP-0x124`, leaving 2,567/2,574 comparable bytes. No historical
-`p2-*` object is exact. Both source forms are deliberately inadmissible dead
-phase/storage diagnostics; retain the natural canonical source. Full hashes and
-commands are in `.analysis/getinput-pareto-rescore-20260908.md`.
+A complete canonical rescore of the historical `p2-*` corpus tightens that boundary.
+Nine optimized-away front-end phase expressions produce a 2,662-byte/579-instruction
+object with target register coloring, all 22 solved relocations, and 2,573/2,574
+comparable bytes; only `sub esp,0x11C` versus target `0x124` differs. Adding an
+eight-byte user-defined return temporary makes the frame exact but moves all seven
+`inputIndex` references from target `EBP-0x11C` to `EBP-0x124`, leaving 2,567/2,574
+comparable bytes. No historical `p2-*` object is exact. Both source forms are
+deliberately inadmissible dead phase/storage diagnostics; retain the natural canonical
+source.
 
-A follow-up cross-oracle closes the remaining parameter-declaration escape
-hatch. Sixteen ordinary parameter names plus plain, top-level `const`,
-`register`, `const register`, and `__w64` spellings were compiled on the same
-eight-byte UDT diagnostic. Every object remains 2,662 bytes / 579 instructions,
-reserves `0x124`, and stores ECX at `EBP-0x124`; none restores the target
-seven-use `EBP-0x11C` parameter home. Parameter renaming or ABI-equivalent
-qualification therefore cannot compose the target-frame and phase effects.
-The complete oracle is in `.analysis/final-four-oracles-20260908.md`.
+A follow-up cross-oracle closes the remaining parameter-declaration escape hatch.
+Sixteen ordinary parameter names plus plain, top-level `const`, `register`, `const
+register`, and `__w64` spellings were compiled on the same eight-byte UDT diagnostic.
+Every object remains 2,662 bytes / 579 instructions, reserves `0x124`, and stores ECX at
+`EBP-0x124`; none restores the target seven-use `EBP-0x11C` parameter home. Parameter
+renaming or ABI-equivalent qualification therefore cannot compose the target-frame and
+phase effects.
 
 A live-use cross does not provide a clean escape. Giving the eight-byte return
 object real initialized state and returning one member grows the body to 2,693
@@ -2149,15 +2147,13 @@ Platform SDK headers expose no `sincos`, `fsincos`, or `frndint` declaration.
 available clean-frontend surface and explains why the exact source requires
 the compiler's inline assembler for these opcodes.
 
-An expanded per-name `#pragma intrinsic` whitelist oracle tested 34 names.
-Only the `sin`, `cos`, and `sqrt` positive controls are accepted. All 31
-`sincos`/`fsincos` and `frnd`/`rndint`/`rint`/`nearbyint`/`round` spellings,
-including one- and two-underscore variants, receive C4163; no generated object
-contains `FSINCOS` or `FRNDINT`. The TH08 source family supplies the missing
-source provenance: its `DrawInner` spells the same four-value `FRNDINT` stack
-sequence in `__asm`, and its `sincos` macro expands to `FLD`, `FSINCOS`, and two
-`FSTP` instructions. Reproduction details and hashes are in
-`.analysis/final-four-oracles-20260908.md`.
+An expanded per-name `#pragma intrinsic` whitelist oracle tested 34 names. Only the
+`sin`, `cos`, and `sqrt` positive controls are accepted. All 31 `sincos`/`fsincos` and
+`frnd`/`rndint`/`rint`/`nearbyint`/`round` spellings, including one- and two-underscore
+variants, receive C4163; no generated object contains `FSINCOS` or `FRNDINT`. The TH08
+source family supplies the missing source provenance: its `DrawInner` spells the same
+four-value `FRNDINT` stack sequence in `__asm`, and its `sincos` macro expands to `FLD`,
+`FSINCOS`, and two `FSTP` instructions.
 
 The reconstruction therefore uses assembly only at those four source sites:
 one four-value `FRNDINT` block in `DrawInner`, one `FSINCOS` block in `Draw2D`,
@@ -2192,7 +2188,7 @@ compiler and uses scalar atomic copies on modern backends. Exact and normal
 VC7.1 use the same binding and one owner layout. The source must still account
 for the count word copied into slot 15, with no pointer-array overrun or selected
 type. Minimal/full target, independent normal and native publication receipts
-are recorded in SEM-338; private probes remain in .analysis/sem338/.
+are recorded in SEM-338.
 
 ## ANM quad scalar-copy and construction oracle (SEM-352)
 

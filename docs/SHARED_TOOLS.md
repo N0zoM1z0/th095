@@ -40,3 +40,14 @@ recorded game-specific prefix/profile.
 Read-only source access to other registered games remains available through
 Factory for cross-reference. Shared tools do not grant writes to their mutable
 state. Ordinary analysis and source browsing do not require a full replay.
+
+The local VC7.1 installation keeps its locked compiler/linker, runtime DLLs,
+CRT/SDK headers and x86 libraries. ATL/MFC, CRT implementation sources, Common7
+utilities, SDK samples/Misc and IA64 libraries are not used by the current
+main/semantic/expansion build paths. With those components unavailable, a
+2026-11-10 probe compiled zwave, EclRun and AnmManager and strictly compared all
+37 owned units (55,171 bytes, 1,277 relocations). Resource compilation and a
+CRT/C++/D3DX console link/run also passed using this game's Factory Wine prefix.
+VC7.1's rc.exe rejects /nologo; linking the legacy D3DX library uses the existing
+/NODEFAULTLIB:libci.lib setting. Keep the remaining headers/libraries until a
+separate affected-path experiment justifies further removal.

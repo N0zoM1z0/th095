@@ -103,9 +103,9 @@ the exported supervisorLayoutAbiReceipt from the resulting i386 COFF object.
 The table checks 65 field offsets, eight subobject sizes, the 0x7BC extent,
 caller packing and real callback signatures. It is not a fixture parent ABI.
 
-The supporting Clang recipe and its case-only SDK VFS are in the private
-.analysis/sem345/ command receipts. It targets i686-pc-windows-msvc with VC7.1
-compatibility and uses the unchanged installed legacy CRT/SDK headers.
+The supplementary Clang layout probe used i686-pc-windows-msvc with VC7.1
+compatibility and the installed legacy CRT/SDK headers. Recreate its case-only
+SDK VFS on a case-sensitive host when repeating that probe.
 TH08_MODERN_PORT selects an existing math body solely to permit this type/layout
 compile. It accepts neither that math behavior nor a normal/portable game
 product. Narrow diagnostic options admit the legacy offsetof expression;

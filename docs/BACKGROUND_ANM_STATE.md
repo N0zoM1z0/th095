@@ -69,6 +69,4 @@ opaque loaded-data interface; its aligned terminating wire record is a fixture,
 while Background, AnmManager and drawing methods are the actual normal owners.
 No full stage scene, assets, GPU, worker scheduling or native game ABI follows.
 
-Target/Ghidra byte reconciliation, layout data, exact and normal comparisons,
-input hashes and runtime reports live below `.analysis/sem356/`. Current
-acceptance and the next task belong in [RE_HANDOFF.md](RE_HANDOFF.md).
+Current acceptance and the next task belong in [RE_HANDOFF.md](RE_HANDOFF.md).

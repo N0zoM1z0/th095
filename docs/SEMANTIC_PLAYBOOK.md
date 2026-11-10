@@ -206,7 +206,6 @@ The batch can close while the subsystem remains open. Say so plainly.
 | `SOURCE_MAP.md` | Exact/normal/emission/build ownership map |
 | `KNOWLEDGE_BASE.md` | Stable target facts with evidence provenance |
 | `RE_HANDOFF.md` | Replaceable current status, blockers, and next lane |
-| `RE_HANDOFF_HISTORY.md` | Archived prior operational handoffs |
 
 Historical prose can be wrong or superseded. Current policy, ledgers, target
 evidence, and the short handoff take precedence.
