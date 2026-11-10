@@ -90,11 +90,10 @@ remain work.
 
 ## Validation and reproducibility
 
-Private commands, controls and reports are under `.analysis/sem350/`. Minimal
-controls separately test shared parameter/ANM layouts, real Supervisor fields,
-canonical task flags, direct `ZunTimer`, and one ScreenEffect body. Each passes
-all 47 affected units after reviewed symbol identities; complete compared bytes,
-relocation positions/types, physical destinations and changed private references agree.
+Minimal controls separately test shared parameter/ANM layouts, real Supervisor fields,
+canonical task flags, direct `ZunTimer`, and one ScreenEffect body. Each passes all 47
+affected units after reviewed symbol identities; complete compared bytes, relocation
+positions/types, physical destinations and changed private references agree.
 
 The actual normal product independently passes seventeen strict target units:
 all fourteen ScreenEffect bodies, factory, ANM constructor and layer-six reset.

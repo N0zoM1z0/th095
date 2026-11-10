@@ -4856,6 +4856,9 @@ def check_screen_effect_quad_wire(source_text: str | None = None) -> None:
 def main() -> int:
     check_profile_selector_debt()
     check_profile_selected_declaration_debt()
+    if sys.argv[1:] == ["--profile-debt"]:
+        print("closed profile selector/declaration debt OK")
+        return 0
     check_anm_opcode_protocol()
     check_background_protocol()
     check_background_owner()
