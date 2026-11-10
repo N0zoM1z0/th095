@@ -4,12 +4,25 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: python3 scripts/ci.py
+      - name: Basic public checks
+        run: python3 -B scripts/ci.py
+        env:
+          TH095_CI_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}

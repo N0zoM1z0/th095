@@ -1,8 +1,6 @@
 # Current reconstruction handoff
 
-This file is deliberately short and replaceable. Prior operational notes are
-archived in [RE_HANDOFF_HISTORY.md](RE_HANDOFF_HISTORY.md); semantic batch
-records are in [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md). Live counts come
+This file is deliberately short and replaceable. Semantic batch records are in [SEMANTIC_HISTORY.md](SEMANTIC_HISTORY.md). Live counts come
 from the ledgers, not prose.
 
 ## Authority and current state
