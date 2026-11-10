@@ -2,7 +2,6 @@
 """Fast public checks; no retail target, private toolchain or generated outputs."""
 from __future__ import annotations
 
-import ast
 import json
 import os
 from pathlib import Path
@@ -110,7 +109,7 @@ def main() -> int:
             if not path.is_file() or path.is_symlink():
                 continue
             if path.suffix == ".py":
-                ast.parse(path.read_text(encoding="utf-8"), filename=name)
+                compile(path.read_bytes(), name, "exec", dont_inherit=True)
             elif path.suffix == ".json":
                 json.loads(path.read_text(encoding="utf-8"))
             elif path.suffix == ".toml":
