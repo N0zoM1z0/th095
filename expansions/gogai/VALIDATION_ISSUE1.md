@@ -62,10 +62,7 @@ failure. Twelve observed terminal fields agree exactly, including player/boss
 positions, camera mode/charge, photo counters, frame geometry and failure mode.
 Both game sessions exit with status 0.
 
-Local evidence is retained under `.analysis/gogai/`: native build terminals,
-independent ECL dumps, per-scene state reports/screenshots,
-`replay-roundtrip.json`, `full-session-exit.json` and the restored Best Shot
-screenshot. Original data and screenshots containing original artwork are not
+Original data and screenshots containing original artwork are not
 committed. The private input pilot is an observation aid, not shipped gameplay.
 
 ## Remaining playtesting
@@ -100,4 +97,3 @@ Windows reports the same `ntdll.dll` fault offset `0x65C15` in both modes.
 The launcher tests establish patch installation and ordinary-launch restoration,
 not a clean native Windows shutdown or native Windows no-death gameplay pass.
 The earlier Wine gameplay and clean-exit results describe the ordinary product.
-Logs and event receipts are retained below `.analysis/gogai/`.

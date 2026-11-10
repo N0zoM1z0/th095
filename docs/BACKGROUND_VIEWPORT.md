@@ -104,8 +104,4 @@ the FULL_WINDOW element/current selection, and then feed the canonical global
 background configuration into actual D3DX projection. No substitute stage
 interpreter or duplicate owner layout is involved.
 
-These are sequential Win32 client checks. Window/driver execution, whole-game
-scheduling, arbitrary invalid indices/dimensions, native parent layout and
-shake synchronization remain outside their scope. The thirteen native
-component programs remain separate. SEM-348 and MAIN-058 record the bounded
-acceptance; private evidence and commands are under .analysis/sem348/.
+These are sequential Win32 client checks. Window/driver execution, whole-game scheduling, arbitrary invalid indices/dimensions, native parent layout and shake synchronization remain outside their scope. The thirteen native component programs remain separate.

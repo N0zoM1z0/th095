@@ -125,13 +125,11 @@ and captured post-shift release traces. It does not run worker threads, D3D,
 or a modern game. Whole-game portability and reachable lifetime domains remain
 open. No new profile selector or selected declaration is introduced.
 
-The minimal ordinary sixteen-pointer representation with a separate final
-metadata store emits 103 bytes versus target 91. The complete address-word
-representation with an explicit signed count test matches all 91 bytes under
-pinned VC7.1 build 3077. An unsigned test instead changes JLE to JBE. A separate
-null publication avoids VC7.1's extra pointer-argument temporary and preserves
-the target's immediate-zero store. Reproducible probe/target receipts are
-private under `.analysis/sem330/`; accepted validation is in SEM-330 history.
+The minimal ordinary sixteen-pointer representation with a separate final metadata store
+emits 103 bytes versus target 91. The complete address-word representation with an
+explicit signed count test matches all 91 bytes under pinned VC7.1 build 3077. An
+unsigned test instead changes JLE to JBE. A separate null publication avoids VC7.1's
+extra pointer-argument temporary and preserves the target's immediate-zero store.
 
 SEM-333 adds a sixth native x86-64/UBSan executable. It executes the actual
 shared preview wait, cancellation checks, and address publication with real
@@ -148,13 +146,11 @@ constructed state, a global count bound, a leak, or data-race freedom. The
 fixture captures protocol components, not a native controller ABI or OS thread.
 UI old-front release and teardown post-shift release remain unchanged.
 
-Ordinary and force-inline pointer-argument wait helpers each enlarged the
-bounded worker from target 3,070 bytes to 3,170 under pinned build 3077.
-Statement sharing preserves its complete target body and all 115 relocations
-without adding parameters, padding, assembly, or profile-selected bodies.
-Existing compilerStorage phase locals and surrounding Controller/Supervisor
-views remain historical emission/ownership debt. SEM-333 probe and normal
-baseline receipts are private under `.analysis/sem333/`.
+Ordinary and force-inline pointer-argument wait helpers each enlarged the bounded worker
+from target 3,070 bytes to 3,170 under pinned build 3077. Statement sharing preserves
+its complete target body and all 115 relocations without adding parameters, padding,
+assembly, or profile-selected bodies. Existing compilerStorage phase locals and
+surrounding Controller/Supervisor views remain historical emission/ownership debt.
 
 SEM-334 makes the actual SupervisorFlags word available to the native wait
 fixture: close is read from its canonical bit-7 member with timer/bit-8/upper

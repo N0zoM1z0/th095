@@ -73,8 +73,4 @@ Exact and normal products retain their existing ownership and source routes.
 Normal-only bodies require their own evidence; exact replay does not accept
 them wholesale.
 
-Private target/Ghidra reconciliation, before/after comparisons, layout data and
-actual-normal runtime reports belong below `.analysis/sem355/`. The current
-checkpoint and validation authority belong in [RE_HANDOFF.md](RE_HANDOFF.md).
-This protocol does not establish GPU output, failed-device recovery, global
-cache coherence, thread safety or a native 64-bit/Linux/Web game ABI.
+The current checkpoint and validation authority belong in [RE_HANDOFF.md](RE_HANDOFF.md). This protocol does not establish GPU output, failed-device recovery, global cache coherence, thread safety or a native 64-bit/Linux/Web game ABI.
