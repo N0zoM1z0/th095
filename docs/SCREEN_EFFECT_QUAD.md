@@ -92,11 +92,4 @@ tests and thirteen native programs. This source-only batch changes no production
 header, compiler profile or object partition, so fresh exact scope is the sole
 affected unit; SEM-350's prior 698-unit aggregate remains separate evidence.
 
-Commands and compiler/target/runtime/graph reports are private under
-.analysis/sem351/. Use the workflow's [resource limits](RE_WORKFLOW.md#host-resource-limits)
-for matching, normal compilation and `scripts/check-supervisor-lifecycle.py --viewport`.
-This program validates the reconstructed caller and typed SDK boundary, not a
-GPU/driver, a full game session, synchronization or a native 64-bit game ABI.
-The separate [ANM XYZ/UV contract](ANM_QUAD_VERTICES.md) records its GPU
-stream and distinct 24-byte copy. That copy's role, raw ScreenEffect parameter
-names, the opaque cancel gate and broader renderer/lifecycle work remain open.
+Use the workflow's [resource limits](RE_WORKFLOW.md#host-resource-limits) for matching, normal compilation and `scripts/check-supervisor-lifecycle.py --viewport`. This program validates the reconstructed caller and typed SDK boundary, not a GPU/driver, a full game session, synchronization or a native 64-bit game ABI. The separate [ANM XYZ/UV contract](ANM_QUAD_VERTICES.md) records its GPU stream and distinct 24-byte copy. That copy's role, raw ScreenEffect parameter names, the opaque cancel gate and broader renderer/lifecycle work remain open.
