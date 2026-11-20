@@ -36,7 +36,7 @@ check. Use the [semantic index](SEMANTIC_INDEX.md).
 accepted exact match. The target's 0x124-byte frame has eight bytes below
 the lowest observed stack operand. The current pinned build reserves 0x11C
 and differs in keyboard-path register scheduling. A fresh compile reproduced
-2,655 bytes against the target's 2,662.
+2,655 bytes against the target's 2,662. The fresh [expression probes](BUILD_MATCHING.md#getinput-keyboard-expression-probes) leave the frame and register-allocation issue open.
 
 ## Local inputs
 

@@ -2120,6 +2120,24 @@ homes. Syntactic use therefore does not move this temporary into the target's
 post-parameter allocation class, and the empty forms remain provenance-free.
 
 
+### GetInput keyboard expression probes
+
+A fresh pinned VC7.1 build reproduces the 2,655-byte body with the same 579
+mnemonics and all 212 observed EBP displacements. The target has 2,662 bytes
+and reserves a 0x124-byte frame. In the 458 authored functions with a simple
+EBP prologue and explicit stack reservation, GetInput is the only one with
+eight bytes below its deepest directly referenced EBP slot.
+
+Nine equivalent keyboard expressions and storage forms were compiled in
+the same profile. Explicit mask comparison and reversed OR operands return
+the baseline topology and frame. An explicit OR assignment emits 2,663
+bytes with a changed mnemonic sequence and still reserves 0x11C. A named
+one-member keyboard array aggregate reserves 0x120 and moves all 212
+paired stack displacements. The other threshold, arithmetic and helper
+forms change the instruction count. The source and accepted exact count
+stay as recorded. Probe inputs and results are under
+`.analysis/controller-get-input/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
