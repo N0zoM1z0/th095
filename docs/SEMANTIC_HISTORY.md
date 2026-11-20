@@ -17406,3 +17406,19 @@ directly. The target comparison uses the same save-data pointer and
 0x60-byte records at +0x460. All 24 ResultScreen exact units pass with
 their complete extents and relocations. The normal initializer already
 used the same declaration.
+
+
+### SEM-365 — share the persistent photo score entry
+
+PhotoStage Update indexes the same 0x60-byte score entries as the result
+initializer. It copies the eight-word breakdown at record +0x18, checks
+the Best Shot lock bit at +0x50, increments attempts at +0x44, and stores
+the saved capture time and Best Shot slow rate at +0x3C and +0x4C. The
+target addresses include 0x0042B649 for the counter check,
+0x0042B8AC for the copy destination and 0x0042BA8C for the slow rate.
+
+Both profiles use the same ResultScoreEntryView declaration. The exact
+PhotoStage comparison binds seven references to g_ResultSaveData at
+0x004C4E78 with the same operand positions and addends. All 175 affected
+exact units pass across the 25 known consumers of the score header. The affected normal objects
+also rebuild and link.

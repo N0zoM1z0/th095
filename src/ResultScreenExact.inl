@@ -647,7 +647,7 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
         if (scoreEntry->score < g_ResultScreenGlobalState->currentScore)
         {
             scoreEntry->score = g_ResultScreenGlobalState->currentScore;
-            scoreEntry->slowRate =
+            scoreEntry->highScoreSlowRate =
                 100.0f -
                 (f32)(g_ReplayLagNumerator / g_ReplayLagDenominator) * 100.0f;
         }

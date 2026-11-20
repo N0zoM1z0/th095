@@ -167,7 +167,6 @@
 1	src/SceneTexture.cpp	struct	SceneTextureLoadLocals
 1	src/ScoreData.cpp	struct	ScorePhotoStageView
 1	src/ScoreData.cpp	struct	ScoreWriteLocals
-1	src/ScoreData.hpp	struct	PhotoScoreBreakdownView
 1	src/ScoreData.hpp	struct	ScoreRecordHeaderView
 1	src/ScoreLifecycle.cpp	struct	ScoreOpenLocals
 1	src/ScoreLifecycle.cpp	struct	ScoreProfileRandomFillView

@@ -40,6 +40,8 @@ SEM-363 gives the capture state a single header in PhotoInf, followed by
 eleven photo records with a full 80-byte comment each. PhotoStage now shares
 the canonical stage declaration between its exact and normal bodies. Use
 the [source map](SOURCE_MAP.md) for the remaining exact lifetime adapter.
+SEM-364 and SEM-365 bind result initialization and capture updates to
+the same persistent score-entry layout.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below

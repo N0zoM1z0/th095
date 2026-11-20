@@ -238,11 +238,11 @@
 1	src/ScoreData.cpp	#ifdef DIFFBUILD
 2	src/ScoreData.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ScoreData.cpp	#ifndef DIFFBUILD
-5	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT)
+3	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT)
 3	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/ScoreData.hpp	#if defined(TH095_MATCH_EXACT)
 3	src/ScoreData.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-11	src/ScoreData.hpp	#ifdef TH095_MATCH_EXACT
+6	src/ScoreData.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ScoreDataExact.inl	#ifdef TH095_MATCH_EXACT
 1	src/ScoreLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ScoreLoad.cpp	#if !defined(TH095_MATCH_EXACT)
