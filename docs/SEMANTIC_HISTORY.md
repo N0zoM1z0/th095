@@ -17493,3 +17493,15 @@ relocation destination. The preserved pre-fix ECL object is rejected at
 units, and the full literal audit now agrees at all 762 references. The
 normal objects contain the corrected values, and both links pass the
 code and initialized-data comparisons.
+
+### SEM-371 — share the enemy spawn context assignment
+
+SpawnWithContext copies 32 dwords to Enemy +0x2F4 after the initial
+subroutine setup. The destination is the declared 0x80-byte
+PhotoEnemyEclScriptStateView. Both profiles now use the typed assignment
+already used in the normal path. The memcpy form caused VC7.1 to schedule
+the source and destination loads in the opposite order.
+
+All 22 EnemyManagerUpdate exact units pass with their relocations. The
+same five instructions perform the 32-dword copy in the 345-byte normal
+body and the 336-byte target body.

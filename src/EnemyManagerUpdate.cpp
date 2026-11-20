@@ -792,10 +792,6 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
     {
         u32 words[sizeof(PhotoEnemyView) / sizeof(u32)];
     };
-    struct EnemyContextCopy
-    {
-        u32 words[0x80 / sizeof(u32)];
-    };
     i32 enemyIndex;
     PhotoEnemyView *enemy;
 
@@ -818,14 +814,8 @@ PhotoEnemyView *PhotoEnemyManagerView::SpawnWithContext(
         TH095_PHOTO_ECL_INIT(this->eclManager,
             &enemy->mainEclContext,
             static_cast<i16>(subroutineId));
-#if defined(TH095_MATCH_EXACT)
-        *reinterpret_cast<EnemyContextCopy *>(
-            reinterpret_cast<u8 *>(enemy) + 0x2f4) =
-            *reinterpret_cast<const EnemyContextCopy *>(contextValues);
-#else
         enemy->mainEclContext.scriptState =
             *reinterpret_cast<const PhotoEnemyEclScriptStateView *>(contextValues);
-#endif
         if (TH095_PHOTO_ECL_RUN(this->eclManager, enemy) == ZUN_ERROR)
         {
             enemy->Deactivate();

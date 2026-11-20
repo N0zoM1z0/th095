@@ -11039,7 +11039,7 @@ target_address = 0x004163F0
 size = 0x332
 compare_size = 0x372
 relocations = [
-  { offset = 0x5C, type = "DIR32", symbol = "$L73681", target = 0x00416722 },
+  { offset = 0x5C, type = "DIR32", symbol = "$L73670", target = 0x00416722 },
   { offset = 0xB1, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
   { offset = 0xB6, type = "REL32", symbol = "?Spawn@PhotoEnemyManagerView@th095@@QAEPAUPhotoEnemyView@2@HPBUFloat3@2@HHHI@Z", target = 0x004156C0 },
   { offset = 0x109, type = "DIR32", symbol = "?g_PhotoEnemyManager@th095@@3PAUPhotoEnemyManagerView@1@A", target = 0x004BDDC0 },
@@ -11071,7 +11071,7 @@ relocations = [
   { offset = 0x352, type = "DIR32", symbol = "$L72640", target = 0x00416663 },
   { offset = 0x356, type = "DIR32", symbol = "$L72588", target = 0x004166E0 },
   { offset = 0x35A, type = "DIR32", symbol = "$L72646", target = 0x0041668B },
-  { offset = 0x35E, type = "DIR32", symbol = "$L73662", target = 0x0041650E },
+  { offset = 0x35E, type = "DIR32", symbol = "$L73651", target = 0x0041650E },
   { offset = 0x362, type = "DIR32", symbol = "$L72606", target = 0x00416507 },
   { offset = 0x366, type = "DIR32", symbol = "$L72588", target = 0x004166E0 },
   { offset = 0x36A, type = "DIR32", symbol = "$L72588", target = 0x004166E0 },
