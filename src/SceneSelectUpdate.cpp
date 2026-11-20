@@ -753,9 +753,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             view->sceneCursors[initialCursorIndex].wraps = 1;
             view->sceneCursors[initialCursorIndex].Set(0);
         }
-        view->groupCursor.Set(g_ResultSaveData->lastSelectedGroup);
+        view->groupCursor.Set(g_ResultSaveData->profile.lastSelectedGroup);
         view->sceneCursors[view->groupCursor.GetCurrent()].Set(
-            g_ResultSaveData->lastSelectedScene);
+            g_ResultSaveData->profile.lastSelectedScene);
 
         g_SelectedScene =
             &g_SceneGroups[view->groupCursor.GetCurrent()]
@@ -1035,9 +1035,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->vmIds.SetInterrupt(0x4a, 2);
         view->vmIds.SetInterrupt(0x4b, 2);
         this->UpdateSelectedSceneDetails();
-        g_ResultSaveData->lastSelectedGroup =
+        g_ResultSaveData->profile.lastSelectedGroup =
             (i16)view->groupCursor.GetCurrent();
-        g_ResultSaveData->lastSelectedScene =
+        g_ResultSaveData->profile.lastSelectedScene =
             (i16)activeSceneCursor.GetCurrent();
 
         SET_SCENE_VM_VISIBILITY(
@@ -1129,7 +1129,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->vmIds.SetInterrupt(0x4a, 2);
                 view->vmIds.SetInterrupt(0x4b, 2);
                 this->UpdateSelectedSceneDetails();
-                g_ResultSaveData->lastSelectedScene =
+                g_ResultSaveData->profile.lastSelectedScene =
                     (i16)activeSceneCursor.GetCurrent();
                 goto update_preview_text;
             }

@@ -80,14 +80,6 @@ typedef char ResultAsciiScaleYAt8074[
 
 extern ResultScreenGlobalStateView *g_ResultScreenGlobalState;
 
-struct ResultRuntimeView
-{
-    u8 unknown000[0x14];
-    char replayName[9];
-    u8 unknown01d[3];
-    i16 scene;
-};
-
 struct ResultScreenInitializeLocals
 {
     i32 lineIndex;
@@ -110,7 +102,6 @@ typedef char ResultBestShotRecordPhotoIndexAt6C[
     (offsetof(ResultBestShotRecordView, photoIndex) == 0x6c) ? 1 : -1];
 
 extern i32 g_ResultSceneState;
-extern ResultRuntimeView *g_ResultRuntime;
 extern i32 g_ResultGroupMap[];
 extern u8 *__fastcall ReadResultHelpLine(
     char *destination, u8 *source, i32 maxLength);
@@ -568,8 +559,8 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
         ResultScoreEntryView *scoreEntry =
             &g_ResultSaveData
                  ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex];
-        scoreEntry->magic = 0x4353;
-        scoreEntry->version = 1;
+        scoreEntry->magic = SCENE_SCORE_RECORD_MAGIC;
+        scoreEntry->version = SCENE_SCORE_RECORD_VERSION;
         scoreEntry->size = sizeof(ResultScoreEntryView);
         scoreEntry->index = g_ResultScreenGlobalState->bestShotIndex;
         scoreEntry->flags |= 1;
@@ -1063,7 +1054,7 @@ ChainCallbackResult ResultScreen::Update()
                 g_ResultSceneState = 4;
                 break;
             case 1:
-                g_ResultRuntime->scene = (i16)(g_SelectedScene->scene + 1);
+                g_ResultSaveData->profile.lastSelectedScene = (i16)(g_SelectedScene->scene + 1);
                 g_SelectedScene =
                     g_SceneGroups[g_SelectedScene->group] +
                     (g_SelectedScene->scene + 1);
@@ -1133,7 +1124,7 @@ ChainCallbackResult ResultScreen::Update()
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
             this->SetState(14);
-            strcpy(this->replayName, g_ResultRuntime->replayName);
+            strcpy(this->replayName, g_ResultSaveData->profile.replayName);
             if (strcmp(this->replayName, "        ") != 0)
             {
                 this->keyboardSelection = 95;
@@ -1276,7 +1267,7 @@ ChainCallbackResult ResultScreen::Update()
     case 15:
         sprintf(path, "th95_%.2d.rpy", this->replayCursor.GetCurrent() + 1);
         g_ReplayManager->WriteReplay(path, this->replayName);
-        strcpy(g_ResultRuntime->replayName, this->replayName);
+        strcpy(g_ResultSaveData->profile.replayName, this->replayName);
         this->SetState(13);
         this->LoadReplays();
         this->replayCursor.Pop();

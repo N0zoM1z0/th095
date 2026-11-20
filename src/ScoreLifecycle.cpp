@@ -1,6 +1,3 @@
-#ifdef TH095_MATCH_EXACT
-#include "ScoreLifecycleExact.inl"
-#else
 #include "Rng.hpp"
 #include "ScoreData.hpp"
 #include <windows.h>
@@ -38,45 +35,6 @@ static __forceinline void ScoreFreeDecompressedPhase(void *data)
     free(data);
 }
 
-struct ScoreProfileRandomFillView
-{
-    u8 beforeRandomWords[8];
-    u16 randomWords[512];
-};
-
-typedef char ScoreProfileRandomFillSizeIs408[
-    (sizeof(ScoreProfileRandomFillView) == 0x408) ? 1 : -1];
-typedef char ScoreProfileRandomFillWordsAt8[
-    (offsetof(ScoreProfileRandomFillView, randomWords) == 8) ? 1 : -1];
-
-struct ScoreProfileView
-{
-    ScoreRecordHeaderView recordHeader;
-    char replayName[9];
-    u8 unknown015;
-    i16 lastSelectedGroup;
-    i16 lastSelectedScene;
-    union
-    {
-        u8 nextSceneByGroup[11];
-        ScoreProfileRandomFillView randomFill;
-    };
-    u8 tail[0x36];
-
-    void Initialize();
-};
-typedef char ScoreProfileSizeIs458[(sizeof(ScoreProfileView) == 0x458) ? 1 : -1];
-typedef char ScoreProfileRecordHeaderAt00[
-    (offsetof(ScoreProfileView, recordHeader) == 0x00) ? 1 : -1];
-typedef char ScoreProfileReplayNameAt0C[
-    (offsetof(ScoreProfileView, replayName) == 0x0c) ? 1 : -1];
-typedef char ScoreProfileSelectionAt16[
-    (offsetof(ScoreProfileView, lastSelectedGroup) == 0x16 &&
-     offsetof(ScoreProfileView, lastSelectedScene) == 0x18) ? 1 : -1];
-typedef char ScoreProfileNextSceneAt1A[
-    (offsetof(ScoreProfileView, nextSceneByGroup) == 0x1a &&
-     offsetof(ScoreProfileView, randomFill) == 0x1a) ? 1 : -1];
-
 ResultSaveDataView *g_ResultSaveData;
 
 // FUNCTION: TH095 0x004354B0.
@@ -85,7 +43,7 @@ ResultSaveDataView::ResultSaveDataView()
     memset(this, 0, sizeof(*this));
     this->fileHeader = reinterpret_cast<ScoreFileHeader *>(
         ScoreOpenRawFilePhase());
-    reinterpret_cast<ScoreProfileView *>(this->profileData)->Initialize();
+    this->profile.Initialize();
     this->ParseScoreFile();
 }
 
@@ -113,11 +71,11 @@ ResultSaveDataView::~ResultSaveDataView()
 // FUNCTION: TH095 0x00435500.
 void ScoreProfileView::Initialize()
 {
-    this->recordHeader.magic = 0x5453;
-    this->recordHeader.version = 0;
-    this->recordHeader.size = 0x458;
+    this->recordHeader.magic = SCORE_PROFILE_RECORD_MAGIC;
+    this->recordHeader.version = SCORE_PROFILE_RECORD_VERSION;
+    this->recordHeader.size = sizeof(*this);
     strcpy(this->replayName, "        ");
-    for (u32 i = 0; i < 512; ++i)
+    for (u32 i = 0; i < ARRAY_SIZE(this->randomFill.randomWords); ++i)
         this->randomFill.randomWords[i] = g_Rng.GetRandomU16();
 }
 
@@ -139,5 +97,3 @@ void ReleaseScoreData()
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

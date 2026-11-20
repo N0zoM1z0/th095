@@ -8,28 +8,27 @@
 namespace th095
 {
 
-#ifdef TH095_MATCH_EXACT
-typedef ::ZunResult ScoreDataResult;
-#else
-typedef ZunResult ScoreDataResult;
-#endif
+enum
+{
+    SCORE_FILE_MAGIC = 0x35394854,
+    SCORE_FILE_VERSION = 2,
+    SCENE_SCORE_RECORD_MAGIC = 0x4353,
+    SCENE_SCORE_RECORD_VERSION = 1,
+    SCORE_PROFILE_RECORD_MAGIC = 0x5453,
+    SCORE_PROFILE_RECORD_VERSION = 0,
+};
 
 struct ScoreFileHeader
 {
     u32 magic;
     u32 fileSize;
-#if defined(TH095_MATCH_EXACT)
-    u32 unknown008;
-#else
     u16 version;
     u16 unknown00a;
-#endif
     u32 unknown00c;
     i32 compressedSize;
     i32 uncompressedSize;
 };
 
-#if !defined(TH095_MATCH_EXACT)
 struct ScoreRecordHeaderView
 {
     u16 magic;
@@ -40,7 +39,6 @@ struct ScoreRecordHeaderView
 
 typedef char ScoreRecordHeaderSizeIs0C[
     (sizeof(ScoreRecordHeaderView) == 0x0c) ? 1 : -1];
-#endif
 
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 enum PhotoScoreFlags
@@ -141,42 +139,51 @@ struct ResultScoreEntryView
     u8 unknown054[0x60 - 0x54];
 };
 
+struct ScoreProfileRandomFillView
+{
+    u8 nextScenePrefix[8];
+    u16 randomWords[512];
+};
+
+typedef char ScoreProfileRandomFillSizeIs408[
+    (sizeof(ScoreProfileRandomFillView) == 0x408) ? 1 : -1];
+typedef char ScoreProfileRandomFillWordsAt8[
+    (offsetof(ScoreProfileRandomFillView, randomWords) == 8) ? 1 : -1];
+
+struct ScoreProfileView
+{
+    ScoreRecordHeaderView recordHeader;
+    char replayName[9];
+    u8 unknown015;
+    i16 lastSelectedGroup;
+    i16 lastSelectedScene;
+    union
+    {
+        // The last three saved scene selectors overlap the RNG word fill.
+        u8 nextSceneByGroup[11];
+        ScoreProfileRandomFillView randomFill;
+    };
+    u8 tail[0x36];
+
+    void Initialize();
+};
+typedef char ScoreProfileSizeIs458[(sizeof(ScoreProfileView) == 0x458) ? 1 : -1];
+typedef char ScoreProfileRecordHeaderAt00[
+    (offsetof(ScoreProfileView, recordHeader) == 0x00) ? 1 : -1];
+typedef char ScoreProfileReplayNameAt0C[
+    (offsetof(ScoreProfileView, replayName) == 0x0c) ? 1 : -1];
+typedef char ScoreProfileSelectionAt16[
+    (offsetof(ScoreProfileView, lastSelectedGroup) == 0x16 &&
+     offsetof(ScoreProfileView, lastSelectedScene) == 0x18) ? 1 : -1];
+typedef char ScoreProfileNextSceneAt1A[
+    (offsetof(ScoreProfileView, nextSceneByGroup) == 0x1a &&
+     offsetof(ScoreProfileView, randomFill) == 0x1a) ? 1 : -1];
+
 struct ResultSaveDataView
 {
     ScoreFileHeader *fileHeader;
     u8 *decompressedData;
-    union
-    {
-        u8 profileData[0x458];
-        struct
-        {
-            u8 unknown008[8];
-            i32 profileChecksum;
-            u8 unknown014[0x22 - 0x14];
-            u8 nextSceneByGroup[11];
-            u8 unknown02d[0x460 - 0x2d];
-        } profile;
-        // The result and scene-select code address these fields directly in
-        // the same 0x458-byte profile block.  They are aliases, not another
-        // runtime object or another allocation.
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u8 unknownRuntime008[0x0c];
-#else
-            ScoreRecordHeaderView profileRecordHeader;
-#endif
-            char replayName[9];
-            u8 unknownRuntime01d;
-            i16 lastSelectedGroup;
-            union
-            {
-                i16 lastSelectedScene;
-                i16 scene;
-            };
-            u8 unknownRuntime022[0x43e];
-        };
-    };
+    ScoreProfileView profile;
     ResultScoreEntryView scoreEntries[120];
     ResultBestShotRecordView bestShotRecords[120];
 
@@ -184,8 +191,8 @@ struct ResultSaveDataView
     ~ResultSaveDataView();
     i32 ParseScoreFile();
     void UpdateBestShotRecord(i32 index);
-    ScoreDataResult WriteBestShotData();
-    ScoreDataResult LoadScenePreviewTexture(
+    ZunResult WriteBestShotData();
+    ZunResult LoadScenePreviewTexture(
         struct AnmLoaded *anm, i32 textureIndex, i32 sceneIndex);
     i32 LoadBestShotForScene(i32 group, i32 scene);
     i32 IsSceneGroupUnlocked(i32 group);
@@ -197,10 +204,8 @@ struct ResultSaveDataView
 
 typedef char ScoreFileHeaderSizeIs18[
     (sizeof(ScoreFileHeader) == 0x18) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT)
 typedef char ScoreFileHeaderVersionAt08[
     (offsetof(ScoreFileHeader, version) == 0x08) ? 1 : -1];
-#endif
 typedef char ResultBestShotRecordSizeIs78[
     (sizeof(ResultBestShotRecordView) == 0x78) ? 1 : -1];
 typedef char ResultBestShotPayloadFormatSizeIs1[
@@ -226,23 +231,14 @@ typedef char ResultScoreEntryBestShotSlowRateAt4C[
     (offsetof(ResultScoreEntryView, bestShotSlowRate) == 0x4c) ? 1 : -1];
 typedef char ResultScoreEntryUnknown038At38[
     (offsetof(ResultScoreEntryView, unknown038) == 0x38) ? 1 : -1];
-typedef char ResultSaveProfileDataAt08[
-    (offsetof(ResultSaveDataView, profileData) == 0x08) ? 1 : -1];
-#if !defined(TH095_MATCH_EXACT)
-typedef char ResultSaveProfileRecordHeaderAt08[
-    (offsetof(ResultSaveDataView, profileRecordHeader) == 0x08) ? 1 : -1];
-#endif
-typedef char ResultSaveNextSceneAt22[
-    (offsetof(ResultSaveDataView, profile.nextSceneByGroup) == 0x22) ? 1 : -1];
+typedef char ResultSaveProfileAt08[
+    (offsetof(ResultSaveDataView, profile) == 0x08) ? 1 : -1];
 typedef char ResultSaveScoreEntriesAt460[
     (offsetof(ResultSaveDataView, scoreEntries) == 0x460) ? 1 : -1];
 typedef char ResultSaveBestShotRecordsAt3160[
     (offsetof(ResultSaveDataView, bestShotRecords) == 0x3160) ? 1 : -1];
 typedef char ResultSaveDataSizeIs69A0[
     (sizeof(ResultSaveDataView) == 0x69a0) ? 1 : -1];
-typedef char ResultSaveSelectionAt1E[
-    (offsetof(ResultSaveDataView, lastSelectedGroup) == 0x1e &&
-     offsetof(ResultSaveDataView, lastSelectedScene) == 0x20) ? 1 : -1];
 typedef char ResultBestShotRecordCommentAt18[
     (offsetof(ResultBestShotRecordView, comment) == 0x18) ? 1 : -1];
 typedef char ResultBestShotRecordValidAt68[

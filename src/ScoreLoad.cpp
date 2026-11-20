@@ -9,11 +9,6 @@
 namespace th095
 {
 
-struct ScoreProfileRawView
-{
-    u8 bytes[0x458];
-};
-
 i32 ResultSaveDataView::ParseScoreFile()
 {
     struct ScoreLoadState
@@ -21,7 +16,7 @@ i32 ResultSaveDataView::ParseScoreFile()
         size_t allocationSize;
         size_t headerSize;
         void *ownedFile;
-        u8 *cursor;
+        ScoreRecordHeaderView *cursor;
         i32 remaining;
         u8 *compressedInput;
     } locals;
@@ -44,23 +39,15 @@ initializeScoreFile:
         headerSize = sizeof(ScoreFileHeader);
         this->fileHeader = reinterpret_cast<ScoreFileHeader *>(malloc(headerSize));
         memset(this->fileHeader, 0, sizeof(ScoreFileHeader));
-        this->fileHeader->magic = 0x35394854;
-#if defined(TH095_MATCH_EXACT)
-        *reinterpret_cast<u16 *>(&this->fileHeader->unknown008) = 2;
-#else
-        this->fileHeader->version = 2;
-#endif
+        this->fileHeader->magic = SCORE_FILE_MAGIC;
+        this->fileHeader->version = SCORE_FILE_VERSION;
         this->fileHeader->unknown00c = 0x102;
         goto finished;
     }
     else
     {
-        if (this->fileHeader->magic != 0x35394854 ||
-#if defined(TH095_MATCH_EXACT)
-            *reinterpret_cast<u16 *>(&this->fileHeader->unknown008) != 2)
-#else
-            this->fileHeader->version != 2)
-#endif
+        if (this->fileHeader->magic != SCORE_FILE_MAGIC ||
+            this->fileHeader->version != SCORE_FILE_VERSION)
         {
             utils::DebugPrint("error ScoreFile Version Error\n");
             goto initializeScoreFile;
@@ -77,76 +64,37 @@ initializeScoreFile:
                        this->decompressedData, this->fileHeader->uncompressedSize);
 
         remaining = this->fileHeader->uncompressedSize;
-        cursor = this->decompressedData;
+        cursor = reinterpret_cast<ScoreRecordHeaderView *>(
+            this->decompressedData);
         while (remaining > 0)
         {
-#if !defined(TH095_MATCH_EXACT)
-            ScoreRecordHeaderView *recordHeader =
-                reinterpret_cast<ScoreRecordHeaderView *>(cursor);
-#endif
-            if (
-#if defined(TH095_MATCH_EXACT)
-                *reinterpret_cast<u16 *>(cursor)
-#else
-                recordHeader->magic
-#endif
-                == 0x4353)
+            if (cursor->magic == SCENE_SCORE_RECORD_MAGIC)
             {
-                if (
-#if defined(TH095_MATCH_EXACT)
-                    *reinterpret_cast<u16 *>(cursor + 2)
-#else
-                    recordHeader->version
-#endif
-                    == 1)
+                if (cursor->version == SCENE_SCORE_RECORD_VERSION)
                 {
-                    if (CalculateAlignedChecksum(reinterpret_cast<i32 *>(cursor), 0x60) -
-#if defined(TH095_MATCH_EXACT)
-                            *reinterpret_cast<i32 *>(cursor + 8) ==
-                        *reinterpret_cast<i32 *>(cursor + 8))
-#else
-                            recordHeader->checksum ==
-                        recordHeader->checksum)
-#endif
+                    if (CalculateAlignedChecksum(
+                            reinterpret_cast<i32 *>(cursor),
+                            sizeof(ResultScoreEntryView)) -
+                            cursor->checksum == cursor->checksum)
                     {
-#if defined(TH095_MATCH_EXACT)
-                        this->scoreEntries[*reinterpret_cast<i32 *>(cursor + 0x0c)] =
+                        this->scoreEntries[
+                            reinterpret_cast<ResultScoreEntryView *>(cursor)
+                                ->index] =
                             *reinterpret_cast<ResultScoreEntryView *>(cursor);
-#else
-                        ResultScoreEntryView *scoreRecord =
-                            reinterpret_cast<ResultScoreEntryView *>(cursor);
-                        this->scoreEntries[scoreRecord->index] = *scoreRecord;
-#endif
                     }
                 }
             }
-            else if (
-#if defined(TH095_MATCH_EXACT)
-                *reinterpret_cast<u16 *>(cursor)
-#else
-                recordHeader->magic
-#endif
-                == 0x5453)
+            else if (cursor->magic == SCORE_PROFILE_RECORD_MAGIC)
             {
-                if (
-#if defined(TH095_MATCH_EXACT)
-                    *reinterpret_cast<u16 *>(cursor + 2)
-#else
-                    recordHeader->version
-#endif
-                    == 0)
+                if (cursor->version == SCORE_PROFILE_RECORD_VERSION)
                 {
-                    if (CalculateAlignedChecksum(reinterpret_cast<i32 *>(cursor), 0x458) -
-#if defined(TH095_MATCH_EXACT)
-                            *reinterpret_cast<i32 *>(cursor + 8) ==
-                        *reinterpret_cast<i32 *>(cursor + 8))
-#else
-                            recordHeader->checksum ==
-                        recordHeader->checksum)
-#endif
+                    if (CalculateAlignedChecksum(
+                            reinterpret_cast<i32 *>(cursor),
+                            sizeof(ScoreProfileView)) -
+                            cursor->checksum == cursor->checksum)
                     {
-                        *reinterpret_cast<ScoreProfileRawView *>(this->profileData) =
-                            *reinterpret_cast<ScoreProfileRawView *>(cursor);
+                        this->profile =
+                            *reinterpret_cast<ScoreProfileView *>(cursor);
                     }
                 }
             }
@@ -156,21 +104,14 @@ initializeScoreFile:
                 goto initializeScoreFile;
             }
 
-#if defined(TH095_MATCH_EXACT)
-            remaining -= *reinterpret_cast<i32 *>(cursor + 4);
-#else
-            remaining -= recordHeader->size;
-#endif
+            remaining -= cursor->size;
             if (remaining < 0)
             {
                 utils::DebugPrint("error ScoreFile Data Error\n");
                 goto initializeScoreFile;
             }
-#if defined(TH095_MATCH_EXACT)
-            cursor += *reinterpret_cast<i32 *>(cursor + 4);
-#else
-            cursor += recordHeader->size;
-#endif
+            cursor = reinterpret_cast<ScoreRecordHeaderView *>(
+                reinterpret_cast<u8 *>(cursor) + cursor->size);
         }
     }
 

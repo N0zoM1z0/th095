@@ -293,3 +293,23 @@ all permit that ordering, which accounts for a one-frame head start.
 The traces and fixture are under
 `build/position-independence/anm-preload-owner-demo/` and
 `.analysis/pi/anm-preload-owner/check-replay-start.py`.
+
+## Score-file owner and current link layouts
+
+SEM-400 publishes the score owner through `g_ResultSaveData` in both
+profiles. In the reversed normal link the slot moves from `0x004D7800`
+to `0x004DCC0C`. All 133 code operands follow it, including the stores in
+initialization and release and the reads in the photo task, results and
+Scene Select. Thirteen lifecycle and writer calls follow their functions.
+
+The new pair of normal PEs resolves 11,496 game code operands and 639
+initialized-data operands. All seventeen game dynamic initializers are
+registered in both links. A fresh library comparison resolves 7,748 code
+references and 1,007 initialized-data references. Both links have the same
+172 initial import names or ordinals, with 127 address-table slots moving.
+
+The linked score code writes and reads the same bytes as retail in twelve
+round trips, including the embedded profile and its scene selectors. The
+fixture supplies file and heap calls and executes the game's actual RNG,
+compression, encryption and checksum code. The tests and maps are described
+in [SEM-400](SEMANTIC_HISTORY.md#sem-400--share-score-file-io-and-lifetime).

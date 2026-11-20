@@ -18158,3 +18158,31 @@ independently and check queue publication, display-state history and VM
 interrupts against retail. The refresh fixture supplies the Windows lock
 and VM interrupt boundaries. See `.analysis/pi/scene-save-owner/` for the
 recipes.
+
+### SEM-400 — share score file I/O and lifetime
+
+`ScoreLifecycle.cpp` constructs and publishes the actual `ResultSaveDataView`
+in both profiles. Its embedded profile owns the saved replay name and scene
+selectors. The final three next-scene bytes overlap the first RNG-filled
+bytes, matching the retail initializer and result-screen update. The title
+and photo task now name the same `g_ResultSaveData` slot. The photo task's
+Best Shot checks address score records through typed fields.
+
+Both profiles emit one `ParseScoreFile` and one `WriteBestShotData`. The
+parser tests the 16-bit file version at +0x08 and leaves the high halfword
+and +0x0C dword uninterpreted. It uses the common record prefix for the
+checksum and cursor advance. The writer checksums and emits the embedded
+profile and calls the canonical file API.
+
+All 167 affected exact comparisons pass across 24 translation units. The
+exact manifest has 133 references to the retail save slot, all under one
+symbol. Both normal link orders resolve 133 code operands to the same slot,
+which moves from `0x004D7800` to `0x004DCC0C`. The thirteen checked lifecycle
+and writer calls also follow their destinations.
+
+The fixture executes the linked RNG, compression, encryption and checksum
+code while supplying file and heap calls. Retail and both normal links
+produce identical bytes in twelve write/read round trips. They also agree
+on 24 header rejection cases and nine mixed record-version and checksum
+cases. A separate test varies the two unexamined header fields and loads
+the same records. See `.analysis/pi/score-file-owner/` for the recipes.

@@ -1,23 +1,15 @@
-#ifdef TH095_MATCH_EXACT
-#include "ScoreDataExact.inl"
-#else
 #include "ScoreData.hpp"
 #include "GameplayGlobals.hpp"
 
 #include "Checksum.hpp"
-#include "FileSystem.hpp"
-#include "SceneSelect.hpp"
+#include "Main.hpp"
+#include "SceneData.hpp"
 #include "PhotoStage.hpp"
 
 #include <direct.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef TH095_MATCH_EXACT
-#define ZUN_SUCCESS TH095_LEGACY_ZUN_SUCCESS
-#define ZUN_ERROR TH095_LEGACY_ZUN_ERROR
-#endif
 
 namespace th095
 {
@@ -48,7 +40,7 @@ typedef char ScoreWriteLocalsPathAt20[
 typedef char ScoreWriteLocalsRawBufferAt12C[
     (offsetof(ScoreWriteLocals, rawBuffer) == 0x12c) ? 1 : -1];
 
-ScoreDataResult ResultSaveDataView::WriteBestShotData()
+ZunResult ResultSaveDataView::WriteBestShotData()
 {
     ScoreWriteLocals locals;
 
@@ -74,8 +66,8 @@ ScoreDataResult ResultSaveDataView::WriteBestShotData()
 
             locals.scoreEntry =
                 &this->scoreEntries[locals.pendingBestShotIndex];
-            locals.scoreEntry->magic = 0x4353;
-            locals.scoreEntry->version = 1;
+            locals.scoreEntry->magic = SCENE_SCORE_RECORD_MAGIC;
+            locals.scoreEntry->version = SCENE_SCORE_RECORD_VERSION;
             locals.scoreEntry->size = sizeof(ResultScoreEntryView);
             this->scoreEntries[locals.pendingBestShotIndex]
                 .bestShotChecksum =
@@ -145,7 +137,7 @@ ScoreDataResult ResultSaveDataView::WriteBestShotData()
          locals.scoreIndex < ARRAY_SIZE(this->scoreEntries);
          locals.scoreIndex++)
     {
-        if (this->scoreEntries[locals.scoreIndex].magic == 0x4353)
+        if (this->scoreEntries[locals.scoreIndex].magic == SCENE_SCORE_RECORD_MAGIC)
         {
             this->scoreEntries[locals.scoreIndex].index = locals.scoreIndex;
             this->scoreEntries[locals.scoreIndex].checksum = 0;
@@ -161,12 +153,12 @@ ScoreDataResult ResultSaveDataView::WriteBestShotData()
         }
     }
 
-    this->profile.profileChecksum = 0;
-    this->profile.profileChecksum = CalculateAlignedChecksum(
-        reinterpret_cast<i32 *>(this->profileData), sizeof(this->profileData));
-    memcpy(locals.rawBuffer + locals.outputOffset, this->profileData,
-           sizeof(this->profileData));
-    locals.outputOffset += sizeof(this->profileData);
+    this->profile.recordHeader.checksum = 0;
+    this->profile.recordHeader.checksum = CalculateAlignedChecksum(
+        reinterpret_cast<i32 *>(&this->profile), sizeof(this->profile));
+    memcpy(locals.rawBuffer + locals.outputOffset, &this->profile,
+           sizeof(this->profile));
+    locals.outputOffset += sizeof(this->profile);
 
     locals.rawCopyStart = locals.rawBuffer;
     this->fileHeader->uncompressedSize =
@@ -195,5 +187,3 @@ ScoreDataResult ResultSaveDataView::WriteBestShotData()
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

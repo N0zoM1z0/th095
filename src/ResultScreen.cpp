@@ -723,8 +723,8 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
         ResultScoreEntryView *scoreEntry =
             &g_ResultSaveData
                  ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex];
-        scoreEntry->magic = 0x4353;
-        scoreEntry->version = 1;
+        scoreEntry->magic = SCENE_SCORE_RECORD_MAGIC;
+        scoreEntry->version = SCENE_SCORE_RECORD_VERSION;
         scoreEntry->size = sizeof(ResultScoreEntryView);
         scoreEntry->index = g_ResultScreenGlobalState->bestShotIndex;
         scoreEntry->flags |= 1;
@@ -1229,7 +1229,7 @@ ChainCallbackResult ResultScreen::Update()
                 g_ResultSceneState = 4;
                 break;
             case 1:
-                g_ResultSaveData->scene = (i16)(g_SelectedScene->scene + 1);
+                g_ResultSaveData->profile.lastSelectedScene = (i16)(g_SelectedScene->scene + 1);
                 g_SelectedScene =
                     g_SceneGroups[g_SelectedScene->group] +
                     (g_SelectedScene->scene + 1);
@@ -1307,7 +1307,7 @@ ChainCallbackResult ResultScreen::Update()
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_SELECT, 0);
             this->SetState(TH095_RESULT_STATE_REPLAY_NAME_ENTRY);
-            strcpy(this->replayName, g_ResultSaveData->replayName);
+            strcpy(this->replayName, g_ResultSaveData->profile.replayName);
             if (strcmp(this->replayName, "        ") != 0)
             {
                 this->keyboardSelection = 95;
@@ -1451,7 +1451,7 @@ ChainCallbackResult ResultScreen::Update()
     case TH095_RESULT_STATE_REPLAY_WRITE:
         sprintf(path, "th95_%.2d.rpy", this->replayCursor.GetCurrent() + 1);
         g_ReplayManager->WriteReplay(path, this->replayName);
-        strcpy(g_ResultSaveData->replayName, this->replayName);
+        strcpy(g_ResultSaveData->profile.replayName, this->replayName);
         this->SetState(TH095_RESULT_STATE_REPLAY_SLOT_SELECT);
         this->LoadReplays();
         this->replayCursor.Pop();

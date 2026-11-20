@@ -37,7 +37,6 @@ struct FrontEndLifecycleView;
 
 #ifdef TH095_MATCH_EXACT
 extern FrontEndLifecycleView *g_FrontEndController;
-extern ResultSaveDataView *g_FrontEndResultSaveData;
 
 struct FrontEndAnmManagerView
 {
@@ -69,7 +68,6 @@ extern SupervisorFlags g_FrontEndSupervisorFlags;
 #define TH095_FRONT_HIDE_LOADING() g_FrontEndSupervisor.HideLoadingVms()
 #define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_FrontEndSupervisor.BeginLoadingCompletion()
 #define TH095_FRONT_START_REPLAY_SCAN(callback, argument) g_FrontEndSupervisor.StartReplayScan((callback), (argument))
-#define TH095_FRONT_RESULT_SAVE_DATA g_FrontEndResultSaveData
 #else
 #define TH095_FRONT_CONTROLLER_STORAGE g_ActiveMenuController
 #define TH095_FRONT_CONTROLLER_VALUE reinterpret_cast<FrontEndLifecycleView *>(g_ActiveMenuController)
@@ -81,7 +79,6 @@ extern SupervisorFlags g_FrontEndSupervisorFlags;
 #define TH095_FRONT_HIDE_LOADING() g_Supervisor.HideLoadingVms()
 #define TH095_FRONT_BEGIN_LOADING_COMPLETION() g_Supervisor.BeginLoadingCompletion()
 #define TH095_FRONT_START_REPLAY_SCAN(callback, argument) g_Supervisor.StartReplayScan((callback), (argument))
-#define TH095_FRONT_RESULT_SAVE_DATA g_ResultSaveData
 #endif
 
 extern i32 g_SoundInitializationComplete;
@@ -498,7 +495,7 @@ FrontEndLifecycleView::~FrontEndLifecycleView()
     i32 replayIndex;
     i32 pendingIndex;
 
-    TH095_FRONT_RESULT_SAVE_DATA->WriteBestShotData();
+    g_ResultSaveData->WriteBestShotData();
     for (replayIndex = 0; replayIndex < 80; replayIndex++)
     {
         if (this->replays[replayIndex] != NULL)

@@ -27,7 +27,7 @@ struct ScenePreviewLocals
 typedef char ScenePreviewLocalsSizeIs30[
     (sizeof(ScenePreviewLocals) == 0x30) ? 1 : -1];
 
-ScoreDataResult ResultSaveDataView::LoadScenePreviewTexture(
+ZunResult ResultSaveDataView::LoadScenePreviewTexture(
     AnmLoaded *anm, i32 textureIndex, i32 sceneIndex)
 {
     ScenePreviewLocals locals;
@@ -94,7 +94,7 @@ ScoreDataResult ResultSaveDataView::LoadScenePreviewTexture(
         locals.surface->UnlockRect();
     }
     locals.surface->Release();
-    return static_cast<ScoreDataResult>(ZUN_SUCCESS);
+    return ZUN_SUCCESS;
 }
 
 } // namespace th095

@@ -4,6 +4,7 @@
 #include "ControllerInputSlot.hpp"
 #include "PhotoStage.hpp"
 #include "SoundPlayer.hpp"
+#include "ScoreData.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
 
@@ -129,11 +130,6 @@ typedef char PhotoGameTaskUpdateLoopIAt10[
 typedef char PhotoRuntimeConfigSizeIsC8[
     (sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
 
-struct PhotoSceneSaveDataTaskView
-{
-    u8 bytes[1];
-};
-
 struct PhotoGameTaskView
 {
     PhotoBackgroundManagerView *background; // +0x000
@@ -182,7 +178,6 @@ typedef char PhotoGameTaskChainsAt118[
     (offsetof(PhotoGameTaskView, calcChain) == 0x118) ? 1 : -1];
 
 extern char g_ReplayPath[];
-extern PhotoSceneSaveDataTaskView *g_PhotoSceneSaveData;
 extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoHelpMenuTaskView *g_PhotoHelpMenu;
@@ -341,13 +336,9 @@ i32 PhotoGameTaskView::DrawHud()
              (locals.highScorePosition.z = 0.0f),
              &locals.highScorePosition),
             "HiScore %.7d",
-            *reinterpret_cast<i32 *>(
-                &g_PhotoSceneSaveData->bytes[
-                    0x470 + g_PhotoGameTask->bestShotIndex * 0x60]) >
+            g_ResultSaveData->scoreEntries[g_PhotoGameTask->bestShotIndex].score >
                     this->score
-                ? *reinterpret_cast<i32 *>(
-                      &g_PhotoSceneSaveData->bytes[
-                          0x470 + g_PhotoGameTask->bestShotIndex * 0x60])
+                ? g_ResultSaveData->scoreEntries[g_PhotoGameTask->bestShotIndex].score
                 : this->score);
         locals.scorePosition.x = 128.0f;
         locals.scorePosition.y = 32.0f;
@@ -534,12 +525,8 @@ i32 PhotoGameTaskView::InitializeSubsystems()
 
     if (!PhotoGameFileSystemView::CheckIfFileAlreadyExists(bestShotPath))
     {
-        *reinterpret_cast<i32 *>(
-            &g_PhotoSceneSaveData->bytes[
-                0x49c + this->bestShotIndex * 0x60]) = 0;
-        *reinterpret_cast<i32 *>(
-            &g_PhotoSceneSaveData->bytes[
-                0x478 + this->bestShotIndex * 0x60]) = 0;
+        g_ResultSaveData->scoreEntries[this->bestShotIndex].captureTime = 0;
+        g_ResultSaveData->scoreEntries[this->bestShotIndex].detailScore = 0;
     }
 
     this->background = PhotoBackgroundManagerView::Create();
