@@ -264,3 +264,32 @@ the retail reference. The new PE comparison covers 927 game code
 sections and 11,500 code relocations. All 639 initialized-data relocations,
 8,755 library relocations and 172 imports also pass. The traces are under
 `build/position-independence/photo-overlay-owner/demo-{regular,reordered}/`.
+
+## ANM preload and replay startup
+
+SEM-393 separates the synchronous and asynchronous preload names on the
+shared ANM manager. Both normal links resolve 18 asynchronous loads, one
+synchronous load and two texture creation calls to their moved targets.
+A comparison against the preceding pair of
+links finds one game code section with different instruction bytes outside
+the relocation slots, `AnmManager::ReadAnmEntries`. The other 926 game code
+sections and all 639 checked initialized-data operands follow the same
+references in both sets of links.
+
+The regular link, the pre-change reversed link and a repeat of the current
+reversed link match all ten gameplay fields at all 2,712 indices of
+`demo0.rpy`. Each finishes with score 52,930 and six photos. The first run
+of the same reversed executable starts the player's entrance one frame
+earlier relative to the replay cursor and finishes at 52,760. The stage
+timer starts one tick later than retail in all four runs. The two current
+reversed runs use byte-identical executables.
+
+The replay callback runs at priority 7 and the player at priority 11.
+Both check the gameplay-loading bit at `PhotoGameTaskView + 0xFC`. A
+linked-code fixture clears the bit before, between and after those
+callbacks. When it clears between them, the player updates while the
+replay cursor stays put. Retail and the pre-change and current links
+all permit that ordering, which accounts for a one-frame head start.
+The traces and fixture are under
+`build/position-independence/anm-preload-owner-demo/` and
+`.analysis/pi/anm-preload-owner/check-replay-start.py`.

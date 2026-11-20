@@ -2162,6 +2162,16 @@ unsigned key masks. All six emit the same 2,655-byte GetInput code and
 relocations as the current source. The 0x11C frame and register schedule
 remain unchanged. See `.analysis/controller-get-input/canonical-owner/`.
 
+An instruction audit found only two address-taken locals in the retail
+body. Both instructions pass the same 256-byte keyboard buffer to the
+Win32 and DirectInput keyboard APIs. The deepest referenced slot is the
+input index at EBP-0x11C, with seven operands. Five pinned probes tested
+an array typedef, bounds-preserving inline adapters for each keyboard API
+and their combination, and initializing the HRESULT at the DirectInput
+call. Every variant emits 2,655 bytes and reserves 0x11C. The Win32
+adapter and the typedef preserve the baseline bytes and relocations.
+See `.analysis/controller-get-input/api-boundary/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
