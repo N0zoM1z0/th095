@@ -2424,7 +2424,7 @@ def check_scene_select_best_shot_record_access(
             fail(f"{name} restored raw best-shot record access")
     for name, field in (
         ("SceneBestShot.cpp", "componentsLoaded"),
-        ("ScenePreviewExact.inl", "width"),
+        ("ScenePreview.cpp", "width"),
         ("ScenePreview.cpp", "height"),
     ):
         body = source_without_comments((SRC / name).read_text(encoding="utf-8"))

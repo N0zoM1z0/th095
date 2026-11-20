@@ -319,8 +319,6 @@ struct SceneSaveDataView
     SceneScoreEntryView sceneScores[120];
     ResultBestShotRecordView bestShotRecords[120];
 
-    ::ZunResult LoadScenePreviewTexture(SceneAnmLoadedView *anm,
-                                      i32 textureIndex, i32 sceneIndex);
     i32 LoadBestShotForScene(i32 group, i32 scene);
     i32 IsSceneGroupUnlocked(i32 group);
     i32 FindHighestUnlockedSceneGroup();

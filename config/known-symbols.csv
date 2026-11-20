@@ -87,7 +87,7 @@ address,name,module,confidence,evidence
 0x004479E0,th095::SceneSelectControllerView::UpdateMainMenuSelection,FrontEndController,exact,Canonical eighteen-VM main-menu selection interrupt sequence
 0x00447D00,th095::SceneSelectControllerView::UpdateSceneSelect,SceneSelect,high,Shared-controller state 2 target and root of the TH095 scene-selection cluster
 0x00452630,th095::SceneSelectControllerView::Draw,FrontEndController,high,Complete scene-result and replay-browser text renderer with exact 19-call topology
-0x004362A0,th095::SceneSaveDataView::LoadScenePreviewTexture,SceneSelect,high,Target-local selected-scene thumbnail upload into an ANM texture
+0x004362A0,th095::ResultSaveDataView::LoadScenePreviewTexture,SceneSelect,high,Target-local selected-scene thumbnail upload into an ANM texture
 0x00442B90,th095::AnmManager::LoadTexture,AnmTexture,exact,Canonical file-or-embedded texture upload with seven relocations
 0x00442CA0,th095::AnmManager::LoadTextureRegion,AnmTexture,exact,Canonical 354-byte partial texture upload with seven relocations
 0x00442510,th095::AnmManager::ApplyTextureAlphaBleed,AnmTexture,exact,Canonical 1292-byte three-format alpha bleed with 43-byte switch-table tail and 18 relocations

@@ -1,12 +1,16 @@
-#ifdef TH095_MATCH_EXACT
-#include "ScenePreviewExact.inl"
-#else
-#include "SceneSelect.hpp"
+#include "AnmManager.hpp"
+#include "ScoreData.hpp"
 
 #include <string.h>
 
 namespace th095
 {
+
+enum
+{
+    SCENE_PREVIEW_WIDTH = 256,
+    SCENE_PREVIEW_HEIGHT = 192,
+};
 
 struct ScenePreviewLocals
 {
@@ -23,8 +27,8 @@ struct ScenePreviewLocals
 typedef char ScenePreviewLocalsSizeIs30[
     (sizeof(ScenePreviewLocals) == 0x30) ? 1 : -1];
 
-ZunResult ResultSaveDataView::LoadScenePreviewTexture(
-    SceneAnmLoadedView *anm, i32 textureIndex, i32 sceneIndex)
+ScoreDataResult ResultSaveDataView::LoadScenePreviewTexture(
+    AnmLoaded *anm, i32 textureIndex, i32 sceneIndex)
 {
     ScenePreviewLocals locals;
 
@@ -50,14 +54,16 @@ ZunResult ResultSaveDataView::LoadScenePreviewTexture(
             NULL, &locals.sourceRect, D3DX_FILTER_POINT, 0);
 
         locals.surface->LockRect(&locals.lockedRect, NULL, 0);
-        for (locals.y = 0; locals.y < 192; locals.y++)
+        for (locals.y = 0; locals.y < SCENE_PREVIEW_HEIGHT; locals.y++)
         {
             locals.pixel =
                 reinterpret_cast<u8 *>(locals.lockedRect.pBits) +
                 locals.y * locals.lockedRect.Pitch;
+            // The retail upload checks the D3D row pitch here. Both branches
+            // walk four-byte pixels, including when the decoded source is 16-bit.
             if (locals.lockedRect.Pitch == 4)
             {
-                for (locals.x = 0; locals.x < 256; locals.x++)
+                for (locals.x = 0; locals.x < SCENE_PREVIEW_WIDTH; locals.x++)
                 {
                     locals.pixel[3] = 0xff;
                     locals.pixel += 4;
@@ -65,7 +71,7 @@ ZunResult ResultSaveDataView::LoadScenePreviewTexture(
             }
             else
             {
-                for (locals.x = 0; locals.x < 256; locals.x++)
+                for (locals.x = 0; locals.x < SCENE_PREVIEW_WIDTH; locals.x++)
                 {
                     locals.pixel[3] |= 0xf0;
                     locals.pixel += 4;
@@ -77,20 +83,18 @@ ZunResult ResultSaveDataView::LoadScenePreviewTexture(
     else
     {
         locals.surface->LockRect(&locals.lockedRect, NULL, 0);
-        for (locals.clearY = 0; locals.clearY < 192; locals.clearY++)
+        for (locals.clearY = 0; locals.clearY < SCENE_PREVIEW_HEIGHT; locals.clearY++)
         {
             locals.clearRow =
                 reinterpret_cast<u8 *>(locals.lockedRect.pBits) +
                 locals.clearY * locals.lockedRect.Pitch;
             memset(locals.clearRow, 0,
-                   anm->textures[textureIndex].bytesPerPixel * 256);
+                   anm->textures[textureIndex].bytesPerPixel * SCENE_PREVIEW_WIDTH);
         }
         locals.surface->UnlockRect();
     }
     locals.surface->Release();
-    return ZUN_SUCCESS;
+    return static_cast<ScoreDataResult>(ZUN_SUCCESS);
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

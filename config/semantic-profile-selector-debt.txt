@@ -211,7 +211,6 @@
 1	src/SceneControllerDraw.cpp	#ifdef TH095_MATCH_EXACT
 2	src/SceneData.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/SceneDetail.cpp	#ifdef TH095_MATCH_EXACT
-1	src/ScenePreview.cpp	#ifdef TH095_MATCH_EXACT
 2	src/SceneSelect.cpp	#ifdef DIFFBUILD
 1	src/SceneSelect.cpp	#ifdef TH095_MATCH_EXACT
 4	src/SceneSelect.hpp	#ifdef DIFFBUILD

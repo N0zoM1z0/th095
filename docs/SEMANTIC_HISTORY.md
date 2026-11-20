@@ -18019,3 +18019,31 @@ bleed and clear reach their moved targets. The linked-code fixture checks
 144 file and embedded uploads and ten alpha/clear cases against retail.
 It executes the pixel operations and supplies D3D API responses, including
 failed uploads. See `.analysis/pi/scene-texture-owner/` for the recipes.
+
+### SEM-395 — share the Best Shot preview surface owner
+
+`ResultSaveDataView::LoadScenePreviewTexture` now uses the real saved-data
+and loaded-ANM declarations in both profiles. The receiver supplies the
+selected record's dimensions, component count and availability. The
+pixel pointer comes from the same record index on `g_ResultSaveData`.
+Scene Select also uses that global for the preview's comment and layout.
+
+The original 578-byte body uses two different widths. In the upload path,
+0x004363DC compares `D3DLOCKED_RECT::Pitch` with 4 and both branches update
+byte 3 of each four-byte pixel. The empty-preview path clears 256 times
+the texture entry's bytes per pixel on each of the 192 rows. The shared
+implementation preserves those operations.
+
+All 51 affected strict comparisons pass. The eight saved-data relocations
+use the same retail address, and the preview call keeps its destination.
+The regular and reversed links move both that call's destination and
+the saved-data slot. All four mapped sections of each rebuilt PE agree
+with its pre-change link. The linked-code fixture supplies D3D responses
+and checks 96 uploads and 24 clears with distinct receiver/global records,
+source and destination strides, row padding and buffer canaries.
+
+Using `AnmLoaded` throughout the exact Scene Select update also changes
+the existing VM call sites: the trial body grows from 16,066 to 16,423
+bytes. The preview call therefore converts the existing loaded-ANM
+projection at its boundary while the older VM methods retain their
+emission. See `.analysis/pi/scene-preview-owner/` for the local recipes.

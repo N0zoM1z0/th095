@@ -372,8 +372,11 @@ static __forceinline void SceneSelectProcessLoadedSceneQueue(
                 }
                 else
                     loadedSceneLoadValue = 0;
-                g_SceneSaveData->LoadScenePreviewTexture(
-                    view->sceneAnm, 1, loadedSceneLoadValue);
+                // The exact scene update still uses the older ANM method
+                // declarations. The preview consumes the actual loaded ANM.
+                g_ResultSaveData->LoadScenePreviewTexture(
+                    reinterpret_cast<AnmLoaded *>(view->sceneAnm),
+                    1, loadedSceneLoadValue);
                 view->vmIds.SetInterrupt(0x82, 1);
                 SceneSelectCreateVmAt(view, 0x82);
                 reinterpret_cast<AnmTextManagerView *>(g_SceneAnmManager)
@@ -381,7 +384,7 @@ static __forceinline void SceneSelectProcessLoadedSceneQueue(
                         reinterpret_cast<AnmTextVmView *>(
                             g_SceneAnmManager->GetVm(view->vmIds.values[0x82])),
                         0x00efcfcf, 0,
-                        g_SceneSaveData->bestShotRecords[
+                        g_ResultSaveData->bestShotRecords[
                             (&view->loadedSceneQueue)->Front()].comment);
             }
         }
@@ -1254,22 +1257,22 @@ update_preview_text:
         {
             previewVm =
                 g_SceneAnmManager->GetVm(view->vmIds.values[0x12]);
-            if (g_SceneSaveData->bestShotRecords[
+            if (g_ResultSaveData->bestShotRecords[
                     view->selectedScoreEntryIndex].componentsLoaded != 0)
             {
                 previewVm->loadedSprite->uvEndX =
-                    (f32)g_SceneSaveData->bestShotRecords[
+                    (f32)g_ResultSaveData->bestShotRecords[
                         view->selectedScoreEntryIndex].width /
                     256.0f;
                 previewVm->loadedSprite->uvEndY =
-                    (f32)g_SceneSaveData->bestShotRecords[
+                    (f32)g_ResultSaveData->bestShotRecords[
                         view->selectedScoreEntryIndex].height /
                     256.0f;
                 previewVm->spriteWidth =
-                    (f32)g_SceneSaveData->bestShotRecords[
+                    (f32)g_ResultSaveData->bestShotRecords[
                         view->selectedScoreEntryIndex].width;
                 previewVm->spriteHeight =
-                    (f32)g_SceneSaveData->bestShotRecords[
+                    (f32)g_ResultSaveData->bestShotRecords[
                         view->selectedScoreEntryIndex].height;
                 previewVm->flagsWord |= 2;
             }
