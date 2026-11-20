@@ -9,5 +9,5 @@ void __fastcall Supervisor::InitializeInput(void *s)
     g_Supervisor.flags.controllerAvailable = 0;
     g_Supervisor.SetupDInput();
     g_Supervisor.flags.keyboardAvailable = g_Supervisor.keyboard != NULL;
-    g_Supervisor.flags.controllerAvailable = g_Supervisor.controller != NULL;
+    g_Supervisor.flags.controllerAvailable = g_Supervisor.controllerDevices[0] != NULL;
 }

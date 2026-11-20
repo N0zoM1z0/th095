@@ -8,10 +8,10 @@ BOOL CALLBACK Supervisor::EnumGameControllersCb(
     HRESULT result;
     (void)context;
 
-    if (g_Supervisor.controller == NULL)
+    if (g_Supervisor.controllerDevices[0] == NULL)
     {
         result = g_Supervisor.directInput->CreateDevice(
-            instance->guidInstance, &g_Supervisor.controller, NULL);
+            instance->guidInstance, &g_Supervisor.controllerDevices[0], NULL);
         if (result < 0)
         {
             return DIENUM_CONTINUE;

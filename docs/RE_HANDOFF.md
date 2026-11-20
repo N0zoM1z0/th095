@@ -15,9 +15,11 @@ and [source ownership](SOURCE_MAP.md). Live totals come from the ledgers and
 ## Current work
 
 The [PI evidence](POSITION_INDEPENDENCE.md) covers the two normal link
-orders, initialized data, library and import references, and the built-in
-scene 3-6 replay. SEM-358 and SEM-360 correct the MIDI and DirectInput
-storage. The second DirectInput device slot's publication remains open.
+orders, initialized data, library and import references, and the three built-in
+replays. The full cycle agrees on the gameplay samples, with one-tick
+scene timer differences at startup. SEM-358 and SEM-360 correct MIDI and
+DirectInput storage. SEM-376 makes the normal readers honor both controller
+indices. Publication of the second controller slot remains open.
 SEM-368 binds stage loading to the BGM command queue. SEM-369 and SEM-370
 correct sixteen mismatched floating-point references and enforce literal
 data comparison in exact replay.

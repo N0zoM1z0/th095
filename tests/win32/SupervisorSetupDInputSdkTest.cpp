@@ -20,7 +20,7 @@ struct InputSdkReceiverFixture
     InputSdkConfigurationFixture config;
     IDirectInput8A *directInput;
     IDirectInputDevice8A *keyboard;
-    IDirectInputDevice8A *controller;
+    IDirectInputDevice8A *controllerDevices[2];
     DIDEVCAPS controllerCaps;
     SupervisorFlags flags;
     i32 SetupDInput();

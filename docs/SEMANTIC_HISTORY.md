@@ -17561,3 +17561,23 @@ orders. All mapped PE sections match the respective regular and repeated
 reordered images used for the scene 3-6 replay. The existing BulletInf
 guard and focused test follow the layout header and reject a displaced
 owner declaration.
+
+### SEM-376 — share the indexed DirectInput device pointers
+
+Retail GetControllerInput and GetControllerState load their selected COM
+receiver from Supervisor +0x14/+0x18. The former normal body discarded
+the index. A two-device COM fixture reproduces the resulting wrong buttons
+in both previous link orders. The canonical owner now declares the two
+pointers as one array. Setup, availability publication and release name
+element zero. Both readers use their incoming index in both profiles.
+
+All 611 affected strict comparisons pass. The two readers bind their
+sixteen operands to `g_Supervisor + 0x14`. The pinned compiler renumbered
+367 private labels by one. Their relocation offsets, types and destinations
+compare identically.
+
+Both normal PEs now poll and read the requested device in the two-device
+fixture. The sixteen operands follow the Supervisor from 0x004DCBA0 to
+0x004D7178. The existing input initialization fixture still passes all
+694 cases. The pinned SDK layout and API probes compile, as do the MinGW
+x86 and x64 SDK API fixtures.

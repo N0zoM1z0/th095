@@ -2138,6 +2138,16 @@ forms change the instruction count. The source and accepted exact count
 stay as recorded. Probe inputs and results are under
 `.analysis/controller-get-input/`.
 
+SEM-376 reran the comparison after the DirectInput device owner change.
+Both current Controller objects still produce 2,655 bytes, 579 instructions,
+22 relocations and a 0x11C-byte frame. A separate instruction-level fixture
+compares retail and both normal link layouts with synthetic keyboard API
+and controller-dispatch responses. All 1,312 cases agree on the returned
+mask, controller-dispatch arguments and the full three-slot input history.
+The fixture covers both keyboard APIs, DirectInput reacquisition paths and
+repeat-count boundaries. See
+`.analysis/controller-get-input/verify-published-semantics.py`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now

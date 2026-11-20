@@ -18,7 +18,6 @@ DIFFABLE_STATIC_ARRAY(ControllerInputSlotView, 3, g_ControllerInputSlots);
 #define TH095_CONTROLLER_INPUT_SLOT(index) ((&g_ControllerInputSlots) + (index))
 #define TH095_CONTROLLER_JOYCAPS_FIRST g_JoystickCaps
 #define TH095_CONTROLLER_JOYCAP(index) ((&g_JoystickCaps)[index])
-#define TH095_CONTROLLER_DEVICE(index) ((&g_ControllerDevices)[index])
 #define TH095_CONTROLLER_KEYBOARD_AVAILABLE (((g_ControllerRuntimeFlags >> 10) & 1) != 0)
 #define TH095_CONTROLLER_CONTROLLER_AVAILABLE (((g_ControllerRuntimeFlags >> 11) & 1) != 0)
 #define TH095_CONTROLLER_PAD_X g_ControllerPadXAxis
@@ -31,7 +30,6 @@ DIFFABLE_STATIC_ARRAY(ControllerInputSlotView, 3, g_ControllerInputSlots);
 #define TH095_CONTROLLER_INPUT_SLOT(index) (g_ControllerInputSlots + (index))
 #define TH095_CONTROLLER_JOYCAPS_FIRST g_JoystickCaps[0]
 #define TH095_CONTROLLER_JOYCAP(index) (g_JoystickCaps[index])
-#define TH095_CONTROLLER_DEVICE(index) (g_Supervisor.controller)
 #define TH095_CONTROLLER_KEYBOARD_AVAILABLE (g_Supervisor.flags.keyboardAvailable != 0)
 #define TH095_CONTROLLER_CONTROLLER_AVAILABLE (g_Supervisor.flags.controllerAvailable != 0)
 #define TH095_CONTROLLER_PAD_X g_Supervisor.config.padXAxis
@@ -250,15 +248,15 @@ u16 GetControllerInput(i32 controllerIndex, i32 joystickIndex, u16 buttons)
         return buttons;
     }
 
-    locals.result = TH095_CONTROLLER_DEVICE(joystickIndex)->Poll();
+    locals.result = g_Supervisor.controllerDevices[joystickIndex]->Poll();
     if (locals.result < 0)
     {
         acquireAttempts = 0;
         utils::DebugPrint("error : DIERR_INPUTLOST\r\n");
-        locals.result = TH095_CONTROLLER_DEVICE(joystickIndex)->Acquire();
+        locals.result = g_Supervisor.controllerDevices[joystickIndex]->Acquire();
         while (locals.result == DIERR_INPUTLOST)
         {
-            locals.result = TH095_CONTROLLER_DEVICE(joystickIndex)->Acquire();
+            locals.result = g_Supervisor.controllerDevices[joystickIndex]->Acquire();
             utils::DebugPrint(
                 "error : DIERR_INPUTLOST %d\r\n", acquireAttempts);
             acquireAttempts++;
@@ -271,7 +269,7 @@ u16 GetControllerInput(i32 controllerIndex, i32 joystickIndex, u16 buttons)
     }
 
     memset(&locals.joystickState, 0, sizeof(locals.joystickState));
-    locals.result = TH095_CONTROLLER_DEVICE(joystickIndex)->GetDeviceState(
+    locals.result = g_Supervisor.controllerDevices[joystickIndex]->GetDeviceState(
         sizeof(locals.joystickState), &locals.joystickState);
     if (locals.result < 0)
     {
@@ -331,15 +329,15 @@ u8 *GetControllerState(i32 deviceIndex)
         return TH095_CONTROLLER_BUTTONS_PTR;
     }
 
-    locals.result = TH095_CONTROLLER_DEVICE(deviceIndex)->Poll();
+    locals.result = g_Supervisor.controllerDevices[deviceIndex]->Poll();
     if (locals.result < 0)
     {
         acquireAttempts = 0;
         utils::DebugPrint("error : DIERR_INPUTLOST\r\n");
-        locals.result = TH095_CONTROLLER_DEVICE(deviceIndex)->Acquire();
+        locals.result = g_Supervisor.controllerDevices[deviceIndex]->Acquire();
         while (locals.result == DIERR_INPUTLOST)
         {
-            locals.result = TH095_CONTROLLER_DEVICE(deviceIndex)->Acquire();
+            locals.result = g_Supervisor.controllerDevices[deviceIndex]->Acquire();
             acquireAttempts++;
             if (acquireAttempts >= 400)
             {
@@ -352,7 +350,7 @@ u8 *GetControllerState(i32 deviceIndex)
         return TH095_CONTROLLER_BUTTONS_PTR;
     }
 
-    TH095_CONTROLLER_DEVICE(deviceIndex)->GetDeviceState(
+    g_Supervisor.controllerDevices[deviceIndex]->GetDeviceState(
         sizeof(locals.joystickState), &locals.joystickState);
     if (locals.result < 0)
     {

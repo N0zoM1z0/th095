@@ -10,7 +10,7 @@
         range.lMin = -1000;
         range.lMax = 1000;
 
-        if (g_Supervisor.controller->SetProperty(DIPROP_RANGE, &range.diph) < 0)
+        if (g_Supervisor.controllerDevices[0]->SetProperty(DIPROP_RANGE, &range.diph) < 0)
         {
             return DIENUM_STOP;
         }

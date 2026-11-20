@@ -12,7 +12,6 @@ namespace th095
 
 #ifdef TH095_MATCH_EXACT
 extern u8 g_ControllerButtons;
-extern LPDIRECTINPUTDEVICE8A g_ControllerDevices;
 extern u32 g_ControllerRuntimeFlags;
 extern JOYCAPSA g_JoystickCaps;
 extern i16 g_ControllerPadXAxis;

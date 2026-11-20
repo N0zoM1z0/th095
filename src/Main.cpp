@@ -1812,14 +1812,14 @@ i32 __fastcall Supervisor::DeletedCallback(void *arg)
         }
     }
 
-    if (((Supervisor *)arg)->controller != NULL)
+    if (((Supervisor *)arg)->controllerDevices[0] != NULL)
     {
         utils::DebugPrint("DirectInput(Pad) Release\n");
-        ((Supervisor *)arg)->controller->Unacquire();
-        if (((Supervisor *)arg)->controller != NULL)
+        ((Supervisor *)arg)->controllerDevices[0]->Unacquire();
+        if (((Supervisor *)arg)->controllerDevices[0] != NULL)
         {
-            ((Supervisor *)arg)->controller->Release();
-            ((Supervisor *)arg)->controller = NULL;
+            ((Supervisor *)arg)->controllerDevices[0]->Release();
+            ((Supervisor *)arg)->controllerDevices[0] = NULL;
         }
     }
 

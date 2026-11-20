@@ -48,8 +48,7 @@ struct Supervisor
     IDirectInputDevice8A *keyboard;                  // +0x010
     // The indexed input readers address +0x14/+0x18. SetupDInput publishes
     // the first device and passes the record at +0x1c to GetCapabilities.
-    IDirectInputDevice8A *controller;                // +0x014
-    IDirectInputDevice8A *secondController;           // +0x018
+    IDirectInputDevice8A *controllerDevices[2];       // +0x014
     DIDEVCAPS controllerCaps;                         // +0x01c
     HWND gameWindow;                                 // +0x048
     D3DXMATRIX viewMatrix;                           // +0x04c
@@ -178,7 +177,7 @@ struct Supervisor
 
 typedef char SupervisorPresentAtE4[(offsetof(Supervisor, presentParameters) == 0xe4) ? 1 : -1];
 typedef char SupervisorDummyMidiTimerAt118[(offsetof(Supervisor, dummyMidiTimer) == 0x118) ? 1 : -1];
-typedef char SupervisorSecondControllerAt18[(offsetof(Supervisor, secondController) == 0x18) ? 1 : -1];
+typedef char SupervisorControllerDevicesAt14[(offsetof(Supervisor, controllerDevices) == 0x14) ? 1 : -1];
 typedef char SupervisorControllerCapsAt1C[(offsetof(Supervisor, controllerCaps) == 0x1c) ? 1 : -1];
 typedef char SupervisorCurrentViewportAt3C4[
     (offsetof(Supervisor, currentViewportConfiguration) == 0x3c4) ? 1 : -1];

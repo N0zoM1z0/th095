@@ -1254,7 +1254,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
             ("range.diph.dwObj = object->dwType;", "range.diph.dwObj = object->dwType & DIDFT_AXIS;"),
             ("range.lMin = -1000;", "range.lMin = 0;"),
             ("DIPH_BYID", "DIPH_BYOFFSET"),
-            ("g_Supervisor.controller->", "static_cast<Supervisor *>(context)->controller->"),
+            ("g_Supervisor.controllerDevices[0]->", "static_cast<Supervisor *>(context)->controllerDevices[0]->"),
             ("< 0", "<= 0"),
             ("return DIENUM_STOP;", "return DIENUM_CONTINUE;"),
         ):
@@ -1272,7 +1272,7 @@ class SemanticProtocolGuardTests(unittest.TestCase):
         for name, before, after in (
             ("SupervisorInitializeInput.inl", "g_Supervisor.SetupDInput();", "if (g_Supervisor.SetupDInput() < 0) return;"),
             ("SupervisorInitializeInput.inl", "g_Supervisor.keyboard != NULL", "g_Supervisor.keyboard == NULL"),
-            ("SupervisorEnumGameControllers.inl", "g_Supervisor.controller,", "static_cast<Supervisor *>(context)->controller,"),
+            ("SupervisorEnumGameControllers.inl", "g_Supervisor.controllerDevices[0],", "static_cast<Supervisor *>(context)->controllerDevices[0],"),
             ("SupervisorEnumGameControllers.inl", "result < 0", "result <= 0"),
             ("SupervisorEnumGameControllers.inl", "return DIENUM_CONTINUE;", "return DIENUM_STOP;"),
         ):

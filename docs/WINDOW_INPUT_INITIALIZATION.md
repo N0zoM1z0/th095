@@ -66,11 +66,21 @@ normal object used +0x18 for the record because the exact recipe compensated
 with a four-byte-adjusted base. The canonical member, exact relocation and
 normal COFF addend now agree.
 
-The controller input and state helpers address their devices through an
-indexed pointer read at Supervisor +0x14. This makes +0x18 the second slot.
-The TH095 enumeration callback publishes the first slot. Publication of the
-second slot remains open in TH095. TH09 corroborates the placement with its
-own two-controller startup.
+The controller input and state helpers index the two pointers in
+`Supervisor::controllerDevices` at +0x14 and +0x18. The earlier normal
+build used the first slot for both indices. With two distinct synthetic
+devices, retail `GetControllerInput` and `GetControllerState` poll the
+requested slot and return its buttons. The normal and exact source now share
+the indexed access. Setup, enumeration, availability and shutdown use the
+first slot. Publication of the second slot remains open in TH095. TH09
+corroborates its placement with its own two-controller startup.
+
+The two-device fixture executes the linked instructions with synthetic
+DirectInput receivers and different button states. Both normal links now
+send Poll and GetDeviceState to the selected receiver and match the retail
+button masks and raw button arrays. Their 16 related COFF operands link
+against the moved Supervisor base with addend +0x14. The local fixture is
+`.analysis/controller-get-input/verify-published-semantics.py`.
 
 ## Device selection and availability publication
 

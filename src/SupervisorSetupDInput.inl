@@ -72,14 +72,14 @@ i32 Supervisor::SetupDInput()
     this->directInput->EnumDevices(
         DI8DEVCLASS_GAMECTRL, Supervisor::EnumGameControllersCb, NULL, DIEDFL_ATTACHEDONLY);
 
-    if (this->controller != NULL)
+    if (this->controllerDevices[0] != NULL)
     {
-        this->controller->SetDataFormat(&c_dfDIJoystick2);
-        this->controller->SetCooperativeLevel(
+        this->controllerDevices[0]->SetDataFormat(&c_dfDIJoystick2);
+        this->controllerDevices[0]->SetCooperativeLevel(
             this->gameWindow, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
         g_Supervisor.controllerCaps.dwSize = sizeof(DIDEVCAPS);
-        this->controller->GetCapabilities(&g_Supervisor.controllerCaps);
-        this->controller->EnumObjects(Supervisor::ControllerCallback, NULL, 0);
+        this->controllerDevices[0]->GetCapabilities(&g_Supervisor.controllerCaps);
+        this->controllerDevices[0]->EnumObjects(Supervisor::ControllerCallback, NULL, 0);
         g_GameErrorContext.Log(
             "\x97\x4c\x8c\xf8\x82\xc8\x83\x70\x83\x62\x83\x68\x82\xf0\x94\xad\x8c\xa9\x82\xb5\x82\xdc\x82\xb5\x82\xbd\r\n");
     }

@@ -40,7 +40,8 @@ struct InputSupervisorFixture
     InputWindowFixture *gameWindow;
     struct Configuration { struct Options { u32 disableDirectInput; } options; } config;
     InputInterfaceFixture *directInput;
-    InputDeviceFixture *keyboard, *controller;
+    InputDeviceFixture *keyboard;
+    InputDeviceFixture *controllerDevices[2];
     InputCapsFixture controllerCaps;
     SupervisorFlags flags;
     i32 SetupDInput();
@@ -108,7 +109,7 @@ struct InputDeviceFixture
     }
     i32 SetProperty(const InputGuidFixture &property, const InputPropertyHeaderFixture *header)
     {
-        CHECK(this == g_Supervisor.controller && !isKeyboard && &property == &DIPROP_RANGE);
+        CHECK(this == g_Supervisor.controllerDevices[0] && !isKeyboard && &property == &DIPROP_RANGE);
         CHECK(header->dwSize == sizeof(InputPropertyRangeFixture));
         CHECK(header->dwHeaderSize == sizeof(InputPropertyHeaderFixture) && header->dwHow == DIPH_BYID);
         const InputPropertyRangeFixture *range=reinterpret_cast<const InputPropertyRangeFixture *>(header);
@@ -141,7 +142,7 @@ struct InputInterfaceFixture
         if (&guid != &GUID_SysKeyboard)
         {
             CHECK(scenario.executeDeviceCallback && outer == NULL);
-            CHECK(this == g_Supervisor.directInput && output == &g_Supervisor.controller);
+            CHECK(this == g_Supervisor.directInput && output == &g_Supervisor.controllerDevices[0]);
             const std::size_t index = scenario.createdGuids.size();
             CHECK(index < scenario.controllerResults.size());
             scenario.createdGuids.push_back(&guid); scenario.events.push_back(CREATE_CONTROLLER);
@@ -172,7 +173,7 @@ struct InputInterfaceFixture
                 if (result == DIENUM_STOP) break;
             }
         }
-        else if (scenario.publishController) scenario.receiver->controller = &controllerDevice;
+        else if (scenario.publishController) scenario.receiver->controllerDevices[0] = &controllerDevice;
         return scenario.ignoredFailures & 2u ? -1 : 0;
     }
 } inputInterface, oldInput;
@@ -251,7 +252,7 @@ static void Reset(InputSupervisorFixture *receiver, InputModuleHandleFixture mod
     receiver->config.options.disableDirectInput=stage == DISABLED;
     if (stage == DISABLED)
     {
-        receiver->directInput=&oldInput;receiver->keyboard=&oldKeyboard;receiver->controller=&oldController;
+        receiver->directInput=&oldInput;receiver->keyboard=&oldKeyboard;receiver->controllerDevices[0]=&oldController;
     }
 }
 static u32 FlagWord(const SupervisorFlags &flags)
@@ -271,13 +272,13 @@ static void Verify(InputSupervisorFixture *receiver, bool worker=false, void *ar
     {
         CHECK(receiver == &g_Supervisor);
         const u32 expected=(before & ~0xC00u) | (receiver->keyboard != NULL ? 0x400u : 0)
-                           | (receiver->controller != NULL ? 0x800u : 0);
+                           | (receiver->controllerDevices[0] != NULL ? 0x800u : 0);
         CHECK(FlagWord(g_Supervisor.flags) == expected);
     }
     std::vector<int> expected={WINDOW_READ};
     if (stage == DISABLED)
     {
-        CHECK(receiver->directInput == &oldInput && receiver->keyboard == &oldKeyboard && receiver->controller == &oldController);
+        CHECK(receiver->directInput == &oldInput && receiver->keyboard == &oldKeyboard && receiver->controllerDevices[0] == &oldController);
     }
     else
     {
@@ -305,7 +306,7 @@ static void Verify(InputSupervisorFixture *receiver, bool worker=false, void *ar
         if (stage != FAIL_NONE) expected.push_back(LOG_MESSAGE);
         CHECK(receiver->directInput == (stage == FAIL_NONE ? &inputInterface : NULL));
         CHECK(receiver->keyboard == (stage == FAIL_NONE ? &keyboardDevice : NULL));
-        CHECK(receiver->controller == (stage == FAIL_NONE && scenario.publishController ? &controllerDevice : NULL));
+        CHECK(receiver->controllerDevices[0] == (stage == FAIL_NONE && scenario.publishController ? &controllerDevice : NULL));
     }
     CHECK(expected == scenario.events);
     CHECK(scenario.inputReleases == (stage >= FAIL_KEYBOARD ? 1 : 0));
@@ -329,13 +330,13 @@ static void CheckDeviceCallbacks()
         for (InputDeviceFixture *output : outputs)
         {
             Reset(&g_Supervisor,&modules[0],FAIL_NONE,false);
-            unrelated=InputSupervisorFixture(); unrelated.controller=&oldKeyboard;
+            unrelated=InputSupervisorFixture(); unrelated.controllerDevices[0]=&oldKeyboard;
             scenario.executeDeviceCallback=true;
             scenario.controllerResults.push_back({result,output});
             g_Supervisor.directInput=&inputInterface;
             CHECK(InputSupervisorFixture::EnumGameControllersCb(&instance,&unrelated)
                   == (result < 0 ? DIENUM_CONTINUE : DIENUM_STOP));
-            CHECK(g_Supervisor.controller == output && unrelated.controller == &oldKeyboard);
+            CHECK(g_Supervisor.controllerDevices[0] == output && unrelated.controllerDevices[0] == &oldKeyboard);
             CHECK(scenario.createdGuids.size() == 1 && scenario.createdGuids[0] == &instance.guidInstance);
             CHECK(reinterpret_cast<std::uintptr_t>(scenario.createdGuids[0]) > UINT32_MAX);
             CHECK(scenario.events == std::vector<int>({CREATE_CONTROLLER}));
@@ -344,7 +345,7 @@ static void CheckDeviceCallbacks()
     // A pre-existing device stops enumeration before touching a null instance
     // or input interface. The argument/context do not supply an alternate owner.
     Reset(&g_Supervisor,&modules[0],FAIL_NONE,false);
-    g_Supervisor.controller=&oldController;
+    g_Supervisor.controllerDevices[0]=&oldController;
     CHECK(InputSupervisorFixture::EnumGameControllersCb(NULL,NULL) == DIENUM_STOP);
     CHECK(scenario.events.empty()); ++cases;
 
@@ -374,9 +375,9 @@ static void CheckDeviceCallbacks()
         CHECK(scenario.createdGuids.size() == creates[trace]);
         for (std::size_t i=0;i<scenario.createdGuids.size();++i)
             CHECK(scenario.createdGuids[i] == &scenario.devices[i].guidInstance);
-        CHECK(g_Supervisor.controller == (trace == 1 || trace == 3 || trace == 5 ? &controllerDevice : NULL));
+        CHECK(g_Supervisor.controllerDevices[0] == (trace == 1 || trace == 3 || trace == 5 ? &controllerDevice : NULL));
         if (trace == 5)
-            CHECK(receiver.controller == NULL && g_Supervisor.directInput == &oldInput);
+            CHECK(receiver.controllerDevices[0] == NULL && g_Supervisor.directInput == &oldInput);
         CHECK(scenario.inputReleases == 0 && scenario.keyReleases == 0); ++cases;
     }
 }
@@ -394,13 +395,13 @@ static void CheckAxisCallbacks()
             for (int withContext=0;withContext<2;++withContext)
             {
                 Reset(&g_Supervisor,&modules[0],FAIL_NONE,false);
-                g_Supervisor.controller=&controllerDevice;
-                InputSupervisorFixture unrelated={}; unrelated.controller=&oldController;
+                g_Supervisor.controllerDevices[0]=&controllerDevice;
+                InputSupervisorFixture unrelated={}; unrelated.controllerDevices[0]=&oldController;
                 InputObjectInstanceFixture object={item.type};
                 scenario.propertyResult=result;
                 CHECK(InputSupervisorFixture::ControllerCallback(&object,withContext ? &unrelated : NULL)
                       == (item.axis && result < 0 ? DIENUM_STOP : DIENUM_CONTINUE));
-                CHECK(unrelated.controller == &oldController && g_Supervisor.controller == &controllerDevice);
+                CHECK(unrelated.controllerDevices[0] == &oldController && g_Supervisor.controllerDevices[0] == &controllerDevice);
                 CHECK(scenario.ranges.size() == (item.axis ? 1u : 0u));
                 if (item.axis)
                 {
@@ -415,7 +416,7 @@ static void CheckAxisCallbacks()
         Reset(&g_Supervisor,&modules[0],FAIL_NONE,false);
         InputObjectInstanceFixture object={type};
         CHECK(InputSupervisorFixture::ControllerCallback(&object,NULL) == DIENUM_CONTINUE);
-        CHECK(g_Supervisor.controller == NULL && scenario.events.empty()); ++cases;
+        CHECK(g_Supervisor.controllerDevices[0] == NULL && scenario.events.empty()); ++cases;
     }
     const struct Trace {
         std::vector<u32> objects, visited, configured;
@@ -436,7 +437,7 @@ static void CheckAxisCallbacks()
     {
         InputSupervisorFixture receiver;
         Reset(trace.foreignReceiver ? &receiver : &g_Supervisor,&modules[1],FAIL_NONE,true,trace.backendFailures);
-        if (trace.foreignReceiver) g_Supervisor.controller=&oldController;
+        if (trace.foreignReceiver) g_Supervisor.controllerDevices[0]=&oldController;
         scenario.executeObjectCallback=true; scenario.propertyResult=trace.propertyResult;
         for (u32 type : trace.objects) scenario.objects.push_back({type});
         CHECK(scenario.receiver->SetupDInput() == 0);
@@ -449,8 +450,8 @@ static void CheckAxisCallbacks()
         expected.insert(expected.end(),trace.configured.size(),SET_AXIS_RANGE); expected.push_back(LOG_MESSAGE);
         CHECK(scenario.events == expected);
         CHECK(scenario.inputReleases == 0 && scenario.keyReleases == 0);
-        CHECK(scenario.receiver->controller == &controllerDevice);
-        if (trace.foreignReceiver) CHECK(g_Supervisor.controller == &oldController);
+        CHECK(scenario.receiver->controllerDevices[0] == &controllerDevice);
+        if (trace.foreignReceiver) CHECK(g_Supervisor.controllerDevices[0] == &oldController);
         ++cases;
     }
 }

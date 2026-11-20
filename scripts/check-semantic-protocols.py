@@ -3014,7 +3014,7 @@ def check_supervisor_axis_range(overrides: dict[str, str] | None = None) -> None
             range.diph.dwObj = object->dwType;
             range.lMin = -1000;
             range.lMax = 1000;
-            if (g_Supervisor.controller->SetProperty(DIPROP_RANGE, &range.diph) < 0)
+            if (g_Supervisor.controllerDevices[0]->SetProperty(DIPROP_RANGE, &range.diph) < 0)
             {
                 return DIENUM_STOP;
             }
@@ -3043,12 +3043,12 @@ def check_supervisor_input_selection(overrides: dict[str, str] | None = None) ->
     ordered = ["(void)s;", "g_Supervisor.flags.keyboardAvailable=0;",
                "g_Supervisor.flags.controllerAvailable=0;", "g_Supervisor.SetupDInput();",
                "g_Supervisor.flags.keyboardAvailable=g_Supervisor.keyboard!=NULL;",
-               "g_Supervisor.flags.controllerAvailable=g_Supervisor.controller!=NULL;"]
+               "g_Supervisor.flags.controllerAvailable=g_Supervisor.controllerDevices[0]!=NULL;"]
     if any(token not in initializer for token in ordered) or [initializer.index(token) for token in ordered] != sorted(initializer.index(token) for token in ordered):
         fail("input initializer changed global ownership or availability publication order")
     callback = bodies["EnumGameControllersCb"]
-    required = ["(void)context;", "if(g_Supervisor.controller==NULL)",
-                "result=g_Supervisor.directInput->CreateDevice(instance->guidInstance,&g_Supervisor.controller,NULL);",
+    required = ["(void)context;", "if(g_Supervisor.controllerDevices[0]==NULL)",
+                "result=g_Supervisor.directInput->CreateDevice(instance->guidInstance,&g_Supervisor.controllerDevices[0],NULL);",
                 "if(result<0){returnDIENUM_CONTINUE;}"]
     if any(token not in callback for token in required) or not callback.endswith("returnDIENUM_STOP;}"):
         fail("device selection changed global storage, HRESULT sign or enumeration continuation")

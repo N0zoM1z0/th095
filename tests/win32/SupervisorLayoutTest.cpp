@@ -31,8 +31,7 @@ struct SupervisorCallerPackingProbe { unsigned char prefix; unsigned int value; 
     X(d3dDevice, 0x008) \
     X(directInput, 0x00c) \
     X(keyboard, 0x010) \
-    X(controller, 0x014) \
-    X(secondController, 0x018) \
+    X(controllerDevices, 0x014) \
     X(controllerCaps, 0x01c) \
     X(gameWindow, 0x048) \
     X(viewMatrix, 0x04c) \
