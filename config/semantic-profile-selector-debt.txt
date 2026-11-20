@@ -208,7 +208,6 @@
 1	src/SceneControllerDraw.cpp	#ifdef DIFFBUILD
 1	src/SceneControllerDraw.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneDetail.cpp	#ifdef TH095_MATCH_EXACT
-1	src/SceneSelect.cpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelect.hpp	#ifdef TH095_MATCH_EXACT
 1	src/SceneSelect.hpp	#ifndef DIFFBUILD
 1	src/SceneSelectAssets.cpp	#ifdef TH095_MATCH_EXACT
@@ -220,7 +219,7 @@
 3	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT)
 1	src/ScoreData.hpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 2	src/ScoreData.hpp	#if defined(TH095_MATCH_EXACT)
-2	src/ScoreData.hpp	#ifdef TH095_MATCH_EXACT
+1	src/ScoreData.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ScoreDataExact.inl	#ifdef TH095_MATCH_EXACT
 1	src/ScoreLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ScoreLoad.cpp	#if !defined(TH095_MATCH_EXACT)

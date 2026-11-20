@@ -47,13 +47,6 @@ extern u16 g_PressedButtons;
 #define g_ResultMenuInput (RuntimeResultMenuInput())
 #define g_PressedButtons (RuntimePressedButtons())
 
-struct SceneSelectScoreFlagsView
-{
-    u32 captured : 1;
-    u32 bestShotLocked : 1;
-    u32 unknownFlags : 30;
-};
-
 struct SceneSelectUpdateView
 {
     SceneAnmLoadedView *sceneAnm;
@@ -277,7 +270,7 @@ static __forceinline void SceneSelectInitialSceneVmPhase(SceneSelectUpdateView *
             SET_SCENE_VM_VISIBILITY(
                 view, initialSceneIndex * 3 + 0x27,
                 g_ResultSaveData
-                        ->sceneScores[
+                        ->scoreEntries[
                             g_SceneGroups[view->groupCursor.GetCurrent()]
                                          [initialSceneIndex]
                                              .scoreEntryIndex]
@@ -320,7 +313,7 @@ static __forceinline void SceneSelectNewGroupSceneVmPhase(SceneSelectUpdateView 
             SET_SCENE_VM_VISIBILITY(
                 view, newGroupIndex * 3 + 0x27,
                 g_ResultSaveData
-                        ->sceneScores[
+                        ->scoreEntries[
                             g_SceneGroups[view->groupCursor.GetCurrent()]
                                          [newGroupIndex]
                                              .scoreEntryIndex]
@@ -345,11 +338,10 @@ static __forceinline void SceneSelectCreateVmAt(SceneSelectUpdateView *view, i32
     view->vmIds[vmIndex] = view->sceneAnm->CreateVm(vmIndex, 7);
 }
 
-static __forceinline SceneSelectScoreFlagsView *SceneSelectScoreFlagsAt(
-    SceneSaveDataView *saveData, i32 scoreIndex)
+static __forceinline ResultScoreEntryFlagBits *SceneSelectScoreFlagsAt(
+    ResultSaveDataView *saveData, i32 scoreIndex)
 {
-    return reinterpret_cast<SceneSelectScoreFlagsView *>(
-        &saveData->sceneScores[scoreIndex].flags);
+    return &saveData->scoreEntries[scoreIndex].flagBits;
 }
 
 static __forceinline i32 SceneSelectDrainedQueueSizePhase(SceneValueQueue *queue)
@@ -956,12 +948,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     }
 
     if (SceneInputAnd(g_PressedButtons, TH_BUTTON_L) != 0 &&
-        *reinterpret_cast<u16 *>(
-            &g_ResultSaveData
-                 ->sceneScores[view->selectedScoreEntryIndex]) != 0)
+        g_ResultSaveData->scoreEntries[view->selectedScoreEntryIndex].magic != 0)
     {
-        SceneSelectScoreFlagsAt(
-            g_ResultSaveData, view->selectedScoreEntryIndex)
+        SceneSelectScoreFlagsAt(g_ResultSaveData, view->selectedScoreEntryIndex)
             ->bestShotLocked ^= 1;
     }
 

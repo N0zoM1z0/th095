@@ -902,7 +902,7 @@ i32 PhotoStageStateView::Update()
 
                     if (!GetPhotoStageScoreEntry(
                              g_PhotoStageGlobalState->scoreIndex)
-                             ->bestShotLocked &&
+                             ->flagBits.bestShotLocked &&
                         this->slots[this->capture.slot].score >
                             GetPhotoStageScoreEntry(
                                 g_PhotoStageGlobalState->scoreIndex)

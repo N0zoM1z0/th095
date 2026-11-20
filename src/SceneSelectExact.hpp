@@ -22,35 +22,6 @@
 namespace th095
 {
 
-struct SceneScoreEntryView
-{
-    u8 unknown000[0x10];
-    i32 score;
-    u8 unknown014[4];
-    i32 detailScore;
-    u8 unknown01c[0x20];
-    union
-    {
-        i32 attemptCount;
-        time_t captureTime;
-    };
-    i32 bestShotChecksum;
-    i32 unlockScore;
-    f32 slowRate;
-    f32 successRate;
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 captured : 1;
-            u32 showSuccessRateMarker : 1;
-            u32 unknownFlags : 30;
-        };
-    };
-    u8 unknown054[0x0c];
-};
-
 struct SceneGroupCursorView
 {
     i32 current;
@@ -275,35 +246,6 @@ typedef char SceneSelectPendingTextureDataLayout[
      offsetof(FrontEndPendingTextureData, primarySize) == 0x10 &&
      offsetof(FrontEndPendingTextureData, secondaryData) == 0x1c &&
      offsetof(FrontEndPendingTextureData, secondarySize) == 0x28) ? 1 : -1];
-struct SceneSaveDataView
-{
-    u8 unknown0000[0x1e];
-    i16 lastSelectedGroup;
-    i16 lastSelectedScene;
-    u8 unknown0022[0x43e];
-    SceneScoreEntryView sceneScores[120];
-    ResultBestShotRecordView bestShotRecords[120];
-
-    i32 IsSceneGroupUnlocked(i32 group);
-    i32 FindHighestUnlockedSceneGroup();
-    i32 CountCapturedScenes();
-    i32 CountCapturedScenesInGroup(i32 group);
-    i32 GetSceneGroupUnlockScore(i32 group);
-};
-
-typedef char SceneScoreEntrySizeIs60[
-    (sizeof(SceneScoreEntryView) == 0x60) ? 1 : -1];
-typedef char SceneScoreEntryScoreAt10[
-    (offsetof(SceneScoreEntryView, score) == 0x10) ? 1 : -1];
-typedef char SceneScoreEntryDetailScoreAt18[
-    (offsetof(SceneScoreEntryView, detailScore) == 0x18) ? 1 : -1];
-typedef char SceneScoreEntryUnlockScoreAt44[
-    (offsetof(SceneScoreEntryView, unlockScore) == 0x44) ? 1 : -1];
-typedef char SceneScoreEntryFlagsAt50[
-    (offsetof(SceneScoreEntryView, flags) == 0x50) ? 1 : -1];
-typedef char SceneScoreEntryRatesAt48[
-    (offsetof(SceneScoreEntryView, slowRate) == 0x48 &&
-     offsetof(SceneScoreEntryView, successRate) == 0x4c) ? 1 : -1];
 typedef char SceneAnmVmIdSizeIs4[
     (sizeof(SceneAnmVmId) == 4) ? 1 : -1];
 typedef char SceneAnmVmGlyphSizeAt2C0[
@@ -332,15 +274,6 @@ typedef char SceneSupervisorCriticalSectionsAt664[
     (offsetof(SceneSupervisorView, criticalSections) == 0x664) ? 1 : -1];
 typedef char SceneSupervisorLockCountsAt70C[
     (offsetof(SceneSupervisorView, lockCounts) == 0x70c) ? 1 : -1];
-typedef char SceneSaveDataScoresAt460[
-    (offsetof(SceneSaveDataView, sceneScores) == 0x460) ? 1 : -1];
-typedef char SceneSaveDataSelectionAt1E[
-    (offsetof(SceneSaveDataView, lastSelectedGroup) == 0x1e &&
-     offsetof(SceneSaveDataView, lastSelectedScene) == 0x20) ? 1 : -1];
-typedef char SceneSaveBestShotRecordsAt3160[
-    (offsetof(SceneSaveDataView, bestShotRecords) == 0x3160) ? 1 : -1];
-typedef char SceneScoreEntryAttemptCountAt3C[
-    (offsetof(SceneScoreEntryView, attemptCount) == 0x3c) ? 1 : -1];
 typedef char SceneSelectExactTimersAt8And14[
     (offsetof(SceneSelectControllerView, stateTimer) == 0x08 &&
      offsetof(SceneSelectControllerView, animationTimer) == 0x14) ? 1 : -1];
@@ -396,7 +329,6 @@ extern i32 g_SceneGroupCounts[12];
 extern i32 g_SceneUnlockScoreRequirements[12];
 extern i32 g_SceneUnlockCaptureRequirements[12];
 extern i32 g_SceneUnlockGroupCaptureRequirements[12];
-extern SceneSaveDataView *g_SceneSaveData;
 extern SceneDefinitionView *g_SelectedScene;
 extern SceneSupervisorView g_SceneSupervisor;
 extern SceneAnmLoadedView *g_SceneUiAnm;

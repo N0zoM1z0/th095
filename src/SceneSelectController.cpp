@@ -89,9 +89,9 @@ void SceneSelectControllerView::RefreshSceneSelection(
     {
         refreshDisplayState = this->lockedDisplayState;
     }
-    else if (g_ResultSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].score == 0)
+    else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex].score == 0)
     {
-        if (g_ResultSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].captureTime == 0)
+        if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex].captureTime == 0)
         {
             refreshDisplayState = this->unattemptedDisplayState;
         }
@@ -100,7 +100,7 @@ void SceneSelectControllerView::RefreshSceneSelection(
             refreshDisplayState = this->attemptedDisplayState;
         }
     }
-    else if (g_ResultSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].score <
+    else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex].score <
              g_SelectedScene->scoreRequirement)
     {
         refreshDisplayState = this->belowRequirementDisplayState;
@@ -159,11 +159,11 @@ void SceneSelectControllerView::RefreshSceneSelection(
                     0x62, 0));                                                \
         }                                                                     \
         else if (g_ResultSaveData                                              \
-                     ->sceneScores[g_SelectedScene->scoreEntryIndex]          \
+                     ->scoreEntries[g_SelectedScene->scoreEntryIndex]          \
                      .score == 0)                                             \
         {                                                                     \
             if (g_ResultSaveData                                               \
-                    ->sceneScores[g_SelectedScene->scoreEntryIndex]           \
+                    ->scoreEntries[g_SelectedScene->scoreEntryIndex]           \
                     .captureTime == 0)                                       \
             {                                                                 \
                 SceneWriteText(                                               \
@@ -188,7 +188,7 @@ void SceneSelectControllerView::RefreshSceneSelection(
             }                                                                 \
         }                                                                     \
         else if (g_ResultSaveData                                              \
-                     ->sceneScores[g_SelectedScene->scoreEntryIndex]          \
+                     ->scoreEntries[g_SelectedScene->scoreEntryIndex]          \
                      .score < g_SelectedScene->scoreRequirement)              \
         {                                                                     \
             SceneWriteText(                                                   \

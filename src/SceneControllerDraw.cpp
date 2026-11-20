@@ -107,7 +107,7 @@ static __forceinline void FrontEndDrawSceneSummary(
         totalScore = 0;
         for (i = 0; i < 120; i++)
         {
-            totalScore += g_ResultSaveData->sceneScores[i].score;
+            totalScore += g_ResultSaveData->scoreEntries[i].score;
         }
 
         totalScorePosition.x = 516.0f;
@@ -127,14 +127,14 @@ static __forceinline void FrontEndDrawSceneSummary(
         highScorePosition.y = 332.0f;
         highScorePosition.z = 0.0f;
         g_AsciiManager.AddFormatText(
-            &highScorePosition, "High Score %.6d", g_ResultSaveData->sceneScores[view->selectedScoreEntry].score);
+            &highScorePosition, "High Score %.6d", g_ResultSaveData->scoreEntries[view->selectedScoreEntry].score);
 
         g_AsciiManager.color.color = 0xff80d0d0;
         slowRatePosition.x = 242.0f;
         slowRatePosition.y = 346.0f;
         slowRatePosition.z = 0.0f;
         g_AsciiManager.AddFormatText(
-            &slowRatePosition, "Slow Rate  %2.0f%%", g_ResultSaveData->sceneScores[view->selectedScoreEntry].highScoreSlowRate);
+            &slowRatePosition, "Slow Rate  %2.0f%%", g_ResultSaveData->scoreEntries[view->selectedScoreEntry].highScoreSlowRate);
         g_AsciiManager.color.color = 0xffffffff;
 
         if (view->flagBits.showRates)
@@ -146,13 +146,13 @@ static __forceinline void FrontEndDrawSceneSummary(
             bestShotSlowRatePosition.y = 285.0f;
             bestShotSlowRatePosition.z = 0.0f;
             g_AsciiManager.AddFormatText(
-                &bestShotSlowRatePosition, "%2.0f%%", g_ResultSaveData->sceneScores[view->selectedScoreEntry].bestShotSlowRate);
+                &bestShotSlowRatePosition, "%2.0f%%", g_ResultSaveData->scoreEntries[view->selectedScoreEntry].bestShotSlowRate);
             g_AsciiManager.scaleX = 1.0f;
             g_AsciiManager.scaleY = 1.0f;
             g_AsciiManager.color.color = 0xffffffff;
         }
 
-        if (g_ResultSaveData->sceneScores[view->selectedScoreEntry].bestShotLocked)
+        if (g_ResultSaveData->scoreEntries[view->selectedScoreEntry].flagBits.bestShotLocked)
         {
             g_AsciiManager.color.color = 0xffc0e0e0;
             g_AsciiManager.scaleX = 0.75f;
@@ -161,7 +161,7 @@ static __forceinline void FrontEndDrawSceneSummary(
             markerPosition.y = 124.0f;
             markerPosition.z = 0.0f;
             g_AsciiManager.AddFormatText(
-                &markerPosition, "L", g_ResultSaveData->sceneScores[view->selectedScoreEntry].bestShotSlowRate);
+                &markerPosition, "L", g_ResultSaveData->scoreEntries[view->selectedScoreEntry].bestShotSlowRate);
             g_AsciiManager.scaleX = 1.0f;
             g_AsciiManager.scaleY = 1.0f;
             g_AsciiManager.color.color = 0xffffffff;

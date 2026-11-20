@@ -52,7 +52,7 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
     this->vmIds.SetInterrupt(0x82, 1);
 
     refreshUnlockGroup = this->selectedGroup;
-    if (g_SceneSaveData->IsSceneGroupUnlocked(refreshUnlockGroup) != 0)
+    if (g_ResultSaveData->IsSceneGroupUnlocked(refreshUnlockGroup) != 0)
     {
         this->groupPreviewQueue.Push(g_SelectedScene->groupPreviewAssetSelector);
         this->scenePreviewQueue.Push(g_SelectedScene->scenePreviewAssetSelector);
@@ -66,13 +66,13 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
 
     refreshDisplayState = 0;
     refreshStateGroup = this->selectedGroup;
-    if (g_SceneSaveData->IsSceneGroupUnlocked(refreshStateGroup) == 0)
+    if (g_ResultSaveData->IsSceneGroupUnlocked(refreshStateGroup) == 0)
     {
         refreshDisplayState = this->lockedDisplayState;
     }
-    else if (g_SceneSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].score == 0)
+    else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex].score == 0)
     {
-        if (g_SceneSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].attemptCount == 0)
+        if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex].captureTime == 0)
         {
             refreshDisplayState = this->unattemptedDisplayState;
         }
@@ -81,7 +81,7 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
             refreshDisplayState = this->attemptedDisplayState;
         }
     }
-    else if (g_SceneSaveData->sceneScores[g_SelectedScene->scoreEntryIndex].score <
+    else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex].score <
              g_SelectedScene->scoreRequirement)
     {
         refreshDisplayState = this->belowRequirementDisplayState;
@@ -125,7 +125,7 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
     g_SceneAnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphWidth =    \
         0x13;                                                                 \
     {                                                                         \
-        if (g_SceneSaveData->IsSceneGroupUnlocked(                            \
+        if (g_ResultSaveData->IsSceneGroupUnlocked(                            \
                 this->GetSelectedGroup()) == 0)                               \
         {                                                                     \
             SceneWriteText(                                                   \
@@ -136,13 +136,13 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
                     this->previewTextSources.lockedEncodedText, columnIndex, \
                     0x62, 0));                                                \
         }                                                                     \
-        else if (g_SceneSaveData                                              \
-                     ->sceneScores[g_SelectedScene->scoreEntryIndex]          \
+        else if (g_ResultSaveData                                              \
+                     ->scoreEntries[g_SelectedScene->scoreEntryIndex]          \
                      .score == 0)                                             \
         {                                                                     \
-            if (g_SceneSaveData                                               \
-                    ->sceneScores[g_SelectedScene->scoreEntryIndex]           \
-                    .attemptCount == 0)                                       \
+            if (g_ResultSaveData                                               \
+                    ->scoreEntries[g_SelectedScene->scoreEntryIndex]           \
+                    .captureTime == 0)                                       \
             {                                                                 \
                 SceneWriteText(                                               \
                     g_SceneAnmManager,                                        \
@@ -165,8 +165,8 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
                         0x62, 3));                                            \
             }                                                                 \
         }                                                                     \
-        else if (g_SceneSaveData                                              \
-                     ->sceneScores[g_SelectedScene->scoreEntryIndex]          \
+        else if (g_ResultSaveData                                              \
+                     ->scoreEntries[g_SelectedScene->scoreEntryIndex]          \
                      .score < g_SelectedScene->scoreRequirement)              \
         {                                                                     \
             SceneWriteText(                                                   \

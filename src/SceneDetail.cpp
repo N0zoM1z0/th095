@@ -15,7 +15,7 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
     time_t captureTimeValue;
     tm *captureTime;
 
-    if (g_ResultSaveData->sceneScores[this->selectedScoreEntryIndex]
+    if (g_ResultSaveData->scoreEntries[this->selectedScoreEntryIndex]
             .captureTime == 0)
     {
         SET_DETAIL_SPRITE(0x4c, 0x34);
@@ -36,7 +36,7 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
     else
     {
         captureTimeValue = (time_t)g_ResultSaveData
-                               ->sceneScores[this->selectedScoreEntryIndex]
+                               ->scoreEntries[this->selectedScoreEntryIndex]
                                .captureTime;
         captureTime = localtime(&captureTimeValue);
 
@@ -50,7 +50,7 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
         SET_DETAIL_SPRITE(0x55, captureTime->tm_min % 10 + 0x27);
 
         value = g_ResultSaveData
-                    ->sceneScores[this->selectedScoreEntryIndex]
+                    ->scoreEntries[this->selectedScoreEntryIndex]
                     .detailScore;
         SET_DETAIL_SPRITE(0x56, value / 100000 % 10 + 0x27);
         SET_DETAIL_SPRITE(0x57, value / 10000 % 10 + 0x27);
@@ -60,7 +60,7 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
         SET_DETAIL_SPRITE(0x5b, value % 10 + 0x27);
     }
 
-    value = g_ResultSaveData->sceneScores[this->selectedScoreEntryIndex]
+    value = g_ResultSaveData->scoreEntries[this->selectedScoreEntryIndex]
                 .attemptCount;
     if (value / 100000 != 0)
     {

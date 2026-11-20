@@ -48,6 +48,8 @@ checksum and serialization bounds from the same record layout.
 SEM-397 shares the initialized scene catalog with the title loader and
 Scene Select's text consumers. SEM-398 routes gameplay and replay through
 the same selected-scene pointer and group table as Scene Select.
+SEM-399 uses the persistent score owner in both Scene Select profiles and
+shares the five scene progress queries.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

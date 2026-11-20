@@ -113,7 +113,6 @@
 1	src/SceneSelectAssets.cpp	struct	SceneSelectionAssetLoadLocals
 1	src/SceneSelectUpdate.cpp	struct	AnmTextManagerView
 1	src/SceneSelectUpdate.cpp	struct	AnmTextVmView
-1	src/SceneSelectUpdate.cpp	struct	SceneSelectScoreFlagsView
 1	src/SceneSelectUpdate.cpp	struct	SceneSelectShallowLocals
 1	src/SceneSelectUpdate.cpp	struct	SceneSelectUpdateView
 1	src/ScoreData.cpp	struct	ScoreWriteLocals

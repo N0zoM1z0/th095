@@ -3,6 +3,9 @@
 namespace th095
 {
 
+typedef char SceneDetailCaptureTimeMatchesCrt[
+    (sizeof(time_t) == sizeof(i32)) ? 1 : -1];
+
 #define SET_DETAIL_SPRITE(vmIndex, spriteIndex)                               \
     this->SetDetailDigitSpriteInline(vmIndex, spriteIndex)
 
@@ -11,7 +14,7 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
     i32 value;
     tm *captureTime;
 
-    if (g_SceneSaveData->sceneScores[this->selectedScoreEntryIndex]
+    if (g_ResultSaveData->scoreEntries[this->selectedScoreEntryIndex]
             .captureTime == 0)
     {
         SET_DETAIL_SPRITE(0x4c, 0x34);
@@ -31,9 +34,11 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
     }
     else
     {
+        // VC7.1 localtime takes a pointer to the stored 32-bit timestamp.
         captureTime = localtime(
-            &g_SceneSaveData->sceneScores[this->selectedScoreEntryIndex]
-                 .captureTime);
+            reinterpret_cast<const time_t *>(
+                &g_ResultSaveData->scoreEntries[this->selectedScoreEntryIndex]
+                     .captureTime));
 
         SET_DETAIL_SPRITE(0x4c, (captureTime->tm_mon + 1) / 10 + 0x27);
         SET_DETAIL_SPRITE(0x4d, (captureTime->tm_mon + 1) % 10 + 0x27);
@@ -44,8 +49,8 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
         SET_DETAIL_SPRITE(0x54, captureTime->tm_min / 10 + 0x27);
         SET_DETAIL_SPRITE(0x55, captureTime->tm_min % 10 + 0x27);
 
-        value = g_SceneSaveData
-                    ->sceneScores[this->selectedScoreEntryIndex]
+        value = g_ResultSaveData
+                    ->scoreEntries[this->selectedScoreEntryIndex]
                     .detailScore;
         SET_DETAIL_SPRITE(0x56, value / 100000 % 10 + 0x27);
         SET_DETAIL_SPRITE(0x57, value / 10000 % 10 + 0x27);
@@ -55,8 +60,8 @@ void SceneSelectControllerView::UpdateSelectedSceneDetails()
         SET_DETAIL_SPRITE(0x5b, value % 10 + 0x27);
     }
 
-    value = g_SceneSaveData->sceneScores[this->selectedScoreEntryIndex]
-                .unlockScore;
+    value = g_ResultSaveData->scoreEntries[this->selectedScoreEntryIndex]
+                .attemptCount;
     if (value / 100000 != 0)
     {
         SET_DETAIL_SPRITE(0x5e, value / 100000 % 10 + 0x4b);

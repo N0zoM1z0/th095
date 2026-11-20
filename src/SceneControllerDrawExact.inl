@@ -99,7 +99,7 @@ static __forceinline void FrontEndDrawSceneSummary(
         totalScore = 0;
         for (i = 0; i < 120; i++)
         {
-            totalScore += g_SceneSaveData->sceneScores[i].score;
+            totalScore += g_ResultSaveData->scoreEntries[i].score;
         }
 
         totalScorePosition.x = 516.0f;
@@ -113,20 +113,20 @@ static __forceinline void FrontEndDrawSceneSummary(
         capturedPosition.z = 0.0f;
         g_FrontEndAsciiManager.AddFormatText(
             &capturedPosition, "%2d Scene Success\n",
-            g_SceneSaveData->CountCapturedScenes());
+            g_ResultSaveData->CountCapturedScenes());
 
         highScorePosition.x = 242.0f;
         highScorePosition.y = 332.0f;
         highScorePosition.z = 0.0f;
         g_FrontEndAsciiManager.AddFormatText(
-            &highScorePosition, "High Score %.6d", g_SceneSaveData->sceneScores[view->selectedScoreEntry].score);
+            &highScorePosition, "High Score %.6d", g_ResultSaveData->scoreEntries[view->selectedScoreEntry].score);
 
         g_FrontEndAsciiManager.color = 0xff80d0d0;
         slowRatePosition.x = 242.0f;
         slowRatePosition.y = 346.0f;
         slowRatePosition.z = 0.0f;
         g_FrontEndAsciiManager.AddFormatText(
-            &slowRatePosition, "Slow Rate  %2.0f%%", g_SceneSaveData->sceneScores[view->selectedScoreEntry].slowRate);
+            &slowRatePosition, "Slow Rate  %2.0f%%", g_ResultSaveData->scoreEntries[view->selectedScoreEntry].highScoreSlowRate);
         g_FrontEndAsciiManager.color = 0xffffffff;
 
         if (view->showSuccessRate)
@@ -138,13 +138,13 @@ static __forceinline void FrontEndDrawSceneSummary(
             successRatePosition.y = 285.0f;
             successRatePosition.z = 0.0f;
             g_FrontEndAsciiManager.AddFormatText(
-                &successRatePosition, "%2.0f%%", g_SceneSaveData->sceneScores[view->selectedScoreEntry].successRate);
+                &successRatePosition, "%2.0f%%", g_ResultSaveData->scoreEntries[view->selectedScoreEntry].bestShotSlowRate);
             g_FrontEndAsciiManager.scaleX = 1.0f;
             g_FrontEndAsciiManager.scaleY = 1.0f;
             g_FrontEndAsciiManager.color = 0xffffffff;
         }
 
-        if (g_SceneSaveData->sceneScores[view->selectedScoreEntry].showSuccessRateMarker)
+        if (g_ResultSaveData->scoreEntries[view->selectedScoreEntry].flagBits.bestShotLocked)
         {
             g_FrontEndAsciiManager.color = 0xffc0e0e0;
             g_FrontEndAsciiManager.scaleX = 0.75f;
@@ -153,7 +153,7 @@ static __forceinline void FrontEndDrawSceneSummary(
             markerPosition.y = 124.0f;
             markerPosition.z = 0.0f;
             g_FrontEndAsciiManager.AddFormatText(
-                &markerPosition, "L", g_SceneSaveData->sceneScores[view->selectedScoreEntry].successRate);
+                &markerPosition, "L", g_ResultSaveData->scoreEntries[view->selectedScoreEntry].bestShotSlowRate);
             g_FrontEndAsciiManager.scaleX = 1.0f;
             g_FrontEndAsciiManager.scaleY = 1.0f;
             g_FrontEndAsciiManager.color = 0xffffffff;

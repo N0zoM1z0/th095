@@ -23,13 +23,6 @@ extern u16 g_FrontEndCurrentInput;
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 
-struct SceneSelectScoreFlagsView
-{
-    u32 captured : 1;
-    u32 showSuccessRateMarker : 1;
-    u32 unknownFlags : 30;
-};
-
 struct SceneSelectUpdateView
 {
     SceneAnmLoadedView *sceneAnm;
@@ -251,13 +244,13 @@ static __forceinline void SceneSelectInitialSceneVmPhase(SceneSelectUpdateView *
 
             SET_SCENE_VM_VISIBILITY(
                 view, initialSceneIndex * 3 + 0x27,
-                g_SceneSaveData
-                        ->sceneScores[
+                g_ResultSaveData
+                        ->scoreEntries[
                             g_SceneGroups[view->groupCursor.GetCurrent()]
                                          [initialSceneIndex]
                                              .scoreEntryIndex]
                         .score != 0);
-            if (g_SceneSaveData->IsSceneGroupUnlocked(
+            if (g_ResultSaveData->IsSceneGroupUnlocked(
                     view->groupCursor.GetCurrent()) == 0)
             {
                 g_SceneAnmManager
@@ -294,13 +287,13 @@ static __forceinline void SceneSelectNewGroupSceneVmPhase(SceneSelectUpdateView 
 
             SET_SCENE_VM_VISIBILITY(
                 view, newGroupIndex * 3 + 0x27,
-                g_SceneSaveData
-                        ->sceneScores[
+                g_ResultSaveData
+                        ->scoreEntries[
                             g_SceneGroups[view->groupCursor.GetCurrent()]
                                          [newGroupIndex]
                                              .scoreEntryIndex]
                         .score != 0);
-            if (g_SceneSaveData->IsSceneGroupUnlocked(
+            if (g_ResultSaveData->IsSceneGroupUnlocked(
                     view->groupCursor.GetCurrent()) == 0)
             {
                 g_SceneAnmManager
@@ -320,11 +313,10 @@ static __forceinline void SceneSelectCreateVmAt(SceneSelectUpdateView *view, i32
     view->vmIds[vmIndex] = view->sceneAnm->CreateVm(vmIndex, 7);
 }
 
-static __forceinline SceneSelectScoreFlagsView *SceneSelectScoreFlagsAt(
-    SceneSaveDataView *saveData, i32 scoreIndex)
+static __forceinline ResultScoreEntryFlagBits *SceneSelectScoreFlagsAt(
+    ResultSaveDataView *saveData, i32 scoreIndex)
 {
-    return reinterpret_cast<SceneSelectScoreFlagsView *>(
-        &saveData->sceneScores[scoreIndex].flags);
+    return &saveData->scoreEntries[scoreIndex].flagBits;
 }
 
 static __forceinline i32 SceneSelectDrainedQueueSizePhase(SceneValueQueue *queue)
@@ -708,19 +700,19 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         SceneSelectInitialTimerViewPhase(view);
         view->groupCursor.Push();
 
-        if (g_SceneSaveData->FindHighestUnlockedSceneGroup() < 2)
+        if (g_ResultSaveData->FindHighestUnlockedSceneGroup() < 2)
         {
             view->groupCursor.count = 3;
         }
-        else if (g_SceneSaveData->FindHighestUnlockedSceneGroup() < 5)
+        else if (g_ResultSaveData->FindHighestUnlockedSceneGroup() < 5)
         {
             view->groupCursor.count = 6;
         }
         else
         {
             view->groupCursor.SetCount(
-                12 <= g_SceneSaveData->FindHighestUnlockedSceneGroup() + 2
-                    ? 12 : g_SceneSaveData->FindHighestUnlockedSceneGroup() + 2);
+                12 <= g_ResultSaveData->FindHighestUnlockedSceneGroup() + 2
+                    ? 12 : g_ResultSaveData->FindHighestUnlockedSceneGroup() + 2);
         }
         view->groupCursor.wraps = 1;
         view->state = 1;
@@ -735,9 +727,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             view->sceneCursors[initialCursorIndex].wraps = 1;
             view->sceneCursors[initialCursorIndex].Set(0);
         }
-        view->groupCursor.Set(g_SceneSaveData->lastSelectedGroup);
+        view->groupCursor.Set(g_ResultSaveData->lastSelectedGroup);
         view->sceneCursors[view->groupCursor.GetCurrent()].Set(
-            g_SceneSaveData->lastSelectedScene);
+            g_ResultSaveData->lastSelectedScene);
 
         g_SelectedScene =
             &g_SceneGroups[view->groupCursor.GetCurrent()]
@@ -834,7 +826,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         SceneSelectCreateVmAt(view, 0x63);
 
         initialGroupVm = view->vmIds.values[0x68].GetVm();
-        if (g_SceneSaveData->IsSceneGroupUnlocked(
+        if (g_ResultSaveData->IsSceneGroupUnlocked(
                 view->groupCursor.GetCurrent()) != 0)
         {
             reinterpret_cast<AnmVmColorInterpolationView *>(
@@ -930,13 +922,10 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
     }
 
     if (SceneInputAnd(g_PressedButtons, (u16)0x8000) != 0 &&
-        *reinterpret_cast<u16 *>(
-            &g_SceneSaveData
-                 ->sceneScores[view->selectedScoreEntryIndex]) != 0)
+        g_ResultSaveData->scoreEntries[view->selectedScoreEntryIndex].magic != 0)
     {
-        SceneSelectScoreFlagsAt(
-            g_SceneSaveData, view->selectedScoreEntryIndex)
-            ->showSuccessRateMarker ^= 1;
+        SceneSelectScoreFlagsAt(g_ResultSaveData, view->selectedScoreEntryIndex)
+            ->bestShotLocked ^= 1;
     }
 
     view->groupCursor.SaveCurrent();
@@ -1020,9 +1009,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         view->vmIds.SetInterrupt(0x4a, 2);
         view->vmIds.SetInterrupt(0x4b, 2);
         this->UpdateSelectedSceneDetails();
-        g_SceneSaveData->lastSelectedGroup =
+        g_ResultSaveData->lastSelectedGroup =
             (i16)view->groupCursor.GetCurrent();
-        g_SceneSaveData->lastSelectedScene =
+        g_ResultSaveData->lastSelectedScene =
             (i16)activeSceneCursor.GetCurrent();
 
         SET_SCENE_VM_VISIBILITY(
@@ -1032,7 +1021,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             view->groupCursor.GetCurrent() != view->groupCursor.GetCount() - 1);
 
         transitionGroupVm = view->vmIds.values[0x68].GetVm();
-        if (g_SceneSaveData->IsSceneGroupUnlocked(
+        if (g_ResultSaveData->IsSceneGroupUnlocked(
                 view->groupCursor.GetCurrent()) != 0)
         {
             reinterpret_cast<AnmVmColorInterpolationView *>(
@@ -1051,7 +1040,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
         }    }
     else
     {
-        if (g_SceneSaveData->IsSceneGroupUnlocked(
+        if (g_ResultSaveData->IsSceneGroupUnlocked(
                 SceneSelectPostTransitionGroupPhase(view)) != 0)
         {
             activeSceneCursor.SaveCurrent();
@@ -1114,7 +1103,7 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 view->vmIds.SetInterrupt(0x4a, 2);
                 view->vmIds.SetInterrupt(0x4b, 2);
                 this->UpdateSelectedSceneDetails();
-                g_SceneSaveData->lastSelectedScene =
+                g_ResultSaveData->lastSelectedScene =
                     (i16)activeSceneCursor.GetCurrent();
                 goto update_preview_text;
             }

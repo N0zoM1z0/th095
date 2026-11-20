@@ -1,7 +1,5 @@
-#ifdef TH095_MATCH_EXACT
-#include "SceneSelectExact.inl"
-#else
-#include "SceneSelect.hpp"
+#include "SceneData.hpp"
+#include "ScoreData.hpp"
 
 namespace th095
 {
@@ -162,7 +160,7 @@ i32 ResultSaveDataView::IsSceneGroupUnlocked(i32 group)
     totalScore = 0;
     for (u32 i = 0; i < 120; i++)
     {
-        totalScore += this->sceneScores[i].score;
+        totalScore += this->scoreEntries[i].score;
     }
 
     return ((((totalScore < g_SceneUnlockScoreRequirements[group]) ||
@@ -198,9 +196,9 @@ i32 ResultSaveDataView::CountCapturedScenes()
     {
         for (i32 scene = 0; scene < g_SceneGroupCounts[group]; scene++)
         {
-            if (this->sceneScores[
+            if (this->scoreEntries[
                     g_SceneGroups[group][scene].scoreEntryIndex]
-                    .captured != 0)
+                    .flagBits.captured != 0)
             {
                 count++;
             }
@@ -216,8 +214,8 @@ i32 ResultSaveDataView::CountCapturedScenesInGroup(i32 group)
     count = 0;
     for (i32 scene = 0; scene < g_SceneGroupCounts[group]; scene++)
     {
-        if (this->sceneScores[g_SceneGroups[group][scene].scoreEntryIndex]
-                .captured != 0)
+        if (this->scoreEntries[g_SceneGroups[group][scene].scoreEntryIndex]
+                .flagBits.captured != 0)
         {
             count++;
         }
@@ -232,12 +230,10 @@ i32 ResultSaveDataView::GetSceneGroupAttemptCount(i32 group)
     attemptCount = 0;
     for (i32 scene = 0; scene < g_SceneGroupCounts[group]; scene++)
     {
-        attemptCount += this->sceneScores[
+        attemptCount += this->scoreEntries[
             g_SceneGroups[group][scene].scoreEntryIndex].attemptCount;
     }
     return attemptCount;
 }
 
 } // namespace th095
-
-#endif // TH095_MATCH_EXACT

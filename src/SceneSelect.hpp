@@ -20,8 +20,6 @@
 namespace th095
 {
 
-typedef ResultScoreEntryView SceneScoreEntryView;
-
 #ifndef DIFFBUILD
 enum SceneSelectState
 {
@@ -199,21 +197,6 @@ typedef char SceneSelectPendingTextureDataLayout[
 typedef char SceneSelectAnimationTimerAt14[
     (offsetof(SceneSelectControllerView, animationTimer) == 0x14) ? 1 : -1];
 
-typedef ResultSaveDataView SceneSaveDataView;
-
-typedef char SceneScoreEntrySizeIs60[
-    (sizeof(SceneScoreEntryView) == 0x60) ? 1 : -1];
-typedef char SceneScoreEntryScoreAt10[
-    (offsetof(SceneScoreEntryView, score) == 0x10) ? 1 : -1];
-typedef char SceneScoreEntryDetailScoreAt18[
-    (offsetof(SceneScoreEntryView, detailScore) == 0x18) ? 1 : -1];
-typedef char SceneScoreEntryAttemptCountAt44[
-    (offsetof(SceneScoreEntryView, attemptCount) == 0x44) ? 1 : -1];
-typedef char SceneScoreEntryFlagsAt50[
-    (offsetof(SceneScoreEntryView, flags) == 0x50) ? 1 : -1];
-typedef char SceneScoreEntrySlowRatesAt48[
-    (offsetof(SceneScoreEntryView, highScoreSlowRate) == 0x48 &&
-     offsetof(SceneScoreEntryView, bestShotSlowRate) == 0x4c) ? 1 : -1];
 typedef char SceneAnmVmIdSizeIs4[
     (sizeof(SceneAnmVmId) == 4) ? 1 : -1];
 typedef char SceneAnmVmGlyphSizeAt2C0[
@@ -234,15 +217,6 @@ typedef char SceneValueQueueSizeIs48[
     (sizeof(SceneValueQueue) == 0x48) ? 1 : -1];
 typedef char SceneGroupCursorSizeIsD8[
     (sizeof(SceneGroupCursorView) == 0xd8) ? 1 : -1];
-typedef char SceneSaveDataScoresAt460[
-    (offsetof(SceneSaveDataView, sceneScores) == 0x460) ? 1 : -1];
-typedef char SceneSaveDataSelectionAt1E[
-    (offsetof(SceneSaveDataView, lastSelectedGroup) == 0x1e &&
-     offsetof(SceneSaveDataView, lastSelectedScene) == 0x20) ? 1 : -1];
-typedef char SceneSaveBestShotRecordsAt3160[
-    (offsetof(SceneSaveDataView, bestShotRecords) == 0x3160) ? 1 : -1];
-typedef char SceneScoreEntryCaptureTimeAt3C[
-    (offsetof(SceneScoreEntryView, captureTime) == 0x3c) ? 1 : -1];
 typedef char SceneSelectSecondaryCursorAtF8[
     (offsetof(SceneSelectControllerView, secondaryCursor) == 0xf8) ? 1 : -1];
 typedef char SceneSelectGroupCursorsAt1D0[

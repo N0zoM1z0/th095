@@ -106,6 +106,13 @@ enum
     RESULT_BEST_SHOT_FILE_HEADER_WITH_COMMENT_SIZE = offsetof(ResultBestShotRecordView, valid),
 };
 
+struct ResultScoreEntryFlagBits
+{
+    u32 captured : 1;
+    u32 bestShotLocked : 1;
+    u32 unknownFlags : 30;
+};
+
 struct ResultScoreEntryView
 {
     u16 magic;
@@ -129,12 +136,7 @@ struct ResultScoreEntryView
     union
     {
         u32 flags;
-        struct
-        {
-            u32 captured : 1;
-            u32 bestShotLocked : 1;
-            u32 unknownFlags : 30;
-        };
+        ResultScoreEntryFlagBits flagBits;
     };
     u8 unknown054[0x60 - 0x54];
 };
@@ -175,11 +177,7 @@ struct ResultSaveDataView
             u8 unknownRuntime022[0x43e];
         };
     };
-    union
-    {
-        ResultScoreEntryView scoreEntries[120];
-        ResultScoreEntryView sceneScores[120];
-    };
+    ResultScoreEntryView scoreEntries[120];
     ResultBestShotRecordView bestShotRecords[120];
 
     ResultSaveDataView();
@@ -194,11 +192,7 @@ struct ResultSaveDataView
     i32 FindHighestUnlockedSceneGroup();
     i32 CountCapturedScenes();
     i32 CountCapturedScenesInGroup(i32 group);
-#ifdef TH095_MATCH_EXACT
-    i32 GetSceneGroupUnlockScore(i32 group);
-#else
     i32 GetSceneGroupAttemptCount(i32 group);
-#endif
 };
 
 typedef char ScoreFileHeaderSizeIs18[
@@ -213,6 +207,9 @@ typedef char ResultBestShotPayloadFormatSizeIs1[
     (sizeof(ResultBestShotPayloadFormat) == 1) ? 1 : -1];
 typedef char ResultBestShotPayloadFormatAt04[
     (offsetof(ResultBestShotRecordView, payloadFormat) == 0x04) ? 1 : -1];
+typedef char ResultScoreEntryFlagsAt50[
+    (sizeof(ResultScoreEntryFlagBits) == 4 &&
+     offsetof(ResultScoreEntryView, flagBits) == 0x50) ? 1 : -1];
 typedef char ResultScoreEntrySizeIs60[
     (sizeof(ResultScoreEntryView) == 0x60) ? 1 : -1];
 typedef char ResultScoreEntryScoreBreakdownAt18[
@@ -221,6 +218,8 @@ typedef char ResultScoreEntryScoreAt10[
     (offsetof(ResultScoreEntryView, score) == 0x10) ? 1 : -1];
 typedef char ResultScoreEntryCaptureTimeAt3C[
     (offsetof(ResultScoreEntryView, captureTime) == 0x3c) ? 1 : -1];
+typedef char ResultScoreEntryAttemptCountAt44[
+    (offsetof(ResultScoreEntryView, attemptCount) == 0x44) ? 1 : -1];
 typedef char ResultScoreEntryHighScoreSlowRateAt48[
     (offsetof(ResultScoreEntryView, highScoreSlowRate) == 0x48) ? 1 : -1];
 typedef char ResultScoreEntryBestShotSlowRateAt4C[

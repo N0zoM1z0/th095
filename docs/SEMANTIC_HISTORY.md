@@ -18129,3 +18129,32 @@ cases, and 65 background, enemy and frontend resource paths against retail.
 They exercise high bits in the recording indices and resource failures
 with fixture responses at the allocation and loading boundaries. See
 `.analysis/pi/selected-scene-owner/` for the recipes.
+
+### SEM-399 — share the scene progress and saved-score owner
+
+Scene Select uses the `ResultSaveDataView` pointer published by score
+initialization. The controller tests the record magic before toggling
+`bestShotLocked`, which the photo stage reads before replacing a Best Shot.
+A zero-score preview uses `captureTime` at +0x3C to select its display state.
+The detail digits and group attempt sum read `attemptCount` at +0x44.
+The exact detail renderer passes the 32-bit timestamp directly to VC7.1
+`localtime`. The normal renderer converts it to `time_t` before the call.
+
+Both builds emit the same five capture and unlock queries in `SceneSelect.cpp`.
+Keeping the typed flag-address helper preserves the exact scene update body.
+Directly toggling the canonical bitfield grew that trial body from 16,066
+to 16,097 bytes. The helper returns a pointer to the named flag field.
+
+All 167 affected exact comparisons pass across 24 translation units.
+Forty-six data relocations and nineteen calls now name their canonical
+symbols. All 54 saved-data operands in the five linked Scene Select files
+resolve to `ScoreLifecycle.cpp`'s slot, which moves from `0x004D7800`
+to `0x004DCC0C`. Both rebuilt PEs preserve the four mapped sections of
+their previous links.
+
+The linked fixtures exercise 157 saved-data states across all five queries
+and 96 preview refresh cases. They vary the timestamp and attempt count
+independently and check queue publication, display-state history and VM
+interrupts against retail. The refresh fixture supplies the Windows lock
+and VM interrupt boundaries. See `.analysis/pi/scene-save-owner/` for the
+recipes.
