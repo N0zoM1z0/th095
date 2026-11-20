@@ -98,12 +98,8 @@ static __forceinline EnemyShotDescriptorView *TargetShotDescriptor(Enemy *enemy)
 }
 static __forceinline f32 &TargetMinimumDistanceSquared(Enemy *enemy)
 {
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    return *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(enemy) + 0x2c4c);
-#else
     return reinterpret_cast<EnemyShotDistanceView *>(enemy)
         ->minimumPlayerDistanceSquared;
-#endif
 }
 static __forceinline const Float3 &TargetPlayerPosition()
 {

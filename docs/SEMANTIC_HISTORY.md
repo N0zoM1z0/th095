@@ -17505,3 +17505,14 @@ the source and destination loads in the opposite order.
 All 22 EnemyManagerUpdate exact units pass with their relocations. The
 same five instructions perform the 32-dword copy in the 345-byte normal
 body and the 336-byte target body.
+
+### SEM-372 — use the ANM interrupt and shared ECL field access
+
+The ECL opcode 124 store at 0x0040C735 writes the VM's pending interrupt
+at Enemy +0x236. RunEcl now names the ANM member directly. It also uses
+the existing compact-enemy layout anchors for the pending shot packet,
+trail vertex buffer and opcode 133 timer. EnemyShotDispatch reads the
+same typed minimum-distance field in both profiles.
+
+Both exact units pass with their full extents and relocations. The
+normal objects retain the previous code and relocation contracts.

@@ -105,7 +105,7 @@
 1	src/EnemyShotAnm.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/EnemyShotAnm.cpp	#ifdef DIFFBUILD
 1	src/EnemyShotDispatch.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-2	src/EnemyShotDispatch.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
+1	src/EnemyShotDispatch.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 2	src/EnemyShotDispatch.cpp	#ifndef DIFFBUILD
 1	src/FileSystem.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FileSystem.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)

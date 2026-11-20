@@ -35,7 +35,8 @@
         if (((TH095_RUN_ECL_CONTROL_WORD(enemy)
               >> 15) & 1U) != 0)
         {
-            memcpy(reinterpret_cast<u8 *>(enemy) + 0x2b9c,
+            memcpy(TH095_PHOTO_ENEMY_OBJECT_PTR(
+                       enemy, PHOTO_ENEMY_ECL_PENDING_SHOT_OFFSET, u8),
                    instruction, 0x2c);
             break;
         }
@@ -309,7 +310,7 @@ enter_subroutine:
         break;
 
     case 124:
-        *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x236) =
+        enemy->vm.pendingInterrupt =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 0));
         break;
 
@@ -362,7 +363,8 @@ enter_subroutine:
         {
             TH095_ECL_CONFIGURE_PHOTO_ANM(
                 &enemy->vm,
-                reinterpret_cast<u8 *>(enemy) + 0x376c,
+                TH095_PHOTO_ENEMY_OBJECT_PTR(
+                    enemy, PHOTO_ENEMY_ECL_TRAIL_VERTICES_OFFSET, AnmVertex),
                 (*reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x4ca6) /
                  *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x4caa)) << 1);
         }
@@ -371,8 +373,8 @@ enter_subroutine:
 
     case 133:
     {
-        *reinterpret_cast<ZunTimer *>(
-            reinterpret_cast<u8 *>(enemy) + 0x4cac) =
+        TH095_PHOTO_ENEMY_OBJECT(
+            enemy, PHOTO_ENEMY_ECL_TIMER_4CAC_OFFSET, ZunTimer) =
             TH08_ECL_READ_I(ctx, 0);
         break;
     }
