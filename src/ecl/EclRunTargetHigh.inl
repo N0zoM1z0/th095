@@ -249,16 +249,13 @@ enter_subroutine:
     case 119:
         if (TH08_ECL_READ_I(ctx, 0) >= 0)
         {
-            *reinterpret_cast<Th095ExInsn *>(
-                reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x10) =
+            enemy->activeEclContext->perFrameCallback =
                 g_Th095ExInsn[TH08_ECL_READ_I(ctx, 0)];
-            *reinterpret_cast<EclRawInstruction **>(
-                reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x14) = instruction;
+            enemy->activeEclContext->perFrameInstruction = instruction;
         }
         else
         {
-            *reinterpret_cast<Th095ExInsn *>(
-                reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x10) = 0;
+            enemy->activeEclContext->perFrameCallback = 0;
         }
         break;
 

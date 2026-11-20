@@ -5,6 +5,7 @@
 #include "PhotoEnemyControl.hpp"
 #include "PhotoEnemyEclAccess.hpp"
 #include "ZunTimer.hpp"
+#include "ecl/EclCallback.hpp"
 #include "inttypes.hpp"
 
 #include <stddef.h>
@@ -39,7 +40,8 @@ struct PhotoEnemyEclContextView
 {
     void *currentInstruction;
     ZunTimer time;
-    u8 unknown010[8];
+    EclExtendedCallback perFrameCallback;
+    EclRawInstruction *perFrameInstruction;
     PhotoEnemyEclScriptStateView scriptState; // +0x018
     ZunTimer secondaryTime;
     PhotoEnemyEclInterpolationSlotView interpolationSlots[8];
@@ -231,6 +233,9 @@ typedef char PhotoEnemyEclInterpolationSlotSizeIs30[
     (sizeof(PhotoEnemyEclInterpolationSlotView) == 0x30) ? 1 : -1];
 typedef char PhotoEnemyEclScriptStateSizeIs80[
     (sizeof(PhotoEnemyEclScriptStateView) == 0x80) ? 1 : -1];
+typedef char PhotoEnemyEclContextCallbackFields[
+    (offsetof(PhotoEnemyEclContextView, perFrameCallback) == 0x10 &&
+     offsetof(PhotoEnemyEclContextView, perFrameInstruction) == 0x14) ? 1 : -1];
 typedef char PhotoEnemyEclContextScriptStateAt18[
     (offsetof(PhotoEnemyEclContextView, scriptState) == 0x18) ? 1 : -1];
 typedef char PhotoEnemyEclContextSecondaryTimerAt98[

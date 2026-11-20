@@ -205,8 +205,7 @@ extern Th095StageController *g_Th095StageController;
 extern u8 *g_Th095GameManager;
 extern AnmManagerLookup *g_Th095AnmManager;
 extern PhotoModeController *g_Th095PhotoMode;
-typedef void (__fastcall *Th095ExInsn)(Enemy *, EclRawInstruction *);
-extern Th095ExInsn g_Th095ExInsn[];
+extern EclExtendedCallback g_Th095ExInsn[];
 
 inline void AddTimerValue(ZunTimer *timer, i32 value)
 {
@@ -913,8 +912,7 @@ enter_subroutine:
     case 136:
         g_EclExInsn[TH08_ECL_READ_I(ctx, 0)](
             TH08_ECL_CONTEXT_ENEMY(ctx),
-            reinterpret_cast<EclExInstruction *>(
-                TH08_ECL_CONTEXT_INSTRUCTION(ctx)));
+            TH08_ECL_CONTEXT_INSTRUCTION(ctx));
         break;
     case 137:
         if (TH08_ECL_READ_I(ctx, 0) >= 0)
@@ -922,8 +920,7 @@ enter_subroutine:
             TH08_ECL_CONTEXT_ENEMY(ctx)->activeEclContext->perFrameCallback =
                 g_EclExInsn[TH08_ECL_READ_I(ctx, 0)];
             TH08_ECL_CONTEXT_ENEMY(ctx)->activeEclContext->perFrameInstruction =
-                reinterpret_cast<EclExInstruction *>(
-                    TH08_ECL_CONTEXT_INSTRUCTION(ctx));
+                TH08_ECL_CONTEXT_INSTRUCTION(ctx);
         }
         else
             TH08_ECL_CONTEXT_ENEMY(ctx)->activeEclContext->perFrameCallback = 0;

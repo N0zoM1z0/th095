@@ -1070,11 +1070,9 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 namespace EclRunHigh
 {
-typedef void (__fastcall *Th095ExInsn)(Enemy *, EclRawInstruction *);
-
 // Target 0x004A4270: opcode-118 extension entries 0..21.  Every pointer names
 // its reconstructed exact callback; no preferred-base address is embedded.
-Th095ExInsn g_Th095ExInsn[22] = {
+EclExtendedCallback g_Th095ExInsn[22] = {
     EclExtended::SpawnDeathPhotoVms,
     EclExtended::Callback01,
     EclExtended::Callback02,

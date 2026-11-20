@@ -2,6 +2,7 @@
 
 #include "Global.hpp"
 #include "AnmManagerEclView.hpp"
+#include "EclCallback.hpp"
 #include "Supervisor.hpp"
 #include "ZunResult.hpp"
 
@@ -188,26 +189,7 @@ enum EclComparisonOpcode
 #endif
 } // namespace EclRunLow
 
-struct EclExInstruction
-{
-    i32 time;
-    i16 opcode;
-    i16 nextOffset;
-    u8 serializedReserved08;
-    u8 difficultyMask;
-    u16 operandFlags;
-    u8 serializedReserved0C[4];
-    union
-    {
-        i32 value;
-        i8 byteValue;
-    };
-};
-C_ASSERT(offsetof(EclExInstruction, value) == 0x10);
-
-typedef void (__fastcall *EclExInstructionCallback)(
-    Enemy *enemy, EclExInstruction *instruction);
-extern EclExInstructionCallback g_EclExInsn[32];
+extern EclExtendedCallback g_EclExInsn[32];
 
 // Only the target-observed fixed header is named here. Both pointer tables are
 // stored as file-relative offsets and are rebased in place by Load.
@@ -253,8 +235,8 @@ struct EnemyEclContext
 
     EclRawInstruction *currentInstr;
     ZunTimer time;
-    EclExInstructionCallback perFrameCallback;
-    EclExInstruction *perFrameInstruction;
+    EclExtendedCallback perFrameCallback;
+    EclRawInstruction *perFrameInstruction;
     i32 intVariables[8];
     f32 floatVariables[8];
     i32 extraIntVariables[4];
@@ -269,6 +251,7 @@ struct EnemyEclContext
     u8 contextTailAlignment22E[2];
 };
 typedef char EnemyEclContextCallbackOffsetCheck[offsetof(EnemyEclContext, perFrameCallback) == 0x10 ? 1 : -1];
+typedef char EnemyEclContextCallbackInstructionOffsetCheck[offsetof(EnemyEclContext, perFrameInstruction) == 0x14 ? 1 : -1];
 typedef char EnemyEclContextIntVariablesOffsetCheck[offsetof(EnemyEclContext, intVariables) == 0x18 ? 1 : -1];
 typedef char EnemyEclContextFloatVariablesOffsetCheck[offsetof(EnemyEclContext, floatVariables) == 0x38 ? 1 : -1];
 typedef char EnemyEclContextExtraIntVariablesOffsetCheck[offsetof(EnemyEclContext, extraIntVariables) == 0x58 ? 1 : -1];

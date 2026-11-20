@@ -17516,3 +17516,18 @@ same typed minimum-distance field in both profiles.
 
 Both exact units pass with their full extents and relocations. The
 normal objects retain the previous code and relocation contracts.
+
+### SEM-373 — use one ECL extension callback signature
+
+RunEcl opcode 119 stores the selected extension callback at context +0x10
+and the current raw instruction pointer at +0x14. A negative argument
+clears the function pointer. At 0x0040F393 the frame tail calls through
+that pointer with the enemy in ECX and the saved raw instruction in EDX.
+The table at 0x004A4270 holds the same callbacks used by immediate opcode 118.
+
+The compact enemy context and the interpreter now declare the same two
+members, using the same callback type as the table. All 167 affected
+exact comparisons pass. RunEcl and the extension bodies keep their
+normal instructions and relocation destinations, and all 22 table
+entries retain their retail order in both normal links. The table moves
+from 0x004B92B0 to 0x004BA6D0.
