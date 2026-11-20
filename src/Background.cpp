@@ -7,6 +7,7 @@
 #include "AnmVmId.hpp"
 #include "Background.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 #include "PhotoStage.hpp"
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoEnemyManager.hpp"
@@ -24,40 +25,6 @@ namespace th095
 #else
 #define TH095_BACKGROUND_DIRECT_3D_DRAW_MODE ANM_VM_DRAW_MODE_DIRECT_3D
 #endif
-
-struct BackgroundGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlag0 : 1;
-#else
-            u32 captureActive : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 freezeBackground : 1;
-#else
-            u32 capturedPhotoActive : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 suppressBackground : 1;
-#else
-            u32 gameplayLoadActive : 1;
-#endif
-            u32 unknownFlags3 : 7;
-#if defined(TH095_MATCH_EXACT)
-            u32 blockBackgroundUpdate : 1;
-#else
-            u32 photoTransitionActive : 1;
-#endif
-            u32 unknownFlags11 : 21;
-        };
-    };
-};
 
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 #define TH095_BACKGROUND_STAGE_OPCODE_HALT 0
@@ -301,7 +268,6 @@ typedef char BackgroundStageObjectInstanceSizeIs10[
     (sizeof(BackgroundStageObjectInstance) == 0x10) ? 1 : -1];
 
 extern BackgroundRuntimeView *g_BackgroundRuntime;
-extern BackgroundGlobalStateView *g_PhotoGlobalState;
 #ifndef DIFFBUILD
 #define g_BackgroundRuntime \
     TH095_RUNTIME_GLOBAL_PTR(BackgroundRuntimeView, g_RuntimeEnemyManagerOwner)
@@ -310,11 +276,6 @@ extern BackgroundGlobalStateView *g_PhotoGlobalState;
 extern ZunColor g_PhotoScreenFadeColor;
 #elif defined(DIFFBUILD)
 extern u32 g_PhotoScreenFadeColor;
-#endif
-
-#ifndef DIFFBUILD
-#define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(BackgroundGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 DIFFABLE_STATIC(Background *, g_Background);
@@ -904,28 +865,14 @@ i32 Background::UpdateStageObjectVms()
 // FUNCTION: TH095 0x00402B80.
 i32 __fastcall Background::OnUpdate(Background *background)
 {
-#if defined(TH095_MATCH_EXACT)
     if (BackgroundEitherFlag(
-            g_PhotoGlobalState->unknownFlag0,
-            g_PhotoGlobalState->suppressBackground) != 0 ||
-#else
-    if (BackgroundEitherFlag(
-            g_PhotoGlobalState->captureActive,
-            g_PhotoGlobalState->gameplayLoadActive) != 0 ||
-#endif
-#if defined(TH095_MATCH_EXACT)
-        g_PhotoGlobalState->freezeBackground != 0)
-#else
-        g_PhotoGlobalState->capturedPhotoActive != 0)
-#endif
+            g_RuntimeGlobalStateOwner->captureActive,
+            g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0 ||
+        g_RuntimeGlobalStateOwner->capturedPhotoActive != 0)
     {
         return 1;
     }
-#if defined(TH095_MATCH_EXACT)
-    if (g_PhotoGlobalState->blockBackgroundUpdate != 0)
-#else
-    if (g_PhotoGlobalState->photoTransitionActive != 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->photoTransitionActive != 0)
     {
         return 1;
     }
@@ -935,11 +882,7 @@ i32 __fastcall Background::OnUpdate(Background *background)
 // FUNCTION: TH095 0x00402BF0.
 i32 __fastcall Background::OnDrawHighPrio(Background *background)
 {
-#if defined(TH095_MATCH_EXACT)
-    if (g_PhotoGlobalState->suppressBackground != 0)
-#else
-    if (g_PhotoGlobalState->gameplayLoadActive != 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }
@@ -949,11 +892,7 @@ i32 __fastcall Background::OnDrawHighPrio(Background *background)
 // FUNCTION: TH095 0x00402C20.
 i32 __fastcall Background::OnDrawLowPrio(Background *background)
 {
-#if defined(TH095_MATCH_EXACT)
-    if (g_PhotoGlobalState->suppressBackground != 0)
-#else
-    if (g_PhotoGlobalState->gameplayLoadActive != 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }

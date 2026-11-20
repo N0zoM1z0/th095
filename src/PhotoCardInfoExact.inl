@@ -2,6 +2,7 @@
 #include "PhotoStage.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 #include "AnmVmId.hpp"
 #include "utils.hpp"
 
@@ -21,12 +22,6 @@ typedef char PhotoCardVmHandleSizeIs4[
 struct PhotoCardAnmLoadedView
 {
     PhotoCardVmHandle CreateVm(i32 scriptIndex, Float3 *position);
-};
-
-struct PhotoCardGameTaskView
-{
-    u8 unknown000[0xfc];
-    u32 flags;
 };
 
 struct PhotoCardInfoView
@@ -68,7 +63,6 @@ typedef char PhotoCardInfoChainsAt60[
 extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoCardAnmLoadedView *g_PhotoCardBackgroundAnm;
 extern PhotoCardAnmLoadedView *g_PhotoCardUiAnm;
-extern PhotoCardGameTaskView *g_PhotoCardGameTask;
 extern u32 g_PhotoScreenFadeColor;
 
 static __forceinline void CreatePhotoCardBackgroundVm(
@@ -289,11 +283,11 @@ i32 PhotoCardInfoView::Draw()
 // FUNCTION: TH095 0x00408C60.
 i32 __fastcall PhotoCardInfoView::OnUpdate(PhotoCardInfoView *cardInfo)
 {
-    if (((g_PhotoCardGameTask->flags >> 2) & 1) != 0)
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }
-    if (((g_PhotoCardGameTask->flags >> 10) & 1) != 0)
+    if (g_RuntimeGlobalStateOwner->photoTransitionActive != 0)
     {
         return 1;
     }
@@ -303,7 +297,7 @@ i32 __fastcall PhotoCardInfoView::OnUpdate(PhotoCardInfoView *cardInfo)
 // FUNCTION: TH095 0x00408CB0.
 i32 __fastcall PhotoCardInfoView::OnDraw(PhotoCardInfoView *cardInfo)
 {
-    if (((g_PhotoCardGameTask->flags >> 2) & 1) != 0)
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }

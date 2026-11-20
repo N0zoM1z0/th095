@@ -69,6 +69,8 @@ SEM-407 binds animation, ASCII and replay callbacks to the active task and
 names the configuration member copied during replay initialization.
 SEM-408 uses the same task for player, camera, front timer, bullet, item,
 enemy and effect callbacks. The enemy draw loop uses the TH095 enemy layout.
+SEM-409 gives the background, photo card, capture and result paths the same
+task fields, including the score, Best Shot index and replay mode.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

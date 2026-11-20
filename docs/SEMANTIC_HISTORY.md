@@ -18380,3 +18380,24 @@ with retail across 266 callback calls, six player completion cases, 16
 countdown cases, 19 viewfinder cases and eight enemy draw groups. They
 run the original and linked bodies with controlled script and rendering
 responses. See `.analysis/pi/photo-task-gameplay-consumers/` for the recipes.
+
+### SEM-409 — use the active task in capture and results
+
+`PhotoStageStateView::SavePhoto` sets the active task's `captureActive`
+bit. The capture update changes that bit to `capturedPhotoActive`, adds
+eligible points to the task's score, and uses `bestShotIndex` to select
+the persistent record. The 16-bit and 32-bit pixel copies use the same
+record index. The result initializers set `resultScreenActive` and
+`resetFpsSample`, choose the menu from the active task's replay mode,
+and use its score for the replay header and record update. Both profiles
+now use the named fields. Background and photo-card callbacks read the
+same task's capture and load flags.
+
+All 60 affected exact comparisons pass. The 110 changed active-task
+relocations keep their target destinations. All 229 active-slot references
+resolve to the symbol in both normal links. In linked fixtures, 120 callback
+cases, 18 capture requests, 24 result initializers and 72 pixel copies
+agree with retail. The fixtures vary the two task slots independently
+and supply D3D, text and file boundaries. The existing Best Shot save,
+preview and capture publication checks pass as well. See
+`.analysis/pi/photo-task-record-consumers/` for the recipes.

@@ -5,6 +5,7 @@
 #include "AnmText.hpp"
 #include "AsciiManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 #include "InputRuntime.hpp"
 #include "Main.hpp"
 #include "PhotoStage.hpp"
@@ -42,61 +43,6 @@ extern f32 g_AnmGameSpeed;
 // constructor publishes it and the destructor clears it.
 DIFFABLE_STATIC(ResultScreen *, g_ResultScreen);
 
-struct ResultScreenGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flagsWord;
-        struct
-        {
-            u32 unknownFlag0 : 1;
-            u32 unknownFlag1 : 1;
-#ifdef DIFFBUILD
-            u32 suppressResultCallbacks : 1;
-#else
-            u32 gameplayLoadActive : 1;
-#endif
-            u32 unknownFlag3 : 1;
-#ifdef DIFFBUILD
-            u32 unknownFlag4 : 1;
-#else
-            u32 resultScreenActive : 1;
-#endif
-            u32 playerDeathTransitionComplete : 1;
-            u32 photoLimitTransitionComplete : 1;
-#ifdef DIFFBUILD
-            u32 unknownFlags : 25;
-#else
-            u32 resetFpsSample : 1;
-            u32 unknownFlags8_31 : 24;
-#endif
-        };
-    };
-    i32 bestShotIndex;
-    u8 unknown104[0x114 - 0x104];
-    i32 currentScore;
-    u8 unknown118[8];
-#ifdef DIFFBUILD
-    i32 resultMode;
-#else
-    ReplayManagerMode replayMode;
-#endif
-};
-
-#ifndef DIFFBUILD
-typedef char ResultScreenGlobalReplayModeAt120[
-    (offsetof(ResultScreenGlobalStateView, replayMode) == 0x120) ? 1 : -1];
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_RESULT_IS_RECORD_MODE() \
-    (g_ResultScreenGlobalState->resultMode == 0)
-#else
-#define TH095_RESULT_IS_RECORD_MODE() \
-    (g_ResultScreenGlobalState->replayMode == REPLAY_MANAGER_RECORD)
-#endif
-
 #ifdef DIFFBUILD
 struct ResultAnmVmDrawView
 {
@@ -119,10 +65,6 @@ struct ResultAsciiManagerView
     void AddFormatText(Float3 *position, const char *format, ...);
 };
 
-typedef char ResultScreenGlobalBestShotIndexAt100[
-    (offsetof(ResultScreenGlobalStateView, bestShotIndex) == 0x100) ? 1 : -1];
-typedef char ResultScreenGlobalCurrentScoreAt114[
-    (offsetof(ResultScreenGlobalStateView, currentScore) == 0x114) ? 1 : -1];
 typedef char ResultAsciiColorAt806C[
     (offsetof(ResultAsciiManagerView, color) == 0x806c) ? 1 : -1];
 typedef char ResultAsciiScaleXAt8070[
@@ -130,12 +72,6 @@ typedef char ResultAsciiScaleXAt8070[
 typedef char ResultAsciiScaleYAt8074[
     (offsetof(ResultAsciiManagerView, scaleY) == 0x8074) ? 1 : -1];
 
-extern ResultScreenGlobalStateView *g_ResultScreenGlobalState;
-
-#ifndef DIFFBUILD
-#define g_ResultScreenGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(ResultScreenGlobalStateView, g_RuntimeGlobalStateOwner)
-#endif
 
 struct ResultScreenInitializeLocals
 {
@@ -529,22 +465,14 @@ void __fastcall InitializeGameResultScreen(ResultScreen *resultScreen)
     resultScreen->stateTimer.Reset();
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
-#ifdef DIFFBUILD
-    g_ResultScreenGlobalState->flagsWord |= 0x10;
-#else
-    g_ResultScreenGlobalState->resultScreenActive = 1;
-#endif
-#ifdef DIFFBUILD
-    g_ResultScreenGlobalState->flagsWord |= 0x80;
-#else
-    g_ResultScreenGlobalState->resetFpsSample = 1;
-#endif
+    g_RuntimeGlobalStateOwner->resultScreenActive = 1;
+    g_RuntimeGlobalStateOwner->resetFpsSample = 1;
 
     InitializeResultCapturePhase();
 
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 0), 0);
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 3), 3);
-    if (TH095_RESULT_IS_RECORD_MODE())
+    if (g_RuntimeGlobalStateOwner->replayMode == REPLAY_MANAGER_RECORD)
     {
         resultScreen->state = TH095_RESULT_STATE_GAME_RESULT_MENU;
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 4), 4);
@@ -571,7 +499,7 @@ static __forceinline void InitializeReplayNormalTailPhase()
     g_ReplayManager->activeInputData->timestamp =
         (i32)time(NULL);
     g_ReplayManager->activeInputData->score =
-        g_ResultScreenGlobalState->currentScore;
+        g_RuntimeGlobalStateOwner->score;
 }
 
 static __forceinline void InitializeReplayExtraTailPhase(
@@ -600,22 +528,14 @@ void __fastcall InitializeReplayResultScreen(ResultScreen *resultScreen)
     resultScreen->stateTimer.Reset();
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
-#ifdef DIFFBUILD
-    g_ResultScreenGlobalState->flagsWord |= 0x10;
-#else
-    g_ResultScreenGlobalState->resultScreenActive = 1;
-#endif
-#ifdef DIFFBUILD
-    g_ResultScreenGlobalState->flagsWord |= 0x80;
-#else
-    g_ResultScreenGlobalState->resetFpsSample = 1;
-#endif
+    g_RuntimeGlobalStateOwner->resultScreenActive = 1;
+    g_RuntimeGlobalStateOwner->resetFpsSample = 1;
 
     InitializeResultCapturePhase();
 
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 1), 1);
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 7), 7);
-    if (TH095_RESULT_IS_RECORD_MODE())
+    if (g_RuntimeGlobalStateOwner->replayMode == REPLAY_MANAGER_RECORD)
     {
         resultScreen->state = TH095_RESULT_STATE_REPLAY_RESULT_MENU;
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 9), 9);
@@ -688,22 +608,14 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
     resultScreen->stateTimer.Reset();
     resultScreen->savedGameSpeed = g_AnmGameSpeed;
     g_AnmGameSpeed = 1.0f;
-#ifdef DIFFBUILD
-    g_ResultScreenGlobalState->flagsWord |= 0x10;
-#else
-    g_ResultScreenGlobalState->resultScreenActive = 1;
-#endif
-#ifdef DIFFBUILD
-    g_ResultScreenGlobalState->flagsWord |= 0x80;
-#else
-    g_ResultScreenGlobalState->resetFpsSample = 1;
-#endif
+    g_RuntimeGlobalStateOwner->resultScreenActive = 1;
+    g_RuntimeGlobalStateOwner->resetFpsSample = 1;
 
     InitializeResultCapturePhase();
 
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 2), 2);
     resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 11), 11);
-    if (TH095_RESULT_IS_RECORD_MODE())
+    if (g_RuntimeGlobalStateOwner->replayMode == REPLAY_MANAGER_RECORD)
     {
         resultScreen->state = TH095_RESULT_STATE_PHOTO_RESULT_MENU;
         resultScreen->anm->InitializeVm(GetResultVm(resultScreen, 14), 14);
@@ -722,15 +634,15 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
 
         ResultScoreEntryView *scoreEntry =
             &g_ResultSaveData
-                 ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex];
+                 ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex];
         scoreEntry->magic = SCENE_SCORE_RECORD_MAGIC;
         scoreEntry->version = SCENE_SCORE_RECORD_VERSION;
         scoreEntry->size = sizeof(ResultScoreEntryView);
-        scoreEntry->index = g_ResultScreenGlobalState->bestShotIndex;
+        scoreEntry->index = g_RuntimeGlobalStateOwner->bestShotIndex;
         scoreEntry->flags |= 1;
-        if (scoreEntry->score < g_ResultScreenGlobalState->currentScore)
+        if (scoreEntry->score < g_RuntimeGlobalStateOwner->score)
         {
-            scoreEntry->score = g_ResultScreenGlobalState->currentScore;
+            scoreEntry->score = g_RuntimeGlobalStateOwner->score;
             scoreEntry->highScoreSlowRate =
                 100.0f -
                 (f32)(g_Supervisor.lagNumerator / g_Supervisor.lagDenominator) * 100.0f;
@@ -749,7 +661,7 @@ void __fastcall InitializePhotoResultScreen(ResultScreen *resultScreen)
     g_ReplayManager->activeInputData->timestamp =
         (i32)time(NULL);
     g_ReplayManager->activeInputData->score =
-        g_ResultScreenGlobalState->currentScore;
+        g_RuntimeGlobalStateOwner->score;
 }
 
 static __forceinline void PrepareBestShotCursorSetPhase(
@@ -850,57 +762,57 @@ void __fastcall UpdatePhotoResultScreen(ResultScreen *resultScreen)
         i32 photoIndex = resultScreen->photoCursor.GetCurrent();
 
         g_ResultSaveData
-            ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
+            ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex]
             .scoreBreakdown =
             g_PhotoStageState->slots[photoIndex].scoreBreakdown;
         g_ResultSaveData->UpdateBestShotRecord(
-            g_ResultScreenGlobalState->bestShotIndex);
+            g_RuntimeGlobalStateOwner->bestShotIndex);
 
         g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .valid = 1;
         g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .magic = 0x53545342;
         g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .width = g_PhotoStageState->slots[photoIndex].width;
         g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .height = g_PhotoStageState->slots[photoIndex].height;
         g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .score = g_PhotoStageState->slots[photoIndex].score;
         g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .group = (u16)(g_SelectedScene->group + 1);
         g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .scene = (u16)(g_SelectedScene->scene + 1);
         g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .payloadFormat =
             RESULT_BEST_SHOT_PAYLOAD_COMMENT_AND_COMPRESSED_PIXELS;
         g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .version = 0x102;
         g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .componentCount =
             (u8)((g_PhotoStageState->anm->textures[photoIndex].bytesPerPixel == 4) + 2);
         g_ResultSaveData
-            ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
+            ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex]
             .bestShotSlowRate = g_PhotoStageState->slots[photoIndex].slowRate;
         g_ResultSaveData
-            ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
+            ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex]
             .captureTime = g_PhotoStageState->slots[photoIndex].timestamp;
         strcpy(
             g_ResultSaveData
-                ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+                ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
                 .comment,
             g_PhotoStageState->slots[photoIndex].comment);
         g_ResultSaveData
-            ->bestShotRecords[g_ResultScreenGlobalState->bestShotIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .photoIndex = photoIndex;
 
         g_ResultSaveData->WriteBestShotData();
@@ -983,12 +895,12 @@ ChainCallbackResult ResultScreen::Update()
             InitializeGameResultScreen(this);
             break;
         }
-        else if (g_ResultScreenGlobalState->playerDeathTransitionComplete != 0)
+        else if (g_RuntimeGlobalStateOwner->playerDeathTransitionComplete != 0)
         {
             InitializeReplayResultScreen(this);
             break;
         }
-        else if (g_ResultScreenGlobalState->photoLimitTransitionComplete != 0)
+        else if (g_RuntimeGlobalStateOwner->photoLimitTransitionComplete != 0)
         {
             InitializePhotoResultScreen(this);
             break;
@@ -1038,11 +950,7 @@ ChainCallbackResult ResultScreen::Update()
             switch (this->replayCursor.GetCurrent())
             {
             case 0:
-#ifdef DIFFBUILD
-                g_ResultScreenGlobalState->flagsWord &= ~0x10;
-#else
-                g_ResultScreenGlobalState->resultScreenActive = 0;
-#endif
+                g_RuntimeGlobalStateOwner->resultScreenActive = 0;
                 break;
             case 1:
                 g_AnmGameSpeed = 1.0f;
@@ -1054,11 +962,7 @@ ChainCallbackResult ResultScreen::Update()
                 break;
             }
             g_ResultSaveData->WriteBestShotData();
-#ifdef DIFFBUILD
-            g_ResultScreenGlobalState->flagsWord |= 0x80;
-#else
-            g_ResultScreenGlobalState->resetFpsSample = 1;
-#endif
+            g_RuntimeGlobalStateOwner->resetFpsSample = 1;
         }
         break;
 
@@ -1105,11 +1009,7 @@ ChainCallbackResult ResultScreen::Update()
             switch (this->replayCursor.GetCurrent())
             {
             case 0:
-#ifdef DIFFBUILD
-                g_ResultScreenGlobalState->flagsWord &= ~0x10;
-#else
-                g_ResultScreenGlobalState->resultScreenActive = 0;
-#endif
+                g_RuntimeGlobalStateOwner->resultScreenActive = 0;
                 break;
             case 1:
                 g_AnmGameSpeed = 1.0f;
@@ -1173,11 +1073,7 @@ ChainCallbackResult ResultScreen::Update()
                 break;
             }
             g_ResultSaveData->WriteBestShotData();
-#ifdef DIFFBUILD
-            g_ResultScreenGlobalState->flagsWord |= 0x80;
-#else
-            g_ResultScreenGlobalState->resetFpsSample = 1;
-#endif
+            g_RuntimeGlobalStateOwner->resetFpsSample = 1;
         }
         break;
 
@@ -1236,11 +1132,7 @@ ChainCallbackResult ResultScreen::Update()
                 g_ResultSceneState = 8;
                 break;
             }
-#ifdef DIFFBUILD
-            g_ResultScreenGlobalState->flagsWord |= 0x80;
-#else
-            g_ResultScreenGlobalState->resetFpsSample = 1;
-#endif
+            g_RuntimeGlobalStateOwner->resetFpsSample = 1;
         }
         break;
 
@@ -1280,11 +1172,7 @@ ChainCallbackResult ResultScreen::Update()
                 g_ResultSceneState = 2;
                 break;
             }
-#ifdef DIFFBUILD
-            g_ResultScreenGlobalState->flagsWord |= 0x80;
-#else
-            g_ResultScreenGlobalState->resetFpsSample = 1;
-#endif
+            g_RuntimeGlobalStateOwner->resetFpsSample = 1;
         }
         break;
 
@@ -1318,7 +1206,7 @@ ChainCallbackResult ResultScreen::Update()
         else if (GetPressedButtons(9) != 0)
         {
             g_SoundPlayer.PlaySoundByIdx(SOUND_BACK, 0);
-            if (g_ResultScreenGlobalState->playerDeathTransitionComplete != 0)
+            if (g_RuntimeGlobalStateOwner->playerDeathTransitionComplete != 0)
             {
                 this->stateTimer.Reset();
                 this->anm->InitializeVm(GetResultVm(this, 7), 7);
@@ -1332,7 +1220,7 @@ ChainCallbackResult ResultScreen::Update()
                 this->replayNameCursor = 0;
                 goto updateResultVms;
             }
-            else if (g_ResultScreenGlobalState->photoLimitTransitionComplete != 0)
+            else if (g_RuntimeGlobalStateOwner->photoLimitTransitionComplete != 0)
             {
                 ResultUpdatePhotoSetStatePhase(
                     this, TH095_RESULT_STATE_PHOTO_RESULT_MENU);
@@ -1621,7 +1509,7 @@ ChainCallbackResult ResultScreen::Draw()
         scorePosition.z = 0.0f;
         g_AsciiManager.AddFormatText(
             &scorePosition, "      Score  %.7d",
-            g_ResultScreenGlobalState->currentScore);
+            g_RuntimeGlobalStateOwner->score);
 
         highScorePosition.x = 230.0f;
         highScorePosition.y = 54.0f;
@@ -1629,7 +1517,7 @@ ChainCallbackResult ResultScreen::Draw()
         g_AsciiManager.AddFormatText(
             &highScorePosition, " High Score  %.7d",
             g_ResultSaveData
-                ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
+                ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex]
                 .score);
 
         DrawResultTotalScorePhase(&totalScorePosition);
@@ -1650,7 +1538,7 @@ ChainCallbackResult ResultScreen::Draw()
         g_AsciiManager.AddFormatText(
             &slowRatePosition, "  Slow Rate      %2.0f%%",
             g_ResultSaveData
-                ->scoreEntries[g_ResultScreenGlobalState->bestShotIndex]
+                ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex]
                 .highScoreSlowRate);
         g_AsciiManager.color.color = 0xffffffff;
 
@@ -1771,7 +1659,7 @@ ChainCallbackResult ResultScreen::Draw()
             replayNameSceneText, replayNameTimestamp->tm_mon + 1,
             replayNameTimestamp->tm_mday, replayNameTimestamp->tm_hour,
             replayNameTimestamp->tm_min,
-            g_ResultScreenGlobalState->currentScore);
+            g_RuntimeGlobalStateOwner->score);
 
         rowY = 320.0f;
         positionZ = 0.0f;
@@ -1876,11 +1764,7 @@ ChainCallbackResult ResultScreen::Draw()
 
 ChainCallbackResult ResultScreen::OnUpdate(ResultScreen *resultScreen)
 {
-#ifdef DIFFBUILD
-    if (g_ResultScreenGlobalState->suppressResultCallbacks)
-#else
-    if (g_ResultScreenGlobalState->gameplayLoadActive)
-#endif
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
@@ -1889,11 +1773,7 @@ ChainCallbackResult ResultScreen::OnUpdate(ResultScreen *resultScreen)
 
 ChainCallbackResult ResultScreen::OnDraw(ResultScreen *resultScreen)
 {
-#ifdef DIFFBUILD
-    if (g_ResultScreenGlobalState->suppressResultCallbacks)
-#else
-    if (g_ResultScreenGlobalState->gameplayLoadActive)
-#endif
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive)
     {
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
@@ -1918,7 +1798,6 @@ ResultScreenResult ResultScreen::LoadReplays()
     return ZUN_SUCCESS;
 }
 
-#undef TH095_RESULT_IS_RECORD_MODE
 
 } // namespace th095
 

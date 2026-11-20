@@ -28,10 +28,9 @@
 1	src/Background.cpp	#elif defined(DIFFBUILD)
 1	src/Background.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 6	src/Background.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-9	src/Background.cpp	#if defined(TH095_MATCH_EXACT)
 2	src/Background.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 9	src/Background.cpp	#ifdef TH095_MATCH_EXACT
-2	src/Background.cpp	#ifndef DIFFBUILD
+1	src/Background.cpp	#ifndef DIFFBUILD
 1	src/BackgroundLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/BulletManager.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 23	src/BulletManager.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -145,7 +144,6 @@
 3	src/PhotoCamera.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/PhotoCamera.cpp	#ifdef TH095_MATCH_EXACT
 4	src/PhotoCamera.cpp	#ifndef DIFFBUILD
-4	src/PhotoCardInfo.cpp	#ifdef DIFFBUILD
 1	src/PhotoCardInfo.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoCardInfo.cpp	#ifndef DIFFBUILD
 4	src/PhotoEffect.cpp	#ifdef DIFFBUILD
@@ -166,8 +164,7 @@
 1	src/PhotoItemManager.cpp	#ifdef TH095_MATCH_EXACT
 1	src/PhotoItemManager.cpp	#ifndef DIFFBUILD
 2	src/PhotoRuntime.cpp	#ifndef DIFFBUILD
-2	src/PhotoStage.cpp	#if defined(TH095_MATCH_EXACT)
-8	src/PhotoStage.cpp	#ifdef DIFFBUILD
+5	src/PhotoStage.cpp	#ifdef DIFFBUILD
 1	src/PhotoStage.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoStage.cpp	#ifndef DIFFBUILD
 1	src/ReplayBrowser.cpp	#ifdef DIFFBUILD
@@ -187,9 +184,9 @@
 1	src/ReplayManagerExact.inl	#ifdef TH095_MATCH_EXACT
 1	src/ReplayScanWorker.cpp	#ifdef TH095_MATCH_EXACT
 1	src/ResultScreen.cpp	#if defined(DIFFBUILD)
-21	src/ResultScreen.cpp	#ifdef DIFFBUILD
+2	src/ResultScreen.cpp	#ifdef DIFFBUILD
 3	src/ResultScreen.cpp	#ifdef TH095_MATCH_EXACT
-5	src/ResultScreen.cpp	#ifndef DIFFBUILD
+3	src/ResultScreen.cpp	#ifndef DIFFBUILD
 3	src/ResultScreen.hpp	#ifdef TH095_MATCH_EXACT
 1	src/ResultScreenExact.inl	#ifdef TH095_MATCH_EXACT
 1	src/Rng.hpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)

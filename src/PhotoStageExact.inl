@@ -3,6 +3,7 @@
 #include "ScoreData.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 
 #include <stdlib.h>
 #include <string.h>
@@ -60,26 +61,6 @@ struct PhotoStageSupervisorView
     PhotoStageAnmLoadedView *photoAnm;
 };
 
-struct PhotoStageGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 captureActive : 1;
-            u32 capturedPhotoActive : 1;
-            u32 unknownFlag02 : 30;
-        };
-    };
-    i32 scoreIndex;
-    u8 unknown104[0x114 - 0x104];
-    i32 currentScore;
-    u8 unknown118[8];
-    i32 resultMode;
-};
-
 struct PhotoStageRuntimeView
 {
     u8 unknown000[0x20];
@@ -100,7 +81,7 @@ struct PhotoStageSaveLocals
 {
     f32 entryX;
     f32 photoX;
-    PhotoStageGlobalStateView *globalState;
+    PhotoGameTaskView *globalState;
     Float3 entryPosition;
     Float3 photoPosition;
 };
@@ -118,7 +99,6 @@ struct PhotoStageCaptureLocals
 };
 
 
-extern PhotoStageGlobalStateView *g_PhotoStageGlobalState;
 extern PhotoStageRuntimeView *g_PhotoStageRuntime;
 extern PhotoStageSupervisorView *g_PhotoStageSupervisor;
 extern PhotoStageEffectManagerView *g_PhotoStageEffectManager;
@@ -168,19 +148,19 @@ static inline ResultBestShotRecordView *GetPhotoStageBestShotRecord(i32 index)
 }
 
 static __forceinline void ClearPhotoStageGlobalCaptureActive(
-    PhotoStageGlobalStateView *state)
+    PhotoGameTaskView *state)
 {
     state->captureActive = 0;
 }
 
 static __forceinline void ClearPhotoStageGlobalCapturedPhotoActive(
-    PhotoStageGlobalStateView *state)
+    PhotoGameTaskView *state)
 {
     state->capturedPhotoActive = 0;
 }
 
 static __forceinline void SetPhotoStageGlobalCapturedPhotoActive(
-    PhotoStageGlobalStateView *state)
+    PhotoGameTaskView *state)
 {
     state->capturedPhotoActive = 1;
 }
@@ -518,18 +498,18 @@ static __forceinline void PhotoStageAccumulateCapturedScore(PhotoStageStateView 
 {
     if ((state->slots[state->capture.slot].scoreBreakdown.scoringFlags & 1) != 0)
     {
-        PhotoStageGlobalStateView *globalState;
+        PhotoGameTaskView *globalState;
         i32 bgmFormatIndexLocal05 =
             state->slots[state->capture.slot].score;
-        globalState = g_PhotoStageGlobalState;
-        globalState->currentScore += bgmFormatIndexLocal05;
+        globalState = g_RuntimeGlobalStateOwner;
+        globalState->score += bgmFormatIndexLocal05;
     }
 }
 
 static __forceinline void PhotoStagePublishSlowRate(PhotoStageStateView *state)
 {
     state->slots[state->capture.slot].slowRate =
-        GetPhotoStageBestShotRecord(g_PhotoStageGlobalState->scoreIndex)->slowRate =
+        GetPhotoStageBestShotRecord(g_RuntimeGlobalStateOwner->bestShotIndex)->slowRate =
             100.0f -
             (f32)(g_PhotoLagNumerator / g_PhotoLagDenominator) * 100.0f;
 }
@@ -725,7 +705,7 @@ i32 PhotoStageStateView::Update()
                     readByteCountLocal02, right, top, bottom);
 
                 g_PhotoCaptureCountdown = 99;
-                g_PhotoStageGlobalState->flags |= 0x80;
+                g_RuntimeGlobalStateOwner->resetFpsSample = 1;
                 this->flags &= ~PHOTO_STAGE_WAITING_FOR_TEXTURE;
             }
             else
@@ -820,9 +800,9 @@ i32 PhotoStageStateView::Update()
                 this->capturedPhotoVms[this->capture.slot].value,
                 &resultDrawBacking012);
 
-            ClearPhotoStageGlobalCaptureActive(g_PhotoStageGlobalState);
+            ClearPhotoStageGlobalCaptureActive(g_RuntimeGlobalStateOwner);
             SetPhotoStageGlobalCapturedPhotoActive(
-                g_PhotoStageGlobalState);
+                g_RuntimeGlobalStateOwner);
         }
         else if (this->captureFrame == 2)
         {
@@ -832,14 +812,14 @@ i32 PhotoStageStateView::Update()
 
                 PhotoStageAccumulateCapturedScore(this);
 
-                if (g_PhotoStageGlobalState->resultMode == 0)
+                if (g_RuntimeGlobalStateOwner->replayMode == REPLAY_MANAGER_RECORD)
                 {
                     if (GetPhotoStageScoreEntry(
-                            g_PhotoStageGlobalState->scoreIndex)
+                            g_RuntimeGlobalStateOwner->bestShotIndex)
                             ->attemptCount < 999999)
                     {
                         GetPhotoStageScoreEntry(
-                            g_PhotoStageGlobalState->scoreIndex)
+                            g_RuntimeGlobalStateOwner->bestShotIndex)
                             ->attemptCount++;
                     }
 
@@ -865,67 +845,67 @@ i32 PhotoStageStateView::Update()
                     }
 
                     if (!GetPhotoStageScoreEntry(
-                             g_PhotoStageGlobalState->scoreIndex)
+                             g_RuntimeGlobalStateOwner->bestShotIndex)
                              ->flagBits.bestShotLocked &&
                         this->slots[this->capture.slot].score >
                             GetPhotoStageScoreEntry(
-                                g_PhotoStageGlobalState->scoreIndex)
+                                g_RuntimeGlobalStateOwner->bestShotIndex)
                                 ->scoreBreakdown.finalScore)
                     {
                         memcpy(
                             &GetPhotoStageScoreEntry(
-                                 g_PhotoStageGlobalState->scoreIndex)
+                                 g_RuntimeGlobalStateOwner->bestShotIndex)
                                  ->scoreBreakdown,
                             &this->slots[this->capture.slot].scoreBreakdown,
                             sizeof(PhotoScoreBreakdownView));
                         g_ResultSaveData->UpdateBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex);
+                            g_RuntimeGlobalStateOwner->bestShotIndex);
 
                         GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->valid = 1;
+                            g_RuntimeGlobalStateOwner->bestShotIndex)->valid = 1;
                         GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->magic =
+                            g_RuntimeGlobalStateOwner->bestShotIndex)->magic =
                             0x53545342;
                         GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->width =
+                            g_RuntimeGlobalStateOwner->bestShotIndex)->width =
                             (u16)this->capture.width;
                         GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->height =
+                            g_RuntimeGlobalStateOwner->bestShotIndex)->height =
                             (u16)this->capture.height;
                         GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->score =
+                            g_RuntimeGlobalStateOwner->bestShotIndex)->score =
                                 this->slots[this->capture.slot]
                                     .score;
                         GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->group =
+                            g_RuntimeGlobalStateOwner->bestShotIndex)->group =
                                 (u16)(g_SelectedScene->group + 1);
                         GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->scene =
+                            g_RuntimeGlobalStateOwner->bestShotIndex)->scene =
                                 (u16)(g_SelectedScene->scene + 1);
                         GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->payloadFormat =
+                            g_RuntimeGlobalStateOwner->bestShotIndex)->payloadFormat =
                             RESULT_BEST_SHOT_PAYLOAD_COMMENT_AND_COMPRESSED_PIXELS;
                         GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)->version =
+                            g_RuntimeGlobalStateOwner->bestShotIndex)->version =
                             0x102;
                         GetPhotoStageBestShotRecord(
-                            g_PhotoStageGlobalState->scoreIndex)
+                            g_RuntimeGlobalStateOwner->bestShotIndex)
                             ->componentCount =
                             (u8)((this->anm->textures
                                       [this->capture.slot]
                                           .bytesPerPixel == 4) +
                                 2);
                         GetPhotoStageScoreEntry(
-                            g_PhotoStageGlobalState->scoreIndex)->bestShotSlowRate =
+                            g_RuntimeGlobalStateOwner->bestShotIndex)->bestShotSlowRate =
                             this->slots[this->capture.slot].slowRate;
                         GetPhotoStageScoreEntry(
-                            g_PhotoStageGlobalState->scoreIndex)->captureTime =
+                            g_RuntimeGlobalStateOwner->bestShotIndex)->captureTime =
                             this->slots[this->capture.slot].timestamp;
                         if (g_PhotoStageRuntime != NULL)
                         {
                             strcpy(
                                 GetPhotoStageBestShotRecord(
-                                    g_PhotoStageGlobalState->scoreIndex)
+                                    g_RuntimeGlobalStateOwner->bestShotIndex)
                                     ->comment,
                                 g_PhotoStageRuntime->comment);
                         }
@@ -933,7 +913,7 @@ i32 PhotoStageStateView::Update()
                         {
                             memset(
                                 GetPhotoStageBestShotRecord(
-                                    g_PhotoStageGlobalState->scoreIndex)
+                                    g_RuntimeGlobalStateOwner->bestShotIndex)
                                     ->comment,
                                 0, 0x50);
                         }
@@ -941,13 +921,13 @@ i32 PhotoStageStateView::Update()
                         if (this->capture.slot != 10)
                         {
                             GetPhotoStageBestShotRecord(
-                                g_PhotoStageGlobalState->scoreIndex)
+                                g_RuntimeGlobalStateOwner->bestShotIndex)
                                 ->photoIndex = this->capture.slot;
                         }
                         else
                         {
                             GetPhotoStageBestShotRecord(
-                                g_PhotoStageGlobalState->scoreIndex)
+                                g_RuntimeGlobalStateOwner->bestShotIndex)
                                 ->photoIndex = -1;
                             this->CapturePhotoPixels(
                                 this->capture.slot);
@@ -993,7 +973,7 @@ i32 PhotoStageStateView::Update()
             }
 
             ClearPhotoStageGlobalCapturedPhotoActive(
-                g_PhotoStageGlobalState);
+                g_RuntimeGlobalStateOwner);
             this->flags &= ~PHOTO_STAGE_CAPTURING;
         }
 
@@ -1079,7 +1059,7 @@ i32 PhotoStageStateView::Update()
 
 i32 __fastcall UpdatePhotoStage(PhotoStageStateView *stage)
 {
-    if (((g_PhotoStageGlobalState->flags >> 2) & 1) != 0)
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }
@@ -1098,8 +1078,8 @@ i32 PhotoStageStateView::SavePhoto(
     }
 
     this->flags |= PHOTO_STAGE_CAPTURING;
-    locals.globalState = g_PhotoStageGlobalState;
-    locals.globalState->flags |= 1;
+    locals.globalState = g_RuntimeGlobalStateOwner;
+    locals.globalState->captureActive = 1;
     this->captureFrame = 0;
     *this->GetCapturePosition() = *position;
     this->GetCaptureWidth() = width;
@@ -1147,16 +1127,16 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
     locals.allocationSize =
         GetPhotoStagePixelCount(
             (u32)g_ResultSaveData
-                ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
+                ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
                 .width,
             (u32)g_ResultSaveData
-                ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
+                ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
                 .height) *
         (u32)g_ResultSaveData
-            ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .componentCount;
     locals.record = &g_ResultSaveData
-        ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex];
+        ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex];
     locals.record->pixelData =
         reinterpret_cast<u8 *>(malloc(locals.allocationSize));
 
@@ -1166,16 +1146,16 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
     locals.surface->LockRect(&locals.lockedRect, NULL, 0);
 
     locals.destination = g_ResultSaveData
-        ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
+        ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
         .pixelData;
     if (g_ResultSaveData
-            ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
+            ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
             .componentCount == 3)
     {
         for (locals.y = 0;
              locals.y <
                  (i32)g_ResultSaveData
-                     ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
+                     ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
                      .height;
              locals.y++)
         {
@@ -1185,7 +1165,7 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
             for (locals.x = 0;
                  locals.x <
                      (i32)g_ResultSaveData
-                         ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
+                         ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
                          .width;
                  locals.x++, locals.source += 4, locals.destination += 3)
             {
@@ -1200,7 +1180,7 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
         for (locals.y = 0;
              locals.y <
                  (i32)g_ResultSaveData
-                     ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
+                     ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
                      .height;
              locals.y++)
         {
@@ -1210,7 +1190,7 @@ i32 PhotoStageStateView::CapturePhotoPixels(i32 photoIndex)
             for (locals.x = 0;
                  locals.x <
                      (i32)g_ResultSaveData
-                         ->bestShotRecords[g_PhotoStageGlobalState->scoreIndex]
+                         ->bestShotRecords[g_RuntimeGlobalStateOwner->bestShotIndex]
                          .width;
                  locals.x++, locals.source += 2, locals.destination += 2)
             {
