@@ -398,9 +398,9 @@ void PhotoCameraState::UpdateViewfinder()
         this->viewfinderPosition.y = 436.0f;
     }
 
-    this->viewfinderSize.x = this->charge * 160.0f + 48.0f;
+    this->viewfinderSize.x = this->charge * 160.0f + 96.0f;
     this->viewfinderSize.y =
-        (this->charge * 160.0f + 48.0f) * 0.75f;
+        (this->charge * 160.0f + 96.0f) * 0.75f;
     this->viewfinderSize.z = 0.0f;
 
     PhotoToScreen(&locals.screenPosition, &this->viewfinderPosition);
@@ -998,7 +998,7 @@ focusedCharge:
         {
             this->charge +=
                 this->focusChargeFrames < 70
-                    ? (((f32)this->focusChargeFrames * 40.0f / 800.0f) / 30.0f +
+                    ? (((f32)this->focusChargeFrames * 3.0f / 800.0f) / 70.0f +
                        0.00125f) * g_AnmGameSpeed
                     : 0.005f * g_AnmGameSpeed;
             if (this->charge > 1.0f)

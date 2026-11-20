@@ -17462,3 +17462,16 @@ retains the target's 335-byte code structure. Its queue operand follows
 the moved SoundPlayer in both links. Under Wine the original kept opcode
 1 pending with the WAV configuration. With music off it entered scene 1-1
 and captured a temporary photo, as did both rebuilt layouts.
+
+### SEM-369 — restore the camera's float constants
+
+The target's viewfinder size is charge times 160 plus 96, with height
+scaled by 0.75. Both additions at 0x00432B2D and 0x00432B4B reference
+0x0049550C, which holds 96. The first 70 focused charge frames use 3 and
+70 at 0x00434047 and 0x00434053. The earlier comparison mapped the COFF
+symbols for 48, 40 and 30 to those same target addresses.
+
+The shared implementation now loads the target values. All eleven
+PhotoCamera units replay exactly and the normal object emits the same
+four corrected constant references. A no-music run of scene 1-1 confirms
+the rebuilt capture reaches the original's 256-pixel width.
