@@ -16,14 +16,6 @@ namespace th095
 
 DIFFABLE_STATIC(int, g_ScreenEffectCounter);
 
-// Target 0x004BDEC8 is the task's standalone publication slot, distinct
-// from Supervisor::photoGameTask. The full task owner supplies its flag word.
-extern void *g_RuntimeGlobalStateOwner;
-static __forceinline PhotoGameTaskView *ScreenEffectPhotoTask()
-{
-    return static_cast<PhotoGameTaskView *>(g_RuntimeGlobalStateOwner);
-}
-
 static __forceinline int ScreenEffectEitherFlag(int first, int second)
 {
     return first | second;
@@ -194,14 +186,14 @@ int ScreenEffect::CalcShake(ScreenEffect *screenEffect)
     if (g_ScreenEffectCounter != 0)
         return 0;
 
-    if (ScreenEffectPhotoTask() != NULL)
+    if (g_RuntimeGlobalStateOwner != NULL)
     {
-        if (ScreenEffectEitherFlag(ScreenEffectPhotoTask()->captureActive,
-                                   ScreenEffectPhotoTask()->gameplayLoadActive) != 0 ||
-            ScreenEffectPhotoTask()->capturedPhotoActive != 0 ||
-            ScreenEffectPhotoTask()->resultScreenActive != 0 ||
-            ScreenEffectPhotoTask()->playerDeathTransitionComplete != 0 ||
-            ScreenEffectPhotoTask()->photoLimitTransitionComplete != 0)
+        if (ScreenEffectEitherFlag(g_RuntimeGlobalStateOwner->captureActive,
+                                   g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0 ||
+            g_RuntimeGlobalStateOwner->capturedPhotoActive != 0 ||
+            g_RuntimeGlobalStateOwner->resultScreenActive != 0 ||
+            g_RuntimeGlobalStateOwner->playerDeathTransitionComplete != 0 ||
+            g_RuntimeGlobalStateOwner->photoLimitTransitionComplete != 0)
             return 1;
     }
     else
@@ -255,14 +247,14 @@ int ScreenEffect::CalcShakeEnvelope(ScreenEffect *screenEffect)
     if (g_ScreenEffectCounter != 0)
         return 0;
 
-    if (ScreenEffectPhotoTask() != NULL)
+    if (g_RuntimeGlobalStateOwner != NULL)
     {
-        if (ScreenEffectEitherFlag(ScreenEffectPhotoTask()->captureActive,
-                                   ScreenEffectPhotoTask()->gameplayLoadActive) != 0 ||
-            ScreenEffectPhotoTask()->capturedPhotoActive != 0 ||
-            ScreenEffectPhotoTask()->resultScreenActive != 0 ||
-            ScreenEffectPhotoTask()->playerDeathTransitionComplete != 0 ||
-            ScreenEffectPhotoTask()->photoLimitTransitionComplete != 0)
+        if (ScreenEffectEitherFlag(g_RuntimeGlobalStateOwner->captureActive,
+                                   g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0 ||
+            g_RuntimeGlobalStateOwner->capturedPhotoActive != 0 ||
+            g_RuntimeGlobalStateOwner->resultScreenActive != 0 ||
+            g_RuntimeGlobalStateOwner->playerDeathTransitionComplete != 0 ||
+            g_RuntimeGlobalStateOwner->photoLimitTransitionComplete != 0)
             return 1;
     }
     else

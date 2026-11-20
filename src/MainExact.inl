@@ -19,29 +19,11 @@ using namespace th095;
 
 namespace th095
 {
-struct SupervisorGameTaskView
-{
-    u8 unknown000[0xfc];
-    u32 captureActive : 1;
-    u32 unknownFlag1 : 1;
-    u32 gameplayLoadActive : 1;
-    u32 unknownFlag3 : 1;
-    u32 resultScreenActive : 1;
-    u32 playerDeathTransitionComplete : 1;
-    u32 photoLimitTransitionComplete : 1;
-    u32 resetFpsSample : 1;
-    u32 unknownFlags8 : 24;
-};
-
-extern SupervisorGameTaskView *g_SupervisorGameTask;
-
 struct FrontEndControllerView
 {
     static FrontEndControllerView *__fastcall Create(i32 mode);
     void Destroy();
 };
-
-extern void *g_RuntimeGlobalStateOwner;
 
 struct SupervisorSoundPlayerView
 {
@@ -1354,8 +1336,7 @@ i32 Supervisor::UpdateSceneState()
                 break;
 
             case SUPERVISOR_STATE_RESTART_PHOTO_GAME:
-                locals.resultMode = static_cast<PhotoGameTaskView *>(
-                    g_RuntimeGlobalStateOwner)->replayMode;
+                locals.resultMode = g_RuntimeGlobalStateOwner->replayMode;
                 g_Supervisor.flags.resultRestartActive = 1;
                 this->photoGameTask->Destroy();
                 this->photoGameTask = NULL;

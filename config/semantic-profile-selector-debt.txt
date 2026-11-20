@@ -112,7 +112,6 @@
 6	src/FrontEndLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/FrontEndLifecycle.cpp	#ifdef TH095_MATCH_EXACT
 1	src/GameErrorContext.cpp	#ifdef TH095_MATCH_EXACT
-1	src/GameplayGlobals.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/GameplayGlobals.hpp	#if defined(DIFFBUILD)
 1	src/GameplayGlobals.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/GameplayGlobals.hpp	#if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
@@ -132,7 +131,7 @@
 2	src/InputRuntime.hpp	#if defined(TH095_MATCH_EXACT)
 4	src/Main.cpp	#ifdef DIFFBUILD
 1	src/Main.cpp	#ifdef TH095_MATCH_EXACT
-4	src/Main.cpp	#ifndef DIFFBUILD
+3	src/Main.cpp	#ifndef DIFFBUILD
 1	src/MusicRoom.cpp	#ifdef DIFFBUILD
 1	src/MusicRoom.cpp	#ifdef TH095_MATCH_EXACT
 2	src/MusicRoom.hpp	#ifdef DIFFBUILD
@@ -170,12 +169,11 @@
 1	src/PhotoGame.cpp	#ifdef TH095_MATCH_EXACT
 3	src/PhotoGame.cpp	#ifndef DIFFBUILD
 2	src/PhotoGameTask.cpp	#if defined(TH095_MATCH_EXACT)
-4	src/PhotoGameTask.cpp	#ifdef DIFFBUILD
+3	src/PhotoGameTask.cpp	#ifdef DIFFBUILD
 1	src/PhotoGameTask.cpp	#ifdef TH095_MATCH_EXACT
-5	src/PhotoGameTask.cpp	#ifndef DIFFBUILD
+4	src/PhotoGameTask.cpp	#ifndef DIFFBUILD
 1	src/PhotoItemManager.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoItemManager.cpp	#ifndef DIFFBUILD
-1	src/PhotoOverlay.cpp	#ifndef DIFFBUILD
 2	src/PhotoRuntime.cpp	#ifndef DIFFBUILD
 2	src/PhotoStage.cpp	#if defined(TH095_MATCH_EXACT)
 8	src/PhotoStage.cpp	#ifdef DIFFBUILD

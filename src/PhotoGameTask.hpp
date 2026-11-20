@@ -2,6 +2,7 @@
 #define TH095_PHOTO_GAME_TASK_HPP
 
 #include "Main.hpp"
+#include "PhotoGameTaskOwner.hpp"
 #include "PhotoGameTaskState.hpp"
 #include "ReplayManagerMode.hpp"
 #include "ZunTimer.hpp"

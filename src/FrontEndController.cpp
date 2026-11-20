@@ -139,7 +139,6 @@ typedef char FrontEndUpdateLocalsSizeIs3C[
 #endif
 
 DIFFABLE_STATIC(i32, g_MainMenuDemoWaitFrames); // 0x004CA2FC
-extern void *g_RuntimeGlobalStateOwner;
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 extern u16 g_FrontEndCurrentInput;
@@ -389,8 +388,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         }
         if (view->transitionReady != 0)
         {
-            if (static_cast<PhotoGameTaskView *>(g_RuntimeGlobalStateOwner)
-                    ->gameplayLoadFailed)
+            if (g_RuntimeGlobalStateOwner->gameplayLoadFailed)
             {
                 g_Supervisor.requestedSceneState = SUPERVISOR_STATE_EXIT;
                 break;
@@ -437,8 +435,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
         }
         if (view->transitionReady != 0)
         {
-            if (static_cast<PhotoGameTaskView *>(g_RuntimeGlobalStateOwner)
-                    ->gameplayLoadFailed)
+            if (g_RuntimeGlobalStateOwner->gameplayLoadFailed)
             {
                 g_Supervisor.requestedSceneState = SUPERVISOR_STATE_EXIT;
                 break;

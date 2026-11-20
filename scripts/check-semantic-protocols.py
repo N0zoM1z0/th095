@@ -3118,7 +3118,7 @@ def check_supervisor_fps_boundary(overrides: dict[str, str] | None = None) -> No
                  "else if (g_FpsClockAnomalyCount == 4)",
                  "g_GameWindow.performanceFrequency.QuadPart = 0;",
                  "if (this->currentFps > 57.0f)",
-                 "g_SupervisorGameTask->resetFpsSample = 0;",
+                 "g_RuntimeGlobalStateOwner->resetFpsSample = 0;",
                  "this->fpsFrameCount = 0;"):
         if fact not in sampler:
             fail(f"FPS sampler lost its target transition: {fact}")

@@ -17,13 +17,6 @@ namespace utils
 void DebugPrint(char *format, ...);
 }
 
-extern PhotoGameTaskView *g_PhotoGameTask;
-
-#ifndef DIFFBUILD
-#define g_PhotoGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
-#endif
-
 i32 __fastcall UpdatePhotoStage(PhotoStageStateView *stage);
 
 // The two embedded AnmVm arrays supply the slot's construction and unwind work.
@@ -109,7 +102,7 @@ i32 PhotoStageStateView::Draw()
                     0xffffffff;
             else if (this->slots[locals.slotIndex].score >=
                      g_ResultSaveData->scoreEntries[
-                         g_PhotoGameTask->bestShotIndex].detailScore)
+                         g_RuntimeGlobalStateOwner->bestShotIndex].detailScore)
                 this->slots[locals.slotIndex]
                     .overlayVms[locals.vmIndex].color1.color =
                     0xffffff00;
@@ -131,7 +124,7 @@ i32 PhotoStageStateView::Draw()
 i32 __fastcall DrawPhotoStage(PhotoStageStateView *manager)
 {
     g_Supervisor.ConfigureGameplayViewport(TH095_SUPERVISOR_VIEWPORT_FULL_WINDOW);
-    if (g_PhotoGameTask->gameplayLoadActive != 0)
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }

@@ -49,13 +49,13 @@ void Supervisor::CalculateFps()
             g_FpsClockAnomalyCount = 0;
         }
 
-        if (g_SupervisorGameTask != NULL &&
-            g_SupervisorGameTask->resultScreenActive == 0 &&
-            g_SupervisorGameTask->captureActive == 0 &&
-            g_SupervisorGameTask->gameplayLoadActive == 0 &&
-            g_SupervisorGameTask->playerDeathTransitionComplete == 0 &&
-            g_SupervisorGameTask->photoLimitTransitionComplete == 0 &&
-            g_SupervisorGameTask->resetFpsSample == 0)
+        if (g_RuntimeGlobalStateOwner != NULL &&
+            g_RuntimeGlobalStateOwner->resultScreenActive == 0 &&
+            g_RuntimeGlobalStateOwner->captureActive == 0 &&
+            g_RuntimeGlobalStateOwner->gameplayLoadActive == 0 &&
+            g_RuntimeGlobalStateOwner->playerDeathTransitionComplete == 0 &&
+            g_RuntimeGlobalStateOwner->photoLimitTransitionComplete == 0 &&
+            g_RuntimeGlobalStateOwner->resetFpsSample == 0)
         {
             this->lagDenominator += 60.0;
             if (this->currentFps > 57.0f)
@@ -68,9 +68,9 @@ void Supervisor::CalculateFps()
             }
         }
 
-        if (g_SupervisorGameTask != NULL)
+        if (g_RuntimeGlobalStateOwner != NULL)
         {
-            g_SupervisorGameTask->resetFpsSample = 0;
+            g_RuntimeGlobalStateOwner->resetFpsSample = 0;
         }
         this->fpsFrameCount = 0;
     }

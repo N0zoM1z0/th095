@@ -1,6 +1,7 @@
 #ifndef TH095_GAMEPLAY_GLOBALS_HPP
 #define TH095_GAMEPLAY_GLOBALS_HPP
 
+#include "PhotoGameTaskOwner.hpp"
 #include "diffbuild.hpp"
 
 namespace th095
@@ -14,14 +15,6 @@ namespace th095
 DIFFABLE_EXTERN(void *, g_RuntimeBulletManagerOwner);
 DIFFABLE_EXTERN(void *, g_RuntimeEnemyManagerOwner);
 DIFFABLE_EXTERN(void *, g_RuntimeBackgroundManagerOwner);
-// Target 0x004BDEC8 is the standalone gameplay/global-state owner published by
-// PhotoGameTask construction and cleared by its destruction. Do not merge it
-// with the second publication slot below: target code writes the two slots at
-// different points in the front-end/gameplay transition. This reconstruction
-// owner name is production-only so it cannot perturb exact-unit COFF labels.
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-extern void *g_RuntimeGlobalStateOwner;
-#endif
 // Target 0x004C4DF4 is Supervisor::photoGameTask at g_Supervisor + 0x784.
 // Production binds a reference to that embedded slot; it is the front-end's
 // publication of the task and is physically distinct from 0x004BDEC8.

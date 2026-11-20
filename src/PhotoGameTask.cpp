@@ -33,6 +33,8 @@
 namespace th095
 {
 
+PhotoGameTaskView *g_RuntimeGlobalStateOwner; // 0x004BDEC8
+
 struct PhotoFrontManagerView
 {
     static PhotoFrontManagerView *Create();
@@ -121,7 +123,6 @@ extern char g_ReplayPath[];
 extern char g_SelectedReplayPath[0x100];
 #define g_ReplayPath g_SelectedReplayPath
 #endif
-extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
 #define g_PhotoEnemyManagerTask \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerTaskView, g_RuntimeEnemyManagerOwner)
@@ -135,12 +136,6 @@ extern u32 g_PhotoAsciiTextColor;
 extern i32 g_ReplayUsesArchive;
 #define REPLAY_PLAYBACK_SOURCE_LOOSE_FILE 0
 #define REPLAY_PLAYBACK_SOURCE_ARCHIVE 1
-#endif
-// Target 0x004C6E70 is the zero-initialized load barrier consumed by this
-// task's loading loop.
-#ifndef DIFFBUILD
-#define g_PhotoGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
 PhotoGameTaskView::PhotoGameTaskView()
@@ -291,10 +286,10 @@ i32 PhotoGameTaskView::DrawHud()
              &locals.highScorePosition),
             "HiScore %.7d",
             g_ResultSaveData
-                        ->scoreEntries[g_PhotoGameTask->bestShotIndex]
+                        ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex]
                         .score > this->score
                 ? g_ResultSaveData
-                      ->scoreEntries[g_PhotoGameTask->bestShotIndex]
+                      ->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex]
                       .score
                 : this->score);
         locals.scorePosition.x = 128.0f;
@@ -355,12 +350,8 @@ PhotoGameTaskView *PhotoGameTaskView::Create(i32 replayMode)
     } locals;
 
     locals.task = new PhotoGameTaskView();
-    g_PhotoGameTask = locals.task;
-#ifdef DIFFBUILD
-    locals.task->replayMode = replayMode;
-#else
+    g_RuntimeGlobalStateOwner = locals.task;
     locals.task->replayMode = static_cast<ReplayManagerMode>(replayMode);
-#endif
     locals.task->gameplayLoadActive = 1;
 
     locals.elem = g_Chain.CreateElem(
@@ -391,7 +382,7 @@ void PhotoGameTaskView::Destroy()
 
 void __fastcall PhotoGameTaskView::Load(void *argument)
 {
-    PhotoGameTaskView *task = g_PhotoGameTask;
+    PhotoGameTaskView *task = g_RuntimeGlobalStateOwner;
     task->gameplayLoadActive = 1;
 
     while (g_AnmManager->captureSurfaceIdx >= 0 ||
@@ -570,7 +561,7 @@ PhotoGameTaskView::~PhotoGameTaskView()
     }
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
-    g_PhotoGameTask = NULL;
+    g_RuntimeGlobalStateOwner = NULL;
 
     if (g_Supervisor.flags.resultRestartActive == 0 &&
         g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)

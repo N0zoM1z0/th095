@@ -88,8 +88,6 @@ char g_WindowTitle[] =
 void *g_RuntimeBulletManagerOwner = 0;
 void *g_RuntimeEnemyManagerOwner = 0;
 void *g_RuntimeBackgroundManagerOwner = 0;
-// Target 0x004BDEC8 is standalone storage owned by PhotoGameTask itself.
-void *g_RuntimeGlobalStateOwner = 0;
 // Target 0x004C4DF4 is the Supervisor's embedded game-task publication slot.
 // It mirrors the pointer during steady-state gameplay, but it is not the same
 // storage and must retain its own transition lifetime.
@@ -99,27 +97,6 @@ void *g_RuntimeItemManagerOwner = 0;
 void *g_RuntimeEffectManagerOwner = 0;
 PhotoStageStateView *g_PhotoStageState = NULL;
 PhotoGameUpdateView *g_RuntimePlayerOwner = NULL;
-#endif
-
-struct SupervisorGameTaskView
-{
-    u8 unknown000[0xfc];
-    u32 captureActive : 1;
-    u32 unknownFlag1 : 1;
-    u32 gameplayLoadActive : 1;
-    u32 unknownFlag3 : 1;
-    u32 resultScreenActive : 1;
-    u32 playerDeathTransitionComplete : 1;
-    u32 photoLimitTransitionComplete : 1;
-    u32 resetFpsSample : 1;
-    u32 unknownFlags8 : 24;
-};
-
-extern SupervisorGameTaskView *g_SupervisorGameTask;
-
-#ifndef DIFFBUILD
-#define g_SupervisorGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(SupervisorGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
 
 // Target 0x004C4658 is a standalone 0x18-byte ReplayScanWorker. Its static
@@ -152,8 +129,6 @@ struct FrontEndLifecycleView
 #define TH095_FRONT_END_DESTROY(controller) (controller)->Destroy()
 #define TH095_FRONT_END_RELEASE_RESOURCES() ReleaseSceneSelectAnms()
 #endif
-
-extern void *g_RuntimeGlobalStateOwner;
 
 struct TextHelperView
 {
@@ -1419,8 +1394,7 @@ i32 Supervisor::UpdateSceneState()
                 break;
 
             case SUPERVISOR_STATE_RESTART_PHOTO_GAME:
-                locals.resultMode = static_cast<PhotoGameTaskView *>(
-                    g_RuntimeGlobalStateOwner)->replayMode;
+                locals.resultMode = g_RuntimeGlobalStateOwner->replayMode;
                 g_Supervisor.flags.resultRestartActive = 1;
                 this->photoGameTask->Destroy();
                 this->photoGameTask = NULL;

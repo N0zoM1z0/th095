@@ -6,6 +6,7 @@
 #include "SoundPlayer.hpp"
 #include "ScoreData.hpp"
 #include "PhotoGamePlayer.hpp"
+#include "PhotoGameTaskOwner.hpp"
 #include "GameplayGlobals.hpp"
 
 #include <stdio.h>
@@ -179,7 +180,6 @@ typedef char PhotoGameTaskChainsAt118[
 
 extern char g_ReplayPath[];
 extern PhotoCardInfoView *g_PhotoCardInfo;
-extern PhotoGameTaskView *g_PhotoGameTask;
 extern PhotoHelpMenuTaskView *g_PhotoHelpMenu;
 extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
 extern PhotoAsciiManagerTaskView g_PhotoAsciiManager;
@@ -336,9 +336,9 @@ i32 PhotoGameTaskView::DrawHud()
              (locals.highScorePosition.z = 0.0f),
              &locals.highScorePosition),
             "HiScore %.7d",
-            g_ResultSaveData->scoreEntries[g_PhotoGameTask->bestShotIndex].score >
+            g_ResultSaveData->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex].score >
                     this->score
-                ? g_ResultSaveData->scoreEntries[g_PhotoGameTask->bestShotIndex].score
+                ? g_ResultSaveData->scoreEntries[g_RuntimeGlobalStateOwner->bestShotIndex].score
                 : this->score);
         locals.scorePosition.x = 128.0f;
         locals.scorePosition.y = 32.0f;
@@ -397,7 +397,7 @@ PhotoGameTaskView *PhotoGameTaskView::Create(i32 replayMode)
     } locals;
 
     locals.task = new PhotoGameTaskView();
-    g_PhotoGameTask = locals.task;
+    g_RuntimeGlobalStateOwner = locals.task;
     locals.task->replayMode = replayMode;
     locals.task->flags = locals.task->flags | 4;
 
@@ -429,7 +429,7 @@ void PhotoGameTaskView::Destroy()
 
 void __fastcall PhotoGameTaskView::Load(void *argument)
 {
-    PhotoGameTaskView *task = g_PhotoGameTask;
+    PhotoGameTaskView *task = g_RuntimeGlobalStateOwner;
     task->flags = task->flags | 4;
 
     while (g_AnmManager->captureSurfaceIdx >= 0 ||
@@ -604,7 +604,7 @@ PhotoGameTaskView::~PhotoGameTaskView()
     }
     g_Chain.Cut(this->calcChain);
     g_Chain.Cut(this->drawChain);
-    g_PhotoGameTask = NULL;
+    g_RuntimeGlobalStateOwner = NULL;
 
     if (g_Supervisor.flags.resultRestartActive == 0 &&
         g_ReplayUsesArchive == 0)

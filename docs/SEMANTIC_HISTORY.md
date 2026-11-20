@@ -18311,3 +18311,30 @@ transition cases agree with retail, including opposite replay modes in
 the two task slots, title and task factory failures, and the original
 lock-count behavior on exit. The fixtures supply the lifecycle and lock
 API responses. See `.analysis/pi/supervisor-game-task/` for the recipes.
+
+### SEM-406 — give the active photo task one typed slot
+
+`PhotoGameTaskView::Create @ 0x00417F80` writes the active task at
+`0x004BDEC8` before it registers the frame callbacks and starts the loader.
+`Load` reads the slot and the destructor clears it after cutting both
+callbacks. `Supervisor::CalculateFps @ 0x00424720` gates slow-rate
+accounting on the same task and clears its one-shot reset bit after a
+sample. The title and scene handoff still use the independently published
+`Supervisor::photoGameTask` where the target does.
+
+`PhotoGameTaskOwner.hpp` declares the active slot as a
+`PhotoGameTaskView *`. `PhotoGameTask.cpp` owns the zero-initialized storage.
+The lifecycle, FPS sampler, screen effects and photo overlay now reference
+it directly. The exact PhotoGameTask implementation still uses its
+historical class declaration for construction and subsystem calls.
+
+All 386 affected exact comparisons pass across 31 translation units. In
+the two normal links, all 229 address operands from 21 game objects
+resolve to the PhotoGameTask slot. It moves from `0x004D664C` to
+`0x004DBDC8` and starts null in both layouts.
+
+The linked x86 fixtures agree with retail in two publications, eight
+teardowns, 243 FPS samples, 384 asynchronous load cases and 540 photo
+task updates. The fixtures run the original and linked bodies with
+controlled subsystem, timing and thread responses. See
+`.analysis/pi/active-photo-task/` for the lifetime and relocation recipes.
