@@ -54,6 +54,8 @@ for construction, score-file I/O, the title, the photo task and results.
 SEM-401 shares Scene Select's preview builder and restores stale VM handle
 clearing for its three preview columns. Music Room description VMs use the
 same text animation owner and handle type.
+SEM-402 gives title selection and transition code the actual ANM fields and
+preserves stale handle clearing for scene group headings and music tracks.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the

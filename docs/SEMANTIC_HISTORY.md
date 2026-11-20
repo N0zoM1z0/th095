@@ -18217,3 +18217,32 @@ the fix, 38 visibility cases in each normal link retained a stale VM ID.
 The fixtures run the real decoder, state changes and handle clearing and
 supply VM allocation, lookup and rendering boundaries. See
 `.analysis/pi/scene-preview-text-owner/` for the recipes.
+
+### SEM-402 — use the title menu VM layout
+
+`UpdateMainMenuSelection @ 0x004479E0` uses entries 0 through 17 of the
+controller's VM array. It sends interrupts to the first two sets in pairs
+before sending the third set. The front-end coordinator writes the
+transition handle from the real `AnmLoaded::CreateVm` return value in its
+three entry paths. It reads the title texture's bytes-per-pixel field and
+copies positions and `color1` between the 0x66/0x67 and 0x68/0x69 VM pairs.
+Each destination position receives the original 512-pixel X shift.
+
+The group-heading lookup in Scene Select uses the canonical lookup on a
+temporary and copies back the cleared ID on failure. That slot shares its
+POD array with preview-text pointers. The Music Room track IDs have their
+own array and use `AnmVmId` directly for lookup and interrupts. Previous
+normal links retained stale IDs in both paths. The retail caller expects
+a resolved VM when it proceeds to interpolation or rendering.
+
+All 44 affected strict comparisons pass across 13 translation units. Both
+linked layouts resolve 22 handle lookup calls, 70 VM creation calls and
+208 animation manager references in the three affected files. The lookup
+routine moves from `0x0040B960` to `0x004503D0`.
+
+The linked fixtures match retail in eight selection cases, 32 paired-VM
+updates, and six entry cases covering both texture formats and all three
+entry modes. Four group-heading and four track lookup cases per image
+match the live-handle and stale-handle behavior. The missing-track cases
+stop at the renderer boundary. The texture and VM allocation calls use
+fixture responses. See `.analysis/pi/title-vm-owner/` for the recipes.

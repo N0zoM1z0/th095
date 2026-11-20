@@ -67,7 +67,13 @@ struct SceneAnmVmId
 
     SceneAnmVmView *GetVm()
     {
-        return g_AnmManager->GetVm(*this);
+        AnmVmId id = *this;
+        AnmVm *vm = id.GetVm();
+        if (vm == NULL)
+        {
+            this->value = id.value;
+        }
+        return vm;
     }
 
     void SetInterrupt(i32 interrupt)

@@ -156,7 +156,8 @@ i32 MusicRoomView::UpdateMusicRoom()
 
         for (i32 trackVmIndex = 0; trackVmIndex < musicComment.trackCount; trackVmIndex++)
             this->trackVms[trackVmIndex] =
-                this->sceneAnm->CreateVm(trackVmIndex + 0x83, 7);
+                reinterpret_cast<AnmLoaded *>(this->sceneAnm)->CreateVm(
+                    trackVmIndex + 0x83, 7);
         for (i32 descriptionVmIndex = 0; descriptionVmIndex < 8; descriptionVmIndex++)
             this->descriptionVms[descriptionVmIndex] =
                 g_Supervisor.textAnm->CreateVm(descriptionVmIndex + 1, 7);
@@ -174,10 +175,11 @@ i32 MusicRoomView::UpdateMusicRoom()
                 i32 trackLine = (this->stateTimer.GetCurrent() - 2) / 2;
                 if (trackLine < this->trackCount)
                 {
-                    SceneAnmVmView *trackVm =
+                    AnmVm *trackVm =
                         this->trackVms[trackLine].GetVm();
-                    SceneWriteText(g_SceneAnmManager, trackVm, 0x00dfdfff, 0,
-                                   this->titles[trackLine]);
+                    SceneWriteText(
+                        g_SceneAnmManager, reinterpret_cast<SceneAnmVmView *>(trackVm),
+                        0x00dfdfff, 0, this->titles[trackLine]);
                     trackVm->pendingInterrupt =
                         (trackLine != this->cursor.GetCurrent()) + 2;
                 }
@@ -223,7 +225,7 @@ i32 MusicRoomView::UpdateMusicRoom()
             g_SoundPlayer.PlaySoundByIdx(SOUND_MOVE_MENU, 0);
             for (i32 trackIndex = 0; trackIndex < this->trackCount; trackIndex++)
             {
-                SceneAnmVmView *trackVm = this->trackVms[trackIndex].GetVm();
+                AnmVm *trackVm = this->trackVms[trackIndex].GetVm();
                 trackVm->pendingInterrupt =
                     (trackIndex != this->cursor.GetCurrent()) + 2;
             }

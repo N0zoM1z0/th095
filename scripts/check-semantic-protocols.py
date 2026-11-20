@@ -2523,7 +2523,6 @@ def check_front_end_transition_vm_owner(exact_header_text: str | None = None) ->
             (
                 "offsetof(FrontEndControllerUpdateView, transitionVm) == 0x6100",
                 "view->transitionVm.SetInterrupt(1);",
-                "&view->transitionVm",
             ),
         ),
         (
@@ -2562,7 +2561,7 @@ def check_front_end_transition_vm_owner(exact_header_text: str | None = None) ->
             if marker not in body:
                 fail(f"{name} lost a transition-VM producer/consumer: {marker}")
         if name == "FrontEndController.cpp" and body.count(
-            "*reinterpret_cast<SceneAnmVmId *>(&view->transitionVm) ="
+            "view->transitionVm = view->transitionAnm->CreateVm(0, 7);"
         ) != 3:
             fail("FrontEnd coordinator lost one of three transition-VM creations")
     for name in (

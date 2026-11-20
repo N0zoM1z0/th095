@@ -40,27 +40,6 @@ enum FrontEndMainMenuStateValue
 #define TH095_SCENE_SELECT_STATE_INITIALIZE SCENE_SELECT_STATE_INITIALIZE
 #endif
 
-struct FrontEndTextureEntryView
-{
-    IDirect3DTexture8 *texture;
-    u8 unknown004[8];
-    i32 bytesPerPixel;
-};
-
-struct FrontEndAnmStorageView
-{
-    u8 unknown000[0x14];
-    FrontEndTextureEntryView *textures;
-};
-
-struct FrontEndVmUpdateView
-{
-    u8 unknown000[0x148];
-    Float3 position;
-    u8 unknown154[0xcc];
-    u32 displayState;
-};
-
 struct FrontEndGameManagerView
 {
     u8 unknown000[0xfc];
@@ -85,7 +64,7 @@ typedef ZunTimer FrontEndControllerTimer;
 struct FrontEndControllerUpdateView
 {
     SceneAnmLoadedView *sceneAnm;
-    SceneAnmLoadedView *transitionAnm;
+    AnmLoaded *transitionAnm;
     FrontEndControllerTimer stateTimer;
     FrontEndControllerTimer animationTimer;
     ResultScreenReplayCursor cursor;
@@ -109,10 +88,10 @@ struct FrontEndControllerUpdateView
 
 struct FrontEndUpdateLocals
 {
-    FrontEndVmUpdateView *second69;
-    FrontEndVmUpdateView *first68;
-    FrontEndVmUpdateView *second67;
-    FrontEndVmUpdateView *first66;
+    AnmVm *second69;
+    AnmVm *first68;
+    AnmVm *second67;
+    AnmVm *first66;
     i32 replayInterruptIndex;
     i32 gameInterruptIndex;
     u8 *rgb16Pixel;
@@ -147,14 +126,6 @@ struct MainMenuVmPositions
     Float3 position0;
 };
 
-typedef char FrontEndTextureEntrySizeIs10[
-    (sizeof(FrontEndTextureEntryView) == 0x10) ? 1 : -1];
-typedef char FrontEndTextureFormatAtC[
-    (offsetof(FrontEndTextureEntryView, bytesPerPixel) == 0x0c) ? 1 : -1];
-typedef char FrontEndVmPositionAt148[
-    (offsetof(FrontEndVmUpdateView, position) == 0x148) ? 1 : -1];
-typedef char FrontEndVmDisplayStateAt220[
-    (offsetof(FrontEndVmUpdateView, displayState) == 0x220) ? 1 : -1];
 typedef char FrontEndUpdateCursorAt20[
     (offsetof(FrontEndControllerUpdateView, cursor) == 0x20) ? 1 : -1];
 typedef char FrontEndUpdateSecondaryCursorAtF8[
@@ -321,13 +292,9 @@ ChainCallbackResult SceneSelectControllerView::Update()
 
         TH095_FRONT_SUPERVISOR.StopReplayScan();
         locals.surface = NULL;
-        reinterpret_cast<FrontEndAnmStorageView *>(view->sceneAnm)
-            ->textures[1]
-            .texture->GetSurfaceLevel(0, &locals.surface);
+        view->sceneAnm->textures[1].texture->GetSurfaceLevel(0, &locals.surface);
         locals.surface->LockRect(&locals.lockedRect, NULL, 0);
-        if (reinterpret_cast<FrontEndAnmStorageView *>(view->sceneAnm)
-                ->textures[1]
-                .bytesPerPixel == 4)
+        if (view->sceneAnm->textures[1].bytesPerPixel == 4)
         {
             for (locals.argb32Y = 0; locals.argb32Y < 192;
                  locals.argb32Y++)
@@ -389,10 +356,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             FrontEndCreateSceneVm(view, 0x67);
             FrontEndCreateSceneVm(view, 0x19);
             FrontEndCreateSceneVm(view, 0x1a);
-            // Both target handles are four-byte VM ids; preserving the
-            // returned wrapper as a whole is codegen-significant here.
-            *reinterpret_cast<SceneAnmVmId *>(&view->transitionVm) =
-                view->transitionAnm->CreateVm(0, 7);
+            view->transitionVm = view->transitionAnm->CreateVm(0, 7);
             FrontEndCreateSceneVm(view, 0x1b);
             FrontEndCreateSceneVm(view, 0x64);
             FrontEndCreateSceneVm(view, 0x65);
@@ -405,8 +369,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             FrontEndResetTimer(&view->stateTimer);
             FrontEndCreateSceneVm(view, 0x19);
             FrontEndCreateSceneVm(view, 0x1a);
-            *reinterpret_cast<SceneAnmVmId *>(&view->transitionVm) =
-                view->transitionAnm->CreateVm(0, 7);
+            view->transitionVm = view->transitionAnm->CreateVm(0, 7);
             FrontEndCreateSceneVm(view, 0x1b);
             FrontEndCreateSceneVm(view, 0x64);
             FrontEndCreateSceneVm(view, 0x65);
@@ -421,8 +384,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             view->cursor.Set(1);
             FrontEndCreateSceneVm(view, 0x19);
             FrontEndCreateSceneVm(view, 0x1a);
-            *reinterpret_cast<SceneAnmVmId *>(&view->transitionVm) =
-                view->transitionAnm->CreateVm(0, 7);
+            view->transitionVm = view->transitionAnm->CreateVm(0, 7);
             FrontEndCreateSceneVm(view, 0x1b);
             FrontEndCreateSceneVm(view, 0x64);
             FrontEndCreateSceneVm(view, 0x65);
@@ -573,31 +535,25 @@ ChainCallbackResult SceneSelectControllerView::Update()
     // The controller overlays these VM ids as POD storage; keep the exact
     // AnmVmId::GetVm ABI while naming their canonical array ownership.
     locals.first66 =
-        reinterpret_cast<FrontEndVmUpdateView *>(
-            reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x66])
-                ->GetVm());
+        reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x66])->GetVm();
     locals.second67 =
-        reinterpret_cast<FrontEndVmUpdateView *>(
-            reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x67])
-                ->GetVm());
+        reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x67])->GetVm();
     if (locals.first66 != NULL && locals.second67 != NULL)
     {
         locals.second67->position = locals.first66->position;
         locals.second67->position.x += 512.0f;
-        locals.second67->displayState = locals.first66->displayState;
+        locals.second67->color1.color = locals.first66->color1.color;
     }
 
-    locals.first68 = reinterpret_cast<FrontEndVmUpdateView *>(
-        reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x68])
-            ->GetVm());
-    locals.second69 = reinterpret_cast<FrontEndVmUpdateView *>(
-        reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x69])
-            ->GetVm());
+    locals.first68 =
+        reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x68])->GetVm();
+    locals.second69 =
+        reinterpret_cast<AnmVmId *>(&view->vmIds.values[0x69])->GetVm();
     if (locals.first68 != NULL && locals.second69 != NULL)
     {
         locals.second69->position = locals.first68->position;
         locals.second69->position.x += 512.0f;
-        locals.second69->displayState = locals.first68->displayState;
+        locals.second69->color1.color = locals.first68->color1.color;
     }
 
     if (view->animationTimer.current % 5 == 0)
@@ -636,45 +592,42 @@ void SceneSelectControllerView::CloseMainMenu()
 
 void SceneSelectControllerView::UpdateMainMenuSelection()
 {
-#define MAIN_MENU_VM(offset)                                                   \
-    (*reinterpret_cast<SceneAnmVmId *>(reinterpret_cast<u8 *>(this) + offset))
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xbf4), (this->GetSelectedGroup() != 0) + 2);
+        this->vmIds.values[0], (this->GetSelectedGroup() != 0) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc0c), (this->GetSelectedGroup() != 0) + 2);
+        this->vmIds.values[6], (this->GetSelectedGroup() != 0) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xbf8), (this->GetSelectedGroup() != 1) + 2);
+        this->vmIds.values[1], (this->GetSelectedGroup() != 1) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc10), (this->GetSelectedGroup() != 1) + 2);
+        this->vmIds.values[7], (this->GetSelectedGroup() != 1) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xbfc), (this->GetSelectedGroup() != 2) + 2);
+        this->vmIds.values[2], (this->GetSelectedGroup() != 2) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc14), (this->GetSelectedGroup() != 2) + 2);
+        this->vmIds.values[8], (this->GetSelectedGroup() != 2) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc00), (this->GetSelectedGroup() != 3) + 2);
+        this->vmIds.values[3], (this->GetSelectedGroup() != 3) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc18), (this->GetSelectedGroup() != 3) + 2);
+        this->vmIds.values[9], (this->GetSelectedGroup() != 3) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc04), (this->GetSelectedGroup() != 4) + 2);
+        this->vmIds.values[4], (this->GetSelectedGroup() != 4) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc1c), (this->GetSelectedGroup() != 4) + 2);
+        this->vmIds.values[10], (this->GetSelectedGroup() != 4) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc08), (this->GetSelectedGroup() != 5) + 2);
+        this->vmIds.values[5], (this->GetSelectedGroup() != 5) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc20), (this->GetSelectedGroup() != 5) + 2);
+        this->vmIds.values[11], (this->GetSelectedGroup() != 5) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc24), (this->GetSelectedGroup() != 0) + 2);
+        this->vmIds.values[12], (this->GetSelectedGroup() != 0) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc28), (this->GetSelectedGroup() != 1) + 2);
+        this->vmIds.values[13], (this->GetSelectedGroup() != 1) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc2c), (this->GetSelectedGroup() != 2) + 2);
+        this->vmIds.values[14], (this->GetSelectedGroup() != 2) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc30), (this->GetSelectedGroup() != 3) + 2);
+        this->vmIds.values[15], (this->GetSelectedGroup() != 3) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc34), (this->GetSelectedGroup() != 4) + 2);
+        this->vmIds.values[16], (this->GetSelectedGroup() != 4) + 2);
     TH095_FRONT_ANM_MANAGER->SetInterrupt(
-        MAIN_MENU_VM(0xc38), (this->GetSelectedGroup() != 5) + 2);
-#undef MAIN_MENU_VM
+        this->vmIds.values[17], (this->GetSelectedGroup() != 5) + 2);
 }
 
 ChainCallbackResult SceneSelectControllerView::UpdateMainMenu()
