@@ -136,13 +136,12 @@
         break;
 
     case 108:
-        *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x285c +
-                                 TH08_ECL_READ_I(ctx, 1) * 2) =
+        enemy->eclSubroutineIds[TH08_ECL_READ_I(ctx, 1)] =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 0));
         break;
 
     case 107:
-        *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x289c) =
+        enemy->pendingEclSubroutineIndex =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 0));
         goto enter_subroutine;
 
@@ -154,16 +153,15 @@ enter_subroutine:
               >> 24) & 1U) == 0)
         {
             memcpy(enemy->activeEclCallStack + enemy->activeEclCallStackDepth,
-                   &enemy->mainEclContextStorage, 0x230);
+                   &enemy->mainEclContextStorage,
+                   sizeof(enemy->mainEclContextStorage));
         }
         this->CallEclSub(
             &enemy->mainEclContextStorage,
-            *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x285c +
-                                     *reinterpret_cast<i16 *>(
-                                         reinterpret_cast<u8 *>(enemy) + 0x289c) * 2));
+            enemy->eclSubroutineIds[enemy->pendingEclSubroutineIndex]);
         if (enemy->activeEclCallStackDepth < 15)
             ++enemy->activeEclCallStackDepth;
-        *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x289c) = -1;
+        enemy->pendingEclSubroutineIndex = -1;
         goto restart_context;
 
     case 113:
@@ -275,8 +273,7 @@ enter_subroutine:
                 TH08_ECL_RAW_I(ctx, 0),
                 TH095_TARGET_ENEMY_POSITION_PTR(enemy),
                 10, 0, 0,
-                reinterpret_cast<i32 *>(
-                    reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x18));
+                enemy->activeEclContext->intVariables);
         }
         break;
 
@@ -301,8 +298,7 @@ enter_subroutine:
                 spawned =
                 TH095_ECL_ENEMY_SPAWN(
                     packet.eclSubroutineId, &position, 10, 0, 0,
-                    reinterpret_cast<i32 *>(
-                        reinterpret_cast<u8 *>(enemy->activeEclContext) + 0x18));
+                    enemy->activeEclContext->intVariables);
             }
             (void)spawned;
         }
@@ -398,18 +394,10 @@ enter_subroutine:
         break;
 
     case 137:
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-        if (((*reinterpret_cast<f32 *>(
-                   reinterpret_cast<u8 *>(g_Th095PhotoCamera) + 0x1e30) < enemy->position.x) &&
+        if (((TH095_ECL_PHOTO_PLAYER_OWNER->playerPosition.x <
+              enemy->position.x) &&
              (enemy->position.x > 96.0f)) ||
             (enemy->position.x > 288.0f))
-#else
-        if (((TH095_RUNTIME_GLOBAL_PTR(
-                   ::th095::PhotoPlayerRuntimeView, ::th095::g_RuntimePlayerOwner)
-                   ->playerPosition.x < enemy->position.x) &&
-             (enemy->position.x > 96.0f)) ||
-            (enemy->position.x > 288.0f))
-#endif
         {
             *TH08_ECL_WRITE_F(ctx, 0) = AddNormalizeAngle(
                 g_Rng.GetRandomF32() * 1.5707963705062866f +
@@ -447,8 +435,7 @@ enter_subroutine:
 
     case 141:
         AssignPhotoCameraLimit(
-            &reinterpret_cast<PhotoPlayerRuntimeView *>(
-                TH095_ECL_PHOTO_PLAYER_OWNER)->camera,
+            &TH095_ECL_PHOTO_PLAYER_OWNER->camera,
             TH08_ECL_READ_I(ctx, 0));
         break;
 

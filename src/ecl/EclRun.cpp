@@ -52,7 +52,8 @@
 #endif
 
 #ifdef DIFFBUILD
-#define TH095_ECL_PHOTO_PLAYER_OWNER g_Th095PhotoCamera
+#define TH095_ECL_PHOTO_PLAYER_OWNER \
+    reinterpret_cast<::th095::PhotoPlayerRuntimeView *>(g_Th095PhotoCamera)
 #define TH095_ECL_PLAYER_ANGLE(point) g_Th095Player->AngleToPoint(point)
 #define TH095_ECL_PHOTO_ANGLE(point) g_Th095PhotoCamera->GetAngle(point)
 #else

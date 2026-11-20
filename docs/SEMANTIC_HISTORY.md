@@ -17422,3 +17422,16 @@ PhotoStage comparison binds seven references to g_ResultSaveData at
 0x004C4E78 with the same operand positions and addends. All 175 affected
 exact units pass across the 25 known consumers of the score header. The affected normal objects
 also rebuild and link.
+
+### SEM-366 — type ECL subroutine and player accesses
+
+RunEcl opcodes 107 and 108 use the 32 signed subroutine IDs at Enemy +0x285C
+and the pending index at +0x289C. The target writes the selected index at
+0x0040BF3D, reads the ID at 0x0040BFA2, and clears the index at 0x0040BFEA.
+The stack copy uses the declared 0x230-byte context, and opcodes 83 and 84
+pass the active context's integer variables directly to child creation.
+
+Opcode 137 reads player X at 0x0040CBDD through the player owner loaded from
+0x004C4E70. It now uses the same typed player boundary as opcode 141, which
+updates the camera limit. The RunEcl exact unit passes with both owned switch
+tables and all 647 relocations.
