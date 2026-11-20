@@ -313,3 +313,20 @@ round trips, including the embedded profile and its scene selectors. The
 fixture supplies file and heap calls and executes the game's actual RNG,
 compression, encryption and checksum code. The tests and maps are described
 in [SEM-400](SEMANTIC_HISTORY.md#sem-400--share-score-file-io-and-lifetime).
+
+## Active task and demo0 regression
+
+After SEM-407, both normal links play the original archive demo0 under
+Wine/Xvfb and release the replay manager at index 2,711. All 2,712 sampled
+indices agree with the retail trace on score, player position, RNG seed,
+camera state and capture fields. Both games finish with 52,930 points and
+six photos. The regular link also matches the stage timers. The reordered
+link's stage timers lag by one tick after the first advancement.
+
+The matching normal objects account for 926 code sections, 11,476 code
+relocations, 844 initialized sections and 639 initialized-data
+relocations in both links. Both register all 17 game initializers and the
+CRT cookie initializer. The 172 import identities agree, including 127
+address-table entries that moved. See `.analysis/pi/active-task-consumers/`
+for the checks and `build/position-independence/active-task-consumers-demo0/`
+for the two traces.

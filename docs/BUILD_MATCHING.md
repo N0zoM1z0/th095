@@ -2192,6 +2192,16 @@ still agree on the 2,655 instruction bytes and all 22 relocations. See
 `.analysis/controller-get-input/frame-poller/` for the sources and stack
 operands.
 
+Six keyboard frontend probes test whether an inlined input boundary can
+explain the extra stack space. A buffer subscript that returns a const
+reference and a template that accumulates the key mask both produce the
+baseline bytes and relocations. Three value-returning readers allocate a
+0x150-byte frame and grow the body to 3,285 bytes. Giving the DirectInput
+wrapper a live device-pointer argument reserves 0x120 bytes and moves all
+seven input-index references to EBP-0x120. None matches the original
+instruction sequence with the original parameter home. The sources and
+stack operands are under `.analysis/controller-get-input/keyboard-frontends/`.
+
 ### ANM x87 frontend exhaustion and exact closure (2026-09-08)
 
 The three former ANM residuals are independently target-attested and now
