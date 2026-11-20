@@ -3,8 +3,6 @@
 # Format: count<TAB>repository path<TAB>kind<TAB>name
 # This file is an exact closed baseline: remove entries when debt is retired;
 # never add or increase an entry to admit a new declaration.
-1	src/AnmPreload.cpp	struct	AnmManagerPreloadView
-1	src/AnmPreload.cpp	struct	AnmPreloadSlotView
 1	src/AnmVmId.cpp	struct	AnmVmIdNodeView
 1	src/AnmVmLifecycle.cpp	struct	AnmLoadedPositionView
 1	src/AsciiManager.cpp	struct	AsciiBackgroundSupervisorView

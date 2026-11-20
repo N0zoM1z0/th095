@@ -938,7 +938,7 @@ PhotoEffectManagerView::~PhotoEffectManagerView()
 
 i32 PhotoEffectManagerView::Initialize()
 {
-    this->anm = TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 6, "bullet.anm");
+    this->anm = g_AnmManager->PreloadAnm(6, "bullet.anm");
     if (this->anm == NULL)
     {
         g_GameErrorContext.Log(

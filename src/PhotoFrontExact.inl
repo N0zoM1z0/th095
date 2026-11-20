@@ -85,7 +85,7 @@ extern i32 g_PhotoFrontReplayUsesArchive;
 
 i32 LoadPhotoFrontAnm()
 {
-    if (g_AnmManager->LoadAnm(5, "front.anm") == NULL)
+    if (g_AnmManager->PreloadAnm(5, "front.anm") == NULL)
     {
         g_GameErrorContext.Log(
             "\x89\xe6\x96\xca\x8d\x5c\x90\xac"
@@ -134,7 +134,7 @@ i32 PhotoFrontManagerView::Initialize()
     PhotoFrontVmIdView vmIds[4];
 
     this->frontAnm = reinterpret_cast<PhotoFrontAnmLoadedView *>(
-        g_AnmManager->LoadAnm(5, "front.anm"));
+        g_AnmManager->PreloadAnm(5, "front.anm"));
     if (this->frontAnm == NULL)
     {
         g_GameErrorContext.Log(

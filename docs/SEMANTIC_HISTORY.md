@@ -17971,3 +17971,27 @@ configuration snapshots. The loader fixture checks pending surface and
 texture requests, close during a wait, subsystem failure, music queue drain,
 restart flags and worker publication. See `.analysis/pi/photo-task-capture/`
 for the local recipes.
+
+### SEM-393 — share ANM preload and texture owners
+
+Both profiles emit the twelve preload and upload methods on `AnmManager`.
+`ReadAnmEntries` copies the filename into its slot's `path` at +0x20.
+Texture creation works on the full texture record and passes its texture
+member to D3DX. This keeps the texture pointer at +0 and the bytes per
+pixel at +0x0C on the same object. Release clears the complete 0x120-byte
+slot. The normal build retains its critical-section guard for synchronous
+and serviced postload.
+
+Thirteen retail call sites at the asynchronous destination 0x004432E0
+previously used the `LoadAnm` relocation spelling. They now name
+`PreloadAnm`. The synchronous startup call names `LoadAnm` at 0x00443010.
+The regular and reversed links each resolve 18 preload calls, one
+synchronous load and the two typed texture-creation calls to their moved
+targets in `AnmPreload.obj`.
+
+All 520 affected strict comparisons pass. Retail and both normal links
+agree in 216 load and reuse cases, two release/service cases and
+72 texture-creation cases. The linked-code fixtures supply file,
+allocation and D3D responses and check cancellation, slot bounds, lock
+balance, format conversion, pitch and failure behavior. See
+`.analysis/pi/anm-preload-owner/` for the local recipes.

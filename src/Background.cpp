@@ -1011,8 +1011,7 @@ i32 Background::LoadStageDataInner(const char *path)
         TH095_BACKGROUND_STAGE_DATA_CACHE,
         TH095_BACKGROUND_STAGE_DATA_CACHE_SIZE);
 
-    background->anm = TH095_ANM_PRELOAD_COMPAT(g_AnmManager,
-        4, background->stageData->anmPath);
+    background->anm = g_AnmManager->PreloadAnm(4, background->stageData->anmPath);
     if (background->anm == NULL)
     {
         TH095_BACKGROUND_ANM_FAILURE(

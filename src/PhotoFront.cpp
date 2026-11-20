@@ -84,7 +84,7 @@ extern PhotoFrontManagerView *g_PhotoFrontManager;
 
 i32 LoadPhotoFrontAnm()
 {
-    if (TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 5, "front.anm") == NULL)
+    if (g_AnmManager->PreloadAnm(5, "front.anm") == NULL)
     {
         g_GameErrorContext.Log(
             "\x89\xe6\x96\xca\x8d\x5c\x90\xac"
@@ -132,7 +132,7 @@ i32 PhotoFrontManagerView::Initialize()
 {
     AnmVmId vmIds[4];
 
-    this->frontAnm = TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 5, "front.anm");
+    this->frontAnm = g_AnmManager->PreloadAnm(5, "front.anm");
     if (this->frontAnm == NULL)
     {
         g_GameErrorContext.Log(

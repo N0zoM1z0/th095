@@ -195,7 +195,7 @@ ResultScreen::~ResultScreen()
     ResultScreenInitializeLocals locals;
 
     this->anm = reinterpret_cast<ResultScreenAnmLoadedView *>(
-        g_AnmManager->LoadAnm(10, "pause.anm"));
+        g_AnmManager->PreloadAnm(10, "pause.anm"));
     if (this->anm == NULL)
     {
         g_GameErrorContext.Log(
@@ -272,7 +272,7 @@ ResultScreen::~ResultScreen()
 // FUNCTION: TH095 0x00426820.
 ::ZunResult ResultScreen::LoadAnm()
 {
-    if (g_AnmManager->LoadAnm(10, "pause.anm") == NULL)
+    if (g_AnmManager->PreloadAnm(10, "pause.anm") == NULL)
     {
         g_GameErrorContext.Log(
             "\x89\xe6\x96\xca\x8d\x5c\x90\xac"

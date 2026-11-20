@@ -545,11 +545,15 @@ struct AnmPreloadSlot
 {
     AnmLoaded loaded;
     i32 releasePending;
-    u8 path[0x100];
+    char path[0x100];
 };
 
 typedef char AnmPreloadSlotSizeIs120[
     (sizeof(AnmPreloadSlot) == 0x120) ? 1 : -1];
+typedef char AnmPreloadSlotFields[
+    (offsetof(AnmPreloadSlot, loaded) == 0 &&
+     offsetof(AnmPreloadSlot, releasePending) == 0x1c &&
+     offsetof(AnmPreloadSlot, path) == 0x20) ? 1 : -1];
 
 struct AnmManager
 {
@@ -642,9 +646,9 @@ struct AnmManager
                         i32 scriptCount, AnmRawEntryView *rawEntry);
     i32 CreateTextureFromFile(AnmTextureEntryView *entry, i32 format,
                               i32 colorKey);
-    i32 CreateTextureFromAnm(IDirect3DTexture8 **outTexture,
+    i32 CreateTextureFromAnm(AnmTextureEntryView *entry,
                              void *textureData, i32 format);
-    i32 CreateEmptyTexture(IDirect3DTexture8 **outTexture, i32 width,
+    i32 CreateEmptyTexture(AnmTextureEntryView *entry, i32 width,
                            i32 height, i32 format);
     void ApplyTextureAlphaBleed(AnmTextureEntryView *entry);
     i32 LoadTexture(AnmTextureEntryView *entry, u8 *data, i32 size,
@@ -726,19 +730,6 @@ struct AnmManager
     void ClearZWrite() { this->disableZWrite = 0xff; }
     void ClearCameraSettings() { this->cameraMode = 0xff; }
 };
-
-// Several exact-facing TH095 call sites historically decorate target
-// PreloadAnm @ 0x004432E0 as AnmManager::LoadAnm. Preserve that relocation
-// spelling in exact/DIFF builds while using the canonical preload API in the
-// reconstructed runtime, where loaded slots must be reused rather than
-// replacement-loaded.
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define TH095_ANM_PRELOAD_COMPAT(manager, index, path) \
-    (manager)->LoadAnm((index), (path))
-#else
-#define TH095_ANM_PRELOAD_COMPAT(manager, index, path) \
-    (manager)->PreloadAnm((index), (path))
-#endif
 
 typedef char VertexTex1XyzrhwSizeIs18[(sizeof(VertexTex1Xyzrhw) == 0x18) ? 1 : -1];
 typedef char AnmManagerPrimaryVmAtF0C[(offsetof(AnmManager, primaryVm) == 0xf0c) ? 1 : -1];

@@ -193,13 +193,13 @@ ZunResult AsciiManager::RegisterChain()
 ZunResult AsciiManager::AddedCallback(AsciiManager *ascii)
 {
     memset(ascii, 0, sizeof(AsciiManager));
-    ascii->asciiAnm = TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 1, "ascii.anm");
+    ascii->asciiAnm = g_AnmManager->PreloadAnm(1, "ascii.anm");
     if (ascii->asciiAnm == NULL)
     {
         return ZUN_ERROR;
     }
 
-    ascii->captureAnm = TH095_ANM_PRELOAD_COMPAT(g_AnmManager, 3, "capture.anm");
+    ascii->captureAnm = g_AnmManager->PreloadAnm(3, "capture.anm");
     if (ascii->captureAnm == NULL)
     {
         return ZUN_ERROR;
