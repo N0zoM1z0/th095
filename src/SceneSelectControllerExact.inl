@@ -1,4 +1,5 @@
 #include "SceneSelect.hpp"
+#include "Main.hpp"
 
 namespace th095
 {
@@ -38,8 +39,8 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
     i32 refreshLockedGroup;
     i32 refreshStateGroup;
 
-    g_SceneSupervisor.EnterCriticalSectionWrapper(4);
-    g_SceneSupervisor.lockCounts[4]++;
+    g_Supervisor.EnterCriticalSectionWrapper(4);
+    g_Supervisor.criticalSectionLockCounts[4]++;
 
     refreshSelectedGroup = this->selectedGroup;
     refreshGroupCursorIndex = this->selectedGroup;
@@ -104,8 +105,8 @@ void SceneSelectControllerView::RefreshSceneSelection(i32)
         this->vmIds.SetInterrupt(0x16, 5);
     }
 
-    g_SceneSupervisor.LeaveCriticalSectionWrapper(4);
-    g_SceneSupervisor.lockCounts[4]--;
+    g_Supervisor.LeaveCriticalSectionWrapper(4);
+    g_Supervisor.criticalSectionLockCounts[4]--;
     this->previewTimer = 0;
 }
 #undef refreshDisplayState

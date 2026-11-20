@@ -13,10 +13,8 @@
 #ifndef DIFFBUILD
 #include "InputRuntime.hpp"
 #endif
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "FileSystem.hpp"
 #include "PhotoGameTask.hpp"
-#endif
 
 #include <d3d8.h>
 #include <stdio.h>
@@ -39,21 +37,6 @@ enum FrontEndMainMenuStateValue
 #define TH095_MAIN_MENU_STATE_ACTIVE FRONT_END_MAIN_MENU_STATE_ACTIVE
 #define TH095_SCENE_SELECT_STATE_INITIALIZE SCENE_SELECT_STATE_INITIALIZE
 #endif
-
-struct FrontEndGameManagerView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknownFlags0 : 3;
-            u32 transitionBlocked : 1;
-            u32 unknownFlags4 : 28;
-        };
-    };
-};
 
 typedef ZunTimer FrontEndControllerTimer;
 
@@ -150,45 +133,13 @@ typedef char FrontEndUpdateLocalsSizeIs3C[
     (sizeof(FrontEndUpdateLocals) == 0x3c) ? 1 : -1];
 
 #ifdef TH095_MATCH_EXACT
-extern i32 g_FrontEndSupervisorState;
-struct FrontEndSupervisorAudioView
-{
-    ::ZunResult LoadMusic(i32 slot, const char *path);
-    ::ZunResult PlayMusic(i32 slot, i32 unused);
-    ::ZunResult FadeOutMusic(f32 durationSeconds);
-};
-extern FrontEndSupervisorAudioView g_FrontEndSupervisorAudio;
-#define TH095_FRONT_SUPERVISOR g_SceneSupervisor
-#define TH095_FRONT_AUDIO g_FrontEndSupervisorAudio
-#define TH095_FRONT_SUPERVISOR_STATE g_FrontEndSupervisorState
 #define TH095_FRONT_ANM_MANAGER g_SceneAnmManager
 #else
-#define TH095_FRONT_SUPERVISOR g_Supervisor
-#define TH095_FRONT_AUDIO g_Supervisor
-#define TH095_FRONT_SUPERVISOR_STATE g_Supervisor.requestedSceneState
 #define TH095_FRONT_ANM_MANAGER g_AnmManager
 #endif
 
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-#define g_MainMenuDemoWaitFrames g_FrontEndUiState
-#endif
 DIFFABLE_STATIC(i32, g_MainMenuDemoWaitFrames); // 0x004CA2FC
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-DIFFABLE_STATIC(FrontEndGameManagerView *, g_FrontEndGameManager);
-#else
-// Target writes at 0x00446684 and 0x004467C0 publish directly to 0x004C4DF4,
-// Supervisor::photoGameTask (+0x784). A separate production static leaves the
-// Supervisor pointer null and crashes the first retry/return transition when
-// UpdateSceneState reads PhotoGameTaskView::replayMode at +0x120.
-#define g_FrontEndGameManager \
-    TH095_RUNTIME_GLOBAL_PTR(FrontEndGameManagerView, g_RuntimeGameTaskOwner)
-#endif
-extern FrontEndGameManagerView *g_FrontEndGlobalState;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-extern i32 g_ReplayUsesArchive;
-#define REPLAY_PLAYBACK_SOURCE_LOOSE_FILE 0
-#define REPLAY_PLAYBACK_SOURCE_ARCHIVE 1
-#endif
+extern void *g_RuntimeGlobalStateOwner;
 extern u16 g_ResultMenuInput;
 extern u16 g_PressedButtons;
 extern u16 g_FrontEndCurrentInput;
@@ -198,11 +149,6 @@ extern u16 g_FrontEndCurrentInput;
 #define g_FrontEndCurrentInput (RuntimeInputCurrent())
 #endif
 DIFFABLE_STATIC(i32, g_DemoReplayIndex);
-
-#ifndef DIFFBUILD
-#define g_FrontEndGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(FrontEndGameManagerView, g_RuntimeGlobalStateOwner)
-#endif
 
 static __forceinline u16 FrontEndInputAnd(u16 input, u16 mask)
 {
@@ -259,8 +205,6 @@ static __forceinline void FrontEndCreateSceneVm(
 }
 
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-FrontEndGameManagerView *__fastcall CreateFrontEndGameManager(i32 mode);
-
 #define TH095_MUSIC_ROOM_STATE_INITIALIZE 0
 #define TH095_REPLAY_BROWSER_STATE_INITIALIZE 0
 #define TH095_OPTIONS_MENU_STATE_INITIALIZE 0
@@ -281,8 +225,8 @@ ChainCallbackResult SceneSelectControllerView::Update()
     {
         if (view->flagBits.titleLoadFailed)
         {
-            TH095_FRONT_SUPERVISOR.StopReplayScan();
-            TH095_FRONT_SUPERVISOR_STATE = 6;
+            g_Supervisor.StopReplayScan();
+            g_Supervisor.requestedSceneState = SUPERVISOR_STATE_ERROR;
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
         if (PrimaryWorkerActiveSnapshot() != 0)
@@ -290,7 +234,7 @@ ChainCallbackResult SceneSelectControllerView::Update()
             return CHAIN_CALLBACK_RESULT_BREAK;
         }
 
-        TH095_FRONT_SUPERVISOR.StopReplayScan();
+        g_Supervisor.StopReplayScan();
         locals.surface = NULL;
         view->sceneAnm->textures[1].texture->GetSurfaceLevel(0, &locals.surface);
         locals.surface->LockRect(&locals.lockedRect, NULL, 0);
@@ -336,8 +280,8 @@ ChainCallbackResult SceneSelectControllerView::Update()
 
         if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
         {
-            TH095_FRONT_AUDIO.LoadMusic(0, "bgm/th09_00.wav");
-            TH095_FRONT_AUDIO.PlayMusic(0, 0);
+            g_Supervisor.LoadMusic(0, "bgm/th09_00.wav");
+            g_Supervisor.PlayMusic(0, 0);
         }
         else
         {
@@ -426,21 +370,17 @@ ChainCallbackResult SceneSelectControllerView::Update()
     case FRONT_END_REQUESTED_STATE_START_GAME:
         if ((view->stateTimer.current == 1) != 0)
         {
-            TH095_FRONT_AUDIO.FadeOutMusic(2.0f);
+            g_Supervisor.FadeOutMusic(2.0f);
             if (PrimaryWorkerActiveSnapshot() != 0)
             {
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
-            TH095_FRONT_SUPERVISOR.StopReplayScan();
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-            g_FrontEndGameManager = reinterpret_cast<FrontEndGameManagerView *>(
-                PhotoGameTaskView::Create(REPLAY_MANAGER_RECORD));
-#else
-            g_FrontEndGameManager = CreateFrontEndGameManager(0);
-#endif
-            if (g_FrontEndGameManager == NULL)
+            g_Supervisor.StopReplayScan();
+            g_Supervisor.photoGameTask =
+                PhotoGameTaskView::Create(REPLAY_MANAGER_RECORD);
+            if (g_Supervisor.photoGameTask == NULL)
             {
-                TH095_FRONT_SUPERVISOR_STATE = 1;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_EXIT;
             }
         }
         if ((view->stateTimer.current < 40) != 0)
@@ -449,9 +389,10 @@ ChainCallbackResult SceneSelectControllerView::Update()
         }
         if (view->transitionReady != 0)
         {
-            if (g_FrontEndGlobalState->transitionBlocked)
+            if (static_cast<PhotoGameTaskView *>(g_RuntimeGlobalStateOwner)
+                    ->gameplayLoadFailed)
             {
-                TH095_FRONT_SUPERVISOR_STATE = 1;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_EXIT;
                 break;
             }
             for (locals.gameInterruptIndex = 0;
@@ -462,10 +403,10 @@ ChainCallbackResult SceneSelectControllerView::Update()
                     view->vmIds[locals.gameInterruptIndex], 1);
             }
             view->transitionVm.SetInterrupt(1);
-            TH095_FRONT_SUPERVISOR_STATE = 3;
+            g_Supervisor.requestedSceneState = SUPERVISOR_STATE_PHOTO_GAME;
             if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
             {
-                TH095_FRONT_AUDIO.PlayMusic(0, 0);
+                g_Supervisor.PlayMusic(0, 0);
             }
             break;
         }
@@ -476,22 +417,18 @@ ChainCallbackResult SceneSelectControllerView::Update()
         {
             if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
             {
-                TH095_FRONT_AUDIO.FadeOutMusic(2.0f);
+                g_Supervisor.FadeOutMusic(2.0f);
             }
             if (PrimaryWorkerActiveSnapshot() != 0)
             {
                 return CHAIN_CALLBACK_RESULT_CONTINUE;
             }
-            TH095_FRONT_SUPERVISOR.StopReplayScan();
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-            g_FrontEndGameManager = reinterpret_cast<FrontEndGameManagerView *>(
-                PhotoGameTaskView::Create(REPLAY_MANAGER_PLAYBACK));
-#else
-            g_FrontEndGameManager = CreateFrontEndGameManager(1);
-#endif
-            if (g_FrontEndGameManager == NULL)
+            g_Supervisor.StopReplayScan();
+            g_Supervisor.photoGameTask =
+                PhotoGameTaskView::Create(REPLAY_MANAGER_PLAYBACK);
+            if (g_Supervisor.photoGameTask == NULL)
             {
-                TH095_FRONT_SUPERVISOR_STATE = 1;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_EXIT;
             }
         }
         if ((view->stateTimer.current < 40) != 0)
@@ -500,9 +437,10 @@ ChainCallbackResult SceneSelectControllerView::Update()
         }
         if (view->transitionReady != 0)
         {
-            if (g_FrontEndGlobalState->transitionBlocked)
+            if (static_cast<PhotoGameTaskView *>(g_RuntimeGlobalStateOwner)
+                    ->gameplayLoadFailed)
             {
-                TH095_FRONT_SUPERVISOR_STATE = 1;
+                g_Supervisor.requestedSceneState = SUPERVISOR_STATE_EXIT;
                 break;
             }
             for (locals.replayInterruptIndex = 0;
@@ -513,10 +451,10 @@ ChainCallbackResult SceneSelectControllerView::Update()
                     view->vmIds[locals.replayInterruptIndex], 1);
             }
             view->transitionVm.SetInterrupt(1);
-            TH095_FRONT_SUPERVISOR_STATE = 7;
+            g_Supervisor.requestedSceneState = SUPERVISOR_STATE_START_REPLAY;
             if (g_ReplayUsesArchive == REPLAY_PLAYBACK_SOURCE_LOOSE_FILE)
             {
-                TH095_FRONT_AUDIO.PlayMusic(0, 0);
+                g_Supervisor.PlayMusic(0, 0);
             }
             break;
         }
@@ -527,8 +465,8 @@ ChainCallbackResult SceneSelectControllerView::Update()
         {
             return CHAIN_CALLBACK_RESULT_CONTINUE;
         }
-        TH095_FRONT_SUPERVISOR.StopReplayScan();
-        TH095_FRONT_SUPERVISOR_STATE = 1;
+        g_Supervisor.StopReplayScan();
+        g_Supervisor.requestedSceneState = SUPERVISOR_STATE_EXIT;
         break;
     }
 

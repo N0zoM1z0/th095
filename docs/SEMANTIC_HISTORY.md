@@ -18246,3 +18246,29 @@ entry modes. Four group-heading and four track lookup cases per image
 match the live-handle and stale-handle behavior. The missing-track cases
 stop at the renderer boundary. The texture and VM allocation calls use
 fixture responses. See `.analysis/pi/title-vm-owner/` for the recipes.
+
+### SEM-403 — share the title-to-game handoff
+
+`SceneSelectControllerView::Update @ 0x00445E80` publishes the record or
+playback factory result to `Supervisor::photoGameTask` at `+0x784` on frame
+one after the primary scan worker goes idle. `Supervisor::UpdateSceneState`
+uses that member for scene changes. After frame 39 the coordinator reads
+the load-failure bit through the active task at `0x004BDEC8`. The factory
+publishes that slot independently, and the asynchronous load sets the bit
+on failure. Both profiles now use these owners directly, alongside the
+Supervisor scene request, audio calls and scan shutdown. Scene Select's
+refresh uses Supervisor for the lane-four critical section and count in
+both profiles. The demo wait counter shares one symbol.
+
+All ten affected strict comparisons passed with unchanged target operands.
+The 55 selected operands across the coordinator, main menu and refresh
+resolve to their COFF symbols and addends in both normal links. Supervisor
+moves from `0x004DBAD8` to `0x004D6178`, and the active task slot moves
+from `0x004D6604` to `0x004DBE54`.
+
+The retail and linked fixtures agree across 69 task creation, transition,
+exit and initialization cases, 96 Scene Select refresh cases and 157
+saved-data query cases. The transition fixture gives the two task slots
+opposite load states to verify the active slot is read. Factory, audio and
+VM calls use fixture responses. See `.analysis/pi/title-game-handoff/` for
+the handoff and relocation recipes.
