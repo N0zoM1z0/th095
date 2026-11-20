@@ -2,6 +2,7 @@
 #include "AnmManager.hpp"
 #include "AsciiManager.hpp"
 #include "Controller.hpp"
+#include "PhotoGameTask.hpp"
 
 #include <direct.h>
 #include <math.h>
@@ -40,16 +41,7 @@ struct FrontEndControllerView
     void Destroy();
 };
 
-struct PhotoGameTaskView
-{
-    u8 unknown000[0x120];
-    i32 replayMode;
-
-    static PhotoGameTaskView *__fastcall Create(i32 replayMode);
-    void Destroy();
-};
-
-extern PhotoGameTaskView *g_PhotoGameTask;
+extern void *g_RuntimeGlobalStateOwner;
 
 struct SupervisorSoundPlayerView
 {
@@ -1275,8 +1267,8 @@ i32 Supervisor::UpdateSceneState()
 {
     struct
     {
-        i32 resultMode;
-        i32 replayMode;
+        ReplayManagerMode resultMode;
+        ReplayManagerMode replayMode;
     } locals;
 
     if (this->activeSceneState != this->requestedSceneState)
@@ -1339,7 +1331,7 @@ i32 Supervisor::UpdateSceneState()
                 this->photoGameTask = NULL;
                 this->frontEndController =
                     FrontEndControllerView::Create(
-                        locals.replayMode != 0 ? 2 : 1);
+                        locals.replayMode != REPLAY_MANAGER_RECORD ? 2 : 1);
                 if (this->frontEndController == NULL)
                 {
                     goto failure;
@@ -1353,7 +1345,7 @@ i32 Supervisor::UpdateSceneState()
                 this->photoGameTask->Destroy();
                 this->photoGameTask = NULL;
                 this->flags.restartPhotoGame = 1;
-                this->photoGameTask = PhotoGameTaskView::Create(0);
+                this->photoGameTask = PhotoGameTaskView::Create(REPLAY_MANAGER_RECORD);
                 if (this->photoGameTask == NULL)
                 {
                     goto failure;
@@ -1362,7 +1354,8 @@ i32 Supervisor::UpdateSceneState()
                 break;
 
             case SUPERVISOR_STATE_RESTART_PHOTO_GAME:
-                locals.resultMode = g_PhotoGameTask->replayMode;
+                locals.resultMode = static_cast<PhotoGameTaskView *>(
+                    g_RuntimeGlobalStateOwner)->replayMode;
                 g_Supervisor.flags.resultRestartActive = 1;
                 this->photoGameTask->Destroy();
                 this->photoGameTask = NULL;

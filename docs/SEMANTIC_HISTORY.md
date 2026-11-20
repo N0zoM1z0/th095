@@ -18295,3 +18295,19 @@ with the retail code through the input return, and the existing 1,312
 input scenarios and both controller device cases pass in both links.
 The fixture supplies audio, keyboard and device API responses. See
 `.analysis/controller-get-input/frame-poller/` for the recipes.
+
+### SEM-405 — use the shared task in Supervisor scene changes
+
+`Supervisor::UpdateSceneState @ 0x00425EF0` reads the replay mode from
+its published `photoGameTask` on return to the title. A result restart
+reads it from the independently published active task before destroying
+the old task. Retry always creates a recording task. Both Supervisor
+profiles now use the canonical `PhotoGameTaskView` and `ReplayManagerMode`.
+
+All 48 affected exact comparisons pass, including all three switch tables
+owned by `UpdateSceneState`. The active slot and seven task lifecycle calls
+resolve to their symbols in both normal layouts. Fourteen linked scene
+transition cases agree with retail, including opposite replay modes in
+the two task slots, title and task factory failures, and the original
+lock-count behavior on exit. The fixtures supply the lifecycle and lock
+API responses. See `.analysis/pi/supervisor-game-task/` for the recipes.

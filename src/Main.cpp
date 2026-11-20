@@ -6,6 +6,7 @@
 #include "Controller.hpp"
 #include "GameplayGlobals.hpp"
 #include "InputRuntime.hpp"
+#include "PhotoGameTask.hpp"
 #ifndef DIFFBUILD
 #include "ReplayManager.hpp"
 #include "ResultScreen.hpp"
@@ -152,33 +153,7 @@ struct FrontEndLifecycleView
 #define TH095_FRONT_END_RELEASE_RESOURCES() ReleaseSceneSelectAnms()
 #endif
 
-struct PhotoGameTaskView
-{
-    u8 unknown000[0x120];
-#ifdef DIFFBUILD
-    i32 replayMode;
-#else
-    ReplayManagerMode replayMode;
-#endif
-
-    static PhotoGameTaskView *__fastcall Create(i32 replayMode);
-    void Destroy();
-};
-
-#ifdef DIFFBUILD
-#define TH095_GAME_TASK_RECORD_MODE 0
-#define TH095_GAME_TASK_FRONT_END_MODE(mode) ((mode) != 0 ? 2 : 1)
-#else
-#define TH095_GAME_TASK_RECORD_MODE REPLAY_MANAGER_RECORD
-#define TH095_GAME_TASK_FRONT_END_MODE(mode) \
-    ((mode) != REPLAY_MANAGER_RECORD ? 2 : 1)
-#endif
-
-extern PhotoGameTaskView *g_PhotoGameTask;
-#ifndef DIFFBUILD
-#define g_PhotoGameTask \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
-#endif
+extern void *g_RuntimeGlobalStateOwner;
 
 struct TextHelperView
 {
@@ -1356,13 +1331,8 @@ i32 Supervisor::UpdateSceneState()
 {
     struct
     {
-#ifdef DIFFBUILD
-        i32 resultMode;
-        i32 replayMode;
-#else
         ReplayManagerMode resultMode;
         ReplayManagerMode replayMode;
-#endif
     } locals;
 
     if (this->activeSceneState != this->requestedSceneState)
@@ -1425,7 +1395,7 @@ i32 Supervisor::UpdateSceneState()
                 this->photoGameTask = NULL;
                 this->frontEndController =
                     TH095_FRONT_END_CREATE(
-                        TH095_GAME_TASK_FRONT_END_MODE(locals.replayMode));
+                        locals.replayMode != REPLAY_MANAGER_RECORD ? 2 : 1);
                 if (this->frontEndController == NULL)
                 {
                     goto failure;
@@ -1440,7 +1410,7 @@ i32 Supervisor::UpdateSceneState()
                 this->photoGameTask = NULL;
                 this->flags.restartPhotoGame = 1;
                 this->photoGameTask =
-                    PhotoGameTaskView::Create(TH095_GAME_TASK_RECORD_MODE);
+                    PhotoGameTaskView::Create(REPLAY_MANAGER_RECORD);
                 if (this->photoGameTask == NULL)
                 {
                     goto failure;
@@ -1449,7 +1419,8 @@ i32 Supervisor::UpdateSceneState()
                 break;
 
             case SUPERVISOR_STATE_RESTART_PHOTO_GAME:
-                locals.resultMode = g_PhotoGameTask->replayMode;
+                locals.resultMode = static_cast<PhotoGameTaskView *>(
+                    g_RuntimeGlobalStateOwner)->replayMode;
                 g_Supervisor.flags.resultRestartActive = 1;
                 this->photoGameTask->Destroy();
                 this->photoGameTask = NULL;
