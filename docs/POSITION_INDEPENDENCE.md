@@ -140,3 +140,20 @@ The retail photo was 256 pixels wide while the two pre-fix builds produced
 to the target's 96. Both layouts subsequently produced a 256-pixel photo.
 The height was 191 or 192 pixels in the individual runs. These were
 live keyboard samples at different frame timings.
+
+The latest no-music samples from retail and both link orders captured
+a 256-by-191 temporary photo. With WAV music enabled on this Wine setup,
+the rebuilt loader now waits on the same pending opcode 1 observed in
+retail. In both runs, the gameplay load bit stayed set while the command
+was pending. The experiments use separate executable and configuration
+copies under `build/position-independence/`.
+
+## Linked library objects
+
+The map names 270 archive members from the pinned VC7.1 CRT and SDK.
+A section comparison checked 7,119 code references and 895 initialized
+data references from those members in both link orders. These references
+resolve consistently with their COFF inputs. The check covers 1,641 code
+sections and 1,920 initialized data sections. It leaves 741 unpaired
+reference slots, including library-private labels in unpaired sections.
+The experiment is under `.analysis/pi/check-linked-library-sections.py`.
