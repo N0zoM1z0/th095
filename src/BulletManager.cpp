@@ -55,12 +55,8 @@ static __forceinline i32 PhotoBulletPlayerCollision(
 #endif
 
 extern PhotoBulletPlayerView *g_PhotoBulletPlayer;
-extern PhotoBulletManagerView *g_PhotoBulletManager;
+PhotoBulletManagerView *g_PhotoBulletManager; // Retail 0x004BDD98
 
-#ifndef DIFFBUILD
-#define g_PhotoBulletManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
-#endif
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 // Target .data 0x004A40C0..0x004A424F contains six adjacent, relocation-
 // bounded bullet metadata tables.  Keep the observed item counts explicit:

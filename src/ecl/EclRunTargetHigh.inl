@@ -84,11 +84,11 @@
         break;
 
     case 99:
-        TH095_ECL_BULLET_DESCRIPTOR(enemy, BulletSpawnDescriptor)->position =
-            TH095_TARGET_ENEMY_POSITION(enemy) +
-            enemy->shootOffset;
-        TH095_ECL_BULLET_SPAWN(
-            TH095_ECL_BULLET_DESCRIPTOR(enemy, BulletSpawnDescriptor));
+        reinterpret_cast<Float3 &>(
+            TH095_ECL_BULLET_DESCRIPTOR(enemy, PhotoBulletSpawnDescriptor)->position) =
+                TH095_TARGET_ENEMY_POSITION(enemy) + enemy->shootOffset;
+        g_PhotoBulletManager->SpawnBulletPattern(
+            TH095_ECL_BULLET_DESCRIPTOR(enemy, PhotoBulletSpawnDescriptor));
         break;
 
     case 100:
@@ -445,7 +445,7 @@ enter_subroutine:
     }
 
     case 102:
-        TH095_ECL_BULLET_RESET();
+        g_PhotoBulletManager->DespawnAllBullets();
         PhotoEffectManagerView::DrawSecondary(g_PhotoEffectManager);
         break;
 

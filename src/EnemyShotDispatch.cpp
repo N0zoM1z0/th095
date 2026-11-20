@@ -1,81 +1,13 @@
 #include "EnemyManager.hpp"
 #include "GameplayGlobals.hpp"
-#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
-#include "PhotoBulletManager.hpp"
-#endif
+#include "PhotoBulletManagerLayout.hpp"
+#include "PhotoEnemyEclAccess.hpp"
 #include "PhotoPlayerRuntime.hpp"
 #include "ecl/EclManager.hpp"
 #include "ecl/EclOperands.hpp"
 
 namespace th095
 {
-// Private target-local ABI view for this ECL lane.
-struct PhotoBulletTransformRecordView
-{
-    u8 bytes[0x18];
-};
-struct EnemyShotDescriptorView
-{
-    i16 bulletType;
-    i16 color;
-    Float3 position;
-    f32 angle;
-    f32 angleStep;
-    f32 speed1;
-    f32 speed2;
-    PhotoBulletTransformRecordView transforms[18];
-    u8 laserFields[0x24];
-    i16 count1;
-    i16 count2;
-#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-    u16 aimMode;
-#else
-    BulletAimMode aimMode;
-#endif
-    u16 unconsumedWord1FA;
-    u32 transformFlags;
-    i32 spawnSound;
-    i32 transformSound;
-    i32 transformStartIndex;
-    void *templateSprites;
-};
-typedef char ShotDescriptorSizeIs210[(sizeof(EnemyShotDescriptorView) == 0x210) ? 1 : -1];
-
-struct EnemyShotOwnerView
-{
-    u8 unknown0000[0x298c];
-    EnemyShotDescriptorView bulletSpawnDescriptor;
-};
-typedef char EnemyShotDescriptorAt298C[
-    (offsetof(EnemyShotOwnerView, bulletSpawnDescriptor) == 0x298c) ? 1 : -1];
-
-struct EnemyShotDistanceView
-{
-    u8 unknown0000[0x2c4c];
-    f32 minimumPlayerDistanceSquared;
-};
-typedef char EnemyShotMinimumDistanceAt2C4C[
-    (offsetof(EnemyShotDistanceView, minimumPlayerDistanceSquared) == 0x2c4c) ? 1 : -1];
-
-struct Player;
-
-struct EnemyShotBulletManagerView
-{
-    i32 SpawnBulletPattern(EnemyShotDescriptorView *descriptor);
-};
-extern EnemyShotBulletManagerView *g_EnemyShotBulletManager;
-#ifndef DIFFBUILD
-#define TH095_ENEMY_SHOT_SPAWN(manager, descriptor) \
-    reinterpret_cast<PhotoBulletManagerView *>(manager)->SpawnBulletPattern( \
-        reinterpret_cast<PhotoBulletSpawnDescriptor *>(descriptor))
-#else
-#define TH095_ENEMY_SHOT_SPAWN(manager, descriptor) manager->SpawnBulletPattern(descriptor)
-#endif
-#ifndef DIFFBUILD
-#define g_EnemyShotBulletManager \
-    TH095_RUNTIME_GLOBAL_PTR(EnemyShotBulletManagerView, g_RuntimeBulletManagerOwner)
-#endif
-
 namespace EclRunHigh
 {
 struct ShotArgs
@@ -92,14 +24,13 @@ struct ShotArgs
 };
 typedef char ShotArgsSizeIs20[(sizeof(ShotArgs) == 0x20) ? 1 : -1];
 
-static __forceinline EnemyShotDescriptorView *TargetShotDescriptor(Enemy *enemy)
+static __forceinline PhotoBulletSpawnDescriptor *TargetShotDescriptor(Enemy *enemy)
 {
-    return &reinterpret_cast<EnemyShotOwnerView *>(enemy)->bulletSpawnDescriptor;
+    return TH095_ECL_BULLET_DESCRIPTOR(enemy, PhotoBulletSpawnDescriptor);
 }
 static __forceinline f32 &TargetMinimumDistanceSquared(Enemy *enemy)
 {
-    return reinterpret_cast<EnemyShotDistanceView *>(enemy)
-        ->minimumPlayerDistanceSquared;
+    return TH095_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED(enemy);
 }
 static __forceinline const Float3 &TargetPlayerPosition()
 {
@@ -109,7 +40,7 @@ static __forceinline const Float3 &TargetPlayerPosition()
 
 void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruction)
 {
-    EnemyShotDescriptorView *descriptor;
+    PhotoBulletSpawnDescriptor *descriptor;
     ShotArgs *args;
     i32 packed;
 
@@ -120,44 +51,46 @@ void __fastcall DispatchShotInstruction(Enemy *enemy, EclRawInstruction *instruc
     if (TargetMinimumDistanceSquared(enemy) > 0.0f)
     {
         if (((enemy->worldPosition.x - TargetPlayerPosition().x) *
-         (enemy->worldPosition.x - TargetPlayerPosition().x) +
-     (enemy->worldPosition.y - TargetPlayerPosition().y) *
-         (enemy->worldPosition.y - TargetPlayerPosition().y)) < TargetMinimumDistanceSquared(enemy))
+                 (enemy->worldPosition.x - TargetPlayerPosition().x) +
+             (enemy->worldPosition.y - TargetPlayerPosition().y) *
+                 (enemy->worldPosition.y - TargetPlayerPosition().y)) <
+            TargetMinimumDistanceSquared(enemy))
             return;
     }
 
-        descriptor->position = enemy->worldPosition + enemy->shootOffset;
+    reinterpret_cast<Float3 &>(descriptor->position) =
+        enemy->worldPosition + enemy->shootOffset;
 
-        packed = args->bulletType;
-        descriptor->bulletType = (instruction->operandFlags & 1)
-            ? EclOperands::ResolveInt(enemy, packed)
-            : packed;
-        descriptor->aimMode = instruction->opcode - 0x56;
-        descriptor->count1 = (instruction->operandFlags & 4)
-            ? EclOperands::ResolveInt(enemy, args->count1)
-            : args->count1;
-        descriptor->count2 = (instruction->operandFlags & 8)
-            ? EclOperands::ResolveInt(enemy, args->count2)
-            : args->count2;
-        descriptor->angle = (instruction->operandFlags & 0x40)
-            ? enemy->ResolveFloat(args->angle)
-            : args->angle;
-        descriptor->speed1 = (instruction->operandFlags & 0x10)
-            ? enemy->ResolveFloat(args->speed1)
-            : args->speed1;
-        descriptor->angleStep = (instruction->operandFlags & 0x80)
-            ? enemy->ResolveFloat(args->angleStep)
-            : args->angleStep;
-        descriptor->speed2 = (instruction->operandFlags & 0x20)
-            ? enemy->ResolveFloat(args->speed2)
-            : args->speed2;
-        descriptor->unconsumedWord1FA = 0;
-        descriptor->transformFlags = args->transformFlags;
-        packed = args->color;
-        descriptor->color = (instruction->operandFlags & 2)
-            ? EclOperands::ResolveInt(enemy, packed)
-            : packed;
-        TH095_ENEMY_SHOT_SPAWN(g_EnemyShotBulletManager, descriptor);
+    packed = args->bulletType;
+    descriptor->bulletType = (instruction->operandFlags & 1)
+        ? EclOperands::ResolveInt(enemy, packed)
+        : packed;
+    descriptor->aimMode = instruction->opcode - 0x56;
+    descriptor->count1 = (instruction->operandFlags & 4)
+        ? EclOperands::ResolveInt(enemy, args->count1)
+        : args->count1;
+    descriptor->count2 = (instruction->operandFlags & 8)
+        ? EclOperands::ResolveInt(enemy, args->count2)
+        : args->count2;
+    descriptor->angle = (instruction->operandFlags & 0x40)
+        ? enemy->ResolveFloat(args->angle)
+        : args->angle;
+    descriptor->speed1 = (instruction->operandFlags & 0x10)
+        ? enemy->ResolveFloat(args->speed1)
+        : args->speed1;
+    descriptor->angleStep = (instruction->operandFlags & 0x80)
+        ? enemy->ResolveFloat(args->angleStep)
+        : args->angleStep;
+    descriptor->speed2 = (instruction->operandFlags & 0x20)
+        ? enemy->ResolveFloat(args->speed2)
+        : args->speed2;
+    descriptor->unknown1FA = 0;
+    descriptor->transformFlags = args->transformFlags;
+    packed = args->color;
+    descriptor->color = (instruction->operandFlags & 2)
+        ? EclOperands::ResolveInt(enemy, packed)
+        : packed;
+    g_PhotoBulletManager->SpawnBulletPattern(descriptor);
 }
 }
 }

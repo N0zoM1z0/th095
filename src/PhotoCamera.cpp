@@ -68,7 +68,6 @@ static inline SoundPlayer *PhotoSoundPlayer()
 }
 
 extern PhotoEnemyManagerView *g_PhotoRuntime;
-extern PhotoBulletManagerView *g_PhotoBulletManager;
 #ifndef DIFFBUILD
 #define g_PhotoRuntime \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
@@ -78,11 +77,6 @@ extern u16 g_PhotoInputPressed;
 #ifndef DIFFBUILD
 #define g_PhotoInput (RuntimeHistoryCurrent())
 #define g_PhotoInputPressed (RuntimeHistoryPressed())
-#endif
-
-#ifndef DIFFBUILD
-#define g_PhotoBulletManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);

@@ -6,9 +6,7 @@
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoEnemyManager.hpp"
 #endif
-#ifndef DIFFBUILD
 #include "PhotoBulletManager.hpp"
-#endif
 #include "SceneData.hpp"
 #include <stdlib.h>
 #include <string.h>
@@ -263,31 +261,8 @@ struct PhotoEnemyTimelineExtendedSpawnArgs
     i32 score;
 };
 
-#ifdef TH095_MATCH_EXACT
-struct PhotoEnemyAnmSpawnerView
-{
-    AnmVmId CreateVm(i32 scriptIndex, Float3 *position);
-};
-typedef PhotoEnemyAnmSpawnerView PhotoEnemyAnmSpawner;
-#else
-typedef AnmLoaded PhotoEnemyAnmSpawner;
-#endif
-
-#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
-struct PhotoEnemyBulletManagerView
-{
-    u8 unknown000000[0x27c5b0];
-    PhotoEnemyAnmSpawner *anmSpawner;
-};
-#else
-typedef PhotoBulletManagerView PhotoEnemyBulletManagerView;
-#endif
-
-extern PhotoEnemyBulletManagerView *g_PhotoEnemyBulletManager;
 extern PhotoEnemyManagerView *g_PhotoEnemyManager;
 #ifndef DIFFBUILD
-#define g_PhotoEnemyBulletManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyBulletManagerView, g_RuntimeBulletManagerOwner)
 #define g_PhotoEnemyManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyManagerView, g_RuntimeEnemyManagerOwner)
 #endif
@@ -957,16 +932,8 @@ i32 __fastcall PhotoEnemyManagerView::OnUpdate(
             {
                 *reinterpret_cast<AnmVmId *>(
                     &enemy->photoMarkerVmId) =
-#ifdef TH095_MATCH_EXACT
-                    g_PhotoEnemyBulletManager->anmSpawner
-                        ->CreateVm(0x127, &enemy->worldPosition);
-#elif defined(DIFFBUILD)
-                    g_PhotoEnemyBulletManager->anmSpawner
+                    g_PhotoBulletManager->bulletAnm
                         ->CreateVmAtWorld(0x127, &enemy->worldPosition);
-#else
-                    g_PhotoEnemyBulletManager->bulletAnm
-                        ->CreateVmAtWorld(0x127, &enemy->worldPosition);
-#endif
             }
             else
             {

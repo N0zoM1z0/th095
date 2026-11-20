@@ -11,8 +11,6 @@
 namespace th095
 {
 
-#define g_PhotoBulletManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
 
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);

@@ -422,7 +422,6 @@ def check_ecl_extended_type_boundaries() -> None:
         "typedef AnmLoaded ExtendedAnmSpawner;",
         "typedef Float3 ExtendedVector;",
         "typedef ::th095::PhotoBulletView ExtendedBulletView;",
-        "typedef ::th095::PhotoBulletManagerView ExtendedBulletManager;",
         "typedef ::th095::PhotoEnemyManagerView ExtendedPhotoEnemyManagerView;",
         "typedef ::th095::PhotoEnemyManagerView ExtendedRuntimeView;",
         "#define TH095_EXT_PLAYER_TYPE ::th095::PhotoPlayerRuntimeView",
@@ -445,8 +444,17 @@ def check_ecl_extended_type_boundaries() -> None:
         if access not in extended:
             fail(f"EclExtended lost canonical PhotoEffect access: {access}")
 
+    for access in (
+        '#include "PhotoBulletManagerLayout.hpp"',
+        "g_PhotoBulletManager->bulletAnm",
+        "g_PhotoBulletManager->bullets",
+    ):
+        if access not in extended:
+            fail(f"EclExtended lost canonical BulletInf access: {access}")
+
     forbidden_normal_debt = (
         "struct AnmManagerLookupView",
+        "ExtendedBulletManager",
         "struct ExtendedVmHandle",
         "struct ExtendedAnmSpawner",
         "struct ExtendedVector",
@@ -469,11 +477,7 @@ def check_ecl_extended_type_boundaries() -> None:
             "struct ExtendedAnmSpawner",
         ),
         "EclExtendedMathEmission.inl": ("struct ExtendedVector",),
-        "EclExtendedBulletEmission.inl": (
-            "struct ExtendedBulletView",
-            "struct ExtendedBulletManager",
-            "VC7 emission adapter for EclExtended callbacks only",
-        ),
+        "EclExtendedBulletEmission.inl": ("struct ExtendedBulletView",),
         "EclExtendedPlayerEmission.inl": (
             "struct ExtendedPhotoCameraView",
             "i32 CountPhotoTargets(f32 *closestDistance, f32 *bossRate);",
@@ -542,6 +546,8 @@ def check_photo_bullet_owner() -> None:
         fail("BulletInf must not restore a duplicate spawn descriptor")
     if len(re.findall(r"\bstruct\s+PhotoBulletManagerView\s*\{", entry + header)) != 1:
         fail("BulletInf must define exactly one canonical owner")
+    if "extern PhotoBulletManagerView *g_PhotoBulletManager;" not in header:
+        fail("BulletInf layout must declare the shared manager slot")
     required_layout = (
         "sizeof(PhotoBulletView) == 0x65c",
         "offsetof(PhotoBulletManagerView, bullets) == 0x4c",
@@ -567,8 +573,10 @@ def check_photo_bullet_owner() -> None:
     )
     for path in direct_consumers:
         text = path.read_text(encoding="utf-8")
-        if 'PhotoBulletManager.hpp"' not in text:
-            fail(f"{path.relative_to(SRC)} must consume canonical PhotoBulletManager.hpp")
+        if not any(f'{header_name}"' in text for header_name in (
+            "PhotoBulletManager.hpp", "PhotoBulletManagerLayout.hpp"
+        )):
+            fail(f"{path.relative_to(SRC)} must consume the canonical BulletInf layout")
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if 'PhotoBulletManagerLayout.hpp"' not in ecl_run:
         fail("EclRun must consume the canonical BulletInf layout")

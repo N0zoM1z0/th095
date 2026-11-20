@@ -122,23 +122,8 @@
         ->eclPhotoCardSession
 #endif
 
-#ifdef DIFFBUILD
-#define TH095_ECL_BULLET_MANAGER EclRunHigh::g_Th095BulletManager
-#define TH095_ECL_BULLET_SPAWN(descriptor) \
-    TH095_ECL_BULLET_MANAGER->SpawnEnemyPattern( \
-        reinterpret_cast<i16 *>(descriptor))
-#else
-#define TH095_ECL_BULLET_MANAGER \
-    TH095_RUNTIME_GLOBAL_PTR(::th095::PhotoBulletManagerView, \
-                             ::th095::g_RuntimeBulletManagerOwner)
-#define TH095_ECL_BULLET_SPAWN(descriptor) \
-    TH095_ECL_BULLET_MANAGER->SpawnBulletPattern( \
-        reinterpret_cast<::th095::PhotoBulletSpawnDescriptor *>(descriptor))
-#endif
 #define TH095_ECL_BULLET_ANM_SPAWNER \
-    reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>( \
-        reinterpret_cast<::th095::PhotoBulletManagerView *>( \
-            TH095_ECL_BULLET_MANAGER)->bulletAnm)
+    reinterpret_cast<EclRunHigh::PhotoAnmSpawner *>(g_PhotoBulletManager->bulletAnm)
 
 #ifdef DIFFBUILD
 #define TH095_ECL_ANM_MANAGER EclRunHigh::g_Th095AnmManager
@@ -175,12 +160,6 @@
 #define TH095_ECL_CONFIGURE_PHOTO_ANM(vm, work, value) \
     ::th095::g_AnmManager->InitializeHorizontalTextureStrip( \
         (vm), reinterpret_cast<::th095::AnmVertex *>(work), (value))
-#endif
-
-#ifdef DIFFBUILD
-#define TH095_ECL_BULLET_RESET() TH095_ECL_BULLET_MANAGER->ResetEnemyPatterns()
-#else
-#define TH095_ECL_BULLET_RESET() TH095_ECL_BULLET_MANAGER->DespawnAllBullets()
 #endif
 
 // RunEcl and CallEclSub return the target's global ::ZunResult enum in both

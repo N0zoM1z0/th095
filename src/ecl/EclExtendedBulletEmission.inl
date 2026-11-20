@@ -1,5 +1,5 @@
-// VC7 emission adapter for EclExtended callbacks only.  Normal callbacks use
-// the canonical PhotoBulletView/PhotoBulletManagerView owner declarations.
+// VC7 element emission for EclExtended callbacks. Both profiles locate the
+// pool through PhotoBulletManagerView.
 struct ExtendedBulletView
 {
     u32 flags;
@@ -63,16 +63,3 @@ typedef char ExtendedBulletField348At348[
     (offsetof(ExtendedBulletView, field348) == 0x348) ? 1 : -1];
 typedef char ExtendedBulletField34CAt34C[
     (offsetof(ExtendedBulletView, field34c) == 0x34c) ? 1 : -1];
-
-struct ExtendedBulletManager
-{
-    u8 unknown000[0x4c];
-    ExtendedBulletView bullets[0x641];
-    u8 unknown27C5A8[8];
-    ExtendedAnmSpawner *bulletAnm;
-};
-
-typedef char ExtendedBulletManagerBulletsAt4C[
-    (offsetof(ExtendedBulletManager, bullets) == 0x4c) ? 1 : -1];
-typedef char ExtendedBulletManagerAnmAt27C5B0[
-    (offsetof(ExtendedBulletManager, bulletAnm) == 0x27c5b0) ? 1 : -1];

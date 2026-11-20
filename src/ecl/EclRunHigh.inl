@@ -145,12 +145,6 @@ struct PhotoModeController
     void End();
 };
 
-struct Th095BulletManager
-{
-    void SpawnEnemyPattern(i16 *descriptor);
-    void ResetEnemyPatterns();
-};
-
 struct Th095RuntimeManager
 {
     Enemy *SpawnEnemy(i32 subroutineId, Float3 *position, i32 arg2,
@@ -189,7 +183,6 @@ inline i32 Th095PreserveI32(i32 value)
 
 extern u8 *g_Th095StageState;
 extern u8 *g_Th095Runtime;
-extern Th095BulletManager *g_Th095BulletManager;
 extern AnmManagerLookup *g_Th095AnmManager;
 extern PhotoModeController *g_Th095PhotoMode;
 extern EclExtendedCallback g_Th095ExInsn[];

@@ -41,14 +41,8 @@ struct PhotoResetTargetView
 
 #ifdef DIFFBUILD
 extern PhotoResetTargetView *g_PhotoRuntimeResetTarget;
-extern PhotoResetTargetView *g_PhotoBulletResetTarget;
 #endif
 #define g_PhotoInput (RuntimeHistoryCurrent())
-
-#ifndef DIFFBUILD
-#define g_PhotoBulletManager \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
-#endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -677,11 +671,7 @@ i32 PhotoGameUpdateView::Update()
         }
         else if (this->completionTimer == 15)
         {
-#ifdef DIFFBUILD
-            g_PhotoBulletResetTarget->ResetForPhotoTransition();
-#else
             g_PhotoBulletManager->DespawnAllBullets();
-#endif
             PhotoEffectManagerView::DrawSecondary(g_PhotoEffectManager);
         }
         else if (this->completionTimer == 30)

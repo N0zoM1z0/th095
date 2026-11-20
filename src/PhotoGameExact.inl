@@ -9,7 +9,6 @@
 namespace th095
 {
 
-extern PhotoBulletManagerView *g_PhotoBulletManager;
 
 void Rotate(Float3 *outVector, Float3 *point, f32 angle);
 
@@ -41,7 +40,6 @@ struct PhotoResetTargetView
 };
 
 extern PhotoResetTargetView *g_PhotoRuntimeResetTarget;
-extern PhotoResetTargetView *g_PhotoBulletResetTarget;
 extern u16 g_PhotoInput;
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -677,7 +675,7 @@ i32 PhotoGameUpdateView::Update()
         }
         else if (this->completionTimer == 15)
         {
-            g_PhotoBulletResetTarget->ResetForPhotoTransition();
+            g_PhotoBulletManager->DespawnAllBullets();
             PhotoEffectManagerView::DrawSecondary(g_PhotoEffectManager);
         }
         else if (this->completionTimer == 30)

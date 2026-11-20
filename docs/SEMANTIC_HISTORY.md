@@ -18501,3 +18501,30 @@ agree on publication and teardown, traversal order, ECL opcodes 102 and
 145, frame-15 player transition and extended callback dispatch. Fixtures
 supply virtual effect, ANM and Chain boundaries. Capture-drop and gameplay
 callback fixtures also pass. See `.analysis/pi/photo-effect-owner/`.
+
+### SEM-415 — publish the canonical bullet manager
+
+BulletInf publishes its allocation at `0x004BDD98` and clears the slot
+after Chain and ANM cleanup. Both builds now bind `g_PhotoBulletManager`
+to that slot. ECL opcode 99 and shot dispatch use the canonical
+0x210-byte spawn descriptor at compact Enemy +0x298C. Opcode 102 and the
+player photo-limit transition call `DespawnAllBullets`. PhotoStage uses
+`ClearCapturedBullets`, and the enemy marker reads the same loaded
+`bulletAnm` as the other clients.
+
+The extension callbacks locate the bullet pool through the shared
+manager. The exact ECL ANM declaration leaves the two method
+declarations out, so those callbacks retain a cast to their existing ANM
+method receiver. The force-inlined helper experiment changed callback
+stack allocation and call offsets. The direct cast preserves the
+target byte sequence.
+
+All 372 affected exact units pass. The 27 renamed operands preserve
+their extents, offsets, relocation kinds and destinations. In both
+normal link orders, all 30 references from nine objects follow the
+typed slot. The 125 focused retail comparisons cover publication,
+teardown, opcode 99, nine shot opcodes with immediate and indirect
+operands, and the last usable bullet and sentinel in the extended motion
+callback. The fixtures supply Chain, ANM and shot-spawn boundaries.
+Capture-drop, task-lifetime and player-transition fixtures also pass.
+See `.analysis/pi/photo-bullet-manager-owner/`.

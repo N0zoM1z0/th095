@@ -5,6 +5,7 @@
 #include "PhotoFront.hpp"
 #include "PhotoItemManager.hpp"
 #include "PhotoEffectRuntime.hpp"
+#include "PhotoBulletManager.hpp"
 #include "PhotoStage.hpp"
 #include "SoundPlayer.hpp"
 #include "ScoreData.hpp"
@@ -21,12 +22,6 @@ namespace th095
 struct PhotoBackgroundManagerView
 {
     static PhotoBackgroundManagerView *Create();
-    void Destroy();
-};
-
-struct PhotoBulletManagerTaskView
-{
-    static PhotoBulletManagerTaskView *Create();
     void Destroy();
 };
 
@@ -120,7 +115,7 @@ struct PhotoGameTaskView
 {
     PhotoBackgroundManagerView *background; // +0x000
     PhotoFrontManagerView *front;            // +0x004
-    PhotoBulletManagerTaskView *bullets;     // +0x008
+    PhotoBulletManagerView *bullets;     // +0x008
     PhotoPlayerManagerView *player;          // +0x00c
     ReplayManagerTaskView *replay;           // +0x010
     PhotoEnemyManagerTaskView *enemies;      // +0x014
@@ -524,7 +519,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
     {
         return ZUN_ERROR;
     }
-    this->bullets = PhotoBulletManagerTaskView::Create();
+    this->bullets = PhotoBulletManagerView::Create();
     if (this->bullets == NULL)
     {
         return ZUN_ERROR;

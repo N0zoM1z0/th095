@@ -7,7 +7,6 @@
 namespace th095
 {
 
-extern PhotoBulletManagerView *g_PhotoBulletManager;
 
 struct ItemSoundPlayerView
 {

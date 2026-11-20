@@ -38,10 +38,6 @@ typedef AnmLoaded PhotoStageAnmLoadedView;
 extern PhotoCardInfoView *g_PhotoStageRuntime;
 #define TH095_PHOTO_STAGE_CARD_INFO g_PhotoStageRuntime
 
-struct PhotoStageBulletManagerView
-{
-    i32 ClearCapturedBullets();
-};
 #endif
 
 struct PhotoStageSaveLocals
@@ -75,9 +71,6 @@ typedef char PhotoStageScoreEntryTailSizeIs48[
 #define TH095_PHOTO_STAGE_CARD_INFO g_PhotoCardInfo
 #endif
 
-#ifdef DIFFBUILD
-extern PhotoStageBulletManagerView *g_PhotoStageBulletManager;
-#endif
 // Target 0x004C45F8 is an independent zero-initialized byte published when a
 // captured texture becomes ready.
 DIFFABLE_STATIC(u8, g_PhotoCaptureCountdown);
@@ -929,13 +922,7 @@ i32 PhotoStageStateView::Update()
                 }
 
                 PhotoEffectManagerView::CheckCollisionStored(g_PhotoEffectManager);
-#ifdef DIFFBUILD
-                g_PhotoStageBulletManager->ClearCapturedBullets();
-#else
-                TH095_RUNTIME_GLOBAL_PTR(
-                    PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
-                    ->ClearCapturedBullets();
-#endif
+                g_PhotoBulletManager->ClearCapturedBullets();
             }
         }
         else if (this->captureFrame == 10)

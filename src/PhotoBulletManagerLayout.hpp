@@ -182,4 +182,6 @@ typedef char PhotoBulletManagerAnmAt27C5B0[
 typedef char PhotoBulletManagerCountAt27C5B4[
     (offsetof(PhotoBulletManagerView, activeBulletCount) == 0x27c5b4) ? 1 : -1];
 
+extern PhotoBulletManagerView *g_PhotoBulletManager;
+
 } // namespace th095

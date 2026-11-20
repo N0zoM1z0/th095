@@ -8,9 +8,9 @@
 #include "PhotoEnemyEclAccess.hpp"
 #include "PhotoRotatingLaserArgs.hpp"
 #include "PhotoEffectRuntime.hpp"
+#include "PhotoBulletManagerLayout.hpp"
 #if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 #include "Background.hpp"
-#include "PhotoBulletManager.hpp"
 #include "PhotoCamera.hpp"
 #include "PhotoEnemyManager.hpp"
 #endif
@@ -171,7 +171,6 @@ typedef char ExtendedPhotoEffectNodeFlagsAt58C[(offsetof(ExtendedPhotoEffectNode
 #include "ecl/EclExtendedBulletEmission.inl"
 #else
 typedef ::th095::PhotoBulletView ExtendedBulletView;
-typedef ::th095::PhotoBulletManagerView ExtendedBulletManager;
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -193,7 +192,6 @@ extern AnmManagerLookupView *g_AnmManager;
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 extern u8 *g_Background;
 #endif
-extern ExtendedBulletManager *g_PhotoBulletManager;
 extern ExtendedPhotoEnemyManagerView *g_ExtendedPhotoEnemyManager;
 
 #if defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
@@ -202,11 +200,6 @@ static __forceinline u8 *ExtendedBackgroundOwner()
     return reinterpret_cast<u8 *>(::th095::g_Background);
 }
 #define g_Background ExtendedBackgroundOwner()
-#endif
-
-#ifndef DIFFBUILD
-#define g_PhotoBulletManager \
-    TH095_RUNTIME_GLOBAL_PTR(ExtendedBulletManager, ::th095::g_RuntimeBulletManagerOwner)
 #endif
 
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
@@ -224,13 +217,17 @@ i32 __fastcall GetPhotoBulletScriptBase(i32 bulletType);
 #define TH095_EXTENDED_SCRIPT_BASE ::th095::GetPhotoBulletScriptBase
 #endif
 
+// The legacy ECL ANM declaration needs the existing method receiver.
+#define TH095_EXT_BULLET_ANM \
+    reinterpret_cast<ExtendedAnmSpawner *>(g_PhotoBulletManager->bulletAnm)
+
 #if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 __forceinline void ExtendedBulletView::ReinitializeDirect()
 {
     // Extended entries 2/3 repeat this target 0x2C InitializeVm phase.
     u8 compilerStorage[0x2c];
     TH095_EXT_ANM_INITIALIZE(
-        g_PhotoBulletManager->bulletAnm, &this->vm,
+        TH095_EXT_BULLET_ANM, &this->vm,
         TH095_EXTENDED_SCRIPT_BASE(this->bulletType) + this->color);
 }
 
@@ -239,7 +236,7 @@ __forceinline void ExtendedBulletView::ReinitializeShifted()
     // Entry 2 uses the same phase but selects the shifted script bank.
     u8 compilerStorage[0x2c];
     TH095_EXT_ANM_INITIALIZE(
-        g_PhotoBulletManager->bulletAnm, &this->vm,
+        TH095_EXT_BULLET_ANM, &this->vm,
         TH095_EXTENDED_SCRIPT_BASE(this->bulletType) + 0x10 + this->color);
 }
 #define TH095_EXT_REINITIALIZE_DIRECT(bullet) (bullet)->ReinitializeDirect()
@@ -251,7 +248,7 @@ static __forceinline void ReinitializeExtendedBulletDirect(
     // The normal callback operates on the canonical BulletInf element.
     u8 compilerStorage[0x2c];
     TH095_EXT_ANM_INITIALIZE(
-        g_PhotoBulletManager->bulletAnm, &bullet->vm,
+        TH095_EXT_BULLET_ANM, &bullet->vm,
         TH095_EXTENDED_SCRIPT_BASE(bullet->bulletType) + bullet->color);
 }
 
@@ -260,7 +257,7 @@ static __forceinline void ReinitializeExtendedBulletShifted(
 {
     u8 compilerStorage[0x2c];
     TH095_EXT_ANM_INITIALIZE(
-        g_PhotoBulletManager->bulletAnm, &bullet->vm,
+        TH095_EXT_BULLET_ANM, &bullet->vm,
         TH095_EXTENDED_SCRIPT_BASE(bullet->bulletType) + 0x10 + bullet->color);
 }
 #define TH095_EXT_REINITIALIZE_DIRECT(bullet) \
@@ -329,9 +326,9 @@ i32 __fastcall DispatchExtendedValue(
 void __fastcall SpawnDeathPhotoVms(
     Enemy *enemy, EclRawInstruction *instruction)
 {
-    TH095_EXT_CREATE_VM_WORLD(g_PhotoBulletManager->bulletAnm, 0x123, &enemy->position);
+    TH095_EXT_CREATE_VM_WORLD(TH095_EXT_BULLET_ANM, 0x123, &enemy->position);
     for (i32 i = 0; i < 32; ++i)
-        TH095_EXT_CREATE_VM_WORLD(g_PhotoBulletManager->bulletAnm, 0x122, &enemy->position);
+        TH095_EXT_CREATE_VM_WORLD(TH095_EXT_BULLET_ANM, 0x122, &enemy->position);
     TH095_ECL_EXT_SOUND_PLAYER.PlaySoundByIdx((SoundIdx)0x12, 0);
     TH095_ECL_EXT_GAME_SPEED = 0.25f;
 }
@@ -483,7 +480,7 @@ void __fastcall ResetOwnedBulletMotion(
     Enemy *enemy, EclRawInstruction *instruction)
 {
     ExtendedBulletView *bullet =
-        g_PhotoBulletManager->bullets;
+        reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
     for (i32 i = 0; i < 0x640; ++i, ++bullet)
     {
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -525,7 +522,7 @@ void __fastcall FadeOwnedCapturedBullets(
         ExtendedBulletView *bullet;
     } locals;
 
-    locals.bullet = g_PhotoBulletManager->bullets;
+    locals.bullet = reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
     for (locals.i = 0; locals.i < 0x640; ++locals.i, ++locals.bullet)
     {
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -888,7 +885,7 @@ void __fastcall Callback01(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedBulletView *index;
     i32 bullet;
 
-    index = g_PhotoBulletManager->bullets;
+    index = reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -914,7 +911,7 @@ void __fastcall Callback02(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedBulletView *index;
     i32 bullet;
 
-    index = g_PhotoBulletManager->bullets;
+    index = reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -958,7 +955,7 @@ void __fastcall Callback03(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedBulletView *index;
     i32 bullet;
 
-    index = g_PhotoBulletManager->bullets;
+    index = reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
@@ -991,7 +988,7 @@ void __fastcall Callback04(Enemy *enemy, EclRawInstruction *instruction)
     ExtendedBulletView *index;
     i32 bullet;
 
-    index = g_PhotoBulletManager->bullets;
+    index = reinterpret_cast<ExtendedBulletView *>(g_PhotoBulletManager->bullets);
     for (bullet = 0; bullet < 0x640; bullet++, index++)
     {
 #if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
