@@ -1244,20 +1244,6 @@ void PhotoEnemyView::Deactivate()
 // locals without relying on the patched TH08 var_order frontend.
 #define scheduledArgumentIndex restartCommandProcessingLocal05
 #define scheduledCurrentFrame averagedPanLocal12
-#if defined(TH095_MATCH_EXACT)
-#define PHOTO_ENEMY_SHOT_DESCRIPTOR(owner) \
-    reinterpret_cast<u8 *>(owner) + 0x298c
-#define PHOTO_ENEMY_DEFAULT_SHOT_DESCRIPTOR(owner) \
-    reinterpret_cast<u8 *>(owner) + 0x298c
-#define PHOTO_ENEMY_SHOT_DESCRIPTOR_SIZE(owner) 0x210
-#else
-#define PHOTO_ENEMY_SHOT_DESCRIPTOR(owner) \
-    &(owner)->bulletSpawnDescriptor
-#define PHOTO_ENEMY_DEFAULT_SHOT_DESCRIPTOR(owner) \
-    &PHOTO_ENEMY_MANAGER_SPAWN_TEMPLATE(owner)->bulletSpawnDescriptor
-#define PHOTO_ENEMY_SHOT_DESCRIPTOR_SIZE(owner) \
-    sizeof((owner)->bulletSpawnDescriptor)
-#endif
 
 i32 PhotoEnemyView::UpdateScheduledEclCalls()
 {
@@ -1290,15 +1276,10 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
             }
 
             memcpy(
-                PHOTO_ENEMY_SHOT_DESCRIPTOR(this),
-                PHOTO_ENEMY_DEFAULT_SHOT_DESCRIPTOR(g_PhotoEnemyManager),
-                PHOTO_ENEMY_SHOT_DESCRIPTOR_SIZE(this));
-#if defined(TH095_MATCH_EXACT)
-            *reinterpret_cast<i32 *>(
-                reinterpret_cast<u8 *>(this) + 0x2bc8) = 0;
-#else
+                &this->bulletSpawnDescriptor,
+                &PHOTO_ENEMY_MANAGER_SPAWN_TEMPLATE(g_PhotoEnemyManager)->bulletSpawnDescriptor,
+                sizeof(this->bulletSpawnDescriptor));
             this->shootIntervalFrames = 0;
-#endif
         }
     }
 
@@ -1306,9 +1287,6 @@ i32 PhotoEnemyView::UpdateScheduledEclCalls()
 }
 #undef scheduledArgumentIndex
 #undef scheduledCurrentFrame
-#undef PHOTO_ENEMY_SHOT_DESCRIPTOR_SIZE
-#undef PHOTO_ENEMY_DEFAULT_SHOT_DESCRIPTOR
-#undef PHOTO_ENEMY_SHOT_DESCRIPTOR
 
 } // namespace th095
 

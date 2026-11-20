@@ -17369,3 +17369,13 @@ members and the change leaves the existing stage ownership intact.
 All six PhotoStage units pass strict comparison with their relocations.
 The normal SavePhoto and CapturePhotoPixels objects also match the target's
 code structure. Normal Update retains its separately maintained body.
+
+### SEM-362 — scheduled ECL shot restoration
+
+When a scheduled ECL call fires, UpdateScheduledEclCalls restores the
+0x210-byte bullet descriptor from the manager's spawn template and clears
+`shootIntervalFrames`. Target 0x0041702F–0x00417058 shows the complete
+copy and reset. UpdateShotAndAnm independently consumes the interval at
++0x2BC8. Both profiles now use the declared descriptor and interval members.
+The exact replay passes all 22 units in EnemyManagerUpdate. The matching
+normal method compiles and the normal game links.
