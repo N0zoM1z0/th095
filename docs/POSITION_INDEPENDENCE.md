@@ -157,3 +157,25 @@ resolve consistently with their COFF inputs. The check covers 1,641 code
 sections and 1,920 initialized data sections. It leaves 741 unpaired
 reference slots, including library-private labels in unpaired sections.
 The experiment is under `.analysis/pi/check-linked-library-sections.py`.
+
+## Attract-mode replay and PE imports
+
+The retail executable and both SEM-373 links played the original
+`demo/demo0.rpy` from the game archive under Wine/Xvfb. The replay is
+scene 3-6 with seed 29856 and a 16,266-byte input stream. All three runs
+released the replay manager after frame index 2711 and finished with
+score 52930 and six photos.
+
+Read-only process samples compared the two stage timer fields, score,
+three player coordinates, RNG seed, camera mode and charge, photo index,
+photos taken and photo limit. Retail and the regular link agreed at all
+2,712 frame indices including startup index zero. The reordered link
+agreed at all 2,710 sampled indices. The observer missed two intermediate
+indices in that run. The local recipe and traces are
+`.analysis/pi/demo-replay-trace.py` and
+`build/position-independence/demo-{retail,regular,reordered}/trace.json`.
+
+The same pair of PEs imports 172 names or ordinals from nine DLLs.
+The import lookup and initial address tables agree within each image.
+127 address-table slots change RVA without changing their DLL and
+name or ordinal.
