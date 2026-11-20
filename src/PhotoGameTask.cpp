@@ -131,10 +131,6 @@ extern u32 g_PhotoAsciiTextColor;
 // canonical ZunColor storage used by every following AddFormatText call.
 #define g_PhotoAsciiTextColor (g_AsciiManager.color.color)
 #endif
-extern i32 g_PhotoNextState;
-#ifndef DIFFBUILD
-#define g_PhotoNextState (g_Supervisor.requestedSceneState)
-#endif
 #ifdef DIFFBUILD
 extern i32 g_ReplayUsesArchive;
 #define REPLAY_PLAYBACK_SOURCE_LOOSE_FILE 0
@@ -165,7 +161,7 @@ i32 PhotoGameTaskView::Update()
 #endif
     {
         g_Supervisor.StopReplayScan();
-        g_PhotoNextState = 6;
+        g_Supervisor.requestedSceneState = SUPERVISOR_STATE_ERROR;
         if (g_ActiveMenuController != NULL)
         {
             locals.shutdownHelpMenu = reinterpret_cast<PhotoHelpMenuTaskView *>(
@@ -196,7 +192,7 @@ i32 PhotoGameTaskView::Update()
          this->playerDeathTransitionComplete != 0 ||
          this->photoLimitTransitionComplete != 0))
     {
-        g_PhotoNextState = 2;
+        g_Supervisor.requestedSceneState = SUPERVISOR_STATE_FRONT_END;
     }
 
     if (this->resultScreenActive != 0)

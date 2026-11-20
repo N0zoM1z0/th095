@@ -17946,3 +17946,28 @@ six Options binding cases and 24 volume and window changes. It executes the
 actual controller reader after loading and remapping, with file, rendering
 and device calls supplied by the fixture. See
 `.analysis/controller-get-input/binding-owner/` for the local recipes.
+
+### SEM-392 — bind the photo task to its capture and Supervisor owners
+
+The exact task now waits on both live ANM capture slots and consumes the
+same Supervisor flags that Main publishes. The completion loops use the
+real PhotoInf handles and call the existing AnmVmId methods directly.
+Replay-demo interruption reads the current word of input slot 0. A direct
+mask expression emits 783 bytes for Update. A pointer-only helper emits
+789 bytes. Passing the mask as a 16-bit argument restores the narrowing
+step and the 790-byte target body.
+
+The task copies the canonical configuration from Supervisor to its
+0xC8-byte snapshot. Its constructor uses the existing fieldless
+configuration adapter. Calling Initialize explicitly inside the
+constructor body emits 142 bytes. Member construction preserves the
+148-byte target, including initialization before the task reset.
+
+All 58 affected strict comparisons pass. The 37 owner and method
+relocations keep their effective retail destinations. Both normal links
+preserve the four mapped sections of their respective pre-change builds.
+Retail and both links agree in 384 loader cases, 540 update cases and 15
+configuration snapshots. The loader fixture checks pending surface and
+texture requests, close during a wait, subsystem failure, music queue drain,
+restart flags and worker publication. See `.analysis/pi/photo-task-capture/`
+for the local recipes.

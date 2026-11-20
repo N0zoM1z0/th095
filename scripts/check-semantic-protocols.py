@@ -1395,7 +1395,7 @@ def check_game_configuration_owner(overrides: dict[str, str] | None = None) -> N
         if f"this->controllerAssignments[{index}] = {index};" not in main_exact_body:
             fail("GameConfiguration::Initialize lost canonical controller assignments")
 
-    if manifest.count("?Initialize@GameConfiguration@th095@@QAEXXZ") != 4:
+    if manifest.count("?Initialize@GameConfiguration@th095@@QAEXXZ") != 5:
         fail("match manifest lost the canonical GameConfiguration Initialize ABI")
 
 

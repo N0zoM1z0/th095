@@ -50,7 +50,6 @@ struct PhotoGameTaskView
 };
 
 extern PhotoGameTaskView *g_PhotoGameTask;
-extern u32 g_ControllerRuntimeFlags;
 
 struct SupervisorSoundPlayerView
 {
@@ -1369,7 +1368,7 @@ i32 Supervisor::UpdateSceneState()
 
             case SUPERVISOR_STATE_RESTART_PHOTO_GAME:
                 locals.resultMode = g_PhotoGameTask->replayMode;
-                g_ControllerRuntimeFlags |= 0x200;
+                g_Supervisor.flags.resultRestartActive = 1;
                 this->photoGameTask->Destroy();
                 this->photoGameTask = NULL;
                 this->photoGameTask =

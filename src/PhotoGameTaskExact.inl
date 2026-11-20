@@ -1,5 +1,6 @@
 #include "AnmManager.hpp"
 #include "AnmVmId.hpp"
+#include "ControllerInputSlot.hpp"
 #include "PhotoStage.hpp"
 #include "SoundPlayer.hpp"
 #include "PhotoGamePlayer.hpp"
@@ -76,62 +77,15 @@ struct PhotoGameFileSystemView
     static BOOL CheckIfFileAlreadyExists(LPCSTR path);
 };
 
-struct PhotoGameSupervisorView
-{
-    i32 LoadMusic(i32 slot, char *path);
-    i32 ConfigureMusic(i32 mode, i32 value);
-    i32 StopAudio();
-    ZunResult StartReplayScan(
-        void (__fastcall *callback)(void *), void *argument);
-    void StopReplayScan();
-    void CompleteLoading();
-    void FailLoading();
-};
-
 struct PhotoHelpMenuTaskView
 {
     u8 unknown000[0x6108];
     i32 closeRequested;
 };
 
-struct PhotoStageStateTaskView
-{
-    u8 unknown000[0x17720];
-    AnmVmId capturedPhotoVms[11];
-};
-
-struct PhotoCaptureManagerTaskView
-{
-    u8 unknown000[8];
-    i32 captureSlot0;
-    i32 captureSlot1;
-};
-
-struct PhotoReplayInputButtonsTaskView
-{
-    u16 current;
-
-    u16 operator&(u16 mask)
-    {
-        return this->current & mask;
-    }
-};
-
 struct PhotoAsciiManagerTaskView
 {
     i32 AddFormatText(Float3 *position, const char *format, ...);
-};
-
-struct PhotoRuntimeConfigView
-{
-    u32 values[50];
-
-    PhotoRuntimeConfigView()
-    {
-        this->Initialize();
-    }
-
-    void Initialize();
 };
 
 struct PhotoCompletionStateTaskView
@@ -172,7 +126,7 @@ typedef char PhotoGameTaskUpdateLoopIAt10[
     (offsetof(PhotoGameTaskUpdateLocals, i) == 0x10) ? 1 : -1];
 
 typedef char PhotoRuntimeConfigSizeIsC8[
-    (sizeof(PhotoRuntimeConfigView) == 0xc8) ? 1 : -1];
+    (sizeof(GameConfiguration) == 0xc8) ? 1 : -1];
 
 struct PhotoSceneDefinitionTaskView
 {
@@ -201,7 +155,8 @@ struct PhotoGameTaskView
     ResultScreen *pause;                     // +0x020
     PhotoLaserManagerTaskView *lasers;       // +0x024
     ZunTimer stageTimer;                     // +0x028
-    PhotoRuntimeConfigView runtimeConfig;    // +0x034
+    // The task initializes this member before clearing its full storage.
+    GameConfigurationConstructionAdapter runtimeConfig; // +0x034
     u32 flags;                               // +0x0fc
     i32 bestShotIndex;                       // +0x100
     PhotoCompletionStateTaskView completion; // +0x104
@@ -234,22 +189,15 @@ typedef char PhotoGameTaskCompletionTimerAt108[
 typedef char PhotoGameTaskChainsAt118[
     (offsetof(PhotoGameTaskView, calcChain) == 0x118) ? 1 : -1];
 
-extern PhotoRuntimeConfigView g_PhotoRuntimeConfig;
 extern char g_ReplayPath[];
 extern PhotoSceneDefinitionTaskView *g_PhotoSceneDefinition;
 extern PhotoSceneSaveDataTaskView *g_PhotoSceneSaveData;
 extern PhotoCardInfoView *g_PhotoCardInfo;
 extern PhotoGameTaskView *g_PhotoGameTask;
-extern PhotoGameSupervisorView g_PhotoGameSupervisor;
 extern PhotoHelpMenuTaskView *g_PhotoHelpMenu;
-extern PhotoCaptureManagerTaskView *g_PhotoCaptureManager;
-extern PhotoStageStateTaskView *g_PhotoGameTaskStage;
 extern PhotoEnemyManagerTaskView *g_PhotoEnemyManagerTask;
 extern PhotoAsciiManagerTaskView g_PhotoAsciiManager;
 extern u32 g_PhotoAsciiTextColor;
-extern PhotoReplayInputButtonsTaskView g_ReplayInputButtons;
-extern i32 g_PhotoNextState;
-extern u32 g_ControllerRuntimeFlags;
 extern i32 g_ReplayUsesArchive;
 extern double g_PhotoGameClock;
 extern double g_PhotoGameClock2;
@@ -261,14 +209,21 @@ PhotoGameTaskView::PhotoGameTaskView()
     memset(this, 0, sizeof(PhotoGameTaskView));
 }
 
+// Preserve the target's 16-bit mask result before testing it.
+static __forceinline u16 ReadPhotoDemoInterrupt(
+    const ControllerInputSlotView *slot, u16 mask)
+{
+    return slot->current & mask;
+}
+
 i32 PhotoGameTaskView::Update()
 {
     PhotoGameTaskUpdateLocals locals;
 
     if (((this->flags >> 3) & 1) != 0)
     {
-        g_PhotoGameSupervisor.StopReplayScan();
-        g_PhotoNextState = 6;
+        g_Supervisor.StopReplayScan();
+        g_Supervisor.requestedSceneState = SUPERVISOR_STATE_ERROR;
         if (g_PhotoHelpMenu != NULL)
         {
             locals.shutdownHelpMenu = g_PhotoHelpMenu;
@@ -283,7 +238,7 @@ i32 PhotoGameTaskView::Update()
         return 1;
     }
 
-    g_PhotoGameSupervisor.StopReplayScan();
+    g_Supervisor.StopReplayScan();
     if (g_PhotoHelpMenu != NULL)
     {
         locals.activeHelpMenu = g_PhotoHelpMenu;
@@ -292,12 +247,12 @@ i32 PhotoGameTaskView::Update()
     }
 
     if (g_ReplayUsesArchive != 0 &&
-        ((g_ReplayInputButtons & 0x160b) != 0 ||
+        (ReadPhotoDemoInterrupt(&g_ControllerInputSlots[0], 0x160b) != 0 ||
          ((this->flags >> 4) & 1) != 0 ||
          ((this->flags >> 5) & 1) != 0 ||
          ((this->flags >> 6) & 1) != 0))
     {
-        g_PhotoNextState = 2;
+        g_Supervisor.requestedSceneState = SUPERVISOR_STATE_FRONT_END;
     }
 
     if (((this->flags >> 4) & 1) != 0)
@@ -311,9 +266,8 @@ i32 PhotoGameTaskView::Update()
                  locals.i++)
             {
                 AnmManager::ExecuteScript(
-                    g_PhotoGameTaskStage
-                        ->capturedPhotoVms[locals.i]
-                        .GetVm());
+                    reinterpret_cast<AnmVmId *>(
+                        &g_PhotoStageState->capturedPhotoVms[locals.i])->GetVm());
             }
         }
         return 3;
@@ -333,9 +287,8 @@ i32 PhotoGameTaskView::Update()
              locals.j++)
         {
             AnmManager::ExecuteScript(
-                g_PhotoGameTaskStage
-                    ->capturedPhotoVms[locals.j]
-                    .GetVm());
+                reinterpret_cast<AnmVmId *>(
+                    &g_PhotoStageState->capturedPhotoVms[locals.j])->GetVm());
         }
         return 3;
     }
@@ -478,7 +431,7 @@ PhotoGameTaskView *PhotoGameTaskView::Create(i32 replayMode)
     g_Chain.AddToDrawChain(locals.elem, 2);
     locals.task->drawChain = locals.elem;
 
-    g_PhotoGameSupervisor.StartReplayScan(PhotoGameTaskView::Load, NULL);
+    g_Supervisor.StartReplayScan(PhotoGameTaskView::Load, NULL);
     return locals.task;
 }
 
@@ -497,10 +450,10 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
     PhotoGameTaskView *task = g_PhotoGameTask;
     task->flags = task->flags | 4;
 
-    while (g_PhotoCaptureManager->captureSlot0 >= 0 ||
-           g_PhotoCaptureManager->captureSlot1 >= 0)
+    while (g_AnmManager->captureSurfaceIdx >= 0 ||
+           g_AnmManager->captureAnmIdx >= 0)
     {
-        if (((g_ControllerRuntimeFlags >> 7) & 1) != 0)
+        if (g_Supervisor.flags.receivedCloseMsg != 0)
         {
             goto failure;
         }
@@ -517,29 +470,29 @@ void __fastcall PhotoGameTaskView::Load(void *argument)
         Sleep(16);
     }
 
-    if (((g_ControllerRuntimeFlags >> 9) & 1) == 0)
+    if (g_Supervisor.flags.resultRestartActive == 0)
     {
-        if (((g_ControllerRuntimeFlags >> 12) & 1) == 0)
+        if (g_Supervisor.flags.restartPhotoGame == 0)
         {
             task->flags = task->flags | 0x100;
         }
         else
         {
-            g_ControllerRuntimeFlags &= ~0x1000;
-            g_PhotoGameSupervisor.ConfigureMusic(0, 0);
+            g_Supervisor.flags.restartPhotoGame = 0;
+            g_Supervisor.PlayMusic(0, 0);
         }
     }
 
-    g_PhotoGameSupervisor.CompleteLoading();
+    g_Supervisor.HideLoadingVms();
     task->flags = task->flags & ~4;
-    g_ControllerRuntimeFlags &= ~0x200;
+    g_Supervisor.flags.resultRestartActive = 0;
     WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
     WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
     return;
 
 failure:
     task->flags = task->flags | 8;
-    g_PhotoGameSupervisor.FailLoading();
+    g_Supervisor.BeginLoadingCompletion();
     WriteWorkerSignal(g_Supervisor.replayScanWorker.active, 0);
     WriteWorkerSignal(g_Supervisor.replayScanWorker.exitSignal, 1);
 }
@@ -558,7 +511,7 @@ i32 PhotoGameTaskView::InitializeSubsystems()
 {
     char bestShotPath[0x108];
 
-    this->runtimeConfig = g_PhotoRuntimeConfig;
+    this->runtimeConfig = g_Supervisor.config;
     this->replay = ReplayManagerTaskView::Create(
         this->replayMode, g_ReplayPath);
     if (this->replay == NULL)
@@ -644,10 +597,10 @@ i32 PhotoGameTaskView::InitializeSubsystems()
         return ZUN_ERROR;
     }
 
-    if (((g_ControllerRuntimeFlags >> 9) & 1) == 0 &&
+    if (g_Supervisor.flags.resultRestartActive == 0 &&
         g_ReplayUsesArchive == 0)
     {
-        g_PhotoGameSupervisor.LoadMusic(
+        g_Supervisor.LoadMusic(
             0, g_PhotoSceneDefinition->musicPath);
     }
     g_PhotoGameClock2 = g_PhotoGameClock = 0.0;
@@ -675,12 +628,12 @@ PhotoGameTaskView::~PhotoGameTaskView()
     g_Chain.Cut(this->drawChain);
     g_PhotoGameTask = NULL;
 
-    if (((g_ControllerRuntimeFlags >> 9) & 1) == 0 &&
+    if (g_Supervisor.flags.resultRestartActive == 0 &&
         g_ReplayUsesArchive == 0)
     {
-        g_PhotoGameSupervisor.StopAudio();
+        g_Supervisor.StopAudio();
     }
-    if (((g_ControllerRuntimeFlags >> 9) & 1) != 0)
+    if (g_Supervisor.flags.resultRestartActive != 0)
     {
         g_PhotoScreenFadeColor = 0;
     }

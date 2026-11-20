@@ -34,13 +34,14 @@ signature and SEM-374 types the ECL trail configuration. SEM-375 routes the
 ECL bullet ANM accessor through the same BulletInf layout as normal code.
 The inherited ECL ANM declaration still supplies the embedded VM type for
 exact compilation. SEM-377 gives PhotoInf a typed display boundary.
-SEM-378 removes the photo task's padded normal view of the captured VM
-IDs. Its exact view still supplies the direct `AnmVmId` receiver.
+SEM-378 removes the normal photo task's padded VM view. SEM-392 removes the
+remaining exact view and uses the real Supervisor, ANM requests, and input
+slot in the exact task.
 SEM-379 shares the PhotoOverlay lifecycle and draw body through the
 canonical PhotoInf and slot declarations. SEM-380 shares the score
 breakdown between PhotoCamera, PhotoInf and ScoreData. SEM-381 replaces the
-normal PhotoInf pointer projections with one typed singleton. PhotoGameTask
-and ECL still have recorded exact emission views.
+normal PhotoInf pointer projections with one typed singleton. ECL still has
+recorded exact emission views.
 SEM-382 shares the PlayerInf allocation declaration and typed publication
 across PhotoGame and PhotoEffect. The normal photo task uses the same type.
 SEM-383 removes PlayerInf projections in the HUD, card, foreground and
