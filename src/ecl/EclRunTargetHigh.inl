@@ -348,22 +348,23 @@ enter_subroutine:
 
     case 131:
     {
-        *reinterpret_cast<i8 *>(reinterpret_cast<u8 *>(enemy) + 0x4ca4) =
-            static_cast<i8>(TH08_ECL_RAW_I(ctx, 0));
-        *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x4ca6) =
+        TH095_ECL_TRAIL_CONFIG(enemy).flags =
+            static_cast<u8>(TH08_ECL_RAW_I(ctx, 0));
+        TH095_ECL_TRAIL_CONFIG(enemy).length =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 1));
-        *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x4ca8) =
+        TH095_ECL_TRAIL_CONFIG(enemy).unknown04 =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 2));
-        *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x4caa) =
+        TH095_ECL_TRAIL_CONFIG(enemy).sampleStride =
             static_cast<i16>(TH08_ECL_READ_I(ctx, 3));
-        if ((*reinterpret_cast<u8 *>(reinterpret_cast<u8 *>(enemy) + 0x4ca4) & 8U) != 0)
+        if ((TH095_ECL_TRAIL_CONFIG(enemy).flags &
+             PHOTO_ENEMY_TRAIL_INITIALIZE_STRIP) != 0)
         {
             TH095_ECL_CONFIGURE_PHOTO_ANM(
                 &enemy->vm,
                 TH095_PHOTO_ENEMY_OBJECT_PTR(
                     enemy, PHOTO_ENEMY_ECL_TRAIL_VERTICES_OFFSET, AnmVertex),
-                (*reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x4ca6) /
-                 *reinterpret_cast<i16 *>(reinterpret_cast<u8 *>(enemy) + 0x4caa)) << 1);
+                (TH095_ECL_TRAIL_CONFIG(enemy).length /
+                 TH095_ECL_TRAIL_CONFIG(enemy).sampleStride) << 1);
         }
         break;
     }

@@ -17531,3 +17531,19 @@ exact comparisons pass. RunEcl and the extension bodies keep their
 normal instructions and relocation destinations, and all 22 table
 entries retain their retail order in both normal links. The table moves
 from 0x004B92B0 to 0x004BA6D0.
+
+### SEM-374 — type the ECL trail and special animation fields
+
+Opcode 131 writes a byte and three signed words beginning at Enemy +0x4CA4.
+Bit 3 causes RunEcl to pass the trail vertex buffer and twice the signed
+quotient of the words at +0x4CA6 and +0x4CAA to the ANM strip initializer at
+0x004411D0. The word at +0x4CA8 remains opaque. The compact enemy owner now
+declares this eight-byte configuration, and the legacy ECL receiver accesses
+it through the shared layout bridge.
+
+Both branches of opcode 62 select the same special animation script at
++0x2C18. They now use the existing field through that bridge. The distance
+accessor uses the asserted +0x2C4C constant and keeps its VC7.1 expression
+shape. All 166 affected exact comparisons pass, the normal RunEcl code and
+relocation destinations are unchanged, and both normal links pass the game
+section comparison.

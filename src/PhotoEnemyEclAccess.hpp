@@ -49,6 +49,7 @@ enum PhotoEnemyEclOperandOffset
     PHOTO_ENEMY_ECL_SECONDARY_CONTROL_OFFSET = 0x2bf8,
     PHOTO_ENEMY_ECL_PHOTO_MARKER_TIMER_OFFSET = 0x2bfc,
     PHOTO_ENEMY_ECL_DRAW_GROUP_OFFSET = 0x2c0b,
+    PHOTO_ENEMY_ECL_SPECIAL_ANM_SCRIPT_OFFSET = 0x2c18,
     PHOTO_ENEMY_ECL_PHOTO_PULSE_VM_OFFSET = 0x2c1c,
     PHOTO_ENEMY_ECL_PHOTO_MARKER_VM_OFFSET = 0x2c20,
     PHOTO_ENEMY_ECL_PHOTO_PULSE_TIMER_OFFSET = 0x2c24,
@@ -65,6 +66,20 @@ enum PhotoEnemyEclOperandOffset
     PHOTO_ENEMY_ECL_PHOTO_ANM_CONFIG_OFFSET = 0x4ca4,
     PHOTO_ENEMY_ECL_TIMER_4CAC_OFFSET = 0x4cac,
     PHOTO_ENEMY_ECL_ATTACHED_VM_OFFSET = 0x4cbc,
+};
+
+enum PhotoEnemyTrailFlag
+{
+    PHOTO_ENEMY_TRAIL_INITIALIZE_STRIP = 1 << 3,
+};
+
+struct PhotoEnemyTrailConfig
+{
+    u8 flags;
+    u8 unknown01;
+    i16 length;
+    i16 unknown04;
+    i16 sampleStride;
 };
 
 // Dependency-light access to the two manager fields consumed by the operand
@@ -225,6 +240,11 @@ enum PhotoEnemyEclOperandRuntimeOffset
         (owner), th095::PHOTO_ENEMY_ECL_PHOTO_MARKER_TIMER_OFFSET, ZunTimer)
 #define TH095_ECL_DRAW_GROUP(owner) \
     TH095_PHOTO_ENEMY_U8((owner), th095::PHOTO_ENEMY_ECL_DRAW_GROUP_OFFSET)
+#define TH095_ECL_SPECIAL_ANM_SCRIPT(owner) \
+    TH095_PHOTO_ENEMY_I16((owner), th095::PHOTO_ENEMY_ECL_SPECIAL_ANM_SCRIPT_OFFSET)
+#define TH095_ECL_TRAIL_CONFIG(owner) \
+    TH095_PHOTO_ENEMY_OBJECT((owner), th095::PHOTO_ENEMY_ECL_PHOTO_ANM_CONFIG_OFFSET, \
+                             th095::PhotoEnemyTrailConfig)
 #define TH095_ECL_PHOTO_PULSE_VM(owner, type) \
     TH095_PHOTO_ENEMY_OBJECT( \
         (owner), th095::PHOTO_ENEMY_ECL_PHOTO_PULSE_VM_OFFSET, type)
@@ -243,7 +263,8 @@ enum PhotoEnemyEclOperandRuntimeOffset
 // shape reproduces the target's two owner loads before the x87 pair.  The
 // canonical PhotoEnemyView assertion independently pins the literal offset.
 #define TH095_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED(owner) \
-    *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(owner) + 0x2c4c)
+    *reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(owner) + \
+                             th095::PHOTO_ENEMY_ECL_MINIMUM_PLAYER_DISTANCE_SQUARED_OFFSET)
 #define TH095_ECL_SCHEDULED_FRAME(owner, index) \
     TH095_PHOTO_ENEMY_I32( \
         (owner), \

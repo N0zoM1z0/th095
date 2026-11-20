@@ -207,7 +207,7 @@ struct PhotoEnemyView
     EnemyChildEclBlock *childEclBlocks[16]; // +0x2cac
     PhotoEnemyTrailSampleView trailSamples[96]; // +0x2cec
     AnmVertex trailVertices[194]; // +0x376c
-    u8 unknown4ca4[8];
+    PhotoEnemyTrailConfig trailConfig;     // +0x4ca4
     ZunTimer timer4cac;                     // +0x4cac
     u8 unknown4cb8[4];
     PhotoEnemyAnmVmIdStorage attachedVmId; // +0x4cbc
@@ -367,7 +367,8 @@ typedef char PhotoEnemyDrawGroupAt2C0B[
         ? 1 : -1];
 typedef char PhotoEnemyAnmScriptsAt2C0E[
     (offsetof(PhotoEnemyView, idleAnmScript) == 0x2c0e &&
-     offsetof(PhotoEnemyView, specialAnmScript) == 0x2c18) ? 1 : -1];
+     offsetof(PhotoEnemyView, specialAnmScript) ==
+         PHOTO_ENEMY_ECL_SPECIAL_ANM_SCRIPT_OFFSET) ? 1 : -1];
 typedef char PhotoEnemyChildEclBlocksAt2CAC[
     (offsetof(PhotoEnemyView, childEclBlocks) ==
      PHOTO_ENEMY_ECL_CHILD_BLOCKS_OFFSET) ? 1 : -1];
@@ -395,6 +396,14 @@ typedef char PhotoEnemyTrailSamplesAt2CEC[
 typedef char PhotoEnemyTrailVerticesAt376C[
     (offsetof(PhotoEnemyView, trailVertices) ==
      PHOTO_ENEMY_ECL_TRAIL_VERTICES_OFFSET) ? 1 : -1];
+typedef char PhotoEnemyTrailConfigLayout[
+    (sizeof(PhotoEnemyTrailConfig) == 8 &&
+     offsetof(PhotoEnemyTrailConfig, flags) == 0 &&
+     offsetof(PhotoEnemyTrailConfig, length) == 2 &&
+     offsetof(PhotoEnemyTrailConfig, unknown04) == 4 &&
+     offsetof(PhotoEnemyTrailConfig, sampleStride) == 6 &&
+     offsetof(PhotoEnemyView, trailConfig) == PHOTO_ENEMY_ECL_PHOTO_ANM_CONFIG_OFFSET)
+        ? 1 : -1];
 typedef char PhotoEnemyTimerAt4CAC[
     (offsetof(PhotoEnemyView, timer4cac) == PHOTO_ENEMY_ECL_TIMER_4CAC_OFFSET)
         ? 1 : -1];

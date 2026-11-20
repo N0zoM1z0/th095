@@ -14,39 +14,18 @@ and [source ownership](SOURCE_MAP.md). Live totals come from the ledgers and
 
 ## Current work
 
-SEM-357 names the two ANM axis-alignment selectors and opcode 65. The
-[alignment contract](ANM_ALIGNMENT.md) records their literal-operand format,
-the six drawing paths and the behavior of the unhandled value. All 698
-configured exact checks and 45 independent normal-method comparisons passed.
-The old draft and target probes remain under `.analysis/sem357/`.
+The [PI evidence](POSITION_INDEPENDENCE.md) covers the two normal link
+orders, initialized data, library and import references, and the built-in
+scene 3-6 replay. SEM-358 and SEM-360 correct the MIDI and DirectInput
+storage. The second DirectInput device slot's publication remains open.
+SEM-368 binds stage loading to the BGM command queue. SEM-369 and SEM-370
+correct sixteen mismatched floating-point references and enforce literal
+data comparison in exact replay.
 
-SEM-358 fixes MIDI's window reference and removes the exact-only file
-lock offsets. The normal PE and a reverse-order link both pass the checked
-symbol bindings and file-lock runtime probe.
-[Position independence](POSITION_INDEPENDENCE.md)
-
-SEM-360 corrects the `DIDEVCAPS` record to Supervisor +0x1C. Both the
-normal and reverse-order links resolve the two `SetupDInput` references
-to that field. The target's indexed joystick consumers address a second
-device slot at +0x18. Its publication remains open.
-[DirectInput storage](WINDOW_INPUT_INITIALIZATION.md#capability-storage)
-
-SEM-359 moves ECL movement and shot helpers to the shared typed player
-position. Use the [semantic index](SEMANTIC_INDEX.md) for the remaining ECL
-offsets. SEM-362 restores the scheduled ECL bullet descriptor and shot
-interval through typed members.
-
-SEM-363 gives the capture state a single header in PhotoInf, followed by
-eleven photo records with a full 80-byte comment each. PhotoStage now shares
-the canonical stage declaration between its exact and normal bodies. Use
-the [source map](SOURCE_MAP.md) for the remaining exact lifetime adapter.
-SEM-364 and SEM-365 bind result initialization and capture updates to
-the same persistent score-entry layout.
-SEM-367 applies the same canonical owner to Best Shot metadata and pixels.
-SEM-366 types RunEcl's subroutine slots and shared player access.
-SEM-368 binds the photo loader to the BGM command queue. SEM-369 and
-SEM-370 correct sixteen floating-point references and make the exact
-comparator check the referenced COFF data bytes.
+[The source map](SOURCE_MAP.md) tracks the shared photo capture and
+persistent score owners. SEM-373 unifies the ECL extension callback
+signature and SEM-374 types the ECL trail configuration. The exact ECL
+bullet ANM accessor still crosses the inherited ANM declaration boundary.
 
 `Controller::GetInput` at 0x00419AE0 remains the only function without an
 accepted exact match. The target's 0x124-byte frame has eight bytes below
