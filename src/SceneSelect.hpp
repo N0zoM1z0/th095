@@ -119,7 +119,7 @@ struct SceneSelectControllerView
     u8 unknown0e8c[6];
     i8 currentDisplayState;
     u8 unknown0e93;
-    SceneAnmVmId previewTextVmIds[3];
+    AnmVmId previewTextVmIds[3];
     i32 previewTimer;
     u8 unknown0ea4[0x525c];
     AnmVmId transitionVm;

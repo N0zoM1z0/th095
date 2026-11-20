@@ -136,82 +136,70 @@ void SceneSelectControllerView::RefreshSceneSelection(
 #undef refreshLockedGroup
 #undef refreshStateGroup
 
-// Exact BuildScenePreviewText reads target 0x004C4AAC, the embedded
-// Supervisor::textAnm owner.  The title controller's sceneAnm is title.anm;
-// using it here makes dynamic scene descriptions overwrite the title menu.
+#define DRAW_SCENE_PREVIEW_TEXT(vm, textColor, text) \
+    SceneWriteText(g_AnmManager, vm, textColor, 0, text)
+
+} // namespace th095
+
+#endif // TH095_MATCH_EXACT
+
+#include "AnmText.hpp"
+
+namespace th095
+{
+
+// The three dynamic columns belong to text.anm, published by Supervisor.
 #define BUILD_SCENE_PREVIEW_LINE(vmSlot, scriptIndex, columnIndex)             \
-    this->previewTextVmIds[vmSlot] =                                          \
-        g_Supervisor.textAnm->CreateVm(scriptIndex, 7);                       \
-    g_AnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphHeight =   \
-        0x13;                                                                 \
-    g_AnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphWidth =    \
-        0x13;                                                                 \
-    {                                                                         \
-        if (g_ResultSaveData->IsSceneGroupUnlocked(                            \
-                this->GetSelectedGroup()) == 0)                               \
-        {                                                                     \
-            SceneWriteText(                                                   \
-                g_AnmManager,                                            \
-                g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
-                0x00df8f8f, 0,                                               \
-                this->ResolveSceneText(                                       \
-                    this->previewTextSources.lockedEncodedText, columnIndex, \
-                    0x62, 0));                                                \
-        }                                                                     \
-        else if (g_ResultSaveData                                              \
-                     ->scoreEntries[g_SelectedScene->scoreEntryIndex]          \
-                     .score == 0)                                             \
-        {                                                                     \
-            if (g_ResultSaveData                                               \
-                    ->scoreEntries[g_SelectedScene->scoreEntryIndex]           \
-                    .captureTime == 0)                                       \
-            {                                                                 \
-                SceneWriteText(                                               \
-                    g_AnmManager,                                        \
-                    g_AnmManager->GetVm(                                 \
-                        this->previewTextVmIds[vmSlot]),                       \
-                    0x00df8f8f, 0,                                           \
-                    this->ResolveSceneText(                                   \
-                        this->previewTextSources.unattemptedEncodedText,     \
-                        columnIndex, 0x62, 1));                               \
-            }                                                                 \
-            else                                                              \
-            {                                                                 \
-                SceneWriteText(                                               \
-                    g_AnmManager,                                        \
-                    g_AnmManager->GetVm(                                 \
-                        this->previewTextVmIds[vmSlot]),                       \
-                    0x00df8f8f, 0,                                           \
-                    this->ResolveSceneText(                                   \
-                        this->previewTextSources.attemptedEncodedText, columnIndex,\
-                        0x62, 3));                                            \
-            }                                                                 \
-        }                                                                     \
-        else if (g_ResultSaveData                                              \
-                     ->scoreEntries[g_SelectedScene->scoreEntryIndex]          \
-                     .score < g_SelectedScene->scoreRequirement)              \
-        {                                                                     \
-            SceneWriteText(                                                   \
-                g_AnmManager,                                            \
-                g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
-                0x00df8f8f, 0,                                               \
-                this->ResolveSceneText(                                       \
-                    this->previewTextSources.belowRequirementEncodedText,    \
-                    columnIndex, 0x62, 2));                                   \
-        }                                                                     \
-        else                                                                  \
-        {                                                                     \
-            SceneWriteText(                                                   \
-                g_AnmManager,                                            \
-                g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]),     \
-                0x00cfcfff, 0,                                               \
-                g_SelectedScene->encodedTitleText != 0                             \
-                    ? this->ResolveSceneText(                                 \
-                          g_SelectedScene->encodedTitleText, columnIndex,           \
-                          g_SelectedScene->group,                            \
-                          g_SelectedScene->scene)                            \
-                    : " ");                                                   \
-        }                                                                     \
+    this->previewTextVmIds[vmSlot] =                                           \
+        g_Supervisor.textAnm->CreateVm(scriptIndex, 7);                        \
+    g_AnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphHeight = 0x13;   \
+    g_AnmManager->GetVm(this->previewTextVmIds[vmSlot])->glyphWidth = 0x13;    \
+    if (g_ResultSaveData->IsSceneGroupUnlocked(this->GetSelectedGroup()) == 0) \
+    {                                                                          \
+        DRAW_SCENE_PREVIEW_TEXT(                                               \
+            g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]), 0x00df8f8f,   \
+            this->ResolveSceneText(this->previewTextSources.lockedEncodedText, \
+                                   columnIndex, 0x62, 0));                     \
+    }                                                                          \
+    else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex]  \
+                 .score == 0)                                                  \
+    {                                                                          \
+        if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex]   \
+                .captureTime == 0)                                             \
+        {                                                                      \
+            DRAW_SCENE_PREVIEW_TEXT(                                           \
+                g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]), 0x00df8f8f,\
+                this->ResolveSceneText(                                        \
+                    this->previewTextSources.unattemptedEncodedText,           \
+                    columnIndex, 0x62, 1));                                    \
+        }                                                                      \
+        else                                                                   \
+        {                                                                      \
+            DRAW_SCENE_PREVIEW_TEXT(                                           \
+                g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]), 0x00df8f8f,\
+                this->ResolveSceneText(                                        \
+                    this->previewTextSources.attemptedEncodedText,             \
+                    columnIndex, 0x62, 3));                                    \
+        }                                                                      \
+    }                                                                          \
+    else if (g_ResultSaveData->scoreEntries[g_SelectedScene->scoreEntryIndex]  \
+                 .score < g_SelectedScene->scoreRequirement)                   \
+    {                                                                          \
+        DRAW_SCENE_PREVIEW_TEXT(                                               \
+            g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]), 0x00df8f8f,   \
+            this->ResolveSceneText(                                            \
+                this->previewTextSources.belowRequirementEncodedText,          \
+                columnIndex, 0x62, 2));                                        \
+    }                                                                          \
+    else                                                                       \
+    {                                                                          \
+        DRAW_SCENE_PREVIEW_TEXT(                                               \
+            g_AnmManager->GetVm(this->previewTextVmIds[vmSlot]), 0x00cfcfff,   \
+            g_SelectedScene->encodedTitleText != 0                             \
+                ? this->ResolveSceneText(                                      \
+                      g_SelectedScene->encodedTitleText, columnIndex,          \
+                      g_SelectedScene->group, g_SelectedScene->scene)          \
+                : " ");                                                        \
     }
 
 void SceneSelectControllerView::BuildScenePreviewText()
@@ -239,13 +227,7 @@ void SceneSelectControllerView::BuildScenePreviewText()
 }
 
 #undef BUILD_SCENE_PREVIEW_LINE
-
-} // namespace th095
-
-#endif // TH095_MATCH_EXACT
-
-namespace th095
-{
+#undef DRAW_SCENE_PREVIEW_TEXT
 
 char *SceneSelectControllerView::ResolveSceneText(
     SceneEncodedText encodedText,

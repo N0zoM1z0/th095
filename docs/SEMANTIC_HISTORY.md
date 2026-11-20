@@ -18186,3 +18186,34 @@ produce identical bytes in twelve write/read round trips. They also agree
 on 24 header rejection cases and nine mixed record-version and checksum
 cases. A separate test varies the two unexamined header fields and loads
 the same records. See `.analysis/pi/score-file-owner/` for the recipes.
+
+### SEM-401 — share the scene preview text and VM owners
+
+Scene Select preview columns and Music Room descriptions create their VMs
+through `Supervisor::textAnm`. Scene Select visibility checks now call
+`AnmVmId::GetVm`, which clears a handle when its ID no longer resolves.
+The prior normal body used the manager lookup directly and left the stale
+ID in the controller. The earlier apparent conflict between score data and
+the ANM manager was an instruction alignment artifact in the longer normal
+preview body.
+
+Both profiles emit the same preview builder. Assigning the returned
+`AnmVmId` as an object preserves the read of the returned value before the
+destination address. Copying just its dword changed the register schedule
+and extent in both Scene Select and Music Room. The shared builder is
+1,989 bytes in both profiles with identical nonrelocation bytes and 141
+relocation slots. Exact calls `DrawTextLeft` directly, as retail does.
+The fifteen normal draw calls go through `SceneWriteText`, which passes
+the decoded bytes as a literal string to the renderer.
+
+All 44 affected strict comparisons pass across 13 translation units. Six
+linked operands follow `Supervisor::textAnm` from `0x004DBF14` to
+`0x004D65B4`. The fourteen linked handle lookup calls and the seventeen
+front-end text wrapper calls follow their respective functions.
+
+The linked fixtures agree with retail on 36 preview cases, 54 visibility
+cases, two Music Room initializations, and 24 description draws. Before
+the fix, 38 visibility cases in each normal link retained a stale VM ID.
+The fixtures run the real decoder, state changes and handle clearing and
+supply VM allocation, lookup and rendering boundaries. See
+`.analysis/pi/scene-preview-text-owner/` for the recipes.

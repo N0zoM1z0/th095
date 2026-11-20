@@ -159,7 +159,7 @@ i32 MusicRoomView::UpdateMusicRoom()
                 this->sceneAnm->CreateVm(trackVmIndex + 0x83, 7);
         for (i32 descriptionVmIndex = 0; descriptionVmIndex < 8; descriptionVmIndex++)
             this->descriptionVms[descriptionVmIndex] =
-                g_SceneUiAnm->CreateVm(descriptionVmIndex + 1, 7);
+                g_Supervisor.textAnm->CreateVm(descriptionVmIndex + 1, 7);
         this->trackCount = musicComment.trackCount;
         this->cursor.count = musicComment.trackCount;
         this->cursor.Set(0);
@@ -201,10 +201,12 @@ i32 MusicRoomView::UpdateMusicRoom()
                     (this->stateTimer.GetCurrent() - 10) / 2;
                 if (descriptionLine < 8)
                 {
-                    SceneAnmVmView *descriptionVm =
+                    AnmVm *descriptionVm =
                         this->descriptionVms[descriptionLine].GetVm();
                     SceneWriteText(
-                        g_SceneAnmManager, descriptionVm, 0x00dfdfff, 0,
+                        g_SceneAnmManager,
+                        reinterpret_cast<SceneAnmVmView *>(descriptionVm),
+                        0x00dfdfff, 0,
                         this->descriptions[this->cursor.GetCurrent()][descriptionLine]);
                     descriptionVm->pendingInterrupt = 2;
                 }
@@ -231,7 +233,7 @@ i32 MusicRoomView::UpdateMusicRoom()
         {
             for (i32 descriptionIndex = 0; descriptionIndex < 8; descriptionIndex++)
             {
-                SceneAnmVmView *descriptionVm =
+                AnmVm *descriptionVm =
                     this->descriptionVms[descriptionIndex].GetVm();
                 descriptionVm->pendingInterrupt = 3;
             }

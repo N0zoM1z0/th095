@@ -41,7 +41,7 @@ struct SceneSelectUpdateView
     u8 unknown0e8c[6];
     i8 currentDisplayState;
     u8 unknown0e93;
-    SceneAnmVmId previewTextVmIds[3];
+    AnmVmId previewTextVmIds[3];
     i32 previewTimer;
     u8 unknown0ea4[0x525c];
     AnmVmId transitionVm;
@@ -1119,11 +1119,11 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
                 SceneSelectResetTimer(&view->stateTimer);
                 view->flagBits.assetLoadStopRequested = 1;
                 g_SceneSupervisor.replayScanWorker.RequestExit();
-                g_SceneAnmManager->MarkVmForDeletion(
+                g_AnmManager->MarkVmForDeletion(
                     view->previewTextVmIds[0]);
-                g_SceneAnmManager->MarkVmForDeletion(
+                g_AnmManager->MarkVmForDeletion(
                     view->previewTextVmIds[1]);
-                g_SceneAnmManager->MarkVmForDeletion(
+                g_AnmManager->MarkVmForDeletion(
                     view->previewTextVmIds[2]);
                 selected = activeSceneCursor.GetCurrent();
                 view->vmIds.SetInterrupt(selected * 3 + 0x25, 6);
@@ -1222,9 +1222,9 @@ ChainCallbackResult SceneSelectControllerView::UpdateSceneSelect()
             view->vmIds.SetInterrupt(0x62, 1);
             view->vmIds.SetInterrupt(0x63, 1);
             view->vmIds.SetInterrupt(0x48, 1);
-            g_SceneAnmManager->SetInterrupt(view->previewTextVmIds[0], 1);
-            g_SceneAnmManager->SetInterrupt(view->previewTextVmIds[1], 1);
-            g_SceneAnmManager->SetInterrupt(view->previewTextVmIds[2], 1);
+            g_AnmManager->SetInterrupt(view->previewTextVmIds[0], 1);
+            g_AnmManager->SetInterrupt(view->previewTextVmIds[1], 1);
+            g_AnmManager->SetInterrupt(view->previewTextVmIds[2], 1);
             view->vmIds.SetInterrupt(0x82, 1);
             SceneSelectClearPreviewVmPhase(view);
             return CHAIN_CALLBACK_RESULT_CONTINUE;

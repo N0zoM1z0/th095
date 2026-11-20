@@ -28,7 +28,7 @@ struct MusicRoomView
     char paths[32][64];
     char descriptions[32][8][64];
     SceneAnmVmId trackVms[32];
-    SceneAnmVmId descriptionVms[8];
+    AnmVmId descriptionVms[8];
     u8 unknown60a0[0x60];
     AnmVmId transitionVm;
     i32 trackCount;

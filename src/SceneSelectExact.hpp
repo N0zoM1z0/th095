@@ -171,7 +171,7 @@ struct SceneSelectControllerView
     u8 unknown0e8c[6];
     i8 currentDisplayState;
     u8 unknown0e93;
-    SceneAnmVmId previewTextVmIds[3];
+    AnmVmId previewTextVmIds[3];
     i32 previewTimer;
     u8 unknown0ea4[0x525c];
     AnmVmId transitionVm;
@@ -331,7 +331,6 @@ extern i32 g_SceneUnlockCaptureRequirements[12];
 extern i32 g_SceneUnlockGroupCaptureRequirements[12];
 extern SceneDefinitionView *g_SelectedScene;
 extern SceneSupervisorView g_SceneSupervisor;
-extern SceneAnmLoadedView *g_SceneUiAnm;
 extern SceneSelectControllerView *g_SceneSelectController;
 extern u8 g_SceneTextBuffer[0x40];
 extern u32 g_SceneGroupColors[11];
