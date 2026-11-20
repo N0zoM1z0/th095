@@ -5,6 +5,7 @@
 #include "AnmVmId.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 #include "PhotoEnemyManager.hpp"
 #include "PhotoEffectRuntime.hpp"
 #include "PhotoRotatingLaserArgs.hpp"
@@ -125,46 +126,6 @@ extern PhotoCaptureParticleSpawnerView *g_PhotoCaptureParticleSpawner;
         ->Spawn((type), (position), (color))
 #endif
 
-struct PhotoEffectGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlag0 : 1;
-#else
-            u32 captureActive : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 freezeEffects : 1;
-#else
-            u32 capturedPhotoActive : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 suppressEffects : 1;
-#else
-            u32 gameplayLoadActive : 1;
-#endif
-            u32 unknownFlags3 : 7;
-#if defined(TH095_MATCH_EXACT)
-            u32 blockEffectUpdate : 1;
-#else
-            u32 photoTransitionActive : 1;
-#endif
-            u32 unknownFlags11 : 21;
-        };
-    };
-};
-
-extern PhotoEffectGlobalStateView *g_PhotoGlobalState;
-
-#ifndef DIFFBUILD
-#define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEffectGlobalStateView, g_RuntimeGlobalStateOwner)
-#endif
 
 static inline i32 PhotoEffectEitherFlag(i32 first, i32 second)
 {
@@ -1085,31 +1046,17 @@ i32 __fastcall PhotoEffectManagerView::Draw(
 i32 __fastcall PhotoEffectManagerView::OnUpdate(
     PhotoEffectManagerView *manager)
 {
-#if defined(TH095_MATCH_EXACT)
     if (PhotoEffectEitherFlag(
-            g_PhotoGlobalState->unknownFlag0,
-            g_PhotoGlobalState->suppressEffects) != 0)
-#else
-    if (PhotoEffectEitherFlag(
-            g_PhotoGlobalState->captureActive,
-            g_PhotoGlobalState->gameplayLoadActive) != 0)
-#endif
+            g_RuntimeGlobalStateOwner->captureActive,
+            g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0)
     {
         return 1;
     }
-#if defined(TH095_MATCH_EXACT)
-    if (g_PhotoGlobalState->blockEffectUpdate != 0)
-#else
-    if (g_PhotoGlobalState->photoTransitionActive != 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->photoTransitionActive != 0)
     {
         return 1;
     }
-#if defined(TH095_MATCH_EXACT)
-    if (g_PhotoGlobalState->freezeEffects != 0)
-#else
-    if (g_PhotoGlobalState->capturedPhotoActive != 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->capturedPhotoActive != 0)
     {
         f32 gameSpeed = g_AnmGameSpeed;
         g_AnmGameSpeed = 0.0f;
@@ -1123,11 +1070,7 @@ i32 __fastcall PhotoEffectManagerView::OnUpdate(
 i32 __fastcall PhotoEffectManagerView::OnDraw(
     PhotoEffectManagerView *manager)
 {
-#if defined(TH095_MATCH_EXACT)
-    if (g_PhotoGlobalState->suppressEffects != 0)
-#else
-    if (g_PhotoGlobalState->gameplayLoadActive != 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }

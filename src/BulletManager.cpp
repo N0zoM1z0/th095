@@ -4,6 +4,7 @@
 #include "PhotoItemManager.hpp"
 #include "SoundPlayer.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 #ifndef DIFFBUILD
 #include "PhotoGamePlayer.hpp"
 #endif
@@ -23,45 +24,6 @@ namespace th095
     reinterpret_cast<Float3 *>(&(vector))->FromAngleMagnitude((angle), (magnitude))
 #endif
 
-
-struct PhotoBulletGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlag0 : 1;
-#else
-            u32 captureActive : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 blocksBulletUpdate : 1;
-#else
-            u32 capturedPhotoActive : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 suppressesBulletCallbacks : 1;
-#else
-            u32 gameplayLoadActive : 1;
-#endif
-            u32 unknownFlags3 : 6;
-#if defined(TH095_MATCH_EXACT)
-            u32 suppressesPhotoSound : 1;
-#else
-            u32 photoSoundSuppressed : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 photoCaptureInputMode : 1;
-#else
-            u32 photoTransitionActive : 1;
-#endif
-            u32 unknownFlags11 : 21;
-        };
-    };
-};
 
 struct PhotoBulletPlayerView
 {
@@ -92,7 +54,6 @@ static __forceinline i32 PhotoBulletPlayerCollision(
     PhotoBulletPlayerCollision((position), (size))
 #endif
 
-extern PhotoBulletGlobalStateView *g_PhotoBulletGlobalState;
 extern PhotoBulletPlayerView *g_PhotoBulletPlayer;
 extern PhotoBulletManagerView *g_PhotoBulletManager;
 
@@ -141,11 +102,6 @@ extern i32 g_PhotoBulletDrawBucketIndices[];
 extern u32 g_PhotoBulletColors16[];
 extern u32 g_PhotoBulletColors8[];
 extern u32 g_PhotoBulletColors4[];
-#endif
-
-#ifndef DIFFBUILD
-#define g_PhotoBulletGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoBulletGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -1084,11 +1040,7 @@ PhotoBulletView *PhotoBulletManagerView::CapturePhotoTargets(
         capturePrevious = captureBullet;
     }
 
-#if defined(TH095_MATCH_EXACT)
-    if (g_PhotoBulletGlobalState->suppressesPhotoSound == 0)
-#else
-    if (g_PhotoBulletGlobalState->photoSoundSuppressed == 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
         g_SoundPlayer.PlaySoundByIdx(static_cast<SoundIdx>(0x0f), 0);
     return captureFirst;
 }
@@ -1338,13 +1290,8 @@ static __forceinline i32 PhotoBulletEitherFlag(i32 first, i32 second)
 i32 __fastcall PhotoBulletManagerView::OnUpdate(
     PhotoBulletManagerView *bulletManager)
 {
-#if defined(TH095_MATCH_EXACT)
-    if (PhotoBulletEitherFlag(g_PhotoBulletGlobalState->unknownFlag0,
-                              g_PhotoBulletGlobalState->suppressesBulletCallbacks) != 0)
-#else
-    if (PhotoBulletEitherFlag(g_PhotoBulletGlobalState->captureActive,
-                              g_PhotoBulletGlobalState->gameplayLoadActive) != 0)
-#endif
+    if (PhotoBulletEitherFlag(g_RuntimeGlobalStateOwner->captureActive,
+                              g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0)
     {
         return 1;
     }
@@ -1355,11 +1302,7 @@ i32 __fastcall PhotoBulletManagerView::OnUpdate(
 i32 __fastcall PhotoBulletManagerView::OnDraw(
     PhotoBulletManagerView *bulletManager)
 {
-#if defined(TH095_MATCH_EXACT)
-    if (((g_PhotoBulletGlobalState->flags >> 2) & 1) != 0)
-#else
-    if (g_PhotoBulletGlobalState->gameplayLoadActive != 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }
@@ -1398,19 +1341,11 @@ i32 PhotoBulletManagerView::Update()
             continue;
         }
 
-#if defined(TH095_MATCH_EXACT)
-        if (g_PhotoBulletGlobalState->blocksBulletUpdate != 0)
-#else
-        if (g_PhotoBulletGlobalState->capturedPhotoActive != 0)
-#endif
+        if (g_RuntimeGlobalStateOwner->capturedPhotoActive != 0)
         {
             goto enqueueBullet;
         }
-#if defined(TH095_MATCH_EXACT)
-        if (g_PhotoBulletGlobalState->photoCaptureInputMode != 0)
-#else
-        if (g_PhotoBulletGlobalState->photoTransitionActive != 0)
-#endif
+        if (g_RuntimeGlobalStateOwner->photoTransitionActive != 0)
         {
             goto enqueueBullet;
         }

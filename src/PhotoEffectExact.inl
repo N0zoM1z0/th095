@@ -2,6 +2,7 @@
 #include "AnmVmId.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 
 namespace th095
 {
@@ -207,25 +208,6 @@ struct PhotoCaptureParticleSpawnerView
 
 extern PhotoCaptureParticleSpawnerView *g_PhotoCaptureParticleSpawner;
 
-struct PhotoEffectGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 unknownFlag0 : 1;
-            u32 freezeEffects : 1;
-            u32 suppressEffects : 1;
-            u32 unknownFlags3 : 7;
-            u32 blockEffectUpdate : 1;
-            u32 unknownFlags11 : 21;
-        };
-    };
-};
-
-extern PhotoEffectGlobalStateView *g_PhotoGlobalState;
 
 static inline i32 PhotoEffectEitherFlag(i32 first, i32 second)
 {
@@ -1189,16 +1171,16 @@ i32 __fastcall PhotoEffectManagerView::OnUpdate(
     PhotoEffectManagerView *manager)
 {
     if (PhotoEffectEitherFlag(
-            g_PhotoGlobalState->unknownFlag0,
-            g_PhotoGlobalState->suppressEffects) != 0)
+            g_RuntimeGlobalStateOwner->captureActive,
+            g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0)
     {
         return 1;
     }
-    if (g_PhotoGlobalState->blockEffectUpdate != 0)
+    if (g_RuntimeGlobalStateOwner->photoTransitionActive != 0)
     {
         return 1;
     }
-    if (g_PhotoGlobalState->freezeEffects != 0)
+    if (g_RuntimeGlobalStateOwner->capturedPhotoActive != 0)
     {
         f32 gameSpeed = g_GameSpeed;
         g_GameSpeed = 0.0f;
@@ -1212,7 +1194,7 @@ i32 __fastcall PhotoEffectManagerView::OnUpdate(
 i32 __fastcall PhotoEffectManagerView::OnDraw(
     PhotoEffectManagerView *manager)
 {
-    if (g_PhotoGlobalState->suppressEffects != 0)
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }

@@ -35,10 +35,9 @@
 1	src/BackgroundLifecycle.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/BulletManager.cpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 23	src/BulletManager.cpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-10	src/BulletManager.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/BulletManager.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 3	src/BulletManager.cpp	#ifdef DIFFBUILD
-3	src/BulletManager.cpp	#ifndef DIFFBUILD
+2	src/BulletManager.cpp	#ifndef DIFFBUILD
 1	src/BulletManager.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 2	src/BulletManager.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
 1	src/diffbuild.hpp	#ifdef DIFFBUILD
@@ -78,11 +77,11 @@
 3	src/EclOperandsInt.cpp	#ifdef DIFFBUILD
 2	src/EclOperandsInt.cpp	#ifndef DIFFBUILD
 1	src/EclOperandsIntLValue.cpp	#ifndef DIFFBUILD
-4	src/EnemyManagerTask.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-7	src/EnemyManagerTask.cpp	#if defined(TH095_MATCH_EXACT)
+3	src/EnemyManagerTask.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
+1	src/EnemyManagerTask.cpp	#if defined(TH095_MATCH_EXACT)
 1	src/EnemyManagerTask.cpp	#if defined(TH095_MATCH_EXACT) || defined(DIFFBUILD)
 1	src/EnemyManagerTask.cpp	#ifdef TH095_MATCH_EXACT
-2	src/EnemyManagerTask.cpp	#ifndef DIFFBUILD
+1	src/EnemyManagerTask.cpp	#ifndef DIFFBUILD
 1	src/EnemyManagerUpdate.cpp	#elif defined(DIFFBUILD)
 1	src/EnemyManagerUpdate.cpp	#if !defined(TH095_MATCH_EXACT)
 2	src/EnemyManagerUpdate.cpp	#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
@@ -149,17 +148,14 @@
 4	src/PhotoCardInfo.cpp	#ifdef DIFFBUILD
 1	src/PhotoCardInfo.cpp	#ifdef TH095_MATCH_EXACT
 2	src/PhotoCardInfo.cpp	#ifndef DIFFBUILD
-8	src/PhotoEffect.cpp	#if defined(TH095_MATCH_EXACT)
 4	src/PhotoEffect.cpp	#ifdef DIFFBUILD
 1	src/PhotoEffect.cpp	#ifdef TH095_MATCH_EXACT
-4	src/PhotoEffect.cpp	#ifndef DIFFBUILD
+3	src/PhotoEffect.cpp	#ifndef DIFFBUILD
 1	src/PhotoEffectRuntime.hpp	#if !defined(DIFFBUILD) && !defined(TH095_MATCH_EXACT)
 1	src/PhotoEffectRuntime.hpp	#if defined(DIFFBUILD) || defined(TH095_MATCH_EXACT)
-5	src/PhotoFront.cpp	#ifdef DIFFBUILD
 1	src/PhotoFront.cpp	#ifdef TH095_MATCH_EXACT
 1	src/PhotoFront.cpp	#ifndef DIFFBUILD
 1	src/PhotoGame.cpp	#if defined(DIFFBUILD)
-10	src/PhotoGame.cpp	#if defined(TH095_MATCH_EXACT)
 4	src/PhotoGame.cpp	#ifdef DIFFBUILD
 1	src/PhotoGame.cpp	#ifdef TH095_MATCH_EXACT
 3	src/PhotoGame.cpp	#ifndef DIFFBUILD
@@ -168,7 +164,7 @@
 1	src/PhotoGameTask.cpp	#ifdef TH095_MATCH_EXACT
 4	src/PhotoGameTask.cpp	#ifndef DIFFBUILD
 1	src/PhotoItemManager.cpp	#ifdef TH095_MATCH_EXACT
-2	src/PhotoItemManager.cpp	#ifndef DIFFBUILD
+1	src/PhotoItemManager.cpp	#ifndef DIFFBUILD
 2	src/PhotoRuntime.cpp	#ifndef DIFFBUILD
 2	src/PhotoStage.cpp	#if defined(TH095_MATCH_EXACT)
 8	src/PhotoStage.cpp	#ifdef DIFFBUILD

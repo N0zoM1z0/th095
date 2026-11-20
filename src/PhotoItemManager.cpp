@@ -4,6 +4,7 @@
 #include "PhotoItemManager.hpp"
 #include "PhotoBulletManager.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "SoundPlayer.hpp"
 
@@ -18,31 +19,6 @@ namespace th095
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
 
-struct ItemGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 captureActive : 1;
-            u32 unknownFlag1 : 1;
-            u32 gameplayLoadActive : 1;
-            u32 unknownFlags3_8 : 6;
-            u32 photoSoundSuppressed : 1;
-            u32 photoTransitionActive : 1;
-            u32 unknownFlags11_31 : 21;
-        };
-    };
-};
-
-extern ItemGlobalStateView *g_PhotoGlobalState;
-
-#ifndef DIFFBUILD
-#define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(ItemGlobalStateView, g_RuntimeGlobalStateOwner)
-#endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -220,7 +196,7 @@ i32 PhotoItemManagerView::Update()
             {
                 AddFixedItemCameraCharge(g_RuntimePlayerOwner);
             }
-            if (g_PhotoGlobalState->photoSoundSuppressed == 0)
+            if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
             {
                 g_SoundPlayer.PlaySoundPositionedByIdx(
                     static_cast<SoundIdx>(0x14), locals.item->position.x);
@@ -257,12 +233,12 @@ i32 PhotoItemManagerView::Draw()
 i32 __fastcall PhotoItemManagerView::OnUpdate(PhotoItemManagerView *manager)
 {
     if (ItemEitherFlag(
-            g_PhotoGlobalState->captureActive,
-            g_PhotoGlobalState->gameplayLoadActive) != 0)
+            g_RuntimeGlobalStateOwner->captureActive,
+            g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0)
     {
         return 1;
     }
-    if (g_PhotoGlobalState->photoTransitionActive != 0)
+    if (g_RuntimeGlobalStateOwner->photoTransitionActive != 0)
     {
         return 1;
     }
@@ -271,7 +247,7 @@ i32 __fastcall PhotoItemManagerView::OnUpdate(PhotoItemManagerView *manager)
 
 i32 __fastcall PhotoItemManagerView::OnDraw(PhotoItemManagerView *manager)
 {
-    if (g_PhotoGlobalState->gameplayLoadActive != 0)
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }

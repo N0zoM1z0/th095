@@ -18360,3 +18360,23 @@ retail in 52 ANM lifecycle cases, 26 ASCII cases, 26 replay callback calls
 and ten configuration snapshots. They run the real dispatch and snapshot
 bodies with controlled script, rendering, and file-loader responses. See
 `.analysis/pi/active-task-consumers/` for the recipes.
+
+### SEM-408 — use the active task in gameplay callbacks
+
+The player, camera, bullets, items, enemies, effects and front timer read
+the named `PhotoGameTaskView` fields in both builds. The player callback
+consults replay history's pressed word when a photo transition is active.
+Its death and photo-limit paths publish distinct completion flags.
+Effects run with zero animation speed during captured-photo display and
+restore the speed afterward. The front timer reads the active task's
+completion state, and the camera reads its capture and loading flags to
+control the viewfinder. The enemy draw loop uses the TH095 enemy's link,
+position and embedded VM fields.
+
+All 130 affected exact comparisons pass. The 52 active-task relocations
+in the changed units keep their original destination. All 229 active-slot
+operands follow the symbol in both normal links. The linked fixtures agree
+with retail across 266 callback calls, six player completion cases, 16
+countdown cases, 19 viewfinder cases and eight enemy draw groups. They
+run the original and linked bodies with controlled script and rendering
+responses. See `.analysis/pi/photo-task-gameplay-consumers/` for the recipes.

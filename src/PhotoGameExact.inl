@@ -3,6 +3,7 @@
 #include "PhotoBulletManager.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 
 namespace th095
 {
@@ -38,28 +39,9 @@ struct PhotoResetTargetView
     void ResetForPhotoTransition();
 };
 
-struct PhotoGameGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 blocksPlayerUpdate0 : 1;
-            u32 blocksPlayerUpdate1 : 1;
-            u32 blocksPlayerDraw : 1;
-            u32 unknown003 : 7;
-            u32 photoCaptureInputMode : 1;
-            u32 unknown011 : 21;
-        };
-    };
-};
-
 extern PhotoResetTargetView *g_PhotoRuntimeResetTarget;
 extern PhotoResetTargetView *g_PhotoBulletResetTarget;
 extern PhotoResetTargetView *g_PhotoStageResetTarget;
-extern PhotoGameGlobalStateView *g_PhotoGameGlobalState;
 extern u16 g_PhotoInput;
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -359,7 +341,7 @@ void PhotoGameUpdateView::Die()
             &screenPosition);
     }
     this->completionTimer = 0;
-    if ((g_PhotoGameGlobalState->flags >> 9 & 1) == 0)
+    if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
     {
         PhotoGameSoundPlayer()->PlaySoundByIdx(4, 0);
     }
@@ -391,14 +373,14 @@ static __forceinline i32 PhotoGameEitherFlag(i32 first, i32 second)
 
 i32 __fastcall PhotoGameUpdateView::OnUpdate(PhotoGameUpdateView *player)
 {
-    if (PhotoGameEitherFlag(g_PhotoGameGlobalState->blocksPlayerUpdate0,
-                            g_PhotoGameGlobalState->blocksPlayerDraw) != 0 ||
-        g_PhotoGameGlobalState->blocksPlayerUpdate1 != 0)
+    if (PhotoGameEitherFlag(g_RuntimeGlobalStateOwner->captureActive,
+                            g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0 ||
+        g_RuntimeGlobalStateOwner->capturedPhotoActive != 0)
     {
         return 1;
     }
 
-    if (g_PhotoGameGlobalState->photoCaptureInputMode != 0)
+    if (g_RuntimeGlobalStateOwner->photoTransitionActive != 0)
     {
         if (PhotoGameInputMask(g_PhotoInput, 2) != 0)
         {
@@ -411,7 +393,7 @@ i32 __fastcall PhotoGameUpdateView::OnUpdate(PhotoGameUpdateView *player)
 
 i32 __fastcall PhotoGameUpdateView::OnDrawPlayer(PhotoGameUpdateView *player)
 {
-    if (g_PhotoGameGlobalState->blocksPlayerDraw != 0)
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }
@@ -683,7 +665,7 @@ i32 PhotoGameUpdateView::Update()
     case PHOTO_PLAYER_MODE_DEATH_TRANSITION:
         if (this->completionTimer >= 30)
         {
-            g_PhotoGameGlobalState->flags |= 0x20;
+            g_RuntimeGlobalStateOwner->playerDeathTransitionComplete = 1;
             g_AnmGameSpeed = 1.0f;
         }
         break;
@@ -700,7 +682,7 @@ i32 PhotoGameUpdateView::Update()
         }
         else if (this->completionTimer == 30)
         {
-            g_PhotoGameGlobalState->flags |= 0x40;
+            g_RuntimeGlobalStateOwner->photoLimitTransitionComplete = 1;
         }
         break;
     }

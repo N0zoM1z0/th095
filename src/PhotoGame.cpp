@@ -6,6 +6,7 @@
 #include "Global.hpp"
 #include "AnmVmId.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 #include "PhotoStage.hpp"
 #include "InputRuntime.hpp"
 #ifndef DIFFBUILD
@@ -40,61 +41,16 @@ struct PhotoResetTargetView
 };
 #endif
 
-struct PhotoGameGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u32 blocksPlayerUpdate0 : 1;
-#else
-            u32 captureActive : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 blocksPlayerUpdate1 : 1;
-#else
-            u32 capturedPhotoActive : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 blocksPlayerDraw : 1;
-#else
-            u32 gameplayLoadActive : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 unknown003 : 7;
-#else
-            u32 unknown003 : 2;
-            u32 playerDeathTransitionComplete : 1;
-            u32 photoLimitTransitionComplete : 1;
-            u32 unknown007 : 2;
-            u32 photoSoundSuppressed : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 photoCaptureInputMode : 1;
-#else
-            u32 photoTransitionActive : 1;
-#endif
-            u32 unknown011 : 21;
-        };
-    };
-};
-
 #ifdef DIFFBUILD
 extern PhotoResetTargetView *g_PhotoRuntimeResetTarget;
 extern PhotoResetTargetView *g_PhotoBulletResetTarget;
 extern PhotoResetTargetView *g_PhotoStageResetTarget;
 #endif
-extern PhotoGameGlobalStateView *g_PhotoGameGlobalState;
 #define g_PhotoInput (RuntimeHistoryCurrent())
 
 #ifndef DIFFBUILD
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
-#define g_PhotoGameGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameGlobalStateView, g_RuntimeGlobalStateOwner)
 #endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
@@ -379,11 +335,7 @@ void PhotoGameUpdateView::Die()
             &screenPosition);
     }
     this->completionTimer = 0;
-#if defined(TH095_MATCH_EXACT)
-    if ((g_PhotoGameGlobalState->flags >> 9 & 1) == 0)
-#else
-    if (g_PhotoGameGlobalState->photoSoundSuppressed == 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
     {
         g_SoundPlayer.PlaySoundByIdx(SOUND_PICHUN, 0);
     }
@@ -415,27 +367,14 @@ static __forceinline i32 PhotoGameEitherFlag(i32 first, i32 second)
 
 i32 __fastcall PhotoGameUpdateView::OnUpdate(PhotoGameUpdateView *player)
 {
-#if defined(TH095_MATCH_EXACT)
-    if (PhotoGameEitherFlag(g_PhotoGameGlobalState->blocksPlayerUpdate0,
-                            g_PhotoGameGlobalState->blocksPlayerDraw) != 0 ||
-#else
-    if (PhotoGameEitherFlag(g_PhotoGameGlobalState->captureActive,
-                            g_PhotoGameGlobalState->gameplayLoadActive) != 0 ||
-#endif
-#if defined(TH095_MATCH_EXACT)
-        g_PhotoGameGlobalState->blocksPlayerUpdate1 != 0)
-#else
-        g_PhotoGameGlobalState->capturedPhotoActive != 0)
-#endif
+    if (PhotoGameEitherFlag(g_RuntimeGlobalStateOwner->captureActive,
+                            g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0 ||
+        g_RuntimeGlobalStateOwner->capturedPhotoActive != 0)
     {
         return 1;
     }
 
-#if defined(TH095_MATCH_EXACT)
-    if (g_PhotoGameGlobalState->photoCaptureInputMode != 0)
-#else
-    if (g_PhotoGameGlobalState->photoTransitionActive != 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->photoTransitionActive != 0)
     {
         if (PhotoGameInputMask(RuntimeHistoryPressed(), 2) != 0)
         {
@@ -448,11 +387,7 @@ i32 __fastcall PhotoGameUpdateView::OnUpdate(PhotoGameUpdateView *player)
 
 i32 __fastcall PhotoGameUpdateView::OnDrawPlayer(PhotoGameUpdateView *player)
 {
-#if defined(TH095_MATCH_EXACT)
-    if (g_PhotoGameGlobalState->blocksPlayerDraw != 0)
-#else
-    if (g_PhotoGameGlobalState->gameplayLoadActive != 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }
@@ -727,7 +662,7 @@ i32 PhotoGameUpdateView::Update()
     case PHOTO_PLAYER_MODE_DEATH_TRANSITION:
         if (this->completionTimer >= 30)
         {
-            g_PhotoGameGlobalState->playerDeathTransitionComplete = 1;
+            g_RuntimeGlobalStateOwner->playerDeathTransitionComplete = 1;
             g_AnmGameSpeed = 1.0f;
         }
         break;
@@ -757,7 +692,7 @@ i32 PhotoGameUpdateView::Update()
         }
         else if (this->completionTimer == 30)
         {
-            g_PhotoGameGlobalState->photoLimitTransitionComplete = 1;
+            g_RuntimeGlobalStateOwner->photoLimitTransitionComplete = 1;
         }
         break;
     }

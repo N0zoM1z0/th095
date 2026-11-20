@@ -1,6 +1,7 @@
 #include "PhotoItemManager.hpp"
 #include "PhotoGamePlayer.hpp"
 #include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 
 namespace th095
 {
@@ -18,30 +19,11 @@ struct ItemBulletManagerView
 
 extern ItemBulletManagerView *g_PhotoBulletManager;
 
-struct ItemGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-            u32 blockItemUpdate0 : 1;
-            u32 unknownFlag1 : 1;
-            u32 blockItemUpdateAndDraw : 1;
-            u32 unknownFlags3 : 7;
-            u32 blockItemUpdate1 : 1;
-            u32 unknownFlags11 : 21;
-        };
-    };
-};
-
 struct ItemSoundPlayerView
 {
     void PlaySoundPositionedByIdx(i32 soundIndex, f32 pan);
 };
 
-extern ItemGlobalStateView *g_PhotoGlobalState;
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -219,7 +201,7 @@ i32 PhotoItemManagerView::Update()
             {
                 AddFixedItemCameraCharge(g_RuntimePlayerOwner);
             }
-            if (((g_PhotoGlobalState->flags >> 9) & 1) == 0)
+            if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
             {
                 reinterpret_cast<ItemSoundPlayerView *>(&g_SoundPlayer)
                     ->PlaySoundPositionedByIdx(0x14, locals.item->position.x);
@@ -256,12 +238,12 @@ i32 PhotoItemManagerView::Draw()
 i32 __fastcall PhotoItemManagerView::OnUpdate(PhotoItemManagerView *manager)
 {
     if (ItemEitherFlag(
-            g_PhotoGlobalState->blockItemUpdate0,
-            g_PhotoGlobalState->blockItemUpdateAndDraw) != 0)
+            g_RuntimeGlobalStateOwner->captureActive,
+            g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0)
     {
         return 1;
     }
-    if (g_PhotoGlobalState->blockItemUpdate1 != 0)
+    if (g_RuntimeGlobalStateOwner->photoTransitionActive != 0)
     {
         return 1;
     }
@@ -270,7 +252,7 @@ i32 __fastcall PhotoItemManagerView::OnUpdate(PhotoItemManagerView *manager)
 
 i32 __fastcall PhotoItemManagerView::OnDraw(PhotoItemManagerView *manager)
 {
-    if (g_PhotoGlobalState->blockItemUpdateAndDraw != 0)
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
     {
         return 1;
     }

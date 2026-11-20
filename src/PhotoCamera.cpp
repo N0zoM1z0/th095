@@ -68,7 +68,6 @@ static inline SoundPlayer *PhotoSoundPlayer()
 }
 
 extern PhotoEnemyManagerView *g_PhotoRuntime;
-extern PhotoGameTaskView *g_PhotoGlobalState;
 extern PhotoBulletManagerView *g_PhotoBulletManager;
 extern PhotoEffectManagerView *g_PhotoEffectManager;
 #ifndef DIFFBUILD
@@ -87,11 +86,7 @@ extern u16 g_PhotoInputPressed;
 #ifndef DIFFBUILD
 #define g_PhotoBulletManager \
     TH095_RUNTIME_GLOBAL_PTR(PhotoBulletManagerView, g_RuntimeBulletManagerOwner)
-#define g_PhotoGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)
 #endif
-
-#define PHOTO_SOUND_SUPPRESSED (g_PhotoGlobalState->photoSoundSuppressed)
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 f32 NormalizeAngle(f32 angle);
@@ -249,7 +244,7 @@ void PhotoCameraState::BeginCapture()
         TH095_PHOTO_ANM_MARK_DELETE(this->vmIds[10].value);
         this->vmIds[10].value = PreservePhotoId(0);
     }
-    if (PHOTO_SOUND_SUPPRESSED == 0)
+    if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
     {
         PhotoSoundPlayer()->PlaySoundByIdx(SOUND_CAMERA_FOCUS, 0);
     }
@@ -496,7 +491,7 @@ u32 PhotoCameraState::TakePhoto()
     g_AnmGameSpeed = 1.0f;
     this->modeTimer = 0;
     PhotoSoundPlayer()->StopSoundByIdx(SOUND_CAMERA_FOCUS);
-    if (PHOTO_SOUND_SUPPRESSED == 0)
+    if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
     {
         PhotoSoundPlayer()->PlaySoundByIdx(static_cast<SoundIdx>(0x29), 0);
     }
@@ -898,7 +893,7 @@ void PhotoCameraState::UpdateCharge()
                 if (this->focusChargeFrames >= 5)
                 {
                     this->flags |= PHOTO_FLAG_FOCUSED;
-                    if (PHOTO_SOUND_SUPPRESSED == 0)
+                    if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
                     {
                         PhotoSoundPlayer()->PlaySoundByIdx(
                             SOUND_FOCUS_CHARGE, 0);
@@ -944,7 +939,7 @@ normalCharge:
     }
     else
     {
-        if (PHOTO_SOUND_SUPPRESSED != 0)
+        if (g_RuntimeGlobalStateOwner->photoSoundSuppressed != 0)
         {
             PhotoSoundPlayer()->StopSoundByIdx(SOUND_FOCUS_CHARGE);
         }
@@ -989,8 +984,8 @@ focusedCharge:
 
 void PhotoCameraState::Draw()
 {
-    if (PhotoEitherFlag(g_PhotoGlobalState->captureActive,
-                        g_PhotoGlobalState->gameplayLoadActive) == 0)
+    if (PhotoEitherFlag(g_RuntimeGlobalStateOwner->captureActive,
+                        g_RuntimeGlobalStateOwner->gameplayLoadActive) == 0)
     {
         this->viewfinderVms[0].Draw();
         this->viewfinderVms[1].Draw();
@@ -998,8 +993,8 @@ void PhotoCameraState::Draw()
         this->viewfinderVms[3].Draw();
     }
 
-    if (PhotoEitherFlag(g_PhotoGlobalState->captureActive,
-                        g_PhotoGlobalState->gameplayLoadActive) != 0)
+    if (PhotoEitherFlag(g_RuntimeGlobalStateOwner->captureActive,
+                        g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0)
     {
         AnmVm *vm;
         for (i32 index = 0; index < 9; index++)
@@ -1228,7 +1223,7 @@ updateCharge:
                 if (((camera->flags >> 3) & 3) !=
                     PHOTO_CAMERA_CHARGE_UI_FULL)
                 {
-                    if (PHOTO_SOUND_SUPPRESSED == 0)
+                    if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
                     {
                         PhotoSoundPlayer()->PlaySoundByIdx(
                             SOUND_CHARGE_FULL, 0);
@@ -1335,7 +1330,7 @@ updateCharge:
             camera->CancelCapture();
             break;
         }
-        if (PHOTO_SOUND_SUPPRESSED != 0)
+        if (g_RuntimeGlobalStateOwner->photoSoundSuppressed != 0)
         {
             PhotoSoundPlayer()->StopSoundByIdx(SOUND_CAMERA_FOCUS);
         }
@@ -1359,7 +1354,7 @@ cameraActive:
             {
                 if (PHOTO_CAMERA_TARGET_SOUND_PLAYED(camera->flags) == 0)
                 {
-                    if (PHOTO_SOUND_SUPPRESSED == 0)
+                    if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
                         PhotoSoundPlayer()->PlaySoundByIdx(
                             SOUND_TARGET_ACQUIRED, 0);
                     camera->flags |= PHOTO_FLAG_TARGET_SOUND_PLAYED;
@@ -1440,7 +1435,7 @@ cameraActive:
             }
             if ((camera->flags & PHOTO_FLAG_ALTERNATE_CAPTURE) != 0)
             {
-                if (PHOTO_SOUND_SUPPRESSED == 0)
+                if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
                 {
                     PhotoSoundPlayer()->PlaySoundPositionedByIdx(
                         static_cast<SoundIdx>(0x21),
@@ -1456,7 +1451,7 @@ cameraActive:
             }
             else
             {
-                if (PHOTO_SOUND_SUPPRESSED == 0)
+                if (g_RuntimeGlobalStateOwner->photoSoundSuppressed == 0)
                 {
                     PhotoSoundPlayer()->PlaySoundPositionedByIdx(
                         static_cast<SoundIdx>(0x25),
@@ -1558,6 +1553,5 @@ finish:
     camera->auxiliaryTimer.Tick();
 }
 
-#undef PHOTO_SOUND_SUPPRESSED
 
 } // namespace th095

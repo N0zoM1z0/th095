@@ -3792,16 +3792,18 @@ def check_photo_game_task_ecl_owner() -> None:
         if retired in camera or retired in manifest:
             fail(f"PhotoCamera restored duplicate global-state projection: {retired}")
     for fact in (
-        "extern PhotoGameTaskView *g_PhotoGlobalState;",
-        "TH095_RUNTIME_GLOBAL_PTR(PhotoGameTaskView, g_RuntimeGlobalStateOwner)",
-        "g_PhotoGlobalState->captureActive",
-        "g_PhotoGlobalState->gameplayLoadActive",
-        "g_PhotoGlobalState->photoSoundSuppressed",
+        "g_RuntimeGlobalStateOwner->captureActive",
+        "g_RuntimeGlobalStateOwner->gameplayLoadActive",
+        "g_RuntimeGlobalStateOwner->photoSoundSuppressed",
     ):
         if fact not in camera:
             fail(f"PhotoCamera lost canonical PhotoGameTask access: {fact}")
-    if "?g_PhotoGlobalState@th095@@3PAUPhotoGameTaskView@1@A" not in manifest:
-        fail("PhotoCamera exact units lost canonical PhotoGameTask global ABI")
+    draw = tomllib.loads(manifest)["units"]["photo-camera-draw"]
+    task_refs = [row for row in draw["relocations"] if row["target"] == 0x004BDEC8]
+    if not task_refs or any(row["symbol"] !=
+                            "?g_RuntimeGlobalStateOwner@th095@@3PAUPhotoGameTaskView@1@A"
+                            for row in task_refs):
+        fail("PhotoCamera draw lost the active task slot")
 
     ecl_run = (SRC / "ecl" / "EclRun.cpp").read_text(encoding="utf-8")
     if '#include "../PhotoGameTask.hpp"' not in ecl_run:

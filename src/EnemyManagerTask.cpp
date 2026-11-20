@@ -1,8 +1,6 @@
-#include "EnemyManager.hpp"
-#include "GameplayGlobals.hpp"
-#if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
 #include "PhotoEnemyManager.hpp"
-#endif
+#include "GameplayGlobals.hpp"
+#include "PhotoGameTask.hpp"
 
 namespace th095
 {
@@ -18,40 +16,6 @@ extern PhotoEnemyAnmManagerDrawView *g_PhotoEnemyAnmManager;
 #define TH095_PHOTO_ENEMY_DRAW(vm) g_AnmManager->Draw(vm)
 #endif
 
-struct PhotoEnemyTaskGlobalStateView
-{
-    u8 unknown000[0xfc];
-    union
-    {
-        u32 flags;
-        struct
-        {
-#if defined(TH095_MATCH_EXACT)
-            u32 unknownFlag0 : 1;
-#else
-            u32 captureActive : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 blockEnemyUpdate : 1;
-#else
-            u32 capturedPhotoActive : 1;
-#endif
-#if defined(TH095_MATCH_EXACT)
-            u32 blockEnemyUpdateAndDraw : 1;
-#else
-            u32 gameplayLoadActive : 1;
-#endif
-            u32 unknownFlags3 : 29;
-        };
-    };
-};
-
-extern PhotoEnemyTaskGlobalStateView *g_PhotoEnemyGlobalState;
-
-#ifndef DIFFBUILD
-#define g_PhotoEnemyGlobalState \
-    TH095_RUNTIME_GLOBAL_PTR(PhotoEnemyTaskGlobalStateView, g_RuntimeGlobalStateOwner)
-#endif
 
 Float3 *__fastcall PhotoToScreen(Float3 *output, const Float3 *position);
 
@@ -64,7 +28,7 @@ static inline i32 PhotoEnemyEitherFlag(i32 first, i32 second)
 struct PhotoEnemyManagerTaskView
 {
     u8 unknown000000[0x4dc0];
-    Enemy *drawGroupHeads[4];          // +0x004DC0
+    PhotoEnemyView *drawGroupHeads[4]; // +0x004DC0
     u8 unknown004dd0[0x26ae20 - 0x4dd0];
     ChainElem *calcChain;              // +0x26AE20
     ChainElem *drawChain;              // +0x26AE24
@@ -200,10 +164,9 @@ i32 PhotoEnemyManagerTaskView::Draw()
 i32 PhotoEnemyManagerTaskView::DrawGroup(i32 groupIndex)
 {
 #if !defined(TH095_MATCH_EXACT) && !defined(DIFFBUILD)
-    Enemy *enemy = reinterpret_cast<Enemy *>(
-        PhotoEnemyRuntime(this)->drawGroupHeads[groupIndex]);
+    PhotoEnemyView *enemy = PhotoEnemyRuntime(this)->drawGroupHeads[groupIndex];
 #else
-    Enemy *enemy = this->drawGroupHeads[groupIndex];
+    PhotoEnemyView *enemy = this->drawGroupHeads[groupIndex];
 #endif
     while (enemy != NULL)
     {
@@ -221,20 +184,10 @@ i32 __fastcall PhotoEnemyManagerTaskView::OnUpdate(
     // Source argument order matters under VC7.1: fastcall/right-to-left
     // evaluation loads the draw-suppression bit before flag 0, as the target
     // does, while the logical short-circuit shares one return-1 tail.
-#if defined(TH095_MATCH_EXACT)
     if (PhotoEnemyEitherFlag(
-            g_PhotoEnemyGlobalState->unknownFlag0,
-            g_PhotoEnemyGlobalState->blockEnemyUpdateAndDraw) != 0 ||
-#else
-    if (PhotoEnemyEitherFlag(
-            g_PhotoEnemyGlobalState->captureActive,
-            g_PhotoEnemyGlobalState->gameplayLoadActive) != 0 ||
-#endif
-#if defined(TH095_MATCH_EXACT)
-        g_PhotoEnemyGlobalState->blockEnemyUpdate != 0)
-#else
-        g_PhotoEnemyGlobalState->capturedPhotoActive != 0)
-#endif
+            g_RuntimeGlobalStateOwner->captureActive,
+            g_RuntimeGlobalStateOwner->gameplayLoadActive) != 0 ||
+        g_RuntimeGlobalStateOwner->capturedPhotoActive != 0)
     {
         return 1;
     }
@@ -245,11 +198,7 @@ i32 __fastcall PhotoEnemyManagerTaskView::OnUpdate(
 i32 __fastcall PhotoEnemyManagerTaskView::OnDraw(
     PhotoEnemyManagerTaskView *manager)
 {
-#if defined(TH095_MATCH_EXACT)
-    if (g_PhotoEnemyGlobalState->blockEnemyUpdateAndDraw != 0)
-#else
-    if (g_PhotoEnemyGlobalState->gameplayLoadActive != 0)
-#endif
+    if (g_RuntimeGlobalStateOwner->gameplayLoadActive != 0)
         return 1;
     return manager->Draw();
 }
